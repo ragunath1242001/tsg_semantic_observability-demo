@@ -4,8 +4,6 @@ import {
   IReference,
   Reference,
   SerializableClass,
-  Time,
-  URI,
   Value,
 } from "../common";
 import { Action, LeftOperand, Operator } from "./negotiation.schema";
@@ -56,7 +54,7 @@ export interface IProhibition extends IPolicyRule {
   target: string;
 }
 
-export interface IDuty extends IPolicyRule {}
+export type IDuty = IPolicyRule
 
 export interface IPermission extends IPolicyRule {
   target: string;

@@ -28,7 +28,7 @@ export function Value(): PropertyDecorator {
     Reflect.defineMetadata(valueSymbol, true, target, propertyKey);
 }
 
-export function Namespace(ns: String): PropertyDecorator {
+export function Namespace(ns: string): PropertyDecorator {
   return (target: any, propertyKey: string | symbol) =>
     Reflect.defineMetadata(namespaceSymbol, ns, target, propertyKey);
 }

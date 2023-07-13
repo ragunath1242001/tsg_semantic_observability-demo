@@ -150,7 +150,7 @@ export interface IDistribution extends IReference {
   format?: Reference;
   issued?: Time;
   modified?: Time;
-  title?: String;
+  title?: string;
   hasPolicy?: Array<Policy>;
 }
 
@@ -200,7 +200,7 @@ export class Distribution extends Reference {
   modified?: Time;
   @Namespace("dct")
   @IsString()
-  title?: String;
+  title?: string;
   @Namespace("odrl")
   @ValidateNested()
   hasPolicy?: Array<Policy>;
@@ -277,7 +277,7 @@ export interface ICatalogRecord extends IReference {
   description?: Array<Multilanguage>;
   issued?: Date;
   modified?: Date;
-  title?: String;
+  title?: string;
   primaryTopic?: Resource;
 }
 
@@ -297,7 +297,7 @@ export class CatalogRecord extends Reference {
   modified?: Date;
   @Namespace("dct")
   @IsString()
-  title?: String;
+  title?: string;
   @Namespace("foaf")
   @ValidateNested()
   primaryTopic?: Resource;

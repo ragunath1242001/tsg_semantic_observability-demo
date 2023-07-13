@@ -18,7 +18,7 @@ export class SerializableClass {
       throw new ClassValidationError(`Validation error: ${validation.map(v => v.toString()).join('\n')}`, validation)
     }
   }
-  serialize(context: boolean = true): any {
+  serialize(context = true): any {
     return serialize(this, context)
   }
 }

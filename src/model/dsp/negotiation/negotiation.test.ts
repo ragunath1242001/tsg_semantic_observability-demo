@@ -1,5 +1,5 @@
 import { deserialize } from "../../serialize";
-import { Reference, Time, URI } from "../common";
+import { URI } from "../common";
 import {
   Agreement,
   Constraint,
@@ -8,7 +8,7 @@ import {
   Permission,
   Prohibition,
 } from "./negotiation";
-import { Action, LeftOperand, Operator } from "./negotiation.schema";
+import { Action, LDAgreement, LDOffer, LeftOperand, Operator } from "./negotiation.schema";
 
 test("Contract offer serialization", async () => {
   const offer = new Offer({
@@ -41,8 +41,8 @@ test("Contract offer serialization", async () => {
     ],
   });
 
-  const offerSerialized = await offer.serialize();
-  expect(offerSerialized).toStrictEqual({
+  const serialized = await offer.serialize();
+  const expected: LDOffer = {
     "@context": "https://w3id.org/dspace/v0.8/context.json",
     "@type": "odrl:Offer",
     "@id": "urn:uuid:8d613f77-3dde-4286-88ff-c1ab96da6d59",
@@ -51,7 +51,7 @@ test("Contract offer serialization", async () => {
     "odrl:permission": [
       {
         "@type": "odrl:Permission",
-        "odrl:action": "odrl:use",
+        "odrl:action": Action.USE,
         "odrl:target": "urn:uuid:340eab1a-f3ee-471f-a0ad-beadddc521b6",
         "odrl:constraint": [
           {
@@ -60,14 +60,14 @@ test("Contract offer serialization", async () => {
               "@type": "xsd:anyURI",
               "@value": "http://example.com/purposeX",
             },
-            "odrl:leftOperand": "odrl:purpose",
-            "odrl:operator": "odrl:eq",
+            "odrl:leftOperand": LeftOperand.PURPOSE,
+            "odrl:operator": Operator.EQ,
           },
         ],
         "odrl:duty": [
           {
             "@type": "odrl:Duty",
-            "odrl:action": "odrl:inform",
+            "odrl:action": Action.INFORM,
           },
         ],
       },
@@ -75,12 +75,13 @@ test("Contract offer serialization", async () => {
     "odrl:prohibition": [
       {
         "@type": "odrl:Prohibition",
-        "odrl:action": "odrl:distribute",
+        "odrl:action": Action.DISTRIBUTE,
         "odrl:target": "urn:uuid:340eab1a-f3ee-471f-a0ad-beadddc521b6",
       },
     ],
-  });
-  const deserialized = await deserialize<Offer>(offerSerialized);
+  }
+  expect(serialized).toStrictEqual(expected);
+  const deserialized = await deserialize<Offer>(serialized);
   expect(offer).toStrictEqual(deserialized);
 });
 
@@ -119,8 +120,8 @@ test("Contract agreement serialization", async () => {
     ],
   });
 
-  const agreementSerialized = await agreement.serialize();
-  expect(agreementSerialized).toStrictEqual({
+  const serialized = await agreement.serialize();
+  const expected: LDAgreement = {
     "@context": "https://w3id.org/dspace/v0.8/context.json",
     "@type": "odrl:Agreement",
     "@id": "urn:uuid:8d613f77-3dde-4286-88ff-c1ab96da6d59",
@@ -129,7 +130,7 @@ test("Contract agreement serialization", async () => {
     "odrl:permission": [
       {
         "@type": "odrl:Permission",
-        "odrl:action": "odrl:use",
+        "odrl:action": Action.USE,
         "odrl:target": "urn:uuid:340eab1a-f3ee-471f-a0ad-beadddc521b6",
         "odrl:constraint": [
           {
@@ -138,14 +139,14 @@ test("Contract agreement serialization", async () => {
               "@type": "xsd:anyURI",
               "@value": "http://example.com/purposeX",
             },
-            "odrl:leftOperand": "odrl:purpose",
-            "odrl:operator": "odrl:eq",
+            "odrl:leftOperand": LeftOperand.PURPOSE,
+            "odrl:operator": Operator.EQ,
           },
         ],
         "odrl:duty": [
           {
             "@type": "odrl:Duty",
-            "odrl:action": "odrl:inform",
+            "odrl:action": Action.INFORM,
           },
         ],
       },
@@ -153,14 +154,15 @@ test("Contract agreement serialization", async () => {
     "odrl:prohibition": [
       {
         "@type": "odrl:Prohibition",
-        "odrl:action": "odrl:distribute",
+        "odrl:action": Action.DISTRIBUTE,
         "odrl:target": "urn:uuid:340eab1a-f3ee-471f-a0ad-beadddc521b6",
       },
     ],
     "dspace:timestamp": "2023-01-01T00:00:00Z",
     "dspace:consumerId": "Consumer A",
     "dspace:providerId": "Provider 1",
-  });
-  const deserialized = await deserialize<Agreement>(agreementSerialized);
+  }
+  expect(serialized).toStrictEqual(expected);
+  const deserialized = await deserialize<Agreement>(serialized);
   expect(agreement).toStrictEqual(deserialized);
 });

@@ -1,7 +1,8 @@
-import { deserialize, serialize } from "../../serialize";
+import { deserialize } from "../../serialize";
 import { Multilanguage, Reference } from "../common";
 import { Offer } from "../negotiation/negotiation";
 import { Resource } from "./catalog";
+import { LDResource } from "./catalog.schema";
 
 test("Resource serialization", async () => {
   const resource = new Resource({
@@ -29,8 +30,7 @@ test("Resource serialization", async () => {
     ]
   });
   const serialized = await resource.serialize();
-  
-  expect(serialized).toStrictEqual({
+  const expected: LDResource = {
     "@context": "https://w3id.org/dspace/v0.8/context.json",
     "@type": "dcat:Resource",
     "@id": "urn:uuid:5b156cfa-5800-4345-8acc-6725c7eb5bc2",
@@ -67,9 +67,9 @@ test("Resource serialization", async () => {
         "odrl:assigner": "urn:uuid:ab07632c-68c3-4665-8708-533552b51e91",
       },
     ],
-  });
+  }
+  expect(serialized).toStrictEqual(expected);
   const deserialized = await deserialize<Resource>(serialized);
-
   expect(deserialized).toStrictEqual(resource);
 });
 

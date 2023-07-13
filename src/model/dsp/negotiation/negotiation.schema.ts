@@ -1,4 +1,4 @@
-import { LDValue, LDReference, LDTime } from "../common.schema";
+import { LDValue, LDReference, LDContext } from "../common.schema";
 
 export enum Action {
   DELETE = "odrl:delete",
@@ -110,21 +110,21 @@ export interface LDConstraint {
   'odrl:leftOperand': LeftOperand;
   'odrl:operator': Operator;
   'odrl:rightOperand'?: LDValue;
-  'odrl:rightOperandReference'?: LDReference;
+  'odrl:rightOperandReference'?: string;
 }
 
 export interface LDPolicyRule {
-  // '@type': 'odrl:PolicyRule';
-  'odrl:assigner'?: LDReference;
-  'odrl:assignee'?: LDReference;
+  '@type': 'odrl:Prohibition' | 'odrl:Duty' | 'odrl:Permission';
+  'odrl:assigner'?: string;
+  'odrl:assignee'?: string;
   'odrl:action': Action;
-  'odrl:target'?: LDReference;
+  'odrl:target'?: string;
   'odrl:constraint'?: Array<LDConstraint>;
 }
 
 export interface LDProhibition extends LDPolicyRule {
   '@type': 'odrl:Prohibition';
-  'odrl:target': LDReference;
+  'odrl:target': string;
 }
 
 export interface LDDuty extends LDPolicyRule {
@@ -133,30 +133,30 @@ export interface LDDuty extends LDPolicyRule {
 
 export interface LDPermission extends LDPolicyRule {
   '@type': 'odrl:Permission';
-  'odrl:target': LDReference;
+  'odrl:target': string;
   'odrl:duty'?: Array<LDDuty>;
 }
 
 export interface LDPolicy extends LDReference {
-  // '@type': 'odrl:Policy';
-  'odrl:assigner'?: LDReference;
-  'odrl:assignee'?: LDReference;
-  'odrl:profile'?: LDReference;
+  '@type': 'odrl:Offer' | 'odrl:Agreement';
+  'odrl:assigner'?: string;
+  'odrl:assignee'?: string;
+  'odrl:profile'?: string;
   'odrl:permission'?: Array<LDPermission>;
   'odrl:prohibition'?: Array<LDProhibition>;
   'odrl:obligation'?: Array<LDDuty>;
 }
 
-export interface LDOffer extends LDPolicy {
+export interface LDOffer extends LDContext, LDPolicy {
   '@type': 'odrl:Offer';
-  'odrl:assigner': LDReference;
+  'odrl:assigner': string;
 }
 
-export interface LDAgreement extends LDPolicy {
+export interface LDAgreement extends LDContext, LDPolicy {
   '@type': 'odrl:Agreement';
-  'odrl:assigner': LDReference;
-  'odrl:assignee': LDReference;
-  'odrl:timestamp': LDTime;
+  'odrl:assigner': string;
+  'odrl:assignee': string;
+  'dspace:timestamp': string;
   'dspace:consumerId': string;
   'dspace:providerId': string;
 }

@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsString, ValidateNested } from "class-validator";
 import { Serializable, Namespace } from "../../decorators";
-import { Multilanguage, SerializableClass, Time } from "../common";
+import { Multilanguage, SerializableClass } from "../common";
 import { NegotiationEvent, ProofTypes } from "./messages.schema";
 import { Agreement, Offer } from "./negotiation";
 

@@ -1,7 +1,8 @@
 import { deserialize } from "../../serialize";
 import { Multilanguage } from "../common";
 import { Catalog } from "./catalog";
-import { CatalogError, CatalogMessage, CatalogRequestMessage, DatasetRequestMessage, ICatalogRequestMessage } from "./messages";
+import { CatalogError, CatalogMessage, CatalogRequestMessage, DatasetRequestMessage } from "./messages";
+import { LDCatalogError, LDCatalogMessage, LDCatalogRequestMessage, LDDatasetRequestMessage } from "./messages.schema";
 
 test("Catalog Error", async () => {
   const catalogError = new CatalogError({
@@ -13,8 +14,8 @@ test("Catalog Error", async () => {
       }),
     ],
   });
-  const catalogErrorSerialized = await catalogError.serialize();
-  const catalogErrorJsonLD = {
+  const serialized = await catalogError.serialize();
+  const expected: LDCatalogError = {
     "@context": "https://w3id.org/dspace/v0.8/context.json",
     "@type": "dspace:CatalogError",
     "dspace:code": "123:A",
@@ -25,11 +26,9 @@ test("Catalog Error", async () => {
       },
     ],
   };
-  expect(catalogErrorSerialized).toStrictEqual(catalogErrorJsonLD);
-  const deserialized = await deserialize<CatalogError>(catalogErrorJsonLD)
-  expect(deserialized).toStrictEqual(
-    catalogError
-  );
+  expect(serialized).toStrictEqual(expected);
+  const deserialized = await deserialize<CatalogError>(expected)
+  expect(deserialized).toStrictEqual(catalogError);
 });
 
 test("Catalog Message", async () => {
@@ -38,8 +37,8 @@ test("Catalog Message", async () => {
       id: "urn:uuid:5b156cfa-5800-4345-8acc-6725c7eb5bc2"
     })],
   });
-  const catalogMessageSerialized = await catalogMessage.serialize();
-  const catalogMessageJsonLD = {
+  const serialized = await catalogMessage.serialize();
+  const expected: LDCatalogMessage = {
     "@context": "https://w3id.org/dspace/v0.8/context.json",
     "@type": "dspace:CatalogMessage",
     "dspace:catalog": [{
@@ -47,10 +46,9 @@ test("Catalog Message", async () => {
       "@id": "urn:uuid:5b156cfa-5800-4345-8acc-6725c7eb5bc2"
     }]
   };
-  expect(catalogMessageSerialized).toStrictEqual(catalogMessageJsonLD);
-  expect(await deserialize<CatalogMessage>(catalogMessageJsonLD)).toStrictEqual(
-    catalogMessage
-  );
+  expect(serialized).toStrictEqual(expected);
+  const deserialized = await deserialize<CatalogMessage>(expected)
+  expect(deserialized).toStrictEqual(catalogMessage);
 });
 
 test("Catalog Request Message", async () => {
@@ -60,8 +58,8 @@ test("Catalog Request Message", async () => {
       'dspace:SPARQL': 'DESCRIBE * WHERE {?s ?p ?o.}'
     }],
   });
-  const catalogRequestMessageSerialized = await catalogRequestMessage.serialize();
-  const catalogRequestMessageJsonLD = {
+  const serialized = await catalogRequestMessage.serialize();
+  const expected: LDCatalogRequestMessage = {
     "@context": "https://w3id.org/dspace/v0.8/context.json",
     "@type": "dspace:CatalogRequestMessage",
     "dspace:filter": [{
@@ -69,11 +67,9 @@ test("Catalog Request Message", async () => {
       "dspace:SPARQL": "DESCRIBE * WHERE {?s ?p ?o.}"
     }]
   };
-  expect(catalogRequestMessageSerialized).toStrictEqual(catalogRequestMessageJsonLD);
-  const deserialized = await deserialize<CatalogRequestMessage>(catalogRequestMessageJsonLD)
-  expect(deserialized).toStrictEqual(
-    catalogRequestMessage
-  );
+  expect(serialized).toStrictEqual(expected);
+  const deserialized = await deserialize<CatalogRequestMessage>(expected)
+  expect(deserialized).toStrictEqual(catalogRequestMessage);
 });
 
 
@@ -81,15 +77,14 @@ test("Dataset Request Message", async () => {
   const datasetRequestMessage = new DatasetRequestMessage({
     dataset: "urn:uuid:5b156cfa-5800-4345-8acc-6725c7eb5bc2",
   });
-  const datasetRequestMessageSerialized = await datasetRequestMessage.serialize();
-  const datasetRequestMessageJsonLD = {
+  const serialized = await datasetRequestMessage.serialize();
+  const expected: LDDatasetRequestMessage = {
     "@context": "https://w3id.org/dspace/v0.8/context.json",
     "@type": "dspace:DatasetRequestMessage",
     "dspace:dataset": "urn:uuid:5b156cfa-5800-4345-8acc-6725c7eb5bc2"
   };
-  expect(datasetRequestMessageSerialized).toStrictEqual(datasetRequestMessageJsonLD);
-  expect(await deserialize<DatasetRequestMessage>(datasetRequestMessageJsonLD)).toStrictEqual(
-    datasetRequestMessage
-  );
+  expect(serialized).toStrictEqual(expected);
+  const deserialized = await deserialize<DatasetRequestMessage>(expected)
+  expect(deserialized).toStrictEqual(datasetRequestMessage);
 });
 

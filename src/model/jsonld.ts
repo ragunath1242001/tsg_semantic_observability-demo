@@ -1,5 +1,5 @@
 import jsonld, { ContextDefinition, JsonLdDocument, Options } from "jsonld";
-import { JsonLdArray, JsonLdObj, RemoteDocument, Url } from "jsonld/jsonld-spec";
+import { JsonLdObj, RemoteDocument } from "jsonld/jsonld-spec";
 
 // TODO: Move towards hosted context on w3id.org or https://github.com/International-Data-Spaces-Association/ids-specification/raw/main/common/schema/context.json
 const context: ContextDefinition = {
@@ -43,7 +43,7 @@ const context: ContextDefinition = {
 
 const nodeDocumentLoader = (jsonld as any).documentLoaders.node();
 const jsonldOptions: Options.DocLoader = {
-  async documentLoader(url, callback): Promise<RemoteDocument> {
+  async documentLoader(url): Promise<RemoteDocument> {
     
     if (url === "https://w3id.org/dspace/v0.8/context.json") {
       const remoteDocument: RemoteDocument = {
@@ -62,11 +62,8 @@ const jsonldOptions: Options.DocLoader = {
 
 export async function compact(document: JsonLdDocument, internal: boolean): Promise<JsonLdObj> {
   const expanded = await jsonld.expand(document, jsonldOptions);
-  const {'@language': _, ...strippedContext} = context;
-  if (!internal) {
-    strippedContext['@language'] = 'en'
-  }
-  const compacted = await jsonld.compact(expanded, strippedContext, {
+  const usingContext: ContextDefinition = (internal) ? context : {...context, '@language': 'en'};
+  const compacted = await jsonld.compact(expanded, usingContext, {
     ...jsonldOptions
   })
   compacted['@context'] = "https://w3id.org/dspace/v0.8/context.json";

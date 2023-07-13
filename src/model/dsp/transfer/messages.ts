@@ -1,6 +1,7 @@
-import { ArrayNotEmpty, IsNotEmpty, ValidateNested, validate, validateSync } from "class-validator";
+import { ArrayNotEmpty, IsNotEmpty, ValidateNested } from "class-validator";
 import { Serializable, Namespace } from "../../decorators";
 import { Multilanguage, SerializableClass, URI } from "../common";
+import { TransferState } from "./messages.schema";
 
 export interface ITransferCompletionMessage {
   processId: string;
@@ -42,14 +43,6 @@ export class TransferError extends SerializableClass {
     this.code = value.code;
     this.reason = value.reason;
   }
-}
-
-export enum TransferState {
-  REQUESTED = "dspace:REQUESTED",
-  STARTED = "dspace:STARTED",
-  TERMINATED = "dspace:TERMINATED",
-  COMPLETED = "dspace:COMPLETED",
-  SUSPENDED = "dspace:SUSPENDED",
 }
 
 export interface ITransferProcess {

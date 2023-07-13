@@ -1,27 +1,27 @@
-import { LDMultilanguage, LDTime } from "../common.schema";
+import { LDContext, LDMultilanguage } from "../common.schema";
 import { LDAgreement, LDOffer } from "./negotiation.schema";
 
 
-export interface LDContractRequestMessage {
+export interface LDContractRequestMessage extends LDContext {
   '@type': 'dspace:ContractRequestMessage'
   'dspace:processId': string;
   'odrl:offer': LDOffer;
   'dspace:callbackAddress': string;
 }
 
-export interface LDContractOfferMessage {
+export interface LDContractOfferMessage extends LDContext {
   '@type': 'dspace:ContractOfferMessage'
   'dspace:processId': string;
   'odrl:offer': LDOffer;
   'dspace:callbackAddress': string;
 }
-export interface LDContractNegotiationTerminationMessage {
+export interface LDContractNegotiationTerminationMessage extends LDContext {
   '@type': 'dspace:ContractNegotiationTerminationMessage'
   'dspace:processId': string;
   'dspace:code'?: string;
-  'dspace:reason': Array<LDMultilanguage>;
+  'dspace:reason': Array<LDMultilanguage | string>;
 }
-export interface LDContractNegotiation {
+export interface LDContractNegotiation extends LDContext {
   '@type': 'dspace:ContractNegotiation'
   'dspace:processId': string;
   'dspace:negotiationId': string;
@@ -30,15 +30,15 @@ export enum NegotiationEvent {
   ACCEPTED = "dspace:ACCEPTED",
   FINALIZED = "dspace:FINALIZED",
 }
-export interface LDContractNegotiationEventMessage {
+export interface LDContractNegotiationEventMessage extends LDContext {
   '@type': 'dspace:ContractNegotiationEventMessage'
   'dspace:processId': string;
   'dspace:eventType': NegotiationEvent;
 }
-export interface LDContractNegotiationError {
+export interface LDContractNegotiationError extends LDContext {
   '@type': 'dspace:ContractNegotiationError'
   'dspace:processId': string;
-  'dspace:reason'?: Array<LDMultilanguage>;
+  'dspace:reason'?: Array<LDMultilanguage | string>;
   'dct:description'?: Array<string>;
 }
 export enum ProofTypes {
@@ -54,11 +54,11 @@ export enum ProofTypes {
 }
 export interface LDProof {
   "@type": ProofTypes;
-  "dct:created": LDTime;
+  "dct:created": string;
   "sec:jws": string;
   [key: string]: any;
 }
-export interface LDContractAgreementVerificationMessage {
+export interface LDContractAgreementVerificationMessage extends LDContext {
   '@type': 'dspace:ContractAgreementVerificationMessage'
   'dspace:processId': string;
   'cred:credentialSubject': {
@@ -67,8 +67,8 @@ export interface LDContractAgreementVerificationMessage {
   };
   'sec:proof': LDProof;
 }
-export interface LDContractAgreementMessage {
+export interface LDContractAgreementMessage extends LDContext {
   '@type': 'dspace:ContractAgreementMessage'
   'dspace:processId': string;
-  'dspace:agreement': LDAgreement;
+  'odrl:agreement': LDAgreement;
 }

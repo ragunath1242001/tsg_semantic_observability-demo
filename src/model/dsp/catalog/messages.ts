@@ -42,7 +42,7 @@ export class CatalogMessage extends SerializableClass {
 export interface Filter {
   "@type": "dspace:Filter";
   [filterKey: string]: string;
-};
+}
 
 export interface ICatalogRequestMessage {
   filter?: Array<Filter>;

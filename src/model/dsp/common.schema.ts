@@ -1,3 +1,7 @@
+export interface LDContext {
+  "@context"?: "https://w3id.org/dspace/v0.8/context.json"
+}
+
 export interface LDReference {
   '@id': string
 }
