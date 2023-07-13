@@ -1,3 +1,4 @@
+import { IsNotEmpty, IsString, ValidateNested } from "class-validator";
 import { Namespace, Serializable } from "../../decorators";
 import { Multilanguage, SerializableClass } from "../common";
 import { Catalog } from "./catalog";
@@ -12,9 +13,10 @@ export class CatalogError extends SerializableClass {
   @Namespace("dspace")
   code?: string;
   @Namespace("dspace")
+  @ValidateNested()
   reason?: Array<Multilanguage>;
 
-  constructor(value: ICatalogError) {
+  constructor (value: ICatalogError) {
     super()
     this.code = value.code;
     this.reason = value.reason;
@@ -28,9 +30,10 @@ export interface ICatalogMessage {
 @Serializable("dspace:CatalogMessage")
 export class CatalogMessage extends SerializableClass {
   @Namespace("dspace")
+  @ValidateNested()
   catalog?: Array<Catalog>;
 
-  constructor(value: ICatalogMessage) {
+  constructor (value: ICatalogMessage) {
     super()
     this.catalog = value.catalog;
   }
@@ -48,9 +51,10 @@ export interface ICatalogRequestMessage {
 @Serializable("dspace:CatalogRequestMessage")
 export class CatalogRequestMessage extends SerializableClass {
   @Namespace("dspace")
+  @ValidateNested()
   filter?: Array<Filter>;
 
-  constructor(value: ICatalogRequestMessage) {
+  constructor (value: ICatalogRequestMessage) {
     super()
     this.filter = value.filter;
   }
@@ -63,9 +67,11 @@ export interface IDatasetRequestMessage {
 @Serializable("dspace:DatasetRequestMessage")
 export class DatasetRequestMessage extends SerializableClass {
   @Namespace("dspace")
+  @IsNotEmpty()
+  @IsString()
   dataset: string;
 
-  constructor(value: IDatasetRequestMessage) {
+  constructor (value: IDatasetRequestMessage) {
     super()
     this.dataset = value.dataset;
   }

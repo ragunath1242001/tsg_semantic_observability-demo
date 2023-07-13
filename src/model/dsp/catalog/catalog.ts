@@ -1,3 +1,4 @@
+import { IsDate, IsString, ValidateNested } from "class-validator";
 import { Serializable, Namespace } from "../../decorators";
 import {
   Decimal,
@@ -33,43 +34,59 @@ export interface IResource extends IReference {
 @Serializable("dcat:Resource")
 export class Resource extends Reference {
   @Namespace("dcat")
+  @ValidateNested()
   contactPoint?: Reference;
   @Namespace("dcat")
+  @ValidateNested()
   keyword?: Array<Multilanguage>;
   @Namespace("dcat")
+  @ValidateNested()
   landingPage?: Reference;
   @Namespace("dcat")
+  @ValidateNested()
   theme?: Array<Reference>;
   @Namespace("dcat")
+  @ValidateNested()
   conformsTo?: Reference;
   @Namespace("dct")
+  @ValidateNested()
   creator?: Reference;
   @Namespace("dct")
+  @ValidateNested()
   description?: Array<Multilanguage>;
   @Namespace("dct")
   identifier?: string;
   @Namespace("dct")
+  @ValidateNested()
   isReferencedBy?: Reference;
   @Namespace("dct")
+  @ValidateNested()
   issued?: Time;
   @Namespace("dct")
+  @ValidateNested()
   language?: Reference;
   @Namespace("dct")
+  @ValidateNested()
   license?: Reference;
   @Namespace("dct")
+  @ValidateNested()
   modified?: Time;
   @Namespace("dct")
+  @ValidateNested()
   publisher?: Reference;
   @Namespace("dct")
+  @ValidateNested()
   relation?: Reference;
   @Namespace("dct")
   title?: string;
   @Namespace("dct")
+  @ValidateNested()
   type?: Reference;
   @Namespace("odrl")
+  @ValidateNested()
   hasPolicy?: Array<Policy>;
 
-  constructor(value: IResource) {
+  constructor (value: IResource) {
     super(value);
     this.contactPoint = value.contactPoint;
     this.keyword = value.keyword;
@@ -101,13 +118,16 @@ export interface IDataService extends IResource {
 @Serializable("dcat:DataService")
 export class DataService extends Resource {
   @Namespace("dcat")
+  @ValidateNested()
   endpointDescription?: Reference;
   @Namespace("dcat")
+  @IsString()
   endpointURL?: string;
   @Namespace("dcat")
+  @ValidateNested()
   servesDataset?: Array<Dataset>;
 
-  constructor(value: IDataService) {
+  constructor (value: IDataService) {
     super(value);
     this.endpointDescription = value.endpointDescription;
     this.endpointURL = value.endpointURL;
@@ -137,39 +157,55 @@ export interface IDistribution extends IReference {
 @Serializable("dcat:Distribution")
 export class Distribution extends Reference {
   @Namespace("dcat")
+  @ValidateNested()
   accessService?: Array<DataService>;
   @Namespace("dcat")
+  @ValidateNested()
   accessURL?: Reference;
   @Namespace("dcat")
+  @ValidateNested()
   byteSize?: Decimal;
   @Namespace("dcat")
+  @ValidateNested()
   compressFormat?: Reference;
   @Namespace("dcat")
+  @ValidateNested()
   downloadURL?: Reference;
   @Namespace("dcat")
+  @ValidateNested()
   mediaType?: Reference;
   @Namespace("dcat")
+  @ValidateNested()
   packageFormat?: Reference;
   @Namespace("dcat")
+  @ValidateNested()
   spatialResolutionInMeters?: Decimal;
   @Namespace("dcat")
+  @ValidateNested()
   temporalResolution?: Duration;
   @Namespace("dct")
+  @ValidateNested()
   conformsTo?: Reference;
   @Namespace("dct")
+  @ValidateNested()
   description?: Array<Multilanguage>;
   @Namespace("dct")
+  @ValidateNested()
   format?: Reference;
   @Namespace("dct")
+  @ValidateNested()
   issued?: Time;
   @Namespace("dct")
+  @ValidateNested()
   modified?: Time;
   @Namespace("dct")
+  @IsString()
   title?: String;
   @Namespace("odrl")
+  @ValidateNested()
   hasPolicy?: Array<Policy>;
 
-  constructor(value: IDistribution) {
+  constructor (value: IDistribution) {
     super(value);
     this.accessService = value.accessService;
     this.accessURL = value.accessURL;
@@ -203,21 +239,28 @@ export interface IDataset extends IResource {
 @Serializable("dcat:Dataset")
 export class Dataset extends Resource {
   @Namespace("dcat")
+  @ValidateNested()
   distribution?: Array<Distribution>;
   @Namespace("dcat")
+  @ValidateNested()
   spatialResolutionInMeters?: Reference;
   @Namespace("dcat")
+  @ValidateNested()
   temporalResolution?: Duration;
   @Namespace("dct")
+  @ValidateNested()
   accrualPeriodicity?: Reference;
   @Namespace("dct")
+  @ValidateNested()
   spatial?: Reference;
   @Namespace("dct")
+  @ValidateNested()
   temporal?: Reference;
   @Namespace("prov")
+  @ValidateNested()
   wasGeneratedBy?: Reference;
 
-  constructor(value: IDataset) {
+  constructor (value: IDataset) {
     super(value);
     this.distribution = value.distribution;
     this.spatialResolutionInMeters = value.spatialResolutionInMeters;
@@ -241,19 +284,25 @@ export interface ICatalogRecord extends IReference {
 @Serializable("dcat:CatalogRecord")
 export class CatalogRecord extends Reference {
   @Namespace("dct")
+  @ValidateNested()
   conformsTo?: Reference;
   @Namespace("dct")
+  @ValidateNested()
   description?: Array<Multilanguage>;
   @Namespace("dct")
+  @IsDate()
   issued?: Date;
   @Namespace("dct")
+  @IsDate()
   modified?: Date;
   @Namespace("dct")
+  @IsString()
   title?: String;
   @Namespace("foaf")
+  @ValidateNested()
   primaryTopic?: Resource;
 
-  constructor(value: ICatalogRecord) {
+  constructor (value: ICatalogRecord) {
     super(value);
     this.conformsTo = value.conformsTo;
     this.description = value.description;
@@ -276,19 +325,25 @@ export interface ICatalog extends IDataset {
 @Serializable("dcat:Catalog")
 export class Catalog extends Dataset {
   @Namespace("dcat")
+  @ValidateNested()
   dataset?: Array<Dataset>;
   @Namespace("dcat")
+  @ValidateNested()
   record?: CatalogRecord;
   @Namespace("dcat")
+  @ValidateNested()
   service?: Array<DataService>;
   @Namespace("dcat")
+  @ValidateNested()
   themeTaxonomy?: Reference;
   @Namespace("dct")
+  @ValidateNested()
   hasPart?: Array<Resource>;
   @Namespace("foaf")
+  @ValidateNested()
   homepage?: Reference;
 
-  constructor(value: ICatalog) {
+  constructor (value: ICatalog) {
     super(value);
     this.dataset = value.dataset;
     this.record = value.record;

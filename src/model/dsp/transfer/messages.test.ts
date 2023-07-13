@@ -1,5 +1,5 @@
 import { deserialize } from "../../serialize";
-import { Multilanguage, URI } from "../common";
+import { ClassValidationError, Multilanguage, URI } from "../common";
 import {
   TransferCompletionMessage,
   TransferError,
@@ -11,22 +11,33 @@ import {
   TransferTerminationMessage,
 } from "./messages";
 
-test("Transfer Completion Message", () => {
+test("Validation", async () => {
+  const jsonLd = {
+    "@context": "https://w3id.org/dspace/v0.8/context.json",
+    "@type": "dspace:TransferCompletionMessage",
+    "dspace:processId": "",
+  }
+  expect(async () => {
+    return await deserialize<TransferCompletionMessage>(jsonLd)
+  }).rejects.toThrowError(ClassValidationError)
+})
+
+test("Transfer Completion Message", async () => {
   const transferCompletionMessage = new TransferCompletionMessage({
     processId: "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
   });
-  const serialized = transferCompletionMessage.serialize();
+  const serialized = await transferCompletionMessage.serialize();
   expect(serialized).toStrictEqual({
     "@context": "https://w3id.org/dspace/v0.8/context.json",
     "@type": "dspace:TransferCompletionMessage",
     "dspace:processId": "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
   });
-  expect(deserialize<TransferCompletionMessage>(serialized)).toStrictEqual(
+  expect(await deserialize<TransferCompletionMessage>(serialized)).toStrictEqual(
     transferCompletionMessage
   );
 });
 
-test("Transfer Error", () => {
+test("Transfer Error", async () => {
   const transferError = new TransferError({
     processId: "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
     code: "123:A",
@@ -37,7 +48,7 @@ test("Transfer Error", () => {
       }),
     ],
   });
-  const serialized = transferError.serialize();
+  const serialized = await transferError.serialize();
   expect(serialized).toStrictEqual({
     "@context": "https://w3id.org/dspace/v0.8/context.json",
     "@type": "dspace:TransferError",
@@ -50,57 +61,54 @@ test("Transfer Error", () => {
       },
     ],
   });
-  expect(deserialize<TransferError>(serialized)).toStrictEqual(transferError);
+  expect(await deserialize<TransferError>(serialized)).toStrictEqual(transferError);
 });
 
-test("Transfer Process", () => {
+test("Transfer Process", async () => {
   const transferProcess = new TransferProcess({
     processId: "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
     transferState: TransferState.SUSPENDED,
   });
-  const serialized = transferProcess.serialize();
+  const serialized = await transferProcess.serialize();
   expect(serialized).toStrictEqual({
     "@context": "https://w3id.org/dspace/v0.8/context.json",
     "@type": "dspace:TransferProcess",
     "dspace:processId": "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
     "dspace:transferState": "dspace:SUSPENDED",
   });
-  expect(deserialize<TransferProcess>(serialized)).toStrictEqual(
+  expect(await deserialize<TransferProcess>(serialized)).toStrictEqual(
     transferProcess
   );
 });
 
-test("Transfer Request Message", () => {
+test("Transfer Request Message", async () => {
   const transferRequestMessage = new TransferRequestMessage({
-    agreementId: new URI("urn:uuid:1246a1af-6e5f-4c05-86e2-6d8624efeeb3"),
+    agreementId: "urn:uuid:1246a1af-6e5f-4c05-86e2-6d8624efeeb3",
     format: "dspace:HTTP",
     dataAddress: new URI("http://example.com"),
   });
-  const serialized = transferRequestMessage.serialize();
+  const serialized = await transferRequestMessage.serialize();
   expect(serialized).toStrictEqual({
     "@context": "https://w3id.org/dspace/v0.8/context.json",
     "@type": "dspace:TransferRequestMessage",
-    "dspace:agreementId": {
-      "@type": "xsd:anyURI",
-      "@value": "urn:uuid:1246a1af-6e5f-4c05-86e2-6d8624efeeb3",
-    },
+    "dspace:agreementId": "urn:uuid:1246a1af-6e5f-4c05-86e2-6d8624efeeb3",
     "dct:format": "dspace:HTTP",
     "dspace:dataAddress": {
       "@type": "xsd:anyURI",
       "@value": "http://example.com",
     },
   });
-  expect(deserialize<TransferRequestMessage>(serialized)).toStrictEqual(
+  expect(await deserialize<TransferRequestMessage>(serialized)).toStrictEqual(
     transferRequestMessage
   );
 });
 
-test("Transfer Start Message", () => {
+test("Transfer Start Message", async () => {
   const transferStartMessage = new TransferStartMessage({
     processId: "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
     dataAddress: new URI("http://example.com"),
   });
-  const serialized = transferStartMessage.serialize();
+  const serialized = await transferStartMessage.serialize();
   expect(serialized).toStrictEqual({
     "@context": "https://w3id.org/dspace/v0.8/context.json",
     "@type": "dspace:TransferStartMessage",
@@ -110,12 +118,12 @@ test("Transfer Start Message", () => {
       "@value": "http://example.com",
     },
   });
-  expect(deserialize<TransferStartMessage>(serialized)).toStrictEqual(
+  expect(await deserialize<TransferStartMessage>(serialized)).toStrictEqual(
     transferStartMessage
   );
 });
 
-test("Transfer Suspension Message", () => {
+test("Transfer Suspension Message", async () => {
   const transferSuspensionMessage = new TransferSuspensionMessage({
     processId: "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
     reason: [
@@ -125,7 +133,7 @@ test("Transfer Suspension Message", () => {
       }),
     ],
   });
-  const serialized = transferSuspensionMessage.serialize();
+  const serialized = await transferSuspensionMessage.serialize();
   expect(serialized).toStrictEqual({
     "@context": "https://w3id.org/dspace/v0.8/context.json",
     "@type": "dspace:TransferSuspensionMessage",
@@ -137,13 +145,13 @@ test("Transfer Suspension Message", () => {
       },
     ],
   });
-  expect(deserialize<TransferSuspensionMessage>(serialized)).toStrictEqual(
+  expect(await deserialize<TransferSuspensionMessage>(serialized)).toStrictEqual(
     transferSuspensionMessage
   );
 });
 
 
-test("Transfer Termination Message", () => {
+test("Transfer Termination Message", async () => {
   const transferTerminationMessage = new TransferTerminationMessage({
     processId: "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
     code: "123:A",
@@ -154,7 +162,7 @@ test("Transfer Termination Message", () => {
       }),
     ],
   });
-  const serialized = transferTerminationMessage.serialize();
+  const serialized = await transferTerminationMessage.serialize();
   expect(serialized).toStrictEqual({
     "@context": "https://w3id.org/dspace/v0.8/context.json",
     "@type": "dspace:TransferTerminationMessage",
@@ -167,7 +175,7 @@ test("Transfer Termination Message", () => {
       },
     ],
   });
-  expect(deserialize<TransferTerminationMessage>(serialized)).toStrictEqual(
+  expect(await deserialize<TransferTerminationMessage>(serialized)).toStrictEqual(
     transferTerminationMessage
   );
 });

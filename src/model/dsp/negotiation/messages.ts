@@ -1,5 +1,7 @@
+import { IsNotEmpty, IsString, ValidateNested } from "class-validator";
 import { Serializable, Namespace } from "../../decorators";
 import { Multilanguage, SerializableClass, Time } from "../common";
+import { NegotiationEvent, ProofTypes } from "./messages.schema";
 import { Agreement, Offer } from "./negotiation";
 
 export interface IContractRequestMessage {
@@ -11,13 +13,17 @@ export interface IContractRequestMessage {
 @Serializable("dspace:ContractRequestMessage")
 export class ContractRequestMessage extends SerializableClass {
   @Namespace("dspace")
+  @IsNotEmpty()
   processId: string;
-  @Namespace("dspace")
+  @Namespace("odrl")
+  @ValidateNested()
+  @IsNotEmpty()
   offer: Offer;
   @Namespace("dspace")
+  @IsNotEmpty()
   callbackAddress: string;
 
-  constructor(value: IContractRequestMessage) {
+  constructor (value: IContractRequestMessage) {
     super()
     this.processId = value.processId;
     this.offer = value.offer;
@@ -34,13 +40,17 @@ export interface IContractOfferMessage {
 @Serializable("dspace:ContractOfferMessage")
 export class ContractOfferMessage extends SerializableClass {
   @Namespace("dspace")
+  @IsNotEmpty()
   processId: string;
-  @Namespace("dspace")
+  @Namespace("odrl")
+  @ValidateNested()
+  @IsNotEmpty()
   offer: Offer;
   @Namespace("dspace")
+  @IsNotEmpty()
   callbackAddress: string;
 
-  constructor(value: IContractOfferMessage) {
+  constructor (value: IContractOfferMessage) {
     super()
     this.processId = value.processId;
     this.offer = value.offer;
@@ -58,13 +68,15 @@ export interface IContractNegotiationTerminationMessage {
 export class ContractNegotiationTerminationMessage extends SerializableClass
 {
   @Namespace("dspace")
+  @IsNotEmpty()
   processId: string;
   @Namespace("dspace")
   code?: string;
   @Namespace("dspace")
+  @ValidateNested()
   reason: Array<Multilanguage>;
 
-  constructor(value: IContractNegotiationTerminationMessage) {
+  constructor (value: IContractNegotiationTerminationMessage) {
     super();
     this.processId = value.processId;
     this.code = value.code;
@@ -80,21 +92,19 @@ export interface IContractNegotiation {
 @Serializable("dspace:ContractNegotiation")
 export class ContractNegotiation extends SerializableClass {
   @Namespace("dspace")
+  @IsNotEmpty()
   processId: string;
   @Namespace("dspace")
+  @IsNotEmpty()
   negotiationId: string;
 
-  constructor(value: IContractNegotiation) {
+  constructor (value: IContractNegotiation) {
     super()
     this.processId = value.processId;
     this.negotiationId = value.negotiationId;
   }
 }
 
-export enum NegotiationEvent {
-  ACCEPTED = "dspace:ACCEPTED",
-  FINALIZED = "dspace:FINALIZED",
-}
 
 export interface IContractNegotiationEventMessage {
   processId: string;
@@ -105,11 +115,13 @@ export interface IContractNegotiationEventMessage {
 export class ContractNegotiationEventMessage extends SerializableClass
 {
   @Namespace("dspace")
+  @IsNotEmpty()
   processId: string;
   @Namespace("dspace")
+  @IsNotEmpty()
   eventType: NegotiationEvent;
 
-  constructor(value: IContractNegotiationEventMessage) {
+  constructor (value: IContractNegotiationEventMessage) {
     super();
     this.processId = value.processId;
     this.eventType = value.eventType;
@@ -125,13 +137,16 @@ export interface IContractNegotiationError {
 @Serializable("dspace:ContractNegotiationError")
 export class ContractNegotiationError extends SerializableClass {
   @Namespace("dspace")
+  @IsNotEmpty()
   processId: string;
   @Namespace("dspace")
+  @ValidateNested()
   reason?: Array<Multilanguage>;
   @Namespace("dct")
+  @IsString({each: true})
   description?: Array<string>;
 
-  constructor(value: IContractNegotiationError) {
+  constructor (value: IContractNegotiationError) {
     super()
     this.processId = value.processId;
     this.reason = value.reason;
@@ -139,20 +154,9 @@ export class ContractNegotiationError extends SerializableClass {
   }
 }
 
-export enum ProofTypes {
-  EcdsaSecp256k1Signature2019 = "sec:EcdsaSecp256k1Signature2019",
-  EcdsaSecp256k1RecoverySignature2020 = "sec:EcdsaSecp256k1RecoverySignature2020",
-  RsaSignature2018 = "sec:RsaSignature2018",
-  SchnorrSecp256k1Signature2019 = "sec:SchnorrSecp256k1Signature2019",
-  MerkleProof2019 = "sec:MerkleProof2019",
-  Ed25519Signature2020 = "sec:Ed25519Signature2020",
-  JsonWebSignature2020 = "sec:JsonWebSignature2020",
-  BbsBlsSignature2020 = "sec:BbsBlsSignature2020",
-  BbsBlsSignatureProof2020 = "sec:BbsBlsSignatureProof2020",
-}
 export interface Proof {
   "@type": ProofTypes;
-  "dct:created": Time;
+  "dct:created": string;
   "sec:jws": string;
   [key: string]: any;
 }
@@ -170,16 +174,19 @@ export interface IContractAgreementVerificationMessage {
 export class ContractAgreementVerificationMessage extends SerializableClass
 {
   @Namespace("dspace")
+  @IsNotEmpty()
   processId: string;
   @Namespace("cred")
+  @IsNotEmpty()
   credentialSubject: {
     "dspace:hash": string;
     [key: string]: any;
   };
-  @Namespace("dct")
+  @Namespace("sec")
+  @IsNotEmpty()
   proof: Proof;
 
-  constructor(value: IContractAgreementVerificationMessage) {
+  constructor (value: IContractAgreementVerificationMessage) {
     super();
     this.processId = value.processId;
     this.credentialSubject = value.credentialSubject;
@@ -195,11 +202,14 @@ export interface IContractAgreementMessage {
 @Serializable("dspace:ContractAgreementMessage")
 export class ContractAgreementMessage extends SerializableClass {
   @Namespace("dspace")
+  @IsNotEmpty()
   processId: string;
   @Namespace("odrl")
+  @IsNotEmpty()
+  @ValidateNested()
   agreement: Agreement;
 
-  constructor(value: IContractAgreementMessage) {
+  constructor (value: IContractAgreementMessage) {
     super()
     this.processId = value.processId;
     this.agreement = value.agreement;

@@ -3,7 +3,7 @@ import { Multilanguage, Reference } from "../common";
 import { Offer } from "../negotiation/negotiation";
 import { Resource } from "./catalog";
 
-test("Resource serialization", () => {
+test("Resource serialization", async () => {
   const resource = new Resource({
     id: "urn:uuid:5b156cfa-5800-4345-8acc-6725c7eb5bc2",
     contactPoint: new Reference({ id: "http://example.com" }),
@@ -24,11 +24,12 @@ test("Resource serialization", () => {
     hasPolicy: [
       new Offer({
         id: "urn:uuid:d5b97478-639e-49ab-a125-dbb8ea6e3259",
-        assigner: new Reference({id: "urn:uuid:ab07632c-68c3-4665-8708-533552b51e91"})
+        assigner: "urn:uuid:ab07632c-68c3-4665-8708-533552b51e91"
       })
     ]
   });
-  const serialized = resource.serialize();
+  const serialized = await resource.serialize();
+  
   expect(serialized).toStrictEqual({
     "@context": "https://w3id.org/dspace/v0.8/context.json",
     "@type": "dcat:Resource",
@@ -63,13 +64,11 @@ test("Resource serialization", () => {
       {
         "@id": "urn:uuid:d5b97478-639e-49ab-a125-dbb8ea6e3259",
         "@type": "odrl:Offer",
-        "odrl:assigner": {
-          "@id": "urn:uuid:ab07632c-68c3-4665-8708-533552b51e91",
-        },
+        "odrl:assigner": "urn:uuid:ab07632c-68c3-4665-8708-533552b51e91",
       },
     ],
   });
-  const deserialized = deserialize<Resource>(serialized);
+  const deserialized = await deserialize<Resource>(serialized);
 
   expect(deserialized).toStrictEqual(resource);
 });

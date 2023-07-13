@@ -1,3 +1,4 @@
+import { ArrayNotEmpty, IsNotEmpty, ValidateNested, validate, validateSync } from "class-validator";
 import { Serializable, Namespace } from "../../decorators";
 import { Multilanguage, SerializableClass, URI } from "../common";
 
@@ -8,6 +9,7 @@ export interface ITransferCompletionMessage {
 @Serializable("dspace:TransferCompletionMessage")
 export class TransferCompletionMessage extends SerializableClass {
   @Namespace("dspace")
+  @IsNotEmpty()
   processId: string;
 
   constructor(value: ITransferCompletionMessage) {
@@ -25,10 +27,13 @@ export interface ITransferError {
 @Serializable("dspace:TransferError")
 export class TransferError extends SerializableClass {
   @Namespace("dspace")
+  @IsNotEmpty()
   processId: string;
   @Namespace("dspace")
+  @IsNotEmpty()
   code: string;
   @Namespace("dspace")
+  @ValidateNested()
   reason?: Array<Multilanguage>;
 
   constructor(value: ITransferError) {
@@ -55,8 +60,10 @@ export interface ITransferProcess {
 @Serializable("dspace:TransferProcess")
 export class TransferProcess extends SerializableClass {
   @Namespace("dspace")
+  @IsNotEmpty()
   processId: string;
   @Namespace("dspace")
+  @IsNotEmpty()
   transferState: TransferState;
 
   constructor(value: ITransferProcess) {
@@ -67,7 +74,7 @@ export class TransferProcess extends SerializableClass {
 }
 
 export interface ITransferRequestMessage {
-  agreementId: URI;
+  agreementId: string;
   format: string;
   dataAddress?: URI;
   callbackAddress?: URI;
@@ -76,12 +83,16 @@ export interface ITransferRequestMessage {
 @Serializable("dspace:TransferRequestMessage")
 export class TransferRequestMessage extends SerializableClass {
   @Namespace("dspace")
-  agreementId: URI;
+  @IsNotEmpty()
+  agreementId: string;
   @Namespace("dct")
+  @IsNotEmpty()
   format: string;
   @Namespace("dspace")
+  @ValidateNested()
   dataAddress?: URI;
   @Namespace("dspace")
+  @ValidateNested()
   callbackAddress?: URI;
 
   constructor(value: ITransferRequestMessage) {
@@ -101,8 +112,10 @@ export interface ITransferStartMessage {
 @Serializable("dspace:TransferStartMessage")
 export class TransferStartMessage extends SerializableClass {
   @Namespace("dspace")
+  @IsNotEmpty()
   processId: string;
   @Namespace("dspace")
+  @ValidateNested()
   dataAddress?: URI;
 
   constructor(value: ITransferStartMessage) {
@@ -120,8 +133,11 @@ export interface ITransferSuspensionMessage {
 @Serializable("dspace:TransferSuspensionMessage")
 export class TransferSuspensionMessage extends SerializableClass {
   @Namespace("dspace")
+  @IsNotEmpty()
   processId: string;
   @Namespace("dspace")
+  @ValidateNested()
+  @ArrayNotEmpty()
   reason: Array<Multilanguage>;
 
   constructor(value: ITransferSuspensionMessage) {
@@ -140,10 +156,14 @@ export interface ITransferTerminationMessage {
 @Serializable("dspace:TransferTerminationMessage")
 export class TransferTerminationMessage extends SerializableClass {
   @Namespace("dspace")
+  @IsNotEmpty()
   processId: string;
   @Namespace("dspace")
+  @IsNotEmpty()
   code: string;
   @Namespace("dspace")
+  @IsNotEmpty()
+  @ValidateNested()
   reason: Array<Multilanguage>;
 
   constructor(value: ITransferTerminationMessage) {

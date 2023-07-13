@@ -1,3 +1,4 @@
+import { IsDateString, IsNotEmpty, ValidateIf, ValidateNested } from "class-validator";
 import { Namespace, Serializable } from "../../decorators";
 import {
   IReference,
@@ -7,111 +8,7 @@ import {
   URI,
   Value,
 } from "../common";
-
-export enum Action {
-  DELETE = "odrl:delete",
-  EXECUTE = "odrl:execute",
-  SOURCE_CODE = "cc:SourceCode",
-  ANONYMIZE = "odrl:anonymize",
-  EXTRACT = "odrl:extract",
-  READ = "odrl:read",
-  INDEX = "odrl:index",
-  COMPENSATE = "odrl:compensate",
-  SELL = "odrl:sell",
-  DERIVE = "odrl:derive",
-  ENSURE_EXCLUSIVITY = "odrl:ensureExclusivity",
-  ANNOTATE = "odrl:annotate",
-  REPRODUCTION = "cc:Reproduction",
-  TRANSLATE = "odrl:translate",
-  INCLUDE = "odrl:include",
-  DERIVATIVE_WORKS = "cc:DerivativeWorks",
-  DISTRIBUTION = "cc:Distribution",
-  TEXT_TO_SPEECH = "odrl:textToSpeech",
-  INFORM = "odrl:inform",
-  GRANT_USE = "odrl:grantUse",
-  ARCHIVE = "odrl:archive",
-  MODIFY = "odrl:modify",
-  AGGREGATE = "odrl:aggregate",
-  ATTRIBUTE = "odrl:attribute",
-  NEXT_POLICY = "odrl:nextPolicy",
-  DIGITIZE = "odrl:digitize",
-  ATTRIBUTION = "cc:Attribution",
-  INSTALL = "odrl:install",
-  CONCURRENTUSE = "odrl:concurrentUse",
-  DISTRIBUTE = "odrl:distribute",
-  SYNCHRONIZE = "odrl:synchronize",
-  MOVE = "odrl:move",
-  OBTAIN_CONSENT = "odrl:obtainConsent",
-  PRINT = "odrl:print",
-  NOTICE = "cc:Notice",
-  GIVE = "odrl:give",
-  UNINSTALL = "odrl:uninstall",
-  SHARING = "cc:Sharing",
-  REVIEW_POLICY = "odrl:reviewPolicy",
-  WATERMARK = "odrl:watermark",
-  PLAY = "odrl:play",
-  REPRODUCE = "odrl:reproduce",
-  TRANSFORM = "odrl:transform",
-  DISPLAY = "odrl:display",
-  STREAM = "odrl:stream",
-  SHARE_ALIKE = "cc:ShareAlike",
-  ACCEPT_TRACKING = "odrl:acceptTracking",
-  COMMERICAL_USE = "cc:CommericalUse",
-  PRESENT = "odrl:present",
-  USE = "odrl:use",
-}
-
-export enum Operator {
-  EQ = "odrl:eq",
-  GT = "odrl:gt",
-  GTEQ = "odrl:gteq",
-  HAS_PART = "odrl:hasPart",
-  IS_A = "odrl:isA",
-  IS_ALL_OF = "odrl:isAllOf",
-  IS_ANY_OF = "odrl:isAnyOf",
-  IS_NONE_OF = "odrl:isNoneOf",
-  IS_PART_OF = "odrl:isPartOf",
-  LT = "odrl:lt",
-  LTEQ = "odrl:term-lteq",
-  NEQ = "odrl:neq",
-}
-
-export enum LeftOperand {
-  ABSOLUTE_POSITION = "odrl:absolutePosition",
-  ABSOLUTE_SIZE = "odrl:absoluteSize",
-  ABSOLUTE_SPATIAL_POSITION = "odrl:absoluteSpatialPosition",
-  ABSOLUTE_TEMPORAL_POSITION = "odrl:absoluteTemporalPosition",
-  COUNT = "odrl:count",
-  DATE_TIME = "odrl:dateTime",
-  DELAY_PERIOD = "odrl:delayPeriod",
-  DELIVERY_CHANNEL = "odrl:deliveryChannel",
-  DEVICE = "odrl:device",
-  ELAPSED_TIME = "odrl:elapsedTime",
-  EVENT = "odrl:event",
-  FILE_FORMAT = "odrl:fileFormat",
-  INDUSTRY = "odrl:industry",
-  LANGUAGE = "odrl:language",
-  MEDIA = "odrl:media",
-  METERED_TIME = "odrl:meteredTime",
-  PAY_AMOUNT = "odrl:payAmount",
-  PERCENTAGE = "odrl:percentage",
-  PRODUCT = "odrl:product",
-  PURPOSE = "odrl:purpose",
-  RECIPIENT = "odrl:recipient",
-  RELATIVE_POSITION = "odrl:relativePosition",
-  RELATIVE_SIZE = "odrl:relativeSize",
-  RELATIVE_SPATIAL_POSITION = "odrl:relativeSpatialPosition",
-  RELATIVE_TEMPORAL_POSITION = "odrl:relativeTemporalPosition",
-  RESOLUTION = "odrl:resolution",
-  SPATIAL = "odrl:spatial",
-  SPATIAL_COORDINATES = "odrl:spatialCoordinates",
-  SYSTEM = "odrl:system",
-  SYSTEM_DEVICE = "odrl:systemDevice",
-  TIME_INTERVAL = "odrl:timeInterval",
-  UNIT_OF_COUNT = "odrl:unitOfCount",
-  VERSION = "odrl:version",
-  VIRTUAL_LOCATION = "odrl:virtualLocation",
-}
+import { Action, LeftOperand, Operator } from "./negotiation.schema";
 
 export interface IConstraint {
   leftOperand: LeftOperand;
@@ -123,15 +20,22 @@ export interface IConstraint {
 @Serializable("odrl:Constraint")
 export class Constraint extends SerializableClass {
   @Namespace("odrl")
+  @IsNotEmpty()
   leftOperand: LeftOperand;
   @Namespace("odrl")
+  @IsNotEmpty()
   operator: Operator;
   @Namespace("odrl")
+  @IsNotEmpty()
+  @ValidateNested()
   rightOperand?: Value;
   @Namespace("odrl")
+  @ValidateIf((o: Constraint) => o.rightOperand === undefined)
+  @ValidateNested()
+  @IsNotEmpty()
   rightOperandReference?: Reference;
 
-  constructor(value: IConstraint) {
+  constructor (value: IConstraint) {
     super();
     this.rightOperand = value.rightOperand;
     this.rightOperandReference = value.rightOperandReference;
@@ -144,35 +48,39 @@ export interface IPolicyRule {
   assigner?: Reference;
   assignee?: Reference;
   action: Action;
-  target?: Reference;
+  target?: string;
   constraint?: Array<Constraint>;
 }
 
 export interface IProhibition extends IPolicyRule {
-  target: Reference;
+  target: string;
 }
 
 export interface IDuty extends IPolicyRule {}
 
 export interface IPermission extends IPolicyRule {
-  target: Reference;
+  target: string;
   duty?: Array<Duty>;
 }
 
 @Serializable("odrl:PolicyRule")
 export class PolicyRule extends SerializableClass {
   @Namespace("odrl")
+  @ValidateNested()
   assigner?: Reference;
   @Namespace("odrl")
+  @ValidateNested()
   assignee?: Reference;
   @Namespace("odrl")
+  @IsNotEmpty()
   action: Action;
   @Namespace("odrl")
-  target?: Reference;
+  target?: string;
   @Namespace("odrl")
+  @ValidateNested()
   constraint?: Array<Constraint>;
 
-  constructor(value: IPolicyRule) {
+  constructor (value: IPolicyRule) {
     super();
     this.assigner = value.assigner;
     this.assignee = value.assignee;
@@ -185,11 +93,13 @@ export class PolicyRule extends SerializableClass {
 @Serializable("odrl:Permission")
 export class Permission extends PolicyRule {
   @Namespace("odrl")
-  target: Reference;
+  @IsNotEmpty()
+  target: string;
   @Namespace("odrl")
+  @ValidateNested()
   duty?: Array<Duty>;
 
-  constructor(value: IPermission) {
+  constructor (value: IPermission) {
     super(value);
     this.target = value.target;
     this.duty = value.duty;
@@ -199,9 +109,10 @@ export class Permission extends PolicyRule {
 @Serializable("odrl:Prohibition")
 export class Prohibition extends PolicyRule {
   @Namespace("odrl")
-  target: Reference;
+  @IsNotEmpty()
+  target: string;
 
-  constructor(value: IProhibition) {
+  constructor (value: IProhibition) {
     super(value);
     this.target = value.target;
   }
@@ -211,8 +122,8 @@ export class Prohibition extends PolicyRule {
 export class Duty extends PolicyRule {}
 
 export interface IPolicy extends IReference {
-  assigner?: Reference;
-  assignee?: Reference;
+  assigner?: string;
+  assignee?: string;
   profile?: Reference;
   permission?: Array<Permission>;
   prohibition?: Array<Prohibition>;
@@ -222,19 +133,25 @@ export interface IPolicy extends IReference {
 @Serializable("odrl:Policy")
 export class Policy extends Reference {
   @Namespace("odrl")
-  assigner?: Reference;
+  // @ValidateNested()
+  assigner?: string;
   @Namespace("odrl")
-  assignee?: Reference;
+  // @ValidateNested()
+  assignee?: string;
   @Namespace("odrl")
+  @ValidateNested()
   profile?: Reference;
   @Namespace("odrl")
+  @ValidateNested()
   permission?: Array<Permission>;
   @Namespace("odrl")
+  @ValidateNested()
   prohibition?: Array<Prohibition>;
   @Namespace("odrl")
+  @ValidateNested()
   obligation?: Array<Duty>;
 
-  constructor(value: IPolicy) {
+  constructor (value: IPolicy) {
     super(value);
     this.assigner = value.assigner;
     this.assignee = value.assignee;
@@ -246,24 +163,26 @@ export class Policy extends Reference {
 }
 
 export interface IOffer extends IPolicy {
-  assigner: Reference;
+  assigner: string;
 }
 
 @Serializable("odrl:Offer")
 export class Offer extends Policy {
   @Namespace("odrl")
-  assigner: Reference;
+  // @ValidateNested()
+  @IsNotEmpty()
+  assigner: string;
 
-  constructor(value: IOffer) {
+  constructor (value: IOffer) {
     super(value);
     this.assigner = value.assigner;
   }
 }
 
 export interface IAgreement extends IPolicy {
-  assigner: Reference;
-  assignee: Reference;
-  timestamp: Time;
+  assigner: string;
+  assignee: string;
+  timestamp: string;
   consumerId: string;
   providerId: string;
 }
@@ -271,17 +190,26 @@ export interface IAgreement extends IPolicy {
 @Serializable("odrl:Agreement")
 export class Agreement extends Policy {
   @Namespace("odrl")
-  assigner: Reference;
+  // @ValidateNested()
+  @IsNotEmpty()
+  assigner: string;
   @Namespace("odrl")
-  assignee: Reference;
+  // @ValidateNested()
+  @IsNotEmpty()
+  assignee: string;
   @Namespace("dspace")
-  timestamp: Time;
+  // @ValidateNested()
+  @IsNotEmpty()
+  @IsDateString()
+  timestamp: string;
   @Namespace("dspace")
+  @IsNotEmpty()
   consumerId: string;
   @Namespace("dspace")
+  @IsNotEmpty()
   providerId: string;
 
-  constructor(value: IAgreement) {
+  constructor (value: IAgreement) {
     super(value);
     this.assigner = value.assigner;
     this.assignee = value.assignee;
