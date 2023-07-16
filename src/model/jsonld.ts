@@ -41,6 +41,7 @@ const context: ContextDefinition = {
   "odrl:constraint": { "@container": "@set"},
 }
 
+/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
 const nodeDocumentLoader = (jsonld as any).documentLoaders.node();
 const jsonldOptions: Options.DocLoader = {
   async documentLoader(url): Promise<RemoteDocument> {

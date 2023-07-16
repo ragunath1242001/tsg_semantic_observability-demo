@@ -1,4 +1,4 @@
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export const serializableSymbol = Symbol("custom:serializable");
 export const idSymbol = Symbol("custom:id");
 export const languageSymbol = Symbol("custom:language");

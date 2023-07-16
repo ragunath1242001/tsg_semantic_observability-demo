@@ -18,7 +18,8 @@ export class SerializableClass {
       throw new ClassValidationError(`Validation error: ${validation.map(v => v.toString()).join('\n')}`, validation)
     }
   }
-  serialize(context = true): any {
+  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+  async serialize(context = true): Promise<any> {
     return serialize(this, context)
   }
 }
