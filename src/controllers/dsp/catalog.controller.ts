@@ -25,7 +25,7 @@ export class CatalogController {
     if (dataset) {
       return dataset.serialize();
     } else {
-      throw new HttpException('Dataset not found', 404)
+      throw new HttpException('Dataset not found', HttpStatus.NOT_FOUND)
     }
   }
 }

@@ -158,6 +158,7 @@ export interface Proof {
   "@type": ProofTypes;
   "dct:created": string;
   "sec:jws": string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any;
 }
 
@@ -165,6 +166,7 @@ export interface IContractAgreementVerificationMessage {
   processId: string;
   credentialSubject: {
     "dspace:hash": string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     [key: string]: any;
   };
   proof: Proof;
@@ -180,6 +182,7 @@ export class ContractAgreementVerificationMessage extends SerializableClass
   @IsNotEmpty()
   credentialSubject: {
     "dspace:hash": string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     [key: string]: any;
   };
   @Namespace("sec")

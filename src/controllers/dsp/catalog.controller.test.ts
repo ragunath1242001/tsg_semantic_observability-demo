@@ -1,8 +1,8 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { CatalogController } from "./catalog.controller";
-import { CatalogRequestMessage } from "../../model/dsp/catalog/messages";
+import { CatalogRequestMessage, DatasetRequestMessage } from "../../model/dsp/catalog/messages";
 import { CatalogService } from "../../services/catalog.service";
-import { HttpException, INestApplication } from "@nestjs/common";
+import { HttpException, HttpStatus, INestApplication } from "@nestjs/common";
 import request from "supertest";
 
 describe("CatalogController", () => {
@@ -29,6 +29,13 @@ describe("CatalogController", () => {
       });
     });
   });
+  it("Invalid body should result in a 400", async () => {
+    expect(async() => {
+      await catalogController.request(
+        new DatasetRequestMessage({dataset: "urn:uuid:5b156cfa-5800-4345-8acc-6725c7eb5bc2"})
+      );
+    }).rejects.toThrowError(expect.objectContaining({status: HttpStatus.BAD_REQUEST}));
+  });
   describe("/datasets", () => {
     it("Dataset request with known id should result a dataset", async () => {
       const result = await catalogController.getDataset(
@@ -45,7 +52,7 @@ describe("CatalogController", () => {
         await catalogController.getDataset(
           "urn:uuid:00000000-0000-0000-0000-000000000000"
         );
-      }).rejects.toThrowError(HttpException);
+      }).rejects.toThrowError(expect.objectContaining({status: HttpStatus.NOT_FOUND}));
     });
   });
 });
@@ -81,6 +88,12 @@ describe("Catalog Module", () => {
           });
         });
     });
+    it("Invalid body should result in a 400", async () => {
+      request(app.getHttpServer())
+        .post("/catalog/request")
+        .send(await new DatasetRequestMessage({dataset: "urn:uuid:5b156cfa-5800-4345-8acc-6725c7eb5bc2"}).serialize())
+        .expect(400)
+    })
   });
   describe("/datasets", () => {
     it("Dataset request with known id should result a dataset", async () => {
