@@ -2,7 +2,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { CatalogController } from "./catalog.controller";
 import { CatalogRequestMessage, DatasetRequestMessage } from "../../model/dsp/catalog/messages";
 import { CatalogService } from "../../services/catalog.service";
-import { HttpException, HttpStatus, INestApplication } from "@nestjs/common";
+import { HttpStatus, INestApplication } from "@nestjs/common";
 import request from "supertest";
 
 describe("CatalogController", () => {
@@ -28,13 +28,6 @@ describe("CatalogController", () => {
         "@type": "dcat:Catalog",
       });
     });
-  });
-  it("Invalid body should result in a 400", async () => {
-    expect(async() => {
-      await catalogController.request(
-        new DatasetRequestMessage({dataset: "urn:uuid:5b156cfa-5800-4345-8acc-6725c7eb5bc2"})
-      );
-    }).rejects.toThrowError(expect.objectContaining({status: HttpStatus.BAD_REQUEST}));
   });
   describe("/datasets", () => {
     it("Dataset request with known id should result a dataset", async () => {

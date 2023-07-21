@@ -1,20 +1,19 @@
 import { IsNotEmpty, IsString, ValidateNested } from "class-validator";
 import { Serializable, Namespace } from "../../decorators";
-import { Multilanguage, SerializableClass } from "../common";
-import { NegotiationEvent, ProofTypes } from "./messages.schema";
+import { IReference, Multilanguage, Reference, SerializableClass } from "../common";
+import { ContractNegotiationState, LDContractAgreementMessage, LDContractAgreementVerificationMessage, LDContractNegotiation, LDContractNegotiationError, LDContractNegotiationEventMessage, LDContractNegotiationTerminationMessage, LDContractOfferMessage, LDContractRequestMessage, NegotiationEvent, ProofTypes } from "./messages.schema";
 import { Agreement, Offer } from "./negotiation";
 
 export interface IContractRequestMessage {
-  processId: string;
+  processId?: string;
   offer: Offer;
   callbackAddress: string;
 }
 
 @Serializable("dspace:ContractRequestMessage")
-export class ContractRequestMessage extends SerializableClass {
+export class ContractRequestMessage extends SerializableClass<LDContractRequestMessage> {
   @Namespace("dspace")
-  @IsNotEmpty()
-  processId: string;
+  processId?: string;
   @Namespace("odrl")
   @ValidateNested()
   @IsNotEmpty()
@@ -38,7 +37,7 @@ export interface IContractOfferMessage {
 }
 
 @Serializable("dspace:ContractOfferMessage")
-export class ContractOfferMessage extends SerializableClass {
+export class ContractOfferMessage extends SerializableClass<LDContractOfferMessage> {
   @Namespace("dspace")
   @IsNotEmpty()
   processId: string;
@@ -65,7 +64,7 @@ export interface IContractNegotiationTerminationMessage {
 }
 
 @Serializable("dspace:ContractNegotiationTerminationMessage")
-export class ContractNegotiationTerminationMessage extends SerializableClass
+export class ContractNegotiationTerminationMessage extends SerializableClass<LDContractNegotiationTerminationMessage>
 {
   @Namespace("dspace")
   @IsNotEmpty()
@@ -84,24 +83,24 @@ export class ContractNegotiationTerminationMessage extends SerializableClass
   }
 }
 
-export interface IContractNegotiation {
+export interface IContractNegotiation extends IReference {
   processId: string;
-  negotiationId: string;
+  contractNegotiationState: ContractNegotiationState
 }
 
 @Serializable("dspace:ContractNegotiation")
-export class ContractNegotiation extends SerializableClass {
+export class ContractNegotiation extends Reference<LDContractNegotiation> {
   @Namespace("dspace")
   @IsNotEmpty()
   processId: string;
   @Namespace("dspace")
   @IsNotEmpty()
-  negotiationId: string;
+  contractNegotiationState: ContractNegotiationState;
 
   constructor (value: IContractNegotiation) {
-    super()
+    super(value)
     this.processId = value.processId;
-    this.negotiationId = value.negotiationId;
+    this.contractNegotiationState = value.contractNegotiationState;
   }
 }
 
@@ -112,7 +111,7 @@ export interface IContractNegotiationEventMessage {
 }
 
 @Serializable("dspace:ContractNegotiationEventMessage")
-export class ContractNegotiationEventMessage extends SerializableClass
+export class ContractNegotiationEventMessage extends SerializableClass<LDContractNegotiationEventMessage>
 {
   @Namespace("dspace")
   @IsNotEmpty()
@@ -135,7 +134,7 @@ export interface IContractNegotiationError {
 }
 
 @Serializable("dspace:ContractNegotiationError")
-export class ContractNegotiationError extends SerializableClass {
+export class ContractNegotiationError extends SerializableClass<LDContractNegotiationError> {
   @Namespace("dspace")
   @IsNotEmpty()
   processId: string;
@@ -173,7 +172,7 @@ export interface IContractAgreementVerificationMessage {
 }
 
 @Serializable("dspace:ContractAgreementVerificationMessage")
-export class ContractAgreementVerificationMessage extends SerializableClass
+export class ContractAgreementVerificationMessage extends SerializableClass<LDContractAgreementVerificationMessage>
 {
   @Namespace("dspace")
   @IsNotEmpty()
@@ -203,7 +202,7 @@ export interface IContractAgreementMessage {
 }
 
 @Serializable("dspace:ContractAgreementMessage")
-export class ContractAgreementMessage extends SerializableClass {
+export class ContractAgreementMessage extends SerializableClass<LDContractAgreementMessage> {
   @Namespace("dspace")
   @IsNotEmpty()
   processId: string;

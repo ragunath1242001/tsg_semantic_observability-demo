@@ -18,7 +18,7 @@ export class CatalogService {
       return new Dataset({
         id: 'urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0cea'
       })
-    } {
+    } else {
       return undefined;
     }
   }

@@ -1,10 +1,10 @@
-import { LDContext, LDMultilanguage } from "../common.schema";
+import { LDContext, LDMultilanguage, LDReference } from "../common.schema";
 import { LDAgreement, LDOffer } from "./negotiation.schema";
 
 
 export interface LDContractRequestMessage extends LDContext {
   '@type': 'dspace:ContractRequestMessage'
-  'dspace:processId': string;
+  'dspace:processId'?: string;
   'odrl:offer': LDOffer;
   'dspace:callbackAddress': string;
 }
@@ -21,10 +21,21 @@ export interface LDContractNegotiationTerminationMessage extends LDContext {
   'dspace:code'?: string;
   'dspace:reason': Array<LDMultilanguage | string>;
 }
-export interface LDContractNegotiation extends LDContext {
+
+export enum ContractNegotiationState {
+  REQUESTED = "dspace:REQUESTED",
+  OFFERED = "dspace:OFFERED",
+  ACCEPTED = "dspace:ACCEPTED",
+  AGREED = "dspace:AGREED",
+  VERIFIED = "dspace:VERIFIED",
+  FINALIZED = "dspace:FINALIZED",
+  TERMINATED = "dspace:TERMINATED"
+}
+
+export interface LDContractNegotiation extends LDContext, LDReference {
   '@type': 'dspace:ContractNegotiation'
   'dspace:processId': string;
-  'dspace:negotiationId': string;
+  'dspace:contractNegotiationState': ContractNegotiationState
 }
 export enum NegotiationEvent {
   ACCEPTED = "dspace:ACCEPTED",
@@ -56,6 +67,7 @@ export interface LDProof {
   "@type": ProofTypes;
   "dct:created": string;
   "sec:jws": string;
+  /* eslint-disable @typescript-eslint/no-explicit-any */
   [key: string]: any;
 }
 export interface LDContractAgreementVerificationMessage extends LDContext {
@@ -63,6 +75,7 @@ export interface LDContractAgreementVerificationMessage extends LDContext {
   'dspace:processId': string;
   'cred:credentialSubject': {
     "dspace:hash": string;
+    /* eslint-disable @typescript-eslint/no-explicit-any */
     [key: string]: any;
   };
   'sec:proof': LDProof;

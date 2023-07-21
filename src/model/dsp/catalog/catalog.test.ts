@@ -9,18 +9,12 @@ test("Resource serialization", async () => {
     id: "urn:uuid:5b156cfa-5800-4345-8acc-6725c7eb5bc2",
     contactPoint: new Reference({ id: "http://example.com" }),
     keyword: [
-      new Multilanguage({
-        value: "keyword1",
-        language: "en",
-      }),
-      new Multilanguage({
-        value: "keyword2",
-        language: "en",
-      }),
+      new Multilanguage("keyword1"),
+      new Multilanguage("keyword2"),
     ],
     landingPage: new Reference({ id: "http://example.com" }),
     title: 'Resource title',
-    description: [new Multilanguage({value: "Resource description", language: "en"})],
+    description: [new Multilanguage("Resource description")],
     publisher: new Reference({ id: "urn:uuid:b07295ed-68b5-446f-b35b-db6573cda632" }),
     hasPolicy: [
       new Offer({

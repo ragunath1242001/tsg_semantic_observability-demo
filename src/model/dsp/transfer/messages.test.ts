@@ -33,10 +33,7 @@ test("Transfer Error", async () => {
     processId: "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
     code: "123:A",
     reason: [
-      new Multilanguage({
-        value: "Could not transfer",
-        language: "en",
-      }),
+      new Multilanguage("Could not transfer"),
     ],
   });
   const serialized = await transferError.serialize();
@@ -126,10 +123,7 @@ test("Transfer Suspension Message", async () => {
   const transferSuspensionMessage = new TransferSuspensionMessage({
     processId: "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
     reason: [
-      new Multilanguage({
-        value: "Network switching",
-        language: "en",
-      }),
+      new Multilanguage("Network switching"),
     ],
   });
   const serialized = await transferSuspensionMessage.serialize();
@@ -157,10 +151,7 @@ test("Transfer Termination Message", async () => {
     processId: "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
     code: "123:A",
     reason: [
-      new Multilanguage({
-        value: "Network switching",
-        language: "en",
-      }),
+      new Multilanguage("Network switching"),
     ],
   });
   const serialized = await transferTerminationMessage.serialize();

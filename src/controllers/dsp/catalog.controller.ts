@@ -10,20 +10,21 @@ import { DeserializePipe } from "./deserialize.pipe";
 export class CatalogController {
   constructor(private readonly catalogService: CatalogService) {}
   @Post('request')
-  @HttpCode(200)
+  @HttpCode(HttpStatus.OK)
   async request(@Body(new DeserializePipe<LDCatalogRequestMessage, CatalogRequestMessage>()) body: CatalogRequestMessage): Promise<LDCatalog> {
     if (body instanceof CatalogRequestMessage) {
-      const catalog = await this.catalogService.request(body);
-      return catalog.serialize();
+      const result = await this.catalogService.request(body);
+      return result.serialize();
     }
     throw new HttpException('Unkown request body', HttpStatus.BAD_REQUEST)
   }
 
   @Get('datasets/:id')
+  @HttpCode(HttpStatus.OK)
   async getDataset(@Param('id') id: string): Promise<LDDataset> {
-    const dataset = await this.catalogService.getDataset(id)
-    if (dataset) {
-      return dataset.serialize();
+    const result = await this.catalogService.getDataset(id)
+    if (result) {
+      return result.serialize();
     } else {
       throw new HttpException('Dataset not found', HttpStatus.NOT_FOUND)
     }

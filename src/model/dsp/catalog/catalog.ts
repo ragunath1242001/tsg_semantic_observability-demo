@@ -9,6 +9,8 @@ import {
   Time,
 } from "../common";
 import { Policy } from "../negotiation/negotiation";
+import { LDCatalog, LDCatalogRecord, LDDataService, LDDataset, LDDistribution, LDResource } from "./catalog.schema";
+import { LDContext } from "../common.schema";
 
 export interface IResource extends IReference {
   contactPoint?: Reference;
@@ -32,7 +34,7 @@ export interface IResource extends IReference {
 }
 
 @Serializable("dcat:Resource")
-export class Resource extends Reference {
+export class Resource<OutType extends LDContext = LDResource> extends Reference<OutType> {
   @Namespace("dcat")
   @ValidateNested()
   contactPoint?: Reference;
@@ -116,7 +118,7 @@ export interface IDataService extends IResource {
 }
 
 @Serializable("dcat:DataService")
-export class DataService extends Resource {
+export class DataService extends Resource<LDDataService> {
   @Namespace("dcat")
   @ValidateNested()
   endpointDescription?: Reference;
@@ -155,7 +157,7 @@ export interface IDistribution extends IReference {
 }
 
 @Serializable("dcat:Distribution")
-export class Distribution extends Reference {
+export class Distribution extends Reference<LDDistribution & LDContext> {
   @Namespace("dcat")
   @ValidateNested()
   accessService?: Array<DataService>;
@@ -237,7 +239,7 @@ export interface IDataset extends IResource {
 }
 
 @Serializable("dcat:Dataset")
-export class Dataset extends Resource {
+export class Dataset<OutType extends LDContext = LDDataset> extends Resource<OutType> {
   @Namespace("dcat")
   @ValidateNested()
   distribution?: Array<Distribution>;
@@ -282,7 +284,7 @@ export interface ICatalogRecord extends IReference {
 }
 
 @Serializable("dcat:CatalogRecord")
-export class CatalogRecord extends Reference {
+export class CatalogRecord extends Reference<LDCatalogRecord & LDContext> {
   @Namespace("dct")
   @ValidateNested()
   conformsTo?: Reference;
@@ -323,7 +325,7 @@ export interface ICatalog extends IDataset {
 }
 
 @Serializable("dcat:Catalog")
-export class Catalog extends Dataset {
+export class Catalog extends Dataset<LDCatalog> {
   @Namespace("dcat")
   @ValidateNested()
   dataset?: Array<Dataset>;

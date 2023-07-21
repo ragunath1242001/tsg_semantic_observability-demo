@@ -2,6 +2,7 @@ import { IsNotEmpty, IsString, ValidateNested } from "class-validator";
 import { Namespace, Serializable } from "../../decorators";
 import { Multilanguage, SerializableClass } from "../common";
 import { Catalog } from "./catalog";
+import { LDCatalogError, LDCatalogMessage, LDCatalogRequestMessage, LDDatasetRequestMessage } from "./messages.schema";
 
 export interface ICatalogError {
   code?: string;
@@ -9,7 +10,7 @@ export interface ICatalogError {
 }
 
 @Serializable("dspace:CatalogError")
-export class CatalogError extends SerializableClass {
+export class CatalogError extends SerializableClass<LDCatalogError> {
   @Namespace("dspace")
   code?: string;
   @Namespace("dspace")
@@ -28,7 +29,7 @@ export interface ICatalogMessage {
 }
 
 @Serializable("dspace:CatalogMessage")
-export class CatalogMessage extends SerializableClass {
+export class CatalogMessage extends SerializableClass<LDCatalogMessage> {
   @Namespace("dspace")
   @ValidateNested()
   catalog?: Array<Catalog>;
@@ -49,7 +50,7 @@ export interface ICatalogRequestMessage {
 }
 
 @Serializable("dspace:CatalogRequestMessage")
-export class CatalogRequestMessage extends SerializableClass {
+export class CatalogRequestMessage extends SerializableClass<LDCatalogRequestMessage> {
   @Namespace("dspace")
   @ValidateNested()
   filter?: Array<Filter>;
@@ -65,7 +66,7 @@ export interface IDatasetRequestMessage {
 }
 
 @Serializable("dspace:DatasetRequestMessage")
-export class DatasetRequestMessage extends SerializableClass {
+export class DatasetRequestMessage extends SerializableClass<LDDatasetRequestMessage> {
   @Namespace("dspace")
   @IsNotEmpty()
   @IsString()

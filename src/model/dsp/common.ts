@@ -2,6 +2,7 @@ import crypto from "crypto";
 import { Id, Language, Serializable, Value } from "../decorators";
 import { serialize } from "../serialize";
 import { IsDateString, IsDecimal, IsNotEmpty, Matches, ValidationError, validateSync } from "class-validator";
+import { LDContext, LDDecimal, LDDuration, LDMultilanguage, LDReference, LDTime, LDURI } from "./common.schema";
 
 export class ClassValidationError extends Error {
   errors: ValidationError[];
@@ -11,15 +12,15 @@ export class ClassValidationError extends Error {
   }
 }
 
-export class SerializableClass {
+export class SerializableClass<OutType extends LDContext> {
   validate() {
     const validation = validateSync(this)
     if (validation.length > 0) {
       throw new ClassValidationError(`Validation error: ${validation.map(v => v.toString()).join('\n')}`, validation)
     }
   }
-  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-  async serialize(context = true): Promise<any> {
+
+  async serialize(context = true): Promise<OutType> {
     return serialize(this, context)
   }
 }
@@ -33,7 +34,7 @@ export interface IMultilanguage {
   language: string
 }
 
-export class Reference extends SerializableClass {
+export class Reference<OutType extends LDContext = LDReference & LDContext> extends SerializableClass<OutType> {
   @Id()
   id: string
 
@@ -43,7 +44,7 @@ export class Reference extends SerializableClass {
   }
 }
 
-export class Multilanguage extends SerializableClass {
+export class Multilanguage extends SerializableClass<LDMultilanguage & LDContext> {
   @Value()
   @IsNotEmpty()
   value: string;
@@ -51,15 +52,20 @@ export class Multilanguage extends SerializableClass {
   @IsNotEmpty()
   language: string;
 
-  constructor (value: IMultilanguage) {
+  constructor (value: IMultilanguage | string) {
     super()
-    this.value = value.value;
-    this.language = value.language;
+    if (typeof value === 'string') {
+      this.value = value;
+      this.language = "en"
+    } else {
+      this.value = value.value;
+      this.language = value.language;
+    }
   }
 }
 
 @Serializable("xsd:dateTime")
-export class Time extends SerializableClass {
+export class Time extends SerializableClass<LDTime & LDContext> {
   @Value()
   @IsNotEmpty()
   @IsDateString()
@@ -72,7 +78,7 @@ export class Time extends SerializableClass {
 }
 
 @Serializable("xsd:decimal")
-export class Decimal extends SerializableClass {
+export class Decimal extends SerializableClass<LDDecimal & LDContext> {
   @Value()
   @IsNotEmpty()
   @IsDecimal()
@@ -85,7 +91,7 @@ export class Decimal extends SerializableClass {
 }
 
 @Serializable("xsd:duration")
-export class Duration extends SerializableClass {
+export class Duration extends SerializableClass<LDDuration & LDContext> {
   @Value()
   @Matches(/^(-?)P(?=.)((\d+)Y)?((\d+)M)?((\d+)D)?(T(?=.)((\d+)H)?((\d+)M)?(\d*(\.\d+)?S)?)?$/)
   value: string;
@@ -97,7 +103,7 @@ export class Duration extends SerializableClass {
 }
 
 @Serializable("xsd:anyURI")
-export class URI extends SerializableClass {
+export class URI extends SerializableClass<LDURI & LDContext> {
   @Value()
   value: string;
 

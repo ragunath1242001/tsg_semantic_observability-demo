@@ -1,14 +1,14 @@
 import { ArrayNotEmpty, IsNotEmpty, ValidateNested } from "class-validator";
 import { Serializable, Namespace } from "../../decorators";
 import { Multilanguage, SerializableClass, URI } from "../common";
-import { TransferState } from "./messages.schema";
+import { LDTransferCompletionMessage, LDTransferError, LDTransferProcess, LDTransferRequestMessage, LDTransferStartMessage, LDTransferSuspensionMessage, LDTransferTerminationMessage, TransferState } from "./messages.schema";
 
 export interface ITransferCompletionMessage {
   processId: string;
 }
 
 @Serializable("dspace:TransferCompletionMessage")
-export class TransferCompletionMessage extends SerializableClass {
+export class TransferCompletionMessage extends SerializableClass<LDTransferCompletionMessage> {
   @Namespace("dspace")
   @IsNotEmpty()
   processId: string;
@@ -26,7 +26,7 @@ export interface ITransferError {
 }
 
 @Serializable("dspace:TransferError")
-export class TransferError extends SerializableClass {
+export class TransferError extends SerializableClass<LDTransferError> {
   @Namespace("dspace")
   @IsNotEmpty()
   processId: string;
@@ -51,7 +51,7 @@ export interface ITransferProcess {
 }
 
 @Serializable("dspace:TransferProcess")
-export class TransferProcess extends SerializableClass {
+export class TransferProcess extends SerializableClass<LDTransferProcess> {
   @Namespace("dspace")
   @IsNotEmpty()
   processId: string;
@@ -70,11 +70,11 @@ export interface ITransferRequestMessage {
   agreementId: string;
   format: string;
   dataAddress?: URI;
-  callbackAddress?: URI;
+  callbackAddress?: string;
 }
 
 @Serializable("dspace:TransferRequestMessage")
-export class TransferRequestMessage extends SerializableClass {
+export class TransferRequestMessage extends SerializableClass<LDTransferRequestMessage> {
   @Namespace("dspace")
   @IsNotEmpty()
   agreementId: string;
@@ -86,7 +86,7 @@ export class TransferRequestMessage extends SerializableClass {
   dataAddress?: URI;
   @Namespace("dspace")
   @ValidateNested()
-  callbackAddress?: URI;
+  callbackAddress?: string;
 
   constructor(value: ITransferRequestMessage) {
     super()
@@ -103,7 +103,7 @@ export interface ITransferStartMessage {
 }
 
 @Serializable("dspace:TransferStartMessage")
-export class TransferStartMessage extends SerializableClass {
+export class TransferStartMessage extends SerializableClass<LDTransferStartMessage> {
   @Namespace("dspace")
   @IsNotEmpty()
   processId: string;
@@ -124,7 +124,7 @@ export interface ITransferSuspensionMessage {
 }
 
 @Serializable("dspace:TransferSuspensionMessage")
-export class TransferSuspensionMessage extends SerializableClass {
+export class TransferSuspensionMessage extends SerializableClass<LDTransferSuspensionMessage> {
   @Namespace("dspace")
   @IsNotEmpty()
   processId: string;
@@ -147,7 +147,7 @@ export interface ITransferTerminationMessage {
 }
 
 @Serializable("dspace:TransferTerminationMessage")
-export class TransferTerminationMessage extends SerializableClass {
+export class TransferTerminationMessage extends SerializableClass<LDTransferTerminationMessage> {
   @Namespace("dspace")
   @IsNotEmpty()
   processId: string;

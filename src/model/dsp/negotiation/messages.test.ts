@@ -1,7 +1,7 @@
 import { deserialize } from "../../serialize"
 import { Multilanguage } from "../common"
 import { ContractAgreementMessage, ContractAgreementVerificationMessage, ContractNegotiation, ContractNegotiationError, ContractNegotiationEventMessage, ContractNegotiationTerminationMessage, ContractOfferMessage, ContractRequestMessage } from "./messages"
-import { LDContractAgreementMessage, LDContractAgreementVerificationMessage, LDContractNegotiation, LDContractNegotiationError, LDContractNegotiationEventMessage, LDContractNegotiationTerminationMessage, LDContractOfferMessage, LDContractRequestMessage, NegotiationEvent, ProofTypes } from "./messages.schema"
+import { ContractNegotiationState, LDContractAgreementMessage, LDContractAgreementVerificationMessage, LDContractNegotiation, LDContractNegotiationError, LDContractNegotiationEventMessage, LDContractNegotiationTerminationMessage, LDContractOfferMessage, LDContractRequestMessage, NegotiationEvent, ProofTypes } from "./messages.schema"
 import { Agreement, Offer } from "./negotiation"
 
 
@@ -62,10 +62,7 @@ test("Contract Negotiation Termination Message", async () => {
   const contractNegotiationTerminationMessage = new ContractNegotiationTerminationMessage({
     processId: "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
     code: "123:A",
-    reason: [new Multilanguage({
-      value: "Could not proceed with negotiation",
-      language: "en"
-    })]
+    reason: [new Multilanguage("Could not proceed with negotiation")]
   })
   const serialized = await contractNegotiationTerminationMessage.serialize();
   const expected: LDContractNegotiationTerminationMessage = {
@@ -89,15 +86,17 @@ test("Contract Negotiation Termination Message", async () => {
 
 test("Contract Negotiation", async () => {
   const contractNegotiation = new ContractNegotiation({
+    id: "urn:uuid:448790ed-f829-4994-b148-f2114d1f3a82",
     processId: "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
-    negotiationId: "urn:uuid:f635f0d2-e4dd-4b87-8a7f-5765954303c5"
+    contractNegotiationState: ContractNegotiationState.REQUESTED
   })
   const serialized = await contractNegotiation.serialize();
   const expected: LDContractNegotiation = {
     "@context": "https://w3id.org/dspace/v0.8/context.json",
     "@type": "dspace:ContractNegotiation",
+    "@id": "urn:uuid:448790ed-f829-4994-b148-f2114d1f3a82",
     "dspace:processId": "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
-    "dspace:negotiationId": "urn:uuid:f635f0d2-e4dd-4b87-8a7f-5765954303c5",
+    "dspace:contractNegotiationState": ContractNegotiationState.REQUESTED
   }
   expect(serialized).toStrictEqual(expected);
   const deserialized = await deserialize<ContractNegotiation>(serialized);
@@ -125,10 +124,7 @@ test("Contract Negotiation Error", async () => {
   const contractNegotiationError = new ContractNegotiationError({
     processId: "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
     description: ["123:A"],
-    reason: [new Multilanguage({
-      value: "Could not proceed with negotiation",
-      language: "en"
-    })]
+    reason: [new Multilanguage("Could not proceed with negotiation")]
   })
   const serialized = await contractNegotiationError.serialize();
   const expected: LDContractNegotiationError = {
