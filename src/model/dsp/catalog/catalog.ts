@@ -9,8 +9,8 @@ import {
   Time,
 } from "../common";
 import { Policy } from "../negotiation/negotiation";
-import { LDCatalog, LDCatalogRecord, LDDataService, LDDataset, LDDistribution, LDResource } from "./catalog.schema";
-import { LDContext } from "../common.schema";
+import { CatalogDto, CatalogRecordDto, DataServiceDto, DatasetDto, DistributionDto, ResourceDto } from "./catalog.dto";
+import { ContextDto } from "../common.dto";
 
 export interface IResource extends IReference {
   contactPoint?: Reference;
@@ -26,15 +26,15 @@ export interface IResource extends IReference {
   language?: Reference;
   license?: Reference;
   modified?: Time;
-  publisher?: Reference;
+  publisher?: string;
   relation?: Reference;
   title?: string;
-  type?: Reference;
+  type?: string;
   hasPolicy?: Array<Policy>;
 }
 
 @Serializable("dcat:Resource")
-export class Resource<OutType extends LDContext = LDResource> extends Reference<OutType> {
+export class Resource<OutType extends ContextDto = ResourceDto> extends Reference<OutType> {
   @Namespace("dcat")
   @ValidateNested()
   contactPoint?: Reference;
@@ -74,16 +74,14 @@ export class Resource<OutType extends LDContext = LDResource> extends Reference<
   @ValidateNested()
   modified?: Time;
   @Namespace("dct")
-  @ValidateNested()
-  publisher?: Reference;
+  publisher?: string;
   @Namespace("dct")
   @ValidateNested()
   relation?: Reference;
   @Namespace("dct")
   title?: string;
   @Namespace("dct")
-  @ValidateNested()
-  type?: Reference;
+  type?: string;
   @Namespace("odrl")
   @ValidateNested()
   hasPolicy?: Array<Policy>;
@@ -118,7 +116,7 @@ export interface IDataService extends IResource {
 }
 
 @Serializable("dcat:DataService")
-export class DataService extends Resource<LDDataService> {
+export class DataService extends Resource<DataServiceDto> {
   @Namespace("dcat")
   @ValidateNested()
   endpointDescription?: Reference;
@@ -149,7 +147,7 @@ export interface IDistribution extends IReference {
   temporalResolution?: Duration;
   conformsTo?: Reference;
   description?: Array<Multilanguage>;
-  format?: Reference;
+  format?: string;
   issued?: Time;
   modified?: Time;
   title?: string;
@@ -157,7 +155,7 @@ export interface IDistribution extends IReference {
 }
 
 @Serializable("dcat:Distribution")
-export class Distribution extends Reference<LDDistribution & LDContext> {
+export class Distribution extends Reference<DistributionDto & ContextDto> {
   @Namespace("dcat")
   @ValidateNested()
   accessService?: Array<DataService>;
@@ -192,8 +190,7 @@ export class Distribution extends Reference<LDDistribution & LDContext> {
   @ValidateNested()
   description?: Array<Multilanguage>;
   @Namespace("dct")
-  @ValidateNested()
-  format?: Reference;
+  format?: string;
   @Namespace("dct")
   @ValidateNested()
   issued?: Time;
@@ -239,7 +236,7 @@ export interface IDataset extends IResource {
 }
 
 @Serializable("dcat:Dataset")
-export class Dataset<OutType extends LDContext = LDDataset> extends Resource<OutType> {
+export class Dataset<OutType extends ContextDto = DatasetDto> extends Resource<OutType> {
   @Namespace("dcat")
   @ValidateNested()
   distribution?: Array<Distribution>;
@@ -284,7 +281,7 @@ export interface ICatalogRecord extends IReference {
 }
 
 @Serializable("dcat:CatalogRecord")
-export class CatalogRecord extends Reference<LDCatalogRecord & LDContext> {
+export class CatalogRecord extends Reference<CatalogRecordDto & ContextDto> {
   @Namespace("dct")
   @ValidateNested()
   conformsTo?: Reference;
@@ -325,7 +322,7 @@ export interface ICatalog extends IDataset {
 }
 
 @Serializable("dcat:Catalog")
-export class Catalog extends Dataset<LDCatalog> {
+export class Catalog extends Dataset<CatalogDto> {
   @Namespace("dcat")
   @ValidateNested()
   dataset?: Array<Dataset>;

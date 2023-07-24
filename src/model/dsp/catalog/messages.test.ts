@@ -2,7 +2,7 @@ import { deserialize } from "../../serialize";
 import { Multilanguage } from "../common";
 import { Catalog } from "./catalog";
 import { CatalogError, CatalogMessage, CatalogRequestMessage, DatasetRequestMessage } from "./messages";
-import { LDCatalogError, LDCatalogMessage, LDCatalogRequestMessage, LDDatasetRequestMessage } from "./messages.schema";
+import { CatalogErrorDto, CatalogMessageDto, CatalogRequestMessageDto, DatasetRequestMessageDto } from "./messages.dto";
 
 test("Catalog Error", async () => {
   const catalogError = new CatalogError({
@@ -15,7 +15,7 @@ test("Catalog Error", async () => {
     ],
   });
   const serialized = await catalogError.serialize();
-  const expected: LDCatalogError = {
+  const expected: CatalogErrorDto = {
     "@context": "https://w3id.org/dspace/v0.8/context.json",
     "@type": "dspace:CatalogError",
     "dspace:code": "123:A",
@@ -38,7 +38,7 @@ test("Catalog Message", async () => {
     })],
   });
   const serialized = await catalogMessage.serialize();
-  const expected: LDCatalogMessage = {
+  const expected: CatalogMessageDto = {
     "@context": "https://w3id.org/dspace/v0.8/context.json",
     "@type": "dspace:CatalogMessage",
     "dspace:catalog": [{
@@ -59,7 +59,7 @@ test("Catalog Request Message", async () => {
     }],
   });
   const serialized = await catalogRequestMessage.serialize();
-  const expected: LDCatalogRequestMessage = {
+  const expected: CatalogRequestMessageDto = {
     "@context": "https://w3id.org/dspace/v0.8/context.json",
     "@type": "dspace:CatalogRequestMessage",
     "dspace:filter": [{
@@ -78,7 +78,7 @@ test("Dataset Request Message", async () => {
     dataset: "urn:uuid:5b156cfa-5800-4345-8acc-6725c7eb5bc2",
   });
   const serialized = await datasetRequestMessage.serialize();
-  const expected: LDDatasetRequestMessage = {
+  const expected: DatasetRequestMessageDto = {
     "@context": "https://w3id.org/dspace/v0.8/context.json",
     "@type": "dspace:DatasetRequestMessage",
     "dspace:dataset": "urn:uuid:5b156cfa-5800-4345-8acc-6725c7eb5bc2"

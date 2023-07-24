@@ -1,25 +1,41 @@
 import { Injectable } from "@nestjs/common";
 import { CatalogRequestMessage } from "../model/dsp/catalog/messages";
-import { Catalog, Dataset } from "../model/dsp/catalog/catalog";
+import {
+  Catalog,
+  DataService,
+  Dataset,
+  Distribution,
+} from "../model/dsp/catalog/catalog";
+import { Multilanguage, Reference } from "../model/dsp/common";
 
 @Injectable()
 export class CatalogService {
+  private catalog: Catalog | undefined;
+  private datasets: Dataset[] = [];
+
+  async modifyCatalog(catalog: Catalog): Promise<void> {
+    this.catalog = catalog;
+  }
+
+  async addDataset(dataset: Dataset): Promise<void> {
+    this.datasets.push(dataset);
+  }
+
+  async removeDataset(datasetId: string): Promise<void> {
+    this.datasets = this.datasets.filter(dataset => dataset.id !== datasetId);
+  }
+
   async request(requestMessage: CatalogRequestMessage): Promise<Catalog> {
-    requestMessage.filter?.forEach(filter => {
-      console.log(filter)
-    })
+    requestMessage.filter?.forEach((filter) => {
+      console.log(filter);
+    });
     return new Catalog({
-      id: 'urn:uuid:84f5328f-1d89-4f98-98b1-57b5600c8085'
+      ...this.catalog,
+      dataset: this.datasets,
     });
   }
 
   async getDataset(datasetId: string): Promise<Dataset | undefined> {
-    if (datasetId == 'urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0cea') {
-      return new Dataset({
-        id: 'urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0cea'
-      })
-    } else {
-      return undefined;
-    }
+    return this.datasets.find((dataset) => dataset.id === datasetId);
   }
 }

@@ -8,6 +8,11 @@ import { Multilanguage } from "../../model/dsp/common";
 
 describe("TransferController", () => {
   let transferController: TransferController;
+  let transferProviderService: TransferProviderService;
+  let transferConsumerService: TransferConsumerService;
+
+  let transferProviderUuid: string;
+  let transferConsumerUuid: string;
 
   beforeEach(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
@@ -15,9 +20,21 @@ describe("TransferController", () => {
       providers: [TransferProviderService, TransferConsumerService],
     }).compile();
 
-    transferController = moduleRef.get<TransferController>(
-      TransferController
-    );
+    transferController = moduleRef.get(TransferController);
+    transferProviderService = moduleRef.get(TransferProviderService);
+    transferConsumerService = moduleRef.get(TransferConsumerService);
+    const transferProviderProcess = await transferProviderService.request(new TransferRequestMessage({
+      agreementId: "urn:uuid:a1b6d55e-a9ee-4e9c-9a72-ce6e0b1db099",
+      format: "dspace:http",
+      callbackAddress:
+        "http://localhost/transfer/callback/urn:uuid:de465939-8292-49c1-97d5-bcb643df1fdb",
+    }));
+    transferProviderUuid = transferProviderProcess.processId
+    const transferConsumerProcess = await transferConsumerService.initiateTransferProcess({
+      agreementId: 'urn:uuid:urn:uuid:a1b6d55e-a9ee-4e9c-9a72-ce6e0b1db099',
+      format: 'dspace:HTTP'
+    });
+    transferConsumerUuid = transferConsumerProcess.internalId;
   });
 
 
@@ -43,23 +60,23 @@ describe("TransferController", () => {
       expect(result).toStrictEqual({
         "@context": "https://w3id.org/dspace/v0.8/context.json",
         "@type": "dspace:TransferProcess",
-        "dspace:processId": "urn:uuid:9d1793cd-bc1b-44a6-a3e8-4e3850bdd9f6",
-        "dspace:transferState": "dspace:REQUESTED",
+        "dspace:processId": expect.stringContaining("urn:uuid:"),
+        "dspace:transferState": "dspace:STARTED",
       });
-      expect(responseMock.setHeader.mock.calls[0]).toStrictEqual(["Location", "/transfer/urn:uuid:9d1793cd-bc1b-44a6-a3e8-4e3850bdd9f6"])
+      expect(responseMock.setHeader.mock.calls[0]).toStrictEqual(["Location", expect.stringContaining("urn:uuid:")])
     });
   });
 
   describe("/:id", () => {
     it("Transfer request with known id should result the transfer", async () => {
       const result = await transferController.getTransfer(
-        "urn:uuid:9d1793cd-bc1b-44a6-a3e8-4e3850bdd9f6"
+        transferProviderUuid
       );
       expect(result).toStrictEqual({
         "@context": "https://w3id.org/dspace/v0.8/context.json",
         "@type": "dspace:TransferProcess",
-        "dspace:processId": "urn:uuid:9d1793cd-bc1b-44a6-a3e8-4e3850bdd9f6",
-        "dspace:transferState": "dspace:REQUESTED",
+        "dspace:processId": transferProviderUuid,
+        "dspace:transferState": "dspace:STARTED",
       });
     });
     it("Transfer request with unknown id should result in a 404", () => {
@@ -76,10 +93,17 @@ describe("TransferController", () => {
 
   describe("/:id/start", () => {
     it("Transfer start with specified identifier should return a status OK", async () => {
+      await transferProviderService.suspendTransferProcess(
+        transferProviderUuid,
+        new TransferSuspensionMessage({
+          processId: transferProviderUuid,
+          reason: [new Multilanguage("Test")]
+        })
+      )
       const result = await transferController.startTransferProcess(
-        "urn:uuid:9d1793cd-bc1b-44a6-a3e8-4e3850bdd9f6",
+        transferProviderUuid,
         new TransferStartMessage({
-          processId: "urn:uuid:9d1793cd-bc1b-44a6-a3e8-4e3850bdd9f6",
+          processId: transferProviderUuid,
         })
       );
       expect(result).toStrictEqual({
@@ -101,7 +125,7 @@ describe("TransferController", () => {
     it("Mismatch processId in contract request message and id path parameter should result in a 400", () => {
       expect(async () => {
         await transferController.startTransferProcess(
-          "urn:uuid:9d1793cd-bc1b-44a6-a3e8-4e3850bdd9f6",
+          transferProviderUuid,
           new TransferStartMessage({
             processId: "urn:uuid:741e3479-cdf4-4f1b-b8a5-9d07980725da",
           })
@@ -115,9 +139,9 @@ describe("TransferController", () => {
   describe("/:id/complete", () => {
     it("Transfer complete with specified identifier should return a status OK", async () => {
       const result = await transferController.completeTransferProcess(
-        "urn:uuid:9d1793cd-bc1b-44a6-a3e8-4e3850bdd9f6",
+        transferProviderUuid,
         new TransferCompletionMessage({
-          processId: "urn:uuid:9d1793cd-bc1b-44a6-a3e8-4e3850bdd9f6",
+          processId: transferProviderUuid,
         })
       );
       expect(result).toStrictEqual({
@@ -139,7 +163,7 @@ describe("TransferController", () => {
     it("Mismatch processId in contract request message and id path parameter should result in a 400", () => {
       expect(async () => {
         await transferController.completeTransferProcess(
-          "urn:uuid:9d1793cd-bc1b-44a6-a3e8-4e3850bdd9f6",
+          transferProviderUuid,
           new TransferCompletionMessage({
             processId: "urn:uuid:741e3479-cdf4-4f1b-b8a5-9d07980725da",
           })
@@ -153,9 +177,9 @@ describe("TransferController", () => {
   describe("/:id/terminate", () => {
     it("Transfer terminate with specified identifier should return a status OK", async () => {
       const result = await transferController.terminateTransferProcess(
-        "urn:uuid:9d1793cd-bc1b-44a6-a3e8-4e3850bdd9f6",
+        transferProviderUuid,
         new TransferTerminationMessage({
-          processId: "urn:uuid:9d1793cd-bc1b-44a6-a3e8-4e3850bdd9f6",
+          processId: transferProviderUuid,
           code: "123:A",
           reason: [
             new Multilanguage("Testing"),
@@ -185,7 +209,7 @@ describe("TransferController", () => {
     it("Mismatch processId in contract request message and id path parameter should result in a 400", () => {
       expect(async () => {
         await transferController.terminateTransferProcess(
-          "urn:uuid:9d1793cd-bc1b-44a6-a3e8-4e3850bdd9f6",
+          transferProviderUuid,
           new TransferTerminationMessage({
             processId: "urn:uuid:741e3479-cdf4-4f1b-b8a5-9d07980725da",
             code: "123:A",
@@ -203,9 +227,9 @@ describe("TransferController", () => {
   describe("/:id/suspend", () => {
     it("Transfer suspend with specified identifier should return a status OK", async () => {
       const result = await transferController.suspendTransferProcess(
-        "urn:uuid:9d1793cd-bc1b-44a6-a3e8-4e3850bdd9f6",
+        transferProviderUuid,
         new TransferSuspensionMessage({
-          processId: "urn:uuid:9d1793cd-bc1b-44a6-a3e8-4e3850bdd9f6",
+          processId: transferProviderUuid,
           reason: [
             new Multilanguage("Testing"),
           ],
@@ -233,7 +257,7 @@ describe("TransferController", () => {
     it("Mismatch processId in contract request message and id path parameter should result in a 400", () => {
       expect(async () => {
         await transferController.suspendTransferProcess(
-          "urn:uuid:9d1793cd-bc1b-44a6-a3e8-4e3850bdd9f6",
+          transferProviderUuid,
           new TransferSuspensionMessage({
             processId: "urn:uuid:741e3479-cdf4-4f1b-b8a5-9d07980725da",
             reason: [
@@ -250,7 +274,7 @@ describe("TransferController", () => {
   describe("/callback/:id/start", () => {
     it("Transfer start with specified identifier should return a status OK", async () => {
       const result = await transferController.callbackStartTransferProcess(
-        "urn:uuid:9d1793cd-bc1b-44a6-a3e8-4e3850bdd9f6",
+        transferConsumerUuid,
         new TransferStartMessage({
           processId: "urn:uuid:9d1793cd-bc1b-44a6-a3e8-4e3850bdd9f6",
         })
@@ -275,8 +299,14 @@ describe("TransferController", () => {
 
   describe("/callback/:id/complete", () => {
     it("Transfer complete with specified identifier should return a status OK", async () => {
+      await transferConsumerService.startTransferProcess(
+        transferConsumerUuid,
+        new TransferStartMessage({
+          processId: "urn:uuid:9d1793cd-bc1b-44a6-a3e8-4e3850bdd9f6"
+        })
+      )
       const result = await transferController.callbackCompleteTransferProcess(
-        "urn:uuid:9d1793cd-bc1b-44a6-a3e8-4e3850bdd9f6",
+        transferConsumerUuid,
         new TransferCompletionMessage({
           processId: "urn:uuid:9d1793cd-bc1b-44a6-a3e8-4e3850bdd9f6",
         })
@@ -302,7 +332,7 @@ describe("TransferController", () => {
   describe("/callback/:id/terminate", () => {
     it("Transfer terminate with specified identifier should return a status OK", async () => {
       const result = await transferController.callbackTerminateTransferProcess(
-        "urn:uuid:9d1793cd-bc1b-44a6-a3e8-4e3850bdd9f6",
+        transferConsumerUuid,
         new TransferTerminationMessage({
           processId: "urn:uuid:9d1793cd-bc1b-44a6-a3e8-4e3850bdd9f6",
           code: "123:A",
@@ -335,8 +365,14 @@ describe("TransferController", () => {
 
   describe("/callback/:id/suspend", () => {
     it("Transfer suspend with specified identifier should return a status OK", async () => {
+      await transferConsumerService.startTransferProcess(
+        transferConsumerUuid,
+        new TransferStartMessage({
+          processId: "urn:uuid:9d1793cd-bc1b-44a6-a3e8-4e3850bdd9f6"
+        })
+      )
       const result = await transferController.callbackSuspendTransferProcess(
-        "urn:uuid:9d1793cd-bc1b-44a6-a3e8-4e3850bdd9f6",
+        transferConsumerUuid,
         new TransferSuspensionMessage({
           processId: "urn:uuid:9d1793cd-bc1b-44a6-a3e8-4e3850bdd9f6",
           reason: [

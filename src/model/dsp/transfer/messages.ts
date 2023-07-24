@@ -1,14 +1,14 @@
 import { ArrayNotEmpty, IsNotEmpty, ValidateNested } from "class-validator";
 import { Serializable, Namespace } from "../../decorators";
 import { Multilanguage, SerializableClass, URI } from "../common";
-import { LDTransferCompletionMessage, LDTransferError, LDTransferProcess, LDTransferRequestMessage, LDTransferStartMessage, LDTransferSuspensionMessage, LDTransferTerminationMessage, TransferState } from "./messages.schema";
+import { TransferCompletionMessageDto, TransferErrorDto, TransferProcessDto, TransferRequestMessageDto, TransferStartMessageDto, TransferSuspensionMessageDto, TransferTerminationMessageDto, TransferState } from "./messages.dto";
 
 export interface ITransferCompletionMessage {
   processId: string;
 }
 
 @Serializable("dspace:TransferCompletionMessage")
-export class TransferCompletionMessage extends SerializableClass<LDTransferCompletionMessage> {
+export class TransferCompletionMessage extends SerializableClass<TransferCompletionMessageDto> {
   @Namespace("dspace")
   @IsNotEmpty()
   processId: string;
@@ -26,7 +26,7 @@ export interface ITransferError {
 }
 
 @Serializable("dspace:TransferError")
-export class TransferError extends SerializableClass<LDTransferError> {
+export class TransferError extends SerializableClass<TransferErrorDto> {
   @Namespace("dspace")
   @IsNotEmpty()
   processId: string;
@@ -51,7 +51,7 @@ export interface ITransferProcess {
 }
 
 @Serializable("dspace:TransferProcess")
-export class TransferProcess extends SerializableClass<LDTransferProcess> {
+export class TransferProcess extends SerializableClass<TransferProcessDto> {
   @Namespace("dspace")
   @IsNotEmpty()
   processId: string;
@@ -74,7 +74,7 @@ export interface ITransferRequestMessage {
 }
 
 @Serializable("dspace:TransferRequestMessage")
-export class TransferRequestMessage extends SerializableClass<LDTransferRequestMessage> {
+export class TransferRequestMessage extends SerializableClass<TransferRequestMessageDto> {
   @Namespace("dspace")
   @IsNotEmpty()
   agreementId: string;
@@ -103,7 +103,7 @@ export interface ITransferStartMessage {
 }
 
 @Serializable("dspace:TransferStartMessage")
-export class TransferStartMessage extends SerializableClass<LDTransferStartMessage> {
+export class TransferStartMessage extends SerializableClass<TransferStartMessageDto> {
   @Namespace("dspace")
   @IsNotEmpty()
   processId: string;
@@ -124,7 +124,7 @@ export interface ITransferSuspensionMessage {
 }
 
 @Serializable("dspace:TransferSuspensionMessage")
-export class TransferSuspensionMessage extends SerializableClass<LDTransferSuspensionMessage> {
+export class TransferSuspensionMessage extends SerializableClass<TransferSuspensionMessageDto> {
   @Namespace("dspace")
   @IsNotEmpty()
   processId: string;
@@ -147,7 +147,7 @@ export interface ITransferTerminationMessage {
 }
 
 @Serializable("dspace:TransferTerminationMessage")
-export class TransferTerminationMessage extends SerializableClass<LDTransferTerminationMessage> {
+export class TransferTerminationMessage extends SerializableClass<TransferTerminationMessageDto> {
   @Namespace("dspace")
   @IsNotEmpty()
   processId: string;

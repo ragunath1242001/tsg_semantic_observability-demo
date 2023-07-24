@@ -2,7 +2,7 @@ import { deserialize } from "../../serialize";
 import { Multilanguage, Reference } from "../common";
 import { Offer } from "../negotiation/negotiation";
 import { Resource } from "./catalog";
-import { LDResource } from "./catalog.schema";
+import { ResourceDto } from "./catalog.dto";
 
 test("Resource serialization", async () => {
   const resource = new Resource({
@@ -15,7 +15,7 @@ test("Resource serialization", async () => {
     landingPage: new Reference({ id: "http://example.com" }),
     title: 'Resource title',
     description: [new Multilanguage("Resource description")],
-    publisher: new Reference({ id: "urn:uuid:b07295ed-68b5-446f-b35b-db6573cda632" }),
+    publisher: "urn:uuid:b07295ed-68b5-446f-b35b-db6573cda632",
     hasPolicy: [
       new Offer({
         id: "urn:uuid:d5b97478-639e-49ab-a125-dbb8ea6e3259",
@@ -24,7 +24,7 @@ test("Resource serialization", async () => {
     ]
   });
   const serialized = await resource.serialize();
-  const expected: LDResource = {
+  const expected: ResourceDto = {
     "@context": "https://w3id.org/dspace/v0.8/context.json",
     "@type": "dcat:Resource",
     "@id": "urn:uuid:5b156cfa-5800-4345-8acc-6725c7eb5bc2",
@@ -50,9 +50,7 @@ test("Resource serialization", async () => {
         "@value": "Resource description",
       },
     ],
-    "dct:publisher": {
-      "@id": "urn:uuid:b07295ed-68b5-446f-b35b-db6573cda632",
-    },
+    "dct:publisher": "urn:uuid:b07295ed-68b5-446f-b35b-db6573cda632",
     "dct:title": "Resource title",
     "odrl:hasPolicy": [
       {

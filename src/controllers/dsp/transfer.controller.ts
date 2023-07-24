@@ -3,7 +3,7 @@ import { Get, HttpCode, Param, Post, Res } from "@nestjs/common/decorators";
 import { DeserializePipe } from "./deserialize.pipe";
 import { Response } from "express";
 import { TransferCompletionMessage, TransferRequestMessage, TransferStartMessage, TransferSuspensionMessage, TransferTerminationMessage } from "../../model/dsp/transfer/messages";
-import { LDTransferCompletionMessage, LDTransferProcess, LDTransferRequestMessage, LDTransferStartMessage, LDTransferSuspensionMessage, LDTransferTerminationMessage } from "../../model/dsp/transfer/messages.schema";
+import { TransferCompletionMessageDto, TransferProcessDto, TransferRequestMessageDto, TransferStartMessageDto, TransferSuspensionMessageDto, TransferTerminationMessageDto } from "../../model/dsp/transfer/messages.dto";
 import { TransferConsumerService } from "../../services/transferConsumer.service";
 import { TransferProviderService } from "../../services/transferProvider.service";
 
@@ -15,7 +15,7 @@ export class TransferController {
 
   @Post('request')
   @HttpCode(HttpStatus.CREATED)
-  async request(@Body(new DeserializePipe<LDTransferRequestMessage, TransferRequestMessage>()) body: TransferRequestMessage, @Res() response: Response): Promise<LDTransferProcess> {
+  async request(@Body(new DeserializePipe<TransferRequestMessageDto, TransferRequestMessage>()) body: TransferRequestMessage, @Res() response: Response): Promise<TransferProcessDto> {
     if (body instanceof TransferRequestMessage) {
       const result = await this.transferProviderService.request(body);
       response.setHeader("Location", `/transfer/${result.processId}`);
@@ -26,7 +26,7 @@ export class TransferController {
 
   @Get(':id')
   @HttpCode(HttpStatus.OK)
-  async getTransfer(@Param('id') id: string): Promise<LDTransferProcess> {
+  async getTransfer(@Param('id') id: string): Promise<TransferProcessDto> {
     const transferProcess = await this.transferProviderService.getTransferProcess(id);
     if (transferProcess) {
       return transferProcess.serialize();
@@ -37,7 +37,7 @@ export class TransferController {
 
   @Post(':id/start')
   @HttpCode(HttpStatus.OK)
-  async startTransferProcess(@Param('id') id: string, @Body(new DeserializePipe<LDTransferStartMessage, TransferStartMessage>()) body: TransferStartMessage): Promise<{status: string}> {
+  async startTransferProcess(@Param('id') id: string, @Body(new DeserializePipe<TransferStartMessageDto, TransferStartMessage>()) body: TransferStartMessage): Promise<{status: string}> {
     if (body instanceof TransferStartMessage) {
       if (body.processId === undefined || body.processId !== id) {
         throw new HttpException('Missing or mismatch processId field in transfer start message', HttpStatus.BAD_REQUEST);
@@ -55,7 +55,7 @@ export class TransferController {
   
   @Post(':id/complete')
   @HttpCode(HttpStatus.OK)
-  async completeTransferProcess(@Param('id') id: string, @Body(new DeserializePipe<LDTransferCompletionMessage, TransferCompletionMessage>()) body: TransferCompletionMessage): Promise<{status: string}> {
+  async completeTransferProcess(@Param('id') id: string, @Body(new DeserializePipe<TransferCompletionMessageDto, TransferCompletionMessage>()) body: TransferCompletionMessage): Promise<{status: string}> {
     if (body instanceof TransferCompletionMessage) {
       if (body.processId === undefined || body.processId !== id) {
         throw new HttpException('Missing or mismatch processId field in transfer completion message', HttpStatus.BAD_REQUEST);
@@ -73,7 +73,7 @@ export class TransferController {
   
   @Post(':id/terminate')
   @HttpCode(HttpStatus.OK)
-  async terminateTransferProcess(@Param('id') id: string, @Body(new DeserializePipe<LDTransferTerminationMessage, TransferTerminationMessage>()) body: TransferTerminationMessage): Promise<{status: string}> {
+  async terminateTransferProcess(@Param('id') id: string, @Body(new DeserializePipe<TransferTerminationMessageDto, TransferTerminationMessage>()) body: TransferTerminationMessage): Promise<{status: string}> {
     if (body instanceof TransferTerminationMessage) {
       if (body.processId === undefined || body.processId !== id) {
         throw new HttpException('Missing or mismatch processId field in transfer completion message', HttpStatus.BAD_REQUEST);
@@ -91,7 +91,7 @@ export class TransferController {
   
   @Post(':id/suspend')
   @HttpCode(HttpStatus.OK)
-  async suspendTransferProcess(@Param('id') id: string, @Body(new DeserializePipe<LDTransferSuspensionMessage, TransferSuspensionMessage>()) body: TransferSuspensionMessage): Promise<{status: string}> {
+  async suspendTransferProcess(@Param('id') id: string, @Body(new DeserializePipe<TransferSuspensionMessageDto, TransferSuspensionMessage>()) body: TransferSuspensionMessage): Promise<{status: string}> {
     if (body instanceof TransferSuspensionMessage) {
       if (body.processId === undefined || body.processId !== id) {
         throw new HttpException('Missing or mismatch processId field in transfer completion message', HttpStatus.BAD_REQUEST);
@@ -109,7 +109,7 @@ export class TransferController {
 
   @Post('/callback/:id/start')
   @HttpCode(HttpStatus.OK)
-  async callbackStartTransferProcess(@Param('id') id: string, @Body(new DeserializePipe<LDTransferStartMessage, TransferStartMessage>()) body: TransferStartMessage): Promise<{status: string}> {
+  async callbackStartTransferProcess(@Param('id') id: string, @Body(new DeserializePipe<TransferStartMessageDto, TransferStartMessage>()) body: TransferStartMessage): Promise<{status: string}> {
     if (body instanceof TransferStartMessage) {
       const result = await this.transferConsumerService.startTransferProcess(id, body);
       if (result === undefined) {
@@ -124,7 +124,7 @@ export class TransferController {
   
   @Post('/callback/:id/complete')
   @HttpCode(HttpStatus.OK)
-  async callbackCompleteTransferProcess(@Param('id') id: string, @Body(new DeserializePipe<LDTransferCompletionMessage, TransferCompletionMessage>()) body: TransferCompletionMessage): Promise<{status: string}> {
+  async callbackCompleteTransferProcess(@Param('id') id: string, @Body(new DeserializePipe<TransferCompletionMessageDto, TransferCompletionMessage>()) body: TransferCompletionMessage): Promise<{status: string}> {
     if (body instanceof TransferCompletionMessage) {
       const result = await this.transferConsumerService.completeTransferProcess(id, body);
       if (result === undefined) {
@@ -139,7 +139,7 @@ export class TransferController {
   
   @Post('/callback/:id/terminate')
   @HttpCode(HttpStatus.OK)
-  async callbackTerminateTransferProcess(@Param('id') id: string, @Body(new DeserializePipe<LDTransferTerminationMessage, TransferTerminationMessage>()) body: TransferTerminationMessage): Promise<{status: string}> {
+  async callbackTerminateTransferProcess(@Param('id') id: string, @Body(new DeserializePipe<TransferTerminationMessageDto, TransferTerminationMessage>()) body: TransferTerminationMessage): Promise<{status: string}> {
     if (body instanceof TransferTerminationMessage) {
       const result = await this.transferConsumerService.terminateTransferProcess(id, body);
       if (result === undefined) {
@@ -154,7 +154,7 @@ export class TransferController {
   
   @Post('/callback/:id/suspend')
   @HttpCode(HttpStatus.OK)
-  async callbackSuspendTransferProcess(@Param('id') id: string, @Body(new DeserializePipe<LDTransferSuspensionMessage, TransferSuspensionMessage>()) body: TransferSuspensionMessage): Promise<{status: string}> {
+  async callbackSuspendTransferProcess(@Param('id') id: string, @Body(new DeserializePipe<TransferSuspensionMessageDto, TransferSuspensionMessage>()) body: TransferSuspensionMessage): Promise<{status: string}> {
     if (body instanceof TransferSuspensionMessage) {
       const result = await this.transferConsumerService.suspendTransferProcess(id, body);
       if (result === undefined) {

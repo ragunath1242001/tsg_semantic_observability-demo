@@ -1,25 +1,25 @@
-import { LDContext, LDMultilanguage, LDReference } from "../common.schema";
-import { LDAgreement, LDOffer } from "./negotiation.schema";
+import { ContextDto, MultilanguageDto, ReferenceDto } from "../common.dto";
+import { AgreementDto, OfferDto } from "./negotiation.dto";
 
 
-export interface LDContractRequestMessage extends LDContext {
+export interface ContractRequestMessageDto extends ContextDto {
   '@type': 'dspace:ContractRequestMessage'
   'dspace:processId'?: string;
-  'odrl:offer': LDOffer;
+  'odrl:offer': OfferDto;
   'dspace:callbackAddress': string;
 }
 
-export interface LDContractOfferMessage extends LDContext {
+export interface ContractOfferMessageDto extends ContextDto {
   '@type': 'dspace:ContractOfferMessage'
   'dspace:processId': string;
-  'odrl:offer': LDOffer;
+  'odrl:offer': OfferDto;
   'dspace:callbackAddress': string;
 }
-export interface LDContractNegotiationTerminationMessage extends LDContext {
+export interface ContractNegotiationTerminationMessageDto extends ContextDto {
   '@type': 'dspace:ContractNegotiationTerminationMessage'
   'dspace:processId': string;
   'dspace:code'?: string;
-  'dspace:reason': Array<LDMultilanguage | string>;
+  'dspace:reason': Array<MultilanguageDto | string>;
 }
 
 export enum ContractNegotiationState {
@@ -32,7 +32,7 @@ export enum ContractNegotiationState {
   TERMINATED = "dspace:TERMINATED"
 }
 
-export interface LDContractNegotiation extends LDContext, LDReference {
+export interface ContractNegotiationDto extends ContextDto, ReferenceDto {
   '@type': 'dspace:ContractNegotiation'
   'dspace:processId': string;
   'dspace:contractNegotiationState': ContractNegotiationState
@@ -41,15 +41,15 @@ export enum NegotiationEvent {
   ACCEPTED = "dspace:ACCEPTED",
   FINALIZED = "dspace:FINALIZED",
 }
-export interface LDContractNegotiationEventMessage extends LDContext {
+export interface ContractNegotiationEventMessageDto extends ContextDto {
   '@type': 'dspace:ContractNegotiationEventMessage'
   'dspace:processId': string;
   'dspace:eventType': NegotiationEvent;
 }
-export interface LDContractNegotiationError extends LDContext {
+export interface ContractNegotiationErrorDto extends ContextDto {
   '@type': 'dspace:ContractNegotiationError'
   'dspace:processId': string;
-  'dspace:reason'?: Array<LDMultilanguage | string>;
+  'dspace:reason'?: Array<MultilanguageDto | string>;
   'dct:description'?: Array<string>;
 }
 export enum ProofTypes {
@@ -63,14 +63,14 @@ export enum ProofTypes {
   BbsBlsSignature2020 = "sec:BbsBlsSignature2020",
   BbsBlsSignatureProof2020 = "sec:BbsBlsSignatureProof2020",
 }
-export interface LDProof {
+export interface ProofDto {
   "@type": ProofTypes;
   "dct:created": string;
   "sec:jws": string;
   /* eslint-disable @typescript-eslint/no-explicit-any */
   [key: string]: any;
 }
-export interface LDContractAgreementVerificationMessage extends LDContext {
+export interface ContractAgreementVerificationMessageDto extends ContextDto {
   '@type': 'dspace:ContractAgreementVerificationMessage'
   'dspace:processId': string;
   'cred:credentialSubject': {
@@ -78,10 +78,10 @@ export interface LDContractAgreementVerificationMessage extends LDContext {
     /* eslint-disable @typescript-eslint/no-explicit-any */
     [key: string]: any;
   };
-  'sec:proof': LDProof;
+  'sec:proof': ProofDto;
 }
-export interface LDContractAgreementMessage extends LDContext {
+export interface ContractAgreementMessageDto extends ContextDto {
   '@type': 'dspace:ContractAgreementMessage'
   'dspace:processId': string;
-  'odrl:agreement': LDAgreement;
+  'odrl:agreement': AgreementDto;
 }

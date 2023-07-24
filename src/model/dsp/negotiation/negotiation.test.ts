@@ -8,7 +8,7 @@ import {
   Permission,
   Prohibition,
 } from "./negotiation";
-import { Action, LDAgreement, LDOffer, LeftOperand, Operator } from "./negotiation.schema";
+import { Action, AgreementDto, OfferDto, LeftOperand, Operator } from "./negotiation.dto";
 
 test("Contract offer serialization", async () => {
   const offer = new Offer({
@@ -42,7 +42,7 @@ test("Contract offer serialization", async () => {
   });
 
   const serialized = await offer.serialize();
-  const expected: LDOffer = {
+  const expected: OfferDto = {
     "@context": "https://w3id.org/dspace/v0.8/context.json",
     "@type": "odrl:Offer",
     "@id": "urn:uuid:8d613f77-3dde-4286-88ff-c1ab96da6d59",
@@ -121,7 +121,7 @@ test("Contract agreement serialization", async () => {
   });
 
   const serialized = await agreement.serialize();
-  const expected: LDAgreement = {
+  const expected: AgreementDto = {
     "@context": "https://w3id.org/dspace/v0.8/context.json",
     "@type": "odrl:Agreement",
     "@id": "urn:uuid:8d613f77-3dde-4286-88ff-c1ab96da6d59",

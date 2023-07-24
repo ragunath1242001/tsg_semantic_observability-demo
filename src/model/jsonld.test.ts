@@ -1,7 +1,7 @@
 import { JsonLdDocument } from "jsonld";
 import { compact } from "./jsonld";
 
-test("Compaction of JSON-LD", async () => {
+test("Compaction of JSON-Dto", async () => {
   const document: JsonLdDocument = {
     "@context": "https://w3id.org/dspace/v0.8/context.json",
     "@type": "odrl:Offer",

@@ -1,4 +1,4 @@
-import { LDValue, LDReference, LDContext } from "../common.schema";
+import { ValueDto, ReferenceDto, ContextDto } from "../common.dto";
 
 export enum Action {
   DELETE = "odrl:delete",
@@ -105,54 +105,54 @@ export enum LeftOperand {
   VIRTUAL_LOCATION = "odrl:virtualLocation",
 }
 
-export interface LDConstraint {
+export interface ConstraintDto {
   '@type': 'odrl:Constraint';
   'odrl:leftOperand': LeftOperand;
   'odrl:operator': Operator;
-  'odrl:rightOperand'?: LDValue;
+  'odrl:rightOperand'?: ValueDto;
   'odrl:rightOperandReference'?: string;
 }
 
-export interface LDPolicyRule {
+export interface PolicyRuleDto {
   '@type': 'odrl:Prohibition' | 'odrl:Duty' | 'odrl:Permission';
   'odrl:assigner'?: string;
   'odrl:assignee'?: string;
   'odrl:action': Action;
   'odrl:target'?: string;
-  'odrl:constraint'?: Array<LDConstraint>;
+  'odrl:constraint'?: Array<ConstraintDto>;
 }
 
-export interface LDProhibition extends LDPolicyRule {
+export interface ProhibitionDto extends PolicyRuleDto {
   '@type': 'odrl:Prohibition';
   'odrl:target': string;
 }
 
-export interface LDDuty extends LDPolicyRule {
+export interface DutyDto extends PolicyRuleDto {
   '@type': 'odrl:Duty';
 }
 
-export interface LDPermission extends LDPolicyRule {
+export interface PermissionDto extends PolicyRuleDto {
   '@type': 'odrl:Permission';
   'odrl:target': string;
-  'odrl:duty'?: Array<LDDuty>;
+  'odrl:duty'?: Array<DutyDto>;
 }
 
-export interface LDPolicy extends LDReference {
+export interface PolicyDto extends ReferenceDto {
   '@type': 'odrl:Offer' | 'odrl:Agreement';
   'odrl:assigner'?: string;
   'odrl:assignee'?: string;
   'odrl:profile'?: string;
-  'odrl:permission'?: Array<LDPermission>;
-  'odrl:prohibition'?: Array<LDProhibition>;
-  'odrl:obligation'?: Array<LDDuty>;
+  'odrl:permission'?: Array<PermissionDto>;
+  'odrl:prohibition'?: Array<ProhibitionDto>;
+  'odrl:obligation'?: Array<DutyDto>;
 }
 
-export interface LDOffer extends LDContext, LDPolicy {
+export interface OfferDto extends ContextDto, PolicyDto {
   '@type': 'odrl:Offer';
   'odrl:assigner': string;
 }
 
-export interface LDAgreement extends LDContext, LDPolicy {
+export interface AgreementDto extends ContextDto, PolicyDto {
   '@type': 'odrl:Agreement';
   'odrl:assigner': string;
   'odrl:assignee': string;

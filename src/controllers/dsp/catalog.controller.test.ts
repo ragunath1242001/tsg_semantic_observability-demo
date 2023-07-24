@@ -4,6 +4,91 @@ import { CatalogRequestMessage, DatasetRequestMessage } from "../../model/dsp/ca
 import { CatalogService } from "../../services/catalog.service";
 import { HttpStatus, INestApplication } from "@nestjs/common";
 import request from "supertest";
+import { CatalogDto, DatasetDto } from "../../model/dsp/catalog/catalog.dto";
+import { Catalog, DataService, Dataset, Distribution } from "../../model/dsp/catalog/catalog";
+import { deserialize } from "../../model/serialize";
+import { Multilanguage } from "../../model/dsp/common";
+
+const dataset = new Dataset({
+  id: "urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0cea",
+  distribution: [
+    new Distribution({
+      id: "urn:uuid:06d7da99-68eb-4f9e-8cb6-b78666c46123",
+      format: "dspace:HTTP",
+      accessService: [
+        new DataService({
+          id: "urn:uuid:0d5f0685-eb04-409a-8a77-ee4ed207f2f0"
+        })
+      ]
+    })
+  ]
+})
+
+// const datasetSample: DatasetDto = {
+//   "@id": "urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0cea",
+//   "@type": "dcat:Dataset",
+//   "dcat:distribution": [
+//     {
+//       "@id": "urn:uuid:06d7da99-68eb-4f9e-8cb6-b78666c46123",
+//       "@type": "dcat:Distribution",
+//       "dcat:accessService": [
+//         {
+//           "@id": "urn:uuid:0d5f0685-eb04-409a-8a77-ee4ed207f2f0",
+//           "@type": "dcat:DataService",
+//         },
+//       ],
+//       "dct:format": "dspace:HTTP",
+//     },
+//   ],
+// }
+
+// const datasetSampleWithContext: DatasetDto = {
+//   "@context": "https://w3id.org/dspace/v0.8/context.json",
+//   ...datasetSample
+// }
+
+const catalog = new Catalog({
+  id: "urn:uuid:84f5328f-1d89-4f98-98b1-57b5600c8085",
+  title: "Connector Catalog",
+  publisher: "urn:connector:provider",
+  description: [new Multilanguage("Catalog of datasets and services of this connector instance")],
+  service: [
+    new DataService({
+      id: "urn:uuid:0d5f0685-eb04-409a-8a77-ee4ed207f2f0",
+      endpointURL: "http://localhost/",
+      type: "connector"
+    })
+  ]
+});
+
+const catalogWithDataset = new Catalog({
+  ...catalog,
+  dataset: [dataset]
+})
+
+// const catalogSample: CatalogDto = {
+//   "@context": "https://w3id.org/dspace/v0.8/context.json",
+//   "@id": "urn:uuid:84f5328f-1d89-4f98-98b1-57b5600c8085",
+//   "@type": "dcat:Catalog",
+//   "dct:title": "Connector Catalog",
+//   "dct:publisher": "urn:connector:provider",
+//   "dct:description": [
+//     {
+//       "@language": "en",
+//       "@value": "Catalog of datasets and services of this connector instance",
+//     },
+//   ],
+//   "dcat:service": [
+//     {
+//       "@id": "urn:uuid:0d5f0685-eb04-409a-8a77-ee4ed207f2f0",
+//       "@type": "dcat:DataService",
+//       "dcat:endpointURL": "http://localhost/",
+//       "dct:type": "connector",
+//     },
+//   ],
+//   "dcat:dataset": [datasetSample],
+// }
+
 
 describe("CatalogController", () => {
   let catalogController: CatalogController;
@@ -14,7 +99,10 @@ describe("CatalogController", () => {
       providers: [CatalogService],
     }).compile();
 
-    catalogController = moduleRef.get<CatalogController>(CatalogController);
+    catalogController = moduleRef.get(CatalogController);
+    const catalogService = moduleRef.get(CatalogService);
+    catalogService.modifyCatalog(catalog)
+    catalogService.addDataset(dataset)
   });
 
   describe("/request", () => {
@@ -22,11 +110,7 @@ describe("CatalogController", () => {
       const result = await catalogController.request(
         new CatalogRequestMessage({})
       );
-      expect(result).toStrictEqual({
-        "@context": "https://w3id.org/dspace/v0.8/context.json",
-        "@id": "urn:uuid:84f5328f-1d89-4f98-98b1-57b5600c8085",
-        "@type": "dcat:Catalog",
-      });
+      expect(result).toStrictEqual(await catalogWithDataset.serialize());
     });
   });
   describe("/datasets", () => {
@@ -34,11 +118,7 @@ describe("CatalogController", () => {
       const result = await catalogController.getDataset(
         "urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0cea"
       );
-      expect(result).toStrictEqual({
-        "@context": "https://w3id.org/dspace/v0.8/context.json",
-        "@id": "urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0cea",
-        "@type": "dcat:Dataset",
-      });
+      expect(result).toStrictEqual(await dataset.serialize());
     });
     it("Dataset request with unknown id should result in a 404", async () => {
       expect(async () => {
@@ -59,6 +139,10 @@ describe("Catalog Module", () => {
       providers: [CatalogService],
     }).compile();
 
+    const catalogService = moduleRef.get(CatalogService);
+    catalogService.modifyCatalog(catalog)
+    catalogService.addDataset(dataset)
+    
     app = moduleRef.createNestApplication();
     await app.init();
   });
@@ -69,17 +153,11 @@ describe("Catalog Module", () => {
 
   describe("/request", () => {
     it("Empty catalog request should return empty catalog", async () => {
-      request(app.getHttpServer())
+      const response = await request(app.getHttpServer())
         .post("/catalog/request")
         .send(await new CatalogRequestMessage({}).serialize())
         .expect(200)
-        .then((response) => {
-          expect(response.body).toStrictEqual({
-            "@context": "https://w3id.org/dspace/v0.8/context.json",
-            "@id": "urn:uuid:84f5328f-1d89-4f98-98b1-57b5600c8085",
-            "@type": "dcat:Catalog",
-          });
-        });
+      expect(response.body).toStrictEqual(await catalogWithDataset.serialize());
     });
     it("Invalid body should result in a 400", async () => {
       request(app.getHttpServer())
@@ -94,11 +172,7 @@ describe("Catalog Module", () => {
         .get("/catalog/datasets/urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0cea")
         .expect(200);
 
-      expect(response.body).toStrictEqual({
-        "@context": "https://w3id.org/dspace/v0.8/context.json",
-        "@id": "urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0cea",
-        "@type": "dcat:Dataset",
-      });
+      expect(response.body).toStrictEqual(await dataset.serialize());
     });
     it("Dataset request with unknown id should result in a 404", async () => {
       request(app.getHttpServer())

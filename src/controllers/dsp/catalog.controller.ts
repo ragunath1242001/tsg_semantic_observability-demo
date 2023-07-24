@@ -1,5 +1,5 @@
-import { LDCatalog, LDDataset } from "../../model/dsp/catalog/catalog.schema";
-import { LDCatalogRequestMessage } from "../../model/dsp/catalog/messages.schema";
+import { CatalogDto, DatasetDto } from "../../model/dsp/catalog/catalog.dto";
+import { CatalogRequestMessageDto } from "../../model/dsp/catalog/messages.dto";
 import { Body, Controller, HttpException, HttpStatus } from "@nestjs/common";
 import { Get, HttpCode, Param, Post } from "@nestjs/common/decorators";
 import { CatalogRequestMessage } from "../../model/dsp/catalog/messages";
@@ -11,7 +11,7 @@ export class CatalogController {
   constructor(private readonly catalogService: CatalogService) {}
   @Post('request')
   @HttpCode(HttpStatus.OK)
-  async request(@Body(new DeserializePipe<LDCatalogRequestMessage, CatalogRequestMessage>()) body: CatalogRequestMessage): Promise<LDCatalog> {
+  async request(@Body(new DeserializePipe<CatalogRequestMessageDto, CatalogRequestMessage>()) body: CatalogRequestMessage): Promise<CatalogDto> {
     if (body instanceof CatalogRequestMessage) {
       const result = await this.catalogService.request(body);
       return result.serialize();
@@ -21,7 +21,7 @@ export class CatalogController {
 
   @Get('datasets/:id')
   @HttpCode(HttpStatus.OK)
-  async getDataset(@Param('id') id: string): Promise<LDDataset> {
+  async getDataset(@Param('id') id: string): Promise<DatasetDto> {
     const result = await this.catalogService.getDataset(id)
     if (result) {
       return result.serialize();

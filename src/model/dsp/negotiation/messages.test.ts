@@ -1,7 +1,7 @@
 import { deserialize } from "../../serialize"
 import { Multilanguage } from "../common"
 import { ContractAgreementMessage, ContractAgreementVerificationMessage, ContractNegotiation, ContractNegotiationError, ContractNegotiationEventMessage, ContractNegotiationTerminationMessage, ContractOfferMessage, ContractRequestMessage } from "./messages"
-import { ContractNegotiationState, LDContractAgreementMessage, LDContractAgreementVerificationMessage, LDContractNegotiation, LDContractNegotiationError, LDContractNegotiationEventMessage, LDContractNegotiationTerminationMessage, LDContractOfferMessage, LDContractRequestMessage, NegotiationEvent, ProofTypes } from "./messages.schema"
+import { ContractNegotiationState, ContractAgreementMessageDto, ContractAgreementVerificationMessageDto, ContractNegotiationDto, ContractNegotiationErrorDto, ContractNegotiationEventMessageDto, ContractNegotiationTerminationMessageDto, ContractOfferMessageDto, ContractRequestMessageDto, NegotiationEvent, ProofTypes } from "./messages.dto"
 import { Agreement, Offer } from "./negotiation"
 
 
@@ -15,7 +15,7 @@ test("Contract Request Message", async () => {
     callbackAddress: "http://example.com"
   })
   const serialized = await contractRequestMessage.serialize();
-  const expected: LDContractRequestMessage = {
+  const expected: ContractRequestMessageDto = {
     "@context": "https://w3id.org/dspace/v0.8/context.json",
     "@type": "dspace:ContractRequestMessage",
     "dspace:processId": "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
@@ -42,7 +42,7 @@ test("Contract Offer Message", async () => {
     callbackAddress: "http://example.com"
   })
   const serialized = await contractOfferMessage.serialize();
-  const expected: LDContractOfferMessage = {
+  const expected: ContractOfferMessageDto = {
     "@context": "https://w3id.org/dspace/v0.8/context.json",
     "@type": "dspace:ContractOfferMessage",
     "dspace:processId": "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
@@ -65,7 +65,7 @@ test("Contract Negotiation Termination Message", async () => {
     reason: [new Multilanguage("Could not proceed with negotiation")]
   })
   const serialized = await contractNegotiationTerminationMessage.serialize();
-  const expected: LDContractNegotiationTerminationMessage = {
+  const expected: ContractNegotiationTerminationMessageDto = {
     "@context": "https://w3id.org/dspace/v0.8/context.json",
     "@type": "dspace:ContractNegotiationTerminationMessage",
     "dspace:processId": "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
@@ -91,7 +91,7 @@ test("Contract Negotiation", async () => {
     contractNegotiationState: ContractNegotiationState.REQUESTED
   })
   const serialized = await contractNegotiation.serialize();
-  const expected: LDContractNegotiation = {
+  const expected: ContractNegotiationDto = {
     "@context": "https://w3id.org/dspace/v0.8/context.json",
     "@type": "dspace:ContractNegotiation",
     "@id": "urn:uuid:448790ed-f829-4994-b148-f2114d1f3a82",
@@ -109,7 +109,7 @@ test("Contract Negotiation Event Message", async () => {
     eventType: NegotiationEvent.ACCEPTED
   })
   const serialized = await contractNegotiationEventMessage.serialize();
-  const expected: LDContractNegotiationEventMessage = {
+  const expected: ContractNegotiationEventMessageDto = {
     "@context": "https://w3id.org/dspace/v0.8/context.json",
     "@type": "dspace:ContractNegotiationEventMessage",
     "dspace:processId": "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
@@ -127,7 +127,7 @@ test("Contract Negotiation Error", async () => {
     reason: [new Multilanguage("Could not proceed with negotiation")]
   })
   const serialized = await contractNegotiationError.serialize();
-  const expected: LDContractNegotiationError = {
+  const expected: ContractNegotiationErrorDto = {
     "@context": "https://w3id.org/dspace/v0.8/context.json",
     "@type": "dspace:ContractNegotiationError",
     "dspace:processId": "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
@@ -158,7 +158,7 @@ test("Contract AgreementVerification Message", async () => {
     }
   })
   const serialized = await contractAgreementVerificationMessage.serialize();
-  const expected: LDContractAgreementVerificationMessage = {
+  const expected: ContractAgreementVerificationMessageDto = {
     "@context": "https://w3id.org/dspace/v0.8/context.json",
     "@type": "dspace:ContractAgreementVerificationMessage",
     "dspace:processId": "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
@@ -190,7 +190,7 @@ test("Contract Agreement Message", async () => {
     })
   })
   const serialized = await contractAgreementMessage.serialize();
-  const expected: LDContractAgreementMessage = {
+  const expected: ContractAgreementMessageDto = {
     "@context": "https://w3id.org/dspace/v0.8/context.json",
     "@type": "dspace:ContractAgreementMessage",
     "dspace:processId": "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",

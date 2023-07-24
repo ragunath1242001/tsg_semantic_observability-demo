@@ -5,11 +5,13 @@ import { HttpStatus } from "@nestjs/common";
 import { ContractAgreementMessage, ContractAgreementVerificationMessage, ContractNegotiationEventMessage, ContractNegotiationTerminationMessage, ContractOfferMessage, ContractRequestMessage } from "../../model/dsp/negotiation/messages";
 import { Agreement, Offer } from "../../model/dsp/negotiation/negotiation";
 import { NegotiationConsumerService } from "../../services/negotiationConsumer.service";
-import { NegotiationEvent, ProofTypes } from "../../model/dsp/negotiation/messages.schema";
+import { NegotiationEvent, ProofTypes } from "../../model/dsp/negotiation/messages.dto";
 import { Multilanguage } from "../../model/dsp/common";
 
 describe("NegotiationController", () => {
   let negotiationController: NegotiationController;
+  let negotiationProviderService: NegotiationProviderService;
+  let negotiationConsumerService: NegotiationConsumerService;
 
   beforeEach(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
@@ -17,9 +19,22 @@ describe("NegotiationController", () => {
       providers: [NegotiationProviderService, NegotiationConsumerService],
     }).compile();
 
-    negotiationController = moduleRef.get<NegotiationController>(
-      NegotiationController
-    );
+    negotiationController = moduleRef.get(NegotiationController);
+    negotiationProviderService = moduleRef.get(NegotiationProviderService);
+    negotiationConsumerService = moduleRef.get(NegotiationConsumerService);
+    
+    await negotiationProviderService.request(new ContractRequestMessage({
+      processId: "urn:uuid:63f0abdb-ef13-42a4-acb0-567ba5c2c41c",
+      callbackAddress:
+        "http://localhost/negotiation/callback/urn:uuid:de465939-8292-49c1-97d5-bcb643df1fdb",
+      offer: new Offer({
+        id: "urn:uuid:81a41b35-2926-4b29-8c9a-ee52665a047b",
+        assigner: "urn:uuid:fcddc591-b9f1-4c75-b557-80d1cf955859",
+      }),
+    }));
+    await negotiationConsumerService.initiateNegotiationProcess({
+      processId: "urn:uuid:40925b73-e6b7-40a3-b71f-28c550d1cec4"
+    });
   });
 
 
@@ -48,7 +63,7 @@ describe("NegotiationController", () => {
         "@context": "https://w3id.org/dspace/v0.8/context.json",
         "@id": "urn:uuid:09b15239-8775-4de3-8441-c0d2b59cdf54",
         "@type": "dspace:ContractNegotiation",
-        "dspace:contractNegotiationState": "dspace:REQUESTED",
+        "dspace:contractNegotiationState": "dspace:OFFERED",
         "dspace:processId": "urn:uuid:84f5328f-1d89-4f98-98b1-57b5600c8085",
       });
       expect(responseMock.setHeader.mock.calls[0]).toStrictEqual(["Location", "/negotiation/urn:uuid:84f5328f-1d89-4f98-98b1-57b5600c8085"])
@@ -64,7 +79,7 @@ describe("NegotiationController", () => {
         "@context": "https://w3id.org/dspace/v0.8/context.json",
         "@id": "urn:uuid:09b15239-8775-4de3-8441-c0d2b59cdf54",
         "@type": "dspace:ContractNegotiation",
-        "dspace:contractNegotiationState": "dspace:REQUESTED",
+        "dspace:contractNegotiationState": "dspace:OFFERED",
         "dspace:processId": "urn:uuid:63f0abdb-ef13-42a4-acb0-567ba5c2c41c",
       });
     });
@@ -98,7 +113,7 @@ describe("NegotiationController", () => {
         "@context": "https://w3id.org/dspace/v0.8/context.json",
         "@id": "urn:uuid:09b15239-8775-4de3-8441-c0d2b59cdf54",
         "@type": "dspace:ContractNegotiation",
-        "dspace:contractNegotiationState": "dspace:REQUESTED",
+        "dspace:contractNegotiationState": "dspace:OFFERED",
         "dspace:processId": "urn:uuid:5d9c9c88-a86a-47b7-9ade-72913afda5e2",
       });
     });
@@ -167,6 +182,13 @@ describe("NegotiationController", () => {
     });
     describe("/:id/agreement/verification", () => {
       it("Contract agreement verification should with specified identifier return a status OK", async () => {
+        await negotiationProviderService.negotiationEvent(
+          "urn:uuid:63f0abdb-ef13-42a4-acb0-567ba5c2c41c",
+          new ContractNegotiationEventMessage({
+            processId: "urn:uuid:63f0abdb-ef13-42a4-acb0-567ba5c2c41c",
+            eventType: NegotiationEvent.ACCEPTED
+          })
+        )
         const result = await negotiationController.agreementVerification(
           "urn:uuid:63f0abdb-ef13-42a4-acb0-567ba5c2c41c",
           new ContractAgreementVerificationMessage({
@@ -313,11 +335,25 @@ describe("NegotiationController", () => {
     });
     describe("/callbacks/:id/event", () => {
       it("Callback with a contract event should return a status OK", async () => {
+        await negotiationConsumerService.agreementCallback(
+          "urn:uuid:40925b73-e6b7-40a3-b71f-28c550d1cec4",
+          new ContractAgreementMessage({
+            processId: "urn:uuid:63f0abdb-ef13-42a4-acb0-567ba5c2c41c",
+            agreement: new Agreement({
+              id: "urn:uuid:81a41b35-2926-4b29-8c9a-ee52665a047b",
+              assigner: "urn:uuid:fcddc591-b9f1-4c75-b557-80d1cf955859",
+              assignee: "urn:uuid:05da26f1-6213-4c27-b104-623cd33ecde7",
+              consumerId: "urn:uuid:ce2c234a-09e4-4cfd-bb44-3f94b925f18d",
+              providerId: "urn:uuid:d5da1d7e-8d62-4579-8bb8-d092fe9a53ea",
+              timestamp: "2023-07-21T09:26:00Z"
+            })
+          })
+        )
         const result = await negotiationController.callbackEvent(
           "urn:uuid:40925b73-e6b7-40a3-b71f-28c550d1cec4",
           new ContractNegotiationEventMessage({
             processId: "urn:uuid:63f0abdb-ef13-42a4-acb0-567ba5c2c41c",
-            eventType: NegotiationEvent.ACCEPTED
+            eventType: NegotiationEvent.FINALIZED
           })
         );
         expect(result).toStrictEqual({

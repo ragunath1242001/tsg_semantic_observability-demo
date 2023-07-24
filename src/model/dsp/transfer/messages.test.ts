@@ -9,14 +9,14 @@ import {
   TransferSuspensionMessage,
   TransferTerminationMessage,
 } from "./messages";
-import { LDTransferCompletionMessage, LDTransferError, LDTransferProcess, LDTransferRequestMessage, LDTransferStartMessage, LDTransferSuspensionMessage, LDTransferTerminationMessage, TransferState } from "./messages.schema";
+import { TransferCompletionMessageDto, TransferErrorDto, TransferProcessDto, TransferRequestMessageDto, TransferStartMessageDto, TransferSuspensionMessageDto, TransferTerminationMessageDto, TransferState } from "./messages.dto";
 
 test("Transfer Completion Message", async () => {
   const transferCompletionMessage = new TransferCompletionMessage({
     processId: "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
   });
   const serialized = await transferCompletionMessage.serialize();
-  const expected: LDTransferCompletionMessage = {
+  const expected: TransferCompletionMessageDto = {
     "@context": "https://w3id.org/dspace/v0.8/context.json",
     "@type": "dspace:TransferCompletionMessage",
     "dspace:processId": "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
@@ -37,7 +37,7 @@ test("Transfer Error", async () => {
     ],
   });
   const serialized = await transferError.serialize();
-  const expected: LDTransferError = {
+  const expected: TransferErrorDto = {
     "@context": "https://w3id.org/dspace/v0.8/context.json",
     "@type": "dspace:TransferError",
     "dspace:processId": "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
@@ -60,7 +60,7 @@ test("Transfer Process", async () => {
     transferState: TransferState.SUSPENDED,
   });
   const serialized = await transferProcess.serialize();
-  const expected: LDTransferProcess = {
+  const expected: TransferProcessDto = {
     "@context": "https://w3id.org/dspace/v0.8/context.json",
     "@type": "dspace:TransferProcess",
     "dspace:processId": "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
@@ -80,7 +80,7 @@ test("Transfer Request Message", async () => {
     dataAddress: new URI("http://example.com"),
   });
   const serialized = await transferRequestMessage.serialize();
-  const expected: LDTransferRequestMessage = {
+  const expected: TransferRequestMessageDto = {
     "@context": "https://w3id.org/dspace/v0.8/context.json",
     "@type": "dspace:TransferRequestMessage",
     "dspace:agreementId": "urn:uuid:1246a1af-6e5f-4c05-86e2-6d8624efeeb3",
@@ -103,7 +103,7 @@ test("Transfer Start Message", async () => {
     dataAddress: new URI("http://example.com"),
   });
   const serialized = await transferStartMessage.serialize();
-  const expected: LDTransferStartMessage = {
+  const expected: TransferStartMessageDto = {
     "@context": "https://w3id.org/dspace/v0.8/context.json",
     "@type": "dspace:TransferStartMessage",
     "dspace:processId": "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
@@ -127,7 +127,7 @@ test("Transfer Suspension Message", async () => {
     ],
   });
   const serialized = await transferSuspensionMessage.serialize();
-  const expected: LDTransferSuspensionMessage = {
+  const expected: TransferSuspensionMessageDto = {
     "@context": "https://w3id.org/dspace/v0.8/context.json",
     "@type": "dspace:TransferSuspensionMessage",
     "dspace:processId": "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
@@ -155,7 +155,7 @@ test("Transfer Termination Message", async () => {
     ],
   });
   const serialized = await transferTerminationMessage.serialize();
-  const expected: LDTransferTerminationMessage = {
+  const expected: TransferTerminationMessageDto = {
     "@context": "https://w3id.org/dspace/v0.8/context.json",
     "@type": "dspace:TransferTerminationMessage",
     "dspace:processId": "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",

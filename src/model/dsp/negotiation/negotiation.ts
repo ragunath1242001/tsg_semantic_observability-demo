@@ -6,8 +6,8 @@ import {
   SerializableClass,
   Value,
 } from "../common";
-import { Action, LDAgreement, LDConstraint, LDDuty, LDOffer, LDPermission, LDPolicy, LDProhibition, LeftOperand, Operator } from "./negotiation.schema";
-import { LDContext } from "../common.schema";
+import { Action, AgreementDto, ConstraintDto, DutyDto, OfferDto, PermissionDto, PolicyDto, ProhibitionDto, LeftOperand, Operator } from "./negotiation.dto";
+import { ContextDto } from "../common.dto";
 
 export interface IConstraint {
   leftOperand: LeftOperand;
@@ -17,7 +17,7 @@ export interface IConstraint {
 }
 
 @Serializable("odrl:Constraint")
-export class Constraint extends SerializableClass<LDConstraint & LDContext> {
+export class Constraint extends SerializableClass<ConstraintDto & ContextDto> {
   @Namespace("odrl")
   @IsNotEmpty()
   leftOperand: LeftOperand;
@@ -63,7 +63,7 @@ export interface IPermission extends IPolicyRule {
 }
 
 @Serializable("odrl:PolicyRule")
-export class PolicyRule<OutType extends LDContext> extends SerializableClass<OutType> {
+export class PolicyRule<OutType extends ContextDto> extends SerializableClass<OutType> {
   @Namespace("odrl")
   @ValidateNested()
   assigner?: Reference;
@@ -90,7 +90,7 @@ export class PolicyRule<OutType extends LDContext> extends SerializableClass<Out
 }
 
 @Serializable("odrl:Permission")
-export class Permission extends PolicyRule<LDPermission & LDContext> {
+export class Permission extends PolicyRule<PermissionDto & ContextDto> {
   @Namespace("odrl")
   @IsNotEmpty()
   target: string;
@@ -106,7 +106,7 @@ export class Permission extends PolicyRule<LDPermission & LDContext> {
 }
 
 @Serializable("odrl:Prohibition")
-export class Prohibition extends PolicyRule<LDProhibition & LDContext> {
+export class Prohibition extends PolicyRule<ProhibitionDto & ContextDto> {
   @Namespace("odrl")
   @IsNotEmpty()
   target: string;
@@ -118,7 +118,7 @@ export class Prohibition extends PolicyRule<LDProhibition & LDContext> {
 }
 
 @Serializable("odrl:Duty")
-export class Duty extends PolicyRule<LDDuty & LDContext> {}
+export class Duty extends PolicyRule<DutyDto & ContextDto> {}
 
 export interface IPolicy extends IReference {
   assigner?: string;
@@ -130,7 +130,7 @@ export interface IPolicy extends IReference {
 }
 
 @Serializable("odrl:Policy")
-export class Policy<OutType extends LDContext = LDPolicy & LDContext> extends Reference<OutType> {
+export class Policy<OutType extends ContextDto = PolicyDto & ContextDto> extends Reference<OutType> {
   @Namespace("odrl")
   // @ValidateNested()
   assigner?: string;
@@ -166,7 +166,7 @@ export interface IOffer extends IPolicy {
 }
 
 @Serializable("odrl:Offer")
-export class Offer extends Policy<LDOffer> {
+export class Offer extends Policy<OfferDto> {
   @Namespace("odrl")
   // @ValidateNested()
   @IsNotEmpty()
@@ -187,7 +187,7 @@ export interface IAgreement extends IPolicy {
 }
 
 @Serializable("odrl:Agreement")
-export class Agreement extends Policy<LDAgreement> {
+export class Agreement extends Policy<AgreementDto> {
   @Namespace("odrl")
   // @ValidateNested()
   @IsNotEmpty()
