@@ -1,12 +1,12 @@
 import { Injectable } from "@nestjs/common";
-import { CatalogRequestMessage } from "../model/dsp/catalog/messages";
+import { CatalogRequestMessage } from "../../model/dsp/catalog/messages";
 import {
   Catalog,
   DataService,
   Dataset,
   Distribution,
-} from "../model/dsp/catalog/catalog";
-import { Multilanguage, Reference } from "../model/dsp/common";
+} from "../../model/dsp/catalog/catalog";
+import { Multilanguage, Reference } from "../../model/dsp/common";
 
 @Injectable()
 export class CatalogService {
@@ -19,6 +19,11 @@ export class CatalogService {
 
   async addDataset(dataset: Dataset): Promise<void> {
     this.datasets.push(dataset);
+  }
+
+  async updateDataset(datasetId: string, dataset: Dataset): Promise<void> {
+    await this.removeDataset(datasetId);
+    await this.addDataset(dataset);
   }
 
   async removeDataset(datasetId: string): Promise<void> {

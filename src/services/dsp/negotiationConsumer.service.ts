@@ -6,12 +6,12 @@ import {
   ContractOfferMessage,
   ContractRequestMessage,
   IContractRequestMessage,
-} from "../model/dsp/negotiation/messages";
-import { Agreement, Offer } from "../model/dsp/negotiation/negotiation";
-import { Multilanguage } from "../model/dsp/common";
+} from "../../model/dsp/negotiation/messages";
+import { Agreement, Offer } from "../../model/dsp/negotiation/negotiation";
+import { Multilanguage } from "../../model/dsp/common";
 import { NegotiationProviderService } from "./negotiationProvider.service";
 import crypto from "crypto";
-import { ContractNegotiationState, NegotiationEvent } from "../model/dsp/negotiation/messages.dto";
+import { ContractNegotiationState, NegotiationEvent } from "../../model/dsp/negotiation/messages.dto";
 
 interface NegotiationConsumerStatus {
   negotiation: ContractRequestMessage,

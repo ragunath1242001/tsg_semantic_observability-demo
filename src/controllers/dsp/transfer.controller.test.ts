@@ -1,8 +1,8 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { TransferController } from "./transfer.controller";
-import { TransferProviderService } from "../../services/transferProvider.service";
+import { TransferProviderService } from "../../services/dsp/transferProvider.service";
 import { HttpStatus } from "@nestjs/common";
-import { TransferConsumerService } from "../../services/transferConsumer.service";
+import { TransferConsumerService } from "../../services/dsp/transferConsumer.service";
 import { TransferCompletionMessage, TransferRequestMessage, TransferStartMessage, TransferSuspensionMessage, TransferTerminationMessage } from "../../model/dsp/transfer/messages";
 import { Multilanguage } from "../../model/dsp/common";
 

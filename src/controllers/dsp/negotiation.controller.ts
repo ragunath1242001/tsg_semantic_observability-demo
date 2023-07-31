@@ -1,11 +1,11 @@
 import { Body, Controller, HttpException, HttpStatus } from "@nestjs/common";
 import { Get, HttpCode, Inject, Param, Post, Res } from "@nestjs/common/decorators";
-import { NegotiationProviderService } from "../../services/negotiationProvider.service";
+import { NegotiationProviderService } from "../../services/dsp/negotiationProvider.service";
 import { DeserializePipe } from "./deserialize.pipe";
 import { ContractAgreementMessageDto, ContractAgreementVerificationMessageDto, ContractNegotiationDto, ContractNegotiationEventMessageDto, ContractNegotiationTerminationMessageDto, ContractOfferMessageDto, ContractRequestMessageDto } from "../../model/dsp/negotiation/messages.dto";
 import { ContractAgreementMessage, ContractAgreementVerificationMessage, ContractNegotiationEventMessage, ContractNegotiationTerminationMessage, ContractOfferMessage, ContractRequestMessage } from "../../model/dsp/negotiation/messages";
 import { Response } from "express";
-import { NegotiationConsumerService } from "../../services/negotiationConsumer.service";
+import { NegotiationConsumerService } from "../../services/dsp/negotiationConsumer.service";
 
 @Controller('negotiation')
 export class NegotiationController {

@@ -4,8 +4,8 @@ import { DeserializePipe } from "./deserialize.pipe";
 import { Response } from "express";
 import { TransferCompletionMessage, TransferRequestMessage, TransferStartMessage, TransferSuspensionMessage, TransferTerminationMessage } from "../../model/dsp/transfer/messages";
 import { TransferCompletionMessageDto, TransferProcessDto, TransferRequestMessageDto, TransferStartMessageDto, TransferSuspensionMessageDto, TransferTerminationMessageDto } from "../../model/dsp/transfer/messages.dto";
-import { TransferConsumerService } from "../../services/transferConsumer.service";
-import { TransferProviderService } from "../../services/transferProvider.service";
+import { TransferConsumerService } from "../../services/dsp/transferConsumer.service";
+import { TransferProviderService } from "../../services/dsp/transferProvider.service";
 
 @Controller('transfer')
 export class TransferController {

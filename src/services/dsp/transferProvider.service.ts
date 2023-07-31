@@ -1,8 +1,9 @@
 import { Injectable } from "@nestjs/common";
-import { TransferCompletionMessage, TransferProcess, TransferRequestMessage, TransferStartMessage, TransferSuspensionMessage, TransferTerminationMessage } from "../model/dsp/transfer/messages";
-import { TransferState } from "../model/dsp/transfer/messages.dto";
-import { Multilanguage, URI } from "../model/dsp/common";
+import { TransferCompletionMessage, TransferProcess, TransferRequestMessage, TransferStartMessage, TransferSuspensionMessage, TransferTerminationMessage } from "../../model/dsp/transfer/messages";
+import { TransferState } from "../../model/dsp/transfer/messages.dto";
+import { Multilanguage, URI } from "../../model/dsp/common";
 import crypto from "crypto";
+import { DataPlaneDetailsDto } from "../../model/data-planes/dataPlanes.dto";
 
 interface TransferProviderStatus {
   agreementId: string,

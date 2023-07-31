@@ -3,7 +3,7 @@ import { CatalogRequestMessageDto } from "../../model/dsp/catalog/messages.dto";
 import { Body, Controller, HttpException, HttpStatus } from "@nestjs/common";
 import { Get, HttpCode, Param, Post } from "@nestjs/common/decorators";
 import { CatalogRequestMessage } from "../../model/dsp/catalog/messages";
-import { CatalogService } from "../../services/catalog.service";
+import { CatalogService } from "../../services/dsp/catalog.service";
 import { DeserializePipe } from "./deserialize.pipe";
 
 @Controller('catalog')

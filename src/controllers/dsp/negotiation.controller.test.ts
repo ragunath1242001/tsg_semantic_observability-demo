@@ -1,10 +1,10 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { NegotiationController } from "./negotiation.controller";
-import { NegotiationProviderService } from "../../services/negotiationProvider.service";
+import { NegotiationProviderService } from "../../services/dsp/negotiationProvider.service";
 import { HttpStatus } from "@nestjs/common";
 import { ContractAgreementMessage, ContractAgreementVerificationMessage, ContractNegotiationEventMessage, ContractNegotiationTerminationMessage, ContractOfferMessage, ContractRequestMessage } from "../../model/dsp/negotiation/messages";
 import { Agreement, Offer } from "../../model/dsp/negotiation/negotiation";
-import { NegotiationConsumerService } from "../../services/negotiationConsumer.service";
+import { NegotiationConsumerService } from "../../services/dsp/negotiationConsumer.service";
 import { NegotiationEvent, ProofTypes } from "../../model/dsp/negotiation/messages.dto";
 import { Multilanguage } from "../../model/dsp/common";
 

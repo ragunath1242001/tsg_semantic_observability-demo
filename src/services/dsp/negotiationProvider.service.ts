@@ -5,13 +5,13 @@ import {
   ContractNegotiationEventMessage,
   ContractNegotiationTerminationMessage,
   ContractRequestMessage,
-} from "../model/dsp/negotiation/messages";
+} from "../../model/dsp/negotiation/messages";
 import {
   ContractNegotiationState,
   NegotiationEvent,
-} from "../model/dsp/negotiation/messages.dto";
-import { Agreement, Offer } from "../model/dsp/negotiation/negotiation";
-import { Multilanguage } from "../model/dsp/common";
+} from "../../model/dsp/negotiation/messages.dto";
+import { Agreement, Offer } from "../../model/dsp/negotiation/negotiation";
+import { Multilanguage } from "../../model/dsp/common";
 
 interface NegotiationProviderStatus {
     negotiation: ContractNegotiation,
