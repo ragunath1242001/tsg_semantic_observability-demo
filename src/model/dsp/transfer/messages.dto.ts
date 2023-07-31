@@ -38,7 +38,21 @@ export interface TransferRequestMessageDto extends ContextDto {
 export interface TransferStartMessageDto extends ContextDto {
   '@type': 'dspace:TransferStartMessage'
   'dspace:processId': string;
-  'dspace:dataAddress'?: URIDto;
+  'dspace:dataAddress'?: DataAddressDto;
+}
+
+// In discussion: https://github.com/International-Data-Spaces-Association/ids-specification/issues/107
+export interface DataAddressDto extends ContextDto {
+  '@type': 'dspace:DataAddress'
+  'dspace:endpointType': string;
+  'dspace:endpoint': string;
+  'dspace:endpointProperties': Array<EndpointPropertyDto>;
+}
+
+export interface EndpointPropertyDto extends ContextDto {
+  '@type': 'dspace:EndpointProperty';
+  'dspace:name': string;
+  'dspace:value': string;
 }
 
 export interface TransferSuspensionMessageDto extends ContextDto {
