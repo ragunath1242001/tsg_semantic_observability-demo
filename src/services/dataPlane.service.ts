@@ -1,9 +1,12 @@
 import { Injectable } from "@nestjs/common";
-import { DataPlaneCreation, DataPlaneDetailsDto } from "../model/data-planes/dataPlanes.dto";
+import { DataPlaneRequestResponseDto, DataPlaneCreation, DataPlaneDetailsDto, DataPlaneTransferDto } from "../model/data-planes/dataPlanes.dto";
 import { Cron, CronExpression } from "@nestjs/schedule";
 import { CatalogService } from "./dsp/catalog.service";
 import { Dataset } from "../model/dsp/catalog/catalog";
 import crypto from "crypto";
+import { TransferCompletionMessage, TransferRequestMessage, TransferStartMessage, TransferSuspensionMessage, TransferTerminationMessage } from "../model/dsp/transfer/messages";
+import axios from "axios";
+import { DSPAxiosError } from "../utils/errors/dspAxiosError";
 
 enum HealthStatus {
   HEALTHY, UNRESPONSIVE, ERRONEOUS, EXITED, UNKNOWN
@@ -87,7 +90,71 @@ export class DataPlaneService {
     // TODO: update Dataset in CatalogService if to many fails
   }
 
+  async requestTransfer(requestDetail: TransferRequestMessage, role: "provider" | "consumer"): Promise<DataPlaneTransferDto> {
+    const dataPlanes = this.dataPlanes.filter(dataPlane => dataPlane.details.dataplaneType === requestDetail.format && (dataPlane.details.role === role || dataPlane.details.role === "both"));
+    if (dataPlanes.length === 0) {
+      throw Error(`Dataplane for type '${requestDetail.format}' cannot be found`);
+    }
+    for (const dataPlane of dataPlanes) {
+      try {
+        const dataPlaneRequestResponse = await axios.post<DataPlaneRequestResponseDto>(`${dataPlane.details.managementAddress}/request/${role}`, requestDetail);
+        if (dataPlaneRequestResponse.data.accepted) {
+          return {
+            dataPlaneIdentifier: dataPlane.identifier,
+            ...dataPlaneRequestResponse.data
+          };
+        }
+      } catch (err) {
+        console.log(new DSPAxiosError("Error requesting transfer", err).message);
+      }
+    }
+    throw Error("None of the dataplanes did accept the transfer request message");
+  }
 
+  async startTransfer(dataPlaneTransfer: DataPlaneTransferDto, transferStartMessage: TransferStartMessage): Promise<void> {
+    const dataPlane = await this.getDataPlane(dataPlaneTransfer.dataPlaneIdentifier);
+    if (dataPlane === undefined) {
+      throw Error(`Data plane with identifier ${dataPlaneTransfer.dataPlaneIdentifier} not found`);
+    }
+    try {
+      await axios.post(`${dataPlane.managementAddress}/start/${dataPlaneTransfer.identifier}`, transferStartMessage);
+    } catch (err) {
+      throw new DSPAxiosError("Error starting transfer", err);
+    }
+  }
+  async completeTransfer(dataPlaneTransfer: DataPlaneTransferDto, transferCompletionMessage: TransferCompletionMessage): Promise<void> {
+    const dataPlane = await this.getDataPlane(dataPlaneTransfer.dataPlaneIdentifier);
+    if (dataPlane === undefined) {
+      throw Error(`Data plane with identifier ${dataPlaneTransfer.dataPlaneIdentifier} not found`);
+    }
+    try {
+      await axios.post(`${dataPlane.managementAddress}/complete/${dataPlaneTransfer.identifier}`, transferCompletionMessage);
+    } catch (err) {
+      throw new DSPAxiosError("Error completeing transfer", err);
+    }
+  }
+  async terminateTransfer(dataPlaneTransfer: DataPlaneTransferDto, transferTerminationMessage: TransferTerminationMessage): Promise<void> {
+    const dataPlane = await this.getDataPlane(dataPlaneTransfer.dataPlaneIdentifier);
+    if (dataPlane === undefined) {
+      throw Error(`Data plane with identifier ${dataPlaneTransfer.dataPlaneIdentifier} not found`);
+    }
+    try {
+      await axios.post(`${dataPlane.managementAddress}/terminate/${dataPlaneTransfer.identifier}`, transferTerminationMessage);
+    } catch (err) {
+      throw new DSPAxiosError("Error terminateing transfer", err);
+    }
+  }
+  async suspendTransfer(dataPlaneTransfer: DataPlaneTransferDto, transferSuspensionMessage: TransferSuspensionMessage): Promise<void> {
+    const dataPlane = await this.getDataPlane(dataPlaneTransfer.dataPlaneIdentifier);
+    if (dataPlane === undefined) {
+      throw Error(`Data plane with identifier ${dataPlaneTransfer.dataPlaneIdentifier} not found`);
+    }
+    try {
+      await axios.post(`${dataPlane.managementAddress}/suspend/${dataPlaneTransfer.identifier}`, transferSuspensionMessage);
+    } catch (err) {
+      throw new DSPAxiosError("Error suspending transfer", err);
+    }
+  }
 
   @Cron(CronExpression.EVERY_MINUTE)
   async pullCatalogs() {

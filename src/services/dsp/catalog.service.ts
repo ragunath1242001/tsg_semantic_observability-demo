@@ -2,11 +2,8 @@ import { Injectable } from "@nestjs/common";
 import { CatalogRequestMessage } from "../../model/dsp/catalog/messages";
 import {
   Catalog,
-  DataService,
   Dataset,
-  Distribution,
 } from "../../model/dsp/catalog/catalog";
-import { Multilanguage, Reference } from "../../model/dsp/common";
 
 @Injectable()
 export class CatalogService {

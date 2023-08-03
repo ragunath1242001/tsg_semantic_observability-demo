@@ -5,36 +5,86 @@ import { HttpStatus } from "@nestjs/common";
 import { TransferConsumerService } from "../../services/dsp/transferConsumer.service";
 import { TransferCompletionMessage, TransferRequestMessage, TransferStartMessage, TransferSuspensionMessage, TransferTerminationMessage } from "../../model/dsp/transfer/messages";
 import { Multilanguage } from "../../model/dsp/common";
+import { DataPlaneService } from "../../services/dataPlane.service";
+import { CatalogService } from "../../services/dsp/catalog.service";
+import { rest } from "msw"; 
+import { SetupServer, setupServer } from "msw/node";
 
 describe("TransferController", () => {
   let transferController: TransferController;
   let transferProviderService: TransferProviderService;
   let transferConsumerService: TransferConsumerService;
+  let dataPlaneService: DataPlaneService;
 
   let transferProviderUuid: string;
   let transferConsumerUuid: string;
+  let server: SetupServer;
+
+  beforeAll(async () => {
+    server = setupServer(
+      rest.post("http://127.0.0.1/request/consumer", (req, res, ctx) => {
+        return res(ctx.json({
+          accepted: true,
+          identifier: 'ABCDEFG',
+          callbackAddress: "http://127.0.0.1/callback/ABCDEFG"
+        }))
+      }),
+      rest.post("http://127.0.0.1/request/provider", (req, res, ctx) => {
+        return res(ctx.json({
+          accepted: true,
+          identifier: 'ABCDEFG',
+          callbackAddress: "http://127.0.0.1/callback/ABCDEFG"
+        }))
+      }),
+      rest.post("http://127.0.0.1/:action/ABCDEFG", (req, res, ctx) => {
+        return res(ctx.json({
+          status: "OK"
+        }))
+      })
+    );
+    
+    server.listen({
+      onUnhandledRequest: "bypass"
+    });
+  });
+
+  afterAll(async () => {
+    server.close();
+  })
 
   beforeEach(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
       controllers: [TransferController],
-      providers: [TransferProviderService, TransferConsumerService],
+      providers: [TransferProviderService, TransferConsumerService, DataPlaneService, CatalogService],
     }).compile();
 
     transferController = moduleRef.get(TransferController);
     transferProviderService = moduleRef.get(TransferProviderService);
     transferConsumerService = moduleRef.get(TransferConsumerService);
+    dataPlaneService = moduleRef.get(DataPlaneService);
+
+    dataPlaneService.addDataPlane({
+      dataplaneType: "dspace:HTTP",
+      endpointPrefix: "",
+      callbackAddress: "http://127.0.0.1",
+      managementAddress: "http://127.0.0.1",
+      catalogSynchronization: "push",
+      role: "both"
+    });
+
     const transferProviderProcess = await transferProviderService.request(new TransferRequestMessage({
       agreementId: "urn:uuid:a1b6d55e-a9ee-4e9c-9a72-ce6e0b1db099",
-      format: "dspace:http",
+      format: "dspace:HTTP",
       callbackAddress:
-        "http://localhost/transfer/callback/urn:uuid:de465939-8292-49c1-97d5-bcb643df1fdb",
+        "http://127.0.0.1/transfer/callback/urn:uuid:de465939-8292-49c1-97d5-bcb643df1fdb",
     }));
     transferProviderUuid = transferProviderProcess.processId
-    const transferConsumerProcess = await transferConsumerService.initiateTransferProcess({
+    const transferConsumerProcess = await transferConsumerService.initiateTransferProcess(new TransferRequestMessage({
       agreementId: 'urn:uuid:urn:uuid:a1b6d55e-a9ee-4e9c-9a72-ce6e0b1db099',
       format: 'dspace:HTTP'
-    });
+    }));
     transferConsumerUuid = transferConsumerProcess.internalId;
+
   });
 
 
@@ -51,9 +101,9 @@ describe("TransferController", () => {
       const result = await transferController.request(
         new TransferRequestMessage({
           agreementId: "urn:uuid:a1b6d55e-a9ee-4e9c-9a72-ce6e0b1db099",
-          format: "dspace:http",
+          format: "dspace:HTTP",
           callbackAddress:
-            "http://localhost/transfer/callback/urn:uuid:de465939-8292-49c1-97d5-bcb643df1fdb",
+            "http://127.0.0.1/transfer/callback/urn:uuid:de465939-8292-49c1-97d5-bcb643df1fdb",
         }),
         responseMock as any
       );

@@ -33,7 +33,11 @@ describe("NegotiationController", () => {
       }),
     }));
     await negotiationConsumerService.initiateNegotiationProcess({
-      processId: "urn:uuid:40925b73-e6b7-40a3-b71f-28c550d1cec4"
+      processId: "urn:uuid:40925b73-e6b7-40a3-b71f-28c550d1cec4",
+      offer: new Offer({
+        id: "urn:uuid:92928e7a-8f21-4489-adbd-d5800b7475a1",
+        assigner: "urn:uuid:fcddc591-b9f1-4c75-b557-80d1cf955859",
+      })
     });
   });
 

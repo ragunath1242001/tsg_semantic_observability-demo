@@ -1,15 +1,16 @@
 import { Injectable } from "@nestjs/common";
-import { TransferCompletionMessage, TransferProcess, TransferRequestMessage, TransferStartMessage, TransferSuspensionMessage, TransferTerminationMessage } from "../../model/dsp/transfer/messages";
+import { DataAddress, TransferCompletionMessage, TransferProcess, TransferRequestMessage, TransferStartMessage, TransferSuspensionMessage, TransferTerminationMessage } from "../../model/dsp/transfer/messages";
 import { TransferState } from "../../model/dsp/transfer/messages.dto";
-import { Multilanguage, URI } from "../../model/dsp/common";
+import { Multilanguage } from "../../model/dsp/common";
 import crypto from "crypto";
-import { DataPlaneDetailsDto } from "../../model/data-planes/dataPlanes.dto";
+import { DataPlaneService } from "../dataPlane.service";
+import { DataPlaneTransferDto } from "../../model/data-planes/dataPlanes.dto";
 
 interface TransferProviderStatus {
   agreementId: string,
   format: string,
-  dataAddress?: URI,
-  callbackAddress?: string,
+  dataAddress?: DataAddress,
+  dataPlaneTransfer: DataPlaneTransferDto,
   process: TransferProcess,
   suspended?: Multilanguage[],
   terminated?: {
@@ -20,6 +21,7 @@ interface TransferProviderStatus {
 
 @Injectable()
 export class TransferProviderService {
+  constructor(private readonly dataPlaneService: DataPlaneService) {}
   private readonly transfers: TransferProviderStatus[] = []
 
   async getTransfer(processId: string): Promise<TransferProviderStatus | undefined> {
@@ -31,11 +33,12 @@ export class TransferProviderService {
       processId: `urn:uuid:${crypto.randomUUID()}`,
       transferState: TransferState.STARTED
     })
+    const dataPlaneTransfer = await this.dataPlaneService.requestTransfer(transferRequestMessage, "provider");
     this.transfers.push({
       agreementId: transferRequestMessage.agreementId,
       format: transferRequestMessage.format,
       dataAddress: transferRequestMessage.dataAddress,
-      callbackAddress: transferRequestMessage.callbackAddress,
+      dataPlaneTransfer: dataPlaneTransfer,
       process: transferProcess
     })
     return transferProcess;
@@ -53,6 +56,8 @@ export class TransferProviderService {
     if (transfer.process.transferState !== TransferState.SUSPENDED) {
       throw Error(`Transfer with process ID ${processId} cannot transition from ${transfer.process.transferState} to dspace:STARTED`);
     }
+    await this.dataPlaneService.startTransfer(transfer.dataPlaneTransfer, transferStartMessage)
+
     transfer.process.transferState = TransferState.STARTED;
     return {
       status: 'OK'
@@ -66,6 +71,8 @@ export class TransferProviderService {
     if (transfer.process.transferState !== TransferState.STARTED) {
       throw Error(`Transfer with process ID ${processId} cannot transition from ${transfer.process.transferState} to dspace:COMPLETED`);
     }
+    await this.dataPlaneService.completeTransfer(transfer.dataPlaneTransfer, transferCompletionMessage)
+
     transfer.process.transferState = TransferState.COMPLETED;
     return {
       status: 'OK'
@@ -80,6 +87,8 @@ export class TransferProviderService {
       code: transferTerminationMessage.code,
       reason: transferTerminationMessage.reason
     }
+    await this.dataPlaneService.terminateTransfer(transfer.dataPlaneTransfer, transferTerminationMessage)
+
     transfer.process.transferState = TransferState.TERMINATED;
     return {
       status: 'OK'
@@ -93,6 +102,8 @@ export class TransferProviderService {
     if (transfer.process.transferState !== TransferState.STARTED) {
       throw Error(`Transfer with process ID ${processId} cannot transition from ${transfer.process.transferState} to dspace:SUSPENDED`);
     }
+    await this.dataPlaneService.suspendTransfer(transfer.dataPlaneTransfer, transferSuspensionMessage)
+
     transfer.suspended = transferSuspensionMessage.reason;
     transfer.process.transferState = TransferState.SUSPENDED;
     return {

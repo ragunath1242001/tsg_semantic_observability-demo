@@ -9,7 +9,6 @@ import {
 } from "../../model/dsp/negotiation/messages";
 import { Agreement, Offer } from "../../model/dsp/negotiation/negotiation";
 import { Multilanguage } from "../../model/dsp/common";
-import { NegotiationProviderService } from "./negotiationProvider.service";
 import crypto from "crypto";
 import { ContractNegotiationState, NegotiationEvent } from "../../model/dsp/negotiation/messages.dto";
 
@@ -38,9 +37,12 @@ export class NegotiationConsumerService {
     if (await this.getNegotiation(processId)) {
       throw Error(`Contract negotiation with process ID ${processId} already exists`);
     }
+    if (negotiation.offer === undefined) {
+      throw Error(`Contract negotiation requires a "offer" to be present`)
+    }
     const contractRequestMessage = new ContractRequestMessage({
       processId: processId,
-      offer: negotiation.offer!,
+      offer: negotiation.offer,
       callbackAddress: `http://localhost/negotiation/callback/${processId}`
     })
     this.contractNegotiations.push({
