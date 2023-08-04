@@ -7,9 +7,10 @@ import { NegotiationConsumerService } from "../../services/negotiationConsumer.s
 import { TransferController } from "./transfer.controller";
 import { TransferProviderService } from "../../services/transferProvider.service";
 import { TransferConsumerService } from "../../services/transferConsumer.service";
+import { AuthModule } from "../../auth/auth.module";
 
 @Module({
-  imports: [],
+  imports: [AuthModule],
   controllers: [CatalogController, NegotiationController, TransferController],
   providers: [
     CatalogService,
