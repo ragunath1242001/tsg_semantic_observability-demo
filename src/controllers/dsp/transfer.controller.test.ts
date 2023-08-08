@@ -22,21 +22,21 @@ describe("TransferController", () => {
 
   beforeAll(async () => {
     server = setupServer(
-      rest.post("http://127.0.0.1/request/consumer", (req, res, ctx) => {
+      rest.post("http://127.0.0.1/transfer/request/consumer", (req, res, ctx) => {
         return res(ctx.json({
           accepted: true,
           identifier: 'ABCDEFG',
-          callbackAddress: "http://127.0.0.1/callback/ABCDEFG"
+          callbackAddress: "http://127.0.0.1/transfer/callback/ABCDEFG"
         }))
       }),
-      rest.post("http://127.0.0.1/request/provider", (req, res, ctx) => {
+      rest.post("http://127.0.0.1/transfer/request/provider", (req, res, ctx) => {
         return res(ctx.json({
           accepted: true,
           identifier: 'ABCDEFG',
-          callbackAddress: "http://127.0.0.1/callback/ABCDEFG"
+          callbackAddress: "http://127.0.0.1/transfer/callback/ABCDEFG"
         }))
       }),
-      rest.post("http://127.0.0.1/:action/ABCDEFG", (req, res, ctx) => {
+      rest.post("http://127.0.0.1/transfer/ABCDEFG/:action", (req, res, ctx) => {
         return res(ctx.json({
           status: "OK"
         }))
@@ -68,6 +68,7 @@ describe("TransferController", () => {
       endpointPrefix: "",
       callbackAddress: "http://127.0.0.1",
       managementAddress: "http://127.0.0.1",
+      managementToken: "DpuwVK9bnX2MVGf6MVVjlBnI4PvtQSGJ",
       catalogSynchronization: "push",
       role: "both"
     });

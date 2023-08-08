@@ -5,6 +5,7 @@ export interface DataPlaneDetailsDto {
   endpointPrefix: string;
   callbackAddress: string;
   managementAddress: string;
+  managementToken: string;
   catalogSynchronization: "push" | "pull";
   role: "consumer" | "provider" | "both"
 }
