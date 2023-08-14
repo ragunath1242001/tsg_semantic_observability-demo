@@ -1,0 +1,93 @@
+import { Injectable } from "@nestjs/common";
+import axios, { AxiosRequestConfig } from "axios";
+import { CatalogDto, DatasetDto } from "../../model/dsp/catalog/catalog.dto";
+import { CatalogRequestMessage, Filter } from "../../model/dsp/catalog/messages";
+import { SerializableClass } from "../../model/dsp/common";
+import { ContextDto } from "../../model/dsp/common.dto";
+import { ContractNegotiationDto } from "../../model/dsp/negotiation/messages.dto";
+import { ContractRequestMessage } from "../../model/dsp/negotiation/messages";
+import { TransferCompletionMessage, TransferRequestMessage, TransferStartMessage, TransferSuspensionMessage, TransferTerminationMessage } from "../../model/dsp/transfer/messages";
+import { TransferProcessDto } from "../../model/dsp/transfer/messages.dto";
+
+export class DSPClientError extends Error {
+  err: unknown;
+  status?: number;
+  constructor(message: string, err: unknown) {
+    super()
+    let status: number | undefined;
+    let errorMessage;
+    if (axios.isAxiosError(err)) {
+      if (err.response) {
+        errorMessage = `${message} (response): ${err.response.status} ${JSON.stringify(err.response.data)}`;
+        status = err.response.status;
+      } else {
+        errorMessage = `${message} (request): ${err.message}`
+        status = err.status
+      }
+    } else { 
+      errorMessage = `${message} (unknown): ${err}`;
+    }
+    this.name = 'DSPClientError';
+    this.message = errorMessage;
+    this.status = status;
+    this.err = err;
+  }
+}
+
+@Injectable()
+export class DspClientService {
+  private readonly axios = axios.create({
+    timeout: 30000
+  });
+  
+  async requestCatalog(address: string, filters?: Array<Filter>): Promise<CatalogDto> {
+    const catalogRequestMessage = new CatalogRequestMessage({
+      filter: filters
+    });
+    return await this.executePost<CatalogDto, CatalogRequestMessage>(address, catalogRequestMessage, `Request catalog at ${address}`);
+  }
+
+  async requestDataset(address: string, id: string): Promise<DatasetDto> {
+    return await this.executeGet<DatasetDto>(`${address}/${id}`, `Request catalog at ${address}`);
+  }
+
+  async requestNegotiation(address: string, contractRequestMessage: ContractRequestMessage): Promise<ContractNegotiationDto> {
+    const addressWithId = (contractRequestMessage.processId) ? `${address}/${contractRequestMessage.processId}/request` : `${address}/request`;
+    return await this.executePost<ContractNegotiationDto, ContractRequestMessage>(addressWithId, contractRequestMessage, `Contract request at ${address} with offer ${contractRequestMessage.offer.id} and callback ${contractRequestMessage.callbackAddress}`);
+  }
+
+  async requestTransfer(address: string, transferRequestMessage: TransferRequestMessage): Promise<TransferProcessDto> {
+    return await this.executePost<TransferProcessDto, TransferRequestMessage>(address, transferRequestMessage, `Requesting transfer at ${address} for agreement ${transferRequestMessage.agreementId}`)
+  }
+  async startTransfer(address: string, transferStartMessage: TransferStartMessage): Promise<{status: string} | undefined> {
+    return await this.executePost<{status: string} | undefined, TransferStartMessage>(address, transferStartMessage, `Starting transfer at ${address} for process ${transferStartMessage.processId}`)
+  }
+  async completeTransfer(address: string, transferCompletionMessage: TransferCompletionMessage): Promise<{status: string} | undefined> {
+    return await this.executePost<{status: string} | undefined, TransferCompletionMessage>(address, transferCompletionMessage, `Completing transfer at ${address} for process ${transferCompletionMessage.processId}`)
+  }
+  async terminateTransfer(address: string, transferTerminationMessage: TransferTerminationMessage): Promise<{status: string} | undefined> {
+    return await this.executePost<{status: string} | undefined, TransferTerminationMessage>(address, transferTerminationMessage, `Terminating transfer at ${address} for process ${transferTerminationMessage.processId}`)
+  }
+  async suspendTransfer(address: string, transferSuspensionMessage: TransferSuspensionMessage): Promise<{status: string} | undefined> {
+    return await this.executePost<{status: string} | undefined, TransferSuspensionMessage>(address, transferSuspensionMessage, `Suspending transfer at ${address} for process ${transferSuspensionMessage.processId}`)
+  }
+
+  private async executeGet<Out>(address: string, message: string, config?: AxiosRequestConfig): Promise<Out> {
+    try {
+      const response = await this.axios.get<Out>(address, config);
+      return response.data;
+    } catch (err) {
+      throw new DSPClientError(message, err);
+    }
+  }
+
+  private async executePost<Out, In extends SerializableClass<ContextDto>>(address: string, body: In, message: string, config?: AxiosRequestConfig): Promise<Out> {
+    try {
+      const bodyDto = await body.serialize();
+      const response = await this.axios.post<Out>(address, bodyDto, config);
+      return response.data;
+    } catch (err) {
+      throw new DSPClientError(message, err);
+    }
+  }
+}

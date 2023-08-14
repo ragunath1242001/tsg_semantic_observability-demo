@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { DataPlaneRequestResponseDto, DataPlaneCreation, DataPlaneDetailsDto, DataPlaneTransferDto } from "../model/data-planes/dataPlanes.dto";
-import { Cron, CronExpression, Interval } from "@nestjs/schedule";
+import { Interval } from "@nestjs/schedule";
 import { CatalogService } from "./dsp/catalog.service";
 import { Dataset, IDataset } from "../model/dsp/catalog/catalog";
 import crypto from "crypto";
@@ -28,7 +28,7 @@ interface DataPlaneStatus {
 @Injectable()
 export class DataPlaneService {
   constructor(private readonly catalogService: CatalogService) {}
-  private dataPlanes: DataPlaneStatus[] = []
+  private dataPlanes: DataPlaneStatus[] = [];
 
   private readonly maxHealthCheckMisses = 10;
   private static readonly pullInterval = 60000;
@@ -258,15 +258,15 @@ export class DataPlaneService {
     }
   }
 
-  @Interval(DataPlaneService.pullInterval)
+  @Interval("catalogPull", DataPlaneService.pullInterval)
   async pullCatalogs() {
     const dataPlanePromises = this.dataPlanes.filter(dataPlane => dataPlane.details.catalogSynchronization === "pull").map(dataPlane => this.pullCatalog(dataPlane));
     await Promise.all(dataPlanePromises);
   }
   
-  @Interval(DataPlaneService.pullInterval)
+  @Interval("healthCheck", DataPlaneService.pullInterval)
   async healthChecks() {
-    const dataPlanePromises = this.dataPlanes.filter(dataPlane => dataPlane.details.catalogSynchronization === "push").map(dataPlane => this.pullCatalog(dataPlane));
+    const dataPlanePromises = this.dataPlanes.filter(dataPlane => dataPlane.details.catalogSynchronization === "push").map(dataPlane => this.healthCheck(dataPlane));
     await Promise.all(dataPlanePromises);
   }
 }

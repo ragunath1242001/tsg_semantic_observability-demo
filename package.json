@@ -8,6 +8,7 @@
     "tsc": "tsc -p tsconfig.json",
     "lint": "eslint . --fix --ext .ts",
     "test": "jest",
+    "openapi": "npm run tsc && node ./build/swagger.js",
     "schema:dsp": "typescript-json-schema \"src/model/dsp/**/*.dto.ts\" \"*\" -o resources/schemas/dsp.schema.json",
     "schema:data-planes": "typescript-json-schema \"src/model/data-planes/**/*.dto.ts\" \"*\" -o resources/schemas/data-planes.schema.json",
     "schema:all": "npm run schema:dsp && npm run schema:data-planes"
@@ -24,9 +25,11 @@
     "express-session": "^1.17.3",
     "jsonld": "^8.2.0",
     "reflect-metadata": "^0.1.13",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.1",
+    "yaml": "^2.3.1"
   },
   "devDependencies": {
+    "@nestjs/cli": "^10.1.11",
     "@nestjs/testing": "^10.0.5",
     "@types/cron": "^2.0.1",
     "@types/deep-equal": "^1.0.1",

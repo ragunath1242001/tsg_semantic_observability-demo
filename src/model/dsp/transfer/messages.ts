@@ -111,7 +111,7 @@ export interface ITransferRequestMessage {
   agreementId: string;
   format: string;
   dataAddress?: DataAddress;
-  callbackAddress?: string;
+  callbackAddress: string;
 }
 
 @Serializable("dspace:TransferRequestMessage")
@@ -126,8 +126,8 @@ export class TransferRequestMessage extends SerializableClass<TransferRequestMes
   @ValidateNested()
   dataAddress?: DataAddress;
   @Namespace("dspace")
-  @ValidateNested()
-  callbackAddress?: string;
+  @IsNotEmpty()
+  callbackAddress: string;
 
   constructor(value: ITransferRequestMessage) {
     super()

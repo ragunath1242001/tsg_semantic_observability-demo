@@ -79,6 +79,7 @@ test("Transfer Request Message", async () => {
   const transferRequestMessage = new TransferRequestMessage({
     agreementId: "urn:uuid:1246a1af-6e5f-4c05-86e2-6d8624efeeb3",
     format: "dspace:HTTP",
+    callbackAddress: "http://localhost",
     dataAddress: new DataAddress({
       endpointType: "HTTP",
       endpoint: "http://example.com",
@@ -96,6 +97,7 @@ test("Transfer Request Message", async () => {
     "@type": "dspace:TransferRequestMessage",
     "dspace:agreementId": "urn:uuid:1246a1af-6e5f-4c05-86e2-6d8624efeeb3",
     "dct:format": "dspace:HTTP",
+    "dspace:callbackAddress": "http://localhost",
     "dspace:dataAddress": {
       "@type": "dspace:DataAddress",
       "dspace:endpointType": "HTTP",

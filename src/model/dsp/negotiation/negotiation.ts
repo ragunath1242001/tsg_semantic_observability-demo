@@ -132,10 +132,8 @@ export interface IPolicy extends IReference {
 @Serializable("odrl:Policy")
 export class Policy<OutType extends ContextDto = PolicyDto & ContextDto> extends Reference<OutType> {
   @Namespace("odrl")
-  // @ValidateNested()
   assigner?: string;
   @Namespace("odrl")
-  // @ValidateNested()
   assignee?: string;
   @Namespace("odrl")
   @ValidateNested()
@@ -168,7 +166,6 @@ export interface IOffer extends IPolicy {
 @Serializable("odrl:Offer")
 export class Offer extends Policy<OfferDto> {
   @Namespace("odrl")
-  // @ValidateNested()
   @IsNotEmpty()
   assigner: string;
 
@@ -189,15 +186,12 @@ export interface IAgreement extends IPolicy {
 @Serializable("odrl:Agreement")
 export class Agreement extends Policy<AgreementDto> {
   @Namespace("odrl")
-  // @ValidateNested()
   @IsNotEmpty()
   assigner: string;
   @Namespace("odrl")
-  // @ValidateNested()
   @IsNotEmpty()
   assignee: string;
   @Namespace("dspace")
-  // @ValidateNested()
   @IsNotEmpty()
   @IsDateString()
   timestamp: string;

@@ -46,7 +46,7 @@ export interface TransferRequestMessageDto extends ContextDto {
   'dspace:agreementId': string;
   'dct:format': string;
   'dspace:dataAddress'?: DataAddressDto;
-  'dspace:callbackAddress'?: string;
+  'dspace:callbackAddress': string;
 }
 
 export interface TransferStartMessageDto extends ContextDto {

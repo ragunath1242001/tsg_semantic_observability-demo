@@ -5,7 +5,8 @@ import { ScheduleModule } from "@nestjs/schedule";
 
 @Module({
   imports: [
-    ScheduleModule.forRoot()
+    ScheduleModule.forRoot(),
+    DspModule, DataPlaneModule
   ],
   exports: [DspModule, DataPlaneModule]
 })
