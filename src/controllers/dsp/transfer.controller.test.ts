@@ -108,7 +108,7 @@ describe("TransferController", () => {
       }),
       "http://127.0.0.1/transfer/request"
     );
-    transferConsumerUuid = transferConsumerProcess.internalId;
+    transferConsumerUuid = transferConsumerProcess.localId;
 
   });
 

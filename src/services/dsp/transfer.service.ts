@@ -9,20 +9,18 @@ import { DspClientService } from "./client.service"
 import { deserialize } from "../../model/serialize"
 
 
-enum TransferRole {
-  PROVIDER, CONSUMER
-}
+type TransferRole = "provider" | "consumer";
 
 interface TransferEvent {
   time: Date,
   state: TransferState,
-  internalMessage?: string,
+  localMessage?: string,
   code?: string,
   reason?: Multilanguage[]
 }
 
 interface TransferStatus {
-  internalId: string,
+  localId: string,
   remoteId?: string,
   role: TransferRole,
   remoteAddress: string,
@@ -42,43 +40,63 @@ export class TransferService {
   private readonly transfers: TransferStatus[] = []
 
   private readonly providerTransitions: Record<TransferState, TransferState[]> = {
-    [TransferState.REQUESTED]: [TransferState.TERMINATED],
-    [TransferState.STARTED]: [TransferState.SUSPENDED, TransferState.COMPLETED, TransferState.TERMINATED],
-    [TransferState.TERMINATED]: [],
-    [TransferState.COMPLETED]: [],
-    [TransferState.SUSPENDED]: [TransferState.STARTED]
-  }
-  private readonly consumerTransitions: Record<TransferState, TransferState[]> = {
     [TransferState.REQUESTED]: [TransferState.STARTED, TransferState.TERMINATED],
     [TransferState.STARTED]: [TransferState.SUSPENDED, TransferState.COMPLETED, TransferState.TERMINATED],
     [TransferState.TERMINATED]: [],
     [TransferState.COMPLETED]: [],
-    [TransferState.SUSPENDED]: [TransferState.STARTED]
+    [TransferState.SUSPENDED]: [TransferState.STARTED, TransferState.TERMINATED]
   }
-  private readonly allowedRemoteTransitions: Record<TransferRole, Record<TransferState, TransferState[]>> = {
-    [TransferRole.PROVIDER]: this.providerTransitions,
-    [TransferRole.CONSUMER]: this.consumerTransitions
+
+  private readonly consumerTransitions: Record<TransferState, TransferState[]> = {
+    [TransferState.REQUESTED]: [TransferState.TERMINATED],
+    [TransferState.STARTED]: [TransferState.SUSPENDED, TransferState.COMPLETED, TransferState.TERMINATED],
+    [TransferState.TERMINATED]: [],
+    [TransferState.COMPLETED]: [],
+    [TransferState.SUSPENDED]: [TransferState.STARTED, TransferState.TERMINATED]
   }
-  private readonly allowedInternalTransitions: Record<TransferRole, Record<TransferState, TransferState[]>> = {
-    [TransferRole.PROVIDER]: this.consumerTransitions,
-    [TransferRole.CONSUMER]: this.providerTransitions
+
+  private readonly allowedTransitions: Record<"remote" | "local", Record<TransferRole, Record<TransferState, TransferState[]>>> = {
+    remote: {
+      provider: this.consumerTransitions,
+      consumer: this.providerTransitions
+    },
+    local: {
+      provider: this.providerTransitions,
+      consumer: this.consumerTransitions
+    }
+  }
+
+  private checkTransition(direction: "remote" | "local", transfer: TransferStatus, to: TransferState) {
+    if (!this.allowedTransitions[direction][transfer.role][transfer.state].includes(to)) {
+      const event: TransferEvent = {
+        time: new Date(),
+        state: TransferState.STARTED,
+        localMessage: `Transfer with process ID ${transfer.localId} cannot transition from ${transfer.state} to ${to}`
+      }
+      if (direction === "remote") {
+        transfer.remoteEvents.push(event);
+      } else {
+        transfer.localEvents.push(event);
+      }
+      throw Error(`Transfer with process ID ${transfer.localId} cannot transition from ${transfer.state} to ${to}`);
+    }
   }
 
   async getTransfer(processId: string): Promise<TransferStatus | undefined> {
-    return this.transfers.find(transfer => transfer.internalId === processId);
+    return this.transfers.find(transfer => transfer.localId === processId);
   }
 
-  async initiateTransferProcess(requestDetail: TransferRequestMessage, remoteAddress: string): Promise<{internalId: string, message: TransferRequestMessage}> {
-    const internalId = `urn:uuid:${crypto.randomUUID()}`;
+  async initiateTransferProcess(requestDetail: TransferRequestMessage, remoteAddress: string): Promise<{localId: string, message: TransferRequestMessage}> {
+    const localId = `urn:uuid:${crypto.randomUUID()}`;
     
     const transferRequestMessage = new TransferRequestMessage(requestDetail);
     const dataPlaneTransfer = await this.dataPlaneService.requestTransfer(transferRequestMessage, "consumer");
     const requestTransfer = await this.dsp.requestTransfer(remoteAddress, transferRequestMessage);
     const transferProcess = await deserialize<TransferProcess>(requestTransfer);
     this.transfers.push({
-      internalId: internalId,
+      localId: localId,
       remoteId: transferProcess.processId,
-      role: TransferRole.CONSUMER,
+      role: "consumer",
       remoteAddress: `${remoteAddress}/${transferProcess.processId}`,
       state: TransferState.REQUESTED,
       agreementId: requestDetail.agreementId,
@@ -93,7 +111,7 @@ export class TransferService {
       remoteEvents: []
     });
     return {
-      internalId,
+      localId,
       message: transferRequestMessage
     };
   }
@@ -105,9 +123,9 @@ export class TransferService {
     })
     const dataPlaneTransfer = await this.dataPlaneService.requestTransfer(transferRequestMessage, "provider");
     this.transfers.push({
-      internalId: transferProcess.processId,
+      localId: transferProcess.processId,
       remoteId: transferProcess.processId,
-      role: TransferRole.PROVIDER,
+      role: "provider",
       remoteAddress: transferRequestMessage.callbackAddress,
       state: TransferState.REQUESTED,
       agreementId: transferRequestMessage.agreementId,
@@ -129,15 +147,7 @@ export class TransferService {
     if (transfer === undefined) {
       return undefined;
     }
-
-    if (!this.allowedInternalTransitions[transfer.role][transfer.state].includes(TransferState.STARTED)) {
-      transfer.localEvents.push({
-        time: new Date(),
-        state: TransferState.STARTED,
-        internalMessage: `Transfer with process ID ${processId} cannot transition from ${transfer.state} to dspace:STARTED`
-      });
-      throw Error(`Transfer with process ID ${processId} cannot transition from ${transfer.state} to dspace:STARTED`);
-    }
+    this.checkTransition("local", transfer, TransferState.STARTED);
     transfer.localEvents.push({
       time: new Date(),
       state: TransferState.STARTED
@@ -158,15 +168,7 @@ export class TransferService {
     if (transfer === undefined) {
       return undefined;
     }
-
-    if (!this.allowedRemoteTransitions[transfer.role][transfer.state].includes(TransferState.STARTED)) {
-      transfer.remoteEvents.push({
-        time: new Date(),
-        state: TransferState.STARTED,
-        internalMessage: `Transfer with process ID ${processId} cannot transition from ${transfer.state} to dspace:STARTED`
-      });
-      throw Error(`Transfer with process ID ${processId} cannot transition from ${transfer.state} to dspace:STARTED`);
-    }
+    this.checkTransition("remote", transfer, TransferState.STARTED);
     transfer.remoteEvents.push({
       time: new Date(),
       state: TransferState.STARTED
@@ -184,14 +186,7 @@ export class TransferService {
     if (transfer === undefined) {
       return undefined;
     }
-    if (!this.allowedInternalTransitions[transfer.role][transfer.state].includes(TransferState.COMPLETED)) {
-      transfer.localEvents.push({
-        time: new Date(),
-        state: TransferState.COMPLETED,
-        internalMessage: `Transfer with process ID ${processId} cannot transition from ${transfer.state} to dspace:COMPLETED`
-      });
-      throw Error(`Transfer with process ID ${processId} cannot transition from ${transfer.state} to dspace:COMPLETED`);
-    }
+    this.checkTransition("local", transfer, TransferState.COMPLETED);
     transfer.localEvents.push({
       time: new Date(),
       state: TransferState.COMPLETED
@@ -211,14 +206,7 @@ export class TransferService {
     if (transfer === undefined) {
       return undefined;
     }
-    if (!this.allowedRemoteTransitions[transfer.role][transfer.state].includes(TransferState.COMPLETED)) {
-      transfer.remoteEvents.push({
-        time: new Date(),
-        state: TransferState.COMPLETED,
-        internalMessage: `Transfer with process ID ${processId} cannot transition from ${transfer.state} to dspace:COMPLETED`
-      });
-      throw Error(`Transfer with process ID ${processId} cannot transition from ${transfer.state} to dspace:COMPLETED`);
-    }
+    this.checkTransition("remote", transfer, TransferState.COMPLETED);
     transfer.remoteEvents.push({
       time: new Date(),
       state: TransferState.COMPLETED
@@ -236,6 +224,7 @@ export class TransferService {
     if (transfer === undefined) {
       return undefined;
     }
+    this.checkTransition("local", transfer, TransferState.TERMINATED);
     transfer.localEvents.push({
       time: new Date(),
       state: TransferState.TERMINATED,
@@ -257,6 +246,7 @@ export class TransferService {
     if (transfer === undefined) {
       return undefined;
     }
+    this.checkTransition("remote", transfer, TransferState.TERMINATED);
     transfer.remoteEvents.push({
       time: new Date(),
       state: TransferState.TERMINATED,
@@ -276,15 +266,7 @@ export class TransferService {
     if (transfer === undefined) {
       return undefined;
     }
-    if (!this.allowedInternalTransitions[transfer.role][transfer.state].includes(TransferState.SUSPENDED)) {
-      transfer.localEvents.push({
-        time: new Date(),
-        state: TransferState.SUSPENDED,
-        reason: transferSuspensionMessage.reason,
-        internalMessage: `Transfer with process ID ${processId} cannot transition from ${transfer.state} to dspace:SUSPENDED`
-      });
-      throw Error(`Transfer with process ID ${processId} cannot transition from ${transfer.state} to dspace:SUSPENDED`);
-    }
+    this.checkTransition("local", transfer, TransferState.SUSPENDED);
     transfer.localEvents.push({
       time: new Date(),
       state: TransferState.SUSPENDED,
@@ -305,15 +287,7 @@ export class TransferService {
     if (transfer === undefined) {
       return undefined;
     }
-    if (!this.allowedRemoteTransitions[transfer.role][transfer.state].includes(TransferState.SUSPENDED)) {
-      transfer.remoteEvents.push({
-        time: new Date(),
-        state: TransferState.SUSPENDED,
-        reason: transferSuspensionMessage.reason,
-        internalMessage: `Transfer with process ID ${processId} cannot transition from ${transfer.state} to dspace:SUSPENDED`
-      });
-      throw Error(`Transfer with process ID ${processId} cannot transition from ${transfer.state} to dspace:SUSPENDED`);
-    }
+    this.checkTransition("remote", transfer, TransferState.SUSPENDED);
     transfer.remoteEvents.push({
       time: new Date(),
       state: TransferState.SUSPENDED,

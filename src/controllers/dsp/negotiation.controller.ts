@@ -1,21 +1,20 @@
 import { Body, Controller, HttpException, HttpStatus } from "@nestjs/common";
 import { Get, HttpCode, Param, Post, Res } from "@nestjs/common/decorators";
-import { NegotiationProviderService } from "../../services/dsp/negotiationProvider.service";
 import { DeserializePipe } from "./deserialize.pipe";
 import { ContractAgreementMessageDto, ContractAgreementVerificationMessageDto, ContractNegotiationDto, ContractNegotiationEventMessageDto, ContractNegotiationTerminationMessageDto, ContractOfferMessageDto, ContractRequestMessageDto } from "../../model/dsp/negotiation/messages.dto";
-import { ContractAgreementMessage, ContractAgreementVerificationMessage, ContractNegotiationEventMessage, ContractNegotiationTerminationMessage, ContractOfferMessage, ContractRequestMessage } from "../../model/dsp/negotiation/messages";
+import { ContractAgreementMessage, ContractAgreementVerificationMessage, ContractNegotiation, ContractNegotiationEventMessage, ContractNegotiationTerminationMessage, ContractOfferMessage, ContractRequestMessage } from "../../model/dsp/negotiation/messages";
 import { Response } from "express";
-import { NegotiationConsumerService } from "../../services/dsp/negotiationConsumer.service";
+import { NegotiationService } from "../../services/dsp/negotiation.service";
 
 @Controller('negotiation')
 export class NegotiationController {
-  constructor(private readonly negotiationProviderService: NegotiationProviderService, private readonly negotiationConsumerService: NegotiationConsumerService) {}
+  constructor(private readonly negotiationService: NegotiationService) {}
 
   @Post('request')
   @HttpCode(HttpStatus.CREATED)
   async request(@Body(new DeserializePipe<ContractRequestMessageDto, ContractRequestMessage>()) body: ContractRequestMessage, @Res() response: Response): Promise<ContractNegotiationDto> {
     if (body instanceof ContractRequestMessage) {
-      const result = await this.negotiationProviderService.request(body);
+      const result = await this.negotiationService.handleRequest(body);
       response.setHeader("Location", `/negotiation/${result.processId}`);
       return result.serialize();
     }
@@ -25,9 +24,12 @@ export class NegotiationController {
   @Get(':id')
   @HttpCode(HttpStatus.OK)
   async getNegotiation(@Param('id') id: string): Promise<ContractNegotiationDto> {
-    const contractNegotiation = await this.negotiationProviderService.getNegotiation(id);
-    if (contractNegotiation) {
-      return contractNegotiation.serialize();
+    const negotiation = await this.negotiationService.getNegotiation(id);
+    if (negotiation) {
+      return new ContractNegotiation({
+        processId: negotiation.localId,
+        contractNegotiationState: negotiation.state
+      }).serialize();
     } else {
       throw new HttpException('Negotiation not found', HttpStatus.NOT_FOUND)
     }
@@ -40,7 +42,7 @@ export class NegotiationController {
       if (body.processId === undefined || body.processId !== id) {
         throw new HttpException('Missing or mismatch processId field in contract request message', HttpStatus.BAD_REQUEST);
       }
-      const result = await this.negotiationProviderService.request(body);
+      const result = await this.negotiationService.handleExistingRequest(id, body);
       return result.serialize();
     }
     throw new HttpException('Unkown request body', HttpStatus.BAD_REQUEST)
@@ -53,7 +55,7 @@ export class NegotiationController {
       if (body.processId !== id) {
         throw new HttpException('Mismatch processId field in contract negotiation event message', HttpStatus.BAD_REQUEST);
       }
-      const result = await this.negotiationProviderService.negotiationEvent(id, body);
+      const result = await this.negotiationService.handleEvent(id, body);
       if (result) {
         return {
           status: 'OK'
@@ -71,7 +73,7 @@ export class NegotiationController {
       if (body.processId !== id) {
         throw new HttpException('Mismatch processId field in contract negotiation event message', HttpStatus.BAD_REQUEST);
       }
-      const result = await this.negotiationProviderService.agreementVerification(id, body);
+      const result = await this.negotiationService.handleVerification(id, body);
       if (result) {
         return {
           status: 'OK'
@@ -89,7 +91,7 @@ export class NegotiationController {
       if (body.processId !== id) {
         throw new HttpException('Mismatch processId field in contract negotiation event message', HttpStatus.BAD_REQUEST);
       }
-      const result = await this.negotiationProviderService.negotiationTermination(id, body);
+      const result = await this.negotiationService.handleTermination(id, body);
       if (result) {
         return {
           status: 'OK'
@@ -104,7 +106,7 @@ export class NegotiationController {
   @Post('callbacks/:id/offer')
   async callbackOffer(@Param('id') id: string, @Body(new DeserializePipe<ContractOfferMessageDto, ContractOfferMessage>()) body: ContractOfferMessage): Promise<{status: string}> {
     if (body instanceof ContractOfferMessage) {
-      const result = await this.negotiationConsumerService.offerCallback(id, body);
+      const result = await this.negotiationService.handleOffer(id, body);
       if (result) {
         return {
           status: 'OK'
@@ -119,7 +121,7 @@ export class NegotiationController {
   @Post('callbacks/:id/agreement')
   async callbackAgreement(@Param('id') id: string, @Body(new DeserializePipe<ContractAgreementMessageDto, ContractAgreementMessage>()) body: ContractAgreementMessage): Promise<{status: string}> {
     if (body instanceof ContractAgreementMessage) {
-      const result = await this.negotiationConsumerService.agreementCallback(id, body);
+      const result = await this.negotiationService.handleAgreement(id, body);
       if (result) {
         return {
           status: 'OK'
@@ -135,7 +137,7 @@ export class NegotiationController {
   @Post('callbacks/:id/events')
   async callbackEvent(@Param('id') id: string, @Body(new DeserializePipe<ContractNegotiationEventMessageDto, ContractNegotiationEventMessage>()) body: ContractNegotiationEventMessage): Promise<{status: string}> {
     if (body instanceof ContractNegotiationEventMessage) {
-      const result = await this.negotiationConsumerService.eventCallback(id, body);
+      const result = await this.negotiationService.handleEvent(id, body);
       if (result) {
         return {
           status: 'OK'
