@@ -14,7 +14,7 @@ export class NegotiationController {
   @HttpCode(HttpStatus.CREATED)
   async request(@Body(new DeserializePipe<ContractRequestMessageDto, ContractRequestMessage>()) body: ContractRequestMessage, @Res() response: Response): Promise<ContractNegotiationDto> {
     if (body instanceof ContractRequestMessage) {
-      const result = await this.negotiationService.handleRequest(body);
+      const result = await this.negotiationService.handleNewRequest(body);
       response.setHeader("Location", `/negotiation/${result.processId}`);
       return result.serialize();
     }

@@ -1,43 +1,78 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { NegotiationController } from "./negotiation.controller";
 import { HttpStatus } from "@nestjs/common";
-import { ContractAgreementMessage, ContractAgreementVerificationMessage, ContractNegotiationEventMessage, ContractNegotiationTerminationMessage, ContractOfferMessage, ContractRequestMessage } from "../../model/dsp/negotiation/messages";
+import { ContractAgreementMessage, ContractAgreementVerificationMessage, ContractNegotiation, ContractNegotiationEventMessage, ContractNegotiationTerminationMessage, ContractOfferMessage, ContractRequestMessage } from "../../model/dsp/negotiation/messages";
 import { Agreement, Offer } from "../../model/dsp/negotiation/negotiation";
 import { ContractNegotiationState, NegotiationEvent, ProofTypes } from "../../model/dsp/negotiation/messages.dto";
 import { Multilanguage } from "../../model/dsp/common";
 import { NegotiationService } from "../../services/dsp/negotiation.service";
+import { DspClientService } from "../../services/dsp/client.service";
+import { rest } from "msw"; 
+import { SetupServer, setupServer } from "msw/node";
 
 describe("NegotiationController", () => {
   let negotiationController: NegotiationController;
   let negotiationService: NegotiationService;
   let providerNegotiationId: string;
   let consumerNegotiationId: string;
+  let server: SetupServer;
 
+  beforeAll(async () => {
+    server = setupServer(
+      rest.post("http://127.0.0.1/negotiation/callbacks/:id/:action", (req, res, ctx) => {
+        return res(ctx.json({
+          status: "OK"
+        }))
+      }),
+      rest.post("http://127.0.0.1/negotiation/request", async (req, res, ctx) => {
+        return res(ctx.json(
+          await new ContractNegotiation({
+            processId: 'urn:uuid:4486d6f5-aa10-45d3-b260-2f368dfca4e2',
+            contractNegotiationState: ContractNegotiationState.REQUESTED
+          }).serialize()
+        ))
+      }),
+      rest.post("http://127.0.0.1/negotiation/:id/:action", (req, res, ctx) => {
+        return res(ctx.json({
+          status: "OK"
+        }))
+      }),
+    );
+    
+    server.listen({
+      onUnhandledRequest: "error"
+    });
+  });
+
+  afterAll(async () => {
+    server.close();
+  });
+  
   beforeEach(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
       controllers: [NegotiationController],
-      providers: [NegotiationService],
+      providers: [NegotiationService, DspClientService],
     }).compile();
 
     negotiationController = moduleRef.get(NegotiationController);
     negotiationService = moduleRef.get(NegotiationService);
 
     
-    const providerNegotiation =  await negotiationService.handleRequest(new ContractRequestMessage({
+    const providerNegotiation =  await negotiationService.handleNewRequest(new ContractRequestMessage({
       callbackAddress:
-        "http://localhost/negotiation/callback/urn:uuid:de465939-8292-49c1-97d5-bcb643df1fdb",
+        "http://127.0.0.1/negotiation/callback/urn:uuid:de465939-8292-49c1-97d5-bcb643df1fdb",
       offer: new Offer({
         id: "urn:uuid:81a41b35-2926-4b29-8c9a-ee52665a047b",
         assigner: "urn:uuid:fcddc591-b9f1-4c75-b557-80d1cf955859",
       }),
     }));
     providerNegotiationId = providerNegotiation.processId;
-    const consumerNegotiation = await negotiationService.request(
+    const consumerNegotiation = await negotiationService.requestNew(
       new Offer({
         id: "urn:uuid:92928e7a-8f21-4489-adbd-d5800b7475a1",
         assigner: "urn:uuid:fcddc591-b9f1-4c75-b557-80d1cf955859",
       }),
-      "http://localhost"
+      "http://127.0.0.1/negotiation"
     );
     consumerNegotiationId = consumerNegotiation.processId!;
   });
@@ -56,7 +91,7 @@ describe("NegotiationController", () => {
       const result = await negotiationController.request(
         new ContractRequestMessage({
           callbackAddress:
-            "http://localhost/negotiation/callback/urn:uuid:de465939-8292-49c1-97d5-bcb643df1fdb",
+            "http://127.0.0.1/negotiation/callback/urn:uuid:de465939-8292-49c1-97d5-bcb643df1fdb",
           offer: new Offer({
             id: "urn:uuid:81a41b35-2926-4b29-8c9a-ee52665a047b",
             assigner: "urn:uuid:fcddc591-b9f1-4c75-b557-80d1cf955859",
@@ -108,7 +143,7 @@ describe("NegotiationController", () => {
         new ContractRequestMessage({
           processId: providerNegotiationId,
           callbackAddress:
-            "http://localhost/negotiation/callback/urn:uuid:5d9c9c88-a86a-47b7-9ade-72913afda5e2",
+            "http://127.0.0.1/negotiation/callback/urn:uuid:5d9c9c88-a86a-47b7-9ade-72913afda5e2",
           offer: new Offer({
             id: "urn:uuid:81a41b35-2926-4b29-8c9a-ee52665a047b",
             assigner: "urn:uuid:fcddc591-b9f1-4c75-b557-80d1cf955859",
@@ -129,7 +164,7 @@ describe("NegotiationController", () => {
           "urn:uuid:5d9c9c88-a86a-47b7-9ade-72913afda5e2",
           new ContractRequestMessage({
             callbackAddress:
-              "http://localhost/negotiation/callback/urn:uuid:5d9c9c88-a86a-47b7-9ade-72913afda5e2",
+              "http://127.0.0.1/negotiation/callback/urn:uuid:5d9c9c88-a86a-47b7-9ade-72913afda5e2",
             offer: new Offer({
               id: "urn:uuid:81a41b35-2926-4b29-8c9a-ee52665a047b",
               assigner: "urn:uuid:fcddc591-b9f1-4c75-b557-80d1cf955859",
@@ -147,7 +182,7 @@ describe("NegotiationController", () => {
           new ContractRequestMessage({
             processId: "urn:uuid:e8f94bf2-c59d-48c8-b5b9-9d5366ae2f3d",
             callbackAddress:
-              "http://localhost/negotiation/callback/urn:uuid:5d9c9c88-a86a-47b7-9ade-72913afda5e2",
+              "http://127.0.0.1/negotiation/callback/urn:uuid:5d9c9c88-a86a-47b7-9ade-72913afda5e2",
             offer: new Offer({
               id: "urn:uuid:81a41b35-2926-4b29-8c9a-ee52665a047b",
               assigner: "urn:uuid:fcddc591-b9f1-4c75-b557-80d1cf955859",
@@ -267,7 +302,7 @@ describe("NegotiationController", () => {
         consumerNegotiationId,
         new ContractOfferMessage({
           processId: consumerNegotiationId,
-          callbackAddress: `http://localhost/negotiation/callback/${consumerNegotiationId}`,
+          callbackAddress: `http://127.0.0.1/negotiation/callback/${consumerNegotiationId}`,
           offer: new Offer({
             id: "urn:uuid:81a41b35-2926-4b29-8c9a-ee52665a047b",
             assigner: "urn:uuid:fcddc591-b9f1-4c75-b557-80d1cf955859",
@@ -284,7 +319,7 @@ describe("NegotiationController", () => {
           "urn:uuid:5d9c9c88-a86a-47b7-9ade-72913afda5e2",
           new ContractOfferMessage({
             processId: consumerNegotiationId,
-            callbackAddress: 'http://localhost/negotiation/callback/urn:uuid:63f0abdb-ef13-42a4-acb0-567ba5c2c41c',
+            callbackAddress: 'http://127.0.0.1/negotiation/callback/urn:uuid:63f0abdb-ef13-42a4-acb0-567ba5c2c41c',
             offer: new Offer({
               id: "urn:uuid:81a41b35-2926-4b29-8c9a-ee52665a047b",
               assigner: "urn:uuid:fcddc591-b9f1-4c75-b557-80d1cf955859",

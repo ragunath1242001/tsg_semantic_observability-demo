@@ -5,7 +5,7 @@ import { CatalogRequestMessage, Filter } from "../../model/dsp/catalog/messages"
 import { SerializableClass } from "../../model/dsp/common";
 import { ContextDto } from "../../model/dsp/common.dto";
 import { ContractNegotiationDto } from "../../model/dsp/negotiation/messages.dto";
-import { ContractRequestMessage } from "../../model/dsp/negotiation/messages";
+import { ContractAgreementMessage, ContractAgreementVerificationMessage, ContractNegotiationEventMessage, ContractNegotiationTerminationMessage, ContractOfferMessage, ContractRequestMessage } from "../../model/dsp/negotiation/messages";
 import { TransferCompletionMessage, TransferRequestMessage, TransferStartMessage, TransferSuspensionMessage, TransferTerminationMessage } from "../../model/dsp/transfer/messages";
 import { TransferProcessDto } from "../../model/dsp/transfer/messages.dto";
 
@@ -52,9 +52,27 @@ export class DspClientService {
   }
 
   async requestNegotiation(address: string, contractRequestMessage: ContractRequestMessage): Promise<ContractNegotiationDto> {
-    const addressWithId = (contractRequestMessage.processId) ? `${address}/${contractRequestMessage.processId}/request` : `${address}/request`;
-    return await this.executePost<ContractNegotiationDto, ContractRequestMessage>(addressWithId, contractRequestMessage, `Contract request at ${address} with offer ${contractRequestMessage.offer.id} and callback ${contractRequestMessage.callbackAddress}`);
+    return await this.executePost<ContractNegotiationDto, ContractRequestMessage>(address, contractRequestMessage, `New contract request at ${address} with offer ${contractRequestMessage.offer.id} and callback ${contractRequestMessage.callbackAddress}`);
   }
+  async requestExistingNegotiation(address: string, contractRequestMessage: ContractRequestMessage): Promise<ContractNegotiationDto> {
+    return await this.executePost<ContractNegotiationDto, ContractRequestMessage>(address, contractRequestMessage, `Exsiting contract request at ${address} with offer ${contractRequestMessage.offer.id} and callback ${contractRequestMessage.callbackAddress}`);
+  }
+  async negotiationOffer(address: string, contractOfferMessage: ContractOfferMessage): Promise<{status: string} | undefined> {
+    return await this.executePost<{status: string} | undefined, ContractOfferMessage>(address, contractOfferMessage, `Making negotiation offer at ${address} for negotiation ${contractOfferMessage.processId}`);
+  }
+  async negotiationEvent(address: string, contractNegotiationEventMessage: ContractNegotiationEventMessage): Promise<{status: string} | undefined> {
+    return await this.executePost<{status: string} | undefined, ContractNegotiationEventMessage>(address, contractNegotiationEventMessage, `Creating negotiation event ${contractNegotiationEventMessage.eventType} at ${address} for negotiation ${contractNegotiationEventMessage.processId}`);
+  }
+  async negotiationAgreement(address: string, contractAgreementMessage: ContractAgreementMessage): Promise<{status: string} | undefined> {
+    return await this.executePost<{status: string} | undefined, ContractAgreementMessage>(address, contractAgreementMessage, `Contract agreement at ${address} for negotiation ${contractAgreementMessage.processId}`);
+  }
+  async negotiationVerification(address: string, contractAgreementVerificationMessage: ContractAgreementVerificationMessage): Promise<{status: string} | undefined> {
+    return await this.executePost<{status: string} | undefined, ContractAgreementVerificationMessage>(address, contractAgreementVerificationMessage, `Contract agreement verification at ${address} for negotiation ${contractAgreementVerificationMessage.processId}`);
+  }
+  async negotiationTermination(address: string, contractNegotiationTerminationMessage: ContractNegotiationTerminationMessage): Promise<{status: string} | undefined> {
+    return await this.executePost<{status: string} | undefined, ContractNegotiationTerminationMessage>(address, contractNegotiationTerminationMessage, `Negotiation termination at ${address} for negotiation ${contractNegotiationTerminationMessage.processId}`);
+  }
+
 
   async requestTransfer(address: string, transferRequestMessage: TransferRequestMessage): Promise<TransferProcessDto> {
     return await this.executePost<TransferProcessDto, TransferRequestMessage>(address, transferRequestMessage, `Requesting transfer at ${address} for agreement ${transferRequestMessage.agreementId}`)

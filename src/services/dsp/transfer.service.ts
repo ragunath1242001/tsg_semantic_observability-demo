@@ -91,7 +91,7 @@ export class TransferService {
     
     const transferRequestMessage = new TransferRequestMessage(requestDetail);
     const dataPlaneTransfer = await this.dataPlaneService.requestTransfer(transferRequestMessage, "consumer");
-    const requestTransfer = await this.dsp.requestTransfer(remoteAddress, transferRequestMessage);
+    const requestTransfer = await this.dsp.requestTransfer(`${remoteAddress}/request`, transferRequestMessage);
     const transferProcess = await deserialize<TransferProcess>(requestTransfer);
     this.transfers.push({
       localId: localId,
