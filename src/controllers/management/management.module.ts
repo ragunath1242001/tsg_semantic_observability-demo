@@ -6,4 +6,4 @@ import { ServicesModule } from "../../services/services.module";
   imports: [ServicesModule],
   controllers: [ManagementController],
 })
-export class DataPlaneModule {}
+export class ManagementModule {}

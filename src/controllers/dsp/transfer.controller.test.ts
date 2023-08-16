@@ -115,22 +115,13 @@ describe("TransferController", () => {
 
   describe("/request", () => {
     it("Contract request should return default contract transfer", async () => {
-      const statusResponseMock = {
-        send: jest.fn((x) => x),
-      };
-      const responseMock = {
-        status: jest.fn((x) => statusResponseMock),
-        send: jest.fn((x) => x),
-        setHeader: jest.fn((x, y) => {}),
-      };
       const result = await transferController.request(
         new TransferRequestMessage({
           agreementId: "urn:uuid:a1b6d55e-a9ee-4e9c-9a72-ce6e0b1db099",
           format: "dspace:HTTP",
           callbackAddress:
             "http://127.0.0.1/transfer/callbacks/urn:uuid:de465939-8292-49c1-97d5-bcb643df1fdb",
-        }),
-        responseMock as any
+        })
       );
       expect(result).toStrictEqual({
         "@context": "https://w3id.org/dspace/v0.8/context.json",
@@ -138,7 +129,6 @@ describe("TransferController", () => {
         "dspace:processId": expect.stringContaining("urn:uuid:"),
         "dspace:transferState": "dspace:STARTED",
       });
-      expect(responseMock.setHeader.mock.calls[0]).toStrictEqual(["Location", expect.stringContaining("urn:uuid:")])
     });
   });
 
