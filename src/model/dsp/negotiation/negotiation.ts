@@ -1,4 +1,4 @@
-import { IsDateString, IsNotEmpty, ValidateIf, ValidateNested } from "class-validator";
+import { IsDateString, IsNotEmpty, IsOptional, IsString, ValidateIf, ValidateNested } from "class-validator";
 import { Namespace, Serializable } from "../../decorators";
 import {
   IReference,
@@ -66,17 +66,21 @@ export interface IPermission extends IPolicyRule {
 export class PolicyRule<OutType extends ContextDto> extends SerializableClass<OutType> {
   @Namespace("odrl")
   @ValidateNested()
+  @IsOptional()
   assigner?: Reference;
   @Namespace("odrl")
   @ValidateNested()
+  @IsOptional()
   assignee?: Reference;
   @Namespace("odrl")
   @IsNotEmpty()
   action: Action;
   @Namespace("odrl")
+  @IsOptional()
   target?: string;
   @Namespace("odrl")
   @ValidateNested()
+  @IsOptional()
   constraint?: Array<Constraint>;
 
   constructor (value: IPolicyRule) {
@@ -96,6 +100,7 @@ export class Permission extends PolicyRule<PermissionDto & ContextDto> {
   target: string;
   @Namespace("odrl")
   @ValidateNested()
+  @IsOptional()
   duty?: Array<Duty>;
 
   constructor (value: IPermission) {
@@ -132,20 +137,28 @@ export interface IPolicy extends IReference {
 @Serializable("odrl:Policy")
 export class Policy<OutType extends ContextDto = PolicyDto & ContextDto> extends Reference<OutType> {
   @Namespace("odrl")
+  @IsString()
+  @IsOptional()
   assigner?: string;
   @Namespace("odrl")
+  @IsString()
+  @IsOptional()
   assignee?: string;
   @Namespace("odrl")
   @ValidateNested()
+  @IsOptional()
   profile?: Reference;
   @Namespace("odrl")
   @ValidateNested()
+  @IsOptional()
   permission?: Array<Permission>;
   @Namespace("odrl")
   @ValidateNested()
+  @IsOptional()
   prohibition?: Array<Prohibition>;
   @Namespace("odrl")
   @ValidateNested()
+  @IsOptional()
   obligation?: Array<Duty>;
 
   constructor (value: IPolicy) {

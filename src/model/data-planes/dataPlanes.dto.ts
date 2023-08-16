@@ -12,12 +12,19 @@ export interface DataPlaneDetailsDto {
 
 export type DataPlaneCreation = Omit<DataPlaneDetailsDto, "identifier"> & { identifier?: string }
 
+export interface DataPlaneAddressDto {
+  endpoint: string,
+  properties: {name: string, value: string}[]
+}
+
 export interface DataPlaneRequestResponseDto {
   accepted: boolean;
   identifier: string;
+  dataAddress?: DataPlaneAddressDto,
   callbackAddress?: string;
 }
 
-export interface DataPlaneTransferDto extends DataPlaneRequestResponseDto{
+export interface DataPlaneTransferDto extends DataPlaneRequestResponseDto {
   dataPlaneIdentifier: string;
+  endpointType: string;
 }
