@@ -1,7 +1,7 @@
-import { Injectable } from "@nestjs/common"
+import { Injectable, Logger } from "@nestjs/common"
 import { DataPlaneTransferDto } from "../../model/data-planes/dataPlanes.dto"
 import { Multilanguage } from "../../model/dsp/common"
-import { DataAddress, TransferCompletionMessage, TransferProcess, TransferRequestMessage, TransferStartMessage, TransferSuspensionMessage, TransferTerminationMessage } from "../../model/dsp/transfer/messages"
+import { DataAddress, EndpointProperty, TransferCompletionMessage, TransferProcess, TransferRequestMessage, TransferStartMessage, TransferSuspensionMessage, TransferTerminationMessage } from "../../model/dsp/transfer/messages"
 import { TransferState } from "../../model/dsp/transfer/messages.dto"
 import { DataPlaneService } from "../dataPlane.service"
 import crypto from "crypto"
@@ -21,7 +21,7 @@ interface TransferEvent {
 
 interface TransferStatus {
   localId: string,
-  remoteId?: string,
+  remoteId: string,
   role: TransferRole,
   remoteAddress: string,
   state: TransferState,
@@ -38,6 +38,7 @@ interface TransferStatus {
 export class TransferService {
   constructor(private readonly dataPlaneService: DataPlaneService, private readonly dsp: DspClientService) {}
   private readonly transfers: TransferStatus[] = []
+  private readonly logger = new Logger(this.constructor.name);
 
   private readonly providerTransitions: Record<TransferState, TransferState[]> = {
     [TransferState.REQUESTED]: [TransferState.STARTED, TransferState.TERMINATED],
@@ -86,22 +87,35 @@ export class TransferService {
     return this.transfers.find(transfer => transfer.localId === processId);
   }
 
-  async initiateTransferProcess(requestDetail: TransferRequestMessage, remoteAddress: string): Promise<{localId: string, message: TransferRequestMessage}> {
-    const localId = `urn:uuid:${crypto.randomUUID()}`;
+  async initiateTransferProcess(agreementId: string, format: string, dataAddress: DataAddress | undefined, remoteAddress: string): Promise<{localId: string, message: TransferRequestMessage, process: TransferProcess}> {
+    const localId = `urn:uuid:consumer:${crypto.randomUUID()}`;
     
-    const transferRequestMessage = new TransferRequestMessage(requestDetail);
-    const dataPlaneTransfer = await this.dataPlaneService.requestTransfer(transferRequestMessage, "consumer");
+    const transferRequestMessage = new TransferRequestMessage({
+      agreementId: agreementId,
+      format: format,
+      dataAddress: dataAddress,
+      callbackAddress: `http://localhost:3000/transfer/${localId}`
+    });
+    const dataPlaneTransfer = await this.dataPlaneService.requestTransfer(transferRequestMessage, localId, "consumer");
     const requestTransfer = await this.dsp.requestTransfer(`${remoteAddress}/request`, transferRequestMessage);
     const transferProcess = await deserialize<TransferProcess>(requestTransfer);
+    if (dataAddress === undefined && dataPlaneTransfer.dataAddress !== undefined) {
+      dataAddress = new DataAddress({
+        endpointType: dataPlaneTransfer.endpointType,
+        endpoint: dataPlaneTransfer.dataAddress?.endpoint || '',
+        endpointProperties: dataPlaneTransfer.dataAddress?.properties?.map(p => new EndpointProperty(p)) || []
+      })
+    }
+
     this.transfers.push({
       localId: localId,
       remoteId: transferProcess.processId,
       role: "consumer",
       remoteAddress: `${remoteAddress}/${transferProcess.processId}`,
       state: TransferState.REQUESTED,
-      agreementId: requestDetail.agreementId,
-      format: requestDetail.format,
-      dataAddress: requestDetail.dataAddress,
+      agreementId: agreementId,
+      format: format,
+      dataAddress: dataAddress,
       dataPlaneTransfer: dataPlaneTransfer,
       process: transferProcess,
       localEvents: [{
@@ -112,19 +126,20 @@ export class TransferService {
     });
     return {
       localId,
-      message: transferRequestMessage
+      message: transferRequestMessage,
+      process: transferProcess
     };
   }
 
   async handleRequest(transferRequestMessage: TransferRequestMessage): Promise<TransferProcess> {
     const transferProcess = new TransferProcess({
-      processId: `urn:uuid:${crypto.randomUUID()}`,
+      processId: `urn:uuid:provider:${crypto.randomUUID()}`,
       transferState: TransferState.STARTED
     })
-    const dataPlaneTransfer = await this.dataPlaneService.requestTransfer(transferRequestMessage, "provider");
-    this.transfers.push({
+    const dataPlaneTransfer = await this.dataPlaneService.requestTransfer(transferRequestMessage, transferProcess.processId, "provider");
+    const transfer: TransferStatus = {
       localId: transferProcess.processId,
-      remoteId: transferProcess.processId,
+      remoteId: transferRequestMessage.callbackAddress.split("/").slice(-1)[0],
       role: "provider",
       remoteAddress: transferRequestMessage.callbackAddress,
       state: TransferState.REQUESTED,
@@ -138,7 +153,22 @@ export class TransferService {
         time: new Date(),
         state: TransferState.REQUESTED
       }]
-    })
+    }
+    this.transfers.push(transfer);
+    if (dataPlaneTransfer.dataAddress) {
+      const dataAddress = new DataAddress({
+        endpointType: dataPlaneTransfer.endpointType,
+        endpoint: dataPlaneTransfer.dataAddress?.endpoint || '',
+        endpointProperties: dataPlaneTransfer.dataAddress?.properties?.map(p => new EndpointProperty(p)) || []
+      })
+      setTimeout(() => {
+        this.start(transferProcess.processId, new TransferStartMessage({
+          processId: transfer.remoteId,
+          dataAddress: dataAddress
+        }), false);
+        // this.dsp.startTransfer(`${transfer.remoteAddress}/start`, )
+      }, 2000);
+    }
     return transferProcess;
   }
 
@@ -147,6 +177,7 @@ export class TransferService {
     if (transfer === undefined) {
       return undefined;
     }
+    transferStartMessage.processId = transfer.remoteId;
     this.checkTransition("local", transfer, TransferState.STARTED);
     transfer.localEvents.push({
       time: new Date(),
@@ -181,7 +212,7 @@ export class TransferService {
     }
   }
 
-  async complete(processId: string, transferCompletionMessage: TransferCompletionMessage, fromDataPlane: boolean): Promise<{status: string} | undefined> {
+  async complete(processId: string, fromDataPlane: boolean): Promise<{status: string} | undefined> {
     const transfer = await this.getTransfer(processId);
     if (transfer === undefined) {
       return undefined;
@@ -190,6 +221,9 @@ export class TransferService {
     transfer.localEvents.push({
       time: new Date(),
       state: TransferState.COMPLETED
+    });
+    const transferCompletionMessage = new TransferCompletionMessage({
+      processId: transfer.remoteId
     });
     if (!fromDataPlane) {
       await this.dataPlaneService.completeTransfer(transfer.dataPlaneTransfer, transferCompletionMessage)

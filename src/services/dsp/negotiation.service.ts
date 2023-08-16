@@ -93,7 +93,7 @@ export class NegotiationService {
     }
     const contractRequestMessage = new ContractRequestMessage({
       offer: offer,
-      callbackAddress: `http://localhost/negotiation/callback/${processId}`
+      callbackAddress: `http://localhost:3000/negotiation/callback/${processId}`
     });
 
     const contractNegotiationResponse = await this.dsp.requestNegotiation(`${remoteAddress}/request`, contractRequestMessage);
@@ -124,7 +124,7 @@ export class NegotiationService {
 
     const contractRequestMessage = new ContractRequestMessage({
       offer: offer,
-      callbackAddress: `http://localhost/negotiation/callback/${processId}`
+      callbackAddress: `http://localhost:3000/negotiation/callback/${processId}`
     });
     const contractNegotiationResponse = await this.dsp.requestNegotiation(`${negotiation.remoteAddress}/request`, contractRequestMessage);
     const contractNegotiation = await deserialize<ContractNegotiation>(contractNegotiationResponse);

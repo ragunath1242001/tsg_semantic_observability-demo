@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import axios, { AxiosRequestConfig } from "axios";
 import { CatalogDto, DatasetDto } from "../../model/dsp/catalog/catalog.dto";
 import { CatalogRequestMessage, Filter } from "../../model/dsp/catalog/messages";
@@ -36,6 +36,8 @@ export class DSPClientError extends Error {
 
 @Injectable()
 export class DspClientService {
+  private readonly logger = new Logger(this.constructor.name);
+
   private readonly axios = axios.create({
     timeout: 30000
   });
@@ -103,6 +105,7 @@ export class DspClientService {
     try {
       const bodyDto = await body.serialize();
       const response = await this.axios.post<Out>(address, bodyDto, config);
+      this.logger.log(message);
       return response.data;
     } catch (err) {
       throw new DSPClientError(message, err);

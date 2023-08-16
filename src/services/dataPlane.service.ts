@@ -1,13 +1,14 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { DataPlaneRequestResponseDto, DataPlaneCreation, DataPlaneDetailsDto, DataPlaneTransferDto } from "../model/data-planes/dataPlanes.dto";
 import { Interval } from "@nestjs/schedule";
 import { CatalogService } from "./dsp/catalog.service";
 import { Dataset, IDataset } from "../model/dsp/catalog/catalog";
 import crypto from "crypto";
 import { TransferCompletionMessage, TransferRequestMessage, TransferStartMessage, TransferSuspensionMessage, TransferTerminationMessage } from "../model/dsp/transfer/messages";
-import axios, { AxiosRequestConfig } from "axios";
+import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from "axios";
 import { DSPAxiosError } from "../utils/errors/dspAxiosError";
 import deepEqual from "deep-equal";
+import { SerializableClass } from "../model/dsp/common";
 
 
 enum HealthStatus {
@@ -27,7 +28,17 @@ interface DataPlaneStatus {
 
 @Injectable()
 export class DataPlaneService {
-  constructor(private readonly catalogService: CatalogService) {}
+  private readonly axios: AxiosInstance;
+  constructor(private readonly catalogService: CatalogService) {
+    this.axios = axios.create();
+    this.axios.interceptors.request.use(async (request: InternalAxiosRequestConfig) => {
+      if (request.data instanceof SerializableClass) {
+        request.data = await request.data.serialize();
+      }
+      return request;
+    });
+  }
+  private readonly logger = new Logger(this.constructor.name);
   private dataPlanes: DataPlaneStatus[] = [];
 
   private readonly maxHealthCheckMisses = 10;
@@ -97,7 +108,7 @@ export class DataPlaneService {
           'If-None-Match': dataPlaneStatus.etag
         }
       }
-      const datasetJson = await axios.get<IDataset>(`${dataPlaneStatus.details.managementAddress}/catalog`, requestConfig);
+      const datasetJson = await this.axios.get<IDataset>(`${dataPlaneStatus.details.managementAddress}/catalog`, requestConfig);
       try {
         if (datasetJson.status === 200) {
           const dataset = new Dataset(datasetJson.data);
@@ -110,7 +121,7 @@ export class DataPlaneService {
         await this.updateHealth(dataPlaneStatus, HealthStatus.ERRONEOUS);
       }
     } catch (err) {
-      console.log(new DSPAxiosError(`Error pulling catalog for data plane ${dataPlaneStatus.identifier}`, err).message);
+      this.logger.log(new DSPAxiosError(`Error pulling catalog for data plane ${dataPlaneStatus.identifier}`, err).message);
       await this.updateHealth(dataPlaneStatus, HealthStatus.UNRESPONSIVE);
     }
   }
@@ -122,14 +133,14 @@ export class DataPlaneService {
           Authorization: `Bearer ${dataPlaneStatus.details.managementToken}`
         }
       }
-      const datasetJson = await axios.get<void>(`${dataPlaneStatus.details.managementAddress}/health`, requestConfig);
+      const datasetJson = await this.axios.get<void>(`${dataPlaneStatus.details.managementAddress}/health`, requestConfig);
       if (datasetJson.status === 200) {
         await this.updateHealth(dataPlaneStatus, HealthStatus.HEALTHY);
       } else {
         await this.updateHealth(dataPlaneStatus, HealthStatus.ERRONEOUS);
       }
     } catch (err) {
-      console.log(new DSPAxiosError(`Error pulling catalog for data plane ${dataPlaneStatus.identifier}`, err).message);
+      this.logger.log(new DSPAxiosError(`Error in health check for data plane ${dataPlaneStatus.identifier}`, err).message);
       await this.updateHealth(dataPlaneStatus, HealthStatus.UNRESPONSIVE);
     }
   }
@@ -159,7 +170,7 @@ export class DataPlaneService {
     }
     if (dataPlaneStatus.missedHealthChecks > this.maxHealthCheckMisses) {
       if (dataPlaneStatus.dataset !== undefined) {
-        console.log(`Data plane with identifier ${dataPlaneStatus.identifier} is unresponsive for ${dataPlaneStatus.missedHealthChecks * DataPlaneService.pullInterval / 1000} seconds, its catalog is deregistered.`)
+        this.logger.log(`Data plane with identifier ${dataPlaneStatus.identifier} is unresponsive for ${dataPlaneStatus.missedHealthChecks * DataPlaneService.pullInterval / 1000} seconds, its catalog is deregistered.`)
         await this.catalogService.removeDataset(dataPlaneStatus.dataset.id);
         dataPlaneStatus.dataset = undefined;
       }
@@ -167,7 +178,7 @@ export class DataPlaneService {
 
   }
 
-  async requestTransfer(requestDetail: TransferRequestMessage, role: "provider" | "consumer"): Promise<DataPlaneTransferDto> {
+  async requestTransfer(requestDetail: TransferRequestMessage, processId: string, role: "provider" | "consumer"): Promise<DataPlaneTransferDto> {
     const dataPlanes = this.dataPlanes.filter(dataPlane => dataPlane.details.dataplaneType === requestDetail.format && (dataPlane.details.role === role || dataPlane.details.role === "both"));
     if (dataPlanes.length === 0) {
       throw Error(`Dataplane for type '${requestDetail.format}' cannot be found`);
@@ -179,15 +190,16 @@ export class DataPlaneService {
             Authorization: `Bearer ${dataPlane.details.managementToken}`
           }
         }
-        const dataPlaneRequestResponse = await axios.post<DataPlaneRequestResponseDto>(`${dataPlane.details.managementAddress}/transfer/request/${role}`, requestDetail, requestConfig);
+        const dataPlaneRequestResponse = await this.axios.post<DataPlaneRequestResponseDto>(`${dataPlane.details.managementAddress}/transfer/request/${role}?processId=${processId}`, requestDetail, requestConfig);
         if (dataPlaneRequestResponse.data.accepted) {
           return {
             dataPlaneIdentifier: dataPlane.identifier,
+            endpointType: dataPlane.details.dataplaneType,
             ...dataPlaneRequestResponse.data
           };
         }
       } catch (err) {
-        console.log(new DSPAxiosError("Error requesting transfer", err).message);
+        this.logger.log(new DSPAxiosError("Error requesting transfer", err).message);
       }
     }
     throw Error("None of the dataplanes did accept the transfer request message");
@@ -204,7 +216,7 @@ export class DataPlaneService {
           Authorization: `Bearer ${dataPlane.managementToken}`
         }
       }
-      await axios.post(`${dataPlane.managementAddress}/transfer/${dataPlaneTransfer.identifier}/start`, transferStartMessage, requestConfig);
+      await this.axios.post(`${dataPlane.managementAddress}/transfer/${dataPlaneTransfer.identifier}/start`, transferStartMessage, requestConfig);
     } catch (err) {
       throw new DSPAxiosError("Error starting transfer", err);
     }
@@ -220,7 +232,7 @@ export class DataPlaneService {
           Authorization: `Bearer ${dataPlane.managementToken}`
         }
       }
-      await axios.post(`${dataPlane.managementAddress}/transfer/${dataPlaneTransfer.identifier}/complete`, transferCompletionMessage, requestConfig);
+      await this.axios.post(`${dataPlane.managementAddress}/transfer/${dataPlaneTransfer.identifier}/complete`, transferCompletionMessage, requestConfig);
     } catch (err) {
       throw new DSPAxiosError("Error completeing transfer", err);
     }
@@ -236,7 +248,7 @@ export class DataPlaneService {
           Authorization: `Bearer ${dataPlane.managementToken}`
         }
       }
-      await axios.post(`${dataPlane.managementAddress}/transfer/${dataPlaneTransfer.identifier}/terminate`, transferTerminationMessage, requestConfig);
+      await this.axios.post(`${dataPlane.managementAddress}/transfer/${dataPlaneTransfer.identifier}/terminate`, transferTerminationMessage, requestConfig);
     } catch (err) {
       throw new DSPAxiosError("Error terminateing transfer", err);
     }
@@ -252,7 +264,7 @@ export class DataPlaneService {
           Authorization: `Bearer ${dataPlane.managementToken}`
         }
       }
-      await axios.post(`${dataPlane.managementAddress}/transfer/${dataPlaneTransfer.identifier}/suspend`, transferSuspensionMessage, requestConfig);
+      await this.axios.post(`${dataPlane.managementAddress}/transfer/${dataPlaneTransfer.identifier}/suspend`, transferSuspensionMessage, requestConfig);
     } catch (err) {
       throw new DSPAxiosError("Error suspending transfer", err);
     }
