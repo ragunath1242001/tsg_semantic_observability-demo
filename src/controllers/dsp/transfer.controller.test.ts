@@ -11,6 +11,8 @@ import { TransferService } from "../../services/dsp/transfer.service";
 import { DspClientService } from "../../services/dsp/client.service";
 import { TransferState } from "../../model/dsp/transfer/messages.dto";
 import { Catalog } from "../../model/dsp/catalog/catalog";
+import { ServerConfig } from "../../config";
+import { plainToClass } from "class-transformer";
 
 describe("TransferController", () => {
   let transferController: TransferController;
@@ -76,7 +78,13 @@ describe("TransferController", () => {
   beforeEach(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
       controllers: [TransferController],
-      providers: [TransferService, DataPlaneService, CatalogService, DspClientService],
+      providers: [
+        TransferService, 
+        DataPlaneService, 
+        CatalogService, 
+        DspClientService,
+        {provide: ServerConfig, useValue: plainToClass(ServerConfig, {})}
+      ],
     }).compile();
 
     transferController = moduleRef.get(TransferController);
