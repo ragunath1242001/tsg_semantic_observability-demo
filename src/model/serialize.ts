@@ -120,7 +120,9 @@ export async function deserialize<Type>(obj: any, root = true): Promise<Type> {
     }
 
     const resultObject = new resolvedType.constructor(result, true)
-    resultObject.validate()
+    if (root) {
+      resultObject.validate()
+    }
     return resultObject;
   } else {
     return obj as Type;

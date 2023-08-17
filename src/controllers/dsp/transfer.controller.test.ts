@@ -1,61 +1,125 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { TransferController } from "./transfer.controller";
-import { TransferProviderService } from "../../services/transferProvider.service";
 import { HttpStatus } from "@nestjs/common";
-import { TransferConsumerService } from "../../services/transferConsumer.service";
-import { TransferCompletionMessage, TransferRequestMessage, TransferStartMessage, TransferSuspensionMessage, TransferTerminationMessage } from "../../model/dsp/transfer/messages";
+import { TransferCompletionMessage, TransferProcess, TransferRequestMessage, TransferStartMessage, TransferSuspensionMessage, TransferTerminationMessage } from "../../model/dsp/transfer/messages";
 import { Multilanguage } from "../../model/dsp/common";
+import { DataPlaneService } from "../../services/dataPlane.service";
+import { CatalogService } from "../../services/dsp/catalog.service";
+import { rest } from "msw"; 
+import { SetupServer, setupServer } from "msw/node";
+import { TransferService } from "../../services/dsp/transfer.service";
+import { DspClientService } from "../../services/dsp/client.service";
+import { TransferState } from "../../model/dsp/transfer/messages.dto";
+import { Catalog } from "../../model/dsp/catalog/catalog";
 
 describe("TransferController", () => {
   let transferController: TransferController;
-  let transferProviderService: TransferProviderService;
-  let transferConsumerService: TransferConsumerService;
+  let transferService: TransferService;
+  let dataPlaneService: DataPlaneService;
 
   let transferProviderUuid: string;
   let transferConsumerUuid: string;
+  let server: SetupServer;
+
+  beforeAll(async () => {
+    server = setupServer(
+      rest.post("http://127.0.0.1/data-plane/transfer/request/consumer", (req, res, ctx) => {
+        return res(ctx.json({
+          accepted: true,
+          identifier: 'ABCDEFG',
+          callbackAddress: "http://127.0.0.1/data-plane/transfer/callbacks/ABCDEFG"
+        }))
+      }),
+      rest.post("http://127.0.0.1/data-plane/transfer/request/provider", (req, res, ctx) => {
+        return res(ctx.json({
+          accepted: true,
+          identifier: 'ABCDEFG',
+          callbackAddress: "http://127.0.0.1/data-plane/transfer/callbacks/ABCDEFG"
+        }))
+      }),
+      rest.post("http://127.0.0.1/data-plane/transfer/ABCDEFG/:action", (req, res, ctx) => {
+        return res(ctx.json({
+          status: "OK"
+        }))
+      }),
+      rest.get("http://127.0.0.1/data-plane/health", (req, res, ctx) => res()),
+      rest.get("http://127.0.0.1/data-plane/catalog", async (req, res, ctx) => res(ctx.json(await new Catalog({}).serialize()))),
+      rest.post("http://127.0.0.1/transfer/request", async (req, res, ctx) => {
+        return res(ctx.json(
+          await new TransferProcess({
+            processId: 'urn:uuid:0cb31b6f-d38c-4e88-a329-4b9a2b2e0b61',
+            transferState: TransferState.STARTED
+          }).serialize()
+        ))
+      }),
+      rest.post("http://127.0.0.1/transfer/callbacks/:id/:action", async (req, res, ctx) => {
+        return res(ctx.json({
+          status: 'OK'
+        }))
+      }),
+      rest.post("http://127.0.0.1/transfer/:id/:action", async (req, res, ctx) => {
+        return res(ctx.json({
+          status: 'OK'
+        }))
+      })
+    );
+    
+    server.listen({
+      onUnhandledRequest: "bypass"
+    });
+  });
+
+  afterAll(async () => {
+    server.close();
+  })
 
   beforeEach(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
       controllers: [TransferController],
-      providers: [TransferProviderService, TransferConsumerService],
+      providers: [TransferService, DataPlaneService, CatalogService, DspClientService],
     }).compile();
 
     transferController = moduleRef.get(TransferController);
-    transferProviderService = moduleRef.get(TransferProviderService);
-    transferConsumerService = moduleRef.get(TransferConsumerService);
-    const transferProviderProcess = await transferProviderService.request(new TransferRequestMessage({
+    transferService = moduleRef.get(TransferService);
+    dataPlaneService = moduleRef.get(DataPlaneService);
+
+    dataPlaneService.addDataPlane({
+      dataplaneType: "dspace:HTTP",
+      endpointPrefix: "",
+      callbackAddress: "http://127.0.0.1/data-plane",
+      managementAddress: "http://127.0.0.1/data-plane",
+      managementToken: "DpuwVK9bnX2MVGf6MVVjlBnI4PvtQSGJ",
+      catalogSynchronization: "push",
+      role: "both"
+    });
+
+    const transferProviderProcess = await transferService.handleRequest(new TransferRequestMessage({
       agreementId: "urn:uuid:a1b6d55e-a9ee-4e9c-9a72-ce6e0b1db099",
-      format: "dspace:http",
+      format: "dspace:HTTP",
       callbackAddress:
-        "http://localhost/transfer/callback/urn:uuid:de465939-8292-49c1-97d5-bcb643df1fdb",
+        "http://127.0.0.1/transfer/callbacks/urn:uuid:de465939-8292-49c1-97d5-bcb643df1fdb",
     }));
     transferProviderUuid = transferProviderProcess.processId
-    const transferConsumerProcess = await transferConsumerService.initiateTransferProcess({
-      agreementId: 'urn:uuid:urn:uuid:a1b6d55e-a9ee-4e9c-9a72-ce6e0b1db099',
-      format: 'dspace:HTTP'
-    });
-    transferConsumerUuid = transferConsumerProcess.internalId;
+    const transferConsumerProcess = await transferService.initiateTransferProcess(
+      'urn:uuid:urn:uuid:a1b6d55e-a9ee-4e9c-9a72-ce6e0b1db099',
+      'dspace:HTTP',
+      undefined,
+      "http://127.0.0.1/transfer/request"
+    );
+    transferConsumerUuid = transferConsumerProcess.localId;
+
   });
 
 
   describe("/request", () => {
     it("Contract request should return default contract transfer", async () => {
-      const statusResponseMock = {
-        send: jest.fn((x) => x),
-      };
-      const responseMock = {
-        status: jest.fn((x) => statusResponseMock),
-        send: jest.fn((x) => x),
-        setHeader: jest.fn((x, y) => {}),
-      };
       const result = await transferController.request(
         new TransferRequestMessage({
           agreementId: "urn:uuid:a1b6d55e-a9ee-4e9c-9a72-ce6e0b1db099",
-          format: "dspace:http",
+          format: "dspace:HTTP",
           callbackAddress:
-            "http://localhost/transfer/callback/urn:uuid:de465939-8292-49c1-97d5-bcb643df1fdb",
-        }),
-        responseMock as any
+            "http://127.0.0.1/transfer/callbacks/urn:uuid:de465939-8292-49c1-97d5-bcb643df1fdb",
+        })
       );
       expect(result).toStrictEqual({
         "@context": "https://w3id.org/dspace/v0.8/context.json",
@@ -63,7 +127,6 @@ describe("TransferController", () => {
         "dspace:processId": expect.stringContaining("urn:uuid:"),
         "dspace:transferState": "dspace:STARTED",
       });
-      expect(responseMock.setHeader.mock.calls[0]).toStrictEqual(["Location", expect.stringContaining("urn:uuid:")])
     });
   });
 
@@ -93,7 +156,8 @@ describe("TransferController", () => {
 
   describe("/:id/start", () => {
     it("Transfer start with specified identifier should return a status OK", async () => {
-      await transferProviderService.suspendTransferProcess(
+      await transferService.start(transferProviderUuid, undefined, true)
+      await transferService.handleSuspend(
         transferProviderUuid,
         new TransferSuspensionMessage({
           processId: transferProviderUuid,
@@ -138,6 +202,8 @@ describe("TransferController", () => {
 
   describe("/:id/complete", () => {
     it("Transfer complete with specified identifier should return a status OK", async () => {
+      await transferService.start(transferProviderUuid, undefined, true)
+
       const result = await transferController.completeTransferProcess(
         transferProviderUuid,
         new TransferCompletionMessage({
@@ -226,6 +292,8 @@ describe("TransferController", () => {
 
   describe("/:id/suspend", () => {
     it("Transfer suspend with specified identifier should return a status OK", async () => {
+      await transferService.start(transferProviderUuid, undefined, true)
+      
       const result = await transferController.suspendTransferProcess(
         transferProviderUuid,
         new TransferSuspensionMessage({
@@ -271,7 +339,7 @@ describe("TransferController", () => {
     });
   });
 
-  describe("/callback/:id/start", () => {
+  describe("/callbacks/:id/start", () => {
     it("Transfer start with specified identifier should return a status OK", async () => {
       const result = await transferController.callbackStartTransferProcess(
         transferConsumerUuid,
@@ -297,9 +365,9 @@ describe("TransferController", () => {
     });
   });
 
-  describe("/callback/:id/complete", () => {
+  describe("/callbacks/:id/complete", () => {
     it("Transfer complete with specified identifier should return a status OK", async () => {
-      await transferConsumerService.startTransferProcess(
+      await transferService.handleStart(
         transferConsumerUuid,
         new TransferStartMessage({
           processId: "urn:uuid:9d1793cd-bc1b-44a6-a3e8-4e3850bdd9f6"
@@ -329,7 +397,7 @@ describe("TransferController", () => {
     });
   });
 
-  describe("/callback/:id/terminate", () => {
+  describe("/callbacks/:id/terminate", () => {
     it("Transfer terminate with specified identifier should return a status OK", async () => {
       const result = await transferController.callbackTerminateTransferProcess(
         transferConsumerUuid,
@@ -363,9 +431,9 @@ describe("TransferController", () => {
     });
   });
 
-  describe("/callback/:id/suspend", () => {
+  describe("/callbacks/:id/suspend", () => {
     it("Transfer suspend with specified identifier should return a status OK", async () => {
-      await transferConsumerService.startTransferProcess(
+      await transferService.handleStart(
         transferConsumerUuid,
         new TransferStartMessage({
           processId: "urn:uuid:9d1793cd-bc1b-44a6-a3e8-4e3850bdd9f6"

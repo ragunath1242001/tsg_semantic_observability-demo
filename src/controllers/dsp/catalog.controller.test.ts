@@ -1,7 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { CatalogController } from "./catalog.controller";
 import { CatalogRequestMessage, DatasetRequestMessage } from "../../model/dsp/catalog/messages";
-import { CatalogService } from "../../services/catalog.service";
+import { CatalogService } from "../../services/dsp/catalog.service";
 import { HttpStatus, INestApplication } from "@nestjs/common";
 import request from "supertest";
 import { CatalogDto, DatasetDto } from "../../model/dsp/catalog/catalog.dto";
@@ -24,29 +24,6 @@ const dataset = new Dataset({
   ]
 })
 
-// const datasetSample: DatasetDto = {
-//   "@id": "urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0cea",
-//   "@type": "dcat:Dataset",
-//   "dcat:distribution": [
-//     {
-//       "@id": "urn:uuid:06d7da99-68eb-4f9e-8cb6-b78666c46123",
-//       "@type": "dcat:Distribution",
-//       "dcat:accessService": [
-//         {
-//           "@id": "urn:uuid:0d5f0685-eb04-409a-8a77-ee4ed207f2f0",
-//           "@type": "dcat:DataService",
-//         },
-//       ],
-//       "dct:format": "dspace:HTTP",
-//     },
-//   ],
-// }
-
-// const datasetSampleWithContext: DatasetDto = {
-//   "@context": "https://w3id.org/dspace/v0.8/context.json",
-//   ...datasetSample
-// }
-
 const catalog = new Catalog({
   id: "urn:uuid:84f5328f-1d89-4f98-98b1-57b5600c8085",
   title: "Connector Catalog",
@@ -65,29 +42,6 @@ const catalogWithDataset = new Catalog({
   ...catalog,
   dataset: [dataset]
 })
-
-// const catalogSample: CatalogDto = {
-//   "@context": "https://w3id.org/dspace/v0.8/context.json",
-//   "@id": "urn:uuid:84f5328f-1d89-4f98-98b1-57b5600c8085",
-//   "@type": "dcat:Catalog",
-//   "dct:title": "Connector Catalog",
-//   "dct:publisher": "urn:connector:provider",
-//   "dct:description": [
-//     {
-//       "@language": "en",
-//       "@value": "Catalog of datasets and services of this connector instance",
-//     },
-//   ],
-//   "dcat:service": [
-//     {
-//       "@id": "urn:uuid:0d5f0685-eb04-409a-8a77-ee4ed207f2f0",
-//       "@type": "dcat:DataService",
-//       "dcat:endpointURL": "http://localhost/",
-//       "dct:type": "connector",
-//     },
-//   ],
-//   "dcat:dataset": [datasetSample],
-// }
 
 
 describe("CatalogController", () => {

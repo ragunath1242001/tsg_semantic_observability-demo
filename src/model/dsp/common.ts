@@ -3,6 +3,7 @@ import { Id, Language, Serializable, Value } from "../decorators";
 import { serialize } from "../serialize";
 import { IsDateString, IsDecimal, IsNotEmpty, Matches, ValidationError, validateSync } from "class-validator";
 import { ContextDto, DecimalDto, DurationDto, MultilanguageDto, ReferenceDto, TimeDto, URIDto } from "./common.dto";
+import { Logger } from "@nestjs/common";
 
 export class ClassValidationError extends Error {
   errors: ValidationError[];
@@ -12,11 +13,13 @@ export class ClassValidationError extends Error {
   }
 }
 
-export class SerializableClass<OutType extends ContextDto> {
+export class SerializableClass<OutType extends ContextDto> {  
   validate() {
     const validation = validateSync(this)
     if (validation.length > 0) {
-      throw new ClassValidationError(`Validation error: ${validation.map(v => v.toString()).join('\n')}`, validation)
+      Logger.warn(`Validation of ${validation[0].target ? validation[0].target.constructor.name : 'an object'} failed`, this.constructor.name)
+      Logger.debug(validation.map(v => v.toString(false, true, '', true)).join(''), this.constructor.name);
+      throw new ClassValidationError(`Validation error:\n${validation.map(v => v.toString()).join('')}`, validation)
     }
   }
 

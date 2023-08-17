@@ -1,11 +1,11 @@
-import { IsNotEmpty, IsString, ValidateNested } from "class-validator";
+import { IsNotEmpty, IsOptional, IsString, ValidateNested } from "class-validator";
 import { Serializable, Namespace } from "../../decorators";
 import { IReference, Multilanguage, Reference, SerializableClass } from "../common";
 import { ContractNegotiationState, ContractAgreementMessageDto, ContractAgreementVerificationMessageDto, ContractNegotiationDto, ContractNegotiationErrorDto, ContractNegotiationEventMessageDto, ContractNegotiationTerminationMessageDto, ContractOfferMessageDto, ContractRequestMessageDto, NegotiationEvent, ProofTypes } from "./messages.dto";
 import { Agreement, Offer } from "./negotiation";
 
 export interface IContractRequestMessage {
-  processId?: string;
+  processId: string;
   offer: Offer;
   callbackAddress: string;
 }
@@ -13,7 +13,9 @@ export interface IContractRequestMessage {
 @Serializable("dspace:ContractRequestMessage")
 export class ContractRequestMessage extends SerializableClass<ContractRequestMessageDto> {
   @Namespace("dspace")
-  processId?: string;
+  @IsOptional()
+  @IsString()
+  processId: string;
   @Namespace("odrl")
   @ValidateNested()
   @IsNotEmpty()
@@ -70,6 +72,8 @@ export class ContractNegotiationTerminationMessage extends SerializableClass<Con
   @IsNotEmpty()
   processId: string;
   @Namespace("dspace")
+  @IsString()
+  @IsOptional()
   code?: string;
   @Namespace("dspace")
   @ValidateNested()
@@ -140,9 +144,11 @@ export class ContractNegotiationError extends SerializableClass<ContractNegotiat
   processId: string;
   @Namespace("dspace")
   @ValidateNested()
+  @IsOptional()
   reason?: Array<Multilanguage>;
   @Namespace("dct")
   @IsString({each: true})
+  @IsOptional()
   description?: Array<string>;
 
   constructor (value: IContractNegotiationError) {

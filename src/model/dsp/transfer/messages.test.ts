@@ -1,6 +1,8 @@
 import { deserialize } from "../../serialize";
 import { Multilanguage, URI } from "../common";
 import {
+  DataAddress,
+  EndpointProperty,
   TransferCompletionMessage,
   TransferError,
   TransferProcess,
@@ -77,7 +79,17 @@ test("Transfer Request Message", async () => {
   const transferRequestMessage = new TransferRequestMessage({
     agreementId: "urn:uuid:1246a1af-6e5f-4c05-86e2-6d8624efeeb3",
     format: "dspace:HTTP",
-    dataAddress: new URI("http://example.com"),
+    callbackAddress: "http://localhost",
+    dataAddress: new DataAddress({
+      endpointType: "HTTP",
+      endpoint: "http://example.com",
+      endpointProperties: [
+        new EndpointProperty({
+          name: "Authorization",
+          value: "Bearer TOKEN-ABCDEFG"
+        })
+      ]
+    }),
   });
   const serialized = await transferRequestMessage.serialize();
   const expected: TransferRequestMessageDto = {
@@ -85,9 +97,16 @@ test("Transfer Request Message", async () => {
     "@type": "dspace:TransferRequestMessage",
     "dspace:agreementId": "urn:uuid:1246a1af-6e5f-4c05-86e2-6d8624efeeb3",
     "dct:format": "dspace:HTTP",
+    "dspace:callbackAddress": "http://localhost",
     "dspace:dataAddress": {
-      "@type": "xsd:anyURI",
-      "@value": "http://example.com",
+      "@type": "dspace:DataAddress",
+      "dspace:endpointType": "HTTP",
+      "dspace:endpoint": "http://example.com",
+      "dspace:endpointProperties": [{
+        "@type": "dspace:EndpointProperty",
+        "dspace:name": "Authorization",
+        "dspace:value": "Bearer TOKEN-ABCDEFG"
+      }]
     },
   }
   expect(serialized).toStrictEqual(expected);
@@ -100,7 +119,16 @@ test("Transfer Request Message", async () => {
 test("Transfer Start Message", async () => {
   const transferStartMessage = new TransferStartMessage({
     processId: "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
-    dataAddress: new URI("http://example.com"),
+    dataAddress: new DataAddress({
+      endpointType: "HTTP",
+      endpoint: "http://example.com",
+      endpointProperties: [
+        new EndpointProperty({
+          name: "Authorization",
+          value: "Bearer TOKEN-ABCDEFG"
+        })
+      ]
+    }),
   });
   const serialized = await transferStartMessage.serialize();
   const expected: TransferStartMessageDto = {
@@ -108,8 +136,14 @@ test("Transfer Start Message", async () => {
     "@type": "dspace:TransferStartMessage",
     "dspace:processId": "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
     "dspace:dataAddress": {
-      "@type": "xsd:anyURI",
-      "@value": "http://example.com",
+      "@type": "dspace:DataAddress",
+      "dspace:endpointType": "HTTP",
+      "dspace:endpoint": "http://example.com",
+      "dspace:endpointProperties": [{
+        "@type": "dspace:EndpointProperty",
+        "dspace:name": "Authorization",
+        "dspace:value": "Bearer TOKEN-ABCDEFG"
+      }]
     },
   }
   expect(serialized).toStrictEqual(expected);
