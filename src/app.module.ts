@@ -4,13 +4,22 @@ import { DataPlaneModule } from "./controllers/data-plane/dataplane.module";
 import { ScheduleModule } from "@nestjs/schedule";
 import { ManagementModule } from "./controllers/management/management.module";
 import { RequestContextMiddleware, LoggerMiddleware } from "./utils/logging";
+import { AuthModule } from "./auth/auth.module";
 
 @Module({
   imports: [
     ScheduleModule.forRoot(),
-    DspModule, DataPlaneModule, ManagementModule
+    DspModule,
+    DataPlaneModule,
+    ManagementModule,
+    AuthModule
   ],
-  exports: [DspModule, DataPlaneModule, ManagementModule]
+  exports: [
+    DspModule,
+    DataPlaneModule,
+    ManagementModule,
+    AuthModule
+  ]
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
