@@ -1,7 +1,7 @@
-import { ArrayNotEmpty, IsNotEmpty, ValidateNested } from "class-validator";
+import { ArrayNotEmpty, IsNotEmpty, IsOptional, ValidateNested } from "class-validator";
 import { Serializable, Namespace } from "../../decorators";
-import { Multilanguage, SerializableClass, URI } from "../common";
-import { TransferCompletionMessageDto, TransferErrorDto, TransferProcessDto, TransferRequestMessageDto, TransferStartMessageDto, TransferSuspensionMessageDto, TransferTerminationMessageDto, TransferState } from "./messages.dto";
+import { Multilanguage, SerializableClass } from "../common";
+import { TransferCompletionMessageDto, TransferErrorDto, TransferProcessDto, TransferRequestMessageDto, TransferStartMessageDto, TransferSuspensionMessageDto, TransferTerminationMessageDto, TransferState, EndpointPropertyDto, DataAddressDto } from "./messages.dto";
 
 export interface ITransferCompletionMessage {
   processId: string;
@@ -35,6 +35,7 @@ export class TransferError extends SerializableClass<TransferErrorDto> {
   code: string;
   @Namespace("dspace")
   @ValidateNested()
+  @IsOptional()
   reason?: Array<Multilanguage>;
 
   constructor(value: ITransferError) {
@@ -66,11 +67,52 @@ export class TransferProcess extends SerializableClass<TransferProcessDto> {
   }
 }
 
+@Serializable("dspace:EndpointProperty")
+export class EndpointProperty extends SerializableClass<EndpointPropertyDto> {
+  @Namespace("dspace")
+  @IsNotEmpty()
+  name: string;
+  @Namespace("dspace")
+  @IsNotEmpty()
+  value: string;
+  constructor(value: IEndpointProperty) {
+    super()
+    this.name = value.name;
+    this.value = value.value;
+  }
+}
+
+export interface IDataAddress {
+  endpointType: string;
+  endpoint: string;
+  endpointProperties: Array<EndpointProperty>
+}
+
+@Serializable("dspace:DataAddress")
+export class DataAddress extends SerializableClass<DataAddressDto> {
+  @Namespace("dspace")
+  @IsNotEmpty()
+  endpointType: string;
+  @Namespace("dspace")
+  @IsNotEmpty()
+  endpoint: string;
+  @Namespace("dspace")
+  @IsNotEmpty()
+  endpointProperties: Array<EndpointProperty>
+
+  constructor(value: IDataAddress) {
+    super()
+    this.endpointType = value.endpointType;
+    this.endpoint = value.endpoint;
+    this.endpointProperties = value.endpointProperties;
+  }
+}
+
 export interface ITransferRequestMessage {
   agreementId: string;
   format: string;
-  dataAddress?: URI;
-  callbackAddress?: string;
+  dataAddress?: DataAddress;
+  callbackAddress: string;
 }
 
 @Serializable("dspace:TransferRequestMessage")
@@ -83,10 +125,10 @@ export class TransferRequestMessage extends SerializableClass<TransferRequestMes
   format: string;
   @Namespace("dspace")
   @ValidateNested()
-  dataAddress?: URI;
+  dataAddress?: DataAddress;
   @Namespace("dspace")
-  @ValidateNested()
-  callbackAddress?: string;
+  @IsNotEmpty()
+  callbackAddress: string;
 
   constructor(value: ITransferRequestMessage) {
     super()
@@ -97,9 +139,15 @@ export class TransferRequestMessage extends SerializableClass<TransferRequestMes
   }
 }
 
+// In discussion: https://github.com/International-Data-Spaces-Association/ids-specification/issues/107
+export interface IEndpointProperty {
+  name: string;
+  value: string;
+}
+
 export interface ITransferStartMessage {
   processId: string;
-  dataAddress?: URI;
+  dataAddress?: DataAddress;
 }
 
 @Serializable("dspace:TransferStartMessage")
@@ -109,7 +157,7 @@ export class TransferStartMessage extends SerializableClass<TransferStartMessage
   processId: string;
   @Namespace("dspace")
   @ValidateNested()
-  dataAddress?: URI;
+  dataAddress?: DataAddress;
 
   constructor(value: ITransferStartMessage) {
     super()

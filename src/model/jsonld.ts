@@ -36,6 +36,7 @@ const context: ContextDefinition = {
   "dspace:reason": { "@container": "@set"},
   "dspace:catalog": { "@container": "@set"},
   "dspace:filter": { "@container": "@set"},
+  "dspace:endpointProperties": { "@container": "@set"},
   "dct:description": { "@container": "@set"},
   "odrl:hasPolicy": { "@container": "@set"},
   "odrl:permission": { "@container": "@set"},
