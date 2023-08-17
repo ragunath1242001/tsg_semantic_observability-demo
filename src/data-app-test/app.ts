@@ -1,9 +1,9 @@
 import { Body, Controller, Get, Headers, HttpCode, HttpException, HttpStatus, Logger, Module, Param, Post, Query } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { DeserializePipe } from '../controllers/dsp/deserialize.pipe';
+import { DeserializePipe } from '../utils/deserialize.pipe';
 import { DataPlaneAddressDto, DataPlaneCreation, DataPlaneDetailsDto, DataPlaneRequestResponseDto } from '../model/data-planes/dataPlanes.dto';
 import { DataAddress, TransferCompletionMessage, TransferRequestMessage, TransferStartMessage, TransferSuspensionMessage, TransferTerminationMessage } from '../model/dsp/transfer/messages';
-import { TransferCompletionMessageDto, TransferRequestMessageDto, TransferStartMessageDto, TransferState, TransferSuspensionMessageDto, TransferTerminationMessageDto } from '../model/dsp/transfer/messages.dto';
+import { TransferState } from '../model/dsp/transfer/messages.dto';
 import crypto from "crypto";
 import axios from 'axios';
 import { DataService, Dataset, Distribution } from '../model/dsp/catalog/catalog';
@@ -59,11 +59,15 @@ export class DataPlaneTestController {
 
   @Get("/catalog")
   @HttpCode(HttpStatus.NOT_IMPLEMENTED)
-  async getCatalog(){}
+  async getCatalog(){
+    return
+  }
 
   @Get("/health")
   @HttpCode(HttpStatus.OK)
-  async healthCheck(){}
+  async healthCheck(){
+    return
+  }
 
   @Post("/transfer/request/:role")
   @HttpCode(HttpStatus.OK)
@@ -107,7 +111,7 @@ export class DataPlaneTestController {
     transfer.state = TransferState.STARTED;
     if (transfer.role === "consumer") {
       if (body.dataAddress === undefined) {
-        throw Error(`Expected dataAddress in TransferStartMessage`);
+        throw new HttpException(`Expected dataAddress in TransferStartMessage`, HttpStatus.BAD_REQUEST);
       }
       const dataAddress = body.dataAddress;
       setTimeout(async () => {
@@ -167,9 +171,18 @@ export class DataPlaneTestController {
   }
 
   @Get("/data/:id")
-  async getData(@Param('id') id: string, @Headers('Authorization') authorization: string): Promise<any> {
+  async getData(@Param('id') id: string, @Headers('Authorization') authorization: string): Promise<{id: string, result: string}> {
     this.logger.log(`Received data request for transfer ${id}`);
     const transfer = this.transfers.find(transfer => transfer.id === id);
+    if (transfer === undefined) {
+      throw new HttpException(`Transfer ${id} not found`, HttpStatus.NOT_FOUND);
+    }
+    if (transfer.state !== TransferState.STARTED) {
+      throw new HttpException(`Transfer process ${id} is in ${transfer.state} state, accessing is not allowed`, HttpStatus.FORBIDDEN);
+    }
+    if (authorization !== `Bearer ${id}`) {
+      throw new HttpException(`Incorrect authorization header`, HttpStatus.UNAUTHORIZED);
+    }
     await new Promise(f => setTimeout(f, 2000));
     return {
       result: 'Test Data',

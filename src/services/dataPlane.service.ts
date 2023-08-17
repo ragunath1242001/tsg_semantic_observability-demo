@@ -5,8 +5,8 @@ import { CatalogService } from "./dsp/catalog.service";
 import { Dataset, IDataset } from "../model/dsp/catalog/catalog";
 import crypto from "crypto";
 import { TransferCompletionMessage, TransferRequestMessage, TransferStartMessage, TransferSuspensionMessage, TransferTerminationMessage } from "../model/dsp/transfer/messages";
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from "axios";
-import { DSPAxiosError } from "../utils/errors/dspAxiosError";
+import axios, { AxiosInstance, AxiosRequestConfig, InternalAxiosRequestConfig } from "axios";
+import { DSPClientError } from "../utils/errors/error";
 import deepEqual from "deep-equal";
 import { SerializableClass } from "../model/dsp/common";
 
@@ -121,7 +121,7 @@ export class DataPlaneService {
         await this.updateHealth(dataPlaneStatus, HealthStatus.ERRONEOUS);
       }
     } catch (err) {
-      this.logger.log(new DSPAxiosError(`Error pulling catalog for data plane ${dataPlaneStatus.identifier}`, err).message);
+      this.logger.log(new DSPClientError(`Error pulling catalog for data plane ${dataPlaneStatus.identifier}`, err).message);
       await this.updateHealth(dataPlaneStatus, HealthStatus.UNRESPONSIVE);
     }
   }
@@ -140,7 +140,7 @@ export class DataPlaneService {
         await this.updateHealth(dataPlaneStatus, HealthStatus.ERRONEOUS);
       }
     } catch (err) {
-      this.logger.log(new DSPAxiosError(`Error in health check for data plane ${dataPlaneStatus.identifier}`, err).message);
+      this.logger.log(new DSPClientError(`Error in health check for data plane ${dataPlaneStatus.identifier}`, err).message);
       await this.updateHealth(dataPlaneStatus, HealthStatus.UNRESPONSIVE);
     }
   }
@@ -199,7 +199,7 @@ export class DataPlaneService {
           };
         }
       } catch (err) {
-        this.logger.log(new DSPAxiosError("Error requesting transfer", err).message);
+        this.logger.log(new DSPClientError("Error requesting transfer", err).message);
       }
     }
     throw Error("None of the dataplanes did accept the transfer request message");
@@ -218,7 +218,7 @@ export class DataPlaneService {
       }
       await this.axios.post(`${dataPlane.managementAddress}/transfer/${dataPlaneTransfer.identifier}/start`, transferStartMessage, requestConfig);
     } catch (err) {
-      throw new DSPAxiosError("Error starting transfer", err);
+      throw new DSPClientError("Error starting transfer", err);
     }
   }
   async completeTransfer(dataPlaneTransfer: DataPlaneTransferDto, transferCompletionMessage: TransferCompletionMessage): Promise<void> {
@@ -234,7 +234,7 @@ export class DataPlaneService {
       }
       await this.axios.post(`${dataPlane.managementAddress}/transfer/${dataPlaneTransfer.identifier}/complete`, transferCompletionMessage, requestConfig);
     } catch (err) {
-      throw new DSPAxiosError("Error completeing transfer", err);
+      throw new DSPClientError("Error completeing transfer", err);
     }
   }
   async terminateTransfer(dataPlaneTransfer: DataPlaneTransferDto, transferTerminationMessage: TransferTerminationMessage): Promise<void> {
@@ -250,7 +250,7 @@ export class DataPlaneService {
       }
       await this.axios.post(`${dataPlane.managementAddress}/transfer/${dataPlaneTransfer.identifier}/terminate`, transferTerminationMessage, requestConfig);
     } catch (err) {
-      throw new DSPAxiosError("Error terminateing transfer", err);
+      throw new DSPClientError("Error terminateing transfer", err);
     }
   }
   async suspendTransfer(dataPlaneTransfer: DataPlaneTransferDto, transferSuspensionMessage: TransferSuspensionMessage): Promise<void> {
@@ -266,7 +266,7 @@ export class DataPlaneService {
       }
       await this.axios.post(`${dataPlane.managementAddress}/transfer/${dataPlaneTransfer.identifier}/suspend`, transferSuspensionMessage, requestConfig);
     } catch (err) {
-      throw new DSPAxiosError("Error suspending transfer", err);
+      throw new DSPClientError("Error suspending transfer", err);
     }
   }
 

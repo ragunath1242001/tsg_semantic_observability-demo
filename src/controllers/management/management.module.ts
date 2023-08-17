@@ -1,9 +1,14 @@
 import { Module } from "@nestjs/common";
-import { ManagementController } from "./management.controller";
 import { ServicesModule } from "../../services/services.module";
+import { CatalogManagementController } from "./catalogManagement.controller";
+import { NegotiationManagementController } from "./negotiationManagement.controller";
+import { TransferManagementController } from "./transferManagement.controller";
 
 @Module({
   imports: [ServicesModule],
-  controllers: [ManagementController],
+  controllers: [
+    CatalogManagementController, 
+    NegotiationManagementController, 
+    TransferManagementController],
 })
 export class ManagementModule {}

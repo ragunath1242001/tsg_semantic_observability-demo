@@ -5,7 +5,7 @@ import { ContractNegotiationState, ContractAgreementMessageDto, ContractAgreemen
 import { Agreement, Offer } from "./negotiation";
 
 export interface IContractRequestMessage {
-  processId?: string;
+  processId: string;
   offer: Offer;
   callbackAddress: string;
 }
@@ -15,7 +15,7 @@ export class ContractRequestMessage extends SerializableClass<ContractRequestMes
   @Namespace("dspace")
   @IsOptional()
   @IsString()
-  processId?: string;
+  processId: string;
   @Namespace("odrl")
   @ValidateNested()
   @IsNotEmpty()

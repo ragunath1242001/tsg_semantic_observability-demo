@@ -59,8 +59,9 @@ describe("NegotiationController", () => {
 
     
     const providerNegotiation =  await negotiationService.handleNewRequest(new ContractRequestMessage({
+      processId: 'urn:uuid:a81bea31-55d4-4c70-b454-9758e1228fd0',
       callbackAddress:
-        "http://127.0.0.1/negotiation/callback/urn:uuid:de465939-8292-49c1-97d5-bcb643df1fdb",
+        "http://127.0.0.1/negotiation/callbacks/urn:uuid:de465939-8292-49c1-97d5-bcb643df1fdb",
       offer: new Offer({
         id: "urn:uuid:81a41b35-2926-4b29-8c9a-ee52665a047b",
         assigner: "urn:uuid:fcddc591-b9f1-4c75-b557-80d1cf955859",
@@ -74,30 +75,22 @@ describe("NegotiationController", () => {
       }),
       "http://127.0.0.1/negotiation"
     );
-    consumerNegotiationId = consumerNegotiation.processId!;
+    consumerNegotiationId = consumerNegotiation.localId!;
   });
 
 
   describe("/request", () => {
     it("Contract request should return default contract negotiation", async () => {
-      const statusResponseMock = {
-        send: jest.fn((x) => x),
-      };
-      const responseMock = {
-        status: jest.fn((x) => statusResponseMock),
-        send: jest.fn((x) => x),
-        setHeader: jest.fn((x, y) => {}),
-      };
       const result = await negotiationController.request(
         new ContractRequestMessage({
+          processId: 'urn:uuid:a81bea31-55d4-4c70-b454-9758e1228fd0',
           callbackAddress:
-            "http://127.0.0.1/negotiation/callback/urn:uuid:de465939-8292-49c1-97d5-bcb643df1fdb",
+            "http://127.0.0.1/negotiation/callbacks/urn:uuid:de465939-8292-49c1-97d5-bcb643df1fdb",
           offer: new Offer({
             id: "urn:uuid:81a41b35-2926-4b29-8c9a-ee52665a047b",
             assigner: "urn:uuid:fcddc591-b9f1-4c75-b557-80d1cf955859",
           }),
-        }),
-        responseMock as any
+        })
       );
       expect(result).toStrictEqual({
         "@context": "https://w3id.org/dspace/v0.8/context.json",
@@ -106,7 +99,6 @@ describe("NegotiationController", () => {
         "dspace:contractNegotiationState": "dspace:REQUESTED",
         "dspace:processId": expect.stringContaining("urn:uuid:")
       });
-      expect(responseMock.setHeader.mock.calls[0]).toStrictEqual(["Location", expect.stringContaining("/negotiation/urn:uuid:")])
     });
   });
 
@@ -143,7 +135,7 @@ describe("NegotiationController", () => {
         new ContractRequestMessage({
           processId: providerNegotiationId,
           callbackAddress:
-            "http://127.0.0.1/negotiation/callback/urn:uuid:5d9c9c88-a86a-47b7-9ade-72913afda5e2",
+            "http://127.0.0.1/negotiation/callbacks/urn:uuid:5d9c9c88-a86a-47b7-9ade-72913afda5e2",
           offer: new Offer({
             id: "urn:uuid:81a41b35-2926-4b29-8c9a-ee52665a047b",
             assigner: "urn:uuid:fcddc591-b9f1-4c75-b557-80d1cf955859",
@@ -163,8 +155,9 @@ describe("NegotiationController", () => {
         await negotiationController.requestWithId(
           "urn:uuid:5d9c9c88-a86a-47b7-9ade-72913afda5e2",
           new ContractRequestMessage({
+            processId: 'urn:uuid:a81bea31-55d4-4c70-b454-9758e1228fd0',
             callbackAddress:
-              "http://127.0.0.1/negotiation/callback/urn:uuid:5d9c9c88-a86a-47b7-9ade-72913afda5e2",
+              "http://127.0.0.1/negotiation/callbacks/urn:uuid:5d9c9c88-a86a-47b7-9ade-72913afda5e2",
             offer: new Offer({
               id: "urn:uuid:81a41b35-2926-4b29-8c9a-ee52665a047b",
               assigner: "urn:uuid:fcddc591-b9f1-4c75-b557-80d1cf955859",
@@ -182,7 +175,7 @@ describe("NegotiationController", () => {
           new ContractRequestMessage({
             processId: "urn:uuid:e8f94bf2-c59d-48c8-b5b9-9d5366ae2f3d",
             callbackAddress:
-              "http://127.0.0.1/negotiation/callback/urn:uuid:5d9c9c88-a86a-47b7-9ade-72913afda5e2",
+              "http://127.0.0.1/negotiation/callbacks/urn:uuid:5d9c9c88-a86a-47b7-9ade-72913afda5e2",
             offer: new Offer({
               id: "urn:uuid:81a41b35-2926-4b29-8c9a-ee52665a047b",
               assigner: "urn:uuid:fcddc591-b9f1-4c75-b557-80d1cf955859",
@@ -302,7 +295,7 @@ describe("NegotiationController", () => {
         consumerNegotiationId,
         new ContractOfferMessage({
           processId: consumerNegotiationId,
-          callbackAddress: `http://127.0.0.1/negotiation/callback/${consumerNegotiationId}`,
+          callbackAddress: `http://127.0.0.1/negotiation/callbacks/${consumerNegotiationId}`,
           offer: new Offer({
             id: "urn:uuid:81a41b35-2926-4b29-8c9a-ee52665a047b",
             assigner: "urn:uuid:fcddc591-b9f1-4c75-b557-80d1cf955859",
@@ -319,7 +312,7 @@ describe("NegotiationController", () => {
           "urn:uuid:5d9c9c88-a86a-47b7-9ade-72913afda5e2",
           new ContractOfferMessage({
             processId: consumerNegotiationId,
-            callbackAddress: 'http://127.0.0.1/negotiation/callback/urn:uuid:63f0abdb-ef13-42a4-acb0-567ba5c2c41c',
+            callbackAddress: 'http://127.0.0.1/negotiation/callbacks/urn:uuid:63f0abdb-ef13-42a4-acb0-567ba5c2c41c',
             offer: new Offer({
               id: "urn:uuid:81a41b35-2926-4b29-8c9a-ee52665a047b",
               assigner: "urn:uuid:fcddc591-b9f1-4c75-b557-80d1cf955859",

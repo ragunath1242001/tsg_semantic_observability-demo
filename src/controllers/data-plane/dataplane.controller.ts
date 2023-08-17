@@ -1,9 +1,9 @@
-import { Body, Controller, HttpCode, HttpException, HttpStatus, Logger, Param, Post } from "@nestjs/common";
+import { Body, Controller, HttpCode, HttpStatus, Logger, Param, Post } from "@nestjs/common";
 import { DataPlaneCreation, DataPlaneDetailsDto } from "../../model/data-planes/dataPlanes.dto";
 import { DataPlaneService } from "../../services/dataPlane.service";
-import { DeserializePipe } from "../dsp/deserialize.pipe";
+import { DeserializePipe } from "../../utils/deserialize.pipe";
 import { Dataset } from "../../model/dsp/catalog/catalog";
-import { DatasetDto } from "../../model/dsp/catalog/catalog.dto";
+import { DSPError } from "../../utils/errors/error";
 
 @Controller('data-plane')
 export class DataPlaneController {
@@ -22,11 +22,11 @@ export class DataPlaneController {
   async update(@Param('id') id: string, @Body() dataPlaneDetails: DataPlaneDetailsDto): Promise<DataPlaneDetailsDto> {
     this.logger.log(`Received update from data plane ${id}: ${JSON.stringify(dataPlaneDetails)}`);
     if (id !== dataPlaneDetails.identifier) {
-      throw new HttpException("Identifier in path and in body do not match", HttpStatus.BAD_REQUEST);
+      throw new DSPError("Identifier in path and in body do not match", HttpStatus.BAD_REQUEST);
     }
     const dataPlane = await this.dataPlaneService.updateDataPlane(dataPlaneDetails);
     if (dataPlane === undefined) {
-      throw new HttpException(`Data plane with identifier ${dataPlaneDetails.identifier} not found`, HttpStatus.NOT_FOUND);
+      throw new DSPError(`Data plane with identifier ${dataPlaneDetails.identifier} not found`, HttpStatus.NOT_FOUND);
     }
     return dataPlane;
   }
@@ -37,7 +37,7 @@ export class DataPlaneController {
     this.logger.log(`Received catalog update from data plane ${id}`);
     const datasetUpdate = await this.dataPlaneService.updateCatalog(id, dataset);
     if (datasetUpdate === undefined) {
-      throw new HttpException(`Data plane with identifier ${id} not found`, HttpStatus.NOT_FOUND);
+      throw new DSPError(`Data plane with identifier ${id} not found`, HttpStatus.NOT_FOUND);
     }
     return datasetUpdate;
   }

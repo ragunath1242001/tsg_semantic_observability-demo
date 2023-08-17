@@ -59,37 +59,37 @@ export class DspClientService {
   async requestExistingNegotiation(address: string, contractRequestMessage: ContractRequestMessage): Promise<ContractNegotiationDto> {
     return await this.executePost<ContractNegotiationDto, ContractRequestMessage>(address, contractRequestMessage, `Exsiting contract request at ${address} with offer ${contractRequestMessage.offer.id} and callback ${contractRequestMessage.callbackAddress}`);
   }
-  async negotiationOffer(address: string, contractOfferMessage: ContractOfferMessage): Promise<{status: string} | undefined> {
-    return await this.executePost<{status: string} | undefined, ContractOfferMessage>(address, contractOfferMessage, `Making negotiation offer at ${address} for negotiation ${contractOfferMessage.processId}`);
+  async negotiationOffer(address: string, contractOfferMessage: ContractOfferMessage): Promise<{status: string}> {
+    return await this.executePost<{status: string}, ContractOfferMessage>(address, contractOfferMessage, `Making negotiation offer at ${address} for negotiation ${contractOfferMessage.processId}`);
   }
-  async negotiationEvent(address: string, contractNegotiationEventMessage: ContractNegotiationEventMessage): Promise<{status: string} | undefined> {
-    return await this.executePost<{status: string} | undefined, ContractNegotiationEventMessage>(address, contractNegotiationEventMessage, `Creating negotiation event ${contractNegotiationEventMessage.eventType} at ${address} for negotiation ${contractNegotiationEventMessage.processId}`);
+  async negotiationEvent(address: string, contractNegotiationEventMessage: ContractNegotiationEventMessage): Promise<{status: string}> {
+    return await this.executePost<{status: string}, ContractNegotiationEventMessage>(address, contractNegotiationEventMessage, `Creating negotiation event ${contractNegotiationEventMessage.eventType} at ${address} for negotiation ${contractNegotiationEventMessage.processId}`);
   }
-  async negotiationAgreement(address: string, contractAgreementMessage: ContractAgreementMessage): Promise<{status: string} | undefined> {
-    return await this.executePost<{status: string} | undefined, ContractAgreementMessage>(address, contractAgreementMessage, `Contract agreement at ${address} for negotiation ${contractAgreementMessage.processId}`);
+  async negotiationAgreement(address: string, contractAgreementMessage: ContractAgreementMessage): Promise<{status: string}> {
+    return await this.executePost<{status: string}, ContractAgreementMessage>(address, contractAgreementMessage, `Contract agreement at ${address} for negotiation ${contractAgreementMessage.processId}`);
   }
-  async negotiationVerification(address: string, contractAgreementVerificationMessage: ContractAgreementVerificationMessage): Promise<{status: string} | undefined> {
-    return await this.executePost<{status: string} | undefined, ContractAgreementVerificationMessage>(address, contractAgreementVerificationMessage, `Contract agreement verification at ${address} for negotiation ${contractAgreementVerificationMessage.processId}`);
+  async negotiationVerification(address: string, contractAgreementVerificationMessage: ContractAgreementVerificationMessage): Promise<{status: string}> {
+    return await this.executePost<{status: string}, ContractAgreementVerificationMessage>(address, contractAgreementVerificationMessage, `Contract agreement verification at ${address} for negotiation ${contractAgreementVerificationMessage.processId}`);
   }
-  async negotiationTermination(address: string, contractNegotiationTerminationMessage: ContractNegotiationTerminationMessage): Promise<{status: string} | undefined> {
-    return await this.executePost<{status: string} | undefined, ContractNegotiationTerminationMessage>(address, contractNegotiationTerminationMessage, `Negotiation termination at ${address} for negotiation ${contractNegotiationTerminationMessage.processId}`);
+  async negotiationTermination(address: string, contractNegotiationTerminationMessage: ContractNegotiationTerminationMessage): Promise<{status: string}> {
+    return await this.executePost<{status: string}, ContractNegotiationTerminationMessage>(address, contractNegotiationTerminationMessage, `Negotiation termination at ${address} for negotiation ${contractNegotiationTerminationMessage.processId}`);
   }
 
 
   async requestTransfer(address: string, transferRequestMessage: TransferRequestMessage): Promise<TransferProcessDto> {
     return await this.executePost<TransferProcessDto, TransferRequestMessage>(address, transferRequestMessage, `Requesting transfer at ${address} for agreement ${transferRequestMessage.agreementId}`)
   }
-  async startTransfer(address: string, transferStartMessage: TransferStartMessage): Promise<{status: string} | undefined> {
-    return await this.executePost<{status: string} | undefined, TransferStartMessage>(address, transferStartMessage, `Starting transfer at ${address} for process ${transferStartMessage.processId}`)
+  async startTransfer(address: string, transferStartMessage: TransferStartMessage): Promise<{status: string}> {
+    return await this.executePost<{status: string}, TransferStartMessage>(address, transferStartMessage, `Starting transfer at ${address} for process ${transferStartMessage.processId}`)
   }
-  async completeTransfer(address: string, transferCompletionMessage: TransferCompletionMessage): Promise<{status: string} | undefined> {
-    return await this.executePost<{status: string} | undefined, TransferCompletionMessage>(address, transferCompletionMessage, `Completing transfer at ${address} for process ${transferCompletionMessage.processId}`)
+  async completeTransfer(address: string, transferCompletionMessage: TransferCompletionMessage): Promise<{status: string}> {
+    return await this.executePost<{status: string}, TransferCompletionMessage>(address, transferCompletionMessage, `Completing transfer at ${address} for process ${transferCompletionMessage.processId}`)
   }
-  async terminateTransfer(address: string, transferTerminationMessage: TransferTerminationMessage): Promise<{status: string} | undefined> {
-    return await this.executePost<{status: string} | undefined, TransferTerminationMessage>(address, transferTerminationMessage, `Terminating transfer at ${address} for process ${transferTerminationMessage.processId}`)
+  async terminateTransfer(address: string, transferTerminationMessage: TransferTerminationMessage): Promise<{status: string}> {
+    return await this.executePost<{status: string}, TransferTerminationMessage>(address, transferTerminationMessage, `Terminating transfer at ${address} for process ${transferTerminationMessage.processId}`)
   }
-  async suspendTransfer(address: string, transferSuspensionMessage: TransferSuspensionMessage): Promise<{status: string} | undefined> {
-    return await this.executePost<{status: string} | undefined, TransferSuspensionMessage>(address, transferSuspensionMessage, `Suspending transfer at ${address} for process ${transferSuspensionMessage.processId}`)
+  async suspendTransfer(address: string, transferSuspensionMessage: TransferSuspensionMessage): Promise<{status: string}> {
+    return await this.executePost<{status: string}, TransferSuspensionMessage>(address, transferSuspensionMessage, `Suspending transfer at ${address} for process ${transferSuspensionMessage.processId}`)
   }
 
   private async executeGet<Out>(address: string, message: string, config?: AxiosRequestConfig): Promise<Out> {

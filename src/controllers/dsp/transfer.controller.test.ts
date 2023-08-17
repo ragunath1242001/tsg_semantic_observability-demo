@@ -101,11 +101,9 @@ describe("TransferController", () => {
     }));
     transferProviderUuid = transferProviderProcess.processId
     const transferConsumerProcess = await transferService.initiateTransferProcess(
-      new TransferRequestMessage({
-        agreementId: 'urn:uuid:urn:uuid:a1b6d55e-a9ee-4e9c-9a72-ce6e0b1db099',
-        callbackAddress: 'http://localhost',
-        format: 'dspace:HTTP'
-      }),
+      'urn:uuid:urn:uuid:a1b6d55e-a9ee-4e9c-9a72-ce6e0b1db099',
+      'dspace:HTTP',
+      undefined,
       "http://127.0.0.1/transfer/request"
     );
     transferConsumerUuid = transferConsumerProcess.localId;
@@ -158,9 +156,7 @@ describe("TransferController", () => {
 
   describe("/:id/start", () => {
     it("Transfer start with specified identifier should return a status OK", async () => {
-      await transferService.start(transferProviderUuid, new TransferStartMessage({
-        processId: transferProviderUuid,
-      }), true)
+      await transferService.start(transferProviderUuid, undefined, true)
       await transferService.handleSuspend(
         transferProviderUuid,
         new TransferSuspensionMessage({
@@ -206,9 +202,7 @@ describe("TransferController", () => {
 
   describe("/:id/complete", () => {
     it("Transfer complete with specified identifier should return a status OK", async () => {
-      await transferService.start(transferProviderUuid, new TransferStartMessage({
-        processId: transferProviderUuid,
-      }), true)
+      await transferService.start(transferProviderUuid, undefined, true)
 
       const result = await transferController.completeTransferProcess(
         transferProviderUuid,
@@ -298,9 +292,7 @@ describe("TransferController", () => {
 
   describe("/:id/suspend", () => {
     it("Transfer suspend with specified identifier should return a status OK", async () => {
-      await transferService.start(transferProviderUuid, new TransferStartMessage({
-        processId: transferProviderUuid,
-      }), true)
+      await transferService.start(transferProviderUuid, undefined, true)
       
       const result = await transferController.suspendTransferProcess(
         transferProviderUuid,

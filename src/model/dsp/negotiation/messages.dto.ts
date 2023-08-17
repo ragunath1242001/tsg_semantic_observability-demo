@@ -4,7 +4,7 @@ import { AgreementDto, OfferDto } from "./negotiation.dto";
 
 export interface ContractRequestMessageDto extends ContextDto {
   '@type': 'dspace:ContractRequestMessage'
-  'dspace:processId'?: string;
+  'dspace:processId': string;
   'odrl:offer': OfferDto;
   'dspace:callbackAddress': string;
 }
