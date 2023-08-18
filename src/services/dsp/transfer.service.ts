@@ -8,6 +8,7 @@ import crypto from "crypto"
 import { DspClientService } from "./client.service"
 import { deserialize } from "../../model/serialize"
 import { DSPError } from "../../utils/errors/error"
+import { ServerConfig } from "../../config"
 
 
 export type TransferRole = "provider" | "consumer";
@@ -37,7 +38,7 @@ export interface TransferStatus {
 
 @Injectable()
 export class TransferService {
-  constructor(private readonly dataPlaneService: DataPlaneService, private readonly dsp: DspClientService) {}
+  constructor(private readonly dataPlaneService: DataPlaneService, private readonly dsp: DspClientService, private readonly server: ServerConfig) {}
   private readonly transfers: TransferStatus[] = []
   private readonly logger = new Logger(this.constructor.name);
 
@@ -99,7 +100,7 @@ export class TransferService {
       agreementId: agreementId,
       format: format,
       dataAddress: dataAddress,
-      callbackAddress: `http://localhost:3000/transfer/${localId}`
+      callbackAddress: `${this.server.publicAddress}/transfer/${localId}`
     });
     const dataPlaneTransfer = await this.dataPlaneService.requestTransfer(transferRequestMessage, localId, "consumer");
     const requestTransfer = await this.dsp.requestTransfer(`${remoteAddress}/request`, transferRequestMessage);
