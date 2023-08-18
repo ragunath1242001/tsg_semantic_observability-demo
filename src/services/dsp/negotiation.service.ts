@@ -7,6 +7,7 @@ import crypto from "crypto";
 import { DspClientService } from "./client.service";
 import { deserialize } from "../../model/serialize";
 import { DSPError } from "../../utils/errors/error";
+import { ServerConfig } from "../../config";
 
 export type NegotiationRole = "provider" | "consumer";
 
@@ -37,7 +38,7 @@ export interface NegotiationDetail extends NegotiationStatus {
 
 @Injectable()
 export class NegotiationService {
-  constructor(private readonly dsp: DspClientService) {}
+  constructor(private readonly dsp: DspClientService, private readonly server: ServerConfig) {}
   private readonly logger = new Logger(this.constructor.name);
 
   private readonly negotiations: NegotiationDetail[] = [];
@@ -112,7 +113,7 @@ export class NegotiationService {
     const contractRequestMessage = new ContractRequestMessage({
       processId: processId,
       offer: offer,
-      callbackAddress: `http://localhost:3000/negotiation/callbacks/${processId}`
+      callbackAddress: `${this.server.publicAddress}/negotiation/callbacks/${processId}`
     });
 
     const contractNegotiationResponse = await this.dsp.requestNegotiation(`${remoteAddress}/request`, contractRequestMessage);
@@ -171,7 +172,7 @@ export class NegotiationService {
     const contractRequestMessage = new ContractRequestMessage({
       processId: negotiation.remoteId,
       offer: offer,
-      callbackAddress: `http://localhost:3000/negotiation/callbacks/${processId}`
+      callbackAddress: `${this.server.publicAddress}/negotiation/callbacks/${processId}`
     });
     const contractNegotiationResponse = await this.dsp.requestNegotiation(`${negotiation.remoteAddress}/request`, contractRequestMessage);
     
@@ -217,7 +218,7 @@ export class NegotiationService {
     const contractOfferMessage = new ContractOfferMessage({
       processId: negotiation.remoteId,
       offer: offer,
-      callbackAddress: `http://localhost:3000/negotiation/${negotiation.localId}`
+      callbackAddress: `${this.server.publicAddress}/negotiation/${negotiation.localId}`
     })
     negotiation.localEvents.push({
       time: new Date(),

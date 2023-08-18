@@ -9,6 +9,8 @@ import { NegotiationService } from "../../services/dsp/negotiation.service";
 import { DspClientService } from "../../services/dsp/client.service";
 import { rest } from "msw"; 
 import { SetupServer, setupServer } from "msw/node";
+import { ServerConfig } from "../../config";
+import { plainToClass } from "class-transformer";
 
 describe("NegotiationController", () => {
   let negotiationController: NegotiationController;
@@ -51,7 +53,12 @@ describe("NegotiationController", () => {
   beforeEach(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
       controllers: [NegotiationController],
-      providers: [NegotiationService, DspClientService],
+      providers: [
+        NegotiationService, 
+        DspClientService, 
+        {provide: ServerConfig, useValue: plainToClass(ServerConfig, {})
+      }
+    ],
     }).compile();
 
     negotiationController = moduleRef.get(NegotiationController);
