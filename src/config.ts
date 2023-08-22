@@ -72,6 +72,32 @@ export class CredentialConfig {
   public readonly credentialSubject!: CredentialSubject
 }
 
+export abstract class DatabaseConfig {
+  @IsString()
+  @IsIn(["sqlite", "postgres"])
+  public readonly type: 'sqlite' | 'postgres' = 'sqlite'
+
+  @IsString()
+  public readonly database!: string
+}
+
+export class SQLiteConfig extends DatabaseConfig {
+  override readonly type: 'sqlite' = 'sqlite';
+}
+
+export class PostgresConfig extends DatabaseConfig {
+  override readonly type: 'postgres' = 'postgres';
+
+  @IsString()
+  public readonly host!: string
+  @IsNumber()
+  public readonly port!: number
+  @IsString()
+  public readonly username!: string
+  @IsString()
+  public readonly password!: string
+}
+
 export class RootConfig {
   @ValidateNested()
   @Type(() => ServerConfig)
@@ -87,4 +113,16 @@ export class RootConfig {
 
   @IsString()
   public readonly storageLocation: string = './storage/';
+
+  @ValidateNested()
+  @Type(() => DatabaseConfig, {
+    discriminator: {
+      property: 'type',
+      subTypes: [
+        { value: SQLiteConfig, name: 'sqlite'},
+        { value: PostgresConfig, name: 'postgres'}
+      ]
+    }
+  })
+  public readonly db!: DatabaseConfig
 }

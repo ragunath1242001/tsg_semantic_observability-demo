@@ -7,24 +7,15 @@ import { RequestContextMiddleware, LoggerMiddleware } from "./utils/logging.js";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
+import { ConfigModule, rootConfig } from "./config.module.js";
 
 @Module({
   imports: [
     ScheduleModule.forRoot(),
     CredentialsModule,
-    TypedConfigModule.forRoot({
-      schema: RootConfig,
-      load: [
-        fileLoader(),
-        dotenvLoader({
-          separator: "__",
-          keyTransformer: (key) => key.toLowerCase().replace(/([a-z]_[a-z])/g, g => g[0] + g[2].toUpperCase()),
-        }),
-      ]
-    }),
+    ConfigModule,
     TypeOrmModule.forRoot({
-      type: "sqlite",
-      database: "walletDB",
+      ...rootConfig.db,
       entities: [dirname(fileURLToPath(import.meta.url)) + "/**/*.dao.ts"],
       synchronize: true
     })
