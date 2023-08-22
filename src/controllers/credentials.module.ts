@@ -1,11 +1,17 @@
 import { Module } from '@nestjs/common';
-import { CredentialsService } from '../services/credentials.service';
-import { CredentialsManagementController } from './credentialsManagement.controller';
-import { CredentialsController } from './credentials.controller';
-import { OidcController } from './oidc.controller';
+import { CredentialsService } from '../services/credentials.service.js';
+import { CredentialsManagementController } from './credentialsManagement.controller.js';
+import { CredentialsController } from './credentials.controller.js';
+import { Credentials, DIDDocuments, KeyMaterials } from '../model/credentials.dao.js';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
-  controllers: [CredentialsController, CredentialsManagementController, OidcController],
+  imports: [
+    TypeOrmModule.forFeature([DIDDocuments]),
+    TypeOrmModule.forFeature([KeyMaterials]),
+    TypeOrmModule.forFeature([Credentials]),
+  ],
+  controllers: [CredentialsController, CredentialsManagementController],
   providers: [CredentialsService]
 })
 export class CredentialsModule {}

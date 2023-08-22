@@ -1,8 +1,8 @@
-import { Controller, Get, HttpException, HttpStatus, Param } from "@nestjs/common";
-import { CredentialsService } from "../services/credentials.service";
+import { Controller, Get, HttpStatus, Param } from "@nestjs/common";
+import { CredentialsService } from "../services/credentials.service.js";
 import { DIDDocument } from "did-resolver";
-import { VerifiableCredential, CredentialSubject } from "../model/credential.dto";
-import { AppError } from "../utils/error";
+import { VerifiableCredential, CredentialSubject } from "../model/credential.dto.js";
+import { AppError } from "../utils/error.js";
 
 @Controller()
 export class CredentialsController {

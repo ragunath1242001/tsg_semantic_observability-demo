@@ -14,7 +14,7 @@
         "type": "node",
         "request": "launch",
         "args": ["${workspaceFolder}/src/app.ts"],
-        "runtimeArgs": ["--nolazy", "-r", "ts-node/register"],
+        "runtimeArgs": ["--nolazy", "--loader", "ts-node/esm"],
         "sourceMaps": true,
         "cwd": "${workspaceRoot}",
         "outputCapture": "std"

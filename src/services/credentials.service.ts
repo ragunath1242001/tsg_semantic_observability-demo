@@ -1,169 +1,148 @@
-import { HttpStatus, Injectable, Logger, OnModuleInit } from "@nestjs/common";
-import { CredentialConfig, KeyConfig, RootConfig } from "../config";
+import { HttpStatus, Injectable, Logger } from "@nestjs/common";
+import { CredentialConfig, KeyConfig, RootConfig } from "../config.js";
 import { DIDDocument } from "did-resolver";
-import fs from "fs";
-import { CompactSign, JWK, KeyLike, exportJWK, generateKeyPair, importJWK, importPKCS8, importX509 } from "jose";
-import path from "path";
-import { Credential, CredentialSubject, Signature, VerifiableCredential } from "../model/credential.dto";
+import { CompactSign, KeyLike, exportJWK, generateKeyPair, importJWK, importPKCS8, importX509 } from "jose";
+import { Credential, CredentialSubject, Signature, VerifiableCredential } from "../model/credential.dto.js";
 import jsonld from "jsonld";
 import crypto from "crypto";
-import { AppError } from "../utils/error";
-
-export interface KeyMaterial {
-  id: string
-  type: 'EdDSA' | 'ES384' | 'X509'
-  default: boolean
-  privateKey: KeyLike
-  publicKey: KeyLike
-  jwk: JWK
-}
-
-export interface CredentialInstance {
-  id: string
-  credential: VerifiableCredential<CredentialSubject>
-}
+import { AppError } from "../utils/error.js";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Credentials, DIDDocuments, KeyMaterials } from "../model/credentials.dao.js";
+import { Not, Repository } from "typeorm";
 
 @Injectable()
 export class CredentialsService {
-  constructor(private readonly config: RootConfig) {
+  private readonly didId: string;
+  constructor(
+    private readonly config: RootConfig,
+    @InjectRepository(DIDDocuments) private readonly didRepository: Repository<DIDDocuments>,
+    @InjectRepository(KeyMaterials) private readonly keyRepository: Repository<KeyMaterials>,
+    @InjectRepository(Credentials) private readonly credentialRepository: Repository<Credentials>,
+  ) {
     this.init();
+    this.didId = `did:web:${this.config.server.publicDomain.replace(':','%3A')}`
   }
   private readonly logger = new Logger(this.constructor.name);
-  private readonly didId = `did:web:${this.config.server.publicDomain.replace(':','%3A')}`
-
-
-  private didDocument?: DIDDocument
-  private keyMaterial: KeyMaterial[] = []
-  private credentials: CredentialInstance[] = []
   
   async init() {
     this.logger.log('Initializing CredentialService');
-    this.keyMaterial = await Promise.all(this.config.keys.map(k => this.createKeyMaterial(k)));
-    this.didDocument = await this.createDidDocument(this.keyMaterial);
-    this.credentials = await Promise.all(this.config.credentials.map(c => this.createCredential(c)));
+    const keys = await Promise.all(this.config.keys.map(k => this.createKeyMaterial(k)));
+    await this.createDidDocument(keys);
+    await Promise.all(this.config.credentials.map(c => this.createCredential(c)));
   }
 
   async getDid(): Promise<DIDDocument | undefined> {
-    return this.didDocument;
+    const did = await this.didRepository.findOneBy({id: 0});
+    return did?.document;
   }
 
-  async getKeys(): Promise<KeyMaterial[]> {
-    return this.keyMaterial;
+  async getKeys(): Promise<KeyMaterials[]> {
+    return this.keyRepository.find({});
   }
 
-  async getKey(keyId: string): Promise<KeyMaterial> {
-    const key = this.keyMaterial.find(key => key.id === keyId);
-    if (key === undefined) {
+  async getKey(keyId: string): Promise<KeyMaterials> {
+    const key = await this.keyRepository.findOneBy({id: keyId});
+    if (key === null) {
       throw new AppError(`Key with identifier ${keyId} can't be found`, HttpStatus.NOT_FOUND)
     }
     return key;
   }
 
-  async addKey(keyConfig: KeyConfig): Promise<KeyMaterial> {
-    const existing = this.keyMaterial.find(key => key.id === keyConfig.id);
+  async addKey(keyConfig: KeyConfig): Promise<KeyMaterials> {
+    const existing = await this.keyRepository.findOneBy({id: keyConfig.id});
     if (existing) {
       throw new AppError(`Key with identifier ${keyConfig.id} already exists`, HttpStatus.CONFLICT);
     }
     const key = await this.createKeyMaterial(keyConfig);
-    this.keyMaterial.push(key);
     if (keyConfig.default) {
       this.changeDefaultKey(keyConfig.id);
     }
-    this.didDocument = await this.createDidDocument(this.keyMaterial);
+    await this.createDidDocument(await this.getKeys());
     return key;
   }
 
   async changeDefaultKey(keyId: string) {
-    this.keyMaterial.forEach(key => {
-      key.default = key.id === keyId
-    })
+    await this.keyRepository.update({id: Not(keyId)},{default: false});
+    await this.keyRepository.update({id: keyId},{default: true});
   }
 
   async deleteKey(keyId: string) {
-    const key = this.keyMaterial.find(key => key.id === keyId);
-    if (key === undefined) {
+    const key = await this.keyRepository.findOneBy({id: keyId});
+    if (key === null) {
       throw new AppError(`Key with identifier ${keyId} can't be found`, HttpStatus.NOT_FOUND)
     }
-    this.deleteFile(`${key.id}.privateKey.json`);
-    this.deleteFile(`${key.id}.publicKey.json`);
-    this.keyMaterial = this.keyMaterial.filter(key => key.id !== keyId);
-    this.didDocument = await this.createDidDocument(this.keyMaterial);
+
+    await this.keyRepository.softRemove(key)
+    await this.createDidDocument(await this.getKeys());
   }
 
-  async getCredentials(): Promise<CredentialInstance[]> {
-    return this.credentials;
+  async getCredentials(): Promise<Credentials[]> {
+    return this.credentialRepository.find({});
   }
 
-  async getCredential(credentialId: string): Promise<CredentialInstance> {
-    const credential = this.credentials.find(credential => credential.id === credentialId);
-    if (credential === undefined) {
+  async getCredential(credentialId: string): Promise<Credentials> {
+    const credential = await this.credentialRepository.findOneBy({id: credentialId});
+    if (credential === null) {
       throw new AppError(`Credential with identifier ${credentialId} can't be found`, HttpStatus.NOT_FOUND)
     }
     return credential;
   }
 
-  async addCredential(credentialConfig: CredentialConfig): Promise<CredentialInstance> {
-    const existing = this.credentials.find(credential => credential.id === credentialConfig.id);
+  async addCredential(credentialConfig: CredentialConfig): Promise<Credentials> {
+    const existing = await this.credentialRepository.findOneBy({id: credentialConfig.id});
     if (existing) {
       throw new AppError(`Credential with identifier ${credentialConfig.id} already exists`, HttpStatus.CONFLICT);
     }
-    const credential = await this.createCredential(credentialConfig);
-    this.credentials.push(credential);
-    return credential;
+    return await this.createCredential(credentialConfig);
   }
 
-  async updateCredential(credentialId: string, credentialConfig: CredentialConfig): Promise<CredentialInstance> {
-    const existing = this.credentials.find(credential => credential.id === credentialId);
-    if (existing === undefined) {
+  async updateCredential(credentialId: string, credentialConfig: CredentialConfig): Promise<Credentials> {
+    const existing = await this.credentialRepository.findOneBy({id:  credentialId});
+    if (existing === null) {
       throw new AppError(`Credential with identifier ${credentialConfig.id} can't be found`, HttpStatus.NOT_FOUND);
     }
     const credential = await this.createCredential(credentialConfig);
-    await this.deleteCredential(existing.id);
-    this.credentials.push(credential);
     return credential;
   }
 
   async deleteCredential(credentialId: string) {
-    const credential = this.credentials.find(credential => credential.id === credentialId);
-    if (credential === undefined) {
+    const credential = await this.credentialRepository.findOneBy({id: credentialId});
+    if (credential === null) {
       throw new AppError(`Credential with identifier ${credentialId} can't be found`, HttpStatus.NOT_FOUND)
     }
-    this.credentials = this.credentials.filter(credential => credential.id !== credentialId);
+    await this.credentialRepository.softRemove(credential);
   }
   
-  async createKeyMaterial(key: KeyConfig): Promise<KeyMaterial> {
+  async createKeyMaterial(key: KeyConfig): Promise<KeyMaterials> {
     this.logger.log(`Loading key material for key ${key.id}`);
     let privateKey: KeyLike;
     let publicKey: KeyLike;
+    const existing = await this.keyRepository.findOneBy({id: key.id});
+    
     if (key.existingKey && key.existingCertificate) {
       this.logger.log(`Loading existing PKCS#8 key and X.509 certificate`);
       privateKey = await importPKCS8(key.existingKey, 'RSA');
       publicKey = await importX509(key.existingCertificate, 'RSA');
-    } else if (this.existsFile(`${key.id}.privateKey.json`) && this.existsFile(`${key.id}.publicKey.json`)) {
-      this.logger.log(`Loading existing public and private JWK`);
-      const privateKeyJson = JSON.parse(this.getFile(`${key.id}.privateKey.json`))
-      privateKey = await importJWK(privateKeyJson) as KeyLike;
-      const publicKeyJson = JSON.parse(this.getFile(`${key.id}.publicKey.json`));
-      publicKey = await importJWK(publicKeyJson) as KeyLike;
+    } else if (existing) {
+      this.logger.log(`Loaded key from repository`);
+      return existing;
     } else {
       this.logger.log(`Creating new keypair with ${key.type}`);
       const keypair = await generateKeyPair(key.type);
-      this.writeFile(`${key.id}.privateKey.json`, JSON.stringify(await exportJWK(keypair.privateKey), null, 2));
-      this.writeFile(`${key.id}.publicKey.json`, JSON.stringify(await exportJWK(keypair.publicKey), null, 2));
       privateKey = keypair.privateKey;
       publicKey = keypair.publicKey;
     }
-    return {
+
+    return await this.keyRepository.save({
       id: key.id,
       type: key.type,
       default: key.default,
-      privateKey: privateKey,
-      publicKey: publicKey,
-      jwk: await exportJWK(publicKey)
-    }
+      privateKey: await exportJWK(privateKey),
+      publicKey: await exportJWK(publicKey)
+    })
   }
 
-  async createDidDocument(keys: KeyMaterial[]): Promise<DIDDocument> {
+  async createDidDocument(keys: KeyMaterials[]): Promise<DIDDocument> {
     this.logger.log('Creating DID document');
 
     const didDocument: DIDDocument = {
@@ -176,7 +155,7 @@ export class CredentialsService {
           controller: this.didId,
           publicKeyJwk: {
             kty: 'OKP',
-            ...key.jwk,
+            ...key.publicKey,
           }
         }
       }),
@@ -184,10 +163,14 @@ export class CredentialsService {
     }
     this.logger.log(`DID document created for ${this.didId}`);
     this.logger.debug(`DID document ${this.didId}\n${JSON.stringify(didDocument, null, 2)}`);
+    await this.didRepository.save({
+      id: 0,
+      document: didDocument
+    });
     return didDocument;
   }
 
-  async createCredential(credentialConfig: CredentialConfig): Promise<CredentialInstance> {
+  async createCredential(credentialConfig: CredentialConfig): Promise<Credentials> {
     this.logger.log(`Creating verifiable credential for ${credentialConfig.id}`)
     const credential: Credential<CredentialSubject> = {
       '@context': ["https://www.w3.org/2018/credentials/v1"].concat(credentialConfig.context),
@@ -200,12 +183,21 @@ export class CredentialsService {
     const normalized = await jsonld.normalize(credential, {
       algorithm: 'URDNA2015'
     });
-    const keyMaterial = ( (credentialConfig.keyId) ? this.keyMaterial.find(k => k.id === credentialConfig.keyId) : this.keyMaterial.find(k => k.default) ) || this.keyMaterial[0];
+    let keyMaterial: KeyMaterials | null;
+    if (credentialConfig.keyId) {
+      keyMaterial = await this.keyRepository.findOneByOrFail({id: credentialConfig.keyId});
+    } else {
+      keyMaterial = await this.keyRepository.findOneBy({default: true});
+    }
+    if (keyMaterial === null) {
+      throw new AppError(`No matching key found, either provide a correct keyId in the request or set a key to be default`, HttpStatus.BAD_REQUEST);
+    }
     this.logger.debug(`Signing with key ${keyMaterial.id}`);
     const hash = crypto.createHash(this.hashingAlgorithm(keyMaterial.type)).update(normalized).digest('hex');
     const signature = new CompactSign(new TextEncoder().encode(hash))
       .setProtectedHeader({alg: this.signingAlgorithm(keyMaterial.type), b64: false, crit: ['b64']});
-    const jws = await signature.sign(keyMaterial.privateKey);
+    const privateKey = await importJWK(keyMaterial.privateKey);
+    const jws = await signature.sign(privateKey);
     
     const proof: Signature = {
       type: 'JsonWebSignature2020',
@@ -220,26 +212,10 @@ export class CredentialsService {
       proof: proof
     }
     this.logger.debug(`Verifiable credential ${credentialConfig.id}\n${JSON.stringify(verifiableCredential, null, 2)}`);
-
-    return {
+    return await this.credentialRepository.save({
       id: credentialConfig.id,
       credential: verifiableCredential
-    };
-  }
-
-
-  private existsFile(file: string): boolean {
-    return fs.existsSync(path.join(this.config.storageLocation, file));
-  }
-  private getFile(file: string): string {
-    return fs.readFileSync(path.join(this.config.storageLocation, file)).toString();
-  }
-  private writeFile(file: string, content: string) {
-    fs.mkdirSync(this.config.storageLocation, {recursive: true});
-    fs.writeFileSync(path.join(this.config.storageLocation, file), content);
-  }
-  private deleteFile(file: string) {
-    fs.rmSync(path.join(this.config.storageLocation, file));
+    });
   }
 
   private hashingAlgorithm(type: 'EdDSA' | 'ES384' | 'X509'): string {

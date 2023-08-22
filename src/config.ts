@@ -2,7 +2,7 @@ import { Allow, IsBoolean, IsIn, IsNumber, IsOptional, IsString, ValidateNested 
 import { Transform, TransformFnParams, Type } from "class-transformer";
 import fs from "fs";
 import { Logger } from "@nestjs/common";
-import { CredentialSubject } from "./model/credential.dto";
+import { CredentialSubject } from "./model/credential.dto.js";
 
 function fileTransformer(params: TransformFnParams): string | undefined {
   if (typeof params.value === "string") {

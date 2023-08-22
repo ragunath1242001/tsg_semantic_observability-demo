@@ -1,8 +1,9 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Param, Post, Put, ValidationPipe } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put, ValidationPipe } from "@nestjs/common";
 import { DIDDocument } from "did-resolver";
-import { CredentialInstance, CredentialsService, KeyMaterial } from "../services/credentials.service";
-import { CredentialConfig, KeyConfig } from "../config";
-import { AppError } from "../utils/error";
+import { CredentialsService } from "../services/credentials.service.js";
+import { CredentialConfig, KeyConfig } from "../config.js";
+import { AppError } from "../utils/error.js";
+import { Credentials, KeyMaterials } from "../model/credentials.dao.js";
 
 @Controller('management/credentials')
 export class CredentialsManagementController {
@@ -20,19 +21,19 @@ export class CredentialsManagementController {
 
   @Get("keys")
   @HttpCode(HttpStatus.OK)
-  async getKeys(): Promise<KeyMaterial[]> {
+  async getKeys(): Promise<KeyMaterials[]> {
     return this.credentialsService.getKeys();
   }
 
   @Post("keys")
   @HttpCode(HttpStatus.OK)
-  async addKey(@Body(new ValidationPipe()) keyConfig: KeyConfig): Promise<KeyMaterial> {
+  async addKey(@Body(new ValidationPipe()) keyConfig: KeyConfig): Promise<KeyMaterials> {
     return this.credentialsService.addKey(keyConfig);
   }
   
   @Get("keys/:keyId")
   @HttpCode(HttpStatus.OK)
-  async getKey(@Param('keyId') keyId: string): Promise<KeyMaterial> {
+  async getKey(@Param('keyId') keyId: string): Promise<KeyMaterials> {
     return this.credentialsService.getKey(keyId);
   }
   
@@ -50,25 +51,25 @@ export class CredentialsManagementController {
   
   @Get("credentials")
   @HttpCode(HttpStatus.OK)
-  async getCredentials(): Promise<CredentialInstance[]> {
+  async getCredentials(): Promise<Credentials[]> {
     return this.credentialsService.getCredentials();
   }
 
   @Post("credentials")
   @HttpCode(HttpStatus.OK)
-  async addCredential(@Body(new ValidationPipe({transform: true})) credentialConfig: CredentialConfig): Promise<CredentialInstance> {
+  async addCredential(@Body(new ValidationPipe({transform: true})) credentialConfig: CredentialConfig): Promise<Credentials> {
     return this.credentialsService.addCredential(credentialConfig);
   }
   
   @Get("credentials/:credentialId")
   @HttpCode(HttpStatus.OK)
-  async getCredential(@Param('credentialId') credentialId: string): Promise<CredentialInstance> {
+  async getCredential(@Param('credentialId') credentialId: string): Promise<Credentials> {
     return this.credentialsService.getCredential(credentialId);
   }
 
   @Put("credentials/:credentialId")
   @HttpCode(HttpStatus.OK)
-  async updateCredential(@Body(new ValidationPipe({transform: true})) credentialConfig: CredentialConfig, @Param('credentialId') credentialId: string): Promise<CredentialInstance> {
+  async updateCredential(@Body(new ValidationPipe({transform: true})) credentialConfig: CredentialConfig, @Param('credentialId') credentialId: string): Promise<Credentials> {
     return this.credentialsService.updateCredential(credentialId, credentialConfig);
   }
 
