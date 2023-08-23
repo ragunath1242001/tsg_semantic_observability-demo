@@ -83,8 +83,12 @@ export class PresentationValidation extends VerifiablePresentationJwt {
   @IsBoolean()
   validateJWTExpiryDate!: boolean;
 
+  @IsBoolean({each: true})
+  validateTrustAnchors!: Array<boolean>
+
   @IsIn([true, false, "undefined"])
   validateExpiryDate!: Array<boolean | "undefined">;
+  
   @IsBoolean({each: true})
   validateCredentials!: Array<boolean>;
 

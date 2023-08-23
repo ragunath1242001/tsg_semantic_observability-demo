@@ -98,6 +98,14 @@ export class PostgresConfig extends DatabaseConfig {
   public readonly password!: string
 }
 
+export class TrustAnchorConfig {
+  @IsString()
+  public readonly identifier!: string
+
+  @IsString({each: true})
+  public readonly credentialTypes!: string[]
+}
+
 export class RootConfig {
   @ValidateNested()
   @Type(() => ServerConfig)
@@ -111,8 +119,9 @@ export class RootConfig {
   @Type(() => CredentialConfig)
   public readonly credentials!: CredentialConfig[];
 
-  @IsString()
-  public readonly storageLocation: string = './storage/';
+  @ValidateNested({each: true})
+  @Type(() => TrustAnchorConfig)
+  public readonly trustAnchors!: TrustAnchorConfig[];
 
   @ValidateNested()
   @Type(() => DatabaseConfig, {

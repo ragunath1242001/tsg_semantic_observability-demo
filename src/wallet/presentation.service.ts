@@ -8,13 +8,15 @@ import crypto from "crypto";
 import { CredentialsService, hashingAlgorithm, signingAlgorithm } from "./credentials.service.js";
 import { KeyService } from "./keys.service.js";
 import { DIDResolver } from "./didResolver.service.js";
+import { RootConfig } from "../config.js";
 
 @Injectable()
 export class PresentationService {
   constructor(
+    private readonly config: RootConfig,
     private readonly credentialsService: CredentialsService,
     private readonly keyService: KeyService,
-    private readonly didResolver: DIDResolver
+    private readonly didResolver: DIDResolver,
   ) {}
   private readonly logger = new Logger(this.constructor.name);
 
@@ -65,13 +67,13 @@ export class PresentationService {
     const vp = plainToClass(VerifiablePresentation, jwtPayload.vp)
     const resolvedDid = await this.didResolver.resolve(jwtPayload.iss!)
 
-    let validSignature = false;
+    let validateJWTSignature = false;
     for (const verificationMethod of resolvedDid.verificationMethod || []) {
       if (verificationMethod.publicKeyJwk) {
         const publicKey = await importJWK(verificationMethod.publicKeyJwk);
         try {
           await jwtVerify(vpJwt.vp, publicKey, {});
-          validSignature = true;
+          validateJWTSignature = true;
           break;
         } catch (err) {
           this.logger.debug(`Invalid JWT signature for key ${verificationMethod.id}`)
@@ -83,6 +85,7 @@ export class PresentationService {
 
     const validateExpiryDate: Array<boolean | "undefined"> = []
     const validateCredentials: boolean[] = [];
+    const validateTrustAnchors: boolean[] = [];
     for (const credential of vp.verifiableCredential) {
       try {
         const validExpirationDate = (credential.expirationDate) ? new Date(credential.expirationDate).getTime() > new Date().getTime() : "undefined";
@@ -98,25 +101,31 @@ export class PresentationService {
         const usedKey = resolvedDid.verificationMethod?.find(m => m.id === proof.verificationMethod);
         if (!usedKey || !usedKey.publicKeyJwk){
           validateCredentials.push(false);
+          validateTrustAnchors.push(false);
           break;
         }
         
         await compactVerify(jwsWithHash, await importJWK(usedKey.publicKeyJwk));
         validateCredentials.push(true);
+        const credentialTypes = this.config.trustAnchors.find(trustAnchor => trustAnchor.identifier === credential.issuer)?.credentialTypes || []
+        const trustedCredential = credential.type.filter(t => t !== 'VerifiableCredential').every(type => credentialTypes.includes(type));
+        validateTrustAnchors.push(trustedCredential);
       } catch (err) {
         validateCredentials.push(false);
+        validateTrustAnchors.push(false);
         break;
       }
     }
 
-    const valid = validSignature && (validateAudience || true) && validateJWTExpiryDate && validateCredentials.every(r => r) && validateExpiryDate.every(r => r === true)
+    const valid = validateJWTSignature && (validateAudience || true) && validateJWTExpiryDate && validateCredentials.every(r => r) && validateExpiryDate.every(r => r === true)
 
     return {
       vp: vpJwt.vp,
       valid: valid,
       validateExpiryDate: validateExpiryDate,
       validateCredentials: validateCredentials,
-      validateJWTSignature: validSignature,
+      validateTrustAnchors: validateTrustAnchors,
+      validateJWTSignature: validateJWTSignature,
       validateJWTExpiryDate: validateJWTExpiryDate,
       validateAudience: validateAudience,
     }
