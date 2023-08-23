@@ -82,11 +82,11 @@ export abstract class DatabaseConfig {
 }
 
 export class SQLiteConfig extends DatabaseConfig {
-  override readonly type: 'sqlite' = 'sqlite';
+  override readonly type: 'sqlite' = 'sqlite' as const;
 }
 
 export class PostgresConfig extends DatabaseConfig {
-  override readonly type: 'postgres' = 'postgres';
+  override readonly type: 'postgres' = 'postgres' as const;
 
   @IsString()
   public readonly host!: string

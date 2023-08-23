@@ -1,16 +1,20 @@
 import { Controller, Get, HttpStatus, Param } from "@nestjs/common";
-import { CredentialsService } from "../services/credentials.service.js";
+import { CredentialsService } from "./credentials.service.js";
 import { DIDDocument } from "did-resolver";
 import { VerifiableCredential, CredentialSubject } from "../model/credential.dto.js";
 import { AppError } from "../utils/error.js";
+import { DidService } from "./did.service.js";
 
 @Controller()
 export class CredentialsController {
-  constructor(private readonly credentialsService: CredentialsService) {}
+  constructor(
+    private readonly didService: DidService,
+    private readonly credentialsService: CredentialsService,
+  ) {}
 
   @Get('.well-known/did.json')
   async getDid(): Promise<DIDDocument> {
-    const didDocument = await this.credentialsService.getDid();
+    const didDocument = await this.didService.getDid();
     if (didDocument === undefined) {
       throw new AppError(`DID Document not ready yet`, HttpStatus.NOT_FOUND);
     }

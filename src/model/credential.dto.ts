@@ -1,5 +1,5 @@
 import { Type } from "class-transformer";
-import { IsOptional, IsString, ValidateNested } from "class-validator";
+import { IsBoolean, IsIn, IsOptional, IsString, ValidateNested } from "class-validator";
 
 export class Signature {
   @IsString()
@@ -60,4 +60,35 @@ export class VerifiablePresentation<T extends VerifiableCredential<CredentialSub
   @ValidateNested()
   @Type(() => VerifiableCredential<CredentialSubject>)
   verifiableCredential!: T[];
+}
+
+export class VerifiablePresentationJwt {
+  @IsString()
+  vp!: string;
+}
+
+export class VerifiablePresentationJsonLd {
+  @ValidateNested()
+  @Type(() => VerifiablePresentation)
+  vp!: VerifiablePresentation<VerifiableCredential<CredentialSubject>>;
+}
+
+export class PresentationValidation extends VerifiablePresentationJwt {
+  @IsBoolean()
+  valid!: boolean
+
+  @IsBoolean()
+  validateJWTSignature!: boolean;
+
+  @IsBoolean()
+  validateJWTExpiryDate!: boolean;
+
+  @IsIn([true, false, "undefined"])
+  validateExpiryDate!: Array<boolean | "undefined">;
+  @IsBoolean({each: true})
+  validateCredentials!: Array<boolean>;
+
+  @IsBoolean()
+  @IsOptional()
+  validateAudience?: boolean;
 }

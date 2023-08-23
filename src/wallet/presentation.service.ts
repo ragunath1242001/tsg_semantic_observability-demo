@@ -1,0 +1,124 @@
+import { Injectable, HttpStatus, Logger } from "@nestjs/common";
+import { plainToClass } from "class-transformer";
+import { SignJWT, importJWK, decodeJwt, jwtVerify, compactVerify } from "jose";
+import { VerifiablePresentationJsonLd, VerifiablePresentation, VerifiableCredential, CredentialSubject, VerifiablePresentationJwt, PresentationValidation } from "../model/credential.dto.js";
+import { AppError } from "../utils/error.js";
+import jsonld from "jsonld";
+import crypto from "crypto";
+import { CredentialsService, hashingAlgorithm, signingAlgorithm } from "./credentials.service.js";
+import { KeyService } from "./keys.service.js";
+import { DIDResolver } from "./didResolver.service.js";
+
+@Injectable()
+export class PresentationService {
+  constructor(
+    private readonly credentialsService: CredentialsService,
+    private readonly keyService: KeyService,
+    private readonly didResolver: DIDResolver
+  ) {}
+  private readonly logger = new Logger(this.constructor.name);
+
+  async createVerifiablePresentationJsonLd(credentialId: string): Promise<VerifiablePresentationJsonLd> {
+    const credential = await this.credentialsService.getCredential(credentialId);
+    const verifiablePresentation: VerifiablePresentation<VerifiableCredential<CredentialSubject>> = {
+      '@context': ['https://www.w3.org/2018/credentials/v1'],
+      '@type': ['VerifiablePresentation'],
+      verifiableCredential: [
+        credential.credential
+      ],
+    }
+    
+    return plainToClass(VerifiablePresentationJsonLd, {vp: verifiablePresentation})
+  }
+
+  async createVerifiablePresentationJwt(credentialId: string, audience: string): Promise<VerifiablePresentationJwt> {
+    const credential = await this.credentialsService.getCredential(credentialId);
+    if (!credential) {
+      throw new AppError(`Credential ${credentialId} can't be found`, HttpStatus.NOT_FOUND);
+    }
+    const keyId = credential.credential.proof.verificationMethod.split('#').slice(-1)[0];
+    const key = await this.keyService.getKey(keyId);
+    if (!key) {
+      throw new AppError(`Key material with id ${keyId} for credential ${credential.credential.id} can't be loaded`, HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+    const verifiablePresentation: VerifiablePresentation<VerifiableCredential<CredentialSubject>> = {
+      '@context': ['https://www.w3.org/2018/credentials/v1'],
+      '@type': ['VerifiablePresentation'],
+      verifiableCredential: [
+        credential.credential
+      ]
+    }
+    const jwt = await new SignJWT({vp: verifiablePresentation})
+      .setProtectedHeader({alg: signingAlgorithm(key.type)})
+      .setIssuedAt()
+      .setIssuer(credential.credential.issuer)
+      .setSubject(credential.credential.issuer)
+      .setAudience(audience)
+      .setExpirationTime('24h')
+      .setJti(crypto.randomUUID())
+      .sign(await importJWK(key.privateKey))
+    return plainToClass(VerifiablePresentationJwt, {vp: jwt})
+  }
+
+  async validatePresentation(vpJwt: VerifiablePresentationJwt, audience?: string): Promise<PresentationValidation> {
+    const jwtPayload = decodeJwt(vpJwt.vp);
+    const vp = plainToClass(VerifiablePresentation, jwtPayload.vp)
+    const resolvedDid = await this.didResolver.resolve(jwtPayload.iss!)
+
+    let validSignature = false;
+    for (const verificationMethod of resolvedDid.verificationMethod || []) {
+      if (verificationMethod.publicKeyJwk) {
+        const publicKey = await importJWK(verificationMethod.publicKeyJwk);
+        try {
+          await jwtVerify(vpJwt.vp, publicKey, {});
+          validSignature = true;
+          break;
+        } catch (err) {
+          this.logger.debug(`Invalid JWT signature for key ${verificationMethod.id}`)
+        }
+      }
+    }
+    const validateAudience = (audience) ? jwtPayload.aud === audience : undefined;
+    const validateJWTExpiryDate = (jwtPayload.exp) ? jwtPayload.exp > (new Date().getTime() / 1000) : false;
+
+    const validateExpiryDate: Array<boolean | "undefined"> = []
+    const validateCredentials: boolean[] = [];
+    for (const credential of vp.verifiableCredential) {
+      try {
+        const validExpirationDate = (credential.expirationDate) ? new Date(credential.expirationDate).getTime() > new Date().getTime() : "undefined";
+        validateExpiryDate.push(validExpirationDate);
+        const {proof, ...plainCredential} = credential;
+        const proofAlgorithm = JSON.parse(atob(proof.jws.split('.')[0])).alg
+
+        const normalized = await jsonld.normalize(plainCredential, {
+          algorithm: 'URDNA2015'
+        });
+        const hash = crypto.createHash(hashingAlgorithm(proofAlgorithm)).update(normalized).digest('hex');
+        const jwsWithHash = proof.jws.replace('..',`.${hash}.`);
+        const usedKey = resolvedDid.verificationMethod?.find(m => m.id === proof.verificationMethod);
+        if (!usedKey || !usedKey.publicKeyJwk){
+          validateCredentials.push(false);
+          break;
+        }
+        
+        await compactVerify(jwsWithHash, await importJWK(usedKey.publicKeyJwk));
+        validateCredentials.push(true);
+      } catch (err) {
+        validateCredentials.push(false);
+        break;
+      }
+    }
+
+    const valid = validSignature && (validateAudience || true) && validateJWTExpiryDate && validateCredentials.every(r => r) && validateExpiryDate.every(r => r === true)
+
+    return {
+      vp: vpJwt.vp,
+      valid: valid,
+      validateExpiryDate: validateExpiryDate,
+      validateCredentials: validateCredentials,
+      validateJWTSignature: validSignature,
+      validateJWTExpiryDate: validateJWTExpiryDate,
+      validateAudience: validateAudience,
+    }
+  }
+}

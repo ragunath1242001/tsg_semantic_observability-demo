@@ -37,7 +37,7 @@ export class RequestContextMiddleware implements NestMiddleware<Request, Respons
 
 @Injectable()
 export class AppLogger extends ConsoleLogger {
-  protected formatPid(pid: number): string {
+  protected override formatPid(): string {
     return '';
   }
 

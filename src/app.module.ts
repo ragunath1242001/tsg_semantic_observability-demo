@@ -1,27 +1,31 @@
 import { Module, NestModule, MiddlewareConsumer } from "@nestjs/common";
 import { ScheduleModule } from "@nestjs/schedule";
-import { TypedConfigModule, fileLoader, dotenvLoader } from "nest-typed-config";
-import { RootConfig } from "./config.js";
-import { CredentialsModule } from "./controllers/credentials.module.js";
 import { RequestContextMiddleware, LoggerMiddleware } from "./utils/logging.js";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { ConfigModule, rootConfig } from "./config.module.js";
+import { AuthModule } from "./auth/auth.module.js";
+import { WalletModule } from "./wallet/wallet.module.js";
+import { ManagementModule } from "./management/management.module.js";
 
 @Module({
   imports: [
     ScheduleModule.forRoot(),
-    CredentialsModule,
     ConfigModule,
     TypeOrmModule.forRoot({
       ...rootConfig.db,
       entities: [dirname(fileURLToPath(import.meta.url)) + "/**/*.dao.ts"],
       synchronize: true
-    })
+    }),
+    WalletModule,
+    ManagementModule,
+    AuthModule,
   ],
   exports: [
-    CredentialsModule
+    WalletModule,
+    ManagementModule,
+    AuthModule
   ]
 })
 export class AppModule implements NestModule {
