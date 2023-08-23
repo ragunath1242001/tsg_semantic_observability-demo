@@ -2,6 +2,7 @@ import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put, 
 import { CredentialsService } from "../wallet/credentials.service.js";
 import { CredentialConfig } from "../config.js";
 import { Credentials } from "../model/credentials.dao.js";
+import { CredentialSubject, VerifiableCredential } from "../model/credential.dto.js";
 
 @Controller('management/credentials')
 export class CredentialsManagementController {
@@ -18,7 +19,13 @@ export class CredentialsManagementController {
   @Post()
   @HttpCode(HttpStatus.OK)
   async addCredential(@Body(new ValidationPipe({transform: true})) credentialConfig: CredentialConfig): Promise<Credentials> {
-    return this.credentialsService.addCredential(credentialConfig);
+    return this.credentialsService.issueCredential(credentialConfig);
+  }
+
+  @Post("import")
+  @HttpCode(HttpStatus.OK)
+  async importCredential(@Body() credential: VerifiableCredential<CredentialSubject>): Promise<Credentials> {
+    return this.credentialsService.importCredential(credential);
   }
   
   @Get(":credentialId")
