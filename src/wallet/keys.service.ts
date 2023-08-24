@@ -78,11 +78,11 @@ export class KeyService {
     const existing = await this.keyRepository.findOneBy({id: key.id});
     
     if (key.existingKey && key.existingCertificate) {
-      this.logger.log(`Loading existing PKCS#8 key and X.509 certificate`);
+      this.logger.log(`Loading existing PKCS#8 key and X.509 certificate for ${key.id}`);
       privateKey = await importPKCS8(key.existingKey, 'RSA');
       publicKey = await importX509(key.existingCertificate, 'RSA');
     } else if (existing) {
-      this.logger.log(`Loaded key from repository`);
+      this.logger.log(`Loaded key ${existing.id} from repository`);
       return existing;
     } else {
       this.logger.log(`Creating new keypair with ${key.type}`);
