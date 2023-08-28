@@ -2,7 +2,7 @@ import { Allow, IsBoolean, IsIn, IsNumber, IsOptional, IsString, ValidateNested 
 import { Transform, TransformFnParams, Type } from "class-transformer";
 import fs from "fs";
 import { Logger } from "@nestjs/common";
-import { CredentialSubject } from "./model/credential.dto.js";
+import { CredentialSubject } from "./model/credentials.dto.js";
 
 function fileTransformer(params: TransformFnParams): string | undefined {
   if (typeof params.value === "string") {
@@ -98,6 +98,47 @@ export class PostgresConfig extends DatabaseConfig {
   public readonly password!: string
 }
 
+export class SmtpConfig {
+  @IsString()
+  public readonly host!: string
+
+  @IsNumber()
+  @Type()
+  public readonly port!: number
+
+  @IsBoolean()
+  @IsOptional()
+  public readonly secure: boolean = true
+
+  @IsString()
+  public readonly user!: string
+  
+  @IsString()
+  public readonly password!: string
+
+  @IsString()
+  public readonly from!: string
+}
+
+export class MailConfig {
+  // @IsBoolean()
+  // public readonly enabled!: boolean
+
+  @ValidateNested()
+  @Type(() => SmtpConfig)
+  public readonly smtp!: SmtpConfig
+
+  @IsString()
+  public readonly title!: string
+
+  @IsString()
+  public readonly dataspace!: string
+
+  @IsString()
+  @IsOptional()
+  public readonly logo?: string
+}
+
 export class TrustAnchorConfig {
   @IsString()
   public readonly identifier!: string
@@ -122,6 +163,11 @@ export class RootConfig {
   @ValidateNested({each: true})
   @Type(() => TrustAnchorConfig)
   public readonly trustAnchors!: TrustAnchorConfig[];
+
+  @ValidateNested()
+  @Type(() => MailConfig)
+  @IsOptional()
+  public readonly mail?: MailConfig;
 
   @ValidateNested()
   @Type(() => DatabaseConfig, {

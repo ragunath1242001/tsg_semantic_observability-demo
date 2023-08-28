@@ -1,7 +1,7 @@
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { CredentialConfig, RootConfig } from "../config.js";
 import { CompactSign, importJWK } from "jose";
-import { Credential, CredentialSubject, Signature, VerifiableCredential } from "../model/credential.dto.js";
+import { Credential, CredentialSubject, Signature, VerifiableCredential } from "../model/credentials.dto.js";
 import jsonld from "jsonld";
 import crypto from "crypto";
 import { AppError } from "../utils/error.js";
@@ -46,71 +46,78 @@ export class CredentialsService {
     await Promise.all(this.config.credentials.map(c => this.selfIssueCredential(c)));
   }
 
-  async getCredentials(): Promise<Credentials[]> {
-    return this.credentialRepository.find({});
+  async getCredentials(targetDid?: string): Promise<Credentials[]> {
+    return this.credentialRepository.find({
+      where: {
+        targetDid: targetDid
+      }
+    });
   }
 
-  async getCredential(credentialId: string): Promise<Credentials> {
-    const credential = await this.credentialRepository.findOneBy({id: credentialId});
+  async getCredential(credentialId: string, targetDid?: string): Promise<Credentials> {
+    const credential = await this.credentialRepository.findOneBy({id: credentialId, targetDid: targetDid});
     if (credential === null) {
       throw new AppError(`Credential with identifier ${credentialId} can't be found`, HttpStatus.NOT_FOUND)
     }
     return credential;
   }
 
-  async issueCredential(credentialConfig: CredentialConfig): Promise<Credentials> {
+  async issueCredential(credentialConfig: CredentialConfig, targetDid?: string): Promise<Credentials> {
     const existing = await this.credentialRepository.findOneBy({id: credentialConfig.id});
     if (existing) {
       throw new AppError(`Credential with identifier ${credentialConfig.id} already exists`, HttpStatus.CONFLICT);
     }
-    return await this.selfIssueCredential(credentialConfig);
+    return await this.selfIssueCredential(credentialConfig, targetDid);
   }
 
-  async importCredential(credential: VerifiableCredential<CredentialSubject>): Promise<Credentials> {
-    const didId = await this.didService.getDidId();
+  async importCredential(credential: VerifiableCredential<CredentialSubject>, targetDid?: string): Promise<Credentials> {
+    const didId = targetDid || await this.didService.getDidId();
     if (!credential.id?.startsWith(`${didId}#`)) {
-      throw new AppError('Imported credentials must be of format {DID_ID}#{CREDENTIAL_ID}', HttpStatus.BAD_REQUEST);
+      throw new AppError('Imported credentials must be have an ID that starts with a DID appended with # and a credential ID', HttpStatus.BAD_REQUEST);
     }
     return await this.credentialRepository.save({
       id: credential.id,
+      targetDid: didId,
       selfIssued: false,
       credential: credential
     });
   }
 
-  async updateCredential(credentialId: string, credential: CredentialConfig | VerifiableCredential<CredentialSubject>): Promise<Credentials> {
-    const existing = await this.credentialRepository.findOneBy({id:  credentialId});
+  async updateCredential(credentialId: string, credential: CredentialConfig | VerifiableCredential<CredentialSubject>, targetDid?: string): Promise<Credentials> {
+    const existing = await this.credentialRepository.findOneBy({id:  credentialId, targetDid: targetDid});
     if (existing === null) {
       throw new AppError(`Credential with identifier ${credentialId} can't be found`, HttpStatus.NOT_FOUND);
     }
     if (credential instanceof CredentialConfig) {
-      return await this.selfIssueCredential(credential);
+      return await this.selfIssueCredential(credential, targetDid);
     } else {
       return await this.credentialRepository.save({
         id: credentialId,
+        targetDid: targetDid || await this.didService.getDidId(),
         selfIssued: false,
         credential: credential
       });
     }
   }
 
-  async deleteCredential(credentialId: string) {
-    const credential = await this.credentialRepository.findOneBy({id: credentialId});
+  async deleteCredential(credentialId: string, targetDid?: string) {
+    const credential = await this.credentialRepository.findOneBy({id: credentialId, targetDid: targetDid});
     if (credential === null) {
       throw new AppError(`Credential with identifier ${credentialId} can't be found`, HttpStatus.NOT_FOUND)
     }
     await this.credentialRepository.softRemove(credential);
   }
   
-  async selfIssueCredential(credentialConfig: CredentialConfig): Promise<Credentials> {
+  async selfIssueCredential(credentialConfig: CredentialConfig, targetDid?: string): Promise<Credentials> {
     this.logger.log(`Creating verifiable credential for ${credentialConfig.id}`);
     const issuanceDate = new Date();
     const expirationDate = new Date();
     expirationDate.setMonth(expirationDate.getMonth()+3);
+    const credentialId = (targetDid) ? `${targetDid}#${credentialConfig.id}` : `${await this.didService.getDidId()}#${credentialConfig.id}` ;
     const credential: Credential<CredentialSubject> = {
       '@context': ["https://www.w3.org/2018/credentials/v1"].concat(credentialConfig.context),
       type: ['VerifiableCredential'].concat(credentialConfig.type),
-      id: `${await this.didService.getDidId()}#${credentialConfig.id}`,
+      id: credentialId,
       issuer: await this.didService.getDidId(),
       issuanceDate: issuanceDate.toISOString(),
       expirationDate: expirationDate.toISOString(),
@@ -146,7 +153,8 @@ export class CredentialsService {
     }
     this.logger.debug(`Verifiable credential ${credentialConfig.id}\n${JSON.stringify(verifiableCredential, null, 2)}`);
     return await this.credentialRepository.save({
-      id: credential.id,
+      id: credentialId,
+      targetDid: credentialId.split('#')?.[0],
       credential: verifiableCredential,
       selfIssued: true
     });

@@ -1,7 +1,7 @@
 import { DIDDocument } from "did-resolver";
 import { JWK } from "jose";
 import { Column, Entity, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
-import { VerifiableCredential, CredentialSubject } from "./credential.dto.js";
+import { VerifiableCredential, CredentialSubject } from "./credentials.dto.js";
 import { MetaEntity } from "./common.dao.js";
 
 @Entity()
@@ -35,6 +35,9 @@ export class KeyMaterials extends MetaEntity {
 export class Credentials extends MetaEntity {
   @PrimaryColumn()
   id!: string;
+
+  @Column()
+  targetDid!: string;
 
   @Column("simple-json")
   credential!: VerifiableCredential<CredentialSubject>

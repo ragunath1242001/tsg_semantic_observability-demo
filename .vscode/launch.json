@@ -13,11 +13,12 @@
         "name": "Debug Main",
         "type": "node",
         "request": "launch",
-        "args": ["${workspaceFolder}/src/app.ts"],
+        "args": ["${workspaceFolder}/backend/src/app.ts"],
         "runtimeArgs": ["--nolazy", "--loader", "ts-node/esm"],
         "sourceMaps": true,
-        "cwd": "${workspaceRoot}",
+        "cwd": "${workspaceRoot}/backend",
         "outputCapture": "std"
+        ,
     }
   ]
 }

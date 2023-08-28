@@ -1,0 +1,289 @@
+import { ForbiddenException, HttpStatus, Injectable } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { AppRole, ClientInfo, ClientSignup, ResetPassword } from "../model/clients.dto.js";
+import { DeepPartial, Repository } from "typeorm";
+import { JwtService } from "@nestjs/jwt";
+import bcrypt from "bcrypt";
+import { jwtSecrets } from "./auth.module.js";
+import { Clients } from "../model/clients.dao.js";
+import { AppError } from "../utils/error.js";
+import { MailService } from "./mail.service.js";
+import crypto from "crypto";
+import { RootConfig } from "../config.js";
+
+@Injectable()
+export class ClientsService {
+  constructor(
+    @InjectRepository(Clients) private readonly clientsRepository: Repository<Clients>,
+    private readonly mail: MailService,
+    private readonly jwtService: JwtService,
+    private readonly config: RootConfig
+  ) {
+    
+    this.clientsRepository.save({
+      clientId: 'wallet-admin',
+      clientSecret: bcrypt.hashSync('test', 10),
+      email: 'noreply@dataspac.es',
+      didId: 'did:web:localhost%3A3000',
+      roles: [AppRole.VIEW_ALL_CREDENTIALS, AppRole.MANAGE_ALL_CREDENTIALS, AppRole.MANAGE_KEYS, AppRole.MANAGE_CLIENTS],
+      verified: true
+    })
+    this.clientsRepository.save({
+      clientId: 'presentation-user',
+      clientSecret: bcrypt.hashSync('test', 10),
+      email: 'noreply@dataspac.es',
+      didId: 'did:web:localhost%3A3000',
+      roles: [AppRole.VIEW_PRESENTATIONS],
+      verified: true
+    })
+    this.clientsRepository.save({
+      clientId: 'test2',
+      clientSecret: bcrypt.hashSync('test2', 10),
+      email: 'noreply@dataspac.es',
+      didId: 'did:web:localhost%3A3001',
+      roles: [AppRole.VIEW_OWN_CREDENTIALS, AppRole.MANAGE_OWN_CREDENTIALS],
+      verified: true
+    })
+  }
+
+  async signup(clientSignup: ClientSignup, active: boolean = false): Promise<Clients> {
+    if (!clientSignup.email || !clientSignup.didId || !clientSignup.secret) {
+      throw new AppError(`Missing information for signup`, HttpStatus.BAD_REQUEST);
+    }
+    const client = await this.clientsRepository.findOneBy({clientId: clientSignup.email});
+    if (client) {
+      throw new AppError(`Client with email address ${clientSignup.email} already exists`, HttpStatus.CONFLICT);
+    }
+    const newClient: DeepPartial<Clients> = {
+      clientId: clientSignup.email,
+      clientSecret: await bcrypt.hash(clientSignup.secret, 10),
+      email: clientSignup.email,
+      didId: clientSignup.didId,
+      roles: []
+    }
+    if (!active && this.config.mail) {
+      newClient.verified = false;
+      newClient.verificationCode = crypto.randomBytes(32).toString('hex');
+      newClient.verificationExpiration = new Date(new Date().getTime() + 60 * 60 * 1000);
+      await this.mail.sendMail({
+        email: clientSignup.email,
+        sender: `"${this.config.mail.title}" <${this.config.mail.smtp.from}>`,
+        title: `${this.config.mail.dataspace} - Activate your account`,
+        summary: `Activate your account for the ${this.config.mail.title}`,
+        link: this.config.server.publicAddress,
+        img: `${this.config.mail.logo}`,
+        header: 'Activate your account',
+        content: [
+          {
+            paragraphs: [
+              `An account has been created on the ${this.config.mail.title}`,
+              'We need to validate your email address to activate your account. Click the following button to activate your account:'
+            ]
+          },
+          {
+            button: {
+              url: `${this.config.server.publicAddress}/?action=verify&clientId=${encodeURIComponent(clientSignup.email)}&code=${newClient.verificationCode}`,
+              text: 'Activate my account'
+            }
+          }
+        ],
+        footer: `This email was sent to you by ${this.config.mail.title} because you signed up for an account. If you do not recognise this, you can safely ignore this email.`
+      })
+    } else {
+      newClient.verified = true;
+    }
+    return this.clientsRepository.save(newClient)
+  }
+
+  async forgotPassword(clientId: string): Promise<void> {
+    if (!this.config.mail) {
+      throw new AppError(`This server does not support resetting of passwords`, HttpStatus.NOT_IMPLEMENTED);
+    }
+    const client = await this.clientsRepository.findOneBy({clientId: clientId});
+    if (!client) {
+      throw new AppError(`Client with id ${clientId} not found`, HttpStatus.NOT_FOUND);
+    }
+    client.verificationCode = crypto.randomBytes(32).toString('hex');
+    client.verificationExpiration = new Date(new Date().getTime() + 60 * 60 * 1000);
+
+    await this.mail.sendMail({
+      email: clientId,
+      sender: `"${this.config.mail.title}" <${this.config.mail.smtp.from}>`,
+      title: `${this.config.mail.dataspace} - Reset password`,
+      summary: `Reset your password for the ${this.config.mail.title}`,
+      link: this.config.server.publicAddress,
+      img: `${this.config.mail.logo}`,
+      header: 'Reset password',
+      content: [
+        {
+          paragraphs: [
+            `A request has been made to reset the password for your account on the ${this.config.mail.title}`,
+            'Click the following button to reset your password:'
+          ]
+        },
+        {
+          button: {
+            url: `${this.config.server.publicAddress}/?forgot=${client.verificationCode
+              }&client=${encodeURIComponent(clientId)}`,
+            text: 'Reset password'
+          }
+        }
+      ],
+      footer: `This email was sent to you by ${this.config.mail.title} because you requested a reset of your password. If you do not recognise this, you can safely ignore this email.`
+    });
+
+    await this.clientsRepository.save(client);
+  }
+
+  async updateDidId(didId: string, clientId: string) {
+    const client = await this.clientsRepository.findOneBy({clientId: clientId});
+    if (!client) {
+      throw new AppError(`Client with id ${clientId} not found`, HttpStatus.NOT_FOUND);
+    }
+    client.didId = didId;
+    await this.clientsRepository.save(client);
+  }
+
+  async getClients(): Promise<Clients[]> {
+    const clients = await this.clientsRepository.find({});
+    return clients.map(client => {
+      client.clientSecret = ''
+      client.refreshToken = ''
+      return client;
+    });
+  }
+
+  async addRole(role: AppRole, clientId: string) {
+    const client = await this.clientsRepository.findOneBy({clientId: clientId});
+    if (!client) {
+      throw new AppError(`Client with id ${clientId} not found`, HttpStatus.NOT_FOUND);
+    }
+    client.roles = [...new Set([...client.roles, role])];
+    await this.clientsRepository.save(client);
+  }
+
+  async removeRole(role: AppRole, clientId: string) {
+    const client = await this.clientsRepository.findOneBy({clientId: clientId});
+    if (!client) {
+      throw new AppError(`Client with id ${clientId} not found`, HttpStatus.NOT_FOUND);
+    }
+    client.roles = client.roles.filter(r => r !== role);
+    await this.clientsRepository.save(client);
+  }
+
+  async activate(clientId: string) {
+    const client = await this.clientsRepository.findOneBy({clientId: clientId});
+    if (!client) {
+      throw new AppError(`Client with id ${clientId} not found`, HttpStatus.NOT_FOUND);
+    }
+    client.verified = true;
+    await this.clientsRepository.save(client);
+  }
+  
+  async deactivate(clientId: string) {
+    const client = await this.clientsRepository.findOneBy({clientId: clientId});
+    if (!client) {
+      throw new AppError(`Client with id ${clientId} not found`, HttpStatus.NOT_FOUND);
+    }
+    client.verified = false;
+    await this.clientsRepository.save(client);
+  }
+
+  async remove(clientId: string) {
+    const client = await this.clientsRepository.findOneBy({clientId: clientId});
+    if (!client) {
+      throw new AppError(`Client with id ${clientId} not found`, HttpStatus.NOT_FOUND);
+    }
+    await this.clientsRepository.softRemove(client);
+  }
+
+  async verify(code: string, clientId: string) {
+    if (!clientId || clientId.trim().length === 0) {
+      throw new AppError(`Incorrect data`, HttpStatus.BAD_REQUEST)
+    }
+    const client = await this.clientsRepository.findOneBy({clientId: clientId});
+    if (!client) {
+      throw new AppError(`Incorrect data`, HttpStatus.BAD_REQUEST)
+    }
+    if (client.verificationCode === code && client.verificationExpiration && client.verificationExpiration > new Date()) {
+      client.verified = true;
+      client.verificationCode = undefined;
+      client.verificationExpiration = undefined;
+      this.clientsRepository.save(client);
+    } else {
+      throw new AppError(`Expired or incorrect code`, HttpStatus.BAD_REQUEST)
+    }
+  }
+
+  async resetPassword(reset: ResetPassword) {
+    if (!reset.clientId || reset.clientId.trim().length === 0) {
+      throw new AppError(`Incorrect data`, HttpStatus.BAD_REQUEST)
+    }
+    const client = await this.clientsRepository.findOneBy({clientId: reset.clientId});
+    if (!client) {
+      throw new AppError(`Incorrect data`, HttpStatus.BAD_REQUEST)
+    }
+    if ((client.verificationCode === reset.old && client.verificationExpiration && client.verificationExpiration > new Date()) || await bcrypt.compare(reset.old, client.clientSecret)){
+      client.clientSecret = await bcrypt.hash(reset.old, 10);
+      client.verificationCode = undefined;
+      client.verificationExpiration = undefined;
+      this.clientsRepository.save(client);
+    } else {
+      throw new AppError(`Incorrect data`, HttpStatus.BAD_REQUEST)
+    }
+  }
+
+  async signin(clientId: string, secret: string): Promise<ClientInfo | null> {
+    const client = await this.clientsRepository.findOneBy({clientId: clientId, verified: true});
+    if (!client) return null;
+    if (await bcrypt.compare(secret, client?.clientSecret)) {
+        return {
+        sub: client.clientId,
+        email: client.email,
+        didId: client.didId,
+        roles: client.roles
+      };
+    }
+    return null;
+  }
+
+  async validateToken(clientId: string): Promise<ClientInfo | null> {
+    const client = await this.clientsRepository.findOneBy({clientId: clientId, verified: true});
+    if (!client) return null;
+    return {
+      sub: client.clientId,
+      email: client.email,
+      didId: client.didId,
+      roles: client.roles
+    };
+  }
+
+  async validateRefreshToken(clientId: string, refreshToken: string) {
+    const client = await this.clientsRepository.findOneBy({clientId: clientId, verified: true});
+    if (!client) return null;
+    if (refreshToken === client.refreshToken) {
+      return this.login({
+        sub: client.clientId,
+        email: client.email,
+        didId: client.didId,
+        roles: client.roles
+      });
+    }
+    throw new ForbiddenException('Access denied');
+  }
+
+  async login(client: ClientInfo) {
+    const refreshToken = this.jwtService.sign(client, {
+      secret: jwtSecrets.refresh,
+      expiresIn: '7d'
+    })
+    await this.clientsRepository.update({clientId: client.sub}, {refreshToken: refreshToken});
+    return {
+      access_token: this.jwtService.sign(client, {
+        secret: jwtSecrets.access,
+        expiresIn: '15m'
+      }),
+      refresh_token: refreshToken
+    }
+  }
+}

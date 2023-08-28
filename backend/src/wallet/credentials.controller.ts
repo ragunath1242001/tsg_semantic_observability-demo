@@ -1,11 +1,13 @@
 import { Controller, Get, HttpStatus, Param } from "@nestjs/common";
 import { CredentialsService } from "./credentials.service.js";
 import { DIDDocument } from "did-resolver";
-import { VerifiableCredential, CredentialSubject } from "../model/credential.dto.js";
+import { VerifiableCredential, CredentialSubject } from "../model/credentials.dto.js";
 import { AppError } from "../utils/error.js";
 import { DidService } from "./did.service.js";
+import { DisableJwtGuard } from "../auth/jwt.guard.js";
 
 @Controller()
+@DisableJwtGuard(true)
 export class CredentialsController {
   constructor(
     private readonly didService: DidService,

@@ -1,7 +1,7 @@
 import { Injectable, HttpStatus, Logger } from "@nestjs/common";
 import { plainToClass } from "class-transformer";
 import { SignJWT, importJWK, decodeJwt, jwtVerify, compactVerify } from "jose";
-import { VerifiablePresentationJsonLd, VerifiablePresentation, VerifiableCredential, CredentialSubject, VerifiablePresentationJwt, PresentationValidation } from "../model/credential.dto.js";
+import { VerifiablePresentationJsonLd, VerifiablePresentation, VerifiableCredential, CredentialSubject, VerifiablePresentationJwt, PresentationValidation } from "../model/credentials.dto.js";
 import { AppError } from "../utils/error.js";
 import jsonld from "jsonld";
 import crypto from "crypto";
