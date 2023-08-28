@@ -1,4 +1,4 @@
-import { ForbiddenException, HttpStatus, Injectable } from "@nestjs/common";
+import { ForbiddenException, HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { AppRole, ClientInfo, ClientSignup, ResetPassword } from "../model/clients.dto.js";
 import { DeepPartial, Repository } from "typeorm";
@@ -17,34 +17,54 @@ export class ClientsService {
     @InjectRepository(Clients) private readonly clientsRepository: Repository<Clients>,
     private readonly mail: MailService,
     private readonly jwtService: JwtService,
-    private readonly config: RootConfig
+    private readonly config: RootConfig,
   ) {
-    
-    this.clientsRepository.save({
-      clientId: 'wallet-admin',
-      clientSecret: bcrypt.hashSync('test', 10),
-      email: 'noreply@dataspac.es',
-      didId: 'did:web:localhost%3A3000',
-      roles: [AppRole.VIEW_ALL_CREDENTIALS, AppRole.MANAGE_ALL_CREDENTIALS, AppRole.MANAGE_KEYS, AppRole.MANAGE_CLIENTS],
-      verified: true
-    })
-    this.clientsRepository.save({
-      clientId: 'presentation-user',
-      clientSecret: bcrypt.hashSync('test', 10),
-      email: 'noreply@dataspac.es',
-      didId: 'did:web:localhost%3A3000',
-      roles: [AppRole.VIEW_PRESENTATIONS],
-      verified: true
-    })
-    this.clientsRepository.save({
-      clientId: 'test2',
-      clientSecret: bcrypt.hashSync('test2', 10),
-      email: 'noreply@dataspac.es',
-      didId: 'did:web:localhost%3A3001',
-      roles: [AppRole.VIEW_OWN_CREDENTIALS, AppRole.MANAGE_OWN_CREDENTIALS],
-      verified: true
+    const didId = `did:web:${this.config.server.publicDomain.replace(':','%3A')}`;
+    if (this.config.initClients.length === 0) {
+      const secret = crypto.randomBytes(32).toString('hex')
+      this.upsertClient({
+        clientId: 'admin',
+        clientSecret: bcrypt.hashSync(secret, 10),
+        email: 'noreply@dataspac.es',
+        didId: didId,
+        roles: [AppRole.VIEW_ALL_CREDENTIALS, AppRole.MANAGE_ALL_CREDENTIALS, AppRole.MANAGE_KEYS, AppRole.MANAGE_CLIENTS],
+        verified: true
+      })
+      // this.clientsRepository.upsert(, ['id', 'clientId']);
+      this.logger.warn('No initial clients configured, one admin client is created automatically:');
+      this.logger.warn('  clientId: admin');
+      this.logger.warn(`  clientSecret: ${secret}`)
+      this.logger.warn('Please update your configuration for production environments with predefined client(s)');
+    } else {
+      for (const initClient of this.config.initClients) {
+        let secret: string;
+        if (initClient.secret.match(/^\$2[aby]?\$\d{1,2}\$[./A-Za-z0-9]{53}$/g)) {
+          secret = initClient.secret;
+        } else {
+          secret = bcrypt.hashSync(initClient.secret, 10)
+          this.logger.warn(`Secret for client ${initClient.id} configured in plain text`);
+        }
+        this.upsertClient({
+          clientId: initClient.id,
+          clientSecret: secret,
+          email: initClient.email,
+          didId: initClient.didId || didId,
+          roles: initClient.roles,
+          verified: true
+        });
+      }
+    }
+  }
+
+  private async upsertClient(clientInfo: DeepPartial<Clients>) {
+    const client: DeepPartial<Clients> = await this.clientsRepository.findOneBy({clientId: clientInfo.clientId}) || {};
+    await this.clientsRepository.save({
+      ...client,
+      ...clientInfo
     })
   }
+
+  private readonly logger = new Logger(this.constructor.name);
 
   async signup(clientSignup: ClientSignup, active: boolean = false): Promise<Clients> {
     if (!clientSignup.email || !clientSignup.didId || !clientSignup.secret) {

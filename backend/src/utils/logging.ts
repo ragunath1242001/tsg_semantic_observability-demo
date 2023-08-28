@@ -1,4 +1,4 @@
-import { Injectable, NestMiddleware, Logger, ConsoleLogger } from "@nestjs/common";
+import { Injectable, NestMiddleware, Logger, ConsoleLogger, LogLevel } from "@nestjs/common";
 import { AsyncLocalStorage } from "async_hooks";
 import { Request, Response, NextFunction } from "express";
 import crypto from "crypto";
@@ -37,6 +37,17 @@ export class RequestContextMiddleware implements NestMiddleware<Request, Respons
 
 @Injectable()
 export class AppLogger extends ConsoleLogger {
+  constructor(level: 'log' | 'debug' | 'verbose') {
+    super();
+    let levels: LogLevel[] = []
+    switch(level) {
+      case "log": levels = ['log', 'warn', 'error', 'fatal']; break;
+      case "debug": levels = ['debug', 'log', 'warn', 'error', 'fatal']; break;
+      case "verbose": levels = ['verbose', 'debug', 'log', 'warn', 'error', 'fatal']; break;
+    }
+    this.setLogLevels(levels)
+  }
+
   protected override formatPid(): string {
     return '';
   }

@@ -1,8 +1,9 @@
-import { Allow, IsBoolean, IsIn, IsNumber, IsOptional, IsString, ValidateNested } from "class-validator";
+import { Allow, IsBoolean, IsDefined, IsEmail, IsIn, IsNumber, IsOptional, IsString, ValidateNested } from "class-validator";
 import { Transform, TransformFnParams, Type } from "class-transformer";
 import fs from "fs";
 import { Logger } from "@nestjs/common";
 import { CredentialSubject } from "./model/credentials.dto.js";
+import { AppRole } from "./model/clients.dto.js";
 
 function fileTransformer(params: TransformFnParams): string | undefined {
   if (typeof params.value === "string") {
@@ -21,17 +22,21 @@ function fileTransformer(params: TransformFnParams): string | undefined {
 
 export class ServerConfig {
   @IsString()
+  @IsOptional()
   public readonly listen: string = '0.0.0.0';
   @IsNumber()
   @Type()
+  @IsOptional()
   public readonly port: number = 3000;
   @IsString()
+  @IsOptional()
   public readonly publicDomain: string = 'localhost';
   @IsString()
+  @IsOptional()
   public readonly publicAddress: string = `http://localhost:3000`;
 }
 
-export class KeyConfig {
+export class InitKeyConfig {
   @IsString()
   @IsIn(['EdDSA','ES384','X509'])
   public readonly type!: 'EdDSA' | 'ES384' | 'X509'
@@ -40,6 +45,7 @@ export class KeyConfig {
   public readonly id!: string
 
   @IsBoolean()
+  @IsOptional()
   public readonly default: boolean = false
 
   @IsOptional()
@@ -51,7 +57,7 @@ export class KeyConfig {
   public readonly existingCertificate?: string
 }
 
-export class CredentialConfig {
+export class InitCredentialConfig {
   @IsString({each: true})
   @IsOptional()
   public readonly context: string[] = []
@@ -67,7 +73,6 @@ export class CredentialConfig {
   @IsOptional()
   public readonly keyId?: string
 
-  // @Transform(({value}) => value)
   @Allow()
   public readonly credentialSubject!: CredentialSubject
 }
@@ -75,7 +80,7 @@ export class CredentialConfig {
 export abstract class DatabaseConfig {
   @IsString()
   @IsIn(["sqlite", "postgres"])
-  public readonly type: 'sqlite' | 'postgres' = 'sqlite'
+  public readonly type!: 'sqlite' | 'postgres';
 
   @IsString()
   public readonly database!: string
@@ -121,11 +126,9 @@ export class SmtpConfig {
 }
 
 export class MailConfig {
-  // @IsBoolean()
-  // public readonly enabled!: boolean
-
   @ValidateNested()
   @Type(() => SmtpConfig)
+  @IsDefined()
   public readonly smtp!: SmtpConfig
 
   @IsString()
@@ -144,39 +147,68 @@ export class TrustAnchorConfig {
   public readonly identifier!: string
 
   @IsString({each: true})
-  public readonly credentialTypes!: string[]
+  public readonly credentialTypes: string[] = []
+}
+
+export class InitClientConfig {
+  @IsString()
+  public readonly id!: string
+
+  @IsString()
+  public readonly secret!: string
+
+  @IsEmail()
+  public readonly email!: string
+
+  @IsString()
+  @IsOptional()
+  public readonly didId?: string
+
+  @IsString({each: true})
+  @IsIn(Object.values(AppRole), {each: true})
+  public readonly roles: AppRole[] = []
 }
 
 export class RootConfig {
   @ValidateNested()
   @Type(() => ServerConfig)
-  public readonly server!: ServerConfig;
+  @IsOptional()
+  public readonly server: ServerConfig = new ServerConfig();
 
   @ValidateNested({each: true})
-  @Type(() => KeyConfig)
-  public readonly keys!: KeyConfig[];
+  @Type(() => InitKeyConfig)
+  @IsOptional()
+  public readonly initKeys: InitKeyConfig[] = [];
 
   @ValidateNested({each: true})
-  @Type(() => CredentialConfig)
-  public readonly credentials!: CredentialConfig[];
+  @Type(() => InitCredentialConfig)
+  @IsOptional()
+  public readonly initCredentials: InitCredentialConfig[] = [];
 
   @ValidateNested({each: true})
   @Type(() => TrustAnchorConfig)
-  public readonly trustAnchors!: TrustAnchorConfig[];
+  @IsOptional()
+  public readonly trustAnchors: TrustAnchorConfig[] = [];
 
   @ValidateNested()
   @Type(() => MailConfig)
   @IsOptional()
   public readonly mail?: MailConfig;
 
+  @ValidateNested({each: true})
+  @Type(() => InitClientConfig)
+  public readonly initClients: InitClientConfig[] = [];
+
   @ValidateNested()
+  @IsDefined({message: 'Either sqlite or postgres DB config must be provided'})
   @Type(() => DatabaseConfig, {
     discriminator: {
       property: 'type',
       subTypes: [
         { value: SQLiteConfig, name: 'sqlite'},
         { value: PostgresConfig, name: 'postgres'}
-      ]
+      ],
+
     }
   })
   public readonly db!: DatabaseConfig

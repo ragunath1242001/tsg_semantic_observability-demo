@@ -1,0 +1,14 @@
+# db:
+#   type: sqlite
+#   database: test.sqlite
+
+# initClients:
+#   - id: admin
+#     secret: test
+#     email: noreply@dataspac.es
+#     roles:
+#       - view_all_credentials
+#       - manage_all_credentials
+#       - manage_keys
+#       - manage_clients
+

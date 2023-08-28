@@ -1,6 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { MailConfig, RootConfig } from "../config.js";
-import nodemailer, { Transporter, createTransport } from "nodemailer";
+import { Transporter, createTransport } from "nodemailer";
 
 
 /** Email content part, either paragraph(s) or a button */
@@ -59,6 +59,7 @@ export class MailService {
         html: this.emailHtmlTemplate(parameters),
         text: this.emailTextTemplate(parameters)
       });
+      this.logger.debug(`Send mail: ${info}`)
       return true;
     } else {
       return false;

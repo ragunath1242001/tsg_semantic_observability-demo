@@ -1,7 +1,7 @@
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { KeyLike, importPKCS8, importX509, generateKeyPair, exportJWK } from "jose";
 import { Not, Repository } from "typeorm";
-import { KeyConfig, RootConfig } from "../config.js";
+import { InitKeyConfig, RootConfig } from "../config.js";
 import { KeyMaterials } from "../model/credentials.dao.js";
 import { AppError } from "../utils/error.js";
 import { InjectRepository } from "@nestjs/typeorm";
@@ -19,8 +19,19 @@ export class KeyService {
   private readonly logger = new Logger(this.constructor.name);
 
   async init() {
-    const keys = await Promise.all(this.config.keys.map(k => this.createKeyMaterial(k)));
+    const keys = await Promise.all(this.config.initKeys.map(k => this.insertIfNotExists(k)));
     await this.didService.createDidDocument(keys);
+  }
+
+  private async insertIfNotExists(initKeyConfig: InitKeyConfig): Promise<KeyMaterials> {
+    const existing = await this.keyRepository.findOneBy({id: initKeyConfig.id});
+    if (!existing) {
+      this.logger.log(`Creating initial key ${initKeyConfig.id}`);
+      return this.createKeyMaterial(initKeyConfig);
+    } else {
+      this.logger.log(`Using existing initial key ${initKeyConfig.id}`);
+      return existing;
+    }
   }
 
   async getKeys(): Promise<KeyMaterials[]> {
@@ -43,7 +54,7 @@ export class KeyService {
     return key;
   }
 
-  async addKey(keyConfig: KeyConfig): Promise<KeyMaterials> {
+  async addKey(keyConfig: InitKeyConfig): Promise<KeyMaterials> {
     const existing = await this.keyRepository.findOneBy({id: keyConfig.id});
     if (existing) {
       throw new AppError(`Key with identifier ${keyConfig.id} already exists`, HttpStatus.CONFLICT);
@@ -71,7 +82,7 @@ export class KeyService {
     await this.didService.createDidDocument(await this.getKeys());
   }
 
-  async createKeyMaterial(key: KeyConfig): Promise<KeyMaterials> {
+  async createKeyMaterial(key: InitKeyConfig): Promise<KeyMaterials> {
     this.logger.log(`Loading key material for key ${key.id}`);
     let privateKey: KeyLike;
     let publicKey: KeyLike;

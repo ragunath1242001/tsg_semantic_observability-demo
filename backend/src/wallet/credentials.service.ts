@@ -1,5 +1,5 @@
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
-import { CredentialConfig, RootConfig } from "../config.js";
+import { InitCredentialConfig, RootConfig } from "../config.js";
 import { CompactSign, importJWK } from "jose";
 import { Credential, CredentialSubject, Signature, VerifiableCredential } from "../model/credentials.dto.js";
 import jsonld from "jsonld";
@@ -43,7 +43,18 @@ export class CredentialsService {
   
   async init() {
     this.logger.log('Initializing CredentialService');
-    await Promise.all(this.config.credentials.map(c => this.selfIssueCredential(c)));
+    await Promise.all(this.config.initCredentials.map(c => this.insertIfNotExists(c)));
+  }
+
+  private async insertIfNotExists(initCredentialConfig: InitCredentialConfig): Promise<Credentials> {
+    const existing = await this.credentialRepository.findOneBy({id: initCredentialConfig.id});
+    if (!existing) {
+      this.logger.log(`Creating initial key ${initCredentialConfig.id}`);
+      return this.selfIssueCredential(initCredentialConfig);
+    } else {
+      this.logger.log(`Using existing initial key ${initCredentialConfig.id}`);
+      return existing;
+    }
   }
 
   async getCredentials(targetDid?: string): Promise<Credentials[]> {
@@ -62,7 +73,7 @@ export class CredentialsService {
     return credential;
   }
 
-  async issueCredential(credentialConfig: CredentialConfig, targetDid?: string): Promise<Credentials> {
+  async issueCredential(credentialConfig: InitCredentialConfig, targetDid?: string): Promise<Credentials> {
     const existing = await this.credentialRepository.findOneBy({id: credentialConfig.id});
     if (existing) {
       throw new AppError(`Credential with identifier ${credentialConfig.id} already exists`, HttpStatus.CONFLICT);
@@ -83,12 +94,12 @@ export class CredentialsService {
     });
   }
 
-  async updateCredential(credentialId: string, credential: CredentialConfig | VerifiableCredential<CredentialSubject>, targetDid?: string): Promise<Credentials> {
+  async updateCredential(credentialId: string, credential: InitCredentialConfig | VerifiableCredential<CredentialSubject>, targetDid?: string): Promise<Credentials> {
     const existing = await this.credentialRepository.findOneBy({id:  credentialId, targetDid: targetDid});
     if (existing === null) {
       throw new AppError(`Credential with identifier ${credentialId} can't be found`, HttpStatus.NOT_FOUND);
     }
-    if (credential instanceof CredentialConfig) {
+    if (credential instanceof InitCredentialConfig) {
       return await this.selfIssueCredential(credential, targetDid);
     } else {
       return await this.credentialRepository.save({
@@ -108,7 +119,7 @@ export class CredentialsService {
     await this.credentialRepository.softRemove(credential);
   }
   
-  async selfIssueCredential(credentialConfig: CredentialConfig, targetDid?: string): Promise<Credentials> {
+  async selfIssueCredential(credentialConfig: InitCredentialConfig, targetDid?: string): Promise<Credentials> {
     this.logger.log(`Creating verifiable credential for ${credentialConfig.id}`);
     const issuanceDate = new Date();
     const expirationDate = new Date();

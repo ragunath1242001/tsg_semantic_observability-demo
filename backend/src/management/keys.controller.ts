@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put, ValidationPipe } from "@nestjs/common";
-import { KeyConfig } from "../config.js";
+import { InitKeyConfig } from "../config.js";
 import { KeyService } from "../wallet/keys.service.js";
 import { Roles } from "../auth/roles.guard.js";
 import { AppRole } from "../model/clients.dto.js";
@@ -30,7 +30,7 @@ export class KeysManagementController {
 
   @Post()
   @HttpCode(HttpStatus.OK)
-  async addKey(@Body(new ValidationPipe()) keyConfig: KeyConfig): Promise<KeyInfo> {
+  async addKey(@Body(new ValidationPipe()) keyConfig: InitKeyConfig): Promise<KeyInfo> {
     const key = await this.keyService.addKey(keyConfig);
     return {
       id: key.id,

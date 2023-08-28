@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put, ValidationPipe } from "@nestjs/common";
 import { CredentialsService } from "../wallet/credentials.service.js";
-import { CredentialConfig } from "../config.js";
+import { InitCredentialConfig } from "../config.js";
 import { Credentials } from "../model/credentials.dao.js";
 import { CredentialSubject, VerifiableCredential } from "../model/credentials.dto.js";
 import { Client } from "../auth/roles.guard.js";
@@ -43,7 +43,7 @@ export class CredentialsManagementController {
 
   @Post()
   @HttpCode(HttpStatus.OK)
-  async addCredential(@Body(new ValidationPipe({transform: true})) credentialConfig: CredentialConfig, @Client() client: ClientInfo): Promise<Credentials> {
+  async addCredential(@Body(new ValidationPipe({transform: true})) credentialConfig: InitCredentialConfig, @Client() client: ClientInfo): Promise<Credentials> {
     const targetDid = this.targetDid('manage', client);
     return this.credentialsService.issueCredential(credentialConfig, targetDid);
   }
@@ -64,7 +64,7 @@ export class CredentialsManagementController {
 
   @Put(":credentialId")
   @HttpCode(HttpStatus.OK)
-  async updateCredential(@Body(new ValidationPipe({transform: true})) credentialConfig: CredentialConfig, @Param('credentialId') credentialId: string, @Client() client: ClientInfo): Promise<Credentials> {
+  async updateCredential(@Body(new ValidationPipe({transform: true})) credentialConfig: InitCredentialConfig, @Param('credentialId') credentialId: string, @Client() client: ClientInfo): Promise<Credentials> {
     const targetDid = this.targetDid('manage', client);
     return this.credentialsService.updateCredential(credentialId, credentialConfig, targetDid);
   }
