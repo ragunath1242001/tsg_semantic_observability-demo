@@ -58,6 +58,7 @@ export class CredentialsService {
       }
     } catch (err) {
       if (retry < 5) {
+        this.logger.warn(`Retrying creating credential ${initCredentialConfig.id}`);
         await new Promise(f => setTimeout(f, 10000));
         return await this.insertIfNotExists(initCredentialConfig, retry++);
       } else {
