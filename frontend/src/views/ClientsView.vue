@@ -2,10 +2,10 @@
   <div>
     <div class="card">
       <div class="card-header">
-        <p class="card-header-title">Keys</p>
+        <p class="card-header-title">Clients</p>
       </div>
       <div class="card-content">
-        <p>The current keys registered for this Wallet instance:</p>
+        <p>The current clients registered for this Wallet instance:</p>
         <b-table :data="clients">
             <b-table-column field="clientId" label="ClientID" v-slot="props">
               <code>{{ props.row.clientId }}</code>
@@ -93,8 +93,8 @@
               @keyup.native.enter="addClient"
             />
           </b-field>
-          <b-field horizontal>
-            <b-button type="is-primary" @click="addClient">Add key</b-button>
+          <b-field>
+            <b-button type="is-primary" @click="addClient">Add client</b-button>
           </b-field>
         </form>
       </div>

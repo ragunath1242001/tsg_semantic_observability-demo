@@ -90,10 +90,10 @@
           <template #detail="props">
             <h3 class="subtitle">JSON-LD Context</h3>
             <template v-if="props.row.document">
-              <b-collapse :open="false" aria-id="contextjsonld" class="mt-6">
+              <b-collapse :open="false" aria-id="contextjsonld" class="mt-4">
               <template #trigger="props">
                 <b-button 
-                  :label="(props.open) ? 'Hide raw keys JSON' : 'Show raw keys JSON'"
+                  :label="(props.open) ? 'Hide JSON-LD context' : 'Show JSON-LD context'"
                   type="is-primary" 
                   aria-controls="contextjsonld" 
                   :aria-expanded="props.open" />
@@ -104,10 +104,10 @@
             <p v-else>-</p>
             <h3 class="subtitle">JSON Schema</h3>
             <template v-if="props.row.schema">
-              <b-collapse :open="false" aria-id="schemajson" class="mt-6">
+              <b-collapse :open="false" aria-id="schemajson" class="mt-4">
               <template #trigger="props">
                 <b-button 
-                  :label="(props.open) ? 'Hide raw keys JSON' : 'Show raw keys JSON'"
+                  :label="(props.open) ? 'Hide JSON schema' : 'Show JSON schema'"
                   type="is-primary" 
                   aria-controls="schemajson" 
                   :aria-expanded="props.open" />
@@ -186,7 +186,7 @@
               @blur="validateCredentialSubject(false)"
               ></b-input>
           </b-field>
-          <b-field horizontal>
+          <b-field>
             <b-button type="is-primary" @click="issueCredential">Issue credential</b-button>
           </b-field>
         </form>
@@ -209,7 +209,7 @@
               @blur="validateCredential(false)"
               ></b-input>
           </b-field>
-          <b-field horizontal>
+          <b-field>
             <b-button type="is-primary" @click="importCredential">Import credential</b-button>
           </b-field>
         </form>
