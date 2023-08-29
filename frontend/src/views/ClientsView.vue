@@ -52,7 +52,7 @@
               key="register-email"
               v-model="addClientForm.email"
               placeholder="Email"
-              type="email"
+              type="string"
               icon-left="account"
               autocomplete="username"
               required

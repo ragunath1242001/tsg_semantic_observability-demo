@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put, ValidationPipe } from "@nestjs/common";
 import { CredentialsService } from "../wallet/credentials.service.js";
-import { InitCredentialConfig } from "../config.js";
+import { InitCredentialConfig, JsonLdContextConfig, RootConfig, TrustAnchorConfig } from "../config.js";
 import { Credentials } from "../model/credentials.dao.js";
 import { CredentialSubject, VerifiableCredential } from "../model/credentials.dto.js";
 import { Client } from "../auth/roles.guard.js";
@@ -11,6 +11,7 @@ import { ClientInfo, AppRole } from "../model/clients.dto.js";
 export class CredentialsManagementController {
   constructor(
     private readonly credentialsService: CredentialsService,
+    private readonly config: RootConfig
   ) {}
 
   private targetDid(action: 'view' | 'manage', client: ClientInfo): string | undefined {
@@ -41,6 +42,15 @@ export class CredentialsManagementController {
     return this.credentialsService.getCredentials(targetDid);
   }
 
+  @Get('config')
+  @HttpCode(HttpStatus.OK)
+  async getConfig(): Promise<{trustAnchors: TrustAnchorConfig[], contexts: JsonLdContextConfig[]}> {
+    return {
+      trustAnchors: this.config.trustAnchors,
+      contexts: this.config.contexts
+    }
+  }
+
   @Post()
   @HttpCode(HttpStatus.OK)
   async addCredential(@Body(new ValidationPipe({transform: true})) credentialConfig: InitCredentialConfig, @Client() client: ClientInfo): Promise<Credentials> {
@@ -68,13 +78,6 @@ export class CredentialsManagementController {
     const targetDid = this.targetDid('manage', client);
     return this.credentialsService.updateCredential(credentialId, credentialConfig, targetDid);
   }
-
-  // @Put(":credentialId/issue")
-  // @HttpCode(HttpStatus.OK)
-  // async issueCredential(@Body(new ValidationPipe({transform: true})) credentialConfig: CredentialConfig, @Param('credentialId') credentialId: string, @Client() client: ClientInfo): Promise<Credentials> {
-  //   const targetDid = this.targetDid('manage', client);
-  //   return this.credentialsService.issueCredential(credentialId, credentialConfig, targetDid);
-  // }
 
   @Delete(":credentialId")
   @HttpCode(HttpStatus.OK)

@@ -43,12 +43,14 @@ initCredentials:
       gx:termsAndConditions: 70c1d713215f95191a11d38fe2341faed27d19e083917bc8732ca4fea4976700
 
   - id: scsn
+    context:
+      - http://localhost:3000/context/SCSN
     type:
-      - http://smart-connected.nl/context/SCSNCredential
+      - SCSNCredential
     credentialSubject:
       id: did:web:localhost%3A3000
-      'http://smart-connected.nl/context/scsnId': 'urn:scsn:123456789'
-      'http://smart-connected.nl/context/role': 'http://smart-connected.nl/context/ServiceProvider'
+      scsnIdentifier: 'urn:scsn:123456789'
+      scsnRole: 'scsn:ServiceProvider'
 
 db:
   type: sqlite
@@ -74,4 +76,61 @@ mail:
     from: noreply@dataspac.es
   title: SCSN Wallet
   dataspace: SCSN
-  
+
+trustAnchors:
+  - identifier: did:web:localhost%3A3000
+    credentialTypes:
+      - SCSNCredential
+      - scsn:SCSNCredential
+      - https://wallet.alpha.scsn.dataspac.es/credentials/SCSNCredential
+
+contexts:
+  - id: SCSN
+    credentialType: SCSNCredential
+    issuable: true
+    document:
+      '@context':
+        '@version': 1.1
+        '@protected': true
+        scsn: https://wallet.alpha.scsn.dataspac.es/credentials/
+        id: '@id'
+        type: '@type'
+        SCSNCredential:
+          '@context':
+            - https://www.w3.org/2018/credentials/v1
+          '@id': 'scsn:SCSNCredential'
+        scsnIdentifier:
+          '@id': 'scsn:scsnIdentifier'
+        scsnRole:
+          '@id': 'scsn:scsnRole'
+          "@type": '@id'
+        ServiceProvider:
+          '@id': 'scsn:ServiceProvider'
+        Manufacturer:
+          '@id': 'scsn:Manufacturer'
+        Administrator:
+          '@id': 'scsn:Administrator'
+    schema:
+      type: object
+      title: SCSNCredential
+      additionalProperties: true
+      properties:
+        id:
+          type: string
+          pattern: "^did:web:.*"
+        scsnIdentifier:
+          type: string
+          pattern: "^urn:scsn:.*"
+        scsnRole:
+          enum:
+          - scsn:ServiceProvider
+          - scsn:Manufacturer
+          - scsn:Administrator
+      required:
+      - id
+      - scsnIdentifier
+      - scsnRole
+  - id: Catena-X
+    credentialType: SummaryCredential
+    issuable: false
+    documentUrl: https://catenax-ng.github.io/product-core-schemas/SummaryVC.json

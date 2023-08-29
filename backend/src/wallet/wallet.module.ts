@@ -15,7 +15,7 @@ import { PresentationService } from './presentation.service.js';
     TypeOrmModule.forFeature([DIDDocuments]),
     TypeOrmModule.forFeature([KeyMaterials]),
     TypeOrmModule.forFeature([Credentials]),
-    AuthModule,
+    AuthModule
   ],
   controllers: [
     CredentialsController, 

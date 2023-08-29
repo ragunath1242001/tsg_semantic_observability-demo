@@ -31,7 +31,7 @@ export const jwtSecrets = {
     AuthController
   ],
   providers: [
-    ClientsService, 
+    ClientsService,
     LocalStrategy,
     AccessTokenStrategy,
     RefreshTokenStrategy,

@@ -2,8 +2,11 @@ import { Body, Controller, DefaultValuePipe, Get, HttpStatus, ParseBoolPipe, Pos
 import { PresentationValidation, VerifiablePresentationJsonLd, VerifiablePresentationJwt } from "../model/credentials.dto.js";
 import { AppError } from "../utils/error.js";
 import { PresentationService } from "./presentation.service.js";
+import { Roles } from "../auth/roles.guard.js";
+import { AppRole } from "../model/clients.dto.js";
 
 @Controller('presentations')
+@Roles(AppRole.VIEW_PRESENTATIONS)
 export class PresentationController {
   constructor(private readonly presentationService: PresentationService) {}
 

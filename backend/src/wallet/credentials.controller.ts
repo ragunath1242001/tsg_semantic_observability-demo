@@ -1,10 +1,11 @@
-import { Controller, Get, HttpStatus, Param } from "@nestjs/common";
+import { Controller, Get, HttpException, HttpStatus, Param } from "@nestjs/common";
 import { CredentialsService } from "./credentials.service.js";
 import { DIDDocument } from "did-resolver";
 import { VerifiableCredential, CredentialSubject } from "../model/credentials.dto.js";
 import { AppError } from "../utils/error.js";
 import { DidService } from "./did.service.js";
 import { DisableJwtGuard } from "../auth/jwt.guard.js";
+import { RootConfig } from "../config.js";
 
 @Controller()
 @DisableJwtGuard(true)
@@ -12,6 +13,7 @@ export class CredentialsController {
   constructor(
     private readonly didService: DidService,
     private readonly credentialsService: CredentialsService,
+    private readonly config: RootConfig
   ) {}
 
   @Get('.well-known/did.json')
@@ -21,6 +23,22 @@ export class CredentialsController {
       throw new AppError(`DID Document not ready yet`, HttpStatus.NOT_FOUND);
     }
     return didDocument;
+  }
+
+  @Get('context/:id')
+  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+  async getContext(@Param('id') id: string): Promise<Record<string, any>> {
+    const context = this.config.contexts.find(context => context.id === id);
+    if (!context) {
+      throw new AppError(`JSON LD context with identifier ${id} not found`, HttpStatus.NOT_FOUND);
+    }
+    if (context.documentUrl) {
+      throw new AppError(`JSON LD context with identifier ${id} is not defined here, location: ${context.document}`, HttpStatus.NOT_FOUND);
+    }
+    if (context.document) {
+      return context.document;
+    }
+    throw new AppError(`No document or documentUrl configured for context ${id}`, HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
   @Get('credentials/:credentialId')

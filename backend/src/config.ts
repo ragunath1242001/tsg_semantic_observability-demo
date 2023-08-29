@@ -1,4 +1,4 @@
-import { Allow, IsBoolean, IsDefined, IsEmail, IsIn, IsNumber, IsOptional, IsString, ValidateNested } from "class-validator";
+import { Allow, IsBoolean, IsDefined, IsEmail, IsIn, IsNumber, IsObject, IsOptional, IsString, ValidateNested } from "class-validator";
 import { Transform, TransformFnParams, Type } from "class-transformer";
 import fs from "fs";
 import { Logger } from "@nestjs/common";
@@ -169,6 +169,31 @@ export class InitClientConfig {
   public readonly roles: AppRole[] = []
 }
 
+export class JsonLdContextConfig {
+  @IsString()
+  public readonly id!: string
+
+  @IsString()
+  public readonly credentialType!: string
+
+  @IsBoolean()
+  public readonly issuable!: boolean
+
+  @IsString()
+  @IsOptional()
+  public readonly documentUrl?: string
+
+  @IsObject()
+  @IsOptional()
+  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+  public readonly document?: Record<string, any>
+
+  @IsObject()
+  @IsOptional()
+  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+  public readonly schema?: Record<string, any>
+}
+
 export class RootConfig {
   @ValidateNested()
   @Type(() => ServerConfig)
@@ -198,6 +223,10 @@ export class RootConfig {
   @ValidateNested({each: true})
   @Type(() => InitClientConfig)
   public readonly initClients: InitClientConfig[] = [];
+
+  @ValidateNested({each: true})
+  @Type(() => JsonLdContextConfig)
+  public readonly contexts: JsonLdContextConfig[] = [];
 
   @ValidateNested()
   @IsDefined({message: 'Either sqlite or postgres DB config must be provided'})

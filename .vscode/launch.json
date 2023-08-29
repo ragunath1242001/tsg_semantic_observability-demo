@@ -47,7 +47,10 @@
           "EMBEDDED_FRONTEND": "${workspaceRoot}/frontend/dist"
         },
         "cwd": "${workspaceRoot}/backend",
-        "outputCapture": "std",
+        // "outputCapture": "std",
+        "outputCapture": "console",
+        "console": "integratedTerminal",
+        "internalConsoleOptions": "openOnSessionStart",
         "preLaunchTask": "npm: build - frontend"
     }
   ]

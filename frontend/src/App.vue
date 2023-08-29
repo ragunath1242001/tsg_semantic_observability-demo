@@ -3,7 +3,7 @@
     <b-navbar :mobile-burger="false" :shadow="true">
       <template #brand>
         <b-navbar-item tag="router-link" :to="'/'">
-            Wallet UI
+            TSG Wallet UI
         </b-navbar-item>
         </template>
         <template #end  v-if="client_info">
@@ -26,9 +26,8 @@
       <aside class="column is-2 p-5">
         <b-menu>
           <b-menu-list label="Navigation">
-            <b-menu-item tag="router-link" icon="home" to="/" label="Home"></b-menu-item>
+            <b-menu-item tag="router-link" icon="card-account-details-outline" to="/" label="DID"></b-menu-item>
             <template v-if="client_info">
-              <b-menu-item tag="router-link" icon="card-account-details-outline" to="/did" label="DID"></b-menu-item>
               <b-menu-item tag="router-link" v-if="client_info.roles.includes('manage_keys')" icon="key" to="/keys" label="Keys"></b-menu-item>
               <b-menu-item tag="router-link" v-if="client_info.roles.includes('view_own_credentials') || client_info.roles.includes('view_all_credentials')" icon="email-seal-outline" to="/credentials" label="Credentials"></b-menu-item>
               <b-menu-item tag="router-link" v-if="client_info.roles.includes('manage_clients')" icon="account-multiple" to="/clients" label="Clients"></b-menu-item>
@@ -40,63 +39,13 @@
       <div class="container column is-10">
         <router-view v-if="client_info" />
         <login v-else />
-
-        <!-- <div class="section">
-          <div class="card">
-            <div class="card-header">
-              <p class="card-header-title">Header</p>
-            </div>
-            <div class="card-content"><div class="content">Content</div></div>
-          </div>
-          <br />
-
-          <div class="card is-hidden1">
-            <div class="card-header">
-              <p class="card-header-title">Header</p>
-            </div>
-            <div class="card-content"><div class="content">Content</div></div>
-          </div>
-          <br />
-
-          <div class="card is-hidden1">
-            <div class="card-header">
-              <p class="card-header-title">Header</p>
-            </div>
-            <div class="card-content"><div class="content">Content</div></div>
-          </div>
-          <br />
-
-          <div class="card is-hidden1">
-            <div class="card-header">
-              <p class="card-header-title">Header</p>
-            </div>
-            <div class="card-content"><div class="content">Content</div></div>
-          </div>
-          <br />
-
-          <div class="card is-hidden1">
-            <div class="card-header">
-              <p class="card-header-title">Header</p>
-            </div>
-            <div class="card-content"><div class="content">Content</div></div>
-          </div>
-          <br />
-
-          <div class="card is-hidden1">
-            <div class="card-header">
-              <p class="card-header-title">Header</p>
-            </div>
-            <div class="card-content"><div class="content">Content</div></div>
-          </div>
-          <br />
-        </div> -->
       </div>
     </section>
 
     <footer class="footer">
       <div class="container">
         <div class="content has-text-centered">
-          <p>Hello</p>
+          <p>&copy; 2023 - TNO TSG</p>
         </div>
       </div>
     </footer>
