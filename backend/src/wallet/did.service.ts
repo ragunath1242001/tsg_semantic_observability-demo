@@ -22,7 +22,7 @@ export class DidService {
   }
 
   async getDid(): Promise<DIDDocument | undefined> {
-    const did = await this.didRepository.findOneBy({id: 0});
+    const did = await this.didRepository.findOne({});
     return did?.document;
   }
 
@@ -48,8 +48,9 @@ export class DidService {
     }
     this.logger.log(`DID document created for ${this.didId}`);
     this.logger.debug(`DID document ${this.didId}\n${JSON.stringify(didDocument, null, 2)}`);
+    const existing = await this.didRepository.findOne({});
     await this.didRepository.save({
-      id: 0,
+      ...existing,
       document: didDocument
     });
     return didDocument;
