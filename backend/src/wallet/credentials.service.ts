@@ -46,14 +46,23 @@ export class CredentialsService {
     await Promise.all(this.config.initCredentials.map(c => this.insertIfNotExists(c)));
   }
 
-  private async insertIfNotExists(initCredentialConfig: InitCredentialConfig): Promise<Credentials> {
-    const existing = await this.credentialRepository.findOneBy({id: initCredentialConfig.id});
-    if (!existing) {
-      this.logger.log(`Creating initial key ${initCredentialConfig.id}`);
-      return this.selfIssueCredential(initCredentialConfig);
-    } else {
-      this.logger.log(`Using existing initial key ${initCredentialConfig.id}`);
-      return existing;
+  private async insertIfNotExists(initCredentialConfig: InitCredentialConfig, retry = 0): Promise<Credentials> {
+    try {
+      const existing = await this.credentialRepository.findOneBy({id: initCredentialConfig.id});
+      if (!existing) {
+        this.logger.log(`Creating initial key ${initCredentialConfig.id}`);
+        return this.selfIssueCredential(initCredentialConfig);
+      } else {
+        this.logger.log(`Using existing initial key ${initCredentialConfig.id}`);
+        return existing;
+      }
+    } catch (err) {
+      if (retry < 5) {
+        return await this.insertIfNotExists(initCredentialConfig, retry++);
+      } else {
+        this.logger.error(`Could not create credential ${initCredentialConfig.id}: ${err}`);
+        throw err
+      }
     }
   }
 
