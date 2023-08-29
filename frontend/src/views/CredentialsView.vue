@@ -19,9 +19,6 @@
             <small v-if="props.row.targetDid !== props.row.credential.issuer"><code>({{ props.row.credential.issuer  }})</code></small>
             <small v-else><code>(self)</code></small>
           </b-table-column>
-          <!-- <b-table-column field="issuer" label="Issuer" v-slot="props">
-            <code>{{ props.row.credential.issuer  }}</code>
-          </b-table-column> -->
           <b-table-column field="type" label="Type" v-slot="props">
             <b-taglist>
               <b-tag v-for="(credentialType, id) in props.row.credential.type" :key="`${props.row.id}-${id}`">{{ credentialType.split(/[/#]/g).slice(-1)[0] }}</b-tag>
@@ -30,7 +27,7 @@
           <b-table-column field="expirationDate" label="Expiration" v-slot="props">
             {{ formatDate(props.row.credential.expirationDate)  }}
           </b-table-column>
-          <b-table-column field="actions" label="Actions" v-slot="props">
+          <b-table-column field="actions" label="Actions" v-slot="props" :visible="manager">
             <div class="buttons">
                 <b-button type="is-danger" icon-right="delete" @click="deleteCredential(props.row.id)"></b-button>
               </div>
@@ -64,7 +61,68 @@
     </div>
 
 
-    <div class="card">
+    <div class="card" v-if="manager">
+      <div class="card-header">
+        <p class="card-header-title">Configured contexts</p>
+      </div>
+      <div class="card-content">
+        <b-table :data="config?.contexts" detailed detail-key="id">
+          <b-table-column field="id" label="ID" v-slot="props">
+            {{ props.row.id  }}
+          </b-table-column>
+          <b-table-column field="credentialType" label="Credential Type" v-slot="props">
+            <code>{{ props.row.credentialType  }}</code>
+          </b-table-column>
+          <b-table-column field="issuable" label="Issuable" v-slot="props">
+            <b-icon v-if="props.row.issuable" icon="check-bold" type="is-success" />
+            <b-icon v-else icon="close-thick" type="is-danger" />
+          </b-table-column>
+          <b-table-column field="schema" label="Schema" v-slot="props">
+            <b-icon v-if="props.row.schema" icon="check-bold" type="is-success" />
+            <b-icon v-else icon="close-thick" type="is-danger" />
+          </b-table-column>
+          <b-table-column field="actions" label="Actions" v-slot="props">
+            <div class="buttons">
+                <b-button type="is-success" @click="useContext(props.row)">Use</b-button>
+              </div>
+          </b-table-column>
+
+          <template #detail="props">
+            <h3 class="subtitle">JSON-LD Context</h3>
+            <template v-if="props.row.document">
+              <b-collapse :open="false" aria-id="contextjsonld" class="mt-6">
+              <template #trigger="props">
+                <b-button 
+                  :label="(props.open) ? 'Hide raw keys JSON' : 'Show raw keys JSON'"
+                  type="is-primary" 
+                  aria-controls="contextjsonld" 
+                  :aria-expanded="props.open" />
+              </template>
+              <code-highlight :code="props.row.document" />
+            </b-collapse>
+            </template>
+            <p v-else>-</p>
+            <h3 class="subtitle">JSON Schema</h3>
+            <template v-if="props.row.schema">
+              <b-collapse :open="false" aria-id="schemajson" class="mt-6">
+              <template #trigger="props">
+                <b-button 
+                  :label="(props.open) ? 'Hide raw keys JSON' : 'Show raw keys JSON'"
+                  type="is-primary" 
+                  aria-controls="schemajson" 
+                  :aria-expanded="props.open" />
+              </template>
+              <code-highlight :code="props.row.schema" />
+            </b-collapse>
+            </template>
+            <p v-else>-</p>
+          </template>
+
+        </b-table>
+      </div>
+    </div>
+
+    <div class="card" v-if="manager">
       <div class="card-header">
         <p class="card-header-title">Issue credential</p>
       </div>
@@ -74,6 +132,10 @@
             <b-taginput
                 v-model="issueCredentialForm.context"
                 ellipsis
+                :data="issuableContexts"
+                :allow-new="true"
+                :open-on-focus="true"
+                autocomplete
                 icon="label"
                 placeholder="(Optionally) Add a JSON-LD context"
                 aria-close-label="Delete context">
@@ -83,6 +145,9 @@
             <b-taginput
                 v-model="issueCredentialForm.type"
                 ellipsis
+                :data="issuableCredentialTypes"
+                :allow-new="true"
+                :open-on-focus="true"
                 icon="label"
                 placeholder="Add a Credential type"
                 aria-close-label="Delete credential type">
@@ -127,7 +192,7 @@
         </form>
       </div>
     </div>
-    <div class="card">
+    <div class="card" v-if="manager">
       <div class="card-header">
         <p class="card-header-title">Import credential</p>
       </div>
@@ -158,7 +223,10 @@
 import store, { axiosInstance } from '@/store';
 import Vue from 'vue';
 import CodeHighlight from '../components/CodeHighlight.vue';
-import { Credentials } from '../model/credentials';
+import { CredentialConfig, Credentials, JsonLdContextConfig } from '../model/credentials';
+import Ajv, {JSONSchemaType} from "ajv";
+import axios from 'axios';
+import { AppRole } from '@/model/clients';
 
 export default Vue.extend({
   name: 'CredentialsView',
@@ -167,6 +235,7 @@ export default Vue.extend({
   },
   data(): {
     credentials: Credentials[] | undefined,
+    config: CredentialConfig | undefined,
     issueCredentialForm: {
       context: string[],
       type: string[],
@@ -183,6 +252,7 @@ export default Vue.extend({
   } {
     return {
       credentials: undefined,
+      config: undefined,
       issueCredentialForm: {
         context: [],
         type: [],
@@ -202,16 +272,43 @@ export default Vue.extend({
   },
   async created() {
     await this.loadCredentials();
+    await this.loadConfig();
   },
   computed: {
     compositeId() {
       return `${this.issueCredentialForm.targetDid}#${encodeURIComponent(this.issueCredentialForm.id)}`
+    },
+    issuableContexts() {
+      return this.config?.contexts?.filter(c => c.issuable)?.map(c => c.documentUrl)
+    },
+    issuableCredentialTypes() {
+      return this.config?.contexts?.filter(c => c.issuable)?.map(c => c.credentialType)
+    },
+    manager() {
+      return store.state.client_info?.roles.includes(AppRole.MANAGE_OWN_CREDENTIALS) || store.state.client_info?.roles.includes(AppRole.MANAGE_ALL_CREDENTIALS) || false
     }
   },
   methods: {
     async loadCredentials() {
       const response = await axiosInstance<Credentials[]>('management/credentials');
       this.credentials = response.data;
+    },
+    async loadConfig() {
+      const response = await axiosInstance<CredentialConfig>('management/credentials/config');
+      for (const context of response.data.contexts) {
+        if (!context.document && context.documentUrl) {
+          const contextResponse = await axios.get(context.documentUrl);
+          context.document = contextResponse.data;
+        }
+        if (!context.documentUrl) {
+          context.documentUrl = `${document.location.protocol}//${document.location.host}/context/${context.id}`;
+        }
+      }
+      this.config = response.data;
+    },
+    useContext(context: JsonLdContextConfig) {
+      this.issueCredentialForm.context = [...new Set(this.issueCredentialForm.context), (context.documentUrl || '')]
+      this.issueCredentialForm.type = [...new Set(this.issueCredentialForm.type), context.credentialType]
     },
     validateCredentialSubject(toast: boolean): any | null {
       try {
@@ -235,6 +332,21 @@ export default Vue.extend({
         if (!toast) {
           this.issueCredentialForm.credentialValidation = undefined;
         }
+
+        const contexts: JsonLdContextConfig[] = this.config?.contexts?.filter(c => this.issueCredentialForm.type.includes(c.credentialType)) || []
+        for (const context of contexts) {
+          if (context.schema) {
+            const ajv = new Ajv({allErrors: true});
+            const schema = context.schema as JSONSchemaType<any>;
+            const validate = ajv.compile(schema);
+            if (!validate(credentialSubject)) {
+              console.log(`Validation of context ${context.id} error: ${JSON.stringify(validate.errors)}`)
+              throw Error('Credential schema validation errors: ' + validate.errors?.map(e => e.message).join(", "))
+            }
+          }
+        }
+
+
         return credentialSubject;
       } catch (e) {
         const errorMessage = (e as Error).message

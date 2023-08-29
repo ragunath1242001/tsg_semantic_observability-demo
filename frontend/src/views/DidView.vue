@@ -68,9 +68,8 @@ export default Vue.extend({
     }
   },
   async created() {
-      const response = await axiosInstance.get<DIDDocument>('/.well-known/did.json');
+      const response = await axiosInstance.get<DIDDocument>('/.well-known/did.json', {baseURL: ''});
       this.didDocument = response.data;
   },
-
 });
 </script>
