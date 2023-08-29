@@ -8,12 +8,14 @@ import crypto from "crypto";
 export class LoggerMiddleware implements NestMiddleware {
   private readonly logger = new Logger("HTTP");
   use(req: Request, res: Response, next: NextFunction) {
-    this.logger.log(`${req.method} ${req.originalUrl} (${req.ip})`);
-    const time = Date.now();
-    
-    res.on("finish", () => {
-      this.logger.log(`${req.method} ${req.originalUrl} (${req.ip}) -> ${res.statusCode} ${res.get("content-length")} (${Date.now()-time} ms)`)
-    });
+    if (!req.originalUrl.startsWith('/health')){
+      this.logger.log(`${req.method} ${req.originalUrl} (${req.ip})`);
+      const time = Date.now();
+      
+      res.on("finish", () => {
+        this.logger.log(`${req.method} ${req.originalUrl} (${req.ip}) -> ${res.statusCode} ${res.get("content-length")} (${Date.now()-time} ms)`)
+      });
+    }
     next();
   }
 }
