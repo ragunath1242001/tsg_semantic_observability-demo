@@ -92,6 +92,8 @@ export class PresentationService {
         validateExpiryDate.push(validExpirationDate);
         const {proof, ...plainCredential} = credential;
 
+        const resolvedIssuerDid = await this.didResolver.resolve(credential.issuer);
+
         const credentialTypes = this.config.trustAnchors.find(trustAnchor => trustAnchor.identifier === credential.issuer)?.credentialTypes || []
         const trustedCredential = credential.type.filter(t => t !== 'VerifiableCredential').every(type => credentialTypes.includes(type));
 
@@ -102,7 +104,7 @@ export class PresentationService {
         });
         const hash = crypto.createHash(hashingAlgorithm(proofAlgorithm)).update(normalized).digest('hex');
         const jwsWithHash = proof.jws.replace('..',`.${hash}.`);
-        const usedKey = resolvedDid.verificationMethod?.find(m => m.id === proof.verificationMethod);
+        const usedKey = resolvedIssuerDid.verificationMethod?.find(m => m.id === proof.verificationMethod);
         if (!usedKey || !usedKey.publicKeyJwk){
           this.logger.debug(`Error during validation of VP: key mismatch`);
           validateCredentials.push(false);
