@@ -20,6 +20,32 @@ function fileTransformer(params: TransformFnParams): string | undefined {
   return `${params.value}`;
 }
 
+export abstract class DatabaseConfig {
+  @IsString()
+  @IsIn(["sqlite", "postgres"])
+  public readonly type!: 'sqlite' | 'postgres';
+
+  @IsString()
+  public readonly database!: string
+}
+
+export class SQLiteConfig extends DatabaseConfig {
+  override readonly type: 'sqlite' = 'sqlite' as const;
+}
+
+export class PostgresConfig extends DatabaseConfig {
+  override readonly type: 'postgres' = 'postgres' as const;
+
+  @IsString()
+  public readonly host!: string
+  @IsNumber()
+  public readonly port!: number
+  @IsString()
+  public readonly username!: string
+  @IsString()
+  public readonly password!: string
+}
+
 export class ServerConfig {
   @IsString()
   @IsOptional()
@@ -34,6 +60,64 @@ export class ServerConfig {
   @IsString()
   @IsOptional()
   public readonly publicAddress: string = `http://localhost:3000`;
+}
+
+export class SmtpConfig {
+  @IsString()
+  public readonly host!: string
+
+  @IsNumber()
+  @Type()
+  public readonly port!: number
+
+  @IsBoolean()
+  @IsOptional()
+  public readonly secure: boolean = true
+
+  @IsString()
+  public readonly user!: string
+  
+  @IsString()
+  public readonly password!: string
+
+  @IsString()
+  public readonly from!: string
+}
+
+export class MailConfig {
+  @ValidateNested()
+  @Type(() => SmtpConfig)
+  @IsDefined()
+  public readonly smtp!: SmtpConfig
+
+  @IsString()
+  public readonly title!: string
+
+  @IsString()
+  public readonly dataspace!: string
+
+  @IsString()
+  @IsOptional()
+  public readonly logo?: string
+}
+
+export class InitClientConfig {
+  @IsString()
+  public readonly id!: string
+
+  @IsString()
+  public readonly secret!: string
+
+  @IsEmail()
+  public readonly email!: string
+
+  @IsString()
+  @IsOptional()
+  public readonly didId?: string
+
+  @IsString({each: true})
+  @IsIn(Object.values(AppRole), {each: true})
+  public readonly roles: AppRole[] = []
 }
 
 export class InitKeyConfig {
@@ -77,96 +161,12 @@ export class InitCredentialConfig {
   public readonly credentialSubject!: CredentialSubject
 }
 
-export abstract class DatabaseConfig {
-  @IsString()
-  @IsIn(["sqlite", "postgres"])
-  public readonly type!: 'sqlite' | 'postgres';
-
-  @IsString()
-  public readonly database!: string
-}
-
-export class SQLiteConfig extends DatabaseConfig {
-  override readonly type: 'sqlite' = 'sqlite' as const;
-}
-
-export class PostgresConfig extends DatabaseConfig {
-  override readonly type: 'postgres' = 'postgres' as const;
-
-  @IsString()
-  public readonly host!: string
-  @IsNumber()
-  public readonly port!: number
-  @IsString()
-  public readonly username!: string
-  @IsString()
-  public readonly password!: string
-}
-
-export class SmtpConfig {
-  @IsString()
-  public readonly host!: string
-
-  @IsNumber()
-  @Type()
-  public readonly port!: number
-
-  @IsBoolean()
-  @IsOptional()
-  public readonly secure: boolean = true
-
-  @IsString()
-  public readonly user!: string
-  
-  @IsString()
-  public readonly password!: string
-
-  @IsString()
-  public readonly from!: string
-}
-
-export class MailConfig {
-  @ValidateNested()
-  @Type(() => SmtpConfig)
-  @IsDefined()
-  public readonly smtp!: SmtpConfig
-
-  @IsString()
-  public readonly title!: string
-
-  @IsString()
-  public readonly dataspace!: string
-
-  @IsString()
-  @IsOptional()
-  public readonly logo?: string
-}
-
 export class TrustAnchorConfig {
   @IsString()
   public readonly identifier!: string
 
   @IsString({each: true})
   public readonly credentialTypes: string[] = []
-}
-
-export class InitClientConfig {
-  @IsString()
-  public readonly id!: string
-
-  @IsString()
-  public readonly secret!: string
-
-  @IsEmail()
-  public readonly email!: string
-
-  @IsString()
-  @IsOptional()
-  public readonly didId?: string
-
-  @IsString({each: true})
-  @IsIn(Object.values(AppRole), {each: true})
-  public readonly roles: AppRole[] = []
 }
 
 export class JsonLdContextConfig {
@@ -196,9 +196,32 @@ export class JsonLdContextConfig {
 
 export class RootConfig {
   @ValidateNested()
+  @IsDefined({message: 'Either sqlite or postgres DB config must be provided'})
+  @Type(() => DatabaseConfig, {
+    discriminator: {
+      property: 'type',
+      subTypes: [
+        { value: SQLiteConfig, name: 'sqlite'},
+        { value: PostgresConfig, name: 'postgres'}
+      ],
+
+    }
+  })
+  public readonly db!: DatabaseConfig
+
+  @ValidateNested()
   @Type(() => ServerConfig)
   @IsOptional()
   public readonly server: ServerConfig = new ServerConfig();
+
+  @ValidateNested()
+  @Type(() => MailConfig)
+  @IsOptional()
+  public readonly mail?: MailConfig;
+
+  @ValidateNested({each: true})
+  @Type(() => InitClientConfig)
+  public readonly initClients: InitClientConfig[] = [];
 
   @ValidateNested({each: true})
   @Type(() => InitKeyConfig)
@@ -215,30 +238,8 @@ export class RootConfig {
   @IsOptional()
   public readonly trustAnchors: TrustAnchorConfig[] = [];
 
-  @ValidateNested()
-  @Type(() => MailConfig)
-  @IsOptional()
-  public readonly mail?: MailConfig;
-
-  @ValidateNested({each: true})
-  @Type(() => InitClientConfig)
-  public readonly initClients: InitClientConfig[] = [];
-
   @ValidateNested({each: true})
   @Type(() => JsonLdContextConfig)
   public readonly contexts: JsonLdContextConfig[] = [];
 
-  @ValidateNested()
-  @IsDefined({message: 'Either sqlite or postgres DB config must be provided'})
-  @Type(() => DatabaseConfig, {
-    discriminator: {
-      property: 'type',
-      subTypes: [
-        { value: SQLiteConfig, name: 'sqlite'},
-        { value: PostgresConfig, name: 'postgres'}
-      ],
-
-    }
-  })
-  public readonly db!: DatabaseConfig
 }

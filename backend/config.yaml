@@ -12,6 +12,12 @@ initClients:
       - manage_all_credentials
       - manage_keys
       - manage_clients
+      - view_presentations
+  - id: connector
+    secret: test
+    email: noreply@dataspac.es
+    roles:
+      - view_presentations
 initKeys:
   - id: key-0
     type: EdDSA

@@ -20,7 +20,7 @@ async function bootstrap() {
   const config = app.get(RootConfig);
   if (process.env['EMBEDDED_FRONTEND']) {
     app.setGlobalPrefix('api', {
-      exclude: ['.well-known/did.json', 'context/(.*)']
+      exclude: ['.well-known/did.json', 'context/(.*)', 'health']
     })
   }
   Logger.debug(`Starting with the following context:\n${JSON.stringify(config, null, 2)}`, 'Bootstrap')

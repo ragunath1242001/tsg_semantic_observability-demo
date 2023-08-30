@@ -23,7 +23,7 @@ export class PresentationService {
   async createVerifiablePresentationJsonLd(credentialId: string): Promise<VerifiablePresentationJsonLd> {
     const credential = await this.credentialsService.getCredential(credentialId);
     const verifiablePresentation: VerifiablePresentation<VerifiableCredential<CredentialSubject>> = {
-      '@context': ['https://www.w3.org/2018/credentials/v1'],
+      '@context': ['https://www.w3.org/2018/credentials/v1', "https://w3c.github.io/vc-jws-2020/contexts/v1/"],
       '@type': ['VerifiablePresentation'],
       verifiableCredential: [
         credential.credential
@@ -44,7 +44,7 @@ export class PresentationService {
       throw new AppError(`Key material with id ${keyId} for credential ${credential.credential.id} can't be loaded`, HttpStatus.INTERNAL_SERVER_ERROR)
     }
     const verifiablePresentation: VerifiablePresentation<VerifiableCredential<CredentialSubject>> = {
-      '@context': ['https://www.w3.org/2018/credentials/v1'],
+      '@context': ['https://www.w3.org/2018/credentials/v1', "https://w3c.github.io/vc-jws-2020/contexts/v1/"],
       '@type': ['VerifiablePresentation'],
       verifiableCredential: [
         credential.credential
@@ -53,7 +53,7 @@ export class PresentationService {
     const jwt = await new SignJWT({vp: verifiablePresentation})
       .setProtectedHeader({alg: signingAlgorithm(key.type)})
       .setIssuedAt()
-      .setIssuer(credential.credential.issuer)
+      .setIssuer(credential.credential.credentialSubject.id)
       .setSubject(credential.credential.issuer)
       .setAudience(audience)
       .setExpirationTime('24h')
@@ -91,6 +91,12 @@ export class PresentationService {
         const validExpirationDate = (credential.expirationDate) ? new Date(credential.expirationDate).getTime() > new Date().getTime() : "undefined";
         validateExpiryDate.push(validExpirationDate);
         const {proof, ...plainCredential} = credential;
+
+        const resolvedIssuerDid = await this.didResolver.resolve(credential.issuer);
+
+        const credentialTypes = this.config.trustAnchors.find(trustAnchor => trustAnchor.identifier === credential.issuer)?.credentialTypes || []
+        const trustedCredential = credential.type.filter(t => t !== 'VerifiableCredential').every(type => credentialTypes.includes(type));
+
         const proofAlgorithm = JSON.parse(atob(proof.jws.split('.')[0])).alg
 
         const normalized = await jsonld.normalize(plainCredential, {
@@ -98,19 +104,19 @@ export class PresentationService {
         });
         const hash = crypto.createHash(hashingAlgorithm(proofAlgorithm)).update(normalized).digest('hex');
         const jwsWithHash = proof.jws.replace('..',`.${hash}.`);
-        const usedKey = resolvedDid.verificationMethod?.find(m => m.id === proof.verificationMethod);
+        const usedKey = resolvedIssuerDid.verificationMethod?.find(m => m.id === proof.verificationMethod);
         if (!usedKey || !usedKey.publicKeyJwk){
+          this.logger.debug(`Error during validation of VP: key mismatch`);
           validateCredentials.push(false);
-          validateTrustAnchors.push(false);
+          validateTrustAnchors.push(trustedCredential);
           break;
         }
         
         await compactVerify(jwsWithHash, await importJWK(usedKey.publicKeyJwk));
         validateCredentials.push(true);
-        const credentialTypes = this.config.trustAnchors.find(trustAnchor => trustAnchor.identifier === credential.issuer)?.credentialTypes || []
-        const trustedCredential = credential.type.filter(t => t !== 'VerifiableCredential').every(type => credentialTypes.includes(type));
         validateTrustAnchors.push(trustedCredential);
       } catch (err) {
+        this.logger.debug(`Error during validation of VP: ${err}`);
         validateCredentials.push(false);
         validateTrustAnchors.push(false);
         break;

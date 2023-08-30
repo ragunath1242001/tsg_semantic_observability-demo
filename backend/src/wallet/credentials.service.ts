@@ -46,14 +46,25 @@ export class CredentialsService {
     await Promise.all(this.config.initCredentials.map(c => this.insertIfNotExists(c)));
   }
 
-  private async insertIfNotExists(initCredentialConfig: InitCredentialConfig): Promise<Credentials> {
-    const existing = await this.credentialRepository.findOneBy({id: initCredentialConfig.id});
-    if (!existing) {
-      this.logger.log(`Creating initial key ${initCredentialConfig.id}`);
-      return this.selfIssueCredential(initCredentialConfig);
-    } else {
-      this.logger.log(`Using existing initial key ${initCredentialConfig.id}`);
-      return existing;
+  private async insertIfNotExists(initCredentialConfig: InitCredentialConfig, retry = 0): Promise<Credentials> {
+    try {
+      const existing = await this.credentialRepository.findOneBy({id: initCredentialConfig.id});
+      if (!existing) {
+        this.logger.log(`Creating initial key ${initCredentialConfig.id}`);
+        return await this.selfIssueCredential(initCredentialConfig, initCredentialConfig.credentialSubject.id);
+      } else {
+        this.logger.log(`Using existing initial key ${initCredentialConfig.id}`);
+        return existing;
+      }
+    } catch (err) {
+      if (retry < 5) {
+        this.logger.warn(`Retrying creating credential ${initCredentialConfig.id}`);
+        await new Promise(f => setTimeout(f, 10000));
+        return await this.insertIfNotExists(initCredentialConfig, retry++);
+      } else {
+        this.logger.error(`Could not create credential ${initCredentialConfig.id}: ${err}`);
+        throw err
+      }
     }
   }
 
@@ -126,7 +137,7 @@ export class CredentialsService {
     expirationDate.setMonth(expirationDate.getMonth()+3);
     const credentialId = (targetDid) ? `${targetDid}#${credentialConfig.id}` : `${await this.didService.getDidId()}#${credentialConfig.id}` ;
     const credential: Credential<CredentialSubject> = {
-      '@context': ["https://www.w3.org/2018/credentials/v1"].concat(credentialConfig.context),
+      '@context': ["https://www.w3.org/2018/credentials/v1", "https://w3c.github.io/vc-jws-2020/contexts/v1/"].concat(credentialConfig.context),
       type: ['VerifiableCredential'].concat(credentialConfig.type),
       id: credentialId,
       issuer: await this.didService.getDidId(),

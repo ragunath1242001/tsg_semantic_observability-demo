@@ -9,6 +9,7 @@ import { DIDResolver } from './didResolver.service.js';
 import { DidService } from './did.service.js';
 import { KeyService } from './keys.service.js';
 import { PresentationService } from './presentation.service.js';
+import { HealthController } from './health.controller.js';
 
 @Module({
   imports: [
@@ -19,7 +20,8 @@ import { PresentationService } from './presentation.service.js';
   ],
   controllers: [
     CredentialsController, 
-    PresentationController
+    PresentationController,
+    HealthController
   ],
   providers: [
     DidService,
