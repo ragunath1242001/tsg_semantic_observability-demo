@@ -20,12 +20,12 @@ export class PresentationService {
   ) {}
   private readonly logger = new Logger(this.constructor.name);
 
-  async createVerifiablePresentationJsonLd(credentialId: string): Promise<VerifiablePresentationJsonLd> {
+  async createVerifiablePresentationJsonLd(credentialId: string, unwrap: boolean): Promise<VerifiablePresentationJsonLd> {
     const credential = await this.credentialsService.getCredential(credentialId);
     const verifiablePresentation: VerifiablePresentation<VerifiableCredential<CredentialSubject>> = {
       '@context': ['https://www.w3.org/2018/credentials/v1', "https://w3c.github.io/vc-jws-2020/contexts/v1/"],
       '@type': ['VerifiablePresentation'],
-      verifiableCredential: [
+      verifiableCredential: (unwrap) ? credential.credential : [
         credential.credential
       ],
     }
@@ -33,7 +33,7 @@ export class PresentationService {
     return plainToClass(VerifiablePresentationJsonLd, {vp: verifiablePresentation})
   }
 
-  async createVerifiablePresentationJwt(credentialId: string, audience: string): Promise<VerifiablePresentationJwt> {
+  async createVerifiablePresentationJwt(credentialId: string, audience: string, unwrap: boolean): Promise<VerifiablePresentationJwt> {
     const credential = await this.credentialsService.getCredential(credentialId);
     if (!credential) {
       throw new AppError(`Credential ${credentialId} can't be found`, HttpStatus.NOT_FOUND);
@@ -46,9 +46,9 @@ export class PresentationService {
     const verifiablePresentation: VerifiablePresentation<VerifiableCredential<CredentialSubject>> = {
       '@context': ['https://www.w3.org/2018/credentials/v1', "https://w3c.github.io/vc-jws-2020/contexts/v1/"],
       '@type': ['VerifiablePresentation'],
-      verifiableCredential: [
+      verifiableCredential: (unwrap) ? credential.credential : [
         credential.credential
-      ]
+      ],
     }
     const jwt = await new SignJWT({vp: verifiablePresentation})
       .setProtectedHeader({alg: signingAlgorithm(key.type)})
