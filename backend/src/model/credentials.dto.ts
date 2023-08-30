@@ -78,7 +78,7 @@ export class VerifiablePresentation<T extends VerifiableCredential<CredentialSub
   '@id'?: string
   @ValidateNested()
   @Type(() => VerifiableCredential<CredentialSubject>)
-  verifiableCredential!: T[];
+  verifiableCredential!: T[] | T;
 }
 
 export class VerifiablePresentationJwt {

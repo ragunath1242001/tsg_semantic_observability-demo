@@ -86,7 +86,13 @@ export class PresentationService {
     const validateExpiryDate: Array<boolean | "undefined"> = []
     const validateCredentials: boolean[] = [];
     const validateTrustAnchors: boolean[] = [];
-    for (const credential of vp.verifiableCredential) {
+    let credentials: VerifiableCredential<CredentialSubject>[]
+    if (vp.verifiableCredential instanceof Array) {
+      credentials = vp.verifiableCredential;
+    } else {
+      credentials = [vp.verifiableCredential]
+    }
+    for (const credential of credentials) {
       try {
         const validExpirationDate = (credential.expirationDate) ? new Date(credential.expirationDate).getTime() > new Date().getTime() : "undefined";
         validateExpiryDate.push(validExpirationDate);
