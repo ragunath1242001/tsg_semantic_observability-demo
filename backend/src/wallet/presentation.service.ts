@@ -53,7 +53,7 @@ export class PresentationService {
     const jwt = await new SignJWT({vp: verifiablePresentation})
       .setProtectedHeader({alg: signingAlgorithm(key.type)})
       .setIssuedAt()
-      .setIssuer(credential.credential.issuer)
+      .setIssuer(credential.credential.credentialSubject.id)
       .setSubject(credential.credential.issuer)
       .setAudience(audience)
       .setExpirationTime('24h')
@@ -100,6 +100,7 @@ export class PresentationService {
         const jwsWithHash = proof.jws.replace('..',`.${hash}.`);
         const usedKey = resolvedDid.verificationMethod?.find(m => m.id === proof.verificationMethod);
         if (!usedKey || !usedKey.publicKeyJwk){
+          this.logger.debug(`Error during validation of VP: key mismatch`);
           validateCredentials.push(false);
           validateTrustAnchors.push(false);
           break;
@@ -111,6 +112,7 @@ export class PresentationService {
         const trustedCredential = credential.type.filter(t => t !== 'VerifiableCredential').every(type => credentialTypes.includes(type));
         validateTrustAnchors.push(trustedCredential);
       } catch (err) {
+        this.logger.debug(`Error during validation of VP: ${err}`);
         validateCredentials.push(false);
         validateTrustAnchors.push(false);
         break;
