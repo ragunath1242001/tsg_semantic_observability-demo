@@ -18,9 +18,6 @@ export class Signature {
 export class CredentialSubject {
   @IsString()
   id!: string
-  @IsString({each: true})
-  @IsOptional()
-  type?: string[]
   /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   [key: string]: any
 }

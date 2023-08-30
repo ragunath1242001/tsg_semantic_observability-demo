@@ -91,6 +91,10 @@ export class PresentationService {
         const validExpirationDate = (credential.expirationDate) ? new Date(credential.expirationDate).getTime() > new Date().getTime() : "undefined";
         validateExpiryDate.push(validExpirationDate);
         const {proof, ...plainCredential} = credential;
+
+        const credentialTypes = this.config.trustAnchors.find(trustAnchor => trustAnchor.identifier === credential.issuer)?.credentialTypes || []
+        const trustedCredential = credential.type.filter(t => t !== 'VerifiableCredential').every(type => credentialTypes.includes(type));
+
         const proofAlgorithm = JSON.parse(atob(proof.jws.split('.')[0])).alg
 
         const normalized = await jsonld.normalize(plainCredential, {
@@ -102,14 +106,12 @@ export class PresentationService {
         if (!usedKey || !usedKey.publicKeyJwk){
           this.logger.debug(`Error during validation of VP: key mismatch`);
           validateCredentials.push(false);
-          validateTrustAnchors.push(false);
+          validateTrustAnchors.push(trustedCredential);
           break;
         }
         
         await compactVerify(jwsWithHash, await importJWK(usedKey.publicKeyJwk));
         validateCredentials.push(true);
-        const credentialTypes = this.config.trustAnchors.find(trustAnchor => trustAnchor.identifier === credential.issuer)?.credentialTypes || []
-        const trustedCredential = credential.type.filter(t => t !== 'VerifiableCredential').every(type => credentialTypes.includes(type));
         validateTrustAnchors.push(trustedCredential);
       } catch (err) {
         this.logger.debug(`Error during validation of VP: ${err}`);
