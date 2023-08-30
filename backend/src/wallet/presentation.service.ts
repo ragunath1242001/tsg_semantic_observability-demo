@@ -23,7 +23,7 @@ export class PresentationService {
   async createVerifiablePresentationJsonLd(credentialId: string): Promise<VerifiablePresentationJsonLd> {
     const credential = await this.credentialsService.getCredential(credentialId);
     const verifiablePresentation: VerifiablePresentation<VerifiableCredential<CredentialSubject>> = {
-      '@context': ['https://www.w3.org/2018/credentials/v1'],
+      '@context': ['https://www.w3.org/2018/credentials/v1', "https://w3c.github.io/vc-jws-2020/contexts/v1/"],
       '@type': ['VerifiablePresentation'],
       verifiableCredential: [
         credential.credential
@@ -44,7 +44,7 @@ export class PresentationService {
       throw new AppError(`Key material with id ${keyId} for credential ${credential.credential.id} can't be loaded`, HttpStatus.INTERNAL_SERVER_ERROR)
     }
     const verifiablePresentation: VerifiablePresentation<VerifiableCredential<CredentialSubject>> = {
-      '@context': ['https://www.w3.org/2018/credentials/v1'],
+      '@context': ['https://www.w3.org/2018/credentials/v1', "https://w3c.github.io/vc-jws-2020/contexts/v1/"],
       '@type': ['VerifiablePresentation'],
       verifiableCredential: [
         credential.credential

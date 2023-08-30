@@ -137,7 +137,7 @@ export class CredentialsService {
     expirationDate.setMonth(expirationDate.getMonth()+3);
     const credentialId = (targetDid) ? `${targetDid}#${credentialConfig.id}` : `${await this.didService.getDidId()}#${credentialConfig.id}` ;
     const credential: Credential<CredentialSubject> = {
-      '@context': ["https://www.w3.org/2018/credentials/v1"].concat(credentialConfig.context),
+      '@context': ["https://www.w3.org/2018/credentials/v1", "https://w3c.github.io/vc-jws-2020/contexts/v1/"].concat(credentialConfig.context),
       type: ['VerifiableCredential'].concat(credentialConfig.type),
       id: credentialId,
       issuer: await this.didService.getDidId(),
