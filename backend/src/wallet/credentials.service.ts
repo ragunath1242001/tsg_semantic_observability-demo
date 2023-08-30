@@ -51,7 +51,7 @@ export class CredentialsService {
       const existing = await this.credentialRepository.findOneBy({id: initCredentialConfig.id});
       if (!existing) {
         this.logger.log(`Creating initial key ${initCredentialConfig.id}`);
-        return await this.selfIssueCredential(initCredentialConfig);
+        return await this.selfIssueCredential(initCredentialConfig, initCredentialConfig.credentialSubject.id);
       } else {
         this.logger.log(`Using existing initial key ${initCredentialConfig.id}`);
         return existing;
