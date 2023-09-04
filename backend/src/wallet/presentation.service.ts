@@ -129,7 +129,7 @@ export class PresentationService {
       }
     }
 
-    const valid = validateJWTSignature && (validateAudience || true) && validateJWTExpiryDate && validateCredentials.every(r => r) && validateExpiryDate.every(r => r === true)
+    const valid = validateJWTSignature && ((validateAudience !== undefined) ? validateAudience : true) && validateJWTExpiryDate && validateCredentials.every(r => r) && validateExpiryDate.every(r => r === true)
 
     return {
       vp: vpJwt.vp,
