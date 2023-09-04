@@ -1,10 +1,12 @@
-import { Body, Controller, Get, HttpCode, HttpException, HttpStatus, Logger, Param, Post, Query } from "@nestjs/common";
+import { Body, Controller, Get, HttpCode, HttpException, HttpStatus, Logger, Param, Post, Query, UseGuards } from "@nestjs/common";
 import { DspClientService } from "../../services/dsp/client.service";
 import { TransferService, TransferStatus } from "../../services/dsp/transfer.service";
 import { TransferProcessDto } from "../../model/dsp/transfer/messages.dto";
 import { normalizeAddress } from "../../utils/address";
 import { DataPlaneAddressDto } from "../../model/data-planes/dataPlanes.dto";
+import { ManagementGuard } from "../../auth/management.guard";
 
+@UseGuards(ManagementGuard)
 @Controller('management/transfer')
 export class TransferManagementController {
   constructor(private readonly dsp: DspClientService, private readonly transferService: TransferService) {}
@@ -26,10 +28,10 @@ export class TransferManagementController {
 
   @Post("request")
   @HttpCode(HttpStatus.OK)
-  async requestTransfer(@Query('address') address: string, @Query('agreementId') agreementId: string, @Query('format') format: string): Promise<TransferProcessDto> {
+  async requestTransfer(@Query('address') address: string, @Query('agreementId') agreementId: string, @Query('format') format: string, @Query('audience') audience: string): Promise<TransferProcessDto> {
     this.logger.log(`Received transfer request for ${address} with agreementId ${agreementId} and format ${format}`);
     const controlPlaneAddress = normalizeAddress(address, 1, "transfer", "request");
-    const internalTransfer = await this.transferService.initiateTransferProcess(agreementId, format, undefined, controlPlaneAddress);
+    const internalTransfer = await this.transferService.initiateTransferProcess(agreementId, format, undefined, controlPlaneAddress, audience);
     return internalTransfer.process.serialize();
   }
 

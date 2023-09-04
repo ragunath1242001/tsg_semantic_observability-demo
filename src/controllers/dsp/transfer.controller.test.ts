@@ -13,6 +13,7 @@ import { TransferState } from "../../model/dsp/transfer/messages.dto";
 import { Catalog } from "../../model/dsp/catalog/catalog";
 import { ServerConfig } from "../../config";
 import { plainToClass } from "class-transformer";
+import { AuthService } from "../../auth/auth.service";
 
 describe("TransferController", () => {
   let transferController: TransferController;
@@ -85,6 +86,13 @@ describe("TransferController", () => {
         DspClientService,
         {provide: ServerConfig, useValue: plainToClass(ServerConfig, {})}
       ],
+    }).useMocker((token) => {
+      if (token === AuthService) {
+        return {
+          requestToken() {return "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjb25uZWN0b3IiLCJlbWFpbCI6Im5vcmVwbHlAZGF0YXNwYWMuZXMiLCJkaWRJZCI6ImRpZDp3ZWI6d2FsbGV0LWNhdGVuYS14LmFscGhhLnNjc24uZGF0YXNwYWMuZXMiLCJyb2xlcyI6WyJ2aWV3X3ByZXNlbnRhdGlvbnMiXSwiaWF0IjoxNjkzNDIzNzgyLCJleHAiOjE2OTM0MjQ2ODJ9.UkVNT1ZFRF9TSUdOQVRVUkU"},
+          validateToken() {return true}
+        }
+      }
     }).compile();
 
     transferController = moduleRef.get(TransferController);
@@ -106,13 +114,14 @@ describe("TransferController", () => {
       format: "dspace:HTTP",
       callbackAddress:
         "http://127.0.0.1/transfer/callbacks/urn:uuid:de465939-8292-49c1-97d5-bcb643df1fdb",
-    }));
+    }), 'did:web:localhost');
     transferProviderUuid = transferProviderProcess.processId
     const transferConsumerProcess = await transferService.initiateTransferProcess(
       'urn:uuid:urn:uuid:a1b6d55e-a9ee-4e9c-9a72-ce6e0b1db099',
       'dspace:HTTP',
       undefined,
-      "http://127.0.0.1/transfer/request"
+      "http://127.0.0.1/transfer/request", 
+      'did:web:localhost'
     );
     transferConsumerUuid = transferConsumerProcess.localId;
 
@@ -127,7 +136,7 @@ describe("TransferController", () => {
           format: "dspace:HTTP",
           callbackAddress:
             "http://127.0.0.1/transfer/callbacks/urn:uuid:de465939-8292-49c1-97d5-bcb643df1fdb",
-        })
+        }), 'did:web:localhost'
       );
       expect(result).toStrictEqual({
         "@context": "https://w3id.org/dspace/v0.8/context.json",
@@ -141,7 +150,7 @@ describe("TransferController", () => {
   describe("/:id", () => {
     it("Transfer request with known id should result the transfer", async () => {
       const result = await transferController.getTransfer(
-        transferProviderUuid
+        transferProviderUuid, 'did:web:localhost'
       );
       expect(result).toStrictEqual({
         "@context": "https://w3id.org/dspace/v0.8/context.json",
@@ -153,7 +162,7 @@ describe("TransferController", () => {
     it("Transfer request with unknown id should result in a 404", () => {
       expect(async () => {
         await transferController.getTransfer(
-          "urn:uuid:00000000-0000-0000-0000-000000000000"
+          "urn:uuid:00000000-0000-0000-0000-000000000000", 'did:web:localhost'
         );
       }).rejects.toThrowError(
         expect.objectContaining({ status: HttpStatus.NOT_FOUND })
@@ -170,13 +179,13 @@ describe("TransferController", () => {
         new TransferSuspensionMessage({
           processId: transferProviderUuid,
           reason: [new Multilanguage("Test")]
-        })
+        }), 'did:web:localhost'
       )
       const result = await transferController.startTransferProcess(
         transferProviderUuid,
         new TransferStartMessage({
           processId: transferProviderUuid,
-        })
+        }), 'did:web:localhost'
       );
       expect(result).toStrictEqual({
         status: 'OK'
@@ -188,7 +197,7 @@ describe("TransferController", () => {
           "urn:uuid:741e3479-cdf4-4f1b-b8a5-9d07980725da",
           new TransferStartMessage({
             processId: "urn:uuid:741e3479-cdf4-4f1b-b8a5-9d07980725da",
-          })
+          }), 'did:web:localhost'
         );
       }).rejects.toThrowError(
         expect.objectContaining({ status: HttpStatus.NOT_FOUND })
@@ -200,7 +209,7 @@ describe("TransferController", () => {
           transferProviderUuid,
           new TransferStartMessage({
             processId: "urn:uuid:741e3479-cdf4-4f1b-b8a5-9d07980725da",
-          })
+          }), 'did:web:localhost'
         );
       }).rejects.toThrowError(
         expect.objectContaining({ status: HttpStatus.BAD_REQUEST })
@@ -216,7 +225,7 @@ describe("TransferController", () => {
         transferProviderUuid,
         new TransferCompletionMessage({
           processId: transferProviderUuid,
-        })
+        }), 'did:web:localhost'
       );
       expect(result).toStrictEqual({
         status: 'OK'
@@ -228,7 +237,7 @@ describe("TransferController", () => {
           "urn:uuid:741e3479-cdf4-4f1b-b8a5-9d07980725da",
           new TransferCompletionMessage({
             processId: "urn:uuid:741e3479-cdf4-4f1b-b8a5-9d07980725da",
-          })
+          }), 'did:web:localhost'
         );
       }).rejects.toThrowError(
         expect.objectContaining({ status: HttpStatus.NOT_FOUND })
@@ -240,7 +249,7 @@ describe("TransferController", () => {
           transferProviderUuid,
           new TransferCompletionMessage({
             processId: "urn:uuid:741e3479-cdf4-4f1b-b8a5-9d07980725da",
-          })
+          }), 'did:web:localhost'
         );
       }).rejects.toThrowError(
         expect.objectContaining({ status: HttpStatus.BAD_REQUEST })
@@ -258,7 +267,7 @@ describe("TransferController", () => {
           reason: [
             new Multilanguage("Testing"),
           ],
-        })
+        }), 'did:web:localhost'
       );
       expect(result).toStrictEqual({
         status: 'OK'
@@ -274,7 +283,7 @@ describe("TransferController", () => {
             reason: [
               new Multilanguage("Testing"),
             ],
-          })
+          }), 'did:web:localhost'
         );
       }).rejects.toThrowError(
         expect.objectContaining({ status: HttpStatus.NOT_FOUND })
@@ -290,7 +299,7 @@ describe("TransferController", () => {
             reason: [
               new Multilanguage("Testing"),
             ],
-          })
+          }), 'did:web:localhost'
         );
       }).rejects.toThrowError(
         expect.objectContaining({ status: HttpStatus.BAD_REQUEST })
@@ -309,7 +318,7 @@ describe("TransferController", () => {
           reason: [
             new Multilanguage("Testing"),
           ],
-        })
+        }), 'did:web:localhost'
       );
       expect(result).toStrictEqual({
         status: 'OK'
@@ -324,7 +333,7 @@ describe("TransferController", () => {
             reason: [
               new Multilanguage("Testing"),
             ],
-          })
+          }), 'did:web:localhost'
         );
       }).rejects.toThrowError(
         expect.objectContaining({ status: HttpStatus.NOT_FOUND })
@@ -339,7 +348,7 @@ describe("TransferController", () => {
             reason: [
               new Multilanguage("Testing"),
             ],
-          })
+          }), 'did:web:localhost'
         );
       }).rejects.toThrowError(
         expect.objectContaining({ status: HttpStatus.BAD_REQUEST })
@@ -353,7 +362,7 @@ describe("TransferController", () => {
         transferConsumerUuid,
         new TransferStartMessage({
           processId: "urn:uuid:9d1793cd-bc1b-44a6-a3e8-4e3850bdd9f6",
-        })
+        }), 'did:web:localhost'
       );
       expect(result).toStrictEqual({
         status: 'OK'
@@ -365,7 +374,7 @@ describe("TransferController", () => {
           "urn:uuid:741e3479-cdf4-4f1b-b8a5-9d07980725da",
           new TransferStartMessage({
             processId: "urn:uuid:741e3479-cdf4-4f1b-b8a5-9d07980725da",
-          })
+          }), 'did:web:localhost'
         );
       }).rejects.toThrowError(
         expect.objectContaining({ status: HttpStatus.NOT_FOUND })
@@ -379,13 +388,13 @@ describe("TransferController", () => {
         transferConsumerUuid,
         new TransferStartMessage({
           processId: "urn:uuid:9d1793cd-bc1b-44a6-a3e8-4e3850bdd9f6"
-        })
+        }), 'did:web:localhost'
       )
       const result = await transferController.callbackCompleteTransferProcess(
         transferConsumerUuid,
         new TransferCompletionMessage({
           processId: "urn:uuid:9d1793cd-bc1b-44a6-a3e8-4e3850bdd9f6",
-        })
+        }), 'did:web:localhost'
       );
       expect(result).toStrictEqual({
         status: 'OK'
@@ -397,7 +406,7 @@ describe("TransferController", () => {
           "urn:uuid:741e3479-cdf4-4f1b-b8a5-9d07980725da",
           new TransferCompletionMessage({
             processId: "urn:uuid:741e3479-cdf4-4f1b-b8a5-9d07980725da",
-          })
+          }), 'did:web:localhost'
         );
       }).rejects.toThrowError(
         expect.objectContaining({ status: HttpStatus.NOT_FOUND })
@@ -415,7 +424,7 @@ describe("TransferController", () => {
           reason: [
             new Multilanguage("Testing"),
           ],
-        })
+        }), 'did:web:localhost'
       );
       expect(result).toStrictEqual({
         status: 'OK'
@@ -431,7 +440,7 @@ describe("TransferController", () => {
             reason: [
               new Multilanguage("Testing"),
             ],
-          })
+          }), 'did:web:localhost'
         );
       }).rejects.toThrowError(
         expect.objectContaining({ status: HttpStatus.NOT_FOUND })
@@ -445,7 +454,7 @@ describe("TransferController", () => {
         transferConsumerUuid,
         new TransferStartMessage({
           processId: "urn:uuid:9d1793cd-bc1b-44a6-a3e8-4e3850bdd9f6"
-        })
+        }), 'did:web:localhost'
       )
       const result = await transferController.callbackSuspendTransferProcess(
         transferConsumerUuid,
@@ -454,7 +463,7 @@ describe("TransferController", () => {
           reason: [
             new Multilanguage("Testing"),
           ],
-        })
+        }), 'did:web:localhost'
       );
       expect(result).toStrictEqual({
         status: 'OK'
@@ -469,7 +478,7 @@ describe("TransferController", () => {
             reason: [
               new Multilanguage("Testing"),
             ],
-          })
+          }), 'did:web:localhost'
         );
       }).rejects.toThrowError(
         expect.objectContaining({ status: HttpStatus.NOT_FOUND })

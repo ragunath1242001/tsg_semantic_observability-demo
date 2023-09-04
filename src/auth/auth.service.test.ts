@@ -1,18 +1,32 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { AuthService } from './auth.service';
+import { SetupServer } from "msw/node";
+import { IamConfig } from "../config";
+import { AuthService } from "./auth.service";
+import { mockWalletConfig, setupMockWalletServer } from "./wallets/wallet.mock.test";
 
-describe('AuthService', () => {
-  let service: AuthService;
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [AuthService],
-    }).compile();
+describe('Auth Service', () => {
+  let server: SetupServer;
+  let iamConfig: IamConfig;
+  
+  beforeAll(async () => {
+    server = setupMockWalletServer();
+    iamConfig = mockWalletConfig();
+  }); 
 
-    service = module.get<AuthService>(AuthService);
-  });
+  afterAll(async () => {
+    server.close();
+  })
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
-  });
-});
+  let authService: AuthService
+  beforeEach(() => {
+    authService = new AuthService(iamConfig);
+  })
+
+  it("Request & validate token", async () => {
+    const token = await authService.requestToken(iamConfig.didId);
+    expect(token).toEqual(expect.any(String));
+
+    const valid = await authService.validateToken(token);
+    expect(valid).toStrictEqual(true);
+  })
+})

@@ -1,15 +1,18 @@
 import { CatalogDto, DatasetDto } from "../../model/dsp/catalog/catalog.dto";
 import { Body, Controller, HttpStatus, Logger } from "@nestjs/common";
-import { Get, HttpCode, Param, Post } from "@nestjs/common/decorators";
+import { Get, HttpCode, Param, Post, UseGuards } from "@nestjs/common/decorators";
 import { CatalogRequestMessage } from "../../model/dsp/catalog/messages";
 import { CatalogService } from "../../services/dsp/catalog.service";
 import { DeserializePipe } from "../../utils/deserialize.pipe";
 import { DSPError } from "../../utils/errors/error";
+import { VerifiablePresentationGuard } from "../../auth/verifiablePresentation.guard";
 
+@UseGuards(VerifiablePresentationGuard)
 @Controller('catalog')
 export class CatalogController {
   constructor(private readonly catalogService: CatalogService) {}
   private readonly logger = new Logger(this.constructor.name);
+  
   @Post('request')
   @HttpCode(HttpStatus.OK)
   async request(@Body(new DeserializePipe(CatalogRequestMessage)) body: CatalogRequestMessage): Promise<CatalogDto> {

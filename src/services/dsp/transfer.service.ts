@@ -26,6 +26,7 @@ export interface TransferStatus {
   remoteId: string,
   role: TransferRole,
   remoteAddress: string,
+  remoteParty: string,
   state: TransferState,
   process: TransferProcess,
   agreementId: string,
@@ -89,11 +90,15 @@ export class TransferService {
     return this.transfers;
   }
 
-  async getTransfer(processId: string): Promise<TransferStatus | undefined> {
-    return this.transfers.find(transfer => transfer.localId === processId);
+  async getTransfer(processId: string, audience?: string): Promise<TransferStatus | undefined> {
+    if (audience) {
+      return this.transfers.find(transfer => transfer.localId === processId && transfer.remoteParty === audience);
+    } else {
+      return this.transfers.find(transfer => transfer.localId === processId);
+    }
   }
 
-  async initiateTransferProcess(agreementId: string, format: string, dataAddress: DataAddress | undefined, remoteAddress: string): Promise<{localId: string, message: TransferRequestMessage, process: TransferProcess}> {
+  async initiateTransferProcess(agreementId: string, format: string, dataAddress: DataAddress | undefined, remoteAddress: string, audience: string): Promise<{localId: string, message: TransferRequestMessage, process: TransferProcess}> {
     const localId = `urn:uuid:consumer:${crypto.randomUUID()}`;
     
     const transferRequestMessage = new TransferRequestMessage({
@@ -103,7 +108,7 @@ export class TransferService {
       callbackAddress: `${this.server.publicAddress}/transfer/${localId}`
     });
     const dataPlaneTransfer = await this.dataPlaneService.requestTransfer(transferRequestMessage, localId, "consumer");
-    const requestTransfer = await this.dsp.requestTransfer(`${remoteAddress}/request`, transferRequestMessage);
+    const requestTransfer = await this.dsp.requestTransfer(`${remoteAddress}/request`, transferRequestMessage, audience);
     const transferProcess = await deserialize<TransferProcess>(requestTransfer);
     if (dataAddress === undefined && dataPlaneTransfer.dataAddress !== undefined) {
       dataAddress = new DataAddress({
@@ -118,6 +123,7 @@ export class TransferService {
       remoteId: transferProcess.processId,
       role: "consumer",
       remoteAddress: `${remoteAddress}/${transferProcess.processId}`,
+      remoteParty: audience,
       state: TransferState.REQUESTED,
       agreementId: agreementId,
       format: format,
@@ -137,7 +143,7 @@ export class TransferService {
     };
   }
 
-  async handleRequest(transferRequestMessage: TransferRequestMessage): Promise<TransferProcess> {
+  async handleRequest(transferRequestMessage: TransferRequestMessage, audience: string): Promise<TransferProcess> {
     const transferProcess = new TransferProcess({
       processId: `urn:uuid:provider:${crypto.randomUUID()}`,
       transferState: TransferState.STARTED
@@ -148,6 +154,7 @@ export class TransferService {
       remoteId: transferRequestMessage.callbackAddress.split("/").slice(-1)[0],
       role: "provider",
       remoteAddress: transferRequestMessage.callbackAddress,
+      remoteParty: audience,
       state: TransferState.REQUESTED,
       agreementId: transferRequestMessage.agreementId,
       format: transferRequestMessage.format,
@@ -194,7 +201,7 @@ export class TransferService {
     if (!fromDataPlane) {
       await this.dataPlaneService.startTransfer(transfer.dataPlaneTransfer, transferStartMessage)
     }
-    await this.dsp.startTransfer(`${transfer.remoteAddress}/start`, transferStartMessage);
+    await this.dsp.startTransfer(`${transfer.remoteAddress}/start`, transferStartMessage, transfer.remoteParty);
     transfer.state = TransferState.STARTED;
     return {
       status: 'OK'
@@ -202,8 +209,8 @@ export class TransferService {
   }
 
 
-  async handleStart(processId: string, transferStartMessage: TransferStartMessage): Promise<{status: string}> {
-    const transfer = await this.getTransfer(processId);
+  async handleStart(processId: string, transferStartMessage: TransferStartMessage, audience: string): Promise<{status: string}> {
+    const transfer = await this.getTransfer(processId, audience);
     if (transfer === undefined) {
       throw new DSPError(`Transfer with process ID ${processId} not found`, HttpStatus.NOT_FOUND);
     }
@@ -236,15 +243,15 @@ export class TransferService {
     if (!fromDataPlane) {
       await this.dataPlaneService.completeTransfer(transfer.dataPlaneTransfer, transferCompletionMessage)
     }
-    await this.dsp.completeTransfer(`${transfer.remoteAddress}/complete`, transferCompletionMessage);
+    await this.dsp.completeTransfer(`${transfer.remoteAddress}/complete`, transferCompletionMessage, transfer.remoteParty);
     transfer.state = TransferState.COMPLETED;
     return {
       status: 'OK'
     }
   }
   
-  async handleComplete(processId: string, transferCompletionMessage: TransferCompletionMessage): Promise<{status: string}> {
-    const transfer = await this.getTransfer(processId);
+  async handleComplete(processId: string, transferCompletionMessage: TransferCompletionMessage, audience: string): Promise<{status: string}> {
+    const transfer = await this.getTransfer(processId, audience);
     if (transfer === undefined) {
       throw new DSPError(`Transfer with process ID ${processId} not found`, HttpStatus.NOT_FOUND);
     }
@@ -281,15 +288,15 @@ export class TransferService {
     if (!fromDataPlane) {
       await this.dataPlaneService.terminateTransfer(transfer.dataPlaneTransfer, transferTerminationMessage)
     }
-    await this.dsp.terminateTransfer(`${transfer.remoteAddress}/complete`, transferTerminationMessage);
+    await this.dsp.terminateTransfer(`${transfer.remoteAddress}/complete`, transferTerminationMessage, transfer.remoteParty);
     transfer.state = TransferState.TERMINATED;
     return {
       status: 'OK'
     }
   }
   
-  async handleTerminate(processId: string, transferTerminationMessage: TransferTerminationMessage): Promise<{status: string}> {
-    const transfer = await this.getTransfer(processId);
+  async handleTerminate(processId: string, transferTerminationMessage: TransferTerminationMessage, audience: string): Promise<{status: string}> {
+    const transfer = await this.getTransfer(processId, audience);
     if (transfer === undefined) {
       throw new DSPError(`Transfer with process ID ${processId} not found`, HttpStatus.NOT_FOUND);
     }
@@ -326,15 +333,15 @@ export class TransferService {
     if (!fromDataPlane) {
       await this.dataPlaneService.suspendTransfer(transfer.dataPlaneTransfer, transferSuspensionMessage)
     }
-    await this.dsp.suspendTransfer(`${transfer.remoteAddress}/complete`, transferSuspensionMessage);
+    await this.dsp.suspendTransfer(`${transfer.remoteAddress}/complete`, transferSuspensionMessage, transfer.remoteParty);
     transfer.state = TransferState.SUSPENDED;
     return {
       status: 'OK'
     }
   }
 
-  async handleSuspend(processId: string, transferSuspensionMessage: TransferSuspensionMessage): Promise<{status: string}> {
-    const transfer = await this.getTransfer(processId);
+  async handleSuspend(processId: string, transferSuspensionMessage: TransferSuspensionMessage, audience: string): Promise<{status: string}> {
+    const transfer = await this.getTransfer(processId, audience);
     if (transfer === undefined) {
       throw new DSPError(`Transfer with process ID ${processId} not found`, HttpStatus.NOT_FOUND);
     }

@@ -1,9 +1,24 @@
 import { Module } from '@nestjs/common';
-import { AuthController } from './auth.controller';
-import { AuthService, DidService } from './auth.service';
+import { AuthService } from './auth.service';
+import { VerifiablePresentationGuard } from './verifiablePresentation.guard';
+import { ManagementGuard } from './management.guard';
+import { VerifiablePresentationStrategy } from './verifiablePresentation.strategy';
+import { ManagementStrategy } from './management.strategy';
 
 @Module({
-  controllers: [AuthController],
-  providers: [AuthService, DidService]
+  providers: [
+    AuthService,
+    VerifiablePresentationGuard,
+    VerifiablePresentationStrategy,
+    ManagementGuard,
+    ManagementStrategy
+  ],
+  exports: [
+    AuthService,
+    VerifiablePresentationGuard,
+    VerifiablePresentationStrategy,
+    ManagementGuard,
+    ManagementStrategy
+  ]
 })
 export class AuthModule {}
