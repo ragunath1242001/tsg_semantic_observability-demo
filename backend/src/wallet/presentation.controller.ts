@@ -23,7 +23,7 @@ export class PresentationController {
   }
 
   @Post('validate')
-  async validatePresentation(@Body() presentation: VerifiablePresentationJwt): Promise<PresentationValidation> {
-    return this.presentationService.validatePresentation(presentation);
+  async validatePresentation(@Body() presentation: VerifiablePresentationJwt, @Query('audience') audience: string | undefined): Promise<PresentationValidation> {
+    return this.presentationService.validatePresentation(presentation, audience);
   }
 }
