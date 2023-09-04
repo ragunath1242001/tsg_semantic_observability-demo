@@ -4,10 +4,20 @@ import { CatalogRequestMessage, DatasetRequestMessage } from "../../model/dsp/ca
 import { CatalogService } from "../../services/dsp/catalog.service";
 import { HttpStatus, INestApplication } from "@nestjs/common";
 import request from "supertest";
-import { CatalogDto, DatasetDto } from "../../model/dsp/catalog/catalog.dto";
 import { Catalog, DataService, Dataset, Distribution } from "../../model/dsp/catalog/catalog";
-import { deserialize } from "../../model/serialize";
 import { Multilanguage } from "../../model/dsp/common";
+import { AuthService } from "../../auth/auth.service";
+import { AuthModule } from "../../auth/auth.module";
+import { IamConfig, RootConfig } from "../../config";
+import { plainToClass, plainToInstance } from "class-transformer";
+import { VerifiablePresentationGuard } from "../../auth/verifiablePresentation.guard";
+import { VerifiablePresentationStrategy } from "../../auth/verifiablePresentation.strategy";
+import { ManagementGuard } from "../../auth/management.guard";
+import { ManagementStrategy } from "../../auth/management.strategy";
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { SetupServer } from "msw/lib/node";
+import { setupMockWalletServer, mockWalletConfig, sampleVpToken } from "../../auth/wallets/wallet.mock.test";
+
 
 const dataset = new Dataset({
   id: "urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0cea",
@@ -86,12 +96,36 @@ describe("CatalogController", () => {
 
 describe("Catalog Module", () => {
   let app: INestApplication;
+  let server: SetupServer;
+  let iamConfig: IamConfig;
+  
+  beforeAll(async () => {
+    server = setupMockWalletServer();
+    iamConfig = mockWalletConfig();
+  }); 
 
+  afterAll(async () => {
+    server.close();
+  })
+  
   beforeAll(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
       controllers: [CatalogController],
-      providers: [CatalogService],
-    }).compile();
+      providers: [
+        VerifiablePresentationGuard,
+        VerifiablePresentationStrategy,
+        CatalogService,
+      ],
+    })
+    .useMocker((token) => {
+      if (token === AuthService) {
+        return {
+          requestToken() {return "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjb25uZWN0b3IiLCJlbWFpbCI6Im5vcmVwbHlAZGF0YXNwYWMuZXMiLCJkaWRJZCI6ImRpZDp3ZWI6d2FsbGV0LWNhdGVuYS14LmFscGhhLnNjc24uZGF0YXNwYWMuZXMiLCJyb2xlcyI6WyJ2aWV3X3ByZXNlbnRhdGlvbnMiXSwiaWF0IjoxNjkzNDIzNzgyLCJleHAiOjE2OTM0MjQ2ODJ9.UkVNT1ZFRF9TSUdOQVRVUkU"},
+          validateToken() {return true}
+        }
+      }
+    })
+    .compile();
 
     const catalogService = moduleRef.get(CatalogService);
     catalogService.modifyCatalog(catalog)
@@ -109,6 +143,7 @@ describe("Catalog Module", () => {
     it("Empty catalog request should return empty catalog", async () => {
       const response = await request(app.getHttpServer())
         .post("/catalog/request")
+        .set('Authorization', `Bearer ${sampleVpToken()}`)
         .send(await new CatalogRequestMessage({}).serialize())
         .expect(200)
       expect(response.body).toStrictEqual(await catalogWithDataset.serialize());
@@ -116,6 +151,7 @@ describe("Catalog Module", () => {
     it("Invalid body should result in a 400", async () => {
       request(app.getHttpServer())
         .post("/catalog/request")
+        .set('Authorization', `Bearer ${sampleVpToken()}`)
         .send(await new DatasetRequestMessage({dataset: "urn:uuid:5b156cfa-5800-4345-8acc-6725c7eb5bc2"}).serialize())
         .expect(400)
     })
@@ -124,6 +160,7 @@ describe("Catalog Module", () => {
     it("Dataset request with known id should result a dataset", async () => {
       const response = await request(app.getHttpServer())
         .get("/catalog/datasets/urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0cea")
+        .set('Authorization', `Bearer ${sampleVpToken()}`)
         .expect(200);
 
       expect(response.body).toStrictEqual(await dataset.serialize());
@@ -131,6 +168,7 @@ describe("Catalog Module", () => {
     it("Dataset request with unknown id should result in a 404", async () => {
       request(app.getHttpServer())
         .get("/catalog/datasets/urn:uuid:00000000-0000-0000-0000-000000000000")
+        .set('Authorization', `Bearer ${sampleVpToken()}`)
         .expect(404);
     });
   });

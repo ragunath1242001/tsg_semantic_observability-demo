@@ -1,10 +1,12 @@
-import { Body, Controller, HttpCode, HttpStatus, Logger, Param, Post } from "@nestjs/common";
+import { Body, Controller, HttpCode, HttpStatus, Logger, Param, Post, UseGuards } from "@nestjs/common";
 import { DataPlaneCreation, DataPlaneDetailsDto } from "../../model/data-planes/dataPlanes.dto";
 import { DataPlaneService } from "../../services/dataPlane.service";
 import { DeserializePipe } from "../../utils/deserialize.pipe";
 import { Dataset } from "../../model/dsp/catalog/catalog";
 import { DSPError } from "../../utils/errors/error";
+import { ManagementGuard } from "../../auth/management.guard";
 
+@UseGuards(ManagementGuard)
 @Controller('data-plane')
 export class DataPlaneController {
   private readonly logger = new Logger(this.constructor.name);

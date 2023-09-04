@@ -4,25 +4,24 @@ import { DataPlaneModule } from "./controllers/data-plane/dataplane.module";
 import { ScheduleModule } from "@nestjs/schedule";
 import { ManagementModule } from "./controllers/management/management.module";
 import { RequestContextMiddleware, LoggerMiddleware } from "./utils/logging";
-import { TypedConfigModule, fileLoader, dotenvLoader } from 'nest-typed-config';
-import { RootConfig } from "./config";
+import { AuthModule } from "./auth/auth.module";
+import { ConfigModule } from "./config.module";
 
 @Module({
   imports: [
     ScheduleModule.forRoot(),
-    DspModule, DataPlaneModule, ManagementModule,
-    TypedConfigModule.forRoot({
-      schema: RootConfig,
-      load: [
-        fileLoader(),
-        dotenvLoader({
-          separator: "__",
-          keyTransformer: (key) => key.toLowerCase().replace(/([a-z]_[a-z])/g, g => g[0] + g[2].toUpperCase()),
-        }),
-      ],
-    }),
+    DspModule,
+    DataPlaneModule,
+    ManagementModule,
+    AuthModule,
+    ConfigModule,
   ],
-  exports: [DspModule, DataPlaneModule, ManagementModule]
+  exports: [
+    DspModule,
+    DataPlaneModule,
+    ManagementModule,
+    AuthModule
+  ]
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

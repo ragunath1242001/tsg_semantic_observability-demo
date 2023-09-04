@@ -1,0 +1,20 @@
+server:
+  port: '3001'
+  listen: '0.0.0.0'
+  publicDomain: maastro.gaiax.dataspac.es
+
+iam:
+  type: tsg
+  didId: did:web:wallet-catena-x.alpha.scsn.dataspac.es
+  tokenUrl: http://127.0.0.1/tsg/token
+  presentationUrl: http://127.0.0.1/tsg/presentations
+  validationUrl: http://127.0.0.1/tsg/validate
+  clientId: testClient
+  clientSecret: testSecret
+  credentialId: did:web:wallet-catena-x.alpha.scsn.dataspac.es#90277481-89fc-47c1-9fcb-7abbbe5aac6e
+  validations:
+  - valid
+
+users:
+  - username: admin
+    password: $2a$12$/1aqZWSslSi8E556dpChNOxOyEv3hPA.k8asnRk9iIN2bxH6VGUE6
