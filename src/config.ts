@@ -77,6 +77,17 @@ export class UserConfig {
   public readonly password!: string
 }
 
+export class InitCatalog {
+  @IsString()
+  public readonly creator!: string
+  @IsString()
+  public readonly publisher!: string
+  @IsString()
+  public readonly title!: string
+  @IsString()
+  public readonly description!: string
+}
+
 export class RootConfig {
   @ValidateNested()
   @IsOptional()
@@ -92,4 +103,9 @@ export class RootConfig {
   @Type(() => UserConfig)
   @ArrayMinSize(1)
   public readonly users!: UserConfig[]
+
+  @ValidateNested()
+  @Type(() => InitCatalog)
+  @IsDefined()
+  public readonly initCatalog!: InitCatalog
 }

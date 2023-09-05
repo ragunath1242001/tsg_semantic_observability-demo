@@ -142,7 +142,7 @@ describe("TransferController", () => {
         "@context": "https://w3id.org/dspace/v0.8/context.json",
         "@type": "dspace:TransferProcess",
         "dspace:processId": expect.stringContaining("urn:uuid:"),
-        "dspace:transferState": "dspace:STARTED",
+        "dspace:transferState": "dspace:REQUESTED",
       });
     });
   });
@@ -156,7 +156,7 @@ describe("TransferController", () => {
         "@context": "https://w3id.org/dspace/v0.8/context.json",
         "@type": "dspace:TransferProcess",
         "dspace:processId": transferProviderUuid,
-        "dspace:transferState": "dspace:STARTED",
+        "dspace:transferState": "dspace:REQUESTED",
       });
     });
     it("Transfer request with unknown id should result in a 404", () => {

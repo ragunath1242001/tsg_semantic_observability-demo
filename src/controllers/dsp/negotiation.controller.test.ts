@@ -81,6 +81,7 @@ describe("NegotiationController", () => {
         id: "urn:uuid:81a41b35-2926-4b29-8c9a-ee52665a047b",
         assigner: "urn:uuid:fcddc591-b9f1-4c75-b557-80d1cf955859",
       }),
+      dataSet: 'urn:uuid:0433ba4f-142d-494a-a7d0-74e3040ed4e6'
     }), 'did:web:localhost');
     providerNegotiationId = providerNegotiation.processId;
     const consumerNegotiation = await negotiationService.requestNew(
@@ -88,6 +89,7 @@ describe("NegotiationController", () => {
         id: "urn:uuid:92928e7a-8f21-4489-adbd-d5800b7475a1",
         assigner: "urn:uuid:fcddc591-b9f1-4c75-b557-80d1cf955859",
       }),
+      'urn:uuid:009c36f4-475c-43f0-88be-da23822f9c6d',
       "http://127.0.0.1/negotiation",
       'did:web:localhost'
     );
@@ -106,6 +108,7 @@ describe("NegotiationController", () => {
             id: "urn:uuid:81a41b35-2926-4b29-8c9a-ee52665a047b",
             assigner: "urn:uuid:fcddc591-b9f1-4c75-b557-80d1cf955859",
           }),
+          dataSet: 'urn:uuid:0433ba4f-142d-494a-a7d0-74e3040ed4e6'
         }),
         'did:web:localhost'
       );
@@ -157,6 +160,7 @@ describe("NegotiationController", () => {
             id: "urn:uuid:81a41b35-2926-4b29-8c9a-ee52665a047b",
             assigner: "urn:uuid:fcddc591-b9f1-4c75-b557-80d1cf955859",
           }),
+          dataSet: 'urn:uuid:0433ba4f-142d-494a-a7d0-74e3040ed4e6'
         }), 'did:web:localhost'
       );
       expect(result).toStrictEqual({
@@ -179,6 +183,7 @@ describe("NegotiationController", () => {
               id: "urn:uuid:81a41b35-2926-4b29-8c9a-ee52665a047b",
               assigner: "urn:uuid:fcddc591-b9f1-4c75-b557-80d1cf955859",
             }),
+            dataSet: 'urn:uuid:0433ba4f-142d-494a-a7d0-74e3040ed4e6'
           }), 'did:web:localhost'
         );
       }).rejects.toThrowError(
@@ -197,6 +202,7 @@ describe("NegotiationController", () => {
               id: "urn:uuid:81a41b35-2926-4b29-8c9a-ee52665a047b",
               assigner: "urn:uuid:fcddc591-b9f1-4c75-b557-80d1cf955859",
             }),
+            dataSet: 'urn:uuid:0433ba4f-142d-494a-a7d0-74e3040ed4e6'
           }), 'did:web:localhost'
         );
       }).rejects.toThrowError(

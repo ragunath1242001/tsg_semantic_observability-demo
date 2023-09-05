@@ -28,6 +28,7 @@ export interface NegotiationStatus {
   role: NegotiationRole,
   remoteAddress: string,
   state: ContractNegotiationState,
+  dataSet: string
 }
 
 export interface NegotiationDetail extends NegotiationStatus {
@@ -98,7 +99,8 @@ export class NegotiationService {
         role: negotiation.role,
         remoteAddress: negotiation.remoteAddress,
         remoteParty: negotiation.remoteParty,
-        state: negotiation.state
+        state: negotiation.state,
+        dataSet: negotiation.dataSet
       }
     });
   }
@@ -111,7 +113,7 @@ export class NegotiationService {
     }
   }
 
-  async requestNew(offer: Offer, remoteAddress: string, audience: string): Promise<NegotiationDetail> {
+  async requestNew(offer: Offer, dataSet: string, remoteAddress: string, audience: string): Promise<NegotiationDetail> {
     const processId = `urn:uuid:${crypto.randomUUID()}`;
     if (await this.getNegotiation(processId)) {
       throw new DSPError(`Contract negotiation with process ID ${processId} already exists`, HttpStatus.CONFLICT);
@@ -119,7 +121,8 @@ export class NegotiationService {
     const contractRequestMessage = new ContractRequestMessage({
       processId: processId,
       offer: offer,
-      callbackAddress: `${this.server.publicAddress}/negotiation/callbacks/${processId}`
+      callbackAddress: `${this.server.publicAddress}/negotiation/callbacks/${processId}`,
+      dataSet: dataSet
     });
 
     const contractNegotiationResponse = await this.dsp.requestNegotiation(`${remoteAddress}/request`, contractRequestMessage, audience);
@@ -132,6 +135,7 @@ export class NegotiationService {
       remoteAddress: `${remoteAddress}/${contractNegotiation.processId}`,
       remoteParty: audience,
       state: ContractNegotiationState.REQUESTED,
+      dataSet: dataSet,
       offer: offer,
       localEvents: [{
         time: new Date(),
@@ -160,6 +164,7 @@ export class NegotiationService {
       remoteAddress: requestMessage.callbackAddress,
       remoteParty: remoteParty,
       state: ContractNegotiationState.REQUESTED,
+      dataSet: requestMessage.dataSet,
       offer: requestMessage.offer,
       localEvents: [],
       remoteEvents: [{
@@ -180,7 +185,8 @@ export class NegotiationService {
     const contractRequestMessage = new ContractRequestMessage({
       processId: negotiation.remoteId,
       offer: offer,
-      callbackAddress: `${this.server.publicAddress}/negotiation/callbacks/${processId}`
+      callbackAddress: `${this.server.publicAddress}/negotiation/callbacks/${processId}`,
+      dataSet: negotiation.dataSet
     });
     const contractNegotiationResponse = await this.dsp.requestNegotiation(`${negotiation.remoteAddress}/request`, contractRequestMessage, negotiation.remoteParty);
     

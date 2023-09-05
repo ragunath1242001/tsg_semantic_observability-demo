@@ -1,7 +1,7 @@
 import { SetupServer } from "msw/node";
 import { IamConfig } from "../config";
 import { AuthService } from "./auth.service";
-import { mockWalletConfig, setupMockWalletServer } from "./wallets/wallet.mock.test";
+import { mockWalletConfig, setupMockWalletServer } from "./wallets/wallet.util.test";
 
 
 describe('Auth Service', () => {
