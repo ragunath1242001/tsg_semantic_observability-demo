@@ -6,6 +6,7 @@ import { ManagementModule } from "./controllers/management/management.module";
 import { RequestContextMiddleware, LoggerMiddleware } from "./utils/logging";
 import { AuthModule } from "./auth/auth.module";
 import { ConfigModule } from "./config.module";
+import { HealthController } from "./health.controller";
 
 @Module({
   imports: [
@@ -21,6 +22,9 @@ import { ConfigModule } from "./config.module";
     DataPlaneModule,
     ManagementModule,
     AuthModule
+  ],
+  controllers: [
+    HealthController
   ]
 })
 export class AppModule implements NestModule {
