@@ -9,7 +9,8 @@ info:
 servers: 
   - url: http://localhost
 security: 
-  -  BearerAuth: []
+  - BearerAuth: []
+  - BasicAuth: []
 paths: 
   /transfer/request:
     post:
@@ -141,3 +142,6 @@ components:
     BearerAuth:
       type: http
       scheme: bearer
+    BasicAuth:
+      type: http
+      scheme: basic
