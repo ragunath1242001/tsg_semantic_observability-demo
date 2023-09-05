@@ -1,0 +1,47 @@
+image: gcr.io/kaniko-project/executor:debug
+
+stages:
+  - release
+
+before_script:
+  - mkdir -p /kaniko/.docker
+  - echo "$CONFIG_JSON" > "/kaniko/.docker/config.json"
+
+release:
+  stage: release
+  tags:
+    - k8s
+  variables:
+    IMAGE_NAME: docker.nexus.dataspac.es/dsp/control-plane
+  script:
+    - >-
+      /kaniko/executor
+      --context "${CI_PROJECT_DIR}"
+      --build-arg BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+      --build-arg BUILD_SHA=${CI_COMMIT_SHORT_SHA}
+      --dockerfile "${CI_PROJECT_DIR}/Dockerfile"
+      --destination "${IMAGE_NAME}:${CI_COMMIT_REF_NAME//\//-}"
+      --destination "${IMAGE_NAME}:${CI_COMMIT_REF_NAME//\//-}-${CI_COMMIT_SHORT_SHA}"
+  except:
+    variables:
+      - $RELEASE_VERSION
+
+release_version:
+  stage: release
+  tags:
+    - k8s
+  variables:
+    IMAGE_NAME: docker.nexus.dataspac.es/dsp/control-plane
+  script:
+    - >-
+      /kaniko/executor
+      --context "${CI_PROJECT_DIR}"
+      --build-arg BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+      --build-arg BUILD_SHA=${CI_COMMIT_SHORT_SHA}
+      --dockerfile "${CI_PROJECT_DIR}/Dockerfile"
+      --destination "${IMAGE_NAME}:${RELEASE_VERSION}"
+  only:
+    refs:
+      - master
+    variables:
+      - $RELEASE_VERSION
