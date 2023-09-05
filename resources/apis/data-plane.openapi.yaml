@@ -10,6 +10,7 @@ servers:
   - url: http://localhost
 security: 
   -  BearerAuth: []
+  -  BasicAuth: []
 tags:
   - name: generic
     description: Generic Control Plane-Data Plane interactions
@@ -107,6 +108,28 @@ paths:
           description: Accepted transfer start signal
         "404":
           description: Transfer not found
+  /transfer/{transferId}/execute:
+    post:
+      operationId: executeTransfer
+      summary: Execute transfer
+      tags: 
+        -  transfer
+      parameters: 
+        - name: transferId
+          in: path
+          required: true
+          schema: 
+            type: string
+      requestBody: 
+        content: 
+          application/json: 
+            schema:
+              $ref: ../schemas/dsp.schema.json#/definitions/TransferStartMessageDto
+      responses: 
+        "202":
+          description: Accepted transfer execute signal
+        "404":
+          description: Transfer not found
   /transfer/{transferId}/complete:
     post:
       operationId: completeTransfer
@@ -182,5 +205,8 @@ components:
     BearerAuth:
       type: http
       scheme: bearer
+    BasicAuth:
+      type: http
+      scheme: basic
 #   schemas:
 #     Catalog:

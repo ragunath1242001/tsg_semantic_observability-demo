@@ -134,3 +134,5 @@ components:
     BearerAuth:
       type: http
       scheme: bearer
+      bearerFormat: JWT
+      description: JWT-based Verifiable Presentation
