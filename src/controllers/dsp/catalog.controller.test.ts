@@ -16,7 +16,7 @@ import { ManagementGuard } from "../../auth/management.guard";
 import { ManagementStrategy } from "../../auth/management.strategy";
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { SetupServer } from "msw/lib/node";
-import { setupMockWalletServer, mockWalletConfig, sampleVpToken } from "../../auth/wallets/wallet.mock.test";
+import { setupMockWalletServer, mockWalletConfig, sampleVpToken } from "../../auth/wallets/wallet.util.test";
 
 
 const dataset = new Dataset({

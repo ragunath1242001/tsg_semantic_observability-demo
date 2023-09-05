@@ -74,7 +74,7 @@ export class TransferService {
     if (!this.allowedTransitions[direction][transfer.role][transfer.state].includes(to)) {
       const event: TransferEvent = {
         time: new Date(),
-        state: TransferState.STARTED,
+        state: to,
         localMessage: `Transfer with process ID ${transfer.localId} cannot transition from ${transfer.state} to ${to}`
       }
       if (direction === "remote") {
@@ -146,7 +146,7 @@ export class TransferService {
   async handleRequest(transferRequestMessage: TransferRequestMessage, audience: string): Promise<TransferProcess> {
     const transferProcess = new TransferProcess({
       processId: `urn:uuid:provider:${crypto.randomUUID()}`,
-      transferState: TransferState.STARTED
+      transferState: TransferState.REQUESTED
     })
     const dataPlaneTransfer = await this.dataPlaneService.requestTransfer(transferRequestMessage, transferProcess.processId, "provider");
     const transfer: TransferStatus = {
@@ -186,7 +186,7 @@ export class TransferService {
       dataAddress = new DataAddress({
         endpoint: dataPlaneAddress.endpoint,
         endpointType: transfer.dataPlaneTransfer.endpointType,
-        endpointProperties: dataPlaneAddress.properties.map(p => new EndpointProperty(p))
+        endpointProperties: dataPlaneAddress.properties?.map(p => new EndpointProperty(p)) || []
       });
     }
     const transferStartMessage = new TransferStartMessage({

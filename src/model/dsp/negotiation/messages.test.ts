@@ -12,7 +12,8 @@ test("Contract Request Message", async () => {
       id: "urn:uuid:506f0e00-67ad-4b53-b9b6-5f2580b533c0",
       assigner: "urn:uuid:ef0ab3f8-15c9-4612-a5c3-7c574155e86f"
     }),
-    callbackAddress: "http://example.com"
+    callbackAddress: "http://example.com",
+    dataSet: "urn:uuid:3058a24a-2805-4f00-9276-c4f2234c7117"
   })
   const serialized = await contractRequestMessage.serialize();
   const expected: ContractRequestMessageDto = {
@@ -25,6 +26,7 @@ test("Contract Request Message", async () => {
       "odrl:assigner": "urn:uuid:ef0ab3f8-15c9-4612-a5c3-7c574155e86f",
     },
     "dspace:callbackAddress": "http://example.com",
+    "dspace:dataSet": "urn:uuid:3058a24a-2805-4f00-9276-c4f2234c7117"
   }
   expect(serialized).toStrictEqual(expected);
   const deserialized = await deserialize<ContractRequestMessage>(serialized);

@@ -11,6 +11,7 @@ try {
     load: [
       fileLoader({
         basename: 'config',
+        ...((process.env['CONFIG_PATH']) ? {absolutePath: process.env['CONFIG_PATH']} : {}),
         loaders: {
           '.js': () => null,
           '.cjs': () => null,

@@ -7,6 +7,7 @@ export interface ContractRequestMessageDto extends ContextDto {
   'dspace:processId': string;
   'odrl:offer': OfferDto;
   'dspace:callbackAddress': string;
+  'dspace:dataSet': string;
 }
 
 export interface ContractOfferMessageDto extends ContextDto {

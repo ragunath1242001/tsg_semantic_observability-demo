@@ -1,20 +1,27 @@
 server:
-  port: '3001'
+  port: '3000'
   listen: '0.0.0.0'
-  publicDomain: maastro.gaiax.dataspac.es
+  publicDomain: localhost:3000
+  publicAddress: http://localhost:3000
 
 iam:
   type: tsg
-  didId: did:web:wallet-catena-x.alpha.scsn.dataspac.es
-  tokenUrl: http://127.0.0.1/tsg/token
-  presentationUrl: http://127.0.0.1/tsg/presentations
-  validationUrl: http://127.0.0.1/tsg/validate
-  clientId: testClient
-  clientSecret: testSecret
-  credentialId: did:web:wallet-catena-x.alpha.scsn.dataspac.es#90277481-89fc-47c1-9fcb-7abbbe5aac6e
+  didId: did:web:wallet-spa.alpha.scsn.dataspac.es
+  tokenUrl: https://wallet-spa.alpha.scsn.dataspac.es/api/auth/login
+  presentationUrl: https://wallet-spa.alpha.scsn.dataspac.es/api/presentations
+  validationUrl: https://wallet-spa.alpha.scsn.dataspac.es/api/presentations/validate
+  clientId: connector
+  clientSecret: test
+  credentialId: did:web:wallet-spa.alpha.scsn.dataspac.es#d3693f15-35e8-422c-b192-8b19d47b9301
   validations:
   - valid
 
 users:
   - username: admin
     password: $2a$12$/1aqZWSslSi8E556dpChNOxOyEv3hPA.k8asnRk9iIN2bxH6VGUE6
+
+initCatalog:
+  creator: did:web:wallet-spa.alpha.scsn.dataspac.es
+  publisher: did:web:wallet-spa.alpha.scsn.dataspac.es
+  title: TSG Test Connector
+  description: TSG Test Connector testing Data Space Protocol support

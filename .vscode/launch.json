@@ -18,6 +18,32 @@
         "sourceMaps": true,
         "cwd": "${workspaceRoot}",
         "outputCapture": "std"
+    },
+    {
+        "name": "Debug Test A",
+        "type": "node",
+        "request": "launch",
+        "args": ["${workspaceFolder}/src/app.ts"],
+        "runtimeArgs": ["--nolazy", "-r", "ts-node/register"],
+        "env": {
+          "CONFIG_PATH": "./config.test-a.yaml"
+        },
+        "sourceMaps": true,
+        "cwd": "${workspaceRoot}",
+        "outputCapture": "std"
+    },
+    {
+        "name": "Debug Test B",
+        "type": "node",
+        "request": "launch",
+        "args": ["${workspaceFolder}/src/app.ts"],
+        "runtimeArgs": ["--nolazy", "-r", "ts-node/register"],
+        "env": {
+          "CONFIG_PATH": "./config.test-b.yaml"
+        },
+        "sourceMaps": true,
+        "cwd": "${workspaceRoot}",
+        "outputCapture": "std"
     }
   ]
 }

@@ -109,7 +109,7 @@ export class DspClientService {
       const response = await this.axios.get<Out>(address, {
         ...config,
         headers: {
-          Authorization: `Bearer ${this.getToken(address, audience)}`
+          Authorization: `Bearer ${await this.getToken(address, audience)}`
         }
       });
       return response.data;
@@ -124,7 +124,7 @@ export class DspClientService {
       const response = await this.axios.post<Out>(address, bodyDto, {
         ...config,
         headers: {
-          Authorization: `Bearer ${this.getToken(address, audience)}`
+          Authorization: `Bearer ${await this.getToken(address, audience)}`
         }
       });
       this.logger.log(message);

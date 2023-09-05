@@ -62,3 +62,7 @@ export function setupMockWalletServer(start: boolean = true): SetupServer {
   }
   return server;
 }
+
+describe('Util Test', () => {
+  it("Empty util test", () => {})
+})

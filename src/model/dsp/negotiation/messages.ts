@@ -8,6 +8,7 @@ export interface IContractRequestMessage {
   processId: string;
   offer: Offer;
   callbackAddress: string;
+  dataSet: string;
 }
 
 @Serializable("dspace:ContractRequestMessage")
@@ -23,12 +24,16 @@ export class ContractRequestMessage extends SerializableClass<ContractRequestMes
   @Namespace("dspace")
   @IsNotEmpty()
   callbackAddress: string;
+  @Namespace("dspace")
+  @IsNotEmpty()
+  dataSet: string;
 
   constructor (value: IContractRequestMessage) {
     super()
     this.processId = value.processId;
     this.offer = value.offer;
     this.callbackAddress = value.callbackAddress;
+    this.dataSet = value.dataSet;
   }
 }
 
