@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "http-data-plane.fullname" . }}-config
+  labels: {{ include "http-data-plane.labels" $ | nindent 4 }}
+data:
+  config.yaml: |-
+    {{- tpl (.Values.config | toYaml) $ | nindent 4}}

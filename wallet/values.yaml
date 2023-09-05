@@ -1,0 +1,126 @@
+image: docker.nexus.dataspac.es/dsp/wallet:main
+replicaCount: 1
+
+ingress:
+  enabled: true
+  clusterIssuer: letsencrypt
+
+# host: wallet.alpha.scsn.dataspac.es
+
+config:
+  server:
+    port: 3000
+    listen: '0.0.0.0'
+    publicDomain: "{{ .Values.host }}"
+    publicAddress: https://{{ .Values.host }}
+  
+#   initClients:
+#     - id: admin
+#       secret: test
+#       email: noreply@dataspac.es
+#       roles:
+#         - view_all_credentials
+#         - manage_all_credentials
+#         - manage_keys
+#         - manage_clients
+#   initKeys:
+#     - id: key-0
+#       type: EdDSA
+#       default: true
+#     - id: key-1
+#       type: ES384
+#       # default: true
+  
+#   initCredentials: []  
+#     # - id: 5bbfe352-6097-45cc-a305-ea0106bca623
+#     #   context:
+#     #     - https://wallet.alpha.scsn.dataspac.es/context/SCSN
+#     #   type:
+#     #     - SCSNCredential
+#     #   credentialSubject:
+#     #     id: did:web:wallet.alpha.scsn.dataspac.es
+#     #     scsnIdentifier: 'urn:scsn:123456789'
+#     #     scsnRole: 'scsn:ServiceProvider'
+  
+#   # db:
+#   #   type: sqlite
+#   #   database: wallet.sqlite
+  
+#   # db:
+#   #   type: postgres
+#   #   database: wallet
+#   #   host: postgresql
+#   #   port: 5432
+#   #   username: wallet
+#   #   password: password
+  
+  
+#   # mail:
+#   #   enabled: true
+#   #   smtp:
+#   #     host: mail.server
+#   #     port: 465
+#   #     secure: true
+#   #     user: username
+#   #     password: password
+#   #     from: noreply@dataspac.es
+#   #   title: SCSN Wallet
+#   #   dataspace: SCSN
+  
+#   trustAnchors: []
+#     # - identifier: did:web:wallet.alpha.scsn.dataspac.es
+#     #   credentialTypes:
+#     #     - SCSNCredential
+#     #     - scsn:SCSNCredential
+#     #     - https://wallet.alpha.scsn.dataspac.es/credentials/SCSNCredential
+  
+#   contexts: []
+#     # - id: SCSN
+#     #   credentialType: SCSNCredential
+#     #   issuable: true
+#     #   document:
+#     #     '@context':
+#     #       '@version': 1.1
+#     #       '@protected': true
+#     #       scsn: https://wallet.alpha.scsn.dataspac.es/credentials/
+#     #       id: '@id'
+#     #       type: '@type'
+#     #       SCSNCredential:
+#     #         '@context':
+#     #           - https://www.w3.org/2018/credentials/v1
+#     #         '@id': 'scsn:SCSNCredential'
+#     #       scsnIdentifier:
+#     #         '@id': 'scsn:scsnIdentifier'
+#     #       scsnRole:
+#     #         '@id': 'scsn:scsnRole'
+#     #         "@type": '@id'
+#     #       ServiceProvider:
+#     #         '@id': 'scsn:ServiceProvider'
+#     #       Manufacturer:
+#     #         '@id': 'scsn:Manufacturer'
+#     #       Administrator:
+#     #         '@id': 'scsn:Administrator'
+#     #   schema:
+#     #     type: object
+#     #     title: SCSNCredential
+#     #     additionalProperties: true
+#     #     properties:
+#     #       id:
+#     #         type: string
+#     #         pattern: "^did:web:.*"
+#     #       scsnIdentifier:
+#     #         type: string
+#     #         pattern: "^urn:scsn:.*"
+#     #       scsnRole:
+#     #         enum:
+#     #         - scsn:ServiceProvider
+#     #         - scsn:Manufacturer
+#     #         - scsn:Administrator
+#     #     required:
+#     #     - id
+#     #     - scsnIdentifier
+#     #     - scsnRole
+#     # - id: Catena-X
+#     #   credentialType: SummaryCredential
+#     #   issuable: false
+#     #   documentUrl: https://catenax-ng.github.io/product-core-schemas/SummaryVC.json
