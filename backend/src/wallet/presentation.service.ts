@@ -5,7 +5,7 @@ import { VerifiablePresentationJsonLd, VerifiablePresentation, VerifiableCredent
 import { AppError } from "../utils/error.js";
 import jsonld from "jsonld";
 import crypto from "crypto";
-import { CredentialsService, hashingAlgorithm, signingAlgorithm } from "./credentials.service.js";
+import { CredentialsService, signingAlgorithm } from "./credentials.service.js";
 import { KeyService } from "./keys.service.js";
 import { DIDResolver } from "./didResolver.service.js";
 import { RootConfig } from "../config.js";
@@ -103,12 +103,10 @@ export class PresentationService {
         const credentialTypes = this.config.trustAnchors.find(trustAnchor => trustAnchor.identifier === credential.issuer)?.credentialTypes || []
         const trustedCredential = credential.type.filter(t => t !== 'VerifiableCredential').every(type => credentialTypes.includes(type));
 
-        const proofAlgorithm = JSON.parse(atob(proof.jws.split('.')[0])).alg
-
         const normalized = await jsonld.normalize(plainCredential, {
           algorithm: 'URDNA2015'
         });
-        const hash = crypto.createHash(hashingAlgorithm(proofAlgorithm)).update(normalized).digest('hex');
+        const hash = crypto.createHash('sha256').update(normalized).digest('hex');
         const jwsWithHash = proof.jws.replace('..',`.${hash}.`);
         const usedKey = resolvedIssuerDid.verificationMethod?.find(m => m.id === proof.verificationMethod);
         if (!usedKey || !usedKey.publicKeyJwk){

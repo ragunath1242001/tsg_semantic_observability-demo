@@ -11,16 +11,6 @@ import { Repository } from "typeorm";
 import { DidService } from "./did.service.js";
 import { KeyService } from "./keys.service.js";
 
-
-export function hashingAlgorithm(type: 'EdDSA' | 'ES384' | 'X509' | 'PS256' | string): string {
-  switch(type) {
-    case "EdDSA": return 'sha512'
-    case "ES384": return 'sha384'
-    case "X509": return 'sha256'
-    case "PS256": return 'sha256'
-    default: return 'sha256'
-  }
-}
 export function signingAlgorithm(type: 'EdDSA' | 'ES384' | 'X509'): string {
   switch(type) {
     case "EdDSA": return 'EdDSA'
@@ -155,7 +145,7 @@ export class CredentialsService {
       keyMaterial = await this.keyService.getDefaultKey();
     }
     this.logger.debug(`Signing with key ${keyMaterial.id}`);
-    const hash = crypto.createHash(hashingAlgorithm(keyMaterial.type)).update(normalized).digest('hex');
+    const hash = crypto.createHash('sha256').update(normalized).digest('hex');
     const signature = new CompactSign(new TextEncoder().encode(hash))
       .setProtectedHeader({alg: signingAlgorithm(keyMaterial.type), b64: false, crit: ['b64']});
     const privateKey = await importJWK(keyMaterial.privateKey);
