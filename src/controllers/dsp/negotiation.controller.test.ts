@@ -9,7 +9,7 @@ import { NegotiationService } from "../../services/dsp/negotiation.service";
 import { DspClientService } from "../../services/dsp/client.service";
 import { rest } from "msw"; 
 import { SetupServer, setupServer } from "msw/node";
-import { ServerConfig } from "../../config";
+import { IamConfig, ServerConfig } from "../../config";
 import { plainToClass } from "class-transformer";
 import { AuthService } from "../../auth/auth.service";
 
@@ -57,8 +57,17 @@ describe("NegotiationController", () => {
       providers: [
         NegotiationService, 
         DspClientService, 
-        {provide: ServerConfig, useValue: plainToClass(ServerConfig, {})
-      }
+        {provide: ServerConfig, useValue: plainToClass(ServerConfig, {})},
+        {provide: IamConfig, useValue: plainToClass(IamConfig, {
+          didId: 'did:web:localhost',
+          tokenUrl: 'http://localhost/auth/login',
+          presentationUrl: 'http://localhost/presentations',
+          validationUrl: 'http://localhost/presentations/validate',
+          clientId: 'client',
+          clientSecret: 'secret',
+          credentialId: 'did:web:localhost#00000000-0000-0000-0000-000000000000',
+          validations: ['valid']
+        })}
     ],
     }).useMocker((token) => {
       if (token === AuthService) {

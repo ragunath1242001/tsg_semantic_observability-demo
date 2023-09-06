@@ -7,7 +7,7 @@ import crypto from "crypto";
 import { DspClientService } from "./client.service";
 import { deserialize } from "../../model/serialize";
 import { DSPError } from "../../utils/errors/error";
-import { ServerConfig } from "../../config";
+import { IamConfig, ServerConfig } from "../../config";
 
 export type NegotiationRole = "provider" | "consumer";
 
@@ -40,7 +40,7 @@ export interface NegotiationDetail extends NegotiationStatus {
 
 @Injectable()
 export class NegotiationService {
-  constructor(private readonly dsp: DspClientService, private readonly server: ServerConfig) {}
+  constructor(private readonly dsp: DspClientService, private readonly server: ServerConfig, private readonly iam: IamConfig) {}
   private readonly logger = new Logger(this.constructor.name);
 
   private readonly negotiations: NegotiationDetail[] = [];
@@ -317,10 +317,10 @@ export class NegotiationService {
     const agreement = new Agreement({
       ...negotiation.offer,
       timestamp: new Date().toISOString(),
-      consumerId: negotiation.offer?.assignee || 'urn:TODO:ConsumerFromAuth',
-      providerId: 'urn:TODO:ProviderFromConfig',
-      assignee: negotiation.offer?.assignee || 'urn:TODO:ConsumerFromAuth',
-      assigner: 'urn:TODO:AssignerFromConfig'
+      consumerId: negotiation.remoteParty,
+      providerId: this.iam.didId,
+      assignee: negotiation.offer?.assignee || negotiation.remoteParty,
+      assigner: this.iam.didId
     });
     const agreementMessage = new ContractAgreementMessage({
       processId: negotiation.remoteId || "",
