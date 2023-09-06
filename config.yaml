@@ -6,13 +6,13 @@ server:
 
 iam:
   type: tsg
-  didId: did:web:wallet-spa.alpha.scsn.dataspac.es
-  tokenUrl: https://wallet-spa.alpha.scsn.dataspac.es/api/auth/login
-  presentationUrl: https://wallet-spa.alpha.scsn.dataspac.es/api/presentations
-  validationUrl: https://wallet-spa.alpha.scsn.dataspac.es/api/presentations/validate
-  clientId: connector
-  clientSecret: test
-  credentialId: did:web:wallet-spa.alpha.scsn.dataspac.es#d3693f15-35e8-422c-b192-8b19d47b9301
+  didId: did:web:localhost%3A3001
+  tokenUrl: http://localhost:3001/api/auth/login
+  presentationUrl: http://localhost:3001/api/presentations
+  validationUrl: http://localhost:3001/api/presentations/validate
+  clientId: client
+  clientSecret: secret
+  credentialId: did:web:localhost%3A3001#00000000-0000-0000-0000-000000000000
   validations:
   - valid
 
@@ -21,7 +21,7 @@ users:
     password: $2a$12$/1aqZWSslSi8E556dpChNOxOyEv3hPA.k8asnRk9iIN2bxH6VGUE6
 
 initCatalog:
-  creator: did:web:wallet-spa.alpha.scsn.dataspac.es
-  publisher: did:web:wallet-spa.alpha.scsn.dataspac.es
+  creator: did:web:localhost%3A3001
+  publisher: did:web:localhost%3A3001
   title: TSG Test Connector
   description: TSG Test Connector testing Data Space Protocol support
