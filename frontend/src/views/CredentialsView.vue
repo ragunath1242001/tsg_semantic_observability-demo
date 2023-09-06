@@ -34,6 +34,10 @@
           </b-table-column>
           
           <template #detail="props">
+            <div class="buttons">
+              <b-button type="is-primary" @click="copyCredentialId(props.row.id)">Copy Credential ID</b-button>
+              <b-button type="is-primary" @click="copyCredential(props.row.credential)">Copy Credential</b-button>
+            </div>
             <h3 class="subtitle">Proof</h3>
             <b-field horizontal label="Type">{{ props.row.credential.proof.type  }}</b-field>
             <b-field horizontal label="Issuance date">{{ formatDate(props.row.credential.issuanceDate)  }}</b-field>
@@ -223,7 +227,7 @@
 import store, { axiosInstance } from '@/store';
 import Vue from 'vue';
 import CodeHighlight from '../components/CodeHighlight.vue';
-import { CredentialConfig, Credentials, JsonLdContextConfig } from '../model/credentials';
+import { CredentialConfig, CredentialSubject, Credentials, JsonLdContextConfig, VerifiableCredential } from '../model/credentials';
 import Ajv, {JSONSchemaType} from "ajv";
 import axios from 'axios';
 import { AppRole } from '@/model/clients';
@@ -485,6 +489,12 @@ export default Vue.extend({
             }
           }
       })
+    },
+    copyCredentialId(credentialId: string) {
+      navigator.clipboard.writeText(credentialId);
+    },
+    copyCredential(credential: VerifiableCredential<CredentialSubject>) {
+      navigator.clipboard.writeText(JSON.stringify(credential, null, 2));
     },
     formatDate(dateString: string) {
       const date = new Date(dateString);
