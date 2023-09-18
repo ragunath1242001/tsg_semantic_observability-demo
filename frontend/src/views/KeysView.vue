@@ -59,6 +59,12 @@
           <b-field horizontal label="Default" message="Set this new key as default key">
             <b-checkbox v-model="addKeyForm.default"></b-checkbox>
           </b-field>
+          <b-field v-if="addKeyForm.type === 'X509'" horizontal label="Existing key (PKCS#8)">
+            <b-input type="textarea" v-model="addKeyForm.existingKey"></b-input>
+          </b-field>
+          <b-field v-if="addKeyForm.type === 'X509'" horizontal label="Existing certificate (chain) (PEM)">
+            <b-input type="textarea" v-model="addKeyForm.existingCertificate"></b-input>
+          </b-field>
           <b-field horizontal>
             <b-button type="is-primary" @click="addKey">Add key</b-button>
           </b-field>
@@ -84,7 +90,9 @@ export default Vue.extend({
     addKeyForm: {
       type: 'EdDSA' | 'ES384' | 'X509',
       id: string,
-      default: boolean
+      default: boolean,
+      existingKey?: string,
+      existingCertificate?: string
     }
   } {
     return {

@@ -17,7 +17,7 @@ export interface Credential<T extends CredentialSubject> {
   '@context': string[]
   type: string[]
   id?: string
-  credentialSubject: T
+  credentialSubject: T | T[]
   issuer: string
   expirationDate?: string
   issuanceDate: string
