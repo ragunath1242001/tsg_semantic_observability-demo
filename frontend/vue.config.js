@@ -5,8 +5,9 @@ module.exports = defineConfig({
   devServer: {
     proxy: {
       "^/api": {
-        target: "https://wallet.alpha.scsn.dataspac.es/",
-        // pathRewrite: { "^/api": "" },
+        // target: "https://wallet.alpha.scsn.dataspac.es/",
+        target: "http://localhost:3000/",
+        pathRewrite: { "^/api": "" },
       },
     },
   },

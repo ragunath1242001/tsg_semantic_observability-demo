@@ -153,7 +153,7 @@
                 :allow-new="true"
                 :open-on-focus="true"
                 icon="label"
-                placeholder="Add a Credential type"
+                placeholder="Add a Credential type (only if not explicit in credential subject)"
                 aria-close-label="Delete credential type">
             </b-taginput>
           </b-field>
@@ -182,13 +182,24 @@
           <b-field label="Credential"
             :type="(issueCredentialForm.credentialValidation) ? 'is-danger' : ''"
             :message="issueCredentialForm.credentialValidation"
+            v-if="!issueCredentialForm.schema || issueCredentialForm.manualCredential"
             >
+            <div>
             <b-input 
               v-model="issueCredentialForm.credentialSubject" 
               type="textarea"
               class="is-family-monospace"
+              rows="10"
               @blur="validateCredentialSubject(false)"
               ></b-input>
+              <b-button type="is-info" class="m-3" v-if="issueCredentialForm.schema" @click="() => {issueCredentialForm.manualCredential = !issueCredentialForm.manualCredential}">Credential form</b-button>
+            </div>
+          </b-field>
+          <b-field label="Credential form" v-if="issueCredentialForm.schema && !issueCredentialForm.manualCredential">
+            <div>
+              <JsonSchemaFormElement v-for="(child, key) in issueCredentialForm.schema.properties" :schema="child" :key="key" :required="issueCredentialForm.schema.required.includes(key)" :name="key" :didId="didId" @input="($event) => {issueCredentialForm.credentialSubjectObject[key] = $event; updateCredentialSubject();}"></JsonSchemaFormElement>
+              <b-button type="is-warning" class="m-3" @click="() => {issueCredentialForm.manualCredential = !issueCredentialForm.manualCredential}">Manual credential</b-button>
+            </div>
           </b-field>
           <b-field>
             <b-button type="is-primary" @click="issueCredential">Issue credential</b-button>
@@ -201,7 +212,7 @@
         <p class="card-header-title">Import credential</p>
       </div>
       <div class="card-content">
-        <form id="addKey" @submit.prevent="importCredential">
+        <form id="addKey" @submit.prevent="importCredential(true)">
           <b-field label="Credential"
             :type="(importCredentialForm.credentialValidation) ? 'is-danger' : ''"
             :message="importCredentialForm.credentialValidation"
@@ -214,7 +225,10 @@
               ></b-input>
           </b-field>
           <b-field>
-            <b-button type="is-primary" @click="importCredential">Import credential</b-button>
+            <div class="buttons">
+              <b-button type="is-primary" @click="importCredential(true)">Import credential</b-button>
+              <b-button type="is-warning" @click="importCredential(false)">Import credential without verification</b-button>
+            </div>
           </b-field>
         </form>
       </div>
@@ -231,15 +245,19 @@ import { CredentialConfig, CredentialSubject, Credentials, JsonLdContextConfig, 
 import Ajv, {JSONSchemaType} from "ajv";
 import axios from 'axios';
 import { AppRole } from '@/model/clients';
+import JsonSchemaFormElement from '../components/JsonSchemaFormElement.vue';
+
 
 export default Vue.extend({
   name: 'CredentialsView',
   components: {
-    CodeHighlight
+    CodeHighlight,
+    JsonSchemaFormElement
   },
   data(): {
     credentials: Credentials[] | undefined,
     config: CredentialConfig | undefined,
+
     issueCredentialForm: {
       context: string[],
       type: string[],
@@ -247,7 +265,10 @@ export default Vue.extend({
       id: string,
       keyId?: string,
       credentialSubject: string,
-      credentialValidation: string | undefined
+      credentialSubjectObject: Record<string, any>,
+      manualCredential: boolean,
+      credentialValidation: string | undefined,
+      schema: Record<string, any> | undefined
     },
     importCredentialForm: {
       credential: string,
@@ -266,7 +287,10 @@ export default Vue.extend({
         credentialSubject: JSON.stringify({
           id: store.state.client_info?.didId || '',
         }, null, 2),
-        credentialValidation: undefined
+        credentialSubjectObject: {},
+        manualCredential: false,
+        credentialValidation: undefined,
+        schema: undefined
       },
       importCredentialForm: {
         credential: '{}',
@@ -279,6 +303,9 @@ export default Vue.extend({
     await this.loadConfig();
   },
   computed: {
+    didId() {
+      return store.state.client_info?.didId;
+    },
     compositeId() {
       return `${this.issueCredentialForm.targetDid}#${encodeURIComponent(this.issueCredentialForm.id)}`
     },
@@ -311,8 +338,11 @@ export default Vue.extend({
       this.config = response.data;
     },
     useContext(context: JsonLdContextConfig) {
-      this.issueCredentialForm.context = [...new Set(this.issueCredentialForm.context), (context.documentUrl || '')]
-      this.issueCredentialForm.type = [...new Set(this.issueCredentialForm.type), context.credentialType]
+      this.issueCredentialForm.context = [...new Set([...this.issueCredentialForm.context, (context.documentUrl || '')])]
+      this.issueCredentialForm.schema = context.schema;
+      if (!context.schema?.properties?.type && !context.schema?.properties?.['@type']) {
+        this.issueCredentialForm.type = [...new Set([...this.issueCredentialForm.type, context.credentialType])]
+      }
     },
     validateCredentialSubject(toast: boolean): any | null {
       try {
@@ -397,7 +427,10 @@ export default Vue.extend({
           credentialSubject: JSON.stringify({
             id: store.state.client_info?.didId || '',
           }, null, 2),
-          credentialValidation: undefined
+          credentialSubjectObject: {},
+          manualCredential: false,
+          credentialValidation: undefined,
+          schema: undefined
         }
       } catch (err) {
         this.$buefy.toast.open({
@@ -428,9 +461,9 @@ export default Vue.extend({
         }
         if (!credential['credentialSubject']
           || typeof credential['credentialSubject'] !== 'object'
-          || !credential['credentialSubject']['id']
+          || (!credential['credentialSubject']['id']
           || typeof credential['credentialSubject']['id'] !== 'string'
-          || !credential['credentialSubject']['id'].startsWith('did:web:')
+          || !credential['credentialSubject']['id'].startsWith('did:web:'))
           ) {
             throw Error('Credential subject must be present and be an object containing at least an id starting with did:web:')
         }
@@ -452,9 +485,14 @@ export default Vue.extend({
         return null;
       }
     },
-    async importCredential() {
-      const credential = this.validateCredential(true);
-      if (!credential) return;
+    async importCredential(validate: boolean = true) {
+      let credential;
+      if (validate) {
+        credential = this.validateCredential(true);
+        if (!credential) return;
+      } else {
+        credential = JSON.parse(this.importCredentialForm.credential)
+      }
 
       try {
         await axiosInstance.post('management/credentials/import', credential);
@@ -502,6 +540,9 @@ export default Vue.extend({
     },
     getFormElement(id: string) {
       return document.getElementById(id) as HTMLFormElement
+    },
+    updateCredentialSubject() {
+      this.issueCredentialForm.credentialSubject = JSON.stringify(this.issueCredentialForm.credentialSubjectObject, null, 2)
     }
   }
 
