@@ -4,6 +4,7 @@ import { DIDDocuments, KeyMaterials } from "../model/credentials.dao.js";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { RootConfig } from "../config.js";
+import { signingAlgorithm } from "./credentials.service.js";
 
 @Injectable()
 export class DidService {
@@ -40,6 +41,7 @@ export class DidService {
           controller: this.didId,
           publicKeyJwk: {
             kty: 'OKP',
+            alg: signingAlgorithm(key.type),
             ...key.publicKey,
           }
         }
@@ -50,15 +52,11 @@ export class DidService {
     this.logger.debug(`DID document ${this.didId}\n${JSON.stringify(didDocument, null, 2)}`);
     const existing = await this.didRepository.find({});
     if (existing[0]) {
-      await this.didRepository.save({
-        ...existing,
-        document: didDocument
-      });
-    } else {
-      await this.didRepository.save({
-        document: didDocument
-      });
+      await this.didRepository.clear()
     }
+    await this.didRepository.save({
+      document: didDocument
+    });
     return didDocument;
   }
 }

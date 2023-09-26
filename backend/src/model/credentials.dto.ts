@@ -32,13 +32,17 @@ export class Credential<T extends CredentialSubject> {
   id?: string
   @ValidateNested()
   @Type(() => CredentialSubject)
-  credentialSubject!: T
+  credentialSubject!: T | T[]
   @IsString()
   issuer!: string
   @IsString()
+  @IsOptional()
   expirationDate?: string
   @IsString()
   issuanceDate!: string
+  @IsOptional()
+  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+  evidence?: any
 }
 
 export class KeyInfo {
@@ -72,10 +76,10 @@ export class VerifiablePresentation<T extends VerifiableCredential<CredentialSub
   @IsString({each: true})
   '@context': string[]
   @IsString({each: true})
-  '@type': string[]
+  type!: string[]
   @IsString()
   @IsOptional()
-  '@id'?: string
+  id?: string
   @ValidateNested()
   @Type(() => VerifiableCredential<CredentialSubject>)
   verifiableCredential!: T[] | T;

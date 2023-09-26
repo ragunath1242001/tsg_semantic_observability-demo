@@ -21,6 +21,21 @@ const routes: Array<RouteConfig> = [
     component: () => import(/* webpackChunkName: "credentials" */ '../views/CredentialsView.vue')
   },
   {
+    path: '/credentials/issue',
+    name: 'issuecredentials',
+    component: () => import(/* webpackChunkName: "credentials" */ '../views/credentials/IssueCredentialView.vue')
+  },
+  {
+    path: '/credentials/import',
+    name: 'importcredentials',
+    component: () => import(/* webpackChunkName: "credentials" */ '../views/credentials/ImportCredentialView.vue')
+  },
+  {
+    path: '/credentials/gaiax',
+    name: 'gaiaxcredentials',
+    component: () => import(/* webpackChunkName: "credentials" */ '../views/credentials/GaiaXCredentialView.vue')
+  },
+  {
     path: '/clients',
     name: 'clients',
     component: () => import(/* webpackChunkName: "clients" */ '../views/ClientsView.vue')

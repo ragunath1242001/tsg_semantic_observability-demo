@@ -29,6 +29,9 @@ export class KeyMaterials extends MetaEntity {
 
   @Column("simple-json")
   publicKey!: JWK
+
+  @Column({nullable: true})
+  caChain?: string
 }
 
 @Entity()

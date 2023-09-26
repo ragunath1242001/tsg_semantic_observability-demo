@@ -10,6 +10,7 @@ import { DidService } from './did.service.js';
 import { KeyService } from './keys.service.js';
 import { PresentationService } from './presentation.service.js';
 import { HealthController } from './health.controller.js';
+import { KeysController } from './keys.controller.js';
 
 @Module({
   imports: [
@@ -21,7 +22,8 @@ import { HealthController } from './health.controller.js';
   controllers: [
     CredentialsController, 
     PresentationController,
-    HealthController
+    HealthController,
+    KeysController
   ],
   providers: [
     DidService,

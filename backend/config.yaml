@@ -21,54 +21,14 @@ initClients:
 initKeys:
   - id: key-0
     type: EdDSA
-    # default: true
-  - id: key-1
-    type: ES384
     default: true
 
-initCredentials:
-  - context:
-      - https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework
-    id: gaiax
-    credentialSubject:
-      id: did:web:localhost%3A3000
-      gx:legalName: Stichting Maastricht Radiation Oncology "Maastro-Clinic"
-      gx:registrationNumber:
-        gx:registrationNumberType: vatID
-        gx:registrationNumberNumber: NL004210104B01
-      gx:headquarterAddress:
-        gx:addressCountryCode: NL
-        gx:addressCode: NL-LI
-        gx:streetAddress: Dr Tanslaan 12
-        gx:postalCode: 6229ET
-      gx:legalAddress:
-        gx:addressCountryCode: NL
-        gx:addressCode: NL-LI
-        gx:streetAddress: Dr Tanslaan 12
-        gx:postalCode: 6229ET
-      gx:termsAndConditions: 70c1d713215f95191a11d38fe2341faed27d19e083917bc8732ca4fea4976700
-
-  - id: scsn
-    context:
-      - http://localhost:3000/context/SCSN
-    type:
-      - SCSNCredential
-    credentialSubject:
-      id: did:web:localhost%3A3000
-      scsnIdentifier: 'urn:scsn:123456789'
-      scsnRole: 'scsn:ServiceProvider'
+initCredentials: []
 
 db:
   type: sqlite
   database: wallet.sqlite
 
-# db:
-#   type: postgres
-#   database: wallet
-#   host: localhost
-#   port: 5432
-#   username: test
-#   password: test
 
 
 mail:
@@ -94,28 +54,7 @@ contexts:
   - id: SCSN
     credentialType: SCSNCredential
     issuable: true
-    document:
-      '@context':
-        '@version': 1.1
-        '@protected': true
-        scsn: https://wallet.alpha.scsn.dataspac.es/credentials/
-        id: '@id'
-        type: '@type'
-        SCSNCredential:
-          '@context':
-            - https://www.w3.org/2018/credentials/v1
-          '@id': 'scsn:SCSNCredential'
-        scsnIdentifier:
-          '@id': 'scsn:scsnIdentifier'
-        scsnRole:
-          '@id': 'scsn:scsnRole'
-          "@type": '@id'
-        ServiceProvider:
-          '@id': 'scsn:ServiceProvider'
-        Manufacturer:
-          '@id': 'scsn:Manufacturer'
-        Administrator:
-          '@id': 'scsn:Administrator'
+    documentUrl: https://wallet.alpha.scsn.dataspac.es/context/SCSN
     schema:
       type: object
       title: SCSNCredential
@@ -140,3 +79,74 @@ contexts:
     credentialType: SummaryCredential
     issuable: false
     documentUrl: https://catenax-ng.github.io/product-core-schemas/SummaryVC.json
+  - id: Gaia-X LegalParticipant
+    credentialType: gx:LegalParticipant
+    issuable: true
+    documentUrl: https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#
+    schema:
+      type: object
+      title: LegalParticipant
+      additionalProperties: true
+      properties:
+        type:
+          const: "gx:LegalParticipant"
+        id:
+          type: string
+          pattern: "^did:web:.*"
+        gx:legalName:
+          type: string
+        gx:legalRegistrationNumber:
+          type: object
+          additionalProperties: false
+          properties:
+            id:
+              type: string
+          required:
+            - id
+        gx:headquarterAddress:
+          type: object
+          additionalProperties: false
+          properties:
+            gx:countrySubdivisionCode:
+              type: string
+          required:
+            - gx:countrySubdivisionCode
+        gx:legalAddress:
+          type: object
+          additionalProperties: false
+          properties:
+            gx:countrySubdivisionCode:
+              type: string
+          required:
+            - gx:countrySubdivisionCode
+        gx-terms-and-conditions:gaiaxTermsAndConditions:
+          type: string
+      required:
+      - id
+      - type
+      - gx:legalName
+      - gx:legalRegistrationNumber
+      - gx:headquarterAddress
+      - gx:legalAddress
+      - gx-terms-and-conditions:gaiaxTermsAndConditions
+
+  - id: Gaia-X Terms and Conditions
+    credentialType: gx:GaiaXTermsAndConditions
+    issuable: true
+    documentUrl: https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#
+    schema:
+      type: object
+      title: GaiaXTermsAndConditions
+      additionalProperties: true
+      properties:
+        type:
+          const: "gx:GaiaXTermsAndConditions"
+        id:
+          type: string
+          pattern: "^did:web:.*"
+        gx:termsAndConditions:
+          type: string
+      required:
+      - id
+      - type
+      - gx:termsAndConditions

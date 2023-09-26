@@ -9,6 +9,7 @@ import { CredentialsService, signingAlgorithm } from "./credentials.service.js";
 import { KeyService } from "./keys.service.js";
 import { DIDResolver } from "./didResolver.service.js";
 import { RootConfig } from "../config.js";
+import { DidService } from "./did.service.js";
 
 @Injectable()
 export class PresentationService {
@@ -17,6 +18,7 @@ export class PresentationService {
     private readonly credentialsService: CredentialsService,
     private readonly keyService: KeyService,
     private readonly didResolver: DIDResolver,
+    private readonly didService: DidService
   ) {}
   private readonly logger = new Logger(this.constructor.name);
 
@@ -24,7 +26,8 @@ export class PresentationService {
     const credential = await this.credentialsService.getCredential(credentialId);
     const verifiablePresentation: VerifiablePresentation<VerifiableCredential<CredentialSubject>> = {
       '@context': ['https://www.w3.org/2018/credentials/v1', "https://w3c.github.io/vc-jws-2020/contexts/v1/"],
-      '@type': ['VerifiablePresentation'],
+      type: ['VerifiablePresentation'],
+      id: `${this.didService.getDidId()}#${crypto.randomUUID()}`,
       verifiableCredential: (unwrap) ? credential.credential : [
         credential.credential
       ],
@@ -45,15 +48,17 @@ export class PresentationService {
     }
     const verifiablePresentation: VerifiablePresentation<VerifiableCredential<CredentialSubject>> = {
       '@context': ['https://www.w3.org/2018/credentials/v1', "https://w3c.github.io/vc-jws-2020/contexts/v1/"],
-      '@type': ['VerifiablePresentation'],
+      type: ['VerifiablePresentation'],
+      id: `${this.didService.getDidId()}#${crypto.randomUUID()}`,
       verifiableCredential: (unwrap) ? credential.credential : [
         credential.credential
       ],
     }
+    const issuer = (credential.credential.credentialSubject instanceof Array) ? credential.credential.credentialSubject[0].id : credential.credential.credentialSubject.id ;
     const jwt = await new SignJWT({vp: verifiablePresentation})
       .setProtectedHeader({alg: signingAlgorithm(key.type)})
       .setIssuedAt()
-      .setIssuer(credential.credential.credentialSubject.id)
+      .setIssuer(issuer)
       .setSubject(credential.credential.issuer)
       .setAudience(audience)
       .setExpirationTime('24h')
