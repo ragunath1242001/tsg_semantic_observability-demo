@@ -33,7 +33,7 @@
       </b-checkbox>
     </template>
     <template v-else-if="type === 'object'">
-      <JsonSchemaFormElement v-for="(child, key) in schema.properties" :schema="child" :key="key" :name="key" :required="schema.required?.includes(key)" @input="($event) => {value[key] = $event; emitValue()}"></JsonSchemaFormElement>
+      <JsonSchemaFormElement v-for="(child, key) in schema.properties" :schema="child" :key="key" :name="key" :required="schema.required?.includes(key)" @input="emitValue"></JsonSchemaFormElement>
     </template>
     <template v-else-if="type === 'array'">
       <template v-if="getType(schema.items) !== 'string'">Only string arrays supported at this moment</template>
@@ -122,7 +122,8 @@ export default Vue.extend({
       }
       return type;
     },
-    emitValue() {
+    emitValue(value: any) {
+      this.value = value;
       this.$emit('input', this.value)
     }
   }

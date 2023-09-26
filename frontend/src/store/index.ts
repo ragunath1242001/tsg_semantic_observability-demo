@@ -74,7 +74,7 @@ const store = new Vuex.Store({
 });
 
 export const axiosInstance = axios.create({
-  baseURL: 'api/',
+  baseURL: '/api/',
   timeout: 60000,
 });
 axiosInstance.interceptors.request.use(

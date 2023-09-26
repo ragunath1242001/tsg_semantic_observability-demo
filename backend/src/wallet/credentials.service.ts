@@ -1,7 +1,7 @@
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { InitCredentialConfig, RootConfig } from "../config.js";
 import { CompactSign, importJWK } from "jose";
-import { Credential, CredentialSubject, Signature, VerifiableCredential } from "../model/credentials.dto.js";
+import { Credential, CredentialSubject, Signature, VerifiableCredential, VerifiablePresentation } from "../model/credentials.dto.js";
 import jsonld from "jsonld";
 import crypto from "crypto";
 import { AppError } from "../utils/error.js";
@@ -10,6 +10,9 @@ import { Credentials, KeyMaterials } from "../model/credentials.dao.js";
 import { Repository } from "typeorm";
 import { DidService } from "./did.service.js";
 import { KeyService } from "./keys.service.js";
+import { ComplianceRequest, LegalRegistrationNumberRequest } from "../model/gaiax.dto.js";
+import axios, { AxiosError } from "axios";
+import { toArray } from "../utils/unions.js";
 
 export function signingAlgorithm(type: 'EdDSA' | 'ES384' | 'X509'): string {
   switch(type) {
@@ -170,5 +173,76 @@ export class CredentialsService {
       credential: verifiableCredential,
       selfIssued: true
     });
+  }
+
+
+  async requestLegalRegistrationNumberCredential(credentialConfig: LegalRegistrationNumberRequest, targetDid: string | undefined) {
+    if (targetDid && (!credentialConfig.vcId.startsWith(targetDid) || credentialConfig.credentialSubject.id !== targetDid)) {
+      throw new AppError(`Can't request credential with these identifiers`, HttpStatus.FORBIDDEN)
+    }
+    try {
+      const response = await axios.post<VerifiableCredential<CredentialSubject>>(`https://${credentialConfig.clearingHouse}/registrationNumberVC`, credentialConfig.credentialSubject, {
+        params: {
+          vcid: credentialConfig.vcId
+        }
+      });
+      return await this.credentialRepository.save({
+        id: credentialConfig.vcId,
+        targetDid: credentialConfig.credentialSubject.id,
+        selfIssued: false,
+        credential: response.data
+      })
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        if (err.response) {
+          throw new AppError({
+            message: `Error in requesting legal registration number credential: ${err}`,
+            code: err.response.status,
+            body: err.response.data
+          }, HttpStatus.BAD_REQUEST);
+        } else {
+          throw new AppError(`Error in requesting legal registration number credential: ${err}`, HttpStatus.BAD_REQUEST);
+        }
+      }
+      throw new AppError(`Unexpected error in requesting legal registration number credential: ${err}`, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async requestComplianceCredential(complianceRequest: ComplianceRequest, targetDid: string | undefined) {
+    if (targetDid && !complianceRequest.vcId.startsWith(targetDid)) {
+      throw new AppError(`Can't request credential with these identifiers`, HttpStatus.FORBIDDEN)
+    }
+    try {
+      const presentation: VerifiablePresentation<VerifiableCredential<CredentialSubject>> = {
+        '@context': ['https://www.w3.org/2018/credentials/v1'],
+        type: ['VerifiablePresentation'],
+        id: `${this.didService.getDidId()}#${crypto.randomUUID()}`,
+        verifiableCredential: complianceRequest.credentials
+      }
+      const response = await axios.post<VerifiableCredential<CredentialSubject>>(`https://${complianceRequest.clearingHouse}/api/credential-offers`, presentation, {
+        params: {
+          vcid: complianceRequest.vcId
+        }
+      });
+      return await this.credentialRepository.save({
+        id: complianceRequest.vcId,
+        targetDid: toArray(complianceRequest.credentials[0].credentialSubject)[0].id,
+        selfIssued: false,
+        credential: response.data
+      })
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        if (err.response) {
+          throw new AppError({
+            message: `Error in requesting compliance credential: ${err}`,
+            code: err.response.status,
+            body: err.response.data
+          }, HttpStatus.BAD_REQUEST);
+        } else {
+          throw new AppError(`Error in requesting compliance credential: ${err}`, HttpStatus.BAD_REQUEST);
+        }
+      }
+      throw new AppError(`Unexpected error in requesting compliance credential: ${err}`, HttpStatus.BAD_REQUEST);
+    }
   }
 }

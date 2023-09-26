@@ -6,6 +6,7 @@ import { KeyMaterials } from "../model/credentials.dao.js";
 import { AppError } from "../utils/error.js";
 import { InjectRepository } from "@nestjs/typeorm";
 import { DidService } from "./did.service.js";
+import { JsonWebKey } from "crypto";
 
 @Injectable()
 export class KeyService {
@@ -19,7 +20,10 @@ export class KeyService {
   private readonly logger = new Logger(this.constructor.name);
 
   async init() {
-    const keys = await Promise.all(this.config.initKeys.map(k => this.insertIfNotExists(k)));
+    let keys = await this.keyRepository.find({});
+    if (keys.length === 0) {
+      keys = await Promise.all(this.config.initKeys.map(k => this.insertIfNotExists(k)));
+    }
     await this.didService.createDidDocument(keys);
   }
 
@@ -92,6 +96,16 @@ export class KeyService {
       this.logger.log(`Loading existing PKCS#8 key and X.509 certificate for ${key.id}`);
       privateKey = await importPKCS8(key.existingKey, 'RSA');
       publicKey = await importX509(key.existingCertificate, 'RSA');
+      const publicKeyJwk = await exportJWK(publicKey) as JsonWebKey;
+      publicKeyJwk.x5u = `${this.config.server.publicAddress}/keys/${encodeURIComponent(key.id)}`
+      return await this.keyRepository.save({
+        id: key.id,
+        type: key.type,
+        default: key.default,
+        privateKey: await exportJWK(privateKey),
+        publicKey: publicKeyJwk,
+        caChain: key.existingCertificate
+      })
     } else if (existing) {
       this.logger.log(`Loaded key ${existing.id} from repository`);
       return existing;
@@ -102,12 +116,15 @@ export class KeyService {
       publicKey = keypair.publicKey;
     }
 
+
+
     return await this.keyRepository.save({
       id: key.id,
       type: key.type,
       default: key.default,
       privateKey: await exportJWK(privateKey),
-      publicKey: await exportJWK(publicKey)
+      publicKey: await exportJWK(publicKey),
+      caChain: key.existingCertificate
     })
   }
 }

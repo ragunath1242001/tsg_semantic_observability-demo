@@ -29,7 +29,14 @@
             <b-menu-item tag="router-link" icon="card-account-details-outline" to="/" label="DID"></b-menu-item>
             <template v-if="client_info">
               <b-menu-item tag="router-link" v-if="client_info.roles.includes('manage_keys')" icon="key" to="/keys" label="Keys"></b-menu-item>
-              <b-menu-item tag="router-link" v-if="client_info.roles.includes('view_own_credentials') || client_info.roles.includes('view_all_credentials')" icon="email-seal-outline" to="/credentials" label="Credentials"></b-menu-item>
+              <b-menu-item tag="router-link" :expanded="true" v-if="client_info.roles.includes('view_own_credentials') || client_info.roles.includes('view_all_credentials')" icon="email-seal-outline" to="/credentials">
+                <template #label>
+                  Credentials
+                </template>
+                <b-menu-item v-if="client_info.roles.includes('manage_own_credentials') || client_info.roles.includes('manage_all_credentials')" tag="router-link" icon="draw" to="/credentials/issue" label="Issue credential"></b-menu-item>
+                <b-menu-item v-if="client_info.roles.includes('manage_own_credentials') || client_info.roles.includes('manage_all_credentials')" tag="router-link" icon="import" to="/credentials/import" label="Import credential"></b-menu-item>
+                <b-menu-item v-if="client_info.roles.includes('manage_own_credentials') || client_info.roles.includes('manage_all_credentials')" tag="router-link" icon="check-decagram-outline" to="/credentials/gaiax" label="Gaia-X credentials"></b-menu-item>
+              </b-menu-item>
               <b-menu-item tag="router-link" v-if="client_info.roles.includes('manage_clients')" icon="account-multiple" to="/clients" label="Clients"></b-menu-item>
             </template>
           </b-menu-list>

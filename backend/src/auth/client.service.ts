@@ -19,14 +19,19 @@ export class ClientsService {
     private readonly jwtService: JwtService,
     private readonly config: RootConfig,
   ) {
-    const didId = `did:web:${this.config.server.publicDomain.replace(':','%3A')}`;
-    if (this.config.initClients.length === 0) {
+    this.didId = `did:web:${this.config.server.publicDomain.replace(':','%3A')}`;
+    this.init();
+  }
+  private readonly didId: string;
+
+  private async init() {
+    if (this.config.initClients.length === 0 && (await this.clientsRepository.find({})).length === 0) {
       const secret = crypto.randomBytes(32).toString('hex')
       this.upsertClient({
         clientId: 'admin',
         clientSecret: bcrypt.hashSync(secret, 10),
         email: 'noreply@dataspac.es',
-        didId: didId,
+        didId: this.didId,
         roles: [AppRole.VIEW_ALL_CREDENTIALS, AppRole.MANAGE_ALL_CREDENTIALS, AppRole.MANAGE_KEYS, AppRole.MANAGE_CLIENTS],
         verified: true
       })
@@ -48,7 +53,7 @@ export class ClientsService {
           clientId: initClient.id,
           clientSecret: secret,
           email: initClient.email,
-          didId: initClient.didId || didId,
+          didId: initClient.didId || this.didId,
           roles: initClient.roles,
           verified: true
         });

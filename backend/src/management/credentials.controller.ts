@@ -6,6 +6,7 @@ import { CredentialSubject, VerifiableCredential } from "../model/credentials.dt
 import { Client } from "../auth/roles.guard.js";
 import { AppError } from "../utils/error.js";
 import { ClientInfo, AppRole } from "../model/clients.dto.js";
+import { ComplianceRequest, LegalRegistrationNumberRequest } from "../model/gaiax.dto.js";
 
 @Controller('management/credentials')
 export class CredentialsManagementController {
@@ -84,5 +85,19 @@ export class CredentialsManagementController {
   async deleteCredential(@Param('credentialId') credentialId: string, @Client() client: ClientInfo): Promise<void> {
     const targetDid = this.targetDid('manage', client);
     return this.credentialsService.deleteCredential(credentialId, targetDid);
+  }
+
+  @Post("gaiax/legalRegistrationNumber")
+  @HttpCode(HttpStatus.OK)
+  async requestLegalRegistrationNumberCredential(@Body(new ValidationPipe({transform: true})) credentialConfig: LegalRegistrationNumberRequest, @Client() client: ClientInfo) {
+    const targetDid = this.targetDid('manage', client);
+    return this.credentialsService.requestLegalRegistrationNumberCredential(credentialConfig, targetDid);
+  }
+
+  @Post("gaiax/compliance")
+  @HttpCode(HttpStatus.OK)
+  async requestComplianceCredential(@Body(new ValidationPipe({transform: true})) credentialConfig: ComplianceRequest, @Client() client: ClientInfo) {
+    const targetDid = this.targetDid('manage', client);
+    return this.credentialsService.requestComplianceCredential(credentialConfig, targetDid);
   }
 }
