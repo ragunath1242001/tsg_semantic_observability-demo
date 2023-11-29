@@ -1,3 +1,7 @@
+db:
+  type: sqlite
+  database: control-plane
+
 server:
   port: '3000'
   listen: '0.0.0.0'

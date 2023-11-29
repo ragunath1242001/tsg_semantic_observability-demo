@@ -139,7 +139,7 @@ describe("TransferController", () => {
         }), 'did:web:localhost'
       );
       expect(result).toStrictEqual({
-        "@context": "https://w3id.org/dspace/v0.8/context.json",
+        "@context": "http://localhost:8080/dspace/v0.8/context.json",
         "@type": "dspace:TransferProcess",
         "dspace:processId": expect.stringContaining("urn:uuid:"),
         "dspace:transferState": "dspace:REQUESTED",
@@ -153,7 +153,7 @@ describe("TransferController", () => {
         transferProviderUuid, 'did:web:localhost'
       );
       expect(result).toStrictEqual({
-        "@context": "https://w3id.org/dspace/v0.8/context.json",
+        "@context": "http://localhost:8080/dspace/v0.8/context.json",
         "@type": "dspace:TransferProcess",
         "dspace:processId": transferProviderUuid,
         "dspace:transferState": "dspace:REQUESTED",

@@ -26,7 +26,7 @@ export async function serialize(obj: any, root = true): Promise<any> {
     };
     if (root) {
       result = {
-        '@context': 'https://w3id.org/dspace/v0.8/context.json',
+        '@context': 'http://localhost:8080/dspace/v0.8/context.json',
         ...result
       }
     }

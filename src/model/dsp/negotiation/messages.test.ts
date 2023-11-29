@@ -17,10 +17,10 @@ test("Contract Request Message", async () => {
   })
   const serialized = await contractRequestMessage.serialize();
   const expected: ContractRequestMessageDto = {
-    "@context": "https://w3id.org/dspace/v0.8/context.json",
+    "@context": "http://localhost:8080/dspace/v0.8/context.json",
     "@type": "dspace:ContractRequestMessage",
     "dspace:processId": "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
-    "odrl:offer": {
+    "dspace:offer": {
       "@type": "odrl:Offer",
       "@id": "urn:uuid:506f0e00-67ad-4b53-b9b6-5f2580b533c0",
       "odrl:assigner": "urn:uuid:ef0ab3f8-15c9-4612-a5c3-7c574155e86f",
@@ -45,10 +45,10 @@ test("Contract Offer Message", async () => {
   })
   const serialized = await contractOfferMessage.serialize();
   const expected: ContractOfferMessageDto = {
-    "@context": "https://w3id.org/dspace/v0.8/context.json",
+    "@context": "http://localhost:8080/dspace/v0.8/context.json",
     "@type": "dspace:ContractOfferMessage",
     "dspace:processId": "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
-    "odrl:offer": {
+    "dspace:offer": {
       "@type": "odrl:Offer",
       "@id": "urn:uuid:506f0e00-67ad-4b53-b9b6-5f2580b533c0",
       "odrl:assigner": "urn:uuid:ef0ab3f8-15c9-4612-a5c3-7c574155e86f",
@@ -68,7 +68,7 @@ test("Contract Negotiation Termination Message", async () => {
   })
   const serialized = await contractNegotiationTerminationMessage.serialize();
   const expected: ContractNegotiationTerminationMessageDto = {
-    "@context": "https://w3id.org/dspace/v0.8/context.json",
+    "@context": "http://localhost:8080/dspace/v0.8/context.json",
     "@type": "dspace:ContractNegotiationTerminationMessage",
     "dspace:processId": "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
     "dspace:code": "123:A",
@@ -94,7 +94,7 @@ test("Contract Negotiation", async () => {
   })
   const serialized = await contractNegotiation.serialize();
   const expected: ContractNegotiationDto = {
-    "@context": "https://w3id.org/dspace/v0.8/context.json",
+    "@context": "http://localhost:8080/dspace/v0.8/context.json",
     "@type": "dspace:ContractNegotiation",
     "@id": "urn:uuid:448790ed-f829-4994-b148-f2114d1f3a82",
     "dspace:processId": "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
@@ -112,7 +112,7 @@ test("Contract Negotiation Event Message", async () => {
   })
   const serialized = await contractNegotiationEventMessage.serialize();
   const expected: ContractNegotiationEventMessageDto = {
-    "@context": "https://w3id.org/dspace/v0.8/context.json",
+    "@context": "http://localhost:8080/dspace/v0.8/context.json",
     "@type": "dspace:ContractNegotiationEventMessage",
     "dspace:processId": "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
     "dspace:eventType": NegotiationEvent.ACCEPTED,
@@ -130,7 +130,7 @@ test("Contract Negotiation Error", async () => {
   })
   const serialized = await contractNegotiationError.serialize();
   const expected: ContractNegotiationErrorDto = {
-    "@context": "https://w3id.org/dspace/v0.8/context.json",
+    "@context": "http://localhost:8080/dspace/v0.8/context.json",
     "@type": "dspace:ContractNegotiationError",
     "dspace:processId": "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
     "dct:description": ["123:A"],
@@ -161,7 +161,7 @@ test("Contract AgreementVerification Message", async () => {
   })
   const serialized = await contractAgreementVerificationMessage.serialize();
   const expected: ContractAgreementVerificationMessageDto = {
-    "@context": "https://w3id.org/dspace/v0.8/context.json",
+    "@context": "http://localhost:8080/dspace/v0.8/context.json",
     "@type": "dspace:ContractAgreementVerificationMessage",
     "dspace:processId": "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
     "cred:credentialSubject": {
@@ -193,10 +193,10 @@ test("Contract Agreement Message", async () => {
   })
   const serialized = await contractAgreementMessage.serialize();
   const expected: ContractAgreementMessageDto = {
-    "@context": "https://w3id.org/dspace/v0.8/context.json",
+    "@context": "http://localhost:8080/dspace/v0.8/context.json",
     "@type": "dspace:ContractAgreementMessage",
     "dspace:processId": "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
-    "odrl:agreement": {
+    "dspace:agreement": {
       "@type": "odrl:Agreement",
       "@id": "urn:uuid:506f0e00-67ad-4b53-b9b6-5f2580b533c0",
       "odrl:assigner": "urn:uuid:ef0ab3f8-15c9-4612-a5c3-7c574155e86f",

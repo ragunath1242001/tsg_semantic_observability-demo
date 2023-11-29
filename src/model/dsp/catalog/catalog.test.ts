@@ -25,7 +25,7 @@ test("Resource serialization", async () => {
   });
   const serialized = await resource.serialize();
   const expected: ResourceDto = {
-    "@context": "https://w3id.org/dspace/v0.8/context.json",
+    "@context": "http://localhost:8080/dspace/v0.8/context.json",
     "@type": "dcat:Resource",
     "@id": "urn:uuid:5b156cfa-5800-4345-8acc-6725c7eb5bc2",
     "dcat:contactPoint": {

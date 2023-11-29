@@ -31,7 +31,7 @@ export class NegotiationManagementController {
   @HttpCode(HttpStatus.OK)
   async requestNewNegotiation(@Body(new DeserializePipe(Offer)) body: Offer, @Query('dataSet') dataSet: string, @Query('address') address: string, @Query('audience') audience: string): Promise<NegotiationDetail> {
     this.logger.log(`Received negotiation request for ${address} with offer ${JSON.stringify(body)}`);
-    const controlPlaneAddress = normalizeAddress(address, 1, "negotiation", "request");
+    const controlPlaneAddress = normalizeAddress(address, 1, "negotiations", "request");
     const negotiationProcess = await this.negotiationService.requestNew(body, dataSet, controlPlaneAddress, audience);
     return negotiationProcess;
   }

@@ -5,11 +5,14 @@ import { DataPlaneService } from "./dataPlane.service";
 import { DspClientService } from "./dsp/client.service";
 import { TransferService } from "./dsp/transfer.service";
 import { AuthModule } from "../auth/auth.module";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { ResourceDao, DataServiceDao, DistributionDao, DatasetDao, CatalogRecordDao, CatalogDao } from "../model/dsp/catalog/catalog.dao";
 
 
 @Module({
   imports: [
-    AuthModule
+    AuthModule,
+    TypeOrmModule.forFeature([ResourceDao, DataServiceDao, DistributionDao, DatasetDao, CatalogRecordDao, CatalogDao]),
   ],
   providers: [
     DspClientService,

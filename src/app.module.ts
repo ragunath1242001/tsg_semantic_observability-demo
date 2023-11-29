@@ -5,8 +5,9 @@ import { ScheduleModule } from "@nestjs/schedule";
 import { ManagementModule } from "./controllers/management/management.module";
 import { RequestContextMiddleware, LoggerMiddleware } from "./utils/logging";
 import { AuthModule } from "./auth/auth.module";
-import { ConfigModule } from "./config.module";
+import { ConfigModule, config } from "./config.module";
 import { HealthController } from "./health.controller";
+import { TypeOrmModule } from "@nestjs/typeorm";
 
 @Module({
   imports: [
@@ -16,6 +17,11 @@ import { HealthController } from "./health.controller";
     ManagementModule,
     AuthModule,
     ConfigModule,
+    TypeOrmModule.forRoot({
+      ...config.db,
+      entities: ["**/*.dao{.js,.ts}"],
+      synchronize: true
+    }),
   ],
   exports: [
     DspModule,

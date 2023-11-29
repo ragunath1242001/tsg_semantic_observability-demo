@@ -50,7 +50,7 @@ const nodeDocumentLoader = (jsonld as any).documentLoaders.node();
 const jsonldOptions: Options.DocLoader = {
   async documentLoader(url): Promise<RemoteDocument> {
     
-    if (url === "https://w3id.org/dspace/v0.8/context.json") {
+    if (url === "http://localhost:8080/dspace/v0.8/context.json") {
       const remoteDocument: RemoteDocument = {
         contextUrl: undefined,
         document: {
@@ -59,7 +59,10 @@ const jsonldOptions: Options.DocLoader = {
         documentUrl: url
       }
       return remoteDocument;
+      const document = await nodeDocumentLoader('http://localhost:8080/dspace/v0.8/context.json');
+      return document;
     }
+    console.log(`Loading Document: ${url}`);
     return nodeDocumentLoader(url);
   },
 }
@@ -71,6 +74,6 @@ export async function compact(document: JsonLdDocument, internal: boolean): Prom
   const compacted = await jsonld.compact(expanded, usingContext, {
     ...jsonldOptions
   })
-  compacted['@context'] = "https://w3id.org/dspace/v0.8/context.json";
+  compacted['@context'] = "http://localhost:8080/dspace/v0.8/context.json";
   return compacted;
 }

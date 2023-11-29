@@ -18,6 +18,32 @@ function fileTransformer(params: TransformFnParams): string | undefined {
   return `${params.value}`;
 }
 
+export abstract class DatabaseConfig {
+  @IsString()
+  @IsIn(["sqlite", "postgres"])
+  public readonly type!: 'sqlite' | 'postgres';
+
+  @IsString()
+  public readonly database!: string
+}
+
+export class SQLiteConfig extends DatabaseConfig {
+  override readonly type: 'sqlite' = 'sqlite' as const;
+}
+
+export class PostgresConfig extends DatabaseConfig {
+  override readonly type: 'postgres' = 'postgres' as const;
+
+  @IsString()
+  public readonly host!: string
+  @IsNumber()
+  public readonly port!: number
+  @IsString()
+  public readonly username!: string
+  @IsString()
+  public readonly password!: string
+}
+
 export class ServerConfig {
   @IsString()
   public readonly listen: string = '0.0.0.0';
@@ -39,20 +65,20 @@ export class IamConfig {
   public readonly type!: 'tsg' | 'miw'
 
   @IsString()
-  @IsUrl()
+  @IsUrl({require_tld: false, require_protocol: true, require_host: false})
   public readonly tokenUrl!: string
   
   @IsString()
-  @IsUrl()
+  @IsUrl({require_tld: false, require_protocol: true, require_host: false})
   public readonly presentationUrl!: string
 
   @IsString()
-  @IsUrl()
+  @IsUrl({require_tld: false, require_protocol: true, require_host: false})
   @IsOptional()
   public readonly walletUrl?: string
   
   @IsString()
-  @IsUrl()
+  @IsUrl({require_tld: false, require_protocol: true, require_host: false})
   public readonly validationUrl!: string
 
   @IsString()
@@ -89,6 +115,20 @@ export class InitCatalog {
 }
 
 export class RootConfig {
+  @ValidateNested()
+  @IsDefined({message: 'Either sqlite or postgres DB config must be provided'})
+  @Type(() => DatabaseConfig, {
+    discriminator: {
+      property: 'type',
+      subTypes: [
+        { value: SQLiteConfig, name: 'sqlite'},
+        { value: PostgresConfig, name: 'postgres'}
+      ],
+
+    }
+  })
+  public readonly db!: DatabaseConfig
+
   @ValidateNested()
   @IsOptional()
   @Type(() => ServerConfig)
