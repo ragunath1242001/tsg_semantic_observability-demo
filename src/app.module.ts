@@ -1,27 +1,33 @@
 import { MiddlewareConsumer, Module, NestModule } from "@nestjs/common";
-import { DspModule } from "./controllers/dsp/dsp.module";
-import { DataPlaneModule } from "./controllers/data-plane/dataplane.module";
+import { DataPlaneModule } from "./data-plane/dataplane.module";
 import { ScheduleModule } from "@nestjs/schedule";
-import { ManagementModule } from "./controllers/management/management.module";
 import { RequestContextMiddleware, LoggerMiddleware } from "./utils/logging";
 import { AuthModule } from "./auth/auth.module";
 import { ConfigModule } from "./config.module";
 import { HealthController } from "./health.controller";
+import { DspClientModule } from "./dsp/client/client.module";
+import { CatalogModule } from "./dsp/catalog/catalog.module";
+import { NegotiationModule } from "./dsp/negotiation/negotiation.module";
+import { TransferModule } from "./dsp/transfer/transfer.module";
 
 @Module({
   imports: [
     ScheduleModule.forRoot(),
-    DspModule,
-    DataPlaneModule,
-    ManagementModule,
     AuthModule,
-    ConfigModule,
+    DataPlaneModule,
+    DspClientModule,
+    CatalogModule,
+    NegotiationModule,
+    TransferModule,
+    ConfigModule
   ],
   exports: [
-    DspModule,
+    AuthModule,
     DataPlaneModule,
-    ManagementModule,
-    AuthModule
+    DspClientModule,
+    CatalogModule,
+    NegotiationModule,
+    TransferModule
   ],
   controllers: [
     HealthController

@@ -1,9 +1,9 @@
 import { Test, TestingModule } from "@nestjs/testing"
 import { DataPlaneController } from "./dataplane.controller"
-import { ServerConfig } from "../../config";
+import { ServerConfig } from "../config";
 import { plainToClass } from "class-transformer";
-import { DataPlaneService } from "../../services/dataPlane.service";
-import { CatalogService } from "../../services/dsp/catalog.service";
+import { DataPlaneService } from "./dataPlane.service";
+import { CatalogService } from "../dsp/catalog/catalog.service";
 
 
 describe("DataPlaneController", () => {

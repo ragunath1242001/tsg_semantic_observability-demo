@@ -4,7 +4,7 @@ import { ContractAgreementMessage, ContractAgreementVerificationMessage, Contrac
 import { ContractNegotiationState, NegotiationEvent, ProofTypes } from "../../model/dsp/negotiation/messages.dto";
 import { Offer, Agreement } from "../../model/dsp/negotiation/negotiation";
 import crypto from "crypto";
-import { DspClientService } from "./client.service";
+import { DspClientService } from "../client/client.service";
 import { deserialize } from "../../model/serialize";
 import { DSPError } from "../../utils/errors/error";
 import { IamConfig, ServerConfig } from "../../config";

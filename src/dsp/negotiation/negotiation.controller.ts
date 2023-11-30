@@ -3,7 +3,7 @@ import { Get, HttpCode, Param, Post, UseGuards } from "@nestjs/common/decorators
 import { DeserializePipe } from "../../utils/deserialize.pipe";
 import { ContractNegotiationDto } from "../../model/dsp/negotiation/messages.dto";
 import { ContractAgreementMessage, ContractAgreementVerificationMessage, ContractNegotiation, ContractNegotiationEventMessage, ContractNegotiationTerminationMessage, ContractOfferMessage, ContractRequestMessage } from "../../model/dsp/negotiation/messages";
-import { NegotiationService } from "../../services/dsp/negotiation.service";
+import { NegotiationService } from "./negotiation.service";
 import { DSPError } from "../../utils/errors/error";
 import { VerifiablePresentationGuard } from "../../auth/verifiablePresentation.guard";
 import { VerifiablePresentation } from "../../model/verifiablePresentations.dto";

@@ -1,7 +1,7 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Logger, Param, Post, Query, UseGuards } from "@nestjs/common";
 import { Offer } from "../../model/dsp/negotiation/negotiation";
-import { DspClientService } from "../../services/dsp/client.service";
-import { NegotiationService, NegotiationDetail, NegotiationStatus } from "../../services/dsp/negotiation.service";
+import { DspClientService } from "../client/client.service";
+import { NegotiationService, NegotiationDetail, NegotiationStatus } from "./negotiation.service";
 import { DeserializePipe } from "../../utils/deserialize.pipe";
 import { normalizeAddress } from "../../utils/address";
 import { DSPError } from "../../utils/errors/error";

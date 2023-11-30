@@ -1,7 +1,7 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { DataPlaneRequestResponseDto, DataPlaneCreation, DataPlaneDetailsDto, DataPlaneTransferDto } from "../model/data-planes/dataPlanes.dto";
 import { Interval } from "@nestjs/schedule";
-import { CatalogService } from "./dsp/catalog.service";
+import { CatalogService } from "../dsp/catalog/catalog.service";
 import { Dataset, IDataset } from "../model/dsp/catalog/catalog";
 import crypto from "crypto";
 import { TransferCompletionMessage, TransferRequestMessage, TransferStartMessage, TransferSuspensionMessage, TransferTerminationMessage } from "../model/dsp/transfer/messages";
