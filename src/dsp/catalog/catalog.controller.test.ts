@@ -1,7 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { CatalogController } from "./catalog.controller";
 import { CatalogRequestMessage, DatasetRequestMessage } from "../../model/dsp/catalog/messages";
-import { CatalogService } from "../../services/dsp/catalog.service";
+import { CatalogService } from "./catalog.service";
 import { HttpStatus, INestApplication } from "@nestjs/common";
 import request from "supertest";
 import { Catalog, DataService, Dataset, Distribution } from "../../model/dsp/catalog/catalog";

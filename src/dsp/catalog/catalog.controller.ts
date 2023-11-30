@@ -2,7 +2,7 @@ import { CatalogDto, DatasetDto } from "../../model/dsp/catalog/catalog.dto";
 import { Body, Controller, HttpStatus, Logger } from "@nestjs/common";
 import { Get, HttpCode, Param, Post, UseGuards } from "@nestjs/common/decorators";
 import { CatalogRequestMessage } from "../../model/dsp/catalog/messages";
-import { CatalogService } from "../../services/dsp/catalog.service";
+import { CatalogService } from "./catalog.service";
 import { DeserializePipe } from "../../utils/deserialize.pipe";
 import { DSPError } from "../../utils/errors/error";
 import { VerifiablePresentationGuard } from "../../auth/verifiablePresentation.guard";
