@@ -5,7 +5,7 @@ import { deserialize } from "./serialize";
 
 test("Validation", async () => {
   const jsonLd = {
-    "@context": "http://localhost:8080/dspace/v0.8/context.json",
+    "@context": "https://w3id.org/dspace/v0.8/context.json",
     "@type": "dspace:TransferCompletionMessage",
     "dspace:processId": "",
   }

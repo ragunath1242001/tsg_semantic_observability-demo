@@ -43,7 +43,7 @@ test("Contract offer serialization", async () => {
 
   const serialized = await offer.serialize();
   const expected: OfferDto = {
-    "@context": "http://localhost:8080/dspace/v0.8/context.json",
+    "@context": "https://w3id.org/dspace/v0.8/context.json",
     "@type": "odrl:Offer",
     "@id": "urn:uuid:8d613f77-3dde-4286-88ff-c1ab96da6d59",
     "odrl:assigner": "urn:uuid:1adde502-3c96-48ac-83ff-a02fabd24b4f",
@@ -122,7 +122,7 @@ test("Contract agreement serialization", async () => {
 
   const serialized = await agreement.serialize();
   const expected: AgreementDto = {
-    "@context": "http://localhost:8080/dspace/v0.8/context.json",
+    "@context": "https://w3id.org/dspace/v0.8/context.json",
     "@type": "odrl:Agreement",
     "@id": "urn:uuid:8d613f77-3dde-4286-88ff-c1ab96da6d59",
     "odrl:assigner": "urn:uuid:1adde502-3c96-48ac-83ff-a02fabd24b4f",

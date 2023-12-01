@@ -16,7 +16,7 @@ test("Catalog Error", async () => {
   });
   const serialized = await catalogError.serialize();
   const expected: CatalogErrorDto = {
-    "@context": "http://localhost:8080/dspace/v0.8/context.json",
+    "@context": "https://w3id.org/dspace/v0.8/context.json",
     "@type": "dspace:CatalogError",
     "dspace:code": "123:A",
     "dspace:reason": [
@@ -39,7 +39,7 @@ test("Catalog Message", async () => {
   });
   const serialized = await catalogMessage.serialize();
   const expected: CatalogMessageDto = {
-    "@context": "http://localhost:8080/dspace/v0.8/context.json",
+    "@context": "https://w3id.org/dspace/v0.8/context.json",
     "@type": "dspace:CatalogMessage",
     "dspace:catalog": [{
       "@type": "dcat:Catalog",
@@ -60,7 +60,7 @@ test("Catalog Request Message", async () => {
   });
   const serialized = await catalogRequestMessage.serialize();
   const expected: CatalogRequestMessageDto = {
-    "@context": "http://localhost:8080/dspace/v0.8/context.json",
+    "@context": "https://w3id.org/dspace/v0.8/context.json",
     "@type": "dspace:CatalogRequestMessage",
     "dspace:filter": [{
       "@type": "dspace:Filter",
@@ -79,7 +79,7 @@ test("Dataset Request Message", async () => {
   });
   const serialized = await datasetRequestMessage.serialize();
   const expected: DatasetRequestMessageDto = {
-    "@context": "http://localhost:8080/dspace/v0.8/context.json",
+    "@context": "https://w3id.org/dspace/v0.8/context.json",
     "@type": "dspace:DatasetRequestMessage",
     "dspace:dataset": "urn:uuid:5b156cfa-5800-4345-8acc-6725c7eb5bc2"
   };

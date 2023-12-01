@@ -122,7 +122,7 @@ describe("NegotiationController", () => {
         'did:web:localhost'
       );
       expect(result).toStrictEqual({
-        "@context": "http://localhost:8080/dspace/v0.8/context.json",
+        "@context": "https://w3id.org/dspace/v0.8/context.json",
         "@id": expect.stringContaining("urn:uuid:"),
         "@type": "dspace:ContractNegotiation",
         "dspace:contractNegotiationState": "dspace:REQUESTED",
@@ -135,7 +135,7 @@ describe("NegotiationController", () => {
     it("Negotiation request with known id should result the negotiation", async () => {
       const result = await negotiationController.getNegotiation(providerNegotiationId, 'did:web:localhost');
       expect(result).toStrictEqual({
-        "@context": "http://localhost:8080/dspace/v0.8/context.json",
+        "@context": "https://w3id.org/dspace/v0.8/context.json",
         "@id": expect.stringContaining("urn:uuid:"),
         "@type": "dspace:ContractNegotiation",
         "dspace:contractNegotiationState": "dspace:REQUESTED",
@@ -173,7 +173,7 @@ describe("NegotiationController", () => {
         }), 'did:web:localhost'
       );
       expect(result).toStrictEqual({
-        "@context": "http://localhost:8080/dspace/v0.8/context.json",
+        "@context": "https://w3id.org/dspace/v0.8/context.json",
         "@id": expect.stringContaining("urn:uuid:"),
         "@type": "dspace:ContractNegotiation",
         "dspace:contractNegotiationState": "dspace:REQUESTED",

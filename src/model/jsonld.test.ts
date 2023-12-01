@@ -2,7 +2,7 @@ import { JsonLdDocument } from "jsonld";
 import { compact } from "./jsonld";
 
 const document: JsonLdDocument = {
-  "@context": "http://localhost:8080/dspace/v0.8/context.json",
+  "@context": "https://w3id.org/dspace/v0.8/context.json",
   "@type": "odrl:Offer",
   "@id": "urn:uuid:8d613f77-3dde-4286-88ff-c1ab96da6d59",
   "odrl:assigner": {
@@ -53,7 +53,7 @@ const document: JsonLdDocument = {
 };
 
 const expected = {
-  "@context": "http://localhost:8080/dspace/v0.8/context.json",
+  "@context": "https://w3id.org/dspace/v0.8/context.json",
   "@id": "urn:uuid:8d613f77-3dde-4286-88ff-c1ab96da6d59",
   "@type": "odrl:Offer",
   "odrl:assignee": "urn:uuid:e02bb9f5-8af0-4826-b1f7-e1acbc2697b2",

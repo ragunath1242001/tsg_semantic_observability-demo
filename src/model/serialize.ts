@@ -5,6 +5,9 @@ import { serializableSymbol, idSymbol, languageSymbol, valueSymbol, namespaceSym
 import { compact } from "./jsonld";
 
 export async function serialize(obj: any, root = true): Promise<any> {
+  if (obj === null) {
+    return null;
+  }
   if (Array.isArray(obj)) {
     return await Promise.all(obj.map((entry) => serialize(entry, false)));
   }
@@ -26,7 +29,7 @@ export async function serialize(obj: any, root = true): Promise<any> {
     };
     if (root) {
       result = {
-        '@context': 'http://localhost:8080/dspace/v0.8/context.json',
+        '@context': 'https://w3id.org/dspace/v0.8/context.json',
         ...result
       }
     }
