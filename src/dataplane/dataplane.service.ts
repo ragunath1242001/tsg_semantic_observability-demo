@@ -7,6 +7,9 @@ import { TransferState } from "../model/dsp/transfer/messages.dto";
 import { RootConfig } from "../config";
 import crypto from "crypto";
 import bcrypt from "bcrypt";
+import { Request, Response } from "express";
+import { IncomingHttpHeaders } from "http";
+import { Reference } from "../model/dsp/common";
 
 interface Transfer {
   role: "provider" | "consumer";
@@ -41,7 +44,7 @@ export class DataPlaneService {
   private readonly logger = new Logger(this.constructor.name);
   private readonly managementToken = crypto.randomBytes(32).toString("hex");
 
-  private readonly transfers: Transfer[] = []
+  public readonly transfers: Transfer[] = []
 
   async init() {
     setTimeout(async () => {
@@ -55,34 +58,30 @@ export class DataPlaneService {
         role: "both"
       }
       const details = await this.axiosDataPlane.post<DataPlaneDetailsDto>(`/init`, dataPlaneCreation);
+      const accessService = new DataService({
+        endpointURL: this.config.controlPlane.controlEndpoint,
+      })
+      const dataset = new Dataset({
+        id: this.config.dataset.id,
+        title: this.config.dataset.title,
+        distribution: this.config.dataset.distributions.map(distributionConfig => {
+          return new Distribution({
+            id: distributionConfig.id,
+            format: "dspace:HTTP",
+            title: `Version ${distributionConfig.version}`,
+            conformsTo: (distributionConfig.openApiSpec) ? new Reference(distributionConfig.openApiSpec) : undefined,
+            accessService: [accessService]
+          })
+        })
+      });
       await this.axiosDataPlane.post(
         `/${details.data.identifier}/catalog`,
-        await new Dataset({
-          id: "urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0cea",
-          title: 'Test HTTP dataset',
-          distribution: [
-            new Distribution({
-              id: "urn:uuid:06d7da99-68eb-4f9e-8cb6-b78666c46123",
-              format: "dspace:HTTP",
-              accessService: [
-                new DataService({
-                  id: "urn:uuid:0d5f0685-eb04-409a-8a77-ee4ed207f2f0",
-                  endpointURL: this.config.controlPlane.controlEndpoint
-                })
-              ]
-            })
-          ]
-        }).serialize(),
-        {
-          headers: {
-            Authorization: this.config.controlPlane.authorization
-          }
-        }
+        await dataset.serialize()
       );
-    }, 1000)
+    }, this.config.controlPlane.initializationDelay)
   }
 
-  async checkAuthorization(authorization: string) {
+  async checkManagementAuthorization(authorization: string) {
     if (authorization.startsWith('Basic ')) {
       const [username, password] = atob(authorization.slice(6)).split(':');
       const user = this.config.users.find(user => user.username === username);
@@ -106,7 +105,7 @@ export class DataPlaneService {
     if (role === "provider") {
       secret = crypto.randomBytes(32).toString("hex");
       dataAddress = {
-        endpoint: `${this.config.server.publicAddress}/data/${id}`,
+        endpoint: `${this.config.server.publicAddress}/proxy/${id}`,
         properties: [{
           name: 'Authorization',
           value: `Bearer ${secret}`
@@ -141,35 +140,6 @@ export class DataPlaneService {
         throw new HttpException(`Expected dataAddress in TransferStartMessage`, HttpStatus.BAD_REQUEST);
       }
       transfer.dataAddress = transferStartMessage.dataAddress;
-      // setTimeout(async () => {
-      //   // await this.executePull(dataAddress);
-      //   // await this.axiosManagement.post(`/transfer/${transfer.processId}/complete`);
-      // }, 1000);
-    }
-  }
-
-  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-  async executePull(processId: string): Promise<any> {
-    const transfer = this.transfers.find(transfer => transfer.id === processId);
-    if (transfer === undefined) {
-      throw new HttpException(`Transfer ${processId} not found`, HttpStatus.NOT_FOUND);
-    }
-    if (transfer.dataAddress === undefined) {
-      throw new HttpException(`Transfer ${processId} does not have a data address present`, HttpStatus.BAD_REQUEST);
-    }
-
-    try {
-      this.logger.log(`Executing pull to ${transfer.dataAddress.endpoint} with Authorization ${transfer.dataAddress.endpointProperties.find(p => p.name === 'Authorization')?.value}`)
-      const result = await axios.get(transfer.dataAddress.endpoint, {
-        headers: {
-          'Authorization': transfer.dataAddress.endpointProperties.find(p => p.name === 'Authorization')?.value
-        }
-      });
-      this.logger.log(`Executing pull successful: ${JSON.stringify(result.data)}`);
-      return result.data;
-    } catch (e) {
-      this.logger.log(`Error in executing pull: ${e}`);
-      throw new HttpException(`Error in executing pull: ${e}`, HttpStatus.INTERNAL_SERVER_ERROR)
     }
   }
 
@@ -197,7 +167,29 @@ export class DataPlaneService {
     transfer.state = TransferState.SUSPENDED;
   }
 
-  async getData(processId: string, authorization: string): Promise<{id: string, result: string}> {
+  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+  async executeProxyRequest(processId: string, version: string, path: string, request: Request, response: Response): Promise<any> {
+    const transfer = this.transfers.find(transfer => transfer.id === processId);
+    if (transfer === undefined) {
+      throw new HttpException(`Transfer ${processId} not found`, HttpStatus.NOT_FOUND);
+    }
+    if (transfer.dataAddress === undefined) {
+      throw new HttpException(`Transfer ${processId} does not have a data address present`, HttpStatus.BAD_REQUEST);
+    }
+
+    try {
+      const newUrl = `${transfer.dataAddress.endpoint}/${version}/${path}`;
+      const headers = request.headers
+      headers['authorization'] = transfer.dataAddress.endpointProperties.find(p => p.name === 'Authorization')?.value
+
+      this.proxy(request.method, newUrl, headers, request.body, response);
+    } catch (e) {
+      this.logger.log(`Error in executing transfer: ${e}`);
+      throw new HttpException(`Error in executing transfer: ${e}`, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  async handleProxyRequest(processId: string, authorization: string, version: string, path: string, request: Request, response: Response) {
     const transfer = this.transfers.find(transfer => transfer.id === processId);
     if (transfer === undefined) {
       this.logger.warn(`Transfer ${processId} not found`);
@@ -211,11 +203,59 @@ export class DataPlaneService {
       this.logger.warn(`Incorrect authorization header ${authorization} vs ${`Bearer ${transfer.secret}`}`)
       throw new HttpException(`Incorrect authorization header`, HttpStatus.UNAUTHORIZED);
     }
-    await new Promise(f => setTimeout(f, 2000));
-    return {
-      result: 'Test Data',
-      id: processId
+
+    this.logger.log(`Request for data for ${processId}`);
+    this.logger.log(`Request: ${request.method} ${request.path}`);
+    const distribution = this.config.dataset.distributions.find(distribution => distribution.version === version);
+    if (distribution === undefined) {
+      this.logger.warn(`No distribution for version ${version} found`)
+      throw new HttpException(`No distribution for version ${version} found`, HttpStatus.NOT_FOUND);
     }
+    try {
+      const headers = request.headers
+      if (distribution.authorization) {
+        headers["authorization"] = distribution.authorization;
+      }
+      const newUrl = `${distribution.backend}/${version}/${path}`;
+      this.logger.log(`Rewrite: ${newUrl}`);
+      this.logger.log(`Headers: ${JSON.stringify(headers)}`);
+
+      await this.proxy(request.method, newUrl, headers, request.body, response);
+    } catch (e) {
+      this.logger.log(`Error in executing transfer: ${e}`);
+      throw new HttpException(`Error in executing transfer: ${e}`, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  private async proxy(method: string, url: string, headers: IncomingHttpHeaders, body: any, response: Response) {
+    delete headers["transfer-encoding"];
+    delete headers["keep-alive"];
+    delete headers["connection"];
+    delete headers["accept-ranges"];
+    delete headers["authorization"];
+    delete headers["content-length"];
+    delete headers["host"];
+    try {
+      const proxyResponse = await axios({
+        method: method,
+        url: url,
+        headers: headers,
+        data: body,
+        responseType: 'stream',
+        validateStatus: () => true
+      });
+      Object.entries(proxyResponse.headers).forEach(([name, value]) => {
+        if (value) {
+          response.setHeader(name, value)
+        }
+      })
+      response.status(proxyResponse.status);
+      proxyResponse.data.pipe(response);
+    } catch (e) {
+      console.log(e);
+      return;
+    }
+
   }
 
 }
