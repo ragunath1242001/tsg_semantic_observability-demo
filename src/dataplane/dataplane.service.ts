@@ -173,16 +173,20 @@ export class DataPlaneService {
     if (transfer === undefined) {
       throw new HttpException(`Transfer ${processId} not found`, HttpStatus.NOT_FOUND);
     }
+    if (transfer.state !== TransferState.STARTED) {
+      this.logger.warn(`Transfer process ${processId} is in ${transfer.state} state, accessing is not allowed`);
+      throw new HttpException(`Transfer process ${processId} is in ${transfer.state} state, accessing is not allowed`, HttpStatus.FORBIDDEN);
+    }
     if (transfer.dataAddress === undefined) {
       throw new HttpException(`Transfer ${processId} does not have a data address present`, HttpStatus.BAD_REQUEST);
     }
 
     try {
       const newUrl = `${transfer.dataAddress.endpoint}/${version}/${path}`;
-      const headers = request.headers
+      const headers = request.headers;
       headers['authorization'] = transfer.dataAddress.endpointProperties.find(p => p.name === 'Authorization')?.value
 
-      this.proxy(request.method, newUrl, headers, request.body, response);
+      await this.proxy(request.method, newUrl, headers, request.body, request.query, response);
     } catch (e) {
       this.logger.log(`Error in executing transfer: ${e}`);
       throw new HttpException(`Error in executing transfer: ${e}`, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -220,14 +224,15 @@ export class DataPlaneService {
       this.logger.log(`Rewrite: ${newUrl}`);
       this.logger.log(`Headers: ${JSON.stringify(headers)}`);
 
-      await this.proxy(request.method, newUrl, headers, request.body, response);
+      await this.proxy(request.method, newUrl, headers, request.body, request.query, response);
     } catch (e) {
       this.logger.log(`Error in executing transfer: ${e}`);
       throw new HttpException(`Error in executing transfer: ${e}`, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
-  private async proxy(method: string, url: string, headers: IncomingHttpHeaders, body: any, response: Response) {
+  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+  private async proxy(method: string, url: string, headers: IncomingHttpHeaders, body: any, query: qs.ParsedQs, response: Response) {
     delete headers["transfer-encoding"];
     delete headers["keep-alive"];
     delete headers["connection"];
@@ -241,6 +246,7 @@ export class DataPlaneService {
         url: url,
         headers: headers,
         data: body,
+        params: query,
         responseType: 'stream',
         validateStatus: () => true
       });

@@ -8,6 +8,8 @@ import { SetupServer, setupServer } from "msw/node";
 import { HttpResponse, PathParams, http } from "msw";
 import { DataPlaneCreation } from "../model/data-planes/dataPlanes.dto";
 import {
+  DataAddress,
+  EndpointProperty,
   TransferCompletionMessage,
   TransferRequestMessage,
   TransferStartMessage,
@@ -63,7 +65,9 @@ describe("Dataplane Service", () => {
       ),
       http.post("https://httpbin.org/anything/0.9.2/anything/test", () => {
         return HttpResponse.json({
-          args: {},
+          args: {
+            filter: "filterQueryString"
+          },
           data: '{"test":"test2"}',
           files: {},
           form: {},
@@ -86,7 +90,7 @@ describe("Dataplane Service", () => {
       })
     );
 
-    server.listen({ onUnhandledRequest: "error" });
+    server.listen({ onUnhandledRequest: "bypass" });
 
     const moduleRef: TestingModule = await Test.createTestingModule({
       controllers: [DataPlaneTestController],
@@ -115,6 +119,9 @@ describe("Dataplane Service", () => {
         "content-type": "application/json",
         accept: "application/json",
       },
+      query: {
+        'filter':'filterQueryString'
+      } as qs.ParsedQs,
       body: {
         test: "test2",
       },
@@ -148,7 +155,7 @@ describe("Dataplane Service", () => {
           request,
           response.res
         )
-      ).rejects.toThrow(HttpException);
+      ).rejects.toThrow('accessing is not allowed');
     });
 
     it("Transfer start", async () => {
@@ -179,11 +186,39 @@ describe("Dataplane Service", () => {
         ).toString()
       );
 
-      console.log("");
       expect(resultBody["json"]["test"]).toBe('test2');
       expect(resultBody["headers"]["Content-Type"]).toBe("application/json");
       expect(resultBody["headers"]["Accept"]).toBe("application/json");
+      expect(resultBody["args"]["filter"]).toBe("filterQueryString");
       expect((response.res.status as jest.Mock).mock.calls[0][0]).toBe(200);
+    });
+
+    it("Transfer execution without authorization", async () => {
+      const response = getMockRes();
+      await expect(
+        dataPlaneService.handleProxyRequest(
+          transferProcessId,
+          "UNKNOWN",
+          "0.9.2",
+          "anything/test",
+          request,
+          response.res
+        )
+      ).rejects.toThrow('Incorrect authorization header');
+    });
+    
+    it("Transfer execution on unknown transfer", async () => {
+      const response = getMockRes();
+      await expect(
+        dataPlaneService.handleProxyRequest(
+          "urn:uuid:00000000-0000-0000-0000-000000000000",
+          "UNKNOWN",
+          "0.9.2",
+          "anything/test",
+          request,
+          response.res
+        )
+      ).rejects.toThrow('not found');
     });
 
     it("Transfer completion", async () => {
@@ -206,7 +241,125 @@ describe("Dataplane Service", () => {
           request,
           response.res
         )
-      ).rejects.toThrow(HttpException);
+      ).rejects.toThrow('accessing is not allowed');
     });
   });
+
+  describe("Consumer process", () => {
+    let transferProcessId = "urn:uuid:dab7264b-7ff4-4182-9e89-6238a57b5006";
+    const request = {
+      method: "POST",
+      path: "/0.9.2/anything/test",
+      headers: {
+        "content-type": "application/json",
+        accept: "application/json",
+      },
+      query: {
+        'filter':'filterQueryString'
+      } as qs.ParsedQs,
+      body: {
+        test: "test2",
+      },
+    } as Request;
+
+    it("Transfer Request", async () => {
+      const result = await dataPlaneService.transferRequest(
+        new TransferRequestMessage({
+          agreementId: "urn:uuid:e785d4a8-2030-4a2b-b223-9881e35c0df7",
+          format: "dspace:HTTP",
+          callbackAddress: "http://127.0.0.1/test"
+        }),
+        "consumer",
+        transferProcessId);
+      transferProcessId = result.identifier;
+    });
+
+    it("Transfer execution on requested", async () => {
+      const response = getMockRes();
+      await expect(
+        dataPlaneService.executeProxyRequest(
+          transferProcessId,
+          "0.9.2",
+          "anything/test",
+          request,
+          response.res
+        )
+      ).rejects.toThrow('accessing is not allowed');
+    });
+
+    it("Transfer start", async () => {
+      await dataPlaneService.transferStart(
+        new TransferStartMessage({
+          processId: transferProcessId,
+          dataAddress: new DataAddress({
+            endpoint: `https://httpbin.org/anything`,
+            endpointType: "HTTP",
+            endpointProperties: [new EndpointProperty({
+              name: 'Authorization',
+              value: 'Bearer ABCDEF'
+            })]
+          })
+        }),
+        transferProcessId)
+    });
+
+    it("Transfer execution", async () => {
+      const response = getMockRes();
+      await dataPlaneService.executeProxyRequest(
+        transferProcessId,
+        "0.9.2",
+        "anything/test",
+        request,
+        response.res
+      );
+      await new Promise((r) => setTimeout(r, 10));
+      const resultBody = JSON.parse(
+        Buffer.from(
+          (response.res.write as jest.Mock).mock.calls[0][0]
+        ).toString()
+      );
+      expect(resultBody["json"]["test"]).toBe('test2');
+      expect(resultBody["headers"]["Content-Type"]).toBe("application/json");
+      expect(resultBody["headers"]["Accept"]).toBe("application/json");
+      expect(resultBody["args"]["filter"]).toBe("filterQueryString");
+      expect((response.res.status as jest.Mock).mock.calls[0][0]).toBe(200);
+    })
+
+
+    it("Transfer execution on unknown transfer", async () => {
+      const response = getMockRes();
+      await expect(
+        dataPlaneService.executeProxyRequest(
+          "urn:uuid:00000000-0000-0000-0000-000000000000",
+          "0.9.2",
+          "anything/test",
+          request,
+          response.res
+        )
+      ).rejects.toThrow('not found');
+    });
+
+    it("Transfer completion", async () => {
+      await dataPlaneService.transferComplete(
+        new TransferCompletionMessage({
+          processId: transferProcessId,
+        }),
+        transferProcessId
+      );
+    });
+
+    it("Transfer execution on completed", async () => {
+      const response = getMockRes();
+      await expect(
+        dataPlaneService.executeProxyRequest(
+          transferProcessId,
+          "0.9.2",
+          "anything/test",
+          request,
+          response.res
+        )
+      ).rejects.toThrow('accessing is not allowed');
+    });
+
+  })
 });
