@@ -26,6 +26,8 @@ export class ControlPlaneConfig {
   public readonly controlEndpoint!: string;
   @IsString()
   public readonly authorization!: string;
+  @IsNumber()
+  public readonly initializationDelay: number = 5000;
 }
 
 export class UserConfig {
@@ -35,6 +37,43 @@ export class UserConfig {
   @IsString()
   @Matches(/^\$2[aby]?\$\d{1,2}\$[./A-Za-z0-9]{53}$/g)
   public readonly password!: string
+}
+
+export class DatasetConfig {
+  @IsString()
+  @IsOptional()
+  public readonly id?: string
+
+  @IsString()
+  @IsDefined()
+  public readonly title!: string
+
+  @ValidateNested()
+  @Type(() => DistributionConfig)
+  @ArrayMinSize(1)
+  public readonly distributions!: DistributionConfig[];
+}
+
+export class DistributionConfig {
+  @IsString()
+  @IsOptional()
+  public readonly id?: string
+
+  @IsString()
+  @IsUrl({require_tld: false})
+  public readonly backend!: string
+
+  @IsString()
+  public readonly version!: string
+
+  @IsString()
+  @IsUrl()
+  @IsOptional()
+  public readonly openApiSpec?: string
+
+  @IsString()
+  @IsOptional()
+  public readonly authorization?: string
 }
 
 export class RootConfig {
@@ -52,4 +91,9 @@ export class RootConfig {
   @Type(() => UserConfig)
   @ArrayMinSize(1)
   public readonly users!: UserConfig[]
+
+  @ValidateNested()
+  @Type(() => DatasetConfig)
+  @IsDefined()
+  public readonly dataset!: DatasetConfig;
 }
