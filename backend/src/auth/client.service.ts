@@ -124,7 +124,7 @@ export class ClientsService {
     if (!this.config.mail) {
       throw new AppError(`This server does not support resetting of passwords`, HttpStatus.NOT_IMPLEMENTED);
     }
-    const client = await this.clientsRepository.findOneBy({clientId: clientId});
+    const client = await this.getClient(clientId);
     if (!client) {
       throw new AppError(`Client with id ${clientId} not found`, HttpStatus.NOT_FOUND);
     }
@@ -160,13 +160,17 @@ export class ClientsService {
     await this.clientsRepository.save(client);
   }
 
-  async updateDidId(didId: string, clientId: string) {
-    const client = await this.clientsRepository.findOneBy({clientId: clientId});
+  async getClient(clientId: string, verified: boolean = false): Promise<Clients> {
+    let client: Clients | null;
+    if (verified) {
+      client = await this.clientsRepository.findOneBy({clientId: clientId, verified: true});
+    } else {
+      client = await this.clientsRepository.findOneBy({clientId: clientId});
+    }
     if (!client) {
       throw new AppError(`Client with id ${clientId} not found`, HttpStatus.NOT_FOUND);
     }
-    client.didId = didId;
-    await this.clientsRepository.save(client);
+    return client;
   }
 
   async getClients(): Promise<Clients[]> {
@@ -178,47 +182,38 @@ export class ClientsService {
     });
   }
 
+  async updateDidId(didId: string, clientId: string) {
+    const client = await this.getClient(clientId);
+    client.didId = didId;
+    await this.clientsRepository.save(client);
+  }
+
   async addRole(role: AppRole, clientId: string) {
-    const client = await this.clientsRepository.findOneBy({clientId: clientId});
-    if (!client) {
-      throw new AppError(`Client with id ${clientId} not found`, HttpStatus.NOT_FOUND);
-    }
+    const client = await this.getClient(clientId);
     client.roles = [...new Set([...client.roles, role])];
     await this.clientsRepository.save(client);
   }
 
   async removeRole(role: AppRole, clientId: string) {
-    const client = await this.clientsRepository.findOneBy({clientId: clientId});
-    if (!client) {
-      throw new AppError(`Client with id ${clientId} not found`, HttpStatus.NOT_FOUND);
-    }
+    const client = await this.getClient(clientId);
     client.roles = client.roles.filter(r => r !== role);
     await this.clientsRepository.save(client);
   }
 
   async activate(clientId: string) {
-    const client = await this.clientsRepository.findOneBy({clientId: clientId});
-    if (!client) {
-      throw new AppError(`Client with id ${clientId} not found`, HttpStatus.NOT_FOUND);
-    }
+    const client = await this.getClient(clientId);
     client.verified = true;
     await this.clientsRepository.save(client);
   }
   
   async deactivate(clientId: string) {
-    const client = await this.clientsRepository.findOneBy({clientId: clientId});
-    if (!client) {
-      throw new AppError(`Client with id ${clientId} not found`, HttpStatus.NOT_FOUND);
-    }
+    const client = await this.getClient(clientId);
     client.verified = false;
     await this.clientsRepository.save(client);
   }
 
   async remove(clientId: string) {
-    const client = await this.clientsRepository.findOneBy({clientId: clientId});
-    if (!client) {
-      throw new AppError(`Client with id ${clientId} not found`, HttpStatus.NOT_FOUND);
-    }
+    const client = await this.getClient(clientId);
     await this.clientsRepository.softRemove(client);
   }
 
@@ -226,15 +221,17 @@ export class ClientsService {
     if (!clientId || clientId.trim().length === 0) {
       throw new AppError(`Incorrect data`, HttpStatus.BAD_REQUEST)
     }
-    const client = await this.clientsRepository.findOneBy({clientId: clientId});
-    if (!client) {
-      throw new AppError(`Incorrect data`, HttpStatus.BAD_REQUEST)
+    let client: Clients;
+    try {
+      client = await this.getClient(clientId);
+    } catch (e) {
+      throw new AppError('Incorrect data', HttpStatus.BAD_REQUEST)
     }
     if (client.verificationCode === code && client.verificationExpiration && client.verificationExpiration > new Date()) {
       client.verified = true;
       client.verificationCode = undefined;
       client.verificationExpiration = undefined;
-      this.clientsRepository.save(client);
+      await this.clientsRepository.save(client);
     } else {
       throw new AppError(`Expired or incorrect code`, HttpStatus.BAD_REQUEST)
     }
@@ -244,12 +241,14 @@ export class ClientsService {
     if (!reset.clientId || reset.clientId.trim().length === 0) {
       throw new AppError(`Incorrect data`, HttpStatus.BAD_REQUEST)
     }
-    const client = await this.clientsRepository.findOneBy({clientId: reset.clientId});
-    if (!client) {
-      throw new AppError(`Incorrect data`, HttpStatus.BAD_REQUEST)
+    let client: Clients;
+    try {
+      client = await this.getClient(reset.clientId);
+    } catch (e) {
+      throw new AppError('Incorrect data', HttpStatus.BAD_REQUEST)
     }
     if ((client.verificationCode === reset.old && client.verificationExpiration && client.verificationExpiration > new Date()) || await bcrypt.compare(reset.old, client.clientSecret)){
-      client.clientSecret = await bcrypt.hash(reset.old, 10);
+      client.clientSecret = await bcrypt.hash(reset.new, 10);
       client.verificationCode = undefined;
       client.verificationExpiration = undefined;
       this.clientsRepository.save(client);
@@ -259,21 +258,25 @@ export class ClientsService {
   }
 
   async signin(clientId: string, secret: string): Promise<ClientInfo | null> {
-    const client = await this.clientsRepository.findOneBy({clientId: clientId, verified: true});
-    if (!client) return null;
-    if (await bcrypt.compare(secret, client?.clientSecret)) {
-        return {
-        sub: client.clientId,
-        email: client.email,
-        didId: client.didId,
-        roles: client.roles
-      };
+    try {
+      const client = await this.getClient(clientId, true);
+      if (await bcrypt.compare(secret, client?.clientSecret)) {
+          return {
+          sub: client.clientId,
+          email: client.email,
+          didId: client.didId,
+          roles: client.roles
+        };
+      } else {
+        return null;
+      }
+    } catch (e) {
+      return null;
     }
-    return null;
   }
 
   async validateToken(clientId: string): Promise<ClientInfo | null> {
-    const client = await this.clientsRepository.findOneBy({clientId: clientId, verified: true});
+    const client = await this.getClient(clientId, true);
     if (!client) return null;
     return {
       sub: client.clientId,
@@ -284,10 +287,14 @@ export class ClientsService {
   }
 
   async validateRefreshToken(clientId: string, refreshToken: string) {
-    const client = await this.clientsRepository.findOneBy({clientId: clientId, verified: true});
-    if (!client) return null;
+    let client: Clients;
+    try {
+      client = await this.getClient(clientId, true);
+    } catch (e) {
+      return null;
+    }
     if (refreshToken === client.refreshToken) {
-      return this.login({
+      return await this.login({
         sub: client.clientId,
         email: client.email,
         didId: client.didId,
