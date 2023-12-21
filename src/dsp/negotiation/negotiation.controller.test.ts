@@ -5,8 +5,8 @@ import { ContractAgreementMessage, ContractAgreementVerificationMessage, Contrac
 import { Agreement, Offer } from "../../model/dsp/negotiation/negotiation";
 import { ContractNegotiationState, NegotiationEvent, ProofTypes } from "../../model/dsp/negotiation/messages.dto";
 import { Multilanguage } from "../../model/dsp/common";
-import { NegotiationService } from "../../services/dsp/negotiation.service";
-import { DspClientService } from "../../services/dsp/client.service";
+import { NegotiationService } from "./negotiation.service";
+import { DspClientService } from "../client/client.service";
 import { rest } from "msw"; 
 import { SetupServer, setupServer } from "msw/node";
 import { IamConfig, ServerConfig } from "../../config";

@@ -3,17 +3,17 @@ import { TransferController } from "./transfer.controller";
 import { HttpStatus } from "@nestjs/common";
 import { TransferCompletionMessage, TransferProcess, TransferRequestMessage, TransferStartMessage, TransferSuspensionMessage, TransferTerminationMessage } from "../../model/dsp/transfer/messages";
 import { Multilanguage } from "../../model/dsp/common";
-import { DataPlaneService } from "../../services/dataPlane.service";
-import { CatalogService } from "../../services/dsp/catalog.service";
 import { rest } from "msw"; 
 import { SetupServer, setupServer } from "msw/node";
-import { TransferService } from "../../services/dsp/transfer.service";
-import { DspClientService } from "../../services/dsp/client.service";
+import { DspClientService } from "../client/client.service";
 import { TransferState } from "../../model/dsp/transfer/messages.dto";
 import { Catalog } from "../../model/dsp/catalog/catalog";
 import { ServerConfig } from "../../config";
 import { plainToClass } from "class-transformer";
 import { AuthService } from "../../auth/auth.service";
+import { TransferService } from "./transfer.service";
+import { DataPlaneService } from "../../data-plane/dataPlane.service";
+import { CatalogService } from "../catalog/catalog.service";
 
 describe("TransferController", () => {
   let transferController: TransferController;
