@@ -1,23 +1,27 @@
-import { HttpStatus, Injectable, Optional } from "@nestjs/common";
+import { ConflictException, HttpStatus, Injectable, Optional } from "@nestjs/common";
 import { CatalogRequestMessage } from "../../model/dsp/catalog/messages";
 import {
   Catalog,
   DataService,
   Dataset,
+  Distribution,
+  Resource,
 } from "../../model/dsp/catalog/catalog";
 import { InitCatalog, ServerConfig } from "../../config";
 import { Multilanguage, Reference } from "../../model/dsp/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { CatalogDao, DatasetDao } from "../../model/dsp/catalog/catalog.dao";
+import { CatalogDao, DataServiceDao, DatasetDao, DistributionDao, ResourceDao } from "../../model/dsp/catalog/catalog.dao";
 import { DSPError } from "../../utils/errors/error";
-import { DatasetDto } from "../../model/dsp/catalog/catalog.dto";
 
 @Injectable()
 export class CatalogService {
   constructor(
       @InjectRepository(CatalogDao) private readonly catalogRepository: Repository<CatalogDao>,
       @InjectRepository(DatasetDao) private readonly datasetRepository: Repository<DatasetDao>,
+      @InjectRepository(DataServiceDao) private readonly dataservicesRepository: Repository<DataServiceDao>,
+      @InjectRepository(DistributionDao) private readonly distributionRepository: Repository<DistributionDao>,
+      @InjectRepository(ResourceDao) private readonly resourceRepository: Repository<ResourceDao>,
       @Optional() private readonly initCatalog?: InitCatalog, 
       @Optional() private readonly server?: ServerConfig) {
     this.initalizeCatalog()
@@ -26,8 +30,17 @@ export class CatalogService {
   // private catalog: Catalog | undefined;
   // private datasets: Dataset[] = [];
 
-  async getCatalogDao(): Promise<CatalogDao> {
-    const catalog = await this.catalogRepository.find({});
+  async getCatalogDao(relations?: boolean): Promise<CatalogDao> {
+    let catalog;
+    if ( relations ) {
+      catalog = await this.catalogRepository.find({relations: {
+        _datasets: true,
+        _services: true
+      }});
+    } else {
+      catalog = await this.catalogRepository.find({});
+    }
+    
     if (!catalog[0]) {
       throw new DSPError("Catalog not (yet) available", HttpStatus.NOT_FOUND)
     }
@@ -37,76 +50,123 @@ export class CatalogService {
   async initalizeCatalog() {
     const existingCatalog = await this.catalogRepository.find({});
     if (!existingCatalog[0] && this.initCatalog && this.server) {
-      const dataServices = new DataService({
+      const resource = this.resourceRepository.create(new Resource({
+        creator: new Reference(this.initCatalog.creator),
+        publisher: this.initCatalog.publisher,
+        title: this.initCatalog.title,
+        description: [new Multilanguage(this.initCatalog.description)],
+      }))
+      const dataset = this.datasetRepository.create({...new Dataset({}),
+        _resource: resource
+      })
+      const dservice = new DataService({
         endpointDescription: new Reference('dpsace:connector'),
         conformsTo: new Reference('dpsace:connector'),
         endpointURL: `${this.server.publicAddress}`,
+      })
+      this.dataservicesRepository.create({
+        ...dservice
       });
-      this.catalogRepository.save({
-        ...new Catalog({
-          creator: new Reference(this.initCatalog.creator),
-          publisher: this.initCatalog.publisher,
-          title: this.initCatalog.title,
-          description: [new Multilanguage(this.initCatalog.description)],
-          service: [dataServices]
-        }),
-        _service: [dataServices]
-      });
+      const catalog = this.catalogRepository.create(new Catalog({}))
+      catalog._services = [dservice]
+      catalog._dataset = dataset
+      return this.catalogRepository.save(
+        catalog);
     } 
+    
+    
   }
 
-  async modifyCatalog(catalog: Catalog): Promise<void> {
-    this.catalogRepository.update({}, catalog)
-    // this.catalog = catalog;
+  async modifyCatalog(catalog: CatalogDao): Promise<void> {
+    await this.catalogRepository.update({id: catalog.id}, catalog)
+  }
 
-    const dataset: DatasetDto = {
-      '@type': 'dcat:Dataset',
-      '@id': "urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0cea",
-      'dct:title': 'Test HTTP dataset',
-      "dcat:distribution": [
-        {
-          '@id': "urn:uuid:06d7da99-68eb-4f9e-8cb6-b78666c46123",
-          '@type': 'dcat:Distribution',
-          'dct:format': "dspace:HTTP",
-          'dcat:accessService': [
-            {
-              '@type': 'dcat:DataService',
-              '@id': "urn:uuid:0d5f0685-eb04-409a-8a77-ee4ed207f2f0",
-              'dcat:endpointURL': "https://httpbin.org/anything"
-            }
-          ]
-        }
-      ]
+  async addDataset(dataset: Dataset): Promise<DatasetDao | undefined> {
+    const catalog = await this.getCatalogDao(true);
+    const exist = await this.datasetRepository.findOne({where: {id: dataset.id}})
+    if (exist) {
+      throw new ConflictException(
+        `The dataset with ${dataset.id} already exists.`,
+        HttpStatus.CONFLICT.toString(),
+      );
     }
-
+    const newResource = this.resourceRepository.create(dataset)
+    const newDataset = this.datasetRepository.create(dataset)
+    newDataset._resource=newResource
+    const distributions: Array<Distribution> | undefined = dataset.distribution
+    if (distributions !== undefined) {
+      const distributionArray: DistributionDao[] = []
+      distributions.forEach((distribution: Distribution) => {
+        const distributionObj = this.distributionRepository.create(distribution)
+        const services: Array<DataService> | undefined = distribution.accessService
+        if (services !== undefined) {
+          const servicesArray: DataServiceDao[] = []
+          services.forEach((service: DataService) => {
+            const resourceObj = this.resourceRepository.create({id: service.id})
+            const serviceObj = this.dataservicesRepository.create(service)
+            serviceObj._resource = resourceObj
+            servicesArray.push(serviceObj)
+          })
+          distributionObj._accessService = servicesArray
+        }
+        distributionArray.push(distributionObj)
+      })
+      newDataset._distribution = distributionArray
+    }
+    catalog._datasets?.push(newDataset)
+    await this.catalogRepository.save(catalog)
+    return newDataset
   }
 
-  async addDataset(dataset: Dataset): Promise<void> {
-    const catalog = await this.getCatalogDao();
-    this.datasetRepository.insert({
-      ...dataset,
-      _catalog: catalog
-    })
-    // this.datasets.push(dataset);
-  }
-
-  async updateDataset(datasetId: string, dataset: Dataset): Promise<void> {
-    const catalog = await this.getCatalogDao();
+  async updateDataset(datasetId: string, dataset: Dataset): Promise<DatasetDao | null> {
     const existingDataset = await this.datasetRepository.findOneBy({id: datasetId});
     if (!existingDataset) {
       throw new DSPError(`Can't update a dataset, as dataset with id ${datasetId} does not exist yet`, HttpStatus.NOT_FOUND)
     }
-    this.datasetRepository.update({id: datasetId}, {
-      ...dataset,
-      _catalog: catalog
-    })
-    // await this.removeDataset(datasetId);
-    // await this.addDataset(dataset);
+    await this.resourceRepository
+      .createQueryBuilder()
+      .update(ResourceDao)
+      .set({
+        id: dataset.id,
+        contactPoint: dataset.contactPoint,
+        keyword: dataset.keyword,
+        landingPage: dataset.landingPage,
+        theme: dataset.theme,
+        conformsTo: dataset.conformsTo,
+        creator: dataset.creator,
+        description: dataset.description,
+        identifier: dataset.identifier,
+        isReferencedBy: dataset.isReferencedBy,
+        issued: dataset.issued,
+        language: dataset.language,
+        license: dataset.license,
+        modified: dataset.modified,
+        publisher: dataset.publisher,
+        relation: dataset.relation,
+        title: dataset.title,
+        type: dataset.type,
+        hasPolicy: dataset.hasPolicy,
+      })
+      .where("id = :id", {id: existingDataset!._resource!.id})
+      .execute();
+    await this.datasetRepository
+      .createQueryBuilder()
+      .update(DatasetDao)
+      .set({
+        spatialResolutionInMeters: dataset.spatialResolutionInMeters,
+        temporalResolution: dataset.temporalResolution,
+        accrualPeriodicity: dataset.accrualPeriodicity,
+        spatial: dataset.spatial,
+        temporal: dataset.temporal,
+        wasGeneratedBy: dataset.wasGeneratedBy
+      })
+      .where("_id = :_id", {_id: existingDataset._id})
+      .execute();    
+    return await this.datasetRepository.findOneBy({_id: existingDataset._id})
   }
 
   async removeDataset(datasetId: string): Promise<void> {
     await this.datasetRepository.delete({id: datasetId});
-    // this.datasets = this.datasets.filter(dataset => dataset.id !== datasetId);
   }
 
   async request(requestMessage: CatalogRequestMessage): Promise<Catalog> {
@@ -122,8 +182,7 @@ export class CatalogService {
     if (!dataset) {
       return undefined;
     } else {
-      return new Dataset(dataset)
+      return new Dataset(new Resource(dataset._resource!))
     }
-    // return this.datasets.find((dataset) => dataset.id === datasetId);
   }
 }

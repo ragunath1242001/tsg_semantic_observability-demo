@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, ObjectType, OneToMany, OneToOne, PrimaryColumn, PrimaryGeneratedColumn, Relation } from "typeorm";
+import { BeforeInsert, ChildEntity, Column, Entity, Generated, JoinColumn, JoinTable, ManyToMany, ManyToOne, ObjectType, OneToMany, OneToOne, Relation, TableInheritance } from "typeorm";
 import { MetaEntity, mapToInstances } from "../../common.dao";
 import { CatalogRecord, DataService, Dataset, Distribution, ICatalog, ICatalogRecord, IDataService, IDataset, IDistribution, IResource, Resource } from "./catalog";
 import { Reference, Multilanguage, Time, Decimal, Duration, SerializableClass } from "../common";
@@ -10,8 +10,6 @@ import { DatasetDto } from "./catalog.dto";
 export class ResourceDao extends MetaEntity implements IResource {
   @Column({unique: true})
   id!: string
-  @ManyToOne(() => CatalogDao)
-  _catalog?: Relation<CatalogDao>
   @Column("simple-json", {nullable: true})
   contactPoint?: Reference;
   @Column("simple-json", {nullable: true})
@@ -52,20 +50,20 @@ export class ResourceDao extends MetaEntity implements IResource {
 }
 
 @Entity({name: "dataservice"})
-export class DataServiceDao extends ResourceDao implements IDataService {
-  @ManyToOne(() => CatalogDao)
+export class DataServiceDao extends MetaEntity implements IDataService {
+  @ManyToOne(() => CatalogDao, {nullable: true})
   _catalog?: Relation<CatalogDao>
-
-  @Column({unique: true})
-  id!: string
+  @OneToOne(() => ResourceDao, {cascade: true, eager: true})
+  @JoinColumn()
+  _resource: ResourceDao | undefined
   @Column("simple-json", {nullable: true})
   endpointDescription?: Reference;
   @Column({nullable: true})
   endpointURL?: string;
 
-  @ManyToMany(() => DatasetDao)
+  @ManyToMany(() => DatasetDao, {nullable: true, cascade: true})
   @JoinTable()
-  _servesDataset?: Array<DatasetDao>;
+  _servesDataset?: Array<Relation<DatasetDao>>;
   get servesDataset(): Dataset<DatasetDto>[] | undefined {
     return mapToInstances(this._servesDataset, Dataset)
   }
@@ -75,7 +73,7 @@ export class DataServiceDao extends ResourceDao implements IDataService {
 export class DistributionDao extends MetaEntity implements IDistribution {
   @Column({unique: true})
   id!: string
-  @ManyToMany(() => DataServiceDao)
+  @ManyToMany(() => DataServiceDao, {nullable: true, cascade: true})
   @JoinTable()
   _accessService?: Array<DataServiceDao>;
   get accessService(): Array<DataService> | undefined {
@@ -115,12 +113,15 @@ export class DistributionDao extends MetaEntity implements IDistribution {
 }
 
 @Entity({name: "dataset"})
-export class DatasetDao extends ResourceDao implements IDataset {
+export class DatasetDao extends MetaEntity implements IDataset {
   @Column({unique: true})
   id!: string
-  @ManyToOne(() => CatalogDao)
+  @OneToOne(() => ResourceDao, {cascade: true, eager: true})
+  @JoinColumn()
+  _resource: ResourceDao | undefined
+  @ManyToOne(() => CatalogDao, {nullable: true})
   _catalog?: Relation<CatalogDao>
-  @ManyToMany(() => DataServiceDao)
+  @ManyToMany(() => DataServiceDao, {nullable: true, cascade: true})
   @JoinTable()
   _distribution?: Array<DistributionDao>;
   get distribution(): Array<Distribution> | undefined {
@@ -144,6 +145,8 @@ export class DatasetDao extends ResourceDao implements IDataset {
 export class CatalogRecordDao extends MetaEntity implements ICatalogRecord {
   @Column({unique: true})
   id!: string
+  @ManyToOne(() => CatalogDao, {nullable: true})
+  _catalog?: Relation<CatalogDao>
   @Column("simple-json", {nullable: true})
   conformsTo?: Reference;
   @Column("simple-json", {nullable: true})
@@ -154,7 +157,7 @@ export class CatalogRecordDao extends MetaEntity implements ICatalogRecord {
   modified?: Date;
   @Column({nullable: true})
   title?: string;
-  @OneToOne(() => ResourceDao)
+  @OneToOne(() => ResourceDao, {cascade: true})
   @JoinColumn()
   _primaryTopic?: Resource;
   get primaryTopic(): Resource | undefined {
@@ -163,82 +166,34 @@ export class CatalogRecordDao extends MetaEntity implements ICatalogRecord {
 }
 
 @Entity({name: "catalog"})
-export class CatalogDao extends DatasetDao implements ICatalog {
+export class CatalogDao extends MetaEntity implements ICatalog {
   @Column({unique: true})
   id!: string
-  @OneToMany(() => DatasetDao, (dataset) => dataset._catalog)
-  _dataset?: Array<DatasetDao>;
+  @OneToMany(() => DatasetDao, (dataset) => dataset._catalog, {cascade: true})
+  _datasets?: Array<Relation<DatasetDao>>;
   get dataset(): Array<Dataset> | undefined {
-    return mapToInstances(this._dataset, Dataset)
+    return mapToInstances(this._datasets, Dataset)
   }
+  @OneToOne(() => DatasetDao, {eager: true})
+  @JoinColumn()
+  _dataset: Relation<DatasetDao> | undefined
   @Column("simple-json", {nullable: true})
-  record?: CatalogRecord;
-  @OneToMany(() => DataServiceDao, (dataservice) => dataservice._catalog)
-  _service?: Array<DataService>;
-  get service(): Array<DataService> | undefined {
-    return mapToInstances(this._service, DataService)
-  }
   themeTaxonomy?: Reference;
-  @OneToMany(() => ResourceDao, (resource) => resource._catalog)
-  _hasPart?: Array<ResourceDao>;
-  get hasPart(): Array<Resource> | undefined {
-    return mapToInstances(this._hasPart, Resource)
-  }
+  @Column("simple-json", {nullable: true})
   homepage?: Reference;
+
+  @OneToMany(() => CatalogRecordDao, (catalogrecord) => catalogrecord._catalog, {cascade: true})
+  _records?: Array<CatalogRecord>;
+  @OneToMany(() => DataServiceDao, (dataservice) => dataservice._catalog, {cascade: true})
+  _services?: Array<DataService>;
+  get service(): Array<DataService> | undefined {
+    return mapToInstances(this._services, DataService)
+  }
+
+  @ManyToOne(() => CatalogDao, (catalog) => catalog.children, {nullable: true})
+  parent?: Relation<CatalogDao>
+
+  @OneToMany(() => CatalogDao, (catalog) => catalog.parent, {nullable: true})
+  children?: Relation<CatalogDao>
+
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// @Entity()
-// export class CatalogDao extends MetaEntity {
-//   @PrimaryGeneratedColumn()
-//   id!: number;
-
-//   @OneToMany(() => DatasetDao, (dataset) => dataset.catalog)
-//   dataset!: Array<DatasetDao>
-//   @OneToMany(() => DataServiceDao, (service) => service.catalog)
-//   service!: Array<DataServiceDao>
-// }
-
-// @Entity()
-// export class DatasetDao extends MetaEntity {
-//   @PrimaryGeneratedColumn()
-//   id!: number;
-
-//   @ManyToOne(() => CatalogDao, (catalog) => catalog.dataset)
-//   catalog!: CatalogDao
-
-//   @OneToMany(() => DistributionDao, (distribution) => distribution.dataset)
-//   distribution!: Array<DistributionDao>
-// }
-
-// @Entity()
-// export class DataServiceDao extends MetaEntity {
-//   @PrimaryGeneratedColumn()
-//   id!: number;
-
-//   @ManyToOne(() => CatalogDao, (catalog) => catalog.dataset)
-//   catalog!: CatalogDao
-//   @ManyToOne(() => CatalogDao, (catalog) => catalog.dataset)
-//   distribution!: CatalogDao
-// }
-
-// @Entity()
-// export class DistributionDao extends MetaEntity {
-//   @PrimaryGeneratedColumn()
-//   id!: number;
-
-//   @ManyToOne(() => DatasetDao, (dataset) => dataset.distribution)
-//   dataset!: DatasetDao
-// }

@@ -11,6 +11,7 @@ import {
 import { Policy } from "../negotiation/negotiation";
 import { CatalogDto, CatalogRecordDto, DataServiceDto, DatasetDto, DistributionDto, ResourceDto } from "./catalog.dto";
 import { ContextDto } from "../common.dto";
+import { PartialType } from "@nestjs/mapped-types";
 
 export interface IResource extends IReference {
   contactPoint?: Reference;
@@ -360,7 +361,7 @@ export class CatalogRecord extends Reference<CatalogRecordDto & ContextDto> {
 
 export interface ICatalog extends IDataset {
   dataset?: Array<Dataset>;
-  record?: CatalogRecord;
+  record?: Array<CatalogRecord>;
   service?: Array<DataService>;
   themeTaxonomy?: Reference;
   hasPart?: Array<Resource>;
@@ -376,7 +377,7 @@ export class Catalog extends Dataset<CatalogDto> {
   @Namespace("dcat")
   @ValidateNested()
   @IsOptional()
-  record?: CatalogRecord;
+  record?: Array<CatalogRecord>;
   @Namespace("dcat")
   @ValidateNested()
   @IsOptional()

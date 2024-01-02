@@ -1,35 +1,28 @@
-import { Injectable, Logger } from "@nestjs/common";
-import { DataPlaneRequestResponseDto, DataPlaneCreation, DataPlaneDetailsDto, DataPlaneTransferDto } from "../model/data-planes/dataPlanes.dto";
+import { HttpStatus, Injectable, Logger } from "@nestjs/common";
+import { DataPlaneRequestResponseDto, DataPlaneCreation, DataPlaneDetailsDto, DataPlaneTransferDto} from "../model/data-planes/dataPlanes.dto";
 import { Interval } from "@nestjs/schedule";
 import { CatalogService } from "../dsp/catalog/catalog.service";
 import { Dataset, IDataset } from "../model/dsp/catalog/catalog";
 import crypto from "crypto";
 import { TransferCompletionMessage, TransferRequestMessage, TransferStartMessage, TransferSuspensionMessage, TransferTerminationMessage } from "../model/dsp/transfer/messages";
 import axios, { AxiosInstance, AxiosRequestConfig, InternalAxiosRequestConfig } from "axios";
-import { DSPClientError } from "../utils/errors/error";
+import { DSPClientError, DSPError } from "../utils/errors/error";
 import deepEqual from "deep-equal";
 import { SerializableClass } from "../model/dsp/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { DataPlaneDetailsDao, DataPlaneStatusDao } from "../model/data-planes/dataPlanes.dao";
+import { Repository, UpdateResult } from "typeorm";
+import { DataPlaneDetails, DataPlaneStatus, HealthStatus } from "../model/data-planes/dataPlanes";
+import { DatasetDao } from "../model/dsp/catalog/catalog.dao";
 
-
-enum HealthStatus {
-  HEALTHY, UNRESPONSIVE, ERRONEOUS, EXITED, UNKNOWN
-}
-
-interface DataPlaneStatus {
-  identifier: string;
-  created: Date;
-  modified: Date;
-  details: DataPlaneDetailsDto;
-  health: HealthStatus;
-  missedHealthChecks: number;
-  dataset?: Dataset;
-  etag?: string
-}
 
 @Injectable()
 export class DataPlaneService {
   private readonly axios: AxiosInstance;
-  constructor(private readonly catalogService: CatalogService) {
+  constructor(
+    @InjectRepository(DataPlaneStatusDao) private readonly dataPlaneStatusRepository: Repository<DataPlaneStatusDao>,
+    @InjectRepository(DataPlaneDetailsDao) private readonly dataPlaneDetailsRepository: Repository<DataPlaneDetailsDao>,
+    private readonly catalogService: CatalogService) {
     this.axios = axios.create();
     this.axios.interceptors.request.use(async (request: InternalAxiosRequestConfig) => {
       if (request.data instanceof SerializableClass) {
@@ -39,13 +32,26 @@ export class DataPlaneService {
     });
   }
   private readonly logger = new Logger(this.constructor.name);
-  private dataPlanes: DataPlaneStatus[] = [];
 
   private readonly maxHealthCheckMisses = 10;
   private static readonly pullInterval = 60000;
 
-  async getDataPlane(identifier: string): Promise<DataPlaneDetailsDto | undefined> {
-    return this.dataPlanes.find(dataPlane => dataPlane.identifier === identifier)?.details;
+  async getDataPlane(identifier: string): Promise<DataPlaneStatus| undefined> {
+    const dataPlaneDetails = await this.dataPlaneStatusRepository.findOneBy({identifier: identifier});
+    if (!dataPlaneDetails) {
+      return undefined
+    } else {
+      return new DataPlaneStatus(dataPlaneDetails)
+    }
+  }
+  async getDataPlaneDetails(identifier: string): Promise<DataPlaneDetails| undefined> {
+    const dataPlaneDetails = await this.dataPlaneDetailsRepository.findOneBy({identifier: identifier});
+    if (!dataPlaneDetails) {
+      // TODO is DSPError a good error here or do we need a dataplane error of some kind?
+      throw new DSPError(`Dataplane details with identifier ${identifier} not found`, HttpStatus.NOT_FOUND)
+    } else {
+      return new DataPlaneDetails(dataPlaneDetails)
+    }
   }
 
   async addDataPlane(dataPlane: DataPlaneCreation): Promise<DataPlaneDetailsDto> {
@@ -61,7 +67,7 @@ export class DataPlaneService {
       health: HealthStatus.UNKNOWN,
       missedHealthChecks: 0
     }
-    this.dataPlanes.push(dataPlaneStatus);
+    this.dataPlaneStatusRepository.save(dataPlaneStatus);
     switch(dataPlane.catalogSynchronization) {
       case "push": await this.healthCheck(dataPlaneStatus); break;
       case "pull": await this.pullCatalog(dataPlaneStatus); break;
@@ -69,30 +75,49 @@ export class DataPlaneService {
     return dataPlaneDetails;
   }
 
-  async updateDataPlane(dataPlaneDetails: DataPlaneDetailsDto): Promise<DataPlaneDetailsDto | undefined> {
-    const dataPlane = this.dataPlanes.find(dataPlane => dataPlane.identifier === dataPlaneDetails.identifier);
-    if (dataPlane) {
+  async updateDataPlane(dataPlaneDetails: DataPlaneDetailsDto): Promise<UpdateResult | undefined> {
+    const dataPlane = await this.dataPlaneStatusRepository.findOneBy({identifier: dataPlaneDetails.identifier});
+    if (!dataPlane) {
+      // TODO is DSPError a good error here or do we need a dataplane error of some kind?
+      throw new DSPError(`Dataplane with identifier ${dataPlaneDetails.identifier} not found`, HttpStatus.NOT_FOUND)
+    } else {
       dataPlane.modified = new Date();
-      dataPlane.details = dataPlaneDetails;
+      const updateResult = await this.dataPlaneDetailsRepository.update({identifier: dataPlaneDetails.identifier},{
+        ...dataPlaneDetails
+      })
+      await this.dataPlaneStatusRepository.update(dataPlane._id, dataPlane)
       switch(dataPlane.details.catalogSynchronization) {
         case "push": await this.healthCheck(dataPlane); break;
         case "pull": await this.pullCatalog(dataPlane); break;
       }
-      return dataPlaneDetails;
+      return updateResult;
     }
   }
 
   async updateCatalog(identifier: string, dataset: Dataset, etag?: string): Promise<Dataset | undefined> {
-    const dataPlane = this.dataPlanes.find(dataPlane => dataPlane.identifier === identifier);
-    if (dataPlane) {
+    const dataPlane = await this.dataPlaneStatusRepository.findOneBy({identifier: identifier});
+    let addedDataset: DatasetDao = new DatasetDao()
+    if (!dataPlane) {
+      // TODO is DSPError a good error here or do we need a dataplane error of some kind?
+      throw new DSPError(`Dataplane with identifier ${identifier} not found`, HttpStatus.NOT_FOUND)
+    } else {
       if (dataPlane.dataset) {
-        this.catalogService.updateDataset(dataPlane.dataset.id, dataset);
+        this.logger.log(`Updating dataset for dataplane ${identifier}`)
+        const resp = await this.catalogService.updateDataset(dataPlane.dataset?.id, dataset);
+        if (resp) {
+          addedDataset = resp
+        }
       } else {
-        this.catalogService.addDataset(dataset);
+        this.logger.log(`Adding dataset for dataplane ${identifier}`)
+        const resp = await this.catalogService.addDataset(dataset);
+        if (resp) {
+          addedDataset = resp
+        }
       }
       // TODO: Should we update modified when the catalog changes?
       // dataPlane.modified = new Date();
-      dataPlane.dataset = dataset;
+      dataPlane._dataset = addedDataset;
+      await this.dataPlaneStatusRepository.update({identifier: identifier}, dataPlane)
       if (etag) {
         dataPlane.etag = etag;
       }
@@ -179,7 +204,7 @@ export class DataPlaneService {
   }
 
   async requestTransfer(requestDetail: TransferRequestMessage, processId: string, role: "provider" | "consumer"): Promise<DataPlaneTransferDto> {
-    const dataPlanes = this.dataPlanes.filter(dataPlane => dataPlane.details.dataplaneType === requestDetail.format && (dataPlane.details.role === role || dataPlane.details.role === "both"));
+    const dataPlanes = await this.dataPlaneDetailsRepository.findBy({dataplaneType: requestDetail.format, role: role || 'both' });
     if (dataPlanes.length === 0) {
       throw Error(`Dataplane for type '${requestDetail.format}' cannot be found`);
     }
@@ -187,14 +212,14 @@ export class DataPlaneService {
       try {
         const requestConfig: AxiosRequestConfig = {
           headers: {
-            Authorization: `Bearer ${dataPlane.details.managementToken}`
+            Authorization: `Bearer ${dataPlane.managementToken}`
           }
         }
-        const dataPlaneRequestResponse = await this.axios.post<DataPlaneRequestResponseDto>(`${dataPlane.details.managementAddress}/transfer/request/${role}?processId=${processId}`, requestDetail, requestConfig);
+        const dataPlaneRequestResponse = await this.axios.post<DataPlaneRequestResponseDto>(`${dataPlane.managementAddress}/transfer/request/${role}?processId=${processId}`, requestDetail, requestConfig);
         if (dataPlaneRequestResponse.data.accepted) {
           return {
             dataPlaneIdentifier: dataPlane.identifier,
-            endpointType: dataPlane.details.dataplaneType,
+            endpointType: dataPlane.dataplaneType,
             ...dataPlaneRequestResponse.data
           };
         }
@@ -206,7 +231,7 @@ export class DataPlaneService {
   }
 
   async startTransfer(dataPlaneTransfer: DataPlaneTransferDto, transferStartMessage: TransferStartMessage): Promise<void> {
-    const dataPlane = await this.getDataPlane(dataPlaneTransfer.dataPlaneIdentifier);
+    const dataPlane = await this.getDataPlaneDetails(dataPlaneTransfer.dataPlaneIdentifier);
     if (dataPlane === undefined) {
       throw Error(`Data plane with identifier ${dataPlaneTransfer.dataPlaneIdentifier} not found`);
     }
@@ -222,7 +247,7 @@ export class DataPlaneService {
     }
   }
   async completeTransfer(dataPlaneTransfer: DataPlaneTransferDto, transferCompletionMessage: TransferCompletionMessage): Promise<void> {
-    const dataPlane = await this.getDataPlane(dataPlaneTransfer.dataPlaneIdentifier);
+    const dataPlane = await this.getDataPlaneDetails(dataPlaneTransfer.dataPlaneIdentifier);
     if (dataPlane === undefined) {
       throw Error(`Data plane with identifier ${dataPlaneTransfer.dataPlaneIdentifier} not found`);
     }
@@ -238,7 +263,7 @@ export class DataPlaneService {
     }
   }
   async terminateTransfer(dataPlaneTransfer: DataPlaneTransferDto, transferTerminationMessage: TransferTerminationMessage): Promise<void> {
-    const dataPlane = await this.getDataPlane(dataPlaneTransfer.dataPlaneIdentifier);
+    const dataPlane = await this.getDataPlaneDetails(dataPlaneTransfer.dataPlaneIdentifier);
     if (dataPlane === undefined) {
       throw Error(`Data plane with identifier ${dataPlaneTransfer.dataPlaneIdentifier} not found`);
     }
@@ -254,7 +279,7 @@ export class DataPlaneService {
     }
   }
   async suspendTransfer(dataPlaneTransfer: DataPlaneTransferDto, transferSuspensionMessage: TransferSuspensionMessage): Promise<void> {
-    const dataPlane = await this.getDataPlane(dataPlaneTransfer.dataPlaneIdentifier);
+    const dataPlane = await this.getDataPlaneDetails(dataPlaneTransfer.dataPlaneIdentifier);
     if (dataPlane === undefined) {
       throw Error(`Data plane with identifier ${dataPlaneTransfer.dataPlaneIdentifier} not found`);
     }
@@ -272,13 +297,29 @@ export class DataPlaneService {
 
   @Interval("catalogPull", DataPlaneService.pullInterval)
   async pullCatalogs() {
-    const dataPlanePromises = this.dataPlanes.filter(dataPlane => dataPlane.details.catalogSynchronization === "pull").map(dataPlane => this.pullCatalog(dataPlane));
+    const detailsrepo = await this.dataPlaneStatusRepository.
+    createQueryBuilder()
+    .leftJoinAndSelect(
+      "dataplanedetails", 
+      "details", 
+      "details.identifier = detaplanedetails.identifier")
+      .where({"details.catalogSynchronization":"pull"})
+      .getMany()
+    const dataPlanePromises = detailsrepo.map(dataPlane => this.pullCatalog(dataPlane));
     await Promise.all(dataPlanePromises);
   }
   
   @Interval("healthCheck", DataPlaneService.pullInterval)
   async healthChecks() {
-    const dataPlanePromises = this.dataPlanes.filter(dataPlane => dataPlane.details.catalogSynchronization === "push").map(dataPlane => this.healthCheck(dataPlane));
+    const detailsrepo = await this.dataPlaneStatusRepository.
+    createQueryBuilder()
+    .leftJoinAndSelect(
+      "dataplanedetails", 
+      "details", 
+      "details.identifier = detaplanedetails.identifier")
+      .where({"details.catalogSynchronization":"push"})
+      .getMany()
+    const dataPlanePromises = detailsrepo.map(dataPlane => this.healthCheck(dataPlane));
     await Promise.all(dataPlanePromises);
   }
 }

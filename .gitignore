@@ -43,3 +43,6 @@ yarn.lock
 iam/
 
 config.*.yaml
+
+#sqlite files
+*.sqlite

@@ -1,9 +1,19 @@
 import type { Config } from "@jest/types"
 
 const config: Config.InitialOptions = {
-  transform: { "^.+\\.ts?$": "ts-jest" },
+  transform: {
+    '^.+\\.tsx?$': [
+      'ts-jest',
+      {
+        useESM: true,
+      },
+    ],
+  },
   testEnvironment: "node",
   testRegex: "/.*\\.(test|spec)?\\.(ts|tsx)$",
-  moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"]
+  moduleNameMapper: {
+    '^(\\.{1,2}/.*)\\.js$': '$1',
+  },
+
 }
 export default config

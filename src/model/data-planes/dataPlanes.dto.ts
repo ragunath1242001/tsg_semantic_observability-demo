@@ -1,3 +1,4 @@
+import { Dataset } from "../dsp/catalog/catalog";
 
 export interface DataPlaneDetailsDto {
   identifier: string;
