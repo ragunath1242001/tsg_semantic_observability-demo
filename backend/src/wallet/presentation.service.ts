@@ -1,5 +1,5 @@
 import { Injectable, HttpStatus, Logger } from "@nestjs/common";
-import { plainToClass } from "class-transformer";
+import { plainToInstance } from "class-transformer";
 import { SignJWT, importJWK, decodeJwt, jwtVerify, compactVerify } from "jose";
 import { VerifiablePresentationJsonLd, VerifiablePresentation, VerifiableCredential, CredentialSubject, VerifiablePresentationJwt, PresentationValidation } from "../model/credentials.dto.js";
 import { AppError } from "../utils/error.js";
@@ -33,7 +33,7 @@ export class PresentationService {
       ],
     }
     
-    return plainToClass(VerifiablePresentationJsonLd, {vp: verifiablePresentation})
+    return plainToInstance(VerifiablePresentationJsonLd, {vp: verifiablePresentation})
   }
 
   async createVerifiablePresentationJwt(credentialId: string, audience: string, unwrap: boolean): Promise<VerifiablePresentationJwt> {
@@ -64,12 +64,12 @@ export class PresentationService {
       .setExpirationTime('24h')
       .setJti(crypto.randomUUID())
       .sign(await importJWK(key.privateKey))
-    return plainToClass(VerifiablePresentationJwt, {vp: jwt})
+    return plainToInstance(VerifiablePresentationJwt, {vp: jwt})
   }
 
   async validatePresentation(vpJwt: VerifiablePresentationJwt, audience?: string): Promise<PresentationValidation> {
     const jwtPayload = decodeJwt(vpJwt.vp);
-    const vp = plainToClass(VerifiablePresentation, jwtPayload.vp)
+    const vp = plainToInstance(VerifiablePresentation, jwtPayload.vp)
     const resolvedDid = await this.didResolver.resolve(jwtPayload.iss!)
 
     let validateJWTSignature = false;

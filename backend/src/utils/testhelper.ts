@@ -20,6 +20,7 @@ export class TypeOrmTestHelper {
         this.testdb = new Database(':memory:');
     }
 
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
     module(entities: any[]) {
       return TypeOrmModule.forRoot({
         type: 'sqlite',

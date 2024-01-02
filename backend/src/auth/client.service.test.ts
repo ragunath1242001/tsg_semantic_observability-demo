@@ -1,5 +1,5 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { plainToClass } from "class-transformer";
+import { plainToInstance } from "class-transformer";
 import { RootConfig } from "../config.js";
 import { ClientsService } from "./client.service.js";
 import { TypeOrmTestHelper } from "../utils/testhelper.js";
@@ -19,7 +19,7 @@ describe("Client Service", () => {
   let clientsService: ClientsService
   beforeAll(async () => {
     await TypeOrmTestHelper.instance.setupTestDB();
-    const config = plainToClass(RootConfig, {
+    const config = plainToInstance(RootConfig, {
       mail: {
         smtp: {
           host: "localhost",

@@ -11,7 +11,7 @@ import { Repository } from "typeorm";
 import { DidService } from "./did.service.js";
 import { KeyService } from "./keys.service.js";
 import { ComplianceRequest, LegalRegistrationNumberRequest } from "../model/gaiax.dto.js";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import { toArray } from "../utils/unions.js";
 
 export function signingAlgorithm(type: 'EdDSA' | 'ES384' | 'X509'): string {
@@ -30,30 +30,31 @@ export class CredentialsService {
     private readonly didService: DidService,
     private readonly keyService: KeyService,
   ) {
-    this.init();
+    this.initialized = this.init();
   }
   private readonly logger = new Logger(this.constructor.name);
+  initialized: Promise<boolean>
   
   async init() {
     this.logger.log('Initializing CredentialService');
     await Promise.all(this.config.initCredentials.map(c => this.insertIfNotExists(c)));
+    return true;
   }
 
-  private async insertIfNotExists(initCredentialConfig: InitCredentialConfig, retry = 0): Promise<Credentials> {
+  private async insertIfNotExists(initCredentialConfig: InitCredentialConfig, retry = 0): Promise<void> {
     try {
       const existing = await this.credentialRepository.findOneBy({id: initCredentialConfig.id});
       if (!existing) {
-        this.logger.log(`Creating initial key ${initCredentialConfig.id}`);
-        return await this.selfIssueCredential(initCredentialConfig, initCredentialConfig.credentialSubject.id);
+        this.logger.log(`Creating initial credential ${initCredentialConfig.id}`);
+        await this.selfIssueCredential(initCredentialConfig, initCredentialConfig.credentialSubject.id);
       } else {
-        this.logger.log(`Using existing initial key ${initCredentialConfig.id}`);
-        return existing;
+        this.logger.log(`Using existing initial credential ${initCredentialConfig.id}`);
       }
     } catch (err) {
       if (retry < 5) {
         this.logger.warn(`Retrying creating credential ${initCredentialConfig.id}`);
         await new Promise(f => setTimeout(f, 10000));
-        return await this.insertIfNotExists(initCredentialConfig, retry++);
+        await this.insertIfNotExists(initCredentialConfig, retry++);
       } else {
         this.logger.error(`Could not create credential ${initCredentialConfig.id}: ${err}`);
         throw err
@@ -128,7 +129,8 @@ export class CredentialsService {
     const issuanceDate = new Date();
     const expirationDate = new Date();
     expirationDate.setMonth(expirationDate.getMonth()+3);
-    const credentialId = (targetDid) ? `${targetDid}#${credentialConfig.id}` : `${await this.didService.getDidId()}#${credentialConfig.id}` ;
+    const target = (targetDid) ? targetDid : await this.didService.getDidId();
+    const credentialId = (credentialConfig.id.startsWith(target)) ? credentialConfig.id : `${target}#${credentialConfig.id}` ;
     const credential: Credential<CredentialSubject> = {
       '@context': ["https://www.w3.org/2018/credentials/v1", "https://w3c.github.io/vc-jws-2020/contexts/v1/"].concat(credentialConfig.context),
       type: ['VerifiableCredential'].concat(credentialConfig.type),
