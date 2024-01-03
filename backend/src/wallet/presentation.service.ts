@@ -1,8 +1,6 @@
-import { Injectable, HttpStatus, Logger } from "@nestjs/common";
 import { plainToInstance } from "class-transformer";
 import { SignJWT, importJWK, decodeJwt, jwtVerify, compactVerify } from "jose";
 import { VerifiablePresentationJsonLd, VerifiablePresentation, VerifiableCredential, CredentialSubject, VerifiablePresentationJwt, PresentationValidation } from "../model/credentials.dto.js";
-import { AppError } from "../utils/error.js";
 import jsonld from "jsonld";
 import crypto from "crypto";
 import { CredentialsService, signingAlgorithm } from "./credentials.service.js";
@@ -10,6 +8,8 @@ import { KeyService } from "./keys.service.js";
 import { DIDResolver } from "./didResolver.service.js";
 import { RootConfig } from "../config.js";
 import { DidService } from "./did.service.js";
+import { Injectable, Logger } from "@nestjs/common";
+import { toArray } from "../utils/unions.js";
 
 @Injectable()
 export class PresentationService {
@@ -27,7 +27,7 @@ export class PresentationService {
     const verifiablePresentation: VerifiablePresentation<VerifiableCredential<CredentialSubject>> = {
       '@context': ['https://www.w3.org/2018/credentials/v1', "https://w3c.github.io/vc-jws-2020/contexts/v1/"],
       type: ['VerifiablePresentation'],
-      id: `${this.didService.getDidId()}#${crypto.randomUUID()}`,
+      id: `${await this.didService.getDidId()}#${crypto.randomUUID()}`,
       verifiableCredential: (unwrap) ? credential.credential : [
         credential.credential
       ],
@@ -38,14 +38,8 @@ export class PresentationService {
 
   async createVerifiablePresentationJwt(credentialId: string, audience: string, unwrap: boolean): Promise<VerifiablePresentationJwt> {
     const credential = await this.credentialsService.getCredential(credentialId);
-    if (!credential) {
-      throw new AppError(`Credential ${credentialId} can't be found`, HttpStatus.NOT_FOUND);
-    }
     const keyId = credential.credential.proof.verificationMethod.split('#').slice(-1)[0];
     const key = await this.keyService.getKey(keyId);
-    if (!key) {
-      throw new AppError(`Key material with id ${keyId} for credential ${credential.credential.id} can't be loaded`, HttpStatus.INTERNAL_SERVER_ERROR)
-    }
     const verifiablePresentation: VerifiablePresentation<VerifiableCredential<CredentialSubject>> = {
       '@context': ['https://www.w3.org/2018/credentials/v1', "https://w3c.github.io/vc-jws-2020/contexts/v1/"],
       type: ['VerifiablePresentation'],
@@ -54,7 +48,7 @@ export class PresentationService {
         credential.credential
       ],
     }
-    const issuer = (credential.credential.credentialSubject instanceof Array) ? credential.credential.credentialSubject[0].id : credential.credential.credentialSubject.id ;
+    const issuer = toArray(credential.credential.credentialSubject)[0].id;
     const jwt = await new SignJWT({vp: verifiablePresentation})
       .setProtectedHeader({alg: signingAlgorithm(key.type)})
       .setIssuedAt()
@@ -91,13 +85,7 @@ export class PresentationService {
     const validateExpiryDate: Array<boolean | "undefined"> = []
     const validateCredentials: boolean[] = [];
     const validateTrustAnchors: boolean[] = [];
-    let credentials: VerifiableCredential<CredentialSubject>[]
-    if (vp.verifiableCredential instanceof Array) {
-      credentials = vp.verifiableCredential;
-    } else {
-      credentials = [vp.verifiableCredential]
-    }
-    for (const credential of credentials) {
+    for (const credential of toArray(vp.verifiableCredential)) {
       try {
         const validExpirationDate = (credential.expirationDate) ? new Date(credential.expirationDate).getTime() > new Date().getTime() : "undefined";
         validateExpiryDate.push(validExpirationDate);

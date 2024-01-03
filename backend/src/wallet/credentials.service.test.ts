@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CredentialsService } from "./credentials.service.js";
 import { plainToInstance } from 'class-transformer';
-import { RootConfig } from '../config.js';
+import { InitCredentialConfig, RootConfig } from '../config.js';
 import { TypeOrmTestHelper } from '../utils/testhelper.js';
 import { Credentials, DIDDocuments, KeyMaterials } from '../model/credentials.dao.js';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -181,6 +181,26 @@ describe("Credentials Service", () => {
       expect(credential).toBeDefined();
       expect(credential.id).toBe(`${didId}#LRN`)
       expect(credential.credential.issuer).toBe('did:web:registration.lab.gaia-x.eu:development');
+
+      await expect(credentialsService.requestLegalRegistrationNumberCredential({
+        vcId: 'LRN',
+      } as LegalRegistrationNumberRequest, 'did:web:localhost')).rejects.toThrow("Can't request credential with these identifiers")
+      await expect(credentialsService.requestLegalRegistrationNumberCredential({
+        vcId: 'did:web:localhost#LRN',
+        credentialSubject: {
+          id: 'did:web:external.com'
+        }
+      } as LegalRegistrationNumberRequest, 'did:web:localhost')).rejects.toThrow("Can't request credential with these identifiers")
+      await expect(credentialsService.requestLegalRegistrationNumberCredential({
+        vcId: `${didId}#LRN`,
+        clearingHouse: 'localhost:1',
+        credentialSubject: {
+          '@context': ['https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/participant'],
+          'type': 'gx:legalRegistrationNumber',
+          id: didId,
+          'gx:vatID': 'NL000099998B57'
+        }
+      }, undefined)).rejects.toThrow('Error in requesting legal registration number credential')
     })
     it("Request Gaia Compliance", async () => {
       const credential = await credentialsService.requestComplianceCredential(plainToInstance(ComplianceRequest ,{
@@ -191,6 +211,15 @@ describe("Credentials Service", () => {
       expect(credential).toBeDefined();
       expect(credential.id).toBe(`${didId}#LRN`)
       expect(credential.credential.issuer).toBe('did:web:compliance.lab.gaia-x.eu:development');
+
+      await expect(credentialsService.requestComplianceCredential({
+        vcId: 'Compliance'
+      } as ComplianceRequest, 'did:web:localhost')).rejects.toThrow("Can't request credential with these identifiers")
+      await expect(credentialsService.requestComplianceCredential({
+        vcId: `${didId}#LRN`,
+        clearingHouse: 'localhost:1',
+        credentials: []
+      } as ComplianceRequest, 'did:web:localhost')).rejects.toThrow("Error in requesting compliance credential")
     })
     it("Import credential", async () => {
       const testCredential = await credentialsService.getCredential(`${didId}#test-credential`);
@@ -203,20 +232,35 @@ describe("Credentials Service", () => {
 
       expect(importedCredential).toBeDefined();
       expect(importedCredential.selfIssued).toBe(false);
-      expect(importedCredential.credential.issuer).toBe('did:web:external-issuer.com')
+      expect(importedCredential.credential.issuer).toBe('did:web:external-issuer.com');
+
+      await expect(credentialsService.importCredential({
+        ...testCredential.credential,
+        id: `imported-credential`,
+        issuer: 'did:web:external-issuer.com'
+      })).rejects.toThrow('Imported credentials must be have an ID that starts with a DID appended with # and a credential ID')
     });
     it("Update credential", async () => {
-      const credential = await credentialsService.updateCredential(`${didId}#test-credential`,{
+      const credential = await credentialsService.updateCredential(`${didId}#test-credential`,plainToInstance(InitCredentialConfig, {
         context: [],
         type: [],
         id: 'test-credential',
         credentialSubject: {
           id: didId,
-          extraProperty: 'test'
+          'https://example.com/extraProperty': 'test'
         }
-      });
+      }));
       expect(credential).toBeDefined();
-      expect(toArray((await credentialsService.getCredential(`${didId}#test-credential`)).credential.credentialSubject)[0]['extraProperty']).toBe('test')
+      expect(toArray((await credentialsService.getCredential(`${didId}#test-credential`)).credential.credentialSubject)[0]['https://example.com/extraProperty']).toBe('test')
+
+
+      const testCredential = await credentialsService.getCredential(`${didId}#test-credential`);
+      const updateImportedCredential = await credentialsService.updateCredential(`${didId}#imported-credential`,{
+        ...testCredential.credential,
+        id: `${didId}#imported-credential`,
+        issuer: 'did:web:external-issuer.com'
+      })
+
     });
     it("Delete credential", async () => {
       await credentialsService.deleteCredential(`${didId}#test-credential`);

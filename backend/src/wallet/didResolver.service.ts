@@ -1,7 +1,7 @@
-import { HttpStatus, Injectable } from "@nestjs/common";
 import axios from "axios";
 import { DIDDocument } from "did-resolver";
 import { AppError } from "../utils/error.js";
+import { HttpStatus, Injectable } from "@nestjs/common";
 
 @Injectable()
 export class DIDResolver {

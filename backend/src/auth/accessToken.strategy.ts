@@ -16,6 +16,6 @@ export class AccessTokenStrategy extends PassportStrategy(Strategy, 'jwt') {
 
   /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   async validate(payload: any) {
-    return this.authService.validateToken(payload.sub);
+    return this.authService.getMinimalClient(payload.sub);
   }
 }

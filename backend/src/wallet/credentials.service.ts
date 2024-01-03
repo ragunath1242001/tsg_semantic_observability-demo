@@ -4,7 +4,7 @@ import { CompactSign, importJWK } from "jose";
 import { Credential, CredentialSubject, Signature, VerifiableCredential, VerifiablePresentation } from "../model/credentials.dto.js";
 import jsonld from "jsonld";
 import crypto from "crypto";
-import { AppError } from "../utils/error.js";
+import { AppError, parseNetworkError } from "../utils/error.js";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Credentials, KeyMaterials } from "../model/credentials.dao.js";
 import { Repository } from "typeorm";
@@ -33,7 +33,7 @@ export class CredentialsService {
     this.initialized = this.init();
   }
   private readonly logger = new Logger(this.constructor.name);
-  initialized: Promise<boolean>
+  initialized: Promise<boolean>;
   
   async init() {
     this.logger.log('Initializing CredentialService');
@@ -100,10 +100,7 @@ export class CredentialsService {
   }
 
   async updateCredential(credentialId: string, credential: InitCredentialConfig | VerifiableCredential<CredentialSubject>, targetDid?: string): Promise<Credentials> {
-    const existing = await this.credentialRepository.findOneBy({id:  credentialId, targetDid: targetDid});
-    if (existing === null) {
-      throw new AppError(`Credential with identifier ${credentialId} can't be found`, HttpStatus.NOT_FOUND);
-    }
+    await this.getCredential(credentialId, targetDid);
     if (credential instanceof InitCredentialConfig) {
       return await this.selfIssueCredential(credential, targetDid);
     } else {
@@ -195,18 +192,7 @@ export class CredentialsService {
         credential: response.data
       })
     } catch (err) {
-      if (axios.isAxiosError(err)) {
-        if (err.response) {
-          throw new AppError({
-            message: `Error in requesting legal registration number credential: ${err}`,
-            code: err.response.status,
-            body: err.response.data
-          }, HttpStatus.BAD_REQUEST);
-        } else {
-          throw new AppError(`Error in requesting legal registration number credential: ${err}`, HttpStatus.BAD_REQUEST);
-        }
-      }
-      throw new AppError(`Unexpected error in requesting legal registration number credential: ${err}`, HttpStatus.BAD_REQUEST);
+      throw parseNetworkError(err, 'requesting legal registration number credential');
     }
   }
 
@@ -233,18 +219,7 @@ export class CredentialsService {
         credential: response.data
       })
     } catch (err) {
-      if (axios.isAxiosError(err)) {
-        if (err.response) {
-          throw new AppError({
-            message: `Error in requesting compliance credential: ${err}`,
-            code: err.response.status,
-            body: err.response.data
-          }, HttpStatus.BAD_REQUEST);
-        } else {
-          throw new AppError(`Error in requesting compliance credential: ${err}`, HttpStatus.BAD_REQUEST);
-        }
-      }
-      throw new AppError(`Unexpected error in requesting compliance credential: ${err}`, HttpStatus.BAD_REQUEST);
+      throw parseNetworkError(err, 'requesting compliance credential');
     }
   }
 }

@@ -9,7 +9,7 @@ import { Clients } from "../model/clients.dao.js";
 import { AppError } from "../utils/error.js";
 import { MailService } from "./mail.service.js";
 import crypto from "crypto";
-import { RootConfig } from "../config.js";
+import { InitClientConfig, RootConfig } from "../config.js";
 
 @Injectable()
 export class ClientsService {
@@ -20,12 +20,13 @@ export class ClientsService {
     private readonly config: RootConfig,
   ) {
     this.didId = `did:web:${this.config.server.publicDomain.replace(':','%3A')}`;
-    this.init();
+    this.initialized = this.init(config.initClients);
   }
   private readonly didId: string;
+  initialized: Promise<boolean>;
 
-  private async init() {
-    if (this.config.initClients.length === 0 && (await this.clientsRepository.find({})).length === 0) {
+  async init(initClients: InitClientConfig[]) {
+    if (initClients.length === 0 && (await this.clientsRepository.find({})).length === 0) {
       const secret = crypto.randomBytes(32).toString('hex')
       this.upsertClient({
         clientId: 'admin',
@@ -41,7 +42,7 @@ export class ClientsService {
       this.logger.warn(`  clientSecret: ${secret}`)
       this.logger.warn('Please update your configuration for production environments with predefined client(s)');
     } else {
-      for (const initClient of this.config.initClients) {
+      for (const initClient of initClients) {
         let secret: string;
         if (initClient.secret.match(/^\$2[aby]?\$\d{1,2}\$[./A-Za-z0-9]{53}$/g)) {
           secret = initClient.secret;
@@ -49,7 +50,7 @@ export class ClientsService {
           secret = bcrypt.hashSync(initClient.secret, 10)
           this.logger.warn(`Secret for client ${initClient.id} configured in plain text`);
         }
-        this.upsertClient({
+        await this.upsertClient({
           clientId: initClient.id,
           clientSecret: secret,
           email: initClient.email,
@@ -59,6 +60,7 @@ export class ClientsService {
         });
       }
     }
+    return true;
   }
 
   private async upsertClient(clientInfo: DeepPartial<Clients>) {
@@ -125,9 +127,6 @@ export class ClientsService {
       throw new AppError(`This server does not support resetting of passwords`, HttpStatus.NOT_IMPLEMENTED);
     }
     const client = await this.getClient(clientId);
-    if (!client) {
-      throw new AppError(`Client with id ${clientId} not found`, HttpStatus.NOT_FOUND);
-    }
     client.verificationCode = crypto.randomBytes(32).toString('hex');
     client.verificationExpiration = new Date(new Date().getTime() + 60 * 60 * 1000);
 
@@ -275,9 +274,8 @@ export class ClientsService {
     }
   }
 
-  async validateToken(clientId: string): Promise<ClientInfo | null> {
+  async getMinimalClient(clientId: string): Promise<ClientInfo | null> {
     const client = await this.getClient(clientId, true);
-    if (!client) return null;
     return {
       sub: client.clientId,
       email: client.email,
