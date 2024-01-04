@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put, 
 import { CredentialsService } from "../wallet/credentials.service.js";
 import { InitCredentialConfig, JsonLdContextConfig, RootConfig, TrustAnchorConfig } from "../config.js";
 import { Credentials } from "../model/credentials.dao.js";
-import { CredentialSubject, VerifiableCredential } from "../model/credentials.dto.js";
+import { CredentialSubject, VerifiableCredential } from "@tsg-dsp/common";
 import { Client } from "../auth/roles.guard.js";
 import { AppError } from "../utils/error.js";
 import { ClientInfo, AppRole } from "../model/clients.dto.js";

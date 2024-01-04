@@ -70,9 +70,10 @@
 import store, { axiosInstance } from '@/store';
 import Vue from 'vue';
 import CodeHighlight from '../components/CodeHighlight.vue';
-import { CredentialConfig, CredentialSubject, Credentials, VerifiableCredential } from '../model/credentials';
+import { CredentialConfig, Credentials } from '../model/credentials';
 import axios from 'axios';
 import { AppRole } from '@/model/clients';
+import { CredentialSubject, VerifiableCredential } from '@tsg-dsp/common';
 
 
 export default Vue.extend({

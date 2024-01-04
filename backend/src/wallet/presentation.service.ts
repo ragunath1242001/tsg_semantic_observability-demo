@@ -1,6 +1,6 @@
 import { plainToInstance } from "class-transformer";
 import { SignJWT, importJWK, decodeJwt, jwtVerify, compactVerify } from "jose";
-import { VerifiablePresentationJsonLd, VerifiablePresentation, VerifiableCredential, CredentialSubject, VerifiablePresentationJwt, PresentationValidation } from "../model/credentials.dto.js";
+import { VerifiablePresentationJsonLd, VerifiablePresentation, VerifiableCredential, CredentialSubject, VerifiablePresentationJwt, PresentationValidation } from "@tsg-dsp/common";
 import jsonld from "jsonld";
 import crypto from "crypto";
 import { CredentialsService, signingAlgorithm } from "./credentials.service.js";

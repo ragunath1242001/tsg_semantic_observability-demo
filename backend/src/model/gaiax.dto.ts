@@ -1,4 +1,4 @@
-import { CredentialSubject, VerifiableCredential } from "./credentials.dto.js";
+import { CredentialSubject, VerifiableCredential } from "@tsg-dsp/common";
 import { Type } from "class-transformer";
 import { IsDefined, IsString, ValidateNested } from "class-validator";
 

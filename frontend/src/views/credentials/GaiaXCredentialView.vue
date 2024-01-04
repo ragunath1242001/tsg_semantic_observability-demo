@@ -110,8 +110,9 @@
 <script lang="ts">
 import store, { axiosInstance } from '../../store';
 import Vue from 'vue';
-import { CredentialSubject, Credentials, VerifiableCredential } from '../../model/credentials';
+import { Credentials } from '../../model/credentials';
 import { AppRole } from '../../model/clients';
+import { VerifiableCredential, CredentialSubject } from '@tsg-dsp/common';
 
 export default Vue.extend({
   name: 'GaiaXCredentialsView',

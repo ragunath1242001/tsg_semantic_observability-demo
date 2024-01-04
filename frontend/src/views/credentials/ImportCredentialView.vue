@@ -99,7 +99,7 @@ export default Vue.extend({
         return null;
       }
     },
-    async importCredential(validate: boolean = true) {
+    async importCredential(validate = true) {
       let credential;
       if (validate) {
         credential = this.validateCredential(true);

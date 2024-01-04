@@ -1,7 +1,7 @@
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { InitCredentialConfig, RootConfig } from "../config.js";
 import { CompactSign, importJWK } from "jose";
-import { Credential, CredentialSubject, Signature, VerifiableCredential, VerifiablePresentation } from "../model/credentials.dto.js";
+import { Credential, CredentialSubject, Signature, VerifiableCredential, VerifiablePresentation } from "@tsg-dsp/common";
 import jsonld from "jsonld";
 import crypto from "crypto";
 import { AppError, parseNetworkError } from "../utils/error.js";

@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@mdi/font": "^7.2.96",
+    "@tsg-dsp/common": "^0.0.1",
     "@types/jsonwebtoken": "^9.0.2",
     "ajv": "^8.12.0",
     "axios": "^1.4.0",

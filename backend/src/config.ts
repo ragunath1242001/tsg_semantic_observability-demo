@@ -2,7 +2,7 @@ import { Allow, IsBoolean, IsDefined, IsEmail, IsIn, IsNumber, IsObject, IsOptio
 import { Transform, TransformFnParams, Type } from "class-transformer";
 import fs from "fs";
 import { Logger } from "@nestjs/common";
-import { CredentialSubject } from "./model/credentials.dto.js";
+import { CredentialSubject } from "@tsg-dsp/common";
 import { AppRole } from "./model/clients.dto.js";
 
 function fileTransformer(params: TransformFnParams): string | undefined {

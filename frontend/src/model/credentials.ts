@@ -1,31 +1,4 @@
-
-export interface Signature {
-  type: string;
-  created: string;
-  proofPurpose: string;
-  jws: string;
-  verificationMethod: string;
-}
-
-export interface CredentialSubject {
-  id: string
-  type?: string[]
-  [key: string]: any
-}
-
-export interface Credential<T extends CredentialSubject> {
-  '@context': string[]
-  type: string[]
-  id?: string
-  credentialSubject: T | T[]
-  issuer: string
-  expirationDate?: string
-  issuanceDate: string
-}
-
-export interface VerifiableCredential<T extends CredentialSubject> extends Credential<T> {
-  proof: Signature;
-}
+import { CredentialSubject, VerifiableCredential } from "@tsg-dsp/common";
 
 export interface Credentials {
   id: string;
