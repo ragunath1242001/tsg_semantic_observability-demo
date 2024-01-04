@@ -182,7 +182,35 @@ export class CatalogService {
     if (!dataset) {
       return undefined;
     } else {
-      return new Dataset(new Resource(dataset._resource!))
+      const resource = dataset._resource!
+      return new Dataset({
+        id: dataset.id,
+        contactPoint: resource.contactPoint,
+        keyword: resource.keyword,
+        landingPage: resource.landingPage,
+        theme: resource.theme,
+        conformsTo: resource.conformsTo,
+        creator: resource.creator,
+        description: resource.description,
+        identifier: resource.identifier,
+        isReferencedBy: resource.isReferencedBy,
+        issued: resource.issued,
+        language: resource.language,
+        license: resource.license,
+        modified: resource.modified,
+        publisher: resource.publisher,
+        relation: resource.relation,
+        title: resource.title,
+        type: resource.type,
+        hasPolicy: resource.hasPolicy,
+        distribution: dataset.distribution,
+        spatialResolutionInMeters: dataset.spatialResolutionInMeters,
+        temporalResolution: dataset.temporalResolution,
+        accrualPeriodicity: dataset.accrualPeriodicity,
+        spatial: dataset.spatial,
+        temporal: dataset.temporal,
+        wasGeneratedBy: dataset.wasGeneratedBy,
+      })
     }
   }
 }

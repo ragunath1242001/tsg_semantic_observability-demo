@@ -2,12 +2,15 @@ import { IsDateString, IsNotEmpty, IsOptional, IsString, ValidateIf, ValidateNes
 import { Namespace, Serializable } from "../../decorators";
 import {
   IReference,
+  Multilanguage,
   Reference,
   SerializableClass,
   Value,
 } from "../common";
 import { Action, AgreementDto, ConstraintDto, DutyDto, OfferDto, PermissionDto, PolicyDto, ProhibitionDto, LeftOperand, Operator } from "./negotiation.dto";
 import { ContextDto } from "../common.dto";
+import { ContractAgreementVerificationMessage } from "./messages";
+import { ContractNegotiationState } from "./messages.dto";
 
 export interface IConstraint {
   leftOperand: LeftOperand;
@@ -222,5 +225,90 @@ export class Agreement extends Policy<AgreementDto> {
     this.timestamp = value.timestamp;
     this.consumerId = value.consumerId;
     this.providerId = value.providerId;
+  }
+}
+
+export type NegotiationRole = "provider" | "consumer";
+
+export interface INegotiationProcessEvent {
+  time: Date,
+  state: ContractNegotiationState,
+  localMessage?: string,
+  code?: string,
+  reason?: Multilanguage[],
+  agreementMessage?: string,
+  verification?: ContractAgreementVerificationMessage
+  type: "local" | "remote"
+}
+
+export class NegotiationProcessEvent {
+  time: Date
+  state: ContractNegotiationState
+  localMessage?: string
+  code?: string
+  reason?: Multilanguage[]
+  agreementMessage?: string
+  verification?: ContractAgreementVerificationMessage
+  type: "local" | "remote"
+
+  constructor (value: INegotiationProcessEvent) {
+    this.time = value.time
+    this.state = value.state
+    this.localMessage = value.localMessage
+    this.code = value.code
+    this.reason = value.reason
+    this.agreementMessage = value.agreementMessage
+    this.verification = value.verification
+    this.type = value.type
+  }
+}
+
+export interface INegotiationStatus {
+  localId: string,
+  remoteId: string,
+  remoteParty: string,
+  role: NegotiationRole,
+  remoteAddress: string,
+  state: ContractNegotiationState,
+  dataSet: string
+}
+
+export interface INegotiationDetail extends INegotiationStatus {
+  offer?: Offer,
+  agreement?: Agreement,
+  events: Array<NegotiationProcessEvent>,
+}
+
+
+export class NegotiationStatus {
+  localId: string
+  remoteId: string
+  remoteParty: string
+  role: NegotiationRole
+  remoteAddress: string
+  state: ContractNegotiationState
+  dataSet: string
+
+  constructor (value: INegotiationStatus) {
+    this.localId = value.localId 
+    this.remoteId = value.remoteId 
+    this.remoteParty = value.remoteParty 
+    this.role = value.role 
+    this.remoteAddress = value.remoteAddress 
+    this.state = value.state 
+    this.dataSet = value.dataSet 
+  }
+}
+
+export class NegotiationDetail extends NegotiationStatus {
+  offer?: Offer
+  agreement?: Agreement
+  events: Array<NegotiationProcessEvent>
+
+  constructor(value: INegotiationDetail) {
+    super(value);
+    this.offer = value.offer
+    this.agreement = value.agreement
+    this.events = value.events
   }
 }

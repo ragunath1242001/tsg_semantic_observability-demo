@@ -1,7 +1,7 @@
-import { BeforeInsert, ChildEntity, Column, Entity, Generated, JoinColumn, JoinTable, ManyToMany, ManyToOne, ObjectType, OneToMany, OneToOne, Relation, TableInheritance } from "typeorm";
+import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne, Relation } from "typeorm";
 import { MetaEntity, mapToInstances } from "../../common.dao";
 import { CatalogRecord, DataService, Dataset, Distribution, ICatalog, ICatalogRecord, IDataService, IDataset, IDistribution, IResource, Resource } from "./catalog";
-import { Reference, Multilanguage, Time, Decimal, Duration, SerializableClass } from "../common";
+import { Reference, Multilanguage, Time, Decimal, Duration } from "../common";
 import { Policy } from "../negotiation/negotiation";
 import { DatasetDto } from "./catalog.dto";
 

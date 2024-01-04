@@ -7,11 +7,12 @@
     "start": "npm run tsc && node ./build/app.js",
     "tsc": "tsc -p tsconfig.json",
     "lint": "eslint . --fix --ext .ts",
-    "test": "jest",
     "openapi": "npm run tsc && node ./build/swagger.js",
     "schema:dsp": "typescript-json-schema \"src/model/dsp/**/*.dto.ts\" \"*\" -o resources/schemas/dsp.schema.json",
     "schema:data-planes": "typescript-json-schema \"src/model/data-planes/**/*.dto.ts\" \"*\" -o resources/schemas/data-planes.schema.json",
-    "schema:all": "npm run schema:dsp && npm run schema:data-planes"
+    "schema:all": "npm run schema:dsp && npm run schema:data-planes",
+    "test": "jest",
+    "test:coverage": "jest --coverage --coverage-reporters text"
   },
   "dependencies": {
     "@nestjs/common": "^10.1.3",

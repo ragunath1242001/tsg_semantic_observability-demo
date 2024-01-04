@@ -1,5 +1,5 @@
 import { Column, Entity, JoinColumn, OneToOne } from "typeorm";
-import { MetaEntity, mapToInstances } from "../common.dao";
+import { MetaEntity } from "../common.dao";
 import { DatasetDao } from "../dsp/catalog/catalog.dao";
 import { Dataset } from "../dsp/catalog/catalog";
 import { IDataPlaneDetails, IDataPlaneStatus, HealthStatus, DataPlaneDetails } from "./dataPlanes";

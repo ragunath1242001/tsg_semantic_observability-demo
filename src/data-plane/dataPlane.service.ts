@@ -37,11 +37,11 @@ export class DataPlaneService {
   private static readonly pullInterval = 60000;
 
   async getDataPlane(identifier: string): Promise<DataPlaneStatus| undefined> {
-    const dataPlaneDetails = await this.dataPlaneStatusRepository.findOneBy({identifier: identifier});
-    if (!dataPlaneDetails) {
+    const dataPlane = await this.dataPlaneStatusRepository.findOneBy({identifier: identifier});
+    if (!dataPlane) {
       return undefined
     } else {
-      return new DataPlaneStatus(dataPlaneDetails)
+      return new DataPlaneStatus(dataPlane)
     }
   }
   async getDataPlaneDetails(identifier: string): Promise<DataPlaneDetails| undefined> {
