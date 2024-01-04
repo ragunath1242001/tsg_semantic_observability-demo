@@ -12,7 +12,7 @@ Additionally environment variables can be provided to override specific properti
 The primary configuration blocks of the wallet are:
 | Key | Required | Class | Description |
 | --- | --- | --- | --- |
-| `db` | Y | `SQLiteConfig | PostgresConfig` | Database configuration for either SQLite or Postgres |
+| `db` | Y | `SQLiteConfig \| PostgresConfig` | Database configuration for either SQLite or Postgres |
 | `server` | N | `ServerConfig` | Primary web server configuration and public available addresses |
 | `mail` | N | `MailConfig` | Mail configuration for user registration and password resetting |
 | `initClients` | N | `InitClientConfig[]` | Initial clients configured for the wallet, if none provided an administrative user is generated with credentials logged to standard out |

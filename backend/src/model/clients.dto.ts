@@ -20,7 +20,6 @@ export interface ClientInfo {
 }
 
 export interface ClientSignup {
-  clientId: string
   email: string
   secret: string
   didId: string

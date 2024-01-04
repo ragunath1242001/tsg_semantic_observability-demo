@@ -1,6 +1,6 @@
-import { IsDefined, IsString, MinLength, ValidateNested } from "class-validator";
 import { CredentialSubject, VerifiableCredential } from "./credentials.dto.js";
 import { Type } from "class-transformer";
+import { IsDefined, IsString, ValidateNested } from "class-validator";
 
 
 export class LegalRegistrationNumberRequest {

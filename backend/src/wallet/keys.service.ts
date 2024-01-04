@@ -15,16 +15,15 @@ export class KeyService {
     @InjectRepository(KeyMaterials) private readonly keyRepository: Repository<KeyMaterials>,
     private readonly didService: DidService
   ) {
-    this.init();
+    this.initialized = this.init();
   }
   private readonly logger = new Logger(this.constructor.name);
+  initialized: Promise<boolean>;
 
   async init() {
-    let keys = await this.keyRepository.find({});
-    if (keys.length === 0) {
-      keys = await Promise.all(this.config.initKeys.map(k => this.insertIfNotExists(k)));
-    }
+    const keys = await Promise.all(this.config.initKeys.map(k => this.insertIfNotExists(k)));
     await this.didService.createDidDocument(keys);
+    return true;
   }
 
   private async insertIfNotExists(initKeyConfig: InitKeyConfig): Promise<KeyMaterials> {
@@ -90,7 +89,6 @@ export class KeyService {
     this.logger.log(`Loading key material for key ${key.id}`);
     let privateKey: KeyLike;
     let publicKey: KeyLike;
-    const existing = await this.keyRepository.findOneBy({id: key.id});
     
     if (key.existingKey && key.existingCertificate) {
       this.logger.log(`Loading existing PKCS#8 key and X.509 certificate for ${key.id}`);
@@ -106,17 +104,12 @@ export class KeyService {
         publicKey: publicKeyJwk,
         caChain: key.existingCertificate
       })
-    } else if (existing) {
-      this.logger.log(`Loaded key ${existing.id} from repository`);
-      return existing;
     } else {
       this.logger.log(`Creating new keypair with ${key.type}`);
       const keypair = await generateKeyPair(key.type);
       privateKey = keypair.privateKey;
       publicKey = keypair.publicKey;
     }
-
-
 
     return await this.keyRepository.save({
       id: key.id,
