@@ -1,0 +1,44 @@
+{
+  "name": "@tsg-dsp/common",
+  "version": "0.0.1",
+  "description": "TSG Dataspace Protocol Common",
+  "author": "Maarten Kollenstart",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/tno-tsg/dsp/common.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "prepare": "install-peers",
+    "build": "tsup"
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "*.md"
+  ],
+  "peerDependencies": {
+    "class-transformer": "*",
+    "class-validator": "*",
+    "reflect-metadata": "^0.1.12"
+  },
+  "peerDependenciesMeta": {
+    "class-validator": {
+      "optional": true
+    },
+    "class-transformer": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "install-peers-cli": "^2.2.0",
+    "tslib": "^2.6.2",
+    "tsup": "^8.0.1",
+    "typescript": "^5.3.3"
+  }
+}
