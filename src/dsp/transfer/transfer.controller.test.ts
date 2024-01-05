@@ -3,7 +3,7 @@ import { TransferController } from "./transfer.controller";
 import { HttpStatus } from "@nestjs/common";
 import { TransferCompletionMessage, TransferProcess, TransferRequestMessage, TransferStartMessage, TransferSuspensionMessage, TransferTerminationMessage } from "../../model/dsp/transfer/messages";
 import { Multilanguage } from "../../model/dsp/common";
-import { rest } from "msw"; 
+import { HttpResponse, http } from "msw"; 
 import { SetupServer, setupServer } from "msw/node";
 import { DspClientService } from "../client/client.service";
 import { TransferState } from "../../model/dsp/transfer/messages.dto";
@@ -26,44 +26,44 @@ describe("TransferController", () => {
 
   beforeAll(async () => {
     server = setupServer(
-      rest.post("http://127.0.0.1/data-plane/transfer/request/consumer", (req, res, ctx) => {
-        return res(ctx.json({
+      http.post("http://127.0.0.1/data-plane/transfer/request/consumer", () => {
+        return HttpResponse.json({
           accepted: true,
           identifier: 'ABCDEFG',
           callbackAddress: "http://127.0.0.1/data-plane/transfer/callbacks/ABCDEFG"
-        }))
+        })
       }),
-      rest.post("http://127.0.0.1/data-plane/transfer/request/provider", (req, res, ctx) => {
-        return res(ctx.json({
+      http.post("http://127.0.0.1/data-plane/transfer/request/provider", () => {
+        return HttpResponse.json({
           accepted: true,
           identifier: 'ABCDEFG',
           callbackAddress: "http://127.0.0.1/data-plane/transfer/callbacks/ABCDEFG"
-        }))
+        })
       }),
-      rest.post("http://127.0.0.1/data-plane/transfer/ABCDEFG/:action", (req, res, ctx) => {
-        return res(ctx.json({
+      http.post("http://127.0.0.1/data-plane/transfer/ABCDEFG/:action", () => {
+        return HttpResponse.json({
           status: "OK"
-        }))
+        })
       }),
-      rest.get("http://127.0.0.1/data-plane/health", (req, res, ctx) => res()),
-      rest.get("http://127.0.0.1/data-plane/catalog", async (req, res, ctx) => res(ctx.json(await new Catalog({}).serialize()))),
-      rest.post("http://127.0.0.1/transfer/request", async (req, res, ctx) => {
-        return res(ctx.json(
+      http.get("http://127.0.0.1/data-plane/health", () => HttpResponse.text('')),
+      http.get("http://127.0.0.1/data-plane/catalog", async () => HttpResponse.json(await new Catalog({}))),
+      http.post("http://127.0.0.1/transfer/request", async () => {
+        return HttpResponse.json(
           await new TransferProcess({
             processId: 'urn:uuid:0cb31b6f-d38c-4e88-a329-4b9a2b2e0b61',
             transferState: TransferState.STARTED
           }).serialize()
-        ))
+        )
       }),
-      rest.post("http://127.0.0.1/transfer/callbacks/:id/:action", async (req, res, ctx) => {
-        return res(ctx.json({
+      http.post("http://127.0.0.1/transfer/callbacks/:id/:action", async () => {
+        return HttpResponse.json({
           status: 'OK'
-        }))
+        })
       }),
-      rest.post("http://127.0.0.1/transfer/:id/:action", async (req, res, ctx) => {
-        return res(ctx.json({
+      http.post("http://127.0.0.1/transfer/:id/:action", async () => {
+        return HttpResponse.json({
           status: 'OK'
-        }))
+        })
       })
     );
     

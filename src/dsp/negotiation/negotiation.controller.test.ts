@@ -7,7 +7,7 @@ import { ContractNegotiationState, NegotiationEvent, ProofTypes } from "../../mo
 import { Multilanguage } from "../../model/dsp/common";
 import { NegotiationService } from "./negotiation.service";
 import { DspClientService } from "../client/client.service";
-import { rest } from "msw"; 
+import { HttpResponse, http } from "msw"; 
 import { SetupServer, setupServer } from "msw/node";
 import { IamConfig, ServerConfig } from "../../config";
 import { plainToClass } from "class-transformer";
@@ -22,23 +22,23 @@ describe("NegotiationController", () => {
 
   beforeAll(async () => {
     server = setupServer(
-      rest.post("http://127.0.0.1/negotiation/callbacks/:id/:action", (req, res, ctx) => {
-        return res(ctx.json({
+      http.post("http://127.0.0.1/negotiation/callbacks/:id/:action", () => {
+        return HttpResponse.json({
           status: "OK"
-        }))
+        })
       }),
-      rest.post("http://127.0.0.1/negotiation/request", async (req, res, ctx) => {
-        return res(ctx.json(
+      http.post("http://127.0.0.1/negotiation/request", async () => {
+        return HttpResponse.json(
           await new ContractNegotiation({
             processId: 'urn:uuid:4486d6f5-aa10-45d3-b260-2f368dfca4e2',
             contractNegotiationState: ContractNegotiationState.REQUESTED
           }).serialize()
-        ))
+        )
       }),
-      rest.post("http://127.0.0.1/negotiation/:id/:action", (req, res, ctx) => {
-        return res(ctx.json({
+      http.post("http://127.0.0.1/negotiation/:id/:action", () => {
+        return HttpResponse.json({
           status: "OK"
-        }))
+        })
       }),
     );
     

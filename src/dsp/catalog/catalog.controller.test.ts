@@ -8,7 +8,7 @@ import { Catalog, DataService, Dataset, Distribution } from "../../model/dsp/cat
 import { Multilanguage } from "../../model/dsp/common";
 import { AuthService } from "../../auth/auth.service";
 import { AuthModule } from "../../auth/auth.module";
-import { IamConfig, RootConfig } from "../../config";
+import { IamConfig, InitCatalog, RootConfig, ServerConfig } from "../../config";
 import { plainToClass, plainToInstance } from "class-transformer";
 import { VerifiablePresentationGuard } from "../../auth/verifiablePresentation.guard";
 import { VerifiablePresentationStrategy } from "../../auth/verifiablePresentation.strategy";
@@ -17,10 +17,14 @@ import { ManagementStrategy } from "../../auth/management.strategy";
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { SetupServer } from "msw/lib/node";
 import { setupMockWalletServer, mockWalletConfig, sampleVpToken } from "../../auth/wallets/wallet.util.test";
+import { TypeOrmTestHelper } from "../../utils/testhelper";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { CatalogDao, CatalogRecordDao, DatasetDao, DataServiceDao, DistributionDao, ResourceDao } from "../../model/dsp/catalog/catalog.dao";
 
 
 const dataset = new Dataset({
   id: "urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0cea",
+  title: "Test HTTP Dataset",
   distribution: [
     new Distribution({
       id: "urn:uuid:06d7da99-68eb-4f9e-8cb6-b78666c46123",
@@ -57,16 +61,29 @@ const catalogWithDataset = new Catalog({
 describe("CatalogController", () => {
   let catalogController: CatalogController;
 
-  beforeEach(async () => {
-    const moduleRef: TestingModule = await Test.createTestingModule({
-      controllers: [CatalogController],
-      providers: [CatalogService],
-    }).compile();
+  beforeAll(async () => {
+    await TypeOrmTestHelper.instance.setupTestDB();
 
+    const moduleRef: TestingModule = await Test.createTestingModule({
+      imports: [
+          TypeOrmTestHelper.instance.module([CatalogDao, CatalogRecordDao, DatasetDao, DataServiceDao, DistributionDao, ResourceDao]),
+          TypeOrmModule.forFeature([CatalogDao, CatalogRecordDao, DatasetDao, DataServiceDao, DistributionDao, ResourceDao])
+      ],
+      controllers: [CatalogController],
+      providers: [
+        CatalogService,
+        {
+            provide: InitCatalog,
+            useValue: {}
+        },
+        {
+            provide: ServerConfig,
+            useValue: {}
+        }
+      ],
+    }).compile();
     catalogController = moduleRef.get(CatalogController);
     const catalogService = moduleRef.get(CatalogService);
-    catalogService.modifyCatalog(catalog)
-    catalogService.addDataset(dataset)
   });
 
   describe("/request", () => {
@@ -128,7 +145,7 @@ describe("Catalog Module", () => {
     .compile();
 
     const catalogService = moduleRef.get(CatalogService);
-    catalogService.modifyCatalog(catalog)
+    // catalogService.modifyCatalog(catalog)
     catalogService.addDataset(dataset)
     
     app = moduleRef.createNestApplication();
