@@ -49,13 +49,75 @@ export class ResourceDao extends MetaEntity implements IResource {
   hasPolicy?: Array<Policy>;
 }
 
+export abstract class ResourceChild extends MetaEntity {
+  _resource: ResourceDao | undefined;
+
+  get contactPoint() {
+    return this._resource?.contactPoint;
+  }
+  get keyword() {
+    return this._resource?.keyword;
+  }
+  get landingPage() {
+    return this._resource?.landingPage;
+  }
+  get theme() {
+    return this._resource?.theme;
+  }
+  get conformsTo() {
+    return this._resource?.conformsTo;
+  }
+  get creator() {
+    return this._resource?.creator;
+  }
+  get description() {
+    return this._resource?.description;
+  }
+  get identifier() {
+    return this._resource?.identifier;
+  }
+  get isReferencedBy() {
+    return this._resource?.isReferencedBy;
+  }
+  get issued() {
+    return this._resource?.issued;
+  }
+  get language() {
+    return this._resource?.language;
+  }
+  get license() {
+    return this._resource?.license;
+  }
+  get modified() {
+    return this._resource?.modified;
+  }
+  get publisher() {
+    return this._resource?.publisher;
+  }
+  get relation() {
+    return this._resource?.relation;
+  }
+  get title() {
+    return this._resource?.title;
+  }
+  get type() {
+    return this._resource?.type;
+  }
+  get hasPolicy() {
+    return this._resource?.hasPolicy;
+  }
+}
+
 @Entity({name: "dataservice"})
-export class DataServiceDao extends MetaEntity implements IDataService {
+export class DataServiceDao extends ResourceChild implements IDataService {
+  @Column({unique: true})
+  id!: string
   @ManyToOne(() => CatalogDao, {nullable: true})
   _catalog?: Relation<CatalogDao>
   @OneToOne(() => ResourceDao, {cascade: true, eager: true})
   @JoinColumn()
   _resource: ResourceDao | undefined
+
   @Column("simple-json", {nullable: true})
   endpointDescription?: Reference;
   @Column({nullable: true})
@@ -113,15 +175,16 @@ export class DistributionDao extends MetaEntity implements IDistribution {
 }
 
 @Entity({name: "dataset"})
-export class DatasetDao extends MetaEntity implements IDataset {
+export class DatasetDao extends ResourceChild implements IDataset {
   @Column({unique: true})
   id!: string
   @OneToOne(() => ResourceDao, {cascade: true, eager: true})
   @JoinColumn()
   _resource: ResourceDao | undefined
+
   @ManyToOne(() => CatalogDao, {nullable: true})
   _catalog?: Relation<CatalogDao>
-  @ManyToMany(() => DataServiceDao, {nullable: true, cascade: true})
+  @ManyToMany(() => DistributionDao, {nullable: true, cascade: true})
   @JoinTable()
   _distribution?: Array<DistributionDao>;
   get distribution(): Array<Distribution> | undefined {
@@ -165,8 +228,93 @@ export class CatalogRecordDao extends MetaEntity implements ICatalogRecord {
   }
 }
 
+
+export abstract class DatasetChild extends MetaEntity {
+  _dataset: DatasetDao | undefined;
+
+
+  get distribution() {
+    return this._dataset?.distribution;
+  }
+  get spatialResolutionInMeters() {
+    return this._dataset?.spatialResolutionInMeters;
+  }
+  get temporalResolution() {
+    return this._dataset?.temporalResolution;
+  }
+  get accrualPeriodicity() {
+    return this._dataset?.accrualPeriodicity;
+  }
+  get spatial() {
+    return this._dataset?.spatial;
+  }
+  get temporal() {
+    return this._dataset?.temporal;
+  }
+  get wasGeneratedBy() {
+    return this._dataset?.wasGeneratedBy;
+  }
+  
+  get contactPoint() {
+    return this._dataset?.contactPoint;
+  }
+  get keyword() {
+    return this._dataset?.keyword;
+  }
+  get landingPage() {
+    return this._dataset?.landingPage;
+  }
+  get theme() {
+    return this._dataset?.theme;
+  }
+  get conformsTo() {
+    return this._dataset?.conformsTo;
+  }
+  get creator() {
+    return this._dataset?.creator;
+  }
+  get description() {
+    return this._dataset?.description;
+  }
+  get identifier() {
+    return this._dataset?.identifier;
+  }
+  get isReferencedBy() {
+    return this._dataset?.isReferencedBy;
+  }
+  get issued() {
+    return this._dataset?.issued;
+  }
+  get language() {
+    return this._dataset?.language;
+  }
+  get license() {
+    return this._dataset?.license;
+  }
+  get modified() {
+    return this._dataset?.modified;
+  }
+  get publisher() {
+    return this._dataset?.publisher;
+  }
+  get relation() {
+    return this._dataset?.relation;
+  }
+  get title() {
+    return this._dataset?.title;
+  }
+  get type() {
+    return this._dataset?.type;
+  }
+  get hasPolicy() {
+    return this._dataset?.hasPolicy;
+  }
+
+
+}
+
 @Entity({name: "catalog"})
-export class CatalogDao extends MetaEntity implements ICatalog {
+export class CatalogDao extends DatasetChild implements ICatalog {
   @Column({unique: true})
   id!: string
   @OneToMany(() => DatasetDao, (dataset) => dataset._catalog, {cascade: true})
@@ -189,11 +337,4 @@ export class CatalogDao extends MetaEntity implements ICatalog {
   get service(): Array<DataService> | undefined {
     return mapToInstances(this._services, DataService)
   }
-
-  @ManyToOne(() => CatalogDao, (catalog) => catalog.children, {nullable: true})
-  parent?: Relation<CatalogDao>
-
-  @OneToMany(() => CatalogDao, (catalog) => catalog.parent, {nullable: true})
-  children?: Relation<CatalogDao>
-
 }

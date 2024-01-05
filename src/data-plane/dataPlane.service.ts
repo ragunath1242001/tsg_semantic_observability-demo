@@ -75,7 +75,7 @@ export class DataPlaneService {
     return dataPlaneDetails;
   }
 
-  async updateDataPlane(dataPlaneDetails: DataPlaneDetailsDto): Promise<UpdateResult | undefined> {
+  async updateDataPlane(dataPlaneDetails: DataPlaneDetailsDto): Promise<DataPlaneDetails | undefined> {
     const dataPlane = await this.dataPlaneStatusRepository.findOneBy({identifier: dataPlaneDetails.identifier});
     if (!dataPlane) {
       // TODO is DSPError a good error here or do we need a dataplane error of some kind?
@@ -90,7 +90,7 @@ export class DataPlaneService {
         case "push": await this.healthCheck(dataPlane); break;
         case "pull": await this.pullCatalog(dataPlane); break;
       }
-      return updateResult;
+      return await this.getDataPlaneDetails(dataPlaneDetails.identifier);
     }
   }
 

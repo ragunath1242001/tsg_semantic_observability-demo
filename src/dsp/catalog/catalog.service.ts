@@ -10,9 +10,10 @@ import {
 import { InitCatalog, ServerConfig } from "../../config";
 import { Multilanguage, Reference } from "../../model/dsp/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { DeepPartial, FindOptionsWhere, ObjectLiteral, Repository } from "typeorm";
 import { CatalogDao, DataServiceDao, DatasetDao, DistributionDao, ResourceDao } from "../../model/dsp/catalog/catalog.dao";
 import { DSPError } from "../../utils/errors/error";
+import { MetaEntity } from "../../model/common.dao";
 
 @Injectable()
 export class CatalogService {
@@ -24,19 +25,34 @@ export class CatalogService {
       @InjectRepository(ResourceDao) private readonly resourceRepository: Repository<ResourceDao>,
       @Optional() private readonly initCatalog?: InitCatalog, 
       @Optional() private readonly server?: ServerConfig) {
-    this.initalizeCatalog()
   }
-
-  // private catalog: Catalog | undefined;
-  // private datasets: Dataset[] = [];
+  initialized = this.initalizeCatalog();
 
   async getCatalogDao(relations?: boolean): Promise<CatalogDao> {
     let catalog;
     if ( relations ) {
-      catalog = await this.catalogRepository.find({relations: {
-        _datasets: true,
-        _services: true
-      }});
+      catalog = await this.catalogRepository.find({
+        relations:
+        {
+          _datasets: {
+            _resource: true,
+            _distribution: {
+              _accessService: {
+                _resource: true
+              },
+            }
+          },
+          _services: true,
+          _dataset: {
+            _resource: true,
+            _distribution: {
+              _accessService: {
+                _resource: true
+              }
+            }
+          }
+        }
+      });
     } else {
       catalog = await this.catalogRepository.find({});
     }
@@ -56,7 +72,9 @@ export class CatalogService {
         title: this.initCatalog.title,
         description: [new Multilanguage(this.initCatalog.description)],
       }))
-      const dataset = this.datasetRepository.create({...new Dataset({}),
+      const dataset = this.datasetRepository.create({...new Dataset({
+        id: resource.id
+      }),
         _resource: resource
       })
       const dservice = new DataService({
@@ -67,9 +85,12 @@ export class CatalogService {
       this.dataservicesRepository.create({
         ...dservice
       });
-      const catalog = this.catalogRepository.create(new Catalog({}))
+      const catalog = this.catalogRepository.create(new Catalog({
+        id: dataset.id
+      }))
       catalog._services = [dservice]
-      catalog._dataset = dataset
+      catalog._dataset = await this.datasetRepository.save(dataset);
+      
       return this.catalogRepository.save(
         catalog);
     } 
@@ -92,30 +113,32 @@ export class CatalogService {
     }
     const newResource = this.resourceRepository.create(dataset)
     const newDataset = this.datasetRepository.create(dataset)
-    newDataset._resource=newResource
-    const distributions: Array<Distribution> | undefined = dataset.distribution
-    if (distributions !== undefined) {
-      const distributionArray: DistributionDao[] = []
-      distributions.forEach((distribution: Distribution) => {
-        const distributionObj = this.distributionRepository.create(distribution)
-        const services: Array<DataService> | undefined = distribution.accessService
-        if (services !== undefined) {
-          const servicesArray: DataServiceDao[] = []
-          services.forEach((service: DataService) => {
-            const resourceObj = this.resourceRepository.create({id: service.id})
-            const serviceObj = this.dataservicesRepository.create(service)
-            serviceObj._resource = resourceObj
-            servicesArray.push(serviceObj)
-          })
-          distributionObj._accessService = servicesArray
-        }
-        distributionArray.push(distributionObj)
-      })
-      newDataset._distribution = distributionArray
-    }
+    newDataset._resource = newResource
+    newDataset._distribution = dataset.distribution?.map(distribution => {
+      const distributionObj = this.distributionRepository.create(distribution);
+      distributionObj._accessService = distribution.accessService?.map(service => {
+        const resourceObj = this.resourceRepository.create({id: service.id});
+        const serviceObj = this.dataservicesRepository.create(service);
+        serviceObj._resource = resourceObj;
+        return serviceObj
+      });
+      return distributionObj;
+    })
     catalog._datasets?.push(newDataset)
     await this.catalogRepository.save(catalog)
     return newDataset
+  }
+
+  async saveOnId<T extends MetaEntity & {id: string}>(repository: Repository<T>, entity: DeepPartial<T>): Promise<T> {
+    const loadedEntity = await repository.findOneBy({id: entity.id} as FindOptionsWhere<T>);
+    if (loadedEntity) {
+      return await repository.save({
+        ...loadedEntity,
+        ...entity
+      });
+    } else {
+      return await repository.save(entity)
+    }
   }
 
   async updateDataset(datasetId: string, dataset: Dataset): Promise<DatasetDao | null> {
@@ -123,46 +146,22 @@ export class CatalogService {
     if (!existingDataset) {
       throw new DSPError(`Can't update a dataset, as dataset with id ${datasetId} does not exist yet`, HttpStatus.NOT_FOUND)
     }
-    await this.resourceRepository
-      .createQueryBuilder()
-      .update(ResourceDao)
-      .set({
-        id: dataset.id,
-        contactPoint: dataset.contactPoint,
-        keyword: dataset.keyword,
-        landingPage: dataset.landingPage,
-        theme: dataset.theme,
-        conformsTo: dataset.conformsTo,
-        creator: dataset.creator,
-        description: dataset.description,
-        identifier: dataset.identifier,
-        isReferencedBy: dataset.isReferencedBy,
-        issued: dataset.issued,
-        language: dataset.language,
-        license: dataset.license,
-        modified: dataset.modified,
-        publisher: dataset.publisher,
-        relation: dataset.relation,
-        title: dataset.title,
-        type: dataset.type,
-        hasPolicy: dataset.hasPolicy,
-      })
-      .where("id = :id", {id: existingDataset!._resource!.id})
-      .execute();
-    await this.datasetRepository
-      .createQueryBuilder()
-      .update(DatasetDao)
-      .set({
-        spatialResolutionInMeters: dataset.spatialResolutionInMeters,
-        temporalResolution: dataset.temporalResolution,
-        accrualPeriodicity: dataset.accrualPeriodicity,
-        spatial: dataset.spatial,
-        temporal: dataset.temporal,
-        wasGeneratedBy: dataset.wasGeneratedBy
-      })
-      .where("_id = :_id", {_id: existingDataset._id})
-      .execute();    
-    return await this.datasetRepository.findOneBy({_id: existingDataset._id})
+    const newResource = await this.saveOnId(this.resourceRepository, dataset)
+    return await this.saveOnId(this.datasetRepository, {
+      ...dataset,
+      _resource: newResource,
+      _distribution: (dataset.distribution) ? await Promise.all(dataset.distribution?.map(async distribution => {
+        return await this.saveOnId(this.distributionRepository, {
+          ...distribution,
+          _accessService: (distribution.accessService) ? await Promise.all(distribution.accessService?.map(async service => {
+            return await this.saveOnId(this.dataservicesRepository, {
+              ...service,
+              _resource: await this.saveOnId(this.resourceRepository, {id: service.id})
+            })
+          })) : undefined
+        })
+      })) : undefined
+    });
   }
 
   async removeDataset(datasetId: string): Promise<void> {
@@ -178,39 +177,23 @@ export class CatalogService {
   }
 
   async getDataset(datasetId: string): Promise<Dataset | undefined> {
-    const dataset = await this.datasetRepository.findOneBy({id: datasetId});
+    const dataset = await this.datasetRepository.findOne({
+      where: {
+        id: datasetId
+      },
+      relations: {
+        _resource: true,
+        _distribution: {
+          _accessService: {
+            _resource: true
+          },
+        }
+      }
+    });
     if (!dataset) {
       return undefined;
     } else {
-      const resource = dataset._resource!
-      return new Dataset({
-        id: dataset.id,
-        contactPoint: resource.contactPoint,
-        keyword: resource.keyword,
-        landingPage: resource.landingPage,
-        theme: resource.theme,
-        conformsTo: resource.conformsTo,
-        creator: resource.creator,
-        description: resource.description,
-        identifier: resource.identifier,
-        isReferencedBy: resource.isReferencedBy,
-        issued: resource.issued,
-        language: resource.language,
-        license: resource.license,
-        modified: resource.modified,
-        publisher: resource.publisher,
-        relation: resource.relation,
-        title: resource.title,
-        type: resource.type,
-        hasPolicy: resource.hasPolicy,
-        distribution: dataset.distribution,
-        spatialResolutionInMeters: dataset.spatialResolutionInMeters,
-        temporalResolution: dataset.temporalResolution,
-        accrualPeriodicity: dataset.accrualPeriodicity,
-        spatial: dataset.spatial,
-        temporal: dataset.temporal,
-        wasGeneratedBy: dataset.wasGeneratedBy,
-      })
+      return new Dataset(dataset);
     }
   }
 }
