@@ -11,7 +11,7 @@ import deepEqual from "deep-equal";
 import { SerializableClass } from "../model/dsp/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { DataPlaneDetailsDao, DataPlaneStatusDao } from "../model/data-planes/dataPlanes.dao";
-import { Repository, UpdateResult } from "typeorm";
+import { In, Repository } from "typeorm";
 import { DataPlaneDetails, DataPlaneStatus, HealthStatus } from "../model/data-planes/dataPlanes";
 import { DatasetDao } from "../model/dsp/catalog/catalog.dao";
 
@@ -67,7 +67,7 @@ export class DataPlaneService {
       health: HealthStatus.UNKNOWN,
       missedHealthChecks: 0
     }
-    this.dataPlaneStatusRepository.save(dataPlaneStatus);
+    await this.dataPlaneStatusRepository.save(dataPlaneStatus);
     switch(dataPlane.catalogSynchronization) {
       case "push": await this.healthCheck(dataPlaneStatus); break;
       case "pull": await this.pullCatalog(dataPlaneStatus); break;
@@ -204,7 +204,7 @@ export class DataPlaneService {
   }
 
   async requestTransfer(requestDetail: TransferRequestMessage, processId: string, role: "provider" | "consumer"): Promise<DataPlaneTransferDto> {
-    const dataPlanes = await this.dataPlaneDetailsRepository.findBy({dataplaneType: requestDetail.format, role: role || 'both' });
+    const dataPlanes = await this.dataPlaneDetailsRepository.findBy({dataplaneType: requestDetail.format, role: In([role, 'both'])});
     if (dataPlanes.length === 0) {
       throw Error(`Dataplane for type '${requestDetail.format}' cannot be found`);
     }
