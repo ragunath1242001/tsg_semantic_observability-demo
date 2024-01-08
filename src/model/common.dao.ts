@@ -4,10 +4,8 @@ import { IResource } from "./dsp/catalog/catalog";
 import { SerializableClass } from "./dsp/common";
 import { ContextDto } from "./dsp/common.dto";
 
-export class MetaEntity {
-  @PrimaryGeneratedColumn()
-  _id!: number;
 
+export class MetaEntityWithoutPrimary {
   @CreateDateColumn()
   createdDate!: Date
 
@@ -17,6 +15,11 @@ export class MetaEntity {
   @DeleteDateColumn()
   @Exclude()
   deletedDate!: Date
+}
+
+export class MetaEntity extends MetaEntityWithoutPrimary{
+  @PrimaryGeneratedColumn()
+  _id!: number;
 }
 
 

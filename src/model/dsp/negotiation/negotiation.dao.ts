@@ -1,5 +1,5 @@
-import { Column, Entity, ManyToOne, OneToMany, Relation } from "typeorm";
-import { MetaEntity } from "../../common.dao";
+import { Column, Entity, ManyToOne, OneToMany, PrimaryColumn, Relation } from "typeorm";
+import { MetaEntity, MetaEntityWithoutPrimary } from "../../common.dao";
 import { ContractNegotiationState } from "./messages.dto";
 import { Multilanguage } from "../common";
 import { ContractAgreementVerificationMessage } from "./messages";
@@ -12,13 +12,13 @@ export class NegotiationProcessEventDao extends MetaEntity implements INegotiati
     time!: Date
     @Column("simple-enum")
     state!: ContractNegotiationState
-    @Column("simple-json", {nullable: true})
+    @Column({nullable: true})
     localMessage?: string;
-    @Column("simple-json", {nullable: true})
+    @Column({nullable: true})
     code?: string;
     @Column("simple-json", {nullable: true})
     reason?: Array<Multilanguage>
-    @Column("simple-json", {nullable: true})
+    @Column({nullable: true})
     agreementMessage?: string;
     @Column("simple-json", {nullable: true})
     verification?: ContractAgreementVerificationMessage
@@ -29,16 +29,16 @@ export class NegotiationProcessEventDao extends MetaEntity implements INegotiati
 }
 
 @Entity({name: "negotiationDetail"})
-export class NegotiationDetailDao extends MetaEntity implements INegotiationDetail {
-    @Column("simple-json")
+export class NegotiationDetailDao extends MetaEntityWithoutPrimary implements INegotiationDetail {
+    @PrimaryColumn()
     localId!: string
-    @Column("simple-json")
+    @Column()
     remoteId!: string
-    @Column("simple-json")
+    @Column()
     remoteParty!: string;
-    @Column("simple-json")
+    @Column()
     role!: NegotiationRole
-    @Column("simple-json")
+    @Column()
     remoteAddress!: string;
     @Column()
     state!: ContractNegotiationState;
