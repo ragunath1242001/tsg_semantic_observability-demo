@@ -82,10 +82,10 @@ export class DataPlaneService {
       throw new DSPError(`Dataplane with identifier ${dataPlaneDetails.identifier} not found`, HttpStatus.NOT_FOUND)
     } else {
       dataPlane.modified = new Date();
-      const updateResult = await this.dataPlaneDetailsRepository.update({identifier: dataPlaneDetails.identifier},{
+      await this.dataPlaneDetailsRepository.update({identifier: dataPlaneDetails.identifier},{
         ...dataPlaneDetails
       })
-      await this.dataPlaneStatusRepository.update(dataPlane._id, dataPlane)
+      await this.dataPlaneStatusRepository.update({identifier: dataPlane.identifier}, dataPlane)
       switch(dataPlane.details.catalogSynchronization) {
         case "push": await this.healthCheck(dataPlane); break;
         case "pull": await this.pullCatalog(dataPlane); break;

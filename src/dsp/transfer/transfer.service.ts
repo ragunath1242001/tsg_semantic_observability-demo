@@ -1,5 +1,5 @@
 import { HttpStatus, Injectable, Logger } from "@nestjs/common"
-import { DataPlaneAddressDto, DataPlaneTransferDto } from "../../model/data-planes/dataPlanes.dto"
+import { DataPlaneAddressDto } from "../../model/data-planes/dataPlanes.dto"
 import { Multilanguage } from "../../model/dsp/common"
 import { DataAddress, EndpointProperty, TransferCompletionMessage, TransferProcess, TransferRequestMessage, TransferStartMessage, TransferSuspensionMessage, TransferTerminationMessage } from "../../model/dsp/transfer/messages"
 import { TransferState } from "../../model/dsp/transfer/messages.dto"

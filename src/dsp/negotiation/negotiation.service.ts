@@ -10,7 +10,7 @@ import { NegotiationDetailDao, NegotiationProcessEventDao } from "../../model/ds
 import { DSPError } from "../../utils/errors/error";
 import { IamConfig, ServerConfig } from "../../config";
 import { InjectRepository } from "@nestjs/typeorm";
-import { FindOptionsWhere, Repository } from "typeorm";
+import { Repository } from "typeorm";
 
 
 @Injectable()

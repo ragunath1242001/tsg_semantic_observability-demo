@@ -1,5 +1,5 @@
 import { Column, Entity, ManyToOne, OneToMany, PrimaryColumn, Relation } from "typeorm";
-import { MetaEntity, MetaEntityWithoutPrimary } from "../../common.dao";
+import { AutoIdEntity, MetaEntity } from "../../common.dao";
 import { ContractNegotiationState } from "./messages.dto";
 import { Multilanguage } from "../common";
 import { ContractAgreementVerificationMessage } from "./messages";
@@ -7,7 +7,7 @@ import { Agreement, INegotiationDetail, INegotiationProcessEvent, NegotiationPro
 
 
 @Entity({name: "negotationProcessEvent"})
-export class NegotiationProcessEventDao extends MetaEntity implements INegotiationProcessEvent {
+export class NegotiationProcessEventDao extends AutoIdEntity implements INegotiationProcessEvent {
     @Column()
     time!: Date
     @Column("simple-enum")
@@ -29,7 +29,7 @@ export class NegotiationProcessEventDao extends MetaEntity implements INegotiati
 }
 
 @Entity({name: "negotiationDetail"})
-export class NegotiationDetailDao extends MetaEntityWithoutPrimary implements INegotiationDetail {
+export class NegotiationDetailDao extends MetaEntity implements INegotiationDetail {
     @PrimaryColumn()
     localId!: string
     @Column()

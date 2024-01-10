@@ -1,15 +1,15 @@
 import { Column, Entity, ManyToOne, OneToMany, PrimaryColumn, Relation } from "typeorm";
-import { MetaEntity, MetaEntityWithoutPrimary } from "../../common.dao";
+import { AutoIdEntity, MetaEntity } from "../../common.dao";
 import { DataPlaneTransferDto } from "../../data-planes/dataPlanes.dto";
 import { Multilanguage } from "../common";
 import { TransferProcess, DataAddress } from "./messages";
 import { TransferState } from "./messages.dto";
-import { ITransferEvent, ITransferStatus, TransferEvent, TransferStatus } from "./transfer.dto";
+import { ITransferEvent, ITransferStatus, TransferEvent } from "./transfer.dto";
 
 export type TransferRole = "provider" | "consumer";
 
 @Entity()
-export class TransferEventDao extends MetaEntity implements ITransferEvent {
+export class TransferEventDao extends AutoIdEntity implements ITransferEvent {
   @Column()
   time!: Date
   @Column("simple-enum")
@@ -27,7 +27,7 @@ export class TransferEventDao extends MetaEntity implements ITransferEvent {
 }
 
 @Entity()
-export class TransferDetailDao extends MetaEntityWithoutPrimary implements ITransferStatus {
+export class TransferDetailDao extends MetaEntity implements ITransferStatus {
   @PrimaryColumn()
   localId!: string
   @Column()

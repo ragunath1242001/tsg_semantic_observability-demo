@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne, Relation } from "typeorm";
+import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryColumn, Relation } from "typeorm";
 import { MetaEntity, mapToInstances } from "../../common.dao";
 import { CatalogRecord, DataService, Dataset, Distribution, ICatalog, ICatalogRecord, IDataService, IDataset, IDistribution, IResource, Resource } from "./catalog";
 import { Reference, Multilanguage, Time, Decimal, Duration } from "../common";
@@ -8,7 +8,7 @@ import { DatasetDto } from "./catalog.dto";
 
 @Entity({name: "resource"})
 export class ResourceDao extends MetaEntity implements IResource {
-  @Column({unique: true})
+  @PrimaryColumn()
   id!: string
   @Column("simple-json", {nullable: true})
   contactPoint?: Reference;
@@ -110,7 +110,7 @@ export abstract class ResourceChild extends MetaEntity {
 
 @Entity({name: "dataservice"})
 export class DataServiceDao extends ResourceChild implements IDataService {
-  @Column({unique: true})
+  @PrimaryColumn()
   id!: string
   @ManyToOne(() => CatalogDao, {nullable: true})
   _catalog?: Relation<CatalogDao>
@@ -133,7 +133,7 @@ export class DataServiceDao extends ResourceChild implements IDataService {
 
 @Entity({name: "distribution"})
 export class DistributionDao extends MetaEntity implements IDistribution {
-  @Column({unique: true})
+  @PrimaryColumn()
   id!: string
   @ManyToMany(() => DataServiceDao, {nullable: true, cascade: true})
   @JoinTable()
@@ -176,7 +176,7 @@ export class DistributionDao extends MetaEntity implements IDistribution {
 
 @Entity({name: "dataset"})
 export class DatasetDao extends ResourceChild implements IDataset {
-  @Column({unique: true})
+  @PrimaryColumn()
   id!: string
   @OneToOne(() => ResourceDao, {cascade: true, eager: true})
   @JoinColumn()
@@ -206,7 +206,7 @@ export class DatasetDao extends ResourceChild implements IDataset {
 
 @Entity({name: "catalogrecord"})
 export class CatalogRecordDao extends MetaEntity implements ICatalogRecord {
-  @Column({unique: true})
+  @PrimaryColumn()
   id!: string
   @ManyToOne(() => CatalogDao, {nullable: true})
   _catalog?: Relation<CatalogDao>
@@ -315,7 +315,7 @@ export abstract class DatasetChild extends MetaEntity {
 
 @Entity({name: "catalog"})
 export class CatalogDao extends DatasetChild implements ICatalog {
-  @Column({unique: true})
+  @PrimaryColumn()
   id!: string
   @OneToMany(() => DatasetDao, (dataset) => dataset._catalog, {cascade: true})
   _datasets?: Array<Relation<DatasetDao>>;

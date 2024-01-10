@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, OneToOne } from "typeorm";
+import { Column, Entity, JoinColumn, OneToOne, PrimaryColumn } from "typeorm";
 import { MetaEntity } from "../common.dao";
 import { DatasetDao } from "../dsp/catalog/catalog.dao";
 import { Dataset } from "../dsp/catalog/catalog";
@@ -6,7 +6,7 @@ import { IDataPlaneDetails, IDataPlaneStatus, HealthStatus, DataPlaneDetails } f
 
 @Entity({name: "dataplanestatus"})
 export class DataPlaneStatusDao extends MetaEntity implements IDataPlaneStatus {
-    @Column({unique: true})
+    @PrimaryColumn()
     identifier!: string
     @Column("simple-json", {nullable: true})
     created?: Date;
@@ -31,7 +31,7 @@ export class DataPlaneStatusDao extends MetaEntity implements IDataPlaneStatus {
 
 @Entity({name: "dataplanedetails"})
 export class DataPlaneDetailsDao extends MetaEntity implements IDataPlaneDetails{
-    @Column({unique: true})
+    @PrimaryColumn()
     identifier!: string
     @Column()
     dataplaneType!: string;

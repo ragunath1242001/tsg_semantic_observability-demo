@@ -1,22 +1,6 @@
+import 'reflect-metadata';
 import { ArrayMinSize, IsDefined, IsIn, IsNumber, IsOptional, IsString, IsUrl, Matches, ValidateNested } from "class-validator";
-import { Transform, TransformFnParams, Type } from "class-transformer";
-import fs from "fs";
-import { Logger } from "@nestjs/common";
-
-function fileTransformer(params: TransformFnParams): string | undefined {
-  if (typeof params.value === "string") {
-    if (params.value.startsWith("file:")) {
-      try {
-        return fs.readFileSync(params.value.slice(5)).toString();
-      } catch (err) {
-        Logger.warn(`Could not load ${params.value}: ${err}`, 'Config')
-        return undefined;
-      }
-    }
-    return params.value;
-  }
-  return `${params.value}`;
-}
+import { Type } from "class-transformer";
 
 export abstract class DatabaseConfig {
   @IsString()

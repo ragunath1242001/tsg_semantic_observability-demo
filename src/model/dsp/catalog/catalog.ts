@@ -11,7 +11,6 @@ import {
 import { Policy } from "../negotiation/negotiation";
 import { CatalogDto, CatalogRecordDto, DataServiceDto, DatasetDto, DistributionDto, ResourceDto } from "./catalog.dto";
 import { ContextDto } from "../common.dto";
-import { PartialType } from "@nestjs/mapped-types";
 
 export interface IResource extends IReference {
   contactPoint?: Reference;

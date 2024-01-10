@@ -4,16 +4,14 @@ import {
   Catalog,
   DataService,
   Dataset,
-  Distribution,
   Resource,
 } from "../../model/dsp/catalog/catalog";
 import { InitCatalog, ServerConfig } from "../../config";
 import { Multilanguage, Reference } from "../../model/dsp/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { DeepPartial, FindOptionsWhere, ObjectLiteral, Repository } from "typeorm";
+import { Repository } from "typeorm";
 import { CatalogDao, DataServiceDao, DatasetDao, DistributionDao, ResourceDao } from "../../model/dsp/catalog/catalog.dao";
 import { DSPError } from "../../utils/errors/error";
-import { MetaEntity } from "../../model/common.dao";
 
 @Injectable()
 export class CatalogService {
@@ -129,38 +127,26 @@ export class CatalogService {
     return newDataset
   }
 
-  async saveOnId<T extends MetaEntity & {id: string}>(repository: Repository<T>, entity: DeepPartial<T>): Promise<T> {
-    const loadedEntity = await repository.findOneBy({id: entity.id} as FindOptionsWhere<T>);
-    if (loadedEntity) {
-      return await repository.save({
-        ...loadedEntity,
-        ...entity
-      });
-    } else {
-      return await repository.save(entity)
-    }
-  }
-
   async updateDataset(datasetId: string, dataset: Dataset): Promise<DatasetDao | null> {
     const existingDataset = await this.datasetRepository.findOneBy({id: datasetId});
     if (!existingDataset) {
       throw new DSPError(`Can't update a dataset, as dataset with id ${datasetId} does not exist yet`, HttpStatus.NOT_FOUND)
     }
-    const newResource = await this.saveOnId(this.resourceRepository, dataset)
-    return await this.saveOnId(this.datasetRepository, {
+    const newResource = this.resourceRepository.create(dataset)
+    return await this.datasetRepository.save({
       ...dataset,
       _resource: newResource,
-      _distribution: (dataset.distribution) ? await Promise.all(dataset.distribution?.map(async distribution => {
-        return await this.saveOnId(this.distributionRepository, {
+      _distribution: dataset.distribution?.map(distribution => {
+        return this.distributionRepository.create({
           ...distribution,
-          _accessService: (distribution.accessService) ? await Promise.all(distribution.accessService?.map(async service => {
-            return await this.saveOnId(this.dataservicesRepository, {
+          _accessService: distribution.accessService?.map(service => {
+            return this.dataservicesRepository.create({
               ...service,
-              _resource: await this.saveOnId(this.resourceRepository, {id: service.id})
+              _resource: this.resourceRepository.create({id: service.id})
             })
-          })) : undefined
+          })
         })
-      })) : undefined
+      })
     });
   }
 

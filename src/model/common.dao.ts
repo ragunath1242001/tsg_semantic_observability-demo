@@ -5,7 +5,7 @@ import { SerializableClass } from "./dsp/common";
 import { ContextDto } from "./dsp/common.dto";
 
 
-export class MetaEntityWithoutPrimary {
+export class MetaEntity {
   @CreateDateColumn()
   createdDate!: Date
 
@@ -17,7 +17,7 @@ export class MetaEntityWithoutPrimary {
   deletedDate!: Date
 }
 
-export class MetaEntity extends MetaEntityWithoutPrimary{
+export class AutoIdEntity extends MetaEntity {
   @PrimaryGeneratedColumn()
   _id!: number;
 }

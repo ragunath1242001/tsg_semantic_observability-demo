@@ -2,7 +2,7 @@ import qs from "qs";
 import { IamConfig } from "../../config";
 import { ValidationResult, VerifiablePresentationJwt, WalletClient } from "./walletClient";
 import axios from "axios";
-import { DSPClientError, DSPError } from "../../utils/errors/error";
+import { DSPClientError } from "../../utils/errors/error";
 import { Logger } from "@nestjs/common";
 
 export class TsgWalletClient extends WalletClient {

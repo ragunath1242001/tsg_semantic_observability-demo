@@ -6,8 +6,7 @@ import { ContractAgreementMessage, ContractAgreementVerificationMessage, Contrac
 import { NegotiationService } from "./negotiation.service";
 import { DSPError } from "../../utils/errors/error";
 import { VerifiablePresentationGuard } from "../../auth/verifiablePresentation.guard";
-import { VerifiablePresentation } from "../../model/verifiablePresentations.dto";
-import { VP, VPId } from "../../auth/verifiablePresentation.strategy";
+import { VPId } from "../../auth/verifiablePresentation.strategy";
 
 @UseGuards(VerifiablePresentationGuard)
 @Controller('negotiations')
