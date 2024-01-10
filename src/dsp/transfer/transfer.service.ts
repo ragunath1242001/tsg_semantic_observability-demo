@@ -191,7 +191,7 @@ export class TransferService {
       });
     }
     const transferStartMessage = new TransferStartMessage({
-      processId: transfer.remoteId,
+      processId: transfer.remoteId!,
       dataAddress: dataAddress
     })
     await this.checkTransition("local", transfer, TransferState.STARTED);
@@ -246,7 +246,7 @@ export class TransferService {
       })
     );
     const transferCompletionMessage = new TransferCompletionMessage({
-      processId: transfer.remoteId
+      processId: transfer.remoteId!
     });
     if (!fromDataPlane) {
       await this.dataPlaneService.completeTransfer(transfer.dataPlaneTransfer, transferCompletionMessage)
@@ -282,7 +282,7 @@ export class TransferService {
     const transfer = await this.getTransfer(processId);
     await this.checkTransition("local", transfer, TransferState.TERMINATED);
     const transferTerminationMessage = new TransferTerminationMessage({
-      processId: transfer.remoteId,
+      processId: transfer.remoteId!,
       code: code,
       reason: [new Multilanguage(reason)]
     });
@@ -331,7 +331,7 @@ export class TransferService {
     const transfer = await this.getTransfer(processId);
     await this.checkTransition("local", transfer, TransferState.SUSPENDED);
     const transferSuspensionMessage = new TransferSuspensionMessage({
-      processId: transfer.remoteId,
+      processId: transfer.remoteId!,
       reason: [new Multilanguage(reason)]
     })
     transfer.events.push(

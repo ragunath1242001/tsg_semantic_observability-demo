@@ -158,7 +158,7 @@ export class CatalogService {
     requestMessage.filter?.forEach((filter) => {
       console.log(filter);
     });
-    const catalog = await this.getCatalogDao();
+    const catalog = await this.getCatalogDao(true);
     return new Catalog(catalog);
   }
 

@@ -162,8 +162,8 @@ describe("Transfer service", () => {
     });
   });
 
-  afterAll(() => {
-    TypeOrmTestHelper.instance.teardownTestDB();
+  afterAll(async () => {
+    await TypeOrmTestHelper.instance.teardownTestDB();
     server.close();
   });
 

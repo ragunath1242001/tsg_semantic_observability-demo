@@ -14,6 +14,11 @@ import { AuthService } from "../../auth/auth.service";
 import { TransferService } from "./transfer.service";
 import { DataPlaneService } from "../../data-plane/dataPlane.service";
 import { CatalogService } from "../catalog/catalog.service";
+import { TypeOrmTestHelper } from "../../utils/testhelper";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { DataPlaneStatusDao, DataPlaneDetailsDao } from "../../model/data-planes/dataPlanes.dao";
+import { CatalogDao, CatalogRecordDao, DatasetDao, DataServiceDao, DistributionDao, ResourceDao } from "../../model/dsp/catalog/catalog.dao";
+import { TransferEventDao, TransferDetailDao } from "../../model/dsp/transfer/transfer.dao";
 
 describe("TransferController", () => {
   let transferController: TransferController;
@@ -77,7 +82,12 @@ describe("TransferController", () => {
   })
 
   beforeEach(async () => {
+    await TypeOrmTestHelper.instance.setupTestDB();
     const moduleRef: TestingModule = await Test.createTestingModule({
+      imports: [
+        TypeOrmTestHelper.instance.module([CatalogDao, CatalogRecordDao, DatasetDao, DataServiceDao, DistributionDao, ResourceDao, DataPlaneStatusDao, DataPlaneDetailsDao, TransferEventDao, TransferDetailDao]),
+        TypeOrmModule.forFeature([CatalogDao, CatalogRecordDao, DatasetDao, DataServiceDao, DistributionDao, ResourceDao, DataPlaneStatusDao, DataPlaneDetailsDao, TransferEventDao, TransferDetailDao]),
+      ],
       controllers: [TransferController],
       providers: [
         TransferService, 
@@ -99,7 +109,7 @@ describe("TransferController", () => {
     transferService = moduleRef.get(TransferService);
     dataPlaneService = moduleRef.get(DataPlaneService);
 
-    dataPlaneService.addDataPlane({
+    await dataPlaneService.addDataPlane({
       dataplaneType: "dspace:HTTP",
       endpointPrefix: "",
       callbackAddress: "http://127.0.0.1/data-plane",
@@ -125,6 +135,10 @@ describe("TransferController", () => {
     );
     transferConsumerUuid = transferConsumerProcess.localId;
 
+  });
+
+  afterEach(async () => {
+    await TypeOrmTestHelper.instance.teardownTestDB();
   });
 
 

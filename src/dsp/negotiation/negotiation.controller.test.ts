@@ -12,6 +12,9 @@ import { SetupServer, setupServer } from "msw/node";
 import { IamConfig, ServerConfig } from "../../config";
 import { plainToClass } from "class-transformer";
 import { AuthService } from "../../auth/auth.service";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { NegotiationDetailDao, NegotiationProcessEventDao } from "../../model/dsp/negotiation/negotiation.dao";
+import { TypeOrmTestHelper } from "../../utils/testhelper";
 
 describe("NegotiationController", () => {
   let negotiationController: NegotiationController;
@@ -52,11 +55,16 @@ describe("NegotiationController", () => {
   });
   
   beforeEach(async () => {
+    await TypeOrmTestHelper.instance.setupTestDB();
     const moduleRef: TestingModule = await Test.createTestingModule({
+      imports: [
+          TypeOrmTestHelper.instance.module([NegotiationDetailDao, NegotiationProcessEventDao]),
+          TypeOrmModule.forFeature([NegotiationDetailDao, NegotiationProcessEventDao])
+      ],
       controllers: [NegotiationController],
       providers: [
         NegotiationService, 
-        DspClientService, 
+        DspClientService,
         {provide: ServerConfig, useValue: plainToClass(ServerConfig, {})},
         {provide: IamConfig, useValue: plainToClass(IamConfig, {
           didId: 'did:web:localhost',
@@ -103,6 +111,10 @@ describe("NegotiationController", () => {
       'did:web:localhost'
     );
     consumerNegotiationId = consumerNegotiation.localId!;
+  });
+
+  afterEach(async () => {
+    await TypeOrmTestHelper.instance.teardownTestDB();
   });
 
 
@@ -156,9 +168,7 @@ describe("NegotiationController", () => {
 
   describe("/:id/request", () => {
     it("Contract request should with specified identifier return default contract negotiation", async () => {
-      const negotiation = await negotiationService.getNegotiation(providerNegotiationId);
-      negotiation!.state = ContractNegotiationState.OFFERED;
-
+      negotiationService["negotiationDetailRepository"].update({localId: providerNegotiationId}, {state: ContractNegotiationState.OFFERED});
       const result = await negotiationController.requestWithId(
         providerNegotiationId,
         new ContractRequestMessage({
@@ -222,8 +232,7 @@ describe("NegotiationController", () => {
 
   describe("/:id/events", () => {
     it("Contract negotiation event should with specified identifier return a status OK", async () => {
-      const negotiation = await negotiationService.getNegotiation(providerNegotiationId);
-      negotiation!.state = ContractNegotiationState.OFFERED;
+      negotiationService["negotiationDetailRepository"].update({localId: providerNegotiationId}, {state: ContractNegotiationState.OFFERED});
       const result = await negotiationController.negotiationEvent(
         providerNegotiationId,
         new ContractNegotiationEventMessage({
@@ -251,8 +260,7 @@ describe("NegotiationController", () => {
   });
   describe("/:id/agreement/verification", () => {
     it("Contract agreement verification should with specified identifier return a status OK", async () => {
-      const negotiation = await negotiationService.getNegotiation(providerNegotiationId);
-      negotiation!.state = ContractNegotiationState.AGREED;
+      negotiationService["negotiationDetailRepository"].update({localId: providerNegotiationId}, {state: ContractNegotiationState.AGREED});
       const result = await negotiationController.agreementVerification(
         providerNegotiationId,
         new ContractAgreementVerificationMessage({
@@ -399,8 +407,7 @@ describe("NegotiationController", () => {
   });
   describe("/callbacks/:id/event", () => {
     it("Callback with a contract event should return a status OK", async () => {
-      const negotiation = await negotiationService.getNegotiation(consumerNegotiationId);
-      negotiation!.state = ContractNegotiationState.VERIFIED;
+      negotiationService["negotiationDetailRepository"].update({localId: consumerNegotiationId}, {state: ContractNegotiationState.VERIFIED});
       const result = await negotiationController.callbackEvent(
         consumerNegotiationId,
         new ContractNegotiationEventMessage({

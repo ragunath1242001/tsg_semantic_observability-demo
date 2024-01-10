@@ -7,7 +7,7 @@ import { TypeOrmModule } from "@nestjs/typeorm"
 import { CatalogDao, CatalogRecordDao, DataServiceDao, DatasetDao, DistributionDao, ResourceDao } from "../../model/dsp/catalog/catalog.dao"
 import { DSPError } from "../../utils/errors/error"
 import { Reference } from "../../model/dsp/common"
-import { Catalog, DataService, Dataset, Distribution } from "../../model/dsp/catalog/catalog"
+import { DataService, Dataset, Distribution } from "../../model/dsp/catalog/catalog"
 
 jest.useFakeTimers();
 describe("Catalog Service", () => {
@@ -43,9 +43,9 @@ describe("Catalog Service", () => {
         catalogService = moduleRef.get(CatalogService);
     })
 
-    afterAll(() => {
-        TypeOrmTestHelper.instance.teardownTestDB();
-    })
+    afterAll(async () => {
+      await TypeOrmTestHelper.instance.teardownTestDB();
+    });
 
     describe("Initializing catalog", () => {
 

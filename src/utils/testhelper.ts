@@ -16,7 +16,7 @@ export class TypeOrmTestHelper {
         return this._instance;
     }
 
-    private testdb!: Database;
+    testdb!: Database;
 
 
     async setupTestDB(database: string = ':memory:') {
@@ -35,11 +35,15 @@ export class TypeOrmTestHelper {
       })
     }
 
-    teardownTestDB() {
-        this.testdb.close();
-        if (this.database != ':memory:') {
-          fs.rmSync(this.database);
-        }
+    async teardownTestDB() {
+      await new Promise<void>(resolve => {
+        this.testdb.close(() => {
+          resolve()
+        });
+      })
+      if (this.database != ':memory:') {
+        fs.rmSync(this.database);
+      }
     }
 
 }

@@ -34,7 +34,7 @@ export class TransferEvent {
 
 export interface ITransferStatus {
   localId: string
-  remoteId: string
+  remoteId?: string
   role: TransferRole
   remoteAddress: string
   remoteParty: string
@@ -46,7 +46,7 @@ export interface ITransferStatus {
 
 export class TransferStatus {
   localId: string
-  remoteId: string
+  remoteId?: string
   role: TransferRole
   remoteAddress: string
   remoteParty: string
@@ -62,7 +62,7 @@ export class TransferStatus {
     this.remoteAddress = value.remoteAddress;
     this.remoteParty = value.remoteParty;
     this.state = value.state;
-    this.process = value.process;
+    this.process = new TransferProcess(value.process);
     this.agreementId = value.agreementId;
     this.format = value.format;
   }

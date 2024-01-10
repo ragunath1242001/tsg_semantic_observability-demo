@@ -30,8 +30,8 @@ export class TransferEventDao extends AutoIdEntity implements ITransferEvent {
 export class TransferDetailDao extends MetaEntity implements ITransferStatus {
   @PrimaryColumn()
   localId!: string
-  @Column()
-  remoteId!: string
+  @Column({nullable: true})
+  remoteId?: string
   @Column()
   role!: TransferRole
   @Column()

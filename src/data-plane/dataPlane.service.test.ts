@@ -7,7 +7,6 @@ import { TypeOrmTestHelper } from "../utils/testhelper";
 import { DataPlaneService } from "./dataPlane.service"
 import { CatalogService } from "../dsp/catalog/catalog.service";
 import { DataPlaneDetailsDao, DataPlaneStatusDao } from "../model/data-planes/dataPlanes.dao";
-import { DataPlaneDetailsDto } from "../model/data-planes/dataPlanes.dto";
 import { DataPlaneCreation } from "../model/data-planes/dataPlanes.dto";
 import { DSPError } from "../utils/errors/error";
 import { Dataset, Distribution, DataService } from "../model/dsp/catalog/catalog";
@@ -43,9 +42,10 @@ describe("DataPlane Service", () => {
         catalogService = moduleRef.get(CatalogService);
     })
 
-    afterAll(() => {
-        TypeOrmTestHelper.instance.teardownTestDB();
-    })
+    afterAll(async () => {
+      await TypeOrmTestHelper.instance.teardownTestDB();
+    });
+    
     describe("Add, get and update dataplane", () => {
 
         it("Dataplane creation", async () => {

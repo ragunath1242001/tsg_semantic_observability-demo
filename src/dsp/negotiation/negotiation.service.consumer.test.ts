@@ -90,10 +90,10 @@ describe("Negotiation Service (Consumer)", () => {
         negotiationService = moduleRef.get(NegotiationService);
     })
 
-    afterAll(() => {
-        TypeOrmTestHelper.instance.teardownTestDB();
-        server.close();
-    })
+    afterAll(async () => {
+      await TypeOrmTestHelper.instance.teardownTestDB();
+      server.close();
+    });
 
     describe("Simple negotiation interactions", () => {
         let localProcessId: string;
