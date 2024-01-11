@@ -1,21 +1,31 @@
+import 'reflect-metadata';
 import { ArrayMinSize, IsDefined, IsIn, IsNumber, IsOptional, IsString, IsUrl, Matches, ValidateNested } from "class-validator";
-import { Transform, TransformFnParams, Type } from "class-transformer";
-import fs from "fs";
-import { Logger } from "@nestjs/common";
+import { Type } from "class-transformer";
 
-function fileTransformer(params: TransformFnParams): string | undefined {
-  if (typeof params.value === "string") {
-    if (params.value.startsWith("file:")) {
-      try {
-        return fs.readFileSync(params.value.slice(5)).toString();
-      } catch (err) {
-        Logger.warn(`Could not load ${params.value}: ${err}`, 'Config')
-        return undefined;
-      }
-    }
-    return params.value;
-  }
-  return `${params.value}`;
+export abstract class DatabaseConfig {
+  @IsString()
+  @IsIn(["sqlite", "postgres"])
+  public readonly type!: 'sqlite' | 'postgres';
+
+  @IsString()
+  public readonly database!: string
+}
+
+export class SQLiteConfig extends DatabaseConfig {
+  override readonly type: 'sqlite' = 'sqlite' as const;
+}
+
+export class PostgresConfig extends DatabaseConfig {
+  override readonly type: 'postgres' = 'postgres' as const;
+
+  @IsString()
+  public readonly host!: string
+  @IsNumber()
+  public readonly port!: number
+  @IsString()
+  public readonly username!: string
+  @IsString()
+  public readonly password!: string
 }
 
 export class ServerConfig {
@@ -39,20 +49,20 @@ export class IamConfig {
   public readonly type!: 'tsg' | 'miw'
 
   @IsString()
-  @IsUrl()
+  @IsUrl({require_tld: false, require_protocol: true, require_host: false})
   public readonly tokenUrl!: string
   
   @IsString()
-  @IsUrl()
+  @IsUrl({require_tld: false, require_protocol: true, require_host: false})
   public readonly presentationUrl!: string
 
   @IsString()
-  @IsUrl()
+  @IsUrl({require_tld: false, require_protocol: true, require_host: false})
   @IsOptional()
   public readonly walletUrl?: string
   
   @IsString()
-  @IsUrl()
+  @IsUrl({require_tld: false, require_protocol: true, require_host: false})
   public readonly validationUrl!: string
 
   @IsString()
@@ -89,6 +99,20 @@ export class InitCatalog {
 }
 
 export class RootConfig {
+  @ValidateNested()
+  @IsDefined({message: 'Either sqlite or postgres DB config must be provided'})
+  @Type(() => DatabaseConfig, {
+    discriminator: {
+      property: 'type',
+      subTypes: [
+        { value: SQLiteConfig, name: 'sqlite'},
+        { value: PostgresConfig, name: 'postgres'}
+      ],
+
+    }
+  })
+  public readonly db!: DatabaseConfig
+
   @ValidateNested()
   @IsOptional()
   @Type(() => ServerConfig)

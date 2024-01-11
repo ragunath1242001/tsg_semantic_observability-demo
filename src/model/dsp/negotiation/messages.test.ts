@@ -20,7 +20,7 @@ test("Contract Request Message", async () => {
     "@context": "https://w3id.org/dspace/v0.8/context.json",
     "@type": "dspace:ContractRequestMessage",
     "dspace:processId": "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
-    "odrl:offer": {
+    "dspace:offer": {
       "@type": "odrl:Offer",
       "@id": "urn:uuid:506f0e00-67ad-4b53-b9b6-5f2580b533c0",
       "odrl:assigner": "urn:uuid:ef0ab3f8-15c9-4612-a5c3-7c574155e86f",
@@ -48,7 +48,7 @@ test("Contract Offer Message", async () => {
     "@context": "https://w3id.org/dspace/v0.8/context.json",
     "@type": "dspace:ContractOfferMessage",
     "dspace:processId": "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
-    "odrl:offer": {
+    "dspace:offer": {
       "@type": "odrl:Offer",
       "@id": "urn:uuid:506f0e00-67ad-4b53-b9b6-5f2580b533c0",
       "odrl:assigner": "urn:uuid:ef0ab3f8-15c9-4612-a5c3-7c574155e86f",
@@ -196,7 +196,7 @@ test("Contract Agreement Message", async () => {
     "@context": "https://w3id.org/dspace/v0.8/context.json",
     "@type": "dspace:ContractAgreementMessage",
     "dspace:processId": "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
-    "odrl:agreement": {
+    "dspace:agreement": {
       "@type": "odrl:Agreement",
       "@id": "urn:uuid:506f0e00-67ad-4b53-b9b6-5f2580b533c0",
       "odrl:assigner": "urn:uuid:ef0ab3f8-15c9-4612-a5c3-7c574155e86f",

@@ -6,11 +6,10 @@ import { ContractAgreementMessage, ContractAgreementVerificationMessage, Contrac
 import { NegotiationService } from "./negotiation.service";
 import { DSPError } from "../../utils/errors/error";
 import { VerifiablePresentationGuard } from "../../auth/verifiablePresentation.guard";
-import { VerifiablePresentation } from "../../model/verifiablePresentations.dto";
-import { VP, VPId } from "../../auth/verifiablePresentation.strategy";
+import { VPId } from "../../auth/verifiablePresentation.strategy";
 
 @UseGuards(VerifiablePresentationGuard)
-@Controller('negotiation')
+@Controller('negotiations')
 export class NegotiationController {
   constructor(private readonly negotiationService: NegotiationService) {}
   private readonly logger = new Logger(this.constructor.name);

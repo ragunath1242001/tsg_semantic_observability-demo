@@ -7,20 +7,20 @@ import request from "supertest";
 import { Catalog, DataService, Dataset, Distribution } from "../../model/dsp/catalog/catalog";
 import { Multilanguage } from "../../model/dsp/common";
 import { AuthService } from "../../auth/auth.service";
-import { AuthModule } from "../../auth/auth.module";
-import { IamConfig, RootConfig } from "../../config";
-import { plainToClass, plainToInstance } from "class-transformer";
+import { IamConfig, InitCatalog, ServerConfig } from "../../config";
+import { plainToClass } from "class-transformer";
 import { VerifiablePresentationGuard } from "../../auth/verifiablePresentation.guard";
 import { VerifiablePresentationStrategy } from "../../auth/verifiablePresentation.strategy";
-import { ManagementGuard } from "../../auth/management.guard";
-import { ManagementStrategy } from "../../auth/management.strategy";
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { SetupServer } from "msw/lib/node";
 import { setupMockWalletServer, mockWalletConfig, sampleVpToken } from "../../auth/wallets/wallet.util.test";
+import { TypeOrmTestHelper } from "../../utils/testhelper";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { CatalogDao, CatalogRecordDao, DatasetDao, DataServiceDao, DistributionDao, ResourceDao } from "../../model/dsp/catalog/catalog.dao";
 
 
 const dataset = new Dataset({
   id: "urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0cea",
+  title: "Test HTTP Dataset",
   distribution: [
     new Distribution({
       id: "urn:uuid:06d7da99-68eb-4f9e-8cb6-b78666c46123",
@@ -56,17 +56,45 @@ const catalogWithDataset = new Catalog({
 
 describe("CatalogController", () => {
   let catalogController: CatalogController;
+  let catalogService: CatalogService;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
+    await TypeOrmTestHelper.instance.setupTestDB();
+    const initCatalog = plainToClass(InitCatalog, {
+        creator: "urn:uuid:de8e1b94-4169-4491-986d-6a1c528b867b",
+        publisher: "urn:uuid:de8e1b94-4169-4491-986d-6a1c528b867b",
+        title: "Test Connector",
+        description: "Connector catalog for testing purposes"
+    })
+    const serverConfig = plainToClass(ServerConfig, {})
+
     const moduleRef: TestingModule = await Test.createTestingModule({
-      controllers: [CatalogController],
-      providers: [CatalogService],
+        imports: [
+            TypeOrmTestHelper.instance.module([CatalogDao, CatalogRecordDao, DatasetDao, DataServiceDao, DistributionDao, ResourceDao]),
+            TypeOrmModule.forFeature([CatalogDao, CatalogRecordDao, DatasetDao, DataServiceDao, DistributionDao, ResourceDao])
+        ],
+        controllers: [
+          CatalogController
+        ],
+        providers: [
+            CatalogService,
+            {
+                provide: InitCatalog,
+                useValue: initCatalog
+            },
+            {
+                provide: ServerConfig,
+                useValue: serverConfig
+            }
+        ]
     }).compile();
-
     catalogController = moduleRef.get(CatalogController);
-    const catalogService = moduleRef.get(CatalogService);
-    catalogService.modifyCatalog(catalog)
-    catalogService.addDataset(dataset)
+    catalogService = moduleRef.get(CatalogService);
+    await catalogService.initialized;
+  });
+
+  afterAll(async () => {
+    await TypeOrmTestHelper.instance.teardownTestDB();
   });
 
   describe("/request", () => {
@@ -74,11 +102,17 @@ describe("CatalogController", () => {
       const result = await catalogController.request(
         new CatalogRequestMessage({})
       );
-      expect(result).toStrictEqual(await catalogWithDataset.serialize());
+      expect(result).toBeDefined();
+      expect(result["dcat:service"]?.length).toBe(1);
+      expect(result["dct:creator"]?.["@id"]).toBe("urn:uuid:de8e1b94-4169-4491-986d-6a1c528b867b");
+      expect(result["dct:publisher"]).toBe("urn:uuid:de8e1b94-4169-4491-986d-6a1c528b867b");
+      expect(result["dct:title"]).toBe("Test Connector");
     });
   });
   describe("/datasets", () => {
     it("Dataset request with known id should result a dataset", async () => {
+      await catalogService.addDataset(dataset);
+
       const result = await catalogController.getDataset(
         "urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0cea"
       );
@@ -109,12 +143,32 @@ describe("Catalog Module", () => {
   })
   
   beforeAll(async () => {
+    await TypeOrmTestHelper.instance.setupTestDB();
+    const initCatalog = plainToClass(InitCatalog, {
+        creator: "urn:uuid:de8e1b94-4169-4491-986d-6a1c528b867b",
+        publisher: "urn:uuid:de8e1b94-4169-4491-986d-6a1c528b867b",
+        title: "Test Connector",
+        description: "Connector catalog for testing purposes"
+    })
+    const serverConfig = plainToClass(ServerConfig, {})
     const moduleRef: TestingModule = await Test.createTestingModule({
+      imports: [
+          TypeOrmTestHelper.instance.module([CatalogDao, CatalogRecordDao, DatasetDao, DataServiceDao, DistributionDao, ResourceDao]),
+          TypeOrmModule.forFeature([CatalogDao, CatalogRecordDao, DatasetDao, DataServiceDao, DistributionDao, ResourceDao])
+      ],
       controllers: [CatalogController],
       providers: [
         VerifiablePresentationGuard,
         VerifiablePresentationStrategy,
         CatalogService,
+        {
+            provide: InitCatalog,
+            useValue: initCatalog
+        },
+        {
+            provide: ServerConfig,
+            useValue: serverConfig
+        }
       ],
     })
     .useMocker((token) => {
@@ -128,8 +182,8 @@ describe("Catalog Module", () => {
     .compile();
 
     const catalogService = moduleRef.get(CatalogService);
-    catalogService.modifyCatalog(catalog)
-    catalogService.addDataset(dataset)
+    await catalogService.initialized;
+    await catalogService.addDataset(dataset);
     
     app = moduleRef.createNestApplication();
     await app.init();
@@ -146,7 +200,11 @@ describe("Catalog Module", () => {
         .set('Authorization', `Bearer ${sampleVpToken()}`)
         .send(await new CatalogRequestMessage({}).serialize())
         .expect(200)
-      expect(response.body).toStrictEqual(await catalogWithDataset.serialize());
+
+      expect(response.body["dcat:service"].length).toBe(1);
+      expect(response.body["dct:creator"]["@id"]).toBe("urn:uuid:de8e1b94-4169-4491-986d-6a1c528b867b");
+      expect(response.body["dct:publisher"]).toBe("urn:uuid:de8e1b94-4169-4491-986d-6a1c528b867b");
+      expect(response.body["dct:title"]).toBe("Test Connector");
     });
     it("Invalid body should result in a 400", async () => {
       request(app.getHttpServer())

@@ -5,7 +5,7 @@ import { AgreementDto, OfferDto } from "./negotiation.dto";
 export interface ContractRequestMessageDto extends ContextDto {
   '@type': 'dspace:ContractRequestMessage'
   'dspace:processId': string;
-  'odrl:offer': OfferDto;
+  'dspace:offer': OfferDto;
   'dspace:callbackAddress': string;
   'dspace:dataSet': string;
 }
@@ -13,7 +13,7 @@ export interface ContractRequestMessageDto extends ContextDto {
 export interface ContractOfferMessageDto extends ContextDto {
   '@type': 'dspace:ContractOfferMessage'
   'dspace:processId': string;
-  'odrl:offer': OfferDto;
+  'dspace:offer': OfferDto;
   'dspace:callbackAddress': string;
 }
 export interface ContractNegotiationTerminationMessageDto extends ContextDto {
@@ -84,5 +84,5 @@ export interface ContractAgreementVerificationMessageDto extends ContextDto {
 export interface ContractAgreementMessageDto extends ContextDto {
   '@type': 'dspace:ContractAgreementMessage'
   'dspace:processId': string;
-  'odrl:agreement': AgreementDto;
+  'dspace:agreement': AgreementDto;
 }

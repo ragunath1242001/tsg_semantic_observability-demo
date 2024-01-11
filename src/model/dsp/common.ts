@@ -46,7 +46,7 @@ export class Reference<OutType extends ContextDto = ReferenceDto & ContextDto> e
     if (typeof value === 'string') {
       this.id = value;
     } else {
-      this.id = value.id  || `urn:uuid:${crypto.randomUUID()}`
+      this.id = value?.id  || `urn:uuid:${crypto.randomUUID()}`
     }
   }
 }
@@ -65,8 +65,8 @@ export class Multilanguage extends SerializableClass<MultilanguageDto & ContextD
       this.value = value;
       this.language = "en"
     } else {
-      this.value = value.value;
-      this.language = value.language;
+      this.value = value?.value;
+      this.language = value?.language;
     }
   }
 }

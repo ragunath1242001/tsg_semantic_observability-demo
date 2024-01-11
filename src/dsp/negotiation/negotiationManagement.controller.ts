@@ -1,7 +1,7 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Logger, Param, Post, Query, UseGuards } from "@nestjs/common";
-import { Offer } from "../../model/dsp/negotiation/negotiation";
+import { NegotiationDetail, NegotiationStatus, Offer } from "../../model/dsp/negotiation/negotiation";
 import { DspClientService } from "../client/client.service";
-import { NegotiationService, NegotiationDetail, NegotiationStatus } from "./negotiation.service";
+import { NegotiationService } from "./negotiation.service";
 import { DeserializePipe } from "../../utils/deserialize.pipe";
 import { normalizeAddress } from "../../utils/address";
 import { DSPError } from "../../utils/errors/error";
@@ -31,7 +31,7 @@ export class NegotiationManagementController {
   @HttpCode(HttpStatus.OK)
   async requestNewNegotiation(@Body(new DeserializePipe(Offer)) body: Offer, @Query('dataSet') dataSet: string, @Query('address') address: string, @Query('audience') audience: string): Promise<NegotiationDetail> {
     this.logger.log(`Received negotiation request for ${address} with offer ${JSON.stringify(body)}`);
-    const controlPlaneAddress = normalizeAddress(address, 1, "negotiation", "request");
+    const controlPlaneAddress = normalizeAddress(address, 1, "negotiations", "request");
     const negotiationProcess = await this.negotiationService.requestNew(body, dataSet, controlPlaneAddress, audience);
     return negotiationProcess;
   }

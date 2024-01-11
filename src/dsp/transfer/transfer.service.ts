@@ -1,5 +1,5 @@
 import { HttpStatus, Injectable, Logger } from "@nestjs/common"
-import { DataPlaneAddressDto, DataPlaneTransferDto } from "../../model/data-planes/dataPlanes.dto"
+import { DataPlaneAddressDto } from "../../model/data-planes/dataPlanes.dto"
 import { Multilanguage } from "../../model/dsp/common"
 import { DataAddress, EndpointProperty, TransferCompletionMessage, TransferProcess, TransferRequestMessage, TransferStartMessage, TransferSuspensionMessage, TransferTerminationMessage } from "../../model/dsp/transfer/messages"
 import { TransferState } from "../../model/dsp/transfer/messages.dto"
@@ -9,38 +9,20 @@ import { DspClientService } from "../client/client.service"
 import { deserialize } from "../../model/serialize"
 import { DSPError } from "../../utils/errors/error"
 import { ServerConfig } from "../../config"
+import { TransferStatus, TransferRole, TransferEvent, TransferDetail } from "../../model/dsp/transfer/transfer.dto"
+import { TransferEventDao, TransferDetailDao } from "../../model/dsp/transfer/transfer.dao"
+import { InjectRepository } from "@nestjs/typeorm"
+import { Repository } from "typeorm"
 
-
-export type TransferRole = "provider" | "consumer";
-
-export interface TransferEvent {
-  time: Date,
-  state: TransferState,
-  localMessage?: string,
-  code?: string,
-  reason?: Multilanguage[]
-}
-
-export interface TransferStatus {
-  localId: string,
-  remoteId: string,
-  role: TransferRole,
-  remoteAddress: string,
-  remoteParty: string,
-  state: TransferState,
-  process: TransferProcess,
-  agreementId: string,
-  format?: string,
-  dataAddress?: DataAddress,
-  dataPlaneTransfer: DataPlaneTransferDto,
-  localEvents: TransferEvent[],
-  remoteEvents: TransferEvent[]
-}
 
 @Injectable()
 export class TransferService {
-  constructor(private readonly dataPlaneService: DataPlaneService, private readonly dsp: DspClientService, private readonly server: ServerConfig) {}
-  private readonly transfers: TransferStatus[] = []
+  constructor(
+    private readonly dataPlaneService: DataPlaneService, 
+    private readonly dsp: DspClientService, 
+    private readonly server: ServerConfig,
+    @InjectRepository(TransferDetailDao) private readonly transferDetailRepository: Repository<TransferDetailDao>,
+    @InjectRepository(TransferEventDao) private readonly transferEventRepository: Repository<TransferEventDao>) {}
   private readonly logger = new Logger(this.constructor.name);
 
   private readonly providerTransitions: Record<TransferState, TransferState[]> = {
@@ -70,37 +52,55 @@ export class TransferService {
     }
   }
 
-  private checkTransition(direction: "remote" | "local", transfer: TransferStatus, to: TransferState) {
+  private async checkTransition(direction: "remote" | "local", transfer: TransferDetail, to: TransferState) {
     if (!this.allowedTransitions[direction][transfer.role][transfer.state].includes(to)) {
       const event: TransferEvent = {
         time: new Date(),
         state: to,
-        localMessage: `Transfer with process ID ${transfer.localId} cannot transition from ${transfer.state} to ${to}`
+        localMessage: `Transfer with process ID ${transfer.localId} cannot transition from ${transfer.state} to ${to}`,
+        type: direction
       }
-      if (direction === "remote") {
-        transfer.remoteEvents.push(event);
-      } else {
-        transfer.localEvents.push(event);
-      }
+      const eventObj = this.transferEventRepository.create(event);
+      transfer.events.push(eventObj);
+      await this.transferDetailRepository.save(transfer);
       throw new DSPError(`Transfer with process ID ${transfer.localId} cannot transition from ${transfer.state} to ${to}`, HttpStatus.BAD_REQUEST);
     }
   }
 
   async getTransfers(): Promise<TransferStatus[]> {
-    return this.transfers;
+    const transfers = await this.transferDetailRepository.find({
+      select: {
+        localId: true,
+        remoteId: true,
+        role: true,
+        remoteAddress: true,
+        remoteParty: true,
+        state: true,
+        process: {
+          processId: true,
+          transferState: true,
+        },
+        agreementId: true,
+        format: true
+      }
+    })
+    return transfers.map(transfer => new TransferStatus(transfer));
   }
 
-  async getTransfer(processId: string, audience?: string): Promise<TransferStatus | undefined> {
-    if (audience) {
-      return this.transfers.find(transfer => transfer.localId === processId && transfer.remoteParty === audience);
+  async getTransfer(processId: string, audience?: string): Promise<TransferDetail> {
+    const transfer = await this.transferDetailRepository.findOneBy({
+      localId: processId,
+      remoteParty: audience
+    });
+    if (transfer) {
+      return new TransferDetail(transfer)
     } else {
-      return this.transfers.find(transfer => transfer.localId === processId);
+      throw new DSPError(`Cannot get transfer with process ID ${processId}`, HttpStatus.NOT_FOUND)
     }
   }
 
   async initiateTransferProcess(agreementId: string, format: string, dataAddress: DataAddress | undefined, remoteAddress: string, audience: string): Promise<{localId: string, message: TransferRequestMessage, process: TransferProcess}> {
     const localId = `urn:uuid:consumer:${crypto.randomUUID()}`;
-    
     const transferRequestMessage = new TransferRequestMessage({
       agreementId: agreementId,
       format: format,
@@ -113,12 +113,11 @@ export class TransferService {
     if (dataAddress === undefined && dataPlaneTransfer.dataAddress !== undefined) {
       dataAddress = new DataAddress({
         endpointType: dataPlaneTransfer.endpointType,
-        endpoint: dataPlaneTransfer.dataAddress?.endpoint || '',
-        endpointProperties: dataPlaneTransfer.dataAddress?.properties?.map(p => new EndpointProperty(p)) || []
+        endpoint: dataPlaneTransfer.dataAddress.endpoint,
+        endpointProperties: dataPlaneTransfer.dataAddress.properties.map(p => new EndpointProperty(p))
       })
     }
-
-    this.transfers.push({
+    const transfer: TransferDetail = {
       localId: localId,
       remoteId: transferProcess.processId,
       role: "consumer",
@@ -130,12 +129,15 @@ export class TransferService {
       dataAddress: dataAddress,
       dataPlaneTransfer: dataPlaneTransfer,
       process: transferProcess,
-      localEvents: [{
-        time: new Date(),
-        state: TransferState.REQUESTED
-      }],
-      remoteEvents: []
-    });
+      events: [
+        this.transferEventRepository.create({
+          time: new Date(),
+          state: TransferState.REQUESTED,
+          type: 'local'
+        })
+      ]
+    }
+    await this.transferDetailRepository.save(transfer);
     return {
       localId,
       message: transferRequestMessage,
@@ -149,7 +151,7 @@ export class TransferService {
       transferState: TransferState.REQUESTED
     })
     const dataPlaneTransfer = await this.dataPlaneService.requestTransfer(transferRequestMessage, transferProcess.processId, "provider");
-    const transfer: TransferStatus = {
+    const transfer: TransferDetail = {
       localId: transferProcess.processId,
       remoteId: transferRequestMessage.callbackAddress.split("/").slice(-1)[0],
       role: "provider",
@@ -161,13 +163,15 @@ export class TransferService {
       dataAddress: transferRequestMessage.dataAddress,
       dataPlaneTransfer: dataPlaneTransfer,
       process: transferProcess,
-      localEvents: [],
-      remoteEvents: [{
-        time: new Date(),
-        state: TransferState.REQUESTED
-      }]
+      events: [
+        this.transferEventRepository.create({
+          time: new Date(),
+          state: TransferState.REQUESTED,
+          type: 'remote'
+        })
+      ]
     }
-    this.transfers.push(transfer);
+    await this.transferDetailRepository.save(transfer);
     if (dataPlaneTransfer.dataAddress) {
       setTimeout(() => {
         this.start(transferProcess.processId, dataPlaneTransfer.dataAddress, false);
@@ -178,9 +182,6 @@ export class TransferService {
 
   async start(processId: string, dataPlaneAddress: DataPlaneAddressDto | undefined, fromDataPlane: boolean): Promise<{status: string}> {
     const transfer = await this.getTransfer(processId);
-    if (transfer === undefined) {
-      throw new DSPError(`Transfer with process ID ${processId} not found`, HttpStatus.NOT_FOUND);
-    }
     let dataAddress: DataAddress | undefined;
     if (dataPlaneAddress) {
       dataAddress = new DataAddress({
@@ -190,19 +191,23 @@ export class TransferService {
       });
     }
     const transferStartMessage = new TransferStartMessage({
-      processId: transfer.remoteId,
+      processId: transfer.remoteId!,
       dataAddress: dataAddress
     })
-    this.checkTransition("local", transfer, TransferState.STARTED);
-    transfer.localEvents.push({
-      time: new Date(),
-      state: TransferState.STARTED
-    });
+    await this.checkTransition("local", transfer, TransferState.STARTED);
+    transfer.events.push(
+      this.transferEventRepository.create({
+        time: new Date(),
+        state: TransferState.STARTED,
+        type: 'local'
+      })
+    );
     if (!fromDataPlane) {
       await this.dataPlaneService.startTransfer(transfer.dataPlaneTransfer, transferStartMessage)
     }
     await this.dsp.startTransfer(`${transfer.remoteAddress}/start`, transferStartMessage, transfer.remoteParty);
     transfer.state = TransferState.STARTED;
+    await this.transferDetailRepository.save(transfer);
     return {
       status: 'OK'
     }
@@ -211,17 +216,20 @@ export class TransferService {
 
   async handleStart(processId: string, transferStartMessage: TransferStartMessage, audience: string): Promise<{status: string}> {
     const transfer = await this.getTransfer(processId, audience);
-    if (transfer === undefined) {
-      throw new DSPError(`Transfer with process ID ${processId} not found`, HttpStatus.NOT_FOUND);
-    }
-    this.checkTransition("remote", transfer, TransferState.STARTED);
-    transfer.remoteEvents.push({
-      time: new Date(),
-      state: TransferState.STARTED
-    });
+    await this.checkTransition("remote", transfer, TransferState.STARTED);
+    transfer.events.push(
+      this.transferEventRepository.create({
+        time: new Date(),
+        state: TransferState.STARTED,
+        type: 'remote'
+      })
+    );
     await this.dataPlaneService.startTransfer(transfer.dataPlaneTransfer, transferStartMessage)
-
+    if (transferStartMessage.dataAddress) {
+      transfer.dataAddress = transferStartMessage.dataAddress;
+    }
     transfer.state = TransferState.STARTED;
+    await this.transferDetailRepository.save(transfer);
     return {
       status: 'OK'
     }
@@ -229,22 +237,23 @@ export class TransferService {
 
   async complete(processId: string, fromDataPlane: boolean): Promise<{status: string}> {
     const transfer = await this.getTransfer(processId);
-    if (transfer === undefined) {
-      throw new DSPError(`Transfer with process ID ${processId} not found`, HttpStatus.NOT_FOUND);
-    }
-    this.checkTransition("local", transfer, TransferState.COMPLETED);
-    transfer.localEvents.push({
-      time: new Date(),
-      state: TransferState.COMPLETED
-    });
+    await this.checkTransition("local", transfer, TransferState.COMPLETED);
+    transfer.events.push(
+      this.transferEventRepository.create({
+        time: new Date(),
+        state: TransferState.COMPLETED,
+        type: 'local'
+      })
+    );
     const transferCompletionMessage = new TransferCompletionMessage({
-      processId: transfer.remoteId
+      processId: transfer.remoteId!
     });
     if (!fromDataPlane) {
       await this.dataPlaneService.completeTransfer(transfer.dataPlaneTransfer, transferCompletionMessage)
     }
     await this.dsp.completeTransfer(`${transfer.remoteAddress}/complete`, transferCompletionMessage, transfer.remoteParty);
     transfer.state = TransferState.COMPLETED;
+    await this.transferDetailRepository.save(transfer);
     return {
       status: 'OK'
     }
@@ -252,17 +261,18 @@ export class TransferService {
   
   async handleComplete(processId: string, transferCompletionMessage: TransferCompletionMessage, audience: string): Promise<{status: string}> {
     const transfer = await this.getTransfer(processId, audience);
-    if (transfer === undefined) {
-      throw new DSPError(`Transfer with process ID ${processId} not found`, HttpStatus.NOT_FOUND);
-    }
-    this.checkTransition("remote", transfer, TransferState.COMPLETED);
-    transfer.remoteEvents.push({
-      time: new Date(),
-      state: TransferState.COMPLETED
-    });
+    await this.checkTransition("remote", transfer, TransferState.COMPLETED);
+    transfer.events.push(
+      this.transferEventRepository.create({
+        time: new Date(),
+        state: TransferState.COMPLETED,
+        type: 'remote'
+      })
+    );
     await this.dataPlaneService.completeTransfer(transfer.dataPlaneTransfer, transferCompletionMessage)
 
     transfer.state = TransferState.COMPLETED;
+    await this.transferDetailRepository.save(transfer);
     return {
       status: 'OK'
     }
@@ -270,26 +280,27 @@ export class TransferService {
   
   async terminate(processId: string, code: string, reason: string, fromDataPlane: boolean): Promise<{status: string}> {
     const transfer = await this.getTransfer(processId);
-    if (transfer === undefined) {
-      throw new DSPError(`Transfer with process ID ${processId} not found`, HttpStatus.NOT_FOUND);
-    }
-    this.checkTransition("local", transfer, TransferState.TERMINATED);
+    await this.checkTransition("local", transfer, TransferState.TERMINATED);
     const transferTerminationMessage = new TransferTerminationMessage({
-      processId: transfer.remoteId,
+      processId: transfer.remoteId!,
       code: code,
       reason: [new Multilanguage(reason)]
     });
-    transfer.localEvents.push({
-      time: new Date(),
-      state: TransferState.TERMINATED,
-      code: code,
-      reason: transferTerminationMessage.reason
-    });
+    transfer.events.push(
+      this.transferEventRepository.create({
+        time: new Date(),
+        state: TransferState.TERMINATED,
+        code: code,
+        reason: transferTerminationMessage.reason,
+        type: 'local'
+      })
+    );
     if (!fromDataPlane) {
       await this.dataPlaneService.terminateTransfer(transfer.dataPlaneTransfer, transferTerminationMessage)
     }
-    await this.dsp.terminateTransfer(`${transfer.remoteAddress}/complete`, transferTerminationMessage, transfer.remoteParty);
+    await this.dsp.terminateTransfer(`${transfer.remoteAddress}/terminate`, transferTerminationMessage, transfer.remoteParty);
     transfer.state = TransferState.TERMINATED;
+    await this.transferDetailRepository.save(transfer);
     return {
       status: 'OK'
     }
@@ -297,19 +308,20 @@ export class TransferService {
   
   async handleTerminate(processId: string, transferTerminationMessage: TransferTerminationMessage, audience: string): Promise<{status: string}> {
     const transfer = await this.getTransfer(processId, audience);
-    if (transfer === undefined) {
-      throw new DSPError(`Transfer with process ID ${processId} not found`, HttpStatus.NOT_FOUND);
-    }
-    this.checkTransition("remote", transfer, TransferState.TERMINATED);
-    transfer.remoteEvents.push({
-      time: new Date(),
-      state: TransferState.TERMINATED,
-      code: transferTerminationMessage.code,
-      reason: transferTerminationMessage.reason
-    });
+    await this.checkTransition("remote", transfer, TransferState.TERMINATED);
+    transfer.events.push(
+      this.transferEventRepository.create({
+        time: new Date(),
+        state: TransferState.TERMINATED,
+        code: transferTerminationMessage.code,
+        reason: transferTerminationMessage.reason,
+        type: 'remote'
+      })
+    );
     await this.dataPlaneService.terminateTransfer(transfer.dataPlaneTransfer, transferTerminationMessage)
 
     transfer.state = TransferState.TERMINATED;
+    await this.transferDetailRepository.save(transfer);
     return {
       status: 'OK'
     }
@@ -317,24 +329,25 @@ export class TransferService {
 
   async suspend(processId: string, reason: string, fromDataPlane: boolean): Promise<{status: string}> {
     const transfer = await this.getTransfer(processId);
-    if (transfer === undefined) {
-      throw new DSPError(`Transfer with process ID ${processId} not found`, HttpStatus.NOT_FOUND);
-    }
-    this.checkTransition("local", transfer, TransferState.SUSPENDED);
+    await this.checkTransition("local", transfer, TransferState.SUSPENDED);
     const transferSuspensionMessage = new TransferSuspensionMessage({
-      processId: transfer.remoteId,
+      processId: transfer.remoteId!,
       reason: [new Multilanguage(reason)]
     })
-    transfer.localEvents.push({
-      time: new Date(),
-      state: TransferState.SUSPENDED,
-      reason: transferSuspensionMessage.reason
-    });
+    transfer.events.push(
+      this.transferEventRepository.create({
+        time: new Date(),
+        state: TransferState.SUSPENDED,
+        reason: transferSuspensionMessage.reason,
+        type: 'local'
+      })
+    );
     if (!fromDataPlane) {
       await this.dataPlaneService.suspendTransfer(transfer.dataPlaneTransfer, transferSuspensionMessage)
     }
-    await this.dsp.suspendTransfer(`${transfer.remoteAddress}/complete`, transferSuspensionMessage, transfer.remoteParty);
+    await this.dsp.suspendTransfer(`${transfer.remoteAddress}/suspend`, transferSuspensionMessage, transfer.remoteParty);
     transfer.state = TransferState.SUSPENDED;
+    await this.transferDetailRepository.save(transfer);
     return {
       status: 'OK'
     }
@@ -342,18 +355,18 @@ export class TransferService {
 
   async handleSuspend(processId: string, transferSuspensionMessage: TransferSuspensionMessage, audience: string): Promise<{status: string}> {
     const transfer = await this.getTransfer(processId, audience);
-    if (transfer === undefined) {
-      throw new DSPError(`Transfer with process ID ${processId} not found`, HttpStatus.NOT_FOUND);
-    }
-    this.checkTransition("remote", transfer, TransferState.SUSPENDED);
-    transfer.remoteEvents.push({
-      time: new Date(),
-      state: TransferState.SUSPENDED,
-      reason: transferSuspensionMessage.reason
-    });
+    await this.checkTransition("remote", transfer, TransferState.SUSPENDED);
+    transfer.events.push(
+      this.transferEventRepository.create({
+        time: new Date(),
+        state: TransferState.SUSPENDED,
+        reason: transferSuspensionMessage.reason,
+        type: 'remote'
+      })
+    );
     await this.dataPlaneService.suspendTransfer(transfer.dataPlaneTransfer, transferSuspensionMessage)
     transfer.state = TransferState.SUSPENDED;
-
+    await this.transferDetailRepository.save(transfer);
     return {
       status: 'OK'
     }

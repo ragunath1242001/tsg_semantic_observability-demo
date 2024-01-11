@@ -17,7 +17,7 @@ export class ContractRequestMessage extends SerializableClass<ContractRequestMes
   @IsOptional()
   @IsString()
   processId: string;
-  @Namespace("odrl")
+  @Namespace("dspace")
   @ValidateNested()
   @IsNotEmpty()
   offer: Offer;
@@ -48,7 +48,7 @@ export class ContractOfferMessage extends SerializableClass<ContractOfferMessage
   @Namespace("dspace")
   @IsNotEmpty()
   processId: string;
-  @Namespace("odrl")
+  @Namespace("dspace")
   @ValidateNested()
   @IsNotEmpty()
   offer: Offer;
@@ -217,7 +217,7 @@ export class ContractAgreementMessage extends SerializableClass<ContractAgreemen
   @Namespace("dspace")
   @IsNotEmpty()
   processId: string;
-  @Namespace("odrl")
+  @Namespace("dspace")
   @IsNotEmpty()
   @ValidateNested()
   agreement: Agreement;

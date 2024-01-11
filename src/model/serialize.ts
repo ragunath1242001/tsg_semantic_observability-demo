@@ -5,6 +5,9 @@ import { serializableSymbol, idSymbol, languageSymbol, valueSymbol, namespaceSym
 import { compact } from "./jsonld";
 
 export async function serialize(obj: any, root = true): Promise<any> {
+  if (obj === null) {
+    return null;
+  }
   if (Array.isArray(obj)) {
     return await Promise.all(obj.map((entry) => serialize(entry, false)));
   }
@@ -46,14 +49,20 @@ export async function serialize(obj: any, root = true): Promise<any> {
             result["@value"] = value;
           } else {
             const namespace = Reflect.getMetadata(namespaceSymbol, obj, property);
-            if (namespace) {
-              result[`${namespace}:${property}`] = await serialize(value, false);
-            } else {
-              result[`${property}`] = await serialize(value, false);
+            const serializedValue = await serialize(value, false);
+            if (serializedValue !== null && serializedValue !== undefined) {
+              if (namespace) {
+                result[`${namespace}:${property}`] = serializedValue;
+              } else {
+                result[`${property}`] = serializedValue;
+              }
             }
           }
         } catch (error) {
-          result[`${property}`] = await serialize(value, false);
+          const serializedValue = await serialize(value, false);
+          if (serializedValue !== null && serializedValue !== undefined) {
+            result[`${property}`] = serializedValue;
+          }
         }
       }
     }
