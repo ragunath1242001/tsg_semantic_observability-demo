@@ -10,7 +10,7 @@ import { KeyService } from './keys.service.js';
 import { describe, expect, beforeAll, afterAll, it, jest } from '@jest/globals';
 import { SetupServer, setupServer } from "msw/node";
 import { HttpResponse, PathParams, http } from "msw";
-import { CredentialSubject, VerifiableCredential, VerifiablePresentation } from '../model/credentials.dto.js';
+import { CredentialSubject, VerifiableCredential, VerifiablePresentation } from "@tsg-dsp/common";
 import { toArray } from '../utils/unions.js';
 import { ComplianceRequest, LegalRegistrationNumberRequest } from '../model/gaiax.dto.js';
 

@@ -1,5 +1,5 @@
 import { Body, Controller, DefaultValuePipe, Get, HttpStatus, ParseBoolPipe, Post, Query } from "@nestjs/common";
-import { PresentationValidation, VerifiablePresentationJsonLd, VerifiablePresentationJwt } from "../model/credentials.dto.js";
+import { PresentationValidation, VerifiablePresentationJsonLd, VerifiablePresentationJwt } from "@tsg-dsp/common";
 import { AppError } from "../utils/error.js";
 import { PresentationService } from "./presentation.service.js";
 import { Roles } from "../auth/roles.guard.js";

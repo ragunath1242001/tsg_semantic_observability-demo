@@ -1,7 +1,7 @@
 import { DIDDocument } from "did-resolver";
 import { JWK } from "jose";
 import { Column, Entity, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
-import { VerifiableCredential, CredentialSubject } from "./credentials.dto.js";
+import { VerifiableCredential, CredentialSubject } from "@tsg-dsp/common";
 import { MetaEntity } from "./common.dao.js";
 
 @Entity()
