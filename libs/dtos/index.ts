@@ -1,0 +1,1 @@
+export * from './ssi/verifiablePresentations.dto';

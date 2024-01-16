@@ -10,6 +10,7 @@ import { DataPlaneDetailsDao, DataPlaneStatusDao } from "../model/data-planes/da
 import { DataPlaneCreation } from "../model/data-planes/dataPlanes.dto";
 import { DSPError } from "../utils/errors/error";
 import { Dataset, Distribution, DataService } from "../model/dsp/catalog/catalog";
+
 jest.useFakeTimers();
 describe("DataPlane Service", () => {
     let dataPlaneService: DataPlaneService
@@ -43,9 +44,9 @@ describe("DataPlane Service", () => {
     })
 
     afterAll(async () => {
-      await TypeOrmTestHelper.instance.teardownTestDB();
+        await TypeOrmTestHelper.instance.teardownTestDB();
     });
-    
+
     describe("Add, get and update dataplane", () => {
 
         it("Dataplane creation", async () => {
