@@ -1,7 +1,7 @@
 import { Body, Controller, HttpStatus, Logger } from "@nestjs/common";
 import { Get, HttpCode, Param, Post, UseGuards } from "@nestjs/common/decorators";
 import { DeserializePipe } from "../../utils/deserialize.pipe";
-import { ContractNegotiationDto } from "../../model/dsp/negotiation/messages.dto";
+import { ContractNegotiationDto } from "@tsg-dsp/common";
 import { ContractAgreementMessage, ContractAgreementVerificationMessage, ContractNegotiation, ContractNegotiationEventMessage, ContractNegotiationTerminationMessage, ContractOfferMessage, ContractRequestMessage } from "../../model/dsp/negotiation/messages";
 import { NegotiationService } from "./negotiation.service";
 import { DSPError } from "../../utils/errors/error";

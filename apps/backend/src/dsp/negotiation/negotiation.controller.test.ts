@@ -3,7 +3,7 @@ import { NegotiationController } from "./negotiation.controller";
 import { HttpStatus } from "@nestjs/common";
 import { ContractAgreementMessage, ContractAgreementVerificationMessage, ContractNegotiation, ContractNegotiationEventMessage, ContractNegotiationTerminationMessage, ContractOfferMessage, ContractRequestMessage } from "../../model/dsp/negotiation/messages";
 import { Agreement, Offer } from "../../model/dsp/negotiation/negotiation";
-import { ContractNegotiationState, NegotiationEvent, ProofTypes } from "../../model/dsp/negotiation/messages.dto";
+import { ContractNegotiationState, NegotiationEvent, ProofTypes } from "@tsg-dsp/common";
 import { Multilanguage } from "../../model/dsp/common";
 import { NegotiationService } from "./negotiation.service";
 import { DspClientService } from "../client/client.service";

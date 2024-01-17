@@ -1,7 +1,7 @@
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { Multilanguage } from "../../model/dsp/common";
 import { ContractAgreementMessage, ContractAgreementVerificationMessage, ContractNegotiation, ContractNegotiationEventMessage, ContractNegotiationTerminationMessage, ContractOfferMessage, ContractRequestMessage } from "../../model/dsp/negotiation/messages";
-import { ContractNegotiationState, NegotiationEvent, ProofTypes } from "../../model/dsp/negotiation/messages.dto";
+import { ContractNegotiationState, NegotiationEvent, ProofTypes } from "@tsg-dsp/common";
 import { Offer, Agreement, NegotiationDetail, NegotiationProcessEvent, NegotiationRole, NegotiationStatus } from "../../model/dsp/negotiation/negotiation";
 import crypto from "crypto";
 import { DspClientService } from "../client/client.service";

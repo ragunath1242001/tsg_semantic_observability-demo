@@ -2,7 +2,7 @@ import crypto from "crypto";
 import { Id, Language, Serializable, Value } from "../decorators";
 import { serialize } from "../serialize";
 import { IsDateString, IsDecimal, IsNotEmpty, Matches, ValidationError, validateSync } from "class-validator";
-import { ContextDto, DecimalDto, DurationDto, MultilanguageDto, ReferenceDto, TimeDto, URIDto } from "./common.dto";
+import { ContextDto, DecimalDto, DurationDto, MultilanguageDto, ReferenceDto, TimeDto, URIDto } from "@tsg-dsp/common";
 import { Logger } from "@nestjs/common";
 
 export class ClassValidationError extends Error {

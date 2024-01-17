@@ -1,5 +1,5 @@
 import { Body, Controller, HttpCode, HttpStatus, Logger, Param, Post, UseGuards } from "@nestjs/common";
-import { DataPlaneCreation, DataPlaneDetailsDto } from "../model/data-planes/dataPlanes.dto";
+import { DataPlaneCreation, DataPlaneDetailsDto } from "@libs/dtos";
 import { DataPlaneService } from "./dataPlane.service";
 import { DeserializePipe } from "../utils/deserialize.pipe";
 import { Dataset } from "../model/dsp/catalog/catalog";

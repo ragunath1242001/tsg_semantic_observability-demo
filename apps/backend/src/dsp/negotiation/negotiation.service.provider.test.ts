@@ -10,7 +10,7 @@ import { AuthService } from "../../auth/auth.service";
 import { Offer } from "../../model/dsp/negotiation/negotiation";
 import { SetupServer, setupServer } from "msw/node";
 import { HttpResponse, PathParams, http } from "msw";
-import { ContractAgreementVerificationMessageDto, ContractNegotiationState, NegotiationEvent, ProofTypes } from "../../model/dsp/negotiation/messages.dto";
+import { ContractAgreementVerificationMessageDto, ContractNegotiationState, NegotiationEvent, ProofTypes } from "@tsg-dsp/common";
 import { ContractAgreementVerificationMessage, ContractNegotiationEventMessage, ContractNegotiationTerminationMessage, ContractRequestMessage } from "../../model/dsp/negotiation/messages";
 import { Multilanguage } from "../../model/dsp/common";
 

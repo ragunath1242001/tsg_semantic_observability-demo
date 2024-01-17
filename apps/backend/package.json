@@ -25,6 +25,7 @@
     "@nestjs/platform-express": "^10.1.3",
     "@nestjs/schedule": "^3.0.2",
     "@nestjs/typeorm": "^10.0.0",
+    "@tsg-dsp/common": "^0.0.1",
     "axios": "^1.4.0",
     "bcrypt": "^5.1.1",
     "class-transformer": "^0.5.1",

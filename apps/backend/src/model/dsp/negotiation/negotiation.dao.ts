@@ -1,6 +1,6 @@
 import { Column, Entity, ManyToOne, OneToMany, PrimaryColumn, Relation } from "typeorm";
 import { AutoIdEntity, MetaEntity } from "../../common.dao";
-import { ContractNegotiationState } from "./messages.dto";
+import { ContractNegotiationState } from "@tsg-dsp/common";
 import { Multilanguage } from "../common";
 import { ContractAgreementVerificationMessage } from "./messages";
 import { Agreement, INegotiationDetail, INegotiationProcessEvent, NegotiationProcessEvent, NegotiationRole, Offer } from "./negotiation";

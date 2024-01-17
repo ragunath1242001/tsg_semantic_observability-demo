@@ -1,14 +1,11 @@
 import { Injectable, Logger } from "@nestjs/common";
 import axios, { AxiosRequestConfig } from "axios";
-import { CatalogDto, DatasetDto } from "../../model/dsp/catalog/catalog.dto";
 import { CatalogRequestMessage, Filter } from "../../model/dsp/catalog/messages";
 import { SerializableClass } from "../../model/dsp/common";
-import { ContextDto } from "../../model/dsp/common.dto";
-import { ContractNegotiationDto } from "../../model/dsp/negotiation/messages.dto";
 import { ContractAgreementMessage, ContractAgreementVerificationMessage, ContractNegotiationEventMessage, ContractNegotiationTerminationMessage, ContractOfferMessage, ContractRequestMessage } from "../../model/dsp/negotiation/messages";
 import { TransferCompletionMessage, TransferRequestMessage, TransferStartMessage, TransferSuspensionMessage, TransferTerminationMessage } from "../../model/dsp/transfer/messages";
-import { TransferProcessDto } from "../../model/dsp/transfer/messages.dto";
 import { AuthService } from "../../auth/auth.service";
+import { CatalogDto, DatasetDto, ContractNegotiationDto, TransferProcessDto, ContextDto } from "@tsg-dsp/common";
 
 export class DSPClientError extends Error {
   err: unknown;

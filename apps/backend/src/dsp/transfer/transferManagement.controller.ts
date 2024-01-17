@@ -1,11 +1,11 @@
 import { Body, Controller, Get, HttpCode, HttpException, HttpStatus, Logger, Param, Post, Query, UseGuards } from "@nestjs/common";
 import { DspClientService } from "../client/client.service";
 import { TransferService } from "./transfer.service";
-import { TransferProcessDto } from "../../model/dsp/transfer/messages.dto";
+import { TransferProcessDto } from "@tsg-dsp/common";
 import { normalizeAddress } from "../../utils/address";
-import { DataPlaneAddressDto } from "../../model/data-planes/dataPlanes.dto";
+import { DataPlaneAddressDto } from "@libs/dtos";
 import { ManagementGuard } from "../../auth/management.guard";
-import { TransferStatus } from "../../model/dsp/transfer/transfer.dto";
+import { TransferStatus } from "@libs/dtos";
 
 @UseGuards(ManagementGuard)
 @Controller('management/transfer')
