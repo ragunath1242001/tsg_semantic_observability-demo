@@ -1,17 +1,17 @@
-FROM node:20-alpine as builder
+FROM node:20-slim AS base
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable
 
-WORKDIR /app
-COPY package* /app/
-RUN npm install
-COPY . .
-RUN npm run tsc && npm run lint
+FROM base AS build
+COPY . /usr/src/app
+WORKDIR /usr/src/app
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+RUN pnpm run -r build
+RUN pnpm deploy --filter=backend --prod /prod/backend
 
-FROM node:20-alpine
-
-WORKDIR /app
-COPY package* /app/
-RUN npm install --production
-COPY --from=builder /app/build/ /app/
-
+FROM base
+COPY --from=build /prod/backend /prod/backend
+WORKDIR /prod/backend
 EXPOSE 3000
-ENTRYPOINT [ "node", "app.js" ]
+CMD [ "pnpm", "start" ]

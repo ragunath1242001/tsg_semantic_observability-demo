@@ -1,6 +1,6 @@
 import { Type } from "class-transformer";
-import { IsBoolean, IsDate, IsIn, IsObject, IsOptional, IsString, ValidateNested } from "class-validator";
-import { JWK } from "jose";
+import { IsBoolean, IsIn, IsOptional, IsString, ValidateNested } from "class-validator";
+
 
 export class Signature {
   @IsString()
@@ -39,27 +39,6 @@ export class Credential<T extends CredentialSubject> {
   expirationDate?: string
   @IsString()
   issuanceDate!: string
-}
-
-export class KeyInfo {
-  @IsString()
-  id!: string
-
-  @IsString()
-  @IsIn(['EdDSA','ES384','X509'])
-  type!: 'EdDSA' | 'ES384' | 'X509'
-
-  @IsBoolean()
-  default!: boolean
-
-  @IsObject()
-  publicKey!: JWK
-
-  @IsDate()
-  created!: Date
-
-  @IsDate()
-  modified!: Date
 }
 
 export class VerifiableCredential<T extends CredentialSubject = CredentialSubject> extends Credential<T> {
