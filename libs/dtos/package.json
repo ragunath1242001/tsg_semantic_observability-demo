@@ -1,0 +1,16 @@
+{
+  "name": "@libs/dtos",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.ts",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "private": true,
+  "dependencies": {
+    "class-validator": "^0.14.0",
+    "jose": "^4.14.4",
+    "tslib": "^2.6.2",
+    "typescript": "^5.3.3"
+  }
+}
