@@ -15,10 +15,10 @@
     "rootDir": "src", /* Specify the root folder within your source files. */
     "resolveJsonModule": true, /* Enable importing .json files. */
     /* JavaScript Support */
-    "allowJs": false, /* Allow JavaScript files to be a part of your program. Use the 'checkJS' option to get errors from these files. */
+    "allowJs": true, /* Allow JavaScript files to be a part of your program. Use the 'checkJS' option to get errors from these files. */
     /* Emit */
     "sourceMap": true, /* Create source map files for emitted JavaScript files. */
-    "outDir": "build", /* Specify an output folder for all emitted files. */
+    "outDir": "dist", /* Specify an output folder for all emitted files. */
     /* Interop Constraints */
     "esModuleInterop": true, /* Emit additional JavaScript to ease support for importing CommonJS modules. This enables 'allowSyntheticDefaultImports' for type compatibility. */
     "forceConsistentCasingInFileNames": true, /* Ensure that casing is correct in imports. */
@@ -31,6 +31,6 @@
   "exclude": [
     "jest.config.ts",
     "coverage/",
-    "build"
+    "dist/"
   ]
 }
