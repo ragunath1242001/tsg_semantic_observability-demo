@@ -7,7 +7,7 @@ import { TypeOrmTestHelper } from "../utils/testhelper";
 import { DataPlaneService } from "./dataPlane.service"
 import { CatalogService } from "../dsp/catalog/catalog.service";
 import { DataPlaneDetailsDao, DataPlaneStatusDao } from "../model/data-planes/dataPlanes.dao";
-import { DataPlaneCreation } from "../model/data-planes/dataPlanes.dto";
+import { DataPlaneCreation } from "@libs/dtos";
 import { DSPError } from "../utils/errors/error";
 import { Dataset, Distribution, DataService } from "../model/dsp/catalog/catalog";
 

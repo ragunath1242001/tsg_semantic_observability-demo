@@ -1,10 +1,10 @@
 import { Column, Entity, ManyToOne, OneToMany, PrimaryColumn, Relation } from "typeorm";
 import { AutoIdEntity, MetaEntity } from "../../common.dao";
-import { DataPlaneTransferDto } from "../../data-planes/dataPlanes.dto";
+import { DataPlaneTransferDto } from "@libs/dtos";
 import { Multilanguage } from "../common";
 import { TransferProcess, DataAddress } from "./messages";
-import { TransferState } from "./messages.dto";
-import { ITransferEvent, ITransferStatus, TransferEvent } from "./transfer.dto";
+import { TransferState } from "@tsg-dsp/common";
+import { ITransferEvent, ITransferStatus, TransferEvent } from "@libs/dtos";
 
 export type TransferRole = "provider" | "consumer";
 

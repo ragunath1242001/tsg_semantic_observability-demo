@@ -8,7 +8,7 @@ import {
   Permission,
   Prohibition,
 } from "./negotiation";
-import { Action, AgreementDto, OfferDto, LeftOperand, Operator } from "./negotiation.dto";
+import { Action, AgreementDto, OfferDto, LeftOperand, Operator } from "@tsg-dsp/common";
 
 test("Contract offer serialization", async () => {
   const offer = new Offer({

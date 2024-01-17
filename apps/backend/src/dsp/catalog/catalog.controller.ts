@@ -1,4 +1,4 @@
-import { CatalogDto, DatasetDto } from "../../model/dsp/catalog/catalog.dto";
+import { CatalogDto, DatasetDto } from "@tsg-dsp/common";
 import { Body, Controller, HttpStatus, Logger } from "@nestjs/common";
 import { Get, HttpCode, Param, Post, UseGuards } from "@nestjs/common/decorators";
 import { CatalogRequestMessage } from "../../model/dsp/catalog/messages";

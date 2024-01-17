@@ -1,7 +1,7 @@
 import { ArrayNotEmpty, IsNotEmpty, IsOptional, ValidateNested } from "class-validator";
 import { Serializable, Namespace } from "../../decorators";
 import { Multilanguage, SerializableClass } from "../common";
-import { TransferCompletionMessageDto, TransferErrorDto, TransferProcessDto, TransferRequestMessageDto, TransferStartMessageDto, TransferSuspensionMessageDto, TransferTerminationMessageDto, TransferState, EndpointPropertyDto, DataAddressDto } from "./messages.dto";
+import { TransferCompletionMessageDto, TransferErrorDto, TransferProcessDto, TransferRequestMessageDto, TransferStartMessageDto, TransferSuspensionMessageDto, TransferTerminationMessageDto, TransferState, EndpointPropertyDto, DataAddressDto } from "@tsg-dsp/common";
 
 export interface ITransferCompletionMessage {
   processId: string;

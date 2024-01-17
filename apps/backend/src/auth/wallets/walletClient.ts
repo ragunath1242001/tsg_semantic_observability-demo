@@ -1,7 +1,4 @@
-
-export interface VerifiablePresentationJwt {
-  vp: string
-}
+import { VerifiablePresentationJwt } from "@tsg-dsp/common";
 
 export interface ValidationResult {
   [key: string]: boolean | boolean[]

@@ -3,10 +3,10 @@ import axios from "axios";
 import qs from "qs";
 import { IamConfig } from "../../config";
 import { DSPClientError, DSPError } from "../../utils/errors/error";
-import { ValidationResult, VerifiablePresentationJwt, WalletClient } from "./walletClient";
+import { ValidationResult, WalletClient } from "./walletClient";
 import { DIDDocument } from "did-resolver";
 import jwt from "jsonwebtoken";
-import { VerifiableCredential } from "../../model/verifiablePresentations.dto";
+import { CredentialSubject, VerifiableCredential, VerifiablePresentationJwt } from "@tsg-dsp/common";
 
 export interface MiWWalletDetails {
   name: string
@@ -14,7 +14,7 @@ export interface MiWWalletDetails {
   bpn: string
   algorithm: string,
   didDocument: DIDDocument,
-  verifiableCredentials: VerifiableCredential[]
+  verifiableCredentials: VerifiableCredential<CredentialSubject>[]
 }
 
 export class ManagedIdentityWalletClient extends WalletClient {

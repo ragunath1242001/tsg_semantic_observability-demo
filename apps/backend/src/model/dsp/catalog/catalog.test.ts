@@ -2,7 +2,7 @@ import { deserialize } from "../../serialize";
 import { Multilanguage, Reference } from "../common";
 import { Offer } from "../negotiation/negotiation";
 import { Resource } from "./catalog";
-import { ResourceDto } from "./catalog.dto";
+import { ResourceDto } from "@tsg-dsp/common";
 
 test("Resource serialization", async () => {
   const resource = new Resource({

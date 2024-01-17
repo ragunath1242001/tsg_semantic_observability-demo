@@ -3,7 +3,7 @@ import { MetaEntity, mapToInstances } from "../../common.dao";
 import { CatalogRecord, DataService, Dataset, Distribution, ICatalog, ICatalogRecord, IDataService, IDataset, IDistribution, IResource, Resource } from "./catalog";
 import { Reference, Multilanguage, Time, Decimal, Duration } from "../common";
 import { Policy } from "../negotiation/negotiation";
-import { DatasetDto } from "./catalog.dto";
+import { DatasetDto } from "@tsg-dsp/common";
 
 
 @Entity({name: "resource"})

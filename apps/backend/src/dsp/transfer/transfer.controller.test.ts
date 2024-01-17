@@ -6,7 +6,7 @@ import { Multilanguage } from "../../model/dsp/common";
 import { HttpResponse, http } from "msw"; 
 import { SetupServer, setupServer } from "msw/node";
 import { DspClientService } from "../client/client.service";
-import { TransferState } from "../../model/dsp/transfer/messages.dto";
+import { TransferState } from "@tsg-dsp/common";
 import { Catalog } from "../../model/dsp/catalog/catalog";
 import { ServerConfig } from "../../config";
 import { plainToClass } from "class-transformer";

@@ -2,7 +2,7 @@ import { Body, Controller, HttpStatus, Logger } from "@nestjs/common";
 import { Get, HttpCode, Param, Post, UseGuards } from "@nestjs/common/decorators";
 import { DeserializePipe } from "../../utils/deserialize.pipe";
 import { TransferCompletionMessage, TransferRequestMessage, TransferStartMessage, TransferSuspensionMessage, TransferTerminationMessage } from "../../model/dsp/transfer/messages";
-import { TransferProcessDto } from "../../model/dsp/transfer/messages.dto";
+import { TransferProcessDto } from "@tsg-dsp/common";
 import { TransferService } from "./transfer.service";
 import { DSPError } from "../../utils/errors/error";
 import { VerifiablePresentationGuard } from "../../auth/verifiablePresentation.guard";

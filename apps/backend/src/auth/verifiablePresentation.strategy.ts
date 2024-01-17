@@ -4,11 +4,12 @@ import { AuthService } from "./auth.service";
 import { Strategy } from "passport-http-bearer";
 import { DSPError } from "../utils/errors/error";
 import jwt from "jsonwebtoken";
-import { VerifiablePresentation } from "../model/verifiablePresentations.dto";
 import { plainToInstance } from "class-transformer";
+import { CredentialSubject, VerifiableCredential, VerifiablePresentation } from "@tsg-dsp/common";
+import { toArray } from "../utils/unions";
 
 
-export const VP = createParamDecorator((_, context: ExecutionContext): VerifiablePresentation | undefined => {
+export const VP = createParamDecorator((_, context: ExecutionContext): VerifiablePresentation<VerifiableCredential<CredentialSubject>> | undefined => {
   const request = context.switchToHttp().getRequest();
   if (!request.user) return undefined;
   const vp = plainToInstance(VerifiablePresentation, request.user);
@@ -19,11 +20,7 @@ export const VPId = createParamDecorator((_, context: ExecutionContext): string 
   const request = context.switchToHttp().getRequest();
   if (!request.user) return undefined;
   const vp = plainToInstance(VerifiablePresentation, request.user);
-  if (vp.verifiableCredential instanceof Array) {
-    return vp.verifiableCredential[0].credentialSubject.id;
-  } else {
-    return vp.verifiableCredential.credentialSubject.id;
-  }
+  return toArray(toArray(vp.verifiableCredential)[0].credentialSubject)[0].id;
 });
 
 @Injectable()

@@ -2,7 +2,7 @@ import { IsNotEmpty, IsOptional, IsString, ValidateNested } from "class-validato
 import { Namespace, Serializable } from "../../decorators";
 import { Multilanguage, SerializableClass } from "../common";
 import { Catalog } from "./catalog";
-import { CatalogErrorDto, CatalogMessageDto, CatalogRequestMessageDto, DatasetRequestMessageDto } from "./messages.dto";
+import { CatalogErrorDto, CatalogMessageDto, CatalogRequestMessageDto, DatasetRequestMessageDto } from "@tsg-dsp/common";
 
 export interface ICatalogError {
   code?: string;

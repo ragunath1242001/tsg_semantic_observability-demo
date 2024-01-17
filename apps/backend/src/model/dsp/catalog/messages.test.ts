@@ -2,7 +2,7 @@ import { deserialize } from "../../serialize";
 import { Multilanguage } from "../common";
 import { Catalog } from "./catalog";
 import { CatalogError, CatalogMessage, CatalogRequestMessage, DatasetRequestMessage } from "./messages";
-import { CatalogErrorDto, CatalogMessageDto, CatalogRequestMessageDto, DatasetRequestMessageDto } from "./messages.dto";
+import { CatalogErrorDto, CatalogMessageDto, CatalogRequestMessageDto, DatasetRequestMessageDto } from "@tsg-dsp/common";
 
 test("Catalog Error", async () => {
   const catalogError = new CatalogError({

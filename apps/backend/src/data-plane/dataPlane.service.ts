@@ -1,5 +1,5 @@
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
-import { DataPlaneRequestResponseDto, DataPlaneCreation, DataPlaneDetailsDto, DataPlaneTransferDto} from "../model/data-planes/dataPlanes.dto";
+import { DataPlaneRequestResponseDto, DataPlaneCreation, DataPlaneDetailsDto, DataPlaneTransferDto} from "@libs/dtos";
 import { Interval } from "@nestjs/schedule";
 import { CatalogService } from "../dsp/catalog/catalog.service";
 import { Dataset, IDataset } from "../model/dsp/catalog/catalog";
@@ -44,13 +44,13 @@ export class DataPlaneService {
       return new DataPlaneStatus(dataPlane)
     }
   }
-  async getDataPlaneDetails(identifier: string): Promise<DataPlaneDetails| undefined> {
+  async getDataPlaneDetails(identifier: string): Promise<DataPlaneDetailsDao| undefined> {
     const dataPlaneDetails = await this.dataPlaneDetailsRepository.findOneBy({identifier: identifier});
     if (!dataPlaneDetails) {
       // TODO is DSPError a good error here or do we need a dataplane error of some kind?
       throw new DSPError(`Dataplane details with identifier ${identifier} not found`, HttpStatus.NOT_FOUND)
     } else {
-      return new DataPlaneDetails(dataPlaneDetails)
+      return dataPlaneDetails
     }
   }
 

@@ -3,7 +3,7 @@ import { IamConfig } from "../../config";
 import { ManagedIdentityWalletClient } from "./miw.wallet";
 import { HttpResponse, PathParams, http } from "msw";
 import { SetupServer, setupServer } from "msw/node";
-import { VerifiablePresentationJwt } from "../../model/verifiablePresentations.dto";
+import { VerifiablePresentationJwt } from "@tsg-dsp/common";
 
 describe('Managed Identity Wallet', () => {
   let server: SetupServer;

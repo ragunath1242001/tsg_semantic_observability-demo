@@ -9,8 +9,7 @@ import {
   Time,
 } from "../common";
 import { Policy } from "../negotiation/negotiation";
-import { CatalogDto, CatalogRecordDto, DataServiceDto, DatasetDto, DistributionDto, ResourceDto } from "./catalog.dto";
-import { ContextDto } from "../common.dto";
+import { ContextDto, CatalogDto, CatalogRecordDto, DataServiceDto, DatasetDto, DistributionDto, ResourceDto } from "@tsg-dsp/common";
 
 export interface IResource extends IReference {
   contactPoint?: Reference;

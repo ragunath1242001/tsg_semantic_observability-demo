@@ -7,10 +7,8 @@ import {
   SerializableClass,
   Value,
 } from "../common";
-import { Action, AgreementDto, ConstraintDto, DutyDto, OfferDto, PermissionDto, PolicyDto, ProhibitionDto, LeftOperand, Operator } from "./negotiation.dto";
-import { ContextDto } from "../common.dto";
 import { ContractAgreementVerificationMessage } from "./messages";
-import { ContractNegotiationState } from "./messages.dto";
+import { LeftOperand, Operator, ConstraintDto, ContextDto, Action, PermissionDto, ProhibitionDto, DutyDto, PolicyDto, OfferDto, AgreementDto, ContractNegotiationState } from "@tsg-dsp/common";
 
 export interface IConstraint {
   leftOperand: LeftOperand;

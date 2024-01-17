@@ -17,10 +17,10 @@ import { CatalogDao, CatalogRecordDao, DatasetDao, DataServiceDao, DistributionD
 import { CatalogService } from "../catalog/catalog.service";
 import { http, HttpResponse, PathParams } from "msw";
 import { Catalog } from "../../model/dsp/catalog/catalog";
-import { TransferProcessDto, TransferRequestMessageDto, TransferState } from "../../model/dsp/transfer/messages.dto";
+import { TransferProcessDto, TransferRequestMessageDto, TransferState } from "@tsg-dsp/common";
 import { DataAddress, EndpointProperty, TransferCompletionMessage, TransferRequestMessage, TransferStartMessage, TransferSuspensionMessage, TransferTerminationMessage } from "../../model/dsp/transfer/messages";
 import { Multilanguage } from "../../model/dsp/common";
-import { DataPlaneRequestResponseDto, DataPlaneTransferDto } from "../../model/data-planes/dataPlanes.dto";
+import { DataPlaneRequestResponseDto, DataPlaneTransferDto } from "@libs/dtos";
 
 jest.useFakeTimers({doNotFake: ['Date']});
 

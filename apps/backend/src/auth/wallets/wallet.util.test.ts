@@ -2,7 +2,7 @@ import { HttpResponse, PathParams, http } from "msw";
 import { SetupServer, setupServer } from "msw/node";
 import { IamConfig } from "../../config";
 import { plainToInstance } from "class-transformer";
-import { VerifiablePresentationJwt } from "../../model/verifiablePresentations.dto";
+import { VerifiablePresentationJwt } from "@tsg-dsp/common";
 
 
 export function mockWalletConfig(): IamConfig {

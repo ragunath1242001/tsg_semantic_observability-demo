@@ -1,5 +1,5 @@
 import { Controller, Get, HttpCode, HttpStatus, Logger, Query, UseGuards } from "@nestjs/common";
-import { CatalogDto, DatasetDto } from "../../model/dsp/catalog/catalog.dto";
+import { CatalogDto, DatasetDto } from "@tsg-dsp/common";
 import { DspClientService } from "../client/client.service";
 import { normalizeAddress } from "../../utils/address";
 import { ManagementGuard } from "../../auth/management.guard";

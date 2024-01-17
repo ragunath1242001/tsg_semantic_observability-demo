@@ -2,7 +2,7 @@ import { Exclude } from "class-transformer"
 import { CreateDateColumn, UpdateDateColumn, DeleteDateColumn, PrimaryGeneratedColumn } from "typeorm"
 import { IResource } from "./dsp/catalog/catalog";
 import { SerializableClass } from "./dsp/common";
-import { ContextDto } from "./dsp/common.dto";
+import { ContextDto } from "@tsg-dsp/common";
 
 
 export class MetaEntity {
