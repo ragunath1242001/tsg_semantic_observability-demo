@@ -1,4 +1,5 @@
 {{- if .Values.ingress.enabled }}
+{{ required "A hostname under the key 'host' is required to enable ingresses" .Values.host }}
 {{- with .Values.ingress }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -29,7 +30,7 @@ spec:
           service:
             name: {{ template "control-plane.fullname" $ }}
             port: 
-              number: 3000
+              number: {{ $.Values.config.server.port | default 3000 }}
         path: {{ .path | default "/" }} 
         pathType: Prefix
 {{- end }}

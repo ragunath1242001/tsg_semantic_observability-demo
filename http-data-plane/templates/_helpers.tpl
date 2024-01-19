@@ -60,3 +60,32 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{- define "recurseSecretConfig" -}}
+{{- $map := first . -}}
+{{- $label := last . -}}
+{{- range $key, $val := $map -}}
+  {{- $sublabel := snakecase $key | upper -}}
+  {{- if not (empty $label) -}}
+    {{- $sublabel = printf "%s__%s" $label $sublabel -}}
+  {{- end -}}
+  {{- if kindOf $val | eq "map" -}}
+    {{- if and (hasKey $val "name") (hasKey $val "key")}}
+- name: {{ $sublabel | quote }}
+  valueFrom:
+    secretKeyRef:
+      name: {{ $val.name }}
+      key: {{ $val.key }}
+    {{- else }}
+    {{- list $val $sublabel | include "recurseSecretConfig" -}}
+    {{- end }}
+  {{- else if kindOf $val | eq "slice" -}}
+    {{- range $elem := $val }}
+      {{- list $elem (printf "%s__0" $sublabel) | include "recurseSecretConfig" -}}
+    {{- end }}
+  {{- else -}}
+- name: {{ $sublabel | quote }}
+  value: {{ $val | quote }}
+{{ end -}}
+{{- end -}}
+{{- end -}}

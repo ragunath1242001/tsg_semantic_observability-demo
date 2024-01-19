@@ -1,4 +1,4 @@
-# host: control-plane-spa.alpha.scsn.dataspac.es
+host: # example.com
 
 image: docker.nexus.dataspac.es/dsp/control-plane:main
 replicaCount: 1
@@ -11,27 +11,27 @@ ingress:
   # annotations: {}
   # class: nginx
 
-# env:
-#   - name: IAM__CLIENT_ID
-#     valueFrom:
-#       secretKeyRef:
-#         name: wallet-auth
-#         key: client-id
-#   - name: IAM__CLIENT_SECRET
-#     valueFrom:
-#       secretKeyRef:
-#         name: wallet-auth
-#         key: client-secret
-#   - name: USERS__0__USERNAME
-#     valueFrom:
-#       secretKeyRef:
+env: []
+configFromSecrets: []
+# configFromSecrets:
+#   iam:
+#     clientId:
+#       name: wallet-auth
+#       key: client-id
+#     clientSecret:
+#       name: wallet-auth
+#       key: client-secret
+#   users:
+#     - username:
 #         name: cp-auth
 #         key: username
-#   - name: USERS__0__PASSWORD
-#     valueFrom:
-#       secretKeyRef:
+#       password:
 #         name: cp-auth
 #         key: password
+#   db:
+#     password:
+#       name: postgresql
+#       key: password
 
 config:
   server:
@@ -39,7 +39,13 @@ config:
     listen: '0.0.0.0'
     publicDomain: "{{ .Values.host }}"
     publicAddress: https://{{ .Values.host }}/control-plane
-  
+  db:
+    type: postgres
+    database: controlplane
+    host: # postgresql
+    port: 5432
+    username: postgres
+
 #   iam:
 #     type: tsg
 #     didId: did:web:{{ .Values.host }}

@@ -7,13 +7,33 @@ ingress:
 
 # host: wallet.alpha.scsn.dataspac.es
 
+# configFromSecrets: []
+configFromSecrets:
+  initClients:
+    - id:
+        name: wallet-client
+        key: id
+      secret:
+        name: wallet-client
+        key: secret
+  db:
+    password:
+      name: postgresql
+      key: password
+
 config:
   server:
     port: 3000
     listen: '0.0.0.0'
     publicDomain: "{{ .Values.host }}"
     publicAddress: https://{{ .Values.host }}
-  
+  db:
+    type: postgres
+    database: wallet
+    host: postgresql
+    port: 5432
+    username: postgres
+
 #   initClients:
 #     - id: admin
 #       secret: test
@@ -45,14 +65,6 @@ config:
 #   # db:
 #   #   type: sqlite
 #   #   database: wallet.sqlite
-  
-#   # db:
-#   #   type: postgres
-#   #   database: wallet
-#   #   host: postgresql
-#   #   port: 5432
-#   #   username: wallet
-#   #   password: password
   
   
 #   # mail:

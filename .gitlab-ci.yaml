@@ -1,0 +1,67 @@
+image: dtzar/helm-kubectl:3.14
+
+stages:
+  - release
+  - release-version
+
+before_script:
+  - helm dep update
+
+.release:
+  stage: release
+  tags:
+    - k8s
+  script:
+    - cd $FOLDER
+    - VERSION=$(grep -m 1 'version' Chart.yaml | awk '{ print $2}')
+    # replace / with -
+    - BRANCH_NAME=${CI_COMMIT_REF_NAME/\//-}
+    - helm package --version "$VERSION-$BRANCH_NAME" .
+    - curl -u $TSG_NEXUS_USERNAME:$TSG_NEXUS_PASSWORD https://nexus.dataspac.es/repository/tsg-helm/ --upload-file *.tgz -v
+  rules:
+    - if: $CI_COMMIT_BRANCH != "main"
+      changes:
+      - "$FOLDER/**/*"
+
+.release_version:
+  stage: release-version
+  tags:
+    - k8s
+  script:
+    - cd $FOLDER
+    - helm package .
+    - curl -u $TSG_NEXUS_USERNAME:$TSG_NEXUS_PASSWORD https://nexus.dataspac.es/repository/tsg-helm/ --upload-file *.tgz -v
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+      changes:
+        - "$FOLDER/**/*"
+
+release:control-plane:
+  extends: .release
+  variables:
+    FOLDER: control-plane
+
+release_version:control-plane:
+  extends: .release_version
+  variables:
+    FOLDER: control-plane
+
+release:wallet:
+  extends: .release
+  variables:
+    FOLDER: wallet
+
+release_version:wallet:
+  extends: .release_version
+  variables:
+    FOLDER: wallet
+
+release:http-data-plane:
+  extends: .release
+  variables:
+    FOLDER: http-data-plane
+
+release_version:http-data-plane:
+  extends: .release_version
+  variables:
+    FOLDER: http-data-plane
