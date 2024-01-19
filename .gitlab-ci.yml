@@ -4,15 +4,13 @@ stages:
   - release
   - release-version
 
-before_script:
-  - helm dep update
-
 .release:
   stage: release
   tags:
     - k8s
   script:
     - cd $FOLDER
+    - helm dep update
     - VERSION=$(grep -m 1 'version' Chart.yaml | awk '{ print $2}')
     # replace / with -
     - BRANCH_NAME=${CI_COMMIT_REF_NAME/\//-}
@@ -22,6 +20,7 @@ before_script:
     - if: $CI_COMMIT_BRANCH != "main"
       changes:
       - "$FOLDER/**/*"
+      - .gitlab-ci.yml
 
 .release_version:
   stage: release-version
@@ -29,12 +28,14 @@ before_script:
     - k8s
   script:
     - cd $FOLDER
+    - helm dep update
     - helm package .
     - curl -u $TSG_NEXUS_USERNAME:$TSG_NEXUS_PASSWORD https://nexus.dataspac.es/repository/tsg-helm/ --upload-file *.tgz -v
   rules:
     - if: $CI_COMMIT_BRANCH == "main"
       changes:
         - "$FOLDER/**/*"
+        - .gitlab-ci.yml
 
 release:control-plane:
   extends: .release
