@@ -14,7 +14,7 @@ metadata:
     {{- tpl (toYaml . ) $ | nindent 4 }}
     {{- end }}
     kubernetes.io/ingress.class: {{ .class | default "nginx" }}
-    {{- if .rewriteTarget}}    
+    {{- if .rewriteTarget}}
     nginx.ingress.kubernetes.io/rewrite-target: {{ .rewriteTarget }}
     {{- end }}
 spec:

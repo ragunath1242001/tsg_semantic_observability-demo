@@ -11,7 +11,7 @@ stages:
   script:
     - cd $FOLDER
     - helm dep update
-    - VERSION=$(grep -m 1 'version' Chart.yaml | awk '{ print $2}')
+    - VERSION=$(grep -m 1 '^version:' Chart.yaml | awk '{ print $2}')
     # replace / with -
     - BRANCH_NAME=${CI_COMMIT_REF_NAME/\//-}
     - helm package --version "$VERSION-$BRANCH_NAME" .
