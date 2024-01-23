@@ -19,7 +19,7 @@ metadata:
 spec:
   tls:
   - hosts:
-    - {{ $.Values.host }}
+    - {{ required "A hostname under the key 'host' is required to enable ingresses" $.Values.host }}
     secretName: {{ $.Values.host }}-tls-secret
   rules:
   - host: {{ $.Values.host }}
@@ -29,7 +29,7 @@ spec:
           service:
             name: {{ template "http-data-plane.fullname" $ }}
             port: 
-              number: 3000
+              number: {{ $.Values.config.server.port | default 3000 }}
         path: {{ .path | default "/" }} 
         pathType: Prefix
 {{- end }}
