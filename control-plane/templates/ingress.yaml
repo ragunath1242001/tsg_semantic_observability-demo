@@ -1,5 +1,4 @@
 {{- if .Values.ingress.enabled }}
-{{ required "A hostname under the key 'host' is required to enable ingresses" .Values.host }}
 {{- with .Values.ingress }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -20,7 +19,7 @@ metadata:
 spec:
   tls:
   - hosts:
-    - {{ $.Values.host }}
+    - {{ required "A hostname under the key 'host' is required to enable ingresses" $.Values.host }}
     secretName: {{ $.Values.host }}-tls-secret
   rules:
   - host: {{ $.Values.host }}

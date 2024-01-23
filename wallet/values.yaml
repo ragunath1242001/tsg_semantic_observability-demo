@@ -5,21 +5,8 @@ ingress:
   enabled: true
   clusterIssuer: letsencrypt
 
-# host: wallet.alpha.scsn.dataspac.es
-
-# configFromSecrets: []
-configFromSecrets:
-  initClients:
-    - id:
-        name: wallet-client
-        key: id
-      secret:
-        name: wallet-client
-        key: secret
-  db:
-    password:
-      name: postgresql
-      key: password
+env: []
+configFromSecrets: {}
 
 config:
   server:

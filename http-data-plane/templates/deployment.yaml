@@ -27,16 +27,16 @@ spec:
               memory: "100Mi"
           ports:
             - name: http
-              containerPort: 3000
+              containerPort: {{ .Values.config.server.port | default 3000 }}
               protocol: TCP
           livenessProbe:
             httpGet:
               path: /health
-              port: 3000
+              port: {{ .Values.config.server.port | default 3000 }}
           readinessProbe:
             httpGet:
               path: /health
-              port: 3000
+              port: {{ .Values.config.server.port | default 3000 }}
           volumeMounts:
           - name: http-data-plane-config
             mountPath: /app/config.yaml
