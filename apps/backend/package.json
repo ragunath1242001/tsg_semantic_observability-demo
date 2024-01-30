@@ -5,6 +5,7 @@
   "scripts": {
     "watch": "tsc-watch --onSuccess \"node ./dist/app.js\"",
     "start": "node ./dist/app.js",
+    "buildAndStart": "tsc -p tsconfig.json && node ./dist/app.js",
     "tsc": "tsc -p tsconfig.json",
     "build": "tsc -p tsconfig.json",
     "lint": "eslint . --fix --ext .ts",
@@ -15,6 +16,7 @@
     "jest": "jest",
     "jest:coverage": "jest --coverage --coverage-reporters text"
   },
+  "files": ["dist"],
   "dependencies": {
     "@libs/dtos": "workspace:*",
     "@nestjs/common": "^10.1.3",
