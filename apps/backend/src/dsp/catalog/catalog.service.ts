@@ -86,7 +86,7 @@ export class CatalogService {
       const catalog = this.catalogRepository.create(new Catalog({
         id: dataset.id
       }))
-      catalog._services = [dservice]
+      catalog._services = [this.dataservicesRepository.create(dservice)]
       catalog._dataset = await this.datasetRepository.save(dataset);
       
       return this.catalogRepository.save(

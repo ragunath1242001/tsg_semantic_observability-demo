@@ -331,9 +331,9 @@ export class CatalogDao extends DatasetChild implements ICatalog {
   homepage?: Reference;
 
   @OneToMany(() => CatalogRecordDao, (catalogrecord) => catalogrecord._catalog, {cascade: true})
-  _records?: Array<CatalogRecord>;
+  _records?: Array<CatalogRecordDao>;
   @OneToMany(() => DataServiceDao, (dataservice) => dataservice._catalog, {cascade: true})
-  _services?: Array<DataService>;
+  _services?: Array<DataServiceDao>;
   get service(): Array<DataService> | undefined {
     return mapToInstances(this._services, DataService)
   }

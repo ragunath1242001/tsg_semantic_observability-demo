@@ -18,7 +18,7 @@ import { TransferModule } from "./dsp/transfer/transfer.module";
     ConfigModule,
     TypeOrmModule.forRoot({
       ...config.db,
-      entities: ["dist/**/*.dao{.js,.ts}"],
+      autoLoadEntities: true,
       synchronize: true
     }),
     DataPlaneModule,
