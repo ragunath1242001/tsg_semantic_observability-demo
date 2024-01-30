@@ -9,10 +9,10 @@ import { DspClientService } from "../client/client.service"
 import { deserialize } from "../../model/serialize"
 import { DSPError } from "../../utils/errors/error"
 import { ServerConfig } from "../../config"
-import { TransferStatus, TransferRole, TransferEvent, TransferDetail } from "@libs/dtos"
-import { TransferEventDao, TransferDetailDao } from "../../model/dsp/transfer/transfer.dao"
+import { TransferEventDao, TransferDetailDao, TransferRole } from "../../model/dsp/transfer/transfer.dao"
 import { InjectRepository } from "@nestjs/typeorm"
 import { Repository } from "typeorm"
+import { TransferDetail, TransferEvent, TransferStatus } from "../../model/dsp/transfer/transfer"
 
 
 @Injectable()

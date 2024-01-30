@@ -5,7 +5,7 @@ import { TransferProcessDto } from "@tsg-dsp/common";
 import { normalizeAddress } from "../../utils/address";
 import { DataPlaneAddressDto } from "@libs/dtos";
 import { ManagementGuard } from "../../auth/management.guard";
-import { TransferStatus } from "@libs/dtos";
+import { TransferStatus } from "../../model/dsp/transfer/transfer";
 
 @UseGuards(ManagementGuard)
 @Controller('management/transfer')
