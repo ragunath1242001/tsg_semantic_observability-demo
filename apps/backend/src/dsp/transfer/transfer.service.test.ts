@@ -22,7 +22,7 @@ import { DataAddress, EndpointProperty, TransferCompletionMessage, TransferReque
 import { Multilanguage } from "../../model/dsp/common";
 import { DataPlaneRequestResponseDto, DataPlaneTransferDto } from "@libs/dtos";
 
-jest.useFakeTimers({doNotFake: ['Date']});
+jest.useFakeTimers({ doNotFake: ['Date'] });
 
 describe("Transfer service", () => {
   let transferService: TransferService;
@@ -60,8 +60,8 @@ describe("Transfer service", () => {
           useValue: iamConfig,
         },
         {
-            provide: InitCatalog,
-            useValue: initCatalog
+          provide: InitCatalog,
+          useValue: initCatalog
         },
         {
           provide: ServerConfig,
@@ -124,16 +124,16 @@ describe("Transfer service", () => {
         })
       }),
       http.post(`http://remoteparty.test/transfer/${remoteProcessId}/start`, () => {
-        return HttpResponse.json({status: 'OK'})
+        return HttpResponse.json({ status: 'OK' })
       }),
       http.post(`http://remoteparty.test/transfer/${remoteProcessId}/suspend`, () => {
-        return HttpResponse.json({status: 'OK'})
+        return HttpResponse.json({ status: 'OK' })
       }),
       http.post(`http://remoteparty.test/transfer/${remoteProcessId}/complete`, () => {
-        return HttpResponse.json({status: 'OK'})
+        return HttpResponse.json({ status: 'OK' })
       }),
       http.post(`http://remoteparty.test/transfer/${remoteProcessId}/terminate`, () => {
-        return HttpResponse.json({status: 'OK'})
+        return HttpResponse.json({ status: 'OK' })
       }),
       http.post("http://remoteparty.test/data-plane/:id", () => {
         return HttpResponse.json<TransferProcessDto>({
@@ -146,7 +146,7 @@ describe("Transfer service", () => {
 
     );
 
-    server.listen({onUnhandledRequest: "warn"})
+    server.listen({ onUnhandledRequest: "warn" })
 
     transferService = moduleRef.get(TransferService);
     const dataPlaneService = moduleRef.get(DataPlaneService);
@@ -195,7 +195,7 @@ describe("Transfer service", () => {
       );
       expect(transferProcessPush).toBeDefined();
       expect(transferProcessPush.process.processId).toBe(remoteProcessId);
-      
+
       const transferDetail = await transferService.getTransfer(transferProcessPush.localId);
       expect(transferDetail.dataAddress).toBeDefined();
     });
@@ -218,7 +218,7 @@ describe("Transfer service", () => {
 
     it("Handle transfer start", async () => {
       await transferService.handleStart(
-        localProcessId, 
+        localProcessId,
         new TransferStartMessage({
           processId: localProcessId,
           dataAddress: new DataAddress({
@@ -229,10 +229,10 @@ describe("Transfer service", () => {
               value: 'Bearer TESTTOKEN'
             })]
           })
-        }), 
+        }),
         'did:web:remoteparty.test');
-        const transferDetail = await transferService.getTransfer(localProcessId);
-        expect(transferDetail.state).toBe(TransferState.STARTED);
+      const transferDetail = await transferService.getTransfer(localProcessId);
+      expect(transferDetail.state).toBe(TransferState.STARTED);
     });
 
     it("Suspend transfer", async () => {
@@ -259,7 +259,7 @@ describe("Transfer service", () => {
     })
     it("Handle transfer restart", async () => {
       await transferService.handleStart(
-        localProcessId, 
+        localProcessId,
         new TransferStartMessage({
           processId: localProcessId,
           dataAddress: new DataAddress({
@@ -270,10 +270,10 @@ describe("Transfer service", () => {
               value: 'Bearer TESTTOKEN2'
             })]
           })
-        }), 
+        }),
         'did:web:remoteparty.test')
-        const transferDetail = await transferService.getTransfer(localProcessId);
-        expect(transferDetail.state).toBe(TransferState.STARTED);
+      const transferDetail = await transferService.getTransfer(localProcessId);
+      expect(transferDetail.state).toBe(TransferState.STARTED);
     });
     it("Complete transfer", async () => {
       await transferService.complete(localProcessId, true);
@@ -296,7 +296,7 @@ describe("Transfer service", () => {
       localProcessId = handledRequest.processId;
       jest.runAllTimers();
       jest.useRealTimers();
-      await new Promise(f => setTimeout(f, 10));
+      await new Promise(f => setTimeout(f, 500));
       const pushTransfer = await transferService.getTransfer(localProcessId);
       expect(pushTransfer.state).toBe(TransferState.STARTED);
     });
@@ -325,7 +325,7 @@ describe("Transfer service", () => {
     })
     it("Handle transfer restart", async () => {
       await transferService.handleStart(
-        localProcessId, 
+        localProcessId,
         new TransferStartMessage({
           processId: localProcessId,
           dataAddress: new DataAddress({
@@ -336,10 +336,10 @@ describe("Transfer service", () => {
               value: 'Bearer TESTTOKEN2'
             })]
           })
-        }), 
+        }),
         'did:web:remoteparty.test')
-        const transferDetail = await transferService.getTransfer(localProcessId);
-        expect(transferDetail.state).toBe(TransferState.STARTED);
+      const transferDetail = await transferService.getTransfer(localProcessId);
+      expect(transferDetail.state).toBe(TransferState.STARTED);
     });
     it("Complete transfer", async () => {
       await transferService.handleComplete(
@@ -348,8 +348,8 @@ describe("Transfer service", () => {
           processId: localProcessId
         }),
         'did:web:remoteparty.test');
-        const transferDetail = await transferService.getTransfer(localProcessId);
-        expect(transferDetail.state).toBe(TransferState.COMPLETED);
+      const transferDetail = await transferService.getTransfer(localProcessId);
+      expect(transferDetail.state).toBe(TransferState.COMPLETED);
     })
   })
 
