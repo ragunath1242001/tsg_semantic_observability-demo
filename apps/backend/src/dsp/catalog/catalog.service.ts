@@ -177,7 +177,7 @@ export class CatalogService {
       }
     });
     if (!dataset) {
-      return undefined;
+      throw new DSPError(`Could not find dataset with id ${datasetId}`, HttpStatus.NOT_FOUND)
     } else {
       return new Dataset(dataset);
     }
