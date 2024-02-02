@@ -1,16 +1,23 @@
 import { Type } from "class-transformer";
-import { IsString, IsOptional, ValidateNested, IsBoolean, IsIn } from "class-validator";
+import {
+  IsString,
+  IsOptional,
+  ValidateNested,
+  IsBoolean,
+  IsIn,
+} from "class-validator";
 import { VerifiableCredential, CredentialSubject } from "./credentials.dto";
 
-
-export class VerifiablePresentation<T extends VerifiableCredential<CredentialSubject>> {
-  @IsString({each: true})
-  '@context': string[]
-  @IsString({each: true})
-  type!: string[]
+export class VerifiablePresentation<
+  T extends VerifiableCredential<CredentialSubject>
+> {
+  @IsString({ each: true })
+  "@context": string[];
+  @IsString({ each: true })
+  type!: string[];
   @IsString()
   @IsOptional()
-  id?: string
+  id?: string;
   @ValidateNested()
   @Type(() => VerifiableCredential<CredentialSubject>)
   verifiableCredential!: T[] | T;
@@ -29,7 +36,7 @@ export class VerifiablePresentationJsonLd {
 
 export class PresentationValidation extends VerifiablePresentationJwt {
   @IsBoolean()
-  valid!: boolean
+  valid!: boolean;
 
   @IsBoolean()
   validateJWTSignature!: boolean;
@@ -37,13 +44,13 @@ export class PresentationValidation extends VerifiablePresentationJwt {
   @IsBoolean()
   validateJWTExpiryDate!: boolean;
 
-  @IsBoolean({each: true})
-  validateTrustAnchors!: Array<boolean>
+  @IsBoolean({ each: true })
+  validateTrustAnchors!: Array<boolean>;
 
   @IsIn([true, false, "undefined"])
   validateExpiryDate!: Array<boolean | "undefined">;
-  
-  @IsBoolean({each: true})
+
+  @IsBoolean({ each: true })
   validateCredentials!: Array<boolean>;
 
   @IsBoolean()

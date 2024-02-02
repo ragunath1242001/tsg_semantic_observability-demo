@@ -1,6 +1,6 @@
 {
   "name": "@tsg-dsp/common",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "TSG Dataspace Protocol Common",
   "author": "Maarten Kollenstart",
   "license": "Apache-2.0",
