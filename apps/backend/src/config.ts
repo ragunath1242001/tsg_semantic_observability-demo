@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { ArrayMinSize, IsDefined, IsIn, IsNumber, IsOptional, IsString, IsUrl, Matches, ValidateNested } from "class-validator";
+import { ArrayMinSize, IsArray, IsDefined, IsIn, IsNumber, IsOptional, IsString, IsUrl, Matches, ValidateNested } from "class-validator";
 import { Type } from "class-transformer";
 
 export abstract class DatabaseConfig {
@@ -96,6 +96,11 @@ export class InitCatalog {
   public readonly title!: string
   @IsString()
   public readonly description!: string
+  @IsArray()
+  @IsString({each: true})
+  @IsOptional()
+  public datasets?: string[]
+
 }
 
 export class RootConfig {

@@ -35,7 +35,17 @@ export class DataPlaneService {
   private readonly maxHealthCheckMisses = 10;
   private static readonly pullInterval = 60000;
 
-  async getDataPlane(identifier: string): Promise<DataPlaneStatus | undefined> {
+  async getDataPlanes(): Promise<DataPlane[]> {
+    const dataPlanes = await this.dataPlaneRepository.find({})
+    if (!dataPlanes) {
+      throw new DSPError(`No dataplanes found.`, HttpStatus.NOT_FOUND)
+    } else {
+      return dataPlanes
+    }
+
+  }
+
+  async getDataPlane(identifier: string): Promise<DataPlaneStatus> {
     const dataPlane = await this.dataPlaneRepository.findOne({
       where: {identifier: identifier},
       select: {
@@ -48,7 +58,7 @@ export class DataPlaneService {
       }
       });
     if (!dataPlane) {
-      return undefined
+      throw new DSPError(`Dataplane details with identifier ${identifier} not found`, HttpStatus.NOT_FOUND)
     } else {
       return new DataPlaneStatus(dataPlane)
     }

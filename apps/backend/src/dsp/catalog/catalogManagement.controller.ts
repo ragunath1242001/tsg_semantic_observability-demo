@@ -23,17 +23,15 @@ export class CatalogManagementController {
 
   @Get("dataset")
   @HttpCode(HttpStatus.OK)
-  async requestDataset(@Query('address') address: string, @Query('id') id: string, @Query('audience') audience?: string): Promise<DatasetDto | undefined> {
+  async requestDataset(@Query('address') address: string, @Query('id') id: string, @Query('audience') audience?: string): Promise<DatasetDto> {
     this.logger.log(`Received dataset request for ${address} with id ${id}`);
     return (address) ? this.dsp.requestDataset(normalizeAddress(address, 0, "catalog", "datasets"), id, audience) : (await this.catalogService.getDataset(id))?.serialize()
   }
 
   @Post("dataset")
   @HttpCode(HttpStatus.CREATED)
-  async addDataset(@Body(new DeserializePipe(Dataset)) dataset: Dataset): Promise<DatasetDto | undefined> {
-    const adataset = await this.catalogService.addDataset(dataset)
-    if (adataset) {
-      return new Dataset(adataset).serialize()
-    }
+  async addDataset(@Body(new DeserializePipe(Dataset)) dataset: Dataset): Promise<DatasetDto> {
+    const datasetdao = await this.catalogService.addDataset(dataset)
+    return new Dataset(datasetdao).serialize()
   }
 }

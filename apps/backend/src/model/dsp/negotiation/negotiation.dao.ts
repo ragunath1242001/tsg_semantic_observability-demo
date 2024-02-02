@@ -10,7 +10,7 @@ import { Agreement, INegotiationDetail, INegotiationProcessEvent, NegotiationPro
 export class NegotiationProcessEventDao extends AutoIdEntity implements INegotiationProcessEvent {
     @Column()
     time!: Date
-    @Column("simple-enum")
+    @Column()
     state!: ContractNegotiationState
     @Column({nullable: true})
     localMessage?: string;

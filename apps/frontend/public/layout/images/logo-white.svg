@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="651px" height="251px" version="1.1" viewBox="-.5 -.5 651 251" xmlns="http://www.w3.org/2000/svg">
+<path d="m125 205v-160" fill="none" pointer-events="stroke" stroke="#fff" stroke-miterlimit="10" stroke-width="10"/>
+<path d="m135 45h70" fill="none" pointer-events="stroke" stroke="#fff" stroke-miterlimit="10" stroke-width="10"/>
+<path d="m235 85 40-40" fill="none" pointer-events="stroke" stroke="#fff" stroke-miterlimit="10" stroke-width="10"/>
+<path d="m275 45h80" fill="none" pointer-events="stroke" stroke="#fff" stroke-miterlimit="10" stroke-width="10"/>
+<path d="m355 45 40 40" fill="none" pointer-events="stroke" stroke="#fff" stroke-miterlimit="10" stroke-width="10"/>
+<path d="m235 85 160 80" fill="none" pointer-events="stroke" stroke="#fff" stroke-miterlimit="10" stroke-width="10"/>
+<path d="m355 205 40-40" fill="none" pointer-events="stroke" stroke="#fff" stroke-miterlimit="10" stroke-width="10"/>
+<path d="m275 205h80" fill="none" pointer-events="stroke" stroke="#fff" stroke-miterlimit="10" stroke-width="10"/>
+<path d="m235 165 40 40" fill="none" pointer-events="stroke" stroke="#fff" stroke-miterlimit="10" stroke-width="10"/>
+<path d="m425 85v80" fill="none" pointer-events="stroke" stroke="#fff" stroke-miterlimit="10" stroke-width="10"/>
+<path d="m465 45-40 40" fill="none" pointer-events="stroke" stroke="#fff" stroke-miterlimit="10" stroke-width="10"/>
+<path d="m545 45h-80" fill="none" pointer-events="stroke" stroke="#fff" stroke-miterlimit="10" stroke-width="10"/>
+<path d="m585 85-40-40" fill="none" pointer-events="stroke" stroke="#fff" stroke-miterlimit="10" stroke-width="10"/>
+<path d="m465 205-40-40" fill="none" pointer-events="stroke" stroke="#fff" stroke-miterlimit="10" stroke-width="10"/>
+<path d="m545 205h-80" fill="none" pointer-events="stroke" stroke="#fff" stroke-miterlimit="10" stroke-width="10"/>
+<path d="m585 165-40 40" fill="none" pointer-events="stroke" stroke="#fff" stroke-miterlimit="10" stroke-width="10"/>
+<path d="m585 125v40" fill="none" pointer-events="stroke" stroke="#fff" stroke-miterlimit="10" stroke-width="10"/>
+<path d="m545 125h40" fill="none" pointer-events="stroke" stroke="#fff" stroke-miterlimit="10" stroke-width="10"/>
+<path d="m545 155v-30" fill="none" pointer-events="stroke" stroke="#fff" stroke-miterlimit="10" stroke-width="10"/>
+<rect x="115" y="35" width="20" height="20" fill="#fff" pointer-events="all"/>
+<path d="m45 45h70" fill="none" pointer-events="stroke" stroke="#fff" stroke-miterlimit="10" stroke-width="10"/>
+<rect x="35" y="35" width="20" height="20" fill="#fff" pointer-events="all"/>
+<rect x="195" y="35" width="20" height="20" fill="#fff" pointer-events="all"/>
+<rect x="115" y="195" width="20" height="20" fill="#fff" pointer-events="all"/>
+<rect x="265" y="195" width="20" height="20" fill="#fff" pointer-events="all"/>
+<rect x="225" y="155" width="20" height="20" fill="#fff" pointer-events="all"/>
+<rect x="345" y="195" width="20" height="20" fill="#fff" pointer-events="all"/>
+<rect x="385" y="155" width="20" height="20" fill="#fff" pointer-events="all"/>
+<rect x="415" y="155" width="20" height="20" fill="#fff" pointer-events="all"/>
+<rect x="415" y="75" width="20" height="20" fill="#fff" pointer-events="all"/>
+<rect x="385" y="75" width="20" height="20" fill="#fff" pointer-events="all"/>
+<rect x="345" y="35" width="20" height="20" fill="#fff" pointer-events="all"/>
+<rect x="265" y="35" width="20" height="20" fill="#fff" pointer-events="all"/>
+<rect x="225" y="75" width="20" height="20" fill="#fff" pointer-events="all"/>
+<rect transform="rotate(-65,315,125)" x="305" y="115" width="20" height="20" fill="#fff" pointer-events="all"/>
+<rect x="455" y="195" width="20" height="20" fill="#fff" pointer-events="all"/>
+<rect x="535" y="195" width="20" height="20" fill="#fff" pointer-events="all"/>
+<rect x="575" y="155" width="20" height="20" fill="#fff" pointer-events="all"/>
+<rect x="575" y="115" width="20" height="20" fill="#fff" pointer-events="all"/>
+<rect x="535" y="115" width="20" height="20" fill="#fff" pointer-events="all"/>
+<rect x="535" y="145" width="20" height="20" fill="#fff" pointer-events="all"/>
+<rect x="575" y="75" width="20" height="20" fill="#fff" pointer-events="all"/>
+<rect x="535" y="35" width="20" height="20" fill="#fff" pointer-events="all"/>
+<rect x="455" y="35" width="20" height="20" fill="#fff" pointer-events="all"/>
+<path d="m5 245v-240" fill="none" pointer-events="stroke" stroke="#fff" stroke-miterlimit="10" stroke-width="2"/>
+<path d="m5 245h80" fill="none" pointer-events="stroke" stroke="#fff" stroke-miterlimit="10" stroke-width="2"/>
+<path d="m215 5h-210" fill="none" pointer-events="stroke" stroke="#fff" stroke-miterlimit="10" stroke-width="2"/>
+<path d="m385 5h-140" fill="none" pointer-events="stroke" stroke="#fff" stroke-miterlimit="10" stroke-width="2"/>
+<path d="m645 5h-210" fill="none" pointer-events="stroke" stroke="#fff" stroke-miterlimit="10" stroke-width="2"/>
+<path d="m645 5v60" fill="none" pointer-events="stroke" stroke="#fff" stroke-miterlimit="10" stroke-width="2"/>
+<path d="m645 165v80" fill="none" pointer-events="stroke" stroke="#fff" stroke-miterlimit="10" stroke-width="2"/>
+<path d="m645 245h-200" fill="none" pointer-events="stroke" stroke="#fff" stroke-miterlimit="10" stroke-width="2"/>
+<path d="m395 245h-160" fill="none" pointer-events="stroke" stroke="#fff" stroke-miterlimit="10" stroke-width="2"/>
+<path d="m215 5-10 40" fill="none" pointer-events="stroke" stroke="#fff" stroke-miterlimit="10" stroke-width="2"/>
+<path d="m125 205-40 40" fill="none" pointer-events="stroke" stroke="#fff" stroke-miterlimit="10" stroke-width="2"/>
+<path d="m275 205-40 40" fill="none" pointer-events="stroke" stroke="#fff" stroke-miterlimit="10" stroke-width="2"/>
+<path d="m395 245-40-40" fill="none" pointer-events="stroke" stroke="#fff" stroke-miterlimit="10" stroke-width="2"/>
+<path d="m445 245 20-40" fill="none" pointer-events="stroke" stroke="#fff" stroke-miterlimit="10" stroke-width="2"/>
+<path d="m585 125 60 40" fill="none" pointer-events="stroke" stroke="#fff" stroke-miterlimit="10" stroke-width="2"/>
+<path d="m585 85 60-20" fill="none" pointer-events="stroke" stroke="#fff" stroke-miterlimit="10" stroke-width="2"/>
+<path d="m435 5 30 40" fill="none" pointer-events="stroke" stroke="#fff" stroke-miterlimit="10" stroke-width="2"/>
+<path d="m385 5-30 40" fill="none" pointer-events="stroke" stroke="#fff" stroke-miterlimit="10" stroke-width="2"/>
+<path d="m245 5 30 40" fill="none" pointer-events="stroke" stroke="#fff" stroke-miterlimit="10" stroke-width="2"/>
+<rect x="80" y="240" width="10" height="10" fill="#fff" pointer-events="all"/>
+<rect y="240" width="10" height="10" fill="#fff" pointer-events="all"/>
+<rect x="230" y="240" width="10" height="10" fill="#fff" pointer-events="all"/>
+<rect x="390" y="240" width="10" height="10" fill="#fff" pointer-events="all"/>
+<rect x="440" y="240" width="10" height="10" fill="#fff" pointer-events="all"/>
+<rect x="640" y="240" width="10" height="10" fill="#fff" pointer-events="all"/>
+<rect x="640" y="240" width="10" height="10" fill="#fff" pointer-events="all"/>
+<rect x="640" y="160" width="10" height="10" fill="#fff" pointer-events="all"/>
+<rect x="640" y="60" width="10" height="10" fill="#fff" pointer-events="all"/>
+<rect x="640" width="10" height="10" fill="#fff" pointer-events="all"/>
+<rect x="430" width="10" height="10" fill="#fff" pointer-events="all"/>
+<rect x="380" width="10" height="10" fill="#fff" pointer-events="all"/>
+<rect x="240" width="10" height="10" fill="#fff" pointer-events="all"/>
+<rect x="210" width="10" height="10" fill="#fff" pointer-events="all"/>
+<rect width="10" height="10" fill="#fff" pointer-events="all"/>
+<g fill="#fff" fill-opacity=".2">
+<path d="m5 5h210l-10 40h-80v160l-40 40h-80z"/>
+<path d="m275 45-30-40h140l-30 40z" stroke="#fff" stroke-width="1px"/>
+<path d="m435 5h210v60l-60 20-40-40h-80z" stroke="#fff" stroke-width="1px"/>
+<path d="m585 125 60 40v80h-200l20-40h80l40-40z" stroke="#fff" stroke-width="1px"/>
+<path d="m275 205h80l40 40h-160z" stroke="#fff" stroke-width="1px"/>
+</g>
+</svg>

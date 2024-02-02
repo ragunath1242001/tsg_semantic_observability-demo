@@ -12,6 +12,8 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { CatalogDao, DataServiceDao, DatasetDao, DistributionDao, ResourceDao } from "../../model/dsp/catalog/catalog.dao";
 import { DSPError } from "../../utils/errors/error";
+import { deserialize } from "../../model/serialize";
+import { DatasetDto } from "@tsg-dsp/common";
 
 @Injectable()
 export class CatalogService {
@@ -88,10 +90,12 @@ export class CatalogService {
       }))
       catalog._services = [this.dataservicesRepository.create(dservice)]
       catalog._dataset = await this.datasetRepository.save(dataset);
-      
-      return this.catalogRepository.save(
-        catalog);
-    } 
+      const response = await this.catalogRepository.save(catalog); 
+      this.initCatalog.datasets?.map(async (dataset) =>
+        this.addDataset(await deserialize<Dataset>(JSON.parse(dataset)))
+      )
+      return response
+    }
     
     
   }
@@ -100,7 +104,7 @@ export class CatalogService {
     await this.catalogRepository.update({id: catalog.id}, catalog)
   }
 
-  async addDataset(dataset: Dataset): Promise<DatasetDao | undefined> {
+  async addDataset(dataset: Dataset): Promise<DatasetDao> {
     const catalog = await this.getCatalogDao(true);
     const exist = await this.datasetRepository.findOne({where: {id: dataset.id}})
     if (exist) {
@@ -162,7 +166,7 @@ export class CatalogService {
     return new Catalog(catalog);
   }
 
-  async getDataset(datasetId: string): Promise<Dataset | undefined> {
+  async getDataset(datasetId: string): Promise<Dataset> {
     const dataset = await this.datasetRepository.findOne({
       where: {
         id: datasetId
