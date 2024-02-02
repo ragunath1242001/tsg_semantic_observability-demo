@@ -1,5 +1,5 @@
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
-import { DataPlaneRequestResponseDto, DataPlaneCreation, DataPlaneDetailsDto, DataPlaneTransferDto} from "@libs/dtos";
+import { DataPlaneRequestResponseDto, DataPlaneCreation, DataPlaneDto, DataPlaneTransferDto} from "@libs/dtos";
 import { Interval } from "@nestjs/schedule";
 import { CatalogService } from "../dsp/catalog/catalog.service";
 import { Dataset, IDataset } from "../model/dsp/catalog/catalog";
@@ -10,9 +10,9 @@ import { DSPClientError, DSPError } from "../utils/errors/error";
 import deepEqual from "deep-equal";
 import { SerializableClass } from "../model/dsp/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { DataPlaneDetailsDao, DataPlaneStatusDao } from "../model/data-planes/dataPlanes.dao";
+import { DataPlaneDao } from "../model/data-planes/dataPlanes.dao";
 import { In, Repository } from "typeorm";
-import { DataPlaneDetails, DataPlaneStatus, HealthStatus } from "../model/data-planes/dataPlanes";
+import { DataPlane, DataPlaneStatus, HealthStatus } from "../model/data-planes/dataPlanes";
 import { DatasetDao } from "../model/dsp/catalog/catalog.dao";
 
 
@@ -20,8 +20,7 @@ import { DatasetDao } from "../model/dsp/catalog/catalog.dao";
 export class DataPlaneService {
   private readonly axios: AxiosInstance;
   constructor(
-    @InjectRepository(DataPlaneStatusDao) private readonly dataPlaneStatusRepository: Repository<DataPlaneStatusDao>,
-    @InjectRepository(DataPlaneDetailsDao) private readonly dataPlaneDetailsRepository: Repository<DataPlaneDetailsDao>,
+    @InjectRepository(DataPlaneDao) private readonly dataPlaneRepository: Repository<DataPlaneDao>,
     private readonly catalogService: CatalogService) {
     this.axios = axios.create();
     this.axios.interceptors.request.use(async (request: InternalAxiosRequestConfig) => {
@@ -36,16 +35,26 @@ export class DataPlaneService {
   private readonly maxHealthCheckMisses = 10;
   private static readonly pullInterval = 60000;
 
-  async getDataPlane(identifier: string): Promise<DataPlaneStatus| undefined> {
-    const dataPlane = await this.dataPlaneStatusRepository.findOneBy({identifier: identifier});
+  async getDataPlane(identifier: string): Promise<DataPlaneStatus | undefined> {
+    const dataPlane = await this.dataPlaneRepository.findOne({
+      where: {identifier: identifier},
+      select: {
+        identifier: true,
+        created: true,
+        modified: true,
+        health: true,
+        missedHealthChecks: true,
+        etag: true
+      }
+      });
     if (!dataPlane) {
       return undefined
     } else {
       return new DataPlaneStatus(dataPlane)
     }
   }
-  async getDataPlaneDetails(identifier: string): Promise<DataPlaneDetailsDao| undefined> {
-    const dataPlaneDetails = await this.dataPlaneDetailsRepository.findOneBy({identifier: identifier});
+  async getDataPlaneDetails(identifier: string): Promise<DataPlaneDao> {
+    const dataPlaneDetails = await this.dataPlaneRepository.findOneBy({identifier: identifier});
     if (!dataPlaneDetails) {
       // TODO is DSPError a good error here or do we need a dataplane error of some kind?
       throw new DSPError(`Dataplane details with identifier ${identifier} not found`, HttpStatus.NOT_FOUND)
@@ -54,86 +63,72 @@ export class DataPlaneService {
     }
   }
 
-  async addDataPlane(dataPlane: DataPlaneCreation): Promise<DataPlaneDetailsDto> {
-    const dataPlaneDetails: DataPlaneDetailsDto = {
-      ...dataPlane,
-      identifier: dataPlane.identifier || `urn:uuid:${crypto.randomUUID()}`
-    }
-    const dataPlaneStatus: DataPlaneStatus = {
-      identifier: dataPlaneDetails.identifier,
+  async addDataPlane(dataPlaneCreation: DataPlaneCreation): Promise<DataPlaneDto> {
+    const dataPlane: DataPlane = {
+      identifier: dataPlaneCreation.identifier || `urn:uuid:${crypto.randomUUID()}`,
       created: new Date(),
       modified: new Date(),
-      details: dataPlaneDetails,
       health: HealthStatus.UNKNOWN,
-      missedHealthChecks: 0
+      missedHealthChecks: 0,
+      ...dataPlaneCreation
     }
-    await this.dataPlaneStatusRepository.save(dataPlaneStatus);
-    switch(dataPlane.catalogSynchronization) {
-      case "push": await this.healthCheck(dataPlaneStatus); break;
-      case "pull": await this.pullCatalog(dataPlaneStatus); break;
+    await this.dataPlaneRepository.save(dataPlane);
+    switch(dataPlaneCreation.catalogSynchronization) {
+      case "push": await this.healthCheck(dataPlane); break;
+      case "pull": await this.pullCatalog(dataPlane); break;
     }
-    return dataPlaneDetails;
+    return dataPlane;
   }
 
-  async updateDataPlane(dataPlaneDetails: DataPlaneDetailsDto): Promise<DataPlaneDetails | undefined> {
-    const dataPlane = await this.dataPlaneStatusRepository.findOneBy({identifier: dataPlaneDetails.identifier});
-    if (!dataPlane) {
-      // TODO is DSPError a good error here or do we need a dataplane error of some kind?
-      throw new DSPError(`Dataplane with identifier ${dataPlaneDetails.identifier} not found`, HttpStatus.NOT_FOUND)
-    } else {
-      dataPlane.modified = new Date();
-      await this.dataPlaneDetailsRepository.update({identifier: dataPlaneDetails.identifier},{
-        ...dataPlaneDetails
-      })
-      await this.dataPlaneStatusRepository.update({identifier: dataPlane.identifier}, dataPlane)
-      switch(dataPlane.details.catalogSynchronization) {
-        case "push": await this.healthCheck(dataPlane); break;
-        case "pull": await this.pullCatalog(dataPlane); break;
-      }
-      return await this.getDataPlaneDetails(dataPlaneDetails.identifier);
+  async updateDataPlane(dataPlaneDetails: DataPlaneDto): Promise<DataPlane | undefined> {
+    const dataPlane = await this.getDataPlaneDetails(dataPlaneDetails.identifier);
+    dataPlane.modified = new Date();
+    await this.dataPlaneRepository.save({
+      ...dataPlane,
+      ...dataPlaneDetails
+    })
+    switch(dataPlane.catalogSynchronization) {
+      case "push": await this.healthCheck(dataPlane); break;
+      case "pull": await this.pullCatalog(dataPlane); break;
     }
+    return await this.getDataPlaneDetails(dataPlaneDetails.identifier);
   }
 
   async updateCatalog(identifier: string, dataset: Dataset, etag?: string): Promise<Dataset | undefined> {
-    const dataPlane = await this.dataPlaneStatusRepository.findOneBy({identifier: identifier});
+    const dataPlane = await this.getDataPlaneDetails(identifier);
     let addedDataset: DatasetDao = new DatasetDao()
-    if (!dataPlane) {
-      // TODO is DSPError a good error here or do we need a dataplane error of some kind?
-      throw new DSPError(`Dataplane with identifier ${identifier} not found`, HttpStatus.NOT_FOUND)
+    if (dataPlane.dataset) {
+      this.logger.log(`Updating dataset for dataplane ${identifier}`)
+      const resp = await this.catalogService.updateDataset(dataPlane.dataset?.id, dataset);
+      if (resp) {
+        addedDataset = resp
+      }
     } else {
-      if (dataPlane.dataset) {
-        this.logger.log(`Updating dataset for dataplane ${identifier}`)
-        const resp = await this.catalogService.updateDataset(dataPlane.dataset?.id, dataset);
-        if (resp) {
-          addedDataset = resp
-        }
-      } else {
-        this.logger.log(`Adding dataset for dataplane ${identifier}`)
-        const resp = await this.catalogService.addDataset(dataset);
-        if (resp) {
-          addedDataset = resp
-        }
+      this.logger.log(`Adding dataset for dataplane ${identifier}`)
+      const resp = await this.catalogService.addDataset(dataset);
+      if (resp) {
+        addedDataset = resp
       }
-      // TODO: Should we update modified when the catalog changes?
-      // dataPlane.modified = new Date();
-      dataPlane._dataset = addedDataset;
-      await this.dataPlaneStatusRepository.update({identifier: identifier}, dataPlane)
-      if (etag) {
-        dataPlane.etag = etag;
-      }
-      return dataset;
     }
+    // TODO: Should we update modified when the catalog changes?
+    // dataPlane.modified = new Date();
+    dataPlane._dataset = addedDataset;
+    await this.dataPlaneRepository.update({identifier: identifier}, dataPlane)
+    if (etag) {
+      dataPlane.etag = etag;
+    }
+    return dataset;
   }
 
-  async pullCatalog(dataPlaneStatus: DataPlaneStatus) {
+  async pullCatalog(dataPlaneStatus: DataPlane) {
     try {
       const requestConfig: AxiosRequestConfig = {
         headers: {
-          Authorization: `Bearer ${dataPlaneStatus.details.managementToken}`,
+          Authorization: `Bearer ${dataPlaneStatus.managementToken}`,
           'If-None-Match': dataPlaneStatus.etag
         }
       }
-      const datasetJson = await this.axios.get<IDataset>(`${dataPlaneStatus.details.managementAddress}/catalog`, requestConfig);
+      const datasetJson = await this.axios.get<IDataset>(`${dataPlaneStatus.managementAddress}/catalog`, requestConfig);
       try {
         if (datasetJson.status === 200) {
           const dataset = new Dataset(datasetJson.data);
@@ -151,14 +146,14 @@ export class DataPlaneService {
     }
   }
 
-  async healthCheck(dataPlaneStatus: DataPlaneStatus) {
+  async healthCheck(dataPlaneStatus: DataPlane) {
     try {
       const requestConfig: AxiosRequestConfig = {
         headers: {
-          Authorization: `Bearer ${dataPlaneStatus.details.managementToken}`
+          Authorization: `Bearer ${dataPlaneStatus.managementToken}`
         }
       }
-      const datasetJson = await this.axios.get<void>(`${dataPlaneStatus.details.managementAddress}/health`, requestConfig);
+      const datasetJson = await this.axios.get<void>(`${dataPlaneStatus.managementAddress}/health`, requestConfig);
       if (datasetJson.status === 200) {
         await this.updateHealth(dataPlaneStatus, HealthStatus.HEALTHY);
       } else {
@@ -170,41 +165,41 @@ export class DataPlaneService {
     }
   }
 
-  private async updateHealth(dataPlaneStatus: DataPlaneStatus, healthStatus: HealthStatus) {
+  private async updateHealth(dataPlane: DataPlane, healthStatus: HealthStatus) {
     switch(healthStatus) {
       case HealthStatus.HEALTHY:
-        dataPlaneStatus.health = HealthStatus.HEALTHY;
-        dataPlaneStatus.missedHealthChecks = 0;
+        dataPlane.health = HealthStatus.HEALTHY;
+        dataPlane.missedHealthChecks = 0;
         break;
       case HealthStatus.UNRESPONSIVE:
-        dataPlaneStatus.health = HealthStatus.UNRESPONSIVE;
-        dataPlaneStatus.missedHealthChecks += 1;
+        dataPlane.health = HealthStatus.UNRESPONSIVE;
+        dataPlane.missedHealthChecks += 1;
         break;
       case HealthStatus.ERRONEOUS:
-        dataPlaneStatus.health = HealthStatus.ERRONEOUS;
-        dataPlaneStatus.missedHealthChecks += 1;
+        dataPlane.health = HealthStatus.ERRONEOUS;
+        dataPlane.missedHealthChecks += 1;
         break;
       case HealthStatus.EXITED:
-        dataPlaneStatus.health = HealthStatus.EXITED;
-        dataPlaneStatus.missedHealthChecks = 0;
+        dataPlane.health = HealthStatus.EXITED;
+        dataPlane.missedHealthChecks = 0;
         break;
       case HealthStatus.UNKNOWN:
-        dataPlaneStatus.health = HealthStatus.UNKNOWN;
-        dataPlaneStatus.missedHealthChecks += 1;
+        dataPlane.health = HealthStatus.UNKNOWN;
+        dataPlane.missedHealthChecks += 1;
         break;
     }
-    if (dataPlaneStatus.missedHealthChecks > this.maxHealthCheckMisses) {
-      if (dataPlaneStatus.dataset !== undefined) {
-        this.logger.log(`Data plane with identifier ${dataPlaneStatus.identifier} is unresponsive for ${dataPlaneStatus.missedHealthChecks * DataPlaneService.pullInterval / 1000} seconds, its catalog is deregistered.`)
-        await this.catalogService.removeDataset(dataPlaneStatus.dataset.id);
-        dataPlaneStatus.dataset = undefined;
+    if (dataPlane.missedHealthChecks > this.maxHealthCheckMisses) {
+      if (dataPlane.dataset !== undefined) {
+        this.logger.log(`Data plane with identifier ${dataPlane.identifier} is unresponsive for ${dataPlane.missedHealthChecks * DataPlaneService.pullInterval / 1000} seconds, its catalog is deregistered.`)
+        await this.catalogService.removeDataset(dataPlane.dataset.id);
+        dataPlane.dataset = undefined;
       }
     }
 
   }
 
   async requestTransfer(requestDetail: TransferRequestMessage, processId: string, role: "provider" | "consumer"): Promise<DataPlaneTransferDto> {
-    const dataPlanes = await this.dataPlaneDetailsRepository.findBy({dataplaneType: requestDetail.format, role: In([role, 'both'])});
+    const dataPlanes = await this.dataPlaneRepository.findBy({dataplaneType: requestDetail.format, role: In([role, 'both'])});
     if (dataPlanes.length === 0) {
       throw Error(`Dataplane for type '${requestDetail.format}' cannot be found`);
     }
@@ -297,29 +292,23 @@ export class DataPlaneService {
 
   @Interval("catalogPull", DataPlaneService.pullInterval)
   async pullCatalogs() {
-    const detailsrepo = await this.dataPlaneStatusRepository.
-    createQueryBuilder()
-    .leftJoinAndSelect(
-      "dataplanedetails", 
-      "details", 
-      "details.identifier = detaplanedetails.identifier")
-      .where({"details.catalogSynchronization":"pull"})
-      .getMany()
-    const dataPlanePromises = detailsrepo.map(dataPlane => this.pullCatalog(dataPlane));
+    const dataPlanes = await this.dataPlaneRepository.find({
+      where: {
+        catalogSynchronization: "pull"
+      }
+    });
+    const dataPlanePromises = dataPlanes.map(dataPlane => this.pullCatalog(dataPlane));
     await Promise.all(dataPlanePromises);
   }
   
   @Interval("healthCheck", DataPlaneService.pullInterval)
   async healthChecks() {
-    const detailsrepo = await this.dataPlaneStatusRepository.
-    createQueryBuilder()
-    .leftJoinAndSelect(
-      "dataplanedetails", 
-      "details", 
-      "details.identifier = detaplanedetails.identifier")
-      .where({"details.catalogSynchronization":"push"})
-      .getMany()
-    const dataPlanePromises = detailsrepo.map(dataPlane => this.healthCheck(dataPlane));
+    const dataPlanes = await this.dataPlaneRepository.find({
+      where: {
+        catalogSynchronization: "push"
+      }
+    });
+    const dataPlanePromises = dataPlanes.map(dataPlane => this.healthCheck(dataPlane));
     await Promise.all(dataPlanePromises);
   }
 }

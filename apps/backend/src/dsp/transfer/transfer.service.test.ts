@@ -12,7 +12,7 @@ import {
 } from "../../model/dsp/transfer/transfer.dao";
 import { plainToClass } from "class-transformer";
 import { DataPlaneService } from "../../data-plane/dataPlane.service";
-import { DataPlaneStatusDao, DataPlaneDetailsDao } from "../../model/data-planes/dataPlanes.dao";
+import { DataPlaneDao } from "../../model/data-planes/dataPlanes.dao";
 import { CatalogDao, CatalogRecordDao, DatasetDao, DataServiceDao, DistributionDao, ResourceDao } from "../../model/dsp/catalog/catalog.dao";
 import { CatalogService } from "../catalog/catalog.service";
 import { http, HttpResponse, PathParams } from "msw";
@@ -36,8 +36,8 @@ describe("Transfer service", () => {
     const serverConfig = plainToClass(ServerConfig, {});
     const moduleRef: TestingModule = await Test.createTestingModule({
       imports: [
-        TypeOrmTestHelper.instance.module([CatalogDao, CatalogRecordDao, DatasetDao, DataServiceDao, DistributionDao, ResourceDao, DataPlaneStatusDao, DataPlaneDetailsDao, TransferEventDao, TransferDetailDao]),
-        TypeOrmModule.forFeature([CatalogDao, CatalogRecordDao, DatasetDao, DataServiceDao, DistributionDao, ResourceDao, DataPlaneStatusDao, DataPlaneDetailsDao, TransferEventDao, TransferDetailDao]),
+        TypeOrmTestHelper.instance.module([CatalogDao, CatalogRecordDao, DatasetDao, DataServiceDao, DistributionDao, ResourceDao, DataPlaneDao, TransferEventDao, TransferDetailDao]),
+        TypeOrmModule.forFeature([CatalogDao, CatalogRecordDao, DatasetDao, DataServiceDao, DistributionDao, ResourceDao, DataPlaneDao, TransferEventDao, TransferDetailDao]),
       ],
       providers: [
         TransferService,

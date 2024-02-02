@@ -6,7 +6,7 @@ import { CatalogDao, CatalogRecordDao, DatasetDao, DataServiceDao, DistributionD
 import { TypeOrmTestHelper } from "../utils/testhelper";
 import { DataPlaneService } from "./dataPlane.service"
 import { CatalogService } from "../dsp/catalog/catalog.service";
-import { DataPlaneDetailsDao, DataPlaneStatusDao } from "../model/data-planes/dataPlanes.dao";
+import { DataPlaneDao } from "../model/data-planes/dataPlanes.dao";
 import { DataPlaneCreation } from "@libs/dtos";
 import { DSPError } from "../utils/errors/error";
 import { Dataset, Distribution, DataService } from "../model/dsp/catalog/catalog";
@@ -22,8 +22,8 @@ describe("DataPlane Service", () => {
 
         const moduleRef: TestingModule = await Test.createTestingModule({
             imports: [
-                TypeOrmTestHelper.instance.module([CatalogDao, CatalogRecordDao, DatasetDao, DataServiceDao, DistributionDao, ResourceDao, DataPlaneStatusDao, DataPlaneDetailsDao]),
-                TypeOrmModule.forFeature([CatalogDao, CatalogRecordDao, DatasetDao, DataServiceDao, DistributionDao, ResourceDao, DataPlaneStatusDao, DataPlaneDetailsDao])
+                TypeOrmTestHelper.instance.module([CatalogDao, CatalogRecordDao, DatasetDao, DataServiceDao, DistributionDao, ResourceDao, DataPlaneDao]),
+                TypeOrmModule.forFeature([CatalogDao, CatalogRecordDao, DatasetDao, DataServiceDao, DistributionDao, ResourceDao, DataPlaneDao])
             ],
             providers: [
                 DataPlaneService,

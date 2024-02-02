@@ -16,7 +16,7 @@ import { DataPlaneService } from "../../data-plane/dataPlane.service";
 import { CatalogService } from "../catalog/catalog.service";
 import { TypeOrmTestHelper } from "../../utils/testhelper";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { DataPlaneStatusDao, DataPlaneDetailsDao } from "../../model/data-planes/dataPlanes.dao";
+import { DataPlaneDao } from "../../model/data-planes/dataPlanes.dao";
 import { CatalogDao, CatalogRecordDao, DatasetDao, DataServiceDao, DistributionDao, ResourceDao } from "../../model/dsp/catalog/catalog.dao";
 import { TransferEventDao, TransferDetailDao } from "../../model/dsp/transfer/transfer.dao";
 
@@ -101,8 +101,8 @@ describe("TransferController", () => {
     await TypeOrmTestHelper.instance.setupTestDB();
     const moduleRef: TestingModule = await Test.createTestingModule({
       imports: [
-        TypeOrmTestHelper.instance.module([CatalogDao, CatalogRecordDao, DatasetDao, DataServiceDao, DistributionDao, ResourceDao, DataPlaneStatusDao, DataPlaneDetailsDao, TransferEventDao, TransferDetailDao]),
-        TypeOrmModule.forFeature([CatalogDao, CatalogRecordDao, DatasetDao, DataServiceDao, DistributionDao, ResourceDao, DataPlaneStatusDao, DataPlaneDetailsDao, TransferEventDao, TransferDetailDao]),
+        TypeOrmTestHelper.instance.module([CatalogDao, CatalogRecordDao, DatasetDao, DataServiceDao, DistributionDao, ResourceDao, DataPlaneDao, TransferEventDao, TransferDetailDao]),
+        TypeOrmModule.forFeature([CatalogDao, CatalogRecordDao, DatasetDao, DataServiceDao, DistributionDao, ResourceDao, DataPlaneDao, TransferEventDao, TransferDetailDao]),
       ],
       controllers: [TransferController],
       providers: [
