@@ -1,0 +1,25 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ printf "%s-init" (include "casdoor-init.fullname" .) }}
+  labels:
+    {{- include "casdoor-init.labels" . | nindent 4 }}
+spec:
+  template:
+    spec:
+      serviceAccountName: {{ include "casdoor-init.serviceAccountName" . }}
+      restartPolicy: "OnFailure"
+      containers:
+      - image: {{ .Values.image }}
+        name: casdoor-init
+        imagePullPolicy: Always
+        args: [ "while true; do sleep 5; done;" ]
+        volumeMounts:
+        - name: init-config
+          mountPath: /app/config.yaml
+          subPath: config.yaml
+      volumes:
+      - name: init-config
+        configMap:
+          name: {{ printf "%s-init-config" (include "casdoor-init.fullname" .) }}

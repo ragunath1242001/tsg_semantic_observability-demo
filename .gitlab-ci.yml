@@ -66,3 +66,13 @@ release_version:http-data-plane:
   extends: .release_version
   variables:
     FOLDER: http-data-plane
+
+release:casdoor-init:
+  extends: .release
+  variables:
+    FOLDER: casdoor-init
+
+release_version:casdoor-init:
+  extends: .release_version
+  variables:
+    FOLDER: casdoor-init
