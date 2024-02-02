@@ -11,22 +11,8 @@ ingress:
   # annotations: {}
   # class: nginx
 
-# env:
-#   - name: CONTROL_PLANE__AUTHORIZATION
-#     valueFrom:
-#       secretKeyRef:
-#         name: cp-auth
-#         key: header
-#   - name: USERS__0__USERNAME
-#     valueFrom:
-#       secretKeyRef:
-#         name: dp-auth
-#         key: username
-#   - name: USERS__0__PASSWORD
-#     valueFrom:
-#       secretKeyRef:
-#         name: dp-auth
-#         key: password
+env: []
+configFromSecrets: []
 
 config:
   server:

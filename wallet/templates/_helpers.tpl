@@ -80,8 +80,8 @@ Create the name of the service account to use
     {{- list $val $sublabel | include "recurseSecretConfig" -}}
     {{- end }}
   {{- else if kindOf $val | eq "slice" -}}
-    {{- range $elem := $val }}
-      {{- list $elem (printf "%s__0" $sublabel) | include "recurseSecretConfig" -}}
+    {{- range $idx, $elem := $val }}
+      {{- list $elem (printf "%s__%d" $sublabel $idx) | include "recurseSecretConfig" -}}
     {{- end }}
   {{- else -}}
 - name: {{ $sublabel | quote }}
