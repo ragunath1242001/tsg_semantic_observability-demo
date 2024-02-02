@@ -1,7 +1,4 @@
 {
-    "extends": [
-        "../../tsconfig.json"
-    ],
     "compilerOptions": {
         "paths": {},
         "module": "commonjs",
@@ -21,8 +18,13 @@
         "strict": true,
         "strictNullChecks": false,
         "types": [],
+        "outDir": "dist",
+        "rootDir": "."
     },
     "include": [
-        "**/*.ts"
+        "."
     ],
+    "exclude": [
+        "dist"
+    ]
 }

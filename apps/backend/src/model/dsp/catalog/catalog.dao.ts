@@ -12,16 +12,16 @@ export class ResourceDao extends MetaEntity implements IResource {
   id!: string
   @Column("simple-json", {nullable: true})
   contactPoint?: Reference;
-  @Column("simple-json", {nullable: true})
-  keyword?: Array<Multilanguage>;
+  @Column("simple-array", {nullable: true})
+  keyword?: Array<string>;
   @Column("simple-json", {nullable: true})
   landingPage?: Reference;
   @Column("simple-json", {nullable: true})
   theme?: Array<Reference>;
-  @Column("simple-json", {nullable: true})
-  conformsTo?: Reference;
-  @Column("simple-json", {nullable: true})
-  creator?: Reference;
+  @Column({nullable: true})
+  conformsTo?: string;
+  @Column({nullable: true})
+  creator?: string;
   @Column("simple-json", {nullable: true})
   description?: Array<Multilanguage>;
   @Column({nullable: true})
@@ -118,8 +118,8 @@ export class DataServiceDao extends ResourceChild implements IDataService {
   @JoinColumn()
   _resource: ResourceDao | undefined
 
-  @Column("simple-json", {nullable: true})
-  endpointDescription?: Reference;
+  @Column({nullable: true})
+  endpointDescription?: string;
   @Column({nullable: true})
   endpointURL?: string;
 
@@ -327,13 +327,13 @@ export class CatalogDao extends DatasetChild implements ICatalog {
   _dataset: Relation<DatasetDao> | undefined
   @Column("simple-json", {nullable: true})
   themeTaxonomy?: Reference;
-  @Column("simple-json", {nullable: true})
-  homepage?: Reference;
+  @Column({nullable: true})
+  homepage?: string;
 
   @OneToMany(() => CatalogRecordDao, (catalogrecord) => catalogrecord._catalog, {cascade: true})
-  _records?: Array<CatalogRecord>;
+  _records?: Array<CatalogRecordDao>;
   @OneToMany(() => DataServiceDao, (dataservice) => dataservice._catalog, {cascade: true})
-  _services?: Array<DataService>;
+  _services?: Array<DataServiceDao>;
   get service(): Array<DataService> | undefined {
     return mapToInstances(this._services, DataService)
   }

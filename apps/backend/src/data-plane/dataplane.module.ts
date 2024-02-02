@@ -3,10 +3,10 @@ import { DataPlaneController } from "./dataplane.controller";
 import { DataPlaneService } from "./dataPlane.service";
 import { CatalogModule } from "../dsp/catalog/catalog.module";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { DataPlaneDetailsDao, DataPlaneStatusDao } from "../model/data-planes/dataPlanes.dao";
+import { DataPlaneDao } from "../model/data-planes/dataPlanes.dao";
 
 @Module({
-  imports: [CatalogModule, TypeOrmModule.forFeature([DataPlaneStatusDao, DataPlaneDetailsDao])],
+  imports: [CatalogModule, TypeOrmModule.forFeature([DataPlaneDao])],
   controllers: [DataPlaneController],
   providers: [DataPlaneService],
   exports: [DataPlaneService]

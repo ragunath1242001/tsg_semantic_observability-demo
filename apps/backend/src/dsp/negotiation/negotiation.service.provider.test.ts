@@ -10,7 +10,7 @@ import { AuthService } from "../../auth/auth.service";
 import { Offer } from "../../model/dsp/negotiation/negotiation";
 import { SetupServer, setupServer } from "msw/node";
 import { HttpResponse, PathParams, http } from "msw";
-import { ContractAgreementVerificationMessageDto, ContractNegotiationState, NegotiationEvent, ProofTypes } from "@tsg-dsp/common";
+import { ContractAgreementVerificationMessageDto, ContractNegotiationState, NegotiationEvent } from "@tsg-dsp/common";
 import { ContractAgreementVerificationMessage, ContractNegotiationEventMessage, ContractNegotiationTerminationMessage, ContractRequestMessage } from "../../model/dsp/negotiation/messages";
 import { Multilanguage } from "../../model/dsp/common";
 
@@ -91,20 +91,20 @@ describe("Negotiation Service (Provider)", () => {
         it("Handle new negotiation request", async () => {
             const offer = new Offer({
                 id: 'urn:uuid:b1de3dee-169d-41db-865f-b84cce26ff00',
-                assigner: 'urn:uuid:c2165eeb-8fc3-4de8-aed0-a088a6fb48d0'
+                assigner: 'urn:uuid:c2165eeb-8fc3-4de8-aed0-a088a6fb48d0',
+                target: 'urn:uuid:b9e2af39-36a9-4e92-a02e-a05dcd94219b'
             });
             const negotiation = await negotiationService.handleNewRequest(
                 new ContractRequestMessage({
-                    processId: remoteProcessId,
+                    consumerPid: remoteProcessId,
                     offer: offer,
-                    callbackAddress: `http://remoteparty.test/negotiation/${remoteProcessId}`,
-                    dataSet: 'urn:uuid:b9e2af39-36a9-4e92-a02e-a05dcd94219b'
+                    callbackAddress: `http://remoteparty.test/negotiation/${remoteProcessId}`
                 }),
                 'did:web:remoteparty.test'
             );
             expect(negotiation).toBeDefined();
-            expect(negotiation.contractNegotiationState).toBe(ContractNegotiationState.REQUESTED);
-            localProcessId = negotiation.processId;
+            expect(negotiation.state).toBe(ContractNegotiationState.REQUESTED);
+            localProcessId = negotiation.providerPid;
 
             const negotiationDetail = await negotiationService.getNegotiation(localProcessId);
             expect(negotiationDetail.state).toBe(ContractNegotiationState.REQUESTED);
@@ -125,7 +125,8 @@ describe("Negotiation Service (Provider)", () => {
             await expect(negotiationService.handleEvent(
                 localProcessId, 
                 new ContractNegotiationEventMessage({
-                    processId: localProcessId,
+                    providerPid: localProcessId,
+                    consumerPid: remoteProcessId,
                     eventType: NegotiationEvent.FINALIZED
                 }),
                 'did:web:remoteparty.test'
@@ -144,15 +145,11 @@ describe("Negotiation Service (Provider)", () => {
             const verification = await negotiationService.handleVerification(
                 localProcessId,
                 new ContractAgreementVerificationMessage({
-                    processId: localProcessId,
-                    credentialSubject: {
-                        '@type': 'dspace:ContractAgreementMessageHash',
-                        "dspace:hash": 'AGREEMENT_HASH'
-                    },
-                    proof: {
-                        '@type': ProofTypes.JsonWebSignature2020,
-                        'dct:created': new Date().toISOString(),
-                        'sec:jws': '...'
+                    providerPid: localProcessId,
+                    consumerPid: remoteProcessId,
+                    hashedMessage: {
+                        "dspace:algorithm": "sha256",
+                        "dspace:digest": "..."
                     }
                 }),
                 'did:web:remoteparty.test'
@@ -177,20 +174,20 @@ describe("Negotiation Service (Provider)", () => {
         it("Handle new negotiation request", async () => {
             const offer = new Offer({
                 id: 'urn:uuid:b1de3dee-169d-41db-865f-b84cce26ff00',
-                assigner: 'urn:uuid:c2165eeb-8fc3-4de8-aed0-a088a6fb48d0'
+                assigner: 'urn:uuid:c2165eeb-8fc3-4de8-aed0-a088a6fb48d0',
+                target: 'urn:uuid:b9e2af39-36a9-4e92-a02e-a05dcd94219b'
             });
             const negotiation = await negotiationService.handleNewRequest(
                 new ContractRequestMessage({
-                    processId: remoteProcessId,
+                    consumerPid: remoteProcessId,
                     offer: offer,
                     callbackAddress: `http://remoteparty.test/negotiation/${remoteProcessId}`,
-                    dataSet: 'urn:uuid:b9e2af39-36a9-4e92-a02e-a05dcd94219b'
                 }),
                 'did:web:remoteparty.test'
             );
             expect(negotiation).toBeDefined();
-            expect(negotiation.contractNegotiationState).toBe(ContractNegotiationState.REQUESTED);
-            localProcessId = negotiation.processId;
+            expect(negotiation.state).toBe(ContractNegotiationState.REQUESTED);
+            localProcessId = negotiation.providerPid;
 
             const negotiationDetail = await negotiationService.getNegotiation(localProcessId);
             expect(negotiationDetail.state).toBe(ContractNegotiationState.REQUESTED);
@@ -209,7 +206,8 @@ describe("Negotiation Service (Provider)", () => {
             await expect(negotiationService.handleEvent(
                 localProcessId, 
                 new ContractNegotiationEventMessage({
-                    processId: localProcessId,
+                    providerPid: localProcessId,
+                    consumerPid: remoteProcessId,
                     eventType: NegotiationEvent.FINALIZED
                 }),
                 'did:web:remoteparty.test'
@@ -231,16 +229,17 @@ describe("Negotiation Service (Provider)", () => {
         it("Handle new offer request", async () => {
             const offer = new Offer({
                 id: 'urn:uuid:b1de3dee-169d-41db-865f-b84cce26ff00',
-                assigner: 'urn:uuid:c2165eeb-8fc3-4de8-aed0-a088a6fb48d0'
+                assigner: 'urn:uuid:c2165eeb-8fc3-4de8-aed0-a088a6fb48d0',
+                target: 'urn:uuid:b9e2af39-36a9-4e92-a02e-a05dcd94219b'
             });
 
             await expect(negotiationService.handleExistingRequest(
                 localProcessId,
                 new ContractRequestMessage({
-                    processId: remoteProcessId,
+                    providerPid: remoteProcessId,
+                    consumerPid: localProcessId,
                     offer: offer,
                     callbackAddress: `http://remoteparty.test/negotiation/${remoteProcessId}`,
-                    dataSet: 'urn:uuid:b9e2af39-36a9-4e92-a02e-a05dcd94219b'
                 }),
                 'did:web:remoteparty.test'
             )).rejects.toThrow('Contract negotiation process ID mismatch')
@@ -248,10 +247,10 @@ describe("Negotiation Service (Provider)", () => {
             await negotiationService.handleExistingRequest(
                 localProcessId,
                 new ContractRequestMessage({
-                    processId: localProcessId,
+                    providerPid: localProcessId,
+                    consumerPid: remoteProcessId,
                     offer: offer,
                     callbackAddress: `http://remoteparty.test/negotiation/${remoteProcessId}`,
-                    dataSet: 'urn:uuid:b9e2af39-36a9-4e92-a02e-a05dcd94219b'
                 }),
                 'did:web:remoteparty.test'
             )
@@ -260,7 +259,8 @@ describe("Negotiation Service (Provider)", () => {
         it("Offer new contract", async () => {
             const offer = new Offer({
                 id: 'urn:uuid:b1de3dee-169d-41db-865f-b84cce26ff00',
-                assigner: 'urn:uuid:c2165eeb-8fc3-4de8-aed0-a088a6fb48d0'
+                assigner: 'urn:uuid:c2165eeb-8fc3-4de8-aed0-a088a6fb48d0',
+                target: 'urn:uuid:b9e2af39-36a9-4e92-a02e-a05dcd94219b'
             });
             const offerResult = await negotiationService.offer(offer, localProcessId)
             expect(offerResult.status).toBe('OK')
@@ -270,7 +270,8 @@ describe("Negotiation Service (Provider)", () => {
             const accept = await negotiationService.handleEvent(
                 localProcessId,
                 new ContractNegotiationEventMessage({
-                    processId: localProcessId,
+                    providerPid: localProcessId,
+                    consumerPid: remoteProcessId,
                     eventType: NegotiationEvent.ACCEPTED
                 }),
                 'did:web:remoteparty.test'
@@ -290,15 +291,11 @@ describe("Negotiation Service (Provider)", () => {
             const verification = await negotiationService.handleVerification(
                 localProcessId,
                 new ContractAgreementVerificationMessage({
-                    processId: localProcessId,
-                    credentialSubject: {
-                        '@type': 'dspace:ContractAgreementMessageHash',
-                        "dspace:hash": 'AGREEMENT_HASH'
-                    },
-                    proof: {
-                        '@type': ProofTypes.JsonWebSignature2020,
-                        'dct:created': new Date().toISOString(),
-                        'sec:jws': '...'
+                    providerPid: localProcessId,
+                    consumerPid: remoteProcessId,
+                    hashedMessage: {
+                        "dspace:algorithm": "sha256",
+                        "dspace:digest": "..."
                     }
                 }),
                 'did:web:remoteparty.test'
@@ -322,25 +319,26 @@ describe("Negotiation Service (Provider)", () => {
         it("Consumer termination", async () => {
             const offer = new Offer({
                 id: 'urn:uuid:b1de3dee-169d-41db-865f-b84cce26ff00',
-                assigner: 'urn:uuid:c2165eeb-8fc3-4de8-aed0-a088a6fb48d0'
+                assigner: 'urn:uuid:c2165eeb-8fc3-4de8-aed0-a088a6fb48d0',
+                target: 'urn:uuid:b9e2af39-36a9-4e92-a02e-a05dcd94219b'
             });
             const negotiation = await negotiationService.handleNewRequest(
                 new ContractRequestMessage({
-                    processId: remoteProcessId,
+                    consumerPid: remoteProcessId,
                     offer: offer,
                     callbackAddress: `http://remoteparty.test/negotiation/${remoteProcessId}`,
-                    dataSet: 'urn:uuid:b9e2af39-36a9-4e92-a02e-a05dcd94219b'
                 }),
                 'did:web:remoteparty.test'
             );
             expect(negotiation).toBeDefined();
-            expect(negotiation.contractNegotiationState).toBe(ContractNegotiationState.REQUESTED);
-            localProcessId = negotiation.processId;
+            expect(negotiation.state).toBe(ContractNegotiationState.REQUESTED);
+            localProcessId = negotiation.providerPid;
 
             const termination = await negotiationService.handleTermination(
                 localProcessId,
                 new ContractNegotiationTerminationMessage({
-                    processId: localProcessId,
+                    providerPid: localProcessId,
+                    consumerPid: remoteProcessId,
                     reason: [new Multilanguage('Request termination')],
                     code: 'CONSUMER_ERROR'
                 }),
@@ -352,20 +350,20 @@ describe("Negotiation Service (Provider)", () => {
         it("Provider termination", async () => {
             const offer = new Offer({
                 id: 'urn:uuid:b1de3dee-169d-41db-865f-b84cce26ff00',
-                assigner: 'urn:uuid:c2165eeb-8fc3-4de8-aed0-a088a6fb48d0'
+                assigner: 'urn:uuid:c2165eeb-8fc3-4de8-aed0-a088a6fb48d0',
+                target: 'urn:uuid:b9e2af39-36a9-4e92-a02e-a05dcd94219b'
             });
             const negotiation = await negotiationService.handleNewRequest(
                 new ContractRequestMessage({
-                    processId: remoteProcessId,
+                    consumerPid: remoteProcessId,
                     offer: offer,
                     callbackAddress: `http://remoteparty.test/negotiation/${remoteProcessId}`,
-                    dataSet: 'urn:uuid:b9e2af39-36a9-4e92-a02e-a05dcd94219b'
                 }),
                 'did:web:remoteparty.test'
             );
             expect(negotiation).toBeDefined();
-            expect(negotiation.contractNegotiationState).toBe(ContractNegotiationState.REQUESTED);
-            localProcessId = negotiation.processId;
+            expect(negotiation.state).toBe(ContractNegotiationState.REQUESTED);
+            localProcessId = negotiation.providerPid;
             
             const termination = await negotiationService.terminate(localProcessId, 'PROVIDER_ERROR', 'Request termination');
             expect(termination.status).toBe('OK');

@@ -2,13 +2,16 @@
   "name": "@libs/dtos",
   "version": "1.0.0",
   "description": "",
-  "main": "index.ts",
+  "main": "index.js",
   "keywords": [],
   "author": "",
   "license": "ISC",
   "private": true,
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
+  },
   "dependencies": {
-    "@tsg-dsp/common": "^0.0.1",
+    "@tsg-dsp/common": "^0.1.0",
     "class-validator": "^0.14.0",
     "jose": "^4.14.4",
     "tslib": "^2.6.2",

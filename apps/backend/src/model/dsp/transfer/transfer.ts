@@ -1,7 +1,7 @@
+import { DataPlaneTransferDto } from "@libs/dtos";
 import { TransferState } from "@tsg-dsp/common";
-import { DataPlaneTransferDto } from "../data-planes/dataPlanes.dto";
-import { Multilanguage } from "../../../apps/backend/src/model/dsp/common";
-import { TransferProcess, DataAddress } from "../../../apps/backend/src/model/dsp/transfer/messages";
+import { Multilanguage } from "../common";
+import { TransferProcess, DataAddress } from "./messages";
 
 export type TransferRole = "provider" | "consumer";
 

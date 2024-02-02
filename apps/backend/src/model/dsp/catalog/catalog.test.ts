@@ -9,8 +9,8 @@ test("Resource serialization", async () => {
     id: "urn:uuid:5b156cfa-5800-4345-8acc-6725c7eb5bc2",
     contactPoint: new Reference({ id: "http://example.com" }),
     keyword: [
-      new Multilanguage("keyword1"),
-      new Multilanguage("keyword2"),
+      "keyword1",
+      "keyword2",
     ],
     landingPage: new Reference({ id: "http://example.com" }),
     title: 'Resource title',
@@ -32,14 +32,8 @@ test("Resource serialization", async () => {
       "@id": "http://example.com",
     },
     "dcat:keyword": [
-      {
-        "@language": "en",
-        "@value": "keyword1",
-      },
-      {
-        "@language": "en",
-        "@value": "keyword2",
-      },
+      "keyword1",
+      "keyword2",
     ],
     "dcat:landingPage": {
       "@id": "http://example.com",

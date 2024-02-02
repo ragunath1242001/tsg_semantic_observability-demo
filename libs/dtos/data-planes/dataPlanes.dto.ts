@@ -1,5 +1,5 @@
 
-export interface DataPlaneDetailsDto {
+export interface DataPlaneDto {
   identifier: string;
   dataplaneType: string;
   endpointPrefix: string;
@@ -10,7 +10,7 @@ export interface DataPlaneDetailsDto {
   role: "consumer" | "provider" | "both"
 }
 
-export type DataPlaneCreation = Omit<DataPlaneDetailsDto, "identifier"> & { identifier?: string }
+export type DataPlaneCreation = Omit<DataPlaneDto, "identifier"> & { identifier?: string }
 
 export interface DataPlaneAddressDto {
   endpoint: string,

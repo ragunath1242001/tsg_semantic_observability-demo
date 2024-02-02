@@ -4,7 +4,7 @@ import { DataPlaneTransferDto } from "@libs/dtos";
 import { Multilanguage } from "../common";
 import { TransferProcess, DataAddress } from "./messages";
 import { TransferState } from "@tsg-dsp/common";
-import { ITransferEvent, ITransferStatus, TransferEvent } from "@libs/dtos";
+import { ITransferEvent, ITransferStatus, TransferEvent } from "./transfer";
 
 export type TransferRole = "provider" | "consumer";
 

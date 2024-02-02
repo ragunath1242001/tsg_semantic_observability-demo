@@ -8,7 +8,7 @@ import {
   Permission,
   Prohibition,
 } from "./negotiation";
-import { Action, AgreementDto, OfferDto, LeftOperand, Operator } from "@tsg-dsp/common";
+import { ODRLAction, AgreementDto, OfferDto, ODRLLeftOperand, ODRLOperator } from "@tsg-dsp/common";
 
 test("Contract offer serialization", async () => {
   const offer = new Offer({
@@ -17,25 +17,25 @@ test("Contract offer serialization", async () => {
     assignee: "urn:uuid:e02bb9f5-8af0-4826-b1f7-e1acbc2697b2",
     permission: [
       new Permission({
-        action: Action.USE,
+        action: ODRLAction.USE,
         target: "urn:uuid:340eab1a-f3ee-471f-a0ad-beadddc521b6",
         constraint: [
           new Constraint({
-            leftOperand: LeftOperand.PURPOSE,
-            operator: Operator.EQ,
+            leftOperand: ODRLLeftOperand.PURPOSE,
+            operator: ODRLOperator.EQ,
             rightOperand: new URI("http://example.com/purposeX"),
           }),
         ],
         duty: [
           new Duty({
-            action: Action.INFORM,
+            action: ODRLAction.INFORM,
           }),
         ],
       }),
     ],
     prohibition: [
       new Prohibition({
-        action: Action.DISTRIBUTE,
+        action: ODRLAction.DISTRIBUTE,
         target: "urn:uuid:340eab1a-f3ee-471f-a0ad-beadddc521b6",
       }),
     ],
@@ -51,7 +51,7 @@ test("Contract offer serialization", async () => {
     "odrl:permission": [
       {
         "@type": "odrl:Permission",
-        "odrl:action": Action.USE,
+        "odrl:action": ODRLAction.USE,
         "odrl:target": "urn:uuid:340eab1a-f3ee-471f-a0ad-beadddc521b6",
         "odrl:constraint": [
           {
@@ -60,14 +60,14 @@ test("Contract offer serialization", async () => {
               "@type": "xsd:anyURI",
               "@value": "http://example.com/purposeX",
             },
-            "odrl:leftOperand": LeftOperand.PURPOSE,
-            "odrl:operator": Operator.EQ,
+            "odrl:leftOperand": ODRLLeftOperand.PURPOSE,
+            "odrl:operator": ODRLOperator.EQ,
           },
         ],
         "odrl:duty": [
           {
             "@type": "odrl:Duty",
-            "odrl:action": Action.INFORM,
+            "odrl:action": ODRLAction.INFORM,
           },
         ],
       },
@@ -75,7 +75,7 @@ test("Contract offer serialization", async () => {
     "odrl:prohibition": [
       {
         "@type": "odrl:Prohibition",
-        "odrl:action": Action.DISTRIBUTE,
+        "odrl:action": ODRLAction.DISTRIBUTE,
         "odrl:target": "urn:uuid:340eab1a-f3ee-471f-a0ad-beadddc521b6",
       },
     ],
@@ -92,29 +92,28 @@ test("Contract agreement serialization", async () => {
     assigner: "urn:uuid:1adde502-3c96-48ac-83ff-a02fabd24b4f",
     assignee: "urn:uuid:e02bb9f5-8af0-4826-b1f7-e1acbc2697b2",
     timestamp: "2023-01-01T00:00:00Z",
-    consumerId: "Consumer A",
-    providerId: "Provider 1",
+    target: "urn:uuid:21d38f03-3a0d-4a64-9281-45222863a04e",
     permission: [
       new Permission({
-        action: Action.USE,
+        action: ODRLAction.USE,
         target: "urn:uuid:340eab1a-f3ee-471f-a0ad-beadddc521b6",
         constraint: [
           new Constraint({
-            leftOperand: LeftOperand.PURPOSE,
-            operator: Operator.EQ,
+            leftOperand: ODRLLeftOperand.PURPOSE,
+            operator: ODRLOperator.EQ,
             rightOperand: new URI("http://example.com/purposeX"),
           }),
         ],
         duty: [
           new Duty({
-            action: Action.INFORM,
+            action: ODRLAction.INFORM,
           }),
         ],
       }),
     ],
     prohibition: [
       new Prohibition({
-        action: Action.DISTRIBUTE,
+        action: ODRLAction.DISTRIBUTE,
         target: "urn:uuid:340eab1a-f3ee-471f-a0ad-beadddc521b6",
       }),
     ],
@@ -130,7 +129,7 @@ test("Contract agreement serialization", async () => {
     "odrl:permission": [
       {
         "@type": "odrl:Permission",
-        "odrl:action": Action.USE,
+        "odrl:action": ODRLAction.USE,
         "odrl:target": "urn:uuid:340eab1a-f3ee-471f-a0ad-beadddc521b6",
         "odrl:constraint": [
           {
@@ -139,14 +138,14 @@ test("Contract agreement serialization", async () => {
               "@type": "xsd:anyURI",
               "@value": "http://example.com/purposeX",
             },
-            "odrl:leftOperand": LeftOperand.PURPOSE,
-            "odrl:operator": Operator.EQ,
+            "odrl:leftOperand": ODRLLeftOperand.PURPOSE,
+            "odrl:operator": ODRLOperator.EQ,
           },
         ],
         "odrl:duty": [
           {
             "@type": "odrl:Duty",
-            "odrl:action": Action.INFORM,
+            "odrl:action": ODRLAction.INFORM,
           },
         ],
       },
@@ -154,13 +153,12 @@ test("Contract agreement serialization", async () => {
     "odrl:prohibition": [
       {
         "@type": "odrl:Prohibition",
-        "odrl:action": Action.DISTRIBUTE,
+        "odrl:action": ODRLAction.DISTRIBUTE,
         "odrl:target": "urn:uuid:340eab1a-f3ee-471f-a0ad-beadddc521b6",
       },
     ],
     "dspace:timestamp": "2023-01-01T00:00:00Z",
-    "dspace:consumerId": "Consumer A",
-    "dspace:providerId": "Provider 1",
+    "odrl:target": "urn:uuid:21d38f03-3a0d-4a64-9281-45222863a04e"
   }
   expect(serialized).toStrictEqual(expected);
   const deserialized = await deserialize<Agreement>(serialized);

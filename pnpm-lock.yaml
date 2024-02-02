@@ -34,12 +34,15 @@ importers:
       '@nestjs/schedule':
         specifier: ^3.0.2
         version: 3.0.4(@nestjs/common@10.3.0)(@nestjs/core@10.3.0)(reflect-metadata@0.1.14)
+      '@nestjs/serve-static':
+        specifier: ^4.0.0
+        version: 4.0.0(@nestjs/common@10.3.0)(@nestjs/core@10.3.0)(express@4.18.2)
       '@nestjs/typeorm':
         specifier: ^10.0.0
         version: 10.0.1(@nestjs/common@10.3.0)(@nestjs/core@10.3.0)(reflect-metadata@0.1.14)(rxjs@7.8.1)(typeorm@0.3.19)
       '@tsg-dsp/common':
-        specifier: ^0.0.1
-        version: 0.0.1(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.1.14)
+        specifier: ^0.1.0
+        version: 0.1.0(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.1.14)
       axios:
         specifier: ^1.4.0
         version: 1.6.5
@@ -215,8 +218,8 @@ importers:
   libs/dtos:
     dependencies:
       '@tsg-dsp/common':
-        specifier: ^0.0.1
-        version: 0.0.1(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.1.14)
+        specifier: ^0.1.0
+        version: 0.1.0(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.1.14)
       class-validator:
         specifier: ^0.14.0
         version: 0.14.1
@@ -1268,6 +1271,28 @@ packages:
       - chokidar
     dev: true
 
+  /@nestjs/serve-static@4.0.0(@nestjs/common@10.3.0)(@nestjs/core@10.3.0)(express@4.18.2):
+    resolution: {integrity: sha512-8cTrNV2ngdHIjiLNsXePnw0+KY1ThrZGz/WeyAG5gIvmZNDbnZBOrPoYlKL+MOzlXlQStxR5jKLYmn+nJeoncQ==}
+    peerDependencies:
+      '@fastify/static': ^6.5.0
+      '@nestjs/common': ^9.0.0 || ^10.0.0
+      '@nestjs/core': ^9.0.0 || ^10.0.0
+      express: ^4.18.1
+      fastify: ^4.7.0
+    peerDependenciesMeta:
+      '@fastify/static':
+        optional: true
+      express:
+        optional: true
+      fastify:
+        optional: true
+    dependencies:
+      '@nestjs/common': 10.3.0(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.1.14)(rxjs@7.8.1)
+      '@nestjs/core': 10.3.0(@nestjs/common@10.3.0)(@nestjs/platform-express@10.3.0)(reflect-metadata@0.1.14)(rxjs@7.8.1)
+      express: 4.18.2
+      path-to-regexp: 0.2.5
+    dev: false
+
   /@nestjs/testing@10.3.0(@nestjs/common@10.3.0)(@nestjs/core@10.3.0)(@nestjs/platform-express@10.3.0):
     resolution: {integrity: sha512-8DM+bw1qASCvaEnoHUQhypCOf54+G5R21MeFBMvnSk5DtKaWVZuzDP2GjLeYCpTH19WeP6LrrjHv3rX2LKU02A==}
     peerDependencies:
@@ -1435,8 +1460,8 @@ packages:
   /@tsconfig/node16@1.0.4:
     resolution: {integrity: sha512-vxhUy4J8lyeyinH7Azl1pdd43GJhZH/tP2weN8TntQblOY+A0XbT8DJk1/oCPuOOyg/Ja757rG0CgHcWC8OfMA==}
 
-  /@tsg-dsp/common@0.0.1(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.1.14):
-    resolution: {integrity: sha512-BXBZy79R8xo0r6WUG0Ugp5vxouNlo5fxGDniedU7jrj3umzjbEffTOeaZQW8xNnkEM+enD/a0HuMTt35Yfh/Xg==}
+  /@tsg-dsp/common@0.1.0(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.1.14):
+    resolution: {integrity: sha512-dSu3ZqmHEPePeTSW4CEjbFxilFT98hbuEed8I8kBcnoMRs1YyCZBazj4r+3LmVs5agwFUEEgM1cI2Fwvy258PA==}
     peerDependencies:
       class-transformer: '*'
       class-validator: '*'
@@ -3102,6 +3127,13 @@ packages:
     resolution: {integrity: sha512-IPzF4w4/Rd94bA9imS68tZBaYyBWSCE47V1RGuMrB94iyTOIEwRmVL2x/4An+6mETpLrKJ5hQkB8W4kFAadeIQ==}
     engines: {node: '>=12'}
     dev: false
+
+  /dotenv@16.4.1:
+    resolution: {integrity: sha512-CjA3y+Dr3FyFDOAMnxZEGtnW9KBR2M0JvvUtXNW+dYJL5ROWxP9DUHCwgFqpMk0OXCc0ljhaNTr2w/kutYIcHQ==}
+    engines: {node: '>=12'}
+    requiresBuild: true
+    dev: false
+    optional: true
 
   /duplexer@0.1.2:
     resolution: {integrity: sha512-jtD6YG370ZCIi/9GTaJKQxWTZD045+4R4hTk/x1UyoqadyJ9x9CgSi1RlVDQF8U2sxLLSnFkCaMihqljHIWgMg==}
@@ -5444,7 +5476,7 @@ packages:
       '@iarna/toml': 2.2.5
       '@nestjs/axios': 3.0.1(@nestjs/common@10.3.0)(axios@1.6.5)(reflect-metadata@0.1.14)(rxjs@7.8.1)
       cosmiconfig: 9.0.0(typescript@5.3.3)
-      dotenv: 16.3.1
+      dotenv: 16.4.1
       dotenv-expand: 10.0.0
       parse-json: 8.1.0
       yaml: 2.3.4
@@ -5828,6 +5860,10 @@ packages:
 
   /path-to-regexp@0.1.7:
     resolution: {integrity: sha512-5DFkuoqlv1uYQKxy8omFBeJPQcdoE07Kv2sferDCrAq1ohOU+MSDswDIbnx3YAM60qIOnYa53wBhXW0EbMonrQ==}
+
+  /path-to-regexp@0.2.5:
+    resolution: {integrity: sha512-l6qtdDPIkmAmzEO6egquYDfqQGPMRNGjYtrU13HAXb3YSRrt7HSb1sJY0pKp6o2bAa86tSB6iwaW2JbthPKr7Q==}
+    dev: false
 
   /path-to-regexp@3.2.0:
     resolution: {integrity: sha512-jczvQbCUS7XmS7o+y1aEO9OBVFeZBQ1MDSEqmO7xSoPgOPoowY/SxLpZ6Vh97/8qHZOteiCKb7gkG9gA2ZUxJA==}

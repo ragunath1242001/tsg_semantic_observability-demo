@@ -4,14 +4,23 @@ ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
 
 FROM base AS build
-COPY . /usr/src/app
-WORKDIR /usr/src/app
+WORKDIR /app 
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY apps/backend/package.json apps/backend/
+COPY apps/frontend/package.json apps/frontend/
+COPY libs/dtos/package.json libs/dtos/
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
-RUN pnpm run -r build
-RUN pnpm deploy --filter=backend --prod /prod/backend
 
-FROM base
-COPY --from=build /prod/backend /prod/backend
-WORKDIR /prod/backend
+COPY apps apps
+COPY libs libs 
+RUN pnpm run --parallel -r build
+RUN pnpm deploy --filter backend --prod /prod/backend
+RUN pnpm deploy --filter frontend --prod /prod/frontend
+
+FROM base AS deploy 
+WORKDIR /app
+COPY --from=build /prod/backend .
+COPY --from=build /prod/frontend/dist frontend/
 EXPOSE 3000
-CMD [ "pnpm", "start" ]
+ENV EMBEDDED_FRONTEND="/app/frontend"
+CMD ["pnpm", "start"]

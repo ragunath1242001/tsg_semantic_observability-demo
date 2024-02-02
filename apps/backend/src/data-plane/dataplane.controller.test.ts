@@ -6,8 +6,7 @@ import { DataPlaneService } from "./dataPlane.service";
 import { CatalogService } from "../dsp/catalog/catalog.service";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import {
-  DataPlaneStatusDao,
-  DataPlaneDetailsDao,
+  DataPlaneDao,
 } from "../model/data-planes/dataPlanes.dao";
 import {
   CatalogDao,
@@ -35,8 +34,7 @@ describe("DataPlaneController", () => {
           DataServiceDao,
           DistributionDao,
           ResourceDao,
-          DataPlaneStatusDao,
-          DataPlaneDetailsDao,
+          DataPlaneDao,
         ]),
         TypeOrmModule.forFeature([
           CatalogDao,
@@ -45,8 +43,7 @@ describe("DataPlaneController", () => {
           DataServiceDao,
           DistributionDao,
           ResourceDao,
-          DataPlaneStatusDao,
-          DataPlaneDetailsDao,
+          DataPlaneDao,
         ]),
       ],
       controllers: [

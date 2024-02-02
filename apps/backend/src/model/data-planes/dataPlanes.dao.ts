@@ -2,21 +2,18 @@ import { Column, Entity, JoinColumn, OneToOne, PrimaryColumn } from "typeorm";
 import { MetaEntity } from "../common.dao";
 import { DatasetDao } from "../dsp/catalog/catalog.dao";
 import { Dataset } from "../dsp/catalog/catalog";
-import { IDataPlaneDetails, IDataPlaneStatus, HealthStatus, DataPlaneDetails } from "./dataPlanes";
+import { IDataPlane, HealthStatus } from "./dataPlanes";
 
-@Entity({name: "dataplanestatus"})
-export class DataPlaneStatusDao extends MetaEntity implements IDataPlaneStatus {
+@Entity({name: "dataplanedetails"})
+export class DataPlaneDao extends MetaEntity implements IDataPlane {
     @PrimaryColumn()
-    identifier!: string
+    identifier!: string;
     @Column("simple-json", {nullable: true})
     created?: Date;
     @Column("simple-json", {nullable: true})
     modified?: Date;
-    @OneToOne(() => DataPlaneDetailsDao, {cascade: true, eager: true})
-    @JoinColumn()
-    details!: DataPlaneDetails
-    @Column("simple-enum")
-    health!: HealthStatus
+    @Column()
+    health!: HealthStatus;
     @Column()
     missedHealthChecks!: number;
     @OneToOne(() => DatasetDao, {eager: true})
@@ -27,12 +24,6 @@ export class DataPlaneStatusDao extends MetaEntity implements IDataPlaneStatus {
     }
     @Column({nullable: true})
     etag?: string;
-}
-
-@Entity({name: "dataplanedetails"})
-export class DataPlaneDetailsDao extends MetaEntity implements IDataPlaneDetails{
-    @PrimaryColumn()
-    identifier!: string
     @Column()
     dataplaneType!: string;
     @Column()

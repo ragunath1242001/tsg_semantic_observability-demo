@@ -104,7 +104,7 @@ describe("CatalogController", () => {
       );
       expect(result).toBeDefined();
       expect(result["dcat:service"]?.length).toBe(1);
-      expect(result["dct:creator"]?.["@id"]).toBe("urn:uuid:de8e1b94-4169-4491-986d-6a1c528b867b");
+      expect(result["dct:creator"]).toBe("urn:uuid:de8e1b94-4169-4491-986d-6a1c528b867b");
       expect(result["dct:publisher"]).toBe("urn:uuid:de8e1b94-4169-4491-986d-6a1c528b867b");
       expect(result["dct:title"]).toBe("Test Connector");
     });
@@ -202,7 +202,7 @@ describe("Catalog Module", () => {
         .expect(200)
 
       expect(response.body["dcat:service"].length).toBe(1);
-      expect(response.body["dct:creator"]["@id"]).toBe("urn:uuid:de8e1b94-4169-4491-986d-6a1c528b867b");
+      expect(response.body["dct:creator"]).toBe("urn:uuid:de8e1b94-4169-4491-986d-6a1c528b867b");
       expect(response.body["dct:publisher"]).toBe("urn:uuid:de8e1b94-4169-4491-986d-6a1c528b867b");
       expect(response.body["dct:title"]).toBe("Test Connector");
     });

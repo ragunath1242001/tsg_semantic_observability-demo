@@ -1,12 +1,12 @@
 import { IsNotEmpty, IsOptional, IsString, ValidateNested } from "class-validator";
 import { Namespace, Serializable } from "../../decorators";
-import { Multilanguage, SerializableClass } from "../common";
+import { SerializableClass } from "../common";
 import { Catalog } from "./catalog";
 import { CatalogErrorDto, CatalogMessageDto, CatalogRequestMessageDto, DatasetRequestMessageDto } from "@tsg-dsp/common";
 
 export interface ICatalogError {
   code?: string;
-  reason?: Array<Multilanguage>;
+  reason?: Array<any>;
 }
 
 @Serializable("dspace:CatalogError")
@@ -18,7 +18,7 @@ export class CatalogError extends SerializableClass<CatalogErrorDto> {
   @Namespace("dspace")
   @ValidateNested()
   @IsOptional()
-  reason?: Array<Multilanguage>;
+  reason?: Array<any>;
 
   constructor (value: ICatalogError) {
     super()
@@ -44,13 +44,8 @@ export class CatalogMessage extends SerializableClass<CatalogMessageDto> {
   }
 }
 
-export interface Filter {
-  "@type": "dspace:Filter";
-  [filterKey: string]: string;
-}
-
 export interface ICatalogRequestMessage {
-  filter?: Array<Filter>;
+  filter?: Array<any>;
 }
 
 @Serializable("dspace:CatalogRequestMessage")
@@ -58,7 +53,7 @@ export class CatalogRequestMessage extends SerializableClass<CatalogRequestMessa
   @Namespace("dspace")
   @ValidateNested()
   @IsOptional()
-  filter?: Array<Filter>;
+  filter?: Array<any>;
 
   constructor (value: ICatalogRequestMessage) {
     super()

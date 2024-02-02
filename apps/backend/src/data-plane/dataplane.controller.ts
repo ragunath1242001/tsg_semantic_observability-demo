@@ -1,5 +1,5 @@
 import { Body, Controller, HttpCode, HttpStatus, Logger, Param, Post, UseGuards } from "@nestjs/common";
-import { DataPlaneCreation, DataPlaneDetailsDto } from "@libs/dtos";
+import { DataPlaneCreation, DataPlaneDto } from "@libs/dtos";
 import { DataPlaneService } from "./dataPlane.service";
 import { DeserializePipe } from "../utils/deserialize.pipe";
 import { Dataset } from "../model/dsp/catalog/catalog";
@@ -14,14 +14,14 @@ export class DataPlaneController {
 
   @Post("/init")
   @HttpCode(HttpStatus.OK)
-  async init(@Body() dataPlaneDetails: DataPlaneCreation): Promise<DataPlaneDetailsDto> {
+  async init(@Body() dataPlaneDetails: DataPlaneCreation): Promise<DataPlaneDto> {
     this.logger.log(`Received init from data plane: ${JSON.stringify(dataPlaneDetails)}`)
     return this.dataPlaneService.addDataPlane(dataPlaneDetails);
   }
   
   @Post("/:id/update")
   @HttpCode(HttpStatus.OK)
-  async update(@Param('id') id: string, @Body() dataPlaneDetails: DataPlaneDetailsDto): Promise<DataPlaneDetailsDto> {
+  async update(@Param('id') id: string, @Body() dataPlaneDetails: DataPlaneDto): Promise<DataPlaneDto> {
     this.logger.log(`Received update from data plane ${id}: ${JSON.stringify(dataPlaneDetails)}`);
     if (id !== dataPlaneDetails.identifier) {
       throw new DSPError("Identifier in path and in body do not match", HttpStatus.BAD_REQUEST);

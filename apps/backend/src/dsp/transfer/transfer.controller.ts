@@ -39,9 +39,6 @@ export class TransferController {
   @HttpCode(HttpStatus.OK)
   async startTransferProcess(@Param('id') id: string, @Body(new DeserializePipe(TransferStartMessage)) body: TransferStartMessage, @VPId() vpId: string): Promise<{status: string}> {
     this.logger.log(`Received transfer start from ${vpId} for ${id}: ${JSON.stringify(body)}`);
-    if (body.processId === undefined || body.processId !== id) {
-      throw new DSPError('Missing or mismatch processId field in transfer start message', HttpStatus.BAD_REQUEST);
-    }
     return await this.transferService.handleStart(id, body, vpId);
   }
   
@@ -49,9 +46,6 @@ export class TransferController {
   @HttpCode(HttpStatus.OK)
   async completeTransferProcess(@Param('id') id: string, @Body(new DeserializePipe(TransferCompletionMessage)) body: TransferCompletionMessage, @VPId() vpId: string): Promise<{status: string}> {
     this.logger.log(`Received transfer complete from ${vpId} for ${id}: ${JSON.stringify(body)}`);
-    if (body.processId === undefined || body.processId !== id) {
-      throw new DSPError('Missing or mismatch processId field in transfer completion message', HttpStatus.BAD_REQUEST);
-    }
     return await this.transferService.handleComplete(id, body, vpId);
   }
   
@@ -59,9 +53,6 @@ export class TransferController {
   @HttpCode(HttpStatus.OK)
   async terminateTransferProcess(@Param('id') id: string, @Body(new DeserializePipe(TransferTerminationMessage)) body: TransferTerminationMessage, @VPId() vpId: string): Promise<{status: string}> {
     this.logger.log(`Received transfer terminate from ${vpId} for ${id}: ${JSON.stringify(body)}`);
-    if (body.processId === undefined || body.processId !== id) {
-      throw new DSPError('Missing or mismatch processId field in transfer completion message', HttpStatus.BAD_REQUEST);
-    }
     return await this.transferService.handleTerminate(id, body, vpId);
   }
   
@@ -69,9 +60,6 @@ export class TransferController {
   @HttpCode(HttpStatus.OK)
   async suspendTransferProcess(@Param('id') id: string, @Body(new DeserializePipe(TransferSuspensionMessage)) body: TransferSuspensionMessage, @VPId() vpId: string): Promise<{status: string}> {
     this.logger.log(`Received transfer suspend from ${vpId} for ${id}: ${JSON.stringify(body)}`);
-    if (body.processId === undefined || body.processId !== id) {
-      throw new DSPError('Missing or mismatch processId field in transfer completion message', HttpStatus.BAD_REQUEST);
-    }
     return await this.transferService.handleSuspend(id, body, vpId);
   }
 

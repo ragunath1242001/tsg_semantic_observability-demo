@@ -1,6 +1,6 @@
 db:
   type: sqlite
-  database: control-plane-b.sqlite
+  database: ":memory:"
 
 server:
   port: "3000"

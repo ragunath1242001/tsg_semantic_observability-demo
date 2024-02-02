@@ -7,3 +7,15 @@ The package is setup as a pnpm workspace. This means you can run the frontend an
 ```
 pnpm run dev --parallel
 ```
+
+## Docker build
+
+To build both the Frontend, Backend & libs in a single Docker image run:
+```
+docker build -t control-plane . 
+```
+Then run it:
+```
+docker run -p 3000:3000 control-plane
+```
+And visit http://localhost:3000 to view the control plane.
