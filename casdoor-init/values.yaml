@@ -1,0 +1,103 @@
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+  automount: true
+
+nameOverride: casdoor
+
+image: docker.nexus.dataspac.es/dsp/utils/casdoor-init:main
+
+initConfig:
+  url: # https://casdoor.heracles.dataspac.es
+  organization:
+    id: TSG
+    name: TSG
+    overwrite:
+      passwordType: argon2id
+  users:
+  - username: admin
+    isAdmin: true
+    secretName: casdoor-admin-secret
+
+  applications:
+  - id: wallet
+    name: Wallet
+  - id: control-plane
+    name: Control Plane
+  - id: http-data-plane
+    name: HTTP Data Plane
+
+  roles:
+  - id: wallet_view_did
+    name: Wallet View Did
+    users: ['admin', 'wallet']
+  - id: wallet_manage_keys
+    name: Wallet Manage Keys
+    users: ['admin', 'wallet']
+  - id: wallet_view_own_credentials
+    name: Wallet View Own Credentials
+    users: ['admin', 'wallet']
+  - id: wallet_view_all_credentials
+    name: Wallet View All Credentials
+    users: ['admin', 'wallet']
+  - id: wallet_manage_own_credentials
+    name: Wallet Manage Own Credentials
+    users: ['admin', 'wallet']
+  - id: wallet_manage_all_credentials
+    name: Wallet Manage All Credentials
+    users: ['admin', 'wallet']
+  - id: wallet_issue_credentials
+    name: Wallet Issue Credentials
+    users: ['admin', 'wallet', 'control-plane']
+  - id: wallet_view_presentations
+    name: Wallet View Presentations
+    users: ['admin', 'wallet']
+  - id: wallet_manage_clients
+    name: Wallet Manage Clients
+    users: ['admin', 'wallet']
+  - id: controlplane_admin
+    name: Controlplane Admin
+    users: ['admin', 'control-plane']
+  - id: controlplane_dataplane
+    name: Controlplane Dataplane
+    users: ['admin', 'control-plane', 'http-data-plane']
+
+
+casdoor:
+  nameOverride: casdoor
+
+  ingress:
+    enabled: false
+    # className: nginx
+    # annotations:
+    #   cert-manager.io/cluster-issuer: letsencrypt
+    # hosts:
+    #   - host: casdoor.heracles.dataspac.es
+    #     paths:
+    #       - path: /
+    #         pathType: Prefix
+    # tls:
+    #   - hosts:
+    #     - casdoor.heracles.dataspac.es
+    #     secretName: casdoor.heracles.dataspac.es-tls
+
+  config: |
+    appname = casdoor
+    httpport = {{ .Values.service.port }}
+    runmode = dev
+    SessionOn = true
+    copyrequestbody = true
+    driverName = sqlite
+    dataSourceName = "file:ent?mode=memory&cache=shared&_fk=1"
+    dbName = casdoor
+    redisEndpoint =
+    defaultStorageProvider =
+    isCloudIntranet = false
+    authState = "casdoor"
+    socks5Proxy = ""
+    verificationCodeTimeout = 10
+    initScore = 0
+    logPostOnly = true
+    origin =
+    enableGzip = true
