@@ -18,6 +18,8 @@ import Card from 'primevue/card';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import CatalogVue from './components/Catalog.vue'
+import AppConfigVue from './layout/AppConfig.vue'
+import Password from 'primevue/password'
 
 
 const app = createApp(App);
@@ -27,6 +29,7 @@ app.use(PrimeVue, { ripple: true });
 app.use(ToastService);
 
 
+app.component('AppConfig', AppConfigVue)
 app.component('Button', Button);
 app.component('Card', Card);
 app.component('CatalogVue', CatalogVue);
@@ -34,6 +37,7 @@ app.component('Column', Column)
 app.component('DataTable', DataTable);
 app.component('InputSwitch', InputSwitch);
 app.component('InputText', InputText);
+app.component('Password', Password);
 app.component('Tag', Tag);
 app.component('Toast', Toast);
 app.component('ToggleButton', ToggleButton);

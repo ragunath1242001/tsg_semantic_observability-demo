@@ -2,8 +2,8 @@ import axios, { AxiosInstance } from 'axios';
 
 const axiosInstance: AxiosInstance = axios.create({
     baseURL: "/api/", auth: {
-        username: "admin",
-        password: "admin"
+        username: localStorage.getItem("username"),
+        password: localStorage.getItem("password")
     }
 })
 
