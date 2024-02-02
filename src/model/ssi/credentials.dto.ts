@@ -16,35 +16,37 @@ export class Signature {
 
 export class CredentialSubject {
   @IsString()
-  id!: string
+  id!: string;
   /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-  [key: string]: any
+  [key: string]: any;
 }
 
 export class Credential<T extends CredentialSubject> {
-  @IsString({each: true})
-  '@context': string[]
-  @IsString({each: true})
-  type!: string[]
+  @IsString({ each: true })
+  "@context": string[];
+  @IsString({ each: true })
+  type!: string[];
   @IsString()
   @IsOptional()
-  id?: string
+  id?: string;
   @ValidateNested()
   @Type(() => CredentialSubject)
-  credentialSubject!: T | T[]
+  credentialSubject!: T | T[];
   @IsString()
-  issuer!: string
+  issuer!: string;
   @IsString()
   @IsOptional()
-  expirationDate?: string
+  expirationDate?: string;
   @IsString()
-  issuanceDate!: string
+  issuanceDate!: string;
   @IsOptional()
   /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-  evidence?: any
+  evidence?: any;
 }
 
-export class VerifiableCredential<T extends CredentialSubject> extends Credential<T> {
+export class VerifiableCredential<
+  T extends CredentialSubject
+> extends Credential<T> {
   @ValidateNested()
   @Type(() => Signature)
   proof!: Signature;
