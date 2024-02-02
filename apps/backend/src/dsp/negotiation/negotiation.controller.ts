@@ -29,8 +29,9 @@ export class NegotiationController {
     const negotiation = await this.negotiationService.getNegotiation(id, vpId);
     if (negotiation) {
       return new ContractNegotiation({
-        processId: negotiation.localId,
-        contractNegotiationState: negotiation.state
+        providerPid: negotiation.localId,
+        consumerPid: negotiation.remoteId,
+        state: negotiation.state
       }).serialize();
     } else {
       throw new DSPError('Negotiation not found', HttpStatus.NOT_FOUND)
@@ -41,8 +42,8 @@ export class NegotiationController {
   @HttpCode(HttpStatus.OK)
   async requestWithId(@Param('id') id: string, @Body(new DeserializePipe(ContractRequestMessage)) body: ContractRequestMessage, @VPId() vpId: string): Promise<ContractNegotiationDto> {
     this.logger.log(`Received negotiation request for ${id}: ${JSON.stringify(body)}`);
-    if (body.processId === undefined || body.processId !== id) {
-      throw new DSPError('Missing or mismatch processId field in contract request message', HttpStatus.BAD_REQUEST);
+    if (body.providerPid === undefined || body.providerPid !== id) {
+      throw new DSPError('Missing or mismatch providerPid field in contract request message', HttpStatus.BAD_REQUEST);
     }
     const result = await this.negotiationService.handleExistingRequest(id, body, vpId);
     return result.serialize();
@@ -52,8 +53,8 @@ export class NegotiationController {
   @HttpCode(HttpStatus.OK)
   async negotiationEvent(@Param('id') id: string, @Body(new DeserializePipe(ContractNegotiationEventMessage)) body: ContractNegotiationEventMessage, @VPId() vpId: string): Promise<{status: string}> {
     this.logger.log(`Received negotiation event for ${id}: ${JSON.stringify(body)}`);
-    if (body.processId !== id) {
-      throw new DSPError('Mismatch processId field in contract negotiation event message', HttpStatus.BAD_REQUEST);
+    if (body.providerPid !== id) {
+      throw new DSPError('Mismatch providerPid field in contract negotiation event message', HttpStatus.BAD_REQUEST);
     }
     const result = await this.negotiationService.handleEvent(id, body, vpId);
     if (result) {
@@ -68,8 +69,8 @@ export class NegotiationController {
   @HttpCode(HttpStatus.OK)
   async agreementVerification(@Param('id') id: string, @Body(new DeserializePipe(ContractAgreementVerificationMessage)) body: ContractAgreementVerificationMessage, @VPId() vpId: string): Promise<{status: string}> {
     this.logger.log(`Received negotiation verification for ${id}: ${JSON.stringify(body)}`);
-    if (body.processId !== id) {
-      throw new DSPError('Mismatch processId field in contract negotiation event message', HttpStatus.BAD_REQUEST);
+    if (body.providerPid !== id) {
+      throw new DSPError('Mismatch providerPid field in contract negotiation event message', HttpStatus.BAD_REQUEST);
     }
     const result = await this.negotiationService.handleVerification(id, body, vpId);
     if (result) {
@@ -84,8 +85,8 @@ export class NegotiationController {
   @HttpCode(HttpStatus.OK)
   async negotiationTermination(@Param('id') id: string, @Body(new DeserializePipe(ContractNegotiationTerminationMessage)) body: ContractNegotiationTerminationMessage, @VPId() vpId: string): Promise<{status: string}> {
     this.logger.log(`Received negotiation termination for ${id}: ${JSON.stringify(body)}`);
-    if (body.processId !== id) {
-      throw new DSPError('Mismatch processId field in contract negotiation event message', HttpStatus.BAD_REQUEST);
+    if (body.providerPid !== id) {
+      throw new DSPError('Mismatch providerPid field in contract negotiation event message', HttpStatus.BAD_REQUEST);
     }
     const result = await this.negotiationService.handleTermination(id, body, vpId);
     if (result) {

@@ -65,7 +65,7 @@ export class CatalogService {
     const existingCatalog = await this.catalogRepository.find({});
     if (!existingCatalog[0] && this.initCatalog && this.server) {
       const resource = this.resourceRepository.create(new Resource({
-        creator: new Reference(this.initCatalog.creator),
+        creator: this.initCatalog.creator,
         publisher: this.initCatalog.publisher,
         title: this.initCatalog.title,
         description: [new Multilanguage(this.initCatalog.description)],
@@ -76,8 +76,8 @@ export class CatalogService {
         _resource: resource
       })
       const dservice = new DataService({
-        endpointDescription: new Reference('dpsace:connector'),
-        conformsTo: new Reference('dpsace:connector'),
+        endpointDescription: 'dpsace:connector',
+        conformsTo: 'dpsace:connector',
         endpointURL: `${this.server.publicAddress}`,
       })
       this.dataservicesRepository.create({

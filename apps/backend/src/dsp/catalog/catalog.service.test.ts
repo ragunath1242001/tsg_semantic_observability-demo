@@ -64,12 +64,11 @@ describe("Catalog Service", () => {
 
         it("Modify catalog", async () => {
             const catalogDao = await catalogService.getCatalogDao();
-            const homepage = new Reference('https://tno.nl/')
-            catalogDao.homepage = homepage
+            catalogDao.homepage = 'https://tno.nl/'
             await catalogService.modifyCatalog(catalogDao)
 
             const catalogModified = await catalogService.getCatalogDao();
-            expect(catalogModified.homepage).toEqual(homepage)
+            expect(catalogModified.homepage).toEqual('https://tno.nl/')
         })
 
         it("Add dataset", async () => {

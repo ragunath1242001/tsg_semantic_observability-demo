@@ -1,14 +1,14 @@
 import { IsNotEmpty, IsOptional, IsString, ValidateNested } from "class-validator";
 import { Serializable, Namespace } from "../../decorators";
 import { IReference, Multilanguage, Reference, SerializableClass } from "../common";
-import { ContractNegotiationState, ContractAgreementMessageDto, ContractAgreementVerificationMessageDto, ContractNegotiationDto, ContractNegotiationErrorDto, ContractNegotiationEventMessageDto, ContractNegotiationTerminationMessageDto, ContractOfferMessageDto, ContractRequestMessageDto, NegotiationEvent, ProofTypes } from "@tsg-dsp/common";
+import { ContractNegotiationState, ContractAgreementMessageDto, ContractAgreementVerificationMessageDto, ContractNegotiationDto, ContractNegotiationErrorDto, ContractNegotiationEventMessageDto, ContractNegotiationTerminationMessageDto, ContractOfferMessageDto, ContractRequestMessageDto, NegotiationEvent, HashedMessage } from "@tsg-dsp/common";
 import { Agreement, Offer } from "./negotiation";
 
 export interface IContractRequestMessage {
-  processId: string;
+  consumerPid: string;
+  providerPid?: string;
   offer: Offer;
   callbackAddress: string;
-  dataSet: string;
 }
 
 @Serializable("dspace:ContractRequestMessage")
@@ -16,29 +16,31 @@ export class ContractRequestMessage extends SerializableClass<ContractRequestMes
   @Namespace("dspace")
   @IsOptional()
   @IsString()
-  processId: string;
-  @Namespace("odrl")
+  consumerPid: string;
+  @Namespace("dspace")
+  @IsOptional()
+  @IsString()
+  providerPid?: string;
+  @Namespace("dspace")
   @ValidateNested()
   @IsNotEmpty()
   offer: Offer;
   @Namespace("dspace")
   @IsNotEmpty()
   callbackAddress: string;
-  @Namespace("dspace")
-  @IsNotEmpty()
-  dataSet: string;
 
   constructor (value: IContractRequestMessage) {
     super()
-    this.processId = value.processId;
+    this.consumerPid = value.consumerPid;
+    this.providerPid = value.providerPid;
     this.offer = value.offer;
     this.callbackAddress = value.callbackAddress;
-    this.dataSet = value.dataSet;
   }
 }
 
 export interface IContractOfferMessage {
-  processId: string;
+  consumerPid?: string;
+  providerPid: string;
   offer: Offer;
   callbackAddress: string;
 }
@@ -46,9 +48,14 @@ export interface IContractOfferMessage {
 @Serializable("dspace:ContractOfferMessage")
 export class ContractOfferMessage extends SerializableClass<ContractOfferMessageDto> {
   @Namespace("dspace")
-  @IsNotEmpty()
-  processId: string;
-  @Namespace("odrl")
+  @IsOptional()
+  @IsString()
+  consumerPid?: string;
+  @Namespace("dspace")
+  @IsOptional()
+  @IsString()
+  providerPid: string;
+  @Namespace("dspace")
   @ValidateNested()
   @IsNotEmpty()
   offer: Offer;
@@ -58,24 +65,31 @@ export class ContractOfferMessage extends SerializableClass<ContractOfferMessage
 
   constructor (value: IContractOfferMessage) {
     super()
-    this.processId = value.processId;
+    this.consumerPid = value.consumerPid;
+    this.providerPid = value.providerPid;
     this.offer = value.offer;
     this.callbackAddress = value.callbackAddress;
   }
 }
 
 export interface IContractNegotiationTerminationMessage {
-  processId: string;
+  consumerPid: string;
+  providerPid: string;
   code?: string;
-  reason: Array<Multilanguage>;
+  reason: Array<any>;
 }
 
 @Serializable("dspace:ContractNegotiationTerminationMessage")
 export class ContractNegotiationTerminationMessage extends SerializableClass<ContractNegotiationTerminationMessageDto>
-{
+{ 
   @Namespace("dspace")
-  @IsNotEmpty()
-  processId: string;
+  @IsOptional()
+  @IsString()
+  consumerPid: string;
+  @Namespace("dspace")
+  @IsOptional()
+  @IsString()
+  providerPid: string;
   @Namespace("dspace")
   @IsString()
   @IsOptional()
@@ -86,36 +100,45 @@ export class ContractNegotiationTerminationMessage extends SerializableClass<Con
 
   constructor (value: IContractNegotiationTerminationMessage) {
     super();
-    this.processId = value.processId;
+    this.consumerPid = value.consumerPid;
+    this.providerPid = value.providerPid;
     this.code = value.code;
     this.reason = value.reason;
   }
 }
 
 export interface IContractNegotiation extends IReference {
-  processId: string;
-  contractNegotiationState: ContractNegotiationState
+  consumerPid: string;
+  providerPid: string;
+  state: ContractNegotiationState
 }
 
 @Serializable("dspace:ContractNegotiation")
 export class ContractNegotiation extends Reference<ContractNegotiationDto> {
   @Namespace("dspace")
-  @IsNotEmpty()
-  processId: string;
+  @IsOptional()
+  @IsString()
+  consumerPid: string;
+  @Namespace("dspace")
+  @IsOptional()
+  @IsString()
+  providerPid: string;
   @Namespace("dspace")
   @IsNotEmpty()
-  contractNegotiationState: ContractNegotiationState;
+  state: ContractNegotiationState;
 
   constructor (value: IContractNegotiation) {
     super(value)
-    this.processId = value.processId;
-    this.contractNegotiationState = value.contractNegotiationState;
+    this.consumerPid = value.consumerPid;
+    this.providerPid = value.providerPid;
+    this.state = value.state;
   }
 }
 
 
 export interface IContractNegotiationEventMessage {
-  processId: string;
+  consumerPid: string;
+  providerPid: string;
   eventType: NegotiationEvent;
 }
 
@@ -123,108 +146,114 @@ export interface IContractNegotiationEventMessage {
 export class ContractNegotiationEventMessage extends SerializableClass<ContractNegotiationEventMessageDto>
 {
   @Namespace("dspace")
-  @IsNotEmpty()
-  processId: string;
+  @IsOptional()
+  @IsString()
+  consumerPid: string;
+  @Namespace("dspace")
+  @IsOptional()
+  @IsString()
+  providerPid: string;
   @Namespace("dspace")
   @IsNotEmpty()
   eventType: NegotiationEvent;
 
   constructor (value: IContractNegotiationEventMessage) {
     super();
-    this.processId = value.processId;
+    this.consumerPid = value.consumerPid;
+    this.providerPid = value.providerPid;
     this.eventType = value.eventType;
   }
 }
 
 export interface IContractNegotiationError {
-  processId: string;
-  reason?: Array<Multilanguage>;
-  description?: Array<string>;
+  consumerPid: string;
+  providerPid: string;
+  reason?: Array<any>;
+  description?: Array<Multilanguage>;
 }
 
 @Serializable("dspace:ContractNegotiationError")
 export class ContractNegotiationError extends SerializableClass<ContractNegotiationErrorDto> {
   @Namespace("dspace")
-  @IsNotEmpty()
-  processId: string;
+  @IsOptional()
+  @IsString()
+  consumerPid: string;
+  @Namespace("dspace")
+  @IsOptional()
+  @IsString()
+  providerPid: string;
   @Namespace("dspace")
   @ValidateNested()
   @IsOptional()
-  reason?: Array<Multilanguage>;
+  reason?: Array<any>;
   @Namespace("dct")
-  @IsString({each: true})
+  @ValidateNested()
   @IsOptional()
-  description?: Array<string>;
+  description?: Array<Multilanguage>;
 
   constructor (value: IContractNegotiationError) {
     super()
-    this.processId = value.processId;
+    this.consumerPid = value.consumerPid;
+    this.providerPid = value.providerPid;
     this.reason = value.reason;
     this.description = value.description;
   }
 }
 
-export interface Proof {
-  "@type": ProofTypes;
-  "dct:created": string;
-  "sec:jws": string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  [key: string]: any;
-}
-
 export interface IContractAgreementVerificationMessage {
-  processId: string;
-  credentialSubject: {
-    "dspace:hash": string;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    [key: string]: any;
-  };
-  proof: Proof;
+  consumerPid: string;
+  providerPid: string;
+  hashedMessage: HashedMessage;
 }
 
 @Serializable("dspace:ContractAgreementVerificationMessage")
 export class ContractAgreementVerificationMessage extends SerializableClass<ContractAgreementVerificationMessageDto>
 {
   @Namespace("dspace")
+  @IsOptional()
+  @IsString()
+  consumerPid: string;
+  @Namespace("dspace")
+  @IsOptional()
+  @IsString()
+  providerPid: string;
+  @Namespace("dspace")
   @IsNotEmpty()
-  processId: string;
-  @Namespace("cred")
-  @IsNotEmpty()
-  credentialSubject: {
-    "dspace:hash": string;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    [key: string]: any;
-  };
-  @Namespace("sec")
-  @IsNotEmpty()
-  proof: Proof;
+  hashedMessage: HashedMessage;
 
   constructor (value: IContractAgreementVerificationMessage) {
     super();
-    this.processId = value.processId;
-    this.credentialSubject = value.credentialSubject;
-    this.proof = value.proof;
+    this.consumerPid = value.consumerPid;
+    this.providerPid = value.providerPid;
+    this.hashedMessage = value.hashedMessage;
   }
 }
 
 export interface IContractAgreementMessage {
-  processId: string;
+  consumerPid: string;
+  providerPid: string;
   agreement: Agreement;
 }
 
 @Serializable("dspace:ContractAgreementMessage")
 export class ContractAgreementMessage extends SerializableClass<ContractAgreementMessageDto> {
   @Namespace("dspace")
-  @IsNotEmpty()
-  processId: string;
-  @Namespace("odrl")
+  @IsOptional()
+  @IsString()
+  consumerPid: string;
+  @Namespace("dspace")
+  @IsOptional()
+  @IsString()
+  providerPid: string;
+  @Namespace("dspace")
   @IsNotEmpty()
   @ValidateNested()
   agreement: Agreement;
 
   constructor (value: IContractAgreementMessage) {
     super()
-    this.processId = value.processId;
+    this.consumerPid = value.consumerPid;
+    this.providerPid = value.providerPid;
     this.agreement = value.agreement;
   }
 }

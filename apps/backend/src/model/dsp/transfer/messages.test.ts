@@ -15,13 +15,15 @@ import { TransferCompletionMessageDto, TransferErrorDto, TransferProcessDto, Tra
 
 test("Transfer Completion Message", async () => {
   const transferCompletionMessage = new TransferCompletionMessage({
-    processId: "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
+    providerPid: "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
+    consumerPid: "urn:uuid:89442cfb-4d96-48fa-80d1-d7cf93bd34a3",
   });
   const serialized = await transferCompletionMessage.serialize();
   const expected: TransferCompletionMessageDto = {
     "@context": "https://w3id.org/dspace/v0.8/context.json",
     "@type": "dspace:TransferCompletionMessage",
-    "dspace:processId": "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
+    "dspace:providerPid": "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
+    "dspace:consumerPid": "urn:uuid:89442cfb-4d96-48fa-80d1-d7cf93bd34a3",
   }
   expect(serialized).toStrictEqual(expected);
   const deserialized = await deserialize<TransferCompletionMessage>(serialized);
@@ -32,7 +34,8 @@ test("Transfer Completion Message", async () => {
 
 test("Transfer Error", async () => {
   const transferError = new TransferError({
-    processId: "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
+    providerPid: "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
+    consumerPid: "urn:uuid:89442cfb-4d96-48fa-80d1-d7cf93bd34a3",
     code: "123:A",
     reason: [
       new Multilanguage("Could not transfer"),
@@ -42,7 +45,8 @@ test("Transfer Error", async () => {
   const expected: TransferErrorDto = {
     "@context": "https://w3id.org/dspace/v0.8/context.json",
     "@type": "dspace:TransferError",
-    "dspace:processId": "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
+    "dspace:providerPid": "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
+    "dspace:consumerPid": "urn:uuid:89442cfb-4d96-48fa-80d1-d7cf93bd34a3",
     "dspace:code": "123:A",
     "dspace:reason": [
       {
@@ -58,15 +62,19 @@ test("Transfer Error", async () => {
 
 test("Transfer Process", async () => {
   const transferProcess = new TransferProcess({
-    processId: "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
-    transferState: TransferState.SUSPENDED,
+    providerPid: "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
+    consumerPid: "urn:uuid:89442cfb-4d96-48fa-80d1-d7cf93bd34a3",
+    state: TransferState.SUSPENDED,
+    agreementId: "urn:uuid:b5c1ac04-620f-470a-a841-df11d14e5268",
   });
   const serialized = await transferProcess.serialize();
   const expected: TransferProcessDto = {
     "@context": "https://w3id.org/dspace/v0.8/context.json",
     "@type": "dspace:TransferProcess",
-    "dspace:processId": "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
-    "dspace:transferState": TransferState.SUSPENDED,
+    "dspace:providerPid": "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
+    "dspace:consumerPid": "urn:uuid:89442cfb-4d96-48fa-80d1-d7cf93bd34a3",
+    "dspace:state": TransferState.SUSPENDED,
+    "dspace:agreementId": "urn:uuid:b5c1ac04-620f-470a-a841-df11d14e5268"
   }
   expect(serialized).toStrictEqual(expected);
   const deserialized = await deserialize<TransferProcess>(serialized);
@@ -77,6 +85,7 @@ test("Transfer Process", async () => {
 
 test("Transfer Request Message", async () => {
   const transferRequestMessage = new TransferRequestMessage({
+    consumerPid: "urn:uuid:89442cfb-4d96-48fa-80d1-d7cf93bd34a3",
     agreementId: "urn:uuid:1246a1af-6e5f-4c05-86e2-6d8624efeeb3",
     format: "dspace:HTTP",
     callbackAddress: "http://localhost",
@@ -95,6 +104,7 @@ test("Transfer Request Message", async () => {
   const expected: TransferRequestMessageDto = {
     "@context": "https://w3id.org/dspace/v0.8/context.json",
     "@type": "dspace:TransferRequestMessage",
+    "dspace:consumerPid": "urn:uuid:89442cfb-4d96-48fa-80d1-d7cf93bd34a3",
     "dspace:agreementId": "urn:uuid:1246a1af-6e5f-4c05-86e2-6d8624efeeb3",
     "dct:format": "dspace:HTTP",
     "dspace:callbackAddress": "http://localhost",
@@ -118,7 +128,8 @@ test("Transfer Request Message", async () => {
 
 test("Transfer Start Message", async () => {
   const transferStartMessage = new TransferStartMessage({
-    processId: "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
+    providerPid: "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
+    consumerPid: "urn:uuid:89442cfb-4d96-48fa-80d1-d7cf93bd34a3",
     dataAddress: new DataAddress({
       endpointType: "HTTP",
       endpoint: "http://example.com",
@@ -134,7 +145,8 @@ test("Transfer Start Message", async () => {
   const expected: TransferStartMessageDto = {
     "@context": "https://w3id.org/dspace/v0.8/context.json",
     "@type": "dspace:TransferStartMessage",
-    "dspace:processId": "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
+    "dspace:providerPid": "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
+    "dspace:consumerPid": "urn:uuid:89442cfb-4d96-48fa-80d1-d7cf93bd34a3",
     "dspace:dataAddress": {
       "@type": "dspace:DataAddress",
       "dspace:endpointType": "HTTP",
@@ -155,7 +167,8 @@ test("Transfer Start Message", async () => {
 
 test("Transfer Suspension Message", async () => {
   const transferSuspensionMessage = new TransferSuspensionMessage({
-    processId: "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
+    providerPid: "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
+    consumerPid: "urn:uuid:89442cfb-4d96-48fa-80d1-d7cf93bd34a3",
     reason: [
       new Multilanguage("Network switching"),
     ],
@@ -164,7 +177,8 @@ test("Transfer Suspension Message", async () => {
   const expected: TransferSuspensionMessageDto = {
     "@context": "https://w3id.org/dspace/v0.8/context.json",
     "@type": "dspace:TransferSuspensionMessage",
-    "dspace:processId": "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
+    "dspace:providerPid": "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
+    "dspace:consumerPid": "urn:uuid:89442cfb-4d96-48fa-80d1-d7cf93bd34a3",
     "dspace:reason": [
       {
         "@value": "Network switching",
@@ -182,7 +196,8 @@ test("Transfer Suspension Message", async () => {
 
 test("Transfer Termination Message", async () => {
   const transferTerminationMessage = new TransferTerminationMessage({
-    processId: "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
+    providerPid: "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
+    consumerPid: "urn:uuid:89442cfb-4d96-48fa-80d1-d7cf93bd34a3",
     code: "123:A",
     reason: [
       new Multilanguage("Network switching"),
@@ -192,7 +207,8 @@ test("Transfer Termination Message", async () => {
   const expected: TransferTerminationMessageDto = {
     "@context": "https://w3id.org/dspace/v0.8/context.json",
     "@type": "dspace:TransferTerminationMessage",
-    "dspace:processId": "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
+    "dspace:providerPid": "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
+    "dspace:consumerPid": "urn:uuid:89442cfb-4d96-48fa-80d1-d7cf93bd34a3",
     "dspace:code": "123:A",
     "dspace:reason": [
       {

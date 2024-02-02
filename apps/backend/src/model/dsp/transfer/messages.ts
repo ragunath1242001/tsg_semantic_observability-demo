@@ -4,32 +4,41 @@ import { Multilanguage, SerializableClass } from "../common";
 import { TransferCompletionMessageDto, TransferErrorDto, TransferProcessDto, TransferRequestMessageDto, TransferStartMessageDto, TransferSuspensionMessageDto, TransferTerminationMessageDto, TransferState, EndpointPropertyDto, DataAddressDto } from "@tsg-dsp/common";
 
 export interface ITransferCompletionMessage {
-  processId: string;
+  providerPid: string;
+  consumerPid: string;
 }
 
 @Serializable("dspace:TransferCompletionMessage")
 export class TransferCompletionMessage extends SerializableClass<TransferCompletionMessageDto> {
   @Namespace("dspace")
   @IsNotEmpty()
-  processId: string;
+  providerPid: string;
+  @Namespace("dspace")
+  @IsNotEmpty()
+  consumerPid: string;
 
   constructor(value: ITransferCompletionMessage) {
     super()
-    this.processId = value.processId;
+    this.providerPid = value.providerPid;
+    this.consumerPid = value.consumerPid;
   }
 }
 
 export interface ITransferError {
-  processId: string;
+  providerPid: string;
+  consumerPid: string;
   code: string;
-  reason?: Array<Multilanguage>;
+  reason?: Array<any>;
 }
 
 @Serializable("dspace:TransferError")
 export class TransferError extends SerializableClass<TransferErrorDto> {
   @Namespace("dspace")
   @IsNotEmpty()
-  processId: string;
+  providerPid: string;
+  @Namespace("dspace")
+  @IsNotEmpty()
+  consumerPid: string;
   @Namespace("dspace")
   @IsNotEmpty()
   code: string;
@@ -40,30 +49,41 @@ export class TransferError extends SerializableClass<TransferErrorDto> {
 
   constructor(value: ITransferError) {
     super()
-    this.processId = value.processId;
+    this.providerPid = value.providerPid;
+    this.consumerPid = value.consumerPid;
     this.code = value.code;
     this.reason = value.reason;
   }
 }
 
 export interface ITransferProcess {
-  processId: string;
-  transferState: TransferState;
+  providerPid: string;
+  consumerPid: string;
+  state: TransferState;
+  agreementId: string;
 }
 
 @Serializable("dspace:TransferProcess")
 export class TransferProcess extends SerializableClass<TransferProcessDto> {
   @Namespace("dspace")
   @IsNotEmpty()
-  processId: string;
+  providerPid: string;
   @Namespace("dspace")
   @IsNotEmpty()
-  transferState: TransferState;
+  consumerPid: string;
+  @Namespace("dspace")
+  @IsNotEmpty()
+  state: TransferState;
+  @Namespace("dspace")
+  @IsNotEmpty()
+  agreementId: string;
 
   constructor(value: ITransferProcess) {
     super()
-    this.processId = value.processId;
-    this.transferState = value.transferState;
+    this.providerPid = value.providerPid;
+    this.consumerPid = value.consumerPid;
+    this.state = value.state;
+    this.agreementId = value.agreementId;
   }
 }
 
@@ -109,6 +129,7 @@ export class DataAddress extends SerializableClass<DataAddressDto> {
 }
 
 export interface ITransferRequestMessage {
+  consumerPid: string;
   agreementId: string;
   format: string;
   dataAddress?: DataAddress;
@@ -117,6 +138,9 @@ export interface ITransferRequestMessage {
 
 @Serializable("dspace:TransferRequestMessage")
 export class TransferRequestMessage extends SerializableClass<TransferRequestMessageDto> {
+  @Namespace("dspace")
+  @IsNotEmpty()
+  consumerPid: string;
   @Namespace("dspace")
   @IsNotEmpty()
   agreementId: string;
@@ -132,6 +156,7 @@ export class TransferRequestMessage extends SerializableClass<TransferRequestMes
 
   constructor(value: ITransferRequestMessage) {
     super()
+    this.consumerPid = value.consumerPid;
     this.agreementId = value.agreementId;
     this.format = value.format;
     this.dataAddress = value.dataAddress;
@@ -146,7 +171,8 @@ export interface IEndpointProperty {
 }
 
 export interface ITransferStartMessage {
-  processId: string;
+  providerPid: string;
+  consumerPid: string;
   dataAddress?: DataAddress;
 }
 
@@ -154,28 +180,36 @@ export interface ITransferStartMessage {
 export class TransferStartMessage extends SerializableClass<TransferStartMessageDto> {
   @Namespace("dspace")
   @IsNotEmpty()
-  processId: string;
+  providerPid: string;
+  @Namespace("dspace")
+  @IsNotEmpty()
+  consumerPid: string;
   @Namespace("dspace")
   @ValidateNested()
   dataAddress?: DataAddress;
 
   constructor(value: ITransferStartMessage) {
     super()
-    this.processId = value.processId;
+    this.providerPid = value.providerPid;
+    this.consumerPid = value.consumerPid;
     this.dataAddress = value.dataAddress;
   }
 }
 
 export interface ITransferSuspensionMessage {
-  processId: string;
-  reason: Array<Multilanguage>;
+  providerPid: string;
+  consumerPid: string;
+  reason: Array<any>;
 }
 
 @Serializable("dspace:TransferSuspensionMessage")
 export class TransferSuspensionMessage extends SerializableClass<TransferSuspensionMessageDto> {
   @Namespace("dspace")
   @IsNotEmpty()
-  processId: string;
+  providerPid: string;
+  @Namespace("dspace")
+  @IsNotEmpty()
+  consumerPid: string;
   @Namespace("dspace")
   @ValidateNested()
   @ArrayNotEmpty()
@@ -183,22 +217,27 @@ export class TransferSuspensionMessage extends SerializableClass<TransferSuspens
 
   constructor(value: ITransferSuspensionMessage) {
     super()
-    this.processId = value.processId;
+    this.providerPid = value.providerPid;
+    this.consumerPid = value.consumerPid;
     this.reason = value.reason;
   }
 }
 
 export interface ITransferTerminationMessage {
-  processId: string;
+  providerPid: string;
+  consumerPid: string;
   code: string;
-  reason: Array<Multilanguage>;
+  reason: Array<any>;
 }
 
 @Serializable("dspace:TransferTerminationMessage")
 export class TransferTerminationMessage extends SerializableClass<TransferTerminationMessageDto> {
   @Namespace("dspace")
   @IsNotEmpty()
-  processId: string;
+  providerPid: string;
+  @Namespace("dspace")
+  @IsNotEmpty()
+  consumerPid: string;
   @Namespace("dspace")
   @IsNotEmpty()
   code: string;
@@ -209,7 +248,8 @@ export class TransferTerminationMessage extends SerializableClass<TransferTermin
 
   constructor(value: ITransferTerminationMessage) {
     super()
-    this.processId = value.processId;
+    this.providerPid = value.providerPid;
+    this.consumerPid = value.consumerPid;
     this.code = value.code;
     this.reason = value.reason;
   }

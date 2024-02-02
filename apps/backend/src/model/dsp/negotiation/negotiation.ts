@@ -8,32 +8,32 @@ import {
   Value,
 } from "../common";
 import { ContractAgreementVerificationMessage } from "./messages";
-import { LeftOperand, Operator, ConstraintDto, ContextDto, Action, PermissionDto, ProhibitionDto, DutyDto, PolicyDto, OfferDto, AgreementDto, ContractNegotiationState } from "@tsg-dsp/common";
+import { ODRLLeftOperand, ODRLOperator, ConstraintDto, ContextDto, ODRLAction, PermissionDto, ProhibitionDto, DutyDto, PolicyDto, OfferDto, AgreementDto, ContractNegotiationState } from "@tsg-dsp/common";
 
 export interface IConstraint {
-  leftOperand: LeftOperand;
-  operator: Operator;
-  rightOperand?: Value;
-  rightOperandReference?: Reference;
+  leftOperand: ODRLLeftOperand | string;
+  operator: ODRLOperator | string;
+  rightOperand?: Value | string;
+  rightOperandReference?: string;
 }
 
 @Serializable("odrl:Constraint")
 export class Constraint extends SerializableClass<ConstraintDto & ContextDto> {
   @Namespace("odrl")
   @IsNotEmpty()
-  leftOperand: LeftOperand;
+  leftOperand: ODRLLeftOperand | string;
   @Namespace("odrl")
   @IsNotEmpty()
-  operator: Operator;
+  operator: ODRLOperator | string;
   @Namespace("odrl")
   @IsNotEmpty()
   @ValidateNested()
-  rightOperand?: Value;
+  rightOperand?: Value | string;
   @Namespace("odrl")
   @ValidateIf((o: Constraint) => o.rightOperand === undefined)
   @ValidateNested()
   @IsNotEmpty()
-  rightOperandReference?: Reference;
+  rightOperandReference?: string;
 
   constructor (value: IConstraint) {
     super();
@@ -47,7 +47,7 @@ export class Constraint extends SerializableClass<ConstraintDto & ContextDto> {
 export interface IPolicyRule {
   assigner?: Reference;
   assignee?: Reference;
-  action: Action;
+  action: ODRLAction | string;
   target?: string;
   constraint?: Array<Constraint>;
 }
@@ -75,7 +75,7 @@ export class PolicyRule<OutType extends ContextDto> extends SerializableClass<Ou
   assignee?: Reference;
   @Namespace("odrl")
   @IsNotEmpty()
-  action: Action;
+  action: ODRLAction | string;
   @Namespace("odrl")
   @IsOptional()
   target?: string;
@@ -133,6 +133,7 @@ export interface IPolicy extends IReference {
   permission?: Array<Permission>;
   prohibition?: Array<Prohibition>;
   obligation?: Array<Duty>;
+  target?: string;
 }
 
 @Serializable("odrl:Policy")
@@ -161,6 +162,9 @@ export class Policy<OutType extends ContextDto = PolicyDto & ContextDto> extends
   @ValidateNested()
   @IsOptional()
   obligation?: Array<Duty>;
+  @Namespace("odrl")
+  @IsOptional()
+  target?: string;
 
   constructor (value: IPolicy) {
     super(value);
@@ -170,6 +174,7 @@ export class Policy<OutType extends ContextDto = PolicyDto & ContextDto> extends
     this.permission = value.permission;
     this.prohibition = value.prohibition;
     this.obligation = value.obligation;
+    this.target = value.target;
   }
 }
 
@@ -193,8 +198,7 @@ export interface IAgreement extends IPolicy {
   assigner: string;
   assignee: string;
   timestamp: string;
-  consumerId: string;
-  providerId: string;
+  target: string;
 }
 
 @Serializable("odrl:Agreement")
@@ -209,20 +213,12 @@ export class Agreement extends Policy<AgreementDto> {
   @IsNotEmpty()
   @IsDateString()
   timestamp: string;
-  @Namespace("dspace")
-  @IsNotEmpty()
-  consumerId: string;
-  @Namespace("dspace")
-  @IsNotEmpty()
-  providerId: string;
 
   constructor (value: IAgreement) {
     super(value);
     this.assigner = value.assigner;
     this.assignee = value.assignee;
     this.timestamp = value.timestamp;
-    this.consumerId = value.consumerId;
-    this.providerId = value.providerId;
   }
 }
 

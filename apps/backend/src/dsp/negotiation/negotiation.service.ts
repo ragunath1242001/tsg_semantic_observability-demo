@@ -1,7 +1,7 @@
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { Multilanguage } from "../../model/dsp/common";
 import { ContractAgreementMessage, ContractAgreementVerificationMessage, ContractNegotiation, ContractNegotiationEventMessage, ContractNegotiationTerminationMessage, ContractOfferMessage, ContractRequestMessage } from "../../model/dsp/negotiation/messages";
-import { ContractNegotiationState, NegotiationEvent, ProofTypes } from "@tsg-dsp/common";
+import { ContractNegotiationState, NegotiationEvent } from "@tsg-dsp/common";
 import { Offer, Agreement, NegotiationDetail, NegotiationProcessEvent, NegotiationRole, NegotiationStatus } from "../../model/dsp/negotiation/negotiation";
 import crypto from "crypto";
 import { DspClientService } from "../client/client.service";
@@ -96,22 +96,22 @@ export class NegotiationService {
   } 
 
   async requestNew(offer: Offer, dataSet: string, remoteAddress: string, audience: string): Promise<NegotiationDetail> {
-    const processId = `urn:uuid:${crypto.randomUUID()}`;
+    const consumerPid = `urn:uuid:${crypto.randomUUID()}`;
+    offer.target = dataSet;
     const contractRequestMessage = new ContractRequestMessage({
-      processId: processId,
+      consumerPid: consumerPid,
       offer: offer,
-      callbackAddress: `${this.server.publicAddress}/negotiation/callbacks/${processId}`,
-      dataSet: dataSet
+      callbackAddress: `${this.server.publicAddress}/negotiation/callbacks/${consumerPid}`
     });
 
     const contractNegotiationResponse = await this.dsp.requestNegotiation(`${remoteAddress}/request`, contractRequestMessage, audience);
     const contractNegotiation = await deserialize<ContractNegotiation>(contractNegotiationResponse);
 
     const negotiation: NegotiationDetail = {
-      localId: processId,
-      remoteId: contractNegotiation.processId,
+      localId: consumerPid,
+      remoteId: contractNegotiation.providerPid,
       role: "consumer",
-      remoteAddress: `${remoteAddress}/${contractNegotiation.processId}`,
+      remoteAddress: `${remoteAddress}/${contractNegotiation.providerPid}`,
       remoteParty: audience,
       state: ContractNegotiationState.REQUESTED,
       dataSet: dataSet,
@@ -135,21 +135,26 @@ export class NegotiationService {
   }
 
   async handleNewRequest(requestMessage: ContractRequestMessage, remoteParty: string): Promise<ContractNegotiation> {
-    const processId = `urn:uuid:${crypto.randomUUID()}`;
+    const providerPid = `urn:uuid:${crypto.randomUUID()}`;
     const contractNegotiation = new ContractNegotiation({
-      id: processId,
-      processId: processId,
-      contractNegotiationState: ContractNegotiationState.REQUESTED,
+      id: providerPid,
+      consumerPid: requestMessage.consumerPid,
+      providerPid: providerPid,
+      state: ContractNegotiationState.REQUESTED,
     });
 
+    if (requestMessage.offer.target === undefined) {
+      throw new DSPError('Target attribute in provided Offer must be set.', HttpStatus.BAD_REQUEST);
+    }
+
     const negotiation: NegotiationDetail = {
-      localId: processId,
-      remoteId: requestMessage.processId,
+      localId: providerPid,
+      remoteId: requestMessage.consumerPid,
       role: "provider",
       remoteAddress: requestMessage.callbackAddress,
       remoteParty: remoteParty,
       state: ContractNegotiationState.REQUESTED,
-      dataSet: requestMessage.dataSet,
+      dataSet: requestMessage.offer.target,
       offer: requestMessage.offer,
       events: []
     }
@@ -160,12 +165,12 @@ export class NegotiationService {
   async requestExisting(offer: Offer, processId: string): Promise<NegotiationDetail> {
     const negotiation = await this.getNegotiation(processId);
     await this.checkTransition("local", negotiation, ContractNegotiationState.REQUESTED);
-
+    offer.target = negotiation.dataSet;
     const contractRequestMessage = new ContractRequestMessage({
-      processId: negotiation.remoteId,
+      providerPid: negotiation.remoteId,
+      consumerPid: negotiation.localId,
       offer: offer,
       callbackAddress: `${this.server.publicAddress}/negotiation/callbacks/${processId}`,
-      dataSet: negotiation.dataSet
     });
     const contractNegotiationResponse = await this.dsp.requestNegotiation(`${negotiation.remoteAddress}/request`, contractRequestMessage, negotiation.remoteParty);
     
@@ -182,8 +187,8 @@ export class NegotiationService {
   }
 
   async handleExistingRequest(processId: string, requestMessage: ContractRequestMessage, audience: string) {
-    if (processId !== requestMessage.processId) {
-      throw new DSPError(`Contract negotiation process ID mismatch ${processId} vs ${requestMessage.processId}`, HttpStatus.BAD_REQUEST);
+    if (processId !== requestMessage.providerPid) {
+      throw new DSPError(`Contract negotiation process ID mismatch ${processId} vs ${requestMessage.providerPid}`, HttpStatus.BAD_REQUEST);
     }
     const negotiation = await this.getNegotiation(processId, audience);
     await this.checkTransition("remote", negotiation, ContractNegotiationState.REQUESTED);
@@ -196,8 +201,9 @@ export class NegotiationService {
     negotiation.offer = requestMessage.offer;
     await this.negotiationDetailRepository.save(negotiation)
     return new ContractNegotiation({
-      processId: negotiation.localId,
-      contractNegotiationState: negotiation.state,
+      providerPid: negotiation.localId,
+      consumerPid: negotiation.remoteId,
+      state: negotiation.state,
     });
   }
 
@@ -206,7 +212,8 @@ export class NegotiationService {
     const negotiation = await this.getNegotiation(processId);
     await this.checkTransition("local", negotiation, ContractNegotiationState.OFFERED);
     const contractOfferMessage = new ContractOfferMessage({
-      processId: negotiation.remoteId,
+      providerPid: negotiation.localId,
+      consumerPid: negotiation.remoteId,
       offer: offer,
       callbackAddress: `${this.server.publicAddress}/negotiation/${negotiation.localId}`
     })
@@ -251,7 +258,8 @@ export class NegotiationService {
       type: "local"
     });
     const eventMessage = new ContractNegotiationEventMessage({
-      processId: negotiation.remoteId || "",
+      providerPid: negotiation.remoteId,
+      consumerPid: negotiation.localId,
       eventType: NegotiationEvent.ACCEPTED
     })
     await this.dsp.negotiationEvent(`${negotiation.remoteAddress}/events`, eventMessage, negotiation.remoteParty);
@@ -284,17 +292,20 @@ export class NegotiationService {
     if (negotiation.offer === undefined) {
       throw new DSPError(`No offer present for negotiation ${processId}, no agreement can be created`, HttpStatus.BAD_REQUEST);
     }
+    if (negotiation.offer.target === undefined) {
+      throw new DSPError(`No agreement target available`, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
     await this.checkTransition("local", negotiation, ContractNegotiationState.AGREED);
     const agreement = new Agreement({
       ...negotiation.offer,
+      target: negotiation.offer.target,
       timestamp: new Date().toISOString(),
-      consumerId: negotiation.remoteParty,
-      providerId: this.iam.didId,
-      assignee: negotiation.offer?.assignee || negotiation.remoteParty,
+      assignee: negotiation.remoteParty,
       assigner: this.iam.didId
     });
     const agreementMessage = new ContractAgreementMessage({
-      processId: negotiation.remoteId || "",
+      providerPid: negotiation.localId,
+      consumerPid: negotiation.remoteId,
       agreement: agreement
     });
     negotiation.events.push({
@@ -337,15 +348,11 @@ export class NegotiationService {
       throw new DSPError(`No agreement message present that can be signed for verification`, HttpStatus.BAD_REQUEST);
     }
     const contractAgreementVerificationMessage = new ContractAgreementVerificationMessage({
-      processId: negotiation.remoteId,
-      credentialSubject: {
-        '@type': 'dspace:ContractAgreementMessageHash',
-        'dspace:hash': this.createHash(contractAgreementMessage.agreementMessage || ''),
-      },
-      proof: {
-        "@type": ProofTypes.Ed25519Signature2020,
-        "dct:created": new Date().toISOString(),
-        "sec:jws": "..."
+      providerPid: negotiation.remoteId,
+      consumerPid: negotiation.localId,
+      hashedMessage: {
+        "dspace:algorithm": "sha256",
+        "dspace:digest": this.createHash("")
       }
     });
     negotiation.events.push({
@@ -388,7 +395,8 @@ export class NegotiationService {
       type: "local"
     });
     const eventMessage = new ContractNegotiationEventMessage({
-      processId: negotiation.remoteId || "",
+      providerPid: negotiation.localId,
+      consumerPid: negotiation.remoteId,
       eventType: NegotiationEvent.FINALIZED
     })
     await this.dsp.negotiationEvent(`${negotiation.remoteAddress}/events`, eventMessage, negotiation.remoteParty);

@@ -1,6 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
 import axios, { AxiosRequestConfig } from "axios";
-import { CatalogRequestMessage, Filter } from "../../model/dsp/catalog/messages";
+import { CatalogRequestMessage } from "../../model/dsp/catalog/messages";
 import { SerializableClass } from "../../model/dsp/common";
 import { ContractAgreementMessage, ContractAgreementVerificationMessage, ContractNegotiationEventMessage, ContractNegotiationTerminationMessage, ContractOfferMessage, ContractRequestMessage } from "../../model/dsp/negotiation/messages";
 import { TransferCompletionMessage, TransferRequestMessage, TransferStartMessage, TransferSuspensionMessage, TransferTerminationMessage } from "../../model/dsp/transfer/messages";
@@ -41,7 +41,7 @@ export class DspClientService {
     timeout: 30000
   });
   
-  async requestCatalog(address: string, audience?: string, filters?: Array<Filter>): Promise<CatalogDto> {
+  async requestCatalog(address: string, audience?: string, filters?: Array<any>): Promise<CatalogDto> {
     const catalogRequestMessage = new CatalogRequestMessage({
       filter: filters
     });
@@ -59,19 +59,19 @@ export class DspClientService {
     return await this.executePost<ContractNegotiationDto, ContractRequestMessage>(address, contractRequestMessage, `Exsiting contract request at ${address} with offer ${contractRequestMessage.offer.id} and callback ${contractRequestMessage.callbackAddress}`, audience);
   }
   async negotiationOffer(address: string, contractOfferMessage: ContractOfferMessage, audience: string): Promise<{status: string}> {
-    return await this.executePost<{status: string}, ContractOfferMessage>(address, contractOfferMessage, `Making negotiation offer at ${address} for negotiation ${contractOfferMessage.processId}`, audience);
+    return await this.executePost<{status: string}, ContractOfferMessage>(address, contractOfferMessage, `Making negotiation offer at ${address} for negotiation ${contractOfferMessage.consumerPid}`, audience);
   }
   async negotiationEvent(address: string, contractNegotiationEventMessage: ContractNegotiationEventMessage, audience: string): Promise<{status: string}> {
-    return await this.executePost<{status: string}, ContractNegotiationEventMessage>(address, contractNegotiationEventMessage, `Creating negotiation event ${contractNegotiationEventMessage.eventType} at ${address} for negotiation ${contractNegotiationEventMessage.processId}`, audience);
+    return await this.executePost<{status: string}, ContractNegotiationEventMessage>(address, contractNegotiationEventMessage, `Creating negotiation event ${contractNegotiationEventMessage.eventType} at ${address} for negotiation ${contractNegotiationEventMessage.consumerPid}`, audience);
   }
   async negotiationAgreement(address: string, contractAgreementMessage: ContractAgreementMessage, audience: string): Promise<{status: string}> {
-    return await this.executePost<{status: string}, ContractAgreementMessage>(address, contractAgreementMessage, `Contract agreement at ${address} for negotiation ${contractAgreementMessage.processId}`, audience);
+    return await this.executePost<{status: string}, ContractAgreementMessage>(address, contractAgreementMessage, `Contract agreement at ${address} for negotiation ${contractAgreementMessage.consumerPid}`, audience);
   }
   async negotiationVerification(address: string, contractAgreementVerificationMessage: ContractAgreementVerificationMessage, audience: string): Promise<{status: string}> {
-    return await this.executePost<{status: string}, ContractAgreementVerificationMessage>(address, contractAgreementVerificationMessage, `Contract agreement verification at ${address} for negotiation ${contractAgreementVerificationMessage.processId}`, audience);
+    return await this.executePost<{status: string}, ContractAgreementVerificationMessage>(address, contractAgreementVerificationMessage, `Contract agreement verification at ${address} for negotiation ${contractAgreementVerificationMessage.consumerPid}`, audience);
   }
   async negotiationTermination(address: string, contractNegotiationTerminationMessage: ContractNegotiationTerminationMessage, audience: string): Promise<{status: string}> {
-    return await this.executePost<{status: string}, ContractNegotiationTerminationMessage>(address, contractNegotiationTerminationMessage, `Negotiation termination at ${address} for negotiation ${contractNegotiationTerminationMessage.processId}`, audience);
+    return await this.executePost<{status: string}, ContractNegotiationTerminationMessage>(address, contractNegotiationTerminationMessage, `Negotiation termination at ${address} for negotiation ${contractNegotiationTerminationMessage.consumerPid}`, audience);
   }
 
 
@@ -79,16 +79,16 @@ export class DspClientService {
     return await this.executePost<TransferProcessDto, TransferRequestMessage>(address, transferRequestMessage, `Requesting transfer at ${address} for agreement ${transferRequestMessage.agreementId}`, audience)
   }
   async startTransfer(address: string, transferStartMessage: TransferStartMessage, audience: string): Promise<{status: string}> {
-    return await this.executePost<{status: string}, TransferStartMessage>(address, transferStartMessage, `Starting transfer at ${address} for process ${transferStartMessage.processId}`, audience)
+    return await this.executePost<{status: string}, TransferStartMessage>(address, transferStartMessage, `Starting transfer at ${address} for process ${transferStartMessage.consumerPid}`, audience)
   }
   async completeTransfer(address: string, transferCompletionMessage: TransferCompletionMessage, audience: string): Promise<{status: string}> {
-    return await this.executePost<{status: string}, TransferCompletionMessage>(address, transferCompletionMessage, `Completing transfer at ${address} for process ${transferCompletionMessage.processId}`, audience)
+    return await this.executePost<{status: string}, TransferCompletionMessage>(address, transferCompletionMessage, `Completing transfer at ${address} for process ${transferCompletionMessage.consumerPid}`, audience)
   }
   async terminateTransfer(address: string, transferTerminationMessage: TransferTerminationMessage, audience: string): Promise<{status: string}> {
-    return await this.executePost<{status: string}, TransferTerminationMessage>(address, transferTerminationMessage, `Terminating transfer at ${address} for process ${transferTerminationMessage.processId}`, audience)
+    return await this.executePost<{status: string}, TransferTerminationMessage>(address, transferTerminationMessage, `Terminating transfer at ${address} for process ${transferTerminationMessage.consumerPid}`, audience)
   }
   async suspendTransfer(address: string, transferSuspensionMessage: TransferSuspensionMessage, audience: string): Promise<{status: string}> {
-    return await this.executePost<{status: string}, TransferSuspensionMessage>(address, transferSuspensionMessage, `Suspending transfer at ${address} for process ${transferSuspensionMessage.processId}`, audience)
+    return await this.executePost<{status: string}, TransferSuspensionMessage>(address, transferSuspensionMessage, `Suspending transfer at ${address} for process ${transferSuspensionMessage.consumerPid}`, audience)
   }
 
   private async getToken(address: string, audience?: string): Promise<string> {

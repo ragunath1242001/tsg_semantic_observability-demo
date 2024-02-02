@@ -13,11 +13,11 @@ import { ContextDto, CatalogDto, CatalogRecordDto, DataServiceDto, DatasetDto, D
 
 export interface IResource extends IReference {
   contactPoint?: Reference;
-  keyword?: Array<Multilanguage>;
+  keyword?: Array<string>;
   landingPage?: Reference;
   theme?: Array<Reference>;
-  conformsTo?: Reference;
-  creator?: Reference;
+  conformsTo?: string;
+  creator?: string;
   description?: Array<Multilanguage>;
   identifier?: string;
   isReferencedBy?: Reference;
@@ -39,9 +39,8 @@ export class Resource<OutType extends ContextDto = ResourceDto> extends Referenc
   @IsOptional()
   contactPoint?: Reference;
   @Namespace("dcat")
-  @ValidateNested()
   @IsOptional()
-  keyword?: Array<Multilanguage>;
+  keyword?: Array<string>;
   @Namespace("dcat")
   @ValidateNested()
   @IsOptional()
@@ -51,13 +50,11 @@ export class Resource<OutType extends ContextDto = ResourceDto> extends Referenc
   @IsOptional()
   theme?: Array<Reference>;
   @Namespace("dcat")
-  @ValidateNested()
   @IsOptional()
-  conformsTo?: Reference;
+  conformsTo?: string;
   @Namespace("dct")
-  @ValidateNested()
   @IsOptional()
-  creator?: Reference;
+  creator?: string;
   @Namespace("dct")
   @ValidateNested()
   @IsOptional()
@@ -123,7 +120,7 @@ export class Resource<OutType extends ContextDto = ResourceDto> extends Referenc
 }
 
 export interface IDataService extends IResource {
-  endpointDescription?: Reference;
+  endpointDescription?: string;
   endpointURL?: string;
   servesDataset?: Array<Dataset>;
 }
@@ -131,9 +128,8 @@ export interface IDataService extends IResource {
 @Serializable("dcat:DataService")
 export class DataService extends Resource<DataServiceDto> {
   @Namespace("dcat")
-  @ValidateNested()
   @IsOptional()
-  endpointDescription?: Reference;
+  endpointDescription?: string;
   @Namespace("dcat")
   @IsString()
   @IsOptional()
@@ -363,7 +359,7 @@ export interface ICatalog extends IDataset {
   service?: Array<DataService>;
   themeTaxonomy?: Reference;
   hasPart?: Array<Resource>;
-  homepage?: Reference;
+  homepage?: string;
 }
 
 @Serializable("dcat:Catalog")
@@ -391,7 +387,7 @@ export class Catalog extends Dataset<CatalogDto> {
   @Namespace("foaf")
   @ValidateNested()
   @IsOptional()
-  homepage?: Reference;
+  homepage?: string;
 
   constructor (value: ICatalog) {
     super(value);
