@@ -44,6 +44,6 @@ const getCatalog = async () => {
         </div>
       </form>
     </div>
-    <Catalog :catalog="catalog" v-if="dataAvailable" />
+    <Catalog :catalog="catalog" :url="urlInput" v-if="dataAvailable" />
   </div>
 </template>

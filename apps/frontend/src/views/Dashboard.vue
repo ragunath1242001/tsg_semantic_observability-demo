@@ -113,7 +113,7 @@ onMounted(() => initialize());
       </div>
     </div>
 
-    <Catalog :catalog="catalog" v-if="dataAvailable" />
+    <Catalog :catalog="catalog" url="" v-if="dataAvailable" />
   </div>
 </template>
 <style scoped>

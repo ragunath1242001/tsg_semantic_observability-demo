@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, toRefs } from "vue";
 import {
   PolicyDto,
   ReferenceDto,
@@ -11,14 +11,16 @@ import { JsonTreeView } from "json-tree-view-vue3";
 import { injectStrict } from "../utils/injectTyped";
 import { AxiosKey } from "../utils/symbols";
 
-defineProps<{
+const props = defineProps<{
   catalog: CatalogDto;
+  url: string;
 }>();
 
-const urlInput = ref("");
 const parsedView = ref(true);
 var datasetView = ref(false);
 var datasetData = ref<DatasetDto>();
+
+const { catalog, url } = toRefs(props);
 
 const http = injectStrict(AxiosKey);
 
@@ -91,7 +93,7 @@ const parsePolicies = (policies: Array<PolicyDto>): Array<FlatPolicy> => {
 const getDataset = async (datasetId: String) => {
   try {
     const response = await http.get<DatasetDto>(
-      `management/catalog/dataset?address=${urlInput.value}&id=${datasetId}`
+      `management/catalog/dataset?address=${url.value}&id=${datasetId}`
     );
     datasetData.value = response.data;
     datasetView.value = true;
