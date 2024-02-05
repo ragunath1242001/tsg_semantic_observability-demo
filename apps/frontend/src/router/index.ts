@@ -1,5 +1,7 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
 import AppLayout from '@/layout/AppLayout.vue';
+import DashboardVue from '../views/Dashboard.vue';
+import CatalogVue from '../views/Catalog.vue';
 
 const router = createRouter({
     history: createWebHashHistory(),
@@ -11,12 +13,12 @@ const router = createRouter({
                 {
                     path: '/',
                     name: 'dashboard',
-                    component: () => import('@/views/Dashboard.vue')
+                    component: () => DashboardVue
                 },
                 {
                     path: '/catalog/request',
                     name: 'catalogrequest',
-                    component: () => import('@/views/Catalog.vue')
+                    component: () => CatalogVue
                 },
 
             ]

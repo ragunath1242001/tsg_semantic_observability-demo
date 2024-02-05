@@ -65,6 +65,12 @@ const isOutsideClicked = (event) => {
     topbarEl.contains(event.target)
   );
 };
+
+const logout = () => {
+  localStorage.removeItem("username");
+  localStorage.removeItem("password");
+  router.push("/login");
+};
 </script>
 
 <template>
@@ -87,6 +93,13 @@ const isOutsideClicked = (event) => {
     >
       <i class="pi pi-ellipsis-v"></i>
     </button>
+
+    <div class="layout-topbar-menu" :class="topbarMenuClasses">
+      <button @click="logout()" class="p-link layout-topbar-button">
+        <i class="pi pi-sign-out"></i>
+        <span>Log out</span>
+      </button>
+    </div>
   </div>
 </template>
 

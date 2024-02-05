@@ -1,4 +1,4 @@
-import { ConflictException, HttpStatus, Injectable, Optional } from "@nestjs/common";
+import { ConflictException, HttpStatus, Injectable, Logger, Optional } from "@nestjs/common";
 import { CatalogRequestMessage } from "../../model/dsp/catalog/messages";
 import {
   Catalog,
@@ -13,7 +13,8 @@ import { Repository } from "typeorm";
 import { CatalogDao, DataServiceDao, DatasetDao, DistributionDao, ResourceDao } from "../../model/dsp/catalog/catalog.dao";
 import { DSPError } from "../../utils/errors/error";
 import { deserialize } from "../../model/serialize";
-import { DatasetDto } from "@tsg-dsp/common";
+import { ODRLAction } from "@tsg-dsp/common";
+import { Offer, Permission } from "../../model/dsp/negotiation/negotiation";
 
 @Injectable()
 export class CatalogService {
@@ -27,6 +28,7 @@ export class CatalogService {
       @Optional() private readonly server?: ServerConfig) {
   }
   initialized = this.initalizeCatalog();
+  private readonly logger = new Logger(this.constructor.name);
 
   async getCatalogDao(relations?: boolean): Promise<CatalogDao> {
     let catalog;
@@ -78,8 +80,8 @@ export class CatalogService {
         _resource: resource
       })
       const dservice = new DataService({
-        endpointDescription: 'dpsace:connector',
-        conformsTo: 'dpsace:connector',
+        endpointDescription: 'dspace:connector',
+        conformsTo: 'dspace:connector',
         endpointURL: `${this.server.publicAddress}`,
       })
       this.dataservicesRepository.create({
@@ -112,6 +114,20 @@ export class CatalogService {
         `The dataset with ${dataset.id} already exists.`,
         HttpStatus.CONFLICT.toString(),
       );
+    }
+    if (!dataset.hasPolicy) {
+      this.logger.log(`No policies found on dataset with id: ${dataset.id}. Creating a default one.`)
+      dataset.hasPolicy = [
+        new Offer({
+          assigner: dataset.publisher || dataset.creator || "",
+          permission: [new Permission({
+            target: "everyone",
+            action: ODRLAction.READ
+          })
+          ]
+          
+    })
+      ]
     }
     const newResource = this.resourceRepository.create(dataset)
     const newDataset = this.datasetRepository.create(dataset)

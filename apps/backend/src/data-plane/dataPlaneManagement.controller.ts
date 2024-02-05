@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Logger, Post, Query, UseGuards } from "@nestjs/common";
+import { Controller, Get, HttpCode, HttpStatus, Logger, UseGuards } from "@nestjs/common";
 import { ManagementGuard } from "../auth/management.guard";
 import { DataPlaneService } from "./dataPlane.service";import { DataPlaneDto } from "@libs/dtos";
 
@@ -14,7 +14,14 @@ export class DataplaneManagementController {
   @HttpCode(HttpStatus.OK)
   async getDataPlanes(): Promise<DataPlaneDto[]> {
     this.logger.log("Received call to fetch all dataplanes.");
-    return (await this.dataplaneService.getDataPlanes())
+    const dataPlanes = await this.dataplaneService.getDataPlanes()
+    const dataPlanesDtosPromise = Promise.all(dataPlanes.map(async (dataplane) => {
+      return {
+        ...dataplane,
+        dataset: await dataplane.dataset?.serialize()
+      }
+    }))
+    return dataPlanesDtosPromise
   }
 
 }

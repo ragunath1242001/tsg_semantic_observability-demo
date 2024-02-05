@@ -42,7 +42,7 @@ const login = async () => {
             <div class="text-900 text-3xl font-medium mb-3">
               Welcome to the Control Plane UI
             </div>
-            <span class="text-600 font-medium">Sign in to continueee</span>
+            <span class="text-600 font-medium">Sign in to continue</span>
           </div>
 
           <form @submit="login">
@@ -70,6 +70,7 @@ const login = async () => {
               v-model="password"
               placeholder="Password"
               :toggleMask="true"
+              :feedback="false"
               class="w-full mb-3"
               inputClass="w-full"
               :inputStyle="{ padding: '1rem' }"
