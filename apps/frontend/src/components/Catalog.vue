@@ -44,6 +44,7 @@ const obtainValues = (multilingualArray: Array<MultilanguageDto | String>) => {
 interface FlatPolicy {
   type: string;
   assigner: string;
+  assignee: string;
   target: string;
   action: string;
   leftOperand: string;
@@ -64,16 +65,20 @@ const parsePolicies = (policies: Array<PolicyDto>): Array<FlatPolicy> => {
           (permission) => {
             return {
               type: "permission",
-              assigner: policy["odrl:assigner"],
-              target: permission["odrl:target"],
-              action: permission["odrl:action"],
-              leftOperand: permission["odrl:constraint"][0]["odrl:leftOperand"],
-              rightOperand: permission["odrl:constraint"][0][
+              assigner: policy["odrl:assigner"] || policy["assigner"],
+              assignee: policy["odrl:assignee"] || policy["assignee"] || "*",
+              target: permission["odrl:target"] || permission["target"],
+              action: permission["odrl:action"] || permission["action"],
+              leftOperand:
+                permission["odrl:constraint"]?.[0]?.["odrl:leftOperand"],
+              rightOperand: permission["odrl:constraint"]?.[0]?.[
                 "odrl:rightOperand"
               ]["@id"]
-                ? permission["odrl:constraint"][0]["odrl:rightOperand"]["@id"]
-                : permission["odrl:constraint"][0]["odrl:rightOperand"],
-              operator: permission["odrl:constraint"][0]["odrl:operator"],
+                ? permission["odrl:constraint"]?.[0]?.["odrl:rightOperand"][
+                    "@id"
+                  ]
+                : permission["odrl:constraint"]?.[0]?.["odrl:rightOperand"],
+              operator: permission["odrl:constraint"]?.[0]?.["odrl:operator"],
             } as FlatPolicy;
           }
         )
@@ -171,7 +176,7 @@ const getDataset = async (datasetId: String) => {
           <template #footer>
             <div class="flex align-items-center justify-content-between">
               <span class="font-semibold"
-                >Policies: {{ dataset["odrl:hasPolicy"].length }}</span
+                >Policies: {{ dataset["odrl:hasPolicy"]?.length ?? 0 }}</span
               >
               <Button
                 icon="pi pi-external-link"
@@ -257,6 +262,7 @@ const getDataset = async (datasetId: String) => {
               >
                 <Column field="type" header="Type"></Column>
                 <Column field="assigner" header="Assigner"> </Column>
+                <Column field="assignee" header="Assignee"> </Column>
                 <Column
                   field="target"
                   header="Target"

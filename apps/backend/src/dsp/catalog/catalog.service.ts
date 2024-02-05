@@ -7,14 +7,14 @@ import {
   Resource,
 } from "../../model/dsp/catalog/catalog";
 import { InitCatalog, ServerConfig } from "../../config";
-import { Multilanguage, Reference } from "../../model/dsp/common";
+import { Multilanguage } from "../../model/dsp/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { CatalogDao, DataServiceDao, DatasetDao, DistributionDao, ResourceDao } from "../../model/dsp/catalog/catalog.dao";
 import { DSPError } from "../../utils/errors/error";
 import { deserialize } from "../../model/serialize";
-import { ODRLAction } from "@tsg-dsp/common";
-import { Offer, Permission } from "../../model/dsp/negotiation/negotiation";
+import { ODRLAction, ODRLOperator } from "@tsg-dsp/common";
+import { Constraint, Offer, Permission } from "../../model/dsp/negotiation/negotiation";
 
 @Injectable()
 export class CatalogService {
@@ -119,10 +119,19 @@ export class CatalogService {
       this.logger.log(`No policies found on dataset with id: ${dataset.id}. Creating a default one.`)
       dataset.hasPolicy = [
         new Offer({
-          assigner: dataset.publisher || dataset.creator || "",
+          assigner: dataset.publisher || dataset.creator || catalog.publisher || "",
           permission: [new Permission({
-            target: "everyone",
-            action: ODRLAction.READ
+            target: dataset.id,
+            action: ODRLAction.READ,
+            constraint: [
+              new Constraint(
+                {
+                  leftOperand: "dspace:identity",
+                  operator: ODRLOperator.IS_PART_OF,
+                  rightOperand: "dspace:sameDataSpace"
+                }
+              )
+            ]
           })
           ]
           
