@@ -16,7 +16,7 @@ defineProps<{
 }>();
 
 const urlInput = ref("");
-var parsedView = ref(true);
+const parsedView = ref(true);
 var datasetView = ref(false);
 var datasetData = ref<DatasetDto>();
 
@@ -70,15 +70,14 @@ const parsePolicies = (policies: Array<PolicyDto>): Array<FlatPolicy> => {
               target: permission["odrl:target"] || permission["target"],
               action: permission["odrl:action"] || permission["action"],
               leftOperand:
-                permission["odrl:constraint"]?.[0]?.["odrl:leftOperand"],
-              rightOperand: permission["odrl:constraint"]?.[0]?.[
-                "odrl:rightOperand"
-              ]["@id"]
-                ? permission["odrl:constraint"]?.[0]?.["odrl:rightOperand"][
-                    "@id"
-                  ]
-                : permission["odrl:constraint"]?.[0]?.["odrl:rightOperand"],
-              operator: permission["odrl:constraint"]?.[0]?.["odrl:operator"],
+                permission["odrl:constraint"]?.[0]?.["odrl:leftOperand"] ||
+                permission["constraint"]?.[0]?.["leftOperand"],
+              rightOperand:
+                permission["odrl:constraint"]?.[0]?.["odrl:rightOperand"] ||
+                permission["constraint"]?.[0]?.["rightOperand"],
+              operator:
+                permission["odrl:constraint"]?.[0]?.["odrl:operator"] ||
+                permission["constraint"]?.[0]?.["operator"],
             } as FlatPolicy;
           }
         )
@@ -108,13 +107,13 @@ const getDataset = async (datasetId: String) => {
     <div class="col-12">
       <div class="card" v-if="!datasetView">
         <div class="flex align-items-center mb-4 gap-2">
-          <label for="input-parsedview">Parsed View</label>
-          <InputSwitch v-model="parsedView" inputId="input-parsedview" />
+          <label>Parsed View </label><InputSwitch v-model="parsedView" />
         </div>
         <JsonTreeView
           v-if="!parsedView"
           :data="JSON.stringify(catalog)"
           :maxDepth="3"
+          color-scheme="dark"
           rootKey="Catalog"
         />
         <div class="grid" v-if="parsedView">

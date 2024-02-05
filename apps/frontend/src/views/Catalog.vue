@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { type CatalogDto } from "@tsg-dsp/common";
-import { JsonTreeView } from "json-tree-view-vue3";
 import { injectStrict } from "../utils/injectTyped";
 import { AxiosKey } from "../utils/symbols";
 import Catalog from "../components/Catalog.vue";

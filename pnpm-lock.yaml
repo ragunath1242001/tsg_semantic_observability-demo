@@ -237,8 +237,8 @@ importers:
         specifier: ^6.0.1
         version: 6.0.1
       primevue:
-        specifier: ^3.35.0
-        version: 3.47.2(vue@3.4.15)
+        specifier: 3.39.0
+        version: 3.39.0(vue@3.4.15)
       vite:
         specifier: ^4.2.1
         version: 4.5.2(@types/node@16.18.71)(sass@1.70.0)
@@ -6779,8 +6779,8 @@ packages:
     resolution: {integrity: sha512-KDeO94CbWI4pKsPnYpA1FPjo79EsY9I+M8ywoPBSf9XMXoe/0crjbUK7jcQEDHuc0ZMRIZsxH3TYLv4TUtHmAA==}
     dev: false
 
-  /primevue@3.47.2(vue@3.4.15):
-    resolution: {integrity: sha512-/vgIhc2vxNW8amBGBJX/NMBgWi/THOwT0DIPgy/aswJ86x+uwLwGtjNz22c/uSE5UkHu4E5rpktWOJtFvTbRPg==}
+  /primevue@3.39.0(vue@3.4.15):
+    resolution: {integrity: sha512-fDaK/SHijvw5ds3RNs4yzPgVFyA1/RYXxnEshHME1zhn9/HiTxEqa0Wv3obbuwSmRckA4fdGh+lZ8dDd1RJJLQ==}
     peerDependencies:
       vue: ^3.0.0
     dependencies:

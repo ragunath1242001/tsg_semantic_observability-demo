@@ -11,7 +11,6 @@ import InputText from 'primevue/inputtext';
 import Toast from 'primevue/toast';
 import ToastService from 'primevue/toastservice';
 import Tree from 'primevue/tree';
-import '@/assets/styles.scss'
 import ToggleButton from 'primevue/togglebutton';
 import Tag from 'primevue/tag';
 import Card from 'primevue/card';
@@ -21,6 +20,7 @@ import CatalogVue from './components/Catalog.vue'
 import AppConfigVue from './layout/AppConfig.vue'
 import Password from 'primevue/password'
 
+import '@/assets/styles.scss'
 
 const app = createApp(App);
 app.provide(AxiosKey, http);
