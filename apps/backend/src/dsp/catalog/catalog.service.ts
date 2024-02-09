@@ -1,4 +1,4 @@
-import { ConflictException, HttpStatus, Injectable, Optional } from "@nestjs/common";
+import { ConflictException, HttpStatus, Injectable, Logger, Optional } from "@nestjs/common";
 import { CatalogRequestMessage } from "../../model/dsp/catalog/messages";
 import {
   Catalog,
@@ -7,11 +7,14 @@ import {
   Resource,
 } from "../../model/dsp/catalog/catalog";
 import { InitCatalog, ServerConfig } from "../../config";
-import { Multilanguage, Reference } from "../../model/dsp/common";
+import { Multilanguage } from "../../model/dsp/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { CatalogDao, DataServiceDao, DatasetDao, DistributionDao, ResourceDao } from "../../model/dsp/catalog/catalog.dao";
 import { DSPError } from "../../utils/errors/error";
+import { deserialize } from "../../model/serialize";
+import { ODRLAction, ODRLOperator } from "@tsg-dsp/common";
+import { Constraint, Offer, Permission } from "../../model/dsp/negotiation/negotiation";
 
 @Injectable()
 export class CatalogService {
@@ -25,6 +28,7 @@ export class CatalogService {
       @Optional() private readonly server?: ServerConfig) {
   }
   initialized = this.initalizeCatalog();
+  private readonly logger = new Logger(this.constructor.name);
 
   async getCatalogDao(relations?: boolean): Promise<CatalogDao> {
     let catalog;
@@ -76,8 +80,8 @@ export class CatalogService {
         _resource: resource
       })
       const dservice = new DataService({
-        endpointDescription: 'dpsace:connector',
-        conformsTo: 'dpsace:connector',
+        endpointDescription: 'dspace:connector',
+        conformsTo: 'dspace:connector',
         endpointURL: `${this.server.publicAddress}`,
       })
       this.dataservicesRepository.create({
@@ -88,10 +92,12 @@ export class CatalogService {
       }))
       catalog._services = [this.dataservicesRepository.create(dservice)]
       catalog._dataset = await this.datasetRepository.save(dataset);
-      
-      return this.catalogRepository.save(
-        catalog);
-    } 
+      const response = await this.catalogRepository.save(catalog); 
+      this.initCatalog.datasets?.map(async (dataset) =>
+        this.addDataset(await deserialize<Dataset>(JSON.parse(dataset)))
+      )
+      return response
+    }
     
     
   }
@@ -100,7 +106,7 @@ export class CatalogService {
     await this.catalogRepository.update({id: catalog.id}, catalog)
   }
 
-  async addDataset(dataset: Dataset): Promise<DatasetDao | undefined> {
+  async addDataset(dataset: Dataset): Promise<DatasetDao> {
     const catalog = await this.getCatalogDao(true);
     const exist = await this.datasetRepository.findOne({where: {id: dataset.id}})
     if (exist) {
@@ -108,6 +114,29 @@ export class CatalogService {
         `The dataset with ${dataset.id} already exists.`,
         HttpStatus.CONFLICT.toString(),
       );
+    }
+    if (!dataset.hasPolicy) {
+      this.logger.log(`No policies found on dataset with id: ${dataset.id}. Creating a default one.`)
+      dataset.hasPolicy = [
+        new Offer({
+          assigner: dataset.publisher || dataset.creator || catalog.publisher || "",
+          permission: [new Permission({
+            target: dataset.id,
+            action: ODRLAction.READ,
+            constraint: [
+              new Constraint(
+                {
+                  leftOperand: "dspace:identity",
+                  operator: ODRLOperator.IS_PART_OF,
+                  rightOperand: "dspace:sameDataSpace"
+                }
+              )
+            ]
+          })
+          ]
+          
+    })
+      ]
     }
     const newResource = this.resourceRepository.create(dataset)
     const newDataset = this.datasetRepository.create(dataset)
@@ -162,7 +191,7 @@ export class CatalogService {
     return new Catalog(catalog);
   }
 
-  async getDataset(datasetId: string): Promise<Dataset | undefined> {
+  async getDataset(datasetId: string): Promise<Dataset> {
     const dataset = await this.datasetRepository.findOne({
       where: {
         id: datasetId

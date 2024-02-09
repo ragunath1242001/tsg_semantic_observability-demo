@@ -10,6 +10,8 @@ import { DataPlaneDao } from "../model/data-planes/dataPlanes.dao";
 import { DataPlaneCreation } from "@libs/dtos";
 import { DSPError } from "../utils/errors/error";
 import { Dataset, Distribution, DataService } from "../model/dsp/catalog/catalog";
+import { ODRLAction } from "@tsg-dsp/common";
+import { Offer, Permission } from "../model/dsp/negotiation/negotiation";
 
 jest.useFakeTimers();
 describe("DataPlane Service", () => {
@@ -82,7 +84,12 @@ describe("DataPlane Service", () => {
             expect(dpDetails).toBeDefined();
             if (dpDetails !== undefined) {
                 dpDetails.callbackAddress = "https://google.com"
-                await dataPlaneService.updateDataPlane(dpDetails)
+                const dpDetailsDto = {
+                    ...dpDetails,
+                    dataset: await dpDetails.dataset?.serialize()
+                }
+
+                await dataPlaneService.updateDataPlane(dpDetailsDto)
             }
 
             const dpDetailsUpdated = await dataPlaneService.getDataPlaneDetails(addedDataPlane.identifier)
@@ -147,6 +154,7 @@ describe("DataPlane Service", () => {
                 expect(createdDataset).toBeDefined();
                 const catalog = await catalogService.getCatalogDao(true)
                 expect(catalog._datasets?.length).toEqual(1)
+                expect(catalog._datasets?.[0].hasPolicy).toHaveLength(1)
 
             })
 
@@ -156,6 +164,18 @@ describe("DataPlane Service", () => {
                 const dataset = new Dataset({
                     id: "urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0ceb",
                     title: 'Test HTTP dataset',
+                    publisher: "me",
+                    hasPolicy: [
+                        new Offer({
+                            assigner: "me",
+                            permission: [new Permission({
+                                target: "everyone",
+                                action: ODRLAction.READ
+                            })
+                            ]
+
+                        })
+                    ],
                     distribution: [
                         new Distribution({
                             id: "urn:uuid:06d7da99-68eb-4f9e-8cb6-b78666c46133",
@@ -191,6 +211,8 @@ describe("DataPlane Service", () => {
                 expect(updatedDataset).toBeDefined();
                 catalog = await catalogService.getCatalogDao(true)
                 expect(catalog._datasets?.length).toEqual(lengthToMatch)
+                const datasetToCheck = catalog._datasets?.find((dataset) => dataset.id === "urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0ceb")
+                expect(datasetToCheck?.hasPolicy?.[0].assigner).toEqual("me");
 
             })
         })

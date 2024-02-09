@@ -1,5 +1,7 @@
+import { DatasetDto } from "@tsg-dsp/common";
 
 export interface DataPlaneDto {
+  dataset?: DatasetDto;
   identifier: string;
   dataplaneType: string;
   endpointPrefix: string;
@@ -14,7 +16,7 @@ export type DataPlaneCreation = Omit<DataPlaneDto, "identifier"> & { identifier?
 
 export interface DataPlaneAddressDto {
   endpoint: string,
-  properties: {name: string, value: string}[]
+  properties: { name: string, value: string }[]
 }
 
 export interface DataPlaneRequestResponseDto {

@@ -12,7 +12,7 @@ export type TransferRole = "provider" | "consumer";
 export class TransferEventDao extends AutoIdEntity implements ITransferEvent {
   @Column()
   time!: Date
-  @Column("simple-enum")
+  @Column()
   state!: TransferState
   @Column({nullable: true})
   localMessage?: string

@@ -44,7 +44,7 @@ describe("Catalog Service", () => {
     })
 
     afterAll(async () => {
-      await TypeOrmTestHelper.instance.teardownTestDB();
+        await TypeOrmTestHelper.instance.teardownTestDB();
     });
 
     describe("Initializing catalog", () => {
@@ -99,6 +99,9 @@ describe("Catalog Service", () => {
             expect(updatedCatalogDao.dataset?.[0]?.distribution).toHaveLength(1)
             expect(updatedCatalogDao.dataset?.[0]?.distribution?.[0]?.accessService).toHaveLength(1)
             expect(updatedCatalogDao.dataset?.[0]?.distribution?.[0]?.accessService?.[0]?.endpointURL).toBe("https://httpbin.org/anything")
+
+            //    A policy should be auto generated since we haven't defined one.
+            expect(updatedCatalogDao.dataset?.[0].hasPolicy).toHaveLength(1);
 
             const datasetDao = await catalogService.getDataset(dataset.id)
             expect(datasetDao).toBeDefined()

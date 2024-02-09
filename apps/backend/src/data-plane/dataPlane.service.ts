@@ -14,6 +14,7 @@ import { DataPlaneDao } from "../model/data-planes/dataPlanes.dao";
 import { In, Repository } from "typeorm";
 import { DataPlane, DataPlaneStatus, HealthStatus } from "../model/data-planes/dataPlanes";
 import { DatasetDao } from "../model/dsp/catalog/catalog.dao";
+import { deserialize } from "../model/serialize";
 
 
 @Injectable()
@@ -35,7 +36,17 @@ export class DataPlaneService {
   private readonly maxHealthCheckMisses = 10;
   private static readonly pullInterval = 60000;
 
-  async getDataPlane(identifier: string): Promise<DataPlaneStatus | undefined> {
+  async getDataPlanes(): Promise<DataPlane[]> {
+    const dataPlanes = await this.dataPlaneRepository.find({})
+    if (!dataPlanes) {
+      throw new DSPError(`No dataplanes found.`, HttpStatus.NOT_FOUND)
+    } else {
+      return dataPlanes
+    }
+
+  }
+
+  async getDataPlane(identifier: string): Promise<DataPlaneStatus> {
     const dataPlane = await this.dataPlaneRepository.findOne({
       where: {identifier: identifier},
       select: {
@@ -48,7 +59,7 @@ export class DataPlaneService {
       }
       });
     if (!dataPlane) {
-      return undefined
+      throw new DSPError(`Dataplane details with identifier ${identifier} not found`, HttpStatus.NOT_FOUND)
     } else {
       return new DataPlaneStatus(dataPlane)
     }
@@ -65,27 +76,41 @@ export class DataPlaneService {
 
   async addDataPlane(dataPlaneCreation: DataPlaneCreation): Promise<DataPlaneDto> {
     const dataPlane: DataPlane = {
+      dataset: (dataPlaneCreation.dataset) ? await deserialize<Dataset>(dataPlaneCreation.dataset) : undefined,
       identifier: dataPlaneCreation.identifier || `urn:uuid:${crypto.randomUUID()}`,
       created: new Date(),
       modified: new Date(),
       health: HealthStatus.UNKNOWN,
       missedHealthChecks: 0,
-      ...dataPlaneCreation
+      dataplaneType: dataPlaneCreation.dataplaneType,
+      endpointPrefix: dataPlaneCreation.endpointPrefix,
+      callbackAddress: dataPlaneCreation.callbackAddress,
+      managementAddress: dataPlaneCreation.managementAddress,
+      managementToken: dataPlaneCreation.managementToken,
+      catalogSynchronization: dataPlaneCreation.catalogSynchronization,
+      role: dataPlaneCreation.role
     }
     await this.dataPlaneRepository.save(dataPlane);
     switch(dataPlaneCreation.catalogSynchronization) {
       case "push": await this.healthCheck(dataPlane); break;
       case "pull": await this.pullCatalog(dataPlane); break;
     }
-    return dataPlane;
+    return {
+      ...dataPlane,
+      dataset: await dataPlane.dataset?.serialize()
+    };
   }
 
   async updateDataPlane(dataPlaneDetails: DataPlaneDto): Promise<DataPlane | undefined> {
     const dataPlane = await this.getDataPlaneDetails(dataPlaneDetails.identifier);
     dataPlane.modified = new Date();
+    const dataPlaneDetailsObj = {
+      ...dataPlaneDetails,
+      dataset: dataPlaneDetails.dataset ? await deserialize<Dataset>(dataPlaneDetails.dataset) : undefined,
+    }
     await this.dataPlaneRepository.save({
       ...dataPlane,
-      ...dataPlaneDetails
+      ...dataPlaneDetailsObj
     })
     switch(dataPlane.catalogSynchronization) {
       case "push": await this.healthCheck(dataPlane); break;

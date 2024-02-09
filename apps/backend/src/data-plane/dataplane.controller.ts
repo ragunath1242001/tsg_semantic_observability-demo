@@ -30,7 +30,10 @@ export class DataPlaneController {
     if (dataPlane === undefined) {
       throw new DSPError(`Data plane with identifier ${dataPlaneDetails.identifier} not found`, HttpStatus.NOT_FOUND);
     }
-    return dataPlane;
+    return {
+      ...dataPlane,
+        dataset: await dataPlane.dataset?.serialize()
+      }
   }
 
   @Post("/:id/catalog")
