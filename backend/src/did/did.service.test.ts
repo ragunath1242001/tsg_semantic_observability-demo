@@ -1,13 +1,13 @@
 import { describe, expect, beforeAll, afterAll, it, jest } from '@jest/globals';
 import { DidService } from './did.service.js';
-import { TypeOrmTestHelper } from '../utils/testhelper';
+import { TypeOrmTestHelper } from '../utils/testhelper.js';
 import { plainToInstance } from 'class-transformer';
 import { RootConfig } from '../config.js';
 import { TestingModule, Test } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Credentials, DIDDocuments, KeyMaterials } from '../model/credentials.dao';
-import { CredentialsService } from './credentials.service';
-import { KeyService } from './keys.service.js';
+import { Credentials, DIDDocuments, KeyMaterials } from '../model/credentials.dao.js';
+import { CredentialsService } from '../credentials/credentials.service';
+import { KeysService } from '../keys/keys.service.js';
 import { DIDDocument } from 'did-resolver';
 import { exportJWK, generateKeyPair } from 'jose';
 

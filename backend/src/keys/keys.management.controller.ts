@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put, ValidationPipe } from "@nestjs/common";
 import { InitKeyConfig } from "../config.js";
-import { KeyService } from "../wallet/keys.service.js";
+import { KeysService } from "./keys.service.js";
 import { Roles } from "../auth/roles.guard.js";
 import { AppRole } from "../model/clients.dto.js";
 import { KeyInfo } from "../model/credentials.dto.js";
@@ -9,7 +9,7 @@ import { KeyInfo } from "../model/credentials.dto.js";
 @Roles(AppRole.MANAGE_KEYS)
 export class KeysManagementController {
   constructor(
-    private readonly keyService: KeyService,
+    private readonly keyService: KeysService,
   ) {}
 
   @Get()

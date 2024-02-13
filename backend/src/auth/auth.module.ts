@@ -13,6 +13,7 @@ import { RolesGuard } from './roles.guard.js';
 import { AccessTokenStrategy } from './accessToken.strategy.js';
 import { RefreshTokenStrategy } from './refreshToken.strategy.js';
 import { MailService } from './mail.service.js';
+import { ClientsController } from './clients.management.controller.js';
 
 export const jwtSecrets = {
   access: crypto.randomBytes(48).toString('hex'),
@@ -28,7 +29,8 @@ export const jwtSecrets = {
     JwtModule.register({}),
   ],
   controllers: [
-    AuthController
+    AuthController,
+    ClientsController
   ],
   providers: [
     ClientsService,

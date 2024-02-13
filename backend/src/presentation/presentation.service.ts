@@ -3,11 +3,11 @@ import { SignJWT, importJWK, decodeJwt, jwtVerify, compactVerify } from "jose";
 import { VerifiablePresentationJsonLd, VerifiablePresentation, VerifiableCredential, CredentialSubject, VerifiablePresentationJwt, PresentationValidation } from "@tsg-dsp/common";
 import jsonld from "jsonld";
 import crypto from "crypto";
-import { CredentialsService, signingAlgorithm } from "./credentials.service.js";
-import { KeyService } from "./keys.service.js";
-import { DIDResolver } from "./didResolver.service.js";
+import { CredentialsService, signingAlgorithm } from "../credentials/credentials.service.js";
+import { KeysService } from "../keys/keys.service.js";
+import { DIDResolver } from "../did/didResolver.service.js";
 import { RootConfig } from "../config.js";
-import { DidService } from "./did.service.js";
+import { DidService } from "../did/did.service.js";
 import { Injectable, Logger } from "@nestjs/common";
 import { toArray } from "../utils/unions.js";
 
@@ -16,7 +16,7 @@ export class PresentationService {
   constructor(
     private readonly config: RootConfig,
     private readonly credentialsService: CredentialsService,
-    private readonly keyService: KeyService,
+    private readonly keyService: KeysService,
     private readonly didResolver: DIDResolver,
     private readonly didService: DidService
   ) {}

@@ -4,9 +4,13 @@ import { RequestContextMiddleware, LoggerMiddleware } from "./utils/logging.js";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { ConfigModule, config } from "./config.module.js";
 import { AuthModule } from "./auth/auth.module.js";
-import { WalletModule } from "./wallet/wallet.module.js";
-import { ManagementModule } from "./management/management.module.js";
 import { ServeStaticModule } from "@nestjs/serve-static";
+import { HealthController } from "./health.controller.js";
+import { CredentialsModule } from "./credentials/credentials.module.js";
+import { DidModule } from "./did/did.module.js";
+import { IssuanceModule } from "./issuance/issuance.module.js";
+import { KeysModule } from "./keys/keys.module.js";
+import { PresentationModule } from "./presentation/presentation.module.js";
 
 
 const embeddedFrontend = (process.env['EMBEDDED_FRONTEND']) ? [
@@ -25,15 +29,24 @@ const embeddedFrontend = (process.env['EMBEDDED_FRONTEND']) ? [
       entities: ["**/*.dao{.js,.ts}"],
       synchronize: true
     }),
-    WalletModule,
-    ManagementModule,
     AuthModule,
+    CredentialsModule,
+    DidModule,
+    IssuanceModule,
+    KeysModule,
+    PresentationModule,
     ...embeddedFrontend
   ],
+  controllers: [
+    HealthController
+  ],
   exports: [
-    WalletModule,
-    ManagementModule,
-    AuthModule
+    AuthModule,
+    CredentialsModule,
+    DidModule,
+    IssuanceModule,
+    KeysModule,
+    PresentationModule,
   ]
 })
 export class AppModule implements NestModule {

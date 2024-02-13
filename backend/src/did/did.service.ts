@@ -4,7 +4,7 @@ import { DIDDocuments, KeyMaterials } from "../model/credentials.dao.js";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { RootConfig } from "../config.js";
-import { signingAlgorithm } from "./credentials.service.js";
+import { signingAlgorithm } from "../credentials/credentials.service.js";
 
 @Injectable()
 export class DidService {

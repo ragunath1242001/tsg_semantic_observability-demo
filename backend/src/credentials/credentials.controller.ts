@@ -3,7 +3,7 @@ import { CredentialsService } from "./credentials.service.js";
 import { DIDDocument } from "did-resolver";
 import { VerifiableCredential, CredentialSubject } from "@tsg-dsp/common";
 import { AppError } from "../utils/error.js";
-import { DidService } from "./did.service.js";
+import { DidService } from "../did/did.service.js";
 import { DisableJwtGuard } from "../auth/jwt.guard.js";
 import { RootConfig } from "../config.js";
 

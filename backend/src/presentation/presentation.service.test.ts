@@ -1,15 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { CredentialsService } from "./credentials.service.js";
+import { CredentialsService } from "../credentials/credentials.service.js";
 import { plainToInstance } from 'class-transformer';
 import { RootConfig } from '../config.js';
 import { TypeOrmTestHelper } from '../utils/testhelper.js';
 import { Credentials, DIDDocuments, KeyMaterials } from '../model/credentials.dao.js';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { DidService } from './did.service.js';
-import { KeyService } from './keys.service.js';
+import { DidService } from '../did/did.service.js';
+import { KeysService } from '../keys/keys.service.js';
 import { PresentationService } from './presentation.service.js';
 import { describe, expect, beforeAll, afterAll, it, jest } from '@jest/globals';
-import { DIDResolver } from './didResolver.service.js';
+import { DIDResolver } from '../did/didResolver.service.js';
 import { VerifiablePresentationJwt } from "@tsg-dsp/common";
 import { SetupServer, setupServer } from 'msw/node';
 import { HttpResponse, http } from 'msw';
@@ -50,7 +50,7 @@ describe("Presentation Service", () => {
         CredentialsService,
         DidService,
         DIDResolver,
-        KeyService,
+        KeysService,
         PresentationService,
         {
           provide: RootConfig,
@@ -60,7 +60,7 @@ describe("Presentation Service", () => {
     }).compile();
     presentationService = await moduleRef.get(PresentationService);
     const didService = await moduleRef.get(DidService);
-    await moduleRef.get(KeyService).initialized;
+    await moduleRef.get(KeysService).initialized;
     await moduleRef.get(CredentialsService).initialized;
     server = setupServer(
       http.get('http://localhost/.well-known/did.json', async () => {

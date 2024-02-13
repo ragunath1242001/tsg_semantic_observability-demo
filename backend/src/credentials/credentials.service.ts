@@ -8,8 +8,8 @@ import { AppError, parseNetworkError } from "../utils/error.js";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Credentials, KeyMaterials } from "../model/credentials.dao.js";
 import { Repository } from "typeorm";
-import { DidService } from "./did.service.js";
-import { KeyService } from "./keys.service.js";
+import { DidService } from "../did/did.service.js";
+import { KeysService } from "../keys/keys.service.js";
 import { ComplianceRequest, LegalRegistrationNumberRequest } from "../model/gaiax.dto.js";
 import axios from "axios";
 import { toArray } from "../utils/unions.js";
@@ -28,7 +28,7 @@ export class CredentialsService {
     private readonly config: RootConfig,
     @InjectRepository(Credentials) private readonly credentialRepository: Repository<Credentials>,
     private readonly didService: DidService,
-    private readonly keyService: KeyService,
+    private readonly keyService: KeysService,
   ) {
     this.initialized = this.init();
   }

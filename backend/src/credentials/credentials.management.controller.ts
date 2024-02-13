@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put, ValidationPipe } from "@nestjs/common";
-import { CredentialsService } from "../wallet/credentials.service.js";
+import { CredentialsService } from "./credentials.service.js";
 import { InitCredentialConfig, JsonLdContextConfig, RootConfig, TrustAnchorConfig } from "../config.js";
 import { Credentials } from "../model/credentials.dao.js";
 import { CredentialSubject, VerifiableCredential } from "@tsg-dsp/common";

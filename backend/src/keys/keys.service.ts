@@ -5,11 +5,11 @@ import { InitKeyConfig, RootConfig } from "../config.js";
 import { KeyMaterials } from "../model/credentials.dao.js";
 import { AppError } from "../utils/error.js";
 import { InjectRepository } from "@nestjs/typeorm";
-import { DidService } from "./did.service.js";
+import { DidService } from "../did/did.service.js";
 import { JsonWebKey } from "crypto";
 
 @Injectable()
-export class KeyService {
+export class KeysService {
   constructor(
     private readonly config: RootConfig,
     @InjectRepository(KeyMaterials) private readonly keyRepository: Repository<KeyMaterials>,
