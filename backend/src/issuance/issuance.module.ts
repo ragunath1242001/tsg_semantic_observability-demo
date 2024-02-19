@@ -7,6 +7,9 @@ import { PresentationModule } from "../presentation/presentation.module.js";
 import { IssuerService } from "./issuer.service.js";
 import { DidModule } from "../did/did.module.js";
 import { HolderService } from "./holder.service.js";
+import { KeysModule } from "../keys/keys.module.js";
+import { HolderController } from "./holder.controller.js";
+import { IssuerController } from "./issuer.controller.js";
 
 @Module({
   imports: [
@@ -14,7 +17,12 @@ import { HolderService } from "./holder.service.js";
     TypeOrmModule.forFeature([CredentialIssuance, CIAccessToken]),
     CredentialsModule,
     PresentationModule,
-    DidModule
+    DidModule,
+    KeysModule
+  ],
+  controllers: [
+    HolderController,
+    IssuerController
   ],
   providers: [
     IssuerService,

@@ -41,7 +41,7 @@ export class HolderService {
   async init() {
     this.logger.log('Initializing HolderService');
     const existingCredentials = await this.credentialsService.getCredentials();
-    await Promise.all(this.config.oid4ci.holder.map(async holderConfig => {
+    await Promise.all(this.config.oid4vci.holder.map(async holderConfig => {
       if (existingCredentials.find(c => c.credential.type.includes(holderConfig.credentialType))) {
         this.logger.log(`Already holding ${holderConfig.credentialType} credential, skipping request`);
       } else {
@@ -59,7 +59,7 @@ export class HolderService {
       if (retry < 5) {
         this.logger.warn(`Could not request credential with code ${preAuthorizedCode} at ${issuerUrl}, retrying in 10 seconds`);
         await new Promise(f => setTimeout(f, 10000));
-        await this.requestCredentialWithRetry(preAuthorizedCode, issuerUrl, retry++);
+        await this.requestCredentialWithRetry(preAuthorizedCode, issuerUrl, ++retry);
       } else {
         this.logger.error(`Could not request credential with code ${preAuthorizedCode} at ${issuerUrl}: ${err}`);
         throw err;
@@ -79,7 +79,7 @@ export class HolderService {
       throw new AppError(
         "Access token does not contain authorization details or credential identifier",
         HttpStatus.BAD_REQUEST
-      );
+      ).andLog(this.logger);
     }
 
     const credentialConfig =
@@ -88,7 +88,7 @@ export class HolderService {
       throw new AppError(
         `Credential configuration for ${accessToken.authorization_details?.[0]?.credential_identifiers?.[0]} not found`,
         HttpStatus.BAD_REQUEST
-      );
+      ).andLog(this.logger);
     }
 
     const credentialRequest = await this.generateCredentialRequest(
@@ -109,16 +109,13 @@ export class HolderService {
           vp: credentialResponse.credential,
         });
       if (!presentationCheck.valid) {
-        throw new AppError(
-          `Verifiable presentation token is not valid: ${JSON.stringify(
-            presentationCheck
-          )}`,
-          HttpStatus.BAD_REQUEST
-        );
+        this.logger.warn(`Verifiable presentation token from issuer ${issuerUrl} not valid, credential will be added but might not be valid:\n${JSON.stringify(
+          presentationCheck, null, 2
+        )}`);
       }
       const jwtPayload = decodeJwt(credentialResponse.credential);
       const vp = plainToInstance(VerifiablePresentation, jwtPayload.vp);
-
+      this.logger.log(`Importing credential ${toArray(vp.verifiableCredential)[0].id}`)
       return this.credentialsService.importCredential(
         toArray(vp.verifiableCredential)[0]
       );
@@ -126,7 +123,7 @@ export class HolderService {
       throw new AppError(
         "Deferred credential handling not yet supported",
         HttpStatus.NOT_IMPLEMENTED
-      );
+      ).andLog(this.logger);
     }
   }
 
@@ -164,7 +161,7 @@ export class HolderService {
           throw new AppError(
             `Could not find token endpoint for ${issuerUrl}`,
             HttpStatus.BAD_REQUEST
-          );
+          ).andLog(this.logger);
         }
       }
 
@@ -173,7 +170,7 @@ export class HolderService {
       throw new AppError(
         `Could not load OpenID Credential issuer metadata from ${credentialIssuerMetadataEndpoint}`,
         HttpStatus.BAD_REQUEST
-      );
+      ).andLog(this.logger);
     }
   }
 
@@ -216,7 +213,7 @@ export class HolderService {
       throw new AppError(
         `Could not retrieve access token for pre authorization code ${preAuthorizedCode} at ${tokenEndpoint}`,
         HttpStatus.BAD_REQUEST
-      );
+      ).andLog(this.logger);
     }
   }
 
@@ -268,7 +265,7 @@ export class HolderService {
       throw new AppError(
         `Error in requesting credential at ${credentialEndpoint}`,
         HttpStatus.BAD_REQUEST
-      );
+      ).andLog(this.logger);
     }
   }
 

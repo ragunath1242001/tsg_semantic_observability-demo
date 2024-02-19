@@ -60,8 +60,9 @@ export class CredentialsService {
     } catch (err) {
       if (retry < 5) {
         this.logger.warn(`Retrying creating credential ${initCredentialConfig.id}`);
+        this.logger.log(`Error: ${err}`);
         await new Promise(f => setTimeout(f, 10000));
-        await this.insertIfNotExists(initCredentialConfig, retry++);
+        await this.insertIfNotExists(initCredentialConfig, ++retry);
       } else {
         this.logger.error(`Could not create credential ${initCredentialConfig.id}: ${err}`);
         throw err
@@ -80,7 +81,7 @@ export class CredentialsService {
   async getCredential(credentialId: string, targetDid?: string): Promise<Credentials> {
     const credential = await this.credentialRepository.findOneBy({id: credentialId, targetDid: targetDid});
     if (credential === null) {
-      throw new AppError(`Credential with identifier ${credentialId} can't be found`, HttpStatus.NOT_FOUND)
+      throw new AppError(`Credential with identifier ${credentialId} can't be found`, HttpStatus.NOT_FOUND).andLog(this.logger, 'debug');
     }
     return credential;
   }
@@ -88,7 +89,7 @@ export class CredentialsService {
   async issueCredential(credentialConfig: InitCredentialConfig, targetDid?: string): Promise<Credentials> {
     const existing = await this.credentialRepository.findOneBy({id: credentialConfig.id});
     if (existing) {
-      throw new AppError(`Credential with identifier ${credentialConfig.id} already exists`, HttpStatus.CONFLICT);
+      throw new AppError(`Credential with identifier ${credentialConfig.id} already exists`, HttpStatus.CONFLICT).andLog(this.logger, 'debug');
     }
     return await this.selfIssueCredential(credentialConfig, targetDid);
   }
@@ -96,7 +97,7 @@ export class CredentialsService {
   async importCredential(credential: VerifiableCredential<CredentialSubject>, targetDid?: string): Promise<Credentials> {
     const didId = targetDid || await this.didService.getDidId();
     if (!credential.id?.startsWith(`${didId}#`)) {
-      throw new AppError('Imported credentials must be have an ID that starts with a DID appended with # and a credential ID', HttpStatus.BAD_REQUEST);
+      throw new AppError('Imported credentials must be have an ID that starts with a DID appended with # and a credential ID', HttpStatus.BAD_REQUEST).andLog(this.logger, 'warn');
     }
     return await this.credentialRepository.save({
       id: credential.id,
@@ -123,7 +124,7 @@ export class CredentialsService {
   async deleteCredential(credentialId: string, targetDid?: string) {
     const credential = await this.credentialRepository.findOneBy({id: credentialId, targetDid: targetDid});
     if (credential === null) {
-      throw new AppError(`Credential with identifier ${credentialId} can't be found`, HttpStatus.NOT_FOUND)
+      throw new AppError(`Credential with identifier ${credentialId} can't be found`, HttpStatus.NOT_FOUND).andLog(this.logger, 'debug')
     }
     await this.credentialRepository.softRemove(credential);
   }
@@ -184,7 +185,7 @@ export class CredentialsService {
 
   async requestLegalRegistrationNumberCredential(credentialConfig: LegalRegistrationNumberRequest, targetDid: string | undefined) {
     if (targetDid && (!credentialConfig.vcId.startsWith(targetDid) || credentialConfig.credentialSubject.id !== targetDid)) {
-      throw new AppError(`Can't request credential with these identifiers`, HttpStatus.FORBIDDEN)
+      throw new AppError(`Can't request credential with these identifiers`, HttpStatus.FORBIDDEN).andLog(this.logger, 'warn')
     }
     try {
       const response = await axios.post<VerifiableCredential<CredentialSubject>>(`https://${credentialConfig.clearingHouse}/registrationNumberVC`, credentialConfig.credentialSubject, {
@@ -205,7 +206,7 @@ export class CredentialsService {
 
   async requestComplianceCredential(complianceRequest: ComplianceRequest, targetDid: string | undefined) {
     if (targetDid && !complianceRequest.vcId.startsWith(targetDid)) {
-      throw new AppError(`Can't request credential with these identifiers`, HttpStatus.FORBIDDEN)
+      throw new AppError(`Can't request credential with these identifiers`, HttpStatus.FORBIDDEN).andLog(this.logger, 'warn')
     }
     try {
       const presentation: VerifiablePresentation<VerifiableCredential<CredentialSubject>> = {

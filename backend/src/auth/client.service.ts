@@ -75,11 +75,11 @@ export class ClientsService {
 
   async signup(clientSignup: ClientSignup, active: boolean = false): Promise<Clients> {
     if (!clientSignup.email || !clientSignup.didId || !clientSignup.secret) {
-      throw new AppError(`Missing information for signup`, HttpStatus.BAD_REQUEST);
+      throw new AppError(`Missing information for signup`, HttpStatus.BAD_REQUEST).andLog(this.logger, 'debug');
     }
     const client = await this.clientsRepository.findOneBy({clientId: clientSignup.email});
     if (client) {
-      throw new AppError(`Client with email address ${clientSignup.email} already exists`, HttpStatus.CONFLICT);
+      throw new AppError(`Client with email address ${clientSignup.email} already exists`, HttpStatus.CONFLICT).andLog(this.logger, 'debug');
     }
     const newClient: DeepPartial<Clients> = {
       clientId: clientSignup.email,
@@ -124,7 +124,7 @@ export class ClientsService {
 
   async forgotPassword(clientId: string): Promise<void> {
     if (!this.config.mail) {
-      throw new AppError(`This server does not support resetting of passwords`, HttpStatus.NOT_IMPLEMENTED);
+      throw new AppError(`This server does not support resetting of passwords`, HttpStatus.NOT_IMPLEMENTED).andLog(this.logger, 'debug');
     }
     const client = await this.getClient(clientId);
     client.verificationCode = crypto.randomBytes(32).toString('hex');
@@ -167,7 +167,7 @@ export class ClientsService {
       client = await this.clientsRepository.findOneBy({clientId: clientId});
     }
     if (!client) {
-      throw new AppError(`Client with id ${clientId} not found`, HttpStatus.NOT_FOUND);
+      throw new AppError(`Client with id ${clientId} not found`, HttpStatus.NOT_FOUND).andLog(this.logger, 'debug');
     }
     return client;
   }
@@ -218,13 +218,13 @@ export class ClientsService {
 
   async verify(code: string, clientId: string) {
     if (!clientId || clientId.trim().length === 0) {
-      throw new AppError(`Incorrect data`, HttpStatus.BAD_REQUEST)
+      throw new AppError(`Incorrect data`, HttpStatus.BAD_REQUEST).andLog(this.logger, 'debug')
     }
     let client: Clients;
     try {
       client = await this.getClient(clientId);
     } catch (e) {
-      throw new AppError('Incorrect data', HttpStatus.BAD_REQUEST)
+      throw new AppError('Incorrect data', HttpStatus.BAD_REQUEST).andLog(this.logger, 'debug')
     }
     if (client.verificationCode === code && client.verificationExpiration && client.verificationExpiration > new Date()) {
       client.verified = true;
@@ -232,19 +232,19 @@ export class ClientsService {
       client.verificationExpiration = undefined;
       await this.clientsRepository.save(client);
     } else {
-      throw new AppError(`Expired or incorrect code`, HttpStatus.BAD_REQUEST)
+      throw new AppError(`Expired or incorrect code`, HttpStatus.BAD_REQUEST).andLog(this.logger, 'debug')
     }
   }
 
   async resetPassword(reset: ResetPassword) {
     if (!reset.clientId || reset.clientId.trim().length === 0) {
-      throw new AppError(`Incorrect data`, HttpStatus.BAD_REQUEST)
+      throw new AppError(`Incorrect data`, HttpStatus.BAD_REQUEST).andLog(this.logger, 'debug')
     }
     let client: Clients;
     try {
       client = await this.getClient(reset.clientId);
     } catch (e) {
-      throw new AppError('Incorrect data', HttpStatus.BAD_REQUEST)
+      throw new AppError('Incorrect data', HttpStatus.BAD_REQUEST).andLog(this.logger, 'debug')
     }
     if ((client.verificationCode === reset.old && client.verificationExpiration && client.verificationExpiration > new Date()) || await bcrypt.compare(reset.old, client.clientSecret)){
       client.clientSecret = await bcrypt.hash(reset.new, 10);
@@ -252,7 +252,7 @@ export class ClientsService {
       client.verificationExpiration = undefined;
       this.clientsRepository.save(client);
     } else {
-      throw new AppError(`Incorrect data`, HttpStatus.BAD_REQUEST)
+      throw new AppError(`Incorrect data`, HttpStatus.BAD_REQUEST).andLog(this.logger, 'debug')
     }
   }
 

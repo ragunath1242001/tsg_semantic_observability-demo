@@ -280,5 +280,5 @@ export class RootConfig {
 
   @ValidateNested()
   @Type(() => OID4VCIConfig)
-  public readonly oid4ci!: OID4VCIConfig;
+  public readonly oid4vci!: OID4VCIConfig;
 }

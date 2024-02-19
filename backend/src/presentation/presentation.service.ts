@@ -40,19 +40,19 @@ export class PresentationService {
     const credential = await this.credentialsService.getCredential(credentialId);
     const keyId = credential.credential.proof.verificationMethod.split('#').slice(-1)[0];
     const key = await this.keyService.getKey(keyId);
+    const didId = await this.didService.getDidId();
     const verifiablePresentation: VerifiablePresentation<VerifiableCredential<CredentialSubject>> = {
       '@context': ['https://www.w3.org/2018/credentials/v1', "https://w3c.github.io/vc-jws-2020/contexts/v1/"],
       type: ['VerifiablePresentation'],
-      id: `${this.didService.getDidId()}#${crypto.randomUUID()}`,
+      id: `${didId}#${crypto.randomUUID()}`,
       verifiableCredential: (unwrap) ? credential.credential : [
         credential.credential
       ],
     }
-    const issuer = toArray(credential.credential.credentialSubject)[0].id;
     const jwt = await new SignJWT({vp: verifiablePresentation})
       .setProtectedHeader({alg: signingAlgorithm(key.type)})
       .setIssuedAt()
-      .setIssuer(issuer)
+      .setIssuer(didId)
       .setSubject(credential.credential.issuer)
       .setAudience(audience)
       .setExpirationTime('24h')

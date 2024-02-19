@@ -29,7 +29,7 @@ export class IssuerService {
   async init() {
     this.logger.log('Initializing IssuanceService');
     const existingOffers = await this.issuanceRepository.find({});
-    await Promise.all(this.config.oid4ci.issuer.map(async issuerConfig => {
+    await Promise.all(this.config.oid4vci.issuer.map(async issuerConfig => {
       if (existingOffers.find(o => 
           o.holderId === issuerConfig.holderId && 
           o.credentialType === issuerConfig.credentialType && 
@@ -56,8 +56,9 @@ export class IssuerService {
     } catch(err) {
       if (retry < 5) {
         this.logger.warn(`Could not create credential offer for ${offerRequest.holderId} for ${offerRequest.credentialType} credential`);
+        this.logger.log(`Error: ${err}`);
         await new Promise(f => setTimeout(f, 10000));
-        await this.createCredentialOfferWithRetry(offerRequest, retry++);
+        await this.createCredentialOfferWithRetry(offerRequest, ++retry);
       } else {
         this.logger.error(`Could not create credential offer for ${offerRequest.holderId} for ${offerRequest.credentialType} credential: ${err}`);
         throw err;
@@ -123,7 +124,7 @@ export class IssuerService {
   async createAccessToken(preAuthorizedCode: string): Promise<AccessToken> {
     const issuance = await this.issuanceRepository.findOneBy({preAuthorizedCode: preAuthorizedCode});
     if (!issuance) {
-      throw new AppError('No credential issuance flow found', HttpStatus.NOT_FOUND);
+      throw new AppError('No credential issuance flow found', HttpStatus.NOT_FOUND).andLog(this.logger);
     }
     const expirationDate = new Date();
     expirationDate.setSeconds(expirationDate.getSeconds()+86400);
@@ -201,9 +202,9 @@ export class IssuerService {
       }
     } catch (error) {
       if (error instanceof AppError) {
-        throw error
+        throw error.andLog(this.logger);
       } else {
-        throw new AppError(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR)
+        throw new AppError(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR).andLog(this.logger);
       }
     }
   }

@@ -44,7 +44,7 @@ export class KeysService {
   async getKey(keyId: string): Promise<KeyMaterials> {
     const key = await this.keyRepository.findOneBy({id: keyId});
     if (key === null) {
-      throw new AppError(`Key with identifier ${keyId} can't be found`, HttpStatus.NOT_FOUND)
+      throw new AppError(`Key with identifier ${keyId} can't be found`, HttpStatus.NOT_FOUND).andLog(this.logger, 'debug');
     }
     return key;
   }
@@ -52,7 +52,7 @@ export class KeysService {
   async getDefaultKey(): Promise<KeyMaterials> {
     const key = await this.keyRepository.findOneBy({default: true});
     if (key === null) {
-      throw new AppError(`No default key present`, HttpStatus.NOT_FOUND)
+      throw new AppError(`No default key present`, HttpStatus.NOT_FOUND).andLog(this.logger);
     }
     return key;
   }
@@ -60,7 +60,7 @@ export class KeysService {
   async addKey(keyConfig: InitKeyConfig): Promise<KeyMaterials> {
     const existing = await this.keyRepository.findOneBy({id: keyConfig.id});
     if (existing) {
-      throw new AppError(`Key with identifier ${keyConfig.id} already exists`, HttpStatus.CONFLICT);
+      throw new AppError(`Key with identifier ${keyConfig.id} already exists`, HttpStatus.CONFLICT).andLog(this.logger);
     }
     const key = await this.createKeyMaterial(keyConfig);
     if (keyConfig.default) {
@@ -78,7 +78,7 @@ export class KeysService {
   async deleteKey(keyId: string) {
     const key = await this.keyRepository.findOneBy({id: keyId});
     if (key === null) {
-      throw new AppError(`Key with identifier ${keyId} can't be found`, HttpStatus.NOT_FOUND)
+      throw new AppError(`Key with identifier ${keyId} can't be found`, HttpStatus.NOT_FOUND).andLog(this.logger, 'debug');
     }
 
     await this.keyRepository.softRemove(key)
