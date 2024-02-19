@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, Query } from "@nestjs/common";
-import { Roles } from "../auth/roles.guard.js";
+import { Roles } from "./roles.guard.js";
 import { AppRole, ClientSignup } from "../model/clients.dto.js";
-import { ClientsService } from "../auth/client.service.js";
+import { ClientsService } from "./client.service.js";
 import { Clients } from "../model/clients.dao.js";
 
 

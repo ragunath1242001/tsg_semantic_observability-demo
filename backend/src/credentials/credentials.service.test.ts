@@ -5,8 +5,8 @@ import { InitCredentialConfig, RootConfig } from '../config.js';
 import { TypeOrmTestHelper } from '../utils/testhelper.js';
 import { Credentials, DIDDocuments, KeyMaterials } from '../model/credentials.dao.js';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { DidService } from './did.service.js';
-import { KeyService } from './keys.service.js';
+import { DidService } from '../did/did.service.js';
+import { KeysService } from '../keys/keys.service.js';
 import { describe, expect, beforeAll, afterAll, it, jest } from '@jest/globals';
 import { SetupServer, setupServer } from "msw/node";
 import { HttpResponse, PathParams, http } from "msw";
@@ -114,7 +114,7 @@ describe("Credentials Service", () => {
       providers: [
         CredentialsService,
         DidService,
-        KeyService,
+        KeysService,
         {
           provide: RootConfig,
           useValue: config

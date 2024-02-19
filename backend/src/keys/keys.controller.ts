@@ -1,13 +1,13 @@
 import { Controller, Get, Header, HttpStatus, Param } from "@nestjs/common";
 import { DisableJwtGuard } from "../auth/jwt.guard.js";
-import { KeyService } from "./keys.service.js";
+import { KeysService } from "./keys.service.js";
 import { AppError } from "../utils/error.js";
 
 @Controller()
 @DisableJwtGuard(true)
 export class KeysController {
   constructor(
-    private readonly keyService: KeyService,
+    private readonly keyService: KeysService,
   ) {}
 
   @Get('keys/:id')

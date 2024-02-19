@@ -1,16 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { CredentialsService } from "./credentials.service.js";
+import { CredentialsService } from "../credentials/credentials.service.js";
 import { plainToInstance } from 'class-transformer';
 import { RootConfig } from '../config.js';
 import { TypeOrmTestHelper } from '../utils/testhelper.js';
 import { Credentials, DIDDocuments, KeyMaterials } from '../model/credentials.dao.js';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { DidService } from './did.service.js';
-import { KeyService } from './keys.service.js';
+import { DidService } from '../did/did.service.js';
+import { KeysService } from './keys.service.js';
 import { describe, expect, beforeAll, afterAll, it, jest } from '@jest/globals';
 
 describe("Key Service", () => {
-  let keyService: KeyService
+  let keyService: KeysService
   beforeAll(async () => {
     await TypeOrmTestHelper.instance.setupTestDB();
     const config = plainToInstance(RootConfig, {
@@ -28,14 +28,14 @@ describe("Key Service", () => {
       providers: [
         CredentialsService,
         DidService,
-        KeyService,
+        KeysService,
         {
           provide: RootConfig,
           useValue: config
         }
       ]
     }).compile();
-    keyService = await moduleRef.get(KeyService);
+    keyService = await moduleRef.get(KeysService);
     await keyService.initialized;
     await keyService.init();
   });

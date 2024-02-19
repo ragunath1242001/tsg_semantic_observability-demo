@@ -3,11 +3,11 @@ import { SignJWT, importJWK, decodeJwt, jwtVerify, compactVerify } from "jose";
 import { VerifiablePresentationJsonLd, VerifiablePresentation, VerifiableCredential, CredentialSubject, VerifiablePresentationJwt, PresentationValidation } from "@tsg-dsp/common";
 import jsonld from "jsonld";
 import crypto from "crypto";
-import { CredentialsService, signingAlgorithm } from "./credentials.service.js";
-import { KeyService } from "./keys.service.js";
-import { DIDResolver } from "./didResolver.service.js";
+import { CredentialsService, signingAlgorithm } from "../credentials/credentials.service.js";
+import { KeysService } from "../keys/keys.service.js";
+import { DidResolverService } from "../did/did.resolver.service.js";
 import { RootConfig } from "../config.js";
-import { DidService } from "./did.service.js";
+import { DidService } from "../did/did.service.js";
 import { Injectable, Logger } from "@nestjs/common";
 import { toArray } from "../utils/unions.js";
 
@@ -16,8 +16,8 @@ export class PresentationService {
   constructor(
     private readonly config: RootConfig,
     private readonly credentialsService: CredentialsService,
-    private readonly keyService: KeyService,
-    private readonly didResolver: DIDResolver,
+    private readonly keyService: KeysService,
+    private readonly didResolver: DidResolverService,
     private readonly didService: DidService
   ) {}
   private readonly logger = new Logger(this.constructor.name);
@@ -40,19 +40,19 @@ export class PresentationService {
     const credential = await this.credentialsService.getCredential(credentialId);
     const keyId = credential.credential.proof.verificationMethod.split('#').slice(-1)[0];
     const key = await this.keyService.getKey(keyId);
+    const didId = await this.didService.getDidId();
     const verifiablePresentation: VerifiablePresentation<VerifiableCredential<CredentialSubject>> = {
       '@context': ['https://www.w3.org/2018/credentials/v1', "https://w3c.github.io/vc-jws-2020/contexts/v1/"],
       type: ['VerifiablePresentation'],
-      id: `${this.didService.getDidId()}#${crypto.randomUUID()}`,
+      id: `${didId}#${crypto.randomUUID()}`,
       verifiableCredential: (unwrap) ? credential.credential : [
         credential.credential
       ],
     }
-    const issuer = toArray(credential.credential.credentialSubject)[0].id;
     const jwt = await new SignJWT({vp: verifiablePresentation})
       .setProtectedHeader({alg: signingAlgorithm(key.type)})
       .setIssuedAt()
-      .setIssuer(issuer)
+      .setIssuer(didId)
       .setSubject(credential.credential.issuer)
       .setAudience(audience)
       .setExpirationTime('24h')
@@ -63,7 +63,7 @@ export class PresentationService {
 
   async validatePresentation(vpJwt: VerifiablePresentationJwt, audience?: string): Promise<PresentationValidation> {
     const jwtPayload = decodeJwt(vpJwt.vp);
-    const vp = plainToInstance(VerifiablePresentation, jwtPayload.vp)
+    const vp = plainToInstance(VerifiablePresentation, jwtPayload.vp);
     const resolvedDid = await this.didResolver.resolve(jwtPayload.iss!)
 
     let validateJWTSignature = false;
