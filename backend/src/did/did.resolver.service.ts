@@ -25,7 +25,7 @@ export class DidResolverService {
       const response = await axios.get<DIDDocument>(url);
       return response.data;
     } catch (err) {
-      throw new AppError(`Could not load DID document for ${didId}`, HttpStatus.BAD_REQUEST).andLog(this.logger, 'debug');
+      throw new AppError(`Could not load DID document for ${didId}`, HttpStatus.BAD_REQUEST).andLog(this.logger);
     }
   }
 }
