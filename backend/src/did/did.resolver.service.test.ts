@@ -1,4 +1,4 @@
-import { DIDResolver } from "./didResolver.service.js";
+import { DidResolverService } from "./did.resolver.service.js";
 import { describe, expect, beforeAll, afterAll, it, jest } from "@jest/globals";
 import { TestingModule, Test } from "@nestjs/testing";
 import { SetupServer, setupServer } from "msw/node";
@@ -6,7 +6,7 @@ import { HttpResponse, http } from "msw";
 import { DIDDocument } from "did-resolver";
 
 describe("DID Service", () => {
-  let didResolver: DIDResolver;
+  let didResolver: DidResolverService;
   let server: SetupServer;
   const didGenerator: (didId: string) => DIDDocument = (didId: string) => {
     return {
@@ -55,9 +55,9 @@ describe("DID Service", () => {
 
   beforeAll(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
-      providers: [DIDResolver],
+      providers: [DidResolverService],
     }).compile();
-    didResolver = await moduleRef.get(DIDResolver);
+    didResolver = await moduleRef.get(DidResolverService);
 
     server = setupServer(
       http.get("http://localhost/.well-known/did.json", () => {

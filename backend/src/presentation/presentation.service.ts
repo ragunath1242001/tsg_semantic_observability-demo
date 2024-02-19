@@ -5,7 +5,7 @@ import jsonld from "jsonld";
 import crypto from "crypto";
 import { CredentialsService, signingAlgorithm } from "../credentials/credentials.service.js";
 import { KeysService } from "../keys/keys.service.js";
-import { DIDResolver } from "../did/didResolver.service.js";
+import { DidResolverService } from "../did/did.resolver.service.js";
 import { RootConfig } from "../config.js";
 import { DidService } from "../did/did.service.js";
 import { Injectable, Logger } from "@nestjs/common";
@@ -17,7 +17,7 @@ export class PresentationService {
     private readonly config: RootConfig,
     private readonly credentialsService: CredentialsService,
     private readonly keyService: KeysService,
-    private readonly didResolver: DIDResolver,
+    private readonly didResolver: DidResolverService,
     private readonly didService: DidService
   ) {}
   private readonly logger = new Logger(this.constructor.name);
@@ -63,7 +63,7 @@ export class PresentationService {
 
   async validatePresentation(vpJwt: VerifiablePresentationJwt, audience?: string): Promise<PresentationValidation> {
     const jwtPayload = decodeJwt(vpJwt.vp);
-    const vp = plainToInstance(VerifiablePresentation, jwtPayload.vp)
+    const vp = plainToInstance(VerifiablePresentation, jwtPayload.vp);
     const resolvedDid = await this.didResolver.resolve(jwtPayload.iss!)
 
     let validateJWTSignature = false;

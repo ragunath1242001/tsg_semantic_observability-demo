@@ -1,4 +1,4 @@
-import { Allow, IsBoolean, IsDefined, IsEmail, IsIn, IsNumber, IsObject, IsOptional, IsString, ValidateNested } from "class-validator";
+import { Allow, IsBoolean, IsDefined, IsEmail, IsIn, IsNumber, IsObject, IsOptional, IsString, IsUrl, ValidateNested } from "class-validator";
 import { Transform, TransformFnParams, Type } from "class-transformer";
 import fs from "fs";
 import { Logger } from "@nestjs/common";
@@ -194,6 +194,42 @@ export class JsonLdContextConfig {
   public readonly schema?: Record<string, any>
 }
 
+export class OID4VCIConfig {
+  @ValidateNested({each: true})
+  @Type(() => IssuerConfig)
+  public readonly issuer: IssuerConfig[] = []
+
+  @ValidateNested({each: true})
+  @Type(() => HolderConfig)
+  public readonly holder: HolderConfig[] = []
+}
+
+export class IssuerConfig {
+  @IsString()
+  public readonly holderId!: string;
+
+  @IsString()
+  public readonly credentialType!: string;
+
+  @Allow()
+  public readonly credentialSubject!: CredentialSubject;
+
+  @IsString()
+  @IsOptional()
+  public readonly preAuthorizationCode?: string;
+}
+
+export class HolderConfig {
+  @IsString()
+  public readonly preAuthorizationCode!: string;
+
+  @IsUrl({require_tld: false, require_protocol: true, require_host: false})
+  public readonly issuerUrl!: string;
+
+  @IsString()
+  public readonly credentialType!: string;
+}
+
 export class RootConfig {
   @ValidateNested()
   @IsDefined({message: 'Either sqlite or postgres DB config must be provided'})
@@ -242,4 +278,7 @@ export class RootConfig {
   @Type(() => JsonLdContextConfig)
   public readonly contexts: JsonLdContextConfig[] = [];
 
+  @ValidateNested()
+  @Type(() => OID4VCIConfig)
+  public readonly oid4ci!: OID4VCIConfig;
 }

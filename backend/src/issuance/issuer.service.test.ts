@@ -1,5 +1,5 @@
-import { describe, expect, beforeAll, afterAll, it, jest } from '@jest/globals';
-import { IssuanceService } from './issuance.service';
+import { describe, beforeAll, afterAll, it } from '@jest/globals';
+import { IssuerService } from './issuer.service';
 import { TypeOrmTestHelper } from '../utils/testhelper';
 import { plainToInstance } from 'class-transformer';
 import { RootConfig } from '../config';
@@ -8,17 +8,23 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Credentials, DIDDocuments, KeyMaterials } from '../model/credentials.dao';
 import { CredentialsService } from '../credentials/credentials.service';
 import { DidService } from '../did/did.service';
-import { DIDResolver } from '../did/didResolver.service';
+import { DidResolverService } from '../did/did.resolver.service';
 import { KeysService } from '../keys/keys.service';
 import { PresentationService } from '../presentation/presentation.service';
 import { CIAccessToken, CredentialIssuance } from '../model/issuance.dao';
 import { http, HttpResponse } from 'msw';
 import { SetupServer, setupServer } from 'msw/node';
 import { OfferGrants } from '../model/issuance.dto';
+import { GenerateKeyPairResult, KeyLike, SignJWT, exportJWK, generateKeyPair } from 'jose';
+import { DIDDocument } from 'did-resolver';
+import { HolderService } from './holder.service';
 
-describe("Issuance Service", () => {
-  let issuanceService: IssuanceService;
+describe("Issuer service", () => {
+  let issuerService: IssuerService;
+  let holderService: HolderService;
   let server: SetupServer;
+  let moduleRef: TestingModule;
+  let exampleKey: GenerateKeyPairResult<KeyLike>;
 
   beforeAll(async () => {
     await TypeOrmTestHelper.instance.setupTestDB();
@@ -36,7 +42,7 @@ describe("Issuance Service", () => {
       }]
     });
 
-    const moduleRef: TestingModule = await Test.createTestingModule({
+    moduleRef = await Test.createTestingModule({
       imports: [
         TypeOrmTestHelper.instance.module([Credentials, DIDDocuments, KeyMaterials, CredentialIssuance, CIAccessToken]),
         TypeOrmModule.forFeature([Credentials, DIDDocuments, KeyMaterials, CredentialIssuance, CIAccessToken])
@@ -44,23 +50,48 @@ describe("Issuance Service", () => {
       providers: [
         CredentialsService,
         DidService,
-        DIDResolver,
+        DidResolverService,
         KeysService,
         PresentationService,
-        IssuanceService,
+        IssuerService,
+        HolderService,
         {
           provide: RootConfig,
           useValue: config
         }
       ]
     }).compile();
-    issuanceService = await moduleRef.get(IssuanceService);
+    issuerService = await moduleRef.get(IssuerService);
+    holderService = await moduleRef.get(HolderService);
+
     const didService = await moduleRef.get(DidService);
     await moduleRef.get(KeysService).initialized;
     await moduleRef.get(CredentialsService).initialized;
+    exampleKey = await generateKeyPair('EdDSA');
+    const exampleDid: DIDDocument = {
+      '@context': ['https://www.w3.org/ns/did/v1', 'https://w3c-ccg.github.io/lds-jws2020/contexts/v1/'],
+      id: 'did:web:example.com',
+      verificationMethod: [{
+        id: 'did:web:example.com#KEY-0',
+        type: 'JsonWebKey2020',
+        controller: 'did:web:example.com',
+        publicKeyJwk: {
+          kty: 'OKP',
+          alg: 'EdDSA',
+          ...await exportJWK(exampleKey.publicKey),
+        }
+      }],
+      assertionMethod: ['did:web:example.com#KEY-0'],
+    }
+
+
+
     server = setupServer(
       http.get('http://localhost/.well-known/did.json', async () => {
         return HttpResponse.json(await didService.getDid())
+      }),
+      http.get('https://example.com/.well-known/did.json', async () => {
+        return HttpResponse.json(exampleDid)
       }),
       http.get('https://example.com/context.json', () => {
         return HttpResponse.json({
@@ -89,30 +120,41 @@ describe("Issuance Service", () => {
 
   describe("Issuance process", () => {
     it("Create offer", async () => {
-      const offer = await issuanceService.createCredentialOffer("did:web:example.com", "ExampleCredentialType", {id: "did:web:example.com"});
-      const access_token = await issuanceService.createAccessToken(offer.grants?.[OfferGrants.PRE_AUTHORIZATION_CODE]?.['pre-authorization_code'] ?? "");
-      const credential = await issuanceService.handleCredentialRequest(access_token.access_token, {
+      const offer = await issuerService.createCredentialOffer({
+        holderId: "did:web:example.com",
+        credentialType: "ExampleCredentialType",
+        credentialSubject: {id: "did:web:example.com"}
+      });
+      
+      const access_token = await issuerService.createAccessToken(offer.grants?.[OfferGrants.PRE_AUTHORIZATION_CODE]?.['pre-authorization_code'] ?? "");
+      
+      const jwt = await new SignJWT({nonce: access_token.c_nonce})
+        .setProtectedHeader({
+          alg: 'EdDSA',
+          typ: 'openid4vci-proof+jwt',
+          kid: 'did:web:example.com#KEY-0'
+        })
+        .setIssuer('did:web:example.com')
+        .setAudience('http://localhost:3000')
+        .setIssuedAt()
+        .sign(exampleKey.privateKey);
+      
+      const credential = await issuerService.handleCredentialRequest(access_token.access_token, {
         format: "jwt_vc_json-ld",
+        credential_definition: {
+          "@context": [],
+          type: ['VerifiableCredential', 'ExampleCredentialType']
+        },
         proof: {
-          proof_type: "ldp_vp",
-          ldp_vp: {
-            '@context': ['https://www.w3.org/ns/credentials/v2'],
-            type: ['VerifiablePresentation'],
-            holder: 'did:web:example.com',
-            proof: {
-              type: 'DataIntegrityProof',
-              cryptosuite: "eddsa-2022",
-              proofPurpose: 'authentication',
-              verificationMethod: "did:web:example.com#KEY-ID",
-              created: "2023-03-01T14:56:29.280619Z",
-              challenge: "82d4cb36-11f6-4273-b9c6-df1ac0ff17e9",
-              domain: "did:web:audience.company.com",
-              proofValue: "z5hrbHzZiqXHNpLq6i7zePEUcUzEbZKmWfNQzXcUXUrqF7bykQ7ACiWFyZdT2HcptF1zd1t7NhfQSdqrbPEjZceg7"
-            }
-          }
+          proof_type: "jwt",
+          jwt: jwt
         }
       });
       console.log(JSON.stringify(credential))
+    })
+
+    it("Issuer Metadata", async () => {
+      console.log(JSON.stringify(await issuerService.issuerMetadata(), null, 2));
     })
   })
 })

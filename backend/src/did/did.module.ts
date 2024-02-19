@@ -2,7 +2,7 @@ import { Module } from "@nestjs/common";
 import { AuthModule } from "../auth/auth.module.js";
 import { DIDDocuments } from "../model/credentials.dao.js";
 import { DidService } from "./did.service.js";
-import { DIDResolver } from "./didResolver.service.js";
+import { DidResolverService } from "./did.resolver.service.js";
 import { TypeOrmModule } from "@nestjs/typeorm";
 
 @Module({
@@ -12,11 +12,11 @@ import { TypeOrmModule } from "@nestjs/typeorm";
   ],
   providers: [
     DidService,
-    DIDResolver
+    DidResolverService
   ],
   exports: [
     DidService,
-    DIDResolver
+    DidResolverService
   ]
 })
 export class DidModule {}

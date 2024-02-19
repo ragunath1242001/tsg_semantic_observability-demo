@@ -4,7 +4,7 @@ import { AppError } from "../utils/error.js";
 import { HttpStatus, Injectable } from "@nestjs/common";
 
 @Injectable()
-export class DIDResolver {
+export class DidResolverService {
 
   async resolve(didId: string): Promise<DIDDocument> {
     if (!didId.startsWith('did:web:')) {

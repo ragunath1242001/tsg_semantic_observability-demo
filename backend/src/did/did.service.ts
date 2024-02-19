@@ -4,7 +4,7 @@ import { DIDDocuments, KeyMaterials } from "../model/credentials.dao.js";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { RootConfig } from "../config.js";
-import { signingAlgorithm } from "../credentials/credentials.service.js";
+import { keyTypes, signingAlgorithm } from "../credentials/credentials.service.js";
 
 @Injectable()
 export class DidService {
@@ -40,7 +40,7 @@ export class DidService {
           type: 'JsonWebKey2020',
           controller: this.didId,
           publicKeyJwk: {
-            kty: 'OKP',
+            kty: keyTypes(key.type),
             alg: signingAlgorithm(key.type),
             ...key.publicKey,
           }
