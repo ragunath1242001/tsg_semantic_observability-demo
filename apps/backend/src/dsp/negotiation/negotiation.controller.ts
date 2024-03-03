@@ -7,11 +7,12 @@ import { NegotiationService } from "./negotiation.service";
 import { DSPError } from "../../utils/errors/error";
 import { VerifiablePresentationGuard } from "../../auth/verifiablePresentation.guard";
 import { VPId } from "../../auth/verifiablePresentation.strategy";
+import { NegotiationGateway } from "./negotiation.gateway";
 
 @UseGuards(VerifiablePresentationGuard)
 @Controller('negotiations')
 export class NegotiationController {
-  constructor(private readonly negotiationService: NegotiationService) {}
+  constructor(private readonly negotiationService: NegotiationService, private readonly negotiationGateway: NegotiationGateway) {}
   private readonly logger = new Logger(this.constructor.name);
 
   @Post('request')
@@ -19,6 +20,7 @@ export class NegotiationController {
   async request(@Body(new DeserializePipe(ContractRequestMessage)) body: ContractRequestMessage, @VPId() vpId: string): Promise<ContractNegotiationDto> {
     this.logger.log(`Received negotiation request: ${JSON.stringify(body)}`);
     const result = await this.negotiationService.handleNewRequest(body, vpId);
+    this.negotiationGateway.sendUpdateToClients("negotiation:create", "created")
     return result.serialize();
   }
 
@@ -27,15 +29,11 @@ export class NegotiationController {
   async getNegotiation(@Param('id') id: string, @VPId() vpId: string): Promise<ContractNegotiationDto> {
     this.logger.log(`Received negotiation status request for ${id}`);
     const negotiation = await this.negotiationService.getNegotiation(id, vpId);
-    if (negotiation) {
-      return new ContractNegotiation({
-        providerPid: negotiation.localId,
-        consumerPid: negotiation.remoteId,
-        state: negotiation.state
-      }).serialize();
-    } else {
-      throw new DSPError('Negotiation not found', HttpStatus.NOT_FOUND)
-    }
+    return new ContractNegotiation({
+      providerPid: negotiation.localId,
+      consumerPid: negotiation.remoteId,
+      state: negotiation.state
+    }).serialize();
   }
 
   @Post(':id/request')
@@ -46,6 +44,7 @@ export class NegotiationController {
       throw new DSPError('Missing or mismatch providerPid field in contract request message', HttpStatus.BAD_REQUEST);
     }
     const result = await this.negotiationService.handleExistingRequest(id, body, vpId);
+    this.negotiationGateway.sendUpdateToClients("negotiation:update", "updated")
     return result.serialize();
   }
 
@@ -58,6 +57,7 @@ export class NegotiationController {
     }
     const result = await this.negotiationService.handleEvent(id, body, vpId);
     if (result) {
+      this.negotiationGateway.sendUpdateToClients("negotiation:update", "updated")
       return {
         status: 'OK'
       }
@@ -74,6 +74,7 @@ export class NegotiationController {
     }
     const result = await this.negotiationService.handleVerification(id, body, vpId);
     if (result) {
+      this.negotiationGateway.sendUpdateToClients("negotiation:update", "updated")
       return {
         status: 'OK'
       }
@@ -103,6 +104,7 @@ export class NegotiationController {
     this.logger.log(`Received negotiation callback offer for ${id}: ${JSON.stringify(body)}`);
     const result = await this.negotiationService.handleOffer(id, body, vpId);
     if (result) {
+      this.negotiationGateway.sendUpdateToClients("negotiation:update", "updated")
       return {
         status: 'OK'
       }
@@ -116,6 +118,7 @@ export class NegotiationController {
     this.logger.log(`Received negotiation callback agreement for ${id}: ${JSON.stringify(body)}`);
     const result = await this.negotiationService.handleAgreement(id, body, vpId);
     if (result) {
+      this.negotiationGateway.sendUpdateToClients("negotiation:update", "updated")
       return {
         status: 'OK'
       }
@@ -129,6 +132,7 @@ export class NegotiationController {
     this.logger.log(`Received negotiation callback event for ${id}: ${JSON.stringify(body)}`);
     const result = await this.negotiationService.handleEvent(id, body, vpId);
     if (result) {
+      this.negotiationGateway.sendUpdateToClients("negotiation:update", "updated")
       return {
         status: 'OK'
       }

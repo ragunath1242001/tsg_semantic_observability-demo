@@ -91,7 +91,7 @@ export class NegotiationService {
     if (negotiation) {
       return new NegotiationDetail(negotiation);
     } else {
-      throw new DSPError(`Cannot get negotiation with process ID ${processId}`, HttpStatus.NOT_FOUND)
+      throw new DSPError(`Cannot get negotiation with process ID ${processId} for ${audience}`, HttpStatus.NOT_FOUND)
     }
   } 
 
@@ -101,7 +101,7 @@ export class NegotiationService {
     const contractRequestMessage = new ContractRequestMessage({
       consumerPid: consumerPid,
       offer: offer,
-      callbackAddress: `${this.server.publicAddress}/negotiation/callbacks/${consumerPid}`
+      callbackAddress: `${this.server.publicAddress}/negotiations/callbacks/${consumerPid}`
     });
 
     const contractNegotiationResponse = await this.dsp.requestNegotiation(`${remoteAddress}/request`, contractRequestMessage, audience);
@@ -170,7 +170,7 @@ export class NegotiationService {
       providerPid: negotiation.remoteId,
       consumerPid: negotiation.localId,
       offer: offer,
-      callbackAddress: `${this.server.publicAddress}/negotiation/callbacks/${processId}`,
+      callbackAddress: `${this.server.publicAddress}/negotiations/callbacks/${processId}`,
     });
     const contractNegotiationResponse = await this.dsp.requestNegotiation(`${negotiation.remoteAddress}/request`, contractRequestMessage, negotiation.remoteParty);
     
@@ -215,7 +215,7 @@ export class NegotiationService {
       providerPid: negotiation.localId,
       consumerPid: negotiation.remoteId,
       offer: offer,
-      callbackAddress: `${this.server.publicAddress}/negotiation/${negotiation.localId}`
+      callbackAddress: `${this.server.publicAddress}/negotiations/${negotiation.localId}`
     })
     negotiation.events.push({
       time: new Date(),

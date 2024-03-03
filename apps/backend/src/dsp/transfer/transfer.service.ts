@@ -107,7 +107,7 @@ export class TransferService {
       agreementId: agreementId,
       format: format,
       dataAddress: dataAddress,
-      callbackAddress: `${this.server.publicAddress}/transfer/${localId}`
+      callbackAddress: `${this.server.publicAddress}/transfers/${localId}`
     });
     const dataPlaneTransfer = await this.dataPlaneService.requestTransfer(transferRequestMessage, localId, "consumer");
     const requestTransfer = await this.dsp.requestTransfer(`${remoteAddress}/request`, transferRequestMessage, audience);

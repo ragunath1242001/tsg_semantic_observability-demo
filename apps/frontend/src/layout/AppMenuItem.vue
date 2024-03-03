@@ -122,6 +122,14 @@ const checkActiveRoute = (item) => {
         class="pi pi-fw pi-angle-down layout-submenu-toggler"
         v-if="item.items"
       ></i>
+      <span class="p-1">
+        <Badge
+          v-if="item.badge"
+          class="p-overlay-badge p-0"
+          severity="danger"
+          :value="item.badge"
+        ></Badge>
+      </span>
     </router-link>
     <Transition
       v-if="item.items && item.visible !== false"

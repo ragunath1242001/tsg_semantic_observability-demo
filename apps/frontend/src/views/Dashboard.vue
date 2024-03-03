@@ -41,11 +41,11 @@ const getDataPlanes = async () => {
 };
 
 const initialize = async () => {
-  getCatalog();
   getDataPlanes();
+  getCatalog();
 };
 
-onMounted(() => initialize());
+onMounted(async () => await initialize());
 </script><template>
   <div>
     <div class="card">
@@ -56,7 +56,7 @@ onMounted(() => initialize());
         control plane.
       </p>
     </div>
-    <div class="grid card-container">
+    <div class="grid card-container" v-if="dataAvailable">
       <div class="col-12 lg:col-6 xl:col-3">
         <div class="card mb-0">
           <div class="flex justify-content-between mb-3">
@@ -113,7 +113,14 @@ onMounted(() => initialize());
       </div>
     </div>
 
-    <Catalog :catalog="catalog" url="" v-if="dataAvailable" />
+    <Catalog
+      :catalog="catalog"
+      url=""
+      type="provider"
+      assigner=""
+      v-if="dataAvailable"
+    />
+    <Skeleton width="100%" height="150px" v-else />
   </div>
 </template>
 <style scoped>

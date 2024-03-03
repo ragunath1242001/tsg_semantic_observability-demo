@@ -41,6 +41,7 @@ export class DspClientService {
     timeout: 30000
   });
   
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async requestCatalog(address: string, audience?: string, filters?: Array<any>): Promise<CatalogDto> {
     const catalogRequestMessage = new CatalogRequestMessage({
       filter: filters

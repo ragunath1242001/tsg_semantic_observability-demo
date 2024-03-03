@@ -6,12 +6,13 @@ import { NegotiationManagementController } from "./negotiationManagement.control
 import { DspClientModule } from "../client/client.module";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { NegotiationDetailDao, NegotiationProcessEventDao } from "../../model/dsp/negotiation/negotiation.dao";
+import { NegotiationGateway } from "./negotiation.gateway";
 
 
 @Module({
   imports: [AuthModule, DspClientModule, TypeOrmModule.forFeature([NegotiationDetailDao, NegotiationProcessEventDao])],
   controllers: [NegotiationController, NegotiationManagementController],
-  providers: [NegotiationService],
+  providers: [NegotiationService, NegotiationGateway],
   exports: [NegotiationService]
 })
 export class NegotiationModule {}

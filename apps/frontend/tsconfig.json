@@ -6,6 +6,7 @@
   ],
   "compilerOptions": {
     "baseUrl": ".",
+    "experimentalDecorators": true, /* Enable experimental support for legacy experimental decorators. */
     "paths": {
       "@/*": [
         "./*"

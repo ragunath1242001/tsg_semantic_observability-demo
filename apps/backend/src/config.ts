@@ -45,8 +45,8 @@ export class IamConfig {
   public readonly didId!: string
 
   @IsString()
-  @IsIn(['tsg', 'miw'])
-  public readonly type!: 'tsg' | 'miw'
+  @IsIn(['tsg', 'miw', 'dev'])
+  public readonly type!: 'tsg' | 'miw' | 'dev'
 
   @IsString()
   @IsUrl({require_tld: false, require_protocol: true, require_host: false})

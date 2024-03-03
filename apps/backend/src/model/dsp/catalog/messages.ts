@@ -6,6 +6,7 @@ import { CatalogErrorDto, CatalogMessageDto, CatalogRequestMessageDto, DatasetRe
 
 export interface ICatalogError {
   code?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   reason?: Array<any>;
 }
 
@@ -18,6 +19,7 @@ export class CatalogError extends SerializableClass<CatalogErrorDto> {
   @Namespace("dspace")
   @ValidateNested()
   @IsOptional()
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   reason?: Array<any>;
 
   constructor (value: ICatalogError) {
@@ -45,6 +47,7 @@ export class CatalogMessage extends SerializableClass<CatalogMessageDto> {
 }
 
 export interface ICatalogRequestMessage {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   filter?: Array<any>;
 }
 
@@ -53,6 +56,7 @@ export class CatalogRequestMessage extends SerializableClass<CatalogRequestMessa
   @Namespace("dspace")
   @ValidateNested()
   @IsOptional()
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   filter?: Array<any>;
 
   constructor (value: ICatalogRequestMessage) {
