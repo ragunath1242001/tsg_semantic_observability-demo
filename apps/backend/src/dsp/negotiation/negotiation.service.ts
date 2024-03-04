@@ -11,6 +11,7 @@ import { DSPError } from "../../utils/errors/error";
 import { IamConfig, ServerConfig } from "../../config";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
+import { NegotiationStatusDto } from "@libs/dtos";
 
 
 @Injectable()
@@ -68,7 +69,7 @@ export class NegotiationService {
     }
   }
 
-  async getNegotiations(): Promise<NegotiationStatus[]> {
+  async getNegotiations(): Promise<NegotiationStatusDto[]> {
     const negotiations = await this.negotiationDetailRepository.find({
       select: {
         localId: true,
@@ -77,10 +78,11 @@ export class NegotiationService {
         remoteAddress: true,
         remoteParty: true,
         state: true,
-        dataSet: true
+        dataSet: true,
+        modifiedDate: true
       }
     });
-    return negotiations.map(negotiation => new NegotiationStatus(negotiation));
+    return negotiations;
   }
 
   async getNegotiation(processId: string, audience?: string): Promise<NegotiationDetail> {

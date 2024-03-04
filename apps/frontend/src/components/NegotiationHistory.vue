@@ -72,21 +72,29 @@ const getNegotiation = async (event?: AccordionTabOpenEvent) => {
         :key="negotiation.localId"
       >
         <template #header>
-          <span class="flex align-items-center gap-2 w-full">
-            <i :class="calculateIcon(index)"></i>
-            <span class="fold-bold white-space-nowrap"
-              >{{ negotiation.dataSet }} - {{ negotiation.remoteParty }}</span
-            >
+          <span class="flex align-items-center justify-content-between w-full">
+            <div>
+              <i :class="calculateIcon(index)"></i>
+              <span class="mx-2"
+                >{{ negotiation.dataSet }} - {{ negotiation.remoteParty }}</span
+              >
+            </div>
+            <small class="p-text-secondary">
+              {{ new Date(negotiation.modifiedDate).toLocaleDateString() }}
+            </small>
           </span>
         </template>
-        <div class="flex align-items-stretch" v-if="accNegotiation">
+        <div
+          class="flex align-items-stretch grid card-container"
+          v-if="accNegotiation"
+        >
           <div class="p-0 col-12 xl:col-6">
             <pre><code>{{
                   accNegotiation.agreement? JSON.stringify(accNegotiation.agreement, undefined, 2) :
                   JSON.stringify(accNegotiation.offer, undefined, 2)
                 }}</code></pre>
           </div>
-          <div class="p-0 col-12 xl:col-6">
+          <div class="p-0 mt-4 col-12 xl:col-6">
             <Timeline :value="accNegotiation.events">
               <template #opposite="slotProps">
                 <small class="p-text-secondary">{{

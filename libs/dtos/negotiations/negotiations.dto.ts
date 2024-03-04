@@ -20,7 +20,8 @@ export interface NegotiationStatusDto {
     role: NegotiationRole,
     remoteAddress: string,
     state: ContractNegotiationState,
-    dataSet: string
+    dataSet: string,
+    modifiedDate: Date
 }
 
 export interface NegotiationDetailDto extends NegotiationStatusDto {
