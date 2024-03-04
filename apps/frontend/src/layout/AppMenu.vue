@@ -2,6 +2,10 @@
 import { ref } from "vue";
 
 import AppMenuItem from "./AppMenuItem.vue";
+import { useNegotiationStore } from "../stores/negotiations";
+import { storeToRefs } from "pinia";
+
+const { negotiationsCount } = storeToRefs(useNegotiationStore());
 
 const model = ref([
   {
@@ -15,6 +19,17 @@ const model = ref([
         label: "Catalog Request",
         icon: "pi pi-fw pi-book",
         to: "/catalog/request",
+      },
+    ],
+  },
+  {
+    label: "Negotiations",
+    items: [
+      {
+        label: "Negotiations",
+        icon: "pi pi-fw pi-comments",
+        to: "/negotiations",
+        badge: negotiationsCount,
       },
     ],
   },

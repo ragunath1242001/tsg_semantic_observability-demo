@@ -3,12 +3,14 @@ import { IamConfig } from "../config";
 import { WalletClient } from "./wallets/walletClient";
 import { TsgWalletClient } from "./wallets/tsg.wallet";
 import { ManagedIdentityWalletClient } from "./wallets/miw.wallet";
+import { DevWalletClient } from "./wallets/dev.wallet";
 
 @Injectable()
 export class AuthService {
   private readonly walletClient: WalletClient;
   constructor(private readonly iamConfig: IamConfig) {
     switch (iamConfig.type) {
+      case "dev": this.walletClient = new DevWalletClient(iamConfig); break;
       case "tsg": this.walletClient = new TsgWalletClient(iamConfig) ; break;
       case "miw": this.walletClient = new ManagedIdentityWalletClient(iamConfig) ; break;
     }

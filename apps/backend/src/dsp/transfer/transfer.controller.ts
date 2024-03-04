@@ -9,7 +9,7 @@ import { VerifiablePresentationGuard } from "../../auth/verifiablePresentation.g
 import { VPId } from "../../auth/verifiablePresentation.strategy";
 
 @UseGuards(VerifiablePresentationGuard)
-@Controller('transfer')
+@Controller('transfers')
 export class TransferController {
   constructor(private readonly transferService: TransferService) {}
   private readonly logger = new Logger(this.constructor.name);

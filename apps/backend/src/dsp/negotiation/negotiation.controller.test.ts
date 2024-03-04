@@ -7,7 +7,7 @@ import { ContractNegotiationDto, ContractNegotiationState, ContractRequestMessag
 import { Multilanguage } from "../../model/dsp/common";
 import { NegotiationService } from "./negotiation.service";
 import { DspClientService } from "../client/client.service";
-import { HttpResponse, PathParams, http } from "msw"; 
+import { HttpResponse, PathParams, http } from "msw";
 import { SetupServer, setupServer } from "msw/node";
 import { IamConfig, ServerConfig } from "../../config";
 import { plainToClass } from "class-transformer";
@@ -15,10 +15,12 @@ import { AuthService } from "../../auth/auth.service";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { NegotiationDetailDao, NegotiationProcessEventDao } from "../../model/dsp/negotiation/negotiation.dao";
 import { TypeOrmTestHelper } from "../../utils/testhelper";
+import { NegotiationGateway } from "./negotiation.gateway";
 
 describe("NegotiationController", () => {
   let negotiationController: NegotiationController;
   let negotiationService: NegotiationService;
+  let negotiationGateway: NegotiationGateway
   let providerNegotiationId: string;
   let consumerNegotiationId: string;
   let server: SetupServer;
@@ -45,7 +47,7 @@ describe("NegotiationController", () => {
         })
       }),
     );
-    
+
     server.listen({
       onUnhandledRequest: "error"
     });
@@ -54,44 +56,50 @@ describe("NegotiationController", () => {
   afterAll(async () => {
     server.close();
   });
-  
+
   beforeEach(async () => {
     await TypeOrmTestHelper.instance.setupTestDB();
     const moduleRef: TestingModule = await Test.createTestingModule({
       imports: [
-          TypeOrmTestHelper.instance.module([NegotiationDetailDao, NegotiationProcessEventDao]),
-          TypeOrmModule.forFeature([NegotiationDetailDao, NegotiationProcessEventDao])
+        TypeOrmTestHelper.instance.module([NegotiationDetailDao, NegotiationProcessEventDao]),
+        TypeOrmModule.forFeature([NegotiationDetailDao, NegotiationProcessEventDao])
       ],
       controllers: [NegotiationController],
       providers: [
-        NegotiationService, 
+        NegotiationService,
         DspClientService,
-        {provide: ServerConfig, useValue: plainToClass(ServerConfig, {})},
-        {provide: IamConfig, useValue: plainToClass(IamConfig, {
-          didId: 'did:web:localhost',
-          tokenUrl: 'http://localhost/auth/login',
-          presentationUrl: 'http://localhost/presentations',
-          validationUrl: 'http://localhost/presentations/validate',
-          clientId: 'client',
-          clientSecret: 'secret',
-          credentialId: 'did:web:localhost#00000000-0000-0000-0000-000000000000',
-          validations: ['valid']
-        })}
-    ],
+        NegotiationGateway,
+        { provide: ServerConfig, useValue: plainToClass(ServerConfig, {}) },
+        {
+          provide: IamConfig, useValue: plainToClass(IamConfig, {
+            didId: 'did:web:localhost',
+            tokenUrl: 'http://localhost/auth/login',
+            presentationUrl: 'http://localhost/presentations',
+            validationUrl: 'http://localhost/presentations/validate',
+            clientId: 'client',
+            clientSecret: 'secret',
+            credentialId: 'did:web:localhost#00000000-0000-0000-0000-000000000000',
+            validations: ['valid']
+          })
+        }
+      ],
     }).useMocker((token) => {
       if (token === AuthService) {
         return {
-          requestToken() {return "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjb25uZWN0b3IiLCJlbWFpbCI6Im5vcmVwbHlAZGF0YXNwYWMuZXMiLCJkaWRJZCI6ImRpZDp3ZWI6d2FsbGV0LWNhdGVuYS14LmFscGhhLnNjc24uZGF0YXNwYWMuZXMiLCJyb2xlcyI6WyJ2aWV3X3ByZXNlbnRhdGlvbnMiXSwiaWF0IjoxNjkzNDIzNzgyLCJleHAiOjE2OTM0MjQ2ODJ9.UkVNT1ZFRF9TSUdOQVRVUkU"},
-          validateToken() {return true}
+          requestToken() { return "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjb25uZWN0b3IiLCJlbWFpbCI6Im5vcmVwbHlAZGF0YXNwYWMuZXMiLCJkaWRJZCI6ImRpZDp3ZWI6d2FsbGV0LWNhdGVuYS14LmFscGhhLnNjc24uZGF0YXNwYWMuZXMiLCJyb2xlcyI6WyJ2aWV3X3ByZXNlbnRhdGlvbnMiXSwiaWF0IjoxNjkzNDIzNzgyLCJleHAiOjE2OTM0MjQ2ODJ9.UkVNT1ZFRF9TSUdOQVRVUkU" },
+          validateToken() { return true }
         }
       }
-    }).compile();
+    })
+      .overrideProvider(NegotiationGateway)
+      .useValue(negotiationGateway)
+      .compile();
 
     negotiationController = moduleRef.get(NegotiationController);
     negotiationService = moduleRef.get(NegotiationService);
 
-    
-    const providerNegotiation =  await negotiationService.handleNewRequest(new ContractRequestMessage({
+
+    const providerNegotiation = await negotiationService.handleNewRequest(new ContractRequestMessage({
       consumerPid: 'urn:uuid:a81bea31-55d4-4c70-b454-9758e1228fd0',
       callbackAddress:
         "http://127.0.0.1/negotiation/callbacks/urn:uuid:de465939-8292-49c1-97d5-bcb643df1fdb",
@@ -171,7 +179,7 @@ describe("NegotiationController", () => {
 
   describe("/:id/request", () => {
     it("Contract request should with specified identifier return default contract negotiation", async () => {
-      negotiationService["negotiationDetailRepository"].update({localId: providerNegotiationId}, {state: ContractNegotiationState.OFFERED});
+      negotiationService["negotiationDetailRepository"].update({ localId: providerNegotiationId }, { state: ContractNegotiationState.OFFERED });
       const result = await negotiationController.requestWithId(
         providerNegotiationId,
         new ContractRequestMessage({
@@ -237,7 +245,7 @@ describe("NegotiationController", () => {
 
   describe("/:id/events", () => {
     it("Contract negotiation event should with specified identifier return a status OK", async () => {
-      negotiationService["negotiationDetailRepository"].update({localId: providerNegotiationId}, {state: ContractNegotiationState.OFFERED});
+      negotiationService["negotiationDetailRepository"].update({ localId: providerNegotiationId }, { state: ContractNegotiationState.OFFERED });
       const result = await negotiationController.negotiationEvent(
         providerNegotiationId,
         new ContractNegotiationEventMessage({
@@ -267,7 +275,7 @@ describe("NegotiationController", () => {
   });
   describe("/:id/agreement/verification", () => {
     it("Contract agreement verification should with specified identifier return a status OK", async () => {
-      negotiationService["negotiationDetailRepository"].update({localId: providerNegotiationId}, {state: ContractNegotiationState.AGREED});
+      negotiationService["negotiationDetailRepository"].update({ localId: providerNegotiationId }, { state: ContractNegotiationState.AGREED });
       const result = await negotiationController.agreementVerification(
         providerNegotiationId,
         new ContractAgreementVerificationMessage({
@@ -413,7 +421,7 @@ describe("NegotiationController", () => {
   });
   describe("/callbacks/:id/event", () => {
     it("Callback with a contract event should return a status OK", async () => {
-      negotiationService["negotiationDetailRepository"].update({localId: consumerNegotiationId}, {state: ContractNegotiationState.VERIFIED});
+      negotiationService["negotiationDetailRepository"].update({ localId: consumerNegotiationId }, { state: ContractNegotiationState.VERIFIED });
       const result = await negotiationController.callbackEvent(
         consumerNegotiationId,
         new ContractNegotiationEventMessage({

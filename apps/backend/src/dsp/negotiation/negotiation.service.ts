@@ -11,6 +11,7 @@ import { DSPError } from "../../utils/errors/error";
 import { IamConfig, ServerConfig } from "../../config";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
+import { NegotiationStatusDto } from "@libs/dtos";
 
 
 @Injectable()
@@ -68,7 +69,7 @@ export class NegotiationService {
     }
   }
 
-  async getNegotiations(): Promise<NegotiationStatus[]> {
+  async getNegotiations(): Promise<NegotiationStatusDto[]> {
     const negotiations = await this.negotiationDetailRepository.find({
       select: {
         localId: true,
@@ -77,10 +78,11 @@ export class NegotiationService {
         remoteAddress: true,
         remoteParty: true,
         state: true,
-        dataSet: true
+        dataSet: true,
+        modifiedDate: true
       }
     });
-    return negotiations.map(negotiation => new NegotiationStatus(negotiation));
+    return negotiations;
   }
 
   async getNegotiation(processId: string, audience?: string): Promise<NegotiationDetail> {
@@ -91,7 +93,7 @@ export class NegotiationService {
     if (negotiation) {
       return new NegotiationDetail(negotiation);
     } else {
-      throw new DSPError(`Cannot get negotiation with process ID ${processId}`, HttpStatus.NOT_FOUND)
+      throw new DSPError(`Cannot get negotiation with process ID ${processId} for ${audience}`, HttpStatus.NOT_FOUND)
     }
   } 
 
@@ -101,7 +103,7 @@ export class NegotiationService {
     const contractRequestMessage = new ContractRequestMessage({
       consumerPid: consumerPid,
       offer: offer,
-      callbackAddress: `${this.server.publicAddress}/negotiation/callbacks/${consumerPid}`
+      callbackAddress: `${this.server.publicAddress}/negotiations/callbacks/${consumerPid}`
     });
 
     const contractNegotiationResponse = await this.dsp.requestNegotiation(`${remoteAddress}/request`, contractRequestMessage, audience);
@@ -170,7 +172,7 @@ export class NegotiationService {
       providerPid: negotiation.remoteId,
       consumerPid: negotiation.localId,
       offer: offer,
-      callbackAddress: `${this.server.publicAddress}/negotiation/callbacks/${processId}`,
+      callbackAddress: `${this.server.publicAddress}/negotiations/callbacks/${processId}`,
     });
     const contractNegotiationResponse = await this.dsp.requestNegotiation(`${negotiation.remoteAddress}/request`, contractRequestMessage, negotiation.remoteParty);
     
@@ -215,7 +217,7 @@ export class NegotiationService {
       providerPid: negotiation.localId,
       consumerPid: negotiation.remoteId,
       offer: offer,
-      callbackAddress: `${this.server.publicAddress}/negotiation/${negotiation.localId}`
+      callbackAddress: `${this.server.publicAddress}/negotiations/${negotiation.localId}`
     })
     negotiation.events.push({
       time: new Date(),

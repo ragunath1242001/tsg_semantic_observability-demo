@@ -3,9 +3,14 @@ import App from './App.vue'
 import http from './utils/http'
 import { AxiosKey } from './utils/symbols'
 import router from './router'
-
+import { createPinia } from 'pinia'
 import PrimeVue from 'primevue/config';
+import Accordion from 'primevue/accordion'
+import AccordionTab from 'primevue/accordiontab'
+import Badge from 'primevue/badge';
+import BadgeDirective from 'primevue/badgedirective';
 import Button from 'primevue/button';
+import Dialog from 'primevue/dialog'
 import InputSwitch from 'primevue/inputswitch';
 import InputText from 'primevue/inputtext';
 import Toast from 'primevue/toast';
@@ -19,28 +24,49 @@ import Column from 'primevue/column';
 import CatalogVue from './components/Catalog.vue'
 import AppConfigVue from './layout/AppConfig.vue'
 import Password from 'primevue/password'
+import Panel from 'primevue/panel'
+import Skeleton from 'primevue/skeleton'
+import Textarea from 'primevue/textarea'
+import Timeline from 'primevue/timeline'
+
 
 import '@/assets/styles.scss'
+import ProgressSpinner from 'primevue/progressspinner'
 
+const pinia = createPinia();
 const app = createApp(App);
 app.provide(AxiosKey, http);
+app.use(pinia);
 app.use(router);
 app.use(PrimeVue, { ripple: true });
 app.use(ToastService);
 
 
+app.component('Accordion', Accordion)
+app.component('AccordionTab', AccordionTab)
 app.component('AppConfig', AppConfigVue)
+app.component('Badge', Badge);
 app.component('Button', Button);
 app.component('Card', Card);
 app.component('CatalogVue', CatalogVue);
 app.component('Column', Column)
 app.component('DataTable', DataTable);
+app.component('DataView', DataView);
+app.component('Dialog', Dialog);
 app.component('InputSwitch', InputSwitch);
 app.component('InputText', InputText);
+app.component('Panel', Panel);
 app.component('Password', Password);
+app.component('ProgressSpinner', ProgressSpinner);
+app.component('Skeleton', Skeleton);
 app.component('Tag', Tag);
+app.component('Textarea', Textarea);
+app.component('Timeline', Timeline);
 app.component('Toast', Toast);
 app.component('ToggleButton', ToggleButton);
 app.component('Tree', Tree);
+
+
+app.directive('badge', BadgeDirective);
 
 app.mount('#app');

@@ -1,48 +1,56 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Logger, Param, Post, Query, UseGuards } from "@nestjs/common";
-import { NegotiationDetail, NegotiationStatus, Offer } from "../../model/dsp/negotiation/negotiation";
+import { NegotiationDetail, Offer } from "../../model/dsp/negotiation/negotiation";
+import {NegotiationStatusDto } from "@libs/dtos"
 import { DspClientService } from "../client/client.service";
 import { NegotiationService } from "./negotiation.service";
 import { DeserializePipe } from "../../utils/deserialize.pipe";
 import { normalizeAddress } from "../../utils/address";
-import { DSPError } from "../../utils/errors/error";
 import { ManagementGuard } from "../../auth/management.guard";
+import { ContractNegotiationDto } from "@tsg-dsp/common";
+import { ContractNegotiation } from "../../model/dsp/negotiation/messages";
+import { NegotiationGateway } from "./negotiation.gateway";
 
 @UseGuards(ManagementGuard)
-@Controller('management/negotiation')
+@Controller('management/negotiations')
 export class NegotiationManagementController {
-  constructor(private readonly dsp: DspClientService, private readonly negotiationService: NegotiationService) {}
+  constructor(private readonly dsp: DspClientService, private readonly negotiationService: NegotiationService, private readonly negotiationGateway: NegotiationGateway) {}
   private readonly logger = new Logger(this.constructor.name);
 
   @Get()
-  async getNegotiations(): Promise<NegotiationStatus[]> {
+  async getNegotiations(): Promise<NegotiationStatusDto[]> {
     return this.negotiationService.getNegotiations();
   }
 
   @Get(":processId")
   async getNegotiation(@Param("processId") processId: string): Promise<NegotiationDetail> {
     const negotiation = await this.negotiationService.getNegotiation(processId);
-    if (negotiation === undefined) {
-      throw new DSPError(`Contract negotiation with process ID ${processId} not found`, HttpStatus.NOT_FOUND);
-    }
     return negotiation;
   }
 
   @Post("request")
   @HttpCode(HttpStatus.OK)
-  async requestNewNegotiation(@Body(new DeserializePipe(Offer)) body: Offer, @Query('dataSet') dataSet: string, @Query('address') address: string, @Query('audience') audience: string): Promise<NegotiationDetail> {
+  async requestNewNegotiation(@Body(new DeserializePipe(Offer)) body: Offer, @Query('dataSet') dataSet: string, @Query('address') address: string, @Query('audience') audience: string): Promise<ContractNegotiationDto> {
     this.logger.log(`Received negotiation request for ${address} with offer ${JSON.stringify(body)}`);
     const controlPlaneAddress = normalizeAddress(address, 1, "negotiations", "request");
     const negotiationProcess = await this.negotiationService.requestNew(body, dataSet, controlPlaneAddress, audience);
-    return negotiationProcess;
+    return new ContractNegotiation({
+      providerPid: negotiationProcess.localId,
+      consumerPid: negotiationProcess.remoteId,
+      state: negotiationProcess.state
+    }).serialize();
   }
 
 
   @Post(":processId/request")
   @HttpCode(HttpStatus.OK)
-  async requestExistingNegotiation(@Body(new DeserializePipe(Offer)) body: Offer, @Param('processId') processId: string): Promise<NegotiationDetail> {
+  async requestExistingNegotiation(@Body(new DeserializePipe(Offer)) body: Offer, @Param('processId') processId: string): Promise<ContractNegotiationDto> {
     this.logger.log(`Received negotiation request for ${processId} with offer ${JSON.stringify(body)}`);
     const negotiationProcess = await this.negotiationService.requestExisting(body, processId);
-    return negotiationProcess;
+    return new ContractNegotiation({
+      providerPid: negotiationProcess.localId,
+      consumerPid: negotiationProcess.remoteId,
+      state: negotiationProcess.state
+    }).serialize();
   }
 
   @Post(":processId/offer")
@@ -59,6 +67,7 @@ export class NegotiationManagementController {
   async agree(@Param('processId') processId: string): Promise<{status: string}> {
     this.logger.log(`Received negotiation agreement for ${processId}`);
     const negotiationProcess = await this.negotiationService.agree(processId);
+    this.negotiationGateway.sendUpdateToClients("negotiation:update", "updated")
     return negotiationProcess;
   }
 
@@ -67,6 +76,7 @@ export class NegotiationManagementController {
   async verify(@Param('processId') processId: string): Promise<{status: string}> {
     this.logger.log(`Received negotiation agreement verification for ${processId}`);
     const negotiationProcess = await this.negotiationService.verify(processId);
+    this.negotiationGateway.sendUpdateToClients("negotiation:update", "updated")
     return negotiationProcess;
   }
 
@@ -75,6 +85,7 @@ export class NegotiationManagementController {
   async finalize(@Param('processId') processId: string): Promise<{status: string}> {
     this.logger.log(`Received negotiation finalization for ${processId}`);
     const negotiationProcess = await this.negotiationService.finalize(processId);
+    this.negotiationGateway.sendUpdateToClients("negotiation:update", "updated")
     return negotiationProcess;
   }
 
@@ -83,6 +94,7 @@ export class NegotiationManagementController {
   async terminate(@Param('processId') processId: string, @Body() body: {code: string, reason: string}): Promise<{status: string}> {
     this.logger.log(`Received negotiation termination for ${processId}`);
     const negotiationProcess = await this.negotiationService.terminate(processId, body.code, body.reason);
+    this.negotiationGateway.sendUpdateToClients("negotiation:update", "updated")
     return negotiationProcess;
   }
 
