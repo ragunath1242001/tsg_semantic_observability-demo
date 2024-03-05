@@ -29,61 +29,51 @@ An example configuration can be found in `backend/config.yaml`
 
 To build and test the wallet locally, first you have to decide which portion of the wallet you'd want to test.
 
+### Dependencies
+
+The wallet is built via pnpm, first install all dependencies:
+```
+pnpm install
+```
 
 ### Backend
 
-The wallet backend is built via typescript and npm, first change the directory to backend and install the dependencies:
+To compile the typescript files into javascript and watch the wallet backend:
 ```
-cd backend
-npm install
-```
-
-To compile the typescript files into javascript and execute the wallet backend:
-```
-npm run tsc
-node ./build/app.js
-```
-
-Or run directly on the typescript files using `ts-node`:
-```
-node --nolazy --loader ts-node/esm src/app.ts
+pnpm --filter backend watch
 ```
 
 > _Note_: The wallet backend will run by default on port `3000`
 
-Or use the included VS Code Run configuration `Debug Main (without frontend)` to allow debugging functionality in VS code.
-
 ### Frontend
 
-The wallet frontend is built via typescript and npm, first change the directory to frontend and install the dependencies:
+To compile the typescript files into javascript and watch the wallet frontend:
 ```
-cd frontend
-npm install
+pnpm --filter frontend dev
 ```
+> _Note_: The Vite serve by default runs on port `5173`, but will try subsequent ports if they are already used.
 
 Compiling the frontend into HTML, Javascript, and CSS execute:
 ```
-npm run build
+pnpm --filter frontend build
 ```
 
-Running a live server that automatically updates on changes to the source files, execute:
-```
-npm run serve
-```
-> _Note_: The Vue CLI serve by default runs on port `8080`, but will try subsequent ports if they are already used.
+The build result will be located in `./apps/frontend/dist`.
+
 
 ### Combined backend and frontend
 
-To test the comination of backend with embedded frontend, execute:
+To test the combination of backend with embedded frontend, execute the following commands in separate terminals:
 ```
-cd frontend
-npm run build
-cd ../backend
-EMBEDDED_FRONTEND="../frontend/dist" node --nolazy --loader ts-node/esm src/app.ts
+pnpm --filter backend watch
+```
+
+```
+pnpm --filter frontend dev
 ```
 
 Or build the Docker image and subsequently run the docker image:
 ```
 docker build -t tsg-wallet .
-docker run --rm -it -v ./backend/config.yaml:/app/config.yaml -p 3000:3000
+docker run --rm -it -v ./apps/backend/config.yaml:/app/config.yaml -p 3000:3000 tsg-wallet
 ```
