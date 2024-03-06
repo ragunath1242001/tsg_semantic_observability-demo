@@ -3,30 +3,30 @@ info:
   title: TSG - Dataspace Protocol - Negotiation Callback API
   description: API definition for communication for consumers in negotiation sequences between Control Planes
   version: 0.0.1
-  license: 
+  license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
-servers: 
+servers:
   - url: http://localhost
-security: 
-  -  BearerAuth: []
-paths: 
+security:
+  - BearerAuth: []
+paths:
   /negotiation/callbacks/{id}/offer:
     post:
       operationId: offerCallback
       summary: Post a contract offer to a callback address
-      parameters: 
+      parameters:
         - name: id
           in: path
           required: true
-          schema: 
+          schema:
             type: string
-      requestBody: 
+      requestBody:
         content:
           application/json:
-            schema: 
+            schema:
               $ref: ../schemas/dsp.schema.json#/definitions/ContractOfferMessageDto
-      responses: 
+      responses:
         200:
           description: Offer processed
         404:
@@ -37,18 +37,18 @@ paths:
     post:
       operationId: agreementCallback
       summary: Post a contract agreement to a callback address
-      parameters: 
+      parameters:
         - name: id
           in: path
           required: true
-          schema: 
+          schema:
             type: string
-      requestBody: 
+      requestBody:
         content:
           application/json:
-            schema: 
+            schema:
               $ref: ../schemas/dsp.schema.json#/definitions/ContractAgreementMessageDto
-      responses: 
+      responses:
         200:
           description: Agreement processed
         404:
@@ -59,25 +59,25 @@ paths:
     post:
       operationId: eventsCallback
       summary: Post a negotiation finalized event to a callback address
-      parameters: 
+      parameters:
         - name: id
           in: path
           required: true
-          schema: 
+          schema:
             type: string
-      requestBody: 
+      requestBody:
         content:
           application/json:
-            schema: 
+            schema:
               $ref: ../schemas/dsp.schema.json#/definitions/ContractNegotiationEventMessageDto
-      responses: 
+      responses:
         200:
           description: Negotiation finalized event processed
         404:
           description: Negotiation process not found
         4XX:
           description: Request error
-components: 
+components:
   securitySchemes:
     BearerAuth:
       type: http

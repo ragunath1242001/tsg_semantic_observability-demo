@@ -4,13 +4,13 @@ export const idSymbol = Symbol("custom:id");
 export const languageSymbol = Symbol("custom:language");
 export const valueSymbol = Symbol("custom:value");
 export const namespaceSymbol = Symbol("custom:namespace");
-export const serializableTypes: {[key: string]: any} = {}
+export const serializableTypes: { [key: string]: any } = {};
 
 export function Serializable(type: string): ClassDecorator {
   return (target: any) => {
-    serializableTypes[type] = target
+    serializableTypes[type] = target;
     Reflect.defineMetadata(serializableSymbol, type, target.prototype);
-  }
+  };
 }
 
 export function Id(): PropertyDecorator {

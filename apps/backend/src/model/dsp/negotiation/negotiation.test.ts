@@ -8,7 +8,13 @@ import {
   Permission,
   Prohibition,
 } from "./negotiation";
-import { ODRLAction, AgreementDto, OfferDto, ODRLLeftOperand, ODRLOperator } from "@tsg-dsp/common";
+import {
+  ODRLAction,
+  AgreementDto,
+  OfferDto,
+  ODRLLeftOperand,
+  ODRLOperator,
+} from "@tsg-dsp/common";
 
 test("Contract offer serialization", async () => {
   const offer = new Offer({
@@ -79,12 +85,11 @@ test("Contract offer serialization", async () => {
         "odrl:target": "urn:uuid:340eab1a-f3ee-471f-a0ad-beadddc521b6",
       },
     ],
-  }
+  };
   expect(serialized).toStrictEqual(expected);
   const deserialized = await deserialize<Offer>(serialized);
   expect(offer).toStrictEqual(deserialized);
 });
-
 
 test("Contract agreement serialization", async () => {
   const agreement = new Agreement({
@@ -158,8 +163,8 @@ test("Contract agreement serialization", async () => {
       },
     ],
     "dspace:timestamp": "2023-01-01T00:00:00Z",
-    "odrl:target": "urn:uuid:21d38f03-3a0d-4a64-9281-45222863a04e"
-  }
+    "odrl:target": "urn:uuid:21d38f03-3a0d-4a64-9281-45222863a04e",
+  };
   expect(serialized).toStrictEqual(expected);
   const deserialized = await deserialize<Agreement>(serialized);
   expect(agreement).toStrictEqual(deserialized);

@@ -1,30 +1,26 @@
 {
-    "compilerOptions": {
-        "paths": {},
-        "module": "commonjs",
-        "declaration": true,
-        "noImplicitAny": false,
-        "skipLibCheck": true,
-        "noUnusedLocals": false,
-        "importHelpers": true,
-        "removeComments": false,
-        "noLib": false,
-        "emitDecoratorMetadata": true,
-        "experimentalDecorators": true,
-        "useUnknownInCatchVariables": false,
-        "target": "ES2021",
-        "sourceMap": false,
-        "allowJs": false,
-        "strict": true,
-        "strictNullChecks": false,
-        "types": [],
-        "outDir": "dist",
-        "rootDir": "."
-    },
-    "include": [
-        "."
-    ],
-    "exclude": [
-        "dist"
-    ]
+  "compilerOptions": {
+    "paths": {},
+    "module": "commonjs",
+    "declaration": true,
+    "noImplicitAny": false,
+    "skipLibCheck": true,
+    "noUnusedLocals": false,
+    "importHelpers": true,
+    "removeComments": false,
+    "noLib": false,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "useUnknownInCatchVariables": false,
+    "target": "ES2021",
+    "sourceMap": false,
+    "allowJs": false,
+    "strict": true,
+    "strictNullChecks": false,
+    "types": [],
+    "outDir": "dist",
+    "rootDir": "."
+  },
+  "include": ["."],
+  "exclude": ["dist"]
 }

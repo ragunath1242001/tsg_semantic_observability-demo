@@ -1,4 +1,14 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Logger, Post, Query, UseGuards } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Logger,
+  Post,
+  Query,
+  UseGuards,
+} from "@nestjs/common";
 import { CatalogDto, DatasetDto } from "@tsg-dsp/common";
 import { DspClientService } from "../client/client.service";
 import { normalizeAddress } from "../../utils/address";
@@ -9,29 +19,54 @@ import { CatalogService } from "./catalog.service";
 import { CatalogRequestMessage } from "../../model/dsp/catalog/messages";
 
 @UseGuards(ManagementGuard)
-@Controller('management/catalog')
+@Controller("management/catalog")
 export class CatalogManagementController {
-  constructor(private readonly dsp: DspClientService, private readonly catalogService: CatalogService) {}
+  constructor(
+    private readonly dsp: DspClientService,
+    private readonly catalogService: CatalogService
+  ) {}
   private readonly logger = new Logger(this.constructor.name);
 
   @Get("request")
   @HttpCode(HttpStatus.OK)
-  async requestCatalog(@Query('address') address?: string, @Query('audience') audience?: string): Promise<CatalogDto> {
+  async requestCatalog(
+    @Query("address") address?: string,
+    @Query("audience") audience?: string
+  ): Promise<CatalogDto> {
     this.logger.log(`Received catalog request for ${address}`);
-    return (address) ? this.dsp.requestCatalog(normalizeAddress(address, 0, "catalog", "request"), audience) : (await this.catalogService.request(new CatalogRequestMessage({}))).serialize()
+    return address
+      ? this.dsp.requestCatalog(
+          normalizeAddress(address, 0, "catalog", "request"),
+          audience
+        )
+      : (
+          await this.catalogService.request(new CatalogRequestMessage({}))
+        ).serialize();
   }
 
   @Get("dataset")
   @HttpCode(HttpStatus.OK)
-  async requestDataset(@Query('address') address: string, @Query('id') id: string, @Query('audience') audience?: string): Promise<DatasetDto> {
+  async requestDataset(
+    @Query("address") address: string,
+    @Query("id") id: string,
+    @Query("audience") audience?: string
+  ): Promise<DatasetDto> {
     this.logger.log(`Received dataset request for ${address} with id ${id}`);
-    return (address) ? this.dsp.requestDataset(normalizeAddress(address, 0, "catalog", "datasets"), id, audience) : (await this.catalogService.getDataset(id))?.serialize()
+    return address
+      ? this.dsp.requestDataset(
+          normalizeAddress(address, 0, "catalog", "datasets"),
+          id,
+          audience
+        )
+      : (await this.catalogService.getDataset(id))?.serialize();
   }
 
   @Post("dataset")
   @HttpCode(HttpStatus.CREATED)
-  async addDataset(@Body(new DeserializePipe(Dataset)) dataset: Dataset): Promise<DatasetDto> {
-    const datasetdao = await this.catalogService.addDataset(dataset)
-    return new Dataset(datasetdao).serialize()
+  async addDataset(
+    @Body(new DeserializePipe(Dataset)) dataset: Dataset
+  ): Promise<DatasetDto> {
+    const datasetdao = await this.catalogService.addDataset(dataset);
+    return new Dataset(datasetdao).serialize();
   }
 }

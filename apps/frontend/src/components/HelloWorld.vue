@@ -1,30 +1,40 @@
 <script lang="ts" setup>
-import {ref} from 'vue'
+import { ref } from "vue";
 import { useToast } from "primevue/usetoast";
 
 const toast = useToast();
 
 const increaseCount = () => {
-  count.value++
+  count.value++;
 
-  if(count.value === 3) {
-    toast.add({severity:'success', summary: 'PrimeVue', detail:'Welcome to PrimeVue + Create Vue', life: 3000})
+  if (count.value === 3) {
+    toast.add({
+      severity: "success",
+      summary: "PrimeVue",
+      detail: "Welcome to PrimeVue + Create Vue",
+      life: 3000,
+    });
 
-    count.value = 0
+    count.value = 0;
   }
-}
+};
 
-const count = ref(0)
+const count = ref(0);
 </script>
 
 <template>
   <div class="greetings">
     <Toast />
-  
+
     <h3>
       <a href="https://vitejs.dev/" target="_blank" rel="noopener">Vite</a> +
       <a href="https://vuejs.org/" target="_blank" rel="noopener">Vue 3</a> +
-      <a href="https://www.primefaces.org/primevue/" target="_blank" rel="noopener">PrimeVue</a>.
+      <a
+        href="https://www.primefaces.org/primevue/"
+        target="_blank"
+        rel="noopener"
+        >PrimeVue</a
+      >.
     </h3>
 
     <Button @click="increaseCount" label="Count"></Button>
@@ -48,6 +58,5 @@ h3 {
 }
 button {
   margin-top: 20px;
-
 }
 </style>

@@ -1,7 +1,23 @@
-import { ArrayNotEmpty, IsNotEmpty, IsOptional, ValidateNested } from "class-validator";
+import {
+  ArrayNotEmpty,
+  IsNotEmpty,
+  IsOptional,
+  ValidateNested,
+} from "class-validator";
 import { Serializable, Namespace } from "../../decorators";
 import { Multilanguage, SerializableClass } from "../common";
-import { TransferCompletionMessageDto, TransferErrorDto, TransferProcessDto, TransferRequestMessageDto, TransferStartMessageDto, TransferSuspensionMessageDto, TransferTerminationMessageDto, TransferState, EndpointPropertyDto, DataAddressDto } from "@tsg-dsp/common";
+import {
+  TransferCompletionMessageDto,
+  TransferErrorDto,
+  TransferProcessDto,
+  TransferRequestMessageDto,
+  TransferStartMessageDto,
+  TransferSuspensionMessageDto,
+  TransferTerminationMessageDto,
+  TransferState,
+  EndpointPropertyDto,
+  DataAddressDto,
+} from "@tsg-dsp/common";
 
 export interface ITransferCompletionMessage {
   providerPid: string;
@@ -18,7 +34,7 @@ export class TransferCompletionMessage extends SerializableClass<TransferComplet
   consumerPid: string;
 
   constructor(value: ITransferCompletionMessage) {
-    super()
+    super();
     this.providerPid = value.providerPid;
     this.consumerPid = value.consumerPid;
   }
@@ -48,7 +64,7 @@ export class TransferError extends SerializableClass<TransferErrorDto> {
   reason?: Array<Multilanguage>;
 
   constructor(value: ITransferError) {
-    super()
+    super();
     this.providerPid = value.providerPid;
     this.consumerPid = value.consumerPid;
     this.code = value.code;
@@ -79,7 +95,7 @@ export class TransferProcess extends SerializableClass<TransferProcessDto> {
   agreementId: string;
 
   constructor(value: ITransferProcess) {
-    super()
+    super();
     this.providerPid = value.providerPid;
     this.consumerPid = value.consumerPid;
     this.state = value.state;
@@ -96,7 +112,7 @@ export class EndpointProperty extends SerializableClass<EndpointPropertyDto> {
   @IsNotEmpty()
   value: string;
   constructor(value: IEndpointProperty) {
-    super()
+    super();
     this.name = value.name;
     this.value = value.value;
   }
@@ -105,7 +121,7 @@ export class EndpointProperty extends SerializableClass<EndpointPropertyDto> {
 export interface IDataAddress {
   endpointType: string;
   endpoint: string;
-  endpointProperties: Array<EndpointProperty>
+  endpointProperties: Array<EndpointProperty>;
 }
 
 @Serializable("dspace:DataAddress")
@@ -118,10 +134,10 @@ export class DataAddress extends SerializableClass<DataAddressDto> {
   endpoint: string;
   @Namespace("dspace")
   @IsNotEmpty()
-  endpointProperties: Array<EndpointProperty>
+  endpointProperties: Array<EndpointProperty>;
 
   constructor(value: IDataAddress) {
-    super()
+    super();
     this.endpointType = value.endpointType;
     this.endpoint = value.endpoint;
     this.endpointProperties = value.endpointProperties;
@@ -155,7 +171,7 @@ export class TransferRequestMessage extends SerializableClass<TransferRequestMes
   callbackAddress: string;
 
   constructor(value: ITransferRequestMessage) {
-    super()
+    super();
     this.consumerPid = value.consumerPid;
     this.agreementId = value.agreementId;
     this.format = value.format;
@@ -189,7 +205,7 @@ export class TransferStartMessage extends SerializableClass<TransferStartMessage
   dataAddress?: DataAddress;
 
   constructor(value: ITransferStartMessage) {
-    super()
+    super();
     this.providerPid = value.providerPid;
     this.consumerPid = value.consumerPid;
     this.dataAddress = value.dataAddress;
@@ -216,7 +232,7 @@ export class TransferSuspensionMessage extends SerializableClass<TransferSuspens
   reason: Array<Multilanguage>;
 
   constructor(value: ITransferSuspensionMessage) {
-    super()
+    super();
     this.providerPid = value.providerPid;
     this.consumerPid = value.consumerPid;
     this.reason = value.reason;
@@ -247,7 +263,7 @@ export class TransferTerminationMessage extends SerializableClass<TransferTermin
   reason: Array<Multilanguage>;
 
   constructor(value: ITransferTerminationMessage) {
-    super()
+    super();
     this.providerPid = value.providerPid;
     this.consumerPid = value.consumerPid;
     this.code = value.code;

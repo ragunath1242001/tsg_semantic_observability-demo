@@ -75,7 +75,7 @@ const expected = {
       ],
       "odrl:duty": [{ "@type": "odrl:Duty", "odrl:action": "odrl:inform" }],
       "odrl:target": "urn:uuid:340eab1a-f3ee-471f-a0ad-beadddc521b6",
-    }
+    },
   ],
   "odrl:prohibition": [
     {

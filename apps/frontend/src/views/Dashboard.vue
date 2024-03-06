@@ -46,7 +46,8 @@ const initialize = async () => {
 };
 
 onMounted(async () => await initialize());
-</script><template>
+</script>
+<template>
   <div>
     <div class="card">
       <h1>Control Plane Dashboard</h1>

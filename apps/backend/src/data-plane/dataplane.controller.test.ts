@@ -5,9 +5,7 @@ import { plainToClass } from "class-transformer";
 import { DataPlaneService } from "./dataPlane.service";
 import { CatalogService } from "../dsp/catalog/catalog.service";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import {
-  DataPlaneDao,
-} from "../model/data-planes/dataPlanes.dao";
+import { DataPlaneDao } from "../model/data-planes/dataPlanes.dao";
 import {
   CatalogDao,
   CatalogRecordDao,
@@ -46,9 +44,7 @@ describe("DataPlaneController", () => {
           DataPlaneDao,
         ]),
       ],
-      controllers: [
-        DataPlaneController
-      ],
+      controllers: [DataPlaneController],
       providers: [
         DataPlaneService,
         CatalogService,
@@ -73,15 +69,15 @@ describe("DataPlaneController", () => {
   describe("/init", () => {
     it("Initialization of a new data plane should return 200", async () => {
       const result = await dataPlaneController.init({
-          dataplaneType: "http",
-          endpointPrefix: "https://",
-          callbackAddress: "https://httpbin.org/anything",
-          managementAddress: "https://httpbin.org/mgmt",
-          managementToken: "",
-          catalogSynchronization: "pull",
-          role: "consumer"
+        dataplaneType: "http",
+        endpointPrefix: "https://",
+        callbackAddress: "https://httpbin.org/anything",
+        managementAddress: "https://httpbin.org/mgmt",
+        managementToken: "",
+        catalogSynchronization: "pull",
+        role: "consumer",
       });
-      expect(result.identifier).toContain('urn:uuid:')
+      expect(result.identifier).toContain("urn:uuid:");
     });
   });
 });
