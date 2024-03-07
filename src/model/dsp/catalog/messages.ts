@@ -1,8 +1,18 @@
-import { IsNotEmpty, IsOptional, IsString, ValidateNested } from "class-validator";
+import {
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from "class-validator";
 import { Namespace, Serializable } from "../../decorators";
 import { Multilanguage, SerializableClass } from "../common";
 import { Catalog } from "./catalog";
-import { CatalogErrorDto, CatalogMessageDto, CatalogRequestMessageDto, DatasetRequestMessageDto } from "./messages.dto";
+import {
+  CatalogErrorDto,
+  CatalogMessageDto,
+  CatalogRequestMessageDto,
+  DatasetRequestMessageDto,
+} from "./messages.dto";
 
 export interface ICatalogError {
   code?: string;
@@ -20,8 +30,8 @@ export class CatalogError extends SerializableClass<CatalogErrorDto> {
   @IsOptional()
   reason?: Array<Multilanguage>;
 
-  constructor (value: ICatalogError) {
-    super()
+  constructor(value: ICatalogError) {
+    super();
     this.code = value.code;
     this.reason = value.reason;
   }
@@ -38,8 +48,8 @@ export class CatalogMessage extends SerializableClass<CatalogMessageDto> {
   @IsOptional()
   catalog?: Array<Catalog>;
 
-  constructor (value: ICatalogMessage) {
-    super()
+  constructor(value: ICatalogMessage) {
+    super();
     this.catalog = value.catalog;
   }
 }
@@ -60,8 +70,8 @@ export class CatalogRequestMessage extends SerializableClass<CatalogRequestMessa
   @IsOptional()
   filter?: Array<Filter>;
 
-  constructor (value: ICatalogRequestMessage) {
-    super()
+  constructor(value: ICatalogRequestMessage) {
+    super();
     this.filter = value.filter;
   }
 }
@@ -77,8 +87,8 @@ export class DatasetRequestMessage extends SerializableClass<DatasetRequestMessa
   @IsString()
   dataset: string;
 
-  constructor (value: IDatasetRequestMessage) {
-    super()
+  constructor(value: IDatasetRequestMessage) {
+    super();
     this.dataset = value.dataset;
   }
 }

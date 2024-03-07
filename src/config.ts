@@ -1,28 +1,36 @@
 import { Type } from "class-transformer";
-import { IsString, IsNumber, IsOptional, ValidateNested, IsDefined, IsUrl, Matches, ArrayMinSize } from "class-validator";
-
+import {
+  IsString,
+  IsNumber,
+  IsOptional,
+  ValidateNested,
+  IsDefined,
+  IsUrl,
+  Matches,
+  ArrayMinSize,
+} from "class-validator";
 
 export class ServerConfig {
   @IsString()
-  public readonly listen: string = '0.0.0.0';
+  public readonly listen: string = "0.0.0.0";
   @IsNumber()
   @Type()
   public readonly port: number = 3001;
   @IsString()
-  public readonly publicDomain: string = 'localhost';
+  public readonly publicDomain: string = "localhost";
   @IsString()
   public readonly publicAddress: string = `http://localhost:3001`;
 }
 
 export class ControlPlaneConfig {
   @IsString()
-  @IsUrl({require_tld: false})
+  @IsUrl({ require_tld: false })
   public readonly dataPlaneEndpoint!: string;
   @IsString()
-  @IsUrl({require_tld: false})
+  @IsUrl({ require_tld: false })
   public readonly managementEndpoint!: string;
   @IsString()
-  @IsUrl({require_tld: false})
+  @IsUrl({ require_tld: false })
   public readonly controlEndpoint!: string;
   @IsString()
   public readonly authorization!: string;
@@ -36,17 +44,17 @@ export class UserConfig {
 
   @IsString()
   @Matches(/^\$2[aby]?\$\d{1,2}\$[./A-Za-z0-9]{53}$/g)
-  public readonly password!: string
+  public readonly password!: string;
 }
 
 export class DatasetConfig {
   @IsString()
   @IsOptional()
-  public readonly id?: string
+  public readonly id?: string;
 
   @IsString()
   @IsDefined()
-  public readonly title!: string
+  public readonly title!: string;
 
   @ValidateNested()
   @Type(() => DistributionConfig)
@@ -57,23 +65,23 @@ export class DatasetConfig {
 export class DistributionConfig {
   @IsString()
   @IsOptional()
-  public readonly id?: string
+  public readonly id?: string;
 
   @IsString()
-  @IsUrl({require_tld: false})
-  public readonly backend!: string
+  @IsUrl({ require_tld: false })
+  public readonly backend!: string;
 
   @IsString()
-  public readonly version!: string
+  public readonly version!: string;
 
   @IsString()
   @IsUrl()
   @IsOptional()
-  public readonly openApiSpec?: string
+  public readonly openApiSpec?: string;
 
   @IsString()
   @IsOptional()
-  public readonly authorization?: string
+  public readonly authorization?: string;
 }
 
 export class RootConfig {
@@ -90,7 +98,7 @@ export class RootConfig {
   @ValidateNested()
   @Type(() => UserConfig)
   @ArrayMinSize(1)
-  public readonly users!: UserConfig[]
+  public readonly users!: UserConfig[];
 
   @ValidateNested()
   @Type(() => DatasetConfig)

@@ -1,57 +1,85 @@
 import crypto from "crypto";
 import { Id, Language, Serializable, Value } from "../decorators";
 import { serialize } from "../serialize";
-import { IsDateString, IsDecimal, IsNotEmpty, Matches, ValidationError, validateSync } from "class-validator";
-import { ContextDto, DecimalDto, DurationDto, MultilanguageDto, ReferenceDto, TimeDto, URIDto } from "./common.dto";
+import {
+  IsDateString,
+  IsDecimal,
+  IsNotEmpty,
+  Matches,
+  ValidationError,
+  validateSync,
+} from "class-validator";
+import {
+  ContextDto,
+  DecimalDto,
+  DurationDto,
+  MultilanguageDto,
+  ReferenceDto,
+  TimeDto,
+  URIDto,
+} from "./common.dto";
 import { Logger } from "@nestjs/common";
 
 export class ClassValidationError extends Error {
   errors: ValidationError[];
-  constructor(msg: string, errors: ValidationError[]){
-    super(msg)
+  constructor(msg: string, errors: ValidationError[]) {
+    super(msg);
     this.errors = errors;
   }
 }
 
-export class SerializableClass<OutType extends ContextDto> {  
+export class SerializableClass<OutType extends ContextDto> {
   validate() {
-    const validation = validateSync(this)
+    const validation = validateSync(this);
     if (validation.length > 0) {
-      Logger.warn(`Validation of ${validation[0].target ? validation[0].target.constructor.name : 'an object'} failed`, this.constructor.name)
-      Logger.debug(validation.map(v => v.toString(false, true, '', true)).join(''), this.constructor.name);
-      throw new ClassValidationError(`Validation error:\n${validation.map(v => v.toString()).join('')}`, validation)
+      Logger.warn(
+        `Validation of ${validation[0].target ? validation[0].target.constructor.name : "an object"} failed`,
+        this.constructor.name,
+      );
+      Logger.debug(
+        validation.map((v) => v.toString(false, true, "", true)).join(""),
+        this.constructor.name,
+      );
+      throw new ClassValidationError(
+        `Validation error:\n${validation.map((v) => v.toString()).join("")}`,
+        validation,
+      );
     }
   }
 
   async serialize(context = true): Promise<OutType> {
-    return serialize(this, context)
+    return serialize(this, context);
   }
 }
 
 export interface IReference {
-  id?: string
+  id?: string;
 }
 
 export interface IMultilanguage {
-  value: string
-  language: string
+  value: string;
+  language: string;
 }
 
-export class Reference<OutType extends ContextDto = ReferenceDto & ContextDto> extends SerializableClass<OutType> {
+export class Reference<
+  OutType extends ContextDto = ReferenceDto & ContextDto,
+> extends SerializableClass<OutType> {
   @Id()
-  id: string
+  id: string;
 
-  constructor (value: IReference | string) {
-    super()
-    if (typeof value === 'string') {
+  constructor(value: IReference | string) {
+    super();
+    if (typeof value === "string") {
       this.id = value;
     } else {
-      this.id = value.id  || `urn:uuid:${crypto.randomUUID()}`
+      this.id = value.id || `urn:uuid:${crypto.randomUUID()}`;
     }
   }
 }
 
-export class Multilanguage extends SerializableClass<MultilanguageDto & ContextDto> {
+export class Multilanguage extends SerializableClass<
+  MultilanguageDto & ContextDto
+> {
   @Value()
   @IsNotEmpty()
   value: string;
@@ -59,11 +87,11 @@ export class Multilanguage extends SerializableClass<MultilanguageDto & ContextD
   @IsNotEmpty()
   language: string;
 
-  constructor (value: IMultilanguage | string) {
-    super()
-    if (typeof value === 'string') {
+  constructor(value: IMultilanguage | string) {
+    super();
+    if (typeof value === "string") {
       this.value = value;
-      this.language = "en"
+      this.language = "en";
     } else {
       this.value = value.value;
       this.language = value.language;
@@ -78,9 +106,9 @@ export class Time extends SerializableClass<TimeDto & ContextDto> {
   @IsDateString()
   value: string;
 
-  constructor (value: string) {
-    super()
-    this.value = value
+  constructor(value: string) {
+    super();
+    this.value = value;
   }
 }
 
@@ -91,21 +119,23 @@ export class Decimal extends SerializableClass<DecimalDto & ContextDto> {
   @IsDecimal()
   value: string;
 
-  constructor (value: string) {
-    super()
-    this.value = value
+  constructor(value: string) {
+    super();
+    this.value = value;
   }
 }
 
 @Serializable("xsd:duration")
 export class Duration extends SerializableClass<DurationDto & ContextDto> {
   @Value()
-  @Matches(/^(-?)P(?=.)((\d+)Y)?((\d+)M)?((\d+)D)?(T(?=.)((\d+)H)?((\d+)M)?(\d*(\.\d+)?S)?)?$/)
+  @Matches(
+    /^(-?)P(?=.)((\d+)Y)?((\d+)M)?((\d+)D)?(T(?=.)((\d+)H)?((\d+)M)?(\d*(\.\d+)?S)?)?$/,
+  )
   value: string;
 
-  constructor (value: string) {
-    super()
-    this.value = value
+  constructor(value: string) {
+    super();
+    this.value = value;
   }
 }
 
@@ -114,9 +144,9 @@ export class URI extends SerializableClass<URIDto & ContextDto> {
   @Value()
   value: string;
 
-  constructor (value: string) {
-    super()
-    this.value = value
+  constructor(value: string) {
+    super();
+    this.value = value;
   }
 }
 

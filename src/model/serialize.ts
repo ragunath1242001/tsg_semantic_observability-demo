@@ -1,7 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import "reflect-metadata";
 import { Multilanguage, Reference } from "./dsp/common";
-import { serializableSymbol, idSymbol, languageSymbol, valueSymbol, namespaceSymbol, serializableTypes } from "./decorators";
+import {
+  serializableSymbol,
+  idSymbol,
+  languageSymbol,
+  valueSymbol,
+  namespaceSymbol,
+  serializableTypes,
+} from "./decorators";
 import { compact } from "./jsonld";
 
 export async function serialize(obj: any, root = true): Promise<any> {
@@ -17,8 +24,12 @@ export async function serialize(obj: any, root = true): Promise<any> {
   } catch (e) {
     serializableType = undefined;
   }
-  if (serializableType === undefined && '@type' in obj && obj['@type'] in serializableTypes) {
-    serializableType = serializableTypes[obj['@type']]
+  if (
+    serializableType === undefined &&
+    "@type" in obj &&
+    obj["@type"] in serializableTypes
+  ) {
+    serializableType = serializableTypes[obj["@type"]];
   }
   if (serializableType !== undefined) {
     let result: { [name: string]: any } = {
@@ -26,9 +37,9 @@ export async function serialize(obj: any, root = true): Promise<any> {
     };
     if (root) {
       result = {
-        '@context': 'https://w3id.org/dspace/v0.8/context.json',
-        ...result
-      }
+        "@context": "https://w3id.org/dspace/v0.8/context.json",
+        ...result,
+      };
     }
     const properties = Object.getOwnPropertyNames(obj);
     for (const property of properties) {
@@ -45,9 +56,16 @@ export async function serialize(obj: any, root = true): Promise<any> {
           } else if (Reflect.getMetadata(valueSymbol, obj, property)) {
             result["@value"] = value;
           } else {
-            const namespace = Reflect.getMetadata(namespaceSymbol, obj, property);
+            const namespace = Reflect.getMetadata(
+              namespaceSymbol,
+              obj,
+              property,
+            );
             if (namespace) {
-              result[`${namespace}:${property}`] = await serialize(value, false);
+              result[`${namespace}:${property}`] = await serialize(
+                value,
+                false,
+              );
             } else {
               result[`${property}`] = await serialize(value, false);
             }
@@ -59,16 +77,16 @@ export async function serialize(obj: any, root = true): Promise<any> {
     }
     return result;
   } else {
-    if (Object.keys(obj).length === 2 && 'value' in obj && 'language' in obj) {
+    if (Object.keys(obj).length === 2 && "value" in obj && "language" in obj) {
       return {
-        '@value': obj['value'],
-        '@language': obj['language']
-      }
+        "@value": obj["value"],
+        "@language": obj["language"],
+      };
     }
-    if (Object.keys(obj).length === 1 && Object.keys(obj)[0] === 'id') {
+    if (Object.keys(obj).length === 1 && Object.keys(obj)[0] === "id") {
       return {
-        '@id': obj['id']
-      }
+        "@id": obj["id"],
+      };
     }
     return obj;
   }
@@ -80,48 +98,62 @@ export async function deserialize<Type>(obj: any, root = true): Promise<Type> {
   }
 
   if (Array.isArray(obj)) {
-    return Promise.all(obj.map((entry) => deserialize(entry, false))) as Promise<Type>;
+    return Promise.all(
+      obj.map((entry) => deserialize(entry, false)),
+    ) as Promise<Type>;
   }
   if (typeof obj !== "object") {
     return obj as Type;
   }
-  const resolvedType = serializableTypes[obj['@type']]?.prototype
+  const resolvedType = serializableTypes[obj["@type"]]?.prototype;
 
   if (resolvedType === undefined) {
     if ("@value" in obj && "@language" in obj) {
-      return new Multilanguage({value: obj['@value'], language: obj['@language']}) as Type
+      return new Multilanguage({
+        value: obj["@value"],
+        language: obj["@language"],
+      }) as Type;
     } else if ("@id" in obj) {
-      return new Reference({id: obj['@id']}) as Type
+      return new Reference({ id: obj["@id"] }) as Type;
     } else {
-      return obj as Type
+      return obj as Type;
     }
   }
 
   if (Reflect.getMetadata(serializableSymbol, resolvedType)) {
-    let result: { [name: string]: any } = {}
-    const properties = Object.getOwnPropertyNames(new resolvedType.constructor({}, false));
+    let result: { [name: string]: any } = {};
+    const properties = Object.getOwnPropertyNames(
+      new resolvedType.constructor({}, false),
+    );
 
     for (const property of properties) {
       if (Reflect.getMetadata(idSymbol, resolvedType, property)) {
-        result[property] = obj['@id'];
+        result[property] = obj["@id"];
       } else if (Reflect.getMetadata(languageSymbol, resolvedType, property)) {
-        result[property] = obj['@language'];
+        result[property] = obj["@language"];
       } else if (Reflect.getMetadata(valueSymbol, resolvedType, property)) {
-        result = obj['@value'];
+        result = obj["@value"];
         break;
       } else {
-        const namespace = Reflect.getMetadata(namespaceSymbol, resolvedType, property);
+        const namespace = Reflect.getMetadata(
+          namespaceSymbol,
+          resolvedType,
+          property,
+        );
         if (namespace) {
-          result[property] = await deserialize(obj[`${namespace}:${property}`], false);
+          result[property] = await deserialize(
+            obj[`${namespace}:${property}`],
+            false,
+          );
         } else {
           result[property] = obj[property];
         }
       }
     }
 
-    const resultObject = new resolvedType.constructor(result, true)
+    const resultObject = new resolvedType.constructor(result, true);
     if (root) {
-      resultObject.validate()
+      resultObject.validate();
     }
     return resultObject;
   } else {

@@ -1,12 +1,25 @@
-import { IsDateString, IsNotEmpty, IsOptional, IsString, ValidateIf, ValidateNested } from "class-validator";
-import { Namespace, Serializable } from "../../decorators";
 import {
-  IReference,
-  Reference,
-  SerializableClass,
-  Value,
-} from "../common";
-import { Action, AgreementDto, ConstraintDto, DutyDto, OfferDto, PermissionDto, PolicyDto, ProhibitionDto, LeftOperand, Operator } from "./negotiation.dto";
+  IsDateString,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  ValidateIf,
+  ValidateNested,
+} from "class-validator";
+import { Namespace, Serializable } from "../../decorators";
+import { IReference, Reference, SerializableClass, Value } from "../common";
+import {
+  Action,
+  AgreementDto,
+  ConstraintDto,
+  DutyDto,
+  OfferDto,
+  PermissionDto,
+  PolicyDto,
+  ProhibitionDto,
+  LeftOperand,
+  Operator,
+} from "./negotiation.dto";
 import { ContextDto } from "../common.dto";
 
 export interface IConstraint {
@@ -34,7 +47,7 @@ export class Constraint extends SerializableClass<ConstraintDto & ContextDto> {
   @IsNotEmpty()
   rightOperandReference?: Reference;
 
-  constructor (value: IConstraint) {
+  constructor(value: IConstraint) {
     super();
     this.rightOperand = value.rightOperand;
     this.rightOperandReference = value.rightOperandReference;
@@ -55,7 +68,7 @@ export interface IProhibition extends IPolicyRule {
   target: string;
 }
 
-export type IDuty = IPolicyRule
+export type IDuty = IPolicyRule;
 
 export interface IPermission extends IPolicyRule {
   target: string;
@@ -63,7 +76,9 @@ export interface IPermission extends IPolicyRule {
 }
 
 @Serializable("odrl:PolicyRule")
-export class PolicyRule<OutType extends ContextDto> extends SerializableClass<OutType> {
+export class PolicyRule<
+  OutType extends ContextDto,
+> extends SerializableClass<OutType> {
   @Namespace("odrl")
   @ValidateNested()
   @IsOptional()
@@ -83,7 +98,7 @@ export class PolicyRule<OutType extends ContextDto> extends SerializableClass<Ou
   @IsOptional()
   constraint?: Array<Constraint>;
 
-  constructor (value: IPolicyRule) {
+  constructor(value: IPolicyRule) {
     super();
     this.assigner = value.assigner;
     this.assignee = value.assignee;
@@ -103,7 +118,7 @@ export class Permission extends PolicyRule<PermissionDto & ContextDto> {
   @IsOptional()
   duty?: Array<Duty>;
 
-  constructor (value: IPermission) {
+  constructor(value: IPermission) {
     super(value);
     this.target = value.target;
     this.duty = value.duty;
@@ -116,7 +131,7 @@ export class Prohibition extends PolicyRule<ProhibitionDto & ContextDto> {
   @IsNotEmpty()
   target: string;
 
-  constructor (value: IProhibition) {
+  constructor(value: IProhibition) {
     super(value);
     this.target = value.target;
   }
@@ -135,7 +150,9 @@ export interface IPolicy extends IReference {
 }
 
 @Serializable("odrl:Policy")
-export class Policy<OutType extends ContextDto = PolicyDto & ContextDto> extends Reference<OutType> {
+export class Policy<
+  OutType extends ContextDto = PolicyDto & ContextDto,
+> extends Reference<OutType> {
   @Namespace("odrl")
   @IsString()
   @IsOptional()
@@ -161,7 +178,7 @@ export class Policy<OutType extends ContextDto = PolicyDto & ContextDto> extends
   @IsOptional()
   obligation?: Array<Duty>;
 
-  constructor (value: IPolicy) {
+  constructor(value: IPolicy) {
     super(value);
     this.assigner = value.assigner;
     this.assignee = value.assignee;
@@ -182,7 +199,7 @@ export class Offer extends Policy<OfferDto> {
   @IsNotEmpty()
   assigner: string;
 
-  constructor (value: IOffer) {
+  constructor(value: IOffer) {
     super(value);
     this.assigner = value.assigner;
   }
@@ -215,7 +232,7 @@ export class Agreement extends Policy<AgreementDto> {
   @IsNotEmpty()
   providerId: string;
 
-  constructor (value: IAgreement) {
+  constructor(value: IAgreement) {
     super(value);
     this.assigner = value.assigner;
     this.assignee = value.assignee;

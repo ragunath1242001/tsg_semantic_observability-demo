@@ -1,7 +1,23 @@
-import { ArrayNotEmpty, IsNotEmpty, IsOptional, ValidateNested } from "class-validator";
+import {
+  ArrayNotEmpty,
+  IsNotEmpty,
+  IsOptional,
+  ValidateNested,
+} from "class-validator";
 import { Serializable, Namespace } from "../../decorators";
 import { Multilanguage, SerializableClass } from "../common";
-import { TransferCompletionMessageDto, TransferErrorDto, TransferProcessDto, TransferRequestMessageDto, TransferStartMessageDto, TransferSuspensionMessageDto, TransferTerminationMessageDto, TransferState, EndpointPropertyDto, DataAddressDto } from "./messages.dto";
+import {
+  TransferCompletionMessageDto,
+  TransferErrorDto,
+  TransferProcessDto,
+  TransferRequestMessageDto,
+  TransferStartMessageDto,
+  TransferSuspensionMessageDto,
+  TransferTerminationMessageDto,
+  TransferState,
+  EndpointPropertyDto,
+  DataAddressDto,
+} from "./messages.dto";
 
 export interface ITransferCompletionMessage {
   processId: string;
@@ -14,7 +30,7 @@ export class TransferCompletionMessage extends SerializableClass<TransferComplet
   processId: string;
 
   constructor(value: ITransferCompletionMessage) {
-    super()
+    super();
     this.processId = value.processId;
   }
 }
@@ -39,7 +55,7 @@ export class TransferError extends SerializableClass<TransferErrorDto> {
   reason?: Array<Multilanguage>;
 
   constructor(value: ITransferError) {
-    super()
+    super();
     this.processId = value.processId;
     this.code = value.code;
     this.reason = value.reason;
@@ -61,7 +77,7 @@ export class TransferProcess extends SerializableClass<TransferProcessDto> {
   transferState: TransferState;
 
   constructor(value: ITransferProcess) {
-    super()
+    super();
     this.processId = value.processId;
     this.transferState = value.transferState;
   }
@@ -76,7 +92,7 @@ export class EndpointProperty extends SerializableClass<EndpointPropertyDto> {
   @IsNotEmpty()
   value: string;
   constructor(value: IEndpointProperty) {
-    super()
+    super();
     this.name = value.name;
     this.value = value.value;
   }
@@ -85,7 +101,7 @@ export class EndpointProperty extends SerializableClass<EndpointPropertyDto> {
 export interface IDataAddress {
   endpointType: string;
   endpoint: string;
-  endpointProperties: Array<EndpointProperty>
+  endpointProperties: Array<EndpointProperty>;
 }
 
 @Serializable("dspace:DataAddress")
@@ -98,10 +114,10 @@ export class DataAddress extends SerializableClass<DataAddressDto> {
   endpoint: string;
   @Namespace("dspace")
   @IsNotEmpty()
-  endpointProperties: Array<EndpointProperty>
+  endpointProperties: Array<EndpointProperty>;
 
   constructor(value: IDataAddress) {
-    super()
+    super();
     this.endpointType = value.endpointType;
     this.endpoint = value.endpoint;
     this.endpointProperties = value.endpointProperties;
@@ -131,7 +147,7 @@ export class TransferRequestMessage extends SerializableClass<TransferRequestMes
   callbackAddress: string;
 
   constructor(value: ITransferRequestMessage) {
-    super()
+    super();
     this.agreementId = value.agreementId;
     this.format = value.format;
     this.dataAddress = value.dataAddress;
@@ -160,7 +176,7 @@ export class TransferStartMessage extends SerializableClass<TransferStartMessage
   dataAddress?: DataAddress;
 
   constructor(value: ITransferStartMessage) {
-    super()
+    super();
     this.processId = value.processId;
     this.dataAddress = value.dataAddress;
   }
@@ -182,7 +198,7 @@ export class TransferSuspensionMessage extends SerializableClass<TransferSuspens
   reason: Array<Multilanguage>;
 
   constructor(value: ITransferSuspensionMessage) {
-    super()
+    super();
     this.processId = value.processId;
     this.reason = value.reason;
   }
@@ -208,7 +224,7 @@ export class TransferTerminationMessage extends SerializableClass<TransferTermin
   reason: Array<Multilanguage>;
 
   constructor(value: ITransferTerminationMessage) {
-    super()
+    super();
     this.processId = value.processId;
     this.code = value.code;
     this.reason = value.reason;

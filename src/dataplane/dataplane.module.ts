@@ -5,7 +5,6 @@ import { DataPlaneService } from "./dataplane.service";
 @Module({
   imports: [],
   controllers: [DataPlaneTestController],
-  providers: [DataPlaneService]
-
+  providers: [DataPlaneService],
 })
 export class DataPlaneTestModule {}

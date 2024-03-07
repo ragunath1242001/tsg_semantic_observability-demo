@@ -4,15 +4,8 @@ import { ConfigModule } from "./config.module";
 import { HealthController } from "./health.controller";
 
 @Module({
-  imports: [
-    DataPlaneTestModule,
-    ConfigModule
-  ],
-  exports: [
-    DataPlaneTestModule
-  ],
-  controllers: [
-    HealthController
-  ]
+  imports: [DataPlaneTestModule, ConfigModule],
+  exports: [DataPlaneTestModule],
+  controllers: [HealthController],
 })
 export class AppModule {}

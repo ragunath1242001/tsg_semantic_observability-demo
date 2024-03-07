@@ -8,7 +8,13 @@ import {
   Permission,
   Prohibition,
 } from "./negotiation";
-import { Action, AgreementDto, OfferDto, LeftOperand, Operator } from "./negotiation.dto";
+import {
+  Action,
+  AgreementDto,
+  OfferDto,
+  LeftOperand,
+  Operator,
+} from "./negotiation.dto";
 
 test("Contract offer serialization", async () => {
   const offer = new Offer({
@@ -79,12 +85,11 @@ test("Contract offer serialization", async () => {
         "odrl:target": "urn:uuid:340eab1a-f3ee-471f-a0ad-beadddc521b6",
       },
     ],
-  }
+  };
   expect(serialized).toStrictEqual(expected);
   const deserialized = await deserialize<Offer>(serialized);
   expect(offer).toStrictEqual(deserialized);
 });
-
 
 test("Contract agreement serialization", async () => {
   const agreement = new Agreement({
@@ -161,7 +166,7 @@ test("Contract agreement serialization", async () => {
     "dspace:timestamp": "2023-01-01T00:00:00Z",
     "dspace:consumerId": "Consumer A",
     "dspace:providerId": "Provider 1",
-  }
+  };
   expect(serialized).toStrictEqual(expected);
   const deserialized = await deserialize<Agreement>(serialized);
   expect(agreement).toStrictEqual(deserialized);

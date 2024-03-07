@@ -11,7 +11,16 @@ import {
   TransferSuspensionMessage,
   TransferTerminationMessage,
 } from "./messages";
-import { TransferCompletionMessageDto, TransferErrorDto, TransferProcessDto, TransferRequestMessageDto, TransferStartMessageDto, TransferSuspensionMessageDto, TransferTerminationMessageDto, TransferState } from "./messages.dto";
+import {
+  TransferCompletionMessageDto,
+  TransferErrorDto,
+  TransferProcessDto,
+  TransferRequestMessageDto,
+  TransferStartMessageDto,
+  TransferSuspensionMessageDto,
+  TransferTerminationMessageDto,
+  TransferState,
+} from "./messages.dto";
 
 test("Transfer Completion Message", async () => {
   const transferCompletionMessage = new TransferCompletionMessage({
@@ -22,21 +31,17 @@ test("Transfer Completion Message", async () => {
     "@context": "https://w3id.org/dspace/v0.8/context.json",
     "@type": "dspace:TransferCompletionMessage",
     "dspace:processId": "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
-  }
+  };
   expect(serialized).toStrictEqual(expected);
   const deserialized = await deserialize<TransferCompletionMessage>(serialized);
-  expect(deserialized).toStrictEqual(
-    transferCompletionMessage
-  );
+  expect(deserialized).toStrictEqual(transferCompletionMessage);
 });
 
 test("Transfer Error", async () => {
   const transferError = new TransferError({
     processId: "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
     code: "123:A",
-    reason: [
-      new Multilanguage("Could not transfer"),
-    ],
+    reason: [new Multilanguage("Could not transfer")],
   });
   const serialized = await transferError.serialize();
   const expected: TransferErrorDto = {
@@ -50,7 +55,7 @@ test("Transfer Error", async () => {
         "@language": "en",
       },
     ],
-  }
+  };
   expect(serialized).toStrictEqual(expected);
   const deserialized = await deserialize<TransferError>(serialized);
   expect(deserialized).toStrictEqual(transferError);
@@ -67,12 +72,10 @@ test("Transfer Process", async () => {
     "@type": "dspace:TransferProcess",
     "dspace:processId": "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
     "dspace:transferState": TransferState.SUSPENDED,
-  }
+  };
   expect(serialized).toStrictEqual(expected);
   const deserialized = await deserialize<TransferProcess>(serialized);
-  expect(deserialized).toStrictEqual(
-    transferProcess
-  );
+  expect(deserialized).toStrictEqual(transferProcess);
 });
 
 test("Transfer Request Message", async () => {
@@ -86,9 +89,9 @@ test("Transfer Request Message", async () => {
       endpointProperties: [
         new EndpointProperty({
           name: "Authorization",
-          value: "Bearer TOKEN-ABCDEFG"
-        })
-      ]
+          value: "Bearer TOKEN-ABCDEFG",
+        }),
+      ],
     }),
   });
   const serialized = await transferRequestMessage.serialize();
@@ -102,18 +105,18 @@ test("Transfer Request Message", async () => {
       "@type": "dspace:DataAddress",
       "dspace:endpointType": "HTTP",
       "dspace:endpoint": "http://example.com",
-      "dspace:endpointProperties": [{
-        "@type": "dspace:EndpointProperty",
-        "dspace:name": "Authorization",
-        "dspace:value": "Bearer TOKEN-ABCDEFG"
-      }]
+      "dspace:endpointProperties": [
+        {
+          "@type": "dspace:EndpointProperty",
+          "dspace:name": "Authorization",
+          "dspace:value": "Bearer TOKEN-ABCDEFG",
+        },
+      ],
     },
-  }
+  };
   expect(serialized).toStrictEqual(expected);
   const deserialized = await deserialize<TransferRequestMessage>(serialized);
-  expect(deserialized).toStrictEqual(
-    transferRequestMessage
-  );
+  expect(deserialized).toStrictEqual(transferRequestMessage);
 });
 
 test("Transfer Start Message", async () => {
@@ -125,9 +128,9 @@ test("Transfer Start Message", async () => {
       endpointProperties: [
         new EndpointProperty({
           name: "Authorization",
-          value: "Bearer TOKEN-ABCDEFG"
-        })
-      ]
+          value: "Bearer TOKEN-ABCDEFG",
+        }),
+      ],
     }),
   });
   const serialized = await transferStartMessage.serialize();
@@ -139,26 +142,24 @@ test("Transfer Start Message", async () => {
       "@type": "dspace:DataAddress",
       "dspace:endpointType": "HTTP",
       "dspace:endpoint": "http://example.com",
-      "dspace:endpointProperties": [{
-        "@type": "dspace:EndpointProperty",
-        "dspace:name": "Authorization",
-        "dspace:value": "Bearer TOKEN-ABCDEFG"
-      }]
+      "dspace:endpointProperties": [
+        {
+          "@type": "dspace:EndpointProperty",
+          "dspace:name": "Authorization",
+          "dspace:value": "Bearer TOKEN-ABCDEFG",
+        },
+      ],
     },
-  }
+  };
   expect(serialized).toStrictEqual(expected);
   const deserialized = await deserialize<TransferStartMessage>(serialized);
-  expect(deserialized).toStrictEqual(
-    transferStartMessage
-  );
+  expect(deserialized).toStrictEqual(transferStartMessage);
 });
 
 test("Transfer Suspension Message", async () => {
   const transferSuspensionMessage = new TransferSuspensionMessage({
     processId: "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
-    reason: [
-      new Multilanguage("Network switching"),
-    ],
+    reason: [new Multilanguage("Network switching")],
   });
   const serialized = await transferSuspensionMessage.serialize();
   const expected: TransferSuspensionMessageDto = {
@@ -171,22 +172,17 @@ test("Transfer Suspension Message", async () => {
         "@language": "en",
       },
     ],
-  }
+  };
   expect(serialized).toStrictEqual(expected);
   const deserialized = await deserialize<TransferSuspensionMessage>(serialized);
-  expect(deserialized).toStrictEqual(
-    transferSuspensionMessage
-  );
+  expect(deserialized).toStrictEqual(transferSuspensionMessage);
 });
-
 
 test("Transfer Termination Message", async () => {
   const transferTerminationMessage = new TransferTerminationMessage({
     processId: "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
     code: "123:A",
-    reason: [
-      new Multilanguage("Network switching"),
-    ],
+    reason: [new Multilanguage("Network switching")],
   });
   const serialized = await transferTerminationMessage.serialize();
   const expected: TransferTerminationMessageDto = {
@@ -200,10 +196,9 @@ test("Transfer Termination Message", async () => {
         "@language": "en",
       },
     ],
-  }
+  };
   expect(serialized).toStrictEqual(expected);
-  const deserialized = await deserialize<TransferTerminationMessage>(serialized);
-  expect(deserialized).toStrictEqual(
-    transferTerminationMessage
-  );
+  const deserialized =
+    await deserialize<TransferTerminationMessage>(serialized);
+  expect(deserialized).toStrictEqual(transferTerminationMessage);
 });

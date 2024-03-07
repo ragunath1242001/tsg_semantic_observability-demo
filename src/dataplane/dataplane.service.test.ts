@@ -30,7 +30,7 @@ describe("Dataplane Service", () => {
         managementEndpoint: "http://localhost:3000/management",
         controlEndpoint: "http://localhost:3000",
         authorization: "Basic YWRtaW46YWRtaW4=",
-        initializationDelay: 1
+        initializationDelay: 1,
       },
       dataset: {
         title: "HTTPBin",
@@ -55,18 +55,18 @@ describe("Dataplane Service", () => {
             ...requestBody,
             identifier: "urn:uuid:4ab97081-665e-447e-88a1-791a185994b9",
           });
-        }
+        },
       ),
       http.post(
         `${config.controlPlane.dataPlaneEndpoint}/:id/catalog`,
         ({ request, params, cookies }) => {
           return HttpResponse.json(request.json());
-        }
+        },
       ),
       http.post("https://httpbin.org/anything/0.9.2/anything/test", () => {
         return HttpResponse.json({
           args: {
-            filter: "filterQueryString"
+            filter: "filterQueryString",
           },
           data: '{"test":"test2"}',
           files: {},
@@ -87,7 +87,7 @@ describe("Dataplane Service", () => {
           origin: "0.0.0.0",
           url: "https://httpbin.org/anything/0.9.2/anything/test",
         });
-      })
+      }),
     );
 
     server.listen({ onUnhandledRequest: "bypass" });
@@ -120,7 +120,7 @@ describe("Dataplane Service", () => {
         accept: "application/json",
       },
       query: {
-        'filter':'filterQueryString'
+        filter: "filterQueryString",
       } as qs.ParsedQs,
       body: {
         test: "test2",
@@ -134,12 +134,12 @@ describe("Dataplane Service", () => {
           callbackAddress: "http://127.0.0.1/test",
         }),
         "provider",
-        transferProcessId
+        transferProcessId,
       );
       transferProcessId = result.identifier;
       authorization =
         result.dataAddress?.properties?.find(
-          ({ name }) => name === "Authorization"
+          ({ name }) => name === "Authorization",
         )?.value || "UNKNOWN";
       expect(result.dataAddress).toBeDefined();
     });
@@ -153,9 +153,9 @@ describe("Dataplane Service", () => {
           "0.9.2",
           "anything/test",
           request,
-          response.res
-        )
-      ).rejects.toThrow('accessing is not allowed');
+          response.res,
+        ),
+      ).rejects.toThrow("accessing is not allowed");
     });
 
     it("Transfer start", async () => {
@@ -163,7 +163,7 @@ describe("Dataplane Service", () => {
         new TransferStartMessage({
           processId: transferProcessId,
         }),
-        transferProcessId
+        transferProcessId,
       );
     });
 
@@ -175,18 +175,18 @@ describe("Dataplane Service", () => {
         "0.9.2",
         "anything/test",
         request,
-        response.res
+        response.res,
       );
 
       await new Promise((r) => setTimeout(r, 50));
 
       const resultBody = JSON.parse(
         Buffer.from(
-          (response.res.write as jest.Mock).mock.calls[0][0]
-        ).toString()
+          (response.res.write as jest.Mock).mock.calls[0][0],
+        ).toString(),
       );
 
-      expect(resultBody["json"]["test"]).toBe('test2');
+      expect(resultBody["json"]["test"]).toBe("test2");
       expect(resultBody["headers"]["Content-Type"]).toBe("application/json");
       expect(resultBody["headers"]["Accept"]).toBe("application/json");
       expect(resultBody["args"]["filter"]).toBe("filterQueryString");
@@ -202,11 +202,11 @@ describe("Dataplane Service", () => {
           "0.9.2",
           "anything/test",
           request,
-          response.res
-        )
-      ).rejects.toThrow('Incorrect authorization header');
+          response.res,
+        ),
+      ).rejects.toThrow("Incorrect authorization header");
     });
-    
+
     it("Transfer execution on unknown transfer", async () => {
       const response = getMockRes();
       await expect(
@@ -216,9 +216,9 @@ describe("Dataplane Service", () => {
           "0.9.2",
           "anything/test",
           request,
-          response.res
-        )
-      ).rejects.toThrow('not found');
+          response.res,
+        ),
+      ).rejects.toThrow("not found");
     });
 
     it("Transfer completion", async () => {
@@ -226,7 +226,7 @@ describe("Dataplane Service", () => {
         new TransferCompletionMessage({
           processId: transferProcessId,
         }),
-        transferProcessId
+        transferProcessId,
       );
     });
 
@@ -239,9 +239,9 @@ describe("Dataplane Service", () => {
           "0.9.2",
           "anything/test",
           request,
-          response.res
-        )
-      ).rejects.toThrow('accessing is not allowed');
+          response.res,
+        ),
+      ).rejects.toThrow("accessing is not allowed");
     });
   });
 
@@ -255,7 +255,7 @@ describe("Dataplane Service", () => {
         accept: "application/json",
       },
       query: {
-        'filter':'filterQueryString'
+        filter: "filterQueryString",
       } as qs.ParsedQs,
       body: {
         test: "test2",
@@ -267,10 +267,11 @@ describe("Dataplane Service", () => {
         new TransferRequestMessage({
           agreementId: "urn:uuid:e785d4a8-2030-4a2b-b223-9881e35c0df7",
           format: "dspace:HTTP",
-          callbackAddress: "http://127.0.0.1/test"
+          callbackAddress: "http://127.0.0.1/test",
         }),
         "consumer",
-        transferProcessId);
+        transferProcessId,
+      );
       transferProcessId = result.identifier;
     });
 
@@ -282,9 +283,9 @@ describe("Dataplane Service", () => {
           "0.9.2",
           "anything/test",
           request,
-          response.res
-        )
-      ).rejects.toThrow('accessing is not allowed');
+          response.res,
+        ),
+      ).rejects.toThrow("accessing is not allowed");
     });
 
     it("Transfer start", async () => {
@@ -294,13 +295,16 @@ describe("Dataplane Service", () => {
           dataAddress: new DataAddress({
             endpoint: `https://httpbin.org/anything`,
             endpointType: "HTTP",
-            endpointProperties: [new EndpointProperty({
-              name: 'Authorization',
-              value: 'Bearer ABCDEF'
-            })]
-          })
+            endpointProperties: [
+              new EndpointProperty({
+                name: "Authorization",
+                value: "Bearer ABCDEF",
+              }),
+            ],
+          }),
         }),
-        transferProcessId)
+        transferProcessId,
+      );
     });
 
     it("Transfer execution", async () => {
@@ -310,21 +314,20 @@ describe("Dataplane Service", () => {
         "0.9.2",
         "anything/test",
         request,
-        response.res
+        response.res,
       );
       await new Promise((r) => setTimeout(r, 10));
       const resultBody = JSON.parse(
         Buffer.from(
-          (response.res.write as jest.Mock).mock.calls[0][0]
-        ).toString()
+          (response.res.write as jest.Mock).mock.calls[0][0],
+        ).toString(),
       );
-      expect(resultBody["json"]["test"]).toBe('test2');
+      expect(resultBody["json"]["test"]).toBe("test2");
       expect(resultBody["headers"]["Content-Type"]).toBe("application/json");
       expect(resultBody["headers"]["Accept"]).toBe("application/json");
       expect(resultBody["args"]["filter"]).toBe("filterQueryString");
       expect((response.res.status as jest.Mock).mock.calls[0][0]).toBe(200);
-    })
-
+    });
 
     it("Transfer execution on unknown transfer", async () => {
       const response = getMockRes();
@@ -334,9 +337,9 @@ describe("Dataplane Service", () => {
           "0.9.2",
           "anything/test",
           request,
-          response.res
-        )
-      ).rejects.toThrow('not found');
+          response.res,
+        ),
+      ).rejects.toThrow("not found");
     });
 
     it("Transfer completion", async () => {
@@ -344,7 +347,7 @@ describe("Dataplane Service", () => {
         new TransferCompletionMessage({
           processId: transferProcessId,
         }),
-        transferProcessId
+        transferProcessId,
       );
     });
 
@@ -356,10 +359,9 @@ describe("Dataplane Service", () => {
           "0.9.2",
           "anything/test",
           request,
-          response.res
-        )
-      ).rejects.toThrow('accessing is not allowed');
+          response.res,
+        ),
+      ).rejects.toThrow("accessing is not allowed");
     });
-
-  })
+  });
 });

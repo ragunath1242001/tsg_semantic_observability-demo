@@ -1,5 +1,13 @@
 import { Type } from "class-transformer";
-import { IsBoolean, IsDate, IsIn, IsObject, IsOptional, IsString, ValidateNested } from "class-validator";
+import {
+  IsBoolean,
+  IsDate,
+  IsIn,
+  IsObject,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from "class-validator";
 import { JWK } from "jose";
 
 export class Signature {
@@ -17,65 +25,69 @@ export class Signature {
 
 export class CredentialSubject {
   @IsString()
-  id!: string
+  id!: string;
   /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-  [key: string]: any
+  [key: string]: any;
 }
 
 export class Credential<T extends CredentialSubject> {
-  @IsString({each: true})
-  '@context': string[]
-  @IsString({each: true})
-  type!: string[]
+  @IsString({ each: true })
+  "@context": string[];
+  @IsString({ each: true })
+  type!: string[];
   @IsString()
   @IsOptional()
-  id?: string
+  id?: string;
   @ValidateNested()
   @Type(() => CredentialSubject)
-  credentialSubject!: T
+  credentialSubject!: T;
   @IsString()
-  issuer!: string
+  issuer!: string;
   @IsString()
-  expirationDate?: string
+  expirationDate?: string;
   @IsString()
-  issuanceDate!: string
+  issuanceDate!: string;
 }
 
 export class KeyInfo {
   @IsString()
-  id!: string
+  id!: string;
 
   @IsString()
-  @IsIn(['EdDSA','ES384','X509'])
-  type!: 'EdDSA' | 'ES384' | 'X509'
+  @IsIn(["EdDSA", "ES384", "X509"])
+  type!: "EdDSA" | "ES384" | "X509";
 
   @IsBoolean()
-  default!: boolean
+  default!: boolean;
 
   @IsObject()
-  publicKey!: JWK
+  publicKey!: JWK;
 
   @IsDate()
-  created!: Date
+  created!: Date;
 
   @IsDate()
-  modified!: Date
+  modified!: Date;
 }
 
-export class VerifiableCredential<T extends CredentialSubject = CredentialSubject> extends Credential<T> {
+export class VerifiableCredential<
+  T extends CredentialSubject = CredentialSubject,
+> extends Credential<T> {
   @ValidateNested()
   @Type(() => Signature)
   proof!: Signature;
 }
 
-export class VerifiablePresentation<T extends VerifiableCredential<CredentialSubject> = VerifiableCredential> {
-  @IsString({each: true})
-  '@context': string[]
-  @IsString({each: true})
-  '@type': string[]
+export class VerifiablePresentation<
+  T extends VerifiableCredential<CredentialSubject> = VerifiableCredential,
+> {
+  @IsString({ each: true })
+  "@context": string[];
+  @IsString({ each: true })
+  "@type": string[];
   @IsString()
   @IsOptional()
-  '@id'?: string
+  "@id"?: string;
   @ValidateNested()
   @Type(() => VerifiableCredential<CredentialSubject>)
   verifiableCredential!: T[] | T;
@@ -94,7 +106,7 @@ export class VerifiablePresentationJsonLd {
 
 export class PresentationValidation extends VerifiablePresentationJwt {
   @IsBoolean()
-  valid!: boolean
+  valid!: boolean;
 
   @IsBoolean()
   validateJWTSignature!: boolean;
@@ -102,13 +114,13 @@ export class PresentationValidation extends VerifiablePresentationJwt {
   @IsBoolean()
   validateJWTExpiryDate!: boolean;
 
-  @IsBoolean({each: true})
-  validateTrustAnchors!: Array<boolean>
+  @IsBoolean({ each: true })
+  validateTrustAnchors!: Array<boolean>;
 
   @IsIn([true, false, "undefined"])
   validateExpiryDate!: Array<boolean | "undefined">;
-  
-  @IsBoolean({each: true})
+
+  @IsBoolean({ each: true })
   validateCredentials!: Array<boolean>;
 
   @IsBoolean()

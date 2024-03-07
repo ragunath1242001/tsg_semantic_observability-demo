@@ -9,7 +9,14 @@ import {
   Time,
 } from "../common";
 import { Policy } from "../negotiation/negotiation";
-import { CatalogDto, CatalogRecordDto, DataServiceDto, DatasetDto, DistributionDto, ResourceDto } from "./catalog.dto";
+import {
+  CatalogDto,
+  CatalogRecordDto,
+  DataServiceDto,
+  DatasetDto,
+  DistributionDto,
+  ResourceDto,
+} from "./catalog.dto";
 import { ContextDto } from "../common.dto";
 
 export interface IResource extends IReference {
@@ -34,7 +41,9 @@ export interface IResource extends IReference {
 }
 
 @Serializable("dcat:Resource")
-export class Resource<OutType extends ContextDto = ResourceDto> extends Reference<OutType> {
+export class Resource<
+  OutType extends ContextDto = ResourceDto,
+> extends Reference<OutType> {
   @Namespace("dcat")
   @ValidateNested()
   @IsOptional()
@@ -100,7 +109,7 @@ export class Resource<OutType extends ContextDto = ResourceDto> extends Referenc
   @IsOptional()
   hasPolicy?: Array<Policy>;
 
-  constructor (value: IResource) {
+  constructor(value: IResource) {
     super(value);
     this.contactPoint = value.contactPoint;
     this.keyword = value.keyword;
@@ -144,7 +153,7 @@ export class DataService extends Resource<DataServiceDto> {
   @IsOptional()
   servesDataset?: Array<Dataset>;
 
-  constructor (value: IDataService) {
+  constructor(value: IDataService) {
     super(value);
     this.endpointDescription = value.endpointDescription;
     this.endpointURL = value.endpointURL;
@@ -237,7 +246,7 @@ export class Distribution extends Reference<DistributionDto & ContextDto> {
   @IsOptional()
   hasPolicy?: Array<Policy>;
 
-  constructor (value: IDistribution) {
+  constructor(value: IDistribution) {
     super(value);
     this.accessService = value.accessService;
     this.accessURL = value.accessURL;
@@ -269,7 +278,9 @@ export interface IDataset extends IResource {
 }
 
 @Serializable("dcat:Dataset")
-export class Dataset<OutType extends ContextDto = DatasetDto> extends Resource<OutType> {
+export class Dataset<
+  OutType extends ContextDto = DatasetDto,
+> extends Resource<OutType> {
   @Namespace("dcat")
   @ValidateNested()
   @IsOptional()
@@ -299,7 +310,7 @@ export class Dataset<OutType extends ContextDto = DatasetDto> extends Resource<O
   @IsOptional()
   wasGeneratedBy?: Reference;
 
-  constructor (value: IDataset) {
+  constructor(value: IDataset) {
     super(value);
     this.distribution = value.distribution;
     this.spatialResolutionInMeters = value.spatialResolutionInMeters;
@@ -347,7 +358,7 @@ export class CatalogRecord extends Reference<CatalogRecordDto & ContextDto> {
   @IsOptional()
   primaryTopic?: Resource;
 
-  constructor (value: ICatalogRecord) {
+  constructor(value: ICatalogRecord) {
     super(value);
     this.conformsTo = value.conformsTo;
     this.description = value.description;
@@ -394,7 +405,7 @@ export class Catalog extends Dataset<CatalogDto> {
   @IsOptional()
   homepage?: Reference;
 
-  constructor (value: ICatalog) {
+  constructor(value: ICatalog) {
     super(value);
     this.dataset = value.dataset;
     this.record = value.record;

@@ -1,25 +1,24 @@
 import { ContextDto, MultilanguageDto, ReferenceDto } from "../common.dto";
 import { AgreementDto, OfferDto } from "./negotiation.dto";
 
-
 export interface ContractRequestMessageDto extends ContextDto {
-  '@type': 'dspace:ContractRequestMessage'
-  'dspace:processId': string;
-  'odrl:offer': OfferDto;
-  'dspace:callbackAddress': string;
+  "@type": "dspace:ContractRequestMessage";
+  "dspace:processId": string;
+  "odrl:offer": OfferDto;
+  "dspace:callbackAddress": string;
 }
 
 export interface ContractOfferMessageDto extends ContextDto {
-  '@type': 'dspace:ContractOfferMessage'
-  'dspace:processId': string;
-  'odrl:offer': OfferDto;
-  'dspace:callbackAddress': string;
+  "@type": "dspace:ContractOfferMessage";
+  "dspace:processId": string;
+  "odrl:offer": OfferDto;
+  "dspace:callbackAddress": string;
 }
 export interface ContractNegotiationTerminationMessageDto extends ContextDto {
-  '@type': 'dspace:ContractNegotiationTerminationMessage'
-  'dspace:processId': string;
-  'dspace:code'?: string;
-  'dspace:reason': Array<MultilanguageDto | string>;
+  "@type": "dspace:ContractNegotiationTerminationMessage";
+  "dspace:processId": string;
+  "dspace:code"?: string;
+  "dspace:reason": Array<MultilanguageDto | string>;
 }
 
 export enum ContractNegotiationState {
@@ -29,28 +28,28 @@ export enum ContractNegotiationState {
   AGREED = "dspace:AGREED",
   VERIFIED = "dspace:VERIFIED",
   FINALIZED = "dspace:FINALIZED",
-  TERMINATED = "dspace:TERMINATED"
+  TERMINATED = "dspace:TERMINATED",
 }
 
 export interface ContractNegotiationDto extends ContextDto, ReferenceDto {
-  '@type': 'dspace:ContractNegotiation'
-  'dspace:processId': string;
-  'dspace:contractNegotiationState': ContractNegotiationState
+  "@type": "dspace:ContractNegotiation";
+  "dspace:processId": string;
+  "dspace:contractNegotiationState": ContractNegotiationState;
 }
 export enum NegotiationEvent {
   ACCEPTED = "dspace:ACCEPTED",
   FINALIZED = "dspace:FINALIZED",
 }
 export interface ContractNegotiationEventMessageDto extends ContextDto {
-  '@type': 'dspace:ContractNegotiationEventMessage'
-  'dspace:processId': string;
-  'dspace:eventType': NegotiationEvent;
+  "@type": "dspace:ContractNegotiationEventMessage";
+  "dspace:processId": string;
+  "dspace:eventType": NegotiationEvent;
 }
 export interface ContractNegotiationErrorDto extends ContextDto {
-  '@type': 'dspace:ContractNegotiationError'
-  'dspace:processId': string;
-  'dspace:reason'?: Array<MultilanguageDto | string>;
-  'dct:description'?: Array<string>;
+  "@type": "dspace:ContractNegotiationError";
+  "dspace:processId": string;
+  "dspace:reason"?: Array<MultilanguageDto | string>;
+  "dct:description"?: Array<string>;
 }
 export enum ProofTypes {
   EcdsaSecp256k1Signature2019 = "sec:EcdsaSecp256k1Signature2019",
@@ -71,17 +70,17 @@ export interface ProofDto {
   [key: string]: any;
 }
 export interface ContractAgreementVerificationMessageDto extends ContextDto {
-  '@type': 'dspace:ContractAgreementVerificationMessage'
-  'dspace:processId': string;
-  'cred:credentialSubject': {
+  "@type": "dspace:ContractAgreementVerificationMessage";
+  "dspace:processId": string;
+  "cred:credentialSubject": {
     "dspace:hash": string;
     /* eslint-disable @typescript-eslint/no-explicit-any */
     [key: string]: any;
   };
-  'sec:proof': ProofDto;
+  "sec:proof": ProofDto;
 }
 export interface ContractAgreementMessageDto extends ContextDto {
-  '@type': 'dspace:ContractAgreementMessage'
-  'dspace:processId': string;
-  'odrl:agreement': AgreementDto;
+  "@type": "dspace:ContractAgreementMessage";
+  "dspace:processId": string;
+  "odrl:agreement": AgreementDto;
 }

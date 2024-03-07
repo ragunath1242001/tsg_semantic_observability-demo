@@ -1,7 +1,29 @@
-import { IsNotEmpty, IsOptional, IsString, ValidateNested } from "class-validator";
+import {
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from "class-validator";
 import { Serializable, Namespace } from "../../decorators";
-import { IReference, Multilanguage, Reference, SerializableClass } from "../common";
-import { ContractNegotiationState, ContractAgreementMessageDto, ContractAgreementVerificationMessageDto, ContractNegotiationDto, ContractNegotiationErrorDto, ContractNegotiationEventMessageDto, ContractNegotiationTerminationMessageDto, ContractOfferMessageDto, ContractRequestMessageDto, NegotiationEvent, ProofTypes } from "./messages.dto";
+import {
+  IReference,
+  Multilanguage,
+  Reference,
+  SerializableClass,
+} from "../common";
+import {
+  ContractNegotiationState,
+  ContractAgreementMessageDto,
+  ContractAgreementVerificationMessageDto,
+  ContractNegotiationDto,
+  ContractNegotiationErrorDto,
+  ContractNegotiationEventMessageDto,
+  ContractNegotiationTerminationMessageDto,
+  ContractOfferMessageDto,
+  ContractRequestMessageDto,
+  NegotiationEvent,
+  ProofTypes,
+} from "./messages.dto";
 import { Agreement, Offer } from "./negotiation";
 
 export interface IContractRequestMessage {
@@ -24,8 +46,8 @@ export class ContractRequestMessage extends SerializableClass<ContractRequestMes
   @IsNotEmpty()
   callbackAddress: string;
 
-  constructor (value: IContractRequestMessage) {
-    super()
+  constructor(value: IContractRequestMessage) {
+    super();
     this.processId = value.processId;
     this.offer = value.offer;
     this.callbackAddress = value.callbackAddress;
@@ -51,8 +73,8 @@ export class ContractOfferMessage extends SerializableClass<ContractOfferMessage
   @IsNotEmpty()
   callbackAddress: string;
 
-  constructor (value: IContractOfferMessage) {
-    super()
+  constructor(value: IContractOfferMessage) {
+    super();
     this.processId = value.processId;
     this.offer = value.offer;
     this.callbackAddress = value.callbackAddress;
@@ -66,8 +88,7 @@ export interface IContractNegotiationTerminationMessage {
 }
 
 @Serializable("dspace:ContractNegotiationTerminationMessage")
-export class ContractNegotiationTerminationMessage extends SerializableClass<ContractNegotiationTerminationMessageDto>
-{
+export class ContractNegotiationTerminationMessage extends SerializableClass<ContractNegotiationTerminationMessageDto> {
   @Namespace("dspace")
   @IsNotEmpty()
   processId: string;
@@ -79,7 +100,7 @@ export class ContractNegotiationTerminationMessage extends SerializableClass<Con
   @ValidateNested()
   reason: Array<Multilanguage>;
 
-  constructor (value: IContractNegotiationTerminationMessage) {
+  constructor(value: IContractNegotiationTerminationMessage) {
     super();
     this.processId = value.processId;
     this.code = value.code;
@@ -89,7 +110,7 @@ export class ContractNegotiationTerminationMessage extends SerializableClass<Con
 
 export interface IContractNegotiation extends IReference {
   processId: string;
-  contractNegotiationState: ContractNegotiationState
+  contractNegotiationState: ContractNegotiationState;
 }
 
 @Serializable("dspace:ContractNegotiation")
@@ -101,13 +122,12 @@ export class ContractNegotiation extends Reference<ContractNegotiationDto> {
   @IsNotEmpty()
   contractNegotiationState: ContractNegotiationState;
 
-  constructor (value: IContractNegotiation) {
-    super(value)
+  constructor(value: IContractNegotiation) {
+    super(value);
     this.processId = value.processId;
     this.contractNegotiationState = value.contractNegotiationState;
   }
 }
-
 
 export interface IContractNegotiationEventMessage {
   processId: string;
@@ -115,8 +135,7 @@ export interface IContractNegotiationEventMessage {
 }
 
 @Serializable("dspace:ContractNegotiationEventMessage")
-export class ContractNegotiationEventMessage extends SerializableClass<ContractNegotiationEventMessageDto>
-{
+export class ContractNegotiationEventMessage extends SerializableClass<ContractNegotiationEventMessageDto> {
   @Namespace("dspace")
   @IsNotEmpty()
   processId: string;
@@ -124,7 +143,7 @@ export class ContractNegotiationEventMessage extends SerializableClass<ContractN
   @IsNotEmpty()
   eventType: NegotiationEvent;
 
-  constructor (value: IContractNegotiationEventMessage) {
+  constructor(value: IContractNegotiationEventMessage) {
     super();
     this.processId = value.processId;
     this.eventType = value.eventType;
@@ -147,12 +166,12 @@ export class ContractNegotiationError extends SerializableClass<ContractNegotiat
   @IsOptional()
   reason?: Array<Multilanguage>;
   @Namespace("dct")
-  @IsString({each: true})
+  @IsString({ each: true })
   @IsOptional()
   description?: Array<string>;
 
-  constructor (value: IContractNegotiationError) {
-    super()
+  constructor(value: IContractNegotiationError) {
+    super();
     this.processId = value.processId;
     this.reason = value.reason;
     this.description = value.description;
@@ -178,8 +197,7 @@ export interface IContractAgreementVerificationMessage {
 }
 
 @Serializable("dspace:ContractAgreementVerificationMessage")
-export class ContractAgreementVerificationMessage extends SerializableClass<ContractAgreementVerificationMessageDto>
-{
+export class ContractAgreementVerificationMessage extends SerializableClass<ContractAgreementVerificationMessageDto> {
   @Namespace("dspace")
   @IsNotEmpty()
   processId: string;
@@ -194,7 +212,7 @@ export class ContractAgreementVerificationMessage extends SerializableClass<Cont
   @IsNotEmpty()
   proof: Proof;
 
-  constructor (value: IContractAgreementVerificationMessage) {
+  constructor(value: IContractAgreementVerificationMessage) {
     super();
     this.processId = value.processId;
     this.credentialSubject = value.credentialSubject;
@@ -217,8 +235,8 @@ export class ContractAgreementMessage extends SerializableClass<ContractAgreemen
   @ValidateNested()
   agreement: Agreement;
 
-  constructor (value: IContractAgreementMessage) {
-    super()
+  constructor(value: IContractAgreementMessage) {
+    super();
     this.processId = value.processId;
     this.agreement = value.agreement;
   }

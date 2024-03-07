@@ -14,7 +14,7 @@ const context: ContextDefinition = {
   dspace: "https://w3id.org/dspace/v0.8/",
   "dspace:timestamp": { "@type": "xsd:dateTime" },
   "dspace:transportType": { "@type": "@id" },
-  "dct:title": {"@language": "en"},
+  "dct:title": { "@language": "en" },
   "dct:issued": { "@type": "xsd:dateTime" },
   "dct:modified": { "@type": "xsd:dateTime" },
   "dct:created": { "@type": "xsd:dateTime" },
@@ -33,44 +33,47 @@ const context: ContextDefinition = {
   "odrl:operator": { "@type": "@id" },
   "odrl:rightOperandReference": { "@type": "@id" },
   "odrl:profile": { "@type": "@id" },
-  "dspace:reason": { "@container": "@set"},
-  "dspace:catalog": { "@container": "@set"},
-  "dspace:filter": { "@container": "@set"},
-  "dspace:endpointProperties": { "@container": "@set"},
-  "dct:description": { "@container": "@set"},
-  "odrl:hasPolicy": { "@container": "@set"},
-  "odrl:permission": { "@container": "@set"},
-  "odrl:prohibition": { "@container": "@set"},
-  "odrl:duty": { "@container": "@set"},
-  "odrl:constraint": { "@container": "@set"},
-}
+  "dspace:reason": { "@container": "@set" },
+  "dspace:catalog": { "@container": "@set" },
+  "dspace:filter": { "@container": "@set" },
+  "dspace:endpointProperties": { "@container": "@set" },
+  "dct:description": { "@container": "@set" },
+  "odrl:hasPolicy": { "@container": "@set" },
+  "odrl:permission": { "@container": "@set" },
+  "odrl:prohibition": { "@container": "@set" },
+  "odrl:duty": { "@container": "@set" },
+  "odrl:constraint": { "@container": "@set" },
+};
 
 /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
 const nodeDocumentLoader = (jsonld as any).documentLoaders.node();
 const jsonldOptions: Options.DocLoader = {
   async documentLoader(url): Promise<RemoteDocument> {
-    
     if (url === "https://w3id.org/dspace/v0.8/context.json") {
       const remoteDocument: RemoteDocument = {
         contextUrl: undefined,
         document: {
-          "@context": context
+          "@context": context,
         },
-        documentUrl: url
-      }
+        documentUrl: url,
+      };
       return remoteDocument;
     }
     return nodeDocumentLoader(url);
   },
-}
+};
 
-
-export async function compact(document: JsonLdDocument, internal: boolean): Promise<JsonLdObj> {
+export async function compact(
+  document: JsonLdDocument,
+  internal: boolean,
+): Promise<JsonLdObj> {
   const expanded = await jsonld.expand(document, jsonldOptions);
-  const usingContext: ContextDefinition = (internal) ? context : {...context, '@language': 'en'};
+  const usingContext: ContextDefinition = internal
+    ? context
+    : { ...context, "@language": "en" };
   const compacted = await jsonld.compact(expanded, usingContext, {
-    ...jsonldOptions
-  })
-  compacted['@context'] = "https://w3id.org/dspace/v0.8/context.json";
+    ...jsonldOptions,
+  });
+  compacted["@context"] = "https://w3id.org/dspace/v0.8/context.json";
   return compacted;
 }

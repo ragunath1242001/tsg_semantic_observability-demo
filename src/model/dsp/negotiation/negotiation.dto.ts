@@ -106,57 +106,57 @@ export enum LeftOperand {
 }
 
 export interface ConstraintDto {
-  '@type': 'odrl:Constraint';
-  'odrl:leftOperand': LeftOperand;
-  'odrl:operator': Operator;
-  'odrl:rightOperand'?: ValueDto;
-  'odrl:rightOperandReference'?: string;
+  "@type": "odrl:Constraint";
+  "odrl:leftOperand": LeftOperand;
+  "odrl:operator": Operator;
+  "odrl:rightOperand"?: ValueDto;
+  "odrl:rightOperandReference"?: string;
 }
 
 export interface PolicyRuleDto {
-  '@type': 'odrl:Prohibition' | 'odrl:Duty' | 'odrl:Permission';
-  'odrl:assigner'?: string;
-  'odrl:assignee'?: string;
-  'odrl:action': Action;
-  'odrl:target'?: string;
-  'odrl:constraint'?: Array<ConstraintDto>;
+  "@type": "odrl:Prohibition" | "odrl:Duty" | "odrl:Permission";
+  "odrl:assigner"?: string;
+  "odrl:assignee"?: string;
+  "odrl:action": Action;
+  "odrl:target"?: string;
+  "odrl:constraint"?: Array<ConstraintDto>;
 }
 
 export interface ProhibitionDto extends PolicyRuleDto {
-  '@type': 'odrl:Prohibition';
-  'odrl:target': string;
+  "@type": "odrl:Prohibition";
+  "odrl:target": string;
 }
 
 export interface DutyDto extends PolicyRuleDto {
-  '@type': 'odrl:Duty';
+  "@type": "odrl:Duty";
 }
 
 export interface PermissionDto extends PolicyRuleDto {
-  '@type': 'odrl:Permission';
-  'odrl:target': string;
-  'odrl:duty'?: Array<DutyDto>;
+  "@type": "odrl:Permission";
+  "odrl:target": string;
+  "odrl:duty"?: Array<DutyDto>;
 }
 
 export interface PolicyDto extends ReferenceDto {
-  '@type': 'odrl:Offer' | 'odrl:Agreement';
-  'odrl:assigner'?: string;
-  'odrl:assignee'?: string;
-  'odrl:profile'?: string;
-  'odrl:permission'?: Array<PermissionDto>;
-  'odrl:prohibition'?: Array<ProhibitionDto>;
-  'odrl:obligation'?: Array<DutyDto>;
+  "@type": "odrl:Offer" | "odrl:Agreement";
+  "odrl:assigner"?: string;
+  "odrl:assignee"?: string;
+  "odrl:profile"?: string;
+  "odrl:permission"?: Array<PermissionDto>;
+  "odrl:prohibition"?: Array<ProhibitionDto>;
+  "odrl:obligation"?: Array<DutyDto>;
 }
 
 export interface OfferDto extends ContextDto, PolicyDto {
-  '@type': 'odrl:Offer';
-  'odrl:assigner': string;
+  "@type": "odrl:Offer";
+  "odrl:assigner": string;
 }
 
 export interface AgreementDto extends ContextDto, PolicyDto {
-  '@type': 'odrl:Agreement';
-  'odrl:assigner': string;
-  'odrl:assignee': string;
-  'dspace:timestamp': string;
-  'dspace:consumerId': string;
-  'dspace:providerId': string;
+  "@type": "odrl:Agreement";
+  "odrl:assigner": string;
+  "odrl:assignee": string;
+  "dspace:timestamp": string;
+  "dspace:consumerId": string;
+  "dspace:providerId": string;
 }

@@ -4,26 +4,35 @@ import axios from "axios";
 
 export class DSPError extends HttpException {
   err: unknown;
-  constructor(message: string | Record<string, any>, status: HttpStatus)
-  constructor(message: string | Record<string, any>, status: HttpStatus, err: unknown)
-  constructor(message: string | Record<string, any>, status: HttpStatus, name = "DSPError", err?: unknown) {
+  constructor(message: string | Record<string, any>, status: HttpStatus);
+  constructor(
+    message: string | Record<string, any>,
+    status: HttpStatus,
+    err: unknown,
+  );
+  constructor(
+    message: string | Record<string, any>,
+    status: HttpStatus,
+    name = "DSPError",
+    err?: unknown,
+  ) {
     let response: Record<string, any>;
-    if (typeof message === 'string') {
+    if (typeof message === "string") {
       response = {
         name: name,
         status: HttpStatus[status],
         code: status,
         message: message,
-        error: (err) ? `${err}` : undefined
-      }
+        error: err ? `${err}` : undefined,
+      };
     } else {
       response = {
         name: name,
         status: HttpStatus[status],
         code: status,
         ...message,
-        error: (err) ? `${err}` : undefined
-      }
+        error: err ? `${err}` : undefined,
+      };
     }
     super(response, status);
     this.err = err;
@@ -38,13 +47,13 @@ export class DSPClientError extends DSPError {
     let status: HttpStatus;
     if (axios.isAxiosError(err)) {
       if (err.response) {
-        errorMessage = `${message} (response): ${err.response.status} ${JSON.stringify(err.response.data)}`
+        errorMessage = `${message} (response): ${err.response.status} ${JSON.stringify(err.response.data)}`;
         status = err.response.status;
       } else {
         errorMessage = `${message} (request): ${err.message}`;
         status = HttpStatus.INTERNAL_SERVER_ERROR;
       }
-    } else { 
+    } else {
       errorMessage = `${message} (unknown): ${err}`;
       status = HttpStatus.INTERNAL_SERVER_ERROR;
     }
