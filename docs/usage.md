@@ -7,6 +7,7 @@ The commands assume the wallet is reachable at `http://localhost:3000/` with an 
 ## Request Verifiable Presentation
 
 To request a verifiable presentation, first request an access token at the wallet:
+
 ```bash
 curl --location 'http://localhost:3000/api/auth/login' \
   --header 'Content-Type: application/x-www-form-urlencoded' \
@@ -15,10 +16,11 @@ curl --location 'http://localhost:3000/api/auth/login' \
 ```
 
 The HTTP response should be similar to:
+
 ```json
 {
-    "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-    "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
 }
 ```
 
@@ -26,19 +28,23 @@ Store the `access_token` for usage in the remainder of the calls.
 
 The request the verifiable presentation as JWT:
 With parameters:
+
 - Credential ID: `did:web:localhost%3A3000#credential`
 - Format as JWT: `true`
 - Audience: `did:web:AUDIENCE`
+
 ```bash
 curl --location 'http://localhost:3000/api/presentations?credentialId=did%3Aweb%3Alocalhost%253A3000%23credential&asJwt=true&audience=did%3Aweb%3AAUDIENCE' \
   --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
 ```
+
 > _Note_: parameters `credentialId` & `audience` might require URL encoding
 
 The HTTP response should be similar to:
+
 ```json
 {
-    "vp": "eyJhbGciOiJFUzM4NCJ9..."
+  "vp": "eyJhbGciOiJFUzM4NCJ9..."
 }
 ```
 
@@ -47,6 +53,7 @@ This verifiable presentation in JWT format can now be exchanged with other conne
 ## Validate Verifiable Presentation
 
 For verification of verifiable presentations the following request can be made:
+
 ```bash
 curl --location 'http://localhost:3000/api/presentations/validate' \
 --header 'Content-Type: application/json' \
@@ -55,25 +62,21 @@ curl --location 'http://localhost:3000/api/presentations/validate' \
 ```
 
 The HTTP response should be similar to:
+
 ```json
 {
-    "vp": "eyJhbGciOiJFUzM4NCJ9...",
-    "valid": true,
-    "validateExpiryDate": [
-        true
-    ],
-    "validateCredentials": [
-        true
-    ],
-    "validateTrustAnchors": [
-        true
-    ],
-    "validateJWTSignature": true,
-    "validateJWTExpiryDate": true
+  "vp": "eyJhbGciOiJFUzM4NCJ9...",
+  "valid": true,
+  "validateExpiryDate": [true],
+  "validateCredentials": [true],
+  "validateTrustAnchors": [true],
+  "validateJWTSignature": true,
+  "validateJWTExpiryDate": true
 }
 ```
 
 Where the fields are:
+
 - `vp`: the original VP JWT requested
 - `valid`: summary of the validation of the VP
 - `validateExpiryDate`: list of booleans indicating whether the credentials in the VP are still within their expiry date

@@ -61,16 +61,18 @@ describe("DID Service", () => {
 
     server = setupServer(
       http.get("http://localhost/.well-known/did.json", () => {
-        return HttpResponse.json(didGenerator('did:web:localhost'));
+        return HttpResponse.json(didGenerator("did:web:localhost"));
       }),
       http.get("https://example.com/.well-known/did.json", () => {
-        return HttpResponse.json(didGenerator('did:web:example.com'));
+        return HttpResponse.json(didGenerator("did:web:example.com"));
       }),
       http.get("https://example.com/user/admin/did.json", () => {
-        return HttpResponse.json(didGenerator('did:web:example.com:user:admin'));
+        return HttpResponse.json(
+          didGenerator("did:web:example.com:user:admin")
+        );
       }),
       http.get("https://example.com/user/admin-internal/did.json", () => {
-        return new HttpResponse(null, { status: 404 })
+        return new HttpResponse(null, { status: 404 });
       })
     );
 
@@ -90,22 +92,24 @@ describe("DID Service", () => {
     });
     it("Resolve main DID", async () => {
       const didDocument = await didResolver.resolve("did:web:example.com");
-      expect(didDocument).toEqual(didGenerator('did:web:example.com'));
+      expect(didDocument).toEqual(didGenerator("did:web:example.com"));
     });
     it("Resolve localhost main DID", async () => {
       const didDocument = await didResolver.resolve("did:web:localhost");
-      expect(didDocument).toEqual(didGenerator('did:web:localhost'));
+      expect(didDocument).toEqual(didGenerator("did:web:localhost"));
     });
     it("Resolve subdirectory DID", async () => {
-      const didDocument = await didResolver.resolve("did:web:example.com:user:admin");
-      expect(didDocument).toEqual(didGenerator('did:web:example.com:user:admin'));
+      const didDocument = await didResolver.resolve(
+        "did:web:example.com:user:admin"
+      );
+      expect(didDocument).toEqual(
+        didGenerator("did:web:example.com:user:admin")
+      );
     });
     it("Resolve non existing DID", async () => {
       await expect(
-        didResolver.resolve(
-          "did:web:example.com:user:admin-internal"
-        )
+        didResolver.resolve("did:web:example.com:user:admin-internal")
       ).rejects.toThrow("Could not load DID document for");
-    })
+    });
   });
 });

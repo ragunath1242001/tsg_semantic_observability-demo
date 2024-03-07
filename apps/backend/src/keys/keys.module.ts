@@ -8,20 +8,9 @@ import { DidModule } from "../did/did.module.js";
 import { KeysManagementController } from "./keys.management.controller.js";
 
 @Module({
-  imports: [
-    AuthModule,
-    DidModule,
-    TypeOrmModule.forFeature([KeyMaterials]),
-  ],
-  controllers: [
-    KeysController,
-    KeysManagementController
-  ],
-  providers: [
-    KeysService
-  ],
-  exports: [
-    KeysService
-  ]
+  imports: [AuthModule, DidModule, TypeOrmModule.forFeature([KeyMaterials])],
+  controllers: [KeysController, KeysManagementController],
+  providers: [KeysService],
+  exports: [KeysService],
 })
 export class KeysModule {}

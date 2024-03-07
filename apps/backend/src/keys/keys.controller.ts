@@ -6,18 +6,19 @@ import { AppError } from "../utils/error.js";
 @Controller()
 @DisableJwtGuard(true)
 export class KeysController {
-  constructor(
-    private readonly keyService: KeysService,
-  ) {}
+  constructor(private readonly keyService: KeysService) {}
 
-  @Get('keys/:id')
-  @Header('content-type', 'application/x-x509-ca-cert')
-  async getCaChain(@Param('id') id: string): Promise<string> {
+  @Get("keys/:id")
+  @Header("content-type", "application/x-x509-ca-cert")
+  async getCaChain(@Param("id") id: string): Promise<string> {
     const key = await this.keyService.getKey(id);
     if (key.caChain) {
       return key.caChain;
     } else {
-      throw new AppError(`Key with id ${id} does not contain a CA chain`, HttpStatus.NOT_FOUND);
+      throw new AppError(
+        `Key with id ${id} does not contain a CA chain`,
+        HttpStatus.NOT_FOUND
+      );
     }
   }
 }

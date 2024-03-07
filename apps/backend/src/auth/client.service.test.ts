@@ -7,16 +7,16 @@ import { Clients } from "../model/clients.dao.js";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { MailService } from "./mail.service.js";
 import { JwtService } from "@nestjs/jwt";
-import { describe, expect, beforeAll, afterAll, it, jest } from '@jest/globals'
+import { describe, expect, beforeAll, afterAll, it, jest } from "@jest/globals";
 import { AppRole, ClientSignup } from "@libs/dtos";
 
-const sendMailMock = jest.fn(); 
+const sendMailMock = jest.fn();
 jest.mock("nodemailer");
 const nodemailer = require("nodemailer");
-nodemailer.createTransport.mockReturnValue({"sendMail": sendMailMock});
+nodemailer.createTransport.mockReturnValue({ sendMail: sendMailMock });
 
 describe("Client Service", () => {
-  let clientsService: ClientsService
+  let clientsService: ClientsService;
   beforeAll(async () => {
     await TypeOrmTestHelper.instance.setupTestDB();
     const config = plainToInstance(RootConfig, {
@@ -27,16 +27,16 @@ describe("Client Service", () => {
           secure: true,
           user: "test",
           password: "test",
-          from: "test@test.com"
+          from: "test@test.com",
         },
         title: "Test",
-        dataspace: "Test"
-      }
-    })
+        dataspace: "Test",
+      },
+    });
     const moduleRef: TestingModule = await Test.createTestingModule({
       imports: [
         TypeOrmTestHelper.instance.module([Clients]),
-        TypeOrmModule.forFeature([Clients])
+        TypeOrmModule.forFeature([Clients]),
       ],
       providers: [
         ClientsService,
@@ -44,68 +44,86 @@ describe("Client Service", () => {
         JwtService,
         {
           provide: RootConfig,
-          useValue: config
-        }
-      ]
+          useValue: config,
+        },
+      ],
     }).compile();
 
     clientsService = moduleRef.get(ClientsService);
     await clientsService.initialized;
     const initClients = plainToInstance(InitClientConfig, [
       {
-        id: 'init-1',
-        email: 'init-1@test.com',
-        secret: 'testsecret',
-        didId: 'did:web:test.com'
+        id: "init-1",
+        email: "init-1@test.com",
+        secret: "testsecret",
+        didId: "did:web:test.com",
       },
       {
-        id: 'init-2',
-        email: 'init-1@test.com',
-        secret: '$2a$12$HqB8QXE/iIpFdWl0x4W4Bey7judBWSfJQ1nIkqS1CxGUvMP1h/BdK'
-      }
+        id: "init-2",
+        email: "init-1@test.com",
+        secret: "$2a$12$HqB8QXE/iIpFdWl0x4W4Bey7judBWSfJQ1nIkqS1CxGUvMP1h/BdK",
+      },
     ]);
     await clientsService.init(initClients);
-  })
+  });
 
   afterAll(() => {
     TypeOrmTestHelper.instance.teardownTestDB();
-  })
+  });
 
   describe("Client CRUD", () => {
-    const clientId = 'test@test.com';
-    
+    const clientId = "test@test.com";
+
     it("Client Create", async () => {
-      await expect(clientsService.signup({} as ClientSignup)).rejects.toThrow('Missing information for signup')
-      await expect(clientsService.signup({
-        email: 'init-1',
-        secret: 'testsecret',
-        didId: 'did:web:test.com'
-      })).rejects.toThrow('already exists')
-      const client = await clientsService.signup({
-        email: clientId,
-        secret: 'testsecret',
-        didId: 'did:web:test.com'
-      }, false);
+      await expect(clientsService.signup({} as ClientSignup)).rejects.toThrow(
+        "Missing information for signup"
+      );
+      await expect(
+        clientsService.signup({
+          email: "init-1",
+          secret: "testsecret",
+          didId: "did:web:test.com",
+        })
+      ).rejects.toThrow("already exists");
+      const client = await clientsService.signup(
+        {
+          email: clientId,
+          secret: "testsecret",
+          didId: "did:web:test.com",
+        },
+        false
+      );
 
       expect(client).toBeDefined();
 
       const signupMail = (sendMailMock.mock.calls[0][0] as any).text;
       expect(signupMail).toBeDefined();
-      const codeMatch = signupMail.match(/code=(?<code>[0-9a-z]+)/) as {groups: Record<string, string>} | null;
+      const codeMatch = signupMail.match(/code=(?<code>[0-9a-z]+)/) as {
+        groups: Record<string, string>;
+      } | null;
       expect(codeMatch).toBeDefined();
-      const code = codeMatch!.groups['code'];
+      const code = codeMatch!.groups["code"];
 
-      await expect(clientsService.verify('', '')).rejects.toThrow('Incorrect data');
-      await expect(clientsService.verify('', 'unknown-client')).rejects.toThrow('Incorrect data');
-      await expect(clientsService.verify('incorrect-code', clientId)).rejects.toThrow('Expired or incorrect code');
+      await expect(clientsService.verify("", "")).rejects.toThrow(
+        "Incorrect data"
+      );
+      await expect(clientsService.verify("", "unknown-client")).rejects.toThrow(
+        "Incorrect data"
+      );
+      await expect(
+        clientsService.verify("incorrect-code", clientId)
+      ).rejects.toThrow("Expired or incorrect code");
 
       await clientsService.verify(code, clientId);
 
-      await clientsService.signup({
-        email: 'test-auto-activated@test.com',
-        secret: 'testsecret',
-        didId: 'did:web:test.com'
-      }, true);
+      await clientsService.signup(
+        {
+          email: "test-auto-activated@test.com",
+          secret: "testsecret",
+          didId: "did:web:test.com",
+        },
+        true
+      );
 
       const clients = await clientsService.getClients();
       expect(clients).toHaveLength(5);
@@ -116,27 +134,43 @@ describe("Client Service", () => {
 
       const resetMail = (sendMailMock.mock.calls[1][0] as any).text;
       expect(resetMail).toBeDefined();
-      const forgotMatch = resetMail.match(/forgot=(?<forgot>[0-9a-z]+)/) as {groups: Record<string, string>} | null;
+      const forgotMatch = resetMail.match(/forgot=(?<forgot>[0-9a-z]+)/) as {
+        groups: Record<string, string>;
+      } | null;
       expect(forgotMatch).toBeDefined();
-      const forgot = forgotMatch!.groups['forgot'];
+      const forgot = forgotMatch!.groups["forgot"];
 
-      await expect(clientsService.resetPassword({clientId: '', old: '', new: ''})).rejects.toThrow('Incorrect data');
-      await expect(clientsService.resetPassword({clientId: 'unknown-client', old: '', new: ''})).rejects.toThrow('Incorrect data');
-      await expect(clientsService.resetPassword({clientId: clientId, old: 'incorred-code', new: ''})).rejects.toThrow('Incorrect data');
+      await expect(
+        clientsService.resetPassword({ clientId: "", old: "", new: "" })
+      ).rejects.toThrow("Incorrect data");
+      await expect(
+        clientsService.resetPassword({
+          clientId: "unknown-client",
+          old: "",
+          new: "",
+        })
+      ).rejects.toThrow("Incorrect data");
+      await expect(
+        clientsService.resetPassword({
+          clientId: clientId,
+          old: "incorred-code",
+          new: "",
+        })
+      ).rejects.toThrow("Incorrect data");
 
       await clientsService.resetPassword({
         clientId: clientId,
         old: forgot,
-        new: 'testsecret'
+        new: "testsecret",
       });
     });
 
     it("Update DID id", async () => {
-      await clientsService.updateDidId('did:web:test-new.com', clientId);
+      await clientsService.updateDidId("did:web:test-new.com", clientId);
 
       const client = await clientsService.getClient(clientId);
       expect(client).toBeDefined();
-      expect(client?.didId).toBe('did:web:test-new.com');
+      expect(client?.didId).toBe("did:web:test-new.com");
     });
 
     it("Update roles", async () => {
@@ -168,58 +202,70 @@ describe("Client Service", () => {
       expect(client?.verified).toBe(false);
 
       await clientsService.activate(clientId);
-      
+
       client = await clientsService.getClient(clientId);
       expect(client).toBeDefined();
       expect(client?.verified).toBe(true);
     });
 
     it("Signin", async () => {
-      const client = await clientsService.signin(clientId, 'testsecret');
+      const client = await clientsService.signin(clientId, "testsecret");
 
       expect(client).toBeDefined();
       expect(client?.sub).toBe(clientId);
       expect(client?.email).toBe(clientId);
-      expect(client?.didId).toBe('did:web:test-new.com');
+      expect(client?.didId).toBe("did:web:test-new.com");
       expect(client?.roles.length).toBe(0);
 
       const minimalClient = await clientsService.getMinimalClient(clientId);
       expect(minimalClient).toEqual(client);
 
-      expect(await clientsService.signin(clientId, 'incorrect-secret')).toBeNull();
-      expect(await clientsService.signin('unknown-client', 'incorrect-secret')).toBeNull();
-    }); 
+      expect(
+        await clientsService.signin(clientId, "incorrect-secret")
+      ).toBeNull();
+      expect(
+        await clientsService.signin("unknown-client", "incorrect-secret")
+      ).toBeNull();
+    });
 
     it("Tokens", async () => {
       const tokens = await clientsService.login({
         sub: clientId,
         email: clientId,
-        didId: 'did:web:test-new.com',
-        roles: []
+        didId: "did:web:test-new.com",
+        roles: [],
       });
 
       expect(tokens).toBeDefined();
       expect(tokens.access_token).toBeDefined();
       expect(tokens.refresh_token).toBeDefined();
 
-      const refreshedTokens = await clientsService.validateRefreshToken(clientId, tokens.refresh_token);
+      const refreshedTokens = await clientsService.validateRefreshToken(
+        clientId,
+        tokens.refresh_token
+      );
       expect(refreshedTokens).toBeDefined();
       expect(refreshedTokens?.access_token).toBeDefined();
       expect(refreshedTokens?.refresh_token).toBeDefined();
 
-      expect(await clientsService.validateRefreshToken('unknown-client', '')).toBeNull();
-      
-      await expect(clientsService.validateRefreshToken(clientId, 'null')).rejects.toThrow('Access denied')
+      expect(
+        await clientsService.validateRefreshToken("unknown-client", "")
+      ).toBeNull();
+
+      await expect(
+        clientsService.validateRefreshToken(clientId, "null")
+      ).rejects.toThrow("Access denied");
     });
 
     it("Client removal", async () => {
       await clientsService.remove(clientId);
-      
+
       const clients = await clientsService.getClients();
       expect(clients).toHaveLength(4);
 
-      await expect(clientsService.remove(clientId)).rejects.toThrow('not found')
-    })
-
-  })
-})
+      await expect(clientsService.remove(clientId)).rejects.toThrow(
+        "not found"
+      );
+    });
+  });
+});

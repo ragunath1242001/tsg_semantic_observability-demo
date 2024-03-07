@@ -1,18 +1,18 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onMounted, ref } from "vue";
 import { KeyInfo } from "@libs/dtos";
-import { useToast } from 'primevue/usetoast';
-import { useConfirm } from 'primevue/useconfirm';
-import { JsonTreeView } from 'json-tree-view-vue3';
-import FormField from '../components/FormField.vue';
-import { axiosInstance } from '../store/index.js';
+import { useToast } from "primevue/usetoast";
+import { useConfirm } from "primevue/useconfirm";
+import { JsonTreeView } from "json-tree-view-vue3";
+import FormField from "../components/FormField.vue";
+import { axiosInstance } from "../store/index.js";
 
 interface KeyForm {
-  type: 'EdDSA' | 'ES384' | 'X509',
-  id: string,
-  default: boolean,
-  existingKey?: string,
-  existingCertificate?: string
+  type: "EdDSA" | "ES384" | "X509";
+  id: string;
+  default: boolean;
+  existingKey?: string;
+  existingCertificate?: string;
 }
 
 const toast = useToast();
@@ -21,75 +21,114 @@ const confirm = useConfirm();
 const keys = ref<KeyInfo[]>([]);
 const rawDialog = ref(false);
 const keyForm = ref<KeyForm>({
-  type: 'EdDSA',
-  id: 'key-',
-  default: false
+  type: "EdDSA",
+  id: "key-",
+  default: false,
 });
 const keyTypes = ref([
   {
-    value: 'EdDSA',
-    label: 'EdDSA (Edwards-curve DSA)'
+    value: "EdDSA",
+    label: "EdDSA (Edwards-curve DSA)",
   },
   {
-    value: 'ES384',
-    label: 'ES384 (P-384 curve DSA)'
+    value: "ES384",
+    label: "ES384 (P-384 curve DSA)",
   },
   {
-    value: 'X509',
-    label: 'RSA (X.509)'
+    value: "X509",
+    label: "RSA (X.509)",
   },
 ]);
 
 const loadKeys = async () => {
   try {
-    const response = await axiosInstance<KeyInfo[]>('management/keys');
+    const response = await axiosInstance<KeyInfo[]>("management/keys");
     keys.value = response.data;
   } catch (err) {
-    toast.add({severity: 'warn', summary: 'API error', detail: 'Could not load keys', life: 10000});
+    toast.add({
+      severity: "warn",
+      summary: "API error",
+      detail: "Could not load keys",
+      life: 10000,
+    });
   }
-}
-
+};
 
 const setDefaultKey = async (keyId: string) => {
   try {
-    await axiosInstance.put(`management/keys/${encodeURIComponent(keyId)}/default`);
+    await axiosInstance.put(
+      `management/keys/${encodeURIComponent(keyId)}/default`
+    );
     await loadKeys();
-    toast.add({severity: 'success', summary: 'Success', detail: 'Default key updated', life: 3000})
+    toast.add({
+      severity: "success",
+      summary: "Success",
+      detail: "Default key updated",
+      life: 3000,
+    });
   } catch (err) {
-    toast.add({severity: 'warn', summary: 'API error', detail: 'Could not update default key', life: 10000});
+    toast.add({
+      severity: "warn",
+      summary: "API error",
+      detail: "Could not update default key",
+      life: 10000,
+    });
   }
-}
+};
 
 const deleteKey = async (keyId: string) => {
   confirm.require({
-    header: 'Are you sure you want to delete this key?',
-    message: 'Existing credentials signed with this key cannotbe used for verifiable presentations anymore!',
-    icon: 'pi pi-info-circle',
-    rejectLabel: 'Cancel',
-    acceptLabel: 'Delete',
-    rejectClass: 'p-button-secondary p-button-outlined',
-    acceptClass: 'p-button-danger',
+    header: "Are you sure you want to delete this key?",
+    message:
+      "Existing credentials signed with this key cannotbe used for verifiable presentations anymore!",
+    icon: "pi pi-info-circle",
+    rejectLabel: "Cancel",
+    acceptLabel: "Delete",
+    rejectClass: "p-button-secondary p-button-outlined",
+    acceptClass: "p-button-danger",
     accept: async () => {
       try {
-        await axiosInstance.delete(`management/keys/${encodeURIComponent(keyId)}`);
+        await axiosInstance.delete(
+          `management/keys/${encodeURIComponent(keyId)}`
+        );
         await loadKeys();
-        toast.add({severity: 'success', summary: 'Success', detail: 'Key deleted', life: 3000})
+        toast.add({
+          severity: "success",
+          summary: "Success",
+          detail: "Key deleted",
+          life: 3000,
+        });
       } catch (err) {
-        toast.add({severity: 'warn', summary: 'API error', detail: 'Could not delete key', life: 10000});
+        toast.add({
+          severity: "warn",
+          summary: "API error",
+          detail: "Could not delete key",
+          life: 10000,
+        });
       }
-    }
-  })
-}
+    },
+  });
+};
 
 const addKey = async () => {
   try {
-    await axiosInstance.post('management/keys', keyForm.value);
+    await axiosInstance.post("management/keys", keyForm.value);
     await loadKeys();
-    toast.add({severity: 'success', summary: 'Success', detail: 'Key added', life: 3000})
+    toast.add({
+      severity: "success",
+      summary: "Success",
+      detail: "Key added",
+      life: 3000,
+    });
   } catch (err) {
-    toast.add({severity: 'warn', summary: 'API error', detail: 'Could not add key', life: 10000});
+    toast.add({
+      severity: "warn",
+      summary: "API error",
+      detail: "Could not add key",
+      life: 10000,
+    });
   }
-}
+};
 
 onMounted(async () => {
   await loadKeys();
@@ -100,32 +139,62 @@ onMounted(async () => {
   <div>
     <Card>
       <template #title>Keys</template>
-      <template #subtitle>The current keys registered for this Wallet instance</template>
+      <template #subtitle
+        >The current keys registered for this Wallet instance</template
+      >
       <template #content>
-        <DataTable :value="keys" sort-field="id" :sort-order="1" paginator :rows="10">
+        <DataTable
+          :value="keys"
+          sort-field="id"
+          :sort-order="1"
+          paginator
+          :rows="10"
+        >
           <Column field="id" header="ID" />
           <Column field="type" header="Type" />
-          <Column field="default" header="Default" >
+          <Column field="default" header="Default">
             <template #body="props">
-              <i v-if="props.data.default" class="pi pi-check-circle text-green-500" />
+              <i
+                v-if="props.data.default"
+                class="pi pi-check-circle text-green-500"
+              />
               <i v-else class="pi pi-times-circle text-red-500" />
             </template>
           </Column>
           <Column field="algorithm" header="Algorithm">
             <template #body="props">
-              <code>{{ props.data.publicKey.kty }} {{ props.data.publicKey.crv || props.data.publicKey.alg }}</code>
+              <code
+                >{{ props.data.publicKey.kty }}
+                {{ props.data.publicKey.crv || props.data.publicKey.alg }}</code
+              >
             </template>
           </Column>
           <Column field="actions" header="Actions">
             <template #body="props">
-              <Button severity="primary" @click="setDefaultKey(props.data.id)" :disabled="props.data.default">Default</Button>
-              <Button class="ml-3" severity="danger" icon="pi pi-times" :disabled="props.data.default" @click="deleteKey(props.data.id)" />
+              <Button
+                severity="primary"
+                @click="setDefaultKey(props.data.id)"
+                :disabled="props.data.default"
+                >Default</Button
+              >
+              <Button
+                class="ml-3"
+                severity="danger"
+                icon="pi pi-times"
+                :disabled="props.data.default"
+                @click="deleteKey(props.data.id)"
+              />
             </template>
           </Column>
         </DataTable>
         <Button class="mt-4" label="Show raw keys" @click="rawDialog = true" />
-        <Dialog v-model:visible="rawDialog" modal header="Raw keys" :style="{width: '90vw', maxWidth: '75rem'}">
-          <JsonTreeView 
+        <Dialog
+          v-model:visible="rawDialog"
+          modal
+          header="Raw keys"
+          :style="{ width: '90vw', maxWidth: '75rem' }"
+        >
+          <JsonTreeView
             :data="JSON.stringify(keys)"
             color-scheme="dark"
             root-key="Keys"
@@ -139,38 +208,45 @@ onMounted(async () => {
       <template #content>
         <form @submit.prevent="addKey">
           <FormField label="Type" v-slot="props">
-            <Dropdown :id="props.id" v-model="keyForm.type" :options="keyTypes" option-label="label" option-value="value" />
+            <Dropdown
+              :id="props.id"
+              v-model="keyForm.type"
+              :options="keyTypes"
+              option-label="label"
+              option-value="value"
+            />
           </FormField>
           <FormField label="Key ID" v-slot="props">
-            <InputText
-              :id="props.id"
-              class="w-full"
-              v-model="keyForm.id"
-              />
+            <InputText :id="props.id" class="w-full" v-model="keyForm.id" />
           </FormField>
           <FormField label="Default" v-slot="props">
-            <InputSwitch 
-              :id="props.id"
-              v-model="keyForm.default"
-              />
+            <InputSwitch :id="props.id" v-model="keyForm.default" />
           </FormField>
-          <FormField label="Existing key (PKCS#8)" v-slot="props"  v-if="keyForm.type === 'X509'">
+          <FormField
+            label="Existing key (PKCS#8)"
+            v-slot="props"
+            v-if="keyForm.type === 'X509'"
+          >
             <Textarea
               :id="props.id"
               v-model="keyForm.existingKey"
               class="w-full"
-              style="font-family: monospace;"
+              style="font-family: monospace"
               rows="10"
-              />
+            />
           </FormField>
-          <FormField label="Existing certificate (chain) (PEM)" v-slot="props"  v-if="keyForm.type === 'X509'">
+          <FormField
+            label="Existing certificate (chain) (PEM)"
+            v-slot="props"
+            v-if="keyForm.type === 'X509'"
+          >
             <Textarea
               :id="props.id"
               v-model="keyForm.existingCertificate"
               class="w-full"
-              style="font-family: monospace;"
+              style="font-family: monospace"
               rows="10"
-              />
+            />
           </FormField>
           <FormField no-label>
             <Button label="Add key" type="submit" />
@@ -181,6 +257,4 @@ onMounted(async () => {
   </div>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

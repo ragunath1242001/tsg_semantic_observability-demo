@@ -12,13 +12,14 @@ import { IssuanceModule } from "./issuance/issuance.module.js";
 import { KeysModule } from "./keys/keys.module.js";
 import { PresentationModule } from "./presentation/presentation.module.js";
 
-
-const embeddedFrontend = (process.env['EMBEDDED_FRONTEND']) ? [
-  ServeStaticModule.forRoot({
-    rootPath: process.env['EMBEDDED_FRONTEND'],
-    exclude: ['/api/(.*)', '/.well-known/(.*)'],
-  })
- ] : []
+const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
+  ? [
+      ServeStaticModule.forRoot({
+        rootPath: process.env["EMBEDDED_FRONTEND"],
+        exclude: ["/api/(.*)", "/.well-known/(.*)"],
+      }),
+    ]
+  : [];
 
 @Module({
   imports: [
@@ -27,7 +28,7 @@ const embeddedFrontend = (process.env['EMBEDDED_FRONTEND']) ? [
     TypeOrmModule.forRoot({
       ...config.db,
       autoLoadEntities: true,
-      synchronize: true
+      synchronize: true,
     }),
     AuthModule,
     CredentialsModule,
@@ -35,11 +36,9 @@ const embeddedFrontend = (process.env['EMBEDDED_FRONTEND']) ? [
     IssuanceModule,
     KeysModule,
     PresentationModule,
-    ...embeddedFrontend
+    ...embeddedFrontend,
   ],
-  controllers: [
-    HealthController
-  ],
+  controllers: [HealthController],
   exports: [
     AuthModule,
     CredentialsModule,
@@ -47,11 +46,11 @@ const embeddedFrontend = (process.env['EMBEDDED_FRONTEND']) ? [
     IssuanceModule,
     KeysModule,
     PresentationModule,
-  ]
+  ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(RequestContextMiddleware).forRoutes('*');
+    consumer.apply(RequestContextMiddleware).forRoutes("*");
     consumer.apply(LoggerMiddleware).forRoutes("*");
   }
 }

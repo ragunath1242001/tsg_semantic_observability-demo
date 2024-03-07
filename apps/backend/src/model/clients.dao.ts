@@ -2,36 +2,35 @@ import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 import { MetaEntity } from "./common.dao.js";
 import { AppRole } from "@libs/dtos";
 
-
 @Entity()
 export class Clients extends MetaEntity {
   @PrimaryGeneratedColumn()
-  id!: number
+  id!: number;
 
-  @Column({unique: true})
-  clientId!: string
-
-  @Column()
-  clientSecret!: string
+  @Column({ unique: true })
+  clientId!: string;
 
   @Column()
-  didId!: string
+  clientSecret!: string;
+
+  @Column()
+  didId!: string;
 
   @Column("simple-array")
-  roles!: AppRole[]
+  roles!: AppRole[];
 
-  @Column({nullable: true})
-  refreshToken?: string
-
-  @Column()
-  email!: string
+  @Column({ nullable: true })
+  refreshToken?: string;
 
   @Column()
-  verified!: boolean
+  email!: string;
 
-  @Column({nullable: true})
-  verificationCode?: string
+  @Column()
+  verified!: boolean;
 
-  @Column({nullable: true})
-  verificationExpiration?: Date
+  @Column({ nullable: true })
+  verificationCode?: string;
+
+  @Column({ nullable: true })
+  verificationExpiration?: Date;
 }

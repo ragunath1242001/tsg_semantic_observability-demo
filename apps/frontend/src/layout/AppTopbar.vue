@@ -68,7 +68,7 @@ const isOutsideClicked = (event) => {
 };
 
 const logout = async () => {
-  await store.dispatch('logout')
+  await store.dispatch("logout");
   router.go(0);
 };
 </script>

@@ -5,7 +5,7 @@ import { jwtSecrets } from "./auth.module.js";
 import { ClientsService } from "./client.service.js";
 
 @Injectable()
-export class AccessTokenStrategy extends PassportStrategy(Strategy, 'jwt') {
+export class AccessTokenStrategy extends PassportStrategy(Strategy, "jwt") {
   constructor(private readonly authService: ClientsService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),

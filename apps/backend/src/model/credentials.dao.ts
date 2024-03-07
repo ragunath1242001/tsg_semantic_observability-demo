@@ -10,28 +10,28 @@ export class DIDDocuments extends MetaEntity {
   id!: number;
 
   @Column("simple-json")
-  document!: DIDDocument
+  document!: DIDDocument;
 }
 
 @Entity()
 export class KeyMaterials extends MetaEntity {
   @PrimaryColumn()
-  id!: string
+  id!: string;
 
   @Column()
-  type!: 'EdDSA' | 'ES384' | 'X509'
+  type!: "EdDSA" | "ES384" | "X509";
 
   @Column()
-  default!: boolean
+  default!: boolean;
 
   @Column("simple-json")
-  privateKey!: JWK
+  privateKey!: JWK;
 
   @Column("simple-json")
-  publicKey!: JWK
+  publicKey!: JWK;
 
-  @Column({nullable: true})
-  caChain?: string
+  @Column({ nullable: true })
+  caChain?: string;
 }
 
 @Entity()
@@ -43,8 +43,8 @@ export class Credentials extends MetaEntity {
   targetDid!: string;
 
   @Column("simple-json")
-  credential!: VerifiableCredential<CredentialSubject>
+  credential!: VerifiableCredential<CredentialSubject>;
 
   @Column("boolean")
-  selfIssued!: boolean
+  selfIssued!: boolean;
 }

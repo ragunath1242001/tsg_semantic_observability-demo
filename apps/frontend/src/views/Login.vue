@@ -20,7 +20,7 @@ interface LoginForms {
   };
   change: {
     password: string;
-  }
+  };
 }
 
 const loginForm = ref<HTMLFormElement>(null);
@@ -30,7 +30,7 @@ const resetPasswordForm = ref<HTMLFormElement>(null);
 
 const toast = useToast();
 
-const currentForm = ref<'login' | 'registration' | 'reset' | 'change'>('login')
+const currentForm = ref<"login" | "registration" | "reset" | "change">("login");
 const resetCode = ref<string | null>(null);
 const resetClient = ref<string | null>(null);
 const forms = ref<LoginForms>({
@@ -45,13 +45,12 @@ const forms = ref<LoginForms>({
   },
   reset: {
     clientId: "",
-    email: ""
+    email: "",
   },
   change: {
-    password: ""
-  }
+    password: "",
+  },
 });
-
 
 const logoUrl = computed(() => {
   return "layout/images/logo-white.svg";
@@ -59,38 +58,72 @@ const logoUrl = computed(() => {
 
 onMounted(async () => {
   const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.has('action') && urlParams.get('action') === 'verify') {
-      try {
-        await axiosInstance.post(`auth/verify?clientId=${encodeURIComponent(urlParams.get('clientId') || '-')}&code=${encodeURIComponent(urlParams.get('code') || '-')}`);
-        toast.add({severity: 'success', summary: 'Verified', detail: 'Email address verified, you can now login', life: 5000});
-        router.push("/");
-      } catch (e) {
-        toast.add({severity: 'error', summary: 'Verification failed', detail: 'Cannot verify account', life: 5000});
-      }
+  if (urlParams.has("action") && urlParams.get("action") === "verify") {
+    try {
+      await axiosInstance.post(
+        `auth/verify?clientId=${encodeURIComponent(
+          urlParams.get("clientId") || "-"
+        )}&code=${encodeURIComponent(urlParams.get("code") || "-")}`
+      );
+      toast.add({
+        severity: "success",
+        summary: "Verified",
+        detail: "Email address verified, you can now login",
+        life: 5000,
+      });
+      router.push("/");
+    } catch (e) {
+      toast.add({
+        severity: "error",
+        summary: "Verification failed",
+        detail: "Cannot verify account",
+        life: 5000,
+      });
     }
-    if (urlParams.has('forgot') && urlParams.has('clientId')) {
-      resetCode.value = urlParams.get('forgot');
-      resetClient.value = urlParams.get('clientId');
-    }
-    if (urlParams.has('verified')) {
-      toast.add({severity: 'success', summary: 'Verified', detail: 'Email address verified, you can now login', life: 5000});
-    }
-})
+  }
+  if (urlParams.has("forgot") && urlParams.has("clientId")) {
+    resetCode.value = urlParams.get("forgot");
+    resetClient.value = urlParams.get("clientId");
+  }
+  if (urlParams.has("verified")) {
+    toast.add({
+      severity: "success",
+      summary: "Verified",
+      detail: "Email address verified, you can now login",
+      life: 5000,
+    });
+  }
+});
 
 const login = async (e) => {
   if (!loginForm.value.checkValidity()) {
-    toast.add({severity: 'error', summary: 'Login error', detail: 'Please fill in all elements', life: 10000});
+    toast.add({
+      severity: "error",
+      summary: "Login error",
+      detail: "Please fill in all elements",
+      life: 10000,
+    });
     return;
   }
   try {
-    await store.dispatch('login', {
+    await store.dispatch("login", {
       client_id: forms.value.login.clientId,
-      client_secret: forms.value.login.password
+      client_secret: forms.value.login.password,
     });
-    toast.add({severity: 'success', summary: 'Logged in', detail: 'Successfully logged in!', life: 5000});
+    toast.add({
+      severity: "success",
+      summary: "Logged in",
+      detail: "Successfully logged in!",
+      life: 5000,
+    });
     router.push("/");
   } catch (err) {
-    toast.add({severity: 'error', summary: 'Login failed', detail: 'Unsuccessful login attempt', life: 10000});
+    toast.add({
+      severity: "error",
+      summary: "Login failed",
+      detail: "Unsuccessful login attempt",
+      life: 10000,
+    });
   }
 };
 </script>
@@ -121,10 +154,24 @@ const login = async (e) => {
             <div class="text-900 text-3xl font-medium mb-3">
               Welcome to the TSG Wallet UI
             </div>
-            <span class="text-600 font-medium" v-if="currentForm === 'login'">Sign in to continue</span>
-            <span class="text-600 font-medium" v-else-if="currentForm === 'registration'">Register a new client</span>
-            <span class="text-600 font-medium" v-else-if="currentForm === 'reset'">Reset password</span>
-            <span class="text-600 font-medium" v-else-if="currentForm === 'change'">Change password</span>
+            <span class="text-600 font-medium" v-if="currentForm === 'login'"
+              >Sign in to continue</span
+            >
+            <span
+              class="text-600 font-medium"
+              v-else-if="currentForm === 'registration'"
+              >Register a new client</span
+            >
+            <span
+              class="text-600 font-medium"
+              v-else-if="currentForm === 'reset'"
+              >Reset password</span
+            >
+            <span
+              class="text-600 font-medium"
+              v-else-if="currentForm === 'change'"
+              >Change password</span
+            >
           </div>
           <div v-if="currentForm === 'login'">
             <form ref="loginForm" @submit.prevent="login">
@@ -184,7 +231,7 @@ const login = async (e) => {
                   severity="warning"
                   @click="currentForm = 'reset'"
                 ></Button>
-                </div> 
+              </div>
             </form>
           </div>
           <div v-else-if="currentForm === 'registration'">
@@ -193,7 +240,8 @@ const login = async (e) => {
                 <label
                   for="email"
                   class="block text-900 text-xl font-medium mb-2"
-                >Email</label>
+                  >Email</label
+                >
                 <InputText
                   id="email"
                   type="text"
@@ -208,7 +256,8 @@ const login = async (e) => {
                 <label
                   for="password"
                   class="block text-900 text-xl font-medium mb-2"
-                >Password</label>
+                  >Password</label
+                >
                 <Password
                   id="password"
                   v-model="forms.register.password"
@@ -225,7 +274,8 @@ const login = async (e) => {
                 <label
                   for="didId"
                   class="block text-900 text-xl font-medium mb-2"
-                >Email</label>
+                  >Email</label
+                >
                 <InputText
                   id="didId"
                   type="text"
@@ -261,7 +311,8 @@ const login = async (e) => {
                 <label
                   for="email"
                   class="block text-900 text-xl font-medium mb-2"
-                >Email</label>
+                  >Email</label
+                >
                 <InputText
                   id="email"
                   type="text"
@@ -295,7 +346,8 @@ const login = async (e) => {
                 <label
                   for="password"
                   class="block text-900 text-xl font-medium mb-2"
-                >Password</label>
+                  >Password</label
+                >
                 <Password
                   id="password"
                   v-model="forms.register.password"

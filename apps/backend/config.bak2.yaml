@@ -1,10 +1,11 @@
 server:
   port: 3000
-  listen: '0.0.0.0'
+  listen: "0.0.0.0"
   publicAddress: https://wallet-gx.alpha.scsn.dataspac.es
-  publicDomain: 'wallet-gx.alpha.scsn.dataspac.es'
+  publicDomain: "wallet-gx.alpha.scsn.dataspac.es"
 
-initClients: []
+initClients:
+  []
   # - id: admin
   #   secret: test
   #   email: noreply@dataspac.es
@@ -119,7 +120,7 @@ initKeys:
       4RgqsahDYVvTH9w7jXbyLeiNdd8XM2w9U/t7y0Ff/9yi0GE44Za4rF2LN9d11TPA
       mRGunUHBcnWEvgJBQl9nJEiU0Zsnvgc/ubhPgXRR4Xq37Z0j4r7g1SgEEzwxA57d
       emyPxgcYxn/eR44/KJ4EBs+lVDR3veyJm+kXQ99b21/+jh5Xos1AnX5iItreGCc=
-      -----END CERTIFICATE-----          
+      -----END CERTIFICATE-----
     existingKey: |
       -----BEGIN PRIVATE KEY-----
       MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDL0fMKo9l+HA/U
@@ -149,7 +150,8 @@ initKeys:
       oloYhHdgUHKQSaGhZdJbfeBjbI0Hifhe+VSDijblDZKTFXDsxzPCn94JMVnXmKFX
       vr7BLguGyJhI4gPi786Mw9en
       -----END PRIVATE KEY-----
-initCredentials: []
+initCredentials:
+  []
   # - context:
   #     - https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework
   #   id: gaiax
@@ -193,7 +195,6 @@ db:
   username: wallet
   password: i2SBoNJpfrhU5z0gku809AF7eZI2M2a9
 
-
 mail:
   enabled: true
   smtp:
@@ -206,7 +207,8 @@ mail:
   title: SCSN Wallet
   dataspace: SCSN
 
-trustAnchors: []
+trustAnchors:
+  []
   # - identifier: did:web:localhost%3A3000
   #   credentialTypes:
   #     - SCSNCredential
@@ -218,27 +220,27 @@ contexts:
     credentialType: SCSNCredential
     issuable: true
     document:
-      '@context':
-        '@version': 1.1
-        '@protected': true
+      "@context":
+        "@version": 1.1
+        "@protected": true
         scsn: https://wallet.alpha.scsn.dataspac.es/credentials/
-        id: '@id'
-        type: '@type'
+        id: "@id"
+        type: "@type"
         SCSNCredential:
-          '@context':
+          "@context":
             - https://www.w3.org/2018/credentials/v1
-          '@id': 'scsn:SCSNCredential'
+          "@id": "scsn:SCSNCredential"
         scsnIdentifier:
-          '@id': 'scsn:scsnIdentifier'
+          "@id": "scsn:scsnIdentifier"
         scsnRole:
-          '@id': 'scsn:scsnRole'
-          "@type": '@id'
+          "@id": "scsn:scsnRole"
+          "@type": "@id"
         ServiceProvider:
-          '@id': 'scsn:ServiceProvider'
+          "@id": "scsn:ServiceProvider"
         Manufacturer:
-          '@id': 'scsn:Manufacturer'
+          "@id": "scsn:Manufacturer"
         Administrator:
-          '@id': 'scsn:Administrator'
+          "@id": "scsn:Administrator"
     schema:
       type: object
       title: SCSNCredential
@@ -252,13 +254,13 @@ contexts:
           pattern: "^urn:scsn:.*"
         scsnRole:
           enum:
-          - scsn:ServiceProvider
-          - scsn:Manufacturer
-          - scsn:Administrator
+            - scsn:ServiceProvider
+            - scsn:Manufacturer
+            - scsn:Administrator
       required:
-      - id
-      - scsnIdentifier
-      - scsnRole
+        - id
+        - scsnIdentifier
+        - scsnRole
   - id: Catena-X
     credentialType: SummaryCredential
     issuable: false
@@ -325,13 +327,13 @@ contexts:
           title: Gaia-X Terms and Conditions
           description: "Gaia-X Terms and Conditions hash"
       required:
-      - id
-      - type
-      - gx:legalName
-      - gx:legalRegistrationNumber
-      - gx:headquarterAddress
-      - gx:legalAddress
-      - gx-terms-and-conditions:gaiaxTermsAndConditions
+        - id
+        - type
+        - gx:legalName
+        - gx:legalRegistrationNumber
+        - gx:headquarterAddress
+        - gx:legalAddress
+        - gx-terms-and-conditions:gaiaxTermsAndConditions
 
   - id: Gaia-X Terms and Conditions
     credentialType: gx:GaiaXTermsAndConditions
@@ -350,6 +352,6 @@ contexts:
         gx:termsAndConditions:
           type: string
       required:
-      - id
-      - type
-      - gx:termsAndConditions
+        - id
+        - type
+        - gx:termsAndConditions

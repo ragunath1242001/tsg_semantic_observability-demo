@@ -1,13 +1,13 @@
-import { describe, expect, beforeAll, it } from '@jest/globals';
-import { DidService } from './did.service.js';
-import { TypeOrmTestHelper } from '../utils/testhelper.js';
-import { plainToInstance } from 'class-transformer';
-import { RootConfig } from '../config.js';
-import { TestingModule, Test } from '@nestjs/testing';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { DIDDocuments, KeyMaterials } from '../model/credentials.dao.js';
-import { DIDDocument } from 'did-resolver';
-import { exportJWK, generateKeyPair } from 'jose';
+import { describe, expect, beforeAll, it } from "@jest/globals";
+import { DidService } from "./did.service.js";
+import { TypeOrmTestHelper } from "../utils/testhelper.js";
+import { plainToInstance } from "class-transformer";
+import { RootConfig } from "../config.js";
+import { TestingModule, Test } from "@nestjs/testing";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { DIDDocuments, KeyMaterials } from "../model/credentials.dao.js";
+import { DIDDocument } from "did-resolver";
+import { exportJWK, generateKeyPair } from "jose";
 
 describe("DID Service", () => {
   let didService: DidService;
@@ -22,30 +22,32 @@ describe("DID Service", () => {
           secure: true,
           user: "test",
           password: "test",
-          from: "test@test.com"
+          from: "test@test.com",
         },
         title: "Test",
-        dataspace: "Test"
+        dataspace: "Test",
       },
-      initKeys: [{
-        id: "key-0",
-        type: "EdDSA",
-        default: true
-      }]
+      initKeys: [
+        {
+          id: "key-0",
+          type: "EdDSA",
+          default: true,
+        },
+      ],
     });
 
     const moduleRef: TestingModule = await Test.createTestingModule({
       imports: [
         TypeOrmTestHelper.instance.module([DIDDocuments]),
-        TypeOrmModule.forFeature([DIDDocuments])
+        TypeOrmModule.forFeature([DIDDocuments]),
       ],
       providers: [
         DidService,
         {
           provide: RootConfig,
-          useValue: config
-        }
-      ]
+          useValue: config,
+        },
+      ],
     }).compile();
 
     didService = await moduleRef.get(DidService);
@@ -67,8 +69,8 @@ describe("DID Service", () => {
 
     it("Get DID ID", async () => {
       const didId = await didService.getDidId();
-      expect(didId).toBe('did:web:localhost');
-    })
+      expect(didId).toBe("did:web:localhost");
+    });
 
     it("Retrieve created DID document", async () => {
       const retrievedDid = await didService.getDid();
@@ -78,12 +80,12 @@ describe("DID Service", () => {
     it("Create DID document with key material", async () => {
       const keypair = await generateKeyPair("EdDSA");
       const keyMaterial: KeyMaterials = plainToInstance(KeyMaterials, {
-        id: 'test-key',
-        type: 'EdDSA',
+        id: "test-key",
+        type: "EdDSA",
         default: true,
         privateKey: await exportJWK(keypair.privateKey),
         publicKey: await exportJWK(keypair.publicKey),
-        caChain: undefined
+        caChain: undefined,
       });
       createdDidWithKey = await didService.createDidDocument([keyMaterial]);
       expect(createdDidWithKey).toBeDefined();
@@ -95,5 +97,5 @@ describe("DID Service", () => {
       const retrievedDid = await didService.getDid();
       expect(retrievedDid).toEqual(createdDidWithKey);
     });
-  })
-})
+  });
+});

@@ -15,15 +15,8 @@ import { CredentialsManagementController } from "./credentials.management.contro
     KeysModule,
     TypeOrmModule.forFeature([Credentials]),
   ],
-  controllers: [
-    CredentialsController,
-    CredentialsManagementController
-  ],
-  providers: [
-    CredentialsService
-  ],
-  exports: [
-    CredentialsService
-  ]
+  controllers: [CredentialsController, CredentialsManagementController],
+  providers: [CredentialsService],
+  exports: [CredentialsService],
 })
 export class CredentialsModule {}

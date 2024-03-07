@@ -1,31 +1,33 @@
-import 'reflect-metadata'
-import { CredentialSubject, VerifiableCredential } from "@tsg-dsp/common/dist/model/ssi/credentials.dto.js"
-import { Type } from "class-transformer"
-import { IsString, ValidateNested, IsDefined } from "class-validator"
-
+import "reflect-metadata";
+import {
+  CredentialSubject,
+  VerifiableCredential,
+} from "@tsg-dsp/common/dist/model/ssi/credentials.dto.js";
+import { Type } from "class-transformer";
+import { IsString, ValidateNested, IsDefined } from "class-validator";
 
 export class LegalRegistrationNumberRequest {
   @IsString()
-  vcId!: string
+  vcId!: string;
 
   @IsString()
-  clearingHouse!: string
+  clearingHouse!: string;
 
   @ValidateNested()
   @Type(() => CredentialSubject)
   @IsDefined()
-  credentialSubject!: CredentialSubject
+  credentialSubject!: CredentialSubject;
 }
 
 export class ComplianceRequest {
   @IsString()
-  vcId!: string
+  vcId!: string;
 
   @IsString()
-  clearingHouse!: string
+  clearingHouse!: string;
 
-  @ValidateNested({each: true})
+  @ValidateNested({ each: true })
   @Type(() => VerifiableCredential<CredentialSubject>)
   @IsDefined()
-  credentials!: VerifiableCredential<CredentialSubject>[]
+  credentials!: VerifiableCredential<CredentialSubject>[];
 }

@@ -32,6 +32,7 @@ To build and test the wallet locally, first you have to decide which portion of 
 ### Dependencies
 
 The wallet is built via pnpm, first install all dependencies:
+
 ```
 pnpm install
 ```
@@ -39,6 +40,7 @@ pnpm install
 ### Backend
 
 To compile the typescript files into javascript and watch the wallet backend:
+
 ```
 pnpm --filter backend watch
 ```
@@ -48,22 +50,25 @@ pnpm --filter backend watch
 ### Frontend
 
 To compile the typescript files into javascript and watch the wallet frontend:
+
 ```
 pnpm --filter frontend dev
 ```
+
 > _Note_: The Vite serve by default runs on port `5173`, but will try subsequent ports if they are already used.
 
 Compiling the frontend into HTML, Javascript, and CSS execute:
+
 ```
 pnpm --filter frontend build
 ```
 
 The build result will be located in `./apps/frontend/dist`.
 
-
 ### Combined backend and frontend
 
 To test the combination of backend with embedded frontend, execute the following commands in separate terminals:
+
 ```
 pnpm --filter backend watch
 ```
@@ -73,6 +78,7 @@ pnpm --filter frontend dev
 ```
 
 Or build the Docker image and subsequently run the docker image:
+
 ```
 docker build -t tsg-wallet .
 docker run --rm -it -v ./apps/backend/config.yaml:/app/config.yaml -p 3000:3000 tsg-wallet
