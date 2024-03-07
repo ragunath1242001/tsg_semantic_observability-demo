@@ -17,7 +17,7 @@ export class CredentialsController {
   ) {}
   private readonly logger = new Logger(this.constructor.name);
 
-  @Get('.well-known/did.json')
+  @Get(".well-known/did.json")
   async getDid(): Promise<DIDDocument> {
     const didDocument = await this.didService.getDid();
     if (didDocument === undefined) {
@@ -26,24 +26,36 @@ export class CredentialsController {
     return didDocument;
   }
 
-  @Get('context/:id')
+  @Get("context/:id")
   /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-  async getContext(@Param('id') id: string): Promise<Record<string, any>> {
-    const context = this.config.contexts.find(context => context.id === id);
+  async getContext(@Param("id") id: string): Promise<Record<string, any>> {
+    const context = this.config.contexts.find((context) => context.id === id);
     if (!context) {
-      throw new AppError(`JSON LD context with identifier ${id} not found`, HttpStatus.NOT_FOUND).andLog(this.logger, 'log');
+      throw new AppError(
+        `JSON LD context with identifier ${id} not found`,
+        HttpStatus.NOT_FOUND
+      ).andLog(this.logger, "log");
     }
     if (context.documentUrl) {
-      throw new AppError(`JSON LD context with identifier ${id} is not defined here, location: ${context.document}`, HttpStatus.NOT_FOUND).andLog(this.logger, 'log');
+      throw new AppError(
+        `JSON LD context with identifier ${id} is not defined here, location: ${context.document}`,
+        HttpStatus.NOT_FOUND
+      ).andLog(this.logger, "log");
     }
     if (context.document) {
       return context.document;
     }
-    throw new AppError(`No document or documentUrl configured for context ${id}`, HttpStatus.INTERNAL_SERVER_ERROR).andLog(this.logger);
+    throw new AppError(
+      `No document or documentUrl configured for context ${id}`,
+      HttpStatus.INTERNAL_SERVER_ERROR
+    ).andLog(this.logger);
   }
 
-  @Get('credentials/:credentialId')
-  async getCredential(@Param('credentialId') credentialId: string): Promise<VerifiableCredential<CredentialSubject>> {
-    return (await this.credentialsService.getCredential(credentialId)).credential;
+  @Get("credentials/:credentialId")
+  async getCredential(
+    @Param("credentialId") credentialId: string
+  ): Promise<VerifiableCredential<CredentialSubject>> {
+    return (await this.credentialsService.getCredential(credentialId))
+      .credential;
   }
 }

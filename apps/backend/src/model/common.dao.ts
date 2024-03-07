@@ -1,14 +1,14 @@
-import { Exclude } from "class-transformer"
-import { CreateDateColumn, UpdateDateColumn, DeleteDateColumn } from "typeorm"
+import { Exclude } from "class-transformer";
+import { CreateDateColumn, UpdateDateColumn, DeleteDateColumn } from "typeorm";
 
 export class MetaEntity {
   @CreateDateColumn()
-  created!: Date
+  created!: Date;
 
   @UpdateDateColumn()
-  modified!: Date
+  modified!: Date;
 
   @DeleteDateColumn()
   @Exclude()
-  deleted!: Date
+  deleted!: Date;
 }

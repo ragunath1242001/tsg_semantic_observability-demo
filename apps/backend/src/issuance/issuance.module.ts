@@ -18,19 +18,10 @@ import { IssuerController } from "./issuer.controller.js";
     CredentialsModule,
     PresentationModule,
     DidModule,
-    KeysModule
+    KeysModule,
   ],
-  controllers: [
-    HolderController,
-    IssuerController
-  ],
-  providers: [
-    IssuerService,
-    HolderService
-  ],
-  exports: [
-    IssuerService,
-    HolderService
-  ]
+  controllers: [HolderController, IssuerController],
+  providers: [IssuerService, HolderService],
+  exports: [IssuerService, HolderService],
 })
 export class IssuanceModule {}

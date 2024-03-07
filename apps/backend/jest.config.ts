@@ -1,19 +1,19 @@
-import type { Config } from "@jest/types"
+import type { Config } from "@jest/types";
 
 const config: Config.InitialOptions = {
   transform: {
-    '^.+\\.tsx?$': [
-      'ts-jest',
+    "^.+\\.tsx?$": [
+      "ts-jest",
       {
         useESM: true,
       },
     ],
   },
   testEnvironment: "node",
-  extensionsToTreatAsEsm: ['.ts'],
+  extensionsToTreatAsEsm: [".ts"],
   testRegex: "/.*\\.(test|spec)?\\.(ts|tsx)$",
   moduleNameMapper: {
-    '^(\\.{1,2}/.*)\\.js$': '$1',
+    "^(\\.{1,2}/.*)\\.js$": "$1",
   },
   collectCoverageFrom: [
     "src/**/*.ts",
@@ -21,7 +21,7 @@ const config: Config.InitialOptions = {
     "!src/**/*.strategy.ts",
     "!src/**/*.controller.ts",
     "!src/**/*.module.ts",
-    "!node_modules/**"
-  ]
-}
-export default config
+    "!node_modules/**",
+  ],
+};
+export default config;

@@ -3,23 +3,23 @@ import { JWK } from "jose";
 
 export class KeyInfo {
   @IsString()
-  id!: string
+  id!: string;
 
   @IsString()
-  @IsIn(['EdDSA','ES384','X509'])
-  type!: 'EdDSA' | 'ES384' | 'X509'
+  @IsIn(["EdDSA", "ES384", "X509"])
+  type!: "EdDSA" | "ES384" | "X509";
 
   @IsBoolean()
-  default!: boolean
+  default!: boolean;
 
   @IsObject()
-  publicKey!: JWK
+  publicKey!: JWK;
 
   @IsDate()
-  created!: Date
+  created!: Date;
 
   @IsDate()
-  modified!: Date
+  modified!: Date;
 }
 
 export interface TrustAnchorConfig {
@@ -37,6 +37,6 @@ export interface JsonLdContextConfig {
 }
 
 export interface CredentialConfig {
-  trustAnchors: TrustAnchorConfig[],
-  contexts: JsonLdContextConfig[]
+  trustAnchors: TrustAnchorConfig[];
+  contexts: JsonLdContextConfig[];
 }

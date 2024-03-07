@@ -6,17 +6,8 @@ import { DidResolverService } from "./did.resolver.service.js";
 import { TypeOrmModule } from "@nestjs/typeorm";
 
 @Module({
-  imports: [
-    AuthModule,
-    TypeOrmModule.forFeature([DIDDocuments]),
-  ],
-  providers: [
-    DidService,
-    DidResolverService
-  ],
-  exports: [
-    DidService,
-    DidResolverService
-  ]
+  imports: [AuthModule, TypeOrmModule.forFeature([DIDDocuments])],
+  providers: [DidService, DidResolverService],
+  exports: [DidService, DidResolverService],
 })
 export class DidModule {}

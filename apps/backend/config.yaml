@@ -1,6 +1,6 @@
 server:
   port: 3000
-  listen: '0.0.0.0'
+  listen: "0.0.0.0"
   publicDomain: localhost:3000
 
 initClients:
@@ -28,8 +28,6 @@ initCredentials: []
 db:
   type: sqlite
   database: wallet.sqlite
-
-
 
 mail:
   enabled: true
@@ -68,13 +66,13 @@ contexts:
           pattern: "^urn:scsn:.*"
         scsnRole:
           enum:
-          - scsn:ServiceProvider
-          - scsn:Manufacturer
-          - scsn:Administrator
+            - scsn:ServiceProvider
+            - scsn:Manufacturer
+            - scsn:Administrator
       required:
-      - id
-      - scsnIdentifier
-      - scsnRole
+        - id
+        - scsnIdentifier
+        - scsnRole
   - id: Catena-X
     credentialType: SummaryCredential
     issuable: false
@@ -122,13 +120,13 @@ contexts:
         gx-terms-and-conditions:gaiaxTermsAndConditions:
           type: string
       required:
-      - id
-      - type
-      - gx:legalName
-      - gx:legalRegistrationNumber
-      - gx:headquarterAddress
-      - gx:legalAddress
-      - gx-terms-and-conditions:gaiaxTermsAndConditions
+        - id
+        - type
+        - gx:legalName
+        - gx:legalRegistrationNumber
+        - gx:headquarterAddress
+        - gx:legalAddress
+        - gx-terms-and-conditions:gaiaxTermsAndConditions
 
   - id: Gaia-X Terms and Conditions
     credentialType: gx:GaiaXTermsAndConditions
@@ -147,6 +145,6 @@ contexts:
         gx:termsAndConditions:
           type: string
       required:
-      - id
-      - type
-      - gx:termsAndConditions
+        - id
+        - type
+        - gx:termsAndConditions

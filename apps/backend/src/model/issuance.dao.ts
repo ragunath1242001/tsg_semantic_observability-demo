@@ -1,13 +1,20 @@
-import { Column, Entity, ManyToOne, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryColumn,
+  PrimaryGeneratedColumn,
+} from "typeorm";
 import { MetaEntity } from "./common.dao.js";
 import { CredentialSubject } from "@tsg-dsp/common";
 
 @Entity()
 export class CredentialIssuance extends MetaEntity {
-  @PrimaryGeneratedColumn('increment')
+  @PrimaryGeneratedColumn("increment")
   id!: number;
-  
-  @Column({unique: true})
+
+  @Column({ unique: true })
   preAuthorizedCode!: string;
 
   @OneToMany(() => CIAccessToken, (token) => token.issuance)
@@ -15,11 +22,11 @@ export class CredentialIssuance extends MetaEntity {
 
   @Column()
   holderId!: string;
-  
+
   @Column()
   credentialType!: string;
 
-  @Column({nullable: true})
+  @Column({ nullable: true })
   credentialId?: string;
 
   @Column()

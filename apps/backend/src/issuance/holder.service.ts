@@ -39,35 +39,61 @@ export class HolderService {
 
   initialized: Promise<boolean>;
   async init() {
-    this.logger.log('Initializing HolderService');
+    this.logger.log("Initializing HolderService");
     const existingCredentials = await this.credentialsService.getCredentials();
-    await Promise.all(this.config.oid4vci.holder.map(async holderConfig => {
-      if (existingCredentials.find(c => c.credential.type.includes(holderConfig.credentialType))) {
-        this.logger.log(`Already holding ${holderConfig.credentialType} credential, skipping request`);
-      } else {
-        await this.requestCredentialWithRetry(holderConfig.preAuthorizationCode, holderConfig.issuerUrl);
-      }
-    }));
+    await Promise.all(
+      this.config.oid4vci.holder.map(async (holderConfig) => {
+        if (
+          existingCredentials.find((c) =>
+            c.credential.type.includes(holderConfig.credentialType)
+          )
+        ) {
+          this.logger.log(
+            `Already holding ${holderConfig.credentialType} credential, skipping request`
+          );
+        } else {
+          await this.requestCredentialWithRetry(
+            holderConfig.preAuthorizationCode,
+            holderConfig.issuerUrl
+          );
+        }
+      })
+    );
 
     return true;
   }
 
-  async requestCredentialWithRetry(preAuthorizedCode: string, issuerUrl: string, retry = 0) {
+  async requestCredentialWithRetry(
+    preAuthorizedCode: string,
+    issuerUrl: string,
+    retry = 0
+  ) {
     try {
       await this.requestCredential(preAuthorizedCode, issuerUrl);
-    } catch(err) {
+    } catch (err) {
       if (retry < 5) {
-        this.logger.warn(`Could not request credential with code ${preAuthorizedCode} at ${issuerUrl}, retrying in 10 seconds`);
-        await new Promise(f => setTimeout(f, 10000));
-        await this.requestCredentialWithRetry(preAuthorizedCode, issuerUrl, ++retry);
+        this.logger.warn(
+          `Could not request credential with code ${preAuthorizedCode} at ${issuerUrl}, retrying in 10 seconds`
+        );
+        await new Promise((f) => setTimeout(f, 10000));
+        await this.requestCredentialWithRetry(
+          preAuthorizedCode,
+          issuerUrl,
+          ++retry
+        );
       } else {
-        this.logger.error(`Could not request credential with code ${preAuthorizedCode} at ${issuerUrl}: ${err}`);
+        this.logger.error(
+          `Could not request credential with code ${preAuthorizedCode} at ${issuerUrl}: ${err}`
+        );
         throw err;
       }
     }
   }
 
-  async requestCredential(preAuthorizedCode: string, issuerUrl: string): Promise<Credentials> {
+  async requestCredential(
+    preAuthorizedCode: string,
+    issuerUrl: string
+  ): Promise<Credentials> {
     const issuerMetadata = await this.retrieveIssuerMetadata(issuerUrl);
     const accessToken = await this.requestAccessToken(
       preAuthorizedCode,
@@ -109,13 +135,19 @@ export class HolderService {
           vp: credentialResponse.credential,
         });
       if (!presentationCheck.valid) {
-        this.logger.warn(`Verifiable presentation token from issuer ${issuerUrl} not valid, credential will be added but might not be valid:\n${JSON.stringify(
-          presentationCheck, null, 2
-        )}`);
+        this.logger.warn(
+          `Verifiable presentation token from issuer ${issuerUrl} not valid, credential will be added but might not be valid:\n${JSON.stringify(
+            presentationCheck,
+            null,
+            2
+          )}`
+        );
       }
       const jwtPayload = decodeJwt(credentialResponse.credential);
       const vp = plainToInstance(VerifiablePresentation, jwtPayload.vp);
-      this.logger.log(`Importing credential ${toArray(vp.verifiableCredential)[0].id}`)
+      this.logger.log(
+        `Importing credential ${toArray(vp.verifiableCredential)[0].id}`
+      );
       return this.credentialsService.importCredential(
         toArray(vp.verifiableCredential)[0]
       );
@@ -130,7 +162,10 @@ export class HolderService {
   private async retrieveIssuerMetadata(
     issuerUrl: string
   ): Promise<CredentialIssuerMetadata> {
-    const credentialIssuerMetadataEndpoint = this.constructWellKnown('issuer', issuerUrl);
+    const credentialIssuerMetadataEndpoint = this.constructWellKnown(
+      "issuer",
+      issuerUrl
+    );
     try {
       const response = await axios.get<CredentialIssuerMetadata>(
         credentialIssuerMetadataEndpoint
@@ -177,8 +212,14 @@ export class HolderService {
   private async retrieveTokenEndpoint(
     authorizationServer: string
   ): Promise<string | undefined> {
-    const openIdMetadataEndpoint = this.constructWellKnown('openid', authorizationServer);
-    const oauthMetadataEndpoint = this.constructWellKnown('oauth', authorizationServer);
+    const openIdMetadataEndpoint = this.constructWellKnown(
+      "openid",
+      authorizationServer
+    );
+    const oauthMetadataEndpoint = this.constructWellKnown(
+      "oauth",
+      authorizationServer
+    );
     try {
       const response = await axios.get(openIdMetadataEndpoint);
       if (response.data.token_endpoint) {
@@ -269,13 +310,22 @@ export class HolderService {
     }
   }
 
-  private constructWellKnown(type: 'issuer' | 'openid' | 'oauth', baseUrl: string) {
+  private constructWellKnown(
+    type: "issuer" | "openid" | "oauth",
+    baseUrl: string
+  ) {
     let url: string;
-    switch(type) {
-      case "issuer": url = `${baseUrl}/.well-known/openid-credential-issuer`; break;
-      case "openid": url = `${baseUrl}/.well-known/openid-configuration`; break;
-      case "oauth": url = `${baseUrl}/.well-known/oauth-authorization-server`; break;
+    switch (type) {
+      case "issuer":
+        url = `${baseUrl}/.well-known/openid-credential-issuer`;
+        break;
+      case "openid":
+        url = `${baseUrl}/.well-known/openid-configuration`;
+        break;
+      case "oauth":
+        url = `${baseUrl}/.well-known/oauth-authorization-server`;
+        break;
     }
-    return url.replace(/([^:])(\/\/+)/g, '$1/')
+    return url.replace(/([^:])(\/\/+)/g, "$1/");
   }
 }

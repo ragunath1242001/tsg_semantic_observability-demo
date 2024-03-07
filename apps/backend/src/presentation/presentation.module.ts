@@ -7,20 +7,9 @@ import { KeysModule } from "../keys/keys.module.js";
 import { DidModule } from "../did/did.module.js";
 
 @Module({
-  imports: [
-    AuthModule,
-    CredentialsModule,
-    KeysModule,
-    DidModule
-  ],
-  controllers: [
-    PresentationController
-  ],
-  providers: [
-    PresentationService
-  ],
-  exports: [
-    PresentationService
-  ]
+  imports: [AuthModule, CredentialsModule, KeysModule, DidModule],
+  controllers: [PresentationController],
+  providers: [PresentationService],
+  exports: [PresentationService],
 })
 export class PresentationModule {}

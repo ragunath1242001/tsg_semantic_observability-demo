@@ -17,8 +17,8 @@ export interface CredentialOffer {
 }
 
 export interface CredentialOfferStatus {
-  id: number,
-  created: Date,
+  id: number;
+  created: Date;
   preAuthorizedCode: string;
   holderId: string;
   credentialType: string;

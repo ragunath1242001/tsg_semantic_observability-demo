@@ -8,8 +8,8 @@ import { ClientInfo } from "@libs/dtos";
 export class LocalStrategy extends PassportStrategy(Strategy) {
   constructor(private readonly authService: ClientsService) {
     super({
-      usernameField: 'client_id', 
-      passwordField: 'client_secret'
+      usernameField: "client_id",
+      passwordField: "client_secret",
     });
   }
 
