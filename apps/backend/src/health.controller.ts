@@ -2,9 +2,6 @@ import { Controller, Get } from "@nestjs/common";
 
 @Controller()
 export class HealthController {
-
-  @Get('/health')
-  async getHealth() {
-    
-  }
+  @Get("/health")
+  async getHealth() {}
 }

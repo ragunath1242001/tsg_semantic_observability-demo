@@ -3,14 +3,14 @@ info:
   title: TSG - Data Plane API
   description: API definition for communication from the Control plane towards a Data plane
   version: 0.0.1
-  license: 
+  license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
-servers: 
+servers:
   - url: http://localhost
-security: 
-  -  BearerAuth: []
-  -  BasicAuth: []
+security:
+  - BearerAuth: []
+  - BasicAuth: []
 tags:
   - name: generic
     description: Generic Control Plane-Data Plane interactions
@@ -21,21 +21,21 @@ paths:
     get:
       operationId: catalogPull
       summary: Pull up to date
-      tags: 
-        -  generic
-      parameters: 
+      tags:
+        - generic
+      parameters:
         - name: If-None-Match
           in: header
           description: Known entity tag to indicate the known hash of the last request (ETag)
           schema:
             type: string
           required: false
-      responses: 
+      responses:
         "200":
           description: Successful Catalog response
           headers:
             ETag:
-              schema: 
+              schema:
                 type: string
               description: Entity tag with a hash of the response which only changes when the catalog itself has changed
           content:
@@ -52,7 +52,7 @@ paths:
       summary: Health check
       tags:
         - generic
-      responses: 
+      responses:
         "200":
           description: Successful health check
         "4XX":
@@ -62,27 +62,27 @@ paths:
   /transfer/{role}:
     post:
       operationId: requestTransfer
-      tags: 
-        -  transfer
+      tags:
+        - transfer
       summary: Request transfer
-      parameters: 
+      parameters:
         - name: role
           in: path
           required: true
-          schema: 
+          schema:
             type: string
             enum: ["consumer", "provider"]
-      requestBody: 
-        content: 
-          application/json: 
+      requestBody:
+        content:
+          application/json:
             schema:
               $ref: ../schemas/dsp.schema.json#/definitions/TransferRequestMessageDto
-      responses: 
+      responses:
         "200":
           description: Accepted transfer request
           content:
             application/json:
-              schema: 
+              schema:
                 $ref: ../schemas/data-planes.schema.json#/definitions/DataPlaneRequestResponseDto
         "4XX":
           description: Declined transfer request
@@ -90,20 +90,20 @@ paths:
     post:
       operationId: startTransfer
       summary: Start transfer
-      tags: 
-        -  transfer
-      parameters: 
+      tags:
+        - transfer
+      parameters:
         - name: transferId
           in: path
           required: true
-          schema: 
+          schema:
             type: string
-      requestBody: 
-        content: 
-          application/json: 
+      requestBody:
+        content:
+          application/json:
             schema:
               $ref: ../schemas/dsp.schema.json#/definitions/TransferStartMessageDto
-      responses: 
+      responses:
         "202":
           description: Accepted transfer start signal
         "404":
@@ -112,20 +112,20 @@ paths:
     post:
       operationId: executeTransfer
       summary: Execute transfer
-      tags: 
-        -  transfer
-      parameters: 
+      tags:
+        - transfer
+      parameters:
         - name: transferId
           in: path
           required: true
-          schema: 
+          schema:
             type: string
-      requestBody: 
-        content: 
-          application/json: 
+      requestBody:
+        content:
+          application/json:
             schema:
               $ref: ../schemas/dsp.schema.json#/definitions/TransferStartMessageDto
-      responses: 
+      responses:
         "202":
           description: Accepted transfer execute signal
         "404":
@@ -134,20 +134,20 @@ paths:
     post:
       operationId: completeTransfer
       summary: Complete transfer
-      tags: 
-        -  transfer
-      parameters: 
+      tags:
+        - transfer
+      parameters:
         - name: transferId
           in: path
           required: true
-          schema: 
+          schema:
             type: string
-      requestBody: 
-        content: 
-          application/json: 
+      requestBody:
+        content:
+          application/json:
             schema:
               $ref: ../schemas/dsp.schema.json#/definitions/TransferCompletionMessageDto
-      responses: 
+      responses:
         "202":
           description: Accepted transfer complete signal
         "404":
@@ -156,20 +156,20 @@ paths:
     post:
       operationId: terminateTransfer
       summary: Terminate transfer
-      tags: 
-        -  transfer
-      parameters: 
+      tags:
+        - transfer
+      parameters:
         - name: transferId
           in: path
           required: true
-          schema: 
+          schema:
             type: string
-      requestBody: 
-        content: 
-          application/json: 
+      requestBody:
+        content:
+          application/json:
             schema:
               $ref: ../schemas/dsp.schema.json#/definitions/TransferTerminationMessageDto
-      responses: 
+      responses:
         "202":
           description: Accepted transfer terminate signal
         "404":
@@ -178,29 +178,26 @@ paths:
     post:
       operationId: suspendTransfer
       summary: Suspend transfer
-      tags: 
-        -  transfer
-      parameters: 
+      tags:
+        - transfer
+      parameters:
         - name: transferId
           in: path
           required: true
-          schema: 
+          schema:
             type: string
-      requestBody: 
-        content: 
-          application/json: 
+      requestBody:
+        content:
+          application/json:
             schema:
               $ref: ../schemas/dsp.schema.json#/definitions/TransferSuspensionMessageDto
-      responses: 
+      responses:
         "202":
           description: Accepted transfer suspend signal
         "404":
           description: Transfer not found
-        
 
-
-
-components: 
+components:
   securitySchemes:
     BearerAuth:
       type: http

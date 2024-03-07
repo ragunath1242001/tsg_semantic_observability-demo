@@ -10,6 +10,6 @@ import { DataplaneManagementController } from "./dataPlaneManagement.controller"
   imports: [CatalogModule, TypeOrmModule.forFeature([DataPlaneDao])],
   controllers: [DataPlaneController, DataplaneManagementController],
   providers: [DataPlaneService],
-  exports: [DataPlaneService]
+  exports: [DataPlaneService],
 })
 export class DataPlaneModule {}

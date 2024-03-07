@@ -57,21 +57,22 @@ const initialize = async () => {
 };
 
 onMounted(async () => await initialize());
-</script><template>
+</script>
+<template>
   <div class="col-12">
     <div class="card">
       <h5>Catalog Request</h5>
-        <div class="p-fluid formgrid grid">
-          <div class="field col-12 md:col-6">
-            <span class="p-float-label">
-              <InputText id="url" type="text" v-model="urlInput" />
-              <label for="url">Url of Catalog to Request</label>
-            </span>
-          </div>
-          <div class="field col-12 md:col-1">
-            <Button label="Submit" type="button" @click="getCatalog"></Button>
-          </div>
+      <div class="p-fluid formgrid grid">
+        <div class="field col-12 md:col-6">
+          <span class="p-float-label">
+            <InputText id="url" type="text" v-model="urlInput" />
+            <label for="url">Url of Catalog to Request</label>
+          </span>
         </div>
+        <div class="field col-12 md:col-1">
+          <Button label="Submit" type="button" @click="getCatalog"></Button>
+        </div>
+      </div>
     </div>
     <Catalog
       :catalog="catalog"

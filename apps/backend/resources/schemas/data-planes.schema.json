@@ -1,119 +1,104 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "definitions": {
-        "DataPlaneCreation": {
-            "allOf": [
-                {
-                    "$ref": "#/definitions/Omit<DataPlaneDetailsDto,\"identifier\">"
-                },
-                {
-                    "properties": {
-                        "identifier": {
-                            "type": "string"
-                        }
-                    },
-                    "type": "object"
-                }
-            ]
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "DataPlaneCreation": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/Omit<DataPlaneDetailsDto,\"identifier\">"
         },
-        "DataPlaneDetailsDto": {
-            "properties": {
-                "callbackAddress": {
-                    "type": "string"
-                },
-                "catalogSynchronization": {
-                    "enum": [
-                        "pull",
-                        "push"
-                    ],
-                    "type": "string"
-                },
-                "dataplaneType": {
-                    "type": "string"
-                },
-                "endpointPrefix": {
-                    "type": "string"
-                },
-                "identifier": {
-                    "type": "string"
-                },
-                "managementAddress": {
-                    "type": "string"
-                },
-                "role": {
-                    "enum": [
-                        "both",
-                        "consumer",
-                        "provider"
-                    ],
-                    "type": "string"
-                }
-            },
-            "type": "object"
-        },
-        "DataPlaneRequestResponseDto": {
-            "properties": {
-                "accepted": {
-                    "type": "boolean"
-                },
-                "callbackAddress": {
-                    "type": "string"
-                },
-                "identifier": {
-                    "type": "string"
-                }
-            },
-            "type": "object"
-        },
-        "DataPlaneTransferDto": {
-            "properties": {
-                "accepted": {
-                    "type": "boolean"
-                },
-                "callbackAddress": {
-                    "type": "string"
-                },
-                "dataPlaneIdentifier": {
-                    "type": "string"
-                },
-                "identifier": {
-                    "type": "string"
-                }
-            },
-            "type": "object"
-        },
-        "Omit<DataPlaneDetailsDto,\"identifier\">": {
-            "properties": {
-                "callbackAddress": {
-                    "type": "string"
-                },
-                "catalogSynchronization": {
-                    "enum": [
-                        "pull",
-                        "push"
-                    ],
-                    "type": "string"
-                },
-                "dataplaneType": {
-                    "type": "string"
-                },
-                "endpointPrefix": {
-                    "type": "string"
-                },
-                "managementAddress": {
-                    "type": "string"
-                },
-                "role": {
-                    "enum": [
-                        "both",
-                        "consumer",
-                        "provider"
-                    ],
-                    "type": "string"
-                }
-            },
-            "type": "object"
+        {
+          "properties": {
+            "identifier": {
+              "type": "string"
+            }
+          },
+          "type": "object"
         }
+      ]
+    },
+    "DataPlaneDetailsDto": {
+      "properties": {
+        "callbackAddress": {
+          "type": "string"
+        },
+        "catalogSynchronization": {
+          "enum": ["pull", "push"],
+          "type": "string"
+        },
+        "dataplaneType": {
+          "type": "string"
+        },
+        "endpointPrefix": {
+          "type": "string"
+        },
+        "identifier": {
+          "type": "string"
+        },
+        "managementAddress": {
+          "type": "string"
+        },
+        "role": {
+          "enum": ["both", "consumer", "provider"],
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "DataPlaneRequestResponseDto": {
+      "properties": {
+        "accepted": {
+          "type": "boolean"
+        },
+        "callbackAddress": {
+          "type": "string"
+        },
+        "identifier": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "DataPlaneTransferDto": {
+      "properties": {
+        "accepted": {
+          "type": "boolean"
+        },
+        "callbackAddress": {
+          "type": "string"
+        },
+        "dataPlaneIdentifier": {
+          "type": "string"
+        },
+        "identifier": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "Omit<DataPlaneDetailsDto,\"identifier\">": {
+      "properties": {
+        "callbackAddress": {
+          "type": "string"
+        },
+        "catalogSynchronization": {
+          "enum": ["pull", "push"],
+          "type": "string"
+        },
+        "dataplaneType": {
+          "type": "string"
+        },
+        "endpointPrefix": {
+          "type": "string"
+        },
+        "managementAddress": {
+          "type": "string"
+        },
+        "role": {
+          "enum": ["both", "consumer", "provider"],
+          "type": "string"
+        }
+      },
+      "type": "object"
     }
+  }
 }
-

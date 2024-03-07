@@ -1,9 +1,9 @@
-import { Module } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { VerifiablePresentationGuard } from './verifiablePresentation.guard';
-import { ManagementGuard } from './management.guard';
-import { VerifiablePresentationStrategy } from './verifiablePresentation.strategy';
-import { ManagementStrategy } from './management.strategy';
+import { Module } from "@nestjs/common";
+import { AuthService } from "./auth.service";
+import { VerifiablePresentationGuard } from "./verifiablePresentation.guard";
+import { ManagementGuard } from "./management.guard";
+import { VerifiablePresentationStrategy } from "./verifiablePresentation.strategy";
+import { ManagementStrategy } from "./management.strategy";
 
 @Module({
   providers: [
@@ -11,14 +11,14 @@ import { ManagementStrategy } from './management.strategy';
     VerifiablePresentationGuard,
     VerifiablePresentationStrategy,
     ManagementGuard,
-    ManagementStrategy
+    ManagementStrategy,
   ],
   exports: [
     AuthService,
     VerifiablePresentationGuard,
     VerifiablePresentationStrategy,
     ManagementGuard,
-    ManagementStrategy
-  ]
+    ManagementStrategy,
+  ],
 })
 export class AuthModule {}

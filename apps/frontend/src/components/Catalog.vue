@@ -184,7 +184,8 @@ const sendNegotiation = async (
   display.value = false;
   return;
 };
-</script><template>
+</script>
+<template>
   <div class="grid card-container">
     <div class="col-12">
       <div class="card" v-if="!datasetView">

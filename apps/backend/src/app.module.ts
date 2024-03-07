@@ -13,12 +13,14 @@ import { TransferModule } from "./dsp/transfer/transfer.module";
 
 import { ServeStaticModule } from "@nestjs/serve-static";
 
-const embeddedFrontend = (process.env['EMBEDDED_FRONTEND']) ? [
-  ServeStaticModule.forRoot({
-    rootPath: process.env['EMBEDDED_FRONTEND'],
-    exclude: ['/api/(.*)', '/.well-known/(.*)'],
-  })
- ] : []
+const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
+  ? [
+      ServeStaticModule.forRoot({
+        rootPath: process.env["EMBEDDED_FRONTEND"],
+        exclude: ["/api/(.*)", "/.well-known/(.*)"],
+      }),
+    ]
+  : [];
 
 @Module({
   imports: [
@@ -28,14 +30,14 @@ const embeddedFrontend = (process.env['EMBEDDED_FRONTEND']) ? [
     TypeOrmModule.forRoot({
       ...config.db,
       autoLoadEntities: true,
-      synchronize: true
+      synchronize: true,
     }),
     DataPlaneModule,
     DspClientModule,
     CatalogModule,
     NegotiationModule,
     TransferModule,
-    ...embeddedFrontend
+    ...embeddedFrontend,
   ],
   exports: [
     AuthModule,
@@ -43,15 +45,13 @@ const embeddedFrontend = (process.env['EMBEDDED_FRONTEND']) ? [
     DspClientModule,
     CatalogModule,
     NegotiationModule,
-    TransferModule
+    TransferModule,
   ],
-  controllers: [
-    HealthController
-  ]
+  controllers: [HealthController],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(RequestContextMiddleware).forRoutes('*');
+    consumer.apply(RequestContextMiddleware).forRoutes("*");
     consumer.apply(LoggerMiddleware).forRoutes("*");
   }
 }

@@ -1,7 +1,29 @@
-import { IsNotEmpty, IsOptional, IsString, ValidateNested } from "class-validator";
+import {
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from "class-validator";
 import { Serializable, Namespace } from "../../decorators";
-import { IReference, Multilanguage, Reference, SerializableClass } from "../common";
-import { ContractNegotiationState, ContractAgreementMessageDto, ContractAgreementVerificationMessageDto, ContractNegotiationDto, ContractNegotiationErrorDto, ContractNegotiationEventMessageDto, ContractNegotiationTerminationMessageDto, ContractOfferMessageDto, ContractRequestMessageDto, NegotiationEvent, HashedMessage } from "@tsg-dsp/common";
+import {
+  IReference,
+  Multilanguage,
+  Reference,
+  SerializableClass,
+} from "../common";
+import {
+  ContractNegotiationState,
+  ContractAgreementMessageDto,
+  ContractAgreementVerificationMessageDto,
+  ContractNegotiationDto,
+  ContractNegotiationErrorDto,
+  ContractNegotiationEventMessageDto,
+  ContractNegotiationTerminationMessageDto,
+  ContractOfferMessageDto,
+  ContractRequestMessageDto,
+  NegotiationEvent,
+  HashedMessage,
+} from "@tsg-dsp/common";
 import { Agreement, Offer } from "./negotiation";
 
 export interface IContractRequestMessage {
@@ -29,8 +51,8 @@ export class ContractRequestMessage extends SerializableClass<ContractRequestMes
   @IsNotEmpty()
   callbackAddress: string;
 
-  constructor (value: IContractRequestMessage) {
-    super()
+  constructor(value: IContractRequestMessage) {
+    super();
     this.consumerPid = value.consumerPid;
     this.providerPid = value.providerPid;
     this.offer = value.offer;
@@ -63,8 +85,8 @@ export class ContractOfferMessage extends SerializableClass<ContractOfferMessage
   @IsNotEmpty()
   callbackAddress: string;
 
-  constructor (value: IContractOfferMessage) {
-    super()
+  constructor(value: IContractOfferMessage) {
+    super();
     this.consumerPid = value.consumerPid;
     this.providerPid = value.providerPid;
     this.offer = value.offer;
@@ -80,8 +102,7 @@ export interface IContractNegotiationTerminationMessage {
 }
 
 @Serializable("dspace:ContractNegotiationTerminationMessage")
-export class ContractNegotiationTerminationMessage extends SerializableClass<ContractNegotiationTerminationMessageDto>
-{ 
+export class ContractNegotiationTerminationMessage extends SerializableClass<ContractNegotiationTerminationMessageDto> {
   @Namespace("dspace")
   @IsOptional()
   @IsString()
@@ -98,7 +119,7 @@ export class ContractNegotiationTerminationMessage extends SerializableClass<Con
   @ValidateNested()
   reason: Array<Multilanguage>;
 
-  constructor (value: IContractNegotiationTerminationMessage) {
+  constructor(value: IContractNegotiationTerminationMessage) {
     super();
     this.consumerPid = value.consumerPid;
     this.providerPid = value.providerPid;
@@ -110,7 +131,7 @@ export class ContractNegotiationTerminationMessage extends SerializableClass<Con
 export interface IContractNegotiation extends IReference {
   consumerPid: string;
   providerPid: string;
-  state: ContractNegotiationState
+  state: ContractNegotiationState;
 }
 
 @Serializable("dspace:ContractNegotiation")
@@ -127,14 +148,13 @@ export class ContractNegotiation extends Reference<ContractNegotiationDto> {
   @IsNotEmpty()
   state: ContractNegotiationState;
 
-  constructor (value: IContractNegotiation) {
-    super(value)
+  constructor(value: IContractNegotiation) {
+    super(value);
     this.consumerPid = value.consumerPid;
     this.providerPid = value.providerPid;
     this.state = value.state;
   }
 }
-
 
 export interface IContractNegotiationEventMessage {
   consumerPid: string;
@@ -143,8 +163,7 @@ export interface IContractNegotiationEventMessage {
 }
 
 @Serializable("dspace:ContractNegotiationEventMessage")
-export class ContractNegotiationEventMessage extends SerializableClass<ContractNegotiationEventMessageDto>
-{
+export class ContractNegotiationEventMessage extends SerializableClass<ContractNegotiationEventMessageDto> {
   @Namespace("dspace")
   @IsOptional()
   @IsString()
@@ -157,7 +176,7 @@ export class ContractNegotiationEventMessage extends SerializableClass<ContractN
   @IsNotEmpty()
   eventType: NegotiationEvent;
 
-  constructor (value: IContractNegotiationEventMessage) {
+  constructor(value: IContractNegotiationEventMessage) {
     super();
     this.consumerPid = value.consumerPid;
     this.providerPid = value.providerPid;
@@ -191,8 +210,8 @@ export class ContractNegotiationError extends SerializableClass<ContractNegotiat
   @IsOptional()
   description?: Array<Multilanguage>;
 
-  constructor (value: IContractNegotiationError) {
-    super()
+  constructor(value: IContractNegotiationError) {
+    super();
     this.consumerPid = value.consumerPid;
     this.providerPid = value.providerPid;
     this.reason = value.reason;
@@ -207,8 +226,7 @@ export interface IContractAgreementVerificationMessage {
 }
 
 @Serializable("dspace:ContractAgreementVerificationMessage")
-export class ContractAgreementVerificationMessage extends SerializableClass<ContractAgreementVerificationMessageDto>
-{
+export class ContractAgreementVerificationMessage extends SerializableClass<ContractAgreementVerificationMessageDto> {
   @Namespace("dspace")
   @IsOptional()
   @IsString()
@@ -221,7 +239,7 @@ export class ContractAgreementVerificationMessage extends SerializableClass<Cont
   @IsNotEmpty()
   hashedMessage: HashedMessage;
 
-  constructor (value: IContractAgreementVerificationMessage) {
+  constructor(value: IContractAgreementVerificationMessage) {
     super();
     this.consumerPid = value.consumerPid;
     this.providerPid = value.providerPid;
@@ -250,8 +268,8 @@ export class ContractAgreementMessage extends SerializableClass<ContractAgreemen
   @ValidateNested()
   agreement: Agreement;
 
-  constructor (value: IContractAgreementMessage) {
-    super()
+  constructor(value: IContractAgreementMessage) {
+    super();
     this.consumerPid = value.consumerPid;
     this.providerPid = value.providerPid;
     this.agreement = value.agreement;

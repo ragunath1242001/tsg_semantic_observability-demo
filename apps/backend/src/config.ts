@@ -1,81 +1,92 @@
-import 'reflect-metadata';
-import { ArrayMinSize, IsArray, IsDefined, IsIn, IsNumber, IsOptional, IsString, IsUrl, Matches, ValidateNested } from "class-validator";
+import "reflect-metadata";
+import {
+  ArrayMinSize,
+  IsArray,
+  IsDefined,
+  IsIn,
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsUrl,
+  Matches,
+  ValidateNested,
+} from "class-validator";
 import { Type } from "class-transformer";
 
 export abstract class DatabaseConfig {
   @IsString()
   @IsIn(["sqlite", "postgres"])
-  public readonly type!: 'sqlite' | 'postgres';
+  public readonly type!: "sqlite" | "postgres";
 
   @IsString()
-  public readonly database!: string
+  public readonly database!: string;
 }
 
 export class SQLiteConfig extends DatabaseConfig {
-  override readonly type: 'sqlite' = 'sqlite' as const;
+  override readonly type: "sqlite" = "sqlite" as const;
 }
 
 export class PostgresConfig extends DatabaseConfig {
-  override readonly type: 'postgres' = 'postgres' as const;
+  override readonly type: "postgres" = "postgres" as const;
 
   @IsString()
-  public readonly host!: string
+  public readonly host!: string;
   @IsNumber()
-  public readonly port!: number
+  public readonly port!: number;
   @IsString()
-  public readonly username!: string
+  public readonly username!: string;
   @IsString()
-  public readonly password!: string
+  public readonly password!: string;
 }
 
 export class ServerConfig {
   @IsString()
-  public readonly listen: string = '0.0.0.0';
+  public readonly listen: string = "0.0.0.0";
   @IsNumber()
   @Type()
   public readonly port: number = 3000;
   @IsString()
-  public readonly publicDomain: string = 'localhost';
+  public readonly publicDomain: string = "localhost";
   @IsString()
   public readonly publicAddress: string = `http://localhost:3000`;
 }
 
 export class IamConfig {
   @IsString()
-  public readonly didId!: string
+  public readonly didId!: string;
 
   @IsString()
-  @IsIn(['tsg', 'miw', 'dev'])
-  public readonly type!: 'tsg' | 'miw' | 'dev'
+  @IsIn(["tsg", "miw", "dev"])
+  public readonly type!: "tsg" | "miw" | "dev";
 
   @IsString()
-  @IsUrl({require_tld: false, require_protocol: true, require_host: false})
-  public readonly tokenUrl!: string
-  
-  @IsString()
-  @IsUrl({require_tld: false, require_protocol: true, require_host: false})
-  public readonly presentationUrl!: string
+  @IsUrl({ require_tld: false, require_protocol: true, require_host: false })
+  public readonly tokenUrl!: string;
 
   @IsString()
-  @IsUrl({require_tld: false, require_protocol: true, require_host: false})
+  @IsUrl({ require_tld: false, require_protocol: true, require_host: false })
+  public readonly presentationUrl!: string;
+
+  @IsString()
+  @IsUrl({ require_tld: false, require_protocol: true, require_host: false })
   @IsOptional()
-  public readonly walletUrl?: string
-  
-  @IsString()
-  @IsUrl({require_tld: false, require_protocol: true, require_host: false})
-  public readonly validationUrl!: string
+  public readonly walletUrl?: string;
 
   @IsString()
-  public readonly clientId!: string
+  @IsUrl({ require_tld: false, require_protocol: true, require_host: false })
+  public readonly validationUrl!: string;
 
   @IsString()
-  public readonly clientSecret!: string
+  public readonly clientId!: string;
 
   @IsString()
-  public readonly credentialId!: string
+  public readonly clientSecret!: string;
 
-  @IsString({each: true})
-  public readonly validations!: string[]
+  @IsString()
+  public readonly credentialId!: string;
+
+  @IsString({ each: true })
+  public readonly validations!: string[];
 }
 
 export class UserConfig {
@@ -84,39 +95,39 @@ export class UserConfig {
 
   @IsString()
   @Matches(/^\$2[aby]?\$\d{1,2}\$[./A-Za-z0-9]{53}$/g)
-  public readonly password!: string
+  public readonly password!: string;
 }
 
 export class InitCatalog {
   @IsString()
-  public readonly creator!: string
+  public readonly creator!: string;
   @IsString()
-  public readonly publisher!: string
+  public readonly publisher!: string;
   @IsString()
-  public readonly title!: string
+  public readonly title!: string;
   @IsString()
-  public readonly description!: string
+  public readonly description!: string;
   @IsArray()
-  @IsString({each: true})
+  @IsString({ each: true })
   @IsOptional()
-  public datasets?: string[]
-
+  public datasets?: string[];
 }
 
 export class RootConfig {
   @ValidateNested()
-  @IsDefined({message: 'Either sqlite or postgres DB config must be provided'})
+  @IsDefined({
+    message: "Either sqlite or postgres DB config must be provided",
+  })
   @Type(() => DatabaseConfig, {
     discriminator: {
-      property: 'type',
+      property: "type",
       subTypes: [
-        { value: SQLiteConfig, name: 'sqlite'},
-        { value: PostgresConfig, name: 'postgres'}
+        { value: SQLiteConfig, name: "sqlite" },
+        { value: PostgresConfig, name: "postgres" },
       ],
-
-    }
+    },
   })
-  public readonly db!: DatabaseConfig
+  public readonly db!: DatabaseConfig;
 
   @ValidateNested()
   @IsOptional()
@@ -131,10 +142,10 @@ export class RootConfig {
   @ValidateNested()
   @Type(() => UserConfig)
   @ArrayMinSize(1)
-  public readonly users!: UserConfig[]
+  public readonly users!: UserConfig[];
 
   @ValidateNested()
   @Type(() => InitCatalog)
   @IsDefined()
-  public readonly initCatalog!: InitCatalog
+  public readonly initCatalog!: InitCatalog;
 }

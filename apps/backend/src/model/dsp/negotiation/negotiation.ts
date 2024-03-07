@@ -1,4 +1,11 @@
-import { IsDateString, IsNotEmpty, IsOptional, IsString, ValidateIf, ValidateNested } from "class-validator";
+import {
+  IsDateString,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  ValidateIf,
+  ValidateNested,
+} from "class-validator";
 import { Namespace, Serializable } from "../../decorators";
 import {
   IReference,
@@ -8,7 +15,20 @@ import {
   Value,
 } from "../common";
 import { ContractAgreementVerificationMessage } from "./messages";
-import { ODRLLeftOperand, ODRLOperator, ConstraintDto, ContextDto, ODRLAction, PermissionDto, ProhibitionDto, DutyDto, PolicyDto, OfferDto, AgreementDto, ContractNegotiationState } from "@tsg-dsp/common";
+import {
+  ODRLLeftOperand,
+  ODRLOperator,
+  ConstraintDto,
+  ContextDto,
+  ODRLAction,
+  PermissionDto,
+  ProhibitionDto,
+  DutyDto,
+  PolicyDto,
+  OfferDto,
+  AgreementDto,
+  ContractNegotiationState,
+} from "@tsg-dsp/common";
 
 export interface IConstraint {
   leftOperand: ODRLLeftOperand | string;
@@ -35,7 +55,7 @@ export class Constraint extends SerializableClass<ConstraintDto & ContextDto> {
   @IsNotEmpty()
   rightOperandReference?: string;
 
-  constructor (value: IConstraint) {
+  constructor(value: IConstraint) {
     super();
     this.rightOperand = value.rightOperand;
     this.rightOperandReference = value.rightOperandReference;
@@ -56,7 +76,7 @@ export interface IProhibition extends IPolicyRule {
   target: string;
 }
 
-export type IDuty = IPolicyRule
+export type IDuty = IPolicyRule;
 
 export interface IPermission extends IPolicyRule {
   target: string;
@@ -64,7 +84,9 @@ export interface IPermission extends IPolicyRule {
 }
 
 @Serializable("odrl:PolicyRule")
-export class PolicyRule<OutType extends ContextDto> extends SerializableClass<OutType> {
+export class PolicyRule<
+  OutType extends ContextDto
+> extends SerializableClass<OutType> {
   @Namespace("odrl")
   @ValidateNested()
   @IsOptional()
@@ -84,7 +106,7 @@ export class PolicyRule<OutType extends ContextDto> extends SerializableClass<Ou
   @IsOptional()
   constraint?: Array<Constraint>;
 
-  constructor (value: IPolicyRule) {
+  constructor(value: IPolicyRule) {
     super();
     this.assigner = value.assigner;
     this.assignee = value.assignee;
@@ -104,7 +126,7 @@ export class Permission extends PolicyRule<PermissionDto & ContextDto> {
   @IsOptional()
   duty?: Array<Duty>;
 
-  constructor (value: IPermission) {
+  constructor(value: IPermission) {
     super(value);
     this.target = value.target;
     this.duty = value.duty;
@@ -117,7 +139,7 @@ export class Prohibition extends PolicyRule<ProhibitionDto & ContextDto> {
   @IsNotEmpty()
   target: string;
 
-  constructor (value: IProhibition) {
+  constructor(value: IProhibition) {
     super(value);
     this.target = value.target;
   }
@@ -137,7 +159,9 @@ export interface IPolicy extends IReference {
 }
 
 @Serializable("odrl:Policy")
-export class Policy<OutType extends ContextDto = PolicyDto & ContextDto> extends Reference<OutType> {
+export class Policy<
+  OutType extends ContextDto = PolicyDto & ContextDto
+> extends Reference<OutType> {
   @Namespace("odrl")
   @IsString()
   @IsOptional()
@@ -166,7 +190,7 @@ export class Policy<OutType extends ContextDto = PolicyDto & ContextDto> extends
   @IsOptional()
   target?: string;
 
-  constructor (value: IPolicy) {
+  constructor(value: IPolicy) {
     super(value);
     this.assigner = value.assigner;
     this.assignee = value.assignee;
@@ -188,7 +212,7 @@ export class Offer extends Policy<OfferDto> {
   @IsNotEmpty()
   assigner: string;
 
-  constructor (value: IOffer) {
+  constructor(value: IOffer) {
     super(value);
     this.assigner = value.assigner;
   }
@@ -214,7 +238,7 @@ export class Agreement extends Policy<AgreementDto> {
   @IsDateString()
   timestamp: string;
 
-  constructor (value: IAgreement) {
+  constructor(value: IAgreement) {
     super(value);
     this.assigner = value.assigner;
     this.assignee = value.assignee;
@@ -225,84 +249,83 @@ export class Agreement extends Policy<AgreementDto> {
 export type NegotiationRole = "provider" | "consumer";
 
 export interface INegotiationProcessEvent {
-  time: Date,
-  state: ContractNegotiationState,
-  localMessage?: string,
-  code?: string,
-  reason?: Multilanguage[],
-  agreementMessage?: string,
-  verification?: ContractAgreementVerificationMessage
-  type: "local" | "remote"
+  time: Date;
+  state: ContractNegotiationState;
+  localMessage?: string;
+  code?: string;
+  reason?: Multilanguage[];
+  agreementMessage?: string;
+  verification?: ContractAgreementVerificationMessage;
+  type: "local" | "remote";
 }
 
 export class NegotiationProcessEvent {
-  time: Date
-  state: ContractNegotiationState
-  localMessage?: string
-  code?: string
-  reason?: Multilanguage[]
-  agreementMessage?: string
-  verification?: ContractAgreementVerificationMessage
-  type: "local" | "remote"
+  time: Date;
+  state: ContractNegotiationState;
+  localMessage?: string;
+  code?: string;
+  reason?: Multilanguage[];
+  agreementMessage?: string;
+  verification?: ContractAgreementVerificationMessage;
+  type: "local" | "remote";
 
-  constructor (value: INegotiationProcessEvent) {
-    this.time = value.time
-    this.state = value.state
-    this.localMessage = value.localMessage
-    this.code = value.code
-    this.reason = value.reason
-    this.agreementMessage = value.agreementMessage
-    this.verification = value.verification
-    this.type = value.type
+  constructor(value: INegotiationProcessEvent) {
+    this.time = value.time;
+    this.state = value.state;
+    this.localMessage = value.localMessage;
+    this.code = value.code;
+    this.reason = value.reason;
+    this.agreementMessage = value.agreementMessage;
+    this.verification = value.verification;
+    this.type = value.type;
   }
 }
 
 export interface INegotiationStatus {
-  localId: string,
-  remoteId: string,
-  remoteParty: string,
-  role: NegotiationRole,
-  remoteAddress: string,
-  state: ContractNegotiationState,
-  dataSet: string
+  localId: string;
+  remoteId: string;
+  remoteParty: string;
+  role: NegotiationRole;
+  remoteAddress: string;
+  state: ContractNegotiationState;
+  dataSet: string;
 }
 
 export interface INegotiationDetail extends INegotiationStatus {
-  offer?: Offer,
-  agreement?: Agreement,
-  events: Array<NegotiationProcessEvent>,
+  offer?: Offer;
+  agreement?: Agreement;
+  events: Array<NegotiationProcessEvent>;
 }
 
-
 export class NegotiationStatus {
-  localId: string
-  remoteId: string
-  remoteParty: string
-  role: NegotiationRole
-  remoteAddress: string
-  state: ContractNegotiationState
-  dataSet: string
+  localId: string;
+  remoteId: string;
+  remoteParty: string;
+  role: NegotiationRole;
+  remoteAddress: string;
+  state: ContractNegotiationState;
+  dataSet: string;
 
-  constructor (value: INegotiationStatus) {
-    this.localId = value.localId 
-    this.remoteId = value.remoteId 
-    this.remoteParty = value.remoteParty 
-    this.role = value.role 
-    this.remoteAddress = value.remoteAddress 
-    this.state = value.state 
-    this.dataSet = value.dataSet 
+  constructor(value: INegotiationStatus) {
+    this.localId = value.localId;
+    this.remoteId = value.remoteId;
+    this.remoteParty = value.remoteParty;
+    this.role = value.role;
+    this.remoteAddress = value.remoteAddress;
+    this.state = value.state;
+    this.dataSet = value.dataSet;
   }
 }
 
 export class NegotiationDetail extends NegotiationStatus {
-  offer?: Offer
-  agreement?: Agreement
-  events: Array<NegotiationProcessEvent>
+  offer?: Offer;
+  agreement?: Agreement;
+  events: Array<NegotiationProcessEvent>;
 
   constructor(value: INegotiationDetail) {
     super(value);
-    this.offer = value.offer
-    this.agreement = value.agreement
-    this.events = value.events
+    this.offer = value.offer;
+    this.agreement = value.agreement;
+    this.events = value.events;
   }
 }

@@ -3,133 +3,133 @@ info:
   title: TSG - Dataspace Protocol - Negotiation API
   description: API definition for communication for providers in negotiation sequences between Control Planes
   version: 0.0.1
-  license: 
+  license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
-servers: 
+servers:
   - url: http://localhost
-security: 
-  -  BearerAuth: []
-paths: 
+security:
+  - BearerAuth: []
+paths:
   /negotiations/request:
     post:
       operationId: contractRequest
       summary: Request a contract negotiation
-      requestBody: 
+      requestBody:
         content:
           application/json:
-            schema: 
+            schema:
               $ref: ../schemas/dsp.schema.json#/definitions/ContractRequestMessageDto
-      responses: 
+      responses:
         200:
           description: Contract negotiation response
           content:
             application/json:
-              schema: 
+              schema:
                 $ref: ../schemas/dsp.schema.json#/definitions/ContractNegotiationDto
         4XX:
           description: Request error
   /negotiations/{processId}:
-    get: 
+    get:
       operationId: requestContractNegotiation
       summary: Request contract negotiation status
-      parameters: 
+      parameters:
         - name: processId
           in: path
           required: true
-          schema: 
+          schema:
             type: string
-      responses: 
+      responses:
         200:
           description: Contract negotiation response
           content:
             application/json:
-              schema: 
+              schema:
                 $ref: ../schemas/dsp.schema.json#/definitions/ContractNegotiationDto
         404:
           description: Contract negotiation not found
   /negotiations/{processId}/request:
-    post: 
+    post:
       operationId: contractOffer
       summary: Make an offer initiated from a consumer
-      parameters: 
+      parameters:
         - name: processId
           in: path
           required: true
-          schema: 
+          schema:
             type: string
-      requestBody: 
-        content: 
+      requestBody:
+        content:
           application/json:
-            schema: 
-              $ref: ../schemas/dsp.schema.json#/definitions/ContractRequestMessageDto        
-      responses: 
+            schema:
+              $ref: ../schemas/dsp.schema.json#/definitions/ContractRequestMessageDto
+      responses:
         200:
           description: Offer processed
         404:
           description: Contract negotiation not found
   /negotiations/{processId}/events:
-    post: 
+    post:
       operationId: offerAcceptance
-      summary: Contract negotiation event indicating acceptance of the offer provided by the provider 
-      parameters: 
+      summary: Contract negotiation event indicating acceptance of the offer provided by the provider
+      parameters:
         - name: processId
           in: path
           required: true
-          schema: 
+          schema:
             type: string
-      requestBody: 
-        content: 
+      requestBody:
+        content:
           application/json:
-            schema: 
-              $ref: ../schemas/dsp.schema.json#/definitions/ContractNegotiationEventMessageDto        
-      responses: 
+            schema:
+              $ref: ../schemas/dsp.schema.json#/definitions/ContractNegotiationEventMessageDto
+      responses:
         200:
           description: Acceptance processed
         404:
           description: Contract negotiation not found
   /negotiations/{processId}/agreement/verification:
-    post: 
+    post:
       operationId: agreementVerification
-      summary: Contract agreement verification to cryptographically verify the acceptance of an agreement 
-      parameters: 
+      summary: Contract agreement verification to cryptographically verify the acceptance of an agreement
+      parameters:
         - name: processId
           in: path
           required: true
-          schema: 
+          schema:
             type: string
-      requestBody: 
-        content: 
+      requestBody:
+        content:
           application/json:
-            schema: 
-              $ref: ../schemas/dsp.schema.json#/definitions/ContractAgreementVerificationMessageDto        
-      responses: 
+            schema:
+              $ref: ../schemas/dsp.schema.json#/definitions/ContractAgreementVerificationMessageDto
+      responses:
         200:
           description: Verification processed
         404:
           description: Contract negotiation not found
   /negotiations/{processId}/termination:
-    post: 
+    post:
       operationId: negotiationTermination
-      summary: Negotiation termination  
-      parameters: 
+      summary: Negotiation termination
+      parameters:
         - name: processId
           in: path
           required: true
-          schema: 
+          schema:
             type: string
-      requestBody: 
-        content: 
+      requestBody:
+        content:
           application/json:
-            schema: 
-              $ref: ../schemas/dsp.schema.json#/definitions/ContractNegotiationTerminationMessageDto        
-      responses: 
+            schema:
+              $ref: ../schemas/dsp.schema.json#/definitions/ContractNegotiationTerminationMessageDto
+      responses:
         200:
           description: Termination processed
         404:
           description: Contract negotiation not found
 
-components: 
+components:
   securitySchemes:
     BearerAuth:
       type: http

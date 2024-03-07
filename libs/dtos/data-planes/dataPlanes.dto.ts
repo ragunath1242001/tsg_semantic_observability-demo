@@ -9,20 +9,22 @@ export interface DataPlaneDto {
   managementAddress: string;
   managementToken: string;
   catalogSynchronization: "push" | "pull";
-  role: "consumer" | "provider" | "both"
+  role: "consumer" | "provider" | "both";
 }
 
-export type DataPlaneCreation = Omit<DataPlaneDto, "identifier"> & { identifier?: string }
+export type DataPlaneCreation = Omit<DataPlaneDto, "identifier"> & {
+  identifier?: string;
+};
 
 export interface DataPlaneAddressDto {
-  endpoint: string,
-  properties: { name: string, value: string }[]
+  endpoint: string;
+  properties: { name: string; value: string }[];
 }
 
 export interface DataPlaneRequestResponseDto {
   accepted: boolean;
   identifier: string;
-  dataAddress?: DataPlaneAddressDto,
+  dataAddress?: DataPlaneAddressDto;
   callbackAddress?: string;
 }
 

@@ -6,21 +6,21 @@ import { TransferProcess, DataAddress } from "./messages";
 export type TransferRole = "provider" | "consumer";
 
 export interface ITransferEvent {
-  time: Date
-  state: TransferState
-  localMessage?: string
-  code?: string
-  reason?: Multilanguage[]
-  type: "local" | "remote"
+  time: Date;
+  state: TransferState;
+  localMessage?: string;
+  code?: string;
+  reason?: Multilanguage[];
+  type: "local" | "remote";
 }
 
 export class TransferEvent {
-  time: Date
-  state: TransferState
-  localMessage?: string
-  code?: string
-  reason?: Multilanguage[]
-  type: "local" | "remote"
+  time: Date;
+  state: TransferState;
+  localMessage?: string;
+  code?: string;
+  reason?: Multilanguage[];
+  type: "local" | "remote";
 
   constructor(value: ITransferEvent) {
     this.time = value.time;
@@ -33,27 +33,27 @@ export class TransferEvent {
 }
 
 export interface ITransferStatus {
-  localId: string
-  remoteId?: string
-  role: TransferRole
-  remoteAddress: string
-  remoteParty: string
-  state: TransferState
-  process: TransferProcess
-  agreementId: string
-  format?: string
+  localId: string;
+  remoteId?: string;
+  role: TransferRole;
+  remoteAddress: string;
+  remoteParty: string;
+  state: TransferState;
+  process: TransferProcess;
+  agreementId: string;
+  format?: string;
 }
 
 export class TransferStatus {
-  localId: string
-  remoteId?: string
-  role: TransferRole
-  remoteAddress: string
-  remoteParty: string
-  state: TransferState
-  process: TransferProcess
-  agreementId: string
-  format?: string
+  localId: string;
+  remoteId?: string;
+  role: TransferRole;
+  remoteAddress: string;
+  remoteParty: string;
+  state: TransferState;
+  process: TransferProcess;
+  agreementId: string;
+  format?: string;
 
   constructor(value: ITransferStatus) {
     this.localId = value.localId;
@@ -69,20 +69,20 @@ export class TransferStatus {
 }
 
 export interface ITransferDetail extends ITransferStatus {
-  dataAddress?: DataAddress
-  dataPlaneTransfer: DataPlaneTransferDto
-  events: TransferEvent[]
+  dataAddress?: DataAddress;
+  dataPlaneTransfer: DataPlaneTransferDto;
+  events: TransferEvent[];
 }
 
 export class TransferDetail extends TransferStatus {
-  dataAddress?: DataAddress
-  dataPlaneTransfer: DataPlaneTransferDto
-  events: TransferEvent[]
+  dataAddress?: DataAddress;
+  dataPlaneTransfer: DataPlaneTransferDto;
+  events: TransferEvent[];
 
   constructor(value: ITransferDetail) {
     super(value);
-    this.dataAddress = value.dataAddress; 
-    this.dataPlaneTransfer = value.dataPlaneTransfer; 
-    this.events = value.events; 
+    this.dataAddress = value.dataAddress;
+    this.dataPlaneTransfer = value.dataPlaneTransfer;
+    this.events = value.events;
   }
 }

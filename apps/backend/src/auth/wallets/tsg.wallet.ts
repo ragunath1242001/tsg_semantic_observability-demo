@@ -12,71 +12,102 @@ export class TsgWalletClient extends WalletClient {
   }
   private readonly logger = new Logger(this.constructor.name);
   private access_token?: string;
-  private expiration?: Date
+  private expiration?: Date;
 
   private async requestAccessToken() {
     const data = qs.stringify({
-      'client_id': this.iamConfig.clientId,
-      'client_secret': this.iamConfig.clientSecret,
-      'grant_type': 'client_credentials'
+      client_id: this.iamConfig.clientId,
+      client_secret: this.iamConfig.clientSecret,
+      grant_type: "client_credentials",
     });
     try {
-      const response = await axios.post<{access_token: string}>(this.iamConfig.tokenUrl, data, {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
+      const response = await axios.post<{ access_token: string }>(
+        this.iamConfig.tokenUrl,
+        data,
+        {
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
         }
-      });
+      );
       this.access_token = response.data.access_token;
 
-      const accessTokenPayload = JSON.parse(atob(this.access_token.split('.')[1]))
-      if (accessTokenPayload['exp']) {
-        this.expiration = new Date(accessTokenPayload['exp'] * 1000 - 10000);
+      const accessTokenPayload = JSON.parse(
+        atob(this.access_token.split(".")[1])
+      );
+      if (accessTokenPayload["exp"]) {
+        this.expiration = new Date(accessTokenPayload["exp"] * 1000 - 10000);
       }
     } catch (err) {
-      throw new DSPClientError("Could not request access token from wallet", err);
+      throw new DSPClientError(
+        "Could not request access token from wallet",
+        err
+      );
     }
   }
-  
-  async requestVerifiablePresentation(audience: string): Promise<VerifiablePresentationJwt> {
+
+  async requestVerifiablePresentation(
+    audience: string
+  ): Promise<VerifiablePresentationJwt> {
     try {
-      if (!this.access_token || !this.expiration || this.expiration < new Date()) {
+      if (
+        !this.access_token ||
+        !this.expiration ||
+        this.expiration < new Date()
+      ) {
         await this.requestAccessToken();
       }
-      const response = await axios.get<VerifiablePresentationJwt>(this.iamConfig.presentationUrl, {
-        headers: {
-          Authorization: `Bearer ${this.access_token}`
-        },
-        params: {
-          credentialId: this.iamConfig.credentialId,
-          asJwt: 'true',
-          audience: audience
+      const response = await axios.get<VerifiablePresentationJwt>(
+        this.iamConfig.presentationUrl,
+        {
+          headers: {
+            Authorization: `Bearer ${this.access_token}`,
+          },
+          params: {
+            credentialId: this.iamConfig.credentialId,
+            asJwt: "true",
+            audience: audience,
+          },
         }
-      });
+      );
       return response.data;
     } catch (err) {
       throw new DSPClientError("Could not request VP", err);
     }
   }
-  
-  async requestValidation(jwt: VerifiablePresentationJwt, audience: string): Promise<boolean> {
+
+  async requestValidation(
+    jwt: VerifiablePresentationJwt,
+    audience: string
+  ): Promise<boolean> {
     try {
-      if (!this.access_token || !this.expiration || this.expiration < new Date()) {
+      if (
+        !this.access_token ||
+        !this.expiration ||
+        this.expiration < new Date()
+      ) {
         await this.requestAccessToken();
       }
-      const response = await axios.post<ValidationResult>(this.iamConfig.validationUrl, jwt, {
-        headers: {
-          Authorization: `Bearer ${this.access_token}`
-        },
-        params: {
-          audience: audience
+      const response = await axios.post<ValidationResult>(
+        this.iamConfig.validationUrl,
+        jwt,
+        {
+          headers: {
+            Authorization: `Bearer ${this.access_token}`,
+          },
+          params: {
+            audience: audience,
+          },
         }
-      });
+      );
       for (const validation of this.iamConfig.validations) {
         const validationResult = response.data[validation];
         if (validationResult) {
           if (validationResult instanceof Array) {
-            if (validationResult.some(c => !c)) {
-              this.logger.log(`Validation for ${validation} contains at least one false`);
+            if (validationResult.some((c) => !c)) {
+              this.logger.log(
+                `Validation for ${validation} contains at least one false`
+              );
               return false;
             }
           } else {

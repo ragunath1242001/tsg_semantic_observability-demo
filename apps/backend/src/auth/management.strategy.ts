@@ -7,17 +7,26 @@ import { RootConfig } from "../config";
 import bcrypt from "bcrypt";
 
 @Injectable()
-export class ManagementStrategy extends PassportStrategy(BasicStrategy, 'mgmt') {
-  constructor(private readonly authService: AuthService, private readonly config: RootConfig) {
-    super()
+export class ManagementStrategy extends PassportStrategy(
+  BasicStrategy,
+  "mgmt"
+) {
+  constructor(
+    private readonly authService: AuthService,
+    private readonly config: RootConfig
+  ) {
+    super();
   }
 
   async validate(username: string, password: string) {
-    const user = this.config.users.find(user => user.username === username);
+    const user = this.config.users.find((user) => user.username === username);
     if (!user || !bcrypt.compareSync(password, user.password)) {
-      throw new DSPError('Unknown user / password combination', HttpStatus.UNAUTHORIZED);
+      throw new DSPError(
+        "Unknown user / password combination",
+        HttpStatus.UNAUTHORIZED
+      );
     }
 
-    return { username: user.username }
+    return { username: user.username };
   }
 }

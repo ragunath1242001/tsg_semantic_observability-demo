@@ -1,29 +1,38 @@
 import { CatalogDto, DatasetDto } from "@tsg-dsp/common";
 import { Body, Controller, HttpStatus, Logger } from "@nestjs/common";
-import { Get, HttpCode, Param, Post, UseGuards } from "@nestjs/common/decorators";
+import {
+  Get,
+  HttpCode,
+  Param,
+  Post,
+  UseGuards,
+} from "@nestjs/common/decorators";
 import { CatalogRequestMessage } from "../../model/dsp/catalog/messages";
 import { CatalogService } from "./catalog.service";
 import { DeserializePipe } from "../../utils/deserialize.pipe";
 import { VerifiablePresentationGuard } from "../../auth/verifiablePresentation.guard";
 
 @UseGuards(VerifiablePresentationGuard)
-@Controller('catalog')
+@Controller("catalog")
 export class CatalogController {
   constructor(private readonly catalogService: CatalogService) {}
   private readonly logger = new Logger(this.constructor.name);
-  
-  @Post('request')
+
+  @Post("request")
   @HttpCode(HttpStatus.OK)
-  async request(@Body(new DeserializePipe(CatalogRequestMessage)) body: CatalogRequestMessage): Promise<CatalogDto> {
+  async request(
+    @Body(new DeserializePipe(CatalogRequestMessage))
+    body: CatalogRequestMessage
+  ): Promise<CatalogDto> {
     this.logger.log(`Received catalog request`);
     return (await this.catalogService.request(body)).serialize();
   }
 
-  @Get('datasets/:id')
+  @Get("datasets/:id")
   @HttpCode(HttpStatus.OK)
-  async getDataset(@Param('id') id: string): Promise<DatasetDto> {
+  async getDataset(@Param("id") id: string): Promise<DatasetDto> {
     this.logger.log(`Received dataset request for id ${id}`);
-    const result = (await this.catalogService.getDataset(id)).serialize()
-    return result
+    const result = (await this.catalogService.getDataset(id)).serialize();
+    return result;
   }
 }

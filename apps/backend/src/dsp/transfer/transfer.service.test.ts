@@ -13,31 +13,70 @@ import {
 import { plainToClass } from "class-transformer";
 import { DataPlaneService } from "../../data-plane/dataPlane.service";
 import { DataPlaneDao } from "../../model/data-planes/dataPlanes.dao";
-import { CatalogDao, CatalogRecordDao, DatasetDao, DataServiceDao, DistributionDao, ResourceDao } from "../../model/dsp/catalog/catalog.dao";
+import {
+  CatalogDao,
+  CatalogRecordDao,
+  DatasetDao,
+  DataServiceDao,
+  DistributionDao,
+  ResourceDao,
+} from "../../model/dsp/catalog/catalog.dao";
 import { CatalogService } from "../catalog/catalog.service";
 import { http, HttpResponse, PathParams } from "msw";
 import { Catalog } from "../../model/dsp/catalog/catalog";
-import { TransferProcessDto, TransferRequestMessageDto, TransferState } from "@tsg-dsp/common";
-import { DataAddress, EndpointProperty, TransferCompletionMessage, TransferRequestMessage, TransferStartMessage, TransferSuspensionMessage, TransferTerminationMessage } from "../../model/dsp/transfer/messages";
+import {
+  TransferProcessDto,
+  TransferRequestMessageDto,
+  TransferState,
+} from "@tsg-dsp/common";
+import {
+  DataAddress,
+  EndpointProperty,
+  TransferCompletionMessage,
+  TransferRequestMessage,
+  TransferStartMessage,
+  TransferSuspensionMessage,
+  TransferTerminationMessage,
+} from "../../model/dsp/transfer/messages";
 import { Multilanguage } from "../../model/dsp/common";
 import { DataPlaneRequestResponseDto, DataPlaneTransferDto } from "@libs/dtos";
 
-jest.useFakeTimers({ doNotFake: ['Date'] });
+jest.useFakeTimers({ doNotFake: ["Date"] });
 
 describe("Transfer service", () => {
   let transferService: TransferService;
   let server: SetupServer;
-  let remoteProcessId = 'urn:uuid:6334612d-bc17-4474-b8c1-5703c7a80bb1';
+  let remoteProcessId = "urn:uuid:6334612d-bc17-4474-b8c1-5703c7a80bb1";
 
   beforeAll(async () => {
     await TypeOrmTestHelper.instance.setupTestDB();
     const iamConfig = plainToClass(IamConfig, {});
-    const initCatalog = plainToClass(InitCatalog, {})
+    const initCatalog = plainToClass(InitCatalog, {});
     const serverConfig = plainToClass(ServerConfig, {});
     const moduleRef: TestingModule = await Test.createTestingModule({
       imports: [
-        TypeOrmTestHelper.instance.module([CatalogDao, CatalogRecordDao, DatasetDao, DataServiceDao, DistributionDao, ResourceDao, DataPlaneDao, TransferEventDao, TransferDetailDao]),
-        TypeOrmModule.forFeature([CatalogDao, CatalogRecordDao, DatasetDao, DataServiceDao, DistributionDao, ResourceDao, DataPlaneDao, TransferEventDao, TransferDetailDao]),
+        TypeOrmTestHelper.instance.module([
+          CatalogDao,
+          CatalogRecordDao,
+          DatasetDao,
+          DataServiceDao,
+          DistributionDao,
+          ResourceDao,
+          DataPlaneDao,
+          TransferEventDao,
+          TransferDetailDao,
+        ]),
+        TypeOrmModule.forFeature([
+          CatalogDao,
+          CatalogRecordDao,
+          DatasetDao,
+          DataServiceDao,
+          DistributionDao,
+          ResourceDao,
+          DataPlaneDao,
+          TransferEventDao,
+          TransferDetailDao,
+        ]),
       ],
       providers: [
         TransferService,
@@ -61,7 +100,7 @@ describe("Transfer service", () => {
         },
         {
           provide: InitCatalog,
-          useValue: initCatalog
+          useValue: initCatalog,
         },
         {
           provide: ServerConfig,
@@ -72,79 +111,108 @@ describe("Transfer service", () => {
 
     let dataPlaneConsumerFirst = true;
     server = setupServer(
-      http.get("http://127.0.0.1/data-plane/health", () => HttpResponse.text('')),
-      http.get("http://127.0.0.1/data-plane/catalog", async () => HttpResponse.json(await new Catalog({}))),
-      http.post<PathParams, TransferRequestMessageDto, DataPlaneRequestResponseDto>("http://127.0.0.1/data-plane/transfer/request/consumer", () => {
+      http.get("http://127.0.0.1/data-plane/health", () =>
+        HttpResponse.text("")
+      ),
+      http.get("http://127.0.0.1/data-plane/catalog", async () =>
+        HttpResponse.json(await new Catalog({}))
+      ),
+      http.post<
+        PathParams,
+        TransferRequestMessageDto,
+        DataPlaneRequestResponseDto
+      >("http://127.0.0.1/data-plane/transfer/request/consumer", () => {
         if (dataPlaneConsumerFirst) {
           dataPlaneConsumerFirst = false;
           return HttpResponse.json({
             accepted: true,
-            identifier: 'ABCDEFG',
-            callbackAddress: "http://127.0.0.1/data-plane/transfer/callbacks/ABCDEFG"
-          })
+            identifier: "ABCDEFG",
+            callbackAddress:
+              "http://127.0.0.1/data-plane/transfer/callbacks/ABCDEFG",
+          });
         }
         return HttpResponse.json<DataPlaneRequestResponseDto>({
           accepted: true,
-          identifier: 'ABCDEFG',
-          callbackAddress: "http://127.0.0.1/data-plane/transfer/callbacks/ABCDEFG",
+          identifier: "ABCDEFG",
+          callbackAddress:
+            "http://127.0.0.1/data-plane/transfer/callbacks/ABCDEFG",
           dataAddress: {
             endpoint: `http://localhost/data-plane/push`,
-            properties: [{
-              name: 'Authorization',
-              value: 'Bearer TESTTOKEN'
-            }]
-          }
-        })
+            properties: [
+              {
+                name: "Authorization",
+                value: "Bearer TESTTOKEN",
+              },
+            ],
+          },
+        });
       }),
       http.post("http://127.0.0.1/data-plane/transfer/request/provider", () => {
         return HttpResponse.json({
           accepted: true,
-          identifier: 'ABCDEFG',
-          callbackAddress: "http://127.0.0.1/data-plane/transfer/callbacks/ABCDEFG",
+          identifier: "ABCDEFG",
+          callbackAddress:
+            "http://127.0.0.1/data-plane/transfer/callbacks/ABCDEFG",
           dataAddress: {
             endpoint: `http://remoteparty.test/data-plane${remoteProcessId}`,
-            properties: [{
-              name: 'Authorization',
-              value: 'Bearer TESTTOKEN'
-            }]
-          }
-        })
+            properties: [
+              {
+                name: "Authorization",
+                value: "Bearer TESTTOKEN",
+              },
+            ],
+          },
+        });
       }),
       http.post("http://127.0.0.1/data-plane/transfer/ABCDEFG/:action", () => {
         return HttpResponse.json({
-          status: "OK"
-        })
+          status: "OK",
+        });
       }),
-      http.post<PathParams, TransferRequestMessageDto, TransferProcessDto>("http://remoteparty.test/transfer/request", async (ctx) => {
-        const reqBody = await ctx.request.json();
-        return HttpResponse.json<TransferProcessDto>({
-          "@context": 'https://w3id.org/dspace/v0.8/context.json',
-          "@type": 'dspace:TransferProcess',
-          "dspace:consumerPid": reqBody["dspace:consumerPid"],
-          "dspace:providerPid": remoteProcessId,
-          "dspace:state": TransferState.REQUESTED,
-          "dspace:agreementId": reqBody["dspace:agreementId"]
-        })
-      }),
-      http.post(`http://remoteparty.test/transfer/${remoteProcessId}/start`, () => {
-        return HttpResponse.json({ status: 'OK' })
-      }),
-      http.post(`http://remoteparty.test/transfer/${remoteProcessId}/suspend`, () => {
-        return HttpResponse.json({ status: 'OK' })
-      }),
-      http.post(`http://remoteparty.test/transfer/${remoteProcessId}/complete`, () => {
-        return HttpResponse.json({ status: 'OK' })
-      }),
-      http.post(`http://remoteparty.test/transfer/${remoteProcessId}/terminate`, () => {
-        return HttpResponse.json({ status: 'OK' })
-      }),
+      http.post<PathParams, TransferRequestMessageDto, TransferProcessDto>(
+        "http://remoteparty.test/transfer/request",
+        async (ctx) => {
+          const reqBody = await ctx.request.json();
+          return HttpResponse.json<TransferProcessDto>({
+            "@context": "https://w3id.org/dspace/v0.8/context.json",
+            "@type": "dspace:TransferProcess",
+            "dspace:consumerPid": reqBody["dspace:consumerPid"],
+            "dspace:providerPid": remoteProcessId,
+            "dspace:state": TransferState.REQUESTED,
+            "dspace:agreementId": reqBody["dspace:agreementId"],
+          });
+        }
+      ),
+      http.post(
+        `http://remoteparty.test/transfer/${remoteProcessId}/start`,
+        () => {
+          return HttpResponse.json({ status: "OK" });
+        }
+      ),
+      http.post(
+        `http://remoteparty.test/transfer/${remoteProcessId}/suspend`,
+        () => {
+          return HttpResponse.json({ status: "OK" });
+        }
+      ),
+      http.post(
+        `http://remoteparty.test/transfer/${remoteProcessId}/complete`,
+        () => {
+          return HttpResponse.json({ status: "OK" });
+        }
+      ),
+      http.post(
+        `http://remoteparty.test/transfer/${remoteProcessId}/terminate`,
+        () => {
+          return HttpResponse.json({ status: "OK" });
+        }
+      ),
       http.post("http://remoteparty.test/data-plane/:id", () => {
-        return HttpResponse.json({"result": "data"})
+        return HttpResponse.json({ result: "data" });
       })
-
     );
 
-    server.listen({ onUnhandledRequest: "warn" })
+    server.listen({ onUnhandledRequest: "warn" });
 
     transferService = moduleRef.get(TransferService);
     const dataPlaneService = moduleRef.get(DataPlaneService);
@@ -156,7 +224,7 @@ describe("Transfer service", () => {
       managementAddress: "http://127.0.0.1/data-plane",
       managementToken: "DpuwVK9bnX2MVGf6MVVjlBnI4PvtQSGJ",
       catalogSynchronization: "push",
-      role: "both"
+      role: "both",
     });
   });
 
@@ -169,38 +237,41 @@ describe("Transfer service", () => {
     let localProcessId: string;
     it("Retrieve initial transfers", async () => {
       const transfers = await transferService.getTransfers();
-      expect(transfers).toHaveLength(0)
+      expect(transfers).toHaveLength(0);
     });
 
     it("Request new transfer", async () => {
       const transferProcess = await transferService.initiateTransferProcess(
-        'urn:uuid:2d9ea8f0-57da-4ea8-8083-bdb8e6782fc9',
-        'dspace:HTTP',
+        "urn:uuid:2d9ea8f0-57da-4ea8-8083-bdb8e6782fc9",
+        "dspace:HTTP",
         undefined,
-        'http://remoteparty.test/transfer',
-        'did:web:remoteparty.test'
+        "http://remoteparty.test/transfer",
+        "did:web:remoteparty.test"
       );
       expect(transferProcess).toBeDefined();
       expect(transferProcess.process.providerPid).toBe(remoteProcessId);
       localProcessId = transferProcess.localId;
 
       const transferProcessPush = await transferService.initiateTransferProcess(
-        'urn:uuid:2d9ea8f0-57da-4ea8-8083-bdb8e6782fc9',
-        'dspace:HTTP',
+        "urn:uuid:2d9ea8f0-57da-4ea8-8083-bdb8e6782fc9",
+        "dspace:HTTP",
         undefined,
-        'http://remoteparty.test/transfer',
-        'did:web:remoteparty.test'
+        "http://remoteparty.test/transfer",
+        "did:web:remoteparty.test"
       );
       expect(transferProcessPush).toBeDefined();
       expect(transferProcessPush.process.providerPid).toBe(remoteProcessId);
 
-      const transferDetail = await transferService.getTransfer(transferProcessPush.localId);
+      const transferDetail = await transferService.getTransfer(
+        transferProcessPush.localId
+      );
       expect(transferDetail.dataAddress).toBeDefined();
     });
 
     it("Unexpected transition", async () => {
-      await expect(transferService.suspend(localProcessId, '', true))
-        .rejects.toThrow('cannot transition from');
+      await expect(
+        transferService.suspend(localProcessId, "", true)
+      ).rejects.toThrow("cannot transition from");
     });
 
     it("Retrieve transfer", async () => {
@@ -208,11 +279,23 @@ describe("Transfer service", () => {
       expect(transfers).toHaveLength(2);
       const transferDetail = await transferService.getTransfer(localProcessId);
       expect(transferDetail).toBeDefined();
-      const transferDetail2 = await transferService.getTransfer(localProcessId, 'did:web:remoteparty.test');
+      const transferDetail2 = await transferService.getTransfer(
+        localProcessId,
+        "did:web:remoteparty.test"
+      );
       expect(transferDetail2).toBeDefined();
-      await expect(transferService.getTransfer(localProcessId, 'did:web:otherremoteparty.test')).rejects.toThrow('Cannot get transfer with process ID')
-      await expect(transferService.getTransfer('urn:uuid:00000000-0000-0000-0000-000000000000')).rejects.toThrow('Cannot get transfer with process ID')
-    })
+      await expect(
+        transferService.getTransfer(
+          localProcessId,
+          "did:web:otherremoteparty.test"
+        )
+      ).rejects.toThrow("Cannot get transfer with process ID");
+      await expect(
+        transferService.getTransfer(
+          "urn:uuid:00000000-0000-0000-0000-000000000000"
+        )
+      ).rejects.toThrow("Cannot get transfer with process ID");
+    });
 
     it("Handle transfer start", async () => {
       await transferService.handleStart(
@@ -221,42 +304,45 @@ describe("Transfer service", () => {
           providerPid: remoteProcessId,
           consumerPid: localProcessId,
           dataAddress: new DataAddress({
-            endpointType: 'dspace:HTTP',
+            endpointType: "dspace:HTTP",
             endpoint: `http://remoteparty.test/data-plane/${remoteProcessId}`,
-            endpointProperties: [new EndpointProperty({
-              name: 'Authorization',
-              value: 'Bearer TESTTOKEN'
-            })]
-          })
+            endpointProperties: [
+              new EndpointProperty({
+                name: "Authorization",
+                value: "Bearer TESTTOKEN",
+              }),
+            ],
+          }),
         }),
-        'did:web:remoteparty.test');
+        "did:web:remoteparty.test"
+      );
       const transferDetail = await transferService.getTransfer(localProcessId);
       expect(transferDetail.state).toBe(TransferState.STARTED);
     });
 
     it("Suspend transfer", async () => {
-      await transferService.suspend(localProcessId, 'Test suspending', true);
+      await transferService.suspend(localProcessId, "Test suspending", true);
       const transferDetail = await transferService.getTransfer(localProcessId);
       expect(transferDetail.state).toBe(TransferState.SUSPENDED);
-    })
+    });
     it("Restart transfer", async () => {
       await transferService.start(localProcessId, undefined, true);
       const transferDetail = await transferService.getTransfer(localProcessId);
       expect(transferDetail.state).toBe(TransferState.STARTED);
-    })
+    });
     it("Remote suspend", async () => {
       await transferService.handleSuspend(
         localProcessId,
         new TransferSuspensionMessage({
           providerPid: remoteProcessId,
           consumerPid: localProcessId,
-          reason: [new Multilanguage('Test suspending')]
+          reason: [new Multilanguage("Test suspending")],
         }),
-        'did:web:remoteparty.test'
-      )
+        "did:web:remoteparty.test"
+      );
       const transferDetail = await transferService.getTransfer(localProcessId);
       expect(transferDetail.state).toBe(TransferState.SUSPENDED);
-    })
+    });
     it("Handle transfer restart", async () => {
       await transferService.handleStart(
         localProcessId,
@@ -264,15 +350,18 @@ describe("Transfer service", () => {
           providerPid: remoteProcessId,
           consumerPid: localProcessId,
           dataAddress: new DataAddress({
-            endpointType: 'dspace:HTTP',
+            endpointType: "dspace:HTTP",
             endpoint: `http://remoteparty.test/data-plane/${remoteProcessId}`,
-            endpointProperties: [new EndpointProperty({
-              name: 'Authorization',
-              value: 'Bearer TESTTOKEN2'
-            })]
-          })
+            endpointProperties: [
+              new EndpointProperty({
+                name: "Authorization",
+                value: "Bearer TESTTOKEN2",
+              }),
+            ],
+          }),
         }),
-        'did:web:remoteparty.test')
+        "did:web:remoteparty.test"
+      );
       const transferDetail = await transferService.getTransfer(localProcessId);
       expect(transferDetail.state).toBe(TransferState.STARTED);
     });
@@ -281,7 +370,7 @@ describe("Transfer service", () => {
       const transferDetail = await transferService.getTransfer(localProcessId);
       expect(transferDetail.state).toBe(TransferState.COMPLETED);
     });
-  })
+  });
 
   describe("Provider interactions", () => {
     let localProcessId: string;
@@ -289,43 +378,43 @@ describe("Transfer service", () => {
       const handledRequest = await transferService.handleRequest(
         new TransferRequestMessage({
           consumerPid: remoteProcessId,
-          agreementId: 'urn:uuid:2d9ea8f0-57da-4ea8-8083-bdb8e6782fc9',
-          format: 'dspace:HTTP',
-          callbackAddress: `http://remoteparty.test/transfer/${remoteProcessId}`
+          agreementId: "urn:uuid:2d9ea8f0-57da-4ea8-8083-bdb8e6782fc9",
+          format: "dspace:HTTP",
+          callbackAddress: `http://remoteparty.test/transfer/${remoteProcessId}`,
         }),
-        'did:web:remoteparty.test'
+        "did:web:remoteparty.test"
       );
       localProcessId = handledRequest.providerPid;
       jest.runAllTimers();
       jest.useRealTimers();
-      await new Promise(f => setTimeout(f, 500));
+      await new Promise((f) => setTimeout(f, 500));
       const pushTransfer = await transferService.getTransfer(localProcessId);
       expect(pushTransfer.state).toBe(TransferState.STARTED);
     });
 
     it("Suspend transfer", async () => {
-      await transferService.suspend(localProcessId, 'Test suspending', true);
+      await transferService.suspend(localProcessId, "Test suspending", true);
       const transferDetail = await transferService.getTransfer(localProcessId);
       expect(transferDetail.state).toBe(TransferState.SUSPENDED);
-    })
+    });
     it("Restart transfer", async () => {
       await transferService.start(localProcessId, undefined, true);
       const transferDetail = await transferService.getTransfer(localProcessId);
       expect(transferDetail.state).toBe(TransferState.STARTED);
-    })
+    });
     it("Remote suspend", async () => {
       await transferService.handleSuspend(
         localProcessId,
         new TransferSuspensionMessage({
           providerPid: localProcessId,
           consumerPid: remoteProcessId,
-          reason: [new Multilanguage('Test suspending')]
+          reason: [new Multilanguage("Test suspending")],
         }),
-        'did:web:remoteparty.test'
-      )
+        "did:web:remoteparty.test"
+      );
       const transferDetail = await transferService.getTransfer(localProcessId);
       expect(transferDetail.state).toBe(TransferState.SUSPENDED);
-    })
+    });
     it("Handle transfer restart", async () => {
       await transferService.handleStart(
         localProcessId,
@@ -333,15 +422,18 @@ describe("Transfer service", () => {
           providerPid: localProcessId,
           consumerPid: remoteProcessId,
           dataAddress: new DataAddress({
-            endpointType: 'dspace:HTTP',
+            endpointType: "dspace:HTTP",
             endpoint: `http://localhost/data-plane/${remoteProcessId}`,
-            endpointProperties: [new EndpointProperty({
-              name: 'Authorization',
-              value: 'Bearer TESTTOKEN2'
-            })]
-          })
+            endpointProperties: [
+              new EndpointProperty({
+                name: "Authorization",
+                value: "Bearer TESTTOKEN2",
+              }),
+            ],
+          }),
         }),
-        'did:web:remoteparty.test')
+        "did:web:remoteparty.test"
+      );
       const transferDetail = await transferService.getTransfer(localProcessId);
       expect(transferDetail.state).toBe(TransferState.STARTED);
     });
@@ -352,45 +444,55 @@ describe("Transfer service", () => {
           providerPid: localProcessId,
           consumerPid: remoteProcessId,
         }),
-        'did:web:remoteparty.test');
+        "did:web:remoteparty.test"
+      );
       const transferDetail = await transferService.getTransfer(localProcessId);
       expect(transferDetail.state).toBe(TransferState.COMPLETED);
-    })
-  })
+    });
+  });
 
   describe("Transfer termination", () => {
     it("Remote termination", async () => {
       const transferProcess = await transferService.initiateTransferProcess(
-        'urn:uuid:2d9ea8f0-57da-4ea8-8083-bdb8e6782fc9',
-        'dspace:HTTP',
+        "urn:uuid:2d9ea8f0-57da-4ea8-8083-bdb8e6782fc9",
+        "dspace:HTTP",
         undefined,
-        'http://remoteparty.test/transfer',
-        'did:web:remoteparty.test'
+        "http://remoteparty.test/transfer",
+        "did:web:remoteparty.test"
       );
       await transferService.handleTerminate(
         transferProcess.localId,
         new TransferTerminationMessage({
           providerPid: transferProcess.remoteId,
           consumerPid: transferProcess.localId,
-          reason: [new Multilanguage('Test termination')],
-          code: 'PROVIDER_TERMINATION'
+          reason: [new Multilanguage("Test termination")],
+          code: "PROVIDER_TERMINATION",
         }),
-        'did:web:remoteparty.test'
-      )
-      const transferDetail = await transferService.getTransfer(transferProcess.localId);
+        "did:web:remoteparty.test"
+      );
+      const transferDetail = await transferService.getTransfer(
+        transferProcess.localId
+      );
       expect(transferDetail.state).toBe(TransferState.TERMINATED);
-    })
+    });
     it("Remote termination", async () => {
       const transferProcess = await transferService.initiateTransferProcess(
-        'urn:uuid:2d9ea8f0-57da-4ea8-8083-bdb8e6782fc9',
-        'dspace:HTTP',
+        "urn:uuid:2d9ea8f0-57da-4ea8-8083-bdb8e6782fc9",
+        "dspace:HTTP",
         undefined,
-        'http://remoteparty.test/transfer',
-        'did:web:remoteparty.test'
+        "http://remoteparty.test/transfer",
+        "did:web:remoteparty.test"
       );
-      await transferService.terminate(transferProcess.localId, 'CONSUMER_TERMINATION', 'Test termination', true)
-      const transferDetail = await transferService.getTransfer(transferProcess.localId);
+      await transferService.terminate(
+        transferProcess.localId,
+        "CONSUMER_TERMINATION",
+        "Test termination",
+        true
+      );
+      const transferDetail = await transferService.getTransfer(
+        transferProcess.localId
+      );
       expect(transferDetail.state).toBe(TransferState.TERMINATED);
-    })
-  })
+    });
+  });
 });

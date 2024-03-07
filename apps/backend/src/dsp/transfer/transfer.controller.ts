@@ -1,7 +1,19 @@
 import { Body, Controller, HttpStatus, Logger } from "@nestjs/common";
-import { Get, HttpCode, Param, Post, UseGuards } from "@nestjs/common/decorators";
+import {
+  Get,
+  HttpCode,
+  Param,
+  Post,
+  UseGuards,
+} from "@nestjs/common/decorators";
 import { DeserializePipe } from "../../utils/deserialize.pipe";
-import { TransferCompletionMessage, TransferRequestMessage, TransferStartMessage, TransferSuspensionMessage, TransferTerminationMessage } from "../../model/dsp/transfer/messages";
+import {
+  TransferCompletionMessage,
+  TransferRequestMessage,
+  TransferStartMessage,
+  TransferSuspensionMessage,
+  TransferTerminationMessage,
+} from "../../model/dsp/transfer/messages";
 import { TransferProcessDto } from "@tsg-dsp/common";
 import { TransferService } from "./transfer.service";
 import { DSPError } from "../../utils/errors/error";
@@ -9,86 +21,161 @@ import { VerifiablePresentationGuard } from "../../auth/verifiablePresentation.g
 import { VPId } from "../../auth/verifiablePresentation.strategy";
 
 @UseGuards(VerifiablePresentationGuard)
-@Controller('transfers')
+@Controller("transfers")
 export class TransferController {
   constructor(private readonly transferService: TransferService) {}
   private readonly logger = new Logger(this.constructor.name);
 
-  @Post('request')
+  @Post("request")
   @HttpCode(HttpStatus.CREATED)
-  async request(@Body(new DeserializePipe(TransferRequestMessage)) body: TransferRequestMessage, @VPId() vpId: string): Promise<TransferProcessDto> {
-    this.logger.log(`Received transfer request from ${vpId}: ${JSON.stringify(body)}`);
+  async request(
+    @Body(new DeserializePipe(TransferRequestMessage))
+    body: TransferRequestMessage,
+    @VPId() vpId: string
+  ): Promise<TransferProcessDto> {
+    this.logger.log(
+      `Received transfer request from ${vpId}: ${JSON.stringify(body)}`
+    );
     const result = await this.transferService.handleRequest(body, vpId);
     return await result.serialize();
-
   }
 
-  @Get(':id')
+  @Get(":id")
   @HttpCode(HttpStatus.OK)
-  async getTransfer(@Param('id') id: string, @VPId() vpId: string): Promise<TransferProcessDto> {
+  async getTransfer(
+    @Param("id") id: string,
+    @VPId() vpId: string
+  ): Promise<TransferProcessDto> {
     this.logger.log(`Received transfer status request from ${vpId} for ${id}`);
     const transferProcess = await this.transferService.getTransfer(id, vpId);
     if (transferProcess?.process) {
       return await transferProcess.process.serialize();
     } else {
-      throw new DSPError('Transfer process not found', HttpStatus.NOT_FOUND)
+      throw new DSPError("Transfer process not found", HttpStatus.NOT_FOUND);
     }
   }
 
-  @Post(':id/start')
+  @Post(":id/start")
   @HttpCode(HttpStatus.OK)
-  async startTransferProcess(@Param('id') id: string, @Body(new DeserializePipe(TransferStartMessage)) body: TransferStartMessage, @VPId() vpId: string): Promise<{status: string}> {
-    this.logger.log(`Received transfer start from ${vpId} for ${id}: ${JSON.stringify(body)}`);
+  async startTransferProcess(
+    @Param("id") id: string,
+    @Body(new DeserializePipe(TransferStartMessage)) body: TransferStartMessage,
+    @VPId() vpId: string
+  ): Promise<{ status: string }> {
+    this.logger.log(
+      `Received transfer start from ${vpId} for ${id}: ${JSON.stringify(body)}`
+    );
     return await this.transferService.handleStart(id, body, vpId);
   }
-  
-  @Post(':id/complete')
+
+  @Post(":id/complete")
   @HttpCode(HttpStatus.OK)
-  async completeTransferProcess(@Param('id') id: string, @Body(new DeserializePipe(TransferCompletionMessage)) body: TransferCompletionMessage, @VPId() vpId: string): Promise<{status: string}> {
-    this.logger.log(`Received transfer complete from ${vpId} for ${id}: ${JSON.stringify(body)}`);
+  async completeTransferProcess(
+    @Param("id") id: string,
+    @Body(new DeserializePipe(TransferCompletionMessage))
+    body: TransferCompletionMessage,
+    @VPId() vpId: string
+  ): Promise<{ status: string }> {
+    this.logger.log(
+      `Received transfer complete from ${vpId} for ${id}: ${JSON.stringify(
+        body
+      )}`
+    );
     return await this.transferService.handleComplete(id, body, vpId);
   }
-  
-  @Post(':id/terminate')
+
+  @Post(":id/terminate")
   @HttpCode(HttpStatus.OK)
-  async terminateTransferProcess(@Param('id') id: string, @Body(new DeserializePipe(TransferTerminationMessage)) body: TransferTerminationMessage, @VPId() vpId: string): Promise<{status: string}> {
-    this.logger.log(`Received transfer terminate from ${vpId} for ${id}: ${JSON.stringify(body)}`);
+  async terminateTransferProcess(
+    @Param("id") id: string,
+    @Body(new DeserializePipe(TransferTerminationMessage))
+    body: TransferTerminationMessage,
+    @VPId() vpId: string
+  ): Promise<{ status: string }> {
+    this.logger.log(
+      `Received transfer terminate from ${vpId} for ${id}: ${JSON.stringify(
+        body
+      )}`
+    );
     return await this.transferService.handleTerminate(id, body, vpId);
   }
-  
-  @Post(':id/suspend')
+
+  @Post(":id/suspend")
   @HttpCode(HttpStatus.OK)
-  async suspendTransferProcess(@Param('id') id: string, @Body(new DeserializePipe(TransferSuspensionMessage)) body: TransferSuspensionMessage, @VPId() vpId: string): Promise<{status: string}> {
-    this.logger.log(`Received transfer suspend from ${vpId} for ${id}: ${JSON.stringify(body)}`);
+  async suspendTransferProcess(
+    @Param("id") id: string,
+    @Body(new DeserializePipe(TransferSuspensionMessage))
+    body: TransferSuspensionMessage,
+    @VPId() vpId: string
+  ): Promise<{ status: string }> {
+    this.logger.log(
+      `Received transfer suspend from ${vpId} for ${id}: ${JSON.stringify(
+        body
+      )}`
+    );
     return await this.transferService.handleSuspend(id, body, vpId);
   }
 
-  @Post('/callbacks/:id/start')
+  @Post("/callbacks/:id/start")
   @HttpCode(HttpStatus.OK)
-  async callbackStartTransferProcess(@Param('id') id: string, @Body(new DeserializePipe(TransferStartMessage)) body: TransferStartMessage, @VPId() vpId: string): Promise<{status: string}> {
-    this.logger.log(`Received transfer callback start from ${vpId} for ${id}: ${JSON.stringify(body)}`);
+  async callbackStartTransferProcess(
+    @Param("id") id: string,
+    @Body(new DeserializePipe(TransferStartMessage)) body: TransferStartMessage,
+    @VPId() vpId: string
+  ): Promise<{ status: string }> {
+    this.logger.log(
+      `Received transfer callback start from ${vpId} for ${id}: ${JSON.stringify(
+        body
+      )}`
+    );
     return await this.transferService.handleStart(id, body, vpId);
   }
-  
-  @Post('/callbacks/:id/complete')
+
+  @Post("/callbacks/:id/complete")
   @HttpCode(HttpStatus.OK)
-  async callbackCompleteTransferProcess(@Param('id') id: string, @Body(new DeserializePipe(TransferCompletionMessage)) body: TransferCompletionMessage, @VPId() vpId: string): Promise<{status: string}> {
-    this.logger.log(`Received transfer callback complete from ${vpId} for ${id}: ${JSON.stringify(body)}`);
+  async callbackCompleteTransferProcess(
+    @Param("id") id: string,
+    @Body(new DeserializePipe(TransferCompletionMessage))
+    body: TransferCompletionMessage,
+    @VPId() vpId: string
+  ): Promise<{ status: string }> {
+    this.logger.log(
+      `Received transfer callback complete from ${vpId} for ${id}: ${JSON.stringify(
+        body
+      )}`
+    );
     return await this.transferService.handleComplete(id, body, vpId);
   }
-  
-  @Post('/callbacks/:id/terminate')
+
+  @Post("/callbacks/:id/terminate")
   @HttpCode(HttpStatus.OK)
-  async callbackTerminateTransferProcess(@Param('id') id: string, @Body(new DeserializePipe(TransferTerminationMessage)) body: TransferTerminationMessage, @VPId() vpId: string): Promise<{status: string}> {
-    this.logger.log(`Received transfer callback terminate from ${vpId} for ${id}: ${JSON.stringify(body)}`);
+  async callbackTerminateTransferProcess(
+    @Param("id") id: string,
+    @Body(new DeserializePipe(TransferTerminationMessage))
+    body: TransferTerminationMessage,
+    @VPId() vpId: string
+  ): Promise<{ status: string }> {
+    this.logger.log(
+      `Received transfer callback terminate from ${vpId} for ${id}: ${JSON.stringify(
+        body
+      )}`
+    );
     return await this.transferService.handleTerminate(id, body, vpId);
   }
-  
-  @Post('/callbacks/:id/suspend')
+
+  @Post("/callbacks/:id/suspend")
   @HttpCode(HttpStatus.OK)
-  async callbackSuspendTransferProcess(@Param('id') id: string, @Body(new DeserializePipe(TransferSuspensionMessage)) body: TransferSuspensionMessage, @VPId() vpId: string): Promise<{status: string}> {
-    this.logger.log(`Received transfer callback suspend from ${vpId} for ${id}: ${JSON.stringify(body)}`);
+  async callbackSuspendTransferProcess(
+    @Param("id") id: string,
+    @Body(new DeserializePipe(TransferSuspensionMessage))
+    body: TransferSuspensionMessage,
+    @VPId() vpId: string
+  ): Promise<{ status: string }> {
+    this.logger.log(
+      `Received transfer callback suspend from ${vpId} for ${id}: ${JSON.stringify(
+        body
+      )}`
+    );
     return await this.transferService.handleSuspend(id, body, vpId);
   }
-
 }

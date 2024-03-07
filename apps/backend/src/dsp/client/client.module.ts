@@ -3,14 +3,8 @@ import { AuthModule } from "../../auth/auth.module";
 import { DspClientService } from "./client.service";
 
 @Module({
-  imports: [
-    AuthModule
-  ],
-  providers: [
-    DspClientService
-  ],
-  exports: [
-    DspClientService
-  ]
+  imports: [AuthModule],
+  providers: [DspClientService],
+  exports: [DspClientService],
 })
 export class DspClientModule {}

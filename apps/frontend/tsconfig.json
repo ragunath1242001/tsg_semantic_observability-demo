@@ -1,16 +1,10 @@
 {
-  "include": [
-    "env.d.ts",
-    "src/**/*",
-    "src/**/*.vue"
-  ],
+  "include": ["env.d.ts", "src/**/*", "src/**/*.vue"],
   "compilerOptions": {
     "baseUrl": ".",
-    "experimentalDecorators": true, /* Enable experimental support for legacy experimental decorators. */
+    "experimentalDecorators": true /* Enable experimental support for legacy experimental decorators. */,
     "paths": {
-      "@/*": [
-        "./*"
-      ]
+      "@/*": ["./*"]
     }
   },
   "references": [

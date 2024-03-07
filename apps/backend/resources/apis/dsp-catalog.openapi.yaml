@@ -3,53 +3,53 @@ info:
   title: TSG - Dataspace Protocol - Catalog API
   description: API definition for communication on catalogs between Control Planes
   version: 0.0.1
-  license: 
+  license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
-servers: 
+servers:
   - url: http://localhost
-security: 
-  -  BearerAuth: []
-paths: 
+security:
+  - BearerAuth: []
+paths:
   /catalog/request:
     post:
       operationId: catalogRequest
       summary: Request the catalog of another connector, with optional filtering
-      requestBody: 
+      requestBody:
         content:
           application/json:
-            schema: 
+            schema:
               $ref: ../schemas/dsp.schema.json#/definitions/CatalogRequestMessageDto
-      responses: 
+      responses:
         200:
           description: Catalog response
           content:
             application/json:
-              schema: 
+              schema:
                 $ref: ../schemas/dsp.schema.json#/definitions/CatalogDto
         4XX:
           description: Request error
   /catalog/dataset/{id}:
-    get: 
+    get:
       operationId: requestDataset
       summary: Request a specific dataset
-      parameters: 
+      parameters:
         - name: id
           in: path
           required: true
-          schema: 
+          schema:
             type: string
-      responses: 
+      responses:
         200:
           description: Dataset response
           content:
             application/json:
-              schema: 
+              schema:
                 $ref: ../schemas/dsp.schema.json#/definitions/DatasetDto
         404:
           description: Dataset not found
 
-components: 
+components:
   securitySchemes:
     BearerAuth:
       type: http

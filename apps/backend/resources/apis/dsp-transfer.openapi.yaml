@@ -3,48 +3,48 @@ info:
   title: TSG - Dataspace Protocol - Transfer API
   description: API definition for communication for providers in transfer sequences between Control Planes
   version: 0.0.1
-  license: 
+  license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
-servers: 
+servers:
   - url: http://localhost
-security: 
-  -  BearerAuth: []
-paths: 
+security:
+  - BearerAuth: []
+paths:
   /transfer/request:
     post:
       operationId: transferRequest
       summary: Request a transfer from the provider
-      requestBody: 
+      requestBody:
         content:
           application/json:
-            schema: 
+            schema:
               $ref: ../schemas/dsp.schema.json#/definitions/TransferRequestMessageDto
-      responses: 
+      responses:
         200:
           description: Transfer process response
           content:
             application/json:
-              schema: 
+              schema:
                 $ref: ../schemas/dsp.schema.json#/definitions/TransferProcessDto
         4XX:
           description: Request error
   /transfer/{id}:
-    get: 
+    get:
       operationId: requestTransferStatus
       summary: Request the transfer process status object
-      parameters: 
+      parameters:
         - name: id
           in: path
           required: true
-          schema: 
+          schema:
             type: string
-      responses: 
+      responses:
         200:
           description: Transfer process response
           content:
             application/json:
-              schema: 
+              schema:
                 $ref: ../schemas/dsp.schema.json#/definitions/TransferProcessDto
         404:
           description: Transfer process not found
@@ -52,91 +52,87 @@ paths:
     post:
       operationId: startTransfer
       summary: Start the transfer process by the consumer
-      parameters: 
+      parameters:
         - name: id
           in: path
           required: true
-          schema: 
+          schema:
             type: string
-      requestBody: 
-        content: 
+      requestBody:
+        content:
           application/json:
-            schema: 
+            schema:
               $ref: ../schemas/dsp.schema.json#/definitions/TransferStartMessageDto
-      responses: 
+      responses:
         200:
           description: Transfer start processed
         404:
           description: Transfer process not found
-        
 
   /transfer/{id}/complete:
     post:
       operationId: completeTransfer
       summary: Complete the transfer process by the consumer
-      parameters: 
+      parameters:
         - name: id
           in: path
           required: true
-          schema: 
+          schema:
             type: string
-      requestBody: 
-        content: 
+      requestBody:
+        content:
           application/json:
-            schema: 
+            schema:
               $ref: ../schemas/dsp.schema.json#/definitions/TransferCompletionMessageDto
-      responses: 
+      responses:
         200:
           description: Transfer complete processed
         404:
           description: Transfer process not found
-        
 
   /transfer/{id}/terminate:
     post:
       operationId: terminateTransfer
       summary: Terminate the transfer process by the consumer
-      parameters: 
+      parameters:
         - name: id
           in: path
           required: true
-          schema: 
+          schema:
             type: string
-      requestBody: 
-        content: 
+      requestBody:
+        content:
           application/json:
-            schema: 
+            schema:
               $ref: ../schemas/dsp.schema.json#/definitions/TransferTerminationMessageDto
-      responses: 
+      responses:
         200:
           description: Transfer terminate processed
         404:
           description: Transfer process not found
-        
 
   /transfer/{id}/suspend:
     post:
       operationId: suspendTransfer
       summary: Suspend the transfer process by the consumer
-      parameters: 
+      parameters:
         - name: id
           in: path
           required: true
-          schema: 
+          schema:
             type: string
-      requestBody: 
-        content: 
+      requestBody:
+        content:
           application/json:
-            schema: 
+            schema:
               $ref: ../schemas/dsp.schema.json#/definitions/TransferSuspensionMessageDto
-      responses: 
+      responses:
         200:
           description: Transfer suspend processed
         404:
           description: Transfer process not found
-        
 
-components: 
+components:
   securitySchemes:
     BearerAuth:
       type: http
