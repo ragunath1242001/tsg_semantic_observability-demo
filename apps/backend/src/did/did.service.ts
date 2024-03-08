@@ -56,6 +56,14 @@ export class DidService {
         };
       }),
       assertionMethod: keys.map((key) => `${this.didId}#${key.id}`),
+      service: [
+        {
+          id: `${this.didId}#oid4vci`,
+          type: "OID4VCI",
+          serviceEndpoint: this.config.server.publicDomain,
+        },
+        ...this.config.didServices,
+      ],
     };
     this.logger.log(`DID document created for ${this.didId}`);
     this.logger.debug(
