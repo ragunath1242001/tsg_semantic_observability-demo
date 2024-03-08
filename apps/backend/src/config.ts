@@ -242,6 +242,17 @@ export class HolderConfig {
   public readonly credentialType!: string;
 }
 
+export class DidServiceConfig {
+  @IsString()
+  public readonly id!: string;
+
+  @IsString()
+  public readonly type!: string;
+
+  @IsString()
+  public readonly serviceEndpoint!: string;
+}
+
 export class RootConfig {
   @ValidateNested()
   @IsDefined({
@@ -294,4 +305,8 @@ export class RootConfig {
   @ValidateNested()
   @Type(() => OID4VCIConfig)
   public readonly oid4vci: OID4VCIConfig = new OID4VCIConfig();
+
+  @ValidateNested({ each: true })
+  @Type(() => DidServiceConfig)
+  public readonly didServices: DidServiceConfig[] = [];
 }
