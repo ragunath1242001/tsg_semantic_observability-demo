@@ -8,7 +8,7 @@ import {
   Reference,
   Time,
 } from "../common";
-import { Policy } from "../negotiation/negotiation";
+import { Offer, Policy } from "../negotiation/negotiation";
 import {
   ContextDto,
   CatalogDto,
@@ -18,6 +18,10 @@ import {
   DistributionDto,
   ResourceDto,
 } from "@tsg-dsp/common";
+import {
+  createInstances,
+  createOptionalInstance,
+} from "../../../utils/instances";
 
 export interface IResource extends IReference {
   contactPoint?: Reference;
@@ -125,7 +129,7 @@ export class Resource<
     this.relation = value.relation;
     this.title = value.title;
     this.type = value.type;
-    this.hasPolicy = value.hasPolicy;
+    this.hasPolicy = createInstances(value.hasPolicy, Offer);
   }
 }
 
@@ -153,7 +157,7 @@ export class DataService extends Resource<DataServiceDto> {
     super(value);
     this.endpointDescription = value.endpointDescription;
     this.endpointURL = value.endpointURL;
-    this.servesDataset = value.servesDataset;
+    this.servesDataset = createInstances(value.servesDataset, Dataset);
   }
 }
 
@@ -244,7 +248,7 @@ export class Distribution extends Reference<DistributionDto & ContextDto> {
 
   constructor(value: IDistribution) {
     super(value);
-    this.accessService = value.accessService;
+    this.accessService = createInstances(value.accessService, DataService);
     this.accessURL = value.accessURL;
     this.byteSize = value.byteSize;
     this.compressFormat = value.compressFormat;
@@ -259,7 +263,7 @@ export class Distribution extends Reference<DistributionDto & ContextDto> {
     this.issued = value.issued;
     this.modified = value.modified;
     this.title = value.title;
-    this.hasPolicy = value.hasPolicy;
+    this.hasPolicy = createInstances(value.hasPolicy, Offer);
   }
 }
 
@@ -308,7 +312,7 @@ export class Dataset<
 
   constructor(value: IDataset) {
     super(value);
-    this.distribution = value.distribution;
+    this.distribution = createInstances(value.distribution, Distribution);
     this.spatialResolutionInMeters = value.spatialResolutionInMeters;
     this.temporalResolution = value.temporalResolution;
     this.accrualPeriodicity = value.accrualPeriodicity;
@@ -361,7 +365,7 @@ export class CatalogRecord extends Reference<CatalogRecordDto & ContextDto> {
     this.issued = value.issued;
     this.modified = value.modified;
     this.title = value.title;
-    this.primaryTopic = value.primaryTopic;
+    this.primaryTopic = createOptionalInstance(value.primaryTopic, Resource);
   }
 }
 
@@ -403,11 +407,11 @@ export class Catalog extends Dataset<CatalogDto> {
 
   constructor(value: ICatalog) {
     super(value);
-    this.dataset = value.dataset;
-    this.record = value.record;
-    this.service = value.service;
+    this.dataset = createInstances(value.dataset, Dataset);
+    this.record = createInstances(value.record, CatalogRecord);
+    this.service = createInstances(value.service, DataService);
     this.themeTaxonomy = value.themeTaxonomy;
-    this.hasPart = value.hasPart;
+    this.hasPart = createInstances(value.hasPart, Resource);
     this.homepage = value.homepage;
   }
 }

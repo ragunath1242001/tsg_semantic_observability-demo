@@ -142,6 +142,8 @@ describe("Catalog Service", () => {
       expect(
         datasetDao!.distribution?.[0]?.accessService?.[0]?.endpointURL
       ).toBe("https://httpbin.org/anything");
+      const dto = await datasetDao.serialize();
+      expect(dto["odrl:hasPolicy"]?.[0]?.["odrl:assigner"]).toBeDefined();
     });
     it("Throw error when dataset isn't available", async () => {
       const dataset = new Dataset({
