@@ -29,6 +29,7 @@ import {
   AgreementDto,
   ContractNegotiationState,
 } from "@tsg-dsp/common";
+import { createInstances } from "../../../utils/instances";
 
 export interface IConstraint {
   leftOperand: ODRLLeftOperand | string;
@@ -47,6 +48,7 @@ export class Constraint extends SerializableClass<ConstraintDto & ContextDto> {
   operator: ODRLOperator | string;
   @Namespace("odrl")
   @IsNotEmpty()
+  @ValidateIf((o: Constraint) => typeof o.rightOperand !== "string")
   @ValidateNested()
   rightOperand?: Value | string;
   @Namespace("odrl")
@@ -112,7 +114,7 @@ export class PolicyRule<
     this.assignee = value.assignee;
     this.action = value.action;
     this.target = value.target;
-    this.constraint = value.constraint;
+    this.constraint = createInstances(value.constraint, Constraint);
   }
 }
 
@@ -129,7 +131,7 @@ export class Permission extends PolicyRule<PermissionDto & ContextDto> {
   constructor(value: IPermission) {
     super(value);
     this.target = value.target;
-    this.duty = value.duty;
+    this.duty = createInstances(value.duty, Duty);
   }
 }
 
@@ -195,9 +197,9 @@ export class Policy<
     this.assigner = value.assigner;
     this.assignee = value.assignee;
     this.profile = value.profile;
-    this.permission = value.permission;
-    this.prohibition = value.prohibition;
-    this.obligation = value.obligation;
+    this.permission = createInstances(value.permission, Permission);
+    this.prohibition = createInstances(value.prohibition, Prohibition);
+    this.obligation = createInstances(value.obligation, Duty);
     this.target = value.target;
   }
 }
