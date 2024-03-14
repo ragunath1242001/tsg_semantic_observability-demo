@@ -48,6 +48,7 @@ export class Constraint extends SerializableClass<ConstraintDto & ContextDto> {
   operator: ODRLOperator | string;
   @Namespace("odrl")
   @IsNotEmpty()
+  @ValidateIf((o: Constraint) => typeof o.rightOperand !== "string")
   @ValidateNested()
   rightOperand?: Value | string;
   @Namespace("odrl")

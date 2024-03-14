@@ -66,32 +66,23 @@ interface FlatPolicy {
 const parsePolicies = (policies: Array<PolicyDto>): Array<FlatPolicy> => {
   var output: Array<FlatPolicy> = [];
   for (var policy of policies) {
-    if (
-      policy["odrl:permission"] !== undefined ||
-      policy["permission"] !== undefined
-    ) {
+    if (policy["odrl:permission"] !== undefined) {
       output.push.apply(
         output,
-        (policy["odrl:permission"] || policy["permission"]).map(
-          (permission) => {
-            return {
-              type: "permission",
-              assigner: policy["odrl:assigner"] || policy["assigner"],
-              assignee: policy["odrl:assignee"] || policy["assignee"] || "*",
-              target: permission["odrl:target"] || permission["target"],
-              action: permission["odrl:action"] || permission["action"],
-              leftOperand:
-                permission["odrl:constraint"]?.[0]?.["odrl:leftOperand"] ||
-                permission["constraint"]?.[0]?.["leftOperand"],
-              rightOperand:
-                permission["odrl:constraint"]?.[0]?.["odrl:rightOperand"] ||
-                permission["constraint"]?.[0]?.["rightOperand"],
-              operator:
-                permission["odrl:constraint"]?.[0]?.["odrl:operator"] ||
-                permission["constraint"]?.[0]?.["operator"],
-            } as FlatPolicy;
-          }
-        )
+        policy["odrl:permission"].map((permission) => {
+          return {
+            type: "permission",
+            assigner: policy["odrl:assigner"],
+            assignee: policy["odrl:assignee"] || "*",
+            target: permission["odrl:target"],
+            action: permission["odrl:action"],
+            leftOperand:
+              permission["odrl:constraint"]?.[0]?.["odrl:leftOperand"],
+            rightOperand:
+              permission["odrl:constraint"]?.[0]?.["odrl:rightOperand"],
+            operator: permission["odrl:constraint"]?.[0]?.["odrl:operator"],
+          } as FlatPolicy;
+        })
       );
     } else {
       console.log(`No permissions found in ${JSON.stringify(policy)}`);
@@ -138,16 +129,13 @@ const open = () => {
 };
 
 const createPolicy = (policy: PolicyDto): string => {
-  delete policy["id"];
   const offer = {
     ...policy,
     "@context": "https://w3id.org/dspace/v0.8/context.json",
     "@type": "odrl:Offer",
     "@id": `urn:uuid:${crypto.randomUUID()}`,
     "odrl:assigner": assigner.value,
-    "odrl:permission": policy["permission"],
   };
-  delete offer["permission"];
   return JSON.stringify(offer, null, 2);
 };
 const changeEditable = (edit: boolean) => {
