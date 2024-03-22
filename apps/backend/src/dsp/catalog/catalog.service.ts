@@ -31,6 +31,7 @@ import {
   Offer,
   Permission,
 } from "../../model/dsp/negotiation/negotiation";
+import { DSPClientError } from "../client/client.service";
 
 @Injectable()
 export class CatalogService {
@@ -129,8 +130,22 @@ export class CatalogService {
     await this.catalogRepository.update({ id: catalog.id }, catalog);
   }
 
-  async addDataset(dataset: Dataset): Promise<DatasetDao> {
-    const catalog = await this.getCatalogDao(true);
+  async addDataset(
+    dataset: Dataset,
+    catalogId?: string | undefined
+  ): Promise<DatasetDao> {
+    let catalog: CatalogDao | null;
+    if (catalogId) {
+      catalog = await this.catalogRepository.findOneBy({ id: catalogId });
+      if (!catalog) {
+        throw new DSPClientError(
+          `Could not find catalog with id ${catalogId}`,
+          HttpStatus.BAD_REQUEST
+        );
+      }
+    } else {
+      catalog = await this.getCatalogDao(true);
+    }
     const exist = await this.datasetRepository.findOne({
       where: { id: dataset.id },
     });
@@ -181,7 +196,11 @@ export class CatalogService {
       );
       return distributionObj;
     });
-    catalog._datasets?.push(newDataset);
+    if (catalog._datasets) {
+      catalog._datasets.push(newDataset);
+    } else {
+      catalog._datasets = [newDataset];
+    }
     await this.catalogRepository.save(catalog);
     return newDataset;
   }

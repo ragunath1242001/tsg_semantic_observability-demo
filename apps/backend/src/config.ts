@@ -2,6 +2,7 @@ import "reflect-metadata";
 import {
   ArrayMinSize,
   IsArray,
+  IsBoolean,
   IsDefined,
   IsIn,
   IsNumber,
@@ -51,6 +52,16 @@ export class ServerConfig {
   public readonly publicAddress: string = `http://localhost:3000`;
 }
 
+export class RegistryConfig {
+  @IsBoolean()
+  public readonly isRegistry: boolean = false;
+
+  @IsString()
+  public readonly registryUrl!: string;
+
+  @IsNumber()
+  public readonly registryIntervalInMilliseconds: number = 30000;
+}
 export class IamConfig {
   @IsString()
   public readonly didId!: string;
@@ -133,6 +144,11 @@ export class RootConfig {
   @IsOptional()
   @Type(() => ServerConfig)
   public readonly server!: ServerConfig;
+
+  @ValidateNested()
+  @IsOptional()
+  @Type(() => RegistryConfig)
+  public readonly registry!: RegistryConfig;
 
   @ValidateNested()
   @Type(() => IamConfig)
