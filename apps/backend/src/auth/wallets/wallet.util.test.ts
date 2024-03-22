@@ -11,6 +11,7 @@ export function mockWalletConfig(): IamConfig {
     tokenUrl: "http://127.0.0.1/tsg/token",
     presentationUrl: "http://127.0.0.1/tsg/presentations",
     validationUrl: "http://127.0.0.1/tsg/validate",
+    walletUrl: "http://127.0.0.1/tsg",
     clientId: "testClient",
     clientSecret: "testSecret",
     credentialId:
@@ -51,7 +52,40 @@ export function setupMockWalletServer(start: boolean = true): SetupServer {
           vp: (await request.json()).vp,
         });
       }
-    )
+    ),
+    http.get("http://127.0.0.1/tsg/management/credentials", () => {
+      return HttpResponse.json([
+        {
+          created: "2024-03-18T10:53:21.000Z",
+          modified: "2024-03-18T10:53:21.000Z",
+          deleted: null,
+          id: "did:web:localhost#test-init-credential",
+          targetDid: "did:web:localhost",
+          credential: {
+            "@context": [
+              "https://www.w3.org/2018/credentials/v1",
+              "https://w3c.github.io/vc-jws-2020/contexts/v1/",
+            ],
+            type: ["VerifiableCredential"],
+            id: "did:web:localhost#test-init-credential",
+            issuer: "did:web:localhost",
+            issuanceDate: "2024-03-18T10:53:21.231Z",
+            expirationDate: "2024-06-18T09:53:21.231Z",
+            credentialSubject: {
+              id: "did:web:localhost",
+            },
+            proof: {
+              type: "JsonWebSignature2020",
+              created: "2024-03-18T10:53:21.859Z",
+              proofPurpose: "assertionMethod",
+              jws: "eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..icXdCpZ0sHdbavYz5TxrW0nvjbD11_ZaIPGfjgP8YBA2vK8wygd_ZWr8x-kCsmCzcTQ7wFEMq31hdFHaUDK1DQ",
+              verificationMethod: "did:web:localhost#key-0",
+            },
+          },
+          selfIssued: true,
+        },
+      ]);
+    })
   );
   if (start) {
     server.listen({

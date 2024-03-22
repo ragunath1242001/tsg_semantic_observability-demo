@@ -12,6 +12,7 @@ import { NegotiationModule } from "./dsp/negotiation/negotiation.module";
 import { TransferModule } from "./dsp/transfer/transfer.module";
 
 import { ServeStaticModule } from "@nestjs/serve-static";
+import { RegistryModule } from './registry/registry.module';
 
 const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
   ? [
@@ -38,6 +39,7 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
     NegotiationModule,
     TransferModule,
     ...embeddedFrontend,
+    RegistryModule,
   ],
   exports: [
     AuthModule,

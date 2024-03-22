@@ -147,15 +147,14 @@ describe("CatalogController", () => {
     });
   });
   describe("/datasets", () => {
-    // TODO disable dataset until https://ci.tno.nl/gitlab/ids/dataspace-protocol/control-plane/-/issues/26 is fixed
-    // it("Dataset request with known id should result a dataset", async () => {
-    //   await catalogService.addDataset(dataset);
+    it("Dataset request with known id should result a dataset", async () => {
+      await catalogService.addDataset(dataset);
 
-    //   const result = await catalogController.getDataset(
-    //     "urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0cea"
-    //   );
-    //   expect(result).toStrictEqual(await dataset.serialize());
-    // });
+      const result = await catalogController.getDataset(
+        "urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0cea"
+      );
+      expect(result).toStrictEqual(await dataset.serialize());
+    });
     it("Dataset request with unknown id should result in a 404", async () => {
       expect(async () => {
         await catalogController.getDataset(

@@ -28,9 +28,10 @@ import Panel from "primevue/panel";
 import Skeleton from "primevue/skeleton";
 import Textarea from "primevue/textarea";
 import Timeline from "primevue/timeline";
+import ProgressSpinner from "primevue/progressspinner";
+import OverlayPanel from "primevue/overlaypanel";
 
 import "@/assets/styles.scss";
-import ProgressSpinner from "primevue/progressspinner";
 
 const pinia = createPinia();
 const app = createApp(App);
@@ -53,6 +54,7 @@ app.component("DataView", DataView);
 app.component("Dialog", Dialog);
 app.component("InputSwitch", InputSwitch);
 app.component("InputText", InputText);
+app.component("OverlayPanel", OverlayPanel);
 app.component("Panel", Panel);
 app.component("Password", Password);
 app.component("ProgressSpinner", ProgressSpinner);

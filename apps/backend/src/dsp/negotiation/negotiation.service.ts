@@ -16,7 +16,6 @@ import {
   NegotiationDetail,
   NegotiationProcessEvent,
   NegotiationRole,
-  NegotiationStatus,
 } from "../../model/dsp/negotiation/negotiation";
 import crypto from "crypto";
 import { DspClientService } from "../client/client.service";

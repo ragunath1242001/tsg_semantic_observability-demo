@@ -7,14 +7,24 @@ import { Logger } from "@nestjs/common";
 import { VerifiablePresentationJwt } from "@tsg-dsp/common";
 
 export class TsgWalletClient extends WalletClient {
-  constructor(private readonly iamConfig: IamConfig) {
+  constructor(readonly iamConfig: IamConfig) {
     super();
   }
-  private readonly logger = new Logger(this.constructor.name);
-  private access_token?: string;
-  private expiration?: Date;
+  readonly logger = new Logger(this.constructor.name);
+  access_token?: string;
+  expiration?: Date;
 
-  private async requestAccessToken() {
+  async ensureAccessToken() {
+    if (
+      !this.access_token ||
+      !this.expiration ||
+      this.expiration < new Date()
+    ) {
+      await this.requestAccessToken();
+    }
+  }
+
+  async requestAccessToken() {
     const data = qs.stringify({
       client_id: this.iamConfig.clientId,
       client_secret: this.iamConfig.clientSecret,
@@ -50,13 +60,7 @@ export class TsgWalletClient extends WalletClient {
     audience: string
   ): Promise<VerifiablePresentationJwt> {
     try {
-      if (
-        !this.access_token ||
-        !this.expiration ||
-        this.expiration < new Date()
-      ) {
-        await this.requestAccessToken();
-      }
+      await this.ensureAccessToken();
       const response = await axios.get<VerifiablePresentationJwt>(
         this.iamConfig.presentationUrl,
         {
@@ -81,13 +85,7 @@ export class TsgWalletClient extends WalletClient {
     audience: string
   ): Promise<boolean> {
     try {
-      if (
-        !this.access_token ||
-        !this.expiration ||
-        this.expiration < new Date()
-      ) {
-        await this.requestAccessToken();
-      }
+      await this.ensureAccessToken();
       const response = await axios.post<ValidationResult>(
         this.iamConfig.validationUrl,
         jwt,

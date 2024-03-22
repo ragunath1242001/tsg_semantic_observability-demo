@@ -38,14 +38,16 @@ const context: ContextDefinition = {
   "dspace:filter": { "@container": "@set" },
   "dspace:endpointProperties": { "@container": "@set" },
   "dcat:accessService": { "@container": "@set" },
+  "dcat:dataset": { "@container": "@set" },
+  "dcat:service": { "@container": "@set" },
   "dcat:distribution": { "@container": "@set" },
   "dcat:keyword": { "@container": "@set" },
   "dct:description": { "@container": "@set" },
+  "odrl:constraint": { "@container": "@set" },
   "odrl:hasPolicy": { "@container": "@set" },
   "odrl:permission": { "@container": "@set" },
   "odrl:prohibition": { "@container": "@set" },
   "odrl:duty": { "@container": "@set" },
-  "odrl:constraint": { "@container": "@set" },
 };
 
 /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
