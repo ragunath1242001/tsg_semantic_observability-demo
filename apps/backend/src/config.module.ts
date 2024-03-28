@@ -29,9 +29,6 @@ try {
             .replace(/([a-z]_[a-z])/g, (g) => g[0] + g[2].toUpperCase()),
       }),
     ],
-    // validationOptions: {
-
-    // }
   });
   rootConfig = selectConfig(configModule, RootConfig);
 } catch (err) {

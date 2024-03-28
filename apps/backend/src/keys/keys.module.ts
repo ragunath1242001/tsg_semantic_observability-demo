@@ -6,11 +6,12 @@ import { KeysController } from "./keys.controller.js";
 import { KeysService } from "./keys.service.js";
 import { DidModule } from "../did/did.module.js";
 import { KeysManagementController } from "./keys.management.controller.js";
+import { TokenService } from "./token.service.js";
 
 @Module({
   imports: [AuthModule, DidModule, TypeOrmModule.forFeature([KeyMaterials])],
   controllers: [KeysController, KeysManagementController],
-  providers: [KeysService],
-  exports: [KeysService],
+  providers: [KeysService, TokenService],
+  exports: [KeysService, TokenService],
 })
 export class KeysModule {}

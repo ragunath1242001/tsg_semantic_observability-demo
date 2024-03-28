@@ -1,8 +1,5 @@
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
-import {
-  CredentialsService,
-  signingAlgorithm,
-} from "../credentials/credentials.service.js";
+import { CredentialsService } from "../credentials/credentials.service.js";
 import {
   AccessToken,
   CredentialDefinition,
@@ -23,6 +20,7 @@ import { plainToInstance } from "class-transformer";
 import { toArray } from "../utils/unions.js";
 import { RootConfig } from "../config.js";
 import { Credentials } from "../model/credentials.dao.js";
+import { signingAlgorithm } from "../utils/keymapping.js";
 
 @Injectable()
 export class HolderService {

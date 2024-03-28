@@ -4,10 +4,7 @@ import { DIDDocuments, KeyMaterials } from "../model/credentials.dao.js";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { RootConfig } from "../config.js";
-import {
-  keyTypes,
-  signingAlgorithm,
-} from "../credentials/credentials.service.js";
+import { keyTypes, signingAlgorithm } from "../utils/keymapping.js";
 
 @Injectable()
 export class DidService {
@@ -40,7 +37,7 @@ export class DidService {
     const didDocument: DIDDocument = {
       "@context": [
         "https://www.w3.org/ns/did/v1",
-        "https://w3c-ccg.github.io/lds-jws2020/contexts/v1/",
+        "https://w3id.org/security/suites/jws-2020/v1",
       ],
       id: this.didId,
       verificationMethod: keys.map((key) => {
@@ -60,7 +57,14 @@ export class DidService {
         {
           id: `${this.didId}#oid4vci`,
           type: "OID4VCI",
-          serviceEndpoint: this.config.server.publicDomain,
+          serviceEndpoint: this.config.server.publicAddress,
+        },
+        {
+          id: `${this.didId}#presentation`,
+          type: "PresentationService",
+          serviceEndpoint: `${this.config.server.publicAddress}${
+            process.env["EMBEDDED_FRONTEND"] ? "/api" : ""
+          }/iatp/holder/presentation`,
         },
         ...this.config.didServices,
       ],

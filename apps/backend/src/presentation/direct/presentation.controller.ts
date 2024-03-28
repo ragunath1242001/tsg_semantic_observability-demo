@@ -13,14 +13,14 @@ import {
   VerifiablePresentationJsonLd,
   VerifiablePresentationJwt,
 } from "@tsg-dsp/common";
-import { AppError } from "../utils/error.js";
-import { PresentationService } from "./presentation.service.js";
-import { Roles } from "../auth/roles.guard.js";
+import { AppError } from "../../utils/error.js";
+import { PresentationService } from "../presentation.service.js";
+import { Roles } from "../../auth/roles.guard.js";
 import { AppRole } from "@libs/dtos";
 
 @Controller("presentations")
 @Roles(AppRole.VIEW_PRESENTATIONS)
-export class PresentationController {
+export class DirectPresentationController {
   constructor(private readonly presentationService: PresentationService) {}
 
   @Get()

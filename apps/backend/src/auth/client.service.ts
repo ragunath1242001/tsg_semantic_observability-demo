@@ -9,7 +9,7 @@ import { AppRole, ClientInfo, ClientSignup, ResetPassword } from "@libs/dtos";
 import { DeepPartial, Repository } from "typeorm";
 import { JwtService } from "@nestjs/jwt";
 import bcrypt from "bcrypt";
-import { jwtSecrets } from "./auth.module.js";
+import { jwtSecrets } from "../utils/secrets.js";
 import { Clients } from "../model/clients.dao.js";
 import { AppError } from "../utils/error.js";
 import { MailService } from "./mail.service.js";
@@ -53,7 +53,6 @@ export class ClientsService {
         ],
         verified: true,
       });
-      // this.clientsRepository.upsert(, ['id', 'clientId']);
       this.logger.warn(
         "No initial clients configured, one admin client is created automatically:"
       );

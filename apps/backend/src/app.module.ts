@@ -30,12 +30,12 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
       autoLoadEntities: true,
       synchronize: true,
     }),
+    PresentationModule.register(config.presentation),
     AuthModule,
     CredentialsModule,
     DidModule,
-    IssuanceModule,
     KeysModule,
-    PresentationModule,
+    IssuanceModule,
     ...embeddedFrontend,
   ],
   controllers: [HealthController],
@@ -45,7 +45,6 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
     DidModule,
     IssuanceModule,
     KeysModule,
-    PresentationModule,
   ],
 })
 export class AppModule implements NestModule {

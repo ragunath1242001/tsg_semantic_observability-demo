@@ -16,7 +16,7 @@ var numberOfAssertionMethods = ref(0);
 const getDidDocument = async () => {
   try {
     const response = await axiosInstance.get<DIDDocument>(
-      "https://issuer.oid4vci.heracles.dataspac.es/.well-known/did.json",
+      "/.well-known/did.json",
       { baseURL: "" }
     );
     didDocument.value = response.data;

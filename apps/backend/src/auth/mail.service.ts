@@ -33,8 +33,6 @@ export class MailService {
     }
   }
 
-  // transporter
-
   private readonly logger = new Logger(this.constructor.name);
 
   async init(mail: MailConfig) {

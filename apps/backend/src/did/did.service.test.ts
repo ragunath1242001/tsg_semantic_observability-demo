@@ -7,7 +7,7 @@ import { TestingModule, Test } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { DIDDocuments, KeyMaterials } from "../model/credentials.dao.js";
 import { DIDDocument } from "did-resolver";
-import { exportJWK, generateKeyPair } from "jose";
+import { generateKeyPair, exportJWK } from "jose";
 
 describe("DID Service", () => {
   let didService: DidService;

@@ -24,6 +24,7 @@ import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import Password from "primevue/password";
 import ConfirmationService from "primevue/confirmationservice";
+import Panel from "primevue/panel";
 
 import "@/assets/styles.scss";
 import { store } from "./store/index.js";
@@ -54,5 +55,6 @@ app.component("Textarea", Textarea);
 app.component("Toast", Toast);
 app.component("ToggleButton", ToggleButton);
 app.component("Tree", Tree);
+app.component("Panel", Panel);
 
 app.mount("#app");
