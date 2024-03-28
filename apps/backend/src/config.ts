@@ -3,6 +3,7 @@ import {
   IsBoolean,
   IsDefined,
   IsEmail,
+  IsEnum,
   IsIn,
   IsNumber,
   IsObject,
@@ -253,6 +254,21 @@ export class DidServiceConfig {
   public readonly serviceEndpoint!: string;
 }
 
+export enum PresentationType {
+  DIRECT = "DIRECT",
+  IATP = "IATP",
+  OID4VP = "OID4VP",
+}
+
+export class PresentationConfig {
+  @IsOptional()
+  @IsEnum(PresentationType, { each: true })
+  public readonly types: PresentationType[] = [
+    PresentationType.DIRECT,
+    PresentationType.IATP,
+  ];
+}
+
 export class RootConfig {
   @ValidateNested()
   @IsDefined({
@@ -309,4 +325,8 @@ export class RootConfig {
   @ValidateNested({ each: true })
   @Type(() => DidServiceConfig)
   public readonly didServices: DidServiceConfig[] = [];
+
+  @ValidateNested()
+  @Type(() => PresentationConfig)
+  public readonly presentation: PresentationConfig = new PresentationConfig();
 }

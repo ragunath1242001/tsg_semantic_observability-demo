@@ -28,7 +28,7 @@ describe("Presentation Service", () => {
         {
           id: "key-0",
           type: "EdDSA",
-          default: false,
+          default: true,
         },
         {
           id: "key-1",

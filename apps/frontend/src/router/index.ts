@@ -11,6 +11,7 @@ import CredentialOID4VCI from "../views/credentials/OID4VCI.vue";
 
 import ClientsVue from "../views/Clients.vue";
 import { store } from "../store/index.js";
+import Presentation from "../views/Presentation.vue";
 
 const router = createRouter({
   history: createWebHashHistory(),
@@ -53,6 +54,11 @@ const router = createRouter({
           path: "/credentials/oid4vci",
           name: "credentials-oid4vci",
           component: CredentialOID4VCI,
+        },
+        {
+          path: "/presentation",
+          name: "presentation",
+          component: Presentation,
         },
         {
           path: "/clients",

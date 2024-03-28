@@ -1,21 +1,21 @@
 import { describe, beforeAll, afterAll, it } from "@jest/globals";
-import { IssuerService } from "./issuer.service";
-import { TypeOrmTestHelper } from "../utils/testhelper";
+import { IssuerService } from "./issuer.service.js";
+import { TypeOrmTestHelper } from "../utils/testhelper.js";
 import { plainToInstance } from "class-transformer";
-import { RootConfig } from "../config";
+import { RootConfig } from "../config.js";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import {
   Credentials,
   DIDDocuments,
   KeyMaterials,
-} from "../model/credentials.dao";
-import { CredentialsService } from "../credentials/credentials.service";
-import { DidService } from "../did/did.service";
-import { DidResolverService } from "../did/did.resolver.service";
-import { KeysService } from "../keys/keys.service";
-import { PresentationService } from "../presentation/presentation.service";
-import { CIAccessToken, CredentialIssuance } from "../model/issuance.dao";
+} from "../model/credentials.dao.js";
+import { CredentialsService } from "../credentials/credentials.service.js";
+import { DidService } from "../did/did.service.js";
+import { DidResolverService } from "../did/did.resolver.service.js";
+import { KeysService } from "../keys/keys.service.js";
+import { PresentationService } from "../presentation/presentation.service.js";
+import { CIAccessToken, CredentialIssuance } from "../model/issuance.dao.js";
 import { http, HttpResponse, PathParams } from "msw";
 import { SetupServer, setupServer } from "msw/node";
 import {
@@ -31,7 +31,7 @@ import {
   generateKeyPair,
 } from "jose";
 import { DIDDocument } from "did-resolver";
-import { HolderService } from "./holder.service";
+import { HolderService } from "./holder.service.js";
 
 describe("Holder service", () => {
   let issuerService: IssuerService;

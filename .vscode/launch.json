@@ -6,7 +6,7 @@
       "type": "npm",
       "script": "build",
       "options": {
-        "cwd": "${workspaceRoot}/frontend"
+        "cwd": "${workspaceRoot}/apps/frontend"
       }
     },
     {
@@ -15,7 +15,7 @@
       "command": "npm run build",
       "group": "test",
       "options": {
-        "cwd": "${workspaceRoot}/frontend"
+        "cwd": "${workspaceRoot}/apps/frontend"
       }
     }
   ],
@@ -24,7 +24,7 @@
       "type": "node",
       "name": "vscode-jest-tests.v2",
       "request": "launch",
-      "program": "${workspaceFolder}/backend/node_modules/.bin/jest",
+      "program": "${workspaceFolder}/apps/backend/node_modules/jest/bin/jest",
       "args": [
         "--runInBand",
         "--watchAll=false",
@@ -34,12 +34,9 @@
         "${jest.testFile}"
       ],
       "runtimeArgs": ["--experimental-vm-modules"],
-      "cwd": "${workspaceFolder}/backend",
+      "cwd": "${workspaceFolder}/apps/backend",
       "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen",
-      "windows": {
-        "program": "${workspaceFolder}/backend/node_modules/jest/bin/jest"
-      }
+      "internalConsoleOptions": "neverOpen"
     },
     {
       "name": "Debug Jest Tests",
@@ -59,23 +56,23 @@
       "name": "Debug Main (without frontend)",
       "type": "node",
       "request": "launch",
-      "args": ["${workspaceFolder}/backend/src/app.ts"],
+      "args": ["${workspaceFolder}/apps/backend/src/app.ts"],
       "runtimeArgs": ["--nolazy", "--loader", "ts-node/esm"],
       "sourceMaps": true,
-      "cwd": "${workspaceRoot}/backend",
+      "cwd": "${workspaceRoot}/apps/backend",
       "outputCapture": "std"
     },
     {
       "name": "Debug Main (with frontend)",
       "type": "node",
       "request": "launch",
-      "args": ["${workspaceFolder}/backend/src/app.ts"],
+      "args": ["${workspaceFolder}/apps/backend/src/app.ts"],
       "runtimeArgs": ["--nolazy", "--loader", "ts-node/esm"],
       "sourceMaps": true,
       "env": {
-        "EMBEDDED_FRONTEND": "${workspaceRoot}/frontend/dist"
+        "EMBEDDED_FRONTEND": "${workspaceRoot}/apps/frontend/dist"
       },
-      "cwd": "${workspaceRoot}/backend",
+      "cwd": "${workspaceRoot}/apps/backend",
       // "outputCapture": "std",
       "outputCapture": "console",
       "console": "integratedTerminal",

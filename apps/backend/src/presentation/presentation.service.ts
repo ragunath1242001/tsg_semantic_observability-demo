@@ -10,16 +10,14 @@ import {
 } from "@tsg-dsp/common";
 import jsonld from "jsonld";
 import crypto from "crypto";
-import {
-  CredentialsService,
-  signingAlgorithm,
-} from "../credentials/credentials.service.js";
+import { CredentialsService } from "../credentials/credentials.service.js";
 import { KeysService } from "../keys/keys.service.js";
 import { DidResolverService } from "../did/did.resolver.service.js";
 import { RootConfig } from "../config.js";
 import { DidService } from "../did/did.service.js";
 import { Injectable, Logger } from "@nestjs/common";
 import { toArray } from "../utils/unions.js";
+import { signingAlgorithm } from "../utils/keymapping.js";
 
 @Injectable()
 export class PresentationService {
@@ -59,17 +57,20 @@ export class PresentationService {
   }
 
   async createVerifiablePresentationJwt(
-    credentialId: string,
+    credentials: string | VerifiableCredential<CredentialSubject>[],
     audience: string,
     unwrap: boolean
   ): Promise<VerifiablePresentationJwt> {
-    const credential = await this.credentialsService.getCredential(
-      credentialId
-    );
-    const keyId = credential.credential.proof.verificationMethod
-      .split("#")
-      .slice(-1)[0];
-    const key = await this.keyService.getKey(keyId);
+    let vcs: VerifiableCredential<CredentialSubject>[];
+    if (Array.isArray(credentials)) {
+      vcs = credentials;
+    } else {
+      const credential = await this.credentialsService.getCredential(
+        credentials
+      );
+      vcs = [credential.credential];
+    }
+    const key = await this.keyService.getDefaultKey();
     const didId = await this.didService.getDidId();
     const verifiablePresentation: VerifiablePresentation<
       VerifiableCredential<CredentialSubject>
@@ -80,15 +81,13 @@ export class PresentationService {
       ],
       type: ["VerifiablePresentation"],
       id: `${didId}#${crypto.randomUUID()}`,
-      verifiableCredential: unwrap
-        ? credential.credential
-        : [credential.credential],
+      verifiableCredential: unwrap ? vcs[0] : vcs,
     };
     const jwt = await new SignJWT({ vp: verifiablePresentation })
       .setProtectedHeader({ alg: signingAlgorithm(key.type) })
       .setIssuedAt()
       .setIssuer(didId)
-      .setSubject(credential.credential.issuer)
+      .setSubject(didId)
       .setAudience(audience)
       .setExpirationTime("24h")
       .setJti(crypto.randomUUID())

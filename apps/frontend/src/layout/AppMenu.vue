@@ -55,6 +55,16 @@ const model = ref([
     ],
   },
   {
+    label: "Presentation",
+    items: [
+      {
+        label: "Manual invocation",
+        icon: "pi pi-fw pi-wrench",
+        to: "/presentation"
+      }
+    ]
+  },
+  {
     label: "Clients",
     items: [
       {
