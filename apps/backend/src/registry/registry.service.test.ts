@@ -13,8 +13,8 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { DspClientService } from "../dsp/client/client.service";
 import { AuthService } from "../auth/auth.service";
 import { DidResolverService } from "./did.resolver.service";
-import { plainToClass } from "class-transformer";
-import { IamConfig, RegistryConfig } from "../config";
+import { plainToClass, plainToInstance } from "class-transformer";
+import { IamConfig, RegistryConfig, RootConfig } from "../config";
 import { SetupServer } from "msw/lib/node";
 import {
   mockWalletConfig,
@@ -59,7 +59,9 @@ describe("RegistryService", () => {
         RegistryService,
         {
           provide: AuthService,
-          useValue: new AuthService(iamConfig),
+          useValue: new AuthService(
+            plainToInstance(RootConfig, { iam: iamConfig })
+          ),
         },
         {
           provide: IamConfig,

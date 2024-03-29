@@ -62,13 +62,20 @@ export class RegistryConfig {
   @IsNumber()
   public readonly registryIntervalInMilliseconds: number = 30000;
 }
-export class IamConfig {
+
+export abstract class IamConfig {
+  @IsString()
+  @IsIn(["tsg", "tsg-iatp", "miw", "dev"])
+  public readonly type!: "tsg" | "tsg-iatp" | "miw" | "dev";
+
   @IsString()
   public readonly didId!: string;
 
   @IsString()
-  @IsIn(["tsg", "miw", "dev"])
-  public readonly type!: "tsg" | "miw" | "dev";
+  public readonly clientId!: string;
+
+  @IsString()
+  public readonly clientSecret!: string;
 
   @IsString()
   @IsUrl({ require_tld: false, require_protocol: true, require_host: false })
@@ -76,22 +83,65 @@ export class IamConfig {
 
   @IsString()
   @IsUrl({ require_tld: false, require_protocol: true, require_host: false })
-  public readonly presentationUrl!: string;
+  @IsOptional()
+  public readonly walletUrl?: string;
+}
+
+export class DevWalletConfig extends IamConfig {
+  override readonly type: "dev" = "dev" as const;
+}
+
+export class TsgWalletDirectConfig extends IamConfig {
+  override readonly type: "tsg" = "tsg" as const;
+
+  @IsString()
+  public readonly credentialId!: string;
 
   @IsString()
   @IsUrl({ require_tld: false, require_protocol: true, require_host: false })
-  @IsOptional()
-  public readonly walletUrl?: string;
+  public readonly presentationUrl!: string;
 
   @IsString()
   @IsUrl({ require_tld: false, require_protocol: true, require_host: false })
   public readonly validationUrl!: string;
 
-  @IsString()
-  public readonly clientId!: string;
+  @IsString({ each: true })
+  public readonly validations!: string[];
+}
+
+export class TsgWalletIatpConfig extends IamConfig {
+  override readonly type: "tsg-iatp" = "tsg-iatp" as const;
 
   @IsString()
-  public readonly clientSecret!: string;
+  @IsUrl({ require_tld: false, require_protocol: true, require_host: false })
+  public readonly siopUrl!: string;
+
+  @IsString()
+  @IsUrl({ require_tld: false, require_protocol: true, require_host: false })
+  public readonly verifyUrl!: string;
+
+  @IsString()
+  @IsOptional()
+  public readonly typeFilter?: string;
+
+  @IsString()
+  @IsOptional()
+  public readonly issuerFilter?: string;
+
+  @IsOptional()
+  public readonly customFields?: any[];
+}
+
+export class MiwConfig extends IamConfig {
+  override readonly type: "miw" = "miw" as const;
+
+  @IsString()
+  @IsUrl({ require_tld: false, require_protocol: true, require_host: false })
+  public readonly presentationUrl!: string;
+
+  @IsString()
+  @IsUrl({ require_tld: false, require_protocol: true, require_host: false })
+  public readonly validationUrl!: string;
 
   @IsString()
   public readonly credentialId!: string;
@@ -151,7 +201,17 @@ export class RootConfig {
   public readonly registry!: RegistryConfig;
 
   @ValidateNested()
-  @Type(() => IamConfig)
+  @Type(() => IamConfig, {
+    discriminator: {
+      property: "type",
+      subTypes: [
+        { value: DevWalletConfig, name: "dev" },
+        { value: TsgWalletDirectConfig, name: "tsg" },
+        { value: TsgWalletIatpConfig, name: "tsg-iatp" },
+        { value: MiwConfig, name: "miw" },
+      ],
+    },
+  })
   @IsDefined()
   public readonly iam!: IamConfig;
 

@@ -1,16 +1,18 @@
 import { HttpStatus, Logger } from "@nestjs/common";
 import axios from "axios";
 import qs from "qs";
-import { IamConfig } from "../../config";
+import { MiwConfig } from "../../config";
 import { DSPClientError, DSPError } from "../../utils/errors/error";
-import { ValidationResult, WalletClient } from "./walletClient";
+import { Credential, ValidationResult, WalletClient } from "./walletClient";
 import { DIDDocument } from "did-resolver";
-import jwt from "jsonwebtoken";
+import jwt, { decode } from "jsonwebtoken";
 import {
   CredentialSubject,
   VerifiableCredential,
+  VerifiablePresentation,
   VerifiablePresentationJwt,
 } from "@tsg-dsp/common";
+import { plainToInstance } from "class-transformer";
 
 export interface MiWWalletDetails {
   name: string;
@@ -22,7 +24,7 @@ export interface MiWWalletDetails {
 }
 
 export class ManagedIdentityWalletClient extends WalletClient {
-  constructor(private readonly iamConfig: IamConfig) {
+  constructor(private readonly iamConfig: MiwConfig) {
     super();
   }
   private readonly logger = new Logger(this.constructor.name);
@@ -80,9 +82,7 @@ export class ManagedIdentityWalletClient extends WalletClient {
     }
   }
 
-  async requestVerifiablePresentation(
-    audience: string
-  ): Promise<VerifiablePresentationJwt> {
+  async requestVerifiablePresentation(audience: string): Promise<string> {
     if (
       !this.access_token ||
       !this.expiration ||
@@ -111,16 +111,21 @@ export class ManagedIdentityWalletClient extends WalletClient {
           },
         }
       );
-      return response.data;
+      return response.data.vp;
     } catch (err) {
       throw new DSPClientError("Could not request VP", err);
     }
   }
 
   async requestValidation(
-    jwt: VerifiablePresentationJwt,
+    token: string,
     audience: string
-  ): Promise<boolean> {
+  ): Promise<
+    VerifiablePresentation<VerifiableCredential<CredentialSubject>> | undefined
+  > {
+    const jwt: VerifiablePresentationJwt = {
+      vp: token,
+    };
     if (
       !this.access_token ||
       !this.expiration ||
@@ -151,21 +156,26 @@ export class ManagedIdentityWalletClient extends WalletClient {
               this.logger.log(
                 `Validation for ${validation} contains at least one false`
               );
-              return false;
+              return undefined;
             }
           } else {
             if (!validationResult) {
               this.logger.log(`Validation for ${validation} is false`);
-              return false;
+              return undefined;
             }
           }
         } else {
-          return false;
+          return undefined;
         }
       }
-      return true;
+      const tokenPayload = decode(token, { json: true });
+      return plainToInstance(tokenPayload!["vp"], VerifiablePresentation);
     } catch (err) {
       throw new DSPClientError("Could not request VP", err);
     }
+  }
+
+  async getCredentials(): Promise<Credential[]> {
+    return [];
   }
 }

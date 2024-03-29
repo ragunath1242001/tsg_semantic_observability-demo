@@ -2,6 +2,7 @@ import {
   ExecutionContext,
   HttpStatus,
   Injectable,
+  Logger,
   createParamDecorator,
 } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
@@ -48,10 +49,12 @@ export class VerifiablePresentationStrategy extends PassportStrategy(
   constructor(private readonly authService: AuthService) {
     super();
   }
+  private readonly logger = new Logger(this.constructor.name);
 
   async validate(token: string) {
     const tokenPayload = jwt.decode(token, { json: true });
     if (!tokenPayload) {
+      this.logger.warn(`Token could not be decoded: ${tokenPayload}`);
       throw new DSPError("Malformed token", HttpStatus.UNAUTHORIZED);
     }
     const valid = await this.authService.validateToken(token);
@@ -61,14 +64,6 @@ export class VerifiablePresentationStrategy extends PassportStrategy(
         HttpStatus.UNAUTHORIZED
       );
     }
-
-    if (!tokenPayload["vp"]) {
-      throw new DSPError(
-        'No "vp" field in token payload',
-        HttpStatus.UNAUTHORIZED
-      );
-    }
-
-    return tokenPayload["vp"];
+    return valid;
   }
 }

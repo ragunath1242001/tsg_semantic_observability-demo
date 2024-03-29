@@ -1,6 +1,6 @@
 import qs from "qs";
-import { TsgWalletDirectConfig } from "../../config";
-import { Credential, ValidationResult, WalletClient } from "./walletClient";
+import { TsgWalletIatpConfig } from "../../config";
+import { Credential, WalletClient } from "./walletClient";
 import axios from "axios";
 import { DSPClientError } from "../../utils/errors/error";
 import { Logger } from "@nestjs/common";
@@ -8,13 +8,11 @@ import {
   CredentialSubject,
   VerifiableCredential,
   VerifiablePresentation,
-  VerifiablePresentationJwt,
 } from "@tsg-dsp/common";
-import { plainToInstance } from "class-transformer";
-import { decode } from "jsonwebtoken";
+import crypto from "crypto";
 
-export class TsgWalletClient extends WalletClient {
-  constructor(readonly iamConfig: TsgWalletDirectConfig) {
+export class TsgIatpWalletClient extends WalletClient {
+  constructor(readonly iamConfig: TsgWalletIatpConfig) {
     super();
   }
   readonly logger = new Logger(this.constructor.name);
@@ -66,20 +64,18 @@ export class TsgWalletClient extends WalletClient {
   async requestVerifiablePresentation(audience: string): Promise<string> {
     try {
       await this.ensureAccessToken();
-      const response = await axios.get<VerifiablePresentationJwt>(
-        this.iamConfig.presentationUrl,
+      const response = await axios.get<{ id_token: string }>(
+        this.iamConfig.siopUrl,
         {
           headers: {
             Authorization: `Bearer ${this.access_token}`,
           },
           params: {
-            credentialId: this.iamConfig.credentialId,
-            asJwt: "true",
             audience: audience,
           },
         }
       );
-      return response.data.vp;
+      return response.data.id_token;
     } catch (err) {
       throw new DSPClientError("Could not request VP", err);
     }
@@ -91,14 +87,52 @@ export class TsgWalletClient extends WalletClient {
   ): Promise<
     VerifiablePresentation<VerifiableCredential<CredentialSubject>> | undefined
   > {
-    const jwt: VerifiablePresentationJwt = {
-      vp: token,
-    };
     try {
       await this.ensureAccessToken();
-      const response = await axios.post<ValidationResult>(
-        this.iamConfig.validationUrl,
-        jwt,
+      const response = await axios.post<
+        VerifiablePresentation<VerifiableCredential<CredentialSubject>>
+      >(
+        this.iamConfig.verifyUrl,
+        {
+          holderIdToken: token,
+          presentationDefinition: {
+            id: crypto.randomUUID(),
+            name: "DSP Presentation definition",
+            input_descriptors: [
+              {
+                id: crypto.randomUUID(),
+                name: "Primary credential descriptor",
+                constraints: {
+                  fields: [
+                    ...(this.iamConfig.typeFilter
+                      ? [
+                          {
+                            path: ["$.type"],
+                            filter: {
+                              type: "string",
+                              pattern: this.iamConfig.typeFilter,
+                            },
+                          },
+                        ]
+                      : []),
+                    ...(this.iamConfig.issuerFilter
+                      ? [
+                          {
+                            path: ["$.issuer"],
+                            filter: {
+                              type: "string",
+                              pattern: this.iamConfig.issuerFilter,
+                            },
+                          },
+                        ]
+                      : []),
+                    ...(this.iamConfig.customFields ?? []),
+                  ],
+                },
+              },
+            ],
+          },
+        },
         {
           headers: {
             Authorization: `Bearer ${this.access_token}`,
@@ -108,26 +142,7 @@ export class TsgWalletClient extends WalletClient {
           },
         }
       );
-      for (const validation of this.iamConfig.validations) {
-        const validationResult = response.data[validation];
-        if (validationResult) {
-          if (validationResult instanceof Array) {
-            if (validationResult.some((c) => !c)) {
-              this.logger.log(
-                `Validation for ${validation} contains at least one false`
-              );
-              return undefined;
-            }
-          } else {
-            if (!validationResult) {
-              this.logger.log(`Validation for ${validation} is false`);
-              return undefined;
-            }
-          }
-        }
-      }
-      const tokenPayload = decode(token, { json: true });
-      return plainToInstance(tokenPayload!["vp"], VerifiablePresentation);
+      return response.data;
     } catch (err) {
       throw new DSPClientError("Could not request VP", err);
     }

@@ -1,10 +1,11 @@
 import { SetupServer } from "msw/node";
-import { IamConfig } from "../config";
+import { IamConfig, RootConfig } from "../config";
 import { AuthService } from "./auth.service";
 import {
   mockWalletConfig,
   setupMockWalletServer,
 } from "./wallets/wallet.util.test";
+import { plainToInstance } from "class-transformer";
 
 describe("Auth Service", () => {
   let server: SetupServer;
@@ -21,7 +22,9 @@ describe("Auth Service", () => {
 
   let authService: AuthService;
   beforeEach(() => {
-    authService = new AuthService(iamConfig);
+    authService = new AuthService(
+      plainToInstance(RootConfig, { iam: iamConfig })
+    );
   });
 
   it("Request & validate token", async () => {
@@ -29,6 +32,6 @@ describe("Auth Service", () => {
     expect(token).toEqual(expect.any(String));
 
     const valid = await authService.validateToken(token);
-    expect(valid).toStrictEqual(true);
+    expect(valid).toBeDefined();
   });
 });

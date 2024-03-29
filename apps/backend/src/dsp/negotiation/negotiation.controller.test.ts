@@ -22,7 +22,7 @@ import { NegotiationService } from "./negotiation.service";
 import { DspClientService } from "../client/client.service";
 import { HttpResponse, PathParams, http } from "msw";
 import { SetupServer, setupServer } from "msw/node";
-import { IamConfig, ServerConfig } from "../../config";
+import { RootConfig, ServerConfig } from "../../config";
 import { plainToClass } from "class-transformer";
 import { AuthService } from "../../auth/auth.service";
 import { TypeOrmModule } from "@nestjs/typeorm";
@@ -96,17 +96,19 @@ describe("NegotiationController", () => {
         NegotiationGateway,
         { provide: ServerConfig, useValue: plainToClass(ServerConfig, {}) },
         {
-          provide: IamConfig,
-          useValue: plainToClass(IamConfig, {
-            didId: "did:web:localhost",
-            tokenUrl: "http://localhost/auth/login",
-            presentationUrl: "http://localhost/presentations",
-            validationUrl: "http://localhost/presentations/validate",
-            clientId: "client",
-            clientSecret: "secret",
-            credentialId:
-              "did:web:localhost#00000000-0000-0000-0000-000000000000",
-            validations: ["valid"],
+          provide: RootConfig,
+          useValue: plainToClass(RootConfig, {
+            iam: {
+              didId: "did:web:localhost",
+              tokenUrl: "http://localhost/auth/login",
+              presentationUrl: "http://localhost/presentations",
+              validationUrl: "http://localhost/presentations/validate",
+              clientId: "client",
+              clientSecret: "secret",
+              credentialId:
+                "did:web:localhost#00000000-0000-0000-0000-000000000000",
+              validations: ["valid"],
+            },
           }),
         },
       ],

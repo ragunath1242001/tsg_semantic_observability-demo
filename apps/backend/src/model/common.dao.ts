@@ -5,7 +5,6 @@ import {
   DeleteDateColumn,
   PrimaryGeneratedColumn,
 } from "typeorm";
-import { IResource } from "./dsp/catalog/catalog";
 import { IReference, SerializableClass } from "./dsp/common";
 import { ContextDto } from "@tsg-dsp/common";
 

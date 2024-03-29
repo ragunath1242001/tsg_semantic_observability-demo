@@ -1,17 +1,20 @@
 import crypto from "crypto";
 import { SignJWT } from "jose";
-import { IamConfig } from "../../config";
-import { WalletClient } from "./walletClient";
-import { VerifiablePresentationJwt } from "@tsg-dsp/common";
+import { DevWalletConfig } from "../../config";
+import { Credential, WalletClient } from "./walletClient";
+import {
+  VerifiablePresentation,
+  VerifiableCredential,
+  CredentialSubject,
+} from "@tsg-dsp/common";
 import { plainToInstance } from "class-transformer";
+import { decode } from "jsonwebtoken";
 
 export class DevWalletClient extends WalletClient {
-  constructor(private readonly iamConfig: IamConfig) {
+  constructor(private readonly iamConfig: DevWalletConfig) {
     super();
   }
-  async requestVerifiablePresentation(
-    audience: string
-  ): Promise<VerifiablePresentationJwt> {
+  async requestVerifiablePresentation(audience: string): Promise<string> {
     const vp = {
       "@context": [
         "https://www.w3.org/2018/credentials/v1",
@@ -59,13 +62,20 @@ export class DevWalletClient extends WalletClient {
       .setJti(crypto.randomUUID())
       .sign(new TextEncoder().encode("ThisIsTheMostSecretKeyYouHaveEverSeen"));
 
-    return plainToInstance(VerifiablePresentationJwt, { vp: jwt });
+    return jwt;
   }
 
   async requestValidation(
-    jwt: VerifiablePresentationJwt,
+    token: string,
     audience: string
-  ): Promise<boolean> {
-    return true;
+  ): Promise<
+    VerifiablePresentation<VerifiableCredential<CredentialSubject>> | undefined
+  > {
+    const tokenPayload = decode(token, { json: true });
+    return plainToInstance(tokenPayload!["vp"], VerifiablePresentation);
+  }
+
+  async getCredentials(): Promise<Credential[]> {
+    return [];
   }
 }
