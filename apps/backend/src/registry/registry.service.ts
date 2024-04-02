@@ -8,7 +8,7 @@ import {
   ResourceDao,
 } from "../model/dsp/catalog/catalog.dao";
 import { DidResolverService } from "./did.resolver.service";
-import { DSPClientError, DspClientService } from "../dsp/client/client.service";
+import { DspClientService } from "../dsp/client/client.service";
 import { normalizeAddress } from "../utils/address";
 import { CatalogDto } from "@tsg-dsp/common";
 import { SchedulerRegistry } from "@nestjs/schedule";
@@ -17,7 +17,7 @@ import { Repository } from "typeorm";
 import { Catalog, Dataset, Resource } from "../model/dsp/catalog/catalog";
 import { deserialize } from "../model/serialize";
 import axios from "axios";
-import { DSPError } from "../utils/errors/error";
+import { DSPClientError, DSPError } from "../utils/errors/error";
 import { CatalogService } from "../dsp/catalog/catalog.service";
 import { CredentialAddressDto } from "@libs/dtos";
 import { AuthService } from "../auth/auth.service";

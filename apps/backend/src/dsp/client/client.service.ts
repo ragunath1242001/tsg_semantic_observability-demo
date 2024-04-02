@@ -25,33 +25,7 @@ import {
   TransferProcessDto,
   ContextDto,
 } from "@tsg-dsp/common";
-
-export class DSPClientError extends Error {
-  err: unknown;
-  status?: number;
-  constructor(message: string, err: unknown) {
-    super();
-    let status: number | undefined;
-    let errorMessage;
-    if (axios.isAxiosError(err)) {
-      if (err.response) {
-        errorMessage = `${message} (response): ${
-          err.response.status
-        } ${JSON.stringify(err.response.data)}`;
-        status = err.response.status;
-      } else {
-        errorMessage = `${message} (request): ${err.message}`;
-        status = err.status;
-      }
-    } else {
-      errorMessage = `${message} (unknown): ${err}`;
-    }
-    this.name = "DSPClientError";
-    this.message = errorMessage;
-    this.status = status;
-    this.err = err;
-  }
-}
+import { DSPClientError } from "../../utils/errors/error";
 
 @Injectable()
 export class DspClientService {

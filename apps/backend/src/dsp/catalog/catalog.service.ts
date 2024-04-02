@@ -23,7 +23,7 @@ import {
   DistributionDao,
   ResourceDao,
 } from "../../model/dsp/catalog/catalog.dao";
-import { DSPError } from "../../utils/errors/error";
+import { DSPClientError, DSPError } from "../../utils/errors/error";
 import { deserialize } from "../../model/serialize";
 import { ODRLAction, ODRLOperator } from "@tsg-dsp/common";
 import {
@@ -31,7 +31,6 @@ import {
   Offer,
   Permission,
 } from "../../model/dsp/negotiation/negotiation";
-import { DSPClientError } from "../client/client.service";
 
 @Injectable()
 export class CatalogService {
