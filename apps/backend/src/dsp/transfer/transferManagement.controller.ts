@@ -39,12 +39,6 @@ export class TransferManagementController {
     @Param("processId") processId: string
   ): Promise<TransferStatus> {
     const transfer = await this.transferService.getTransfer(processId);
-    if (transfer === undefined) {
-      throw new HttpException(
-        `Transfer ${processId} not found`,
-        HttpStatus.NOT_FOUND
-      );
-    }
     return transfer;
   }
 
@@ -87,13 +81,6 @@ export class TransferManagementController {
         body
       )}`
     );
-    const internalTransfer = await this.transferService.getTransfer(processId);
-    if (internalTransfer === undefined) {
-      throw new DSPError(
-        `Internal transfer ${processId} not found`,
-        HttpStatus.NOT_FOUND
-      ).andLog(this.logger, "warn");
-    }
     return await this.transferService.start(processId, body, false);
   }
 
@@ -103,13 +90,6 @@ export class TransferManagementController {
     @Param("processId") processId: string
   ): Promise<{ status: string }> {
     this.logger.log(`Received transfer complete for processId ${processId}`);
-    const internalTransfer = await this.transferService.getTransfer(processId);
-    if (internalTransfer === undefined) {
-      throw new DSPError(
-        `Internal transfer ${processId} not found`,
-        HttpStatus.NOT_FOUND
-      ).andLog(this.logger, "warn");
-    }
     return await this.transferService.complete(processId, false);
   }
 
@@ -123,13 +103,6 @@ export class TransferManagementController {
     this.logger.log(
       `Received transfer terminate for processId ${processId} with code ${body.code} and reason ${body.reason}`
     );
-    const internalTransfer = await this.transferService.getTransfer(processId);
-    if (internalTransfer === undefined) {
-      throw new DSPError(
-        `Internal transfer ${processId} not found`,
-        HttpStatus.NOT_FOUND
-      ).andLog(this.logger, "warn");
-    }
     return await this.transferService.terminate(
       processId,
       body.code,
@@ -148,13 +121,6 @@ export class TransferManagementController {
     this.logger.log(
       `Received transfer suspend for processId ${processId} with reason ${body.reason}`
     );
-    const internalTransfer = await this.transferService.getTransfer(processId);
-    if (internalTransfer === undefined) {
-      throw new DSPError(
-        `Internal transfer ${processId} not found`,
-        HttpStatus.NOT_FOUND
-      ).andLog(this.logger, "warn");
-    }
     return await this.transferService.suspend(processId, body.reason, false);
   }
 }

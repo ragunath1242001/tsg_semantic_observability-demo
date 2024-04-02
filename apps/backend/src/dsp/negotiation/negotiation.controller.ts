@@ -110,20 +110,11 @@ export class NegotiationController {
       ).andLog(this.logger, "warn");
     }
     const result = await this.negotiationService.handleEvent(id, body, vpId);
-    if (result) {
-      this.negotiationGateway.sendUpdateToClients(
-        "negotiation:update",
-        "updated"
-      );
-      return {
-        status: "OK",
-      };
-    } else {
-      throw new DSPError("Negotiation not found", HttpStatus.NOT_FOUND).andLog(
-        this.logger,
-        "warn"
-      );
-    }
+    this.negotiationGateway.sendUpdateToClients(
+      "negotiation:update",
+      "updated"
+    );
+    return result;
   }
   @Post(":id/agreement/verification")
   @HttpCode(HttpStatus.OK)
@@ -147,21 +138,13 @@ export class NegotiationController {
       body,
       vpId
     );
-    if (result) {
-      this.negotiationGateway.sendUpdateToClients(
-        "negotiation:update",
-        "updated"
-      );
-      return {
-        status: "OK",
-      };
-    } else {
-      throw new DSPError("Negotiation not found", HttpStatus.NOT_FOUND).andLog(
-        this.logger,
-        "warn"
-      );
-    }
+    this.negotiationGateway.sendUpdateToClients(
+      "negotiation:update",
+      "updated"
+    );
+    return result;
   }
+
   @Post(":id/termination")
   @HttpCode(HttpStatus.OK)
   async negotiationTermination(
@@ -184,16 +167,7 @@ export class NegotiationController {
       body,
       vpId
     );
-    if (result) {
-      return {
-        status: "OK",
-      };
-    } else {
-      throw new DSPError("Negotiation not found", HttpStatus.NOT_FOUND).andLog(
-        this.logger,
-        "warn"
-      );
-    }
+    return result;
   }
 
   @Post("callbacks/:id/offer")
@@ -206,20 +180,11 @@ export class NegotiationController {
       `Received negotiation callback offer for ${id}: ${JSON.stringify(body)}`
     );
     const result = await this.negotiationService.handleOffer(id, body, vpId);
-    if (result) {
-      this.negotiationGateway.sendUpdateToClients(
-        "negotiation:update",
-        "updated"
-      );
-      return {
-        status: "OK",
-      };
-    } else {
-      throw new DSPError("Negotiation not found", HttpStatus.NOT_FOUND).andLog(
-        this.logger,
-        "warn"
-      );
-    }
+    this.negotiationGateway.sendUpdateToClients(
+      "negotiation:update",
+      "updated"
+    );
+    return result;
   }
 
   @Post("callbacks/:id/agreement")
@@ -239,20 +204,11 @@ export class NegotiationController {
       body,
       vpId
     );
-    if (result) {
-      this.negotiationGateway.sendUpdateToClients(
-        "negotiation:update",
-        "updated"
-      );
-      return {
-        status: "OK",
-      };
-    } else {
-      throw new DSPError("Negotiation not found", HttpStatus.NOT_FOUND).andLog(
-        this.logger,
-        "warn"
-      );
-    }
+    this.negotiationGateway.sendUpdateToClients(
+      "negotiation:update",
+      "updated"
+    );
+    return result;
   }
 
   @Post("callbacks/:id/events")
@@ -266,19 +222,10 @@ export class NegotiationController {
       `Received negotiation callback event for ${id}: ${JSON.stringify(body)}`
     );
     const result = await this.negotiationService.handleEvent(id, body, vpId);
-    if (result) {
-      this.negotiationGateway.sendUpdateToClients(
-        "negotiation:update",
-        "updated"
-      );
-      return {
-        status: "OK",
-      };
-    } else {
-      throw new DSPError("Negotiation not found", HttpStatus.NOT_FOUND).andLog(
-        this.logger,
-        "warn"
-      );
-    }
+    this.negotiationGateway.sendUpdateToClients(
+      "negotiation:update",
+      "updated"
+    );
+    return result;
   }
 }

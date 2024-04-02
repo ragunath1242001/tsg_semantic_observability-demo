@@ -48,14 +48,7 @@ export class TransferController {
   ): Promise<TransferProcessDto> {
     this.logger.log(`Received transfer status request from ${vpId} for ${id}`);
     const transferProcess = await this.transferService.getTransfer(id, vpId);
-    if (transferProcess?.process) {
-      return await transferProcess.process.serialize();
-    } else {
-      throw new DSPError(
-        "Transfer process not found",
-        HttpStatus.NOT_FOUND
-      ).andLog(this.logger, "warn");
-    }
+    return await transferProcess.process.serialize();
   }
 
   @Post(":id/start")

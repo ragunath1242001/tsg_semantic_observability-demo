@@ -33,15 +33,20 @@ export class CatalogManagementController {
     @Query("address") address?: string,
     @Query("audience") audience?: string
   ): Promise<CatalogDto> {
-    this.logger.log(`Received catalog request for ${address}`);
-    return address
-      ? this.dsp.requestCatalog(
-          normalizeAddress(address, 0, "catalog", "request"),
-          audience
-        )
-      : (
-          await this.catalogService.request(new CatalogRequestMessage({}))
-        ).serialize();
+    if (address) {
+      this.logger.log(
+        `Received catalog request for remote connector at ${address}`
+      );
+      return await this.dsp.requestCatalog(
+        normalizeAddress(address, 0, "catalog", "request"),
+        audience
+      );
+    } else {
+      this.logger.log(`Received catalog request for local connector`);
+      return (
+        await this.catalogService.request(new CatalogRequestMessage({}))
+      ).serialize();
+    }
   }
 
   @Get("dataset")
@@ -51,14 +56,21 @@ export class CatalogManagementController {
     @Query("id") id: string,
     @Query("audience") audience?: string
   ): Promise<DatasetDto> {
-    this.logger.log(`Received dataset request for ${address} with id ${id}`);
-    return address
-      ? this.dsp.requestDataset(
-          normalizeAddress(address, 0, "catalog", "datasets"),
-          id,
-          audience
-        )
-      : (await this.catalogService.getDataset(id))?.serialize();
+    if (address) {
+      this.logger.log(
+        `Received dataset request for remote connector at ${address} with id ${id}`
+      );
+      return this.dsp.requestDataset(
+        normalizeAddress(address, 0, "catalog", "datasets"),
+        id,
+        audience
+      );
+    } else {
+      this.logger.log(
+        `Received dataset request for local connector with id ${id}`
+      );
+      return (await this.catalogService.getDataset(id))?.serialize();
+    }
   }
 
   @Post("dataset")

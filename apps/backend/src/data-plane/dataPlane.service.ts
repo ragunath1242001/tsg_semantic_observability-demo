@@ -142,9 +142,7 @@ export class DataPlaneService {
     };
   }
 
-  async updateDataPlane(
-    dataPlaneDetails: DataPlaneDto
-  ): Promise<DataPlane | undefined> {
+  async updateDataPlane(dataPlaneDetails: DataPlaneDto): Promise<DataPlane> {
     const dataPlane = await this.getDataPlaneDetails(
       dataPlaneDetails.identifier
     );
@@ -174,7 +172,7 @@ export class DataPlaneService {
     identifier: string,
     dataset: Dataset,
     etag?: string
-  ): Promise<Dataset | undefined> {
+  ): Promise<Dataset> {
     const dataPlane = await this.getDataPlaneDetails(identifier);
     let addedDataset: DatasetDao = new DatasetDao();
     if (dataPlane.dataset) {

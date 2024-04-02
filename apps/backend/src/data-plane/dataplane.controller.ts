@@ -52,12 +52,6 @@ export class DataPlaneController {
     const dataPlane = await this.dataPlaneService.updateDataPlane(
       dataPlaneDetails
     );
-    if (dataPlane === undefined) {
-      throw new DSPError(
-        `Data plane with identifier ${dataPlaneDetails.identifier} not found`,
-        HttpStatus.NOT_FOUND
-      ).andLog(this.logger, "warn");
-    }
     return {
       ...dataPlane,
       dataset: await dataPlane.dataset?.serialize(),
@@ -75,12 +69,6 @@ export class DataPlaneController {
       id,
       dataset
     );
-    if (datasetUpdate === undefined) {
-      throw new DSPError(
-        `Data plane with identifier ${id} not found`,
-        HttpStatus.NOT_FOUND
-      ).andLog(this.logger, "warn");
-    }
     return datasetUpdate;
   }
 }
