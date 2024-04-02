@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable } from "@nestjs/common";
+import { HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
 import { AuthService } from "./auth.service";
 import { DSPError } from "../utils/errors/error";
@@ -11,12 +11,10 @@ export class ManagementStrategy extends PassportStrategy(
   BasicStrategy,
   "mgmt"
 ) {
-  constructor(
-    private readonly authService: AuthService,
-    private readonly config: RootConfig
-  ) {
+  constructor(private readonly config: RootConfig) {
     super();
   }
+  readonly logger = new Logger(this.constructor.name);
 
   async validate(username: string, password: string) {
     const user = this.config.users.find((user) => user.username === username);
@@ -24,7 +22,7 @@ export class ManagementStrategy extends PassportStrategy(
       throw new DSPError(
         "Unknown user / password combination",
         HttpStatus.UNAUTHORIZED
-      );
+      ).andLog(this.logger, "warn");
     }
 
     return { username: user.username };

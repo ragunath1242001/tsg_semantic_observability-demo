@@ -72,7 +72,7 @@ export class DevWalletClient extends WalletClient {
     VerifiablePresentation<VerifiableCredential<CredentialSubject>> | undefined
   > {
     const tokenPayload = decode(token, { json: true });
-    return plainToInstance(tokenPayload!["vp"], VerifiablePresentation);
+    return plainToInstance(VerifiablePresentation, tokenPayload!["vp"]);
   }
 
   async getCredentials(): Promise<Credential[]> {

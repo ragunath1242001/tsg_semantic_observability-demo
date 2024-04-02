@@ -177,12 +177,15 @@ export class RegistryService {
       throw new DSPError(
         "No registry URL provided in the configuration.",
         HttpStatus.PRECONDITION_REQUIRED
-      );
+      ).andLog(this.logger, "warn");
     }
     try {
       return await axios.get(`${this.registryConfig.registryUrl}/registry`);
     } catch (err) {
-      throw new DSPClientError("Could not request catalogs", err);
+      throw new DSPClientError("Could not request catalogs", err).andLog(
+        this.logger,
+        "warn"
+      );
     }
   }
 }

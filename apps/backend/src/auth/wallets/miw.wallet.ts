@@ -56,7 +56,7 @@ export class ManagedIdentityWalletClient extends WalletClient {
       throw new DSPClientError(
         "Could not request access token from wallet",
         err
-      );
+      ).andLog(this.logger, "warn");
     }
   }
 
@@ -72,7 +72,10 @@ export class ManagedIdentityWalletClient extends WalletClient {
       });
       return data.data;
     } catch (err) {
-      throw new DSPClientError("Could not request wallet details", err);
+      throw new DSPClientError("Could not request wallet details", err).andLog(
+        this.logger,
+        "warn"
+      );
     }
   }
 
@@ -107,7 +110,10 @@ export class ManagedIdentityWalletClient extends WalletClient {
       );
       return response.data.vp;
     } catch (err) {
-      throw new DSPClientError("Could not request VP", err);
+      throw new DSPClientError("Could not request VP", err).andLog(
+        this.logger,
+        "warn"
+      );
     }
   }
 
@@ -159,13 +165,17 @@ export class ManagedIdentityWalletClient extends WalletClient {
             }
           }
         } else {
+          this.logger.log(`Validation for ${validation} is false`);
           return undefined;
         }
       }
       const tokenPayload = decode(token, { json: true });
-      return plainToInstance(tokenPayload!["vp"], VerifiablePresentation);
+      return plainToInstance(VerifiablePresentation, tokenPayload!["vp"]);
     } catch (err) {
-      throw new DSPClientError("Could not request VP", err);
+      throw new DSPClientError("Could not request VP", err).andLog(
+        this.logger,
+        "warn"
+      );
     }
   }
 

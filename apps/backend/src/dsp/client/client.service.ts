@@ -262,7 +262,7 @@ export class DspClientService {
       });
       return response.data;
     } catch (err) {
-      throw new DSPClientError(message, err);
+      throw new DSPClientError(message, err).andLog(this.logger, "debug");
     }
   }
 
@@ -284,7 +284,7 @@ export class DspClientService {
       this.logger.log(message);
       return response.data;
     } catch (err) {
-      throw new DSPClientError(message, err);
+      throw new DSPClientError(message, err).andLog(this.logger, "debug");
     }
   }
 }

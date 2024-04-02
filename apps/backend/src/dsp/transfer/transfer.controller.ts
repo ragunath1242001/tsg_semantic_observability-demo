@@ -51,7 +51,10 @@ export class TransferController {
     if (transferProcess?.process) {
       return await transferProcess.process.serialize();
     } else {
-      throw new DSPError("Transfer process not found", HttpStatus.NOT_FOUND);
+      throw new DSPError(
+        "Transfer process not found",
+        HttpStatus.NOT_FOUND
+      ).andLog(this.logger, "warn");
     }
   }
 

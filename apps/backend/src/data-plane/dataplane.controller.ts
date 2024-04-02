@@ -47,7 +47,7 @@ export class DataPlaneController {
       throw new DSPError(
         "Identifier in path and in body do not match",
         HttpStatus.BAD_REQUEST
-      );
+      ).andLog(this.logger, "warn");
     }
     const dataPlane = await this.dataPlaneService.updateDataPlane(
       dataPlaneDetails
@@ -56,7 +56,7 @@ export class DataPlaneController {
       throw new DSPError(
         `Data plane with identifier ${dataPlaneDetails.identifier} not found`,
         HttpStatus.NOT_FOUND
-      );
+      ).andLog(this.logger, "warn");
     }
     return {
       ...dataPlane,
@@ -79,7 +79,7 @@ export class DataPlaneController {
       throw new DSPError(
         `Data plane with identifier ${id} not found`,
         HttpStatus.NOT_FOUND
-      );
+      ).andLog(this.logger, "warn");
     }
     return datasetUpdate;
   }

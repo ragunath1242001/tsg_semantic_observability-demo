@@ -18,6 +18,7 @@ import { normalizeAddress } from "../../utils/address";
 import { DataPlaneAddressDto } from "@libs/dtos";
 import { ManagementGuard } from "../../auth/management.guard";
 import { TransferStatus } from "../../model/dsp/transfer/transfer";
+import { DSPError } from "../../utils/errors/error";
 
 @UseGuards(ManagementGuard)
 @Controller("management/transfer")
@@ -88,10 +89,10 @@ export class TransferManagementController {
     );
     const internalTransfer = await this.transferService.getTransfer(processId);
     if (internalTransfer === undefined) {
-      throw new HttpException(
+      throw new DSPError(
         `Internal transfer ${processId} not found`,
         HttpStatus.NOT_FOUND
-      );
+      ).andLog(this.logger, "warn");
     }
     return await this.transferService.start(processId, body, false);
   }
@@ -104,10 +105,10 @@ export class TransferManagementController {
     this.logger.log(`Received transfer complete for processId ${processId}`);
     const internalTransfer = await this.transferService.getTransfer(processId);
     if (internalTransfer === undefined) {
-      throw new HttpException(
+      throw new DSPError(
         `Internal transfer ${processId} not found`,
         HttpStatus.NOT_FOUND
-      );
+      ).andLog(this.logger, "warn");
     }
     return await this.transferService.complete(processId, false);
   }
@@ -124,10 +125,10 @@ export class TransferManagementController {
     );
     const internalTransfer = await this.transferService.getTransfer(processId);
     if (internalTransfer === undefined) {
-      throw new HttpException(
+      throw new DSPError(
         `Internal transfer ${processId} not found`,
         HttpStatus.NOT_FOUND
-      );
+      ).andLog(this.logger, "warn");
     }
     return await this.transferService.terminate(
       processId,
@@ -149,10 +150,10 @@ export class TransferManagementController {
     );
     const internalTransfer = await this.transferService.getTransfer(processId);
     if (internalTransfer === undefined) {
-      throw new HttpException(
+      throw new DSPError(
         `Internal transfer ${processId} not found`,
         HttpStatus.NOT_FOUND
-      );
+      ).andLog(this.logger, "warn");
     }
     return await this.transferService.suspend(processId, body.reason, false);
   }

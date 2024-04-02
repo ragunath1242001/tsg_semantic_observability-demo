@@ -124,7 +124,7 @@ export class NegotiationService {
       throw new DSPError(
         `Negotiation with process ID ${negotiation.localId} cannot transition from ${negotiation.state} to ${to}`,
         HttpStatus.BAD_REQUEST
-      );
+      ).andLog(this.logger, "warn");
     }
   }
 
@@ -158,7 +158,7 @@ export class NegotiationService {
       throw new DSPError(
         `Cannot get negotiation with process ID ${processId} for ${audience}`,
         HttpStatus.NOT_FOUND
-      );
+      ).andLog(this.logger, "warn");
     }
   }
 
@@ -230,7 +230,7 @@ export class NegotiationService {
       throw new DSPError(
         "Target attribute in provided Offer must be set.",
         HttpStatus.BAD_REQUEST
-      );
+      ).andLog(this.logger, "warn");
     }
 
     const negotiation: NegotiationDetail = {
@@ -292,7 +292,7 @@ export class NegotiationService {
       throw new DSPError(
         `Contract negotiation process ID mismatch ${processId} vs ${requestMessage.providerPid}`,
         HttpStatus.BAD_REQUEST
-      );
+      ).andLog(this.logger, "warn");
     }
     const negotiation = await this.getNegotiation(processId, audience);
     await this.checkTransition(
@@ -436,13 +436,13 @@ export class NegotiationService {
       throw new DSPError(
         `No offer present for negotiation ${processId}, no agreement can be created`,
         HttpStatus.BAD_REQUEST
-      );
+      ).andLog(this.logger, "warn");
     }
     if (negotiation.offer.target === undefined) {
       throw new DSPError(
         `No agreement target available`,
         HttpStatus.INTERNAL_SERVER_ERROR
-      );
+      ).andLog(this.logger, "warn");
     }
     await this.checkTransition(
       "local",
@@ -521,7 +521,7 @@ export class NegotiationService {
       throw new DSPError(
         `No agreement message present that can be signed for verification`,
         HttpStatus.BAD_REQUEST
-      );
+      ).andLog(this.logger, "warn");
     }
     const contractAgreementVerificationMessage =
       new ContractAgreementVerificationMessage({

@@ -61,7 +61,10 @@ export class DataPlaneService {
   async getDataPlanes(): Promise<DataPlane[]> {
     const dataPlanes = await this.dataPlaneRepository.find({});
     if (!dataPlanes) {
-      throw new DSPError(`No dataplanes found.`, HttpStatus.NOT_FOUND);
+      throw new DSPError(`No dataplanes found.`, HttpStatus.NOT_FOUND).andLog(
+        this.logger,
+        "warn"
+      );
     } else {
       return dataPlanes;
     }
@@ -83,7 +86,7 @@ export class DataPlaneService {
       throw new DSPError(
         `Dataplane details with identifier ${identifier} not found`,
         HttpStatus.NOT_FOUND
-      );
+      ).andLog(this.logger, "warn");
     } else {
       return new DataPlaneStatus(dataPlane);
     }
@@ -97,7 +100,7 @@ export class DataPlaneService {
       throw new DSPError(
         `Dataplane details with identifier ${identifier} not found`,
         HttpStatus.NOT_FOUND
-      );
+      ).andLog(this.logger, "warn");
     } else {
       return dataPlaneDetails;
     }
@@ -317,9 +320,10 @@ export class DataPlaneService {
       role: In([role, "both"]),
     });
     if (dataPlanes.length === 0) {
-      throw Error(
-        `Dataplane for type '${requestDetail.format}' cannot be found`
-      );
+      throw new DSPError(
+        `Dataplane for type '${requestDetail.format}' cannot be found`,
+        HttpStatus.NOT_FOUND
+      ).andLog(this.logger, "warn");
     }
     for (const dataPlane of dataPlanes) {
       try {
@@ -347,9 +351,10 @@ export class DataPlaneService {
         );
       }
     }
-    throw Error(
-      "None of the dataplanes did accept the transfer request message"
-    );
+    throw new DSPError(
+      "None of the dataplanes did accept the transfer request message",
+      HttpStatus.BAD_REQUEST
+    ).andLog(this.logger, "warn");
   }
 
   async startTransfer(
@@ -360,9 +365,10 @@ export class DataPlaneService {
       dataPlaneTransfer.dataPlaneIdentifier
     );
     if (dataPlane === undefined) {
-      throw Error(
-        `Data plane with identifier ${dataPlaneTransfer.dataPlaneIdentifier} not found`
-      );
+      throw new DSPError(
+        `Data plane with identifier ${dataPlaneTransfer.dataPlaneIdentifier} not found`,
+        HttpStatus.NOT_FOUND
+      ).andLog(this.logger, "warn");
     }
     try {
       const requestConfig: AxiosRequestConfig = {
@@ -376,7 +382,10 @@ export class DataPlaneService {
         requestConfig
       );
     } catch (err) {
-      throw new DSPClientError("Error starting transfer", err);
+      throw new DSPClientError("Error starting transfer", err).andLog(
+        this.logger,
+        "warn"
+      );
     }
   }
   async completeTransfer(
@@ -387,9 +396,10 @@ export class DataPlaneService {
       dataPlaneTransfer.dataPlaneIdentifier
     );
     if (dataPlane === undefined) {
-      throw Error(
-        `Data plane with identifier ${dataPlaneTransfer.dataPlaneIdentifier} not found`
-      );
+      throw new DSPError(
+        `Data plane with identifier ${dataPlaneTransfer.dataPlaneIdentifier} not found`,
+        HttpStatus.NOT_FOUND
+      ).andLog(this.logger, "warn");
     }
     try {
       const requestConfig: AxiosRequestConfig = {
@@ -403,7 +413,10 @@ export class DataPlaneService {
         requestConfig
       );
     } catch (err) {
-      throw new DSPClientError("Error completeing transfer", err);
+      throw new DSPClientError("Error completeing transfer", err).andLog(
+        this.logger,
+        "warn"
+      );
     }
   }
   async terminateTransfer(
@@ -414,9 +427,10 @@ export class DataPlaneService {
       dataPlaneTransfer.dataPlaneIdentifier
     );
     if (dataPlane === undefined) {
-      throw Error(
-        `Data plane with identifier ${dataPlaneTransfer.dataPlaneIdentifier} not found`
-      );
+      throw new DSPError(
+        `Data plane with identifier ${dataPlaneTransfer.dataPlaneIdentifier} not found`,
+        HttpStatus.NOT_FOUND
+      ).andLog(this.logger, "warn");
     }
     try {
       const requestConfig: AxiosRequestConfig = {
@@ -430,7 +444,10 @@ export class DataPlaneService {
         requestConfig
       );
     } catch (err) {
-      throw new DSPClientError("Error terminateing transfer", err);
+      throw new DSPClientError("Error terminateing transfer", err).andLog(
+        this.logger,
+        "warn"
+      );
     }
   }
   async suspendTransfer(
@@ -441,9 +458,10 @@ export class DataPlaneService {
       dataPlaneTransfer.dataPlaneIdentifier
     );
     if (dataPlane === undefined) {
-      throw Error(
-        `Data plane with identifier ${dataPlaneTransfer.dataPlaneIdentifier} not found`
-      );
+      throw new DSPError(
+        `Data plane with identifier ${dataPlaneTransfer.dataPlaneIdentifier} not found`,
+        HttpStatus.NOT_FOUND
+      ).andLog(this.logger, "warn");
     }
     try {
       const requestConfig: AxiosRequestConfig = {
@@ -457,7 +475,10 @@ export class DataPlaneService {
         requestConfig
       );
     } catch (err) {
-      throw new DSPClientError("Error suspending transfer", err);
+      throw new DSPClientError("Error suspending transfer", err).andLog(
+        this.logger,
+        "warn"
+      );
     }
   }
 

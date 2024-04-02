@@ -57,7 +57,7 @@ export class TsgIatpWalletClient extends WalletClient {
       throw new DSPClientError(
         "Could not request access token from wallet",
         err
-      );
+      ).andLog(this.logger, "warn");
     }
   }
 
@@ -77,7 +77,10 @@ export class TsgIatpWalletClient extends WalletClient {
       );
       return response.data.id_token;
     } catch (err) {
-      throw new DSPClientError("Could not request VP", err);
+      throw new DSPClientError("Could not request VP", err).andLog(
+        this.logger,
+        "warn"
+      );
     }
   }
 
@@ -144,7 +147,10 @@ export class TsgIatpWalletClient extends WalletClient {
       );
       return response.data;
     } catch (err) {
-      throw new DSPClientError("Could not request VP", err);
+      throw new DSPClientError("Could not request VP", err).andLog(
+        this.logger,
+        "warn"
+      );
     }
   }
 
@@ -161,7 +167,10 @@ export class TsgIatpWalletClient extends WalletClient {
       );
       return response.data;
     } catch (err) {
-      throw new DSPClientError("Could not get credentials", err);
+      throw new DSPClientError("Could not get credentials", err).andLog(
+        this.logger,
+        "warn"
+      );
     }
   }
 }

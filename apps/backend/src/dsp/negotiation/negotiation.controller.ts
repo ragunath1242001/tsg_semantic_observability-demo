@@ -78,7 +78,7 @@ export class NegotiationController {
       throw new DSPError(
         "Missing or mismatch providerPid field in contract request message",
         HttpStatus.BAD_REQUEST
-      );
+      ).andLog(this.logger, "warn");
     }
     const result = await this.negotiationService.handleExistingRequest(
       id,
@@ -107,7 +107,7 @@ export class NegotiationController {
       throw new DSPError(
         "Mismatch providerPid field in contract negotiation event message",
         HttpStatus.BAD_REQUEST
-      );
+      ).andLog(this.logger, "warn");
     }
     const result = await this.negotiationService.handleEvent(id, body, vpId);
     if (result) {
@@ -119,7 +119,10 @@ export class NegotiationController {
         status: "OK",
       };
     } else {
-      throw new DSPError("Negotiation not found", HttpStatus.NOT_FOUND);
+      throw new DSPError("Negotiation not found", HttpStatus.NOT_FOUND).andLog(
+        this.logger,
+        "warn"
+      );
     }
   }
   @Post(":id/agreement/verification")
@@ -137,7 +140,7 @@ export class NegotiationController {
       throw new DSPError(
         "Mismatch providerPid field in contract negotiation event message",
         HttpStatus.BAD_REQUEST
-      );
+      ).andLog(this.logger, "warn");
     }
     const result = await this.negotiationService.handleVerification(
       id,
@@ -153,7 +156,10 @@ export class NegotiationController {
         status: "OK",
       };
     } else {
-      throw new DSPError("Negotiation not found", HttpStatus.NOT_FOUND);
+      throw new DSPError("Negotiation not found", HttpStatus.NOT_FOUND).andLog(
+        this.logger,
+        "warn"
+      );
     }
   }
   @Post(":id/termination")
@@ -171,7 +177,7 @@ export class NegotiationController {
       throw new DSPError(
         "Mismatch providerPid field in contract negotiation event message",
         HttpStatus.BAD_REQUEST
-      );
+      ).andLog(this.logger, "warn");
     }
     const result = await this.negotiationService.handleTermination(
       id,
@@ -183,7 +189,10 @@ export class NegotiationController {
         status: "OK",
       };
     } else {
-      throw new DSPError("Negotiation not found", HttpStatus.NOT_FOUND);
+      throw new DSPError("Negotiation not found", HttpStatus.NOT_FOUND).andLog(
+        this.logger,
+        "warn"
+      );
     }
   }
 
@@ -206,7 +215,10 @@ export class NegotiationController {
         status: "OK",
       };
     } else {
-      throw new DSPError("Negotiation not found", HttpStatus.NOT_FOUND);
+      throw new DSPError("Negotiation not found", HttpStatus.NOT_FOUND).andLog(
+        this.logger,
+        "warn"
+      );
     }
   }
 
@@ -236,7 +248,10 @@ export class NegotiationController {
         status: "OK",
       };
     } else {
-      throw new DSPError("Negotiation not found", HttpStatus.NOT_FOUND);
+      throw new DSPError("Negotiation not found", HttpStatus.NOT_FOUND).andLog(
+        this.logger,
+        "warn"
+      );
     }
   }
 
@@ -260,7 +275,10 @@ export class NegotiationController {
         status: "OK",
       };
     } else {
-      throw new DSPError("Negotiation not found", HttpStatus.NOT_FOUND);
+      throw new DSPError("Negotiation not found", HttpStatus.NOT_FOUND).andLog(
+        this.logger,
+        "warn"
+      );
     }
   }
 }

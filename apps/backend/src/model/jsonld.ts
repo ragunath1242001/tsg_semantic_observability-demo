@@ -63,10 +63,6 @@ const jsonldOptions: Options.DocLoader = {
         documentUrl: url,
       };
       return remoteDocument;
-      const document = await nodeDocumentLoader(
-        "https://w3id.org/dspace/v0.8/context.json"
-      );
-      return document;
     }
     console.log(`Loading Document: ${url}`);
     return nodeDocumentLoader(url);

@@ -22,7 +22,10 @@ export class DeserializePipe<
       if (this.type === undefined || transformed instanceof this.type) {
         return transformed;
       } else {
-        throw Error(`Incorrect deserialization of ${this.type.name}`);
+        throw new DSPError(
+          `Incorrect deserialization of ${this.type.name}`,
+          HttpStatus.INTERNAL_SERVER_ERROR
+        ).andLog(this.logger, "warn");
       }
     } catch (err) {
       if (err instanceof ClassValidationError) {
@@ -45,9 +48,12 @@ export class DeserializePipe<
               .filter((l) => l !== ""),
           },
           HttpStatus.BAD_REQUEST
-        );
+        ).andLog(this.logger, "warn");
       } else {
-        throw new DSPError(`${err}`, HttpStatus.BAD_REQUEST, err);
+        throw new DSPError(`${err}`, HttpStatus.BAD_REQUEST, err).andLog(
+          this.logger,
+          "warn"
+        );
       }
     }
   }

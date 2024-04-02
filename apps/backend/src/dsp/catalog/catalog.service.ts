@@ -80,7 +80,10 @@ export class CatalogService {
     }
 
     if (!catalog[0]) {
-      throw new DSPError("Catalog not (yet) available", HttpStatus.NOT_FOUND);
+      throw new DSPError(
+        "Catalog not (yet) available",
+        HttpStatus.NOT_FOUND
+      ).andLog(this.logger, "warn");
     }
     return catalog[0];
   }
@@ -137,10 +140,10 @@ export class CatalogService {
     if (catalogId) {
       catalog = await this.catalogRepository.findOneBy({ id: catalogId });
       if (!catalog) {
-        throw new DSPClientError(
+        throw new DSPError(
           `Could not find catalog with id ${catalogId}`,
           HttpStatus.BAD_REQUEST
-        );
+        ).andLog(this.logger, "warn");
       }
     } else {
       catalog = await this.getCatalogDao(true);
@@ -149,10 +152,10 @@ export class CatalogService {
       where: { id: dataset.id },
     });
     if (exist) {
-      throw new ConflictException(
+      throw new DSPError(
         `The dataset with ${dataset.id} already exists.`,
-        HttpStatus.CONFLICT.toString()
-      );
+        HttpStatus.CONFLICT
+      ).andLog(this.logger, "warn");
     }
     if (!dataset.hasPolicy) {
       this.logger.log(
@@ -215,7 +218,7 @@ export class CatalogService {
       throw new DSPError(
         `Can't update a dataset, as dataset with id ${datasetId} does not exist yet`,
         HttpStatus.NOT_FOUND
-      );
+      ).andLog(this.logger, "warn");
     }
     const newResource = this.resourceRepository.create(dataset);
     return await this.datasetRepository.save({
@@ -265,7 +268,7 @@ export class CatalogService {
       throw new DSPError(
         `Could not find dataset with id ${datasetId}`,
         HttpStatus.NOT_FOUND
-      );
+      ).andLog(this.logger, "warn");
     } else {
       return new Dataset(dataset);
     }
