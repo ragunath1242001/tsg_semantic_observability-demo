@@ -71,6 +71,7 @@ describe("TSG Wallet", () => {
     {
       type: "tsg-iatp",
       didId: "did:web:localhost%3A3000",
+      walletUrl: "http://127.0.0.1/api",
       siopUrl: "http://127.0.0.1/api/iatp/holder/token",
       verifyUrl: "http://127.0.0.1/api/iatp/verifier/verify",
       tokenUrl: "http://127.0.0.1/api/auth/login",

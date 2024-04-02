@@ -61,12 +61,6 @@ export class ManagedIdentityWalletClient extends WalletClient {
   }
 
   private async getWallet(): Promise<MiWWalletDetails> {
-    if (!this.iamConfig.walletUrl) {
-      throw new DSPError(
-        "No walletUrl configured for the Managed Identity Wallet",
-        HttpStatus.INTERNAL_SERVER_ERROR
-      );
-    }
     try {
       const data = await axios.get<MiWWalletDetails>(this.iamConfig.walletUrl, {
         headers: {

@@ -83,8 +83,7 @@ export abstract class IamConfig {
 
   @IsString()
   @IsUrl({ require_tld: false, require_protocol: true, require_host: false })
-  @IsOptional()
-  public readonly walletUrl?: string;
+  public readonly walletUrl!: string;
 }
 
 export class DevWalletConfig extends IamConfig {

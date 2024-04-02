@@ -152,7 +152,12 @@ export class TsgIatpWalletClient extends WalletClient {
     try {
       await this.ensureAccessToken();
       const response = await axios.get<Credential[]>(
-        `${this.iamConfig.walletUrl}/management/credentials`
+        `${this.iamConfig.walletUrl}/management/credentials`,
+        {
+          headers: {
+            Authorization: `Bearer ${this.access_token}`,
+          },
+        }
       );
       return response.data;
     } catch (err) {
