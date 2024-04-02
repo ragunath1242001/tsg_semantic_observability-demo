@@ -25,19 +25,36 @@ export const VP = createParamDecorator(
   ):
     | VerifiablePresentation<VerifiableCredential<CredentialSubject>>
     | undefined => {
-    const request = context.switchToHttp().getRequest();
-    if (!request.user) return undefined;
-    const vp = plainToInstance(VerifiablePresentation, request.user);
-    return vp;
+    try {
+      const request = context.switchToHttp().getRequest();
+      if (!request.user) return undefined;
+      const vp = plainToInstance(VerifiablePresentation, request.user);
+      return vp;
+    } catch (err) {
+      throw new DSPError(
+        `Error in retrieving VP`,
+        HttpStatus.UNAUTHORIZED,
+        err
+      ).andLog(new Logger("VP Decorator"));
+    }
   }
 );
 
 export const VPId = createParamDecorator(
   (_, context: ExecutionContext): string | undefined => {
-    const request = context.switchToHttp().getRequest();
-    if (!request.user) return undefined;
-    const vp = plainToInstance(VerifiablePresentation, request.user);
-    return toArray(toArray(vp.verifiableCredential)[0].credentialSubject)[0].id;
+    try {
+      const request = context.switchToHttp().getRequest();
+      if (!request.user) return undefined;
+      const vp = plainToInstance(VerifiablePresentation, request.user);
+      return toArray(toArray(vp.verifiableCredential)[0].credentialSubject)[0]
+        .id;
+    } catch (err) {
+      throw new DSPError(
+        `Error in retrieving VP ID`,
+        HttpStatus.UNAUTHORIZED,
+        err
+      ).andLog(new Logger("VP ID Decorator"));
+    }
   }
 );
 

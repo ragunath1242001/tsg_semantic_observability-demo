@@ -145,6 +145,9 @@ export class TsgIatpWalletClient extends WalletClient {
           },
         }
       );
+      this.logger.debug(
+        `Successfully requested validation for audience ${audience}`
+      );
       return response.data;
     } catch (err) {
       throw new DSPClientError("Could not request VP", err).andLog(
@@ -165,6 +168,7 @@ export class TsgIatpWalletClient extends WalletClient {
           },
         }
       );
+      this.logger.debug(`Successfully requested credentials at local wallet`);
       return response.data;
     } catch (err) {
       throw new DSPClientError("Could not get credentials", err).andLog(

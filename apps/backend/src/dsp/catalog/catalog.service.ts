@@ -124,6 +124,7 @@ export class CatalogService {
       this.initCatalog.datasets?.map(async (dataset) =>
         this.addDataset(await deserialize<Dataset>(JSON.parse(dataset)))
       );
+      this.logger.debug(`Initialized catalog`);
       return response;
     }
   }
@@ -204,6 +205,7 @@ export class CatalogService {
       catalog._datasets = [newDataset];
     }
     await this.catalogRepository.save(catalog);
+    this.logger.debug(`Added dataset ${dataset.id}`);
     return newDataset;
   }
 
@@ -221,6 +223,7 @@ export class CatalogService {
       ).andLog(this.logger, "warn");
     }
     const newResource = this.resourceRepository.create(dataset);
+    this.logger.debug(`Updated dataset ${datasetId}`);
     return await this.datasetRepository.save({
       ...dataset,
       _resource: newResource,

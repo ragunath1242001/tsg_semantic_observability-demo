@@ -79,6 +79,7 @@ export class TsgWalletClient extends WalletClient {
           },
         }
       );
+      this.logger.debug(`Successfully requested Verifiable Presentation`);
       return response.data.vp;
     } catch (err) {
       throw new DSPClientError("Could not request VP", err).andLog(
@@ -133,6 +134,7 @@ export class TsgWalletClient extends WalletClient {
         }
       }
       const tokenPayload = decode(token, { json: true });
+      this.logger.debug(`Successfully validated Verifiable Presentation`);
       return plainToInstance(VerifiablePresentation, tokenPayload!["vp"]);
     } catch (err) {
       throw new DSPClientError("Could not request VP", err).andLog(
@@ -153,6 +155,7 @@ export class TsgWalletClient extends WalletClient {
           },
         }
       );
+      this.logger.debug(`Successfully requested credentials at local wallet`);
       return response.data;
     } catch (err) {
       throw new DSPClientError("Could not get credentials", err).andLog(

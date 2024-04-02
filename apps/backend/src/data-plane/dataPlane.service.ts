@@ -128,6 +128,7 @@ export class DataPlaneService {
       role: dataPlaneCreation.role,
     };
     await this.dataPlaneRepository.save(dataPlane);
+    this.logger.debug(`Added dataplane ${dataPlane.identifier}`);
     switch (dataPlaneCreation.catalogSynchronization) {
       case "push":
         await this.healthCheck(dataPlane);
@@ -157,6 +158,7 @@ export class DataPlaneService {
       ...dataPlane,
       ...dataPlaneDetailsObj,
     });
+    this.logger.debug(`Added dataplane ${dataPlane.identifier}`);
     switch (dataPlane.catalogSynchronization) {
       case "push":
         await this.healthCheck(dataPlane);
@@ -337,6 +339,9 @@ export class DataPlaneService {
             requestConfig
           );
         if (dataPlaneRequestResponse.data.accepted) {
+          this.logger.debug(
+            `Dataplane ${dataPlane.identifier} accepted transfer`
+          );
           return {
             dataPlaneIdentifier: dataPlane.identifier,
             endpointType: dataPlane.dataplaneType,
@@ -379,6 +384,7 @@ export class DataPlaneService {
         transferStartMessage,
         requestConfig
       );
+      this.logger.debug(`Transfer ${dataPlaneTransfer.identifier} started`);
     } catch (err) {
       throw new DSPClientError("Error starting transfer", err).andLog(
         this.logger,
@@ -410,6 +416,7 @@ export class DataPlaneService {
         transferCompletionMessage,
         requestConfig
       );
+      this.logger.debug(`Transfer ${dataPlaneTransfer.identifier} completed`);
     } catch (err) {
       throw new DSPClientError("Error completeing transfer", err).andLog(
         this.logger,
@@ -441,6 +448,7 @@ export class DataPlaneService {
         transferTerminationMessage,
         requestConfig
       );
+      this.logger.debug(`Transfer ${dataPlaneTransfer.identifier} terminated`);
     } catch (err) {
       throw new DSPClientError("Error terminateing transfer", err).andLog(
         this.logger,
@@ -472,6 +480,7 @@ export class DataPlaneService {
         transferSuspensionMessage,
         requestConfig
       );
+      this.logger.debug(`Transfer ${dataPlaneTransfer.identifier} suspended`);
     } catch (err) {
       throw new DSPClientError("Error suspending transfer", err).andLog(
         this.logger,
