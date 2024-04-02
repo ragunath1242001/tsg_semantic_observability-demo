@@ -4,7 +4,12 @@ import { TypeOrmTestHelper } from "../../utils/testhelper";
 import { TestingModule, Test } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { AuthService } from "../../auth/auth.service";
-import { IamConfig, InitCatalog, ServerConfig } from "../../config";
+import {
+  DevWalletConfig,
+  IamConfig,
+  InitCatalog,
+  ServerConfig,
+} from "../../config";
 import { DspClientService } from "../client/client.service";
 import {
   TransferEventDao,
@@ -50,7 +55,7 @@ describe("Transfer service", () => {
 
   beforeAll(async () => {
     await TypeOrmTestHelper.instance.setupTestDB();
-    const iamConfig = plainToClass(IamConfig, {});
+    const iamConfig = plainToClass(DevWalletConfig, {});
     const initCatalog = plainToClass(InitCatalog, {});
     const serverConfig = plainToClass(ServerConfig, {});
     const moduleRef: TestingModule = await Test.createTestingModule({

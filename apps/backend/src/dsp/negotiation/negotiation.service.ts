@@ -25,7 +25,7 @@ import {
   NegotiationProcessEventDao,
 } from "../../model/dsp/negotiation/negotiation.dao";
 import { DSPError } from "../../utils/errors/error";
-import { IamConfig, ServerConfig } from "../../config";
+import { RootConfig, ServerConfig } from "../../config";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { NegotiationStatusDto } from "@libs/dtos";
@@ -35,7 +35,7 @@ export class NegotiationService {
   constructor(
     private readonly dsp: DspClientService,
     private readonly server: ServerConfig,
-    private readonly iam: IamConfig,
+    private readonly config: RootConfig,
     @InjectRepository(NegotiationDetailDao)
     private readonly negotiationDetailRepository: Repository<NegotiationDetailDao>,
     @InjectRepository(NegotiationProcessEventDao)
@@ -454,7 +454,7 @@ export class NegotiationService {
       target: negotiation.offer.target,
       timestamp: new Date().toISOString(),
       assignee: negotiation.remoteParty,
-      assigner: this.iam.didId,
+      assigner: this.config.iam.didId,
     });
     const agreementMessage = new ContractAgreementMessage({
       providerPid: negotiation.localId,

@@ -12,7 +12,6 @@ import {
 } from "typeorm";
 import { MetaEntity, mapToInstances } from "../../common.dao";
 import {
-  CatalogRecord,
   DataService,
   Dataset,
   Distribution,

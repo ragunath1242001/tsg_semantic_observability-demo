@@ -10,6 +10,7 @@ import OverlayPanel from "primevue/overlaypanel";
 
 // Define a ref for the URL input
 const urlInput = ref("");
+const didInput = ref("");
 const overlay = ref(null);
 var catalog = ref<CatalogDto>();
 var addresses = ref<string[]>();
@@ -27,11 +28,19 @@ const getCatalog = async () => {
   try {
     if (!manual.value) {
       urlInput.value = selection.value.address;
+      didInput.value = selection.value.didId;
       overlay.value.hide();
     }
+    const audience = (didInput.value.trim() === "") ? undefined : didInput.value ;
     loading.value = true;
     const response = await http.get<CatalogDto>(
-      `management/catalog/request?address=${urlInput.value}`
+      'management/catalog/request',
+      {
+        params: {
+          address: urlInput.value,
+          audience: audience
+        }
+      }
     );
     catalog.value = response.data;
     dataAvailable.value = true;
@@ -52,7 +61,7 @@ const getCatalog = async () => {
 const getOwnCatalog = async () => {
   try {
     const response = await http.get<CatalogDto>(
-      `management/catalog/request?address=`
+      'management/catalog/request'
     );
     assigner.value = response.data["dct:publisher"] || "";
     return catalog;
@@ -102,6 +111,12 @@ onMounted(async () => await initialize());
           <span class="p-float-label">
             <InputText id="url" type="text" v-model="urlInput" />
             <label for="url">Url of Catalog to Request</label>
+          </span>
+        </div>
+        <div class="field col-12 md:col-6">
+          <span class="p-float-label">
+            <InputText id="url" type="text" v-model="didInput" />
+            <label for="url">DID identifier</label>
           </span>
         </div>
         <div class="field col-12 md:col-1">

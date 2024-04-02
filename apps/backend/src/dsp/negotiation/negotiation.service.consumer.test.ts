@@ -1,7 +1,7 @@
 import { plainToClass } from "class-transformer";
 import { TypeOrmTestHelper } from "../../utils/testhelper";
 import { NegotiationService } from "./negotiation.service";
-import { IamConfig, ServerConfig } from "../../config";
+import { RootConfig, ServerConfig } from "../../config";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { DspClientService } from "../client/client.service";
@@ -35,7 +35,7 @@ describe("Negotiation Service (Consumer)", () => {
 
   beforeAll(async () => {
     await TypeOrmTestHelper.instance.setupTestDB();
-    const iamConfig = plainToClass(IamConfig, {});
+    const config = plainToClass(RootConfig, { iam: { type: "dev" } });
     const serverConfig = plainToClass(ServerConfig, {});
 
     const moduleRef: TestingModule = await Test.createTestingModule({
@@ -64,8 +64,8 @@ describe("Negotiation Service (Consumer)", () => {
           })(),
         },
         {
-          provide: IamConfig,
-          useValue: iamConfig,
+          provide: RootConfig,
+          useValue: config,
         },
         {
           provide: ServerConfig,

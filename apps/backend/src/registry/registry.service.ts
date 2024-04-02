@@ -1,5 +1,5 @@
 import { HttpStatus, Injectable, Logger, Optional } from "@nestjs/common";
-import { IamConfig, RegistryConfig } from "../config";
+import { RegistryConfig } from "../config";
 import { InjectRepository } from "@nestjs/typeorm";
 import {
   CatalogDao,
@@ -7,7 +7,6 @@ import {
   DatasetDao,
   ResourceDao,
 } from "../model/dsp/catalog/catalog.dao";
-import { RegistryWalletClient } from "./registry.wallet";
 import { DidResolverService } from "./did.resolver.service";
 import { DSPClientError, DspClientService } from "../dsp/client/client.service";
 import { normalizeAddress } from "../utils/address";
@@ -21,10 +20,10 @@ import axios from "axios";
 import { DSPError } from "../utils/errors/error";
 import { CatalogService } from "../dsp/catalog/catalog.service";
 import { CredentialAddressDto } from "@libs/dtos";
+import { AuthService } from "../auth/auth.service";
 
 @Injectable()
 export class RegistryService {
-  private readonly walletClient: RegistryWalletClient;
   constructor(
     @InjectRepository(CatalogDao)
     private readonly catalogRepository: Repository<CatalogDao>,
@@ -37,27 +36,27 @@ export class RegistryService {
     private readonly catalogService: CatalogService,
     private readonly didResolverService: DidResolverService,
     private readonly dsp: DspClientService,
-    private readonly iamConfig: IamConfig,
     private readonly schedulerRegistry: SchedulerRegistry,
+    private readonly authService: AuthService,
     @Optional()
-    private readonly registryConfig: RegistryConfig
+    private readonly registryConfig?: RegistryConfig
   ) {
-    this.walletClient = new RegistryWalletClient(iamConfig);
     this.createJob();
   }
   private readonly logger = new Logger(this.constructor.name);
 
   private async createJob() {
-    const interval = setInterval(
-      this.crawl,
-      this.registryConfig.registryIntervalInMilliseconds
-    );
-    this.schedulerRegistry.addInterval("crawl", interval);
+    if (this.registryConfig) {
+      const interval = setInterval(
+        this.crawl,
+        this.registryConfig.registryIntervalInMilliseconds
+      );
+      this.schedulerRegistry.addInterval("crawl", interval);
+    }
   }
 
   private async fetchDidDocuments(): Promise<DIDDocument[]> {
-    const response = await this.walletClient.getCredentials();
-    const credentials = response.data;
+    const credentials = await this.authService.walletClient.getCredentials();
     const didDocuments = await Promise.all(
       credentials.map((credential) =>
         this.didResolverService.resolve(credential.targetDid)

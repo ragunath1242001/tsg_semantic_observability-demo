@@ -1,23 +1,26 @@
 import { HttpResponse, PathParams, http } from "msw";
 import { SetupServer, setupServer } from "msw/node";
-import { IamConfig } from "../../config";
+import { IamConfig, TsgWalletDirectConfig } from "../../config";
 import { plainToInstance } from "class-transformer";
 import { VerifiablePresentationJwt } from "@tsg-dsp/common";
 
 export function mockWalletConfig(): IamConfig {
-  return plainToInstance<IamConfig, IamConfig>(IamConfig, {
-    type: "tsg",
-    didId: "did:web:wallet-catena-x.alpha.scsn.dataspac.es",
-    tokenUrl: "http://127.0.0.1/tsg/token",
-    presentationUrl: "http://127.0.0.1/tsg/presentations",
-    validationUrl: "http://127.0.0.1/tsg/validate",
-    walletUrl: "http://127.0.0.1/tsg",
-    clientId: "testClient",
-    clientSecret: "testSecret",
-    credentialId:
-      "did:web:wallet-catena-x.alpha.scsn.dataspac.es#90277481-89fc-47c1-9fcb-7abbbe5aac6e",
-    validations: ["valid"],
-  });
+  return plainToInstance<TsgWalletDirectConfig, TsgWalletDirectConfig>(
+    TsgWalletDirectConfig,
+    {
+      type: "tsg",
+      didId: "did:web:wallet-catena-x.alpha.scsn.dataspac.es",
+      tokenUrl: "http://127.0.0.1/tsg/token",
+      presentationUrl: "http://127.0.0.1/tsg/presentations",
+      validationUrl: "http://127.0.0.1/tsg/validate",
+      walletUrl: "http://127.0.0.1/tsg",
+      clientId: "testClient",
+      clientSecret: "testSecret",
+      credentialId:
+        "did:web:wallet-catena-x.alpha.scsn.dataspac.es#90277481-89fc-47c1-9fcb-7abbbe5aac6e",
+      validations: ["valid"],
+    }
+  );
 }
 
 export function sampleVpToken(): String {
