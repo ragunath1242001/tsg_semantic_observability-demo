@@ -10,9 +10,8 @@ import { DspClientModule } from "./dsp/client/client.module";
 import { CatalogModule } from "./dsp/catalog/catalog.module";
 import { NegotiationModule } from "./dsp/negotiation/negotiation.module";
 import { TransferModule } from "./dsp/transfer/transfer.module";
-
+import { RegistryModule } from "./registry/registry.module";
 import { ServeStaticModule } from "@nestjs/serve-static";
-import { RegistryModule } from './registry/registry.module';
 
 const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
   ? [

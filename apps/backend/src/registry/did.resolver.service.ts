@@ -9,7 +9,10 @@ export class DidResolverService {
 
   async resolve(didId: string): Promise<DIDDocument> {
     if (!didId.startsWith("did:web:")) {
-      throw Error("Resolver only supports did:web");
+      throw new DSPError(
+        "Resolver only supports did:web",
+        HttpStatus.NOT_FOUND
+      ).andLog(this.logger, "log");
     }
     let [host, ...paths] = didId.slice(8).split(":");
     host = decodeURIComponent(host);
@@ -28,7 +31,7 @@ export class DidResolverService {
       throw new DSPError(
         `Could not load DID document for ${didId}`,
         HttpStatus.BAD_REQUEST
-      );
+      ).andLog(this.logger, "log");
     }
   }
 }

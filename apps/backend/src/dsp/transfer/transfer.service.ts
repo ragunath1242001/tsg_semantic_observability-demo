@@ -115,7 +115,7 @@ export class TransferService {
       throw new DSPError(
         `Transfer with process ID ${transfer.localId} cannot transition from ${transfer.state} to ${to}`,
         HttpStatus.BAD_REQUEST
-      );
+      ).andLog(this.logger, "warn");
     }
   }
 
@@ -154,7 +154,7 @@ export class TransferService {
       throw new DSPError(
         `Cannot get transfer with process ID ${processId}`,
         HttpStatus.NOT_FOUND
-      );
+      ).andLog(this.logger, "warn");
     }
   }
 
@@ -588,7 +588,7 @@ export class TransferService {
         throw new DSPError(
           "Mismatch in received and stored process identifiers",
           HttpStatus.BAD_REQUEST
-        );
+        ).andLog(this.logger, "warn");
       }
     } else {
       if (
@@ -598,7 +598,7 @@ export class TransferService {
         throw new DSPError(
           "Mismatch in received and stored process identifiers",
           HttpStatus.BAD_REQUEST
-        );
+        ).andLog(this.logger, "warn");
       }
     }
   }

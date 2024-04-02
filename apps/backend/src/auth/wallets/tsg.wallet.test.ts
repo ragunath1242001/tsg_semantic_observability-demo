@@ -53,6 +53,7 @@ describe("TSG Wallet", () => {
   >(TsgWalletDirectConfig, {
     type: "tsg",
     didId: "did:web:wallet-catena-x.alpha.scsn.dataspac.es",
+    walletUrl: "http://127.0.0.1/api",
     tokenUrl: "http://127.0.0.1/tsg/token",
     presentationUrl: "http://127.0.0.1/tsg/presentations",
     validationUrl: "http://127.0.0.1/tsg/validate",

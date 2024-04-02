@@ -57,7 +57,7 @@ export class TsgIatpWalletClient extends WalletClient {
       throw new DSPClientError(
         "Could not request access token from wallet",
         err
-      );
+      ).andLog(this.logger, "warn");
     }
   }
 
@@ -77,7 +77,10 @@ export class TsgIatpWalletClient extends WalletClient {
       );
       return response.data.id_token;
     } catch (err) {
-      throw new DSPClientError("Could not request VP", err);
+      throw new DSPClientError("Could not request VP", err).andLog(
+        this.logger,
+        "warn"
+      );
     }
   }
 
@@ -142,9 +145,15 @@ export class TsgIatpWalletClient extends WalletClient {
           },
         }
       );
+      this.logger.debug(
+        `Successfully requested validation for audience ${audience}`
+      );
       return response.data;
     } catch (err) {
-      throw new DSPClientError("Could not request VP", err);
+      throw new DSPClientError("Could not request VP", err).andLog(
+        this.logger,
+        "warn"
+      );
     }
   }
 
@@ -152,11 +161,20 @@ export class TsgIatpWalletClient extends WalletClient {
     try {
       await this.ensureAccessToken();
       const response = await axios.get<Credential[]>(
-        `${this.iamConfig.walletUrl}/management/credentials`
+        `${this.iamConfig.walletUrl}/management/credentials`,
+        {
+          headers: {
+            Authorization: `Bearer ${this.access_token}`,
+          },
+        }
       );
+      this.logger.debug(`Successfully requested credentials at local wallet`);
       return response.data;
     } catch (err) {
-      throw new DSPClientError("Could not get credentials", err);
+      throw new DSPClientError("Could not get credentials", err).andLog(
+        this.logger,
+        "warn"
+      );
     }
   }
 }

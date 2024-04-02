@@ -59,7 +59,7 @@ export class TsgWalletClient extends WalletClient {
       throw new DSPClientError(
         "Could not request access token from wallet",
         err
-      );
+      ).andLog(this.logger, "warn");
     }
   }
 
@@ -79,9 +79,13 @@ export class TsgWalletClient extends WalletClient {
           },
         }
       );
+      this.logger.debug(`Successfully requested Verifiable Presentation`);
       return response.data.vp;
     } catch (err) {
-      throw new DSPClientError("Could not request VP", err);
+      throw new DSPClientError("Could not request VP", err).andLog(
+        this.logger,
+        "warn"
+      );
     }
   }
 
@@ -124,12 +128,19 @@ export class TsgWalletClient extends WalletClient {
               return undefined;
             }
           }
+        } else {
+          this.logger.log(`Validation for ${validation} is false`);
+          return undefined;
         }
       }
       const tokenPayload = decode(token, { json: true });
-      return plainToInstance(tokenPayload!["vp"], VerifiablePresentation);
+      this.logger.debug(`Successfully validated Verifiable Presentation`);
+      return plainToInstance(VerifiablePresentation, tokenPayload!["vp"]);
     } catch (err) {
-      throw new DSPClientError("Could not request VP", err);
+      throw new DSPClientError("Could not request VP", err).andLog(
+        this.logger,
+        "warn"
+      );
     }
   }
 
@@ -137,11 +148,20 @@ export class TsgWalletClient extends WalletClient {
     try {
       await this.ensureAccessToken();
       const response = await axios.get<Credential[]>(
-        `${this.iamConfig.walletUrl}/management/credentials`
+        `${this.iamConfig.walletUrl}/management/credentials`,
+        {
+          headers: {
+            Authorization: `Bearer ${this.access_token}`,
+          },
+        }
       );
+      this.logger.debug(`Successfully requested credentials at local wallet`);
       return response.data;
     } catch (err) {
-      throw new DSPClientError("Could not get credentials", err);
+      throw new DSPClientError("Could not get credentials", err).andLog(
+        this.logger,
+        "warn"
+      );
     }
   }
 }

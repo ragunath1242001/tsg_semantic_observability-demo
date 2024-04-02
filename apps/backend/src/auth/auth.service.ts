@@ -44,10 +44,7 @@ export class AuthService {
   }
 
   async requestToken(audience: string): Promise<string> {
-    const vpToken = await this.walletClient.requestVerifiablePresentation(
-      audience
-    );
-    return vpToken;
+    return await this.walletClient.requestVerifiablePresentation(audience);
   }
 
   async validateToken(

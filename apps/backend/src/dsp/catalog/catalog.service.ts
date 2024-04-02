@@ -23,7 +23,7 @@ import {
   DistributionDao,
   ResourceDao,
 } from "../../model/dsp/catalog/catalog.dao";
-import { DSPError } from "../../utils/errors/error";
+import { DSPClientError, DSPError } from "../../utils/errors/error";
 import { deserialize } from "../../model/serialize";
 import { ODRLAction, ODRLOperator } from "@tsg-dsp/common";
 import {
@@ -31,7 +31,6 @@ import {
   Offer,
   Permission,
 } from "../../model/dsp/negotiation/negotiation";
-import { DSPClientError } from "../client/client.service";
 
 @Injectable()
 export class CatalogService {
@@ -81,7 +80,10 @@ export class CatalogService {
     }
 
     if (!catalog[0]) {
-      throw new DSPError("Catalog not (yet) available", HttpStatus.NOT_FOUND);
+      throw new DSPError(
+        "Catalog not (yet) available",
+        HttpStatus.NOT_FOUND
+      ).andLog(this.logger, "warn");
     }
     return catalog[0];
   }
@@ -122,6 +124,7 @@ export class CatalogService {
       this.initCatalog.datasets?.map(async (dataset) =>
         this.addDataset(await deserialize<Dataset>(JSON.parse(dataset)))
       );
+      this.logger.debug(`Initialized catalog`);
       return response;
     }
   }
@@ -138,10 +141,10 @@ export class CatalogService {
     if (catalogId) {
       catalog = await this.catalogRepository.findOneBy({ id: catalogId });
       if (!catalog) {
-        throw new DSPClientError(
+        throw new DSPError(
           `Could not find catalog with id ${catalogId}`,
           HttpStatus.BAD_REQUEST
-        );
+        ).andLog(this.logger, "warn");
       }
     } else {
       catalog = await this.getCatalogDao(true);
@@ -150,10 +153,10 @@ export class CatalogService {
       where: { id: dataset.id },
     });
     if (exist) {
-      throw new ConflictException(
+      throw new DSPError(
         `The dataset with ${dataset.id} already exists.`,
-        HttpStatus.CONFLICT.toString()
-      );
+        HttpStatus.CONFLICT
+      ).andLog(this.logger, "warn");
     }
     if (!dataset.hasPolicy) {
       this.logger.log(
@@ -202,6 +205,7 @@ export class CatalogService {
       catalog._datasets = [newDataset];
     }
     await this.catalogRepository.save(catalog);
+    this.logger.debug(`Added dataset ${dataset.id}`);
     return newDataset;
   }
 
@@ -216,9 +220,10 @@ export class CatalogService {
       throw new DSPError(
         `Can't update a dataset, as dataset with id ${datasetId} does not exist yet`,
         HttpStatus.NOT_FOUND
-      );
+      ).andLog(this.logger, "warn");
     }
     const newResource = this.resourceRepository.create(dataset);
+    this.logger.debug(`Updated dataset ${datasetId}`);
     return await this.datasetRepository.save({
       ...dataset,
       _resource: newResource,
@@ -266,7 +271,7 @@ export class CatalogService {
       throw new DSPError(
         `Could not find dataset with id ${datasetId}`,
         HttpStatus.NOT_FOUND
-      );
+      ).andLog(this.logger, "warn");
     } else {
       return new Dataset(dataset);
     }
