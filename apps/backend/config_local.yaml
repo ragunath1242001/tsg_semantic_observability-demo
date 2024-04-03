@@ -1,0 +1,24 @@
+db:
+  type: "sqlite"
+  database: "test2.db"
+
+server:
+  port: 3003
+  publicAddress: http://localhost:3003
+
+controlPlane:
+  dataPlaneEndpoint: http://localhost:3002/api/data-plane
+  managementEndpoint: http://localhost:3002/api/management
+  controlEndpoint: http://localhost:3002
+  authorization: Basic YWRtaW46YWRtaW4=
+
+users:
+  - username: admin
+    password: $2a$12$/1aqZWSslSi8E556dpChNOxOyEv3hPA.k8asnRk9iIN2bxH6VGUE6 # admin
+
+dataset:
+  title: HTTP Dataset
+  distributions:
+    - backend: https://httpbin.org/anything
+      version: "0.9.2"
+      openApiSpec: "https://httpbin.org/spec.json"

@@ -10,6 +10,7 @@ import {
   Headers,
   Req,
   Res,
+  Body,
 } from "@nestjs/common";
 import { DataPlaneService } from "./dataplane.service";
 import { Request, Response } from "express";
@@ -42,7 +43,7 @@ export class DataPlaneController {
   @Post("/transfers/request/:role")
   @HttpCode(HttpStatus.OK)
   async requestTransfer(
-    body: TransferRequestMessageDto,
+    @Body() body: TransferRequestMessageDto,
     @Param("role") role: "provider" | "consumer",
     @Query("processId") processId: string,
     @Headers("Authorization") authorization: string,
@@ -57,7 +58,7 @@ export class DataPlaneController {
   @Post("/transfers/:id/start")
   @HttpCode(HttpStatus.ACCEPTED)
   async startTransfer(
-    body: TransferStartMessageDto,
+    @Body() body: TransferStartMessageDto,
     @Param("id") id: string,
     @Headers("Authorization") authorization: string,
   ): Promise<void> {
@@ -93,7 +94,7 @@ export class DataPlaneController {
   @Post("/transfers/:id/complete")
   @HttpCode(HttpStatus.ACCEPTED)
   async completeTransfer(
-    body: TransferCompletionMessageDto,
+    @Body() body: TransferCompletionMessageDto,
     @Param("id") id: string,
     @Headers("Authorization") authorization: string,
   ): Promise<void> {
@@ -107,7 +108,7 @@ export class DataPlaneController {
   @Post("/transfers/:id/terminate")
   @HttpCode(HttpStatus.ACCEPTED)
   async terminateTransfer(
-    body: TransferTerminationMessageDto,
+    @Body() body: TransferTerminationMessageDto,
     @Param("id") id: string,
     @Headers("Authorization") authorization: string,
   ): Promise<void> {
@@ -121,7 +122,7 @@ export class DataPlaneController {
   @Post("/transfers/:id/suspend")
   @HttpCode(HttpStatus.ACCEPTED)
   async suspendTransfer(
-    body: TransferSuspensionMessageDto,
+    @Body() body: TransferSuspensionMessageDto,
     @Param("id") id: string,
     @Headers("Authorization") authorization: string,
   ): Promise<void> {
