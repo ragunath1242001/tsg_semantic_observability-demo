@@ -1,0 +1,23 @@
+{
+  "name": "@libs/dtos",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "private": true,
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@libs/dtos": "workspace:*",
+    "@tsg-dsp/common": "^0.1.0",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.0",
+    "jose": "^4.14.4",
+    "reflect-metadata": "^0.1.14",
+    "tslib": "^2.6.2",
+    "typescript": "^5.3.3"
+  }
+}

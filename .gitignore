@@ -36,6 +36,7 @@ Thumbs.db
 
 # Ignore built ts files
 build/**/*
+dist
 
 # ignore yarn.lock
 yarn.lock
@@ -43,3 +44,5 @@ yarn.lock
 iam/
 
 config.*.yaml
+
+*.db

@@ -1,9 +1,0 @@
-controlPlane:
-  dataPlaneEndpoint: http://localhost:3000/data-plane
-  managementEndpoint: http://localhost:3000/management
-  controlEndpoint: http://localhost:3000
-  authorization: Basic YWRtaW46YWRtaW4=
-
-users:
-  - username: admin
-    password: $2a$12$/1aqZWSslSi8E556dpChNOxOyEv3hPA.k8asnRk9iIN2bxH6VGUE6
