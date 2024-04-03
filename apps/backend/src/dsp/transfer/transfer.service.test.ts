@@ -45,11 +45,13 @@ import {
 } from "../../model/dsp/transfer/messages";
 import { Multilanguage } from "../../model/dsp/common";
 import { DataPlaneRequestResponseDto, DataPlaneTransferDto } from "@libs/dtos";
+import { DspGateway } from "../client/dsp.gateway";
 
 jest.useFakeTimers({ doNotFake: ["Date"] });
 
 describe("Transfer service", () => {
   let transferService: TransferService;
+  let dspGateway: DspGateway;
   let server: SetupServer;
   let remoteProcessId = "urn:uuid:6334612d-bc17-4474-b8c1-5703c7a80bb1";
 
@@ -86,6 +88,7 @@ describe("Transfer service", () => {
       providers: [
         TransferService,
         DspClientService,
+        DspGateway,
         DataPlaneService,
         CatalogService,
         {
@@ -112,7 +115,10 @@ describe("Transfer service", () => {
           useValue: serverConfig,
         },
       ],
-    }).compile();
+    })
+      .overrideProvider(DspGateway)
+      .useValue(dspGateway)
+      .compile();
 
     let dataPlaneConsumerFirst = true;
     server = setupServer(
@@ -126,21 +132,21 @@ describe("Transfer service", () => {
         PathParams,
         TransferRequestMessageDto,
         DataPlaneRequestResponseDto
-      >("http://127.0.0.1/data-plane/transfer/request/consumer", () => {
+      >("http://127.0.0.1/data-plane/transfers/request/consumer", () => {
         if (dataPlaneConsumerFirst) {
           dataPlaneConsumerFirst = false;
           return HttpResponse.json({
             accepted: true,
             identifier: "ABCDEFG",
             callbackAddress:
-              "http://127.0.0.1/data-plane/transfer/callbacks/ABCDEFG",
+              "http://127.0.0.1/data-plane/transfers/callbacks/ABCDEFG",
           });
         }
         return HttpResponse.json<DataPlaneRequestResponseDto>({
           accepted: true,
           identifier: "ABCDEFG",
           callbackAddress:
-            "http://127.0.0.1/data-plane/transfer/callbacks/ABCDEFG",
+            "http://127.0.0.1/data-plane/transfers/callbacks/ABCDEFG",
           dataAddress: {
             endpoint: `http://localhost/data-plane/push`,
             properties: [
@@ -152,30 +158,33 @@ describe("Transfer service", () => {
           },
         });
       }),
-      http.post("http://127.0.0.1/data-plane/transfer/request/provider", () => {
-        return HttpResponse.json({
-          accepted: true,
-          identifier: "ABCDEFG",
-          callbackAddress:
-            "http://127.0.0.1/data-plane/transfer/callbacks/ABCDEFG",
-          dataAddress: {
-            endpoint: `http://remoteparty.test/data-plane${remoteProcessId}`,
-            properties: [
-              {
-                name: "Authorization",
-                value: "Bearer TESTTOKEN",
-              },
-            ],
-          },
-        });
-      }),
-      http.post("http://127.0.0.1/data-plane/transfer/ABCDEFG/:action", () => {
+      http.post(
+        "http://127.0.0.1/data-plane/transfers/request/provider",
+        () => {
+          return HttpResponse.json({
+            accepted: true,
+            identifier: "ABCDEFG",
+            callbackAddress:
+              "http://127.0.0.1/data-plane/transfers/callbacks/ABCDEFG",
+            dataAddress: {
+              endpoint: `http://remoteparty.test/data-plane${remoteProcessId}`,
+              properties: [
+                {
+                  name: "Authorization",
+                  value: "Bearer TESTTOKEN",
+                },
+              ],
+            },
+          });
+        }
+      ),
+      http.post("http://127.0.0.1/data-plane/transfers/ABCDEFG/:action", () => {
         return HttpResponse.json({
           status: "OK",
         });
       }),
       http.post<PathParams, TransferRequestMessageDto, TransferProcessDto>(
-        "http://remoteparty.test/transfer/request",
+        "http://remoteparty.test/transfers/request",
         async (ctx) => {
           const reqBody = await ctx.request.json();
           return HttpResponse.json<TransferProcessDto>({
@@ -189,25 +198,25 @@ describe("Transfer service", () => {
         }
       ),
       http.post(
-        `http://remoteparty.test/transfer/${remoteProcessId}/start`,
+        `http://remoteparty.test/transfers/${remoteProcessId}/start`,
         () => {
           return HttpResponse.json({ status: "OK" });
         }
       ),
       http.post(
-        `http://remoteparty.test/transfer/${remoteProcessId}/suspend`,
+        `http://remoteparty.test/transfers/${remoteProcessId}/suspend`,
         () => {
           return HttpResponse.json({ status: "OK" });
         }
       ),
       http.post(
-        `http://remoteparty.test/transfer/${remoteProcessId}/complete`,
+        `http://remoteparty.test/transfers/${remoteProcessId}/complete`,
         () => {
           return HttpResponse.json({ status: "OK" });
         }
       ),
       http.post(
-        `http://remoteparty.test/transfer/${remoteProcessId}/terminate`,
+        `http://remoteparty.test/transfers/${remoteProcessId}/terminate`,
         () => {
           return HttpResponse.json({ status: "OK" });
         }
@@ -250,7 +259,7 @@ describe("Transfer service", () => {
         "urn:uuid:2d9ea8f0-57da-4ea8-8083-bdb8e6782fc9",
         "dspace:HTTP",
         undefined,
-        "http://remoteparty.test/transfer",
+        "http://remoteparty.test/transfers",
         "did:web:remoteparty.test"
       );
       expect(transferProcess).toBeDefined();
@@ -261,7 +270,7 @@ describe("Transfer service", () => {
         "urn:uuid:2d9ea8f0-57da-4ea8-8083-bdb8e6782fc9",
         "dspace:HTTP",
         undefined,
-        "http://remoteparty.test/transfer",
+        "http://remoteparty.test/transfers",
         "did:web:remoteparty.test"
       );
       expect(transferProcessPush).toBeDefined();
@@ -385,7 +394,7 @@ describe("Transfer service", () => {
           consumerPid: remoteProcessId,
           agreementId: "urn:uuid:2d9ea8f0-57da-4ea8-8083-bdb8e6782fc9",
           format: "dspace:HTTP",
-          callbackAddress: `http://remoteparty.test/transfer/${remoteProcessId}`,
+          callbackAddress: `http://remoteparty.test/transfers/${remoteProcessId}`,
         }),
         "did:web:remoteparty.test"
       );
@@ -462,7 +471,7 @@ describe("Transfer service", () => {
         "urn:uuid:2d9ea8f0-57da-4ea8-8083-bdb8e6782fc9",
         "dspace:HTTP",
         undefined,
-        "http://remoteparty.test/transfer",
+        "http://remoteparty.test/transfers",
         "did:web:remoteparty.test"
       );
       await transferService.handleTerminate(
@@ -485,7 +494,7 @@ describe("Transfer service", () => {
         "urn:uuid:2d9ea8f0-57da-4ea8-8083-bdb8e6782fc9",
         "dspace:HTTP",
         undefined,
-        "http://remoteparty.test/transfer",
+        "http://remoteparty.test/transfers",
         "did:web:remoteparty.test"
       );
       await transferService.terminate(

@@ -232,7 +232,6 @@ describe("RegistryService", () => {
           return await catalog.serialize();
         })
       );
-      console.log(output);
       expect(catalogs).toHaveLength(1);
       expect(catalogs[0].dataset).toHaveLength(1);
       expect(catalogs[0].service).toHaveLength(1);

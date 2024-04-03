@@ -1,5 +1,5 @@
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
-import { DataPlaneAddressDto } from "@libs/dtos";
+import { DataPlaneAddressDto, TransferRole } from "@libs/dtos";
 import { Multilanguage } from "../../model/dsp/common";
 import {
   DataAddress,
@@ -21,7 +21,6 @@ import { ServerConfig } from "../../config";
 import {
   TransferEventDao,
   TransferDetailDao,
-  TransferRole,
 } from "../../model/dsp/transfer/transfer.dao";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
@@ -30,12 +29,14 @@ import {
   TransferEvent,
   TransferStatus,
 } from "../../model/dsp/transfer/transfer";
+import { DspGateway } from "../client/dsp.gateway";
 
 @Injectable()
 export class TransferService {
   constructor(
     private readonly dataPlaneService: DataPlaneService,
     private readonly dsp: DspClientService,
+    private readonly dspGateway: DspGateway,
     private readonly server: ServerConfig,
     @InjectRepository(TransferDetailDao)
     private readonly transferDetailRepository: Repository<TransferDetailDao>,
@@ -222,6 +223,7 @@ export class TransferService {
       ],
     };
     await this.transferDetailRepository.save(transfer);
+    this.dspGateway.sendUpdateToClients("transfer:create", "created");
     return {
       localId,
       remoteId: transferProcess.providerPid,
@@ -275,6 +277,7 @@ export class TransferService {
         );
       }, 2000);
     }
+    this.dspGateway.sendUpdateToClients("transfer:create", "created");
     return transferProcess;
   }
 
@@ -322,6 +325,7 @@ export class TransferService {
     );
     transfer.state = TransferState.STARTED;
     await this.transferDetailRepository.save(transfer);
+    this.dspGateway.sendUpdateToClients("transfer:update", "updated");
     return {
       status: "OK",
     };
@@ -355,6 +359,7 @@ export class TransferService {
     }
     transfer.state = TransferState.STARTED;
     await this.transferDetailRepository.save(transfer);
+    this.dspGateway.sendUpdateToClients("transfer:update", "updated");
     return {
       status: "OK",
     };
@@ -392,6 +397,7 @@ export class TransferService {
     );
     transfer.state = TransferState.COMPLETED;
     await this.transferDetailRepository.save(transfer);
+    this.dspGateway.sendUpdateToClients("transfer:update", "updated");
     return {
       status: "OK",
     };
@@ -423,6 +429,7 @@ export class TransferService {
 
     transfer.state = TransferState.COMPLETED;
     await this.transferDetailRepository.save(transfer);
+    this.dspGateway.sendUpdateToClients("transfer:update", "updated");
     return {
       status: "OK",
     };
@@ -466,6 +473,7 @@ export class TransferService {
     );
     transfer.state = TransferState.TERMINATED;
     await this.transferDetailRepository.save(transfer);
+    this.dspGateway.sendUpdateToClients("transfer:update", "updated");
     return {
       status: "OK",
     };
@@ -499,6 +507,7 @@ export class TransferService {
 
     transfer.state = TransferState.TERMINATED;
     await this.transferDetailRepository.save(transfer);
+    this.dspGateway.sendUpdateToClients("transfer:update", "updated");
     return {
       status: "OK",
     };
@@ -539,6 +548,7 @@ export class TransferService {
     );
     transfer.state = TransferState.SUSPENDED;
     await this.transferDetailRepository.save(transfer);
+    this.dspGateway.sendUpdateToClients("transfer:update", "updated");
     return {
       status: "OK",
     };
@@ -570,6 +580,7 @@ export class TransferService {
     );
     transfer.state = TransferState.SUSPENDED;
     await this.transferDetailRepository.save(transfer);
+    this.dspGateway.sendUpdateToClients("transfer:update", "updated");
     return {
       status: "OK",
     };

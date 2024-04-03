@@ -9,7 +9,7 @@ import {
   NegotiationDetailDao,
   NegotiationProcessEventDao,
 } from "../../model/dsp/negotiation/negotiation.dao";
-import { NegotiationGateway } from "./negotiation.gateway";
+import { DspGateway } from "../client/dsp.gateway";
 
 @Module({
   imports: [
@@ -21,7 +21,7 @@ import { NegotiationGateway } from "./negotiation.gateway";
     ]),
   ],
   controllers: [NegotiationController, NegotiationManagementController],
-  providers: [NegotiationService, NegotiationGateway],
+  providers: [NegotiationService, DspGateway],
   exports: [NegotiationService],
 })
 export class NegotiationModule {}

@@ -22,11 +22,20 @@ export function createInstance<Type>(
   }
 }
 
-export function createInstances<Type>(
+export function createOptionalInstances<Type>(
   arr: Type[] | undefined,
   cls: ClassConstructor<Type>
 ): Type[] | undefined {
   return arr?.map((obj) => {
+    return createInstance(obj, cls);
+  });
+}
+
+export function createInstances<Type>(
+  arr: Type[],
+  cls: ClassConstructor<Type>
+): Type[] {
+  return arr.map((obj) => {
     return createInstance(obj, cls);
   });
 }

@@ -11,33 +11,37 @@ import {
   Query,
   UseGuards,
 } from "@nestjs/common";
-import { DspClientService } from "../client/client.service";
 import { TransferService } from "./transfer.service";
 import { TransferProcessDto } from "@tsg-dsp/common";
 import { normalizeAddress } from "../../utils/address";
-import { DataPlaneAddressDto } from "@libs/dtos";
+import { DataPlaneAddressDto, TransferStatusDto } from "@libs/dtos";
 import { ManagementGuard } from "../../auth/management.guard";
-import { TransferStatus } from "../../model/dsp/transfer/transfer";
-import { DSPError } from "../../utils/errors/error";
+import { TransferDetail } from "../../model/dsp/transfer/transfer";
 
 @UseGuards(ManagementGuard)
-@Controller("management/transfer")
+@Controller("management/transfers")
 export class TransferManagementController {
-  constructor(
-    private readonly dsp: DspClientService,
-    private readonly transferService: TransferService
-  ) {}
+  constructor(private readonly transferService: TransferService) {}
   private readonly logger = new Logger(this.constructor.name);
 
   @Get()
-  async getTransfers(): Promise<TransferStatus[]> {
-    return this.transferService.getTransfers();
+  async getTransfers(): Promise<TransferStatusDto[]> {
+    const transfers = await this.transferService.getTransfers();
+    return Promise.all(
+      transfers.map(async (transfer) => {
+        return {
+          ...transfer,
+          process: await transfer.process.serialize(),
+          modifiedDate: new Date(),
+        };
+      })
+    );
   }
 
   @Get(":processId")
   async getTransfer(
     @Param("processId") processId: string
-  ): Promise<TransferStatus> {
+  ): Promise<TransferDetail> {
     const transfer = await this.transferService.getTransfer(processId);
     return transfer;
   }
@@ -56,7 +60,7 @@ export class TransferManagementController {
     const controlPlaneAddress = normalizeAddress(
       address,
       1,
-      "transfer",
+      "transfers",
       "request"
     );
     const internalTransfer = await this.transferService.initiateTransferProcess(

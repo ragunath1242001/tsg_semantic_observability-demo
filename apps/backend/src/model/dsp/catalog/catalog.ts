@@ -21,6 +21,7 @@ import {
 import {
   createInstances,
   createOptionalInstance,
+  createOptionalInstances,
 } from "../../../utils/instances";
 
 export interface IResource extends IReference {
@@ -129,7 +130,7 @@ export class Resource<
     this.relation = value.relation;
     this.title = value.title;
     this.type = value.type;
-    this.hasPolicy = createInstances(value.hasPolicy, Offer);
+    this.hasPolicy = createOptionalInstances(value.hasPolicy, Offer);
   }
 }
 
@@ -157,7 +158,7 @@ export class DataService extends Resource<DataServiceDto> {
     super(value);
     this.endpointDescription = value.endpointDescription;
     this.endpointURL = value.endpointURL;
-    this.servesDataset = createInstances(value.servesDataset, Dataset);
+    this.servesDataset = createOptionalInstances(value.servesDataset, Dataset);
   }
 }
 
@@ -248,7 +249,10 @@ export class Distribution extends Reference<DistributionDto & ContextDto> {
 
   constructor(value: IDistribution) {
     super(value);
-    this.accessService = createInstances(value.accessService, DataService);
+    this.accessService = createOptionalInstances(
+      value.accessService,
+      DataService
+    );
     this.accessURL = value.accessURL;
     this.byteSize = value.byteSize;
     this.compressFormat = value.compressFormat;
@@ -263,7 +267,7 @@ export class Distribution extends Reference<DistributionDto & ContextDto> {
     this.issued = value.issued;
     this.modified = value.modified;
     this.title = value.title;
-    this.hasPolicy = createInstances(value.hasPolicy, Offer);
+    this.hasPolicy = createOptionalInstances(value.hasPolicy, Offer);
   }
 }
 
@@ -312,7 +316,10 @@ export class Dataset<
 
   constructor(value: IDataset) {
     super(value);
-    this.distribution = createInstances(value.distribution, Distribution);
+    this.distribution = createOptionalInstances(
+      value.distribution,
+      Distribution
+    );
     this.spatialResolutionInMeters = value.spatialResolutionInMeters;
     this.temporalResolution = value.temporalResolution;
     this.accrualPeriodicity = value.accrualPeriodicity;
@@ -407,11 +414,11 @@ export class Catalog extends Dataset<CatalogDto> {
 
   constructor(value: ICatalog) {
     super(value);
-    this.dataset = createInstances(value.dataset, Dataset);
-    this.record = createInstances(value.record, CatalogRecord);
-    this.service = createInstances(value.service, DataService);
+    this.dataset = createOptionalInstances(value.dataset, Dataset);
+    this.record = createOptionalInstances(value.record, CatalogRecord);
+    this.service = createOptionalInstances(value.service, DataService);
     this.themeTaxonomy = value.themeTaxonomy;
-    this.hasPart = createInstances(value.hasPart, Resource);
+    this.hasPart = createOptionalInstances(value.hasPart, Resource);
     this.homepage = value.homepage;
   }
 }

@@ -59,7 +59,7 @@ paths:
           description: Unexpected behaviour
         "5XX":
           description: Data plane error
-  /transfer/{role}:
+  /transfers/{role}:
     post:
       operationId: requestTransfer
       tags:
@@ -86,7 +86,7 @@ paths:
                 $ref: ../schemas/data-planes.schema.json#/definitions/DataPlaneRequestResponseDto
         "4XX":
           description: Declined transfer request
-  /transfer/{transferId}/start:
+  /transfers/{transferId}/start:
     post:
       operationId: startTransfer
       summary: Start transfer
@@ -108,7 +108,7 @@ paths:
           description: Accepted transfer start signal
         "404":
           description: Transfer not found
-  /transfer/{transferId}/execute:
+  /transfers/{transferId}/execute:
     post:
       operationId: executeTransfer
       summary: Execute transfer
@@ -130,7 +130,7 @@ paths:
           description: Accepted transfer execute signal
         "404":
           description: Transfer not found
-  /transfer/{transferId}/complete:
+  /transfers/{transferId}/complete:
     post:
       operationId: completeTransfer
       summary: Complete transfer
@@ -152,7 +152,7 @@ paths:
           description: Accepted transfer complete signal
         "404":
           description: Transfer not found
-  /transfer/{transferId}/terminate:
+  /transfers/{transferId}/terminate:
     post:
       operationId: terminateTransfer
       summary: Terminate transfer
@@ -174,7 +174,7 @@ paths:
           description: Accepted transfer terminate signal
         "404":
           description: Transfer not found
-  /transfer/{transferId}/suspend:
+  /transfers/{transferId}/suspend:
     post:
       operationId: suspendTransfer
       summary: Suspend transfer

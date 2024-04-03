@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { useNegotiationStore } from "./stores/negotiations";
+import { useDspStore } from "./stores/dsp";
 import { socket } from "./socket";
-const store = useNegotiationStore();
+const store = useDspStore();
 
 socket.off();
 

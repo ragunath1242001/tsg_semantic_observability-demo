@@ -11,7 +11,7 @@ servers:
 security:
   - BearerAuth: []
 paths:
-  /transfer/request:
+  /transfers/request:
     post:
       operationId: transferRequest
       summary: Request a transfer from the provider
@@ -29,7 +29,7 @@ paths:
                 $ref: ../schemas/dsp.schema.json#/definitions/TransferProcessDto
         4XX:
           description: Request error
-  /transfer/{id}:
+  /transfers/{id}:
     get:
       operationId: requestTransferStatus
       summary: Request the transfer process status object
@@ -48,7 +48,7 @@ paths:
                 $ref: ../schemas/dsp.schema.json#/definitions/TransferProcessDto
         404:
           description: Transfer process not found
-  /transfer/{id}/start:
+  /transfers/{id}/start:
     post:
       operationId: startTransfer
       summary: Start the transfer process by the consumer
@@ -69,7 +69,7 @@ paths:
         404:
           description: Transfer process not found
 
-  /transfer/{id}/complete:
+  /transfers/{id}/complete:
     post:
       operationId: completeTransfer
       summary: Complete the transfer process by the consumer
@@ -90,7 +90,7 @@ paths:
         404:
           description: Transfer process not found
 
-  /transfer/{id}/terminate:
+  /transfers/{id}/terminate:
     post:
       operationId: terminateTransfer
       summary: Terminate the transfer process by the consumer
@@ -111,7 +111,7 @@ paths:
         404:
           description: Transfer process not found
 
-  /transfer/{id}/suspend:
+  /transfers/{id}/suspend:
     post:
       operationId: suspendTransfer
       summary: Suspend the transfer process by the consumer

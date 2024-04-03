@@ -29,6 +29,7 @@ import { RootConfig, ServerConfig } from "../../config";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { NegotiationStatusDto } from "@libs/dtos";
+import { DspGateway } from "../client/dsp.gateway";
 
 @Injectable()
 export class NegotiationService {
@@ -36,6 +37,7 @@ export class NegotiationService {
     private readonly dsp: DspClientService,
     private readonly server: ServerConfig,
     private readonly config: RootConfig,
+    private readonly dspGateway: DspGateway,
     @InjectRepository(NegotiationDetailDao)
     private readonly negotiationDetailRepository: Repository<NegotiationDetailDao>,
     @InjectRepository(NegotiationProcessEventDao)
@@ -211,6 +213,7 @@ export class NegotiationService {
     });
     negotiation.events.push(event);
     await this.negotiationDetailRepository.save(negotiation);
+    this.dspGateway.sendUpdateToClients("negotiation:create", "created");
     return negotiation;
   }
 
@@ -245,6 +248,7 @@ export class NegotiationService {
       events: [],
     };
     await this.createNegotiationDetail(negotiation, "remote");
+    this.dspGateway.sendUpdateToClients("negotiation:create", "created");
     return contractNegotiation;
   }
 
@@ -280,6 +284,7 @@ export class NegotiationService {
     });
     negotiation.offer = offer;
     await this.negotiationDetailRepository.save(negotiation);
+    this.dspGateway.sendUpdateToClients("negotiation:create", "created");
     return negotiation;
   }
 
@@ -308,6 +313,7 @@ export class NegotiationService {
     negotiation.state = ContractNegotiationState.REQUESTED;
     negotiation.offer = requestMessage.offer;
     await this.negotiationDetailRepository.save(negotiation);
+    this.dspGateway.sendUpdateToClients("negotiation:update", "updated");
     return new ContractNegotiation({
       providerPid: negotiation.localId,
       consumerPid: negotiation.remoteId,
@@ -347,6 +353,7 @@ export class NegotiationService {
     negotiation.offer = contractOfferMessage.offer;
     negotiation.state = ContractNegotiationState.OFFERED;
     await this.negotiationDetailRepository.save(negotiation);
+    this.dspGateway.sendUpdateToClients("negotiation:update", "updated");
     return {
       status: "OK",
     };
@@ -372,6 +379,7 @@ export class NegotiationService {
     negotiation.offer = contractOfferMessage.offer;
     negotiation.state = ContractNegotiationState.OFFERED;
     await this.negotiationDetailRepository.save(negotiation);
+    this.dspGateway.sendUpdateToClients("negotiation:update", "updated");
     return {
       status: "OK",
     };
@@ -401,6 +409,7 @@ export class NegotiationService {
     );
     negotiation.state = ContractNegotiationState.ACCEPTED;
     await this.negotiationDetailRepository.save(negotiation);
+    this.dspGateway.sendUpdateToClients("negotiation:update", "updated");
     return {
       status: "OK",
     };
@@ -425,6 +434,7 @@ export class NegotiationService {
     });
     negotiation.state = newState;
     await this.negotiationDetailRepository.save(negotiation);
+    this.dspGateway.sendUpdateToClients("negotiation:update", "updated");
     return {
       status: "OK",
     };
@@ -475,6 +485,7 @@ export class NegotiationService {
     negotiation.state = ContractNegotiationState.AGREED;
     negotiation.agreement = agreement;
     await this.negotiationDetailRepository.save(negotiation);
+    this.dspGateway.sendUpdateToClients("negotiation:update", "updated");
     return {
       status: "OK",
     };
@@ -502,6 +513,7 @@ export class NegotiationService {
     negotiation.agreement = contractAgreementMessage.agreement;
     negotiation.state = ContractNegotiationState.AGREED;
     await this.negotiationDetailRepository.save(negotiation);
+    this.dspGateway.sendUpdateToClients("negotiation:update", "updated");
     return {
       status: "OK",
     };
@@ -545,6 +557,7 @@ export class NegotiationService {
     );
     negotiation.state = ContractNegotiationState.VERIFIED;
     await this.negotiationDetailRepository.save(negotiation);
+    this.dspGateway.sendUpdateToClients("negotiation:update", "updated");
     return {
       status: "OK",
     };
@@ -570,6 +583,7 @@ export class NegotiationService {
     });
     negotiation.state = ContractNegotiationState.VERIFIED;
     await this.negotiationDetailRepository.save(negotiation);
+    this.dspGateway.sendUpdateToClients("negotiation:update", "updated");
     return {
       status: "OK",
     };
@@ -599,6 +613,7 @@ export class NegotiationService {
     );
     negotiation.state = ContractNegotiationState.FINALIZED;
     await this.negotiationDetailRepository.save(negotiation);
+    this.dspGateway.sendUpdateToClients("negotiation:update", "updated");
     return {
       status: "OK",
     };
@@ -624,6 +639,7 @@ export class NegotiationService {
     });
     negotiation.state = ContractNegotiationState.TERMINATED;
     await this.negotiationDetailRepository.save(negotiation);
+    this.dspGateway.sendUpdateToClients("negotiation:update", "updated");
     return {
       status: "OK",
     };
@@ -649,6 +665,7 @@ export class NegotiationService {
     });
     negotiation.state = ContractNegotiationState.TERMINATED;
     await this.negotiationDetailRepository.save(negotiation);
+    this.dspGateway.sendUpdateToClients("negotiation:update", "updated");
     return {
       status: "OK",
     };

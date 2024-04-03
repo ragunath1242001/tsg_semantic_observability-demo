@@ -21,15 +21,11 @@ import { NegotiationService } from "./negotiation.service";
 import { DSPError } from "../../utils/errors/error";
 import { VerifiablePresentationGuard } from "../../auth/verifiablePresentation.guard";
 import { VPId } from "../../auth/verifiablePresentation.strategy";
-import { NegotiationGateway } from "./negotiation.gateway";
 
 @UseGuards(VerifiablePresentationGuard)
 @Controller("negotiations")
 export class NegotiationController {
-  constructor(
-    private readonly negotiationService: NegotiationService,
-    private readonly negotiationGateway: NegotiationGateway
-  ) {}
+  constructor(private readonly negotiationService: NegotiationService) {}
   private readonly logger = new Logger(this.constructor.name);
 
   @Post("request")
@@ -41,10 +37,6 @@ export class NegotiationController {
   ): Promise<ContractNegotiationDto> {
     this.logger.log(`Received negotiation request: ${JSON.stringify(body)}`);
     const result = await this.negotiationService.handleNewRequest(body, vpId);
-    this.negotiationGateway.sendUpdateToClients(
-      "negotiation:create",
-      "created"
-    );
     return result.serialize();
   }
 
@@ -85,10 +77,6 @@ export class NegotiationController {
       body,
       vpId
     );
-    this.negotiationGateway.sendUpdateToClients(
-      "negotiation:update",
-      "updated"
-    );
     return result.serialize();
   }
 
@@ -110,10 +98,6 @@ export class NegotiationController {
       ).andLog(this.logger, "warn");
     }
     const result = await this.negotiationService.handleEvent(id, body, vpId);
-    this.negotiationGateway.sendUpdateToClients(
-      "negotiation:update",
-      "updated"
-    );
     return result;
   }
   @Post(":id/agreement/verification")
@@ -138,10 +122,7 @@ export class NegotiationController {
       body,
       vpId
     );
-    this.negotiationGateway.sendUpdateToClients(
-      "negotiation:update",
-      "updated"
-    );
+
     return result;
   }
 
@@ -180,10 +161,6 @@ export class NegotiationController {
       `Received negotiation callback offer for ${id}: ${JSON.stringify(body)}`
     );
     const result = await this.negotiationService.handleOffer(id, body, vpId);
-    this.negotiationGateway.sendUpdateToClients(
-      "negotiation:update",
-      "updated"
-    );
     return result;
   }
 
@@ -204,10 +181,6 @@ export class NegotiationController {
       body,
       vpId
     );
-    this.negotiationGateway.sendUpdateToClients(
-      "negotiation:update",
-      "updated"
-    );
     return result;
   }
 
@@ -222,10 +195,6 @@ export class NegotiationController {
       `Received negotiation callback event for ${id}: ${JSON.stringify(body)}`
     );
     const result = await this.negotiationService.handleEvent(id, body, vpId);
-    this.negotiationGateway.sendUpdateToClients(
-      "negotiation:update",
-      "updated"
-    );
     return result;
   }
 }

@@ -17,14 +17,14 @@ import { Socket, Server } from "socket.io";
     ],
   },
 })
-export class NegotiationGateway
+export class DspGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
-  private readonly logger = new Logger(NegotiationGateway.name);
+  private readonly logger = new Logger(DspGateway.name);
   @WebSocketServer() server!: Server;
 
   afterInit() {
-    this.logger.log("Initialized Negotiation Gateway.");
+    this.logger.log("Initialized Dsp Gateway.");
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

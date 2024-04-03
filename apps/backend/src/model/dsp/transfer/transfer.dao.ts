@@ -7,13 +7,11 @@ import {
   Relation,
 } from "typeorm";
 import { AutoIdEntity, MetaEntity } from "../../common.dao";
-import { DataPlaneTransferDto } from "@libs/dtos";
+import { DataPlaneTransferDto, TransferRole } from "@libs/dtos";
 import { Multilanguage } from "../common";
 import { TransferProcess, DataAddress } from "./messages";
 import { TransferState } from "@tsg-dsp/common";
 import { ITransferEvent, ITransferStatus, TransferEvent } from "./transfer";
-
-export type TransferRole = "provider" | "consumer";
 
 @Entity()
 export class TransferEventDao extends AutoIdEntity implements ITransferEvent {
