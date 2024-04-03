@@ -34,7 +34,10 @@ export class DataPlaneController {
     return;
   }
 
-  @Get("/health")
+  @Get([
+    "/health",
+    ...(process.env["EMBEDDED_FRONTEND"] ? ["/api/health"] : []),
+  ])
   @HttpCode(HttpStatus.OK)
   async healthCheck() {
     return;
@@ -71,7 +74,6 @@ export class DataPlaneController {
 
   @Post("/transfers/:id/execute/:version/:path(*)?")
   @HttpCode(HttpStatus.ACCEPTED)
-  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   async executeTransfer(
     @Param("id") id: string,
     @Param("version") version: string,
@@ -79,6 +81,7 @@ export class DataPlaneController {
     @Headers("Authorization") authorization: string,
     @Req() request: Request,
     @Res() response: Response,
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   ): Promise<any> {
     this.logger.log(`Requesting transfer execution for id ${id}`);
     await this.dataPlaneService.checkManagementAuthorization(authorization);

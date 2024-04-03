@@ -6,7 +6,6 @@ import bcrypt from "bcrypt";
 import { Request, Response } from "express";
 import { IncomingHttpHeaders } from "http";
 import {
-  DataAddressDto,
   DataPlaneAddressDto,
   DataPlaneCreation,
   DataPlaneDetailsDto,
@@ -266,13 +265,13 @@ export class DataPlaneService {
     await this.transferRepository.save(transfer);
   }
 
-  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   async executeProxyRequest(
     processId: string,
     version: string,
     path: string,
     request: Request,
     response: Response,
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   ): Promise<any> {
     const transfer = await this.transferRepository.findOneBy({ id: processId });
     if (!transfer) {
@@ -394,11 +393,11 @@ export class DataPlaneService {
     }
   }
 
-  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   private async proxy(
     method: string,
     url: string,
     headers: IncomingHttpHeaders,
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
     body: any,
     query: qs.ParsedQs,
     response: Response,
