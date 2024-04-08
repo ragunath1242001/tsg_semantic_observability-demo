@@ -203,7 +203,7 @@ const terminateTransfer = async (transfer) => {
             @click="close()"
           />
           <Button
-            label="Accept"
+            label="Proceed"
             severity="success"
             icon="pi pi-check"
             type="submit"

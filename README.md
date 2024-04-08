@@ -36,6 +36,14 @@ pnpm dev:backend
 pnpm dev:frontend
 ```
 
-You can run both in one terminal but you'd miss the logs from one of them.
+You can run both in one terminal (using pnpm dev) but you'd miss the logs from one of them.
 
-If you want to test interactions between control planes, we recommend to run one docker container on port 3001 and the normal backend on 3000. You can access the local running instance by using host.docker.internal instead of localhost for the publicAddress in the config.yaml of the local running instance.
+If you want to test interactions between control planes excecute the following commands to generate a second instance:
+
+```
+CONFIG_PATH=$(pwd)/apps/backend/config_local.yaml pnpm dev:backend
+```
+
+```
+BACKEND=http://localhost:3002 pnpm dev:frontend
+```
