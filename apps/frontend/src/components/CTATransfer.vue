@@ -1,14 +1,13 @@
 <script setup lang="ts">
-import { TransferDetailDto } from "@libs/dtos";
+import { TransferStatusDto } from "@libs/dtos";
 import TransferProceed from "./TransferProceed.vue";
 import { toRef } from "vue";
 
 const props = defineProps<{
-  transfers: TransferDetailDto[];
+  transfers: TransferStatusDto[];
 }>();
 
 const transfers = toRef(props, "transfers");
-console.log(transfers.value);
 </script>
 <template>
   <div class="grid">

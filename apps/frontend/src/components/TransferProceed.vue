@@ -7,7 +7,6 @@ import http from "../utils/http";
 
 const props = defineProps<{
   transfer: TransferStatusDto;
-  endState: "verify" | "finalize";
 }>();
 
 const display = ref<boolean>(false);
@@ -21,8 +20,18 @@ const determineNextHappyState = (transfer: TransferStatusDto) => {
   switch (transfer.state) {
     case "dspace:REQUESTED":
       return "start";
+    case "dspace:SUSPENDED":
+      return "start";
     case "dspace:STARTED":
       return "complete";
+  }
+};
+
+const determineTerminateLabel = (transfer: TransferStatusDto) => {
+  if (transfer.state === "dspace:STARTED") {
+    return "";
+  } else {
+    return "Terminate";
   }
 };
 
@@ -51,7 +60,7 @@ const determineButton = (transfer: TransferStatusDto) => {
 
 const proceedTransfer = async (transfer: TransferStatusDto) => {
   try {
-    await close();
+    close();
     const nextState = determineNextHappyState(transfer);
     await http.post(`management/transfers/${transfer.localId}/${nextState}`);
     toast.add({
@@ -139,7 +148,7 @@ const terminateTransfer = async (transfer) => {
     </span>
     <div class="flex justify-content-between mb-0">
       <Button
-        label="Terminate"
+        :label="determineTerminateLabel(transfer)"
         severity="danger"
         icon="pi pi-times"
         type="submit"
@@ -147,13 +156,20 @@ const terminateTransfer = async (transfer) => {
         @click="openDialog('terminate')"
       />
       <Button
-        label="Suspend"
         severity="warning"
-        icon="pi pi-times"
+        icon="pi pi-pause"
         type="submit"
         v-if="transfer.state === 'dspace:STARTED'"
         class="p-button-outlined"
         @click="openDialog('suspend')"
+      />
+      <Button
+        :label="determineButton(transfer)"
+        severity="success"
+        icon="pi pi-check"
+        type="submit"
+        class="p-button-outlined"
+        @click="proceedTransfer(transfer)"
       />
       <Dialog
         :header="determineHeader()"
@@ -196,14 +212,6 @@ const terminateTransfer = async (transfer) => {
           />
         </template>
       </Dialog>
-      <Button
-        :label="determineButton(transfer)"
-        severity="success"
-        icon="pi pi-check"
-        type="submit"
-        class="p-button-outlined"
-        @click="proceedTransfer(transfer)"
-      />
     </div>
   </div>
 </template>

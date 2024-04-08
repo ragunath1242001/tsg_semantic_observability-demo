@@ -296,6 +296,16 @@ export class TransferService {
           dataPlaneAddress.properties?.map((p) => new EndpointProperty(p)) ||
           [],
       });
+    } else {
+      this.logger.log(transfer.dataPlaneTransfer.dataAddress);
+      dataAddress = new DataAddress({
+        endpoint: transfer.dataPlaneTransfer.dataAddress?.endpoint || "",
+        endpointType: transfer.dataPlaneTransfer.endpointType,
+        endpointProperties:
+          transfer.dataPlaneTransfer.dataAddress?.properties?.map(
+            (p) => new EndpointProperty(p)
+          ) || [],
+      });
     }
     const transferStartMessage = new TransferStartMessage({
       providerPid:

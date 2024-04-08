@@ -84,6 +84,7 @@ const requestTransfer = async (accNegotiation: NegotiationDetailDto) => {
         severity: "success",
         summary: "Request sent",
         detail: "Successfully requested to start transfer process.",
+        life: 3000,
       });
     }
   } catch (e) {

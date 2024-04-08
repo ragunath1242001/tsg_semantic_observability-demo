@@ -21,6 +21,6 @@ FROM base AS deploy
 WORKDIR /app
 COPY --from=build /prod/backend .
 COPY --from=build /prod/frontend/dist frontend/
-EXPOSE 3000
+EXPOSE 3002
 ENV EMBEDDED_FRONTEND="/app/frontend"
 CMD ["pnpm", "start"]
