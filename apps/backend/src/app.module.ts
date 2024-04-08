@@ -12,6 +12,7 @@ import { NegotiationModule } from "./dsp/negotiation/negotiation.module";
 import { TransferModule } from "./dsp/transfer/transfer.module";
 import { RegistryModule } from "./registry/registry.module";
 import { ServeStaticModule } from "@nestjs/serve-static";
+import { ConfigController } from "./config.controller";
 
 const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
   ? [
@@ -48,7 +49,7 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
     NegotiationModule,
     TransferModule,
   ],
-  controllers: [HealthController],
+  controllers: [ConfigController, HealthController],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

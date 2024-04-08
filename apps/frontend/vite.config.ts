@@ -5,6 +5,9 @@ import vue from "@vitejs/plugin-vue";
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  define: {
+    "process.env": process.env,
+  },
   plugins: [vue()],
   resolve: {
     alias: {
@@ -13,7 +16,7 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      "/api": "http://localhost:3000/",
+      "/api": process.env.BACKEND || "http://localhost:3000",
     },
   },
 });

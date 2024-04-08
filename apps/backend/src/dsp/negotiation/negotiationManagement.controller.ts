@@ -15,23 +15,17 @@ import {
   Offer,
 } from "../../model/dsp/negotiation/negotiation";
 import { NegotiationStatusDto } from "@libs/dtos";
-import { DspClientService } from "../client/client.service";
 import { NegotiationService } from "./negotiation.service";
 import { DeserializePipe } from "../../utils/deserialize.pipe";
 import { normalizeAddress } from "../../utils/address";
 import { ManagementGuard } from "../../auth/management.guard";
 import { ContractNegotiationDto } from "@tsg-dsp/common";
 import { ContractNegotiation } from "../../model/dsp/negotiation/messages";
-import { NegotiationGateway } from "./negotiation.gateway";
 
 @UseGuards(ManagementGuard)
 @Controller("management/negotiations")
 export class NegotiationManagementController {
-  constructor(
-    private readonly dsp: DspClientService,
-    private readonly negotiationService: NegotiationService,
-    private readonly negotiationGateway: NegotiationGateway
-  ) {}
+  constructor(private readonly negotiationService: NegotiationService) {}
   private readonly logger = new Logger(this.constructor.name);
 
   @Get()
@@ -131,10 +125,6 @@ export class NegotiationManagementController {
   ): Promise<{ status: string }> {
     this.logger.log(`Received negotiation agreement for ${processId}`);
     const negotiationProcess = await this.negotiationService.agree(processId);
-    this.negotiationGateway.sendUpdateToClients(
-      "negotiation:update",
-      "updated"
-    );
     return negotiationProcess;
   }
 
@@ -147,10 +137,6 @@ export class NegotiationManagementController {
       `Received negotiation agreement verification for ${processId}`
     );
     const negotiationProcess = await this.negotiationService.verify(processId);
-    this.negotiationGateway.sendUpdateToClients(
-      "negotiation:update",
-      "updated"
-    );
     return negotiationProcess;
   }
 
@@ -162,10 +148,6 @@ export class NegotiationManagementController {
     this.logger.log(`Received negotiation finalization for ${processId}`);
     const negotiationProcess = await this.negotiationService.finalize(
       processId
-    );
-    this.negotiationGateway.sendUpdateToClients(
-      "negotiation:update",
-      "updated"
     );
     return negotiationProcess;
   }
@@ -181,10 +163,6 @@ export class NegotiationManagementController {
       processId,
       body.code,
       body.reason
-    );
-    this.negotiationGateway.sendUpdateToClients(
-      "negotiation:update",
-      "updated"
     );
     return negotiationProcess;
   }

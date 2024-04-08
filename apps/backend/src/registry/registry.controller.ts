@@ -2,6 +2,7 @@ import { Controller, Get, HttpCode, HttpStatus, Logger } from "@nestjs/common";
 import { CatalogDto } from "@tsg-dsp/common";
 import { RegistryService } from "./registry.service";
 import { CredentialAddressDto } from "@libs/dtos";
+
 @Controller("registry")
 export class RegistryController {
   constructor(private readonly registryService: RegistryService) {}

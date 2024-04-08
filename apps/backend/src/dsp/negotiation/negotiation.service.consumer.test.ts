@@ -27,9 +27,11 @@ import {
   ContractOfferMessage,
 } from "../../model/dsp/negotiation/messages";
 import { Multilanguage } from "../../model/dsp/common";
+import { DspGateway } from "../client/dsp.gateway";
 
 describe("Negotiation Service (Consumer)", () => {
   let negotiationService: NegotiationService;
+  let dspGateway: DspGateway;
   let server: SetupServer;
   let remoteProcessId = "urn:uuid:51532177-8ae0-4d24-839e-c7bc969ddcfd";
 
@@ -52,6 +54,7 @@ describe("Negotiation Service (Consumer)", () => {
       providers: [
         NegotiationService,
         DspClientService,
+        DspGateway,
         {
           provide: AuthService,
           useValue: new (class {
@@ -72,7 +75,10 @@ describe("Negotiation Service (Consumer)", () => {
           useValue: serverConfig,
         },
       ],
-    }).compile();
+    })
+      .overrideProvider(DspGateway)
+      .useValue(dspGateway)
+      .compile();
 
     server = setupServer(
       http.post<PathParams, ContractRequestMessageDto, ContractNegotiationDto>(

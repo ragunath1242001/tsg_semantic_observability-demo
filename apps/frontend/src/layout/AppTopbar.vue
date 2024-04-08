@@ -3,7 +3,7 @@ import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 import { useLayout } from "../layout/composables/layout";
 import { useRouter } from "vue-router";
 
-const { layoutConfig, onMenuToggle } = useLayout();
+const { layoutConfig, onMenuToggle, onConfigButtonClick } = useLayout();
 
 const outsideClickListener = ref(null);
 const topbarMenuActive = ref(false);
@@ -95,6 +95,13 @@ const logout = () => {
     </button>
 
     <div class="layout-topbar-menu" :class="topbarMenuClasses">
+      <button
+        @click="onConfigButtonClick()"
+        class="p-link layout-topbar-button"
+      >
+        <i class="pi pi-cog"></i>
+        <span>Settings</span>
+      </button>
       <button @click="logout()" class="p-link layout-topbar-button">
         <i class="pi pi-sign-out"></i>
         <span>Log out</span>

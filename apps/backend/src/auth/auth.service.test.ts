@@ -70,7 +70,5 @@ describe("Auth Service", () => {
     };
 
     const instance = plainToInstance(VerifiablePresentation, vp);
-
-    console.log();
   });
 });

@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import CTANegotiation from "../components/CTANegotiation.vue";
 
-import { useNegotiationStore } from "../stores/negotiations";
+import { useDspStore } from "../stores/dsp";
 import { storeToRefs } from "pinia";
 import NegotiationHistory from "../components/NegotiationHistory.vue";
 
-const { negotiations, ctaNegotiations } = storeToRefs(useNegotiationStore());
+const { negotiations, ctaNegotiations } = storeToRefs(useDspStore());
 </script>
 <template>
   <div>

@@ -92,16 +92,26 @@ const parsePolicies = (policies: Array<PolicyDto>): Array<FlatPolicy> => {
 };
 const getDataset = async (datasetId: String) => {
   try {
-    const response = await http.get<DatasetDto>(
-      `management/catalog/dataset?address=${url.value}&id=${datasetId}`
-    );
+    const response = await http.get<DatasetDto>("management/catalog/dataset", {
+      params: {
+        address: url.value,
+        id: datasetId,
+        audience: catalog.value["dct:publisher"],
+      },
+    });
     datasetData.value = response.data;
     policy.value = createPolicy(datasetData.value["odrl:hasPolicy"][0]);
     datasetView.value = true;
     return datasetData;
   } catch (e) {
+    toast.add({
+      severity: "error",
+      summary: "Failed to send dataset request",
+      detail: `${e.response.data.message}`,
+      life: 3000,
+    });
     console.error(
-      `Could not retrieve dataset with id ${datasetId}. Error: ${e}`
+      `Could not retrieve dataset with id ${datasetId} at ${url.value} with audience ${catalog.value["dct:publisher"]}. Error: ${e}`
     );
   }
 };
@@ -149,8 +159,15 @@ const sendNegotiation = async (
 ) => {
   try {
     await http.post(
-      `management/negotiations/request?dataSet=${datasetId}&address=${address}&audience=${audience}`,
-      JSON.parse(policy.value) as OfferDto
+      "management/negotiations/request",
+      JSON.parse(policy.value) as OfferDto,
+      {
+        params: {
+          dataSet: datasetId,
+          address: address,
+          audience: audience,
+        },
+      }
     );
     toast.add({
       severity: "success",
@@ -392,9 +409,7 @@ const sendNegotiation = async (
                   <form
                     @submit="
                       sendNegotiation(
-                        datasetData['dct:title']
-                          ? datasetData['dct:title']
-                          : datasetData['@id'],
+                        datasetData['@id'],
                         url,
                         catalog['dct:publisher']
                       )

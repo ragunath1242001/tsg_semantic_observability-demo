@@ -334,8 +334,8 @@ export class DataPlaneService {
         };
         const dataPlaneRequestResponse =
           await this.axios.post<DataPlaneRequestResponseDto>(
-            `${dataPlane.managementAddress}/transfer/request/${role}?processId=${processId}`,
-            requestDetail,
+            `${dataPlane.managementAddress}/transfers/request/${role}?processId=${processId}`,
+            await requestDetail.serialize(),
             requestConfig
           );
         if (dataPlaneRequestResponse.data.accepted) {
@@ -380,7 +380,7 @@ export class DataPlaneService {
         },
       };
       await this.axios.post(
-        `${dataPlane.managementAddress}/transfer/${dataPlaneTransfer.identifier}/start`,
+        `${dataPlane.managementAddress}/transfers/${dataPlaneTransfer.identifier}/start`,
         transferStartMessage,
         requestConfig
       );
@@ -412,7 +412,7 @@ export class DataPlaneService {
         },
       };
       await this.axios.post(
-        `${dataPlane.managementAddress}/transfer/${dataPlaneTransfer.identifier}/complete`,
+        `${dataPlane.managementAddress}/transfers/${dataPlaneTransfer.identifier}/complete`,
         transferCompletionMessage,
         requestConfig
       );
@@ -444,7 +444,7 @@ export class DataPlaneService {
         },
       };
       await this.axios.post(
-        `${dataPlane.managementAddress}/transfer/${dataPlaneTransfer.identifier}/terminate`,
+        `${dataPlane.managementAddress}/transfers/${dataPlaneTransfer.identifier}/terminate`,
         transferTerminationMessage,
         requestConfig
       );
@@ -476,7 +476,7 @@ export class DataPlaneService {
         },
       };
       await this.axios.post(
-        `${dataPlane.managementAddress}/transfer/${dataPlaneTransfer.identifier}/suspend`,
+        `${dataPlane.managementAddress}/transfers/${dataPlaneTransfer.identifier}/suspend`,
         transferSuspensionMessage,
         requestConfig
       );

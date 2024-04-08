@@ -29,7 +29,7 @@ import {
   AgreementDto,
   ContractNegotiationState,
 } from "@tsg-dsp/common";
-import { createInstances } from "../../../utils/instances";
+import { createOptionalInstances } from "../../../utils/instances";
 
 export interface IConstraint {
   leftOperand: ODRLLeftOperand | string;
@@ -114,7 +114,7 @@ export class PolicyRule<
     this.assignee = value.assignee;
     this.action = value.action;
     this.target = value.target;
-    this.constraint = createInstances(value.constraint, Constraint);
+    this.constraint = createOptionalInstances(value.constraint, Constraint);
   }
 }
 
@@ -131,7 +131,7 @@ export class Permission extends PolicyRule<PermissionDto & ContextDto> {
   constructor(value: IPermission) {
     super(value);
     this.target = value.target;
-    this.duty = createInstances(value.duty, Duty);
+    this.duty = createOptionalInstances(value.duty, Duty);
   }
 }
 
@@ -197,9 +197,9 @@ export class Policy<
     this.assigner = value.assigner;
     this.assignee = value.assignee;
     this.profile = value.profile;
-    this.permission = createInstances(value.permission, Permission);
-    this.prohibition = createInstances(value.prohibition, Prohibition);
-    this.obligation = createInstances(value.obligation, Duty);
+    this.permission = createOptionalInstances(value.permission, Permission);
+    this.prohibition = createOptionalInstances(value.prohibition, Prohibition);
+    this.obligation = createOptionalInstances(value.obligation, Duty);
     this.target = value.target;
   }
 }

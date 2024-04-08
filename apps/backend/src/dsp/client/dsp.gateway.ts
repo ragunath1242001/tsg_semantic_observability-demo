@@ -12,19 +12,21 @@ import { Socket, Server } from "socket.io";
   cors: {
     origin: [
       "http://localhost:5173",
+      "http://localhost:5174",
       "http://localhost:3000",
       "http://localhost:3001",
+      "http://localhost:3002",
     ],
   },
 })
-export class NegotiationGateway
+export class DspGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
-  private readonly logger = new Logger(NegotiationGateway.name);
+  private readonly logger = new Logger(DspGateway.name);
   @WebSocketServer() server!: Server;
 
   afterInit() {
-    this.logger.log("Initialized Negotiation Gateway.");
+    this.logger.log("Initialized Dsp Gateway.");
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

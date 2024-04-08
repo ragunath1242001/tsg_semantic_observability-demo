@@ -45,12 +45,6 @@ export class DevWalletClient extends WalletClient {
           verificationMethod: "did:web:wallet.alpha.scsn.dataspac.es#key-0",
         },
       },
-      iat: Date.now(),
-      iss: "did:web:wallet-catena-x.alpha.scsn.dataspac.es",
-      sub: this.iamConfig.didId,
-      aud: audience,
-      exp: Date.now() + 60 * 60 * 24 * 1000,
-      jti: "5a06004e-2d39-4ccd-a0c4-cf8d36a287be",
     };
     const jwt = await new SignJWT({ vp: vp })
       .setProtectedHeader({ alg: "HS256" })

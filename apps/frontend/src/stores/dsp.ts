@@ -1,12 +1,18 @@
 import { defineStore } from "pinia";
 import { socket } from "../socket";
-import { NegotiationDetailDto, NegotiationStatusDto } from "@libs/dtos";
+import {
+  NegotiationDetailDto,
+  NegotiationStatusDto,
+  TransferDetailDto,
+  TransferStatusDto,
+} from "@libs/dtos";
 import http from "../utils/http";
-import { ref } from "vue";
 
-interface INegotiationStore {
+interface IDspStore {
   negotiations: NegotiationStatusDto[];
   ctaNegotiations: NegotiationDetailDto[];
+  transfers: TransferStatusDto[];
+  ctaTransfers: TransferDetailDto[];
 }
 
 const getNegotiations = async () => {
@@ -36,14 +42,37 @@ const getNegotiations = async () => {
   }
 };
 
-export const useNegotiationStore = defineStore("negotiations", {
-  state: (): INegotiationStore => ({
+const getTransfers = async () => {
+  try {
+    const response = await http.get("management/transfers");
+    const transfers = response.data;
+    const ctaTransfers = response.data.filter(
+      (transfer: TransferStatusDto) =>
+        (transfer.role == "provider" && transfer.state == "dspace:REQUESTED") ||
+        transfer.state == "dspace:STARTED" ||
+        transfer.state == "dspace:SUSPENDED"
+    );
+    return {
+      transfers: transfers,
+      ctaTransfers: ctaTransfers,
+    };
+  } catch (error) {
+    console.error("Error:", error);
+    throw error;
+  }
+};
+
+export const useDspStore = defineStore("dsp", {
+  state: (): IDspStore => ({
     negotiations: [],
     ctaNegotiations: [],
+    transfers: [],
+    ctaTransfers: [],
   }),
 
   getters: {
     negotiationsCount: (state) => state.ctaNegotiations.length,
+    ctaTransfersCount: (state) => state.ctaTransfers.length,
   },
 
   actions: {
@@ -53,6 +82,13 @@ export const useNegotiationStore = defineStore("negotiations", {
         const resp = await getNegotiations();
         this.negotiations = resp.negotiations;
         this.ctaNegotiations = resp.ctaNegotiations;
+      });
+
+      socket.on("connect", async () => {
+        console.log("Connected to websocket");
+        const resp = await getTransfers();
+        this.transfers = resp.transfers;
+        this.ctaTransfers = resp.ctaTransfers;
       });
 
       socket.on("negotiation:update", async (negotiation) => {
@@ -65,6 +101,17 @@ export const useNegotiationStore = defineStore("negotiations", {
         const resp = await getNegotiations();
         this.negotiations = resp.negotiations;
         this.ctaNegotiations = resp.ctaNegotiations;
+      });
+      socket.on("transfer:update", async (transfer) => {
+        const resp = await getTransfers();
+        this.transfers = resp.transfers;
+        this.ctaTransfers = resp.ctaTransfers;
+      });
+
+      socket.on("transfer:create", async (transfer) => {
+        const resp = await getTransfers();
+        this.transfers = resp.transfers;
+        this.ctaTransfers = resp.ctaTransfers;
       });
     },
   },

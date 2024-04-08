@@ -128,6 +128,7 @@ export class TsgWalletIatpConfig extends IamConfig {
   public readonly issuerFilter?: string;
 
   @IsOptional()
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public readonly customFields?: any[];
 }
 
@@ -156,6 +157,13 @@ export class UserConfig {
   @IsString()
   @Matches(/^\$2[aby]?\$\d{1,2}\$[./A-Za-z0-9]{53}$/g)
   public readonly password!: string;
+}
+
+export class RuntimeConfig {
+  @IsString()
+  @IsIn(["automatic", "semi-manual", "manual"])
+  public controlPlaneInteractions: "automatic" | "semi-manual" | "manual" =
+    "automatic";
 }
 
 export class InitCatalog {
@@ -223,4 +231,9 @@ export class RootConfig {
   @Type(() => InitCatalog)
   @IsDefined()
   public readonly initCatalog!: InitCatalog;
+
+  @ValidateNested()
+  @Type(() => RuntimeConfig)
+  @IsDefined()
+  public readonly runtime!: RuntimeConfig;
 }

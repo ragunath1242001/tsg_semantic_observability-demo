@@ -4,10 +4,10 @@ db:
   # database: control-plane.sqlite
 
 server:
-  port: "3000"
+  port: "3002"
   listen: "0.0.0.0"
-  publicDomain: localhost:3000
-  publicAddress: http://localhost:3000/api
+  publicDomain: localhost:3002
+  publicAddress: http://localhost:3002/api
 
 runtime:
   controlPlaneInteractions: manual
@@ -30,8 +30,8 @@ users:
     password: $2a$12$/1aqZWSslSi8E556dpChNOxOyEv3hPA.k8asnRk9iIN2bxH6VGUE6
 
 initCatalog:
-  creator: did:web:localhost%3A3001
-  publisher: did:web:localhost%3A3001
+  creator: did:web:localhost%3A3002
+  publisher: did:web:localhost%3A3002
   title: TSG Test Connector
   description: TSG Test Connector testing Data Space Protocol support
   datasets:

@@ -31,12 +31,11 @@ import {
   NegotiationProcessEventDao,
 } from "../../model/dsp/negotiation/negotiation.dao";
 import { TypeOrmTestHelper } from "../../utils/testhelper";
-import { NegotiationGateway } from "./negotiation.gateway";
+import { DspGateway } from "../client/dsp.gateway";
 
 describe("NegotiationController", () => {
   let negotiationController: NegotiationController;
   let negotiationService: NegotiationService;
-  let negotiationGateway: NegotiationGateway;
   let providerNegotiationId: string;
   let consumerNegotiationId: string;
   let server: SetupServer;
@@ -93,7 +92,7 @@ describe("NegotiationController", () => {
       providers: [
         NegotiationService,
         DspClientService,
-        NegotiationGateway,
+        DspGateway,
         { provide: ServerConfig, useValue: plainToClass(ServerConfig, {}) },
         {
           provide: RootConfig,
@@ -125,8 +124,6 @@ describe("NegotiationController", () => {
           };
         }
       })
-      .overrideProvider(NegotiationGateway)
-      .useValue(negotiationGateway)
       .compile();
 
     negotiationController = moduleRef.get(NegotiationController);

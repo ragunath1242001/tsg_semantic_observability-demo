@@ -13,6 +13,7 @@ const layoutConfig = reactive({
 const layoutState = reactive({
   staticMenuDesktopInactive: false,
   overlayMenuActive: false,
+  configMenuActive: false,
   profileSidebarVisible: false,
   configSidebarVisible: false,
   staticMenuMobileActive: false,
@@ -33,6 +34,10 @@ export function useLayout() {
     layoutConfig.activeMenuItem = item.value || item;
   };
 
+  const onConfigButtonClick = () => {
+    layoutState.configMenuActive = !layoutState.configMenuActive;
+  };
+
   const onMenuToggle = () => {
     if (layoutConfig.menuMode === "overlay") {
       layoutState.overlayMenuActive = !layoutState.overlayMenuActive;
@@ -49,7 +54,6 @@ export function useLayout() {
   const isSidebarActive = computed(
     () => layoutState.overlayMenuActive || layoutState.staticMenuMobileActive
   );
-
   const isDarkTheme = computed(() => layoutConfig.darkTheme);
 
   return {
@@ -57,6 +61,7 @@ export function useLayout() {
     layoutState: toRefs(layoutState),
     changeThemeSettings,
     setScale,
+    onConfigButtonClick,
     onMenuToggle,
     isSidebarActive,
     isDarkTheme,

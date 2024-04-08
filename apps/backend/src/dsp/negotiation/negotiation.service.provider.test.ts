@@ -25,9 +25,11 @@ import {
   ContractRequestMessage,
 } from "../../model/dsp/negotiation/messages";
 import { Multilanguage } from "../../model/dsp/common";
+import { DspGateway } from "../client/dsp.gateway";
 
 describe("Negotiation Service (Provider)", () => {
   let negotiationService: NegotiationService;
+  let dspGateway: DspGateway;
   let server: SetupServer;
   let remoteProcessId = "urn:uuid:51532177-8ae0-4d24-839e-c7bc969ddcfd";
 
@@ -50,6 +52,7 @@ describe("Negotiation Service (Provider)", () => {
       providers: [
         NegotiationService,
         DspClientService,
+        DspGateway,
         {
           provide: AuthService,
           useValue: new (class {
@@ -70,7 +73,10 @@ describe("Negotiation Service (Provider)", () => {
           useValue: serverConfig,
         },
       ],
-    }).compile();
+    })
+      .overrideProvider(DspGateway)
+      .useValue(dspGateway)
+      .compile();
 
     server = setupServer(
       http.post<PathParams, ContractAgreementVerificationMessageDto>(

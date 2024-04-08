@@ -2,8 +2,12 @@ import { DataPlaneTransferDto } from "@libs/dtos";
 import { TransferState } from "@tsg-dsp/common";
 import { Multilanguage } from "../common";
 import { TransferProcess, DataAddress } from "./messages";
-
-export type TransferRole = "provider" | "consumer";
+import { TransferRole } from "@libs/dtos";
+import {
+  createInstance,
+  createInstances,
+  createOptionalInstances,
+} from "../../../utils/instances";
 
 export interface ITransferEvent {
   time: Date;
@@ -27,7 +31,7 @@ export class TransferEvent {
     this.state = value.state;
     this.localMessage = value.localMessage;
     this.code = value.code;
-    this.reason = value.reason;
+    this.reason = createOptionalInstances(value.reason, Multilanguage);
     this.type = value.type;
   }
 }
@@ -62,7 +66,7 @@ export class TransferStatus {
     this.remoteAddress = value.remoteAddress;
     this.remoteParty = value.remoteParty;
     this.state = value.state;
-    this.process = new TransferProcess(value.process);
+    this.process = createInstance(value.process, TransferProcess);
     this.agreementId = value.agreementId;
     this.format = value.format;
   }
@@ -83,6 +87,6 @@ export class TransferDetail extends TransferStatus {
     super(value);
     this.dataAddress = value.dataAddress;
     this.dataPlaneTransfer = value.dataPlaneTransfer;
-    this.events = value.events;
+    this.events = createInstances(value.events, TransferEvent);
   }
 }

@@ -4,6 +4,7 @@ import DashboardVue from "../views/Dashboard.vue";
 import CatalogVue from "../views/Catalog.vue";
 import LoginVue from "../views/Login.vue";
 import NegotiationsVue from "../views/Negotiations.vue";
+import TransfersVue from "../views/Transfers.vue";
 
 const router = createRouter({
   history: createWebHashHistory(),
@@ -26,6 +27,11 @@ const router = createRouter({
           path: "/negotiations",
           name: "negotiations",
           component: NegotiationsVue,
+        },
+        {
+          path: "/transfers",
+          name: "transfers",
+          component: TransfersVue,
         },
       ],
     },
