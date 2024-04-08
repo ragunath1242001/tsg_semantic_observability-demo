@@ -288,8 +288,6 @@ export class TransferService {
   ): Promise<{ status: string }> {
     const transfer = await this.getTransfer(processId);
     let dataAddress: DataAddress | undefined;
-    this.logger.log(dataPlaneAddress);
-    this.logger.log(JSON.stringify(transfer));
     if (dataPlaneAddress && dataPlaneAddress.endpoint) {
       dataAddress = new DataAddress({
         endpoint: dataPlaneAddress.endpoint,
@@ -299,7 +297,6 @@ export class TransferService {
           [],
       });
     } else {
-      this.logger.log(transfer.dataAddress);
       dataAddress = new DataAddress({
         endpoint: transfer.dataAddress?.endpoint || "",
         endpointType: transfer.dataAddress?.endpointType || "",

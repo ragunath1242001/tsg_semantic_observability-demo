@@ -1,6 +1,5 @@
 import { io } from "socket.io-client";
 
-console.log(process.env.BACKEND);
 const localUrl = process.env.BACKEND
   ? process.env.BACKEND
   : "http://localhost:3000";
