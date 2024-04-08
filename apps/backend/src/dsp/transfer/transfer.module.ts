@@ -10,7 +10,6 @@ import {
   TransferDetailDao,
   TransferEventDao,
 } from "../../model/dsp/transfer/transfer.dao";
-import { DspGateway } from "../client/dsp.gateway";
 
 @Module({
   imports: [
@@ -20,7 +19,7 @@ import { DspGateway } from "../client/dsp.gateway";
     TypeOrmModule.forFeature([TransferDetailDao, TransferEventDao]),
   ],
   controllers: [TransferController, TransferManagementController],
-  providers: [TransferService, DspGateway],
+  providers: [TransferService],
   exports: [TransferService],
 })
 export class TransferModule {}
