@@ -71,6 +71,14 @@ release:
   only:
     refs:
       - main
+publish:
+  stage: release
+  script:
+    - pnpm i
+    - npx semantic-release
+  only:
+    refs:
+      - main
 
 include:
   - template: Jobs/Dependency-Scanning.gitlab-ci.yml
