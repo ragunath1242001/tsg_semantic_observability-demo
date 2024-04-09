@@ -14,6 +14,7 @@ build:
     - corepack prepare pnpm@latest-8 --activate
     - pnpm config set store-dir .pnpm-store
   script:
+    - pnpm install
     - pnpm build
   cache:
     key:
@@ -33,6 +34,7 @@ test:
     - corepack prepare pnpm@latest-8 --activate
     - pnpm config set store-dir .pnpm-store
   script:
+    - pnpm install
     - pnpm test:ci
   cache:
     key:
