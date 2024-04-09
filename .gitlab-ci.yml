@@ -53,7 +53,9 @@ test:
 
 release:
   stage: release
-  image: gcr.io/kaniko-project/executor:debug
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
   tags:
     - saas-linux-medium-amd64
   script:
