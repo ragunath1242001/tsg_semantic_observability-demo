@@ -42,6 +42,7 @@ test:
         - pnpm-lock.yaml
     paths:
       - .pnpm-store
+  coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/
   artifacts:
     reports:
       junit:
