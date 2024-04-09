@@ -16,7 +16,7 @@
     "schema:all": "npm run schema:dsp && npm run schema:data-planes",
     "jest": "jest",
     "jest:coverage": "jest --coverage --coverage-reporters text",
-    "jest:ci": "jest --coverage --coverage-reporters cobertura --ci --reporters=default --reporters=jest-junit"
+    "jest:ci": "jest --coverage --coverage-reporters cobertura --coverage-reporters text --ci --reporters=default --reporters=jest-junit"
   },
   "files": [
     "dist"
