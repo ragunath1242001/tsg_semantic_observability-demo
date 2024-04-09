@@ -95,5 +95,7 @@ include:
   - template: Jobs/Container-Scanning.gitlab-ci.yml
 
 container_scanning:
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
   variables:
     CS_IMAGE: "${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_SLUG}"
