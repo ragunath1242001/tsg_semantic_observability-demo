@@ -1,4 +1,4 @@
-image: node:20-slim
+image: node:20
 
 stages:
   - build
@@ -7,17 +7,20 @@ stages:
 
 build:
   stage: build
-  image: node:20-slim
+  tags:
+    - saas-linux-medium-amd64
+  before_script:
+    - corepack enable
+    - corepack prepare pnpm@latest-8 --activate
+    - pnpm config set store-dir .pnpm-store
   script:
     - pnpm build
   cache:
+    key:
+      files:
+        - pnpm-lock.yaml
     paths:
-      - node_modules/
-  artifacts:
-    expire_in: "1 days"
-    when: on_success
-    paths:
-      - "node_modules/"
+      - .pnpm-store
 
 test:
   stage: test
@@ -25,8 +28,18 @@ test:
     - saas-linux-medium-amd64
   dependencies:
     - build
+  before_script:
+    - corepack enable
+    - corepack prepare pnpm@latest-8 --activate
+    - pnpm config set store-dir .pnpm-store
   script:
     - pnpm test:ci
+  cache:
+    key:
+      files:
+        - pnpm-lock.yaml
+    paths:
+      - .pnpm-store
   artifacts:
     reports:
       junit:
