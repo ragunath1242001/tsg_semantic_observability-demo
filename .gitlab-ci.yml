@@ -1,47 +1,59 @@
-image: gcr.io/kaniko-project/executor:debug
+image: node:20-slim
 
 stages:
+  - build
+  - test
   - release
 
-before_script:
-  - mkdir -p /kaniko/.docker
-  - echo "$CONFIG_JSON" > "/kaniko/.docker/config.json"
+build:
+  stage: build
+  image: node:20-slim
+  script:
+    - pnpm build
+  cache:
+    paths:
+      - node_modules/
+  artifacts:
+    expire_in: "1 days"
+    when: on_success
+    paths:
+      - "node_modules/"
+
+test:
+  stage: test
+  tags:
+    - saas-linux-medium-amd64
+  dependencies:
+    - build
+  script:
+    - pnpm test:ci
+  artifacts:
+    reports:
+      junit:
+        - apps/backend/junit.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: apps/backend/coverage/cobertura-coverage.xml
 
 release:
   stage: release
+  image: gcr.io/kaniko-project/executor:debug
   tags:
-    - k8s
-  variables:
-    IMAGE_NAME: docker.nexus.dataspac.es/dsp/control-plane
+    - saas-linux-medium-amd64
   script:
+    - mkdir -p /kaniko/.docker
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"auth\":\"$(echo -n $CI_REGISTRY_USER:$CI_REGISTRY_PASSWORD | base64)\"}}}" > /kaniko/.docker/config.json
     - >-
       /kaniko/executor
       --context "${CI_PROJECT_DIR}"
       --build-arg BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
       --build-arg BUILD_SHA=${CI_COMMIT_SHORT_SHA}
       --dockerfile "${CI_PROJECT_DIR}/Dockerfile"
-      --destination "${IMAGE_NAME}:${CI_COMMIT_REF_NAME//\//-}"
-      --destination "${IMAGE_NAME}:${CI_COMMIT_REF_NAME//\//-}-${CI_COMMIT_SHORT_SHA}"
-  except:
-    variables:
-      - $RELEASE_VERSION
-
-release_version:
-  stage: release
-  tags:
-    - k8s
-  variables:
-    IMAGE_NAME: docker.nexus.dataspac.es/dsp/control-plane
-  script:
-    - >-
-      /kaniko/executor
-      --context "${CI_PROJECT_DIR}"
-      --build-arg BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
-      --build-arg BUILD_SHA=${CI_COMMIT_SHORT_SHA}
-      --dockerfile "${CI_PROJECT_DIR}/Dockerfile"
-      --destination "${IMAGE_NAME}:${RELEASE_VERSION}"
+      --destination "${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME//\//-}"
   only:
     refs:
-      - master
-    variables:
-      - $RELEASE_VERSION
+      - main
+
+include:
+  - template: Jobs/Dependency-Scanning.gitlab-ci.yml
+  - template: Jobs/Container-Scanning.gitlab-ci.yml
