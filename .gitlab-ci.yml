@@ -86,9 +86,6 @@ publish:
         - pnpm-lock.yaml
     paths:
       - .pnpm-store
-  only:
-    refs:
-      - main
   rules:
     - if: '$RELEASE_NOW == "true"'
 
