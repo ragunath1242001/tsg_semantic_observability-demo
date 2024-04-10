@@ -11,12 +11,19 @@
     "dev:embedded": "pnpm --filter frontend build && CONFIG_PATH=\"./config.yaml\" EMBEDDED_FRONTEND=\"../frontend/dist\" pnpm run --filter backend watch",
     "start": "pnpm --filter backend build && pnpm --filter backend start",
     "start:prod": "pnpm --filter backend start",
-    "test": "pnpm -r jest"
+    "test": "pnpm -r jest",
+    "test:coverage": "pnpm -r jest:coverage",
+    "test:ci": "pnpm -r jest:ci"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "prettier": "^2.7.1"
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/gitlab": "^13.0.3",
+    "@semantic-release/gitlab-config": "^14.0.1",
+    "prettier": "^2.7.1",
+    "semantic-release": "^23.0.7"
   }
 }
