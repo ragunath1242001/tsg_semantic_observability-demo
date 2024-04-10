@@ -25,6 +25,8 @@ build:
 
 test:
   stage: test
+  variables:
+    NODE_OPTIONS: "--experimental-vm-modules"
   tags:
     - saas-linux-medium-amd64
   dependencies:
