@@ -1,47 +1,100 @@
-image: gcr.io/kaniko-project/executor:debug
+image: node:20
 
 stages:
+  - build
+  - test
   - release
 
-before_script:
-  - mkdir -p /kaniko/.docker
-  - echo "$CONFIG_JSON" > "/kaniko/.docker/config.json"
+build:
+  stage: build
+  tags:
+    - saas-linux-medium-amd64
+  before_script:
+    - corepack enable
+    - corepack prepare pnpm@latest-8 --activate
+    - pnpm config set store-dir .pnpm-store
+  script:
+    - pnpm install
+    - pnpm build
+  cache:
+    key:
+      files:
+        - pnpm-lock.yaml
+    paths:
+      - .pnpm-store
+
+test:
+  stage: test
+  tags:
+    - saas-linux-medium-amd64
+  dependencies:
+    - build
+  before_script:
+    - corepack enable
+    - corepack prepare pnpm@latest-8 --activate
+    - pnpm config set store-dir .pnpm-store
+  script:
+    - pnpm install
+    - pnpm test:ci
+  cache:
+    key:
+      files:
+        - pnpm-lock.yaml
+    paths:
+      - .pnpm-store
+  coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/
+  artifacts:
+    reports:
+      junit:
+        - apps/backend/junit.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: apps/backend/coverage/cobertura-coverage.xml
 
 release:
   stage: release
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
   tags:
-    - k8s
-  variables:
-    IMAGE_NAME: docker.nexus.dataspac.es/dsp/data-plane/http-test
+    - saas-linux-medium-amd64
   script:
+    - mkdir -p /kaniko/.docker
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"auth\":\"$(echo -n $CI_REGISTRY_USER:$CI_REGISTRY_PASSWORD | base64)\"}}}" > /kaniko/.docker/config.json
     - >-
       /kaniko/executor
       --context "${CI_PROJECT_DIR}"
       --build-arg BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
       --build-arg BUILD_SHA=${CI_COMMIT_SHORT_SHA}
       --dockerfile "${CI_PROJECT_DIR}/Dockerfile"
-      --destination "${IMAGE_NAME}:${CI_COMMIT_REF_NAME//\//-}"
-      --destination "${IMAGE_NAME}:${CI_COMMIT_REF_NAME//\//-}-${CI_COMMIT_SHORT_SHA}"
-  except:
-    variables:
-      - $RELEASE_VERSION
-
-release_version:
-  stage: release
-  tags:
-    - k8s
-  variables:
-    IMAGE_NAME: docker.nexus.dataspac.es/dsp/data-plane/http-test
-  script:
-    - >-
-      /kaniko/executor
-      --context "${CI_PROJECT_DIR}"
-      --build-arg BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
-      --build-arg BUILD_SHA=${CI_COMMIT_SHORT_SHA}
-      --dockerfile "${CI_PROJECT_DIR}/Dockerfile"
-      --destination "${IMAGE_NAME}:${RELEASE_VERSION}"
+      --destination "${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_SLUG}"
   only:
     refs:
-      - master
-    variables:
-      - $RELEASE_VERSION
+      - main
+publish:
+  stage: release
+  before_script:
+    - corepack enable
+    - corepack prepare pnpm@latest-8 --activate
+    - pnpm config set store-dir .pnpm-store
+  script:
+    - pnpm install
+    - npx semantic-release
+  cache:
+    key:
+      files:
+        - pnpm-lock.yaml
+    paths:
+      - .pnpm-store
+  rules:
+    - if: '$RELEASE_NOW == "true"'
+
+include:
+  - template: Jobs/Dependency-Scanning.gitlab-ci.yml
+  - template: Jobs/Container-Scanning.gitlab-ci.yml
+
+container_scanning:
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+  variables:
+    CS_IMAGE: "${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_SLUG}"
