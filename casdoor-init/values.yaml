@@ -6,7 +6,7 @@ serviceAccount:
 
 nameOverride: casdoor
 
-image: docker.nexus.dataspac.es/dsp/utils/casdoor-init:main
+image: registry.gitlab.com/tno-tsg/dataspace-protocol/utils/casdoor-init:main
 
 initConfig:
   url: # https://casdoor.heracles.dataspac.es

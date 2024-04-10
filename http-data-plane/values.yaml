@@ -1,6 +1,6 @@
 host: http-data-plane-spa.alpha.scsn.dataspac.es
 
-image: docker.nexus.dataspac.es/dsp/data-plane/http-test:main
+image: registry.gitlab.com/tno-tsg/dataspace-protocol/http-data-plane:main
 replicaCount: 1
 
 ingress:

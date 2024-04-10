@@ -7,7 +7,7 @@ stages:
 .release:
   stage: release
   tags:
-    - k8s
+    - saas-linux-small-amd64
   script:
     - cd $FOLDER
     - helm dep update
@@ -15,7 +15,7 @@ stages:
     # replace / with -
     - BRANCH_NAME=${CI_COMMIT_REF_NAME/\//-}
     - helm package --version "$VERSION-$BRANCH_NAME" .
-    - curl -u $TSG_NEXUS_USERNAME:$TSG_NEXUS_PASSWORD https://nexus.dataspac.es/repository/tsg-helm/ --upload-file *.tgz -v
+    - curl --request POST --user gitlab-ci-token:$CI_JOB_TOKEN --form "chart=@$( ls *.tgz | head -n1 )" "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/helm/api/devel/charts"
   rules:
     - if: $CI_COMMIT_BRANCH != "main"
       changes:
@@ -25,12 +25,12 @@ stages:
 .release_version:
   stage: release-version
   tags:
-    - k8s
+    - saas-linux-small-amd64
   script:
     - cd $FOLDER
     - helm dep update
     - helm package .
-    - curl -u $TSG_NEXUS_USERNAME:$TSG_NEXUS_PASSWORD https://nexus.dataspac.es/repository/tsg-helm/ --upload-file *.tgz -v
+    - curl --request POST --user gitlab-ci-token:$CI_JOB_TOKEN --form "chart=@$( ls *.tgz | head -n1 )" "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/helm/api/stable/charts"
   rules:
     - if: $CI_COMMIT_BRANCH == "main"
       changes:

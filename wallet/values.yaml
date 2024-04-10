@@ -1,4 +1,4 @@
-image: docker.nexus.dataspac.es/dsp/wallet:main
+image: registry.gitlab.com/tno-tsg/dataspace-protocol/wallet:main
 replicaCount: 1
 
 ingress:

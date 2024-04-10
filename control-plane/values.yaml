@@ -1,6 +1,6 @@
 host: # example.com
 
-image: docker.nexus.dataspac.es/dsp/control-plane:main
+image: registry.gitlab.com/tno-tsg/dataspace-protocol/control-plane:main
 replicaCount: 1
 
 ingress:
