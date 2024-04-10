@@ -12,11 +12,13 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { DidService } from "../did/did.service.js";
 import { KeysService } from "../keys/keys.service.js";
 import { PresentationService } from "./presentation.service.js";
-import { describe, expect, beforeAll, afterAll, it } from "@jest/globals";
+import { describe, expect, beforeAll, afterAll, it, jest } from "@jest/globals";
 import { DidResolverService } from "../did/did.resolver.service.js";
 import { VerifiablePresentationJwt } from "@tsg-dsp/common";
 import { SetupServer, setupServer } from "msw/node";
 import { HttpResponse, http } from "msw";
+
+jest.useFakeTimers({ legacyFakeTimers: true });
 
 describe("Presentation Service", () => {
   let presentationService: PresentationService;
