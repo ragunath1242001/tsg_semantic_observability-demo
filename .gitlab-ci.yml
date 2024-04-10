@@ -89,6 +89,8 @@ publish:
   only:
     refs:
       - main
+  rules:
+    - if: '$RELEASE_NOW == "true"'
 
 include:
   - template: Jobs/Dependency-Scanning.gitlab-ci.yml
