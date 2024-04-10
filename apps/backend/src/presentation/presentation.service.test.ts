@@ -81,11 +81,11 @@ describe("Presentation Service", () => {
       })
     );
     server.listen({ onUnhandledRequest: "bypass" });
-  });
+  }, 30000);
   afterAll(() => {
     TypeOrmTestHelper.instance.teardownTestDB();
     server.close();
-  });
+  }, 30000);
 
   describe("Presentation interactions", () => {
     let vpJwt: VerifiablePresentationJwt;

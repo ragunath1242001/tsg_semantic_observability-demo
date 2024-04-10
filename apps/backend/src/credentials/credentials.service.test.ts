@@ -164,12 +164,12 @@ describe("Credentials Service", () => {
     await credentialsService.initialized;
     await credentialsService.init();
     didId = await moduleRef.get(DidService).getDidId();
-  });
+  }, 30000);
 
   afterAll(() => {
     server.close();
     TypeOrmTestHelper.instance.teardownTestDB();
-  });
+  }, 30000);
 
   describe("Credentials CRUD", () => {
     it("Get credentials initial credentials", async () => {
