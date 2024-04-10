@@ -72,6 +72,8 @@ release:
   only:
     refs:
       - main
+      - tags
+
 publish:
   stage: release
   before_script:
