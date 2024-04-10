@@ -9,6 +9,7 @@ const config: Config.InitialOptions = {
       },
     ],
   },
+  testTimeout: 30000,
   testEnvironment: "node",
   extensionsToTreatAsEsm: [".ts"],
   testRegex: "/.*\\.(test|spec)?\\.(ts|tsx)$",

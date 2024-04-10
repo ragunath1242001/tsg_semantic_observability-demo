@@ -22,8 +22,6 @@ import {
 import { toArray } from "../utils/unions.js";
 import { ComplianceRequest, LegalRegistrationNumberRequest } from "@libs/dtos";
 
-jest.useFakeTimers({ legacyFakeTimers: true });
-
 describe("Credentials Service", () => {
   let credentialsService: CredentialsService;
   let server: SetupServer;
@@ -164,12 +162,12 @@ describe("Credentials Service", () => {
     await credentialsService.initialized;
     await credentialsService.init();
     didId = await moduleRef.get(DidService).getDidId();
-  }, 30000);
+  });
 
   afterAll(() => {
     server.close();
     TypeOrmTestHelper.instance.teardownTestDB();
-  }, 30000);
+  });
 
   describe("Credentials CRUD", () => {
     it("Get credentials initial credentials", async () => {

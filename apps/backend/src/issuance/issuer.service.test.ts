@@ -169,22 +169,26 @@ describe("Issuer service", () => {
         .setAudience("http://localhost:3000")
         .setIssuedAt()
         .sign(exampleKey.privateKey);
-
-      const credential = await issuerService.handleCredentialRequest(
-        access_token.access_token,
-        {
-          format: "jwt_vc_json-ld",
-          credential_definition: {
-            "@context": [],
-            type: ["VerifiableCredential", "ExampleCredentialType"],
-          },
-          proof: {
-            proof_type: "jwt",
-            jwt: jwt,
-          },
-        }
-      );
-      console.log(JSON.stringify(credential));
+      try {
+        const credential = await issuerService.handleCredentialRequest(
+          access_token.access_token,
+          {
+            format: "jwt_vc_json-ld",
+            credential_definition: {
+              "@context": [],
+              type: ["VerifiableCredential", "ExampleCredentialType"],
+            },
+            proof: {
+              proof_type: "jwt",
+              jwt: jwt,
+            },
+          }
+        );
+        console.log(JSON.stringify(credential));
+      } catch (err) {
+        console.log(err);
+        throw err;
+      }
     });
 
     it("Issuer Metadata", async () => {

@@ -341,9 +341,11 @@ export class IssuerService {
       if (error instanceof AppError) {
         throw error.andLog(this.logger);
       } else {
-        throw new AppError(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR).andLog(
-          this.logger
-        );
+        throw new AppError(
+          `${error}`,
+          HttpStatus.INTERNAL_SERVER_ERROR,
+          error
+        ).andLog(this.logger);
       }
     }
   }

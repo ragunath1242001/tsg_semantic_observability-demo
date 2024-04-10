@@ -18,8 +18,6 @@ import { VerifiablePresentationJwt } from "@tsg-dsp/common";
 import { SetupServer, setupServer } from "msw/node";
 import { HttpResponse, http } from "msw";
 
-jest.useFakeTimers({ legacyFakeTimers: true });
-
 describe("Presentation Service", () => {
   let presentationService: PresentationService;
   let server: SetupServer;
@@ -81,11 +79,11 @@ describe("Presentation Service", () => {
       })
     );
     server.listen({ onUnhandledRequest: "bypass" });
-  }, 30000);
+  });
   afterAll(() => {
     TypeOrmTestHelper.instance.teardownTestDB();
     server.close();
-  }, 30000);
+  });
 
   describe("Presentation interactions", () => {
     let vpJwt: VerifiablePresentationJwt;
