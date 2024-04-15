@@ -6,9 +6,10 @@ import {
   ValidateNested,
   IsDefined,
   IsUrl,
-  Matches,
   ArrayMinSize,
   IsIn,
+  IsBoolean,
+  ValidateIf,
 } from "class-validator";
 
 export abstract class DatabaseConfig {
@@ -49,6 +50,41 @@ export class ServerConfig {
   public readonly publicAddress: string = `http://localhost:3001`;
 }
 
+export class AuthConfig {
+  @IsBoolean()
+  public readonly enabled: boolean = true;
+  @ValidateIf((c) => c.enabled)
+  @IsUrl({ require_tld: false, require_protocol: true, require_host: false })
+  public readonly authorizationURL!: string;
+  @ValidateIf((c) => c.enabled)
+  @IsUrl({ require_tld: false, require_protocol: true, require_host: false })
+  public readonly tokenURL!: string;
+  @ValidateIf((c) => c.enabled)
+  @IsUrl({ require_tld: false, require_protocol: true, require_host: false })
+  public readonly introspectionURL!: string;
+  @ValidateIf((c) => c.enabled)
+  @IsUrl({ require_tld: false, require_protocol: true, require_host: false })
+  public readonly callbackURL!: string;
+  @ValidateIf((c) => c.enabled)
+  @IsUrl({ require_tld: false, require_protocol: true, require_host: false })
+  public readonly redirectURL!: string;
+  @ValidateIf((c) => c.enabled)
+  @IsString()
+  public readonly clientID!: string;
+  @ValidateIf((c) => c.enabled)
+  @IsString()
+  public readonly clientSecret!: string;
+  @ValidateIf((c) => c.enabled)
+  @IsString()
+  public readonly clientUsername!: string;
+  @ValidateIf((c) => c.enabled)
+  @IsString()
+  public readonly clientPassword!: string;
+  @ValidateIf((c) => c.enabled)
+  @IsString()
+  public readonly rolePath: string = "$.roles[*].name";
+}
+
 export class ControlPlaneConfig {
   @IsString()
   @IsUrl({ require_tld: false })
@@ -59,19 +95,10 @@ export class ControlPlaneConfig {
   @IsString()
   @IsUrl({ require_tld: false })
   public readonly controlEndpoint!: string;
-  @IsString()
-  public readonly authorization!: string;
+  // @IsString()
+  // public readonly authorization!: string;
   @IsNumber()
   public readonly initializationDelay: number = 5000;
-}
-
-export class UserConfig {
-  @IsString()
-  public readonly username!: string;
-
-  @IsString()
-  @Matches(/^\$2[aby]?\$\d{1,2}\$[./A-Za-z0-9]{53}$/g)
-  public readonly password!: string;
 }
 
 export class DatasetConfig {
@@ -128,6 +155,13 @@ export class RootConfig {
   public readonly db!: DatabaseConfig;
 
   @ValidateNested()
+  @IsDefined({
+    message: "OAuth2.0 configuration must be provided",
+  })
+  @Type(() => AuthConfig)
+  public readonly auth!: AuthConfig;
+
+  @ValidateNested()
   @IsOptional()
   @Type(() => ServerConfig)
   public readonly server: ServerConfig = new ServerConfig();
@@ -136,11 +170,6 @@ export class RootConfig {
   @IsDefined()
   @Type(() => ControlPlaneConfig)
   public readonly controlPlane!: ControlPlaneConfig;
-
-  @ValidateNested()
-  @Type(() => UserConfig)
-  @ArrayMinSize(1)
-  public readonly users!: UserConfig[];
 
   @ValidateNested()
   @Type(() => DatasetConfig)

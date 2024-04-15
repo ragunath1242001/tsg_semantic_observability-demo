@@ -22,13 +22,17 @@ import {
   TransferSuspensionMessageDto,
   TransferTerminationMessageDto,
 } from "@tsg-dsp/common";
+import { DisableOAuthGuard } from "../auth/oauth.guard";
+import { DisableRolesGuard, Roles } from "../auth/roles.guard";
 
 @Controller()
+@Roles("controlplane_dataplane")
 export class DataPlaneController {
   constructor(private readonly dataPlaneService: DataPlaneService) {}
   private readonly logger = new Logger(this.constructor.name);
 
   @Get("/catalog")
+  @Roles("wallet_manage_clients")
   @HttpCode(HttpStatus.NOT_IMPLEMENTED)
   async getCatalog() {
     return;
@@ -38,6 +42,8 @@ export class DataPlaneController {
     "/health",
     ...(process.env["EMBEDDED_FRONTEND"] ? ["/api/health"] : []),
   ])
+  @DisableOAuthGuard()
+  @DisableRolesGuard()
   @HttpCode(HttpStatus.OK)
   async healthCheck() {
     return;
@@ -54,7 +60,6 @@ export class DataPlaneController {
     this.logger.log(
       `Requesting transfer for ${role} with processId ${processId} and with message: ${JSON.stringify(body)}`,
     );
-    await this.dataPlaneService.checkManagementAuthorization(authorization);
     return await this.dataPlaneService.transferRequest(body, role, processId);
   }
 
@@ -68,7 +73,6 @@ export class DataPlaneController {
     this.logger.log(
       `Requesting transfer start for id ${id}, with message:${JSON.stringify(body)}`,
     );
-    await this.dataPlaneService.checkManagementAuthorization(authorization);
     return await this.dataPlaneService.transferStart(body, id);
   }
 
@@ -84,7 +88,6 @@ export class DataPlaneController {
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   ): Promise<any> {
     this.logger.log(`Requesting transfer execution for id ${id}`);
-    await this.dataPlaneService.checkManagementAuthorization(authorization);
     return await this.dataPlaneService.executeProxyRequest(
       id,
       version,
@@ -104,7 +107,6 @@ export class DataPlaneController {
     this.logger.log(
       `Requesting transfer complete for id ${id}, with message:${JSON.stringify(body)}`,
     );
-    await this.dataPlaneService.checkManagementAuthorization(authorization);
     await this.dataPlaneService.transferComplete(body, id);
   }
 
@@ -118,7 +120,6 @@ export class DataPlaneController {
     this.logger.log(
       `Requesting transfer terminate for id ${id}, with message:${JSON.stringify(body)}`,
     );
-    await this.dataPlaneService.checkManagementAuthorization(authorization);
     await this.dataPlaneService.transferTerminate(body, id);
   }
 
@@ -132,7 +133,6 @@ export class DataPlaneController {
     this.logger.log(
       `Requesting transfer suspend for id ${id}, with message:${JSON.stringify(body)}`,
     );
-    await this.dataPlaneService.checkManagementAuthorization(authorization);
     await this.dataPlaneService.transferSuspend(body, id);
   }
 }

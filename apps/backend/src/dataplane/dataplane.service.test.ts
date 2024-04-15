@@ -2,7 +2,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { DataPlaneService } from "./dataplane.service";
 import { DataPlaneController } from "./dataplane.controller";
 import { plainToClass } from "class-transformer";
-import { RootConfig } from "../config";
+import { AuthConfig, RootConfig } from "../config";
 import { SetupServer, setupServer } from "msw/node";
 import { HttpResponse, PathParams, http } from "msw";
 import { Request } from "express";
@@ -12,6 +12,7 @@ import { TypeOrmTestHelper } from "../utils/testhelper";
 import { TransferDao } from "./transfer.dao";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { DataPlaneStateDao } from "./dataplane.dao";
+import { AuthClientService } from "../auth/auth.client.service";
 
 describe("Dataplane Service", () => {
   let dataPlaneService: DataPlaneService;
@@ -97,6 +98,11 @@ describe("Dataplane Service", () => {
       controllers: [DataPlaneController],
       providers: [
         DataPlaneService,
+        AuthClientService,
+        {
+          provide: AuthConfig,
+          useValue: { enabled: false },
+        },
         {
           provide: RootConfig,
           useValue: config,

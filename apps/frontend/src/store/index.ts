@@ -3,41 +3,34 @@ import { createStore } from "vuex";
 
 export const store = createStore({
   state: {
-    username: localStorage.getItem("username") as string | null,
-    password: localStorage.getItem("password") as string | null,
+    user: null,
   },
   getters: {},
   mutations: {
-    credentialUpdate(state, payload) {
-      state.username = payload.username;
-      state.password = payload.password;
+    userInfo(state, payload) {
+      state.user = payload;
     },
   },
   actions: {
     async login({ commit }, payload) {
       try {
-        const response = await axiosInstance.get("/management/state", {
-          headers: {
-            Authorization: `Basic ${btoa(
-              `${payload.username}:${payload.password}`
-            )}`,
-          },
-        });
-        localStorage.setItem("username", payload.username);
-        localStorage.setItem("password", payload.password);
-        commit("credentialUpdate", payload);
+        const response = await axiosInstance.get("/auth/user");
+        if (
+          response.data.state === "unauthenticated" &&
+          payload.redirect === true
+        ) {
+          window.location.replace("/api/auth/login");
+        } else {
+          commit("userInfo", response.data.user);
+        }
       } catch (e) {
         console.log(e);
         throw new Error("Login failed");
       }
     },
     async logout({ commit }) {
-      localStorage.removeItem("username");
-      localStorage.removeItem("password");
-      commit("credentialUpdate", {
-        access_token: null,
-        refresh_token: null,
-      });
+      commit("userInfo", null);
+      window.location.replace("/api/auth/logout");
     },
   },
   modules: {},
@@ -47,15 +40,16 @@ export const axiosInstance = axios.create({
   baseURL: "/api/",
   timeout: 60000,
 });
-axiosInstance.interceptors.request.use(async (config) => {
-  if (
-    !config.headers.Authorization &&
-    store.state.username &&
-    store.state.password
-  ) {
-    config.headers.Authorization = `Basic ${btoa(
-      `${store.state.username}:${store.state.password}`
-    )}`;
-  }
-  return config;
-});
+await store.dispatch("login", { redirect: false });
+// axiosInstance.interceptors.request.use(async (config) => {
+//   if (
+//     !config.headers.Authorization &&
+//     store.state.username &&
+//     store.state.password
+//   ) {
+//     config.headers.Authorization = `Basic ${btoa(
+//       `${store.state.username}:${store.state.password}`
+//     )}`;
+//   }
+//   return config;
+// });

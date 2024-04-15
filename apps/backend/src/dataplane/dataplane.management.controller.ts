@@ -1,8 +1,10 @@
 import { Controller, Logger, Get, Headers } from "@nestjs/common";
 import { DataPlaneService } from "./dataplane.service";
 import { DataPlaneStateDto, TransferDto } from "@libs/dtos";
+import { Roles } from "../auth/roles.guard";
 
 @Controller("/management")
+@Roles("controlplane_dataplane")
 export class DataPlaneManagementController {
   constructor(private readonly dataPlaneService: DataPlaneService) {}
   private readonly logger = new Logger(this.constructor.name);
@@ -11,7 +13,6 @@ export class DataPlaneManagementController {
   async getState(
     @Headers("Authorization") authorization: string,
   ): Promise<DataPlaneStateDto> {
-    await this.dataPlaneService.checkManagementAuthorization(authorization);
     return await this.dataPlaneService.getState();
   }
 
@@ -19,7 +20,6 @@ export class DataPlaneManagementController {
   async getTransfers(
     @Headers("Authorization") authorization: string,
   ): Promise<TransferDto[]> {
-    await this.dataPlaneService.checkManagementAuthorization(authorization);
     return await this.dataPlaneService.getTransfers();
   }
 }

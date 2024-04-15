@@ -2,15 +2,24 @@ db:
   type: "sqlite"
   database: "test.db"
 
+auth:
+  enabled: false
+  # authorizationURL: https://localhost/login/oauth/authorize
+  # tokenURL: https://localhost/api/login/oauth/access_token
+  # introspectionURL: https://localhost/api/login/oauth/introspect
+  # callbackURL: http://localhost:5173/api/auth/callback
+  # clientID:
+  # clientSecret:
+  # clientUsername:
+  # clientPassword:
+  # rolePath: "$.roles[*].name"
+  # redirectURL: http://localhost:5173/
+
 controlPlane:
   dataPlaneEndpoint: http://localhost:3000/api/data-plane
   managementEndpoint: http://localhost:3000/api/management
   controlEndpoint: http://localhost:3000
   authorization: Basic YWRtaW46YWRtaW4=
-
-users:
-  - username: admin
-    password: $2a$12$/1aqZWSslSi8E556dpChNOxOyEv3hPA.k8asnRk9iIN2bxH6VGUE6 # admin
 
 dataset:
   title: HTTP Dataset

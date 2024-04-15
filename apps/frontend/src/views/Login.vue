@@ -69,49 +69,12 @@ const login = async (e) => {
             >
           </div>
           <div>
-            <form ref="loginForm" @submit.prevent="login">
-              <div class="field">
-                <label
-                  for="username"
-                  class="block text-900 text-xl font-medium mb-2"
-                  >Username</label
-                >
-                <InputText
-                  id="username"
-                  type="text"
-                  placeholder="Username"
-                  class="w-full mb-5"
-                  style="padding: 1rem"
-                  required
-                  v-model="username"
-                />
-              </div>
-              <div class="field">
-                <label
-                  for="password1"
-                  class="block text-900 font-medium text-xl mb-2"
-                  >Password</label
-                >
-                <Password
-                  id="password1"
-                  v-model="password"
-                  placeholder="Password"
-                  :toggleMask="true"
-                  :feedback="false"
-                  class="w-full mb-3"
-                  inputClass="w-full"
-                  required
-                  :inputStyle="{ padding: '1rem' }"
-                ></Password>
-              </div>
-              <div class="field">
-                <Button
-                  label="Sign In"
+            <Button
+                  label="Log In"
                   type="submit"
                   class="w-full p-3 mb-3 text-xl"
+                  @click="store.dispatch('login', {redirect: true})"
                 ></Button>
-              </div>
-            </form>
           </div>
         </div>
       </div>

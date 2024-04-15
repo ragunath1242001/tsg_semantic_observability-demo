@@ -26,6 +26,7 @@ import { TransferDao } from "./transfer.dao";
 import { DataPlaneStateDao } from "./dataplane.dao";
 import { DataPlaneError } from "../utils/errors/error";
 import { DataPlaneStateDto, TransferDto } from "@libs/dtos";
+import { AuthClientService } from "../auth/auth.client.service";
 
 @Injectable()
 export class DataPlaneService {
@@ -33,22 +34,17 @@ export class DataPlaneService {
   private readonly axiosManagement: AxiosInstance;
   constructor(
     private readonly config: RootConfig,
+    authClient: AuthClientService,
     @InjectRepository(TransferDao)
     private readonly transferRepository: Repository<TransferDao>,
     @InjectRepository(DataPlaneStateDao)
     private readonly stateRepository: Repository<DataPlaneStateDao>,
   ) {
     this.init();
-    this.axiosDataPlane = axios.create({
-      headers: {
-        Authorization: this.config.controlPlane.authorization,
-      },
+    this.axiosDataPlane = authClient.axiosInstance({
       baseURL: this.config.controlPlane.dataPlaneEndpoint,
     });
-    this.axiosManagement = axios.create({
-      headers: {
-        Authorization: this.config.controlPlane.authorization,
-      },
+    this.axiosManagement = authClient.axiosInstance({
       baseURL: this.config.controlPlane.managementEndpoint,
     });
   }
@@ -118,29 +114,6 @@ export class DataPlaneService {
         });
         this.state = state;
       }, this.config.controlPlane.initializationDelay);
-    }
-  }
-
-  async checkManagementAuthorization(authorization: string) {
-    if (authorization.startsWith("Basic ")) {
-      const [username, password] = atob(authorization.slice(6)).split(":");
-      const user = this.config.users.find((user) => user.username === username);
-      if (!user || !bcrypt.compareSync(password, user.password)) {
-        throw new HttpException(
-          `Wrong user credentials`,
-          HttpStatus.UNAUTHORIZED,
-        );
-      }
-    } else if (authorization.startsWith("Bearer ")) {
-      const token = authorization.slice(7);
-      if (token !== this.state?.managementToken) {
-        throw new HttpException(`Wrong token`, HttpStatus.UNAUTHORIZED);
-      }
-    } else {
-      throw new HttpException(
-        `No authorization present`,
-        HttpStatus.UNAUTHORIZED,
-      );
     }
   }
 

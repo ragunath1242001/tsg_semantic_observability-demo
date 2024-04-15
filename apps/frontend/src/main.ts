@@ -1,5 +1,6 @@
 import { createApp } from "vue";
 import App from "./App.vue";
+import { store } from "./store/index.js";
 import router from "./router/index.js";
 
 import PrimeVue from "primevue/config";
@@ -27,11 +28,10 @@ import ConfirmationService from "primevue/confirmationservice";
 import Panel from "primevue/panel";
 
 import "@/assets/styles.scss";
-import { store } from "./store/index.js";
 
 const app = createApp(App);
-app.use(router);
 app.use(store);
+app.use(router);
 app.use(PrimeVue, { ripple: true });
 app.use(ToastService);
 app.use(ConfirmationService);

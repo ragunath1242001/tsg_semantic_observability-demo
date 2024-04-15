@@ -16,11 +16,11 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      // "/api": {
-      //   target: "http://localhost:3001/",
-      //   rewrite: (path) => path.replace(/^\/api/, ""),
-      // },
-      "/api": "https://dp.dataguard.heracles.dataspac.es/",
+      "/api": {
+        target: "http://localhost:3001/",
+        rewrite: (path) => path.replace(/^\/api/, ""),
+      },
+      // "/api": "https://dp.dataguard.heracles.dataspac.es/",
       // "/api": "https://dp.healthharbormc.heracles.dataspac.es/",
     },
   },

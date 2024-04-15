@@ -3,6 +3,7 @@ import { DataPlaneTestModule } from "./dataplane/dataplane.module";
 import { ConfigModule, config } from "./config.module";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { ServeStaticModule } from "@nestjs/serve-static";
+import { AuthModule } from "./auth/auth.module";
 
 const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
   ? [
@@ -16,6 +17,7 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
 @Module({
   imports: [
     DataPlaneTestModule,
+    AuthModule,
     ConfigModule,
     TypeOrmModule.forRoot({
       ...config.db,
@@ -24,7 +26,7 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
     }),
     ...embeddedFrontend,
   ],
-  exports: [DataPlaneTestModule],
+  exports: [DataPlaneTestModule, AuthModule],
   controllers: [],
 })
 export class AppModule {}
