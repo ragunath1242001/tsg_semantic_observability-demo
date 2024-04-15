@@ -1,8 +1,17 @@
-import { Controller, Get, HttpCode, HttpStatus, Logger } from "@nestjs/common";
+import {
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Logger,
+  UseGuards,
+} from "@nestjs/common";
 import { CatalogDto } from "@tsg-dsp/common";
 import { RegistryService } from "./registry.service";
 import { CredentialAddressDto } from "@libs/dtos";
+import { VerifiablePresentationGuard } from "../auth/verifiablePresentation.guard";
 
+@UseGuards(VerifiablePresentationGuard)
 @Controller("registry")
 export class RegistryController {
   constructor(private readonly registryService: RegistryService) {}
@@ -18,11 +27,6 @@ export class RegistryController {
         return catalog.serialize();
       })
     );
-  }
-
-  @Get("request")
-  async requestCatalogs(): Promise<CatalogDto[]> {
-    return await this.registryService.requestCatalogs();
   }
 
   @Get("addresses")

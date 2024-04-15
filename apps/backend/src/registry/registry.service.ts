@@ -1,4 +1,11 @@
-import { HttpStatus, Injectable, Logger, Optional } from "@nestjs/common";
+import {
+  HttpStatus,
+  Injectable,
+  Logger,
+  OnApplicationBootstrap,
+  OnModuleInit,
+  Optional,
+} from "@nestjs/common";
 import { RegistryConfig } from "../config";
 import { InjectRepository } from "@nestjs/typeorm";
 import {
@@ -16,14 +23,13 @@ import { DIDDocument } from "did-resolver";
 import { Repository } from "typeorm";
 import { Catalog, Dataset, Resource } from "../model/dsp/catalog/catalog";
 import { deserialize } from "../model/serialize";
-import axios from "axios";
-import { DSPClientError, DSPError } from "../utils/errors/error";
 import { CatalogService } from "../dsp/catalog/catalog.service";
 import { CredentialAddressDto } from "@libs/dtos";
 import { AuthService } from "../auth/auth.service";
+import { DSPError } from "../utils/errors/error";
 
 @Injectable()
-export class RegistryService {
+export class RegistryService implements OnApplicationBootstrap {
   constructor(
     @InjectRepository(CatalogDao)
     private readonly catalogRepository: Repository<CatalogDao>,
@@ -40,15 +46,19 @@ export class RegistryService {
     private readonly authService: AuthService,
     @Optional()
     private readonly registryConfig?: RegistryConfig
-  ) {
+  ) {}
+
+  private readonly logger = new Logger(RegistryService.name);
+
+  onApplicationBootstrap() {
     this.createJob();
   }
-  private readonly logger = new Logger(this.constructor.name);
 
   private async createJob() {
-    if (this.registryConfig) {
+    this.logger.log("Creating job for registry interval.");
+    if (this.registryConfig?.isRegistry === true) {
       const interval = setInterval(
-        this.crawl,
+        this.crawl.bind(this),
         this.registryConfig.registryIntervalInMilliseconds
       );
       this.schedulerRegistry.addInterval("crawl", interval);
@@ -67,7 +77,7 @@ export class RegistryService {
 
   async fetchAddresses(): Promise<CredentialAddressDto[]> {
     const didDocuments = await this.fetchDidDocuments();
-    return didDocuments.flatMap((didDocument) => {
+    const credentialAddresses = didDocuments.flatMap((didDocument) => {
       return didDocument
         .service!.filter((service) => service.type === "connector")
         .filter((service) => typeof service.serviceEndpoint === "string")
@@ -78,6 +88,14 @@ export class RegistryService {
           };
         });
     });
+
+    // Return unique addresses
+    return credentialAddresses.filter(
+      (obj, index) =>
+        credentialAddresses.findIndex(
+          (item) => item.address === item.address
+        ) === index
+    );
   }
   async fetchFlatAddresses(): Promise<string[]> {
     const didDocuments = await this.fetchDidDocuments();
@@ -89,15 +107,18 @@ export class RegistryService {
           .flatMap((service) => service.serviceEndpoint);
       }
     });
-
-    return addresses;
+    // Return unique addresses
+    return [...new Set(addresses)];
   }
 
-  async getCatalogs(addresses: string[]): Promise<CatalogDto[]> {
+  async getCatalogs(
+    credentialAddresses: CredentialAddressDto[]
+  ): Promise<CatalogDto[]> {
     const catalogPromises = Promise.all(
-      addresses.map((address) =>
+      credentialAddresses.map((credentialAddress) =>
         this.dsp.requestCatalog(
-          normalizeAddress(address, 0, "catalog", "request")
+          normalizeAddress(credentialAddress.address, 0, "catalog", "request"),
+          credentialAddress.didId
         )
       )
     );
@@ -129,10 +150,18 @@ export class RegistryService {
         await this.catalogRepository.save(catalogObj);
         if (catalogInst.dataset) {
           await Promise.all(
-            catalogInst.dataset.map(
-              async (dS) =>
-                await this.catalogService.addDataset(dS, catalogObj.id)
-            )
+            catalogInst.dataset.map(async (dS) => {
+              try {
+                await this.catalogService.addDataset(dS, catalogObj.id);
+              } catch (err) {
+                if (
+                  err instanceof DSPError &&
+                  err.appResponse.status === HttpStatus.CONFLICT
+                ) {
+                  await this.catalogService.updateDataset(dS.id, dS);
+                }
+              }
+            })
           );
         }
       })
@@ -142,7 +171,7 @@ export class RegistryService {
 
   async crawl() {
     this.logger.log("Crawling addresses and catalogs.");
-    const addresses = await this.fetchFlatAddresses();
+    const addresses = await this.fetchAddresses();
     const catalogs = await this.getCatalogs(addresses);
     return await this.saveToDatabase(catalogs);
   }
@@ -170,22 +199,5 @@ export class RegistryService {
       },
     });
     return catalogDaos.map((catalog) => new Catalog(catalog));
-  }
-
-  async requestCatalogs(): Promise<CatalogDto[]> {
-    if (!this.registryConfig || !this.registryConfig.registryUrl) {
-      throw new DSPError(
-        "No registry URL provided in the configuration.",
-        HttpStatus.PRECONDITION_REQUIRED
-      ).andLog(this.logger, "warn");
-    }
-    try {
-      return await axios.get(`${this.registryConfig.registryUrl}/registry`);
-    } catch (err) {
-      throw new DSPClientError("Could not request catalogs", err).andLog(
-        this.logger,
-        "warn"
-      );
-    }
   }
 }

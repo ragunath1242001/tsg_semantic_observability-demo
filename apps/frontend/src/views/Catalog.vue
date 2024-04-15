@@ -31,17 +31,14 @@ const getCatalog = async () => {
       didInput.value = selection.value.didId;
       overlay.value.hide();
     }
-    const audience = (didInput.value.trim() === "") ? undefined : didInput.value ;
+    const audience = didInput.value.trim() === "" ? undefined : didInput.value;
     loading.value = true;
-    const response = await http.get<CatalogDto>(
-      'management/catalog/request',
-      {
-        params: {
-          address: urlInput.value,
-          audience: audience
-        }
-      }
-    );
+    const response = await http.get<CatalogDto>("management/catalog/request", {
+      params: {
+        address: urlInput.value,
+        audience: audience,
+      },
+    });
     catalog.value = response.data;
     dataAvailable.value = true;
     loading.value = false;
@@ -60,9 +57,7 @@ const getCatalog = async () => {
 
 const getOwnCatalog = async () => {
   try {
-    const response = await http.get<CatalogDto>(
-      'management/catalog/request'
-    );
+    const response = await http.get<CatalogDto>("management/catalog/request");
     assigner.value = response.data["dct:publisher"] || "";
     return catalog;
   } catch (error) {
@@ -74,7 +69,7 @@ const getOwnCatalog = async () => {
 
 const queryAddresses = async () => {
   try {
-    const response = await http.get(`registry/addresses`);
+    const response = await http.get(`management/registry/addresses`);
     addresses.value = response.data;
     return addresses;
   } catch (error) {

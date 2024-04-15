@@ -24,11 +24,11 @@ import {
 import { ODRLAction } from "@tsg-dsp/common";
 import { Offer, Permission } from "../model/dsp/negotiation/negotiation";
 
-jest.useFakeTimers();
 describe("DataPlane Service", () => {
   let dataPlaneService: DataPlaneService;
   let catalogService: CatalogService;
   beforeAll(async () => {
+    jest.useFakeTimers();
     await TypeOrmTestHelper.instance.setupTestDB();
     const initCatalog = plainToClass(InitCatalog, {});
     const serverConfig = plainToClass(ServerConfig, {});
@@ -74,6 +74,7 @@ describe("DataPlane Service", () => {
 
   afterAll(async () => {
     await TypeOrmTestHelper.instance.teardownTestDB();
+    jest.useRealTimers();
   });
 
   describe("Add, get and update dataplane", () => {

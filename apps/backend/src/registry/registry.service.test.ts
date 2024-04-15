@@ -29,6 +29,8 @@ describe("RegistryService", () => {
   let server: SetupServer;
 
   beforeEach(async () => {
+    jest.useFakeTimers();
+    jest.spyOn(global, "setTimeout");
     await TypeOrmTestHelper.instance.setupTestDB();
     let iamConfig: IamConfig = mockWalletConfig();
     const registryConfig = plainToClass(RegistryConfig, {});
@@ -194,6 +196,8 @@ describe("RegistryService", () => {
   afterAll(async () => {
     await TypeOrmTestHelper.instance.teardownTestDB();
     server.close();
+    jest.clearAllTimers();
+    jest.useRealTimers();
   });
 
   it("should be defined", () => {
@@ -217,7 +221,7 @@ describe("RegistryService", () => {
     });
 
     it("Get catalogs based on addresses", async () => {
-      const addresses = await registryService.fetchFlatAddresses();
+      const addresses = await registryService.fetchAddresses();
       const catalogs = await registryService.getCatalogs(addresses);
 
       expect(catalogs).toHaveLength(1);

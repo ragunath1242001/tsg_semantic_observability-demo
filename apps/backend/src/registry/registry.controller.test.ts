@@ -108,11 +108,6 @@ describe("RegistryController", () => {
     expect(result).toEqual([await catalog.serialize()]);
   });
 
-  it("Should call request catalog", async () => {
-    const result = await controller.requestCatalogs();
-
-    expect(registryService.requestCatalogs).toHaveBeenCalled();
-  });
   it("Should call fetch addresses", async () => {
     const result = await controller.requestAddresses();
 

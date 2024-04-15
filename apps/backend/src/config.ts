@@ -10,6 +10,7 @@ import {
   IsString,
   IsUrl,
   Matches,
+  ValidateIf,
   ValidateNested,
 } from "class-validator";
 import { Type } from "class-transformer";
@@ -57,7 +58,13 @@ export class RegistryConfig {
   public readonly isRegistry: boolean = false;
 
   @IsString()
-  public readonly registryUrl!: string;
+  @IsOptional()
+  public readonly registryUrl?: string;
+
+  @IsString()
+  @IsOptional()
+  @ValidateIf((r: RegistryConfig) => r.registryUrl !== undefined)
+  public readonly registryDid?: string;
 
   @IsNumber()
   public readonly registryIntervalInMilliseconds: number = 30000;
@@ -203,9 +210,8 @@ export class RootConfig {
   public readonly server!: ServerConfig;
 
   @ValidateNested()
-  @IsOptional()
   @Type(() => RegistryConfig)
-  public readonly registry!: RegistryConfig;
+  public readonly registry: RegistryConfig = new RegistryConfig();
 
   @ValidateNested()
   @Type(() => IamConfig, {

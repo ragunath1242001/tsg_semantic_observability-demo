@@ -12,6 +12,10 @@ server:
 runtime:
   controlPlaneInteractions: manual
 
+registry:
+  isRegistry: true
+  registryIntervalInMilliseconds: 1000
+
 iam:
   type: dev
   didId: did:web:localhost%3A3001

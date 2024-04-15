@@ -47,8 +47,6 @@ import { Multilanguage } from "../../model/dsp/common";
 import { DataPlaneRequestResponseDto, DataPlaneTransferDto } from "@libs/dtos";
 import { DspGateway } from "../client/dsp.gateway";
 
-jest.useFakeTimers({ doNotFake: ["Date"] });
-
 describe("Transfer service", () => {
   let transferService: TransferService;
   let dspGateway: DspGateway;
@@ -56,6 +54,7 @@ describe("Transfer service", () => {
   let remoteProcessId = "urn:uuid:6334612d-bc17-4474-b8c1-5703c7a80bb1";
 
   beforeAll(async () => {
+    jest.useFakeTimers({ doNotFake: ["Date"] });
     await TypeOrmTestHelper.instance.setupTestDB();
     const iamConfig = plainToClass(DevWalletConfig, {});
     const initCatalog = plainToClass(InitCatalog, {});
@@ -245,6 +244,7 @@ describe("Transfer service", () => {
   afterAll(async () => {
     await TypeOrmTestHelper.instance.teardownTestDB();
     server.close();
+    jest.useRealTimers();
   });
 
   describe("Consumer interactions", () => {

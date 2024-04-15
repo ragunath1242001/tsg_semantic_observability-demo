@@ -20,10 +20,10 @@ import {
   Distribution,
 } from "../../model/dsp/catalog/catalog";
 
-jest.useFakeTimers();
 describe("Catalog Service", () => {
   let catalogService: CatalogService;
   beforeAll(async () => {
+    jest.useFakeTimers();
     await TypeOrmTestHelper.instance.setupTestDB();
     const initCatalog = plainToClass(InitCatalog, {
       creator: "urn:uuid:de8e1b94-4169-4491-986d-6a1c528b867b",
@@ -70,6 +70,7 @@ describe("Catalog Service", () => {
 
   afterAll(async () => {
     await TypeOrmTestHelper.instance.teardownTestDB();
+    jest.useRealTimers();
   });
 
   describe("Initializing catalog", () => {
