@@ -1,8 +1,8 @@
 import { Controller, Get } from "@nestjs/common";
-import { DisableJwtGuard } from "./auth/jwt.guard.js";
+import { DisableOAuthGuard } from "./auth/oauth.guard.js";
 
 @Controller()
-@DisableJwtGuard(true)
+@DisableOAuthGuard()
 export class HealthController {
   @Get("/health")
   async getHealth() {}

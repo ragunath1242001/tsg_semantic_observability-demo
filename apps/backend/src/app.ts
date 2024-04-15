@@ -3,6 +3,8 @@ import { AppModule } from "./app.module.js";
 import { AppLogger } from "./utils/logging.js";
 import { RootConfig } from "./config.js";
 import { Logger } from "@nestjs/common";
+import session from "express-session";
+import passport from "passport";
 
 async function bootstrap() {
   const logLevelConfig =
@@ -43,6 +45,15 @@ async function bootstrap() {
     `Starting with the following context:\n${JSON.stringify(config, null, 2)}`,
     "Bootstrap"
   );
+  app.use(
+    session({
+      secret: "my-secret",
+      resave: false,
+      saveUninitialized: false,
+    })
+  );
+  app.use(passport.initialize());
+  app.use(passport.session());
   await app.listen(config.server.port, config.server.listen);
 }
 bootstrap();

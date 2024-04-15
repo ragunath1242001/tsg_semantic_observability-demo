@@ -26,12 +26,12 @@ const toast = useToast();
 const formDefault: CredentialForm = {
   context: [],
   type: [],
-  targetDid: store.state.client_info?.didId || "",
+  targetDid: store.state.user?.didId || "",
   id: "",
   keyId: undefined,
   credentialSubject: JSON.stringify(
     {
-      id: store.state.client_info?.didId || "",
+      id: store.state.user?.didId || "",
     },
     null,
     2
@@ -46,12 +46,12 @@ const config = ref<CredentialConfig>();
 const credentialForm = ref(formDefault);
 const expandedRows = ref();
 
-const didId = computed(() => store.state.client_info?.didId);
+const didId = computed(() => store.state.user?.didId);
 
 const manager = computed(
   () =>
-    store.state.client_info?.roles.includes(AppRole.MANAGE_OWN_CREDENTIALS) ||
-    store.state.client_info?.roles.includes(AppRole.MANAGE_ALL_CREDENTIALS) ||
+    store.state.user?.roles.includes(AppRole.MANAGE_OWN_CREDENTIALS) ||
+    store.state.user?.roles.includes(AppRole.MANAGE_ALL_CREDENTIALS) ||
     false
 );
 

@@ -3,21 +3,19 @@ server:
   listen: "0.0.0.0"
   publicDomain: localhost:3000
 
-initClients:
-  - id: admin
-    secret: test
-    email: noreply@dataspac.es
-    roles:
-      - view_all_credentials
-      - manage_all_credentials
-      - manage_keys
-      - manage_clients
-      - view_presentations
-  - id: connector
-    secret: test
-    email: noreply@dataspac.es
-    roles:
-      - view_presentations
+auth:
+  enabled: false
+  # authorizationURL: https://localhost/login/oauth/authorize
+  # tokenURL: https://localhost/api/login/oauth/access_token
+  # introspectionURL: https://localhost/api/login/oauth/introspect
+  # callbackURL: http://localhost:5173/api/auth/callback
+  # clientID:
+  # clientSecret:
+  # clientUsername:
+  # clientPassword:
+  # rolePath: "$.roles[*].name"
+  # redirectURL: http://localhost:5173/
+
 initKeys:
   - id: key-0
     type: EdDSA

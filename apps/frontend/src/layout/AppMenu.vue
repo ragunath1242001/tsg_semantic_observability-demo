@@ -63,17 +63,7 @@ const model = ref([
         to: "/presentation"
       }
     ]
-  },
-  {
-    label: "Clients",
-    items: [
-      {
-        label: "Client management",
-        icon: "pi pi-fw pi-cog",
-        to: "/clients",
-      },
-    ],
-  },
+  }
 ]);
 </script>
 

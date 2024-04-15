@@ -11,7 +11,7 @@ const holderForm = ref<{
   audience: string;
   scope: string;
 }>({
-  audience: store.state.client_info?.didId || "",
+  audience: store.state.user?.didId || "",
   scope: ""
 });
 const holderIdToken = ref<string>();
@@ -57,7 +57,7 @@ const requestHolderIDToken = async () => {
       }
     });
     holderIdToken.value = response.data.id_token;
-    if (holderForm.value.audience === store.state.client_info?.didId) {
+    if (holderForm.value.audience === store.state.user?.didId) {
       verifierForm.value.holderIDToken = response.data.id_token;
     }
   } catch (err) {

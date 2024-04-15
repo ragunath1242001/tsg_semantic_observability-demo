@@ -69,7 +69,6 @@ const isOutsideClicked = (event) => {
 
 const logout = async () => {
   await store.dispatch("logout");
-  router.go(0);
 };
 </script>
 
@@ -95,6 +94,9 @@ const logout = async () => {
     </button>
 
     <div class="layout-topbar-menu" :class="topbarMenuClasses">
+      <div class="layout-topbar-button" v-if="store.state.user">
+        {{ store.state.user.name }}
+      </div>
       <button @click="logout()" class="p-link layout-topbar-button">
         <i class="pi pi-sign-out"></i>
         <span>Log out</span>

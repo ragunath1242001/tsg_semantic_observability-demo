@@ -34,8 +34,8 @@ const expandedRows = ref();
 
 const manager = computed(
   () =>
-    store.state.client_info?.roles.includes(AppRole.MANAGE_OWN_CREDENTIALS) ||
-    store.state.client_info?.roles.includes(AppRole.MANAGE_ALL_CREDENTIALS) ||
+    store.state.user?.roles.includes(AppRole.MANAGE_OWN_CREDENTIALS) ||
+    store.state.user?.roles.includes(AppRole.MANAGE_ALL_CREDENTIALS) ||
     false
 );
 

@@ -60,11 +60,6 @@ const router = createRouter({
           name: "presentation",
           component: Presentation,
         },
-        {
-          path: "/clients",
-          name: "clients",
-          component: ClientsVue,
-        },
       ],
     },
     {
@@ -79,7 +74,7 @@ router.beforeEach(async (to) => {
   const publicPages = ["/login"];
   const authRequired = !publicPages.includes(to.path);
 
-  if (authRequired && !store.state.client_info) {
+  if (authRequired && !store.state.user) {
     return "/login";
   }
 });

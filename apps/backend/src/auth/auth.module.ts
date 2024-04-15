@@ -1,41 +1,31 @@
 import { Module } from "@nestjs/common";
 import { PassportModule } from "@nestjs/passport";
-import { LocalStrategy } from "./local.strategy.js";
-import { Clients } from "../model/clients.dao.js";
-import { TypeOrmModule } from "@nestjs/typeorm";
 import { AuthController } from "./auth.controller.js";
-import { JwtModule } from "@nestjs/jwt";
+import { OAuthBearerStrategy } from "./oauth.bearer.strategy.js";
+import { OAuthStrategy } from "./oauth.strategy.js";
+import { SessionSerializer } from "./session.serializer.js";
 import { APP_GUARD } from "@nestjs/core";
-import { JwtAuthGuard } from "./jwt.guard.js";
+import { OAuthGuard } from "./oauth.guard.js";
 import { RolesGuard } from "./roles.guard.js";
-import { AccessTokenStrategy } from "./accessToken.strategy.js";
-import { RefreshTokenStrategy } from "./refreshToken.strategy.js";
-import { MailService } from "./mail.service.js";
-import { ClientsController } from "./clients.management.controller.js";
-import { ClientsService } from "./client.service.js";
+import { config } from "../config.module.js";
+import { AuthClientService } from "./auth.client.service.js";
 
 @Module({
-  imports: [
-    PassportModule,
-    TypeOrmModule.forFeature([Clients]),
-    JwtModule.register({}),
-  ],
-  controllers: [AuthController, ClientsController],
+  imports: [PassportModule.register({ session: true })],
+  controllers: [AuthController],
   providers: [
-    LocalStrategy,
-    AccessTokenStrategy,
-    RefreshTokenStrategy,
-    MailService,
-    ClientsService,
+    ...(config.auth.enabled ? [OAuthStrategy, OAuthBearerStrategy] : []),
+    AuthClientService,
+    SessionSerializer,
     {
       provide: APP_GUARD,
-      useClass: JwtAuthGuard,
+      useClass: OAuthGuard,
     },
     {
       provide: APP_GUARD,
       useClass: RolesGuard,
     },
   ],
-  exports: [ClientsService],
+  exports: [AuthClientService],
 })
 export class AuthModule {}

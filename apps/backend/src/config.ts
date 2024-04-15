@@ -10,6 +10,7 @@ import {
   IsOptional,
   IsString,
   IsUrl,
+  ValidateIf,
   ValidateNested,
 } from "class-validator";
 import { Transform, TransformFnParams, Type } from "class-transformer";
@@ -57,6 +58,41 @@ export class PostgresConfig extends DatabaseConfig {
   public readonly username!: string;
   @IsString()
   public readonly password!: string;
+}
+
+export class AuthConfig {
+  @IsBoolean()
+  public readonly enabled: boolean = true;
+  @ValidateIf((c) => c.enabled)
+  @IsUrl({ require_tld: false, require_protocol: true, require_host: false })
+  public readonly authorizationURL!: string;
+  @ValidateIf((c) => c.enabled)
+  @IsUrl({ require_tld: false, require_protocol: true, require_host: false })
+  public readonly tokenURL!: string;
+  @ValidateIf((c) => c.enabled)
+  @IsUrl({ require_tld: false, require_protocol: true, require_host: false })
+  public readonly introspectionURL!: string;
+  @ValidateIf((c) => c.enabled)
+  @IsUrl({ require_tld: false, require_protocol: true, require_host: false })
+  public readonly callbackURL!: string;
+  @ValidateIf((c) => c.enabled)
+  @IsUrl({ require_tld: false, require_protocol: true, require_host: false })
+  public readonly redirectURL!: string;
+  @ValidateIf((c) => c.enabled)
+  @IsString()
+  public readonly clientID!: string;
+  @ValidateIf((c) => c.enabled)
+  @IsString()
+  public readonly clientSecret!: string;
+  @ValidateIf((c) => c.enabled)
+  @IsString()
+  public readonly clientUsername!: string;
+  @ValidateIf((c) => c.enabled)
+  @IsString()
+  public readonly clientPassword!: string;
+  @ValidateIf((c) => c.enabled)
+  @IsString()
+  public readonly rolePath: string = "$.roles[*].name";
 }
 
 export class ServerConfig {
@@ -112,25 +148,6 @@ export class MailConfig {
   @IsString()
   @IsOptional()
   public readonly logo?: string;
-}
-
-export class InitClientConfig {
-  @IsString()
-  public readonly id!: string;
-
-  @IsString()
-  public readonly secret!: string;
-
-  @IsEmail()
-  public readonly email!: string;
-
-  @IsString()
-  @IsOptional()
-  public readonly didId?: string;
-
-  @IsString({ each: true })
-  @IsIn(Object.values(AppRole), { each: true })
-  public readonly roles: AppRole[] = [];
 }
 
 export class InitKeyConfig {
@@ -286,6 +303,13 @@ export class RootConfig {
   public readonly db!: DatabaseConfig;
 
   @ValidateNested()
+  @IsDefined({
+    message: "OAuth2.0 configuration must be provided",
+  })
+  @Type(() => AuthConfig)
+  public readonly auth!: AuthConfig;
+
+  @ValidateNested()
   @Type(() => ServerConfig)
   @IsOptional()
   public readonly server: ServerConfig = new ServerConfig();
@@ -294,10 +318,6 @@ export class RootConfig {
   @Type(() => MailConfig)
   @IsOptional()
   public readonly mail?: MailConfig;
-
-  @ValidateNested({ each: true })
-  @Type(() => InitClientConfig)
-  public readonly initClients: InitClientConfig[] = [];
 
   @ValidateNested({ each: true })
   @Type(() => InitKeyConfig)

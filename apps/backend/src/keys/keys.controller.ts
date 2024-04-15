@@ -1,10 +1,10 @@
 import { Controller, Get, Header, HttpStatus, Param } from "@nestjs/common";
-import { DisableJwtGuard } from "../auth/jwt.guard.js";
 import { KeysService } from "./keys.service.js";
 import { AppError } from "../utils/error.js";
+import { DisableOAuthGuard } from "../auth/oauth.guard.js";
 
 @Controller()
-@DisableJwtGuard(true)
+@DisableOAuthGuard()
 export class KeysController {
   constructor(private readonly keyService: KeysService) {}
 

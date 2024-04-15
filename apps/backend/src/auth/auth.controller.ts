@@ -1,70 +1,66 @@
-import {
-  Body,
-  Controller,
-  Get,
-  HttpCode,
-  HttpStatus,
-  Post,
-  Query,
-  Request,
-  UnauthorizedException,
-  UseGuards,
-} from "@nestjs/common";
-import { AuthGuard } from "@nestjs/passport";
-import { Request as ExpressRequest } from "express";
-import { ClientsService } from "./client.service.js";
-import { ClientInfo, ClientSignup, ResetPassword } from "@libs/dtos";
-import { DisableJwtGuard } from "./jwt.guard.js";
-import { Clients } from "../model/clients.dao.js";
+import { Controller, Get, Next, Req, Res, UseGuards } from "@nestjs/common";
+import { DisableOAuthGuard, OAuthLoginGuard } from "./oauth.guard.js";
+import { NextFunction, Request, Response } from "express";
+import passport from "passport";
+import { Client } from "./roles.guard.js";
+import { AuthConfig } from "../config.js";
+import { ClientInfo } from "@libs/dtos";
 
 @Controller("auth")
-@DisableJwtGuard(true)
 export class AuthController {
-  constructor(private readonly clientsService: ClientsService) {}
-
-  @UseGuards(AuthGuard("local"))
-  @Post("login")
-  @HttpCode(HttpStatus.OK)
-  async login(@Request() req: ExpressRequest) {
-    return this.clientsService.login(req.user as ClientInfo);
-  }
-  @UseGuards(AuthGuard("jwt-refresh"))
-  @Get("refresh")
-  async refresh(@Request() req: ExpressRequest) {
-    const user = req.user as ClientInfo;
-    if (!user.refreshToken) {
-      throw new UnauthorizedException();
+  constructor(private readonly authConfig: AuthConfig) {}
+  @Get("user")
+  @DisableOAuthGuard()
+  getUser(@Client() client: ClientInfo | undefined) {
+    if (client) {
+      return {
+        state: "authenticated",
+        user: client,
+      };
+    } else {
+      return {
+        state: "unauthenticated",
+      };
     }
-    return this.clientsService.validateRefreshToken(
-      user.sub,
-      user.refreshToken
-    );
   }
 
-  @Post("signup")
-  @HttpCode(HttpStatus.OK)
-  async signup(@Body() body: ClientSignup): Promise<Clients> {
-    return await this.clientsService.signup(body, false);
+  @Get("login")
+  login(@Res() res: Response) {
+    if (!this.authConfig.enabled) {
+      res.redirect("/");
+    }
   }
 
-  @Post("reset")
-  @HttpCode(HttpStatus.OK)
-  async resetPassword(@Body() body: ResetPassword): Promise<void> {
-    return await this.clientsService.resetPassword(body);
+  @Get("logout")
+  logout(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Next() next: NextFunction
+  ) {
+    const redirectURL = this.authConfig.redirectURL;
+    if (!this.authConfig.enabled) {
+      res.redirect("/");
+      return;
+    }
+    return req.logout(function (err: any) {
+      if (err) {
+        return next(err);
+      }
+      res.redirect(redirectURL);
+    });
   }
 
-  @Post("forgot")
-  @HttpCode(HttpStatus.OK)
-  async forgotPassword(@Query("clientId") clientId: string): Promise<void> {
-    return await this.clientsService.forgotPassword(clientId);
-  }
-
-  @Post("verify")
-  @HttpCode(HttpStatus.OK)
-  async verify(
-    @Query("clientId") clientId: string,
-    @Query("code") code: string
-  ): Promise<void> {
-    return await this.clientsService.verify(code, clientId);
+  @Get("callback")
+  @DisableOAuthGuard()
+  @UseGuards(OAuthLoginGuard)
+  callback(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Next() next: NextFunction
+  ): any {
+    passport.authenticate("oauth", {
+      successRedirect: this.authConfig.redirectURL,
+      failureRedirect: this.authConfig.redirectURL,
+    })(req, res, next);
   }
 }

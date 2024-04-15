@@ -2,9 +2,9 @@ import { Controller, Get, Query, Headers } from "@nestjs/common";
 import { IatpSiopService } from "./siop.service.js";
 import { AppRole } from "@libs/dtos";
 import { Roles } from "../../auth/roles.guard.js";
-import { PresentationDefinition, PresentationResponse } from "@libs/dtos";
+import { PresentationResponse } from "@libs/dtos";
 import { IatpHolderService } from "./holder.service.js";
-import { DisableJwtGuard } from "../../auth/jwt.guard.js";
+import { DisableOAuthGuard } from "../../auth/oauth.guard.js";
 
 @Controller("iatp/holder")
 export class IatpHolderController {
@@ -29,7 +29,7 @@ export class IatpHolderController {
   }
 
   @Get("presentation")
-  @DisableJwtGuard(true)
+  @DisableOAuthGuard()
   async getPresentation(
     @Query("presentation_definition")
     presentationDefinition: string,

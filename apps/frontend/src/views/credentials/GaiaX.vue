@@ -49,13 +49,13 @@ const complianceClearingHouses = [
 const legalRegistrationNumberDefault: LegalRegistrationNumberForm = {
   type: undefined,
   value: undefined,
-  targetDid: store.state.client_info?.didId || "",
+  targetDid: store.state.user?.didId || "",
   id: "LRNCredential",
   clearingHouse: "registrationnumber.notary.gaia-x.eu/v1",
   clearingHouses: lrnClearingHouses,
 };
 const complianceCredentialDefault: ComplianceCredentialForm = {
-  targetDid: store.state.client_info?.didId || "",
+  targetDid: store.state.user?.didId || "",
   id: "ComplianceCredential",
   credentials: [],
   clearingHouse: "compliance.gaia-x.eu/development",
@@ -66,8 +66,8 @@ const complianceCredentialForm = ref(complianceCredentialDefault);
 
 const manager = computed(
   () =>
-    store.state.client_info?.roles.includes(AppRole.MANAGE_OWN_CREDENTIALS) ||
-    store.state.client_info?.roles.includes(AppRole.MANAGE_ALL_CREDENTIALS) ||
+    store.state.user?.roles.includes(AppRole.MANAGE_OWN_CREDENTIALS) ||
+    store.state.user?.roles.includes(AppRole.MANAGE_ALL_CREDENTIALS) ||
     false
 );
 

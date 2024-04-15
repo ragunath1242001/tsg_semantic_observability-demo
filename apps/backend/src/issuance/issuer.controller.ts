@@ -19,20 +19,20 @@ import {
 } from "@libs/dtos";
 import { Roles } from "../auth/roles.guard.js";
 import { AppRole } from "@libs/dtos";
-import { DisableJwtGuard } from "../auth/jwt.guard.js";
+import { DisableOAuthGuard } from "../auth/oauth.guard.js";
 
 @Controller()
 export class IssuerController {
   constructor(private readonly issuerService: IssuerService) {}
 
   @Get(".well-known/openid-credential-issuer")
-  @DisableJwtGuard(true)
+  @DisableOAuthGuard()
   async issuerMetadata(): Promise<CredentialIssuerMetadata> {
     return this.issuerService.issuerMetadata();
   }
 
   @Post("oid4vci/token")
-  @DisableJwtGuard(true)
+  @DisableOAuthGuard()
   async tokenEndpoint(
     @Body("pre-authorized_code") preAuthorizedCode: string
   ): Promise<AccessToken> {
@@ -40,7 +40,7 @@ export class IssuerController {
   }
 
   @Post("oid4vci/credential")
-  @DisableJwtGuard(true)
+  @DisableOAuthGuard()
   async credentialEndpoint(
     @Headers("Authorization") authorization: string,
     @Body() credentialRequest: CredentialRequest
