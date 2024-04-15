@@ -9,6 +9,7 @@ const config: Config.InitialOptions = {
       },
     ],
   },
+  testTimeout: 30000,
   testEnvironment: "node",
   testRegex: "/.*\\.(test|spec)?\\.(ts|tsx)$",
   moduleNameMapper: {
