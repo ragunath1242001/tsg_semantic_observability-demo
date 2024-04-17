@@ -9,10 +9,12 @@ import {
   UsePipes,
   ValidationPipe,
 } from "@nestjs/common";
-import { ManagementGuard } from "./auth/management.guard";
 import { RuntimeConfig } from "./config";
+import { OAuthGuard } from "./auth/oauth.guard";
+import { Roles } from "./auth/roles.guard";
 
-@UseGuards(ManagementGuard)
+@UseGuards(OAuthGuard)
+@Roles("controlplane_admin")
 @Controller("settings")
 export class ConfigController {
   constructor(private readonly configService: RuntimeConfig) {}

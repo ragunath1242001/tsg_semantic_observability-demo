@@ -12,13 +12,15 @@ import {
 import { CatalogDto, DatasetDto } from "@tsg-dsp/common";
 import { DspClientService } from "../client/client.service";
 import { normalizeAddress } from "../../utils/address";
-import { ManagementGuard } from "../../auth/management.guard";
 import { Dataset } from "../../model/dsp/catalog/catalog";
 import { DeserializePipe } from "../../utils/deserialize.pipe";
 import { CatalogService } from "./catalog.service";
 import { CatalogRequestMessage } from "../../model/dsp/catalog/messages";
+import { OAuthGuard } from "../../auth/oauth.guard";
+import { Roles } from "../../auth/roles.guard";
 
-@UseGuards(ManagementGuard)
+@UseGuards(OAuthGuard)
+@Roles(["controlplane_admin", "controlplane_dataplane"])
 @Controller("management/catalog")
 export class CatalogManagementController {
   constructor(

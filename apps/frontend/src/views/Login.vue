@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import router from "../router";
+import { store } from "../stores/index.js";
 
 const username = ref("");
 const password = ref("");
@@ -44,43 +45,14 @@ const login = async () => {
             </div>
             <span class="text-600 font-medium">Sign in to continue</span>
           </div>
-
-          <form @submit="login">
-            <label
-              for="username1"
-              class="block text-900 text-xl font-medium mb-2"
-              >Username</label
-            >
-            <InputText
-              id="username1"
-              type="text"
-              placeholder="Username"
-              class="w-full md:w-30rem mb-5"
-              style="padding: 1rem"
-              v-model="username"
-            />
-
-            <label
-              for="password1"
-              class="block text-900 font-medium text-xl mb-2"
-              >Password</label
-            >
-            <Password
-              id="password1"
-              v-model="password"
-              placeholder="Password"
-              :toggleMask="true"
-              :feedback="false"
-              class="w-full mb-3"
-              inputClass="w-full"
-              :inputStyle="{ padding: '1rem' }"
-            ></Password>
+          <div>
             <Button
-              label="Sign In"
-              type="submit"
-              class="w-full p-3 text-xl"
-            ></Button>
-          </form>
+                  label="Log In"
+                  type="submit"
+                  class="w-full p-3 mb-3 text-xl"
+                  @click="store.dispatch('login', {redirect: true})"
+                ></Button>
+          </div>
         </div>
       </div>
     </div>

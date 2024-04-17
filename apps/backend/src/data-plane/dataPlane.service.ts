@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable, Logger } from "@nestjs/common";
+import { HttpStatus, Injectable, Logger, Optional } from "@nestjs/common";
 import {
   DataPlaneRequestResponseDto,
   DataPlaneCreation,
@@ -34,6 +34,7 @@ import {
 } from "../model/data-planes/dataPlanes";
 import { DatasetDao } from "../model/dsp/catalog/catalog.dao";
 import { deserialize } from "../model/serialize";
+import { AuthClientService } from "../auth/auth.client.service";
 
 @Injectable()
 export class DataPlaneService {
@@ -41,7 +42,9 @@ export class DataPlaneService {
   constructor(
     @InjectRepository(DataPlaneDao)
     private readonly dataPlaneRepository: Repository<DataPlaneDao>,
-    private readonly catalogService: CatalogService
+    private readonly catalogService: CatalogService,
+    @Optional()
+    private readonly authClientService?: AuthClientService
   ) {
     this.axios = axios.create();
     this.axios.interceptors.request.use(
@@ -206,11 +209,26 @@ export class DataPlaneService {
     return dataset;
   }
 
+  private async authorizationToken(
+    dataPlaneStatus: DataPlane
+  ): Promise<string | undefined> {
+    if (dataPlaneStatus.managementToken.trim() != "") {
+      return `Bearer ${dataPlaneStatus.managementToken}`;
+    } else {
+      const token = await this.authClientService?.getToken();
+      if (token) {
+        return `Bearer ${token}`;
+      } else {
+        return undefined;
+      }
+    }
+  }
+
   async pullCatalog(dataPlaneStatus: DataPlane) {
     try {
       const requestConfig: AxiosRequestConfig = {
         headers: {
-          Authorization: `Bearer ${dataPlaneStatus.managementToken}`,
+          Authorization: await this.authorizationToken(dataPlaneStatus),
           "If-None-Match": dataPlaneStatus.etag,
         },
       };
@@ -248,7 +266,7 @@ export class DataPlaneService {
     try {
       const requestConfig: AxiosRequestConfig = {
         headers: {
-          Authorization: `Bearer ${dataPlaneStatus.managementToken}`,
+          Authorization: await this.authorizationToken(dataPlaneStatus),
         },
       };
       const datasetJson = await this.axios.get<void>(
@@ -329,7 +347,7 @@ export class DataPlaneService {
       try {
         const requestConfig: AxiosRequestConfig = {
           headers: {
-            Authorization: `Bearer ${dataPlane.managementToken}`,
+            Authorization: await this.authorizationToken(dataPlane),
           },
         };
         const dataPlaneRequestResponse =
@@ -376,7 +394,7 @@ export class DataPlaneService {
     try {
       const requestConfig: AxiosRequestConfig = {
         headers: {
-          Authorization: `Bearer ${dataPlane.managementToken}`,
+          Authorization: await this.authorizationToken(dataPlane),
         },
       };
       await this.axios.post(
@@ -408,7 +426,7 @@ export class DataPlaneService {
     try {
       const requestConfig: AxiosRequestConfig = {
         headers: {
-          Authorization: `Bearer ${dataPlane.managementToken}`,
+          Authorization: await this.authorizationToken(dataPlane),
         },
       };
       await this.axios.post(
@@ -440,7 +458,7 @@ export class DataPlaneService {
     try {
       const requestConfig: AxiosRequestConfig = {
         headers: {
-          Authorization: `Bearer ${dataPlane.managementToken}`,
+          Authorization: await this.authorizationToken(dataPlane),
         },
       };
       await this.axios.post(
@@ -472,7 +490,7 @@ export class DataPlaneService {
     try {
       const requestConfig: AxiosRequestConfig = {
         headers: {
-          Authorization: `Bearer ${dataPlane.managementToken}`,
+          Authorization: await this.authorizationToken(dataPlane),
         },
       };
       await this.axios.post(

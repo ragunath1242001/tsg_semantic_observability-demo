@@ -53,6 +53,41 @@ export class ServerConfig {
   public readonly publicAddress: string = `http://localhost:3000`;
 }
 
+export class AuthConfig {
+  @IsBoolean()
+  public readonly enabled: boolean = true;
+  @ValidateIf((c) => c.enabled)
+  @IsUrl({ require_tld: false, require_protocol: true, require_host: false })
+  public readonly authorizationURL!: string;
+  @ValidateIf((c) => c.enabled)
+  @IsUrl({ require_tld: false, require_protocol: true, require_host: false })
+  public readonly tokenURL!: string;
+  @ValidateIf((c) => c.enabled)
+  @IsUrl({ require_tld: false, require_protocol: true, require_host: false })
+  public readonly introspectionURL!: string;
+  @ValidateIf((c) => c.enabled)
+  @IsUrl({ require_tld: false, require_protocol: true, require_host: false })
+  public readonly callbackURL!: string;
+  @ValidateIf((c) => c.enabled)
+  @IsUrl({ require_tld: false, require_protocol: true, require_host: false })
+  public readonly redirectURL!: string;
+  @ValidateIf((c) => c.enabled)
+  @IsString()
+  public readonly clientID!: string;
+  @ValidateIf((c) => c.enabled)
+  @IsString()
+  public readonly clientSecret!: string;
+  @ValidateIf((c) => c.enabled)
+  @IsString()
+  public readonly clientUsername!: string;
+  @ValidateIf((c) => c.enabled)
+  @IsString()
+  public readonly clientPassword!: string;
+  @ValidateIf((c) => c.enabled)
+  @IsString()
+  public readonly rolePath: string = "$.roles[*].name";
+}
+
 export class RegistryConfig {
   @IsBoolean()
   public readonly isRegistry: boolean = false;
@@ -157,15 +192,6 @@ export class MiwConfig extends IamConfig {
   public readonly validations!: string[];
 }
 
-export class UserConfig {
-  @IsString()
-  public readonly username!: string;
-
-  @IsString()
-  @Matches(/^\$2[aby]?\$\d{1,2}\$[./A-Za-z0-9]{53}$/g)
-  public readonly password!: string;
-}
-
 export class RuntimeConfig {
   @IsString()
   @IsIn(["automatic", "semi-manual", "manual"])
@@ -210,6 +236,13 @@ export class RootConfig {
   public readonly server!: ServerConfig;
 
   @ValidateNested()
+  @IsDefined({
+    message: "OAuth2.0 configuration must be provided",
+  })
+  @Type(() => AuthConfig)
+  public readonly auth!: AuthConfig;
+
+  @ValidateNested()
   @Type(() => RegistryConfig)
   public readonly registry: RegistryConfig = new RegistryConfig();
 
@@ -227,11 +260,6 @@ export class RootConfig {
   })
   @IsDefined()
   public readonly iam!: IamConfig;
-
-  @ValidateNested()
-  @Type(() => UserConfig)
-  @ArrayMinSize(1)
-  public readonly users!: UserConfig[];
 
   @ValidateNested()
   @Type(() => InitCatalog)

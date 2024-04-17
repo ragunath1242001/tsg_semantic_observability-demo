@@ -13,9 +13,11 @@ import { DataPlaneService } from "./dataPlane.service";
 import { DeserializePipe } from "../utils/deserialize.pipe";
 import { Dataset } from "../model/dsp/catalog/catalog";
 import { DSPError } from "../utils/errors/error";
-import { ManagementGuard } from "../auth/management.guard";
+import { OAuthGuard } from "../auth/oauth.guard";
+import { Roles } from "../auth/roles.guard";
 
-@UseGuards(ManagementGuard)
+@UseGuards(OAuthGuard)
+@Roles(["controlplane_admin", "controlplane_dataplane"])
 @Controller("data-plane")
 export class DataPlaneController {
   private readonly logger = new Logger(this.constructor.name);

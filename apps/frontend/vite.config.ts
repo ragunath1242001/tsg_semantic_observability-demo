@@ -16,6 +16,10 @@ export default defineConfig({
   },
   server: {
     proxy: {
+      // "/api": {
+      //   target: "http://localhost:3000/",
+      //   rewrite: (path) => path.replace(/^\/api/, ""),
+      // },
       "/api": process.env.BACKEND || "http://localhost:3000",
     },
   },

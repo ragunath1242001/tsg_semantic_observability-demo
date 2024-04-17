@@ -1,6 +1,6 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { plainToClass, plainToInstance } from "class-transformer";
-import { IamConfig, RegistryConfig, RootConfig } from "../config";
+import { AuthConfig, IamConfig, RegistryConfig, RootConfig } from "../config";
 import { SetupServer, setupServer } from "msw/node";
 import { HttpResponse, http } from "msw";
 import { RegistryClientService } from "./registry.client.service";
@@ -11,6 +11,7 @@ import {
   mockWalletConfig,
   setupMockWalletServer,
 } from "../auth/wallets/wallet.util.test";
+import { AuthClientService } from "../auth/auth.client.service";
 
 describe("RegistryClientService", () => {
   let registryClientService: RegistryClientService;
@@ -108,7 +109,10 @@ describe("RegistryClientService", () => {
         {
           provide: AuthService,
           useValue: new AuthService(
-            plainToInstance(RootConfig, { iam: iamConfig })
+            plainToInstance(RootConfig, { iam: iamConfig }),
+            new AuthClientService(
+              plainToInstance(AuthConfig, { enabled: false })
+            )
           ),
         },
         {
@@ -143,7 +147,10 @@ describe("RegistryClientService", () => {
           {
             provide: AuthService,
             useValue: new AuthService(
-              plainToInstance(RootConfig, { iam: iamConfig })
+              plainToInstance(RootConfig, { iam: iamConfig }),
+              new AuthClientService(
+                plainToInstance(AuthConfig, { enabled: false })
+              )
             ),
           },
           {

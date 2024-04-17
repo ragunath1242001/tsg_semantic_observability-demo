@@ -1,5 +1,6 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Optional } from "@nestjs/common";
 import {
+  AuthConfig,
   DevWalletConfig,
   MiwConfig,
   RootConfig,
@@ -16,23 +17,29 @@ import {
   VerifiableCredential,
   CredentialSubject,
 } from "@tsg-dsp/common";
+import { AuthClientService } from "./auth.client.service";
 
 @Injectable()
 export class AuthService {
   readonly walletClient: WalletClient;
-  constructor(private readonly config: RootConfig) {
+  constructor(
+    private readonly config: RootConfig,
+    private readonly authClientService: AuthClientService
+  ) {
     switch (config.iam.type) {
       case "dev":
         this.walletClient = new DevWalletClient(config.iam as DevWalletConfig);
         break;
       case "tsg":
         this.walletClient = new TsgWalletClient(
-          config.iam as TsgWalletDirectConfig
+          config.iam as TsgWalletDirectConfig,
+          authClientService
         );
         break;
       case "tsg-iatp":
         this.walletClient = new TsgIatpWalletClient(
-          config.iam as TsgWalletIatpConfig
+          config.iam as TsgWalletIatpConfig,
+          authClientService
         );
         break;
       case "miw":

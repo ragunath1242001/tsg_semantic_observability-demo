@@ -9,12 +9,25 @@ server:
   publicDomain: localhost:3000
   publicAddress: http://localhost:3000/api
 
+auth:
+  enabled: false
+  # authorizationURL: https://localhost/login/oauth/authorize
+  # tokenURL: https://localhost/api/login/oauth/access_token
+  # introspectionURL: https://localhost/api/login/oauth/introspect
+  # callbackURL: http://localhost:5173/api/auth/callback
+  # clientID:
+  # clientSecret:
+  # clientUsername:
+  # clientPassword:
+  # rolePath: "$.roles[*].name"
+  # redirectURL: http://localhost:5173/
+
 runtime:
   controlPlaneInteractions: manual
 
 registry:
   isRegistry: true
-  registryIntervalInMilliseconds: 1000
+  registryIntervalInMilliseconds: 30000
 
 iam:
   type: dev
@@ -28,10 +41,6 @@ iam:
   credentialId: did:web:localhost%3A3001#00000000-0000-0000-0000-000000000000
   validations:
     - valid
-
-users:
-  - username: admin
-    password: $2a$12$/1aqZWSslSi8E556dpChNOxOyEv3hPA.k8asnRk9iIN2bxH6VGUE6
 
 initCatalog:
   creator: did:web:localhost%3A3001

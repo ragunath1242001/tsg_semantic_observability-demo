@@ -1,5 +1,5 @@
 import { SetupServer } from "msw/node";
-import { IamConfig, RootConfig } from "../config";
+import { AuthConfig, IamConfig, RootConfig } from "../config";
 import { AuthService } from "./auth.service";
 import {
   mockWalletConfig,
@@ -7,6 +7,7 @@ import {
 } from "./wallets/wallet.util.test";
 import { plainToInstance } from "class-transformer";
 import { VerifiablePresentation } from "@tsg-dsp/common";
+import { AuthClientService } from "./auth.client.service";
 
 describe("Auth Service", () => {
   let server: SetupServer;
@@ -24,7 +25,8 @@ describe("Auth Service", () => {
   let authService: AuthService;
   beforeEach(() => {
     authService = new AuthService(
-      plainToInstance(RootConfig, { iam: iamConfig })
+      plainToInstance(RootConfig, { iam: iamConfig }),
+      new AuthClientService(plainToInstance(AuthConfig, { enabled: false }))
     );
   });
 

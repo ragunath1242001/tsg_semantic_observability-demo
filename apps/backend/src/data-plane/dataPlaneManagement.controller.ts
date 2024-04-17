@@ -6,11 +6,13 @@ import {
   Logger,
   UseGuards,
 } from "@nestjs/common";
-import { ManagementGuard } from "../auth/management.guard";
 import { DataPlaneService } from "./dataPlane.service";
 import { DataPlaneDto } from "@libs/dtos";
+import { OAuthGuard } from "../auth/oauth.guard";
+import { Roles } from "../auth/roles.guard";
 
-@UseGuards(ManagementGuard)
+@UseGuards(OAuthGuard)
+@Roles(["controlplane_admin", "controlplane_dataplane"])
 @Controller("management/dataplanes")
 export class DataplaneManagementController {
   constructor(private readonly dataplaneService: DataPlaneService) {}

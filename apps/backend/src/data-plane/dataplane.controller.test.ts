@@ -1,6 +1,6 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { DataPlaneController } from "./dataplane.controller";
-import { InitCatalog, ServerConfig } from "../config";
+import { AuthConfig, InitCatalog, ServerConfig } from "../config";
 import { plainToClass } from "class-transformer";
 import { DataPlaneService } from "./dataPlane.service";
 import { CatalogService } from "../dsp/catalog/catalog.service";
@@ -22,6 +22,7 @@ describe("DataPlaneController", () => {
     await TypeOrmTestHelper.instance.setupTestDB();
     const initCatalog = plainToClass(InitCatalog, {});
     const serverConfig = plainToClass(ServerConfig, {});
+    const authConfig = plainToClass(AuthConfig, { enabled: false });
 
     const moduleRef: TestingModule = await Test.createTestingModule({
       imports: [
@@ -55,6 +56,10 @@ describe("DataPlaneController", () => {
         {
           provide: ServerConfig,
           useValue: serverConfig,
+        },
+        {
+          provide: AuthConfig,
+          useValue: authConfig,
         },
       ],
     }).compile();

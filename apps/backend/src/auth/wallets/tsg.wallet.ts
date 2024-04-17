@@ -12,73 +12,28 @@ import {
 } from "@tsg-dsp/common";
 import { plainToInstance } from "class-transformer";
 import { decode } from "jsonwebtoken";
+import { AuthClientService } from "../auth.client.service";
 
 export class TsgWalletClient extends WalletClient {
-  constructor(readonly iamConfig: TsgWalletDirectConfig) {
+  constructor(
+    private readonly iamConfig: TsgWalletDirectConfig,
+    private readonly authClientService: AuthClientService
+  ) {
     super();
   }
   readonly logger = new Logger(this.constructor.name);
-  access_token?: string;
-  expiration?: Date;
-
-  async ensureAccessToken() {
-    if (
-      !this.access_token ||
-      !this.expiration ||
-      this.expiration < new Date()
-    ) {
-      await this.requestAccessToken();
-    }
-  }
-
-  async requestAccessToken() {
-    const data = qs.stringify({
-      client_id: this.iamConfig.clientId,
-      client_secret: this.iamConfig.clientSecret,
-      grant_type: "client_credentials",
-    });
-    try {
-      const response = await axios.post<{ access_token: string }>(
-        this.iamConfig.tokenUrl,
-        data,
-        {
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-        }
-      );
-      this.access_token = response.data.access_token;
-
-      const accessTokenPayload = JSON.parse(
-        atob(this.access_token.split(".")[1])
-      );
-      if (accessTokenPayload["exp"]) {
-        this.expiration = new Date(accessTokenPayload["exp"] * 1000 - 10000);
-      }
-    } catch (err) {
-      throw new DSPClientError(
-        "Could not request access token from wallet",
-        err
-      ).andLog(this.logger, "warn");
-    }
-  }
 
   async requestVerifiablePresentation(audience: string): Promise<string> {
     try {
-      await this.ensureAccessToken();
-      const response = await axios.get<VerifiablePresentationJwt>(
-        this.iamConfig.presentationUrl,
-        {
-          headers: {
-            Authorization: `Bearer ${this.access_token}`,
-          },
+      const response = await this.authClientService
+        .axiosInstance()
+        .get<VerifiablePresentationJwt>(this.iamConfig.presentationUrl, {
           params: {
             credentialId: this.iamConfig.credentialId,
             asJwt: "true",
             audience: audience,
           },
-        }
-      );
+        });
       this.logger.debug(`Successfully requested Verifiable Presentation`);
       return response.data.vp;
     } catch (err) {
@@ -99,19 +54,13 @@ export class TsgWalletClient extends WalletClient {
       vp: token,
     };
     try {
-      await this.ensureAccessToken();
-      const response = await axios.post<ValidationResult>(
-        this.iamConfig.validationUrl,
-        jwt,
-        {
-          headers: {
-            Authorization: `Bearer ${this.access_token}`,
-          },
+      const response = await this.authClientService
+        .axiosInstance()
+        .post<ValidationResult>(this.iamConfig.validationUrl, jwt, {
           params: {
             audience: audience,
           },
-        }
-      );
+        });
       for (const validation of this.iamConfig.validations) {
         const validationResult = response.data[validation];
         if (validationResult) {
@@ -146,15 +95,11 @@ export class TsgWalletClient extends WalletClient {
 
   async getCredentials() {
     try {
-      await this.ensureAccessToken();
-      const response = await axios.get<Credential[]>(
-        `${this.iamConfig.walletUrl}/management/credentials`,
-        {
-          headers: {
-            Authorization: `Bearer ${this.access_token}`,
-          },
-        }
-      );
+      const response = await this.authClientService
+        .axiosInstance()
+        .get<Credential[]>(
+          `${this.iamConfig.walletUrl}/management/credentials`
+        );
       this.logger.debug(`Successfully requested credentials at local wallet`);
       return response.data;
     } catch (err) {

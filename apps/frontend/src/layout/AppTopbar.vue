@@ -2,6 +2,7 @@
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 import { useLayout } from "../layout/composables/layout";
 import { useRouter } from "vue-router";
+import { store } from "../stores/index.js";
 
 const { layoutConfig, onMenuToggle, onConfigButtonClick } = useLayout();
 
@@ -95,6 +96,9 @@ const logout = () => {
     </button>
 
     <div class="layout-topbar-menu" :class="topbarMenuClasses">
+      <div class="layout-topbar-button" v-if="store.state.user">
+        {{ store.state.user.name }}
+      </div>
       <button
         @click="onConfigButtonClick()"
         class="p-link layout-topbar-button"

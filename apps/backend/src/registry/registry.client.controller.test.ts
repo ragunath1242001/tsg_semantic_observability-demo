@@ -1,6 +1,8 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { RegistryClientService } from "./registry.client.service";
 import { RegistryClientController } from "./registry.client.controller";
+import { plainToClass } from "class-transformer";
+import { AuthConfig } from "../config";
 
 describe("RegistryController", () => {
   let controller: RegistryClientController;
@@ -9,12 +11,17 @@ describe("RegistryController", () => {
     requestCatalogs: jest.fn(),
   };
   beforeEach(async () => {
+    const authConfig = plainToClass(AuthConfig, { enabled: false });
     const module: TestingModule = await Test.createTestingModule({
       controllers: [RegistryClientController],
       providers: [
         {
           provide: RegistryClientService,
           useValue: registryClientService,
+        },
+        {
+          provide: AuthConfig,
+          useValue: authConfig,
         },
       ],
     }).compile();

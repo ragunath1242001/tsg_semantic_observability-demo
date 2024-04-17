@@ -2,9 +2,11 @@ import { Controller, Get, Logger, UseGuards } from "@nestjs/common";
 import { CatalogDto } from "@tsg-dsp/common";
 import { CredentialAddressDto } from "@libs/dtos";
 import { RegistryClientService } from "./registry.client.service";
-import { ManagementGuard } from "../auth/management.guard";
+import { OAuthGuard } from "../auth/oauth.guard";
+import { Roles } from "../auth/roles.guard";
 
-@UseGuards(ManagementGuard)
+@UseGuards(OAuthGuard)
+@Roles(["controlplane_admin", "controlplane_dataplane"])
 @Controller("management/registry")
 export class RegistryClientController {
   constructor(private readonly registryClientService: RegistryClientService) {}

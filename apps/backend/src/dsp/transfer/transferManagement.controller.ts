@@ -15,10 +15,12 @@ import { TransferService } from "./transfer.service";
 import { TransferProcessDto } from "@tsg-dsp/common";
 import { normalizeAddress } from "../../utils/address";
 import { DataPlaneAddressDto, TransferStatusDto } from "@libs/dtos";
-import { ManagementGuard } from "../../auth/management.guard";
 import { TransferDetail } from "../../model/dsp/transfer/transfer";
+import { OAuthGuard } from "../../auth/oauth.guard";
+import { Roles } from "../../auth/roles.guard";
 
-@UseGuards(ManagementGuard)
+@UseGuards(OAuthGuard)
+@Roles(["controlplane_admin", "controlplane_dataplane"])
 @Controller("management/transfers")
 export class TransferManagementController {
   constructor(private readonly transferService: TransferService) {}

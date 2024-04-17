@@ -1,9 +1,10 @@
 import { plainToInstance } from "class-transformer";
-import { TsgWalletDirectConfig } from "../../config";
+import { AuthConfig, TsgWalletDirectConfig } from "../../config";
 import { TsgWalletClient } from "./tsg.wallet";
 import { HttpResponse, PathParams, http } from "msw";
 import { SetupServer, setupServer } from "msw/node";
 import { VerifiablePresentationJwt } from "@tsg-dsp/common";
+import { AuthClientService } from "../auth.client.service";
 
 describe("TSG Wallet", () => {
   let server: SetupServer;
@@ -64,7 +65,10 @@ describe("TSG Wallet", () => {
     validations: ["valid"],
   });
   const testAudience = "did:web:test-audience.com";
-  const tsgWalletClient = new TsgWalletClient(iamConfig);
+  const tsgWalletClient = new TsgWalletClient(
+    iamConfig,
+    new AuthClientService(plainToInstance(AuthConfig, { enabled: false }))
+  );
 
   it("Request & Validate presentation", async () => {
     const vp = await tsgWalletClient.requestVerifiablePresentation(

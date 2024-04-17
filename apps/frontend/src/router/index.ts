@@ -5,6 +5,7 @@ import CatalogVue from "../views/Catalog.vue";
 import LoginVue from "../views/Login.vue";
 import NegotiationsVue from "../views/Negotiations.vue";
 import TransfersVue from "../views/Transfers.vue";
+import { store } from "../stores/index.js";
 
 const router = createRouter({
   history: createWebHashHistory(),
@@ -46,11 +47,7 @@ router.beforeEach(async (to) => {
   // redirect to login page if not logged in and trying to access a restricted page
   const publicPages = ["/login"];
   const authRequired = !publicPages.includes(to.path);
-
-  if (
-    authRequired &&
-    (!localStorage.getItem("username") || !localStorage.getItem("password"))
-  ) {
+  if (authRequired && !store.state.user) {
     return "/login";
   }
 });

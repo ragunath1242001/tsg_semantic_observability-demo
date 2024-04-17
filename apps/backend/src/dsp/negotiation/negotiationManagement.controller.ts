@@ -18,11 +18,13 @@ import { NegotiationStatusDto } from "@libs/dtos";
 import { NegotiationService } from "./negotiation.service";
 import { DeserializePipe } from "../../utils/deserialize.pipe";
 import { normalizeAddress } from "../../utils/address";
-import { ManagementGuard } from "../../auth/management.guard";
 import { ContractNegotiationDto } from "@tsg-dsp/common";
 import { ContractNegotiation } from "../../model/dsp/negotiation/messages";
+import { OAuthGuard } from "../../auth/oauth.guard";
+import { Roles } from "../../auth/roles.guard";
 
-@UseGuards(ManagementGuard)
+@UseGuards(OAuthGuard)
+@Roles(["controlplane_admin", "controlplane_dataplane"])
 @Controller("management/negotiations")
 export class NegotiationManagementController {
   constructor(private readonly negotiationService: NegotiationService) {}
