@@ -1,15 +1,23 @@
+image: casbin/casdoor:v1.600.0
+initImage: registry.gitlab.com/tno-tsg/dataspace-protocol/utils/casdoor-init
+
+host: casdoor.heracles.dataspac.es
+
 serviceAccount:
   create: true
   annotations: {}
   name: ""
   automount: true
 
-nameOverride: casdoor
+ingress:
+  enabled: true
+  clusterIssuer: letsencrypt
 
-image: registry.gitlab.com/tno-tsg/dataspace-protocol/utils/casdoor-init:main
+env: []
+configFromSecrets: {}
 
 initConfig:
-  url: # https://casdoor.heracles.dataspac.es
+  url: http://{{ template "casdoor.fullname" . }}:{{ .Values.config.httpport }}
   organization:
     id: TSG
     name: TSG
@@ -52,7 +60,7 @@ initConfig:
     users: ['admin', 'wallet', 'control-plane']
   - id: wallet_view_presentations
     name: Wallet View Presentations
-    users: ['admin', 'wallet']
+    users: ['admin', 'wallet', 'control-plane']
   - id: wallet_manage_clients
     name: Wallet Manage Clients
     users: ['admin', 'wallet']
@@ -63,41 +71,22 @@ initConfig:
     name: Controlplane Dataplane
     users: ['admin', 'control-plane', 'http-data-plane']
 
-
-casdoor:
-  nameOverride: casdoor
-
-  ingress:
-    enabled: false
-    # className: nginx
-    # annotations:
-    #   cert-manager.io/cluster-issuer: letsencrypt
-    # hosts:
-    #   - host: casdoor.heracles.dataspac.es
-    #     paths:
-    #       - path: /
-    #         pathType: Prefix
-    # tls:
-    #   - hosts:
-    #     - casdoor.heracles.dataspac.es
-    #     secretName: casdoor.heracles.dataspac.es-tls
-
-  config: |
-    appname = casdoor
-    httpport = {{ .Values.service.port }}
-    runmode = dev
-    SessionOn = true
-    copyrequestbody = true
-    driverName = sqlite
-    dataSourceName = "file:ent?mode=memory&cache=shared&_fk=1"
-    dbName = casdoor
-    redisEndpoint =
-    defaultStorageProvider =
-    isCloudIntranet = false
-    authState = "casdoor"
-    socks5Proxy = ""
-    verificationCodeTimeout = 10
-    initScore = 0
-    logPostOnly = true
-    origin =
-    enableGzip = true
+config:
+  appname: casdoor
+  httpport: 8000
+  runmode: dev
+  SessionOn: true
+  copyrequestbody: true
+  driverName: sqlite
+  dataSourceName: "file:ent?mode=memory&cache=shared&_fk=1"
+  dbName: casdoor
+  redisEndpoint: ""
+  defaultStorageProvider: ""
+  isCloudIntranet: false
+  authState: "casdoor"
+  socks5Proxy: ""
+  verificationCodeTimeout: 10
+  initScore: 0
+  logPostOnly: true
+  origin: ""
+  enableGzip: true
