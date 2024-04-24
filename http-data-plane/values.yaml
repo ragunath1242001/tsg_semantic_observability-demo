@@ -12,7 +12,7 @@ ingress:
   # class: nginx
 
 env: []
-configFromSecrets: []
+configFromSecrets: {}
 
 config:
   server:

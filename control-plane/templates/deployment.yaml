@@ -14,6 +14,8 @@ spec:
       labels:
         app.kubernetes.io/name: {{ template "control-plane.fullname" . }}
         app.kubernetes.io/instance: {{ .Release.Name }}
+      annotations:
+        checksum/config: {{ tpl (toYaml .Values.config) . | sha256sum }}
     spec:
       containers:
         - name: control-plane
