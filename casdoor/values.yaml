@@ -1,7 +1,7 @@
 image: casbin/casdoor:v1.600.0
-initImage: registry.gitlab.com/tno-tsg/dataspace-protocol/utils/casdoor-init
+initImage: registry.gitlab.com/tno-tsg/dataspace-protocol/utils/casdoor-init:main
 
-host: casdoor.heracles.dataspac.es
+host:
 
 serviceAccount:
   create: true
@@ -27,49 +27,6 @@ initConfig:
   - username: admin
     isAdmin: true
     secretName: casdoor-admin-secret
-
-  applications:
-  - id: wallet
-    name: Wallet
-  - id: control-plane
-    name: Control Plane
-  - id: http-data-plane
-    name: HTTP Data Plane
-
-  roles:
-  - id: wallet_view_did
-    name: Wallet View Did
-    users: ['admin', 'wallet']
-  - id: wallet_manage_keys
-    name: Wallet Manage Keys
-    users: ['admin', 'wallet']
-  - id: wallet_view_own_credentials
-    name: Wallet View Own Credentials
-    users: ['admin', 'wallet']
-  - id: wallet_view_all_credentials
-    name: Wallet View All Credentials
-    users: ['admin', 'wallet']
-  - id: wallet_manage_own_credentials
-    name: Wallet Manage Own Credentials
-    users: ['admin', 'wallet']
-  - id: wallet_manage_all_credentials
-    name: Wallet Manage All Credentials
-    users: ['admin', 'wallet']
-  - id: wallet_issue_credentials
-    name: Wallet Issue Credentials
-    users: ['admin', 'wallet', 'control-plane']
-  - id: wallet_view_presentations
-    name: Wallet View Presentations
-    users: ['admin', 'wallet', 'control-plane']
-  - id: wallet_manage_clients
-    name: Wallet Manage Clients
-    users: ['admin', 'wallet']
-  - id: controlplane_admin
-    name: Controlplane Admin
-    users: ['admin', 'control-plane']
-  - id: controlplane_dataplane
-    name: Controlplane Dataplane
-    users: ['admin', 'control-plane', 'http-data-plane']
 
 config:
   appname: casdoor
