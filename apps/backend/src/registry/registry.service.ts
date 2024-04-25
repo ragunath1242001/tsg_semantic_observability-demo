@@ -68,11 +68,19 @@ export class RegistryService implements OnApplicationBootstrap {
   private async fetchDidDocuments(): Promise<DIDDocument[]> {
     const credentials = await this.authService.walletClient.getCredentials();
     const didDocuments = await Promise.all(
-      credentials.map((credential) =>
-        this.didResolverService.resolve(credential.targetDid)
-      )
+      credentials.map((credential) => {
+        try {
+          return this.didResolverService.resolve(credential.targetDid);
+        } catch (e) {
+          this.logger.warn(
+            `Could not resolve did document for ${credential.targetDid}, error: ${e}`
+          );
+        }
+      })
     );
-    return didDocuments;
+    return didDocuments.filter(
+      (didDocument): didDocument is DIDDocument => didDocument !== undefined
+    );
   }
 
   async fetchAddresses(): Promise<CredentialAddressDto[]> {
