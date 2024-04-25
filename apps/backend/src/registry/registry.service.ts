@@ -68,9 +68,9 @@ export class RegistryService implements OnApplicationBootstrap {
   private async fetchDidDocuments(): Promise<DIDDocument[]> {
     const credentials = await this.authService.walletClient.getCredentials();
     const didDocuments = await Promise.all(
-      credentials.map((credential) => {
+      credentials.map(async (credential) => {
         try {
-          return this.didResolverService.resolve(credential.targetDid);
+          return await this.didResolverService.resolve(credential.targetDid);
         } catch (e) {
           this.logger.warn(
             `Could not resolve did document for ${credential.targetDid}, error: ${e}`
