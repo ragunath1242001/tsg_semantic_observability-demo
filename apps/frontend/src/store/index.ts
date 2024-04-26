@@ -41,15 +41,3 @@ export const axiosInstance = axios.create({
   timeout: 60000,
 });
 await store.dispatch("login", { redirect: false });
-// axiosInstance.interceptors.request.use(async (config) => {
-//   if (
-//     !config.headers.Authorization &&
-//     store.state.username &&
-//     store.state.password
-//   ) {
-//     config.headers.Authorization = `Basic ${btoa(
-//       `${store.state.username}:${store.state.password}`
-//     )}`;
-//   }
-//   return config;
-// });

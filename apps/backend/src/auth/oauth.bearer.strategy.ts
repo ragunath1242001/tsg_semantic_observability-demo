@@ -25,7 +25,7 @@ export class OAuthBearerStrategy extends PassportStrategy(
         }),
         {
           auth: {
-            username: this.authConfig.clientID,
+            username: this.authConfig.clientId,
             password: this.authConfig.clientSecret,
           },
         },

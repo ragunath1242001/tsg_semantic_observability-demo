@@ -70,7 +70,7 @@ export class AuthConfig {
   public readonly redirectURL!: string;
   @ValidateIf((c) => c.enabled)
   @IsString()
-  public readonly clientID!: string;
+  public readonly clientId!: string;
   @ValidateIf((c) => c.enabled)
   @IsString()
   public readonly clientSecret!: string;

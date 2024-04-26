@@ -59,7 +59,7 @@ export class AuthClientService {
         params = querystring.stringify({
           grant_type: "refresh_token",
           refresh_token: this.refresh_token!.jwt,
-          client_id: this.authConfig.clientID,
+          client_id: this.authConfig.clientId,
           client_secret: this.authConfig.clientSecret,
         });
       } else {
@@ -67,7 +67,7 @@ export class AuthClientService {
           grant_type: "password",
           username: this.authConfig.clientUsername,
           password: this.authConfig.clientPassword,
-          client_id: this.authConfig.clientID,
+          client_id: this.authConfig.clientId,
           client_secret: this.authConfig.clientSecret,
         });
       }
