@@ -21,19 +21,6 @@ describe("Config", () => {
         publicDomain: "localhost",
         publicAddress: "http://localhost:3000",
       },
-      mail: {
-        smtp: {
-          host: "localhost",
-          port: 123,
-          secure: true,
-          user: "username",
-          password: "password",
-          from: "noreply@localhost",
-        },
-        title: "Test wallet",
-        dataspace: "Test dataspace",
-        logo: "http://example.com/logo.png",
-      },
       initClients: [
         {
           id: "test",

@@ -15,18 +15,6 @@ describe("DID Service", () => {
   beforeAll(async () => {
     await TypeOrmTestHelper.instance.setupTestDB();
     const config = plainToInstance(RootConfig, {
-      mail: {
-        smtp: {
-          host: "localhost",
-          port: 465,
-          secure: true,
-          user: "test",
-          password: "test",
-          from: "test@test.com",
-        },
-        title: "Test",
-        dataspace: "Test",
-      },
       initKeys: [
         {
           id: "key-0",
