@@ -15,7 +15,7 @@ auth:
   # tokenURL: https://localhost/api/login/oauth/access_token
   # introspectionURL: https://localhost/api/login/oauth/introspect
   # callbackURL: http://localhost:5173/api/auth/callback
-  # clientID:
+  # clientId:
   # clientSecret:
   # clientUsername:
   # clientPassword:

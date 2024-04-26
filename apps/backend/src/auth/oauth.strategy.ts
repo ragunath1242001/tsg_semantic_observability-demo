@@ -15,7 +15,7 @@ export class OAuthStrategy extends PassportStrategy(Strategy, "oauth") {
     super({
       authorizationURL: authConfig.authorizationURL,
       tokenURL: authConfig.tokenURL,
-      clientID: authConfig.clientID,
+      clientID: authConfig.clientId,
       clientSecret: authConfig.clientSecret,
       callbackURL: authConfig.callbackURL,
       state: true,
@@ -29,7 +29,7 @@ export class OAuthStrategy extends PassportStrategy(Strategy, "oauth") {
     _accessToken: string,
     _refreshToken: string,
     profile: any,
-    _params: any,
+    _params: any
   ) {
     try {
       if (profile["access_token"]) {

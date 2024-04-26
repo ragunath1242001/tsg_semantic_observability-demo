@@ -9,7 +9,7 @@ import { decodeJwt } from "jose";
 @Injectable()
 export class OAuthBearerStrategy extends PassportStrategy(
   Strategy,
-  "oauth-bearer",
+  "oauth-bearer"
 ) {
   constructor(private readonly authConfig: AuthConfig) {
     super();
@@ -25,10 +25,10 @@ export class OAuthBearerStrategy extends PassportStrategy(
         }),
         {
           auth: {
-            username: this.authConfig.clientID,
+            username: this.authConfig.clientId,
             password: this.authConfig.clientSecret,
           },
-        },
+        }
       );
       if (response.data.active) {
         return decodeJwt(token);
