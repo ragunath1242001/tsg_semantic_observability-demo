@@ -13,7 +13,7 @@ export class OAuthStrategy extends PassportStrategy(Strategy, "oauth", 5) {
     super({
       authorizationURL: authConfig.authorizationURL,
       tokenURL: authConfig.tokenURL,
-      clientID: authConfig.clientID,
+      clientID: authConfig.clientId,
       clientSecret: authConfig.clientSecret,
       callbackURL: authConfig.callbackURL,
       state: true,

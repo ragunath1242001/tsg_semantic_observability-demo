@@ -2,7 +2,6 @@ import {
   Allow,
   IsBoolean,
   IsDefined,
-  IsEmail,
   IsEnum,
   IsIn,
   IsNumber,
@@ -80,7 +79,7 @@ export class AuthConfig {
   public readonly redirectURL!: string;
   @ValidateIf((c) => c.enabled)
   @IsString()
-  public readonly clientID!: string;
+  public readonly clientId!: string;
   @ValidateIf((c) => c.enabled)
   @IsString()
   public readonly clientSecret!: string;
@@ -109,45 +108,6 @@ export class ServerConfig {
   @IsString()
   @IsOptional()
   public readonly publicAddress: string = `http://localhost:3000`;
-}
-
-export class SmtpConfig {
-  @IsString()
-  public readonly host!: string;
-
-  @IsNumber()
-  @Type()
-  public readonly port!: number;
-
-  @IsBoolean()
-  @IsOptional()
-  public readonly secure: boolean = true;
-
-  @IsString()
-  public readonly user!: string;
-
-  @IsString()
-  public readonly password!: string;
-
-  @IsString()
-  public readonly from!: string;
-}
-
-export class MailConfig {
-  @ValidateNested()
-  @Type(() => SmtpConfig)
-  @IsDefined()
-  public readonly smtp!: SmtpConfig;
-
-  @IsString()
-  public readonly title!: string;
-
-  @IsString()
-  public readonly dataspace!: string;
-
-  @IsString()
-  @IsOptional()
-  public readonly logo?: string;
 }
 
 export class InitKeyConfig {
@@ -313,11 +273,6 @@ export class RootConfig {
   @Type(() => ServerConfig)
   @IsOptional()
   public readonly server: ServerConfig = new ServerConfig();
-
-  @ValidateNested()
-  @Type(() => MailConfig)
-  @IsOptional()
-  public readonly mail?: MailConfig;
 
   @ValidateNested({ each: true })
   @Type(() => InitKeyConfig)
