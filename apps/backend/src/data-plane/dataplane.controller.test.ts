@@ -15,6 +15,7 @@ import {
   ResourceDao,
 } from "../model/dsp/catalog/catalog.dao";
 import { TypeOrmTestHelper } from "../utils/testhelper";
+import { AuthClientService } from "../auth/auth.client.service";
 
 describe("DataPlaneController", () => {
   let dataPlaneController: DataPlaneController;
@@ -49,6 +50,7 @@ describe("DataPlaneController", () => {
       providers: [
         DataPlaneService,
         CatalogService,
+        AuthClientService,
         {
           provide: InitCatalog,
           useValue: initCatalog,

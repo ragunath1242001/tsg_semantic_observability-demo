@@ -19,7 +19,7 @@ import {
   TransferState,
 } from "@tsg-dsp/common";
 import { Catalog } from "../../model/dsp/catalog/catalog";
-import { ServerConfig } from "../../config";
+import { AuthConfig, ServerConfig } from "../../config";
 import { plainToClass } from "class-transformer";
 import { AuthService } from "../../auth/auth.service";
 import { TransferService } from "./transfer.service";
@@ -41,6 +41,7 @@ import {
   TransferDetailDao,
 } from "../../model/dsp/transfer/transfer.dao";
 import { DspGateway } from "../client/dsp.gateway";
+import { AuthClientService } from "../../auth/auth.client.service";
 
 describe("TransferController", () => {
   let transferController: TransferController;
@@ -174,6 +175,11 @@ describe("TransferController", () => {
         CatalogService,
         DspClientService,
         DspGateway,
+        AuthClientService,
+        {
+          provide: AuthConfig,
+          useValue: plainToClass(AuthConfig, { enabled: false }),
+        },
         { provide: ServerConfig, useValue: plainToClass(ServerConfig, {}) },
       ],
     })

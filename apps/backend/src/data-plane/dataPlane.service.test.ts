@@ -1,7 +1,7 @@
 import { TestingModule, Test } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { plainToClass } from "class-transformer";
-import { InitCatalog, ServerConfig } from "../config";
+import { AuthConfig, InitCatalog, ServerConfig } from "../config";
 import {
   CatalogDao,
   CatalogRecordDao,
@@ -23,6 +23,7 @@ import {
 } from "../model/dsp/catalog/catalog";
 import { ODRLAction } from "@tsg-dsp/common";
 import { Offer, Permission } from "../model/dsp/negotiation/negotiation";
+import { AuthClientService } from "../auth/auth.client.service";
 
 describe("DataPlane Service", () => {
   let dataPlaneService: DataPlaneService;
@@ -32,6 +33,7 @@ describe("DataPlane Service", () => {
     await TypeOrmTestHelper.instance.setupTestDB();
     const initCatalog = plainToClass(InitCatalog, {});
     const serverConfig = plainToClass(ServerConfig, {});
+    const authConfig = plainToClass(AuthConfig, { enabled: false });
 
     const moduleRef: TestingModule = await Test.createTestingModule({
       imports: [
@@ -57,6 +59,7 @@ describe("DataPlane Service", () => {
       providers: [
         DataPlaneService,
         CatalogService,
+        AuthClientService,
         {
           provide: InitCatalog,
           useValue: initCatalog,
@@ -64,6 +67,10 @@ describe("DataPlane Service", () => {
         {
           provide: ServerConfig,
           useValue: serverConfig,
+        },
+        {
+          provide: AuthConfig,
+          useValue: authConfig,
         },
       ],
     }).compile();

@@ -43,8 +43,7 @@ export class DataPlaneService {
     @InjectRepository(DataPlaneDao)
     private readonly dataPlaneRepository: Repository<DataPlaneDao>,
     private readonly catalogService: CatalogService,
-    @Optional()
-    private readonly authClientService?: AuthClientService
+    private readonly authClientService: AuthClientService
   ) {
     this.axios = axios.create();
     this.axios.interceptors.request.use(
@@ -215,7 +214,7 @@ export class DataPlaneService {
     if (dataPlaneStatus.managementToken.trim() != "") {
       return `Bearer ${dataPlaneStatus.managementToken}`;
     } else {
-      const token = await this.authClientService?.getToken();
+      const token = await this.authClientService.getToken();
       if (token) {
         return `Bearer ${token}`;
       } else {
@@ -350,6 +349,9 @@ export class DataPlaneService {
             Authorization: await this.authorizationToken(dataPlane),
           },
         };
+        this.logger.debug(
+          `Requesting transfer at ${dataPlane.identifier} at ${dataPlane.managementAddress} with authorization: ${requestConfig.headers?.Authorization}`
+        );
         const dataPlaneRequestResponse =
           await this.axios.post<DataPlaneRequestResponseDto>(
             `${dataPlane.managementAddress}/transfers/request/${role}?processId=${processId}`,
@@ -517,7 +519,7 @@ export class DataPlaneService {
     const dataPlanePromises = dataPlanes.map((dataPlane) =>
       this.pullCatalog(dataPlane)
     );
-    await Promise.all(dataPlanePromises);
+    await Promise.allSettled(dataPlanePromises);
   }
 
   @Interval("healthCheck", DataPlaneService.pullInterval)
@@ -530,6 +532,6 @@ export class DataPlaneService {
     const dataPlanePromises = dataPlanes.map((dataPlane) =>
       this.healthCheck(dataPlane)
     );
-    await Promise.all(dataPlanePromises);
+    await Promise.allSettled(dataPlanePromises);
   }
 }

@@ -5,6 +5,7 @@ import { TestingModule, Test } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { AuthService } from "../../auth/auth.service";
 import {
+  AuthConfig,
   DevWalletConfig,
   IamConfig,
   InitCatalog,
@@ -46,6 +47,7 @@ import {
 import { Multilanguage } from "../../model/dsp/common";
 import { DataPlaneRequestResponseDto, DataPlaneTransferDto } from "@libs/dtos";
 import { DspGateway } from "../client/dsp.gateway";
+import { AuthClientService } from "../../auth/auth.client.service";
 
 describe("Transfer service", () => {
   let transferService: TransferService;
@@ -90,6 +92,11 @@ describe("Transfer service", () => {
         DspGateway,
         DataPlaneService,
         CatalogService,
+        AuthClientService,
+        {
+          provide: AuthConfig,
+          useValue: plainToClass(AuthConfig, { enabled: false }),
+        },
         {
           provide: AuthService,
           useValue: new (class {
