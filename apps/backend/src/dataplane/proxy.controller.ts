@@ -26,7 +26,6 @@ export class ProxyController {
     @Param("version") version: string,
     @Param("path") path: string | undefined,
     @Headers("Authorization") authorization: string,
-    // @Req() request: Request,
     @Req() request: RawBodyRequest<Request>,
     @Res() response: Response,
   ) {

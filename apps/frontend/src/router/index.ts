@@ -2,6 +2,7 @@ import { createRouter, createWebHashHistory } from "vue-router";
 import AppLayout from "@/layout/AppLayout.vue";
 import LoginVue from "../views/Login.vue";
 import DashboardVue from "../views/Dashboard.vue";
+import TesterVue from "../views/Tester.vue";
 import { store } from "../store/index.js";
 
 const router = createRouter({
@@ -15,6 +16,14 @@ const router = createRouter({
           path: "/",
           name: "dashboard",
           component: DashboardVue,
+        },
+        {
+          path: "/tester",
+          name: "tester",
+          component: TesterVue,
+          props: {
+            default: true,
+          },
         },
       ],
     },

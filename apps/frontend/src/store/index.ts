@@ -1,14 +1,27 @@
+import { TransferDto } from "@libs/dtos";
 import axios from "axios";
 import { createStore } from "vuex";
 
-export const store = createStore({
+export const store = createStore<{
+  user?: {
+    sub: string;
+    name: string;
+    email: string;
+    roles: string[];
+  };
+  transfer?: TransferDto;
+}>({
   state: {
     user: null,
+    transfer: null,
   },
   getters: {},
   mutations: {
     userInfo(state, payload) {
       state.user = payload;
+    },
+    currentTransfer(state, payload) {
+      state.transfer = payload;
     },
   },
   actions: {

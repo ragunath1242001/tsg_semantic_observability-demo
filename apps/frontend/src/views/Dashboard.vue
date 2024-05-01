@@ -2,11 +2,14 @@
 import { computed, onMounted, ref } from "vue";
 import { axiosInstance } from "../store/index.js";
 import { useToast } from "primevue/usetoast";
+import { useConfirm } from "primevue/useconfirm";
 import { DataPlaneStateDto, TransferDto } from "@libs/dtos";
 import FormField from "../components/FormField.vue";
 import { JsonTreeView } from "json-tree-view-vue3";
+import { store } from "../store/index.js";
 
 const toast = useToast();
+const confirm = useConfirm();
 
 const showDataset = ref(false);
 const state = ref<DataPlaneStateDto>();
@@ -67,6 +70,34 @@ const stateSeverity = (state: string) => {
     case "dspace:SUSPENDED":
       return "warning";
   }
+}
+
+const action = async (event: Event, action: 'start' | 'complete' | 'terminate' | 'suspend') => {
+  const target = event.currentTarget as HTMLElement;
+  target.classList.add('p-disabled');
+  target.classList.add('p-button-loading');
+  confirm.require({
+    header: `Are you sure you want to ${action} this transfer`,
+    message: `Changes to the state of this transfer will be communicated with the remote party, this might be irreversible`,
+    rejectLabel: 'Cancel',
+    acceptLabel: action.charAt(0).toUpperCase() + action.slice(1),
+    rejectClass: "p-button-secondary p-button-outlined",
+    acceptClass: "p-button-danger",
+    accept: async () => {
+      toast.add({
+        severity: "warn",
+        summary: "Not supported",
+        detail: "Performing actions is not supported yet",
+        life: 10000,
+      });
+      target.classList.remove('p-disabled');
+      target.classList.remove('p-button-loading');
+    },
+    reject: () => {
+      target.classList.remove('p-disabled');
+      target.classList.remove('p-button-loading');
+    }
+  });
 }
 
 onMounted(async () => {
@@ -150,11 +181,11 @@ onMounted(async () => {
           </Column>
           <Column header="Quick actions">
             <template #body="props">
-              <Button icon="pi pi-times" :disabled="['dspace:COMPLETED', 'dspace:TERMINATED'].includes(props.data.state)" severity="danger" aria-label="Stop" outlined />
-              <Button v-if="props.data.state === 'dspace:STARTED'" class="ml-2" icon="pi pi-pause" severity="warning" aria-label="Suspend" outlined />
-              <Button v-else :disabled="props.data.state !== 'dspace:SUSPENDED'" class="ml-2" icon="pi pi-play" severity="warning" aria-label="Suspend" outlined />
-              <Button class="ml-2" :disabled="props.data.state !== 'dspace:STARTED'" icon="pi pi-download" severity="info" aria-label="Suspend" outlined />
-              <Button class="ml-2" :disabled="props.data.state !== 'dspace:STARTED'" icon="pi pi-check" severity="success" aria-label="Complete" outlined />
+              <Button icon="pi pi-times" :disabled="['dspace:COMPLETED', 'dspace:TERMINATED'].includes(props.data.state)" severity="danger" aria-label="Stop" outlined @click="action($event, 'terminate')"/>
+              <Button v-if="props.data.state === 'dspace:STARTED'" class="ml-2" icon="pi pi-pause" severity="warning" aria-label="Suspend" outlined  @click="action($event, 'suspend')"/>
+              <Button v-else :disabled="props.data.state !== 'dspace:SUSPENDED'" class="ml-2" icon="pi pi-play" severity="warning" aria-label="Start" outlined  @click="action($event, 'start')"/>
+              <Button class="ml-2" :disabled="props.data.state !== 'dspace:STARTED'" icon="pi pi-download" severity="info" aria-label="Execute" @click="store.commit('currentTransfer', props.data); $router.push({name: 'tester'})" outlined />
+              <Button class="ml-2" :disabled="props.data.state !== 'dspace:STARTED'" icon="pi pi-check" severity="success" aria-label="Complete" outlined  @click="action($event, 'complete')"/>
             </template>
           </Column>
           <template #expansion="props">

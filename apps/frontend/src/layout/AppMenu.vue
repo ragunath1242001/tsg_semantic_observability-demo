@@ -12,6 +12,11 @@ const model = ref([
         icon: "pi pi-fw pi-id-card",
         to: "/",
       },
+      {
+        label: "Tester",
+        icon: "pi pi-fw pi-wrench",
+        to: "/tester",
+      },
     ],
   },
 ]);
