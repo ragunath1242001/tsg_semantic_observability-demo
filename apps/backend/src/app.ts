@@ -7,7 +7,9 @@ import passport from "passport";
 import crypto from "crypto";
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    rawBody: true,
+  });
   const config = app.get(ServerConfig);
   Logger.log(
     `Listening on ${config.listen}:${config.port} with public address ${config.publicAddress}`,
@@ -27,6 +29,10 @@ async function bootstrap() {
   );
   app.use(passport.initialize());
   app.use(passport.session());
+  app.enableCors({
+    allowedHeaders: "*",
+    origin: "*",
+  });
   await app.listen(config.port, config.listen);
 }
 bootstrap();

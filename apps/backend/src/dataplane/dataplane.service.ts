@@ -1,4 +1,10 @@
-import { HttpException, HttpStatus, Injectable, Logger } from "@nestjs/common";
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  Logger,
+  RawBodyRequest,
+} from "@nestjs/common";
 import axios, { AxiosInstance } from "axios";
 import { RootConfig } from "../config";
 import crypto from "crypto";
@@ -61,7 +67,7 @@ export class DataPlaneService {
         `Creating new state (after ${this.config.controlPlane.initializationDelay}ms)`,
       );
       setTimeout(async () => {
-        const managementToken = crypto.randomBytes(32).toString("hex");
+        const managementToken = ""; // TODO: should be removed, due to move towards oAuth
         const dataPlaneCreation: DataPlaneCreation = {
           dataplaneType: "dspace:HTTP",
           endpointPrefix: `${this.config.server.publicAddress}/data`,
@@ -242,7 +248,7 @@ export class DataPlaneService {
     processId: string,
     version: string,
     path: string,
-    request: Request,
+    request: RawBodyRequest<Request>,
     response: Response,
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   ): Promise<any> {
@@ -270,7 +276,11 @@ export class DataPlaneService {
     }
 
     try {
-      const newUrl = `${transfer.dataAddress["dspace:endpoint"]}/${version}/${path}`;
+      const newUrl =
+        `${transfer.dataAddress["dspace:endpoint"]}/${version}/${path}`.replace(
+          /([^:]\/)\/+/g,
+          "$1",
+        );
       const headers = request.headers;
       headers["authorization"] = transfer.dataAddress[
         "dspace:endpointProperties"
@@ -280,9 +290,10 @@ export class DataPlaneService {
         request.method,
         newUrl,
         headers,
-        request.body,
+        request.rawBody,
         request.query,
         response,
+        false,
       );
     } catch (e) {
       this.logger.log(`Error in executing transfer: ${e}`);
@@ -298,7 +309,7 @@ export class DataPlaneService {
     authorization: string,
     version: string,
     path: string,
-    request: Request,
+    request: RawBodyRequest<Request>,
     response: Response,
   ) {
     const transfer = await this.transferRepository.findOneBy({ id: processId });
@@ -345,7 +356,10 @@ export class DataPlaneService {
       if (distribution.authorization) {
         headers["authorization"] = distribution.authorization;
       }
-      const newUrl = `${distribution.backend}/${version}/${path}`;
+      const newUrl = `${distribution.backend}/${path}`.replace(
+        /([^:]\/)\/+/g,
+        "$1",
+      );
       this.logger.log(`Rewrite: ${newUrl}`);
       this.logger.log(`Headers: ${JSON.stringify(headers)}`);
 
@@ -353,9 +367,10 @@ export class DataPlaneService {
         request.method,
         newUrl,
         headers,
-        request.body,
+        request.rawBody,
         request.query,
         response,
+        distribution.authorization !== undefined,
       );
     } catch (e) {
       this.logger.log(`Error in executing transfer: ${e}`);
@@ -371,18 +386,25 @@ export class DataPlaneService {
     url: string,
     headers: IncomingHttpHeaders,
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-    body: any,
+    body: Buffer | undefined,
     query: qs.ParsedQs,
     response: Response,
+    removeAuth: boolean,
   ) {
     delete headers["transfer-encoding"];
     delete headers["keep-alive"];
     delete headers["connection"];
     delete headers["accept-ranges"];
-    delete headers["authorization"];
     delete headers["content-length"];
     delete headers["host"];
+    delete headers["cookie"];
+    if (removeAuth) {
+      delete headers["authorization"];
+    }
     try {
+      this.logger.log(
+        `Proxying request ${method} ${url} (${JSON.stringify(headers)})`,
+      );
       const proxyResponse = await axios({
         method: method,
         url: url,

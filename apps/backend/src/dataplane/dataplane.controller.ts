@@ -7,13 +7,9 @@ import {
   Post,
   Param,
   Query,
-  Headers,
-  Req,
-  Res,
   Body,
 } from "@nestjs/common";
 import { DataPlaneService } from "./dataplane.service";
-import { Request, Response } from "express";
 import {
   DataPlaneRequestResponseDto,
   TransferCompletionMessageDto,
@@ -55,7 +51,6 @@ export class DataPlaneController {
     @Body() body: TransferRequestMessageDto,
     @Param("role") role: "provider" | "consumer",
     @Query("processId") processId: string,
-    @Headers("Authorization") authorization: string,
   ): Promise<DataPlaneRequestResponseDto> {
     this.logger.log(
       `Requesting transfer for ${role} with processId ${processId} and with message: ${JSON.stringify(body)}`,
@@ -68,7 +63,6 @@ export class DataPlaneController {
   async startTransfer(
     @Body() body: TransferStartMessageDto,
     @Param("id") id: string,
-    @Headers("Authorization") authorization: string,
   ): Promise<void> {
     this.logger.log(
       `Requesting transfer start for id ${id}, with message:${JSON.stringify(body)}`,
@@ -76,33 +70,11 @@ export class DataPlaneController {
     return await this.dataPlaneService.transferStart(body, id);
   }
 
-  @Post("/transfers/:id/execute/:version/:path(*)?")
-  @HttpCode(HttpStatus.ACCEPTED)
-  async executeTransfer(
-    @Param("id") id: string,
-    @Param("version") version: string,
-    @Param("path") path: string | undefined,
-    @Headers("Authorization") authorization: string,
-    @Req() request: Request,
-    @Res() response: Response,
-    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-  ): Promise<any> {
-    this.logger.log(`Requesting transfer execution for id ${id}`);
-    return await this.dataPlaneService.executeProxyRequest(
-      id,
-      version,
-      path || "",
-      request,
-      response,
-    );
-  }
-
   @Post("/transfers/:id/complete")
   @HttpCode(HttpStatus.ACCEPTED)
   async completeTransfer(
     @Body() body: TransferCompletionMessageDto,
     @Param("id") id: string,
-    @Headers("Authorization") authorization: string,
   ): Promise<void> {
     this.logger.log(
       `Requesting transfer complete for id ${id}, with message:${JSON.stringify(body)}`,
@@ -115,7 +87,6 @@ export class DataPlaneController {
   async terminateTransfer(
     @Body() body: TransferTerminationMessageDto,
     @Param("id") id: string,
-    @Headers("Authorization") authorization: string,
   ): Promise<void> {
     this.logger.log(
       `Requesting transfer terminate for id ${id}, with message:${JSON.stringify(body)}`,
@@ -128,7 +99,6 @@ export class DataPlaneController {
   async suspendTransfer(
     @Body() body: TransferSuspensionMessageDto,
     @Param("id") id: string,
-    @Headers("Authorization") authorization: string,
   ): Promise<void> {
     this.logger.log(
       `Requesting transfer suspend for id ${id}, with message:${JSON.stringify(body)}`,

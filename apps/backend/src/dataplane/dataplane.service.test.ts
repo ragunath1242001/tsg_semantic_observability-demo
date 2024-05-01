@@ -13,6 +13,7 @@ import { TransferDao } from "./transfer.dao";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { DataPlaneStateDao } from "./dataplane.dao";
 import { AuthClientService } from "../auth/auth.client.service";
+import { RawBodyRequest } from "@nestjs/common";
 
 describe("Dataplane Service", () => {
   let dataPlaneService: DataPlaneService;
@@ -136,7 +137,8 @@ describe("Dataplane Service", () => {
       body: {
         test: "test2",
       },
-    } as Request;
+      rawBody: Buffer.from(JSON.stringify({ test: "test2" }), "utf-8"),
+    } as RawBodyRequest<Request>;
     it("Transfer request", async () => {
       const result = await dataPlaneService.transferRequest(
         {
