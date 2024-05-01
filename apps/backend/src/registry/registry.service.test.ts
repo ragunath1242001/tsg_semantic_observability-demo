@@ -218,21 +218,23 @@ describe("RegistryService", () => {
       });
     });
     it("Retrieve addresses from RegistryWalletClient ready for further use", async () => {
-      const addresses = await registryService.fetchFlatAddresses();
+      const addresses = await registryService.fetchAddresses();
 
       expect(addresses).toHaveLength(1);
-      expect(addresses[0]).toEqual("http://localhost");
+      expect(addresses[0].address).toEqual("http://localhost");
     });
 
     it("Get catalogs based on addresses", async () => {
       const addresses = await registryService.fetchAddresses();
-      const catalogs = await registryService.getCatalogs(addresses);
+      const catalogs = await Promise.all(
+        addresses.map((a) => registryService.getCatalog(a))
+      );
 
       expect(catalogs).toHaveLength(1);
     });
 
     it("Crawl and retrieve", async () => {
-      await registryService.crawl();
+      const result = await registryService.crawl();
 
       const catalogs = await registryService.getAllCatalogs();
       const output = await Promise.all(

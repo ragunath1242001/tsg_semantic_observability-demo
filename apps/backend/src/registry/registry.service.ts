@@ -67,6 +67,9 @@ export class RegistryService implements OnApplicationBootstrap {
 
   private async fetchDidDocuments(): Promise<DIDDocument[]> {
     const credentials = await this.authService.walletClient.getCredentials();
+    this.logger.debug(
+      `Found credentials for ${credentials.map((c) => c.targetDid)}`
+    );
     const didDocuments = await Promise.all(
       credentials.map(async (credential) => {
         try {
@@ -101,87 +104,81 @@ export class RegistryService implements OnApplicationBootstrap {
     return credentialAddresses.filter(
       (obj, index) =>
         credentialAddresses.findIndex(
-          (item) => item.address === item.address
+          (item) => item.address === obj.address
         ) === index
     );
   }
-  async fetchFlatAddresses(): Promise<string[]> {
-    const didDocuments = await this.fetchDidDocuments();
-    const addresses = didDocuments.flatMap((didDocument: DIDDocument) => {
-      if (didDocument.service) {
-        return didDocument.service
-          .filter((service) => service.type === "connector")
-          .filter((service) => typeof service.serviceEndpoint === "string")
-          .flatMap((service) => service.serviceEndpoint);
-      }
+
+  async getCatalog(
+    credentialAddress: CredentialAddressDto
+  ): Promise<CatalogDto> {
+    return await this.dsp.requestCatalog(
+      normalizeAddress(credentialAddress.address, 0, "catalog", "request"),
+      credentialAddress.didId
+    );
+  }
+
+  async saveToDatabase(catalog: CatalogDto) {
+    const catalogInst = await deserialize<Catalog>(catalog);
+    const resource = this.resourceRepository.create(new Resource(catalogInst));
+    const dataset = this.datasetRepository.create({
+      ...new Dataset({
+        ...catalogInst,
+      }),
+      _resource: resource,
     });
-    // Return unique addresses
-    return [...new Set(addresses)];
-  }
+    const catalogObj = this.catalogRepository.create(catalogInst);
 
-  async getCatalogs(
-    credentialAddresses: CredentialAddressDto[]
-  ): Promise<CatalogDto[]> {
-    const catalogPromises = Promise.all(
-      credentialAddresses.map((credentialAddress) =>
-        this.dsp.requestCatalog(
-          normalizeAddress(credentialAddress.address, 0, "catalog", "request"),
-          credentialAddress.didId
-        )
-      )
-    );
-    return await catalogPromises;
-  }
+    if (catalogInst.service) {
+      catalogObj._services = catalogInst.service.map((dservice) =>
+        this.dataServiceRepository.create(dservice)
+      );
+    }
 
-  async saveToDatabase(catalogs: CatalogDto[]) {
-    const promises = Promise.all(
-      catalogs.map(async (catalog) => {
-        const catalogInst = await deserialize<Catalog>(catalog);
-        const resource = this.resourceRepository.create(
-          new Resource(catalogInst)
-        );
-        const dataset = this.datasetRepository.create({
-          ...new Dataset({
-            ...catalogInst,
-          }),
-          _resource: resource,
-        });
-        const catalogObj = this.catalogRepository.create(catalogInst);
-
-        if (catalogInst.service) {
-          catalogObj._services = catalogInst.service.map((dservice) =>
-            this.dataServiceRepository.create(dservice)
-          );
-        }
-
-        catalogObj._dataset = await this.datasetRepository.save(dataset);
-        await this.catalogRepository.save(catalogObj);
-        if (catalogInst.dataset) {
-          await Promise.all(
-            catalogInst.dataset.map(async (dS) => {
-              try {
-                await this.catalogService.addDataset(dS, catalogObj.id);
-              } catch (err) {
-                if (
-                  err instanceof DSPError &&
-                  err.appResponse.status === HttpStatus.CONFLICT
-                ) {
-                  await this.catalogService.updateDataset(dS.id, dS);
-                }
-              }
-            })
-          );
-        }
-      })
-    );
-    return promises;
+    catalogObj._dataset = await this.datasetRepository.save(dataset);
+    await this.catalogRepository.save(catalogObj);
+    if (catalogInst.dataset) {
+      await Promise.allSettled(
+        catalogInst.dataset.map(async (dataset) => {
+          try {
+            await this.catalogService.updateDataset(dataset.id, dataset);
+          } catch (err) {
+            if (
+              err instanceof DSPError &&
+              err.appResponse.code === HttpStatus.NOT_FOUND
+            ) {
+              this.logger.log(
+                `Dataset with id ${dataset.id} does not exist yet, creating adding new dataset to the catalog`
+              );
+              await this.catalogService.addDataset(dataset, catalogObj.id);
+            }
+          }
+        })
+      );
+    }
   }
 
   async crawl() {
     this.logger.log("Crawling addresses and catalogs.");
     const addresses = await this.fetchAddresses();
-    const catalogs = await this.getCatalogs(addresses);
-    return await this.saveToDatabase(catalogs);
+    this.logger.debug(`Addresses to crawl: ${JSON.stringify(addresses)}`);
+    return await Promise.allSettled(
+      addresses.map(async (address) => {
+        try {
+          this.logger.debug(`Crawling address ${address}`);
+          const catalog = await this.getCatalog(address);
+          const result = await this.saveToDatabase(catalog);
+          this.logger.debug(
+            `Crawled address ${address.address} (${address.didId}) and stored to database`
+          );
+          return result;
+        } catch (err) {
+          this.logger.debug(
+            `Error during crawling address ${address.address} (${address.didId}): ${err}`
+          );
+        }
+      })
+    );
   }
 
   async getAllCatalogs(): Promise<Catalog[]> {
