@@ -30,6 +30,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { NegotiationStatusDto } from "@libs/dtos";
 import { DspGateway } from "../client/dsp.gateway";
+import { createInstance } from "../../utils/instances";
 
 @Injectable()
 export class NegotiationService {
@@ -159,6 +160,20 @@ export class NegotiationService {
     } else {
       throw new DSPError(
         `Cannot get negotiation with process ID ${processId} for ${audience}`,
+        HttpStatus.NOT_FOUND
+      ).andLog(this.logger, "warn");
+    }
+  }
+
+  async getAgreement(agreementId: string): Promise<Agreement> {
+    const negotiation = await this.negotiationDetailRepository.findOneBy({
+      agreementId: agreementId,
+    });
+    if (negotiation?.agreement) {
+      return createInstance(negotiation.agreement, Agreement);
+    } else {
+      throw new DSPError(
+        `Cannot get agreement with agreement ID ${agreementId}`,
         HttpStatus.NOT_FOUND
       ).andLog(this.logger, "warn");
     }
@@ -484,6 +499,7 @@ export class NegotiationService {
     );
     negotiation.state = ContractNegotiationState.AGREED;
     negotiation.agreement = agreement;
+    negotiation.agreementId = agreement.id;
     await this.negotiationDetailRepository.save(negotiation);
     this.dspGateway.sendUpdateToClients("negotiation:update", "updated");
     return {
@@ -511,6 +527,7 @@ export class NegotiationService {
       type: "remote",
     });
     negotiation.agreement = contractAgreementMessage.agreement;
+    negotiation.agreementId = contractAgreementMessage.agreement.id;
     negotiation.state = ContractNegotiationState.AGREED;
     await this.negotiationDetailRepository.save(negotiation);
     this.dspGateway.sendUpdateToClients("negotiation:update", "updated");

@@ -296,6 +296,7 @@ export interface INegotiationStatus {
 export interface INegotiationDetail extends INegotiationStatus {
   offer?: Offer;
   agreement?: Agreement;
+  agreementId?: string;
   events: Array<NegotiationProcessEvent>;
 }
 
@@ -322,12 +323,14 @@ export class NegotiationStatus {
 export class NegotiationDetail extends NegotiationStatus {
   offer?: Offer;
   agreement?: Agreement;
+  agreementId?: string;
   events: Array<NegotiationProcessEvent>;
 
   constructor(value: INegotiationDetail) {
     super(value);
     this.offer = value.offer;
     this.agreement = value.agreement;
+    this.agreementId = value.agreementId;
     this.events = value.events;
   }
 }

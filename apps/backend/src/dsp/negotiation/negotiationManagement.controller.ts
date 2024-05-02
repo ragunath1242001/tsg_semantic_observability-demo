@@ -18,7 +18,7 @@ import { NegotiationStatusDto } from "@libs/dtos";
 import { NegotiationService } from "./negotiation.service";
 import { DeserializePipe } from "../../utils/deserialize.pipe";
 import { normalizeAddress } from "../../utils/address";
-import { ContractNegotiationDto } from "@tsg-dsp/common";
+import { AgreementDto, ContractNegotiationDto } from "@tsg-dsp/common";
 import { ContractNegotiation } from "../../model/dsp/negotiation/messages";
 import { OAuthGuard } from "../../auth/oauth.guard";
 import { Roles } from "../../auth/roles.guard";
@@ -41,6 +41,15 @@ export class NegotiationManagementController {
   ): Promise<NegotiationDetail> {
     const negotiation = await this.negotiationService.getNegotiation(processId);
     return negotiation;
+  }
+
+  @Get("agreement/:agreementId")
+  async getAgreement(
+    @Param("agreementId") agreementId: string
+  ): Promise<AgreementDto> {
+    return (
+      await this.negotiationService.getAgreement(agreementId)
+    ).serialize();
   }
 
   @Post("request")

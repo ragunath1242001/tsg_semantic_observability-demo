@@ -67,6 +67,8 @@ export class NegotiationDetailDao
   offer?: Offer;
   @Column("simple-json", { nullable: true })
   agreement?: Agreement;
+  @Column({ nullable: true })
+  agreementId?: string;
   @OneToMany(() => NegotiationProcessEventDao, (event) => event._detail, {
     cascade: true,
     eager: true,
