@@ -11,11 +11,13 @@ import {
   Res,
   All,
   RawBodyRequest,
+  Query,
 } from "@nestjs/common";
 import { DataPlaneService } from "./dataplane.service";
 import { DataPlaneStateDto, TransferDto } from "@libs/dtos";
 import { Roles } from "../auth/roles.guard";
 import { Request, Response } from "express";
+import { AgreementDto, DatasetDto } from "@tsg-dsp/common";
 
 @Controller("/management")
 @Roles("controlplane_dataplane")
@@ -31,6 +33,40 @@ export class DataPlaneManagementController {
   @Get("/transfers")
   async getTransfers(): Promise<TransferDto[]> {
     return await this.dataPlaneService.getTransfers();
+  }
+
+  @Get("/transfers/:id/metadata")
+  async getMetadata(
+    @Param("id") id: string,
+  ): Promise<{ agreement: AgreementDto; dataset: DatasetDto }> {
+    return await this.dataPlaneService.getMetadata(id);
+  }
+
+  @Post("/transfers/:id/start")
+  async startTransfer(@Param("id") id: string): Promise<void> {
+    return await this.dataPlaneService.transferStart(id);
+  }
+
+  @Post("/transfers/:id/complete")
+  async completeTransfer(@Param("id") id: string): Promise<void> {
+    return await this.dataPlaneService.transferComplete(id);
+  }
+
+  @Post("/transfers/:id/terminate")
+  async terminateTransfer(
+    @Param("id") id: string,
+    @Query("code") code: string,
+    @Query("code") reason: string,
+  ): Promise<void> {
+    return await this.dataPlaneService.transferTerminate(id, code, reason);
+  }
+
+  @Post("/transfers/:id/suspend")
+  async suspendTransfer(
+    @Param("id") id: string,
+    @Query("code") reason: string,
+  ): Promise<void> {
+    return await this.dataPlaneService.transferSuspend(id, reason);
   }
 
   @All("/transfers/:id/execute/:version/:path(*)?")

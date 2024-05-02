@@ -12,6 +12,7 @@ import bcrypt from "bcrypt";
 import { Request, Response } from "express";
 import { IncomingHttpHeaders } from "http";
 import {
+  AgreementDto,
   DataPlaneAddressDto,
   DataPlaneCreation,
   DataPlaneDetailsDto,
@@ -30,9 +31,10 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { TransferDao } from "./transfer.dao";
 import { DataPlaneStateDao } from "./dataplane.dao";
-import { DataPlaneError } from "../utils/errors/error";
+import { DataPlaneClientError, DataPlaneError } from "../utils/errors/error";
 import { DataPlaneStateDto, TransferDto } from "@libs/dtos";
 import { AuthClientService } from "../auth/auth.client.service";
+import { resolve } from "../utils/didServiceResolver";
 
 @Injectable()
 export class DataPlaneService {
@@ -137,10 +139,72 @@ export class DataPlaneService {
     return await this.transferRepository.find({});
   }
 
-  async transferRequest(
+  private async getTransferById(id: string) {
+    const transfer = await this.transferRepository.findOneBy({ id: id });
+    if (!transfer) {
+      throw new HttpException(`Transfer ${id} not found`, HttpStatus.NOT_FOUND);
+    }
+    return transfer;
+  }
+
+  async getMetadata(
+    id: string,
+  ): Promise<{ agreement: AgreementDto; dataset: DatasetDto }> {
+    const transfer = await this.getTransferById(id);
+    let agreement: AgreementDto;
+    try {
+      const response = await this.axiosManagement.get<AgreementDto>(
+        `/negotiations/agreement/${transfer.request["dspace:agreementId"]}`,
+      );
+      agreement = response.data;
+    } catch (err) {
+      throw new DataPlaneClientError(
+        `Fetching agreement ${transfer.request["dspace:agreementId"]} failed`,
+        err,
+      ).andLog(this.logger);
+    }
+    const did = await resolve(transfer.remoteParty);
+    const connectorService = did.service?.find(
+      (s) => s.type === "connector" && typeof s.serviceEndpoint === "string",
+    );
+    if (!connectorService) {
+      throw new DataPlaneError(
+        `No connector service defined in DID document for ${transfer.remoteParty}`,
+        HttpStatus.BAD_REQUEST,
+      ).andLog(new Logger("DidResolver"), "log");
+    }
+
+    let dataset: DatasetDto;
+    try {
+      const response = await this.axiosManagement.get<DatasetDto>(
+        `/catalog/dataset`,
+        {
+          params: {
+            address: connectorService.serviceEndpoint,
+            id: agreement["odrl:target"],
+            audience: transfer.remoteParty,
+          },
+        },
+      );
+      dataset = response.data;
+    } catch (err) {
+      throw new DataPlaneClientError(
+        `Fetching dataset ${agreement["odrl:target"]} at ${connectorService.serviceEndpoint} (${transfer.remoteParty}) failed`,
+        err,
+      ).andLog(this.logger);
+    }
+
+    return {
+      agreement: agreement,
+      dataset: dataset,
+    };
+  }
+
+  async handleTransferRequest(
     transferRequestMessage: TransferRequestMessageDto,
     role: "provider" | "consumer",
     processId: string,
+    remoteParty: string,
   ): Promise<DataPlaneRequestResponseDto> {
     const id = crypto.randomUUID();
     let dataAddress: DataPlaneAddressDto | undefined;
@@ -162,6 +226,7 @@ export class DataPlaneService {
       role: role,
       id: id,
       processId: processId,
+      remoteParty: remoteParty,
       secret: secret,
       state: TransferState.REQUESTED,
       request: transferRequestMessage,
@@ -175,7 +240,74 @@ export class DataPlaneService {
     return transfer.response;
   }
 
-  async transferStart(
+  async transferStart(id: string) {
+    const transfer = await this.getTransferById(id);
+    try {
+      const response = await this.axiosManagement.post(
+        `/transfers/${transfer.processId}/start`,
+      );
+      return response.data;
+    } catch (err) {
+      throw new DataPlaneClientError(
+        `Error starting transfer ${id}`,
+        err,
+      ).andLog(this.logger);
+    }
+  }
+
+  async transferComplete(id: string) {
+    const transfer = await this.getTransferById(id);
+    try {
+      const response = await this.axiosManagement.post(
+        `/transfers/${transfer.processId}/complete`,
+      );
+      return response.data;
+    } catch (err) {
+      throw new DataPlaneClientError(
+        `Error starting transfer ${id}`,
+        err,
+      ).andLog(this.logger);
+    }
+  }
+
+  async transferTerminate(id: string, code: string, reason: string) {
+    const transfer = await this.getTransferById(id);
+    try {
+      const response = await this.axiosManagement.post(
+        `/transfers/${transfer.processId}/terminate`,
+        {
+          code: code,
+          reason: reason,
+        },
+      );
+      return response.data;
+    } catch (err) {
+      throw new DataPlaneClientError(
+        `Error starting transfer ${id}`,
+        err,
+      ).andLog(this.logger);
+    }
+  }
+
+  async transferSuspend(id: string, reason: string) {
+    const transfer = await this.getTransferById(id);
+    try {
+      const response = await this.axiosManagement.post(
+        `/transfers/${transfer.processId}/suspend`,
+        {
+          reason: reason,
+        },
+      );
+      return response.data;
+    } catch (err) {
+      throw new DataPlaneClientError(
+        `Error starting transfer ${id}`,
+        err,
+      ).andLog(this.logger);
+    }
+  }
+
+  async handleTransferStart(
     transferStartMessage: TransferStartMessageDto,
     processId: string,
   ) {
@@ -199,7 +331,7 @@ export class DataPlaneService {
     await this.transferRepository.save(transfer);
   }
 
-  async transferComplete(
+  async handleTransferComplete(
     transferCompletionMessage: TransferCompletionMessageDto,
     processId: string,
   ) {
@@ -214,7 +346,7 @@ export class DataPlaneService {
     await this.transferRepository.save(transfer);
   }
 
-  async transferTerminate(
+  async handleTransferTerminate(
     transferTerminationMessage: TransferTerminationMessageDto,
     processId: string,
   ) {
@@ -229,7 +361,7 @@ export class DataPlaneService {
     await this.transferRepository.save(transfer);
   }
 
-  async transferSuspend(
+  async handleTransferSuspend(
     transferSuspensionMessage: TransferSuspensionMessageDto,
     processId: string,
   ) {

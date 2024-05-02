@@ -24,6 +24,9 @@ export class TransferDao {
   @Column()
   processId!: string;
 
+  @Column()
+  remoteParty!: string;
+
   @Column({ nullable: true })
   secret?: string;
 

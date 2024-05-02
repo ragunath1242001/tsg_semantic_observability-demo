@@ -4,11 +4,16 @@ import FormField from "../components/FormField.vue";
 import KeyValuePairEdit from "../components/KeyValuePairEdit.vue";
 import axios, { AxiosResponse } from "axios";
 import { useToast } from "primevue/usetoast";
+import { useDialog } from "primevue/usedialog";
 import { TransferDto } from "@libs/dtos";
-import { store } from "../store/index.js";
+import { axiosInstance, store } from "../store/index.js";
 import { httpStatus } from "../utils/httpStatus";
+import { AgreementDto, DatasetDto } from "@tsg-dsp/common";
+
+import JSONDialog from "../components/JSONDialog.vue";
 
 const toast = useToast();
+const dialog = useDialog();
 
 const transfer = ref<TransferDto>();
 
@@ -18,7 +23,13 @@ const path = ref<string>('');
 const methods = ref<string[]>(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS'])
 const method = ref<'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'HEAD' | 'OPTIONS'>('GET');
 
-const versions = ref<string[]>([]);
+const versions = computed(() => {
+  return metadata.value?.dataset?.["dcat:distribution"]
+      ?.map(distribution => distribution["dct:title"])
+      ?.filter(t => t?.startsWith('Version '))
+      ?.map(t => t.slice(8))
+      ?? []
+})
 const version = ref<string>('0.0.0');
 
 const headers = ref<{key: string, value: string}[]>([]);
@@ -26,10 +37,12 @@ const query = ref<{key: string, value: string}[]>([]);
 
 const bodyPairs = ref<{key: string, value: string}[]>([]);
 const bodyRaw = ref<string>('');
-// const bodyTypes = ref<string[]>(['none', 'form-data', 'x-www-form-urlencoded', 'raw'])
 const bodyType = ref<'none' | 'form-data' | 'x-www-form-urlencoded' | 'raw'>('none')
 
 const loading = ref(false);
+const metadataLoading = ref(false);
+
+const metadata = ref<{agreement: AgreementDto, dataset: DatasetDto}>()
 
 const response = ref<{axios?: AxiosResponse, error?: Error}>();
 
@@ -83,7 +96,6 @@ const interactionChange = () => {
       if (authorization) {
         setHeader('Authorization', authorization["dspace:value"])
       }
-      versions.value = []
     }
   } else {
     removeHeader('Authorization');
@@ -104,6 +116,23 @@ const bodyTypeChange = () => {
     case "raw":
       setHeader('Content-Type', 'text/plain');
   }
+}
+
+const fetchMetadata = async () => {
+  metadataLoading.value = true;
+  try {
+    const response = await axiosInstance.get<{agreement: AgreementDto; dataset: DatasetDto;}>(`management/transfers/${transfer.value.id}/metadata`);
+    metadata.value = response.data;
+    version.value = versions.value[0];
+  } catch (err) {
+    toast.add({
+      severity: "warn",
+      summary: "Error fetching metadata",
+      detail: "Could not fetch metadata for this transfer",
+      life: 10000,
+    });
+  }
+  metadataLoading.value = false;
 }
 
 const execute = async () => {
@@ -146,6 +175,26 @@ const execute = async () => {
   loading.value = false;
 }
 
+const showAgreementDialog = () => {
+  dialog.open(JSONDialog, {
+    props: {
+      header: 'Raw ODRL Agreement',
+      modal: true
+    },
+    data: metadata.value.agreement
+  });
+}
+
+const showDatasetDialog = () => {
+  dialog.open(JSONDialog, {
+    props: {
+      header: 'Raw DCAT Dataset',
+      modal: true
+    },
+    data: metadata.value.dataset
+  });
+}
+
 onMounted(() => {
   transfer.value = store.state.transfer;
   if (transfer.value) {
@@ -154,7 +203,6 @@ onMounted(() => {
     if (authorization) {
       setHeader('Authorization', authorization["dspace:value"])
     }
-    versions.value = []
   }
 })
 </script>
@@ -162,6 +210,36 @@ onMounted(() => {
 <template>
   <div>
     <Card>
+      <template #title>Metadata</template>
+      <template #subtitle>Fetch agreement and dataset metadata</template>
+      <template #content>
+        <Button label="Fetch metadata" :loading="metadataLoading" @click="fetchMetadata" severity="success" />
+        <TabView v-if="metadata">
+          <TabPanel header="Agreement">
+            <FormField label="ID">{{ metadata.agreement["@id"] }}</FormField>
+            <FormField label="Assigner">{{ metadata.agreement["odrl:assigner"] }}</FormField>
+            <FormField label="Assignee">{{ metadata.agreement["odrl:assignee"] }}</FormField>
+            <FormField label="Timestamp">{{ new Date(metadata.agreement["dspace:timestamp"]).toLocaleString() }}</FormField>
+            <FormField label="Rules">{{ metadata.agreement["odrl:permission"]?.length ?? 0 }} permissions, {{ metadata.agreement["odrl:prohibition"]?.length ?? 0 }} prohibitions, {{ metadata.agreement["odrl:obligation"]?.length ?? 0 }} obligations</FormField>
+            <Button label="Show agreement" @click="showAgreementDialog"/>
+          </TabPanel>
+          <TabPanel header="Dataset">
+            <FormField label="ID">{{ metadata.dataset["@id"] }}</FormField>
+            <FormField label="Title" v-if="metadata.dataset['dct:title']">{{ metadata.dataset["dct:title"] }}</FormField>
+            <FormField label="Distributions">
+              <template v-for="(distribution, idx) in metadata.dataset['dcat:distribution']">
+                <hr v-if="idx === 0"/>
+                <FormField label="Title" v-if="distribution['dct:title']">{{ distribution["dct:title"] }}</FormField>
+                <FormField label="Spec" v-if="distribution['dct:conformsTo']">{{ distribution["dct:conformsTo"]["@id"] }}</FormField>
+                <hr />
+              </template>
+            </FormField>
+            <Button label="Show dataset" @click="showDatasetDialog"/>
+          </TabPanel>
+        </TabView>
+      </template>
+    </Card>
+    <Card class="mt-5">
       <template #title>HTTP Tester</template>
       <template #subtitle>HTTP Test Utility for testing transfers</template>
       <template #content>

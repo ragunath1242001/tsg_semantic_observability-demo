@@ -3,6 +3,7 @@
 <template>
   <Toast />
   <ConfirmDialog />
+  <DynamicDialog />
   <router-view />
 </template>
 

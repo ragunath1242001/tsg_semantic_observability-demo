@@ -140,7 +140,7 @@ describe("Dataplane Service", () => {
       rawBody: Buffer.from(JSON.stringify({ test: "test2" }), "utf-8"),
     } as RawBodyRequest<Request>;
     it("Transfer request", async () => {
-      const result = await dataPlaneService.transferRequest(
+      const result = await dataPlaneService.handleTransferRequest(
         {
           "@type": "dspace:TransferRequestMessage",
           "dspace:agreementId": "urn:uuid:cadb401e-4275-4d77-99a2-5aa2af93e3b7",
@@ -150,6 +150,7 @@ describe("Dataplane Service", () => {
         },
         "provider",
         transferProcessId,
+        "did:web:localhost",
       );
       transferProcessId = result.identifier;
       authorization =
@@ -174,7 +175,7 @@ describe("Dataplane Service", () => {
     });
 
     it("Transfer start", async () => {
-      await dataPlaneService.transferStart(
+      await dataPlaneService.handleTransferStart(
         {
           "@type": "dspace:TransferStartMessage",
           "dspace:providerPid": transferProcessId,
@@ -239,7 +240,7 @@ describe("Dataplane Service", () => {
     });
 
     it("Transfer completion", async () => {
-      await dataPlaneService.transferComplete(
+      await dataPlaneService.handleTransferComplete(
         {
           "@type": "dspace:TransferCompletionMessage",
           "dspace:providerPid": transferProcessId,
@@ -282,7 +283,7 @@ describe("Dataplane Service", () => {
     } as Request;
 
     it("Transfer Request", async () => {
-      const result = await dataPlaneService.transferRequest(
+      const result = await dataPlaneService.handleTransferRequest(
         {
           "@type": "dspace:TransferRequestMessage",
           "dspace:consumerPid": "urn:uuid:00000000-0000-0000-0000-000000000000",
@@ -292,6 +293,7 @@ describe("Dataplane Service", () => {
         },
         "consumer",
         transferProcessId,
+        "did:web:localhost",
       );
       transferProcessId = result.identifier;
     });
@@ -310,7 +312,7 @@ describe("Dataplane Service", () => {
     });
 
     it("Transfer start", async () => {
-      await dataPlaneService.transferStart(
+      await dataPlaneService.handleTransferStart(
         {
           "@type": "dspace:TransferStartMessage",
           "dspace:providerPid": transferProcessId,
@@ -368,7 +370,7 @@ describe("Dataplane Service", () => {
     });
 
     it("Transfer completion", async () => {
-      await dataPlaneService.transferComplete(
+      await dataPlaneService.handleTransferComplete(
         {
           "@type": "dspace:TransferCompletionMessage",
           "dspace:providerPid": transferProcessId,

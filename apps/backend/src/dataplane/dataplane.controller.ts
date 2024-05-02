@@ -8,6 +8,7 @@ import {
   Param,
   Query,
   Body,
+  Headers,
 } from "@nestjs/common";
 import { DataPlaneService } from "./dataplane.service";
 import {
@@ -51,11 +52,17 @@ export class DataPlaneController {
     @Body() body: TransferRequestMessageDto,
     @Param("role") role: "provider" | "consumer",
     @Query("processId") processId: string,
+    @Headers("x-remote-party") remoteParty: string,
   ): Promise<DataPlaneRequestResponseDto> {
     this.logger.log(
-      `Requesting transfer for ${role} with processId ${processId} and with message: ${JSON.stringify(body)}`,
+      `Requesting transfer for ${remoteParty} as ${role} with processId ${processId} and with message: ${JSON.stringify(body)}`,
     );
-    return await this.dataPlaneService.transferRequest(body, role, processId);
+    return await this.dataPlaneService.handleTransferRequest(
+      body,
+      role,
+      processId,
+      remoteParty,
+    );
   }
 
   @Post("/transfers/:id/start")
@@ -67,7 +74,7 @@ export class DataPlaneController {
     this.logger.log(
       `Requesting transfer start for id ${id}, with message:${JSON.stringify(body)}`,
     );
-    return await this.dataPlaneService.transferStart(body, id);
+    return await this.dataPlaneService.handleTransferStart(body, id);
   }
 
   @Post("/transfers/:id/complete")
@@ -79,7 +86,7 @@ export class DataPlaneController {
     this.logger.log(
       `Requesting transfer complete for id ${id}, with message:${JSON.stringify(body)}`,
     );
-    await this.dataPlaneService.transferComplete(body, id);
+    await this.dataPlaneService.handleTransferComplete(body, id);
   }
 
   @Post("/transfers/:id/terminate")
@@ -91,7 +98,7 @@ export class DataPlaneController {
     this.logger.log(
       `Requesting transfer terminate for id ${id}, with message:${JSON.stringify(body)}`,
     );
-    await this.dataPlaneService.transferTerminate(body, id);
+    await this.dataPlaneService.handleTransferTerminate(body, id);
   }
 
   @Post("/transfers/:id/suspend")
@@ -103,6 +110,6 @@ export class DataPlaneController {
     this.logger.log(
       `Requesting transfer suspend for id ${id}, with message:${JSON.stringify(body)}`,
     );
-    await this.dataPlaneService.transferSuspend(body, id);
+    await this.dataPlaneService.handleTransferSuspend(body, id);
   }
 }

@@ -72,7 +72,7 @@ const stateSeverity = (state: string) => {
   }
 }
 
-const action = async (event: Event, action: 'start' | 'complete' | 'terminate' | 'suspend') => {
+const action = async (event: Event, action: 'start' | 'complete' | 'terminate' | 'suspend', transfer: TransferDto) => {
   const target = event.currentTarget as HTMLElement;
   target.classList.add('p-disabled');
   target.classList.add('p-button-loading');
@@ -84,12 +84,31 @@ const action = async (event: Event, action: 'start' | 'complete' | 'terminate' |
     rejectClass: "p-button-secondary p-button-outlined",
     acceptClass: "p-button-danger",
     accept: async () => {
-      toast.add({
-        severity: "warn",
-        summary: "Not supported",
-        detail: "Performing actions is not supported yet",
-        life: 10000,
-      });
+      try {
+        let params: Record<string, string> | undefined;
+        if (action === 'terminate') {
+          params = {
+            code: 'USER_INTERVENTION',
+            reason: 'Manual user intervention'
+          }
+        }
+        if (action === 'suspend') {
+          params = {
+            reason: 'Manual user intervention'
+          }
+        }
+        await axiosInstance.post(`management/transfers/${transfer.id}/${action}`, undefined, {
+          params
+        });
+        setTimeout(getTransfers, 1000);
+      } catch (err) {
+        toast.add({
+          severity: "warn",
+          summary: `Error during transfer ${action}`,
+          detail: `Could not ${action} transfer ${transfer.id}`,
+          life: 10000,
+        });
+      }
       target.classList.remove('p-disabled');
       target.classList.remove('p-button-loading');
     },
@@ -166,7 +185,7 @@ onMounted(async () => {
           <Column expander style="width: 5rem" />
           <Column field="remoteId" header="Remote ID">
             <template #body="props">
-              did:web:unknown
+              {{ props.data.remoteParty }}
             </template>
           </Column>
           <Column field="state" header="State">
@@ -181,11 +200,11 @@ onMounted(async () => {
           </Column>
           <Column header="Quick actions">
             <template #body="props">
-              <Button icon="pi pi-times" :disabled="['dspace:COMPLETED', 'dspace:TERMINATED'].includes(props.data.state)" severity="danger" aria-label="Stop" outlined @click="action($event, 'terminate')"/>
-              <Button v-if="props.data.state === 'dspace:STARTED'" class="ml-2" icon="pi pi-pause" severity="warning" aria-label="Suspend" outlined  @click="action($event, 'suspend')"/>
-              <Button v-else :disabled="props.data.state !== 'dspace:SUSPENDED'" class="ml-2" icon="pi pi-play" severity="warning" aria-label="Start" outlined  @click="action($event, 'start')"/>
+              <Button icon="pi pi-times" :disabled="['dspace:COMPLETED', 'dspace:TERMINATED'].includes(props.data.state)" severity="danger" aria-label="Stop" outlined @click="action($event, 'terminate', props.data)" />
+              <Button v-if="props.data.state === 'dspace:STARTED'" class="ml-2" icon="pi pi-pause" severity="warning" aria-label="Suspend" outlined @click="action($event, 'suspend', props.data)" />
+              <Button v-else :disabled="props.data.state !== 'dspace:SUSPENDED'" class="ml-2" icon="pi pi-play" severity="warning" aria-label="Start" outlined @click="action($event, 'start', props.data)" />
               <Button class="ml-2" :disabled="props.data.state !== 'dspace:STARTED'" icon="pi pi-download" severity="info" aria-label="Execute" @click="store.commit('currentTransfer', props.data); $router.push({name: 'tester'})" outlined />
-              <Button class="ml-2" :disabled="props.data.state !== 'dspace:STARTED'" icon="pi pi-check" severity="success" aria-label="Complete" outlined  @click="action($event, 'complete')"/>
+              <Button class="ml-2" :disabled="props.data.state !== 'dspace:STARTED'" icon="pi pi-check" severity="success" aria-label="Complete" outlined @click="action($event, 'complete', props.data)" />
             </template>
           </Column>
           <template #expansion="props">
@@ -222,7 +241,7 @@ onMounted(async () => {
           <Column expander style="width: 5rem" />
           <Column field="remoteId" header="Remote ID">
             <template #body="props">
-              did:web:unknown
+              {{ props.data.remoteParty }}
             </template>
           </Column>
           <Column field="state" header="State">
@@ -237,10 +256,10 @@ onMounted(async () => {
           </Column>
           <Column header="Quick actions">
             <template #body="props">
-              <Button icon="pi pi-times" :disabled="['dspace:COMPLETED', 'dspace:TERMINATED'].includes(props.data.state)" severity="danger" aria-label="Stop" outlined />
-              <Button v-if="props.data.state === 'dspace:STARTED'" class="ml-2" icon="pi pi-pause" severity="warning" aria-label="Suspend" outlined />
-              <Button v-else :disabled="!['dspace:SUSPENDED', 'dspace:REQUESTED'].includes(props.data.state)" class="ml-2" icon="pi pi-play" severity="warning" aria-label="Suspend" outlined />
-              <Button class="ml-2" :disabled="props.data.state !== 'dspace:STARTED'" icon="pi pi-check" severity="success" aria-label="Complete" outlined />
+              <Button icon="pi pi-times" :disabled="['dspace:COMPLETED', 'dspace:TERMINATED'].includes(props.data.state)" severity="danger" aria-label="Terminate" outlined @click="action($event, 'terminate', props.data)" />
+              <Button v-if="props.data.state === 'dspace:STARTED'" class="ml-2" icon="pi pi-pause" severity="warning" aria-label="Suspend" outlined @click="action($event, 'suspend', props.data)" />
+              <Button v-else :disabled="!['dspace:SUSPENDED', 'dspace:REQUESTED'].includes(props.data.state)" class="ml-2" icon="pi pi-play" severity="warning" aria-label="Start" outlined @click="action($event, 'start', props.data)" />
+              <Button class="ml-2" :disabled="props.data.state !== 'dspace:STARTED'" icon="pi pi-check" severity="success" aria-label="Complete" outlined @click="action($event, 'complete', props.data)" />
             </template>
           </Column>
           <template #expansion="props">

@@ -9,6 +9,7 @@ export interface TransferDto {
   id: string;
   role: "provider" | "consumer";
   processId: string;
+  remoteParty: string;
   secret?: string;
   state: TransferState;
   request: TransferRequestMessageDto;
