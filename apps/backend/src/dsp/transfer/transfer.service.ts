@@ -182,7 +182,8 @@ export class TransferService {
     const dataPlaneTransfer = await this.dataPlaneService.requestTransfer(
       transferRequestMessage,
       localId,
-      "consumer"
+      "consumer",
+      audience
     );
     const requestTransfer = await this.dsp.requestTransfer(
       `${remoteAddress}/request`,
@@ -245,7 +246,8 @@ export class TransferService {
     const dataPlaneTransfer = await this.dataPlaneService.requestTransfer(
       transferRequestMessage,
       transferProcess.providerPid,
-      "provider"
+      "provider",
+      audience
     );
     const transfer: TransferDetail = {
       localId: transferProcess.providerPid,

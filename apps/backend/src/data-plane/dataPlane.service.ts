@@ -330,7 +330,8 @@ export class DataPlaneService {
   async requestTransfer(
     requestDetail: TransferRequestMessage,
     processId: string,
-    role: "provider" | "consumer"
+    role: "provider" | "consumer",
+    remoteParty: string
   ): Promise<DataPlaneTransferDto> {
     const dataPlanes = await this.dataPlaneRepository.findBy({
       dataplaneType: requestDetail.format,
@@ -347,10 +348,11 @@ export class DataPlaneService {
         const requestConfig: AxiosRequestConfig = {
           headers: {
             Authorization: await this.authorizationToken(dataPlane),
+            "X-Remote-Party": remoteParty,
           },
         };
         this.logger.debug(
-          `Requesting transfer at ${dataPlane.identifier} at ${dataPlane.managementAddress} with authorization: ${requestConfig.headers?.Authorization}`
+          `Requesting transfer at ${dataPlane.identifier} at ${dataPlane.managementAddress} for ${remoteParty} with authorization: ${requestConfig.headers?.Authorization}`
         );
         const dataPlaneRequestResponse =
           await this.axios.post<DataPlaneRequestResponseDto>(
