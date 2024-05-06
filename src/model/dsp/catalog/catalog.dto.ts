@@ -1,5 +1,5 @@
-import { ContextDto, MultilanguageDto, ReferenceDto } from "./common.dto";
-import { PolicyDto } from "./negotiation.dto";
+import { ContextDto, MultilanguageDto, ReferenceDto } from "../common.dto";
+import { PolicyDto } from "../negotiation/negotiation.dto";
 
 export interface ResourceDto extends ContextDto, ReferenceDto {
   "@type": "dcat:Resource";
@@ -21,6 +21,11 @@ export interface ResourceDto extends ContextDto, ReferenceDto {
   "dct:title"?: string;
   "dct:type"?: string;
   "odrl:hasPolicy"?: Array<PolicyDto>;
+  "dcat:hasVersion"?: Array<ReferenceDto>;
+  "dcat:isVersionOf"?: ReferenceDto;
+  "dcat:version"?: string;
+  "dcat:hasCurrentVersion"?: ReferenceDto;
+  "dcat:previousVersion"?: ReferenceDto;
 }
 
 export interface DataServiceDto extends Omit<ResourceDto, "@type"> {

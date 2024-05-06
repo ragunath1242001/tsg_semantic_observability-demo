@@ -1,4 +1,4 @@
-import { ContextDto } from "./common.dto";
+import { ContextDto } from "../common.dto";
 import { CatalogDto } from "./catalog.dto";
 
 export interface CatalogErrorDto extends ContextDto {

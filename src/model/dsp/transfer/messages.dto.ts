@@ -1,4 +1,4 @@
-import { ContextDto, MultilanguageDto } from "./common.dto";
+import { ContextDto, MultilanguageDto } from "../common.dto";
 
 export interface TransferProcessDto extends ContextDto {
   "@type": "dspace:TransferProcess";

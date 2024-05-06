@@ -1,4 +1,4 @@
-import { ValueDto, ReferenceDto, ContextDto } from "./common.dto";
+import { ValueDto, ReferenceDto, ContextDto } from "../common.dto";
 
 export enum ODRLAction {
   DELETE = "odrl:delete",
