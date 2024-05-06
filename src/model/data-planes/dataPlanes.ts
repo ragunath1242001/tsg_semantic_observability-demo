@@ -35,7 +35,7 @@ export class DataPlaneStatus {
 }
 
 export interface IDataPlane extends IDataPlaneStatus {
-  dataset?: Dataset;
+  datasets?: Array<Dataset>;
   dataplaneType: string;
   endpointPrefix: string;
   callbackAddress: string;
@@ -46,7 +46,7 @@ export interface IDataPlane extends IDataPlaneStatus {
 }
 
 export class DataPlane extends DataPlaneStatus {
-  dataset?: Dataset;
+  datasets?: Array<Dataset>;
   dataplaneType: string;
   endpointPrefix: string;
   callbackAddress: string;
@@ -57,7 +57,7 @@ export class DataPlane extends DataPlaneStatus {
 
   constructor(value: IDataPlane) {
     super(value);
-    this.dataset = value.dataset;
+    this.datasets = value.datasets;
     this.dataplaneType = value.dataplaneType;
     this.endpointPrefix = value.endpointPrefix;
     this.callbackAddress = value.callbackAddress;

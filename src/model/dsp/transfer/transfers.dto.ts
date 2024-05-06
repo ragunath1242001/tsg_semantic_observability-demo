@@ -2,8 +2,8 @@ import { DataPlaneTransferDto } from "../../data-planes";
 import { MultilanguageDto } from "../common.dto";
 import { TransferState, TransferProcessDto, DataAddressDto } from "./messages.dto";
 
-
 export type TransferRole = "provider" | "consumer";
+
 export interface TransferStatusDto {
   localId: string;
   remoteId?: string;
