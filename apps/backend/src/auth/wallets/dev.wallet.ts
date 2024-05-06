@@ -1,14 +1,14 @@
-import crypto from "crypto";
-import { SignJWT } from "jose";
-import { DevWalletConfig } from "../../config";
-import { Credential, WalletClient } from "./walletClient";
 import {
-  VerifiablePresentation,
-  VerifiableCredential,
   CredentialSubject,
+  VerifiableCredential,
+  VerifiablePresentation,
 } from "@tsg-dsp/common";
 import { plainToInstance } from "class-transformer";
+import crypto from "crypto";
+import { SignJWT } from "jose";
 import { decode } from "jsonwebtoken";
+import { DevWalletConfig } from "../../config";
+import { Credential, WalletClient } from "./walletClient";
 
 export class DevWalletClient extends WalletClient {
   constructor(private readonly iamConfig: DevWalletConfig) {

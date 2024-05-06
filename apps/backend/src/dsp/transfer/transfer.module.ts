@@ -6,10 +6,7 @@ import { TransferService } from "./transfer.service";
 import { TransferController } from "./transfer.controller";
 import { TransferManagementController } from "./transferManagement.controller";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import {
-  TransferDetailDao,
-  TransferEventDao,
-} from "../../model/dsp/transfer/transfer.dao";
+import { TransferDetailDao, TransferEventDao } from "../../model/transfer.dao";
 
 @Module({
   imports: [

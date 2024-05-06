@@ -1,29 +1,30 @@
-import { TestingModule, Test } from "@nestjs/testing";
+import { DataPlaneCreation } from "@libs/dtos";
+import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
+import {
+  DataService,
+  Dataset,
+  Distribution,
+  ODRLAction,
+  Offer,
+  Permission,
+} from "@tsg-dsp/common";
 import { plainToClass } from "class-transformer";
+import { AuthClientService } from "../auth/auth.client.service";
 import { AuthConfig, InitCatalog, ServerConfig } from "../config";
+import { CatalogService } from "../dsp/catalog/catalog.service";
 import {
   CatalogDao,
   CatalogRecordDao,
-  DatasetDao,
   DataServiceDao,
+  DatasetDao,
   DistributionDao,
   ResourceDao,
-} from "../model/dsp/catalog/catalog.dao";
+} from "../model/catalog.dao";
+import { DataPlaneDao } from "../model/dataPlanes.dao";
+import { DSPError } from "../utils/errors/error";
 import { TypeOrmTestHelper } from "../utils/testhelper";
 import { DataPlaneService } from "./dataPlane.service";
-import { CatalogService } from "../dsp/catalog/catalog.service";
-import { DataPlaneDao } from "../model/data-planes/dataPlanes.dao";
-import { DataPlaneCreation } from "@libs/dtos";
-import { DSPError } from "../utils/errors/error";
-import {
-  Dataset,
-  Distribution,
-  DataService,
-} from "../model/dsp/catalog/catalog";
-import { ODRLAction } from "@tsg-dsp/common";
-import { Offer, Permission } from "../model/dsp/negotiation/negotiation";
-import { AuthClientService } from "../auth/auth.client.service";
 
 describe("DataPlane Service", () => {
   let dataPlaneService: DataPlaneService;

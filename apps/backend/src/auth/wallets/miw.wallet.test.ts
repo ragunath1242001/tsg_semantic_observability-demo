@@ -1,9 +1,9 @@
+import { VerifiablePresentationJwt } from "@tsg-dsp/common";
 import { plainToInstance } from "class-transformer";
-import { MiwConfig } from "../../config";
-import { ManagedIdentityWalletClient } from "./miw.wallet";
 import { HttpResponse, PathParams, http } from "msw";
 import { SetupServer, setupServer } from "msw/node";
-import { VerifiablePresentationJwt } from "@tsg-dsp/common";
+import { MiwConfig } from "../../config";
+import { ManagedIdentityWalletClient } from "./miw.wallet";
 
 describe("Managed Identity Wallet", () => {
   let server: SetupServer;

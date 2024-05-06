@@ -1,33 +1,32 @@
-import { plainToClass } from "class-transformer";
-import { TypeOrmTestHelper } from "../../utils/testhelper";
-import { NegotiationService } from "./negotiation.service";
-import { RootConfig, ServerConfig } from "../../config";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { DspClientService } from "../client/client.service";
+import {
+  Agreement,
+  ContractAgreementMessage,
+  ContractAgreementVerificationMessageDto,
+  ContractNegotiationDto,
+  ContractNegotiationEventMessage,
+  ContractNegotiationState,
+  ContractNegotiationTerminationMessage,
+  ContractOfferMessage,
+  ContractRequestMessageDto,
+  Multilanguage,
+  NegotiationEvent,
+  Offer,
+} from "@tsg-dsp/common";
+import { plainToClass } from "class-transformer";
+import { HttpResponse, PathParams, http } from "msw";
+import { SetupServer, setupServer } from "msw/node";
+import { AuthService } from "../../auth/auth.service";
+import { RootConfig, ServerConfig } from "../../config";
 import {
   NegotiationDetailDao,
   NegotiationProcessEventDao,
-} from "../../model/dsp/negotiation/negotiation.dao";
-import { AuthService } from "../../auth/auth.service";
-import { Agreement, Offer } from "../../model/dsp/negotiation/negotiation";
-import { SetupServer, setupServer } from "msw/node";
-import { HttpResponse, PathParams, http } from "msw";
-import {
-  ContractAgreementVerificationMessageDto,
-  ContractNegotiationDto,
-  ContractNegotiationState,
-  ContractRequestMessageDto,
-  NegotiationEvent,
-} from "@tsg-dsp/common";
-import {
-  ContractAgreementMessage,
-  ContractNegotiationEventMessage,
-  ContractNegotiationTerminationMessage,
-  ContractOfferMessage,
-} from "../../model/dsp/negotiation/messages";
-import { Multilanguage } from "../../model/dsp/common";
+} from "../../model/negotiation.dao";
+import { TypeOrmTestHelper } from "../../utils/testhelper";
+import { DspClientService } from "../client/client.service";
 import { DspGateway } from "../client/dsp.gateway";
+import { NegotiationService } from "./negotiation.service";
 
 describe("Negotiation Service (Consumer)", () => {
   let negotiationService: NegotiationService;

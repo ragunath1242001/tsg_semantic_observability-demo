@@ -9,15 +9,18 @@ import {
   Query,
   UseGuards,
 } from "@nestjs/common";
-import { CatalogDto, DatasetDto } from "@tsg-dsp/common";
-import { DspClientService } from "../client/client.service";
-import { normalizeAddress } from "../../utils/address";
-import { Dataset } from "../../model/dsp/catalog/catalog";
-import { DeserializePipe } from "../../utils/deserialize.pipe";
-import { CatalogService } from "./catalog.service";
-import { CatalogRequestMessage } from "../../model/dsp/catalog/messages";
+import {
+  CatalogDto,
+  CatalogRequestMessage,
+  Dataset,
+  DatasetDto,
+} from "@tsg-dsp/common";
 import { OAuthGuard } from "../../auth/oauth.guard";
 import { Roles } from "../../auth/roles.guard";
+import { normalizeAddress } from "../../utils/address";
+import { DeserializePipe } from "../../utils/deserialize.pipe";
+import { DspClientService } from "../client/client.service";
+import { CatalogService } from "./catalog.service";
 
 @UseGuards(OAuthGuard)
 @Roles(["controlplane_admin", "controlplane_dataplane"])

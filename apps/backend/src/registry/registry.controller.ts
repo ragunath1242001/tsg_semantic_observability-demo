@@ -1,3 +1,4 @@
+import { CredentialAddressDto } from "@libs/dtos";
 import {
   Controller,
   Get,
@@ -7,9 +8,8 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { CatalogDto } from "@tsg-dsp/common";
-import { RegistryService } from "./registry.service";
-import { CredentialAddressDto } from "@libs/dtos";
 import { VerifiablePresentationGuard } from "../auth/verifiablePresentation.guard";
+import { RegistryService } from "./registry.service";
 
 @UseGuards(VerifiablePresentationGuard)
 @Controller("registry")

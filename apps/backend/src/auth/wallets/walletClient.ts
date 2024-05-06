@@ -1,7 +1,7 @@
 import {
-  VerifiablePresentation,
-  VerifiableCredential,
   CredentialSubject,
+  VerifiableCredential,
+  VerifiablePresentation,
 } from "@tsg-dsp/common";
 
 export interface ValidationResult {

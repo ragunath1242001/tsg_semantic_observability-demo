@@ -6,21 +6,21 @@ import {
   Post,
   UseGuards,
 } from "@nestjs/common/decorators";
-import { DeserializePipe } from "../../utils/deserialize.pipe";
-import { ContractNegotiationDto } from "@tsg-dsp/common";
 import {
   ContractAgreementMessage,
   ContractAgreementVerificationMessage,
   ContractNegotiation,
+  ContractNegotiationDto,
   ContractNegotiationEventMessage,
   ContractNegotiationTerminationMessage,
   ContractOfferMessage,
   ContractRequestMessage,
-} from "../../model/dsp/negotiation/messages";
-import { NegotiationService } from "./negotiation.service";
-import { DSPError } from "../../utils/errors/error";
+} from "@tsg-dsp/common";
 import { VerifiablePresentationGuard } from "../../auth/verifiablePresentation.guard";
 import { VPId } from "../../auth/verifiablePresentation.strategy";
+import { DeserializePipe } from "../../utils/deserialize.pipe";
+import { DSPError } from "../../utils/errors/error";
+import { NegotiationService } from "./negotiation.service";
 
 @UseGuards(VerifiablePresentationGuard)
 @Controller("negotiations")

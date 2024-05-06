@@ -1,18 +1,18 @@
-import { HttpStatus, Logger } from "@nestjs/common";
-import axios from "axios";
-import qs from "qs";
-import { MiwConfig } from "../../config";
-import { DSPClientError, DSPError } from "../../utils/errors/error";
-import { Credential, ValidationResult, WalletClient } from "./walletClient";
-import { DIDDocument } from "did-resolver";
-import jwt, { decode } from "jsonwebtoken";
+import { Logger } from "@nestjs/common";
 import {
   CredentialSubject,
   VerifiableCredential,
   VerifiablePresentation,
   VerifiablePresentationJwt,
 } from "@tsg-dsp/common";
+import axios from "axios";
 import { plainToInstance } from "class-transformer";
+import { DIDDocument } from "did-resolver";
+import jwt, { decode } from "jsonwebtoken";
+import qs from "qs";
+import { MiwConfig } from "../../config";
+import { DSPClientError } from "../../utils/errors/error";
+import { Credential, ValidationResult, WalletClient } from "./walletClient";
 
 export interface MiWWalletDetails {
   name: string;

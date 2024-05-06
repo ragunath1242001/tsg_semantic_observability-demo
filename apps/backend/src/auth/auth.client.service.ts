@@ -1,25 +1,16 @@
 import { Injectable } from "@nestjs/common";
-import { AuthConfig } from "../config";
 import axios, {
   AxiosInstance,
   CreateAxiosDefaults,
   InternalAxiosRequestConfig,
 } from "axios";
-import querystring from "querystring";
 import { decodeJwt } from "jose";
+import querystring from "querystring";
+import { AuthConfig } from "../config";
 
 interface Token {
   jwt: string;
   expiration?: number;
-}
-
-interface Parameters {
-  grant_type: "password" | "refresh_token";
-  username?: string;
-  password?: string;
-  refresh_token?: string;
-  client_id: string;
-  client_secret: string;
 }
 
 @Injectable()

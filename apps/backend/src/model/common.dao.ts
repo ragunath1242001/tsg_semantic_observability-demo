@@ -1,12 +1,11 @@
+import { ContextDto, IReference, SerializableClass } from "@tsg-dsp/common";
 import { Exclude } from "class-transformer";
 import {
   CreateDateColumn,
-  UpdateDateColumn,
   DeleteDateColumn,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from "typeorm";
-import { IReference, SerializableClass } from "./dsp/common";
-import { ContextDto } from "@tsg-dsp/common";
 
 export class MetaEntity {
   @CreateDateColumn()

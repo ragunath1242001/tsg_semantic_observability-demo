@@ -1,3 +1,4 @@
+import { DataPlaneCreation, DataPlaneDto } from "@libs/dtos";
 import {
   Body,
   Controller,
@@ -8,13 +9,12 @@ import {
   Post,
   UseGuards,
 } from "@nestjs/common";
-import { DataPlaneCreation, DataPlaneDto } from "@libs/dtos";
-import { DataPlaneService } from "./dataPlane.service";
-import { DeserializePipe } from "../utils/deserialize.pipe";
-import { Dataset } from "../model/dsp/catalog/catalog";
-import { DSPError } from "../utils/errors/error";
+import { Dataset } from "@tsg-dsp/common";
 import { OAuthGuard } from "../auth/oauth.guard";
 import { Roles } from "../auth/roles.guard";
+import { DeserializePipe } from "../utils/deserialize.pipe";
+import { DSPError } from "../utils/errors/error";
+import { DataPlaneService } from "./dataPlane.service";
 
 @UseGuards(OAuthGuard)
 @Roles(["controlplane_admin", "controlplane_dataplane"])

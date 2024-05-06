@@ -1,9 +1,9 @@
+import { DataPlaneAddressDto, TransferStatusDto } from "@libs/dtos";
 import {
   Body,
   Controller,
   Get,
   HttpCode,
-  HttpException,
   HttpStatus,
   Logger,
   Param,
@@ -11,13 +11,11 @@ import {
   Query,
   UseGuards,
 } from "@nestjs/common";
-import { TransferService } from "./transfer.service";
-import { TransferProcessDto } from "@tsg-dsp/common";
-import { normalizeAddress } from "../../utils/address";
-import { DataPlaneAddressDto, TransferStatusDto } from "@libs/dtos";
-import { TransferDetail } from "../../model/dsp/transfer/transfer";
+import { TransferDetail, TransferProcessDto } from "@tsg-dsp/common";
 import { OAuthGuard } from "../../auth/oauth.guard";
 import { Roles } from "../../auth/roles.guard";
+import { normalizeAddress } from "../../utils/address";
+import { TransferService } from "./transfer.service";
 
 @UseGuards(OAuthGuard)
 @Roles(["controlplane_admin", "controlplane_dataplane"])

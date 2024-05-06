@@ -3,7 +3,7 @@ import { DataPlaneController } from "./dataplane.controller";
 import { DataPlaneService } from "./dataPlane.service";
 import { CatalogModule } from "../dsp/catalog/catalog.module";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { DataPlaneDao } from "../model/data-planes/dataPlanes.dao";
+import { DataPlaneDao } from "../model/dataPlanes.dao";
 import { DataplaneManagementController } from "./dataPlaneManagement.controller";
 import { AuthModule } from "../auth/auth.module";
 

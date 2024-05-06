@@ -1,30 +1,26 @@
 import { Injectable, Logger } from "@nestjs/common";
-import axios, { AxiosRequestConfig } from "axios";
-import { CatalogRequestMessage } from "../../model/dsp/catalog/messages";
-import { SerializableClass } from "../../model/dsp/common";
 import {
+  CatalogDto,
+  CatalogRequestMessage,
+  ContextDto,
   ContractAgreementMessage,
   ContractAgreementVerificationMessage,
+  ContractNegotiationDto,
   ContractNegotiationEventMessage,
   ContractNegotiationTerminationMessage,
   ContractOfferMessage,
   ContractRequestMessage,
-} from "../../model/dsp/negotiation/messages";
-import {
+  DatasetDto,
+  SerializableClass,
   TransferCompletionMessage,
+  TransferProcessDto,
   TransferRequestMessage,
   TransferStartMessage,
   TransferSuspensionMessage,
   TransferTerminationMessage,
-} from "../../model/dsp/transfer/messages";
-import { AuthService } from "../../auth/auth.service";
-import {
-  CatalogDto,
-  DatasetDto,
-  ContractNegotiationDto,
-  TransferProcessDto,
-  ContextDto,
 } from "@tsg-dsp/common";
+import axios, { AxiosRequestConfig } from "axios";
+import { AuthService } from "../../auth/auth.service";
 import { DSPClientError } from "../../utils/errors/error";
 
 @Injectable()

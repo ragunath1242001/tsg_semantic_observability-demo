@@ -1,13 +1,13 @@
+import { VerifiablePresentation } from "@tsg-dsp/common";
+import { plainToInstance } from "class-transformer";
 import { SetupServer } from "msw/node";
 import { AuthConfig, IamConfig, RootConfig } from "../config";
+import { AuthClientService } from "./auth.client.service";
 import { AuthService } from "./auth.service";
 import {
   mockWalletConfig,
   setupMockWalletServer,
 } from "./wallets/wallet.util.test";
-import { plainToInstance } from "class-transformer";
-import { VerifiablePresentation } from "@tsg-dsp/common";
-import { AuthClientService } from "./auth.client.service";
 
 describe("Auth Service", () => {
   let server: SetupServer;

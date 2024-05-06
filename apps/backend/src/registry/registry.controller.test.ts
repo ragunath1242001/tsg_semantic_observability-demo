@@ -1,19 +1,19 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { RegistryController } from "./registry.controller";
-import { RegistryService } from "./registry.service";
 import {
   Catalog,
+  Constraint,
   DataService,
   Dataset,
   Distribution,
-} from "../model/dsp/catalog/catalog";
-import { ODRLAction, ODRLOperator } from "@tsg-dsp/common";
-import { Multilanguage, Reference } from "../model/dsp/common";
-import {
+  Multilanguage,
+  ODRLAction,
+  ODRLOperator,
   Offer,
   Permission,
-  Constraint,
-} from "../model/dsp/negotiation/negotiation";
+  Reference,
+} from "@tsg-dsp/common";
+import { RegistryController } from "./registry.controller";
+import { RegistryService } from "./registry.service";
 
 describe("RegistryController", () => {
   let controller: RegistryController;

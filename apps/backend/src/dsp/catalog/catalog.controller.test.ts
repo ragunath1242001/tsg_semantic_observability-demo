@@ -1,40 +1,38 @@
-import { Test, TestingModule } from "@nestjs/testing";
-import { CatalogController } from "./catalog.controller";
-import {
-  CatalogRequestMessage,
-  DatasetRequestMessage,
-} from "../../model/dsp/catalog/messages";
-import { CatalogService } from "./catalog.service";
 import { HttpStatus, INestApplication } from "@nestjs/common";
-import request from "supertest";
+import { Test, TestingModule } from "@nestjs/testing";
+import { TypeOrmModule } from "@nestjs/typeorm";
 import {
   Catalog,
+  CatalogRequestMessage,
   DataService,
   Dataset,
+  DatasetRequestMessage,
   Distribution,
-} from "../../model/dsp/catalog/catalog";
-import { Multilanguage } from "../../model/dsp/common";
-import { AuthService } from "../../auth/auth.service";
-import { IamConfig, InitCatalog, ServerConfig } from "../../config";
+  Multilanguage,
+} from "@tsg-dsp/common";
 import { plainToClass } from "class-transformer";
+import { SetupServer } from "msw/lib/node";
+import request from "supertest";
+import { AuthService } from "../../auth/auth.service";
 import { VerifiablePresentationGuard } from "../../auth/verifiablePresentation.guard";
 import { VerifiablePresentationStrategy } from "../../auth/verifiablePresentation.strategy";
-import { SetupServer } from "msw/lib/node";
 import {
-  setupMockWalletServer,
   mockWalletConfig,
   sampleVpToken,
+  setupMockWalletServer,
 } from "../../auth/wallets/wallet.util.test";
-import { TypeOrmTestHelper } from "../../utils/testhelper";
-import { TypeOrmModule } from "@nestjs/typeorm";
+import { IamConfig, InitCatalog, ServerConfig } from "../../config";
 import {
   CatalogDao,
   CatalogRecordDao,
-  DatasetDao,
   DataServiceDao,
+  DatasetDao,
   DistributionDao,
   ResourceDao,
-} from "../../model/dsp/catalog/catalog.dao";
+} from "../../model/catalog.dao";
+import { TypeOrmTestHelper } from "../../utils/testhelper";
+import { CatalogController } from "./catalog.controller";
+import { CatalogService } from "./catalog.service";
 
 const dataset = new Dataset({
   id: "urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0cea",

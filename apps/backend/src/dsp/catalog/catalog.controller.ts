@@ -1,4 +1,3 @@
-import { CatalogDto, DatasetDto } from "@tsg-dsp/common";
 import { Body, Controller, HttpStatus, Logger } from "@nestjs/common";
 import {
   Get,
@@ -7,10 +6,10 @@ import {
   Post,
   UseGuards,
 } from "@nestjs/common/decorators";
-import { CatalogRequestMessage } from "../../model/dsp/catalog/messages";
-import { CatalogService } from "./catalog.service";
-import { DeserializePipe } from "../../utils/deserialize.pipe";
+import { CatalogDto, CatalogRequestMessage, DatasetDto } from "@tsg-dsp/common";
 import { VerifiablePresentationGuard } from "../../auth/verifiablePresentation.guard";
+import { DeserializePipe } from "../../utils/deserialize.pipe";
+import { CatalogService } from "./catalog.service";
 
 @UseGuards(VerifiablePresentationGuard)
 @Controller("catalog")

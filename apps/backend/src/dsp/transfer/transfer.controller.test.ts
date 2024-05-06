@@ -1,47 +1,41 @@
-import { Test, TestingModule } from "@nestjs/testing";
-import { TransferController } from "./transfer.controller";
 import { HttpStatus } from "@nestjs/common";
+import { Test, TestingModule } from "@nestjs/testing";
+import { TypeOrmModule } from "@nestjs/typeorm";
 import {
+  Catalog,
+  Multilanguage,
   TransferCompletionMessage,
-  TransferProcess,
+  TransferProcessDto,
   TransferRequestMessage,
+  TransferRequestMessageDto,
   TransferStartMessage,
+  TransferState,
   TransferSuspensionMessage,
   TransferTerminationMessage,
-} from "../../model/dsp/transfer/messages";
-import { Multilanguage } from "../../model/dsp/common";
+} from "@tsg-dsp/common";
+import { plainToClass } from "class-transformer";
 import { HttpResponse, PathParams, http } from "msw";
 import { SetupServer, setupServer } from "msw/node";
-import { DspClientService } from "../client/client.service";
-import {
-  TransferProcessDto,
-  TransferRequestMessageDto,
-  TransferState,
-} from "@tsg-dsp/common";
-import { Catalog } from "../../model/dsp/catalog/catalog";
-import { AuthConfig, ServerConfig } from "../../config";
-import { plainToClass } from "class-transformer";
+import { AuthClientService } from "../../auth/auth.client.service";
 import { AuthService } from "../../auth/auth.service";
-import { TransferService } from "./transfer.service";
+import { AuthConfig, ServerConfig } from "../../config";
 import { DataPlaneService } from "../../data-plane/dataPlane.service";
-import { CatalogService } from "../catalog/catalog.service";
-import { TypeOrmTestHelper } from "../../utils/testhelper";
-import { TypeOrmModule } from "@nestjs/typeorm";
-import { DataPlaneDao } from "../../model/data-planes/dataPlanes.dao";
 import {
   CatalogDao,
   CatalogRecordDao,
-  DatasetDao,
   DataServiceDao,
+  DatasetDao,
   DistributionDao,
   ResourceDao,
-} from "../../model/dsp/catalog/catalog.dao";
-import {
-  TransferEventDao,
-  TransferDetailDao,
-} from "../../model/dsp/transfer/transfer.dao";
+} from "../../model/catalog.dao";
+import { DataPlaneDao } from "../../model/dataPlanes.dao";
+import { TransferDetailDao, TransferEventDao } from "../../model/transfer.dao";
+import { TypeOrmTestHelper } from "../../utils/testhelper";
+import { CatalogService } from "../catalog/catalog.service";
+import { DspClientService } from "../client/client.service";
 import { DspGateway } from "../client/dsp.gateway";
-import { AuthClientService } from "../../auth/auth.client.service";
+import { TransferController } from "./transfer.controller";
+import { TransferService } from "./transfer.service";
 
 describe("TransferController", () => {
   let transferController: TransferController;

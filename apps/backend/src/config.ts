@@ -1,6 +1,5 @@
-import "reflect-metadata";
+import { Type } from "class-transformer";
 import {
-  ArrayMinSize,
   IsArray,
   IsBoolean,
   IsDefined,
@@ -9,11 +8,10 @@ import {
   IsOptional,
   IsString,
   IsUrl,
-  Matches,
   ValidateIf,
   ValidateNested,
 } from "class-validator";
-import { Type } from "class-transformer";
+import "reflect-metadata";
 
 export abstract class DatabaseConfig {
   @IsString()

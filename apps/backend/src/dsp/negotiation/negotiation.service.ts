@@ -1,36 +1,35 @@
+import { NegotiationStatusDto } from "@libs/dtos";
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
-import { Multilanguage } from "../../model/dsp/common";
+import { InjectRepository } from "@nestjs/typeorm";
 import {
+  Agreement,
   ContractAgreementMessage,
   ContractAgreementVerificationMessage,
   ContractNegotiation,
   ContractNegotiationEventMessage,
+  ContractNegotiationState,
   ContractNegotiationTerminationMessage,
   ContractOfferMessage,
   ContractRequestMessage,
-} from "../../model/dsp/negotiation/messages";
-import { ContractNegotiationState, NegotiationEvent } from "@tsg-dsp/common";
-import {
-  Offer,
-  Agreement,
+  Multilanguage,
   NegotiationDetail,
+  NegotiationEvent,
   NegotiationProcessEvent,
   NegotiationRole,
-} from "../../model/dsp/negotiation/negotiation";
+  Offer,
+  createInstance,
+  deserialize,
+} from "@tsg-dsp/common";
 import crypto from "crypto";
-import { DspClientService } from "../client/client.service";
-import { deserialize } from "../../model/serialize";
+import { Repository } from "typeorm";
+import { RootConfig, ServerConfig } from "../../config";
 import {
   NegotiationDetailDao,
   NegotiationProcessEventDao,
-} from "../../model/dsp/negotiation/negotiation.dao";
+} from "../../model/negotiation.dao";
 import { DSPError } from "../../utils/errors/error";
-import { RootConfig, ServerConfig } from "../../config";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { NegotiationStatusDto } from "@libs/dtos";
+import { DspClientService } from "../client/client.service";
 import { DspGateway } from "../client/dsp.gateway";
-import { createInstance } from "../../utils/instances";
 
 @Injectable()
 export class NegotiationService {

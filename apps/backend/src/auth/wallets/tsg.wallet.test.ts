@@ -1,10 +1,10 @@
+import { VerifiablePresentationJwt } from "@tsg-dsp/common";
 import { plainToInstance } from "class-transformer";
-import { AuthConfig, TsgWalletDirectConfig } from "../../config";
-import { TsgWalletClient } from "./tsg.wallet";
 import { HttpResponse, PathParams, http } from "msw";
 import { SetupServer, setupServer } from "msw/node";
-import { VerifiablePresentationJwt } from "@tsg-dsp/common";
+import { AuthConfig, TsgWalletDirectConfig } from "../../config";
 import { AuthClientService } from "../auth.client.service";
+import { TsgWalletClient } from "./tsg.wallet";
 
 describe("TSG Wallet", () => {
   let server: SetupServer;

@@ -6,17 +6,17 @@ import {
   createParamDecorator,
 } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
-import { AuthService } from "./auth.service";
-import { Strategy } from "passport-http-bearer";
-import { DSPError } from "../utils/errors/error";
-import { JwtPayload, decode } from "jsonwebtoken";
-import { plainToInstance } from "class-transformer";
 import {
   CredentialSubject,
   VerifiableCredential,
   VerifiablePresentation,
+  toArray,
 } from "@tsg-dsp/common";
-import { toArray } from "../utils/unions";
+import { plainToInstance } from "class-transformer";
+import { JwtPayload, decode } from "jsonwebtoken";
+import { Strategy } from "passport-http-bearer";
+import { DSPError } from "../utils/errors/error";
+import { AuthService } from "./auth.service";
 
 export const VP = createParamDecorator(
   (

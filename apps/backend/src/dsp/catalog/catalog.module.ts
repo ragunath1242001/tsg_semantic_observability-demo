@@ -12,7 +12,7 @@ import {
   DatasetDao,
   DistributionDao,
   ResourceDao,
-} from "../../model/dsp/catalog/catalog.dao";
+} from "../../model/catalog.dao";
 
 @Module({
   imports: [

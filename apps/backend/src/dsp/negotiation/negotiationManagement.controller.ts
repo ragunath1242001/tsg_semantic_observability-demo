@@ -1,3 +1,4 @@
+import { NegotiationStatusDto } from "@libs/dtos";
 import {
   Body,
   Controller,
@@ -11,17 +12,17 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import {
+  AgreementDto,
+  ContractNegotiation,
+  ContractNegotiationDto,
   NegotiationDetail,
   Offer,
-} from "../../model/dsp/negotiation/negotiation";
-import { NegotiationStatusDto } from "@libs/dtos";
-import { NegotiationService } from "./negotiation.service";
-import { DeserializePipe } from "../../utils/deserialize.pipe";
-import { normalizeAddress } from "../../utils/address";
-import { AgreementDto, ContractNegotiationDto } from "@tsg-dsp/common";
-import { ContractNegotiation } from "../../model/dsp/negotiation/messages";
+} from "@tsg-dsp/common";
 import { OAuthGuard } from "../../auth/oauth.guard";
 import { Roles } from "../../auth/roles.guard";
+import { normalizeAddress } from "../../utils/address";
+import { DeserializePipe } from "../../utils/deserialize.pipe";
+import { NegotiationService } from "./negotiation.service";
 
 @UseGuards(OAuthGuard)
 @Roles(["controlplane_admin", "controlplane_dataplane"])

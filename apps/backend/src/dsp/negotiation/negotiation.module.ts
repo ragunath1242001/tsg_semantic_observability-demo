@@ -8,7 +8,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import {
   NegotiationDetailDao,
   NegotiationProcessEventDao,
-} from "../../model/dsp/negotiation/negotiation.dao";
+} from "../../model/negotiation.dao";
 
 @Module({
   imports: [

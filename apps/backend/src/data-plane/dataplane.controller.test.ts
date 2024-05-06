@@ -5,7 +5,7 @@ import { plainToClass } from "class-transformer";
 import { DataPlaneService } from "./dataPlane.service";
 import { CatalogService } from "../dsp/catalog/catalog.service";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { DataPlaneDao } from "../model/data-planes/dataPlanes.dao";
+import { DataPlaneDao } from "../model/dataPlanes.dao";
 import {
   CatalogDao,
   CatalogRecordDao,
@@ -13,7 +13,7 @@ import {
   DataServiceDao,
   DistributionDao,
   ResourceDao,
-} from "../model/dsp/catalog/catalog.dao";
+} from "../model/catalog.dao";
 import { TypeOrmTestHelper } from "../utils/testhelper";
 import { AuthClientService } from "../auth/auth.client.service";
 

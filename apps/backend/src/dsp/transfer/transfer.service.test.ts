@@ -1,8 +1,24 @@
-import { SetupServer, setupServer } from "msw/node";
-import { TransferService } from "./transfer.service";
-import { TypeOrmTestHelper } from "../../utils/testhelper";
-import { TestingModule, Test } from "@nestjs/testing";
+import { DataPlaneRequestResponseDto } from "@libs/dtos";
+import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
+import {
+  Catalog,
+  DataAddress,
+  EndpointProperty,
+  Multilanguage,
+  TransferCompletionMessage,
+  TransferProcessDto,
+  TransferRequestMessage,
+  TransferRequestMessageDto,
+  TransferStartMessage,
+  TransferState,
+  TransferSuspensionMessage,
+  TransferTerminationMessage,
+} from "@tsg-dsp/common";
+import { plainToClass } from "class-transformer";
+import { HttpResponse, PathParams, http } from "msw";
+import { SetupServer, setupServer } from "msw/node";
+import { AuthClientService } from "../../auth/auth.client.service";
 import { AuthService } from "../../auth/auth.service";
 import {
   AuthConfig,
@@ -11,43 +27,22 @@ import {
   InitCatalog,
   ServerConfig,
 } from "../../config";
-import { DspClientService } from "../client/client.service";
-import {
-  TransferEventDao,
-  TransferDetailDao,
-} from "../../model/dsp/transfer/transfer.dao";
-import { plainToClass } from "class-transformer";
 import { DataPlaneService } from "../../data-plane/dataPlane.service";
-import { DataPlaneDao } from "../../model/data-planes/dataPlanes.dao";
 import {
   CatalogDao,
   CatalogRecordDao,
-  DatasetDao,
   DataServiceDao,
+  DatasetDao,
   DistributionDao,
   ResourceDao,
-} from "../../model/dsp/catalog/catalog.dao";
+} from "../../model/catalog.dao";
+import { DataPlaneDao } from "../../model/dataPlanes.dao";
+import { TransferDetailDao, TransferEventDao } from "../../model/transfer.dao";
+import { TypeOrmTestHelper } from "../../utils/testhelper";
 import { CatalogService } from "../catalog/catalog.service";
-import { http, HttpResponse, PathParams } from "msw";
-import { Catalog } from "../../model/dsp/catalog/catalog";
-import {
-  TransferProcessDto,
-  TransferRequestMessageDto,
-  TransferState,
-} from "@tsg-dsp/common";
-import {
-  DataAddress,
-  EndpointProperty,
-  TransferCompletionMessage,
-  TransferRequestMessage,
-  TransferStartMessage,
-  TransferSuspensionMessage,
-  TransferTerminationMessage,
-} from "../../model/dsp/transfer/messages";
-import { Multilanguage } from "../../model/dsp/common";
-import { DataPlaneRequestResponseDto, DataPlaneTransferDto } from "@libs/dtos";
+import { DspClientService } from "../client/client.service";
 import { DspGateway } from "../client/dsp.gateway";
-import { AuthClientService } from "../../auth/auth.client.service";
+import { TransferService } from "./transfer.service";
 
 describe("Transfer service", () => {
   let transferService: TransferService;

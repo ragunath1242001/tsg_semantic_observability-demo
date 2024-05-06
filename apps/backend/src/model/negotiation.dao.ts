@@ -1,4 +1,15 @@
 import {
+  Agreement,
+  ContractAgreementVerificationMessage,
+  ContractNegotiationState,
+  INegotiationDetail,
+  INegotiationProcessEvent,
+  Multilanguage,
+  NegotiationProcessEvent,
+  NegotiationRole,
+  Offer,
+} from "@tsg-dsp/common";
+import {
   Column,
   Entity,
   ManyToOne,
@@ -6,18 +17,7 @@ import {
   PrimaryColumn,
   Relation,
 } from "typeorm";
-import { AutoIdEntity, MetaEntity } from "../../common.dao";
-import { ContractNegotiationState } from "@tsg-dsp/common";
-import { Multilanguage } from "../common";
-import { ContractAgreementVerificationMessage } from "./messages";
-import {
-  Agreement,
-  INegotiationDetail,
-  INegotiationProcessEvent,
-  NegotiationProcessEvent,
-  NegotiationRole,
-  Offer,
-} from "./negotiation";
+import { AutoIdEntity, MetaEntity } from "./common.dao";
 
 @Entity({ name: "negotationProcessEvent" })
 export class NegotiationProcessEventDao

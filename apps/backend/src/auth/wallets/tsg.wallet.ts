@@ -1,8 +1,3 @@
-import qs from "qs";
-import { TsgWalletDirectConfig } from "../../config";
-import { Credential, ValidationResult, WalletClient } from "./walletClient";
-import axios from "axios";
-import { DSPClientError } from "../../utils/errors/error";
 import { Logger } from "@nestjs/common";
 import {
   CredentialSubject,
@@ -12,7 +7,10 @@ import {
 } from "@tsg-dsp/common";
 import { plainToInstance } from "class-transformer";
 import { decode } from "jsonwebtoken";
+import { TsgWalletDirectConfig } from "../../config";
+import { DSPClientError } from "../../utils/errors/error";
 import { AuthClientService } from "../auth.client.service";
+import { Credential, ValidationResult, WalletClient } from "./walletClient";
 
 export class TsgWalletClient extends WalletClient {
   constructor(

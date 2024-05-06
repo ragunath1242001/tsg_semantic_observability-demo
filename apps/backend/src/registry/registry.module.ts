@@ -7,7 +7,7 @@ import {
   DataServiceDao,
   DatasetDao,
   ResourceDao,
-} from "../model/dsp/catalog/catalog.dao";
+} from "../model/catalog.dao";
 import { ScheduleModule } from "@nestjs/schedule";
 import { DidResolverService } from "./did.resolver.service";
 import { AuthModule } from "../auth/auth.module";

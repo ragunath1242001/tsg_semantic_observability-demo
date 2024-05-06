@@ -1,9 +1,9 @@
+import { CredentialAddressDto } from "@libs/dtos";
 import { Controller, Get, Logger, UseGuards } from "@nestjs/common";
 import { CatalogDto } from "@tsg-dsp/common";
-import { CredentialAddressDto } from "@libs/dtos";
-import { RegistryClientService } from "./registry.client.service";
 import { OAuthGuard } from "../auth/oauth.guard";
 import { Roles } from "../auth/roles.guard";
+import { RegistryClientService } from "./registry.client.service";
 
 @UseGuards(OAuthGuard)
 @Roles(["controlplane_admin", "controlplane_dataplane"])

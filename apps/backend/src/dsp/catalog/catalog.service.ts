@@ -1,36 +1,29 @@
-import {
-  ConflictException,
-  HttpStatus,
-  Injectable,
-  Logger,
-  Optional,
-} from "@nestjs/common";
-import { CatalogRequestMessage } from "../../model/dsp/catalog/messages";
+import { HttpStatus, Injectable, Logger, Optional } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
 import {
   Catalog,
+  CatalogRequestMessage,
+  Constraint,
   DataService,
   Dataset,
+  Multilanguage,
+  ODRLAction,
+  ODRLOperator,
+  Offer,
+  Permission,
   Resource,
-} from "../../model/dsp/catalog/catalog";
-import { InitCatalog, ServerConfig } from "../../config";
-import { Multilanguage } from "../../model/dsp/common";
-import { InjectRepository } from "@nestjs/typeorm";
+  deserialize,
+} from "@tsg-dsp/common";
 import { Repository } from "typeorm";
+import { InitCatalog, ServerConfig } from "../../config";
 import {
   CatalogDao,
   DataServiceDao,
   DatasetDao,
   DistributionDao,
   ResourceDao,
-} from "../../model/dsp/catalog/catalog.dao";
-import { DSPClientError, DSPError } from "../../utils/errors/error";
-import { deserialize } from "../../model/serialize";
-import { ODRLAction, ODRLOperator } from "@tsg-dsp/common";
-import {
-  Constraint,
-  Offer,
-  Permission,
-} from "../../model/dsp/negotiation/negotiation";
+} from "../../model/catalog.dao";
+import { DSPError } from "../../utils/errors/error";
 
 @Injectable()
 export class CatalogService {

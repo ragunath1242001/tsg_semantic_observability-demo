@@ -1,4 +1,4 @@
-import { IsString, IsIn, IsBoolean, IsObject, IsDate } from "class-validator";
+import { IsBoolean, IsDate, IsIn, IsObject, IsString } from "class-validator";
 import { JWK } from "jose";
 
 export class KeyInfo {

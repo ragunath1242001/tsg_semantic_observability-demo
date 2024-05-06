@@ -1,6 +1,3 @@
-import { TsgWalletIatpConfig } from "../../config";
-import { Credential, WalletClient } from "./walletClient";
-import { DSPClientError } from "../../utils/errors/error";
 import { Logger } from "@nestjs/common";
 import {
   CredentialSubject,
@@ -8,7 +5,10 @@ import {
   VerifiablePresentation,
 } from "@tsg-dsp/common";
 import crypto from "crypto";
+import { TsgWalletIatpConfig } from "../../config";
+import { DSPClientError } from "../../utils/errors/error";
 import { AuthClientService } from "../auth.client.service";
+import { Credential, WalletClient } from "./walletClient";
 
 export class TsgIatpWalletClient extends WalletClient {
   constructor(

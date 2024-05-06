@@ -1,34 +1,29 @@
-import { HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { DataPlaneAddressDto, TransferRole } from "@libs/dtos";
-import { Multilanguage } from "../../model/dsp/common";
+import { HttpStatus, Injectable, Logger } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
 import {
   DataAddress,
   EndpointProperty,
+  Multilanguage,
   TransferCompletionMessage,
+  TransferDetail,
+  TransferEvent,
   TransferProcess,
   TransferRequestMessage,
   TransferStartMessage,
+  TransferState,
+  TransferStatus,
   TransferSuspensionMessage,
   TransferTerminationMessage,
-} from "../../model/dsp/transfer/messages";
-import { TransferState } from "@tsg-dsp/common";
-import { DataPlaneService } from "../../data-plane/dataPlane.service";
+  deserialize,
+} from "@tsg-dsp/common";
 import crypto from "crypto";
-import { DspClientService } from "../client/client.service";
-import { deserialize } from "../../model/serialize";
-import { DSPError } from "../../utils/errors/error";
-import { ServerConfig } from "../../config";
-import {
-  TransferEventDao,
-  TransferDetailDao,
-} from "../../model/dsp/transfer/transfer.dao";
-import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import {
-  TransferDetail,
-  TransferEvent,
-  TransferStatus,
-} from "../../model/dsp/transfer/transfer";
+import { ServerConfig } from "../../config";
+import { DataPlaneService } from "../../data-plane/dataPlane.service";
+import { TransferDetailDao, TransferEventDao } from "../../model/transfer.dao";
+import { DSPError } from "../../utils/errors/error";
+import { DspClientService } from "../client/client.service";
 import { DspGateway } from "../client/dsp.gateway";
 
 @Injectable()

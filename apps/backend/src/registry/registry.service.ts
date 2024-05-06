@@ -1,32 +1,35 @@
+import { CredentialAddressDto } from "@libs/dtos";
 import {
   HttpStatus,
   Injectable,
   Logger,
   OnApplicationBootstrap,
-  OnModuleInit,
   Optional,
 } from "@nestjs/common";
-import { RegistryConfig } from "../config";
+import { SchedulerRegistry } from "@nestjs/schedule";
 import { InjectRepository } from "@nestjs/typeorm";
+import {
+  Catalog,
+  CatalogDto,
+  Dataset,
+  Resource,
+  deserialize,
+} from "@tsg-dsp/common";
+import { DIDDocument } from "did-resolver";
+import { Repository } from "typeorm";
+import { AuthService } from "../auth/auth.service";
+import { RegistryConfig } from "../config";
+import { CatalogService } from "../dsp/catalog/catalog.service";
+import { DspClientService } from "../dsp/client/client.service";
 import {
   CatalogDao,
   DataServiceDao,
   DatasetDao,
   ResourceDao,
-} from "../model/dsp/catalog/catalog.dao";
-import { DidResolverService } from "./did.resolver.service";
-import { DspClientService } from "../dsp/client/client.service";
+} from "../model/catalog.dao";
 import { normalizeAddress } from "../utils/address";
-import { CatalogDto } from "@tsg-dsp/common";
-import { SchedulerRegistry } from "@nestjs/schedule";
-import { DIDDocument } from "did-resolver";
-import { Repository } from "typeorm";
-import { Catalog, Dataset, Resource } from "../model/dsp/catalog/catalog";
-import { deserialize } from "../model/serialize";
-import { CatalogService } from "../dsp/catalog/catalog.service";
-import { CredentialAddressDto } from "@libs/dtos";
-import { AuthService } from "../auth/auth.service";
 import { DSPError } from "../utils/errors/error";
+import { DidResolverService } from "./did.resolver.service";
 
 @Injectable()
 export class RegistryService implements OnApplicationBootstrap {

@@ -1,3 +1,13 @@
+import { DataPlaneTransferDto, TransferRole } from "@libs/dtos";
+import {
+  DataAddress,
+  ITransferEvent,
+  ITransferStatus,
+  Multilanguage,
+  TransferEvent,
+  TransferProcess,
+  TransferState,
+} from "@tsg-dsp/common";
 import {
   Column,
   Entity,
@@ -6,12 +16,7 @@ import {
   PrimaryColumn,
   Relation,
 } from "typeorm";
-import { AutoIdEntity, MetaEntity } from "../../common.dao";
-import { DataPlaneTransferDto, TransferRole } from "@libs/dtos";
-import { Multilanguage } from "../common";
-import { TransferProcess, DataAddress } from "./messages";
-import { TransferState } from "@tsg-dsp/common";
-import { ITransferEvent, ITransferStatus, TransferEvent } from "./transfer";
+import { AutoIdEntity, MetaEntity } from "./common.dao";
 
 @Entity()
 export class TransferEventDao extends AutoIdEntity implements ITransferEvent {

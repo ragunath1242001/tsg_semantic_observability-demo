@@ -1,10 +1,10 @@
+import { CredentialAddressDto } from "@libs/dtos";
 import { HttpStatus, Injectable, Logger, Optional } from "@nestjs/common";
-import { RegistryConfig } from "../config";
 import { CatalogDto } from "@tsg-dsp/common";
 import axios from "axios";
-import { DSPClientError, DSPError } from "../utils/errors/error";
-import { CredentialAddressDto } from "@libs/dtos";
 import { AuthService } from "../auth/auth.service";
+import { RegistryConfig } from "../config";
+import { DSPClientError, DSPError } from "../utils/errors/error";
 
 @Injectable()
 export class RegistryClientService {

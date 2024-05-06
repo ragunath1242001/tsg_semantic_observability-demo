@@ -1,4 +1,23 @@
 import {
+  DataService,
+  Dataset,
+  DatasetDto,
+  Decimal,
+  Distribution,
+  Duration,
+  ICatalog,
+  ICatalogRecord,
+  IDataService,
+  IDataset,
+  IDistribution,
+  IResource,
+  Multilanguage,
+  Policy,
+  Reference,
+  Resource,
+  Time,
+} from "@tsg-dsp/common";
+import {
   Column,
   Entity,
   JoinColumn,
@@ -10,22 +29,7 @@ import {
   PrimaryColumn,
   Relation,
 } from "typeorm";
-import { MetaEntity, mapToInstances } from "../../common.dao";
-import {
-  DataService,
-  Dataset,
-  Distribution,
-  ICatalog,
-  ICatalogRecord,
-  IDataService,
-  IDataset,
-  IDistribution,
-  IResource,
-  Resource,
-} from "./catalog";
-import { Reference, Multilanguage, Time, Decimal, Duration } from "../common";
-import { Policy } from "../negotiation/negotiation";
-import { DatasetDto } from "@tsg-dsp/common";
+import { MetaEntity, mapToInstances } from "./common.dao";
 
 @Entity({ name: "resource" })
 export class ResourceDao extends MetaEntity implements IResource {

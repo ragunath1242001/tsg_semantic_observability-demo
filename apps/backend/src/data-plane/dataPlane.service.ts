@@ -1,40 +1,39 @@
-import { HttpStatus, Injectable, Logger, Optional } from "@nestjs/common";
 import {
-  DataPlaneRequestResponseDto,
   DataPlaneCreation,
   DataPlaneDto,
+  DataPlaneRequestResponseDto,
   DataPlaneTransferDto,
 } from "@libs/dtos";
+import { HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { Interval } from "@nestjs/schedule";
-import { CatalogService } from "../dsp/catalog/catalog.service";
-import { Dataset, IDataset } from "../model/dsp/catalog/catalog";
-import crypto from "crypto";
+import { InjectRepository } from "@nestjs/typeorm";
 import {
+  DataPlane,
+  DataPlaneStatus,
+  Dataset,
+  HealthStatus,
+  IDataset,
+  SerializableClass,
   TransferCompletionMessage,
   TransferRequestMessage,
   TransferStartMessage,
   TransferSuspensionMessage,
   TransferTerminationMessage,
-} from "../model/dsp/transfer/messages";
+  deserialize,
+} from "@tsg-dsp/common";
 import axios, {
   AxiosInstance,
   AxiosRequestConfig,
   InternalAxiosRequestConfig,
 } from "axios";
-import { DSPClientError, DSPError } from "../utils/errors/error";
+import crypto from "crypto";
 import deepEqual from "deep-equal";
-import { SerializableClass } from "../model/dsp/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { DataPlaneDao } from "../model/data-planes/dataPlanes.dao";
 import { In, Repository } from "typeorm";
-import {
-  DataPlane,
-  DataPlaneStatus,
-  HealthStatus,
-} from "../model/data-planes/dataPlanes";
-import { DatasetDao } from "../model/dsp/catalog/catalog.dao";
-import { deserialize } from "../model/serialize";
 import { AuthClientService } from "../auth/auth.client.service";
+import { CatalogService } from "../dsp/catalog/catalog.service";
+import { DatasetDao } from "../model/catalog.dao";
+import { DataPlaneDao } from "../model/dataPlanes.dao";
+import { DSPClientError, DSPError } from "../utils/errors/error";
 
 @Injectable()
 export class DataPlaneService {

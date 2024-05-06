@@ -1,7 +1,10 @@
 import { HttpStatus, Injectable, Logger, PipeTransform } from "@nestjs/common";
-import { deserialize } from "../model/serialize";
-import { ClassValidationError, SerializableClass } from "../model/dsp/common";
-import { ContextDto } from "@tsg-dsp/common";
+import {
+  ClassValidationError,
+  ContextDto,
+  SerializableClass,
+  deserialize,
+} from "@tsg-dsp/common";
 import { DSPError } from "./errors/error";
 
 /* eslint-disable-next-line @typescript-eslint/no-explicit-any */

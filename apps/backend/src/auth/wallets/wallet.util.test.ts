@@ -1,8 +1,8 @@
+import { VerifiablePresentationJwt } from "@tsg-dsp/common";
+import { plainToInstance } from "class-transformer";
 import { HttpResponse, PathParams, http } from "msw";
 import { SetupServer, setupServer } from "msw/node";
 import { IamConfig, TsgWalletDirectConfig } from "../../config";
-import { plainToInstance } from "class-transformer";
-import { VerifiablePresentationJwt } from "@tsg-dsp/common";
 
 export function mockWalletConfig(): IamConfig {
   return plainToInstance<TsgWalletDirectConfig, TsgWalletDirectConfig>(

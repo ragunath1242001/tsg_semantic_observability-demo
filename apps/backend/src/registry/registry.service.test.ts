@@ -8,7 +8,7 @@ import {
   DatasetDao,
   DistributionDao,
   ResourceDao,
-} from "../model/dsp/catalog/catalog.dao";
+} from "../model/catalog.dao";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { DspClientService } from "../dsp/client/client.service";
 import { AuthService } from "../auth/auth.service";

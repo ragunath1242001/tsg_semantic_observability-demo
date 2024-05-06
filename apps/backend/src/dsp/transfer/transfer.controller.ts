@@ -6,19 +6,18 @@ import {
   Post,
   UseGuards,
 } from "@nestjs/common/decorators";
-import { DeserializePipe } from "../../utils/deserialize.pipe";
 import {
   TransferCompletionMessage,
+  TransferProcessDto,
   TransferRequestMessage,
   TransferStartMessage,
   TransferSuspensionMessage,
   TransferTerminationMessage,
-} from "../../model/dsp/transfer/messages";
-import { TransferProcessDto } from "@tsg-dsp/common";
-import { TransferService } from "./transfer.service";
-import { DSPError } from "../../utils/errors/error";
+} from "@tsg-dsp/common";
 import { VerifiablePresentationGuard } from "../../auth/verifiablePresentation.guard";
 import { VPId } from "../../auth/verifiablePresentation.strategy";
+import { DeserializePipe } from "../../utils/deserialize.pipe";
+import { TransferService } from "./transfer.service";
 
 @UseGuards(VerifiablePresentationGuard)
 @Controller("transfers")

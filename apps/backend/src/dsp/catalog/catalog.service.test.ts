@@ -1,9 +1,8 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { CatalogService } from "./catalog.service";
-import { TypeOrmTestHelper } from "../../utils/testhelper";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { DataService, Dataset, Distribution } from "@tsg-dsp/common";
 import { plainToClass } from "class-transformer";
 import { InitCatalog, ServerConfig } from "../../config";
-import { TypeOrmModule } from "@nestjs/typeorm";
 import {
   CatalogDao,
   CatalogRecordDao,
@@ -11,14 +10,10 @@ import {
   DatasetDao,
   DistributionDao,
   ResourceDao,
-} from "../../model/dsp/catalog/catalog.dao";
+} from "../../model/catalog.dao";
 import { DSPError } from "../../utils/errors/error";
-import { Reference } from "../../model/dsp/common";
-import {
-  DataService,
-  Dataset,
-  Distribution,
-} from "../../model/dsp/catalog/catalog";
+import { TypeOrmTestHelper } from "../../utils/testhelper";
+import { CatalogService } from "./catalog.service";
 
 describe("Catalog Service", () => {
   let catalogService: CatalogService;

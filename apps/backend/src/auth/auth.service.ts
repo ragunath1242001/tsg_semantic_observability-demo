@@ -1,23 +1,22 @@
-import { Injectable, Optional } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import {
-  AuthConfig,
+  CredentialSubject,
+  VerifiableCredential,
+  VerifiablePresentation,
+} from "@tsg-dsp/common";
+import {
   DevWalletConfig,
   MiwConfig,
   RootConfig,
   TsgWalletDirectConfig,
   TsgWalletIatpConfig,
 } from "../config";
-import { WalletClient } from "./wallets/walletClient";
-import { TsgWalletClient } from "./wallets/tsg.wallet";
-import { ManagedIdentityWalletClient } from "./wallets/miw.wallet";
-import { DevWalletClient } from "./wallets/dev.wallet";
-import { TsgIatpWalletClient } from "./wallets/tsg.iatp.wallet";
-import {
-  VerifiablePresentation,
-  VerifiableCredential,
-  CredentialSubject,
-} from "@tsg-dsp/common";
 import { AuthClientService } from "./auth.client.service";
+import { DevWalletClient } from "./wallets/dev.wallet";
+import { ManagedIdentityWalletClient } from "./wallets/miw.wallet";
+import { TsgIatpWalletClient } from "./wallets/tsg.iatp.wallet";
+import { TsgWalletClient } from "./wallets/tsg.wallet";
+import { WalletClient } from "./wallets/walletClient";
 
 @Injectable()
 export class AuthService {

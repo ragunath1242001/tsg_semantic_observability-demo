@@ -1,37 +1,36 @@
-import { Test, TestingModule } from "@nestjs/testing";
-import { NegotiationController } from "./negotiation.controller";
 import { HttpStatus } from "@nestjs/common";
+import { Test, TestingModule } from "@nestjs/testing";
+import { TypeOrmModule } from "@nestjs/typeorm";
 import {
+  Agreement,
   ContractAgreementMessage,
   ContractAgreementVerificationMessage,
   ContractNegotiation,
+  ContractNegotiationDto,
   ContractNegotiationEventMessage,
+  ContractNegotiationState,
   ContractNegotiationTerminationMessage,
   ContractOfferMessage,
   ContractRequestMessage,
-} from "../../model/dsp/negotiation/messages";
-import { Agreement, Offer } from "../../model/dsp/negotiation/negotiation";
-import {
-  ContractNegotiationDto,
-  ContractNegotiationState,
   ContractRequestMessageDto,
+  Multilanguage,
   NegotiationEvent,
+  Offer,
 } from "@tsg-dsp/common";
-import { Multilanguage } from "../../model/dsp/common";
-import { NegotiationService } from "./negotiation.service";
-import { DspClientService } from "../client/client.service";
+import { plainToClass } from "class-transformer";
 import { HttpResponse, PathParams, http } from "msw";
 import { SetupServer, setupServer } from "msw/node";
-import { RootConfig, ServerConfig } from "../../config";
-import { plainToClass } from "class-transformer";
 import { AuthService } from "../../auth/auth.service";
-import { TypeOrmModule } from "@nestjs/typeorm";
+import { RootConfig, ServerConfig } from "../../config";
 import {
   NegotiationDetailDao,
   NegotiationProcessEventDao,
-} from "../../model/dsp/negotiation/negotiation.dao";
+} from "../../model/negotiation.dao";
 import { TypeOrmTestHelper } from "../../utils/testhelper";
+import { DspClientService } from "../client/client.service";
 import { DspGateway } from "../client/dsp.gateway";
+import { NegotiationController } from "./negotiation.controller";
+import { NegotiationService } from "./negotiation.service";
 
 describe("NegotiationController", () => {
   let negotiationController: NegotiationController;
