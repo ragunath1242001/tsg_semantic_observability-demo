@@ -1,4 +1,4 @@
-import { ContextDto, MultilanguageDto, ReferenceDto } from "./common.dto";
+import { ContextDto, MultilanguageDto, ReferenceDto } from "../common.dto";
 import { AgreementDto, OfferDto } from "./negotiation.dto";
 
 export interface ContractRequestMessageDto extends ContextDto {
