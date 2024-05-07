@@ -27,16 +27,23 @@ try {
         },
       }),
       dotenvLoader({
-        ignoreEnvVars: true,
         separator: "__",
-        keyTransformer: (key) =>
-          key
-            .toLowerCase()
-            .replace(/([a-z]_[a-z])/g, (g) => g[0] + g[2].toUpperCase()),
+        keyTransformer: (key) => {
+          if (key.startsWith("TSG")) {
+            console.log(key);
+            return key
+              .replace("TSG__", "")
+              .toLowerCase()
+              .replace(/([a-z]_[a-z])/g, (g) => g[0] + g[2].toUpperCase());
+          } else {
+            return "";
+          }
+        },
       }),
     ],
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     validate: (rawConfig: any) => {
+      delete rawConfig[""];
       const config = plainToInstance(RootConfig, rawConfig);
       const schemaErrors = validateSync(config, {
         whitelist: true,
