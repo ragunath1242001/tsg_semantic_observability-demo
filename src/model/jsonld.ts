@@ -1,12 +1,3 @@
-// import jsonld, {
-//   ContextDefinition,
-//   JsonLdDocument,
-//   NodeObject,
-//   Options,
-//   frame,
-//   compact,
-
-// } from "jsonld";
 import * as jsonld from 'jsonld';
 import { JsonLdObj, RemoteDocument } from "jsonld/jsonld-spec";
 
@@ -91,9 +82,8 @@ export async function compact(
   const compacted = await jsonld.compact(expanded, usingContext, {
     ...jsonldOptions,
   });
-  const framed = await frame(compacted, internal, internal, undefined);
-  framed["@context"] = "https://w3id.org/dspace/v0.8/context.json";
-  return framed;
+  compacted["@context"] = "https://w3id.org/dspace/v0.8/context.json";
+  return compacted;
 }
 
 export async function flatten(document: jsonld.JsonLdDocument): Promise<JsonLdObj> {
