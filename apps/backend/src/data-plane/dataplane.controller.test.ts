@@ -16,6 +16,8 @@ import {
 } from "../model/catalog.dao";
 import { TypeOrmTestHelper } from "../utils/testhelper";
 import { AuthClientService } from "../auth/auth.client.service";
+import { Agreement } from "@tsg-dsp/common";
+import { NegotiationService } from "../dsp/negotiation/negotiation.service";
 
 describe("DataPlaneController", () => {
   let dataPlaneController: DataPlaneController;
@@ -51,6 +53,19 @@ describe("DataPlaneController", () => {
         DataPlaneService,
         CatalogService,
         AuthClientService,
+        {
+          provide: NegotiationService,
+          useValue: {
+            async getAgreement(agreementId: string): Promise<Agreement> {
+              return new Agreement({
+                assignee: "did:web:localhost",
+                assigner: "did:web:localhost",
+                target: "urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0cea",
+                timestamp: new Date().toISOString(),
+              });
+            },
+          },
+        },
         {
           provide: InitCatalog,
           useValue: initCatalog,

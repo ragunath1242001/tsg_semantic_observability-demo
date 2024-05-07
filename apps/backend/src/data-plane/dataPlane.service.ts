@@ -8,11 +8,12 @@ import { HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { Interval } from "@nestjs/schedule";
 import { InjectRepository } from "@nestjs/typeorm";
 import {
+  Catalog,
   DataPlane,
   DataPlaneStatus,
   Dataset,
   HealthStatus,
-  IDataset,
+  ICatalog,
   SerializableClass,
   TransferCompletionMessage,
   TransferRequestMessage,
@@ -34,6 +35,7 @@ import { CatalogService } from "../dsp/catalog/catalog.service";
 import { DatasetDao } from "../model/catalog.dao";
 import { DataPlaneDao } from "../model/dataPlanes.dao";
 import { DSPClientError, DSPError } from "../utils/errors/error";
+import { NegotiationService } from "../dsp/negotiation/negotiation.service";
 
 @Injectable()
 export class DataPlaneService {
@@ -42,7 +44,8 @@ export class DataPlaneService {
     @InjectRepository(DataPlaneDao)
     private readonly dataPlaneRepository: Repository<DataPlaneDao>,
     private readonly catalogService: CatalogService,
-    private readonly authClientService: AuthClientService
+    private readonly authClientService: AuthClientService,
+    private readonly negotiationService: NegotiationService
   ) {
     this.axios = axios.create();
     this.axios.interceptors.request.use(
@@ -111,8 +114,10 @@ export class DataPlaneService {
     dataPlaneCreation: DataPlaneCreation
   ): Promise<DataPlaneDto> {
     const dataPlane: DataPlane = {
-      dataset: dataPlaneCreation.dataset
-        ? await deserialize<Dataset>(dataPlaneCreation.dataset)
+      datasets: dataPlaneCreation.datasets
+        ? await Promise.all(
+            dataPlaneCreation.datasets?.map((d) => deserialize<Dataset>(d))
+          )
         : undefined,
       identifier:
         dataPlaneCreation.identifier || `urn:uuid:${crypto.randomUUID()}`,
@@ -140,7 +145,9 @@ export class DataPlaneService {
     }
     return {
       ...dataPlane,
-      dataset: await dataPlane.dataset?.serialize(),
+      datasets: dataPlane.datasets
+        ? await Promise.all(dataPlane.datasets.map((d) => d.serialize()))
+        : undefined,
     };
   }
 
@@ -151,8 +158,10 @@ export class DataPlaneService {
     dataPlane.modified = new Date();
     const dataPlaneDetailsObj = {
       ...dataPlaneDetails,
-      dataset: dataPlaneDetails.dataset
-        ? await deserialize<Dataset>(dataPlaneDetails.dataset)
+      datasets: dataPlaneDetails.datasets
+        ? await Promise.all(
+            dataPlaneDetails.datasets?.map((d) => deserialize<Dataset>(d))
+          )
         : undefined,
     };
     await this.dataPlaneRepository.save({
@@ -173,38 +182,47 @@ export class DataPlaneService {
 
   async updateCatalog(
     identifier: string,
-    dataset: Dataset,
+    catalog: Catalog,
     etag?: string
-  ): Promise<Dataset> {
+  ): Promise<Catalog> {
     const dataPlane = await this.getDataPlaneDetails(identifier);
-    let addedDataset: DatasetDao = new DatasetDao();
-    if (dataPlane.dataset) {
-      this.logger.log(`Updating dataset for dataplane ${identifier}`);
-      const resp = await this.catalogService.updateDataset(
-        dataPlane.dataset?.id,
-        dataset
-      );
-      if (resp) {
-        addedDataset = resp;
-      }
-    } else {
-      this.logger.log(`Adding dataset for dataplane ${identifier}`);
-      const resp = await this.catalogService.addDataset(dataset);
-      if (resp) {
-        addedDataset = resp;
+    let existingDatasets = dataPlane._datasets || [];
+    const datasetDaos: DatasetDao[] = [];
+    for (const dataset of catalog.dataset || []) {
+      if (existingDatasets.some((d) => d.id === dataset.id)) {
+        this.logger.log(
+          `Updating dataset ${dataset.id} for dataplane ${identifier}`
+        );
+        const resp = await this.catalogService.updateDataset(
+          dataset.id,
+          dataset
+        );
+
+        if (resp) {
+          datasetDaos.push(resp);
+          existingDatasets = existingDatasets.filter(
+            (d) => d.id !== dataset.id
+          );
+        }
+      } else {
+        this.logger.log(
+          `Adding dataset ${dataset.id} for dataplane ${identifier}`
+        );
+        const resp = await this.catalogService.addDataset(dataset);
+        if (resp) {
+          datasetDaos.push(resp);
+        }
       }
     }
-    // TODO: Should we update modified when the catalog changes?
-    // dataPlane.modified = new Date();
-    dataPlane._dataset = addedDataset;
-    await this.dataPlaneRepository.update(
-      { identifier: identifier },
-      dataPlane
-    );
+    for (const dataset of existingDatasets) {
+      await this.catalogService.removeDataset(dataset.id);
+    }
+    dataPlane._datasets = datasetDaos;
     if (etag) {
       dataPlane.etag = etag;
     }
-    return dataset;
+    await this.dataPlaneRepository.save(dataPlane);
+    return catalog;
   }
 
   private async authorizationToken(
@@ -230,18 +248,18 @@ export class DataPlaneService {
           "If-None-Match": dataPlaneStatus.etag,
         },
       };
-      const datasetJson = await this.axios.get<IDataset>(
+      const catalogJson = await this.axios.get<ICatalog>(
         `${dataPlaneStatus.managementAddress}/catalog`,
         requestConfig
       );
       try {
-        if (datasetJson.status === 200) {
-          const dataset = new Dataset(datasetJson.data);
-          if (!deepEqual(dataset, dataPlaneStatus.dataset)) {
+        if (catalogJson.status === 200) {
+          const catalog = new Catalog(catalogJson.data);
+          if (!deepEqual(catalog.dataset, dataPlaneStatus.datasets)) {
             this.updateCatalog(
               dataPlaneStatus.identifier,
-              dataset,
-              datasetJson.headers["ETag"]
+              catalog,
+              catalogJson.headers["ETag"]
             );
           }
         }
@@ -311,7 +329,7 @@ export class DataPlaneService {
         break;
     }
     if (dataPlane.missedHealthChecks > this.maxHealthCheckMisses) {
-      if (dataPlane.dataset !== undefined) {
+      if (dataPlane.datasets !== undefined) {
         this.logger.log(
           `Data plane with identifier ${
             dataPlane.identifier
@@ -320,8 +338,11 @@ export class DataPlaneService {
             1000
           } seconds, its catalog is deregistered.`
         );
-        await this.catalogService.removeDataset(dataPlane.dataset.id);
-        dataPlane.dataset = undefined;
+        for (const dataset of dataPlane.datasets) {
+          await this.catalogService.removeDataset(dataset.id);
+        }
+        dataPlane.datasets = undefined;
+        this.dataPlaneRepository.save(dataPlane);
       }
     }
   }
@@ -332,6 +353,9 @@ export class DataPlaneService {
     role: "provider" | "consumer",
     remoteParty: string
   ): Promise<DataPlaneTransferDto> {
+    const agreement = await this.negotiationService.getAgreement(
+      requestDetail.agreementId
+    );
     const dataPlanes = await this.dataPlaneRepository.findBy({
       dataplaneType: requestDetail.format,
       role: In([role, "both"]),
@@ -342,12 +366,14 @@ export class DataPlaneService {
         HttpStatus.NOT_FOUND
       ).andLog(this.logger, "warn");
     }
+
     for (const dataPlane of dataPlanes) {
       try {
         const requestConfig: AxiosRequestConfig = {
           headers: {
             Authorization: await this.authorizationToken(dataPlane),
             "X-Remote-Party": remoteParty,
+            "X-Dataset-Id": agreement.target,
           },
         };
         this.logger.debug(

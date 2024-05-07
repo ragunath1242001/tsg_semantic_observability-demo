@@ -9,7 +9,7 @@ import {
   Post,
   UseGuards,
 } from "@nestjs/common";
-import { Dataset } from "@tsg-dsp/common";
+import { Catalog } from "@tsg-dsp/common";
 import { OAuthGuard } from "../auth/oauth.guard";
 import { Roles } from "../auth/roles.guard";
 import { DeserializePipe } from "../utils/deserialize.pipe";
@@ -56,7 +56,11 @@ export class DataPlaneController {
     );
     return {
       ...dataPlane,
-      dataset: await dataPlane.dataset?.serialize(),
+      datasets: dataPlane.datasets
+        ? await Promise.all(
+            dataPlane.datasets.map(async (d) => await d.serialize())
+          )
+        : undefined,
     };
   }
 
@@ -64,13 +68,13 @@ export class DataPlaneController {
   @HttpCode(HttpStatus.OK)
   async updateCatalog(
     @Param("id") id: string,
-    @Body(new DeserializePipe(Dataset)) dataset: Dataset
-  ): Promise<Dataset> {
+    @Body(new DeserializePipe(Catalog)) catalog: Catalog
+  ): Promise<Catalog> {
     this.logger.log(`Received catalog update from data plane ${id}`);
-    const datasetUpdate = await this.dataPlaneService.updateCatalog(
+    const catalogUpdate = await this.dataPlaneService.updateCatalog(
       id,
-      dataset
+      catalog
     );
-    return datasetUpdate;
+    return catalogUpdate;
   }
 }

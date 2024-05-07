@@ -1,7 +1,7 @@
 import { DatasetDto } from "@tsg-dsp/common";
 
 export interface DataPlaneDto {
-  dataset?: DatasetDto;
+  datasets?: DatasetDto[];
   identifier: string;
   dataplaneType: string;
   endpointPrefix: string;

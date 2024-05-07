@@ -2,6 +2,8 @@ import { DataPlaneCreation } from "@libs/dtos";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import {
+  Agreement,
+  Catalog,
   DataService,
   Dataset,
   Distribution,
@@ -25,6 +27,7 @@ import { DataPlaneDao } from "../model/dataPlanes.dao";
 import { DSPError } from "../utils/errors/error";
 import { TypeOrmTestHelper } from "../utils/testhelper";
 import { DataPlaneService } from "./dataPlane.service";
+import { NegotiationService } from "../dsp/negotiation/negotiation.service";
 
 describe("DataPlane Service", () => {
   let dataPlaneService: DataPlaneService;
@@ -61,6 +64,19 @@ describe("DataPlane Service", () => {
         DataPlaneService,
         CatalogService,
         AuthClientService,
+        {
+          provide: NegotiationService,
+          useValue: {
+            async getAgreement(agreementId: string): Promise<Agreement> {
+              return new Agreement({
+                assignee: "did:web:localhost",
+                assigner: "did:web:localhost",
+                target: "urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0cea",
+                timestamp: new Date().toISOString(),
+              });
+            },
+          },
+        },
         {
           provide: InitCatalog,
           useValue: initCatalog,
@@ -122,7 +138,9 @@ describe("DataPlane Service", () => {
         dpDetails.callbackAddress = "https://google.com";
         const dpDetailsDto = {
           ...dpDetails,
-          dataset: await dpDetails.dataset?.serialize(),
+          datasets: dpDetails.datasets
+            ? await Promise.all(dpDetails.datasets.map((d) => d.serialize()))
+            : undefined,
         };
 
         await dataPlaneService.updateDataPlane(dpDetailsDto);
@@ -153,7 +171,10 @@ describe("DataPlane Service", () => {
           ],
         });
         await expect(
-          dataPlaneService.updateCatalog("test123", dataset)
+          dataPlaneService.updateCatalog(
+            "test123",
+            new Catalog({ dataset: [dataset] })
+          )
         ).rejects.toThrow(DSPError);
       });
 
@@ -190,7 +211,7 @@ describe("DataPlane Service", () => {
 
         const createdDataset = await dataPlaneService.updateCatalog(
           addedDataPlane.identifier,
-          dataset
+          new Catalog({ dataset: [dataset] })
         );
 
         expect(createdDataset).toBeDefined();
@@ -243,7 +264,7 @@ describe("DataPlane Service", () => {
         const addedDataPlane = await dataPlaneService.addDataPlane(dataPlane);
         const createdDataset = await dataPlaneService.updateCatalog(
           addedDataPlane.identifier,
-          dataset
+          new Catalog({ dataset: [dataset] })
         );
         createdDataset!.title = "Updated Test HTTP Dataset";
         expect(createdDataset).toBeDefined();

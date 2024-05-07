@@ -2,6 +2,7 @@ import { DataPlaneRequestResponseDto } from "@libs/dtos";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import {
+  Agreement,
   Catalog,
   DataAddress,
   EndpointProperty,
@@ -43,6 +44,7 @@ import { CatalogService } from "../catalog/catalog.service";
 import { DspClientService } from "../client/client.service";
 import { DspGateway } from "../client/dsp.gateway";
 import { TransferService } from "./transfer.service";
+import { NegotiationService } from "../negotiation/negotiation.service";
 
 describe("Transfer service", () => {
   let transferService: TransferService;
@@ -88,6 +90,19 @@ describe("Transfer service", () => {
         DataPlaneService,
         CatalogService,
         AuthClientService,
+        {
+          provide: NegotiationService,
+          useValue: {
+            async getAgreement(agreementId: string): Promise<Agreement> {
+              return new Agreement({
+                assignee: "did:web:localhost",
+                assigner: "did:web:localhost",
+                target: "urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0cea",
+                timestamp: new Date().toISOString(),
+              });
+            },
+          },
+        },
         {
           provide: AuthConfig,
           useValue: plainToClass(AuthConfig, { enabled: false }),

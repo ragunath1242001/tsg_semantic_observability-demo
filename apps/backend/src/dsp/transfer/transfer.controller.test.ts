@@ -2,6 +2,7 @@ import { HttpStatus } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import {
+  Agreement,
   Catalog,
   Multilanguage,
   TransferCompletionMessage,
@@ -36,6 +37,7 @@ import { DspClientService } from "../client/client.service";
 import { DspGateway } from "../client/dsp.gateway";
 import { TransferController } from "./transfer.controller";
 import { TransferService } from "./transfer.service";
+import { NegotiationService } from "../negotiation/negotiation.service";
 
 describe("TransferController", () => {
   let transferController: TransferController;
@@ -170,6 +172,19 @@ describe("TransferController", () => {
         DspClientService,
         DspGateway,
         AuthClientService,
+        {
+          provide: NegotiationService,
+          useValue: {
+            async getAgreement(agreementId: string): Promise<Agreement> {
+              return new Agreement({
+                assignee: "did:web:localhost",
+                assigner: "did:web:localhost",
+                target: "urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0cea",
+                timestamp: new Date().toISOString(),
+              });
+            },
+          },
+        },
         {
           provide: AuthConfig,
           useValue: plainToClass(AuthConfig, { enabled: false }),

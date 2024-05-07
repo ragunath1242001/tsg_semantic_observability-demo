@@ -24,6 +24,7 @@ import { HttpResponse, http } from "msw";
 import { CatalogService } from "../dsp/catalog/catalog.service";
 import { ScheduleModule } from "@nestjs/schedule";
 import { AuthClientService } from "../auth/auth.client.service";
+import { DataPlaneDao } from "../model/dataPlanes.dao";
 
 describe("RegistryService", () => {
   let registryService: RegistryService;
@@ -44,6 +45,7 @@ describe("RegistryService", () => {
           DataServiceDao,
           DistributionDao,
           ResourceDao,
+          DataPlaneDao,
         ]),
         TypeOrmModule.forFeature([
           CatalogDao,
@@ -52,6 +54,7 @@ describe("RegistryService", () => {
           DataServiceDao,
           DistributionDao,
           ResourceDao,
+          DataPlaneDao,
         ]),
         ScheduleModule.forRoot(),
       ],

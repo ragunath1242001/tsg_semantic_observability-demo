@@ -33,6 +33,7 @@ import {
 import { TypeOrmTestHelper } from "../../utils/testhelper";
 import { CatalogController } from "./catalog.controller";
 import { CatalogService } from "./catalog.service";
+import { DataPlaneDao } from "../../model/dataPlanes.dao";
 
 const dataset = new Dataset({
   id: "urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0cea",
@@ -96,6 +97,7 @@ describe("CatalogController", () => {
           DataServiceDao,
           DistributionDao,
           ResourceDao,
+          DataPlaneDao,
         ]),
         TypeOrmModule.forFeature([
           CatalogDao,
@@ -104,6 +106,7 @@ describe("CatalogController", () => {
           DataServiceDao,
           DistributionDao,
           ResourceDao,
+          DataPlaneDao,
         ]),
       ],
       controllers: [CatalogController],
@@ -197,6 +200,7 @@ describe("Catalog Module", () => {
           DataServiceDao,
           DistributionDao,
           ResourceDao,
+          DataPlaneDao,
         ]),
         TypeOrmModule.forFeature([
           CatalogDao,
@@ -205,6 +209,7 @@ describe("Catalog Module", () => {
           DataServiceDao,
           DistributionDao,
           ResourceDao,
+          DataPlaneDao,
         ]),
       ],
       controllers: [CatalogController],

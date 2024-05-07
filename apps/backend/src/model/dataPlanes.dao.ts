@@ -1,5 +1,5 @@
 import { Dataset, HealthStatus, IDataPlane } from "@tsg-dsp/common";
-import { Column, Entity, JoinColumn, OneToOne, PrimaryColumn } from "typeorm";
+import { Column, Entity, OneToMany, PrimaryColumn, Relation } from "typeorm";
 import { DatasetDao } from "./catalog.dao";
 import { MetaEntity } from "./common.dao";
 
@@ -15,11 +15,13 @@ export class DataPlaneDao extends MetaEntity implements IDataPlane {
   health!: HealthStatus;
   @Column()
   missedHealthChecks!: number;
-  @OneToOne(() => DatasetDao, { eager: true })
-  @JoinColumn()
-  _dataset?: DatasetDao | undefined;
-  get dataset(): Dataset | undefined {
-    return this._dataset ? new Dataset(this._dataset) : undefined;
+  @OneToMany(() => DatasetDao, (dataset) => dataset._dataPlane, {
+    cascade: true,
+    eager: true,
+  })
+  _datasets?: Array<Relation<DatasetDao>> | undefined;
+  get datasets(): Array<Dataset> | undefined {
+    return this._datasets?.map((dataset) => new Dataset(dataset));
   }
   @Column({ nullable: true })
   etag?: string;

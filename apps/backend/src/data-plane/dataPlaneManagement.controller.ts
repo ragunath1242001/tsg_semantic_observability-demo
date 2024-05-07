@@ -27,10 +27,13 @@ export class DataplaneManagementController {
       dataPlanes.map(async (dataplane) => {
         return {
           ...dataplane,
-          dataset: await dataplane.dataset?.serialize(),
+          datasets: dataplane.datasets
+            ? await Promise.all(dataplane.datasets.map((d) => d.serialize()))
+            : undefined,
         };
       })
     );
+    dataPlanesDtosPromise;
     return dataPlanesDtosPromise;
   }
 }

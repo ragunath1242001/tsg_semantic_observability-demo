@@ -30,6 +30,7 @@ import {
   Relation,
 } from "typeorm";
 import { MetaEntity, mapToInstances } from "./common.dao";
+import { DataPlaneDao } from "./dataPlanes.dao";
 
 @Entity({ name: "resource" })
 export class ResourceDao extends MetaEntity implements IResource {
@@ -69,6 +70,16 @@ export class ResourceDao extends MetaEntity implements IResource {
   title?: string;
   @Column({ nullable: true })
   type?: string;
+  @Column("simple-json", { nullable: true })
+  hasVersion?: Reference[];
+  @Column("simple-json", { nullable: true })
+  isVersionOf?: Reference;
+  @Column("simple-json", { nullable: true })
+  version?: string;
+  @Column("simple-json", { nullable: true })
+  hasCurrentVersion?: Reference;
+  @Column("simple-json", { nullable: true })
+  previousVersion?: Reference;
   // Todo Many-to-Many, JoinTable
   @Column("simple-json", { nullable: true })
   hasPolicy?: Array<Policy>;
@@ -127,6 +138,21 @@ export abstract class ResourceChild extends MetaEntity {
   }
   get type() {
     return this._resource?.type;
+  }
+  get hasVersion() {
+    return this._resource?.hasVersion;
+  }
+  get isVersionOf() {
+    return this._resource?.isVersionOf;
+  }
+  get version() {
+    return this._resource?.version;
+  }
+  get hasCurrentVersion() {
+    return this._resource?.hasCurrentVersion;
+  }
+  get previousVersion() {
+    return this._resource?.previousVersion;
   }
   get hasPolicy() {
     return this._resource?.hasPolicy;
@@ -206,6 +232,9 @@ export class DatasetDao extends ResourceChild implements IDataset {
   @OneToOne(() => ResourceDao, { cascade: true, eager: true })
   @JoinColumn()
   _resource: ResourceDao | undefined;
+
+  @ManyToOne(() => DataPlaneDao, { nullable: true })
+  _dataPlane?: Relation<DataPlaneDao>;
 
   @ManyToOne(() => CatalogDao, { nullable: true })
   _catalog?: Relation<CatalogDao>;

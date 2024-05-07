@@ -14,6 +14,7 @@ import {
 import { DSPError } from "../../utils/errors/error";
 import { TypeOrmTestHelper } from "../../utils/testhelper";
 import { CatalogService } from "./catalog.service";
+import { DataPlaneDao } from "../../model/dataPlanes.dao";
 
 describe("Catalog Service", () => {
   let catalogService: CatalogService;
@@ -37,6 +38,7 @@ describe("Catalog Service", () => {
           DataServiceDao,
           DistributionDao,
           ResourceDao,
+          DataPlaneDao,
         ]),
         TypeOrmModule.forFeature([
           CatalogDao,
@@ -45,6 +47,7 @@ describe("Catalog Service", () => {
           DataServiceDao,
           DistributionDao,
           ResourceDao,
+          DataPlaneDao,
         ]),
       ],
       providers: [

@@ -6,12 +6,14 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { DataPlaneDao } from "../model/dataPlanes.dao";
 import { DataplaneManagementController } from "./dataPlaneManagement.controller";
 import { AuthModule } from "../auth/auth.module";
+import { NegotiationModule } from "../dsp/negotiation/negotiation.module";
 
 @Module({
   imports: [
     CatalogModule,
     TypeOrmModule.forFeature([DataPlaneDao]),
     AuthModule,
+    NegotiationModule,
   ],
   controllers: [DataPlaneController, DataplaneManagementController],
   providers: [DataPlaneService],
