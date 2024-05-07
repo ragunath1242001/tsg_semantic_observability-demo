@@ -8,18 +8,20 @@ import {
 import axios, { AxiosInstance } from "axios";
 import { RootConfig } from "../config";
 import crypto from "crypto";
-import bcrypt from "bcrypt";
 import { Request, Response } from "express";
 import { IncomingHttpHeaders } from "http";
 import {
   AgreementDto,
+  Catalog,
   DataPlaneAddressDto,
   DataPlaneCreation,
   DataPlaneDetailsDto,
   DataPlaneRequestResponseDto,
-  DataServiceDto,
+  DataService,
+  Dataset,
   DatasetDto,
-  DistributionDto,
+  Distribution,
+  Reference,
   TransferCompletionMessageDto,
   TransferRequestMessageDto,
   TransferStartMessageDto,
@@ -48,7 +50,7 @@ export class DataPlaneService {
     @InjectRepository(DataPlaneStateDao)
     private readonly stateRepository: Repository<DataPlaneStateDao>,
   ) {
-    this.init();
+    this.initialized = this.init();
     this.axiosDataPlane = authClient.axiosInstance({
       baseURL: this.config.controlPlane.dataPlaneEndpoint,
     });
@@ -57,6 +59,7 @@ export class DataPlaneService {
     });
   }
   private readonly logger = new Logger(this.constructor.name);
+  initialized: Promise<void>;
   private state?: DataPlaneStateDao;
 
   async init() {
@@ -83,42 +86,76 @@ export class DataPlaneService {
           `/init`,
           dataPlaneCreation,
         );
-        const accessService: DataServiceDto = {
-          "@id": `urn:uuid:${crypto.randomUUID()}`,
-          "@type": "dcat:DataService",
-          "dcat:endpointURL": this.config.controlPlane.controlEndpoint,
-        };
-        const dataset: DatasetDto = {
-          "@context": "https://w3id.org/dspace/v0.8/context.json",
-          "@id": this.config.dataset.id || `urn:uuid:${crypto.randomUUID()}`,
-          "@type": "dcat:Dataset",
-          "dct:title": this.config.dataset.title,
-          "dcat:distribution": this.config.dataset.distributions.map(
-            (distributionConfig) => {
-              const distribution: DistributionDto = {
-                "@id":
-                  distributionConfig.id || `urn:uuid:${crypto.randomUUID()}`,
-                "@type": "dcat:Distribution",
-                "dct:format": "dspace:HTTP",
-                "dct:title": `Version ${distributionConfig.version}`,
-                "dct:conformsTo": distributionConfig.openApiSpec
-                  ? { "@id": distributionConfig.openApiSpec }
-                  : undefined,
-                "dcat:accessService": [accessService],
-              };
-              return distribution;
-            },
+        const accessService = new DataService({
+          endpointURL: this.config.controlPlane.controlEndpoint,
+        });
+        const id = this.config.dataset.id || `urn:uuid:${crypto.randomUUID()}`;
+        const baseDataset = new Dataset({
+          id: id,
+          title: this.config.dataset.title,
+          hasVersion: this.config.dataset.versions.map(
+            (v) => new Reference(`${id}:${v.version}`),
           ),
-        };
+          hasCurrentVersion: new Reference(
+            `${id}:${this.config.dataset.versions[0].version}`,
+          ),
+          distribution: [
+            new Distribution({
+              id: `${id}:http`,
+              format: "dspace:HTTP",
+              title: this.config.dataset.title,
+              conformsTo: this.config.dataset.versions[0].openApiSpec
+                ? new Reference(this.config.dataset.versions[0].openApiSpec)
+                : undefined,
+              accessService: [accessService],
+            }),
+          ],
+        });
+        const versions = this.config.dataset.versions.map((v, idx) => {
+          return {
+            ...v,
+            previous: this.config.dataset.versions.at(idx + 1),
+          };
+        });
+        const versionedDatasets = versions.map(
+          (v) =>
+            new Dataset({
+              id: `${id}:${v.version}`,
+              title: `${this.config.dataset.title} (${v.version})`,
+              version: `${v.version}`,
+              isVersionOf: new Reference(id),
+              previousVersion: v.previous
+                ? new Reference(`${id}:${v.previous.version}`)
+                : undefined,
+              conformsTo: v.openApiSpec,
+              distribution: [
+                new Distribution({
+                  id: `${id}:${v.version}:http`,
+                  format: "dspace:HTTP",
+                  title: this.config.dataset.title,
+                  conformsTo: v.openApiSpec
+                    ? new Reference(v.openApiSpec)
+                    : undefined,
+                  accessService: [accessService],
+                }),
+              ],
+            }),
+        );
+
+        const catalog: Catalog = new Catalog({
+          dataset: [baseDataset, ...versionedDatasets],
+        });
         await this.axiosDataPlane.post<DataPlaneDetailsDto>(
           `/${details.data.identifier}/catalog`,
-          dataset,
+          await catalog.serialize(),
         );
         const state = await this.stateRepository.save({
           identifier: details.data.identifier,
           managementToken: managementToken,
           details: details.data,
-          dataset: dataset,
+          dataset: await Promise.all(
+            [baseDataset, ...versionedDatasets].map((d) => d.serialize()),
+          ),
         });
         this.state = state;
       }, this.config.controlPlane.initializationDelay);
@@ -205,6 +242,7 @@ export class DataPlaneService {
     role: "provider" | "consumer",
     processId: string,
     remoteParty: string,
+    datasetId: string,
   ): Promise<DataPlaneRequestResponseDto> {
     const id = crypto.randomUUID();
     let dataAddress: DataPlaneAddressDto | undefined;
@@ -227,6 +265,7 @@ export class DataPlaneService {
       id: id,
       processId: processId,
       remoteParty: remoteParty,
+      datasetId: datasetId,
       secret: secret,
       state: TransferState.REQUESTED,
       request: transferRequestMessage,
@@ -378,7 +417,6 @@ export class DataPlaneService {
 
   async executeProxyRequest(
     processId: string,
-    version: string,
     path: string,
     request: RawBodyRequest<Request>,
     response: Response,
@@ -409,7 +447,7 @@ export class DataPlaneService {
 
     try {
       const newUrl =
-        `${transfer.dataAddress["dspace:endpoint"]}/${version}/${path}`.replace(
+        `${transfer.dataAddress["dspace:endpoint"]}/${path}`.replace(
           /([^:]\/)\/+/g,
           "$1",
         );
@@ -439,7 +477,6 @@ export class DataPlaneService {
   async handleProxyRequest(
     processId: string,
     authorization: string,
-    version: string,
     path: string,
     request: RawBodyRequest<Request>,
     response: Response,
@@ -452,6 +489,26 @@ export class DataPlaneService {
         HttpStatus.NOT_FOUND,
       );
     }
+    const state = await this.stateRepository.findOneBy([]);
+    let dataset = state?.dataset?.find((d) => d["@id"] === transfer.datasetId);
+    if (!dataset) {
+      throw new HttpException(
+        `Dataset ${transfer.datasetId} not found`,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    if (!dataset["dcat:version"] && dataset["dcat:hasCurrentVersion"]) {
+      dataset = state?.dataset?.find(
+        (d) => d["@id"] === dataset?.["dcat:hasCurrentVersion"]?.["@id"],
+      );
+      if (!dataset) {
+        throw new HttpException(
+          `Dataset of current version ${dataset?.["dcat:hasCurrentVersion"]?.["@id"]} not found`,
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
+    }
+
     if (transfer.state !== TransferState.STARTED) {
       this.logger.warn(
         `Transfer process ${processId} is in ${transfer.state} state, accessing is not allowed`,
@@ -473,25 +530,22 @@ export class DataPlaneService {
 
     this.logger.log(`Request for data for ${processId}`);
     this.logger.log(`Request: ${request.method} ${request.path}`);
-    const distribution = this.config.dataset.distributions.find(
-      (distribution) => distribution.version === version,
-    );
-    if (distribution === undefined) {
-      this.logger.warn(`No distribution for version ${version} found`);
-      throw new HttpException(
-        `No distribution for version ${version} found`,
-        HttpStatus.NOT_FOUND,
-      );
-    }
+
     try {
       const headers = request.headers;
-      if (distribution.authorization) {
-        headers["authorization"] = distribution.authorization;
-      }
-      const newUrl = `${distribution.backend}/${path}`.replace(
-        /([^:]\/)\/+/g,
-        "$1",
+      const version = this.config.dataset.versions.find(
+        (v) => v.version === dataset["dcat:version"],
       );
+      if (!version) {
+        throw new HttpException(
+          `Version configuration not found`,
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
+      if (version.authorization) {
+        headers["authorization"] = version.authorization;
+      }
+      const newUrl = `${version.backend}/${path}`.replace(/([^:]\/)\/+/g, "$1");
       this.logger.log(`Rewrite: ${newUrl}`);
       this.logger.log(`Headers: ${JSON.stringify(headers)}`);
 
@@ -502,7 +556,7 @@ export class DataPlaneService {
         request.rawBody,
         request.query,
         response,
-        distribution.authorization !== undefined,
+        version.authorization !== undefined,
       );
     } catch (e) {
       this.logger.log(`Error in executing transfer: ${e}`);

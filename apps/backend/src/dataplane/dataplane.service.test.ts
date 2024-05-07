@@ -7,7 +7,7 @@ import { SetupServer, setupServer } from "msw/node";
 import { HttpResponse, PathParams, http } from "msw";
 import { Request } from "express";
 import { getMockRes } from "@jest-mock/express";
-import { DataPlaneCreation } from "@tsg-dsp/common";
+import { AgreementDto, DataPlaneCreation, DatasetDto } from "@tsg-dsp/common";
 import { TypeOrmTestHelper } from "../utils/testhelper";
 import { TransferDao } from "./transfer.dao";
 import { TypeOrmModule } from "@nestjs/typeorm";
@@ -32,8 +32,9 @@ describe("Dataplane Service", () => {
         initializationDelay: 1,
       },
       dataset: {
+        id: `urn:uuid:test`,
         title: "HTTPBin",
-        distributions: [
+        versions: [
           {
             backend: "https://httpbin.org/anything",
             openApiSpec: "https://httpbin.org/spec.json",
@@ -60,6 +61,46 @@ describe("Dataplane Service", () => {
         `${config.controlPlane.dataPlaneEndpoint}/:id/catalog`,
         ({ request, params, cookies }) => {
           return HttpResponse.json(request.json());
+        },
+      ),
+      http.post(
+        `${config.controlPlane.managementEndpoint}/transfers/:processId/:action`,
+        () => {
+          return HttpResponse.json({ status: "OK" });
+        },
+      ),
+      http.get(
+        `${config.controlPlane.managementEndpoint}/negotiations/agreement/:negotiationId`,
+        () => {
+          return HttpResponse.json<AgreementDto>({
+            "@context": "https://w3id.org/dspace/v0.8/context.json",
+            "@type": "odrl:Agreement",
+            "@id": "urn:uuid:test",
+            "odrl:assigner": "did:web:localhost",
+            "odrl:assignee": "did:web:localhost",
+            "dspace:timestamp": new Date().toISOString(),
+            "odrl:target": "urn:uuid:dataset",
+          });
+        },
+      ),
+      http.get("http://localhost/.well-known/did.json", () => {
+        return HttpResponse.json({
+          service: [
+            {
+              type: "connector",
+              serviceEndpoint: "http://remotecontrolplane/",
+            },
+          ],
+        });
+      }),
+      http.get(
+        `${config.controlPlane.managementEndpoint}/catalog/dataset`,
+        () => {
+          return HttpResponse.json<DatasetDto>({
+            "@context": "https://w3id.org/dspace/v0.8/context.json",
+            "@type": "dcat:Dataset",
+            "@id": "urn:uuid:test",
+          });
         },
       ),
       http.post("https://httpbin.org/anything/0.9.2/anything/test", () => {
@@ -139,6 +180,21 @@ describe("Dataplane Service", () => {
       },
       rawBody: Buffer.from(JSON.stringify({ test: "test2" }), "utf-8"),
     } as RawBodyRequest<Request>;
+
+    it("Get state", async () => {
+      await dataPlaneService.initialized;
+      await new Promise((r) => setTimeout(r, 100));
+      const state = await dataPlaneService.getState();
+      expect(state.dataset?.length).toBeGreaterThanOrEqual(1);
+      expect(state.identifier).toBeDefined();
+      expect(state.details).toBeDefined();
+    });
+
+    it("Get transfers for transport", async () => {
+      const transfers = await dataPlaneService.getTransfers();
+      expect(transfers).toHaveLength(0);
+    });
+
     it("Transfer request", async () => {
       const result = await dataPlaneService.handleTransferRequest(
         {
@@ -151,6 +207,7 @@ describe("Dataplane Service", () => {
         "provider",
         transferProcessId,
         "did:web:localhost",
+        "urn:uuid:test",
       );
       transferProcessId = result.identifier;
       authorization =
@@ -166,7 +223,6 @@ describe("Dataplane Service", () => {
         dataPlaneService.handleProxyRequest(
           transferProcessId,
           authorization,
-          "0.9.2",
           "anything/test",
           request,
           response.res,
@@ -190,7 +246,6 @@ describe("Dataplane Service", () => {
       await dataPlaneService.handleProxyRequest(
         transferProcessId,
         authorization,
-        "0.9.2",
         "anything/test",
         request,
         response.res,
@@ -217,7 +272,6 @@ describe("Dataplane Service", () => {
         dataPlaneService.handleProxyRequest(
           transferProcessId,
           "UNKNOWN",
-          "0.9.2",
           "anything/test",
           request,
           response.res,
@@ -231,7 +285,6 @@ describe("Dataplane Service", () => {
         dataPlaneService.handleProxyRequest(
           "urn:uuid:00000000-0000-0000-0000-000000000000",
           "UNKNOWN",
-          "0.9.2",
           "anything/test",
           request,
           response.res,
@@ -256,12 +309,45 @@ describe("Dataplane Service", () => {
         dataPlaneService.handleProxyRequest(
           transferProcessId,
           authorization,
-          "0.9.2",
           "anything/test",
           request,
           response.res,
         ),
       ).rejects.toThrow("accessing is not allowed");
+    });
+
+    it("Request metadata", async () => {
+      const metadata = await dataPlaneService.getMetadata(transferProcessId);
+      expect(metadata.agreement).toBeDefined();
+      expect(metadata.dataset).toBeDefined();
+    });
+
+    it("Start transfer", async () => {
+      const response = await dataPlaneService.transferStart(transferProcessId);
+      expect(response).toStrictEqual({ status: "OK" });
+    });
+
+    it("Complete transfer", async () => {
+      const response =
+        await dataPlaneService.transferComplete(transferProcessId);
+      expect(response).toStrictEqual({ status: "OK" });
+    });
+
+    it("Terminate transfer", async () => {
+      const response = await dataPlaneService.transferTerminate(
+        transferProcessId,
+        "CODE",
+        "REASON",
+      );
+      expect(response).toStrictEqual({ status: "OK" });
+    });
+
+    it("Suspend transfer", async () => {
+      const response = await dataPlaneService.transferSuspend(
+        transferProcessId,
+        "REASON",
+      );
+      expect(response).toStrictEqual({ status: "OK" });
     });
   });
 
@@ -269,7 +355,7 @@ describe("Dataplane Service", () => {
     let transferProcessId = "urn:uuid:dab7264b-7ff4-4182-9e89-6238a57b5006";
     const request = {
       method: "POST",
-      path: "/0.9.2/anything/test",
+      path: "/anything/test",
       headers: {
         "content-type": "application/json",
         accept: "application/json",
@@ -280,7 +366,8 @@ describe("Dataplane Service", () => {
       body: {
         test: "test2",
       },
-    } as Request;
+      rawBody: Buffer.from(JSON.stringify({ test: "test2" }), "utf-8"),
+    } as RawBodyRequest<Request>;
 
     it("Transfer Request", async () => {
       const result = await dataPlaneService.handleTransferRequest(
@@ -294,6 +381,7 @@ describe("Dataplane Service", () => {
         "consumer",
         transferProcessId,
         "did:web:localhost",
+        "urn:uuid:test",
       );
       transferProcessId = result.identifier;
     });
@@ -303,7 +391,6 @@ describe("Dataplane Service", () => {
       await expect(
         dataPlaneService.executeProxyRequest(
           transferProcessId,
-          "0.9.2",
           "anything/test",
           request,
           response.res,
@@ -338,7 +425,6 @@ describe("Dataplane Service", () => {
       const response = getMockRes();
       await dataPlaneService.executeProxyRequest(
         transferProcessId,
-        "0.9.2",
         "anything/test",
         request,
         response.res,
@@ -361,7 +447,6 @@ describe("Dataplane Service", () => {
       await expect(
         dataPlaneService.executeProxyRequest(
           "urn:uuid:00000000-0000-0000-0000-000000000000",
-          "0.9.2",
           "anything/test",
           request,
           response.res,
@@ -385,7 +470,6 @@ describe("Dataplane Service", () => {
       await expect(
         dataPlaneService.executeProxyRequest(
           transferProcessId,
-          "0.9.2",
           "anything/test",
           request,
           response.res,

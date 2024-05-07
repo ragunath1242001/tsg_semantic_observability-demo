@@ -27,6 +27,9 @@ export class TransferDao {
   @Column()
   remoteParty!: string;
 
+  @Column()
+  datasetId!: string;
+
   @Column({ nullable: true })
   secret?: string;
 

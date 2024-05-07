@@ -23,15 +23,6 @@ const path = ref<string>('');
 const methods = ref<string[]>(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS'])
 const method = ref<'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'HEAD' | 'OPTIONS'>('GET');
 
-const versions = computed(() => {
-  return metadata.value?.dataset?.["dcat:distribution"]
-      ?.map(distribution => distribution["dct:title"])
-      ?.filter(t => t?.startsWith('Version '))
-      ?.map(t => t.slice(8))
-      ?? []
-})
-const version = ref<string>('0.0.0');
-
 const headers = ref<{key: string, value: string}[]>([]);
 const query = ref<{key: string, value: string}[]>([]);
 
@@ -64,9 +55,9 @@ const bodyTypes = computed(() => {
 
 const fullUrl = computed(() => {
   if (interaction.value === 'direct') {
-    return `${url.value}/${version.value}/${path.value}`.replace(/([^:]\/)\/+/g, "$1");
+    return `${url.value}/${path.value}`.replace(/([^:]\/)\/+/g, "$1");
   } else {
-    return `${window.location.origin}/api/management/transfers/${transfer.value.id}/execute/${version.value}/${path.value}`.replace(/([^:]\/)\/+/g, "$1");
+    return `${window.location.origin}/api/management/transfers/${transfer.value.id}/execute/${path.value}`.replace(/([^:]\/)\/+/g, "$1");
   }
 })
 
@@ -123,7 +114,6 @@ const fetchMetadata = async () => {
   try {
     const response = await axiosInstance.get<{agreement: AgreementDto; dataset: DatasetDto;}>(`management/transfers/${transfer.value.id}/metadata`);
     metadata.value = response.data;
-    version.value = versions.value[0];
   } catch (err) {
     toast.add({
       severity: "warn",
@@ -251,9 +241,6 @@ onMounted(() => {
         </FormField>
         <FormField label="Interaction" v-slot="props">
           <SelectButton :id="props.id" v-model="interaction" :options="['direct', 'proxy']" :allowEmpty="false" aria-labelledby="basic" @change="interactionChange" />
-        </FormField>
-        <FormField label="Version" v-slot="props">
-          <Dropdown required :id="props.id" class="w-full" v-model="version" :options="versions" editable placeholder="0.0.0" empty-message="No defined versions available"/>
         </FormField>
         <FormField label="Path" v-slot="props">
           <InputText :id="props.id" class="w-full" v-model="path" placeholder="Path"/>

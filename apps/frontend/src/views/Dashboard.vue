@@ -137,7 +137,7 @@ onMounted(async () => {
             <FormField label="Type">{{ state.details.dataplaneType }}</FormField>
             <FormField label="Synchronization">{{ state.details.catalogSynchronization }}</FormField>
             <FormField label="Role">{{ state.details.role }}</FormField>
-            <FormField label="Dataset ID">{{ state.dataset["@id"] }}</FormField>
+            <FormField label="Dataset ID">{{ state.dataset.map(dataset => dataset["@id"]).join(", ") }}</FormField>
           </div>
           <div class="col-12 lg:col-4">
             <div>
@@ -155,13 +155,13 @@ onMounted(async () => {
               <Dialog
                 v-model:visible="showDataset"
                 modal
-                header="DCAT dataset"
+                header="DCAT datasets"
                 :style="{ width: '90vw', maxWidth: '75rem' }"
               >
                 <JsonTreeView
                   :data="JSON.stringify(state.dataset)"
                   color-scheme="dark"
-                  root-key="Dataset"
+                  root-key="Datasets"
                   :max-depth="5"
                 />
               </Dialog>
@@ -213,6 +213,7 @@ onMounted(async () => {
             <FormField label="Date">{{ new Date(props.data.createdDate).toLocaleString() }}</FormField>
             <FormField label="State"><Tag :severity="stateSeverity(props.data.state)" :value="props.data.state.replace(/^dspace:/,'')"/></FormField>
             <FormField label="Agreement">{{ props.data.request['dspace:agreementId'] }}</FormField>
+            <FormField label="Dataset ID">{{ props.data.datasetId }}</FormField>
             <template v-if="props.data.state === 'dspace:STARTED'">
               <h4>Data address</h4>
               <FormField label="Endpoint">{{ props.data.dataAddress['dspace:endpoint'] }}</FormField>
@@ -268,6 +269,7 @@ onMounted(async () => {
             <FormField label="Date">{{ new Date(props.data.createdDate).toLocaleString() }}</FormField>
             <FormField label="State"><Tag :severity="stateSeverity(props.data.state)" :value="props.data.state.replace(/^dspace:/,'')"/></FormField>
             <FormField label="Agreement">{{ props.data.request['dspace:agreementId'] }}</FormField>
+            <FormField label="Dataset ID">{{ props.data.datasetId }}</FormField>
           </template>
         </DataTable>
       </template>

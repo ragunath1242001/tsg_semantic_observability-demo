@@ -69,11 +69,10 @@ export class DataPlaneManagementController {
     return await this.dataPlaneService.transferSuspend(id, reason);
   }
 
-  @All("/transfers/:id/execute/:version/:path(*)?")
+  @All("/transfers/:id/execute/:path(*)?")
   @HttpCode(HttpStatus.ACCEPTED)
   async executeTransfer(
     @Param("id") id: string,
-    @Param("version") version: string,
     @Param("path") path: string | undefined,
     @Req() request: RawBodyRequest<Request>,
     @Res() response: Response,
@@ -82,7 +81,6 @@ export class DataPlaneManagementController {
     this.logger.log(`Requesting transfer execution for id ${id}`);
     return await this.dataPlaneService.executeProxyRequest(
       id,
-      version,
       path || "",
       request,
       response,

@@ -111,12 +111,12 @@ export class DatasetConfig {
   public readonly title!: string;
 
   @ValidateNested()
-  @Type(() => DistributionConfig)
+  @Type(() => VersionConfig)
   @ArrayMinSize(1)
-  public readonly distributions!: DistributionConfig[];
+  public readonly versions!: VersionConfig[];
 }
 
-export class DistributionConfig {
+export class VersionConfig {
   @IsString()
   @IsOptional()
   public readonly id?: string;

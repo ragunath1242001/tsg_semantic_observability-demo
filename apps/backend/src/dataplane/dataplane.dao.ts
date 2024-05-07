@@ -13,5 +13,5 @@ export class DataPlaneStateDao {
   details!: DataPlaneDetailsDto;
 
   @Column("simple-json")
-  dataset!: DatasetDto;
+  dataset!: Array<DatasetDto>;
 }

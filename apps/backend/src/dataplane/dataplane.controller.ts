@@ -53,6 +53,7 @@ export class DataPlaneController {
     @Param("role") role: "provider" | "consumer",
     @Query("processId") processId: string,
     @Headers("x-remote-party") remoteParty: string,
+    @Headers("x-dataset-id") datasetId: string,
   ): Promise<DataPlaneRequestResponseDto> {
     this.logger.log(
       `Requesting transfer for ${remoteParty} as ${role} with processId ${processId} and with message: ${JSON.stringify(body)}`,
@@ -62,6 +63,7 @@ export class DataPlaneController {
       role,
       processId,
       remoteParty,
+      datasetId,
     );
   }
 

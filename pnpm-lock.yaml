@@ -51,8 +51,8 @@ importers:
         specifier: ^10.0.2
         version: 10.0.2(@nestjs/common@10.3.7)(@nestjs/core@10.3.7)(reflect-metadata@0.1.14)(rxjs@7.8.1)(typeorm@0.3.20)
       '@tsg-dsp/common':
-        specifier: ^0.1.0
-        version: 0.1.0(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.1.14)
+        specifier: ^0.3.1
+        version: 0.3.1(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.1.14)
       axios:
         specifier: ^1.6.8
         version: 1.6.8
@@ -193,8 +193,8 @@ importers:
         specifier: workspace:*
         version: link:../../libs/dtos
       '@tsg-dsp/common':
-        specifier: ^0.1.0
-        version: 0.1.0(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.1.14)
+        specifier: ^0.3.1
+        version: 0.3.1(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.1.14)
       ajv:
         specifier: ^8.12.0
         version: 8.12.0
@@ -275,8 +275,8 @@ importers:
         specifier: workspace:*
         version: 'link:'
       '@tsg-dsp/common':
-        specifier: ^0.1.0
-        version: 0.1.0(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.1.14)
+        specifier: ^0.3.1
+        version: 0.3.1(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.1.14)
       class-transformer:
         specifier: ^0.5.1
         version: 0.5.1
@@ -1961,12 +1961,12 @@ packages:
   /@tsconfig/node16@1.0.4:
     resolution: {integrity: sha512-vxhUy4J8lyeyinH7Azl1pdd43GJhZH/tP2weN8TntQblOY+A0XbT8DJk1/oCPuOOyg/Ja757rG0CgHcWC8OfMA==}
 
-  /@tsg-dsp/common@0.1.0(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.1.14):
-    resolution: {integrity: sha512-dSu3ZqmHEPePeTSW4CEjbFxilFT98hbuEed8I8kBcnoMRs1YyCZBazj4r+3LmVs5agwFUEEgM1cI2Fwvy258PA==}
+  /@tsg-dsp/common@0.3.1(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.1.14):
+    resolution: {integrity: sha512-rFoLkyvO6vafhvc8k63D0XEJI599bt/jEJBrGH/sqO9DrOiK+PwCeDYjRikSvujd9DwRPSUhNNWDaK7Tg5oKAA==}
     peerDependencies:
-      class-transformer: '*'
-      class-validator: '*'
-      reflect-metadata: ^0.1.12
+      class-transformer: ^0.5.1
+      class-validator: ^0.14.1
+      reflect-metadata: ^0.1.14
     peerDependenciesMeta:
       class-transformer:
         optional: true
@@ -1975,7 +1975,11 @@ packages:
     dependencies:
       class-transformer: 0.5.1
       class-validator: 0.14.1
+      jsonld: 8.3.2
       reflect-metadata: 0.1.14
+      uuid: 9.0.1
+    transitivePeerDependencies:
+      - web-streams-polyfill
     dev: false
 
   /@types/accepts@1.3.7:
