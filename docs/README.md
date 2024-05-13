@@ -13,7 +13,7 @@ The wallet is aimed at multi-tier deployments, with one (or more) wallet that ac
   - [Scenarios](./architecture/scenarios.md)
   - [Security perpective](./architecture/security.md)
 - [Configuration](./configuration.md)
-- [Build process](./build.md)
+- [Build process](./build-process.md)
 - [Interoperability](./interoperability.md)
 
 ## Design choices
