@@ -30,7 +30,6 @@ try {
         separator: "__",
         keyTransformer: (key) => {
           if (key.startsWith("TSGCP")) {
-            console.log(key);
             return key
               .replace("TSGCP__", "")
               .toLowerCase()
