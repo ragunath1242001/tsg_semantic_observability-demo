@@ -14,6 +14,18 @@ export class DIDDocuments extends MetaEntity {
 }
 
 @Entity()
+export class DIDService extends MetaEntity {
+  @PrimaryColumn()
+  id!: string;
+
+  @Column()
+  type!: string;
+
+  @Column()
+  serviceEndpoint!: string;
+}
+
+@Entity()
 export class KeyMaterials extends MetaEntity {
   @PrimaryColumn()
   id!: string;

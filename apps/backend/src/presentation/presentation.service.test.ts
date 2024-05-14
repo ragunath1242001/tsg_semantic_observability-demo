@@ -6,6 +6,7 @@ import { TypeOrmTestHelper } from "../utils/testhelper.js";
 import {
   Credentials,
   DIDDocuments,
+  DIDService,
   KeyMaterials,
 } from "../model/credentials.dao.js";
 import { TypeOrmModule } from "@nestjs/typeorm";
@@ -53,9 +54,15 @@ describe("Presentation Service", () => {
         TypeOrmTestHelper.instance.module([
           Credentials,
           DIDDocuments,
+          DIDService,
           KeyMaterials,
         ]),
-        TypeOrmModule.forFeature([Credentials, DIDDocuments, KeyMaterials]),
+        TypeOrmModule.forFeature([
+          Credentials,
+          DIDDocuments,
+          DIDService,
+          KeyMaterials,
+        ]),
       ],
       providers: [
         CredentialsService,

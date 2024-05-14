@@ -228,6 +228,7 @@ export class DidServiceConfig {
   public readonly type!: string;
 
   @IsString()
+  @IsUrl({ require_tld: true, require_protocol: true, require_host: false })
   public readonly serviceEndpoint!: string;
 }
 

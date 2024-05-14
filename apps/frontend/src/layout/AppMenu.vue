@@ -58,6 +58,16 @@ const model = computed(() => {
     ],
   },
   {
+    label: "DID",
+    items: [
+      {
+        label: "Services",
+        icon: "pi pi-fw pi-code",
+        to: "/services"
+      }
+    ]
+  },
+  {
     label: "Presentation",
     items: [
       {

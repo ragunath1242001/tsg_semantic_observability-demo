@@ -6,6 +6,7 @@ import { TypeOrmTestHelper } from "../../utils/testhelper.js";
 import {
   Credentials,
   DIDDocuments,
+  DIDService,
   KeyMaterials,
 } from "../../model/credentials.dao.js";
 import { TypeOrmModule } from "@nestjs/typeorm";
@@ -73,12 +74,14 @@ describe("Presentation Service", () => {
         TypeOrmTestHelper.instance.module([
           Credentials,
           DIDDocuments,
+          DIDService,
           KeyMaterials,
           SIToken,
         ]),
         TypeOrmModule.forFeature([
           Credentials,
           DIDDocuments,
+          DIDService,
           KeyMaterials,
           SIToken,
         ]),
@@ -104,11 +107,13 @@ describe("Presentation Service", () => {
     iatpVerifierService = await moduleRef.get(IatpVerifierService);
     presentationService = await moduleRef.get(PresentationService);
     const didService = await moduleRef.get(DidService);
+    await didService.initialized;
     await moduleRef.get(KeysService).initialized;
     await moduleRef.get(CredentialsService).initialized;
     server = setupServer(
       http.get("http://localhost/.well-known/did.json", async () => {
-        return HttpResponse.json(await didService.getDid());
+        const didDocument = await didService.getDid();
+        return HttpResponse.json(didDocument);
       }),
       http.get(
         "http://localhost:3000/iatp/holder/presentation",
