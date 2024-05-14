@@ -7,6 +7,8 @@ import { Credentials } from "../model/credentials.dao.js";
 import { DidModule } from "../did/did.module.js";
 import { KeysModule } from "../keys/keys.module.js";
 import { CredentialsManagementController } from "./credentials.management.controller.js";
+import { GaiaXManagementController } from "./gaiax/gaiax.management.controller.js";
+import { GaiaXService } from "./gaiax/gaiax.service.js";
 
 @Module({
   imports: [
@@ -15,8 +17,12 @@ import { CredentialsManagementController } from "./credentials.management.contro
     KeysModule,
     TypeOrmModule.forFeature([Credentials]),
   ],
-  controllers: [CredentialsController, CredentialsManagementController],
-  providers: [CredentialsService],
-  exports: [CredentialsService],
+  controllers: [
+    CredentialsController,
+    CredentialsManagementController,
+    GaiaXManagementController,
+  ],
+  providers: [CredentialsService, GaiaXService],
+  exports: [CredentialsService, GaiaXService],
 })
 export class CredentialsModule {}

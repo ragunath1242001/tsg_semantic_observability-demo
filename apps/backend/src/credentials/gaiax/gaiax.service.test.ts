@@ -1,17 +1,17 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { CredentialsService } from "./credentials.service.js";
+import { CredentialsService } from "../credentials.service.js";
 import { plainToInstance } from "class-transformer";
-import { InitCredentialConfig, RootConfig } from "../config.js";
-import { TypeOrmTestHelper } from "../utils/testhelper.js";
+import { RootConfig } from "../../config.js";
+import { TypeOrmTestHelper } from "../../utils/testhelper.js";
 import {
   Credentials,
   DIDDocuments,
   KeyMaterials,
-} from "../model/credentials.dao.js";
+} from "../../model/credentials.dao.js";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { DidService } from "../did/did.service.js";
-import { KeysService } from "../keys/keys.service.js";
-import { describe, expect, beforeAll, afterAll, it, jest } from "@jest/globals";
+import { DidService } from "../../did/did.service.js";
+import { KeysService } from "../../keys/keys.service.js";
+import { describe, expect, beforeAll, afterAll, it } from "@jest/globals";
 import { SetupServer, setupServer } from "msw/node";
 import { HttpResponse, PathParams, http } from "msw";
 import {
@@ -19,9 +19,12 @@ import {
   VerifiableCredential,
   VerifiablePresentation,
 } from "@tsg-dsp/common";
-import { toArray } from "../utils/unions.js";
+import { toArray } from "../../utils/unions.js";
+import { ComplianceRequest, LegalRegistrationNumberRequest } from "@libs/dtos";
+import { GaiaXService } from "./gaiax.service.js";
 
 describe("Credentials Service", () => {
+  let gaiaXService: GaiaXService;
   let credentialsService: CredentialsService;
   let server: SetupServer;
   let didId: string;
@@ -136,6 +139,7 @@ describe("Credentials Service", () => {
       ],
       providers: [
         CredentialsService,
+        GaiaXService,
         DidService,
         KeysService,
         {
@@ -145,9 +149,9 @@ describe("Credentials Service", () => {
       ],
     }).compile();
 
+    gaiaXService = moduleRef.get(GaiaXService);
     credentialsService = moduleRef.get(CredentialsService);
     await credentialsService.initialized;
-    await credentialsService.init();
     didId = await moduleRef.get(DidService).getDidId();
   });
 
@@ -157,114 +161,103 @@ describe("Credentials Service", () => {
   });
 
   describe("Credentials CRUD", () => {
-    it("Get credentials initial credentials", async () => {
-      expect(await credentialsService.getCredentials()).toHaveLength(1);
-    });
-    it("Issue Credential", async () => {
-      const credential = await credentialsService.issueCredential({
-        context: [],
-        type: [],
-        id: `test-credential`,
-        keyId: "key-0",
-        credentialSubject: {
-          id: didId,
-        },
-      });
-      expect(credential).toBeDefined();
-      const credential2 = await credentialsService.issueCredential(
-        {
-          context: [],
-          type: [],
-          id: "did:web:external-did.com#test-credential",
-          credentialSubject: {
-            id: didId,
-          },
-        },
-        "did:web:external-did.com"
-      );
-      expect(credential2).toBeDefined();
-      await expect(
-        credentialsService.issueCredential({
-          context: [],
-          type: [],
-          id: `${didId}#test-credential`,
-          credentialSubject: {
-            id: didId,
-          },
-        })
-      ).rejects.toThrow("already exists");
-      expect(await credentialsService.getCredentials()).toHaveLength(3);
-    });
-    it("Import credential", async () => {
-      const testCredential = await credentialsService.getCredential(
-        `${didId}#test-credential`
-      );
-
-      const importedCredential = await credentialsService.importCredential({
-        ...testCredential.credential,
-        id: `${didId}#imported-credential`,
-        issuer: "did:web:external-issuer.com",
-      });
-
-      expect(importedCredential).toBeDefined();
-      expect(importedCredential.selfIssued).toBe(false);
-      expect(importedCredential.credential.issuer).toBe(
-        "did:web:external-issuer.com"
-      );
-
-      await expect(
-        credentialsService.importCredential({
-          ...testCredential.credential,
-          id: `imported-credential`,
-          issuer: "did:web:external-issuer.com",
-        })
-      ).rejects.toThrow(
-        "Imported credentials must be have an ID that starts with a DID appended with # and a credential ID"
-      );
-    });
-    it("Update credential", async () => {
-      const credential = await credentialsService.updateCredential(
-        `${didId}#test-credential`,
-        plainToInstance(InitCredentialConfig, {
-          context: [],
-          type: [],
-          id: "test-credential",
-          credentialSubject: {
-            id: didId,
-            "https://example.com/extraProperty": "test",
-          },
-        })
-      );
-      expect(credential).toBeDefined();
-      expect(
-        toArray(
-          (await credentialsService.getCredential(`${didId}#test-credential`))
-            .credential.credentialSubject
-        )[0]["https://example.com/extraProperty"]
-      ).toBe("test");
-
-      const testCredential = await credentialsService.getCredential(
-        `${didId}#test-credential`
-      );
-      const updateImportedCredential =
-        await credentialsService.updateCredential(
-          `${didId}#imported-credential`,
-          {
-            ...testCredential.credential,
-            id: `${didId}#imported-credential`,
-            issuer: "did:web:external-issuer.com",
-          }
+    it("Request Gaia LRN", async () => {
+      const credential =
+        await gaiaXService.requestLegalRegistrationNumberCredential(
+          plainToInstance(LegalRegistrationNumberRequest, {
+            vcId: `${didId}#LRN`,
+            clearingHouse: "registrationnumber.notary.gaia-x.eu/v1",
+            credentialSubject: {
+              "@context": [
+                "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/participant",
+              ],
+              type: "gx:legalRegistrationNumber",
+              id: didId,
+              "gx:vatID": "NL000099998B57",
+            },
+          }),
+          undefined
         );
-    });
-    it("Delete credential", async () => {
-      await credentialsService.deleteCredential(`${didId}#test-credential`);
+      expect(credential).toBeDefined();
+      expect(credential.id).toBe(`${didId}#LRN`);
+      expect(credential.credential.issuer).toBe(
+        "did:web:registration.lab.gaia-x.eu:development"
+      );
 
       await expect(
-        credentialsService.getCredential(`${didId}#test-credential`)
-      ).rejects.toThrow("can't be found");
+        gaiaXService.requestLegalRegistrationNumberCredential(
+          {
+            vcId: "LRN",
+          } as LegalRegistrationNumberRequest,
+          "did:web:localhost"
+        )
+      ).rejects.toThrow("Can't request credential with these identifiers");
       await expect(
-        credentialsService.deleteCredential(`${didId}#test-credential`)
-      ).rejects.toThrow("can't be found");
+        gaiaXService.requestLegalRegistrationNumberCredential(
+          {
+            vcId: "did:web:localhost#LRN",
+            credentialSubject: {
+              id: "did:web:external.com",
+            },
+          } as LegalRegistrationNumberRequest,
+          "did:web:localhost"
+        )
+      ).rejects.toThrow("Can't request credential with these identifiers");
+      await expect(
+        gaiaXService.requestLegalRegistrationNumberCredential(
+          {
+            vcId: `${didId}#LRN`,
+            clearingHouse: "localhost:1",
+            credentialSubject: {
+              "@context": [
+                "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/participant",
+              ],
+              type: "gx:legalRegistrationNumber",
+              id: didId,
+              "gx:vatID": "NL000099998B57",
+            },
+          },
+          undefined
+        )
+      ).rejects.toThrow(
+        "Error in requesting legal registration number credential"
+      );
+    });
+    it("Request Gaia Compliance", async () => {
+      const credential = await gaiaXService.requestComplianceCredential(
+        plainToInstance(ComplianceRequest, {
+          vcId: `${didId}#LRN`,
+          clearingHouse: "compliance.gaia-x.eu/development",
+          credentials: (
+            await credentialsService.getCredentials()
+          ).map((c) => c.credential),
+        }),
+        undefined
+      );
+      expect(credential).toBeDefined();
+      expect(credential.id).toBe(`${didId}#LRN`);
+      expect(credential.credential.issuer).toBe(
+        "did:web:compliance.lab.gaia-x.eu:development"
+      );
+
+      await expect(
+        gaiaXService.requestComplianceCredential(
+          {
+            vcId: "Compliance",
+          } as ComplianceRequest,
+          "did:web:localhost"
+        )
+      ).rejects.toThrow("Can't request credential with these identifiers");
+      await expect(
+        gaiaXService.requestComplianceCredential(
+          {
+            vcId: `${didId}#LRN`,
+            clearingHouse: "localhost:1",
+            credentials: [],
+          } as ComplianceRequest,
+          "did:web:localhost"
+        )
+      ).rejects.toThrow("Error in requesting compliance credential");
     });
   });
 });

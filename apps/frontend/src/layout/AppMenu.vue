@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed, ref } from "vue";
 
 import AppMenuItem from "./AppMenuItem.vue";
+import { store } from "../store";
 
-const model = ref([
+const model = computed(() => {
+  return [
   {
     label: "Home",
     items: [
@@ -43,15 +45,16 @@ const model = ref([
         to: "/credentials/import",
       },
       {
-        label: "Gaia-X",
-        icon: "pi pi-fw pi-verified",
-        to: "/credentials/gaiax",
-      },
-      {
         label: "OpenID 4 VCI",
         icon: "pi pi-fw pi-refresh",
         to: "/credentials/oid4vci",
       },
+      ...(store.state.settings?.gaiaXSupport ? [{
+        label: "Gaia-X",
+        icon: "pi pi-fw pi-verified",
+        to: "/credentials/gaiax",
+      }] : [])
+      ,
     ],
   },
   {
@@ -64,7 +67,9 @@ const model = ref([
       }
     ]
   }
-]);
+]
+})
+
 </script>
 
 <template>

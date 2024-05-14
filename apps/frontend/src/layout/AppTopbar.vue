@@ -4,7 +4,7 @@ import { useLayout } from "../layout/composables/layout.js";
 import { useRouter } from "vue-router";
 import { store } from "../store/index.js";
 
-const { layoutConfig, onMenuToggle } = useLayout();
+const { layoutConfig, onMenuToggle, onConfigButtonClick } = useLayout();
 
 const outsideClickListener = ref(null);
 const topbarMenuActive = ref(false);
@@ -97,6 +97,13 @@ const logout = async () => {
       <div class="layout-topbar-button" v-if="store.state.user">
         {{ store.state.user.name }}
       </div>
+      <button
+        @click="onConfigButtonClick()"
+        class="p-link layout-topbar-button"
+      >
+        <i class="pi pi-cog"></i>
+        <span>Settings</span>
+      </button>
       <button @click="logout()" class="p-link layout-topbar-button">
         <i class="pi pi-sign-out"></i>
         <span>Log out</span>

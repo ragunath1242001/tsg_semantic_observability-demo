@@ -11,6 +11,7 @@ import { DidModule } from "./did/did.module.js";
 import { IssuanceModule } from "./issuance/issuance.module.js";
 import { KeysModule } from "./keys/keys.module.js";
 import { PresentationModule } from "./presentation/presentation.module.js";
+import { ConfigController } from "./config.controller.js";
 
 const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
   ? [
@@ -38,7 +39,7 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
     IssuanceModule,
     ...embeddedFrontend,
   ],
-  controllers: [HealthController],
+  controllers: [HealthController, ConfigController],
   exports: [
     AuthModule,
     CredentialsModule,

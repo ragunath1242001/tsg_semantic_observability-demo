@@ -136,32 +136,4 @@ export class CredentialsManagementController {
     const targetDid = this.targetDid("manage", client);
     return this.credentialsService.deleteCredential(credentialId, targetDid);
   }
-
-  @Post("gaiax/legalRegistrationNumber")
-  @HttpCode(HttpStatus.OK)
-  async requestLegalRegistrationNumberCredential(
-    @Body(new ValidationPipe({ transform: true }))
-    credentialConfig: LegalRegistrationNumberRequest,
-    @Client() client: ClientInfo
-  ) {
-    const targetDid = this.targetDid("manage", client);
-    return this.credentialsService.requestLegalRegistrationNumberCredential(
-      credentialConfig,
-      targetDid
-    );
-  }
-
-  @Post("gaiax/compliance")
-  @HttpCode(HttpStatus.OK)
-  async requestComplianceCredential(
-    @Body(new ValidationPipe({ transform: true }))
-    credentialConfig: ComplianceRequest,
-    @Client() client: ClientInfo
-  ) {
-    const targetDid = this.targetDid("manage", client);
-    return this.credentialsService.requestComplianceCredential(
-      credentialConfig,
-      targetDid
-    );
-  }
 }

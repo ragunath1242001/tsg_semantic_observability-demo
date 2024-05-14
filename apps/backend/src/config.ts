@@ -246,6 +246,12 @@ export class PresentationConfig {
   ];
 }
 
+export class RuntimeConfig {
+  @IsOptional()
+  @IsBoolean()
+  public gaiaXSupport: boolean = false;
+}
+
 export class RootConfig {
   @ValidateNested()
   @IsDefined({
@@ -304,4 +310,9 @@ export class RootConfig {
   @ValidateNested()
   @Type(() => PresentationConfig)
   public readonly presentation: PresentationConfig = new PresentationConfig();
+
+  @ValidateNested()
+  @Type(() => RuntimeConfig)
+  @IsOptional()
+  public readonly runtime: RuntimeConfig = new RuntimeConfig();
 }

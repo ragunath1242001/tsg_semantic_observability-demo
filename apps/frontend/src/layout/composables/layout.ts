@@ -13,6 +13,7 @@ const layoutConfig = reactive({
 const layoutState = reactive({
   staticMenuDesktopInactive: false,
   overlayMenuActive: false,
+  configMenuActive: false,
   profileSidebarVisible: false,
   configSidebarVisible: false,
   staticMenuMobileActive: false,
@@ -31,6 +32,10 @@ export function useLayout() {
 
   const setActiveMenuItem = (item) => {
     layoutConfig.activeMenuItem = item.value || item;
+  };
+
+  const onConfigButtonClick = () => {
+    layoutState.configMenuActive = !layoutState.configMenuActive;
   };
 
   const onMenuToggle = () => {
@@ -57,6 +62,7 @@ export function useLayout() {
     layoutState: toRefs(layoutState),
     changeThemeSettings,
     setScale,
+    onConfigButtonClick,
     onMenuToggle,
     isSidebarActive,
     isDarkTheme,

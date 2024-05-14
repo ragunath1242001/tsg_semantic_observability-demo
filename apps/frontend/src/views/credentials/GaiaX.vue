@@ -190,6 +190,11 @@ onMounted(async () => {
 
 <template>
   <div>
+    <Card v-if="!store.state.settings?.gaiaXSupport">
+      <template #title>Gaia-X support disabled</template>
+      <template #subtitle>Gaia-X support is disabled for this Wallet instance</template>
+    </Card>
+    <template v-else>
     <Card>
       <template #title>Gaia-X Legal Registration Number</template>
       <template #subtitle
@@ -386,6 +391,7 @@ onMounted(async () => {
         </form>
       </template>
     </Card>
+  </template>
   </div>
 </template>
 
