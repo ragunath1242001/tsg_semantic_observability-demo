@@ -53,16 +53,15 @@ try {
       if (schemaErrors.length) {
         throw new Error(TypedConfigModule.getConfigErrorMessage(schemaErrors));
       }
-
       return config as RootConfig;
     },
   });
 
   rootConfig = selectConfig(configModule, RootConfig);
-  console.log(rootConfig);
 } catch (err) {
   if (err instanceof Error) {
     console.error(err.message);
+    setTimeout(() => console.log("Waiting 30 seconds before exit"), 30000);
   } else {
     console.error(err);
   }
