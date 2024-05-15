@@ -47,13 +47,17 @@ async function bootstrap() {
   );
   app.use(
     session({
-      secret: "my-secret",
+      secret: process.env["SESSION_SECRET"] || crypto.randomUUID(),
       resave: false,
       saveUninitialized: false,
     })
   );
   app.use(passport.initialize());
   app.use(passport.session());
+  app.enableCors({
+    allowedHeaders: "*",
+    origin: "*",
+  });
   await app.listen(config.server.port, config.server.listen);
 }
 bootstrap();
