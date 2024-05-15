@@ -19,7 +19,6 @@ controlPlane:
   dataPlaneEndpoint: http://localhost:3000/api/data-plane
   managementEndpoint: http://localhost:3000/api/management
   controlEndpoint: http://localhost:3000
-  authorization: Basic YWRtaW46YWRtaW4=
 
 dataset:
   title: HTTP Dataset
