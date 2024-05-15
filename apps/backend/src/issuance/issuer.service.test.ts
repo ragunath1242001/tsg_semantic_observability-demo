@@ -5,12 +5,7 @@ import { plainToInstance } from "class-transformer";
 import { RootConfig } from "../config.js";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import {
-  Credentials,
-  DIDDocuments,
-  DIDService,
-  KeyMaterials,
-} from "../model/credentials.dao.js";
+import { Credentials, KeyMaterials } from "../model/credentials.dao.js";
 import { CredentialsService } from "../credentials/credentials.service.js";
 import { DidService } from "../did/did.service.js";
 import { DidResolverService } from "../did/did.resolver.service.js";
@@ -29,6 +24,9 @@ import {
 } from "jose";
 import { DIDDocument } from "did-resolver";
 import { HolderService } from "./holder.service.js";
+import { DIDDocuments, DIDService } from "../model/did.dao.js";
+import { JSONLDContext } from "../model/context.dao.js";
+import { ContextService } from "../contexts/context.service.js";
 
 describe("Issuer service", () => {
   let issuerService: IssuerService;
@@ -66,6 +64,7 @@ describe("Issuer service", () => {
           KeyMaterials,
           CredentialIssuance,
           CIAccessToken,
+          JSONLDContext,
         ]),
         TypeOrmModule.forFeature([
           Credentials,
@@ -74,6 +73,7 @@ describe("Issuer service", () => {
           KeyMaterials,
           CredentialIssuance,
           CIAccessToken,
+          JSONLDContext,
         ]),
       ],
       providers: [
@@ -84,6 +84,7 @@ describe("Issuer service", () => {
         PresentationService,
         IssuerService,
         HolderService,
+        ContextService,
         {
           provide: RootConfig,
           useValue: config,

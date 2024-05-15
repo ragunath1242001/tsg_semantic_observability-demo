@@ -3,12 +3,7 @@ import { CredentialsService } from "./credentials.service.js";
 import { plainToInstance } from "class-transformer";
 import { InitCredentialConfig, RootConfig } from "../config.js";
 import { TypeOrmTestHelper } from "../utils/testhelper.js";
-import {
-  Credentials,
-  DIDDocuments,
-  DIDService,
-  KeyMaterials,
-} from "../model/credentials.dao.js";
+import { Credentials, KeyMaterials } from "../model/credentials.dao.js";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { DidService } from "../did/did.service.js";
 import { KeysService } from "../keys/keys.service.js";
@@ -21,6 +16,7 @@ import {
   VerifiablePresentation,
 } from "@tsg-dsp/common";
 import { toArray } from "../utils/unions.js";
+import { DIDDocuments, DIDService } from "../model/did.dao.js";
 
 describe("Credentials Service", () => {
   let credentialsService: CredentialsService;

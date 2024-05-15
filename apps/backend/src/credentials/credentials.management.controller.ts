@@ -22,12 +22,13 @@ import { CredentialSubject, VerifiableCredential } from "@tsg-dsp/common";
 import { Client } from "../auth/roles.guard.js";
 import { AppError } from "../utils/error.js";
 import { ClientInfo, AppRole } from "@libs/dtos";
-import { ComplianceRequest, LegalRegistrationNumberRequest } from "@libs/dtos";
+import { ContextService } from "../contexts/context.service.js";
 
 @Controller("management/credentials")
 export class CredentialsManagementController {
   constructor(
     private readonly credentialsService: CredentialsService,
+    private readonly contextService: ContextService,
     private readonly config: RootConfig
   ) {}
 
@@ -76,7 +77,7 @@ export class CredentialsManagementController {
   }> {
     return {
       trustAnchors: this.config.trustAnchors,
-      contexts: this.config.contexts,
+      contexts: await this.contextService.getContexts(),
     };
   }
 

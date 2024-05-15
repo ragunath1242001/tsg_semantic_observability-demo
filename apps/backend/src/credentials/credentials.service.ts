@@ -6,19 +6,15 @@ import {
   CredentialSubject,
   Signature,
   VerifiableCredential,
-  VerifiablePresentation,
 } from "@tsg-dsp/common";
 import jsonld from "jsonld";
 import crypto from "crypto";
-import { AppError, parseNetworkError } from "../utils/error.js";
+import { AppError } from "../utils/error.js";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Credentials, KeyMaterials } from "../model/credentials.dao.js";
 import { Repository } from "typeorm";
 import { DidService } from "../did/did.service.js";
 import { KeysService } from "../keys/keys.service.js";
-import { ComplianceRequest, LegalRegistrationNumberRequest } from "@libs/dtos";
-import axios from "axios";
-import { toArray } from "../utils/unions.js";
 import { signingAlgorithm } from "../utils/keymapping.js";
 
 @Injectable()

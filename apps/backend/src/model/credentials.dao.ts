@@ -1,29 +1,7 @@
-import { DIDDocument } from "did-resolver";
 import { JWK } from "jose";
-import { Column, Entity, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, PrimaryColumn } from "typeorm";
 import { VerifiableCredential, CredentialSubject } from "@tsg-dsp/common";
 import { MetaEntity } from "./common.dao.js";
-
-@Entity()
-export class DIDDocuments extends MetaEntity {
-  @PrimaryGeneratedColumn()
-  id!: number;
-
-  @Column("simple-json")
-  document!: DIDDocument;
-}
-
-@Entity()
-export class DIDService extends MetaEntity {
-  @PrimaryColumn()
-  id!: string;
-
-  @Column()
-  type!: string;
-
-  @Column()
-  serviceEndpoint!: string;
-}
 
 @Entity()
 export class KeyMaterials extends MetaEntity {

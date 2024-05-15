@@ -25,9 +25,17 @@ import Column from "primevue/column";
 import Password from "primevue/password";
 import ConfirmationService from "primevue/confirmationservice";
 import Panel from "primevue/panel";
+import SelectButton from "primevue/selectbutton";
 
 import "@/assets/styles.scss";
 import { store } from "./store/index.js";
+
+import { loader } from "@guolao/vue-monaco-editor";
+loader.config({
+  paths: {
+    vs: "https://cdn.jsdelivr.net/npm/monaco-editor@0.43.0/dev/vs",
+  },
+});
 
 const app = createApp(App);
 app.use(router);
@@ -56,5 +64,6 @@ app.component("Toast", Toast);
 app.component("ToggleButton", ToggleButton);
 app.component("Tree", Tree);
 app.component("Panel", Panel);
+app.component("SelectButton", SelectButton);
 
 app.mount("#app");

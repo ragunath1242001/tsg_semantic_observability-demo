@@ -20,6 +20,7 @@ import { plainToInstance } from "class-transformer";
 import { PresentationService } from "../presentation/presentation.service.js";
 import { DidResolverService } from "../did/did.resolver.service.js";
 import { decodeProtectedHeader, importJWK, jwtVerify } from "jose";
+import { ContextService } from "../contexts/context.service.js";
 
 @Injectable()
 export class IssuerService {
@@ -29,6 +30,7 @@ export class IssuerService {
     private readonly issuanceRepository: Repository<CredentialIssuance>,
     @InjectRepository(CIAccessToken)
     private readonly tokenRepository: Repository<CIAccessToken>,
+    private readonly contextService: ContextService,
     private readonly credentialService: CredentialsService,
     private readonly presentationService: PresentationService,
     private readonly didResolverService: DidResolverService
@@ -108,8 +110,9 @@ export class IssuerService {
       token_endpoint: `${this.config.server.publicAddress}/oid4vci/token`,
       credential_configurations_supported: {},
     };
-    this.config.contexts
-      .filter((c) => c.issuable)
+    const contexts = await this.contextService.getContexts();
+    contexts
+      .filter((context) => context.issuable)
       .forEach((context) => {
         issuerMetadata.credential_configurations_supported[
           context.credentialType
@@ -119,8 +122,7 @@ export class IssuerService {
             "https://www.w3.org/2018/credentials/v1",
             "https://w3c.github.io/vc-jws-2020/contexts/v1/",
             context.documentUrl ??
-              context?.documentUrl ??
-              `${this.config.server.publicAddress}/context/${context?.id}`,
+              `${this.config.server.publicAddress}/context/${context.id}`,
           ],
           cryptographic_binding_methods_supported: ["did:web"],
           credential_signing_alg_values_supported: ["EdDSA", "ES384", "PS256"],
@@ -135,8 +137,7 @@ export class IssuerService {
               "https://www.w3.org/2018/credentials/v1",
               "https://w3c.github.io/vc-jws-2020/contexts/v1/",
               context.documentUrl ??
-                context?.documentUrl ??
-                `${this.config.server.publicAddress}/context/${context?.id}`,
+                `${this.config.server.publicAddress}/context/${context.id}`,
             ],
           },
         };
@@ -300,21 +301,14 @@ export class IssuerService {
         );
       }
 
-      const context = this.config.contexts.find(
-        (context) => context.credentialType === issuance.credentialType
+      const context = await this.contextService.getContextByType(
+        issuance.credentialType
       );
-
-      if (!context) {
-        throw new AppError(
-          `Context for ${issuance.credentialType} not configured`,
-          HttpStatus.INTERNAL_SERVER_ERROR
-        );
-      }
 
       const credentialConfig = plainToInstance(InitCredentialConfig, {
         context: [
-          context?.documentUrl ??
-            `${this.config.server.publicAddress}/context/${context?.id}`,
+          context.documentUrl ??
+            `${this.config.server.publicAddress}/context/${context.id}`,
         ],
         type: [issuance.credentialType],
         id: `${issuance.holderId}#${crypto.randomUUID()}`,

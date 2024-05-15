@@ -5,13 +5,10 @@ import { plainToInstance } from "class-transformer";
 import { RootConfig } from "../config.js";
 import { TestingModule, Test } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import {
-  DIDDocuments,
-  DIDService,
-  KeyMaterials,
-} from "../model/credentials.dao.js";
+import { KeyMaterials } from "../model/credentials.dao.js";
 import { DIDDocument } from "did-resolver";
 import { generateKeyPair, exportJWK } from "jose";
+import { DIDDocuments, DIDService } from "../model/did.dao.js";
 
 describe("DID Service", () => {
   let didService: DidService;
@@ -30,11 +27,7 @@ describe("DID Service", () => {
 
     const moduleRef: TestingModule = await Test.createTestingModule({
       imports: [
-        TypeOrmTestHelper.instance.module([
-          DIDDocuments,
-          DIDService,
-          DIDService,
-        ]),
+        TypeOrmTestHelper.instance.module([DIDDocuments, DIDService]),
         TypeOrmModule.forFeature([DIDDocuments, DIDService]),
       ],
       providers: [

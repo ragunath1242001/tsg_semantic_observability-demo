@@ -13,10 +13,10 @@ import {
 import { DIDDocument } from "did-resolver";
 import { AppError } from "../utils/error.js";
 import { DidService } from "./did.service.js";
-import { DIDService } from "../model/credentials.dao.js";
 import { DidServiceConfig } from "../config.js";
 import { Roles } from "../auth/roles.guard.js";
 import { AppRole } from "@libs/dtos";
+import { DIDService } from "../model/did.dao.js";
 
 const validationPipe = new ValidationPipe({
   exceptionFactory: (errors) =>

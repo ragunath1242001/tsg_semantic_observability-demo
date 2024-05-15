@@ -12,6 +12,7 @@ import { IssuanceModule } from "./issuance/issuance.module.js";
 import { KeysModule } from "./keys/keys.module.js";
 import { PresentationModule } from "./presentation/presentation.module.js";
 import { ConfigController } from "./config.controller.js";
+import { ContextModule } from "./contexts/context.module.js";
 
 const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
   ? [
@@ -33,6 +34,7 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
     }),
     PresentationModule.register(config.presentation),
     AuthModule,
+    ContextModule,
     CredentialsModule,
     DidModule,
     KeysModule,

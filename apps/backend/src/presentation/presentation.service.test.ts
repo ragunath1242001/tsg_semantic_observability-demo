@@ -3,12 +3,7 @@ import { CredentialsService } from "../credentials/credentials.service.js";
 import { plainToInstance } from "class-transformer";
 import { RootConfig } from "../config.js";
 import { TypeOrmTestHelper } from "../utils/testhelper.js";
-import {
-  Credentials,
-  DIDDocuments,
-  DIDService,
-  KeyMaterials,
-} from "../model/credentials.dao.js";
+import { Credentials, KeyMaterials } from "../model/credentials.dao.js";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { DidService } from "../did/did.service.js";
 import { KeysService } from "../keys/keys.service.js";
@@ -18,6 +13,7 @@ import { DidResolverService } from "../did/did.resolver.service.js";
 import { VerifiablePresentationJwt } from "@tsg-dsp/common";
 import { SetupServer, setupServer } from "msw/node";
 import { HttpResponse, http } from "msw";
+import { DIDDocuments, DIDService } from "../model/did.dao.js";
 
 describe("Presentation Service", () => {
   let presentationService: PresentationService;

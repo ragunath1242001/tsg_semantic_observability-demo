@@ -9,12 +9,14 @@ import { KeysModule } from "../keys/keys.module.js";
 import { CredentialsManagementController } from "./credentials.management.controller.js";
 import { GaiaXManagementController } from "./gaiax/gaiax.management.controller.js";
 import { GaiaXService } from "./gaiax/gaiax.service.js";
+import { ContextModule } from "../contexts/context.module.js";
 
 @Module({
   imports: [
     AuthModule,
     DidModule,
     KeysModule,
+    ContextModule,
     TypeOrmModule.forFeature([Credentials]),
   ],
   controllers: [

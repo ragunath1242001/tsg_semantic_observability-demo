@@ -9,6 +9,7 @@ import CredentialImport from "../views/credentials/Import.vue";
 import CredentialGaiaX from "../views/credentials/GaiaX.vue";
 import CredentialOID4VCI from "../views/credentials/OID4VCI.vue";
 import DIDServiceView from "../views/DIDServices.vue";
+import ContextView from "../views/Contexts.vue";
 import { store } from "../store/index.js";
 import Presentation from "../views/Presentation.vue";
 
@@ -63,6 +64,11 @@ const router = createRouter({
           path: "/services",
           name: "services",
           component: DIDServiceView,
+        },
+        {
+          path: "/contexts",
+          name: "contexts",
+          component: ContextView,
         },
       ],
     },

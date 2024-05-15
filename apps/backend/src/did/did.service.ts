@@ -1,15 +1,12 @@
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { DIDDocument } from "did-resolver";
-import {
-  DIDDocuments,
-  DIDService,
-  KeyMaterials,
-} from "../model/credentials.dao.js";
+import { KeyMaterials } from "../model/credentials.dao.js";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { DidServiceConfig, RootConfig } from "../config.js";
 import { keyTypes, signingAlgorithm } from "../utils/keymapping.js";
 import { AppError } from "../utils/error.js";
+import { DIDDocuments, DIDService } from "../model/did.dao.js";
 
 @Injectable()
 export class DidService {
@@ -52,7 +49,7 @@ export class DidService {
         await this.insertService(service);
       } catch (e) {
         this.logger.debug(
-          `Service with id ${service.id} already exists, not overriding.`
+          `Service with id ${service.id} already exists, not overriding`
         );
       }
     }
@@ -126,7 +123,7 @@ export class DidService {
     } else {
       throw new AppError(
         `Service with id ${config.id} does not exists`,
-        HttpStatus.CONFLICT
+        HttpStatus.NOT_FOUND
       );
     }
   }

@@ -44,7 +44,6 @@ const formDefault: CredentialForm = {
 
 const config = ref<CredentialConfig>();
 const credentialForm = ref(formDefault);
-const expandedRows = ref();
 
 const didId = computed(() => store.state.user?.didId);
 
@@ -83,8 +82,17 @@ const loadConfig = async () => {
     );
     for (const context of response.data.contexts) {
       if (!context.document && context.documentUrl) {
-        const contextResponse = await axios.get(context.documentUrl);
-        context.document = contextResponse.data;
+        try {
+          const contextResponse = await axios.get(context.documentUrl);
+          context.document = contextResponse.data;
+        } catch (e) {
+          toast.add({
+            severity: "warn",
+            summary: "API error",
+            detail: `Could not load document for context ${context.id}`,
+            life: 10000,
+          });
+        }
       }
       if (!context.documentUrl) {
         context.documentUrl = `${document.location.protocol}/${document.location.host}/context/${context.id}`;
@@ -233,12 +241,10 @@ onMounted(async () => {
       >
       <template #content>
         <DataTable
-          v-model:expanded-rows="expandedRows"
           :value="config?.contexts"
           paginator
           :rows="10"
         >
-          <Column expander style="width: 5rem" />
           <Column field="id" header="ID" />
           <Column field="credentialType" header="Credential Type" />
           <Column field="issuable" header="Issuable">

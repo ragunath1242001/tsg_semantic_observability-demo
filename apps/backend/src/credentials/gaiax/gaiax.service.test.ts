@@ -3,12 +3,7 @@ import { CredentialsService } from "../credentials.service.js";
 import { plainToInstance } from "class-transformer";
 import { RootConfig } from "../../config.js";
 import { TypeOrmTestHelper } from "../../utils/testhelper.js";
-import {
-  Credentials,
-  DIDDocuments,
-  DIDService,
-  KeyMaterials,
-} from "../../model/credentials.dao.js";
+import { Credentials, KeyMaterials } from "../../model/credentials.dao.js";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { DidService } from "../../did/did.service.js";
 import { KeysService } from "../../keys/keys.service.js";
@@ -23,6 +18,7 @@ import {
 import { toArray } from "../../utils/unions.js";
 import { ComplianceRequest, LegalRegistrationNumberRequest } from "@libs/dtos";
 import { GaiaXService } from "./gaiax.service.js";
+import { DIDDocuments, DIDService } from "../../model/did.dao.js";
 
 describe("Credentials Service", () => {
   let gaiaXService: GaiaXService;

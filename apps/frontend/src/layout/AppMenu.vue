@@ -58,6 +58,16 @@ const model = computed(() => {
     ],
   },
   {
+    label: "Contexts",
+    items: [
+      {
+        label: "JSON-LD Contexts",
+        icon: "pi pi-fw pi-search-plus",
+        to: "/contexts"
+      }
+    ]
+  },
+  {
     label: "DID",
     items: [
       {
