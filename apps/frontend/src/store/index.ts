@@ -24,17 +24,18 @@ export const store = createStore({
     async login({ commit }, payload) {
       try {
         const response = await axiosInstance.get("/auth/user");
-        if (
-          response.data.state === "unauthenticated" &&
-          payload.redirect === true
-        ) {
-          window.location.replace("/api/auth/login");
-        } else {
-          commit("userInfo", response.data.user);
+        if (response.data.state === "authenticated") {
           let settingsResponse = await axiosInstance.get<RuntimeConfig>(
             "/settings"
           );
+          commit("userInfo", response.data.user);
           commit("config", settingsResponse.data);
+        } else {
+          if (payload.redirect === true) {
+            window.location.replace("/api/auth/login");
+          } else {
+            commit("userInfo", response.data.user);
+          }
         }
       } catch (e) {
         console.log(e);
