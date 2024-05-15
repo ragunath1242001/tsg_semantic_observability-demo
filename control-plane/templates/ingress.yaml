@@ -12,11 +12,11 @@ metadata:
     {{- with .annotations }}
     {{- tpl (toYaml . ) $ | nindent 4 }}
     {{- end }}
-    kubernetes.io/ingress.class: {{ .class | default "nginx" }} 
     {{- if .rewriteTarget}}
     nginx.ingress.kubernetes.io/rewrite-target: {{ .rewriteTarget }}
     {{- end }}
 spec:
+  ingressClassName: {{ .class | default "nginx" }} 
   tls:
   - hosts:
     - {{ required "A hostname under the key 'host' is required to enable ingresses" $.Values.host }}
