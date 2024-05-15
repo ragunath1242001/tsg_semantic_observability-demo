@@ -67,7 +67,7 @@ Create the name of the service account to use
 {{- range $key, $val := $map -}}
   {{- $sublabel := snakecase $key | upper -}}
   {{- if not (empty $label) -}}
-    {{- $sublabel = printf "%s__%s" $label $sublabel -}}
+    {{- $sublabel = printf "TSGDP__%s__%s" $label $sublabel -}}
   {{- end -}}
   {{- if kindOf $val | eq "map" -}}
     {{- if and (hasKey $val "name") (hasKey $val "key")}}
