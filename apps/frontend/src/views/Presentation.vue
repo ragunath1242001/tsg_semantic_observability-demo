@@ -4,6 +4,8 @@ import { useToast } from "primevue/usetoast";
 import { axiosInstance, store } from "../store/index.js";
 import FormField from "../components/FormField.vue";
 import { CredentialSubject, VerifiableCredential, VerifiablePresentation } from '@tsg-dsp/common';
+import MonacoEditorVue from "../components/MonacoEditor.vue";
+import schema from "../assets/presentation-definition.schema.json";
 
 const toast = useToast();
 
@@ -147,13 +149,10 @@ const copyToken = (token: string) => {
             <InputText :id="props.id" class="w-full" v-model="verifierForm.holderIDToken" />
           </FormField>
           <FormField label="Presentation Definition" v-slot="props">
-            <Textarea
-              :id="props.id"
-              class="w-full"
-              style="font-family: monospace"
+            <MonacoEditorVue
               v-model="verifierForm.presentationDefinition"
-              rows="22"
-            />
+              :schema="schema"
+            ></MonacoEditorVue>
           </FormField>
           <FormField no-label>
             <Button label="Request presentation" type="submit" />
@@ -163,7 +162,6 @@ const copyToken = (token: string) => {
           <FormField label="Status">{{ (verifierResponse.success) ? "Success" : "Error" }}</FormField>
           <FormField label="Code" v-if="verifierResponse.code">{{ verifierResponse.code }}</FormField>
           <pre style="white-space: pre-wrap; overflow-wrap: anywhere;">{{ verifierResponse.body }}</pre>
-          <JsonSchemaFormElement></JsonSchemaFormElement>
           <Button
             class="mr-2"
             label="Copy token"

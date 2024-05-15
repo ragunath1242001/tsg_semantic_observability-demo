@@ -4,6 +4,7 @@
     "target": "esnext",
     "module": "ESNext",
     "moduleResolution": "Node",
+    "resolveJsonModule": true,
     "baseUrl": ".",
     "paths": {
       "@/*": ["./*"]
