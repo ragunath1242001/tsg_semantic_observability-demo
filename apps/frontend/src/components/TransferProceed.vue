@@ -2,7 +2,7 @@
 import { TransferStatusDto } from "@libs/dtos";
 import { useToast } from "primevue/usetoast";
 import { ref } from "vue";
-import stripDspace from "../utils/common";
+import utils from "../utils/common";
 import http from "../utils/http";
 
 const props = defineProps<{
@@ -130,7 +130,7 @@ const terminateTransfer = async (transfer) => {
   <div class="card mb-0">
     <div class="flex justify-content-between mb-3">
       <div>
-        <h5>{{ stripDspace(transfer.state) }}</h5>
+        <h5>{{ utils.stripDspace(transfer.state) }}</h5>
       </div>
       <div
         class="flex align-items-center justify-content-center bg-blue-100 border-round"

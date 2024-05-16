@@ -10,6 +10,7 @@ store.bindEvents();
 
 <template>
   <div>
+    <ConfirmDialog />
     <Toast />
     <router-view />
   </div>

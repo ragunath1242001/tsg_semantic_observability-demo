@@ -4,6 +4,7 @@ import { type CatalogDto } from "@tsg-dsp/common";
 import { injectStrict } from "../utils/injectTyped";
 import { AxiosKey } from "../utils/symbols";
 import Catalog from "../components/Catalog.vue";
+import { useToast } from "primevue/usetoast";
 
 const urlInput = ref("");
 var catalog = ref<CatalogDto>();
@@ -13,6 +14,8 @@ var numberOfServices = ref(0);
 var dataPlanesCount = ref(0);
 
 const http = injectStrict(AxiosKey);
+
+const toast = useToast();
 
 const getCatalog = async () => {
   try {
@@ -34,9 +37,13 @@ const getDataPlanes = async () => {
   try {
     const response = await http.get("management/dataplanes/");
     dataPlanesCount.value = response.data.length;
-  } catch (error) {
-    console.error("Error:", error);
-    throw error;
+  } catch (e) {
+    toast.add({
+      severity: "error",
+      summary: "Failed to get dataplanes",
+      detail: `${e.response.data.message}`,
+      life: 3000,
+    });
   }
 };
 

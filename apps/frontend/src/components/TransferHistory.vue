@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import stripDspace from "../utils/common";
+import utils from "../utils/common";
 
 import { TransferDetailDto, TransferStatusDto } from "@libs/dtos";
 import { ref, toRef } from "vue";
@@ -104,7 +104,7 @@ const getTransfer = async (event?: AccordionTabOpenEvent) => {
               </template>
               <template #content="slotProps">
                 <Tag
-                  :value="stripDspace(slotProps.item.state)"
+                  :value="utils.stripDspace(slotProps.item.state)"
                   :severity="getSeverity(slotProps.item.state)"
                 />
               </template>

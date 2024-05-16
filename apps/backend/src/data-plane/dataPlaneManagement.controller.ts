@@ -1,9 +1,14 @@
 import {
+  Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
   Logger,
+  Param,
+  Post,
+  Put,
   UseGuards,
 } from "@nestjs/common";
 import { DataPlaneService } from "./dataPlane.service";
@@ -35,5 +40,29 @@ export class DataplaneManagementController {
     );
     dataPlanesDtosPromise;
     return dataPlanesDtosPromise;
+  }
+
+  @Post()
+  @HttpCode(HttpStatus.CREATED)
+  async addDataplane(@Body() dataplane: DataPlaneDto): Promise<DataPlaneDto> {
+    this.logger.log("Received call to add dataplane.");
+    this.logger.log(dataplane);
+    return await this.dataplaneService.addDataPlane(dataplane);
+  }
+
+  @Put(":id")
+  @HttpCode(HttpStatus.OK)
+  async updateDataplane(
+    @Body() dataplane: DataPlaneDto
+  ): Promise<DataPlaneDto> {
+    this.logger.log("Received call to update dataplane");
+    return await this.dataplaneService.updateDataPlane(dataplane);
+  }
+
+  @Delete(":id")
+  @HttpCode(HttpStatus.ACCEPTED)
+  async deleteDataPlane(@Param("id") id: string): Promise<void> {
+    this.logger.log(`Deleting dataplane ${id}`);
+    return await this.dataplaneService.deleteDataplane(id);
   }
 }

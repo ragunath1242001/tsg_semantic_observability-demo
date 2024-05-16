@@ -151,7 +151,7 @@ export class DataPlaneService {
     };
   }
 
-  async updateDataPlane(dataPlaneDetails: DataPlaneDto): Promise<DataPlane> {
+  async updateDataPlane(dataPlaneDetails: DataPlaneDto): Promise<DataPlaneDto> {
     const dataPlane = await this.getDataPlaneDetails(
       dataPlaneDetails.identifier
     );
@@ -177,7 +177,17 @@ export class DataPlaneService {
         await this.pullCatalog(dataPlane);
         break;
     }
-    return await this.getDataPlaneDetails(dataPlaneDetails.identifier);
+    return {
+      ...dataPlane,
+      datasets: dataPlane.datasets
+        ? await Promise.all(dataPlane.datasets.map((d) => d.serialize()))
+        : undefined,
+    };
+  }
+
+  async deleteDataplane(dataPlaneId: string) {
+    const dataPlane = await this.getDataPlane(dataPlaneId);
+    await this.dataPlaneRepository.delete({ identifier: dataPlane.identifier });
   }
 
   async updateCatalog(

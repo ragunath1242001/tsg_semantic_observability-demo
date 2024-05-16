@@ -101,7 +101,12 @@ describe("DataPlane Service", () => {
     jest.useRealTimers();
   });
 
-  describe("Add, get and update dataplane", () => {
+  describe("Add, get, update and delete dataplane", () => {
+    it("Error delete when there is no dataplane", async () => {
+      await expect(dataPlaneService.deleteDataplane("testID")).rejects.toThrow(
+        DSPError
+      );
+    });
     it("Dataplane creation", async () => {
       const dataPlane: DataPlaneCreation = {
         dataplaneType: "http",
@@ -150,6 +155,23 @@ describe("DataPlane Service", () => {
         addedDataPlane.identifier
       );
       expect(dpDetailsUpdated?.callbackAddress).toBe("https://google.com");
+    });
+
+    it("Dataplane delete", async () => {
+      const dataPlane: DataPlaneCreation = {
+        dataplaneType: "http",
+        endpointPrefix: "https://",
+        callbackAddress: "https://httpbin.org/anything",
+        managementAddress: "https://httpbin.org/mgmt",
+        managementToken: "",
+        catalogSynchronization: "pull",
+        role: "consumer",
+      };
+      const addedDataPlane = await dataPlaneService.addDataPlane(dataPlane);
+      await dataPlaneService.deleteDataplane(addedDataPlane.identifier);
+      expect(
+        dataPlaneService.getDataPlane(addedDataPlane.identifier)
+      ).rejects.toThrow(DSPError);
     });
   }),
     describe("Update catalog", () => {

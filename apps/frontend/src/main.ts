@@ -10,6 +10,8 @@ import AccordionTab from "primevue/accordiontab";
 import Badge from "primevue/badge";
 import BadgeDirective from "primevue/badgedirective";
 import Button from "primevue/button";
+import ConfirmDialog from "primevue/confirmdialog";
+import ConfirmationService from "primevue/confirmationservice";
 import Dialog from "primevue/dialog";
 import InputSwitch from "primevue/inputswitch";
 import InputText from "primevue/inputtext";
@@ -33,6 +35,7 @@ import ProgressSpinner from "primevue/progressspinner";
 import OverlayPanel from "primevue/overlaypanel";
 
 import "@/assets/styles.scss";
+import MultiSelect from "primevue/multiselect";
 
 const pinia = createPinia();
 const app = createApp(App);
@@ -40,6 +43,7 @@ app.provide(AxiosKey, http);
 app.use(pinia);
 app.use(router);
 app.use(PrimeVue, { ripple: true });
+app.use(ConfirmationService);
 app.use(ToastService);
 
 app.component("Accordion", Accordion);
@@ -50,11 +54,13 @@ app.component("Button", Button);
 app.component("Card", Card);
 app.component("CatalogVue", CatalogVue);
 app.component("Column", Column);
+app.component("ConfirmDialog", ConfirmDialog);
 app.component("DataTable", DataTable);
 app.component("DataView", DataView);
 app.component("Dialog", Dialog);
 app.component("InputSwitch", InputSwitch);
 app.component("InputText", InputText);
+app.component("MultiSelect", MultiSelect);
 app.component("OverlayPanel", OverlayPanel);
 app.component("Panel", Panel);
 app.component("Password", Password);

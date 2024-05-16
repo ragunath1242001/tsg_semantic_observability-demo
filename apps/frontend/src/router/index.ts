@@ -5,6 +5,7 @@ import CatalogVue from "../views/Catalog.vue";
 import LoginVue from "../views/Login.vue";
 import NegotiationsVue from "../views/Negotiations.vue";
 import TransfersVue from "../views/Transfers.vue";
+import DataplaneVue from "../views/Dataplane.vue";
 import { store } from "../stores/index.js";
 
 const router = createRouter({
@@ -33,6 +34,11 @@ const router = createRouter({
           path: "/transfers",
           name: "transfers",
           component: TransfersVue,
+        },
+        {
+          path: "/dataplanes",
+          name: "dataplanes",
+          component: DataplaneVue,
         },
       ],
     },

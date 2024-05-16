@@ -1,11 +1,14 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
   Logger,
+  Param,
   Post,
+  Put,
   Query,
   UseGuards,
 } from "@nestjs/common";
@@ -85,5 +88,23 @@ export class CatalogManagementController {
   ): Promise<DatasetDto> {
     const datasetdao = await this.catalogService.addDataset(dataset);
     return new Dataset(datasetdao).serialize();
+  }
+
+  @Put("dataset/:id")
+  @HttpCode(HttpStatus.ACCEPTED)
+  async updateDataset(
+    @Body(new DeserializePipe(Dataset)) dataset: Dataset
+  ): Promise<DatasetDto> {
+    const datasetdao = await this.catalogService.updateDataset(
+      dataset.id,
+      dataset
+    );
+    return new Dataset(datasetdao).serialize();
+  }
+
+  @Delete("dataset/:id")
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deleteDataset(@Param("id") id: string): Promise<void> {
+    await this.catalogService.removeDataset(id);
   }
 }

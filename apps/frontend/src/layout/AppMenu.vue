@@ -44,6 +44,16 @@ const model = ref([
       },
     ],
   },
+  {
+    label: "Dataplanes",
+    items: [
+      {
+        label: "Dataplanes",
+        icon: "pi pi-fw pi-database",
+        to: "/dataplanes",
+      },
+    ],
+  },
 ]);
 </script>
 

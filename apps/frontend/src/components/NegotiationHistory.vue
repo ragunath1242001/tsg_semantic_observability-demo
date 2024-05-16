@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import stripDspace from "../utils/common";
+import utils from "../utils/common";
 
 import { NegotiationDetailDto, NegotiationStatusDto } from "@libs/dtos";
 import { ref, toRef } from "vue";
@@ -140,7 +140,7 @@ const requestTransfer = async (accNegotiation: NegotiationDetailDto) => {
               </template>
               <template #content="slotProps">
                 <Tag
-                  :value="stripDspace(slotProps.item.state)"
+                  :value="utils.stripDspace(slotProps.item.state)"
                   :severity="getSeverity(slotProps.item.state)"
                 />
               </template>

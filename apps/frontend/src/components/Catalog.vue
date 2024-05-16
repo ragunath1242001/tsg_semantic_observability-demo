@@ -1,17 +1,13 @@
 <script setup lang="ts">
 import { ref, toRefs } from "vue";
-import {
-  OfferDto,
-  PolicyDto,
-  ReferenceDto,
-  type CatalogDto,
-  type DatasetDto,
-  type MultilanguageDto,
-} from "@tsg-dsp/common";
+import { PolicyDto, type CatalogDto, type DatasetDto } from "@tsg-dsp/common";
 import { JsonTreeView } from "json-tree-view-vue3";
 import { injectStrict } from "../utils/injectTyped";
+import utils from "../utils/common";
 import { AxiosKey } from "../utils/symbols";
 import { useToast } from "primevue/usetoast";
+
+import Dataset from "../components/Dataset.vue";
 
 const props = defineProps<{
   catalog: CatalogDto;
@@ -20,76 +16,19 @@ const props = defineProps<{
   type: "provider" | "consumer";
 }>();
 
-const display = ref(false);
 const parsedView = ref(true);
-const editable = ref(true);
 const policy = ref("");
 var datasetView = ref(false);
 var datasetData = ref<DatasetDto>();
 
 const { catalog, url, assigner } = toRefs(props);
+console.log(catalog.value);
+var datasetList = ref(catalog.value["dcat:dataset"]);
 
 const http = injectStrict(AxiosKey);
 
 const toast = useToast();
 
-const obtainValues = (multilingualArray: Array<MultilanguageDto | String>) => {
-  if (multilingualArray !== undefined && Array.isArray(multilingualArray)) {
-    return multilingualArray.map((element) =>
-      typeof element == "object"
-        ? (element as MultilanguageDto)["@value"]
-        : typeof element === "string"
-        ? element
-        : (() => {
-            console.error(
-              `Could not obtain value from ${multilingualArray}, unknown type`
-            );
-            return "";
-          })()
-    );
-  } else {
-    return [];
-  }
-};
-
-interface FlatPolicy {
-  type: string;
-  assigner: string;
-  assignee: string;
-  target: string;
-  action: string;
-  leftOperand: string;
-  rightOperand: ReferenceDto;
-  operator: string;
-}
-
-const parsePolicies = (policies: Array<PolicyDto>): Array<FlatPolicy> => {
-  var output: Array<FlatPolicy> = [];
-  for (var policy of policies) {
-    if (policy["odrl:permission"] !== undefined) {
-      output.push.apply(
-        output,
-        policy["odrl:permission"].map((permission) => {
-          return {
-            type: "permission",
-            assigner: policy["odrl:assigner"],
-            assignee: policy["odrl:assignee"] || "*",
-            target: permission["odrl:target"],
-            action: permission["odrl:action"],
-            leftOperand:
-              permission["odrl:constraint"]?.[0]?.["odrl:leftOperand"],
-            rightOperand:
-              permission["odrl:constraint"]?.[0]?.["odrl:rightOperand"],
-            operator: permission["odrl:constraint"]?.[0]?.["odrl:operator"],
-          } as FlatPolicy;
-        })
-      );
-    } else {
-      console.log(`No permissions found in ${JSON.stringify(policy)}`);
-    }
-  }
-  return output;
-};
 const getDataset = async (datasetId: String) => {
   try {
     const response = await http.get<DatasetDto>("management/catalog/dataset", {
@@ -115,6 +54,33 @@ const getDataset = async (datasetId: String) => {
     );
   }
 };
+
+const updateDatasets = (dataset: DatasetDto) => {
+  const indexToBeReplaced = datasetList.value.findIndex(
+    (ds) => ds["@id"] === dataset["@id"]
+  );
+  datasetList.value[indexToBeReplaced] = dataset;
+  return;
+};
+
+const deleteDataset = async (datasetId: string) => {
+  try {
+    await http.delete(`management/catalog/dataset/${datasetId}`);
+    datasetList.value = datasetList.value.filter((d) => d["@id"] !== datasetId);
+  } catch (e) {
+    toast.add({
+      severity: "error",
+      summary: "Could not delete dataset",
+      detail: `${e.response.data.message}`,
+      life: 3000,
+    });
+  }
+};
+
+const closeDatasetView = () => {
+  datasetView.value = false;
+};
+
 const calculateColor = (index: number) => {
   const colors = ["primary", "orange", "cyan", "purple"];
   return colors[index % 4];
@@ -134,10 +100,6 @@ const calculateIconClass = (index: number) => {
   return `pi pi-file text-${calculateColor(index)}-500`;
 };
 
-const open = () => {
-  display.value = true;
-};
-
 const createPolicy = (policy: PolicyDto): string => {
   const offer = {
     ...policy,
@@ -147,47 +109,6 @@ const createPolicy = (policy: PolicyDto): string => {
     "odrl:assigner": assigner.value,
   };
   return JSON.stringify(offer, null, 2);
-};
-const changeEditable = (edit: boolean) => {
-  editable.value = !edit;
-  return;
-};
-const sendNegotiation = async (
-  datasetId: string,
-  address: string,
-  audience: string
-) => {
-  try {
-    await http.post(
-      "management/negotiations/request",
-      JSON.parse(policy.value) as OfferDto,
-      {
-        params: {
-          dataSet: datasetId,
-          address: address,
-          audience: audience,
-        },
-      }
-    );
-    toast.add({
-      severity: "success",
-      summary: "Great!",
-      detail: "Successfully sent contract negotiation request",
-      life: 3000,
-    });
-  } catch (e) {
-    console.error(
-      `Could not send negotiation to address=${address}&audience=${audience} with id ${datasetId}. Error: ${e}`
-    );
-    toast.add({
-      severity: "error",
-      summary: "Failed to send negotiation request",
-      detail: `${e.response.data.message}`,
-      life: 3000,
-    });
-  }
-  display.value = false;
-  return;
 };
 </script>
 <template>
@@ -208,14 +129,14 @@ const sendNegotiation = async (
           <div class="col">
             <h5>{{ catalog["dct:title"] }}</h5>
             <p style="white-space: pre">
-              {{ obtainValues(catalog["dct:description"]).join("\r\n") }}
+              {{ utils.obtainValues(catalog["dct:description"]).join("\r\n") }}
             </p>
-            <p v-if="obtainValues(catalog['dcat:keyword']).length > 0">
+            <p v-if="utils.obtainValues(catalog['dcat:keyword']).length > 0">
               <b>Keywords </b>
             </p>
             <Tag
               class="mr-2 bg-primary-700"
-              v-for="keyword in obtainValues(catalog['dcat:keyword'])"
+              v-for="keyword in utils.obtainValues(catalog['dcat:keyword'])"
               :key="keyword"
               :value="keyword"
             ></Tag>
@@ -228,10 +149,10 @@ const sendNegotiation = async (
         </div>
       </div>
     </div>
-    <template v-if="!datasetView && parsedView && catalog['dcat:dataset']">
+    <template v-if="!datasetView && parsedView && datasetList">
       <div
         class="col-12 lg:col-6 xl:col-3"
-        v-for="(dataset, index) in catalog['dcat:dataset']"
+        v-for="(dataset, index) in datasetList"
         :key="dataset['@id']"
       >
         <Card
@@ -240,7 +161,7 @@ const sendNegotiation = async (
           <template #title>{{ dataset["dct:title"] }}</template>
           <template #content>
             <p style="white-space: pre">
-              {{ obtainValues(dataset["dct:description"]).join("\r\n") }}
+              {{ utils.obtainValues(dataset["dct:description"]).join("\r\n") }}
             </p>
             <div class="flex flex-wrap justify-content-center gap-3">
               <button
@@ -257,7 +178,7 @@ const sendNegotiation = async (
             <div class="pt-1 pb-1"><b>Keywords </b></div>
             <Tag
               :class="calculateTagClass(index)"
-              v-for="keyword in obtainValues(dataset['dcat:keyword'])"
+              v-for="keyword in utils.obtainValues(dataset['dcat:keyword'])"
               :key="keyword"
               :value="keyword"
             ></Tag>
@@ -268,9 +189,10 @@ const sendNegotiation = async (
                 >Policies: {{ dataset["odrl:hasPolicy"]?.length ?? 0 }}</span
               >
               <Button
-                icon="pi pi-external-link"
-                @click="getDataset(dataset['@id'])"
+                icon="pi pi-trash"
+                @click="deleteDataset(dataset['@id'])"
                 size="large"
+                severity="danger"
                 rounded
                 outlined
               />
@@ -279,7 +201,7 @@ const sendNegotiation = async (
         </Card>
       </div>
     </template>
-    <template v-else-if="parsedView && !catalog['dcat:dataset']">
+    <template v-else-if="parsedView && !datasetList">
       <div class="col-12 lg:col-6 xl:col-3">
         <Card>
           <template #title>Empty Catalog.</template>
@@ -289,156 +211,16 @@ const sendNegotiation = async (
         </Card>
       </div>
     </template>
-    <template v-if="datasetView">
-      <div class="col-12">
-        <div class="card">
-          <Button
-            icon="pi pi-chevron-left"
-            rounded
-            @click="datasetView = false"
-          ></Button>
-          <div class="grid">
-            <div class="col">
-              <h2 class="pt-3">{{ datasetData["dct:title"] }}</h2>
-              <p style="white-space: pre">
-                {{ obtainValues(datasetData["dct:description"]).join("\r\n") }}
-              </p>
-              <div class="pt-1 pb-2"><b>Keywords</b></div>
-              <Tag
-                class="mr-2 bg-primary-700"
-                v-for="keyword in obtainValues(datasetData['dcat:keyword'])"
-                :key="keyword"
-                :value="keyword"
-              ></Tag>
-              <template
-                v-if="
-                  datasetData['dcat:distribution'][0]['dcat:accessService'][0][
-                    'dcat:endpointURL'
-                  ]
-                "
-                ><p>
-                  <b>Accessible via: </b>
-                  <a
-                    :href="
-                      datasetData['dcat:distribution'][0][
-                        'dcat:accessService'
-                      ][0]['dcat:endpointURL']
-                    "
-                  >
-                    {{
-                      datasetData["dcat:distribution"][0]["dct:title"]
-                        ? datasetData["dcat:distribution"][0]["dct:title"]
-                        : datasetData["dcat:distribution"][0][
-                            "dcat:accessService"
-                          ][0]["dcat:endpointURL"]
-                    }}</a
-                  >
-                </p></template
-              >
-            </div>
-            <div
-              class="col"
-              v-if="
-                datasetData['odrl:hasPolicy'] &&
-                datasetData['odrl:hasPolicy'].length > 0
-              "
-            >
-              <h5 class="pt-3">Policies</h5>
-              <DataTable
-                :value="parsePolicies(datasetData['odrl:hasPolicy'])"
-                :rows="5"
-                :paginator="true"
-              >
-                <Column field="type" header="Type"></Column>
-                <Column field="assigner" header="Assigner"> </Column>
-                <Column field="assignee" header="Assignee"> </Column>
-                <Column
-                  field="target"
-                  header="Target"
-                  style="width: 35%"
-                ></Column>
-                <Column field="action" header="Action" style="width: 35%">
-                </Column>
-                <Column
-                  header="leftOperand"
-                  field="leftOperand"
-                  style="width: 15%"
-                >
-                </Column>
-                <Column header="operator" field="operator" style="width: 15%">
-                </Column>
-                <Column
-                  header="rightOperand"
-                  field="rightOperand"
-                  style="width: 15%"
-                >
-                </Column>
-              </DataTable>
-            </div>
-            <div class="col-12" v-if="props.type == 'consumer'">
-              <Dialog
-                header="Are you sure you want to send the following negotiation message?"
-                v-model:visible="display"
-                :breakpoints="{ '840px': '75vw' }"
-                :modal="true"
-              >
-                <div class="grid">
-                  <div class="col">
-                    <Textarea
-                      id="policyEl"
-                      ref="policyElement"
-                      rows="10"
-                      variant="filled"
-                      contenteditable
-                      style="width: 100%"
-                      autoResize
-                      v-model="policy"
-                      :disabled="editable"
-                    />
-                  </div>
-                  <div class="col-fixed" style="width: 55px">
-                    <Button
-                      icon="pi pi-pencil"
-                      size="small"
-                      class="p-button-rounded mt-1 mb-2"
-                      @click="changeEditable(editable)"
-                    />
-                  </div>
-                </div>
-                <template #footer>
-                  <form
-                    @submit="
-                      sendNegotiation(
-                        datasetData['@id'],
-                        url,
-                        catalog['dct:publisher']
-                      )
-                    "
-                  >
-                    <Button
-                      label="Send"
-                      icon="pi pi-check"
-                      type="submit"
-                      class="p-button-outlined"
-                    />
-                  </form>
-                </template>
-              </Dialog>
-
-              <div class="col-6 col-offset-3">
-                <Button
-                  severity="success"
-                  raised
-                  label="Negotiate Contract"
-                  class="text-center p-3"
-                  style="width: 100%"
-                  @click="open"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </template>
+    <Dataset
+      v-if="datasetView"
+      :dataset-data="datasetData"
+      :policy="policy"
+      :address="url"
+      :didId="catalog['dct:publisher']"
+      :datasetView="datasetView"
+      :type="props.type"
+      @change-dataset-view="closeDatasetView"
+      @update-datasets="updateDatasets"
+    ></Dataset>
   </div>
 </template>

@@ -51,17 +51,7 @@ export class DataPlaneController {
         HttpStatus.BAD_REQUEST
       ).andLog(this.logger, "warn");
     }
-    const dataPlane = await this.dataPlaneService.updateDataPlane(
-      dataPlaneDetails
-    );
-    return {
-      ...dataPlane,
-      datasets: dataPlane.datasets
-        ? await Promise.all(
-            dataPlane.datasets.map(async (d) => await d.serialize())
-          )
-        : undefined,
-    };
+    return await this.dataPlaneService.updateDataPlane(dataPlaneDetails);
   }
 
   @Post("/:id/catalog")

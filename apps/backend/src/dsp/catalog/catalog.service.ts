@@ -205,7 +205,7 @@ export class CatalogService {
   async updateDataset(
     datasetId: string,
     dataset: Dataset
-  ): Promise<DatasetDao | null> {
+  ): Promise<DatasetDao> {
     const existingDataset = await this.datasetRepository.findOneBy({
       id: datasetId,
     });
