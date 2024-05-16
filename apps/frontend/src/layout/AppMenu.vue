@@ -17,14 +17,19 @@ const model = computed(() => {
     ],
   },
   {
-    label: "Keys",
+    label: "DID",
     items: [
+      {
+        label: "Services",
+        icon: "pi pi-fw pi-code",
+        to: "/services"
+      },
       {
         label: "Key management",
         icon: "pi pi-fw pi-key",
         to: "/keys",
       },
-    ],
+    ]
   },
   {
     label: "Credentials",
@@ -35,27 +40,42 @@ const model = computed(() => {
         to: "/credentials",
       },
       {
-        label: "Issue",
-        icon: "pi pi-fw pi-pencil",
-        to: "/credentials/issue",
-      },
-      {
-        label: "Import",
+        label: "Import plain credential",
         icon: "pi pi-fw pi-file-import",
         to: "/credentials/import",
+      },
+      ...(store.state.settings?.gaiaXSupport ? [{
+        label: "Gaia-X Credentials",
+        icon: "pi pi-fw pi-verified",
+        to: "/credentials/gaiax",
+      }] : [])
+      ,
+    ],
+  },
+  {
+    label: "Issuance",
+    items: [
+      {
+        label: "Manual issuance",
+        icon: "pi pi-fw pi-pencil",
+        to: "/credentials/issue",
       },
       {
         label: "OpenID 4 VCI",
         icon: "pi pi-fw pi-refresh",
         to: "/credentials/oid4vci",
       },
-      ...(store.state.settings?.gaiaXSupport ? [{
-        label: "Gaia-X",
-        icon: "pi pi-fw pi-verified",
-        to: "/credentials/gaiax",
-      }] : [])
-      ,
-    ],
+    ]
+  },
+  {
+    label: "Presentation",
+    items: [
+      {
+        label: "Manual presentation request",
+        icon: "pi pi-fw pi-wrench",
+        to: "/presentation"
+      }
+    ]
   },
   {
     label: "Contexts",
@@ -67,26 +87,6 @@ const model = computed(() => {
       }
     ]
   },
-  {
-    label: "DID",
-    items: [
-      {
-        label: "Services",
-        icon: "pi pi-fw pi-code",
-        to: "/services"
-      }
-    ]
-  },
-  {
-    label: "Presentation",
-    items: [
-      {
-        label: "Manual invocation",
-        icon: "pi pi-fw pi-wrench",
-        to: "/presentation"
-      }
-    ]
-  }
 ]
 })
 

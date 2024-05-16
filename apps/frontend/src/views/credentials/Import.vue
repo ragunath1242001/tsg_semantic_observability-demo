@@ -106,20 +106,17 @@ const importCredential = async (validate = true) => {
   <div>
     <Card>
       <template #title>Import credential</template>
-      <template #subtitle
-        >Use this form to import a raw JSON credential into the wallet</template
-      >
+      <template #subtitle>
+        <p>The form below can be used to import Verifiable Credentials that are issued and shared in an out-of-band fashion.</p>
+        <p>The contents of the form should match the specification in the <a href="https://www.w3.org/TR/vc-data-model-2.0/">Verifiable Credentials Data Model v2.0</a>.</p>
+      </template>
       <template #content>
         <form @submit.prevent="importCredential(true)">
           <FormField label="Credential" v-slot="props">
-            <Textarea
-              :id="props.id"
-              class="w-full"
-              style="font-family: monospace"
-              v-model="credentialRef"
-              rows="10"
-              @blur="validateCredential(false)"
-            />
+            
+            <MonacoEditorVue
+                v-model="credentialRef"
+              ></MonacoEditorVue>
             <small class="text-yellow-400" v-if="credentialValidation">{{
               credentialValidation
             }}</small>

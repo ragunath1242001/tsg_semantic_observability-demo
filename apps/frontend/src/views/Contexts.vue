@@ -1,13 +1,9 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
-import { KeyInfo } from "@libs/dtos";
 import { useToast } from "primevue/usetoast";
 import { useConfirm } from "primevue/useconfirm";
-import { JsonTreeView } from "json-tree-view-vue3";
 import FormField from "../components/FormField.vue";
-import { axiosInstance, store } from "../store/index.js";
-import { MonacoEditor, VueMonacoEditor, VueMonacoEditorEmitsOptions } from '@guolao/vue-monaco-editor';
-import MonacoEditorVue from "../components/MonacoEditor.vue";
+import { axiosInstance } from "../store/index.js";
 
 interface JSONLDContext {
   id: string;
@@ -30,6 +26,7 @@ const toast = useToast();
 const confirm = useConfirm();
 
 const expandedRows = ref();
+const currentOrigin = ref(window.location.origin);
 
 const contexts = ref<JSONLDContext[]>([]);
 const documentRef = ref('Referenced');
@@ -157,9 +154,11 @@ onMounted(async () => {
   <div>
     <Card>
       <template #title>Contexts</template>
-      <template #subtitle
-        >The current contexts registered for this Wallet instance</template
-      >
+      <template #subtitle>
+        <p>JSON-LD contexts provide a standardized way to define the structure and meaning of data within Verifiable Credentials. It allows for interoperability and understanding between different systems and applications by establishing common terms and vocabulary. This context enables Verifiable Credentials to be exchanged and verified consistently across diverse environments, ensuring clarity and trust in digital transactions.</p>
+        <p>Within the TSG wallet, these JSON-LD contexts can be accompanied with a JSON Schema. This JSON schema is used in UI elements to assist in the issuance of credentials.</p>
+        <p>The table below shows all context registered with this Wallet instance, currently each context corresponds with one credential type.</p>
+      </template>
       <template #content>
         <DataTable
           v-model:expanded-rows="expandedRows"
@@ -213,8 +212,11 @@ onMounted(async () => {
               <code>{{ props.data.credentialType }}</code>
             </FormField>
             <FormField label="Issuable">
-              <code v-if="props.data.issuable">true</code>
-              <code v-else>false</code>
+              <i
+                v-if="props.data.issuable"
+                class="pi pi-check-circle text-green-500"
+              />
+              <i v-else class="pi pi-times-circle text-red-500" />
             </FormField>
             <FormField label="Document URL" v-if="props.data.documentUrl">
               <a :href="props.data.documentUrl" target="_blank">
@@ -222,18 +224,20 @@ onMounted(async () => {
               </a>
             </FormField>
             <FormField label="Document" v-if="props.data.document">
-              <JsonTreeView 
-                color-scheme="dark"
-                root-key="JSON-LD Context"
-                :max-depth="5"
-                :data="JSON.stringify(props.data.document)" />
+              <MonacoEditorVue
+                  :static="props.data.document"
+                  :read-only="true"
+                  :min-lines="1"
+                  :max-lines="20"
+                  />
             </FormField>
             <FormField label="Schema" v-if="props.data.schema">
-              <JsonTreeView
-                color-scheme="dark"
-                root-key="JSON Schema"
-                :max-depth="5"
-                :data="JSON.stringify(props.data.schema)" />
+              <MonacoEditorVue
+                  :static="props.data.schema"
+                  :read-only="true"
+                  :min-lines="1"
+                  :max-lines="20"
+                  />
             </FormField>
           </template>
         </DataTable>
@@ -241,6 +245,10 @@ onMounted(async () => {
     </Card>
     <Card class="mt-5">
       <template #title>Add context</template>
+      <template #subtitle>
+        <p>This form can be used to register a new context to this Wallet. You can choose to make the context issuable within this Wallet if you are intending to issue credentials based on this context.</p>
+        <p>The context is associated with one credential type. If you want to use an existing JSON-LD context that targets multiple credentials, the same document reference can be used multiple times.</p>
+      </template>
       <template #content>
         <form @submit.prevent="addContext">
           <FormField label="Context ID" v-slot="props">
@@ -249,20 +257,27 @@ onMounted(async () => {
           <FormField label="Credential Type" v-slot="props">
             <InputText :id="props.id" class="w-full" v-model="contextForm.credentialType" placeholder="Credential type associated with this context" />
           </FormField>
-          <FormField label="Issuable Endpoint" v-slot="props">
+          <FormField label="Issuable context" v-slot="props">
             <InputSwitch :id="props.id" v-model="contextForm.issuable" />
           </FormField>
           <FormField label="Document" v-slot="props">
             <SelectButton class="mb-2" v-model="documentRef" :allow-empty="false" :options="['Referenced', 'Hosted']" aria-labelledby="basic" />
-            <InputText v-if="documentRef === 'Referenced'" :id="props.id" class="w-full" v-model="contextForm.documentUrl" placeholder="https://..." />
-            <MonacoEditorVue v-else
-              v-model="contextForm.document"
-            ></MonacoEditorVue>
+            <div v-if="documentRef === 'Referenced'"  class="flex flex-column gap-2">
+              <InputText :id="props.id" class="w-full" v-model="contextForm.documentUrl" placeholder="https://..." />
+              <small>Provide the https link to the JSON-LD context to be used</small>
+            </div>
+            <template v-else>
+              <MonacoEditorVue
+                v-model="contextForm.document"
+              ></MonacoEditorVue>
+              <small>Provide the contents of the JSON-LD context to be used, the context will be available at {{ currentOrigin }}/context/CONTEXT_ID</small>
+            </template>
           </FormField>
           <FormField label="Schema">
             <MonacoEditorVue
               v-model="contextForm.schema"
             ></MonacoEditorVue>
+            <small>The JSON schema should target the <code>credentialSubject</code> property of a Verifable Credential.</small>
           </FormField>
           <FormField no-label>
             <Button label="Add context" type="submit" />

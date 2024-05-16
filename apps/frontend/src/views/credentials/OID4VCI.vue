@@ -15,7 +15,6 @@ import { computed, onMounted, ref } from "vue";
 import axios from "axios";
 import Ajv, { JSONSchemaType } from "ajv";
 import { formatDate } from "../../utils/date.js";
-import { JsonTreeView } from "json-tree-view-vue3";
 
 interface OfferForm {
   holderId: string;
@@ -33,6 +32,9 @@ const offers = ref<CredentialOfferStatus[]>();
 const config = ref<CredentialConfig>();
 const expandedRows = ref<Array<any>>();
 const issuerUrl = ref(window.location.origin);
+const isIssuer = computed(() => {
+  return config.value?.contexts?.some(c => c.issuable) || false
+})
 
 const offerDefault: OfferForm = {
   holderId: "",
@@ -73,15 +75,6 @@ const loadConfig = async () => {
     const response = await axiosInstance<CredentialConfig>(
       "management/credentials/config"
     );
-    for (const context of response.data.contexts) {
-      if (!context.document && context.documentUrl) {
-        const contextResponse = await axios.get(context.documentUrl);
-        context.document = contextResponse.data;
-      }
-      if (!context.documentUrl) {
-        context.documentUrl = `${document.location.protocol}/${document.location.host}/context/${context.id}`;
-      }
-    }
     config.value = response.data;
 
     if (response.data.contexts.filter((c) => c.issuable).length === 0) {
@@ -272,10 +265,17 @@ onMounted(async () => {
 <template>
   <div>
     <Card>
+      <template #title>Open ID 4 Verifiable Credential Issuance</template>
+      <template #subtitle>
+        <p><a href="https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0.html" target="_blank">OpenID 4 Verifiable Credential Issuance</a> is a protocol that combines OpenID Connect and Verifiable Credentials to enable the issuance of digital credentials in a secure and interoperable manner. This protocol streamlines the process of issuing and managing credentials, enhancing trust and privacy in online interactions.</p>
+        <p v-if="!isIssuer">Since no issuable JSON-LD contexts are provided, this page only shows the form for requesting credentials. If you'd like to issue credentials via OpenID4VCI, please add a context at <RouterLink to="/contexts">JSON-LD Contexts</RouterLink></p>
+      </template>
+    </Card>
+    <Card v-if="isIssuer" class="mt-5">
       <template #title>Credential offers</template>
-      <template #subtitle
-        >Offered OpenID 4 Verifiable Credential Issuance credentials</template
-      >
+      <template #subtitle>
+        <p>Offered OpenID 4 Verifiable Credential Issuance credentials at this Wallet instance as issuer.</p>
+      </template>
       <template #content>
         <DataTable
           v-model:expanded-rows="expandedRows"
@@ -335,22 +335,23 @@ onMounted(async () => {
               ><code>{{ props.data.credentialType }}</code></FormField
             >
             <FormField label="Credential Subject">
-              <JsonTreeView
-                :data="JSON.stringify(props.data.credentialSubject)"
-                color-scheme="dark"
-                root-key="CredentialSubject"
-                :max-depth="2"
-              />
+              <MonacoEditorVue
+                :static="props.data.credentialSubject"
+                :read-only="true"
+                :min-lines="1"
+                :max-lines="10"
+                />
             </FormField>
           </template>
         </DataTable>
       </template>
     </Card>
-    <Card class="mt-5">
+    <Card class="mt-5" v-if="isIssuer">
       <template #title>Create credential offer</template>
-      <template #subtitle
-        >Create new OpenID 4 Verifiable Credential Issuance flow</template
-      >
+      <template #subtitle>
+        <p>Create a new OpenID 4 Verifiable Credential Issuance flow to offer a Verifable Credential to a specific holder.</p>
+        <p>The supported flow is based on the <a href="https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0.html#name-pre-authorized-code-flow" target="_blank">Pre-Authorized Code Flow</a>. The pre authorized code should be shared out-of-band with the intended holder of the Credential.</p>
+      </template>
       <template #content>
         <form @submit.prevent="createOffer">
           <FormField label="Holder ID" v-slot="props">
@@ -383,14 +384,10 @@ onMounted(async () => {
                 !offerForm.credentialType?.schema || offerForm.manualCredential
               "
             >
-              <Textarea
-                :id="props.id"
-                class="w-full"
-                style="font-family: monospace"
-                v-model="offerForm.credentialSubject"
-                rows="10"
-                @blur="validateCredentialSubject(false)"
-              />
+              <MonacoEditorVue
+                  v-model="offerForm.credentialSubject"
+                  :schema="offerForm.credentialType?.schema"
+                ></MonacoEditorVue>
               <Button
                 severity="success"
                 v-if="offerForm.credentialType?.schema"
@@ -446,10 +443,10 @@ onMounted(async () => {
     </Card>
     <Card class="mt-5">
       <template #title>Request credential</template>
-      <template #subtitle
-        >Request a new credential via the OpenID 4 Verifiable Credential
-        Issuance flow</template
-      >
+      <template #subtitle>
+        <p>Request a new credential as intended holder of the credential from an issuer that has created a credential offer.</p>
+        <p>The supported flow is based on the <a href="https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0.html#name-pre-authorized-code-flow" target="_blank">Pre-Authorized Code Flow</a>. The pre authorized code should be provided by the issuer in an out-of-band manner before you start this flow as holder.</p>
+      </template>
       <template #content>
         <form @submit.prevent="retrieveCredential">
           <FormField label="Issuer URL" v-slot="props">

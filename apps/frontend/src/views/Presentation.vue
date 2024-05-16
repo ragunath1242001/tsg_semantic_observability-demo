@@ -4,7 +4,6 @@ import { useToast } from "primevue/usetoast";
 import { axiosInstance, store } from "../store/index.js";
 import FormField from "../components/FormField.vue";
 import { CredentialSubject, VerifiableCredential, VerifiablePresentation } from '@tsg-dsp/common';
-import MonacoEditorVue from "../components/MonacoEditor.vue";
 import schema from "../assets/presentation-definition.schema.json";
 
 const toast = useToast();
@@ -115,8 +114,19 @@ const copyToken = (token: string) => {
 <template>
   <div>
     <Card>
+      <template #title>Presentation exchange</template>
+      <template #subtitle>
+        <p>This page allows you to manually test the presentation exchange both as holder and verifier. The protocol relies on the <a href="https://openid.net/specs/openid-connect-self-issued-v2-1_0.html">Self-Issued OpenID Provider</a> specification and the <a href="https://identity.foundation/presentation-exchange/spec/v2.0.0/">Presentation Exchange</a> specification.</p>
+      </template>
+    </Card>
+    <Card class="mt-5">
       <template #title>IATP Holder</template>
-      <template #subtitle>Request a holder ID token for exchange with verifier</template>
+      <template #subtitle>
+        <p>As holder of credentials, you are required to request a token that the verifier can use to request the required Verifiable Credentials in a Verifiable Presentation.</p>
+        <p>You are required to provide the DID identifier of the verifier in the form, with optionally a scope to restrict access to specific credentials.</p>
+        <p>The resulting token should be shared with the verifier. If used combined with a TSG Control Plane, the Control Plane automatically shares the token with the remote party. For this manual presentation request, you should share the ID token out-of-band with the verifier.</p>
+        <p><strong><em>NOTE:</em></strong> scope restriction is currently not supported by the TSG Wallet, each ID token provides viewing access to all credentials in the Wallet.</p>
+      </template>
       <template #content>
         <form @submit.prevent="requestHolderIDToken">
           <FormField label="Audience" v-slot="props">
@@ -142,16 +152,22 @@ const copyToken = (token: string) => {
     </Card>
     <Card class="mt-5">
       <template #title>IATP Verifier</template>
-      <template #subtitle>Request a Verifiable Presentation from a holder</template>
+      <template #subtitle>
+        <p>As verifier of credentials from a holder, you need to have an ID token created by the holder in order to be able to request a Verifiable Presentation from the holder.</p>
+        <p>The presentation definition specifies the requirements on the credentials that you want to verify. You're able to set constraints to ensure the right credentials are presented to you, e.g. to ensure a specific type of credential is presented or a credential from a specific issuer is presented.</p>
+        <p>The presentation definition follows the <a href="https://identity.foundation/presentation-exchange/spec/v2.0.0/#presentation-definition" target="_blank">Presentation Exchange Presentation Definition</a> specification.</p>
+      </template>
       <template #content>
         <form @submit.prevent="requestVerification">
           <FormField label="Holder ID Token" v-slot="props">
-            <InputText :id="props.id" class="w-full" v-model="verifierForm.holderIDToken" />
+            <InputText :id="props.id" class="w-full" v-model="verifierForm.holderIDToken" placeholder="eyJhb..." />
           </FormField>
           <FormField label="Presentation Definition" v-slot="props">
             <MonacoEditorVue
               v-model="verifierForm.presentationDefinition"
               :schema="schema"
+              :min-lines="3"
+              :max-lines="30"
             ></MonacoEditorVue>
           </FormField>
           <FormField no-label>
@@ -161,12 +177,11 @@ const copyToken = (token: string) => {
         <Panel v-if="verifierResponse" header="Verifier response">
           <FormField label="Status">{{ (verifierResponse.success) ? "Success" : "Error" }}</FormField>
           <FormField label="Code" v-if="verifierResponse.code">{{ verifierResponse.code }}</FormField>
-          <pre style="white-space: pre-wrap; overflow-wrap: anywhere;">{{ verifierResponse.body }}</pre>
-          <Button
-            class="mr-2"
-            label="Copy token"
-            @click="copyToken(holderIdToken)"
-          />
+          <MonacoEditorVue
+            :static="verifierResponse.body"
+            :read-only="true"
+            :max-lines="100"
+            />
         </Panel>
       </template>
     </Card>

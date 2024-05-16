@@ -8,7 +8,6 @@ import { useConfirm } from "primevue/useconfirm";
 import { useToast } from "primevue/usetoast";
 import { computed, onMounted, ref } from "vue";
 import FormField from "../../components/FormField.vue";
-import { JsonTreeView } from "json-tree-view-vue3";
 
 interface Credential {
   id: string;
@@ -142,9 +141,10 @@ onMounted(async () => {
   <div>
     <Card>
       <template #title>Credentials</template>
-      <template #subtitle
-        >The current credentials registered for this Wallet instance</template
-      >
+      <template #subtitle>
+        <p>Verifiable Credentials are digital credentials that can be securely issued, stored, and shared online. They provide a way for individuals to prove aspects of their identity or qualifications without revealing unnecessary personal information. These credentials are cryptographically secure, enabling verification by others without the need for a trusted third party. For more details see the <a href="https://www.w3.org/TR/vc-data-model-2.0/" target="_blank">Verifiable Credentials Data Model specification</a>.</p>
+        <p>The table below shows all credentials that are issued and imported into this Wallet instance.</p>
+      </template>
       <template #content>
         <DataTable
           v-model:expanded-rows="expandedRows"
@@ -239,14 +239,12 @@ onMounted(async () => {
 
             <h3>Credential subject</h3>
             <div>
-              <JsonTreeView
-                :data="
-                  JSON.stringify(props.data.raw.credential.credentialSubject)
-                "
-                color-scheme="dark"
-                root-key="CredentialSubject"
-                :max-depth="2"
-              />
+              <MonacoEditorVue
+                :static="props.data.raw.credential.credentialSubject"
+                :read-only="true"
+                :min-lines="1"
+                :max-lines="100"
+                />
             </div>
           </template>
         </DataTable>

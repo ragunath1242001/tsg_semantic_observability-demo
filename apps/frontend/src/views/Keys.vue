@@ -3,7 +3,6 @@ import { onMounted, ref } from "vue";
 import { KeyInfo } from "@libs/dtos";
 import { useToast } from "primevue/usetoast";
 import { useConfirm } from "primevue/useconfirm";
-import { JsonTreeView } from "json-tree-view-vue3";
 import FormField from "../components/FormField.vue";
 import { axiosInstance } from "../store/index.js";
 
@@ -139,9 +138,10 @@ onMounted(async () => {
   <div>
     <Card>
       <template #title>Keys</template>
-      <template #subtitle
-        >The current keys registered for this Wallet instance</template
-      >
+      <template #subtitle>
+        <p>Cryptographic public keys are used across the Wallet to sign or encrypt information shared with other parties. For instance, Verifiable Credentials include signature(s) that allow a verifier to trust the credential is created by the right issuer.</p>
+        <p>The public key of key-pairs generated here will be included in the DID document of this Wallet. Alongside signatures the identifier of the used key is shared to allow the other party to retrieve the public key.</p>
+      </template>
       <template #content>
         <DataTable
           :value="keys"
@@ -194,17 +194,19 @@ onMounted(async () => {
           header="Raw keys"
           :style="{ width: '90vw', maxWidth: '75rem' }"
         >
-          <JsonTreeView
-            :data="JSON.stringify(keys)"
-            color-scheme="dark"
-            root-key="Keys"
-            :max-depth="2"
+        <MonacoEditorVue
+          :static="keys"
+          :read-only="true"
+          :max-lines="100"
           />
         </Dialog>
       </template>
     </Card>
     <Card class="mt-5">
       <template #title>Add key</template>
+      <template #subtitle>
+        <p>The algorithms supported by the Wallet for key-pairs are: EdDSA, ES384, RSA. The first two use elliptic curve cryptography to allow for secure but small signatures to be created, RSA is an older algorithm that results in larger signatures. EdDSA is recommended, ES384 & RSA should only be used in specific scenarios where interoperability with other components is required.</p>
+      </template>
       <template #content>
         <form @submit.prevent="addKey">
           <FormField label="Type" v-slot="props">

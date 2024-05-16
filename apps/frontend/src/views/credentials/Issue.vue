@@ -80,24 +80,6 @@ const loadConfig = async () => {
     const response = await axiosInstance<CredentialConfig>(
       "management/credentials/config"
     );
-    for (const context of response.data.contexts) {
-      if (!context.document && context.documentUrl) {
-        try {
-          const contextResponse = await axios.get(context.documentUrl);
-          context.document = contextResponse.data;
-        } catch (e) {
-          toast.add({
-            severity: "warn",
-            summary: "API error",
-            detail: `Could not load document for context ${context.id}`,
-            life: 10000,
-          });
-        }
-      }
-      if (!context.documentUrl) {
-        context.documentUrl = `${document.location.protocol}/${document.location.host}/context/${context.id}`;
-      }
-    }
     config.value = response.data;
   } catch (err) {
     toast.add({
@@ -234,56 +216,14 @@ onMounted(async () => {
 <template>
   <div>
     <Card>
-      <template #title>Configured contexts</template>
-      <template #subtitle
-        >Configured context in this wallet instance, which might be used for the
-        issue process.</template
-      >
-      <template #content>
-        <DataTable
-          :value="config?.contexts"
-          paginator
-          :rows="10"
-        >
-          <Column field="id" header="ID" />
-          <Column field="credentialType" header="Credential Type" />
-          <Column field="issuable" header="Issuable">
-            <template #body="props">
-              <i
-                v-if="props.data.issuable"
-                class="pi pi-check-circle text-green-500"
-              />
-              <i v-else class="pi pi-times-circle text-red-500" />
-            </template>
-          </Column>
-          <Column field="schema" header="Schema">
-            <template #body="props">
-              <i
-                v-if="props.data.schema"
-                class="pi pi-check-circle text-green-500"
-              />
-              <i v-else class="pi pi-times-circle text-red-500" />
-            </template>
-          </Column>
-          <Column field="actions" header="Actions">
-            <template #body="props">
-              <Button
-                severity="success"
-                label="Use"
-                :disabled="props.data.default"
-                @click="useContext(props.data)"
-              />
-            </template>
-          </Column>
-        </DataTable>
+      <template #title>Manual issue credential</template>
+      <template #subtitle>
+        <p>Issue a credential either a self-signed credential, or a credential for
+        another party.</p>
+        <p>The form below allows you to manually create a new Verifiable Credential. Either for creating a self-signed credential, or for issuing a credential for a remote party.</p>
+        <p>JSON-LD context configurations can be used to streamline the process of issuing credentials, the card below the form lists the available contexts for this Wallet instance.</p>
+        <p><strong><em>NOTE:</em></strong> manually issuing credentials for remote parties requires to share the issued credential out-of-band with the remote party. If you'd want to use automated processes for this, please navigate to the <RouterLink to="/credentials/oid4vci">OpenID 4 VCI</RouterLink> page.</p>
       </template>
-    </Card>
-    <Card class="mt-5">
-      <template #title>Issue credential</template>
-      <template #subtitle
-        >Issue a credential either a self-signed credential, or a credential for
-        another party.</template
-      >
       <template #content>
         <form @submit.prevent="issueCredential">
           <FormField label="Contexts" v-slot="props">
@@ -339,14 +279,10 @@ onMounted(async () => {
             v-slot="props"
             v-if="!credentialForm.schema || credentialForm.manualCredential"
           >
-            <Textarea
-              :id="props.id"
-              class="w-full"
-              style="font-family: monospace"
+          <MonacoEditorVue
               v-model="credentialForm.credentialSubject"
-              rows="10"
-              @blur="validateCredentialSubject(false)"
-            />
+              :schema="credentialForm.schema"
+            ></MonacoEditorVue>
             <Button
               severity="success"
               v-if="credentialForm.schema"
@@ -386,6 +322,51 @@ onMounted(async () => {
             <Button label="Issue credential" type="submit" />
           </FormField>
         </form>
+      </template>
+    </Card>
+    <Card class="mt-5">
+      <template #title>Configured contexts</template>
+      <template #subtitle>
+        <p>Configured context in this wallet instance, which might be used for the
+        issue process.</p>
+      </template>
+      <template #content>
+        <DataTable
+          :value="config?.contexts"
+          paginator
+          :rows="10"
+        >
+          <Column field="id" header="ID" />
+          <Column field="credentialType" header="Credential Type" />
+          <Column field="issuable" header="Issuable">
+            <template #body="props">
+              <i
+                v-if="props.data.issuable"
+                class="pi pi-check-circle text-green-500"
+              />
+              <i v-else class="pi pi-times-circle text-red-500" />
+            </template>
+          </Column>
+          <Column field="schema" header="Schema">
+            <template #body="props">
+              <i
+                v-if="props.data.schema"
+                class="pi pi-check-circle text-green-500"
+              />
+              <i v-else class="pi pi-times-circle text-red-500" />
+            </template>
+          </Column>
+          <Column field="actions" header="Actions">
+            <template #body="props">
+              <Button
+                severity="success"
+                label="Use"
+                :disabled="props.data.default"
+                @click="useContext(props.data)"
+              />
+            </template>
+          </Column>
+        </DataTable>
       </template>
     </Card>
   </div>

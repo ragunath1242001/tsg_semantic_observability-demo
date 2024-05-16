@@ -3,7 +3,6 @@ import { onMounted, ref } from "vue";
 import { KeyInfo } from "@libs/dtos";
 import { useToast } from "primevue/usetoast";
 import { useConfirm } from "primevue/useconfirm";
-import { JsonTreeView } from "json-tree-view-vue3";
 import FormField from "../components/FormField.vue";
 import { axiosInstance, store } from "../store/index.js";
 
@@ -110,9 +109,10 @@ onMounted(async () => {
   <div>
     <Card>
       <template #title>DID Services</template>
-      <template #subtitle
-        >The current DID services registered for this Wallet instance</template
-      >
+      <template #subtitle>
+        <p>Services are used in DID documents to express ways of communicating with the DID subject or associated entities. A service can be any type of service the DID subject wants to advertise, including decentralized identity management services for further discovery, authentication, authorization, or interaction.</p>
+        <p>The table below show the current DID services registered for this Wallet instance.</p>
+      </template>
       <template #content>
         <DataTable
           :value="services"
@@ -138,6 +138,9 @@ onMounted(async () => {
     </Card>
     <Card class="mt-5">
       <template #title>Add service</template>
+      <template #subtitle>
+        <p>Create a new service entry in the Wallet's DID document. In order to maximize interoperability, the service type and its associated properties SHOULD be registered in the <a href="https://www.w3.org/TR/did-spec-registries/#service-types" target="_blank">DID Specification Registries</a>.</p>
+      </template>
       <template #content>
         <form @submit.prevent="addService">
           <FormField label="Service ID" v-slot="props">
@@ -147,7 +150,7 @@ onMounted(async () => {
             <InputText :id="props.id" class="w-full" v-model="serviceForm.type" />
           </FormField>
           <FormField label="Service Endpoint" v-slot="props">
-            <InputText :id="props.id" class="w-full" v-model="serviceForm.serviceEndpoint" />
+            <InputText :id="props.id" class="w-full" v-model="serviceForm.serviceEndpoint" placeholder="https://..." />
           </FormField>
           <FormField no-label>
             <Button label="Add service" type="submit" />
