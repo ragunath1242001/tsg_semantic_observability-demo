@@ -1,4 +1,4 @@
-image: node:20
+image: node:22
 
 stages:
   - build
@@ -11,7 +11,7 @@ build:
     - saas-linux-medium-amd64
   before_script:
     - corepack enable
-    - corepack prepare pnpm@latest-8 --activate
+    - corepack prepare pnpm@latest-9 --activate
     - pnpm config set store-dir .pnpm-store
   script:
     - pnpm install
@@ -31,7 +31,7 @@ test:
     - build
   before_script:
     - corepack enable
-    - corepack prepare pnpm@latest-8 --activate
+    - corepack prepare pnpm@latest-9 --activate
     - pnpm config set store-dir .pnpm-store
   script:
     - pnpm install
@@ -78,7 +78,7 @@ publish:
   stage: release
   before_script:
     - corepack enable
-    - corepack prepare pnpm@latest-8 --activate
+    - corepack prepare pnpm@latest-9 --activate
     - pnpm config set store-dir .pnpm-store
   script:
     - pnpm install
