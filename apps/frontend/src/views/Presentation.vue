@@ -125,7 +125,7 @@ const copyToken = (token: string) => {
         <p>As holder of credentials, you are required to request a token that the verifier can use to request the required Verifiable Credentials in a Verifiable Presentation.</p>
         <p>You are required to provide the DID identifier of the verifier in the form, with optionally a scope to restrict access to specific credentials.</p>
         <p>The resulting token should be shared with the verifier. If used combined with a TSG Control Plane, the Control Plane automatically shares the token with the remote party. For this manual presentation request, you should share the ID token out-of-band with the verifier.</p>
-        <p><strong><em>NOTE:</em></strong> scope restriction is currently not supported by the TSG Wallet, each ID token provides viewing access to all credentials in the Wallet.</p>
+        <Message :closable="false">Scope restriction is currently not supported by the TSG Wallet, each ID token provides viewing access to all credentials in the Wallet.</Message>
       </template>
       <template #content>
         <form @submit.prevent="requestHolderIDToken">

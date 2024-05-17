@@ -76,15 +76,6 @@ const loadConfig = async () => {
       "management/credentials/config"
     );
     config.value = response.data;
-
-    if (response.data.contexts.filter((c) => c.issuable).length === 0) {
-      toast.add({
-        severity: "warn",
-        summary: "No issuable credentials",
-        detail: "No issuable credential types/contexts are configured",
-        life: 15000,
-      });
-    }
   } catch (err) {
     toast.add({
       severity: "warn",
@@ -268,7 +259,7 @@ onMounted(async () => {
       <template #title>Open ID 4 Verifiable Credential Issuance</template>
       <template #subtitle>
         <p><a href="https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0.html" target="_blank">OpenID 4 Verifiable Credential Issuance</a> is a protocol that combines OpenID Connect and Verifiable Credentials to enable the issuance of digital credentials in a secure and interoperable manner. This protocol streamlines the process of issuing and managing credentials, enhancing trust and privacy in online interactions.</p>
-        <p v-if="!isIssuer">Since no issuable JSON-LD contexts are provided, this page only shows the form for requesting credentials. If you'd like to issue credentials via OpenID4VCI, please add a context at <RouterLink to="/contexts">JSON-LD Contexts</RouterLink></p>
+        <Message v-if="!isIssuer" :closable="false">Since no issuable JSON-LD contexts are provided, this page only shows the form for requesting credentials. If you'd like to issue credentials via OpenID4VCI, please add a context at <RouterLink to="/contexts">JSON-LD Contexts</RouterLink>.</Message>
       </template>
     </Card>
     <Card v-if="isIssuer" class="mt-5">

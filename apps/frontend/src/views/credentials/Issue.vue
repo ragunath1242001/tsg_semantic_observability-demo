@@ -222,7 +222,7 @@ onMounted(async () => {
         another party.</p>
         <p>The form below allows you to manually create a new Verifiable Credential. Either for creating a self-signed credential, or for issuing a credential for a remote party.</p>
         <p>JSON-LD context configurations can be used to streamline the process of issuing credentials, the card below the form lists the available contexts for this Wallet instance.</p>
-        <p><strong><em>NOTE:</em></strong> manually issuing credentials for remote parties requires to share the issued credential out-of-band with the remote party. If you'd want to use automated processes for this, please navigate to the <RouterLink to="/credentials/oid4vci">OpenID 4 VCI</RouterLink> page.</p>
+        <Message :closable="false">Manually issuing credentials for remote parties requires to share the issued credential out-of-band with the remote party. If you'd want to use automated processes for this, please navigate to the <RouterLink to="/credentials/oid4vci">OpenID 4 VCI</RouterLink> page.</Message>
       </template>
       <template #content>
         <form @submit.prevent="issueCredential">
