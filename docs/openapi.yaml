@@ -1,0 +1,543 @@
+openapi: 3.0.0
+paths:
+  /health:
+    get:
+      operationId: HealthController_getHealth
+      parameters: []
+      responses:
+        "200":
+          description: ""
+  /api/presentations:
+    get:
+      operationId: DirectPresentationController_createPresentation
+      parameters:
+        - name: credentialId
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: asJwt
+          required: true
+          in: query
+          schema:
+            type: boolean
+        - name: unwrap
+          required: true
+          in: query
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: ""
+  /api/presentations/validate:
+    post:
+      operationId: DirectPresentationController_validatePresentation
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VerifiablePresentationJwt"
+      responses:
+        "201":
+          description: ""
+  /api/iatp/holder/token:
+    get:
+      operationId: IatpHolderController_createSIToken
+      parameters:
+        - name: audience
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: scope
+          required: true
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+  /api/iatp/holder/presentation:
+    get:
+      operationId: IatpHolderController_getPresentation
+      parameters:
+        - name: presentation_definition
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: Authorization
+          required: true
+          in: header
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+  /api/iatp/verifier/verify:
+    post:
+      operationId: IatpVerifierController_verify
+      parameters: []
+      responses:
+        "201":
+          description: ""
+  /api/auth/user:
+    get:
+      operationId: AuthController_getUser
+      parameters: []
+      responses:
+        "200":
+          description: ""
+  /api/auth/login:
+    get:
+      operationId: AuthController_login
+      parameters: []
+      responses:
+        "200":
+          description: ""
+  /api/auth/logout:
+    get:
+      operationId: AuthController_logout
+      parameters: []
+      responses:
+        "200":
+          description: ""
+  /api/auth/callback:
+    get:
+      operationId: AuthController_callback
+      parameters: []
+      responses:
+        "200":
+          description: ""
+  /.well-known/did.json:
+    get:
+      operationId: CredentialsController_getDid
+      parameters: []
+      responses:
+        "200":
+          description: ""
+  /context/{id}:
+    get:
+      operationId: CredentialsController_getContext
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+  /api/credentials/{credentialId}:
+    get:
+      operationId: CredentialsController_getCredential
+      parameters:
+        - name: credentialId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+  /api/management/credentials:
+    get:
+      operationId: CredentialsManagementController_getCredentials
+      parameters: []
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CredentialsDto"
+      tags: &a1
+        - Management Credentials
+    post:
+      operationId: CredentialsManagementController_addCredential
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CredentialConfigDto"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CredentialsDto"
+      tags: *a1
+  /api/management/credentials/config:
+    get:
+      operationId: CredentialsManagementController_getConfig
+      parameters: []
+      responses:
+        "200":
+          description: ""
+      tags: *a1
+  /api/management/credentials/import:
+    post:
+      operationId: CredentialsManagementController_importCredential
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VerifiableCredential"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CredentialsDto"
+      tags: *a1
+  /api/management/credentials/{credentialId}:
+    get:
+      operationId: CredentialsManagementController_getCredential
+      parameters:
+        - name: credentialId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CredentialsDto"
+      tags: *a1
+    put:
+      operationId: CredentialsManagementController_updateCredential
+      parameters:
+        - name: credentialId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CredentialConfigDto"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CredentialsDto"
+      tags: *a1
+    delete:
+      operationId: CredentialsManagementController_deleteCredential
+      parameters:
+        - name: credentialId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+      tags: *a1
+  /api/management/credentials/gaiax/legalRegistrationNumber:
+    post:
+      operationId: CredentialsManagementController_requestLegalRegistrationNumberCredential
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LegalRegistrationNumberRequest"
+      responses:
+        "200":
+          description: ""
+      tags: *a1
+  /api/management/credentials/gaiax/compliance:
+    post:
+      operationId: CredentialsManagementController_requestComplianceCredential
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ComplianceRequest"
+      responses:
+        "200":
+          description: ""
+      tags: *a1
+  /keys/{id}:
+    get:
+      operationId: KeysController_getCaChain
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+  /api/management/keys:
+    get:
+      operationId: KeysManagementController_getKeys
+      parameters: []
+      responses:
+        "200":
+          description: ""
+    post:
+      operationId: KeysManagementController_addKey
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InitKeyConfig"
+      responses:
+        "200":
+          description: ""
+  /api/management/keys/{keyId}:
+    get:
+      operationId: KeysManagementController_getKey
+      parameters:
+        - name: keyId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+    delete:
+      operationId: KeysManagementController_deleteKey
+      parameters:
+        - name: keyId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+  /api/management/keys/{keyId}/default:
+    put:
+      operationId: KeysManagementController_setDefaultKey
+      parameters:
+        - name: keyId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+  /api/oid4vci/holder/request:
+    post:
+      operationId: HolderController_requestCredential
+      parameters: []
+      responses:
+        "201":
+          description: ""
+  /.well-known/openid-credential-issuer:
+    get:
+      operationId: IssuerController_issuerMetadata
+      parameters: []
+      responses:
+        "200":
+          description: ""
+  /oid4vci/token:
+    post:
+      operationId: IssuerController_tokenEndpoint
+      parameters: []
+      responses:
+        "201":
+          description: ""
+  /oid4vci/credential:
+    post:
+      operationId: IssuerController_credentialEndpoint
+      parameters:
+        - name: Authorization
+          required: true
+          in: header
+          schema:
+            type: string
+      responses:
+        "201":
+          description: ""
+  /api/oid4vci/offer:
+    get:
+      operationId: IssuerController_listOffers
+      parameters: []
+      responses:
+        "200":
+          description: ""
+    post:
+      operationId: IssuerController_offerEndpoint
+      parameters: []
+      responses:
+        "201":
+          description: ""
+  /api/oid4vci/offer/{id}/revoke:
+    put:
+      operationId: IssuerController_revokeOffer
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+      responses:
+        "200":
+          description: ""
+info:
+  title: TSG Wallet
+  description: Description
+  version: "1.0"
+  contact: {}
+tags: []
+servers: []
+components:
+  securitySchemes:
+    bearer:
+      scheme: bearer
+      bearerFormat: JWT
+      type: http
+  schemas:
+    VerifiablePresentationJwt:
+      type: object
+      properties: {}
+    CredentialsDto:
+      type: object
+      properties:
+        id:
+          type: string
+        targetDid:
+          type: string
+        credential:
+          type: object
+          properties:
+            "@context":
+              type: array
+              items:
+                type: string
+            id:
+              type: string
+            type:
+              type: array
+              items:
+                type: string
+            issuer:
+              type: string
+            credentialSubject:
+              oneOf:
+                - &a2
+                  type: object
+                  properties: &a3
+                    id:
+                      type: string
+                      title: DID Identifier of the credential subject
+                      example: did:web:localhost
+                  additionalProperties: true
+                - type: array
+                  items: *a2
+            expirationDate:
+              type: string
+              format: date-time
+            issuanceDate:
+              type: string
+              format: date-time
+            evidence:
+              type: object
+            proof:
+              type: object
+              properties:
+                type:
+                  type: string
+                created:
+                  type: string
+                  format: date-time
+                proofPurpose:
+                  type: string
+                jws:
+                  type: string
+                verificationMethod:
+                  type: string
+              required:
+                - type
+                - created
+                - proofPurpose
+                - jws
+                - verificationMethod
+        selfIssued:
+          type: boolean
+        created:
+          format: date-time
+          type: string
+        modified:
+          format: date-time
+          type: string
+        deleted:
+          format: date-time
+          type: string
+      required:
+        - id
+        - targetDid
+        - credential
+        - selfIssued
+        - created
+        - modified
+    CredentialConfigDto:
+      type: object
+      properties:
+        context:
+          title: JSON-LD Contexts for the credential
+          example:
+            - https://dataspace.example/context
+          type: array
+          items:
+            type: string
+        type:
+          title: Credential Type
+          example:
+            - DataSpaceMembershipCredential
+          type: array
+          items:
+            type: string
+        id:
+          type: string
+          title: Credential ID
+        keyId:
+          type: string
+        credentialSubject:
+          type: object
+          properties: *a3
+          additionalProperties: true
+      required:
+        - id
+        - credentialSubject
+    VerifiableCredential:
+      type: object
+      properties: {}
+    LegalRegistrationNumberRequest:
+      type: object
+      properties: {}
+    ComplianceRequest:
+      type: object
+      properties: {}
+    InitKeyConfig:
+      type: object
+      properties: {}

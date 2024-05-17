@@ -1,5 +1,6 @@
 import {
   Body,
+  ClassSerializerInterceptor,
   Controller,
   Delete,
   Get,
@@ -8,6 +9,7 @@ import {
   Param,
   Post,
   Put,
+  UseInterceptors,
   ValidationPipe,
 } from "@nestjs/common";
 import { CredentialsService } from "./credentials.service.js";
@@ -23,7 +25,14 @@ import { Client } from "../auth/roles.guard.js";
 import { AppError } from "../utils/error.js";
 import { ClientInfo, AppRole } from "@libs/dtos";
 import { ContextService } from "../contexts/context.service.js";
+import { ComplianceRequest, LegalRegistrationNumberRequest } from "@libs/dtos";
+import { ApiBody, ApiOkResponse, ApiTags } from "@nestjs/swagger";
+import {
+  CredentialConfigDto,
+  CredentialsDto,
+} from "./credentials.management.controller.schemas.js";
 
+@ApiTags("Management Credentials")
 @Controller("management/credentials")
 export class CredentialsManagementController {
   constructor(
@@ -64,6 +73,9 @@ export class CredentialsManagementController {
 
   @Get()
   @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({
+    type: [CredentialsDto],
+  })
   async getCredentials(@Client() client: ClientInfo): Promise<Credentials[]> {
     const targetDid = this.targetDid("view", client);
     return this.credentialsService.getCredentials(targetDid);
@@ -82,6 +94,8 @@ export class CredentialsManagementController {
   }
 
   @Post()
+  @ApiBody({ type: CredentialConfigDto })
+  @ApiOkResponse({ type: CredentialsDto })
   @HttpCode(HttpStatus.OK)
   async addCredential(
     @Body(new ValidationPipe({ transform: true }))
@@ -94,6 +108,8 @@ export class CredentialsManagementController {
 
   @Post("import")
   @HttpCode(HttpStatus.OK)
+  @ApiBody({ type: VerifiableCredential<CredentialSubject> })
+  @ApiOkResponse({ type: CredentialsDto })
   async importCredential(
     @Body() credential: VerifiableCredential<CredentialSubject>,
     @Client() client: ClientInfo
@@ -104,16 +120,19 @@ export class CredentialsManagementController {
 
   @Get(":credentialId")
   @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({ type: CredentialsDto })
   async getCredential(
     @Param("credentialId") credentialId: string,
     @Client() client: ClientInfo
-  ): Promise<Credentials> {
+  ): Promise<CredentialsDto> {
     const targetDid = this.targetDid("manage", client);
     return this.credentialsService.getCredential(credentialId, targetDid);
   }
 
   @Put(":credentialId")
   @HttpCode(HttpStatus.OK)
+  @ApiBody({ type: CredentialConfigDto })
+  @ApiOkResponse({ type: CredentialsDto })
   async updateCredential(
     @Body(new ValidationPipe({ transform: true }))
     credentialConfig: InitCredentialConfig,

@@ -12,6 +12,7 @@
     "dev": "pnpm watch",
     "tsc": "tsc -p tsconfig.build.json",
     "lint": "eslint . --fix --ext .ts",
+    "swagger": "tsc -p tsconfig.build.json && node dist/generate-oas.js",
     "jest": "jest",
     "jest:coverage": "jest --coverage --coverage-reporters text",
     "jest:ci": "jest --coverage --coverage-reporters cobertura --coverage-reporters text --ci --reporters=default --reporters=jest-junit"
@@ -29,6 +30,7 @@
     "@nestjs/platform-express": "^10.3.0",
     "@nestjs/schedule": "^4.0.0",
     "@nestjs/serve-static": "^4.0.0",
+    "@nestjs/swagger": "^7.3.1",
     "@nestjs/typeorm": "^10.0.1",
     "@tsg-dsp/common": "^0.1.0",
     "ajv": "^8.12.0",
