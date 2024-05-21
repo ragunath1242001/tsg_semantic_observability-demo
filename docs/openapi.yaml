@@ -1285,40 +1285,48 @@ paths:
             - wallet_manage_all_credentials
 info:
   title: TSG Wallet
-  description: Description
+  description: >-
+    The TSG Wallet is a SSI wallet that can issue and store verifiable
+    credentials and create presentations to be used within data spaces.<br /><br
+    />
+        The wallet is aimed at multi-tier deployments, with one (or more) wallet that acts as trust anchor for a data space and indivual wallets for each of the participants in the data space. On this page the central wallet that issues credentials will be called the Dataspace Wallet although it is not required that there always is exactly one issuer of credentials in a dataspace.<br /><br />
+        __*Note*__: This OpenAPI definition is not intended to be directly linked with a single Wallet instance. 
   version: "1.0"
   contact: {}
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
 tags:
   - name: Health
-    description: ""
+    description: Health controller
   - name: Settings
-    description: ""
+    description: Settings controller
   - name: Authentication
-    description: ""
+    description: Authentication Controller
   - name: DID
-    description: ""
+    description: DID Controller
   - name: Contexts
-    description: ""
+    description: Contexts Controller
   - name: Keys
-    description: ""
+    description: Keys Controller
   - name: Credentials
-    description: ""
+    description: Credentials Controller
   - name: Management DID
-    description: ""
+    description: Management DID Controller
   - name: Management Contexts
-    description: ""
+    description: Management Contexts Controller
   - name: Management Keys
-    description: ""
+    description: Management Keys Controller
   - name: Management Credentials
-    description: ""
+    description: Management Credentials Controller
   - name: Management Gaia-X Credentials
-    description: ""
+    description: Management Gaia-X Credentials Controller
   - name: OpenID 4 Verifiable Credential Issuance
-    description: ""
+    description: OpenID 4 Verifiable Credential Issuance Controller
   - name: Presentation IATP
-    description: ""
+    description: Presentation IATP Controller
   - name: Presentation Direct
-    description: ""
+    description: Presentation Direct Controller
 servers: []
 components:
   securitySchemes:
@@ -2219,3 +2227,6 @@ components:
       required:
         - credential_issuer
         - credential_configuration_ids
+externalDocs:
+  description: Git Repository
+  url: https://gitlab.com/tno-tsg/dataspace-protocol/wallet

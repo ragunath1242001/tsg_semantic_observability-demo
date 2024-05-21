@@ -16,6 +16,12 @@ The wallet is aimed at multi-tier deployments, with one (or more) wallet that ac
 - [Build process](./build-process.md)
 - [Interoperability](./interoperability.md)
 
+# OpenAPI definition
+
+An OpenAPI definition is generated for the wallet, currently the link between the schemas and the actual objects used in the requests/responses are soft. So it is not guaranteed that the OpenAPI specification is 100% correct. In later releases, this will be synchronized together with `class-validator` and `class-transformer` to ensure correctly structures objects are expected/returned.
+
+The specification is located at: [TSG Wallet OpenAPI Specification](./openapi.yaml)
+
 ## Design choices
 
 ### 1. Leveraging existing standards
@@ -40,18 +46,20 @@ NodeJS & Typescript are chosen as execution and development environment for thes
 ### 3. Limit external dependencies
 
 The requirement on external dependencies should be as low as possible, including only dependencies in case they provide concrete benefits. Reason for this is to keep the Software Bill of Materials as light as possible to recude security risks of these dependencies.
-This also applies for dependencies of external services, in particular for authentication towards the wallet where oAuth2.0 could be an alternative to the internal authentication as used right now. The advantage of the internal authentication is that it doesn't require any external service, especially given that Keycloak (one of the most used self-hosted authentication services) is based on a JVM and uses considerably amounts of memory.
 
 The main dependencies of the backend are:
 
 - [NestJS framework](https://nestjs.com/)
 - [Class-transformer](https://github.com/typestack/class-transformer) & [class-validator](https://github.com/typestack/class-validator)
 - [Express](https://expressjs.com/)
+- [Passport](https://www.passportjs.org/)
+- [TypeORM](https://typeorm.io/)
+- [JSON Object Signing and Encryption](https://github.com/panva/jose)
 - [Axios](https://axios-http.com/docs/intro)
 
 The main dependencies of the frontend are:
 
 - [Vue](https://vuejs.org/)
-- [Bulma](https://bulma.io/) & [Buefy](https://buefy.org/)
+- [PrimeVue](https://primevue.org/)
 - [Axios](https://axios-http.com/docs/intro)
-- [HightlightJS](https://highlightjs.org/)
+- [MonacoEditor](https://microsoft.github.io/monaco-editor/)
