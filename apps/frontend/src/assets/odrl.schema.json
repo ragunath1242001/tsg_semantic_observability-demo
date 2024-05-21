@@ -1,0 +1,72 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["@context", "@type", "@id", "odrl:assigner", "odrl:permission"],
+  "additionalProperties": false,
+  "properties": {
+    "@context": {
+      "type": "string",
+      "enum": ["https://w3id.org/dspace/v0.8/context.json"]
+    },
+    "@type": {
+      "type": "string",
+      "enum": ["odrl:Offer"]
+    },
+    "@id": {
+      "type": "string",
+      "format": "uri"
+    },
+    "odrl:assigner": {
+      "type": "string",
+      "format": "uri"
+    },
+    "odrl:permission": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["@type", "odrl:action", "odrl:target"],
+        "properties": {
+          "@type": {
+            "type": "string",
+            "enum": ["odrl:Permission"]
+          },
+          "odrl:action": {
+            "type": "string",
+            "enum": ["odrl:read"]
+          },
+          "odrl:target": {
+            "type": "string",
+            "format": "uri"
+          },
+          "odrl:constraint": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "@type",
+                "odrl:rightOperand",
+                "odrl:leftOperand",
+                "odrl:operator"
+              ],
+              "properties": {
+                "@type": {
+                  "type": "string",
+                  "enum": ["odrl:Constraint"]
+                },
+                "odrl:rightOperand": {
+                  "type": "string"
+                },
+                "odrl:leftOperand": {
+                  "type": "string"
+                },
+                "odrl:operator": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

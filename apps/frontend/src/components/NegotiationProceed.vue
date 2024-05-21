@@ -56,41 +56,43 @@ const declineNegotiation = async (negotiation) => {
 };
 </script>
 <template>
-  <div class="card mb-0">
-    <div class="flex justify-content-between mb-3">
-      <div>
-        <h5>{{ utils.stripDspace(negotiation.state) }}</h5>
+  <Card style="border-radius: 12px; border: 1px solid var(--surface-border)">
+    <template #content>
+      <div class="flex justify-content-between mb-3">
+        <div>
+          <h5>{{ utils.stripDspace(negotiation.state) }}</h5>
+        </div>
+        <div
+          class="flex align-items-center justify-content-center bg-blue-100 border-round"
+          style="width: 2.5rem; height: 2.5rem"
+        >
+          <i class="pi pi-file text-blue-500 text-xl"></i>
+        </div>
       </div>
-      <div
-        class="flex align-items-center justify-content-center bg-blue-100 border-round"
-        style="width: 2.5rem; height: 2.5rem"
-      >
-        <i class="pi pi-file text-blue-500 text-xl"></i>
+      <span class="block text-600 font-small mb-3"
+        >{{ negotiation.remoteParty.replace("%3A", ":") }}
+      </span>
+      <span class="block text-600 font-small mb-3">
+        accepted/agreed to your request. Do you want to {{ endState }}?
+      </span>
+      <div class="flex justify-content-between mb-0">
+        <Button
+          label="No"
+          severity="danger"
+          icon="pi pi-times"
+          type="submit"
+          class="p-button-outlined"
+          @click="declineNegotiation(negotiation)"
+        />
+        <Button
+          label="Yes, sign contract"
+          severity="success"
+          icon="pi pi-check"
+          type="submit"
+          class="p-button-outlined"
+          @click="proceedNegotiation(negotiation)"
+        />
       </div>
-    </div>
-    <span class="block text-600 font-small mb-3"
-      >{{ negotiation.remoteParty }}
-    </span>
-    <span class="block text-600 font-small mb-3">
-      accepted/agreed to your request. Do you want to {{ endState }}?
-    </span>
-    <div class="flex justify-content-between mb-0">
-      <Button
-        label="No"
-        severity="danger"
-        icon="pi pi-times"
-        type="submit"
-        class="p-button-outlined"
-        @click="declineNegotiation(negotiation)"
-      />
-      <Button
-        label="Yes, sign contract"
-        severity="success"
-        icon="pi pi-check"
-        type="submit"
-        class="p-button-outlined"
-        @click="proceedNegotiation(negotiation)"
-      />
-    </div>
-  </div>
+    </template>
+  </Card>
 </template>

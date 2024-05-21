@@ -127,91 +127,99 @@ const terminateTransfer = async (transfer) => {
 };
 </script>
 <template>
-  <div class="card mb-0">
-    <div class="flex justify-content-between mb-3">
-      <div>
-        <h5>{{ utils.stripDspace(transfer.state) }}</h5>
-      </div>
-      <div
-        class="flex align-items-center justify-content-center bg-blue-100 border-round"
-        style="width: 2.5rem; height: 2.5rem"
-      >
-        <i class="pi pi-file text-blue-500 text-xl"></i>
-      </div>
-    </div>
-    <span class="block text-600 font-small mb-3"> Transfer with </span>
-    <span class="block text-600 font-small mb-3"
-      >{{ transfer.remoteParty }}
-    </span>
-    <span class="block text-600 font-small mb-3">
-      {{ determineWord(transfer) }}, what do you want to do?
-    </span>
-    <div class="flex justify-content-between mb-0">
-      <Button
-        :label="determineTerminateLabel(transfer)"
-        severity="danger"
-        icon="pi pi-times"
-        type="submit"
-        class="p-button-outlined"
-        @click="openDialog('terminate')"
-      />
-      <Button
-        severity="warning"
-        icon="pi pi-pause"
-        type="submit"
-        v-if="transfer.state === 'dspace:STARTED'"
-        class="p-button-outlined"
-        @click="openDialog('suspend')"
-      />
-      <Button
-        :label="determineButton(transfer)"
-        severity="success"
-        icon="pi pi-check"
-        type="submit"
-        class="p-button-outlined"
-        @click="proceedTransfer(transfer)"
-      />
-      <Dialog
-        :header="determineHeader()"
-        v-model:visible="display"
-        :breakpoints="{ '840px': '75vw' }"
-        :modal="true"
-      >
-        <div class="card p-fluid">
-          <div class="field grid">
-            <label for="code" class="col-12 mb-2 md:col-2 md:mb-0">Code</label>
-            <div class="col-12 md:col-10">
-              <InputText id="code" type="text" v-model="code" />
-            </div>
-          </div>
-          <div class="field grid">
-            <label for="reason" class="col-12 mb-2 md:col-2 md:mb-0"
-              >Reason</label
-            >
-            <div class="col-12 md:col-10">
-              <InputText id="reason" type="text" v-model="reason" />
-            </div>
-          </div>
+  <Card style="border-radius: 12px; border: 1px solid var(--surface-border)">
+    <template #content>
+      <div class="flex justify-content-between mb-3">
+        <div>
+          <h5>{{ utils.stripDspace(transfer.state) }}</h5>
         </div>
-        <template #footer>
-          <Button
-            label="Cancel"
-            severity="secondary"
-            icon="pi pi-times"
-            type="submit"
-            class="p-button-outlined"
-            @click="close()"
-          />
-          <Button
-            label="Proceed"
-            severity="success"
-            icon="pi pi-check"
-            type="submit"
-            class="p-button-outlined"
-            @click="terminateTransfer(transfer)"
-          />
-        </template>
-      </Dialog>
-    </div>
-  </div>
+        <div
+          class="flex align-items-center justify-content-center bg-blue-100 border-round"
+          style="width: 2.5rem; height: 2.5rem"
+        >
+          <i class="pi pi-file text-blue-500 text-xl"></i>
+        </div>
+      </div>
+      <span class="block text-600 font-small mb-3"> Transfer with </span>
+      <span style="word-wrap: break-word" class="block text-600 font-small mb-3"
+        >{{ transfer.remoteParty.replace("%3A", ":") }}
+      </span>
+      <span class="block text-600 font-small mb-3">
+        {{ determineWord(transfer) }}, what do you want to do?
+      </span>
+      <div class="flex justify-content-between mb-0">
+        <Button
+          :label="determineTerminateLabel(transfer)"
+          severity="danger"
+          icon="pi pi-times"
+          type="submit"
+          class="p-button-outlined"
+          @click="openDialog('terminate')"
+        />
+        <Button
+          severity="warning"
+          icon="pi pi-pause"
+          type="submit"
+          v-if="transfer.state === 'dspace:STARTED'"
+          class="p-button-outlined"
+          @click="openDialog('suspend')"
+        />
+        <Button
+          :label="determineButton(transfer)"
+          severity="success"
+          icon="pi pi-check"
+          type="submit"
+          class="p-button-outlined"
+          @click="proceedTransfer(transfer)"
+        />
+        <Dialog
+          :header="determineHeader()"
+          v-model:visible="display"
+          :breakpoints="{ '840px': '75vw' }"
+          :modal="true"
+        >
+          <Card
+            style="border-radius: 12px; border: 1px solid var(--surface-border)"
+          >
+            <template #content>
+              <div class="field grid">
+                <label for="code" class="col-12 mb-2 md:col-2 md:mb-0"
+                  >Code</label
+                >
+                <div class="col-12 md:col-10">
+                  <InputText id="code" type="text" v-model="code" />
+                </div>
+              </div>
+              <div class="field grid">
+                <label for="reason" class="col-12 mb-2 md:col-2 md:mb-0"
+                  >Reason</label
+                >
+                <div class="col-12 md:col-10">
+                  <InputText id="reason" type="text" v-model="reason" />
+                </div>
+              </div>
+            </template>
+          </Card>
+          <template #footer>
+            <Button
+              label="Cancel"
+              severity="secondary"
+              icon="pi pi-times"
+              type="submit"
+              class="p-button-outlined"
+              @click="close()"
+            />
+            <Button
+              label="Proceed"
+              severity="success"
+              icon="pi pi-check"
+              type="submit"
+              class="p-button-outlined"
+              @click="terminateTransfer(transfer)"
+            />
+          </template>
+        </Dialog>
+      </div>
+    </template>
+  </Card>
 </template>

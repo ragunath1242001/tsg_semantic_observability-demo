@@ -7,6 +7,7 @@ import Catalog from "../components/Catalog.vue";
 import { useToast } from "primevue/usetoast";
 import { CredentialAddressDto } from "@libs/dtos";
 import OverlayPanel from "primevue/overlaypanel";
+import FormField from "../components/FormField.vue";
 
 // Define a ref for the URL input
 const urlInput = ref("");
@@ -78,6 +79,7 @@ const queryAddresses = async () => {
     toast.add({
       severity: "error",
       summary: "Failed to retrieve catalog",
+      life: 3000,
       detail: `${error.response.data.message}`,
     });
     throw error;
@@ -95,65 +97,72 @@ const initialize = async () => {
 onMounted(async () => await initialize());
 </script>
 <template>
-  <div class="col-12">
-    <div class="card">
-      <h5>Catalog Request</h5>
-      <div class="flex align-items-center mb-4 gap-2">
-        <label>Manual Entry</label><InputSwitch v-model="manual" />
-      </div>
-      <div class="p-fluid formgrid grid" v-if="manual">
-        <div class="field col-12 md:col-6">
-          <span class="p-float-label">
-            <InputText id="url" type="text" v-model="urlInput" />
-            <label for="url">Url of Catalog to Request</label>
-          </span>
+  <div>
+    <Card style="border-radius: 12px; border: 1px solid var(--surface-border)">
+      <template #title><h5>Catalog Request</h5></template>
+      <template #subtitle
+        >Use this page to find other catalogs. You can search for other Control
+        Planes using the Registry, or enter an access URL and a DID manually if
+        you already know what you want to query.</template
+      >
+      <template #content>
+        <FormField label="Manual Entry">
+          <InputSwitch v-model="manual" />
+        </FormField>
+        <div class="p-fluid formgrid grid" v-if="manual">
+          <div class="field col-12 md:col-6">
+            <span class="p-float-label">
+              <InputText id="url" type="text" v-model="urlInput" />
+              <label for="url">Url of Catalog to Request</label>
+            </span>
+          </div>
+          <div class="field col-12 md:col-6">
+            <span class="p-float-label">
+              <InputText id="url" type="text" v-model="didInput" />
+              <label for="url">DID identifier</label>
+            </span>
+          </div>
+          <div class="field ml-3">
+            <Button label="Submit" type="button" @click="getCatalog"></Button>
+          </div>
         </div>
-        <div class="field col-12 md:col-6">
-          <span class="p-float-label">
-            <InputText id="url" type="text" v-model="didInput" />
-            <label for="url">DID identifier</label>
-          </span>
-        </div>
-        <div class="field col-12 md:col-1">
-          <Button label="Submit" type="button" @click="getCatalog"></Button>
-        </div>
-      </div>
-      <div class="p-fluid formgrid grid" v-if="!manual">
-        <div class="flex flex-wrap gap-2">
-          <Button label="Query" type="button" @click="toggle"></Button>
-          <OverlayPanel
-            ref="overlay"
-            appendTo="body"
-            :showCloseIcon="true"
-            id="overlay_panel"
-            style="width: 450px"
-          >
-            <DataTable
-              :value="addresses"
-              v-model:selection="selection"
-              selectionMode="single"
-              :paginator="true"
-              :rows="5"
-              @row-select="getCatalog"
-              responsiveLayout="scroll"
+        <div class="p-fluid formgrid grid" v-if="!manual">
+          <div class="flex flex-wrap gap-2 ml-3">
+            <Button label="Query" type="button" @click="toggle"></Button>
+            <OverlayPanel
+              ref="overlay"
+              appendTo="body"
+              :showCloseIcon="true"
+              id="overlay_panel"
+              style="width: 450px"
             >
-              <Column
-                field="didId"
-                header="DID"
-                :sortable="true"
-                headerStyle="min-width:12rem;"
-              ></Column>
-              <Column
-                field="address"
-                header="Address"
-                :sortable="true"
-                headerStyle="min-width:12rem;"
-              ></Column>
-            </DataTable>
-          </OverlayPanel>
+              <DataTable
+                :value="addresses"
+                v-model:selection="selection"
+                selectionMode="single"
+                :paginator="true"
+                :rows="5"
+                @row-select="getCatalog"
+                responsiveLayout="scroll"
+              >
+                <Column
+                  field="didId"
+                  header="DID"
+                  :sortable="true"
+                  headerStyle="min-width:12rem;"
+                ></Column>
+                <Column
+                  field="address"
+                  header="Address"
+                  :sortable="true"
+                  headerStyle="min-width:12rem;"
+                ></Column>
+              </DataTable>
+            </OverlayPanel>
+          </div>
         </div>
-      </div>
-    </div>
+      </template>
+    </Card>
     <Catalog
       :catalog="catalog"
       :url="urlInput"

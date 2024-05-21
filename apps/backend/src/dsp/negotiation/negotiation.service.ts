@@ -142,6 +142,11 @@ export class NegotiationService {
         dataSet: true,
         modifiedDate: true,
       },
+      order: {
+        modifiedDate: {
+          direction: "DESC",
+        },
+      },
     });
     return negotiations;
   }

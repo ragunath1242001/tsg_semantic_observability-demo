@@ -83,73 +83,75 @@ const declineNegotiation = async (negotiation) => {
 };
 </script>
 <template>
-  <div class="card mb-0">
-    <div class="flex justify-content-between mb-3">
-      <div>
-        <h5>{{ utils.stripDspace(negotiation.state) }}</h5>
-      </div>
-      <div
-        class="flex align-items-center justify-content-center bg-blue-100 border-round"
-        style="width: 2.5rem; height: 2.5rem"
-      >
-        <i class="pi pi-file text-blue-500 text-xl"></i>
-      </div>
-    </div>
-    <span class="block text-600 font-small mb-3"
-      >{{ negotiation.remoteParty }}
-    </span>
-    wants to access dataset:
-    <span class="block text-600 font-small mb-3"
-      >{{ negotiation.dataSet }}
-    </span>
-    <div class="flex justify-content-between mb-0">
-      <Dialog
-        header="Do you agree with the following offer?"
-        v-model:visible="display"
-        :breakpoints="{ '840px': '75vw' }"
-        :modal="true"
-      >
-        <div class="grid">
-          <div class="col">
-            <Textarea
-              id="offerEl"
-              ref="offerElement"
-              rows="10"
-              variant="filled"
-              contenteditable
-              style="width: 100%"
-              autoResize
-              v-model="stringifiedOffer"
-              :disabled="true"
-            />
-          </div>
+  <Card style="border-radius: 12px; border: 1px solid var(--surface-border)">
+    <template #content>
+      <div class="flex justify-content-between mb-3">
+        <div>
+          <h5>{{ utils.stripDspace(negotiation.state) }}</h5>
         </div>
-        <template #footer>
-          <Button
-            label="Decline"
-            severity="danger"
-            icon="pi pi-times"
-            type="submit"
-            class="p-button-outlined"
-            @click="declineNegotiation(ctaNegotiation)"
-          />
-          <Button
-            label="Accept"
-            severity="success"
-            icon="pi pi-check"
-            type="submit"
-            class="p-button-outlined"
-            @click="agreeNegotiation(ctaNegotiation)"
-          />
-        </template>
-      </Dialog>
-      <Button
-        raised
-        label="View Contract Negotiation"
-        class="text-center p-3"
-        style="width: 100%"
-        @click="getNegotiation(negotiation.localId)"
-      />
-    </div>
-  </div>
+        <div
+          class="flex align-items-center justify-content-center bg-blue-100 border-round"
+          style="width: 2.5rem; height: 2.5rem"
+        >
+          <i class="pi pi-file text-blue-500 text-xl"></i>
+        </div>
+      </div>
+      <span style="word-wrap: break-word" class="block text-600 font-small mb-3"
+        >{{ negotiation.remoteParty.replace("%3A", ":") }}
+      </span>
+      wants to access dataset:
+      <span class="block text-600 font-small mb-3"
+        >{{ negotiation.dataSet }}
+      </span>
+      <div class="flex justify-content-between mb-0">
+        <Dialog
+          header="Do you agree with the following offer?"
+          v-model:visible="display"
+          :breakpoints="{ '840px': '75vw' }"
+          :modal="true"
+        >
+          <div class="grid">
+            <div class="col">
+              <Textarea
+                id="offerEl"
+                ref="offerElement"
+                rows="10"
+                variant="filled"
+                contenteditable
+                style="width: 100%"
+                autoResize
+                v-model="stringifiedOffer"
+                :disabled="true"
+              />
+            </div>
+          </div>
+          <template #footer>
+            <Button
+              label="Decline"
+              severity="danger"
+              icon="pi pi-times"
+              type="submit"
+              class="p-button-outlined"
+              @click="declineNegotiation(ctaNegotiation)"
+            />
+            <Button
+              label="Accept"
+              severity="success"
+              icon="pi pi-check"
+              type="submit"
+              class="p-button-outlined"
+              @click="agreeNegotiation(ctaNegotiation)"
+            />
+          </template>
+        </Dialog>
+        <Button
+          raised
+          label="View Contract Negotiation"
+          class="text-center p-3"
+          style="width: 100%"
+          @click="getNegotiation(negotiation.localId)"
+        />
+      </div>
+    </template>
+  </Card>
 </template>

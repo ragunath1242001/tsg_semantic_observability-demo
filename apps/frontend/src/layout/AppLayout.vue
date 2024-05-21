@@ -67,7 +67,7 @@ const isOutsideClicked = (event) => {
 <template>
   <div class="layout-wrapper" :class="containerClass">
     <app-topbar></app-topbar>
-    <div class="layout-sidebar">
+    <div class="layout-sidebar" style="border: 1px solid var(--surface-border)">
       <app-sidebar></app-sidebar>
     </div>
     <div class="layout-main-container">

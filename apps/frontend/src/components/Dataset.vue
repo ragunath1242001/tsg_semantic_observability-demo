@@ -5,6 +5,9 @@ import { useToast } from "primevue/usetoast";
 import { injectStrict } from "../utils/injectTyped";
 import { AxiosKey } from "../utils/symbols";
 import utils from "../utils/common";
+import DisplayField from "./DisplayField.vue";
+import MonacoEditor from "./MonacoEditor.vue";
+import schema from "../assets/odrl.schema.json";
 
 interface FlatPolicy {
   type: string;
@@ -36,7 +39,7 @@ var datasetData = reactive(datasetDataRo.value);
 const policy = toRef(props, "policy");
 
 const display = ref(false);
-var editable = ref(true);
+var editable = ref(false);
 
 var datasetDataString = ref("");
 datasetDataString.value = utils.stringify(datasetDataRo.value);
@@ -63,7 +66,7 @@ const parsePolicies = (policies: Array<PolicyDto>): Array<FlatPolicy> => {
         output,
         policy["odrl:permission"].map((permission) => {
           return {
-            type: "permission",
+            type: "odrl:Permission",
             assigner: policy["odrl:assigner"],
             assignee: policy["odrl:assignee"] || "*",
             target: permission["odrl:target"],
@@ -123,144 +126,170 @@ const sendNegotiation = async (
 </script>
 <template>
   <div class="col-12">
-    <div class="card">
-      <div class="flex align-items-center justify-content-between">
-        <Button icon="pi pi-chevron-left" rounded @click="goBack()"></Button>
-      </div>
-
-      <div class="grid">
-        <div class="col">
-          <h2 class="pt-3">{{ datasetData["dct:title"] }}</h2>
-          <p style="white-space: pre">
-            {{
-              utils.obtainValues(datasetData["dct:description"]).join("\r\n")
-            }}
-          </p>
-          <div class="pt-1 pb-2"><b>Keywords</b></div>
-          <Tag
-            class="mr-2 bg-primary-700"
-            v-for="keyword in utils.obtainValues(datasetData['dcat:keyword'])"
-            :key="keyword"
-            :value="keyword"
-          ></Tag>
-          <template
-            v-if="
-              datasetData['dcat:distribution'][0]['dcat:accessService'][0][
-                'dcat:endpointURL'
-              ]
-            "
-            ><p>
-              <b>Accessible via: </b>
-              <a
-                :href="
-                  datasetData['dcat:distribution'][0]['dcat:accessService'][0][
-                    'dcat:endpointURL'
-                  ]
-                "
-              >
-                {{
-                  datasetData["dcat:distribution"][0]["dct:title"]
-                    ? datasetData["dcat:distribution"][0]["dct:title"]
-                    : datasetData["dcat:distribution"][0][
-                        "dcat:accessService"
-                      ][0]["dcat:endpointURL"]
-                }}</a
-              >
-            </p></template
+    <Card style="border-radius: 12px; border: 1px solid var(--surface-border)">
+      <template #title
+        ><div class="flex align-items-center">
+          <Button icon="pi pi-chevron-left" rounded @click="goBack()"></Button>
+          <h2 class="mx-3">{{ datasetData["dct:title"] }}</h2>
+        </div></template
+      >
+      <template #subtitle
+        ><p style="white-space: pre">
+          {{ utils.obtainValues(datasetData["dct:description"]).join("\r\n") }}
+        </p></template
+      >
+      <template #content>
+        <div class="grid grid-nogutter border-top-1 surface-border">
+          <DisplayField
+            label="Version"
+            v-if="'dcat:hasVersion' in datasetData"
+            >{{ datasetData["dcat:hasVersion"]["@id"] }}</DisplayField
           >
+          <DisplayField
+            label="Current Version"
+            v-if="
+              'dcat:hasCurrentVersion' in datasetData &&
+              datasetData['dcat:hasCurrentVersion']['@id']
+            "
+          >
+            {{ datasetData["dcat:hasCurrentVersion"]["@id"] }}
+          </DisplayField>
+          <DisplayField label="Endpoint URL">
+            <a
+              :href="
+                datasetData['dcat:distribution'][0]['dcat:accessService'][0][
+                  'dcat:endpointURL'
+                ]
+              "
+            >
+              {{
+                datasetData["dcat:distribution"][0]["dct:title"]
+                  ? datasetData["dcat:distribution"][0]["dct:title"]
+                  : datasetData["dcat:distribution"][0][
+                      "dcat:accessService"
+                    ][0]["dcat:endpointURL"]
+              }}</a
+            >
+          </DisplayField>
+          <DisplayField label="Format">
+            {{ datasetData["dcat:distribution"][0]["dct:format"] }}
+          </DisplayField>
+          <DisplayField
+            label="Conforms to"
+            v-if="'dcat:conformsTo' in datasetData['dcat:distribution'][0]"
+          >
+            <a
+              :href="
+                datasetData['dcat:distribution'][0]['dcat:conformsTo']['@id']
+              "
+            >
+              {{
+                datasetData["dcat:distribution"][0]["dcat:conformsTo"]["@id"]
+              }}</a
+            >
+          </DisplayField>
+          <DisplayField label="Keywords"
+            ><Tag
+              class="mr-2 text-900 bg-primary-700"
+              v-for="keyword in utils.obtainValues(datasetData['dcat:keyword'])"
+              :key="keyword"
+              :value="keyword"
+            ></Tag
+          ></DisplayField>
         </div>
+        <h5 class="pt-3">Policies</h5>
         <div
-          class="col"
+          class="grid grid-nogutter border-top-1 surface-border mt-2"
           v-if="
             datasetData['odrl:hasPolicy'] &&
             datasetData['odrl:hasPolicy'].length > 0
           "
         >
-          <h5 class="pt-3">Policies</h5>
-          <DataTable
-            :value="parsePolicies(datasetData['odrl:hasPolicy'])"
-            :rows="5"
-            :paginator="true"
+          <template
+            v-for="policy in parsePolicies(datasetData['odrl:hasPolicy'])"
           >
-            <Column field="type" header="Type"></Column>
-            <Column field="assigner" header="Assigner"> </Column>
-            <Column field="assignee" header="Assignee"> </Column>
-            <Column field="target" header="Target" style="width: 35%"></Column>
-            <Column field="action" header="Action" style="width: 35%"> </Column>
-            <Column header="leftOperand" field="leftOperand" style="width: 15%">
-            </Column>
-            <Column header="operator" field="operator" style="width: 15%">
-            </Column>
-            <Column
-              header="rightOperand"
-              field="rightOperand"
-              style="width: 15%"
-            >
-            </Column>
-          </DataTable>
-        </div>
-        <div class="col-12" v-if="props.type == 'consumer'">
-          <Dialog
-            header="Are you sure you want to send the following negotiation message?"
-            v-model:visible="display"
-            :breakpoints="{ '840px': '75vw' }"
-            :modal="true"
-          >
-            <div class="grid">
-              <div class="col">
-                <Textarea
-                  id="policyEl"
-                  ref="policyElement"
-                  rows="10"
-                  variant="filled"
-                  contenteditable
-                  style="width: 100%"
-                  autoResize
-                  v-model="policy"
-                  :disabled="editable"
-                />
-              </div>
-              <div class="col-fixed" style="width: 55px">
-                <Button
-                  icon="pi pi-pencil"
-                  size="small"
-                  class="p-button-rounded mt-1 mb-2"
-                  @click="changeEditable(editable)"
-                />
-              </div>
+            <DisplayField label="Type">
+              {{ policy.type }}
+            </DisplayField>
+            <DisplayField label="Assigner">
+              {{ policy.assigner }}
+            </DisplayField>
+            <DisplayField label="Assignee">
+              {{ policy.assignee }}
+            </DisplayField>
+            <DisplayField label="Target">
+              {{ policy.target }}
+            </DisplayField>
+            <DisplayField label="Action">
+              {{ policy.action }}
+            </DisplayField>
+            <DisplayField label="Left Operand">
+              {{ policy.leftOperand }}
+            </DisplayField>
+            <DisplayField label="Operator">
+              {{ policy.operator }}
+            </DisplayField>
+            <DisplayField label="Right Operand">
+              {{ policy.rightOperand }}
+            </DisplayField>
+          </template>
+          <div class="col-12" v-if="props.type == 'consumer'">
+            <div class="col-6 col-offset-3">
+              <Button
+                severity="success"
+                raised
+                label="Negotiate Contract"
+                class="text-center p-3"
+                style="width: 100%"
+                @click="open"
+              />
             </div>
-            <template #footer>
-              <form
-                @submit="
-                  sendNegotiation(
-                    datasetData['@id'],
-                    props.address,
-                    props.didId
-                  )
-                "
-              >
-                <Button
-                  label="Send"
-                  icon="pi pi-check"
-                  type="submit"
-                  class="p-button-outlined"
-                />
-              </form>
-            </template>
-          </Dialog>
-
-          <div class="col-6 col-offset-3">
-            <Button
-              severity="success"
-              raised
-              label="Negotiate Contract"
-              class="text-center p-3"
-              style="width: 100%"
-              @click="open"
-            />
+            <Dialog
+              header="Are you sure you want to send the following negotiation message?"
+              v-model:visible="display"
+              :breakpoints="{ '960px': '78vw' }"
+              :modal="true"
+            >
+              <div class="grid">
+                <div class="col">
+                  <MonacoEditor
+                    :schema="schema"
+                    v-model="policy"
+                    :read-only="!editable"
+                    :maxLines="25"
+                  />
+                </div>
+                <div class="col-fixed" style="width: 55px">
+                  <Button
+                    icon="pi pi-pencil"
+                    size="small"
+                    class="p-button-rounded mt-1 mb-2"
+                    @click="changeEditable(editable)"
+                  />
+                </div>
+              </div>
+              <template #footer>
+                <form
+                  @submit="
+                    sendNegotiation(
+                      datasetData['@id'],
+                      props.address,
+                      props.didId
+                    )
+                  "
+                >
+                  <Button
+                    label="Send"
+                    icon="pi pi-check"
+                    type="submit"
+                    class="p-button-outlined"
+                  />
+                </form>
+              </template>
+            </Dialog>
           </div>
         </div>
-      </div>
-    </div>
+      </template>
+    </Card>
   </div>
 </template>

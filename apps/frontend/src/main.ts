@@ -33,6 +33,7 @@ import Textarea from "primevue/textarea";
 import Timeline from "primevue/timeline";
 import ProgressSpinner from "primevue/progressspinner";
 import OverlayPanel from "primevue/overlaypanel";
+import MonacoEditorVue from "./components/MonacoEditor.vue";
 
 import "@/assets/styles.scss";
 import MultiSelect from "primevue/multiselect";
@@ -45,7 +46,12 @@ app.use(router);
 app.use(PrimeVue, { ripple: true });
 app.use(ConfirmationService);
 app.use(ToastService);
-
+import { loader } from "@guolao/vue-monaco-editor";
+loader.config({
+  paths: {
+    vs: "https://cdn.jsdelivr.net/npm/monaco-editor@0.43.0/dev/vs",
+  },
+});
 app.component("Accordion", Accordion);
 app.component("AccordionTab", AccordionTab);
 app.component("AppConfig", AppConfigVue);
@@ -60,6 +66,7 @@ app.component("DataView", DataView);
 app.component("Dialog", Dialog);
 app.component("InputSwitch", InputSwitch);
 app.component("InputText", InputText);
+app.component("MonacoEditorVue", MonacoEditorVue);
 app.component("MultiSelect", MultiSelect);
 app.component("OverlayPanel", OverlayPanel);
 app.component("Panel", Panel);

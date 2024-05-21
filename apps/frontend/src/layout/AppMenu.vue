@@ -40,7 +40,6 @@ const model = ref([
         label: "Transfers",
         icon: "pi pi-fw pi-arrow-right-arrow-left",
         to: "/transfers",
-        badge: ctaTransfersCount,
       },
     ],
   },

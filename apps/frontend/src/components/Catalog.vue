@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import { ref, toRefs } from "vue";
 import { PolicyDto, type CatalogDto, type DatasetDto } from "@tsg-dsp/common";
-import { JsonTreeView } from "json-tree-view-vue3";
 import { injectStrict } from "../utils/injectTyped";
 import utils from "../utils/common";
 import { AxiosKey } from "../utils/symbols";
 import { useToast } from "primevue/usetoast";
 
 import Dataset from "../components/Dataset.vue";
+import DisplayField from "./DisplayField.vue";
+import FormField from "./FormField.vue";
 
 const props = defineProps<{
   catalog: CatalogDto;
@@ -22,7 +23,6 @@ var datasetView = ref(false);
 var datasetData = ref<DatasetDto>();
 
 const { catalog, url, assigner } = toRefs(props);
-console.log(catalog.value);
 var datasetList = ref(catalog.value["dcat:dataset"]);
 
 const http = injectStrict(AxiosKey);
@@ -112,42 +112,43 @@ const createPolicy = (policy: PolicyDto): string => {
 };
 </script>
 <template>
-  <div class="grid card-container">
-    <div class="col-12">
-      <div class="card" v-if="!datasetView">
-        <div class="flex align-items-center mb-4 gap-2">
-          <label>Parsed View </label><InputSwitch v-model="parsedView" />
-        </div>
-        <JsonTreeView
-          v-if="!parsedView"
-          :data="JSON.stringify(catalog)"
-          :maxDepth="3"
-          color-scheme="dark"
-          rootKey="Catalog"
-        />
-        <div class="grid" v-if="parsedView">
-          <div class="col">
-            <h5>{{ catalog["dct:title"] }}</h5>
-            <p style="white-space: pre">
-              {{ utils.obtainValues(catalog["dct:description"]).join("\r\n") }}
-            </p>
-            <p v-if="utils.obtainValues(catalog['dcat:keyword']).length > 0">
-              <b>Keywords </b>
-            </p>
-            <Tag
-              class="mr-2 bg-primary-700"
-              v-for="keyword in utils.obtainValues(catalog['dcat:keyword'])"
-              :key="keyword"
-              :value="keyword"
-            ></Tag>
+  <div class="grid card-container mt-2">
+    <div class="col-12" v-if="!datasetView">
+      <Card
+        style="border-radius: 12px; border: 1px solid var(--surface-border)"
+      >
+        <template #title>{{ catalog["dct:title"] }}</template>
+        <template #subtitle>{{
+          utils.obtainValues(catalog["dct:description"]).join("\r\n")
+        }}</template>
+        <template #content>
+          <FormField label="Parsed View">
+            <InputSwitch v-model="parsedView" />
+          </FormField>
+          <MonacoEditorVue
+            v-if="!parsedView"
+            :static="catalog"
+            :read-only="true"
+            :max-lines="30"
+          />
+          <div class="grid" v-if="parsedView">
+            <DisplayField label="Publisher" v-if="catalog['dct:publisher']">{{
+              catalog["dct:publisher"].replace("%3A", ":")
+            }}</DisplayField>
+            <DisplayField
+              label="Keywords"
+              v-if="utils.obtainValues(catalog['dcat:keyword']).length > 0"
+            >
+              <Tag
+                class="mr-2 bg-primary-700"
+                v-for="keyword in utils.obtainValues(catalog['dcat:keyword'])"
+                :key="keyword"
+                :value="keyword"
+              ></Tag>
+            </DisplayField>
           </div>
-          <div class="col">
-            <p v-if="catalog['dct:publisher']">
-              <b>Publisher</b> {{ catalog["dct:publisher"] }}
-            </p>
-          </div>
-        </div>
-      </div>
+        </template>
+      </Card>
     </div>
     <template v-if="!datasetView && parsedView && datasetList">
       <div
@@ -159,10 +160,10 @@ const createPolicy = (policy: PolicyDto): string => {
           style="border-radius: 12px; border: 1px solid var(--surface-border)"
         >
           <template #title>{{ dataset["dct:title"] }}</template>
+          <template #subtitle>{{
+            utils.obtainValues(dataset["dct:description"]).join("\r\n")
+          }}</template>
           <template #content>
-            <p style="white-space: pre">
-              {{ utils.obtainValues(dataset["dct:description"]).join("\r\n") }}
-            </p>
             <div class="flex flex-wrap justify-content-center gap-3">
               <button
                 :class="calculateIconBg(index)"
@@ -203,7 +204,9 @@ const createPolicy = (policy: PolicyDto): string => {
     </template>
     <template v-else-if="parsedView && !datasetList">
       <div class="col-12 lg:col-6 xl:col-3">
-        <Card>
+        <Card
+          style="border-radius: 12px; border: 1px solid var(--surface-border)"
+        >
           <template #title>Empty Catalog.</template>
           <template #content>
             <p>No datasets were found in this catalog.</p>

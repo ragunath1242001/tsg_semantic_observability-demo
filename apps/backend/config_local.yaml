@@ -1,7 +1,7 @@
 db:
   type: sqlite
   database: ":memory:"
-  # database: control-plane.sqlite
+  # database: control-plane-b.sqlite
 
 server:
   port: "3002"
@@ -17,17 +17,11 @@ iam:
   didId: did:web:localhost%3A3001
   tokenUrl: http://localhost:3001/api/auth/login
   walletUrl: http://localhost:3001/api
-  presentationUrl: http://localhost:3001/api/presentations
-  validationUrl: http://localhost:3001/api/presentations/validate
   clientId: client
   clientSecret: secret
-  credentialId: did:web:localhost%3A3001#00000000-0000-0000-0000-000000000000
-  validations:
-    - valid
 
-users:
-  - username: admin
-    password: $2a$12$/1aqZWSslSi8E556dpChNOxOyEv3hPA.k8asnRk9iIN2bxH6VGUE6
+auth:
+  enabled: false
 
 initCatalog:
   creator: did:web:localhost%3A3002

@@ -7,6 +7,7 @@ import { useToast } from "primevue/usetoast";
 import { useConfirm } from "primevue/useconfirm";
 import FormField from "../components/FormField.vue";
 import { axiosInstance } from "../stores";
+import DisplayField from "../components/DisplayField.vue";
 
 const dataplanes = ref<DataPlaneDto[]>();
 
@@ -108,6 +109,7 @@ onMounted(async () => {
     v-for="dataplane in dataplanes"
     :key="dataplane.identifier"
     class="mb-2"
+    style="border-radius: 12px; border: 1px solid var(--surface-border)"
   >
     <template #title>
       <div class="grid mb-0">
@@ -124,30 +126,30 @@ onMounted(async () => {
     ></template>
     <template #content>
       <div class="grid" v-if="dataplane">
-        <div class="col-11 lg:col-8">
-          <FormField label="Identifier">{{ dataplane.identifier }}</FormField>
-          <FormField label="Type">{{ dataplane.dataplaneType }}</FormField>
-          <FormField label="Synchronization">{{
-            dataplane.catalogSynchronization
-          }}</FormField>
-          <FormField label="Role">{{ dataplane.role }}</FormField>
-          <FormField label="Endpoint Prefix">{{
-            dataplane.endpointPrefix
-          }}</FormField>
-          <FormField label="Callback Address">{{
-            dataplane.callbackAddress
-          }}</FormField>
-          <FormField label="Management Address">{{
-            dataplane.managementAddress
-          }}</FormField>
-          <FormField label="Dataset ID">{{
-            dataplane.datasets.map((dataset) => dataset["@id"]).join(", ")
-          }}</FormField>
-        </div>
+        <DisplayField label="Identifier">{{
+          dataplane.identifier
+        }}</DisplayField>
+        <DisplayField label="Type">{{ dataplane.dataplaneType }}</DisplayField>
+        <DisplayField label="Synchronization">{{
+          dataplane.catalogSynchronization
+        }}</DisplayField>
+        <DisplayField label="Role">{{ dataplane.role }}</DisplayField>
+        <DisplayField label="Endpoint Prefix">{{
+          dataplane.endpointPrefix
+        }}</DisplayField>
+        <DisplayField label="Callback Address">{{
+          dataplane.callbackAddress
+        }}</DisplayField>
+        <DisplayField label="Management Address">{{
+          dataplane.managementAddress
+        }}</DisplayField>
+        <DisplayField label="Dataset ID">{{
+          dataplane.datasets.map((dataset) => dataset["@id"]).join(", ")
+        }}</DisplayField>
       </div>
     </template>
   </Card>
-  <Card class="mt-5">
+  <Card style="border-radius: 12px; border: 1px solid var(--surface-border)">
     <template #title>Add Data Plane</template>
     <template #subtitle> Link a data plane to this Control Plane </template>
     <template #content>

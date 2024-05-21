@@ -132,6 +132,11 @@ export class TransferService {
         agreementId: true,
         format: true,
       },
+      order: {
+        modifiedDate: {
+          direction: "DESC",
+        },
+      },
     });
     return transfers.map((transfer) => new TransferStatus(transfer));
   }

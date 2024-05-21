@@ -7,14 +7,15 @@ const { transfers, ctaTransfers } = storeToRefs(useDspStore());
 </script>
 <template>
   <div>
-    <div class="card">
-      <h1>Transfers</h1>
-
-      <p>
-        This page shows (the history of) the transfers that are present for the
-        Control Plane.
-      </p>
-    </div>
+    <Card style="border-radius: 12px; border: 1px solid var(--surface-border)">
+      <template #title>Transfers</template>
+      <template #content>
+        <p>
+          This page shows (the history of) the transfers that are present for
+          the Control Plane.
+        </p>
+      </template>
+    </Card>
     <CTATransfer :transfers="ctaTransfers"></CTATransfer>
     <TransferHistory :transfers="transfers"></TransferHistory>
   </div>

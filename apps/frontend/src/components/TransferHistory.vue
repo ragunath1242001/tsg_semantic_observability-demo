@@ -63,55 +63,69 @@ const getTransfer = async (event?: AccordionTabOpenEvent) => {
 };
 </script>
 <template>
-  <div class="card">
-    <Accordion @tab-open="getTransfer">
-      <AccordionTab
-        v-for="(transfer, index) in transfers"
-        :key="transfer.localId"
-      >
-        <template #header>
-          <span class="flex align-items-center justify-content-between w-full">
-            <div>
-              <i :class="calculateIcon(index)"></i>
-              <span class="mx-2"
-                >{{ transfer.localId }} - {{ transfer.remoteParty }}</span
-              >
-            </div>
-            <small class="p-text-secondary">
-              {{ new Date(transfer.modifiedDate).toLocaleDateString() }}
-            </small>
-          </span>
-        </template>
-        <div
-          class="flex align-items-stretch grid card-container"
-          v-if="accTransfer"
+  <Card style="border-radius: 12px; border: 1px solid var(--surface-border)">
+    <template #title><h5>Transfer History</h5></template>
+    <template #content v-if="transfers.length > 0">
+      <Accordion @tab-open="getTransfer">
+        <AccordionTab
+          v-for="(transfer, index) in transfers"
+          :key="transfer.localId"
         >
-          <div class="p-0 col-12 xl:col-6">
-            <!-- <DataTable :value="accTransfer.process">
+          <template #header>
+            <span
+              class="flex align-items-center justify-content-between w-full"
+            >
+              <div>
+                <i :class="calculateIcon(index)"></i>
+                <span class="mx-2"
+                  >{{ transfer.localId }} -
+                  {{ transfer.remoteParty.replace("%3A", ":") }}</span
+                >
+              </div>
+              <div>
+                <Tag
+                  class="ml-auto mr-4"
+                  :value="utils.stripDspace(transfer.state)"
+                  :severity="getSeverity(transfer.state)"
+                />
+                <small class="p-text-secondary">
+                  {{ new Date(transfer.modifiedDate).toLocaleDateString() }}
+                </small>
+              </div>
+            </span>
+          </template>
+          <div
+            class="flex align-items-stretch grid card-container"
+            v-if="accTransfer"
+          >
+            <div class="p-0 col-12 xl:col-6">
+              <!-- <DataTable :value="accTransfer.process">
               <Column field="dspace:providerPid" name="Provider ID"></Column>
               <Column field="dspace:consumerPid" name="Consumer ID"></Column>
               <Column field="dspace:agreementId" name="Agreement ID"></Column>
             </DataTable> -->
+            </div>
+            <div
+              class="p-0 mt-4 col-12 xl:col-6 flex flex-wrap justify-content-center"
+            >
+              <Timeline :value="accTransfer.events">
+                <template #opposite="slotProps">
+                  <small class="p-text-secondary">{{
+                    new Date(slotProps.item.time).toLocaleString()
+                  }}</small>
+                </template>
+                <template #content="slotProps">
+                  <Tag
+                    :value="utils.stripDspace(slotProps.item.state)"
+                    :severity="getSeverity(slotProps.item.state)"
+                  />
+                </template>
+              </Timeline>
+            </div>
           </div>
-          <div
-            class="p-0 mt-4 col-12 xl:col-6 flex flex-wrap justify-content-center"
-          >
-            <Timeline :value="accTransfer.events">
-              <template #opposite="slotProps">
-                <small class="p-text-secondary">{{
-                  new Date(slotProps.item.time).toLocaleString()
-                }}</small>
-              </template>
-              <template #content="slotProps">
-                <Tag
-                  :value="utils.stripDspace(slotProps.item.state)"
-                  :severity="getSeverity(slotProps.item.state)"
-                />
-              </template>
-            </Timeline>
-          </div>
-        </div>
-      </AccordionTab>
-    </Accordion>
-  </div>
+        </AccordionTab>
+      </Accordion>
+    </template>
+    <template #content v-else> There is no history to display</template>
+  </Card>
 </template>

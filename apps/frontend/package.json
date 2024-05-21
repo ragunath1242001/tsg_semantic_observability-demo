@@ -9,11 +9,11 @@
     "type-check": "vue-tsc --noEmit"
   },
   "dependencies": {
+    "@guolao/vue-monaco-editor": "^1.5.1",
     "@libs/dtos": "workspace:*",
     "@tsg-dsp/common": "^0.3.1",
     "axios": "^1.4.0",
     "chart.js": "3.3.2",
-    "json-tree-view-vue3": "^0.3.1",
     "pinia": "^2.1.7",
     "primeflex": "^3.3.1",
     "primeicons": "^6.0.1",

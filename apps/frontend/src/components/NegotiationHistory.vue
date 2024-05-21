@@ -7,6 +7,7 @@ import { AccordionTabOpenEvent } from "primevue/accordion";
 import { useToast } from "primevue/usetoast";
 import http from "../utils/http";
 import { DatasetDto } from "@tsg-dsp/common";
+import MonacoEditor from "./MonacoEditor.vue";
 
 const props = defineProps<{
   negotiations: NegotiationStatusDto[];
@@ -100,67 +101,87 @@ const requestTransfer = async (accNegotiation: NegotiationDetailDto) => {
 };
 </script>
 <template>
-  <div class="card">
-    <Accordion @tab-open="getNegotiation">
-      <AccordionTab
-        v-for="(negotiation, index) in negotiations"
-        :key="negotiation.localId"
-      >
-        <template #header>
-          <span class="flex align-items-center justify-content-between w-full">
-            <div>
-              <i :class="calculateIcon(index)"></i>
-              <span class="mx-2"
-                >{{ negotiation.dataSet }} - {{ negotiation.remoteParty }}</span
-              >
-            </div>
-            <small class="p-text-secondary">
-              {{ new Date(negotiation.modifiedDate).toLocaleDateString() }}
-            </small>
-          </span>
-        </template>
-        <div
-          class="flex align-items-stretch grid card-container"
-          v-if="accNegotiation"
+  <Card style="border-radius: 12px; border: 1px solid var(--surface-border)">
+    <template #title><h5>Negotiation History</h5></template>
+    <template #subtitle>Here you can find the history of negotiations</template>
+    <template #content v-if="negotiations.length > 0">
+      <Accordion @tab-open="getNegotiation">
+        <AccordionTab
+          v-for="(negotiation, index) in negotiations"
+          :key="negotiation.localId"
         >
-          <div class="p-0 col-12 xl:col-6">
-            <pre><code>{{
-                  accNegotiation.agreement? JSON.stringify(accNegotiation.agreement, undefined, 2) :
-                  JSON.stringify(accNegotiation.offer, undefined, 2)
-                }}</code></pre>
-          </div>
-          <div
-            class="p-0 mt-4 col-12 xl:col-6 flex flex-wrap justify-content-center"
-          >
-            <Timeline :value="accNegotiation.events">
-              <template #opposite="slotProps">
-                <small class="p-text-secondary">{{
-                  new Date(slotProps.item.time).toLocaleString()
-                }}</small>
-              </template>
-              <template #content="slotProps">
+          <template #header>
+            <span
+              class="flex align-items-center justify-content-between w-full"
+            >
+              <div>
+                <i :class="calculateIcon(index)"></i>
+                <span class="mx-2"
+                  >{{ negotiation.remoteParty.replace("%3A", ":") }} -
+                  {{ negotiation.dataSet }}</span
+                >
+              </div>
+              <div>
                 <Tag
-                  :value="utils.stripDspace(slotProps.item.state)"
-                  :severity="getSeverity(slotProps.item.state)"
+                  class="ml-auto mr-4"
+                  :value="utils.stripDspace(negotiation.state)"
+                  :severity="getSeverity(negotiation.state)"
                 />
-              </template>
-            </Timeline>
-            <Button
-              @click="requestTransfer(accNegotiation)"
-              raised
-              type="button"
-              class="m-6 flex text-center justify-content-center p-3"
-              style="width: 60%; max-width: 60%"
-              label="Request Transfer"
-              severity="success"
-              v-if="
-                accNegotiation.role === 'consumer' &&
-                accNegotiation.state === 'dspace:FINALIZED'
-              "
-            ></Button>
+                <small class="p-text-secondary">
+                  {{ new Date(negotiation.modifiedDate).toLocaleDateString() }}
+                </small>
+              </div>
+            </span>
+          </template>
+          <div
+            class="flex align-items-stretch grid card-container"
+            v-if="accNegotiation"
+          >
+            <div class="p-0 col-12 xl:col-6">
+              <MonacoEditor
+                :static="
+                  accNegotiation.agreement
+                    ? accNegotiation.agreement
+                    : accNegotiation.offer
+                "
+                :read-only="true"
+                :max-lines="35"
+              />
+            </div>
+            <div
+              class="p-0 mt-4 col-12 xl:col-6 flex flex-wrap justify-content-center"
+            >
+              <Timeline :value="accNegotiation.events">
+                <template #opposite="slotProps">
+                  <small class="p-text-secondary">{{
+                    new Date(slotProps.item.time).toLocaleString()
+                  }}</small>
+                </template>
+                <template #content="slotProps">
+                  <Tag
+                    :value="utils.stripDspace(slotProps.item.state)"
+                    :severity="getSeverity(slotProps.item.state)"
+                  />
+                </template>
+              </Timeline>
+              <Button
+                @click="requestTransfer(accNegotiation)"
+                raised
+                type="button"
+                class="m-6 flex text-center justify-content-center p-3"
+                style="width: 60%; max-width: 60%"
+                label="Request Transfer"
+                severity="success"
+                v-if="
+                  accNegotiation.role === 'consumer' &&
+                  accNegotiation.state === 'dspace:FINALIZED'
+                "
+              ></Button>
+            </div>
           </div>
-        </div>
-      </AccordionTab>
-    </Accordion>
-  </div>
+        </AccordionTab>
+      </Accordion>
+    </template>
+    <template #content v-else> There is no history to display</template>
+  </Card>
 </template>
