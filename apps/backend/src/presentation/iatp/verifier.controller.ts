@@ -8,7 +8,13 @@ import {
   VerifiableCredential,
   CredentialSubject,
 } from "@tsg-dsp/common";
-import { ApiBody, ApiOAuth2, ApiOkResponse, ApiTags } from "@nestjs/swagger";
+import {
+  ApiBody,
+  ApiOAuth2,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from "@nestjs/swagger";
 import {
   VerifiablePresentationDto,
   VerificationRequestDto,
@@ -22,6 +28,11 @@ export class IatpVerifierController {
   constructor(private readonly iatpVerifierService: IatpVerifierService) {}
 
   @Post("verify")
+  @ApiOperation({
+    summary: "Start verification flow",
+    description:
+      "Request a new IATP presentation flow to start as verifier, based on a presentation defintion and a holder SIOP token",
+  })
   @ApiBody({ type: VerificationRequestDto })
   @ApiOkResponse({ type: VerifiablePresentationDto })
   async verify(

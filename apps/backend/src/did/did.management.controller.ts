@@ -18,11 +18,9 @@ import { DIDService } from "../model/did.dao.js";
 import { validationPipe } from "../utils/validation.pipe.js";
 import {
   ApiBody,
-  ApiConflictResponse,
-  ApiForbiddenResponse,
-  ApiNotFoundResponse,
   ApiOAuth2,
   ApiOkResponse,
+  ApiOperation,
   ApiTags,
 } from "@nestjs/swagger";
 import {
@@ -30,6 +28,11 @@ import {
   DidServiceConfigDto,
   ServiceDto,
 } from "./did.schemas.js";
+import {
+  ApiForbiddenResponseDefault,
+  ApiConflictResponseDefault,
+  ApiNotFoundResponseDefault,
+} from "../utils/swagger.js";
 
 @Controller("management/did")
 @Roles(AppRole.VIEW_DID)
@@ -39,27 +42,40 @@ export class DIDManagementController {
   constructor(private readonly didService: DidService) {}
 
   @Get()
+  @ApiOperation({
+    summary: "Retrieve DID document",
+    description: "Retrieves the current DID document for this wallet",
+  })
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({ type: DIDDocumentDto })
-  @ApiForbiddenResponse()
+  @ApiForbiddenResponseDefault()
   async getDidDocument(): Promise<DIDDocument> {
     return await this.didService.getDid();
   }
 
   @Get("services")
+  @ApiOperation({
+    summary: "Retrieve DID services",
+    description:
+      "Retrieves the currently registered DID services for this wallet",
+  })
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({ type: [ServiceDto] })
-  @ApiForbiddenResponse()
+  @ApiForbiddenResponseDefault()
   async getServices(): Promise<Array<DIDService>> {
     return await this.didService.getServices();
   }
 
   @Post("services")
+  @ApiOperation({
+    summary: "Add DID service",
+    description: "Registers a new DID service for this wallet",
+  })
   @HttpCode(HttpStatus.OK)
   @ApiBody({ type: DidServiceConfigDto })
   @ApiOkResponse({ type: ServiceDto })
-  @ApiConflictResponse()
-  @ApiForbiddenResponse()
+  @ApiConflictResponseDefault()
+  @ApiForbiddenResponseDefault()
   async addService(
     @Body(validationPipe) service: DidServiceConfig
   ): Promise<DIDService> {
@@ -67,11 +83,15 @@ export class DIDManagementController {
   }
 
   @Put("services/:id")
+  @ApiOperation({
+    summary: "Update DID service",
+    description: "Updates an existing DID service for this wallet",
+  })
   @HttpCode(HttpStatus.OK)
   @ApiBody({ type: DidServiceConfigDto })
   @ApiOkResponse({ type: ServiceDto })
-  @ApiNotFoundResponse()
-  @ApiForbiddenResponse()
+  @ApiNotFoundResponseDefault()
+  @ApiForbiddenResponseDefault()
   async updateService(
     @Param("id") id: string,
     @Body(validationPipe)
@@ -81,10 +101,14 @@ export class DIDManagementController {
   }
 
   @Delete("services/:id")
+  @ApiOperation({
+    summary: "Delete DID service",
+    description: "Deletes an existing DID service for this wallet",
+  })
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse()
-  @ApiNotFoundResponse()
-  @ApiForbiddenResponse()
+  @ApiNotFoundResponseDefault()
+  @ApiForbiddenResponseDefault()
   async deleteService(@Param("id") id: string): Promise<void> {
     return await this.didService.deleteService(id);
   }

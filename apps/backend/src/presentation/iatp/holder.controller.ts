@@ -7,9 +7,9 @@ import { IatpHolderService } from "./holder.service.js";
 import { DisableOAuthGuard } from "../../auth/oauth.guard.js";
 import {
   ApiExtraModels,
-  ApiForbiddenResponse,
   ApiOAuth2,
   ApiOkResponse,
+  ApiOperation,
   ApiQuery,
   ApiTags,
   getSchemaPath,
@@ -18,6 +18,7 @@ import {
   PresentationDefinitionDto,
   PresentationResponseDto,
 } from "../presentation.schema.js";
+import { ApiForbiddenResponseDefault } from "../../utils/swagger.js";
 
 @Controller("iatp/holder")
 @ApiTags("Presentation IATP")
@@ -28,6 +29,11 @@ export class IatpHolderController {
   ) {}
 
   @Get("token")
+  @ApiOperation({
+    summary: "Request a SIOP token",
+    description:
+      "Generates a SIOP token for the provided audience to allow it to request presentations",
+  })
   @Roles(AppRole.VIEW_PRESENTATIONS)
   @ApiOAuth2([AppRole.VIEW_PRESENTATIONS])
   @ApiOkResponse({
@@ -38,7 +44,7 @@ export class IatpHolderController {
       },
     },
   })
-  @ApiForbiddenResponse()
+  @ApiForbiddenResponseDefault()
   async createSIToken(
     @Query("audience") audience: string,
     @Query("scope") scope?: string
@@ -53,6 +59,11 @@ export class IatpHolderController {
   }
 
   @Get("presentation")
+  @ApiOperation({
+    summary: "Retrieve presentation",
+    description:
+      "Request a presentation with a SIOP-token and a presentation definition",
+  })
   @ApiExtraModels(PresentationDefinitionDto)
   @ApiQuery({
     name: "presentation_definition",
@@ -63,7 +74,7 @@ export class IatpHolderController {
     },
   })
   @ApiOkResponse({ type: PresentationResponseDto })
-  @ApiForbiddenResponse()
+  @ApiForbiddenResponseDefault()
   @DisableOAuthGuard()
   async getPresentation(
     @Query("presentation_definition")

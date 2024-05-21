@@ -22,6 +22,7 @@ import {
   ApiExtraModels,
   ApiOAuth2,
   ApiOkResponse,
+  ApiOperation,
   ApiTags,
   getSchemaPath,
 } from "@nestjs/swagger";
@@ -39,6 +40,11 @@ export class DirectPresentationController {
   constructor(private readonly presentationService: PresentationService) {}
 
   @Get()
+  @ApiOperation({
+    summary: "Request a presentation",
+    description:
+      "Generates a Veriable Presentation in Jwt or JSON-LD format for one of the credentials in this wallet",
+  })
   @ApiExtraModels(VerifiablePresentationJwtDto, VerifiablePresentationJsonLdDto)
   @ApiOkResponse({
     schema: {
@@ -75,6 +81,11 @@ export class DirectPresentationController {
   }
 
   @Post("validate")
+  @ApiOperation({
+    summary: "Validate presentation",
+    description:
+      "Validates a Jwt-based Verifiable Presentation according to a fixed set of requirements",
+  })
   @ApiBody({ type: VerifiablePresentationJwtDto })
   @ApiOkResponse({ type: PresentationValidationDto })
   async validatePresentation(

@@ -19,13 +19,10 @@ import { AppError } from "../utils/error.js";
 import { ClientInfo, AppRole } from "@libs/dtos";
 import { ContextService } from "../contexts/context.service.js";
 import {
-  ApiBadRequestResponse,
   ApiBody,
-  ApiConflictResponse,
-  ApiForbiddenResponse,
-  ApiNotFoundResponse,
   ApiOAuth2,
   ApiOkResponse,
+  ApiOperation,
   ApiTags,
 } from "@nestjs/swagger";
 import {
@@ -35,6 +32,12 @@ import {
   VerifiableCredentialDto,
 } from "./credentials.schemas.js";
 import { validationPipe } from "../utils/validation.pipe.js";
+import {
+  ApiForbiddenResponseDefault,
+  ApiConflictResponseDefault,
+  ApiBadRequestResponseDefault,
+  ApiNotFoundResponseDefault,
+} from "../utils/swagger.js";
 
 @ApiTags("Management Credentials")
 @ApiOAuth2([AppRole.VIEW_ALL_CREDENTIALS, AppRole.VIEW_OWN_CREDENTIALS])
@@ -77,25 +80,33 @@ export class CredentialsManagementController {
   }
 
   @Get()
+  @ApiOperation({
+    summary: "List credentials",
+    description:
+      "List all credentials, that the current user is allowed to view, in this wallet",
+  })
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({
     type: [CredentialsDto],
   })
-  @ApiForbiddenResponse()
-  @HttpCode(HttpStatus.OK)
+  @ApiForbiddenResponseDefault()
   async getCredentials(@Client() client: ClientInfo): Promise<Credentials[]> {
     const targetDid = this.targetDid("view", client);
     return this.credentialsService.getCredentials(targetDid);
   }
 
   @Get("config")
+  @ApiOperation({
+    summary: "Retrieve credential configuration",
+    description:
+      "Retrieves credential configuration that can be used by this wallet. Contains both trust anchors and JSON-LD contexts.",
+  })
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({
     type: CredentialConfigDto,
   })
-  @ApiForbiddenResponse()
+  @ApiForbiddenResponseDefault()
   @UsePipes(validationPipe)
-  @HttpCode(HttpStatus.OK)
   async getConfig(): Promise<CredentialsConfigDto> {
     return {
       trustAnchors: this.config.trustAnchors,
@@ -104,11 +115,15 @@ export class CredentialsManagementController {
   }
 
   @Post()
+  @ApiOperation({
+    summary: "Add credential",
+    description: "Issue a new credential within this wallet",
+  })
   @ApiBody({ type: CredentialConfigDto })
   @ApiOkResponse({ type: CredentialsDto })
-  @ApiForbiddenResponse()
-  @ApiConflictResponse()
-  @ApiBadRequestResponse()
+  @ApiForbiddenResponseDefault()
+  @ApiConflictResponseDefault()
+  @ApiBadRequestResponseDefault()
   @ApiOAuth2([AppRole.MANAGE_ALL_CREDENTIALS, AppRole.MANAGE_OWN_CREDENTIALS])
   @HttpCode(HttpStatus.OK)
   async addCredential(
@@ -121,11 +136,15 @@ export class CredentialsManagementController {
   }
 
   @Post("import")
+  @ApiOperation({
+    summary: "Import credential",
+    description: "Import a credential issued by an external credential issuer",
+  })
   @HttpCode(HttpStatus.OK)
   @ApiBody({ type: VerifiableCredentialDto })
   @ApiOkResponse({ type: CredentialsDto })
-  @ApiConflictResponse()
-  @ApiForbiddenResponse()
+  @ApiConflictResponseDefault()
+  @ApiForbiddenResponseDefault()
   @ApiOAuth2([AppRole.MANAGE_ALL_CREDENTIALS, AppRole.MANAGE_OWN_CREDENTIALS])
   async importCredential(
     @Body() credential: VerifiableCredential<CredentialSubject>,
@@ -136,10 +155,14 @@ export class CredentialsManagementController {
   }
 
   @Get(":credentialId")
+  @ApiOperation({
+    summary: "Retrieve credential",
+    description: "Retrieve a specific credential within this wallet",
+  })
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({ type: CredentialsDto })
-  @ApiForbiddenResponse()
-  @ApiNotFoundResponse()
+  @ApiForbiddenResponseDefault()
+  @ApiNotFoundResponseDefault()
   @ApiOAuth2([AppRole.MANAGE_ALL_CREDENTIALS, AppRole.MANAGE_OWN_CREDENTIALS])
   async getCredential(
     @Param("credentialId") credentialId: string,
@@ -150,11 +173,16 @@ export class CredentialsManagementController {
   }
 
   @Put(":credentialId")
+  @ApiOperation({
+    summary: "Update credential",
+    description:
+      "Update a credential within this wallet. __*Note*__: this will either self-issue or import a credential.",
+  })
   @HttpCode(HttpStatus.OK)
   @ApiBody({ type: CredentialConfigDto })
   @ApiOkResponse({ type: CredentialsDto })
-  @ApiForbiddenResponse()
-  @ApiNotFoundResponse()
+  @ApiForbiddenResponseDefault()
+  @ApiNotFoundResponseDefault()
   @ApiOAuth2([AppRole.MANAGE_ALL_CREDENTIALS, AppRole.MANAGE_OWN_CREDENTIALS])
   async updateCredential(
     @Body(validationPipe)
@@ -171,9 +199,13 @@ export class CredentialsManagementController {
   }
 
   @Delete(":credentialId")
+  @ApiOperation({
+    summary: "Delete credential",
+    description: "Deletes an existing credential within this wallet",
+  })
   @HttpCode(HttpStatus.OK)
-  @ApiForbiddenResponse()
-  @ApiNotFoundResponse()
+  @ApiForbiddenResponseDefault()
+  @ApiNotFoundResponseDefault()
   @ApiOAuth2([AppRole.MANAGE_ALL_CREDENTIALS, AppRole.MANAGE_OWN_CREDENTIALS])
   async deleteCredential(
     @Param("credentialId") credentialId: string,

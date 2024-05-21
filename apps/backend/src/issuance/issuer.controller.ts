@@ -26,10 +26,9 @@ import {
   ApiBearerAuth,
   ApiBody,
   ApiExtraModels,
-  ApiForbiddenResponse,
-  ApiNotFoundResponse,
   ApiOAuth2,
   ApiOkResponse,
+  ApiOperation,
   ApiTags,
   getSchemaPath,
 } from "@nestjs/swagger";
@@ -42,6 +41,10 @@ import {
   DeferredCredentialResponseDto,
   ImmediateCredentialResponseDto,
 } from "./issuance.schemas.js";
+import {
+  ApiForbiddenResponseDefault,
+  ApiNotFoundResponseDefault,
+} from "../utils/swagger.js";
 
 @Controller()
 @ApiTags("OpenID 4 Verifiable Credential Issuance")
@@ -57,11 +60,16 @@ export class IssuerController {
   }
 
   @Post("oid4vci/token")
+  @ApiOperation({
+    summary: "Request OID4VCI access token",
+    description:
+      "Requests an access token based on a pre authorizated code the holder has received off-line",
+  })
   @DisableOAuthGuard()
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({ type: AccessTokenDto })
-  @ApiForbiddenResponse()
-  @ApiNotFoundResponse()
+  @ApiForbiddenResponseDefault()
+  @ApiNotFoundResponseDefault()
   @ApiBearerAuth()
   @HttpCode(HttpStatus.OK)
   async tokenEndpoint(
@@ -71,6 +79,11 @@ export class IssuerController {
   }
 
   @Post("oid4vci/credential")
+  @ApiOperation({
+    summary: "Request OID4VCI credential",
+    description:
+      "Requests a new credential based on a Credential Request via the OID4VCI flow",
+  })
   @ApiBody({ type: CredentialRequestDto })
   @ApiExtraModels(ImmediateCredentialResponseDto, DeferredCredentialResponseDto)
   @ApiOkResponse({
@@ -95,9 +108,14 @@ export class IssuerController {
   }
 
   @Get("oid4vci/offer")
+  @ApiOperation({
+    summary: "Retrieve offered credentials",
+    description:
+      "Retrieves all credentials offered this wallet has offered to holders",
+  })
   @Roles(AppRole.MANAGE_ALL_CREDENTIALS)
   @ApiOkResponse({ type: [CredentialOfferStatusDto] })
-  @ApiForbiddenResponse()
+  @ApiForbiddenResponseDefault()
   @ApiOAuth2([AppRole.MANAGE_ALL_CREDENTIALS])
   @HttpCode(HttpStatus.OK)
   async listOffers(): Promise<CredentialOfferStatus[]> {
@@ -105,10 +123,14 @@ export class IssuerController {
   }
 
   @Post("oid4vci/offer")
+  @ApiOperation({
+    summary: "Add offer",
+    description: "Creates a new credential offer",
+  })
   @Roles(AppRole.MANAGE_ALL_CREDENTIALS)
   @ApiBody({ type: CredentialOfferDto })
   @ApiOkResponse({ type: CredentialOfferStatusDto })
-  @ApiForbiddenResponse()
+  @ApiForbiddenResponseDefault()
   @ApiOAuth2([AppRole.MANAGE_ALL_CREDENTIALS])
   @HttpCode(HttpStatus.OK)
   async offerEndpoint(
@@ -118,9 +140,14 @@ export class IssuerController {
   }
 
   @Put("oid4vci/offer/:id/revoke")
+  @ApiOperation({
+    summary: "Revoke offer",
+    description:
+      "Revokes an existing credential offer, so that it cannot be used anymore by the holder",
+  })
   @Roles(AppRole.MANAGE_ALL_CREDENTIALS)
   @ApiOkResponse({ type: CredentialOfferStatusDto })
-  @ApiForbiddenResponse()
+  @ApiForbiddenResponseDefault()
   @ApiOAuth2([AppRole.MANAGE_ALL_CREDENTIALS])
   @HttpCode(HttpStatus.OK)
   async revokeOffer(@Param("id") id: number): Promise<CredentialOfferStatus> {

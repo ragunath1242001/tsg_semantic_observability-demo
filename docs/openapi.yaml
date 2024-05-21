@@ -3,6 +3,9 @@ paths:
   /health:
     get:
       operationId: HealthController_getHealth
+      summary: Health check
+      description: Retrieves the current health of the wallet. If the wallet is
+        running it always returns an empty 200 OK
       parameters: []
       responses:
         "200":
@@ -14,6 +17,8 @@ paths:
   /api/settings:
     get:
       operationId: ConfigController_getSettings
+      summary: Retrieve settings
+      description: Retrieve dynamic settings for this wallet
       parameters: []
       responses:
         "200":
@@ -23,7 +28,11 @@ paths:
               schema:
                 $ref: "#/components/schemas/RuntimeConfigDto"
         "403":
-          description: ""
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
       tags: &a1
         - Settings
       security: &a2
@@ -32,6 +41,8 @@ paths:
   /api/settings/update:
     post:
       operationId: ConfigController_updateSettings
+      summary: Update settings
+      description: Update the dynamic settings for this wallet
       parameters: []
       requestBody:
         required: true
@@ -47,14 +58,25 @@ paths:
               schema:
                 $ref: "#/components/schemas/RuntimeConfigDto"
         "400":
-          description: ""
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
         "403":
-          description: ""
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
       tags: *a1
       security: *a2
   /api/presentations:
     get:
       operationId: DirectPresentationController_createPresentation
+      summary: Request a presentation
+      description: Generates a Veriable Presentation in Jwt or JSON-LD format for one
+        of the credentials in this wallet
       parameters:
         - name: credentialId
           required: true
@@ -88,6 +110,9 @@ paths:
   /api/presentations/validate:
     post:
       operationId: DirectPresentationController_validatePresentation
+      summary: Validate presentation
+      description: Validates a Jwt-based Verifiable Presentation according to a fixed
+        set of requirements
       parameters: []
       requestBody:
         required: true
@@ -107,6 +132,9 @@ paths:
   /api/iatp/holder/token:
     get:
       operationId: IatpHolderController_createSIToken
+      summary: Request a SIOP token
+      description: Generates a SIOP token for the provided audience to allow it to
+        request presentations
       parameters:
         - name: audience
           required: true
@@ -129,7 +157,11 @@ paths:
                   id_token:
                     type: string
         "403":
-          description: ""
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
       tags: &a5
         - Presentation IATP
       security:
@@ -138,6 +170,8 @@ paths:
   /api/iatp/holder/presentation:
     get:
       operationId: IatpHolderController_getPresentation
+      summary: Retrieve presentation
+      description: Request a presentation with a SIOP-token and a presentation definition
       parameters:
         - name: presentation_definition
           required: true
@@ -161,11 +195,18 @@ paths:
               schema:
                 $ref: "#/components/schemas/PresentationResponseDto"
         "403":
-          description: ""
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
       tags: *a5
   /api/iatp/verifier/verify:
     post:
       operationId: IatpVerifierController_verify
+      summary: Start verification flow
+      description: Request a new IATP presentation flow to start as verifier, based on
+        a presentation defintion and a holder SIOP token
       parameters: []
       requestBody:
         required: true
@@ -188,6 +229,10 @@ paths:
   /api/auth/user:
     get:
       operationId: AuthController_getUser
+      summary: Retrieve current user status
+      description: Retrieves current user state, whether someone is logged in or not a
+        200 result is provided. This is used in the frontend to determine
+        whether certain aspects should be shown.
       parameters: []
       responses:
         "200":
@@ -203,6 +248,8 @@ paths:
   /api/auth/login:
     get:
       operationId: AuthController_login
+      summary: Login redirect
+      description: Redirects user to the correct authorization server
       parameters: []
       responses:
         "302":
@@ -211,6 +258,9 @@ paths:
   /api/auth/logout:
     get:
       operationId: AuthController_logout
+      summary: Logout redirect
+      description: Removes session information and redirects user the root of the
+        frontend (`auth.redirectURL`)
       parameters: []
       responses:
         "302":
@@ -219,6 +269,9 @@ paths:
   /api/auth/callback:
     get:
       operationId: AuthController_callback
+      summary: Login callback
+      description: Users are redirected from the authorization server to this endpoint
+        which will redirect them to the frontend (`auth.redirectURL`)
       parameters: []
       responses:
         "302":
@@ -227,6 +280,8 @@ paths:
   /api/credentials/{credentialId}:
     get:
       operationId: CredentialsController_getCredential
+      summary: Retrieve credential
+      description: Retrieve a specific Verifiable Credential issued by this wallet
       parameters:
         - name: credentialId
           required: true
@@ -241,12 +296,19 @@ paths:
               schema:
                 $ref: "#/components/schemas/CredentialsDto"
         "404":
-          description: ""
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
       tags:
         - Credentials
   /api/management/credentials:
     get:
       operationId: CredentialsManagementController_getCredentials
+      summary: List credentials
+      description: List all credentials, that the current user is allowed to view, in
+        this wallet
       parameters: []
       responses:
         "200":
@@ -258,7 +320,11 @@ paths:
                 items:
                   $ref: "#/components/schemas/CredentialsDto"
         "403":
-          description: ""
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
       tags: &a7
         - Management Credentials
       security: &a9
@@ -268,6 +334,8 @@ paths:
             - wallet_view_own_credentials
     post:
       operationId: CredentialsManagementController_addCredential
+      summary: Add credential
+      description: Issue a new credential within this wallet
       parameters: []
       requestBody:
         required: true
@@ -283,11 +351,23 @@ paths:
               schema:
                 $ref: "#/components/schemas/CredentialsDto"
         "400":
-          description: ""
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
         "403":
-          description: ""
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
         "409":
-          description: ""
+          description: Resource already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
       tags: *a7
       security:
         - *a8
@@ -297,6 +377,9 @@ paths:
   /api/management/credentials/config:
     get:
       operationId: CredentialsManagementController_getConfig
+      summary: Retrieve credential configuration
+      description: Retrieves credential configuration that can be used by this wallet.
+        Contains both trust anchors and JSON-LD contexts.
       parameters: []
       responses:
         "200":
@@ -306,12 +389,18 @@ paths:
               schema:
                 $ref: "#/components/schemas/CredentialConfigDto"
         "403":
-          description: ""
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
       tags: *a7
       security: *a9
   /api/management/credentials/import:
     post:
       operationId: CredentialsManagementController_importCredential
+      summary: Import credential
+      description: Import a credential issued by an external credential issuer
       parameters: []
       requestBody:
         required: true
@@ -327,9 +416,17 @@ paths:
               schema:
                 $ref: "#/components/schemas/CredentialsDto"
         "403":
-          description: ""
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
         "409":
-          description: ""
+          description: Resource already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
       tags: *a7
       security:
         - *a8
@@ -339,6 +436,8 @@ paths:
   /api/management/credentials/{credentialId}:
     get:
       operationId: CredentialsManagementController_getCredential
+      summary: Retrieve credential
+      description: Retrieve a specific credential within this wallet
       parameters:
         - name: credentialId
           required: true
@@ -353,9 +452,17 @@ paths:
               schema:
                 $ref: "#/components/schemas/CredentialsDto"
         "403":
-          description: ""
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
         "404":
-          description: ""
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
       tags: *a7
       security:
         - *a8
@@ -364,6 +471,9 @@ paths:
             - wallet_manage_own_credentials
     put:
       operationId: CredentialsManagementController_updateCredential
+      summary: Update credential
+      description: "Update a credential within this wallet. __*Note*__: this will
+        either self-issue or import a credential."
       parameters:
         - name: credentialId
           required: true
@@ -384,9 +494,17 @@ paths:
               schema:
                 $ref: "#/components/schemas/CredentialsDto"
         "403":
-          description: ""
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
         "404":
-          description: ""
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
       tags: *a7
       security:
         - *a8
@@ -395,6 +513,8 @@ paths:
             - wallet_manage_own_credentials
     delete:
       operationId: CredentialsManagementController_deleteCredential
+      summary: Delete credential
+      description: Deletes an existing credential within this wallet
       parameters:
         - name: credentialId
           required: true
@@ -403,9 +523,17 @@ paths:
             type: string
       responses:
         "403":
-          description: ""
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
         "404":
-          description: ""
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
       tags: *a7
       security:
         - *a8
@@ -415,6 +543,9 @@ paths:
   /api/management/credentials/gaiax/legalRegistrationNumber:
     post:
       operationId: GaiaXManagementController_requestLegalRegistrationNumberCredential
+      summary: Issue legal registration number credential
+      description: Self-issue a Legal Registration Number credential following the
+        Gaia-X Trust Framework
       parameters: []
       requestBody:
         required: true
@@ -430,9 +561,17 @@ paths:
               schema:
                 $ref: "#/components/schemas/CredentialsDto"
         "400":
-          description: ""
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
         "403":
-          description: ""
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
       tags: &a10
         - Management Gaia-X Credentials
       security: &a11
@@ -442,6 +581,9 @@ paths:
   /api/management/credentials/gaiax/compliance:
     post:
       operationId: GaiaXManagementController_requestComplianceCredential
+      summary: Request compliance credential
+      description: Request a compliance credential from a Gaia-X Digital Clearing
+        House based on existing credentials within this wallet
       parameters: []
       requestBody:
         required: true
@@ -457,14 +599,25 @@ paths:
               schema:
                 $ref: "#/components/schemas/CredentialsDto"
         "400":
-          description: ""
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
         "403":
-          description: ""
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
       tags: *a10
       security: *a11
   /keys/{id}:
     get:
       operationId: KeysController_getCaChain
+      summary: Retrieve Key CA chain
+      description: Retrieves the CA chain for a given key. Only supported for keys
+        with type `X509`
       parameters:
         - name: id
           required: true
@@ -475,12 +628,18 @@ paths:
         "200":
           description: ""
         "404":
-          description: ""
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
       tags:
         - Keys
   /api/management/keys:
     get:
       operationId: KeysManagementController_getKeys
+      summary: Retrieve keys
+      description: Retrieves all keys registered for this wallet
       parameters: []
       responses:
         "200":
@@ -492,7 +651,11 @@ paths:
                 items:
                   $ref: "#/components/schemas/KeyInfoDto"
         "403":
-          description: ""
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
       tags: &a12
         - Management Keys
       security: &a13
@@ -500,6 +663,8 @@ paths:
             - wallet_manage_keys
     post:
       operationId: KeysManagementController_addKey
+      summary: Add key
+      description: Generates a new key based on the provided configuration
       parameters: []
       requestBody:
         required: true
@@ -515,16 +680,30 @@ paths:
               schema:
                 $ref: "#/components/schemas/KeyInfoDto"
         "400":
-          description: ""
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
         "403":
-          description: ""
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
         "409":
-          description: ""
+          description: Resource already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
       tags: *a12
       security: *a13
   /api/management/keys/{keyId}:
     get:
       operationId: KeysManagementController_getKey
+      summary: Retrieve key
+      description: Retrieves key information of a specific key within this wallet
       parameters:
         - name: keyId
           required: true
@@ -539,13 +718,23 @@ paths:
               schema:
                 $ref: "#/components/schemas/KeyInfoDto"
         "403":
-          description: ""
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
         "404":
-          description: ""
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
       tags: *a12
       security: *a13
     delete:
       operationId: KeysManagementController_deleteKey
+      summary: Delete key
+      description: Deletes an existing key within this wallet
       parameters:
         - name: keyId
           required: true
@@ -556,14 +745,25 @@ paths:
         "200":
           description: ""
         "403":
-          description: ""
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
         "404":
-          description: ""
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
       tags: *a12
       security: *a13
   /api/management/keys/{keyId}/default:
     put:
       operationId: KeysManagementController_setDefaultKey
+      summary: Set default key
+      description: Sets the provided key as default key within this wallet, will
+        remove the default key flag for other keys in this wallet
       parameters:
         - name: keyId
           required: true
@@ -574,14 +774,25 @@ paths:
         "200":
           description: ""
         "403":
-          description: ""
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
         "404":
-          description: ""
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
       tags: *a12
       security: *a13
   /.well-known/did.json:
     get:
       operationId: DIDController_getDid
+      summary: Retrieve DID document
+      description: Retrieves the public DID document on the well-known address for
+        this wallet
       parameters: []
       responses:
         "200":
@@ -595,6 +806,8 @@ paths:
   /api/management/did:
     get:
       operationId: DIDManagementController_getDidDocument
+      summary: Retrieve DID document
+      description: Retrieves the current DID document for this wallet
       parameters: []
       responses:
         "200":
@@ -604,7 +817,11 @@ paths:
               schema:
                 $ref: "#/components/schemas/DIDDocumentDto"
         "403":
-          description: ""
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
       tags: &a14
         - Management DID
       security: &a15
@@ -613,6 +830,8 @@ paths:
   /api/management/did/services:
     get:
       operationId: DIDManagementController_getServices
+      summary: Retrieve DID services
+      description: Retrieves the currently registered DID services for this wallet
       parameters: []
       responses:
         "200":
@@ -624,11 +843,17 @@ paths:
                 items:
                   $ref: "#/components/schemas/ServiceDto"
         "403":
-          description: ""
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
       tags: *a14
       security: *a15
     post:
       operationId: DIDManagementController_addService
+      summary: Add DID service
+      description: Registers a new DID service for this wallet
       parameters: []
       requestBody:
         required: true
@@ -644,14 +869,24 @@ paths:
               schema:
                 $ref: "#/components/schemas/ServiceDto"
         "403":
-          description: ""
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
         "409":
-          description: ""
+          description: Resource already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
       tags: *a14
       security: *a15
   /api/management/did/services/{id}:
     put:
       operationId: DIDManagementController_updateService
+      summary: Update DID service
+      description: Updates an existing DID service for this wallet
       parameters:
         - name: id
           required: true
@@ -672,13 +907,23 @@ paths:
               schema:
                 $ref: "#/components/schemas/ServiceDto"
         "403":
-          description: ""
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
         "404":
-          description: ""
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
       tags: *a14
       security: *a15
     delete:
       operationId: DIDManagementController_deleteService
+      summary: Delete DID service
+      description: Deletes an existing DID service for this wallet
       parameters:
         - name: id
           required: true
@@ -689,14 +934,24 @@ paths:
         "200":
           description: ""
         "403":
-          description: ""
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
         "404":
-          description: ""
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
       tags: *a14
       security: *a15
   /context/{id}:
     get:
       operationId: ContextController_getContext
+      summary: Retrieve context
+      description: Retrieves JSON-LD context document for the given context
       parameters:
         - name: id
           required: true
@@ -711,6 +966,8 @@ paths:
   /api/management/contexts:
     get:
       operationId: ContextManagementController_getContexts
+      summary: Retrieve contexts
+      description: Retrieve all context registered in this wallet
       parameters: []
       responses:
         "200":
@@ -722,7 +979,11 @@ paths:
                 items:
                   $ref: "#/components/schemas/JSONLDContextDto"
         "403":
-          description: ""
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
       tags: &a16
         - Management Contexts
       security: &a17
@@ -730,6 +991,8 @@ paths:
             - wallet_view_did
     post:
       operationId: ContextManagementController_addContext
+      summary: Add context
+      description: Register a new context in this wallet
       parameters: []
       requestBody:
         required: true
@@ -745,16 +1008,30 @@ paths:
               schema:
                 $ref: "#/components/schemas/JSONLDContextDto"
         "400":
-          description: ""
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
         "403":
-          description: ""
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
         "409":
-          description: ""
+          description: Resource already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
       tags: *a16
       security: *a17
   /api/management/contexts/{id}:
     put:
       operationId: ContextManagementController_updateContext
+      summary: Update context
+      description: Update an existing context in this wallet
       parameters:
         - name: id
           required: true
@@ -775,15 +1052,29 @@ paths:
               schema:
                 $ref: "#/components/schemas/JSONLDContextDto"
         "400":
-          description: ""
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
         "403":
-          description: ""
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
         "404":
-          description: ""
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
       tags: *a16
       security: *a17
     delete:
       operationId: ContextManagementController_deleteContext
+      summary: Delete context
+      description: Delete an existing context in this wallet
       parameters:
         - name: id
           required: true
@@ -794,14 +1085,24 @@ paths:
         "200":
           description: ""
         "403":
-          description: ""
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
         "404":
-          description: ""
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
       tags: *a16
       security: *a17
   /api/oid4vci/holder/request:
     post:
       operationId: HolderController_requestCredential
+      summary: Request credential via OID4VCI
+      description: Requests a new credential via the OID4VCI Pre-authorized-code flow.
       parameters: []
       responses:
         "200":
@@ -811,9 +1112,17 @@ paths:
               schema:
                 $ref: "#/components/schemas/CredentialsDto"
         "400":
-          description: ""
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
         "403":
-          description: ""
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
       tags:
         - OpenID 4 Verifiable Credential Issuance
       security:
@@ -836,6 +1145,9 @@ paths:
   /oid4vci/token:
     post:
       operationId: IssuerController_tokenEndpoint
+      summary: Request OID4VCI access token
+      description: Requests an access token based on a pre authorizated code the
+        holder has received off-line
       parameters: []
       responses:
         "200":
@@ -845,15 +1157,26 @@ paths:
               schema:
                 $ref: "#/components/schemas/AccessTokenDto"
         "403":
-          description: ""
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
         "404":
-          description: ""
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
       tags: *a18
       security:
         - bearer: []
   /oid4vci/credential:
     post:
       operationId: IssuerController_credentialEndpoint
+      summary: Request OID4VCI credential
+      description: Requests a new credential based on a Credential Request via the
+        OID4VCI flow
       parameters:
         - name: Authorization
           required: true
@@ -881,6 +1204,8 @@ paths:
   /api/oid4vci/offer:
     get:
       operationId: IssuerController_listOffers
+      summary: Retrieve offered credentials
+      description: Retrieves all credentials offered this wallet has offered to holders
       parameters: []
       responses:
         "200":
@@ -892,13 +1217,19 @@ paths:
                 items:
                   $ref: "#/components/schemas/CredentialOfferStatusDto"
         "403":
-          description: ""
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
       tags: *a18
       security:
         - oauth2:
             - wallet_manage_all_credentials
     post:
       operationId: IssuerController_offerEndpoint
+      summary: Add offer
+      description: Creates a new credential offer
       parameters: []
       requestBody:
         required: true
@@ -914,7 +1245,11 @@ paths:
               schema:
                 $ref: "#/components/schemas/CredentialOfferStatusDto"
         "403":
-          description: ""
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
       tags: *a18
       security:
         - oauth2:
@@ -922,6 +1257,9 @@ paths:
   /api/oid4vci/offer/{id}/revoke:
     put:
       operationId: IssuerController_revokeOffer
+      summary: Revoke offer
+      description: Revokes an existing credential offer, so that it cannot be used
+        anymore by the holder
       parameters:
         - name: id
           required: true
@@ -936,7 +1274,11 @@ paths:
               schema:
                 $ref: "#/components/schemas/CredentialOfferStatusDto"
         "403":
-          description: ""
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
       tags: *a18
       security:
         - oauth2:
@@ -1001,6 +1343,23 @@ components:
           type: boolean
       required:
         - gaiaXSupport
+    ErrorDto:
+      type: object
+      properties:
+        name:
+          type: string
+        status:
+          type: string
+        code:
+          type: number
+        message:
+          type: object
+        error:
+          type: string
+      required:
+        - name
+        - status
+        - code
     VerifiablePresentationJwtDto:
       type: object
       properties:

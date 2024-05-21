@@ -7,11 +7,10 @@ import { ComplianceRequest, LegalRegistrationNumberRequest } from "@libs/dtos";
 import { GaiaXService } from "./gaiax.service.js";
 import { validationPipe } from "../../utils/validation.pipe.js";
 import {
-  ApiBadRequestResponse,
   ApiBody,
-  ApiForbiddenResponse,
   ApiOAuth2,
   ApiOkResponse,
+  ApiOperation,
   ApiTags,
 } from "@nestjs/swagger";
 import {
@@ -19,6 +18,10 @@ import {
   LegalRegistrationNumberRequestDto,
 } from "./gaiax.schemas.js";
 import { CredentialsDto } from "../credentials.schemas.js";
+import {
+  ApiBadRequestResponseDefault,
+  ApiForbiddenResponseDefault,
+} from "../../utils/swagger.js";
 
 @Controller("management/credentials/gaiax")
 @ApiOAuth2([AppRole.MANAGE_ALL_CREDENTIALS, AppRole.MANAGE_OWN_CREDENTIALS])
@@ -60,10 +63,15 @@ export class GaiaXManagementController {
   }
 
   @Post("legalRegistrationNumber")
+  @ApiOperation({
+    summary: "Issue legal registration number credential",
+    description:
+      "Self-issue a Legal Registration Number credential following the Gaia-X Trust Framework",
+  })
   @ApiBody({ type: LegalRegistrationNumberRequestDto })
   @ApiOkResponse({ type: CredentialsDto })
-  @ApiBadRequestResponse()
-  @ApiForbiddenResponse()
+  @ApiBadRequestResponseDefault()
+  @ApiForbiddenResponseDefault()
   @HttpCode(HttpStatus.OK)
   async requestLegalRegistrationNumberCredential(
     @Body(validationPipe)
@@ -84,10 +92,15 @@ export class GaiaXManagementController {
   }
 
   @Post("compliance")
+  @ApiOperation({
+    summary: "Request compliance credential",
+    description:
+      "Request a compliance credential from a Gaia-X Digital Clearing House based on existing credentials within this wallet",
+  })
   @ApiBody({ type: ComplianceRequestDto })
   @ApiOkResponse({ type: CredentialsDto })
-  @ApiBadRequestResponse()
-  @ApiForbiddenResponse()
+  @ApiBadRequestResponseDefault()
+  @ApiForbiddenResponseDefault()
   @HttpCode(HttpStatus.OK)
   async requestComplianceCredential(
     @Body(validationPipe)

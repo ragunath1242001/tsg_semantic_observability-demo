@@ -16,16 +16,19 @@ import { AppRole } from "@libs/dtos";
 import { KeyInfo } from "@libs/dtos";
 import { validationPipe } from "../utils/validation.pipe.js";
 import {
-  ApiBadRequestResponse,
   ApiBody,
-  ApiConflictResponse,
-  ApiForbiddenResponse,
-  ApiNotFoundResponse,
   ApiOAuth2,
   ApiOkResponse,
+  ApiOperation,
   ApiTags,
 } from "@nestjs/swagger";
 import { KeyConfigDto, KeyInfoDto } from "./keys.schema.js";
+import {
+  ApiForbiddenResponseDefault,
+  ApiBadRequestResponseDefault,
+  ApiConflictResponseDefault,
+  ApiNotFoundResponseDefault,
+} from "../utils/swagger.js";
 
 @Controller("management/keys")
 @ApiTags("Management Keys")
@@ -35,9 +38,13 @@ export class KeysManagementController {
   constructor(private readonly keyService: KeysService) {}
 
   @Get()
+  @ApiOperation({
+    summary: "Retrieve keys",
+    description: "Retrieves all keys registered for this wallet",
+  })
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({ type: [KeyInfoDto] })
-  @ApiForbiddenResponse()
+  @ApiForbiddenResponseDefault()
   async getKeys(): Promise<KeyInfo[]> {
     const keys = await this.keyService.getKeys();
     return keys.map((k) => {
@@ -53,12 +60,16 @@ export class KeysManagementController {
   }
 
   @Post()
+  @ApiOperation({
+    summary: "Add key",
+    description: "Generates a new key based on the provided configuration",
+  })
   @HttpCode(HttpStatus.OK)
   @ApiBody({ type: KeyConfigDto })
   @ApiOkResponse({ type: KeyInfoDto })
-  @ApiBadRequestResponse()
-  @ApiConflictResponse()
-  @ApiForbiddenResponse()
+  @ApiBadRequestResponseDefault()
+  @ApiConflictResponseDefault()
+  @ApiForbiddenResponseDefault()
   async addKey(
     @Body(validationPipe) keyConfig: InitKeyConfig
   ): Promise<KeyInfo> {
@@ -74,9 +85,14 @@ export class KeysManagementController {
   }
 
   @Get(":keyId")
+  @ApiOperation({
+    summary: "Retrieve key",
+    description:
+      "Retrieves key information of a specific key within this wallet",
+  })
   @ApiOkResponse({ type: KeyInfoDto })
-  @ApiNotFoundResponse()
-  @ApiForbiddenResponse()
+  @ApiNotFoundResponseDefault()
+  @ApiForbiddenResponseDefault()
   @HttpCode(HttpStatus.OK)
   async getKey(@Param("keyId") keyId: string): Promise<KeyInfo> {
     const key = await this.keyService.getKey(keyId);
@@ -91,19 +107,28 @@ export class KeysManagementController {
   }
 
   @Delete(":keyId")
+  @ApiOperation({
+    summary: "Delete key",
+    description: "Deletes an existing key within this wallet",
+  })
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse()
-  @ApiNotFoundResponse()
-  @ApiForbiddenResponse()
+  @ApiNotFoundResponseDefault()
+  @ApiForbiddenResponseDefault()
   async deleteKey(@Param("keyId") keyId: string): Promise<void> {
     return this.keyService.deleteKey(keyId);
   }
 
   @Put(":keyId/default")
+  @ApiOperation({
+    summary: "Set default key",
+    description:
+      "Sets the provided key as default key within this wallet, will remove the default key flag for other keys in this wallet",
+  })
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse()
-  @ApiNotFoundResponse()
-  @ApiForbiddenResponse()
+  @ApiNotFoundResponseDefault()
+  @ApiForbiddenResponseDefault()
   async setDefaultKey(@Param("keyId") keyId: string): Promise<void> {
     this.keyService.changeDefaultKey(keyId);
   }

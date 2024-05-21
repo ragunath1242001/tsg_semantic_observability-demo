@@ -16,17 +16,19 @@ import { JSONLDContext } from "../model/context.dao.js";
 import { JsonLdContextConfig } from "../config.js";
 import { validationPipe } from "../utils/validation.pipe.js";
 import {
-  ApiBadRequestResponse,
-  ApiBearerAuth,
   ApiBody,
-  ApiConflictResponse,
-  ApiForbiddenResponse,
-  ApiNotFoundResponse,
   ApiOAuth2,
   ApiOkResponse,
+  ApiOperation,
   ApiTags,
 } from "@nestjs/swagger";
 import { JSONLDContextDto, JsonLdContextConfigDto } from "./context.schemas.js";
+import {
+  ApiForbiddenResponseDefault,
+  ApiConflictResponseDefault,
+  ApiBadRequestResponseDefault,
+  ApiNotFoundResponseDefault,
+} from "../utils/swagger.js";
 
 @Controller("management/contexts")
 @ApiTags("Management Contexts")
@@ -36,20 +38,28 @@ export class ContextManagementController {
   constructor(private readonly contextService: ContextService) {}
 
   @Get()
+  @ApiOperation({
+    summary: "Retrieve contexts",
+    description: "Retrieve all context registered in this wallet",
+  })
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({ type: [JSONLDContextDto] })
-  @ApiForbiddenResponse()
+  @ApiForbiddenResponseDefault()
   async getContexts(): Promise<JSONLDContext[]> {
     return await this.contextService.getContexts();
   }
 
   @Post()
+  @ApiOperation({
+    summary: "Add context",
+    description: "Register a new context in this wallet",
+  })
   @HttpCode(HttpStatus.OK)
   @ApiBody({ type: JsonLdContextConfigDto })
   @ApiOkResponse({ type: JSONLDContextDto })
-  @ApiConflictResponse()
-  @ApiForbiddenResponse()
-  @ApiBadRequestResponse()
+  @ApiConflictResponseDefault()
+  @ApiForbiddenResponseDefault()
+  @ApiBadRequestResponseDefault()
   async addContext(
     @Body(validationPipe) service: JsonLdContextConfig
   ): Promise<JSONLDContext> {
@@ -57,12 +67,16 @@ export class ContextManagementController {
   }
 
   @Put(":id")
+  @ApiOperation({
+    summary: "Update context",
+    description: "Update an existing context in this wallet",
+  })
   @HttpCode(HttpStatus.OK)
   @ApiBody({ type: JsonLdContextConfigDto })
   @ApiOkResponse({ type: JSONLDContextDto })
-  @ApiNotFoundResponse()
-  @ApiForbiddenResponse()
-  @ApiBadRequestResponse()
+  @ApiNotFoundResponseDefault()
+  @ApiForbiddenResponseDefault()
+  @ApiBadRequestResponseDefault()
   async updateContext(
     @Param("id") id: string,
     @Body(validationPipe)
@@ -72,10 +86,14 @@ export class ContextManagementController {
   }
 
   @Delete(":id")
+  @ApiOperation({
+    summary: "Delete context",
+    description: "Delete an existing context in this wallet",
+  })
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse()
-  @ApiNotFoundResponse()
-  @ApiForbiddenResponse()
+  @ApiNotFoundResponseDefault()
+  @ApiForbiddenResponseDefault()
   async deleteContext(@Param("id") id: string): Promise<void> {
     return await this.contextService.deleteContext(id);
   }

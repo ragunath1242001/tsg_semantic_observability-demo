@@ -9,6 +9,7 @@ import {
   ApiExtraModels,
   ApiFoundResponse,
   ApiOkResponse,
+  ApiOperation,
   ApiTags,
   getSchemaPath,
 } from "@nestjs/swagger";
@@ -23,6 +24,11 @@ export class AuthController {
   constructor(private readonly authConfig: AuthConfig) {}
   @Get("user")
   @DisableOAuthGuard()
+  @ApiOperation({
+    summary: "Retrieve current user status",
+    description:
+      "Retrieves current user state, whether someone is logged in or not a 200 result is provided. This is used in the frontend to determine whether certain aspects should be shown.",
+  })
   @ApiExtraModels(AuthenticatedUserDto, UnauthenticatedUserDto)
   @ApiOkResponse({
     schema: {
@@ -47,6 +53,10 @@ export class AuthController {
 
   @Get("login")
   @ApiFoundResponse()
+  @ApiOperation({
+    summary: "Login redirect",
+    description: "Redirects user to the correct authorization server",
+  })
   login(@Res() res: Response) {
     if (!this.authConfig.enabled) {
       res.redirect("/");
@@ -54,6 +64,12 @@ export class AuthController {
   }
 
   @Get("logout")
+  @ApiFoundResponse()
+  @ApiOperation({
+    summary: "Logout redirect",
+    description:
+      "Removes session information and redirects user the root of the frontend (`auth.redirectURL`)",
+  })
   @ApiFoundResponse()
   logout(
     @Req() req: Request,
@@ -76,6 +92,12 @@ export class AuthController {
   @Get("callback")
   @DisableOAuthGuard()
   @UseGuards(OAuthLoginGuard)
+  @ApiFoundResponse()
+  @ApiOperation({
+    summary: "Login callback",
+    description:
+      "Users are redirected from the authorization server to this endpoint which will redirect them to the frontend (`auth.redirectURL`)",
+  })
   @ApiFoundResponse()
   callback(
     @Req() req: Request,
