@@ -5,12 +5,33 @@ import passport from "passport";
 import { Client } from "./roles.guard.js";
 import { AuthConfig } from "../config.js";
 import { ClientInfo } from "@libs/dtos";
+import {
+  ApiExtraModels,
+  ApiFoundResponse,
+  ApiOkResponse,
+  ApiTags,
+  getSchemaPath,
+} from "@nestjs/swagger";
+import {
+  AuthenticatedUserDto,
+  UnauthenticatedUserDto,
+} from "./auth.schemas.js";
 
 @Controller("auth")
+@ApiTags("Authentication")
 export class AuthController {
   constructor(private readonly authConfig: AuthConfig) {}
   @Get("user")
   @DisableOAuthGuard()
+  @ApiExtraModels(AuthenticatedUserDto, UnauthenticatedUserDto)
+  @ApiOkResponse({
+    schema: {
+      oneOf: [
+        { $ref: getSchemaPath(AuthenticatedUserDto) },
+        { $ref: getSchemaPath(UnauthenticatedUserDto) },
+      ],
+    },
+  })
   getUser(@Client() client: ClientInfo | undefined) {
     if (client) {
       return {
@@ -25,6 +46,7 @@ export class AuthController {
   }
 
   @Get("login")
+  @ApiFoundResponse()
   login(@Res() res: Response) {
     if (!this.authConfig.enabled) {
       res.redirect("/");
@@ -32,6 +54,7 @@ export class AuthController {
   }
 
   @Get("logout")
+  @ApiFoundResponse()
   logout(
     @Req() req: Request,
     @Res() res: Response,
@@ -53,6 +76,7 @@ export class AuthController {
   @Get("callback")
   @DisableOAuthGuard()
   @UseGuards(OAuthLoginGuard)
+  @ApiFoundResponse()
   callback(
     @Req() req: Request,
     @Res() res: Response,

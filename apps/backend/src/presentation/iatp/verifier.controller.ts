@@ -8,13 +8,22 @@ import {
   VerifiableCredential,
   CredentialSubject,
 } from "@tsg-dsp/common";
+import { ApiBody, ApiOAuth2, ApiOkResponse, ApiTags } from "@nestjs/swagger";
+import {
+  VerifiablePresentationDto,
+  VerificationRequestDto,
+} from "../presentation.schema.js";
 
 @Controller("iatp/verifier")
+@ApiTags("Presentation IATP")
+@ApiOAuth2([AppRole.VIEW_PRESENTATIONS])
 @Roles(AppRole.VIEW_PRESENTATIONS)
 export class IatpVerifierController {
   constructor(private readonly iatpVerifierService: IatpVerifierService) {}
 
   @Post("verify")
+  @ApiBody({ type: VerificationRequestDto })
+  @ApiOkResponse({ type: VerifiablePresentationDto })
   async verify(
     @Body()
     verificationRequest: {

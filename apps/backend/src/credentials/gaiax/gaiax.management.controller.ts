@@ -1,19 +1,28 @@
-import {
-  Body,
-  Controller,
-  HttpCode,
-  HttpStatus,
-  Post,
-  ValidationPipe,
-} from "@nestjs/common";
+import { Body, Controller, HttpCode, HttpStatus, Post } from "@nestjs/common";
 import { RuntimeConfig } from "../../config.js";
 import { Client } from "../../auth/roles.guard.js";
 import { AppError } from "../../utils/error.js";
 import { ClientInfo, AppRole } from "@libs/dtos";
 import { ComplianceRequest, LegalRegistrationNumberRequest } from "@libs/dtos";
 import { GaiaXService } from "./gaiax.service.js";
+import { validationPipe } from "../../utils/validation.pipe.js";
+import {
+  ApiBadRequestResponse,
+  ApiBody,
+  ApiForbiddenResponse,
+  ApiOAuth2,
+  ApiOkResponse,
+  ApiTags,
+} from "@nestjs/swagger";
+import {
+  ComplianceRequestDto,
+  LegalRegistrationNumberRequestDto,
+} from "./gaiax.schemas.js";
+import { CredentialsDto } from "../credentials.schemas.js";
 
 @Controller("management/credentials/gaiax")
+@ApiOAuth2([AppRole.MANAGE_ALL_CREDENTIALS, AppRole.MANAGE_OWN_CREDENTIALS])
+@ApiTags("Management Gaia-X Credentials")
 export class GaiaXManagementController {
   constructor(
     private readonly gaiaXService: GaiaXService,
@@ -51,9 +60,13 @@ export class GaiaXManagementController {
   }
 
   @Post("legalRegistrationNumber")
+  @ApiBody({ type: LegalRegistrationNumberRequestDto })
+  @ApiOkResponse({ type: CredentialsDto })
+  @ApiBadRequestResponse()
+  @ApiForbiddenResponse()
   @HttpCode(HttpStatus.OK)
   async requestLegalRegistrationNumberCredential(
-    @Body(new ValidationPipe({ transform: true }))
+    @Body(validationPipe)
     credentialConfig: LegalRegistrationNumberRequest,
     @Client() client: ClientInfo
   ) {
@@ -71,9 +84,13 @@ export class GaiaXManagementController {
   }
 
   @Post("compliance")
+  @ApiBody({ type: ComplianceRequestDto })
+  @ApiOkResponse({ type: CredentialsDto })
+  @ApiBadRequestResponse()
+  @ApiForbiddenResponse()
   @HttpCode(HttpStatus.OK)
   async requestComplianceCredential(
-    @Body(new ValidationPipe({ transform: true }))
+    @Body(validationPipe)
     credentialConfig: ComplianceRequest,
     @Client() client: ClientInfo
   ) {

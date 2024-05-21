@@ -17,13 +17,37 @@ import { AppError } from "../../utils/error.js";
 import { PresentationService } from "../presentation.service.js";
 import { Roles } from "../../auth/roles.guard.js";
 import { AppRole } from "@libs/dtos";
+import {
+  ApiBody,
+  ApiExtraModels,
+  ApiOAuth2,
+  ApiOkResponse,
+  ApiTags,
+  getSchemaPath,
+} from "@nestjs/swagger";
+import {
+  PresentationValidationDto,
+  VerifiablePresentationJsonLdDto,
+  VerifiablePresentationJwtDto,
+} from "../presentation.schema.js";
 
 @Controller("presentations")
 @Roles(AppRole.VIEW_PRESENTATIONS)
+@ApiOAuth2([AppRole.VIEW_PRESENTATIONS])
+@ApiTags("Presentation Direct")
 export class DirectPresentationController {
   constructor(private readonly presentationService: PresentationService) {}
 
   @Get()
+  @ApiExtraModels(VerifiablePresentationJwtDto, VerifiablePresentationJsonLdDto)
+  @ApiOkResponse({
+    schema: {
+      oneOf: [
+        { $ref: getSchemaPath(VerifiablePresentationJwtDto) },
+        { $ref: getSchemaPath(VerifiablePresentationJsonLdDto) },
+      ],
+    },
+  })
   async createPresentation(
     @Query("credentialId") credentialId: string,
     @Query("audience") audience: string | undefined,
@@ -51,6 +75,8 @@ export class DirectPresentationController {
   }
 
   @Post("validate")
+  @ApiBody({ type: VerifiablePresentationJwtDto })
+  @ApiOkResponse({ type: PresentationValidationDto })
   async validatePresentation(
     @Body() presentation: VerifiablePresentationJwt,
     @Query("audience") audience: string | undefined

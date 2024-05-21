@@ -137,7 +137,7 @@ const validateCredentialSubject = (showToast: boolean) => {
     }
 
     const context = offerForm.value.credentialType;
-    if (context.schema) {
+    if (context?.schema) {
       const ajv = new Ajv({ allErrors: true });
       const schema = context.schema as unknown as JSONSchemaType<any>;
       const validate = ajv.compile(schema);
@@ -193,7 +193,7 @@ const createOffer = async () => {
     });
     offerForm.value = offerDefault;
     await loadOffers();
-    const offerStatus = offers.value.find(
+    const offerStatus = offers.value?.find(
       (o) =>
         o.preAuthorizedCode ===
         offer.data.grants?.[OfferGrants.PRE_AUTHORIZATION_CODE]?.[

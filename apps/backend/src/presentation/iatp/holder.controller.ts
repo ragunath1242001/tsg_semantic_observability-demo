@@ -5,8 +5,22 @@ import { Roles } from "../../auth/roles.guard.js";
 import { PresentationResponse } from "@libs/dtos";
 import { IatpHolderService } from "./holder.service.js";
 import { DisableOAuthGuard } from "../../auth/oauth.guard.js";
+import {
+  ApiExtraModels,
+  ApiForbiddenResponse,
+  ApiOAuth2,
+  ApiOkResponse,
+  ApiQuery,
+  ApiTags,
+  getSchemaPath,
+} from "@nestjs/swagger";
+import {
+  PresentationDefinitionDto,
+  PresentationResponseDto,
+} from "../presentation.schema.js";
 
 @Controller("iatp/holder")
+@ApiTags("Presentation IATP")
 export class IatpHolderController {
   constructor(
     private readonly siopService: IatpSiopService,
@@ -15,6 +29,16 @@ export class IatpHolderController {
 
   @Get("token")
   @Roles(AppRole.VIEW_PRESENTATIONS)
+  @ApiOAuth2([AppRole.VIEW_PRESENTATIONS])
+  @ApiOkResponse({
+    schema: {
+      type: "object",
+      properties: {
+        id_token: { type: "string" },
+      },
+    },
+  })
+  @ApiForbiddenResponse()
   async createSIToken(
     @Query("audience") audience: string,
     @Query("scope") scope?: string
@@ -29,6 +53,17 @@ export class IatpHolderController {
   }
 
   @Get("presentation")
+  @ApiExtraModels(PresentationDefinitionDto)
+  @ApiQuery({
+    name: "presentation_definition",
+    content: {
+      "application/json": {
+        schema: { $ref: getSchemaPath(PresentationResponseDto) },
+      },
+    },
+  })
+  @ApiOkResponse({ type: PresentationResponseDto })
+  @ApiForbiddenResponse()
   @DisableOAuthGuard()
   async getPresentation(
     @Query("presentation_definition")

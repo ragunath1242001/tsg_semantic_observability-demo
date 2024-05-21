@@ -172,7 +172,7 @@ const validateCredentialSubject = (showToast: boolean) => {
     }
 
     const contexts: JsonLdContextConfig[] =
-      config.value.contexts?.filter((c) =>
+      config.value?.contexts?.filter((c) =>
         credentialForm.value.type.includes(c.credentialType)
       ) || [];
     for (const context of contexts) {

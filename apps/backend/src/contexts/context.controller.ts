@@ -1,11 +1,12 @@
-import { Controller, Get, HttpStatus, Param, Res } from "@nestjs/common";
+import { Controller, Get, HttpStatus, Param } from "@nestjs/common";
 import { DisableOAuthGuard } from "../auth/oauth.guard.js";
 import { ContextService } from "./context.service.js";
-import { Response } from "express";
 import { AppError } from "../utils/error.js";
+import { ApiTags } from "@nestjs/swagger";
 
 @Controller()
 @DisableOAuthGuard()
+@ApiTags("Contexts")
 export class ContextController {
   constructor(private readonly contextService: ContextService) {}
 

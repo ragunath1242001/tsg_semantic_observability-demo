@@ -1,6 +1,5 @@
 import {
   Body,
-  ClassSerializerInterceptor,
   Controller,
   Delete,
   Get,
@@ -9,30 +8,36 @@ import {
   Param,
   Post,
   Put,
-  UseInterceptors,
-  ValidationPipe,
+  UsePipes,
 } from "@nestjs/common";
 import { CredentialsService } from "./credentials.service.js";
-import {
-  InitCredentialConfig,
-  JsonLdContextConfig,
-  RootConfig,
-  TrustAnchorConfig,
-} from "../config.js";
+import { InitCredentialConfig, RootConfig } from "../config.js";
 import { Credentials } from "../model/credentials.dao.js";
 import { CredentialSubject, VerifiableCredential } from "@tsg-dsp/common";
 import { Client } from "../auth/roles.guard.js";
 import { AppError } from "../utils/error.js";
 import { ClientInfo, AppRole } from "@libs/dtos";
 import { ContextService } from "../contexts/context.service.js";
-import { ComplianceRequest, LegalRegistrationNumberRequest } from "@libs/dtos";
-import { ApiBody, ApiOkResponse, ApiTags } from "@nestjs/swagger";
+import {
+  ApiBadRequestResponse,
+  ApiBody,
+  ApiConflictResponse,
+  ApiForbiddenResponse,
+  ApiNotFoundResponse,
+  ApiOAuth2,
+  ApiOkResponse,
+  ApiTags,
+} from "@nestjs/swagger";
 import {
   CredentialConfigDto,
+  CredentialsConfigDto,
   CredentialsDto,
-} from "./credentials.management.controller.schemas.js";
+  VerifiableCredentialDto,
+} from "./credentials.schemas.js";
+import { validationPipe } from "../utils/validation.pipe.js";
 
 @ApiTags("Management Credentials")
+@ApiOAuth2([AppRole.VIEW_ALL_CREDENTIALS, AppRole.VIEW_OWN_CREDENTIALS])
 @Controller("management/credentials")
 export class CredentialsManagementController {
   constructor(
@@ -76,6 +81,8 @@ export class CredentialsManagementController {
   @ApiOkResponse({
     type: [CredentialsDto],
   })
+  @ApiForbiddenResponse()
+  @HttpCode(HttpStatus.OK)
   async getCredentials(@Client() client: ClientInfo): Promise<Credentials[]> {
     const targetDid = this.targetDid("view", client);
     return this.credentialsService.getCredentials(targetDid);
@@ -83,10 +90,13 @@ export class CredentialsManagementController {
 
   @Get("config")
   @HttpCode(HttpStatus.OK)
-  async getConfig(): Promise<{
-    trustAnchors: TrustAnchorConfig[];
-    contexts: JsonLdContextConfig[];
-  }> {
+  @ApiOkResponse({
+    type: CredentialConfigDto,
+  })
+  @ApiForbiddenResponse()
+  @UsePipes(validationPipe)
+  @HttpCode(HttpStatus.OK)
+  async getConfig(): Promise<CredentialsConfigDto> {
     return {
       trustAnchors: this.config.trustAnchors,
       contexts: await this.contextService.getContexts(),
@@ -96,9 +106,13 @@ export class CredentialsManagementController {
   @Post()
   @ApiBody({ type: CredentialConfigDto })
   @ApiOkResponse({ type: CredentialsDto })
+  @ApiForbiddenResponse()
+  @ApiConflictResponse()
+  @ApiBadRequestResponse()
+  @ApiOAuth2([AppRole.MANAGE_ALL_CREDENTIALS, AppRole.MANAGE_OWN_CREDENTIALS])
   @HttpCode(HttpStatus.OK)
   async addCredential(
-    @Body(new ValidationPipe({ transform: true }))
+    @Body(validationPipe)
     credentialConfig: InitCredentialConfig,
     @Client() client: ClientInfo
   ): Promise<Credentials> {
@@ -108,8 +122,11 @@ export class CredentialsManagementController {
 
   @Post("import")
   @HttpCode(HttpStatus.OK)
-  @ApiBody({ type: VerifiableCredential<CredentialSubject> })
+  @ApiBody({ type: VerifiableCredentialDto })
   @ApiOkResponse({ type: CredentialsDto })
+  @ApiConflictResponse()
+  @ApiForbiddenResponse()
+  @ApiOAuth2([AppRole.MANAGE_ALL_CREDENTIALS, AppRole.MANAGE_OWN_CREDENTIALS])
   async importCredential(
     @Body() credential: VerifiableCredential<CredentialSubject>,
     @Client() client: ClientInfo
@@ -121,6 +138,9 @@ export class CredentialsManagementController {
   @Get(":credentialId")
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({ type: CredentialsDto })
+  @ApiForbiddenResponse()
+  @ApiNotFoundResponse()
+  @ApiOAuth2([AppRole.MANAGE_ALL_CREDENTIALS, AppRole.MANAGE_OWN_CREDENTIALS])
   async getCredential(
     @Param("credentialId") credentialId: string,
     @Client() client: ClientInfo
@@ -133,8 +153,11 @@ export class CredentialsManagementController {
   @HttpCode(HttpStatus.OK)
   @ApiBody({ type: CredentialConfigDto })
   @ApiOkResponse({ type: CredentialsDto })
+  @ApiForbiddenResponse()
+  @ApiNotFoundResponse()
+  @ApiOAuth2([AppRole.MANAGE_ALL_CREDENTIALS, AppRole.MANAGE_OWN_CREDENTIALS])
   async updateCredential(
-    @Body(new ValidationPipe({ transform: true }))
+    @Body(validationPipe)
     credentialConfig: InitCredentialConfig,
     @Param("credentialId") credentialId: string,
     @Client() client: ClientInfo
@@ -149,6 +172,9 @@ export class CredentialsManagementController {
 
   @Delete(":credentialId")
   @HttpCode(HttpStatus.OK)
+  @ApiForbiddenResponse()
+  @ApiNotFoundResponse()
+  @ApiOAuth2([AppRole.MANAGE_ALL_CREDENTIALS, AppRole.MANAGE_OWN_CREDENTIALS])
   async deleteCredential(
     @Param("credentialId") credentialId: string,
     @Client() client: ClientInfo

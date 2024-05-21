@@ -7,6 +7,51 @@ paths:
       responses:
         "200":
           description: ""
+        "502":
+          description: ""
+      tags:
+        - Health
+  /api/settings:
+    get:
+      operationId: ConfigController_getSettings
+      parameters: []
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RuntimeConfigDto"
+        "403":
+          description: ""
+      tags: &a1
+        - Settings
+      security: &a2
+        - oauth2:
+            - wallet_issue_credentials
+  /api/settings/update:
+    post:
+      operationId: ConfigController_updateSettings
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RuntimeConfigDto"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RuntimeConfigDto"
+        "400":
+          description: ""
+        "403":
+          description: ""
+      tags: *a1
+      security: *a2
   /api/presentations:
     get:
       operationId: DirectPresentationController_createPresentation
@@ -29,6 +74,17 @@ paths:
       responses:
         "200":
           description: ""
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/VerifiablePresentationJwtDto"
+                  - $ref: "#/components/schemas/VerifiablePresentationJsonLdDto"
+      tags: &a3
+        - Presentation Direct
+      security: &a4
+        - oauth2:
+            - wallet_view_presentations
   /api/presentations/validate:
     post:
       operationId: DirectPresentationController_validatePresentation
@@ -38,10 +94,16 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/VerifiablePresentationJwt"
+              $ref: "#/components/schemas/VerifiablePresentationJwtDto"
       responses:
-        "201":
+        "200":
           description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PresentationValidationDto"
+      tags: *a3
+      security: *a4
   /api/iatp/holder/token:
     get:
       operationId: IatpHolderController_createSIToken
@@ -59,6 +121,20 @@ paths:
       responses:
         "200":
           description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id_token:
+                    type: string
+        "403":
+          description: ""
+      tags: &a5
+        - Presentation IATP
+      security:
+        - oauth2:
+            - wallet_view_presentations
   /api/iatp/holder/presentation:
     get:
       operationId: IatpHolderController_getPresentation
@@ -66,6 +142,10 @@ paths:
         - name: presentation_definition
           required: true
           in: query
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PresentationResponseDto"
           schema:
             type: string
         - name: Authorization
@@ -76,13 +156,35 @@ paths:
       responses:
         "200":
           description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PresentationResponseDto"
+        "403":
+          description: ""
+      tags: *a5
   /api/iatp/verifier/verify:
     post:
       operationId: IatpVerifierController_verify
       parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VerificationRequestDto"
       responses:
-        "201":
+        "200":
           description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VerifiablePresentationDto"
+      tags:
+        - Presentation IATP
+      security:
+        - oauth2:
+            - wallet_view_presentations
   /api/auth/user:
     get:
       operationId: AuthController_getUser
@@ -90,46 +192,38 @@ paths:
       responses:
         "200":
           description: ""
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/AuthenticatedUserDto"
+                  - $ref: "#/components/schemas/UnauthenticatedUserDto"
+      tags: &a6
+        - Authentication
   /api/auth/login:
     get:
       operationId: AuthController_login
       parameters: []
       responses:
-        "200":
+        "302":
           description: ""
+      tags: *a6
   /api/auth/logout:
     get:
       operationId: AuthController_logout
       parameters: []
       responses:
-        "200":
+        "302":
           description: ""
+      tags: *a6
   /api/auth/callback:
     get:
       operationId: AuthController_callback
       parameters: []
       responses:
-        "200":
+        "302":
           description: ""
-  /.well-known/did.json:
-    get:
-      operationId: CredentialsController_getDid
-      parameters: []
-      responses:
-        "200":
-          description: ""
-  /context/{id}:
-    get:
-      operationId: CredentialsController_getContext
-      parameters:
-        - name: id
-          required: true
-          in: path
-          schema:
-            type: string
-      responses:
-        "200":
-          description: ""
+      tags: *a6
   /api/credentials/{credentialId}:
     get:
       operationId: CredentialsController_getCredential
@@ -142,6 +236,14 @@ paths:
       responses:
         "200":
           description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CredentialsDto"
+        "404":
+          description: ""
+      tags:
+        - Credentials
   /api/management/credentials:
     get:
       operationId: CredentialsManagementController_getCredentials
@@ -155,8 +257,15 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/CredentialsDto"
-      tags: &a1
+        "403":
+          description: ""
+      tags: &a7
         - Management Credentials
+      security: &a9
+        - &a8
+          oauth2:
+            - wallet_view_all_credentials
+            - wallet_view_own_credentials
     post:
       operationId: CredentialsManagementController_addCredential
       parameters: []
@@ -173,7 +282,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/CredentialsDto"
-      tags: *a1
+        "400":
+          description: ""
+        "403":
+          description: ""
+        "409":
+          description: ""
+      tags: *a7
+      security:
+        - *a8
+        - oauth2:
+            - wallet_manage_all_credentials
+            - wallet_manage_own_credentials
   /api/management/credentials/config:
     get:
       operationId: CredentialsManagementController_getConfig
@@ -181,7 +301,14 @@ paths:
       responses:
         "200":
           description: ""
-      tags: *a1
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CredentialConfigDto"
+        "403":
+          description: ""
+      tags: *a7
+      security: *a9
   /api/management/credentials/import:
     post:
       operationId: CredentialsManagementController_importCredential
@@ -191,7 +318,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/VerifiableCredential"
+              $ref: "#/components/schemas/VerifiableCredentialDto"
       responses:
         "200":
           description: ""
@@ -199,7 +326,16 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/CredentialsDto"
-      tags: *a1
+        "403":
+          description: ""
+        "409":
+          description: ""
+      tags: *a7
+      security:
+        - *a8
+        - oauth2:
+            - wallet_manage_all_credentials
+            - wallet_manage_own_credentials
   /api/management/credentials/{credentialId}:
     get:
       operationId: CredentialsManagementController_getCredential
@@ -216,7 +352,16 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/CredentialsDto"
-      tags: *a1
+        "403":
+          description: ""
+        "404":
+          description: ""
+      tags: *a7
+      security:
+        - *a8
+        - oauth2:
+            - wallet_manage_all_credentials
+            - wallet_manage_own_credentials
     put:
       operationId: CredentialsManagementController_updateCredential
       parameters:
@@ -238,7 +383,16 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/CredentialsDto"
-      tags: *a1
+        "403":
+          description: ""
+        "404":
+          description: ""
+      tags: *a7
+      security:
+        - *a8
+        - oauth2:
+            - wallet_manage_all_credentials
+            - wallet_manage_own_credentials
     delete:
       operationId: CredentialsManagementController_deleteCredential
       parameters:
@@ -248,37 +402,66 @@ paths:
           schema:
             type: string
       responses:
-        "200":
+        "403":
           description: ""
-      tags: *a1
+        "404":
+          description: ""
+      tags: *a7
+      security:
+        - *a8
+        - oauth2:
+            - wallet_manage_all_credentials
+            - wallet_manage_own_credentials
   /api/management/credentials/gaiax/legalRegistrationNumber:
     post:
-      operationId: CredentialsManagementController_requestLegalRegistrationNumberCredential
+      operationId: GaiaXManagementController_requestLegalRegistrationNumberCredential
       parameters: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/LegalRegistrationNumberRequest"
+              $ref: "#/components/schemas/LegalRegistrationNumberRequestDto"
       responses:
         "200":
           description: ""
-      tags: *a1
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CredentialsDto"
+        "400":
+          description: ""
+        "403":
+          description: ""
+      tags: &a10
+        - Management Gaia-X Credentials
+      security: &a11
+        - oauth2:
+            - wallet_manage_all_credentials
+            - wallet_manage_own_credentials
   /api/management/credentials/gaiax/compliance:
     post:
-      operationId: CredentialsManagementController_requestComplianceCredential
+      operationId: GaiaXManagementController_requestComplianceCredential
       parameters: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ComplianceRequest"
+              $ref: "#/components/schemas/ComplianceRequestDto"
       responses:
         "200":
           description: ""
-      tags: *a1
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CredentialsDto"
+        "400":
+          description: ""
+        "403":
+          description: ""
+      tags: *a10
+      security: *a11
   /keys/{id}:
     get:
       operationId: KeysController_getCaChain
@@ -291,6 +474,10 @@ paths:
       responses:
         "200":
           description: ""
+        "404":
+          description: ""
+      tags:
+        - Keys
   /api/management/keys:
     get:
       operationId: KeysManagementController_getKeys
@@ -298,6 +485,19 @@ paths:
       responses:
         "200":
           description: ""
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/KeyInfoDto"
+        "403":
+          description: ""
+      tags: &a12
+        - Management Keys
+      security: &a13
+        - oauth2:
+            - wallet_manage_keys
     post:
       operationId: KeysManagementController_addKey
       parameters: []
@@ -306,10 +506,22 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/InitKeyConfig"
+              $ref: "#/components/schemas/KeyConfigDto"
       responses:
         "200":
           description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/KeyInfoDto"
+        "400":
+          description: ""
+        "403":
+          description: ""
+        "409":
+          description: ""
+      tags: *a12
+      security: *a13
   /api/management/keys/{keyId}:
     get:
       operationId: KeysManagementController_getKey
@@ -322,6 +534,16 @@ paths:
       responses:
         "200":
           description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/KeyInfoDto"
+        "403":
+          description: ""
+        "404":
+          description: ""
+      tags: *a12
+      security: *a13
     delete:
       operationId: KeysManagementController_deleteKey
       parameters:
@@ -333,6 +555,12 @@ paths:
       responses:
         "200":
           description: ""
+        "403":
+          description: ""
+        "404":
+          description: ""
+      tags: *a12
+      security: *a13
   /api/management/keys/{keyId}/default:
     put:
       operationId: KeysManagementController_setDefaultKey
@@ -345,13 +573,253 @@ paths:
       responses:
         "200":
           description: ""
+        "403":
+          description: ""
+        "404":
+          description: ""
+      tags: *a12
+      security: *a13
+  /.well-known/did.json:
+    get:
+      operationId: DIDController_getDid
+      parameters: []
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DIDDocumentDto"
+      tags:
+        - DID
+  /api/management/did:
+    get:
+      operationId: DIDManagementController_getDidDocument
+      parameters: []
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DIDDocumentDto"
+        "403":
+          description: ""
+      tags: &a14
+        - Management DID
+      security: &a15
+        - oauth2:
+            - wallet_view_did
+  /api/management/did/services:
+    get:
+      operationId: DIDManagementController_getServices
+      parameters: []
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ServiceDto"
+        "403":
+          description: ""
+      tags: *a14
+      security: *a15
+    post:
+      operationId: DIDManagementController_addService
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DidServiceConfigDto"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServiceDto"
+        "403":
+          description: ""
+        "409":
+          description: ""
+      tags: *a14
+      security: *a15
+  /api/management/did/services/{id}:
+    put:
+      operationId: DIDManagementController_updateService
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DidServiceConfigDto"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServiceDto"
+        "403":
+          description: ""
+        "404":
+          description: ""
+      tags: *a14
+      security: *a15
+    delete:
+      operationId: DIDManagementController_deleteService
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+        "403":
+          description: ""
+        "404":
+          description: ""
+      tags: *a14
+      security: *a15
+  /context/{id}:
+    get:
+      operationId: ContextController_getContext
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+      tags:
+        - Contexts
+  /api/management/contexts:
+    get:
+      operationId: ContextManagementController_getContexts
+      parameters: []
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/JSONLDContextDto"
+        "403":
+          description: ""
+      tags: &a16
+        - Management Contexts
+      security: &a17
+        - oauth2:
+            - wallet_view_did
+    post:
+      operationId: ContextManagementController_addContext
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/JsonLdContextConfigDto"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JSONLDContextDto"
+        "400":
+          description: ""
+        "403":
+          description: ""
+        "409":
+          description: ""
+      tags: *a16
+      security: *a17
+  /api/management/contexts/{id}:
+    put:
+      operationId: ContextManagementController_updateContext
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/JsonLdContextConfigDto"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JSONLDContextDto"
+        "400":
+          description: ""
+        "403":
+          description: ""
+        "404":
+          description: ""
+      tags: *a16
+      security: *a17
+    delete:
+      operationId: ContextManagementController_deleteContext
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+        "403":
+          description: ""
+        "404":
+          description: ""
+      tags: *a16
+      security: *a17
   /api/oid4vci/holder/request:
     post:
       operationId: HolderController_requestCredential
       parameters: []
       responses:
-        "201":
+        "200":
           description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CredentialsDto"
+        "400":
+          description: ""
+        "403":
+          description: ""
+      tags:
+        - OpenID 4 Verifiable Credential Issuance
+      security:
+        - oauth2:
+            - wallet_manage_own_credentials
+            - wallet_manage_all_credentials
   /.well-known/openid-credential-issuer:
     get:
       operationId: IssuerController_issuerMetadata
@@ -359,13 +827,30 @@ paths:
       responses:
         "200":
           description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CredentialIssuerMetadataDto"
+      tags: &a18
+        - OpenID 4 Verifiable Credential Issuance
   /oid4vci/token:
     post:
       operationId: IssuerController_tokenEndpoint
       parameters: []
       responses:
-        "201":
+        "200":
           description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccessTokenDto"
+        "403":
+          description: ""
+        "404":
+          description: ""
+      tags: *a18
+      security:
+        - bearer: []
   /oid4vci/credential:
     post:
       operationId: IssuerController_credentialEndpoint
@@ -375,9 +860,24 @@ paths:
           in: header
           schema:
             type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CredentialRequestDto"
       responses:
-        "201":
+        "200":
           description: ""
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/ImmediateCredentialResponseDto"
+                  - $ref: "#/components/schemas/DeferredCredentialResponseDto"
+      tags: *a18
+      security:
+        - bearer: []
   /api/oid4vci/offer:
     get:
       operationId: IssuerController_listOffers
@@ -385,12 +885,40 @@ paths:
       responses:
         "200":
           description: ""
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CredentialOfferStatusDto"
+        "403":
+          description: ""
+      tags: *a18
+      security:
+        - oauth2:
+            - wallet_manage_all_credentials
     post:
       operationId: IssuerController_offerEndpoint
       parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CredentialOfferDto"
       responses:
-        "201":
+        "200":
           description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CredentialOfferStatusDto"
+        "403":
+          description: ""
+      tags: *a18
+      security:
+        - oauth2:
+            - wallet_manage_all_credentials
   /api/oid4vci/offer/{id}/revoke:
     put:
       operationId: IssuerController_revokeOffer
@@ -403,23 +931,378 @@ paths:
       responses:
         "200":
           description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CredentialOfferStatusDto"
+        "403":
+          description: ""
+      tags: *a18
+      security:
+        - oauth2:
+            - wallet_manage_all_credentials
 info:
   title: TSG Wallet
   description: Description
   version: "1.0"
   contact: {}
-tags: []
+tags:
+  - name: Health
+    description: ""
+  - name: Settings
+    description: ""
+  - name: Authentication
+    description: ""
+  - name: DID
+    description: ""
+  - name: Contexts
+    description: ""
+  - name: Keys
+    description: ""
+  - name: Credentials
+    description: ""
+  - name: Management DID
+    description: ""
+  - name: Management Contexts
+    description: ""
+  - name: Management Keys
+    description: ""
+  - name: Management Credentials
+    description: ""
+  - name: Management Gaia-X Credentials
+    description: ""
+  - name: OpenID 4 Verifiable Credential Issuance
+    description: ""
+  - name: Presentation IATP
+    description: ""
+  - name: Presentation Direct
+    description: ""
 servers: []
 components:
   securitySchemes:
-    bearer:
-      scheme: bearer
-      bearerFormat: JWT
-      type: http
+    oauth2:
+      type: oauth2
+      flows:
+        password:
+          scopes:
+            wallet_view_did: wallet_view_did
+            wallet_manage_keys: wallet_manage_keys
+            wallet_view_own_credentials: wallet_view_own_credentials
+            wallet_view_all_credentials: wallet_view_all_credentials
+            wallet_manage_own_credentials: wallet_manage_own_credentials
+            wallet_manage_all_credentials: wallet_manage_all_credentials
+            wallet_issue_credentials: wallet_issue_credentials
+            wallet_view_presentations: wallet_view_presentations
   schemas:
-    VerifiablePresentationJwt:
+    RuntimeConfigDto:
       type: object
-      properties: {}
+      properties:
+        gaiaXSupport:
+          type: boolean
+      required:
+        - gaiaXSupport
+    VerifiablePresentationJwtDto:
+      type: object
+      properties:
+        vp:
+          type: string
+      required:
+        - vp
+    SignatureDto:
+      type: object
+      properties:
+        type:
+          type: string
+        created:
+          type: string
+          format: date-time
+        proofPurpose:
+          type: string
+        jws:
+          type: string
+        verificationMethod:
+          type: string
+      required:
+        - type
+        - created
+        - proofPurpose
+        - jws
+        - verificationMethod
+    VerifiableCredentialDto:
+      type: object
+      properties:
+        "@context":
+          type: array
+          items:
+            type: string
+        type:
+          type: array
+          items:
+            type: string
+        id:
+          type: string
+        credentialSubject:
+          oneOf:
+            - $ref: "#/components/schemas/DefaultCredentialSubjectDto"
+            - type: array
+              items:
+                $ref: "#/components/schemas/DefaultCredentialSubjectDto"
+        issuer:
+          type: string
+        expirationDate:
+          type: string
+          format: date-time
+        issuanceDate:
+          type: string
+          format: date-time
+        evidence:
+          type: object
+        proof:
+          $ref: "#/components/schemas/SignatureDto"
+      required:
+        - "@context"
+        - type
+        - credentialSubject
+        - issuer
+        - issuanceDate
+        - proof
+    VerifiablePresentationJsonLdDto:
+      type: object
+      properties:
+        vp:
+          $ref: "#/components/schemas/VerifiableCredentialDto"
+      required:
+        - vp
+    PresentationValidationDto:
+      type: object
+      properties:
+        valid:
+          type: boolean
+        validateJWTSignature:
+          type: boolean
+        validateJWTExpiryDate:
+          type: boolean
+        validateTrustAnchors:
+          type: array
+          items:
+            type: boolean
+        validateExpiryDate:
+          type: array
+          items:
+            type: boolean
+        validateCredentials:
+          type: array
+          items:
+            type: boolean
+        validateAudience:
+          type: boolean
+        vp:
+          type: string
+      required:
+        - valid
+        - validateJWTSignature
+        - validateJWTExpiryDate
+        - validateTrustAnchors
+        - validateExpiryDate
+        - validateCredentials
+        - vp
+    FormatDto:
+      type: object
+      properties:
+        jwt_vp:
+          type: object
+          properties:
+            alg:
+              type: array
+              items:
+                type: string
+    FieldDto:
+      type: object
+      properties:
+        path:
+          type: array
+          items:
+            type: string
+        id:
+          type: string
+        purpose:
+          type: string
+        name:
+          type: string
+        filter:
+          type: object
+        optional:
+          type: boolean
+      required:
+        - path
+    ConstraintDto:
+      type: object
+      properties:
+        fields:
+          type: array
+          items:
+            $ref: "#/components/schemas/FieldDto"
+        limit_disclosure:
+          type: string
+          enum:
+            - required
+            - preferred
+    InputDescriptorDto:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        purpose:
+          type: string
+        format:
+          $ref: "#/components/schemas/FormatDto"
+        constraints:
+          $ref: "#/components/schemas/ConstraintDto"
+      required:
+        - id
+        - constraints
+    PresentationDefinitionDto:
+      type: object
+      properties:
+        id:
+          type: string
+        input_descriptors:
+          type: array
+          items:
+            $ref: "#/components/schemas/InputDescriptorDto"
+        name:
+          type: string
+        purpose:
+          type: string
+        format:
+          $ref: "#/components/schemas/FormatDto"
+      required:
+        - id
+        - input_descriptors
+    DescriptorMapDto:
+      type: object
+      properties:
+        id:
+          type: string
+        format:
+          type: string
+        path:
+          type: string
+        path_nested:
+          $ref: "#/components/schemas/DescriptorMapDto"
+      required:
+        - id
+        - format
+        - path
+    PresentationSubmissionDto:
+      type: object
+      properties:
+        id:
+          type: string
+        definition_id:
+          type: string
+        descriptor_map:
+          type: array
+          items:
+            $ref: "#/components/schemas/DescriptorMapDto"
+      required:
+        - id
+        - definition_id
+        - descriptor_map
+    PresentationResponseDto:
+      type: object
+      properties:
+        vp_token:
+          type: string
+        presentation_submission:
+          $ref: "#/components/schemas/PresentationSubmissionDto"
+      required:
+        - vp_token
+        - presentation_submission
+    VerificationRequestDto:
+      type: object
+      properties:
+        presentationDefinition:
+          $ref: "#/components/schemas/PresentationDefinitionDto"
+        holderIdToken:
+          type: string
+      required:
+        - presentationDefinition
+        - holderIdToken
+    VerifiablePresentationDto:
+      type: object
+      properties:
+        "@context":
+          type: array
+          items:
+            type: string
+        type:
+          type: array
+          items:
+            type: string
+        id:
+          type: string
+        verifiableCredential:
+          oneOf:
+            - &a19
+              $ref: "#/components/schemas/VerifiableCredentialDto"
+            - type: array
+              items: *a19
+      required:
+        - "@context"
+        - type
+        - verifiableCredential
+    AppRole:
+      type: string
+      enum:
+        - wallet_view_did
+        - wallet_manage_keys
+        - wallet_view_own_credentials
+        - wallet_view_all_credentials
+        - wallet_manage_own_credentials
+        - wallet_manage_all_credentials
+        - wallet_issue_credentials
+        - wallet_view_presentations
+    ClientInfoDto:
+      type: object
+      properties:
+        sub:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        didId:
+          type: string
+        roles:
+          type: array
+          items:
+            $ref: "#/components/schemas/AppRole"
+      required:
+        - sub
+        - name
+        - email
+        - didId
+        - roles
+    AuthenticatedUserDto:
+      type: object
+      properties:
+        state:
+          type: string
+        user:
+          $ref: "#/components/schemas/ClientInfoDto"
+      required:
+        - state
+        - user
+    UnauthenticatedUserDto:
+      type: object
+      properties:
+        state:
+          type: string
+      required:
+        - state
     CredentialsDto:
       type: object
       properties:
@@ -428,60 +1311,7 @@ components:
         targetDid:
           type: string
         credential:
-          type: object
-          properties:
-            "@context":
-              type: array
-              items:
-                type: string
-            id:
-              type: string
-            type:
-              type: array
-              items:
-                type: string
-            issuer:
-              type: string
-            credentialSubject:
-              oneOf:
-                - &a2
-                  type: object
-                  properties: &a3
-                    id:
-                      type: string
-                      title: DID Identifier of the credential subject
-                      example: did:web:localhost
-                  additionalProperties: true
-                - type: array
-                  items: *a2
-            expirationDate:
-              type: string
-              format: date-time
-            issuanceDate:
-              type: string
-              format: date-time
-            evidence:
-              type: object
-            proof:
-              type: object
-              properties:
-                type:
-                  type: string
-                created:
-                  type: string
-                  format: date-time
-                proofPurpose:
-                  type: string
-                jws:
-                  type: string
-                verificationMethod:
-                  type: string
-              required:
-                - type
-                - created
-                - proofPurpose
-                - jws
-                - verificationMethod
+          $ref: "#/components/schemas/VerifiableCredentialDto"
         selfIssued:
           type: boolean
         created:
@@ -500,6 +1330,13 @@ components:
         - selfIssued
         - created
         - modified
+    DefaultCredentialSubjectDto:
+      type: object
+      properties:
+        id:
+          type: string
+      required:
+        - id
     CredentialConfigDto:
       type: object
       properties:
@@ -523,21 +1360,503 @@ components:
         keyId:
           type: string
         credentialSubject:
-          type: object
-          properties: *a3
-          additionalProperties: true
+          $ref: "#/components/schemas/DefaultCredentialSubjectDto"
       required:
         - id
         - credentialSubject
-    VerifiableCredential:
+    LegalRegistrationNumberRequestDto:
       type: object
-      properties: {}
-    LegalRegistrationNumberRequest:
+      properties:
+        vcId:
+          type: string
+        clearingHouse:
+          type: string
+        credentialSubject:
+          $ref: "#/components/schemas/DefaultCredentialSubjectDto"
+      required:
+        - vcId
+        - clearingHouse
+        - credentialSubject
+    ComplianceRequestDto:
       type: object
-      properties: {}
-    ComplianceRequest:
+      properties:
+        vcId:
+          type: string
+        clearingHouse:
+          type: string
+        credentials:
+          type: array
+          items:
+            $ref: "#/components/schemas/VerifiableCredentialDto"
+      required:
+        - vcId
+        - clearingHouse
+        - credentials
+    KeyType:
+      type: string
+      enum:
+        - EdDSA
+        - ES384
+        - X509
+    JsonWebKeyDto:
       type: object
-      properties: {}
-    InitKeyConfig:
+      properties:
+        alg:
+          type: string
+        crv:
+          type: string
+        e:
+          type: string
+        ext:
+          type: boolean
+        key_ops:
+          type: array
+          items:
+            type: string
+        kid:
+          type: string
+        kty:
+          type: string
+        n:
+          type: string
+        use:
+          type: string
+        x:
+          type: string
+        y:
+          type: string
+      required:
+        - kty
+    KeyInfoDto:
       type: object
-      properties: {}
+      properties:
+        id:
+          type: string
+        type:
+          $ref: "#/components/schemas/KeyType"
+        default:
+          type: boolean
+        publicKey:
+          $ref: "#/components/schemas/JsonWebKeyDto"
+        created:
+          format: date-time
+          type: string
+        modified:
+          format: date-time
+          type: string
+      required:
+        - id
+        - type
+        - default
+        - publicKey
+        - created
+        - modified
+    KeyConfigDto:
+      type: object
+      properties:
+        type:
+          $ref: "#/components/schemas/KeyType"
+        id:
+          type: string
+        default:
+          type: boolean
+        existingKey:
+          type: string
+        existingCertificate:
+          type: string
+      required:
+        - type
+        - id
+        - default
+    VerificationMethodDto:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+        controller:
+          type: string
+        publicKeyJwk:
+          $ref: "#/components/schemas/JsonWebKeyDto"
+      required:
+        - id
+        - type
+        - controller
+    ServiceDto:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+        serviceEndpoint:
+          oneOf:
+            - &a20
+              type: string
+            - type: array
+              items: *a20
+      required:
+        - id
+        - type
+        - serviceEndpoint
+    DIDDocumentDto:
+      type: object
+      properties:
+        "@context":
+          oneOf:
+            - &a21
+              type: string
+            - type: array
+              items: *a21
+        id:
+          type: string
+        alsoKnownAs:
+          type: array
+          items:
+            type: string
+        controller:
+          oneOf:
+            - &a22
+              type: string
+            - type: array
+              items: *a22
+        verificationMethod:
+          type: array
+          items:
+            $ref: "#/components/schemas/VerificationMethodDto"
+        service:
+          type: array
+          items:
+            $ref: "#/components/schemas/ServiceDto"
+        publicKey:
+          type: array
+          items:
+            $ref: "#/components/schemas/VerificationMethodDto"
+        authentication:
+          type: array
+          items:
+            oneOf:
+              - type: string
+              - $ref: "#/components/schemas/VerificationMethodDto"
+        assertionMethod:
+          type: array
+          items:
+            oneOf:
+              - type: string
+              - $ref: "#/components/schemas/VerificationMethodDto"
+        keyAgreement:
+          type: array
+          items:
+            oneOf:
+              - type: string
+              - $ref: "#/components/schemas/VerificationMethodDto"
+        capabilityInvocation:
+          type: array
+          items:
+            oneOf:
+              - type: string
+              - $ref: "#/components/schemas/VerificationMethodDto"
+        capabilityDelegation:
+          type: array
+          items:
+            oneOf:
+              - type: string
+              - $ref: "#/components/schemas/VerificationMethodDto"
+      required:
+        - id
+    DidServiceConfigDto:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+        serviceEndpoint:
+          type: string
+      required:
+        - id
+        - type
+        - serviceEndpoint
+    JSONLDContextDto:
+      type: object
+      properties:
+        id:
+          type: string
+        credentialType:
+          type: string
+        issuable:
+          type: boolean
+        documentUrl:
+          type: string
+        document:
+          type: object
+        schema:
+          type: object
+        created:
+          format: date-time
+          type: string
+        modified:
+          format: date-time
+          type: string
+        deleted:
+          format: date-time
+          type: string
+      required:
+        - id
+        - credentialType
+        - issuable
+        - created
+        - modified
+    JsonLdContextConfigDto:
+      type: object
+      properties:
+        id:
+          type: string
+        credentialType:
+          type: string
+        issuable:
+          type: boolean
+        documentUrl:
+          type: string
+        document:
+          type: object
+        schema:
+          type: object
+      required:
+        - id
+        - credentialType
+        - issuable
+    CredentialIssuerMetadataDto:
+      type: object
+      properties:
+        credential_issuer:
+          type: string
+        authorization_servers:
+          type: array
+          items:
+            type: string
+        token_endpoint:
+          type: string
+        credential_endpoint:
+          type: string
+        batch_credential_endpoint:
+          type: string
+        deferred_credential_endpoint:
+          type: string
+        notification_endpoint:
+          type: string
+        credential_response_encryption:
+          type: object
+        credential_identifiers_supported:
+          type: boolean
+        signed_metadata:
+          type: string
+        display:
+          type: array
+          items:
+            type: string
+        credential_configurations_supported:
+          type: object
+      required:
+        - credential_issuer
+        - credential_endpoint
+        - credential_configurations_supported
+    AuthorizationDetailDto:
+      type: object
+      properties:
+        type:
+          type: string
+        credential_configuration_id:
+          type: string
+        credential_identifiers:
+          type: array
+          items:
+            type: string
+      required:
+        - type
+        - credential_configuration_id
+        - credential_identifiers
+    AccessTokenDto:
+      type: object
+      properties:
+        access_token:
+          type: string
+        token_type:
+          type: string
+        expires_in:
+          type: number
+        refresh_token:
+          type: string
+        c_nonce:
+          type: string
+        c_nonce_expires_in:
+          type: number
+        authorization_details:
+          type: array
+          items:
+            $ref: "#/components/schemas/AuthorizationDetailDto"
+      required:
+        - access_token
+        - authorization_details
+    ImmediateCredentialResponseDto:
+      type: object
+      properties:
+        credential:
+          type: string
+        c_nonce:
+          type: string
+        c_nonce_expires_in:
+          type: number
+      required:
+        - credential
+    DeferredCredentialResponseDto:
+      type: object
+      properties:
+        transaction_id:
+          type: string
+        c_nonce:
+          type: string
+        c_nonce_expires_in:
+          type: number
+      required:
+        - transaction_id
+    JwtProofDto:
+      type: object
+      properties:
+        proof_type:
+          type: string
+          pattern: jwt
+        jwt:
+          type: string
+      required:
+        - proof_type
+        - jwt
+    CwtProofDto:
+      type: object
+      properties:
+        proof_type:
+          type: string
+          pattern: cbt
+        cbt:
+          type: string
+      required:
+        - proof_type
+        - cbt
+    VpProofDto:
+      type: object
+      properties:
+        "@context":
+          type: array
+          items:
+            type: string
+        type:
+          type: array
+          items:
+            type: string
+        holder:
+          type: string
+        proof:
+          type: object
+      required:
+        - "@context"
+        - type
+        - holder
+        - proof
+    LdpVpProofDto:
+      type: object
+      properties:
+        proof_type:
+          type: string
+          pattern: ldp_vp
+        ldp_vp:
+          $ref: "#/components/schemas/VpProofDto"
+      required:
+        - proof_type
+        - ldp_vp
+    CredentialRequestDto:
+      type: object
+      properties:
+        format:
+          type: string
+          pattern: jwt_vc_json-ld
+        credential_definition:
+          type: object
+        proof:
+          oneOf:
+            - $ref: "#/components/schemas/JwtProofDto"
+            - $ref: "#/components/schemas/CwtProofDto"
+            - $ref: "#/components/schemas/LdpVpProofDto"
+      required:
+        - format
+        - credential_definition
+        - proof
+    CredentialOfferStatusDto:
+      type: object
+      properties:
+        id:
+          type: number
+        created:
+          format: date-time
+          type: string
+        preAuthorizedCode:
+          type: string
+        holderId:
+          type: string
+        credentialType:
+          type: string
+        credentialId:
+          type: string
+        revoked:
+          type: boolean
+        credentialSubject:
+          $ref: "#/components/schemas/DefaultCredentialSubjectDto"
+      required:
+        - id
+        - created
+        - preAuthorizedCode
+        - holderId
+        - credentialType
+        - revoked
+        - credentialSubject
+    PreAuthorizationCodeGrantDto:
+      type: object
+      properties:
+        pre-authorization_code:
+          type: string
+        authorization_server:
+          type: string
+        interval:
+          type: number
+        tx_code:
+          type: object
+      required:
+        - pre-authorization_code
+    AuthorizationCodeDto:
+      type: object
+      properties:
+        authorization_server:
+          type: string
+        issuer_state:
+          type: string
+    OfferGrantsDto:
+      type: object
+      properties:
+        urn:ietf:params:oauth:grant-type:pre-authorized_code:
+          $ref: "#/components/schemas/PreAuthorizationCodeGrantDto"
+        authorization_code:
+          $ref: "#/components/schemas/AuthorizationCodeDto"
+    CredentialOfferDto:
+      type: object
+      properties:
+        credential_issuer:
+          type: string
+        credential_configuration_ids:
+          type: array
+          items:
+            type: string
+        grants:
+          $ref: "#/components/schemas/OfferGrantsDto"
+      required:
+        - credential_issuer
+        - credential_configuration_ids
