@@ -269,22 +269,19 @@ const sendNegotiation = async (
                 </div>
               </div>
               <template #footer>
-                <form
-                  @submit="
+                <Button
+                  label="Send"
+                  icon="pi pi-check"
+                  type="submit"
+                  class="p-button-outlined"
+                  @click="
                     sendNegotiation(
                       datasetData['@id'],
                       props.address,
                       props.didId
                     )
                   "
-                >
-                  <Button
-                    label="Send"
-                    icon="pi pi-check"
-                    type="submit"
-                    class="p-button-outlined"
-                  />
-                </form>
+                />
               </template>
             </Dialog>
           </div>
