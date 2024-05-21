@@ -23,6 +23,8 @@ const config: Config.InitialOptions = {
     "!src/**/*.strategy.ts",
     "!src/**/*.controller.ts",
     "!src/**/*.module.ts",
+    "!src/**/*.schemas.ts",
+    "!src/generate-oas.ts",
     "!node_modules/**",
   ],
 };

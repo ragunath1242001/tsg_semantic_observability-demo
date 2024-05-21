@@ -30,7 +30,7 @@ import {
   PresentationValidationDto,
   VerifiablePresentationJsonLdDto,
   VerifiablePresentationJwtDto,
-} from "../presentation.schema.js";
+} from "../presentation.schemas.js";
 
 @Controller("presentations")
 @Roles(AppRole.VIEW_PRESENTATIONS)

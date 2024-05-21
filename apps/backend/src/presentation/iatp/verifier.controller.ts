@@ -18,7 +18,7 @@ import {
 import {
   VerifiablePresentationDto,
   VerificationRequestDto,
-} from "../presentation.schema.js";
+} from "../presentation.schemas.js";
 
 @Controller("iatp/verifier")
 @ApiTags("Presentation IATP")

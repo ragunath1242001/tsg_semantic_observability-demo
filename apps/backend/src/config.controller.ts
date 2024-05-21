@@ -20,7 +20,7 @@ import {
   ApiOperation,
   ApiTags,
 } from "@nestjs/swagger";
-import { RuntimeConfigDto } from "./config.schema.js";
+import { RuntimeConfigDto } from "./config.schemas.js";
 import {
   ApiForbiddenResponseDefault,
   ApiBadRequestResponseDefault,

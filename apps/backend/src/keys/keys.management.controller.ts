@@ -22,7 +22,7 @@ import {
   ApiOperation,
   ApiTags,
 } from "@nestjs/swagger";
-import { KeyConfigDto, KeyInfoDto } from "./keys.schema.js";
+import { KeyConfigDto, KeyInfoDto } from "./keys.schemas.js";
 import {
   ApiForbiddenResponseDefault,
   ApiBadRequestResponseDefault,

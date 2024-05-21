@@ -17,7 +17,7 @@ import {
 import {
   PresentationDefinitionDto,
   PresentationResponseDto,
-} from "../presentation.schema.js";
+} from "../presentation.schemas.js";
 import { ApiForbiddenResponseDefault } from "../../utils/swagger.js";
 
 @Controller("iatp/holder")
