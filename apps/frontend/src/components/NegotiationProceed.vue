@@ -69,7 +69,7 @@ const declineNegotiation = async (negotiation) => {
           <i class="pi pi-file text-blue-500 text-xl"></i>
         </div>
       </div>
-      <span class="block text-600 font-small mb-3"
+      <span style="word-wrap: break-word" class="block text-600 font-small mb-3"
         >{{ negotiation.remoteParty.replace("%3A", ":") }}
       </span>
       <span class="block text-600 font-small mb-3">
@@ -85,7 +85,7 @@ const declineNegotiation = async (negotiation) => {
           @click="declineNegotiation(negotiation)"
         />
         <Button
-          label="Yes, sign contract"
+          label="Sign"
           severity="success"
           icon="pi pi-check"
           type="submit"

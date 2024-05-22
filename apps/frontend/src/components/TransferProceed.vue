@@ -4,6 +4,7 @@ import { useToast } from "primevue/usetoast";
 import { ref } from "vue";
 import utils from "../utils/common";
 import http from "../utils/http";
+import { useConfirm } from "primevue/useconfirm";
 
 const props = defineProps<{
   transfer: TransferStatusDto;
@@ -13,6 +14,8 @@ const display = ref<boolean>(false);
 const nextState = ref("");
 const code = ref("");
 const reason = ref("");
+
+const confirm = useConfirm();
 
 const toast = useToast();
 
@@ -58,10 +61,9 @@ const determineButton = (transfer: TransferStatusDto) => {
   }
 };
 
-const proceedTransfer = async (transfer: TransferStatusDto) => {
+const sendTransfer = async (transfer: TransferStatusDto, nextState: string) => {
   try {
     close();
-    const nextState = determineNextHappyState(transfer);
     await http.post(`management/transfers/${transfer.localId}/${nextState}`);
     toast.add({
       severity: "success",
@@ -78,6 +80,26 @@ const proceedTransfer = async (transfer: TransferStatusDto) => {
       detail: `${e.response.data.message}`,
       life: 3000,
     });
+  }
+};
+
+const proceedTransfer = async (transfer: TransferStatusDto) => {
+  const nextState = determineNextHappyState(transfer);
+  if (nextState == "complete") {
+    confirm.require({
+      header: `Are you sure you want to complete this transfer?`,
+      message: "This will stop the data transfer!",
+      icon: "pi pi-info-circle",
+      rejectLabel: "Cancel",
+      acceptLabel: "Complete",
+      rejectClass: "p-button-secondary p-button-outlined",
+      acceptClass: "p-button-success",
+      accept: async () => {
+        await sendTransfer(transfer, nextState);
+      },
+    });
+  } else {
+    await sendTransfer(transfer, nextState);
   }
 };
 
@@ -116,7 +138,7 @@ const terminateTransfer = async (transfer) => {
     });
     close();
   } catch (e) {
-    console.error(`Could not decline contract offer. Error: ${e}`);
+    console.error(`Could not terminate transfer. Error: ${e}`);
     toast.add({
       severity: "error",
       summary: "Failed to terminate transfer",
