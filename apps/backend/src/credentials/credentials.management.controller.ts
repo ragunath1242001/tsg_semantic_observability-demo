@@ -95,6 +95,20 @@ export class CredentialsManagementController {
     return this.credentialsService.getCredentials(targetDid);
   }
 
+  @Get("/dataspace")
+  @ApiOperation({
+    summary: "List dataspace credentials",
+    description: "List all credentials in this dataspace.",
+  })
+  @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({
+    type: [CredentialsDto],
+  })
+  @ApiForbiddenResponseDefault()
+  async getDataspaceCredentials(): Promise<Credentials[]> {
+    return this.credentialsService.getDataspaceCredentials();
+  }
+
   @Get("config")
   @ApiOperation({
     summary: "Retrieve credential configuration",

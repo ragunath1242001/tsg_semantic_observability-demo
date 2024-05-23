@@ -16,6 +16,7 @@ import { Repository } from "typeorm";
 import { DidService } from "../did/did.service.js";
 import { KeysService } from "../keys/keys.service.js";
 import { signingAlgorithm } from "../utils/keymapping.js";
+import axios from "axios";
 
 @Injectable()
 export class CredentialsService {
@@ -116,6 +117,25 @@ export class CredentialsService {
       ).andLog(this.logger, "debug");
     }
     return await this.selfIssueCredential(credentialConfig, targetDid);
+  }
+
+  async getDataspaceCredentials(): Promise<Credentials[]> {
+    try {
+      const credentials = await Promise.all(
+        this.config.oid4vci.holder.flatMap(async (holder) => {
+          const response = await axios.get(
+            `${holder.issuerUrl}/api/credentials`
+          );
+          return response.data;
+        })
+      ).then((credentialArrays) => [].concat(...credentialArrays));
+      return credentials;
+    } catch (err) {
+      throw new AppError(
+        `Could not fetch credentials at dataspace wallet`,
+        HttpStatus.BAD_REQUEST
+      ).andLog(this.logger);
+    }
   }
 
   async importCredential(
