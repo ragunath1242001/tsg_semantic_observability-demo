@@ -6,7 +6,8 @@ import LoginVue from "../views/Login.vue";
 import NegotiationsVue from "../views/Negotiations.vue";
 import TransfersVue from "../views/Transfers.vue";
 import DataplaneVue from "../views/Dataplane.vue";
-import { store } from "../stores/index.js";
+import { useUserStore } from "../stores/user.js";
+import Registry from "../views/Registry.vue";
 
 const router = createRouter({
   history: createWebHashHistory(),
@@ -40,6 +41,11 @@ const router = createRouter({
           name: "dataplanes",
           component: DataplaneVue,
         },
+        {
+          path: "/registry",
+          name: "registry",
+          component: Registry,
+        },
       ],
     },
     {
@@ -52,8 +58,9 @@ const router = createRouter({
 router.beforeEach(async (to) => {
   // redirect to login page if not logged in and trying to access a restricted page
   const publicPages = ["/login"];
+  const store = useUserStore();
   const authRequired = !publicPages.includes(to.path);
-  if (authRequired && !store.state.user) {
+  if (authRequired && !store.user) {
     return "/login";
   }
 });

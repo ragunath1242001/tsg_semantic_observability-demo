@@ -11,7 +11,7 @@ const { negotiations, ctaNegotiations } = storeToRefs(useDspStore());
   <div>
     <Card style="border-radius: 12px; border: 1px solid var(--surface-border)">
       <template #title>Negotiations</template>
-      <template #subtitle>
+      <template #content>
         This page shows (the history of) the negotiations that are present for
         the Control Plane. If there are actions required from you, they will
         appear above the negotiation history.

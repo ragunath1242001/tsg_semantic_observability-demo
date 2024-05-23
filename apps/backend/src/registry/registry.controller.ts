@@ -8,10 +8,12 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { CatalogDto } from "@tsg-dsp/common";
-import { VerifiablePresentationGuard } from "../auth/verifiablePresentation.guard";
 import { RegistryService } from "./registry.service";
+import { OAuthGuard } from "../auth/oauth.guard";
+import { Roles } from "../auth/roles.guard";
 
-@UseGuards(VerifiablePresentationGuard)
+@UseGuards(OAuthGuard)
+@Roles(["controlplane_admin", "controlplane_dataplane"])
 @Controller("registry")
 export class RegistryController {
   constructor(private readonly registryService: RegistryService) {}

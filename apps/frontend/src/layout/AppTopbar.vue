@@ -2,13 +2,15 @@
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 import { useLayout } from "../layout/composables/layout";
 import { useRouter } from "vue-router";
-import { store } from "../stores/index.js";
+import { useUserStore } from "../stores/user.js";
 
 const { layoutConfig, onMenuToggle, onConfigButtonClick } = useLayout();
 
 const outsideClickListener = ref(null);
 const topbarMenuActive = ref(false);
 const router = useRouter();
+
+const store = useUserStore();
 
 onMounted(() => {
   bindOutsideClickListener();
@@ -96,8 +98,8 @@ const logout = () => {
     </button>
 
     <div class="layout-topbar-menu" :class="topbarMenuClasses">
-      <div class="layout-topbar-button" v-if="store.state.user">
-        {{ store.state.user.name }}
+      <div class="layout-topbar-button" v-if="store.user">
+        {{ store.user.name }}
       </div>
       <button
         @click="onConfigButtonClick()"

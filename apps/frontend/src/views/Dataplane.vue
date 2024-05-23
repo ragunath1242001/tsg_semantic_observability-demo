@@ -6,7 +6,6 @@ import { onMounted, ref, setDevtoolsHook } from "vue";
 import { useToast } from "primevue/usetoast";
 import { useConfirm } from "primevue/useconfirm";
 import FormField from "../components/FormField.vue";
-import { axiosInstance } from "../stores";
 import DisplayField from "../components/DisplayField.vue";
 
 const dataplanes = ref<DataPlaneDto[]>();
@@ -43,7 +42,7 @@ const getDataPlanes = async () => {
 
 const addDataPlane = async () => {
   try {
-    await axiosInstance.post("management/dataplanes", dataPlaneForm.value);
+    await http.post("management/dataplanes", dataPlaneForm.value);
     dataPlaneForm.value = dataPlaneFormDefault;
     toast.add({
       severity: "success",
@@ -73,7 +72,7 @@ const deleteDataPlane = async (dataplaneId: string) => {
     acceptClass: "p-button-danger",
     accept: async () => {
       try {
-        await axiosInstance.delete(
+        await http.delete(
           `management/dataplanes/${encodeURIComponent(dataplaneId)}`
         );
         await getDataPlanes();
@@ -106,9 +105,20 @@ onMounted(async () => {
 </script>
 <template>
   <Card
+    style="border-radius: 12px; border: 1px solid var(--surface-border)"
+    class="mb-4"
+  >
+    <template #title>Dataplanes</template>
+    <template #content
+      >On this page you can find the dataplanes that are linked to this Control
+      Plane. There is also an option to delete or add dataplanes in this
+      view.</template
+    >
+  </Card>
+  <Card
     v-for="dataplane in dataplanes"
     :key="dataplane.identifier"
-    class="mb-2"
+    class="mb-4"
     style="border-radius: 12px; border: 1px solid var(--surface-border)"
   >
     <template #title>
@@ -158,7 +168,7 @@ onMounted(async () => {
           <InputText
             :id="props.id"
             class="w-full"
-            v-model="dataPlaneForm.catalogSynchronization"
+            v-model="dataPlaneForm.dataplaneType"
             placeholder="Type of data plane you are using, e.g. dspace:HTTP"
             required
           ></InputText>
@@ -205,7 +215,7 @@ onMounted(async () => {
         </FormField>
         <FormField label="Catalog Synchronization" v-slot="props">
           <SelectButton
-            v-model="dataPlaneForm.dataplaneType"
+            v-model="dataPlaneForm.catalogSynchronization"
             required
             :options="['push', 'pull']"
           ></SelectButton>

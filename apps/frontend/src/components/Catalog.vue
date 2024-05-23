@@ -13,8 +13,9 @@ import FormField from "./FormField.vue";
 const props = defineProps<{
   catalog: CatalogDto;
   url: string;
-  assigner: string;
-  type: "provider" | "consumer";
+  assigner?: string;
+  singleCatalog: boolean;
+  ownCatalog: boolean;
 }>();
 
 const parsedView = ref(true);
@@ -86,18 +87,18 @@ const calculateColor = (index: number) => {
   return colors[index % 4];
 };
 const calculateTagClass = (index: number) => {
-  return `mr-2 bg-${calculateColor(index)}-100 text-${calculateColor(
+  return `mx-2 bg-${calculateColor(index)}-100 text-${calculateColor(
     index
   )}-700`;
 };
 const calculateIconBg = (index: number) => {
-  return `p-button p-component p-button-icon-only p-button-rounded flex-shrink-0 w-5rem h-5rem bg-${calculateColor(
+  return `inline-flex border-circle align-items-center justify-content-center bg-${calculateColor(
     index
-  )}-100`;
+  )}-100 mr-3`;
 };
 
 const calculateIconClass = (index: number) => {
-  return `pi pi-file text-${calculateColor(index)}-500`;
+  return `pi pi-file text-xl text-${calculateColor(index)}-600`;
 };
 
 const createPolicy = (policy: PolicyDto): string => {
@@ -113,7 +114,7 @@ const createPolicy = (policy: PolicyDto): string => {
 </script>
 <template>
   <div class="grid card-container mt-2">
-    <div class="col-12" v-if="!datasetView">
+    <div class="col-12" v-if="!datasetView && singleCatalog">
       <Card
         style="border-radius: 12px; border: 1px solid var(--surface-border)"
       >
@@ -159,44 +160,55 @@ const createPolicy = (policy: PolicyDto): string => {
         <Card
           style="border-radius: 12px; border: 1px solid var(--surface-border)"
         >
-          <template #title>{{ dataset["dct:title"] }}</template>
+          <template #title>
+            <div class="flex align-items-center">
+              <span
+                :class="calculateIconBg(index)"
+                style="width: 38px; height: 38px"
+              >
+                <i :class="calculateIconClass(index)"></i
+              ></span>
+              {{ dataset["dct:title"] }}
+            </div></template
+          >
           <template #subtitle>{{
             utils.obtainValues(dataset["dct:description"]).join("\r\n")
           }}</template>
           <template #content>
-            <div class="flex flex-wrap justify-content-center gap-3">
-              <button
-                :class="calculateIconBg(index)"
-                type="button"
-                @click="getDataset(dataset['@id'])"
-              >
-                <i
-                  :class="calculateIconClass(index)"
-                  style="font-size: 2.5rem"
-                ></i>
-              </button>
-            </div>
-            <div class="pt-1 pb-1"><b>Keywords </b></div>
-            <Tag
-              :class="calculateTagClass(index)"
-              v-for="keyword in utils.obtainValues(dataset['dcat:keyword'])"
-              :key="keyword"
-              :value="keyword"
-            ></Tag>
-          </template>
-          <template #footer>
-            <div class="flex align-items-center justify-content-between">
+            <div class="flex-column">
               <span class="font-semibold"
                 >Policies: {{ dataset["odrl:hasPolicy"]?.length ?? 0 }}</span
               >
+              <template v-if="dataset['dcat:keyword']">
+                <div class="pt-3 pb-1 font-semibold">Keywords</div>
+                <Tag
+                  :class="calculateTagClass(index)"
+                  v-for="keyword in utils.obtainValues(dataset['dcat:keyword'])"
+                  :key="keyword"
+                  :value="keyword"
+                ></Tag>
+              </template>
+            </div>
+          </template>
+          <template #footer>
+            <div class="flex align-items-center justify-content-between">
               <Button
                 icon="pi pi-trash"
+                v-if="ownCatalog"
                 @click="deleteDataset(dataset['@id'])"
-                size="large"
                 severity="danger"
                 rounded
                 outlined
               />
+              <span class="p-card-subtitle mb-0" v-if="!ownCatalog">{{
+                catalog["dct:title"]
+              }}</span>
+              <Button
+                icon="pi pi-external-link"
+                rounded
+                outlined
+                @click="getDataset(dataset['@id'])"
+              ></Button>
             </div>
           </template>
         </Card>
@@ -221,7 +233,7 @@ const createPolicy = (policy: PolicyDto): string => {
       :address="url"
       :didId="catalog['dct:publisher']"
       :datasetView="datasetView"
-      :type="props.type"
+      :ownDataset="ownCatalog"
       @change-dataset-view="closeDatasetView"
       @update-datasets="updateDatasets"
     ></Dataset>

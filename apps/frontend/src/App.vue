@@ -1,11 +1,17 @@
 <script setup lang="ts">
 import { useDspStore } from "./stores/dsp";
 import { socket } from "./socket";
-const store = useDspStore();
+import { useUserStore } from "./stores/user";
+import { useCatalogStore } from "./stores/catalog";
+const dspStore = useDspStore();
 
 socket.off();
 
-store.bindEvents();
+dspStore.bindEvents();
+
+const userStore = useUserStore();
+userStore.login({ redirect: false });
+const catalogStore = useCatalogStore();
 </script>
 
 <template>

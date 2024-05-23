@@ -22,14 +22,8 @@ export class RegistryModule {
   static register(registryConfig: RegistryConfig): DynamicModule {
     const module: DynamicModule = {
       module: RegistryModule,
-      imports: [AuthModule],
-      controllers: [RegistryClientController],
-      providers: [DidResolverService, RegistryClientService],
-    };
-
-    if (registryConfig.isRegistry === true) {
-      (module.imports = [
-        ...(module.imports ?? []),
+      imports: [
+        AuthModule,
         DspClientModule,
         CatalogModule,
         TypeOrmModule.forFeature([
@@ -39,14 +33,11 @@ export class RegistryModule {
           ResourceDao,
         ]),
         ScheduleModule.forRoot(),
-      ]),
-        (module.controllers = [
-          ...(module.controllers ?? []),
-          RegistryController,
-        ]);
-      module.providers = [...(module.providers ?? []), RegistryService];
-      module.exports = [...(module.exports ?? []), RegistryService];
-    }
+      ],
+      controllers: [RegistryClientController, RegistryController],
+      providers: [DidResolverService, RegistryClientService, RegistryService],
+      exports: [RegistryService],
+    };
     return module;
   }
 }

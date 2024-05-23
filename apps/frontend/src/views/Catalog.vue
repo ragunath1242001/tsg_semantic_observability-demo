@@ -8,18 +8,20 @@ import { useToast } from "primevue/usetoast";
 import { CredentialAddressDto } from "@libs/dtos";
 import OverlayPanel from "primevue/overlaypanel";
 import FormField from "../components/FormField.vue";
+import { storeToRefs } from "pinia";
+import { useCatalogStore } from "../stores/catalog";
+import router from "../router";
 
 // Define a ref for the URL input
-const urlInput = ref("");
-const didInput = ref("");
 const overlay = ref(null);
-var catalog = ref<CatalogDto>();
-var addresses = ref<string[]>();
+
+const { catalog, urlInput, assigner, didInput } = storeToRefs(
+  useCatalogStore()
+);
 var dataAvailable = ref(false);
 var loading = ref(false);
-var manual = ref();
+var manual = ref(true);
 var selection = ref<CredentialAddressDto>(null);
-var assigner = ref("");
 
 const http = injectStrict(AxiosKey);
 
@@ -31,6 +33,9 @@ const getCatalog = async () => {
       urlInput.value = selection.value.address;
       didInput.value = selection.value.didId;
       overlay.value.hide();
+    }
+    if (!urlInput.value) {
+      return;
     }
     const audience = didInput.value.trim() === "" ? undefined : didInput.value;
     loading.value = true;
@@ -68,106 +73,53 @@ const getOwnCatalog = async () => {
   }
 };
 
-const queryAddresses = async () => {
-  try {
-    const response = await http.get(`management/registry/addresses`);
-    addresses.value = response.data;
-    return addresses;
-  } catch (error) {
-    // Handle error
-    console.error("Error:", error);
-    toast.add({
-      severity: "error",
-      summary: "Failed to retrieve catalog",
-      life: 3000,
-      detail: `${error.response.data.message}`,
-    });
-    throw error;
-  }
-};
-const toggle = (event) => {
-  overlay.value.toggle(event);
+const goToRegistry = () => {
+  router.push("/registry");
 };
 
 const initialize = async () => {
+  getCatalog();
   getOwnCatalog();
-  queryAddresses();
 };
-
 onMounted(async () => await initialize());
 </script>
 <template>
   <div>
     <Card style="border-radius: 12px; border: 1px solid var(--surface-border)">
-      <template #title><h5>Catalog Request</h5></template>
+      <template #title>Catalog Request</template>
       <template #subtitle
         >Use this page to find other catalogs. You can search for other Control
         Planes using the Registry, or enter an access URL and a DID manually if
-        you already know what you want to query.</template
+        you already know which party you want to query.</template
       >
       <template #content>
-        <FormField label="Manual Entry">
-          <InputSwitch v-model="manual" />
-        </FormField>
-        <div class="p-fluid formgrid grid" v-if="manual">
-          <div class="field col-12 md:col-6">
-            <span class="p-float-label">
-              <InputText id="url" type="text" v-model="urlInput" />
-              <label for="url">Url of Catalog to Request</label>
-            </span>
+        <form @submit.stop.prevent="getCatalog">
+          <div class="p-fluid formgrid grid">
+            <div class="field col-12 md:col-6">
+              <span class="p-float-label">
+                <InputText id="url" type="text" v-model="urlInput" />
+                <label for="url">Url of Catalog to Request</label>
+              </span>
+            </div>
+            <div class="field col-12 md:col-6">
+              <span class="p-float-label">
+                <InputText id="did" type="text" v-model="didInput" />
+                <label for="did">DID identifier</label>
+              </span>
+            </div>
+            <div class="field ml-3">
+              <Button label="Submit" type="submit"></Button>
+            </div>
           </div>
-          <div class="field col-12 md:col-6">
-            <span class="p-float-label">
-              <InputText id="url" type="text" v-model="didInput" />
-              <label for="url">DID identifier</label>
-            </span>
-          </div>
-          <div class="field ml-3">
-            <Button label="Submit" type="button" @click="getCatalog"></Button>
-          </div>
-        </div>
-        <div class="p-fluid formgrid grid" v-if="!manual">
-          <div class="flex flex-wrap gap-2 ml-3">
-            <Button label="Query" type="button" @click="toggle"></Button>
-            <OverlayPanel
-              ref="overlay"
-              appendTo="body"
-              :showCloseIcon="true"
-              id="overlay_panel"
-              style="width: 450px"
-            >
-              <DataTable
-                :value="addresses"
-                v-model:selection="selection"
-                selectionMode="single"
-                :paginator="true"
-                :rows="5"
-                @row-select="getCatalog"
-                responsiveLayout="scroll"
-              >
-                <Column
-                  field="didId"
-                  header="DID"
-                  :sortable="true"
-                  headerStyle="min-width:12rem;"
-                ></Column>
-                <Column
-                  field="address"
-                  header="Address"
-                  :sortable="true"
-                  headerStyle="min-width:12rem;"
-                ></Column>
-              </DataTable>
-            </OverlayPanel>
-          </div>
-        </div>
+        </form>
       </template>
     </Card>
     <Catalog
       :catalog="catalog"
       :url="urlInput"
-      type="consumer"
+      :own-catalog="false"
       :assigner="assigner"
+      :single-catalog="true"
       v-if="dataAvailable"
     />
     <Skeleton
@@ -175,5 +127,19 @@ onMounted(async () => await initialize());
       height="150px"
       v-else-if="!dataAvailable && loading"
     />
+    <Card
+      style="border-radius: 12px; border: 1px solid var(--surface-border)"
+      class="mt-4"
+      v-else
+      ><template #title><h5>Find others</h5></template>
+      <template #content>
+        <Button
+          type="button"
+          label="Go to Registry"
+          @click="goToRegistry"
+          icon="pi pi-external-link"
+          iconPos="right"
+        ></Button></template
+    ></Card>
   </div>
 </template>

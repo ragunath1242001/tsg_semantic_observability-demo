@@ -88,7 +88,7 @@ export class AuthConfig {
 
 export class RegistryConfig {
   @IsBoolean()
-  public readonly isRegistry: boolean = false;
+  public readonly useRegistry: boolean = false;
 
   @IsString()
   @IsOptional()

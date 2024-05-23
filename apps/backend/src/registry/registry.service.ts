@@ -59,7 +59,7 @@ export class RegistryService implements OnApplicationBootstrap {
 
   private async createJob() {
     this.logger.log("Creating job for registry interval.");
-    if (this.registryConfig?.isRegistry === true) {
+    if (this.registryConfig?.useRegistry === true) {
       const interval = setInterval(
         this.crawl.bind(this),
         this.registryConfig.registryIntervalInMilliseconds
@@ -150,7 +150,7 @@ export class RegistryService implements OnApplicationBootstrap {
               err instanceof DSPError &&
               err.appResponse.code === HttpStatus.NOT_FOUND
             ) {
-              this.logger.log(
+              this.logger.debug(
                 `Dataset with id ${dataset.id} does not exist yet, creating adding new dataset to the catalog`
               );
               await this.catalogService.addDataset(dataset, catalogObj.id);
@@ -162,7 +162,7 @@ export class RegistryService implements OnApplicationBootstrap {
   }
 
   async crawl() {
-    this.logger.log("Crawling addresses and catalogs.");
+    this.logger.debug("Crawling addresses and catalogs.");
     const addresses = await this.fetchAddresses();
     this.logger.debug(`Addresses to crawl: ${JSON.stringify(addresses)}`);
     return await Promise.allSettled(
@@ -185,6 +185,12 @@ export class RegistryService implements OnApplicationBootstrap {
   }
 
   async getAllCatalogs(): Promise<Catalog[]> {
+    if (!this.registryConfig?.useRegistry) {
+      throw new DSPError(
+        "Registry not enabled in settings",
+        HttpStatus.NOT_IMPLEMENTED
+      );
+    }
     const catalogDaos = await this.catalogRepository.find({
       relations: {
         _datasets: {

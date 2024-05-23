@@ -1,20 +1,12 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
-import router from "../router";
-import { store } from "../stores/index.js";
-
-const username = ref("");
-const password = ref("");
+import { useUserStore } from "../stores/user.js";
 
 const logoUrl = computed(() => {
   return "layout/images/logo-white.svg";
 });
 
-const login = async () => {
-  localStorage.setItem("username", username.value);
-  localStorage.setItem("password", password.value);
-  router.push("/");
-};
+const store = useUserStore();
 </script>
 
 <template>
@@ -47,11 +39,11 @@ const login = async () => {
           </div>
           <div>
             <Button
-                  label="Log In"
-                  type="submit"
-                  class="w-full p-3 mb-3 text-xl"
-                  @click="store.dispatch('login', {redirect: true})"
-                ></Button>
+              label="Log In"
+              type="submit"
+              class="w-full p-3 mb-3 text-xl"
+              @click="store.login({ redirect: true })"
+            ></Button>
           </div>
         </div>
       </div>

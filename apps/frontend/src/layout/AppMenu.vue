@@ -13,29 +13,19 @@ const model = ref([
     items: [{ label: "Dashboard", icon: "pi pi-fw pi-home", to: "/" }],
   },
   {
-    label: "Catalog",
+    label: "Dataspace Protocol",
     items: [
       {
         label: "Catalog Request",
         icon: "pi pi-fw pi-book",
         to: "/catalog/request",
       },
-    ],
-  },
-  {
-    label: "Negotiations",
-    items: [
       {
         label: "Negotiations",
         icon: "pi pi-fw pi-comments",
         to: "/negotiations",
         badge: negotiationsCount,
       },
-    ],
-  },
-  {
-    label: "Transfers",
-    items: [
       {
         label: "Transfers",
         icon: "pi pi-fw pi-arrow-right-arrow-left",
@@ -50,6 +40,16 @@ const model = ref([
         label: "Dataplanes",
         icon: "pi pi-fw pi-database",
         to: "/dataplanes",
+      },
+    ],
+  },
+  {
+    label: "Registry",
+    items: [
+      {
+        label: "Registry",
+        icon: "pi pi-fw pi-address-book",
+        to: "/registry",
       },
     ],
   },

@@ -26,7 +26,7 @@ runtime:
   controlPlaneInteractions: manual
 
 registry:
-  isRegistry: false
+  useRegistry: true
   registryIntervalInMilliseconds: 30000
 
 iam:

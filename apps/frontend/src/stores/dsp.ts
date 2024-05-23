@@ -78,14 +78,12 @@ export const useDspStore = defineStore("dsp", {
   actions: {
     bindEvents() {
       socket.on("connect", async () => {
-        console.log("Connected to websocket.");
         const resp = await getNegotiations();
         this.negotiations = resp.negotiations;
         this.ctaNegotiations = resp.ctaNegotiations;
       });
 
       socket.on("connect", async () => {
-        console.log("Connected to websocket");
         const resp = await getTransfers();
         this.transfers = resp.transfers;
         this.ctaTransfers = resp.ctaTransfers;

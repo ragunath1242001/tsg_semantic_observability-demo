@@ -166,6 +166,8 @@ onMounted(async () => await initialize());
 
     <Catalog
       :catalog="catalog"
+      :single-catalog="true"
+      :own-catalog="true"
       url=""
       type="provider"
       assigner=""

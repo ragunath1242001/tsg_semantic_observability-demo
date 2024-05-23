@@ -26,7 +26,7 @@ const props = defineProps<{
   address: string;
   didId: string;
   datasetView: boolean;
-  type: "consumer" | "provider";
+  ownDataset: boolean;
 }>();
 
 const http = injectStrict(AxiosKey);
@@ -233,7 +233,7 @@ const sendNegotiation = async (
               {{ policy.rightOperand }}
             </DisplayField>
           </template>
-          <div class="col-12" v-if="props.type == 'consumer'">
+          <div class="col-12" v-if="!props.ownDataset">
             <div class="col-6 col-offset-3">
               <Button
                 severity="success"

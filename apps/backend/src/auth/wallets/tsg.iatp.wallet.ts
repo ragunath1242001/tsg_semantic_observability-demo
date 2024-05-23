@@ -111,7 +111,7 @@ export class TsgIatpWalletClient extends WalletClient {
       const response = await this.authClientService
         .axiosInstance()
         .get<Credential[]>(
-          `${this.iamConfig.walletUrl}/management/credentials`
+          `${this.iamConfig.walletUrl}/management/credentials/dataspace`
         );
       this.logger.debug(`Successfully requested credentials at local wallet`);
       return response.data;
