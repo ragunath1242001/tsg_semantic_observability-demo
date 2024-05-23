@@ -56,7 +56,7 @@ export function setupMockWalletServer(start: boolean = true): SetupServer {
         });
       }
     ),
-    http.get("http://127.0.0.1/tsg/management/credentials", () => {
+    http.get("http://127.0.0.1/tsg/management/credentials/dataspace", () => {
       return HttpResponse.json([
         {
           created: "2024-03-18T10:53:21.000Z",

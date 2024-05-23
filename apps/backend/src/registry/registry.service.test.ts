@@ -25,6 +25,7 @@ import { CatalogService } from "../dsp/catalog/catalog.service";
 import { ScheduleModule } from "@nestjs/schedule";
 import { AuthClientService } from "../auth/auth.client.service";
 import { DataPlaneDao } from "../model/dataPlanes.dao";
+import { HttpStatus } from "@nestjs/common";
 
 describe("RegistryService", () => {
   let registryService: RegistryService;
@@ -35,7 +36,9 @@ describe("RegistryService", () => {
     jest.spyOn(global, "setTimeout");
     await TypeOrmTestHelper.instance.setupTestDB();
     let iamConfig: IamConfig = mockWalletConfig();
-    const registryConfig = plainToClass(RegistryConfig, {});
+    const registryConfig = plainToClass(RegistryConfig, {
+      useRegistry: true,
+    });
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         TypeOrmTestHelper.instance.module([
@@ -248,6 +251,68 @@ describe("RegistryService", () => {
       expect(catalogs).toHaveLength(1);
       expect(catalogs[0].dataset).toHaveLength(1);
       expect(catalogs[0].service).toHaveLength(1);
+    });
+  });
+  describe("Crawl fails when registry is disabled", () => {
+    beforeEach(async () => {
+      jest.useFakeTimers();
+      jest.spyOn(global, "setTimeout");
+      await TypeOrmTestHelper.instance.setupTestDB();
+      let iamConfig: IamConfig = mockWalletConfig();
+      const registryConfig = plainToClass(RegistryConfig, {});
+      const module: TestingModule = await Test.createTestingModule({
+        imports: [
+          TypeOrmTestHelper.instance.module([
+            CatalogDao,
+            CatalogRecordDao,
+            DatasetDao,
+            DataServiceDao,
+            DistributionDao,
+            ResourceDao,
+            DataPlaneDao,
+          ]),
+          TypeOrmModule.forFeature([
+            CatalogDao,
+            CatalogRecordDao,
+            DatasetDao,
+            DataServiceDao,
+            DistributionDao,
+            ResourceDao,
+            DataPlaneDao,
+          ]),
+          ScheduleModule.forRoot(),
+        ],
+        providers: [
+          DidResolverService,
+          CatalogService,
+          DspClientService,
+          RegistryService,
+          {
+            provide: AuthService,
+            useValue: new AuthService(
+              plainToInstance(RootConfig, { iam: iamConfig }),
+              new AuthClientService(
+                plainToInstance(AuthConfig, { enabled: false })
+              )
+            ),
+          },
+          {
+            provide: IamConfig,
+            useValue: iamConfig,
+          },
+          {
+            provide: RegistryConfig,
+            useValue: registryConfig,
+          },
+        ],
+      }).compile();
+      it("Crawl fails when registry is disabled (default)", async () => {
+        expect(async () => {
+          await registryService.getAllCatalogs();
+        }).rejects.toThrow(
+          expect.objectContaining({ status: HttpStatus.NOT_IMPLEMENTED })
+        );
+      });
     });
   });
 });
