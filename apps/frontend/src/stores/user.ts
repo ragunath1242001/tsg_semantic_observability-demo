@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import axios from "axios";
 import http from "../utils/http";
+import router from "../router";
 
 interface UserStore {
   user: {
@@ -9,11 +10,13 @@ interface UserStore {
     roles: [];
     sub: string;
   };
+  returnUrl: string;
 }
 
 export const useUserStore = defineStore("user", {
   state: (): UserStore => ({
     user: null,
+    returnUrl: null,
   }),
   getters: {},
   actions: {
@@ -27,7 +30,7 @@ export const useUserStore = defineStore("user", {
           window.location.replace("/api/auth/login");
         } else {
           this.userInfo(response.data.user);
-          window.location.replace("#");
+          router.push(this.returnUrl || "/");
         }
       } catch (e) {
         console.log(e);
