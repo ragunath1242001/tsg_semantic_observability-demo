@@ -37,6 +37,8 @@ import { DataPlaneClientError, DataPlaneError } from "../utils/errors/error";
 import { DataPlaneStateDto, TransferDto } from "@libs/dtos";
 import { AuthClientService } from "../auth/auth.client.service";
 import { resolve } from "../utils/didServiceResolver";
+import { LoggingService } from "../logging/logging.service";
+import { LogEntry } from "../logging/logging.dto";
 
 @Injectable()
 export class DataPlaneService {
@@ -44,6 +46,7 @@ export class DataPlaneService {
   private readonly axiosManagement: AxiosInstance;
   constructor(
     private readonly config: RootConfig,
+    private readonly loggingService: LoggingService,
     authClient: AuthClientService,
     @InjectRepository(TransferDao)
     private readonly transferRepository: Repository<TransferDao>,
@@ -176,7 +179,7 @@ export class DataPlaneService {
     return await this.transferRepository.find({});
   }
 
-  private async getTransferById(id: string) {
+  async getTransferById(id: string) {
     const transfer = await this.transferRepository.findOneBy({ id: id });
     if (!transfer) {
       throw new HttpException(`Transfer ${id} not found`, HttpStatus.NOT_FOUND);
@@ -456,6 +459,11 @@ export class DataPlaneService {
         "dspace:endpointProperties"
       ].find((p) => p["dspace:name"] === "Authorization")?.["dspace:value"];
 
+      let bodyLength = -1;
+      if (this.config.logging.debug && request.rawBody) {
+        bodyLength = Buffer.byteLength(request.rawBody);
+      }
+
       await this.proxy(
         request.method,
         newUrl,
@@ -465,6 +473,28 @@ export class DataPlaneService {
         response,
         false,
       );
+      const logEntry: LogEntry = {
+        date: new Date(),
+        remoteParty: transfer.remoteParty,
+        transferId: transfer.id,
+        datasetId: transfer.datasetId,
+        path: path,
+        method: request.method,
+        status: response.statusCode,
+      };
+      if (this.config.logging.debug) {
+        logEntry.debug = {
+          request: {
+            headers: headers,
+            query: request.query,
+            bodyLength: bodyLength,
+          },
+          response: {
+            headers: response.getHeaders(),
+          },
+        };
+      }
+      await this.loggingService.insertEgressLog(logEntry);
     } catch (e) {
       this.logger.log(`Error in executing transfer: ${e}`);
       throw new HttpException(
@@ -548,7 +578,10 @@ export class DataPlaneService {
       const newUrl = `${version.backend}/${path}`.replace(/([^:]\/)\/+/g, "$1");
       this.logger.log(`Rewrite: ${newUrl}`);
       this.logger.log(`Headers: ${JSON.stringify(headers)}`);
-
+      let bodyLength = -1;
+      if (this.config.logging.debug && request.rawBody) {
+        bodyLength = Buffer.byteLength(request.rawBody);
+      }
       await this.proxy(
         request.method,
         newUrl,
@@ -558,6 +591,28 @@ export class DataPlaneService {
         response,
         version.authorization !== undefined,
       );
+      const logEntry: LogEntry = {
+        date: new Date(),
+        remoteParty: transfer.remoteParty,
+        transferId: transfer.id,
+        datasetId: transfer.datasetId,
+        path: path,
+        method: request.method,
+        status: response.statusCode,
+      };
+      if (this.config.logging.debug) {
+        logEntry.debug = {
+          request: {
+            headers: headers,
+            query: request.query,
+            bodyLength: bodyLength,
+          },
+          response: {
+            headers: response.getHeaders(),
+          },
+        };
+      }
+      await this.loggingService.insertIngressLog(logEntry);
     } catch (e) {
       this.logger.log(`Error in executing transfer: ${e}`);
       throw new HttpException(
@@ -608,8 +663,7 @@ export class DataPlaneService {
       response.status(proxyResponse.status);
       proxyResponse.data.pipe(response);
     } catch (e) {
-      console.log(e);
-      return;
+      this.logger.warn(`Error proxying call to ${url}: ${e}`);
     }
   }
 }

@@ -13,9 +13,9 @@ const model = ref([
         to: "/",
       },
       {
-        label: "Tester",
-        icon: "pi pi-fw pi-wrench",
-        to: "/tester",
+        label: "Logging",
+        icon: "pi pi-fw pi-list",
+        to: "/logging",
       },
     ],
   },

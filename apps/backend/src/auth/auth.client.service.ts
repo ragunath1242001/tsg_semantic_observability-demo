@@ -13,15 +13,6 @@ interface Token {
   expiration?: number;
 }
 
-interface Parameters {
-  grant_type: "password" | "refresh_token";
-  username?: string;
-  password?: string;
-  refresh_token?: string;
-  client_id: string;
-  client_secret: string;
-}
-
 @Injectable()
 export class AuthClientService {
   constructor(private readonly authConfig: AuthConfig) {}
@@ -54,7 +45,7 @@ export class AuthClientService {
       if (this.valid(this.access_token)) {
         return this.access_token!.jwt;
       }
-      var params: string;
+      let params: string;
       if (this.valid(this.refresh_token)) {
         params = querystring.stringify({
           grant_type: "refresh_token",

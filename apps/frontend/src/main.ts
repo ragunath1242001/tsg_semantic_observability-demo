@@ -31,8 +31,18 @@ import Column from "primevue/column";
 import Password from "primevue/password";
 import ConfirmationService from "primevue/confirmationservice";
 import Panel from "primevue/panel";
+import MonacoEditorVue from "./components/MonacoEditor.vue";
+
+import Tooltip from "primevue/tooltip";
 
 import "@/assets/styles.scss";
+
+import { loader } from "@guolao/vue-monaco-editor";
+loader.config({
+  paths: {
+    vs: "https://cdn.jsdelivr.net/npm/monaco-editor@0.43.0/dev/vs",
+  },
+});
 
 const app = createApp(App);
 app.use(store);
@@ -41,6 +51,8 @@ app.use(PrimeVue, { ripple: true });
 app.use(ToastService);
 app.use(ConfirmationService);
 app.use(DialogService);
+
+app.directive("tooltip", Tooltip);
 
 app.component("AutoComplete", AutoComplete);
 app.component("Button", Button);
@@ -66,5 +78,7 @@ app.component("Toast", Toast);
 app.component("ToggleButton", ToggleButton);
 app.component("Tree", Tree);
 app.component("Panel", Panel);
+
+app.component("MonacoEditorVue", MonacoEditorVue);
 
 app.mount("#app");

@@ -2,7 +2,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { DataPlaneService } from "./dataplane.service";
 import { DataPlaneController } from "./dataplane.controller";
 import { plainToClass } from "class-transformer";
-import { AuthConfig, RootConfig } from "../config";
+import { AuthConfig, LoggingConfig, RootConfig } from "../config";
 import { SetupServer, setupServer } from "msw/node";
 import { HttpResponse, PathParams, http } from "msw";
 import { Request } from "express";
@@ -14,6 +14,8 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { DataPlaneStateDao } from "./dataplane.dao";
 import { AuthClientService } from "../auth/auth.client.service";
 import { RawBodyRequest } from "@nestjs/common";
+import { EgressLogDao, IngressLogDao } from "../logging/logging.dao";
+import { LoggingService } from "../logging/logging.service";
 
 describe("Dataplane Service", () => {
   let dataPlaneService: DataPlaneService;
@@ -42,6 +44,9 @@ describe("Dataplane Service", () => {
             authorization: "Bearer AAAAAAA",
           },
         ],
+      },
+      logging: {
+        debug: true,
       },
     });
 
@@ -134,16 +139,31 @@ describe("Dataplane Service", () => {
 
     const moduleRef: TestingModule = await Test.createTestingModule({
       imports: [
-        TypeOrmTestHelper.instance.module([TransferDao, DataPlaneStateDao]),
-        TypeOrmModule.forFeature([TransferDao, DataPlaneStateDao]),
+        TypeOrmTestHelper.instance.module([
+          TransferDao,
+          DataPlaneStateDao,
+          IngressLogDao,
+          EgressLogDao,
+        ]),
+        TypeOrmModule.forFeature([
+          TransferDao,
+          DataPlaneStateDao,
+          IngressLogDao,
+          EgressLogDao,
+        ]),
       ],
       controllers: [DataPlaneController],
       providers: [
         DataPlaneService,
+        LoggingService,
         AuthClientService,
         {
           provide: AuthConfig,
           useValue: { enabled: false },
+        },
+        {
+          provide: LoggingConfig,
+          useValue: { debug: true },
         },
         {
           provide: RootConfig,
@@ -190,11 +210,6 @@ describe("Dataplane Service", () => {
       expect(state.details).toBeDefined();
     });
 
-    it("Get transfers for transport", async () => {
-      const transfers = await dataPlaneService.getTransfers();
-      expect(transfers).toHaveLength(0);
-    });
-
     it("Transfer request", async () => {
       const result = await dataPlaneService.handleTransferRequest(
         {
@@ -215,6 +230,20 @@ describe("Dataplane Service", () => {
           ({ name }) => name === "Authorization",
         )?.value || "UNKNOWN";
       expect(result.dataAddress).toBeDefined();
+    });
+
+    it("Get transfers for transport", async () => {
+      const transfers = await dataPlaneService.getTransfers();
+      expect(transfers).toHaveLength(1);
+
+      const existingTransfer = await dataPlaneService.getTransferById(
+        transfers[0].id,
+      );
+      expect(existingTransfer).toBeDefined();
+
+      await expect(dataPlaneService.getTransferById("unknown")).rejects.toThrow(
+        "not found",
+      );
     });
 
     it("Transfer execution on requested", async () => {

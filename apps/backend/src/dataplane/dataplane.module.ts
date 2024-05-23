@@ -7,11 +7,13 @@ import { DataPlaneStateDao } from "./dataplane.dao";
 import { DataPlaneManagementController } from "./dataplane.management.controller";
 import { ProxyController } from "./proxy.controller";
 import { AuthModule } from "../auth/auth.module";
+import { LoggingModule } from "../logging/logging.module";
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([TransferDao, DataPlaneStateDao]),
     AuthModule,
+    LoggingModule,
   ],
   controllers: [
     DataPlaneController,

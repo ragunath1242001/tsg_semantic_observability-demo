@@ -2,7 +2,6 @@ import {
   Controller,
   Logger,
   Get,
-  Headers,
   HttpCode,
   HttpStatus,
   Param,
@@ -33,6 +32,11 @@ export class DataPlaneManagementController {
   @Get("/transfers")
   async getTransfers(): Promise<TransferDto[]> {
     return await this.dataPlaneService.getTransfers();
+  }
+
+  @Get("/transfers/:id")
+  async getTransfer(@Param("id") id: string): Promise<TransferDto> {
+    return await this.dataPlaneService.getTransferById(id);
   }
 
   @Get("/transfers/:id/metadata")

@@ -1,23 +1,19 @@
 <script setup lang="ts">
-import { ref, onMounted, inject } from "vue";
-import { JsonTreeView } from "json-tree-view-vue3";
+import { ref, onMounted, inject, onBeforeMount } from "vue";
+
 
 const data = ref();
 const dialogRef = inject("dialogRef") as any;
 
+onBeforeMount(() => {
+  data.value = dialogRef.value.data;
+})
 onMounted(() => {
-    data.value = dialogRef.value.data;
 });
 </script>
 
 <template>
-  <div style="max-width: 85vw;">
-
-    <JsonTreeView
-      :data="JSON.stringify(data)"
-      color-scheme="dark"
-      root-key="Dataset"
-      :max-depth="5"
-    />
+  <div style="width: 85vw;">
+    <MonacoEditorVue :static="data" :read-only="true" :max-lines="30" />
   </div>
 </template>

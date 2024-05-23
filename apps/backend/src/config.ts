@@ -138,6 +138,12 @@ export class VersionConfig {
   public readonly authorization?: string;
 }
 
+export class LoggingConfig {
+  @IsBoolean()
+  @IsOptional()
+  public readonly debug: boolean = false;
+}
+
 export class RootConfig {
   @ValidateNested()
   @IsDefined({
@@ -175,4 +181,9 @@ export class RootConfig {
   @Type(() => DatasetConfig)
   @IsDefined()
   public readonly dataset!: DatasetConfig;
+
+  @ValidateNested()
+  @Type(() => LoggingConfig)
+  @IsOptional()
+  public readonly logging: LoggingConfig = new LoggingConfig();
 }
