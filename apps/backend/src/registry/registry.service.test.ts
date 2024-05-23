@@ -306,13 +306,13 @@ describe("RegistryService", () => {
           },
         ],
       }).compile();
-      it("Crawl fails when registry is disabled (default)", async () => {
-        await expect(async () => {
-          registryService.getAllCatalogs();
-        }).rejects.toThrow(
-          expect.objectContaining({ status: HttpStatus.NOT_IMPLEMENTED })
-        );
-      });
+    });
+    it("Crawl fails when registry is disabled (default)", async () => {
+      expect(async () => {
+        await registryService.getAllCatalogs();
+      }).rejects.toThrow(
+        expect.objectContaining({ status: HttpStatus.NOT_IMPLEMENTED })
+      );
     });
   });
 });
