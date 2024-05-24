@@ -23,12 +23,7 @@ export class RegistryController {
   @HttpCode(HttpStatus.OK)
   async getCatalogs(): Promise<CatalogDto[]> {
     this.logger.log(`Received request for all catalogs.`);
-    const catalogs = await this.registryService.getAllCatalogs();
-    return Promise.all(
-      catalogs.map((catalog) => {
-        return catalog.serialize();
-      })
-    );
+    return await this.registryService.getAllCatalogs();
   }
 
   @Get("addresses")

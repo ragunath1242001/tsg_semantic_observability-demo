@@ -201,7 +201,7 @@ describe("DataPlane Service", () => {
       });
 
       it("creates dataset when none exists", async () => {
-        await catalogService.initalizeCatalog();
+        await catalogService.initializeCatalog();
 
         const dataset = new Dataset({
           id: "urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0cea",
@@ -243,7 +243,7 @@ describe("DataPlane Service", () => {
       });
 
       it("updates dataset when one exists", async () => {
-        await catalogService.initalizeCatalog();
+        await catalogService.initializeCatalog();
 
         const dataset = new Dataset({
           id: "urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0ceb",

@@ -26,6 +26,8 @@ import { ScheduleModule } from "@nestjs/schedule";
 import { AuthClientService } from "../auth/auth.client.service";
 import { DataPlaneDao } from "../model/dataPlanes.dao";
 import { HttpStatus } from "@nestjs/common";
+import { RegistryDao } from "../model/registry.dao";
+import { DSPError } from "../utils/errors/error";
 
 describe("RegistryService", () => {
   let registryService: RegistryService;
@@ -41,29 +43,12 @@ describe("RegistryService", () => {
     });
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        TypeOrmTestHelper.instance.module([
-          CatalogDao,
-          CatalogRecordDao,
-          DatasetDao,
-          DataServiceDao,
-          DistributionDao,
-          ResourceDao,
-          DataPlaneDao,
-        ]),
-        TypeOrmModule.forFeature([
-          CatalogDao,
-          CatalogRecordDao,
-          DatasetDao,
-          DataServiceDao,
-          DistributionDao,
-          ResourceDao,
-          DataPlaneDao,
-        ]),
+        TypeOrmTestHelper.instance.module([RegistryDao]),
+        TypeOrmModule.forFeature([RegistryDao]),
         ScheduleModule.forRoot(),
       ],
       providers: [
         DidResolverService,
-        CatalogService,
         DspClientService,
         RegistryService,
         {
@@ -240,17 +225,12 @@ describe("RegistryService", () => {
     });
 
     it("Crawl and retrieve", async () => {
-      const result = await registryService.crawl();
+      await registryService.crawl();
 
       const catalogs = await registryService.getAllCatalogs();
-      const output = await Promise.all(
-        catalogs.map(async (catalog) => {
-          return await catalog.serialize();
-        })
-      );
       expect(catalogs).toHaveLength(1);
-      expect(catalogs[0].dataset).toHaveLength(1);
-      expect(catalogs[0].service).toHaveLength(1);
+      expect(catalogs[0]["dcat:dataset"]).toHaveLength(1);
+      expect(catalogs[0]["dcat:service"]).toHaveLength(1);
     });
   });
   describe("Crawl fails when registry is disabled", () => {
@@ -259,32 +239,15 @@ describe("RegistryService", () => {
       jest.spyOn(global, "setTimeout");
       await TypeOrmTestHelper.instance.setupTestDB();
       let iamConfig: IamConfig = mockWalletConfig();
-      const registryConfig = plainToClass(RegistryConfig, {});
+      const registryConf = plainToClass(RegistryConfig, { useRegistry: false });
       const module: TestingModule = await Test.createTestingModule({
         imports: [
-          TypeOrmTestHelper.instance.module([
-            CatalogDao,
-            CatalogRecordDao,
-            DatasetDao,
-            DataServiceDao,
-            DistributionDao,
-            ResourceDao,
-            DataPlaneDao,
-          ]),
-          TypeOrmModule.forFeature([
-            CatalogDao,
-            CatalogRecordDao,
-            DatasetDao,
-            DataServiceDao,
-            DistributionDao,
-            ResourceDao,
-            DataPlaneDao,
-          ]),
+          TypeOrmTestHelper.instance.module([RegistryDao]),
+          TypeOrmModule.forFeature([RegistryDao]),
           ScheduleModule.forRoot(),
         ],
         providers: [
           DidResolverService,
-          CatalogService,
           DspClientService,
           RegistryService,
           {
@@ -302,17 +265,15 @@ describe("RegistryService", () => {
           },
           {
             provide: RegistryConfig,
-            useValue: registryConfig,
+            useValue: registryConf,
           },
         ],
       }).compile();
+      registryService = module.get(RegistryService);
     });
+
     it("Crawl fails when registry is disabled (default)", async () => {
-      expect(async () => {
-        await registryService.getAllCatalogs();
-      }).rejects.toThrow(
-        expect.objectContaining({ status: HttpStatus.NOT_IMPLEMENTED })
-      );
+      await expect(registryService.getAllCatalogs()).rejects.toThrow(DSPError);
     });
   });
 });

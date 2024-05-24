@@ -41,7 +41,7 @@ export class CatalogService {
     @Optional() private readonly initCatalog?: InitCatalog,
     @Optional() private readonly server?: ServerConfig
   ) {}
-  initialized = this.initalizeCatalog();
+  initialized = this.initializeCatalog();
   private readonly logger = new Logger(this.constructor.name);
 
   async getCatalogDao(relations?: boolean): Promise<CatalogDao> {
@@ -81,7 +81,7 @@ export class CatalogService {
     return catalog[0];
   }
 
-  async initalizeCatalog() {
+  async initializeCatalog() {
     const existingCatalog = await this.catalogRepository.find({});
     if (!existingCatalog[0] && this.initCatalog && this.server) {
       const resource = this.resourceRepository.create(

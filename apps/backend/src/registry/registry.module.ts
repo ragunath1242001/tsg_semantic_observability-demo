@@ -16,6 +16,7 @@ import { CatalogModule } from "../dsp/catalog/catalog.module";
 import { RegistryClientController } from "./registry.client.controller";
 import { RegistryClientService } from "./registry.client.service";
 import { RegistryConfig } from "../config";
+import { RegistryDao } from "../model/registry.dao";
 
 @Module({})
 export class RegistryModule {
@@ -31,6 +32,7 @@ export class RegistryModule {
           DatasetDao,
           DataServiceDao,
           ResourceDao,
+          RegistryDao,
         ]),
         ScheduleModule.forRoot(),
       ],

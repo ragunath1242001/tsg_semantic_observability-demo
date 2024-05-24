@@ -8,41 +8,24 @@ import {
 } from "@nestjs/common";
 import { SchedulerRegistry } from "@nestjs/schedule";
 import { InjectRepository } from "@nestjs/typeorm";
-import {
-  Catalog,
-  CatalogDto,
-  Dataset,
-  Resource,
-  deserialize,
-} from "@tsg-dsp/common";
+import { CatalogDto } from "@tsg-dsp/common";
 import { DIDDocument } from "did-resolver";
 import { Repository } from "typeorm";
 import { AuthService } from "../auth/auth.service";
 import { RegistryConfig } from "../config";
-import { CatalogService } from "../dsp/catalog/catalog.service";
 import { DspClientService } from "../dsp/client/client.service";
-import {
-  CatalogDao,
-  DataServiceDao,
-  DatasetDao,
-  ResourceDao,
-} from "../model/catalog.dao";
+
 import { normalizeAddress } from "../utils/address";
 import { DSPError } from "../utils/errors/error";
 import { DidResolverService } from "./did.resolver.service";
+import { RegistryDao } from "../model/registry.dao";
+import { isFulfilled } from "../utils/promises";
 
 @Injectable()
 export class RegistryService implements OnApplicationBootstrap {
   constructor(
-    @InjectRepository(CatalogDao)
-    private readonly catalogRepository: Repository<CatalogDao>,
-    @InjectRepository(ResourceDao)
-    private readonly resourceRepository: Repository<ResourceDao>,
-    @InjectRepository(DatasetDao)
-    private readonly datasetRepository: Repository<DatasetDao>,
-    @InjectRepository(DataServiceDao)
-    private readonly dataServiceRepository: Repository<DataServiceDao>,
-    private readonly catalogService: CatalogService,
+    @InjectRepository(RegistryDao)
+    private readonly registryRepository: Repository<RegistryDao>,
     private readonly didResolverService: DidResolverService,
     private readonly dsp: DspClientService,
     private readonly schedulerRegistry: SchedulerRegistry,
@@ -122,59 +105,26 @@ export class RegistryService implements OnApplicationBootstrap {
   }
 
   async saveToDatabase(catalog: CatalogDto) {
-    const catalogInst = await deserialize<Catalog>(catalog);
-    const resource = this.resourceRepository.create(new Resource(catalogInst));
-    const dataset = this.datasetRepository.create({
-      ...new Dataset({
-        ...catalogInst,
-      }),
-      _resource: resource,
+    const registryObj = this.registryRepository.create({
+      catalogId: catalog["@id"],
+      catalogJson: catalog,
     });
-    const catalogObj = this.catalogRepository.create(catalogInst);
-
-    if (catalogInst.service) {
-      catalogObj._services = catalogInst.service.map((dservice) =>
-        this.dataServiceRepository.create(dservice)
-      );
-    }
-
-    catalogObj._dataset = await this.datasetRepository.save(dataset);
-    await this.catalogRepository.save(catalogObj);
-    if (catalogInst.dataset) {
-      await Promise.allSettled(
-        catalogInst.dataset.map(async (dataset) => {
-          try {
-            await this.catalogService.updateDataset(dataset.id, dataset);
-          } catch (err) {
-            if (
-              err instanceof DSPError &&
-              err.appResponse.code === HttpStatus.NOT_FOUND
-            ) {
-              this.logger.debug(
-                `Dataset with id ${dataset.id} does not exist yet, creating adding new dataset to the catalog`
-              );
-              await this.catalogService.addDataset(dataset, catalogObj.id);
-            }
-          }
-        })
-      );
-    }
+    await this.registryRepository.save(registryObj);
   }
 
   async crawl() {
     this.logger.debug("Crawling addresses and catalogs.");
     const addresses = await this.fetchAddresses();
     this.logger.debug(`Addresses to crawl: ${JSON.stringify(addresses)}`);
-    return await Promise.allSettled(
+    const results = await Promise.allSettled(
       addresses.map(async (address) => {
         try {
           this.logger.debug(`Crawling address ${address}`);
           const catalog = await this.getCatalog(address);
-          const result = await this.saveToDatabase(catalog);
           this.logger.debug(
-            `Crawled address ${address.address} (${address.didId}) and stored to database`
+            `Crawled address ${address.address} (${address.didId})`
           );
-          return result;
+          return catalog;
         } catch (err) {
           this.logger.debug(
             `Error during crawling address ${address.address} (${address.didId}): ${err}`
@@ -182,36 +132,32 @@ export class RegistryService implements OnApplicationBootstrap {
         }
       })
     );
+
+    const catalogs = results
+      .filter(isFulfilled)
+      .map((response) => response.value);
+
+    if (catalogs.length == 0) {
+      this.logger.log("No other dataspace participants found.");
+      return;
+    }
+
+    await this.registryRepository.clear();
+    return Promise.all(
+      catalogs.map(async (catalog) => {
+        await this.saveToDatabase(catalog);
+      })
+    );
   }
 
-  async getAllCatalogs(): Promise<Catalog[]> {
+  async getAllCatalogs(): Promise<CatalogDto[]> {
     if (!this.registryConfig?.useRegistry) {
       throw new DSPError(
         "Registry not enabled in settings",
         HttpStatus.NOT_IMPLEMENTED
       );
     }
-    const catalogDaos = await this.catalogRepository.find({
-      relations: {
-        _datasets: {
-          _resource: true,
-          _distribution: {
-            _accessService: {
-              _resource: true,
-            },
-          },
-        },
-        _services: true,
-        _dataset: {
-          _resource: true,
-          _distribution: {
-            _accessService: {
-              _resource: true,
-            },
-          },
-        },
-      },
-    });
-    return catalogDaos.map((catalog) => new Catalog(catalog));
+    const registryDaos = await this.registryRepository.find({});
+    return registryDaos.map((reg) => reg.catalogJson);
   }
 }
