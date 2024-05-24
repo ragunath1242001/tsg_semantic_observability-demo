@@ -65,6 +65,9 @@ const getTransfer = async (event?: AccordionTabOpenEvent) => {
 <template>
   <Card style="border-radius: 12px; border: 1px solid var(--surface-border)">
     <template #title><h5>Transfer History</h5></template>
+    <template #subtitle
+      >Here you can find the history of the transfers.</template
+    >
     <template #content v-if="transfers.length > 0">
       <Accordion @tab-open="getTransfer">
         <AccordionTab
@@ -98,13 +101,6 @@ const getTransfer = async (event?: AccordionTabOpenEvent) => {
             class="flex align-items-stretch grid card-container"
             v-if="accTransfer"
           >
-            <div class="p-0 col-12 xl:col-6">
-              <!-- <DataTable :value="accTransfer.process">
-              <Column field="dspace:providerPid" name="Provider ID"></Column>
-              <Column field="dspace:consumerPid" name="Consumer ID"></Column>
-              <Column field="dspace:agreementId" name="Agreement ID"></Column>
-            </DataTable> -->
-            </div>
             <div
               class="p-0 mt-4 col-12 xl:col-6 flex flex-wrap justify-content-center"
             >

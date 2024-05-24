@@ -12,7 +12,13 @@ const { transfers, ctaTransfers } = storeToRefs(useDspStore());
       <template #content>
         <p>
           This page shows (the history of) the transfers that are present for
-          the Control Plane.
+          the Control Plane. It also allows you to suspend, (re)start and
+          terminate transfers, according to the
+          <a
+            href="https://docs.internationaldataspaces.org/ids-knowledgebase/v/dataspace-protocol/transfer-process/transfer.process.protocol"
+            target="_blank"
+            >Transfer Process part of the Dataspace Protocol.</a
+          >
         </p>
       </template>
     </Card>

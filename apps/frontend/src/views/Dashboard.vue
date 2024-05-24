@@ -64,12 +64,12 @@ onMounted(async () => await initialize());
       <template #title>Control Plane Dashboard</template>
       <template #content
         ><p>
-          This page can be used to view the catalog that is available for your
-          control plane.
+          This page displays the Catalog that is available through your control
+          plane. It shows the datasets that are part of your catalog.
         </p></template
       >
     </Card>
-    <div class="grid card-container mt-2" v-if="dataAvailable">
+    <div class="grid card-container mt-3" v-if="dataAvailable">
       <div class="col-12 lg:col-6 xl:col-3">
         <Card
           style="border-radius: 12px; border: 1px solid var(--surface-border)"

@@ -97,7 +97,7 @@ onMounted(async () => await initialize());
   </Card>
   <Card
     style="border-radius: 12px; border: 1px solid var(--surface-border)"
-    class="mt-4"
+    class="mt-5"
   >
     <template #title>Addresses</template>
     <template #subtitle
@@ -131,7 +131,7 @@ onMounted(async () => await initialize());
   </Card>
   <Card
     style="border-radius: 12px; border: 1px solid var(--surface-border)"
-    class="mt-4"
+    class="mt-5"
   >
     <template #title>Browse Datasets</template>
     <template #content

@@ -90,7 +90,13 @@ onMounted(async () => await initialize());
       <template #subtitle
         >Use this page to find other catalogs. You can search for other Control
         Planes using the Registry, or enter an access URL and a DID manually if
-        you already know which party you want to query.</template
+        you already know which party you want to query. Submitting the form will
+        send a Catalog Request according to the
+        <a
+          target="_blank"
+          href="https://docs.internationaldataspaces.org/ids-knowledgebase/v/dataspace-protocol/catalog/catalog.protocol"
+          >Catalog Protocol in the Dataspace Protocol</a
+        >.</template
       >
       <template #content>
         <form @submit.stop.prevent="getCatalog">
@@ -129,7 +135,7 @@ onMounted(async () => await initialize());
     />
     <Card
       style="border-radius: 12px; border: 1px solid var(--surface-border)"
-      class="mt-4"
+      class="mt-5"
       v-else
       ><template #title><h5>Find others</h5></template>
       <template #content>

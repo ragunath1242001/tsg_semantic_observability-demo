@@ -125,7 +125,7 @@ const sendNegotiation = async (
 };
 </script>
 <template>
-  <div class="col-12">
+  <div class="col-12 mt-5">
     <Card style="border-radius: 12px; border: 1px solid var(--surface-border)">
       <template #title
         ><div class="flex align-items-center">
@@ -199,7 +199,7 @@ const sendNegotiation = async (
         </div>
         <h5 class="pt-3">Policies</h5>
         <div
-          class="grid grid-nogutter border-top-1 surface-border mt-2"
+          class="grid grid-nogutter border-top-1 surface-border mt-5"
           v-if="
             datasetData['odrl:hasPolicy'] &&
             datasetData['odrl:hasPolicy'].length > 0

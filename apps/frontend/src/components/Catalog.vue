@@ -113,8 +113,8 @@ const createPolicy = (policy: PolicyDto): string => {
 };
 </script>
 <template>
-  <div class="grid card-container mt-2">
-    <div class="col-12" v-if="!datasetView && singleCatalog">
+  <div class="grid card-container">
+    <div class="col-12 mt-3" v-if="!datasetView && singleCatalog">
       <Card
         style="border-radius: 12px; border: 1px solid var(--surface-border)"
       >
@@ -214,8 +214,8 @@ const createPolicy = (policy: PolicyDto): string => {
         </Card>
       </div>
     </template>
-    <template v-else-if="parsedView && !datasetList">
-      <div class="col-12 lg:col-6 xl:col-3">
+    <template v-else-if="parsedView && !datasetList && singleCatalog">
+      <div class="col-12 lg:col-6 xl:col-3 mt-5">
         <Card
           style="border-radius: 12px; border: 1px solid var(--surface-border)"
         >

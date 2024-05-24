@@ -11,7 +11,7 @@ const props = defineProps<{
 const negotiations = toRef(props, "negotiations");
 </script>
 <template>
-  <div class="grid mt-3">
+  <div class="grid mt-5">
     <div
       class="col-12 lg:col-6 xl:col-3"
       v-for="negotiation in negotiations"

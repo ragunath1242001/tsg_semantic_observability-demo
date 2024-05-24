@@ -103,7 +103,11 @@ const requestTransfer = async (accNegotiation: NegotiationDetailDto) => {
 <template>
   <Card style="border-radius: 12px; border: 1px solid var(--surface-border)">
     <template #title><h5>Negotiation History</h5></template>
-    <template #subtitle>Here you can find the history of negotiations</template>
+    <template #subtitle
+      >Here you can find the history of the contract negotiations. Contracts
+      that are finalized also allow the option to start a Transfer
+      Process.</template
+    >
     <template #content v-if="negotiations.length > 0">
       <Accordion @tab-open="getNegotiation">
         <AccordionTab
