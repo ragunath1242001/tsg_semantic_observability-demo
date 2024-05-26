@@ -1,3 +1,4 @@
+import { DatasetConfig } from "@libs/dtos";
 import { Type } from "class-transformer";
 import {
   IsString,
@@ -6,7 +7,6 @@ import {
   ValidateNested,
   IsDefined,
   IsUrl,
-  ArrayMinSize,
   IsIn,
   IsBoolean,
   ValidateIf,
@@ -99,43 +99,6 @@ export class ControlPlaneConfig {
   // public readonly authorization!: string;
   @IsNumber()
   public readonly initializationDelay: number = 5000;
-}
-
-export class DatasetConfig {
-  @IsString()
-  @IsOptional()
-  public readonly id?: string;
-
-  @IsString()
-  @IsDefined()
-  public readonly title!: string;
-
-  @ValidateNested()
-  @Type(() => VersionConfig)
-  @ArrayMinSize(1)
-  public readonly versions!: VersionConfig[];
-}
-
-export class VersionConfig {
-  @IsString()
-  @IsOptional()
-  public readonly id?: string;
-
-  @IsString()
-  @IsUrl({ require_tld: false })
-  public readonly backend!: string;
-
-  @IsString()
-  public readonly version!: string;
-
-  @IsString()
-  @IsUrl()
-  @IsOptional()
-  public readonly openApiSpec?: string;
-
-  @IsString()
-  @IsOptional()
-  public readonly authorization?: string;
 }
 
 export class LoggingConfig {

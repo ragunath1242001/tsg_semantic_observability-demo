@@ -11,9 +11,12 @@ import {
   All,
   RawBodyRequest,
   Query,
+  Body,
+  Put,
+  ValidationPipe,
 } from "@nestjs/common";
 import { DataPlaneService } from "./dataplane.service";
-import { DataPlaneStateDto, TransferDto } from "@libs/dtos";
+import { DataPlaneStateDto, DatasetConfig, TransferDto } from "@libs/dtos";
 import { Roles } from "../auth/roles.guard";
 import { Request, Response } from "express";
 import { AgreementDto, DatasetDto } from "@tsg-dsp/common";
@@ -26,7 +29,25 @@ export class DataPlaneManagementController {
 
   @Get("/state")
   async getState(): Promise<DataPlaneStateDto> {
-    return await this.dataPlaneService.getState();
+    return await this.dataPlaneService.getStateDto();
+  }
+
+  @Post("/refresh")
+  async refreshRegistration() {
+    return await this.dataPlaneService.registerDataplane();
+  }
+
+  @Get("/dataset")
+  async getDatasetConfig(): Promise<DatasetConfig> {
+    return await this.dataPlaneService.getDatasetConfig();
+  }
+
+  @Put("/dataset")
+  async updateDatasetConfig(
+    @Body(new ValidationPipe({ transform: true, forbidUnknownValues: true }))
+    datasetConfig: DatasetConfig,
+  ) {
+    return await this.dataPlaneService.updateDatasetConfig(datasetConfig);
   }
 
   @Get("/transfers")

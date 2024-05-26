@@ -13,6 +13,7 @@ import { IncomingHttpHeaders } from "http";
 import {
   AgreementDto,
   Catalog,
+  Constraint,
   DataPlaneAddressDto,
   DataPlaneCreation,
   DataPlaneDetailsDto,
@@ -21,6 +22,12 @@ import {
   Dataset,
   DatasetDto,
   Distribution,
+  ODRLLeftOperand,
+  ODRLOperator,
+  Offer,
+  Permission,
+  Policy,
+  Prohibition,
   Reference,
   TransferCompletionMessageDto,
   TransferRequestMessageDto,
@@ -28,13 +35,20 @@ import {
   TransferState,
   TransferSuspensionMessageDto,
   TransferTerminationMessageDto,
+  deserialize,
 } from "@tsg-dsp/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { TransferDao } from "./transfer.dao";
 import { DataPlaneStateDao } from "./dataplane.dao";
 import { DataPlaneClientError, DataPlaneError } from "../utils/errors/error";
-import { DataPlaneStateDto, TransferDto } from "@libs/dtos";
+import {
+  DataPlaneStateDto,
+  DatasetConfig,
+  PolicyConfig,
+  RuleConstraintConfig,
+  TransferDto,
+} from "@libs/dtos";
 import { AuthClientService } from "../auth/auth.client.service";
 import { resolve } from "../utils/didServiceResolver";
 import { LoggingService } from "../logging/logging.service";
@@ -75,97 +89,216 @@ export class DataPlaneService {
         `Creating new state (after ${this.config.controlPlane.initializationDelay}ms)`,
       );
       setTimeout(async () => {
-        const managementToken = ""; // TODO: should be removed, due to move towards oAuth
-        const dataPlaneCreation: DataPlaneCreation = {
-          dataplaneType: "dspace:HTTP",
-          endpointPrefix: `${this.config.server.publicAddress}/data`,
-          callbackAddress: this.config.server.publicAddress,
-          managementAddress: this.config.server.publicAddress,
-          managementToken: managementToken,
-          catalogSynchronization: "push",
-          role: "both",
-        };
-        const details = await this.axiosDataPlane.post<DataPlaneDetailsDto>(
-          `/init`,
-          dataPlaneCreation,
-        );
-        const accessService = new DataService({
-          endpointURL: this.config.controlPlane.controlEndpoint,
-        });
-        const id = this.config.dataset.id || `urn:uuid:${crypto.randomUUID()}`;
-        const baseDataset = new Dataset({
-          id: id,
-          title: this.config.dataset.title,
-          hasVersion: this.config.dataset.versions.map(
-            (v) => new Reference(`${id}:${v.version}`),
-          ),
-          hasCurrentVersion: new Reference(
-            `${id}:${this.config.dataset.versions[0].version}`,
-          ),
-          distribution: [
-            new Distribution({
-              id: `${id}:http`,
-              format: "dspace:HTTP",
-              title: this.config.dataset.title,
-              conformsTo: this.config.dataset.versions[0].openApiSpec
-                ? new Reference(this.config.dataset.versions[0].openApiSpec)
-                : undefined,
-              accessService: [accessService],
-            }),
-          ],
-        });
-        const versions = this.config.dataset.versions.map((v, idx) => {
-          return {
-            ...v,
-            previous: this.config.dataset.versions.at(idx + 1),
-          };
-        });
-        const versionedDatasets = versions.map(
-          (v) =>
-            new Dataset({
-              id: `${id}:${v.version}`,
-              title: `${this.config.dataset.title} (${v.version})`,
-              version: `${v.version}`,
-              isVersionOf: new Reference(id),
-              previousVersion: v.previous
-                ? new Reference(`${id}:${v.previous.version}`)
-                : undefined,
-              conformsTo: v.openApiSpec,
-              distribution: [
-                new Distribution({
-                  id: `${id}:${v.version}:http`,
-                  format: "dspace:HTTP",
-                  title: this.config.dataset.title,
-                  conformsTo: v.openApiSpec
-                    ? new Reference(v.openApiSpec)
-                    : undefined,
-                  accessService: [accessService],
-                }),
-              ],
-            }),
-        );
-
-        const catalog: Catalog = new Catalog({
-          dataset: [baseDataset, ...versionedDatasets],
-        });
-        await this.axiosDataPlane.post<DataPlaneDetailsDto>(
-          `/${details.data.identifier}/catalog`,
-          await catalog.serialize(),
-        );
-        const state = await this.stateRepository.save({
-          identifier: details.data.identifier,
-          managementToken: managementToken,
-          details: details.data,
-          dataset: await Promise.all(
-            [baseDataset, ...versionedDatasets].map((d) => d.serialize()),
-          ),
-        });
-        this.state = state;
+        await this.registerDataplane();
       }, this.config.controlPlane.initializationDelay);
     }
   }
 
-  async getState(): Promise<DataPlaneStateDto> {
+  async registerDataplane() {
+    const managementToken = ""; // TODO: should be removed, due to move towards oAuth
+    const dataPlaneCreation: DataPlaneCreation = {
+      identifier: this.state?.identifier,
+      dataplaneType: "dspace:HTTP",
+      endpointPrefix: `${this.config.server.publicAddress}/data`,
+      callbackAddress: this.config.server.publicAddress,
+      managementAddress: this.config.server.publicAddress,
+      managementToken: managementToken,
+      catalogSynchronization: "push",
+      role: "both",
+    };
+    const details = await this.axiosDataPlane.post<DataPlaneDetailsDto>(
+      `/init`,
+      dataPlaneCreation,
+    );
+    const datasets = await this.createDatasets(this.config.dataset);
+
+    const catalog: Catalog = new Catalog({
+      dataset: datasets,
+    });
+    await this.axiosDataPlane.post<DataPlaneDetailsDto>(
+      `/${details.data.identifier}/catalog`,
+      await catalog.serialize(),
+    );
+    const state = await this.stateRepository.save({
+      identifier: details.data.identifier,
+      managementToken: managementToken,
+      details: details.data,
+      datasetConfig: this.config.dataset,
+      dataset: await Promise.all(datasets.map((d) => d.serialize())),
+    });
+    this.state = state;
+    return state;
+  }
+
+  private constructConstraint(constraint: RuleConstraintConfig): Constraint {
+    switch (constraint.type) {
+      case "CredentialType":
+        return new Constraint({
+          leftOperand: "dspace:credentialType",
+          operator: ODRLOperator.EQ,
+          rightOperand: constraint.value,
+        });
+      case "Recipient":
+        return new Constraint({
+          leftOperand: ODRLLeftOperand.RECIPIENT,
+          operator: ODRLOperator.EQ,
+          rightOperand: constraint.value,
+        });
+      case "License":
+        return new Constraint({
+          leftOperand: "dspace:license",
+          operator: ODRLOperator.EQ,
+          rightOperand: constraint.value,
+        });
+      default:
+        return new Constraint({
+          leftOperand: constraint.type,
+          operator: ODRLOperator.EQ,
+          rightOperand: constraint.value,
+        });
+    }
+  }
+
+  private async constructOffer(
+    datasetId: string,
+    policyConfig?: PolicyConfig,
+  ): Promise<Policy[] | undefined> {
+    if (!policyConfig) return;
+    if (policyConfig.type === "default") return;
+    if (policyConfig.type === "manual") {
+      if (!policyConfig.raw) {
+        throw new DataPlaneError(
+          `Property "raw" must be provided for policy configs with type "manual"`,
+          HttpStatus.BAD_REQUEST,
+        );
+      } else {
+        try {
+          const deserialized = await deserialize<Offer>(policyConfig.raw);
+          return [deserialized];
+        } catch (err) {
+          throw new DataPlaneError(
+            `Could not deserialize "raw" into a ODRL Policy`,
+            HttpStatus.BAD_REQUEST,
+            err,
+          );
+        }
+      }
+    }
+
+    return [
+      new Offer({
+        assigner: "",
+        permission: policyConfig.permissions?.map((permission) => {
+          return new Permission({
+            action: permission.action,
+            target: datasetId,
+            constraint: permission.constraints?.map((constraint) =>
+              this.constructConstraint(constraint),
+            ),
+          });
+        }),
+        prohibition: policyConfig.prohibitions?.map((prohibition) => {
+          return new Prohibition({
+            action: prohibition.action,
+            target: datasetId,
+            constraint: prohibition.constraints?.map((constraint) =>
+              this.constructConstraint(constraint),
+            ),
+          });
+        }),
+      }),
+    ];
+  }
+
+  async updateDatasetConfig(datasetConfig: DatasetConfig) {
+    const currentState = this.getState();
+    const datasets = await this.createDatasets(datasetConfig);
+
+    const catalog: Catalog = new Catalog({
+      dataset: datasets,
+    });
+    await this.axiosDataPlane.post<DataPlaneDetailsDto>(
+      `/${this.state?.identifier}/catalog`,
+      await catalog.serialize(),
+    );
+    const state = await this.stateRepository.save({
+      ...currentState,
+      datasetConfig: datasetConfig,
+      dataset: await Promise.all(datasets.map((d) => d.serialize())),
+    });
+
+    this.state = state;
+    return state;
+  }
+
+  private async createDatasets(datasetConfig: DatasetConfig) {
+    const accessService = new DataService({
+      endpointURL: this.config.controlPlane.controlEndpoint,
+    });
+    const id =
+      datasetConfig.id ||
+      this.state?.dataset?.[0]?.["@id"] ||
+      `urn:uuid:${crypto.randomUUID()}`;
+
+    const baseDataset = new Dataset({
+      id: id,
+      title: datasetConfig.title,
+      hasVersion: datasetConfig.versions.map(
+        (v) => new Reference(`${id}:${v.version}`),
+      ),
+      hasCurrentVersion: new Reference(
+        `${id}:${datasetConfig.versions[0].version}`,
+      ),
+      distribution: [
+        new Distribution({
+          id: `${id}:http`,
+          format: "dspace:HTTP",
+          title: datasetConfig.title,
+          conformsTo: datasetConfig.versions[0].openApiSpec
+            ? new Reference(datasetConfig.versions[0].openApiSpec)
+            : undefined,
+          accessService: [accessService],
+        }),
+      ],
+      hasPolicy: await this.constructOffer(id, datasetConfig.policy),
+    });
+    const versions = datasetConfig.versions.map((v, idx) => {
+      return {
+        ...v,
+        previous: datasetConfig.versions.at(idx + 1),
+      };
+    });
+    const datasets = [baseDataset];
+    for (const v of versions) {
+      datasets.push(
+        new Dataset({
+          id: `${id}:${v.version}`,
+          title: `${datasetConfig.title} (${v.version})`,
+          version: `${v.version}`,
+          isVersionOf: new Reference(id),
+          previousVersion: v.previous
+            ? new Reference(`${id}:${v.previous.version}`)
+            : undefined,
+          conformsTo: v.openApiSpec,
+          distribution: [
+            new Distribution({
+              id: `${id}:${v.version}:http`,
+              format: "dspace:HTTP",
+              title: datasetConfig.title,
+              conformsTo: v.openApiSpec
+                ? new Reference(v.openApiSpec)
+                : undefined,
+              accessService: [accessService],
+            }),
+          ],
+          hasPolicy: await this.constructOffer(id, datasetConfig.policy),
+        }),
+      );
+    }
+    return datasets;
+  }
+
+  private getState(): DataPlaneStateDao {
     if (!this.state) {
       throw new DataPlaneError(
         "No state available yet",
@@ -173,6 +306,14 @@ export class DataPlaneService {
       );
     }
     return this.state;
+  }
+
+  async getStateDto(): Promise<DataPlaneStateDto> {
+    return this.getState();
+  }
+
+  async getDatasetConfig(): Promise<DatasetConfig> {
+    return this.getState().datasetConfig;
   }
 
   async getTransfers(): Promise<TransferDto[]> {

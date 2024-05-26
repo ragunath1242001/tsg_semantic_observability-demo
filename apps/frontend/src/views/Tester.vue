@@ -128,10 +128,11 @@ const fetchMetadata = async () => {
     const response = await axiosInstance.get<{ agreement: AgreementDto; dataset: DatasetDto; }>(`management/transfers/${transfer.value.id}/metadata`);
     metadata.value = response.data;
   } catch (err) {
+    const message = err.response?.data?.message || "Could not fetch metadata for this transfer";
     toast.add({
       severity: "warn",
       summary: "Error fetching metadata",
-      detail: "Could not fetch metadata for this transfer",
+      detail: message,
       life: 10000,
     });
   }
@@ -171,10 +172,11 @@ const execute = async () => {
     response.value = { axios: axiosResponse, measuredTime: stop - start };
   } catch (err) {
     response.value = { error: err as Error };
+    const message = err.response?.data?.message || "Could not execute the call to the remote data plane";
     toast.add({
       severity: "warn",
       summary: "Error executing call",
-      detail: "Could not execute the call to the remote data plane",
+      detail: message,
       life: 10000,
     });
   }

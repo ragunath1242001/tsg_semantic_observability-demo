@@ -5,6 +5,7 @@ import Dashboard from "../views/Dashboard.vue";
 import Tester from "../views/Tester.vue";
 import { store } from "../store/index.js";
 import Logging from "../views/Logging.vue";
+import Metadata from "../views/Metadata.vue";
 
 const router = createRouter({
   history: createWebHashHistory(),
@@ -25,6 +26,11 @@ const router = createRouter({
           props: {
             default: true,
           },
+        },
+        {
+          path: "/metadata",
+          name: "metadata",
+          component: Metadata,
         },
         {
           path: "/logging",

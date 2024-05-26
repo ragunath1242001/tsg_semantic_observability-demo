@@ -7,7 +7,12 @@ import { SetupServer, setupServer } from "msw/node";
 import { HttpResponse, PathParams, http } from "msw";
 import { Request } from "express";
 import { getMockRes } from "@jest-mock/express";
-import { AgreementDto, DataPlaneCreation, DatasetDto } from "@tsg-dsp/common";
+import {
+  AgreementDto,
+  DataPlaneCreation,
+  DatasetDto,
+  OfferDto,
+} from "@tsg-dsp/common";
 import { TypeOrmTestHelper } from "../utils/testhelper";
 import { TransferDao } from "./transfer.dao";
 import { TypeOrmModule } from "@nestjs/typeorm";
@@ -173,6 +178,9 @@ describe("Dataplane Service", () => {
     }).compile();
 
     dataPlaneService = moduleRef.get(DataPlaneService);
+    await expect(dataPlaneService.getStateDto()).rejects.toThrow(
+      "No state available yet",
+    );
 
     await new Promise((r) => setTimeout(r, 20));
   });
@@ -204,7 +212,7 @@ describe("Dataplane Service", () => {
     it("Get state", async () => {
       await dataPlaneService.initialized;
       await new Promise((r) => setTimeout(r, 100));
-      const state = await dataPlaneService.getState();
+      const state = await dataPlaneService.getStateDto();
       expect(state.dataset?.length).toBeGreaterThanOrEqual(1);
       expect(state.identifier).toBeDefined();
       expect(state.details).toBeDefined();
@@ -504,6 +512,148 @@ describe("Dataplane Service", () => {
           response.res,
         ),
       ).rejects.toThrow("accessing is not allowed");
+    });
+  });
+  describe("Config management", () => {
+    it("Update config", async () => {
+      await dataPlaneService.updateDatasetConfig({
+        id: `urn:uuid:test`,
+        title: "HTTPBin",
+        versions: [
+          {
+            backend: "https://httpbin.org/anything",
+            openApiSpec: "https://httpbin.org/spec.json",
+            version: "0.9.2",
+            authorization: "Bearer AAAAAAA",
+          },
+          {
+            backend: "https://httpbin.org/anything",
+            openApiSpec: "https://httpbin.org/spec.json",
+            version: "0.9.1",
+            authorization: "Bearer AAAAAAA",
+          },
+        ],
+        policy: {
+          type: "rules",
+          permissions: [
+            {
+              action: "odrl:use",
+              constraints: [
+                {
+                  type: "CredentialType",
+                  value: "dataspace:MembershipCredential",
+                },
+              ],
+            },
+            {
+              action: "odrl:read",
+            },
+          ],
+          prohibitions: [
+            {
+              action: "odrl:distribute",
+            },
+            {
+              action: "odrl:sell",
+              constraints: [
+                {
+                  type: "CredentialType",
+                  value: "dataspace:CommercialCredential",
+                },
+              ],
+            },
+          ],
+        },
+      });
+      const config = await dataPlaneService.getDatasetConfig();
+      expect(config.versions).toHaveLength(2);
+      expect(config.policy).toBeDefined();
+    });
+    it("Default policy", async () => {
+      await dataPlaneService.updateDatasetConfig({
+        id: `urn:uuid:test`,
+        title: "HTTPBin",
+        versions: [
+          {
+            backend: "https://httpbin.org/anything",
+            openApiSpec: "https://httpbin.org/spec.json",
+            version: "0.9.2",
+            authorization: "Bearer AAAAAAA",
+          },
+        ],
+        policy: {
+          type: "default",
+        },
+      });
+    });
+    it("Raw policy", async () => {
+      await dataPlaneService.updateDatasetConfig({
+        id: `urn:uuid:test`,
+        title: "HTTPBin",
+        versions: [
+          {
+            backend: "https://httpbin.org/anything",
+            openApiSpec: "https://httpbin.org/spec.json",
+            version: "0.9.2",
+            authorization: "Bearer AAAAAAA",
+          },
+        ],
+        policy: {
+          type: "manual",
+          raw: {
+            "@context": "https://w3id.org/dspace/v0.8/context.json",
+            "@type": "odrl:Offer",
+            "@id": "urn:uuid:65d23eb8-6536-42ff-b292-78ab2a991f66",
+            "odrl:assigner": "did:web:...",
+            "odrl:permission": [
+              {
+                "@type": "odrl:Permission",
+                "odrl:action": "odrl:use",
+                "odrl:target": "urn:uuid:test",
+              },
+            ],
+          },
+        },
+      });
+    });
+    it("Empty raw policy", async () => {
+      await expect(
+        dataPlaneService.updateDatasetConfig({
+          id: `urn:uuid:test`,
+          title: "HTTPBin",
+          versions: [
+            {
+              backend: "https://httpbin.org/anything",
+              openApiSpec: "https://httpbin.org/spec.json",
+              version: "0.9.2",
+              authorization: "Bearer AAAAAAA",
+            },
+          ],
+          policy: {
+            type: "manual",
+          },
+        }),
+      ).rejects.toThrow("must be provided for policy");
+    });
+    it("Erroneous raw policy", async () => {
+      await expect(
+        dataPlaneService.updateDatasetConfig({
+          id: `urn:uuid:test`,
+          title: "HTTPBin",
+          versions: [
+            {
+              backend: "https://httpbin.org/anything",
+              openApiSpec: "https://httpbin.org/spec.json",
+              version: "0.9.2",
+              authorization: "Bearer AAAAAAA",
+            },
+          ],
+          policy: {
+            type: "manual",
+            raw: "Test" as unknown as OfferDto,
+          },
+        }),
+      ).rejects.toThrow("Could not deserialize");
     });
   });
 });

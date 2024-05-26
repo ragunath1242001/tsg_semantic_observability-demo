@@ -1,0 +1,100 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "DatasetConfig",
+  "type": "object",
+  "definitions": {
+    "RuleConstraintConfig": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["CredentialType", "Recipient", "License"]
+        },
+        "value": {
+          "type": "string"
+        }
+      },
+      "required": ["type", "value"],
+      "additionalProperties": false
+    },
+    "PolicyRuleConfig": {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string"
+        },
+        "constraints": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/RuleConstraintConfig" }
+        }
+      },
+      "required": ["action", "constraints"],
+      "additionalProperties": false
+    },
+    "PolicyConfig": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["default", "rules", "manual"]
+        },
+        "permissions": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/PolicyRuleConfig" }
+        },
+        "prohibitions": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/PolicyRuleConfig" }
+        },
+        "raw": {
+          "type": "object"
+        }
+      },
+      "required": ["type"],
+      "additionalProperties": false
+    },
+    "VersionConfig": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "backend": {
+          "type": "string",
+          "format": "uri"
+        },
+        "version": {
+          "type": "string"
+        },
+        "openApiSpec": {
+          "type": "string",
+          "format": "uri"
+        },
+        "authorization": {
+          "type": "string"
+        }
+      },
+      "required": ["backend", "version"],
+      "additionalProperties": false
+    }
+  },
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "versions": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/definitions/VersionConfig" }
+    },
+    "policy": {
+      "type": "object",
+      "$ref": "#/definitions/PolicyConfig"
+    }
+  },
+  "required": ["title", "versions"],
+  "additionalProperties": false
+}

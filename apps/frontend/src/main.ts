@@ -15,6 +15,7 @@ import DialogService from "primevue/dialogservice";
 import InputSwitch from "primevue/inputswitch";
 import InputNumber from "primevue/inputtext";
 import InputText from "primevue/inputtext";
+import Inplace from "primevue/inplace";
 import MultiSelect from "primevue/multiselect";
 import SelectButton from "primevue/selectbutton";
 import Toast from "primevue/toast";
@@ -38,6 +39,7 @@ import Tooltip from "primevue/tooltip";
 import "@/assets/styles.scss";
 
 import { loader } from "@guolao/vue-monaco-editor";
+
 loader.config({
   paths: {
     vs: "https://cdn.jsdelivr.net/npm/monaco-editor@0.43.0/dev/vs",
@@ -69,6 +71,7 @@ app.component("SelectButton", SelectButton);
 app.component("InputSwitch", InputSwitch);
 app.component("InputNumber", InputNumber);
 app.component("InputText", InputText);
+app.component("Inplace", Inplace);
 app.component("Password", Password);
 app.component("TabView", TabView);
 app.component("TabPanel", TabPanel);

@@ -8,6 +8,11 @@ const props = defineProps({
     type: Object,
     required: false
   },
+  schemaWarning: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
   readOnly: {
     type: Boolean,
     required: false,
@@ -64,9 +69,9 @@ const handleBeforeMount = (monaco: MonacoEditor) => {
         fileMatch: ['**'],
         schema: JSON.parse(JSON.stringify(props.schema))
       }],
-      enableSchemaRequest: false,
+      enableSchemaRequest: true,
       schemaRequest: 'ignore',
-      schemaValidation: 'error'
+      schemaValidation: props.schemaWarning ? 'warning' : 'error'
     })
   } else if (!props.raw) {
     monaco.languages.json.jsonDefaults.setDiagnosticsOptions({

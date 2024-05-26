@@ -35,10 +35,11 @@ const getState = async () => {
     const response = await axiosInstance.get<DataPlaneStateDto>("management/state");
     state.value = response.data;
   } catch (err) {
+    const message = err.response?.data?.message || "Could not load state from the HTTP data plane";
     toast.add({
       severity: "warn",
       summary: "Loading state failed",
-      detail: "Could not load state from the HTTP data plane",
+      detail: message,
       life: 10000,
     });
   }
@@ -49,10 +50,11 @@ const getTransfers = async () => {
     const response = await axiosInstance.get<TransferDto[]>("management/transfers");
     transfers.value = response.data;
   } catch (err) {
+    const message = err.response?.data?.message || "Could not load transfers from the HTTP data plane";
     toast.add({
       severity: "warn",
-      summary: "Loading state failed",
-      detail: "Could not load state from the HTTP data plane",
+      summary: "Loading transfers failed",
+      detail: message,
       life: 10000,
     });
   }
@@ -103,10 +105,11 @@ const action = async (event: Event, action: 'start' | 'complete' | 'terminate' |
         });
         setTimeout(getTransfers, 1000);
       } catch (err) {
+        const message = err.response?.data?.message ||  `Could not ${action} transfer ${transfer.id}`;
         toast.add({
           severity: "warn",
           summary: `Error during transfer ${action}`,
-          detail: `Could not ${action} transfer ${transfer.id}`,
+          detail: message,
           life: 10000,
         });
       }
@@ -151,26 +154,16 @@ onMounted(async () => {
       <template #title>State</template>
       <template #subtitle>State of this HTTP data plane</template>
       <template #content>
-        <div class="grid" v-if="state">
-          <div class="col-12 lg:col-8">
-            <FormField label="Identifier">{{ state.identifier }}</FormField>
-            <FormField label="Type">{{ state.details.dataplaneType }}</FormField>
-            <FormField label="Synchronization">{{ state.details.catalogSynchronization }}</FormField>
-            <FormField label="Role">{{ state.details.role }}</FormField>
-            <FormField label="Dataset ID">{{ state.dataset.map(dataset => dataset["@id"]).join(", ") }}</FormField>
-          </div>
-          <div class="col-12 lg:col-4">
-            <div>
-              <Button icon="pi pi-refresh" severity="info" label="Refresh state at Control Plane" />
+        <div v-if="state">
+          <FormField label="Identifier">{{ state.identifier }}</FormField>
+          <FormField label="Type">{{ state.details.dataplaneType }}</FormField>
+          <FormField label="Synchronization">{{ state.details.catalogSynchronization }}</FormField>
+          <FormField label="Role">{{ state.details.role }}</FormField>
+          <FormField label="Dataset IDs">
+            <div v-for="dataset in state.dataset">
+              {{ dataset['@id'] }}
             </div>
-            <div class="mt-3">
-              <Button label="Show DCAT dataset" @click="showDataset = true" />
-              <Dialog :dismissableMask="true" v-model:visible="showDataset" modal header="DCAT datasets"
-                :style="{ width: '90vw', maxWidth: '75rem' }">
-                <MonacoEditorVue :static="state.dataset" :read-only="true" :max-lines="30" />
-              </Dialog>
-            </div>
-          </div>
+          </FormField>
         </div>
       </template>
     </Card>

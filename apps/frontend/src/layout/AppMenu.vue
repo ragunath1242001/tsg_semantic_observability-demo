@@ -13,6 +13,11 @@ const model = ref([
         to: "/",
       },
       {
+        label: "Metadata",
+        icon: "pi pi-fw pi-file",
+        to: "/metadata"
+      },
+      {
         label: "Logging",
         icon: "pi pi-fw pi-list",
         to: "/logging",
