@@ -24,6 +24,10 @@ const logoUrl = computed(() => {
   }.svg`;
 });
 
+const title = computed(() => {
+  return store.state.catalog?.['dct:title'];
+})
+
 const onTopBarMenuButton = () => {
   topbarMenuActive.value = !topbarMenuActive.value;
 };
@@ -93,7 +97,9 @@ const logout = async () => {
     >
       <i class="pi pi-ellipsis-v"></i>
     </button>
-
+    <span class="layout-topbar-logo" v-if="title">
+      {{ title }}
+    </span>
     <div class="layout-topbar-menu" :class="topbarMenuClasses">
       <div class="layout-topbar-button" v-if="store.state.user">
         {{ store.state.user.name }}

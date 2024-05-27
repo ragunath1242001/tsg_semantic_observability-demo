@@ -19,7 +19,7 @@ import { DataPlaneService } from "./dataplane.service";
 import { DataPlaneStateDto, DatasetConfig, TransferDto } from "@libs/dtos";
 import { Roles } from "../auth/roles.guard";
 import { Request, Response } from "express";
-import { AgreementDto, DatasetDto } from "@tsg-dsp/common";
+import { AgreementDto, CatalogDto, DatasetDto } from "@tsg-dsp/common";
 
 @Controller("/management")
 @Roles("controlplane_dataplane")
@@ -30,6 +30,11 @@ export class DataPlaneManagementController {
   @Get("/state")
   async getState(): Promise<DataPlaneStateDto> {
     return await this.dataPlaneService.getStateDto();
+  }
+
+  @Get("/catalog")
+  async getCatalog(): Promise<CatalogDto> {
+    return await this.dataPlaneService.getControlPlaneCatalog();
   }
 
   @Post("/refresh")

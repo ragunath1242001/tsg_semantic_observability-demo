@@ -1,4 +1,5 @@
 import { TransferDto } from "@libs/dtos";
+import { CatalogDto } from "@tsg-dsp/common";
 import axios from "axios";
 import { createStore } from "vuex";
 
@@ -10,10 +11,12 @@ export const store = createStore<{
     roles: string[];
   };
   transfer?: TransferDto;
+  catalog?: CatalogDto;
 }>({
   state: {
     user: null,
     transfer: null,
+    catalog: null,
   },
   getters: {},
   mutations: {
@@ -23,9 +26,12 @@ export const store = createStore<{
     currentTransfer(state, payload) {
       state.transfer = payload;
     },
+    catalog(state, payload) {
+      state.catalog = payload;
+    },
   },
   actions: {
-    async login({ commit }, payload) {
+    async login({ commit, dispatch }, payload) {
       try {
         const response = await axiosInstance.get("/auth/user");
         if (
@@ -35,10 +41,24 @@ export const store = createStore<{
           window.location.replace("/api/auth/login");
         } else {
           commit("userInfo", response.data.user);
+          dispatch("getCatalog");
         }
       } catch (e) {
         console.log(e);
         throw new Error("Login failed");
+      }
+    },
+    async getCatalog({ commit }) {
+      try {
+        const response = await axiosInstance.get<CatalogDto>(
+          "/management/catalog"
+        );
+        commit("catalog", response.data);
+        if (response.data?.["dct:title"]) {
+          window.document.title = `HTTP Data Plane - ${response.data?.["dct:title"]}`;
+        }
+      } catch (e) {
+        console.log(e);
       }
     },
     async logout({ commit }) {

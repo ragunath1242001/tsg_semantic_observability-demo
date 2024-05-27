@@ -13,6 +13,7 @@ import { IncomingHttpHeaders } from "http";
 import {
   AgreementDto,
   Catalog,
+  CatalogDto,
   Constraint,
   DataPlaneAddressDto,
   DataPlaneCreation,
@@ -125,11 +126,24 @@ export class DataPlaneService {
       identifier: details.data.identifier,
       managementToken: managementToken,
       details: details.data,
-      datasetConfig: this.config.dataset,
+      datasetConfig: this.state?.datasetConfig || this.config.dataset,
       dataset: await Promise.all(datasets.map((d) => d.serialize())),
     });
     this.state = state;
     return state;
+  }
+
+  async getControlPlaneCatalog(): Promise<CatalogDto> {
+    try {
+      const response =
+        await this.axiosManagement.get<CatalogDto>("/catalog/request");
+      return response.data;
+    } catch (err) {
+      throw new DataPlaneClientError(
+        "Fetching own catalog from control plane failed",
+        err,
+      ).andLog(this.logger);
+    }
   }
 
   private constructConstraint(constraint: RuleConstraintConfig): Constraint {
@@ -187,9 +201,18 @@ export class DataPlaneService {
       }
     }
 
+    let catalog: CatalogDto | undefined = undefined;
+    try {
+      catalog = await this.getControlPlaneCatalog();
+    } catch (err) {
+      this.logger.warn(
+        "Catalog could not be fetched from control plane, therefore, assigner fields in ODRL offers will be empty.",
+      );
+    }
+
     return [
       new Offer({
-        assigner: "",
+        assigner: catalog?.["dct:creator"] || catalog?.["dct:publisher"] || "",
         permission: policyConfig.permissions?.map((permission) => {
           return new Permission({
             action: permission.action,
@@ -662,8 +685,8 @@ export class DataPlaneService {
         HttpStatus.NOT_FOUND,
       );
     }
-    const state = await this.stateRepository.findOneBy([]);
-    let dataset = state?.dataset?.find((d) => d["@id"] === transfer.datasetId);
+    const state = await this.getState();
+    let dataset = state.dataset?.find((d) => d["@id"] === transfer.datasetId);
     if (!dataset) {
       throw new HttpException(
         `Dataset ${transfer.datasetId} not found`,
@@ -671,7 +694,7 @@ export class DataPlaneService {
       );
     }
     if (!dataset["dcat:version"] && dataset["dcat:hasCurrentVersion"]) {
-      dataset = state?.dataset?.find(
+      dataset = state.dataset?.find(
         (d) => d["@id"] === dataset?.["dcat:hasCurrentVersion"]?.["@id"],
       );
       if (!dataset) {
@@ -706,7 +729,7 @@ export class DataPlaneService {
 
     try {
       const headers = request.headers;
-      const version = this.config.dataset.versions.find(
+      const version = state.datasetConfig.versions.find(
         (v) => v.version === dataset["dcat:version"],
       );
       if (!version) {
