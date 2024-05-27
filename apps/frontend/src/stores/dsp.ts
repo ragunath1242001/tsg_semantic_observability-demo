@@ -7,8 +7,17 @@ import {
   TransferStatusDto,
 } from "@libs/dtos";
 import http from "../utils/http";
+import { CatalogDto } from "@tsg-dsp/common";
+
+interface Catalog {
+  catalog: CatalogDto;
+  ownDid: string;
+  numberOfServices: number;
+  numberOfDatasets: number;
+}
 
 interface IDspStore {
+  ownCatalog: Catalog;
   negotiations: NegotiationStatusDto[];
   ctaNegotiations: NegotiationDetailDto[];
   transfers: TransferStatusDto[];
@@ -64,6 +73,12 @@ const getTransfers = async () => {
 
 export const useDspStore = defineStore("dsp", {
   state: (): IDspStore => ({
+    ownCatalog: {
+      catalog: undefined,
+      numberOfDatasets: 0,
+      numberOfServices: 0,
+      ownDid: "",
+    },
     negotiations: [],
     ctaNegotiations: [],
     transfers: [],
@@ -76,6 +91,19 @@ export const useDspStore = defineStore("dsp", {
   },
 
   actions: {
+    async getOwnCatalog() {
+      try {
+        const response = await http.get<CatalogDto>(
+          "management/catalog/request"
+        );
+        this.ownCatalog.ownDid = response.data["dct:publisher"] || "";
+        this.ownCatalog.catalog = response.data;
+      } catch (error) {
+        // Handle error
+        console.error("Error:", error);
+        throw error;
+      }
+    },
     bindEvents() {
       socket.on("connect", async () => {
         const resp = await getNegotiations();

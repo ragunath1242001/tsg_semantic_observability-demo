@@ -9,15 +9,18 @@ import DisplayField from "./DisplayField.vue";
 import MonacoEditor from "./MonacoEditor.vue";
 import schema from "../assets/odrl.schema.json";
 
+interface Constraint {
+  leftOperand: string;
+  rightOperand: ReferenceDto;
+  operator: string;
+}
 interface FlatPolicy {
   type: string;
   assigner: string;
   assignee: string;
   target: string;
   action: string;
-  leftOperand: string;
-  rightOperand: ReferenceDto;
-  operator: string;
+  constraints: Constraint[];
 }
 
 const props = defineProps<{
@@ -54,6 +57,10 @@ const changeEditable = (edit: boolean) => {
   return;
 };
 
+const stripOdrl = (value: string) => {
+  return value.slice(5);
+};
+
 const goBack = () => {
   emit("change-dataset-view");
 };
@@ -66,16 +73,39 @@ const parsePolicies = (policies: Array<PolicyDto>): Array<FlatPolicy> => {
         output,
         policy["odrl:permission"].map((permission) => {
           return {
-            type: "odrl:Permission",
+            type: permission["@type"],
             assigner: policy["odrl:assigner"],
             assignee: policy["odrl:assignee"] || "*",
             target: permission["odrl:target"],
             action: permission["odrl:action"],
-            leftOperand:
-              permission["odrl:constraint"]?.[0]?.["odrl:leftOperand"],
-            rightOperand:
-              permission["odrl:constraint"]?.[0]?.["odrl:rightOperand"],
-            operator: permission["odrl:constraint"]?.[0]?.["odrl:operator"],
+            constraints: permission["odrl:constraint"]?.map((constraint) => {
+              return {
+                leftOperand: constraint["odrl:leftOperand"],
+                rightOperand: constraint["odrl:rightOperand"],
+                operator: constraint["odrl:operator"],
+              };
+            }),
+          } as FlatPolicy;
+        })
+      );
+    }
+    if (policy["odrl:prohibition"] !== undefined) {
+      output.push.apply(
+        output,
+        policy["odrl:prohibition"].map((prohibition) => {
+          return {
+            type: prohibition["@type"],
+            assigner: policy["odrl:assigner"],
+            assignee: policy["odrl:assignee"] || "*",
+            target: prohibition["odrl:target"],
+            action: prohibition["odrl:action"],
+            constraints: prohibition["odrl:constraint"]?.map((constraint) => {
+              return {
+                leftOperand: constraint["odrl:leftOperand"],
+                rightOperand: constraint["odrl:rightOperand"],
+                operator: constraint["odrl:operator"],
+              };
+            }),
           } as FlatPolicy;
         })
       );
@@ -133,18 +163,16 @@ const sendNegotiation = async (
           <h2 class="mx-3">{{ datasetData["dct:title"] }}</h2>
         </div></template
       >
-      <template #subtitle
-        ><p style="white-space: pre">
-          {{ utils.obtainValues(datasetData["dct:description"]).join("\r\n") }}
-        </p></template
-      >
+      <template #subtitle>
+        {{ utils.obtainValues(datasetData["dct:description"]).join("\r\n") }}
+      </template>
       <template #content>
         <div class="grid grid-nogutter border-top-1 surface-border">
-          <DisplayField
-            label="Version"
-            v-if="'dcat:hasVersion' in datasetData"
-            >{{ datasetData["dcat:hasVersion"]["@id"] }}</DisplayField
-          >
+          <DisplayField label="Versions" v-if="'dcat:hasVersion' in datasetData"
+            ><div v-for="version in datasetData['dcat:hasVersion']">
+              {{ version["@id"] }}
+            </div>
+          </DisplayField>
           <DisplayField
             label="Current Version"
             v-if="
@@ -197,41 +225,51 @@ const sendNegotiation = async (
             ></Tag
           ></DisplayField>
         </div>
-        <h5 class="pt-3">Policies</h5>
-        <div
-          class="grid grid-nogutter border-top-1 surface-border mt-5"
+        <Divider />
+        <template
           v-if="
             datasetData['odrl:hasPolicy'] &&
             datasetData['odrl:hasPolicy'].length > 0
           "
         >
+          <div class="pb-5 font-medium text-2xl text-900">Policies</div>
+
           <template
             v-for="policy in parsePolicies(datasetData['odrl:hasPolicy'])"
           >
-            <DisplayField label="Type">
-              {{ policy.type }}
-            </DisplayField>
-            <DisplayField label="Assigner">
-              {{ policy.assigner }}
-            </DisplayField>
-            <DisplayField label="Assignee">
-              {{ policy.assignee }}
-            </DisplayField>
-            <DisplayField label="Target">
-              {{ policy.target }}
-            </DisplayField>
-            <DisplayField label="Action">
-              {{ policy.action }}
-            </DisplayField>
-            <DisplayField label="Left Operand">
-              {{ policy.leftOperand }}
-            </DisplayField>
-            <DisplayField label="Operator">
-              {{ policy.operator }}
-            </DisplayField>
-            <DisplayField label="Right Operand">
-              {{ policy.rightOperand }}
-            </DisplayField>
+            <div class="px-2 font-medium text-lg text-700">
+              {{ stripOdrl(policy.type) }}
+            </div>
+            <div class="grid grid-nogutter">
+              <DisplayField label="Assigner">
+                {{ policy.assigner }}
+              </DisplayField>
+              <DisplayField label="Assignee">
+                {{ policy.assignee }}
+              </DisplayField>
+              <DisplayField label="Target">
+                {{ policy.target }}
+              </DisplayField>
+              <DisplayField label="Action">
+                {{ policy.action }}
+              </DisplayField>
+            </div>
+            <div class="p-3 font-medium text-lg text-700">Constraints</div>
+            <div
+              class="grid grid-nogutter"
+              v-for="constraint in policy.constraints"
+            >
+              <DisplayField label="Left Operand">
+                {{ constraint.leftOperand }}
+              </DisplayField>
+              <DisplayField label="Operator">
+                {{ constraint.operator }}
+              </DisplayField>
+              <DisplayField label="Right Operand">
+                {{ constraint.rightOperand }}
+              </DisplayField>
+            </div>
+            <Divider />
           </template>
           <div class="col-12" v-if="!props.ownDataset">
             <div class="col-6 col-offset-3">
@@ -285,7 +323,7 @@ const sendNegotiation = async (
               </template>
             </Dialog>
           </div>
-        </div>
+        </template>
       </template>
     </Card>
   </div>

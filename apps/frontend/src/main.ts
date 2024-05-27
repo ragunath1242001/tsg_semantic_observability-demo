@@ -34,7 +34,8 @@ import Timeline from "primevue/timeline";
 import ProgressSpinner from "primevue/progressspinner";
 import OverlayPanel from "primevue/overlaypanel";
 import MonacoEditorVue from "./components/MonacoEditor.vue";
-
+import { loader } from "@guolao/vue-monaco-editor";
+import Divider from "primevue/divider";
 import "@/assets/styles.scss";
 import MultiSelect from "primevue/multiselect";
 
@@ -46,7 +47,7 @@ app.use(router);
 app.use(PrimeVue, { ripple: true });
 app.use(ConfirmationService);
 app.use(ToastService);
-import { loader } from "@guolao/vue-monaco-editor";
+
 loader.config({
   paths: {
     vs: "https://cdn.jsdelivr.net/npm/monaco-editor@0.43.0/dev/vs",
@@ -64,6 +65,7 @@ app.component("ConfirmDialog", ConfirmDialog);
 app.component("DataTable", DataTable);
 app.component("DataView", DataView);
 app.component("Dialog", Dialog);
+app.component("Divider", Divider);
 app.component("InputSwitch", InputSwitch);
 app.component("InputText", InputText);
 app.component("MonacoEditorVue", MonacoEditorVue);

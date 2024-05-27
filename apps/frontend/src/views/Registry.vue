@@ -66,20 +66,7 @@ const getCatalogs = async () => {
   }
 };
 
-const getOwnCatalog = async () => {
-  try {
-    const response = await http.get<CatalogDto>("management/catalog/request");
-    assigner.value = response.data["dct:publisher"] || "";
-    return catalog;
-  } catch (error) {
-    // Handle error
-    console.error("Error:", error);
-    throw error;
-  }
-};
-
 const initialize = async () => {
-  getOwnCatalog();
   getCatalogs();
   queryAddresses();
 };
@@ -131,7 +118,7 @@ onMounted(async () => await initialize());
   </Card>
   <Card
     style="border-radius: 12px; border: 1px solid var(--surface-border)"
-    class="mt-5"
+    class="my-5"
   >
     <template #title>Browse Datasets</template>
     <template #content
@@ -140,12 +127,14 @@ onMounted(async () => await initialize());
   </Card>
   <div v-for="catalog in catalogs">
     <!-- TODO get catalogs and make sure the component supports merging data sets. -->
-    <Catalog
-      :url="catalog['dcat:service'][0]['dcat:endpointURL']"
-      :catalog="catalog"
-      :single-catalog="false"
-      :own-catalog="false"
-      :assigner="assigner"
-    ></Catalog>
+    <div class="grid card-container mb-3">
+      <Catalog
+        :url="catalog['dcat:service'][0]['dcat:endpointURL']"
+        :catalog="catalog"
+        :single-catalog="false"
+        :own-catalog="false"
+        :assigner="assigner"
+      ></Catalog>
+    </div>
   </div>
 </template>

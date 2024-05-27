@@ -3,6 +3,7 @@ import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 import { useLayout } from "../layout/composables/layout";
 import { useRouter } from "vue-router";
 import { useUserStore } from "../stores/user.js";
+import { useDspStore } from "../stores/dsp";
 
 const { layoutConfig, onMenuToggle, onConfigButtonClick } = useLayout();
 
@@ -11,6 +12,8 @@ const topbarMenuActive = ref(false);
 const router = useRouter();
 
 const store = useUserStore();
+
+const dspStore = useDspStore();
 
 onMounted(() => {
   bindOutsideClickListener();
@@ -37,6 +40,10 @@ const topbarMenuClasses = computed(() => {
   return {
     "layout-topbar-menu-mobile-active": topbarMenuActive.value,
   };
+});
+
+const title = computed(() => {
+  return dspStore.ownCatalog.catalog?.["dct:title"];
 });
 
 const bindOutsideClickListener = () => {
@@ -96,6 +103,10 @@ const logout = () => {
     >
       <i class="pi pi-ellipsis-v"></i>
     </button>
+
+    <span class="layout-topbar-logo" v-if="title">
+      {{ title }}
+    </span>
 
     <div class="layout-topbar-menu" :class="topbarMenuClasses">
       <div class="layout-topbar-button" v-if="store.user">

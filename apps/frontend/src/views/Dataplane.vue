@@ -106,7 +106,7 @@ onMounted(async () => {
 <template>
   <Card
     style="border-radius: 12px; border: 1px solid var(--surface-border)"
-    class="mb-4"
+    class="mb-5"
   >
     <template #title>Dataplanes</template>
     <template #content
@@ -118,7 +118,7 @@ onMounted(async () => {
   <Card
     v-for="dataplane in dataplanes"
     :key="dataplane.identifier"
-    class="mb-4"
+    class="mb-5"
     style="border-radius: 12px; border: 1px solid var(--surface-border)"
   >
     <template #title>

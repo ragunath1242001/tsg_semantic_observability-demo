@@ -61,31 +61,21 @@ const getCatalog = async () => {
   }
 };
 
-const getOwnCatalog = async () => {
-  try {
-    const response = await http.get<CatalogDto>("management/catalog/request");
-    assigner.value = response.data["dct:publisher"] || "";
-    return catalog;
-  } catch (error) {
-    // Handle error
-    console.error("Error:", error);
-    throw error;
-  }
-};
-
 const goToRegistry = () => {
   router.push("/registry");
 };
 
 const initialize = async () => {
   getCatalog();
-  getOwnCatalog();
 };
 onMounted(async () => await initialize());
 </script>
 <template>
   <div>
-    <Card style="border-radius: 12px; border: 1px solid var(--surface-border)">
+    <Card
+      style="border-radius: 12px; border: 1px solid var(--surface-border)"
+      class="mb-5"
+    >
       <template #title>Catalog Request</template>
       <template #subtitle
         >Use this page to find other catalogs. You can search for other Control
@@ -120,32 +110,34 @@ onMounted(async () => await initialize());
         </form>
       </template>
     </Card>
-    <Catalog
-      :catalog="catalog"
-      :url="urlInput"
-      :own-catalog="false"
-      :assigner="assigner"
-      :single-catalog="true"
-      v-if="dataAvailable"
-    />
-    <Skeleton
-      width="100%"
-      height="150px"
-      v-else-if="!dataAvailable && loading"
-    />
-    <Card
-      style="border-radius: 12px; border: 1px solid var(--surface-border)"
-      class="mt-5"
-      v-else
-      ><template #title><h5>Find others</h5></template>
-      <template #content>
-        <Button
-          type="button"
-          label="Go to Registry"
-          @click="goToRegistry"
-          icon="pi pi-external-link"
-          iconPos="right"
-        ></Button></template
-    ></Card>
+    <div class="grid card-container">
+      <Catalog
+        :catalog="catalog"
+        :url="urlInput"
+        :own-catalog="false"
+        :assigner="assigner"
+        :single-catalog="true"
+        v-if="dataAvailable"
+      />
+      <Skeleton
+        width="100%"
+        height="150px"
+        v-else-if="!dataAvailable && loading"
+      />
+      <div class="col-12 lg:col-6" v-else>
+        <Card
+          style="border-radius: 12px; border: 1px solid var(--surface-border)"
+          ><template #title><h5>Find others</h5></template>
+          <template #content>
+            <Button
+              type="button"
+              label="Go to Registry"
+              @click="goToRegistry"
+              icon="pi pi-external-link"
+              iconPos="right"
+            ></Button></template
+        ></Card>
+      </div>
+    </div>
   </div>
 </template>

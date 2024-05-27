@@ -101,7 +101,10 @@ const requestTransfer = async (accNegotiation: NegotiationDetailDto) => {
 };
 </script>
 <template>
-  <Card style="border-radius: 12px; border: 1px solid var(--surface-border)">
+  <Card
+    style="border-radius: 12px; border: 1px solid var(--surface-border)"
+    class="mt-3"
+  >
     <template #title><h5>Negotiation History</h5></template>
     <template #subtitle
       >Here you can find the history of the contract negotiations. Contracts
