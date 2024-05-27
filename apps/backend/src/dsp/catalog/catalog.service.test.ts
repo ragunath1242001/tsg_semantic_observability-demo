@@ -1,8 +1,13 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { DataService, Dataset, Distribution } from "@tsg-dsp/common";
+import {
+  DataService,
+  Dataset,
+  Distribution,
+  ODRLAction,
+} from "@tsg-dsp/common";
 import { plainToClass } from "class-transformer";
-import { InitCatalog, ServerConfig } from "../../config";
+import { InitCatalog, PolicyConfig, ServerConfig } from "../../config";
 import {
   CatalogDao,
   CatalogRecordDao,
@@ -28,6 +33,20 @@ describe("Catalog Service", () => {
       description: "Connector catalog for testing purposes",
     });
     const serverConfig = plainToClass(ServerConfig, {});
+    const policyConfig = plainToClass(PolicyConfig, {
+      type: "rules",
+      permissions: [
+        {
+          action: ODRLAction.USE,
+          constraints: [
+            {
+              type: "CredentialType",
+              value: "dataspace:MembershipCredential",
+            },
+          ],
+        },
+      ],
+    });
 
     const moduleRef: TestingModule = await Test.createTestingModule({
       imports: [
@@ -59,6 +78,10 @@ describe("Catalog Service", () => {
         {
           provide: ServerConfig,
           useValue: serverConfig,
+        },
+        {
+          provide: PolicyConfig,
+          useValue: policyConfig,
         },
       ],
     }).compile();
@@ -132,6 +155,17 @@ describe("Catalog Service", () => {
 
       //    A policy should be auto generated since we haven't defined one.
       expect(updatedCatalogDao.dataset?.[0].hasPolicy).toHaveLength(1);
+      expect(
+        updatedCatalogDao.dataset?.[0]?.hasPolicy?.[0].permission?.[0]?.action
+      ).toBe("odrl:use");
+      expect(
+        updatedCatalogDao.dataset?.[0]?.hasPolicy?.[0].permission?.[0]
+          ?.constraint?.[0]?.leftOperand
+      ).toBe("dspace:credentialType");
+      expect(
+        updatedCatalogDao.dataset?.[0]?.hasPolicy?.[0].permission?.[0]
+          ?.constraint?.[0]?.rightOperand
+      ).toBe("dataspace:MembershipCredential");
 
       const datasetDao = await catalogService.getDataset(dataset.id);
       expect(datasetDao).toBeDefined();

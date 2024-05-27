@@ -1,3 +1,4 @@
+import { OfferDto } from "@tsg-dsp/common";
 import { Type } from "class-transformer";
 import {
   IsArray,
@@ -212,6 +213,46 @@ export class InitCatalog {
   public datasets?: string[];
 }
 
+export class RuleConstraintConfig {
+  @IsString()
+  @IsDefined()
+  public type!: string;
+
+  @IsString()
+  @IsDefined()
+  public value!: string;
+}
+
+export class PolicyRuleConfig {
+  @IsString()
+  @IsDefined()
+  public action!: string;
+
+  @ValidateNested({ each: true })
+  @Type(() => RuleConstraintConfig)
+  @IsOptional()
+  public constraints?: RuleConstraintConfig[];
+}
+
+export class PolicyConfig {
+  @IsString()
+  @IsIn(["rules", "manual"])
+  public type: "rules" | "manual" = "rules";
+
+  @ValidateNested({ each: true })
+  @Type(() => PolicyRuleConfig)
+  @IsOptional()
+  public permissions?: PolicyRuleConfig[];
+
+  @ValidateNested({ each: true })
+  @Type(() => PolicyRuleConfig)
+  @IsOptional()
+  public prohibitions?: PolicyRuleConfig[];
+
+  @IsOptional()
+  public raw?: OfferDto;
+}
+
 export class RootConfig {
   @ValidateNested()
   @IsDefined({
@@ -263,6 +304,11 @@ export class RootConfig {
   @Type(() => InitCatalog)
   @IsDefined()
   public readonly initCatalog!: InitCatalog;
+
+  @ValidateNested()
+  @Type(() => PolicyConfig)
+  @IsOptional()
+  public readonly defaultPolicy: PolicyConfig = new PolicyConfig();
 
   @ValidateNested()
   @Type(() => RuntimeConfig)

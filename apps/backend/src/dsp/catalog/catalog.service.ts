@@ -8,14 +8,21 @@ import {
   Dataset,
   Multilanguage,
   ODRLAction,
+  ODRLLeftOperand,
   ODRLOperator,
   Offer,
   Permission,
+  Prohibition,
   Resource,
   deserialize,
 } from "@tsg-dsp/common";
 import { Repository } from "typeorm";
-import { InitCatalog, ServerConfig } from "../../config";
+import {
+  InitCatalog,
+  PolicyConfig,
+  RuleConstraintConfig,
+  ServerConfig,
+} from "../../config";
 import {
   CatalogDao,
   DataServiceDao,
@@ -39,7 +46,8 @@ export class CatalogService {
     @InjectRepository(ResourceDao)
     private readonly resourceRepository: Repository<ResourceDao>,
     @Optional() private readonly initCatalog?: InitCatalog,
-    @Optional() private readonly server?: ServerConfig
+    @Optional() private readonly server?: ServerConfig,
+    @Optional() private readonly defaultPolicy?: PolicyConfig
   ) {}
   initialized = this.initializeCatalog();
   private readonly logger = new Logger(this.constructor.name);
@@ -126,6 +134,35 @@ export class CatalogService {
     await this.catalogRepository.update({ id: catalog.id }, catalog);
   }
 
+  private constructConstraint(constraint: RuleConstraintConfig): Constraint {
+    switch (constraint.type) {
+      case "CredentialType":
+        return new Constraint({
+          leftOperand: "dspace:credentialType",
+          operator: ODRLOperator.EQ,
+          rightOperand: constraint.value,
+        });
+      case "Recipient":
+        return new Constraint({
+          leftOperand: ODRLLeftOperand.RECIPIENT,
+          operator: ODRLOperator.EQ,
+          rightOperand: constraint.value,
+        });
+      case "License":
+        return new Constraint({
+          leftOperand: "dspace:license",
+          operator: ODRLOperator.EQ,
+          rightOperand: constraint.value,
+        });
+      default:
+        return new Constraint({
+          leftOperand: constraint.type,
+          operator: ODRLOperator.EQ,
+          rightOperand: constraint.value,
+        });
+    }
+  }
+
   async addDataset(
     dataset: Dataset,
     catalogId?: string | undefined
@@ -155,25 +192,48 @@ export class CatalogService {
       this.logger.log(
         `No policies found on dataset with id: ${dataset.id}. Creating a default one.`
       );
-      dataset.hasPolicy = [
-        new Offer({
+      if (this.defaultPolicy?.type === "manual") {
+        if (!this.defaultPolicy.raw) {
+          throw new DSPError(
+            `Default policy type is manual but no raw ODRL offer is provided`,
+            HttpStatus.INTERNAL_SERVER_ERROR
+          );
+        }
+        const deserialized = await deserialize<Offer>(this.defaultPolicy.raw);
+        dataset.hasPolicy = [deserialized];
+      } else {
+        const offer = new Offer({
           assigner:
             dataset.publisher || dataset.creator || catalog.publisher || "",
-          permission: [
-            new Permission({
+          permission: this.defaultPolicy?.permissions?.map((permission) => {
+            return new Permission({
+              action: permission.action,
               target: dataset.id,
-              action: ODRLAction.READ,
-              constraint: [
-                new Constraint({
-                  leftOperand: "dspace:identity",
-                  operator: ODRLOperator.IS_PART_OF,
-                  rightOperand: "dspace:sameDataSpace",
-                }),
-              ],
+              constraint: permission.constraints?.map((constraint) =>
+                this.constructConstraint(constraint)
+              ),
+            });
+          }),
+          prohibition: this.defaultPolicy?.prohibitions?.map((prohibition) => {
+            return new Prohibition({
+              action: prohibition.action,
+              target: dataset.id,
+              constraint: prohibition.constraints?.map((constraint) =>
+                this.constructConstraint(constraint)
+              ),
+            });
+          }),
+        });
+        if (!offer.permission || offer.permission.length === 0) {
+          offer.permission = [
+            new Permission({
+              action: ODRLAction.USE,
+              target: dataset.id,
             }),
-          ],
-        }),
-      ];
+          ];
+        }
+        dataset.hasPolicy = [offer];
+      }
     }
     const newResource = this.resourceRepository.create(dataset);
     const newDataset = this.datasetRepository.create(dataset);
