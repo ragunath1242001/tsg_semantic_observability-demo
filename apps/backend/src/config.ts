@@ -251,6 +251,10 @@ export class RuntimeConfig {
   @IsOptional()
   @IsBoolean()
   public gaiaXSupport: boolean = false;
+
+  @IsOptional()
+  @IsString()
+  public title?: string;
 }
 
 export class RootConfig {

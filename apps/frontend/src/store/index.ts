@@ -4,6 +4,7 @@ import { createStore } from "vuex";
 
 interface RuntimeConfig {
   gaiaXSupport: boolean;
+  title?: string;
 }
 
 export const store = createStore({
@@ -50,6 +51,9 @@ export const store = createStore({
       try {
         const response = await axiosInstance.get<RuntimeConfig>("/settings");
         commit("config", response.data);
+        if (response.data.title) {
+          window.document.title = `Wallet - ${response.data.title}`;
+        }
       } catch (e) {
         console.log(e);
         throw new Error("Could not save runtime configuration");
