@@ -110,7 +110,9 @@ export class DataPlaneService {
       `/init`,
       dataPlaneCreation,
     );
-    const datasets = await this.createDatasets(this.config.dataset);
+    const datasets = await this.createDatasets(
+      this.state?.datasetConfig || this.config.dataset,
+    );
 
     const catalog: Catalog = new Catalog({
       dataset: datasets,
