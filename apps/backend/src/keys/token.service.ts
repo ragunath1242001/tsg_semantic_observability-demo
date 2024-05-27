@@ -60,32 +60,40 @@ export class TokenService {
     return await jwtBuilder.sign(key);
   }
 
-  async validate(token: string): Promise<JWTPayload | undefined> {
+  async validate(token: string): Promise<JWTPayload> {
     const header = decodeProtectedHeader(token);
     const payload = decodeJwt(token);
     if (!header.kid) {
-      this.logger.debug("Missing Key ID in JWT");
-      return undefined;
+      throw new AppError(
+        `Could not validate ID token. Missing Key ID in JWT.`,
+        HttpStatus.BAD_REQUEST
+      ).andLog(this.logger, "error");
     }
     if (!payload.iss) {
-      this.logger.debug("Missing issuer in JWT");
-      return undefined;
+      throw new AppError(
+        `Could not validate ID token. Missing issuer in JWT.`,
+        HttpStatus.BAD_REQUEST
+      ).andLog(this.logger, "error");
     }
     const resolvedDid = await this.didResolver.resolve(payload.iss);
     const verificationMethod = resolvedDid.verificationMethod?.find(
       (m) => m.id === header.kid
     );
     if (!verificationMethod || !verificationMethod.publicKeyJwk) {
-      this.logger.debug(`Could not resolve public key for ${header.kid}`);
-      return undefined;
+      throw new AppError(
+        `Could not validate ID token. Could not resolve public key for ${header.kid}.`,
+        HttpStatus.BAD_REQUEST
+      ).andLog(this.logger, "error");
     }
     const publicKey = await importJWK(verificationMethod.publicKeyJwk);
     try {
       await jwtVerify(token, publicKey);
       return payload;
     } catch (err) {
-      this.logger.debug(`Invalid JWT signature for key ${header.kid}: ${err}`);
-      return undefined;
+      throw new AppError(
+        `Could not validate ID token. Invalid JWT signature for key ${header.kid}: ${err}.`,
+        HttpStatus.BAD_REQUEST
+      ).andLog(this.logger, "error");
     }
   }
 }

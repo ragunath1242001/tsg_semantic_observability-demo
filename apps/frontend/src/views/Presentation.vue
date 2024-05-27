@@ -72,6 +72,7 @@ const requestHolderIDToken = async () => {
 }
 
 const requestVerification = async () => {
+  verifierResponse.value = undefined;
   try {
     const response = await axiosInstance.post<VerifiablePresentation<VerifiableCredential<CredentialSubject>>>("iatp/verifier/verify", {
       holderIdToken: verifierForm.value.holderIDToken,

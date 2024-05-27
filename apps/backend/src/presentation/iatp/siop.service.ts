@@ -50,12 +50,6 @@ export class IatpSiopService {
   async validateIDToken(idToken: string): Promise<JWTPayload> {
     const didId = await this.didService.getDidId();
     const validatedToken = await this.tokenService.validate(idToken);
-    if (!validatedToken) {
-      throw new AppError(
-        `Could not validate ID token`,
-        HttpStatus.BAD_REQUEST
-      ).andLog(this.logger, "error");
-    }
 
     if (validatedToken.aud !== didId) {
       throw new AppError(

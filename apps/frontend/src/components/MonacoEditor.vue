@@ -29,7 +29,11 @@ const props = defineProps({
 });
 
 if (props.static) {
-  model.value = JSON.stringify(props.static, null, 2)
+  if (typeof props.static === "string") {
+    model.value = props.static;
+  } else {
+    model.value = JSON.stringify(props.static, null, 2)
+  }
 }
 
 const editorHeight = computed(() => {
