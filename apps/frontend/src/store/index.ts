@@ -31,6 +31,9 @@ export const store = createStore({
           );
           commit("userInfo", response.data.user);
           commit("config", settingsResponse.data);
+          if (settingsResponse.data.title) {
+            window.document.title = `Wallet - ${settingsResponse.data.title}`;
+          }
         } else {
           if (payload.redirect === true) {
             window.location.replace("/api/auth/login");
@@ -46,18 +49,6 @@ export const store = createStore({
     async logout({ commit }) {
       commit("userInfo", null);
       window.location.replace("/api/auth/logout");
-    },
-    async loadSettings({ commit }) {
-      try {
-        const response = await axiosInstance.get<RuntimeConfig>("/settings");
-        commit("config", response.data);
-        if (response.data.title) {
-          window.document.title = `Wallet - ${response.data.title}`;
-        }
-      } catch (e) {
-        console.log(e);
-        throw new Error("Could not save runtime configuration");
-      }
     },
     async updateSettings({ commit }, payload: RuntimeConfig) {
       try {
