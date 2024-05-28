@@ -78,9 +78,9 @@ const loadCredentials = async () => {
 
 const deleteCredential = async (credentialId: string) => {
   confirm.require({
-    header: "Are you sure you want to delete this key?",
+    header: "Are you sure you want to delete this credential?",
     message:
-      "Existing credentials signed with this key cannotbe used for verifiable presentations anymore!",
+      "This results in the credential not being available for usage, and might impact authentication in other processes!",
     icon: "pi pi-info-circle",
     rejectLabel: "Cancel",
     acceptLabel: "Delete",
@@ -95,14 +95,14 @@ const deleteCredential = async (credentialId: string) => {
         toast.add({
           severity: "success",
           summary: "Success",
-          detail: "Key deleted",
+          detail: "Credential deleted",
           life: 3000,
         });
       } catch (err) {
         toast.add({
           severity: "warn",
           summary: "API error",
-          detail: "Could not delete key",
+          detail: "Could not delete Credential",
           life: 10000,
         });
       }
@@ -198,7 +198,7 @@ onMounted(async () => {
                 severity="danger"
                 icon="pi pi-times"
                 :disabled="props.data.default"
-                @click="deleteCredential(props.data.id)"
+                @click="deleteCredential(props.data.raw.id)"
               />
             </template>
           </Column>
