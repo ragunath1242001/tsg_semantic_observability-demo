@@ -17,6 +17,7 @@ import { DidService } from "../did/did.service.js";
 import { KeysService } from "../keys/keys.service.js";
 import { signingAlgorithm } from "../utils/keymapping.js";
 import axios from "axios";
+import { jsonldOptions } from "../utils/cachingContextLoader.js";
 
 @Injectable()
 export class CredentialsService {
@@ -216,6 +217,7 @@ export class CredentialsService {
       credentialSubject: credentialConfig.credentialSubject,
     };
     const normalized = await jsonld.normalize(credential, {
+      ...jsonldOptions,
       algorithm: "URDNA2015",
     });
     let keyMaterial: KeyMaterials | null;

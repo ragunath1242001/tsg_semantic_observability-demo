@@ -18,6 +18,7 @@ import { DidService } from "../did/did.service.js";
 import { Injectable, Logger } from "@nestjs/common";
 import { toArray } from "../utils/unions.js";
 import { signingAlgorithm } from "../utils/keymapping.js";
+import { jsonldOptions } from "../utils/cachingContextLoader.js";
 
 @Injectable()
 export class PresentationService {
@@ -147,6 +148,7 @@ export class PresentationService {
           .every((type) => credentialTypes.includes(type));
 
         const normalized = await jsonld.normalize(plainCredential, {
+          ...jsonldOptions,
           algorithm: "URDNA2015",
         });
         const hash = crypto
