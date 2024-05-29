@@ -96,8 +96,15 @@ export const useDspStore = defineStore("dsp", {
         const response = await http.get<CatalogDto>(
           "management/catalog/request"
         );
-        this.ownCatalog.ownDid = response.data["dct:publisher"] || "";
+        this.ownCatalog.ownDid = response.data?.["dct:publisher"] || "";
         this.ownCatalog.catalog = response.data;
+        this.ownCatalog.numberOfDatasets =
+          response.data?.["dcat:dataset"]?.length;
+        this.ownCatalog.numberOfServices =
+          response.data?.["dcat:service"]?.length;
+        if (response.data?.["dct:title"]) {
+          window.document.title = `Control Plane - ${response.data?.["dct:title"]}`;
+        }
       } catch (error) {
         // Handle error
         console.error("Error:", error);

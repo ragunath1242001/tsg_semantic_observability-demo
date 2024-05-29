@@ -30,14 +30,6 @@ const determineNextHappyState = (transfer: TransferStatusDto) => {
   }
 };
 
-const determineTerminateLabel = (transfer: TransferStatusDto) => {
-  if (transfer.state === "dspace:STARTED") {
-    return "";
-  } else {
-    return "Terminate";
-  }
-};
-
 const determineHeader = () => {
   return `What is the reason for your decision to ${nextState.value}?`;
 };
@@ -52,12 +44,14 @@ const determineWord = (transfer: TransferStatusDto) => {
       return "suspended";
   }
 };
-const determineButton = (transfer: TransferStatusDto) => {
+const determineTooltip = (transfer: TransferStatusDto) => {
   switch (transfer.state) {
     case "dspace:REQUESTED":
       return "Start";
     case "dspace:SUSPENDED":
       return "Restart";
+    case "dspace:STARTED":
+      return "Complete";
   }
 };
 
@@ -171,7 +165,7 @@ const terminateTransfer = async (transfer) => {
       </span>
       <div class="flex justify-content-between mb-0">
         <Button
-          :label="determineTerminateLabel(transfer)"
+          v-tooltip.top="'Terminate'"
           severity="danger"
           icon="pi pi-times"
           type="submit"
@@ -179,6 +173,7 @@ const terminateTransfer = async (transfer) => {
           @click="openDialog('terminate')"
         />
         <Button
+          v-tooltip.top="'Suspend'"
           severity="warning"
           icon="pi pi-pause"
           type="submit"
@@ -187,7 +182,7 @@ const terminateTransfer = async (transfer) => {
           @click="openDialog('suspend')"
         />
         <Button
-          :label="determineButton(transfer)"
+          v-tooltip.top="determineTooltip(transfer)"
           severity="success"
           icon="pi pi-check"
           type="submit"

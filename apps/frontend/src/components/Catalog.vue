@@ -40,7 +40,9 @@ const getDataset = async (datasetId: String) => {
       },
     });
     datasetData.value = response.data;
-    policy.value = createPolicy(datasetData.value["odrl:hasPolicy"][0]);
+    if (datasetData.value?.["odrl:hasPolicy"]) {
+      policy.value = createPolicy(datasetData.value?.["odrl:hasPolicy"]?.[0]);
+    }
     datasetView.value = true;
     return datasetData;
   } catch (e) {
@@ -159,13 +161,15 @@ const createPolicy = (policy: PolicyDto): string => {
       >
         <template #title>
           <div class="flex align-items-center">
-            <span
-              :class="calculateIconBg(index)"
-              style="width: 38px; height: 38px"
-            >
+            <span class="mr-2">
               <i :class="calculateIconClass(index)"></i
             ></span>
-            {{ dataset["dct:title"] }}
+            <div
+              class="surface-overlay white-space-nowrap overflow-hidden text-overflow-ellipsis"
+              v-tooltip.top="dataset['dct:title']"
+            >
+              {{ dataset["dct:title"] }}
+            </div>
           </div></template
         >
         <template #subtitle>{{
@@ -194,6 +198,7 @@ const createPolicy = (policy: PolicyDto): string => {
               v-if="ownCatalog"
               @click="deleteDataset(dataset['@id'])"
               severity="danger"
+              class="shadow-4"
               rounded
               outlined
             />
@@ -204,6 +209,7 @@ const createPolicy = (policy: PolicyDto): string => {
               icon="pi pi-external-link"
               rounded
               outlined
+              class="shadow-4"
               @click="getDataset(dataset['@id'])"
             ></Button>
           </div>

@@ -155,12 +155,17 @@ const sendNegotiation = async (
 };
 </script>
 <template>
-  <div class="col-12 mt-5">
+  <div class="col-12">
     <Card style="border-radius: 12px; border: 1px solid var(--surface-border)">
       <template #title
         ><div class="flex align-items-center">
           <Button icon="pi pi-chevron-left" rounded @click="goBack()"></Button>
-          <h2 class="mx-3">{{ datasetData["dct:title"] }}</h2>
+          <h2
+            class="mx-3 surface-overlay white-space-nowrap overflow-hidden text-overflow-ellipsis"
+            v-tooltip.top="datasetData['dct:title']"
+          >
+            {{ datasetData["dct:title"] }}
+          </h2>
         </div></template
       >
       <template #subtitle>
@@ -228,8 +233,8 @@ const sendNegotiation = async (
         <Divider />
         <template
           v-if="
-            datasetData['odrl:hasPolicy'] &&
-            datasetData['odrl:hasPolicy'].length > 0
+            datasetData?.['odrl:hasPolicy'] &&
+            datasetData?.['odrl:hasPolicy'].length > 0
           "
         >
           <div class="pb-5 font-medium text-2xl text-900">Policies</div>

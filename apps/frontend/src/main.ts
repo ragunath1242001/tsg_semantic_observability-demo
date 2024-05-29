@@ -38,6 +38,7 @@ import { loader } from "@guolao/vue-monaco-editor";
 import Divider from "primevue/divider";
 import "@/assets/styles.scss";
 import MultiSelect from "primevue/multiselect";
+import Tooltip from "primevue/tooltip";
 
 const pinia = createPinia();
 const app = createApp(App);
@@ -84,5 +85,6 @@ app.component("ToggleButton", ToggleButton);
 app.component("Tree", Tree);
 
 app.directive("badge", BadgeDirective);
+app.directive("tooltip", Tooltip);
 
 app.mount("#app");
