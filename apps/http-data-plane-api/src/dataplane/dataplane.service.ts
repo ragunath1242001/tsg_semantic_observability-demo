@@ -49,7 +49,7 @@ import {
   PolicyConfig,
   RuleConstraintConfig,
   TransferDto,
-} from "@libs/dtos";
+} from "@libs/http-data-plane-dtos";
 import { AuthClientService } from "../auth/auth.client.service";
 import { resolve } from "../utils/didServiceResolver";
 import { LoggingService } from "../logging/logging.service";

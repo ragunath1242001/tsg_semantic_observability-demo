@@ -1,5 +1,5 @@
 {
-  "name": "@libs/dtos",
+  "name": "@libs/http-data-plane-dtos",
   "version": "1.0.0",
   "description": "",
   "main": "dist/index.js",
@@ -11,7 +11,7 @@
     "build": "tsc -p tsconfig.json"
   },
   "dependencies": {
-    "@libs/dtos": "workspace:*",
+    "@libs/http-data-plane-dtos": "workspace:*",
     "@tsg-dsp/common": "^0.3.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",

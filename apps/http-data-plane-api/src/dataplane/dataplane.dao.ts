@@ -1,4 +1,4 @@
-import { DatasetConfig } from "@libs/dtos";
+import { DatasetConfig } from "@libs/http-data-plane-dtos";
 import { DataPlaneDetailsDto, DatasetDto } from "@tsg-dsp/common";
 import { Column, Entity, PrimaryColumn } from "typeorm";
 

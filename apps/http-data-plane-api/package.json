@@ -22,7 +22,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@libs/dtos": "workspace:*",
+    "@libs/http-data-plane-dtos": "workspace:*",
     "@nestjs/common": "^10.2.4",
     "@nestjs/core": "^10.2.4",
     "@nestjs/passport": "^10.0.3",

@@ -1,4 +1,4 @@
-import { DatasetConfig } from "@libs/dtos";
+import { DatasetConfig } from "@libs/http-data-plane-dtos";
 import { Type } from "class-transformer";
 import {
   IsString,

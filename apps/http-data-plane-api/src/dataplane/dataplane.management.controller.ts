@@ -16,7 +16,11 @@ import {
   ValidationPipe,
 } from "@nestjs/common";
 import { DataPlaneService } from "./dataplane.service";
-import { DataPlaneStateDto, DatasetConfig, TransferDto } from "@libs/dtos";
+import {
+  DataPlaneStateDto,
+  DatasetConfig,
+  TransferDto,
+} from "@libs/http-data-plane-dtos";
 import { Roles } from "../auth/roles.guard";
 import { Request, Response } from "express";
 import { AgreementDto, CatalogDto, DatasetDto } from "@tsg-dsp/common";
