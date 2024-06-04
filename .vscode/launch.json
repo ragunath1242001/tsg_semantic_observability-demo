@@ -7,7 +7,7 @@
       "request": "launch",
       "runtimeArgs": [
         "--inspect-brk",
-        "${workspaceRoot}/apps/backend/node_modules/.bin/jest",
+        "${workspaceRoot}/apps/control-plane-api/node_modules/.bin/jest",
         "--runInBand",
         "--coverage",
         "false"
@@ -19,7 +19,7 @@
       "name": "Debug Main",
       "type": "node",
       "request": "launch",
-      "args": ["${workspaceFolder}/apps/backend/src/app.ts"],
+      "args": ["${workspaceFolder}/apps/control-plane-api/src/app.ts"],
       "runtimeArgs": ["--nolazy", "-r", "ts-node/register"],
       "sourceMaps": true,
       "cwd": "${workspaceRoot}",
@@ -29,7 +29,7 @@
       "name": "Debug Test A",
       "type": "node",
       "request": "launch",
-      "args": ["${workspaceFolder}/apps/backend/src/app.ts"],
+      "args": ["${workspaceFolder}/apps/control-plane-api/src/app.ts"],
       "runtimeArgs": ["--nolazy", "-r", "ts-node/register"],
       "env": {
         "CONFIG_PATH": "./config.test-a.yaml"
@@ -42,7 +42,7 @@
       "name": "Debug Test B",
       "type": "node",
       "request": "launch",
-      "args": ["${workspaceFolder}/apps/backend/src/app.ts"],
+      "args": ["${workspaceFolder}/apps/control-plane-api/src/app.ts"],
       "runtimeArgs": ["--nolazy", "-r", "ts-node/register"],
       "env": {
         "CONFIG_PATH": "./config.test-b.yaml"
