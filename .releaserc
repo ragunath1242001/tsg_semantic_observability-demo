@@ -4,8 +4,7 @@
     "@semantic-release/gitlab"
   ],
   "branches": [
-    "main",
-    "39-add-semantic-release"
+    "main"
   ],
   "extends": "@semantic-release/gitlab-config"
 }
