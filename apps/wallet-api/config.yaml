@@ -1,0 +1,136 @@
+server:
+  port: 3000
+  listen: "0.0.0.0"
+  publicDomain: localhost:3000
+
+auth:
+  enabled: false
+  # authorizationURL: https://localhost/login/oauth/authorize
+  # tokenURL: https://localhost/api/login/oauth/access_token
+  # introspectionURL: https://localhost/api/login/oauth/introspect
+  # callbackURL: http://localhost:5173/api/auth/callback
+  # clientId:
+  # clientSecret:
+  # clientUsername:
+  # clientPassword:
+  # rolePath: "$.roles[*].name"
+  # redirectURL: http://localhost:5173/
+
+initKeys:
+  - id: key-0
+    type: EdDSA
+    default: true
+
+initCredentials: []
+
+db:
+  type: sqlite
+  database: wallet.sqlite
+
+trustAnchors:
+  - identifier: did:web:localhost%3A3000
+    credentialTypes:
+      - SCSNCredential
+      - scsn:SCSNCredential
+      - https://wallet.alpha.scsn.dataspac.es/credentials/SCSNCredential
+
+contexts:
+  - id: SCSN
+    credentialType: SCSNCredential
+    issuable: true
+    documentUrl: https://wallet.alpha.scsn.dataspac.es/context/SCSN
+    schema:
+      type: object
+      title: SCSNCredential
+      additionalProperties: true
+      properties:
+        id:
+          type: string
+          pattern: "^did:web:.*"
+        scsnIdentifier:
+          type: string
+          pattern: "^urn:scsn:.*"
+        scsnRole:
+          enum:
+            - scsn:ServiceProvider
+            - scsn:Manufacturer
+            - scsn:Administrator
+      required:
+        - id
+        - scsnIdentifier
+        - scsnRole
+  - id: Catena-X
+    credentialType: SummaryCredential
+    issuable: false
+    documentUrl: https://catenax-ng.github.io/product-core-schemas/SummaryVC.json
+  - id: Gaia-X LegalParticipant
+    credentialType: gx:LegalParticipant
+    issuable: true
+    documentUrl: https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#
+    schema:
+      type: object
+      title: LegalParticipant
+      additionalProperties: true
+      properties:
+        type:
+          const: "gx:LegalParticipant"
+        id:
+          type: string
+          pattern: "^did:web:.*"
+        gx:legalName:
+          type: string
+        gx:legalRegistrationNumber:
+          type: object
+          additionalProperties: false
+          properties:
+            id:
+              type: string
+          required:
+            - id
+        gx:headquarterAddress:
+          type: object
+          additionalProperties: false
+          properties:
+            gx:countrySubdivisionCode:
+              type: string
+          required:
+            - gx:countrySubdivisionCode
+        gx:legalAddress:
+          type: object
+          additionalProperties: false
+          properties:
+            gx:countrySubdivisionCode:
+              type: string
+          required:
+            - gx:countrySubdivisionCode
+        gx-terms-and-conditions:gaiaxTermsAndConditions:
+          type: string
+      required:
+        - id
+        - type
+        - gx:legalName
+        - gx:legalRegistrationNumber
+        - gx:headquarterAddress
+        - gx:legalAddress
+        - gx-terms-and-conditions:gaiaxTermsAndConditions
+
+  - id: Gaia-X Terms and Conditions
+    credentialType: gx:GaiaXTermsAndConditions
+    issuable: true
+    documentUrl: https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#
+    schema:
+      type: object
+      title: GaiaXTermsAndConditions
+      additionalProperties: true
+      properties:
+        type:
+          const: "gx:GaiaXTermsAndConditions"
+        id:
+          type: string
+          pattern: "^did:web:.*"
+        gx:termsAndConditions:
+          type: string
+      required:
+        - id
+        - type
+        - gx:termsAndConditions

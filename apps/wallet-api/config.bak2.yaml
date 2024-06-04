@@ -1,0 +1,357 @@
+server:
+  port: 3000
+  listen: "0.0.0.0"
+  publicAddress: https://wallet-gx.alpha.scsn.dataspac.es
+  publicDomain: "wallet-gx.alpha.scsn.dataspac.es"
+
+initClients:
+  []
+  # - id: admin
+  #   secret: test
+  #   email: noreply@dataspac.es
+  #   roles:
+  #     - view_all_credentials
+  #     - manage_all_credentials
+  #     - manage_keys
+  #     - manage_clients
+  #     - view_presentations
+  # - id: connector
+  #   secret: test
+  #   email: noreply@dataspac.es
+  #   roles:
+  #     - view_presentations
+initKeys:
+  # - id: key-0
+  #   type: EdDSA
+  #   # default: true
+  # - id: key-1
+  #   type: ES384
+  #   default: true
+  - id: key-gx2
+    type: X509
+    default: true
+    existingCertificate: |
+      -----BEGIN CERTIFICATE-----
+      MIIFBjCCA+6gAwIBAgISBPKtdtOCVtzGqtRZ639ibadvMA0GCSqGSIb3DQEBCwUA
+      MDIxCzAJBgNVBAYTAlVTMRYwFAYDVQQKEw1MZXQncyBFbmNyeXB0MQswCQYDVQQD
+      EwJSMzAeFw0yMzA4MzAxMzI3MzRaFw0yMzExMjgxMzI3MzNaMCgxJjAkBgNVBAMT
+      HXdhbGxldC5hbHBoYS5zY3NuLmRhdGFzcGFjLmVzMIIBIjANBgkqhkiG9w0BAQEF
+      AAOCAQ8AMIIBCgKCAQEAy9HzCqPZfhwP1DNCDF7efJ/EI/zjlvoilFmNolaKqW7T
+      PxNLwYKTJLU3aiayC3qWZmS5SCfrpvsPkavwQZG1gsfyEfO0chmQAiusmngIiVe+
+      8cVqLmkdzkBaiWxJy4dKfv5GfAcSQRBPBzVyWx0O6JZByWf77g2g5FbZvorJ/HY8
+      eeaQWtVddCL4/1goVZ73uuYQl4Fdej67IT7On2QwTrqCIpCiv7pkaq3UXG7WAJ4+
+      EYgnY9r18zCu5sl1yEBUxpWMJ75aY89biuiqSGA0zHbjb8PabDEK9cDAjdVoLI3L
+      rdAqe7lnUpvuB1+8sz7e+c7lFuAxQMNmv0A3sWynsQIDAQABo4ICHjCCAhowDgYD
+      VR0PAQH/BAQDAgWgMB0GA1UdJQQWMBQGCCsGAQUFBwMBBggrBgEFBQcDAjAMBgNV
+      HRMBAf8EAjAAMB0GA1UdDgQWBBRVwCIszg3gGlYEREF4V0qIWJepTTAfBgNVHSME
+      GDAWgBQULrMXt1hWy65QCUDmH6+dixTCxjBVBggrBgEFBQcBAQRJMEcwIQYIKwYB
+      BQUHMAGGFWh0dHA6Ly9yMy5vLmxlbmNyLm9yZzAiBggrBgEFBQcwAoYWaHR0cDov
+      L3IzLmkubGVuY3Iub3JnLzAoBgNVHREEITAfgh13YWxsZXQuYWxwaGEuc2Nzbi5k
+      YXRhc3BhYy5lczATBgNVHSAEDDAKMAgGBmeBDAECATCCAQMGCisGAQQB1nkCBAIE
+      gfQEgfEA7wB1ALc++yTfnE26dfI5xbpY9Gxd/ELPep81xJ4dCYEl7bSZAAABikbX
+      rxsAAAQDAEYwRAIgQg8zlTvWdkFBviwCzwlnLahci4AzMSel6fJn6SVFXa4CIFwO
+      +Tokb80VRS9KfMn9vS1NJ2eCSuf8rdcfDkJugVycAHYA6D7Q2j71BjUy51covIlr
+      yQPTy9ERa+zraeF3fW0GvW4AAAGKRtevIAAABAMARzBFAiEAlpXv8RMQfW86PbMW
+      8GdVL+3cjnNEeRsAlT5S9Mu6R9sCIHe1y+fwTtdzjjoelzNZSEGVpnB9EoTm3J7A
+      RHxFfmf9MA0GCSqGSIb3DQEBCwUAA4IBAQB1ehZEwI1okSzXj7g0Y/7iBURhaESO
+      JYJV+1RQzrayAEzqnqeE5o7uVfcEyXncQdKnN90RE1uZhU1t3YPMel2L9whYYHiO
+      zWNExEO0NQ286azbu1PJk6RE3CNrQio+whp84MQhdJznzXsm8jPItvrwhdjUjJle
+      3z3C/ACC4gP34vl1AX8ArdBHQNHJcF0rD1bQFZD+diBixRDR82fon8bKRRiiksqJ
+      6W9zc6KbGiYkwr4u3vJ8NctaVq10H2MNCGGqxrMlRef3bI0rRTRP2cAde6hrCCmS
+      FRLPQ9D/WIKGgL3cVQS1vfdnTTCiAhAjhtQqCiZ1/PydqZXz6F84Psmv
+      -----END CERTIFICATE-----
+      -----BEGIN CERTIFICATE-----
+      MIIFFjCCAv6gAwIBAgIRAJErCErPDBinU/bWLiWnX1owDQYJKoZIhvcNAQELBQAw
+      TzELMAkGA1UEBhMCVVMxKTAnBgNVBAoTIEludGVybmV0IFNlY3VyaXR5IFJlc2Vh
+      cmNoIEdyb3VwMRUwEwYDVQQDEwxJU1JHIFJvb3QgWDEwHhcNMjAwOTA0MDAwMDAw
+      WhcNMjUwOTE1MTYwMDAwWjAyMQswCQYDVQQGEwJVUzEWMBQGA1UEChMNTGV0J3Mg
+      RW5jcnlwdDELMAkGA1UEAxMCUjMwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEK
+      AoIBAQC7AhUozPaglNMPEuyNVZLD+ILxmaZ6QoinXSaqtSu5xUyxr45r+XXIo9cP
+      R5QUVTVXjJ6oojkZ9YI8QqlObvU7wy7bjcCwXPNZOOftz2nwWgsbvsCUJCWH+jdx
+      sxPnHKzhm+/b5DtFUkWWqcFTzjTIUu61ru2P3mBw4qVUq7ZtDpelQDRrK9O8Zutm
+      NHz6a4uPVymZ+DAXXbpyb/uBxa3Shlg9F8fnCbvxK/eG3MHacV3URuPMrSXBiLxg
+      Z3Vms/EY96Jc5lP/Ooi2R6X/ExjqmAl3P51T+c8B5fWmcBcUr2Ok/5mzk53cU6cG
+      /kiFHaFpriV1uxPMUgP17VGhi9sVAgMBAAGjggEIMIIBBDAOBgNVHQ8BAf8EBAMC
+      AYYwHQYDVR0lBBYwFAYIKwYBBQUHAwIGCCsGAQUFBwMBMBIGA1UdEwEB/wQIMAYB
+      Af8CAQAwHQYDVR0OBBYEFBQusxe3WFbLrlAJQOYfr52LFMLGMB8GA1UdIwQYMBaA
+      FHm0WeZ7tuXkAXOACIjIGlj26ZtuMDIGCCsGAQUFBwEBBCYwJDAiBggrBgEFBQcw
+      AoYWaHR0cDovL3gxLmkubGVuY3Iub3JnLzAnBgNVHR8EIDAeMBygGqAYhhZodHRw
+      Oi8veDEuYy5sZW5jci5vcmcvMCIGA1UdIAQbMBkwCAYGZ4EMAQIBMA0GCysGAQQB
+      gt8TAQEBMA0GCSqGSIb3DQEBCwUAA4ICAQCFyk5HPqP3hUSFvNVneLKYY611TR6W
+      PTNlclQtgaDqw+34IL9fzLdwALduO/ZelN7kIJ+m74uyA+eitRY8kc607TkC53wl
+      ikfmZW4/RvTZ8M6UK+5UzhK8jCdLuMGYL6KvzXGRSgi3yLgjewQtCPkIVz6D2QQz
+      CkcheAmCJ8MqyJu5zlzyZMjAvnnAT45tRAxekrsu94sQ4egdRCnbWSDtY7kh+BIm
+      lJNXoB1lBMEKIq4QDUOXoRgffuDghje1WrG9ML+Hbisq/yFOGwXD9RiX8F6sw6W4
+      avAuvDszue5L3sz85K+EC4Y/wFVDNvZo4TYXao6Z0f+lQKc0t8DQYzk1OXVu8rp2
+      yJMC6alLbBfODALZvYH7n7do1AZls4I9d1P4jnkDrQoxB3UqQ9hVl3LEKQ73xF1O
+      yK5GhDDX8oVfGKF5u+decIsH4YaTw7mP3GFxJSqv3+0lUFJoi5Lc5da149p90Ids
+      hCExroL1+7mryIkXPeFM5TgO9r0rvZaBFOvV2z0gp35Z0+L4WPlbuEjN/lxPFin+
+      HlUjr8gRsI3qfJOQFy/9rKIJR0Y/8Omwt/8oTWgy1mdeHmmjk7j1nYsvC9JSQ6Zv
+      MldlTTKB3zhThV1+XWYp6rjd5JW1zbVWEkLNxE7GJThEUG3szgBVGP7pSWTUTsqX
+      nLRbwHOoq7hHwg==
+      -----END CERTIFICATE-----
+      -----BEGIN CERTIFICATE-----
+      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
+      -----END CERTIFICATE-----
+    existingKey: |
+      -----BEGIN PRIVATE KEY-----
+      MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDL0fMKo9l+HA/U
+      M0IMXt58n8Qj/OOW+iKUWY2iVoqpbtM/E0vBgpMktTdqJrILepZmZLlIJ+um+w+R
+      q/BBkbWCx/IR87RyGZACK6yaeAiJV77xxWouaR3OQFqJbEnLh0p+/kZ8BxJBEE8H
+      NXJbHQ7olkHJZ/vuDaDkVtm+isn8djx55pBa1V10Ivj/WChVnve65hCXgV16Prsh
+      Ps6fZDBOuoIikKK/umRqrdRcbtYAnj4RiCdj2vXzMK7myXXIQFTGlYwnvlpjz1uK
+      6KpIYDTMduNvw9psMQr1wMCN1Wgsjcut0Cp7uWdSm+4HX7yzPt75zuUW4DFAw2a/
+      QDexbKexAgMBAAECggEAc1TNzguBGlcOreiDSzSzeJl/B04mClxoDMHP3zhRJibL
+      6jkk+M7GLFNOlAZpYQ1w5WfBYA8WzVnrKWa9gJzOtL4nP/lC9f14+4FzHcUmL3Ez
+      XuNyfeiFMRxBHtnjuANKKCoCAFSQA7kSvuWDXANJWFsNxsXMTJvxmsN6WtN2ECBk
+      +58ZmrPTr5AqC1k6dMT0eeXRTVJS4sN4x8wZ8+9h2IYdmLXFRNN937kxaBiYrRsE
+      L81t2DzPTO9TRA6nWU7kDr76vbwWeCX6G2Rl+faWZRpgsZvr1Z9PmEXEfqbD3ET9
+      vkj3jUoIJ0Um+REzBtJWO3FoGRW0NeYHZO1mjIVAQQKBgQDi308/SAcGxz3lGc76
+      CIemJZTkpST1R22Eib09+mT4v8apQo1oqyvervCiHF/egAbrF/L3pbRtKcWRDmWe
+      Gu6of63caKtrs2RfiRzQcvtNoBRT9tXP4UGYr63wxyeV0ySgQfByWud+gDI6GGRU
+      8sIYyle8ieDjBukwxTzXGu/PTQKBgQDl/Pm/n5hBgBuMC0mvp3jzGXwPZp09qsB0
+      j3bzFaYR7Cya1jbgioOfzjDjDBrHoyMXlmnSnsqdJzOc873BJSTY/6uQEcFcuapJ
+      EL7H0EgnyjcrBDScKbdF7h3hDxXZnj5+YDPX5So7wylZYA5Y3kzNmdxc+Htx0mYP
+      y4j4+HzP9QKBgC/PZZDtaeWoyUdlh/OzJnsCAn2ou8Ag3FiI+mN8SBkPuRrkVo6P
+      PACCl11iY2WtT0ft1RsRRZOXsPXftdR60n6Z4ZbITA+3T1i+uV7ITGNQb9g99VMI
+      ol098IcEQThWtao8GyLOO2iyNWN+zm4Edpjo01J9L/JH+452klq2Z4ElAoGBANj9
+      YoGqSRPbk6IA8GfbQaFTdRpuvYJ2PRh8V0UoMsSMKNV5sNMPvPokpzlArW+X+r8B
+      ehxvF0lIuEioK2s06VwXdT37ko0y23gOZYHOgJWSE5TxZdXFAhbnf6dc/UeSJvJD
+      QAa9P6idDME3gLHWI26EcUYCZy3Pzd2vMi98+v2VAoGBANp2uV2fpN7ryxDHLIvp
+      CWictMvtCl/oCTbMmzAUB551OBLsfgR60b6iICLmqhuxhWm8lJdgXmzmrdFBA7Nj
+      oloYhHdgUHKQSaGhZdJbfeBjbI0Hifhe+VSDijblDZKTFXDsxzPCn94JMVnXmKFX
+      vr7BLguGyJhI4gPi786Mw9en
+      -----END PRIVATE KEY-----
+initCredentials:
+  []
+  # - context:
+  #     - https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework
+  #   id: gaiax
+  #   credentialSubject:
+  #     id: did:web:localhost%3A3000
+  #     gx:legalName: Stichting Maastricht Radiation Oncology "Maastro-Clinic"
+  #     gx:registrationNumber:
+  #       gx:registrationNumberType: vatID
+  #       gx:registrationNumberNumber: NL004210104B01
+  #     gx:headquarterAddress:
+  #       gx:addressCountryCode: NL
+  #       gx:addressCode: NL-LI
+  #       gx:streetAddress: Dr Tanslaan 12
+  #       gx:postalCode: 6229ET
+  #     gx:legalAddress:
+  #       gx:addressCountryCode: NL
+  #       gx:addressCode: NL-LI
+  #       gx:streetAddress: Dr Tanslaan 12
+  #       gx:postalCode: 6229ET
+  #     gx:termsAndConditions: 70c1d713215f95191a11d38fe2341faed27d19e083917bc8732ca4fea4976700
+
+  # - id: scsn
+  #   context:
+  #     - http://localhost:3000/context/SCSN
+  #   type:
+  #     - SCSNCredential
+  #   credentialSubject:
+  #     id: did:web:localhost%3A3000
+  #     scsnIdentifier: 'urn:scsn:123456789'
+  #     scsnRole: 'scsn:ServiceProvider'
+
+# db:
+#   type: sqlite
+#   database: wallet.sqlite
+
+db:
+  type: postgres
+  database: wallet
+  host: localhost
+  port: 5432
+  username: wallet
+  password: i2SBoNJpfrhU5z0gku809AF7eZI2M2a9
+
+mail:
+  enabled: true
+  smtp:
+    host: aa
+    port: 123
+    secure: true
+    user: abcdef
+    password: abcd
+    from: noreply@dataspac.es
+  title: SCSN Wallet
+  dataspace: SCSN
+
+trustAnchors:
+  []
+  # - identifier: did:web:localhost%3A3000
+  #   credentialTypes:
+  #     - SCSNCredential
+  #     - scsn:SCSNCredential
+  #     - https://wallet.alpha.scsn.dataspac.es/credentials/SCSNCredential
+
+contexts:
+  - id: SCSN
+    credentialType: SCSNCredential
+    issuable: true
+    document:
+      "@context":
+        "@version": 1.1
+        "@protected": true
+        scsn: https://wallet.alpha.scsn.dataspac.es/credentials/
+        id: "@id"
+        type: "@type"
+        SCSNCredential:
+          "@context":
+            - https://www.w3.org/2018/credentials/v1
+          "@id": "scsn:SCSNCredential"
+        scsnIdentifier:
+          "@id": "scsn:scsnIdentifier"
+        scsnRole:
+          "@id": "scsn:scsnRole"
+          "@type": "@id"
+        ServiceProvider:
+          "@id": "scsn:ServiceProvider"
+        Manufacturer:
+          "@id": "scsn:Manufacturer"
+        Administrator:
+          "@id": "scsn:Administrator"
+    schema:
+      type: object
+      title: SCSNCredential
+      additionalProperties: true
+      properties:
+        id:
+          type: string
+          pattern: "^did:web:.*"
+        scsnIdentifier:
+          type: string
+          pattern: "^urn:scsn:.*"
+        scsnRole:
+          enum:
+            - scsn:ServiceProvider
+            - scsn:Manufacturer
+            - scsn:Administrator
+      required:
+        - id
+        - scsnIdentifier
+        - scsnRole
+  - id: Catena-X
+    credentialType: SummaryCredential
+    issuable: false
+    documentUrl: https://catenax-ng.github.io/product-core-schemas/SummaryVC.json
+  - id: Gaia-X LegalParticipant
+    credentialType: gx:LegalParticipant
+    issuable: true
+    documentUrl: https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#
+    schema:
+      type: object
+      title: LegalParticipant
+      additionalProperties: true
+      properties:
+        type:
+          const: "gx:LegalParticipant"
+          description: "Credential Subject JSON-LD type"
+          title: "Credential Type"
+        id:
+          type: string
+          pattern: "^did:web:.*"
+          title: "Credential Subject identifier"
+        gx:legalName:
+          type: string
+          description: "Participant legal name"
+          title: Legal Name
+        gx:legalRegistrationNumber:
+          type: object
+          additionalProperties: false
+          title: "Legal Registration Number"
+          properties:
+            id:
+              type: string
+              title: Credential ID
+              description: "Legal registration number credential ID"
+          required:
+            - id
+        gx:headquarterAddress:
+          type: object
+          additionalProperties: false
+          title: Headquarter Address
+          properties:
+            gx:countrySubdivisionCode:
+              type: string
+              title: Country & Subdivision code
+              pattern: "^[A-Z]{2,3}-[A-Z]{2,}"
+              description: "ISO 3166-2 country & subdivision code (e.g. NL-GR)"
+          required:
+            - gx:countrySubdivisionCode
+        gx:legalAddress:
+          type: object
+          additionalProperties: false
+          title: Legal Address
+          properties:
+            gx:countrySubdivisionCode:
+              type: string
+              title: Country & Subdivision code
+              pattern: "^[A-Z]{2,3}-[A-Z]{2,}"
+              description: "ISO 3166-2 country & subdivision code (e.g. NL-GR)"
+          required:
+            - gx:countrySubdivisionCode
+        gx-terms-and-conditions:gaiaxTermsAndConditions:
+          type: string
+          default: 70c1d713215f95191a11d38fe2341faed27d19e083917bc8732ca4fea4976700
+          title: Gaia-X Terms and Conditions
+          description: "Gaia-X Terms and Conditions hash"
+      required:
+        - id
+        - type
+        - gx:legalName
+        - gx:legalRegistrationNumber
+        - gx:headquarterAddress
+        - gx:legalAddress
+        - gx-terms-and-conditions:gaiaxTermsAndConditions
+
+  - id: Gaia-X Terms and Conditions
+    credentialType: gx:GaiaXTermsAndConditions
+    issuable: true
+    documentUrl: https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#
+    schema:
+      type: object
+      title: GaiaXTermsAndConditions
+      additionalProperties: true
+      properties:
+        type:
+          const: "gx:GaiaXTermsAndConditions"
+        id:
+          type: string
+          pattern: "^did:web:.*"
+        gx:termsAndConditions:
+          type: string
+      required:
+        - id
+        - type
+        - gx:termsAndConditions

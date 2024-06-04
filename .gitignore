@@ -2,3 +2,8 @@
 node_modules
 coverage/
 junit.xml
+node_modules
+dist
+coverage/
+junit.xml
+config.*.yaml

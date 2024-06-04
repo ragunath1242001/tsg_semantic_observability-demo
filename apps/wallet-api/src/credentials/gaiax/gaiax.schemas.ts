@@ -1,0 +1,30 @@
+import {
+  ComplianceRequest,
+  LegalRegistrationNumberRequest,
+} from "@libs/wallet-dtos";
+import { ApiProperty } from "@nestjs/swagger";
+import { CredentialSubject, VerifiableCredential } from "@tsg-dsp/common";
+import {
+  DefaultCredentialSubjectDto,
+  VerifiableCredentialDto,
+} from "../credentials.schemas.js";
+
+export class LegalRegistrationNumberRequestDto
+  implements LegalRegistrationNumberRequest
+{
+  @ApiProperty()
+  vcId!: string;
+  @ApiProperty()
+  clearingHouse!: string;
+  @ApiProperty({ type: DefaultCredentialSubjectDto })
+  credentialSubject!: CredentialSubject;
+}
+
+export class ComplianceRequestDto implements ComplianceRequest {
+  @ApiProperty()
+  vcId!: string;
+  @ApiProperty()
+  clearingHouse!: string;
+  @ApiProperty({ type: [VerifiableCredentialDto] })
+  credentials!: VerifiableCredential<CredentialSubject>[];
+}
