@@ -1,0 +1,14 @@
+image: node:20
+stages:
+  - publish
+
+publish:
+  stage: publish
+  script:
+    - echo "//registry.npmjs.org/:_authToken=${NPMJS_TOKEN}" >> .npmrc
+    - npm install
+    - npm run build
+    - npm publish
+  only:
+    refs:
+      - master
