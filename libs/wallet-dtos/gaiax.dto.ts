@@ -1,8 +1,5 @@
 import "reflect-metadata";
-import {
-  CredentialSubject,
-  VerifiableCredential,
-} from "@libs/common-dsp/dist/model/ssi/credentials.dto.js";
+import { CredentialSubject, VerifiableCredential } from "@libs/common-dsp";
 import { Type } from "class-transformer";
 import { IsString, ValidateNested, IsDefined } from "class-validator";
 

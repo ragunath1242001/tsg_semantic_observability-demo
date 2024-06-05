@@ -6,21 +6,24 @@ RUN corepack enable
 FROM base AS build
 WORKDIR /app 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY apps/backend/package.json apps/backend/
-COPY apps/frontend/package.json apps/frontend/
-COPY libs/dtos/package.json libs/dtos/
+COPY apps/control-plane-api/package.json apps/control-plane-api/
+COPY apps/control-plane-ui/package.json apps/control-plane-ui/
+COPY libs/common-dsp/package.json libs/common-dsp/
+COPY libs/control-plane-dtos/package.json libs/control-plane-dtos/
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
 COPY apps apps
 COPY libs libs 
-RUN pnpm run --parallel -r build
-RUN pnpm deploy --filter backend --prod /prod/backend
-RUN pnpm deploy --filter frontend --prod /prod/frontend
+RUN pnpm run --filter "common*" --parallel -r build 
+RUN pnpm run --filter "./libs/control-plane*" --parallel -r build
+RUN pnpm run --filter "./apps/control-plane*" --parallel -r build 
+RUN pnpm deploy --filter control-plane-api --prod /prod/control-plane-api
+RUN pnpm deploy --filter control-plane-ui --prod /prod/control-plane-ui
 
 FROM base AS deploy 
 WORKDIR /app
-COPY --from=build /prod/backend .
-COPY --from=build /prod/frontend/dist frontend/
+COPY --from=build /prod/control-plane-api .
+COPY --from=build /prod/control-plane-ui/dist control-plane-ui/
 EXPOSE 3000
-ENV EMBEDDED_FRONTEND="/app/frontend"
-CMD ["pnpm", "start"]
+ENV EMBEDDED_FRONTEND="/app/control-plane-ui"
+CMD ["pnpm", "start:control-plane"]
