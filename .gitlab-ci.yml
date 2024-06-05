@@ -130,26 +130,27 @@ http-data-plane-test:
     - .test
   variables:
     APP: http-data-plane
+
 http-data-plane-release:
   extends: .release
   variables:
     APP: http-data-plane
 
-# publish:
-#   extends:
-#     - .base-rules
-#   stage: release
-#   script:
-#     - pnpm install --frozen-lockfile
-#     - npx semantic-release
-#   cache:
-#     key:
-#       files:
-#         - pnpm-lock.yaml
-#     paths:
-#       - .pnpm-store
-#   rules:
-#     - if: '$RELEASE_NOW == "true"'
+publish:
+  extends:
+    - .base-rules
+  stage: release
+  script:
+    - pnpm install --frozen-lockfile
+    - npx semantic-release
+  cache:
+    key:
+      files:
+        - pnpm-lock.yaml
+    paths:
+      - .pnpm-store
+  rules:
+    - if: '$RELEASE_NOW == "true"'
 
 include:
   - template: Jobs/Dependency-Scanning.gitlab-ci.yml

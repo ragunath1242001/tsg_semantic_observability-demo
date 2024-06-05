@@ -6,5 +6,8 @@
   "branches": [
     "main"
   ],
-  "extends": "@semantic-release/gitlab-config"
+  "extends": [
+    "@semantic-release/gitlab-config",
+    "semantic-release-monorepo"
+  ]
 }
