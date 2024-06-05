@@ -37,7 +37,7 @@ import {
   TransferSuspensionMessageDto,
   TransferTerminationMessageDto,
   deserialize,
-} from "@tsg-dsp/common";
+} from "@libs/common-dsp";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { TransferDao } from "./transfer.dao";

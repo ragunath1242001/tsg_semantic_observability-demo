@@ -1,4 +1,4 @@
-import { ContextDto, IReference, SerializableClass } from "@tsg-dsp/common";
+import { ContextDto, IReference, SerializableClass } from "@libs/common-dsp";
 import { Exclude } from "class-transformer";
 import {
   CreateDateColumn,

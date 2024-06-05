@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, toRefs } from "vue";
-import { PolicyDto, type CatalogDto, type DatasetDto } from "@tsg-dsp/common";
+import { PolicyDto, type CatalogDto, type DatasetDto } from "@libs/common-dsp";
 import { injectStrict } from "../utils/injectTyped";
 import utils from "../utils/common";
 import { AxiosKey } from "../utils/symbols";

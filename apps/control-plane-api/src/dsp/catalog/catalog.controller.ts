@@ -6,7 +6,11 @@ import {
   Post,
   UseGuards,
 } from "@nestjs/common/decorators";
-import { CatalogDto, CatalogRequestMessage, DatasetDto } from "@tsg-dsp/common";
+import {
+  CatalogDto,
+  CatalogRequestMessage,
+  DatasetDto,
+} from "@libs/common-dsp";
 import { VerifiablePresentationGuard } from "../../auth/verifiablePresentation.guard";
 import { DeserializePipe } from "../../utils/deserialize.pipe";
 import { CatalogService } from "./catalog.service";

@@ -7,7 +7,7 @@ import {
   VerifiablePresentation,
   VerifiableCredential,
   CredentialSubject,
-} from "@tsg-dsp/common";
+} from "@libs/common-dsp";
 import {
   ApiBody,
   ApiOAuth2,

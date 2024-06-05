@@ -19,7 +19,7 @@ import {
   Offer,
   createInstance,
   deserialize,
-} from "@tsg-dsp/common";
+} from "@libs/common-dsp";
 import crypto from "crypto";
 import { Repository } from "typeorm";
 import { RootConfig, ServerConfig } from "../../config";

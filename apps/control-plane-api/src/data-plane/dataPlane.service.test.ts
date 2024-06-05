@@ -10,7 +10,7 @@ import {
   ODRLAction,
   Offer,
   Permission,
-} from "@tsg-dsp/common";
+} from "@libs/common-dsp";
 import { plainToClass } from "class-transformer";
 import { AuthClientService } from "../auth/auth.client.service";
 import { AuthConfig, InitCatalog, ServerConfig } from "../config";

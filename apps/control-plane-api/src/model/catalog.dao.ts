@@ -16,7 +16,7 @@ import {
   Reference,
   Resource,
   Time,
-} from "@tsg-dsp/common";
+} from "@libs/common-dsp";
 import {
   Column,
   Entity,

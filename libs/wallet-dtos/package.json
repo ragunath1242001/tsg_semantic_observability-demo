@@ -12,7 +12,7 @@
     "build": "tsc -p tsconfig.json"
   },
   "dependencies": {
-    "@tsg-dsp/common": "^0.1.0",
+    "@libs/common-dsp": "workspace:*",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
     "jose": "^4.14.4",

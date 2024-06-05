@@ -7,7 +7,7 @@ import {
   Logger,
   UseGuards,
 } from "@nestjs/common";
-import { CatalogDto } from "@tsg-dsp/common";
+import { CatalogDto } from "@libs/common-dsp";
 import { RegistryService } from "./registry.service";
 import { OAuthGuard } from "../auth/oauth.guard";
 import { Roles } from "../auth/roles.guard";

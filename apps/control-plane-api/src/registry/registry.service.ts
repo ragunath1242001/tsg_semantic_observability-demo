@@ -8,7 +8,7 @@ import {
 } from "@nestjs/common";
 import { SchedulerRegistry } from "@nestjs/schedule";
 import { InjectRepository } from "@nestjs/typeorm";
-import { CatalogDto } from "@tsg-dsp/common";
+import { CatalogDto } from "@libs/common-dsp";
 import { DIDDocument } from "did-resolver";
 import { Repository } from "typeorm";
 import { AuthService } from "../auth/auth.service";

@@ -1,5 +1,5 @@
 {
-  "name": "@tsg-dsp/common",
+  "name": "@libs/common-dsp",
   "version": "0.3.1",
   "description": "TSG Dataspace Protocol Common",
   "author": "Maarten Kollenstart",

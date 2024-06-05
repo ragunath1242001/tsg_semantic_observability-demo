@@ -2,7 +2,7 @@ import {
   CredentialSubject,
   VerifiableCredential,
   VerifiablePresentation,
-} from "@tsg-dsp/common";
+} from "@libs/common-dsp";
 import { plainToInstance } from "class-transformer";
 import crypto from "crypto";
 import { SignJWT } from "jose";

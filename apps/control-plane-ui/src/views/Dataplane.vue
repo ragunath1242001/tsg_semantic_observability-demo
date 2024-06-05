@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { CatalogDto } from "@tsg-dsp/common";
+import { CatalogDto } from "@libs/common-dsp";
 import http from "../utils/http";
 import { DataPlaneDto } from "@libs/control-plane-dtos";
 import { onMounted, ref, setDevtoolsHook } from "vue";

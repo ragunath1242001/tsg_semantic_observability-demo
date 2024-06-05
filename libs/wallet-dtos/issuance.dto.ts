@@ -1,4 +1,4 @@
-import { CredentialSubject } from "@tsg-dsp/common";
+import { CredentialSubject } from "@libs/common-dsp";
 
 export interface CredentialOfferRequest {
   holderId: string;

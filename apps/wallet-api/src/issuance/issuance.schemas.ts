@@ -28,7 +28,7 @@ import {
   ApiPropertyOptional,
   getSchemaPath,
 } from "@nestjs/swagger";
-import { CredentialSubject } from "@tsg-dsp/common";
+import { CredentialSubject } from "@libs/common-dsp";
 import { DefaultCredentialSubjectDto } from "../credentials/credentials.schemas.js";
 
 export class CredentialIssuerMetadataDto implements CredentialIssuerMetadata {

@@ -3,7 +3,7 @@ import { AppRole } from "@libs/wallet-dtos";
 import { toArray } from "../../utils/union.js";
 import { formatDate } from "../../utils/date.js";
 import { axiosInstance, store } from "../../store/index.js";
-import { CredentialSubject, VerifiableCredential } from "@tsg-dsp/common";
+import { CredentialSubject, VerifiableCredential } from "@libs/common-dsp";
 import { useConfirm } from "primevue/useconfirm";
 import { useToast } from "primevue/usetoast";
 import { computed, onMounted, ref } from "vue";
@@ -142,8 +142,21 @@ onMounted(async () => {
     <Card>
       <template #title>Credentials</template>
       <template #subtitle>
-        <p>Verifiable Credentials are digital credentials that can be securely issued, stored, and shared online. They provide a way for individuals to prove aspects of their identity or qualifications without revealing unnecessary personal information. These credentials are cryptographically secure, enabling verification by others without the need for a trusted third party. For more details see the <a href="https://www.w3.org/TR/vc-data-model-2.0/" target="_blank">Verifiable Credentials Data Model specification</a>.</p>
-        <p>The table below shows all credentials that are issued and imported into this Wallet instance.</p>
+        <p>
+          Verifiable Credentials are digital credentials that can be securely
+          issued, stored, and shared online. They provide a way for individuals
+          to prove aspects of their identity or qualifications without revealing
+          unnecessary personal information. These credentials are
+          cryptographically secure, enabling verification by others without the
+          need for a trusted third party. For more details see the
+          <a href="https://www.w3.org/TR/vc-data-model-2.0/" target="_blank"
+            >Verifiable Credentials Data Model specification</a
+          >.
+        </p>
+        <p>
+          The table below shows all credentials that are issued and imported
+          into this Wallet instance.
+        </p>
       </template>
       <template #content>
         <DataTable
@@ -244,7 +257,7 @@ onMounted(async () => {
                 :read-only="true"
                 :min-lines="1"
                 :max-lines="100"
-                />
+              />
             </div>
           </template>
         </DataTable>

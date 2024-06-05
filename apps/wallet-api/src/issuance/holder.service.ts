@@ -15,7 +15,7 @@ import { KeysService } from "../keys/keys.service.js";
 import { SignJWT, decodeJwt, importJWK } from "jose";
 import { DidService } from "../did/did.service.js";
 import { PresentationService } from "../presentation/presentation.service.js";
-import { VerifiablePresentation } from "@tsg-dsp/common";
+import { VerifiablePresentation } from "@libs/common-dsp";
 import { plainToInstance } from "class-transformer";
 import { toArray } from "../utils/unions.js";
 import { RootConfig } from "../config.js";

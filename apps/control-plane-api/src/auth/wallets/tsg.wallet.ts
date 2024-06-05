@@ -4,7 +4,7 @@ import {
   VerifiableCredential,
   VerifiablePresentation,
   VerifiablePresentationJwt,
-} from "@tsg-dsp/common";
+} from "@libs/common-dsp";
 import { plainToInstance } from "class-transformer";
 import { decode } from "jsonwebtoken";
 import { TsgWalletDirectConfig } from "../../config";

@@ -2,7 +2,7 @@ import "reflect-metadata";
 import {
   CredentialSubject,
   VerifiableCredential,
-} from "@tsg-dsp/common/dist/model/ssi/credentials.dto.js";
+} from "@libs/common-dsp/dist/model/ssi/credentials.dto.js";
 import { Type } from "class-transformer";
 import { IsString, ValidateNested, IsDefined } from "class-validator";
 

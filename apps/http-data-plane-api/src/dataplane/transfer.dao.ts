@@ -3,7 +3,7 @@ import {
   DataPlaneRequestResponseDto,
   TransferRequestMessageDto,
   TransferState,
-} from "@tsg-dsp/common";
+} from "@libs/common-dsp";
 import {
   Column,
   CreateDateColumn,

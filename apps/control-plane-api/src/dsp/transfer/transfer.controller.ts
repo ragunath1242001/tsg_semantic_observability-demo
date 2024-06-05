@@ -13,7 +13,7 @@ import {
   TransferStartMessage,
   TransferSuspensionMessage,
   TransferTerminationMessage,
-} from "@tsg-dsp/common";
+} from "@libs/common-dsp";
 import { VerifiablePresentationGuard } from "../../auth/verifiablePresentation.guard";
 import { VPId } from "../../auth/verifiablePresentation.strategy";
 import { DeserializePipe } from "../../utils/deserialize.pipe";

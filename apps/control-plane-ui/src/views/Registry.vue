@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { CredentialAddressDto } from "@libs/control-plane-dtos";
-import { CatalogDto, DatasetDto } from "@tsg-dsp/common";
+import { CatalogDto, DatasetDto } from "@libs/common-dsp";
 import { useToast } from "primevue/usetoast";
 import { onMounted, ref } from "vue";
 import Catalog from "../components/Catalog.vue";

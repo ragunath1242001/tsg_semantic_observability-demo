@@ -1,5 +1,5 @@
 {
-  "name": "frontend",
+  "name": "control-plane-ui",
   "version": "0.0.0",
   "scripts": {
     "dev": "vite --host",
@@ -11,7 +11,7 @@
   "dependencies": {
     "@guolao/vue-monaco-editor": "^1.5.1",
     "@libs/control-plane-dtos": "workspace:*",
-    "@tsg-dsp/common": "^0.3.1",
+    "@libs/common-dsp": "workspace:*",
     "axios": "^1.4.0",
     "chart.js": "3.3.2",
     "pinia": "^2.1.7",

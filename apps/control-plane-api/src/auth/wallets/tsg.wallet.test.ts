@@ -1,4 +1,4 @@
-import { VerifiablePresentationJwt } from "@tsg-dsp/common";
+import { VerifiablePresentationJwt } from "@libs/common-dsp";
 import { plainToInstance } from "class-transformer";
 import { HttpResponse, PathParams, http } from "msw";
 import { SetupServer, setupServer } from "msw/node";

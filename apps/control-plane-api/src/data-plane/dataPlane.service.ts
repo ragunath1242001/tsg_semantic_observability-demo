@@ -21,7 +21,7 @@ import {
   TransferSuspensionMessage,
   TransferTerminationMessage,
   deserialize,
-} from "@tsg-dsp/common";
+} from "@libs/common-dsp";
 import axios, {
   AxiosInstance,
   AxiosRequestConfig,

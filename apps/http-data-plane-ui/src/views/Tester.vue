@@ -8,7 +8,7 @@ import { useDialog } from "primevue/usedialog";
 import { TransferDto } from "@libs/http-data-plane-dtos";
 import { axiosInstance, store } from "../store/index.js";
 import { httpStatus } from "../utils/httpStatus";
-import { AgreementDto, DatasetDto } from "@tsg-dsp/common";
+import { AgreementDto, DatasetDto } from "@libs/common-dsp";
 
 import JSONDialog from "../components/JSONDialog.vue";
 import { useRoute } from "vue-router";
@@ -311,17 +311,11 @@ onMounted(async () => {
               }}
             </FormField>
             <FormField label="Rules"
-              >{{
-                metadata.agreement["odrl:permission"]?.length ?? 0
-              }}
+              >{{ metadata.agreement["odrl:permission"]?.length ?? 0 }}
               permissions,
-              {{
-                metadata.agreement["odrl:prohibition"]?.length ?? 0
-              }}
+              {{ metadata.agreement["odrl:prohibition"]?.length ?? 0 }}
               prohibitions,
-              {{
-                metadata.agreement["odrl:obligation"]?.length ?? 0
-              }}
+              {{ metadata.agreement["odrl:obligation"]?.length ?? 0 }}
               obligations</FormField
             >
             <Button label="Show agreement" @click="showAgreementDialog" />

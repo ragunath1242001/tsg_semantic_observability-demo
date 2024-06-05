@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
-import { type CatalogDto } from "@tsg-dsp/common";
+import { type CatalogDto } from "@libs/common-dsp";
 import { injectStrict } from "../utils/injectTyped";
 import { AxiosKey } from "../utils/symbols";
 import Catalog from "../components/Catalog.vue";

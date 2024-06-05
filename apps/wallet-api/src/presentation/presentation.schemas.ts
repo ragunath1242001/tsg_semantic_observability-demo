@@ -10,7 +10,7 @@ import {
   VerifiablePresentation,
   VerifiablePresentationJsonLd,
   VerifiablePresentationJwt,
-} from "@tsg-dsp/common";
+} from "@libs/common-dsp";
 import { elementOrArray } from "../did/did.schemas.js";
 import {
   Constraint,

@@ -12,7 +12,7 @@ import {
   PresentationValidation,
   VerifiablePresentationJsonLd,
   VerifiablePresentationJwt,
-} from "@tsg-dsp/common";
+} from "@libs/common-dsp";
 import { AppError } from "../../utils/error.js";
 import { PresentationService } from "../presentation.service.js";
 import { Roles } from "../../auth/roles.guard.js";

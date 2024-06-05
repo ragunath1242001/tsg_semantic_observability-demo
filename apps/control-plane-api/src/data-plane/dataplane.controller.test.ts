@@ -16,7 +16,7 @@ import {
 } from "../model/catalog.dao";
 import { TypeOrmTestHelper } from "../utils/testhelper";
 import { AuthClientService } from "../auth/auth.client.service";
-import { Agreement } from "@tsg-dsp/common";
+import { Agreement } from "@libs/common-dsp";
 import { NegotiationService } from "../dsp/negotiation/negotiation.service";
 
 describe("DataPlaneController", () => {

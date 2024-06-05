@@ -4,7 +4,7 @@ import {
   MultilanguageDto,
   TransferProcessDto,
   TransferState,
-} from "@tsg-dsp/common";
+} from "@libs/common-dsp";
 
 export type TransferRole = "provider" | "consumer";
 export interface TransferStatusDto {

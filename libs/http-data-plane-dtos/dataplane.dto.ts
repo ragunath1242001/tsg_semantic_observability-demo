@@ -1,4 +1,4 @@
-import { DataPlaneDetailsDto, DatasetDto, OfferDto } from "@tsg-dsp/common";
+import { DataPlaneDetailsDto, DatasetDto, OfferDto } from "@libs/common-dsp";
 import { Type } from "class-transformer";
 import {
   IsString,

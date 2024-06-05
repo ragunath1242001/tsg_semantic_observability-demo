@@ -18,7 +18,7 @@ import {
   TransferStartMessageDto,
   TransferSuspensionMessageDto,
   TransferTerminationMessageDto,
-} from "@tsg-dsp/common";
+} from "@libs/common-dsp";
 import { DisableOAuthGuard } from "../auth/oauth.guard";
 import { DisableRolesGuard, Roles } from "../auth/roles.guard";
 

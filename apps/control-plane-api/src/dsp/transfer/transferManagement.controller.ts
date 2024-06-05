@@ -14,7 +14,7 @@ import {
   Query,
   UseGuards,
 } from "@nestjs/common";
-import { TransferDetail, TransferProcessDto } from "@tsg-dsp/common";
+import { TransferDetail, TransferProcessDto } from "@libs/common-dsp";
 import { OAuthGuard } from "../../auth/oauth.guard";
 import { Roles } from "../../auth/roles.guard";
 import { normalizeAddress } from "../../utils/address";

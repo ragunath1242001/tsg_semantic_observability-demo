@@ -7,7 +7,7 @@ import {
   TransferStatusDto,
 } from "@libs/control-plane-dtos";
 import http from "../utils/http";
-import { CatalogDto } from "@tsg-dsp/common";
+import { CatalogDto } from "@libs/common-dsp";
 
 interface Catalog {
   catalog: CatalogDto;

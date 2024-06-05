@@ -7,7 +7,7 @@ import {
   PrimaryGeneratedColumn,
 } from "typeorm";
 import { MetaEntity } from "./common.dao.js";
-import { CredentialSubject } from "@tsg-dsp/common";
+import { CredentialSubject } from "@libs/common-dsp";
 
 @Entity()
 export class CredentialIssuance extends MetaEntity {

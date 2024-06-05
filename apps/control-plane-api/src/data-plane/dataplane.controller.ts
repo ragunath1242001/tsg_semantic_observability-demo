@@ -9,7 +9,7 @@ import {
   Post,
   UseGuards,
 } from "@nestjs/common";
-import { Catalog } from "@tsg-dsp/common";
+import { Catalog } from "@libs/common-dsp";
 import { OAuthGuard } from "../auth/oauth.guard";
 import { Roles } from "../auth/roles.guard";
 import { DeserializePipe } from "../utils/deserialize.pipe";

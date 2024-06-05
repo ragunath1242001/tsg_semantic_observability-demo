@@ -1,6 +1,6 @@
 import { CredentialAddressDto } from "@libs/control-plane-dtos";
 import { HttpStatus, Injectable, Logger, Optional } from "@nestjs/common";
-import { CatalogDto } from "@tsg-dsp/common";
+import { CatalogDto } from "@libs/common-dsp";
 import axios from "axios";
 import { AuthService } from "../auth/auth.service";
 import { RegistryConfig } from "../config";

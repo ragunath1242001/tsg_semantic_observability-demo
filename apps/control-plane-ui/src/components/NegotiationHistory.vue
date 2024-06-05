@@ -9,7 +9,7 @@ import { ref, toRef } from "vue";
 import { AccordionTabOpenEvent } from "primevue/accordion";
 import { useToast } from "primevue/usetoast";
 import http from "../utils/http";
-import { DatasetDto } from "@tsg-dsp/common";
+import { DatasetDto } from "@libs/common-dsp";
 import MonacoEditor from "./MonacoEditor.vue";
 
 const props = defineProps<{

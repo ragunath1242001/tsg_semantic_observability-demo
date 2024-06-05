@@ -3,7 +3,7 @@ import {
   CredentialSubject,
   VerifiableCredential,
   VerifiablePresentation,
-} from "@tsg-dsp/common";
+} from "@libs/common-dsp";
 import crypto from "crypto";
 import { AppError, parseNetworkError } from "../../utils/error.js";
 import { DidService } from "../../did/did.service.js";

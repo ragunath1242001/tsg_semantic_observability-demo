@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import { toRefs, ref, toRef, watch, reactive } from "vue";
-import { DatasetDto, OfferDto, PolicyDto, ReferenceDto } from "@tsg-dsp/common";
+import {
+  DatasetDto,
+  OfferDto,
+  PolicyDto,
+  ReferenceDto,
+} from "@libs/common-dsp";
 import { useToast } from "primevue/usetoast";
 import { injectStrict } from "../utils/injectTyped";
 import { AxiosKey } from "../utils/symbols";

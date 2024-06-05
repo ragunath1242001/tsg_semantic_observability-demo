@@ -8,7 +8,7 @@ import {
   NegotiationProcessEvent,
   NegotiationRole,
   Offer,
-} from "@tsg-dsp/common";
+} from "@libs/common-dsp";
 import {
   Column,
   Entity,

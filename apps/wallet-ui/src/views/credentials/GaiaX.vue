@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { AppRole } from "@libs/wallet-dtos";
 import { axiosInstance, store } from "../..//store/index.js";
-import { CredentialSubject, VerifiableCredential } from "@tsg-dsp/common";
+import { CredentialSubject, VerifiableCredential } from "@libs/common-dsp";
 import { computed, onMounted, ref } from "vue";
 import { useToast } from "primevue/usetoast";
 import { toArray } from "../../utils/union.js";

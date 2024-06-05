@@ -7,7 +7,7 @@ import {
   CredentialSubject,
   VerifiablePresentationJwt,
   PresentationValidation,
-} from "@tsg-dsp/common";
+} from "@libs/common-dsp";
 import jsonld from "jsonld";
 import crypto from "crypto";
 import { CredentialsService } from "../credentials/credentials.service.js";

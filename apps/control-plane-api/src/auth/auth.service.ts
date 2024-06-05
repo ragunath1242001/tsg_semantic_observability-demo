@@ -3,7 +3,7 @@ import {
   CredentialSubject,
   VerifiableCredential,
   VerifiablePresentation,
-} from "@tsg-dsp/common";
+} from "@libs/common-dsp";
 import {
   DevWalletConfig,
   MiwConfig,

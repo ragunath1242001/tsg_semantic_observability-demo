@@ -1,5 +1,5 @@
 {
-  "name": "backend",
+  "name": "wallet-api",
   "version": "0.0.1",
   "description": "TSG Dataspace Protocol SSI Wallet",
   "main": "index.js",
@@ -32,7 +32,7 @@
     "@nestjs/serve-static": "^4.0.0",
     "@nestjs/swagger": "^7.3.1",
     "@nestjs/typeorm": "^10.0.1",
-    "@tsg-dsp/common": "^0.1.0",
+    "@libs/common-dsp": "workspace:*",
     "ajv": "^8.12.0",
     "axios": "^1.6.3",
     "class-transformer": "^0.5.1",

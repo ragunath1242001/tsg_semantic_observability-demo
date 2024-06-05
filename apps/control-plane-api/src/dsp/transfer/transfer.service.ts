@@ -16,7 +16,7 @@ import {
   TransferSuspensionMessage,
   TransferTerminationMessage,
   deserialize,
-} from "@tsg-dsp/common";
+} from "@libs/common-dsp";
 import crypto from "crypto";
 import { Repository } from "typeorm";
 import { ServerConfig } from "../../config";

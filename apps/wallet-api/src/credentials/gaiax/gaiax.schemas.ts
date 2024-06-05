@@ -3,7 +3,7 @@ import {
   LegalRegistrationNumberRequest,
 } from "@libs/wallet-dtos";
 import { ApiProperty } from "@nestjs/swagger";
-import { CredentialSubject, VerifiableCredential } from "@tsg-dsp/common";
+import { CredentialSubject, VerifiableCredential } from "@libs/common-dsp";
 import {
   DefaultCredentialSubjectDto,
   VerifiableCredentialDto,

@@ -23,7 +23,7 @@ import {
 } from "@libs/http-data-plane-dtos";
 import { Roles } from "../auth/roles.guard";
 import { Request, Response } from "express";
-import { AgreementDto, CatalogDto, DatasetDto } from "@tsg-dsp/common";
+import { AgreementDto, CatalogDto, DatasetDto } from "@libs/common-dsp";
 
 @Controller("/management")
 @Roles("controlplane_dataplane")
