@@ -142,7 +142,7 @@ publish:
   stage: release
   script:
     - pnpm install --frozen-lockfile
-    - npx semantic-release
+    - npx semantic-release -e "@semantic-release/gitlab-config" -e semantic-release-monorepo -p "@semantic-release/commit-analyzer" -p "@semantic-release/release-notes-generator" -p "@semantic-release/gitlab"
   cache:
     key:
       files:
