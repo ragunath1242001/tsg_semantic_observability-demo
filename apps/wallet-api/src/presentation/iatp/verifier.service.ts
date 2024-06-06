@@ -6,7 +6,7 @@ import axios from "axios";
 import { toArray } from "../../utils/unions.js";
 import { PresentationService } from "../presentation.service.js";
 import { decodeJwt } from "jose";
-import Ajv from "ajv";
+import { Ajv } from "ajv";
 import jsonpath from "jsonpath";
 import {
   PresentationDefinition,
@@ -28,6 +28,7 @@ export class IatpVerifierService {
     private readonly presentationService: PresentationService
   ) {}
   private readonly logger = new Logger(this.constructor.name);
+  //@ts-expect-error ajv error
   private readonly ajv = new Ajv.default();
 
   async verify(

@@ -7,7 +7,7 @@ import {
   PresentationResponse,
 } from "@libs/wallet-dtos";
 import { CredentialsService } from "../../credentials/credentials.service.js";
-import Ajv from "ajv";
+import { Ajv } from "ajv";
 import jsonpath from "jsonpath";
 import { Credentials } from "../../model/credentials.dao.js";
 import { AppError } from "../../utils/error.js";
@@ -20,6 +20,7 @@ export class IatpHolderService {
     private readonly siopService: IatpSiopService
   ) {}
   private readonly logger = new Logger(this.constructor.name);
+  // @ts-expect-error ajv error
   private readonly ajv = new Ajv.default();
 
   async presentationRequest(
@@ -120,6 +121,7 @@ export class IatpHolderService {
   matchCredential(
     fieldDescriptor: Field,
     credential: Credentials,
+    // @ts-expect-error: ajv error
     validateFunction?: Ajv.ValidateFunction
   ): Credentials | undefined {
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
