@@ -1,0 +1,67 @@
+host: # example.com
+
+image: registry.gitlab.com/tno-tsg/dataspace-protocol/control-plane:main
+replicaCount: 1
+
+ingress:
+  enabled: true
+  clusterIssuer: letsencrypt
+  path: /control-plane(/|$)(.*)
+  rewriteTarget: /$2
+  # annotations: {}
+  # class: nginx
+
+env: []
+configFromSecrets: {}
+# configFromSecrets:
+#   iam:
+#     clientId:
+#       name: wallet-auth
+#       key: client-id
+#     clientSecret:
+#       name: wallet-auth
+#       key: client-secret
+#   users:
+#     - username:
+#         name: cp-auth
+#         key: username
+#       password:
+#         name: cp-auth
+#         key: password
+#   db:
+#     password:
+#       name: postgresql
+#       key: password
+
+config:
+  server:
+    port: 3000
+    listen: '0.0.0.0'
+    publicDomain: "{{ .Values.host }}"
+    publicAddress: https://{{ .Values.host }}/control-plane
+  db:
+    type: postgres
+    database: controlplane
+    host: # postgresql
+    port: 5432
+    username: postgres
+
+#   iam:
+#     type: tsg
+#     didId: did:web:{{ .Values.host }}
+#     tokenUrl: https://{{ .Values.host }}/api/auth/login
+#     presentationUrl: https://{{ .Values.host }}/api/presentations
+#     validationUrl: https://{{ .Values.host }}/api/presentations/validate
+#     clientId: # connector
+#     clientSecret: # test
+#     credentialId: # did:web:{{ .Values.host }}#00000000-0000-0000-0000-000000000000
+#     validations:
+#     - valid
+  
+#   users: []
+  
+#   initCatalog:
+#     creator: did:web:{{ .Values.host }}
+#     publisher: did:web:{{ .Values.host }}
+#     title: TSG Test Connector A
+#     description: TSG Test Connector A testing Data Space Protocol support

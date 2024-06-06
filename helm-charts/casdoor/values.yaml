@@ -1,0 +1,49 @@
+image: casbin/casdoor:v1.600.0
+initImage: registry.gitlab.com/tno-tsg/dataspace-protocol/utils/casdoor-init:main
+
+host:
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+  automount: true
+
+ingress:
+  enabled: true
+  clusterIssuer: letsencrypt
+
+env: []
+configFromSecrets: {}
+
+initConfig:
+  url: http://{{ template "casdoor.fullname" . }}:{{ .Values.config.httpport }}
+  organization:
+    id: TSG
+    name: TSG
+    overwrite:
+      passwordType: argon2id
+  users:
+  - username: admin
+    isAdmin: true
+    secretName: casdoor-admin-secret
+
+config:
+  appname: casdoor
+  httpport: 8000
+  runmode: dev
+  SessionOn: true
+  copyrequestbody: true
+  driverName: sqlite
+  dataSourceName: "file:ent?mode=memory&cache=shared&_fk=1"
+  dbName: casdoor
+  redisEndpoint: ""
+  defaultStorageProvider: ""
+  isCloudIntranet: false
+  authState: "casdoor"
+  socks5Proxy: ""
+  verificationCodeTimeout: 10
+  initScore: 0
+  logPostOnly: true
+  origin: ""
+  enableGzip: true

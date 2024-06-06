@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "http-data-plane.fullname" . }}
+  labels: {{ include "http-data-plane.labels" $ | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ template "http-data-plane.fullname" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ template "http-data-plane.fullname" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+      annotations:
+        checksum/config: {{ tpl (toYaml .Values.config) . | sha256sum }}
+    spec:
+      containers:
+        - name: http-data-plane
+          image: "{{ .Values.image }}"
+          imagePullPolicy: Always
+          {{- with concat .Values.env (fromYamlArray (list .Values.configFromSecrets "" | include "recurseSecretConfig"))}}
+          env: {{ toYaml . | nindent 12 }}
+          {{- end }}
+          resources:
+            requests:
+              memory: "100Mi"
+          ports:
+            - name: http
+              containerPort: {{ .Values.config.server.port | default 3000 }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.config.server.port | default 3000 }}
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.config.server.port | default 3000 }}
+          volumeMounts:
+          - name: http-data-plane-config
+            mountPath: /app/config.yaml
+            subPath: "config.yaml"
+      volumes:
+      - name: http-data-plane-config
+        configMap:
+          name: {{ template "http-data-plane.fullname" . }}-config
