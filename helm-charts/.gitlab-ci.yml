@@ -1,10 +1,9 @@
-image: dtzar/helm-kubectl:3.14
-
 stages:
   - release
 
 .helm_devel:
   stage: release
+  image: dtzar/helm-kubectl:3.14
   tags:
     - saas-linux-small-amd64
   script:
@@ -23,6 +22,7 @@ stages:
 
 .helm_stable:
   stage: release
+  image: dtzar/helm-kubectl:3.14
   tags:
     - saas-linux-small-amd64
   script:
