@@ -19,7 +19,9 @@
     "start:prod": "pnpm --filter backend start",
     "test": "pnpm -r jest",
     "test:coverage": "pnpm -r jest:coverage",
-    "test:ci": "pnpm -r jest:ci"
+    "test:control-plane-ci": "pnpm --filter control-plane-api jest:ci",
+    "test:http-data-plane-ci": "pnpm --filter http-data-plane-api jest:ci",
+    "test:wallet-ci": "pnpm --filter wallet-api jest:ci"
   },
   "keywords": [],
   "author": "",

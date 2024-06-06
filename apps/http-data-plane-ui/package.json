@@ -13,7 +13,6 @@
     "@guolao/vue-monaco-editor": "^1.5.1",
     "@libs/http-data-plane-dtos": "workspace:*",
     "@libs/common-dsp": "workspace:*",
-    "ajv": "^8.12.0",
     "axios": "^1.4.0",
     "chart.js": "3.3.2",
     "did-resolver": "^4.1.0",

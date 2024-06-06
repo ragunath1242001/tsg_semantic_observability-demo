@@ -23,6 +23,8 @@ variables:
         - "*/$APP*/**/*"
         - "libs/common*/**/*"
         - .gitlab-ci.yml
+    - if: $CI_OPEN_MERGE_REQUESTS
+      when: never
   tags:
     - saas-linux-medium-amd64
   script:
@@ -55,7 +57,7 @@ variables:
     - pnpm run --filter "common*" --parallel -r  build
     - pnpm run --filter "./libs/$APP*" --parallel -r  build
     - pnpm run --filter $./apps/APP* --parallel -r  build
-    - NODE_OPTIONS="--experimental-vm-modules" pnpm --filter $APP* test:ci
+    - NODE_OPTIONS="--experimental-vm-modules" pnpm test:$APP-ci
   cache:
     key:
       files:
