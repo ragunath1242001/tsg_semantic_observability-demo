@@ -19,7 +19,7 @@ stages:
     - if: $CI_COMMIT_BRANCH != "main"
       changes:
         - "helm-charts/$FOLDER/**/*"
-        - .gitlab-ci.yml
+        - helm-charts/.gitlab-ci.yml
 
 .helm_stable:
   stage: release
@@ -34,7 +34,7 @@ stages:
     - if: $CI_COMMIT_BRANCH == "main"
       changes:
         - "helm-charts/$FOLDER/**/*"
-        - .gitlab-ci.yml
+        - helm-charts/.gitlab-ci.yml
 
 helm-devel:control-plane:
   extends: .helm_devel
