@@ -15,6 +15,7 @@ variables:
     - pnpm config set store-dir .pnpm-store
 
 .build:
+  extends: .base-rules
   stage: build
   rules:
     - if: $CI_COMMIT_BRANCH != "main"
@@ -26,7 +27,9 @@ variables:
     - saas-linux-medium-amd64
   script:
     - pnpm install --frozen-lockfile
-    - pnpm build --filter $APP*
+    - pnpm run --filter "common*" --parallel -r  build
+    - pnpm run --filter "./libs/$APP*" --parallel -r  build
+    - pnpm run --filter $./apps/APP* --parallel -r  build
   cache:
     key:
       files:
@@ -35,6 +38,7 @@ variables:
       - .pnpm-store
 
 .test:
+  extends: .base-rules
   stage: test
   tags:
     - saas-linux-medium-amd64
@@ -48,8 +52,10 @@ variables:
         - .gitlab-ci.yml
   script:
     - pnpm install --frozen-lockfile
-    - pnpm build --filter $APP*
-    - NODE_OPTIONS="--experimental-vm-modules" pnpm test:ci --filter $APP*
+    - pnpm run --filter "common*" --parallel -r  build
+    - pnpm run --filter "./libs/$APP*" --parallel -r  build
+    - pnpm run --filter $./apps/APP* --parallel -r  build
+    - NODE_OPTIONS="--experimental-vm-modules" pnpm --filter $APP* test:ci
   cache:
     key:
       files:
