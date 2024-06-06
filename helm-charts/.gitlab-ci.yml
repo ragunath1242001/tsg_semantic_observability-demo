@@ -3,7 +3,7 @@ image: dtzar/helm-kubectl:3.14
 stages:
   - release
 
-.release:
+.helm_devel:
   stage: release
   tags:
     - saas-linux-small-amd64
@@ -21,7 +21,7 @@ stages:
         - "helm-charts/$FOLDER/**/*"
         - .gitlab-ci.yml
 
-.release_version:
+.helm_stable:
   stage: release
   tags:
     - saas-linux-small-amd64
@@ -37,41 +37,41 @@ stages:
         - .gitlab-ci.yml
 
 helm-devel:control-plane:
-  extends: .release
+  extends: .helm_devel
   variables:
     FOLDER: control-plane
 
 helm-stable:control-plane:
-  extends: .release_version
+  extends: .helm_stable
   variables:
     FOLDER: control-plane
 
 helm-devel:wallet:
-  extends: .release
+  extends: .helm_devel
   variables:
     FOLDER: wallet
 
 helm-stable:wallet:
-  extends: .release_version
+  extends: .helm_stable
   variables:
     FOLDER: wallet
 
 helm-devel:http-data-plane:
-  extends: .release
+  extends: .helm_devel
   variables:
     FOLDER: http-data-plane
 
 helm-stable:http-data-plane:
-  extends: .release_version
+  extends: .helm_stable
   variables:
     FOLDER: http-data-plane
 
 helm-devel:casdoor:
-  extends: .release
+  extends: .helm_devel
   variables:
     FOLDER: casdoor
 
 helm-stable:casdoor:
-  extends: .release_version
+  extends: .helm_stable
   variables:
     FOLDER: casdoor
