@@ -155,6 +155,7 @@ publish:
 include:
   - template: Jobs/Dependency-Scanning.gitlab-ci.yml
   - template: Jobs/Container-Scanning.gitlab-ci.yml
+  - local: helm-charts/.gitlab-ci.yml
 
 container_scanning:
   parallel:

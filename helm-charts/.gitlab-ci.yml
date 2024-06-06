@@ -2,14 +2,13 @@ image: dtzar/helm-kubectl:3.14
 
 stages:
   - release
-  - release-version
 
 .release:
   stage: release
   tags:
     - saas-linux-small-amd64
   script:
-    - cd $FOLDER
+    - cd helm-charts/$FOLDER
     - helm dep update
     - VERSION=$(grep -m 1 '^version:' Chart.yaml | awk '{ print $2}')
     # replace / with -
@@ -19,60 +18,60 @@ stages:
   rules:
     - if: $CI_COMMIT_BRANCH != "main"
       changes:
-      - "$FOLDER/**/*"
-      - .gitlab-ci.yml
+        - "helm-charts/$FOLDER/**/*"
+        - .gitlab-ci.yml
 
 .release_version:
-  stage: release-version
+  stage: release
   tags:
     - saas-linux-small-amd64
   script:
-    - cd $FOLDER
+    - cd helm-charts/$FOLDER
     - helm dep update
     - helm package .
     - curl --request POST --user gitlab-ci-token:$CI_JOB_TOKEN --form "chart=@$( ls *.tgz | head -n1 )" "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/helm/api/stable/charts"
   rules:
     - if: $CI_COMMIT_BRANCH == "main"
       changes:
-        - "$FOLDER/**/*"
+        - "helm-charts/$FOLDER/**/*"
         - .gitlab-ci.yml
 
-release:control-plane:
+helm-devel:control-plane:
   extends: .release
   variables:
     FOLDER: control-plane
 
-release_version:control-plane:
+helm-stable:control-plane:
   extends: .release_version
   variables:
     FOLDER: control-plane
 
-release:wallet:
+helm-devel:wallet:
   extends: .release
   variables:
     FOLDER: wallet
 
-release_version:wallet:
+helm-stable:wallet:
   extends: .release_version
   variables:
     FOLDER: wallet
 
-release:http-data-plane:
+helm-devel:http-data-plane:
   extends: .release
   variables:
     FOLDER: http-data-plane
 
-release_version:http-data-plane:
+helm-stable:http-data-plane:
   extends: .release_version
   variables:
     FOLDER: http-data-plane
 
-release:casdoor:
+helm-devel:casdoor:
   extends: .release
   variables:
     FOLDER: casdoor
 
-release_version:casdoor:
+helm-stable:casdoor:
   extends: .release_version
   variables:
     FOLDER: casdoor
