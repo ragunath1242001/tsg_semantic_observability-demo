@@ -1,5 +1,5 @@
 {
-  "name": "control-plane-api",
+  "name": "@apps/control-plane-api",
   "version": "0.0.0",
   "private": true,
   "scripts": {

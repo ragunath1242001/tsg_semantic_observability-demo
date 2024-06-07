@@ -1,0 +1,15 @@
+.npm-package:
+  extends: .base-rules
+  stage: package
+  script:
+    - echo "//registry.npmjs.org/:_authToken=${NPMJS_TOKEN}" >> .npmrc
+    - pnpm install --frozen-lockfile
+    - pnpm --filter common-dsp build
+    - pnpm --filter common-dsp publish
+  rules:
+    - if: '$RELEASE_NOW == "true"'
+      when: never
+    - if: $CI_COMMIT_TAG && $CI_COMMIT_BRANCH == "main"
+
+common-dsp-package:
+  extends: .npm-package
