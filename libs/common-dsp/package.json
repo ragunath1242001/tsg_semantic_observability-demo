@@ -1,6 +1,6 @@
 {
   "name": "@libs/common-dsp",
-  "version": "0.3.1",
+  "version": "0.1.0",
   "description": "TSG Dataspace Protocol Common",
   "author": "Maarten Kollenstart",
   "license": "Apache-2.0",
