@@ -1,37 +1,18 @@
-image: node:22
-
 stages:
   - build
   - test
+  - package
   - release
 
 variables:
   RULES_CHANGES_PATH: "**/*"
 
 .base-rules:
+  image: node:22
   before_script:
     - corepack enable
     - corepack prepare pnpm@latest-9 --activate
     - pnpm config set store-dir .pnpm-store
-
-.build:
-  extends: .base-rules
-  stage: build
-  rules:
-    - if: $CI_COMMIT_BRANCH != "main"
-      changes:
-        - "*/$APP*/**/*"
-        - "libs/common*/**/*"
-        - .gitlab-ci.yml
-    - if: $CI_OPEN_MERGE_REQUESTS
-      when: never
-  tags:
-    - saas-linux-medium-amd64
-  script:
-    - pnpm install --frozen-lockfile
-    - pnpm run --filter "common*" --parallel -r  build
-    - pnpm run --filter "./libs/$APP*" --parallel -r  build
-    - pnpm run --filter $./apps/APP* --parallel -r  build
   cache:
     key:
       files:
@@ -39,131 +20,27 @@ variables:
     paths:
       - .pnpm-store
 
-.test:
-  extends: .base-rules
-  stage: test
-  tags:
-    - saas-linux-medium-amd64
-  rules:
-    - if: $CI_COMMIT_BRANCH != "main"
-      changes:
-        - "apps/$APP-api/**/*"
-        - "libs/$APP-dtos/**/*"
-        - "libs/common-dsp/**/*"
-        - "libs/common-utils/**/*"
-        - .gitlab-ci.yml
-  script:
-    - pnpm install --frozen-lockfile
-    - pnpm run --filter "common*" --parallel -r  build
-    - pnpm run --filter "./libs/$APP*" --parallel -r  build
-    - pnpm run --filter $./apps/APP* --parallel -r  build
-    - NODE_OPTIONS="--experimental-vm-modules" pnpm test:$APP-ci
-  cache:
-    key:
-      files:
-        - pnpm-lock.yaml
-    paths:
-      - .pnpm-store
-  coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/
-  artifacts:
-    reports:
-      junit:
-        - apps/$APP-api/junit.xml
-      coverage_report:
-        coverage_format: cobertura
-        path: apps/$APP-api/coverage/cobertura-coverage.xml
-
-.release:
-  stage: release
-  image:
-    name: gcr.io/kaniko-project/executor:debug
-    entrypoint: [""]
-  tags:
-    - saas-linux-medium-amd64
-  script:
-    - mkdir -p /kaniko/.docker
-    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"auth\":\"$(echo -n $CI_REGISTRY_USER:$CI_REGISTRY_PASSWORD | base64)\"}}}" > /kaniko/.docker/config.json
-    - >-
-      /kaniko/executor
-      --context "${CI_PROJECT_DIR}"
-      --build-arg BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
-      --build-arg BUILD_SHA=${CI_COMMIT_SHORT_SHA}
-      --dockerfile "${CI_PROJECT_DIR}/Dockerfile-$APP"
-      --destination "${CI_REGISTRY_IMAGE}/$APP:${CI_COMMIT_REF_SLUG}"
-  only:
-    refs:
-      - main
-      - tags
-
-wallet-build:
-  extends:
-    - .build
-  variables:
-    APP: wallet
-
-wallet-test:
-  extends:
-    - .test
-  variables:
-    APP: wallet
-wallet-release:
-  extends: .release
-  variables:
-    APP: wallet
-
-control-plane-build:
-  extends:
-    - .build
-  variables:
-    APP: control-plane
-
-control-plane-test:
-  extends:
-    - .test
-  variables:
-    APP: control-plane
-control-plane-release:
-  extends: .release
-  variables:
-    APP: control-plane
-
-http-data-plane-build:
-  extends:
-    - .build
-  variables:
-    APP: http-data-plane
-
-http-data-plane-test:
-  extends:
-    - .test
-  variables:
-    APP: http-data-plane
-
-http-data-plane-release:
-  extends: .release
-  variables:
-    APP: http-data-plane
-
-publish:
+release:
   extends:
     - .base-rules
   stage: release
+  needs: []
+  variables:
+    GIT_EMAIL: semantic-release-bot@dataspac.es
+    GIT_NAME: semantic-release
+    TITLE: TNO Security Gateway
   script:
     - pnpm install --frozen-lockfile
-    - npx semantic-release -e "@semantic-release/gitlab-config" -e semantic-release-monorepo -p "@semantic-release/commit-analyzer" -p "@semantic-release/release-notes-generator" -p "@semantic-release/gitlab"
-  cache:
-    key:
-      files:
-        - pnpm-lock.yaml
-    paths:
-      - .pnpm-store
+    - node release/release.js
   rules:
-    - if: '$RELEASE_NOW == "true"'
+    - if: '$RELEASE_NOW == "true" && $CI_COMMIT_BRANCH == "main"'
 
 include:
   - template: Jobs/Dependency-Scanning.gitlab-ci.yml
   - template: Jobs/Container-Scanning.gitlab-ci.yml
-  - local: helm-charts/.gitlab-ci.yml
+  - local: apps/apps.gitlab-ci.yml
+  - local: libs/libs.gitlab-ci.yml
+  - local: helm-charts/helm.gitlab-ci.yml
 
 container_scanning:
   parallel:

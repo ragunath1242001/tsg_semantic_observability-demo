@@ -1,5 +1,5 @@
 {
-  "name": "http-data-plane-api",
+  "name": "@apps/http-data-plane-api",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",

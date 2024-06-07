@@ -1,0 +1,122 @@
+variables:
+  RULES_CHANGES_PATH: "**/*"
+
+.build:
+  extends: .base-rules
+  stage: build
+  rules:
+    - if: $CI_COMMIT_BRANCH != "main"
+      changes:
+        - "*/$APP*/**/*"
+        - "libs/common*/**/*"
+        - apps/apps.gitlab-ci.yml
+        - .gitlab-ci.yml
+  tags:
+    - saas-linux-medium-amd64
+  script:
+    - pnpm install --frozen-lockfile
+    - pnpm run --filter "common*" --parallel -r  build
+    - pnpm run --filter "./libs/$APP*" --parallel -r  build
+    - pnpm run --filter "./apps/$APP*" --parallel -r  build
+
+.test:
+  extends: .base-rules
+  stage: test
+  tags:
+    - saas-linux-medium-amd64
+  rules:
+    - if: $CI_COMMIT_BRANCH != "main"
+      changes:
+        - "apps/$APP-api/**/*"
+        - "libs/$APP-dtos/**/*"
+        - "libs/common-dsp/**/*"
+        - "libs/common-utils/**/*"
+        - apps/apps.gitlab-ci.yml
+        - .gitlab-ci.yml
+  script:
+    - pnpm install --frozen-lockfile
+    - pnpm run --filter "common*" --parallel -r  build
+    - pnpm run --filter "./libs/$APP*" --parallel -r  build
+    - pnpm run --filter "./apps/$APP*" --parallel -r  build
+    - NODE_OPTIONS="--experimental-vm-modules" pnpm test:$APP-ci
+  coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/
+  artifacts:
+    reports:
+      junit:
+        - apps/$APP-api/junit.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: apps/$APP-api/coverage/cobertura-coverage.xml
+
+.package:
+  stage: package
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+  tags:
+    - saas-linux-medium-amd64
+  script:
+    - mkdir -p /kaniko/.docker
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"auth\":\"$(echo -n $CI_REGISTRY_USER:$CI_REGISTRY_PASSWORD | base64)\"}}}" > /kaniko/.docker/config.json
+    - >-
+      /kaniko/executor
+      --context "${CI_PROJECT_DIR}"
+      --build-arg BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+      --build-arg BUILD_SHA=${CI_COMMIT_SHORT_SHA}
+      --dockerfile "${CI_PROJECT_DIR}/Dockerfile-$APP"
+      --destination "${CI_REGISTRY_IMAGE}/$APP:${CI_COMMIT_REF_SLUG}"
+  rules:
+    - if: '$RELEASE_NOW == "true"'
+      when: never
+    - if: '$CI_COMMIT_BRANCH == "main"'
+
+wallet-build:
+  extends:
+    - .build
+  variables:
+    APP: wallet
+
+wallet-test:
+  extends:
+    - .test
+  variables:
+    APP: wallet
+
+wallet-package:
+  extends: .package
+  variables:
+    APP: wallet
+
+control-plane-build:
+  extends:
+    - .build
+  variables:
+    APP: control-plane
+
+control-plane-test:
+  extends:
+    - .test
+  variables:
+    APP: control-plane
+
+control-plane-package:
+  extends: .package
+  variables:
+    APP: control-plane
+
+http-data-plane-build:
+  extends:
+    - .build
+  variables:
+    APP: http-data-plane
+
+http-data-plane-test:
+  extends:
+    - .test
+  variables:
+    APP: http-data-plane
+
+http-data-plane-package:
+  extends: .package
+  variables:
+    APP: http-data-plane

@@ -1,5 +1,5 @@
 {
-  "name": "http-data-plane-ui",
+  "name": "@apps/http-data-plane-ui",
   "version": "0.0.0",
   "type": "module",
   "scripts": {
