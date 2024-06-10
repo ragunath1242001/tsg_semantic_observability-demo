@@ -1,7 +1,7 @@
 host: # example.com
 image:
   repository: registry.gitlab.com/tno-tsg/dataspace-protocol/tno-security-gateway/control-plane
-  tag: "{{ .Chart.Version }}"
+  tag: "v{{ .Chart.Version }}"
 replicaCount: 1
 
 ingress:

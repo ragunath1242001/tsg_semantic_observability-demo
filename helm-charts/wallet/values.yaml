@@ -1,6 +1,6 @@
 image:
   repository: registry.gitlab.com/tno-tsg/dataspace-protocol/tno-security-gateway/wallet
-  tag: "{{ .Chart.Version }}"
+  tag: "v{{ .Chart.Version }}"
 replicaCount: 1
 
 ingress:

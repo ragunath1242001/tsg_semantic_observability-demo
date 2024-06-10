@@ -2,7 +2,7 @@ host: http-data-plane-spa.alpha.scsn.dataspac.es
 
 image:
   repository: registry.gitlab.com/tno-tsg/dataspace-protocol/tno-security-gateway/http-data-plane
-  tag: "{{ .Chart.Version }}"
+  tag: "v{{ .Chart.Version }}"
 replicaCount: 1
 
 ingress:
