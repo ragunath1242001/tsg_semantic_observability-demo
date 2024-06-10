@@ -26,4 +26,4 @@ COPY --from=build /prod/wallet-api .
 COPY --from=build /prod/wallet-ui/dist wallet-ui/
 EXPOSE 3000
 ENV EMBEDDED_FRONTEND="/app/wallet-ui"
-CMD ["pnpm", "start:wallet"]
+CMD ["npm", "run", "start"]
