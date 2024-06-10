@@ -1,4 +1,4 @@
-import * as jsonld from 'jsonld';
+import * as jsonld from "jsonld";
 import { JsonLdObj, RemoteDocument } from "jsonld/jsonld-spec";
 
 // TODO: Move towards hosted context on w3id.org or https://github.com/International-Data-Spaces-Association/ids-specification/raw/main/common/schema/context.json
@@ -53,7 +53,9 @@ const context: jsonld.ContextDefinition = {
 };
 
 /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-const nodeDocumentLoader = (jsonld as any).documentLoaders.node();
+const nodeDocumentLoader =
+  (jsonld as any).documentLoaders?.node?.() ||
+  (jsonld as any).documentLoaders?.xhr?.();
 const jsonldOptions: jsonld.Options.DocLoader = {
   async documentLoader(url): Promise<RemoteDocument> {
     if (url === "https://w3id.org/dspace/v0.8/context.json") {
@@ -86,7 +88,9 @@ export async function compact(
   return compacted;
 }
 
-export async function flatten(document: jsonld.JsonLdDocument): Promise<JsonLdObj> {
+export async function flatten(
+  document: jsonld.JsonLdDocument
+): Promise<JsonLdObj> {
   return await jsonld.flatten(document);
 }
 
