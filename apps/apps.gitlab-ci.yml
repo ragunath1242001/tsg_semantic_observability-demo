@@ -64,7 +64,7 @@ variables:
       --build-arg BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
       --build-arg BUILD_SHA=${CI_COMMIT_SHORT_SHA}
       --dockerfile "${CI_PROJECT_DIR}/Dockerfile-$APP"
-      --destination "${CI_REGISTRY_IMAGE}/$APP:${CI_COMMIT_REF_SLUG}"
+      --destination "${CI_REGISTRY_IMAGE}/$APP:${CI_COMMIT_REF_NAME}"
   rules:
     - if: '$RELEASE_NOW == "true"'
       when: never
