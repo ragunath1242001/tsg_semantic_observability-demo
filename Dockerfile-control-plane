@@ -26,4 +26,4 @@ COPY --from=build /prod/control-plane-api .
 COPY --from=build /prod/control-plane-ui/dist control-plane-ui/
 EXPOSE 3000
 ENV EMBEDDED_FRONTEND="/app/control-plane-ui"
-CMD ["pnpm", "start:control-plane"]
+CMD ["npm", "run", "start"]

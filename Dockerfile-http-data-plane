@@ -26,4 +26,4 @@ COPY --from=build /prod/http-data-plane-api .
 COPY --from=build /prod/http-data-plane-ui/dist http-data-plane-ui/
 EXPOSE 3000
 ENV EMBEDDED_FRONTEND="/app/http-data-plane-ui"
-CMD ["pnpm", "start:http-data-plane"]
+CMD ["npm", "run", "start"]
