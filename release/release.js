@@ -85,7 +85,7 @@ for (const folder of helmfolders) {
   });
 }
 
-await readPkgAndWriteVersion("package.json");
+await readPkgAndWriteVersion("package.json", newVersion);
 
 let changelog = `# ${process.env.TITLE} v${newVersion} (${
   new Date().toISOString().split("T")[0]

@@ -1,4 +1,6 @@
-image: registry.gitlab.com/tno-tsg/dataspace-protocol/wallet:main
+image:
+  repository: registry.gitlab.com/tno-tsg/dataspace-protocol/tno-security-gateway/wallet
+  tag: "{{ .Chart.Version }}"
 replicaCount: 1
 
 ingress:
@@ -11,7 +13,7 @@ configFromSecrets: {}
 config:
   server:
     port: 3000
-    listen: '0.0.0.0'
+    listen: "0.0.0.0"
     publicDomain: "{{ .Values.host }}"
     publicAddress: https://{{ .Values.host }}
   db:
@@ -20,7 +22,6 @@ config:
     host: postgresql
     port: 5432
     username: postgres
-
 #   initClients:
 #     - id: admin
 #       secret: test
@@ -37,8 +38,8 @@ config:
 #     - id: key-1
 #       type: ES384
 #       # default: true
-  
-#   initCredentials: []  
+
+#   initCredentials: []
 #     # - id: 5bbfe352-6097-45cc-a305-ea0106bca623
 #     #   context:
 #     #     - https://wallet.alpha.scsn.dataspac.es/context/SCSN
@@ -48,12 +49,11 @@ config:
 #     #     id: did:web:wallet.alpha.scsn.dataspac.es
 #     #     scsnIdentifier: 'urn:scsn:123456789'
 #     #     scsnRole: 'scsn:ServiceProvider'
-  
+
 #   # db:
 #   #   type: sqlite
 #   #   database: wallet.sqlite
-  
-  
+
 #   # mail:
 #   #   enabled: true
 #   #   smtp:
@@ -65,14 +65,14 @@ config:
 #   #     from: noreply@dataspac.es
 #   #   title: SCSN Wallet
 #   #   dataspace: SCSN
-  
+
 #   trustAnchors: []
 #     # - identifier: did:web:wallet.alpha.scsn.dataspac.es
 #     #   credentialTypes:
 #     #     - SCSNCredential
 #     #     - scsn:SCSNCredential
 #     #     - https://wallet.alpha.scsn.dataspac.es/credentials/SCSNCredential
-  
+
 #   contexts: []
 #     # - id: SCSN
 #     #   credentialType: SCSNCredential

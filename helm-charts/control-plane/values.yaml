@@ -1,6 +1,7 @@
 host: # example.com
-
-image: registry.gitlab.com/tno-tsg/dataspace-protocol/control-plane:main
+image:
+  repository: registry.gitlab.com/tno-tsg/dataspace-protocol/tno-security-gateway/control-plane
+  tag: "{{ .Chart.Version }}"
 replicaCount: 1
 
 ingress:
@@ -36,7 +37,7 @@ configFromSecrets: {}
 config:
   server:
     port: 3000
-    listen: '0.0.0.0'
+    listen: "0.0.0.0"
     publicDomain: "{{ .Values.host }}"
     publicAddress: https://{{ .Values.host }}/control-plane
   db:
@@ -45,7 +46,6 @@ config:
     host: # postgresql
     port: 5432
     username: postgres
-
 #   iam:
 #     type: tsg
 #     didId: did:web:{{ .Values.host }}
@@ -57,9 +57,9 @@ config:
 #     credentialId: # did:web:{{ .Values.host }}#00000000-0000-0000-0000-000000000000
 #     validations:
 #     - valid
-  
+
 #   users: []
-  
+
 #   initCatalog:
 #     creator: did:web:{{ .Values.host }}
 #     publisher: did:web:{{ .Values.host }}
