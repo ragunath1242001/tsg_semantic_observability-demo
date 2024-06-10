@@ -1,6 +1,8 @@
 host: http-data-plane-spa.alpha.scsn.dataspac.es
 
-image: registry.gitlab.com/tno-tsg/dataspace-protocol/http-data-plane:main
+image:
+  repository: registry.gitlab.com/tno-tsg/dataspace-protocol/tno-security-gateway/http-data-plane
+  tag: "{{ .Chart.Version }}"
 replicaCount: 1
 
 ingress:
@@ -17,16 +19,16 @@ configFromSecrets: {}
 config:
   server:
     port: 3000
-    listen: '0.0.0.0'
+    listen: "0.0.0.0"
     publicDomain: "{{ .Values.host }}"
     publicAddress: https://{{ .Values.host }}/http-data-plane
-  
+
   # controlPlane:
   #   dataPlaneEndpoint: http://test-control-plane:3000/data-plane
   #   managementEndpoint: http://test-control-plane:3000/management
   #   controlEndpoint: http://test-control-plane:3000
   #   authorization: Basic YWRtaW46YWRtaW4=
-  
+
   # users: []
   #   # - username: admin
   #   #   password: $2a$12$/1aqZWSslSi8E556dpChNOxOyEv3hPA.k8asnRk9iIN2bxH6VGUE6

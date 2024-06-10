@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: wallet
-          image: "{{ .Values.image }}"
+          image: "{{ .Values.image.repository }}:{{ tpl .Values.image.tag . }}"
           imagePullPolicy: Always
           {{- with concat .Values.env (fromYamlArray (list .Values.configFromSecrets "" | include "recurseSecretConfig"))}}
           env: {{ toYaml . | nindent 12 }}
