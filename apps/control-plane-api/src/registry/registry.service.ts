@@ -1,4 +1,4 @@
-import { CredentialAddressDto } from "@libs/control-plane-dtos";
+import { CredentialAddress } from "@libs/control-plane-dtos";
 import {
   HttpStatus,
   Injectable,
@@ -72,7 +72,7 @@ export class RegistryService implements OnApplicationBootstrap {
     );
   }
 
-  async fetchAddresses(): Promise<CredentialAddressDto[]> {
+  async fetchAddresses(): Promise<CredentialAddress[]> {
     const didDocuments = await this.fetchDidDocuments();
     const credentialAddresses = didDocuments.flatMap((didDocument) => {
       return didDocument
@@ -95,9 +95,7 @@ export class RegistryService implements OnApplicationBootstrap {
     );
   }
 
-  async getCatalog(
-    credentialAddress: CredentialAddressDto
-  ): Promise<CatalogDto> {
+  async getCatalog(credentialAddress: CredentialAddress): Promise<CatalogDto> {
     return await this.dsp.requestCatalog(
       normalizeAddress(credentialAddress.address, 0, "catalog", "request"),
       credentialAddress.didId

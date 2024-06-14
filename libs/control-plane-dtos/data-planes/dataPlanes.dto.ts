@@ -1,6 +1,6 @@
 import { DatasetDto } from "@libs/common-dsp";
 
-export interface DataPlaneDto {
+export interface IDataPlaneDto {
   datasets?: DatasetDto[];
   identifier: string;
   dataplaneType: string;
@@ -12,11 +12,11 @@ export interface DataPlaneDto {
   role: "consumer" | "provider" | "both";
 }
 
-export type DataPlaneCreation = Omit<DataPlaneDto, "identifier"> & {
+export type DataPlaneCreation = Omit<IDataPlaneDto, "identifier"> & {
   identifier?: string;
 };
 
-export interface DataPlaneAddressDto {
+export interface DataPlaneAddress {
   endpoint: string;
   properties: { name: string; value: string }[];
 }
@@ -24,7 +24,7 @@ export interface DataPlaneAddressDto {
 export interface DataPlaneRequestResponseDto {
   accepted: boolean;
   identifier: string;
-  dataAddress?: DataPlaneAddressDto;
+  dataAddress?: DataPlaneAddress;
   callbackAddress?: string;
 }
 

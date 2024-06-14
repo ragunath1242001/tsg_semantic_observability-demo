@@ -5,7 +5,7 @@ import { injectStrict } from "../utils/injectTyped";
 import { AxiosKey } from "../utils/symbols";
 import Catalog from "../components/Catalog.vue";
 import { useToast } from "primevue/usetoast";
-import { CredentialAddressDto } from "@libs/control-plane-dtos";
+import { CredentialAddress } from "@libs/control-plane-dtos";
 import OverlayPanel from "primevue/overlaypanel";
 import FormField from "../components/FormField.vue";
 import { storeToRefs } from "pinia";
@@ -21,7 +21,7 @@ const { catalog, urlInput, assigner, didInput } = storeToRefs(
 var dataAvailable = ref(false);
 var loading = ref(false);
 var manual = ref(true);
-var selection = ref<CredentialAddressDto>(null);
+var selection = ref<CredentialAddress>(null);
 
 const http = injectStrict(AxiosKey);
 

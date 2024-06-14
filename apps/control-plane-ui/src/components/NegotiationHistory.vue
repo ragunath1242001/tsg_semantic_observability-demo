@@ -3,7 +3,7 @@ import utils from "../utils/common";
 
 import {
   NegotiationDetailDto,
-  NegotiationStatusDto,
+  INegotiationStatusDto,
 } from "@libs/control-plane-dtos";
 import { ref, toRef } from "vue";
 import { AccordionTabOpenEvent } from "primevue/accordion";
@@ -13,7 +13,7 @@ import { DatasetDto } from "@libs/common-dsp";
 import MonacoEditor from "./MonacoEditor.vue";
 
 const props = defineProps<{
-  negotiations: NegotiationStatusDto[];
+  negotiations: INegotiationStatusDto[];
 }>();
 
 const negotiations = toRef(props, "negotiations");

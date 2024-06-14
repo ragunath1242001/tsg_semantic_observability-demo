@@ -1,17 +1,17 @@
 <script setup lang="ts">
-import { NegotiationStatusDto } from "@libs/control-plane-dtos";
+import { INegotiationStatusDto } from "@libs/control-plane-dtos";
 import { useToast } from "primevue/usetoast";
 import utils from "../utils/common";
 import http from "../utils/http";
 
 const props = defineProps<{
-  negotiation: NegotiationStatusDto;
+  negotiation: INegotiationStatusDto;
   endState: "verify" | "finalize";
 }>();
 
 const toast = useToast();
 
-const proceedNegotiation = async (negotiation: NegotiationStatusDto) => {
+const proceedNegotiation = async (negotiation: INegotiationStatusDto) => {
   try {
     await http.post(
       `management/negotiations/${negotiation.localId}/${props.endState}`

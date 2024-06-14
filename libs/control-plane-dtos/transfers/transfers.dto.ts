@@ -7,7 +7,7 @@ import {
 } from "@libs/common-dsp";
 
 export type TransferRole = "provider" | "consumer";
-export interface TransferStatusDto {
+export interface TransferStatus {
   localId: string;
   remoteId?: string;
   role: TransferRole;
@@ -29,7 +29,7 @@ export interface TransferEventDto {
   type: "local" | "remote";
 }
 
-export interface TransferDetailDto extends TransferStatusDto {
+export interface TransferDetailDto extends TransferStatus {
   dataAddress?: DataAddressDto;
   dataPlaneTransfer: DataPlaneTransferDto;
   events: TransferEventDto[];

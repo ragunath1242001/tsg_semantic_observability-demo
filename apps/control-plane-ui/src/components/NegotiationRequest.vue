@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {
   NegotiationDetailDto,
-  NegotiationStatusDto,
+  INegotiationStatusDto,
 } from "@libs/control-plane-dtos";
 import { useToast } from "primevue/usetoast";
 import { ref } from "vue";
@@ -9,7 +9,7 @@ import utils from "../utils/common";
 import http from "../utils/http";
 
 const props = defineProps<{
-  negotiation: NegotiationStatusDto;
+  negotiation: INegotiationStatusDto;
 }>();
 const display = ref(false);
 

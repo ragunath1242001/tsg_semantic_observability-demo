@@ -1,7 +1,4 @@
-import {
-  DataPlaneAddressDto,
-  TransferStatusDto,
-} from "@libs/control-plane-dtos";
+import { DataPlaneAddress, TransferStatus } from "@libs/control-plane-dtos";
 import {
   Body,
   Controller,
@@ -19,7 +16,24 @@ import { OAuthGuard } from "../../auth/oauth.guard";
 import { Roles } from "../../auth/roles.guard";
 import { normalizeAddress } from "../../utils/address";
 import { TransferService } from "./transfer.service";
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBody,
+  ApiParam,
+  ApiQuery,
+  ApiOAuth2,
+} from "@nestjs/swagger";
+import {
+  DataPlaneAddressSchema,
+  TransferDetailSchema,
+  TransferProcessSchema,
+  TransferStatusDto,
+} from "./transfer.schemas";
 
+@ApiTags("Transfers Management")
+@ApiOAuth2(["controlplane_admin", "controlplane_dataplane"])
 @UseGuards(OAuthGuard)
 @Roles(["controlplane_admin", "controlplane_dataplane"])
 @Controller("management/transfers")
@@ -28,7 +42,9 @@ export class TransferManagementController {
   private readonly logger = new Logger(this.constructor.name);
 
   @Get()
-  async getTransfers(): Promise<TransferStatusDto[]> {
+  @ApiOperation({ summary: "Get all transfers" })
+  @ApiResponse({ status: HttpStatus.OK, type: [TransferStatusDto] })
+  async getTransfers(): Promise<TransferStatus[]> {
     const transfers = await this.transferService.getTransfers();
     return Promise.all(
       transfers.map(async (transfer) => {
@@ -42,6 +58,9 @@ export class TransferManagementController {
   }
 
   @Get(":processId")
+  @ApiOperation({ summary: "Get transfer details by process ID" })
+  @ApiParam({ name: "processId", required: true, description: "Process ID" })
+  @ApiResponse({ status: HttpStatus.OK, type: TransferDetailSchema })
   async getTransfer(
     @Param("processId") processId: string
   ): Promise<TransferDetail> {
@@ -51,6 +70,20 @@ export class TransferManagementController {
 
   @Post("request")
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: "Request a new transfer" })
+  @ApiQuery({
+    name: "address",
+    required: true,
+    description: "Control plane address",
+  })
+  @ApiQuery({
+    name: "agreementId",
+    required: true,
+    description: "Agreement ID",
+  })
+  @ApiQuery({ name: "format", required: true, description: "Format" })
+  @ApiQuery({ name: "audience", required: true, description: "Audience" })
+  @ApiResponse({ type: TransferProcessSchema })
   async requestTransfer(
     @Query("address") address: string,
     @Query("agreementId") agreementId: string,
@@ -78,9 +111,17 @@ export class TransferManagementController {
 
   @Post(":processId/start")
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: "Start a transfer process" })
+  @ApiParam({ name: "processId", required: true, description: "Process ID" })
+  @ApiBody({ type: DataPlaneAddressSchema, required: false })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: "Transfer started successfully",
+    schema: { example: { status: "success" } },
+  })
   async startTransfer(
     @Param("processId") processId: string,
-    @Body() body?: DataPlaneAddressDto
+    @Body() body?: DataPlaneAddress
   ): Promise<{ status: string }> {
     // TODO: Validate body
     this.logger.log(
@@ -93,6 +134,13 @@ export class TransferManagementController {
 
   @Post(":processId/complete")
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: "Complete a transfer process" })
+  @ApiParam({ name: "processId", required: true, description: "Process ID" })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: "Transfer completed successfully",
+    schema: { example: { status: "success" } },
+  })
   async completeTransfer(
     @Param("processId") processId: string
   ): Promise<{ status: string }> {
@@ -102,6 +150,18 @@ export class TransferManagementController {
 
   @Post(":processId/terminate")
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: "Terminate a transfer process" })
+  @ApiParam({ name: "processId", required: true, description: "Process ID" })
+  @ApiBody({
+    schema: {
+      example: { code: "TERMINATION_CODE", reason: "Reason for termination" },
+    },
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: "Transfer terminated successfully",
+    schema: { example: { status: "success" } },
+  })
   async terminateTransfer(
     @Param("processId") processId: string,
     @Body() body: { code: string; reason: string }
@@ -120,6 +180,14 @@ export class TransferManagementController {
 
   @Post(":processId/suspend")
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: "Suspend a transfer process" })
+  @ApiParam({ name: "processId", required: true, description: "Process ID" })
+  @ApiBody({ schema: { example: { reason: "Reason for suspension" } } })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: "Transfer suspended successfully",
+    schema: { example: { status: "success" } },
+  })
   async suspendTransfer(
     @Param("processId") processId: string,
     @Body() body: { reason: string }

@@ -1,4 +1,4 @@
-import { NegotiationStatusDto } from "@libs/control-plane-dtos";
+import { INegotiationStatusDto } from "@libs/control-plane-dtos";
 import {
   Body,
   Controller,
@@ -23,20 +23,56 @@ import { Roles } from "../../auth/roles.guard";
 import { normalizeAddress } from "../../utils/address";
 import { DeserializePipe } from "../../utils/deserialize.pipe";
 import { NegotiationService } from "./negotiation.service";
+import {
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+  ApiBody,
+  ApiParam,
+  ApiQuery,
+  ApiOkResponse,
+  ApiOAuth2,
+} from "@nestjs/swagger";
+import {
+  ContractAgreementMessageSchema,
+  ContractNegotiationSchema,
+  NegotiationDetailSchema,
+  NegotiationStatusDto,
+  OfferSchema,
+} from "./negotiation.schema";
 
+@ApiTags("Negotiations Management")
 @UseGuards(OAuthGuard)
 @Roles(["controlplane_admin", "controlplane_dataplane"])
+@ApiOAuth2(["controlplane_admin", "controlplane_dataplane"])
 @Controller("management/negotiations")
 export class NegotiationManagementController {
   constructor(private readonly negotiationService: NegotiationService) {}
   private readonly logger = new Logger(this.constructor.name);
 
   @Get()
-  async getNegotiations(): Promise<NegotiationStatusDto[]> {
+  @ApiOperation({ summary: "Get all negotiations" })
+  @ApiResponse({
+    status: 200,
+    description: "Successfully fetched negotiations",
+    type: [NegotiationStatusDto],
+  })
+  async getNegotiations(): Promise<INegotiationStatusDto[]> {
     return this.negotiationService.getNegotiations();
   }
 
   @Get(":processId")
+  @ApiOperation({ summary: "Get a negotiation by process ID" })
+  @ApiParam({
+    name: "processId",
+    description: "Process ID of the negotiation",
+    required: true,
+  })
+  @ApiResponse({
+    status: 200,
+    description: "Successfully fetched negotiation",
+    type: NegotiationDetailSchema,
+  })
   async getNegotiation(
     @Param("processId") processId: string
   ): Promise<NegotiationDetail> {
@@ -45,6 +81,13 @@ export class NegotiationManagementController {
   }
 
   @Get("agreement/:agreementId")
+  @ApiOperation({ summary: "Get an agreement by agreement ID" })
+  @ApiParam({
+    name: "agreementId",
+    description: "Agreement ID",
+    required: true,
+  })
+  @ApiOkResponse({ type: ContractAgreementMessageSchema })
   async getAgreement(
     @Param("agreementId") agreementId: string
   ): Promise<AgreementDto> {
@@ -55,6 +98,24 @@ export class NegotiationManagementController {
 
   @Post("request")
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: "Request a new negotiation" })
+  @ApiBody({ description: "Offer details", type: OfferSchema })
+  @ApiQuery({
+    name: "dataSet",
+    description: "Dataset for the negotiation",
+    required: true,
+  })
+  @ApiQuery({
+    name: "address",
+    description: "Address for the negotiation",
+    required: true,
+  })
+  @ApiQuery({
+    name: "audience",
+    description: "Audience for the negotiation",
+    required: true,
+  })
+  @ApiOkResponse({ type: ContractNegotiationSchema })
   async requestNewNegotiation(
     @Body(new DeserializePipe(Offer)) body: Offer,
     @Query("dataSet") dataSet: string,
@@ -87,6 +148,14 @@ export class NegotiationManagementController {
 
   @Post(":processId/request")
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: "Request an existing negotiation" })
+  @ApiBody({ description: "Offer details", type: OfferSchema })
+  @ApiParam({
+    name: "processId",
+    description: "Process ID of the negotiation",
+    required: true,
+  })
+  @ApiOkResponse({ type: ContractNegotiationSchema })
   async requestExistingNegotiation(
     @Body(new DeserializePipe(Offer)) body: Offer,
     @Param("processId") processId: string
@@ -109,6 +178,19 @@ export class NegotiationManagementController {
 
   @Post(":processId/offer")
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: "Submit an offer for an existing negotiation" })
+  @ApiBody({ description: "Offer details", type: OfferSchema })
+  @ApiParam({
+    name: "processId",
+    description: "Process ID of the negotiation",
+    required: true,
+  })
+  @ApiQuery({
+    name: "address",
+    description: "Address for the negotiation",
+    required: false,
+  })
+  @ApiOkResponse({ schema: { example: { status: "string" } } })
   async offer(
     @Body(new DeserializePipe(Offer)) body: Offer,
     @Param("processId") processId: string,
@@ -132,6 +214,13 @@ export class NegotiationManagementController {
 
   @Post(":processId/agreement")
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: "Agree to a negotiation" })
+  @ApiParam({
+    name: "processId",
+    description: "Process ID of the negotiation",
+    required: true,
+  })
+  @ApiOkResponse({ schema: { example: { status: "string" } } })
   async agree(
     @Param("processId") processId: string
   ): Promise<{ status: string }> {
@@ -142,6 +231,13 @@ export class NegotiationManagementController {
 
   @Post(":processId/verify")
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: "Verify a negotiation agreement" })
+  @ApiParam({
+    name: "processId",
+    description: "Process ID of the negotiation",
+    required: true,
+  })
+  @ApiOkResponse({ schema: { example: { status: "string" } } })
   async verify(
     @Param("processId") processId: string
   ): Promise<{ status: string }> {
@@ -154,6 +250,13 @@ export class NegotiationManagementController {
 
   @Post(":processId/finalize")
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: "Finalize a negotiation" })
+  @ApiParam({
+    name: "processId",
+    description: "Process ID of the negotiation",
+    required: true,
+  })
+  @ApiOkResponse({ schema: { example: { status: "string" } } })
   async finalize(
     @Param("processId") processId: string
   ): Promise<{ status: string }> {
@@ -166,6 +269,17 @@ export class NegotiationManagementController {
 
   @Post(":processId/terminate")
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: "Terminate a negotiation" })
+  @ApiParam({
+    name: "processId",
+    description: "Process ID of the negotiation",
+    required: true,
+  })
+  @ApiBody({
+    description: "Termination details",
+    schema: { example: { code: "string", reason: "string" } },
+  })
+  @ApiOkResponse({ schema: { example: { status: "string" } } })
   async terminate(
     @Param("processId") processId: string,
     @Body() body: { code: string; reason: string }
