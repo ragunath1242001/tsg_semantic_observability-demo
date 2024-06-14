@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { CredentialAddressDto } from "@libs/control-plane-dtos";
+import { CredentialAddress } from "@libs/control-plane-dtos";
 import { CatalogDto, DatasetDto } from "@libs/common-dsp";
 import { useToast } from "primevue/usetoast";
 import { onMounted, ref } from "vue";
@@ -14,7 +14,7 @@ import utils from "../utils/common";
 
 var catalog = ref<CatalogDto>();
 var addresses = ref<string[]>();
-var selection = ref<CredentialAddressDto>(null);
+var selection = ref<CredentialAddress>(null);
 var assigner = ref("");
 
 const catalogs = ref<CatalogDto[]>();

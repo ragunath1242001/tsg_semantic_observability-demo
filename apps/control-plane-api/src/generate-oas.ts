@@ -16,7 +16,7 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle("TSG Control Plane")
     .setDescription(
-      `I have to come up with a good description    __*Note*__: This OpenAPI definition is not intended to be directly linked with a single Control Plane instance. `
+      `This OpenAPI specification shows the endpoints of the Control Plane. Most of the endpoints are related to the Dataspace Protocol, as specified by the Eclipse Working Group Dataspaces. Other endpoints are supportive endpoints to make sure the data can be added to the catalog, and to make sure that UI interactions can take place.  __*Note*__: This OpenAPI definition is not intended to be directly linked with a single Control Plane instance. `
     )
     .setLicense(
       "Apache 2.0",
@@ -24,13 +24,22 @@ async function bootstrap() {
     )
     .setExternalDoc(
       "Git Repository",
-      "https://gitlab.com/tno-tsg/dataspace-protocol/control-plane"
+      "https://gitlab.com/tno-tsg/dataspace-protocol/tno-security-gateway"
     )
     .setVersion("1.0")
-    .addTag("Health", "Health controller")
-    .addTag("Settings", "Settings controller")
+    .addTag("Health", "Health Controller")
+    .addTag("Settings", "Settings Controller")
     .addTag("Authentication", "Authentication Controller")
-    .addTag("Data Plane", "Dataplane controller")
+    .addTag("Data Plane", "Data Plane Management Controller")
+    .addTag("Data Plane Management", "Data Plane Management Controller")
+    .addTag("Catalog", "Catalog Controller")
+    .addTag("Catalog Management", "Catalog Management Controller")
+    .addTag("Negotiations", "Negotiations Controller")
+    .addTag("Negotiations Management", "Negotiations Management Controller")
+    .addTag("Transfers", "Transfers Controller")
+    .addTag("Transfers Management", "Transfers Management Controller")
+    .addTag("Registry", "Registry Controller")
+    .addTag("Registry Management", "Registry Management Controller")
     .addOAuth2({
       type: "oauth2",
       flows: {
@@ -42,11 +51,21 @@ async function bootstrap() {
         },
       },
     })
+    .addBearerAuth({
+      type: "http",
+      scheme: "bearer",
+      bearerFormat: "VP",
+      description:
+        "Verifiable Presentation needed to communicate between two instances of the control plane.",
+    })
 
     .build();
   const document = SwaggerModule.createDocument(app, config);
 
-  await fs.writeFile("../../docs/openapi.yaml", stringify(document));
+  await fs.writeFile(
+    "../../docs/apps/control-plane/openapi.yaml",
+    stringify(document)
+  );
   process.exit();
 }
 

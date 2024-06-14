@@ -1,4 +1,4 @@
-import { DataPlaneCreation, DataPlaneDto } from "@libs/control-plane-dtos";
+import { DataPlaneCreation, IDataPlaneDto } from "@libs/control-plane-dtos";
 import {
   Body,
   Controller,
@@ -15,19 +15,40 @@ import { Roles } from "../auth/roles.guard";
 import { DeserializePipe } from "../utils/deserialize.pipe";
 import { DSPError } from "../utils/errors/error";
 import { DataPlaneService } from "./dataPlane.service";
+import {
+  ApiOAuth2,
+  ApiOperation,
+  ApiTags,
+  ApiOkResponse,
+  ApiBadRequestResponse,
+  ApiBody,
+} from "@nestjs/swagger";
+import { DataPlaneCreationDto, DataPlaneDto } from "./dataplane.schemas";
+import { ApiForbiddenResponseDefault } from "../utils/swagger";
+import { CatalogSchema } from "../dsp/catalog/catalog.schema";
 
 @UseGuards(OAuthGuard)
 @Roles(["controlplane_admin", "controlplane_dataplane"])
 @Controller("data-plane")
+@ApiTags("Data Plane")
+@ApiOAuth2(["controlplane_admin", "controlplane_dataplane"])
 export class DataPlaneController {
   private readonly logger = new Logger(this.constructor.name);
   constructor(private readonly dataPlaneService: DataPlaneService) {}
 
   @Post("/init")
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: "Initialize data plane",
+    description: "Initializes a new data plane with the provided details.",
+  })
+  @ApiBody({ type: DataPlaneCreationDto })
+  @ApiOkResponse({ type: DataPlaneDto })
+  @ApiBadRequestResponse({ description: "Invalid data plane details provided" })
+  @ApiForbiddenResponseDefault()
   async init(
     @Body() dataPlaneDetails: DataPlaneCreation
-  ): Promise<DataPlaneDto> {
+  ): Promise<IDataPlaneDto> {
     this.logger.log(
       `Received init from data plane: ${JSON.stringify(dataPlaneDetails)}`
     );
@@ -36,10 +57,18 @@ export class DataPlaneController {
 
   @Post("/:id/update")
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: "Update data plane",
+    description: "Updates the details of an existing data plane.",
+  })
+  @ApiBody({ type: DataPlaneDto })
+  @ApiOkResponse({ type: DataPlaneDto })
+  @ApiBadRequestResponse({ description: "Identifier mismatch or invalid data" })
+  @ApiForbiddenResponseDefault()
   async update(
     @Param("id") id: string,
-    @Body() dataPlaneDetails: DataPlaneDto
-  ): Promise<DataPlaneDto> {
+    @Body() dataPlaneDetails: IDataPlaneDto
+  ): Promise<IDataPlaneDto> {
     this.logger.log(
       `Received update from data plane ${id}: ${JSON.stringify(
         dataPlaneDetails
@@ -56,6 +85,14 @@ export class DataPlaneController {
 
   @Post("/:id/catalog")
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: "Update catalog",
+    description: "Updates the catalog for the specified data plane.",
+  })
+  @ApiBody({ type: CatalogSchema })
+  @ApiOkResponse({ type: CatalogSchema })
+  @ApiBadRequestResponse({ description: "Invalid catalog data" })
+  @ApiForbiddenResponseDefault()
   async updateCatalog(
     @Param("id") id: string,
     @Body(new DeserializePipe(Catalog)) catalog: Catalog

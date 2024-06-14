@@ -1,4 +1,4 @@
-export interface CredentialAddressDto {
+export interface CredentialAddress {
   didId: string;
   address: string;
 }

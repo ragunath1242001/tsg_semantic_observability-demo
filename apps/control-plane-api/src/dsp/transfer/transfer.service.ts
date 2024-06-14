@@ -1,4 +1,4 @@
-import { DataPlaneAddressDto, TransferRole } from "@libs/control-plane-dtos";
+import { DataPlaneAddress, TransferRole } from "@libs/control-plane-dtos";
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import {
@@ -285,7 +285,7 @@ export class TransferService {
 
   async start(
     processId: string,
-    dataPlaneAddress: DataPlaneAddressDto | undefined,
+    dataPlaneAddress: DataPlaneAddress | undefined,
     fromDataPlane: boolean
   ): Promise<{ status: string }> {
     const transfer = await this.getTransfer(processId);

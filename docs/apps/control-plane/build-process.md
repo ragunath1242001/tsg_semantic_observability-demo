@@ -17,31 +17,23 @@ For development, everything is setup to be used with vscode. This means tests wi
 To run the frontend and backend in watch mode use the following command:
 
 ```
-pnpm run dev:backend
+pnpm run dev:control-plane-api
 ```
 
 and
 
 ```
-pnpm run dev:frontend
+pnpm run dev:control-plane-ui
 ```
-
-Another option is to run them in parallel by running:
-
-```
-pnpm run dev --parallel
-```
-
-However, in that case you do not get the logs from both applications and some information might be missing from the logs.
 
 If you want to test interactions between control planes excecute the following commands to generate a second instance:
 
 ```
-CONFIG_PATH=$(pwd)/apps/backend/config_local.yaml pnpm dev:backend
+CONFIG_PATH=$(pwd)/apps/control-plane-api/config_local.yaml pnpm dev:control-plane-api
 ```
 
 ```
-BACKEND=http://localhost:3002 pnpm dev:frontend
+BACKEND=http://localhost:3002 pnpm dev:control-plane-ui
 ```
 
 ## Docker

@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { TransferStatusDto } from "@libs/control-plane-dtos";
+import { TransferStatus } from "@libs/control-plane-dtos";
 import TransferProceed from "./TransferProceed.vue";
 import { toRef } from "vue";
 
 const props = defineProps<{
-  transfers: TransferStatusDto[];
+  transfers: TransferStatus[];
 }>();
 
 const transfers = toRef(props, "transfers");

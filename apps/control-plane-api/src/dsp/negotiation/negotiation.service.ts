@@ -1,4 +1,4 @@
-import { NegotiationStatusDto } from "@libs/control-plane-dtos";
+import { INegotiationStatusDto } from "@libs/control-plane-dtos";
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import {
@@ -130,7 +130,7 @@ export class NegotiationService {
     }
   }
 
-  async getNegotiations(): Promise<NegotiationStatusDto[]> {
+  async getNegotiations(): Promise<INegotiationStatusDto[]> {
     const negotiations = await this.negotiationDetailRepository.find({
       select: {
         localId: true,

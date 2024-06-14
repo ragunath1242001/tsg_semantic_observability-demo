@@ -10,10 +10,10 @@
     "dev": "pnpm watch",
     "build": "tsc -p tsconfig.json",
     "lint": "eslint . --fix --ext .ts",
-    "openapi": "npm run tsc && node ./dist/swagger.js",
     "schema:dsp": "typescript-json-schema \"src/model/dsp/**/*.dto.ts\" \"*\" -o resources/schemas/dsp.schema.json",
     "schema:data-planes": "typescript-json-schema \"src/model/data-planes/**/*.dto.ts\" \"*\" -o resources/schemas/data-planes.schema.json",
     "schema:all": "npm run schema:dsp && npm run schema:data-planes",
+    "swagger": "tsc -p tsconfig.json && node dist/generate-oas.js",
     "jest": "jest",
     "jest:coverage": "jest --coverage --coverage-reporters text",
     "jest:ci": "jest --coverage --coverage-reporters cobertura --coverage-reporters text --ci --reporters=default --reporters=jest-junit"

@@ -1,6 +1,6 @@
 import {
   DataPlaneCreation,
-  DataPlaneDto,
+  IDataPlaneDto,
   DataPlaneRequestResponseDto,
   DataPlaneTransferDto,
 } from "@libs/control-plane-dtos";
@@ -112,7 +112,7 @@ export class DataPlaneService {
 
   async addDataPlane(
     dataPlaneCreation: DataPlaneCreation
-  ): Promise<DataPlaneDto> {
+  ): Promise<IDataPlaneDto> {
     const dataPlane: DataPlane = {
       datasets: dataPlaneCreation.datasets
         ? await Promise.all(
@@ -151,7 +151,9 @@ export class DataPlaneService {
     };
   }
 
-  async updateDataPlane(dataPlaneDetails: DataPlaneDto): Promise<DataPlaneDto> {
+  async updateDataPlane(
+    dataPlaneDetails: IDataPlaneDto
+  ): Promise<IDataPlaneDto> {
     const dataPlane = await this.getDataPlaneDetails(
       dataPlaneDetails.identifier
     );

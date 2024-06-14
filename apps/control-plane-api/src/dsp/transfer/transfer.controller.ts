@@ -18,7 +18,26 @@ import { VerifiablePresentationGuard } from "../../auth/verifiablePresentation.g
 import { VPId } from "../../auth/verifiablePresentation.strategy";
 import { DeserializePipe } from "../../utils/deserialize.pipe";
 import { TransferService } from "./transfer.service";
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBody,
+  ApiParam,
+  ApiBearerAuth,
+  ApiCreatedResponse,
+} from "@nestjs/swagger";
+import {
+  TransferRequestMessageSchema,
+  TransferProcessSchema,
+  TransferCompletionMessageSchema,
+  TransferStartMessageSchema,
+  TransferSuspensionMessageSchema,
+  TransferTerminationMessageSchema,
+} from "./transfer.schemas";
 
+@ApiTags("Transfers")
+@ApiBearerAuth()
 @UseGuards(VerifiablePresentationGuard)
 @Controller("transfers")
 export class TransferController {
@@ -27,6 +46,9 @@ export class TransferController {
 
   @Post("request")
   @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: "Request a transfer" })
+  @ApiBody({ type: TransferRequestMessageSchema })
+  @ApiCreatedResponse({ type: TransferProcessSchema })
   async request(
     @Body(new DeserializePipe(TransferRequestMessage))
     body: TransferRequestMessage,
@@ -41,6 +63,9 @@ export class TransferController {
 
   @Get(":id")
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: "Get transfer status by ID" })
+  @ApiParam({ name: "id", required: true, description: "Transfer ID" })
+  @ApiResponse({ type: TransferProcessSchema })
   async getTransfer(
     @Param("id") id: string,
     @VPId() vpId: string
@@ -52,6 +77,14 @@ export class TransferController {
 
   @Post(":id/start")
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: "Start transfer process" })
+  @ApiParam({ name: "id", required: true, description: "Transfer ID" })
+  @ApiBody({ type: TransferStartMessageSchema })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: "Transfer started successfully",
+    schema: { example: { status: "success" } },
+  })
   async startTransferProcess(
     @Param("id") id: string,
     @Body(new DeserializePipe(TransferStartMessage)) body: TransferStartMessage,
@@ -65,6 +98,14 @@ export class TransferController {
 
   @Post(":id/complete")
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: "Complete transfer process" })
+  @ApiParam({ name: "id", required: true, description: "Transfer ID" })
+  @ApiBody({ type: TransferCompletionMessageSchema })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: "Transfer completed successfully",
+    schema: { example: { status: "success" } },
+  })
   async completeTransferProcess(
     @Param("id") id: string,
     @Body(new DeserializePipe(TransferCompletionMessage))
@@ -81,6 +122,14 @@ export class TransferController {
 
   @Post(":id/terminate")
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: "Terminate transfer process" })
+  @ApiParam({ name: "id", required: true, description: "Transfer ID" })
+  @ApiBody({ type: TransferTerminationMessageSchema })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: "Transfer terminated successfully",
+    schema: { example: { status: "success" } },
+  })
   async terminateTransferProcess(
     @Param("id") id: string,
     @Body(new DeserializePipe(TransferTerminationMessage))
@@ -97,6 +146,14 @@ export class TransferController {
 
   @Post(":id/suspend")
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: "Suspend transfer process" })
+  @ApiParam({ name: "id", required: true, description: "Transfer ID" })
+  @ApiBody({ type: TransferSuspensionMessageSchema })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: "Transfer suspended successfully",
+    schema: { example: { status: "success" } },
+  })
   async suspendTransferProcess(
     @Param("id") id: string,
     @Body(new DeserializePipe(TransferSuspensionMessage))
@@ -113,6 +170,14 @@ export class TransferController {
 
   @Post("/callbacks/:id/start")
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: "Callback to start transfer process" })
+  @ApiParam({ name: "id", required: true, description: "Transfer ID" })
+  @ApiBody({ type: TransferStartMessageSchema })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: "Callback started transfer successfully",
+    schema: { example: { status: "success" } },
+  })
   async callbackStartTransferProcess(
     @Param("id") id: string,
     @Body(new DeserializePipe(TransferStartMessage)) body: TransferStartMessage,
@@ -128,6 +193,14 @@ export class TransferController {
 
   @Post("/callbacks/:id/complete")
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: "Callback to complete transfer process" })
+  @ApiParam({ name: "id", required: true, description: "Transfer ID" })
+  @ApiBody({ type: TransferCompletionMessageSchema })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: "Callback completed transfer successfully",
+    schema: { example: { status: "success" } },
+  })
   async callbackCompleteTransferProcess(
     @Param("id") id: string,
     @Body(new DeserializePipe(TransferCompletionMessage))
@@ -144,6 +217,14 @@ export class TransferController {
 
   @Post("/callbacks/:id/terminate")
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: "Callback to terminate transfer process" })
+  @ApiParam({ name: "id", required: true, description: "Transfer ID" })
+  @ApiBody({ type: TransferTerminationMessageSchema })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: "Callback terminated transfer successfully",
+    schema: { example: { status: "success" } },
+  })
   async callbackTerminateTransferProcess(
     @Param("id") id: string,
     @Body(new DeserializePipe(TransferTerminationMessage))
@@ -160,6 +241,14 @@ export class TransferController {
 
   @Post("/callbacks/:id/suspend")
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: "Callback to suspend transfer process" })
+  @ApiParam({ name: "id", required: true, description: "Transfer ID" })
+  @ApiBody({ type: TransferSuspensionMessageSchema })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: "Callback suspended transfer successfully",
+    schema: { example: { status: "success" } },
+  })
   async callbackSuspendTransferProcess(
     @Param("id") id: string,
     @Body(new DeserializePipe(TransferSuspensionMessage))

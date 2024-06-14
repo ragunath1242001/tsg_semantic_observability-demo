@@ -1,4 +1,4 @@
-import { CredentialAddressDto } from "@libs/control-plane-dtos";
+import { CredentialAddress } from "@libs/control-plane-dtos";
 import { HttpStatus, Injectable, Logger, Optional } from "@nestjs/common";
 import { CatalogDto } from "@libs/common-dsp";
 import axios from "axios";
@@ -35,7 +35,7 @@ export class RegistryClientService {
     };
   }
 
-  async requestAddresses(): Promise<CredentialAddressDto[]> {
+  async requestAddresses(): Promise<CredentialAddress[]> {
     this.checkRegistryConfigUrl();
     try {
       const headers = await this.axiosHeaders();

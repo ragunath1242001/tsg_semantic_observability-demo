@@ -19,7 +19,7 @@ export interface NegotiationProcessEventDto {
   type: "local" | "remote";
 }
 
-export interface NegotiationStatusDto {
+export interface INegotiationStatusDto {
   localId: string;
   remoteId: string;
   remoteParty: string;
@@ -30,7 +30,7 @@ export interface NegotiationStatusDto {
   modifiedDate: Date;
 }
 
-export interface NegotiationDetailDto extends NegotiationStatusDto {
+export interface NegotiationDetailDto extends INegotiationStatusDto {
   offer: OfferDto;
   agreement: AgreementDto;
   events: Array<NegotiationProcessEventDto>;

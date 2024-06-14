@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import utils from "../utils/common";
 
-import { TransferDetailDto, TransferStatusDto } from "@libs/control-plane-dtos";
+import { TransferDetailDto, TransferStatus } from "@libs/control-plane-dtos";
 import { ref, toRef } from "vue";
 import { AccordionTabOpenEvent } from "primevue/accordion";
 import { useToast } from "primevue/usetoast";
 import http from "../utils/http";
 
 const props = defineProps<{
-  transfers: TransferStatusDto[];
+  transfers: TransferStatus[];
 }>();
 
 const transfers = toRef(props, "transfers");

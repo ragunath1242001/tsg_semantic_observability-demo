@@ -2,9 +2,9 @@ import { defineStore } from "pinia";
 import { socket } from "../socket";
 import {
   NegotiationDetailDto,
-  NegotiationStatusDto,
+  INegotiationStatusDto,
   TransferDetailDto,
-  TransferStatusDto,
+  TransferStatus,
 } from "@libs/control-plane-dtos";
 import http from "../utils/http";
 import { CatalogDto } from "@libs/common-dsp";
@@ -18,9 +18,9 @@ interface Catalog {
 
 interface IDspStore {
   ownCatalog: Catalog;
-  negotiations: NegotiationStatusDto[];
+  negotiations: INegotiationStatusDto[];
   ctaNegotiations: NegotiationDetailDto[];
-  transfers: TransferStatusDto[];
+  transfers: TransferStatus[];
   ctaTransfers: TransferDetailDto[];
 }
 
@@ -29,7 +29,7 @@ const getNegotiations = async () => {
     const response = await http.get("management/negotiations/");
     const negotiations = response.data;
     const ctaNegotiations = response.data.filter(
-      (negotiation: NegotiationStatusDto) =>
+      (negotiation: INegotiationStatusDto) =>
         (negotiation.role == "provider" &&
           negotiation.state == "dspace:REQUESTED") ||
         (negotiation.role == "consumer" &&
@@ -56,7 +56,7 @@ const getTransfers = async () => {
     const response = await http.get("management/transfers");
     const transfers = response.data;
     const ctaTransfers = response.data.filter(
-      (transfer: TransferStatusDto) =>
+      (transfer: TransferStatus) =>
         (transfer.role == "provider" && transfer.state == "dspace:REQUESTED") ||
         transfer.state == "dspace:STARTED" ||
         transfer.state == "dspace:SUSPENDED"
