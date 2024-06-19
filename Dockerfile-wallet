@@ -9,6 +9,7 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY apps/wallet-api/package.json apps/wallet-api/
 COPY apps/wallet-ui/package.json apps/wallet-ui/
 COPY libs/common-dsp/package.json libs/common-dsp/
+COPY libs/common-ui/package.json libs/common-ui/
 COPY libs/wallet-dtos/package.json libs/wallet-dtos/
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 

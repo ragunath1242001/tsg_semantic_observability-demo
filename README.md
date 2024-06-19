@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![TNO logo](libs/common-ui/public/layout/images/logo-dark.svg)
+![TNO logo](apps/control-plane-ui/public/layout/images/logo-dark.svg)
 
 </div>
 
