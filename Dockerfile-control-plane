@@ -14,7 +14,7 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
 COPY apps apps
 COPY libs libs 
-RUN pnpm run --filter "common*" --parallel -r build 
+RUN pnpm run --filter "./libs/common*" --parallel -r build 
 RUN pnpm run --filter "./libs/control-plane*" --parallel -r build
 RUN pnpm run --filter "./apps/control-plane*" --parallel -r build 
 RUN pnpm deploy --filter control-plane-api --prod /prod/control-plane-api

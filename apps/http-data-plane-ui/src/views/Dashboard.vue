@@ -4,10 +4,11 @@ import { axiosInstance } from "../store/index.js";
 import { useToast } from "primevue/usetoast";
 import { useConfirm } from "primevue/useconfirm";
 import { DataPlaneStateDto, TransferDto } from "@libs/http-data-plane-dtos";
-import FormField from "../components/FormField.vue";
+import FormField from "@libs/common-ui/components/FormField.vue";
 import { formatDate } from "../utils/date";
 import { store } from "../store/index.js";
 import PaginatedLogTable from "../components/PaginatedLogTable.vue";
+import router from "../router";
 
 const toast = useToast();
 const confirm = useConfirm();
@@ -280,7 +281,7 @@ onMounted(async () => {
                 aria-label="Execute"
                 @click="
                   store.commit('currentTransfer', props.data);
-                  $router.push({
+                  router.push({
                     name: 'tester',
                     params: { id: props.data.id },
                   });

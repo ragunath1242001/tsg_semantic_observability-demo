@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import Sidebar from "primevue/sidebar";
 
-import { onMounted, reactive, ref, watch, watchEffect } from "vue";
-import { useLayout } from "../layout/composables/layout";
+import { onMounted, ref } from "vue";
+import { useLayout } from "@libs/common-ui/layout/composables/layout";
 import { injectStrict } from "../utils/injectTyped";
 import { AxiosKey } from "../utils/symbols";
 import { useToast } from "primevue/usetoast";

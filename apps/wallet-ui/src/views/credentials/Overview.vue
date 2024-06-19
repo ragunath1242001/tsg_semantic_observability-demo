@@ -7,7 +7,7 @@ import { CredentialSubject, VerifiableCredential } from "@libs/common-dsp";
 import { useConfirm } from "primevue/useconfirm";
 import { useToast } from "primevue/usetoast";
 import { computed, onMounted, ref } from "vue";
-import FormField from "../../components/FormField.vue";
+import FormField from "@libs/common-ui/components/FormField.vue";
 
 interface Credential {
   id: string;

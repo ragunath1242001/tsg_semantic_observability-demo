@@ -1,5 +1,5 @@
 import { createRouter, createWebHashHistory } from "vue-router";
-import AppLayout from "@/layout/AppLayout.vue";
+import AppLayout from "@/layout/AppLayoutWallet.vue";
 import LoginVue from "../views/Login.vue";
 import DashboardVue from "../views/Dashboard.vue";
 import KeysVue from "../views/Keys.vue";

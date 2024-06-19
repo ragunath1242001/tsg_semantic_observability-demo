@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import { CatalogDto } from "@libs/common-dsp";
 import http from "../utils/http";
 import { IDataPlaneDto } from "@libs/control-plane-dtos";
-import { onMounted, ref, setDevtoolsHook } from "vue";
+import { onMounted, ref } from "vue";
 import { useToast } from "primevue/usetoast";
 import { useConfirm } from "primevue/useconfirm";
-import FormField from "../components/FormField.vue";
-import DisplayField from "../components/DisplayField.vue";
+import FormField from "@libs/common-ui/components/FormField.vue";
+import DisplayField from "@libs/common-ui/components/DisplayField.vue";
 
 const dataplanes = ref<IDataPlaneDto[]>();
 

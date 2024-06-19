@@ -27,9 +27,9 @@ import Password from "primevue/password";
 import ConfirmationService from "primevue/confirmationservice";
 import Panel from "primevue/panel";
 import SelectButton from "primevue/selectbutton";
-import MonacoEditorVue from "./components/MonacoEditor.vue";
+import MonacoEditorVue from "@libs/common-ui/components/MonacoEditor.vue";
 
-import "@/assets/styles.scss";
+import "@libs/common-ui/assets/styles.scss";
 import { store } from "./store/index.js";
 
 import { loader } from "@guolao/vue-monaco-editor";

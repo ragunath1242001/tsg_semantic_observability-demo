@@ -10,9 +10,9 @@ import { useToast } from "primevue/usetoast";
 import { injectStrict } from "../utils/injectTyped";
 import { AxiosKey } from "../utils/symbols";
 import utils from "../utils/common";
-import DisplayField from "./DisplayField.vue";
-import MonacoEditor from "./MonacoEditor.vue";
-import schema from "../assets/odrl.schema.json";
+import DisplayField from "@libs/common-ui/components/DisplayField.vue";
+import MonacoEditor from "@libs/common-ui/components/MonacoEditor.vue";
+import schema from "@libs/common-ui/assets/odrl.schema.json";
 
 interface Constraint {
   leftOperand: string;

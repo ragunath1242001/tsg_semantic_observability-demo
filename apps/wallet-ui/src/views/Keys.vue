@@ -3,7 +3,7 @@ import { onMounted, ref } from "vue";
 import { KeyInfo } from "@libs/wallet-dtos";
 import { useToast } from "primevue/usetoast";
 import { useConfirm } from "primevue/useconfirm";
-import FormField from "../components/FormField.vue";
+import FormField from "@libs/common-ui/components/FormField.vue";
 import { axiosInstance } from "../store/index.js";
 
 interface KeyForm {

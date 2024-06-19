@@ -32,11 +32,11 @@ import Column from "primevue/column";
 import Password from "primevue/password";
 import ConfirmationService from "primevue/confirmationservice";
 import Panel from "primevue/panel";
-import MonacoEditorVue from "./components/MonacoEditor.vue";
+import MonacoEditorVue from "@libs/common-ui/components/MonacoEditor.vue";
 
 import Tooltip from "primevue/tooltip";
 
-import "@/assets/styles.scss";
+import "@libs/common-ui/assets/styles.scss";
 
 import { loader } from "@guolao/vue-monaco-editor";
 
