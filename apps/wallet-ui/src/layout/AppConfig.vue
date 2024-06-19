@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import Sidebar from "primevue/sidebar";
 
-import { onMounted, reactive, ref, watch, watchEffect } from "vue";
-import { useLayout } from "../layout/composables/layout";
+import { ref } from "vue";
+import { useLayout } from "@libs/common-ui/layout/composables/layout";
 import { useToast } from "primevue/usetoast";
 import { store } from "../store";
 
@@ -13,15 +13,9 @@ const visible = layoutState.configMenuActive;
 
 const config = ref(store.state.settings);
 
-const contractNegotiationValues = ref([
-  { name: "Automatic", value: "automatic" },
-  { name: "Semi-Manual", value: "semi-manual" },
-  { name: "Manual", value: "manual" },
-]);
-
 const updateSettings = async () => {
   try {
-    await store.dispatch('updateSettings', config.value);
+    await store.dispatch("updateSettings", config.value);
   } catch (e) {
     toast.add({
       severity: "error",
@@ -31,7 +25,6 @@ const updateSettings = async () => {
     });
   }
 };
-
 </script>
 
 <template>
@@ -42,12 +35,12 @@ const updateSettings = async () => {
     class="layout-config-sidebar w-26rem"
   >
     <h5>Gaia-X Support</h5>
-    <ToggleButton 
+    <ToggleButton
       v-model="config.gaiaXSupport"
       on-label="Enabled"
       off-label="Disabled"
       @change="updateSettings"
-      />
+    />
   </Sidebar>
 </template>
 

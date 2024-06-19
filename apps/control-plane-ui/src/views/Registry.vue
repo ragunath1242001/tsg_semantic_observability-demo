@@ -9,7 +9,6 @@ import { AxiosKey } from "../utils/symbols";
 import router from "../router";
 import { useCatalogStore } from "../stores/catalog";
 import { storeToRefs } from "pinia";
-
 import utils from "../utils/common";
 
 var catalog = ref<CatalogDto>();

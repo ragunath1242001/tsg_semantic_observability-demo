@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import FormField from "../../components/FormField.vue";
+import FormField from "@libs/common-ui/components/FormField.vue";
 import { axiosInstance, store } from "../../store/index.js";
 import { AppRole } from "@libs/wallet-dtos";
 import { useToast } from "primevue/usetoast";
@@ -107,16 +107,21 @@ const importCredential = async (validate = true) => {
     <Card>
       <template #title>Import credential</template>
       <template #subtitle>
-        <p>The form below can be used to import Verifiable Credentials that are issued and shared in an out-of-band fashion.</p>
-        <p>The contents of the form should match the specification in the <a href="https://www.w3.org/TR/vc-data-model-2.0/">Verifiable Credentials Data Model v2.0</a>.</p>
+        <p>
+          The form below can be used to import Verifiable Credentials that are
+          issued and shared in an out-of-band fashion.
+        </p>
+        <p>
+          The contents of the form should match the specification in the
+          <a href="https://www.w3.org/TR/vc-data-model-2.0/"
+            >Verifiable Credentials Data Model v2.0</a
+          >.
+        </p>
       </template>
       <template #content>
         <form @submit.prevent="importCredential(true)">
           <FormField label="Credential" v-slot="props">
-            
-            <MonacoEditorVue
-                v-model="credentialRef"
-              ></MonacoEditorVue>
+            <MonacoEditorVue v-model="credentialRef"></MonacoEditorVue>
             <small class="text-yellow-400" v-if="credentialValidation">{{
               credentialValidation
             }}</small>

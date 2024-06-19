@@ -4,8 +4,8 @@ import { ref, onMounted } from "vue";
 import { axiosInstance } from "../store";
 import { useToast } from "primevue/usetoast";
 import { useConfirm } from "primevue/useconfirm";
-import FormField from "../components/FormField.vue";
-import schema from "../assets/dataset-config.schema.json";
+import FormField from "@libs/common-ui/components/FormField.vue";
+import schema from "@libs/common-ui/assets/dataset-config.schema.json";
 
 const toast = useToast();
 const confirm = useConfirm();

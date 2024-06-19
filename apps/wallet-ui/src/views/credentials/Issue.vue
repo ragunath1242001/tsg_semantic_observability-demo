@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import { axiosInstance, store } from "../../store/index.js";
-import { AppRole, CredentialConfig, JsonLdContextConfig } from "@libs/wallet-dtos";
-import axios from "axios";
+import {
+  AppRole,
+  CredentialConfig,
+  JsonLdContextConfig,
+} from "@libs/wallet-dtos";
 import { useToast } from "primevue/usetoast";
 import { computed, onMounted, ref } from "vue";
-import FormField from "../../components/FormField.vue";
-import JsonSchemaFormElement from "../../components/JsonSchemaFormElement.vue";
+import FormField from "@libs/common-ui/components/FormField.vue";
+import JsonSchemaFormElement from "@libs/common-ui/components/JsonSchemaFormElement.vue";
 import Ajv, { JSONSchemaType } from "ajv";
 
 interface CredentialForm {
@@ -218,11 +221,27 @@ onMounted(async () => {
     <Card>
       <template #title>Manual issue credential</template>
       <template #subtitle>
-        <p>Issue a credential either a self-signed credential, or a credential for
-        another party.</p>
-        <p>The form below allows you to manually create a new Verifiable Credential. Either for creating a self-signed credential, or for issuing a credential for a remote party.</p>
-        <p>JSON-LD context configurations can be used to streamline the process of issuing credentials, the card below the form lists the available contexts for this Wallet instance.</p>
-        <Message :closable="false">Manually issuing credentials for remote parties requires to share the issued credential out-of-band with the remote party. If you'd want to use automated processes for this, please navigate to the <RouterLink to="/credentials/oid4vci">OpenID 4 VCI</RouterLink> page.</Message>
+        <p>
+          Issue a credential either a self-signed credential, or a credential
+          for another party.
+        </p>
+        <p>
+          The form below allows you to manually create a new Verifiable
+          Credential. Either for creating a self-signed credential, or for
+          issuing a credential for a remote party.
+        </p>
+        <p>
+          JSON-LD context configurations can be used to streamline the process
+          of issuing credentials, the card below the form lists the available
+          contexts for this Wallet instance.
+        </p>
+        <Message :closable="false"
+          >Manually issuing credentials for remote parties requires to share the
+          issued credential out-of-band with the remote party. If you'd want to
+          use automated processes for this, please navigate to the
+          <RouterLink to="/credentials/oid4vci">OpenID 4 VCI</RouterLink>
+          page.</Message
+        >
       </template>
       <template #content>
         <form @submit.prevent="issueCredential">
@@ -279,7 +298,7 @@ onMounted(async () => {
             v-slot="props"
             v-if="!credentialForm.schema || credentialForm.manualCredential"
           >
-          <MonacoEditorVue
+            <MonacoEditorVue
               v-model="credentialForm.credentialSubject"
               :schema="credentialForm.schema"
             ></MonacoEditorVue>
@@ -327,15 +346,13 @@ onMounted(async () => {
     <Card class="mt-5">
       <template #title>Configured contexts</template>
       <template #subtitle>
-        <p>Configured context in this wallet instance, which might be used for the
-        issue process.</p>
+        <p>
+          Configured context in this wallet instance, which might be used for
+          the issue process.
+        </p>
       </template>
       <template #content>
-        <DataTable
-          :value="config?.contexts"
-          paginator
-          :rows="10"
-        >
+        <DataTable :value="config?.contexts" paginator :rows="10">
           <Column field="id" header="ID" />
           <Column field="credentialType" header="Credential Type" />
           <Column field="issuable" header="Issuable">

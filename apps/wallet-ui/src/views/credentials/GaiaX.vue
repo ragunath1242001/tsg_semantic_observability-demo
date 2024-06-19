@@ -5,7 +5,7 @@ import { CredentialSubject, VerifiableCredential } from "@libs/common-dsp";
 import { computed, onMounted, ref } from "vue";
 import { useToast } from "primevue/usetoast";
 import { toArray } from "../../utils/union.js";
-import FormField from "../../components/FormField.vue";
+import FormField from "@libs/common-ui/components/FormField.vue";
 import { AutoCompleteCompleteEvent } from "primevue/autocomplete";
 
 interface LegalRegistrationNumberForm {

@@ -10,7 +10,7 @@ import { AccordionTabOpenEvent } from "primevue/accordion";
 import { useToast } from "primevue/usetoast";
 import http from "../utils/http";
 import { DatasetDto } from "@libs/common-dsp";
-import MonacoEditor from "./MonacoEditor.vue";
+import MonacoEditor from "@libs/common-ui/components/MonacoEditor.vue";
 
 const props = defineProps<{
   negotiations: INegotiationStatusDto[];

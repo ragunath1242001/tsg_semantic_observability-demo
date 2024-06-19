@@ -14,7 +14,7 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
 COPY apps apps
 COPY libs libs 
-RUN pnpm run --filter "common*" --parallel -r build 
+RUN pnpm run --filter "./libs/common*" --parallel -r build 
 RUN pnpm run --filter "./libs/wallet*" --parallel -r build
 RUN pnpm run --filter "./apps/wallet*" --parallel -r build
 RUN pnpm deploy --filter wallet-api --prod /prod/wallet-api

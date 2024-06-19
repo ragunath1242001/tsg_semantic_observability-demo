@@ -23,6 +23,9 @@ junit.xml
 # API keys and secrets
 .env
 
+# Test databases
+**/**.db
+
 # Dependency directory
 node_modules
 bower_components

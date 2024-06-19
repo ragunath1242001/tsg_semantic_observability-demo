@@ -6,8 +6,6 @@ import { AxiosKey } from "../utils/symbols";
 import Catalog from "../components/Catalog.vue";
 import { useToast } from "primevue/usetoast";
 import { CredentialAddress } from "@libs/control-plane-dtos";
-import OverlayPanel from "primevue/overlaypanel";
-import FormField from "../components/FormField.vue";
 import { storeToRefs } from "pinia";
 import { useCatalogStore } from "../stores/catalog";
 import router from "../router";

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
-import FormField from "../components/FormField.vue";
-import KeyValuePairEdit from "../components/KeyValuePairEdit.vue";
+import FormField from "@libs/common-ui/components/FormField.vue";
+import KeyValuePairEdit from "@libs/common-ui/components/KeyValuePairEdit.vue";
 import axios, { AxiosResponse } from "axios";
 import { useToast } from "primevue/usetoast";
 import { useDialog } from "primevue/usedialog";
