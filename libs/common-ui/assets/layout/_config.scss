@@ -1,5 +1,4 @@
-.layout-wrapper {
-  .layout-config-button {
+.layout-config-button {
     display: block;
     position: fixed;
     width: 3rem;
@@ -22,23 +21,22 @@
     box-shadow: -0.25rem 0 1rem rgba(0, 0, 0, 0.15);
 
     i {
-      font-size: 2rem;
-      line-height: inherit;
-      transform: rotate(0deg);
-      transition: transform 1s;
+        font-size: 2rem;
+        line-height: inherit;
+        transform: rotate(0deg);
+        transition: transform 1s;
     }
 
     &:hover {
-      background: var(--primary-400);
+        background: var(--primary-400);
     }
-  }
+}
 
-  .layout-config-sidebar {
+.layout-config-sidebar {
     &.p-sidebar {
-      .p-sidebar-content {
-        padding-left: 2rem;
-        padding-right: 2rem;
-      }
+        .p-sidebar-content {
+            padding-left: 2rem;
+            padding-right: 2rem;
+        }
     }
-  }
 }

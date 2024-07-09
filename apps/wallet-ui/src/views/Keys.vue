@@ -235,7 +235,7 @@ onMounted(async () => {
             <InputText :id="props.id" class="w-full" v-model="keyForm.id" />
           </FormField>
           <FormField label="Default" v-slot="props">
-            <InputSwitch :id="props.id" v-model="keyForm.default" />
+            <ToggleButton :id="props.id" v-model="keyForm.default" />
           </FormField>
           <FormField
             label="Existing key (PKCS#8)"

@@ -6,6 +6,7 @@ import { useLayout } from "@libs/common-ui/layout/composables/layout";
 import { injectStrict } from "../utils/injectTyped";
 import { AxiosKey } from "../utils/symbols";
 import { useToast } from "primevue/usetoast";
+import UIConfig from "@libs/common-ui/layout/UIConfig.vue";
 
 const { layoutState } = useLayout();
 
@@ -60,6 +61,7 @@ onMounted(async () => await initialize());
     :transitionOptions="'.3s cubic-bezier(0, 0, 0.2, 1)'"
     class="layout-config-sidebar w-26rem"
   >
+    <UIConfig />
     <h5>Contract Negotiation</h5>
     <SelectButton
       v-model="controlPlaneInteractions"

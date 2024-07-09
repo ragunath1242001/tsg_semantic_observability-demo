@@ -123,7 +123,7 @@ const createPolicy = (policy: PolicyDto): string => {
       }}</template>
       <template #content>
         <FormField label="Parsed View">
-          <InputSwitch v-model="parsedView" />
+          <ToggleButton v-model="parsedView" onLabel="On" offLabel="Off" />
         </FormField>
         <MonacoEditorVue
           v-if="!parsedView"

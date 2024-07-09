@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { MonacoEditor, VueMonacoEditor } from "@guolao/vue-monaco-editor";
 import { computed } from "vue";
+import { useLayout } from "../layout/composables/layout";
+
+const { layoutConfig } = useLayout();
 
 const model = defineModel({ type: String, required: false });
 const props = defineProps({
@@ -38,13 +41,17 @@ const editorHeight = computed(() => {
   return `${Math.ceil(height * 1.3)}rem`;
 });
 
+const computeTheme = () => {
+  return layoutConfig.darkTheme.value ? "vs-dark" : "vs";
+};
+
 const handleBeforeMount = (monaco: MonacoEditor) => {
   monaco.editor.defineTheme("transparant", {
-    base: "vs-dark",
+    base: computeTheme(),
     inherit: true,
     rules: [],
     colors: {
-      "editor.background": "#1f2937",
+      "editor.background": layoutConfig.darkTheme.value ? "#1f2937" : "#ffffff",
     },
   });
   if (props.schema) {

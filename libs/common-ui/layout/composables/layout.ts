@@ -1,11 +1,11 @@
 import { toRefs, reactive, computed } from "vue";
 
 const layoutConfig = reactive({
-  ripple: false,
+  ripple: true,
   darkTheme: true,
   inputStyle: "outlined",
   menuMode: "static",
-  theme: "lara-light-indigo",
+  theme: "lara-dark-blue",
   scale: 14,
   activeMenuItem: null,
 });
@@ -21,11 +21,6 @@ const layoutState = reactive({
 });
 
 export function useLayout() {
-  const changeThemeSettings = (theme, darkTheme) => {
-    layoutConfig.darkTheme = darkTheme;
-    layoutConfig.theme = theme;
-  };
-
   const setScale = (scale) => {
     layoutConfig.scale = scale;
   };
@@ -54,12 +49,12 @@ export function useLayout() {
   const isSidebarActive = computed(
     () => layoutState.overlayMenuActive || layoutState.staticMenuMobileActive
   );
+
   const isDarkTheme = computed(() => layoutConfig.darkTheme);
 
   return {
     layoutConfig: toRefs(layoutConfig),
     layoutState: toRefs(layoutState),
-    changeThemeSettings,
     setScale,
     onConfigButtonClick,
     onMenuToggle,
