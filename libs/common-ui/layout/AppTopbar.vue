@@ -18,7 +18,6 @@ export interface TopbarProps {
 const props = defineProps<TopbarProps>();
 
 const { title, baseLogoUrl, user, router } = toRefs(props);
-console.log(baseLogoUrl);
 onMounted(() => {
   bindOutsideClickListener();
 });

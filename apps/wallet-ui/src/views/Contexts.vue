@@ -297,7 +297,7 @@ onMounted(async () => {
             />
           </FormField>
           <FormField label="Issuable context" v-slot="props">
-            <InputSwitch :id="props.id" v-model="contextForm.issuable" />
+            <ToggleButton :id="props.id" v-model="contextForm.issuable" />
           </FormField>
           <FormField label="Document" v-slot="props">
             <SelectButton

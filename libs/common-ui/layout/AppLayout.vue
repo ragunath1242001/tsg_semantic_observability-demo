@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { computed, watch, ref, toRefs } from "vue";
+import { watch, ref, toRefs } from "vue";
 import AppTopbar, { TopbarProps } from "./AppTopbar.vue";
 import AppFooter, { FooterProps } from "./AppFooter.vue";
 import AppSidebar from "./AppSidebar.vue";
-import { useLayout } from "../layout/composables/layout.js";
+import { useLayout } from "./composables/layout";
 import { MenuProps } from "./AppMenu.vue";
 
 const { layoutState, isSidebarActive } = useLayout();
@@ -14,8 +14,7 @@ const props = defineProps<{
   footer: FooterProps;
 }>();
 
-const {topbar, sidebar, footer } = toRefs(props);
-console.log(topbar.value.baseLogoUrl)
+const { topbar, sidebar, footer } = toRefs(props);
 const outsideClickListener = ref(null);
 
 watch(isSidebarActive, (newVal) => {
@@ -76,7 +75,6 @@ const isOutsideClicked = (event) => {
       :footerText="footer.footerText"
     ></app-footer>
   </div>
-  <div class="layout-mask"></div>
 </template>
 
 <style lang="scss" scoped></style>

@@ -12,7 +12,6 @@ import Dialog from "primevue/dialog";
 import Dropdown from "primevue/dropdown";
 import DynamicDialog from "primevue/dynamicdialog";
 import DialogService from "primevue/dialogservice";
-import InputSwitch from "primevue/inputswitch";
 import InputNumber from "primevue/inputtext";
 import InputText from "primevue/inputtext";
 import Inplace from "primevue/inplace";
@@ -39,6 +38,7 @@ import Tooltip from "primevue/tooltip";
 import "@libs/common-ui/assets/styles.scss";
 
 import { loader } from "@guolao/vue-monaco-editor";
+import Sidebar from "primevue/sidebar";
 
 loader.config({
   paths: {
@@ -68,11 +68,12 @@ app.component("Column", Column);
 app.component("DataTable", DataTable);
 app.component("MultiSelect", MultiSelect);
 app.component("SelectButton", SelectButton);
-app.component("InputSwitch", InputSwitch);
 app.component("InputNumber", InputNumber);
 app.component("InputText", InputText);
 app.component("Inplace", Inplace);
+app.component("Panel", Panel);
 app.component("Password", Password);
+app.component("Sidebar", Sidebar);
 app.component("TabView", TabView);
 app.component("TabPanel", TabPanel);
 app.component("Tag", Tag);
@@ -80,7 +81,6 @@ app.component("Textarea", Textarea);
 app.component("Toast", Toast);
 app.component("ToggleButton", ToggleButton);
 app.component("Tree", Tree);
-app.component("Panel", Panel);
 
 app.component("MonacoEditorVue", MonacoEditorVue);
 

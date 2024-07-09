@@ -271,8 +271,8 @@ importers:
         specifier: ^7.0.0
         version: 7.0.0
       primevue:
-        specifier: 3.46.0
-        version: 3.46.0(vue@3.4.27(typescript@4.7.4))
+        specifier: 3.49.1
+        version: 3.49.1(vue@3.4.27(typescript@4.7.4))
       socket.io-client:
         specifier: ^4.7.4
         version: 4.7.5
@@ -522,8 +522,8 @@ importers:
         specifier: ^7.0.0
         version: 7.0.0
       primevue:
-        specifier: 3.46.0
-        version: 3.46.0(vue@3.4.27(typescript@4.7.4))
+        specifier: 3.49.1
+        version: 3.49.1(vue@3.4.27(typescript@4.7.4))
       vite:
         specifier: ^5.3.1
         version: 5.3.1(@types/node@16.18.98)(sass@1.77.4)(terser@5.31.0)
@@ -770,8 +770,8 @@ importers:
         specifier: ^7.0.0
         version: 7.0.0
       primevue:
-        specifier: 3.46.0
-        version: 3.46.0(vue@3.4.27(typescript@4.7.4))
+        specifier: 3.49.1
+        version: 3.49.1(vue@3.4.27(typescript@4.7.4))
       vite:
         specifier: ^5.3.1
         version: 5.3.1(@types/node@16.18.98)(sass@1.77.4)(terser@5.31.0)
@@ -886,8 +886,8 @@ importers:
         specifier: ^7.0.0
         version: 7.0.0
       primevue:
-        specifier: 3.46.0
-        version: 3.46.0(vue@3.4.27(typescript@5.4.5))
+        specifier: 3.49.1
+        version: 3.49.1(vue@3.4.27(typescript@5.4.5))
       tslib:
         specifier: ^2.6.2
         version: 2.6.2
@@ -5332,8 +5332,8 @@ packages:
   primeicons@7.0.0:
     resolution: {integrity: sha512-jK3Et9UzwzTsd6tzl2RmwrVY/b8raJ3QZLzoDACj+oTJ0oX7L9Hy+XnVwgo4QVKlKpnP/Ur13SXV/pVh4LzaDw==}
 
-  primevue@3.46.0:
-    resolution: {integrity: sha512-WGprXj9HA+j6gLLDaSxcRRSChIF99ld5fg1D3hYFA7hNiEuON1aqe83gf52vUSw8yjVMtFQ3CMPQSTYhooNwIg==}
+  primevue@3.49.1:
+    resolution: {integrity: sha512-OmUTqbKbPB63Zqf7uA49cipDi+Qh+/13AYJPwgvsVsI4QmAKIkeibBwkOgj1CNIFlopfF79YmyBshFUAPqlw9A==}
     peerDependencies:
       vue: ^3.0.0
 
@@ -11764,11 +11764,11 @@ snapshots:
 
   primeicons@7.0.0: {}
 
-  primevue@3.46.0(vue@3.4.27(typescript@4.7.4)):
+  primevue@3.49.1(vue@3.4.27(typescript@4.7.4)):
     dependencies:
       vue: 3.4.27(typescript@4.7.4)
 
-  primevue@3.46.0(vue@3.4.27(typescript@5.4.5)):
+  primevue@3.49.1(vue@3.4.27(typescript@5.4.5)):
     dependencies:
       vue: 3.4.27(typescript@5.4.5)
 

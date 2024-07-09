@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from "vue";
 import FormField from "./FormField.vue";
+import ToggleButton from "primevue/togglebutton";
 
 const emit = defineEmits(["input"]);
 
@@ -137,7 +138,7 @@ onMounted(() => {
       />
     </template>
     <template v-else-if="typeRef === 'boolean'">
-      <InputSwitch :id="props.id" class="w-full" v-model="valueRef" />
+      <ToggleButton :id="props.id" class="w-full" v-model="valueRef" />
     </template>
     <template v-else-if="typeRef === 'object'">
       <JsonSchemaFormElement
