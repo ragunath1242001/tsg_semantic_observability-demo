@@ -4,5 +4,5 @@ metadata:
   name: {{ template "tsg.fullname" . }}-config
   labels: {{ include "tsg.labels" $ | nindent 4 }}
 data:
-  app.conf: |-
-    {{- tpl (.Values.config | toToml) $ | replace ".0" "" | nindent 4}}
+  config.yaml: |-
+    {{- tpl (.Values.config | toYaml) $ | nindent 4}}

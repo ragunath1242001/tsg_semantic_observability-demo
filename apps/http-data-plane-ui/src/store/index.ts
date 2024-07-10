@@ -38,7 +38,7 @@ export const store = createStore<{
           response.data.state === "unauthenticated" &&
           payload.redirect === true
         ) {
-          window.location.replace("/api/auth/login");
+          window.location.replace("api/auth/login");
         } else {
           commit("userInfo", response.data.user);
           dispatch("getCatalog");
@@ -63,14 +63,14 @@ export const store = createStore<{
     },
     async logout({ commit }) {
       commit("userInfo", null);
-      window.location.replace("/api/auth/logout");
+      window.location.replace("api/auth/logout");
     },
   },
   modules: {},
 });
 
 export const axiosInstance = axios.create({
-  baseURL: "/api/",
+  baseURL: "api/",
   timeout: 60000,
 });
 await store.dispatch("login", { redirect: false });

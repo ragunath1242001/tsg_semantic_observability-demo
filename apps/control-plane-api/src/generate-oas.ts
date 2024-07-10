@@ -10,7 +10,7 @@ async function bootstrap() {
     { preview: true, abortOnError: false } // <-- This parameters prevent for instantiate controllers but its not necessary for SwaggerModule
   );
 
-  app.setGlobalPrefix("api", {
+  app.setGlobalPrefix(`${process.env["SUBPATH"] ?? ""}/api`, {
     exclude: [".well-known/(.*)", "health"],
   });
   const config = new DocumentBuilder()

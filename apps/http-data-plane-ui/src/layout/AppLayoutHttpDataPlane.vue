@@ -6,7 +6,7 @@ import { computed } from "vue";
 import { Menu, MenuProps } from "@libs/common-ui/layout/AppMenu.vue";
 import { FooterProps } from "@libs/common-ui/layout/AppFooter.vue";
 import { TopbarProps } from "@libs/common-ui/layout/AppTopbar.vue";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { store } from "../store/index.js";
 import { usePrimeVue } from "primevue/config";
 
@@ -79,8 +79,11 @@ const footer: FooterProps = {
   footerText: "TNO",
 };
 
+const route = useRoute();
+
 const sidebar: MenuProps = {
   menu: menuList,
+  route: route,
 };
 </script>
 <template>

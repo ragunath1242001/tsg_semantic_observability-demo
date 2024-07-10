@@ -36,7 +36,7 @@ export const store = createStore({
           }
         } else {
           if (payload.redirect === true) {
-            window.location.replace("/api/auth/login");
+            window.location.replace("api/auth/login");
           } else {
             commit("userInfo", response.data.user);
           }
@@ -48,7 +48,7 @@ export const store = createStore({
     },
     async logout({ commit }) {
       commit("userInfo", null);
-      window.location.replace("/api/auth/logout");
+      window.location.replace("api/auth/logout");
     },
     async updateSettings({ commit }, payload: RuntimeConfig) {
       try {
@@ -67,7 +67,7 @@ export const store = createStore({
 });
 
 export const axiosInstance = axios.create({
-  baseURL: "/api/",
+  baseURL: "api/",
   timeout: 60000,
 });
 await store.dispatch("login", { redirect: false });

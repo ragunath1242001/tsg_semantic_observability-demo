@@ -4,6 +4,7 @@ import router from "./router/index.js";
 
 import PrimeVue from "primevue/config";
 import AutoComplete from "primevue/autocomplete";
+import Badge from "primevue/badge";
 import Button from "primevue/button";
 import Chips from "primevue/chips";
 import ConfirmDialog from "primevue/confirmdialog";
@@ -32,6 +33,7 @@ import "@libs/common-ui/assets/styles.scss";
 import { store } from "./store/index.js";
 
 import { loader } from "@guolao/vue-monaco-editor";
+
 loader.config({
   paths: {
     vs: "https://cdn.jsdelivr.net/npm/monaco-editor@0.43.0/dev/vs",
@@ -46,6 +48,7 @@ app.use(ToastService);
 app.use(ConfirmationService);
 
 app.component("AutoComplete", AutoComplete);
+app.component("Badge", Badge);
 app.component("Button", Button);
 app.component("Chips", Chips);
 app.component("ConfirmDialog", ConfirmDialog);

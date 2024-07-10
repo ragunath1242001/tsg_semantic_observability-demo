@@ -1,38 +1,23 @@
-host: # example.com
 image:
   repository: registry.gitlab.com/tno-tsg/dataspace-protocol/tno-security-gateway/control-plane
   tag: "v{{ .Chart.Version }}"
 replicaCount: 1
 
+host:
+
 ingress:
   enabled: true
   clusterIssuer: letsencrypt
-  path: /control-plane(/|$)(.*)
-  rewriteTarget: /$2
-  # annotations: {}
-  # class: nginx
+  paths:
+    - path: '{{ template "tsg.subPath" $ }}/'
+      type: Prefix
+    - path: /.well-known/dspace-version
+      type: Prefix
 
 env: []
 configFromSecrets: {}
-# configFromSecrets:
-#   iam:
-#     clientId:
-#       name: wallet-auth
-#       key: client-id
-#     clientSecret:
-#       name: wallet-auth
-#       key: client-secret
-#   users:
-#     - username:
-#         name: cp-auth
-#         key: username
-#       password:
-#         name: cp-auth
-#         key: password
-#   db:
-#     password:
-#       name: postgresql
-#       key: password
+
+subPath: ""
 
 config:
   server:
@@ -43,25 +28,13 @@ config:
   db:
     type: postgres
     database: controlplane
-    host: # postgresql
+    host: postgresql
     port: 5432
     username: postgres
-#   iam:
-#     type: tsg
-#     didId: did:web:{{ .Values.host }}
-#     tokenUrl: https://{{ .Values.host }}/api/auth/login
-#     presentationUrl: https://{{ .Values.host }}/api/presentations
-#     validationUrl: https://{{ .Values.host }}/api/presentations/validate
-#     clientId: # connector
-#     clientSecret: # test
-#     credentialId: # did:web:{{ .Values.host }}#00000000-0000-0000-0000-000000000000
-#     validations:
-#     - valid
-
-#   users: []
-
-#   initCatalog:
-#     creator: did:web:{{ .Values.host }}
-#     publisher: did:web:{{ .Values.host }}
-#     title: TSG Test Connector A
-#     description: TSG Test Connector A testing Data Space Protocol support
+  auth:
+    authorizationURL: https://{{ .Values.casdoor }}/login/oauth/authorize
+    tokenURL: https://{{ .Values.casdoor }}/api/login/oauth/access_token
+    introspectionURL: https://{{ .Values.casdoor }}/api/login/oauth/introspect
+    callbackURL: https://{{ .Values.host }}{{ template "tsg.subPath" $ }}/api/auth/callback
+    rolePath: "$.roles[*].name"
+    redirectURL: https://{{ .Values.host }}{{ template "tsg.subPath" $ }}/

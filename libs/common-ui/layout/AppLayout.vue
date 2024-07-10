@@ -64,7 +64,7 @@ const isOutsideClicked = (event) => {
     :router="topbar.router"
   ></app-topbar>
   <div class="layout-sidebar" style="border: 1px solid var(--surface-border)">
-    <app-sidebar :menu="sidebar.menu"></app-sidebar>
+    <app-sidebar :menu="sidebar.menu" :route="sidebar.route"></app-sidebar>
   </div>
   <div class="layout-main-container">
     <div class="layout-main">
