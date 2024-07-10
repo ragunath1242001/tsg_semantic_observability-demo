@@ -2,9 +2,9 @@
 kind: Role
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: {{ printf "%s-role" (include "casdoor.serviceAccountName" .) }}
+  name: {{ printf "%s-role" (include "tsg.serviceAccountName" .) }}
   labels:
-    {{- include "casdoor.labels" . | nindent 4 }}
+    {{- include "tsg.labels" . | nindent 4 }}
 rules:
 - apiGroups: [""]
   resources: ["secrets"]

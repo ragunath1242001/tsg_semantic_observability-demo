@@ -29,9 +29,9 @@ try {
       dotenvLoader({
         separator: "__",
         keyTransformer: (key) => {
-          if (key.startsWith("TSGCP")) {
+          if (key.startsWith("TSG__")) {
             return key
-              .replace("TSGCP__", "")
+              .slice(5)
               .toLowerCase()
               .replace(/([a-z]_[a-z])/g, (g) => g[0] + g[2].toUpperCase());
           } else {

@@ -17,16 +17,16 @@ env: []
 configFromSecrets: {}
 
 initConfig:
-  url: http://{{ template "casdoor.fullname" . }}:{{ .Values.config.httpport }}
+  url: http://{{ template "tsg.fullname" . }}:{{ .Values.config.httpport }}
   organization:
     id: TSG
     name: TSG
     overwrite:
       passwordType: argon2id
   users:
-  - username: admin
-    isAdmin: true
-    secretName: casdoor-admin-secret
+    - username: admin
+      isAdmin: true
+      secretName: casdoor-admin-secret
 
 config:
   appname: casdoor

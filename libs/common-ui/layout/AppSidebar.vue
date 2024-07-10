@@ -4,7 +4,7 @@ const props = defineProps<MenuProps>();
 </script>
 
 <template>
-  <app-menu :menu="props.menu"></app-menu>
+  <app-menu :menu="props.menu" :route="route"></app-menu>
 </template>
 
 <style lang="scss" scoped></style>

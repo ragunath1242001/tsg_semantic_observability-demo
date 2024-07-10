@@ -1,6 +1,9 @@
 {
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.formatOnSave": true,
+  "[helm]": {
+    "editor.formatOnSave": false
+  },
   "jest.runMode": "on-save",
   "jest.nodeEnv": {
     "NODE_OPTIONS": "--experimental-vm-modules"

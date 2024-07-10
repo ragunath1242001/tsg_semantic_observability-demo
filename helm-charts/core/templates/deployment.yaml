@@ -18,35 +18,34 @@ spec:
         checksum/config: {{ tpl (toYaml .Values.config) . | sha256sum }}
     spec:
       containers:
-        - name: casdoor
-          image: "{{ .Values.image }}"
-          imagePullPolicy: IfNotPresent
-          env:
-            - name: RUNNING_IN_DOCKER
-              value: "true"
+        - name: {{ template "tsg.name" . }}
+          image: "{{ .Values.image.repository }}:{{ tpl .Values.image.tag . }}"
+          imagePullPolicy: Always
           {{- with concat .Values.env (fromYamlArray (list .Values.configFromSecrets "" | include "tsg.recurseSecretConfig"))}}
-           {{ toYaml . | nindent 12 }}
+          env: {{ toYaml . | nindent 12 }}
+            - name: SUBPATH
+              value: {{ template "tsg.subPath" $ }}
           {{- end }}
           resources:
             requests:
               memory: "100Mi"
           ports:
             - name: http
-              containerPort: {{ .Values.config.httpport | default 8000 }}
+              containerPort: {{ .Values.config.server.port | default 3000 }}
               protocol: TCP
           livenessProbe:
             httpGet:
-              path: /
-              port: http
+              path: /health
+              port: {{ .Values.config.server.port | default 3000 }}
           readinessProbe:
             httpGet:
-              path: /
-              port: http
+              path: /health
+              port: {{ .Values.config.server.port | default 3000 }}
           volumeMounts:
-          - name: casdoor-config
-            mountPath: /conf/app.conf
-            subPath: "app.conf"
+          - name: {{ template "tsg.name" . }}-config
+            mountPath: "/app/config.yaml"
+            subPath: "config.yaml"
       volumes:
-      - name: casdoor-config
+      - name: {{ template "tsg.name" . }}-config
         configMap:
           name: {{ template "tsg.fullname" . }}-config

@@ -6,7 +6,7 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-    - port: {{ $.Values.config.httpport | default 8000 }}
+    - port: {{ $.Values.config.server.port | default 3000 }}
       targetPort: http
       protocol: TCP
       name: http

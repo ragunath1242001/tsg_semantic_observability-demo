@@ -22,12 +22,14 @@ spec:
   - host: {{ $.Values.host }}
     http:
       paths:
+      {{- range .paths }}
       - backend:
           service:
             name: {{ template "tsg.fullname" $ }}
             port: 
-              number: {{ $.Values.config.httpport | default 8000 }}
-        path: {{ .path | default "/" }} 
-        pathType: Prefix
+              number: {{ $.Values.config.server.port | default 3000 }}
+        path: {{ tpl .path $ }}
+        pathType: {{ .type }}
+      {{- end }}
 {{- end }}
 {{- end }}

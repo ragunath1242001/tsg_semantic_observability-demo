@@ -5,6 +5,7 @@ import vue from "@vitejs/plugin-vue";
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  base: "",
   plugins: [vue()],
   resolve: {
     alias: {
@@ -18,7 +19,6 @@ export default defineConfig({
     proxy: {
       "/api": {
         target: "http://localhost:3000/",
-        rewrite: (path) => path.replace(/^\/api/, ""),
       },
       "/.well-known": {
         target: "http://localhost:3000/",

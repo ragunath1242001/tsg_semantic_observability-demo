@@ -18,6 +18,7 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
   ? [
       ServeStaticModule.forRoot({
         rootPath: process.env["EMBEDDED_FRONTEND"],
+        serveRoot: process.env["SUBPATH"],
         exclude: ["/api/(.*)", "/.well-known/(.*)"],
       }),
     ]

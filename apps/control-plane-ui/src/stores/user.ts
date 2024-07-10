@@ -27,7 +27,7 @@ export const useUserStore = defineStore("user", {
           response.data.state === "unauthenticated" &&
           payload.redirect === true
         ) {
-          window.location.replace("/api/auth/login");
+          window.location.replace("api/auth/login");
         } else {
           this.userInfo(response.data.user);
           router.push(this.returnUrl || "/");
@@ -39,7 +39,7 @@ export const useUserStore = defineStore("user", {
     },
     async logout() {
       this.userInfo(null);
-      window.location.replace("/api/auth/logout");
+      window.location.replace("api/auth/logout");
     },
     userInfo(payload) {
       this.user = payload;

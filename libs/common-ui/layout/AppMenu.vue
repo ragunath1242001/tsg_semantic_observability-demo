@@ -2,6 +2,7 @@
 import { ref, toRef } from "vue";
 
 import AppMenuItem from "./AppMenuItem.vue";
+import { RouteLocationNormalizedLoaded } from "vue-router";
 
 interface MenuItem {
   label: string;
@@ -11,12 +12,13 @@ interface MenuItem {
 }
 
 export interface Menu {
-    label: string;
-    items: MenuItem[];
+  label: string;
+  items: MenuItem[];
 }
 
 export interface MenuProps {
   menu: Menu[];
+  route: RouteLocationNormalizedLoaded;
 }
 
 const props = defineProps<MenuProps>();
@@ -27,7 +29,7 @@ const model = toRef(props.menu);
 <template>
   <ul class="layout-menu">
     <template v-for="(item, i) in model" :key="item">
-      <app-menu-item :item="item" :index="i"></app-menu-item>
+      <app-menu-item :item="item" :index="i" :route="route"></app-menu-item>
     </template>
   </ul>
 </template>

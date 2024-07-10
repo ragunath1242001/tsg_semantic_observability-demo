@@ -1,8 +1,1 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: {{ template "wallet.fullname" . }}-config
-  labels: {{ include "wallet.labels" $ | nindent 4 }}
-data:
-  config.yaml: |-
-    {{- tpl (.Values.config | toYaml) $ | nindent 4}}
+../../core/templates/config-map.yaml

@@ -16,7 +16,7 @@ async function bootstrap() {
     "App",
   );
   if (process.env["EMBEDDED_FRONTEND"]) {
-    app.setGlobalPrefix("api", {
+    app.setGlobalPrefix(`${process.env["SUBPATH"] ?? ""}/api`, {
       exclude: ["health", "api/health"],
     });
   }

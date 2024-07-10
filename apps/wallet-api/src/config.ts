@@ -108,6 +108,9 @@ export class ServerConfig {
   @IsString()
   @IsOptional()
   public readonly publicAddress: string = `http://localhost:3000`;
+  @IsString()
+  @IsOptional()
+  public readonly subPath?: string;
 }
 
 export class InitKeyConfig {
