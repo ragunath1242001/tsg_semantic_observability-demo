@@ -364,6 +364,9 @@ onMounted(async () => {
           </div>
         </div>
       </div>
+      <div v-else>
+        No provided datasets configured
+      </div>
     </template>
   </Card>
   <Dialog

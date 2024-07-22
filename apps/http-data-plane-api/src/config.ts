@@ -142,8 +142,8 @@ export class RootConfig {
 
   @ValidateNested()
   @Type(() => DatasetConfig)
-  @IsDefined()
-  public readonly dataset!: DatasetConfig;
+  @IsOptional()
+  public readonly dataset?: DatasetConfig;
 
   @ValidateNested()
   @Type(() => LoggingConfig)
