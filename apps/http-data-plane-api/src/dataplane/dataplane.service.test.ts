@@ -657,3 +657,119 @@ describe("Dataplane Service", () => {
     });
   });
 });
+
+describe("Dataplane Service Consumer", () => {
+  let dataPlaneService: DataPlaneService;
+  let server: SetupServer;
+  let managementToken: string;
+
+  beforeAll(async () => {
+    await TypeOrmTestHelper.instance.setupTestDB();
+    const config = plainToClass(RootConfig, {
+      server: {},
+      controlPlane: {
+        dataPlaneEndpoint: "http://127.0.0.1/data-plane",
+        managementEndpoint: "http://localhost:3000/management",
+        controlEndpoint: "http://localhost:3000",
+        authorization: "Basic YWRtaW46YWRtaW4=",
+        initializationDelay: 1,
+      },
+      dataset: undefined,
+      logging: {
+        debug: true,
+      },
+    });
+
+    server = setupServer(
+      http.post<PathParams, DataPlaneCreation>(
+        `${config.controlPlane.dataPlaneEndpoint}/init`,
+        async ({ request, params, cookies }) => {
+          const requestBody = await request.json();
+          managementToken = requestBody.managementToken;
+          return HttpResponse.json({
+            ...requestBody,
+            identifier: "urn:uuid:4ab97081-665e-447e-88a1-791a185994b9",
+          });
+        },
+      ),
+      http.post(
+        `${config.controlPlane.dataPlaneEndpoint}/:id/catalog`,
+        ({ request, params, cookies }) => {
+          return HttpResponse.json(request.json());
+        },
+      ),
+    );
+
+    server.listen({ onUnhandledRequest: "error" });
+
+    const moduleRef: TestingModule = await Test.createTestingModule({
+      imports: [
+        TypeOrmTestHelper.instance.module([
+          TransferDao,
+          DataPlaneStateDao,
+          IngressLogDao,
+          EgressLogDao,
+        ]),
+        TypeOrmModule.forFeature([
+          TransferDao,
+          DataPlaneStateDao,
+          IngressLogDao,
+          EgressLogDao,
+        ]),
+      ],
+      controllers: [DataPlaneController],
+      providers: [
+        DataPlaneService,
+        LoggingService,
+        AuthClientService,
+        {
+          provide: AuthConfig,
+          useValue: { enabled: false },
+        },
+        {
+          provide: LoggingConfig,
+          useValue: { debug: true },
+        },
+        {
+          provide: RootConfig,
+          useValue: config,
+        },
+      ],
+    }).compile();
+
+    dataPlaneService = moduleRef.get(DataPlaneService);
+    await expect(dataPlaneService.getStateDto()).rejects.toThrow(
+      "No state available yet",
+    );
+
+    await new Promise((r) => setTimeout(r, 20));
+  });
+
+  afterAll(async () => {
+    await TypeOrmTestHelper.instance.teardownTestDB();
+  });
+
+  describe("Initial state", () => {
+    it("Add dataset config", async () => {
+      await dataPlaneService.initialized;
+      await new Promise((r) => setTimeout(r, 100));
+      await expect(dataPlaneService.getDatasetConfig()).rejects.toThrow(
+        "No dataset configured",
+      );
+      await dataPlaneService.updateDatasetConfig({
+        id: `urn:uuid:test`,
+        title: "HTTPBin",
+        versions: [
+          {
+            backend: "https://httpbin.org/anything",
+            openApiSpec: "https://httpbin.org/spec.json",
+            version: "0.9.2",
+            authorization: "Bearer AAAAAAA",
+          },
+        ],
+      });
+      const config = await dataPlaneService.getDatasetConfig();
+      expect(config).toBeDefined();
+    });
+  });
+});

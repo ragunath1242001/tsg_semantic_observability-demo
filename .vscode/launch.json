@@ -87,13 +87,28 @@
       ],
       "outputCapture": "std",
       "internalConsoleOptions": "neverOpen"
-    }, {
+    },
+    {
       "name": "Debug Jest Tests Control Plane",
       "type": "node",
       "request": "launch",
       "runtimeArgs": [
         "--inspect-brk",
         "${workspaceRoot}/apps/control-plane-api/node_modules/.bin/jest",
+        "--runInBand",
+        "--coverage",
+        "false"
+      ],
+      "outputCapture": "std",
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "name": "Debug Jest Tests HTTP Data Plane",
+      "type": "node",
+      "request": "launch",
+      "runtimeArgs": [
+        "--inspect-brk",
+        "${workspaceRoot}/apps/http-data-plane-api/node_modules/.bin/jest",
         "--runInBand",
         "--coverage",
         "false"
@@ -135,7 +150,8 @@
       },
       "sourceMaps": true,
       "cwd": "${workspaceRoot}",
-      "outputCapture": "std"},
+      "outputCapture": "std"
+    },
     {
       "name": "Debug Wallet Main (without wallet-ui)",
       "type": "node",

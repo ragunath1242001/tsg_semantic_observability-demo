@@ -105,23 +105,26 @@ export class DataPlaneService {
       managementAddress: this.config.server.publicAddress,
       managementToken: managementToken,
       catalogSynchronization: "push",
-      role: "both",
+      role: this.config.dataset ? "both" : "consumer",
     };
     const details = await this.axiosDataPlane.post<DataPlaneDetailsDto>(
       `/init`,
       dataPlaneCreation,
     );
-    const datasets = await this.createDatasets(
-      this.state?.datasetConfig || this.config.dataset,
-    );
+    let datasets: Dataset[] = [];
+    if (this.config.dataset) {
+      datasets = await this.createDatasets(
+        this.state?.datasetConfig || this.config.dataset,
+      );
 
-    const catalog: Catalog = new Catalog({
-      dataset: datasets,
-    });
-    await this.axiosDataPlane.post<DataPlaneDetailsDto>(
-      `/${details.data.identifier}/catalog`,
-      await catalog.serialize(),
-    );
+      const catalog: Catalog = new Catalog({
+        dataset: datasets,
+      });
+      await this.axiosDataPlane.post<DataPlaneDetailsDto>(
+        `/${details.data.identifier}/catalog`,
+        await catalog.serialize(),
+      );
+    }
     const state = await this.stateRepository.save({
       identifier: details.data.identifier,
       managementToken: managementToken,
@@ -237,13 +240,22 @@ export class DataPlaneService {
 
   async updateDatasetConfig(datasetConfig: DatasetConfig) {
     const currentState = this.getState();
+
+    if (currentState.details.role === "consumer") {
+      currentState.details.role = "both";
+      await this.axiosDataPlane.post<DataPlaneDetailsDto>(
+        `/init`,
+        currentState.details,
+      );
+    }
+
     const datasets = await this.createDatasets(datasetConfig);
 
     const catalog: Catalog = new Catalog({
       dataset: datasets,
     });
     await this.axiosDataPlane.post<DataPlaneDetailsDto>(
-      `/${this.state?.identifier}/catalog`,
+      `/${currentState.identifier}/catalog`,
       await catalog.serialize(),
     );
     const state = await this.stateRepository.save({
@@ -338,7 +350,12 @@ export class DataPlaneService {
   }
 
   async getDatasetConfig(): Promise<DatasetConfig> {
-    return this.getState().datasetConfig;
+    const datasetConfig = this.getState().datasetConfig;
+    if (datasetConfig) {
+      return datasetConfig;
+    } else {
+      throw new DataPlaneError("No dataset configured", HttpStatus.NOT_FOUND);
+    }
   }
 
   async getTransfers(): Promise<TransferDto[]> {
@@ -729,7 +746,7 @@ export class DataPlaneService {
 
     try {
       const headers = request.headers;
-      const version = state.datasetConfig.versions.find(
+      const version = state.datasetConfig?.versions?.find(
         (v) => v.version === dataset["dcat:version"],
       );
       if (!version) {
