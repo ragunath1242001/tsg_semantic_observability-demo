@@ -1,0 +1,23 @@
+auth:
+  username: postgres
+  password: password
+
+primary:
+  persistence:
+    size: 1Gi
+  # For test deployments, delete the PVC when the helm release is removed
+  persistentVolumeClaimRetentionPolicy:
+    enabled: true
+    whenScaled: Delete
+    whenDeleted: Delete
+  initdb:
+    scripts:
+      create-wallet.sql: |-
+        CREATE DATABASE casdoor;
+        GRANT ALL PRIVILEGES ON DATABASE casdoor TO postgres;
+        CREATE DATABASE wallet;
+        GRANT ALL PRIVILEGES ON DATABASE wallet TO postgres;
+        CREATE DATABASE "control-plane";
+        GRANT ALL PRIVILEGES ON DATABASE "control-plane" TO postgres;
+        CREATE DATABASE "http-data-plane";
+        GRANT ALL PRIVILEGES ON DATABASE "http-data-plane" TO postgres;

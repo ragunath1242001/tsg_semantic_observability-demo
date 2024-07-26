@@ -1,0 +1,124 @@
+initImage: registry.gitlab.com/tno-tsg/dataspace-protocol/utils/casdoor-init:main
+<% if (it.participant.routing === "subdomain") { %>
+host: "casdoor.<%= it.participant.host %>"
+<% } else { %>
+host: "<%= it.participant.host %>"
+<% } %>
+
+ingress:
+  enabled: true
+  clusterIssuer: letsencrypt
+  path: /
+
+env:
+  - name: POSTGRES_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: <%= it.participant.id %>-postgresql
+        key: postgres-password
+  - name: dataSourceName
+    value: "user=postgres password=$(POSTGRES_PASSWORD) host=<%= it.participant.id %>-postgresql port=5432 sslmode=disable dbname=casdoor"
+
+config:
+  driverName: postgres
+  dbName: casdoor
+
+initConfig:
+  organization:
+    id: <%= it.participant.id %>
+    name: <%= it.participant.name %>
+
+  roles:
+  - id: wallet_view_did
+    name: Wallet View Did
+  - id: wallet_manage_keys
+    name: Wallet Manage Keys
+  - id: wallet_view_own_credentials
+    name: Wallet View Own Credentials
+  - id: wallet_view_all_credentials
+    name: Wallet View All Credentials
+  - id: wallet_manage_own_credentials
+    name: Wallet Manage Own Credentials
+  - id: wallet_manage_all_credentials
+    name: Wallet Manage All Credentials
+  - id: wallet_issue_credentials
+    name: Wallet Issue Credentials
+  - id: wallet_view_presentations
+    name: Wallet View Presentations
+  - id: wallet_manage_clients
+    name: Wallet Manage Clients
+  - id: controlplane_admin
+    name: Controlplane Admin
+  - id: controlplane_dataplane
+    name: Controlplane Dataplane
+  
+  users:
+  - username: admin
+    isAdmin: true
+    secretName: "casdoor-admin-<%= it.participant.id %>-secret"
+    password: test
+    roles:
+      - wallet_view_did
+      - wallet_manage_keys
+      - wallet_view_own_credentials
+      - wallet_view_all_credentials
+      - wallet_manage_own_credentials
+      - wallet_manage_all_credentials
+      - wallet_issue_credentials
+      - wallet_view_presentations
+      - wallet_manage_clients
+      - controlplane_admin
+      - controlplane_dataplane
+    properties:
+      didId: did:web:<%= it.participant.host %>
+  - username: "<%= it.general.username %>"
+    isAdmin: true
+    secretName: "casdoor-<%= it.general.username %>-<%= it.participant.id %>-secret"
+    password: "<%= it.general.password %>"
+    roles:
+      - wallet_view_did
+      - wallet_manage_keys
+      - wallet_view_own_credentials
+      - wallet_view_all_credentials
+      - wallet_manage_own_credentials
+      - wallet_manage_all_credentials
+      - wallet_issue_credentials
+      - wallet_view_presentations
+      - wallet_manage_clients
+      - controlplane_admin
+      - controlplane_dataplane
+    properties:
+      didId: did:web:<%= it.participant.host %>
+  
+  applications:
+  - id: connector
+    name: Connector
+    users:
+      - username: wallet
+        secretName: casdoor-wallet-<%= it.participant.id %>-secret
+        roles:
+          - wallet_view_did
+          - wallet_manage_keys
+          - wallet_view_own_credentials
+          - wallet_view_all_credentials
+          - wallet_manage_own_credentials
+          - wallet_manage_all_credentials
+          - wallet_issue_credentials
+          - wallet_view_presentations
+          - wallet_manage_clients
+      - username: control-plane
+        secretName: casdoor-control-plane-<%= it.participant.id %>-secret
+        roles:
+          - wallet_issue_credentials
+          - wallet_view_all_credentials
+          - wallet_view_presentations
+          - controlplane_admin
+          - controlplane_dataplane
+<%- if (it.participant.hasDataPlane) { %>
+      - username: http-data-plane
+        secretName: casdoor-http-data-plane-<%= it.participant.id %>-secret
+        roles:
+          - controlplane_dataplane
+<%- } %>
+    redirectUris:
+      - https://.*<%= it.participant.host %>/.*

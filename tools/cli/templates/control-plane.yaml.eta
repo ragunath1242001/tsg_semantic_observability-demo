@@ -1,0 +1,88 @@
+<% if (it.participant.routing === "subdomain") { %>
+host: "cp.<%= it.participant.host %>"
+endpoint: https://cp.<%= it.participant.host %>
+wallet: "<%= it.participant.host %>"
+walletEndpoint: https://<%= it.participant.host %>
+casdoorEndpoint: "https://casdoor.<%= it.participant.host %>"
+<% } else { %>
+host: "<%= it.participant.host %>"
+endpoint: https://<%= it.participant.host %>/control-plane
+wallet: "<%= it.participant.host %>"
+walletEndpoint: https://<%= it.participant.host %>/wallet
+casdoorEndpoint: "https://<%= it.participant.host %>"
+
+subPath: /control-plane
+<% } %>
+
+<% if (it.applications?.controlPlane?.imageTag || it.applications?.controlPlane?.imageRepository) { %>
+image:
+<%- if (it.applications?.controlPlane?.imageTag) { %>
+  tag: <%= it.applications?.controlPlane.imageTag %>
+<% } %>
+<%- if (it.applications?.controlPlane?.imageRepository) { %>
+  repository: <%= it.applications?.controlPlane.imageRepository %>
+<% } %>
+<% } %>
+
+ingress:
+  enabled: true
+
+configFromSecrets:
+  db:
+    password:
+      name: "<%= it.participant.id %>-postgresql"
+      key: postgres-password
+  auth:
+    clientID:
+      name: casdoor-control-plane-<%= it.participant.id %>-secret
+      key: clientId
+    clientSecret:
+      name: casdoor-control-plane-<%= it.participant.id %>-secret
+      key: clientSecret
+    clientUsername:
+      name: casdoor-control-plane-<%= it.participant.id %>-secret
+      key: username
+    clientPassword:
+      name: casdoor-control-plane-<%= it.participant.id %>-secret
+      key: password
+
+config:
+  db:
+    database: control-plane
+    host: "<%= it.participant.id %>-postgresql"
+  
+  server:
+    publicAddress: "{{ .Values.endpoint }}"
+
+  auth:
+    authorizationURL: "{{ .Values.casdoorEndpoint }}/login/oauth/authorize"
+    tokenURL: "{{ .Values.casdoorEndpoint }}/api/login/oauth/access_token"
+    introspectionURL: "{{ .Values.casdoorEndpoint }}/api/login/oauth/introspect"
+    callbackURL: "{{ .Values.endpoint }}/api/auth/callback"
+    rolePath: "$.roles[*].name"
+    redirectURL: "{{ .Values.endpoint }}/"
+  
+  runtime:
+    controlPlaneInteractions: manual
+  
+  registry:
+    useRegistry: true
+    registryIntervalInMilliseconds: 300000
+   
+  iam:
+    type: tsg-iatp
+    didId: did:web:{{ .Values.wallet }}
+    walletUrl: "{{ .Values.walletEndpoint }}/api"
+    tokenUrl: "{{ .Values.walletEndpoint }}/api/auth/login"
+    siopUrl: "{{ .Values.walletEndpoint }}/api/iatp/holder/token"
+    verifyUrl: "{{ .Values.walletEndpoint }}/api/iatp/verifier/verify"
+    typeFilter: <%= it.general.credentialType %>
+    issuerFilter: "did:web:<%= it.general.authorityDomain %>"
+    clientId: "null"
+    clientSecret: "null"
+  
+  initCatalog:
+    creator: did:web:{{ .Values.wallet }}
+    publisher: did:web:{{ .Values.wallet }}
+    title: "<%= it.participant.name %>"
+    description: "<%= it.participant.name %> connector"

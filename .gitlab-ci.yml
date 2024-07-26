@@ -40,6 +40,7 @@ include:
   - template: Jobs/Container-Scanning.gitlab-ci.yml
   - local: apps/apps.gitlab-ci.yml
   - local: libs/libs.gitlab-ci.yml
+  - local: tools/tools.gitlab-ci.yml
   - local: helm-charts/helm.gitlab-ci.yml
 
 container_scanning:

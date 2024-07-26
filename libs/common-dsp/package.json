@@ -2,11 +2,11 @@
   "name": "@libs/common-dsp",
   "version": "0.1.2",
   "description": "TSG Dataspace Protocol Common",
-  "author": "Maarten Kollenstart",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://gitlab.com/tno-tsg/dsp/common.git"
+    "url": "git+https://gitlab.com/tno-tsg/dataspace-protocol/tno-security-gateway.git",
+    "directory": "libs/common-dsp"
   },
   "publishConfig": {
     "access": "public"

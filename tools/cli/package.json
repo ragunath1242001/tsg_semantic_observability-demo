@@ -1,0 +1,43 @@
+{
+  "name": "@tsg-dsp/cli",
+  "version": "0.1.2",
+  "description": "Configuration Bootstrap CLI tool",
+  "engines": {
+    "node": ">= 16.14"
+  },
+  "bin": {
+    "tsg": "dist/bin/tsg-cli.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
+  },
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://gitlab.com/tno-tsg/dataspace-protocol/tno-security-gateway.git",
+    "directory": "tools/cli"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.11",
+    "@types/semver": "^7.5.8",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "@commander-js/extra-typings": "^12.1.0",
+    "@inquirer/prompts": "^5.3.2",
+    "axios": "^1.7.2",
+    "chalk": "^4.1.2",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.0",
+    "commander": "^12.1.0",
+    "eta": "^3.4.0",
+    "inquirer": "^10.1.2",
+    "reflect-metadata": "^0.2.2",
+    "semver": "^7.6.2",
+    "tslib": "^2.6.2",
+    "yaml": "^2.4.5"
+  }
+}

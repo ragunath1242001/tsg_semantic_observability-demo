@@ -1,0 +1,112 @@
+host: "<%= it.participant.host %>"
+<% if (it.participant.routing === "subdomain") { %>
+endpoint: https://<%= it.participant.host %>
+casdoorEndpoint: "https://casdoor.<%= it.participant.host %>"
+  <% if (it.participant.hasControlPlane) { %>
+controlPlaneEndpoint: https://cp.<%= it.participant.host %>/api
+  <% } %>
+<% } else { %>
+endpoint: https://<%= it.participant.host %>/wallet
+casdoorEndpoint: "https://<%= it.participant.host %>"
+  <% if (it.participant.hasControlPlane) { %>
+controlPlaneEndpoint: https://<%= it.participant.host %>/control-plane/api
+  <% } %>
+subPath: /wallet
+<% } %>
+
+<% if (it.applications?.wallet?.imageTag || it.applications?.wallet?.imageRepository) { %>
+image:
+<%- if (it.applications?.wallet?.imageTag) { %>
+  tag: <%= it.applications?.wallet.imageTag %>
+<% } %>
+<%- if (it.applications?.wallet?.imageRepository) { %>
+  repository: <%= it.applications?.wallet.imageRepository %>
+<% } %>
+<% } %>
+
+ingress:
+  enabled: true
+
+configFromSecrets:
+  db:
+    password:
+      name: "<%= it.participant.id %>-postgresql"
+      key: postgres-password
+  auth:
+    clientID:
+      name: casdoor-wallet-<%= it.participant.id %>-secret
+      key: clientId
+    clientSecret:
+      name: casdoor-wallet-<%= it.participant.id %>-secret
+      key: clientSecret
+    clientUsername:
+      name: casdoor-wallet-<%= it.participant.id %>-secret
+      key: username
+    clientPassword:
+      name: casdoor-wallet-<%= it.participant.id %>-secret
+      key: password
+
+config:
+  db:
+    database: wallet
+    host: "<%= it.participant.id %>-postgresql"
+  
+  server:
+    publicAddress: "{{ .Values.endpoint }}"
+
+  auth:
+    authorizationURL: "{{ .Values.casdoorEndpoint }}/login/oauth/authorize"
+    tokenURL: "{{ .Values.casdoorEndpoint }}/api/login/oauth/access_token"
+    introspectionURL: "{{ .Values.casdoorEndpoint }}/api/login/oauth/introspect"
+    callbackURL: "{{ .Values.endpoint }}/api/auth/callback"
+    rolePath: "$.roles[*].name"
+    redirectURL: "{{ .Values.endpoint }}/"
+  
+  runtime:
+    title: "<%= it.participant.name %>"
+  
+  initKeys:
+    - id: key-0
+      type: EdDSA
+      default: true
+  
+  trustAnchors:
+    - identifier: did:web:<%= it.general.authorityDomain %>
+      credentialTypes:
+        - "<%= it.general.credentialType %>"
+        - "<%= it.participant.id %>:<%= it.general.credentialType %>"
+        - https://<%= it.general.authorityDomain %>/credentials/<%= it.general.credentialType %>
+  
+  contexts:
+    - id: "<%= it.general.credentialType %>"
+      credentialType: "<%= it.general.credentialType %>"
+      issuable: <%= it.participant.issuer %>
+<%- if (it.participant.issuer) { %>
+      document: <%= JSON.stringify(it.participant.document) %>
+      schema: <%= JSON.stringify(it.participant.schema) %>
+<% } else { %>
+      documentUrl: https://<%= it.general.authorityDomain %>/context/<%= it.general.credentialType %>
+<% } %>
+  
+<%- if (it.participant.issuer) { %>
+  oid4vci:
+    issuer: 
+<%- it.participants.filter((p) => !p.issuer).forEach((participant) => { %>
+      - holderId: did:web:<%= participant.host %>
+        credentialType: <%= it.general.credentialType %>
+        credentialSubject: <%= JSON.stringify({...participant.credentialSubject, id: `did:web:${participant.host}`}) %>
+        preAuthorizationCode: <%= participant.preAuthorizationCode %>
+<% }) %>
+<% } else { %>
+  oid4vci:
+    holder:
+      - issuerUrl: https://<%= it.general.authorityDomain %>
+        preAuthorizationCode: <%= it.participant.preAuthorizationCode %>
+        credentialType: <%= it.general.credentialType %>
+<% } %>
+<%- if (it.participant.hasControlPlane) { %>
+  didServices:
+    - id: did:web:<%= it.participant.host%>#control-plane
+      type: connector
+      serviceEndpoint: "{{ .Values.controlPlaneEndpoint }}"
+<% } %>
