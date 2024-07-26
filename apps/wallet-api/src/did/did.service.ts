@@ -33,14 +33,12 @@ export class DidService {
       {
         id: `${this.didId}#oid4vci`,
         type: "OID4VCI",
-        serviceEndpoint: this.config.server.publicAddress,
+        serviceEndpoint: `https://${this.config.server.publicDomain}`,
       },
       {
         id: `${this.didId}#presentation`,
         type: "PresentationService",
-        serviceEndpoint: `${this.config.server.publicAddress}${
-          process.env["EMBEDDED_FRONTEND"] ? "/api" : ""
-        }/iatp/holder/presentation`,
+        serviceEndpoint: `${this.config.server.publicAddress}/iatp/holder/presentation`,
       },
       ...this.config.didServices,
     ];
