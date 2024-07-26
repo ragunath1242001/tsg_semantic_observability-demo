@@ -180,6 +180,19 @@ const createPolicy = (policy: PolicyDto): string => {
             <span class="font-semibold"
               >Policies: {{ dataset["odrl:hasPolicy"]?.length ?? 0 }}</span
             >
+            <template v-if="dataset['dcat:conformsTo']">
+              <div class="pt-3 pb-1 font-semibold">
+                Conforms To:
+                <a :href="dataset['dcat:conformsTo']" target="_blank"
+                  ><i
+                    class="mx-1 pi pi-link text-blue-500"
+                    v-tooltip:bottom="dataset['dcat:conformsTo']"
+                  >
+                  </i
+                ></a>
+              </div>
+            </template>
+
             <template v-if="dataset['dcat:keyword']">
               <div class="pt-3 pb-1 font-semibold">Keywords</div>
               <Tag

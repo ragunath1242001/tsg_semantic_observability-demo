@@ -99,9 +99,9 @@ export const useDspStore = defineStore("dsp", {
         this.ownCatalog.ownDid = response.data?.["dct:publisher"] || "";
         this.ownCatalog.catalog = response.data;
         this.ownCatalog.numberOfDatasets =
-          response.data?.["dcat:dataset"]?.length;
+          response.data?.["dcat:dataset"]?.length ?? 0;
         this.ownCatalog.numberOfServices =
-          response.data?.["dcat:service"]?.length;
+          response.data?.["dcat:service"]?.length ?? 0;
         if (response.data?.["dct:title"]) {
           window.document.title = `Control Plane - ${response.data?.["dct:title"]}`;
         }

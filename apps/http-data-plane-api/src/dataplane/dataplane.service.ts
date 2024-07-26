@@ -269,9 +269,6 @@ export class DataPlaneService {
   }
 
   private async createDatasets(datasetConfig: DatasetConfig) {
-    const accessService = new DataService({
-      endpointURL: this.config.controlPlane.controlEndpoint,
-    });
     const id =
       datasetConfig.id ||
       this.state?.dataset?.[0]?.["@id"] ||
@@ -280,6 +277,7 @@ export class DataPlaneService {
     const baseDataset = new Dataset({
       id: id,
       title: datasetConfig.title,
+      conformsTo: datasetConfig.conformsTo,
       hasVersion: datasetConfig.versions.map(
         (v) => new Reference(`${id}:${v.version}`),
       ),
@@ -294,7 +292,13 @@ export class DataPlaneService {
           conformsTo: datasetConfig.versions[0].openApiSpec
             ? new Reference(datasetConfig.versions[0].openApiSpec)
             : undefined,
-          accessService: [accessService],
+          accessService: [
+            new DataService({
+              endpointURL:
+                datasetConfig.versions[0].backend ||
+                this.config.controlPlane.controlEndpoint,
+            }),
+          ],
         }),
       ],
       hasPolicy: await this.constructOffer(id, datasetConfig.policy),
@@ -325,7 +329,12 @@ export class DataPlaneService {
               conformsTo: v.openApiSpec
                 ? new Reference(v.openApiSpec)
                 : undefined,
-              accessService: [accessService],
+              accessService: [
+                new DataService({
+                  endpointURL:
+                    v.backend || this.config.controlPlane.controlEndpoint,
+                }),
+              ],
             }),
           ],
           hasPolicy: await this.constructOffer(id, datasetConfig.policy),
