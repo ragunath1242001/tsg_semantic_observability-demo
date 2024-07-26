@@ -1,16 +1,21 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
 import { useLayout } from "./composables/layout";
-import { usePrimeVue } from "primevue/config";
+import { PrimeVueConfiguration, PrimeVueChangeTheme } from "primevue/config";
 
-const { setScale, layoutState, layoutConfig } = useLayout();
+const { setScale, layoutConfig } = useLayout();
 
 console.log(layoutConfig.darkTheme.value);
 watch(layoutConfig.darkTheme, () => {
   console.log(layoutConfig.darkTheme.value);
 });
 
-const $primevue = usePrimeVue();
+const props = defineProps<{
+  primevueInstance: {
+    config: PrimeVueConfiguration;
+    changeTheme: PrimeVueChangeTheme;
+  };
+}>();
 
 const decrementScale = () => {
   setScale(layoutConfig.scale.value - 1);
@@ -37,10 +42,15 @@ const onDarkModeChange = (value) => {
 };
 
 const onChangeTheme = (theme, mode) => {
-  $primevue.changeTheme(layoutConfig.theme.value, theme, "theme-css", () => {
-    layoutConfig.theme.value = theme;
-    layoutConfig.darkTheme.value = mode;
-  });
+  props.primevueInstance.changeTheme(
+    layoutConfig.theme.value,
+    theme,
+    "theme-css",
+    () => {
+      layoutConfig.theme.value = theme;
+      layoutConfig.darkTheme.value = mode;
+    }
+  );
 };
 </script>
 <template>

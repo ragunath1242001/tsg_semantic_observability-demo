@@ -34,7 +34,7 @@ const updateSettings = async () => {
     :transitionOptions="'.3s cubic-bezier(0, 0, 0.2, 1)'"
     class="layout-config-sidebar w-26rem"
   >
-    <UIConfig />
+    <UIConfig :primevueInstance="$primevue" />
     <h5>Gaia-X Support</h5>
     <ToggleButton
       v-model="config.gaiaXSupport"
