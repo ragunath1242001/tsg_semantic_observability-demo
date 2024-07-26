@@ -10,23 +10,8 @@ import { FooterProps } from "@libs/common-ui/layout/AppFooter.vue";
 import { TopbarProps } from "@libs/common-ui/layout/AppTopbar.vue";
 import { useRoute, useRouter } from "vue-router";
 import { useUserStore } from "../stores/user";
-import { usePrimeVue } from "primevue/config";
 
 const { layoutConfig, layoutState } = useLayout();
-
-const Primevue = usePrimeVue();
-
-const theme =
-  localStorage.getItem("theme") ??
-  ((window?.matchMedia?.("(prefers-color-scheme:dark)")?.matches
-    ? "lara-dark-blue"
-    : "lara-light-blue") ||
-    "lara-dark-blue");
-
-Primevue.changeTheme(layoutConfig.theme.value, theme, "theme-css", () => {
-  layoutConfig.theme.value = theme;
-  layoutConfig.darkTheme.value = theme === "lara-dark-blue";
-});
 
 const { negotiationsCount } = storeToRefs(useDspStore());
 
@@ -120,7 +105,7 @@ const sidebar: MenuProps = {
 <template>
   <div class="layout-wrapper" :class="containerClass">
     <AppLayout :topbar="topbar" :footer="footer" :sidebar="sidebar" />
-    <AppConfig />
+    <AppConfig :primevue="$primevue" />
     <div class="layout-mask"></div>
   </div>
 </template>
