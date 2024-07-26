@@ -60,7 +60,11 @@ function getChildFolders(path) {
     .map((f) => `${path}/${f.name}`);
 }
 
-const npmfolders = [...getChildFolders("apps"), ...getChildFolders("libs")];
+const npmfolders = [
+  ...getChildFolders("apps"),
+  ...getChildFolders("libs"),
+  ...getChildFolders("tools"),
+];
 const helmfolders = getChildFolders("helm-charts");
 const projects = [];
 for (const folder of npmfolders) {
