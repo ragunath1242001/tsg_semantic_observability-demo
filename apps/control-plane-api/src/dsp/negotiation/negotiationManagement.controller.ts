@@ -1,4 +1,4 @@
-import { INegotiationStatusDto } from "@libs/control-plane-dtos";
+import { INegotiationStatusDto } from "@tsg-dsp/control-plane-dtos";
 import {
   Body,
   Controller,
@@ -17,7 +17,7 @@ import {
   ContractNegotiationDto,
   NegotiationDetail,
   Offer,
-} from "@libs/common-dsp";
+} from "@tsg-dsp/common-dsp";
 import { OAuthGuard } from "../../auth/oauth.guard";
 import { Roles } from "../../auth/roles.guard";
 import { normalizeAddress } from "../../utils/address";

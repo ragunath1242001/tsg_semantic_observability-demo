@@ -4,11 +4,11 @@ import {
   AppRole,
   CredentialConfig,
   JsonLdContextConfig,
-} from "@libs/wallet-dtos";
+} from "@tsg-dsp/wallet-dtos";
 import { useToast } from "primevue/usetoast";
 import { computed, onMounted, ref } from "vue";
-import FormField from "@libs/common-ui/components/FormField.vue";
-import JsonSchemaFormElement from "@libs/common-ui/components/JsonSchemaFormElement.vue";
+import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
+import JsonSchemaFormElement from "@tsg-dsp/common-ui/components/JsonSchemaFormElement.vue";
 import Ajv, { JSONSchemaType } from "ajv";
 
 interface CredentialForm {

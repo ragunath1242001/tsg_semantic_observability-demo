@@ -1,4 +1,4 @@
-import { MultilanguageDto } from "@libs/common-dsp";
+import { MultilanguageDto } from "@tsg-dsp/common-dsp";
 
 const stripDspace = (inputStr: string): string => {
   return `${inputStr.replace("dspace:", "")}`;

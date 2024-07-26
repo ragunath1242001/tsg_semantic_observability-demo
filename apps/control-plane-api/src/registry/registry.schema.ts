@@ -1,4 +1,4 @@
-import { CredentialAddress } from "@libs/control-plane-dtos";
+import { CredentialAddress } from "@tsg-dsp/control-plane-dtos";
 import { ApiProperty } from "@nestjs/swagger";
 
 export class CredentialAddressDto implements CredentialAddress {

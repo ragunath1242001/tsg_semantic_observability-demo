@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import utils from "../utils/common";
 
-import { TransferDetailDto, TransferStatus } from "@libs/control-plane-dtos";
+import { TransferDetailDto, TransferStatus } from "@tsg-dsp/control-plane-dtos";
 import { ref, toRef } from "vue";
 import { AccordionTabOpenEvent } from "primevue/accordion";
 import { useToast } from "primevue/usetoast";

@@ -5,14 +5,14 @@ import {
   OfferDto,
   PolicyDto,
   ReferenceDto,
-} from "@libs/common-dsp";
+} from "@tsg-dsp/common-dsp";
 import { useToast } from "primevue/usetoast";
 import { injectStrict } from "../utils/injectTyped";
 import { AxiosKey } from "../utils/symbols";
 import utils from "../utils/common";
-import DisplayField from "@libs/common-ui/components/DisplayField.vue";
-import MonacoEditor from "@libs/common-ui/components/MonacoEditor.vue";
-import schema from "@libs/common-ui/assets/odrl.schema.json";
+import DisplayField from "@tsg-dsp/common-ui/components/DisplayField.vue";
+import MonacoEditor from "@tsg-dsp/common-ui/components/MonacoEditor.vue";
+import schema from "@tsg-dsp/common-ui/assets/odrl.schema.json";
 
 interface Constraint {
   leftOperand: string;

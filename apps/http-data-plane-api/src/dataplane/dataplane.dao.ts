@@ -1,5 +1,5 @@
-import { DatasetConfig } from "@libs/http-data-plane-dtos";
-import { DataPlaneDetailsDto, DatasetDto } from "@libs/common-dsp";
+import { DatasetConfig } from "@tsg-dsp/http-data-plane-dtos";
+import { DataPlaneDetailsDto, DatasetDto } from "@tsg-dsp/common-dsp";
 import { Column, Entity, PrimaryColumn } from "typeorm";
 
 @Entity()

@@ -1,4 +1,4 @@
-import { Dataset, HealthStatus, IDataPlane } from "@libs/common-dsp";
+import { Dataset, HealthStatus, IDataPlane } from "@tsg-dsp/common-dsp";
 import { Column, Entity, OneToMany, PrimaryColumn, Relation } from "typeorm";
 import { DatasetDao } from "./catalog.dao";
 import { MetaEntity } from "./common.dao";

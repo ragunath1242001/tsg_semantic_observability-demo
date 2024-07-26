@@ -13,10 +13,10 @@ import {
 import { CredentialsService } from "./credentials.service.js";
 import { InitCredentialConfig, RootConfig } from "../config.js";
 import { Credentials } from "../model/credentials.dao.js";
-import { CredentialSubject, VerifiableCredential } from "@libs/common-dsp";
+import { CredentialSubject, VerifiableCredential } from "@tsg-dsp/common-dsp";
 import { Client } from "../auth/roles.guard.js";
 import { AppError } from "../utils/error.js";
-import { ClientInfo, AppRole } from "@libs/wallet-dtos";
+import { ClientInfo, AppRole } from "@tsg-dsp/wallet-dtos";
 import { ContextService } from "../contexts/context.service.js";
 import {
   ApiBody,

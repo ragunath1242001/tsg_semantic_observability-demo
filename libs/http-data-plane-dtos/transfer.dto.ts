@@ -3,7 +3,7 @@ import {
   DataPlaneRequestResponseDto,
   TransferRequestMessageDto,
   TransferState,
-} from "@libs/common-dsp";
+} from "@tsg-dsp/common-dsp";
 
 export interface TransferDto {
   id: string;

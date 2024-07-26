@@ -14,7 +14,7 @@ import { PresentationService } from "../presentation/presentation.service.js";
 import { CIAccessToken, CredentialIssuance } from "../model/issuance.dao.js";
 import { http, HttpResponse } from "msw";
 import { SetupServer, setupServer } from "msw/node";
-import { OfferGrants } from "@libs/wallet-dtos";
+import { OfferGrants } from "@tsg-dsp/wallet-dtos";
 import {
   GenerateKeyPairResult,
   KeyLike,

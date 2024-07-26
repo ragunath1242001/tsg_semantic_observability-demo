@@ -17,7 +17,7 @@ import {
   CatalogRequestMessage,
   Dataset,
   DatasetDto,
-} from "@libs/common-dsp";
+} from "@tsg-dsp/common-dsp";
 import { OAuthGuard } from "../../auth/oauth.guard";
 import { Roles } from "../../auth/roles.guard";
 import { normalizeAddress } from "../../utils/address";

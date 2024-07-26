@@ -1,5 +1,5 @@
 {
-  "name": "@libs/common-dsp",
+  "name": "@tsg-dsp/common-dsp",
   "version": "0.1.2",
   "description": "TSG Dataspace Protocol Common",
   "license": "Apache-2.0",

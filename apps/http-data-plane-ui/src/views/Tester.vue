@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
-import FormField from "@libs/common-ui/components/FormField.vue";
-import KeyValuePairEdit from "@libs/common-ui/components/KeyValuePairEdit.vue";
+import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
+import KeyValuePairEdit from "@tsg-dsp/common-ui/components/KeyValuePairEdit.vue";
 import axios, { AxiosResponse } from "axios";
 import { useToast } from "primevue/usetoast";
 import { useDialog } from "primevue/usedialog";
-import { TransferDto } from "@libs/http-data-plane-dtos";
+import { TransferDto } from "@tsg-dsp/http-data-plane-dtos";
 import { axiosInstance, store } from "../store/index.js";
 import { httpStatus } from "../utils/httpStatus";
-import { AgreementDto, DatasetDto } from "@libs/common-dsp";
+import { AgreementDto, DatasetDto } from "@tsg-dsp/common-dsp";
 
 import JSONDialog from "../components/JSONDialog.vue";
 import { useRoute } from "vue-router";

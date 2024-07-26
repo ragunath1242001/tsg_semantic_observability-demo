@@ -4,7 +4,7 @@ import {
   ContextDto,
   SerializableClass,
   deserialize,
-} from "@libs/common-dsp";
+} from "@tsg-dsp/common-dsp";
 import { DSPError } from "./errors/error";
 
 /* eslint-disable-next-line @typescript-eslint/no-explicit-any */

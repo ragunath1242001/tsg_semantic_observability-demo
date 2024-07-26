@@ -1,13 +1,13 @@
 import { Body, Controller, Post } from "@nestjs/common";
 import { IatpVerifierService } from "./verifier.service.js";
-import { AppRole } from "@libs/wallet-dtos";
+import { AppRole } from "@tsg-dsp/wallet-dtos";
 import { Roles } from "../../auth/roles.guard.js";
-import { PresentationDefinition } from "@libs/wallet-dtos";
+import { PresentationDefinition } from "@tsg-dsp/wallet-dtos";
 import {
   VerifiablePresentation,
   VerifiableCredential,
   CredentialSubject,
-} from "@libs/common-dsp";
+} from "@tsg-dsp/common-dsp";
 import {
   ApiBody,
   ApiOAuth2,

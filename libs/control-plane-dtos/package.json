@@ -1,5 +1,5 @@
 {
-  "name": "@libs/control-plane-dtos",
+  "name": "@tsg-dsp/control-plane-dtos",
   "version": "0.1.2",
   "description": "",
   "main": "index.js",
@@ -11,7 +11,7 @@
     "build": "tsc -p tsconfig.json"
   },
   "dependencies": {
-    "@libs/common-dsp": "workspace:*",
+    "@tsg-dsp/common-dsp": "workspace:*",
     "class-validator": "^0.14.0",
     "jose": "^4.14.4",
     "tslib": "^2.6.2",

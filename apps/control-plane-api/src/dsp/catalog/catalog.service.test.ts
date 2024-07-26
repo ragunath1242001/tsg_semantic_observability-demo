@@ -5,7 +5,7 @@ import {
   Dataset,
   Distribution,
   ODRLAction,
-} from "@libs/common-dsp";
+} from "@tsg-dsp/common-dsp";
 import { plainToClass } from "class-transformer";
 import { InitCatalog, PolicyConfig, ServerConfig } from "../../config";
 import {

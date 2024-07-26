@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import FormField from "@libs/common-ui/components/FormField.vue";
+import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
 import { axiosInstance } from "../../store/index.js";
 import {
   CredentialConfig,
@@ -8,8 +8,8 @@ import {
   CredentialOfferStatus,
   JsonLdContextConfig,
   OfferGrants,
-} from "@libs/wallet-dtos";
-import JsonSchemaFormElement from "@libs/common-ui/components/JsonSchemaFormElement.vue";
+} from "@tsg-dsp/wallet-dtos";
+import JsonSchemaFormElement from "@tsg-dsp/common-ui/components/JsonSchemaFormElement.vue";
 import { useToast } from "primevue/usetoast";
 import { computed, onMounted, ref } from "vue";
 import axios from "axios";

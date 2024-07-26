@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { INegotiationStatusDto } from "@libs/control-plane-dtos";
+import { INegotiationStatusDto } from "@tsg-dsp/control-plane-dtos";
 import { useToast } from "primevue/usetoast";
 import utils from "../utils/common";
 import http from "../utils/http";

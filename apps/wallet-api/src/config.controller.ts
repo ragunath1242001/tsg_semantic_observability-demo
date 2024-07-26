@@ -10,7 +10,7 @@ import {
 } from "@nestjs/common";
 import { RuntimeConfig } from "./config.js";
 import { OAuthGuard } from "./auth/oauth.guard.js";
-import { AppRole } from "@libs/wallet-dtos";
+import { AppRole } from "@tsg-dsp/wallet-dtos";
 import { Roles } from "./auth/roles.guard.js";
 import { validationPipe } from "./utils/validation.pipe.js";
 import {

@@ -11,9 +11,9 @@
   },
   "dependencies": {
     "@guolao/vue-monaco-editor": "^1.5.1",
-    "@libs/common-dsp": "workspace:*",
-    "@libs/common-ui": "workspace:*",
-    "@libs/http-data-plane-dtos": "workspace:*",
+    "@tsg-dsp/common-dsp": "workspace:*",
+    "@tsg-dsp/common-ui": "workspace:*",
+    "@tsg-dsp/http-data-plane-dtos": "workspace:*",
     "axios": "^1.4.0",
     "chart.js": "3.3.2",
     "did-resolver": "^4.1.0",

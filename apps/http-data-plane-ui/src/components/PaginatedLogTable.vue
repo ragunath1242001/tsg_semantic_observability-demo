@@ -2,7 +2,7 @@
 import { onMounted, ref } from "vue";
 import { axiosInstance } from "../store";
 
-import FormField from "@libs/common-ui/components/FormField.vue";
+import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
 import { formatDate } from "../utils/date";
 import { useDialog } from "primevue/usedialog";
 import JSONDialog from "./JSONDialog.vue";

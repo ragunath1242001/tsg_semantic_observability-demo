@@ -12,7 +12,7 @@ import {
   DataPlaneCreation,
   DatasetDto,
   OfferDto,
-} from "@libs/common-dsp";
+} from "@tsg-dsp/common-dsp";
 import { TypeOrmTestHelper } from "../utils/testhelper";
 import { TransferDao } from "./transfer.dao";
 import { TypeOrmModule } from "@nestjs/typeorm";

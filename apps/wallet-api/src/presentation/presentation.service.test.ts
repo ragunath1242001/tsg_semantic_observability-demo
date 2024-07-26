@@ -10,7 +10,7 @@ import { KeysService } from "../keys/keys.service.js";
 import { PresentationService } from "./presentation.service.js";
 import { describe, expect, beforeAll, afterAll, it, jest } from "@jest/globals";
 import { DidResolverService } from "../did/did.resolver.service.js";
-import { VerifiablePresentationJwt } from "@libs/common-dsp";
+import { VerifiablePresentationJwt } from "@tsg-dsp/common-dsp";
 import { SetupServer, setupServer } from "msw/node";
 import { HttpResponse, http } from "msw";
 import { DIDDocuments, DIDService } from "../model/did.dao.js";

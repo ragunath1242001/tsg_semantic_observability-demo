@@ -18,7 +18,7 @@ import {
   TransferStartMessage,
   TransferSuspensionMessage,
   TransferTerminationMessage,
-} from "@libs/common-dsp";
+} from "@tsg-dsp/common-dsp";
 import axios, { AxiosRequestConfig } from "axios";
 import { AuthService } from "../../auth/auth.service";
 import { DSPClientError } from "../../utils/errors/error";

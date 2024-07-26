@@ -10,7 +10,7 @@ import {
   Put,
 } from "@nestjs/common";
 import { Roles } from "../auth/roles.guard.js";
-import { AppRole } from "@libs/wallet-dtos";
+import { AppRole } from "@tsg-dsp/wallet-dtos";
 import { ContextService } from "./context.service.js";
 import { JSONLDContext } from "../model/context.dao.js";
 import { JsonLdContextConfig } from "../config.js";

@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { AppRole } from "@libs/wallet-dtos";
+import { AppRole } from "@tsg-dsp/wallet-dtos";
 import { axiosInstance, store } from "../..//store/index.js";
-import { CredentialSubject, VerifiableCredential } from "@libs/common-dsp";
+import { CredentialSubject, VerifiableCredential } from "@tsg-dsp/common-dsp";
 import { computed, onMounted, ref } from "vue";
 import { useToast } from "primevue/usetoast";
 import { toArray } from "../../utils/union.js";
-import FormField from "@libs/common-ui/components/FormField.vue";
+import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
 import { AutoCompleteCompleteEvent } from "primevue/autocomplete";
 
 interface LegalRegistrationNumberForm {

@@ -11,7 +11,7 @@ import {
   VerifiableCredential,
   VerifiablePresentation,
   toArray,
-} from "@libs/common-dsp";
+} from "@tsg-dsp/common-dsp";
 import { plainToInstance } from "class-transformer";
 import { JwtPayload, decode } from "jsonwebtoken";
 import { Strategy } from "passport-http-bearer";

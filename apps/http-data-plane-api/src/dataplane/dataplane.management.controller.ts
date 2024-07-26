@@ -20,10 +20,10 @@ import {
   DataPlaneStateDto,
   DatasetConfig,
   TransferDto,
-} from "@libs/http-data-plane-dtos";
+} from "@tsg-dsp/http-data-plane-dtos";
 import { Roles } from "../auth/roles.guard";
 import { Request, Response } from "express";
-import { AgreementDto, CatalogDto, DatasetDto } from "@libs/common-dsp";
+import { AgreementDto, CatalogDto, DatasetDto } from "@tsg-dsp/common-dsp";
 
 @Controller("/management")
 @Roles("controlplane_dataplane")

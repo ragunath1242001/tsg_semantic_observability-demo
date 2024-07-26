@@ -9,7 +9,7 @@ import { Observable } from "rxjs";
 import jsonpath from "jsonpath";
 import { config } from "../config.module.js";
 import { AuthConfig } from "../config.js";
-import { AppRole, ClientInfo } from "@libs/wallet-dtos";
+import { AppRole, ClientInfo } from "@tsg-dsp/wallet-dtos";
 
 export const Roles = Reflector.createDecorator<string | string[]>();
 export const DisableRolesGuard = Reflector.createDecorator<boolean>();

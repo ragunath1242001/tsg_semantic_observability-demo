@@ -21,14 +21,14 @@ import {
   OfferGrants,
   PreAuthorizationCodeGrant,
   VpProof,
-} from "@libs/wallet-dtos";
+} from "@tsg-dsp/wallet-dtos";
 import {
   ApiExtraModels,
   ApiProperty,
   ApiPropertyOptional,
   getSchemaPath,
 } from "@nestjs/swagger";
-import { CredentialSubject } from "@libs/common-dsp";
+import { CredentialSubject } from "@tsg-dsp/common-dsp";
 import { DefaultCredentialSubjectDto } from "../credentials/credentials.schemas.js";
 
 export class CredentialIssuerMetadataDto implements CredentialIssuerMetadata {

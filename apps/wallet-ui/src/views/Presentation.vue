@@ -2,13 +2,13 @@
 import { ref } from "vue";
 import { useToast } from "primevue/usetoast";
 import { axiosInstance, store } from "../store/index.js";
-import FormField from "@libs/common-ui/components/FormField.vue";
+import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
 import {
   CredentialSubject,
   VerifiableCredential,
   VerifiablePresentation,
-} from "@libs/common-dsp";
-import schema from "@libs/common-ui/assets/presentation-definition.schema.json";
+} from "@tsg-dsp/common-dsp";
+import schema from "@tsg-dsp/common-ui/assets/presentation-definition.schema.json";
 
 const toast = useToast();
 

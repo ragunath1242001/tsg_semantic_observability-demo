@@ -5,9 +5,9 @@ import {
   INegotiationStatusDto,
   TransferDetailDto,
   TransferStatus,
-} from "@libs/control-plane-dtos";
+} from "@tsg-dsp/control-plane-dtos";
 import http from "../utils/http";
-import { CatalogDto } from "@libs/common-dsp";
+import { CatalogDto } from "@tsg-dsp/common-dsp";
 
 interface Catalog {
   catalog: CatalogDto;

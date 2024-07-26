@@ -19,7 +19,7 @@ import {
   CredentialRequest,
   CredentialResponse,
   OfferGrants,
-} from "@libs/wallet-dtos";
+} from "@tsg-dsp/wallet-dtos";
 import {
   GenerateKeyPairResult,
   KeyLike,

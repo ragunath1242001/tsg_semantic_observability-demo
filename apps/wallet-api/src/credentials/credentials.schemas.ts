@@ -8,7 +8,7 @@ import {
   VerifiableCredential,
   CredentialSubject,
   Signature,
-} from "@libs/common-dsp";
+} from "@tsg-dsp/common-dsp";
 import {
   IsString,
   IsBoolean,

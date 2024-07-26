@@ -1,4 +1,4 @@
-import { DataPlaneCreation } from "@libs/control-plane-dtos";
+import { DataPlaneCreation } from "@tsg-dsp/control-plane-dtos";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import {
@@ -10,7 +10,7 @@ import {
   ODRLAction,
   Offer,
   Permission,
-} from "@libs/common-dsp";
+} from "@tsg-dsp/common-dsp";
 import { plainToClass } from "class-transformer";
 import { AuthClientService } from "../auth/auth.client.service";
 import { AuthConfig, InitCatalog, ServerConfig } from "../config";

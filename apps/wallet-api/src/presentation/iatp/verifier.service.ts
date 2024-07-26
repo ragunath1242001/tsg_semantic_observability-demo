@@ -12,12 +12,12 @@ import {
   PresentationDefinition,
   PresentationResponse,
   Field,
-} from "@libs/wallet-dtos";
+} from "@tsg-dsp/wallet-dtos";
 import {
   CredentialSubject,
   VerifiableCredential,
   VerifiablePresentation,
-} from "@libs/common-dsp";
+} from "@tsg-dsp/common-dsp";
 import { plainToInstance } from "class-transformer";
 
 @Injectable()

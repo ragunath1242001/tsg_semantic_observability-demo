@@ -10,9 +10,9 @@
   },
   "dependencies": {
     "@guolao/vue-monaco-editor": "^1.5.1",
-    "@libs/common-dsp": "workspace:*",
-    "@libs/common-ui": "workspace:*",
-    "@libs/control-plane-dtos": "workspace:*",
+    "@tsg-dsp/common-dsp": "workspace:*",
+    "@tsg-dsp/common-ui": "workspace:*",
+    "@tsg-dsp/control-plane-dtos": "workspace:*",
     "axios": "^1.4.0",
     "chart.js": "3.3.2",
     "pinia": "^2.1.7",

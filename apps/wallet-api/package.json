@@ -23,7 +23,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@libs/wallet-dtos": "workspace:*",
+    "@tsg-dsp/wallet-dtos": "workspace:*",
     "@nestjs/common": "^10.3.0",
     "@nestjs/core": "^10.3.0",
     "@nestjs/passport": "^10.0.3",
@@ -32,7 +32,7 @@
     "@nestjs/serve-static": "^4.0.0",
     "@nestjs/swagger": "^7.3.1",
     "@nestjs/typeorm": "^10.0.1",
-    "@libs/common-dsp": "workspace:*",
+    "@tsg-dsp/common-dsp": "workspace:*",
     "ajv": "^8.13.0",
     "axios": "^1.6.3",
     "class-transformer": "^0.5.1",

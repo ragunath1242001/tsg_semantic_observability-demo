@@ -1,4 +1,4 @@
-import { AppRole, ClientInfo } from "@libs/wallet-dtos";
+import { AppRole, ClientInfo } from "@tsg-dsp/wallet-dtos";
 import { ApiExtraModels, ApiProperty } from "@nestjs/swagger";
 
 export class ClientInfoDto implements ClientInfo {

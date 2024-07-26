@@ -4,7 +4,7 @@ import { NextFunction, Request, Response } from "express";
 import passport from "passport";
 import { Client } from "./roles.guard.js";
 import { AuthConfig } from "../config.js";
-import { ClientInfo } from "@libs/wallet-dtos";
+import { ClientInfo } from "@tsg-dsp/wallet-dtos";
 import {
   ApiExtraModels,
   ApiFoundResponse,

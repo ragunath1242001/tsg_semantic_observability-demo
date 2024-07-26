@@ -1,4 +1,4 @@
-import { OfferDto } from "@libs/common-dsp";
+import { OfferDto } from "@tsg-dsp/common-dsp";
 import { Type } from "class-transformer";
 import {
   IsArray,

@@ -3,14 +3,14 @@ import {
   CredentialSubject,
   VerifiableCredential,
   VerifiablePresentation,
-} from "@libs/common-dsp";
+} from "@tsg-dsp/common-dsp";
 import crypto from "crypto";
 import { AppError, parseNetworkError } from "../../utils/error.js";
 import { DidService } from "../../did/did.service.js";
 import {
   ComplianceRequest,
   LegalRegistrationNumberRequest,
-} from "@libs/wallet-dtos";
+} from "@tsg-dsp/wallet-dtos";
 import axios from "axios";
 import { toArray } from "../../utils/unions.js";
 import { CredentialsService } from "../credentials.service.js";

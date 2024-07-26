@@ -15,8 +15,8 @@ import {
 import { Transform, TransformFnParams, Type } from "class-transformer";
 import fs from "fs";
 import { Logger } from "@nestjs/common";
-import { CredentialSubject } from "@libs/common-dsp";
-import { AppRole } from "@libs/wallet-dtos";
+import { CredentialSubject } from "@tsg-dsp/common-dsp";
+import { AppRole } from "@tsg-dsp/wallet-dtos";
 
 function fileTransformer(params: TransformFnParams): string | undefined {
   if (typeof params.value === "string") {

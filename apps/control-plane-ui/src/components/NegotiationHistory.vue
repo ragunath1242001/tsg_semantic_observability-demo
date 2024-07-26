@@ -4,13 +4,13 @@ import utils from "../utils/common";
 import {
   NegotiationDetailDto,
   INegotiationStatusDto,
-} from "@libs/control-plane-dtos";
+} from "@tsg-dsp/control-plane-dtos";
 import { ref, toRef } from "vue";
 import { AccordionTabOpenEvent } from "primevue/accordion";
 import { useToast } from "primevue/usetoast";
 import http from "../utils/http";
-import { DatasetDto } from "@libs/common-dsp";
-import MonacoEditor from "@libs/common-ui/components/MonacoEditor.vue";
+import { DatasetDto } from "@tsg-dsp/common-dsp";
+import MonacoEditor from "@tsg-dsp/common-ui/components/MonacoEditor.vue";
 
 const props = defineProps<{
   negotiations: INegotiationStatusDto[];

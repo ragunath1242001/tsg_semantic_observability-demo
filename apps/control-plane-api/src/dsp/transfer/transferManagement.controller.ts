@@ -1,4 +1,4 @@
-import { DataPlaneAddress, TransferStatus } from "@libs/control-plane-dtos";
+import { DataPlaneAddress, TransferStatus } from "@tsg-dsp/control-plane-dtos";
 import {
   Body,
   Controller,
@@ -11,7 +11,7 @@ import {
   Query,
   UseGuards,
 } from "@nestjs/common";
-import { TransferDetail, TransferProcessDto } from "@libs/common-dsp";
+import { TransferDetail, TransferProcessDto } from "@tsg-dsp/common-dsp";
 import { OAuthGuard } from "../../auth/oauth.guard";
 import { Roles } from "../../auth/roles.guard";
 import { normalizeAddress } from "../../utils/address";

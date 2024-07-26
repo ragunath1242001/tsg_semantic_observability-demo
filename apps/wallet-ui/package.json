@@ -11,9 +11,9 @@
   },
   "dependencies": {
     "@guolao/vue-monaco-editor": "^1.5.1",
-    "@libs/wallet-dtos": "workspace:*",
-    "@libs/common-dsp": "workspace:*",
-    "@libs/common-ui": "workspace:*",
+    "@tsg-dsp/wallet-dtos": "workspace:*",
+    "@tsg-dsp/common-dsp": "workspace:*",
+    "@tsg-dsp/common-ui": "workspace:*",
     "ajv": "^8.12.0",
     "axios": "^1.4.0",
     "chart.js": "3.3.2",

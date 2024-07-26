@@ -1,4 +1,8 @@
-import { DurationDto, MultilanguageDto, ReferenceDto } from "@libs/common-dsp";
+import {
+  DurationDto,
+  MultilanguageDto,
+  ReferenceDto,
+} from "@tsg-dsp/common-dsp";
 import { ApiProperty } from "@nestjs/swagger";
 
 export class ReferenceSchema implements ReferenceDto {

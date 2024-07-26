@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import AppLayout from "@libs/common-ui/layout/AppLayout.vue";
-import { useLayout } from "@libs/common-ui/layout/composables/layout";
+import AppLayout from "@tsg-dsp/common-ui/layout/AppLayout.vue";
+import { useLayout } from "@tsg-dsp/common-ui/layout/composables/layout";
 import { computed } from "vue";
 import AppConfig from "./AppConfig.vue";
-import { Menu, MenuProps } from "@libs/common-ui/layout/AppMenu.vue";
-import { FooterProps } from "@libs/common-ui/layout/AppFooter.vue";
-import { TopbarProps } from "@libs/common-ui/layout/AppTopbar.vue";
+import { Menu, MenuProps } from "@tsg-dsp/common-ui/layout/AppMenu.vue";
+import { FooterProps } from "@tsg-dsp/common-ui/layout/AppFooter.vue";
+import { TopbarProps } from "@tsg-dsp/common-ui/layout/AppTopbar.vue";
 import { useRouter, useRoute } from "vue-router";
 import { store } from "../store/index.js";
 

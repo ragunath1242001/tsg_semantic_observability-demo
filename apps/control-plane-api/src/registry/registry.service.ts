@@ -1,4 +1,4 @@
-import { CredentialAddress } from "@libs/control-plane-dtos";
+import { CredentialAddress } from "@tsg-dsp/control-plane-dtos";
 import {
   HttpStatus,
   Injectable,
@@ -8,7 +8,7 @@ import {
 } from "@nestjs/common";
 import { SchedulerRegistry } from "@nestjs/schedule";
 import { InjectRepository } from "@nestjs/typeorm";
-import { CatalogDto } from "@libs/common-dsp";
+import { CatalogDto } from "@tsg-dsp/common-dsp";
 import { DIDDocument } from "did-resolver";
 import { Repository } from "typeorm";
 import { AuthService } from "../auth/auth.service";

@@ -3,7 +3,7 @@ import {
   IDataPlaneDto,
   DataPlaneRequestResponseDto,
   DataPlaneTransferDto,
-} from "@libs/control-plane-dtos";
+} from "@tsg-dsp/control-plane-dtos";
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { Interval } from "@nestjs/schedule";
 import { InjectRepository } from "@nestjs/typeorm";
@@ -21,7 +21,7 @@ import {
   TransferSuspensionMessage,
   TransferTerminationMessage,
   deserialize,
-} from "@libs/common-dsp";
+} from "@tsg-dsp/common-dsp";
 import axios, {
   AxiosInstance,
   AxiosRequestConfig,

@@ -13,7 +13,7 @@ import {
   CredentialRequest,
   CredentialResponse,
   OfferGrants,
-} from "@libs/wallet-dtos";
+} from "@tsg-dsp/wallet-dtos";
 import crypto from "crypto";
 import { AppError } from "../utils/error.js";
 import { plainToInstance } from "class-transformer";

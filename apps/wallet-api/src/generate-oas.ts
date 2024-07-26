@@ -3,7 +3,7 @@ import fs from "fs/promises";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { AppModule } from "./app.module.js";
 import { stringify } from "yaml";
-import { AppRole } from "@libs/wallet-dtos";
+import { AppRole } from "@tsg-dsp/wallet-dtos";
 
 async function bootstrap() {
   const app = await NestFactory.create(

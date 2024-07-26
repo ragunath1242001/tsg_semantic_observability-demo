@@ -13,9 +13,9 @@ import {
   DataPlaneRequestResponseDto,
   MultilanguageDto,
   DataPlaneAddressDto,
-} from "@libs/common-dsp";
-import { TransferEventDto } from "@libs/common-dsp/dist/model/dsp/transfer/transfers.dto";
-import { TransferRole, TransferStatus } from "@libs/control-plane-dtos";
+} from "@tsg-dsp/common-dsp";
+import { TransferEventDto } from "@tsg-dsp/common-dsp/dist/model/dsp/transfer/transfers.dto";
+import { TransferRole, TransferStatus } from "@tsg-dsp/control-plane-dtos";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { MultilanguageSchema } from "../common.schema";
 

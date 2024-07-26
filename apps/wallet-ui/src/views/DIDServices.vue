@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
-import { KeyInfo } from "@libs/wallet-dtos";
+import { KeyInfo } from "@tsg-dsp/wallet-dtos";
 import { useToast } from "primevue/usetoast";
 import { useConfirm } from "primevue/useconfirm";
-import FormField from "@libs/common-ui/components/FormField.vue";
+import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
 import { axiosInstance, store } from "../store/index.js";
 
 interface DIDService {
