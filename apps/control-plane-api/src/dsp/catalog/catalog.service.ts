@@ -15,7 +15,7 @@ import {
   Prohibition,
   Resource,
   deserialize,
-} from "@libs/common-dsp";
+} from "@tsg-dsp/common-dsp";
 import { Repository } from "typeorm";
 import {
   InitCatalog,

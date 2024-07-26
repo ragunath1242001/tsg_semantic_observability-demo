@@ -1,4 +1,4 @@
-import { DatasetDto } from "@libs/common-dsp";
+import { DatasetDto } from "@tsg-dsp/common-dsp";
 
 export interface IDataPlaneDto {
   datasets?: DatasetDto[];

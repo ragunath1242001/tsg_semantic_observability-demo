@@ -12,7 +12,7 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { DataPlaneService } from "./dataPlane.service";
-import { IDataPlaneDto } from "@libs/control-plane-dtos";
+import { IDataPlaneDto } from "@tsg-dsp/control-plane-dtos";
 import { OAuthGuard } from "../auth/oauth.guard";
 import { Roles } from "../auth/roles.guard";
 import {

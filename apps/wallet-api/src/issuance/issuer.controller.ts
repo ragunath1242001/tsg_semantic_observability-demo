@@ -18,9 +18,9 @@ import {
   CredentialOfferStatus,
   CredentialRequest,
   CredentialResponse,
-} from "@libs/wallet-dtos";
+} from "@tsg-dsp/wallet-dtos";
 import { Roles } from "../auth/roles.guard.js";
-import { AppRole } from "@libs/wallet-dtos";
+import { AppRole } from "@tsg-dsp/wallet-dtos";
 import { DisableOAuthGuard } from "../auth/oauth.guard.js";
 import {
   ApiBearerAuth,

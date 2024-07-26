@@ -13,7 +13,7 @@ import { DIDDocument } from "did-resolver";
 import { DidService } from "./did.service.js";
 import { DidServiceConfig } from "../config.js";
 import { Roles } from "../auth/roles.guard.js";
-import { AppRole } from "@libs/wallet-dtos";
+import { AppRole } from "@tsg-dsp/wallet-dtos";
 import { DIDService } from "../model/did.dao.js";
 import { validationPipe } from "../utils/validation.pipe.js";
 import {

@@ -1,4 +1,4 @@
-import { KeyInfo } from "@libs/wallet-dtos";
+import { KeyInfo } from "@tsg-dsp/wallet-dtos";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { JWK } from "jose";
 import { JsonWebKeyDto } from "../did/did.schemas.js";

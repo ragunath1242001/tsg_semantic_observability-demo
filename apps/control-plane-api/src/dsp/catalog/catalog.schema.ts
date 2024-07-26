@@ -21,7 +21,7 @@ import {
   ReferenceDto,
   ResourceDto,
   ValueDto,
-} from "@libs/common-dsp";
+} from "@tsg-dsp/common-dsp";
 import { ApiProperty, ApiPropertyOptional, OmitType } from "@nestjs/swagger";
 import {
   DurationSchema,

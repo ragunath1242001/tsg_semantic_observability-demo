@@ -1,4 +1,7 @@
-import { DataPlaneTransferDto, TransferRole } from "@libs/control-plane-dtos";
+import {
+  DataPlaneTransferDto,
+  TransferRole,
+} from "@tsg-dsp/control-plane-dtos";
 import {
   DataAddress,
   ITransferEvent,
@@ -7,7 +10,7 @@ import {
   TransferEvent,
   TransferProcess,
   TransferState,
-} from "@libs/common-dsp";
+} from "@tsg-dsp/common-dsp";
 import {
   Column,
   Entity,

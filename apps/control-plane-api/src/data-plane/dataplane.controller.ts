@@ -1,4 +1,4 @@
-import { DataPlaneCreation, IDataPlaneDto } from "@libs/control-plane-dtos";
+import { DataPlaneCreation, IDataPlaneDto } from "@tsg-dsp/control-plane-dtos";
 import {
   Body,
   Controller,
@@ -9,7 +9,7 @@ import {
   Post,
   UseGuards,
 } from "@nestjs/common";
-import { Catalog } from "@libs/common-dsp";
+import { Catalog } from "@tsg-dsp/common-dsp";
 import { OAuthGuard } from "../auth/oauth.guard";
 import { Roles } from "../auth/roles.guard";
 import { DeserializePipe } from "../utils/deserialize.pipe";

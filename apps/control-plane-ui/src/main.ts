@@ -32,10 +32,10 @@ import Textarea from "primevue/textarea";
 import Timeline from "primevue/timeline";
 import ProgressSpinner from "primevue/progressspinner";
 import OverlayPanel from "primevue/overlaypanel";
-import MonacoEditorVue from "@libs/common-ui/components/MonacoEditor.vue";
+import MonacoEditorVue from "@tsg-dsp/common-ui/components/MonacoEditor.vue";
 import { loader } from "@guolao/vue-monaco-editor";
 import Divider from "primevue/divider";
-import "@libs/common-ui/assets/styles.scss";
+import "@tsg-dsp/common-ui/assets/styles.scss";
 import MultiSelect from "primevue/multiselect";
 import Tooltip from "primevue/tooltip";
 

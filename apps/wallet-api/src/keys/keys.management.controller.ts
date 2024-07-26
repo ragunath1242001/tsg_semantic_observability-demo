@@ -12,8 +12,8 @@ import {
 import { InitKeyConfig } from "../config.js";
 import { KeysService } from "./keys.service.js";
 import { Roles } from "../auth/roles.guard.js";
-import { AppRole } from "@libs/wallet-dtos";
-import { KeyInfo } from "@libs/wallet-dtos";
+import { AppRole } from "@tsg-dsp/wallet-dtos";
+import { KeyInfo } from "@tsg-dsp/wallet-dtos";
 import { validationPipe } from "../utils/validation.pipe.js";
 import {
   ApiBody,

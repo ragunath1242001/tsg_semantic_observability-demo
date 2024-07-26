@@ -9,7 +9,7 @@ import {
   DatasetRequestMessage,
   Distribution,
   Multilanguage,
-} from "@libs/common-dsp";
+} from "@tsg-dsp/common-dsp";
 import { plainToClass } from "class-transformer";
 import { SetupServer } from "msw/lib/node";
 import request from "supertest";

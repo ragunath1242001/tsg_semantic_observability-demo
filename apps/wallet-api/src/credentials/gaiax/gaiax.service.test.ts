@@ -14,12 +14,12 @@ import {
   CredentialSubject,
   VerifiableCredential,
   VerifiablePresentation,
-} from "@libs/common-dsp";
+} from "@tsg-dsp/common-dsp";
 import { toArray } from "../../utils/unions.js";
 import {
   ComplianceRequest,
   LegalRegistrationNumberRequest,
-} from "@libs/wallet-dtos";
+} from "@tsg-dsp/wallet-dtos";
 import { GaiaXService } from "./gaiax.service.js";
 import { DIDDocuments, DIDService } from "../../model/did.dao.js";
 

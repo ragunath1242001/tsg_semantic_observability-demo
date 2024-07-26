@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Sidebar from "primevue/sidebar";
-import { useLayout } from "@libs/common-ui/layout/composables/layout";
-import UIConfig from "@libs/common-ui/layout/UIConfig.vue";
+import { useLayout } from "@tsg-dsp/common-ui/layout/composables/layout";
+import UIConfig from "@tsg-dsp/common-ui/layout/UIConfig.vue";
 
 const { layoutState } = useLayout();
 

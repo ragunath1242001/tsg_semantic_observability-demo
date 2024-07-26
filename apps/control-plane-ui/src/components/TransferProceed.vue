@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { TransferStatus } from "@libs/control-plane-dtos";
+import { TransferStatus } from "@tsg-dsp/control-plane-dtos";
 import { useToast } from "primevue/usetoast";
 import { ref } from "vue";
 import utils from "../utils/common";

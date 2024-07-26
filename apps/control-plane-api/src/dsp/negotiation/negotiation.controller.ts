@@ -24,7 +24,7 @@ import {
   ContractNegotiationTerminationMessage,
   ContractOfferMessage,
   ContractRequestMessage,
-} from "@libs/common-dsp";
+} from "@tsg-dsp/common-dsp";
 import { VerifiablePresentationGuard } from "../../auth/verifiablePresentation.guard";
 import { VPId } from "../../auth/verifiablePresentation.strategy";
 import { DeserializePipe } from "../../utils/deserialize.pipe";

@@ -1,6 +1,6 @@
 import { Controller, Get, HttpCode, HttpStatus, Param } from "@nestjs/common";
 import { CredentialsService } from "./credentials.service.js";
-import { VerifiableCredential, CredentialSubject } from "@libs/common-dsp";
+import { VerifiableCredential, CredentialSubject } from "@tsg-dsp/common-dsp";
 import { DisableOAuthGuard } from "../auth/oauth.guard.js";
 import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { CredentialsDto } from "./credentials.schemas.js";

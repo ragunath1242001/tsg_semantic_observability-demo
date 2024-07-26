@@ -12,11 +12,11 @@ import {
   PresentationValidation,
   VerifiablePresentationJsonLd,
   VerifiablePresentationJwt,
-} from "@libs/common-dsp";
+} from "@tsg-dsp/common-dsp";
 import { AppError } from "../../utils/error.js";
 import { PresentationService } from "../presentation.service.js";
 import { Roles } from "../../auth/roles.guard.js";
-import { AppRole } from "@libs/wallet-dtos";
+import { AppRole } from "@tsg-dsp/wallet-dtos";
 import {
   ApiBody,
   ApiExtraModels,

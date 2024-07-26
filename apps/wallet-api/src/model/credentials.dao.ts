@@ -1,6 +1,6 @@
 import { JWK } from "jose";
 import { Column, Entity, PrimaryColumn } from "typeorm";
-import { VerifiableCredential, CredentialSubject } from "@libs/common-dsp";
+import { VerifiableCredential, CredentialSubject } from "@tsg-dsp/common-dsp";
 import { MetaEntity } from "./common.dao.js";
 
 @Entity()

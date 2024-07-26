@@ -1,4 +1,4 @@
-import { CredentialAddress } from "@libs/control-plane-dtos";
+import { CredentialAddress } from "@tsg-dsp/control-plane-dtos";
 import {
   Controller,
   Get,
@@ -7,7 +7,7 @@ import {
   Logger,
   UseGuards,
 } from "@nestjs/common";
-import { CatalogDto } from "@libs/common-dsp";
+import { CatalogDto } from "@tsg-dsp/common-dsp";
 import { RegistryService } from "./registry.service";
 import { OAuthGuard } from "../auth/oauth.guard";
 import { Roles } from "../auth/roles.guard";

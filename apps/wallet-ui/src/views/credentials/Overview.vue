@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { AppRole } from "@libs/wallet-dtos";
+import { AppRole } from "@tsg-dsp/wallet-dtos";
 import { toArray } from "../../utils/union.js";
 import { formatDate } from "../../utils/date.js";
 import { axiosInstance, store } from "../../store/index.js";
-import { CredentialSubject, VerifiableCredential } from "@libs/common-dsp";
+import { CredentialSubject, VerifiableCredential } from "@tsg-dsp/common-dsp";
 import { useConfirm } from "primevue/useconfirm";
 import { useToast } from "primevue/usetoast";
 import { computed, onMounted, ref } from "vue";
-import FormField from "@libs/common-ui/components/FormField.vue";
+import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
 
 interface Credential {
   id: string;

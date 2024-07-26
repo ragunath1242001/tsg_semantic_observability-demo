@@ -3,7 +3,7 @@ import {
   CredentialSubject,
   VerifiableCredential,
   VerifiablePresentation,
-} from "@libs/common-dsp";
+} from "@tsg-dsp/common-dsp";
 import crypto from "crypto";
 import { TsgWalletIatpConfig } from "../../config";
 import { DSPClientError } from "../../utils/errors/error";

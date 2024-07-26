@@ -10,7 +10,7 @@ import {
   CatalogDto,
   CatalogRequestMessage,
   DatasetDto,
-} from "@libs/common-dsp";
+} from "@tsg-dsp/common-dsp";
 import { VerifiablePresentationGuard } from "../../auth/verifiablePresentation.guard";
 import { DeserializePipe } from "../../utils/deserialize.pipe";
 import { CatalogService } from "./catalog.service";

@@ -1,4 +1,4 @@
-import { VerifiablePresentation } from "@libs/common-dsp";
+import { VerifiablePresentation } from "@tsg-dsp/common-dsp";
 import { plainToInstance } from "class-transformer";
 import { SetupServer } from "msw/node";
 import { AuthConfig, IamConfig, RootConfig } from "../config";

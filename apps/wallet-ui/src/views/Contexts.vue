@@ -2,7 +2,7 @@
 import { computed, onMounted, ref } from "vue";
 import { useToast } from "primevue/usetoast";
 import { useConfirm } from "primevue/useconfirm";
-import FormField from "@libs/common-ui/components/FormField.vue";
+import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
 import { axiosInstance } from "../store/index.js";
 
 interface JSONLDContext {

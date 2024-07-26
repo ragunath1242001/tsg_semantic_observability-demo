@@ -1,5 +1,5 @@
-import { DatasetDto } from "@libs/common-dsp";
-import { IDataPlaneDto } from "@libs/control-plane-dtos";
+import { DatasetDto } from "@tsg-dsp/common-dsp";
+import { IDataPlaneDto } from "@tsg-dsp/control-plane-dtos";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
 class BaseDataPlaneDto {

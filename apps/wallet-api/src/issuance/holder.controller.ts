@@ -1,6 +1,6 @@
 import { Body, Controller, Post } from "@nestjs/common";
 import { Roles } from "../auth/roles.guard.js";
-import { AppRole } from "@libs/wallet-dtos";
+import { AppRole } from "@tsg-dsp/wallet-dtos";
 import { HolderService } from "./holder.service.js";
 import { Credentials } from "../model/credentials.dao.js";
 import {

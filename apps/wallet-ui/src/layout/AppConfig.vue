@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import Sidebar from "primevue/sidebar";
-import UIConfig from "@libs/common-ui/layout/UIConfig.vue";
+import UIConfig from "@tsg-dsp/common-ui/layout/UIConfig.vue";
 import { ref } from "vue";
-import { useLayout } from "@libs/common-ui/layout/composables/layout";
+import { useLayout } from "@tsg-dsp/common-ui/layout/composables/layout";
 import { useToast } from "primevue/usetoast";
 import { store } from "../store";
 

@@ -1,4 +1,4 @@
-import { INegotiationStatusDto } from "@libs/control-plane-dtos";
+import { INegotiationStatusDto } from "@tsg-dsp/control-plane-dtos";
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import {
@@ -19,7 +19,7 @@ import {
   Offer,
   createInstance,
   deserialize,
-} from "@libs/common-dsp";
+} from "@tsg-dsp/common-dsp";
 import crypto from "crypto";
 import { Repository } from "typeorm";
 import { RootConfig, ServerConfig } from "../../config";

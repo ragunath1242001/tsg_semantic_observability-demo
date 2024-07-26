@@ -14,7 +14,7 @@ import {
   CredentialSubject,
   VerifiableCredential,
   VerifiablePresentation,
-} from "@libs/common-dsp";
+} from "@tsg-dsp/common-dsp";
 import { toArray } from "../utils/unions.js";
 import { DIDDocuments, DIDService } from "../model/did.dao.js";
 

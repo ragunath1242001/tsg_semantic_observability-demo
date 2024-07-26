@@ -6,7 +6,7 @@ import {
   CredentialSubject,
   Signature,
   VerifiableCredential,
-} from "@libs/common-dsp";
+} from "@tsg-dsp/common-dsp";
 import jsonld from "jsonld";
 import crypto from "crypto";
 import { AppError } from "../utils/error.js";

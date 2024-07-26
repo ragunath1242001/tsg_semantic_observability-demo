@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { TransferStatus } from "@libs/control-plane-dtos";
+import { TransferStatus } from "@tsg-dsp/control-plane-dtos";
 import TransferProceed from "./TransferProceed.vue";
 import { toRef } from "vue";
 

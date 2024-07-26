@@ -2,7 +2,7 @@ import {
   CredentialSubject,
   VerifiableCredential,
   VerifiablePresentation,
-} from "@libs/common-dsp";
+} from "@tsg-dsp/common-dsp";
 
 export interface ValidationResult {
   [key: string]: boolean | boolean[];

@@ -1,4 +1,4 @@
-import { DataPlaneAddress, TransferRole } from "@libs/control-plane-dtos";
+import { DataPlaneAddress, TransferRole } from "@tsg-dsp/control-plane-dtos";
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import {
@@ -16,7 +16,7 @@ import {
   TransferSuspensionMessage,
   TransferTerminationMessage,
   deserialize,
-} from "@libs/common-dsp";
+} from "@tsg-dsp/common-dsp";
 import crypto from "crypto";
 import { Repository } from "typeorm";
 import { ServerConfig } from "../../config";

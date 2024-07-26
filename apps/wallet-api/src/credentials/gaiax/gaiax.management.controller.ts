@@ -2,11 +2,11 @@ import { Body, Controller, HttpCode, HttpStatus, Post } from "@nestjs/common";
 import { RuntimeConfig } from "../../config.js";
 import { Client } from "../../auth/roles.guard.js";
 import { AppError } from "../../utils/error.js";
-import { ClientInfo, AppRole } from "@libs/wallet-dtos";
+import { ClientInfo, AppRole } from "@tsg-dsp/wallet-dtos";
 import {
   ComplianceRequest,
   LegalRegistrationNumberRequest,
-} from "@libs/wallet-dtos";
+} from "@tsg-dsp/wallet-dtos";
 import { GaiaXService } from "./gaiax.service.js";
 import { validationPipe } from "../../utils/validation.pipe.js";
 import {

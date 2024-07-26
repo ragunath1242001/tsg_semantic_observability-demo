@@ -1,4 +1,4 @@
-import { ClientInfo } from "@libs/wallet-dtos";
+import { ClientInfo } from "@tsg-dsp/wallet-dtos";
 import axios from "axios";
 import { createStore } from "vuex";
 

@@ -1,8 +1,8 @@
 import { Controller, Get, Query, Headers } from "@nestjs/common";
 import { IatpSiopService } from "./siop.service.js";
-import { AppRole } from "@libs/wallet-dtos";
+import { AppRole } from "@tsg-dsp/wallet-dtos";
 import { Roles } from "../../auth/roles.guard.js";
-import { PresentationResponse } from "@libs/wallet-dtos";
+import { PresentationResponse } from "@tsg-dsp/wallet-dtos";
 import { IatpHolderService } from "./holder.service.js";
 import { DisableOAuthGuard } from "../../auth/oauth.guard.js";
 import {

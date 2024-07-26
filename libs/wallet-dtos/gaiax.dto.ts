@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import { CredentialSubject, VerifiableCredential } from "@libs/common-dsp";
+import { CredentialSubject, VerifiableCredential } from "@tsg-dsp/common-dsp";
 import { Type } from "class-transformer";
 import { IsString, ValidateNested, IsDefined } from "class-validator";
 

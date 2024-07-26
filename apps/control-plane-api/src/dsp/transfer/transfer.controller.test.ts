@@ -13,7 +13,7 @@ import {
   TransferState,
   TransferSuspensionMessage,
   TransferTerminationMessage,
-} from "@libs/common-dsp";
+} from "@tsg-dsp/common-dsp";
 import { plainToClass } from "class-transformer";
 import { HttpResponse, PathParams, http } from "msw";
 import { SetupServer, setupServer } from "msw/node";

@@ -37,7 +37,7 @@ import {
   TransferSuspensionMessageDto,
   TransferTerminationMessageDto,
   deserialize,
-} from "@libs/common-dsp";
+} from "@tsg-dsp/common-dsp";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { TransferDao } from "./transfer.dao";
@@ -49,7 +49,7 @@ import {
   PolicyConfig,
   RuleConstraintConfig,
   TransferDto,
-} from "@libs/http-data-plane-dtos";
+} from "@tsg-dsp/http-data-plane-dtos";
 import { AuthClientService } from "../auth/auth.client.service";
 import { resolve } from "../utils/didServiceResolver";
 import { LoggingService } from "../logging/logging.service";

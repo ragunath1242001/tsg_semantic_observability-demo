@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import FormField from "@libs/common-ui/components/FormField.vue";
+import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
 import { axiosInstance, store } from "../../store/index.js";
-import { AppRole } from "@libs/wallet-dtos";
+import { AppRole } from "@tsg-dsp/wallet-dtos";
 import { useToast } from "primevue/usetoast";
 import { computed, onMounted, ref } from "vue";
 

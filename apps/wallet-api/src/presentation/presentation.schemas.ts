@@ -10,7 +10,7 @@ import {
   VerifiablePresentation,
   VerifiablePresentationJsonLd,
   VerifiablePresentationJwt,
-} from "@libs/common-dsp";
+} from "@tsg-dsp/common-dsp";
 import { elementOrArray } from "../did/did.schemas.js";
 import {
   Constraint,
@@ -22,7 +22,7 @@ import {
   PresentationDefinition,
   PresentationResponse,
   PresentationSubmission,
-} from "@libs/wallet-dtos";
+} from "@tsg-dsp/wallet-dtos";
 import { VerifiableCredentialDto } from "../credentials/credentials.schemas.js";
 
 export class VerifiablePresentationDto

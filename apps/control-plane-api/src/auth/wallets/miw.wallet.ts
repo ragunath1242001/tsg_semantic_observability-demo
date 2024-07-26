@@ -4,7 +4,7 @@ import {
   VerifiableCredential,
   VerifiablePresentation,
   VerifiablePresentationJwt,
-} from "@libs/common-dsp";
+} from "@tsg-dsp/common-dsp";
 import axios from "axios";
 import { plainToInstance } from "class-transformer";
 import { DIDDocument } from "did-resolver";
