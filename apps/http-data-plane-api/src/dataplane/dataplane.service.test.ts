@@ -519,6 +519,7 @@ describe("Dataplane Service", () => {
       await dataPlaneService.updateDatasetConfig({
         id: `urn:uuid:test`,
         title: "HTTPBin",
+        conformsTo: "https://some-ontology.org",
         versions: [
           {
             backend: "https://httpbin.org/anything",
@@ -567,6 +568,7 @@ describe("Dataplane Service", () => {
       });
       const config = await dataPlaneService.getDatasetConfig();
       expect(config.versions).toHaveLength(2);
+      expect(config.conformsTo).toEqual("https://some-ontology.org");
       expect(config.policy).toBeDefined();
     });
     it("Default policy", async () => {

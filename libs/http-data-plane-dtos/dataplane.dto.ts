@@ -86,6 +86,10 @@ export class DatasetConfig {
   @IsDefined()
   public title!: string;
 
+  @IsString()
+  @IsOptional()
+  public conformsTo?: string;
+
   @ValidateNested()
   @Type(() => VersionConfig)
   @ArrayMinSize(1)

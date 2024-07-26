@@ -295,6 +295,11 @@ onMounted(async () => {
           dataset.id || "Auto-generated"
         }}</FormField>
         <FormField label="Title">{{ dataset.title }}</FormField>
+        <FormField label="Conforms To" v-if="dataset.conformsTo"
+          ><a :href="dataset.conformsTo" target="_blank">{{
+            dataset.conformsTo
+          }}</a></FormField
+        >
         <h4>Versions</h4>
         <div class="pl-3" v-for="(version, idx) in dataset.versions">
           <hr v-if="idx !== 0" />
@@ -364,9 +369,7 @@ onMounted(async () => {
           </div>
         </div>
       </div>
-      <div v-else>
-        No provided datasets configured
-      </div>
+      <div v-else>No provided datasets configured</div>
     </template>
   </Card>
   <Dialog
@@ -411,6 +414,14 @@ onMounted(async () => {
           :id="props.id"
           v-model="configForm.title"
           placeholder="Title"
+        />
+      </FormField>
+      <FormField label="Conforms To" v-slot="props" v-if="!configRaw">
+        <InputText
+          class="w-full"
+          :id="props.id"
+          v-model="configForm.conformsTo"
+          placeholder="URL to Ontology/data model definitions"
         />
       </FormField>
       <TabView v-if="!configRaw">
