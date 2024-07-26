@@ -105,7 +105,7 @@ export class IssuerService {
 
   async issuerMetadata(): Promise<CredentialIssuerMetadata> {
     const issuerMetadata: CredentialIssuerMetadata = {
-      credential_issuer: this.config.server.publicAddress,
+      credential_issuer: `https://${this.config.server.publicDomain}`,
       credential_endpoint: `${this.config.server.publicAddress}/oid4vci/credential`,
       token_endpoint: `${this.config.server.publicAddress}/oid4vci/token`,
       credential_configurations_supported: {},
@@ -175,7 +175,7 @@ export class IssuerService {
     });
 
     return {
-      credential_issuer: this.config.server.publicAddress,
+      credential_issuer: `https://${this.config.server.publicDomain}`,
       credential_configuration_ids: [offerRequest.credentialType],
       grants: {
         [OfferGrants.PRE_AUTHORIZATION_CODE]: {
@@ -287,9 +287,13 @@ export class IssuerService {
       const key = await importJWK(usedJwk.publicKeyJwk);
       const verifiedJwt = await jwtVerify(credentialRequest.proof.jwt, key);
 
-      if (verifiedJwt.payload.aud !== this.config.server.publicAddress) {
+      const expectedIssuer =
+        this.config.server.publicDomain === "localhost"
+          ? `http://localhost:${this.config.server.port}`
+          : `https://${this.config.server.publicDomain}`;
+      if (verifiedJwt.payload.aud !== expectedIssuer) {
         throw new AppError(
-          `Audience in proof JWT does not match credential_issuer (${verifiedJwt.payload.aud} vs ${this.config.server.publicAddress})`,
+          `Audience in proof JWT does not match credential_issuer (${verifiedJwt.payload.aud} vs ${expectedIssuer}`,
           HttpStatus.BAD_REQUEST
         );
       }

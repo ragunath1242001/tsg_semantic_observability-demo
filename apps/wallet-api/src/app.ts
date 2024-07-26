@@ -31,14 +31,7 @@ async function bootstrap() {
   const config = app.get(RootConfig);
   if (process.env["EMBEDDED_FRONTEND"]) {
     app.setGlobalPrefix(`${process.env["SUBPATH"] ?? ""}/api`, {
-      exclude: [
-        ".well-known/(.*)",
-        "context/(.*)",
-        "keys/(.*)",
-        "oid4vci/token",
-        "oid4vci/credential",
-        "health",
-      ],
+      exclude: [".well-known/(.*)", "health"],
     });
   }
   Logger.debug(
@@ -47,6 +40,7 @@ async function bootstrap() {
   );
   app.use(
     session({
+      name: "connect.sid.tsgw",
       secret: process.env["SESSION_SECRET"] || crypto.randomUUID(),
       resave: false,
       saveUninitialized: false,

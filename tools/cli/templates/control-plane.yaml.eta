@@ -2,13 +2,13 @@
 host: "cp.<%= it.participant.host %>"
 endpoint: https://cp.<%= it.participant.host %>
 wallet: "<%= it.participant.host %>"
-walletEndpoint: https://<%= it.participant.host %>
+walletEndpoint: https://<%= it.participant.host %>/api
 casdoorEndpoint: "https://casdoor.<%= it.participant.host %>"
 <% } else { %>
 host: "<%= it.participant.host %>"
 endpoint: https://<%= it.participant.host %>/control-plane
 wallet: "<%= it.participant.host %>"
-walletEndpoint: https://<%= it.participant.host %>/wallet
+walletEndpoint: https://<%= it.participant.host %>/wallet/api
 casdoorEndpoint: "https://<%= it.participant.host %>"
 
 subPath: /control-plane
@@ -52,7 +52,7 @@ config:
     host: "<%= it.participant.id %>-postgresql"
   
   server:
-    publicAddress: "{{ .Values.endpoint }}"
+    publicAddress: "{{ .Values.endpoint }}/api"
 
   auth:
     authorizationURL: "{{ .Values.casdoorEndpoint }}/login/oauth/authorize"
@@ -72,10 +72,10 @@ config:
   iam:
     type: tsg-iatp
     didId: did:web:{{ .Values.wallet }}
-    walletUrl: "{{ .Values.walletEndpoint }}/api"
-    tokenUrl: "{{ .Values.walletEndpoint }}/api/auth/login"
-    siopUrl: "{{ .Values.walletEndpoint }}/api/iatp/holder/token"
-    verifyUrl: "{{ .Values.walletEndpoint }}/api/iatp/verifier/verify"
+    walletUrl: "{{ .Values.walletEndpoint }}"
+    tokenUrl: "{{ .Values.walletEndpoint }}/auth/login"
+    siopUrl: "{{ .Values.walletEndpoint }}/iatp/holder/token"
+    verifyUrl: "{{ .Values.walletEndpoint }}/iatp/verifier/verify"
     typeFilter: <%= it.general.credentialType %>
     issuerFilter: "did:web:<%= it.general.authorityDomain %>"
     clientId: "null"

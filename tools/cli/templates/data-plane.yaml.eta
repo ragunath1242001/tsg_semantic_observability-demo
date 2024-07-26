@@ -54,7 +54,7 @@ config:
     host: "<%= it.participant.id %>-postgresql"
 
   server:
-    publicAddress: "{{ .Values.endpoint }}"
+    publicAddress: "{{ .Values.endpoint }}/api"
 
   auth:
     authorizationURL: "{{ .Values.casdoorEndpoint }}/login/oauth/authorize"

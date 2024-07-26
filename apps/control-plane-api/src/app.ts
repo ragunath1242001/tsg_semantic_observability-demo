@@ -22,6 +22,7 @@ async function bootstrap() {
   }
   app.use(
     session({
+      name: "connect.sid.tsgcp",
       secret: process.env["SESSION_SECRET"] || crypto.randomUUID(),
       resave: false,
       saveUninitialized: false,

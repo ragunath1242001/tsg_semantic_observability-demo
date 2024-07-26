@@ -13,6 +13,8 @@ ingress:
       type: Prefix
     - path: /.well-known/dspace-version
       type: Prefix
+    - path: /socket.io
+      type: Prefix
 
 env: []
 configFromSecrets: {}
