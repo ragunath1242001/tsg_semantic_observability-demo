@@ -9,6 +9,8 @@ import { DidService } from "../did/did.service.js";
 import { KeysService } from "./keys.service.js";
 import { describe, expect, beforeAll, afterAll, it } from "@jest/globals";
 import { DIDDocuments, DIDService } from "../model/did.dao.js";
+import { DidResolverService } from "../did/did.resolver.service.js";
+import { SignatureService } from "./signature.service.js";
 
 describe("Key Service", () => {
   let keyService: KeysService;
@@ -41,7 +43,9 @@ describe("Key Service", () => {
       providers: [
         CredentialsService,
         DidService,
+        DidResolverService,
         KeysService,
+        SignatureService,
         {
           provide: RootConfig,
           useValue: config,

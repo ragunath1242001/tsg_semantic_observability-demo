@@ -174,6 +174,10 @@ describe("Negotiation Service (Consumer)", () => {
         localProcessId
       );
       expect(negotiationDetail).toBeDefined();
+      const negotiationDto = await negotiationService.getNegotiationDto(
+        localProcessId
+      );
+      expect(negotiationDto).toBeDefined();
       const negotiationDetail2 = await negotiationService.getNegotiation(
         localProcessId,
         "did:web:remoteparty.test"
@@ -185,8 +189,14 @@ describe("Negotiation Service (Consumer)", () => {
           "did:web:otherremoteparty.test"
         )
       ).rejects.toThrow("Cannot get negotiation with process ID");
+      expect(negotiationDto).toBeDefined();
       await expect(
         negotiationService.getNegotiation(
+          "urn:uuid:00000000-0000-0000-0000-000000000000"
+        )
+      ).rejects.toThrow("Cannot get negotiation with process ID");
+      await expect(
+        negotiationService.getNegotiationDto(
           "urn:uuid:00000000-0000-0000-0000-000000000000"
         )
       ).rejects.toThrow("Cannot get negotiation with process ID");
@@ -253,6 +263,17 @@ describe("Negotiation Service (Consumer)", () => {
         localProcessId
       );
       expect(negotiationDetail.state).toBe(ContractNegotiationState.FINALIZED);
+
+      const agreement = await negotiationService.getAgreement(
+        negotiationDetail.agreement?.id!
+      );
+      expect(agreement).toBeDefined();
+
+      await expect(
+        negotiationService.getAgreement(
+          '"urn:uuid:00000000-0000-0000-0000-000000000000"'
+        )
+      ).rejects.toThrow("Cannot get agreement with agreement ID");
     });
   });
 

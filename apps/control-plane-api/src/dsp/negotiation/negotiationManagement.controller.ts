@@ -1,4 +1,7 @@
-import { INegotiationStatusDto } from "@tsg-dsp/control-plane-dtos";
+import {
+  INegotiationStatusDto,
+  NegotiationDetailDto,
+} from "@tsg-dsp/control-plane-dtos";
 import {
   Body,
   Controller,
@@ -75,8 +78,10 @@ export class NegotiationManagementController {
   })
   async getNegotiation(
     @Param("processId") processId: string
-  ): Promise<NegotiationDetail> {
-    const negotiation = await this.negotiationService.getNegotiation(processId);
+  ): Promise<NegotiationDetailDto> {
+    const negotiation = await this.negotiationService.getNegotiationDto(
+      processId
+    );
     return negotiation;
   }
 

@@ -1,5 +1,5 @@
 import { plainToInstance } from "class-transformer";
-import { SignJWT, importJWK, decodeJwt, jwtVerify, compactVerify } from "jose";
+import { decodeJwt } from "jose";
 import {
   VerifiablePresentationJsonLd,
   VerifiablePresentation,
@@ -8,24 +8,21 @@ import {
   VerifiablePresentationJwt,
   PresentationValidation,
 } from "@tsg-dsp/common-dsp";
-import jsonld from "jsonld";
 import crypto from "crypto";
 import { CredentialsService } from "../credentials/credentials.service.js";
-import { KeysService } from "../keys/keys.service.js";
 import { DidResolverService } from "../did/did.resolver.service.js";
 import { RootConfig } from "../config.js";
 import { DidService } from "../did/did.service.js";
 import { Injectable, Logger } from "@nestjs/common";
 import { toArray } from "../utils/unions.js";
-import { signingAlgorithm } from "../utils/keymapping.js";
-import { jsonldOptions } from "../utils/cachingContextLoader.js";
+import { SignatureService } from "../keys/signature.service.js";
 
 @Injectable()
 export class PresentationService {
   constructor(
     private readonly config: RootConfig,
     private readonly credentialsService: CredentialsService,
-    private readonly keyService: KeysService,
+    private readonly signatureService: SignatureService,
     private readonly didResolver: DidResolverService,
     private readonly didService: DidService
   ) {}
@@ -71,7 +68,6 @@ export class PresentationService {
       );
       vcs = [credential.credential];
     }
-    const key = await this.keyService.getDefaultKey();
     const didId = await this.didService.getDidId();
     const verifiablePresentation: VerifiablePresentation<
       VerifiableCredential<CredentialSubject>
@@ -84,16 +80,15 @@ export class PresentationService {
       id: `${didId}#${crypto.randomUUID()}`,
       verifiableCredential: unwrap ? vcs[0] : vcs,
     };
-    const jwt = await new SignJWT({ vp: verifiablePresentation })
-      .setProtectedHeader({ alg: signingAlgorithm(key.type) })
-      .setIssuedAt()
-      .setIssuer(didId)
-      .setSubject(didId)
-      .setAudience(audience)
-      .setExpirationTime("24h")
-      .setJti(crypto.randomUUID())
-      .sign(await importJWK(key.privateKey));
-    return plainToInstance(VerifiablePresentationJwt, { vp: jwt });
+    return plainToInstance(VerifiablePresentationJwt, {
+      vp: await this.signatureService.signJwt(
+        { vp: verifiablePresentation },
+        audience,
+        {
+          expirationTime: "24h",
+        }
+      ),
+    });
   }
 
   async validatePresentation(
@@ -104,21 +99,14 @@ export class PresentationService {
     const vp = plainToInstance(VerifiablePresentation, jwtPayload.vp);
     const resolvedDid = await this.didResolver.resolve(jwtPayload.iss!);
 
-    let validateJWTSignature = false;
-    for (const verificationMethod of resolvedDid.verificationMethod || []) {
-      if (verificationMethod.publicKeyJwk) {
-        const publicKey = await importJWK(verificationMethod.publicKeyJwk);
-        try {
-          await jwtVerify(vpJwt.vp, publicKey, {});
-          validateJWTSignature = true;
-          break;
-        } catch (err) {
-          this.logger.debug(
-            `Invalid JWT signature for key ${verificationMethod.id}`
-          );
-        }
-      }
+    let validateJWTSignature;
+    try {
+      await this.signatureService.validateJwt(vpJwt.vp);
+      validateJWTSignature = true;
+    } catch (e) {
+      validateJWTSignature = false;
     }
+
     const validateAudience = audience ? jwtPayload.aud === audience : undefined;
     const validateJWTExpiryDate = jwtPayload.exp
       ? jwtPayload.exp > new Date().getTime() / 1000
@@ -128,52 +116,34 @@ export class PresentationService {
     const validateCredentials: boolean[] = [];
     const validateTrustAnchors: boolean[] = [];
     for (const credential of toArray(vp.verifiableCredential)) {
+      let validExpiryDate: boolean | "undefined" = false;
+      let validTrustAnchor = false;
+      let validCredential = false;
       try {
-        const validExpirationDate = credential.expirationDate
+        validExpiryDate = credential.expirationDate
           ? new Date(credential.expirationDate).getTime() > new Date().getTime()
           : "undefined";
-        validateExpiryDate.push(validExpirationDate);
-        const { proof, ...plainCredential } = credential;
-
-        const resolvedIssuerDid = await this.didResolver.resolve(
-          credential.issuer
-        );
 
         const credentialTypes =
           this.config.trustAnchors.find(
             (trustAnchor) => trustAnchor.identifier === credential.issuer
           )?.credentialTypes || [];
-        const trustedCredential = credential.type
+        validTrustAnchor = credential.type
           .filter((t) => t !== "VerifiableCredential")
           .every((type) => credentialTypes.includes(type));
 
-        const normalized = await jsonld.normalize(plainCredential, {
-          ...jsonldOptions,
-          algorithm: "URDNA2015",
-        });
-        const hash = crypto
-          .createHash("sha256")
-          .update(normalized)
-          .digest("hex");
-        const jwsWithHash = proof.jws.replace("..", `.${hash}.`);
-        const usedKey = resolvedIssuerDid.verificationMethod?.find(
-          (m) => m.id === proof.verificationMethod
-        );
-        if (!usedKey || !usedKey.publicKeyJwk) {
-          this.logger.debug(`Error during validation of VP: key mismatch`);
-          validateCredentials.push(false);
-          validateTrustAnchors.push(trustedCredential);
-          break;
-        }
-
-        await compactVerify(jwsWithHash, await importJWK(usedKey.publicKeyJwk));
-        validateCredentials.push(true);
-        validateTrustAnchors.push(trustedCredential);
-      } catch (err) {
-        this.logger.debug(`Error during validation of VP: ${err}`);
-        validateCredentials.push(false);
-        validateTrustAnchors.push(false);
-        break;
+        const { proof, ...plainCredential } = credential;
+        try {
+          await this.signatureService.validateJsonWebSignature(
+            plainCredential,
+            proof
+          );
+          validCredential = true;
+        } catch (e) {}
+      } finally {
+        validateExpiryDate.push(validExpiryDate);
+        validateTrustAnchors.push(validTrustAnchor);
+        validateCredentials.push(validCredential);
       }
     }
 

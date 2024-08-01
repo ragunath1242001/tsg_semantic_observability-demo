@@ -9,7 +9,7 @@ import { ref, toRef } from "vue";
 import { AccordionTabOpenEvent } from "primevue/accordion";
 import { useToast } from "primevue/usetoast";
 import http from "../utils/http";
-import { DatasetDto } from "@tsg-dsp/common-dsp";
+import { DatasetDto, HashedMessage } from "@tsg-dsp/common-dsp";
 import MonacoEditor from "@tsg-dsp/common-ui/components/MonacoEditor.vue";
 
 const props = defineProps<{
@@ -18,6 +18,8 @@ const props = defineProps<{
 
 const negotiations = toRef(props, "negotiations");
 const accNegotiation = ref<NegotiationDetailDto>();
+const localProof = ref<HashedMessage>();
+const remoteProof = ref<HashedMessage>();
 
 const toast = useToast();
 
@@ -56,6 +58,8 @@ const getNegotiation = async (event?: AccordionTabOpenEvent) => {
     );
     accNegotiation.value = response.data;
     accNegotiation.value.events = accNegotiation.value.events.reverse();
+    localProof.value = accNegotiation.value.events.find(e => e.type === "local" && e.hashedMessage)?.hashedMessage;
+    remoteProof.value = accNegotiation.value.events.find(e => e.type === "remote" && e.hashedMessage)?.hashedMessage;
     return response;
   } catch (e) {
     toast.add({
@@ -148,15 +152,33 @@ const requestTransfer = async (accNegotiation: NegotiationDetailDto) => {
             v-if="accNegotiation"
           >
             <div class="p-0 col-12 xl:col-6">
-              <MonacoEditor
-                :static="
-                  accNegotiation.agreement
-                    ? accNegotiation.agreement
-                    : accNegotiation.offer
-                "
-                :read-only="true"
-                :max-lines="35"
-              />
+              <TabView>
+                <TabPanel header="Agreement">
+                  <MonacoEditor
+                    :static="
+                      accNegotiation.agreement
+                        ? accNegotiation.agreement
+                        : accNegotiation.offer
+                    "
+                    :read-only="true"
+                    :max-lines="35"
+                  />
+                </TabPanel>
+                <TabPanel header="Local Signature" v-if="localProof && localProof['dspace:algorithm'] === 'JsonWebSignature2020'">
+                  <MonacoEditor
+                    :static="JSON.parse(localProof['dspace:digest'])"
+                    :read-only="true"
+                    :max-lines="35"
+                  />
+                </TabPanel>
+                <TabPanel header="Remote Signature" v-if="remoteProof && remoteProof['dspace:algorithm'] === 'JsonWebSignature2020'">
+                  <MonacoEditor
+                    :static="JSON.parse(remoteProof['dspace:digest'])"
+                    :read-only="true"
+                    :max-lines="35"
+                  />
+                </TabPanel>
+              </TabView>
             </div>
             <div
               class="p-0 mt-4 col-12 xl:col-6 flex flex-wrap justify-content-center"

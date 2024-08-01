@@ -2,6 +2,7 @@ import {
   AgreementDto,
   ContractAgreementVerificationMessageDto,
   ContractNegotiationState,
+  HashedMessage,
   MultilanguageDto,
   OfferDto,
 } from "@tsg-dsp/common-dsp";
@@ -16,6 +17,7 @@ export interface NegotiationProcessEventDto {
   reason?: MultilanguageDto[];
   agreementMessage?: string;
   verification?: ContractAgreementVerificationMessageDto;
+  hashedMessage?: HashedMessage;
   type: "local" | "remote";
 }
 
@@ -31,7 +33,7 @@ export interface INegotiationStatusDto {
 }
 
 export interface NegotiationDetailDto extends INegotiationStatusDto {
-  offer: OfferDto;
-  agreement: AgreementDto;
+  offer?: OfferDto;
+  agreement?: AgreementDto;
   events: Array<NegotiationProcessEventDto>;
 }

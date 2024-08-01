@@ -15,10 +15,25 @@ import {
   Value,
 } from "../common";
 import { ContractAgreementVerificationMessage } from "./messages";
-import { createOptionalInstances } from "../../../utils/instances";
+import {
+  createInstances,
+  createOptionalInstance,
+  createOptionalInstances,
+} from "../../../utils/instances";
 import { ContextDto } from "../common.dto";
-import { ODRLLeftOperand, ODRLOperator, ConstraintDto, ODRLAction, PermissionDto, ProhibitionDto, DutyDto, PolicyDto, OfferDto, AgreementDto } from "./negotiation.dto";
-import { ContractNegotiationState } from "./messages.dto";
+import {
+  ODRLLeftOperand,
+  ODRLOperator,
+  ConstraintDto,
+  ODRLAction,
+  PermissionDto,
+  ProhibitionDto,
+  DutyDto,
+  PolicyDto,
+  OfferDto,
+  AgreementDto,
+} from "./negotiation.dto";
+import { ContractNegotiationState, HashedMessage } from "./messages.dto";
 
 export interface IConstraint {
   leftOperand: ODRLLeftOperand | string;
@@ -247,6 +262,7 @@ export interface INegotiationProcessEvent {
   reason?: Multilanguage[];
   agreementMessage?: string;
   verification?: ContractAgreementVerificationMessage;
+  hashedMessage?: HashedMessage;
   type: "local" | "remote";
 }
 
@@ -258,6 +274,7 @@ export class NegotiationProcessEvent {
   reason?: Multilanguage[];
   agreementMessage?: string;
   verification?: ContractAgreementVerificationMessage;
+  hashedMessage?: HashedMessage;
   type: "local" | "remote";
 
   constructor(value: INegotiationProcessEvent) {
@@ -268,6 +285,7 @@ export class NegotiationProcessEvent {
     this.reason = value.reason;
     this.agreementMessage = value.agreementMessage;
     this.verification = value.verification;
+    this.hashedMessage = value.hashedMessage;
     this.type = value.type;
   }
 }
@@ -317,9 +335,9 @@ export class NegotiationDetail extends NegotiationStatus {
 
   constructor(value: INegotiationDetail) {
     super(value);
-    this.offer = value.offer;
-    this.agreement = value.agreement;
+    this.offer = createOptionalInstance(value.offer, Offer);
+    this.agreement = createOptionalInstance(value.agreement, Agreement);
     this.agreementId = value.agreementId;
-    this.events = value.events;
+    this.events = createInstances(value.events, NegotiationProcessEvent);
   }
 }

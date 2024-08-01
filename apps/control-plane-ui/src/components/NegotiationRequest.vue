@@ -7,6 +7,7 @@ import { useToast } from "primevue/usetoast";
 import { ref } from "vue";
 import utils from "../utils/common";
 import http from "../utils/http";
+import MonacoEditor from "@tsg-dsp/common-ui/components/MonacoEditor.vue";
 
 const props = defineProps<{
   negotiation: INegotiationStatusDto;
@@ -110,21 +111,16 @@ const declineNegotiation = async (negotiation) => {
         <Dialog
           header="Do you agree with the following offer?"
           v-model:visible="display"
-          :breakpoints="{ '840px': '75vw' }"
+          :style="{ width: '50vw'}"
+          :breakpoints="{ '1199px': '80vw', '575px': '97vw' }"
           :modal="true"
         >
           <div class="grid">
             <div class="col">
-              <Textarea
-                id="offerEl"
-                ref="offerElement"
-                rows="10"
-                variant="filled"
-                contenteditable
-                style="width: 100%"
-                autoResize
-                v-model="stringifiedOffer"
-                :disabled="true"
+              <MonacoEditor
+                :static="ctaNegotiation.offer"
+                :read-only="true"
+                :max-lines="35"
               />
             </div>
           </div>

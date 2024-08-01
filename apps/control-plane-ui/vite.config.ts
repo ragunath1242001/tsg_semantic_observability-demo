@@ -24,7 +24,21 @@ export default defineConfig({
       //   target: "http://localhost:3000/",
       //   rewrite: (path) => path.replace(/^\/api/, ""),
       // },
-      "/api": process.env.BACKEND || "http://localhost:3000",
+      // "/api": process.env.BACKEND || "http://localhost:3000",
+      "/socket.io/": {
+        target: "https://healthharbormc.heracles.dataspac.es/socket.io/",
+        changeOrigin: true,
+        headers: {
+          Cookie: "connect.sid.tsgcp=...",
+        },
+      },
+      "/api": {
+        target: "https://healthharbormc.heracles.dataspac.es/control-plane",
+        changeOrigin: true,
+        headers: {
+          Cookie: "connect.sid.tsgcp=...",
+        },
+      },
     },
   },
 });

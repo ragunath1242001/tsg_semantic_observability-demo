@@ -1,4 +1,4 @@
-import { Logger } from "@nestjs/common";
+import { HttpStatus, Logger } from "@nestjs/common";
 import {
   CredentialSubject,
   VerifiableCredential,
@@ -11,7 +11,7 @@ import { DIDDocument } from "did-resolver";
 import jwt, { decode } from "jsonwebtoken";
 import qs from "qs";
 import { MiwConfig } from "../../config";
-import { DSPClientError } from "../../utils/errors/error";
+import { DSPClientError, DSPError } from "../../utils/errors/error";
 import { Credential, ValidationResult, WalletClient } from "./walletClient";
 
 export interface MiWWalletDetails {
@@ -181,5 +181,19 @@ export class ManagedIdentityWalletClient extends WalletClient {
 
   async getCredentials(): Promise<Credential[]> {
     return [];
+  }
+  async requestSignature(document: Record<string, any>): Promise<any> {
+    throw new DSPError(
+      `MIW does not support signing of documents`,
+      HttpStatus.NOT_IMPLEMENTED
+    );
+  }
+  async requestSignatureValidation(
+    signedDocument: Record<string, any>
+  ): Promise<any> {
+    throw new DSPError(
+      `MIW does not support validation of documents`,
+      HttpStatus.NOT_IMPLEMENTED
+    );
   }
 }

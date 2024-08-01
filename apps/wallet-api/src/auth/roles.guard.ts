@@ -25,6 +25,7 @@ export const Client = createParamDecorator(
         roles: [
           AppRole.VIEW_DID,
           AppRole.MANAGE_KEYS,
+          AppRole.USE_KEYS,
           AppRole.VIEW_OWN_CREDENTIALS,
           AppRole.VIEW_ALL_CREDENTIALS,
           AppRole.MANAGE_OWN_CREDENTIALS,

@@ -5,7 +5,26 @@
     "editor.formatOnSave": false
   },
   "jest.runMode": "on-save",
+  "jest.jestCommandLine": "\"./node_modules/jest/bin/jest.js\" --runInBand",
   "jest.nodeEnv": {
     "NODE_OPTIONS": "--experimental-vm-modules"
-  }
+  },
+  "jest.virtualFolders": [
+    {
+      "name": "wallet",
+      "rootPath": "apps/wallet-api"
+    },
+    {
+      "name": "control-plane",
+      "rootPath": "apps/control-plane-api"
+    },
+    {
+      "name": "http-data-plane",
+      "rootPath": "apps/http-data-plane-api"
+    },
+    {
+      "name": "common-dsp",
+      "rootPath": "libs/common-dsp"
+    }
+  ]
 }

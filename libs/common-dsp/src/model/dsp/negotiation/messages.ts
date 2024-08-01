@@ -13,7 +13,20 @@ import {
 } from "../common";
 
 import { Agreement, Offer } from "./negotiation";
-import { ContractRequestMessageDto, ContractOfferMessageDto, ContractNegotiationTerminationMessageDto, ContractNegotiationState, ContractNegotiationDto, NegotiationEvent, ContractNegotiationEventMessageDto, ContractNegotiationErrorDto, HashedMessage, ContractAgreementVerificationMessageDto, ContractAgreementMessageDto } from "./messages.dto";
+import {
+  ContractRequestMessageDto,
+  ContractOfferMessageDto,
+  ContractNegotiationTerminationMessageDto,
+  ContractNegotiationState,
+  ContractNegotiationDto,
+  NegotiationEvent,
+  ContractNegotiationEventMessageDto,
+  ContractNegotiationErrorDto,
+  HashedMessage,
+  ContractAgreementVerificationMessageDto,
+  ContractAgreementMessageDto,
+} from "./messages.dto";
+import { createOptionalInstance } from "../../../utils";
 
 export interface IContractRequestMessage {
   consumerPid: string;
@@ -44,7 +57,7 @@ export class ContractRequestMessage extends SerializableClass<ContractRequestMes
     super();
     this.consumerPid = value.consumerPid;
     this.providerPid = value.providerPid;
-    this.offer = value.offer;
+    this.offer = createOptionalInstance(value.offer, Offer);
     this.callbackAddress = value.callbackAddress;
   }
 }
@@ -78,7 +91,7 @@ export class ContractOfferMessage extends SerializableClass<ContractOfferMessage
     super();
     this.consumerPid = value.consumerPid;
     this.providerPid = value.providerPid;
-    this.offer = value.offer;
+    this.offer = createOptionalInstance(value.offer, Offer);
     this.callbackAddress = value.callbackAddress;
   }
 }
@@ -149,6 +162,7 @@ export interface IContractNegotiationEventMessage {
   consumerPid: string;
   providerPid: string;
   eventType: NegotiationEvent;
+  hashedMessage?: HashedMessage;
 }
 
 @Serializable("dspace:ContractNegotiationEventMessage")
@@ -164,12 +178,16 @@ export class ContractNegotiationEventMessage extends SerializableClass<ContractN
   @Namespace("dspace")
   @IsNotEmpty()
   eventType: NegotiationEvent;
+  @Namespace("dspace")
+  @IsOptional()
+  hashedMessage?: HashedMessage;
 
   constructor(value: IContractNegotiationEventMessage) {
     super();
     this.consumerPid = value.consumerPid;
     this.providerPid = value.providerPid;
     this.eventType = value.eventType;
+    this.hashedMessage = value.hashedMessage;
   }
 }
 
@@ -261,6 +279,6 @@ export class ContractAgreementMessage extends SerializableClass<ContractAgreemen
     super();
     this.consumerPid = value.consumerPid;
     this.providerPid = value.providerPid;
-    this.agreement = value.agreement;
+    this.agreement = createOptionalInstance(value.agreement, Agreement);
   }
 }

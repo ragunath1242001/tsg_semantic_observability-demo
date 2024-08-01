@@ -15,7 +15,7 @@ import { HttpResponse, http } from "msw";
 import { IatpHolderService } from "./holder.service.js";
 import { IatpVerifierService } from "./verifier.service.js";
 import { IatpSiopService } from "./siop.service.js";
-import { TokenService } from "../../keys/token.service.js";
+import { SignatureService } from "../../keys/signature.service.js";
 import { SIToken } from "../../model/iatp.dao.js";
 import crypto from "crypto";
 import { toArray } from "../../utils/unions.js";
@@ -83,7 +83,7 @@ describe("Presentation Service", () => {
         ]),
       ],
       providers: [
-        TokenService,
+        SignatureService,
         IatpSiopService,
         IatpHolderService,
         IatpVerifierService,

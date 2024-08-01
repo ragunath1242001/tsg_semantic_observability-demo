@@ -17,6 +17,8 @@ import {
 } from "@tsg-dsp/common-dsp";
 import { toArray } from "../utils/unions.js";
 import { DIDDocuments, DIDService } from "../model/did.dao.js";
+import { DidResolverService } from "../did/did.resolver.service.js";
+import { SignatureService } from "../keys/signature.service.js";
 
 describe("Credentials Service", () => {
   let credentialsService: CredentialsService;
@@ -140,6 +142,8 @@ describe("Credentials Service", () => {
       providers: [
         CredentialsService,
         DidService,
+        DidResolverService,
+        SignatureService,
         KeysService,
         {
           provide: RootConfig,

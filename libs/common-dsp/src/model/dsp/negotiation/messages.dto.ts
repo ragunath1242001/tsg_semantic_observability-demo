@@ -52,6 +52,7 @@ export interface ContractNegotiationEventMessageDto extends ContextDto {
   "dspace:consumerPid": string;
   "dspace:providerPid": string;
   "dspace:eventType": NegotiationEvent;
+  "dspace:hashedMessage"?: HashedMessage;
 }
 
 export interface ContractNegotiationErrorDto extends ContextDto {

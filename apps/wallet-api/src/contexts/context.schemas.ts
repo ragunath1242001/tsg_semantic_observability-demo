@@ -46,28 +46,3 @@ export class JSONLDContextDto implements JSONLDContext {
   @ApiPropertyOptional()
   deleted!: Date;
 }
-
-// export class JsonLdContextConfig {
-//   @IsString()
-//   public readonly id!: string;
-
-//   @IsString()
-//   public readonly credentialType!: string;
-
-//   @IsBoolean()
-//   public readonly issuable!: boolean;
-
-//   @IsString()
-//   @IsOptional()
-//   public readonly documentUrl?: string;
-
-//   @IsObject()
-//   @IsOptional()
-//   /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-//   public readonly document?: Record<string, any>;
-
-//   @IsObject()
-//   @IsOptional()
-//   /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-//   public readonly schema?: Record<string, any>;
-// }

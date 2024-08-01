@@ -64,4 +64,14 @@ export class AuthService {
       audience || this.config.iam.didId
     );
   }
+
+  async requestSignature(document: Record<string, any>): Promise<any> {
+    return this.walletClient.requestSignature(document);
+  }
+
+  async requestSignatureValidation(
+    signedDocument: Record<string, any>
+  ): Promise<any> {
+    return this.walletClient.requestSignatureValidation(signedDocument);
+  }
 }

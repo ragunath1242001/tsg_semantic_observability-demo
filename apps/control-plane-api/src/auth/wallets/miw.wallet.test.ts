@@ -166,15 +166,27 @@ describe("Managed Identity Wallet", () => {
     validations: ["valid"],
   });
   const testAudience = "did:web:test-audience.com";
-  const tsgWalletClient = new ManagedIdentityWalletClient(iamConfig);
+  const miwWalletClient = new ManagedIdentityWalletClient(iamConfig);
 
   it("Request & Validate presentation", async () => {
-    const vp = await tsgWalletClient.requestVerifiablePresentation(
+    const vp = await miwWalletClient.requestVerifiablePresentation(
       testAudience
     );
     expect(vp).toStrictEqual(expect.any(String));
 
-    const valid = await tsgWalletClient.requestValidation(vp, testAudience);
+    const valid = await miwWalletClient.requestValidation(vp, testAudience);
     expect(valid).toBeDefined();
+  });
+
+  it("Test unimplemented methods", async () => {
+    const credentials = await miwWalletClient.getCredentials();
+    expect(credentials).toHaveLength(0);
+
+    await expect(miwWalletClient.requestSignature({})).rejects.toThrow(
+      "MIW does not support signing of documents"
+    );
+    await expect(
+      miwWalletClient.requestSignatureValidation({})
+    ).rejects.toThrow("MIW does not support validation of documents");
   });
 });

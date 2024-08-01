@@ -9,6 +9,8 @@ import { SignJWT } from "jose";
 import { decode } from "jsonwebtoken";
 import { DevWalletConfig } from "../../config";
 import { Credential, WalletClient } from "./walletClient";
+import { HttpStatus } from "@nestjs/common";
+import { DSPError } from "../../utils/errors/error";
 
 export class DevWalletClient extends WalletClient {
   constructor(private readonly iamConfig: DevWalletConfig) {
@@ -49,7 +51,7 @@ export class DevWalletClient extends WalletClient {
     const jwt = await new SignJWT({ vp: vp })
       .setProtectedHeader({ alg: "HS256" })
       .setIssuedAt()
-      .setIssuer("did:web:wallet-catena-x.alpha.scsn.dataspac.es")
+      .setIssuer(this.iamConfig.didId)
       .setSubject(this.iamConfig.didId)
       .setAudience(audience)
       .setExpirationTime("24h")
@@ -71,5 +73,20 @@ export class DevWalletClient extends WalletClient {
 
   async getCredentials(): Promise<Credential[]> {
     return [];
+  }
+
+  async requestSignature(document: Record<string, any>): Promise<any> {
+    throw new DSPError(
+      `Dev Wallet does not support signing of documents`,
+      HttpStatus.NOT_IMPLEMENTED
+    );
+  }
+  async requestSignatureValidation(
+    signedDocument: Record<string, any>
+  ): Promise<any> {
+    throw new DSPError(
+      `Dev Wallet does not support validation of documents`,
+      HttpStatus.NOT_IMPLEMENTED
+    );
   }
 }
