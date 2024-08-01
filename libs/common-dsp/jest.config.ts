@@ -5,10 +5,11 @@ const config: Config.InitialOptions = {
     "^.+\\.tsx?$": [
       "ts-jest",
       {
-        useESM: true,
+        // useESM: true,
       },
     ],
   },
+  moduleDirectories: ["src", "node_modules"],
   testTimeout: 30000,
   testEnvironment: "node",
   testRegex: "/.*\\.(test|spec)?\\.(ts|tsx)$",

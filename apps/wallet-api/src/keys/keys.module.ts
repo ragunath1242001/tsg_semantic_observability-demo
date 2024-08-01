@@ -6,12 +6,17 @@ import { KeysController } from "./keys.controller.js";
 import { KeysService } from "./keys.service.js";
 import { DidModule } from "../did/did.module.js";
 import { KeysManagementController } from "./keys.management.controller.js";
-import { TokenService } from "./token.service.js";
+import { SignatureService } from "./signature.service.js";
+import { SignatureManagementController } from "./signature.management.controller.js";
 
 @Module({
   imports: [AuthModule, DidModule, TypeOrmModule.forFeature([KeyMaterials])],
-  controllers: [KeysController, KeysManagementController],
-  providers: [KeysService, TokenService],
-  exports: [KeysService, TokenService],
+  controllers: [
+    KeysController,
+    KeysManagementController,
+    SignatureManagementController,
+  ],
+  providers: [KeysService, SignatureService],
+  exports: [KeysService, SignatureService],
 })
 export class KeysModule {}

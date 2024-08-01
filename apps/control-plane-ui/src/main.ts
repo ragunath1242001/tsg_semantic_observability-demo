@@ -38,6 +38,8 @@ import Divider from "primevue/divider";
 import "@tsg-dsp/common-ui/assets/styles.scss";
 import MultiSelect from "primevue/multiselect";
 import Tooltip from "primevue/tooltip";
+import TabView from "primevue/tabview";
+import TabPanel from "primevue/tabpanel";
 
 const pinia = createPinia();
 const app = createApp(App);
@@ -81,6 +83,8 @@ app.component("Timeline", Timeline);
 app.component("Toast", Toast);
 app.component("ToggleButton", ToggleButton);
 app.component("Tree", Tree);
+app.component("TabView", TabView);
+app.component("TabPanel", TabPanel);
 
 app.directive("badge", BadgeDirective);
 app.directive("tooltip", Tooltip);

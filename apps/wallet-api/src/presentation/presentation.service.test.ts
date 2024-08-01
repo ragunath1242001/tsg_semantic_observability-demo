@@ -14,6 +14,7 @@ import { VerifiablePresentationJwt } from "@tsg-dsp/common-dsp";
 import { SetupServer, setupServer } from "msw/node";
 import { HttpResponse, http } from "msw";
 import { DIDDocuments, DIDService } from "../model/did.dao.js";
+import { SignatureService } from "../keys/signature.service.js";
 
 describe("Presentation Service", () => {
   let presentationService: PresentationService;
@@ -65,6 +66,7 @@ describe("Presentation Service", () => {
         DidService,
         DidResolverService,
         KeysService,
+        SignatureService,
         PresentationService,
         {
           provide: RootConfig,

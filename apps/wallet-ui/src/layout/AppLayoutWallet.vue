@@ -53,6 +53,11 @@ const menuList: Menu[] = [
         icon: "pi pi-fw pi-key",
         to: "/keys",
       },
+      {
+        label: "Signature",
+        icon: "pi pi-fw pi-verified",
+        to: "/signature",
+      },
     ],
   },
   {

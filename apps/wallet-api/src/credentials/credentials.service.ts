@@ -1,23 +1,17 @@
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { InitCredentialConfig, RootConfig } from "../config.js";
-import { CompactSign, importJWK } from "jose";
 import {
   Credential,
   CredentialSubject,
-  Signature,
   VerifiableCredential,
 } from "@tsg-dsp/common-dsp";
-import jsonld from "jsonld";
-import crypto from "crypto";
 import { AppError } from "../utils/error.js";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Credentials, KeyMaterials } from "../model/credentials.dao.js";
+import { Credentials } from "../model/credentials.dao.js";
 import { Repository } from "typeorm";
 import { DidService } from "../did/did.service.js";
-import { KeysService } from "../keys/keys.service.js";
-import { signingAlgorithm } from "../utils/keymapping.js";
 import axios from "axios";
-import { jsonldOptions } from "../utils/cachingContextLoader.js";
+import { SignatureService } from "../keys/signature.service.js";
 
 @Injectable()
 export class CredentialsService {
@@ -26,7 +20,7 @@ export class CredentialsService {
     @InjectRepository(Credentials)
     private readonly credentialRepository: Repository<Credentials>,
     private readonly didService: DidService,
-    private readonly keyService: KeysService
+    private readonly signatureService: SignatureService
   ) {
     this.initialized = this.init();
   }
@@ -216,37 +210,11 @@ export class CredentialsService {
       expirationDate: expirationDate.toISOString(),
       credentialSubject: credentialConfig.credentialSubject,
     };
-    const normalized = await jsonld.normalize(credential, {
-      ...jsonldOptions,
-      algorithm: "URDNA2015",
-    });
-    let keyMaterial: KeyMaterials | null;
-    if (credentialConfig.keyId) {
-      keyMaterial = await this.keyService.getKey(credentialConfig.keyId);
-    } else {
-      keyMaterial = await this.keyService.getDefaultKey();
-    }
-    this.logger.debug(`Signing with key ${keyMaterial.id}`);
-    const hash = crypto.createHash("sha256").update(normalized).digest("hex");
-    const signature = new CompactSign(
-      new TextEncoder().encode(hash)
-    ).setProtectedHeader({
-      alg: signingAlgorithm(keyMaterial.type),
-      b64: false,
-      crit: ["b64"],
-    });
-    const privateKey = await importJWK(keyMaterial.privateKey);
-    const jws = await signature.sign(privateKey);
 
-    const proof: Signature = {
-      type: "JsonWebSignature2020",
-      created: new Date().toISOString(),
-      proofPurpose: "assertionMethod",
-      jws: jws,
-      verificationMethod: `${await this.didService.getDidId()}#${
-        keyMaterial.id
-      }`,
-    };
+    const proof = await this.signatureService.signAsJsonWebSignature(
+      credential,
+      credentialConfig.keyId
+    );
 
     const verifiableCredential: VerifiableCredential<CredentialSubject> = {
       ...credential,

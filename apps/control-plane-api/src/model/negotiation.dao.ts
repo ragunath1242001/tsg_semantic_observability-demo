@@ -2,6 +2,7 @@ import {
   Agreement,
   ContractAgreementVerificationMessage,
   ContractNegotiationState,
+  HashedMessage,
   INegotiationDetail,
   INegotiationProcessEvent,
   Multilanguage,
@@ -17,7 +18,7 @@ import {
   PrimaryColumn,
   Relation,
 } from "typeorm";
-import { AutoIdEntity, MetaEntity } from "./common.dao";
+import { AutoIdEntity, instanceTransformer, MetaEntity } from "./common.dao";
 
 @Entity({ name: "negotationProcessEvent" })
 export class NegotiationProcessEventDao
@@ -36,8 +37,13 @@ export class NegotiationProcessEventDao
   reason?: Array<Multilanguage>;
   @Column({ nullable: true })
   agreementMessage?: string;
-  @Column("simple-json", { nullable: true })
+  @Column("simple-json", {
+    nullable: true,
+    transformer: instanceTransformer(ContractAgreementVerificationMessage),
+  })
   verification?: ContractAgreementVerificationMessage;
+  @Column("simple-json", { nullable: true })
+  hashedMessage?: HashedMessage;
   @Column()
   type!: "local" | "remote";
   @ManyToOne(() => NegotiationDetailDao)
@@ -63,9 +69,15 @@ export class NegotiationDetailDao
   state!: ContractNegotiationState;
   @Column()
   dataSet!: string;
-  @Column("simple-json", { nullable: true })
+  @Column("simple-json", {
+    nullable: true,
+    transformer: instanceTransformer(Offer),
+  })
   offer?: Offer;
-  @Column("simple-json", { nullable: true })
+  @Column("simple-json", {
+    nullable: true,
+    transformer: instanceTransformer(Agreement),
+  })
   agreement?: Agreement;
   @Column({ nullable: true })
   agreementId?: string;

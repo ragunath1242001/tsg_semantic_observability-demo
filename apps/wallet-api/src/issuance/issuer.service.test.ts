@@ -27,6 +27,7 @@ import { HolderService } from "./holder.service.js";
 import { DIDDocuments, DIDService } from "../model/did.dao.js";
 import { JSONLDContext } from "../model/context.dao.js";
 import { ContextService } from "../contexts/context.service.js";
+import { SignatureService } from "../keys/signature.service.js";
 
 describe("Issuer service", () => {
   let issuerService: IssuerService;
@@ -81,6 +82,7 @@ describe("Issuer service", () => {
         DidService,
         DidResolverService,
         KeysService,
+        SignatureService,
         PresentationService,
         IssuerService,
         HolderService,

@@ -73,7 +73,7 @@ const declineNegotiation = async (negotiation) => {
         >{{ negotiation.remoteParty.replace("%3A", ":") }}
       </span>
       <span class="block text-600 font-small mb-3">
-        accepted/agreed to your request. Do you want to {{ endState }}?
+        <template v-if="endState === 'verify'">accepted/agreed to</template><template v-else>verified</template> your request. Do you want to {{ endState }}?
       </span>
       <div class="flex justify-content-between mb-0">
         <Button

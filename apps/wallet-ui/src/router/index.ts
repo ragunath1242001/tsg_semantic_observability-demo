@@ -3,6 +3,7 @@ import AppLayout from "@/layout/AppLayoutWallet.vue";
 import LoginVue from "../views/Login.vue";
 import DashboardVue from "../views/Dashboard.vue";
 import KeysVue from "../views/Keys.vue";
+import SignatureVue from "../views/Signature.vue";
 import CredentialOverview from "../views/credentials/Overview.vue";
 import CredentialIssue from "../views/credentials/Issue.vue";
 import CredentialImport from "../views/credentials/Import.vue";
@@ -29,6 +30,11 @@ const router = createRouter({
           path: "/keys",
           name: "keys",
           component: KeysVue,
+        },
+        {
+          path: "/signature",
+          name: "signature",
+          component: SignatureVue,
         },
         {
           path: "/credentials",

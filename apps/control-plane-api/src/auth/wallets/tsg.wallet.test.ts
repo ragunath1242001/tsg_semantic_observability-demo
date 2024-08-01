@@ -36,11 +36,45 @@ describe("TSG Wallet", () => {
             vp: (await request.json()).vp,
           });
         }
+      ),
+      http.get("http://127.0.0.1/api/management/credentials/dataspace", () => {
+        return HttpResponse.json([{}]);
+      }),
+      http.post<PathParams, Record<string, any>>(
+        "http://127.0.0.1/api/management/signature/sign",
+        async ({ request }) => {
+          const body = await request.json();
+          if (Object.keys(body.plainDocument).length === 0) {
+            return new HttpResponse("Bad Request", { status: 400 });
+          } else {
+            return HttpResponse.json({
+              ...body.plainDocument,
+              proof: {
+                type: "JsonWebSignature2020",
+                created: "2024-07-29T16:10:20.763Z",
+                proofPurpose: "assertionMethod",
+                jws: "eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..8zL0OkKo0z1VkxF2ZVtTmHP8e5GdxdwPyCc4RrD-d155B2NhB8jsUfMiw4H0en6dnnbV6AucUTw0MfHKJJfxBA",
+                verificationMethod: "did:web:localhost%3A3000#key-0",
+              },
+            });
+          }
+        }
+      ),
+      http.post<PathParams, Record<string, any>>(
+        "http://127.0.0.1/api/management/signature/validate",
+        async ({ request }) => {
+          const body = await request.json();
+          if (Object.keys(body.jsonWebSignature).length === 0) {
+            return new HttpResponse("Bad Request", { status: 400 });
+          } else {
+            return HttpResponse.json(body.jsonWebSignature);
+          }
+        }
       )
     );
 
     server.listen({
-      onUnhandledRequest: "bypass",
+      onUnhandledRequest: "error",
     });
   });
 
@@ -77,5 +111,42 @@ describe("TSG Wallet", () => {
     expect(vp).toStrictEqual(expect.any(String));
     const valid = await tsgWalletClient.requestValidation(vp, testAudience);
     expect(valid).toBeDefined();
+  });
+
+  it("Get dataspace credentials", async () => {
+    const credentials = await tsgWalletClient.getCredentials();
+    expect(credentials).toHaveLength(1);
+  });
+
+  it("Signature service", async () => {
+    await expect(tsgWalletClient.requestSignature({})).rejects.toThrow(
+      "Could not sign document"
+    );
+    await tsgWalletClient.requestSignature({
+      "@context": "http://schema.org/",
+      "@type": "Person",
+      name: "Jane Doe",
+      jobTitle: "Professor",
+      telephone: "(425) 123-4567",
+      url: "http://www.janedoe.com",
+    });
+    await expect(
+      tsgWalletClient.requestSignatureValidation({})
+    ).rejects.toThrow("Could not validate document");
+    await tsgWalletClient.requestSignatureValidation({
+      "@context": "http://schema.org/",
+      "@type": "Person",
+      name: "Jane Doe",
+      jobTitle: "Professor",
+      telephone: "(425) 123-4567",
+      url: "http://www.janedoe.com",
+      proof: {
+        type: "JsonWebSignature2020",
+        created: "2024-07-29T16:10:20.763Z",
+        proofPurpose: "assertionMethod",
+        jws: "eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..8zL0OkKo0z1VkxF2ZVtTmHP8e5GdxdwPyCc4RrD-d155B2NhB8jsUfMiw4H0en6dnnbV6AucUTw0MfHKJJfxBA",
+        verificationMethod: "did:web:localhost%3A3000#key-0",
+      },
+    });
   });
 });

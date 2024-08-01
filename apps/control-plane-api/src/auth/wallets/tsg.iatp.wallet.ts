@@ -122,4 +122,40 @@ export class TsgIatpWalletClient extends WalletClient {
       );
     }
   }
+
+  async requestSignature(document: Record<string, any>): Promise<any> {
+    try {
+      const response = await this.authClientService
+        .axiosInstance()
+        .post(`${this.iamConfig.walletUrl}/management/signature/sign`, {
+          type: "JsonWebSignature",
+          plainDocument: document,
+        });
+      return response.data;
+    } catch (err) {
+      throw new DSPClientError("Could not sign document", err).andLog(
+        this.logger,
+        "warn"
+      );
+    }
+  }
+
+  async requestSignatureValidation(
+    signedDocument: Record<string, any>
+  ): Promise<any> {
+    try {
+      const response = await this.authClientService
+        .axiosInstance()
+        .post(`${this.iamConfig.walletUrl}/management/signature/validate`, {
+          type: "JsonWebSignature",
+          jsonWebSignature: signedDocument,
+        });
+      return response.data;
+    } catch (err) {
+      throw new DSPClientError("Could not validate document", err).andLog(
+        this.logger,
+        "warn"
+      );
+    }
+  }
 }

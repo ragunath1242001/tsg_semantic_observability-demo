@@ -4,6 +4,7 @@ export function createOptionalInstance<Type>(
   obj: Type | undefined,
   cls: ClassConstructor<Type>
 ): Type | undefined {
+  if (obj === undefined) return undefined;
   if (Object.getPrototypeOf(obj) !== Object.prototype) {
     return obj;
   } else {

@@ -5,6 +5,7 @@ import {
   DeleteDateColumn,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
+  ValueTransformer,
 } from "typeorm";
 
 export class MetaEntity {
@@ -38,4 +39,13 @@ export function mapToInstances<
   target: Type<OutType, InType>
 ): Array<OutType> | undefined {
   return input ? input.map((element) => new target(element)) : undefined;
+}
+
+export function instanceTransformer<
+  OutType extends SerializableClass<ContextDto>
+>(target: Type<OutType, any>): ValueTransformer {
+  return {
+    to: (v) => v,
+    from: (v) => (v ? new target(v) : undefined),
+  };
 }

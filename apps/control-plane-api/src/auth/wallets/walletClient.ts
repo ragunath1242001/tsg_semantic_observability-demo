@@ -24,4 +24,9 @@ export abstract class WalletClient {
     VerifiablePresentation<VerifiableCredential<CredentialSubject>> | undefined
   >;
   abstract getCredentials(): Promise<Credential[]>;
+
+  abstract requestSignature(document: Record<string, any>): Promise<any>;
+  abstract requestSignatureValidation(
+    signedDocument: Record<string, any>
+  ): Promise<any>;
 }

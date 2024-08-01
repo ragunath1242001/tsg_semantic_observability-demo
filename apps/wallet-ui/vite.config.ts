@@ -17,13 +17,21 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      "/api": {
-        target: "http://localhost:3000/",
-      },
-      "/.well-known": {
-        target: "http://localhost:3000/",
-      },
+      // "/api": {
+      //   target: "http://localhost:3000/",
+      // },
+      // "/.well-known": {
+      //   target: "http://localhost:3000/",
+      // },
       // '/api': 'https://issuer.oid4vci.heracles.dataspac.es/'
+
+      "/api": {
+        target: "https://dataguard.heracles.dataspac.es/wallet",
+        changeOrigin: true,
+        headers: {
+          Cookie: "connect.sid.tsgw=...",
+        },
+      },
     },
   },
 });

@@ -11,24 +11,21 @@ import {
 import axios from "axios";
 import { AppError } from "../utils/error.js";
 import qs from "querystring";
-import { KeysService } from "../keys/keys.service.js";
-import { SignJWT, decodeJwt, importJWK } from "jose";
-import { DidService } from "../did/did.service.js";
+import { decodeJwt } from "jose";
 import { PresentationService } from "../presentation/presentation.service.js";
 import { VerifiablePresentation } from "@tsg-dsp/common-dsp";
 import { plainToInstance } from "class-transformer";
 import { toArray } from "../utils/unions.js";
 import { RootConfig } from "../config.js";
 import { Credentials } from "../model/credentials.dao.js";
-import { signingAlgorithm } from "../utils/keymapping.js";
+import { SignatureService } from "../keys/signature.service.js";
 
 @Injectable()
 export class HolderService {
   constructor(
     private readonly credentialsService: CredentialsService,
     private readonly presentationService: PresentationService,
-    private readonly keysService: KeysService,
-    private readonly didService: DidService,
+    private readonly signatureService: SignatureService,
     private readonly config: RootConfig
   ) {
     this.initialized = this.init();
@@ -261,18 +258,15 @@ export class HolderService {
     issuerUrl: string,
     credentialDefinition: CredentialDefinition
   ): Promise<CredentialRequest> {
-    const key = await this.keysService.getDefaultKey();
-
-    const jwt = await new SignJWT({ nonce: nonce })
-      .setProtectedHeader({
-        alg: signingAlgorithm(key.type),
+    const jwt = await this.signatureService.signJwt(
+      { nonce: nonce },
+      issuerUrl,
+      {
         typ: "openid4vci-proof+jwt",
-        kid: `${await this.didService.getDidId()}#${key.id}`,
-      })
-      .setIssuer(await this.didService.getDidId())
-      .setAudience(issuerUrl)
-      .setIssuedAt()
-      .sign(await importJWK(key.privateKey));
+        subject: false,
+        jti: false,
+      }
+    );
 
     return {
       format: "jwt_vc_json-ld",

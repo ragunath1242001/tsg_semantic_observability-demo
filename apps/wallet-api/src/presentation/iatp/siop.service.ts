@@ -1,5 +1,5 @@
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
-import { TokenService } from "../../keys/token.service.js";
+import { SignatureService } from "../../keys/signature.service.js";
 import { SIToken } from "../../model/iatp.dao.js";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
@@ -12,7 +12,7 @@ import { JWTPayload } from "jose";
 export class IatpSiopService {
   constructor(
     private readonly didService: DidService,
-    private readonly tokenService: TokenService,
+    private readonly signatureService: SignatureService,
     @InjectRepository(SIToken)
     private readonly siTokenRepository: Repository<SIToken>
   ) {}
@@ -44,12 +44,14 @@ export class IatpSiopService {
     if (scope) {
       jwtPayload["bearer_access_scope"] = scope;
     }
-    return await this.tokenService.create(jwtPayload);
+    return await this.signatureService.signJwt(jwtPayload, audience, {
+      expirationTime: "5m",
+    });
   }
 
   async validateIDToken(idToken: string): Promise<JWTPayload> {
     const didId = await this.didService.getDidId();
-    const validatedToken = await this.tokenService.validate(idToken);
+    const validatedToken = await this.signatureService.validateJwt(idToken);
 
     if (validatedToken.aud !== didId) {
       throw new AppError(
