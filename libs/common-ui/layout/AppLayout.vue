@@ -6,7 +6,7 @@ import AppSidebar from "./AppSidebar.vue";
 import { useLayout } from "./composables/layout";
 import { MenuProps } from "./AppMenu.vue";
 
-const { layoutState, isSidebarActive } = useLayout();
+const { layoutConfig, layoutState, isSidebarActive, resetMenu } = useLayout();
 
 const props = defineProps<{
   topbar: TopbarProps;
@@ -15,7 +15,7 @@ const props = defineProps<{
 }>();
 
 const { topbar, sidebar, footer } = toRefs(props);
-const outsideClickListener = ref(null);
+const outsideClickListener = ref<any>(null);
 
 watch(isSidebarActive, (newVal) => {
   if (newVal) {
@@ -25,25 +25,25 @@ watch(isSidebarActive, (newVal) => {
   }
 });
 
-const bindOutsideClickListener = () => {
+function bindOutsideClickListener() {
   if (!outsideClickListener.value) {
     outsideClickListener.value = (event) => {
       if (isOutsideClicked(event)) {
-        layoutState.overlayMenuActive.value = false;
-        layoutState.staticMenuMobileActive.value = false;
-        layoutState.menuHoverActive.value = false;
+        resetMenu();
       }
     };
     document.addEventListener("click", outsideClickListener.value);
   }
-};
-const unbindOutsideClickListener = () => {
+}
+
+function unbindOutsideClickListener() {
   if (outsideClickListener.value) {
     document.removeEventListener("click", outsideClickListener.value);
     outsideClickListener.value = null;
   }
-};
-const isOutsideClicked = (event) => {
+}
+
+function isOutsideClicked(event) {
   const sidebarEl = document.querySelector(".layout-sidebar");
   const topbarEl = document.querySelector(".layout-menu-button");
 
@@ -53,17 +53,24 @@ const isOutsideClicked = (event) => {
     topbarEl.isSameNode(event.target) ||
     topbarEl.contains(event.target)
   );
-};
+}
 </script>
 
 <template>
   <app-topbar
     :title="topbar.title"
+    :name="topbar.name"
     :baseLogoUrl="topbar.baseLogoUrl"
     :user="topbar.user"
     :router="topbar.router"
   ></app-topbar>
-  <div class="layout-sidebar" style="border: 1px solid var(--surface-border)">
+  <div
+    class="layout-sidebar"
+    style="
+      border: 1px solid var(--surface-border);
+      box-shadow: var(--p-card-shadow);
+    "
+  >
     <app-sidebar :menu="sidebar.menu" :route="sidebar.route"></app-sidebar>
   </div>
   <div class="layout-main-container">
@@ -75,6 +82,7 @@ const isOutsideClicked = (event) => {
       :footerText="footer.footerText"
     ></app-footer>
   </div>
+  <Toast />
 </template>
 
 <style lang="scss" scoped></style>

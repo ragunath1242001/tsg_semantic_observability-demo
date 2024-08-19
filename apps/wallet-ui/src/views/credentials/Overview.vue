@@ -171,7 +171,7 @@ onMounted(async () => {
           <Column field="id" header="ID">
             <template #body="props">
               <code
-                class="text-sm block white-space-nowrap overflow-hidden text-overflow-ellipsis"
+                class="text-sm block whitespace-nowrap overflow-hidden text-ellipsis"
                 style="width: 36ch"
                 >{{
                   props.data.id.replace(`${props.data.targetDid}#`, "")
@@ -182,13 +182,13 @@ onMounted(async () => {
           <Column field="targetDid" header="Target (Issuer)" class="text-sm">
             <template #body="props">
               <code
-                class="block white-space-nowrap overflow-hidden text-overflow-ellipsis"
+                class="block whitespace-nowrap overflow-hidden text-ellipsis"
                 style="max-width: 50ch"
                 >{{ props.data.targetDid }}</code
               ><br />
               <small
                 ><code
-                  class="block white-space-nowrap overflow-hidden text-overflow-ellipsis"
+                  class="block whitespace-nowrap overflow-hidden text-ellipsis"
                   >({{ props.data.issuer }})</code
                 ></small
               >

@@ -145,25 +145,33 @@ const terminateTransfer = async (transfer) => {
 <template>
   <Card style="border-radius: 12px; border: 1px solid var(--surface-border)">
     <template #content>
-      <div class="flex justify-content-between mb-3">
+      <div class="flex justify-between mb-4">
         <div>
           <h5>{{ utils.stripDspace(transfer.state) }}</h5>
         </div>
         <div
-          class="flex align-items-center justify-content-center bg-blue-100 border-round"
+          class="flex items-center justify-center bg-blue-100 rounded-border"
           style="width: 2.5rem; height: 2.5rem"
         >
           <i class="pi pi-file text-blue-500 text-xl"></i>
         </div>
       </div>
-      <span class="block text-600 font-small mb-3"> Transfer with </span>
-      <span style="word-wrap: break-word" class="block text-600 font-small mb-3"
+      <span
+        class="block text-surface-600 dark:text-surface-200 font-small mb-4"
+      >
+        Transfer with
+      </span>
+      <span
+        style="word-wrap: break-word"
+        class="block text-surface-600 dark:text-surface-200 font-small mb-4"
         >{{ transfer.remoteParty.replace("%3A", ":") }}
       </span>
-      <span class="block text-600 font-small mb-3">
+      <span
+        class="block text-surface-600 dark:text-surface-200 font-small mb-4"
+      >
         {{ determineWord(transfer) }}, what do you want to do?
       </span>
-      <div class="flex justify-content-between mb-0">
+      <div class="flex justify-between mb-0">
         <Button
           v-tooltip.top="'Terminate'"
           severity="danger"
@@ -174,7 +182,7 @@ const terminateTransfer = async (transfer) => {
         />
         <Button
           v-tooltip.top="'Suspend'"
-          severity="warning"
+          severity="warn"
           icon="pi pi-pause"
           type="submit"
           v-if="transfer.state === 'dspace:STARTED'"
@@ -199,19 +207,21 @@ const terminateTransfer = async (transfer) => {
             style="border-radius: 12px; border: 1px solid var(--surface-border)"
           >
             <template #content>
-              <div class="field grid">
-                <label for="code" class="col-12 mb-2 md:col-2 md:mb-0"
+              <div class="field grid grid-cols-12 gap-4">
+                <label for="code" class="col-span-12 mb-2 md:col-span-2 md:mb-0"
                   >Code</label
                 >
-                <div class="col-12 md:col-10">
+                <div class="col-span-12 md:col-span-10">
                   <InputText id="code" type="text" v-model="code" />
                 </div>
               </div>
-              <div class="field grid">
-                <label for="reason" class="col-12 mb-2 md:col-2 md:mb-0"
+              <div class="field grid grid-cols-12 gap-4">
+                <label
+                  for="reason"
+                  class="col-span-12 mb-2 md:col-span-2 md:mb-0"
                   >Reason</label
                 >
-                <div class="col-12 md:col-10">
+                <div class="col-span-12 md:col-span-10">
                   <InputText id="reason" type="text" v-model="reason" />
                 </div>
               </div>

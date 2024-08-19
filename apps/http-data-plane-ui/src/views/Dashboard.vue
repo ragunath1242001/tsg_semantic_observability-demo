@@ -165,152 +165,152 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div>
-    <Dialog
-      :dismissableMask="true"
-      :style="{ width: '90vw', maxWidth: '100rem' }"
-      v-model:visible="showLogModal"
-      @hide="logModal = undefined"
-      modal
-    >
-      <template #header>
-        <span class="p-dialog-title" data-pc-section="title"
-          ><span class="capitalize">{{ logModal.type }}</span> logs for transfer
-          {{ logModal.transfer }}</span
-        >
-      </template>
-      <PaginatedLogTable
-        v-if="logModal"
-        :type="logModal.type"
-        :transferId="logModal.transfer"
-      />
-    </Dialog>
-    <Card>
-      <template #title>State</template>
-      <template #subtitle>State of this HTTP data plane</template>
-      <template #content>
-        <div v-if="state">
-          <FormField label="Identifier">{{ state.identifier }}</FormField>
-          <FormField label="Type">{{ state.details.dataplaneType }}</FormField>
-          <FormField label="Synchronization">{{
-            state.details.catalogSynchronization
-          }}</FormField>
-          <FormField label="Role">{{ state.details.role }}</FormField>
-          <FormField label="Dataset IDs">
-            <div v-for="dataset in state.dataset">
-              {{ dataset["@id"] }}
-            </div>
-          </FormField>
-        </div>
-      </template>
-    </Card>
-    <Card class="mt-5" v-if="showConsumer">
-      <template #title>Consuming Transfers</template>
-      <template #subtitle
-        >Transfers executed by this data plane acting as consumer</template
+  <Dialog
+    :dismissableMask="true"
+    :style="{ width: '90vw', maxWidth: '100rem' }"
+    v-model:visible="showLogModal"
+    @hide="logModal = undefined"
+    modal
+  >
+    <template #header>
+      <span class="p-dialog-title" data-pc-section="title"
+        ><span class="capitalize">{{ logModal.type }}</span> logs for transfer
+        {{ logModal.transfer }}</span
       >
-      <template #content>
-        <DataTable
-          v-model:expanded-rows="expandedConsumerRows"
-          :value="consumerTransfers"
-          sort-field="createdDate"
-          :sort-order="-1"
-          paginator
-          :rows="10"
-        >
-          <Column expander style="width: 5rem" />
-          <Column field="remoteId" header="Remote ID">
-            <template #body="props">
-              {{ props.data.remoteParty }}
-            </template>
-          </Column>
-          <Column field="state" header="State">
-            <template #body="props">
-              <Tag
-                :severity="stateSeverity(props.data.state)"
-                :value="props.data.state.replace(/^dspace:/, '')"
-              />
-            </template>
-          </Column>
-          <Column field="createdDate" header="Date">
-            <template #body="props">
-              {{ new Date(props.data.createdDate).toLocaleString() }}
-            </template>
-          </Column>
-          <Column header="Quick actions">
-            <template #body="props">
-              <Button
-                icon="pi pi-times"
-                :disabled="
-                  ['dspace:COMPLETED', 'dspace:TERMINATED'].includes(
-                    props.data.state
-                  )
-                "
-                severity="danger"
-                aria-label="Stop"
-                outlined
-                @click="action($event, 'terminate', props.data)"
-                v-tooltip.bottom="'Terminate'"
-              />
-              <Button
-                v-if="props.data.state === 'dspace:STARTED'"
-                class="ml-2"
-                icon="pi pi-pause"
-                severity="warning"
-                aria-label="Suspend"
-                outlined
-                @click="action($event, 'suspend', props.data)"
-                v-tooltip.bottom="'Suspend'"
-              />
-              <Button
-                v-else
-                :disabled="props.data.state !== 'dspace:SUSPENDED'"
-                class="ml-2"
-                icon="pi pi-play"
-                severity="warning"
-                aria-label="Start"
-                outlined
-                @click="action($event, 'start', props.data)"
-                v-tooltip.bottom="'Start'"
-              />
-              <Button
-                class="ml-2"
-                :disabled="props.data.state !== 'dspace:STARTED'"
-                icon="pi pi-download"
-                severity="info"
-                aria-label="Execute"
-                @click="
-                  store.commit('currentTransfer', props.data);
-                  router.push({
-                    name: 'tester',
-                    params: { id: props.data.id },
-                  });
-                "
-                v-tooltip.bottom="'Execute'"
-                outlined
-              />
-              <Button
-                class="ml-2"
-                :disabled="props.data.state !== 'dspace:STARTED'"
-                icon="pi pi-check"
-                severity="success"
-                aria-label="Complete"
-                outlined
-                @click="action($event, 'complete', props.data)"
-                v-tooltip.bottom="'Complete'"
-              />
-              <Button
-                class="ml-2"
-                icon="pi pi-list"
-                severity="help"
-                aria-label="Logs"
-                outlined
-                @click="showLogs(props.data)"
-                v-tooltip.bottom="'Logs'"
-              />
-            </template>
-          </Column>
-          <template #expansion="props">
+    </template>
+    <PaginatedLogTable
+      v-if="logModal"
+      :type="logModal.type"
+      :transferId="logModal.transfer"
+    />
+  </Dialog>
+  <Card>
+    <template #title>State</template>
+    <template #subtitle>State of this HTTP data plane</template>
+    <template #content>
+      <div class="flex flex-col gap-4" v-if="state">
+        <FormField label="Identifier">{{ state.identifier }}</FormField>
+        <FormField label="Type">{{ state.details.dataplaneType }}</FormField>
+        <FormField label="Synchronization">{{
+          state.details.catalogSynchronization
+        }}</FormField>
+        <FormField label="Role">{{ state.details.role }}</FormField>
+        <FormField label="Dataset IDs">
+          <div v-for="dataset in state.dataset">
+            {{ dataset["@id"] }}
+          </div>
+        </FormField>
+      </div>
+    </template>
+  </Card>
+  <Card class="mt-8" v-if="showConsumer">
+    <template #title>Consuming Transfers</template>
+    <template #subtitle
+      >Transfers executed by this data plane acting as consumer</template
+    >
+    <template #content>
+      <DataTable
+        v-model:expanded-rows="expandedConsumerRows"
+        :value="consumerTransfers"
+        sort-field="createdDate"
+        :sort-order="-1"
+        paginator
+        :rows="10"
+      >
+        <Column expander style="width: 5rem" />
+        <Column field="remoteId" header="Remote ID">
+          <template #body="props">
+            {{ props.data.remoteParty }}
+          </template>
+        </Column>
+        <Column field="state" header="State">
+          <template #body="props">
+            <Tag
+              :severity="stateSeverity(props.data.state)"
+              :value="props.data.state.replace(/^dspace:/, '')"
+            />
+          </template>
+        </Column>
+        <Column field="createdDate" header="Date">
+          <template #body="props">
+            {{ new Date(props.data.createdDate).toLocaleString() }}
+          </template>
+        </Column>
+        <Column header="Quick actions">
+          <template #body="props">
+            <Button
+              icon="pi pi-times"
+              :disabled="
+                ['dspace:COMPLETED', 'dspace:TERMINATED'].includes(
+                  props.data.state
+                )
+              "
+              severity="danger"
+              aria-label="Stop"
+              outlined
+              @click="action($event, 'terminate', props.data)"
+              v-tooltip.bottom="'Terminate'"
+            />
+            <Button
+              v-if="props.data.state === 'dspace:STARTED'"
+              class="ml-2"
+              icon="pi pi-pause"
+              severity="warn"
+              aria-label="Suspend"
+              outlined
+              @click="action($event, 'suspend', props.data)"
+              v-tooltip.bottom="'Suspend'"
+            />
+            <Button
+              v-else
+              :disabled="props.data.state !== 'dspace:SUSPENDED'"
+              class="ml-2"
+              icon="pi pi-play"
+              severity="warn"
+              aria-label="Start"
+              outlined
+              @click="action($event, 'start', props.data)"
+              v-tooltip.bottom="'Start'"
+            />
+            <Button
+              class="ml-2"
+              :disabled="props.data.state !== 'dspace:STARTED'"
+              icon="pi pi-download"
+              severity="info"
+              aria-label="Execute"
+              @click="
+                store.commit('currentTransfer', props.data);
+                router.push({
+                  name: 'tester',
+                  params: { id: props.data.id },
+                });
+              "
+              v-tooltip.bottom="'Execute'"
+              outlined
+            />
+            <Button
+              class="ml-2"
+              :disabled="props.data.state !== 'dspace:STARTED'"
+              icon="pi pi-check"
+              severity="success"
+              aria-label="Complete"
+              outlined
+              @click="action($event, 'complete', props.data)"
+              v-tooltip.bottom="'Complete'"
+            />
+            <Button
+              class="ml-2"
+              icon="pi pi-list"
+              severity="help"
+              aria-label="Logs"
+              outlined
+              @click="showLogs(props.data)"
+              v-tooltip.bottom="'Logs'"
+            />
+          </template>
+        </Column>
+        <template #expansion="props">
+          <div class="flex flex-col gap-4">
             <FormField label="Local ID">{{ props.data.id }}</FormField>
             <FormField label="Process ID">{{ props.data.processId }}</FormField>
             <FormField label="Date">{{
@@ -326,8 +326,10 @@ onMounted(async () => {
               props.data.request["dspace:agreementId"]
             }}</FormField>
             <FormField label="Dataset ID">{{ props.data.datasetId }}</FormField>
-            <template v-if="props.data.state === 'dspace:STARTED'">
-              <h4>Data address</h4>
+          </div>
+          <template v-if="props.data.state === 'dspace:STARTED'">
+            <div class="text-xl my-2">Data address</div>
+            <div class="flex flex-col gap-4">
               <FormField label="Endpoint">{{
                 props.data.dataAddress["dspace:endpoint"]
               }}</FormField>
@@ -341,126 +343,126 @@ onMounted(async () => {
                   >: {{ property["dspace:value"] }}
                 </div>
               </FormField>
-            </template>
+            </div>
           </template>
-        </DataTable>
-      </template>
-    </Card>
-    <Card class="mt-5" v-if="showProvider">
-      <template #title>Providing Transfers</template>
-      <template #subtitle
-        >Transfers executed by this data plane acting as provider</template
+        </template>
+      </DataTable>
+    </template>
+  </Card>
+  <Card class="mt-8" v-if="showProvider">
+    <template #title>Providing Transfers</template>
+    <template #subtitle
+      >Transfers executed by this data plane acting as provider</template
+    >
+    <template #content>
+      <DataTable
+        v-model:expanded-rows="expandedProviderRows"
+        :value="providerTransfers"
+        sort-field="createdDate"
+        :sort-order="-1"
+        paginator
+        :rows="10"
       >
-      <template #content>
-        <DataTable
-          v-model:expanded-rows="expandedProviderRows"
-          :value="providerTransfers"
-          sort-field="createdDate"
-          :sort-order="-1"
-          paginator
-          :rows="10"
-        >
-          <Column expander style="width: 5rem" />
-          <Column field="remoteId" header="Remote ID">
-            <template #body="props">
-              {{ props.data.remoteParty }}
-            </template>
-          </Column>
-          <Column field="state" header="State">
-            <template #body="props">
-              <Tag
-                :severity="stateSeverity(props.data.state)"
-                :value="props.data.state.replace(/^dspace:/, '')"
-              />
-            </template>
-          </Column>
-          <Column field="createdDate" header="Date">
-            <template #body="props">
-              {{ new Date(props.data.createdDate).toLocaleString() }}
-            </template>
-          </Column>
-          <Column header="Quick actions">
-            <template #body="props">
-              <Button
-                icon="pi pi-times"
-                :disabled="
-                  ['dspace:COMPLETED', 'dspace:TERMINATED'].includes(
-                    props.data.state
-                  )
-                "
-                severity="danger"
-                aria-label="Terminate"
-                outlined
-                @click="action($event, 'terminate', props.data)"
-                v-tooltip.bottom="'Terminate'"
-              />
-              <Button
-                v-if="props.data.state === 'dspace:STARTED'"
-                class="ml-2"
-                icon="pi pi-pause"
-                severity="warning"
-                aria-label="Suspend"
-                outlined
-                @click="action($event, 'suspend', props.data)"
-                v-tooltip.bottom="'Suspend'"
-              />
-              <Button
-                v-else
-                :disabled="
-                  !['dspace:SUSPENDED', 'dspace:REQUESTED'].includes(
-                    props.data.state
-                  )
-                "
-                class="ml-2"
-                icon="pi pi-play"
-                severity="warning"
-                aria-label="Start"
-                outlined
-                @click="action($event, 'start', props.data)"
-                v-tooltip.bottom="'Start'"
-              />
-              <Button
-                class="ml-2"
-                :disabled="props.data.state !== 'dspace:STARTED'"
-                icon="pi pi-check"
-                severity="success"
-                aria-label="Complete"
-                outlined
-                @click="action($event, 'complete', props.data)"
-                v-tooltip.bottom="'Complete'"
-              />
-              <Button
-                class="ml-2"
-                icon="pi pi-list"
-                severity="help"
-                aria-label="Logs"
-                outlined
-                @click="showLogs(props.data)"
-                v-tooltip.bottom="'Logs'"
-              />
-            </template>
-          </Column>
-          <template #expansion="props">
-            <FormField label="Local ID">{{ props.data.id }}</FormField>
-            <FormField label="Process ID">{{ props.data.processId }}</FormField>
-            <FormField label="Date">{{
-              formatDate(props.data.createdDate)
-            }}</FormField>
-            <FormField label="State">
-              <Tag
-                :severity="stateSeverity(props.data.state)"
-                :value="props.data.state.replace(/^dspace:/, '')"
-              />
-            </FormField>
-            <FormField label="Agreement">{{
-              props.data.request["dspace:agreementId"]
-            }}</FormField>
-            <FormField label="Dataset ID">{{ props.data.datasetId }}</FormField>
+        <Column expander style="width: 5rem" />
+        <Column field="remoteId" header="Remote ID">
+          <template #body="props">
+            {{ props.data.remoteParty }}
           </template>
-        </DataTable>
-      </template>
-    </Card>
-  </div>
+        </Column>
+        <Column field="state" header="State">
+          <template #body="props">
+            <Tag
+              :severity="stateSeverity(props.data.state)"
+              :value="props.data.state.replace(/^dspace:/, '')"
+            />
+          </template>
+        </Column>
+        <Column field="createdDate" header="Date">
+          <template #body="props">
+            {{ new Date(props.data.createdDate).toLocaleString() }}
+          </template>
+        </Column>
+        <Column header="Quick actions">
+          <template #body="props">
+            <Button
+              icon="pi pi-times"
+              :disabled="
+                ['dspace:COMPLETED', 'dspace:TERMINATED'].includes(
+                  props.data.state
+                )
+              "
+              severity="danger"
+              aria-label="Terminate"
+              outlined
+              @click="action($event, 'terminate', props.data)"
+              v-tooltip.bottom="'Terminate'"
+            />
+            <Button
+              v-if="props.data.state === 'dspace:STARTED'"
+              class="ml-2"
+              icon="pi pi-pause"
+              severity="warn"
+              aria-label="Suspend"
+              outlined
+              @click="action($event, 'suspend', props.data)"
+              v-tooltip.bottom="'Suspend'"
+            />
+            <Button
+              v-else
+              :disabled="
+                !['dspace:SUSPENDED', 'dspace:REQUESTED'].includes(
+                  props.data.state
+                )
+              "
+              class="ml-2"
+              icon="pi pi-play"
+              severity="warn"
+              aria-label="Start"
+              outlined
+              @click="action($event, 'start', props.data)"
+              v-tooltip.bottom="'Start'"
+            />
+            <Button
+              class="ml-2"
+              :disabled="props.data.state !== 'dspace:STARTED'"
+              icon="pi pi-check"
+              severity="success"
+              aria-label="Complete"
+              outlined
+              @click="action($event, 'complete', props.data)"
+              v-tooltip.bottom="'Complete'"
+            />
+            <Button
+              class="ml-2"
+              icon="pi pi-list"
+              severity="help"
+              aria-label="Logs"
+              outlined
+              @click="showLogs(props.data)"
+              v-tooltip.bottom="'Logs'"
+            />
+          </template>
+        </Column>
+        <template #expansion="props">
+          <FormField label="Local ID">{{ props.data.id }}</FormField>
+          <FormField label="Process ID">{{ props.data.processId }}</FormField>
+          <FormField label="Date">{{
+            formatDate(props.data.createdDate)
+          }}</FormField>
+          <FormField label="State">
+            <Tag
+              :severity="stateSeverity(props.data.state)"
+              :value="props.data.state.replace(/^dspace:/, '')"
+            />
+          </FormField>
+          <FormField label="Agreement">{{
+            props.data.request["dspace:agreementId"]
+          }}</FormField>
+          <FormField label="Dataset ID">{{ props.data.datasetId }}</FormField>
+        </template>
+      </DataTable>
+    </template>
+  </Card>
 </template>
 <style scoped>
 .card-container {

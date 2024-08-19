@@ -1,15 +1,15 @@
 import { createApp } from "vue";
 import App from "./App.vue";
 import router from "./router/index.js";
+import Lara from "@primevue/themes/lara";
 
 import PrimeVue from "primevue/config";
 import AutoComplete from "primevue/autocomplete";
 import Badge from "primevue/badge";
 import Button from "primevue/button";
-import Chips from "primevue/chips";
 import ConfirmDialog from "primevue/confirmdialog";
 import Dialog from "primevue/dialog";
-import Dropdown from "primevue/dropdown";
+import Select from "primevue/select";
 import FileUpload from "primevue/fileupload";
 import InputNumber from "primevue/inputtext";
 import InputText from "primevue/inputtext";
@@ -18,7 +18,7 @@ import Message from "primevue/message";
 import Toast from "primevue/toast";
 import ToastService from "primevue/toastservice";
 import Tree from "primevue/tree";
-import ToggleButton from "primevue/togglebutton";
+import ToggleSwitch from "primevue/toggleswitch";
 import Tag from "primevue/tag";
 import Textarea from "primevue/textarea";
 import Card from "primevue/card";
@@ -31,9 +31,11 @@ import SelectButton from "primevue/selectbutton";
 import MonacoEditorVue from "@tsg-dsp/common-ui/components/MonacoEditor.vue";
 
 import "@tsg-dsp/common-ui/assets/styles.scss";
+import "@tsg-dsp/common-ui/assets/tailwind.css";
 import { store } from "./store/index.js";
 
 import { loader } from "@guolao/vue-monaco-editor";
+import Drawer from "primevue/drawer";
 
 loader.config({
   paths: {
@@ -44,17 +46,24 @@ loader.config({
 const app = createApp(App);
 app.use(router);
 app.use(store);
-app.use(PrimeVue, { ripple: true });
+app.use(PrimeVue, {
+  theme: {
+    preset: Lara,
+    options: {
+      darkModeSelector: ".app-dark",
+    },
+  },
+});
 app.use(ToastService);
 app.use(ConfirmationService);
 
 app.component("AutoComplete", AutoComplete);
 app.component("Badge", Badge);
 app.component("Button", Button);
-app.component("Chips", Chips);
 app.component("ConfirmDialog", ConfirmDialog);
 app.component("Dialog", Dialog);
-app.component("Dropdown", Dropdown);
+app.component("Drawer", Drawer);
+app.component("Select", Select);
 app.component("FileUpload", FileUpload);
 app.component("Card", Card);
 app.component("Column", Column);
@@ -67,7 +76,7 @@ app.component("Password", Password);
 app.component("Tag", Tag);
 app.component("Textarea", Textarea);
 app.component("Toast", Toast);
-app.component("ToggleButton", ToggleButton);
+app.component("ToggleSwitch", ToggleSwitch);
 app.component("Tree", Tree);
 app.component("Panel", Panel);
 app.component("SelectButton", SelectButton);

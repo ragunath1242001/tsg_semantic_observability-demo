@@ -11,9 +11,9 @@ const props = defineProps<{
 const negotiations = toRef(props, "negotiations");
 </script>
 <template>
-  <div class="grid" v-if="negotiations.length > 0">
+  <div class="grid grid-cols-12 gap-4" v-if="negotiations.length > 0">
     <div
-      class="col-12 lg:col-6 xl:col-3"
+      class="col-span-12 lg:col-span-6 xl:col-span-3"
       v-for="negotiation in negotiations"
       :key="negotiation.localId"
     >

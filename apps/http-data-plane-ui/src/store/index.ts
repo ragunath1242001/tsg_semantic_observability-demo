@@ -10,11 +10,13 @@ export const store = createStore<{
     email: string;
     roles: string[];
   };
+  title: string;
   transfer?: TransferDto;
   catalog?: CatalogDto;
 }>({
   state: {
     user: null,
+    title: "",
     transfer: null,
     catalog: null,
   },
@@ -55,7 +57,9 @@ export const store = createStore<{
         );
         commit("catalog", response.data);
         if (response.data?.["dct:title"]) {
-          window.document.title = `HTTP Data Plane - ${response.data?.["dct:title"]}`;
+          const title = `HTTP Data Plane - ${response.data?.["dct:title"]}`;
+          window.document.title = title;
+          this.state.title = title;
         }
       } catch (e) {
         console.log(e);

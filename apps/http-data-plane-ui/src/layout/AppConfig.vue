@@ -1,22 +1,22 @@
 <script setup lang="ts">
-import Sidebar from "primevue/sidebar";
+import Drawer from "primevue/drawer";
 import { useLayout } from "@tsg-dsp/common-ui/layout/composables/layout";
-import UIConfig from "@tsg-dsp/common-ui/layout/UIConfig.vue";
+import { ref } from "vue";
 
-const { layoutState } = useLayout();
+const { configSidebarVisible } = useLayout();
 
-const visible = layoutState.configMenuActive;
+const visible = ref(configSidebarVisible);
 </script>
 
 <template>
-  <Sidebar
+  <Drawer
     v-model:visible="visible"
     position="right"
     :transitionOptions="'.3s cubic-bezier(0, 0, 0.2, 1)'"
-    class="layout-config-sidebar w-26rem"
+    class="layout-config-sidebar w-[26rem]"
   >
-    <UIConfig :primevueInstance="$primevue" />
-  </Sidebar>
+    <p>No Settings yet.</p>
+  </Drawer>
 </template>
 
 <style lang="scss" scoped></style>

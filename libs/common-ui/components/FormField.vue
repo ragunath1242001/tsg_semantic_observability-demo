@@ -15,17 +15,17 @@ const valueClass = ref("");
 const formId = ref(`field-${Math.floor(Math.random() * 100000 + 10000)}`);
 
 if (props.noLabel) {
-  valueClass.value = `col-12 md:col-${12 - props.labelWidth} md:col-offset-${
-    props.labelWidth
-  }`;
+  valueClass.value = `col-span-12 md:col-span-${
+    12 - props.labelWidth
+  } md:col-offset-${props.labelWidth}`;
 } else {
-  labelClass.value = `col-12 md:col-${props.labelWidth} md:mb-0 font-bold`;
-  valueClass.value = `col-12 md:col-${12 - props.labelWidth}`;
+  labelClass.value = `flex items-center col-span-12 mb-2 md:col-span-${props.labelWidth} md:mb-0 font-bold`;
+  valueClass.value = `col-span-12 md:col-span-${12 - props.labelWidth}`;
 }
 </script>
 
 <template>
-  <div class="field grid">
+  <div class="grid grid-cols-12 gap-2">
     <label v-if="!props.noLabel" :for="formId" :class="labelClass">{{
       props.label
     }}</label>

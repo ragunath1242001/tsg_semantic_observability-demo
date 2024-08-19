@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { ref, toRefs } from "vue";
-import { PolicyDto, type CatalogDto, type DatasetDto } from "@tsg-dsp/common-dsp";
+import {
+  PolicyDto,
+  type CatalogDto,
+  type DatasetDto,
+} from "@tsg-dsp/common-dsp";
 import { injectStrict } from "../utils/injectTyped";
 import utils from "../utils/common";
 import { AxiosKey } from "../utils/symbols";
@@ -115,7 +119,7 @@ const createPolicy = (policy: PolicyDto): string => {
 };
 </script>
 <template>
-  <div class="col-12" v-if="!datasetView && singleCatalog">
+  <div class="col-span-12" v-if="!datasetView && singleCatalog">
     <Card style="border-radius: 12px; border: 1px solid var(--surface-border)">
       <template #title>{{ catalog["dct:title"] }}</template>
       <template #subtitle>{{
@@ -123,7 +127,7 @@ const createPolicy = (policy: PolicyDto): string => {
       }}</template>
       <template #content>
         <FormField label="Parsed View">
-          <ToggleButton v-model="parsedView" onLabel="On" offLabel="Off" />
+          <ToggleSwitch v-model="parsedView" />
         </FormField>
         <MonacoEditorVue
           v-if="!parsedView"
@@ -131,7 +135,7 @@ const createPolicy = (policy: PolicyDto): string => {
           :read-only="true"
           :max-lines="30"
         />
-        <div class="grid" v-if="parsedView">
+        <div class="grid grid-cols-12 gap-4" v-if="parsedView">
           <DisplayField label="Publisher" v-if="catalog['dct:publisher']">{{
             catalog["dct:publisher"].replace("%3A", ":")
           }}</DisplayField>
@@ -152,49 +156,49 @@ const createPolicy = (policy: PolicyDto): string => {
   </div>
   <template v-if="!datasetView && parsedView && datasetList">
     <div
-      class="col-12 lg:col-6 xl:col-3"
+      class="col-span-12 lg:col-span-6 xl:col-span-3"
       v-for="(dataset, index) in datasetList"
       :key="dataset['@id']"
     >
       <Card
+        class="flex flex-col h-full"
         style="border-radius: 12px; border: 1px solid var(--surface-border)"
       >
         <template #title>
-          <div class="flex align-items-center">
+          <div class="flex items-center">
             <span class="mr-2">
-              <i :class="calculateIconClass(index)"></i
-            ></span>
+              <i :class="calculateIconClass(index)"></i>
+            </span>
             <div
-              class="surface-overlay white-space-nowrap overflow-hidden text-overflow-ellipsis"
+              class="bg-surface-0 dark:bg-surface-900 whitespace-nowrap overflow-hidden text-ellipsis"
               v-tooltip.top="dataset['dct:title']"
             >
               {{ dataset["dct:title"] }}
             </div>
-          </div></template
-        >
-        <template #subtitle>{{
-          utils.obtainValues(dataset["dct:description"]).join("\r\n")
-        }}</template>
+          </div>
+        </template>
+        <template #subtitle>
+          {{ utils.obtainValues(dataset["dct:description"]).join("\r\n") }}
+        </template>
         <template #content>
-          <div class="flex-column">
-            <span class="font-semibold"
-              >Policies: {{ dataset["odrl:hasPolicy"]?.length ?? 0 }}</span
-            >
+          <div style="min-height: 4em">
+            <span class="font-semibold">
+              Policies: {{ dataset["odrl:hasPolicy"]?.length ?? 0 }}
+            </span>
             <template v-if="dataset['dcat:conformsTo']">
-              <div class="pt-3 pb-1 font-semibold">
+              <div class="pt-4 pb-1 font-semibold">
                 Conforms To:
-                <a :href="dataset['dcat:conformsTo']" target="_blank"
-                  ><i
+                <a :href="dataset['dcat:conformsTo']" target="_blank">
+                  <i
                     class="mx-1 pi pi-link text-blue-500"
                     v-tooltip:bottom="dataset['dcat:conformsTo']"
                   >
-                  </i
-                ></a>
+                  </i>
+                </a>
               </div>
             </template>
-
             <template v-if="dataset['dcat:keyword']">
-              <div class="pt-3 pb-1 font-semibold">Keywords</div>
+              <div class="pt-4 pb-1 font-semibold">Keywords</div>
               <Tag
                 :class="calculateTagClass(index)"
                 v-for="keyword in utils.obtainValues(dataset['dcat:keyword'])"
@@ -204,25 +208,25 @@ const createPolicy = (policy: PolicyDto): string => {
             </template>
           </div>
         </template>
-        <template #footer>
-          <div class="flex align-items-center justify-content-between">
+        <template style="justify-content: flex-end" #footer>
+          <div class="flex items-center card-footer justify-between">
             <Button
               icon="pi pi-trash"
               v-if="ownCatalog"
               @click="deleteDataset(dataset['@id'])"
               severity="danger"
-              class="shadow-4"
+              class="shadow-lg"
               rounded
               outlined
             />
-            <span class="p-card-subtitle mb-0" v-if="!ownCatalog">{{
-              catalog["dct:title"]
-            }}</span>
+            <span class="p-card-subtitle mb-0" v-if="!ownCatalog">
+              {{ catalog["dct:title"] }}
+            </span>
             <Button
               icon="pi pi-external-link"
               rounded
               outlined
-              class="shadow-4"
+              class="shadow-lg"
               @click="getDataset(dataset['@id'])"
             ></Button>
           </div>
@@ -230,8 +234,9 @@ const createPolicy = (policy: PolicyDto): string => {
       </Card>
     </div>
   </template>
+
   <template v-else-if="parsedView && !datasetList && singleCatalog">
-    <div class="col-12 lg:col-6 xl:col-3 mt-5">
+    <div class="col-span-12 lg:col-span-6 xl:col-span-3 mt-8">
       <Card
         style="border-radius: 12px; border: 1px solid var(--surface-border)"
       >

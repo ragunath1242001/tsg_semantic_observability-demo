@@ -1,16 +1,15 @@
 <script setup lang="ts">
-import Sidebar from "primevue/sidebar";
-import UIConfig from "@tsg-dsp/common-ui/layout/UIConfig.vue";
+import Drawer from "primevue/drawer";
 import { ref } from "vue";
 import { useLayout } from "@tsg-dsp/common-ui/layout/composables/layout";
 import { useToast } from "primevue/usetoast";
 import { store } from "../store";
 
-const { layoutState } = useLayout();
+const { configSidebarVisible } = useLayout();
+
+const visible = ref(configSidebarVisible);
 
 const toast = useToast();
-const visible = layoutState.configMenuActive;
-
 const config = ref(store.state.settings);
 
 const updateSettings = async () => {
@@ -28,21 +27,15 @@ const updateSettings = async () => {
 </script>
 
 <template>
-  <Sidebar
+  <Drawer
     v-model:visible="visible"
     position="right"
     :transitionOptions="'.3s cubic-bezier(0, 0, 0.2, 1)'"
-    class="layout-config-sidebar w-26rem"
+    class="layout-config-sidebar w-[26rem]"
   >
-    <UIConfig :primevueInstance="$primevue" />
-    <h5>Gaia-X Support</h5>
-    <ToggleButton
-      v-model="config.gaiaXSupport"
-      on-label="Enabled"
-      off-label="Disabled"
-      @change="updateSettings"
-    />
-  </Sidebar>
+    <div class="text-xl mt-2">Gaia-X Support</div>
+    <ToggleSwitch v-model="config.gaiaXSupport" @change="updateSettings" />
+  </Drawer>
 </template>
 
 <style lang="scss" scoped></style>

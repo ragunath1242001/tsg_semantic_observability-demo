@@ -1,14 +1,11 @@
 <script setup lang="ts">
-import Sidebar from "primevue/sidebar";
-
 import { onMounted, ref } from "vue";
 import { useLayout } from "@tsg-dsp/common-ui/layout/composables/layout";
 import { injectStrict } from "../utils/injectTyped";
 import { AxiosKey } from "../utils/symbols";
 import { useToast } from "primevue/usetoast";
-import UIConfig from "@tsg-dsp/common-ui/layout/UIConfig.vue";
 
-const { layoutState } = useLayout();
+const { configSidebarVisible } = useLayout();
 
 const http = injectStrict(AxiosKey);
 
@@ -22,7 +19,7 @@ const toast = useToast();
 
 const controlPlaneInteractions = ref({ name: "", value: "" });
 
-const visible = layoutState.configMenuActive;
+const visible = ref(configSidebarVisible);
 
 const contractNegotiationValues = ref([
   { name: "Automatic", value: "automatic" },
@@ -55,21 +52,20 @@ onMounted(async () => await initialize());
 </script>
 
 <template>
-  <Sidebar
+  <Drawer
     v-model:visible="visible"
     position="right"
     :transitionOptions="'.3s cubic-bezier(0, 0, 0.2, 1)'"
-    class="layout-config-sidebar w-26rem"
+    class="layout-config-sidebar w-[26rem]"
   >
-    <UIConfig :primevueInstance="$primevue" />
-    <h5>Contract Negotiation</h5>
+    <div class="text-xl mt-2">Contract Negotiation</div>
     <SelectButton
       v-model="controlPlaneInteractions"
       v-on:change="updateSettings"
       :options="contractNegotiationValues"
       optionLabel="name"
     />
-  </Sidebar>
+  </Drawer>
 </template>
 
 <style lang="scss" scoped></style>

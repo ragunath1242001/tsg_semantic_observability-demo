@@ -83,7 +83,7 @@ onMounted(async () => await initialize());
   </Card>
   <Card
     style="border-radius: 12px; border: 1px solid var(--surface-border)"
-    class="mt-5"
+    class="mt-8"
   >
     <template #title>Addresses</template>
     <template #subtitle
@@ -117,7 +117,7 @@ onMounted(async () => await initialize());
   </Card>
   <Card
     style="border-radius: 12px; border: 1px solid var(--surface-border)"
-    class="my-5"
+    class="my-8"
   >
     <template #title>Browse Datasets</template>
     <template #content
@@ -126,7 +126,7 @@ onMounted(async () => await initialize());
   </Card>
   <div v-for="catalog in catalogs">
     <!-- TODO get catalogs and make sure the component supports merging data sets. -->
-    <div class="grid card-container mb-3">
+    <div class="grid grid-cols-12 gap-8 card-container mb-4">
       <Catalog
         :url="catalog['dcat:service'][0]['dcat:endpointURL']"
         :catalog="catalog"

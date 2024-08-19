@@ -206,7 +206,7 @@ onMounted(async () => {
         <template #content>
           <form @submit.prevent="importLRNCredential">
             <FormField label="Legal registration number type" v-slot="props">
-              <Dropdown
+              <Select
                 :id="props.id"
                 v-model="legalRegistrationNumberForm.type"
                 :options="['taxID', 'EUID', 'EORI', 'vatID', 'leiCode']"
@@ -316,7 +316,7 @@ onMounted(async () => {
                 required
               />
             </FormField>
-            <FormField no-label class="mt-5">
+            <FormField no-label class="mt-8">
               <Button
                 label="Request and import Legal Registration Number credential"
                 type="submit"
@@ -325,7 +325,7 @@ onMounted(async () => {
           </form>
         </template>
       </Card>
-      <Card class="mt-5">
+      <Card class="mt-8">
         <template #title>Gaia-X Compliance</template>
         <template #subtitle
           >Request Gaia-X compliance credential from a Gaia-X DCH</template
@@ -384,7 +384,7 @@ onMounted(async () => {
                 required
               />
             </FormField>
-            <FormField no-label class="mt-5">
+            <FormField no-label class="mt-8">
               <Button
                 label="Request and import Compliance credential"
                 type="submit"

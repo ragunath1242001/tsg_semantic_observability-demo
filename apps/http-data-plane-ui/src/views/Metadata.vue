@@ -1,5 +1,8 @@
 <script setup lang="ts">
-import { DataPlaneStateDto, DatasetConfig } from "@tsg-dsp/http-data-plane-dtos";
+import {
+  DataPlaneStateDto,
+  DatasetConfig,
+} from "@tsg-dsp/http-data-plane-dtos";
 import { ref, onMounted } from "vue";
 import { axiosInstance } from "../store";
 import { useToast } from "primevue/usetoast";
@@ -231,8 +234,8 @@ onMounted(async () => {
     <template #title>State</template>
     <template #subtitle>State of this HTTP data plane</template>
     <template #content>
-      <div class="grid" v-if="state">
-        <div class="col-12 lg:col-8">
+      <div class="grid grid-cols-12 gap-4" v-if="state">
+        <div class="col-span-12 lg:col-span-8">
           <FormField label="Identifier">{{ state.identifier }}</FormField>
           <FormField label="Type">{{ state.details.dataplaneType }}</FormField>
           <FormField label="Synchronization">{{
@@ -245,7 +248,7 @@ onMounted(async () => {
             </div>
           </FormField>
         </div>
-        <div class="col-12 lg:col-4">
+        <div class="col-span-12 lg:col-span-4">
           <div>
             <Button
               icon="pi pi-refresh"
@@ -255,7 +258,7 @@ onMounted(async () => {
               @click="refreshRegistration"
             />
           </div>
-          <div class="mt-3">
+          <div class="mt-4">
             <Button label="Show DCAT dataset" @click="showDataset = true" />
             <Dialog
               :dismissableMask="true"
@@ -271,12 +274,12 @@ onMounted(async () => {
               />
             </Dialog>
           </div>
-          <div class="mt-3">
+          <div class="mt-4">
             <Button
               label="Update configuration"
               :loading="updateLoading"
               @click="editModal = true"
-              severity="warning"
+              severity="warn"
               type="submit"
             />
           </div>
@@ -284,7 +287,7 @@ onMounted(async () => {
       </div>
     </template>
   </Card>
-  <Card class="mt-5">
+  <Card class="mt-8">
     <template #title>Dataset Configuration</template>
     <template #subtitle
       >Configuration of the datasets provided by this data plane</template
@@ -301,7 +304,7 @@ onMounted(async () => {
           }}</a></FormField
         >
         <h4>Versions</h4>
-        <div class="pl-3" v-for="(version, idx) in dataset.versions">
+        <div class="pl-4" v-for="(version, idx) in dataset.versions">
           <hr v-if="idx !== 0" />
           <FormField label="Identifier">{{
             version.id || "Auto-generated"
@@ -332,10 +335,10 @@ onMounted(async () => {
             :max-lines="15"
           />
         </FormField>
-        <div class="pl-3" v-if="dataset.policy?.type === 'rules'">
+        <div class="pl-4" v-if="dataset.policy?.type === 'rules'">
           <h5>Permissions</h5>
           <div
-            class="pl-3"
+            class="pl-4"
             v-for="(permission, idx) in dataset.policy?.permissions || []"
           >
             <hr v-if="idx !== 0" />
@@ -352,7 +355,7 @@ onMounted(async () => {
           </div>
           <h5>Prohibitions</h5>
           <div
-            class="pl-3"
+            class="pl-4"
             v-for="(prohibition, idx) in dataset.policy?.prohibitions || []"
           >
             <hr v-if="idx !== 0" />
@@ -380,7 +383,7 @@ onMounted(async () => {
     :style="{ width: '95vw', maxWidth: '75rem' }"
   >
     <div v-if="configString">
-      <div class="mb-3">
+      <div class="mb-4">
         <SelectButton
           v-model="configRaw"
           :options="[
@@ -424,293 +427,310 @@ onMounted(async () => {
           placeholder="URL to Ontology/data model definitions"
         />
       </FormField>
-      <TabView v-if="!configRaw">
-        <TabPanel header="Versions">
-          <FormField no-label
-            ><small
-              >The first listed version will be handled as default version, and
-              the order of versions should be from newest to oldest.</small
-            ></FormField
-          >
-          <FormField no-label>
-            <Button
-              label="Add version"
-              icon="pi pi-plus"
-              severity="success"
-              @click="configForm.versions.unshift({ version: '', backend: '' })"
-            />
-          </FormField>
-          <div v-for="(version, idx) in configForm.versions">
-            <hr v-if="idx !== 0" />
-            <FormField label="Identifier" v-slot="props">
-              <InputText
-                class="w-full"
-                :id="props.id"
-                v-model="version.id"
-                @change="emptyStringToUndefined(version, 'id')"
-                placeholder="Identifier (leave empty for an auto-generated identifier)"
-              />
-            </FormField>
-            <FormField label="Version" v-slot="props">
-              <InputText
-                class="w-full"
-                :id="props.id"
-                v-model="version.version"
-                placeholder="Version"
-              />
-            </FormField>
-            <FormField label="Backend" v-slot="props">
-              <InputText
-                class="w-full"
-                :id="props.id"
-                v-model="version.backend"
-                placeholder="Backend"
-              />
-            </FormField>
-            <FormField label="OpenAPI specification" v-slot="props">
-              <InputText
-                class="w-full"
-                :id="props.id"
-                v-model="version.openApiSpec"
-                @change="emptyStringToUndefined(version, 'openApiSpec')"
-                placeholder="OpenAPI specification (leave empty for no specification)"
-              />
-              <small
-                >The OpenAPI specification should refer to the JSON or YAML
-                document directly.</small
-              >
-            </FormField>
-            <FormField label="Authorization" v-slot="props">
-              <Password
-                class="w-full"
-                input-class="w-full"
-                toggleMask
-                :feedback="false"
-                :input-id="props.id"
-                v-model="version.authorization"
-                @change="emptyStringToUndefined(version, 'authorization')"
-                placeholder="Authorization header, e.g. 'Basic XXX' or 'Bearer XXX' (leave empty for no specification)"
-              />
-              <small
-                >The Authorization will be used for the connection between the
-                data plane and the backend service.</small
-              >
-            </FormField>
+      <Tabs value="Versions" v-if="!configRaw">
+        <TabList>
+          <Tab value="Versions">Versions</Tab>
+          <Tab value="Policy">Policy</Tab>
+        </TabList>
+        <TabPanels>
+          <TabPanel value="Versions">
             <FormField no-label
-              ><Button
-                label="Remove version"
-                icon="pi pi-minus"
-                severity="danger"
-                @click="configForm.versions.splice(idx, 1)"
-            /></FormField>
-          </div>
-        </TabPanel>
-        <TabPanel header="Policy">
-          <FormField label="Type">
-            <SelectButton
-              v-model="configForm.policy.type"
-              :options="['default', 'rules', 'manual']"
-              :option-label="(value) => value[0].toUpperCase() + value.slice(1)"
-            />
-          </FormField>
-          <FormField label="Manual" v-if="configForm.policy?.type === 'manual'">
-            <MonacoEditorVue
-              v-model="rawPolicy"
-              :schema="odrlOfferSchema"
-              schema-warning
-              :maxLines="25"
-              :minLines="15"
-            />
-            <small
-              >The warnings are based on a opiniated JSON-Schema of ODRL from
-              the Dataspace Protocol, which does not cover all possibilities
-              present in the JSON-LD structure.<br />So warnings might be
-              presented regardless of whether the input is actually correct. And
-              vice-versa, even when no warnings are presented the request might
-              be rejected.</small
+              ><small
+                >The first listed version will be handled as default version,
+                and the order of versions should be from newest to
+                oldest.</small
+              ></FormField
             >
-          </FormField>
-          <FormField
-            label="Permissions"
-            v-if="configForm.policy?.type === 'rules'"
-          >
-            <small
-              >Permissions allow the defined action, when all constraints are
-              met.</small
-            >
-            <hr />
-            <div v-for="(permission, idx) in configForm.policy.permissions">
-              <div class="font-bold py-2">Action</div>
-              <Dropdown
-                v-model="permission.action"
-                editable
-                :options="odrlActions"
-                placeholder="Select or provide actions"
-                class="w-full"
+            <FormField no-label>
+              <Button
+                label="Add version"
+                icon="pi pi-plus"
+                severity="success"
+                @click="
+                  configForm.versions.unshift({ version: '', backend: '' })
+                "
               />
-              <div class="font-bold py-2">Constraints</div>
-              <div class="grid grid-nogutter ml-3">
-                <template v-for="(constraint, idx) in permission.constraints">
-                  <div class="col-11 md:col-5">
-                    <Dropdown
-                      v-model="constraint.type"
-                      class="w-full"
-                      :options="['CredentialType', 'Recipient', 'License']"
-                      placeholder="Constraint type"
-                    />
-                  </div>
-                  <div class="col-11 md:col-6">
-                    <InputText
-                      class="w-full"
-                      v-model="constraint.value"
-                      placeholder="Value"
-                    />
-                  </div>
-                  <div class="col-1">
-                    <Button
-                      size="small"
-                      icon="pi pi-times"
-                      @click="permission.constraints.splice(idx, 1)"
-                      severity="danger"
-                      outlined
-                    />
-                  </div>
-                </template>
+            </FormField>
+            <div v-for="(version, idx) in configForm.versions">
+              <hr v-if="idx !== 0" />
+              <FormField label="Identifier" v-slot="props">
+                <InputText
+                  class="w-full"
+                  :id="props.id"
+                  v-model="version.id"
+                  @change="emptyStringToUndefined(version, 'id')"
+                  placeholder="Identifier (leave empty for an auto-generated identifier)"
+                />
+              </FormField>
+              <FormField label="Version" v-slot="props">
+                <InputText
+                  class="w-full"
+                  :id="props.id"
+                  v-model="version.version"
+                  placeholder="Version"
+                />
+              </FormField>
+              <FormField label="Backend" v-slot="props">
+                <InputText
+                  class="w-full"
+                  :id="props.id"
+                  v-model="version.backend"
+                  placeholder="Backend"
+                />
+              </FormField>
+              <FormField label="OpenAPI specification" v-slot="props">
+                <InputText
+                  class="w-full"
+                  :id="props.id"
+                  v-model="version.openApiSpec"
+                  @change="emptyStringToUndefined(version, 'openApiSpec')"
+                  placeholder="OpenAPI specification (leave empty for no specification)"
+                />
+                <small
+                  >The OpenAPI specification should refer to the JSON or YAML
+                  document directly.</small
+                >
+              </FormField>
+              <FormField label="Authorization" v-slot="props">
+                <Password
+                  class="w-full"
+                  input-class="w-full"
+                  toggleMask
+                  :feedback="false"
+                  :input-id="props.id"
+                  v-model="version.authorization"
+                  @change="emptyStringToUndefined(version, 'authorization')"
+                  placeholder="Authorization header, e.g. 'Basic XXX' or 'Bearer XXX' (leave empty for no specification)"
+                />
+                <small
+                  >The Authorization will be used for the connection between the
+                  data plane and the backend service.</small
+                >
+              </FormField>
+              <FormField no-label
+                ><Button
+                  label="Remove version"
+                  icon="pi pi-minus"
+                  severity="danger"
+                  @click="configForm.versions.splice(idx, 1)"
+              /></FormField>
+            </div>
+          </TabPanel>
+          <TabPanel value="Policy">
+            <FormField label="Type">
+              <SelectButton
+                v-model="configForm.policy.type"
+                :options="['default', 'rules', 'manual']"
+                :option-label="
+                  (value) => value[0].toUpperCase() + value.slice(1)
+                "
+              />
+            </FormField>
+            <FormField
+              label="Manual"
+              v-if="configForm.policy?.type === 'manual'"
+            >
+              <MonacoEditorVue
+                v-model="rawPolicy"
+                :schema="odrlOfferSchema"
+                schema-warning
+                :maxLines="25"
+                :minLines="15"
+              />
+              <small
+                >The warnings are based on a opiniated JSON-Schema of ODRL from
+                the Dataspace Protocol, which does not cover all possibilities
+                present in the JSON-LD structure.<br />So warnings might be
+                presented regardless of whether the input is actually correct.
+                And vice-versa, even when no warnings are presented the request
+                might be rejected.</small
+              >
+            </FormField>
+            <FormField
+              label="Permissions"
+              v-if="configForm.policy?.type === 'rules'"
+            >
+              <small
+                >Permissions allow the defined action, when all constraints are
+                met.</small
+              >
+              <hr />
+              <div v-for="(permission, idx) in configForm.policy.permissions">
+                <div class="font-bold py-2">Action</div>
+                <Select
+                  v-model="permission.action"
+                  editable
+                  :options="odrlActions"
+                  placeholder="Select or provide actions"
+                  class="w-full"
+                />
+                <div class="font-bold py-2">Constraints</div>
+                <div class="grid grid-cols-12 gap-4 grid-nogutter ml-4">
+                  <template v-for="(constraint, idx) in permission.constraints">
+                    <div class="col-span-11 md:col-span-5">
+                      <Select
+                        v-model="constraint.type"
+                        class="w-full"
+                        :options="['CredentialType', 'Recipient', 'License']"
+                        placeholder="Constraint type"
+                      />
+                    </div>
+                    <div class="col-span-11 md:col-span-6">
+                      <InputText
+                        class="w-full"
+                        v-model="constraint.value"
+                        placeholder="Value"
+                      />
+                    </div>
+                    <div class="col-span-1">
+                      <Button
+                        size="small"
+                        icon="pi pi-times"
+                        @click="permission.constraints.splice(idx, 1)"
+                        severity="danger"
+                        outlined
+                      />
+                    </div>
+                  </template>
+                  <Button
+                    class="mt-2"
+                    label="Add constraint"
+                    icon="pi pi-plus"
+                    severity="info"
+                    @click="
+                      pushOrCreate(permission, 'constraints', {
+                        type: '',
+                        value: '',
+                      })
+                    "
+                  />
+                </div>
                 <Button
                   class="mt-2"
-                  label="Add constraint"
-                  icon="pi pi-plus"
-                  severity="info"
-                  @click="
-                    pushOrCreate(permission, 'constraints', {
-                      type: '',
-                      value: '',
-                    })
-                  "
+                  label="Remove permission"
+                  icon="pi pi-minus"
+                  severity="danger"
+                  @click="configForm.policy.permissions.splice(idx, 1)"
                 />
+                <hr />
+              </div>
+              <div
+                class="py-2"
+                v-if="
+                  !configForm.policy.permissions ||
+                  configForm.policy.permissions.length === 0
+                "
+              >
+                No permissions
               </div>
               <Button
-                class="mt-2"
-                label="Remove permission"
-                icon="pi pi-minus"
-                severity="danger"
-                @click="configForm.policy.permissions.splice(idx, 1)"
+                label="Add permission"
+                icon="pi pi-plus"
+                severity="success"
+                @click="
+                  pushOrCreate(configForm.policy, 'permissions', {
+                    action: '',
+                    constraints: [],
+                  })
+                "
               />
+            </FormField>
+            <FormField
+              label="Prohibitions"
+              v-if="configForm.policy?.type === 'rules'"
+            >
+              <small
+                >Prohibitions explicitly prohibit the defined action, when all
+                constraints are met. If both permission(s) as prohibition(s)
+                match for a given transfer, the prohibition(s) take
+                precedence.</small
+              >
               <hr />
-            </div>
-            <div
-              class="py-2"
-              v-if="
-                !configForm.policy.permissions ||
-                configForm.policy.permissions.length === 0
-              "
-            >
-              No permissions
-            </div>
-            <Button
-              label="Add permission"
-              icon="pi pi-plus"
-              severity="success"
-              @click="
-                pushOrCreate(configForm.policy, 'permissions', {
-                  action: '',
-                  constraints: [],
-                })
-              "
-            />
-          </FormField>
-          <FormField
-            label="Prohibitions"
-            v-if="configForm.policy?.type === 'rules'"
-          >
-            <small
-              >Prohibitions explicitly prohibit the defined action, when all
-              constraints are met. If both permission(s) as prohibition(s) match
-              for a given transfer, the prohibition(s) take precedence.</small
-            >
-            <hr />
-            <div v-for="(prohibition, idx) in configForm.policy.prohibitions">
-              <div class="font-bold py-2">Action</div>
-              <Dropdown
-                v-model="prohibition.action"
-                editable
-                :options="odrlActions"
-                placeholder="Select or provide actions"
-                class="w-full"
-              />
-              <div class="font-bold py-2">Constraints</div>
-              <div class="grid grid-nogutter ml-3">
-                <template v-for="(constraint, idx) in prohibition.constraints">
-                  <div class="col-11 md:col-5">
-                    <Dropdown
-                      v-model="constraint.type"
-                      class="w-full"
-                      :options="['CredentialType', 'Recipient', 'License']"
-                      placeholder="Constraint type"
-                    />
-                  </div>
-                  <div class="col-11 md:col-6">
-                    <InputText
-                      class="w-full"
-                      v-model="constraint.value"
-                      placeholder="Value"
-                    />
-                  </div>
-                  <div class="col-1">
-                    <Button
-                      size="small"
-                      icon="pi pi-times"
-                      @click="prohibition.constraints.splice(idx, 1)"
-                      severity="danger"
-                      outlined
-                    />
-                  </div>
-                </template>
+              <div v-for="(prohibition, idx) in configForm.policy.prohibitions">
+                <div class="font-bold py-2">Action</div>
+                <Select
+                  v-model="prohibition.action"
+                  editable
+                  :options="odrlActions"
+                  placeholder="Select or provide actions"
+                  class="w-full"
+                />
+                <div class="font-bold py-2">Constraints</div>
+                <div class="grid grid-cols-12 gap-4 grid-nogutter ml-4">
+                  <template
+                    v-for="(constraint, idx) in prohibition.constraints"
+                  >
+                    <div class="col-span-11 md:col-span-5">
+                      <Select
+                        v-model="constraint.type"
+                        class="w-full"
+                        :options="['CredentialType', 'Recipient', 'License']"
+                        placeholder="Constraint type"
+                      />
+                    </div>
+                    <div class="col-span-11 md:col-span-6">
+                      <InputText
+                        class="w-full"
+                        v-model="constraint.value"
+                        placeholder="Value"
+                      />
+                    </div>
+                    <div class="col-span-1">
+                      <Button
+                        size="small"
+                        icon="pi pi-times"
+                        @click="prohibition.constraints.splice(idx, 1)"
+                        severity="danger"
+                        outlined
+                      />
+                    </div>
+                  </template>
+                  <Button
+                    class="mt-2"
+                    label="Add constraint"
+                    icon="pi pi-plus"
+                    severity="info"
+                    @click="
+                      pushOrCreate(prohibition, 'constraints', {
+                        type: '',
+                        value: '',
+                      })
+                    "
+                  />
+                </div>
                 <Button
                   class="mt-2"
-                  label="Add constraint"
-                  icon="pi pi-plus"
-                  severity="info"
-                  @click="
-                    pushOrCreate(prohibition, 'constraints', {
-                      type: '',
-                      value: '',
-                    })
-                  "
+                  label="Remove prohibition"
+                  icon="pi pi-minus"
+                  severity="danger"
+                  @click="configForm.policy.prohibitions.splice(idx, 1)"
                 />
+                <hr />
+              </div>
+              <div
+                class="py-2"
+                v-if="
+                  !configForm.policy.prohibitions ||
+                  configForm.policy.prohibitions.length === 0
+                "
+              >
+                No prohibitions
               </div>
               <Button
-                class="mt-2"
-                label="Remove prohibition"
-                icon="pi pi-minus"
-                severity="danger"
-                @click="configForm.policy.prohibitions.splice(idx, 1)"
+                label="Add prohibition"
+                icon="pi pi-plus"
+                severity="success"
+                @click="
+                  pushOrCreate(configForm.policy, 'prohibitions', {
+                    action: '',
+                    constraints: [],
+                  })
+                "
               />
-              <hr />
-            </div>
-            <div
-              class="py-2"
-              v-if="
-                !configForm.policy.prohibitions ||
-                configForm.policy.prohibitions.length === 0
-              "
-            >
-              No prohibitions
-            </div>
-            <Button
-              label="Add prohibition"
-              icon="pi pi-plus"
-              severity="success"
-              @click="
-                pushOrCreate(configForm.policy, 'prohibitions', {
-                  action: '',
-                  constraints: [],
-                })
-              "
-            />
-          </FormField>
-        </TabPanel>
-      </TabView>
+            </FormField>
+          </TabPanel>
+        </TabPanels>
+      </Tabs>
     </div>
     <template #footer>
       <Button

@@ -30,9 +30,9 @@ const onCellEditComplete = (event) => {
       <template #body="props">
         <div
           style="width: 100%"
-          class="white-space-nowrap overflow-hidden text-overflow-ellipsis"
+          class="whitespace-nowrap overflow-hidden text-ellipsis"
         >
-          <span class="text-color-secondary" v-if="props.data.key.trim() === ''"
+          <span class="text-muted-color" v-if="props.data.key.trim() === ''"
             >Key</span
           >
           <span v-else>{{ props.data.key }}</span>
@@ -56,10 +56,10 @@ const onCellEditComplete = (event) => {
       <template #body="props">
         <div
           style="width: 100%"
-          class="white-space-nowrap overflow-hidden text-overflow-ellipsis"
+          class="whitespace-nowrap overflow-hidden text-ellipsis"
         >
           <span
-            class="text-color-secondary"
+            class="text-muted-color"
             v-if="props.data.value.trim() === ''"
             >Value</span
           >

@@ -97,7 +97,7 @@ onMounted(() => {
 <template>
   <FormField
     :label="schema.title ?? name"
-    class="pl-4"
+    class="pl-6"
     v-slot="props"
     :label-width="typeRef === 'object' ? 12 : 2"
   >
@@ -105,7 +105,7 @@ onMounted(() => {
       <InputText v-model="valueRef" disabled class="w-full" />
     </template>
     <template v-else-if="typeRef === 'enum'">
-      <Dropdown
+      <Select
         :id="props.id"
         class="w-full"
         v-model="valueRef"
@@ -155,7 +155,13 @@ onMounted(() => {
         >Only string arrays supported at this moment</template
       >
       <template v-else>
-        <Chips :id="props.id" class="w-full" v-model="valueRef"></Chips>
+        <AutoComplete
+          :id="props.id"
+          class="w-full"
+          v-model="valueRef"
+          multiple
+          typeahead
+        ></AutoComplete>
       </template>
     </template>
   </FormField>

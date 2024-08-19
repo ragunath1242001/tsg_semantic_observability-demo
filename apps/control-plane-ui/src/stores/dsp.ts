@@ -11,6 +11,7 @@ import { CatalogDto } from "@tsg-dsp/common-dsp";
 
 interface Catalog {
   catalog: CatalogDto;
+  title: string;
   ownDid: string;
   numberOfServices: number;
   numberOfDatasets: number;
@@ -77,6 +78,7 @@ export const useDspStore = defineStore("dsp", {
       catalog: undefined,
       numberOfDatasets: 0,
       numberOfServices: 0,
+      title: "",
       ownDid: "",
     },
     negotiations: [],
@@ -103,7 +105,9 @@ export const useDspStore = defineStore("dsp", {
         this.ownCatalog.numberOfServices =
           response.data?.["dcat:service"]?.length ?? 0;
         if (response.data?.["dct:title"]) {
-          window.document.title = `Control Plane - ${response.data?.["dct:title"]}`;
+          const title = `Control Plane - ${response.data?.["dct:title"]}`;
+          window.document.title = title;
+          this.ownCatalog.title = title;
         }
       } catch (error) {
         // Handle error

@@ -264,7 +264,7 @@ onMounted(async () => {
         </DataTable>
       </template>
     </Card>
-    <Card class="mt-5">
+    <Card class="mt-8">
       <template #title>Add context</template>
       <template #subtitle>
         <p>
@@ -297,7 +297,7 @@ onMounted(async () => {
             />
           </FormField>
           <FormField label="Issuable context" v-slot="props">
-            <ToggleButton :id="props.id" v-model="contextForm.issuable" />
+            <ToggleSwitch :id="props.id" v-model="contextForm.issuable" />
           </FormField>
           <FormField label="Document" v-slot="props">
             <SelectButton
@@ -309,7 +309,7 @@ onMounted(async () => {
             />
             <div
               v-if="documentRef === 'Referenced'"
-              class="flex flex-column gap-2"
+              class="flex flex-col gap-2"
             >
               <InputText
                 :id="props.id"

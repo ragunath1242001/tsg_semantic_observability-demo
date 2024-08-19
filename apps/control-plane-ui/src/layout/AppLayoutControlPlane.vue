@@ -3,7 +3,7 @@ import { useDspStore } from "../stores/dsp";
 import { storeToRefs } from "pinia";
 import AppLayout from "@tsg-dsp/common-ui/layout/AppLayout.vue";
 import { useLayout } from "@tsg-dsp/common-ui/layout/composables/layout";
-import { computed, watch } from "vue";
+import { computed } from "vue";
 import AppConfig from "./AppConfig.vue";
 import { Menu, MenuProps } from "@tsg-dsp/common-ui/layout/AppMenu.vue";
 import { FooterProps } from "@tsg-dsp/common-ui/layout/AppFooter.vue";
@@ -13,7 +13,7 @@ import { useUserStore } from "../stores/user";
 
 const { layoutConfig, layoutState } = useLayout();
 
-const { negotiationsCount } = storeToRefs(useDspStore());
+const { negotiationsCount, ownCatalog } = storeToRefs(useDspStore());
 
 const { user } = storeToRefs(useUserStore());
 
@@ -21,17 +21,13 @@ const baseLogoUrl = "layout/images";
 
 const containerClass = computed(() => {
   return {
-    "layout-theme-light": !layoutConfig.darkTheme.value,
-    "layout-theme-dark": layoutConfig.darkTheme.value,
-    "layout-overlay": layoutConfig.menuMode.value === "overlay",
-    "layout-static": layoutConfig.menuMode.value === "static",
+    "layout-overlay": layoutConfig.menuMode === "overlay",
+    "layout-static": layoutConfig.menuMode === "static",
     "layout-static-inactive":
-      layoutState.staticMenuDesktopInactive.value &&
-      layoutConfig.menuMode.value === "static",
-    "layout-overlay-active": layoutState.overlayMenuActive.value,
-    "layout-mobile-active": layoutState.staticMenuMobileActive.value,
-    "p-input-filled": layoutConfig.inputStyle.value === "filled",
-    "p-ripple-disabled": !layoutConfig.ripple.value,
+      layoutState.staticMenuDesktopInactive &&
+      layoutConfig.menuMode === "static",
+    "layout-overlay-active": layoutState.overlayMenuActive,
+    "layout-mobile-active": layoutState.staticMenuMobileActive,
   };
 });
 
@@ -85,6 +81,7 @@ const menuList: Menu[] = [
 
 const topbar: TopbarProps = {
   title: "Control Plane",
+  name: ownCatalog.value.title,
   baseLogoUrl: baseLogoUrl,
   user: user.value,
   router: useRouter(),
@@ -105,7 +102,7 @@ const sidebar: MenuProps = {
 <template>
   <div class="layout-wrapper" :class="containerClass">
     <AppLayout :topbar="topbar" :footer="footer" :sidebar="sidebar" />
-    <AppConfig :primevue="$primevue" />
-    <div class="layout-mask"></div>
+    <AppConfig />
+    <div class="layout-mask animate-fadein"></div>
   </div>
 </template>

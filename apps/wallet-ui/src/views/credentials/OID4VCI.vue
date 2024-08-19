@@ -270,15 +270,17 @@ onMounted(async () => {
           and managing credentials, enhancing trust and privacy in online
           interactions.
         </p>
-        <Message v-if="!isIssuer" :closable="false"
+        <Message v-if="!isIssuer" :closable="false" icon="pi pi-info-circle"
           >Since no issuable JSON-LD contexts are provided, this page only shows
           the form for requesting credentials. If you'd like to issue
           credentials via OpenID4VCI, please add a context at
-          <RouterLink to="/contexts">JSON-LD Contexts</RouterLink>.</Message
+          <RouterLink class="font-semibold" to="/contexts"
+            >JSON-LD Contexts</RouterLink
+          >.</Message
         >
       </template>
     </Card>
-    <Card v-if="isIssuer" class="mt-5">
+    <Card v-if="isIssuer" class="mt-8">
       <template #title>Credential offers</template>
       <template #subtitle>
         <p>
@@ -317,14 +319,14 @@ onMounted(async () => {
             <template #body="props">
               <Button
                 v-if="props.data.revoked"
-                class="ml-3"
+                class="ml-4"
                 severity="danger"
                 label="Revoked"
                 disabled
               />
               <Button
                 v-else
-                class="ml-3"
+                class="ml-4"
                 severity="danger"
                 label="&nbsp;Revoke&nbsp;"
                 @click="revokeOffer(props.data.id)"
@@ -356,7 +358,7 @@ onMounted(async () => {
         </DataTable>
       </template>
     </Card>
-    <Card class="mt-5" v-if="isIssuer">
+    <Card class="mt-8" v-if="isIssuer">
       <template #title>Create credential offer</template>
       <template #subtitle>
         <p>
@@ -374,7 +376,7 @@ onMounted(async () => {
         </p>
       </template>
       <template #content>
-        <form @submit.prevent="createOffer">
+        <form class="flex flex-col gap-4" @submit.prevent="createOffer">
           <FormField label="Holder ID" v-slot="props">
             <InputText
               :id="props.id"
@@ -387,7 +389,7 @@ onMounted(async () => {
             />
           </FormField>
           <FormField label="Credential Type" v-slot="props">
-            <Dropdown
+            <Select
               :id="props.id"
               class="w-full"
               v-model="offerForm.credentialType"
@@ -440,7 +442,7 @@ onMounted(async () => {
               ></JsonSchemaFormElement>
               <FormField no-label>
                 <Button
-                  severity="warning"
+                  severity="warn"
                   v-if="offerForm.credentialType?.schema"
                   label="Manual credential"
                   @click="offerForm.manualCredential = true"
@@ -462,7 +464,7 @@ onMounted(async () => {
         </form>
       </template>
     </Card>
-    <Card class="mt-5">
+    <Card class="mt-8">
       <template #title>Request credential</template>
       <template #subtitle>
         <p>
@@ -480,7 +482,7 @@ onMounted(async () => {
         </p>
       </template>
       <template #content>
-        <form @submit.prevent="retrieveCredential">
+        <form class="flex flex-col gap-4" @submit.prevent="retrieveCredential">
           <FormField label="Issuer URL" v-slot="props">
             <InputText
               :id="props.id"

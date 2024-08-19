@@ -105,7 +105,7 @@ onMounted(async () => {
 <template>
   <Card
     style="border-radius: 12px; border: 1px solid var(--surface-border)"
-    class="mb-5"
+    class="mb-8"
   >
     <template #title>Dataplanes</template>
     <template #content
@@ -117,15 +117,15 @@ onMounted(async () => {
   <Card
     v-for="dataplane in dataplanes"
     :key="dataplane.identifier"
-    class="mb-5"
+    class="mb-8"
     style="border-radius: 12px; border: 1px solid var(--surface-border)"
   >
     <template #title>
-      <div class="grid mb-0">
-        <div class="col-11 lg:col-8 mb-0">
+      <div class="grid grid-cols-12 gap-4 mb-0">
+        <div class="col-span-11 lg:col-span-8 mb-0">
           {{ dataplane.identifier }}
         </div>
-        <div class="col-1 mb-0">
+        <div class="col-span-1 mb-0">
           <Button
             severity="danger"
             icon="pi pi-trash"
@@ -134,7 +134,7 @@ onMounted(async () => {
         </div></div
     ></template>
     <template #content>
-      <div class="grid" v-if="dataplane">
+      <div class="grid flex-wrap grid-cols-2 gap-4" v-if="dataplane">
         <DisplayField label="Identifier">{{
           dataplane.identifier
         }}</DisplayField>
@@ -162,7 +162,7 @@ onMounted(async () => {
     <template #title>Add Data Plane</template>
     <template #subtitle> Link a data plane to this Control Plane </template>
     <template #content>
-      <form @submit.prevent="addDataPlane">
+      <form class="flex flex-col gap-4" @submit.prevent="addDataPlane">
         <FormField label="Type" v-slot="props">
           <InputText
             :id="props.id"
@@ -226,7 +226,7 @@ onMounted(async () => {
             :options="['consumer', 'provider', 'both']"
           ></SelectButton>
         </FormField>
-        <FormField no-label class="mt-5">
+        <FormField no-label class="mt-8">
           <Button label="Add Dataplane" severity="success" type="submit" />
         </FormField>
       </form>

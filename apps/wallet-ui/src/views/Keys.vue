@@ -188,7 +188,7 @@ onMounted(async () => {
                 >Default</Button
               >
               <Button
-                class="ml-3"
+                class="ml-4"
                 severity="danger"
                 icon="pi pi-times"
                 :disabled="props.data.default"
@@ -197,7 +197,7 @@ onMounted(async () => {
             </template>
           </Column>
         </DataTable>
-        <Button class="mt-4" label="Show raw keys" @click="rawDialog = true" />
+        <Button class="mt-6" label="Show raw keys" @click="rawDialog = true" />
         <Dialog
           v-model:visible="rawDialog"
           modal
@@ -208,7 +208,7 @@ onMounted(async () => {
         </Dialog>
       </template>
     </Card>
-    <Card class="mt-5">
+    <Card class="mt-8">
       <template #title>Add key</template>
       <template #subtitle>
         <p>
@@ -221,9 +221,9 @@ onMounted(async () => {
         </p>
       </template>
       <template #content>
-        <form @submit.prevent="addKey">
+        <form class="flex flex-col gap-4" @submit.prevent="addKey">
           <FormField label="Type" v-slot="props">
-            <Dropdown
+            <Select
               :id="props.id"
               v-model="keyForm.type"
               :options="keyTypes"
@@ -235,7 +235,7 @@ onMounted(async () => {
             <InputText :id="props.id" class="w-full" v-model="keyForm.id" />
           </FormField>
           <FormField label="Default" v-slot="props">
-            <ToggleButton :id="props.id" v-model="keyForm.default" />
+            <ToggleSwitch :id="props.id" v-model="keyForm.default" />
           </FormField>
           <FormField
             label="Existing key (PKCS#8)"

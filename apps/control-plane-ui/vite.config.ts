@@ -29,14 +29,16 @@ export default defineConfig({
         target: "https://healthharbormc.heracles.dataspac.es/socket.io/",
         changeOrigin: true,
         headers: {
-          Cookie: "connect.sid.tsgcp=...",
+          Cookie:
+            "connect.sid.tsgcp=s%3AnE_UFIhTgEUu89yFbjVPuFNxCbUO2ACs.Xs6zciC7XqHy73HBJ7k%2BoZ%2Fs%2B%2FWZV9%2Fhgv%2B4HJGjEKI",
         },
       },
       "/api": {
         target: "https://healthharbormc.heracles.dataspac.es/control-plane",
         changeOrigin: true,
         headers: {
-          Cookie: "connect.sid.tsgcp=...",
+          Cookie:
+            "connect.sid.tsgcp=s%3AnE_UFIhTgEUu89yFbjVPuFNxCbUO2ACs.Xs6zciC7XqHy73HBJ7k%2BoZ%2Fs%2B%2FWZV9%2Fhgv%2B4HJGjEKI",
         },
       },
     },
