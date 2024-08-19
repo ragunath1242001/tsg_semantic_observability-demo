@@ -36,8 +36,11 @@ const initialize = async () => {
 onMounted(async () => await initialize());
 </script>
 <template>
-  <div>
-    <Card style="border-radius: 12px; border: 1px solid var(--surface-border)">
+  <div class="grid grid-cols-12 gap-8">
+    <Card
+      class="col-span-12"
+      style="border-radius: 12px; border: 1px solid var(--surface-border)"
+    >
       <template #title>Control Plane Dashboard</template>
       <template #content
         ><p>
@@ -46,114 +49,123 @@ onMounted(async () => await initialize());
         </p></template
       >
     </Card>
-    <div class="grid card-container my-3">
-      <div class="col-12 lg:col-6 xl:col-3">
-        <Card
-          style="border-radius: 12px; border: 1px solid var(--surface-border)"
-        >
-          <template #content>
-            <div class="flex justify-content-between mb-3">
-              <div>
-                <span class="block text-500 font-medium mb-3">Datasets</span>
-                <div class="text-900 font-medium text-xl">
-                  {{ ownCatalog.numberOfDatasets }}
-                </div>
-              </div>
-              <div
-                class="flex align-items-center justify-content-center bg-blue-100 border-round"
-                style="width: 2.5rem; height: 2.5rem"
+    <div class="col-span-12 lg:col-span-6 xl:col-span-3">
+      <Card
+        style="border-radius: 12px; border: 1px solid var(--surface-border)"
+      >
+        <template #content>
+          <div class="flex justify-between mb-6">
+            <div>
+              <span class="block text-muted-color font-medium mb-6"
+                >Datasets</span
               >
-                <i class="pi pi-file text-blue-500 text-xl"></i>
+              <div
+                class="text-surface-900 dark:text-surface-0 font-medium text-xl"
+              >
+                {{ ownCatalog.numberOfDatasets }}
               </div>
             </div>
-          </template>
-        </Card>
-      </div>
-      <div class="col-12 lg:col-6 xl:col-3">
-        <Card
-          style="border-radius: 12px; border: 1px solid var(--surface-border)"
-        >
-          <template #content>
-            <div class="flex justify-content-between mb-3">
-              <div>
-                <span class="block text-500 font-medium mb-3">Services</span>
-                <div class="text-900 font-medium text-xl">
-                  {{ ownCatalog.numberOfServices }}
-                </div>
-              </div>
-              <div
-                class="flex align-items-center justify-content-center bg-orange-100 border-round"
-                style="width: 2.5rem; height: 2.5rem"
-              >
-                <i class="pi pi-cloud text-orange-500 text-xl"></i>
-              </div>
+            <div
+              class="flex items-center justify-center bg-blue-100 dark:bg-blue-400/10 rounded-border"
+              style="width: 2.5rem; height: 2.5rem"
+            >
+              <i class="pi pi-file text-blue-500 !text-xl"></i>
             </div>
-          </template>
-        </Card>
-      </div>
-      <div class="col-12 lg:col-6 xl:col-3">
-        <Card
-          style="border-radius: 12px; border: 1px solid var(--surface-border)"
-        >
-          <template #content>
-            <div class="flex justify-content-between mb-3">
-              <div>
-                <span class="block text-500 font-medium mb-3">Data Planes</span>
-                <div class="text-900 font-medium text-xl">
-                  {{ dataPlanesCount }}
-                </div>
-              </div>
-              <div
-                class="flex align-items-center justify-content-center bg-cyan-100 border-round"
-                style="width: 2.5rem; height: 2.5rem"
-              >
-                <i class="pi pi-inbox text-cyan-500 text-xl"></i>
-              </div>
-            </div>
-          </template>
-        </Card>
-      </div>
-      <div class="col-12 lg:col-6 xl:col-3">
-        <Card
-          style="border-radius: 12px; border: 1px solid var(--surface-border)"
-        >
-          <template #content>
-            <div class="flex justify-content-between mb-3">
-              <div>
-                <span class="block text-500 font-medium mb-3"
-                  >Active Transfers</span
-                >
-                <div class="text-900 font-medium text-xl">
-                  {{ ctaTransfersCount }}
-                </div>
-              </div>
-              <div
-                class="flex align-items-center justify-content-center bg-purple-100 border-round"
-                style="width: 2.5rem; height: 2.5rem"
-              >
-                <i
-                  class="pi pi-arrow-right-arrow-left text-purple-500 text-xl"
-                ></i>
-              </div>
-            </div>
-          </template>
-        </Card>
-      </div>
+          </div>
+        </template>
+      </Card>
     </div>
-    <div class="grid card-container">
-      <Catalog
-        :catalog="ownCatalog.catalog"
-        v-if="ownCatalog.catalog"
-        :single-catalog="true"
-        :own-catalog="true"
-        url=""
-        type="provider"
-        assigner=""
-      />
+    <div class="col-span-12 lg:col-span-6 xl:col-span-3">
+      <Card
+        style="border-radius: 12px; border: 1px solid var(--surface-border)"
+      >
+        <template #content>
+          <div class="flex justify-between mb-6">
+            <div>
+              <span class="block text-muted-color font-medium mb-6"
+                >Services</span
+              >
+              <div
+                class="text-surface-900 dark:text-surface-0 font-medium text-xl"
+              >
+                {{ ownCatalog.numberOfServices }}
+              </div>
+            </div>
+            <div
+              class="flex items-center justify-center bg-orange-100 rounded-border"
+              style="width: 2.5rem; height: 2.5rem"
+            >
+              <i class="pi pi-cloud text-orange-500 !text-xl"></i>
+            </div>
+          </div>
+        </template>
+      </Card>
     </div>
+    <div class="col-span-12 lg:col-span-6 xl:col-span-3">
+      <Card
+        style="border-radius: 12px; border: 1px solid var(--surface-border)"
+      >
+        <template #content>
+          <div class="flex justify-between mb-6">
+            <div>
+              <span class="block text-muted-color font-medium mb-6"
+                >Data Planes</span
+              >
+              <div
+                class="text-surface-900 dark:text-surface-0 font-medium text-xl"
+              >
+                {{ dataPlanesCount }}
+              </div>
+            </div>
+            <div
+              class="flex items-center justify-center bg-cyan-100 rounded-border"
+              style="width: 2.5rem; height: 2.5rem"
+            >
+              <i class="pi pi-inbox text-cyan-500 !text-xl"></i>
+            </div>
+          </div>
+        </template>
+      </Card>
+    </div>
+    <div class="col-span-12 lg:col-span-6 xl:col-span-3">
+      <Card
+        style="border-radius: 12px; border: 1px solid var(--surface-border)"
+      >
+        <template #content>
+          <div class="flex justify-between mb-6">
+            <div>
+              <span class="block text-muted-color font-medium mb-6"
+                >Active Transfers</span
+              >
+              <div
+                class="text-surface-900 dark:text-surface-0 font-medium text-xl"
+              >
+                {{ ctaTransfersCount }}
+              </div>
+            </div>
+            <div
+              class="flex items-center justify-center bg-purple-100 rounded-border"
+              style="width: 2.5rem; height: 2.5rem"
+            >
+              <i
+                class="pi pi-arrow-right-arrow-left text-purple-500 !text-xl"
+              ></i>
+            </div>
+          </div>
+        </template>
+      </Card>
+    </div>
+    <Catalog
+      :catalog="ownCatalog.catalog"
+      v-if="ownCatalog.catalog"
+      :single-catalog="true"
+      :own-catalog="true"
+      url=""
+      assigner=""
+    />
   </div>
 </template>
-<style scoped>
+<!-- <style scoped>
 .card-container {
   display: flex;
   flex-wrap: wrap;
@@ -161,6 +173,6 @@ onMounted(async () => await initialize());
 
 .card {
   flex: 1 1 auto;
-  margin-right: 1rem; /* Adjust margin as needed */
-}
-</style>
+  margin-right: 1rem;
+} 
+</style> -->

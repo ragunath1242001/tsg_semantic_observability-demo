@@ -3,13 +3,20 @@ import { ref, computed, onMounted, onBeforeUnmount, toRefs } from "vue";
 import { useLayout } from "../layout/composables/layout";
 import { Router } from "vue-router";
 
-const { layoutConfig, onMenuToggle, onConfigButtonClick } = useLayout();
+const {
+  onMenuToggle,
+  toggleDarkMode,
+  isDarkTheme,
+  layoutConfig,
+  onConfigButtonClick,
+} = useLayout();
 
 const outsideClickListener = ref(null);
 const topbarMenuActive = ref(false);
 
 export interface TopbarProps {
   title: string;
+  name: string;
   baseLogoUrl: string;
   user: { name: string };
   router: Router;
@@ -28,7 +35,7 @@ onBeforeUnmount(() => {
 
 const logoUrl = computed(() => {
   return `${baseLogoUrl.value}/${
-    layoutConfig.darkTheme.value ? "logo-white" : "logo-dark"
+    layoutConfig.darkTheme ? "logo-white" : "logo-dark"
   }.svg`;
 });
 
@@ -81,44 +88,47 @@ const logout = () => {
 
 <template>
   <div class="layout-topbar">
-    <router-link to="/" class="layout-topbar-logo">
-      <img :src="logoUrl" alt="logo" />
-      <span> {{ title }}</span>
-    </router-link>
-
-    <button
-      class="p-link layout-menu-button layout-topbar-button"
-      @click="onMenuToggle()"
-    >
-      <i class="pi pi-bars"></i>
-    </button>
-
-    <button
-      class="p-link layout-topbar-menu-button layout-topbar-button"
-      @click="onTopBarMenuButton()"
-    >
-      <i class="pi pi-ellipsis-v"></i>
-    </button>
-
-    <span class="layout-topbar-logo" v-if="title">
-      {{ title }}
-    </span>
-
-    <div class="layout-topbar-menu" :class="topbarMenuClasses">
-      <div class="layout-topbar-button" v-if="user">
-        {{ user.name }}
-      </div>
+    <div class="layout-topbar-logo-container">
       <button
-        @click="onConfigButtonClick()"
-        class="p-link layout-topbar-button"
+        class="layout-menu-button layout-topbar-action"
+        @click="onMenuToggle"
       >
-        <i class="pi pi-cog"></i>
-        <span>Settings</span>
+        <i class="pi pi-bars"></i>
       </button>
-      <button @click="logout()" class="p-link layout-topbar-button">
-        <i class="pi pi-sign-out"></i>
-        <span>Log out</span>
-      </button>
+      <router-link to="/" class="layout-topbar-logo">
+        <img :src="logoUrl" alt="logo" />
+        <span> {{ title }}</span>
+      </router-link>
+    </div>
+    <span class="layout-topbar-logo" v-if="name">
+      {{ name }}
+    </span>
+    <div class="layout-topbar-actions">
+      <div class="layout-config-menu">
+        <button
+          type="button"
+          class="layout-topbar-action"
+          @click="toggleDarkMode"
+        >
+          <i
+            :class="['pi', { 'pi-moon': isDarkTheme, 'pi-sun': !isDarkTheme }]"
+          ></i>
+        </button>
+      </div>
+
+      <div class="layout-topbar-menu" :class="topbarMenuClasses">
+        <div class="layout-topbar-menu-content">
+          <div class="layout-topbar-action" v-if="user">
+            {{ user.name }}
+          </div>
+          <button @click="onConfigButtonClick" class="layout-topbar-action">
+            <i class="pi pi-cog"></i>
+          </button>
+          <button @click="logout()" class="layout-topbar-action">
+            <i class="pi pi-sign-out"></i>
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </template>

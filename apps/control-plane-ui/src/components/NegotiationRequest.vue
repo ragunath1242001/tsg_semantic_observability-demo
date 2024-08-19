@@ -89,25 +89,25 @@ const declineNegotiation = async (negotiation) => {
 <template>
   <Card style="border-radius: 12px; border: 1px solid var(--surface-border)">
     <template #content>
-      <div class="flex justify-content-between mb-3">
+      <div class="flex justify-between mb-4">
         <div>
           <h5>{{ utils.stripDspace(negotiation.state) }}</h5>
         </div>
         <div
-          class="flex align-items-center justify-content-center bg-blue-100 border-round"
+          class="flex items-center justify-center bg-blue-100 rounded-border"
           style="width: 2.5rem; height: 2.5rem"
         >
           <i class="pi pi-file text-blue-500 text-xl"></i>
         </div>
       </div>
-      <span style="word-wrap: break-word" class="block text-600 font-small mb-3"
+      <span style="word-wrap: break-word" class="block text-surface-600 dark:text-surface-200 font-small mb-4"
         >{{ negotiation.remoteParty.replace("%3A", ":") }}
       </span>
       wants to access dataset:
-      <span class="block text-600 font-small mb-3"
+      <span class="block text-surface-600 dark:text-surface-200 font-small mb-4"
         >{{ negotiation.dataSet }}
       </span>
-      <div class="flex justify-content-between mb-0">
+      <div class="flex justify-between mb-0">
         <Dialog
           header="Do you agree with the following offer?"
           v-model:visible="display"
@@ -115,7 +115,7 @@ const declineNegotiation = async (negotiation) => {
           :breakpoints="{ '1199px': '80vw', '575px': '97vw' }"
           :modal="true"
         >
-          <div class="grid">
+          <div class="grid grid-cols-12 gap-4">
             <div class="col">
               <MonacoEditor
                 :static="ctaNegotiation.offer"
@@ -146,7 +146,7 @@ const declineNegotiation = async (negotiation) => {
         <Button
           raised
           label="View Contract Negotiation"
-          class="text-center p-3"
+          class="text-center p-4"
           style="width: 100%"
           @click="getNegotiation(negotiation.localId)"
         />

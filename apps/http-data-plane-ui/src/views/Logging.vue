@@ -12,7 +12,7 @@ import PaginatedLogTable from "../components/PaginatedLogTable.vue"
       <PaginatedLogTable type="ingress" />
     </template>
   </Card>
-  <Card class="mt-5">
+  <Card class="mt-8">
     <template #title>Egress logs</template>
     <template #subtitle>
       <p>All outgoing requests to other data planes</p>

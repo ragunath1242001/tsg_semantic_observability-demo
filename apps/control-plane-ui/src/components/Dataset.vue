@@ -160,13 +160,13 @@ const sendNegotiation = async (
 };
 </script>
 <template>
-  <div class="col-12">
+  <div class="col-span-12">
     <Card style="border-radius: 12px; border: 1px solid var(--surface-border)">
       <template #title
-        ><div class="flex align-items-center">
+        ><div class="flex items-center">
           <Button icon="pi pi-chevron-left" rounded @click="goBack()"></Button>
           <h2
-            class="mx-3 surface-overlay white-space-nowrap overflow-hidden text-overflow-ellipsis"
+            class="mx-4 bg-surface-0 dark:bg-surface-900 whitespace-nowrap overflow-hidden text-ellipsis"
             v-tooltip.top="datasetData['dct:title']"
           >
             {{ datasetData["dct:title"] }}
@@ -177,7 +177,7 @@ const sendNegotiation = async (
         {{ utils.obtainValues(datasetData["dct:description"]).join("\r\n") }}
       </template>
       <template #content>
-        <div class="grid grid-nogutter border-top-1 surface-border">
+        <div class="grid grid-cols-12 gap-4 grid-nogutter border-t border-surface">
           <DisplayField label="Versions" v-if="'dcat:hasVersion' in datasetData"
             ><div v-for="version in datasetData['dcat:hasVersion']">
               {{ version["@id"] }}
@@ -228,7 +228,7 @@ const sendNegotiation = async (
           </DisplayField>
           <DisplayField label="Keywords"
             ><Tag
-              class="mr-2 text-900 bg-primary-700"
+              class="mr-2 text-surface-900 dark:text-surface-0 bg-primary-700"
               v-for="keyword in utils.obtainValues(datasetData['dcat:keyword'])"
               :key="keyword"
               :value="keyword"
@@ -242,15 +242,15 @@ const sendNegotiation = async (
             datasetData?.['odrl:hasPolicy'].length > 0
           "
         >
-          <div class="pb-5 font-medium text-2xl text-900">Policies</div>
+          <div class="pb-8 font-medium text-2xl text-surface-900 dark:text-surface-0">Policies</div>
 
           <template
             v-for="policy in parsePolicies(datasetData['odrl:hasPolicy'])"
           >
-            <div class="px-2 font-medium text-lg text-700">
+            <div class="px-2 font-medium text-lg text-surface-700 dark:text-surface-100">
               {{ stripOdrl(policy.type) }}
             </div>
-            <div class="grid grid-nogutter">
+            <div class="grid grid-cols-12 gap-4 grid-nogutter">
               <DisplayField label="Assigner">
                 {{ policy.assigner }}
               </DisplayField>
@@ -264,9 +264,9 @@ const sendNegotiation = async (
                 {{ policy.action }}
               </DisplayField>
             </div>
-            <div class="p-3 font-medium text-lg text-700">Constraints</div>
+            <div class="p-4 font-medium text-lg text-surface-700 dark:text-surface-100">Constraints</div>
             <div
-              class="grid grid-nogutter"
+              class="grid grid-cols-12 gap-4 grid-nogutter"
               v-for="constraint in policy.constraints"
             >
               <DisplayField label="Left Operand">
@@ -281,13 +281,13 @@ const sendNegotiation = async (
             </div>
             <Divider />
           </template>
-          <div class="col-12" v-if="!props.ownDataset">
-            <div class="col-6 col-offset-3">
+          <div class="col-span-12" v-if="!props.ownDataset">
+            <div class="col-span-6 col-start-4">
               <Button
                 severity="success"
                 raised
                 label="Negotiate Contract"
-                class="text-center p-3"
+                class="text-center p-4"
                 style="width: 100%"
                 @click="open"
               />
@@ -298,7 +298,7 @@ const sendNegotiation = async (
               :breakpoints="{ '960px': '78vw' }"
               :modal="true"
             >
-              <div class="grid">
+              <div class="grid grid-cols-12 gap-4">
                 <div class="col">
                   <MonacoEditor
                     :schema="schema"

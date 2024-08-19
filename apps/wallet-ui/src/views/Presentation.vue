@@ -150,7 +150,7 @@ const copyToken = (token: string) => {
         </p>
       </template>
     </Card>
-    <Card class="mt-5">
+    <Card class="mt-8">
       <template #title>IATP Holder</template>
       <template #subtitle>
         <p>
@@ -176,7 +176,10 @@ const copyToken = (token: string) => {
         >
       </template>
       <template #content>
-        <form @submit.prevent="requestHolderIDToken">
+        <form
+          class="flex flex-col gap-4"
+          @submit.prevent="requestHolderIDToken"
+        >
           <FormField label="Audience" v-slot="props">
             <InputText
               :id="props.id"
@@ -208,7 +211,7 @@ const copyToken = (token: string) => {
         </Panel>
       </template>
     </Card>
-    <Card class="mt-5">
+    <Card class="mt-8">
       <template #title>IATP Verifier</template>
       <template #subtitle>
         <p>
@@ -234,7 +237,7 @@ const copyToken = (token: string) => {
         </p>
       </template>
       <template #content>
-        <form @submit.prevent="requestVerification">
+        <form class="flex flex-col gap-4" @submit.prevent="requestVerification">
           <FormField label="Holder ID Token" v-slot="props">
             <InputText
               :id="props.id"

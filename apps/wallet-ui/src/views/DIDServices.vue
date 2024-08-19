@@ -148,7 +148,7 @@ onMounted(async () => {
         </DataTable>
       </template>
     </Card>
-    <Card class="mt-5">
+    <Card class="mt-8">
       <template #title>Add service</template>
       <template #subtitle>
         <p>
@@ -163,7 +163,7 @@ onMounted(async () => {
         </p>
       </template>
       <template #content>
-        <form @submit.prevent="addService">
+        <form class="flex flex-col gap-4" @submit.prevent="addService">
           <FormField label="Service ID" v-slot="props">
             <InputText
               :id="props.id"

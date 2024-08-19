@@ -1,19 +1,26 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { ref, computed } from "vue";
 import { store } from "../store/index.js";
 
-const logoUrl = computed(() => {
-  return "layout/images/logo-white.svg";
-});
+import FloatingConfigurator from "@tsg-dsp/common-ui/components/FloatingConfigurator.vue";
 
+import { useLayout } from "@tsg-dsp/common-ui/layout/composables/layout";
+
+const { layoutConfig } = useLayout();
+
+const logoUrl = computed(() => {
+  return `layout/images/${
+    layoutConfig.darkTheme ? "logo-white" : "logo-dark"
+  }.svg`;
+});
 </script>
 
 <template>
+  <FloatingConfigurator />
   <div
-    class="surface-ground flex align-items-center justify-content-center min-h-screen min-w-screen overflow-hidden"
+    class="bg-surface-50 dark:bg-surface-950 flex items-center justify-center min-h-screen min-w-[100vw] overflow-hidden"
   >
-    <div class="flex flex-column align-items-center justify-content-center">
-      <img :src="logoUrl" alt="TSG logo" class="mb-5 w-6rem flex-shrink-0" />
+    <div class="flex flex-col items-center justify-center">
       <div
         style="
           border-radius: 56px;
@@ -26,23 +33,29 @@ const logoUrl = computed(() => {
         "
       >
         <div
-          class="w-full surface-card py-8 px-5 sm:px-8"
+          class="w-full bg-surface-0 dark:bg-surface-900 py-20 px-8 sm:px-20"
           style="border-radius: 53px"
         >
-          <div class="text-center mb-5">
-            <img :src="logoUrl" alt="Image" height="50" class="mb-3" />
-            <div class="text-900 text-3xl font-medium mb-3">
-              Welcome to the TSG Wallet UI
+          <div class="text-center mb-8">
+            <img :src="logoUrl" class="mb-6 w-40 shrink-0 mx-auto" alt="logo" />
+            <div
+              class="text-surface-900 dark:text-surface-0 text-3xl font-medium mb-4"
+            >
+              Welcome to the TSG Wallet UI!
             </div>
-            <span class="text-600 font-medium">Sign in to continue</span>
+            <span class="text-muted-color font-medium"
+              >Sign in to continue</span
+            >
           </div>
+
           <div>
             <Button
-                  label="Log In"
-                  type="submit"
-                  class="w-full p-3 mb-3 text-xl"
-                  @click="store.dispatch('login', {redirect: true})"
-                ></Button>
+              label="Log In"
+              class="w-full"
+              as="router-link"
+              to="/"
+              @click="store.dispatch('login', { redirect: true })"
+            ></Button>
           </div>
         </div>
       </div>

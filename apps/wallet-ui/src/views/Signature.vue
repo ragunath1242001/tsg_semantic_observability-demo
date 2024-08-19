@@ -153,13 +153,13 @@ const onUpload = (event) => {
                 :max-lines="35"
                 />
           </FormField>
-          <FormField no-label class="mt-5">
+          <FormField no-label class="mt-8">
             <Button label="Sign document" type="submit" :disabled="isSinging" />
           </FormField>
         </form>
       </template>
     </Card>
-    <Card class="mt-5">
+    <Card class="mt-8">
       <template #title>Validate document</template>
       <template #subtitle>
         <p>
@@ -186,7 +186,7 @@ const onUpload = (event) => {
           <FormField v-if="validateType === 'Separate'" label="Proof" v-slot="props">
             <MonacoEditorVue v-model="validateRef"></MonacoEditorVue>
           </FormField>
-          <FormField no-label class="mt-5">
+          <FormField no-label class="mt-8">
             <Button label="Validate document" type="submit" :disabled="isValidating" />
           </FormField>
         </form>

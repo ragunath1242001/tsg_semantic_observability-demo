@@ -72,7 +72,7 @@ onMounted(async () => await initialize());
   <div>
     <Card
       style="border-radius: 12px; border: 1px solid var(--surface-border)"
-      class="mb-5"
+      class="mb-8"
     >
       <template #title>Catalog Request</template>
       <template #subtitle
@@ -87,28 +87,26 @@ onMounted(async () => await initialize());
         >.</template
       >
       <template #content>
-        <form @submit.stop.prevent="getCatalog">
-          <div class="p-fluid formgrid grid">
-            <div class="field col-12 md:col-6">
-              <span class="p-float-label">
+        <form class="flex flex-col gap-4" @submit.stop.prevent="getCatalog">
+          <div class="flex flex-wrap items-start gap-4">
+            <div class="field">
+              <FloatLabel>
                 <InputText id="url" type="text" v-model="urlInput" />
                 <label for="url">Url of Catalog to Request</label>
-              </span>
+              </FloatLabel>
             </div>
-            <div class="field col-12 md:col-6">
-              <span class="p-float-label">
+            <div class="field">
+              <FloatLabel>
                 <InputText id="did" type="text" v-model="didInput" />
                 <label for="did">DID identifier</label>
-              </span>
+              </FloatLabel>
             </div>
-            <div class="field ml-3">
-              <Button label="Submit" type="submit"></Button>
-            </div>
+            <Button label="Submit" type="submit" :fluid="false"></Button>
           </div>
         </form>
       </template>
     </Card>
-    <div class="grid card-container">
+    <div class="grid grid-cols-12 gap-4 card-container">
       <Catalog
         :catalog="catalog"
         :url="urlInput"
@@ -122,7 +120,7 @@ onMounted(async () => await initialize());
         height="150px"
         v-else-if="!dataAvailable && loading"
       />
-      <div class="col-12 lg:col-6" v-else>
+      <div class="col-span-12" v-else>
         <Card
           style="border-radius: 12px; border: 1px solid var(--surface-border)"
           ><template #title><h5>Find others</h5></template>

@@ -58,24 +58,24 @@ const declineNegotiation = async (negotiation) => {
 <template>
   <Card style="border-radius: 12px; border: 1px solid var(--surface-border)">
     <template #content>
-      <div class="flex justify-content-between mb-3">
+      <div class="flex justify-between mb-4">
         <div>
           <h5>{{ utils.stripDspace(negotiation.state) }}</h5>
         </div>
         <div
-          class="flex align-items-center justify-content-center bg-blue-100 border-round"
+          class="flex items-center justify-center bg-blue-100 rounded-border"
           style="width: 2.5rem; height: 2.5rem"
         >
           <i class="pi pi-file text-blue-500 text-xl"></i>
         </div>
       </div>
-      <span style="word-wrap: break-word" class="block text-600 font-small mb-3"
+      <span style="word-wrap: break-word" class="block text-surface-600 dark:text-surface-200 font-small mb-4"
         >{{ negotiation.remoteParty.replace("%3A", ":") }}
       </span>
-      <span class="block text-600 font-small mb-3">
+      <span class="block text-surface-600 dark:text-surface-200 font-small mb-4">
         <template v-if="endState === 'verify'">accepted/agreed to</template><template v-else>verified</template> your request. Do you want to {{ endState }}?
       </span>
-      <div class="flex justify-content-between mb-0">
+      <div class="flex justify-between mb-0">
         <Button
           label="No"
           severity="danger"

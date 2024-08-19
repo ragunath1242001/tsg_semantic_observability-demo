@@ -42,7 +42,7 @@ const editorHeight = computed(() => {
 });
 
 const computeTheme = () => {
-  return layoutConfig.darkTheme.value ? "vs-dark" : "vs";
+  return layoutConfig.darkTheme ? "vs-dark" : "vs";
 };
 
 const handleBeforeMount = (monaco: MonacoEditor) => {
@@ -51,7 +51,7 @@ const handleBeforeMount = (monaco: MonacoEditor) => {
     inherit: true,
     rules: [],
     colors: {
-      "editor.background": layoutConfig.darkTheme.value ? "#1f2937" : "#ffffff",
+      "editor.background": layoutConfig.darkTheme ? "#1f2937" : "#ffffff",
     },
   });
   if (props.schema) {
@@ -89,7 +89,7 @@ const handleBeforeMount = (monaco: MonacoEditor) => {
       tabSize: 2,
       readOnly: readOnly,
       readOnlyMessage: {
-        value: null,
+        value: '',
       },
       scrollBeyondLastLine: false,
     }"

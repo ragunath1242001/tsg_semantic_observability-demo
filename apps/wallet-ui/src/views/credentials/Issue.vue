@@ -235,16 +235,18 @@ onMounted(async () => {
           of issuing credentials, the card below the form lists the available
           contexts for this Wallet instance.
         </p>
-        <Message :closable="false"
+        <Message :closable="false" icon="pi pi-info-circle"
           >Manually issuing credentials for remote parties requires to share the
           issued credential out-of-band with the remote party. If you'd want to
           use automated processes for this, please navigate to the
-          <RouterLink to="/credentials/oid4vci">OpenID 4 VCI</RouterLink>
+          <RouterLink to="/credentials/oid4vci" class="font-semibold"
+            >OpenID 4 VCI</RouterLink
+          >
           page.</Message
         >
       </template>
       <template #content>
-        <form @submit.prevent="issueCredential">
+        <form class="flex flex-col gap-4" @submit.prevent="issueCredential">
           <FormField label="Contexts" v-slot="props">
             <MultiSelect
               :id="props.id"
@@ -330,20 +332,20 @@ onMounted(async () => {
             ></JsonSchemaFormElement>
             <FormField no-label>
               <Button
-                severity="warning"
+                severity="warn"
                 v-if="credentialForm.schema"
                 label="Manual credential"
                 @click="credentialForm.manualCredential = true"
               />
             </FormField>
           </FormField>
-          <FormField no-label class="mt-5">
+          <FormField no-label class="mt-8">
             <Button label="Issue credential" type="submit" />
           </FormField>
         </form>
       </template>
     </Card>
-    <Card class="mt-5">
+    <Card class="mt-8">
       <template #title>Configured contexts</template>
       <template #subtitle>
         <p>

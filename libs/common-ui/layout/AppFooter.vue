@@ -15,7 +15,7 @@ const { baseLogoUrl, footerText } = toRefs(props);
 
 const logoUrl = computed(() => {
   return `${baseLogoUrl.value}/${
-    layoutConfig.darkTheme.value ? "logo-white" : "logo-dark"
+    layoutConfig.darkTheme ? "logo-white" : "logo-dark"
   }.svg`;
 });
 </script>

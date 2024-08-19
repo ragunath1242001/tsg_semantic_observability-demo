@@ -294,63 +294,69 @@ onMounted(async () => {
           @click="fetchMetadata"
           severity="success"
         />
-        <TabView v-if="metadata">
-          <TabPanel header="Agreement">
-            <FormField label="ID">{{ metadata.agreement["@id"] }}</FormField>
-            <FormField label="Assigner">{{
-              metadata.agreement["odrl:assigner"]
-            }}</FormField>
-            <FormField label="Assignee">{{
-              metadata.agreement["odrl:assignee"]
-            }}</FormField>
-            <FormField label="Timestamp"
-              >{{
-                new Date(
-                  metadata.agreement["dspace:timestamp"]
-                ).toLocaleString()
-              }}
-            </FormField>
-            <FormField label="Rules"
-              >{{ metadata.agreement["odrl:permission"]?.length ?? 0 }}
-              permissions,
-              {{ metadata.agreement["odrl:prohibition"]?.length ?? 0 }}
-              prohibitions,
-              {{ metadata.agreement["odrl:obligation"]?.length ?? 0 }}
-              obligations</FormField
-            >
-            <Button label="Show agreement" @click="showAgreementDialog" />
-          </TabPanel>
-          <TabPanel header="Dataset">
-            <FormField label="ID">{{ metadata.dataset["@id"] }}</FormField>
-            <FormField label="Title" v-if="metadata.dataset['dct:title']"
-              >{{ metadata.dataset["dct:title"] }}
-            </FormField>
-            <FormField label="Distributions">
-              <template
-                v-for="(distribution, idx) in metadata.dataset[
-                  'dcat:distribution'
-                ]"
+        <Tabs value="Agreement" v-if="metadata">
+          <TabList>
+            <Tab value="Agreement">Agreement</Tab>
+            <Tab value="Dataset">Dataset</Tab>
+          </TabList>
+          <TabPanels>
+            <TabPanel value="Agreement">
+              <FormField label="ID">{{ metadata.agreement["@id"] }}</FormField>
+              <FormField label="Assigner">{{
+                metadata.agreement["odrl:assigner"]
+              }}</FormField>
+              <FormField label="Assignee">{{
+                metadata.agreement["odrl:assignee"]
+              }}</FormField>
+              <FormField label="Timestamp"
+                >{{
+                  new Date(
+                    metadata.agreement["dspace:timestamp"]
+                  ).toLocaleString()
+                }}
+              </FormField>
+              <FormField label="Rules"
+                >{{ metadata.agreement["odrl:permission"]?.length ?? 0 }}
+                permissions,
+                {{ metadata.agreement["odrl:prohibition"]?.length ?? 0 }}
+                prohibitions,
+                {{ metadata.agreement["odrl:obligation"]?.length ?? 0 }}
+                obligations</FormField
               >
-                <hr v-if="idx === 0" />
-                <FormField label="Title" v-if="distribution['dct:title']">{{
-                  distribution["dct:title"]
-                }}</FormField>
-                <FormField label="Spec" v-if="distribution['dct:conformsTo']">
-                  {{ distribution["dct:conformsTo"]["@id"] }}</FormField
+              <Button label="Show agreement" @click="showAgreementDialog" />
+            </TabPanel>
+            <TabPanel value="Dataset">
+              <FormField label="ID">{{ metadata.dataset["@id"] }}</FormField>
+              <FormField label="Title" v-if="metadata.dataset['dct:title']"
+                >{{ metadata.dataset["dct:title"] }}
+              </FormField>
+              <FormField label="Distributions">
+                <template
+                  v-for="(distribution, idx) in metadata.dataset[
+                    'dcat:distribution'
+                  ]"
                 >
-                <hr />
-              </template>
-            </FormField>
-            <Button label="Show dataset" @click="showDatasetDialog" />
-          </TabPanel>
-        </TabView>
+                  <hr v-if="idx === 0" />
+                  <FormField label="Title" v-if="distribution['dct:title']">{{
+                    distribution["dct:title"]
+                  }}</FormField>
+                  <FormField label="Spec" v-if="distribution['dct:conformsTo']">
+                    {{ distribution["dct:conformsTo"]["@id"] }}</FormField
+                  >
+                  <hr />
+                </template>
+              </FormField>
+              <Button label="Show dataset" @click="showDatasetDialog" />
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
       </template>
     </Card>
-    <Card class="mt-5">
+    <Card class="mt-8">
       <template #title>HTTP Tester</template>
       <template #subtitle>HTTP Test Utility for testing transfers</template>
       <template #content>
-        <form @submit.prevent="execute">
+        <form class="flex flex-col gap-4" @submit.prevent="execute">
           <FormField v-if="transfer" label="Transfer">
             {{ transfer.id }}
           </FormField>
@@ -384,13 +390,13 @@ onMounted(async () => {
               aria-labelledby="basic"
             />
           </FormField>
-          <FormField label="Headers" class="mt-5" v-slot="props">
+          <FormField label="Headers" class="mt-8" v-slot="props">
             <KeyValuePairEdit v-model="headers" />
           </FormField>
-          <FormField label="Query Params" class="mt-5" v-slot="props">
+          <FormField label="Query Params" class="mt-8" v-slot="props">
             <KeyValuePairEdit v-model="query" />
           </FormField>
-          <FormField label="Body" class="mt-5" v-slot="props">
+          <FormField label="Body" class="mt-8" v-slot="props">
             <SelectButton
               :id="props.id"
               v-model="bodyType"
@@ -414,7 +420,7 @@ onMounted(async () => {
               :raw="true"
             />
           </FormField>
-          <FormField no-label class="mt-5">
+          <FormField no-label class="mt-8">
             <Button
               label="Execute"
               :loading="loading"
@@ -426,7 +432,7 @@ onMounted(async () => {
         </form>
       </template>
     </Card>
-    <Card class="mt-5" v-if="response">
+    <Card class="mt-8" v-if="response">
       <template #title>Response</template>
       <template #subtitle>HTTP Response</template>
       <template #content>

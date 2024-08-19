@@ -3,7 +3,6 @@ import utils from "../utils/common";
 
 import { TransferDetailDto, TransferStatus } from "@tsg-dsp/control-plane-dtos";
 import { ref, toRef } from "vue";
-import { AccordionTabOpenEvent } from "primevue/accordion";
 import { useToast } from "primevue/usetoast";
 import http from "../utils/http";
 
@@ -40,47 +39,45 @@ const getSeverity = (state: string) => {
   }
 };
 
-const getTransfer = async (event?: AccordionTabOpenEvent) => {
-  try {
-    const response = await http.get(
-      `management/transfers/${transfers.value[event!.index].localId}`
-    );
-    accTransfer.value = response.data;
-    if (accTransfer.value) {
-      accTransfer.value.events = accTransfer.value.events.reverse();
+const getTransfer = async (uuid: string) => {
+  if (uuid) {
+    try {
+      const response = await http.get(`management/transfers/${uuid}`);
+      accTransfer.value = response.data;
+      if (accTransfer.value) {
+        accTransfer.value.events = accTransfer.value.events.reverse();
+      }
+      return response;
+    } catch (e) {
+      toast.add({
+        severity: "error",
+        summary: "Failed to load negotiation",
+        detail: `${e.response ? e.response.data.message : e}`,
+        life: 3000,
+      });
+      console.error("Error:", e);
+      throw e;
     }
-    return response;
-  } catch (e) {
-    toast.add({
-      severity: "error",
-      summary: "Failed to load negotiation",
-      detail: `${e.response ? e.response.data.message : e}`,
-      life: 3000,
-    });
-    console.error("Error:", e);
-    throw e;
   }
 };
 </script>
 <template>
   <Card
     style="border-radius: 12px; border: 1px solid var(--surface-border)"
-    class="mt-3"
+    class="mt-4"
   >
     <template #title><h5>Transfer History</h5></template>
     <template #subtitle
       >Here you can find the history of the transfers.</template
     >
     <template #content v-if="transfers.length > 0">
-      <Accordion @tab-open="getTransfer">
-        <AccordionTab
+      <Accordion @update:value="getTransfer">
+        <AccordionPanel
           v-for="(transfer, index) in transfers"
-          :key="transfer.localId"
+          :value="transfer.localId"
         >
-          <template #header>
-            <span
-              class="flex align-items-center justify-content-between w-full"
-            >
+          <AccordionHeader>
+            <span class="flex items-center justify-between w-full">
               <div>
                 <i :class="calculateIcon(index)"></i>
                 <span class="mx-2"
@@ -90,7 +87,7 @@ const getTransfer = async (event?: AccordionTabOpenEvent) => {
               </div>
               <div>
                 <Tag
-                  class="ml-auto mr-4"
+                  class="ml-auto mr-6"
                   :value="utils.stripDspace(transfer.state)"
                   :severity="getSeverity(transfer.state)"
                 />
@@ -99,30 +96,32 @@ const getTransfer = async (event?: AccordionTabOpenEvent) => {
                 </small>
               </div>
             </span>
-          </template>
-          <div
-            class="flex align-items-stretch grid card-container"
-            v-if="accTransfer"
-          >
+          </AccordionHeader>
+          <AccordionContent>
             <div
-              class="p-0 mt-4 col-12 xl:col-6 flex flex-wrap justify-content-center"
+              class="flex items-stretch grid grid-cols-12 gap-4 card-container"
+              v-if="accTransfer"
             >
-              <Timeline :value="accTransfer.events">
-                <template #opposite="slotProps">
-                  <small class="p-text-secondary">{{
-                    new Date(slotProps.item.time).toLocaleString()
-                  }}</small>
-                </template>
-                <template #content="slotProps">
-                  <Tag
-                    :value="utils.stripDspace(slotProps.item.state)"
-                    :severity="getSeverity(slotProps.item.state)"
-                  />
-                </template>
-              </Timeline>
+              <div
+                class="p-0 mt-6 col-span-12 xl:col-span-6 flex flex-wrap justify-center"
+              >
+                <Timeline :value="accTransfer.events">
+                  <template #opposite="slotProps">
+                    <small class="p-text-secondary">{{
+                      new Date(slotProps.item.time).toLocaleString()
+                    }}</small>
+                  </template>
+                  <template #content="slotProps">
+                    <Tag
+                      :value="utils.stripDspace(slotProps.item.state)"
+                      :severity="getSeverity(slotProps.item.state)"
+                    />
+                  </template>
+                </Timeline>
+              </div>
             </div>
-          </div>
-        </AccordionTab>
+          </AccordionContent>
+        </AccordionPanel>
       </Accordion>
     </template>
     <template #content v-else> There is no history to display</template>

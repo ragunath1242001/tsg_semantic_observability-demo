@@ -16,17 +16,13 @@ const user = store.state.user;
 const baseLogoUrl = "layout/images";
 const containerClass = computed(() => {
   return {
-    "layout-theme-light": !layoutConfig.darkTheme.value,
-    "layout-theme-dark": layoutConfig.darkTheme.value,
-    "layout-overlay": layoutConfig.menuMode.value === "overlay",
-    "layout-static": layoutConfig.menuMode.value === "static",
+    "layout-overlay": layoutConfig.menuMode === "overlay",
+    "layout-static": layoutConfig.menuMode === "static",
     "layout-static-inactive":
-      layoutState.staticMenuDesktopInactive.value &&
-      layoutConfig.menuMode.value === "static",
-    "layout-overlay-active": layoutState.overlayMenuActive.value,
-    "layout-mobile-active": layoutState.staticMenuMobileActive.value,
-    "p-input-filled": layoutConfig.inputStyle.value === "filled",
-    "p-ripple-disabled": !layoutConfig.ripple.value,
+      layoutState.staticMenuDesktopInactive &&
+      layoutConfig.menuMode === "static",
+    "layout-overlay-active": layoutState.overlayMenuActive,
+    "layout-mobile-active": layoutState.staticMenuMobileActive,
   };
 });
 const menuList: Menu[] = [
@@ -54,6 +50,7 @@ const menuList: Menu[] = [
 
 const topbar: TopbarProps = {
   title: "Http Data Plane",
+  name: store.state.title,
   baseLogoUrl: baseLogoUrl,
   user: user,
   router: useRouter(),
@@ -75,5 +72,6 @@ const sidebar: MenuProps = {
   <div class="layout-wrapper" :class="containerClass">
     <AppLayout :topbar="topbar" :footer="footer" :sidebar="sidebar" />
     <AppConfig />
+    <div class="layout-mask animate-fadein"></div>
   </div>
 </template>

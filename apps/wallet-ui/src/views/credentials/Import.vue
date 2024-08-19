@@ -126,11 +126,11 @@ const importCredential = async (validate = true) => {
               credentialValidation
             }}</small>
           </FormField>
-          <FormField no-label class="mt-5">
+          <FormField no-label class="mt-8">
             <Button label="Import credential" type="submit" />
             <Button
-              class="ml-3"
-              severity="warning"
+              class="ml-4"
+              severity="warn"
               label="Import credential without verification"
               @click="importCredential(false)"
             />
