@@ -2,7 +2,7 @@ import { DataPlaneCreation } from "@tsg-dsp/control-plane-dtos";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import {
-  Agreement,
+  AgreementDto,
   Catalog,
   DataService,
   Dataset,
@@ -27,7 +27,7 @@ import { DataPlaneDao } from "../model/dataPlanes.dao";
 import { DSPError } from "../utils/errors/error";
 import { TypeOrmTestHelper } from "../utils/testhelper";
 import { DataPlaneService } from "./dataPlane.service";
-import { NegotiationService } from "../dsp/negotiation/negotiation.service";
+import { AgreementService } from "../policy/agreement.service";
 
 describe("DataPlane Service", () => {
   let dataPlaneService: DataPlaneService;
@@ -65,15 +65,17 @@ describe("DataPlane Service", () => {
         CatalogService,
         AuthClientService,
         {
-          provide: NegotiationService,
+          provide: AgreementService,
           useValue: {
-            async getAgreement(agreementId: string): Promise<Agreement> {
-              return new Agreement({
-                assignee: "did:web:localhost",
-                assigner: "did:web:localhost",
-                target: "urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0cea",
-                timestamp: new Date().toISOString(),
-              });
+            async getAgreement(): Promise<AgreementDto> {
+              return {
+                "@type": "odrl:Agreement",
+                "@id": "urn:uuid:24bcf50a-fb1b-4820-bbad-e015c6b8ab39",
+                "odrl:assigner": "did:web:localhost",
+                "odrl:assignee": "did:web:localhost",
+                "odrl:target": "urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0cea",
+                "dspace:timestamp": new Date().toISOString(),
+              };
             },
           },
         },

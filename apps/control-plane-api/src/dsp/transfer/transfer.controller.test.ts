@@ -2,8 +2,9 @@ import { HttpStatus } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import {
-  Agreement,
+  AgreementDto,
   Catalog,
+  CredentialSubject,
   Multilanguage,
   TransferCompletionMessage,
   TransferProcessDto,
@@ -13,6 +14,7 @@ import {
   TransferState,
   TransferSuspensionMessage,
   TransferTerminationMessage,
+  VerifiableCredential,
 } from "@tsg-dsp/common-dsp";
 import { plainToClass } from "class-transformer";
 import { HttpResponse, PathParams, http } from "msw";
@@ -37,7 +39,13 @@ import { DspClientService } from "../client/client.service";
 import { DspGateway } from "../client/dsp.gateway";
 import { TransferController } from "./transfer.controller";
 import { TransferService } from "./transfer.service";
-import { NegotiationService } from "../negotiation/negotiation.service";
+import { AgreementService } from "../../policy/agreement.service";
+import { PolicyEvaluationService } from "../../policy/policy.evaluation.service";
+import { EvaluationTrigger } from "../../policy/constraint.dto";
+import {
+  EvaluationContext,
+  EvaluationDecision,
+} from "../../policy/evaluation.dto";
 
 describe("TransferController", () => {
   let transferController: TransferController;
@@ -166,21 +174,69 @@ describe("TransferController", () => {
       ],
       controllers: [TransferController],
       providers: [
-        TransferService,
         DataPlaneService,
+        TransferService,
         CatalogService,
         DspClientService,
         DspGateway,
         AuthClientService,
         {
-          provide: NegotiationService,
+          provide: AgreementService,
           useValue: {
-            async getAgreement(agreementId: string): Promise<Agreement> {
-              return new Agreement({
-                assignee: "did:web:localhost",
-                assigner: "did:web:localhost",
+            async getAgreement(): Promise<AgreementDto> {
+              return {
+                "@type": "odrl:Agreement",
+                "@id": "urn:uuid:24bcf50a-fb1b-4820-bbad-e015c6b8ab39",
+                "odrl:assigner": "did:web:localhost",
+                "odrl:assignee": "did:web:localhost",
+                "odrl:target": "urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0cea",
+                "dspace:timestamp": new Date().toISOString(),
+              };
+            },
+          },
+        },
+        {
+          provide: PolicyEvaluationService,
+          useValue: {
+            async initializeContext(
+              agreementId: string,
+              role: "consumer" | "provider",
+              scope: EvaluationTrigger,
+              transferId: string,
+              remoteParticipant: string,
+              action: string,
+              verifiableCredentials: VerifiableCredential<CredentialSubject>[]
+            ) {
+              return EvaluationContext.parse({
+                role: role,
+                scope: scope,
+                transferId: transferId,
+                localParticipant: "did:web:localhost",
+                remoteParticipant: remoteParticipant,
                 target: "urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0cea",
-                timestamp: new Date().toISOString(),
+                action: action,
+                verifiableCredentials: verifiableCredentials,
+                evaluationTime: new Date(),
+                policy: {
+                  agreement: {
+                    "@type": "odrl:Agreement",
+                    "@id": "urn:uuid:24bcf50a-fb1b-4820-bbad-e015c6b8ab39",
+                    "odrl:assigner": "did:web:localhost",
+                    "odrl:assignee": "did:web:localhost",
+                    "odrl:target":
+                      "urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0cea",
+                    "dspace:timestamp": new Date().toISOString(),
+                  },
+                },
+              });
+            },
+            async evaluate() {
+              return EvaluationDecision.parse({
+                decision: "ALLOW",
+                permissions: [],
+                prohibitions: [],
+                obligations: [],
+                context: this.context,
               });
             },
           },
@@ -228,7 +284,8 @@ describe("TransferController", () => {
         callbackAddress:
           "http://127.0.0.1/transfers/callbacks/urn:uuid:de465939-8292-49c1-97d5-bcb643df1fdb",
       }),
-      "did:web:localhost"
+      "did:web:localhost",
+      []
     );
     transferProviderUuid = transferProviderProcess.providerPid;
     const transferConsumerProcess =
@@ -257,7 +314,8 @@ describe("TransferController", () => {
           callbackAddress:
             "http://127.0.0.1/transfers/callbacks/urn:uuid:de465939-8292-49c1-97d5-bcb643df1fdb",
         }),
-        "did:web:localhost"
+        "did:web:localhost",
+        { "@context": [], type: [], verifiableCredential: [] }
       );
       expect(result).toStrictEqual({
         "@context": "https://w3id.org/dspace/v0.8/context.json",

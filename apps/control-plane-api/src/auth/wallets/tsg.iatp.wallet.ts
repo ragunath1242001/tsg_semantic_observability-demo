@@ -9,6 +9,7 @@ import { TsgWalletIatpConfig } from "../../config";
 import { DSPClientError } from "../../utils/errors/error";
 import { AuthClientService } from "../auth.client.service";
 import { Credential, WalletClient } from "./walletClient";
+import { InputDescriptor } from "@tsg-dsp/common-dtos";
 
 export class TsgIatpWalletClient extends WalletClient {
   constructor(
@@ -39,11 +40,48 @@ export class TsgIatpWalletClient extends WalletClient {
 
   async requestValidation(
     token: string,
-    audience: string
+    audience: string,
+    inputDescriptors?: InputDescriptor[]
   ): Promise<
     VerifiablePresentation<VerifiableCredential<CredentialSubject>> | undefined
   > {
     try {
+      if (!inputDescriptors) {
+        inputDescriptors = [
+          {
+            id: crypto.randomUUID(),
+            name: "Primary credential descriptor",
+            constraints: {
+              fields: [
+                ...(this.iamConfig.typeFilter
+                  ? [
+                      {
+                        path: ["$.type"],
+                        filter: {
+                          type: "string",
+                          pattern: this.iamConfig.typeFilter,
+                        },
+                      },
+                    ]
+                  : []),
+                ...(this.iamConfig.issuerFilter
+                  ? [
+                      {
+                        path: ["$.issuer"],
+                        filter: {
+                          type: "string",
+                          pattern: this.iamConfig.issuerFilter,
+                        },
+                      },
+                    ]
+                  : []),
+                ...(this.iamConfig.customFields ?? []),
+              ],
+            },
+          },
+        ];
+      }
+
       const response = await this.authClientService
         .axiosInstance()
         .post<VerifiablePresentation<VerifiableCredential<CredentialSubject>>>(
@@ -53,39 +91,7 @@ export class TsgIatpWalletClient extends WalletClient {
             presentationDefinition: {
               id: crypto.randomUUID(),
               name: "DSP Presentation definition",
-              input_descriptors: [
-                {
-                  id: crypto.randomUUID(),
-                  name: "Primary credential descriptor",
-                  constraints: {
-                    fields: [
-                      ...(this.iamConfig.typeFilter
-                        ? [
-                            {
-                              path: ["$.type"],
-                              filter: {
-                                type: "string",
-                                pattern: this.iamConfig.typeFilter,
-                              },
-                            },
-                          ]
-                        : []),
-                      ...(this.iamConfig.issuerFilter
-                        ? [
-                            {
-                              path: ["$.issuer"],
-                              filter: {
-                                type: "string",
-                                pattern: this.iamConfig.issuerFilter,
-                              },
-                            },
-                          ]
-                        : []),
-                      ...(this.iamConfig.customFields ?? []),
-                    ],
-                  },
-                },
-              ],
+              input_descriptors: inputDescriptors,
             },
           },
           {

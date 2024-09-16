@@ -15,10 +15,8 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import {
-  AgreementDto,
   ContractNegotiation,
   ContractNegotiationDto,
-  NegotiationDetail,
   Offer,
 } from "@tsg-dsp/common-dsp";
 import { OAuthGuard } from "../../auth/oauth.guard";
@@ -37,7 +35,6 @@ import {
   ApiOAuth2,
 } from "@nestjs/swagger";
 import {
-  ContractAgreementMessageSchema,
   ContractNegotiationSchema,
   NegotiationDetailSchema,
   NegotiationStatusDto,
@@ -83,22 +80,6 @@ export class NegotiationManagementController {
       processId
     );
     return negotiation;
-  }
-
-  @Get("agreement/:agreementId")
-  @ApiOperation({ summary: "Get an agreement by agreement ID" })
-  @ApiParam({
-    name: "agreementId",
-    description: "Agreement ID",
-    required: true,
-  })
-  @ApiOkResponse({ type: ContractAgreementMessageSchema })
-  async getAgreement(
-    @Param("agreementId") agreementId: string
-  ): Promise<AgreementDto> {
-    return (
-      await this.negotiationService.getAgreement(agreementId)
-    ).serialize();
   }
 
   @Post("request")

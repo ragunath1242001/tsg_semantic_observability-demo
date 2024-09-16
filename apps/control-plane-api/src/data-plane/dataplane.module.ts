@@ -7,6 +7,7 @@ import { DataPlaneDao } from "../model/dataPlanes.dao";
 import { DataplaneManagementController } from "./dataPlaneManagement.controller";
 import { AuthModule } from "../auth/auth.module";
 import { NegotiationModule } from "../dsp/negotiation/negotiation.module";
+import { PolicyModule } from "../policy/policy.module";
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { NegotiationModule } from "../dsp/negotiation/negotiation.module";
     TypeOrmModule.forFeature([DataPlaneDao]),
     AuthModule,
     NegotiationModule,
+    PolicyModule,
   ],
   controllers: [DataPlaneController, DataplaneManagementController],
   providers: [DataPlaneService],

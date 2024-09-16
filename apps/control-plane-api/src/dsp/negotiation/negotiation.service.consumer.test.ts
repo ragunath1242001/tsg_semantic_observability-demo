@@ -2,6 +2,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import {
   Agreement,
+  AgreementDto,
   ContractAgreementMessage,
   ContractAgreementVerificationMessageDto,
   ContractNegotiationDto,
@@ -12,6 +13,7 @@ import {
   ContractRequestMessageDto,
   Multilanguage,
   NegotiationEvent,
+  ODRLAction,
   Offer,
 } from "@tsg-dsp/common-dsp";
 import { plainToClass } from "class-transformer";
@@ -27,9 +29,14 @@ import { TypeOrmTestHelper } from "../../utils/testhelper";
 import { DspClientService } from "../client/client.service";
 import { DspGateway } from "../client/dsp.gateway";
 import { NegotiationService } from "./negotiation.service";
+import { AgreementDao, TransferMonitorDao } from "../../model/agreement.dao";
+import { TransferDetailDao, TransferEventDao } from "../../model/transfer.dao";
+import { AgreementService } from "../../policy/agreement.service";
+import { DSPClientError } from "../../utils/errors/error";
 
 describe("Negotiation Service (Consumer)", () => {
   let negotiationService: NegotiationService;
+  let agreementService: AgreementService;
   let dspGateway: DspGateway;
   let server: SetupServer;
   let remoteProcessId = "urn:uuid:51532177-8ae0-4d24-839e-c7bc969ddcfd";
@@ -44,10 +51,18 @@ describe("Negotiation Service (Consumer)", () => {
         TypeOrmTestHelper.instance.module([
           NegotiationDetailDao,
           NegotiationProcessEventDao,
+          AgreementDao,
+          TransferMonitorDao,
+          TransferDetailDao,
+          TransferEventDao,
         ]),
         TypeOrmModule.forFeature([
           NegotiationDetailDao,
           NegotiationProcessEventDao,
+          AgreementDao,
+          TransferMonitorDao,
+          TransferDetailDao,
+          TransferEventDao,
         ]),
       ],
       providers: [
@@ -63,8 +78,70 @@ describe("Negotiation Service (Consumer)", () => {
             async validateToken(token: string, audience?: string) {
               return true;
             }
+            async requestSignatureValidation(
+              signedDocument: Record<string, any>
+            ) {
+              if (signedDocument.proof.error === true) {
+                throw new DSPClientError(
+                  "Could not validate document",
+                  Error()
+                );
+              }
+            }
           })(),
         },
+        AgreementService,
+        // {
+        //   provide: AgreementService,
+        //   useValue: {
+        //     getAgreement: async (
+        //       id: string,
+        //       dto: boolean
+        //     ): Promise<AgreementDto> => {
+        //       return {
+        //         "@type": "odrl:Agreement",
+        //         "@id": "urn:uuid:00000000-0000-0000-0000-000000000000",
+        //         "odrl:assigner": "did:web:localhost",
+        //         "odrl:assignee": "did:web:remote.com",
+        //         "dspace:timestamp": new Date(
+        //           "2024-08-01T12:00:00Z"
+        //         ).toISOString(),
+        //         "odrl:target": "urn:uuid:33147fb2-8896-4a53-983b-61000b6559b6",
+        //         "odrl:permission": [
+        //           {
+        //             "@type": "odrl:Permission",
+        //             "odrl:action": ODRLAction.USE,
+        //           },
+        //         ],
+        //       };
+        //     },
+        //     syncLastEvaluation: async () => {},
+        //     storeAgreement: async (a: any, negotiationId: string) => {
+        //       return {
+        //         id: "urn:uuid:00000000-0000-0000-0000-000000000000",
+        //         agreement: {
+        //           "@type": "odrl:Agreement",
+        //           "@id": "urn:uuid:00000000-0000-0000-0000-000000000000",
+        //           "odrl:assigner": "did:web:localhost",
+        //           "odrl:assignee": "did:web:remote.com",
+        //           "dspace:timestamp": new Date(
+        //             "2024-08-01T12:00:00Z"
+        //           ).toISOString(),
+        //           "odrl:target":
+        //             "urn:uuid:33147fb2-8896-4a53-983b-61000b6559b6",
+        //           "odrl:permission": [
+        //             {
+        //               "@type": "odrl:Permission",
+        //               "odrl:action": ODRLAction.USE,
+        //             },
+        //           ],
+        //         },
+        //         negotiationId: negotiationId,
+        //         transfers: [],
+        //       };
+        //     },
+        //   },
+        // },
         {
           provide: RootConfig,
           useValue: config,
@@ -127,8 +204,28 @@ describe("Negotiation Service (Consumer)", () => {
     server.listen({
       onUnhandledRequest: "warn",
     });
-
     negotiationService = moduleRef.get(NegotiationService);
+    await negotiationService["negotiationDetailRepository"].query(
+      "PRAGMA foreign_keys = 0"
+    );
+    agreementService = moduleRef.get(AgreementService);
+    await agreementService.storeAgreement(
+      {
+        "@type": "odrl:Agreement",
+        "@id": "urn:uuid:00000000-0000-0000-0000-000000000000",
+        "odrl:assigner": "did:web:localhost",
+        "odrl:assignee": "did:web:remote.com",
+        "dspace:timestamp": new Date("2024-08-01T12:00:00Z").toISOString(),
+        "odrl:target": "urn:uuid:33147fb2-8896-4a53-983b-61000b6559b6",
+        "odrl:permission": [
+          {
+            "@type": "odrl:Permission",
+            "odrl:action": ODRLAction.USE,
+          },
+        ],
+      },
+      "00000000-0000-0000-0000-000000000000"
+    );
   });
 
   afterAll(async () => {
@@ -250,12 +347,31 @@ describe("Negotiation Service (Consumer)", () => {
     });
 
     it("Finalize negotiation", async () => {
+      await expect(
+        negotiationService.handleEvent(
+          localProcessId,
+          new ContractNegotiationEventMessage({
+            consumerPid: localProcessId,
+            providerPid: remoteProcessId,
+            eventType: NegotiationEvent.FINALIZED,
+            hashedMessage: {
+              "dspace:algorithm": "JsonWebSignature2020",
+              "dspace:digest": '{"error": true}',
+            },
+          }),
+          "did:web:remoteparty.test"
+        )
+      ).rejects.toThrow("Signature validation failed for negotiation");
       await negotiationService.handleEvent(
         localProcessId,
         new ContractNegotiationEventMessage({
           consumerPid: localProcessId,
           providerPid: remoteProcessId,
           eventType: NegotiationEvent.FINALIZED,
+          hashedMessage: {
+            "dspace:algorithm": "JsonWebSignature2020",
+            "dspace:digest": "{}",
+          },
         }),
         "did:web:remoteparty.test"
       );
@@ -263,17 +379,6 @@ describe("Negotiation Service (Consumer)", () => {
         localProcessId
       );
       expect(negotiationDetail.state).toBe(ContractNegotiationState.FINALIZED);
-
-      const agreement = await negotiationService.getAgreement(
-        negotiationDetail.agreement?.id!
-      );
-      expect(agreement).toBeDefined();
-
-      await expect(
-        negotiationService.getAgreement(
-          '"urn:uuid:00000000-0000-0000-0000-000000000000"'
-        )
-      ).rejects.toThrow("Cannot get agreement with agreement ID");
     });
   });
 
@@ -393,7 +498,7 @@ describe("Negotiation Service (Consumer)", () => {
 
     it("Handle contract agreement", async () => {
       const agreement = new Agreement({
-        id: "urn:uuid:73a9c260-01c1-4f2a-a29f-a7ea3b96e1f3",
+        id: "urn:uuid:73a9c260-01c1-4f2a-a29f-a7ea3b96e1f4",
         assigner: "urn:uuid:c2165eeb-8fc3-4de8-aed0-a088a6fb48d0",
         assignee: "urn:uuid:3721b819-d096-45d3-b397-8b9fdc312cf3",
         timestamp: new Date().toISOString(),

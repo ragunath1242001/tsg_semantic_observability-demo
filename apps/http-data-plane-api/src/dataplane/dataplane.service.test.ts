@@ -80,7 +80,7 @@ describe("Dataplane Service", () => {
         },
       ),
       http.get(
-        `${config.controlPlane.managementEndpoint}/negotiations/agreement/:negotiationId`,
+        `${config.controlPlane.managementEndpoint}/agreements/:agreementId`,
         () => {
           return HttpResponse.json<AgreementDto>({
             "@context": "https://w3id.org/dspace/v0.8/context.json",

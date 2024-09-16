@@ -26,7 +26,7 @@ export default defineConfig({
       // },
       // "/api": process.env.BACKEND || "http://localhost:3000",
       "/socket.io/": {
-        target: "https://healthharbormc.heracles.dataspac.es/socket.io/",
+        target: "https://bravo.handson.dataspac.es/socket.io/",
         changeOrigin: true,
         headers: {
           Cookie:
@@ -34,7 +34,7 @@ export default defineConfig({
         },
       },
       "/api": {
-        target: "https://healthharbormc.heracles.dataspac.es/control-plane",
+        target: "https://bravo.handson.dataspac.es/control-plane",
         changeOrigin: true,
         headers: {
           Cookie:

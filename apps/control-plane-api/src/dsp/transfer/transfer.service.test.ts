@@ -2,8 +2,9 @@ import { DataPlaneRequestResponseDto } from "@tsg-dsp/control-plane-dtos";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import {
-  Agreement,
+  AgreementDto,
   Catalog,
+  CredentialSubject,
   DataAddress,
   EndpointProperty,
   Multilanguage,
@@ -15,6 +16,7 @@ import {
   TransferState,
   TransferSuspensionMessage,
   TransferTerminationMessage,
+  VerifiableCredential,
 } from "@tsg-dsp/common-dsp";
 import { plainToClass } from "class-transformer";
 import { HttpResponse, PathParams, http } from "msw";
@@ -44,13 +46,20 @@ import { CatalogService } from "../catalog/catalog.service";
 import { DspClientService } from "../client/client.service";
 import { DspGateway } from "../client/dsp.gateway";
 import { TransferService } from "./transfer.service";
-import { NegotiationService } from "../negotiation/negotiation.service";
+import { AgreementService } from "../../policy/agreement.service";
+import { PolicyEvaluationService } from "../../policy/policy.evaluation.service";
+import { EvaluationTrigger } from "../../policy/constraint.dto";
+import {
+  EvaluationContext,
+  EvaluationDecision,
+} from "../../policy/evaluation.dto";
 
 describe("Transfer service", () => {
   let transferService: TransferService;
   let dspGateway: DspGateway;
   let server: SetupServer;
   let remoteProcessId = "urn:uuid:6334612d-bc17-4474-b8c1-5703c7a80bb1";
+  let moduleRef: TestingModule;
 
   beforeAll(async () => {
     jest.useFakeTimers({ doNotFake: ["Date"] });
@@ -58,7 +67,7 @@ describe("Transfer service", () => {
     const iamConfig = plainToClass(DevWalletConfig, {});
     const initCatalog = plainToClass(InitCatalog, {});
     const serverConfig = plainToClass(ServerConfig, {});
-    const moduleRef: TestingModule = await Test.createTestingModule({
+    moduleRef = await Test.createTestingModule({
       imports: [
         TypeOrmTestHelper.instance.module([
           CatalogDao,
@@ -91,14 +100,62 @@ describe("Transfer service", () => {
         CatalogService,
         AuthClientService,
         {
-          provide: NegotiationService,
+          provide: AgreementService,
           useValue: {
-            async getAgreement(agreementId: string): Promise<Agreement> {
-              return new Agreement({
-                assignee: "did:web:localhost",
-                assigner: "did:web:localhost",
+            async getAgreement(): Promise<AgreementDto> {
+              return {
+                "@type": "odrl:Agreement",
+                "@id": "urn:uuid:24bcf50a-fb1b-4820-bbad-e015c6b8ab39",
+                "odrl:assigner": "did:web:localhost",
+                "odrl:assignee": "did:web:localhost",
+                "odrl:target": "urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0cea",
+                "dspace:timestamp": new Date().toISOString(),
+              };
+            },
+          },
+        },
+        {
+          provide: PolicyEvaluationService,
+          useValue: {
+            async initializeContext(
+              agreementId: string,
+              role: "consumer" | "provider",
+              scope: EvaluationTrigger,
+              transferId: string,
+              remoteParticipant: string,
+              action: string,
+              verifiableCredentials: VerifiableCredential<CredentialSubject>[]
+            ) {
+              return EvaluationContext.parse({
+                role: role,
+                scope: scope,
+                transferId: transferId,
+                localParticipant: "did:web:localhost",
+                remoteParticipant: remoteParticipant,
                 target: "urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0cea",
-                timestamp: new Date().toISOString(),
+                action: action,
+                verifiableCredentials: verifiableCredentials,
+                evaluationTime: new Date(),
+                policy: {
+                  agreement: {
+                    "@type": "odrl:Agreement",
+                    "@id": "urn:uuid:24bcf50a-fb1b-4820-bbad-e015c6b8ab39",
+                    "odrl:assigner": "did:web:localhost",
+                    "odrl:assignee": "did:web:localhost",
+                    "odrl:target":
+                      "urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0cea",
+                    "dspace:timestamp": new Date().toISOString(),
+                  },
+                },
+              });
+            },
+            async evaluate() {
+              return EvaluationDecision.parse({
+                decision: "ALLOW",
+                permissions: [],
+                prohibitions: [],
+                obligations: [],
+                context: this.context,
               });
             },
           },
@@ -413,7 +470,8 @@ describe("Transfer service", () => {
           format: "dspace:HTTP",
           callbackAddress: `http://remoteparty.test/transfers/${remoteProcessId}`,
         }),
-        "did:web:remoteparty.test"
+        "did:web:remoteparty.test",
+        []
       );
       localProcessId = handledRequest.providerPid;
       jest.runAllTimers();

@@ -2,9 +2,11 @@ import { DataPlaneAddress, TransferRole } from "@tsg-dsp/control-plane-dtos";
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import {
+  CredentialSubject,
   DataAddress,
   EndpointProperty,
   Multilanguage,
+  ODRLAction,
   TransferCompletionMessage,
   TransferDetail,
   TransferEvent,
@@ -15,7 +17,9 @@ import {
   TransferStatus,
   TransferSuspensionMessage,
   TransferTerminationMessage,
+  VerifiableCredential,
   deserialize,
+  toArray,
 } from "@tsg-dsp/common-dsp";
 import crypto from "crypto";
 import { Repository } from "typeorm";
@@ -25,18 +29,21 @@ import { TransferDetailDao, TransferEventDao } from "../../model/transfer.dao";
 import { DSPError } from "../../utils/errors/error";
 import { DspClientService } from "../client/client.service";
 import { DspGateway } from "../client/dsp.gateway";
+import { PolicyEvaluationService } from "../../policy/policy.evaluation.service";
+import { EvaluationTrigger } from "../../policy/constraint.dto";
 
 @Injectable()
 export class TransferService {
   constructor(
-    private readonly dataPlaneService: DataPlaneService,
     private readonly dsp: DspClientService,
     private readonly dspGateway: DspGateway,
     private readonly server: ServerConfig,
     @InjectRepository(TransferDetailDao)
     private readonly transferDetailRepository: Repository<TransferDetailDao>,
     @InjectRepository(TransferEventDao)
-    private readonly transferEventRepository: Repository<TransferEventDao>
+    private readonly transferEventRepository: Repository<TransferEventDao>,
+    private readonly dataPlaneService: DataPlaneService,
+    private readonly policyEvaluationService: PolicyEvaluationService
   ) {}
   private readonly logger = new Logger(this.constructor.name);
 
@@ -159,6 +166,14 @@ export class TransferService {
     }
   }
 
+  async getTransfersByAgreement(
+    agreementId: string
+  ): Promise<TransferDetailDao[]> {
+    return await this.transferDetailRepository.findBy({
+      agreementId: agreementId,
+    });
+  }
+
   async initiateTransferProcess(
     agreementId: string,
     format: string,
@@ -179,6 +194,25 @@ export class TransferService {
       dataAddress: dataAddress,
       callbackAddress: `${this.server.publicAddress}/transfers/${localId}`,
     });
+    const context = await this.policyEvaluationService.initializeContext(
+      agreementId,
+      "consumer",
+      EvaluationTrigger.CONSUMER_ON_REQUEST,
+      localId,
+      audience,
+      ODRLAction.USE,
+      []
+    );
+    const evaluation = await this.policyEvaluationService.evaluate(context);
+    if (evaluation.decision === "DENY") {
+      throw new DSPError(
+        {
+          message: `Policy evaluation denied transfer request`,
+          evaluation: evaluation,
+        },
+        HttpStatus.FORBIDDEN
+      );
+    }
     const dataPlaneTransfer = await this.dataPlaneService.requestTransfer(
       transferRequestMessage,
       localId,
@@ -235,7 +269,8 @@ export class TransferService {
 
   async handleRequest(
     transferRequestMessage: TransferRequestMessage,
-    audience: string
+    audience: string,
+    verifiableCredentials: VerifiableCredential<CredentialSubject>[]
   ): Promise<TransferProcess> {
     const transferProcess = new TransferProcess({
       providerPid: `urn:uuid:provider:${crypto.randomUUID()}`,
@@ -269,6 +304,25 @@ export class TransferService {
         }),
       ],
     };
+    const context = await this.policyEvaluationService.initializeContext(
+      transferRequestMessage.agreementId,
+      "provider",
+      EvaluationTrigger.PROVIDER_ON_REQUEST,
+      transferProcess.providerPid,
+      audience,
+      ODRLAction.USE,
+      verifiableCredentials
+    );
+    const evaluation = await this.policyEvaluationService.evaluate(context);
+    if (evaluation.decision === "DENY") {
+      throw new DSPError(
+        {
+          message: `Policy evaluation denied transfer request`,
+          evaluation: evaluation,
+        },
+        HttpStatus.FORBIDDEN
+      );
+    }
     await this.transferDetailRepository.save(transfer);
     if (dataPlaneTransfer.dataAddress) {
       setTimeout(() => {
@@ -294,9 +348,9 @@ export class TransferService {
       dataAddress = new DataAddress({
         endpoint: dataPlaneAddress.endpoint,
         endpointType: transfer.dataPlaneTransfer.endpointType,
-        endpointProperties:
-          dataPlaneAddress.properties?.map((p) => new EndpointProperty(p)) ||
-          [],
+        endpointProperties: toArray(dataPlaneAddress.properties).map(
+          (p) => new EndpointProperty(p)
+        ),
       });
     } else {
       dataAddress = new DataAddress({
@@ -309,10 +363,8 @@ export class TransferService {
       });
     }
     const transferStartMessage = new TransferStartMessage({
-      providerPid:
-        transfer.role === "provider" ? transfer.localId : transfer.remoteId!,
-      consumerPid:
-        transfer.role === "provider" ? transfer.remoteId! : transfer.localId,
+      providerPid: this.mapId(transfer, "providerPid"),
+      consumerPid: this.mapId(transfer, "consumerPid"),
       dataAddress: dataAddress,
     });
     await this.checkTransition("local", transfer, TransferState.STARTED);
@@ -390,10 +442,8 @@ export class TransferService {
       })
     );
     const transferCompletionMessage = new TransferCompletionMessage({
-      providerPid:
-        transfer.role === "provider" ? transfer.localId : transfer.remoteId!,
-      consumerPid:
-        transfer.role === "provider" ? transfer.remoteId! : transfer.localId,
+      providerPid: this.mapId(transfer, "providerPid"),
+      consumerPid: this.mapId(transfer, "consumerPid"),
     });
     if (!fromDataPlane) {
       await this.dataPlaneService.completeTransfer(
@@ -455,10 +505,8 @@ export class TransferService {
     const transfer = await this.getTransfer(processId);
     await this.checkTransition("local", transfer, TransferState.TERMINATED);
     const transferTerminationMessage = new TransferTerminationMessage({
-      providerPid:
-        transfer.role === "provider" ? transfer.localId : transfer.remoteId!,
-      consumerPid:
-        transfer.role === "provider" ? transfer.remoteId! : transfer.localId,
+      providerPid: this.mapId(transfer, "providerPid"),
+      consumerPid: this.mapId(transfer, "consumerPid"),
       code: code,
       reason: [new Multilanguage(reason)],
     });
@@ -524,6 +572,19 @@ export class TransferService {
     };
   }
 
+  mapId(transfer: TransferDetail, id: "providerPid" | "consumerPid"): string {
+    switch (id) {
+      case "providerPid":
+        return transfer.role === "provider"
+          ? transfer.localId
+          : transfer.remoteId!;
+      case "consumerPid":
+        return transfer.role === "provider"
+          ? transfer.remoteId!
+          : transfer.localId;
+    }
+  }
+
   async suspend(
     processId: string,
     reason: string,
@@ -532,10 +593,8 @@ export class TransferService {
     const transfer = await this.getTransfer(processId);
     await this.checkTransition("local", transfer, TransferState.SUSPENDED);
     const transferSuspensionMessage = new TransferSuspensionMessage({
-      providerPid:
-        transfer.role === "provider" ? transfer.localId : transfer.remoteId!,
-      consumerPid:
-        transfer.role === "provider" ? transfer.remoteId! : transfer.localId,
+      providerPid: this.mapId(transfer, "providerPid"),
+      consumerPid: this.mapId(transfer, "consumerPid"),
       reason: [new Multilanguage(reason)],
     });
     transfer.events.push(

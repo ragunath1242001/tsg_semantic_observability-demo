@@ -16,8 +16,8 @@ import {
 } from "../model/catalog.dao";
 import { TypeOrmTestHelper } from "../utils/testhelper";
 import { AuthClientService } from "../auth/auth.client.service";
-import { Agreement } from "@tsg-dsp/common-dsp";
-import { NegotiationService } from "../dsp/negotiation/negotiation.service";
+import { AgreementDto } from "@tsg-dsp/common-dsp";
+import { AgreementService } from "../policy/agreement.service";
 
 describe("DataPlaneController", () => {
   let dataPlaneController: DataPlaneController;
@@ -54,15 +54,17 @@ describe("DataPlaneController", () => {
         CatalogService,
         AuthClientService,
         {
-          provide: NegotiationService,
+          provide: AgreementService,
           useValue: {
-            async getAgreement(agreementId: string): Promise<Agreement> {
-              return new Agreement({
-                assignee: "did:web:localhost",
-                assigner: "did:web:localhost",
-                target: "urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0cea",
-                timestamp: new Date().toISOString(),
-              });
+            async getAgreement(): Promise<AgreementDto> {
+              return {
+                "@type": "odrl:Agreement",
+                "@id": "urn:uuid:24bcf50a-fb1b-4820-bbad-e015c6b8ab39",
+                "odrl:assigner": "did:web:localhost",
+                "odrl:assignee": "did:web:localhost",
+                "odrl:target": "urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0cea",
+                "dspace:timestamp": new Date().toISOString(),
+              };
             },
           },
         },

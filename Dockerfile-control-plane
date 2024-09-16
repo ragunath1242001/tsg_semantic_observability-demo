@@ -9,13 +9,14 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY apps/control-plane-api/package.json apps/control-plane-api/
 COPY apps/control-plane-ui/package.json apps/control-plane-ui/
 COPY libs/common-dsp/package.json libs/common-dsp/
+COPY libs/common-dtos/package.json libs/common-dtos/
 COPY libs/common-ui/package.json libs/common-ui/
 COPY libs/control-plane-dtos/package.json libs/control-plane-dtos/
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
 COPY apps apps
 COPY libs libs 
-RUN pnpm run --filter "./libs/common*" --parallel -r build 
+RUN pnpm run --filter "./libs/common*" -r build 
 RUN pnpm run --filter "./libs/control-plane*" --parallel -r build
 RUN pnpm run --filter "./apps/control-plane*" --parallel -r build 
 RUN pnpm deploy --filter control-plane-api --prod /prod/control-plane-api

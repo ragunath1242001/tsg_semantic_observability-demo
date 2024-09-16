@@ -17,6 +17,7 @@ import { ManagedIdentityWalletClient } from "./wallets/miw.wallet";
 import { TsgIatpWalletClient } from "./wallets/tsg.iatp.wallet";
 import { TsgWalletClient } from "./wallets/tsg.wallet";
 import { WalletClient } from "./wallets/walletClient";
+import { InputDescriptor } from "@tsg-dsp/common-dtos";
 
 @Injectable()
 export class AuthService {
@@ -55,13 +56,15 @@ export class AuthService {
 
   async validateToken(
     token: string,
-    audience?: string
+    audience?: string,
+    inputDescriptors?: InputDescriptor[]
   ): Promise<
     VerifiablePresentation<VerifiableCredential<CredentialSubject>> | undefined
   > {
     return await this.walletClient.requestValidation(
       token,
-      audience || this.config.iam.didId
+      audience || this.config.iam.didId,
+      inputDescriptors
     );
   }
 
