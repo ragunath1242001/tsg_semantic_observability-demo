@@ -113,7 +113,7 @@ const createPolicy = (policy: PolicyDto): string => {
     "@context": "https://w3id.org/dspace/v0.8/context.json",
     "@type": "odrl:Offer",
     "@id": `urn:uuid:${crypto.randomUUID()}`,
-    "odrl:assigner": assigner.value,
+    "odrl:assigner": catalog.value['dct:publisher'],
   };
   return JSON.stringify(offer, null, 2);
 };

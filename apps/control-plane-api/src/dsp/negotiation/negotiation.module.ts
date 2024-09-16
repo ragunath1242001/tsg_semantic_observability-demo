@@ -9,6 +9,7 @@ import {
   NegotiationDetailDao,
   NegotiationProcessEventDao,
 } from "../../model/negotiation.dao";
+import { PolicyModule } from "../../policy/policy.module";
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import {
       NegotiationDetailDao,
       NegotiationProcessEventDao,
     ]),
+    PolicyModule,
   ],
   controllers: [NegotiationController, NegotiationManagementController],
   providers: [NegotiationService],

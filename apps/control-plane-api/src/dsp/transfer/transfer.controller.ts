@@ -7,15 +7,22 @@ import {
   UseGuards,
 } from "@nestjs/common/decorators";
 import {
+  CredentialSubject,
+  toArray,
   TransferCompletionMessage,
   TransferProcessDto,
   TransferRequestMessage,
   TransferStartMessage,
   TransferSuspensionMessage,
   TransferTerminationMessage,
+  VerifiableCredential,
+  VerifiablePresentation,
 } from "@tsg-dsp/common-dsp";
-import { VerifiablePresentationGuard } from "../../auth/verifiablePresentation.guard";
-import { VPId } from "../../auth/verifiablePresentation.strategy";
+import {
+  TransferVerifiablePresentationGuard,
+  VerifiablePresentationGuard,
+} from "../../auth/verifiablePresentation.guard";
+import { VP, VPId } from "../../auth/verifiablePresentation.strategy";
 import { DeserializePipe } from "../../utils/deserialize.pipe";
 import { TransferService } from "./transfer.service";
 import {
@@ -38,13 +45,13 @@ import {
 
 @ApiTags("Transfers")
 @ApiBearerAuth()
-@UseGuards(VerifiablePresentationGuard)
 @Controller("transfers")
 export class TransferController {
   constructor(private readonly transferService: TransferService) {}
   private readonly logger = new Logger(this.constructor.name);
 
   @Post("request")
+  @UseGuards(TransferVerifiablePresentationGuard)
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: "Request a transfer" })
   @ApiBody({ type: TransferRequestMessageSchema })
@@ -52,16 +59,22 @@ export class TransferController {
   async request(
     @Body(new DeserializePipe(TransferRequestMessage))
     body: TransferRequestMessage,
-    @VPId() vpId: string
+    @VPId() vpId: string,
+    @VP() vp: VerifiablePresentation<VerifiableCredential<CredentialSubject>>
   ): Promise<TransferProcessDto> {
     this.logger.log(
       `Received transfer request from ${vpId}: ${JSON.stringify(body)}`
     );
-    const result = await this.transferService.handleRequest(body, vpId);
+    const result = await this.transferService.handleRequest(
+      body,
+      vpId,
+      toArray(vp.verifiableCredential)
+    );
     return await result.serialize();
   }
 
   @Get(":id")
+  @UseGuards(TransferVerifiablePresentationGuard)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "Get transfer status by ID" })
   @ApiParam({ name: "id", required: true, description: "Transfer ID" })
@@ -76,6 +89,7 @@ export class TransferController {
   }
 
   @Post(":id/start")
+  @UseGuards(TransferVerifiablePresentationGuard)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "Start transfer process" })
   @ApiParam({ name: "id", required: true, description: "Transfer ID" })
@@ -97,6 +111,7 @@ export class TransferController {
   }
 
   @Post(":id/complete")
+  @UseGuards(TransferVerifiablePresentationGuard)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "Complete transfer process" })
   @ApiParam({ name: "id", required: true, description: "Transfer ID" })
@@ -121,6 +136,7 @@ export class TransferController {
   }
 
   @Post(":id/terminate")
+  @UseGuards(TransferVerifiablePresentationGuard)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "Terminate transfer process" })
   @ApiParam({ name: "id", required: true, description: "Transfer ID" })
@@ -145,6 +161,7 @@ export class TransferController {
   }
 
   @Post(":id/suspend")
+  @UseGuards(TransferVerifiablePresentationGuard)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "Suspend transfer process" })
   @ApiParam({ name: "id", required: true, description: "Transfer ID" })
@@ -169,6 +186,7 @@ export class TransferController {
   }
 
   @Post("/callbacks/:id/start")
+  @UseGuards(VerifiablePresentationGuard)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "Callback to start transfer process" })
   @ApiParam({ name: "id", required: true, description: "Transfer ID" })
@@ -192,6 +210,7 @@ export class TransferController {
   }
 
   @Post("/callbacks/:id/complete")
+  @UseGuards(VerifiablePresentationGuard)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "Callback to complete transfer process" })
   @ApiParam({ name: "id", required: true, description: "Transfer ID" })
@@ -216,6 +235,7 @@ export class TransferController {
   }
 
   @Post("/callbacks/:id/terminate")
+  @UseGuards(VerifiablePresentationGuard)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "Callback to terminate transfer process" })
   @ApiParam({ name: "id", required: true, description: "Transfer ID" })
@@ -240,6 +260,7 @@ export class TransferController {
   }
 
   @Post("/callbacks/:id/suspend")
+  @UseGuards(VerifiablePresentationGuard)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "Callback to suspend transfer process" })
   @ApiParam({ name: "id", required: true, description: "Transfer ID" })

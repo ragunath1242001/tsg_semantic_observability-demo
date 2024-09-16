@@ -79,13 +79,13 @@ const getNegotiation = async (uuid: string) => {
 const requestTransfer = async (accNegotiation: NegotiationDetailDto) => {
   try {
     const address = accNegotiation.remoteAddress.split("negotiations")[0];
-    const audience = accNegotiation.agreement["assigner"];
+    const audience = accNegotiation.agreement["odrl:assigner"];
     const dataset = (
       await http.get<DatasetDto>(
-        `management/catalog/dataset?address=${address}&id=${accNegotiation.agreement["target"]}&audience=${audience}`
+        `management/catalog/dataset?address=${address}&id=${accNegotiation.agreement["odrl:target"]}&audience=${audience}`
       )
     ).data;
-    const agreementId = accNegotiation.agreement["id"];
+    const agreementId = accNegotiation.agreement["@id"];
     const format = dataset["dcat:distribution"][0]["dct:format"];
     const response = await http.post(
       `management/transfers/request?address=${address}&agreementId=${agreementId}&format=${format}&audience=${audience}`

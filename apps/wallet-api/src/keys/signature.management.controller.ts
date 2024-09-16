@@ -1,11 +1,11 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from "@nestjs/common";
 import { Roles } from "../auth/roles.guard.js";
+import { AppRole } from "@tsg-dsp/wallet-dtos";
 import {
-  AppRole,
   JsonWebSignature,
   SignRequest,
   ValidateRequest,
-} from "@tsg-dsp/wallet-dtos";
+} from "@tsg-dsp/common-dtos";
 import { validationPipe } from "../utils/validation.pipe.js";
 import {
   ApiBody,

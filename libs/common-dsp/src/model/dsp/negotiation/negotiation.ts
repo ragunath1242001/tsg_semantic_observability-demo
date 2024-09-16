@@ -27,7 +27,6 @@ import {
   ConstraintDto,
   ODRLAction,
   PermissionDto,
-  ProhibitionDto,
   DutyDto,
   PolicyDto,
   OfferDto,
@@ -71,21 +70,21 @@ export class Constraint extends SerializableClass<ConstraintDto & ContextDto> {
 }
 
 export interface IPolicyRule {
-  assigner?: Reference;
-  assignee?: Reference;
-  action: ODRLAction | string;
+  assigner?: string;
+  assignee?: string | string[];
+  action: ODRLAction | string | Array<ODRLAction | string>;
   target?: string;
   constraint?: Array<Constraint>;
 }
 
 export interface IProhibition extends IPolicyRule {
-  target: string;
+  // target: string;
 }
 
 export type IDuty = IPolicyRule;
 
 export interface IPermission extends IPolicyRule {
-  target: string;
+  // target: string;
   duty?: Array<Duty>;
 }
 
@@ -96,14 +95,14 @@ export class PolicyRule<
   @Namespace("odrl")
   @ValidateNested()
   @IsOptional()
-  assigner?: Reference;
+  assigner?: string;
   @Namespace("odrl")
   @ValidateNested()
   @IsOptional()
-  assignee?: Reference;
+  assignee?: string | string[];
   @Namespace("odrl")
   @IsNotEmpty()
-  action: ODRLAction | string;
+  action: ODRLAction | string | Array<ODRLAction | string>;
   @Namespace("odrl")
   @IsOptional()
   target?: string;
@@ -125,38 +124,25 @@ export class PolicyRule<
 @Serializable("odrl:Permission")
 export class Permission extends PolicyRule<PermissionDto & ContextDto> {
   @Namespace("odrl")
-  @IsNotEmpty()
-  target: string;
-  @Namespace("odrl")
   @ValidateNested()
   @IsOptional()
   duty?: Array<Duty>;
 
   constructor(value: IPermission) {
     super(value);
-    this.target = value.target;
     this.duty = createOptionalInstances(value.duty, Duty);
   }
 }
 
 @Serializable("odrl:Prohibition")
-export class Prohibition extends PolicyRule<ProhibitionDto & ContextDto> {
-  @Namespace("odrl")
-  @IsNotEmpty()
-  target: string;
-
-  constructor(value: IProhibition) {
-    super(value);
-    this.target = value.target;
-  }
-}
+export class Prohibition extends PolicyRule<DutyDto & ContextDto> {}
 
 @Serializable("odrl:Duty")
 export class Duty extends PolicyRule<DutyDto & ContextDto> {}
 
 export interface IPolicy extends IReference {
   assigner?: string;
-  assignee?: string;
+  assignee?: string | string[];
   profile?: Reference;
   permission?: Array<Permission>;
   prohibition?: Array<Prohibition>;
@@ -175,7 +161,7 @@ export class Policy<
   @Namespace("odrl")
   @IsString()
   @IsOptional()
-  assignee?: string;
+  assignee?: string | string[];
   @Namespace("odrl")
   @ValidateNested()
   @IsOptional()

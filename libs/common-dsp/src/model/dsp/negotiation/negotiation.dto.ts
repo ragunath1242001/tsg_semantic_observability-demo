@@ -116,15 +116,15 @@ export interface ConstraintDto {
 export interface PolicyRuleDto {
   "@type": "odrl:Prohibition" | "odrl:Duty" | "odrl:Permission";
   "odrl:assigner"?: string;
-  "odrl:assignee"?: string;
-  "odrl:action": ODRLAction | string;
+  "odrl:assignee"?: string | string[];
+  "odrl:action": ODRLAction | string | Array<ODRLAction | string>;
   "odrl:target"?: string;
   "odrl:constraint"?: Array<ConstraintDto>;
 }
 
 export interface ProhibitionDto extends PolicyRuleDto {
   "@type": "odrl:Prohibition";
-  "odrl:target": string;
+  // "odrl:target": string;
 }
 
 export interface DutyDto extends PolicyRuleDto {
@@ -133,14 +133,14 @@ export interface DutyDto extends PolicyRuleDto {
 
 export interface PermissionDto extends PolicyRuleDto {
   "@type": "odrl:Permission";
-  "odrl:target": string;
+  // "odrl:target": string;
   "odrl:duty"?: Array<DutyDto>;
 }
 
 export interface PolicyDto extends ReferenceDto {
   "@type": "odrl:Offer" | "odrl:Agreement";
   "odrl:assigner"?: string;
-  "odrl:assignee"?: string;
+  "odrl:assignee"?: string | string[];
   "odrl:target"?: string;
   "odrl:profile"?: string;
   "odrl:permission"?: Array<PermissionDto>;

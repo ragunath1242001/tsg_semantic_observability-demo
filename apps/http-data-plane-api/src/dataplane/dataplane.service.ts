@@ -386,7 +386,7 @@ export class DataPlaneService {
     let agreement: AgreementDto;
     try {
       const response = await this.axiosManagement.get<AgreementDto>(
-        `/negotiations/agreement/${transfer.request["dspace:agreementId"]}`,
+        `/agreements/${transfer.request["dspace:agreementId"]}`,
       );
       agreement = response.data;
     } catch (err) {

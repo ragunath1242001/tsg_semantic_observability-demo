@@ -12,7 +12,7 @@ import {
   PresentationDefinition,
   PresentationResponse,
   Field,
-} from "@tsg-dsp/wallet-dtos";
+} from "@tsg-dsp/common-dtos";
 import {
   CredentialSubject,
   VerifiableCredential,

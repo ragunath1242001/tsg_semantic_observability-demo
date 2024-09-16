@@ -12,6 +12,7 @@ const context: jsonld.ContextDefinition = {
   dct: "http://purl.org/dc/terms/",
   dcat: "http://www.w3.org/ns/dcat#",
   dspace: "https://w3id.org/dspace/v0.8/",
+  tsg: "https://dataspac.es/ns/tsg#",
   "dspace:timestamp": { "@type": "xsd:dateTime" },
   "dspace:transportType": { "@type": "@id" },
   "dct:title": { "@language": "en" },

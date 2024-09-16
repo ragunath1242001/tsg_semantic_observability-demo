@@ -2,7 +2,7 @@ import {
   JsonWebSignature,
   SignRequest,
   ValidateRequest,
-} from "@tsg-dsp/wallet-dtos";
+} from "@tsg-dsp/common-dtos";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { SignatureDto } from "../credentials/credentials.schemas.js";
 

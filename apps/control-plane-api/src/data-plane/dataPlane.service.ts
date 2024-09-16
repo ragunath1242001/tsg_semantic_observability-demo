@@ -35,7 +35,7 @@ import { CatalogService } from "../dsp/catalog/catalog.service";
 import { DatasetDao } from "../model/catalog.dao";
 import { DataPlaneDao } from "../model/dataPlanes.dao";
 import { DSPClientError, DSPError } from "../utils/errors/error";
-import { NegotiationService } from "../dsp/negotiation/negotiation.service";
+import { AgreementService } from "../policy/agreement.service";
 
 @Injectable()
 export class DataPlaneService {
@@ -45,7 +45,7 @@ export class DataPlaneService {
     private readonly dataPlaneRepository: Repository<DataPlaneDao>,
     private readonly catalogService: CatalogService,
     private readonly authClientService: AuthClientService,
-    private readonly negotiationService: NegotiationService
+    private readonly agreementService: AgreementService
   ) {
     this.axios = axios.create();
     this.axios.interceptors.request.use(
@@ -365,7 +365,11 @@ export class DataPlaneService {
     role: "provider" | "consumer",
     remoteParty: string
   ): Promise<DataPlaneTransferDto> {
-    const agreement = await this.negotiationService.getAgreement(
+    // const agreement = await this.agreementService?.getAgreement(
+    //   requestDetail.agreementId,
+    //   true
+    // );
+    const agreement = await this.agreementService.getAgreement(
       requestDetail.agreementId
     );
     const dataPlanes = await this.dataPlaneRepository.findBy({

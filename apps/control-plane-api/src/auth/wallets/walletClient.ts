@@ -3,6 +3,7 @@ import {
   VerifiableCredential,
   VerifiablePresentation,
 } from "@tsg-dsp/common-dsp";
+import { InputDescriptor } from "@tsg-dsp/common-dtos";
 
 export interface ValidationResult {
   [key: string]: boolean | boolean[];
@@ -19,7 +20,8 @@ export abstract class WalletClient {
   abstract requestVerifiablePresentation(audience: string): Promise<string>;
   abstract requestValidation(
     token: string,
-    audience: string
+    audience: string,
+    inputDescriptors?: InputDescriptor[]
   ): Promise<
     VerifiablePresentation<VerifiableCredential<CredentialSubject>> | undefined
   >;

@@ -1,5 +1,4 @@
 import {
-  Agreement,
   ContractAgreementVerificationMessage,
   ContractNegotiationState,
   HashedMessage,
@@ -13,12 +12,15 @@ import {
 import {
   Column,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryColumn,
   Relation,
 } from "typeorm";
 import { AutoIdEntity, instanceTransformer, MetaEntity } from "./common.dao";
+import { AgreementDao } from "./agreement.dao";
 
 @Entity({ name: "negotationProcessEvent" })
 export class NegotiationProcessEventDao
@@ -74,13 +76,11 @@ export class NegotiationDetailDao
     transformer: instanceTransformer(Offer),
   })
   offer?: Offer;
-  @Column("simple-json", {
+  @ManyToOne(() => AgreementDao, {
     nullable: true,
-    transformer: instanceTransformer(Agreement),
+    eager: true,
   })
-  agreement?: Agreement;
-  @Column({ nullable: true })
-  agreementId?: string;
+  agreementDao?: AgreementDao;
   @OneToMany(() => NegotiationProcessEventDao, (event) => event._detail, {
     cascade: true,
     eager: true,

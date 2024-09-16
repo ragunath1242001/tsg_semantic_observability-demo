@@ -2,7 +2,7 @@ import { Body, Controller, Post } from "@nestjs/common";
 import { IatpVerifierService } from "./verifier.service.js";
 import { AppRole } from "@tsg-dsp/wallet-dtos";
 import { Roles } from "../../auth/roles.guard.js";
-import { PresentationDefinition } from "@tsg-dsp/wallet-dtos";
+import { PresentationDefinition } from "@tsg-dsp/common-dtos";
 import {
   VerifiablePresentation,
   VerifiableCredential,

@@ -22,7 +22,7 @@ import {
   PresentationDefinition,
   PresentationResponse,
   PresentationSubmission,
-} from "@tsg-dsp/wallet-dtos";
+} from "@tsg-dsp/common-dtos";
 import { VerifiableCredentialDto } from "../credentials/credentials.schemas.js";
 
 export class VerifiablePresentationDto

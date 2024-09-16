@@ -6,6 +6,7 @@ import { HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import {
   Agreement,
+  AgreementDto,
   ContractAgreementMessage,
   ContractAgreementVerificationMessage,
   ContractNegotiation,
@@ -14,13 +15,13 @@ import {
   ContractNegotiationTerminationMessage,
   ContractOfferMessage,
   ContractRequestMessage,
+  HashedMessage,
   Multilanguage,
   NegotiationDetail,
   NegotiationEvent,
   NegotiationProcessEvent,
   NegotiationRole,
   Offer,
-  createInstance,
   deserialize,
 } from "@tsg-dsp/common-dsp";
 import crypto from "crypto";
@@ -34,6 +35,7 @@ import { DSPError } from "../../utils/errors/error";
 import { DspClientService } from "../client/client.service";
 import { DspGateway } from "../client/dsp.gateway";
 import { AuthService } from "../../auth/auth.service";
+import { AgreementService } from "../../policy/agreement.service";
 
 @Injectable()
 export class NegotiationService {
@@ -43,6 +45,7 @@ export class NegotiationService {
     private readonly config: RootConfig,
     private readonly dspGateway: DspGateway,
     private readonly authService: AuthService,
+    private readonly agreementService: AgreementService,
     @InjectRepository(NegotiationDetailDao)
     private readonly negotiationDetailRepository: Repository<NegotiationDetailDao>,
     @InjectRepository(NegotiationProcessEventDao)
@@ -165,11 +168,11 @@ export class NegotiationService {
       remoteParty: audience,
     });
     if (negotiation) {
-      const { offer, agreement, events, ...negotiationPlain } = negotiation;
+      const { offer, agreementDao, events, ...negotiationPlain } = negotiation;
       return {
         ...negotiationPlain,
         offer: offer ? await offer.serialize() : undefined,
-        agreement: agreement ? await agreement.serialize() : undefined,
+        agreement: agreementDao?.agreement,
         events: await Promise.all(
           events.map(async (e) => {
             return {
@@ -201,24 +204,18 @@ export class NegotiationService {
       remoteParty: audience,
     });
     if (negotiation) {
-      return new NegotiationDetail(negotiation);
+      return new NegotiationDetail({
+        ...negotiation,
+        agreement: negotiation.agreementDao
+          ? await deserialize<Agreement>({
+              "@context": "https://w3id.org/dspace/v0.8/context.json",
+              ...negotiation.agreementDao?.agreement,
+            })
+          : undefined,
+      });
     } else {
       throw new DSPError(
         `Cannot get negotiation with process ID ${processId} for ${audience}`,
-        HttpStatus.NOT_FOUND
-      ).andLog(this.logger, "warn");
-    }
-  }
-
-  async getAgreement(agreementId: string): Promise<Agreement> {
-    const negotiation = await this.negotiationDetailRepository.findOneBy({
-      agreementId: agreementId,
-    });
-    if (negotiation?.agreement) {
-      return createInstance(negotiation.agreement, Agreement);
-    } else {
-      throw new DSPError(
-        `Cannot get agreement with agreement ID ${agreementId}`,
         HttpStatus.NOT_FOUND
       ).andLog(this.logger, "warn");
     }
@@ -232,6 +229,7 @@ export class NegotiationService {
   ): Promise<NegotiationDetail> {
     const consumerPid = `urn:uuid:${crypto.randomUUID()}`;
     offer.target = dataSet;
+    offer.assignee = this.config.iam.didId;
     const contractRequestMessage = new ContractRequestMessage({
       consumerPid: consumerPid,
       offer: offer,
@@ -323,6 +321,7 @@ export class NegotiationService {
       ContractNegotiationState.REQUESTED
     );
     offer.target = negotiation.dataSet;
+    offer.assignee = this.config.iam.didId;
     const contractRequestMessage = new ContractRequestMessage({
       providerPid: negotiation.remoteId,
       consumerPid: negotiation.localId,
@@ -393,6 +392,8 @@ export class NegotiationService {
       negotiation,
       ContractNegotiationState.OFFERED
     );
+    offer.assigner = this.config.iam.didId;
+    offer.assignee = negotiation.remoteParty;
     const contractOfferMessage = new ContractOfferMessage({
       providerPid: negotiation.localId,
       consumerPid: negotiation.remoteId,
@@ -485,30 +486,37 @@ export class NegotiationService {
       contractNegotiationEventMessage.eventType === NegotiationEvent.ACCEPTED
         ? ContractNegotiationState.ACCEPTED
         : ContractNegotiationState.FINALIZED;
-
-    if (
-      contractNegotiationEventMessage.hashedMessage?.["dspace:algorithm"] ===
-      "JsonWebSignature2020"
-    ) {
-      try {
-        const signature = JSON.parse(
-          contractNegotiationEventMessage.hashedMessage["dspace:digest"]
-        );
-        const agreement = await negotiation.agreement?.serialize();
-        this.authService.requestSignatureValidation({
-          ...agreement,
-          proof: signature,
-        });
-      } catch (e) {
-        throw new DSPError(
-          `Signature validation failed for negotiation ${processId}`,
-          HttpStatus.BAD_REQUEST,
-          e
-        );
-      }
-    }
-
     await this.checkTransition("remote", negotiation, newState);
+    if (newState === ContractNegotiationState.FINALIZED) {
+      const agreement = await negotiation.agreement?.serialize();
+      const remoteHash = contractNegotiationEventMessage.hashedMessage;
+      if (remoteHash?.["dspace:algorithm"] === "JsonWebSignature2020") {
+        try {
+          const signature = JSON.parse(remoteHash["dspace:digest"]);
+          await this.authService.requestSignatureValidation({
+            ...agreement,
+            proof: signature,
+          });
+        } catch (e) {
+          throw new DSPError(
+            `Signature validation failed for negotiation ${processId}`,
+            HttpStatus.BAD_REQUEST,
+            e
+          );
+        }
+      }
+      const agreementDao = await this.agreementService.storeAgreement(
+        agreement!,
+        negotiation.localId,
+        negotiation.events.find((e) => e.type === "local" && e.hashedMessage)
+          ?.hashedMessage,
+        remoteHash
+      );
+      await this.negotiationDetailRepository.save({
+        ...negotiation,
+        agreementDao: agreementDao,
+      });
+    }
     negotiation.events.push({
       time: new Date(),
       state: newState,
@@ -568,7 +576,16 @@ export class NegotiationService {
     negotiation.state = ContractNegotiationState.AGREED;
     negotiation.agreement = agreement;
     negotiation.agreementId = agreement.id;
-    await this.negotiationDetailRepository.save(negotiation);
+    const agreementDao = await this.agreementService.storeAgreement(
+      await agreement.serialize(),
+      negotiation.localId
+    );
+    await this.negotiationDetailRepository.save({
+      ...negotiation,
+      agreementDao: {
+        id: agreementDao.id,
+      },
+    });
     this.dspGateway.sendUpdateToClients("negotiation:update", "updated");
     return {
       status: "OK",
@@ -596,8 +613,15 @@ export class NegotiationService {
     });
     negotiation.agreement = contractAgreementMessage.agreement;
     negotiation.agreementId = contractAgreementMessage.agreement.id;
+    const agreementDao = await this.agreementService.storeAgreement(
+      await contractAgreementMessage.agreement.serialize(),
+      negotiation.localId
+    );
     negotiation.state = ContractNegotiationState.AGREED;
-    await this.negotiationDetailRepository.save(negotiation);
+    await this.negotiationDetailRepository.save({
+      ...negotiation,
+      agreementDao: agreementDao,
+    });
     this.dspGateway.sendUpdateToClients("negotiation:update", "updated");
     return {
       status: "OK",
@@ -675,6 +699,7 @@ export class NegotiationService {
       negotiation,
       ContractNegotiationState.VERIFIED
     );
+    let agreement: AgreementDto | undefined;
     if (
       contractAgreementVerificationMessage.hashedMessage["dspace:algorithm"] ===
       "JsonWebSignature2020"
@@ -683,8 +708,8 @@ export class NegotiationService {
         const signature = JSON.parse(
           contractAgreementVerificationMessage.hashedMessage["dspace:digest"]
         );
-        const agreement = await negotiation.agreement?.serialize();
-        this.authService.requestSignatureValidation({
+        agreement = await negotiation.agreement?.serialize();
+        await this.authService.requestSignatureValidation({
           ...agreement,
           proof: signature,
         });
@@ -730,22 +755,20 @@ export class NegotiationService {
       digest = this.createHash(JSON.stringify(agreement));
       algorithm = "sha256";
     }
+    const hashedMessage: HashedMessage = {
+      "dspace:algorithm": algorithm,
+      "dspace:digest": digest,
+    };
     negotiation.events.push({
       time: new Date(),
       state: ContractNegotiationState.FINALIZED,
-      hashedMessage: {
-        "dspace:algorithm": algorithm,
-        "dspace:digest": digest,
-      },
+      hashedMessage: hashedMessage,
       type: "local",
     });
     const eventMessage = new ContractNegotiationEventMessage({
       providerPid: negotiation.localId,
       consumerPid: negotiation.remoteId,
-      hashedMessage: {
-        "dspace:algorithm": algorithm,
-        "dspace:digest": digest,
-      },
+      hashedMessage: hashedMessage,
       eventType: NegotiationEvent.FINALIZED,
     });
     await this.dsp.negotiationEvent(
@@ -754,7 +777,17 @@ export class NegotiationService {
       negotiation.remoteParty
     );
     negotiation.state = ContractNegotiationState.FINALIZED;
-    await this.negotiationDetailRepository.save(negotiation);
+    const agreementDao = await this.agreementService.storeAgreement(
+      agreement!,
+      negotiation.localId,
+      hashedMessage,
+      negotiation.events.find((e) => e.type === "remote" && e.hashedMessage)
+        ?.hashedMessage
+    );
+    await this.negotiationDetailRepository.save({
+      ...negotiation,
+      agreementDao: agreementDao,
+    });
     this.dspGateway.sendUpdateToClients("negotiation:update", "updated");
     return {
       status: "OK",

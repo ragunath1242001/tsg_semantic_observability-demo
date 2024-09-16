@@ -9,13 +9,14 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY apps/http-data-plane-api/package.json apps/http-data-plane-api/
 COPY apps/http-data-plane-ui/package.json apps/http-data-plane-ui/
 COPY libs/common-dsp/package.json libs/common-dsp/
+COPY libs/common-dtos/package.json libs/common-dtos/
 COPY libs/common-ui/package.json libs/common-ui/
 COPY libs/http-data-plane-dtos/package.json libs/http-data-plane-dtos/
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
 COPY apps apps
 COPY libs libs 
-RUN pnpm run --filter "./libs/common*" --parallel -r build 
+RUN pnpm run --filter "./libs/common*" -r build 
 RUN pnpm run --filter "./libs/http-data-plane*" --parallel -r build
 RUN pnpm run --filter "./apps/http-data-plane*" --parallel -r build
 RUN pnpm deploy --filter http-data-plane-api --prod /prod/http-data-plane-api

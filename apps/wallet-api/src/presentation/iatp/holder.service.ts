@@ -5,7 +5,7 @@ import {
   Field,
   PresentationDefinition,
   PresentationResponse,
-} from "@tsg-dsp/wallet-dtos";
+} from "@tsg-dsp/common-dtos";
 import { CredentialsService } from "../../credentials/credentials.service.js";
 import { Ajv } from "ajv";
 import jsonpath from "jsonpath";
