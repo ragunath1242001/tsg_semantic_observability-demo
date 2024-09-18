@@ -11,9 +11,18 @@ import {
   TransferSuspensionMessage,
   TransferTerminationMessage,
 } from "./messages";
-import { TransferCompletionMessageDto, TransferErrorDto, TransferState, TransferProcessDto, TransferRequestMessageDto, TransferStartMessageDto, TransferSuspensionMessageDto, TransferTerminationMessageDto } from "./messages.dto";
+import {
+  TransferCompletionMessageDto,
+  TransferErrorDto,
+  TransferState,
+  TransferProcessDto,
+  TransferRequestMessageDto,
+  TransferStartMessageDto,
+  TransferSuspensionMessageDto,
+  TransferTerminationMessageDto,
+} from "./messages.dto";
 
-import {expect, test} from '@jest/globals';
+import { expect, test } from "@jest/globals";
 
 test("Transfer Completion Message", async () => {
   const transferCompletionMessage = new TransferCompletionMessage({
@@ -22,7 +31,7 @@ test("Transfer Completion Message", async () => {
   });
   const serialized = await transferCompletionMessage.serialize();
   const expected: TransferCompletionMessageDto = {
-    "@context": "https://w3id.org/dspace/v0.8/context.json",
+    "@context": "https://w3id.org/dspace/2024/1/context.json",
     "@type": "dspace:TransferCompletionMessage",
     "dspace:providerPid": "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
     "dspace:consumerPid": "urn:uuid:89442cfb-4d96-48fa-80d1-d7cf93bd34a3",
@@ -41,7 +50,7 @@ test("Transfer Error", async () => {
   });
   const serialized = await transferError.serialize();
   const expected: TransferErrorDto = {
-    "@context": "https://w3id.org/dspace/v0.8/context.json",
+    "@context": "https://w3id.org/dspace/2024/1/context.json",
     "@type": "dspace:TransferError",
     "dspace:providerPid": "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
     "dspace:consumerPid": "urn:uuid:89442cfb-4d96-48fa-80d1-d7cf93bd34a3",
@@ -67,7 +76,7 @@ test("Transfer Process", async () => {
   });
   const serialized = await transferProcess.serialize();
   const expected: TransferProcessDto = {
-    "@context": "https://w3id.org/dspace/v0.8/context.json",
+    "@context": "https://w3id.org/dspace/2024/1/context.json",
     "@type": "dspace:TransferProcess",
     "dspace:providerPid": "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
     "dspace:consumerPid": "urn:uuid:89442cfb-4d96-48fa-80d1-d7cf93bd34a3",
@@ -98,7 +107,7 @@ test("Transfer Request Message", async () => {
   });
   const serialized = await transferRequestMessage.serialize();
   const expected: TransferRequestMessageDto = {
-    "@context": "https://w3id.org/dspace/v0.8/context.json",
+    "@context": "https://w3id.org/dspace/2024/1/context.json",
     "@type": "dspace:TransferRequestMessage",
     "dspace:consumerPid": "urn:uuid:89442cfb-4d96-48fa-80d1-d7cf93bd34a3",
     "dspace:agreementId": "urn:uuid:1246a1af-6e5f-4c05-86e2-6d8624efeeb3",
@@ -139,7 +148,7 @@ test("Transfer Start Message", async () => {
   });
   const serialized = await transferStartMessage.serialize();
   const expected: TransferStartMessageDto = {
-    "@context": "https://w3id.org/dspace/v0.8/context.json",
+    "@context": "https://w3id.org/dspace/2024/1/context.json",
     "@type": "dspace:TransferStartMessage",
     "dspace:providerPid": "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
     "dspace:consumerPid": "urn:uuid:89442cfb-4d96-48fa-80d1-d7cf93bd34a3",
@@ -169,7 +178,7 @@ test("Transfer Suspension Message", async () => {
   });
   const serialized = await transferSuspensionMessage.serialize();
   const expected: TransferSuspensionMessageDto = {
-    "@context": "https://w3id.org/dspace/v0.8/context.json",
+    "@context": "https://w3id.org/dspace/2024/1/context.json",
     "@type": "dspace:TransferSuspensionMessage",
     "dspace:providerPid": "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
     "dspace:consumerPid": "urn:uuid:89442cfb-4d96-48fa-80d1-d7cf93bd34a3",
@@ -194,7 +203,7 @@ test("Transfer Termination Message", async () => {
   });
   const serialized = await transferTerminationMessage.serialize();
   const expected: TransferTerminationMessageDto = {
-    "@context": "https://w3id.org/dspace/v0.8/context.json",
+    "@context": "https://w3id.org/dspace/2024/1/context.json",
     "@type": "dspace:TransferTerminationMessage",
     "dspace:providerPid": "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
     "dspace:consumerPid": "urn:uuid:89442cfb-4d96-48fa-80d1-d7cf93bd34a3",

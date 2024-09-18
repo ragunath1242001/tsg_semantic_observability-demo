@@ -241,7 +241,7 @@ describe("NegotiationController", () => {
         "did:web:localhost"
       );
       expect(result).toStrictEqual({
-        "@context": "https://w3id.org/dspace/v0.8/context.json",
+        "@context": "https://w3id.org/dspace/2024/1/context.json",
         "@id": expect.stringContaining("urn:uuid:"),
         "@type": "dspace:ContractNegotiation",
         "dspace:state": "dspace:REQUESTED",
@@ -258,7 +258,7 @@ describe("NegotiationController", () => {
         "did:web:localhost"
       );
       expect(result).toStrictEqual({
-        "@context": "https://w3id.org/dspace/v0.8/context.json",
+        "@context": "https://w3id.org/dspace/2024/1/context.json",
         "@id": expect.stringContaining("urn:uuid:"),
         "@type": "dspace:ContractNegotiation",
         "dspace:state": "dspace:REQUESTED",
@@ -300,7 +300,7 @@ describe("NegotiationController", () => {
         "did:web:localhost"
       );
       expect(result).toStrictEqual({
-        "@context": "https://w3id.org/dspace/v0.8/context.json",
+        "@context": "https://w3id.org/dspace/2024/1/context.json",
         "@id": expect.stringContaining("urn:uuid:"),
         "@type": "dspace:ContractNegotiation",
         "dspace:state": "dspace:REQUESTED",

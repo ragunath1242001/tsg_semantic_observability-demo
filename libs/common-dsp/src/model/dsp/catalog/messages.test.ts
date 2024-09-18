@@ -1,14 +1,19 @@
 import { deserialize } from "../../serialize";
 import { Multilanguage } from "../common";
 import { Catalog } from "./catalog";
-import { CatalogErrorDto, CatalogMessageDto, CatalogRequestMessageDto, DatasetRequestMessageDto } from "./messages.dto";
+import {
+  CatalogErrorDto,
+  CatalogMessageDto,
+  CatalogRequestMessageDto,
+  DatasetRequestMessageDto,
+} from "./messages.dto";
 import {
   CatalogError,
   CatalogMessage,
   CatalogRequestMessage,
   DatasetRequestMessage,
 } from "./messages";
-import {expect, test} from '@jest/globals';
+import { expect, test } from "@jest/globals";
 
 test("Catalog Error", async () => {
   const catalogError = new CatalogError({
@@ -22,7 +27,7 @@ test("Catalog Error", async () => {
   });
   const serialized = await catalogError.serialize();
   const expected: CatalogErrorDto = {
-    "@context": "https://w3id.org/dspace/v0.8/context.json",
+    "@context": "https://w3id.org/dspace/2024/1/context.json",
     "@type": "dspace:CatalogError",
     "dspace:code": "123:A",
     "dspace:reason": [
@@ -47,7 +52,7 @@ test("Catalog Message", async () => {
   });
   const serialized = await catalogMessage.serialize();
   const expected: CatalogMessageDto = {
-    "@context": "https://w3id.org/dspace/v0.8/context.json",
+    "@context": "https://w3id.org/dspace/2024/1/context.json",
     "@type": "dspace:CatalogMessage",
     "dspace:catalog": [
       {
@@ -72,7 +77,7 @@ test("Catalog Request Message", async () => {
   });
   const serialized = await catalogRequestMessage.serialize();
   const expected: CatalogRequestMessageDto = {
-    "@context": "https://w3id.org/dspace/v0.8/context.json",
+    "@context": "https://w3id.org/dspace/2024/1/context.json",
     "@type": "dspace:CatalogRequestMessage",
     "dspace:filter": [
       {
@@ -92,7 +97,7 @@ test("Dataset Request Message", async () => {
   });
   const serialized = await datasetRequestMessage.serialize();
   const expected: DatasetRequestMessageDto = {
-    "@context": "https://w3id.org/dspace/v0.8/context.json",
+    "@context": "https://w3id.org/dspace/2024/1/context.json",
     "@type": "dspace:DatasetRequestMessage",
     "dspace:dataset": "urn:uuid:5b156cfa-5800-4345-8acc-6725c7eb5bc2",
   };

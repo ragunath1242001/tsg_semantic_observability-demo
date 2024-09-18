@@ -7,7 +7,7 @@ export interface ResourceDto extends ContextDto, ReferenceDto {
   "dcat:keyword"?: Array<string>;
   "dcat:landingPage"?: ReferenceDto;
   "dcat:theme"?: Array<ReferenceDto>;
-  "dcat:conformsTo"?: string;
+  "dct:conformsTo"?: string[];
   "dct:creator"?: string;
   "dct:description"?: Array<MultilanguageDto | string>;
   "dct:identifier"?: string;
@@ -38,15 +38,15 @@ export interface DataServiceDto extends Omit<ResourceDto, "@type"> {
 export interface DistributionDto extends ReferenceDto {
   "@type": "dcat:Distribution";
   "dcat:accessService"?: Array<DataServiceDto>;
-  "dcat:accessURL"?: ReferenceDto;
+  "dcat:accessURL"?: string;
   "dcat:byteSize"?: string;
-  "dcat:compressFormat"?: ReferenceDto;
-  "dcat:downloadURL"?: ReferenceDto;
-  "dcat:mediaType"?: ReferenceDto;
-  "dcat:packageFormat"?: ReferenceDto;
+  "dcat:compressFormat"?: string;
+  "dcat:downloadURL"?: string;
+  "dcat:mediaType"?: string;
+  "dcat:packageFormat"?: string;
   "dcat:spatialResolutionInMeters"?: string;
   "dcat:temporalResolution"?: string;
-  "dct:conformsTo"?: ReferenceDto;
+  "dct:conformsTo"?: string[];
   "dct:description"?: Array<MultilanguageDto | string>;
   "dct:format"?: string;
   "dct:issued"?: string;
@@ -63,12 +63,17 @@ export interface DatasetDto extends Omit<ResourceDto, "@type"> {
   "dct:accrualPeriodicity"?: ReferenceDto;
   "dct:spatial"?: ReferenceDto;
   "dct:temporal"?: ReferenceDto;
-  "prov:wasGeneratedBy"?: ReferenceDto;
+  "prov:wasGeneratedBy"?: any;
+  "healthdcatap:hasCodingSystem"?: string[];
+  "healthdcatap:numberOfRecords"?: number;
+  "healthdcatap:numberOfUniqueIndividuals"?: number;
+  "healthdcatap:healthTheme"?: string[];
+  "adms:sample"?: DistributionDto;
 }
 
 export interface CatalogRecordDto extends ReferenceDto {
   "@type": "dcat:CatalogRecord";
-  "dct:conformsTo"?: ReferenceDto;
+  "dct:conformsTo"?: string[];
   "dct:description"?: Array<MultilanguageDto | string>;
   "dct:issued"?: Date;
   "dct:modified"?: Date;

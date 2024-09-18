@@ -161,7 +161,7 @@ describe("Negotiation Service (Consumer)", () => {
         "http://remoteparty.test/negotiation/request",
         async (ctx) => {
           return HttpResponse.json<ContractNegotiationDto>({
-            "@context": "https://w3id.org/dspace/v0.8/context.json",
+            "@context": "https://w3id.org/dspace/2024/1/context.json",
             "@id": remoteProcessId,
             "@type": "dspace:ContractNegotiation",
             "dspace:consumerPid": (await ctx.request.json())[
@@ -176,7 +176,7 @@ describe("Negotiation Service (Consumer)", () => {
         `http://remoteparty.test/negotiation/${remoteProcessId}/request`,
         async (ctx) => {
           return HttpResponse.json<ContractNegotiationDto>({
-            "@context": "https://w3id.org/dspace/v0.8/context.json",
+            "@context": "https://w3id.org/dspace/2024/1/context.json",
             "@id": remoteProcessId,
             "@type": "dspace:ContractNegotiation",
             "dspace:consumerPid": (await ctx.request.json())[

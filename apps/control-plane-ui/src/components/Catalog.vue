@@ -110,7 +110,7 @@ const calculateIconClass = (index: number) => {
 const createPolicy = (policy: PolicyDto): string => {
   const offer = {
     ...policy,
-    "@context": "https://w3id.org/dspace/v0.8/context.json",
+    "@context": "https://w3id.org/dspace/2024/1/context.json",
     "@type": "odrl:Offer",
     "@id": `urn:uuid:${crypto.randomUUID()}`,
     "odrl:assigner": catalog.value['dct:publisher'],

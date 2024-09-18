@@ -8,8 +8,17 @@ import {
   ValidationError,
   validateSync,
 } from "class-validator";
-import { ContextDto, ReferenceDto, MultilanguageDto, TimeDto, DecimalDto, DurationDto, URIDto } from "./common.dto";
+import {
+  ContextDto,
+  ReferenceDto,
+  MultilanguageDto,
+  TimeDto,
+  DecimalDto,
+  DurationDto,
+  URIDto,
+} from "./common.dto";
 import { v4 as uuid } from "uuid";
+// import { Transform } from "class-transformer";
 
 export class ClassValidationError extends Error {
   errors: ValidationError[];
@@ -18,7 +27,6 @@ export class ClassValidationError extends Error {
     this.errors = errors;
   }
 }
-
 
 export class SerializableClass<OutType extends ContextDto> {
   validate() {
@@ -65,11 +73,12 @@ export class Multilanguage extends SerializableClass<
   MultilanguageDto & ContextDto
 > {
   @RdfValue()
+  // @Transform(({ obj }) => (typeof obj === "string" ? obj : obj.value))
   @IsNotEmpty()
   value: string;
   @RdfLanguage()
-  @IsNotEmpty()
-  language: string;
+  // @IsNotEmpty()
+  language: string = "en";
 
   constructor(value: IMultilanguage | string) {
     super();

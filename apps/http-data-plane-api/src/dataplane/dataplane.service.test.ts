@@ -83,7 +83,7 @@ describe("Dataplane Service", () => {
         `${config.controlPlane.managementEndpoint}/agreements/:agreementId`,
         () => {
           return HttpResponse.json<AgreementDto>({
-            "@context": "https://w3id.org/dspace/v0.8/context.json",
+            "@context": "https://w3id.org/dspace/2024/1/context.json",
             "@type": "odrl:Agreement",
             "@id": "urn:uuid:test",
             "odrl:assigner": "did:web:localhost",
@@ -107,7 +107,7 @@ describe("Dataplane Service", () => {
         `${config.controlPlane.managementEndpoint}/catalog/dataset`,
         () => {
           return HttpResponse.json<DatasetDto>({
-            "@context": "https://w3id.org/dspace/v0.8/context.json",
+            "@context": "https://w3id.org/dspace/2024/1/context.json",
             "@type": "dcat:Dataset",
             "@id": "urn:uuid:test",
           });
@@ -603,7 +603,7 @@ describe("Dataplane Service", () => {
         policy: {
           type: "manual",
           raw: {
-            "@context": "https://w3id.org/dspace/v0.8/context.json",
+            "@context": "https://w3id.org/dspace/2024/1/context.json",
             "@type": "odrl:Offer",
             "@id": "urn:uuid:65d23eb8-6536-42ff-b292-78ab2a991f66",
             "odrl:assigner": "did:web:...",

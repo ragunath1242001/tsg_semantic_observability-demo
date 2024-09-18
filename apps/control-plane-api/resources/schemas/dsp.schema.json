@@ -59,7 +59,7 @@
     "AgreementDto": {
       "properties": {
         "@context": {
-          "const": "https://w3id.org/dspace/v0.8/context.json",
+          "const": "https://w3id.org/dspace/2024/1/context.json",
           "type": "string"
         },
         "@id": {
@@ -111,7 +111,7 @@
     "CatalogDto": {
       "properties": {
         "@context": {
-          "const": "https://w3id.org/dspace/v0.8/context.json",
+          "const": "https://w3id.org/dspace/2024/1/context.json",
           "type": "string"
         },
         "@id": {
@@ -258,7 +258,7 @@
     "CatalogErrorDto": {
       "properties": {
         "@context": {
-          "const": "https://w3id.org/dspace/v0.8/context.json",
+          "const": "https://w3id.org/dspace/2024/1/context.json",
           "type": "string"
         },
         "@type": {
@@ -287,7 +287,7 @@
     "CatalogMessageDto": {
       "properties": {
         "@context": {
-          "const": "https://w3id.org/dspace/v0.8/context.json",
+          "const": "https://w3id.org/dspace/2024/1/context.json",
           "type": "string"
         },
         "@type": {
@@ -348,7 +348,7 @@
     "CatalogRequestMessageDto": {
       "properties": {
         "@context": {
-          "const": "https://w3id.org/dspace/v0.8/context.json",
+          "const": "https://w3id.org/dspace/2024/1/context.json",
           "type": "string"
         },
         "@type": {
@@ -388,7 +388,7 @@
     "ContractAgreementMessageDto": {
       "properties": {
         "@context": {
-          "const": "https://w3id.org/dspace/v0.8/context.json",
+          "const": "https://w3id.org/dspace/2024/1/context.json",
           "type": "string"
         },
         "@type": {
@@ -407,7 +407,7 @@
     "ContractAgreementVerificationMessageDto": {
       "properties": {
         "@context": {
-          "const": "https://w3id.org/dspace/v0.8/context.json",
+          "const": "https://w3id.org/dspace/2024/1/context.json",
           "type": "string"
         },
         "@type": {
@@ -435,7 +435,7 @@
     "ContractNegotiationDto": {
       "properties": {
         "@context": {
-          "const": "https://w3id.org/dspace/v0.8/context.json",
+          "const": "https://w3id.org/dspace/2024/1/context.json",
           "type": "string"
         },
         "@id": {
@@ -457,7 +457,7 @@
     "ContractNegotiationErrorDto": {
       "properties": {
         "@context": {
-          "const": "https://w3id.org/dspace/v0.8/context.json",
+          "const": "https://w3id.org/dspace/2024/1/context.json",
           "type": "string"
         },
         "@type": {
@@ -492,7 +492,7 @@
     "ContractNegotiationEventMessageDto": {
       "properties": {
         "@context": {
-          "const": "https://w3id.org/dspace/v0.8/context.json",
+          "const": "https://w3id.org/dspace/2024/1/context.json",
           "type": "string"
         },
         "@type": {
@@ -523,7 +523,7 @@
     "ContractNegotiationTerminationMessageDto": {
       "properties": {
         "@context": {
-          "const": "https://w3id.org/dspace/v0.8/context.json",
+          "const": "https://w3id.org/dspace/2024/1/context.json",
           "type": "string"
         },
         "@type": {
@@ -555,7 +555,7 @@
     "ContractOfferMessageDto": {
       "properties": {
         "@context": {
-          "const": "https://w3id.org/dspace/v0.8/context.json",
+          "const": "https://w3id.org/dspace/2024/1/context.json",
           "type": "string"
         },
         "@type": {
@@ -577,7 +577,7 @@
     "ContractRequestMessageDto": {
       "properties": {
         "@context": {
-          "const": "https://w3id.org/dspace/v0.8/context.json",
+          "const": "https://w3id.org/dspace/2024/1/context.json",
           "type": "string"
         },
         "@type": {
@@ -599,7 +599,7 @@
     "DataAddressDto": {
       "properties": {
         "@context": {
-          "const": "https://w3id.org/dspace/v0.8/context.json",
+          "const": "https://w3id.org/dspace/2024/1/context.json",
           "type": "string"
         },
         "@type": {
@@ -624,7 +624,7 @@
     "DataServiceDto": {
       "properties": {
         "@context": {
-          "const": "https://w3id.org/dspace/v0.8/context.json",
+          "const": "https://w3id.org/dspace/2024/1/context.json",
           "type": "string"
         },
         "@id": {
@@ -732,7 +732,7 @@
     "DatasetDto": {
       "properties": {
         "@context": {
-          "const": "https://w3id.org/dspace/v0.8/context.json",
+          "const": "https://w3id.org/dspace/2024/1/context.json",
           "type": "string"
         },
         "@id": {
@@ -852,7 +852,7 @@
     "DatasetRequestMessageDto": {
       "properties": {
         "@context": {
-          "const": "https://w3id.org/dspace/v0.8/context.json",
+          "const": "https://w3id.org/dspace/2024/1/context.json",
           "type": "string"
         },
         "@type": {
@@ -995,7 +995,7 @@
     "EndpointPropertyDto": {
       "properties": {
         "@context": {
-          "const": "https://w3id.org/dspace/v0.8/context.json",
+          "const": "https://w3id.org/dspace/2024/1/context.json",
           "type": "string"
         },
         "@type": {
@@ -1080,7 +1080,7 @@
     "OfferDto": {
       "properties": {
         "@context": {
-          "const": "https://w3id.org/dspace/v0.8/context.json",
+          "const": "https://w3id.org/dspace/2024/1/context.json",
           "type": "string"
         },
         "@id": {
@@ -1276,7 +1276,7 @@
     "ResourceDto": {
       "properties": {
         "@context": {
-          "const": "https://w3id.org/dspace/v0.8/context.json",
+          "const": "https://w3id.org/dspace/2024/1/context.json",
           "type": "string"
         },
         "@id": {
@@ -1384,7 +1384,7 @@
     "TransferCompletionMessageDto": {
       "properties": {
         "@context": {
-          "const": "https://w3id.org/dspace/v0.8/context.json",
+          "const": "https://w3id.org/dspace/2024/1/context.json",
           "type": "string"
         },
         "@type": {
@@ -1400,7 +1400,7 @@
     "TransferErrorDto": {
       "properties": {
         "@context": {
-          "const": "https://w3id.org/dspace/v0.8/context.json",
+          "const": "https://w3id.org/dspace/2024/1/context.json",
           "type": "string"
         },
         "@type": {
@@ -1432,7 +1432,7 @@
     "TransferProcessDto": {
       "properties": {
         "@context": {
-          "const": "https://w3id.org/dspace/v0.8/context.json",
+          "const": "https://w3id.org/dspace/2024/1/context.json",
           "type": "string"
         },
         "@type": {
@@ -1451,7 +1451,7 @@
     "TransferRequestMessageDto": {
       "properties": {
         "@context": {
-          "const": "https://w3id.org/dspace/v0.8/context.json",
+          "const": "https://w3id.org/dspace/2024/1/context.json",
           "type": "string"
         },
         "@type": {
@@ -1476,7 +1476,7 @@
     "TransferStartMessageDto": {
       "properties": {
         "@context": {
-          "const": "https://w3id.org/dspace/v0.8/context.json",
+          "const": "https://w3id.org/dspace/2024/1/context.json",
           "type": "string"
         },
         "@type": {
@@ -1505,7 +1505,7 @@
     "TransferSuspensionMessageDto": {
       "properties": {
         "@context": {
-          "const": "https://w3id.org/dspace/v0.8/context.json",
+          "const": "https://w3id.org/dspace/2024/1/context.json",
           "type": "string"
         },
         "@type": {
@@ -1534,7 +1534,7 @@
     "TransferTerminationMessageDto": {
       "properties": {
         "@context": {
-          "const": "https://w3id.org/dspace/v0.8/context.json",
+          "const": "https://w3id.org/dspace/2024/1/context.json",
           "type": "string"
         },
         "@type": {
