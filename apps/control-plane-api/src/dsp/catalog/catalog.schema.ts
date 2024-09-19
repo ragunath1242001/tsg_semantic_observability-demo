@@ -197,24 +197,24 @@ export class DistributionSchema
   "@type": "dcat:Distribution";
   @ApiPropertyOptional({ type: [DataServiceSchema] })
   "dcat:accessService"?: Array<DataServiceDto>;
-  @ApiPropertyOptional({ type: ReferenceSchema })
-  "dcat:accessURL"?: ReferenceDto;
+  @ApiPropertyOptional()
+  "dcat:accessURL"?: string;
   @ApiPropertyOptional()
   "dcat:byteSize"?: string;
-  @ApiPropertyOptional({ type: ReferenceSchema })
-  "dcat:compressFormat"?: ReferenceDto;
-  @ApiPropertyOptional({ type: ReferenceSchema })
-  "dcat:downloadURL"?: ReferenceDto;
-  @ApiPropertyOptional({ type: ReferenceSchema })
-  "dcat:mediaType"?: ReferenceDto;
-  @ApiPropertyOptional({ type: ReferenceSchema })
-  "dcat:packageFormat"?: ReferenceDto;
+  @ApiPropertyOptional()
+  "dcat:compressFormat"?: string;
+  @ApiPropertyOptional()
+  "dcat:downloadURL"?: string;
+  @ApiPropertyOptional()
+  "dcat:mediaType"?: string;
+  @ApiPropertyOptional()
+  "dcat:packageFormat"?: string;
   @ApiPropertyOptional()
   "dcat:spatialResolutionInMeters"?: string;
   @ApiPropertyOptional({ type: DurationSchema })
   "dcat:temporalResolution"?: string;
-  @ApiPropertyOptional({ type: ReferenceSchema })
-  "dct:conformsTo"?: ReferenceDto;
+  @ApiPropertyOptional()
+  "dct:conformsTo"?: string[];
   @ApiPropertyOptional({ type: [MultilanguageSchema] })
   "dct:description"?: Array<MultilanguageDto>;
   @ApiPropertyOptional()
@@ -235,8 +235,8 @@ export class CatalogRecordSchema
 {
   @ApiProperty()
   "@type": "dcat:CatalogRecord";
-  @ApiPropertyOptional({ type: ReferenceSchema })
-  "dct:conformsTo"?: ReferenceDto;
+  @ApiPropertyOptional()
+  "dct:conformsTo"?: string[];
   @ApiPropertyOptional({ type: [MultilanguageSchema] })
   "dct:description"?: Array<MultilanguageDto>;
   @ApiPropertyOptional()

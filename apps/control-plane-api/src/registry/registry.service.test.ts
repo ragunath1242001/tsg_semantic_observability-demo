@@ -111,7 +111,7 @@ describe("RegistryService", () => {
       }),
       http.post("http://localhost/catalog/request", () => {
         return HttpResponse.json({
-          "@context": "https://w3id.org/dspace/v0.8/context.json",
+          "@context": "https://w3id.org/dspace/2024/1/context.json",
           "@type": "dcat:Catalog",
           "@id": "urn:uuid:a0920ac1-d08e-4ee1-acde-6dd0432b84e4",
           "dct:creator": "did:web:localhost",

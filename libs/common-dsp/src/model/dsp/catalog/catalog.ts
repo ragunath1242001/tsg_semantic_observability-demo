@@ -1,4 +1,10 @@
-import { IsDate, IsOptional, IsString, ValidateNested } from "class-validator";
+import {
+  IsDate,
+  IsNumber,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from "class-validator";
 import {
   createOptionalInstance,
   createOptionalInstances,
@@ -14,16 +20,24 @@ import {
 } from "../common";
 import { ContextDto } from "../common.dto";
 import { Offer, Policy } from "../negotiation/negotiation";
-import { CatalogDto, CatalogRecordDto, DataServiceDto, DatasetDto, DistributionDto, ResourceDto } from "./catalog.dto";
+import {
+  CatalogDto,
+  CatalogRecordDto,
+  DataServiceDto,
+  DatasetDto,
+  DistributionDto,
+  ResourceDto,
+} from "./catalog.dto";
+import { Transform, Type } from "class-transformer";
 
 export interface IResource extends IReference {
   contactPoint?: Reference;
   keyword?: Array<string>;
   landingPage?: Reference;
   theme?: Array<Reference>;
-  conformsTo?: string;
+  conformsTo?: string[];
   creator?: string;
-  description?: Array<Multilanguage>;
+  description?: Array<string>;
   identifier?: string;
   isReferencedBy?: Reference;
   issued?: Time;
@@ -61,16 +75,17 @@ export class Resource<
   @ValidateNested()
   @IsOptional()
   theme?: Array<Reference>;
-  @Namespace("dcat")
+  @Namespace("dct")
+  @IsString({ each: true })
   @IsOptional()
-  conformsTo?: string;
+  conformsTo?: string[];
   @Namespace("dct")
   @IsOptional()
   creator?: string;
   @Namespace("dct")
-  @ValidateNested()
+  @IsString({ each: true })
   @IsOptional()
-  description?: Array<Multilanguage>;
+  description?: Array<string>;
   @Namespace("dct")
   identifier?: string;
   @Namespace("dct")
@@ -181,15 +196,15 @@ export class DataService extends Resource<DataServiceDto> {
 
 export interface IDistribution extends IReference {
   accessService?: Array<DataService>;
-  accessURL?: Reference;
+  accessURL?: string;
   byteSize?: Decimal;
-  compressFormat?: Reference;
-  downloadURL?: Reference;
-  mediaType?: Reference;
-  packageFormat?: Reference;
+  compressFormat?: string;
+  downloadURL?: string;
+  mediaType?: string;
+  packageFormat?: string;
   spatialResolutionInMeters?: Decimal;
   temporalResolution?: Duration;
-  conformsTo?: Reference;
+  conformsTo?: string[];
   description?: Array<Multilanguage>;
   format?: string;
   issued?: Time;
@@ -205,29 +220,29 @@ export class Distribution extends Reference<DistributionDto & ContextDto> {
   @IsOptional()
   accessService?: Array<DataService>;
   @Namespace("dcat")
-  @ValidateNested()
+  @IsString()
   @IsOptional()
-  accessURL?: Reference;
+  accessURL?: string;
   @Namespace("dcat")
   @ValidateNested()
   @IsOptional()
   byteSize?: Decimal;
   @Namespace("dcat")
-  @ValidateNested()
+  @IsString()
   @IsOptional()
-  compressFormat?: Reference;
+  compressFormat?: string;
   @Namespace("dcat")
-  @ValidateNested()
+  @IsString()
   @IsOptional()
-  downloadURL?: Reference;
+  downloadURL?: string;
   @Namespace("dcat")
-  @ValidateNested()
+  @IsString()
   @IsOptional()
-  mediaType?: Reference;
+  mediaType?: string;
   @Namespace("dcat")
-  @ValidateNested()
+  @IsString()
   @IsOptional()
-  packageFormat?: Reference;
+  packageFormat?: string;
   @Namespace("dcat")
   @ValidateNested()
   @IsOptional()
@@ -237,9 +252,9 @@ export class Distribution extends Reference<DistributionDto & ContextDto> {
   @IsOptional()
   temporalResolution?: Duration;
   @Namespace("dct")
-  @ValidateNested()
+  @IsString({ each: true })
   @IsOptional()
-  conformsTo?: Reference;
+  conformsTo?: string[];
   @Namespace("dct")
   @ValidateNested()
   @IsOptional()
@@ -295,7 +310,12 @@ export interface IDataset extends IResource {
   accrualPeriodicity?: Reference;
   spatial?: Reference;
   temporal?: Reference;
-  wasGeneratedBy?: Reference;
+  wasGeneratedBy?: any;
+  hasCodingSystem?: string[];
+  numberOfRecords?: number;
+  numberOfUniqueIndividuals?: number;
+  healthTheme?: string[];
+  sample?: Distribution;
 }
 
 @Serializable("dcat:Dataset")
@@ -327,9 +347,27 @@ export class Dataset<
   @IsOptional()
   temporal?: Reference;
   @Namespace("prov")
-  @ValidateNested()
   @IsOptional()
-  wasGeneratedBy?: Reference;
+  wasGeneratedBy?: any;
+  @Namespace("healthdcatap")
+  @IsString({ each: true })
+  @IsOptional()
+  hasCodingSystem?: string[];
+  @Namespace("healthdcatap")
+  @IsNumber()
+  @IsOptional()
+  numberOfRecords?: number;
+  @Namespace("healthdcatap")
+  @IsNumber()
+  @IsOptional()
+  numberOfUniqueIndividuals?: number;
+  @Namespace("healthdcatap")
+  @IsString({ each: true })
+  @IsOptional()
+  healthTheme?: string[];
+  @Namespace("adms")
+  @IsOptional()
+  sample?: Distribution;
 
   constructor(value: IDataset) {
     super(value);
@@ -343,11 +381,16 @@ export class Dataset<
     this.spatial = value.spatial;
     this.temporal = value.temporal;
     this.wasGeneratedBy = value.wasGeneratedBy;
+    this.hasCodingSystem = value.hasCodingSystem;
+    this.numberOfRecords = value.numberOfRecords;
+    this.numberOfUniqueIndividuals = value.numberOfUniqueIndividuals;
+    this.healthTheme = value.healthTheme;
+    this.sample = createOptionalInstance(value.sample, Distribution);
   }
 }
 
 export interface ICatalogRecord extends IReference {
-  conformsTo?: Reference;
+  conformsTo?: string[];
   description?: Array<Multilanguage>;
   issued?: Date;
   modified?: Date;
@@ -358,9 +401,9 @@ export interface ICatalogRecord extends IReference {
 @Serializable("dcat:CatalogRecord")
 export class CatalogRecord extends Reference<CatalogRecordDto & ContextDto> {
   @Namespace("dct")
-  @ValidateNested()
+  @IsString({ each: true })
   @IsOptional()
-  conformsTo?: Reference;
+  conformsTo?: string[];
   @Namespace("dct")
   @ValidateNested()
   @IsOptional()

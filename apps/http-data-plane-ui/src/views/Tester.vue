@@ -341,7 +341,7 @@ onMounted(async () => {
                     distribution["dct:title"]
                   }}</FormField>
                   <FormField label="Spec" v-if="distribution['dct:conformsTo']">
-                    {{ distribution["dct:conformsTo"]["@id"] }}</FormField
+                    {{ distribution["dct:conformsTo"][0] }}</FormField
                   >
                   <hr />
                 </template>

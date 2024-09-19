@@ -98,7 +98,7 @@ describe("TransferController", () => {
         async (ctx) => {
           const reqBody = await ctx.request.json();
           return HttpResponse.json<TransferProcessDto>({
-            "@context": "https://w3id.org/dspace/v0.8/context.json",
+            "@context": "https://w3id.org/dspace/2024/1/context.json",
             "@type": "dspace:TransferProcess",
             "dspace:consumerPid": reqBody["dspace:consumerPid"],
             "dspace:providerPid": remoteProcessId,
@@ -112,7 +112,7 @@ describe("TransferController", () => {
         async (ctx) => {
           const reqBody = await ctx.request.json();
           return HttpResponse.json<TransferProcessDto>({
-            "@context": "https://w3id.org/dspace/v0.8/context.json",
+            "@context": "https://w3id.org/dspace/2024/1/context.json",
             "@type": "dspace:TransferProcess",
             "dspace:consumerPid": reqBody["dspace:consumerPid"],
             "dspace:providerPid": remoteProcessId,
@@ -318,7 +318,7 @@ describe("TransferController", () => {
         { "@context": [], type: [], verifiableCredential: [] }
       );
       expect(result).toStrictEqual({
-        "@context": "https://w3id.org/dspace/v0.8/context.json",
+        "@context": "https://w3id.org/dspace/2024/1/context.json",
         "@type": "dspace:TransferProcess",
         "dspace:consumerPid": "urn:uuid:9b17c898-5cce-49f9-944b-20488ef55776",
         "dspace:providerPid": expect.stringContaining("urn:uuid:"),
@@ -335,7 +335,7 @@ describe("TransferController", () => {
         "did:web:localhost"
       );
       expect(result).toStrictEqual({
-        "@context": "https://w3id.org/dspace/v0.8/context.json",
+        "@context": "https://w3id.org/dspace/2024/1/context.json",
         "@type": "dspace:TransferProcess",
         "dspace:consumerPid": expect.stringContaining("urn:uuid:"),
         "dspace:providerPid": transferProviderUuid,
