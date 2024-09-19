@@ -2,11 +2,11 @@ import { serializableTypes } from "./decorators";
 import { ClassValidationError } from "./dsp/common";
 import { TransferCompletionMessage } from "./dsp/transfer/messages";
 import { deserialize } from "./serialize";
-import {expect, test} from '@jest/globals';
+import { expect, test } from "@jest/globals";
 
 test("Validation", async () => {
   const jsonLd = {
-    "@context": "https://w3id.org/dspace/v0.8/context.json",
+    "@context": "https://w3id.org/dspace/2024/1/context.json",
     "@type": "dspace:TransferCompletionMessage",
     "dspace:processId": "",
   };

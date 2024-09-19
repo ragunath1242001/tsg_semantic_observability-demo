@@ -110,7 +110,7 @@ const calculateIconClass = (index: number) => {
 const createPolicy = (policy: PolicyDto): string => {
   const offer = {
     ...policy,
-    "@context": "https://w3id.org/dspace/v0.8/context.json",
+    "@context": "https://w3id.org/dspace/2024/1/context.json",
     "@type": "odrl:Offer",
     "@id": `urn:uuid:${crypto.randomUUID()}`,
     "odrl:assigner": catalog.value['dct:publisher'],
@@ -185,13 +185,13 @@ const createPolicy = (policy: PolicyDto): string => {
             <span class="font-semibold">
               Policies: {{ dataset["odrl:hasPolicy"]?.length ?? 0 }}
             </span>
-            <template v-if="dataset['dcat:conformsTo']">
+            <template v-if="dataset['dct:conformsTo']">
               <div class="pt-4 pb-1 font-semibold">
                 Conforms To:
-                <a :href="dataset['dcat:conformsTo']" target="_blank">
+                <a v-for="conformsTo in dataset['dct:conformsTo']" :href="conformsTo" target="_blank" class="mr-2">
                   <i
                     class="mx-1 pi pi-link text-blue-500"
-                    v-tooltip:bottom="dataset['dcat:conformsTo']"
+                    v-tooltip.bottom="conformsTo"
                   >
                   </i>
                 </a>

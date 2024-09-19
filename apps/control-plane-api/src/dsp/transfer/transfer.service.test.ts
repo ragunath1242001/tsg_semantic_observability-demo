@@ -261,7 +261,7 @@ describe("Transfer service", () => {
         async (ctx) => {
           const reqBody = await ctx.request.json();
           return HttpResponse.json<TransferProcessDto>({
-            "@context": "https://w3id.org/dspace/v0.8/context.json",
+            "@context": "https://w3id.org/dspace/2024/1/context.json",
             "@type": "dspace:TransferProcess",
             "dspace:consumerPid": reqBody["dspace:consumerPid"],
             "dspace:providerPid": remoteProcessId,

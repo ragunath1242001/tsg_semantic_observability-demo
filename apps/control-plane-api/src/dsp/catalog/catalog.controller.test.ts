@@ -55,11 +55,7 @@ const catalog = new Catalog({
   id: "urn:uuid:84f5328f-1d89-4f98-98b1-57b5600c8085",
   title: "Connector Catalog",
   publisher: "urn:connector:provider",
-  description: [
-    new Multilanguage(
-      "Catalog of datasets and services of this connector instance"
-    ),
-  ],
+  description: ["Catalog of datasets and services of this connector instance"],
   service: [
     new DataService({
       id: "urn:uuid:0d5f0685-eb04-409a-8a77-ee4ed207f2f0",

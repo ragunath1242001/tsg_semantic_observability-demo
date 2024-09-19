@@ -277,7 +277,9 @@ export class DataPlaneService {
     const baseDataset = new Dataset({
       id: id,
       title: datasetConfig.title,
-      conformsTo: datasetConfig.conformsTo,
+      conformsTo: datasetConfig.conformsTo
+        ? [datasetConfig.conformsTo]
+        : undefined,
       hasVersion: datasetConfig.versions.map(
         (v) => new Reference(`${id}:${v.version}`),
       ),
@@ -290,7 +292,7 @@ export class DataPlaneService {
           format: "dspace:HTTP",
           title: datasetConfig.title,
           conformsTo: datasetConfig.versions[0].openApiSpec
-            ? new Reference(datasetConfig.versions[0].openApiSpec)
+            ? [datasetConfig.versions[0].openApiSpec]
             : undefined,
           accessService: [
             new DataService({
@@ -320,15 +322,13 @@ export class DataPlaneService {
           previousVersion: v.previous
             ? new Reference(`${id}:${v.previous.version}`)
             : undefined,
-          conformsTo: v.openApiSpec,
+          conformsTo: v.openApiSpec ? [v.openApiSpec] : undefined,
           distribution: [
             new Distribution({
               id: `${id}:${v.version}:http`,
               format: "dspace:HTTP",
               title: datasetConfig.title,
-              conformsTo: v.openApiSpec
-                ? new Reference(v.openApiSpec)
-                : undefined,
+              conformsTo: v.openApiSpec ? [v.openApiSpec] : undefined,
               accessService: [
                 new DataService({
                   endpointURL:

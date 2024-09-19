@@ -41,7 +41,7 @@ export class AgreementService {
       return agreement.agreement;
     } else {
       const a = await deserialize<Agreement>({
-        "@context": "https://w3id.org/dspace/v0.8/context.json",
+        "@context": "https://w3id.org/dspace/2024/1/context.json",
         ...agreement.agreement,
       });
       return a;

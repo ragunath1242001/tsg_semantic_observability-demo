@@ -208,7 +208,7 @@ export class NegotiationService {
         ...negotiation,
         agreement: negotiation.agreementDao
           ? await deserialize<Agreement>({
-              "@context": "https://w3id.org/dspace/v0.8/context.json",
+              "@context": "https://w3id.org/dspace/2024/1/context.json",
               ...negotiation.agreementDao?.agreement,
             })
           : undefined,

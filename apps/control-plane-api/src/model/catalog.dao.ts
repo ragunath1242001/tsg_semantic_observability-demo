@@ -38,18 +38,18 @@ export class ResourceDao extends MetaEntity implements IResource {
   id!: string;
   @Column("simple-json", { nullable: true })
   contactPoint?: Reference;
-  @Column("simple-array", { nullable: true })
+  @Column("simple-json", { nullable: true })
   keyword?: Array<string>;
   @Column("simple-json", { nullable: true })
   landingPage?: Reference;
   @Column("simple-json", { nullable: true })
   theme?: Array<Reference>;
-  @Column({ nullable: true })
-  conformsTo?: string;
+  @Column("simple-json", { nullable: true })
+  conformsTo?: Array<string>;
   @Column({ nullable: true })
   creator?: string;
   @Column("simple-json", { nullable: true })
-  description?: Array<Multilanguage>;
+  description?: Array<string>;
   @Column({ nullable: true })
   identifier?: string;
   @Column("simple-json", { nullable: true })
@@ -192,24 +192,24 @@ export class DistributionDao extends MetaEntity implements IDistribution {
   get accessService(): Array<DataService> | undefined {
     return mapToInstances(this._accessService, DataService);
   }
-  @Column("simple-json", { nullable: true })
-  accessURL?: Reference;
+  @Column({ nullable: true })
+  accessURL?: string;
   @Column("simple-json", { nullable: true })
   byteSize?: Decimal;
-  @Column("simple-json", { nullable: true })
-  compressFormat?: Reference;
-  @Column("simple-json", { nullable: true })
-  downloadURL?: Reference;
-  @Column("simple-json", { nullable: true })
-  mediaType?: Reference;
-  @Column("simple-json", { nullable: true })
-  packageFormat?: Reference;
+  @Column({ nullable: true })
+  compressFormat?: string;
+  @Column({ nullable: true })
+  downloadURL?: string;
+  @Column({ nullable: true })
+  mediaType?: string;
+  @Column({ nullable: true })
+  packageFormat?: string;
   @Column("simple-json", { nullable: true })
   spatialResolutionInMeters?: Decimal;
   @Column("simple-json", { nullable: true })
   temporalResolution?: Duration;
   @Column("simple-json", { nullable: true })
-  conformsTo?: Reference;
+  conformsTo?: Array<string>;
   @Column("simple-json", { nullable: true })
   description?: Array<Multilanguage>;
   @Column({ nullable: true })
@@ -255,7 +255,20 @@ export class DatasetDao extends ResourceChild implements IDataset {
   @Column("simple-json", { nullable: true })
   temporal?: Reference;
   @Column("simple-json", { nullable: true })
-  wasGeneratedBy?: Reference;
+  wasGeneratedBy?: any;
+  @Column("simple-json", { nullable: true })
+  hasCodingSystem?: string[];
+  @Column({ nullable: true })
+  numberOfRecords?: number;
+  @Column({ nullable: true })
+  numberOfUniqueIndividuals?: number;
+  @Column("simple-json", { nullable: true })
+  healthTheme?: string[];
+  @ManyToOne(() => DistributionDao, { nullable: true, cascade: true })
+  _sample?: DistributionDao;
+  get sample(): Distribution | undefined {
+    return this._sample ? new Distribution(this._sample) : undefined;
+  }
 }
 
 @Entity({ name: "catalogrecord" })
@@ -265,7 +278,7 @@ export class CatalogRecordDao extends MetaEntity implements ICatalogRecord {
   @ManyToOne(() => CatalogDao, { nullable: true })
   _catalog?: Relation<CatalogDao>;
   @Column("simple-json", { nullable: true })
-  conformsTo?: Reference;
+  conformsTo?: Array<string>;
   @Column("simple-json", { nullable: true })
   description?: Array<Multilanguage>;
   @Column("simple-json", { nullable: true })

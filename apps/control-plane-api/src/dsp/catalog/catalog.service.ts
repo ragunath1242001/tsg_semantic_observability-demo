@@ -6,7 +6,6 @@ import {
   Constraint,
   DataService,
   Dataset,
-  Multilanguage,
   ODRLAction,
   ODRLLeftOperand,
   ODRLOperator,
@@ -97,7 +96,7 @@ export class CatalogService {
           creator: this.initCatalog.creator,
           publisher: this.initCatalog.publisher,
           title: this.initCatalog.title,
-          description: [new Multilanguage(this.initCatalog.description)],
+          description: [this.initCatalog.description],
         })
       );
       const dataset = this.datasetRepository.create({
@@ -108,7 +107,7 @@ export class CatalogService {
       });
       const dservice = new DataService({
         endpointDescription: "dspace:connector",
-        conformsTo: "dspace:connector",
+        conformsTo: ["dspace:connector"],
         endpointURL: `${this.server.publicAddress}`,
       });
       this.dataservicesRepository.create({
