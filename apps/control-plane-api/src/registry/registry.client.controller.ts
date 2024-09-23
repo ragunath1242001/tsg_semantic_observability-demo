@@ -8,6 +8,7 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { CatalogDto } from "@tsg-dsp/common-dsp";
+import { DIDDocument } from "did-resolver";
 import { OAuthGuard } from "../auth/oauth.guard";
 import { Roles } from "../auth/roles.guard";
 import { RegistryClientService } from "./registry.client.service";
@@ -56,6 +57,19 @@ export class RegistryClientController {
   @ApiForbiddenResponseDefault()
   async requestAddresses(): Promise<CredentialAddress[]> {
     return await this.registryClientService.requestAddresses();
+  }
+
+  @Get("didDocuments")
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: "Request DID Documents",
+    description:
+      "Requests all DID Documents that could be retrieved at the Wallet this Control Plane is linked to.",
+  })
+  // TODO Add @ApiOkResponse with link to DIDDocumentDto in did.schema.ts (now in wallet-api/src/did, needs to be moved to common-dtos)
+  @ApiForbiddenResponseDefault()
+  async requestDIDDocuments(): Promise<DIDDocument[]> {
+    return await this.registryService.fetchDidDocuments();
   }
 
   @Get("catalogs")

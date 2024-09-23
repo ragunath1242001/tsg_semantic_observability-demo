@@ -51,7 +51,7 @@ export class RegistryService implements OnApplicationBootstrap {
     }
   }
 
-  private async fetchDidDocuments(): Promise<DIDDocument[]> {
+  async fetchDidDocuments(): Promise<DIDDocument[]> {
     const credentials = await this.authService.walletClient.getCredentials();
     this.logger.debug(
       `Found credentials for ${credentials.map((c) => c.targetDid)}`

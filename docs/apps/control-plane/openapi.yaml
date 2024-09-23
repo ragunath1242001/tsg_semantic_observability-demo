@@ -821,26 +821,6 @@ paths:
                 $ref: "#/components/schemas/NegotiationDetailSchema"
       tags: *a14
       security: *a15
-  /api/management/negotiations/agreement/{agreementId}:
-    get:
-      operationId: NegotiationManagementController_getAgreement
-      summary: Get an agreement by agreement ID
-      parameters:
-        - name: agreementId
-          required: true
-          in: path
-          description: Agreement ID
-          schema:
-            type: string
-      responses:
-        "200":
-          description: ""
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ContractAgreementMessageSchema"
-      tags: *a14
-      security: *a15
   /api/management/negotiations/request:
     post:
       operationId: NegotiationManagementController_requestNewNegotiation
@@ -1034,6 +1014,620 @@ paths:
                   status: string
       tags: *a14
       security: *a15
+  /api/management/agreements/{agreementId}:
+    get:
+      operationId: AgreementManagementController_getAgreement
+      summary: Get an agreement by agreement ID
+      parameters:
+        - name: agreementId
+          required: true
+          in: path
+          description: Agreement ID
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContractAgreementMessageSchema"
+      tags:
+        - Agreement
+      security:
+        - oauth2:
+            - controlplane_admin
+  /api/management/policy/evaluation/{transferId}/lastContext:
+    get:
+      operationId: PolicyEvaluationController_getLastContext
+      summary: Retrieve last evaluation context
+      description: Retrieve last evaluation context of the specified transfer ID.
+      parameters:
+        - name: transferId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EvaluationContext"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      tags: &a16
+        - Evaluation
+      security: &a17
+        - oauth2:
+            - controlplane_admin
+  /api/management/policy/evaluation/{transferId}/lastDecision:
+    get:
+      operationId: PolicyEvaluationController_getLastDecision
+      summary: Retrieve last evaluation decision
+      description: Retrieve last evaluation decision of the specified transfer ID.
+      parameters:
+        - name: transferId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EvaluationDecision"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      tags: *a16
+      security: *a17
+  /api/management/policy/evaluation/{transferId}/evaluate:
+    post:
+      operationId: PolicyEvaluationController_evaluate
+      summary: Retrieve last evaluation context
+      description: Retrieve last evaluation context of the specified transfer ID.
+      parameters:
+        - name: transferId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EvaluationContext"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EvaluationDecision"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      tags: *a16
+      security: *a17
+  /api/management/policy/evaluation/{transferId}/evaluate/data-plane:
+    post:
+      operationId: PolicyEvaluationController_evaluateDataPlane
+      summary: Retrieve last evaluation context
+      description: Retrieve last evaluation context of the specified transfer ID.
+      parameters:
+        - name: transferId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EvaluationDecision"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      tags: *a16
+      security: *a17
+  /api/management/policy/constraint:
+    get:
+      operationId: RuleRepositoryController_getConstraints
+      summary: Retrieve constraints
+      description: Retrieve constraint templates registered in this control plane
+      parameters: []
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ConstraintModel"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      tags: &a18
+        - Evaluation
+      security: &a19
+        - oauth2:
+            - controlplane_admin
+    post:
+      operationId: RuleRepositoryController_addConstraint
+      summary: Add constraint
+      description: Add new contraint template
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConstraintModel"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConstraintModel"
+        "400":
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "409":
+          description: Resource already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      tags: *a18
+      security: *a19
+  /api/management/policy/constraint/odrl:
+    post:
+      operationId: RuleRepositoryController_getConstraintByOdrl
+      summary: Get constraint by ODRL
+      description: Get constraint based on an ODRL constraint
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConstraintModel"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      tags: *a18
+      security: *a19
+  /api/management/policy/constraint/{id}:
+    get:
+      operationId: RuleRepositoryController_getConstraint
+      summary: Get constraint
+      description: Get constraint based on its identifier
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConstraintModel"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      tags: *a18
+      security: *a19
+    delete:
+      operationId: RuleRepositoryController_deleteConstraint
+      summary: Delete constraint
+      description: Delete constraint template
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+      responses:
+        "200":
+          description: ""
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      tags: *a18
+      security: *a19
+    put:
+      operationId: RuleRepositoryController_updateConstraint
+      summary: Update constraint
+      description: Update constraint template
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConstraintModel"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConstraintModel"
+        "400":
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "409":
+          description: Resource already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      tags: *a18
+      security: *a19
+  /api/management/policy/constraint/{id}/odrl:
+    get:
+      operationId: RuleRepositoryController_getConstraintOdrl
+      summary: Get constraint ODRL
+      description: Get constraint based on its identifier and convert to ODRL
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConstraintModel"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      tags: *a18
+      security: *a19
+  /api/management/policy/rule:
+    get:
+      operationId: RuleRepositoryController_getRules
+      summary: Retrieve rules
+      description: Retrieve rule templates registered in this control plane
+      parameters: []
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Rule"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      tags: *a18
+      security: *a19
+    post:
+      operationId: RuleRepositoryController_addRule
+      summary: Add rule
+      description: Add new contraint template
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Rule"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Rule"
+        "400":
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "409":
+          description: Resource already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      tags: *a18
+      security: *a19
+  /api/management/policy/rule/{id}:
+    get:
+      operationId: RuleRepositoryController_getRule
+      summary: Get rule
+      description: Get rule based on its identifier
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Rule"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      tags: *a18
+      security: *a19
+    delete:
+      operationId: RuleRepositoryController_deleteRule
+      summary: Delete rule
+      description: Delete rule template
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+      responses:
+        "200":
+          description: ""
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      tags: *a18
+      security: *a19
+    put:
+      operationId: RuleRepositoryController_updateRule
+      summary: Update rule
+      description: Update rule template
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Rule"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Rule"
+        "400":
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "409":
+          description: Resource already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      tags: *a18
+      security: *a19
+  /api/management/policy/rule/{id}/odrl:
+    get:
+      operationId: RuleRepositoryController_getRuleOdrl
+      summary: Get rule ODRL
+      description: Get rule ODRL based on its identifier
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+        - name: ruleType
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: target
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Rule"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      tags: *a18
+      security: *a19
   /api/transfers/request:
     post:
       operationId: TransferController_request
@@ -1052,9 +1646,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/TransferProcessSchema"
-      tags: &a16
+      tags: &a20
         - Transfers
-      security: &a17
+      security: &a21
         - bearer: []
   /api/transfers/{id}:
     get:
@@ -1074,8 +1668,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/TransferProcessSchema"
-      tags: *a16
-      security: *a17
+      tags: *a20
+      security: *a21
   /api/transfers/{id}/start:
     post:
       operationId: TransferController_startTransferProcess
@@ -1101,8 +1695,8 @@ paths:
               schema:
                 example:
                   status: success
-      tags: *a16
-      security: *a17
+      tags: *a20
+      security: *a21
   /api/transfers/{id}/complete:
     post:
       operationId: TransferController_completeTransferProcess
@@ -1128,8 +1722,8 @@ paths:
               schema:
                 example:
                   status: success
-      tags: *a16
-      security: *a17
+      tags: *a20
+      security: *a21
   /api/transfers/{id}/terminate:
     post:
       operationId: TransferController_terminateTransferProcess
@@ -1155,8 +1749,8 @@ paths:
               schema:
                 example:
                   status: success
-      tags: *a16
-      security: *a17
+      tags: *a20
+      security: *a21
   /api/transfers/{id}/suspend:
     post:
       operationId: TransferController_suspendTransferProcess
@@ -1182,8 +1776,8 @@ paths:
               schema:
                 example:
                   status: success
-      tags: *a16
-      security: *a17
+      tags: *a20
+      security: *a21
   /api/transfers/callbacks/{id}/start:
     post:
       operationId: TransferController_callbackStartTransferProcess
@@ -1209,8 +1803,8 @@ paths:
               schema:
                 example:
                   status: success
-      tags: *a16
-      security: *a17
+      tags: *a20
+      security: *a21
   /api/transfers/callbacks/{id}/complete:
     post:
       operationId: TransferController_callbackCompleteTransferProcess
@@ -1236,8 +1830,8 @@ paths:
               schema:
                 example:
                   status: success
-      tags: *a16
-      security: *a17
+      tags: *a20
+      security: *a21
   /api/transfers/callbacks/{id}/terminate:
     post:
       operationId: TransferController_callbackTerminateTransferProcess
@@ -1263,8 +1857,8 @@ paths:
               schema:
                 example:
                   status: success
-      tags: *a16
-      security: *a17
+      tags: *a20
+      security: *a21
   /api/transfers/callbacks/{id}/suspend:
     post:
       operationId: TransferController_callbackSuspendTransferProcess
@@ -1290,8 +1884,8 @@ paths:
               schema:
                 example:
                   status: success
-      tags: *a16
-      security: *a17
+      tags: *a20
+      security: *a21
   /api/management/transfers:
     get:
       operationId: TransferManagementController_getTransfers
@@ -1306,9 +1900,9 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/TransferStatusDto"
-      tags: &a18
+      tags: &a22
         - Transfers Management
-      security: &a19
+      security: &a23
         - oauth2:
             - controlplane_admin
             - controlplane_dataplane
@@ -1330,8 +1924,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/TransferDetailSchema"
-      tags: *a18
-      security: *a19
+      tags: *a22
+      security: *a23
   /api/management/transfers/request:
     post:
       operationId: TransferManagementController_requestTransfer
@@ -1368,8 +1962,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/TransferProcessSchema"
-      tags: *a18
-      security: *a19
+      tags: *a22
+      security: *a23
   /api/management/transfers/{processId}/start:
     post:
       operationId: TransferManagementController_startTransfer
@@ -1395,8 +1989,8 @@ paths:
               schema:
                 example:
                   status: success
-      tags: *a18
-      security: *a19
+      tags: *a22
+      security: *a23
   /api/management/transfers/{processId}/complete:
     post:
       operationId: TransferManagementController_completeTransfer
@@ -1416,8 +2010,8 @@ paths:
               schema:
                 example:
                   status: success
-      tags: *a18
-      security: *a19
+      tags: *a22
+      security: *a23
   /api/management/transfers/{processId}/terminate:
     post:
       operationId: TransferManagementController_terminateTransfer
@@ -1445,8 +2039,8 @@ paths:
               schema:
                 example:
                   status: success
-      tags: *a18
-      security: *a19
+      tags: *a22
+      security: *a23
   /api/management/transfers/{processId}/suspend:
     post:
       operationId: TransferManagementController_suspendTransfer
@@ -1473,8 +2067,8 @@ paths:
               schema:
                 example:
                   status: success
-      tags: *a18
-      security: *a19
+      tags: *a22
+      security: *a23
   /api/management/registry:
     get:
       operationId: RegistryClientController_requestCatalogs
@@ -1494,9 +2088,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: &a20
+      tags: &a24
         - Registry Management
-      security: &a21
+      security: &a25
         - oauth2:
             - controlplane_admin
             - controlplane_dataplane
@@ -1521,8 +2115,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a20
-      security: *a21
+      tags: *a24
+      security: *a25
   /api/management/registry/catalogs:
     get:
       operationId: RegistryClientController_getCatalogs
@@ -1542,8 +2136,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a20
-      security: *a21
+      tags: *a24
+      security: *a25
   /api/registry:
     get:
       operationId: RegistryController_getCatalogs
@@ -1558,9 +2152,9 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/CatalogSchema"
-      tags: &a22
+      tags: &a26
         - Registry
-      security: &a23
+      security: &a27
         - bearer: []
   /api/registry/addresses:
     get:
@@ -1576,8 +2170,8 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/CredentialAddressDto"
-      tags: *a22
-      security: *a23
+      tags: *a26
+      security: *a27
 info:
   title: TSG Control Plane
   description: "This OpenAPI specification shows the endpoints of the Control
@@ -2035,7 +2629,9 @@ components:
         "@type":
           type: string
         dct:conformsTo:
-          $ref: "#/components/schemas/ReferenceSchema"
+          type: array
+          items:
+            type: string
         dct:description:
           type: array
           items:
@@ -2229,20 +2825,15 @@ components:
       required:
         - "@id"
         - "@type"
-    FilterSchema:
-      type: object
-      properties:
-        "@type":
-          type: string
-      required:
-        - "@type"
     CatalogRequestMessageSchema:
       type: object
       properties:
         "@type":
           type: string
         dspace:filter:
-          $ref: "#/components/schemas/FilterSchema"
+          type: array
+          items:
+            type: string
       required:
         - "@type"
     OfferSchema:
@@ -2526,6 +3117,111 @@ components:
         - offer
         - agreement
         - events
+    VerifiableCredential:
+      type: object
+      properties: {}
+    EvaluationContext:
+      type: object
+      properties:
+        transferId:
+          type: string
+        localParticipant:
+          type: string
+        remoteParticipant:
+          type: string
+        target:
+          type: string
+        action:
+          type: string
+        verifiableCredentials:
+          $ref: "#/components/schemas/VerifiableCredential"
+        evaluationTime:
+          format: date-time
+          type: string
+      required:
+        - localParticipant
+        - remoteParticipant
+        - target
+        - action
+        - verifiableCredentials
+        - evaluationTime
+    EvaluationDecision:
+      type: object
+      properties:
+        decision:
+          type: string
+        reason:
+          type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        prohibitions:
+          type: array
+          items:
+            type: string
+        obligations:
+          type: array
+          items:
+            type: string
+        context:
+          $ref: "#/components/schemas/EvaluationContext"
+      required:
+        - decision
+    ConstraintType:
+      type: string
+      enum:
+        - ATOMIC
+        - LOGICAL
+    ConstraintModel:
+      type: object
+      properties:
+        id:
+          type: number
+        type:
+          $ref: "#/components/schemas/ConstraintType"
+        title:
+          type: string
+        description:
+          type: string
+      required:
+        - type
+        - title
+    RuleType:
+      type: string
+      enum:
+        - PERMISSION
+        - PROHIBITION
+        - DUTY
+    Rule:
+      type: object
+      properties:
+        id:
+          type: number
+        action:
+          type: array
+          items:
+            type: string
+        assignee:
+          type: array
+          items:
+            type: string
+        constraints:
+          type: array
+          items:
+            $ref: "#/components/schemas/ConstraintModel"
+        duties:
+          type: array
+          items:
+            $ref: "#/components/schemas/Rule"
+        type:
+          $ref: "#/components/schemas/RuleType"
+        target:
+          type: string
+      required:
+        - action
+        - constraints
+        - duties
     EndpointPropertySchema:
       type: object
       properties:

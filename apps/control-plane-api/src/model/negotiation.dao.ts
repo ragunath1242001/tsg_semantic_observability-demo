@@ -12,10 +12,8 @@ import {
 import {
   Column,
   Entity,
-  JoinColumn,
   ManyToOne,
   OneToMany,
-  OneToOne,
   PrimaryColumn,
   Relation,
 } from "typeorm";

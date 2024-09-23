@@ -47,7 +47,7 @@ export class AuthClientService {
       if (this.valid(this.access_token)) {
         return this.access_token!.jwt;
       }
-      var params: string;
+      let params: string;
       if (this.valid(this.refresh_token)) {
         params = querystring.stringify({
           grant_type: "refresh_token",

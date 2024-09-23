@@ -214,15 +214,15 @@ const sendNegotiation = async (
           </DisplayField>
           <DisplayField
             label="Conforms to"
-            v-if="'dcat:conformsTo' in datasetData['dcat:distribution'][0]"
+            v-if="'dct:conformsTo' in datasetData['dcat:distribution'][0]"
           >
             <a
-              :href="
-                datasetData['dcat:distribution'][0]['dcat:conformsTo']['@id']
-              "
+              v-for="conformsTo in datasetData['dcat:distribution'][0]['dct:conformsTo']"
+              :href="conformsTo"
+              class="mr-2"
             >
               {{
-                datasetData["dcat:distribution"][0]["dcat:conformsTo"]["@id"]
+                conformsTo
               }}</a
             >
           </DisplayField>
