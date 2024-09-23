@@ -1,0 +1,30 @@
+FROM node:20-slim AS base
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable
+
+FROM base AS build
+WORKDIR /app 
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY apps/analytics-data-plane-api/package.json apps/analytics-data-plane-api/
+COPY apps/analytics-data-plane-ui/package.json apps/analytics-data-plane-ui/
+COPY libs/common-dsp/package.json libs/common-dsp/
+COPY libs/common-dtos/package.json libs/common-dtos/
+COPY libs/common-ui/package.json libs/common-ui/
+COPY libs/http-data-plane-dtos/package.json libs/http-data-plane-dtos/
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+
+COPY apps apps
+COPY libs libs 
+RUN pnpm run --filter "./libs/common*" -r build 
+RUN pnpm run --filter "./apps/analytics-data-plane*" --parallel -r build
+RUN pnpm deploy --filter analytics-data-plane-api --prod /prod/analytics-data-plane-api
+RUN pnpm deploy --filter analytics-data-plane-ui --prod /prod/analytics-data-plane-ui
+
+FROM base AS deploy 
+WORKDIR /app
+COPY --from=build /prod/analytics-data-plane-api .
+COPY --from=build /prod/analytics-data-plane-ui/dist analytics-data-plane-ui/
+EXPOSE 3000
+ENV EMBEDDED_FRONTEND="/app/analytics-data-plane-ui"
+CMD ["npm", "run", "start"]
