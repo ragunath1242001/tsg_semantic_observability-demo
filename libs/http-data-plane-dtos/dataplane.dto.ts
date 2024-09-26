@@ -1,4 +1,4 @@
-import { DataPlaneDetailsDto, DatasetDto, OfferDto } from "@tsg-dsp/common-dsp";
+import { OfferDto } from "@tsg-dsp/common-dsp";
 import { Type } from "class-transformer";
 import {
   IsString,
@@ -9,12 +9,6 @@ import {
   ArrayMinSize,
   IsUrl,
 } from "class-validator";
-
-export interface DataPlaneStateDto {
-  identifier: string;
-  details: DataPlaneDetailsDto;
-  dataset: Array<DatasetDto>;
-}
 
 export class RuleConstraintConfig {
   @IsString()

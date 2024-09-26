@@ -25,7 +25,7 @@ import { Repository } from "typeorm";
 import { TransferDao } from "./transfer.dao";
 import { DataPlaneStateDao } from "./dataplane.dao";
 import { DataPlaneClientError, DataPlaneError } from "../utils/errors/error";
-import { DataPlaneStateDto, TransferDto } from "@tsg-dsp/http-data-plane-dtos";
+import { DataPlaneStateDto, TransferDto } from "@tsg-dsp/common-dtos";
 import { AuthClientService } from "../auth/auth.client.service";
 import { resolve } from "../utils/didServiceResolver";
 import { LoggingService } from "../logging/logging.service";

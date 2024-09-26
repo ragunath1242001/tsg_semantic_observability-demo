@@ -3,7 +3,7 @@ import { computed, onMounted, ref } from "vue";
 import { axiosInstance } from "../store/index.js";
 import { useToast } from "primevue/usetoast";
 import { useConfirm } from "primevue/useconfirm";
-import { DataPlaneStateDto, TransferDto } from "@tsg-dsp/http-data-plane-dtos";
+import { DataPlaneStateDto, TransferDto } from "@tsg-dsp/common-dtos";
 import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
 import { formatDate } from "../utils/date.js";
 import { store } from "../store/index.js";

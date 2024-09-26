@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import {
   DataPlaneStateDto,
-  DatasetConfig,
-} from "@tsg-dsp/http-data-plane-dtos";
+} from "@tsg-dsp/common-dtos";
 import { ref, onMounted } from "vue";
 import { axiosInstance } from "../store";
 import { useToast } from "primevue/usetoast";

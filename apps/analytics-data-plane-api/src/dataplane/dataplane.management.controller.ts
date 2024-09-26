@@ -17,14 +17,9 @@ import {
   Delete,
 } from "@nestjs/common";
 import { DataPlaneService } from "./dataplane.service";
-import {
-  DataPlaneStateDto,
-  DatasetConfig,
-  TransferDto,
-} from "@tsg-dsp/http-data-plane-dtos";
 import { Roles } from "../auth/roles.guard";
-import { Request, Response } from "express";
 import { AgreementDto, CatalogDto, DatasetDto } from "@tsg-dsp/common-dsp";
+import { DataPlaneStateDto, TransferDto } from "@tsg-dsp/common-dtos";
 
 @Controller("/management")
 @Roles("controlplane_dataplane")

@@ -23,6 +23,6 @@
     "outDir": "dist",
     "rootDir": "."
   },
-  "include": ["."],
+  "include": [".", "transfer.dto.ts"],
   "exclude": ["dist"]
 }

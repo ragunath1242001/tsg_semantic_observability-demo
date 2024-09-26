@@ -211,7 +211,7 @@ export class DistributionDao extends MetaEntity implements IDistribution {
   @Column("simple-json", { nullable: true })
   conformsTo?: Array<string>;
   @Column("simple-json", { nullable: true })
-  description?: Array<Multilanguage>;
+  description?: Array<string>;
   @Column({ nullable: true })
   format?: string;
   @Column("simple-json", { nullable: true })
@@ -280,7 +280,7 @@ export class CatalogRecordDao extends MetaEntity implements ICatalogRecord {
   @Column("simple-json", { nullable: true })
   conformsTo?: Array<string>;
   @Column("simple-json", { nullable: true })
-  description?: Array<Multilanguage>;
+  description?: Array<string>;
   @Column("simple-json", { nullable: true })
   issued?: Date;
   @Column("simple-json", { nullable: true })

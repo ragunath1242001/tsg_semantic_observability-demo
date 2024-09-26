@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import {
-  DataPlaneStateDto,
   DatasetConfig,
 } from "@tsg-dsp/http-data-plane-dtos";
 import { ref, onMounted } from "vue";
@@ -9,6 +8,7 @@ import { useToast } from "primevue/usetoast";
 import { useConfirm } from "primevue/useconfirm";
 import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
 import schema from "@tsg-dsp/common-ui/assets/dataset-config.schema.json";
+import { DataPlaneStateDto } from "@tsg-dsp/common-dtos";
 
 const toast = useToast();
 const confirm = useConfirm();

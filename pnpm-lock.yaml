@@ -68,9 +68,9 @@ importers:
       '@tsg-dsp/common-dsp':
         specifier: workspace:*
         version: link:../../libs/common-dsp
-      '@tsg-dsp/http-data-plane-dtos':
+      '@tsg-dsp/common-dtos':
         specifier: workspace:*
-        version: link:../../libs/http-data-plane-dtos
+        version: link:../../libs/common-dtos
       axios:
         specifier: ^1.6.8
         version: 1.7.2
@@ -216,12 +216,12 @@ importers:
       '@tsg-dsp/common-dsp':
         specifier: workspace:*
         version: link:../../libs/common-dsp
+      '@tsg-dsp/common-dtos':
+        specifier: workspace:*
+        version: link:../../libs/common-dtos
       '@tsg-dsp/common-ui':
         specifier: workspace:*
         version: link:../../libs/common-ui
-      '@tsg-dsp/http-data-plane-dtos':
-        specifier: workspace:*
-        version: link:../../libs/http-data-plane-dtos
       axios:
         specifier: ^1.4.0
         version: 1.7.2
@@ -630,6 +630,9 @@ importers:
       '@tsg-dsp/common-dsp':
         specifier: workspace:*
         version: link:../../libs/common-dsp
+      '@tsg-dsp/common-dtos':
+        specifier: workspace:*
+        version: link:../../libs/common-dtos
       '@tsg-dsp/http-data-plane-dtos':
         specifier: workspace:*
         version: link:../../libs/http-data-plane-dtos
@@ -778,6 +781,9 @@ importers:
       '@tsg-dsp/common-dsp':
         specifier: workspace:*
         version: link:../../libs/common-dsp
+      '@tsg-dsp/common-dtos':
+        specifier: workspace:*
+        version: link:../../libs/common-dtos
       '@tsg-dsp/common-ui':
         specifier: workspace:*
         version: link:../../libs/common-ui
