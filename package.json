@@ -22,6 +22,7 @@
     "test:coverage": "pnpm -r jest:coverage",
     "test:control-plane-ci": "pnpm --filter control-plane-api jest:ci",
     "test:http-data-plane-ci": "pnpm --filter http-data-plane-api jest:ci",
+    "test:analytics-data-plane-ci": "pnpm --filter analytics-data-plane-api jest:ci",
     "test:wallet-ci": "pnpm --filter wallet-api jest:ci"
   },
   "keywords": [],
