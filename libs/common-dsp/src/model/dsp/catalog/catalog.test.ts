@@ -1,6 +1,6 @@
 import { expect, test } from "@jest/globals";
 import { deserialize } from "../../serialize";
-import { Multilanguage, Reference } from "../common";
+import { Reference } from "../common";
 import { Constraint, Offer, Permission } from "../negotiation/negotiation";
 import { ODRLAction, ODRLOperator } from "../negotiation/negotiation.dto";
 import {
