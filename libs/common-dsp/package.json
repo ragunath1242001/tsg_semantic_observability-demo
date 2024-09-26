@@ -13,7 +13,7 @@
   },
   "scripts": {
     "prepare": "install-peers",
-    "build": "tsup",
+    "build": "tsup --onSuccess \"npx tsc --emitDeclarationOnly --declaration -p tsconfig.json\"",
     "jest": "jest"
   },
   "main": "./dist/index.js",
