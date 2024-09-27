@@ -1,4 +1,4 @@
-import { ContextDto, MultilanguageDto, ReferenceDto } from "../common.dto";
+import { ContextDto, ReferenceDto } from "../common.dto";
 import { PolicyDto } from "../negotiation/negotiation.dto";
 
 export interface ResourceDto extends ContextDto, ReferenceDto {
@@ -9,7 +9,7 @@ export interface ResourceDto extends ContextDto, ReferenceDto {
   "dcat:theme"?: Array<ReferenceDto>;
   "dct:conformsTo"?: string[];
   "dct:creator"?: string;
-  "dct:description"?: Array<MultilanguageDto | string>;
+  "dct:description"?: Array<string>;
   "dct:identifier"?: string;
   "dct:isReferencedBy"?: ReferenceDto;
   "dct:issued"?: string;
@@ -47,7 +47,7 @@ export interface DistributionDto extends ReferenceDto {
   "dcat:spatialResolutionInMeters"?: string;
   "dcat:temporalResolution"?: string;
   "dct:conformsTo"?: string[];
-  "dct:description"?: Array<MultilanguageDto | string>;
+  "dct:description"?: Array<string>;
   "dct:format"?: string;
   "dct:issued"?: string;
   "dct:modified"?: string;
@@ -74,7 +74,7 @@ export interface DatasetDto extends Omit<ResourceDto, "@type"> {
 export interface CatalogRecordDto extends ReferenceDto {
   "@type": "dcat:CatalogRecord";
   "dct:conformsTo"?: string[];
-  "dct:description"?: Array<MultilanguageDto | string>;
+  "dct:description"?: Array<string>;
   "dct:issued"?: Date;
   "dct:modified"?: Date;
   "dct:title"?: string;

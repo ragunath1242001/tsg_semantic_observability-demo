@@ -117,8 +117,8 @@ export class ResourceSchema extends ReferenceSchema implements ResourceDto {
   "dcat:conformsTo"?: string;
   @ApiPropertyOptional()
   "dct:creator"?: string;
-  @ApiPropertyOptional({ type: [MultilanguageSchema] })
-  "dct:description"?: Array<MultilanguageDto>;
+  @ApiPropertyOptional()
+  "dct:description"?: Array<string>;
   @ApiPropertyOptional()
   "dct:identifier"?: string;
   @ApiPropertyOptional({ type: ReferenceSchema })
@@ -215,8 +215,8 @@ export class DistributionSchema
   "dcat:temporalResolution"?: string;
   @ApiPropertyOptional()
   "dct:conformsTo"?: string[];
-  @ApiPropertyOptional({ type: [MultilanguageSchema] })
-  "dct:description"?: Array<MultilanguageDto>;
+  @ApiPropertyOptional()
+  "dct:description"?: Array<string>;
   @ApiPropertyOptional()
   "dct:format"?: string;
   @ApiPropertyOptional()
@@ -237,8 +237,8 @@ export class CatalogRecordSchema
   "@type": "dcat:CatalogRecord";
   @ApiPropertyOptional()
   "dct:conformsTo"?: string[];
-  @ApiPropertyOptional({ type: [MultilanguageSchema] })
-  "dct:description"?: Array<MultilanguageDto>;
+  @ApiPropertyOptional()
+  "dct:description"?: Array<string>;
   @ApiPropertyOptional()
   "dct:issued"?: Date;
   @ApiPropertyOptional()

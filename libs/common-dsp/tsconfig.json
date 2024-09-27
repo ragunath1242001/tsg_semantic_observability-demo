@@ -15,11 +15,12 @@
     "useUnknownInCatchVariables": false,
     "useDefineForClassFields": false,
     "target": "ES2016",
-    "sourceMap": false,
+    "sourceMap": true,
+    "declarationMap": true,
     "allowJs": false,
     "strict": true,
     "strictNullChecks": false,
     "types": []
   },
-  "exclude": ["jest.config.ts", "tsup.config.ts", "./dist"]
+  "exclude": ["jest.config.ts", "tsup.config.ts", "dist"]
 }

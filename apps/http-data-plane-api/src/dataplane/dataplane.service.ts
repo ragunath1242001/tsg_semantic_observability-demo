@@ -44,16 +44,15 @@ import { TransferDao } from "./transfer.dao";
 import { DataPlaneStateDao } from "./dataplane.dao";
 import { DataPlaneClientError, DataPlaneError } from "../utils/errors/error";
 import {
-  DataPlaneStateDto,
   DatasetConfig,
   PolicyConfig,
   RuleConstraintConfig,
-  TransferDto,
 } from "@tsg-dsp/http-data-plane-dtos";
 import { AuthClientService } from "../auth/auth.client.service";
 import { resolve } from "../utils/didServiceResolver";
 import { LoggingService } from "../logging/logging.service";
 import { LogEntry } from "../logging/logging.dto";
+import { DataPlaneStateDto, TransferDto } from "@tsg-dsp/common-dtos";
 
 @Injectable()
 export class DataPlaneService {

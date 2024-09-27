@@ -1,4 +1,4 @@
-import { TransferDto } from "@tsg-dsp/http-data-plane-dtos";
+import { TransferDto } from "@tsg-dsp/common-dtos";
 import { CatalogDto } from "@tsg-dsp/common-dsp";
 import axios from "axios";
 import { createStore } from "vuex";

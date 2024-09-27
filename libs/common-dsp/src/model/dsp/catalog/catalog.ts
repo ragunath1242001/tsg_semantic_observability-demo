@@ -10,14 +10,7 @@ import {
   createOptionalInstances,
 } from "../../../utils/instances";
 import { Namespace, Serializable } from "../../decorators";
-import {
-  Decimal,
-  Duration,
-  IReference,
-  Multilanguage,
-  Reference,
-  Time,
-} from "../common";
+import { Decimal, Duration, IReference, Reference, Time } from "../common";
 import { ContextDto } from "../common.dto";
 import { Offer, Policy } from "../negotiation/negotiation";
 import {
@@ -28,7 +21,6 @@ import {
   DistributionDto,
   ResourceDto,
 } from "./catalog.dto";
-import { Transform, Type } from "class-transformer";
 
 export interface IResource extends IReference {
   contactPoint?: Reference;
@@ -205,7 +197,7 @@ export interface IDistribution extends IReference {
   spatialResolutionInMeters?: Decimal;
   temporalResolution?: Duration;
   conformsTo?: string[];
-  description?: Array<Multilanguage>;
+  description?: Array<string>;
   format?: string;
   issued?: Time;
   modified?: Time;
@@ -256,9 +248,9 @@ export class Distribution extends Reference<DistributionDto & ContextDto> {
   @IsOptional()
   conformsTo?: string[];
   @Namespace("dct")
-  @ValidateNested()
+  @IsString({ each: true })
   @IsOptional()
-  description?: Array<Multilanguage>;
+  description?: Array<string>;
   @Namespace("dct")
   @IsOptional()
   format?: string;
@@ -391,7 +383,7 @@ export class Dataset<
 
 export interface ICatalogRecord extends IReference {
   conformsTo?: string[];
-  description?: Array<Multilanguage>;
+  description?: Array<string>;
   issued?: Date;
   modified?: Date;
   title?: string;
@@ -405,9 +397,9 @@ export class CatalogRecord extends Reference<CatalogRecordDto & ContextDto> {
   @IsOptional()
   conformsTo?: string[];
   @Namespace("dct")
-  @ValidateNested()
+  @IsString({ each: true })
   @IsOptional()
-  description?: Array<Multilanguage>;
+  description?: Array<string>;
   @Namespace("dct")
   @IsDate()
   @IsOptional()

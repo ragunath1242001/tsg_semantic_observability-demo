@@ -23,6 +23,10 @@
       "rootPath": "apps/http-data-plane-api"
     },
     {
+      "name": "analytics-data-plane",
+      "rootPath": "apps/analytics-data-plane-api"
+    },
+    {
       "name": "common-dsp",
       "rootPath": "libs/common-dsp"
     }

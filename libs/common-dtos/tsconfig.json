@@ -14,7 +14,8 @@
     "experimentalDecorators": true,
     "useUnknownInCatchVariables": false,
     "target": "ESNext",
-    "sourceMap": false,
+    "sourceMap": true,
+    "declarationMap": true,
     "allowJs": false,
     "strict": true,
     "strictNullChecks": false,
@@ -22,6 +23,6 @@
     "outDir": "dist",
     "rootDir": "."
   },
-  "include": ["."],
+  "include": [".", "transfer.dto.ts"],
   "exclude": ["dist"]
 }
