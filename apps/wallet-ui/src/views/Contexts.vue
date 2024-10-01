@@ -18,8 +18,8 @@ interface JSONLDContextForm {
   credentialType: string;
   issuable: boolean;
   documentUrl?: string;
-  document?: string;
-  schema?: string;
+  document: string;
+  schema: string;
 }
 
 const toast = useToast();
@@ -35,8 +35,8 @@ const contextForm = ref<JSONLDContextForm>({
   credentialType: "",
   issuable: true,
   documentUrl: undefined,
-  document: undefined,
-  schema: undefined,
+  document: "",
+  schema: "",
 });
 
 const contextEditorHeight = computed(() => {
@@ -107,20 +107,19 @@ const deleteContext = async (contextId: string) => {
 const addContext = async () => {
   try {
     if (documentRef.value === "Hosted") {
-      contextForm.value.document = undefined;
-    } else {
       contextForm.value.documentUrl = undefined;
+    } else {
+      contextForm.value.document = "";
     }
-    contextForm.value.credentialType;
     await axiosInstance.post("management/contexts", {
       id: contextForm.value.id,
       credentialType: contextForm.value.credentialType,
       issuable: contextForm.value.issuable,
       documentUrl: contextForm.value.documentUrl,
-      document: contextForm.value.document
+      document: contextForm.value.document.trim() !== ""
         ? JSON.parse(contextForm.value.document)
         : undefined,
-      schema: contextForm.value.schema
+      schema: contextForm.value.schema.trim() !== ""
         ? JSON.parse(contextForm.value.schema)
         : undefined,
     });
@@ -136,8 +135,8 @@ const addContext = async () => {
       credentialType: "",
       issuable: true,
       documentUrl: undefined,
-      document: undefined,
-      schema: undefined,
+      document: "",
+      schema: "",
     };
   } catch (err) {
     console.log(err);
@@ -279,7 +278,7 @@ onMounted(async () => {
         </p>
       </template>
       <template #content>
-        <form @submit.prevent="addContext">
+        <form class="flex flex-col gap-4" @submit.prevent="addContext">
           <FormField label="Context ID" v-slot="props">
             <InputText
               :id="props.id"
