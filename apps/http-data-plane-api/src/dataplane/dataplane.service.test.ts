@@ -5,7 +5,7 @@ import { plainToClass } from "class-transformer";
 import { AuthConfig, LoggingConfig, RootConfig } from "../config";
 import { SetupServer, setupServer } from "msw/node";
 import { HttpResponse, PathParams, http } from "msw";
-import { Request } from "express";
+import { Request, Response } from "express";
 import { getMockRes } from "@jest-mock/express";
 import {
   AgreementDto,
@@ -21,6 +21,8 @@ import { AuthClientService } from "../auth/auth.client.service";
 import { RawBodyRequest } from "@nestjs/common";
 import { EgressLogDao, IngressLogDao } from "../logging/logging.dao";
 import { LoggingService } from "../logging/logging.service";
+import { DatasetConfig } from "@tsg-dsp/http-data-plane-dtos";
+import { resolve } from "path";
 
 describe("Dataplane Service", () => {
   let dataPlaneService: DataPlaneService;
@@ -43,10 +45,14 @@ describe("Dataplane Service", () => {
         title: "HTTPBin",
         versions: [
           {
-            backend: "https://httpbin.org/anything",
-            openApiSpec: "https://httpbin.org/spec.json",
             version: "0.9.2",
             authorization: "Bearer AAAAAAA",
+            distributions: [
+              {
+                format: "http/json",
+                backendUrl: "https://httpbin.org/anything", // This URL returns anything that is passed in the request data.
+              }, //  The testcases expect this, so keep this url as backend.
+            ],
           },
         ],
       },
@@ -459,24 +465,26 @@ describe("Dataplane Service", () => {
     });
 
     it("Transfer execution", async () => {
-      const response = getMockRes();
+      const mockedResponse = getMockRes().res as jest.MockedObject<
+        Response<any, Record<string, any>>
+      >;
       await dataPlaneService.executeProxyRequest(
         transferProcessId,
         "anything/test",
         request,
-        response.res,
+        mockedResponse,
       );
       await new Promise((r) => setTimeout(r, 10));
+
+      expect(mockedResponse.write).toHaveBeenCalledTimes(1);
       const resultBody = JSON.parse(
-        Buffer.from(
-          (response.res.write as jest.Mock).mock.calls[0][0],
-        ).toString(),
+        Buffer.from(mockedResponse.write.mock.lastCall![0]).toString(),
       );
       expect(resultBody["json"]["test"]).toBe("test2");
       expect(resultBody["headers"]["Content-Type"]).toBe("application/json");
       expect(resultBody["headers"]["Accept"]).toBe("application/json");
       expect(resultBody["args"]["filter"]).toBe("filterQueryString");
-      expect((response.res.status as jest.Mock).mock.calls[0][0]).toBe(200);
+      expect(mockedResponse.status).toHaveBeenLastCalledWith(200);
     });
 
     it("Transfer execution on unknown transfer", async () => {
@@ -519,19 +527,29 @@ describe("Dataplane Service", () => {
       await dataPlaneService.updateDatasetConfig({
         id: `urn:uuid:test`,
         title: "HTTPBin",
-        conformsTo: "https://some-ontology.org",
+        baseSemanticModelRef: "https://some-ontology.org",
+        currentVersion: "0.9.2",
         versions: [
           {
-            backend: "https://httpbin.org/anything",
-            openApiSpec: "https://httpbin.org/spec.json",
             version: "0.9.2",
+            semanticModelRef: "http://example.org/semantics",
             authorization: "Bearer AAAAAAA",
+            distributions: [
+              {
+                format: "application/json",
+                backendUrl: "http://example.org/http",
+              },
+            ],
           },
           {
-            backend: "https://httpbin.org/anything",
-            openApiSpec: "https://httpbin.org/spec.json",
             version: "0.9.1",
             authorization: "Bearer AAAAAAA",
+            distributions: [
+              {
+                format: "application/json",
+                backendUrl: "http://example.org/http",
+              },
+            ],
           },
         ],
         policy: {
@@ -568,19 +586,26 @@ describe("Dataplane Service", () => {
       });
       const config = await dataPlaneService.getDatasetConfig();
       expect(config.versions).toHaveLength(2);
-      expect(config.conformsTo).toEqual("https://some-ontology.org");
+      expect(config.baseSemanticModelRef).toEqual("https://some-ontology.org");
       expect(config.policy).toBeDefined();
     });
     it("Default policy", async () => {
       await dataPlaneService.updateDatasetConfig({
         id: `urn:uuid:test`,
         title: "HTTPBin",
+        currentVersion: "0.9.2",
         versions: [
           {
-            backend: "https://httpbin.org/anything",
-            openApiSpec: "https://httpbin.org/spec.json",
             version: "0.9.2",
             authorization: "Bearer AAAAAAA",
+            semanticModelRef: "http://some-more-specific-ontology.org",
+            distributions: [
+              {
+                format: "application/json",
+                openApiSpecRef: "https://httpbin.org/spec.json",
+                backendUrl: "https://httpbin.org/anything",
+              },
+            ],
           },
         ],
         policy: {
@@ -592,12 +617,19 @@ describe("Dataplane Service", () => {
       await dataPlaneService.updateDatasetConfig({
         id: `urn:uuid:test`,
         title: "HTTPBin",
+        currentVersion: "0.9.2",
         versions: [
           {
-            backend: "https://httpbin.org/anything",
-            openApiSpec: "https://httpbin.org/spec.json",
             version: "0.9.2",
             authorization: "Bearer AAAAAAA",
+            semanticModelRef: "http://some-more-specific-ontology.org",
+            distributions: [
+              {
+                format: "application/json",
+                openApiSpecRef: "https://httpbin.org/spec.json",
+                backendUrl: "https://httpbin.org/anything",
+              },
+            ],
           },
         ],
         policy: {
@@ -623,12 +655,19 @@ describe("Dataplane Service", () => {
         dataPlaneService.updateDatasetConfig({
           id: `urn:uuid:test`,
           title: "HTTPBin",
+          currentVersion: "0.9.2",
           versions: [
             {
-              backend: "https://httpbin.org/anything",
-              openApiSpec: "https://httpbin.org/spec.json",
               version: "0.9.2",
               authorization: "Bearer AAAAAAA",
+              semanticModelRef: "http://some-more-specific-ontology.org",
+              distributions: [
+                {
+                  format: "application/json",
+                  openApiSpecRef: "https://httpbin.org/spec.json",
+                  backendUrl: "https://httpbin.org/anything",
+                },
+              ],
             },
           ],
           policy: {
@@ -642,12 +681,19 @@ describe("Dataplane Service", () => {
         dataPlaneService.updateDatasetConfig({
           id: `urn:uuid:test`,
           title: "HTTPBin",
+          currentVersion: "0.9.2",
           versions: [
             {
-              backend: "https://httpbin.org/anything",
-              openApiSpec: "https://httpbin.org/spec.json",
               version: "0.9.2",
               authorization: "Bearer AAAAAAA",
+              semanticModelRef: "http://some-more-specific-ontology.org",
+              distributions: [
+                {
+                  format: "application/json",
+                  openApiSpecRef: "https://httpbin.org/spec.json",
+                  backendUrl: "https://httpbin.org/anything",
+                },
+              ],
             },
           ],
           policy: {
@@ -761,12 +807,19 @@ describe("Dataplane Service Consumer", () => {
       await dataPlaneService.updateDatasetConfig({
         id: `urn:uuid:test`,
         title: "HTTPBin",
+        currentVersion: "0.9.2",
         versions: [
           {
-            backend: "https://httpbin.org/anything",
-            openApiSpec: "https://httpbin.org/spec.json",
             version: "0.9.2",
             authorization: "Bearer AAAAAAA",
+            semanticModelRef: "http://some-more-specific-ontology.org",
+            distributions: [
+              {
+                format: "application/json",
+                openApiSpecRef: "https://httpbin.org/spec.json",
+                backendUrl: "https://httpbin.org/anything",
+              },
+            ],
           },
         ],
       });

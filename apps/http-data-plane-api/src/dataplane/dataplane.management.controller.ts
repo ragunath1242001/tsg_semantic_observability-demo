@@ -14,6 +14,7 @@ import {
   Body,
   Put,
   ValidationPipe,
+  UnprocessableEntityException,
 } from "@nestjs/common";
 import { DataPlaneService } from "./dataplane.service";
 import { DatasetConfig } from "@tsg-dsp/http-data-plane-dtos";
@@ -53,6 +54,15 @@ export class DataPlaneManagementController {
     @Body(new ValidationPipe({ transform: true, forbidUnknownValues: true }))
     datasetConfig: DatasetConfig,
   ) {
+    if (
+      !datasetConfig.versions.some(
+        (v) => v.version === datasetConfig.currentVersion,
+      )
+    ) {
+      throw new UnprocessableEntityException(
+        "Can't find given current version in given list of dataset versions",
+      );
+    }
     return await this.dataPlaneService.updateDatasetConfig(datasetConfig);
   }
 

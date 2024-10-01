@@ -8,6 +8,10 @@ import {
   IsOptional,
   ArrayMinSize,
   IsUrl,
+  IsInt,
+  ArrayNotEmpty,
+  Min,
+  ArrayMaxSize,
 } from "class-validator";
 
 export class RuleConstraintConfig {
@@ -49,26 +53,48 @@ export class PolicyConfig {
   public raw?: OfferDto;
 }
 
+export class DistributionConfig {
+  @IsString()
+  @IsDefined()
+  public format!: string;
+
+  @IsString()
+  @IsOptional()
+  @IsUrl()
+  public schemaRef?: string;
+
+  @IsString()
+  @IsUrl()
+  @IsOptional()
+  public openApiSpecRef?: string;
+
+  @IsString()
+  @IsUrl({ require_tld: false })
+  public backendUrl!: string;
+}
+
 export class VersionConfig {
   @IsString()
   @IsOptional()
   public id?: string;
 
   @IsString()
-  @IsUrl({ require_tld: false })
-  public backend!: string;
-
-  @IsString()
   public version!: string;
 
   @IsString()
-  @IsUrl()
   @IsOptional()
-  public openApiSpec?: string;
+  @IsUrl()
+  public semanticModelRef?: string;
 
   @IsString()
   @IsOptional()
   public authorization?: string;
+
+  @ValidateNested()
+  @Type(() => DistributionConfig)
+  @ArrayNotEmpty()
+  @ArrayMaxSize(1, { message: "currently only one distribution is supported" })
+  public distributions!: DistributionConfig[];
 }
 
 export class DatasetConfig {
@@ -82,12 +108,17 @@ export class DatasetConfig {
 
   @IsString()
   @IsOptional()
-  public conformsTo?: string;
+  @IsUrl()
+  public baseSemanticModelRef?: string;
 
   @ValidateNested()
   @Type(() => VersionConfig)
   @ArrayMinSize(1)
   public versions!: VersionConfig[];
+
+  @IsString()
+  @IsDefined()
+  public currentVersion!: string;
 
   @ValidateNested()
   @Type(() => PolicyConfig)
