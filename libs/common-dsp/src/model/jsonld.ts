@@ -65,6 +65,7 @@ const context: jsonld.ContextDefinition = {
 
   // TSG
   tsg: "https://dataspac.es/ns/tsg#",
+  iana: "https://www.iana.org/assignments/media-types/",
   "dct:created": { "@type": "xsd:dateTime" },
   "dct:publisher": { "@type": "@id" },
   "dct:format": { "@type": "@id" },

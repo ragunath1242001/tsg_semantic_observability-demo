@@ -23,12 +23,19 @@ controlPlane:
 dataset:
   title: HTTP Dataset
   versions:
-    - backend: https://httpbin.org/anything
-      version: "0.9.2"
-      openApiSpec: "https://httpbin.org/spec.json"
-    - backend: https://httpbin.org/anything
-      version: "0.9.1"
-      openApiSpec: "https://httpbin.org/spec.json"
-    - backend: https://httpbin.org/anything
-      version: "0.9.0"
-      openApiSpec: "https://httpbin.org/spec.json"
+    - version: "0.9.2"
+      distributions:
+        - format: "http/json"
+          backendUrl: https://httpbin.org/anything
+          openApiSpecRef: "https://httpbin.org/spec.json"
+    - version: "0.9.1"
+      distributions:
+        - format: "http/json"
+          backendUrl: https://httpbin.org/anything
+          openApiSpecRef: "https://httpbin.org/spec.json"
+    - version: "0.9.0"
+      distributions:
+        - format: "http/json"
+          backendUrl: https://httpbin.org/anything
+          openApiSpecRef: "https://httpbin.org/spec.json"
+  currentVersion: "0.9.2"

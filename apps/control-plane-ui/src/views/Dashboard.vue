@@ -41,7 +41,7 @@ onMounted(async () => await initialize());
       class="col-span-12"
       style="border-radius: 12px; border: 1px solid var(--surface-border)"
     >
-      <template #title>Control Plane Dashboard</template>
+      <template #title>Control Plane Dashboard - My Catalog</template>
       <template #content
         ><p>
           This page displays the Catalog that is available through your control

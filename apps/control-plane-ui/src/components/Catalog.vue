@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, toRefs } from "vue";
+import { computed, ref, toRefs } from "vue";
 import {
   PolicyDto,
   type CatalogDto,
@@ -10,6 +10,7 @@ import utils from "../utils/common";
 import { AxiosKey } from "../utils/symbols";
 import { useToast } from "primevue/usetoast";
 
+import Links from "../components/Links.vue";
 import Dataset from "../components/Dataset.vue";
 import DisplayField from "@tsg-dsp/common-ui/components/DisplayField.vue";
 import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
@@ -29,6 +30,25 @@ var datasetData = ref<DatasetDto>();
 
 const { catalog, url, assigner } = toRefs(props);
 var datasetList = ref(catalog.value["dcat:dataset"]);
+var datasetVersionList = computed(() => {
+  return datasetList.value
+    .filter((dataset) => !dataset["dcat:isVersionOf"])
+    .map((rootDataset) => {
+      return {
+        root: rootDataset,
+        current: !!rootDataset["dcat:hasCurrentVersion"]
+          ? datasetList.value.filter(
+              (dataset) =>
+                dataset["@id"] === rootDataset["dcat:hasCurrentVersion"]["@id"]
+            )[0]
+          : rootDataset,
+        versions: datasetList.value.filter(
+          (dataset) =>
+            dataset["dcat:isVersionOf"]?.["@id"] === rootDataset["@id"]
+        ),
+      };
+    });
+});
 
 const http = injectStrict(AxiosKey);
 
@@ -92,20 +112,6 @@ const calculateColor = (index: number) => {
   const colors = ["primary", "orange", "cyan", "purple"];
   return colors[index % 4];
 };
-const calculateTagClass = (index: number) => {
-  return `mx-2 bg-${calculateColor(index)}-100 text-${calculateColor(
-    index
-  )}-700`;
-};
-const calculateIconBg = (index: number) => {
-  return `inline-flex border-circle align-items-center justify-content-center bg-${calculateColor(
-    index
-  )}-100 mr-3`;
-};
-
-const calculateIconClass = (index: number) => {
-  return `pi pi-file text-xl text-${calculateColor(index)}-600`;
-};
 
 const createPolicy = (policy: PolicyDto): string => {
   const offer = {
@@ -113,7 +119,7 @@ const createPolicy = (policy: PolicyDto): string => {
     "@context": "https://w3id.org/dspace/2024/1/context.json",
     "@type": "odrl:Offer",
     "@id": `urn:uuid:${crypto.randomUUID()}`,
-    "odrl:assigner": catalog.value['dct:publisher'],
+    "odrl:assigner": catalog.value["dct:publisher"],
   };
   return JSON.stringify(offer, null, 2);
 };
@@ -157,8 +163,8 @@ const createPolicy = (policy: PolicyDto): string => {
   <template v-if="!datasetView && parsedView && datasetList">
     <div
       class="col-span-12 lg:col-span-6 xl:col-span-3"
-      v-for="(dataset, index) in datasetList"
-      :key="dataset['@id']"
+      v-for="(dataset, index) in datasetVersionList"
+      :key="dataset.root['@id']"
     >
       <Card
         class="flex flex-col h-full"
@@ -167,67 +173,120 @@ const createPolicy = (policy: PolicyDto): string => {
         <template #title>
           <div class="flex items-center">
             <span class="mr-2">
-              <i :class="calculateIconClass(index)"></i>
+              <i class="pi pi-database text-xl text-primary-600"></i>
             </span>
             <div
               class="bg-surface-0 dark:bg-surface-900 whitespace-nowrap overflow-hidden text-ellipsis"
-              v-tooltip.top="dataset['dct:title']"
+              v-tooltip.top="dataset.root['dct:title']"
             >
-              {{ dataset["dct:title"] }}
+              {{ dataset.root["dct:title"] }}
             </div>
           </div>
         </template>
         <template #subtitle>
-          {{ utils.obtainValues(dataset["dct:description"]).join("\r\n") }}
+          <div>
+            {{
+              utils.obtainValues(dataset.root["dct:description"]).join("\r\n")
+            }}
+          </div>
+          <div v-if="!!dataset.current['dcat:version']">
+            Current version: {{ dataset.current["dcat:version"] }}
+          </div>
         </template>
         <template #content>
           <div style="min-height: 4em">
             <span class="font-semibold">
-              Policies: {{ dataset["odrl:hasPolicy"]?.length ?? 0 }}
+              Policies: {{ dataset.current["odrl:hasPolicy"]?.length ?? 0 }}
             </span>
-            <template v-if="dataset['dct:conformsTo']">
-              <div class="pt-4 pb-1 font-semibold">
-                Conforms To:
-                <a v-for="conformsTo in dataset['dct:conformsTo']" :href="conformsTo" target="_blank" class="mr-2">
-                  <i
-                    class="mx-1 pi pi-link text-blue-500"
-                    v-tooltip.bottom="conformsTo"
-                  >
-                  </i>
-                </a>
-              </div>
-            </template>
-            <template v-if="dataset['dcat:keyword']">
-              <div class="pt-4 pb-1 font-semibold">Keywords</div>
-              <Tag
-                :class="calculateTagClass(index)"
-                v-for="keyword in utils.obtainValues(dataset['dcat:keyword'])"
-                :key="keyword"
-                :value="keyword"
-              ></Tag>
-            </template>
+            <div class="pt-4">
+              <span class="font-semibold">References</span>
+              <ul>
+                <li>
+                  <Links
+                    v-if="dataset.root['dct:conformsTo']"
+                    :urlArray="dataset.root['dct:conformsTo']"
+                    label="Abstract model"
+                  />
+                </li>
+                <li>
+                  <Links
+                    :urlArray="dataset.current['dct:conformsTo']"
+                    label="Version model"
+                  />
+                </li>
+                <li>
+                  <Links
+                    :urlArray="
+                      dataset.current['dcat:distribution']?.[0]?.[
+                        'dct:conformsTo'
+                      ]
+                    "
+                    label="Format"
+                  />
+                </li>
+              </ul>
+            </div>
           </div>
+          <template v-if="dataset.current['dcat:keyword']">
+            <div class="pt-4 pb-1 font-semibold">Keywords</div>
+            <Tag
+              class="mr-1"
+              v-for="keyword in utils.obtainValues(
+                dataset.current['dcat:keyword']
+              )"
+              :key="keyword"
+              :value="keyword"
+              severity="secondary"
+              rounded
+            ></Tag>
+          </template>
+          <Accordion
+            class="pt-4"
+            v-if="dataset.versions.length > 0"
+            value=""
+            unstyled
+          >
+            <AccordionPanel value="0">
+              <AccordionHeader class="font-semibold">
+                All versions
+              </AccordionHeader>
+              <AccordionContent>
+                <ul>
+                  <li v-for="version in dataset.versions" :key="version['@id']">
+                    <div>
+                      {{
+                        version["dcat:distribution"]?.[0]?.["dct:title"] ??
+                        version["dct:title"]
+                      }}
+                      <i
+                        class="mx-1 pi pi-trash text-red-500 cursor-pointer"
+                        v-if="version['@id'] !== dataset.current['@id']"
+                        @click="deleteDataset(version['@id'])"
+                      ></i>
+                      <i class="mx-1 pi pi-trash text-blue-200" v-else></i>
+                      <i
+                        class="mx-1 pi pi-info-circle text-blue-500 cursor-pointer"
+                        @click="getDataset(version['@id'])"
+                      >
+                      </i>
+                    </div>
+                  </li>
+                </ul>
+              </AccordionContent>
+            </AccordionPanel>
+          </Accordion>
         </template>
         <template style="justify-content: flex-end" #footer>
-          <div class="flex items-center card-footer justify-between">
-            <Button
-              icon="pi pi-trash"
-              v-if="ownCatalog"
-              @click="deleteDataset(dataset['@id'])"
-              severity="danger"
-              class="shadow-lg"
-              rounded
-              outlined
-            />
+          <div class="flex items-center card-footer justify-right">
             <span class="p-card-subtitle mb-0" v-if="!ownCatalog">
               {{ catalog["dct:title"] }}
             </span>
             <Button
-              icon="pi pi-external-link"
+              icon="pi pi-info"
               rounded
               outlined
               class="shadow-lg"
-              @click="getDataset(dataset['@id'])"
+              @click="getDataset(dataset.current['@id'])"
             ></Button>
           </div>
         </template>

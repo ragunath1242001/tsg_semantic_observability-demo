@@ -176,6 +176,7 @@ const update = async () => {
     await axiosInstance.put("management/dataset", config);
     editModal.value = false;
     await getDatasetConfig();
+    await getState();
   } catch (err) {
     const message =
       err.response?.data?.message ||
@@ -298,9 +299,9 @@ onMounted(async () => {
           dataset.id || "Auto-generated"
         }}</FormField>
         <FormField label="Title">{{ dataset.title }}</FormField>
-        <FormField label="Conforms To" v-if="dataset.conformsTo"
-          ><a :href="dataset.conformsTo" target="_blank">{{
-            dataset.conformsTo
+        <FormField label="Conforms To" v-if="dataset.baseSemanticModelRef"
+          ><a :href="dataset.baseSemanticModelRef" target="_blank">{{
+            dataset.baseSemanticModelRef
           }}</a></FormField
         >
         <h4>Versions</h4>
@@ -310,9 +311,8 @@ onMounted(async () => {
             version.id || "Auto-generated"
           }}</FormField>
           <FormField label="Version">{{ version.version }}</FormField>
-          <FormField label="Backend">{{ version.backend }}</FormField>
-          <FormField label="OpenAPI specification">{{
-            version.openApiSpec || "None"
+          <FormField label="Message model URL">{{
+            version.semanticModelRef
           }}</FormField>
           <FormField label="Authorization">
             <Inplace v-if="version.authorization">
@@ -411,7 +411,7 @@ onMounted(async () => {
           placeholder="Identifier (leave empty for an auto-generated identifier)"
         />
       </FormField>
-      <FormField label="Title" v-slot="props" v-if="!configRaw">
+      <FormField label="Title*" v-slot="props" v-if="!configRaw">
         <InputText
           class="w-full"
           :id="props.id"
@@ -419,14 +419,29 @@ onMounted(async () => {
           placeholder="Title"
         />
       </FormField>
-      <FormField label="Conforms To" v-slot="props" v-if="!configRaw">
+      <FormField label="Base semantic model" v-slot="props" v-if="!configRaw">
         <InputText
           class="w-full"
           :id="props.id"
-          v-model="configForm.conformsTo"
-          placeholder="URL to Ontology/data model definitions"
+          v-model="configForm.baseSemanticModelRef"
+          placeholder="URL to base/abstract semantic model definitions"
         />
       </FormField>
+      <FormField label="Current version*" v-slot="props" v-if="!configRaw">
+        <Select
+          class="w-full"
+          :id="props.id"
+          v-model="configForm.currentVersion"
+          :options="configForm.versions"
+          option-label="version"
+          option-value="version"
+          placeholder="Current version"
+        />
+      </FormField>
+      <FormField no-label>
+        <small>Fields marked with an asterisk (*) are required.</small>
+      </FormField>
+      <br />
       <Tabs value="Versions" v-if="!configRaw">
         <TabList>
           <Tab value="Versions">Versions</Tab>
@@ -434,25 +449,26 @@ onMounted(async () => {
         </TabList>
         <TabPanels>
           <TabPanel value="Versions">
-            <FormField no-label
-              ><small
-                >The first listed version will be handled as default version,
-                and the order of versions should be from newest to
-                oldest.</small
-              ></FormField
-            >
             <FormField no-label>
               <Button
                 label="Add version"
                 icon="pi pi-plus"
                 severity="success"
                 @click="
-                  configForm.versions.unshift({ version: '', backend: '' })
+                  configForm.versions.unshift({
+                    version: '',
+                    distributions: [
+                      {
+                        format: '',
+                        backendUrl: '',
+                      },
+                    ],
+                  })
                 "
               />
             </FormField>
             <div v-for="(version, idx) in configForm.versions">
-              <hr v-if="idx !== 0" />
+              <br v-if="idx !== 0" />
               <FormField label="Identifier" v-slot="props">
                 <InputText
                   class="w-full"
@@ -462,34 +478,76 @@ onMounted(async () => {
                   placeholder="Identifier (leave empty for an auto-generated identifier)"
                 />
               </FormField>
-              <FormField label="Version" v-slot="props">
+              <FormField label="Version*" v-slot="props">
                 <InputText
                   class="w-full"
                   :id="props.id"
                   v-model="version.version"
-                  placeholder="Version"
+                  placeholder="Version string, e.g. semver like '0.3.1'"
                 />
               </FormField>
-              <FormField label="Backend" v-slot="props">
+              <FormField label="Semantic model" v-slot="props">
                 <InputText
                   class="w-full"
                   :id="props.id"
-                  v-model="version.backend"
-                  placeholder="Backend"
+                  v-model="version.semanticModelRef"
+                  @change="emptyStringToUndefined(version, 'semanticModelRef')"
+                  placeholder="URL to the semantic model of this dataset version"
+                />
+              </FormField>
+              <FormField label="Format*" v-slot="props">
+                <InputText
+                  class="w-full"
+                  :id="props.id"
+                  v-model="version.distributions[0].format"
+                  placeholder="Transfer protocol and message format, e.g. 'http/json'"
+                />
+              </FormField>
+              <FormField label="Schema" v-slot="props">
+                <InputText
+                  class="w-full"
+                  :id="props.id"
+                  v-model="version.distributions[0].schemaRef"
+                  @change="
+                    emptyStringToUndefined(
+                      version.distributions[0],
+                      'schemaRef'
+                    )
+                  "
+                  placeholder="URL to the message schema of this dataset version"
                 />
               </FormField>
               <FormField label="OpenAPI specification" v-slot="props">
                 <InputText
                   class="w-full"
                   :id="props.id"
-                  v-model="version.openApiSpec"
-                  @change="emptyStringToUndefined(version, 'openApiSpec')"
+                  v-model="version.distributions[0].openApiSpecRef"
+                  @change="
+                    emptyStringToUndefined(
+                      version.distributions[0],
+                      'openApiSpecRef'
+                    )
+                  "
                   placeholder="OpenAPI specification (leave empty for no specification)"
                 />
                 <small
                   >The OpenAPI specification should refer to the JSON or YAML
                   document directly.</small
                 >
+              </FormField>
+              <FormField label="Backend URL*" v-slot="props">
+                <InputText
+                  class="w-full"
+                  :id="props.id"
+                  v-model="version.distributions[0].backendUrl"
+                  @change="
+                    emptyStringToUndefined(
+                      version.distributions[0],
+                      'backendUrl'
+                    )
+                  "
+                  placeholder="URL pointing to the data access point"
+                />
               </FormField>
               <FormField label="Authorization" v-slot="props">
                 <Password

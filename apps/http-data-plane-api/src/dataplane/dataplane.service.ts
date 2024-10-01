@@ -273,35 +273,22 @@ export class DataPlaneService {
       this.state?.dataset?.[0]?.["@id"] ||
       `urn:uuid:${crypto.randomUUID()}`;
 
+    const currentDatasetRef =
+      datasetConfig.versions.filter(
+        (v) => v.version === datasetConfig.currentVersion,
+      )[0]?.version ?? datasetConfig.versions[0].version;
+
+    const defArray = <T>(...values: Array<T | undefined | null>): Array<T> =>
+      values.filter((x) => x != null);
+
     const baseDataset = new Dataset({
       id: id,
       title: datasetConfig.title,
-      conformsTo: datasetConfig.conformsTo
-        ? [datasetConfig.conformsTo]
-        : undefined,
+      conformsTo: defArray(datasetConfig.baseSemanticModelRef),
       hasVersion: datasetConfig.versions.map(
         (v) => new Reference(`${id}:${v.version}`),
       ),
-      hasCurrentVersion: new Reference(
-        `${id}:${datasetConfig.versions[0].version}`,
-      ),
-      distribution: [
-        new Distribution({
-          id: `${id}:http`,
-          format: "dspace:HTTP",
-          title: datasetConfig.title,
-          conformsTo: datasetConfig.versions[0].openApiSpec
-            ? [datasetConfig.versions[0].openApiSpec]
-            : undefined,
-          accessService: [
-            new DataService({
-              endpointURL:
-                datasetConfig.versions[0].backend ||
-                this.config.controlPlane.controlEndpoint,
-            }),
-          ],
-        }),
-      ],
+      hasCurrentVersion: new Reference(`${id}:${currentDatasetRef}`),
       hasPolicy: await this.constructOffer(id, datasetConfig.policy),
     });
     const versions = datasetConfig.versions.map((v, idx) => {
@@ -321,21 +308,25 @@ export class DataPlaneService {
           previousVersion: v.previous
             ? new Reference(`${id}:${v.previous.version}`)
             : undefined,
-          conformsTo: v.openApiSpec ? [v.openApiSpec] : undefined,
-          distribution: [
-            new Distribution({
-              id: `${id}:${v.version}:http`,
-              format: "dspace:HTTP",
-              title: datasetConfig.title,
-              conformsTo: v.openApiSpec ? [v.openApiSpec] : undefined,
-              accessService: [
-                new DataService({
-                  endpointURL:
-                    v.backend || this.config.controlPlane.controlEndpoint,
-                }),
-              ],
-            }),
-          ],
+          conformsTo: defArray(
+            v.semanticModelRef ?? datasetConfig.baseSemanticModelRef,
+          ),
+          distribution: v.distributions.map(
+            (d) =>
+              new Distribution({
+                id: `${id}:${v.version}:${d.format}`,
+                title: `${datasetConfig.title} ${v.version} (${d.format})`,
+                format: "dspace:http",
+                mediaType: "iana:" + d.format,
+                conformsTo: defArray(d.schemaRef, d.openApiSpecRef),
+                accessService: [
+                  new DataService({
+                    endpointURL: this.config.controlPlane.controlEndpoint,
+                    endpointDescription: "dspace:connector",
+                  }),
+                ],
+              }),
+          ),
           hasPolicy: await this.constructOffer(id, datasetConfig.policy),
         }),
       );
@@ -766,7 +757,10 @@ export class DataPlaneService {
       if (version.authorization) {
         headers["authorization"] = version.authorization;
       }
-      const newUrl = `${version.backend}/${path}`.replace(/([^:]\/)\/+/g, "$1");
+      const newUrl = `${version.distributions[0].backendUrl}/${path}`.replace(
+        /([^:]\/)\/+/g,
+        "$1",
+      );
       this.logger.log(`Rewrite: ${newUrl}`);
       this.logger.log(`Headers: ${JSON.stringify(headers)}`);
       let bodyLength = -1;
