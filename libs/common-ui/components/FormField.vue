@@ -17,7 +17,7 @@ const formId = ref(`field-${Math.floor(Math.random() * 100000 + 10000)}`);
 if (props.noLabel) {
   valueClass.value = `col-span-12 md:col-span-${
     12 - props.labelWidth
-  } md:col-offset-${props.labelWidth}`;
+  } md:col-start-${props.labelWidth+1}`;
 } else {
   labelClass.value = `flex items-center col-span-12 mb-2 md:col-span-${props.labelWidth} md:mb-0 font-bold`;
   valueClass.value = `col-span-12 md:col-span-${12 - props.labelWidth}`;

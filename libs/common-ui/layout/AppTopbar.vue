@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onBeforeUnmount, toRefs } from "vue";
-import { useLayout } from "../layout/composables/layout";
+import { useLayout } from "./composables/layout";
 import { Router } from "vue-router";
 
 const {

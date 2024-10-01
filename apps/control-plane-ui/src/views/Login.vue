@@ -5,7 +5,7 @@ import { useUserStore } from "../stores/user.js";
 import FloatingConfigurator from "@tsg-dsp/common-ui/components/FloatingConfigurator.vue";
 const store = useUserStore();
 
-import { useLayout } from "@tsg-dsp/common-ui/layout/composables/layout";
+import { useLayout } from "@tsg-dsp/common-ui/layout/composables/layout.js";
 
 const { layoutConfig } = useLayout();
 

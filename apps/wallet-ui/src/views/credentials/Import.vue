@@ -119,7 +119,7 @@ const importCredential = async (validate = true) => {
         </p>
       </template>
       <template #content>
-        <form @submit.prevent="importCredential(true)">
+        <form class="flex flex-col gap-4" @submit.prevent="importCredential(true)">
           <FormField label="Credential" v-slot="props">
             <MonacoEditorVue v-model="credentialRef"></MonacoEditorVue>
             <small class="text-yellow-400" v-if="credentialValidation">{{

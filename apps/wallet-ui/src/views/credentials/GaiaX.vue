@@ -204,7 +204,7 @@ onMounted(async () => {
           DCH</template
         >
         <template #content>
-          <form @submit.prevent="importLRNCredential">
+          <form class="flex flex-col gap-4" @submit.prevent="importLRNCredential">
             <FormField label="Legal registration number type" v-slot="props">
               <Select
                 :id="props.id"
@@ -331,7 +331,7 @@ onMounted(async () => {
           >Request Gaia-X compliance credential from a Gaia-X DCH</template
         >
         <template #content>
-          <form @submit.prevent="importComplianceCredential">
+          <form class="flex flex-col gap-4" @submit.prevent="importComplianceCredential">
             <FormField label="Credentials" v-slot="props">
               <MultiSelect
                 v-model="complianceCredentialForm.credentials"

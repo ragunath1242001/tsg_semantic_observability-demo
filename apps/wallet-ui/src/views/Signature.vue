@@ -131,7 +131,7 @@ const onUpload = (event) => {
         </p>
       </template>
       <template #content>
-        <form @submit.prevent="signDocument">
+        <form class="flex flex-col gap-4" @submit.prevent="signDocument">
           <FormField label="Sign binary document">
             <FileUpload mode="basic" auto name="signature" customUpload @uploader="onUpload" :disabled="isUploading" />
           </FormField>
@@ -173,7 +173,7 @@ const onUpload = (event) => {
         </p>
       </template>
       <template #content>
-        <form @submit.prevent="validateDocument">
+        <form class="flex flex-col gap-4" @submit.prevent="validateDocument">
           <FormField>
             <SelectButton v-model="validateType" :options="['Combined', 'Separate']"></SelectButton>
           </FormField>

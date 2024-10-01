@@ -1,11 +1,31 @@
-import { computed, ref, reactive, readonly } from "vue";
+import { computed, ref, reactive, readonly, watch } from "vue";
 
-const layoutConfig = reactive({
+const defaultConfig = {
   preset: "Lara",
   primary: "blue",
   surface: null,
-  darkTheme: false,
+  darkTheme:
+    window.matchMedia?.("(prefers-color-scheme: dark)").matches ?? false,
   menuMode: "static",
+};
+
+const configStorageItem = `layoutConfig-${location.pathname}`;
+
+function storedConfig() {
+  const config =
+    localStorage.getItem(configStorageItem) ?? JSON.stringify(defaultConfig);
+  localStorage.setItem(config);
+  const parsed = JSON.parse(config);
+  if (parsed.darkTheme) {
+    document.documentElement.classList.add("app-dark");
+  }
+  return parsed;
+}
+
+const layoutConfig = reactive(storedConfig());
+
+watch(layoutConfig, (newValue) => {
+  localStorage.setItem(configStorageItem, JSON.stringify(newValue));
 });
 
 const layoutState = reactive({
