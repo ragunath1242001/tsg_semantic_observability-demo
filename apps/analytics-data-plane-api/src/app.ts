@@ -22,7 +22,7 @@ async function bootstrap() {
   }
   app.use(
     session({
-      name: "connect.sid.tsghdp",
+      name: "connect.sid.tsgadp",
       secret: process.env["SESSION_SECRET"] || crypto.randomUUID(),
       resave: false,
       saveUninitialized: false,
@@ -37,5 +37,3 @@ async function bootstrap() {
   await app.listen(config.port, config.listen);
 }
 bootstrap();
-
-// somewhere in your initialization file

@@ -1,7 +1,6 @@
 import { createApp } from "vue";
 import App from "./App.vue";
 import Lara from "@primevue/themes/lara";
-import { store } from "./store/index.js";
 import router from "./router/index.js";
 
 import PrimeVue from "primevue/config";
@@ -43,6 +42,7 @@ import Drawer from "primevue/drawer";
 import TabList from "primevue/tablist";
 import Tab from "primevue/tab";
 import TabPanels from "primevue/tabpanels";
+import { createPinia } from "pinia";
 
 loader.config({
   paths: {
@@ -50,8 +50,9 @@ loader.config({
   },
 });
 
+const pinia = createPinia();
 const app = createApp(App);
-app.use(store);
+app.use(pinia);
 app.use(router);
 app.use(PrimeVue, {
   theme: {

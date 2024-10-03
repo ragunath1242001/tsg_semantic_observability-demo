@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
-import { axiosInstance } from "../store";
-
+import http from "@tsg-dsp/common-ui/utils/http";
 import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
-import { formatDate } from "../utils/date";
+import { formatDate } from "@tsg-dsp/common-ui/utils/date";
 import { useDialog } from "primevue/usedialog";
 import JSONDialog from "./JSONDialog.vue";
 import { useToast } from "primevue/usetoast";
-import { httpStatus } from "../utils/httpStatus";
+import { httpStatusList, httpStatusNames } from "@tsg-dsp/common-ui/utils/httpStatus";
+import Select from "primevue/select";
+import { toastError } from "@tsg-dsp/common-ui/utils/error";
 
 const props = defineProps<{
   type: "ingress" | "egress";
@@ -38,53 +39,7 @@ const globalFilterFields = ref([
   "datasetId",
   "status",
 ]);
-const statusFilterOptions = ref([
-  "2xx",
-  "200",
-  "201",
-  "202",
-  "203",
-  "204",
-  "205",
-  "206",
-  "3xx",
-  "300",
-  "301",
-  "302",
-  "303",
-  "304",
-  "305",
-  "306",
-  "307",
-  "4xx",
-  "400",
-  "401",
-  "402",
-  "403",
-  "404",
-  "405",
-  "406",
-  "407",
-  "408",
-  "409",
-  "410",
-  "411",
-  "412",
-  "413",
-  "414",
-  "415",
-  "416",
-  "417",
-  "418",
-  "429",
-  "5xx",
-  "500",
-  "501",
-  "502",
-  "503",
-  "504",
-  "505",
-]);
+const statusFilterOptions = ref(httpStatusList);
 const filters = ref({
   remoteParty: {
     value: "",
@@ -117,7 +72,7 @@ const lazyLoad = async (event) => {
     filters.value = event.filters;
   }
   try {
-    const result = await axiosInstance.get(
+    const result = await http.get(
       `/management/logging/${props.type}`,
       {
         params: {
@@ -155,7 +110,7 @@ const onFilter = (event) => {
 const showTransfer = async (logEntry) => {
   try {
     logEntry.transferLoading = true;
-    const transfer = await axiosInstance.get(
+    const transfer = await http.get(
       `/management/transfers/${encodeURIComponent(logEntry.transferId)}`
     );
     dialog.open(JSONDialog, {
@@ -166,14 +121,12 @@ const showTransfer = async (logEntry) => {
       },
       data: transfer.data,
     });
-  } catch (err) {
-    const message = err.response?.data?.message || "Could not load transfer";
-    toast.add({
-      severity: "warn",
-      summary: "API error",
-      detail: message,
-      life: 10000,
-    });
+  } catch (error) {
+    toast.add(toastError({
+      error,
+      summary: "Could not load transfer",
+      defaultMessage: `Could not load transfer with identifier ${logEntry.transferId}`
+    }));
   }
   logEntry.transferLoading = false;
 };
@@ -181,7 +134,7 @@ const showTransfer = async (logEntry) => {
 const showDataset = async (logEntry) => {
   try {
     logEntry.datasetLoading = true;
-    const transfer = await axiosInstance.get(
+    const transfer = await http.get(
       `/management/transfers/${encodeURIComponent(
         logEntry.transferId
       )}/metadata`
@@ -194,15 +147,12 @@ const showDataset = async (logEntry) => {
       },
       data: transfer.data,
     });
-  } catch (err) {
-    const message =
-      err.response?.data?.message || "Could not load transfer metadata";
-    toast.add({
-      severity: "warn",
-      summary: "API error",
-      detail: message,
-      life: 10000,
-    });
+  } catch (error) {
+    toast.add(toastError({
+      error,
+      summary: "Could not load transfer metadata",
+      defaultMessage: `Could not load transfer with identifier ${logEntry.transferId}`
+    }));
   }
   logEntry.datasetLoading = false;
 };
@@ -380,7 +330,7 @@ onMounted(async () => {
       :hidden="!selectedColumns.includes('Status')"
     >
       <template #filter="{ filterModel, filterCallback }">
-        <Dropdown
+        <Select
           v-model="filterModel.value"
           @change="filterCallback()"
           :options="statusFilterOptions"
@@ -456,7 +406,7 @@ onMounted(async () => {
         <code>{{ props.data.method }}</code>
       </FormField>
       <FormField label="Status">
-        <code>{{ props.data.status }} {{ httpStatus[props.data.status] }}</code>
+        <code>{{ props.data.status }} {{ httpStatusNames[props.data.status] }}</code>
       </FormField>
       <FormField label="Debug" v-if="props.data.debug">
         <Button

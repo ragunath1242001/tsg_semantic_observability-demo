@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import { AppRole } from "@tsg-dsp/wallet-dtos";
-import { axiosInstance, store } from "../..//store/index.js";
-import { CredentialSubject, VerifiableCredential } from "@tsg-dsp/common-dsp";
-import { computed, onMounted, ref } from "vue";
+import { CredentialSubject, toArray, VerifiableCredential } from "@tsg-dsp/common-dsp";
+import { onMounted, ref } from "vue";
 import { useToast } from "primevue/usetoast";
-import { toArray } from "../../utils/union.js";
 import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
 import { AutoCompleteCompleteEvent } from "primevue/autocomplete";
+import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
+import http from "@tsg-dsp/common-ui/utils/http";
+import { useRuntimeStore } from "@/stores/runtime";
+import { toastError } from "@tsg-dsp/common-ui/utils/error";
 
 interface LegalRegistrationNumberForm {
   type: string | undefined;
@@ -40,6 +41,8 @@ interface CredentialParsed {
 
 const toast = useToast();
 const credentials = ref<CredentialParsed[]>([]);
+const userStore = useUserStore();
+const runtimeStore = useRuntimeStore();
 
 const lrnClearingHouses = ["registrationnumber.notary.gaia-x.eu/v1"];
 const complianceClearingHouses = [
@@ -49,13 +52,13 @@ const complianceClearingHouses = [
 const legalRegistrationNumberDefault: LegalRegistrationNumberForm = {
   type: undefined,
   value: undefined,
-  targetDid: store.state.user?.didId || "",
+  targetDid: userStore.user?.didId || "",
   id: "LRNCredential",
   clearingHouse: "registrationnumber.notary.gaia-x.eu/v1",
   clearingHouses: lrnClearingHouses,
 };
 const complianceCredentialDefault: ComplianceCredentialForm = {
-  targetDid: store.state.user?.didId || "",
+  targetDid: userStore.user?.didId || "",
   id: "ComplianceCredential",
   credentials: [],
   clearingHouse: "compliance.gaia-x.eu/development",
@@ -64,16 +67,9 @@ const complianceCredentialDefault: ComplianceCredentialForm = {
 const legalRegistrationNumberForm = ref(legalRegistrationNumberDefault);
 const complianceCredentialForm = ref(complianceCredentialDefault);
 
-const manager = computed(
-  () =>
-    store.state.user?.roles.includes(AppRole.MANAGE_OWN_CREDENTIALS) ||
-    store.state.user?.roles.includes(AppRole.MANAGE_ALL_CREDENTIALS) ||
-    false
-);
-
 const loadCredentials = async () => {
   try {
-    const response = await axiosInstance<Credential[]>(
+    const response = await http.get<Credential[]>(
       "management/credentials"
     );
     credentials.value = response.data.map((item) => {
@@ -96,13 +92,12 @@ const loadCredentials = async () => {
         raw: item,
       };
     });
-  } catch (err) {
-    toast.add({
-      severity: "warn",
-      summary: "API error",
-      detail: "Could not load credentials",
-      life: 10000,
-    });
+  } catch (error) {
+    toast.add(toastError({
+      error,
+      summary: "Could not load credentials",
+      defaultMessage: `Could not load credentials`
+    }));
   }
 };
 
@@ -117,7 +112,7 @@ const importLRNCredential = async () => {
       id: legalRegistrationNumberForm.value.targetDid,
       [property]: legalRegistrationNumberForm.value.value,
     };
-    await axiosInstance.post(
+    await http.post(
       "management/credentials/gaiax/legalRegistrationNumber",
       {
         vcId: `${
@@ -134,19 +129,18 @@ const importLRNCredential = async () => {
       life: 3000,
     });
     await loadCredentials();
-  } catch (err) {
-    toast.add({
-      severity: "warn",
-      summary: "API error",
-      detail: "Error in importing Legal Registration Number credential",
-      life: 10000,
-    });
+  } catch (error) {
+    toast.add(toastError({
+      error,
+      summary: "Could not import credential",
+      defaultMessage: `Error in importing Legal Registration Number credential`
+    }));
   }
 };
 
 const importComplianceCredential = async () => {
   try {
-    await axiosInstance.post("management/credentials/gaiax/compliance", {
+    await http.post("management/credentials/gaiax/compliance", {
       vcId: `${complianceCredentialForm.value.targetDid}#${encodeURIComponent(
         complianceCredentialForm.value.id
       )}`,
@@ -160,13 +154,13 @@ const importComplianceCredential = async () => {
       life: 3000,
     });
     await loadCredentials();
-  } catch (err) {
-    toast.add({
-      severity: "warn",
-      summary: "API error",
-      detail: "Error in importing compliance credential",
-      life: 10000,
-    });
+  } catch (error) {
+    toast.add(toastError({
+      error,
+      summary: "Could not import credential",
+      defaultMessage: `Error in importing compliance credential`
+    }));
+
   }
 };
 
@@ -190,7 +184,7 @@ onMounted(async () => {
 
 <template>
   <div>
-    <Card v-if="!store.state.settings?.gaiaXSupport">
+    <Card v-if="!runtimeStore.gaiaXSupport">
       <template #title>Gaia-X support disabled</template>
       <template #subtitle
         >Gaia-X support is disabled for this Wallet instance</template

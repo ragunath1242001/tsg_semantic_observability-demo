@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { AppRole } from "@tsg-dsp/wallet-dtos";
-import { toArray } from "../../utils/union.js";
-import { formatDate } from "../../utils/date.js";
-import { axiosInstance, store } from "../../store/index.js";
+import { toArray } from "@tsg-dsp/common-ui/utils/union.js";
+import { formatDate } from "@tsg-dsp/common-ui/utils/date.js";
 import { CredentialSubject, VerifiableCredential } from "@tsg-dsp/common-dsp";
 import { useConfirm } from "primevue/useconfirm";
 import { useToast } from "primevue/usetoast";
-import { computed, onMounted, ref } from "vue";
+import { onMounted, ref } from "vue";
 import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
+import http from "@tsg-dsp/common-ui/utils/http";
+import { toastError } from "@tsg-dsp/common-ui/utils/error";
 
 interface Credential {
   id: string;
@@ -31,16 +31,9 @@ const confirm = useConfirm();
 const credentials = ref<CredentialParsed[]>();
 const expandedRows = ref();
 
-const manager = computed(
-  () =>
-    store.state.user?.roles.includes(AppRole.MANAGE_OWN_CREDENTIALS) ||
-    store.state.user?.roles.includes(AppRole.MANAGE_ALL_CREDENTIALS) ||
-    false
-);
-
 const loadCredentials = async () => {
   try {
-    const response = await axiosInstance<Credential[]>(
+    const response = await http<Credential[]>(
       "management/credentials"
     );
     credentials.value = response.data.map((item) => {
@@ -66,13 +59,12 @@ const loadCredentials = async () => {
         raw: item,
       };
     });
-  } catch (err) {
-    toast.add({
-      severity: "warn",
-      summary: "API error",
-      detail: "Could not load credentials",
-      life: 10000,
-    });
+  } catch (error) {
+    toast.add(toastError({
+      error,
+      summary: "Could not load credentials",
+      defaultMessage: `Error in fetching credentials`
+    }));
   }
 };
 
@@ -88,7 +80,7 @@ const deleteCredential = async (credentialId: string) => {
     acceptClass: "p-button-danger",
     accept: async () => {
       try {
-        await axiosInstance.delete(
+        await http.delete(
           `management/credentials/${encodeURIComponent(credentialId)}`
         );
         await loadCredentials();
@@ -98,13 +90,12 @@ const deleteCredential = async (credentialId: string) => {
           detail: "Credential deleted",
           life: 3000,
         });
-      } catch (err) {
-        toast.add({
-          severity: "warn",
-          summary: "API error",
-          detail: "Could not delete Credential",
-          life: 10000,
-        });
+      } catch (error) {
+        toast.add(toastError({
+          error,
+          summary: "Could not delete credential",
+          defaultMessage: `Error in deleting credential`
+        }));
       }
     },
   });
@@ -228,7 +219,7 @@ onMounted(async () => {
               />
             </div>
 
-            <h3>Proof</h3>
+            <h3 class="text-2xl font-bold my-2">Proof</h3>
             <FormField label="Type">{{
               props.data.raw.credential.proof.type
             }}</FormField>
@@ -250,7 +241,7 @@ onMounted(async () => {
               }}</code></FormField
             >
 
-            <h3>Credential subject</h3>
+            <h3 class="text-2xl font-bold my-2">Credential subject</h3>
             <div>
               <MonacoEditorVue
                 :static="props.data.raw.credential.credentialSubject"

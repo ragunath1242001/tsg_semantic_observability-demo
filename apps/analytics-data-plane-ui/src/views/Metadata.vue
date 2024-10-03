@@ -3,13 +3,12 @@ import {
   DataPlaneStateDto,
 } from "@tsg-dsp/common-dtos";
 import { ref, onMounted } from "vue";
-import { axiosInstance } from "../store";
 import { useToast } from "primevue/usetoast";
 import { useConfirm } from "primevue/useconfirm";
 import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
-// import schema from "@tsg-dsp/common-ui/assets/dataset-config.schema.json";
 import { Dataset, DatasetDto, deserialize } from "@tsg-dsp/common-dsp";
-import { obtainValues } from "../utils/common";
+import http from "@tsg-dsp/common-ui/utils/http";
+import { toastError } from "@tsg-dsp/common-ui/utils/error";
 
 
 const toast = useToast();
@@ -24,16 +23,6 @@ const newDataset = ref<string>(JSON.stringify({
   "@type": "dcat:Dataset",
 }, null, 2));
 
-// const odrlOfferSchema = {
-//   $schema: "http://json-schema.org/draft-07/schema#",
-//   title:
-//     "Dataspace Protocol Message Offer (https://w3id.org/dspace/2024/1/negotiation/contract-schema.json#/definitions/MessageOffer)",
-//   type: "object",
-//   $ref: "https://w3id.org/dspace/2024/1/negotiation/contract-schema.json#/definitions/MessageOffer",
-// };
-
-obtainValues([])
-
 const updateLoading = ref(false);
 const refreshLoading = ref(false);
 
@@ -41,58 +30,46 @@ const showDataset = ref(false);
 
 const getState = async () => {
   try {
-    const response = await axiosInstance.get<DataPlaneStateDto>(
+    const response = await http.get<DataPlaneStateDto>(
       "management/state"
     );
     state.value = response.data;
-  } catch (err) {
-    const message =
-      err.response?.data?.message ||
-      "Could not load state from the HTTP data plane";
-    toast.add({
-      severity: "warn",
+  } catch (error) {
+    toast.add(toastError({
+      error,
       summary: "Loading state failed",
-      detail: message,
-      life: 10000,
-    });
+      defaultMessage: "Could not load state config from the Analytics data plane"
+    }));
   }
 };
 
 const getDatasetConfig = async () => {
   try {
-    const response = await axiosInstance.get<DatasetDto[]>(
+    const response = await http.get<DatasetDto[]>(
       "management/dataset"
     );
     datasets.value = response.data;
     datasetStrings.value = response.data.map(dataset => JSON.stringify(dataset, null, 2));
-  } catch (err) {
-    const message =
-      err.response?.data?.message ||
-      "Could not load dataset config from the Analytics data plane";
-    toast.add({
-      severity: "warn",
+  } catch (error) {
+    toast.add(toastError({
+      error,
       summary: "Loading dataset config failed",
-      detail: message,
-      life: 10000,
-    });
+      defaultMessage: "Could not load dataset config from the Analytics data plane"
+    }));
   }
 };
 
 const refreshRegistration = async () => {
   refreshLoading.value = true;
   try {
-    await axiosInstance.post("management/refresh");
+    await http.post("management/refresh");
     await getDatasetConfig();
-  } catch (err) {
-    const message =
-      err.response?.data?.message ||
-      "Could not load dataset config from the HTTP data plane";
-    toast.add({
-      severity: "warn",
+  } catch (error) {
+    toast.add(toastError({
+      error,
       summary: "Loading dataset config failed",
-      detail: message,
-      life: 10000,
-    });
+      defaultMessage: "Could not refresh registration at the Analytics data plane"
+    }));
   }
   refreshLoading.value = false;
 };
@@ -109,7 +86,7 @@ const deleteDataset = async (id: string) => {
       accept: async () => {
         refreshLoading.value = true;
         try {
-          await axiosInstance.delete("management/dataset", {
+          await http.delete("management/dataset", {
             params: {
               datasetId: id
             }
@@ -121,16 +98,12 @@ const deleteDataset = async (id: string) => {
             detail: `Successfully deleted dataset ${id}`,
             life: 3000,
           });
-        } catch (err) {
-          const message =
-            err.response?.data?.message ||
-            "Could not delete dataset";
-          toast.add({
-            severity: "warn",
+        } catch (error) {
+          toast.add(toastError({
+            error,
             summary: "Dataset deletion failed",
-            detail: message,
-            life: 10000,
-          });
+            defaultMessage: "Could not delete dataset"
+          }));
         }
         refreshLoading.value = false;
       },
@@ -142,7 +115,7 @@ const updateDataset = async (id: string, updatedDataset: string) => {
   try {
     const parsed = JSON.parse(updatedDataset);
     await deserialize<Dataset>(parsed);
-    await axiosInstance.put("management/dataset", parsed, {
+    await http.put("management/dataset", parsed, {
       params: {
         datasetId: id
       }
@@ -154,20 +127,12 @@ const updateDataset = async (id: string, updatedDataset: string) => {
       detail: `Successfully updated dataset ${id}`,
       life: 3000,
     });
-  } catch (err) {
-    let message = "Could not update dataset";
-    if (err.response?.data?.message) {
-      message = err.response?.data?.message
-    }
-    if (err.errors) {
-      message = err.message;
-    }
-    toast.add({
-      severity: "warn",
+  } catch (error) {
+    toast.add(toastError({
+      error,
       summary: "Dataset update failed",
-      detail: message,
-      life: 10000,
-    });
+      defaultMessage: "Could not update dataset"
+    }));
   }
   refreshLoading.value = false;
 }
@@ -177,7 +142,7 @@ const addDataset = async () => {
   try {
     const parsed = JSON.parse(newDataset.value);
     await deserialize<Dataset>(parsed);
-    await axiosInstance.post("management/dataset", parsed);
+    await http.post("management/dataset", parsed);
     await getDatasetConfig();
     toast.add({
       severity: "success",
@@ -185,20 +150,12 @@ const addDataset = async () => {
       detail: `Successfully added dataset ${parsed['@id']}`,
       life: 3000,
     });
-  } catch (err) {
-    let message = "Could not add dataset";
-    if (err.response?.data?.message) {
-      message = err.response?.data?.message
-    }
-    if (err.errors) {
-      message = err.message;
-    }
-    toast.add({
-      severity: "warn",
+  } catch (error) {
+    toast.add(toastError({
+      error,
       summary: "Dataset creation failed",
-      detail: message,
-      life: 10000,
-    });
+      defaultMessage: "Could not add dataset"
+    }));
   }
   refreshLoading.value = false;
 }

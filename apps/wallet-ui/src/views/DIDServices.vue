@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
-import { KeyInfo } from "@tsg-dsp/wallet-dtos";
 import { useToast } from "primevue/usetoast";
 import { useConfirm } from "primevue/useconfirm";
 import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
-import { axiosInstance, store } from "../store/index.js";
+import http from "@tsg-dsp/common-ui/utils/http";
+import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
+import { toastError } from "@tsg-dsp/common-ui/utils/error";
 
 interface DIDService {
   id: string;
@@ -15,28 +16,27 @@ interface DIDService {
 const toast = useToast();
 const confirm = useConfirm();
 
+const userStore = useUserStore();
+
 const services = ref<DIDService[]>([]);
 const serviceForm = ref<DIDService>({
-  id: `${store.state.user?.didId}#`,
+  id: `${userStore.user?.didId}#`,
   type: "",
   serviceEndpoint: "",
 });
 
 const loadServices = async () => {
   try {
-    const response = await axiosInstance<DIDService[]>(
+    const response = await http<DIDService[]>(
       "management/did/services"
     );
     services.value = response.data;
-  } catch (err) {
-    const message =
-      err.response?.data?.message || "Could not load DID services";
-    toast.add({
-      severity: "warn",
-      summary: "API error",
-      detail: message,
-      life: 10000,
-    });
+  } catch (error) {
+    toast.add(toastError({
+      error,
+      summary: "Could not load DID services",
+      defaultMessage: `Error in fetching registered DID services`
+    }));
   }
 };
 
@@ -52,7 +52,7 @@ const deleteService = async (serviceId: string) => {
     acceptClass: "p-button-danger",
     accept: async () => {
       try {
-        await axiosInstance.delete(
+        await http.delete(
           `management/did/services/${encodeURIComponent(serviceId)}`
         );
         await loadServices();
@@ -62,15 +62,12 @@ const deleteService = async (serviceId: string) => {
           detail: "Service deleted",
           life: 3000,
         });
-      } catch (err) {
-        const message =
-          err.response?.data?.message || "Could not delete service";
-        toast.add({
-          severity: "warn",
-          summary: "API error",
-          detail: message,
-          life: 10000,
-        });
+      } catch (error) {
+        toast.add(toastError({
+          error,
+          summary: "Could not delete service",
+          defaultMessage: `Error in deleting DID service`
+        }));
       }
     },
   });
@@ -78,7 +75,7 @@ const deleteService = async (serviceId: string) => {
 
 const addService = async () => {
   try {
-    await axiosInstance.post("management/did/services", serviceForm.value);
+    await http.post("management/did/services", serviceForm.value);
     await loadServices();
     toast.add({
       severity: "success",
@@ -87,19 +84,16 @@ const addService = async () => {
       life: 3000,
     });
     serviceForm.value = {
-      id: `${store.state.user?.didId}#`,
+      id: `${userStore.user?.didId}#`,
       type: "",
       serviceEndpoint: "",
     };
-  } catch (err) {
-    console.log(err);
-    const message = err.response?.data?.message || "Could not add service";
-    toast.add({
-      severity: "warn",
-      summary: "API error",
-      detail: message,
-      life: 10000,
-    });
+  } catch (error) {
+    toast.add(toastError({
+      error,
+      summary: "Could not add service",
+      defaultMessage: `Error in registering DID service`
+    }));
   }
 };
 
@@ -133,9 +127,9 @@ onMounted(async () => {
           paginator
           :rows="10"
         >
-          <Column field="id" header="ID" />
+          <Column field="id" class="break-all" header="ID" />
           <Column field="type" header="Type" />
-          <Column field="serviceEndpoint" header="Service Endpoint" />
+          <Column field="serviceEndpoint" class="break-all" header="Service Endpoint" />
           <Column field="actions" header="Actions">
             <template #body="props">
               <Button
@@ -169,7 +163,7 @@ onMounted(async () => {
               :id="props.id"
               class="w-full"
               v-model="serviceForm.id"
-              :placeholder="`${store.state.user?.didId}#`"
+              :placeholder="`${userStore.user?.didId}#`"
             />
           </FormField>
           <FormField label="Service Type" v-slot="props">

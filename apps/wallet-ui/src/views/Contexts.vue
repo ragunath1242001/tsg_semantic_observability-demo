@@ -3,7 +3,8 @@ import { computed, onMounted, ref } from "vue";
 import { useToast } from "primevue/usetoast";
 import { useConfirm } from "primevue/useconfirm";
 import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
-import { axiosInstance } from "../store/index.js";
+import http from "@tsg-dsp/common-ui/utils/http";
+import { toastError } from "@tsg-dsp/common-ui/utils/error";
 
 interface JSONLDContext {
   id: string;
@@ -53,18 +54,16 @@ const schemaEditorHeight = computed(() => {
 
 const loadContexts = async () => {
   try {
-    const response = await axiosInstance<JSONLDContext[]>(
+    const response = await http<JSONLDContext[]>(
       "management/contexts"
     );
     contexts.value = response.data;
-  } catch (err) {
-    const message = err.response?.data?.message || "Could not load contexts";
-    toast.add({
-      severity: "warn",
-      summary: "API error",
-      detail: message,
-      life: 10000,
-    });
+  } catch (error) {
+    toast.add(toastError({
+      error,
+      summary: "Could not load contexts",
+      defaultMessage: `Error in fetching registered contexts`
+    }));
   }
 };
 
@@ -80,7 +79,7 @@ const deleteContext = async (contextId: string) => {
     acceptClass: "p-button-danger",
     accept: async () => {
       try {
-        await axiosInstance.delete(
+        await http.delete(
           `management/contexts/${encodeURIComponent(contextId)}`
         );
         await loadContexts();
@@ -90,15 +89,12 @@ const deleteContext = async (contextId: string) => {
           detail: "Context deleted",
           life: 3000,
         });
-      } catch (err) {
-        const message =
-          err.response?.data?.message || "Could not delete context";
-        toast.add({
-          severity: "warn",
-          summary: "API error",
-          detail: message,
-          life: 10000,
-        });
+      } catch (error) {
+        toast.add(toastError({
+          error,
+          summary: "Could not delete context",
+          defaultMessage: `Error in deleting context`
+        }));
       }
     },
   });
@@ -111,7 +107,7 @@ const addContext = async () => {
     } else {
       contextForm.value.document = "";
     }
-    await axiosInstance.post("management/contexts", {
+    await http.post("management/contexts", {
       id: contextForm.value.id,
       credentialType: contextForm.value.credentialType,
       issuable: contextForm.value.issuable,
@@ -138,15 +134,12 @@ const addContext = async () => {
       document: "",
       schema: "",
     };
-  } catch (err) {
-    console.log(err);
-    const message = err.response?.data?.message || "Could not add context";
-    toast.add({
-      severity: "warn",
-      summary: "API error",
-      detail: message,
-      life: 10000,
-    });
+  } catch (error) {
+    toast.add(toastError({
+      error,
+      summary: "Could not add context",
+      defaultMessage: `Error in inserting new context to the wallet`
+    }));
   }
 };
 

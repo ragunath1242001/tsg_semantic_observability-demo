@@ -17,7 +17,7 @@ const { urlArray, label } = toRefs(props);
       v-tooltip="url"
       target="_blank"
     >
-      <i class="mx-1 pi pi-external-link text-blue-500"> </i>
+      <i class="mx-2 pi pi-external-link text-blue-500"> </i>
     </a>
   </div>
 </template>

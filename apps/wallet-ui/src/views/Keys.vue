@@ -4,7 +4,8 @@ import { KeyInfo } from "@tsg-dsp/wallet-dtos";
 import { useToast } from "primevue/usetoast";
 import { useConfirm } from "primevue/useconfirm";
 import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
-import { axiosInstance } from "../store/index.js";
+import http from "@tsg-dsp/common-ui/utils/http";
+import { toastError } from "@tsg-dsp/common-ui/utils/error";
 
 interface KeyForm {
   type: "EdDSA" | "ES384" | "X509";
@@ -41,21 +42,20 @@ const keyTypes = ref([
 
 const loadKeys = async () => {
   try {
-    const response = await axiosInstance<KeyInfo[]>("management/keys");
+    const response = await http<KeyInfo[]>("management/keys");
     keys.value = response.data;
-  } catch (err) {
-    toast.add({
-      severity: "warn",
-      summary: "API error",
-      detail: "Could not load keys",
-      life: 10000,
-    });
+  } catch (error) {
+    toast.add(toastError({
+      error,
+      summary: "Could not load keys",
+      defaultMessage: `Error in fetching key configurations`
+    }));
   }
 };
 
 const setDefaultKey = async (keyId: string) => {
   try {
-    await axiosInstance.put(
+    await http.put(
       `management/keys/${encodeURIComponent(keyId)}/default`
     );
     await loadKeys();
@@ -65,13 +65,12 @@ const setDefaultKey = async (keyId: string) => {
       detail: "Default key updated",
       life: 3000,
     });
-  } catch (err) {
-    toast.add({
-      severity: "warn",
-      summary: "API error",
-      detail: "Could not update default key",
-      life: 10000,
-    });
+  } catch (error) {
+    toast.add(toastError({
+      error,
+      summary: "Could not update default key",
+      defaultMessage: `Error in updating default key configuration`
+    }));
   }
 };
 
@@ -87,7 +86,7 @@ const deleteKey = async (keyId: string) => {
     acceptClass: "p-button-danger",
     accept: async () => {
       try {
-        await axiosInstance.delete(
+        await http.delete(
           `management/keys/${encodeURIComponent(keyId)}`
         );
         await loadKeys();
@@ -97,13 +96,12 @@ const deleteKey = async (keyId: string) => {
           detail: "Key deleted",
           life: 3000,
         });
-      } catch (err) {
-        toast.add({
-          severity: "warn",
-          summary: "API error",
-          detail: "Could not delete key",
-          life: 10000,
-        });
+      } catch (error) {
+        toast.add(toastError({
+          error,
+          summary: "Could not delete key",
+          defaultMessage: `Error in deleting key configuration`
+        }));
       }
     },
   });
@@ -111,7 +109,7 @@ const deleteKey = async (keyId: string) => {
 
 const addKey = async () => {
   try {
-    await axiosInstance.post("management/keys", keyForm.value);
+    await http.post("management/keys", keyForm.value);
     await loadKeys();
     toast.add({
       severity: "success",
@@ -119,13 +117,12 @@ const addKey = async () => {
       detail: "Key added",
       life: 3000,
     });
-  } catch (err) {
-    toast.add({
-      severity: "warn",
-      summary: "API error",
-      detail: "Could not add key",
-      life: 10000,
-    });
+  } catch (error) {
+    toast.add(toastError({
+      error,
+      summary: "Could not add key",
+      defaultMessage: `Error in registering key configuration`
+    }));
   }
 };
 

@@ -2,16 +2,17 @@
 import AppLayout from "@tsg-dsp/common-ui/layout/AppLayout.vue";
 import AppConfig from "./AppConfig.vue";
 import { useLayout } from "@tsg-dsp/common-ui/layout/composables/layout";
-import { computed } from "vue";
+import { computed, onMounted } from "vue";
 import { Menu, MenuProps } from "@tsg-dsp/common-ui/layout/AppMenu.vue";
 import { FooterProps } from "@tsg-dsp/common-ui/layout/AppFooter.vue";
-import { TopbarProps } from "@tsg-dsp/common-ui/layout/AppTopbar.vue";
 import { useRoute, useRouter } from "vue-router";
-import { store } from "../store/index.js";
+import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
+import { useCatalogStore } from "../stores/catalog";
 
 const { layoutConfig, layoutState } = useLayout();
 
-const user = store.state.user;
+const userStore = useUserStore();
+const catalogStore = useCatalogStore();
 
 const baseLogoUrl = "layout/images";
 const containerClass = computed(() => {
@@ -48,14 +49,6 @@ const menuList: Menu[] = [
   },
 ];
 
-const topbar: TopbarProps = {
-  title: "Http Data Plane",
-  name: store.state.title,
-  baseLogoUrl: baseLogoUrl,
-  user: user,
-  router: useRouter(),
-};
-
 const footer: FooterProps = {
   baseLogoUrl: baseLogoUrl,
   footerText: "TNO",
@@ -67,10 +60,24 @@ const sidebar: MenuProps = {
   menu: menuList,
   route: route,
 };
+
+onMounted(async () => {
+  await catalogStore.getOwnCatalog();
+});
+
 </script>
 <template>
   <div class="layout-wrapper" :class="containerClass">
-    <AppLayout :topbar="topbar" :footer="footer" :sidebar="sidebar" />
+    <AppLayout 
+      :topbar="{
+        title: 'Analytics Data Plane',
+        name: catalogStore.title,
+        baseLogoUrl: baseLogoUrl,
+        user: userStore.user,
+        router: useRouter(),
+      }"
+      :footer="footer"
+      :sidebar="sidebar" />
     <AppConfig />
     <div class="layout-mask animate-fadein"></div>
   </div>

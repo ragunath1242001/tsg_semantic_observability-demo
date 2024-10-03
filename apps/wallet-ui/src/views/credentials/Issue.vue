@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import { axiosInstance, store } from "../../store/index.js";
 import {
-  AppRole,
   CredentialConfig,
   JsonLdContextConfig,
 } from "@tsg-dsp/wallet-dtos";
@@ -10,6 +8,9 @@ import { computed, onMounted, ref } from "vue";
 import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
 import JsonSchemaFormElement from "@tsg-dsp/common-ui/components/JsonSchemaFormElement.vue";
 import Ajv, { JSONSchemaType } from "ajv";
+import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
+import http from "@tsg-dsp/common-ui/utils/http";
+import { toastError } from "@tsg-dsp/common-ui/utils/error";
 
 interface CredentialForm {
   context: string[];
@@ -25,16 +26,17 @@ interface CredentialForm {
 }
 
 const toast = useToast();
+const userStore = useUserStore();
 
 const formDefault: CredentialForm = {
   context: [],
   type: [],
-  targetDid: store.state.user?.didId || "",
+  targetDid: userStore.user?.didId || "",
   id: "",
   keyId: undefined,
   credentialSubject: JSON.stringify(
     {
-      id: store.state.user?.didId || "",
+      id: userStore.user?.didId || "",
     },
     null,
     2
@@ -48,14 +50,7 @@ const formDefault: CredentialForm = {
 const config = ref<CredentialConfig>();
 const credentialForm = ref(formDefault);
 
-const didId = computed(() => store.state.user?.didId);
-
-const manager = computed(
-  () =>
-    store.state.user?.roles.includes(AppRole.MANAGE_OWN_CREDENTIALS) ||
-    store.state.user?.roles.includes(AppRole.MANAGE_ALL_CREDENTIALS) ||
-    false
-);
+const didId = computed(() => userStore.user?.didId);
 
 const issuableContexts = computed(
   () =>
@@ -80,17 +75,16 @@ const parsedProperties = computed(() => {
 
 const loadConfig = async () => {
   try {
-    const response = await axiosInstance<CredentialConfig>(
+    const response = await http<CredentialConfig>(
       "management/credentials/config"
     );
     config.value = response.data;
-  } catch (err) {
-    toast.add({
-      severity: "warn",
-      summary: "API error",
-      detail: "Could not load credential config",
-      life: 10000,
-    });
+  } catch (error) {
+    toast.add(toastError({
+      error,
+      summary: "Could not load credential config",
+      defaultMessage: `Error in fetching credential config`
+    }));
   }
 };
 
@@ -107,7 +101,7 @@ const issueCredential = async () => {
   };
 
   try {
-    await axiosInstance.post("management/credentials", credentialConfig);
+    await http.post("management/credentials", credentialConfig);
     toast.add({
       severity: "success",
       summary: "Credential issued",
@@ -115,13 +109,12 @@ const issueCredential = async () => {
       life: 10000,
     });
     credentialForm.value = formDefault;
-  } catch (err) {
-    toast.add({
-      severity: "warn",
-      summary: "API error",
-      detail: "Could not issue credential",
-      life: 10000,
-    });
+  } catch (error) {
+    toast.add(toastError({
+      error,
+      summary: "Could not issue credential",
+      defaultMessage: `Error in issuing new credential`
+    }));
   }
 };
 

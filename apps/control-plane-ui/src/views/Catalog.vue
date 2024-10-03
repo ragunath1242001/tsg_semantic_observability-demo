@@ -9,6 +9,7 @@ import { CredentialAddress } from "@tsg-dsp/control-plane-dtos";
 import { storeToRefs } from "pinia";
 import { useCatalogStore } from "../stores/catalog";
 import router from "../router";
+import { toastError } from "@tsg-dsp/common-ui/utils/error";
 
 // Define a ref for the URL input
 const overlay = ref(null);
@@ -16,10 +17,10 @@ const overlay = ref(null);
 const { catalog, urlInput, assigner, didInput } = storeToRefs(
   useCatalogStore()
 );
-var dataAvailable = ref(false);
-var loading = ref(false);
-var manual = ref(true);
-var selection = ref<CredentialAddress>(null);
+const dataAvailable = ref(false);
+const loading = ref(false);
+const manual = ref(true);
+const selection = ref<CredentialAddress>(null);
 
 const http = injectStrict(AxiosKey);
 
@@ -48,13 +49,13 @@ const getCatalog = async () => {
     loading.value = false;
     return catalog;
   } catch (error) {
+    toast.add(toastError({
+      error,
+      summary: "Failed to retrieve catalog",
+      defaultMessage: `Could not load catalog`
+    }));
     // Handle error
     console.error("Error:", error);
-    toast.add({
-      severity: "error",
-      summary: "Failed to retrieve catalog",
-      detail: `${error.response.data.message}`,
-    });
     throw error;
   }
 };

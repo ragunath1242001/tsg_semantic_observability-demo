@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
-import { store } from "../store/index.js";
-
+import { computed } from "vue";
 import FloatingConfigurator from "@tsg-dsp/common-ui/components/FloatingConfigurator.vue";
-
 import { useLayout } from "@tsg-dsp/common-ui/layout/composables/layout.js";
+import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
 
+const store = useUserStore();
 const { layoutConfig } = useLayout();
 
 const logoUrl = computed(() => {
@@ -54,7 +53,7 @@ const logoUrl = computed(() => {
               class="w-full"
               as="router-link"
               to="/"
-              @click="store.dispatch('login', { redirect: true })"
+              @click="store.login({ redirect: true })"
             ></Button>
           </div>
         </div>

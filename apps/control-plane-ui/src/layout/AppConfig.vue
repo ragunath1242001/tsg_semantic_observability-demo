@@ -4,6 +4,7 @@ import { useLayout } from "@tsg-dsp/common-ui/layout/composables/layout";
 import { injectStrict } from "../utils/injectTyped";
 import { AxiosKey } from "../utils/symbols";
 import { useToast } from "primevue/usetoast";
+import { toastError } from "@tsg-dsp/common-ui/utils/error";
 
 const { configSidebarVisible } = useLayout();
 
@@ -31,13 +32,12 @@ const updateSettings = async () => {
   settings.controlPlaneInteractions = controlPlaneInteractions.value.value;
   try {
     settings = (await http.post("settings/update", settings)).data;
-  } catch (e) {
-    toast.add({
-      severity: "error",
+  } catch (error) {
+    toast.add(toastError({
+      error,
       summary: "Failed to update settings",
-      detail: `${e.response ? e.response.data.message : e}`,
-      life: 3000,
-    });
+      defaultMessage: `Could not update runtime settings`
+    }));
   }
 };
 const initialize = async () => {

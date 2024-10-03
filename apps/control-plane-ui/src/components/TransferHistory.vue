@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import utils from "../utils/common";
+import { stripDspace } from "@tsg-dsp/common-ui/utils/common";
 
 import { TransferDetailDto, TransferStatus } from "@tsg-dsp/control-plane-dtos";
 import { ref, toRef } from "vue";
 import { useToast } from "primevue/usetoast";
-import http from "../utils/http";
+import http from "@tsg-dsp/common-ui/utils/http";
+import { toastError } from "@tsg-dsp/common-ui/utils/error";
 
 const props = defineProps<{
   transfers: TransferStatus[];
@@ -48,15 +49,14 @@ const getTransfer = async (uuid: string) => {
         accTransfer.value.events = accTransfer.value.events.reverse();
       }
       return response;
-    } catch (e) {
-      toast.add({
-        severity: "error",
+    } catch (error) {
+      toast.add(toastError({
+        error,
         summary: "Failed to load negotiation",
-        detail: `${e.response ? e.response.data.message : e}`,
-        life: 3000,
-      });
-      console.error("Error:", e);
-      throw e;
+        defaultMessage: `Could not load negotiation with id ${uuid}`
+      }));
+      console.error("Error:", error);
+      throw error;
     }
   }
 };
@@ -88,7 +88,7 @@ const getTransfer = async (uuid: string) => {
               <div>
                 <Tag
                   class="ml-auto mr-6"
-                  :value="utils.stripDspace(transfer.state)"
+                  :value="stripDspace(transfer.state)"
                   :severity="getSeverity(transfer.state)"
                 />
                 <small class="p-text-secondary">
@@ -113,7 +113,7 @@ const getTransfer = async (uuid: string) => {
                   </template>
                   <template #content="slotProps">
                     <Tag
-                      :value="utils.stripDspace(slotProps.item.state)"
+                      :value="stripDspace(slotProps.item.state)"
                       :severity="getSeverity(slotProps.item.state)"
                     />
                   </template>

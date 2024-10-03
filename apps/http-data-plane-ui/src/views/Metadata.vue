@@ -3,12 +3,14 @@ import {
   DatasetConfig,
 } from "@tsg-dsp/http-data-plane-dtos";
 import { ref, onMounted } from "vue";
-import { axiosInstance } from "../store";
 import { useToast } from "primevue/usetoast";
 import { useConfirm } from "primevue/useconfirm";
 import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
 import schema from "@tsg-dsp/common-ui/assets/dataset-config.schema.json";
 import { DataPlaneStateDto } from "@tsg-dsp/common-dtos";
+import http from "@tsg-dsp/common-ui/utils/http";
+import { ODRLAction } from "@tsg-dsp/common-dsp";
+import { toastError } from "@tsg-dsp/common-ui/utils/error";
 
 const toast = useToast();
 const confirm = useConfirm();
@@ -24,58 +26,7 @@ const odrlOfferSchema = {
   $ref: "https://w3id.org/dspace/2024/1/negotiation/contract-schema.json#/definitions/MessageOffer",
 };
 
-const odrlActions = [
-  "odrl:delete",
-  "odrl:execute",
-  "cc:SourceCode",
-  "odrl:anonymize",
-  "odrl:extract",
-  "odrl:read",
-  "odrl:index",
-  "odrl:compensate",
-  "odrl:sell",
-  "odrl:derive",
-  "odrl:ensureExclusivity",
-  "odrl:annotate",
-  "cc:Reproduction",
-  "odrl:translate",
-  "odrl:include",
-  "cc:DerivativeWorks",
-  "cc:Distribution",
-  "odrl:textToSpeech",
-  "odrl:inform",
-  "odrl:grantUse",
-  "odrl:archive",
-  "odrl:modify",
-  "odrl:aggregate",
-  "odrl:attribute",
-  "odrl:nextPolicy",
-  "odrl:digitize",
-  "cc:Attribution",
-  "odrl:install",
-  "odrl:concurrentUse",
-  "odrl:distribute",
-  "odrl:synchronize",
-  "odrl:move",
-  "odrl:obtainConsent",
-  "odrl:print",
-  "cc:Notice",
-  "odrl:give",
-  "odrl:uninstall",
-  "cc:Sharing",
-  "odrl:reviewPolicy",
-  "odrl:watermark",
-  "odrl:play",
-  "odrl:reproduce",
-  "odrl:transform",
-  "odrl:display",
-  "odrl:stream",
-  "cc:ShareAlike",
-  "odrl:acceptTracking",
-  "cc:CommericalUse",
-  "odrl:present",
-  "odrl:use",
-];
+const odrlActions = Object.values(ODRLAction);
 
 const configRaw = ref(false);
 const configString = ref<string>();
@@ -90,20 +41,16 @@ const showDataset = ref(false);
 
 const getState = async () => {
   try {
-    const response = await axiosInstance.get<DataPlaneStateDto>(
+    const response = await http.get<DataPlaneStateDto>(
       "management/state"
     );
     state.value = response.data;
-  } catch (err) {
-    const message =
-      err.response?.data?.message ||
-      "Could not load state from the HTTP data plane";
-    toast.add({
-      severity: "warn",
+  } catch (error) {
+    toast.add(toastError({
+      error,
       summary: "Loading state failed",
-      detail: message,
-      life: 10000,
-    });
+      defaultMessage: `Could not load state from the HTTP data plane`
+    }));
   }
 };
 
@@ -135,21 +82,17 @@ const fillFormProperties = (config: DatasetConfig) => {
 
 const getDatasetConfig = async () => {
   try {
-    const response = await axiosInstance.get<DatasetConfig>(
+    const response = await http.get<DatasetConfig>(
       "management/dataset"
     );
     dataset.value = response.data;
     fillFormProperties(response.data);
-  } catch (err) {
-    const message =
-      err.response?.data?.message ||
-      "Could not load dataset config from the HTTP data plane";
-    toast.add({
-      severity: "warn",
+  } catch (error) {
+    toast.add(toastError({
+      error,
       summary: "Loading dataset config failed",
-      detail: message,
-      life: 10000,
-    });
+      defaultMessage: `Could not load dataset config from the HTTP data plane`
+    }));
   }
 };
 
@@ -173,20 +116,16 @@ const update = async () => {
         config.policy.raw = undefined;
       }
     }
-    await axiosInstance.put("management/dataset", config);
+    await http.put("management/dataset", config);
     editModal.value = false;
     await getDatasetConfig();
     await getState();
-  } catch (err) {
-    const message =
-      err.response?.data?.message ||
-      "Could not load dataset config from the HTTP data plane";
-    toast.add({
-      severity: "warn",
+  } catch (error) {
+    toast.add(toastError({
+      error,
       summary: "Loading dataset config failed",
-      detail: message,
-      life: 10000,
-    });
+      defaultMessage: `Could not load dataset config from the HTTP data plane`
+    }));
   }
   updateLoading.value = false;
 };
@@ -194,18 +133,14 @@ const update = async () => {
 const refreshRegistration = async () => {
   refreshLoading.value = true;
   try {
-    await axiosInstance.post("management/refresh");
+    await http.post("management/refresh");
     await getDatasetConfig();
-  } catch (err) {
-    const message =
-      err.response?.data?.message ||
-      "Could not load dataset config from the HTTP data plane";
-    toast.add({
-      severity: "warn",
-      summary: "Loading dataset config failed",
-      detail: message,
-      life: 10000,
-    });
+  } catch (error) {
+    toast.add(toastError({
+      error,
+      summary: "Refreshing registration failed",
+      defaultMessage: `Could not refresh registration at the HTTP data plane`
+    }));
   }
   refreshLoading.value = false;
 };

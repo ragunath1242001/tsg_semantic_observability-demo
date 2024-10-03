@@ -6,8 +6,9 @@ import Catalog from "../components/Catalog.vue";
 import { useToast } from "primevue/usetoast";
 import { storeToRefs } from "pinia";
 import { useDspStore } from "../stores/dsp";
+import { toastError } from "@tsg-dsp/common-ui/utils/error";
 
-var dataPlanesCount = ref(0);
+const dataPlanesCount = ref(0);
 
 const http = injectStrict(AxiosKey);
 
@@ -17,13 +18,12 @@ const getDataPlanes = async () => {
   try {
     const response = await http.get("management/dataplanes/");
     dataPlanesCount.value = response.data.length;
-  } catch (e) {
-    toast.add({
-      severity: "error",
+  } catch (error) {
+    toast.add(toastError({
+      error,
       summary: "Failed to get dataplanes",
-      detail: `${e.response.data.message}`,
-      life: 3000,
-    });
+      defaultMessage: `Could not load dataplanes`
+    }));
   }
 };
 const { ctaTransfersCount, ownCatalog } = storeToRefs(useDspStore());

@@ -1,7 +1,7 @@
 import { createApp } from "vue";
 import App from "./App.vue";
 import Lara from "@primevue/themes/lara";
-import http from "./utils/http";
+import http from "@tsg-dsp/common-ui/utils/http";
 import { AxiosKey } from "./utils/symbols";
 import router from "./router";
 import { createPinia } from "pinia";

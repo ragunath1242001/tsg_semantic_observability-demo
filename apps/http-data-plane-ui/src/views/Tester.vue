@@ -6,12 +6,14 @@ import axios, { AxiosResponse } from "axios";
 import { useToast } from "primevue/usetoast";
 import { useDialog } from "primevue/usedialog";
 import { TransferDto } from "@tsg-dsp/common-dtos";
-import { axiosInstance, store } from "../store/index.js";
-import { httpStatus } from "../utils/httpStatus";
+import { httpStatusNames } from "@tsg-dsp/common-ui/utils/httpStatus";
 import { AgreementDto, DatasetDto } from "@tsg-dsp/common-dsp";
 
 import JSONDialog from "../components/JSONDialog.vue";
 import { useRoute } from "vue-router";
+import http from "@tsg-dsp/common-ui/utils/http";
+import { useTransferStore } from "../stores/transfer";
+import { toastError } from "@tsg-dsp/common-ui/utils/error";
 
 const toast = useToast();
 const dialog = useDialog();
@@ -159,21 +161,17 @@ const bodyTypeChange = () => {
 const fetchMetadata = async () => {
   metadataLoading.value = true;
   try {
-    const response = await axiosInstance.get<{
+    const response = await http.get<{
       agreement: AgreementDto;
       dataset: DatasetDto;
     }>(`management/transfers/${transfer.value.id}/metadata`);
     metadata.value = response.data;
-  } catch (err) {
-    const message =
-      err.response?.data?.message ||
-      "Could not fetch metadata for this transfer";
-    toast.add({
-      severity: "warn",
+  } catch (error) {
+    toast.add(toastError({
+      error,
       summary: "Error fetching metadata",
-      detail: message,
-      life: 10000,
-    });
+      defaultMessage: `Could not fetch metadata for this transfer ${transfer.value.id}`
+    }));
   }
   metadataLoading.value = false;
 };
@@ -209,17 +207,13 @@ const execute = async () => {
     });
     const stop = new Date().getTime();
     response.value = { axios: axiosResponse, measuredTime: stop - start };
-  } catch (err) {
-    response.value = { error: err as Error };
-    const message =
-      err.response?.data?.message ||
-      "Could not execute the call to the remote data plane";
-    toast.add({
-      severity: "warn",
+  } catch (error) {
+    response.value = { error: error as Error };
+    toast.add(toastError({
+      error,
       summary: "Error executing call",
-      detail: message,
-      life: 10000,
-    });
+      defaultMessage: `Could not execute the call to the remote data plane`
+    }));
   }
   loading.value = false;
 };
@@ -247,7 +241,7 @@ const showDatasetDialog = () => {
 };
 
 onMounted(async () => {
-  transfer.value = store.state.transfer;
+  transfer.value = useTransferStore().transfer;
   if (transfer.value) {
     url.value = transfer.value.dataAddress?.["dspace:endpoint"];
     const authorization = transfer.value.dataAddress?.[
@@ -258,7 +252,7 @@ onMounted(async () => {
     }
   } else {
     try {
-      const transferResponse = await axiosInstance.get(
+      const transferResponse = await http.get(
         `/management/transfers/${route.params.id}`
       );
       transfer.value = transferResponse.data;
@@ -269,14 +263,12 @@ onMounted(async () => {
       if (authorization) {
         setHeader("Authorization", authorization["dspace:value"]);
       }
-    } catch (err) {
-      const message = err.response?.data?.message || "Could not load transfer";
-      toast.add({
-        severity: "warn",
-        summary: "API error",
-        detail: message,
-        life: 10000,
-      });
+    } catch (error) {
+      toast.add(toastError({
+        error,
+        summary: "Could not load transfer",
+        defaultMessage: `Could not load transfer with identifier ${route.params.id}`
+      }));
     }
   }
 });
@@ -444,7 +436,7 @@ onMounted(async () => {
         <template v-else-if="response.axios">
           <FormField label="Status"
             >{{ response.axios.status }}
-            {{ httpStatus[response.axios.status] }}</FormField
+            {{ httpStatusNames[response.axios.status] }}</FormField
           >
           <FormField label="Time">{{ response.measuredTime }}ms</FormField>
           <FormField label="Headers">

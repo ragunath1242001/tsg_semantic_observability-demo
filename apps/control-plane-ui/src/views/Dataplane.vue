@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import http from "../utils/http";
+import http from "@tsg-dsp/common-ui/utils/http";
 import { IDataPlaneDto } from "@tsg-dsp/control-plane-dtos";
 import { onMounted, ref } from "vue";
 import { useToast } from "primevue/usetoast";
 import { useConfirm } from "primevue/useconfirm";
 import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
 import DisplayField from "@tsg-dsp/common-ui/components/DisplayField.vue";
+import { toastError } from "@tsg-dsp/common-ui/utils/error";
 
 const dataplanes = ref<IDataPlaneDto[]>();
 
@@ -29,13 +30,12 @@ const getDataPlanes = async () => {
     const response = await http.get<IDataPlaneDto[]>("management/dataplanes");
     dataplanes.value = response.data;
     return dataplanes;
-  } catch (e) {
-    toast.add({
-      severity: "error",
+  } catch (error) {
+    toast.add(toastError({
+      error,
       summary: "Failed to get dataplanes",
-      detail: `${e.response.data.message}`,
-      life: 3000,
-    });
+      defaultMessage: `Could not load dataplanes`
+    }));
   }
 };
 
@@ -50,13 +50,12 @@ const addDataPlane = async () => {
       life: 3000,
     });
     await getDataPlanes();
-  } catch (err) {
-    toast.add({
-      severity: "error",
-      summary: "API Error",
-      detail: "Could not add dataplane",
-      life: 3000,
-    });
+  } catch (error) {
+    toast.add(toastError({
+      error,
+      summary: "Failed to add dataplane",
+      defaultMessage: `Could not register new dataplane to the control plane`
+    }));
   }
 };
 
@@ -81,15 +80,12 @@ const deleteDataPlane = async (dataplaneId: string) => {
           detail: "Dataplane deleted",
           life: 3000,
         });
-      } catch (err) {
-        const message =
-          err.response?.data?.message || "Could not delete dataplane";
-        toast.add({
-          severity: "warn",
-          summary: "API error",
-          detail: message,
-          life: 10000,
-        });
+      } catch (error) {
+        toast.add(toastError({
+          error,
+          summary: "Could not delete dataplane",
+          defaultMessage: `Could not delete dataplane`
+        }));
       }
     },
   });
@@ -134,7 +130,7 @@ onMounted(async () => {
         </div></div
     ></template>
     <template #content>
-      <div class="grid flex-wrap grid-cols-2 gap-4" v-if="dataplane">
+      <div class="grid flex-wrap grid-cols-12 gap-4" v-if="dataplane">
         <DisplayField label="Identifier">{{
           dataplane.identifier
         }}</DisplayField>

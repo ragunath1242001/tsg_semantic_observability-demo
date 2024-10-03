@@ -14,7 +14,7 @@ const configStorageItem = `layoutConfig-${location.pathname}`;
 function storedConfig() {
   const config =
     localStorage.getItem(configStorageItem) ?? JSON.stringify(defaultConfig);
-  localStorage.setItem(config);
+  localStorage.setItem(configStorageItem, config);
   const parsed = JSON.parse(config);
   if (parsed.darkTheme) {
     document.documentElement.classList.add("app-dark");

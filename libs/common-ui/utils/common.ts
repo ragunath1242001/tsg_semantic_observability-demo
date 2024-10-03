@@ -28,9 +28,3 @@ export function obtainValues(
 export function stringify(value: object): string {
   return JSON.stringify(value, null, 2);
 }
-
-// export default {
-//   stripDspace,
-//   obtainValues,
-//   stringify,
-// };

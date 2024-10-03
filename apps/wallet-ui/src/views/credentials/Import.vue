@@ -1,21 +1,14 @@
 <script setup lang="ts">
 import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
-import { axiosInstance, store } from "../../store/index.js";
-import { AppRole } from "@tsg-dsp/wallet-dtos";
+import { toastError } from "@tsg-dsp/common-ui/utils/error";
+import http from "@tsg-dsp/common-ui/utils/http";
 import { useToast } from "primevue/usetoast";
-import { computed, onMounted, ref } from "vue";
+import { ref } from "vue";
 
 const toast = useToast();
 
 const credentialRef = ref<string>("{}");
 const credentialValidation = ref<string>();
-
-const manager = computed(
-  () =>
-    store.state.user?.roles.includes(AppRole.MANAGE_OWN_CREDENTIALS) ||
-    store.state.user?.roles.includes(AppRole.MANAGE_ALL_CREDENTIALS) ||
-    false
-);
 
 const validateCredential = (showToast: boolean) => {
   try {
@@ -82,7 +75,7 @@ const importCredential = async (validate = true) => {
   }
 
   try {
-    await axiosInstance.post("management/credentials/import", credential);
+    await http.post("management/credentials/import", credential);
     toast.add({
       severity: "success",
       summary: "Success",
@@ -91,13 +84,12 @@ const importCredential = async (validate = true) => {
     });
     credentialRef.value = "{}";
     credentialValidation.value = undefined;
-  } catch (err) {
-    toast.add({
-      severity: "warn",
-      summary: "API error",
-      detail: "Error in importing credential",
-      life: 10000,
-    });
+  } catch (error) {
+    toast.add(toastError({
+      error,
+      summary: "Could not import credential",
+      defaultMessage: `Error in importing credential`
+    }));
   }
 };
 </script>

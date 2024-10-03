@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
-import { axiosInstance } from "../store/index.js";
 import { DIDDocument } from "did-resolver";
 import { useToast } from "primevue/usetoast";
+import http from "@tsg-dsp/common-ui/utils/http";
+import { toastError } from "@tsg-dsp/common-ui/utils/error";
 
 const toast = useToast();
 
@@ -15,7 +16,7 @@ const numberOfServices = ref(0);
 
 const getDidDocument = async () => {
   try {
-    const response = await axiosInstance.get<DIDDocument>(
+    const response = await http.get<DIDDocument>(
       "/.well-known/did.json",
       { baseURL: "" }
     );
@@ -24,13 +25,12 @@ const getDidDocument = async () => {
       response.data.verificationMethod?.length ?? 0;
     numberOfAssertionMethods.value = response.data.assertionMethod?.length ?? 0;
     numberOfServices.value = response.data.service?.length ?? 0;
-  } catch (err) {
-    toast.add({
-      severity: "warn",
-      summary: "DID Resolvement failed",
-      detail: "Could not load DID document from well-known address",
-      life: 10000,
-    });
+  } catch (error) {
+    toast.add(toastError({
+      error,
+      summary: "DID resolvement failed",
+      defaultMessage: `Error in resolving own DID document`
+    }));
   }
 };
 

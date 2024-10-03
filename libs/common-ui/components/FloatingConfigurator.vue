@@ -10,7 +10,7 @@ const { toggleDarkMode, isDarkTheme } = useLayout();
       type="button"
       @click="toggleDarkMode"
       rounded
-      :icon="{ 'pi pi-moon': isDarkTheme, 'pi pi-sun': !isDarkTheme }"
+      :icon="isDarkTheme ? 'pi pi-moon' : 'pi pi-sun'"
       severity="secondary"
     />
   </div>

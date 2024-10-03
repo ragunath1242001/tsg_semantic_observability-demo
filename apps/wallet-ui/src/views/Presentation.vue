@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { useToast } from "primevue/usetoast";
-import { axiosInstance, store } from "../store/index.js";
 import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
 import {
   CredentialSubject,
@@ -9,14 +8,18 @@ import {
   VerifiablePresentation,
 } from "@tsg-dsp/common-dsp";
 import schema from "@tsg-dsp/common-ui/assets/presentation-definition.schema.json";
+import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
+import http from "@tsg-dsp/common-ui/utils/http";
+import { toastError } from "@tsg-dsp/common-ui/utils/error";
 
 const toast = useToast();
+const userStore = useUserStore();
 
 const holderForm = ref<{
   audience: string;
   scope: string;
 }>({
-  audience: store.state.user?.didId || "",
+  audience: userStore.user?.didId || "",
   scope: "",
 });
 const holderIdToken = ref<string>();
@@ -59,7 +62,7 @@ const verifierResponse = ref<{
 
 const requestHolderIDToken = async () => {
   try {
-    const response = await axiosInstance<{ id_token: string }>(
+    const response = await http<{ id_token: string }>(
       "iatp/holder/token",
       {
         params: {
@@ -72,23 +75,22 @@ const requestHolderIDToken = async () => {
       }
     );
     holderIdToken.value = response.data.id_token;
-    if (holderForm.value.audience === store.state.user?.didId) {
+    if (holderForm.value.audience === userStore.user?.didId) {
       verifierForm.value.holderIDToken = response.data.id_token;
     }
-  } catch (err) {
-    toast.add({
-      severity: "warn",
-      summary: "API error",
-      detail: "Could not create ID token",
-      life: 10000,
-    });
+  } catch (error) {
+    toast.add(toastError({
+      error,
+      summary: "Could not create ID token",
+      defaultMessage: `Could not create ID token for ${holderForm.value.audience}`
+    }));
   }
 };
 
 const requestVerification = async () => {
   verifierResponse.value = undefined;
   try {
-    const response = await axiosInstance.post<
+    const response = await http.post<
       VerifiablePresentation<VerifiableCredential<CredentialSubject>>
     >("iatp/verifier/verify", {
       holderIdToken: verifierForm.value.holderIDToken,
@@ -100,20 +102,19 @@ const requestVerification = async () => {
       success: true,
       body: JSON.stringify(response.data, null, 2),
     };
-  } catch (err) {
-    if (err.response) {
+  } catch (error) {
+    if (error.response) {
       verifierResponse.value = {
         success: false,
-        body: JSON.stringify(err.response.data, null, 2),
-        code: err.response.status,
+        body: JSON.stringify(error.response.data, null, 2),
+        code: error.response.status,
       };
     } else {
-      toast.add({
-        severity: "warn",
-        summary: "API error",
-        detail: "Could not request verification",
-        life: 10000,
-      });
+      toast.add(toastError({
+        error,
+        summary: "Could not request verification",
+        defaultMessage: `Error in requesting verification of presentation definition`
+      }));
     }
   }
 };

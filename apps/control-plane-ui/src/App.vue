@@ -2,7 +2,7 @@
 import { updatePreset, updateSurfacePalette } from "@primevue/themes";
 import { useDspStore } from "./stores/dsp";
 import { socket } from "./socket";
-import { useUserStore } from "./stores/user";
+import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
 import { onBeforeMount } from "vue";
 const dspStore = useDspStore();
 

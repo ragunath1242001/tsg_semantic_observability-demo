@@ -1,19 +1,17 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
-import { axiosInstance } from "../store/index.js";
 import { useToast } from "primevue/usetoast";
 import { useConfirm } from "primevue/useconfirm";
 import { DataPlaneStateDto, TransferDto } from "@tsg-dsp/common-dtos";
 import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
-import { formatDate } from "../utils/date.js";
-import { store } from "../store/index.js";
+import { formatDate } from "@tsg-dsp/common-ui/utils/date.js";
 import PaginatedLogTable from "../components/PaginatedLogTable.vue";
-import router from "../router/index.js";
+import http from "@tsg-dsp/common-ui/utils/http.js";
+import { toastError } from "@tsg-dsp/common-ui/utils/error";
 
 const toast = useToast();
 const confirm = useConfirm();
 
-const showDataset = ref(false);
 const state = ref<DataPlaneStateDto>();
 const transfers = ref<TransferDto[]>();
 const consumerTransfers = computed(() => {
@@ -39,39 +37,31 @@ const expandedProviderRows = ref();
 
 const getState = async () => {
   try {
-    const response = await axiosInstance.get<DataPlaneStateDto>(
+    const response = await http.get<DataPlaneStateDto>(
       "management/state"
     );
     state.value = response.data;
-  } catch (err) {
-    const message =
-      err.response?.data?.message ||
-      "Could not load state from the HTTP data plane";
-    toast.add({
-      severity: "warn",
+  } catch (error) {
+    toast.add(toastError({
+      error,
       summary: "Loading state failed",
-      detail: message,
-      life: 10000,
-    });
+      defaultMessage: "Could not load state from the analytics data plane"
+    }));
   }
 };
 
 const getTransfers = async () => {
   try {
-    const response = await axiosInstance.get<TransferDto[]>(
+    const response = await http.get<TransferDto[]>(
       "management/transfers"
     );
     transfers.value = response.data;
-  } catch (err) {
-    const message =
-      err.response?.data?.message ||
-      "Could not load transfers from the HTTP data plane";
-    toast.add({
-      severity: "warn",
+  } catch (error) {
+    toast.add(toastError({
+      error,
       summary: "Loading transfers failed",
-      detail: message,
-      life: 10000,
-    });
+      defaultMessage: "Could not load transfers from the analytics data plane"
+    }));
   }
 };
 
@@ -119,7 +109,7 @@ const action = async (
             reason: "Manual user intervention",
           };
         }
-        await axiosInstance.post(
+        await http.post(
           `management/transfers/${transfer.id}/${action}`,
           undefined,
           {
@@ -127,16 +117,12 @@ const action = async (
           }
         );
         setTimeout(getTransfers, 1000);
-      } catch (err) {
-        const message =
-          err.response?.data?.message ||
-          `Could not ${action} transfer ${transfer.id}`;
-        toast.add({
-          severity: "warn",
+      } catch (error) {
+        toast.add(toastError({
+          error,
           summary: `Error during transfer ${action}`,
-          detail: message,
-          life: 10000,
-        });
+          defaultMessage: `Could not ${action} transfer ${transfer.id}`
+        }));
       }
       target.classList.remove("p-disabled");
       target.classList.remove("p-button-loading");
@@ -279,10 +265,11 @@ onMounted(async () => {
               severity="info"
               aria-label="Execute"
               @click="
-                store.commit('currentTransfer', props.data);
-                router.push({
-                  name: 'tester',
-                  params: { id: props.data.id },
+                toast.add({
+                  severity: 'error',
+                  summary: 'Cannot execute transfer',
+                  detail: 'Execution of transfers is not yet supported in this data plane',
+                  life: 10000,
                 });
               "
               v-tooltip.bottom="'Execute'"

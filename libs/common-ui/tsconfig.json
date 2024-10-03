@@ -1,5 +1,5 @@
 {
-  "include": ["env.d.ts", "src/**/*", "src/**/*.vue"],
+  "include": ["env.d.ts", "{components,layout,store,utils}/**/*", "{components,layout,store,utils}/**/*.vue"],
   "compilerOptions": {
     "target": "esnext",
     "module": "ESNext",
