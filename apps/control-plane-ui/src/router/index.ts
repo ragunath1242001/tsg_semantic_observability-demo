@@ -6,7 +6,7 @@ import LoginVue from "../views/Login.vue";
 import NegotiationsVue from "../views/Negotiations.vue";
 import TransfersVue from "../views/Transfers.vue";
 import DataplaneVue from "../views/Dataplane.vue";
-import { useUserStore } from "../stores/user.js";
+import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
 import Registry from "../views/Registry.vue";
 
 const router = createRouter({

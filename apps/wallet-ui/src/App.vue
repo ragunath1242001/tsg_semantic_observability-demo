@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { onBeforeMount } from "vue";
 import { updatePreset, updateSurfacePalette } from "@primevue/themes";
+import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
+
+const userStore = useUserStore();
+userStore.login({ redirect: false });
 
 const initialPreset = () => {
   const color = {

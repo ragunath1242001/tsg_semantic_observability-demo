@@ -9,10 +9,11 @@ import {
 import { useToast } from "primevue/usetoast";
 import { injectStrict } from "../utils/injectTyped";
 import { AxiosKey } from "../utils/symbols";
-import utils from "../utils/common";
+import { stringify, obtainValues } from "@tsg-dsp/common-ui/utils/common";
 import DisplayField from "@tsg-dsp/common-ui/components/DisplayField.vue";
 import MonacoEditor from "@tsg-dsp/common-ui/components/MonacoEditor.vue";
 import schema from "@tsg-dsp/common-ui/assets/odrl.schema.json";
+import { toastError } from "@tsg-dsp/common-ui/utils/error";
 
 interface Constraint {
   leftOperand: string;
@@ -42,15 +43,15 @@ const http = injectStrict(AxiosKey);
 const toast = useToast();
 
 const datasetDataRo = toRef(props, "datasetData");
-var datasetData = reactive(datasetDataRo.value);
+const datasetData = reactive(datasetDataRo.value);
 
 const policy = toRef(props, "policy");
 
 const display = ref(false);
-var editable = ref(false);
+const editable = ref(false);
 
-var datasetDataString = ref("");
-datasetDataString.value = utils.stringify(datasetDataRo.value);
+const datasetDataString = ref("");
+datasetDataString.value = stringify(datasetDataRo.value);
 
 const emit = defineEmits(["change-dataset-view", "update-datasets"]);
 
@@ -71,8 +72,8 @@ const goBack = () => {
 };
 
 const parsePolicies = (policies: Array<PolicyDto>): Array<FlatPolicy> => {
-  var output: Array<FlatPolicy> = [];
-  for (var policy of policies) {
+  const output: Array<FlatPolicy> = [];
+  for (const policy of policies) {
     if (policy["odrl:permission"] !== undefined) {
       output.push.apply(
         output,
@@ -144,16 +145,15 @@ const sendNegotiation = async (
       detail: "Successfully sent contract negotiation request",
       life: 3000,
     });
-  } catch (e) {
+  } catch (error) {
     console.error(
-      `Could not send negotiation to address=${address}&audience=${audience} with id ${datasetId}. Error: ${e}`
+      `Could not send negotiation to address=${address}&audience=${audience} with id ${datasetId}. Error: ${error}`
     );
-    toast.add({
-      severity: "error",
+    toast.add(toastError({
+      error,
       summary: "Failed to send negotiation request",
-      detail: `${e.response.data.message}`,
-      life: 3000,
-    });
+      defaultMessage: `Could not send negotiation to address=${address}&audience=${audience} with id ${datasetId}`
+    }));
   }
   display.value = false;
   return;
@@ -174,7 +174,7 @@ const sendNegotiation = async (
         </div></template
       >
       <template #subtitle>
-        {{ utils.obtainValues(datasetData["dct:description"]).join("\r\n") }}
+        {{ obtainValues(datasetData["dct:description"]).join("\r\n") }}
       </template>
       <template #content>
         <div class="grid grid-cols-12 gap-4 grid-nogutter border-t border-surface">
@@ -219,7 +219,7 @@ const sendNegotiation = async (
             <a
               v-for="conformsTo in datasetData['dcat:distribution'][0]['dct:conformsTo']"
               :href="conformsTo"
-              class="mr-2"
+              class="mr-2 break-all"
             >
               {{
                 conformsTo
@@ -229,7 +229,7 @@ const sendNegotiation = async (
           <DisplayField label="Keywords"
             ><Tag
               class="mr-2 text-surface-900 dark:text-surface-0 bg-primary-700"
-              v-for="keyword in utils.obtainValues(datasetData['dcat:keyword'])"
+              v-for="keyword in obtainValues(datasetData['dcat:keyword'])"
               :key="keyword"
               :value="keyword"
             ></Tag

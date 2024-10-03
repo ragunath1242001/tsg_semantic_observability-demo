@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
-import { axiosInstance } from "../../store/index.js";
 import {
   CredentialConfig,
   CredentialOffer,
@@ -12,9 +11,10 @@ import {
 import JsonSchemaFormElement from "@tsg-dsp/common-ui/components/JsonSchemaFormElement.vue";
 import { useToast } from "primevue/usetoast";
 import { computed, onMounted, ref } from "vue";
-import axios from "axios";
 import Ajv, { JSONSchemaType } from "ajv";
-import { formatDate } from "../../utils/date.js";
+import http from "@tsg-dsp/common-ui/utils/http";
+import { formatDate } from "@tsg-dsp/common-ui/utils/date";
+import { toastError } from "@tsg-dsp/common-ui/utils/error";
 
 interface OfferForm {
   holderId: string;
@@ -56,49 +56,47 @@ const issuableCredentialTypes = computed(
 
 const loadOffers = async () => {
   try {
-    const response = await axiosInstance<CredentialOfferStatus[]>(
+    const response = await http<CredentialOfferStatus[]>(
       "oid4vci/offer"
     );
     offers.value = response.data;
-  } catch (err) {
-    toast.add({
-      severity: "warn",
-      summary: "API error",
-      detail: "Could not load credential offers",
-      life: 10000,
-    });
+  } catch (error) {
+    toast.add(toastError({
+      error,
+      summary: "Could not load credential offers",
+      defaultMessage: `Error in fetching credential offers`
+    }));
   }
 };
 
 const loadConfig = async () => {
   try {
-    const response = await axiosInstance<CredentialConfig>(
+    const response = await http<CredentialConfig>(
       "management/credentials/config"
     );
     config.value = response.data;
-  } catch (err) {
-    toast.add({
-      severity: "warn",
-      summary: "API error",
-      detail: "Could not load credential config",
-      life: 10000,
-    });
+  } catch (error) {
+    toast.add(toastError({
+      error,
+      summary: "Could not load credential config",
+      defaultMessage: `Error in fetching credential config`
+    }));
   }
 };
 
 const revokeOffer = async (id: number) => {
   try {
-    await axiosInstance.put<CredentialOfferStatus>(
+    await http.put<CredentialOfferStatus>(
       `oid4vci/offer/${id}/revoke`
     );
     await loadOffers();
-  } catch (err) {
-    toast.add({
-      severity: "warn",
-      summary: "API error",
-      detail: "Could not revoke offer",
-      life: 10000,
-    });
+  } catch (error) {
+
+    toast.add(toastError({
+      error,
+      summary: "Could not revoke offer",
+      defaultMessage: `Error in revoking credential offer`
+    }));
   }
 };
 
@@ -181,7 +179,7 @@ const createOffer = async () => {
       preAuthorizedCode: offerForm.value.preAuthorizedCode,
     };
 
-    const offer = await axiosInstance.post<CredentialOffer>(
+    const offer = await http.post<CredentialOffer>(
       "oid4vci/offer",
       offerRequest
     );
@@ -203,19 +201,18 @@ const createOffer = async () => {
     if (offerStatus) {
       expandedRows.value = [...(expandedRows.value ?? []), offerStatus];
     }
-  } catch (err) {
-    toast.add({
-      severity: "warn",
-      summary: "API error",
-      detail: "Could not create offer",
-      life: 10000,
-    });
+  } catch (error) {
+    toast.add(toastError({
+      error,
+      summary: "Could not create offer",
+      defaultMessage: `Error in creating new credential offer`
+    }));
   }
 };
 
 const retrieveCredential = async () => {
   try {
-    await axiosInstance.post("oid4vci/holder/request", requestForm.value);
+    await http.post("oid4vci/holder/request", requestForm.value);
     toast.add({
       severity: "success",
       summary: "Credential retrieved",
@@ -226,13 +223,12 @@ const retrieveCredential = async () => {
       issuerUrl: "",
       preAuthorizedCode: "",
     };
-  } catch (err) {
-    toast.add({
-      severity: "warn",
-      summary: "API error",
-      detail: "Could not retrieve credential",
-      life: 10000,
-    });
+  } catch (error) {
+    toast.add(toastError({
+      error,
+      summary: "Could not retrieve credential",
+      defaultMessage: `Error in retrieving credential`
+    }));
   }
 };
 

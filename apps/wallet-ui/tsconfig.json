@@ -1,6 +1,7 @@
 {
   "include": ["env.d.ts", "src/**/*", "src/**/*.vue"],
   "compilerOptions": {
+    "skipLibCheck": true /* skipLibCheck, because of an error in Pinia with higher typescript versions https://github.com/vuejs/pinia/discussions/2605 */,
     "target": "esnext",
     "module": "ESNext",
     "moduleResolution": "Node",
@@ -8,7 +9,7 @@
     "allowSyntheticDefaultImports": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./src/*"]
     }
   },
   "references": [

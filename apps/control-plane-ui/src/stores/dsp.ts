@@ -6,7 +6,7 @@ import {
   TransferDetailDto,
   TransferStatus,
 } from "@tsg-dsp/control-plane-dtos";
-import http from "../utils/http";
+import http from "@tsg-dsp/common-ui/utils/http";
 import { CatalogDto } from "@tsg-dsp/common-dsp";
 
 interface Catalog {

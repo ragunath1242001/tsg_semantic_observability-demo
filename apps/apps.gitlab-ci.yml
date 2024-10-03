@@ -124,6 +124,12 @@ http-data-plane-package:
   variables:
     APP: http-data-plane
 
+analytics-data-plane-build:
+  extends:
+    - .build
+  variables:
+    APP: analytics-data-plane
+
 analytics-data-plane-test:
   extends:
     - .test

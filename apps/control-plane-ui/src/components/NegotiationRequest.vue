@@ -5,9 +5,10 @@ import {
 } from "@tsg-dsp/control-plane-dtos";
 import { useToast } from "primevue/usetoast";
 import { ref } from "vue";
-import utils from "../utils/common";
-import http from "../utils/http";
+import { stripDspace } from "@tsg-dsp/common-ui/utils/common";
+import http from "@tsg-dsp/common-ui/utils/http";
 import MonacoEditor from "@tsg-dsp/common-ui/components/MonacoEditor.vue";
+import { toastError } from "@tsg-dsp/common-ui/utils/error";
 
 const props = defineProps<{
   negotiation: INegotiationStatusDto;
@@ -53,15 +54,13 @@ const agreeNegotiation = async (negotiation: NegotiationDetailDto) => {
       life: 3000,
     });
     close();
-  } catch (e) {
-    console.log(e);
-    console.error(`Could not send negotiation agreement. Error: ${e}`);
-    toast.add({
-      severity: "error",
+  } catch (error) {
+    toast.add(toastError({
+      error,
       summary: "Failed to send negotiation agreement",
-      detail: `${e.response.data.message}`,
-      life: 3000,
-    });
+      defaultMessage: "Could not send negotiation agreement"
+    }));
+    console.error(`Could not send negotiation agreement. Error: ${error}`);
   }
 };
 
@@ -75,14 +74,13 @@ const declineNegotiation = async (negotiation) => {
       life: 3000,
     });
     close();
-  } catch (e) {
-    console.error(`Could not decline contract offer. Error: ${e}`);
-    toast.add({
-      severity: "error",
+  } catch (error) {
+    toast.add(toastError({
+      error,
       summary: "Failed to decline contract offer",
-      detail: `${e.response.data.message}`,
-      life: 3000,
-    });
+      defaultMessage: "Could not decline contract offer"
+    }));
+    console.error(`Could not decline contract offer. Error: ${error}`);
   }
 };
 </script>
@@ -91,7 +89,7 @@ const declineNegotiation = async (negotiation) => {
     <template #content>
       <div class="flex justify-between mb-4">
         <div>
-          <h5>{{ utils.stripDspace(negotiation.state) }}</h5>
+          <h5>{{ stripDspace(negotiation.state) }}</h5>
         </div>
         <div
           class="flex items-center justify-center bg-blue-100 rounded-border"
@@ -100,7 +98,7 @@ const declineNegotiation = async (negotiation) => {
           <i class="pi pi-file text-blue-500 text-xl"></i>
         </div>
       </div>
-      <span style="word-wrap: break-word" class="block text-surface-600 dark:text-surface-200 font-small mb-4"
+      <span class="block text-surface-600 dark:text-surface-200 font-small mb-4 break-words"
         >{{ negotiation.remoteParty.replace("%3A", ":") }}
       </span>
       wants to access dataset:

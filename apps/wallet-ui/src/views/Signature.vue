@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
-import { axiosInstance } from "../store/index.js";
+import { toastError } from "@tsg-dsp/common-ui/utils/error";
+import http from "@tsg-dsp/common-ui/utils/http";
 import { useToast } from "primevue/usetoast";
 import { ref } from "vue";
 
@@ -27,25 +28,24 @@ const signDocument = async () => {
       type: "JsonWebSignature",
       plainDocument: JSON.parse(signRef.value)
     }
-    const response = await axiosInstance.post("management/signature/sign", request);
+    const response = await http.post("management/signature/sign", request);
     signedDocumentRef.value = response.data;
-  } catch (err) {
-    console.log(err);
-    if (err.response?.data) {
-      signedDocumentErrorRef.value = err.response?.data;
+  } catch (error) {
+    console.log(error);
+    if (error.response?.data) {
+      signedDocumentErrorRef.value = error.response?.data;
     } else {
       signedDocumentErrorRef.value = {
         type: "error",
-        error: `${err}`
+        error: `${error}`
       };
     }
-    toast.add({
-      severity: "warn",
-      summary: "Signature error",
-      detail: err.response?.data?.message ||
-      "Could not sign document",
-      life: 10000,
-    });
+
+    toast.add(toastError({
+      error,
+      summary: "Could not sign document",
+      defaultMessage: `Error in signing document`
+    }));
   }
   isSinging.value = false;
 };
@@ -64,7 +64,7 @@ const validateDocument = async () => {
         proof: validate
       }
     }
-    await axiosInstance.post("management/signature/validate", {
+    await http.post("management/signature/validate", {
       type: "JsonWebSignature",
       jsonWebSignature: combinedValidateDocument
     });
@@ -74,14 +74,12 @@ const validateDocument = async () => {
       detail: "Successfully validated proof",
       life: 10000,
     });
-  } catch (err) {
-    toast.add({
-      severity: "warn",
+  } catch (error) {
+    toast.add(toastError({
+      error,
       summary: "Validation error",
-      detail: err.response?.data?.message ||
-      "Could not validate document",
-      life: 10000,
-    });
+      defaultMessage: `Error in validating document`
+    }));
   }
   isValidating.value = false;
 }
@@ -133,7 +131,7 @@ const onUpload = (event) => {
       <template #content>
         <form class="flex flex-col gap-4" @submit.prevent="signDocument">
           <FormField label="Sign binary document">
-            <FileUpload mode="basic" auto name="signature" customUpload @uploader="onUpload" :disabled="isUploading" />
+            <FileUpload pt:root:style="justify-content: flex-start" mode="basic" auto name="signature" customUpload @uploader="onUpload" :disabled="isUploading" />
           </FormField>
           <FormField label="Plain document" v-slot="props">
             <MonacoEditorVue v-model="signRef"></MonacoEditorVue>

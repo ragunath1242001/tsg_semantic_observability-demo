@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import utils from "../utils/common";
+import { stripDspace } from "@tsg-dsp/common-ui/utils/common";
 
 import {
   NegotiationDetailDto,
@@ -7,9 +7,10 @@ import {
 } from "@tsg-dsp/control-plane-dtos";
 import { ref, toRef } from "vue";
 import { useToast } from "primevue/usetoast";
-import http from "../utils/http";
+import http from "@tsg-dsp/common-ui/utils/http";
 import { DatasetDto, HashedMessage } from "@tsg-dsp/common-dsp";
 import MonacoEditor from "@tsg-dsp/common-ui/components/MonacoEditor.vue";
+import { toastError } from "@tsg-dsp/common-ui/utils/error";
 
 const props = defineProps<{
   negotiations: INegotiationStatusDto[];
@@ -63,15 +64,14 @@ const getNegotiation = async (uuid: string) => {
         (e) => e.type === "remote" && e.hashedMessage
       )?.hashedMessage;
       return response;
-    } catch (e) {
-      toast.add({
-        severity: "error",
+    } catch (error) {
+      toast.add(toastError({
+        error,
         summary: "Failed to load negotiation",
-        detail: `${e.response ? e.response.data.message : e}`,
-        life: 3000,
-      });
-      console.error("Error:", e);
-      throw e;
+        defaultMessage: `Could not load negotiation with identifer ${uuid}`
+      }));
+      console.error("Error:", error);
+      throw error;
     }
   }
 };
@@ -98,15 +98,14 @@ const requestTransfer = async (accNegotiation: NegotiationDetailDto) => {
         life: 3000,
       });
     }
-  } catch (e) {
-    toast.add({
-      severity: "error",
+  } catch (error) {
+    toast.add(toastError({
+      error,
       summary: "Failed to request transfer",
-      detail: `${e.response ? e.response.data.message : e}`,
-      life: 3000,
-    });
-    console.error("Error:", e);
-    throw e;
+      defaultMessage: "Could not load transfer"
+    }));
+    console.error("Error:", error);
+    throw error;
   }
 };
 </script>
@@ -139,7 +138,7 @@ const requestTransfer = async (accNegotiation: NegotiationDetailDto) => {
               <div>
                 <Tag
                   class="ml-auto mr-6"
-                  :value="utils.stripDspace(negotiation.state)"
+                  :value="stripDspace(negotiation.state)"
                   :severity="getSeverity(negotiation.state)"
                 />
                 <small class="p-text-secondary">
@@ -214,7 +213,7 @@ const requestTransfer = async (accNegotiation: NegotiationDetailDto) => {
                   </template>
                   <template #content="slotProps">
                     <Tag
-                      :value="utils.stripDspace(slotProps.item.state)"
+                      :value="stripDspace(slotProps.item.state)"
                       :severity="getSeverity(slotProps.item.state)"
                     />
                   </template>

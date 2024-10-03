@@ -6,9 +6,10 @@ import {
   type DatasetDto,
 } from "@tsg-dsp/common-dsp";
 import { injectStrict } from "../utils/injectTyped";
-import utils from "../utils/common";
+import { obtainValues } from "@tsg-dsp/common-ui/utils/common";
 import { AxiosKey } from "../utils/symbols";
 import { useToast } from "primevue/usetoast";
+import { toastError } from "@tsg-dsp/common-ui/utils/error";
 
 import Links from "../components/Links.vue";
 import Dataset from "../components/Dataset.vue";
@@ -25,12 +26,12 @@ const props = defineProps<{
 
 const parsedView = ref(true);
 const policy = ref("");
-var datasetView = ref(false);
-var datasetData = ref<DatasetDto>();
+const datasetView = ref(false);
+const datasetData = ref<DatasetDto>();
 
 const { catalog, url, assigner } = toRefs(props);
-var datasetList = ref(catalog.value["dcat:dataset"]);
-var datasetVersionList = computed(() => {
+const datasetList = ref(catalog.value["dcat:dataset"]);
+const datasetVersionList = computed(() => {
   return datasetList.value
     .filter((dataset) => !dataset["dcat:isVersionOf"])
     .map((rootDataset) => {
@@ -69,16 +70,12 @@ const getDataset = async (datasetId: String) => {
     }
     datasetView.value = true;
     return datasetData;
-  } catch (e) {
-    toast.add({
-      severity: "error",
+  } catch (error) {
+    toast.add(toastError({
+      error,
       summary: "Failed to send dataset request",
-      detail: `${e.response.data.message}`,
-      life: 3000,
-    });
-    console.error(
-      `Could not retrieve dataset with id ${datasetId} at ${url.value} with audience ${catalog.value["dct:publisher"]}. Error: ${e}`
-    );
+      defaultMessage: `Could not retrieve dataset with id ${datasetId} at ${url.value} with audience ${catalog.value["dct:publisher"]}`
+    }));
   }
 };
 
@@ -94,13 +91,12 @@ const deleteDataset = async (datasetId: string) => {
   try {
     await http.delete(`management/catalog/dataset/${datasetId}`);
     datasetList.value = datasetList.value.filter((d) => d["@id"] !== datasetId);
-  } catch (e) {
-    toast.add({
-      severity: "error",
+  } catch (error) {
+    toast.add(toastError({
+      error,
       summary: "Could not delete dataset",
-      detail: `${e.response.data.message}`,
-      life: 3000,
-    });
+      defaultMessage: "Could not delete dataset at the control plane"
+    }));
   }
 };
 
@@ -129,7 +125,7 @@ const createPolicy = (policy: PolicyDto): string => {
     <Card style="border-radius: 12px; border: 1px solid var(--surface-border)">
       <template #title>{{ catalog["dct:title"] }}</template>
       <template #subtitle>{{
-        utils.obtainValues(catalog["dct:description"]).join("\r\n")
+        obtainValues(catalog["dct:description"]).join("\r\n")
       }}</template>
       <template #content>
         <FormField label="Parsed View">
@@ -147,11 +143,11 @@ const createPolicy = (policy: PolicyDto): string => {
           }}</DisplayField>
           <DisplayField
             label="Keywords"
-            v-if="utils.obtainValues(catalog['dcat:keyword']).length > 0"
+            v-if="obtainValues(catalog['dcat:keyword']).length > 0"
           >
             <Tag
               class="mr-2 bg-primary-700"
-              v-for="keyword in utils.obtainValues(catalog['dcat:keyword'])"
+              v-for="keyword in obtainValues(catalog['dcat:keyword'])"
               :key="keyword"
               :value="keyword"
             ></Tag>
@@ -186,7 +182,7 @@ const createPolicy = (policy: PolicyDto): string => {
         <template #subtitle>
           <div>
             {{
-              utils.obtainValues(dataset.root["dct:description"]).join("\r\n")
+              obtainValues(dataset.root["dct:description"]).join("\r\n")
             }}
           </div>
           <div v-if="!!dataset.current['dcat:version']">
@@ -201,19 +197,27 @@ const createPolicy = (policy: PolicyDto): string => {
             <div class="pt-4">
               <span class="font-semibold">References</span>
               <ul>
-                <li>
-                  <Links
-                    v-if="dataset.root['dct:conformsTo']"
-                    :urlArray="dataset.root['dct:conformsTo']"
-                    label="Abstract model"
-                  />
-                </li>
-                <li>
+                <li v-if="dataset.versions.length === 0">
                   <Links
                     :urlArray="dataset.current['dct:conformsTo']"
-                    label="Version model"
+                    label="Model"
                   />
                 </li>
+                <template v-else>
+                  <li>
+                    <Links
+                      v-if="dataset.root['dct:conformsTo']"
+                      :urlArray="dataset.root['dct:conformsTo']"
+                      label="Abstract model"
+                    />
+                  </li>
+                  <li>
+                    <Links
+                      :urlArray="dataset.current['dct:conformsTo']"
+                      label="Version model"
+                    />
+                  </li>
+                </template>
                 <li>
                   <Links
                     :urlArray="
@@ -231,7 +235,7 @@ const createPolicy = (policy: PolicyDto): string => {
             <div class="pt-4 pb-1 font-semibold">Keywords</div>
             <Tag
               class="mr-1"
-              v-for="keyword in utils.obtainValues(
+              v-for="keyword in obtainValues(
                 dataset.current['dcat:keyword']
               )"
               :key="keyword"

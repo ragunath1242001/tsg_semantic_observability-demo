@@ -2,9 +2,10 @@
 import { TransferStatus } from "@tsg-dsp/control-plane-dtos";
 import { useToast } from "primevue/usetoast";
 import { ref } from "vue";
-import utils from "../utils/common";
-import http from "../utils/http";
+import { stripDspace } from "@tsg-dsp/common-ui/utils/common";
+import http from "@tsg-dsp/common-ui/utils/http";
 import { useConfirm } from "primevue/useconfirm";
+import { toastError } from "@tsg-dsp/common-ui/utils/error";
 
 const props = defineProps<{
   transfer: TransferStatus;
@@ -65,15 +66,14 @@ const sendTransfer = async (transfer: TransferStatus, nextState: string) => {
       detail: `Successfully proceeded to ${nextState}`,
       life: 3000,
     });
-  } catch (e) {
-    console.log(e);
-    console.error(`Could not send transfer. Error: ${e}`);
-    toast.add({
-      severity: "error",
-      summary: "Failed to send transfer",
-      detail: `${e.response.data.message}`,
-      life: 3000,
-    });
+  } catch (error) {
+      toast.add(toastError({
+        error,
+        summary: "Failed to send transfer",
+        defaultMessage: `Could not send transfer`
+      }));
+    console.log(error);
+    console.error(`Could not send transfer. Error: ${error}`);
   }
 };
 
@@ -111,12 +111,11 @@ const terminateTransfer = async (transfer) => {
     const word = nextState.value;
     if (word !== "suspend" && word !== "terminate") {
       console.error(`Word is not set correctly. value: ${word}`);
-      toast.add({
-        severity: "error",
+      toast.add(toastError({
+        error: null,
         summary: "Failed to terminate transfer",
-        detail: `Word is not set correctly. value: ${word}`,
-        life: 3000,
-      });
+        defaultMessage: `Word is not set correctly. value: ${word}`
+      }));
       return;
     }
     const body = {
@@ -131,14 +130,13 @@ const terminateTransfer = async (transfer) => {
       life: 3000,
     });
     close();
-  } catch (e) {
-    console.error(`Could not terminate transfer. Error: ${e}`);
-    toast.add({
-      severity: "error",
+  } catch (error) {
+    toast.add(toastError({
+      error,
       summary: "Failed to terminate transfer",
-      detail: `${e.response.data.message}`,
-      life: 3000,
-    });
+      defaultMessage: `Could not terminate transfer`
+    }));
+    console.error(`Could not terminate transfer. Error: ${error}`);
   }
 };
 </script>
@@ -147,7 +145,7 @@ const terminateTransfer = async (transfer) => {
     <template #content>
       <div class="flex justify-between mb-4">
         <div>
-          <h5>{{ utils.stripDspace(transfer.state) }}</h5>
+          <h5>{{ stripDspace(transfer.state) }}</h5>
         </div>
         <div
           class="flex items-center justify-center bg-blue-100 rounded-border"
@@ -162,8 +160,7 @@ const terminateTransfer = async (transfer) => {
         Transfer with
       </span>
       <span
-        style="word-wrap: break-word"
-        class="block text-surface-600 dark:text-surface-200 font-small mb-4"
+        class="block text-surface-600 dark:text-surface-200 font-small mb-4 break-words"
         >{{ transfer.remoteParty.replace("%3A", ":") }}
       </span>
       <span

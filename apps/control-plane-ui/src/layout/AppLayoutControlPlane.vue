@@ -7,15 +7,14 @@ import { computed } from "vue";
 import AppConfig from "./AppConfig.vue";
 import { Menu, MenuProps } from "@tsg-dsp/common-ui/layout/AppMenu.vue";
 import { FooterProps } from "@tsg-dsp/common-ui/layout/AppFooter.vue";
-import { TopbarProps } from "@tsg-dsp/common-ui/layout/AppTopbar.vue";
 import { useRoute, useRouter } from "vue-router";
-import { useUserStore } from "../stores/user";
+import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
 
 const { layoutConfig, layoutState } = useLayout();
 
 const { negotiationsCount, ownCatalog } = storeToRefs(useDspStore());
 
-const { user } = storeToRefs(useUserStore());
+const userStore = useUserStore();
 
 const baseLogoUrl = "layout/images";
 
@@ -79,14 +78,6 @@ const menuList: Menu[] = [
   },
 ];
 
-const topbar: TopbarProps = {
-  title: "Control Plane",
-  name: ownCatalog.value.title,
-  baseLogoUrl: baseLogoUrl,
-  user: user.value,
-  router: useRouter(),
-};
-
 const footer: FooterProps = {
   baseLogoUrl: baseLogoUrl,
   footerText: "TNO",
@@ -101,7 +92,16 @@ const sidebar: MenuProps = {
 </script>
 <template>
   <div class="layout-wrapper" :class="containerClass">
-    <AppLayout :topbar="topbar" :footer="footer" :sidebar="sidebar" />
+    <AppLayout 
+      :topbar="{
+        title: 'Control Plane',
+        name: ownCatalog.title,
+        baseLogoUrl: baseLogoUrl,
+        user: userStore.user,
+        router: useRouter(),
+      }"
+      :footer="footer"
+      :sidebar="sidebar" />
     <AppConfig />
     <div class="layout-mask animate-fadein"></div>
   </div>

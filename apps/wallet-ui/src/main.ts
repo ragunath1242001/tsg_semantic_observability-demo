@@ -32,7 +32,7 @@ import MonacoEditorVue from "@tsg-dsp/common-ui/components/MonacoEditor.vue";
 
 import "@tsg-dsp/common-ui/assets/styles.scss";
 import "@tsg-dsp/common-ui/assets/tailwind.css";
-import { store } from "./store/index.js";
+import { createPinia } from "pinia";
 
 import { loader } from "@guolao/vue-monaco-editor";
 import Drawer from "primevue/drawer";
@@ -43,9 +43,10 @@ loader.config({
   },
 });
 
+const pinia = createPinia();
 const app = createApp(App);
+app.use(pinia);
 app.use(router);
-app.use(store);
 app.use(PrimeVue, {
   theme: {
     preset: Lara,

@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
-import { useUserStore } from "../stores/user.js";
-
-import FloatingConfigurator from "@tsg-dsp/common-ui/components/FloatingConfigurator.vue";
-const store = useUserStore();
-
+import { computed } from "vue";
+import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
 import { useLayout } from "@tsg-dsp/common-ui/layout/composables/layout.js";
+import FloatingConfigurator from "@tsg-dsp/common-ui/components/FloatingConfigurator.vue";
+
+const store = useUserStore();
 
 const { layoutConfig } = useLayout();
 

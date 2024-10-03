@@ -24,23 +24,21 @@ export default defineConfig({
       //   target: "http://localhost:3000/",
       //   rewrite: (path) => path.replace(/^\/api/, ""),
       // },
-      "/api": process.env.BACKEND || "http://localhost:3000",
-      // "/socket.io/": {
-      //   target: "https://healthharbormc.heracles.dataspac.es/socket.io/",
-      //   changeOrigin: true,
-      //   headers: {
-      //     Cookie:
-      //       "connect.sid.tsgcp=s%3AnE_UFIhTgEUu89yFbjVPuFNxCbUO2ACs.Xs6zciC7XqHy73HBJ7k%2BoZ%2Fs%2B%2FWZV9%2Fhgv%2B4HJGjEKI",
-      //   },
-      // },
-      // "/api": {
-      //   target: "https://healthharbormc.heracles.dataspac.es/control-plane",
-      //   changeOrigin: true,
-      //   headers: {
-      //     Cookie:
-      //       "connect.sid.tsgcp=s%3AnE_UFIhTgEUu89yFbjVPuFNxCbUO2ACs.Xs6zciC7XqHy73HBJ7k%2BoZ%2Fs%2B%2FWZV9%2Fhgv%2B4HJGjEKI",
-      //   },
-      // },
+      // "/api": process.env.BACKEND || "http://localhost:3000",
+      "/socket.io/": {
+        target: "https://dataguard.heracles.dataspac.es/socket.io/",
+        changeOrigin: true,
+        headers: {
+          Cookie: "connect.sid.tsgcp=...",
+        },
+      },
+      "/api": {
+        target: "https://dataguard.heracles.dataspac.es/control-plane",
+        changeOrigin: true,
+        headers: {
+          Cookie: "connect.sid.tsgcp=...",
+        },
+      },
     },
   },
 });

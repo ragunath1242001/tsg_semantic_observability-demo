@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { CredentialAddress } from "@tsg-dsp/control-plane-dtos";
-import { CatalogDto, DatasetDto } from "@tsg-dsp/common-dsp";
+import { CatalogDto } from "@tsg-dsp/common-dsp";
 import { useToast } from "primevue/usetoast";
 import { onMounted, ref } from "vue";
 import Catalog from "../components/Catalog.vue";
@@ -9,12 +9,11 @@ import { AxiosKey } from "../utils/symbols";
 import router from "../router";
 import { useCatalogStore } from "../stores/catalog";
 import { storeToRefs } from "pinia";
-import utils from "../utils/common";
+import { toastError } from "@tsg-dsp/common-ui/utils/error";
 
-var catalog = ref<CatalogDto>();
-var addresses = ref<string[]>();
-var selection = ref<CredentialAddress>(null);
-var assigner = ref("");
+const addresses = ref<string[]>();
+const selection = ref<CredentialAddress>(null);
+const assigner = ref("");
 
 const catalogs = ref<CatalogDto[]>();
 
@@ -28,14 +27,12 @@ const queryAddresses = async () => {
     addresses.value = response.data;
     return addresses;
   } catch (error) {
-    // Handle error
-    console.error("Error:", error);
-    toast.add({
-      severity: "error",
+    toast.add(toastError({
+      error,
       summary: "Failed to retrieve addresses",
-      life: 3000,
-      detail: `${error.response.data.message}`,
-    });
+      defaultMessage: `Could not load the addresses from the registry`
+    }));
+    console.error("Error:", error);
     throw error;
   }
 };
@@ -54,13 +51,12 @@ const getCatalogs = async () => {
     catalogs.value = response.data;
     return catalogs;
   } catch (error) {
-    console.error("Error:", error);
-    toast.add({
-      severity: "error",
+    toast.add(toastError({
+      error,
       summary: "Failed to retrieve catalogs",
-      life: 3000,
-      detail: `${error.response.data.message}`,
-    });
+      defaultMessage: `Could not load the catalogs from the registry`
+    }));
+    console.error("Error:", error);
     throw error;
   }
 };
@@ -111,6 +107,7 @@ onMounted(async () => await initialize());
           header="Address"
           :sortable="true"
           headerStyle="min-width:12rem;"
+          class="break-all"
         ></Column>
       </DataTable>
     </template>
