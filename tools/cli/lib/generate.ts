@@ -162,6 +162,10 @@ export class Generate {
     if (stdout) {
       return;
     }
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir);
+      return;
+    }
     const existingFiles = fs.readdirSync(dir);
     if (existingFiles.length > 0) {
       const choice = yes

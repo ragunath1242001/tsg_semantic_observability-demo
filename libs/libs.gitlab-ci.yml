@@ -5,7 +5,7 @@
     - echo "//registry.npmjs.org/:_authToken=${NPMJS_TOKEN}" >> .npmrc
     - pnpm install --frozen-lockfile
     - pnpm --filter common-dsp build
-    - pnpm --filter common-dsp publish
+    - pnpm --filter common-dsp publish --no-git-checks
   rules:
     - if: '$RELEASE_NOW == "true"'
       when: never
