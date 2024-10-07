@@ -1,40 +1,34 @@
-# primevue-quickstart-create-vue-ts
+# Control Plane UI
 
-This template should help get you started developing with Vue 3 in Vite.
+This app contains the logic for the Control Plane UI. It is meant to be used with the Control Plane API within this monorepo. It uses the `libs/common-ui` library for the skeleton of each webpage. The router view is filled with contents from this app.
 
-## Recommended IDE Setup
+## External libraries
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
-
-## Type Support for `.vue` Imports in TS
-
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin) to make the TypeScript language service aware of `.vue` types.
-
-If the standalone TypeScript plugin doesn't feel fast enough to you, Volar has also implemented a [Take Over Mode](https://github.com/johnsoncodehk/volar/discussions/471#discussioncomment-1361669) that is more performant. You can enable it by the following steps:
-
-1. Disable the built-in TypeScript Extension
-   1. Run `Extensions: Show Built-in Extensions` from VSCode's command palette
-   2. Find `TypeScript and JavaScript Language Features`, right click and select `Disable (Workspace)`
-2. Reload the VSCode window by running `Developer: Reload Window` from the command palette.
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vitejs.dev/config/).
+- [Vue](https://vuejs.org)
+- [Vue Router](https://router.vuejs.org/) for navigation
+- [Primevue](https://primevue.org/) for generic components
+- [Pinia](https://pinia.vuejs.org/) as the store provider
 
 ## Project Setup
 
-```sh
-npm install
+### Prerequisites
+
+Ensure you have the following installed:
+
+- Node.js (v20+)
+- pnpm
+
+### Installation
+
+```
+git clone https://gitlab.com/tno-tsg/dataspace-protocol/tno-security-gateway.git
+pnpm install
 ```
 
-### Compile and Hot-Reload for Development
+### Running the app
 
-```sh
-npm run dev
+```
+pnpm --filter control-plane-ui dev
 ```
 
-### Type-Check, Compile and Minify for Production
-
-```sh
-npm run build
-```
+This will open the app at `http://localhost:5173`.

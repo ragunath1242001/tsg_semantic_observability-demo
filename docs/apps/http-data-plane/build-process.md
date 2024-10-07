@@ -1,6 +1,6 @@
 # Build Process
 
-This repository is setup as a monorepo with pnpm. The main components are in the `apps` and `libs` folders. They are linked together in one monorepo by pnpm, the file where this is specified is called `pnpm-workspace.yaml`. The `apps` folder contains the frontend and backend packages, the `libs` folder contains the `dto`s that are common between the frontend and the backend. At the root of the monorepo we define a root `package.json` and a `Dockerfile`. This means that there is one docker image for both the backend and the frontend. The frontend can be enabled in the backend by setting an environment variable called `EMBEDDED_FRONTEND`.
+This repository is setup as a monorepo with pnpm. The main components are in the `apps` and `libs` folders. They are linked together in one monorepo by pnpm, the file where this is specified is called `pnpm-workspace.yaml`. The `apps` folder contains the http-data-plane-ui and http-data-plane-api packages, the `libs` folder contains the `dto`s that are common between the http-data-plane-ui and the http-data-plane-api. At the root of the monorepo we define a root `package.json` and a `Dockerfile`. This means that there is one docker image for both the http-data-plane-api and the http-data-plane-ui. The http-data-plane-ui can be enabled in the http-data-plane-api by setting an environment variable called `EMBEDDED_FRONTEND`.
 
 To make use of pnpm, make sure to install it. Then, to use the specific scripts in the root of the repository you can run:
 
@@ -8,22 +8,22 @@ To make use of pnpm, make sure to install it. Then, to use the specific scripts 
 pnpm install
 ```
 
-And afterwards you can run a command by using `pnpm ...` with any command that is listed in the `package.json` file. If you want to run a command only for a specific package (for example backend) you can run `pmpm --filter backend ...` where at the dots you can place a command that is in the `package.json` of that specific app/lib.
+And afterwards you can run a command by using `pnpm ...` with any command that is listed in the `package.json` file. If you want to run a command only for a specific package (for example http-data-plane-api) you can run `pmpm --filter http-data-plane-api ...` where at the dots you can place a command that is in the `package.json` of that specific app/lib.
 
 ## Development
 
 For development, everything is setup to be used with vscode. This means tests will automatically run on save, prettier will make code styling consistent, and debug scripts are available.
 
-To run the frontend and backend in watch mode use the following command:
+To run the http-data-plane-ui and http-data-plane-api in watch mode use the following command:
 
 ```
-pnpm run dev:backend
+pnpm run dev:http-data-plane-api
 ```
 
 and
 
 ```
-pnpm run dev:frontend
+pnpm run dev:http-data-plane-ui
 ```
 
 Another option is to run them in parallel by running:
@@ -34,14 +34,14 @@ pnpm run dev --parallel
 
 However, in that case you do not get the logs from both applications and some information might be missing from the logs.
 
-If you want to test interactions between control planes excecute the following commands to generate a second instance. For this you would need to create a separate config file (based on the existing default config at `./apps/backend/config.yaml`) as well as provide the backend used by the frontend via the `BACKEND` environment variable:
+If you want to test interactions between control planes excecute the following commands to generate a second instance. For this you would need to create a separate config file (based on the existing default config at `./apps/http-data-plane-api/config.yaml`) as well as provide the http-data-plane-api used by the http-data-plane-ui via the `BACKEND` environment variable:
 
 ```
-CONFIG_PATH=$(pwd)/apps/backend/config_second.yaml pnpm dev:backend
+CONFIG_PATH=$(pwd)/apps/http-data-plane-api/config_second.yaml pnpm dev:http-data-plane-api
 ```
 
 ```
-BACKEND=http://localhost:3002 pnpm dev:frontend
+BACKEND=http://localhost:3002 pnpm dev:http-data-plane-ui
 ```
 
 ## Docker

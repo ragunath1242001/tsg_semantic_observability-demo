@@ -8,7 +8,7 @@ This folder contains all the documentation that is available for the TNO Securit
 
 Used standards:
 
-- Dataspace Protocol [Draft v0.8](https://docs.internationaldataspaces.org/ids-knowledgebase/v/dataspace-protocol/overview/readme)
+- Dataspace Protocol [2024-1](https://docs.internationaldataspaces.org/ids-knowledgebase/dataspace-protocol)
 
 ### 2. Programming language & environment
 
