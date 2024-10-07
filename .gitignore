@@ -50,3 +50,5 @@ iam/
 
 *.db**/dist
 config.*.yaml
+
+dev.sessions.json

@@ -2,13 +2,13 @@
 import { toRefs } from "vue";
 
 const props = defineProps<{
-  urlArray: string[];
+  urlArray?: string[];
   label: string;
 }>();
 const { urlArray, label } = toRefs(props);
 </script>
 <template>
-  <div v-if="urlArray.length > 0">
+  <div v-if="urlArray && urlArray.length > 0">
     {{ label }}
     <a
       v-for="(url, index) in urlArray"

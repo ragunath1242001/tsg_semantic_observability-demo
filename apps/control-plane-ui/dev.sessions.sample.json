@@ -1,0 +1,6 @@
+{
+  "local": false,
+  "target": "https://example.com/control-plane",
+  "socketIoTarget": "https://example.com/socket.io",
+  "sessionCookie": "connect.sid.tsgcp=..."
+}

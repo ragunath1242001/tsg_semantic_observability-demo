@@ -1,0 +1,5 @@
+{
+  "local": false,
+  "target": "https://example.com/analytics-data-plane",
+  "sessionCookie": "connect.sid.tsgadp=..."
+}

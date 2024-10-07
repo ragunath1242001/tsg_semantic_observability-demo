@@ -114,7 +114,7 @@ const declineNegotiation = async (negotiation) => {
           :modal="true"
         >
           <div class="grid grid-cols-12 gap-4">
-            <div class="col">
+            <div class="col-span-12">
               <MonacoEditor
                 :static="ctaNegotiation.offer"
                 :read-only="true"

@@ -2,21 +2,23 @@ import { Eta } from "eta";
 import { parse, stringify } from "yaml";
 import {
   Applications,
+  DataPlane,
   Ecosystem,
   General,
   Participant,
   SingleParticipant,
 } from "./model";
-import fs, { rmSync } from "fs";
+import fs from "fs";
 import path from "path";
 import process from "process";
-import { select } from "@inquirer/prompts";
+import { confirm, select } from "@inquirer/prompts";
 import { log, validateAndCreate } from "./utils";
 
 interface Options {
   file?: string;
   output: string;
   stdout: boolean;
+  yes: boolean;
 }
 
 export class Generate {
@@ -49,10 +51,11 @@ export class Generate {
       Ecosystem,
       json
     );
+    participants.forEach((participant) => participant.generateTestService());
     this.general = general;
     this.applications = applications;
     this.participants = participants;
-    await this.detectExistingFiles(options.output);
+    await this.detectExistingFiles(options.output, options.stdout, options.yes);
     participants.forEach((participant) =>
       this.writeParticipant(participant, options)
     );
@@ -65,11 +68,12 @@ export class Generate {
       SingleParticipant,
       json
     );
+    participant.generateTestService();
 
     this.general = general;
     this.applications = applications;
     this.participants = [];
-    await this.detectExistingFiles(options.output);
+    await this.detectExistingFiles(options.output, options.stdout, options.yes);
     this.writeParticipant(participant, options);
   };
 
@@ -78,50 +82,65 @@ export class Generate {
     this.writeConfig(
       "casdoor",
       `${options.output}/${participant.id}/values.casdoor.yaml`,
-      participant,
+      { participant },
       !options.stdout
     );
     this.writeConfig(
       "postgres",
       `${options.output}/${participant.id}/values.postgres.yaml`,
-      participant,
+      { participant },
       !options.stdout
     );
     this.writeConfig(
       "wallet",
       `${options.output}/${participant.id}/values.wallet.yaml`,
-      participant,
+      { participant },
       !options.stdout
     );
     if (participant.hasControlPlane) {
       this.writeConfig(
         "control-plane",
         `${options.output}/${participant.id}/values.control-plane.yaml`,
-        participant,
+        { participant },
         !options.stdout
       );
     }
-    if (participant.hasDataPlane) {
+    participant.dataPlanes.forEach((dataPlane: DataPlane, id: string) => {
       this.writeConfig(
         "data-plane",
-        `${options.output}/${participant.id}/values.data-plane.yaml`,
-        participant,
+        `${options.output}/${participant.id}/values.${id}.yaml`,
+        {
+          participant,
+          dataPlane,
+          id,
+          config: (indent: number): string => {
+            if (dataPlane.config) {
+              return stringify(dataPlane.config).replace(
+                /^/gm,
+                " ".repeat(indent)
+              );
+            } else {
+              return "";
+            }
+          },
+        },
         !options.stdout
       );
-    }
+    });
   };
 
   private writeConfig = (
     templateFile: string,
     outfile: string,
-    participant: Participant,
+    config: any,
     writeFile: boolean
   ) => {
     const yaml = stringify(
       parse(
         this.eta.render(`./${templateFile}.yaml.eta`, {
           general: this.general,
-          participant: participant,
+          ...config,
+          // participant: participant,
           participants: this.participants,
           applications: this.applications,
         })
@@ -135,44 +154,64 @@ export class Generate {
     }
   };
 
-  private detectExistingFiles = async (dir: string) => {
+  private detectExistingFiles = async (
+    dir: string,
+    stdout: boolean,
+    yes: boolean
+  ) => {
+    if (stdout) {
+      return;
+    }
     const existingFiles = fs.readdirSync(dir);
     if (existingFiles.length > 0) {
-      const choice = await select({
-        message:
-          "Existing files found in output directory. What do you want to do?",
-        choices: [
-          {
-            name: "Clean",
-            value: "clean",
-            description: "Clean output directory",
-          },
-          {
-            name: "Move",
-            value: "move",
-            description: `Move existing output directory to "${dir}.old"`,
-          },
-          {
-            name: "Continue",
-            value: "continue",
-            description: "Continue without cleaning",
-          },
-          {
-            name: "Abort",
-            value: "abort",
-            description: "Abort the operation",
-          },
-        ],
-      });
+      const choice = yes
+        ? "clean"
+        : await select({
+            message:
+              "Existing files found in output directory. What do you want to do?",
+            choices: [
+              {
+                name: "Clean",
+                value: "clean",
+                description: "Clean output directory",
+              },
+              {
+                name: "Move",
+                value: "move",
+                description: `Move existing output directory to "${dir}.old"`,
+              },
+              {
+                name: "Continue",
+                value: "continue",
+                description: "Continue without cleaning",
+              },
+              {
+                name: "Abort",
+                value: "abort",
+                description: "Abort the operation",
+              },
+            ],
+          });
       if (choice === "abort") {
         process.exit(0);
       }
       if (choice === "clean") {
         existingFiles.forEach((f) =>
-          rmSync(`${dir}/${f}`, { recursive: true })
+          fs.rmSync(`${dir}/${f}`, { recursive: true })
         );
       }
       if (choice === "move") {
+        if (fs.existsSync(`${dir}.old`)) {
+          if (
+            await confirm({
+              message: `Folder ${dir}.old already exist, overwrite?`,
+            })
+          ) {
+            fs.rmSync(`${dir}.old`, { recursive: true, force: true });
+          } else {
+            process.exit(0);
+          }
+        }
         fs.renameSync(dir, `${dir}.old`);
         fs.mkdirSync(dir);
       }

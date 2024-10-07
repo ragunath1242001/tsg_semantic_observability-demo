@@ -282,16 +282,18 @@ const createPolicy = (policy: PolicyDto): string => {
         </template>
         <template style="justify-content: flex-end" #footer>
           <div class="flex items-center card-footer justify-right">
-            <span class="p-card-subtitle mb-0" v-if="!ownCatalog">
+            <span class="flex-auto p-card-subtitle mb-0" v-if="!ownCatalog">
               {{ catalog["dct:title"] }}
             </span>
+            <span class="flex-auto text-right">
             <Button
               icon="pi pi-info"
               rounded
               outlined
-              class="shadow-lg"
+              class="shadow-lg "
               @click="getDataset(dataset.current['@id'])"
             ></Button>
+          </span>
           </div>
         </template>
       </Card>

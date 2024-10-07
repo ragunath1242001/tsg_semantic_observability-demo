@@ -394,7 +394,6 @@ onMounted(async () => {
                     version: '',
                     distributions: [
                       {
-                        format: '',
                         backendUrl: '',
                       },
                     ],
@@ -430,12 +429,12 @@ onMounted(async () => {
                   placeholder="URL to the semantic model of this dataset version"
                 />
               </FormField>
-              <FormField label="Format*" v-slot="props">
+              <FormField label="Media type" v-slot="props">
                 <InputText
                   class="w-full"
                   :id="props.id"
-                  v-model="version.distributions[0].format"
-                  placeholder="Transfer protocol and message format, e.g. 'http/json'"
+                  v-model="version.distributions[0].mediaType"
+                  placeholder="Media type, defaults to 'application/http'"
                 />
               </FormField>
               <FormField label="Schema" v-slot="props">

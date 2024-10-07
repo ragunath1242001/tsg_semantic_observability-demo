@@ -1,0 +1,5 @@
+{
+  "local": false,
+  "target": "https://example.com/wallet",
+  "sessionCookie": "connect.sid.tsgw=..."
+}

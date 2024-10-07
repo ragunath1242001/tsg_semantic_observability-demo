@@ -120,11 +120,11 @@ initConfig:
           - wallet_view_presentations
           - controlplane_admin
           - controlplane_dataplane
-<%- if (it.participant.hasDataPlane) { %>
-      - username: http-data-plane
-        secretName: casdoor-http-data-plane-<%= it.participant.id %>-secret
+<%- it.participant.dataPlanes.forEach((value, id) => { %>
+      - username: <%= id %>
+        secretName: casdoor-<%= id %>-<%= it.participant.id %>-secret
         roles:
           - controlplane_dataplane
-<%- } %>
+<%- }); %>
     redirectUris:
       - https://.*<%= it.participant.host %>/.*
