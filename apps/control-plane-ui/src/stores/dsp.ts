@@ -67,7 +67,7 @@ const getTransfers = async () => {
       ctaTransfers: ctaTransfers,
     };
   } catch (error) {
-    console.error("Error:", error);
+    // console.error("Error:", error);
     throw error;
   }
 };

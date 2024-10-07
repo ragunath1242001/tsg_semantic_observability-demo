@@ -12,7 +12,7 @@ import CredentialOID4VCI from "../views/credentials/OID4VCI.vue";
 import DIDServiceView from "../views/DIDServices.vue";
 import ContextView from "../views/Contexts.vue";
 import Presentation from "../views/Presentation.vue";
-import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
+import { registerRouter, useUserStore } from "@tsg-dsp/common-ui/stores/user";
 
 const router = createRouter({
   history: createWebHashHistory(),
@@ -96,4 +96,7 @@ router.beforeEach(async (to) => {
     return "/login";
   }
 });
+
+registerRouter(router);
+
 export default router;

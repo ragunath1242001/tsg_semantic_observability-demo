@@ -55,8 +55,8 @@ export class PolicyConfig {
 
 export class DistributionConfig {
   @IsString()
-  @IsDefined()
-  public format!: string;
+  @IsOptional()
+  public mediaType?: string;
 
   @IsString()
   @IsOptional()

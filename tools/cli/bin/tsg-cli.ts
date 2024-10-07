@@ -28,6 +28,7 @@ program
   .option("-o, --output <dir>", "output directory", "output")
   .option("--stdout", "output only to standard out", false)
   .option("-v, --verbose", "verbose logging", false)
+  .option("-y --yes", "assume yes for all prompts", false)
   .action(async (scope, options) => {
     await getLatestRelease();
     try {
@@ -72,6 +73,7 @@ program
   .option("--dry-run", "dry run commands", false)
   .option("--cwd <cwd>", "working directory for the configuration files")
   .option("-v, --verbose", "verbose logging", false)
+  .option("-y --yes", "assume yes for all prompts", false)
   .action(async (scope, options) => {
     await getLatestRelease();
     if (options.uninstall && (options.clean || options.diff)) {

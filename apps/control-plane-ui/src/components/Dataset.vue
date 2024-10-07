@@ -299,7 +299,7 @@ const sendNegotiation = async (
               :modal="true"
             >
               <div class="grid grid-cols-12 gap-4">
-                <div class="col">
+                <div class="col-span-12 md:col-span-11">
                   <MonacoEditor
                     :schema="schema"
                     v-model="policy"
@@ -307,7 +307,7 @@ const sendNegotiation = async (
                     :maxLines="25"
                   />
                 </div>
-                <div class="col-fixed" style="width: 55px">
+                <div class="col-span-12 md:col-span-1">
                   <Button
                     icon="pi pi-pencil"
                     size="small"

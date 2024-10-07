@@ -1,5 +1,6 @@
 import { defineStore, Store } from "pinia";
 import http from "../utils/http";
+import { Router } from "vue-router";
 
 export interface User {
   name: string;
@@ -13,6 +14,12 @@ export interface UserStore {
   user: User | null;
   returnUrl: string | null;
 }
+
+let router: Router | undefined = undefined;
+
+export const registerRouter = (newRouter: Router) => {
+  router = newRouter;
+};
 
 export const useUserStore = defineStore("user", {
   state: (): UserStore => ({
@@ -38,7 +45,11 @@ export const useUserStore = defineStore("user", {
           window.location.replace("api/auth/login");
         } else {
           this.user = response.data.user;
-          window.location.hash = `#${this.returnUrl || "/"}`;
+          if (router) {
+            router.push(this.returnUrl || "/");
+          } else {
+            window.location.hash = `#${this.returnUrl || "/"}`;
+          }
         }
       } catch (e) {
         console.log(e);

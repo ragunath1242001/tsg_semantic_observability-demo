@@ -1,25 +1,30 @@
+<% if (!it.dataPlane.tsgDataPlane) { %>
+<%= it.config(0) %>
+<% } else { %>
 <% if (it.participant.routing === "subdomain") { %>
-host: "dp.<%= it.participant.host %>"
+host: "<%= it.dataPlane.dnsPrefix ?? it.id %>.<%= it.participant.host %>"
 endpoint: https://dp.<%= it.participant.host %>
 casdoorEndpoint: "https://casdoor.<%= it.participant.host %>"
 controlPlaneEndpoint: "http://<%= it.participant.id %>-tsg-control-plane:3000/api"
 <% } else { %>
 host: "<%= it.participant.host %>"
-endpoint: https://<%= it.participant.host %>/http-data-plane
+endpoint: https://<%= it.participant.host %>/<%= it.dataPlane.subPath ?? it.id %>
 casdoorEndpoint: "https://<%= it.participant.host %>"
 controlPlaneEndpoint: "http://<%= it.participant.id %>-tsg-control-plane:3000/control-plane/api"
 
 
-subPath: /http-data-plane
+subPath: /<%= it.dataPlane.subPath ?? it.id %>
 <% } %>
 
-<% if (it.applications?.dataPlane?.imageTag || it.applications?.dataPlane?.imageRepository) { %>
+<% 
+const application = it.applications?.dataPlanes?.get(it.dataPlane.type ?? it.id);
+if (application?.imageTag || application?.imageRepository) { %>
 image:
-<%- if (it.applications?.dataPlane?.imageTag) { %>
-  tag: <%= it.applications?.dataPlane.imageTag %>
+<%- if (application?.imageTag) { %>
+  tag: <%= application.imageTag %>
 <% } %>
-<%- if (it.applications?.dataPlane?.imageRepository) { %>
-  repository: <%= it.applications?.dataPlane.imageRepository %>
+<%- if (application?.imageRepository) { %>
+  repository: <%= application.imageRepository %>
 <% } %>
 <% } %>
 
@@ -33,16 +38,16 @@ configFromSecrets:
       key: postgres-password
   auth:
     clientID:
-      name: casdoor-http-data-plane-<%= it.participant.id %>-secret
+      name: casdoor-<%= it.id %>-<%= it.participant.id %>-secret
       key: clientId
     clientSecret:
-      name: casdoor-http-data-plane-<%= it.participant.id %>-secret
+      name: casdoor-<%= it.id %>-<%= it.participant.id %>-secret
       key: clientSecret
     clientUsername:
-      name: casdoor-http-data-plane-<%= it.participant.id %>-secret
+      name: casdoor-<%= it.id %>-<%= it.participant.id %>-secret
       key: username
     clientPassword:
-      name: casdoor-http-data-plane-<%= it.participant.id %>-secret
+      name: casdoor-<%= it.id %>-<%= it.participant.id %>-secret
       key: password
 
 config:
@@ -50,7 +55,7 @@ config:
     type: postgres
     port: 5432
     username: postgres
-    database: http-data-plane
+    database: <%= it.id %>
     host: "<%= it.participant.id %>-postgresql"
 
   server:
@@ -68,18 +73,9 @@ config:
     dataPlaneEndpoint: "{{ .Values.controlPlaneEndpoint }}/data-plane"
     managementEndpoint: "{{ .Values.controlPlaneEndpoint }}/management"
     controlEndpoint: "{{ .Values.controlPlaneEndpoint }}/"
-  
-<% if (it.participant.hasTestService) { %>
-  dataset:
-    title: "<%= it.participant.name %> HTTPBin"
-    versions:
-      - backend: https://httpbin.org/
-        openApiSpec: https://httpbin.org/spec.json
-        version: "0.9.2"
-    policy:
-      type: default
-<% } %>
 <% if (it.participant.hasDebugLogging) { %>
   logging:
     debug: true
+<% } %>
+<%= it.config(2) %>
 <% } %>

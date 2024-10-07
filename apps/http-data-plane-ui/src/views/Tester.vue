@@ -82,7 +82,7 @@ const fullUrl = computed(() => {
   if (interaction.value === "direct") {
     return `${url.value}/${path.value}`.replace(/([^:]\/)\/+/g, "$1");
   } else {
-    return `${window.location.origin}/api/management/transfers/${transfer.value.id}/execute/${path.value}`.replace(
+    return `${window.location.origin}${window.location.pathname}api/management/transfers/${transfer.value.id}/execute/${path.value}`.replace(
       /([^:]\/)\/+/g,
       "$1"
     );

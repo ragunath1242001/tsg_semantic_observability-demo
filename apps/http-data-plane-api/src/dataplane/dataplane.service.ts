@@ -314,10 +314,10 @@ export class DataPlaneService {
           distribution: v.distributions.map(
             (d) =>
               new Distribution({
-                id: `${id}:${v.version}:${d.format}`,
-                title: `${datasetConfig.title} ${v.version} (${d.format})`,
-                format: "dspace:http",
-                mediaType: "iana:" + d.format,
+                id: `${id}:${v.version}:${d.mediaType ?? "application/http"}`,
+                title: `${datasetConfig.title} ${v.version} (${d.mediaType ?? "application/http"})`,
+                format: "dspace:HTTP",
+                mediaType: `iana:${d.mediaType ?? "application/http"}`,
                 conformsTo: defArray(d.schemaRef, d.openApiSpecRef),
                 accessService: [
                   new DataService({

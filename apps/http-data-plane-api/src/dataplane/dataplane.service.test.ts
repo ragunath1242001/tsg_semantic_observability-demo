@@ -49,7 +49,7 @@ describe("Dataplane Service", () => {
             authorization: "Bearer AAAAAAA",
             distributions: [
               {
-                format: "http/json",
+                mediaType: "http/json",
                 backendUrl: "https://httpbin.org/anything", // This URL returns anything that is passed in the request data.
               }, //  The testcases expect this, so keep this url as backend.
             ],
@@ -536,7 +536,7 @@ describe("Dataplane Service", () => {
             authorization: "Bearer AAAAAAA",
             distributions: [
               {
-                format: "application/json",
+                mediaType: "application/json",
                 backendUrl: "http://example.org/http",
               },
             ],
@@ -546,7 +546,7 @@ describe("Dataplane Service", () => {
             authorization: "Bearer AAAAAAA",
             distributions: [
               {
-                format: "application/json",
+                // mediaType: "application/json",
                 backendUrl: "http://example.org/http",
               },
             ],
@@ -601,7 +601,7 @@ describe("Dataplane Service", () => {
             semanticModelRef: "http://some-more-specific-ontology.org",
             distributions: [
               {
-                format: "application/json",
+                mediaType: "application/json",
                 openApiSpecRef: "https://httpbin.org/spec.json",
                 backendUrl: "https://httpbin.org/anything",
               },
@@ -625,7 +625,7 @@ describe("Dataplane Service", () => {
             semanticModelRef: "http://some-more-specific-ontology.org",
             distributions: [
               {
-                format: "application/json",
+                mediaType: "application/json",
                 openApiSpecRef: "https://httpbin.org/spec.json",
                 backendUrl: "https://httpbin.org/anything",
               },
@@ -663,7 +663,7 @@ describe("Dataplane Service", () => {
               semanticModelRef: "http://some-more-specific-ontology.org",
               distributions: [
                 {
-                  format: "application/json",
+                  mediaType: "application/json",
                   openApiSpecRef: "https://httpbin.org/spec.json",
                   backendUrl: "https://httpbin.org/anything",
                 },
@@ -689,7 +689,7 @@ describe("Dataplane Service", () => {
               semanticModelRef: "http://some-more-specific-ontology.org",
               distributions: [
                 {
-                  format: "application/json",
+                  mediaType: "application/json",
                   openApiSpecRef: "https://httpbin.org/spec.json",
                   backendUrl: "https://httpbin.org/anything",
                 },
@@ -815,7 +815,7 @@ describe("Dataplane Service Consumer", () => {
             semanticModelRef: "http://some-more-specific-ontology.org",
             distributions: [
               {
-                format: "application/json",
+                mediaType: "application/json",
                 openApiSpecRef: "https://httpbin.org/spec.json",
                 backendUrl: "https://httpbin.org/anything",
               },

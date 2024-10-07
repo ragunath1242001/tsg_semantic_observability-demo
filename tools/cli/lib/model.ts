@@ -1,8 +1,9 @@
-import { Type } from "class-transformer";
+import { Exclude, plainToInstance, Type } from "class-transformer";
 import {
   IsBoolean,
   IsDefined,
   IsIn,
+  IsInstance,
   IsObject,
   IsOptional,
   IsString,
@@ -11,6 +12,33 @@ import {
   ValidateNested,
 } from "class-validator";
 import "reflect-metadata";
+import { log } from "./utils";
+
+export class DataPlane {
+  @IsString()
+  @IsOptional()
+  public readonly type?: string;
+
+  @IsBoolean()
+  @IsOptional()
+  public readonly tsgDataPlane: boolean = true;
+
+  @IsBoolean()
+  @IsOptional()
+  public readonly postgres: boolean = true;
+
+  @IsString()
+  @IsOptional()
+  public readonly subPath?: string;
+
+  @IsString()
+  @IsOptional()
+  public readonly dnsPrefix?: string;
+
+  @IsObject()
+  @IsOptional()
+  public readonly config?: Record<string, any>;
+}
 
 export class Participant {
   @IsString()
@@ -29,9 +57,6 @@ export class Participant {
   @IsBoolean()
   @IsOptional()
   public readonly hasControlPlane: boolean = false;
-  @IsBoolean()
-  @IsOptional()
-  public readonly hasDataPlane: boolean = false;
   @IsBoolean()
   @IsOptional()
   public readonly hasTestService: boolean = false;
@@ -57,6 +82,54 @@ export class Participant {
   @IsString()
   @IsOptional()
   public readonly preAuthorizationCode?: string;
+
+  @ValidateNested({ each: true })
+  @IsOptional()
+  @IsInstance(Map)
+  @Type(() => DataPlane)
+  public dataPlanes: Map<string, DataPlane> = new Map<string, DataPlane>();
+
+  @Exclude()
+  generateTestService(warn: boolean = true) {
+    if (this.hasTestService) {
+      const dataPlane: DataPlane = plainToInstance<DataPlane, DataPlane>(
+        DataPlane,
+        {
+          type: "http-data-plane",
+          postgres: true,
+          tsgDataPlane: true,
+          subPath: "http-data-plane",
+          config: {
+            dataset: {
+              title: `${this.name} HTTPBin`,
+              currentVersion: "0.9.2",
+              versions: [
+                {
+                  version: "0.9.2",
+                  distributions: [
+                    {
+                      backendUrl: "https://httpbin.org/",
+                      openApiSpecRef: "https://httpbin.org/spec.json",
+                    },
+                  ],
+                },
+              ],
+              policy: {
+                type: "default",
+              },
+            },
+          },
+        }
+      );
+      this.dataPlanes.set("http-data-plane", dataPlane);
+      if (warn) {
+        log(
+          "warn",
+          "Injected test http-data-plane, must only be used for testing purposes"
+        );
+      }
+    }
+  }
 }
 
 export class General {
@@ -80,7 +153,11 @@ export class General {
 export class Application {
   @IsString()
   @IsOptional()
-  public readonly chart?: string;
+  public readonly chartVersion?: string;
+
+  @IsString()
+  @IsOptional()
+  public readonly chartName?: string;
 
   @IsBoolean()
   @IsOptional()
@@ -112,10 +189,11 @@ export class Applications {
   @IsOptional()
   @Type(() => Application)
   public readonly controlPlane?: Application;
-  @ValidateNested()
+  @ValidateNested({ each: true })
   @IsOptional()
+  @IsInstance(Map)
   @Type(() => Application)
-  public readonly dataPlane?: Application;
+  public readonly dataPlanes?: Map<string, Application>;
 }
 
 export class Ecosystem {

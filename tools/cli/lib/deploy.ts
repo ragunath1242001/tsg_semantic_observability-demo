@@ -7,7 +7,7 @@ import {
   SingleParticipant,
 } from "./model";
 import fs from "fs";
-import { confirm } from "@inquirer/prompts";
+import { checkbox, confirm, Separator } from "@inquirer/prompts";
 import chalk from "chalk";
 import { getCliVersion, getLatestRelease } from "./validate";
 import { execPromise, log, validateAndCreate } from "./utils";
@@ -21,6 +21,7 @@ interface Options {
   dryRun: boolean;
   cwd?: string;
   config: string;
+  yes: boolean;
 }
 
 export class Deploy {
@@ -37,12 +38,14 @@ export class Deploy {
       Ecosystem,
       json
     );
+    participants.forEach((participant) =>
+      participant.generateTestService(false)
+    );
     this.general = general;
     this.applications = applications;
     this.cwd = options.cwd;
 
-    this.latestVersion = await getLatestRelease();
-    this.currentCliVersion = getCliVersion();
+    await this.confirmOptions(options);
 
     if (options.uninstall) {
       log("log", `Uninstalling ecosystem`);
@@ -91,11 +94,11 @@ export class Deploy {
           options.config,
           true,
           false,
-          false
+          false,
+          options.yes
         );
       }
-      const result = await confirm({ message: "Execute upgrade?" });
-      if (result) {
+      if (options.yes || (await confirm({ message: "Execute upgrade?" }))) {
         log("log", `Deploying ecosystem`);
         for (const participant of participants) {
           await this.installParticipant(
@@ -103,7 +106,8 @@ export class Deploy {
             options.config,
             false,
             options.dryRun,
-            true
+            true,
+            options.yes
           );
         }
       }
@@ -115,7 +119,8 @@ export class Deploy {
           options.config,
           false,
           options.dryRun,
-          true
+          true,
+          options.yes
         );
       }
     }
@@ -127,10 +132,13 @@ export class Deploy {
       SingleParticipant,
       json
     );
+    participant.generateTestService(false);
 
     this.general = general;
     this.applications = applications;
     this.cwd = options.cwd;
+
+    await this.confirmOptions(options);
 
     if (options.uninstall) {
       log("log", `Uninstalling participant`);
@@ -168,17 +176,18 @@ export class Deploy {
         options.config,
         true,
         false,
-        false
+        false,
+        options.yes
       );
-      const result = await confirm({ message: "Execute upgrade?" });
-      if (result) {
+      if (options.yes || (await confirm({ message: "Execute upgrade?" }))) {
         log("log", `Deploying participant`);
         await this.installParticipant(
           participant,
           options.config,
           false,
           options.dryRun,
-          true
+          true,
+          options.yes
         );
       }
     } else {
@@ -188,10 +197,96 @@ export class Deploy {
         options.config,
         false,
         options.dryRun,
-        true
+        true,
+        options.yes
       );
     }
   };
+
+  private async confirmOptions(options: Options) {
+    this.latestVersion = await getLatestRelease();
+    this.currentCliVersion = getCliVersion();
+
+    if (!options.yes) {
+      const currentContext: string = await execPromise(
+        "kubectl config current-context",
+        false,
+        undefined,
+        false,
+        undefined,
+        false
+      );
+
+      const answer: (
+        | "context"
+        | "uninstall"
+        | "clean"
+        | "cleanDatabase"
+        | "diff"
+        | "dryRun"
+      )[] = await checkbox({
+        message: "Confirm or update configuration",
+        instructions: ` (Press ${chalk.blue(
+          "<space>"
+        )} to toggle options and ${chalk.blue("<enter>")} to confirm options)`,
+        theme: {
+          helpMode: "always",
+        },
+        choices: [
+          {
+            name: `use Kubernetes context ${currentContext.trim()} (will abort if not selected)`,
+            value: "context",
+            checked: true,
+          },
+          {
+            name: "uninstall all resources, without redeployment (will override clean and clean database)",
+            value: "uninstall",
+            checked: options.uninstall,
+          },
+          {
+            name: "clean existing Helm releases",
+            value: "clean",
+            checked: options.clean,
+          },
+          {
+            name: "delete and redeploy databases",
+            value: "cleanDatabase",
+            checked: options.cleanDatabase,
+          },
+          { name: "execute Helm diff", value: "diff", checked: options.diff },
+          {
+            name: "dry run commands",
+            value: "dryRun",
+            checked: options.dryRun,
+          },
+          new Separator(
+            `Press ${chalk.blue("<enter>")} to confirm configuration`
+          ),
+        ],
+      });
+      if (!answer.includes("context")) {
+        log(
+          "log",
+          `Kubernetes context unchecked, update context via: ${chalk.yellow(
+            "kubectl config use-context "
+          )}${chalk.blue("<context>")}`
+        );
+        process.exit(0);
+      }
+      const checkedFlags = answer.filter((value) => value != "context");
+      checkedFlags.forEach((value) => (options[value] = true));
+      const flags: (
+        | "uninstall"
+        | "clean"
+        | "cleanDatabase"
+        | "diff"
+        | "dryRun"
+      )[] = ["uninstall", "clean", "cleanDatabase", "diff", "dryRun"];
+      flags
+        .filter((o) => !answer.includes(o))
+        .forEach((value) => (options[value] = false));
+    }
+  }
 
   private uninstallParticipant = async (
     participant: Participant,
@@ -227,9 +322,9 @@ export class Deploy {
           false
         );
       }
-      if (participant.hasDataPlane) {
+      for (const [id] of participant.dataPlanes) {
         await execPromise(
-          `helm delete -n ${this.general.namespace} ${participant.id}-tsg-http-data-plane`,
+          `helm delete -n ${this.general.namespace} ${participant.id}-tsg-${id}`,
           dryRun,
           this.cwd,
           false
@@ -258,7 +353,8 @@ export class Deploy {
     config: string,
     diff: boolean,
     dryRun: boolean,
-    wait: boolean
+    wait: boolean,
+    yes: boolean
   ) => {
     const helmCommand = (...flags: string[]) =>
       execPromise(
@@ -271,7 +367,7 @@ export class Deploy {
         ],
         dryRun,
         this.cwd,
-        true,
+        !yes,
         chalk.green("No changes")
       );
     await helmCommand(
@@ -279,9 +375,9 @@ export class Deploy {
       `-f ${config}/${participant.id}/values.postgres.yaml`,
       `-n ${this.general.namespace}`,
       `--repo ${this.helmRepository("bitnami")}`,
-      `--version ${this.applications?.postgres?.chart ?? "13.4.0"}`,
+      `--version ${this.applications?.postgres?.chartVersion ?? "13.4.0"}`,
       `${participant.id}-postgresql`,
-      `postgresql`
+      this.applications?.postgres?.chartName ?? `postgresql`
     );
 
     await helmCommand(
@@ -293,10 +389,10 @@ export class Deploy {
         this.applications?.casdoor?.developmentChart ?? false
       )}`,
       `--version ${
-        this.applications?.casdoor?.chart ?? this.currentCliVersion
+        this.applications?.casdoor?.chartVersion ?? this.currentCliVersion
       }`,
       `${participant.id}-casdoor`,
-      `casdoor`
+      this.applications?.casdoor?.chartName ?? `casdoor`
     );
 
     await helmCommand(
@@ -305,11 +401,13 @@ export class Deploy {
       `-n ${this.general.namespace}`,
       `--repo ${this.helmRepository(
         "tsg",
-        this.applications?.casdoor?.developmentChart ?? false
+        this.applications?.wallet?.developmentChart ?? false
       )}`,
-      `--version ${this.applications?.wallet?.chart ?? this.currentCliVersion}`,
+      `--version ${
+        this.applications?.wallet?.chartVersion ?? this.currentCliVersion
+      }`,
       `${participant.id}-tsg-wallet`,
-      `tsg-wallet`
+      this.applications?.wallet?.chartName ?? `tsg-wallet`
     );
 
     if (participant.hasControlPlane) {
@@ -319,30 +417,33 @@ export class Deploy {
         `-n ${this.general.namespace}`,
         `--repo ${this.helmRepository(
           "tsg",
-          this.applications?.casdoor?.developmentChart ?? false
+          this.applications?.controlPlane?.developmentChart ?? false
         )}`,
         `--version ${
-          this.applications?.controlPlane?.chart ?? this.currentCliVersion
+          this.applications?.controlPlane?.chartVersion ??
+          this.currentCliVersion
         }`,
         `${participant.id}-tsg-control-plane`,
-        `tsg-control-plane`
+        this.applications?.controlPlane?.chartName ?? `tsg-control-plane`
       );
     }
 
-    if (participant.hasDataPlane) {
+    for (const [id, dataPlane] of participant.dataPlanes) {
+      const type = dataPlane.type ?? id;
       await helmCommand(
         wait ? "--wait" : "",
-        `-f ${config}/${participant.id}/values.data-plane.yaml`,
+        `-f ${config}/${participant.id}/values.${id}.yaml`,
         `-n ${this.general.namespace}`,
         `--repo ${this.helmRepository(
           "tsg",
-          this.applications?.casdoor?.developmentChart ?? false
+          this.applications?.dataPlanes?.get(type)?.developmentChart ?? false
         )}`,
         `--version ${
-          this.applications?.dataPlane?.chart ?? this.currentCliVersion
+          this.applications?.dataPlanes?.get(type)?.chartVersion ??
+          this.currentCliVersion
         }`,
-        `${participant.id}-tsg-http-data-plane`,
-        `tsg-http-data-plane`
+        `${participant.id}-tsg-${id}`,
+        this.applications?.dataPlanes?.get(type)?.chartName ?? `tsg-${type}`
       );
     }
   };

@@ -5,7 +5,7 @@ import Dashboard from "../views/Dashboard.vue";
 import Tester from "../views/Tester.vue";
 import Logging from "../views/Logging.vue";
 import Metadata from "../views/Metadata.vue";
-import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
+import { registerRouter, useUserStore } from "@tsg-dsp/common-ui/stores/user";
 
 const router = createRouter({
   history: createWebHashHistory(),
@@ -60,4 +60,7 @@ router.beforeEach(async (to) => {
     return "/login";
   }
 });
+
+registerRouter(router);
+
 export default router;
