@@ -1,6 +1,6 @@
 # Build Process
 
-This repository is setup as a monorepo with pnpm. The main components are in the `apps` and `libs` folders. They are linked together in one monorepo by pnpm, the file where this is specified is called `pnpm-workspace.yaml`. The `apps` folder contains the frontend and backend packages, the `libs` folder contains the `dto`s that are common between the frontend and the backend. At the root of the monorepo we define a root package.json and a Dockerfile. This means that there is one docker image for both the backend and the frontend. The frontend can be enabled in the backend by setting an environment variable called `EMBEDDED_FRONTEND`.
+This repository is setup as a monorepo with pnpm. The main components are in the `apps` and `libs` folders. They are linked together in one monorepo by pnpm, the file where this is specified is called `pnpm-workspace.yaml`. The `apps` folder contains the control-plane-ui and control-plane-api packages, the `libs` folder contains the `dto`s that are common between the control-plane-ui and the control-plane-api. At the root of the monorepo we define a root package.json and a Dockerfile. This means that there is one docker image for both the control-plane-api and the control-plane-ui. The control-plane-ui can be enabled in the control-plane-api by setting an environment variable called `EMBEDDED_FRONTEND`.
 
 To make use of pnpm, make sure to install it. Then, to use the specific scripts in the root of the repository you can run:
 
@@ -8,13 +8,13 @@ To make use of pnpm, make sure to install it. Then, to use the specific scripts 
 pnpm install
 ```
 
-And afterwards you can run a command by using `pnpm ...` with any command that is listed in the `package.json` file. If you want to run a command only for a specific package (for example backend) you can run `pmpm --filter backend ...` where at the dots you can place a command that is in the `package.json` of that specific app/lib.
+And afterwards you can run a command by using `pnpm ...` with any command that is listed in the `package.json` file. If you want to run a command only for a specific package (for example control-plane-api) you can run `pmpm --filter control-plane-api ...` where at the dots you can place a command that is in the `package.json` of that specific app/lib.
 
 ## Development
 
 For development, everything is setup to be used with vscode. This means tests will automatically run on save, prettier will make code styling consistent, and debug scripts are available.
 
-To run the frontend and backend in watch mode use the following command:
+To run the control-plane-ui and control-plane-api in watch mode use the following command:
 
 ```
 pnpm run dev:control-plane-api
