@@ -17,6 +17,7 @@ import fs from "fs";
 import { Logger } from "@nestjs/common";
 import { CredentialSubject } from "@tsg-dsp/common-dsp";
 import { AppRole } from "@tsg-dsp/wallet-dtos";
+import { DIDMethod, DIDMethodList, DIDMethodTypes } from "./utils/did.js";
 
 function fileTransformer(params: TransformFnParams): string | undefined {
   if (typeof params.value === "string") {
@@ -260,6 +261,12 @@ export class RuntimeConfig {
   public title?: string;
 }
 
+export class DidConfig {
+  @IsString()
+  @IsIn(DIDMethodList)
+  public readonly method: DIDMethodTypes = DIDMethod.WEB;
+}
+
 export class RootConfig {
   @ValidateNested()
   @IsDefined({
@@ -323,4 +330,9 @@ export class RootConfig {
   @Type(() => RuntimeConfig)
   @IsOptional()
   public readonly runtime: RuntimeConfig = new RuntimeConfig();
+
+  @ValidateNested()
+  @Type(() => DidConfig)
+  @IsOptional()
+  public readonly did: DidConfig = new DidConfig();
 }

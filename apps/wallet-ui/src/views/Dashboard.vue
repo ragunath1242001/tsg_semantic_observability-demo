@@ -16,21 +16,20 @@ const numberOfServices = ref(0);
 
 const getDidDocument = async () => {
   try {
-    const response = await http.get<DIDDocument>(
-      "/.well-known/did.json",
-      { baseURL: "" }
-    );
+    const response = await http.get<DIDDocument>("management/did");
     didDocument.value = response.data;
     numberOfVerificationMethods.value =
       response.data.verificationMethod?.length ?? 0;
     numberOfAssertionMethods.value = response.data.assertionMethod?.length ?? 0;
     numberOfServices.value = response.data.service?.length ?? 0;
   } catch (error) {
-    toast.add(toastError({
-      error,
-      summary: "DID resolvement failed",
-      defaultMessage: `Error in resolving own DID document`
-    }));
+    toast.add(
+      toastError({
+        error,
+        summary: "DID resolvement failed",
+        defaultMessage: `Error in resolving own DID document`,
+      })
+    );
   }
 };
 

@@ -196,4 +196,11 @@ export class ManagedIdentityWalletClient extends WalletClient {
       HttpStatus.NOT_IMPLEMENTED
     );
   }
+
+  async resolveDidDocument(didId: string): Promise<DIDDocument> {
+    throw new DSPError(
+      `MIW does not support resolving DID Documents`,
+      HttpStatus.NOT_IMPLEMENTED
+    );
+  }
 }

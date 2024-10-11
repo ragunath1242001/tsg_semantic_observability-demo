@@ -1,57 +1,63 @@
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
-import { DIDDocument } from "did-resolver";
+import { DIDDocument, Service, VerificationMethod } from "did-resolver";
 import { KeyMaterials } from "../model/credentials.dao.js";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { Like, Repository } from "typeorm";
 import { DidServiceConfig, RootConfig } from "../config.js";
-import { keyTypes, signingAlgorithm } from "../utils/keymapping.js";
 import { AppError } from "../utils/error.js";
-import { DIDDocuments, DIDService } from "../model/did.dao.js";
+import { DIDDocuments, DIDLogs, DIDService } from "../model/did.dao.js";
+import { DidWebStrategy } from "./web/did.web.strategy.js";
+import { DidTdwStrategy } from "./tdw/did.tdw.strategy.js";
+import {
+  createServices,
+  createVerificationMethods,
+  DIDMethod,
+} from "../utils/did.js";
+
+export interface DidStrategy {
+  createDid(config: RootConfig): string;
+  createDidDocument(
+    config: RootConfig,
+    didId: string,
+    keys: KeyMaterials[],
+    services: DidServiceConfig[]
+  ): Promise<{ didId: string; didDocument: DIDDocument }>;
+  updateDidDocument(
+    didDocument: DIDDocument,
+    verificationMethods?: VerificationMethod[],
+    services?: Service[]
+  ): Promise<DIDDocument>;
+  setDefaultKey(didDocument: DIDDocument, key: KeyMaterials): void;
+}
 
 @Injectable()
 export class DidService {
-  private readonly didId: string;
+  private didId: string;
+  private readonly didStrategy: DidStrategy;
   constructor(
     private readonly config: RootConfig,
     @InjectRepository(DIDDocuments)
     private readonly didRepository: Repository<DIDDocuments>,
     @InjectRepository(DIDService)
-    private readonly serviceRepository: Repository<DIDService>
+    private readonly serviceRepository: Repository<DIDService>,
+    @InjectRepository(DIDLogs)
+    private readonly didLogsRepository: Repository<DIDLogs>
   ) {
-    this.didId = `did:web:${this.config.server.publicDomain.replace(
-      ":",
-      "%3A"
-    )}`;
-    this.initialized = this.init();
+    this.didStrategy = this.retrieveDidStrategy(config.did.method);
+    this.didId = this.didStrategy.createDid(config);
   }
   private readonly logger = new Logger(this.constructor.name);
   private cachedDocument?: DIDDocument = undefined;
-  initialized: Promise<boolean>;
 
-  async init() {
-    const services: DidServiceConfig[] = [
-      {
-        id: `${this.didId}#oid4vci`,
-        type: "OID4VCI",
-        serviceEndpoint: `https://${this.config.server.publicDomain}`,
-      },
-      {
-        id: `${this.didId}#presentation`,
-        type: "PresentationService",
-        serviceEndpoint: `${this.config.server.publicAddress}/iatp/holder/presentation`,
-      },
-      ...this.config.didServices,
-    ];
-    for (const service of services) {
-      try {
-        await this.insertService(service);
-      } catch (e) {
-        this.logger.debug(
-          `Service with id ${service.id} already exists, not overriding`
-        );
-      }
+  private retrieveDidStrategy(didMethod: string): DidStrategy {
+    switch (didMethod) {
+      case DIDMethod.WEB:
+        return new DidWebStrategy();
+      case DIDMethod.TDW:
+        return new DidTdwStrategy(this.didLogsRepository);
+      default:
+        throw Error("DID method is not supported");
     }
-    return true;
   }
 
   async getDidId(): Promise<string> {
@@ -62,29 +68,59 @@ export class DidService {
     if (this.cachedDocument) {
       return this.cachedDocument;
     }
-
-    const did = await this.didRepository.find({});
+    const did = await this.didRepository.find({
+      where: {
+        document: Like(`%"id":"${this.config.did.method}%`),
+      },
+    });
     if (did.length === 0) {
       throw new AppError(`DID Document not ready yet`, HttpStatus.NOT_FOUND);
     }
-    const services = await this.getServices();
-
-    this.cachedDocument = {
-      ...did[0].document,
-      service: services?.map((s) => {
-        return {
-          id: s.id,
-          type: s.type,
-          serviceEndpoint: s.serviceEndpoint,
-        };
-      }),
-    };
-
+    this.cachedDocument = did[0].document;
     return this.cachedDocument;
   }
 
+  private initServices(): DidServiceConfig[] {
+    return [
+      {
+        id: `${this.didId}#oid4vci`,
+        type: "OID4VCI",
+        serviceEndpoint: `https://${this.config.server.publicDomain}`,
+      },
+      {
+        id: `${this.didId}#presentation`,
+        type: "PresentationService",
+        serviceEndpoint: `${this.config.server.publicAddress}/api/iatp/holder/presentation`,
+      },
+      ...this.config.didServices,
+    ];
+  }
+
+  private async saveInitServices(services: Service[]) {
+    for (const service of services) {
+      try {
+        await this.insertService(
+          {
+            id: service.id,
+            type: service.type,
+            serviceEndpoint: service.serviceEndpoint as string,
+          },
+          true
+        );
+      } catch (e) {
+        this.logger.debug(
+          `Service with id ${service.id} already exists, not overriding`
+        );
+      }
+    }
+  }
+
   async getServices() {
-    return await this.serviceRepository.find({});
+    return await this.serviceRepository.find({
+      where: {
+        id: Like(`${this.didId}%`),
+      },
+    });
   }
 
   async getService(id: string) {
@@ -98,7 +134,10 @@ export class DidService {
     return service;
   }
 
-  async insertService(config: DidServiceConfig): Promise<DIDService> {
+  async insertService(
+    config: DidServiceConfig,
+    init?: boolean
+  ): Promise<DIDService> {
     if (await this.serviceRepository.existsBy({ id: config.id })) {
       throw new AppError(
         `Service with id ${config.id} already exists`,
@@ -106,7 +145,11 @@ export class DidService {
       );
     }
     const service = await this.serviceRepository.save(config);
-    this.cachedDocument = undefined;
+
+    if (!init) {
+      await this.updateDidDocumentServices(await this.getServices());
+    }
+
     return service;
   }
 
@@ -116,7 +159,7 @@ export class DidService {
         ...config,
         id: id,
       });
-      this.cachedDocument = undefined;
+      await this.updateDidDocumentServices(await this.getServices());
       return service;
     } else {
       throw new AppError(
@@ -129,43 +172,84 @@ export class DidService {
   async deleteService(id: string) {
     const service = await this.getService(id);
     await this.serviceRepository.remove(service);
+    await this.updateDidDocumentServices(await this.getServices());
   }
 
-  async createDidDocument(keys: KeyMaterials[]): Promise<DIDDocument> {
-    this.logger.log("Creating DID document");
-
-    const didDocument: DIDDocument = {
-      "@context": [
-        "https://www.w3.org/ns/did/v1",
-        "https://w3id.org/security/suites/jws-2020/v1",
-      ],
-      id: this.didId,
-      verificationMethod: keys.map((key) => {
-        return {
-          id: `${this.didId}#${key.id}`,
-          type: "JsonWebKey2020",
-          controller: this.didId,
-          publicKeyJwk: {
-            kty: keyTypes(key.type),
-            alg: signingAlgorithm(key.type),
-            ...key.publicKey,
-          },
-        };
-      }),
-      assertionMethod: keys.map((key) => `${this.didId}#${key.id}`),
-    };
-    this.logger.log(`DID document created for ${this.didId}`);
-    this.logger.debug(
-      `DID document ${this.didId}\n${JSON.stringify(didDocument, null, 2)}`
-    );
-    const existing = await this.didRepository.find({});
-    if (existing[0]) {
-      await this.didRepository.clear();
+  private async saveDidDocument(didDocument: DIDDocument) {
+    const existing = await this.didRepository.find({
+      where: {
+        document: Like(`%"id":"${this.config.did.method}%`),
+      },
+    });
+    if (existing) {
+      existing.forEach(async (e) => await this.didRepository.delete(e.id));
     }
     await this.didRepository.save({
       document: didDocument,
     });
     this.cachedDocument = undefined;
+  }
+
+  async checkExistingDidDocument(
+    defaultKey: KeyMaterials
+  ): Promise<DIDDocument> {
+    let existingDidDocument: DIDDocument;
+    try {
+      existingDidDocument = await this.getDid();
+    } catch (e) {
+      throw new AppError(`DID Document not ready yet`, HttpStatus.NOT_FOUND);
+    }
+    this.didId = existingDidDocument.id;
+    await this.setDidDefaultKey(defaultKey);
+    this.logger.log(`Using existing DID Document for ${this.didId}`);
+    this.logger.debug(
+      `DID document ${this.didId}\n${JSON.stringify(
+        existingDidDocument,
+        null,
+        2
+      )}`
+    );
+    return existingDidDocument;
+  }
+
+  async createDidDocument(keys: KeyMaterials[]): Promise<DIDDocument> {
+    const { didId, didDocument } = await this.didStrategy.createDidDocument(
+      this.config,
+      this.didId,
+      keys,
+      this.initServices()
+    );
+
+    this.didId = didId;
+    if (didDocument.service != null) {
+      this.saveInitServices(didDocument.service!);
+    }
+    await this.saveDidDocument(didDocument);
+
     return didDocument;
+  }
+
+  async updateDidDocumentKeys(keys: KeyMaterials[]) {
+    let didDocument = await this.getDid();
+    didDocument = await this.didStrategy.updateDidDocument(
+      didDocument,
+      createVerificationMethods(didDocument.id, keys),
+      didDocument.service
+    );
+    await this.saveDidDocument(didDocument);
+  }
+
+  private async updateDidDocumentServices(services: DIDService[]) {
+    let didDocument = await this.getDid();
+    didDocument = await this.didStrategy.updateDidDocument(
+      didDocument,
+      didDocument.verificationMethod,
+      createServices(services)
+    );
+    await this.saveDidDocument(didDocument);
+  }
+
+  async setDidDefaultKey(key: KeyMaterials) {
+    this.didStrategy.setDefaultKey(await this.getDid(), key);
   }
 }

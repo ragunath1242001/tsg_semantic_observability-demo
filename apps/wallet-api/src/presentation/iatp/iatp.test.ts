@@ -19,7 +19,7 @@ import { SignatureService } from "../../keys/signature.service.js";
 import { SIToken } from "../../model/iatp.dao.js";
 import crypto from "crypto";
 import { toArray } from "../../utils/unions.js";
-import { DIDDocuments, DIDService } from "../../model/did.dao.js";
+import { DIDDocuments, DIDLogs, DIDService } from "../../model/did.dao.js";
 
 describe("Presentation Service", () => {
   let presentationService: PresentationService;
@@ -73,6 +73,7 @@ describe("Presentation Service", () => {
           DIDService,
           KeyMaterials,
           SIToken,
+          DIDLogs,
         ]),
         TypeOrmModule.forFeature([
           Credentials,
@@ -80,6 +81,7 @@ describe("Presentation Service", () => {
           DIDService,
           KeyMaterials,
           SIToken,
+          DIDLogs,
         ]),
       ],
       providers: [
@@ -103,7 +105,6 @@ describe("Presentation Service", () => {
     iatpVerifierService = await moduleRef.get(IatpVerifierService);
     presentationService = await moduleRef.get(PresentationService);
     const didService = await moduleRef.get(DidService);
-    await didService.initialized;
     await moduleRef.get(KeysService).initialized;
     await moduleRef.get(CredentialsService).initialized;
     server = setupServer(
@@ -112,7 +113,7 @@ describe("Presentation Service", () => {
         return HttpResponse.json(didDocument);
       }),
       http.get(
-        "http://localhost:3000/iatp/holder/presentation",
+        "http://localhost:3000/api/iatp/holder/presentation",
         async (ctx) => {
           const authorization = ctx.request.headers.get("Authorization");
           const presentationDefinition = JSON.parse(

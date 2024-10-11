@@ -12,7 +12,6 @@ import {
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { DspClientService } from "../dsp/client/client.service";
 import { AuthService } from "../auth/auth.service";
-import { DidResolverService } from "./did.resolver.service";
 import { plainToClass, plainToInstance } from "class-transformer";
 import { AuthConfig, IamConfig, RegistryConfig, RootConfig } from "../config";
 import { SetupServer } from "msw/lib/node";
@@ -48,7 +47,6 @@ describe("RegistryService", () => {
         ScheduleModule.forRoot(),
       ],
       providers: [
-        DidResolverService,
         DspClientService,
         RegistryService,
         {
@@ -74,41 +72,6 @@ describe("RegistryService", () => {
     server = setupMockWalletServer();
 
     server.use(
-      http.get("http://localhost/.well-known/did.json", () => {
-        return HttpResponse.json({
-          "@context": [
-            "https://www.w3.org/ns/did/v1",
-            "https://w3c-ccg.github.io/lds-jws2020/contexts/v1/",
-          ],
-          id: "did:web:localhost",
-          verificationMethod: [
-            {
-              id: "did:web:localhost#key-0",
-              type: "JsonWebKey2020",
-              controller: "did:web:localhost",
-              publicKeyJwk: {
-                kty: "OKP",
-                alg: "EdDSA",
-                crv: "Ed25519",
-                x: "Hwltj2aq8ig-VBF5GZJQPlwz6PrxGXpG2rLX0oYwYeg",
-              },
-            },
-          ],
-          assertionMethod: ["did:web:localhost#key-0"],
-          service: [
-            {
-              id: "did:web:localhost#oid4vci",
-              type: "OID4VCI",
-              serviceEndpoint: "http://localhost",
-            },
-            {
-              id: "did:web:localhost",
-              type: "connector",
-              serviceEndpoint: "http://localhost",
-            },
-          ],
-        });
-      }),
       http.post("http://localhost/catalog/request", () => {
         return HttpResponse.json({
           "@context": "https://w3id.org/dspace/2024/1/context.json",
@@ -247,7 +210,6 @@ describe("RegistryService", () => {
           ScheduleModule.forRoot(),
         ],
         providers: [
-          DidResolverService,
           DspClientService,
           RegistryService,
           {

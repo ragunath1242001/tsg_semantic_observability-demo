@@ -188,5 +188,8 @@ describe("Managed Identity Wallet", () => {
     await expect(
       miwWalletClient.requestSignatureValidation({})
     ).rejects.toThrow("MIW does not support validation of documents");
+    await expect(miwWalletClient.resolveDidDocument("")).rejects.toThrow(
+      "MIW does not support resolving DID Documents"
+    );
   });
 });

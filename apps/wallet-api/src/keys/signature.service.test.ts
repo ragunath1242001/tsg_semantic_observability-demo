@@ -8,7 +8,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { DidService } from "../did/did.service.js";
 import { KeysService } from "./keys.service.js";
 import { describe, expect, beforeAll, afterAll, it } from "@jest/globals";
-import { DIDDocuments, DIDService } from "../model/did.dao.js";
+import { DIDDocuments, DIDLogs, DIDService } from "../model/did.dao.js";
 import { DidResolverService } from "../did/did.resolver.service.js";
 import { SignatureService } from "./signature.service.js";
 import { setupServer, SetupServer } from "msw/node";
@@ -35,12 +35,14 @@ describe("Key Service", () => {
           DIDDocuments,
           DIDService,
           KeyMaterials,
+          DIDLogs
         ]),
         TypeOrmModule.forFeature([
           Credentials,
           DIDDocuments,
           DIDService,
           KeyMaterials,
+          DIDLogs
         ]),
       ],
       providers: [

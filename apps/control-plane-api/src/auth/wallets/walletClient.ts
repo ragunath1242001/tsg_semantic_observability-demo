@@ -4,6 +4,7 @@ import {
   VerifiablePresentation,
 } from "@tsg-dsp/common-dsp";
 import { InputDescriptor } from "@tsg-dsp/common-dtos";
+import { DIDDocument } from "did-resolver";
 
 export interface ValidationResult {
   [key: string]: boolean | boolean[];
@@ -26,9 +27,9 @@ export abstract class WalletClient {
     VerifiablePresentation<VerifiableCredential<CredentialSubject>> | undefined
   >;
   abstract getCredentials(): Promise<Credential[]>;
-
   abstract requestSignature(document: Record<string, any>): Promise<any>;
   abstract requestSignatureValidation(
     signedDocument: Record<string, any>
   ): Promise<any>;
+  abstract resolveDidDocument(didId: string): Promise<DIDDocument>;
 }

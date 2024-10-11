@@ -9,7 +9,6 @@ import {
   ResourceDao,
 } from "../model/catalog.dao";
 import { ScheduleModule } from "@nestjs/schedule";
-import { DidResolverService } from "./did.resolver.service";
 import { AuthModule } from "../auth/auth.module";
 import { DspClientModule } from "../dsp/client/client.module";
 import { CatalogModule } from "../dsp/catalog/catalog.module";
@@ -37,7 +36,7 @@ export class RegistryModule {
         ScheduleModule.forRoot(),
       ],
       controllers: [RegistryClientController, RegistryController],
-      providers: [DidResolverService, RegistryClientService, RegistryService],
+      providers: [RegistryClientService, RegistryService],
       exports: [RegistryService],
     };
     return module;

@@ -9,8 +9,9 @@ import { SignJWT } from "jose";
 import { decode } from "jsonwebtoken";
 import { DevWalletConfig } from "../../config";
 import { Credential, WalletClient } from "./walletClient";
-import { HttpStatus } from "@nestjs/common";
+import { HttpStatus, Logger } from "@nestjs/common";
 import { DSPError } from "../../utils/errors/error";
+import { DIDDocument } from "did-resolver";
 
 export class DevWalletClient extends WalletClient {
   constructor(private readonly iamConfig: DevWalletConfig) {
@@ -86,6 +87,13 @@ export class DevWalletClient extends WalletClient {
   ): Promise<any> {
     throw new DSPError(
       `Dev Wallet does not support validation of documents`,
+      HttpStatus.NOT_IMPLEMENTED
+    );
+  }
+
+  async resolveDidDocument(didId: string): Promise<DIDDocument> {
+    throw new DSPError(
+      `Dev Wallet does not support resolving DID Documents`,
       HttpStatus.NOT_IMPLEMENTED
     );
   }

@@ -17,7 +17,6 @@ import { DspClientService } from "../dsp/client/client.service";
 
 import { normalizeAddress } from "../utils/address";
 import { DSPError } from "../utils/errors/error";
-import { DidResolverService } from "./did.resolver.service";
 import { RegistryDao } from "../model/registry.dao";
 import { isFulfilled } from "../utils/promises";
 
@@ -26,7 +25,6 @@ export class RegistryService implements OnApplicationBootstrap {
   constructor(
     @InjectRepository(RegistryDao)
     private readonly registryRepository: Repository<RegistryDao>,
-    private readonly didResolverService: DidResolverService,
     private readonly dsp: DspClientService,
     private readonly schedulerRegistry: SchedulerRegistry,
     private readonly authService: AuthService,
@@ -59,7 +57,9 @@ export class RegistryService implements OnApplicationBootstrap {
     const didDocuments = await Promise.all(
       credentials.map(async (credential) => {
         try {
-          return await this.didResolverService.resolve(credential.targetDid);
+          return await this.authService.walletClient.resolveDidDocument(
+            credential.targetDid
+          );
         } catch (e) {
           this.logger.warn(
             `Could not resolve did document for ${credential.targetDid}, error: ${e}`

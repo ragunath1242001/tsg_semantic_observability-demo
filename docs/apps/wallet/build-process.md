@@ -10,6 +10,12 @@ pnpm install
 
 And afterwards you can run a command by using `pnpm ...` with any command that is listed in the `package.json` file. If you want to run a command only for a specific package (for example wallet-api) you can run `pmpm --filter wallet-api ...` where at the dots you can place a command that is in the `package.json` of that specific app/lib.
 
+_Note:_ This repository depends on a library hosted on the GitLab Package Repository [`@tno-tsg/trustdidweb-ts`](https://gitlab.com/tno-tsg/dataspace-protocol/utils/trustdidweb-ts/-/packages). In order to install this library, make sure to configure the pnpm package registry for the `@tno-tsg` namespace before running `pnpm install`:
+
+```
+pnpm config set @tno-tsg:registry=https://gitlab.com/api/v4/packages/npm/
+```
+
 ## Development
 
 For development, everything is setup to be used with vscode. This means tests will automatically run on save, prettier will make code styling consistent, and debug scripts are available.

@@ -1,16 +1,30 @@
 # Configuration
 
-In this section, the configuration of the control plane is explained. Configuration is used based on a `config.yaml` file which should be placed in the `apps/backend` folder. This `config.yaml` file is loaded when booting the application. The values get type checked, and it gives a clear error message if there is a configuration field missing or provided incorrectly. Next to the `config.yaml` file, you can also set environment variables. These override the values that are listed in the `config.yaml` file.
+In this section, the configuration of the wallet is explained. Configuration is used based on a `config.yaml` file which should be placed in the `apps/backend` folder. This `config.yaml` file is loaded when booting the application. The values get type checked, and it gives a clear error message if there is a configuration field missing or provided incorrectly. Next to the `config.yaml` file, you can also set environment variables. These override the values that are listed in the `config.yaml` file.
 
 ## Databases
 
-By default, the development database is sqlite. We use postgres databases for production type instances of the control planes.
+By default, the development database is sqlite. We use postgres databases for production type instances of the wallets.
 
 ## Authentication
 
 Authentication for frontend services can be done via OAuth. This helps users who need to login to several components to authenticate themselves faster. The wallet is tested against Casdoor, with an Helm chart provided alongside the Helm chart of the wallet, but other OAuth services should be usable (e.g. Keycloak, or hosted OAuth services).
 
-### Possible configuration parameters
+## DID Method
+
+Two DID methods are currently supported: `did:web` and `did:tdw`. A comparison between the two is given below. The decision of which configuration to select should be made based on the specific use case of the wallet.
+
+|                          | did:web                                                                                                                                                   | did:tdw                                                                                                                                                                                                                                              |
+| ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| TSG Configuration value: | `did:web:`                                                                                                                                                | `did:tdw:`                                                                                                                                                                                                                                           |
+| Specification link:      | [W3C internal document](https://w3c-ccg.github.io/did-method-web/)                                                                                        | [BCGov specification draft](https://bcgov.github.io/trustdidweb/)                                                                                                                                                                                    |
+| Supported version:       | Unofficial draft                                                                                                                                          | Draft v1                                                                                                                                                                                                                                             |
+| Underlying technology:   | Web-based DID method that serves the DID Document as a JSON under a certain endpoint (.well-known path) of a web domain that is accessible by the public. | Web-based DID method that utilizes a public JSON Lines file hosted under a web domain to store each change (create, update, delete) that occurs on a DID Document. The DID Document is then resolved by fetching and processing the JSON Lines file. |
+| Identifier format:       | `did:web:{{public web domain}}`<br />e.g. `did:web:example.com`                                                                                           | `did:tdw:{{public web domain}}:{{generated self-certifying identifier}}`<br />e.g. `did:tdw:example.com:b7ep277b2mvxdpcrbja3iergubfy`                                                                                                                |
+| Advantages:              | Straightforward implementation with no additional processing other than hosting DID Document on web server.                                               | Additional security and validation mechanisms contained in the JSON Lines file that increases trustworthiness of DID Document.                                                                                                                       |
+| Disadvantages:           | Easily compromisable without notice by resolving parties when malicious access is gained to the web server.                                               | DID Document is not directly available as extra processing to verify signatures and validate entry hashes retrieved from the JSON Lines file needs to be performed to resolve the DID Document.                                                      |
+
+## Possible configuration parameters
 
 | Name                                    | Data Type         | Required                         | Explanation                                                                                                                  | Default                   |
 | --------------------------------------- | ----------------- | -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- | ------------------------- |
@@ -77,3 +91,5 @@ Authentication for frontend services can be done via OAuth. This helps users who
 | **Runtime Configuration**               |                   |                                  |                                                                                                                              |                           |
 | `runtime.gaiaXSupport`                  | Boolean           | No                               | Flag indicating whether this wallet should support Gaia-X credentials                                                        | `false`                   |
 | `runtime.title`                         | String            | No                               | Title of wallet instance that will be used in the UI                                                                         |                           |
+| **DID Configuration**                   |                   |                                  |                                                                                                                              |                           |
+| `did.method`                            | String            | No                               | DID method to be used by the wallet                                                                                          | `did:web:`                |

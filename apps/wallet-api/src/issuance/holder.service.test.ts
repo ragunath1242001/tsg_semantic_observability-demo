@@ -28,7 +28,7 @@ import {
 } from "jose";
 import { DIDDocument } from "did-resolver";
 import { HolderService } from "./holder.service.js";
-import { DIDDocuments, DIDService } from "../model/did.dao.js";
+import { DIDDocuments, DIDLogs, DIDService } from "../model/did.dao.js";
 import { ContextService } from "../contexts/context.service.js";
 import { JSONLDContext } from "../model/context.dao.js";
 import { SignatureService } from "../keys/signature.service.js";
@@ -70,6 +70,7 @@ describe("Holder service", () => {
           CredentialIssuance,
           CIAccessToken,
           JSONLDContext,
+          DIDLogs,
         ]),
         TypeOrmModule.forFeature([
           Credentials,
@@ -79,6 +80,7 @@ describe("Holder service", () => {
           CredentialIssuance,
           CIAccessToken,
           JSONLDContext,
+          DIDLogs,
         ]),
       ],
       providers: [
@@ -154,7 +156,7 @@ describe("Holder service", () => {
         }
       ),
       http.post<PathParams, any, AccessToken>(
-        "http://localhost:3000/oid4vci/token",
+        "http://localhost:3000/api/oid4vci/token",
         async (ctx) => {
           const data = await ctx.request.formData();
           return HttpResponse.json(
@@ -165,7 +167,7 @@ describe("Holder service", () => {
         }
       ),
       http.post<PathParams, CredentialRequest, CredentialResponse>(
-        "http://localhost:3000/oid4vci/credential",
+        "http://localhost:3000/api/oid4vci/credential",
         async (ctx) => {
           const body = await ctx.request.json();
           const authorization = ctx.request.headers.get("Authorization");

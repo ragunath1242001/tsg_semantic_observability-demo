@@ -21,7 +21,7 @@ import {
   LegalRegistrationNumberRequest,
 } from "@tsg-dsp/wallet-dtos";
 import { GaiaXService } from "./gaiax.service.js";
-import { DIDDocuments, DIDService } from "../../model/did.dao.js";
+import { DIDDocuments, DIDService, DIDLogs } from "../../model/did.dao.js";
 import { DidResolverService } from "../../did/did.resolver.service.js";
 import { SignatureService } from "../../keys/signature.service.js";
 
@@ -137,12 +137,14 @@ describe("Credentials Service", () => {
           DIDDocuments,
           DIDService,
           KeyMaterials,
+          DIDLogs,
         ]),
         TypeOrmModule.forFeature([
           Credentials,
           DIDDocuments,
           DIDService,
           KeyMaterials,
+          DIDLogs,
         ]),
       ],
       providers: [

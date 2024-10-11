@@ -273,8 +273,8 @@ onMounted(async () => {
                 :id="props.id"
                 class="w-full"
                 v-model="legalRegistrationNumberForm.targetDid"
-                placeholder="did:web:..."
-                pattern="did:web:.*"
+                placeholder="did:..."
+                pattern="did:(web|tdw):.*"
                 validation-message="Target DID must be a DID web"
               />
             </FormField>
@@ -341,8 +341,8 @@ onMounted(async () => {
                 :id="props.id"
                 class="w-full"
                 v-model="complianceCredentialForm.targetDid"
-                placeholder="did:web:..."
-                pattern="did:web:.*"
+                placeholder="did:..."
+                pattern="did:(web|tdw):.*"
                 validation-message="Target DID must be a DID web"
               />
             </FormField>

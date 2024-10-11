@@ -31,27 +31,67 @@ describe("DID Service", () => {
       assertionMethod: [`${didId}#test-key`],
     };
   };
-  const subDirectoryDid: DIDDocument = {
-    "@context": [
-      "https://www.w3.org/ns/did/v1",
-      "https://w3c-ccg.github.io/lds-jws2020/contexts/v1/",
-    ],
-    id: "did:web:example.com:user:admin",
-    verificationMethod: [
+  const didLog: string = JSON.stringify([
+    "b6okhmcu4qfy3bibshi7rsfwzafmiruxvyhotg22d3tbaqjrj7aga",
+    1,
+    "2024-08-14T15:06:52Z",
+    {
+      method: "did:tdw:1",
+      scid: "bwrrlevohy72zhnvmuvuvkkavzgr",
+      updateKeys: ["z6MktyEcvgvQo2TPwb3BxcSrmx1FEFs3cvwF4Qe8MovdbkYM"],
+    },
+    {
+      value: {
+        "@context": [
+          "https://www.w3.org/ns/did/v1",
+          "https://w3id.org/security/suites/jws-2020/v1",
+        ],
+        id: "did:tdw:localhost%3A3000:bwrrlevohy72zhnvmuvuvkkavzgr",
+        controller: "did:tdw:localhost%3A3000:bwrrlevohy72zhnvmuvuvkkavzgr",
+        assertionMethod: [
+          "did:tdw:localhost%3A3000:bwrrlevohy72zhnvmuvuvkkavzgr#key-0",
+        ],
+        verificationMethod: [
+          {
+            id: "did:tdw:localhost%3A3000:bwrrlevohy72zhnvmuvuvkkavzgr#key-0",
+            controller: "did:tdw:localhost%3A3000:bwrrlevohy72zhnvmuvuvkkavzgr",
+            type: "JsonWebKey2020",
+            publicKeyJwk: {
+              kty: "OKP",
+              alg: "EdDSA",
+              crv: "Ed25519",
+              x: "17FuANfb0PjxiR5iiixheempqgUmp3HPFfM1zq3WtFY",
+            },
+          },
+        ],
+        service: [
+          {
+            id: "did:tdw:localhost%3A3000:bwrrlevohy72zhnvmuvuvkkavzgr#oid4vci",
+            type: "OID4VCI",
+            serviceEndpoint: "http://localhost:3000",
+          },
+          {
+            id: "did:tdw:localhost%3A3000:bwrrlevohy72zhnvmuvuvkkavzgr#presentation",
+            type: "PresentationService",
+            serviceEndpoint:
+              "http://localhost:3000/api/iatp/holder/presentation",
+          },
+        ],
+      },
+    },
+    [
       {
-        id: "did:web:example.com:user:admin#test-key",
-        type: "JsonWebKey2020",
-        controller: "did:web:example.com:user:admin",
-        publicKeyJwk: {
-          kty: "OKP",
-          alg: "EdDSA",
-          crv: "Ed25519",
-          x: "51eFT_VcIKhmugYwgohttFjY9jqSZK-L8FcwTiPMGzA",
-        },
+        type: "DataIntegrityProof",
+        cryptosuite: "eddsa-jcs-2022",
+        verificationMethod: "z6MktyEcvgvQo2TPwb3BxcSrmx1FEFs3cvwF4Qe8MovdbkYM",
+        created: "2024-08-14T15:06:52Z",
+        proofPurpose: "authentication",
+        challenge: "b6okhmcu4qfy3bibshi7rsfwzafmiruxvyhotg22d3tbaqjrj7aga",
+        proofValue:
+          "zDJwQNLB4ABV63ETmMyPXsuBNHDYfvPsvYV1wjpVjNebhBCyhw2yDVLXisNbnUTrKcamQSUkUYRoYyyvhC3cgaTr",
       },
     ],
-    assertionMethod: ["did:web:example.com:user:admin#test-key"],
-  };
+  ]);
 
   beforeAll(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
@@ -60,20 +100,15 @@ describe("DID Service", () => {
     didResolver = await moduleRef.get(DidResolverService);
 
     server = setupServer(
-      http.get("http://localhost/.well-known/did.json", () => {
-        return HttpResponse.json(didGenerator("did:web:localhost"));
+      http.get("http://localhost:3000/.well-known/did.json", () => {
+        return HttpResponse.json(didGenerator("did:web:localhost%3A3000"));
       }),
-      http.get("https://example.com/.well-known/did.json", () => {
-        return HttpResponse.json(didGenerator("did:web:example.com"));
-      }),
-      http.get("https://example.com/user/admin/did.json", () => {
-        return HttpResponse.json(
-          didGenerator("did:web:example.com:user:admin")
-        );
-      }),
-      http.get("https://example.com/user/admin-internal/did.json", () => {
-        return new HttpResponse(null, { status: 404 });
-      })
+      http.get(
+        "http://localhost:3000/bwrrlevohy72zhnvmuvuvkkavzgr/did.jsonl",
+        () => {
+          return HttpResponse.json(didLog);
+        }
+      )
     );
 
     server.listen({ onUnhandledRequest: "error" });
@@ -83,33 +118,58 @@ describe("DID Service", () => {
   });
 
   describe("DID Resolvement", () => {
-    it("Non DID web resolvement", async () => {
+    it("Non supported DID resolvement", async () => {
       await expect(
         didResolver.resolve(
           "did:keri:EXq5YqaL6L48pf0fu7IUhL0JRaU2_RxFP0AL43wYn148"
         )
-      ).rejects.toThrow("Resolver only supports did:web");
+      ).rejects.toThrow("Resolver does not support the did:keri: method");
     });
-    it("Resolve main DID", async () => {
-      const didDocument = await didResolver.resolve("did:web:example.com");
-      expect(didDocument).toEqual(didGenerator("did:web:example.com"));
+    it("Resolve DID Web", async () => {
+      const didDocument = await didResolver.resolve("did:web:localhost%3A3000");
+      expect(didDocument).toEqual(didGenerator("did:web:localhost%3A3000"));
     });
-    it("Resolve localhost main DID", async () => {
-      const didDocument = await didResolver.resolve("did:web:localhost");
-      expect(didDocument).toEqual(didGenerator("did:web:localhost"));
-    });
-    it("Resolve subdirectory DID", async () => {
+    it("Resolve DID Tdw", async () => {
       const didDocument = await didResolver.resolve(
-        "did:web:example.com:user:admin"
+        "did:tdw:localhost%3A3000:bwrrlevohy72zhnvmuvuvkkavzgr"
       );
-      expect(didDocument).toEqual(
-        didGenerator("did:web:example.com:user:admin")
-      );
-    });
-    it("Resolve non existing DID", async () => {
-      await expect(
-        didResolver.resolve("did:web:example.com:user:admin-internal")
-      ).rejects.toThrow("Could not load DID document for");
+      expect(didDocument).toEqual({
+        "@context": [
+          "https://www.w3.org/ns/did/v1",
+          "https://w3id.org/security/suites/jws-2020/v1",
+        ],
+        id: "did:tdw:localhost%3A3000:bwrrlevohy72zhnvmuvuvkkavzgr",
+        controller: "did:tdw:localhost%3A3000:bwrrlevohy72zhnvmuvuvkkavzgr",
+        assertionMethod: [
+          "did:tdw:localhost%3A3000:bwrrlevohy72zhnvmuvuvkkavzgr#key-0",
+        ],
+        verificationMethod: [
+          {
+            id: "did:tdw:localhost%3A3000:bwrrlevohy72zhnvmuvuvkkavzgr#key-0",
+            controller: "did:tdw:localhost%3A3000:bwrrlevohy72zhnvmuvuvkkavzgr",
+            type: "JsonWebKey2020",
+            publicKeyJwk: {
+              kty: "OKP",
+              alg: "EdDSA",
+              crv: "Ed25519",
+              x: "17FuANfb0PjxiR5iiixheempqgUmp3HPFfM1zq3WtFY",
+            },
+          },
+        ],
+        service: [
+          {
+            id: "did:tdw:localhost%3A3000:bwrrlevohy72zhnvmuvuvkkavzgr#oid4vci",
+            type: "OID4VCI",
+            serviceEndpoint: "http://localhost:3000",
+          },
+          {
+            id: "did:tdw:localhost%3A3000:bwrrlevohy72zhnvmuvuvkkavzgr#presentation",
+            type: "PresentationService",
+            serviceEndpoint:
+              "http://localhost:3000/api/iatp/holder/presentation",
+          },
+        ],
+      });
     });
   });
 });
