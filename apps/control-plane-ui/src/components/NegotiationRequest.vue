@@ -55,11 +55,13 @@ const agreeNegotiation = async (negotiation: NegotiationDetailDto) => {
     });
     close();
   } catch (error) {
-    toast.add(toastError({
-      error,
-      summary: "Failed to send negotiation agreement",
-      defaultMessage: "Could not send negotiation agreement"
-    }));
+    toast.add(
+      toastError({
+        error,
+        summary: "Failed to send negotiation agreement",
+        defaultMessage: "Could not send negotiation agreement",
+      })
+    );
     console.error(`Could not send negotiation agreement. Error: ${error}`);
   }
 };
@@ -75,30 +77,37 @@ const declineNegotiation = async (negotiation) => {
     });
     close();
   } catch (error) {
-    toast.add(toastError({
-      error,
-      summary: "Failed to decline contract offer",
-      defaultMessage: "Could not decline contract offer"
-    }));
+    toast.add(
+      toastError({
+        error,
+        summary: "Failed to decline contract offer",
+        defaultMessage: "Could not decline contract offer",
+      })
+    );
     console.error(`Could not decline contract offer. Error: ${error}`);
   }
 };
 </script>
 <template>
   <Card style="border-radius: 12px; border: 1px solid var(--surface-border)">
-    <template #content>
-      <div class="flex justify-between mb-4">
+    <template #title
+      ><div class="flex justify-between mb-4">
         <div>
-          <h5>{{ stripDspace(negotiation.state) }}</h5>
+          {{ stripDspace(negotiation.state) }}
         </div>
         <div
           class="flex items-center justify-center bg-blue-100 rounded-border"
           style="width: 2.5rem; height: 2.5rem"
         >
           <i class="pi pi-file text-blue-500 text-xl"></i>
-        </div>
-      </div>
-      <span class="block text-surface-600 dark:text-surface-200 font-small mb-4 break-words"
+        </div></div
+    ></template>
+    <template #subtitle>{{
+      new Date(negotiation.modifiedDate).toLocaleString()
+    }}</template>
+    <template #content>
+      <span
+        class="block text-surface-600 dark:text-surface-200 font-small mb-4 break-words"
         >{{ negotiation.remoteParty.replace("%3A", ":") }}
       </span>
       wants to access dataset:
@@ -109,7 +118,7 @@ const declineNegotiation = async (negotiation) => {
         <Dialog
           header="Do you agree with the following offer?"
           v-model:visible="display"
-          :style="{ width: '50vw'}"
+          :style="{ width: '50vw' }"
           :breakpoints="{ '1199px': '80vw', '575px': '97vw' }"
           :modal="true"
         >

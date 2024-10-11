@@ -457,6 +457,16 @@ describe("Transfer service", () => {
       await transferService.complete(localProcessId, true);
       const transferDetail = await transferService.getTransfer(localProcessId);
       expect(transferDetail.state).toBe(TransferState.COMPLETED);
+      expect(transferDetail.events.map((event) => event.state)).toEqual([
+        "dspace:REQUESTED",
+        "dspace:SUSPENDED",
+        "dspace:STARTED",
+        "dspace:SUSPENDED",
+        "dspace:STARTED",
+        "dspace:SUSPENDED",
+        "dspace:STARTED",
+        "dspace:COMPLETED",
+      ]);
     });
   });
 

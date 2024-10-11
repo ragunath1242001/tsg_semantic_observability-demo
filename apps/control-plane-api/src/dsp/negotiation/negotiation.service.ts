@@ -169,23 +169,26 @@ export class NegotiationService {
     });
     if (negotiation) {
       const { offer, agreementDao, events, ...negotiationPlain } = negotiation;
+      const eventsToReturn = await Promise.all(
+        events.map(async (e) => {
+          return {
+            ...e,
+            reason: e.reason
+              ? await Promise.all(e.reason?.map((r) => r.serialize()))
+              : undefined,
+            verification: e.verification
+              ? await e.verification.serialize()
+              : undefined,
+          };
+        })
+      );
       return {
         ...negotiationPlain,
         offer: offer ? await offer.serialize() : undefined,
         agreement: agreementDao?.agreement,
-        events: await Promise.all(
-          events.map(async (e) => {
-            return {
-              ...e,
-              reason: e.reason
-                ? await Promise.all(e.reason?.map((r) => r.serialize()))
-                : undefined,
-              verification: e.verification
-                ? await e.verification.serialize()
-                : undefined,
-            };
-          })
-        ),
+        events: eventsToReturn.sort((a, b) => {
+          return new Date(a.time).valueOf() - new Date(b.time).valueOf();
+        }),
       };
     } else {
       throw new DSPError(
@@ -206,6 +209,9 @@ export class NegotiationService {
     if (negotiation) {
       return new NegotiationDetail({
         ...negotiation,
+        events: negotiation.events.sort((a, b) => {
+          return new Date(a.time).valueOf() - new Date(b.time).valueOf();
+        }),
         agreement: negotiation.agreementDao
           ? await deserialize<Agreement>({
               "@context": "https://w3id.org/dspace/2024/1/context.json",

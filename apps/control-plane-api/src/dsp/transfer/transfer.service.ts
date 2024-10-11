@@ -157,7 +157,12 @@ export class TransferService {
       remoteParty: audience,
     });
     if (transfer) {
-      return new TransferDetail(transfer);
+      return new TransferDetail({
+        ...transfer,
+        events: transfer.events.sort((a, b) => {
+          return new Date(a.time).valueOf() - new Date(b.time).valueOf();
+        }),
+      });
     } else {
       throw new DSPError(
         `Cannot get transfer with process ID ${processId}`,

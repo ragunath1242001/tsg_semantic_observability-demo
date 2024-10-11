@@ -50,11 +50,13 @@ const getTransfer = async (uuid: string) => {
       }
       return response;
     } catch (error) {
-      toast.add(toastError({
-        error,
-        summary: "Failed to load negotiation",
-        defaultMessage: `Could not load negotiation with id ${uuid}`
-      }));
+      toast.add(
+        toastError({
+          error,
+          summary: "Failed to load negotiation",
+          defaultMessage: `Could not load negotiation with id ${uuid}`,
+        })
+      );
       console.error("Error:", error);
       throw error;
     }
@@ -92,7 +94,7 @@ const getTransfer = async (uuid: string) => {
                   :severity="getSeverity(transfer.state)"
                 />
                 <small class="p-text-secondary">
-                  {{ new Date(transfer.modifiedDate).toLocaleDateString() }}
+                  {{ new Date(transfer.modifiedDate).toLocaleString() }}
                 </small>
               </div>
             </span>

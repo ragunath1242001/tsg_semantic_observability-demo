@@ -379,6 +379,13 @@ describe("Negotiation Service (Consumer)", () => {
         localProcessId
       );
       expect(negotiationDetail.state).toBe(ContractNegotiationState.FINALIZED);
+      expect(negotiationDetail.events.map((event) => event.state)).toEqual([
+        "dspace:REQUESTED",
+        "dspace:FINALIZED",
+        "dspace:AGREED",
+        "dspace:VERIFIED",
+        "dspace:FINALIZED",
+      ]);
     });
   });
 
