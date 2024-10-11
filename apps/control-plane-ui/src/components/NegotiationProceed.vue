@@ -24,11 +24,13 @@ const proceedNegotiation = async (negotiation: INegotiationStatusDto) => {
       life: 3000,
     });
   } catch (error) {
-    toast.add(toastError({
-      error,
-      summary: "Failed to send negotiation agreement",
-      defaultMessage: "Could not send negotiation agreement"
-    }));
+    toast.add(
+      toastError({
+        error,
+        summary: "Failed to send negotiation agreement",
+        defaultMessage: "Could not send negotiation agreement",
+      })
+    );
     console.error(`Could not send negotiation agreement. Error: ${error}`);
   }
 };
@@ -44,34 +46,45 @@ const declineNegotiation = async (negotiation) => {
     });
     close();
   } catch (error) {
-    toast.add(toastError({
-      error,
-      summary: "Failed to decline contract offer",
-      defaultMessage: "Could not decline contract offer"
-    }));
+    toast.add(
+      toastError({
+        error,
+        summary: "Failed to decline contract offer",
+        defaultMessage: "Could not decline contract offer",
+      })
+    );
     console.error(`Could not decline contract offer. Error: ${error}`);
   }
 };
 </script>
 <template>
   <Card style="border-radius: 12px; border: 1px solid var(--surface-border)">
-    <template #content>
-      <div class="flex justify-between mb-4">
+    <template #title
+      ><div class="flex justify-between mb-4">
         <div>
-          <h5>{{ stripDspace(negotiation.state) }}</h5>
+          {{ stripDspace(negotiation.state) }}
         </div>
         <div
           class="flex items-center justify-center bg-blue-100 rounded-border"
           style="width: 2.5rem; height: 2.5rem"
         >
           <i class="pi pi-file text-blue-500 text-xl"></i>
-        </div>
-      </div>
-      <span class="block text-surface-600 dark:text-surface-200 font-small mb-4 break-words"
+        </div></div
+    ></template>
+    <template #subtitle>{{
+      new Date(negotiation.modifiedDate).toLocaleString()
+    }}</template>
+    <template #content>
+      <span
+        class="block text-surface-600 dark:text-surface-200 font-small mb-4 break-words"
         >{{ negotiation.remoteParty.replace("%3A", ":") }}
       </span>
-      <span class="block text-surface-600 dark:text-surface-200 font-small mb-4">
-        <template v-if="endState === 'verify'">accepted/agreed to</template><template v-else>verified</template> your request. Do you want to {{ endState }}?
+      <span
+        class="block text-surface-600 dark:text-surface-200 font-small mb-4"
+      >
+        <template v-if="endState === 'verify'">accepted/agreed to</template
+        ><template v-else>verified</template> your request. Do you want to
+        {{ endState }}?
       </span>
       <div class="flex justify-between mb-0">
         <Button

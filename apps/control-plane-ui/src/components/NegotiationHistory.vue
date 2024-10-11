@@ -65,11 +65,13 @@ const getNegotiation = async (uuid: string) => {
       )?.hashedMessage;
       return response;
     } catch (error) {
-      toast.add(toastError({
-        error,
-        summary: "Failed to load negotiation",
-        defaultMessage: `Could not load negotiation with identifer ${uuid}`
-      }));
+      toast.add(
+        toastError({
+          error,
+          summary: "Failed to load negotiation",
+          defaultMessage: `Could not load negotiation with identifer ${uuid}`,
+        })
+      );
       console.error("Error:", error);
       throw error;
     }
@@ -99,11 +101,13 @@ const requestTransfer = async (accNegotiation: NegotiationDetailDto) => {
       });
     }
   } catch (error) {
-    toast.add(toastError({
-      error,
-      summary: "Failed to request transfer",
-      defaultMessage: "Could not load transfer"
-    }));
+    toast.add(
+      toastError({
+        error,
+        summary: "Failed to request transfer",
+        defaultMessage: "Could not load transfer",
+      })
+    );
     console.error("Error:", error);
     throw error;
   }
@@ -142,7 +146,7 @@ const requestTransfer = async (accNegotiation: NegotiationDetailDto) => {
                   :severity="getSeverity(negotiation.state)"
                 />
                 <small class="p-text-secondary">
-                  {{ new Date(negotiation.modifiedDate).toLocaleDateString() }}
+                  {{ new Date(negotiation.modifiedDate).toLocaleString() }}
                 </small>
               </div>
             </span>

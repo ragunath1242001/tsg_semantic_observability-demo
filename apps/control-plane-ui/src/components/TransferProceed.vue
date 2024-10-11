@@ -67,11 +67,13 @@ const sendTransfer = async (transfer: TransferStatus, nextState: string) => {
       life: 3000,
     });
   } catch (error) {
-      toast.add(toastError({
+    toast.add(
+      toastError({
         error,
         summary: "Failed to send transfer",
-        defaultMessage: `Could not send transfer`
-      }));
+        defaultMessage: `Could not send transfer`,
+      })
+    );
     console.log(error);
     console.error(`Could not send transfer. Error: ${error}`);
   }
@@ -111,11 +113,13 @@ const terminateTransfer = async (transfer) => {
     const word = nextState.value;
     if (word !== "suspend" && word !== "terminate") {
       console.error(`Word is not set correctly. value: ${word}`);
-      toast.add(toastError({
-        error: null,
-        summary: "Failed to terminate transfer",
-        defaultMessage: `Word is not set correctly. value: ${word}`
-      }));
+      toast.add(
+        toastError({
+          error: null,
+          summary: "Failed to terminate transfer",
+          defaultMessage: `Word is not set correctly. value: ${word}`,
+        })
+      );
       return;
     }
     const body = {
@@ -131,21 +135,23 @@ const terminateTransfer = async (transfer) => {
     });
     close();
   } catch (error) {
-    toast.add(toastError({
-      error,
-      summary: "Failed to terminate transfer",
-      defaultMessage: `Could not terminate transfer`
-    }));
+    toast.add(
+      toastError({
+        error,
+        summary: "Failed to terminate transfer",
+        defaultMessage: `Could not terminate transfer`,
+      })
+    );
     console.error(`Could not terminate transfer. Error: ${error}`);
   }
 };
 </script>
 <template>
   <Card style="border-radius: 12px; border: 1px solid var(--surface-border)">
-    <template #content>
+    <template #title>
       <div class="flex justify-between mb-4">
         <div>
-          <h5>{{ stripDspace(transfer.state) }}</h5>
+          {{ stripDspace(transfer.state) }}
         </div>
         <div
           class="flex items-center justify-center bg-blue-100 rounded-border"
@@ -154,6 +160,9 @@ const terminateTransfer = async (transfer) => {
           <i class="pi pi-file text-blue-500 text-xl"></i>
         </div>
       </div>
+    </template>
+    <template #subtitle>{{ transfer.localId }}</template>
+    <template #content>
       <span
         class="block text-surface-600 dark:text-surface-200 font-small mb-4"
       >

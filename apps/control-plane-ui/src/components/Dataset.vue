@@ -149,11 +149,13 @@ const sendNegotiation = async (
     console.error(
       `Could not send negotiation to address=${address}&audience=${audience} with id ${datasetId}. Error: ${error}`
     );
-    toast.add(toastError({
-      error,
-      summary: "Failed to send negotiation request",
-      defaultMessage: `Could not send negotiation to address=${address}&audience=${audience} with id ${datasetId}`
-    }));
+    toast.add(
+      toastError({
+        error,
+        summary: "Failed to send negotiation request",
+        defaultMessage: `Could not send negotiation to address=${address}&audience=${audience} with id ${datasetId}`,
+      })
+    );
   }
   display.value = false;
   return;
@@ -177,7 +179,9 @@ const sendNegotiation = async (
         {{ obtainValues(datasetData["dct:description"]).join("\r\n") }}
       </template>
       <template #content>
-        <div class="grid grid-cols-12 gap-4 grid-nogutter border-t border-surface">
+        <div
+          class="grid grid-cols-12 gap-4 grid-nogutter border-t border-surface"
+        >
           <DisplayField label="Versions" v-if="'dcat:hasVersion' in datasetData"
             ><div v-for="version in datasetData['dcat:hasVersion']">
               {{ version["@id"] }}
@@ -217,13 +221,13 @@ const sendNegotiation = async (
             v-if="'dct:conformsTo' in datasetData['dcat:distribution'][0]"
           >
             <a
-              v-for="conformsTo in datasetData['dcat:distribution'][0]['dct:conformsTo']"
+              v-for="conformsTo in datasetData['dcat:distribution'][0][
+                'dct:conformsTo'
+              ]"
               :href="conformsTo"
               class="mr-2 break-all"
             >
-              {{
-                conformsTo
-              }}</a
+              {{ conformsTo }}</a
             >
           </DisplayField>
           <DisplayField label="Keywords"
@@ -242,12 +246,18 @@ const sendNegotiation = async (
             datasetData?.['odrl:hasPolicy'].length > 0
           "
         >
-          <div class="pb-8 font-medium text-2xl text-surface-900 dark:text-surface-0">Policies</div>
+          <div
+            class="pb-8 font-medium text-2xl text-surface-900 dark:text-surface-0"
+          >
+            Policies
+          </div>
 
           <template
             v-for="policy in parsePolicies(datasetData['odrl:hasPolicy'])"
           >
-            <div class="px-2 font-medium text-lg text-surface-700 dark:text-surface-100">
+            <div
+              class="px-2 font-medium text-lg text-surface-700 dark:text-surface-100"
+            >
               {{ stripOdrl(policy.type) }}
             </div>
             <div class="grid grid-cols-12 gap-4 grid-nogutter">
@@ -264,7 +274,12 @@ const sendNegotiation = async (
                 {{ policy.action }}
               </DisplayField>
             </div>
-            <div class="p-4 font-medium text-lg text-surface-700 dark:text-surface-100">Constraints</div>
+            <div
+              class="p-4 font-medium text-lg text-surface-700 dark:text-surface-100"
+              v-if="policy.constraints"
+            >
+              Constraints
+            </div>
             <div
               class="grid grid-cols-12 gap-4 grid-nogutter"
               v-for="constraint in policy.constraints"
@@ -281,8 +296,8 @@ const sendNegotiation = async (
             </div>
             <Divider />
           </template>
-          <div class="col-span-12" v-if="!props.ownDataset">
-            <div class="col-span-6 col-start-4">
+          <div class="grid grid-cols-7" v-if="!props.ownDataset">
+            <div class="col-span-1 col-start-4">
               <Button
                 severity="success"
                 raised

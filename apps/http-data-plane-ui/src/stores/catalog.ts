@@ -19,7 +19,7 @@ export const useCatalogStore = defineStore("catalog", {
         this.catalog = response.data;
         if (response.data?.["dct:title"]) {
           this.title = response.data?.["dct:title"];
-          window.document.title = `Analytics Data Plane - ${this.title}`;
+          window.document.title = `HTTP Data Plane - ${this.title}`;
         }
       } catch (error) {
         // Handle error
