@@ -9,6 +9,7 @@ import { TsgWalletIatpConfig } from "../../config";
 import { DSPClientError } from "../../utils/errors/error";
 import { AuthClientService } from "../auth.client.service";
 import { Credential, WalletClient } from "./walletClient";
+import { DIDDocument } from "did-resolver";
 import { InputDescriptor } from "@tsg-dsp/common-dtos";
 
 export class TsgIatpWalletClient extends WalletClient {
@@ -162,6 +163,27 @@ export class TsgIatpWalletClient extends WalletClient {
         this.logger,
         "warn"
       );
+    }
+  }
+
+  async resolveDidDocument(didId: string): Promise<DIDDocument> {
+    try {
+      const response = await this.authClientService
+        .axiosInstance()
+        .get<DIDDocument>(
+          `${this.iamConfig.walletUrl}/management/did/resolve/${encodeURI(
+            didId
+          )}`
+        );
+      this.logger.debug(
+        `Successfully resolved DID Document for ${didId} at local wallet`
+      );
+      return response.data;
+    } catch (err) {
+      throw new DSPClientError(
+        `Could not resolve DID Document for ${didId}`,
+        err
+      ).andLog(this.logger, "warn");
     }
   }
 }

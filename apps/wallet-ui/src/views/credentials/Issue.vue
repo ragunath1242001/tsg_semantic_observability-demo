@@ -142,6 +142,7 @@ const updateCredentialSubject = () => {
 };
 
 const validateCredentialSubject = (showToast: boolean) => {
+  const didMethods: string[] = ["did:web:", "did:tdw:"];
   try {
     let credentialSubject;
     try {
@@ -155,7 +156,9 @@ const validateCredentialSubject = (showToast: boolean) => {
     if (
       !credentialSubject["id"] ||
       typeof credentialSubject["id"] !== "string" ||
-      !credentialSubject["id"].startsWith("did:web:") ||
+      !didMethods.some((method) =>
+        credentialSubject["id"].startsWith(method)
+      ) ||
       credentialSubject["id"] !== credentialForm.value.targetDid
     ) {
       throw Error(
@@ -263,8 +266,8 @@ onMounted(async () => {
               :id="props.id"
               class="w-full"
               v-model="credentialForm.targetDid"
-              placeholder="did:web:..."
-              pattern="did:web:.*"
+              placeholder="did:..."
+              pattern="did:(web|tdw):.*"
               validation-message="Target DID must be a DID web"
               required
             />

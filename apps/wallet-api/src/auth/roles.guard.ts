@@ -21,7 +21,8 @@ export const Client = createParamDecorator(
         sub: "0",
         name: "anonymous",
         email: "noreply@example.com",
-        didId: `did:web:${config.server.publicDomain.replace(":", "%3A")}`,
+        didId:
+          config.did.method + config.server.publicDomain.replace(":", "%3A"),
         roles: [
           AppRole.VIEW_DID,
           AppRole.MANAGE_KEYS,

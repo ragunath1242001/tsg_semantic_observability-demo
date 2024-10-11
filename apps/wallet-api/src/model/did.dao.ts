@@ -1,6 +1,7 @@
 import { DIDDocument } from "did-resolver";
 import { Entity, PrimaryGeneratedColumn, Column, PrimaryColumn } from "typeorm";
 import { MetaEntity } from "./common.dao.js";
+import { DIDLogEntry } from "@tno-tsg/trustdidweb-ts";
 
 @Entity()
 export class DIDDocuments extends MetaEntity {
@@ -21,4 +22,16 @@ export class DIDService extends MetaEntity {
 
   @Column()
   serviceEndpoint!: string;
+}
+
+@Entity()
+export class DIDLogs extends MetaEntity {
+  @PrimaryGeneratedColumn()
+  id!: number;
+
+  @Column()
+  scid!: string;
+
+  @Column("simple-json")
+  logEntry!: DIDLogEntry;
 }

@@ -28,10 +28,16 @@ export class KeysService {
   initialized: Promise<boolean>;
 
   async init() {
-    const keys = await Promise.all(
-      this.config.initKeys.map((k) => this.insertIfNotExists(k))
-    );
-    await this.didService.createDidDocument(keys);
+    try {
+      await this.didService.checkExistingDidDocument(
+        await this.getDefaultKey()
+      );
+    } catch (e) {
+      const keys = await Promise.all(
+        this.config.initKeys.map((k) => this.insertIfNotExists(k))
+      );
+      await this.didService.createDidDocument(keys);
+    }
     return true;
   }
 
@@ -87,13 +93,14 @@ export class KeysService {
     if (keyConfig.default) {
       this.changeDefaultKey(keyConfig.id);
     }
-    await this.didService.createDidDocument(await this.getKeys());
+    await this.didService.updateDidDocumentKeys(await this.getKeys());
     return key;
   }
 
   async changeDefaultKey(keyId: string) {
     await this.keyRepository.update({ id: Not(keyId) }, { default: false });
     await this.keyRepository.update({ id: keyId }, { default: true });
+    await this.didService.setDidDefaultKey(await this.getDefaultKey());
   }
 
   async deleteKey(keyId: string) {
@@ -106,7 +113,7 @@ export class KeysService {
     }
 
     await this.keyRepository.softRemove(key);
-    await this.didService.createDidDocument(await this.getKeys());
+    await this.didService.updateDidDocumentKeys(await this.getKeys());
   }
 
   async createKeyMaterial(key: InitKeyConfig): Promise<KeyMaterials> {

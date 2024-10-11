@@ -3,6 +3,7 @@ import { plainToInstance } from "class-transformer";
 import { HttpResponse, PathParams, http } from "msw";
 import { SetupServer, setupServer } from "msw/node";
 import { IamConfig, TsgWalletDirectConfig } from "../../config";
+import { DIDDocument } from "did-resolver";
 
 export function mockWalletConfig(): IamConfig {
   return plainToInstance<TsgWalletDirectConfig, TsgWalletDirectConfig>(
@@ -21,6 +22,42 @@ export function mockWalletConfig(): IamConfig {
       validations: ["valid"],
     }
   );
+}
+
+export function mockDidDocument(): DIDDocument {
+  return {
+    "@context": [
+      "https://www.w3.org/ns/did/v1",
+      "https://w3c-ccg.github.io/lds-jws2020/contexts/v1/",
+    ],
+    id: "did:web:localhost",
+    verificationMethod: [
+      {
+        id: "did:web:localhost#key-0",
+        type: "JsonWebKey2020",
+        controller: "did:web:localhost",
+        publicKeyJwk: {
+          kty: "OKP",
+          alg: "EdDSA",
+          crv: "Ed25519",
+          x: "Hwltj2aq8ig-VBF5GZJQPlwz6PrxGXpG2rLX0oYwYeg",
+        },
+      },
+    ],
+    assertionMethod: ["did:web:localhost#key-0"],
+    service: [
+      {
+        id: "did:web:localhost#oid4vci",
+        type: "OID4VCI",
+        serviceEndpoint: "http://localhost",
+      },
+      {
+        id: "did:web:localhost",
+        type: "connector",
+        serviceEndpoint: "http://localhost",
+      },
+    ],
+  };
 }
 
 export function sampleVpToken(): String {
@@ -88,7 +125,15 @@ export function setupMockWalletServer(start: boolean = true): SetupServer {
           selfIssued: true,
         },
       ]);
-    })
+    }),
+    http.get(
+      `http://127.0.0.1/tsg/management/did/resolve/${encodeURI(
+        "did:web:localhost"
+      )}`,
+      () => {
+        return HttpResponse.json(mockDidDocument());
+      }
+    )
   );
   if (start) {
     server.listen({

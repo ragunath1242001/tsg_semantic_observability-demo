@@ -33,13 +33,17 @@ import {
   ApiConflictResponseDefault,
   ApiNotFoundResponseDefault,
 } from "../utils/swagger.js";
+import { DidResolverService } from "./did.resolver.service.js";
 
 @Controller("management/did")
 @Roles(AppRole.VIEW_DID)
 @ApiTags("Management DID")
 @ApiOAuth2([AppRole.VIEW_DID])
 export class DIDManagementController {
-  constructor(private readonly didService: DidService) {}
+  constructor(
+    private readonly didService: DidService,
+    private readonly didResolverService: DidResolverService
+  ) {}
 
   @Get()
   @ApiOperation({
@@ -51,6 +55,21 @@ export class DIDManagementController {
   @ApiForbiddenResponseDefault()
   async getDidDocument(): Promise<DIDDocument> {
     return await this.didService.getDid();
+  }
+
+  @Get("resolve/:didId")
+  @ApiOperation({
+    summary: "Resolve DID document",
+    description:
+      "Resolves the DID identifier from the path parameter into a DID Document",
+  })
+  @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({ type: DIDDocumentDto })
+  @ApiForbiddenResponseDefault()
+  async resolveDidDocument(
+    @Param("didId") didId: string
+  ): Promise<DIDDocument> {
+    return await this.didResolverService.resolve(didId);
   }
 
   @Get("services")

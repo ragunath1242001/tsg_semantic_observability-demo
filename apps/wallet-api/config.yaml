@@ -134,3 +134,6 @@ contexts:
         - id
         - type
         - gx:termsAndConditions
+
+did:
+  method: "did:web:"

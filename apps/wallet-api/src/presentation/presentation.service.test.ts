@@ -13,7 +13,7 @@ import { DidResolverService } from "../did/did.resolver.service.js";
 import { VerifiablePresentationJwt } from "@tsg-dsp/common-dsp";
 import { SetupServer, setupServer } from "msw/node";
 import { HttpResponse, http } from "msw";
-import { DIDDocuments, DIDService } from "../model/did.dao.js";
+import { DIDDocuments, DIDService, DIDLogs } from "../model/did.dao.js";
 import { SignatureService } from "../keys/signature.service.js";
 
 describe("Presentation Service", () => {
@@ -53,12 +53,14 @@ describe("Presentation Service", () => {
           DIDDocuments,
           DIDService,
           KeyMaterials,
+          DIDLogs,
         ]),
         TypeOrmModule.forFeature([
           Credentials,
           DIDDocuments,
           DIDService,
           KeyMaterials,
+          DIDLogs,
         ]),
       ],
       providers: [

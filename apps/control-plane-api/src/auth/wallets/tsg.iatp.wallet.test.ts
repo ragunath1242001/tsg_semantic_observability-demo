@@ -4,6 +4,7 @@ import { HttpResponse, PathParams, http } from "msw";
 import { SetupServer, setupServer } from "msw/node";
 import { TsgIatpWalletClient } from "./tsg.iatp.wallet";
 import { AuthClientService } from "../auth.client.service";
+import { mockDidDocument } from "./wallet.util.test";
 
 describe("TSG Wallet", () => {
   let server: SetupServer;
@@ -89,6 +90,14 @@ describe("TSG Wallet", () => {
             return HttpResponse.json(body.jsonWebSignature);
           }
         }
+      ),
+      http.get(
+        `http://127.0.0.1/api/management/did/resolve/${encodeURI(
+          "did:web:localhost"
+        )}`,
+        () => {
+          return HttpResponse.json(mockDidDocument());
+        }
       )
     );
 
@@ -165,5 +174,25 @@ describe("TSG Wallet", () => {
         verificationMethod: "did:web:localhost%3A3000#key-0",
       },
     });
+  });
+
+  it("Resolve DID Document", async () => {
+    await expect(tsgWalletClient.resolveDidDocument("")).rejects.toThrow(
+      "Could not resolve DID Document"
+    );
+
+    const expectedDidDoc = mockDidDocument();
+    const resolvedDidDoc = await tsgWalletClient.resolveDidDocument(
+      encodeURI("did:web:localhost")
+    );
+    expect(resolvedDidDoc).toBeDefined();
+    expect(resolvedDidDoc.id).toEqual(expectedDidDoc.id);
+    expect(resolvedDidDoc.verificationMethod).toEqual(
+      expectedDidDoc.verificationMethod
+    );
+    expect(resolvedDidDoc.service).toEqual(expectedDidDoc.service);
+    expect(resolvedDidDoc.assertionMethod).toEqual(
+      expectedDidDoc.assertionMethod
+    );
   });
 });

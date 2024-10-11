@@ -11,6 +11,7 @@ const credentialRef = ref<string>("{}");
 const credentialValidation = ref<string>();
 
 const validateCredential = (showToast: boolean) => {
+  const didMethods: string[] = ["did:web:", "did:tdw:"];
   try {
     let credential;
     try {
@@ -27,10 +28,10 @@ const validateCredential = (showToast: boolean) => {
     if (
       !credential["issuer"] ||
       typeof credential["issuer"] !== "string" ||
-      !credential["issuer"].startsWith("did:web:")
+      !didMethods.some((method) => credential["issuer"].startsWith(method))
     ) {
       throw Error(
-        "Credential issuer must be present and be a string and start with did:web:"
+        `Credential issuer must be present and be a string and start with one of the following: ${didMethods}`
       );
     }
     if (
@@ -38,10 +39,12 @@ const validateCredential = (showToast: boolean) => {
       typeof credential["credentialSubject"] !== "object" ||
       !credential["credentialSubject"]["id"] ||
       typeof credential["credentialSubject"]["id"] !== "string" ||
-      !credential["credentialSubject"]["id"].startsWith("did:web:")
+      !didMethods.some((method) =>
+        credential["credentialSubject"]["id"].startsWith(method)
+      )
     ) {
       throw Error(
-        "Credential subject must be present and be an object containing at least an id starting with did:web:"
+        `Credential subject must be present and be an object containing at least an id starting with one of the following ${didMethods}`
       );
     }
 

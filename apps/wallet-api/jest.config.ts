@@ -26,6 +26,7 @@ const config: Config.InitialOptions = {
     "!src/**/*.schemas.ts",
     "!src/generate-oas.ts",
     "!node_modules/**",
+    "src/did/**/*.strategy.ts",
   ],
 };
 export default config;

@@ -106,8 +106,8 @@ export class IssuerService {
   async issuerMetadata(): Promise<CredentialIssuerMetadata> {
     const issuerMetadata: CredentialIssuerMetadata = {
       credential_issuer: `https://${this.config.server.publicDomain}`,
-      credential_endpoint: `${this.config.server.publicAddress}/oid4vci/credential`,
-      token_endpoint: `${this.config.server.publicAddress}/oid4vci/token`,
+      credential_endpoint: `${this.config.server.publicAddress}/api/oid4vci/credential`,
+      token_endpoint: `${this.config.server.publicAddress}/api/oid4vci/token`,
       credential_configurations_supported: {},
     };
     const contexts = await this.contextService.getContexts();
@@ -122,9 +122,9 @@ export class IssuerService {
             "https://www.w3.org/2018/credentials/v1",
             "https://w3c.github.io/vc-jws-2020/contexts/v1/",
             context.documentUrl ??
-              `${this.config.server.publicAddress}/context/${context.id}`,
+              `${this.config.server.publicAddress}/api/context/${context.id}`,
           ],
-          cryptographic_binding_methods_supported: ["did:web"],
+          cryptographic_binding_methods_supported: ["did:tdw", "did:web"],
           credential_signing_alg_values_supported: ["EdDSA", "ES384", "PS256"],
           proof_types_supported: {
             jwt: {
@@ -137,7 +137,7 @@ export class IssuerService {
               "https://www.w3.org/2018/credentials/v1",
               "https://w3c.github.io/vc-jws-2020/contexts/v1/",
               context.documentUrl ??
-                `${this.config.server.publicAddress}/context/${context.id}`,
+                `${this.config.server.publicAddress}/api/context/${context.id}`,
             ],
           },
         };
@@ -312,7 +312,7 @@ export class IssuerService {
       const credentialConfig = plainToInstance(InitCredentialConfig, {
         context: [
           context.documentUrl ??
-            `${this.config.server.publicAddress}/context/${context.id}`,
+            `${this.config.server.publicAddress}/api/context/${context.id}`,
         ],
         type: [issuance.credentialType],
         id: `${issuance.holderId}#${crypto.randomUUID()}`,

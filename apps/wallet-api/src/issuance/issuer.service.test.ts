@@ -24,7 +24,7 @@ import {
 } from "jose";
 import { DIDDocument } from "did-resolver";
 import { HolderService } from "./holder.service.js";
-import { DIDDocuments, DIDService } from "../model/did.dao.js";
+import { DIDDocuments, DIDLogs, DIDService } from "../model/did.dao.js";
 import { JSONLDContext } from "../model/context.dao.js";
 import { ContextService } from "../contexts/context.service.js";
 import { SignatureService } from "../keys/signature.service.js";
@@ -66,6 +66,7 @@ describe("Issuer service", () => {
           CredentialIssuance,
           CIAccessToken,
           JSONLDContext,
+          DIDLogs,
         ]),
         TypeOrmModule.forFeature([
           Credentials,
@@ -75,6 +76,7 @@ describe("Issuer service", () => {
           CredentialIssuance,
           CIAccessToken,
           JSONLDContext,
+          DIDLogs,
         ]),
       ],
       providers: [

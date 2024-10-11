@@ -30,6 +30,7 @@ Used standards:
 
 - W3C DID [(W3C recommendation)](https://www.w3.org/TR/did-core/)
 - did:web [(W3C internal document)](https://w3c-ccg.github.io/did-method-web/)
+- did:tdw [(BCGov specification draft)](https://bcgov.github.io/trustdidweb/)
 - JSON Web Signatures for Data Integrity Proofs [(W3C working draft)](https://www.w3.org/TR/vc-jws-2020/)
   - Supported JOSE signing/encryption: Ed25519/EdDSA, P-384/ES384, RSA/PS256
 - Verifiable Credentials Data Model v1.1 [(W3C recommendation)](https://www.w3.org/TR/vc-data-model/)

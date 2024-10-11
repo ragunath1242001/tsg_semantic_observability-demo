@@ -27,3 +27,13 @@ The development view provides an overview of the different modules inside the wa
 - `credentials.service.ts`: Credentials service providing all changes/state of credentials
 - `credentials.controller.ts`: Controller providing public endpoints supporting credentials
 - `credentials.management.controller.ts`: Controller providing management endpoints for managing credentials
+
+## DID `src/did`
+
+- `did.module.ts`: DID module
+- `did.service.ts`: Service providing all changes/state of DID and DID Document (based on DID method strategy)
+- `did.resolver.ts`: Service providing DID resolving (based on DID method strategy)
+- `did.management.controller.ts`: Controller providing management endpoints for managing DID contents
+- `{DID method}/did.{DID method}.strategy.ts`: Service strategy for all changes/state of DID and DID Document for this particular DID method
+- `{DID method}/did.{DID method}.resolver.strategy.ts`: Service strategy for resolving this particular DID method
+- `{DID method}/did.{DID method}.controller.ts`: Controller providing public endpoints supporting DIDs and DID Documents for this particular DID method
