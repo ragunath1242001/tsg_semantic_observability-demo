@@ -2,6 +2,7 @@ import {
   DataAddressDto,
   DataPlaneTransferDto,
   MultilanguageDto,
+  TransferEventDto,
   TransferProcessDto,
   TransferState,
 } from "@tsg-dsp/common-dsp";
@@ -18,15 +19,6 @@ export interface TransferStatus {
   agreementId: string;
   format?: string;
   modifiedDate: Date;
-}
-
-export interface TransferEventDto {
-  time: Date;
-  state: TransferState;
-  localMessage?: string;
-  code?: string;
-  reason?: MultilanguageDto[];
-  type: "local" | "remote";
 }
 
 export interface TransferDetailDto extends TransferStatus {

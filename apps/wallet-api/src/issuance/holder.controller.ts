@@ -13,7 +13,7 @@ import { CredentialsDto } from "../credentials/credentials.schemas.js";
 import {
   ApiBadRequestResponseDefault,
   ApiForbiddenResponseDefault,
-} from "../utils/swagger.js";
+} from "@tsg-dsp/common-dtos";
 
 @Controller()
 @ApiTags("OpenID 4 Verifiable Credential Issuance")

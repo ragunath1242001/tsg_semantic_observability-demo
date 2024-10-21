@@ -23,16 +23,14 @@ import {
   ApiOperation,
   ApiTags,
 } from "@nestjs/swagger";
-import {
-  DIDDocumentDto,
-  DidServiceConfigDto,
-  ServiceDto,
-} from "./did.schemas.js";
+import { DidServiceConfigDto } from "./did.schemas.js";
 import {
   ApiForbiddenResponseDefault,
   ApiConflictResponseDefault,
   ApiNotFoundResponseDefault,
-} from "../utils/swagger.js";
+  DIDDocumentDto,
+  ServiceDto,
+} from "@tsg-dsp/common-dtos";
 import { DidResolverService } from "./did.resolver.service.js";
 
 @Controller("management/did")

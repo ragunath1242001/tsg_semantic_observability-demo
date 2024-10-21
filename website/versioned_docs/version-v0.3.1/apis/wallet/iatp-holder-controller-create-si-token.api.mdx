@@ -1,0 +1,275 @@
+---
+id: iatp-holder-controller-create-si-token
+title: "Request a SIOP token"
+description: "Generates a SIOP token for the provided audience to allow it to request presentations"
+sidebar_label: "Request a SIOP token"
+hide_title: true
+hide_table_of_contents: true
+api: eJy1VstuGzcU/RViVkmgSK7blVAUMBLXFVDERuSiC8cQqJkrDWOKnJIcTwRB/55zyZE0ei6CRgtb4n2d++A9XGW2IieDsmZUZMNsJEP1l9UFuQ/WBGe1JjfJHclA49GjfSGT9bKCfO5UxUYwuSPDHsgLKcaj+wcRWE3MrBOhJFE5+6oKKoSsC0UmJ8iF1No2QgX+7ui/mnyAInkyIWLxiFJJJxcUyPls+LTKDH4g2sYLFNhQOQLs4GrqZYrRwJdbQujzkhYyG66ysKzY0AenzDxbr3tbXz5H8j/u6JktfQW05Fl+fXXF//arAw85KonEWCarSqs8pjj46llhdRzATr9SHrgCjpsTVHKvikms7Cko/Ollv139egzgT+umqihi4/4nJKl8RyhQK3Sv9idFuS26NqZeTMmxYEHeyzkdR4WMnLPuZA87PXtKeLbR21joTlBBs9ktu/kYbNbWKcg5z1T20Jk4Mbp5fGAjT3ntVFjGobOyDuU16zYYWQqTV0XNZH9Sn3kQMKil5Qs0p1gvGUr8GMhKDRSu1KCMd2oQ2hvkyb2mwe5EHHP5U4U3cXc1SQe9bIaLE1Uq6X1jXZEah/bE0y7MQjGgw5Pe5mQhDeo+eaGl36l1D3t7trYxvAgwSEFJ7Q88H0r3bfH1gu2h9BDh2chn5If2Z6OfkW/tlfc1nTY9FvUujMjwgqydSWVmNva7ndnH8Z34NxodLdxHbNWdWKi4eMcjkWJg6cogcmlExCikKYQP1pHAxKmZklNNogM8KqQNv7+CeTdPSdQeu7tRoVRGFDJI4SuZk+//PnVi8Ef6+8UIfBhXs8OkFrz0g1jUOqj32B1OFFRpu1wghO9Fn8IaEm/AFAsAfLuXgcwDnACFq0EO0uQl1JhUZAdGBK9MoV5rqVtzH7VI5vA+SxQksbpyVUnEhXY82/noi3s+AuQK0xCFORC6rcOEJ1bT71WuUVpziXJWK6LlR7hNyNruSI3FUM9LJjuEMDaIzepKfmGF3kjdyKVnDfqGzPUyVibGdJxGNywySDVI8I8bMZm8+2QDvZtMhmgKfN5XZG4eRqj/TBkV112LRTEhMDunZhfAFaNrZV7aviOYx9bV25SUwaY1XDiMJq+xNJa/9K9aikECGGUMNRiGwI47zshuABlluo66tdM4KkOo/HAwaJqmL6O4b9180Nr6wd+jD7efxrfvYdMvw0LH9V9ZH3B9O54/t8+I7iPk8Oqsdgz4054t7cIO9C0MKi3xlli3ma5aWngC+SpoMjHgX6IGtoyQn/nEB1ZbrabS0z9Or9d8nF4kTEuF8nyNsd5nGAi6kOWbz+2wvRXnsGHX77+rXqWuWS3jp9JPCLV5du3iPPMPF1cTUyI0S5JcFE42Gd3kOVWhY3X0gNmj4bvbR+gyaZ4i0S2tb0XSLDu+DzhTHJOjuEB+4gK5iYvUJS4SkzjHPeI8u+zXnBt6MuHNY+KA0ZLt3GFxTqLd+hlk9R3Dv1XL
+sidebar_class_name: "get api-method"
+info_path: docs/apis/wallet/tsg-wallet
+custom_edit_url: null
+---
+
+import ApiTabs from "@theme/ApiTabs";
+import DiscriminatorTabs from "@theme/DiscriminatorTabs";
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import SecuritySchemes from "@theme/ApiExplorer/SecuritySchemes";
+import MimeTabs from "@theme/MimeTabs";
+import ParamsItem from "@theme/ParamsItem";
+import ResponseSamples from "@theme/ResponseSamples";
+import SchemaItem from "@theme/SchemaItem";
+import SchemaTabs from "@theme/SchemaTabs";
+import Heading from "@theme/Heading";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Request a SIOP token"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/iatp/holder/token"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Generates a SIOP token for the provided audience to allow it to request presentations
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<details
+  style={{"marginBottom":"1rem"}}
+  className={"openapi-markdown__details"}
+  data-collapsed={false}
+  open={true}
+>
+  <summary
+    style={{}}
+  >
+    <h3
+      className={"openapi-markdown__details-summary-header-params"}
+    >
+      Query Parameters
+    </h3>
+  </summary><div>
+    <ul>
+      <ParamsItem
+        className={"paramsItem"}
+        param={{"name":"audience","required":true,"in":"query","schema":{"type":"string"},"enumDescriptions":[]}}
+      >
+        
+      </ParamsItem><ParamsItem
+        className={"paramsItem"}
+        param={{"name":"scope","required":true,"in":"query","schema":{"type":"string"},"enumDescriptions":[]}}
+      >
+        
+      </ParamsItem>
+    </ul>
+  </div>
+</details><div>
+  <div>
+    <ApiTabs
+      label={undefined}
+      id={undefined}
+    >
+      <TabItem
+        label={"200"}
+        value={"200"}
+      >
+        <div>
+          
+          
+          
+          
+          
+        </div><div>
+          <MimeTabs
+            className={"openapi-tabs__mime"}
+            schemaType={"response"}
+          >
+            <TabItem
+              label={"application/json"}
+              value={"application/json"}
+            >
+              <SchemaTabs
+                className={"openapi-tabs__schema"}
+              >
+                <TabItem
+                  label={"Schema"}
+                  value={"Schema"}
+                >
+                  <details
+                    style={{}}
+                    className={"openapi-markdown__details response"}
+                    data-collapsed={false}
+                    open={true}
+                  >
+                    <summary
+                      style={{}}
+                      className={"openapi-markdown__details-summary-response"}
+                    >
+                      <strong>
+                        Schema
+                      </strong>
+                    </summary><div
+                      style={{"textAlign":"left","marginLeft":"1rem"}}
+                    >
+                      
+                    </div><ul
+                      style={{"marginLeft":"1rem"}}
+                    >
+                      <SchemaItem
+                        collapsible={false}
+                        name={"id_token"}
+                        required={false}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem>
+                    </ul>
+                  </details>
+                </TabItem><TabItem
+                  label={"Example (from schema)"}
+                  value={"Example (from schema)"}
+                >
+                  <ResponseSamples
+                    responseExample={"{\n  \"id_token\": \"string\"\n}"}
+                    language={"json"}
+                  >
+                    
+                  </ResponseSamples>
+                </TabItem>
+              </SchemaTabs>
+            </TabItem>
+          </MimeTabs>
+        </div>
+      </TabItem><TabItem
+        label={"403"}
+        value={"403"}
+      >
+        <div>
+          
+          
+          Forbidden
+          
+          
+        </div><div>
+          <MimeTabs
+            className={"openapi-tabs__mime"}
+            schemaType={"response"}
+          >
+            <TabItem
+              label={"application/json"}
+              value={"application/json"}
+            >
+              <SchemaTabs
+                className={"openapi-tabs__schema"}
+              >
+                <TabItem
+                  label={"Schema"}
+                  value={"Schema"}
+                >
+                  <details
+                    style={{}}
+                    className={"openapi-markdown__details response"}
+                    data-collapsed={false}
+                    open={true}
+                  >
+                    <summary
+                      style={{}}
+                      className={"openapi-markdown__details-summary-response"}
+                    >
+                      <strong>
+                        Schema
+                      </strong>
+                    </summary><div
+                      style={{"textAlign":"left","marginLeft":"1rem"}}
+                    >
+                      
+                    </div><ul
+                      style={{"marginLeft":"1rem"}}
+                    >
+                      <SchemaItem
+                        collapsible={false}
+                        name={"name"}
+                        required={true}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"status"}
+                        required={true}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"code"}
+                        required={true}
+                        schemaName={"number"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"number"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"message"}
+                        required={false}
+                        schemaName={"object"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"object"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"error"}
+                        required={false}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem>
+                    </ul>
+                  </details>
+                </TabItem><TabItem
+                  label={"Example (from schema)"}
+                  value={"Example (from schema)"}
+                >
+                  <ResponseSamples
+                    responseExample={"{\n  \"name\": \"string\",\n  \"status\": \"string\",\n  \"code\": 0,\n  \"message\": {},\n  \"error\": \"string\"\n}"}
+                    language={"json"}
+                  >
+                    
+                  </ResponseSamples>
+                </TabItem>
+              </SchemaTabs>
+            </TabItem>
+          </MimeTabs>
+        </div>
+      </TabItem>
+    </ApiTabs>
+  </div>
+</div>
+      

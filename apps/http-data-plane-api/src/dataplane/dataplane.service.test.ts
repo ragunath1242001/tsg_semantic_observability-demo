@@ -21,8 +21,6 @@ import { AuthClientService } from "../auth/auth.client.service";
 import { RawBodyRequest } from "@nestjs/common";
 import { EgressLogDao, IngressLogDao } from "../logging/logging.dao";
 import { LoggingService } from "../logging/logging.service";
-import { DatasetConfig } from "@tsg-dsp/http-data-plane-dtos";
-import { resolve } from "path";
 
 describe("Dataplane Service", () => {
   let dataPlaneService: DataPlaneService;

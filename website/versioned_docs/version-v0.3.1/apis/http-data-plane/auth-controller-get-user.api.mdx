@@ -1,0 +1,239 @@
+---
+id: auth-controller-get-user
+title: "Retrieve current user status"
+description: "Retrieves current user state, whether someone is logged in or not a 200 result is provided. This is used in the frontend to determine whether certain aspects should be shown."
+sidebar_label: "Retrieve current user status"
+hide_title: true
+hide_table_of_contents: true
+api: eJzVVE1PGzEQ/SuWz2mWcuSGgFKkqkQlcEGocnYnWdNd29iz2aIo/71vvBtIEw69NooSezyfb+bNRvtA0bD17qbSZ/q84/rCO46+aSj+XBHfJ4p6oitKZbRBFKH2gzhaWlNSZRcjOVYd1FRiwzRRfU1cy9W35B0pm1TjVyuqlHXKR+U8K6NOT05UpNQ1LAoh+rWtqJqqeY0rvvCYDeBKLSNyIlcp9qoiptha+N3FKSmygaZJgUpOKtW+ayq1IDn1bor0g4mmFcOkzx6fJhqBg3eJcN1oZCJ/f5cIozIHZXkzITS2zDgVz0kUNjqVNbVGTijydgnHG82vgWDsF8/IREucl85GArSPOqMDmUClkQNbbmjEHGHEPVUC9yV7vZ38i7M9L/fOfOjnaSsf6JmV1L4fTQqFB+BSe2k+up2h4hqXwgRbiMuiGyYAv+s3/BKh8ZZf7wSDAUUvyqdy2uU9CCZ62fg+qwSTUu9jNaCHycvSmjlUhk1ojKOfpkJvYf2RdHIgfTsd6b+/DNUvyERUseuaGIyi3dsXH1uDXuuHGWRjCeL0aPgfKNqlNYuG1AxzBDAzlMoRYYBlREvftp3LjcAUck+EMe49phltcyVo45d5rsuBaiqnOtWSqXVLn0Ec+zq/u1Zf5/OZukRJapZrOswoU+Y2kDuf3SghAfIb+psZkHIs0Cd46/gt+IFXoYk0eHD5eXoyMsCUwgBkBgIQKCPJOZMhPA8GaKrTrNvFZkQsnRVF3/dTk5+nPq6K0TYV324urr7fXX2CzbTmtsk1B5+4NW7P827BHO+XLh2Wv3kn6v+3mMZBY/rNBaYAQ74dodyMTHzE8rHQFDbtbY8amMnjZrMwie5js92K+KWj+DpwdG1inlK5wWlNphIKYEv9olfpXllSEMavTdNJEkdLbru/Ha6v5mjWH52oKsw=
+sidebar_class_name: "get api-method"
+info_path: docs/apis/http-data-plane/tsg-http-data-plane
+custom_edit_url: null
+---
+
+import ApiTabs from "@theme/ApiTabs";
+import DiscriminatorTabs from "@theme/DiscriminatorTabs";
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import SecuritySchemes from "@theme/ApiExplorer/SecuritySchemes";
+import MimeTabs from "@theme/MimeTabs";
+import ParamsItem from "@theme/ParamsItem";
+import ResponseSamples from "@theme/ResponseSamples";
+import SchemaItem from "@theme/SchemaItem";
+import SchemaTabs from "@theme/SchemaTabs";
+import Heading from "@theme/Heading";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Retrieve current user status"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/auth/user"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Retrieves current user state, whether someone is logged in or not a 200 result is provided. This is used in the frontend to determine whether certain aspects should be shown.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<div>
+  <div>
+    <ApiTabs
+      label={undefined}
+      id={undefined}
+    >
+      <TabItem
+        label={"200"}
+        value={"200"}
+      >
+        <div>
+          
+          
+          
+          
+          
+        </div><div>
+          <MimeTabs
+            className={"openapi-tabs__mime"}
+            schemaType={"response"}
+          >
+            <TabItem
+              label={"application/json"}
+              value={"application/json"}
+            >
+              <SchemaTabs
+                className={"openapi-tabs__schema"}
+              >
+                <TabItem
+                  label={"Schema"}
+                  value={"Schema"}
+                >
+                  <details
+                    style={{}}
+                    className={"openapi-markdown__details response"}
+                    data-collapsed={false}
+                    open={true}
+                  >
+                    <summary
+                      style={{}}
+                      className={"openapi-markdown__details-summary-response"}
+                    >
+                      <strong>
+                        Schema
+                      </strong>
+                    </summary><div
+                      style={{"textAlign":"left","marginLeft":"1rem"}}
+                    >
+                      
+                    </div><ul
+                      style={{"marginLeft":"1rem"}}
+                    >
+                      <div>
+                        <span
+                          className={"badge badge--info"}
+                          style={{"marginBottom":"1rem"}}
+                        >
+                          oneOf
+                        </span><SchemaTabs>
+                          <TabItem
+                            label={"AuthenticatedUserDto"}
+                            value={"0-item-properties"}
+                          >
+                            <SchemaItem
+                              collapsible={false}
+                              name={"state"}
+                              required={true}
+                              schemaName={"object"}
+                              qualifierMessage={undefined}
+                              schema={{"type":"object"}}
+                            >
+                              
+                            </SchemaItem><SchemaItem
+                              collapsible={true}
+                              className={"schemaItem"}
+                            >
+                              <details
+                                style={{}}
+                                className={"openapi-markdown__details"}
+                              >
+                                <summary
+                                  style={{}}
+                                >
+                                  <span
+                                    className={"openapi-schema__container"}
+                                  >
+                                    <strong
+                                      className={"openapi-schema__property"}
+                                    >
+                                      user
+                                    </strong><span
+                                      className={"openapi-schema__name"}
+                                    >
+                                       object
+                                    </span><span
+                                      className={"openapi-schema__divider"}
+                                    >
+                                      
+                                    </span><span
+                                      className={"openapi-schema__required"}
+                                    >
+                                      required
+                                    </span>
+                                  </span>
+                                </summary><div
+                                  style={{"marginLeft":"1rem"}}
+                                >
+                                  <SchemaItem
+                                    collapsible={false}
+                                    name={"sub"}
+                                    required={true}
+                                    schemaName={"string"}
+                                    qualifierMessage={undefined}
+                                    schema={{"type":"string"}}
+                                  >
+                                    
+                                  </SchemaItem><SchemaItem
+                                    collapsible={false}
+                                    name={"name"}
+                                    required={true}
+                                    schemaName={"string"}
+                                    qualifierMessage={undefined}
+                                    schema={{"type":"string"}}
+                                  >
+                                    
+                                  </SchemaItem><SchemaItem
+                                    collapsible={false}
+                                    name={"email"}
+                                    required={true}
+                                    schemaName={"string"}
+                                    qualifierMessage={undefined}
+                                    schema={{"type":"string"}}
+                                  >
+                                    
+                                  </SchemaItem><SchemaItem
+                                    collapsible={false}
+                                    name={"roles"}
+                                    required={true}
+                                    schemaName={"string[]"}
+                                    qualifierMessage={undefined}
+                                    schema={{"type":"array","items":{"type":"string"}}}
+                                  >
+                                    
+                                  </SchemaItem>
+                                </div>
+                              </details>
+                            </SchemaItem>
+                          </TabItem><TabItem
+                            label={"UnauthenticatedUserDto"}
+                            value={"1-item-properties"}
+                          >
+                            <SchemaItem
+                              collapsible={false}
+                              name={"state"}
+                              required={true}
+                              schemaName={"object"}
+                              qualifierMessage={undefined}
+                              schema={{"type":"object"}}
+                            >
+                              
+                            </SchemaItem>
+                          </TabItem>
+                        </SchemaTabs>
+                      </div>
+                    </ul>
+                  </details>
+                </TabItem><TabItem
+                  label={"Example (from schema)"}
+                  value={"Example (from schema)"}
+                >
+                  <ResponseSamples
+                    responseExample={"{}"}
+                    language={"json"}
+                  >
+                    
+                  </ResponseSamples>
+                </TabItem>
+              </SchemaTabs>
+            </TabItem>
+          </MimeTabs>
+        </div>
+      </TabItem>
+    </ApiTabs>
+  </div>
+</div>
+      

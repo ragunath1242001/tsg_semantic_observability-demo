@@ -31,18 +31,5 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "devDependencies": {
-    "@conventional-changelog/git-client": "^1.0.1",
-    "axios": "^1.7.2",
-    "conventional-changelog": "^6.0.0",
-    "conventional-changelog-writer": "^8.0.0",
-    "conventional-commits-filter": "^5.0.0",
-    "conventional-commits-parser": "^6.0.0",
-    "conventional-recommended-bump": "^10.0.0",
-    "prettier": "^2.8.8",
-    "semantic-release": "^24.0.0",
-    "semantic-release-monorepo": "^8.0.2",
-    "semver": "^7.6.2"
-  },
   "packageManager": "pnpm@9.2.0+sha512.98a80fd11c2e7096747762304106432b3ddc67dcf54b5a8c01c93f68a2cd5e05e6821849522a06fb76284d41a2660d5e334f2ee3bbf29183bf2e739b1dafa771"
 }

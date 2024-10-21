@@ -1,0 +1,197 @@
+---
+id: negotiation-controller-get-negotiation
+title: "Get negotiation status by ID"
+description: "Get negotiation status by ID"
+sidebar_label: "Get negotiation status by ID"
+hide_title: true
+hide_table_of_contents: true
+api: eJyFVU1v4zYQ/SsET+3CtdIcddpgNw0MtFmjyW4PQWDQ5NjimiK55CiuYei/d0jRtuy4WF8szefjm8fRnjsPQaB2dqZ4zR9h7VDn90/OYnDGQFisAUcOPuFeBNECQoi8ftlzSy+UrBW5AvzodAAqhqGDCdeWPF5gQ74oG2gFr/ccdz5lRAzarnnfv6bE6J2NEJP/9uYm/SmIMmifu9acKkgCBRaTT3hvtMyIqu8xBezfN3DL7yAxIQ7poKiH8h8J6nsUE/5xsFzxqOiFhJr6x66FMP+fAiWMur1p9dOwiAKvtevHNL5ktAdsV5Fc7XvRhRhGjSa1yZMVcjzTp4G4Pv0oUKzTYMdqiKlABNkFjbs89CWIAIEeX9P0zif1AMjsKZklCF1kyx2bfSZgJJ3GJbmRsLKaSB01r4TX1SgrVnut+iQbCG+D1EYYMuJhmk502NyOpz4YJnxl3DaHeBHj1gU1iISkkK1ykLg3wsJCqDZr9Ypxcm5UAkV+uow+OQYeDxQVYab4Yjr4/nChFSRn/m1OtgK/QfT8ktJvEPRKi6UBNqerQpdgoNYCKFAMHZOubTubrgSwJeAWwDLcOqYt0W8lROZWDBtgBTPLUKdZbtquXCawSOT56YGVBcDm+USXeJ4bHdkXD/ZuPmPRgyR0sky7IdZzJ7DKO23x2Pqs5pT95SIeXKdYIoYFMHSOfK7k/EzMZjXT4R066cyEiXjoS3EkrRR3L432Edg/LmzoKrGH4Dp/yo5T9oXCwkWz2HnvaDm8jVFQ51ZskpMiUu00XSaFJXKZUOoEjo4tjFsTIqsu0wSyrzMaAe1KunFJ1bkEphDiXxIJbLH48OgQPiwWNTujVcFKW505Jat1mAvZ0ppgKFoREs2OGW03ZN1qbJhgkY5uLsg+ymDKaJbpPg1z/H16U/RN+EgCJAZaq0CLOOmhbPY7Io8Oeptju2CKSGNdVdvtdiqye+rCuiq5sfpz9un+8en+N8qZNtiaLDNP826FHVX+yaY409zxfiP8ixWxR1ezL3j2ZYu80HdBU+J4j9BrTQuRlkdD/VPMfr8UEb4G0/fJ/KODsBvWy5sI+ZLlFad0TM+0NVbCRHgH5/g14r/8Xfb1r+x0j89hFqOwu8S/MB0Mn7QN7IZvZ/9KUQ0IlbfqvjjupASPo5R33720fo8b9eH+mWLT/hvxdbF0cvWrcIiXHPHsNmD7/ogO03sC2Pf/AXDh23c=
+sidebar_class_name: "get api-method"
+info_path: docs/apis/control-plane/tsg-control-plane
+custom_edit_url: null
+---
+
+import ApiTabs from "@theme/ApiTabs";
+import DiscriminatorTabs from "@theme/DiscriminatorTabs";
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import SecuritySchemes from "@theme/ApiExplorer/SecuritySchemes";
+import MimeTabs from "@theme/MimeTabs";
+import ParamsItem from "@theme/ParamsItem";
+import ResponseSamples from "@theme/ResponseSamples";
+import SchemaItem from "@theme/SchemaItem";
+import SchemaTabs from "@theme/SchemaTabs";
+import Heading from "@theme/Heading";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Get negotiation status by ID"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/negotiations/{id}"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Get negotiation status by ID
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<details
+  style={{"marginBottom":"1rem"}}
+  className={"openapi-markdown__details"}
+  data-collapsed={false}
+  open={true}
+>
+  <summary
+    style={{}}
+  >
+    <h3
+      className={"openapi-markdown__details-summary-header-params"}
+    >
+      Path Parameters
+    </h3>
+  </summary><div>
+    <ul>
+      <ParamsItem
+        className={"paramsItem"}
+        param={{"name":"id","required":true,"in":"path","schema":{"type":"string"},"enumDescriptions":[]}}
+      >
+        
+      </ParamsItem>
+    </ul>
+  </div>
+</details><div>
+  <div>
+    <ApiTabs
+      label={undefined}
+      id={undefined}
+    >
+      <TabItem
+        label={"200"}
+        value={"200"}
+      >
+        <div>
+          
+          
+          
+          
+          
+        </div><div>
+          <MimeTabs
+            className={"openapi-tabs__mime"}
+            schemaType={"response"}
+          >
+            <TabItem
+              label={"application/json"}
+              value={"application/json"}
+            >
+              <SchemaTabs
+                className={"openapi-tabs__schema"}
+              >
+                <TabItem
+                  label={"Schema"}
+                  value={"Schema"}
+                >
+                  <details
+                    style={{}}
+                    className={"openapi-markdown__details response"}
+                    data-collapsed={false}
+                    open={true}
+                  >
+                    <summary
+                      style={{}}
+                      className={"openapi-markdown__details-summary-response"}
+                    >
+                      <strong>
+                        Schema
+                      </strong>
+                    </summary><div
+                      style={{"textAlign":"left","marginLeft":"1rem"}}
+                    >
+                      
+                    </div><ul
+                      style={{"marginLeft":"1rem"}}
+                    >
+                      <SchemaItem
+                        collapsible={false}
+                        name={"@id"}
+                        required={true}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"@type"}
+                        required={true}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"dspace:consumerPid"}
+                        required={true}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"dspace:providerPid"}
+                        required={true}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"dspace:state"}
+                        required={true}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem>
+                    </ul>
+                  </details>
+                </TabItem><TabItem
+                  label={"Example (from schema)"}
+                  value={"Example (from schema)"}
+                >
+                  <ResponseSamples
+                    responseExample={"{\n  \"@id\": \"string\",\n  \"@type\": \"string\",\n  \"dspace:consumerPid\": \"string\",\n  \"dspace:providerPid\": \"string\",\n  \"dspace:state\": \"string\"\n}"}
+                    language={"json"}
+                  >
+                    
+                  </ResponseSamples>
+                </TabItem>
+              </SchemaTabs>
+            </TabItem>
+          </MimeTabs>
+        </div>
+      </TabItem>
+    </ApiTabs>
+  </div>
+</div>
+      

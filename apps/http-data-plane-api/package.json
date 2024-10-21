@@ -13,7 +13,8 @@
     "lint": "eslint . --fix --ext .ts",
     "jest": "jest",
     "jest:coverage": "jest --coverage --coverage-reporters text",
-    "jest:ci": "jest --coverage --coverage-reporters cobertura --coverage-reporters text --ci --reporters=default --reporters=jest-junit"
+    "jest:ci": "jest --coverage --coverage-reporters cobertura --coverage-reporters text --ci --reporters=default --reporters=jest-junit",
+    "swagger": "tsc -p tsconfig.json && node dist/generate-oas.js"
   },
   "files": [
     "dist"
@@ -22,8 +23,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@tsg-dsp/http-data-plane-dtos": "workspace:*",
-    "@tsg-dsp/common-dtos": "workspace:*",
     "@nestjs/common": "^10.2.4",
     "@nestjs/core": "^10.2.4",
     "@nestjs/passport": "^10.0.3",
@@ -32,6 +31,8 @@
     "@nestjs/swagger": "^7.3.1",
     "@nestjs/typeorm": "^10.0.2",
     "@tsg-dsp/common-dsp": "workspace:*",
+    "@tsg-dsp/common-dtos": "workspace:*",
+    "@tsg-dsp/http-data-plane-dtos": "workspace:*",
     "axios": "^1.6.8",
     "bcrypt": "^5.1.1",
     "class-transformer": "^0.5.1",
@@ -48,7 +49,8 @@
     "pg": "^8.11.4",
     "rxjs": "^7.8.1",
     "sqlite3": "^5.1.7",
-    "typeorm": "^0.3.20"
+    "typeorm": "^0.3.20",
+    "yaml": "^2.6.0"
   },
   "devDependencies": {
     "@jest-mock/express": "^2.0.2",

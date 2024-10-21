@@ -44,7 +44,7 @@ import {
 import {
   ApiForbiddenResponseDefault,
   ApiNotFoundResponseDefault,
-} from "../utils/swagger.js";
+} from "@tsg-dsp/common-dtos";
 
 @Controller()
 @ApiTags("OpenID 4 Verifiable Credential Issuance")

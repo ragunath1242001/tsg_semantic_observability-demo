@@ -1,9 +1,7 @@
-import {
-  DataPlaneTransferDto,
-  TransferRole,
-} from "@tsg-dsp/control-plane-dtos";
+import { TransferRole } from "@tsg-dsp/control-plane-dtos";
 import {
   DataAddress,
+  DataPlaneTransferDto,
   ITransferEvent,
   ITransferStatus,
   Multilanguage,

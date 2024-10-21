@@ -38,7 +38,6 @@ async function bootstrap() {
       "Git Repository",
       "https://gitlab.com/tno-tsg/dataspace-protocol/wallet"
     )
-    .setVersion("1.0")
     .addTag("Health", "Health controller")
     .addTag("Settings", "Settings controller")
     .addTag("Authentication", "Authentication Controller")
@@ -71,7 +70,7 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, config);
 
-  await fs.writeFile("../../docs/openapi.yaml", stringify(document));
+  await fs.writeFile("../../website/docs/openapi.yaml", stringify(document));
   process.exit();
 }
 

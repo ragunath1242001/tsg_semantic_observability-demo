@@ -37,8 +37,11 @@ import {
   ApiBody,
   ApiParam,
 } from "@nestjs/swagger";
-import { ApiForbiddenResponseDefault } from "../../utils/swagger";
-import { CatalogSchema, DatasetSchema } from "./catalog.schema";
+import {
+  ApiForbiddenResponseDefault,
+  CatalogSchema,
+  DatasetSchema,
+} from "@tsg-dsp/common-dtos";
 
 @UseGuards(OAuthGuard)
 @Roles(["controlplane_admin", "controlplane_dataplane"])

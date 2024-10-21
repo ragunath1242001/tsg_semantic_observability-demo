@@ -1,0 +1,449 @@
+---
+id: data-plane-controller-init
+title: "Initialize data plane"
+description: "Initializes a new data plane with the provided details."
+sidebar_label: "Initialize data plane"
+hide_title: true
+hide_table_of_contents: true
+api: eJztV01vGzcQ/SsEj4EsuW5PurmOGwhoY6N20oNhCBQ51jLaJVly1rIi6L9nyOVq19p1kaI95mJ4yTfkfDy+Ge25deAFamsWis/5e4HithQGrqxBb8sS/FIbjXzCFQTptYtQAi5oUYtSf4XABDOwZYpMmYu2bKuxYFgAc94+awWKKUChyzClc5zwogIEH/j84XHCPfxdQ8Bfrdrx+T59ag/kDPoaJlySI2AwbgnnSi2Ts7MvIbqx50EWUIn4H+4ckGN29QVk9JfuptBQQ4i70bsAGHpI4b3YEVAjVP31gF6bNT8cJskqhXSftgaQCQejnNUGbz086ZdRiBRluRJyc6mUhzB204RXwog1VBTo96Hu7QbMG7ehKO36bmdk4a3RX0VTsREo1Xc8KCqZQf2kwY+npavRw0mKBgkZhj8W7DC0NwPJbhNxUGP0v8dZDwnzHi252TganDWhocDF+Xliwise8x8M+8GwUYa9cnKMbh3Nfhlj1sI8kz6qvi5mFTzKIk+2Pw9tf7N+pZVqvPx/6GlIdEdLEVBgPc4GaVXfxtTVinIRaUIppWQOb4189d5+R1WTP8fb8129NF/HY9oUky2KdWwYKf0s5T+iA8jaa6TO8bDnVtRYXESQbLpXyvpSqEq3iTwuHknFHw+PMSAsbGyAzoaUO4EFfc2E07MIPUvYWW6FAfzzsX+1LtzFQjS5bh3pstMsTPhTabcJ4kQIW+tVU0IqVFod8Xv+r4KZv7XRJHEFwjdPLtEm4vNSu0fMqwSRjX++pbXsfoHoBhPAZ/D0NsSqBEYvMRBFEzFpFoDY8dEyaauqNpGwwFaAWwDDcGuZNlR1I2lysE9pTMg+N69kmqgS6f1nNxlcv4jKNVrS6exDy63HgY62O0P57HYGqtltjYjl2GbWyP6R49LYIRpF7L77QtjXR/NkE3/ya7i/+8DySJbJf1qO+0IHduPAXN4uWHAg6dBGKlgoiHQp0W0yjpl/deaU/UHsb7c6LPGCeSipjKmscTO+wuCEjLW3aKUtJ0yE9l7CrXYJdy1L7QKwv6zfUGjsg7e166zDlN0QzJ9cFmrnLCnXc98LurkSm7hJiHh2ElYpDHGLCaU653IVyCOjTs0Esk8LYiDNn0LG7IR0BEYI8UdSEthy+e6jRXi3XM7Zq7QqolCceymntGospoNMvprcUKRuEssdK7XZ0GoahAULFHp5kuzjK5gyqmWUk6aOP03Pp+f5gZOHRAKiA6k+0BjT6Ti/pPRRqBcJW/syv9Iwn8222+1UpO2p9etZtg2z3xdX1x/vrs/IZlpgVaZ3FvWOCN07uZvse63rlG77ri39h58CWV4QXnBGcBK2Qw5mnxX4gXqe5s3zPms9SSpMb76IWk2Q/X5FivDJl4dDXCbR8LtGm5+FTwoVv+joAoSKD416xQYIwq+aIM7yZEENu05z22mfPUxai0spweE/Yvvt5Pbm7j5qa/5xU6WGyr3YRimgv2kAtSmpqQGktT2nQNd1arC8OTOWKvaQsZ5ybHvd3Gl2PQ+H/YO90SQmOcjUkFLQowe2vWspqZdH+RJlONquvTC4THaHR/L7G7psD28=
+sidebar_class_name: "post api-method"
+info_path: docs/apis/control-plane/tsg-control-plane
+custom_edit_url: null
+---
+
+import ApiTabs from "@theme/ApiTabs";
+import DiscriminatorTabs from "@theme/DiscriminatorTabs";
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import SecuritySchemes from "@theme/ApiExplorer/SecuritySchemes";
+import MimeTabs from "@theme/MimeTabs";
+import ParamsItem from "@theme/ParamsItem";
+import ResponseSamples from "@theme/ResponseSamples";
+import SchemaItem from "@theme/SchemaItem";
+import SchemaTabs from "@theme/SchemaTabs";
+import Heading from "@theme/Heading";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Initialize data plane"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/data-plane/init"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Initializes a new data plane with the provided details.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<MimeTabs
+  className={"openapi-tabs__mime"}
+>
+  <TabItem
+    label={"application/json"}
+    value={"application/json-schema"}
+  >
+    <details
+      style={{}}
+      className={"openapi-markdown__details mime"}
+      data-collapsed={false}
+      open={true}
+    >
+      <summary
+        style={{}}
+        className={"openapi-markdown__details-summary-mime"}
+      >
+        <h3
+          className={"openapi-markdown__details-summary-header-body"}
+        >
+          Body
+        </h3><strong
+          className={"openapi-schema__required"}
+        >
+          required
+        </strong>
+      </summary><div
+        style={{"textAlign":"left","marginLeft":"1rem"}}
+      >
+        
+      </div><ul
+        style={{"marginLeft":"1rem"}}
+      >
+        <SchemaItem
+          collapsible={false}
+          name={"datasets"}
+          required={false}
+          schemaName={"string[]"}
+          qualifierMessage={undefined}
+          schema={{"type":"array","items":{"type":"string"}}}
+        >
+          
+        </SchemaItem><SchemaItem
+          collapsible={false}
+          name={"dataplaneType"}
+          required={true}
+          schemaName={"string"}
+          qualifierMessage={undefined}
+          schema={{"type":"string"}}
+        >
+          
+        </SchemaItem><SchemaItem
+          collapsible={false}
+          name={"endpointPrefix"}
+          required={true}
+          schemaName={"string"}
+          qualifierMessage={undefined}
+          schema={{"type":"string"}}
+        >
+          
+        </SchemaItem><SchemaItem
+          collapsible={false}
+          name={"callbackAddress"}
+          required={true}
+          schemaName={"string"}
+          qualifierMessage={undefined}
+          schema={{"type":"string"}}
+        >
+          
+        </SchemaItem><SchemaItem
+          collapsible={false}
+          name={"managementAddress"}
+          required={true}
+          schemaName={"string"}
+          qualifierMessage={undefined}
+          schema={{"type":"string"}}
+        >
+          
+        </SchemaItem><SchemaItem
+          collapsible={false}
+          name={"managementToken"}
+          required={true}
+          schemaName={"string"}
+          qualifierMessage={undefined}
+          schema={{"type":"string"}}
+        >
+          
+        </SchemaItem><SchemaItem
+          collapsible={false}
+          name={"catalogSynchronization"}
+          required={true}
+          schemaName={"string"}
+          qualifierMessage={undefined}
+          schema={{"type":"string"}}
+        >
+          
+        </SchemaItem><SchemaItem
+          collapsible={false}
+          name={"role"}
+          required={true}
+          schemaName={"string"}
+          qualifierMessage={undefined}
+          schema={{"type":"string"}}
+        >
+          
+        </SchemaItem><SchemaItem
+          collapsible={false}
+          name={"identifier"}
+          required={false}
+          schemaName={"string"}
+          qualifierMessage={undefined}
+          schema={{"type":"string"}}
+        >
+          
+        </SchemaItem>
+      </ul>
+    </details>
+  </TabItem>
+</MimeTabs><div>
+  <div>
+    <ApiTabs
+      label={undefined}
+      id={undefined}
+    >
+      <TabItem
+        label={"200"}
+        value={"200"}
+      >
+        <div>
+          
+          
+          
+          
+          
+        </div><div>
+          <MimeTabs
+            className={"openapi-tabs__mime"}
+            schemaType={"response"}
+          >
+            <TabItem
+              label={"application/json"}
+              value={"application/json"}
+            >
+              <SchemaTabs
+                className={"openapi-tabs__schema"}
+              >
+                <TabItem
+                  label={"Schema"}
+                  value={"Schema"}
+                >
+                  <details
+                    style={{}}
+                    className={"openapi-markdown__details response"}
+                    data-collapsed={false}
+                    open={true}
+                  >
+                    <summary
+                      style={{}}
+                      className={"openapi-markdown__details-summary-response"}
+                    >
+                      <strong>
+                        Schema
+                      </strong>
+                    </summary><div
+                      style={{"textAlign":"left","marginLeft":"1rem"}}
+                    >
+                      
+                    </div><ul
+                      style={{"marginLeft":"1rem"}}
+                    >
+                      <SchemaItem
+                        collapsible={false}
+                        name={"datasets"}
+                        required={false}
+                        schemaName={"string[]"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"array","items":{"type":"string"}}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"dataplaneType"}
+                        required={true}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"endpointPrefix"}
+                        required={true}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"callbackAddress"}
+                        required={true}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"managementAddress"}
+                        required={true}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"managementToken"}
+                        required={true}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"catalogSynchronization"}
+                        required={true}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"role"}
+                        required={true}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"identifier"}
+                        required={true}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem>
+                    </ul>
+                  </details>
+                </TabItem><TabItem
+                  label={"Example (from schema)"}
+                  value={"Example (from schema)"}
+                >
+                  <ResponseSamples
+                    responseExample={"{\n  \"datasets\": [\n    \"string\"\n  ],\n  \"dataplaneType\": \"string\",\n  \"endpointPrefix\": \"string\",\n  \"callbackAddress\": \"string\",\n  \"managementAddress\": \"string\",\n  \"managementToken\": \"string\",\n  \"catalogSynchronization\": \"string\",\n  \"role\": \"string\",\n  \"identifier\": \"string\"\n}"}
+                    language={"json"}
+                  >
+                    
+                  </ResponseSamples>
+                </TabItem>
+              </SchemaTabs>
+            </TabItem>
+          </MimeTabs>
+        </div>
+      </TabItem><TabItem
+        label={"400"}
+        value={"400"}
+      >
+        <div>
+          
+          
+          Invalid data plane details provided
+          
+          
+        </div><div>
+          
+        </div>
+      </TabItem><TabItem
+        label={"403"}
+        value={"403"}
+      >
+        <div>
+          
+          
+          Forbidden
+          
+          
+        </div><div>
+          <MimeTabs
+            className={"openapi-tabs__mime"}
+            schemaType={"response"}
+          >
+            <TabItem
+              label={"application/json"}
+              value={"application/json"}
+            >
+              <SchemaTabs
+                className={"openapi-tabs__schema"}
+              >
+                <TabItem
+                  label={"Schema"}
+                  value={"Schema"}
+                >
+                  <details
+                    style={{}}
+                    className={"openapi-markdown__details response"}
+                    data-collapsed={false}
+                    open={true}
+                  >
+                    <summary
+                      style={{}}
+                      className={"openapi-markdown__details-summary-response"}
+                    >
+                      <strong>
+                        Schema
+                      </strong>
+                    </summary><div
+                      style={{"textAlign":"left","marginLeft":"1rem"}}
+                    >
+                      
+                    </div><ul
+                      style={{"marginLeft":"1rem"}}
+                    >
+                      <SchemaItem
+                        collapsible={false}
+                        name={"name"}
+                        required={true}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"status"}
+                        required={true}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"code"}
+                        required={true}
+                        schemaName={"number"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"number"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"message"}
+                        required={false}
+                        schemaName={"object"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"object"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"error"}
+                        required={false}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem>
+                    </ul>
+                  </details>
+                </TabItem><TabItem
+                  label={"Example (from schema)"}
+                  value={"Example (from schema)"}
+                >
+                  <ResponseSamples
+                    responseExample={"{\n  \"name\": \"string\",\n  \"status\": \"string\",\n  \"code\": 0,\n  \"message\": {},\n  \"error\": \"string\"\n}"}
+                    language={"json"}
+                  >
+                    
+                  </ResponseSamples>
+                </TabItem>
+              </SchemaTabs>
+            </TabItem>
+          </MimeTabs>
+        </div>
+      </TabItem>
+    </ApiTabs>
+  </div>
+</div>
+      

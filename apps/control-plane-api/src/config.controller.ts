@@ -23,7 +23,7 @@ import { RuntimeConfigDto } from "./config.schemas";
 import {
   ApiForbiddenResponseDefault,
   ApiBadRequestResponseDefault,
-} from "./utils/swagger";
+} from "@tsg-dsp/common-dtos";
 
 @UseGuards(OAuthGuard)
 @Roles("controlplane_admin")

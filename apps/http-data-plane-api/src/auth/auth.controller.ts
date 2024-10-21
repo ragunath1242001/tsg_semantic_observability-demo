@@ -4,12 +4,36 @@ import { NextFunction, Request, Response } from "express";
 import passport from "passport";
 import { Client, ClientInfo } from "./roles.guard";
 import { AuthConfig } from "../config";
+import {
+  ApiExtraModels,
+  ApiFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+  getSchemaPath,
+} from "@nestjs/swagger";
+import { AuthenticatedUserDto, UnauthenticatedUserDto } from "./auth.schemas";
 
 @Controller("auth")
+@ApiTags("Authentication")
 export class AuthController {
   constructor(private readonly authConfig: AuthConfig) {}
   @Get("user")
   @DisableOAuthGuard()
+  @ApiOperation({
+    summary: "Retrieve current user status",
+    description:
+      "Retrieves current user state, whether someone is logged in or not a 200 result is provided. This is used in the frontend to determine whether certain aspects should be shown.",
+  })
+  @ApiExtraModels(AuthenticatedUserDto, UnauthenticatedUserDto)
+  @ApiOkResponse({
+    schema: {
+      oneOf: [
+        { $ref: getSchemaPath(AuthenticatedUserDto) },
+        { $ref: getSchemaPath(UnauthenticatedUserDto) },
+      ],
+    },
+  })
   getUser(@Client() client: ClientInfo | undefined) {
     if (client) {
       return {
@@ -24,6 +48,10 @@ export class AuthController {
   }
 
   @Get("login")
+  @ApiOperation({
+    summary: "Login redirect",
+    description: "Redirects user to the correct authorization server",
+  })
   login(@Res() res: Response) {
     if (!this.authConfig.enabled) {
       res.redirect("/");
@@ -31,6 +59,12 @@ export class AuthController {
   }
 
   @Get("logout")
+  @ApiFoundResponse()
+  @ApiOperation({
+    summary: "Logout redirect",
+    description:
+      "Removes session information and redirects user the root of the frontend (`auth.redirectURL`)",
+  })
   logout(
     @Req() req: Request,
     @Res() res: Response,
@@ -52,6 +86,12 @@ export class AuthController {
   @Get("callback")
   @DisableOAuthGuard()
   @UseGuards(OAuthLoginGuard)
+  @ApiFoundResponse()
+  @ApiOperation({
+    summary: "Login callback",
+    description:
+      "Users are redirected from the authorization server to this endpoint which will redirect them to the frontend (`auth.redirectURL`)",
+  })
   callback(
     @Req() req: Request,
     @Res() res: Response,

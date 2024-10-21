@@ -1,0 +1,25 @@
+{
+  "name": "release",
+  "version": "1.0.0",
+  "main": "release.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "type": "module",
+  "devDependencies": {
+    "@conventional-changelog/git-client": "^1.0.1",
+    "axios": "^1.7.2",
+    "conventional-changelog": "^6.0.0",
+    "conventional-changelog-writer": "^8.0.0",
+    "conventional-commits-filter": "^5.0.0",
+    "conventional-commits-parser": "^6.0.0",
+    "conventional-recommended-bump": "^10.0.0",
+    "prettier": "^2.8.8",
+    "semantic-release": "^24.0.0",
+    "semantic-release-monorepo": "^8.0.2",
+    "semver": "^7.6.2"
+  }
+}

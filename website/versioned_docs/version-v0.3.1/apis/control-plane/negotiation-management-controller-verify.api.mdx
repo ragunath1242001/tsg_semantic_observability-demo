@@ -1,0 +1,152 @@
+---
+id: negotiation-management-controller-verify
+title: "Verify a negotiation agreement"
+description: "Verify a negotiation agreement"
+sidebar_label: "Verify a negotiation agreement"
+hide_title: true
+hide_table_of_contents: true
+api: eJyVVU1v4zYQ/SsET+3CtdIcdQt204WBbmI02fawCIwxNbbYUCSXHNlrCP7vHVKyLOcDi+YSazgfb94MHzvpPAYg7eyikqW8w60jnb+/gIUtNmjpo7MUnDEYVjsMenOQM+khQIOEIcryWyctf3C4D05hjJxqJgN+b3VAzkqhxZnUNjkA1XxWYVRB+1SGjcs+Siw+CbcRVKOwZxjsHVWNDciyk3TwqUykoO1WHo9PqUz0zkaM6fz66ir9u0zPGRR3wI2kM/DeaJVTF//G5NBNCuAPaLzBbCSgNk6rpb+ZJNimnqdURXEmSzKmiKoNmg6ZGgct1dcpQvU8egMWV1A12g7QRmMFBPmXfEq9Xfbxd+ZewJQdAduAfd2Z5HnULk3Ru0h5Rkx2KQvwumhGgMUkPBbdOLJjMQ43Ytj1k50085BI6mk+tTQOZDDM5Ma4fXbxEOPehaqnl5csW99goPxftJTvHfSzWSMEDONIk/9gOp394UIDlNhcsm2AXxP5V1uZ6dawNiiWvGTMXM+4RaywEuSEck3T2rRMKNZIe0QraO+Etrw7llk9rfOAWWSoc5mQartxmUBNad3k48NnMdwzscwdvcTzWOso7j3am+VCRI+K0fV7LGLNrOdKaCvvtKWx9EXOufjCm3E6OvsyMSKg4T5yX+nwEzMbPajUvCOnnJkJiKe67Lc+ZL9bZbSPKP5x4ZlvifgcXOvP0XEu7tktvCgWW+9dIL2bouDKDTynQ/ZIudN0hQLL5AqoqjM4bhuM2zIiW70MAxJfFzwCliZQ/eVMKSi5MP+KSRCr1Yc7R/hhtSrFBa0VbrTVmVO2Wkc5kR1KM4yKFU2ROQij7TNb95pqvpGRWzcvyB7XYC54luk+9XP8fX417Dfj4xXgZWBBQpawtA+DkN4wedzodfZtgxmWNJZFsd/v55CP5y5siyE2Fn8uPt7ePdz+xjHzmhqT1ywpAV/9SeafqsjF1o03nPAHFcwfX87jgKgbBOYba6pO8nPWwJmcigx/ltOXYdAZ1pY6CRUn6Lo1RPwazPGYzN9bDIdefXYQ8h3MUlrpmH6zqGzARHyFdZR5+ctfw+vzq/jZ6/Jmg4MRbJLDHZgW+4fkGQ8Xz9zxiZ1rhCqpDiPsz2+UQk+TyFePTlL3Ua6X9w+P7Jw09C1NHR+Q7m1Yr/VTvCOSJ/xZkLnNdxKetHulmEDmUzPZY+w2gKVVjuPmj8f/ADpN6Fw=
+sidebar_class_name: "post api-method"
+info_path: docs/apis/control-plane/tsg-control-plane
+custom_edit_url: null
+---
+
+import ApiTabs from "@theme/ApiTabs";
+import DiscriminatorTabs from "@theme/DiscriminatorTabs";
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import SecuritySchemes from "@theme/ApiExplorer/SecuritySchemes";
+import MimeTabs from "@theme/MimeTabs";
+import ParamsItem from "@theme/ParamsItem";
+import ResponseSamples from "@theme/ResponseSamples";
+import SchemaItem from "@theme/SchemaItem";
+import SchemaTabs from "@theme/SchemaTabs";
+import Heading from "@theme/Heading";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Verify a negotiation agreement"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/management/negotiations/{processId}/verify"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Verify a negotiation agreement
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<details
+  style={{"marginBottom":"1rem"}}
+  className={"openapi-markdown__details"}
+  data-collapsed={false}
+  open={true}
+>
+  <summary
+    style={{}}
+  >
+    <h3
+      className={"openapi-markdown__details-summary-header-params"}
+    >
+      Path Parameters
+    </h3>
+  </summary><div>
+    <ul>
+      <ParamsItem
+        className={"paramsItem"}
+        param={{"name":"processId","required":true,"in":"path","description":"Process ID of the negotiation","schema":{"type":"string"},"enumDescriptions":[]}}
+      >
+        
+      </ParamsItem>
+    </ul>
+  </div>
+</details><div>
+  <div>
+    <ApiTabs
+      label={undefined}
+      id={undefined}
+    >
+      <TabItem
+        label={"200"}
+        value={"200"}
+      >
+        <div>
+          
+          
+          
+          
+          
+        </div><div>
+          <MimeTabs
+            className={"openapi-tabs__mime"}
+            schemaType={"response"}
+          >
+            <TabItem
+              label={"application/json"}
+              value={"application/json"}
+            >
+              <SchemaTabs
+                className={"openapi-tabs__schema"}
+              >
+                <TabItem
+                  label={"Schema"}
+                  value={"Schema"}
+                >
+                  <details
+                    style={{}}
+                    className={"openapi-markdown__details response"}
+                    data-collapsed={false}
+                    open={true}
+                  >
+                    <summary
+                      style={{}}
+                      className={"openapi-markdown__details-summary-response"}
+                    >
+                      <strong>
+                        Schema
+                      </strong>
+                    </summary><div
+                      style={{"textAlign":"left","marginLeft":"1rem"}}
+                    >
+                      
+                    </div><ul
+                      style={{"marginLeft":"1rem"}}
+                    >
+                      any
+                    </ul>
+                  </details>
+                </TabItem><TabItem
+                  label={"Example (from schema)"}
+                  value={"Example (from schema)"}
+                >
+                  <ResponseSamples
+                    responseExample={"{\n  \"status\": \"string\"\n}"}
+                    language={"json"}
+                  >
+                    
+                  </ResponseSamples>
+                </TabItem>
+              </SchemaTabs>
+            </TabItem>
+          </MimeTabs>
+        </div>
+      </TabItem>
+    </ApiTabs>
+  </div>
+</div>
+      

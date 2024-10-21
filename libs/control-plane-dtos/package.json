@@ -15,6 +15,6 @@
     "class-validator": "^0.14.0",
     "jose": "^4.14.4",
     "tslib": "^2.6.2",
-    "typescript": "^5.3.3"
+    "typescript": "^5.5.3"
   }
 }

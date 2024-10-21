@@ -38,7 +38,7 @@ import {
   ContractNegotiationTerminationMessageSchema,
   ContractOfferMessageSchema,
   ContractRequestMessageSchema,
-} from "./negotiation.schema";
+} from "@tsg-dsp/common-dtos";
 
 @ApiBearerAuth()
 @ApiTags("Negotiations")

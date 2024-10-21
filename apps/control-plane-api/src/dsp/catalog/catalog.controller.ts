@@ -22,12 +22,12 @@ import {
   ApiBearerAuth,
   ApiBody,
 } from "@nestjs/swagger";
-import { ApiForbiddenResponseDefault } from "../../utils/swagger";
 import {
+  ApiForbiddenResponseDefault,
   CatalogRequestMessageSchema,
   CatalogSchema,
   DatasetSchema,
-} from "./catalog.schema";
+} from "@tsg-dsp/common-dtos";
 
 @UseGuards(VerifiablePresentationGuard)
 @Controller("catalog")

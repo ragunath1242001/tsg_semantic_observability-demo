@@ -17,7 +17,7 @@ import {
 import {
   ApiForbiddenResponseDefault,
   ApiNotFoundResponseDefault,
-} from "../utils/swagger.js";
+} from "@tsg-dsp/common-dtos";
 import {
   JsonWebSignatureDto,
   SignRequestDto,

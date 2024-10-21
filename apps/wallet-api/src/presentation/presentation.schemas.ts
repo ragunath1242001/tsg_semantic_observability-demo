@@ -11,10 +11,10 @@ import {
   VerifiablePresentationJsonLd,
   VerifiablePresentationJwt,
 } from "@tsg-dsp/common-dsp";
-import { elementOrArray } from "../did/did.schemas.js";
 import {
   Constraint,
   DescriptorMap,
+  elementOrArray,
   Field,
   Filter,
   Format,

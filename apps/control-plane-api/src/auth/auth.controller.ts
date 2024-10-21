@@ -66,7 +66,6 @@ export class AuthController {
     description:
       "Removes session information and redirects user the root of the frontend (`auth.redirectURL`)",
   })
-  @ApiFoundResponse()
   logout(
     @Req() req: Request,
     @Res() res: Response,
@@ -95,7 +94,6 @@ export class AuthController {
     description:
       "Users are redirected from the authorization server to this endpoint which will redirect them to the frontend (`auth.redirectURL`)",
   })
-  @ApiFoundResponse()
   callback(
     @Req() req: Request,
     @Res() res: Response,

@@ -11,11 +11,14 @@ COPY apps/wallet-ui/package.json apps/wallet-ui/
 COPY libs/common-dsp/package.json libs/common-dsp/
 COPY libs/common-dtos/package.json libs/common-dtos/
 COPY libs/common-ui/package.json libs/common-ui/
+COPY libs/control-plane-dtos/package.json libs/control-plane-dtos/
 COPY libs/wallet-dtos/package.json libs/wallet-dtos/
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
 COPY apps apps
 COPY libs libs 
+RUN pnpm run --filter "./libs/common-dsp" build 
+RUN pnpm run --filter "./libs/control-plane-dtos" build 
 RUN pnpm run --filter "./libs/common*" -r build 
 RUN pnpm run --filter "./libs/wallet*" --parallel -r build
 RUN pnpm run --filter "./apps/wallet*" --parallel -r build

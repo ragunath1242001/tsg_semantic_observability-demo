@@ -1,0 +1,186 @@
+---
+id: data-plane-controller-get-catalog
+title: "Get catalog"
+description: "Get catalog, currently not implemented."
+sidebar_label: "Get catalog"
+hide_title: true
+hide_table_of_contents: true
+api: eJyVVE1v2kAQ/SsrnykmaXvJLUpoGqlqkUJziSK0rAe86Xp3szuOiyz+e2fWxhAgh57A8z3z3ts2cx6CRO3sfZFdZbcS5cxICzfOYnDGQFisAW/IbNw6G2UFRBW05wQKvwMUqvONhKpDAItmI6xDoStvoKJvKMaU52WQFSCEmF09PY+yANE7G4E+2+zL5DP/vK/9zYWlLgqwlK1oGirFQdJ7o1WaOH+JHNlmUZVQSf6HGw+U65YvoJDbBt4PddfH0ggHURGDtutsO6J/Eut41qVccZhj62oJgR0VxCjXcNqVfBCCC2fKbXnx11oHoGM/dfMM3ftedBzUaDhtymVu0VEip36dXJyeKRVFuea7JvhEwo/LRCBING7I02ZO1lhecpDqoPUctigow3cJ22deCkvHRCDQE2pY0kcuvc7VwIEI4W0ActfkgTHozrxrtT9MZxhlK+OaFOJljI0LRYceYZSsJaIfBlrIotK84Tnr6Mi6X+M4fu/pjrgEGSAMrOGE3rTzEfEqSVzLHmdk61fgoif0f4SgV1ouDYgZEZoYmngpLEABhUAnlKuq2jJfQSwBGwArsHFCWwLdKojCrQSWIHpQRBp1nEDVduXSEXs2zB/uxPf5fCYOUD6eaF7qKH55sNezexE9KJqvE4uIJd0+9QJbeKctDs2PqrJeGeCu5MV4Mp70GpSKNUizkQSB1LsXVXbtJd1TXKbYOpj+ZvEqz5umGcvkHruwzvvcmP+4v5n+fJh+opxxiZVJW3sXsZL2oPLBI3O8b7t/Gf7jLeohRfiLOd2b6LTtR257xj/RM6N5574t8bykudjRtksZ4Xcw2y2bX2sIm04JbzIkLvAXFSxBFkw00t4f2PCFlALPqnqTpuYBTp6ydwq8m84plpVzTkmDnAeXtJuD2mdEIz4SxqgfMAmRbvFByZ1mF4qeLzqmliYOuesgLS5S3vaZhPYPFuoyKA==
+sidebar_class_name: "get api-method"
+info_path: docs/apis/http-data-plane/tsg-http-data-plane
+custom_edit_url: null
+---
+
+import ApiTabs from "@theme/ApiTabs";
+import DiscriminatorTabs from "@theme/DiscriminatorTabs";
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import SecuritySchemes from "@theme/ApiExplorer/SecuritySchemes";
+import MimeTabs from "@theme/MimeTabs";
+import ParamsItem from "@theme/ParamsItem";
+import ResponseSamples from "@theme/ResponseSamples";
+import SchemaItem from "@theme/SchemaItem";
+import SchemaTabs from "@theme/SchemaTabs";
+import Heading from "@theme/Heading";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Get catalog"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/catalog"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Get catalog, currently not implemented.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<div>
+  <div>
+    <ApiTabs
+      label={undefined}
+      id={undefined}
+    >
+      <TabItem
+        label={"403"}
+        value={"403"}
+      >
+        <div>
+          
+          
+          Forbidden
+          
+          
+        </div><div>
+          <MimeTabs
+            className={"openapi-tabs__mime"}
+            schemaType={"response"}
+          >
+            <TabItem
+              label={"application/json"}
+              value={"application/json"}
+            >
+              <SchemaTabs
+                className={"openapi-tabs__schema"}
+              >
+                <TabItem
+                  label={"Schema"}
+                  value={"Schema"}
+                >
+                  <details
+                    style={{}}
+                    className={"openapi-markdown__details response"}
+                    data-collapsed={false}
+                    open={true}
+                  >
+                    <summary
+                      style={{}}
+                      className={"openapi-markdown__details-summary-response"}
+                    >
+                      <strong>
+                        Schema
+                      </strong>
+                    </summary><div
+                      style={{"textAlign":"left","marginLeft":"1rem"}}
+                    >
+                      
+                    </div><ul
+                      style={{"marginLeft":"1rem"}}
+                    >
+                      <SchemaItem
+                        collapsible={false}
+                        name={"name"}
+                        required={true}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"status"}
+                        required={true}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"code"}
+                        required={true}
+                        schemaName={"number"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"number"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"message"}
+                        required={false}
+                        schemaName={"object"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"object"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"error"}
+                        required={false}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem>
+                    </ul>
+                  </details>
+                </TabItem><TabItem
+                  label={"Example (from schema)"}
+                  value={"Example (from schema)"}
+                >
+                  <ResponseSamples
+                    responseExample={"{\n  \"name\": \"string\",\n  \"status\": \"string\",\n  \"code\": 0,\n  \"message\": {},\n  \"error\": \"string\"\n}"}
+                    language={"json"}
+                  >
+                    
+                  </ResponseSamples>
+                </TabItem>
+              </SchemaTabs>
+            </TabItem>
+          </MimeTabs>
+        </div>
+      </TabItem><TabItem
+        label={"501"}
+        value={"501"}
+      >
+        <div>
+          
+          
+          
+          
+          
+        </div><div>
+          
+        </div>
+      </TabItem>
+    </ApiTabs>
+  </div>
+</div>
+      

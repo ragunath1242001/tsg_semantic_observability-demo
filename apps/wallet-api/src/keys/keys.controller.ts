@@ -3,7 +3,7 @@ import { KeysService } from "./keys.service.js";
 import { AppError } from "../utils/error.js";
 import { DisableOAuthGuard } from "../auth/oauth.guard.js";
 import { ApiOkResponse, ApiTags, ApiOperation } from "@nestjs/swagger";
-import { ApiNotFoundResponseDefault } from "../utils/swagger.js";
+import { ApiNotFoundResponseDefault } from "@tsg-dsp/common-dtos";
 
 @Controller()
 @DisableOAuthGuard()

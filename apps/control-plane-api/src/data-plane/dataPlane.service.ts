@@ -1,9 +1,8 @@
+import { DataPlaneCreation, IDataPlaneDto } from "@tsg-dsp/control-plane-dtos";
 import {
-  DataPlaneCreation,
-  IDataPlaneDto,
   DataPlaneRequestResponseDto,
   DataPlaneTransferDto,
-} from "@tsg-dsp/control-plane-dtos";
+} from "@tsg-dsp/common-dsp";
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { Interval } from "@nestjs/schedule";
 import { InjectRepository } from "@nestjs/typeorm";

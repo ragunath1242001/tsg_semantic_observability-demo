@@ -39,7 +39,7 @@ import {
   NegotiationDetailSchema,
   NegotiationStatusDto,
   OfferSchema,
-} from "./negotiation.schema";
+} from "@tsg-dsp/common-dtos";
 
 @ApiTags("Negotiations Management")
 @UseGuards(OAuthGuard)

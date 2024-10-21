@@ -28,7 +28,7 @@ import {
   ApiBadRequestResponseDefault,
   ApiConflictResponseDefault,
   ApiNotFoundResponseDefault,
-} from "../utils/swagger.js";
+} from "@tsg-dsp/common-dtos";
 
 @Controller("management/keys")
 @ApiTags("Management Keys")

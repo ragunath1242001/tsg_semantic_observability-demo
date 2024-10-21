@@ -29,7 +29,7 @@ import {
   ApiConflictResponseDefault,
   ApiForbiddenResponseDefault,
   ApiNotFoundResponseDefault,
-} from "../utils/swagger";
+} from "@tsg-dsp/common-dtos";
 import { validationPipe } from "../utils/validation.pipe";
 import {
   Constraint as DspConstraint,

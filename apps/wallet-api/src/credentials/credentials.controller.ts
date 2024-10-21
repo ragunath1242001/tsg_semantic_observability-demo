@@ -7,7 +7,7 @@ import { CredentialsDto } from "./credentials.schemas.js";
 import {
   ApiForbiddenResponseDefault,
   ApiNotFoundResponseDefault,
-} from "../utils/swagger.js";
+} from "@tsg-dsp/common-dtos";
 
 @Controller()
 @DisableOAuthGuard()

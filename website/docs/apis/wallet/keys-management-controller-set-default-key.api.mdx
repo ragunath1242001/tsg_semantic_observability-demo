@@ -1,0 +1,319 @@
+---
+id: keys-management-controller-set-default-key
+title: "Set default key"
+description: "Sets the provided key as default key within this wallet, will remove the default key flag for other keys in this wallet"
+sidebar_label: "Set default key"
+hide_title: true
+hide_table_of_contents: true
+api: eJztVk1vGzcQ/SvEnpJA0bpuTkJRwIjdwmibBJGDHtxAoHZHWsZcckNypQiC/nvfkCtp9XntpT7YXs4M583n4zqzDTkZlDWPZTbK/qCV/0saOaeaTHhvTXBWa3ITT+GeZrLVASrZICvJF041bAizMQUvQkWicXahSirFC62E9KJMNvFzqUKlDNSUF0uJW8MAZ1oLR7VdULTv68+0nIuZdcJC4vjIi0N74GikkzUFcj4bPa8zgw/ggS7CGWSOvrfKESILrqVBphhsI0MFmS8qqmU2Wmdh1bCRD06ZebbZfGVD31jjybP89uaG/xyGnG0G2bubn08Fv1k3VWVJBj4KJBB5ZCXZNFoVMdP5N8+a61MIdvqNihiW47oElQCkqE6AIoYgQ+vPigpb9m1MW0/JsaAm71HfU6+QkXPWnUtJP5XPCc/Oe+cLWQsqaDZ74Gvug4XhJqbp3WmaPpO3rStIGBtQ5daU/+cr5gu2Qc65nbP9JAoeTDbxVLROhVXsdivbUN2yZpqHSR0NJi9RmfsYo1FZHuymTdOC1h9luWxUXu8uz1k/X8eh2eTdCDJecos0WD3HY65BSvPW/T4x6WCQzbRdRpVGer+0rkzVQ43iaYd2oWg5KRXDOz4ZnItodO5wcGBrl2ZSIOuISkntj24+lh7a4t8rtsfSY4QXPV+QH9tf9H5BvrNX3rd03vRUdBhxgzUHSRyy43gPZV1jKjOzsd5d4z6Nfxd/b1fx4Xw/YZvvxQI7W4rx+LHb3NjiMohCGhExCmlK4YN1JNBxaqbkVJPoAY8K+JaBOaaHTAQrpiRaD87pCKaUQQrfyIL88JepE/mv6fc/RuCHcS33mFQNQ0Cp0fLqLRaIAwc12q54MPwg3imsIfEKRFQD4OuDCGQB4gPPgV48vkxRQY05S/ZgRPDKlGrRSt2Z+6hFssDts0SdEvurUI2E38Rz1LtjKD521NegG6KwAEK3uzDhidn0B5mLFIsUFaxWRst7XJuQddWRGmuinVdCxazwSt7ur3QvMzDi0EvJJOwF/UDkehUzE306DqPvFhGkHCT4p4WYTN58sIHeTCYjFAV3fmzI3H165DeAMoqru8WimBX4VZGKXQJX9K6VeenqDmceq1fvQlIG69Zw4tCavMZSW/40vOl4BgGgldHUoBkC1e+JI7sDZKTpNuq2TuOoCqHxozxfLpdDGcVD6+Z5Z+vzPx/fP3wYP7yFzbAKtY4c0FgfML69m/FQ6r9xjqdmvWfA//BN1W3zQD9C3miJR9OmS8O6Y5Bn0LOC5p5D8NGt49H28bUlEpBHhUSw1Xo9lZ6+OL3Z8PF39M0q0ctCujj0kddK5fl/EMMMrURXkvTqc9emr8Ul4N2hNJzthdQtfyW4u5fi5isUK5IlKJ8BJNldUVATelYnb5IDiv305Qm6TIHnKHHH1evziI4YUJxSnbhCZeIKVYmrRCSu0oy4xCTiMldsUxv5HhW4EPD2aXDET8l27rAGJ9EOtdls/gW1835p
+sidebar_class_name: "put api-method"
+info_path: docs/apis/wallet/tsg-wallet
+custom_edit_url: null
+---
+
+import ApiTabs from "@theme/ApiTabs";
+import DiscriminatorTabs from "@theme/DiscriminatorTabs";
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import SecuritySchemes from "@theme/ApiExplorer/SecuritySchemes";
+import MimeTabs from "@theme/MimeTabs";
+import ParamsItem from "@theme/ParamsItem";
+import ResponseSamples from "@theme/ResponseSamples";
+import SchemaItem from "@theme/SchemaItem";
+import SchemaTabs from "@theme/SchemaTabs";
+import Heading from "@theme/Heading";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Set default key"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"put"}
+  path={"/api/management/keys/{keyId}/default"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Sets the provided key as default key within this wallet, will remove the default key flag for other keys in this wallet
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<details
+  style={{"marginBottom":"1rem"}}
+  className={"openapi-markdown__details"}
+  data-collapsed={false}
+  open={true}
+>
+  <summary
+    style={{}}
+  >
+    <h3
+      className={"openapi-markdown__details-summary-header-params"}
+    >
+      Path Parameters
+    </h3>
+  </summary><div>
+    <ul>
+      <ParamsItem
+        className={"paramsItem"}
+        param={{"name":"keyId","required":true,"in":"path","schema":{"type":"string"},"enumDescriptions":[]}}
+      >
+        
+      </ParamsItem>
+    </ul>
+  </div>
+</details><div>
+  <div>
+    <ApiTabs
+      label={undefined}
+      id={undefined}
+    >
+      <TabItem
+        label={"200"}
+        value={"200"}
+      >
+        <div>
+          
+          
+          
+          
+          
+        </div><div>
+          
+        </div>
+      </TabItem><TabItem
+        label={"403"}
+        value={"403"}
+      >
+        <div>
+          
+          
+          Forbidden
+          
+          
+        </div><div>
+          <MimeTabs
+            className={"openapi-tabs__mime"}
+            schemaType={"response"}
+          >
+            <TabItem
+              label={"application/json"}
+              value={"application/json"}
+            >
+              <SchemaTabs
+                className={"openapi-tabs__schema"}
+              >
+                <TabItem
+                  label={"Schema"}
+                  value={"Schema"}
+                >
+                  <details
+                    style={{}}
+                    className={"openapi-markdown__details response"}
+                    data-collapsed={false}
+                    open={true}
+                  >
+                    <summary
+                      style={{}}
+                      className={"openapi-markdown__details-summary-response"}
+                    >
+                      <strong>
+                        Schema
+                      </strong>
+                    </summary><div
+                      style={{"textAlign":"left","marginLeft":"1rem"}}
+                    >
+                      
+                    </div><ul
+                      style={{"marginLeft":"1rem"}}
+                    >
+                      <SchemaItem
+                        collapsible={false}
+                        name={"name"}
+                        required={true}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"status"}
+                        required={true}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"code"}
+                        required={true}
+                        schemaName={"number"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"number"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"message"}
+                        required={false}
+                        schemaName={"object"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"object"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"error"}
+                        required={false}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem>
+                    </ul>
+                  </details>
+                </TabItem><TabItem
+                  label={"Example (from schema)"}
+                  value={"Example (from schema)"}
+                >
+                  <ResponseSamples
+                    responseExample={"{\n  \"name\": \"string\",\n  \"status\": \"string\",\n  \"code\": 0,\n  \"message\": {},\n  \"error\": \"string\"\n}"}
+                    language={"json"}
+                  >
+                    
+                  </ResponseSamples>
+                </TabItem>
+              </SchemaTabs>
+            </TabItem>
+          </MimeTabs>
+        </div>
+      </TabItem><TabItem
+        label={"404"}
+        value={"404"}
+      >
+        <div>
+          
+          
+          Resource not found
+          
+          
+        </div><div>
+          <MimeTabs
+            className={"openapi-tabs__mime"}
+            schemaType={"response"}
+          >
+            <TabItem
+              label={"application/json"}
+              value={"application/json"}
+            >
+              <SchemaTabs
+                className={"openapi-tabs__schema"}
+              >
+                <TabItem
+                  label={"Schema"}
+                  value={"Schema"}
+                >
+                  <details
+                    style={{}}
+                    className={"openapi-markdown__details response"}
+                    data-collapsed={false}
+                    open={true}
+                  >
+                    <summary
+                      style={{}}
+                      className={"openapi-markdown__details-summary-response"}
+                    >
+                      <strong>
+                        Schema
+                      </strong>
+                    </summary><div
+                      style={{"textAlign":"left","marginLeft":"1rem"}}
+                    >
+                      
+                    </div><ul
+                      style={{"marginLeft":"1rem"}}
+                    >
+                      <SchemaItem
+                        collapsible={false}
+                        name={"name"}
+                        required={true}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"status"}
+                        required={true}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"code"}
+                        required={true}
+                        schemaName={"number"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"number"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"message"}
+                        required={false}
+                        schemaName={"object"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"object"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"error"}
+                        required={false}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem>
+                    </ul>
+                  </details>
+                </TabItem><TabItem
+                  label={"Example (from schema)"}
+                  value={"Example (from schema)"}
+                >
+                  <ResponseSamples
+                    responseExample={"{\n  \"name\": \"string\",\n  \"status\": \"string\",\n  \"code\": 0,\n  \"message\": {},\n  \"error\": \"string\"\n}"}
+                    language={"json"}
+                  >
+                    
+                  </ResponseSamples>
+                </TabItem>
+              </SchemaTabs>
+            </TabItem>
+          </MimeTabs>
+        </div>
+      </TabItem>
+    </ApiTabs>
+  </div>
+</div>
+      

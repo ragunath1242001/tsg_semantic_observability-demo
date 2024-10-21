@@ -1,0 +1,16 @@
+.features {
+  display: flex;
+  align-items: center;
+  padding: 2rem 0;
+  width: 100%;
+}
+[data-theme="dark"] {
+  svg {
+    fill: #e3e3e3
+  }
+}
+
+.featureSvg {
+  height: 200px;
+  width: 200px;
+}

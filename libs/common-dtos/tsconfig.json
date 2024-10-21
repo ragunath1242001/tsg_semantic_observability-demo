@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
     "paths": {},
-    "module": "ESNext",
     "moduleResolution": "Node",
     "declaration": true,
     "noImplicitAny": false,
@@ -13,7 +12,6 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "useUnknownInCatchVariables": false,
-    "target": "ESNext",
     "sourceMap": true,
     "declarationMap": true,
     "allowJs": false,

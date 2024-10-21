@@ -1,0 +1,212 @@
+---
+id: transfer-management-controller-request-transfer
+title: "Request a new transfer"
+description: "Request a new transfer"
+sidebar_label: "Request a new transfer"
+hide_title: true
+hide_table_of_contents: true
+api: eJytVttuGzcQ/RVin5pAldI86qlG4gYGmliIneTBMASKO9Iy3iVZkmtVEPTvPcO96WY3TqsnLed2ZjhnhtvMOvIyamuu8mya3XppwpL8R2nkiioy8Z010duyJD/39FdNIXY62Shz0suKIvmQTe+2mcEHnMg89xQC5GyhPcFz9DWNMm0ghhO/gTCnoLx2HBunbRzhSmlIDC6CKqiS2XSbxY1j7yF6bVbZbjcaAq48JbDI4UVBLzpDcfX+B2Mtra9kfFmYPzqbH0qmzjUZRS/MZLB6Osg9uwzOmkCB5TktZV3G5u++N3hRuA8UhmXSuVKr1CST74EVtqdB7OI7Kc7ReW6pqJsQvzfiEyzAH5xUNIX6o87Jz3T+nBrghLr6V7X9TnhGLUQZz6Ha7df8rgV/FupZYGdhHAXFHUQdS9oj28xbhWa/aUq64x+U5IpJ1SsFMXCSnQRStddxk4hnZR2Lt6yuGholFs1lXqFlRoeHuYwy/cvuuSEOL/5zQ3EhhaG1iAPTwfLC8oRwNqRblrHA10Q6Pal6YJPOIkzaYcH9SP6xmRB7sFOyTYt04IdWag5G2bK066TiZAhr6/Om89Bf6fRMrtMXFWD6lKC5ggVJj+S7bmf99qiTtcSeZl9nOGvhFzG6E35+Ja+XWi5KEjNwELVKfEKZKadcRCuUraraMM9ILCiuiYyIayu0QeOA2UHYpYgFCbU/KcepabVZ2lTArrNuPohuoM5SRsd4bgsdxLUjczG7EsGRArqG4iIUqHqKRCZ3VpvYhz7wORYf0QudaNBFYYSnEnmkvFj4HpVNJEDyNlply5GQoYsLvcUm6V2qUrtA4pv1DyCk+OBt7QbrMBbXUPNHwULtnMXEedxHgciVfGAhNNg3365Q0qC4vF4GcEhblnYFRCY/NpNRfLnCFWDFScXVCclFZBXUX6EIYj5//clGej2fT8VBWTFetdGppjg1NiZHpg0NGDkGjYrlRpTaPOB0rWMB6gWkXh4Vu2+DscBdMp+ae/xt/Gb8pu1wIEQToB0wrQkznjuiXSoXKB9SfZt0a1+2bRqmk8l6vR7LJB5bv5q0tmHy59W7y083l7/CZlzEqkyNxuwH3fc8PzkxDvqt53akv+MElQMtdy2SbTtM7rBoNI+aYc6BU91AadchjxSMkYKnECy224UM9MWXux0fN7uRJ2KuA5MNE2Mpy0AncPr1lv3yuZ34r8RTb5Cz2B9oc/DWeZRlzVoZ7/KfCn/0Gnku6sF++e+R+wfKMzH7h8//kOjwWHkuyUFrCHnPHz4NUl4oUC5I5jylcemN3YVS5PaBnrxf2Eu/0GbXN7dQ5p1zbgf1q7UXSbPZc366b8QTS6XLKy2wVLyzDrtdN1eoFUqnUdfedgU6xHmy291jSf0DTEob5Q==
+sidebar_class_name: "post api-method"
+info_path: docs/apis/control-plane/tsg-control-plane
+custom_edit_url: null
+---
+
+import ApiTabs from "@theme/ApiTabs";
+import DiscriminatorTabs from "@theme/DiscriminatorTabs";
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import SecuritySchemes from "@theme/ApiExplorer/SecuritySchemes";
+import MimeTabs from "@theme/MimeTabs";
+import ParamsItem from "@theme/ParamsItem";
+import ResponseSamples from "@theme/ResponseSamples";
+import SchemaItem from "@theme/SchemaItem";
+import SchemaTabs from "@theme/SchemaTabs";
+import Heading from "@theme/Heading";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Request a new transfer"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/management/transfers/request"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Request a new transfer
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<details
+  style={{"marginBottom":"1rem"}}
+  className={"openapi-markdown__details"}
+  data-collapsed={false}
+  open={true}
+>
+  <summary
+    style={{}}
+  >
+    <h3
+      className={"openapi-markdown__details-summary-header-params"}
+    >
+      Query Parameters
+    </h3>
+  </summary><div>
+    <ul>
+      <ParamsItem
+        className={"paramsItem"}
+        param={{"name":"address","required":true,"in":"query","description":"Control plane address","schema":{"type":"string"},"enumDescriptions":[]}}
+      >
+        
+      </ParamsItem><ParamsItem
+        className={"paramsItem"}
+        param={{"name":"agreementId","required":true,"in":"query","description":"Agreement ID","schema":{"type":"string"},"enumDescriptions":[]}}
+      >
+        
+      </ParamsItem><ParamsItem
+        className={"paramsItem"}
+        param={{"name":"format","required":true,"in":"query","description":"Format","schema":{"type":"string"},"enumDescriptions":[]}}
+      >
+        
+      </ParamsItem><ParamsItem
+        className={"paramsItem"}
+        param={{"name":"audience","required":true,"in":"query","description":"Audience","schema":{"type":"string"},"enumDescriptions":[]}}
+      >
+        
+      </ParamsItem>
+    </ul>
+  </div>
+</details><div>
+  <div>
+    <ApiTabs
+      label={undefined}
+      id={undefined}
+    >
+      <TabItem
+        label={"default"}
+        value={"default"}
+      >
+        <div>
+          
+          
+          
+          
+          
+        </div><div>
+          <MimeTabs
+            className={"openapi-tabs__mime"}
+            schemaType={"response"}
+          >
+            <TabItem
+              label={"application/json"}
+              value={"application/json"}
+            >
+              <SchemaTabs
+                className={"openapi-tabs__schema"}
+              >
+                <TabItem
+                  label={"Schema"}
+                  value={"Schema"}
+                >
+                  <details
+                    style={{}}
+                    className={"openapi-markdown__details response"}
+                    data-collapsed={false}
+                    open={true}
+                  >
+                    <summary
+                      style={{}}
+                      className={"openapi-markdown__details-summary-response"}
+                    >
+                      <strong>
+                        Schema
+                      </strong>
+                    </summary><div
+                      style={{"textAlign":"left","marginLeft":"1rem"}}
+                    >
+                      
+                    </div><ul
+                      style={{"marginLeft":"1rem"}}
+                    >
+                      <SchemaItem
+                        collapsible={false}
+                        name={"@type"}
+                        required={true}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"dspace:providerPid"}
+                        required={true}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"dspace:consumerPid"}
+                        required={true}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"dspace:agreementId"}
+                        required={true}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"dspace:state"}
+                        required={true}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem>
+                    </ul>
+                  </details>
+                </TabItem><TabItem
+                  label={"Example (from schema)"}
+                  value={"Example (from schema)"}
+                >
+                  <ResponseSamples
+                    responseExample={"{\n  \"@type\": \"string\",\n  \"dspace:providerPid\": \"string\",\n  \"dspace:consumerPid\": \"string\",\n  \"dspace:agreementId\": \"string\",\n  \"dspace:state\": \"string\"\n}"}
+                    language={"json"}
+                  >
+                    
+                  </ResponseSamples>
+                </TabItem>
+              </SchemaTabs>
+            </TabItem>
+          </MimeTabs>
+        </div>
+      </TabItem>
+    </ApiTabs>
+  </div>
+</div>
+      
