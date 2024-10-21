@@ -1,0 +1,183 @@
+---
+id: data-plane-controller-terminate-transfer
+title: "Terminate transfer process"
+description: "Terminate transfer process"
+sidebar_label: "Terminate transfer process"
+hide_title: true
+hide_table_of_contents: true
+api: eJyNVU1v2zgQ/SsET1sgtdIcfdpumrYB+mE0bi5BYYylscVWIrkkFdcQ9N87Q0qyYytBL4nMIYdvZt57bKWx6CAoo28LOZfvIMCiAo3XRgdnqgrdKqCrlYaASwfab9DJC2nBQY0U8XL+0EpNP+i0Kijk8P9GOaRswTV4IZWmiIVQUqxAnztl+TpaHPKJ23cU83mJNch5K8PecjYfnNJb2XU/UlL04T9T7HnH6R05oUUdOATWViqPFWU/Pd/Tnqc265+YB67Dcf1Boefovyl8hoCAews5zmn7oyrQLajSF7YRHN/Uf7GtePE2h9AX0O8A52BPqFXA2k91qjtu/0NfzyT6SaxPkZ3ioDEEFSo8mtyypwY1+zN6D1u8S63ueizeUvrU3KvLK/73DAVGkhXCN3lOyTZNVe0lpwmwZZpFcorITsbiMW+cCvtIQANNKK94U56Ia3nbqqATNh1gFp3cPVwpwoCCOsRXU+lE7tKwIqzxkShM4LnMwKps2O6zVhVdNkJnEqN7TKI4Qhh7kpow4DwwMS1cyE1ldnGLBe93xhWJuETPuFqGYMdqVlDUUVZTqxcnq4cenO4/RNK41giO1D0Ihg/0S0PsvXE1kMzk/YLW+hI46Zm279GpjYJ1hWJBNCBxRpYIjVjQjIMRuanrRrNUUawx7BC1CDsjlPYBNI1BmI0IJYp+oiJCnUVGsLC/HSzh5jfUtsIjCQ+SmFbuWfSJYCeixVTKQZ4PQ+RHx263MXG8g1LuPoiPy+VCHJH3jIil8uKrRf12cSu8xZw6lxxM+JJYEbuAurBG6TC25STrjNIy9VLKN7PL2aVMxgg5GyNhI19EUiPD6w37LRVCqa7i3sZV/TT9PMt2u90MYnhm3Dbrz/rs0+31zZe7m9d0ZlaGuorzYJHUoI8yvyiuJ+WPUgj4O2Q0ZOJw16Npe909kK0rZtygPPqeR8M6iI8EV7JWaXPbrsHjd1d1HS8TT9w+SfIRXCRlNI1Cef6mkW+g8niGa3xV5D/feld9JZ4+WpPQB7fW7NWPUDX8iz5/4T49kh0zpUQoWG0EJAWu03Wvl8m0h4NnDxo72WhPi693S5Zn/zDWiaoOdvwS0994sYklRR+Ja60kxmwbsmuKp5w8RbaiKWsazbWdLm3ChcRzTjN0ITobNeuZlIMJrnJqOjVF0YDGs1saQVjFc9TJrvsD3wwPTg==
+sidebar_class_name: "post api-method"
+info_path: docs/apis/http-data-plane/tsg-http-data-plane
+custom_edit_url: null
+---
+
+import ApiTabs from "@theme/ApiTabs";
+import DiscriminatorTabs from "@theme/DiscriminatorTabs";
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import SecuritySchemes from "@theme/ApiExplorer/SecuritySchemes";
+import MimeTabs from "@theme/MimeTabs";
+import ParamsItem from "@theme/ParamsItem";
+import ResponseSamples from "@theme/ResponseSamples";
+import SchemaItem from "@theme/SchemaItem";
+import SchemaTabs from "@theme/SchemaTabs";
+import Heading from "@theme/Heading";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Terminate transfer process"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/transfers/{id}/terminate"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Terminate transfer process
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<details
+  style={{"marginBottom":"1rem"}}
+  className={"openapi-markdown__details"}
+  data-collapsed={false}
+  open={true}
+>
+  <summary
+    style={{}}
+  >
+    <h3
+      className={"openapi-markdown__details-summary-header-params"}
+    >
+      Path Parameters
+    </h3>
+  </summary><div>
+    <ul>
+      <ParamsItem
+        className={"paramsItem"}
+        param={{"name":"id","required":true,"in":"path","description":"Transfer ID","schema":{"type":"string"},"enumDescriptions":[]}}
+      >
+        
+      </ParamsItem>
+    </ul>
+  </div>
+</details><MimeTabs
+  className={"openapi-tabs__mime"}
+>
+  <TabItem
+    label={"application/json"}
+    value={"application/json-schema"}
+  >
+    <details
+      style={{}}
+      className={"openapi-markdown__details mime"}
+      data-collapsed={false}
+      open={true}
+    >
+      <summary
+        style={{}}
+        className={"openapi-markdown__details-summary-mime"}
+      >
+        <h3
+          className={"openapi-markdown__details-summary-header-body"}
+        >
+          Body
+        </h3><strong
+          className={"openapi-schema__required"}
+        >
+          required
+        </strong>
+      </summary><div
+        style={{"textAlign":"left","marginLeft":"1rem"}}
+      >
+        
+      </div><ul
+        style={{"marginLeft":"1rem"}}
+      >
+        <SchemaItem
+          collapsible={false}
+          name={"@type"}
+          required={true}
+          schemaName={"string"}
+          qualifierMessage={undefined}
+          schema={{"type":"string"}}
+        >
+          
+        </SchemaItem><SchemaItem
+          collapsible={false}
+          name={"dspace:providerPid"}
+          required={true}
+          schemaName={"string"}
+          qualifierMessage={undefined}
+          schema={{"type":"string"}}
+        >
+          
+        </SchemaItem><SchemaItem
+          collapsible={false}
+          name={"dspace:consumerPid"}
+          required={true}
+          schemaName={"string"}
+          qualifierMessage={undefined}
+          schema={{"type":"string"}}
+        >
+          
+        </SchemaItem><SchemaItem
+          collapsible={false}
+          name={"dspace:code"}
+          required={true}
+          schemaName={"string"}
+          qualifierMessage={undefined}
+          schema={{"type":"string"}}
+        >
+          
+        </SchemaItem><SchemaItem
+          collapsible={false}
+          name={"dspace:reason"}
+          required={true}
+          schemaName={"string[]"}
+          qualifierMessage={undefined}
+          schema={{"type":"array","items":{"type":"string"}}}
+        >
+          
+        </SchemaItem>
+      </ul>
+    </details>
+  </TabItem>
+</MimeTabs><div>
+  <div>
+    <ApiTabs
+      label={undefined}
+      id={undefined}
+    >
+      <TabItem
+        label={"202"}
+        value={"202"}
+      >
+        <div>
+          
+          
+          Transfer terminated successfully
+          
+          
+        </div><div>
+          
+        </div>
+      </TabItem>
+    </ApiTabs>
+  </div>
+</div>
+      

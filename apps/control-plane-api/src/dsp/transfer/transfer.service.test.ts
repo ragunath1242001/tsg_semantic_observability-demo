@@ -1,4 +1,4 @@
-import { DataPlaneRequestResponseDto } from "@tsg-dsp/control-plane-dtos";
+import { DataPlaneRequestResponseDto } from "@tsg-dsp/common-dsp";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import {

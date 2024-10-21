@@ -12,8 +12,9 @@ import {
   CredentialOfferStatus,
   CredentialRequest,
   CredentialResponse,
-  OfferGrants,
 } from "@tsg-dsp/wallet-dtos";
+// This needs to be separate since it's an enum. https://stackoverflow.com/questions/38553097/how-to-import-an-enum
+import { OfferGrants } from "@tsg-dsp/wallet-dtos";
 import crypto from "crypto";
 import { AppError } from "../utils/error.js";
 import { plainToInstance } from "class-transformer";

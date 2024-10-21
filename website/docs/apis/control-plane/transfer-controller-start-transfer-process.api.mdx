@@ -1,0 +1,350 @@
+---
+id: transfer-controller-start-transfer-process
+title: "Start transfer process"
+description: "Start transfer process"
+sidebar_label: "Start transfer process"
+hide_title: true
+hide_table_of_contents: true
+api: eJytVktv2zgQ/iuETruFa2dz9KnZNC0CbBujSbuHIDBocWyxoUguOYprGP7vnaEkW/KrAbaXROYMZ755fcN15jwEidrZW5WNs4cgbZxDuHYWgzMGwjSiDNieT4LLIcZskHkZZAkIIWbjx3Vm6Qfd14pEAf6rdACyh6GCQaYtSbzEgmQKYh60Z4cdd+L2PcliXkAps/E6w5VnaxGDtotss3mqjULEv51asca+j5wAg0UWSe+NzlNMo++R/awPTbvZd8iR4wicAdQQWfquFh8gIODRyxzGpP6iFSWCIj2jRnBiVf5STUmUV0oFTun/xwZWeactPrxS7zU6kx6ERluGIFeETyOUvwN43Tyn5S/SVMcUNt1ee2z89K3u2aBGQo2Gjdz0I1zd1y2y+YXVXpIPU3ougR3n73eF3/o967bbd0e7rGO8nap7ntxP5EIuYBdd8hM9Xa2rc3lxwf9ODGaaflAiVjkP/rwyhiv/6nGDH7L0JhWPTGEVuXy1rQSG4aBcMIlsnaZMRciroHGV2GUGMkCgzyemgj7UFKXAFrDfMhSxU+GY1LyLqSmZgcbZSHo9atXjaK3VZpSiZAaC8FIzWgdBSl2dKycrLC67HV8fDLK5ccuk4mWMSxdUnQaqfTrNaz71RlqYSlUmSjxyOOgfMj+kr33tnaBOYZugJvWs3xy1sg8ulJIKln2b0FkDv0D0B6T8DYKeazkzICbUKVTmVFxhARR1AjqRu7KsLBcdxAxwCWAFLp3QlhJpKf3CzQUWIBrMIkEdph7nFvmy4/KbXX+860/3cco9kPaY9kC6R7CnXPSZ86T4jKjLk4+nHTVrcv+4IbgtsT1xprSdu9Rq7VjffxTNXhaTVPuDdVroKO482KvJrYgecqpjPZkiFtSfqSYt4m2RejaH4hNNSyva6VILiQBGYt0BLGQOS/CpTRy63JmBkLH1S3qzVdK7yY32EcS/LjxTdOJjcJXf3Y5DcUdqYc9ZrLx3lNCXLgryXMpnFpIG2+b6ilxaakMhldqBo7ClcQtCZNX+NYni6y01Kz1eZM7ZickEsgp1ak5JENPpm88O4c10Oha9tCqYa6tTTunUOkyGbOOaYChi8BzNShhtn+l0qbEQUkQK3ewlezswQ0G1ZOap6/jX8GJ40XABIaQmoHYgkgXibO6IpouuKH0U6mXSrYJpBjqOR6PlcjmUSTx0YTFq7sbRP7fXN5/vb97SnWGBpUkjyfxYStuxfJJTe/22ZUGEHziizBGBbRok64ZuH2k/aCacLbcPsnHaYTXnEs8WTM+kuF7PZISvwWw2fEwUEVY1E7/IkPgojZbSkb9p2ufSRDjAtF1N2R9fmn36p+g/NI/Cbt82lvdbO5D0+Qyr+mFLU0lgQaq0idaN4Lp297Z5D7QXD7biZtDeuKLt5/Gs7lNne03u7h+YxZuHb+kU3wlyyS9t+ptAuhR+4rh0ts6ovxYVLX6S1za50rytOnXbWxEpqqNpoNIkjQf3DJbK02YF+Xeiq81P/KhRTw==
+sidebar_class_name: "post api-method"
+info_path: docs/apis/control-plane/tsg-control-plane
+custom_edit_url: null
+---
+
+import ApiTabs from "@theme/ApiTabs";
+import DiscriminatorTabs from "@theme/DiscriminatorTabs";
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import SecuritySchemes from "@theme/ApiExplorer/SecuritySchemes";
+import MimeTabs from "@theme/MimeTabs";
+import ParamsItem from "@theme/ParamsItem";
+import ResponseSamples from "@theme/ResponseSamples";
+import SchemaItem from "@theme/SchemaItem";
+import SchemaTabs from "@theme/SchemaTabs";
+import Heading from "@theme/Heading";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Start transfer process"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/transfers/{id}/start"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Start transfer process
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<details
+  style={{"marginBottom":"1rem"}}
+  className={"openapi-markdown__details"}
+  data-collapsed={false}
+  open={true}
+>
+  <summary
+    style={{}}
+  >
+    <h3
+      className={"openapi-markdown__details-summary-header-params"}
+    >
+      Path Parameters
+    </h3>
+  </summary><div>
+    <ul>
+      <ParamsItem
+        className={"paramsItem"}
+        param={{"name":"id","required":true,"in":"path","description":"Transfer ID","schema":{"type":"string"},"enumDescriptions":[]}}
+      >
+        
+      </ParamsItem>
+    </ul>
+  </div>
+</details><MimeTabs
+  className={"openapi-tabs__mime"}
+>
+  <TabItem
+    label={"application/json"}
+    value={"application/json-schema"}
+  >
+    <details
+      style={{}}
+      className={"openapi-markdown__details mime"}
+      data-collapsed={false}
+      open={true}
+    >
+      <summary
+        style={{}}
+        className={"openapi-markdown__details-summary-mime"}
+      >
+        <h3
+          className={"openapi-markdown__details-summary-header-body"}
+        >
+          Body
+        </h3><strong
+          className={"openapi-schema__required"}
+        >
+          required
+        </strong>
+      </summary><div
+        style={{"textAlign":"left","marginLeft":"1rem"}}
+      >
+        
+      </div><ul
+        style={{"marginLeft":"1rem"}}
+      >
+        <SchemaItem
+          collapsible={false}
+          name={"@type"}
+          required={true}
+          schemaName={"string"}
+          qualifierMessage={undefined}
+          schema={{"type":"string"}}
+        >
+          
+        </SchemaItem><SchemaItem
+          collapsible={false}
+          name={"dspace:providerPid"}
+          required={true}
+          schemaName={"string"}
+          qualifierMessage={undefined}
+          schema={{"type":"string"}}
+        >
+          
+        </SchemaItem><SchemaItem
+          collapsible={false}
+          name={"dspace:consumerPid"}
+          required={true}
+          schemaName={"string"}
+          qualifierMessage={undefined}
+          schema={{"type":"string"}}
+        >
+          
+        </SchemaItem><SchemaItem
+          collapsible={true}
+          className={"schemaItem"}
+        >
+          <details
+            style={{}}
+            className={"openapi-markdown__details"}
+          >
+            <summary
+              style={{}}
+            >
+              <span
+                className={"openapi-schema__container"}
+              >
+                <strong
+                  className={"openapi-schema__property"}
+                >
+                  dspace:dataAddress
+                </strong><span
+                  className={"openapi-schema__name"}
+                >
+                   object
+                </span>
+              </span>
+            </summary><div
+              style={{"marginLeft":"1rem"}}
+            >
+              <SchemaItem
+                collapsible={false}
+                name={"@type"}
+                required={true}
+                schemaName={"string"}
+                qualifierMessage={undefined}
+                schema={{"type":"string"}}
+              >
+                
+              </SchemaItem><SchemaItem
+                collapsible={false}
+                name={"dspace:endpointType"}
+                required={true}
+                schemaName={"string"}
+                qualifierMessage={undefined}
+                schema={{"type":"string"}}
+              >
+                
+              </SchemaItem><SchemaItem
+                collapsible={false}
+                name={"dspace:endpoint"}
+                required={true}
+                schemaName={"string"}
+                qualifierMessage={undefined}
+                schema={{"type":"string"}}
+              >
+                
+              </SchemaItem><SchemaItem
+                collapsible={true}
+                className={"schemaItem"}
+              >
+                <details
+                  style={{}}
+                  className={"openapi-markdown__details"}
+                >
+                  <summary
+                    style={{}}
+                  >
+                    <span
+                      className={"openapi-schema__container"}
+                    >
+                      <strong
+                        className={"openapi-schema__property"}
+                      >
+                        dspace:endpointProperties
+                      </strong><span
+                        className={"openapi-schema__name"}
+                      >
+                         object[]
+                      </span><span
+                        className={"openapi-schema__divider"}
+                      >
+                        
+                      </span><span
+                        className={"openapi-schema__required"}
+                      >
+                        required
+                      </span>
+                    </span>
+                  </summary><div
+                    style={{"marginLeft":"1rem"}}
+                  >
+                    <li>
+                      <div
+                        style={{"fontSize":"var(--ifm-code-font-size)","opacity":"0.6","marginLeft":"-.5rem","paddingBottom":".5rem"}}
+                      >
+                        Array [
+                      </div>
+                    </li><SchemaItem
+                      collapsible={false}
+                      name={"@type"}
+                      required={true}
+                      schemaName={"string"}
+                      qualifierMessage={undefined}
+                      schema={{"type":"string"}}
+                    >
+                      
+                    </SchemaItem><SchemaItem
+                      collapsible={false}
+                      name={"dspace:name"}
+                      required={true}
+                      schemaName={"string"}
+                      qualifierMessage={undefined}
+                      schema={{"type":"string"}}
+                    >
+                      
+                    </SchemaItem><SchemaItem
+                      collapsible={false}
+                      name={"dspace:value"}
+                      required={true}
+                      schemaName={"string"}
+                      qualifierMessage={undefined}
+                      schema={{"type":"string"}}
+                    >
+                      
+                    </SchemaItem><li>
+                      <div
+                        style={{"fontSize":"var(--ifm-code-font-size)","opacity":"0.6","marginLeft":"-.5rem"}}
+                      >
+                        ]
+                      </div>
+                    </li>
+                  </div>
+                </details>
+              </SchemaItem>
+            </div>
+          </details>
+        </SchemaItem>
+      </ul>
+    </details>
+  </TabItem>
+</MimeTabs><div>
+  <div>
+    <ApiTabs
+      label={undefined}
+      id={undefined}
+    >
+      <TabItem
+        label={"200"}
+        value={"200"}
+      >
+        <div>
+          
+          
+          Transfer started successfully
+          
+          
+        </div><div>
+          <MimeTabs
+            className={"openapi-tabs__mime"}
+            schemaType={"response"}
+          >
+            <TabItem
+              label={"application/json"}
+              value={"application/json"}
+            >
+              <SchemaTabs
+                className={"openapi-tabs__schema"}
+              >
+                <TabItem
+                  label={"Schema"}
+                  value={"Schema"}
+                >
+                  <details
+                    style={{}}
+                    className={"openapi-markdown__details response"}
+                    data-collapsed={false}
+                    open={true}
+                  >
+                    <summary
+                      style={{}}
+                      className={"openapi-markdown__details-summary-response"}
+                    >
+                      <strong>
+                        Schema
+                      </strong>
+                    </summary><div
+                      style={{"textAlign":"left","marginLeft":"1rem"}}
+                    >
+                      
+                    </div><ul
+                      style={{"marginLeft":"1rem"}}
+                    >
+                      any
+                    </ul>
+                  </details>
+                </TabItem><TabItem
+                  label={"Example (from schema)"}
+                  value={"Example (from schema)"}
+                >
+                  <ResponseSamples
+                    responseExample={"{\n  \"status\": \"success\"\n}"}
+                    language={"json"}
+                  >
+                    
+                  </ResponseSamples>
+                </TabItem>
+              </SchemaTabs>
+            </TabItem>
+          </MimeTabs>
+        </div>
+      </TabItem>
+    </ApiTabs>
+  </div>
+</div>
+      

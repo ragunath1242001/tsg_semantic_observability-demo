@@ -18,7 +18,7 @@ import {
   PresentationDefinitionDto,
   PresentationResponseDto,
 } from "../presentation.schemas.js";
-import { ApiForbiddenResponseDefault } from "../../utils/swagger.js";
+import { ApiForbiddenResponseDefault } from "@tsg-dsp/common-dtos";
 
 @Controller("iatp/holder")
 @ApiTags("Presentation IATP")

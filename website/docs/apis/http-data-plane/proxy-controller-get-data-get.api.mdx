@@ -1,0 +1,130 @@
+---
+id: proxy-controller-get-data-get
+title: "Proxy a request"
+description: "This endpoint is used if the HTTP Data Plane needs to serve as a proxy."
+sidebar_label: "Proxy a request"
+hide_title: true
+hide_table_of_contents: true
+api: eJytVMFu2zAM/RVBpw3w7KzH3Iou6woMm7FmvRRFwdh0LMyWNElOmhn+95Gyk3VNthXFTpYpinzke2QvjUUHQRl9Vcq5zJ152F0YHZxpGnT3awzvIAB/ZSJL9IVTlr3Jd1krL1CX1igdBJ07j6VQlQg1ig/LZS74qcgb0Cg0YulFMMKj26AAL0BYTpYKCmzBQYsBnZfz215q+qEEqqQrh9875ZDABddhIhWnthDqYzwOtK/QCVWiDqpS6MjHFzW2IOe9DDvLUX1wSq/lMCSHROddqI1TP2If/pSzRiifHXEC+HzwORmFqYTDAtWGwgmwtlHFHtIh6TDccVxvjfboGcXZbMaf3+MxGhlgzQ0dWZX0jnpcG+Z55DMimcsMrMoiGVmvyiHr2T5wUuYqcnLHP0XnVNhdM5IxswFq3NmjTkyGRFaN2UYXC95vjSv57AsSW7TWIdiSxGFZG/dQtmOHT1iTJ9bD6cj/180wcPErBEd8xbyMmB5Mpv3de+NaCGS/yck2lcBBj9i5QUd6glWDIqfek7wiL1HVpHmSdWHattPMF4oVhi2iFmFrhNI+gC7QM7k8GMU4XCJCTSNNSlcmNlGFhiEsry+fzs/p4ftsUZ/nV8JbLAjfKBbha+p9zLUfzkPyJ1FTCssEjyHfprN0RhZGCEVgrSWSJIgkNIa3HxYL1E9xFn0710w98/Ms2263KcTr1Lh1Nr312ceri8Wn68UbepPWoW1i1db40IJ+FDnKlPYCTw36o4XTR2TU+/+7eybeAz6EjEghzQ1TXf00ILeSBoTHJY5RIudxMc3jJQ1GTYWwU9+vwONX1wwDm6kGtxtHZwMuiicut1J5PtNEVNB4/EuRr75M6+O1OL3bTkKfjKAZ6gaajv/o+A13407lNfUiEP/aUS+AE3s43A2PVtPlYkn6+Ak+w0Ph
+sidebar_class_name: "get api-method"
+info_path: docs/apis/http-data-plane/tsg-http-data-plane
+custom_edit_url: null
+---
+
+import ApiTabs from "@theme/ApiTabs";
+import DiscriminatorTabs from "@theme/DiscriminatorTabs";
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import SecuritySchemes from "@theme/ApiExplorer/SecuritySchemes";
+import MimeTabs from "@theme/MimeTabs";
+import ParamsItem from "@theme/ParamsItem";
+import ResponseSamples from "@theme/ResponseSamples";
+import SchemaItem from "@theme/SchemaItem";
+import SchemaTabs from "@theme/SchemaTabs";
+import Heading from "@theme/Heading";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Proxy a request"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/proxy/{id}/{path}"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+This endpoint is used if the HTTP Data Plane needs to serve as a proxy. 
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<details
+  style={{"marginBottom":"1rem"}}
+  className={"openapi-markdown__details"}
+  data-collapsed={false}
+  open={true}
+>
+  <summary
+    style={{}}
+  >
+    <h3
+      className={"openapi-markdown__details-summary-header-params"}
+    >
+      Path Parameters
+    </h3>
+  </summary><div>
+    <ul>
+      <ParamsItem
+        className={"paramsItem"}
+        param={{"name":"id","required":true,"in":"path","description":"Transfer identifier","schema":{"type":"string"},"enumDescriptions":[]}}
+      >
+        
+      </ParamsItem><ParamsItem
+        className={"paramsItem"}
+        param={{"name":"path","required":true,"in":"path","description":"Path of receiving application","schema":{},"enumDescriptions":[]}}
+      >
+        
+      </ParamsItem>
+    </ul>
+  </div>
+</details><details
+  style={{"marginBottom":"1rem"}}
+  className={"openapi-markdown__details"}
+  data-collapsed={false}
+  open={true}
+>
+  <summary
+    style={{}}
+  >
+    <h3
+      className={"openapi-markdown__details-summary-header-params"}
+    >
+      Header Parameters
+    </h3>
+  </summary><div>
+    <ul>
+      <ParamsItem
+        className={"paramsItem"}
+        param={{"name":"Authorization","required":true,"in":"header","schema":{"type":"string"},"enumDescriptions":[]}}
+      >
+        
+      </ParamsItem>
+    </ul>
+  </div>
+</details><div>
+  <div>
+    <ApiTabs
+      label={undefined}
+      id={undefined}
+    >
+      <TabItem
+        label={"200"}
+        value={"200"}
+      >
+        <div>
+          
+          
+          
+          
+          
+        </div><div>
+          
+        </div>
+      </TabItem>
+    </ApiTabs>
+  </div>
+</div>
+      

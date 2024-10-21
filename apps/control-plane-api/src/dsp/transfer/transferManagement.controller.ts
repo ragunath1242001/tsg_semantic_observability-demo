@@ -1,4 +1,4 @@
-import { DataPlaneAddress, TransferStatus } from "@tsg-dsp/control-plane-dtos";
+import { TransferStatus } from "@tsg-dsp/control-plane-dtos";
 import {
   Body,
   Controller,
@@ -26,11 +26,12 @@ import {
   ApiOAuth2,
 } from "@nestjs/swagger";
 import {
+  DataPlaneAddressDto,
   DataPlaneAddressSchema,
   TransferDetailSchema,
   TransferProcessSchema,
   TransferStatusDto,
-} from "./transfer.schemas";
+} from "@tsg-dsp/common-dtos";
 
 @ApiTags("Transfers Management")
 @ApiOAuth2(["controlplane_admin", "controlplane_dataplane"])
@@ -121,7 +122,7 @@ export class TransferManagementController {
   })
   async startTransfer(
     @Param("processId") processId: string,
-    @Body() body?: DataPlaneAddress
+    @Body() body?: DataPlaneAddressDto
   ): Promise<{ status: string }> {
     // TODO: Validate body
     this.logger.log(

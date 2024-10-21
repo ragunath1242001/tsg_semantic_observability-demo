@@ -26,7 +26,6 @@ async function bootstrap() {
       "Git Repository",
       "https://gitlab.com/tno-tsg/dataspace-protocol/tno-security-gateway"
     )
-    .setVersion("1.0")
     .addTag("Health", "Health Controller")
     .addTag("Settings", "Settings Controller")
     .addTag("Authentication", "Authentication Controller")
@@ -63,7 +62,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
 
   await fs.writeFile(
-    "../../docs/apps/control-plane/openapi.yaml",
+    "../../website/docs/apps/control-plane/openapi.yaml",
     stringify(document)
   );
   process.exit();

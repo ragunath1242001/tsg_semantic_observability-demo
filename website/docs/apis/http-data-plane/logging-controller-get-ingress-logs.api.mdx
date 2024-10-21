@@ -1,0 +1,278 @@
+---
+id: logging-controller-get-ingress-logs
+title: "Get ingress logs"
+description: "Get ingress logs"
+sidebar_label: "Get ingress logs"
+hide_title: true
+hide_table_of_contents: true
+api: eJy9VsFOGzEQ/RXL5zQbkHrhhgKlSJRGIuWCEHJ2J7uGXdvYXkIU5d87YzubJSESbVFvsWc8b/z85m1WXBuwwkutLgt+wq90WUpVjrXyVtc12IcS/KUqLTiHMccH3AgrGvBgHT+5W3GFCzyobQEWoxaeW2kBa81F7WDApcLocwt2iVGXV9AIfrLiBcxFW3uMnZ3fjDEEqm2wID8Nq7B5P+B+aai68xa74uv1oAM0ooQ/wGukkg0hHA222EcdAILPsP8+gBdPfwvQiNf4++uojzZ6F24PYIfRTyfwEGBi9N8JPASQGP1UAu/phZzRyoGjKsejUWTH5VYa0jVmI06OigblKSaMqWUeNJ89OkpY9dpIAHr2CLknuVuaEC9j+UL4fpawVtAtpIfG7e0jGRwn5QNlA/XbrM3tBpGy9wKEONZtvNFelOodjlbCTSy8SN26yVvgmdY1CJWSruHVH0pY9yfjbqOdzQt3zfVb2Qd+i0Jqlb4mGFr/QObOvN6DCk+QiN05EtPX60BcSf60MTTKfKuJC/BMRmNjdXQ2LFlpckH0vNC5r3CRCSOzRiis36CCsjpWzNJh0jDYl2iH97TIWyv98oYUFV9Xi9ZXx30VxI0Bn9d6kQTg3AInPmoRpRF2K+8NXdfUQsGDKJowOu/tDnZ2u197+dtIJGoGwqIsNjMQHjlubWLftG0EGc3thHcDSEX5Lqe3YOVcilkNDN/ZIVthypgCKKBgXrNcN02raPqAzcAvABTzC40v4bxQOTim58xXwPL4BWKh1WEQgVRzHUhMLz69uWDfp9MJO8MrsUm4025H00o69tOAOp1cMmcgx/7i6DNXIfcBC1RhtFS+A9+pOsSy9MCx5NFwNBwlRxE5TRj2hoYCaEHUXjK7UyOQT3YccltbJ87cSZYtFouhCOGhtmWWzrrs6nJ8fn1z/gXPDCvf1OHWRjuP6utVfke5by7dyczjZGVIoAwDHXpYJVXfoQtKknyna1wkZQeLjtpGPVeIT/mr1Uw4+GXr9Zq2o3/TH4BCOnrxrds/wbL3+XoRdUvNcPoyHMhN7vGR1OQwH0n9Xx3c08IG2ZMFkHeCIGhiJ545zXMwvndq7xtEVTr/uTif4tv/Bi79PQ4=
+sidebar_class_name: "get api-method"
+info_path: docs/apis/http-data-plane/tsg-http-data-plane
+custom_edit_url: null
+---
+
+import ApiTabs from "@theme/ApiTabs";
+import DiscriminatorTabs from "@theme/DiscriminatorTabs";
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import SecuritySchemes from "@theme/ApiExplorer/SecuritySchemes";
+import MimeTabs from "@theme/MimeTabs";
+import ParamsItem from "@theme/ParamsItem";
+import ResponseSamples from "@theme/ResponseSamples";
+import SchemaItem from "@theme/SchemaItem";
+import SchemaTabs from "@theme/SchemaTabs";
+import Heading from "@theme/Heading";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Get ingress logs"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/management/logging/ingress"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Get ingress logs
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<details
+  style={{"marginBottom":"1rem"}}
+  className={"openapi-markdown__details"}
+  data-collapsed={false}
+  open={true}
+>
+  <summary
+    style={{}}
+  >
+    <h3
+      className={"openapi-markdown__details-summary-header-params"}
+    >
+      Query Parameters
+    </h3>
+  </summary><div>
+    <ul>
+      <ParamsItem
+        className={"paramsItem"}
+        param={{"name":"order","required":false,"in":"query","schema":{"default":"DESC","enum":["ASC","DESC"],"type":"string"},"enumDescriptions":[]}}
+      >
+        
+      </ParamsItem><ParamsItem
+        className={"paramsItem"}
+        param={{"name":"page","required":false,"in":"query","schema":{"minimum":1,"default":1,"type":"number"},"enumDescriptions":[]}}
+      >
+        
+      </ParamsItem><ParamsItem
+        className={"paramsItem"}
+        param={{"name":"take","required":false,"in":"query","schema":{"minimum":1,"maximum":50,"default":10,"type":"number"},"enumDescriptions":[]}}
+      >
+        
+      </ParamsItem><ParamsItem
+        className={"paramsItem"}
+        param={{"required":false,"name":"order","in":"query","schema":{"default":"DESC","enum":["ASC","DESC"],"type":"string"},"enumDescriptions":[]}}
+      >
+        
+      </ParamsItem><ParamsItem
+        className={"paramsItem"}
+        param={{"required":false,"name":"page","in":"query","schema":{"minimum":1,"default":1,"type":"number"},"enumDescriptions":[]}}
+      >
+        
+      </ParamsItem><ParamsItem
+        className={"paramsItem"}
+        param={{"required":false,"name":"take","in":"query","schema":{"minimum":1,"maximum":50,"default":10,"type":"number"},"enumDescriptions":[]}}
+      >
+        
+      </ParamsItem>
+    </ul>
+  </div>
+</details><div>
+  <div>
+    <ApiTabs
+      label={undefined}
+      id={undefined}
+    >
+      <TabItem
+        label={"200"}
+        value={"200"}
+      >
+        <div>
+          
+          
+          
+          
+          
+        </div><div>
+          <MimeTabs
+            className={"openapi-tabs__mime"}
+            schemaType={"response"}
+          >
+            <TabItem
+              label={"application/json"}
+              value={"application/json"}
+            >
+              <SchemaTabs
+                className={"openapi-tabs__schema"}
+              >
+                <TabItem
+                  label={"Schema"}
+                  value={"Schema"}
+                >
+                  <details
+                    style={{}}
+                    className={"openapi-markdown__details response"}
+                    data-collapsed={false}
+                    open={true}
+                  >
+                    <summary
+                      style={{}}
+                      className={"openapi-markdown__details-summary-response"}
+                    >
+                      <strong>
+                        Schema
+                      </strong>
+                    </summary><div
+                      style={{"textAlign":"left","marginLeft":"1rem"}}
+                    >
+                      
+                    </div><ul
+                      style={{"marginLeft":"1rem"}}
+                    >
+                      <SchemaItem
+                        collapsible={false}
+                        name={"data"}
+                        required={true}
+                        schemaName={"array[]"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"array","items":{"type":"array"}}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={true}
+                        className={"schemaItem"}
+                      >
+                        <details
+                          style={{}}
+                          className={"openapi-markdown__details"}
+                        >
+                          <summary
+                            style={{}}
+                          >
+                            <span
+                              className={"openapi-schema__container"}
+                            >
+                              <strong
+                                className={"openapi-schema__property"}
+                              >
+                                meta
+                              </strong><span
+                                className={"openapi-schema__name"}
+                              >
+                                 object
+                              </span><span
+                                className={"openapi-schema__divider"}
+                              >
+                                
+                              </span><span
+                                className={"openapi-schema__required"}
+                              >
+                                required
+                              </span>
+                            </span>
+                          </summary><div
+                            style={{"marginLeft":"1rem"}}
+                          >
+                            <SchemaItem
+                              collapsible={false}
+                              name={"page"}
+                              required={true}
+                              schemaName={"number"}
+                              qualifierMessage={undefined}
+                              schema={{"type":"number"}}
+                            >
+                              
+                            </SchemaItem><SchemaItem
+                              collapsible={false}
+                              name={"take"}
+                              required={true}
+                              schemaName={"number"}
+                              qualifierMessage={undefined}
+                              schema={{"type":"number"}}
+                            >
+                              
+                            </SchemaItem><SchemaItem
+                              collapsible={false}
+                              name={"itemCount"}
+                              required={true}
+                              schemaName={"number"}
+                              qualifierMessage={undefined}
+                              schema={{"type":"number"}}
+                            >
+                              
+                            </SchemaItem><SchemaItem
+                              collapsible={false}
+                              name={"pageCount"}
+                              required={true}
+                              schemaName={"number"}
+                              qualifierMessage={undefined}
+                              schema={{"type":"number"}}
+                            >
+                              
+                            </SchemaItem><SchemaItem
+                              collapsible={false}
+                              name={"hasPreviousPage"}
+                              required={true}
+                              schemaName={"boolean"}
+                              qualifierMessage={undefined}
+                              schema={{"type":"boolean"}}
+                            >
+                              
+                            </SchemaItem><SchemaItem
+                              collapsible={false}
+                              name={"hasNextPage"}
+                              required={true}
+                              schemaName={"boolean"}
+                              qualifierMessage={undefined}
+                              schema={{"type":"boolean"}}
+                            >
+                              
+                            </SchemaItem>
+                          </div>
+                        </details>
+                      </SchemaItem>
+                    </ul>
+                  </details>
+                </TabItem><TabItem
+                  label={"Example (from schema)"}
+                  value={"Example (from schema)"}
+                >
+                  <ResponseSamples
+                    responseExample={"{\n  \"data\": [\n    [\n      null\n    ]\n  ],\n  \"meta\": {\n    \"page\": 0,\n    \"take\": 0,\n    \"itemCount\": 0,\n    \"pageCount\": 0,\n    \"hasPreviousPage\": true,\n    \"hasNextPage\": true\n  }\n}"}
+                    language={"json"}
+                  >
+                    
+                  </ResponseSamples>
+                </TabItem>
+              </SchemaTabs>
+            </TabItem>
+          </MimeTabs>
+        </div>
+      </TabItem>
+    </ApiTabs>
+  </div>
+</div>
+      

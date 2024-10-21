@@ -1,0 +1,371 @@
+---
+id: issuer-controller-revoke-offer
+title: "Revoke offer"
+description: "Revokes an existing credential offer, so that it cannot be used anymore by the holder"
+sidebar_label: "Revoke offer"
+hide_title: true
+hide_table_of_contents: true
+api: eJy1VltvIjcU/ivWPO2uWEjTPKGqUpSkFVK1WS3Z9iGNkJk5gDeDPWt7mFDEf+937IGZ4VZVavMQwOf2nYvP501iCrLSK6NHWTJMRs6VZO+M9tbkOdmJpZV5pcfZjGzSSzJyqVUFq0P5S5A5IbWgN+W80nORWspIeyVzYdioJ5wRfiG9UF6kUmvjxZRE6SiD3XppLInpGhokFibPQpRCWrkkT9Ylw+dNovED0VQGkaXvpUKIZOhtSb1EMY5C+gVkLl3QUibDTeLXBVvocjmFw+32hQ1dYbQjx/Lrqyv+6GYDDynyBniWyaLIVRoKM/jmWGFzHMBMv1HqGbHlMnoV3QPpMQh4tyQ9BdnM2KVEnCTDyUevkGBvZ+C8RSHZoLB0W/qFseovyu5MRi23jVYs2yg7KWza8RREF1XO+Igj0JZNjclJ6q71uIzV+Hfl2YXZtnv7zDpomlc+Z6V7msky93eHse69OWXZlPpUDVsVO6pPk+ypzFqIGijhaoy99KWLcBjQzdWPxwP2i7FTlcHsv5u0eDVO9MwFQKf73R2kZj6X5Jyc03FUyMhaY/+5bQHPPnodq1W2B3azKxNsvZzzHU8eC9Kje3EjfierZkpOcxJNiQVvJanT4MpRWlrl12E1GIneXrOHSmJd+clSaqQwwY9J0z+XvPAKwEpZGF5yRRkqyVtjmAxkoQZGZTerFJ/czMFGZdtBHAROhuwqrqJW9DE3KPZgh6GpWjzoJbPcVEGlkM5VxmaxtWhgOK0hrxRVk4wvxdFJ7yCtV1q7Rq192OvYmkp30h9elHZtD0s3vCg9RHg28hn5of3Z6Gfke3vFxHXa9FjUzRgrwkESbuBhvl1ZPbVKz0zodz3VT+NfxR/B6Igin8BrjVgokKUYj0cixojECFYUASMIMRPOMyWumnvQAh4U4m4THWTCmz2rVsovlBZgFilcIVNy/Z+mVgx+jv//1AJ/jKtqMIGAQMdeLLFlFfiIrMioyM16iRCuF3wKo0m8M1YwZ7/vZCBTDydAYUuHXzrFvhXgOCTbwAjglc7UqsSVjuYuaJFM4X0WHgHgfq9SVUjEhXY4a3z0xSMfAXKBaQjCFAjt3mH91OBquk7lKpXnXKKU1bJgeQ+3EVndHZljQZTzBT9VEIKfKrvlFv3CCr2ReSXXjjXoDZnn61CZENNyGu2wyCDWIMI/bsRk8uGT8fRhMhmiKfDJq/D28wj1nymtuLs7LIopI2MsodkZcIXoudKvdd8RzGEv5/uUlMYu1lw4jCavsTiWP/SvahKSgbEx1OAgwvuoYZXkFpBRpuugW9ocRwvvCzccDKqq6ssg7hs7H9S2bvDb6O7h0/jhI2z6C7/MA0EUxnlc35bn+HCMD8TDK7NpuPF/e2DWi9rTmx8UuVThJRMy3NS08AxaVtCsiYG/1WCH9Ts0sMMLPyacZ/3NZiodfbX5dsvH3zEM68gZK2nDTQ6MlSnH37HtZ5gPupD8uy/17L0X5yDXh0iTuyvzkuI7FpQQH8zbF34gkuS0OXoU3KYpFb5lcvQE6dDl569P0GVSO0VyewrenIZzwGnimLzEBXISF8hHXKQWcZE4xDluEOe3/66ugcFR/jMJ78j+gHGi7dxisU2CHXqz3f4NveHKKg==
+sidebar_class_name: "put api-method"
+info_path: docs/apis/wallet/tsg-wallet
+custom_edit_url: null
+---
+
+import ApiTabs from "@theme/ApiTabs";
+import DiscriminatorTabs from "@theme/DiscriminatorTabs";
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import SecuritySchemes from "@theme/ApiExplorer/SecuritySchemes";
+import MimeTabs from "@theme/MimeTabs";
+import ParamsItem from "@theme/ParamsItem";
+import ResponseSamples from "@theme/ResponseSamples";
+import SchemaItem from "@theme/SchemaItem";
+import SchemaTabs from "@theme/SchemaTabs";
+import Heading from "@theme/Heading";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Revoke offer"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"put"}
+  path={"/api/oid4vci/offer/{id}/revoke"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Revokes an existing credential offer, so that it cannot be used anymore by the holder
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<details
+  style={{"marginBottom":"1rem"}}
+  className={"openapi-markdown__details"}
+  data-collapsed={false}
+  open={true}
+>
+  <summary
+    style={{}}
+  >
+    <h3
+      className={"openapi-markdown__details-summary-header-params"}
+    >
+      Path Parameters
+    </h3>
+  </summary><div>
+    <ul>
+      <ParamsItem
+        className={"paramsItem"}
+        param={{"name":"id","required":true,"in":"path","schema":{"type":"number"},"enumDescriptions":[]}}
+      >
+        
+      </ParamsItem>
+    </ul>
+  </div>
+</details><div>
+  <div>
+    <ApiTabs
+      label={undefined}
+      id={undefined}
+    >
+      <TabItem
+        label={"200"}
+        value={"200"}
+      >
+        <div>
+          
+          
+          
+          
+          
+        </div><div>
+          <MimeTabs
+            className={"openapi-tabs__mime"}
+            schemaType={"response"}
+          >
+            <TabItem
+              label={"application/json"}
+              value={"application/json"}
+            >
+              <SchemaTabs
+                className={"openapi-tabs__schema"}
+              >
+                <TabItem
+                  label={"Schema"}
+                  value={"Schema"}
+                >
+                  <details
+                    style={{}}
+                    className={"openapi-markdown__details response"}
+                    data-collapsed={false}
+                    open={true}
+                  >
+                    <summary
+                      style={{}}
+                      className={"openapi-markdown__details-summary-response"}
+                    >
+                      <strong>
+                        Schema
+                      </strong>
+                    </summary><div
+                      style={{"textAlign":"left","marginLeft":"1rem"}}
+                    >
+                      
+                    </div><ul
+                      style={{"marginLeft":"1rem"}}
+                    >
+                      <SchemaItem
+                        collapsible={false}
+                        name={"id"}
+                        required={true}
+                        schemaName={"number"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"number"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"created"}
+                        required={true}
+                        schemaName={"date-time"}
+                        qualifierMessage={undefined}
+                        schema={{"format":"date-time","type":"string"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"preAuthorizedCode"}
+                        required={true}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"holderId"}
+                        required={true}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"credentialType"}
+                        required={true}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"credentialId"}
+                        required={false}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"revoked"}
+                        required={true}
+                        schemaName={"boolean"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"boolean"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={true}
+                        className={"schemaItem"}
+                      >
+                        <details
+                          style={{}}
+                          className={"openapi-markdown__details"}
+                        >
+                          <summary
+                            style={{}}
+                          >
+                            <span
+                              className={"openapi-schema__container"}
+                            >
+                              <strong
+                                className={"openapi-schema__property"}
+                              >
+                                credentialSubject
+                              </strong><span
+                                className={"openapi-schema__name"}
+                              >
+                                 object
+                              </span><span
+                                className={"openapi-schema__divider"}
+                              >
+                                
+                              </span><span
+                                className={"openapi-schema__required"}
+                              >
+                                required
+                              </span>
+                            </span>
+                          </summary><div
+                            style={{"marginLeft":"1rem"}}
+                          >
+                            <SchemaItem
+                              collapsible={false}
+                              name={"id"}
+                              required={true}
+                              schemaName={"string"}
+                              qualifierMessage={undefined}
+                              schema={{"type":"string"}}
+                            >
+                              
+                            </SchemaItem>
+                          </div>
+                        </details>
+                      </SchemaItem>
+                    </ul>
+                  </details>
+                </TabItem><TabItem
+                  label={"Example (from schema)"}
+                  value={"Example (from schema)"}
+                >
+                  <ResponseSamples
+                    responseExample={"{\n  \"id\": 0,\n  \"created\": \"2024-07-29T15:51:28.071Z\",\n  \"preAuthorizedCode\": \"string\",\n  \"holderId\": \"string\",\n  \"credentialType\": \"string\",\n  \"credentialId\": \"string\",\n  \"revoked\": true,\n  \"credentialSubject\": {\n    \"id\": \"string\"\n  }\n}"}
+                    language={"json"}
+                  >
+                    
+                  </ResponseSamples>
+                </TabItem>
+              </SchemaTabs>
+            </TabItem>
+          </MimeTabs>
+        </div>
+      </TabItem><TabItem
+        label={"403"}
+        value={"403"}
+      >
+        <div>
+          
+          
+          Forbidden
+          
+          
+        </div><div>
+          <MimeTabs
+            className={"openapi-tabs__mime"}
+            schemaType={"response"}
+          >
+            <TabItem
+              label={"application/json"}
+              value={"application/json"}
+            >
+              <SchemaTabs
+                className={"openapi-tabs__schema"}
+              >
+                <TabItem
+                  label={"Schema"}
+                  value={"Schema"}
+                >
+                  <details
+                    style={{}}
+                    className={"openapi-markdown__details response"}
+                    data-collapsed={false}
+                    open={true}
+                  >
+                    <summary
+                      style={{}}
+                      className={"openapi-markdown__details-summary-response"}
+                    >
+                      <strong>
+                        Schema
+                      </strong>
+                    </summary><div
+                      style={{"textAlign":"left","marginLeft":"1rem"}}
+                    >
+                      
+                    </div><ul
+                      style={{"marginLeft":"1rem"}}
+                    >
+                      <SchemaItem
+                        collapsible={false}
+                        name={"name"}
+                        required={true}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"status"}
+                        required={true}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"code"}
+                        required={true}
+                        schemaName={"number"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"number"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"message"}
+                        required={false}
+                        schemaName={"object"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"object"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"error"}
+                        required={false}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem>
+                    </ul>
+                  </details>
+                </TabItem><TabItem
+                  label={"Example (from schema)"}
+                  value={"Example (from schema)"}
+                >
+                  <ResponseSamples
+                    responseExample={"{\n  \"name\": \"string\",\n  \"status\": \"string\",\n  \"code\": 0,\n  \"message\": {},\n  \"error\": \"string\"\n}"}
+                    language={"json"}
+                  >
+                    
+                  </ResponseSamples>
+                </TabItem>
+              </SchemaTabs>
+            </TabItem>
+          </MimeTabs>
+        </div>
+      </TabItem>
+    </ApiTabs>
+  </div>
+</div>
+      

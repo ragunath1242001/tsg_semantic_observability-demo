@@ -2,15 +2,12 @@ import {
   AccessToken,
   AuthorizationCode,
   AuthorizationDetail,
-  BaseDisplay,
   CredentialConfiguration,
   CredentialDefinition,
   CredentialIssuerMetadata,
   CredentialOffer,
   CredentialOfferStatus,
   CredentialRequest,
-  CredentialSubjectDefinition,
-  CredentialSubjectElementDefinition,
   CwtProof,
   DataIntegrityProof,
   DeferredCredentialResponse,
@@ -18,10 +15,11 @@ import {
   JwtProof,
   LdpVpProof,
   LogoDisplay,
-  OfferGrants,
   PreAuthorizationCodeGrant,
   VpProof,
 } from "@tsg-dsp/wallet-dtos";
+// This needs to be separate since it's an enum. https://stackoverflow.com/questions/38553097/how-to-import-an-enum
+import { OfferGrants } from "@tsg-dsp/wallet-dtos";
 import {
   ApiExtraModels,
   ApiProperty,

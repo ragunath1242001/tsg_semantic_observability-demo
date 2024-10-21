@@ -21,17 +21,34 @@ variables:
       - .pnpm-store
 
 release:
-  extends:
-    - .base-rules
+  image: node:22
   stage: release
   needs: []
   variables:
     GIT_EMAIL: semantic-release-bot@dataspac.es
     GIT_NAME: semantic-release
     TITLE: TNO Security Gateway
+  before_script:
+    # TODO workaround for: https://github.com/postmanlabs/postman-code-generators/issues/772
+    - mv /usr/local/bin/yarn /usr/local/bin/yarn.bak
   script:
-    - pnpm install --frozen-lockfile
-    - node release/release.js
+    - cd release/
+    - npm install
+    - VERSION=$(node version.js)
+    - echo $VERSION
+    - cd ../website/
+    - npm install
+    - npm run docusaurus clean-api-docs all
+    - npm run docusaurus gen-api-docs all
+    - npm run docusaurus docs:version $VERSION
+    - npm run build:gitlab
+    - mv public ../public
+    - git add .
+    - cd ../release/
+    - node release.js
+  artifacts:
+    paths:
+      - public
   rules:
     - if: '$RELEASE_NOW == "true" && $CI_COMMIT_BRANCH == "main"'
 
@@ -39,6 +56,7 @@ include:
   - template: Jobs/Dependency-Scanning.gitlab-ci.yml
   - template: Jobs/Container-Scanning.gitlab-ci.yml
   - local: apps/apps.gitlab-ci.yml
+  - local: website/docs.gitlab-ci.yml
   - local: libs/libs.gitlab-ci.yml
   - local: tools/tools.gitlab-ci.yml
   - local: helm-charts/helm.gitlab-ci.yml

@@ -24,7 +24,7 @@ import { RuntimeConfigDto } from "./config.schemas.js";
 import {
   ApiForbiddenResponseDefault,
   ApiBadRequestResponseDefault,
-} from "./utils/swagger.js";
+} from "@tsg-dsp/common-dtos";
 
 @UseGuards(OAuthGuard)
 @Roles(AppRole.ISSUE_CREDENTIALS)

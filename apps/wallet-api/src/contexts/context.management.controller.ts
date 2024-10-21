@@ -28,7 +28,7 @@ import {
   ApiConflictResponseDefault,
   ApiBadRequestResponseDefault,
   ApiNotFoundResponseDefault,
-} from "../utils/swagger.js";
+} from "@tsg-dsp/common-dtos";
 
 @Controller("management/contexts")
 @ApiTags("Management Contexts")

@@ -1,0 +1,158 @@
+---
+id: registry-controller-request-addresses
+title: "Request all addresses"
+description: "Request all addresses"
+sidebar_label: "Request all addresses"
+hide_title: true
+hide_table_of_contents: true
+api: eJx1VU1vGzcQ/SvEHgNV6/qom+E4hoE2MWInPRiFMOKOtIy4JEPOWl0I+u+d4VKrj6a+WJrPN28eR/vKB4xAxrunplpUX3FjEsXh3juK3lqMy4g/e0x01zQRU8JUzaoAETokjKlavP09q9gRvBPfYl/d3tzIvwaTjiZIZa770mvN2eve2kGtkXSLjQJrFZyV1dwUHUk2hGCNzrjqH0lK7KvESR3IJxoCclGIEQbOM4RdOrP71Q/UJDijTEdmBNaYRmacwnhO4zbVYVYVEL/wHWS4n72JyJlvpcQpgWcnQ1Yy7jmEwRuwhamP5Dlf/jgINkLVRK8kJtR9NDSwfV+tECJGYfPArkvuvo4L+A9dvIHWy9I2mIcFavlLDcHUsfSpz+MTxvdpZcfuL0LqyI+Hntrbcx5Hw6xaW7/LIQFS2vnYjOtgcrNVj2IJFhwuoemMoP6FcXZpbIAgf7qOPjlG9o7kFAlIfDEdfZ987ICFU31/ZluB3xKF6prM7xjN2sDKonpmZnhjWWTKIa+vUeSV9l3XOxEfqhXSDtEp2nllXCJwrGLl14paVAWzylDnWSvGrX0msIji9eVRlaeknvNE13heW5PUl4Du7vlJpYCa0Y26V6ll1nMndE3wxtHU+qLmXP3pWR7FdYplYlREy3PkucT5kZlNAbQM78lrb2cK0rEvx62GHPegrQkJ1V8+bvkdqMfo+3DKTnP1hcPiVbPUh+D5ub2fo+DOHWzFyRFSW7arNDgmV+R8Asdjg/UbRuSa6zQg9e2JV8A3B7Swk3IJkhDmXzMJarn88NkTflguF+qC1gbXxpnMKVudp1zIldYMo+H3rYkvkzVuy9adoVaBSjy6vSJ7ksFc8S7lPY17/H1+U/TN+FgCLAY+YMhHUfTgIKv2jsnjQW9zbB9tEWla1PVut5tDds993NQlN9V/PN0/fH55+I1z5i11Nsss8L47cGeV/+9GXIhtetiE/1DNtPGbPBQg+3I/3vj0mkquXrlU07HDfO5abi1R+/0KEn6L9nAQM3ePw3hZ3iHm95WPGScgNPmy7astDkIC/xIEOVjvYPt8xq9vvZzA6bg9PrwKhl7ATQNcPf9c/fij4Iaz2gwzR7z6LTqGOisgSL5zI74v/wKZPnXr
+sidebar_class_name: "get api-method"
+info_path: docs/apis/control-plane/tsg-control-plane
+custom_edit_url: null
+---
+
+import ApiTabs from "@theme/ApiTabs";
+import DiscriminatorTabs from "@theme/DiscriminatorTabs";
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import SecuritySchemes from "@theme/ApiExplorer/SecuritySchemes";
+import MimeTabs from "@theme/MimeTabs";
+import ParamsItem from "@theme/ParamsItem";
+import ResponseSamples from "@theme/ResponseSamples";
+import SchemaItem from "@theme/SchemaItem";
+import SchemaTabs from "@theme/SchemaTabs";
+import Heading from "@theme/Heading";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Request all addresses"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/registry/addresses"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Request all addresses
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<div>
+  <div>
+    <ApiTabs
+      label={undefined}
+      id={undefined}
+    >
+      <TabItem
+        label={"200"}
+        value={"200"}
+      >
+        <div>
+          
+          
+          Successfully fetched all addresses
+          
+          
+        </div><div>
+          <MimeTabs
+            className={"openapi-tabs__mime"}
+            schemaType={"response"}
+          >
+            <TabItem
+              label={"application/json"}
+              value={"application/json"}
+            >
+              <SchemaTabs
+                className={"openapi-tabs__schema"}
+              >
+                <TabItem
+                  label={"Schema"}
+                  value={"Schema"}
+                >
+                  <details
+                    style={{}}
+                    className={"openapi-markdown__details response"}
+                    data-collapsed={false}
+                    open={true}
+                  >
+                    <summary
+                      style={{}}
+                      className={"openapi-markdown__details-summary-response"}
+                    >
+                      <strong>
+                        Schema
+                      </strong>
+                    </summary><div
+                      style={{"textAlign":"left","marginLeft":"1rem"}}
+                    >
+                      
+                    </div><ul
+                      style={{"marginLeft":"1rem"}}
+                    >
+                      <li>
+                        <div
+                          style={{"fontSize":"var(--ifm-code-font-size)","opacity":"0.6","marginLeft":"-.5rem","paddingBottom":".5rem"}}
+                        >
+                          Array [
+                        </div>
+                      </li><SchemaItem
+                        collapsible={false}
+                        name={"didId"}
+                        required={true}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"address"}
+                        required={true}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem><li>
+                        <div
+                          style={{"fontSize":"var(--ifm-code-font-size)","opacity":"0.6","marginLeft":"-.5rem"}}
+                        >
+                          ]
+                        </div>
+                      </li>
+                    </ul>
+                  </details>
+                </TabItem><TabItem
+                  label={"Example (from schema)"}
+                  value={"Example (from schema)"}
+                >
+                  <ResponseSamples
+                    responseExample={"[\n  {\n    \"didId\": \"string\",\n    \"address\": \"string\"\n  }\n]"}
+                    language={"json"}
+                  >
+                    
+                  </ResponseSamples>
+                </TabItem>
+              </SchemaTabs>
+            </TabItem>
+          </MimeTabs>
+        </div>
+      </TabItem>
+    </ApiTabs>
+  </div>
+</div>
+      

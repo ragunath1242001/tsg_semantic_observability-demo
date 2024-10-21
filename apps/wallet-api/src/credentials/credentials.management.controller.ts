@@ -37,7 +37,7 @@ import {
   ApiConflictResponseDefault,
   ApiBadRequestResponseDefault,
   ApiNotFoundResponseDefault,
-} from "../utils/swagger.js";
+} from "@tsg-dsp/common-dtos";
 
 @ApiTags("Management Credentials")
 @ApiOAuth2([AppRole.VIEW_ALL_CREDENTIALS, AppRole.VIEW_OWN_CREDENTIALS])

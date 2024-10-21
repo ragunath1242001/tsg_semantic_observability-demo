@@ -2,7 +2,7 @@ import { Controller, Get, Header, Param } from "@nestjs/common";
 import { DisableOAuthGuard } from "../../auth/oauth.guard.js";
 import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { DidTdwStrategy } from "./did.tdw.strategy.js";
-import { DIDDocumentDto } from "../did.schemas.js";
+import { DIDDocumentDto } from "@tsg-dsp/common-dtos";
 import { DIDDocument } from "did-resolver";
 import { DidService } from "../did.service.js";
 

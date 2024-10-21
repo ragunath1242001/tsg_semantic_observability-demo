@@ -1,0 +1,1905 @@
+openapi: 3.0.0
+paths:
+  /api/catalog:
+    get:
+      operationId: DataPlaneController_getCatalog
+      summary: Get catalog
+      description: Get catalog, currently not implemented.
+      parameters: []
+      responses:
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "501":
+          description: ""
+      tags: &a1
+        - Data Plane
+      security: &a2
+        - oauth2:
+            - controlplane_dataplane
+  /health:
+    get:
+      operationId: DataPlaneController_healthCheck
+      summary: Health check
+      description: Retrieves the current health of the control plane. If the control
+        plane is running it always returns an empty 200 OK
+      parameters: []
+      responses:
+        "200":
+          description: ""
+        "502":
+          description: ""
+      tags: *a1
+      security: *a2
+  /api/transfers/request/{role}:
+    post:
+      operationId: DataPlaneController_requestTransfer
+      summary: Request Transfer
+      description: Requests a transfer from control plane to data plane.
+      parameters:
+        - name: role
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: processId
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: x-remote-party
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: x-dataset-id
+          required: true
+          in: header
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransferRequestMessageSchema"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DataPlaneRequestResponseSchema"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      tags: *a1
+      security: *a2
+  /api/transfers/{id}/start:
+    post:
+      operationId: DataPlaneController_startTransfer
+      summary: Start transfer process
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer ID
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransferStartMessageSchema"
+      responses:
+        "202":
+          description: Transfer started successfully
+      tags: *a1
+      security: *a2
+  /api/transfers/{id}/complete:
+    post:
+      operationId: DataPlaneController_completeTransfer
+      summary: Complete transfer process
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer ID
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransferCompletionMessageSchema"
+      responses:
+        "202":
+          description: Transfer completed successfully
+      tags: *a1
+      security: *a2
+  /api/transfers/{id}/terminate:
+    post:
+      operationId: DataPlaneController_terminateTransfer
+      summary: Terminate transfer process
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer ID
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransferTerminationMessageSchema"
+      responses:
+        "202":
+          description: Transfer terminated successfully
+      tags: *a1
+      security: *a2
+  /api/transfers/{id}/suspend:
+    post:
+      operationId: DataPlaneController_suspendTransfer
+      summary: Suspend transfer process
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer ID
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransferSuspensionMessageSchema"
+      responses:
+        "202":
+          description: Transfer suspended successfully
+      tags: *a1
+      security: *a2
+  /api/management/state:
+    get:
+      operationId: DataPlaneManagementController_getState
+      summary: Get Data Plane state
+      description: Get the state of the data plane, consisting of the id, details and
+        the dataset.
+      parameters: []
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DataPlaneStateSchema"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      tags: &a3
+        - Data Plane Management
+      security: &a4
+        - oauth2:
+            - controlplane_dataplane
+  /api/management/catalog:
+    get:
+      operationId: DataPlaneManagementController_getCatalog
+      summary: Get catalog
+      description: Get the current catalog from the Control Plane.
+      parameters: []
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CatalogSchema"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      tags: *a3
+      security: *a4
+  /api/management/refresh:
+    post:
+      operationId: DataPlaneManagementController_refreshRegistration
+      summary: (Re)register data plane
+      description: Use this endpoint to (re)register your data plane. Currently it
+        will register with defaults from the config.
+      parameters: []
+      responses:
+        "202":
+          description: ""
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      tags: *a3
+      security: *a4
+  /api/management/dataset:
+    get:
+      operationId: DataPlaneManagementController_getDatasetConfig
+      summary: Get dataset
+      description: Get the current dataset configuration.
+      parameters: []
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DatasetConfig"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      tags: *a3
+      security: *a4
+    put:
+      operationId: DataPlaneManagementController_updateDatasetConfig
+      summary: Update dataset
+      description: Update the current dataset configuration.
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DatasetConfig"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DataPlaneStateSchema"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      tags: *a3
+      security: *a4
+  /api/management/transfers:
+    get:
+      operationId: DataPlaneManagementController_getTransfers
+      summary: Get all transfers
+      parameters: []
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TransferSchema"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      tags: *a3
+      security: *a4
+  /api/management/transfers/{id}:
+    get:
+      operationId: DataPlaneManagementController_getTransfer
+      summary: Get transfer by ID
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer identifier
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransferSchema"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      tags: *a3
+      security: *a4
+  /api/management/transfers/{id}/metadata:
+    get:
+      operationId: DataPlaneManagementController_getMetadata
+      summary: Get metadata of transfer by ID
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer identifier
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MetadataSchema"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      tags: *a3
+      security: *a4
+  /api/management/transfers/{id}/start:
+    post:
+      operationId: DataPlaneManagementController_startTransfer
+      summary: Start a transfer by ID
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer identifier
+          schema:
+            type: string
+      responses:
+        "202":
+          description: ""
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      tags: *a3
+      security: *a4
+  /api/management/transfers/{id}/complete:
+    post:
+      operationId: DataPlaneManagementController_completeTransfer
+      summary: Complete a transfer by ID
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer identifier
+          schema:
+            type: string
+      responses:
+        "202":
+          description: ""
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      tags: *a3
+      security: *a4
+  /api/management/transfers/{id}/terminate:
+    post:
+      operationId: DataPlaneManagementController_terminateTransfer
+      summary: Terminate a transfer by ID
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer identifier
+          schema:
+            type: string
+        - name: code
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: reason
+          required: true
+          in: query
+          schema:
+            type: string
+      responses:
+        "202":
+          description: ""
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      tags: *a3
+      security: *a4
+  /api/management/transfers/{id}/suspend:
+    post:
+      operationId: DataPlaneManagementController_suspendTransfer
+      summary: Suspend a transfer by ID
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer identifier
+          schema:
+            type: string
+        - name: code
+          required: true
+          in: query
+          schema:
+            type: string
+      responses:
+        "202":
+          description: ""
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      tags: *a3
+      security: *a4
+  /api/management/transfers/{id}/execute/{path}:
+    get:
+      operationId: DataPlaneManagementController_executeTransfer_get
+      summary: Proxy a request
+      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy. "
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer identifier
+          schema:
+            type: string
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema: {}
+      responses:
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      tags: *a3
+      security: *a4
+    post:
+      operationId: DataPlaneManagementController_executeTransfer_post
+      summary: Proxy a request
+      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy. "
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer identifier
+          schema:
+            type: string
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema: {}
+      responses:
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      tags: *a3
+      security: *a4
+    put:
+      operationId: DataPlaneManagementController_executeTransfer_put
+      summary: Proxy a request
+      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy. "
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer identifier
+          schema:
+            type: string
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema: {}
+      responses:
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      tags: *a3
+      security: *a4
+    delete:
+      operationId: DataPlaneManagementController_executeTransfer_delete
+      summary: Proxy a request
+      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy. "
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer identifier
+          schema:
+            type: string
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema: {}
+      responses:
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      tags: *a3
+      security: *a4
+    patch:
+      operationId: DataPlaneManagementController_executeTransfer_patch
+      summary: Proxy a request
+      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy. "
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer identifier
+          schema:
+            type: string
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema: {}
+      responses:
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      tags: *a3
+      security: *a4
+    options:
+      operationId: DataPlaneManagementController_executeTransfer_options
+      summary: Proxy a request
+      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy. "
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer identifier
+          schema:
+            type: string
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema: {}
+      responses:
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      tags: *a3
+      security: *a4
+    head:
+      operationId: DataPlaneManagementController_executeTransfer_head
+      summary: Proxy a request
+      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy. "
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer identifier
+          schema:
+            type: string
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema: {}
+      responses:
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      tags: *a3
+      security: *a4
+    search:
+      operationId: DataPlaneManagementController_executeTransfer_search
+      summary: Proxy a request
+      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy. "
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer identifier
+          schema:
+            type: string
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema: {}
+      responses:
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      tags: *a3
+      security: *a4
+  /api/proxy/{id}/{path}:
+    get:
+      operationId: ProxyController_getData_get
+      summary: Proxy a request
+      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy. "
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer identifier
+          schema:
+            type: string
+        - name: Authorization
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema: {}
+      responses:
+        "200":
+          description: ""
+      tags: &a5
+        - Proxy
+    post:
+      operationId: ProxyController_getData_post
+      summary: Proxy a request
+      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy. "
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer identifier
+          schema:
+            type: string
+        - name: Authorization
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema: {}
+      responses:
+        "200":
+          description: ""
+      tags: *a5
+    put:
+      operationId: ProxyController_getData_put
+      summary: Proxy a request
+      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy. "
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer identifier
+          schema:
+            type: string
+        - name: Authorization
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema: {}
+      responses:
+        "200":
+          description: ""
+      tags: *a5
+    delete:
+      operationId: ProxyController_getData_delete
+      summary: Proxy a request
+      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy. "
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer identifier
+          schema:
+            type: string
+        - name: Authorization
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema: {}
+      responses:
+        "200":
+          description: ""
+      tags: *a5
+    patch:
+      operationId: ProxyController_getData_patch
+      summary: Proxy a request
+      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy. "
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer identifier
+          schema:
+            type: string
+        - name: Authorization
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema: {}
+      responses:
+        "200":
+          description: ""
+      tags: *a5
+    options:
+      operationId: ProxyController_getData_options
+      summary: Proxy a request
+      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy. "
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer identifier
+          schema:
+            type: string
+        - name: Authorization
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema: {}
+      responses:
+        "200":
+          description: ""
+      tags: *a5
+    head:
+      operationId: ProxyController_getData_head
+      summary: Proxy a request
+      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy. "
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer identifier
+          schema:
+            type: string
+        - name: Authorization
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema: {}
+      responses:
+        "200":
+          description: ""
+      tags: *a5
+    search:
+      operationId: ProxyController_getData_search
+      summary: Proxy a request
+      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy. "
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer identifier
+          schema:
+            type: string
+        - name: Authorization
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema: {}
+      responses:
+        "200":
+          description: ""
+      tags: *a5
+  /api/auth/user:
+    get:
+      operationId: AuthController_getUser
+      summary: Retrieve current user status
+      description: Retrieves current user state, whether someone is logged in or not a
+        200 result is provided. This is used in the frontend to determine
+        whether certain aspects should be shown.
+      parameters: []
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/AuthenticatedUserDto"
+                  - $ref: "#/components/schemas/UnauthenticatedUserDto"
+      tags: &a6
+        - Authentication
+  /api/auth/login:
+    get:
+      operationId: AuthController_login
+      summary: Login redirect
+      description: Redirects user to the correct authorization server
+      parameters: []
+      responses:
+        "200":
+          description: ""
+      tags: *a6
+  /api/auth/logout:
+    get:
+      operationId: AuthController_logout
+      summary: Logout redirect
+      description: Removes session information and redirects user the root of the
+        frontend (`auth.redirectURL`)
+      parameters: []
+      responses:
+        "302":
+          description: ""
+      tags: *a6
+  /api/auth/callback:
+    get:
+      operationId: AuthController_callback
+      summary: Login callback
+      description: Users are redirected from the authorization server to this endpoint
+        which will redirect them to the frontend (`auth.redirectURL`)
+      parameters: []
+      responses:
+        "302":
+          description: ""
+      tags: *a6
+  /api/management/logging/ingress:
+    get:
+      operationId: LoggingController_getIngressLogs
+      summary: Get ingress logs
+      parameters:
+        - name: order
+          required: false
+          in: query
+          schema:
+            default: DESC
+            enum: &a7
+              - ASC
+              - DESC
+            type: string
+        - name: page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            default: 1
+            type: number
+        - name: take
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 50
+            default: 10
+            type: number
+        - required: false
+          name: order
+          in: query
+          schema:
+            default: DESC
+            enum: *a7
+            type: string
+        - required: false
+          name: page
+          in: query
+          schema:
+            minimum: 1
+            default: 1
+            type: number
+        - required: false
+          name: take
+          in: query
+          schema:
+            minimum: 1
+            maximum: 50
+            default: 10
+            type: number
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PageDto"
+      tags: &a9
+        - Logging
+  /api/management/logging/egress:
+    get:
+      operationId: LoggingController_getEgressLogs
+      summary: Get egress logs
+      parameters:
+        - name: order
+          required: false
+          in: query
+          schema:
+            default: DESC
+            enum: &a8
+              - ASC
+              - DESC
+            type: string
+        - name: page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            default: 1
+            type: number
+        - name: take
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 50
+            default: 10
+            type: number
+        - required: false
+          name: order
+          in: query
+          schema:
+            default: DESC
+            enum: *a8
+            type: string
+        - required: false
+          name: page
+          in: query
+          schema:
+            minimum: 1
+            default: 1
+            type: number
+        - required: false
+          name: take
+          in: query
+          schema:
+            minimum: 1
+            maximum: 50
+            default: 10
+            type: number
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PageDto"
+      tags: *a9
+info:
+  title: TSG HTTP Data Plane
+  description: This OpenAPI specification shows the endpoints of the HTTP Data Plane.
+  version: 1.0.0
+  contact: {}
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+tags:
+  - name: Health
+    description: Health Controller
+  - name: Settings
+    description: Settings Controller
+  - name: Authentication
+    description: Authentication Controller
+  - name: Data Plane
+    description: Data Plane Controller
+  - name: Data Plane Management
+    description: Data Plane Management Controller
+  - name: Proxy
+    description: Proxy Controller
+  - name: Logging
+    description: Logging Controller
+servers: []
+components:
+  securitySchemes:
+    oauth2:
+      type: oauth2
+      flows:
+        password:
+          scopes:
+            httpdataplane_admin: httpdataplane_admin
+            httpdataplane_dataplane: httpdataplane_dataplane
+    bearer:
+      scheme: bearer
+      bearerFormat: VP
+      type: http
+      description: Verifiable Presentation needed to communicate between two instances
+        of the control plane.
+  schemas:
+    ErrorDto:
+      type: object
+      properties:
+        name:
+          type: string
+        status:
+          type: string
+        code:
+          type: number
+        message:
+          type: object
+        error:
+          type: string
+      required:
+        - name
+        - status
+        - code
+    EndpointPropertySchema:
+      type: object
+      properties:
+        "@type":
+          type: string
+        dspace:name:
+          type: string
+        dspace:value:
+          type: string
+      required:
+        - "@type"
+        - dspace:name
+        - dspace:value
+    DataAddressSchema:
+      type: object
+      properties:
+        "@type":
+          type: string
+        dspace:endpointType:
+          type: string
+        dspace:endpoint:
+          type: string
+        dspace:endpointProperties:
+          type: array
+          items:
+            $ref: "#/components/schemas/EndpointPropertySchema"
+      required:
+        - "@type"
+        - dspace:endpointType
+        - dspace:endpoint
+        - dspace:endpointProperties
+    TransferRequestMessageSchema:
+      type: object
+      properties:
+        "@type":
+          type: string
+        dspace:consumerPid:
+          type: string
+        dspace:agreementId:
+          type: string
+        dct:format:
+          type: string
+        dspace:dataAddress:
+          $ref: "#/components/schemas/DataAddressSchema"
+        dspace:callbackAddress:
+          type: string
+      required:
+        - "@type"
+        - dspace:consumerPid
+        - dspace:agreementId
+        - dct:format
+        - dspace:callbackAddress
+    DataPlaneRequestResponseSchema:
+      type: object
+      properties:
+        accepted:
+          type: boolean
+        identifier:
+          type: string
+        dataAddress:
+          $ref: "#/components/schemas/DataAddressSchema"
+        callbackAddress:
+          type: string
+      required:
+        - accepted
+        - identifier
+    TransferStartMessageSchema:
+      type: object
+      properties:
+        "@type":
+          type: string
+        dspace:providerPid:
+          type: string
+        dspace:consumerPid:
+          type: string
+        dspace:dataAddress:
+          $ref: "#/components/schemas/DataAddressSchema"
+      required:
+        - "@type"
+        - dspace:providerPid
+        - dspace:consumerPid
+    TransferCompletionMessageSchema:
+      type: object
+      properties:
+        "@type":
+          type: string
+        dspace:providerPid:
+          type: string
+        dspace:consumerPid:
+          type: string
+      required:
+        - "@type"
+        - dspace:providerPid
+        - dspace:consumerPid
+    TransferTerminationMessageSchema:
+      type: object
+      properties:
+        "@type":
+          type: string
+        dspace:providerPid:
+          type: string
+        dspace:consumerPid:
+          type: string
+        dspace:code:
+          type: string
+        dspace:reason:
+          type: array
+          items:
+            type: string
+      required:
+        - "@type"
+        - dspace:providerPid
+        - dspace:consumerPid
+        - dspace:code
+        - dspace:reason
+    TransferSuspensionMessageSchema:
+      type: object
+      properties:
+        "@type":
+          type: string
+        dspace:providerPid:
+          type: string
+        dspace:consumerPid:
+          type: string
+        dspace:reason:
+          type: array
+          items:
+            type: string
+      required:
+        - "@type"
+        - dspace:providerPid
+        - dspace:consumerPid
+        - dspace:reason
+    DataPlaneDetailsSchema:
+      type: object
+      properties:
+        identifier:
+          type: string
+        dataplaneType:
+          type: string
+        endpointPrefix:
+          type: string
+        callbackAddress:
+          type: string
+        managementAddress:
+          type: string
+        managementToken:
+          type: string
+        catalogSynchronization:
+          type: string
+        role:
+          type: string
+      required:
+        - identifier
+        - dataplaneType
+        - endpointPrefix
+        - callbackAddress
+        - managementAddress
+        - managementToken
+        - catalogSynchronization
+        - role
+    DataPlaneStateSchema:
+      type: object
+      properties:
+        identifier:
+          type: string
+        details:
+          $ref: "#/components/schemas/DataPlaneDetailsSchema"
+        dataset:
+          type: array
+          items:
+            type: string
+      required:
+        - identifier
+        - details
+        - dataset
+    ReferenceSchema:
+      type: object
+      properties:
+        "@id":
+          type: string
+      required:
+        - "@id"
+    ConstraintSchema:
+      type: object
+      properties:
+        "@type":
+          type: string
+        odrl:leftOperand:
+          type: string
+        odrl:operator:
+          type: string
+        odrl:rightOperand:
+          type: object
+        odrl:rightOperandReference:
+          type: string
+      required:
+        - "@type"
+        - odrl:leftOperand
+        - odrl:operator
+    PermissionSchema:
+      type: object
+      properties:
+        "@type":
+          type: string
+        odrl:assigner:
+          type: string
+        odrl:assignee:
+          type: string
+        odrl:action:
+          type: string
+        odrl:target:
+          type: string
+        odrl:constraint:
+          type: array
+          items:
+            $ref: "#/components/schemas/ConstraintSchema"
+        odrl:Duty:
+          type: array
+          items:
+            type: string
+      required:
+        - "@type"
+        - odrl:action
+    ProhibitionSchema:
+      type: object
+      properties:
+        "@type":
+          type: string
+        odrl:assigner:
+          type: string
+        odrl:assignee:
+          type: string
+        odrl:action:
+          type: string
+        odrl:target:
+          type: string
+        odrl:constraint:
+          type: array
+          items:
+            $ref: "#/components/schemas/ConstraintSchema"
+      required:
+        - "@type"
+        - odrl:action
+    Duty:
+      type: object
+      properties: {}
+    PolicySchema:
+      type: object
+      properties:
+        "@id":
+          type: string
+        "@type":
+          type: string
+        odrl:assigner:
+          type: string
+        odrl:assignee:
+          type: string
+        odrl:profile:
+          $ref: "#/components/schemas/ReferenceSchema"
+        odrl:permission:
+          type: array
+          items:
+            $ref: "#/components/schemas/PermissionSchema"
+        odrl:prohibition:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProhibitionSchema"
+        odrl:obligation:
+          type: array
+          items:
+            $ref: "#/components/schemas/Duty"
+        odrl:target:
+          type: string
+      required:
+        - "@id"
+        - "@type"
+    DurationSchema:
+      type: object
+      properties:
+        "@value":
+          type: string
+        "@type":
+          type: string
+      required:
+        - "@value"
+        - "@type"
+    DatasetSchema:
+      type: object
+      properties:
+        "@id":
+          type: string
+        dcat:contactPoint:
+          $ref: "#/components/schemas/ReferenceSchema"
+        dcat:keyword:
+          type: array
+          items:
+            type: string
+        dcat:landingPage:
+          $ref: "#/components/schemas/ReferenceSchema"
+        dcat:theme:
+          type: array
+          items:
+            $ref: "#/components/schemas/ReferenceSchema"
+        dcat:conformsTo:
+          type: string
+        dct:creator:
+          type: string
+        dct:description:
+          type: array
+          items:
+            type: string
+        dct:identifier:
+          type: string
+        dct:isReferencedBy:
+          $ref: "#/components/schemas/ReferenceSchema"
+        dct:issued:
+          type: string
+        dct:language:
+          $ref: "#/components/schemas/ReferenceSchema"
+        dct:license:
+          $ref: "#/components/schemas/ReferenceSchema"
+        dct:modified:
+          type: string
+        dct:publisher:
+          type: string
+        dct:relation:
+          $ref: "#/components/schemas/ReferenceSchema"
+        dct:title:
+          type: string
+        dct:type:
+          type: string
+        odrl:hasPolicy:
+          type: array
+          items:
+            $ref: "#/components/schemas/PolicySchema"
+        dcat:hasVersion:
+          type: array
+          items:
+            $ref: "#/components/schemas/ReferenceSchema"
+        dcat:isVersionOf:
+          $ref: "#/components/schemas/ReferenceSchema"
+        dcat:version:
+          type: string
+        dcat:hasCurrentVersion:
+          $ref: "#/components/schemas/ReferenceSchema"
+        dcat:previousVersion:
+          $ref: "#/components/schemas/ReferenceSchema"
+        "@type":
+          type: string
+        dcat:distribution:
+          type: array
+          items:
+            type: string
+        dcat:spatialResolutionInMeters:
+          $ref: "#/components/schemas/ReferenceSchema"
+        dcat:temporalResolution:
+          $ref: "#/components/schemas/DurationSchema"
+        dct:accrualPeriodicity:
+          $ref: "#/components/schemas/ReferenceSchema"
+        dct:spatial:
+          $ref: "#/components/schemas/ReferenceSchema"
+        dct:temporal:
+          $ref: "#/components/schemas/ReferenceSchema"
+        prov:wasGeneratedBy:
+          $ref: "#/components/schemas/ReferenceSchema"
+      required:
+        - "@id"
+        - "@type"
+    ResourceSchema:
+      type: object
+      properties:
+        "@id":
+          type: string
+        "@type":
+          type: string
+        dcat:contactPoint:
+          $ref: "#/components/schemas/ReferenceSchema"
+        dcat:keyword:
+          type: array
+          items:
+            type: string
+        dcat:landingPage:
+          $ref: "#/components/schemas/ReferenceSchema"
+        dcat:theme:
+          type: array
+          items:
+            $ref: "#/components/schemas/ReferenceSchema"
+        dcat:conformsTo:
+          type: string
+        dct:creator:
+          type: string
+        dct:description:
+          type: array
+          items:
+            type: string
+        dct:identifier:
+          type: string
+        dct:isReferencedBy:
+          $ref: "#/components/schemas/ReferenceSchema"
+        dct:issued:
+          type: string
+        dct:language:
+          $ref: "#/components/schemas/ReferenceSchema"
+        dct:license:
+          $ref: "#/components/schemas/ReferenceSchema"
+        dct:modified:
+          type: string
+        dct:publisher:
+          type: string
+        dct:relation:
+          $ref: "#/components/schemas/ReferenceSchema"
+        dct:title:
+          type: string
+        dct:type:
+          type: string
+        odrl:hasPolicy:
+          type: array
+          items:
+            $ref: "#/components/schemas/PolicySchema"
+        dcat:hasVersion:
+          type: array
+          items:
+            $ref: "#/components/schemas/ReferenceSchema"
+        dcat:isVersionOf:
+          $ref: "#/components/schemas/ReferenceSchema"
+        dcat:version:
+          type: string
+        dcat:hasCurrentVersion:
+          $ref: "#/components/schemas/ReferenceSchema"
+        dcat:previousVersion:
+          $ref: "#/components/schemas/ReferenceSchema"
+      required:
+        - "@id"
+        - "@type"
+    CatalogRecordSchema:
+      type: object
+      properties:
+        "@id":
+          type: string
+        "@type":
+          type: string
+        dct:conformsTo:
+          type: array
+          items:
+            type: string
+        dct:description:
+          type: array
+          items:
+            type: string
+        dct:issued:
+          format: date-time
+          type: string
+        dct:modified:
+          format: date-time
+          type: string
+        dct:title:
+          type: string
+        foaf:primaryTopic:
+          $ref: "#/components/schemas/ResourceSchema"
+      required:
+        - "@id"
+        - "@type"
+    DataServiceSchema:
+      type: object
+      properties:
+        "@id":
+          type: string
+        dcat:contactPoint:
+          $ref: "#/components/schemas/ReferenceSchema"
+        dcat:keyword:
+          type: array
+          items:
+            type: string
+        dcat:landingPage:
+          $ref: "#/components/schemas/ReferenceSchema"
+        dcat:theme:
+          type: array
+          items:
+            $ref: "#/components/schemas/ReferenceSchema"
+        dcat:conformsTo:
+          type: string
+        dct:creator:
+          type: string
+        dct:description:
+          type: array
+          items:
+            type: string
+        dct:identifier:
+          type: string
+        dct:isReferencedBy:
+          $ref: "#/components/schemas/ReferenceSchema"
+        dct:issued:
+          type: string
+        dct:language:
+          $ref: "#/components/schemas/ReferenceSchema"
+        dct:license:
+          $ref: "#/components/schemas/ReferenceSchema"
+        dct:modified:
+          type: string
+        dct:publisher:
+          type: string
+        dct:relation:
+          $ref: "#/components/schemas/ReferenceSchema"
+        dct:title:
+          type: string
+        dct:type:
+          type: string
+        odrl:hasPolicy:
+          type: array
+          items:
+            $ref: "#/components/schemas/PolicySchema"
+        dcat:hasVersion:
+          type: array
+          items:
+            $ref: "#/components/schemas/ReferenceSchema"
+        dcat:isVersionOf:
+          $ref: "#/components/schemas/ReferenceSchema"
+        dcat:version:
+          type: string
+        dcat:hasCurrentVersion:
+          $ref: "#/components/schemas/ReferenceSchema"
+        dcat:previousVersion:
+          $ref: "#/components/schemas/ReferenceSchema"
+        "@type":
+          type: string
+        dcat:endpointDescription:
+          type: string
+        dcat:endpointURL:
+          type: string
+        dcat:servesDataset:
+          type: array
+          items:
+            $ref: "#/components/schemas/DatasetSchema"
+      required:
+        - "@id"
+        - "@type"
+    CatalogSchema:
+      type: object
+      properties:
+        "@id":
+          type: string
+        dcat:contactPoint:
+          $ref: "#/components/schemas/ReferenceSchema"
+        dcat:keyword:
+          type: array
+          items:
+            type: string
+        dcat:landingPage:
+          $ref: "#/components/schemas/ReferenceSchema"
+        dcat:theme:
+          type: array
+          items:
+            $ref: "#/components/schemas/ReferenceSchema"
+        dcat:conformsTo:
+          type: string
+        dct:creator:
+          type: string
+        dct:description:
+          type: array
+          items:
+            type: string
+        dct:identifier:
+          type: string
+        dct:isReferencedBy:
+          $ref: "#/components/schemas/ReferenceSchema"
+        dct:issued:
+          type: string
+        dct:language:
+          $ref: "#/components/schemas/ReferenceSchema"
+        dct:license:
+          $ref: "#/components/schemas/ReferenceSchema"
+        dct:modified:
+          type: string
+        dct:publisher:
+          type: string
+        dct:relation:
+          $ref: "#/components/schemas/ReferenceSchema"
+        dct:title:
+          type: string
+        dct:type:
+          type: string
+        odrl:hasPolicy:
+          type: array
+          items:
+            $ref: "#/components/schemas/PolicySchema"
+        dcat:hasVersion:
+          type: array
+          items:
+            $ref: "#/components/schemas/ReferenceSchema"
+        dcat:isVersionOf:
+          $ref: "#/components/schemas/ReferenceSchema"
+        dcat:version:
+          type: string
+        dcat:hasCurrentVersion:
+          $ref: "#/components/schemas/ReferenceSchema"
+        dcat:previousVersion:
+          $ref: "#/components/schemas/ReferenceSchema"
+        dcat:distribution:
+          type: array
+          items:
+            type: string
+        dcat:spatialResolutionInMeters:
+          $ref: "#/components/schemas/ReferenceSchema"
+        dcat:temporalResolution:
+          $ref: "#/components/schemas/DurationSchema"
+        dct:accrualPeriodicity:
+          $ref: "#/components/schemas/ReferenceSchema"
+        dct:spatial:
+          $ref: "#/components/schemas/ReferenceSchema"
+        dct:temporal:
+          $ref: "#/components/schemas/ReferenceSchema"
+        prov:wasGeneratedBy:
+          $ref: "#/components/schemas/ReferenceSchema"
+        "@type":
+          type: string
+        dcat:dataset:
+          type: array
+          items:
+            $ref: "#/components/schemas/DatasetSchema"
+        dcat:record:
+          type: array
+          items:
+            $ref: "#/components/schemas/CatalogRecordSchema"
+        dcat:service:
+          type: array
+          items:
+            $ref: "#/components/schemas/DataServiceSchema"
+        dcat:themeTaxonomy:
+          $ref: "#/components/schemas/ReferenceSchema"
+        dct:hasPart:
+          type: array
+          items:
+            $ref: "#/components/schemas/ResourceSchema"
+        foaf:homepage:
+          type: string
+      required:
+        - "@id"
+        - "@type"
+    DatasetConfig:
+      type: object
+      properties: {}
+    TransferSchema:
+      type: object
+      properties:
+        id:
+          type: string
+        role:
+          type: string
+        processId:
+          type: string
+        remoteParty:
+          type: string
+        secret:
+          type: string
+        state:
+          type: string
+        request:
+          $ref: "#/components/schemas/TransferRequestMessageSchema"
+        response:
+          $ref: "#/components/schemas/DataPlaneRequestResponseSchema"
+        dataAddress:
+          $ref: "#/components/schemas/DataAddressSchema"
+        createdDate:
+          format: date-time
+          type: string
+        modifiedDate:
+          format: date-time
+          type: string
+        deletedDate:
+          format: date-time
+          type: string
+      required:
+        - id
+        - role
+        - processId
+        - remoteParty
+        - secret
+        - state
+        - request
+        - response
+        - dataAddress
+        - createdDate
+        - modifiedDate
+        - deletedDate
+    AgreementSchema:
+      type: object
+      properties:
+        "@id":
+          type: string
+        "@type":
+          type: string
+        odrl:assigner:
+          type: string
+        odrl:assignee:
+          type: string
+        odrl:profile:
+          $ref: "#/components/schemas/ReferenceSchema"
+        odrl:permission:
+          type: array
+          items:
+            $ref: "#/components/schemas/PermissionSchema"
+        odrl:prohibition:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProhibitionSchema"
+        odrl:obligation:
+          type: array
+          items:
+            $ref: "#/components/schemas/Duty"
+        odrl:target:
+          type: string
+        dspace:timestamp:
+          type: string
+      required:
+        - "@id"
+        - "@type"
+        - dspace:timestamp
+    MetadataSchema:
+      type: object
+      properties:
+        agreement:
+          $ref: "#/components/schemas/AgreementSchema"
+        dataset:
+          $ref: "#/components/schemas/DatasetSchema"
+      required:
+        - agreement
+        - dataset
+    ClientInfoDto:
+      type: object
+      properties:
+        sub:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        roles:
+          type: array
+          items:
+            type: string
+      required:
+        - sub
+        - name
+        - email
+        - roles
+    AuthenticatedUserDto:
+      type: object
+      properties:
+        state:
+          type: object
+        user:
+          $ref: "#/components/schemas/ClientInfoDto"
+      required:
+        - state
+        - user
+    UnauthenticatedUserDto:
+      type: object
+      properties:
+        state:
+          type: object
+      required:
+        - state
+    PageMetaDto:
+      type: object
+      properties:
+        page:
+          type: number
+        take:
+          type: number
+        itemCount:
+          type: number
+        pageCount:
+          type: number
+        hasPreviousPage:
+          type: boolean
+        hasNextPage:
+          type: boolean
+      required:
+        - page
+        - take
+        - itemCount
+        - pageCount
+        - hasPreviousPage
+        - hasNextPage
+    PageDto:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: array
+        meta:
+          $ref: "#/components/schemas/PageMetaDto"
+      required:
+        - data
+        - meta
+externalDocs:
+  description: Git Repository
+  url: https://gitlab.com/tno-tsg/dataspace-protocol/tno-security-gateway

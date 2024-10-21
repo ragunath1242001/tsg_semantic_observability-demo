@@ -1,0 +1,111 @@
+---
+id: logging-controller-get-ingress-logs
+title: "LoggingController_getIngressLogs"
+description: "LoggingController_getIngressLogs"
+sidebar_label: "LoggingController_getIngressLogs"
+hide_title: true
+hide_table_of_contents: true
+api: eJydVE1v2zAM/SuCzl6cFNglt6LNugDFFiBZL0VQKDZjC5UlVZKbBob/+0hZc7J0A7rdxA+RT4+P6rix4ESQRi9LPuf3pqqkrm6MDs4oBe6pgrDUlQPvMeZ5xq1wooEAzvP5Y8c1GnjRuBIcRh28tNIB1toL5SHjUmP0pQV3xKgvamgEn3e8hL1oVcDY7WJ9gyHQbYMF+XW0onOb8XC0VN0Hh6h432djQysq+Id+jdSyoQ6z7NR7NjbA5jvEf94giOf/bdCIt+H8eXrebfq+3ZYaeGu0B09VrqbTgR1fOGlpLJhNsC5cH5gTzqg2NFOMxLGFGo1cWJk3QiN7DeiQq6FQLoe79CRwr8Nwt2QUrZPhuKZ3DhCNaEN9Raf0mOTI+F6ZQ0yxwvsDKoLOvkCFRW8dgi1FEFYJDU+ibCKTf/JmF97x9C7/FOl7YmkHwiGxsS8hxgvJ9Sv2xbhGkO4eVnycBxXllxw/gJN7KXYK2Aq5QbbinjANUELJgmGFaZpWy0IEYDsIBwDNwsEwqX0QugDPzJ6FGjAxzolFqJM4T6n3JpIogyIIm/Ud+7rZrNgtPomt4psuEW1q6dl3C/p6tWTeQoH4igGUr5H72At0aY3UYWx+UXWCZWnAQ8nZZIo24RMFstIhMiULQD0SuLQK11Ygm+wq5rZOJcb8PM8Ph8NExPDEuCpPd31+v7xZfFsvPuGdSR0aFd9sjQ+ovbPKScfsJGSGcmVJySxJ+TcWRt0FeAs5MoqC6ROsLsn8kaPMaQdGoaORpM6J+0HsKPAaIVF+1+2Ehx9O9T25h/2m/62UniRw2v9nOJ79d69CtRB3NPtrbvqqPpKaPp1T6pYMF1VIG9mf7fXdYoOs/gSxgPb8
+sidebar_class_name: "get api-method"
+info_path: docs/apis/http-data-plane/tsg-http-data-plane
+custom_edit_url: null
+---
+
+import ApiTabs from "@theme/ApiTabs";
+import DiscriminatorTabs from "@theme/DiscriminatorTabs";
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import SecuritySchemes from "@theme/ApiExplorer/SecuritySchemes";
+import MimeTabs from "@theme/MimeTabs";
+import ParamsItem from "@theme/ParamsItem";
+import ResponseSamples from "@theme/ResponseSamples";
+import SchemaItem from "@theme/SchemaItem";
+import SchemaTabs from "@theme/SchemaTabs";
+import Heading from "@theme/Heading";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"LoggingController_getIngressLogs"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/management/logging/ingress"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+LoggingController_getIngressLogs
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<details
+  style={{"marginBottom":"1rem"}}
+  className={"openapi-markdown__details"}
+  data-collapsed={false}
+  open={true}
+>
+  <summary
+    style={{}}
+  >
+    <h3
+      className={"openapi-markdown__details-summary-header-params"}
+    >
+      Query Parameters
+    </h3>
+  </summary><div>
+    <ul>
+      <ParamsItem
+        className={"paramsItem"}
+        param={{"name":"order","required":false,"in":"query","schema":{"default":"DESC","enum":["ASC","DESC"],"type":"string"},"enumDescriptions":[]}}
+      >
+        
+      </ParamsItem><ParamsItem
+        className={"paramsItem"}
+        param={{"name":"page","required":false,"in":"query","schema":{"minimum":1,"default":1,"type":"number"},"enumDescriptions":[]}}
+      >
+        
+      </ParamsItem><ParamsItem
+        className={"paramsItem"}
+        param={{"name":"take","required":false,"in":"query","schema":{"minimum":1,"maximum":50,"default":10,"type":"number"},"enumDescriptions":[]}}
+      >
+        
+      </ParamsItem>
+    </ul>
+  </div>
+</details><div>
+  <div>
+    <ApiTabs
+      label={undefined}
+      id={undefined}
+    >
+      <TabItem
+        label={"200"}
+        value={"200"}
+      >
+        <div>
+          
+          
+          
+          
+          
+        </div><div>
+          
+        </div>
+      </TabItem>
+    </ApiTabs>
+  </div>
+</div>
+      

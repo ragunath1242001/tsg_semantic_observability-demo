@@ -1,0 +1,202 @@
+---
+id: data-plane-management-controller-execute-transfer-put
+title: "Proxy a request"
+description: "This endpoint is used if the HTTP Data Plane needs to serve as a proxy."
+sidebar_label: "Proxy a request"
+hide_title: true
+hide_table_of_contents: true
+api: eJytVclu2zAQ/RWCpxZwrTTtybcgTdsAXYzGzSUIDFoaW0wlkiVHcQxB/94Zil5qqwuKniSRs897T620DrxCbc11ISfyjUI1rZSBj8qoFdRg8NIa9LaqwM/hCfIGYeaVCUv6dg3KkSwg5F47jkERZqUOAkzhrDYo6L0JUAi9FFiCeD+bTQXnEDGJMABFEGhFAP8IQgWhhPP2aTMWFNgpr2pA8EFO7lpp6IMS6IKuPHxvtAcqGX0DI6k5tVNYntaTihW6oGb0UoMnm5CXUCs5aSVuHEcN6LVZya4b7RKlcH+fakqHwi6Fhxz0I4UTyrlK53G8h0m77p7jBmdNgMBVvD57xY+f4721fqELKpt8c9oC1c9GB0Gzh8CW7Wk/dvEAOW+HxkkbRt3n6Vs76ZpqQ4VNGLzKbXHoY5p6QTOkixpCIJCcZqU78N76wfkeDPSur2eXPeWi4aDGit2uOMwbtOTYsS+qFYNBHmBoj1R2DIRQr3ETEWNVg+U52+c9iB17zAtyjm/ynhdBECstg7+Hc1ztRGbK6azexc4w4ShkrS66LFEha9m84xYYwRGpB1Xc8Fr6yW9r2c+qPxjJZWXX0cSpENbWF/1CaW3xtER0u4rnqqgjAIdOR0en+z6P7fc3/VgXoDz4HZDYIR1t7wiLtSL4ydspnaUWOOgJC27BE8vUogIxJYzT7CJUI9dJCYjsua3rxjCEQSwA1wBG4NoKbQgHJofAJGK5SFsTsdRxBI82SxuHmAAyu3l3rCrDkvTZgbmYXovgIKf6ev6IUNLsY66tZO2SH0UdU1hecB/y5fhsfJZoqXKmJdVGrAQi9J5n8sIpmqc4j7aNr9LMwiTL1uv1WMXrsfWrLPmG7MP15dWnm6sX5DMusa5i184GJCweRJ6ySpJaMpkgnMhwuxeM/6nIae8IT5jRUghzXeqrTby5I3nSZLlnDrttuUPvk6jfiT78Hf2IMyX1yP5tu1ABvvqq6/iY2vObnlWPykdcRW4XOvA7kWWpqgC/6f/ZlyQ4z8Xwz2Cwq3SozIYXr6qGv+j1G2z6nxD/Kf6piD/9Jv6hnDjD7p7sSlAFM5km1F9d5Dk4PHA6+X38pIHTrzOyZWkakqqdoLbDBQ2okviV8mxrj0oXpzkYciuK85yGx0ujQe98V7RPnEc/6r7rfgDU5gvC
+sidebar_class_name: "put api-method"
+info_path: docs/apis/http-data-plane/tsg-http-data-plane
+custom_edit_url: null
+---
+
+import ApiTabs from "@theme/ApiTabs";
+import DiscriminatorTabs from "@theme/DiscriminatorTabs";
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import SecuritySchemes from "@theme/ApiExplorer/SecuritySchemes";
+import MimeTabs from "@theme/MimeTabs";
+import ParamsItem from "@theme/ParamsItem";
+import ResponseSamples from "@theme/ResponseSamples";
+import SchemaItem from "@theme/SchemaItem";
+import SchemaTabs from "@theme/SchemaTabs";
+import Heading from "@theme/Heading";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Proxy a request"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"put"}
+  path={"/api/management/transfers/{id}/execute/{path}"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+This endpoint is used if the HTTP Data Plane needs to serve as a proxy. 
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<details
+  style={{"marginBottom":"1rem"}}
+  className={"openapi-markdown__details"}
+  data-collapsed={false}
+  open={true}
+>
+  <summary
+    style={{}}
+  >
+    <h3
+      className={"openapi-markdown__details-summary-header-params"}
+    >
+      Path Parameters
+    </h3>
+  </summary><div>
+    <ul>
+      <ParamsItem
+        className={"paramsItem"}
+        param={{"name":"id","required":true,"in":"path","description":"Transfer identifier","schema":{"type":"string"},"enumDescriptions":[]}}
+      >
+        
+      </ParamsItem><ParamsItem
+        className={"paramsItem"}
+        param={{"name":"path","required":true,"in":"path","description":"Path of receiving application","schema":{},"enumDescriptions":[]}}
+      >
+        
+      </ParamsItem>
+    </ul>
+  </div>
+</details><div>
+  <div>
+    <ApiTabs
+      label={undefined}
+      id={undefined}
+    >
+      <TabItem
+        label={"403"}
+        value={"403"}
+      >
+        <div>
+          
+          
+          Forbidden
+          
+          
+        </div><div>
+          <MimeTabs
+            className={"openapi-tabs__mime"}
+            schemaType={"response"}
+          >
+            <TabItem
+              label={"application/json"}
+              value={"application/json"}
+            >
+              <SchemaTabs
+                className={"openapi-tabs__schema"}
+              >
+                <TabItem
+                  label={"Schema"}
+                  value={"Schema"}
+                >
+                  <details
+                    style={{}}
+                    className={"openapi-markdown__details response"}
+                    data-collapsed={false}
+                    open={true}
+                  >
+                    <summary
+                      style={{}}
+                      className={"openapi-markdown__details-summary-response"}
+                    >
+                      <strong>
+                        Schema
+                      </strong>
+                    </summary><div
+                      style={{"textAlign":"left","marginLeft":"1rem"}}
+                    >
+                      
+                    </div><ul
+                      style={{"marginLeft":"1rem"}}
+                    >
+                      <SchemaItem
+                        collapsible={false}
+                        name={"name"}
+                        required={true}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"status"}
+                        required={true}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"code"}
+                        required={true}
+                        schemaName={"number"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"number"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"message"}
+                        required={false}
+                        schemaName={"object"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"object"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"error"}
+                        required={false}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem>
+                    </ul>
+                  </details>
+                </TabItem><TabItem
+                  label={"Example (from schema)"}
+                  value={"Example (from schema)"}
+                >
+                  <ResponseSamples
+                    responseExample={"{\n  \"name\": \"string\",\n  \"status\": \"string\",\n  \"code\": 0,\n  \"message\": {},\n  \"error\": \"string\"\n}"}
+                    language={"json"}
+                  >
+                    
+                  </ResponseSamples>
+                </TabItem>
+              </SchemaTabs>
+            </TabItem>
+          </MimeTabs>
+        </div>
+      </TabItem>
+    </ApiTabs>
+  </div>
+</div>
+      

@@ -15,7 +15,9 @@ COPY libs/control-plane-dtos/package.json libs/control-plane-dtos/
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
 COPY apps apps
-COPY libs libs 
+COPY libs libs
+RUN pnpm run --filter "common-dsp" build  
+RUN pnpm run --filter "control-plane-dtos" build 
 RUN pnpm run --filter "./libs/common*" -r build 
 RUN pnpm run --filter "./libs/control-plane*" --parallel -r build
 RUN pnpm run --filter "./apps/control-plane*" --parallel -r build 

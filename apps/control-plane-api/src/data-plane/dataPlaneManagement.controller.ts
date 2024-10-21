@@ -25,8 +25,8 @@ import {
   ApiBadRequestResponse,
   ApiBody,
 } from "@nestjs/swagger";
-import { DataPlaneDto } from "./dataplane.schemas";
-import { ApiForbiddenResponseDefault } from "../utils/swagger";
+import { DataPlaneDto } from "./dataplane.schemas.js";
+import { ApiForbiddenResponseDefault } from "@tsg-dsp/common-dtos";
 
 @UseGuards(OAuthGuard)
 @Roles(["controlplane_admin", "controlplane_dataplane"])

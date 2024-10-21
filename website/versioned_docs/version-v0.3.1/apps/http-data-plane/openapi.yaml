@@ -1,0 +1,644 @@
+openapi: 3.0.0
+paths:
+  /api/catalog:
+    get:
+      operationId: DataPlaneController_getCatalog
+      parameters: []
+      responses:
+        "501":
+          description: ""
+  /health:
+    get:
+      operationId: DataPlaneController_healthCheck
+      parameters: []
+      responses:
+        "200":
+          description: ""
+  /api/transfers/request/{role}:
+    post:
+      operationId: DataPlaneController_requestTransfer
+      parameters:
+        - name: role
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: processId
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: x-remote-party
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: x-dataset-id
+          required: true
+          in: header
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+  /api/transfers/{id}/start:
+    post:
+      operationId: DataPlaneController_startTransfer
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "202":
+          description: ""
+  /api/transfers/{id}/complete:
+    post:
+      operationId: DataPlaneController_completeTransfer
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "202":
+          description: ""
+  /api/transfers/{id}/terminate:
+    post:
+      operationId: DataPlaneController_terminateTransfer
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "202":
+          description: ""
+  /api/transfers/{id}/suspend:
+    post:
+      operationId: DataPlaneController_suspendTransfer
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "202":
+          description: ""
+  /api/management/state:
+    get:
+      operationId: DataPlaneManagementController_getState
+      parameters: []
+      responses:
+        "200":
+          description: ""
+  /api/management/catalog:
+    get:
+      operationId: DataPlaneManagementController_getCatalog
+      parameters: []
+      responses:
+        "200":
+          description: ""
+  /api/management/refresh:
+    post:
+      operationId: DataPlaneManagementController_refreshRegistration
+      parameters: []
+      responses:
+        "201":
+          description: ""
+  /api/management/dataset:
+    get:
+      operationId: DataPlaneManagementController_getDatasetConfig
+      parameters: []
+      responses:
+        "200":
+          description: ""
+    put:
+      operationId: DataPlaneManagementController_updateDatasetConfig
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DatasetConfig"
+      responses:
+        "200":
+          description: ""
+  /api/management/transfers:
+    get:
+      operationId: DataPlaneManagementController_getTransfers
+      parameters: []
+      responses:
+        "200":
+          description: ""
+  /api/management/transfers/{id}:
+    get:
+      operationId: DataPlaneManagementController_getTransfer
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+  /api/management/transfers/{id}/metadata:
+    get:
+      operationId: DataPlaneManagementController_getMetadata
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+  /api/management/transfers/{id}/start:
+    post:
+      operationId: DataPlaneManagementController_startTransfer
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "201":
+          description: ""
+  /api/management/transfers/{id}/complete:
+    post:
+      operationId: DataPlaneManagementController_completeTransfer
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "201":
+          description: ""
+  /api/management/transfers/{id}/terminate:
+    post:
+      operationId: DataPlaneManagementController_terminateTransfer
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: code
+          required: true
+          in: query
+          schema:
+            type: string
+      responses:
+        "201":
+          description: ""
+  /api/management/transfers/{id}/suspend:
+    post:
+      operationId: DataPlaneManagementController_suspendTransfer
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: code
+          required: true
+          in: query
+          schema:
+            type: string
+      responses:
+        "201":
+          description: ""
+  /api/management/transfers/{id}/execute/{path}:
+    get:
+      operationId: DataPlaneManagementController_executeTransfer_get
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "202":
+          description: ""
+    post:
+      operationId: DataPlaneManagementController_executeTransfer_post
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "202":
+          description: ""
+    put:
+      operationId: DataPlaneManagementController_executeTransfer_put
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "202":
+          description: ""
+    delete:
+      operationId: DataPlaneManagementController_executeTransfer_delete
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "202":
+          description: ""
+    patch:
+      operationId: DataPlaneManagementController_executeTransfer_patch
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "202":
+          description: ""
+    options:
+      operationId: DataPlaneManagementController_executeTransfer_options
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "202":
+          description: ""
+    head:
+      operationId: DataPlaneManagementController_executeTransfer_head
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "202":
+          description: ""
+    search:
+      operationId: DataPlaneManagementController_executeTransfer_search
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "202":
+          description: ""
+  /api/proxy/{id}/{path}:
+    get:
+      operationId: ProxyController_getData_get
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: Authorization
+          required: true
+          in: header
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+    post:
+      operationId: ProxyController_getData_post
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: Authorization
+          required: true
+          in: header
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+    put:
+      operationId: ProxyController_getData_put
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: Authorization
+          required: true
+          in: header
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+    delete:
+      operationId: ProxyController_getData_delete
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: Authorization
+          required: true
+          in: header
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+    patch:
+      operationId: ProxyController_getData_patch
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: Authorization
+          required: true
+          in: header
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+    options:
+      operationId: ProxyController_getData_options
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: Authorization
+          required: true
+          in: header
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+    head:
+      operationId: ProxyController_getData_head
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: Authorization
+          required: true
+          in: header
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+    search:
+      operationId: ProxyController_getData_search
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: Authorization
+          required: true
+          in: header
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+  /api/auth/user:
+    get:
+      operationId: AuthController_getUser
+      summary: Retrieve current user status
+      description: Retrieves current user state, whether someone is logged in or not a
+        200 result is provided. This is used in the frontend to determine
+        whether certain aspects should be shown.
+      parameters: []
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/AuthenticatedUserDto"
+                  - $ref: "#/components/schemas/UnauthenticatedUserDto"
+      tags: &a1
+        - Authentication
+  /api/auth/login:
+    get:
+      operationId: AuthController_login
+      summary: Login redirect
+      description: Redirects user to the correct authorization server
+      parameters: []
+      responses:
+        "200":
+          description: ""
+      tags: *a1
+  /api/auth/logout:
+    get:
+      operationId: AuthController_logout
+      summary: Logout redirect
+      description: Removes session information and redirects user the root of the
+        frontend (`auth.redirectURL`)
+      parameters: []
+      responses:
+        "302":
+          description: ""
+      tags: *a1
+  /api/auth/callback:
+    get:
+      operationId: AuthController_callback
+      summary: Login callback
+      description: Users are redirected from the authorization server to this endpoint
+        which will redirect them to the frontend (`auth.redirectURL`)
+      parameters: []
+      responses:
+        "302":
+          description: ""
+      tags: *a1
+  /api/management/logging/ingress:
+    get:
+      operationId: LoggingController_getIngressLogs
+      parameters:
+        - name: order
+          required: false
+          in: query
+          schema:
+            default: DESC
+            enum:
+              - ASC
+              - DESC
+            type: string
+        - name: page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            default: 1
+            type: number
+        - name: take
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 50
+            default: 10
+            type: number
+      responses:
+        "200":
+          description: ""
+  /api/management/logging/egress:
+    get:
+      operationId: LoggingController_getEgressLogs
+      parameters:
+        - name: order
+          required: false
+          in: query
+          schema:
+            default: DESC
+            enum:
+              - ASC
+              - DESC
+            type: string
+        - name: page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            default: 1
+            type: number
+        - name: take
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 50
+            default: 10
+            type: number
+      responses:
+        "200":
+          description: ""
+info:
+  title: TSG HTTP Data Plane
+  description: This OpenAPI specification shows the endpoints of the HTTP Data Plane.
+  version: "1.0"
+  contact: {}
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+tags:
+  - name: Health
+    description: Health Controller
+  - name: Settings
+    description: Settings Controller
+  - name: Authentication
+    description: Authentication Controller
+  - name: Data Plane
+    description: Data Plane Management Controller
+  - name: Data Plane Management
+    description: Data Plane Management Controller
+  - name: Catalog
+    description: Catalog Controller
+  - name: Catalog Management
+    description: Catalog Management Controller
+  - name: Negotiations
+    description: Negotiations Controller
+  - name: Negotiations Management
+    description: Negotiations Management Controller
+  - name: Transfers
+    description: Transfers Controller
+  - name: Transfers Management
+    description: Transfers Management Controller
+  - name: Registry
+    description: Registry Controller
+  - name: Registry Management
+    description: Registry Management Controller
+servers: []
+components:
+  securitySchemes:
+    oauth2:
+      type: oauth2
+      flows:
+        password:
+          scopes:
+            httpdataplane_admin: httpdataplane_admin
+            httpdataplane_dataplane: httpdataplane_dataplane
+    bearer:
+      scheme: bearer
+      bearerFormat: VP
+      type: http
+      description: Verifiable Presentation needed to communicate between two instances
+        of the control plane.
+  schemas:
+    DatasetConfig:
+      type: object
+      properties: {}
+    ClientInfoDto:
+      type: object
+      properties:
+        sub:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        roles:
+          type: array
+          items:
+            type: string
+      required:
+        - sub
+        - name
+        - email
+        - roles
+    AuthenticatedUserDto:
+      type: object
+      properties:
+        state:
+          type: object
+        user:
+          $ref: "#/components/schemas/ClientInfoDto"
+      required:
+        - state
+        - user
+    UnauthenticatedUserDto:
+      type: object
+      properties:
+        state:
+          type: object
+      required:
+        - state
+externalDocs:
+  description: Git Repository
+  url: https://gitlab.com/tno-tsg/dataspace-protocol/tno-security-gateway

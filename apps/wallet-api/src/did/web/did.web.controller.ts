@@ -3,7 +3,7 @@ import { DIDDocument } from "did-resolver";
 import { DisableOAuthGuard } from "../../auth/oauth.guard.js";
 import { DidService } from "../did.service.js";
 import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
-import { DIDDocumentDto } from "../did.schemas.js";
+import { DIDDocumentDto } from "@tsg-dsp/common-dtos";
 import { DidWebStrategy } from "./did.web.strategy.js";
 
 @Controller()

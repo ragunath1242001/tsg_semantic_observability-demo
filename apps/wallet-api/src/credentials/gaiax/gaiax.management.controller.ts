@@ -24,7 +24,7 @@ import { CredentialsDto } from "../credentials.schemas.js";
 import {
   ApiBadRequestResponseDefault,
   ApiForbiddenResponseDefault,
-} from "../../utils/swagger.js";
+} from "@tsg-dsp/common-dtos";
 
 @Controller("management/credentials/gaiax")
 @ApiOAuth2([AppRole.MANAGE_ALL_CREDENTIALS, AppRole.MANAGE_OWN_CREDENTIALS])

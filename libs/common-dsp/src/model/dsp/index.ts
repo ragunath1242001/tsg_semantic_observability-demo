@@ -11,3 +11,4 @@ export * from "./negotiation/messages.dto";
 export * from "./transfer/transfer";
 export * from "./transfer/messages";
 export * from "./transfer/messages.dto";
+export * from "./transfer/transfers.dto";

@@ -1,0 +1,197 @@
+---
+id: negotiation-management-controller-terminate
+title: "Terminate a negotiation"
+description: "Terminate a negotiation"
+sidebar_label: "Terminate a negotiation"
+hide_title: true
+hide_table_of_contents: true
+api: eJydVt9v2zYQ/lcIPm2Fa2V59FuWZoWBNTGatH0oAuNMnS0uEsmRVFxD0P++O0q25B/Z0OUhsck73t13332XRlqHHqK2Zp7LmbzHjY06ff8EBjZYoYm31kRvyxL9MqKvtIGIciIdeKiQToKcfW+koS/0gvNWYQj02kR6/LvWHunh6GucSG3YAGJBdzkG5bXjSHS46LzE/IOwaxELFGbIhKyDKrACOWtk3DkOE6LXZiPb9rkLgyH+bvMdW5xGPY701FdA30SOEXQZ6H1FJVKl7A7OlVolg+yvwD7NKDz+gMqVyB+VzUeZcBqQzIfc6IePg7MmYGCf66sr/nOc0v+MHyLEOpzEo4ARNtyRcS+DGLopCbGAqvY67lLjLNSxuGYP1TXalWBwCTnh1Kd2OMwhQvoknxn5y9CigJP2EU0Ky/xyNsREHeLATGbgdFYdMstGTiFrDkxqszHtAvrXjnOjQh4ZoA7ifTkHqvQHE7ku7TaZOAhha33eQUsTELp+nlU/+ylIZm9ddH1ZIXj0h3ayfX+0v/vD+gqIBPLrgs769IsY3dm8fEWv1xpWJYoFEYzA6xhtEHPMRbRC2aqqDRMJxQrjFtGIuLVCG+KNIWD3g9bnLFKqU8mZMu0+D0N19xOc5yFf24S+juwjnx4/il5BxCLBccabQgfx4NDcLOYiOFRUWjcAIhTUspQmmtxZbeIh76M3p+ITMWt/NdgSqsJjSSAkUPjyA7UlOFCMnI1W2XIiIOzjkt1ql+zuVKldQPHN+hcqTXz0tnaDd5iKBzLzJ8FC7Zz1Ub+Os6DIFbzwJVnw20wNocBQZwTk+ZAclQ2l3VBGJj91gyi+zKl/NAyguqnmJyKbUPMUgSCWy3f3NuK75XImjmDNca2NTpjSqbExPWT60JRGTpKpYrkTpTYvdLrVsaA5DlR6eQL2gUNTQb3kYez6+Nv0anrVjwdlSCQgOpCWIakfM6LfEDcEH5V6nWxrX/YcD7Ms2263U0jXU+s3We8bsj/nt3f3j3fvyWdaxKpMLGUtIfEYvfy2AB0R7qAMEX/EjKCjoW77VJpem76TDmtWrkE3J3KsT/R1Nt51g0SRLBUsc/RG06wg4Bdfti0f00T5XSdcr+DT+CYFznXgz6RHayjD6cpqhu0gf/ncL7dfxX+tzIs19odgdtw5KGvs9s8L7o52d/tMxgVCzoJFGXb3t10e75/4lcH/bGO1k73HjVLo4r/aPo/Ww+Lh8YnVsN/kVac2HrYsNfQ75Wpd1wBe9XzWSCLlpqY20X33JtODVf/SFjisu+YyGueKL96Q9T1saYWkoi8+uN82S0V9I/g0pH85Ot+NBxOXyY8wb9t/AEHfXVk=
+sidebar_class_name: "post api-method"
+info_path: docs/apis/control-plane/tsg-control-plane
+custom_edit_url: null
+---
+
+import ApiTabs from "@theme/ApiTabs";
+import DiscriminatorTabs from "@theme/DiscriminatorTabs";
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import SecuritySchemes from "@theme/ApiExplorer/SecuritySchemes";
+import MimeTabs from "@theme/MimeTabs";
+import ParamsItem from "@theme/ParamsItem";
+import ResponseSamples from "@theme/ResponseSamples";
+import SchemaItem from "@theme/SchemaItem";
+import SchemaTabs from "@theme/SchemaTabs";
+import Heading from "@theme/Heading";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Terminate a negotiation"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/management/negotiations/{processId}/terminate"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Terminate a negotiation
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<details
+  style={{"marginBottom":"1rem"}}
+  className={"openapi-markdown__details"}
+  data-collapsed={false}
+  open={true}
+>
+  <summary
+    style={{}}
+  >
+    <h3
+      className={"openapi-markdown__details-summary-header-params"}
+    >
+      Path Parameters
+    </h3>
+  </summary><div>
+    <ul>
+      <ParamsItem
+        className={"paramsItem"}
+        param={{"name":"processId","required":true,"in":"path","description":"Process ID of the negotiation","schema":{"type":"string"},"enumDescriptions":[]}}
+      >
+        
+      </ParamsItem>
+    </ul>
+  </div>
+</details><MimeTabs
+  className={"openapi-tabs__mime"}
+>
+  <TabItem
+    label={"application/json"}
+    value={"application/json-schema"}
+  >
+    <details
+      style={{}}
+      className={"openapi-markdown__details mime"}
+      data-collapsed={false}
+      open={true}
+    >
+      <summary
+        style={{}}
+        className={"openapi-markdown__details-summary-mime"}
+      >
+        <h3
+          className={"openapi-markdown__details-summary-header-body"}
+        >
+          Body
+        </h3><strong
+          className={"openapi-schema__required"}
+        >
+          required
+        </strong>
+      </summary><div
+        style={{"textAlign":"left","marginLeft":"1rem"}}
+      >
+        <div
+          style={{"marginTop":"1rem","marginBottom":"1rem"}}
+        >
+          
+          
+          Termination details
+          
+          
+        </div>
+      </div><ul
+        style={{"marginLeft":"1rem"}}
+      >
+        any
+      </ul>
+    </details>
+  </TabItem>
+</MimeTabs><div>
+  <div>
+    <ApiTabs
+      label={undefined}
+      id={undefined}
+    >
+      <TabItem
+        label={"200"}
+        value={"200"}
+      >
+        <div>
+          
+          
+          
+          
+          
+        </div><div>
+          <MimeTabs
+            className={"openapi-tabs__mime"}
+            schemaType={"response"}
+          >
+            <TabItem
+              label={"application/json"}
+              value={"application/json"}
+            >
+              <SchemaTabs
+                className={"openapi-tabs__schema"}
+              >
+                <TabItem
+                  label={"Schema"}
+                  value={"Schema"}
+                >
+                  <details
+                    style={{}}
+                    className={"openapi-markdown__details response"}
+                    data-collapsed={false}
+                    open={true}
+                  >
+                    <summary
+                      style={{}}
+                      className={"openapi-markdown__details-summary-response"}
+                    >
+                      <strong>
+                        Schema
+                      </strong>
+                    </summary><div
+                      style={{"textAlign":"left","marginLeft":"1rem"}}
+                    >
+                      
+                    </div><ul
+                      style={{"marginLeft":"1rem"}}
+                    >
+                      any
+                    </ul>
+                  </details>
+                </TabItem><TabItem
+                  label={"Example (from schema)"}
+                  value={"Example (from schema)"}
+                >
+                  <ResponseSamples
+                    responseExample={"{\n  \"status\": \"string\"\n}"}
+                    language={"json"}
+                  >
+                    
+                  </ResponseSamples>
+                </TabItem>
+              </SchemaTabs>
+            </TabItem>
+          </MimeTabs>
+        </div>
+      </TabItem>
+    </ApiTabs>
+  </div>
+</div>
+      

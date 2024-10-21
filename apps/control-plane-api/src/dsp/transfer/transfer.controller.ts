@@ -41,7 +41,7 @@ import {
   TransferStartMessageSchema,
   TransferSuspensionMessageSchema,
   TransferTerminationMessageSchema,
-} from "./transfer.schemas";
+} from "@tsg-dsp/common-dtos";
 
 @ApiTags("Transfers")
 @ApiBearerAuth()

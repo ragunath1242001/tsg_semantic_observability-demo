@@ -10,7 +10,7 @@ import { OAuthGuard } from "../auth/oauth.guard";
 import { Roles } from "../auth/roles.guard";
 import { AgreementService } from "./agreement.service";
 import { AgreementDto } from "@tsg-dsp/common-dsp";
-import { ContractAgreementMessageSchema } from "../dsp/negotiation/negotiation.schema";
+import { ContractAgreementMessageSchema } from "@tsg-dsp/common-dtos";
 
 @UseGuards(OAuthGuard)
 @Roles(["controlplane_admin"])

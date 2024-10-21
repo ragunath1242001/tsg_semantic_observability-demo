@@ -18,7 +18,7 @@ import {
   ApiTags,
 } from "@nestjs/swagger";
 import { CredentialAddressDto } from "./registry.schema";
-import { CatalogSchema } from "../dsp/catalog/catalog.schema";
+import { CatalogSchema } from "@tsg-dsp/common-dtos";
 
 @ApiTags("Registry")
 @ApiBearerAuth()

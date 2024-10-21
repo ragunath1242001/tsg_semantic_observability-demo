@@ -15,20 +15,3 @@ export interface IDataPlaneDto {
 export type DataPlaneCreation = Omit<IDataPlaneDto, "identifier"> & {
   identifier?: string;
 };
-
-export interface DataPlaneAddress {
-  endpoint: string;
-  properties: { name: string; value: string }[];
-}
-
-export interface DataPlaneRequestResponseDto {
-  accepted: boolean;
-  identifier: string;
-  dataAddress?: DataPlaneAddress;
-  callbackAddress?: string;
-}
-
-export interface DataPlaneTransferDto extends DataPlaneRequestResponseDto {
-  dataPlaneIdentifier: string;
-  endpointType: string;
-}

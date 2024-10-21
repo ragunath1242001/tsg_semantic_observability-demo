@@ -22,7 +22,7 @@ import { PolicyEvaluationService } from "./policy.evaluation.service";
 import {
   ApiForbiddenResponseDefault,
   ApiNotFoundResponseDefault,
-} from "../utils/swagger";
+} from "@tsg-dsp/common-dtos";
 import { validationPipe } from "../utils/validation.pipe";
 import { EvaluationContext, EvaluationDecision } from "./evaluation.dto";
 
@@ -88,6 +88,7 @@ export class PolicyEvaluationController {
       transferId: transferId,
     });
   }
+
   @Post(":transferId/evaluate/data-plane")
   @ApiOperation({
     summary: "Retrieve last evaluation context",
@@ -95,7 +96,6 @@ export class PolicyEvaluationController {
       "Retrieve last evaluation context of the specified transfer ID.",
   })
   @HttpCode(HttpStatus.OK)
-  @ApiBody({ type: "object" })
   @ApiOkResponse({ type: EvaluationDecision })
   @ApiNotFoundResponseDefault()
   @ApiForbiddenResponseDefault()

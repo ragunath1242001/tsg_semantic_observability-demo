@@ -6,7 +6,6 @@ import {
   CredentialOfferRequest,
   CredentialOfferStatus,
   JsonLdContextConfig,
-  OfferGrants,
 } from "@tsg-dsp/wallet-dtos";
 import JsonSchemaFormElement from "@tsg-dsp/common-ui/components/JsonSchemaFormElement.vue";
 import { useToast } from "primevue/usetoast";
@@ -56,16 +55,16 @@ const issuableCredentialTypes = computed(
 
 const loadOffers = async () => {
   try {
-    const response = await http<CredentialOfferStatus[]>(
-      "oid4vci/offer"
-    );
+    const response = await http<CredentialOfferStatus[]>("oid4vci/offer");
     offers.value = response.data;
   } catch (error) {
-    toast.add(toastError({
-      error,
-      summary: "Could not load credential offers",
-      defaultMessage: `Error in fetching credential offers`
-    }));
+    toast.add(
+      toastError({
+        error,
+        summary: "Could not load credential offers",
+        defaultMessage: `Error in fetching credential offers`,
+      })
+    );
   }
 };
 
@@ -76,27 +75,28 @@ const loadConfig = async () => {
     );
     config.value = response.data;
   } catch (error) {
-    toast.add(toastError({
-      error,
-      summary: "Could not load credential config",
-      defaultMessage: `Error in fetching credential config`
-    }));
+    toast.add(
+      toastError({
+        error,
+        summary: "Could not load credential config",
+        defaultMessage: `Error in fetching credential config`,
+      })
+    );
   }
 };
 
 const revokeOffer = async (id: number) => {
   try {
-    await http.put<CredentialOfferStatus>(
-      `oid4vci/offer/${id}/revoke`
-    );
+    await http.put<CredentialOfferStatus>(`oid4vci/offer/${id}/revoke`);
     await loadOffers();
   } catch (error) {
-
-    toast.add(toastError({
-      error,
-      summary: "Could not revoke offer",
-      defaultMessage: `Error in revoking credential offer`
-    }));
+    toast.add(
+      toastError({
+        error,
+        summary: "Could not revoke offer",
+        defaultMessage: `Error in revoking credential offer`,
+      })
+    );
   }
 };
 
@@ -197,19 +197,21 @@ const createOffer = async () => {
     const offerStatus = offers.value?.find(
       (o) =>
         o.preAuthorizedCode ===
-        offer.data.grants?.[OfferGrants.PRE_AUTHORIZATION_CODE]?.[
-          "pre-authorization_code"
-        ]
+        offer.data.grants?.[
+          "urn:ietf:params:oauth:grant-type:pre-authorized_code"
+        ]?.["pre-authorization_code"]
     );
     if (offerStatus) {
       expandedRows.value = [...(expandedRows.value ?? []), offerStatus];
     }
   } catch (error) {
-    toast.add(toastError({
-      error,
-      summary: "Could not create offer",
-      defaultMessage: `Error in creating new credential offer`
-    }));
+    toast.add(
+      toastError({
+        error,
+        summary: "Could not create offer",
+        defaultMessage: `Error in creating new credential offer`,
+      })
+    );
   }
 };
 
@@ -227,11 +229,13 @@ const retrieveCredential = async () => {
       preAuthorizedCode: "",
     };
   } catch (error) {
-    toast.add(toastError({
-      error,
-      summary: "Could not retrieve credential",
-      defaultMessage: `Error in retrieving credential`
-    }));
+    toast.add(
+      toastError({
+        error,
+        summary: "Could not retrieve credential",
+        defaultMessage: `Error in retrieving credential`,
+      })
+    );
   }
 };
 
