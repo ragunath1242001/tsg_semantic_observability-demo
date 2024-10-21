@@ -48,6 +48,12 @@ import Tab from "primevue/tab";
 import AccordionPanel from "primevue/accordionpanel";
 import AccordionContent from "primevue/accordioncontent";
 import AccordionHeader from "primevue/accordionheader";
+import { setJsonLdDebugContexts } from "@tsg-dsp/common-dsp";
+
+setJsonLdDebugContexts(
+  import.meta.env.TSG_STATIC_MODE !== "production",
+  import.meta.env.TSG_STATIC_VERSION
+);
 
 const pinia = createPinia();
 const app = createApp(App);

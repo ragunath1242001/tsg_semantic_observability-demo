@@ -285,10 +285,8 @@ export class DataPlaneService {
       id: id,
       title: datasetConfig.title,
       conformsTo: defArray(datasetConfig.baseSemanticModelRef),
-      hasVersion: datasetConfig.versions.map(
-        (v) => new Reference(`${id}:${v.version}`),
-      ),
-      hasCurrentVersion: new Reference(`${id}:${currentDatasetRef}`),
+      hasVersion: datasetConfig.versions.map((v) => `${id}:${v.version}`),
+      hasCurrentVersion: `${id}:${currentDatasetRef}`,
       hasPolicy: await this.constructOffer(id, datasetConfig.policy),
     });
     const versions = datasetConfig.versions.map((v, idx) => {
@@ -304,9 +302,9 @@ export class DataPlaneService {
           id: `${id}:${v.version}`,
           title: `${datasetConfig.title} (${v.version})`,
           version: `${v.version}`,
-          isVersionOf: new Reference(id),
+          isVersionOf: id,
           previousVersion: v.previous
-            ? new Reference(`${id}:${v.previous.version}`)
+            ? `${id}:${v.previous.version}`
             : undefined,
           conformsTo: defArray(
             v.semanticModelRef ?? datasetConfig.baseSemanticModelRef,
@@ -711,7 +709,7 @@ export class DataPlaneService {
     }
     if (!dataset["dcat:version"] && dataset["dcat:hasCurrentVersion"]) {
       dataset = state.dataset?.find(
-        (d) => d["@id"] === dataset?.["dcat:hasCurrentVersion"]?.["@id"],
+        (d) => d["@id"] === dataset?.["dcat:hasCurrentVersion"],
       );
       if (!dataset) {
         throw new HttpException(

@@ -19,6 +19,10 @@ COPY apps apps
 COPY libs libs 
 RUN pnpm run --filter "common-dsp" build 
 RUN pnpm run --filter "control-plane-dtos" build 
+ARG TSG_MODE=development
+ARG TSG_VERSION=0.0.0
+ARG TSG_STATIC_MODE=${TSG_MODE}
+ARG TSG_STATIC_VERSION=${TSG_VERSION}
 RUN pnpm run --filter "./libs/common*" -r build 
 RUN pnpm run --filter "./apps/analytics-data-plane*" --parallel -r build
 RUN pnpm deploy --filter analytics-data-plane-api --prod /prod/analytics-data-plane-api
@@ -29,5 +33,9 @@ WORKDIR /app
 COPY --from=build /prod/analytics-data-plane-api .
 COPY --from=build /prod/analytics-data-plane-ui/dist analytics-data-plane-ui/
 EXPOSE 3000
+ARG TSG_MODE=development
+ARG TSG_VERSION=0.0.0
+ENV TSG_MODE=${TSG_MODE}
+ENV TSG_VERSION=${TSG_VERSION}
 ENV EMBEDDED_FRONTEND="/app/analytics-data-plane-ui"
 CMD ["npm", "run", "start"]

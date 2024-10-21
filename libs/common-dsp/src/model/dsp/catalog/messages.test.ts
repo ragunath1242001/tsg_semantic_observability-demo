@@ -1,4 +1,4 @@
-import { deserialize } from "../../serialize";
+import { deserialize } from "../../deserialize";
 import { Multilanguage } from "../common";
 import { Catalog } from "./catalog";
 import {
@@ -14,6 +14,7 @@ import {
   DatasetRequestMessage,
 } from "./messages";
 import { expect, test } from "@jest/globals";
+import { defaultContext } from "../../../jsonld/context.defaults";
 
 test("Catalog Error", async () => {
   const catalogError = new CatalogError({
@@ -27,7 +28,7 @@ test("Catalog Error", async () => {
   });
   const serialized = await catalogError.serialize();
   const expected: CatalogErrorDto = {
-    "@context": "https://w3id.org/dspace/2024/1/context.json",
+    "@context": defaultContext(),
     "@type": "dspace:CatalogError",
     "dspace:code": "123:A",
     "dspace:reason": [
@@ -52,7 +53,7 @@ test("Catalog Message", async () => {
   });
   const serialized = await catalogMessage.serialize();
   const expected: CatalogMessageDto = {
-    "@context": "https://w3id.org/dspace/2024/1/context.json",
+    "@context": defaultContext(),
     "@type": "dspace:CatalogMessage",
     "dspace:catalog": [
       {
@@ -77,7 +78,7 @@ test("Catalog Request Message", async () => {
   });
   const serialized = await catalogRequestMessage.serialize();
   const expected: CatalogRequestMessageDto = {
-    "@context": "https://w3id.org/dspace/2024/1/context.json",
+    "@context": defaultContext(),
     "@type": "dspace:CatalogRequestMessage",
     "dspace:filter": [
       {
@@ -97,7 +98,7 @@ test("Dataset Request Message", async () => {
   });
   const serialized = await datasetRequestMessage.serialize();
   const expected: DatasetRequestMessageDto = {
-    "@context": "https://w3id.org/dspace/2024/1/context.json",
+    "@context": defaultContext(),
     "@type": "dspace:DatasetRequestMessage",
     "dspace:dataset": "urn:uuid:5b156cfa-5800-4345-8acc-6725c7eb5bc2",
   };

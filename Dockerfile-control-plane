@@ -18,6 +18,10 @@ COPY apps apps
 COPY libs libs
 RUN pnpm run --filter "common-dsp" build  
 RUN pnpm run --filter "control-plane-dtos" build 
+ARG TSG_MODE=development
+ARG TSG_VERSION=0.0.0
+ARG TSG_STATIC_MODE=${TSG_MODE}
+ARG TSG_STATIC_VERSION=${TSG_VERSION}
 RUN pnpm run --filter "./libs/common*" -r build 
 RUN pnpm run --filter "./libs/control-plane*" --parallel -r build
 RUN pnpm run --filter "./apps/control-plane*" --parallel -r build 
@@ -29,5 +33,9 @@ WORKDIR /app
 COPY --from=build /prod/control-plane-api .
 COPY --from=build /prod/control-plane-ui/dist control-plane-ui/
 EXPOSE 3000
+ARG TSG_MODE=development
+ARG TSG_VERSION=0.0.0
+ENV TSG_MODE=${TSG_MODE}
+ENV TSG_VERSION=${TSG_VERSION}
 ENV EMBEDDED_FRONTEND="/app/control-plane-ui"
 CMD ["npm", "run", "start"]

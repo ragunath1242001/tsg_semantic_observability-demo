@@ -36,6 +36,12 @@ import { createPinia } from "pinia";
 
 import { loader } from "@guolao/vue-monaco-editor";
 import Drawer from "primevue/drawer";
+import { setJsonLdDebugContexts } from "@tsg-dsp/common-dsp";
+
+setJsonLdDebugContexts(
+  import.meta.env.TSG_STATIC_MODE !== "production",
+  import.meta.env.TSG_STATIC_VERSION
+);
 
 loader.config({
   paths: {

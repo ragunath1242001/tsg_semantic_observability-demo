@@ -4,9 +4,20 @@ import {
   IsOptional,
   ValidateNested,
 } from "class-validator";
-import { Serializable, Namespace } from "../../decorators";
-import { Multilanguage, SerializableClass } from "../common";
-import { TransferCompletionMessageDto, TransferErrorDto, TransferState, TransferProcessDto, EndpointPropertyDto, DataAddressDto, TransferRequestMessageDto, TransferStartMessageDto, TransferSuspensionMessageDto, TransferTerminationMessageDto } from "./messages.dto";
+import { Serializable, Namespace, LDType } from "../../decorators";
+import { Multilanguage, SerializableClass, withExtraProps } from "../common";
+import {
+  TransferCompletionMessageDto,
+  TransferErrorDto,
+  TransferState,
+  TransferProcessDto,
+  EndpointPropertyDto,
+  DataAddressDto,
+  TransferRequestMessageDto,
+  TransferStartMessageDto,
+  TransferSuspensionMessageDto,
+  TransferTerminationMessageDto,
+} from "./messages.dto";
 
 export interface ITransferCompletionMessage {
   providerPid: string;
@@ -22,8 +33,8 @@ export class TransferCompletionMessage extends SerializableClass<TransferComplet
   @IsNotEmpty()
   consumerPid: string;
 
-  constructor(value: ITransferCompletionMessage) {
-    super();
+  constructor(value: withExtraProps<ITransferCompletionMessage>) {
+    super(value);
     this.providerPid = value.providerPid;
     this.consumerPid = value.consumerPid;
   }
@@ -52,8 +63,8 @@ export class TransferError extends SerializableClass<TransferErrorDto> {
   @IsOptional()
   reason?: Array<Multilanguage>;
 
-  constructor(value: ITransferError) {
-    super();
+  constructor(value: withExtraProps<ITransferError>) {
+    super(value);
     this.providerPid = value.providerPid;
     this.consumerPid = value.consumerPid;
     this.code = value.code;
@@ -83,8 +94,8 @@ export class TransferProcess extends SerializableClass<TransferProcessDto> {
   @IsNotEmpty()
   agreementId: string;
 
-  constructor(value: ITransferProcess) {
-    super();
+  constructor(value: withExtraProps<ITransferProcess>) {
+    super(value);
     this.providerPid = value.providerPid;
     this.consumerPid = value.consumerPid;
     this.state = value.state;
@@ -100,8 +111,8 @@ export class EndpointProperty extends SerializableClass<EndpointPropertyDto> {
   @Namespace("dspace")
   @IsNotEmpty()
   value: string;
-  constructor(value: IEndpointProperty) {
-    super();
+  constructor(value: withExtraProps<IEndpointProperty>) {
+    super(value);
     this.name = value.name;
     this.value = value.value;
   }
@@ -123,10 +134,11 @@ export class DataAddress extends SerializableClass<DataAddressDto> {
   endpoint: string;
   @Namespace("dspace")
   @IsNotEmpty()
+  @LDType(() => EndpointProperty)
   endpointProperties: Array<EndpointProperty>;
 
-  constructor(value: IDataAddress) {
-    super();
+  constructor(value: withExtraProps<IDataAddress>) {
+    super(value);
     this.endpointType = value.endpointType;
     this.endpoint = value.endpoint;
     this.endpointProperties = value.endpointProperties;
@@ -154,13 +166,15 @@ export class TransferRequestMessage extends SerializableClass<TransferRequestMes
   format: string;
   @Namespace("dspace")
   @ValidateNested()
+  @LDType(() => DataAddress)
+  @IsOptional()
   dataAddress?: DataAddress;
   @Namespace("dspace")
   @IsNotEmpty()
   callbackAddress: string;
 
-  constructor(value: ITransferRequestMessage) {
-    super();
+  constructor(value: withExtraProps<ITransferRequestMessage>) {
+    super(value);
     this.consumerPid = value.consumerPid;
     this.agreementId = value.agreementId;
     this.format = value.format;
@@ -191,10 +205,12 @@ export class TransferStartMessage extends SerializableClass<TransferStartMessage
   consumerPid: string;
   @Namespace("dspace")
   @ValidateNested()
+  @LDType(() => DataAddress)
+  @IsOptional()
   dataAddress?: DataAddress;
 
-  constructor(value: ITransferStartMessage) {
-    super();
+  constructor(value: withExtraProps<ITransferStartMessage>) {
+    super(value);
     this.providerPid = value.providerPid;
     this.consumerPid = value.consumerPid;
     this.dataAddress = value.dataAddress;
@@ -220,8 +236,8 @@ export class TransferSuspensionMessage extends SerializableClass<TransferSuspens
   @ArrayNotEmpty()
   reason: Array<Multilanguage>;
 
-  constructor(value: ITransferSuspensionMessage) {
-    super();
+  constructor(value: withExtraProps<ITransferSuspensionMessage>) {
+    super(value);
     this.providerPid = value.providerPid;
     this.consumerPid = value.consumerPid;
     this.reason = value.reason;
@@ -251,8 +267,8 @@ export class TransferTerminationMessage extends SerializableClass<TransferTermin
   @ValidateNested()
   reason: Array<Multilanguage>;
 
-  constructor(value: ITransferTerminationMessage) {
-    super();
+  constructor(value: withExtraProps<ITransferTerminationMessage>) {
+    super(value);
     this.providerPid = value.providerPid;
     this.consumerPid = value.consumerPid;
     this.code = value.code;

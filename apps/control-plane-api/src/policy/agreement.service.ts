@@ -2,6 +2,7 @@ import { HttpStatus, Injectable, Logger } from "@nestjs/common";
 import {
   Agreement,
   AgreementDto,
+  defaultContext,
   deserialize,
   HashedMessage,
 } from "@tsg-dsp/common-dsp";
@@ -41,7 +42,7 @@ export class AgreementService {
       return agreement.agreement;
     } else {
       const a = await deserialize<Agreement>({
-        "@context": "https://w3id.org/dspace/2024/1/context.json",
+        "@context": defaultContext(),
         ...agreement.agreement,
       });
       return a;

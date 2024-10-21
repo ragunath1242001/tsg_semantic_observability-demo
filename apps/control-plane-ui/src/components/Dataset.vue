@@ -184,17 +184,17 @@ const sendNegotiation = async (
         >
           <DisplayField label="Versions" v-if="'dcat:hasVersion' in datasetData"
             ><div v-for="version in datasetData['dcat:hasVersion']">
-              {{ version["@id"] }}
+              {{ version }}
             </div>
           </DisplayField>
           <DisplayField
             label="Current Version"
             v-if="
               'dcat:hasCurrentVersion' in datasetData &&
-              datasetData['dcat:hasCurrentVersion']['@id']
+              datasetData['dcat:hasCurrentVersion']
             "
           >
-            {{ datasetData["dcat:hasCurrentVersion"]["@id"] }}
+            {{ datasetData["dcat:hasCurrentVersion"] }}
           </DisplayField>
           <DisplayField label="Endpoint URL">
             <a

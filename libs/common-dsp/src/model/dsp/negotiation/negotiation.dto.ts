@@ -1,3 +1,4 @@
+import { OrArray } from "../../../utils/unions";
 import { ValueDto, ReferenceDto, ContextDto } from "../common.dto";
 
 export enum ODRLAction {
@@ -116,8 +117,8 @@ export interface ConstraintDto {
 export interface PolicyRuleDto {
   "@type": "odrl:Prohibition" | "odrl:Duty" | "odrl:Permission";
   "odrl:assigner"?: string;
-  "odrl:assignee"?: string | string[];
-  "odrl:action": ODRLAction | string | Array<ODRLAction | string>;
+  "odrl:assignee"?: OrArray<string>;
+  "odrl:action": OrArray<ODRLAction | string>;
   "odrl:target"?: string;
   "odrl:constraint"?: Array<ConstraintDto>;
 }
@@ -140,7 +141,7 @@ export interface PermissionDto extends PolicyRuleDto {
 export interface PolicyDto extends ReferenceDto {
   "@type": "odrl:Offer" | "odrl:Agreement";
   "odrl:assigner"?: string;
-  "odrl:assignee"?: string | string[];
+  "odrl:assignee"?: OrArray<string>;
   "odrl:target"?: string;
   "odrl:profile"?: string;
   "odrl:permission"?: Array<PermissionDto>;

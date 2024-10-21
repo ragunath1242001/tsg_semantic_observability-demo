@@ -4,8 +4,8 @@ import {
   IsString,
   ValidateNested,
 } from "class-validator";
-import { Namespace, Serializable } from "../../decorators";
-import { SerializableClass } from "../common";
+import { LDType, Namespace, Serializable } from "../../decorators";
+import { SerializableClass, withExtraProps } from "../common";
 import { Catalog } from "./catalog";
 import {
   CatalogErrorDto,
@@ -32,8 +32,8 @@ export class CatalogError extends SerializableClass<CatalogErrorDto> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   reason?: Array<any>;
 
-  constructor(value: ICatalogError) {
-    super();
+  constructor(value: withExtraProps<ICatalogError>) {
+    super(value);
     this.code = value.code;
     this.reason = value.reason;
   }
@@ -48,10 +48,11 @@ export class CatalogMessage extends SerializableClass<CatalogMessageDto> {
   @Namespace("dspace")
   @ValidateNested()
   @IsOptional()
+  @LDType(() => Catalog)
   catalog?: Array<Catalog>;
 
-  constructor(value: ICatalogMessage) {
-    super();
+  constructor(value: withExtraProps<ICatalogMessage>) {
+    super(value);
     this.catalog = value.catalog;
   }
 }
@@ -69,8 +70,8 @@ export class CatalogRequestMessage extends SerializableClass<CatalogRequestMessa
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   filter?: Array<any>;
 
-  constructor(value: ICatalogRequestMessage) {
-    super();
+  constructor(value: withExtraProps<ICatalogRequestMessage>) {
+    super(value);
     this.filter = value.filter;
   }
 }
@@ -86,8 +87,8 @@ export class DatasetRequestMessage extends SerializableClass<DatasetRequestMessa
   @IsString()
   dataset: string;
 
-  constructor(value: IDatasetRequestMessage) {
-    super();
+  constructor(value: withExtraProps<IDatasetRequestMessage>) {
+    super(value);
     this.dataset = value.dataset;
   }
 }

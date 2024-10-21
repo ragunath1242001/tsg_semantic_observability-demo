@@ -1,6 +1,5 @@
 import { expect, test } from "@jest/globals";
-import { deserialize } from "../../serialize";
-import { Reference } from "../common";
+import { deserialize } from "../../deserialize";
 import { Constraint, Offer, Permission } from "../negotiation/negotiation";
 import { ODRLAction, ODRLOperator } from "../negotiation/negotiation.dto";
 import {
@@ -11,30 +10,22 @@ import {
   Resource,
 } from "./catalog";
 import { CatalogDto, ResourceDto } from "./catalog.dto";
-import { inspect } from "util";
+import { defaultContext } from "../../../jsonld/context.defaults";
 
 test("Resource serialization", async () => {
   const resource = new Resource({
     id: "urn:uuid:5b156cfa-5800-4345-8acc-6725c7eb5bc2",
-    contactPoint: new Reference({ id: "http://example.com" }),
+    contactPoint: "http://example.com",
     keyword: ["keyword1", "keyword2"],
-    landingPage: new Reference({ id: "http://example.com" }),
+    landingPage: "http://example.com",
     title: "Resource title",
     description: ["Resource description"],
     publisher: "urn:uuid:b07295ed-68b5-446f-b35b-db6573cda632",
     version: "0.0.1",
-    hasVersion: [
-      new Reference({ id: "urn:uuid:5b156cfa-5800-4345-8acc-6725c7eb5bc2" }),
-    ],
-    isVersionOf: new Reference({
-      id: "urn:uuid:5b156cfa-5800-4345-8acc-6725c7eb5bc2",
-    }),
-    hasCurrentVersion: new Reference({
-      id: "urn:uuid:5b156cfa-5800-4345-8acc-6725c7eb5bc2",
-    }),
-    previousVersion: new Reference({
-      id: "urn:uuid:5b156cfa-5800-4345-8acc-6725c7eb5bc2",
-    }),
+    hasVersion: ["urn:uuid:5b156cfa-5800-4345-8acc-6725c7eb5bc2"],
+    isVersionOf: "urn:uuid:5b156cfa-5800-4345-8acc-6725c7eb5bc2",
+    hasCurrentVersion: "urn:uuid:5b156cfa-5800-4345-8acc-6725c7eb5bc2",
+    previousVersion: "urn:uuid:5b156cfa-5800-4345-8acc-6725c7eb5bc2",
     hasPolicy: [
       new Offer({
         id: "urn:uuid:d5b97478-639e-49ab-a125-dbb8ea6e3259",
@@ -42,34 +33,26 @@ test("Resource serialization", async () => {
       }),
     ],
   });
+  resource.extraProps["dcat:test"] = "Test";
+  resource.hasPolicy[0].extraProps["dcat:test2"] = {
+    "@id": "urn:uuid:ab07632c-68c3-4665-8708-533552b51e91",
+  };
   const serialized = await resource.serialize();
   const expected: ResourceDto = {
-    "@context": "https://w3id.org/dspace/2024/1/context.json",
+    "@context": defaultContext(),
     "@type": "dcat:Resource",
     "@id": "urn:uuid:5b156cfa-5800-4345-8acc-6725c7eb5bc2",
-    "dcat:contactPoint": {
-      "@id": "http://example.com",
-    },
+    "dcat:contactPoint": "http://example.com",
     "dcat:keyword": ["keyword1", "keyword2"],
-    "dcat:landingPage": {
-      "@id": "http://example.com",
-    },
+    "dcat:landingPage": "http://example.com",
     "dct:description": ["Resource description"],
     "dct:publisher": "urn:uuid:b07295ed-68b5-446f-b35b-db6573cda632",
     "dct:title": "Resource title",
     "dcat:version": "0.0.1",
-    "dcat:hasVersion": [
-      { "@id": "urn:uuid:5b156cfa-5800-4345-8acc-6725c7eb5bc2" },
-    ],
-    "dcat:isVersionOf": {
-      "@id": "urn:uuid:5b156cfa-5800-4345-8acc-6725c7eb5bc2",
-    },
-    "dcat:hasCurrentVersion": {
-      "@id": "urn:uuid:5b156cfa-5800-4345-8acc-6725c7eb5bc2",
-    },
-    "dcat:previousVersion": {
-      "@id": "urn:uuid:5b156cfa-5800-4345-8acc-6725c7eb5bc2",
-    },
+    "dcat:hasVersion": ["urn:uuid:5b156cfa-5800-4345-8acc-6725c7eb5bc2"],
+    "dcat:isVersionOf": "urn:uuid:5b156cfa-5800-4345-8acc-6725c7eb5bc2",
+    "dcat:hasCurrentVersion": "urn:uuid:5b156cfa-5800-4345-8acc-6725c7eb5bc2",
+    "dcat:previousVersion": "urn:uuid:5b156cfa-5800-4345-8acc-6725c7eb5bc2",
     "odrl:hasPolicy": [
       {
         "@id": "urn:uuid:d5b97478-639e-49ab-a125-dbb8ea6e3259",
@@ -77,6 +60,10 @@ test("Resource serialization", async () => {
         "odrl:assigner": "urn:uuid:ab07632c-68c3-4665-8708-533552b51e91",
       },
     ],
+  };
+  expected["dcat:test"] = "Test";
+  expected["odrl:hasPolicy"][0]["dcat:test2"] = {
+    "@id": "urn:uuid:ab07632c-68c3-4665-8708-533552b51e91",
   };
   expect(serialized).toStrictEqual(expected);
   const deserialized = await deserialize<Resource>(serialized);
@@ -138,8 +125,11 @@ test("Catalog serialization", async () => {
     ],
   });
   const serialized = await catalog.serialize();
+  const serializedJson = JSON.stringify(serialized);
+  // const serializedJson2 = JSON.stringify(catalog);
+  // expect(serializedJson).toStrictEqual(serializedJson2);
   const expected: CatalogDto = {
-    "@context": "https://w3id.org/dspace/2024/1/context.json",
+    "@context": defaultContext(),
     "@type": "dcat:Catalog",
     "@id": "urn:uuid:a0920ac1-d08e-4ee1-acde-6dd0432b84e4",
     "dct:creator": "did:web:localhost",
@@ -207,7 +197,7 @@ test("Catalog serialization", async () => {
 
 test("Heracles", async () => {
   const dto: CatalogDto = {
-    "@context": "https://w3id.org/dspace/2024/1/context.json",
+    "@context": defaultContext(),
     "@id": "urn:uuid:a3983705-9382-4acf-bf09-36aaf4657287",
     "@type": "dcat:Catalog",
     "dct:creator": "did:web:pharmacure.heracles.dataspac.es",
@@ -332,11 +322,9 @@ test("Heracles", async () => {
     ],
   };
   const deserialized = await deserialize<Catalog>(dto);
-  console.log(inspect(deserialized, false, null));
+  // console.log(inspect(deserialized, false, null));
   const serialized = await deserialized.serialize(true);
-  console.log(inspect(serialized, false, null));
+  // console.log(inspect(serialized, false, null));
 
   expect(serialized).toStrictEqual(dto);
 });
-
-// TODO: deserialization samples

@@ -22,6 +22,7 @@ import {
   NegotiationProcessEvent,
   NegotiationRole,
   Offer,
+  defaultContext,
   deserialize,
 } from "@tsg-dsp/common-dsp";
 import crypto from "crypto";
@@ -214,7 +215,7 @@ export class NegotiationService {
         }),
         agreement: negotiation.agreementDao
           ? await deserialize<Agreement>({
-              "@context": "https://w3id.org/dspace/2024/1/context.json",
+              "@context": defaultContext(),
               ...negotiation.agreementDao?.agreement,
             })
           : undefined,

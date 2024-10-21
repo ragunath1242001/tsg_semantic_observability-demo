@@ -1,6 +1,8 @@
 import {
   ContractAgreementVerificationMessage,
   ContractNegotiationState,
+  serialize,
+  deserializeSync,
   HashedMessage,
   INegotiationDetail,
   INegotiationProcessEvent,
@@ -17,7 +19,7 @@ import {
   PrimaryColumn,
   Relation,
 } from "typeorm";
-import { AutoIdEntity, instanceTransformer, MetaEntity } from "./common.dao";
+import { AutoIdEntity, jsonLdTransformer, MetaEntity } from "./common.dao";
 import { AgreementDao } from "./agreement.dao";
 
 @Entity({ name: "negotationProcessEvent" })
@@ -39,7 +41,7 @@ export class NegotiationProcessEventDao
   agreementMessage?: string;
   @Column("simple-json", {
     nullable: true,
-    transformer: instanceTransformer(ContractAgreementVerificationMessage),
+    transformer: jsonLdTransformer,
   })
   verification?: ContractAgreementVerificationMessage;
   @Column("simple-json", { nullable: true })
@@ -71,7 +73,7 @@ export class NegotiationDetailDao
   dataSet!: string;
   @Column("simple-json", {
     nullable: true,
-    transformer: instanceTransformer(Offer),
+    transformer: jsonLdTransformer,
   })
   offer?: Offer;
   @ManyToOne(() => AgreementDao, {

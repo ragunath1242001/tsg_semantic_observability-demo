@@ -135,6 +135,13 @@ describe("Catalog Service", () => {
             ],
           }),
         ],
+        extraProps: {
+          "tsg:testExtraProp": {
+            "@type": "tsg:ExtraPropClass",
+            "@id": "urn:uuid:7584b2d4-e9b4-4df3-87cc-db4106bb52d8",
+            "tsg:test": "Test",
+          },
+        },
       });
 
       const catalogDao = await catalogService.getCatalogDao(true);
@@ -166,6 +173,12 @@ describe("Catalog Service", () => {
         updatedCatalogDao.dataset?.[0]?.hasPolicy?.[0].permission?.[0]
           ?.constraint?.[0]?.rightOperand
       ).toBe("dataspace:MembershipCredential");
+
+      expect(
+        updatedCatalogDao.dataset?.[0]?.extraProps["tsg:testExtraProp"]?.[
+          "tsg:test"
+        ]
+      ).toBe("Test");
 
       const datasetDao = await catalogService.getDataset(dataset.id);
       expect(datasetDao).toBeDefined();

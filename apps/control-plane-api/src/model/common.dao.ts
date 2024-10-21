@@ -1,4 +1,10 @@
-import { ContextDto, IReference, SerializableClass } from "@tsg-dsp/common-dsp";
+import {
+  ContextDto,
+  deserializeSync,
+  IReference,
+  SerializableClass,
+  serialize,
+} from "@tsg-dsp/common-dsp";
 import { Exclude } from "class-transformer";
 import {
   CreateDateColumn,
@@ -33,19 +39,15 @@ export type Type<T, ParamT> = {
 export function mapToInstances<
   InType extends IReference,
   DtoType extends ContextDto,
-  OutType extends SerializableClass<DtoType>
+  OutType extends SerializableClass<DtoType>,
 >(
   input: Array<InType> | undefined,
-  target: Type<OutType, InType>
+  target: Type<OutType, InType>,
 ): Array<OutType> | undefined {
   return input ? input.map((element) => new target(element)) : undefined;
 }
 
-export function instanceTransformer<
-  OutType extends SerializableClass<ContextDto>
->(target: Type<OutType, any>): ValueTransformer {
-  return {
-    to: (v) => v,
-    from: (v) => (v ? new target(v) : undefined),
-  };
-}
+export const jsonLdTransformer: ValueTransformer = {
+  to: (value) => serialize(value),
+  from: (value) => deserializeSync(value, true),
+};

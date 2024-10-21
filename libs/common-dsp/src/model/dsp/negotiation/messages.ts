@@ -4,12 +4,13 @@ import {
   IsString,
   ValidateNested,
 } from "class-validator";
-import { Serializable, Namespace } from "../../decorators";
+import { Serializable, Namespace, LDType } from "../../decorators";
 import {
   IReference,
   Multilanguage,
   Reference,
   SerializableClass,
+  withExtraProps,
 } from "../common";
 
 import { Agreement, Offer } from "./negotiation";
@@ -48,13 +49,14 @@ export class ContractRequestMessage extends SerializableClass<ContractRequestMes
   @Namespace("dspace")
   @ValidateNested()
   @IsNotEmpty()
+  @LDType(() => Offer)
   offer: Offer;
   @Namespace("dspace")
   @IsNotEmpty()
   callbackAddress: string;
 
-  constructor(value: IContractRequestMessage) {
-    super();
+  constructor(value: withExtraProps<IContractRequestMessage>) {
+    super(value);
     this.consumerPid = value.consumerPid;
     this.providerPid = value.providerPid;
     this.offer = createOptionalInstance(value.offer, Offer);
@@ -82,13 +84,14 @@ export class ContractOfferMessage extends SerializableClass<ContractOfferMessage
   @Namespace("dspace")
   @ValidateNested()
   @IsNotEmpty()
+  @LDType(() => Offer)
   offer: Offer;
   @Namespace("dspace")
   @IsNotEmpty()
   callbackAddress: string;
 
-  constructor(value: IContractOfferMessage) {
-    super();
+  constructor(value: withExtraProps<IContractOfferMessage>) {
+    super(value);
     this.consumerPid = value.consumerPid;
     this.providerPid = value.providerPid;
     this.offer = createOptionalInstance(value.offer, Offer);
@@ -121,8 +124,8 @@ export class ContractNegotiationTerminationMessage extends SerializableClass<Con
   @ValidateNested()
   reason: Array<Multilanguage>;
 
-  constructor(value: IContractNegotiationTerminationMessage) {
-    super();
+  constructor(value: withExtraProps<IContractNegotiationTerminationMessage>) {
+    super(value);
     this.consumerPid = value.consumerPid;
     this.providerPid = value.providerPid;
     this.code = value.code;
@@ -150,7 +153,7 @@ export class ContractNegotiation extends Reference<ContractNegotiationDto> {
   @IsNotEmpty()
   state: ContractNegotiationState;
 
-  constructor(value: IContractNegotiation) {
+  constructor(value: withExtraProps<IContractNegotiation>) {
     super(value);
     this.consumerPid = value.consumerPid;
     this.providerPid = value.providerPid;
@@ -182,8 +185,8 @@ export class ContractNegotiationEventMessage extends SerializableClass<ContractN
   @IsOptional()
   hashedMessage?: HashedMessage;
 
-  constructor(value: IContractNegotiationEventMessage) {
-    super();
+  constructor(value: withExtraProps<IContractNegotiationEventMessage>) {
+    super(value);
     this.consumerPid = value.consumerPid;
     this.providerPid = value.providerPid;
     this.eventType = value.eventType;
@@ -217,8 +220,8 @@ export class ContractNegotiationError extends SerializableClass<ContractNegotiat
   @IsOptional()
   description?: Array<Multilanguage>;
 
-  constructor(value: IContractNegotiationError) {
-    super();
+  constructor(value: withExtraProps<IContractNegotiationError>) {
+    super(value);
     this.consumerPid = value.consumerPid;
     this.providerPid = value.providerPid;
     this.reason = value.reason;
@@ -246,8 +249,8 @@ export class ContractAgreementVerificationMessage extends SerializableClass<Cont
   @IsNotEmpty()
   hashedMessage: HashedMessage;
 
-  constructor(value: IContractAgreementVerificationMessage) {
-    super();
+  constructor(value: withExtraProps<IContractAgreementVerificationMessage>) {
+    super(value);
     this.consumerPid = value.consumerPid;
     this.providerPid = value.providerPid;
     this.hashedMessage = value.hashedMessage;
@@ -273,10 +276,11 @@ export class ContractAgreementMessage extends SerializableClass<ContractAgreemen
   @Namespace("dspace")
   @IsNotEmpty()
   @ValidateNested()
+  @LDType(() => Agreement)
   agreement: Agreement;
 
-  constructor(value: IContractAgreementMessage) {
-    super();
+  constructor(value: withExtraProps<IContractAgreementMessage>) {
+    super(value);
     this.consumerPid = value.consumerPid;
     this.providerPid = value.providerPid;
     this.agreement = createOptionalInstance(value.agreement, Agreement);

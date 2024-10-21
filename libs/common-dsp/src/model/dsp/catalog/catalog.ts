@@ -9,8 +9,8 @@ import {
   createOptionalInstance,
   createOptionalInstances,
 } from "../../../utils/instances";
-import { Namespace, Serializable } from "../../decorators";
-import { Decimal, Duration, IReference, Reference, Time } from "../common";
+import { KeepTypes, LDType, Namespace, Serializable } from "../../decorators";
+import { IReference, Reference, withExtraProps } from "../common";
 import { ContextDto } from "../common.dto";
 import { Offer, Policy } from "../negotiation/negotiation";
 import {
@@ -23,29 +23,29 @@ import {
 } from "./catalog.dto";
 
 export interface IResource extends IReference {
-  contactPoint?: Reference;
+  contactPoint?: string;
   keyword?: Array<string>;
-  landingPage?: Reference;
-  theme?: Array<Reference>;
+  landingPage?: string;
+  theme?: Array<string>;
   conformsTo?: string[];
   creator?: string;
   description?: Array<string>;
   identifier?: string;
-  isReferencedBy?: Reference;
-  issued?: Time;
-  language?: Reference;
-  license?: Reference;
-  modified?: Time;
+  isReferencedBy?: string;
+  issued?: string;
+  language?: string;
+  license?: string;
+  modified?: string;
   publisher?: string;
-  relation?: Reference;
+  relation?: string;
   title?: string;
   type?: string;
   hasPolicy?: Array<Policy>;
-  hasVersion?: Array<Reference>;
-  isVersionOf?: Reference;
+  hasVersion?: Array<string>;
+  isVersionOf?: string;
   version?: string;
-  hasCurrentVersion?: Reference;
-  previousVersion?: Reference;
+  hasCurrentVersion?: string;
+  previousVersion?: string;
 }
 
 @Serializable("dcat:Resource")
@@ -53,20 +53,20 @@ export class Resource<
   OutType extends ContextDto = ResourceDto
 > extends Reference<OutType> {
   @Namespace("dcat")
-  @ValidateNested()
+  @IsString()
   @IsOptional()
-  contactPoint?: Reference;
+  contactPoint?: string;
   @Namespace("dcat")
   @IsOptional()
   keyword?: Array<string>;
   @Namespace("dcat")
-  @ValidateNested()
+  @IsString()
   @IsOptional()
-  landingPage?: Reference;
+  landingPage?: string;
   @Namespace("dcat")
-  @ValidateNested()
+  @IsString({ each: true })
   @IsOptional()
-  theme?: Array<Reference>;
+  theme?: Array<string>;
   @Namespace("dct")
   @IsString({ each: true })
   @IsOptional()
@@ -81,31 +81,33 @@ export class Resource<
   @Namespace("dct")
   identifier?: string;
   @Namespace("dct")
-  @ValidateNested()
+  @IsString()
   @IsOptional()
-  isReferencedBy?: Reference;
+  isReferencedBy?: string;
   @Namespace("dct")
-  @ValidateNested()
+  @IsString()
   @IsOptional()
-  issued?: Time;
+  issued?: string;
   @Namespace("dct")
-  @ValidateNested()
+  @IsString()
   @IsOptional()
-  language?: Reference;
+  language?: string;
   @Namespace("dct")
-  @ValidateNested()
+  @IsString()
   @IsOptional()
-  license?: Reference;
+  license?: string;
   @Namespace("dct")
-  @ValidateNested()
+  @IsString()
   @IsOptional()
-  modified?: Time;
+  modified?: string;
   @Namespace("dct")
+  @IsString()
+  @IsOptional()
   publisher?: string;
   @Namespace("dct")
-  @ValidateNested()
+  @IsString()
   @IsOptional()
-  relation?: Reference;
+  relation?: string;
   @Namespace("dct")
   title?: string;
   @Namespace("dct")
@@ -113,24 +115,25 @@ export class Resource<
   @Namespace("odrl")
   @ValidateNested()
   @IsOptional()
+  @LDType(() => Offer)
   hasPolicy?: Array<Policy>;
   @Namespace("dcat")
   @IsOptional()
-  hasVersion?: Array<Reference>;
+  hasVersion?: Array<string>;
   @Namespace("dcat")
   @IsOptional()
-  isVersionOf?: Reference;
+  isVersionOf?: string;
   @Namespace("dcat")
   @IsOptional()
   version?: string;
   @Namespace("dcat")
   @IsOptional()
-  hasCurrentVersion?: Reference;
+  hasCurrentVersion?: string;
   @Namespace("dcat")
   @IsOptional()
-  previousVersion?: Reference;
+  previousVersion?: string;
 
-  constructor(value: IResource) {
+  constructor(value: withExtraProps<IResource>) {
     super(value);
     this.contactPoint = value.contactPoint;
     this.keyword = value.keyword;
@@ -150,7 +153,7 @@ export class Resource<
     this.title = value.title;
     this.type = value.type;
     this.hasPolicy = createOptionalInstances(value.hasPolicy, Offer);
-    this.hasVersion = createOptionalInstances(value.hasVersion, Reference);
+    this.hasVersion = value.hasVersion;
     this.isVersionOf = value.isVersionOf;
     this.version = value.version;
     this.hasCurrentVersion = value.hasCurrentVersion;
@@ -176,9 +179,10 @@ export class DataService extends Resource<DataServiceDto> {
   @Namespace("dcat")
   @ValidateNested()
   @IsOptional()
+  @LDType(() => Dataset)
   servesDataset?: Array<Dataset>;
 
-  constructor(value: IDataService) {
+  constructor(value: withExtraProps<IDataService>) {
     super(value);
     this.endpointDescription = value.endpointDescription;
     this.endpointURL = value.endpointURL;
@@ -189,18 +193,18 @@ export class DataService extends Resource<DataServiceDto> {
 export interface IDistribution extends IReference {
   accessService?: Array<DataService>;
   accessURL?: string;
-  byteSize?: Decimal;
+  byteSize?: string;
   compressFormat?: string;
   downloadURL?: string;
   mediaType?: string;
   packageFormat?: string;
-  spatialResolutionInMeters?: Decimal;
-  temporalResolution?: Duration;
+  spatialResolutionInMeters?: string;
+  temporalResolution?: string;
   conformsTo?: string[];
   description?: Array<string>;
   format?: string;
-  issued?: Time;
-  modified?: Time;
+  issued?: string;
+  modified?: string;
   title?: string;
   hasPolicy?: Array<Policy>;
 }
@@ -210,15 +214,16 @@ export class Distribution extends Reference<DistributionDto & ContextDto> {
   @Namespace("dcat")
   @ValidateNested()
   @IsOptional()
+  @LDType(() => DataService)
   accessService?: Array<DataService>;
   @Namespace("dcat")
   @IsString()
   @IsOptional()
   accessURL?: string;
   @Namespace("dcat")
-  @ValidateNested()
+  @IsString()
   @IsOptional()
-  byteSize?: Decimal;
+  byteSize?: string;
   @Namespace("dcat")
   @IsString()
   @IsOptional()
@@ -236,13 +241,13 @@ export class Distribution extends Reference<DistributionDto & ContextDto> {
   @IsOptional()
   packageFormat?: string;
   @Namespace("dcat")
-  @ValidateNested()
+  @IsString()
   @IsOptional()
-  spatialResolutionInMeters?: Decimal;
+  spatialResolutionInMeters?: string;
   @Namespace("dcat")
-  @ValidateNested()
+  @IsString()
   @IsOptional()
-  temporalResolution?: Duration;
+  temporalResolution?: string;
   @Namespace("dct")
   @IsString({ each: true })
   @IsOptional()
@@ -255,13 +260,13 @@ export class Distribution extends Reference<DistributionDto & ContextDto> {
   @IsOptional()
   format?: string;
   @Namespace("dct")
-  @ValidateNested()
+  @IsString()
   @IsOptional()
-  issued?: Time;
+  issued?: string;
   @Namespace("dct")
-  @ValidateNested()
+  @IsString()
   @IsOptional()
-  modified?: Time;
+  modified?: string;
   @Namespace("dct")
   @IsString()
   @IsOptional()
@@ -269,9 +274,10 @@ export class Distribution extends Reference<DistributionDto & ContextDto> {
   @Namespace("odrl")
   @ValidateNested()
   @IsOptional()
+  @LDType(() => Offer)
   hasPolicy?: Array<Policy>;
 
-  constructor(value: IDistribution) {
+  constructor(value: withExtraProps<IDistribution>) {
     super(value);
     this.accessService = createOptionalInstances(
       value.accessService,
@@ -297,11 +303,11 @@ export class Distribution extends Reference<DistributionDto & ContextDto> {
 
 export interface IDataset extends IResource {
   distribution?: Array<Distribution>;
-  spatialResolutionInMeters?: Reference;
-  temporalResolution?: Duration;
-  accrualPeriodicity?: Reference;
-  spatial?: Reference;
-  temporal?: Reference;
+  spatialResolutionInMeters?: string;
+  temporalResolution?: string;
+  accrualPeriodicity?: string;
+  spatial?: string;
+  temporal?: string;
   wasGeneratedBy?: any;
   hasCodingSystem?: string[];
   numberOfRecords?: number;
@@ -317,27 +323,28 @@ export class Dataset<
   @Namespace("dcat")
   @ValidateNested()
   @IsOptional()
+  @LDType(() => Distribution)
   distribution?: Array<Distribution>;
   @Namespace("dcat")
-  @ValidateNested()
+  @IsString()
   @IsOptional()
-  spatialResolutionInMeters?: Reference;
+  spatialResolutionInMeters?: string;
   @Namespace("dcat")
-  @ValidateNested()
+  @IsString()
   @IsOptional()
-  temporalResolution?: Duration;
+  temporalResolution?: string;
   @Namespace("dct")
-  @ValidateNested()
+  @IsString()
   @IsOptional()
-  accrualPeriodicity?: Reference;
+  accrualPeriodicity?: string;
   @Namespace("dct")
-  @ValidateNested()
+  @IsString()
   @IsOptional()
-  spatial?: Reference;
+  spatial?: string;
   @Namespace("dct")
-  @ValidateNested()
+  @IsString()
   @IsOptional()
-  temporal?: Reference;
+  temporal?: string;
   @Namespace("prov")
   @IsOptional()
   wasGeneratedBy?: any;
@@ -359,9 +366,10 @@ export class Dataset<
   healthTheme?: string[];
   @Namespace("adms")
   @IsOptional()
+  @LDType(() => Distribution)
   sample?: Distribution;
 
-  constructor(value: IDataset) {
+  constructor(value: withExtraProps<IDataset>) {
     super(value);
     this.distribution = createOptionalInstances(
       value.distribution,
@@ -414,10 +422,11 @@ export class CatalogRecord extends Reference<CatalogRecordDto & ContextDto> {
   title?: string;
   @Namespace("foaf")
   @ValidateNested()
+  @KeepTypes()
   @IsOptional()
   primaryTopic?: Resource;
 
-  constructor(value: ICatalogRecord) {
+  constructor(value: withExtraProps<ICatalogRecord>) {
     super(value);
     this.conformsTo = value.conformsTo;
     this.description = value.description;
@@ -432,7 +441,7 @@ export interface ICatalog extends IDataset {
   dataset?: Array<Dataset>;
   record?: Array<CatalogRecord>;
   service?: Array<DataService>;
-  themeTaxonomy?: Reference;
+  themeTaxonomy?: string;
   hasPart?: Array<Resource>;
   homepage?: string;
 }
@@ -442,21 +451,25 @@ export class Catalog extends Dataset<CatalogDto> {
   @Namespace("dcat")
   @ValidateNested()
   @IsOptional()
+  @LDType(() => Dataset)
   dataset?: Array<Dataset>;
   @Namespace("dcat")
   @ValidateNested()
   @IsOptional()
+  @LDType(() => CatalogRecord)
   record?: Array<CatalogRecord>;
   @Namespace("dcat")
   @ValidateNested()
   @IsOptional()
+  @LDType(() => DataService)
   service?: Array<DataService>;
   @Namespace("dcat")
-  @ValidateNested()
+  @IsString()
   @IsOptional()
-  themeTaxonomy?: Reference;
+  themeTaxonomy?: string;
   @Namespace("dct")
   @ValidateNested()
+  @KeepTypes()
   @IsOptional()
   hasPart?: Array<Resource>;
   @Namespace("foaf")
@@ -464,7 +477,7 @@ export class Catalog extends Dataset<CatalogDto> {
   @IsOptional()
   homepage?: string;
 
-  constructor(value: ICatalog) {
+  constructor(value: withExtraProps<ICatalog>) {
     super(value);
     this.dataset = createOptionalInstances(value.dataset, Dataset);
     this.record = createOptionalInstances(value.record, CatalogRecord);
