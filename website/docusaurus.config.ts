@@ -1,8 +1,8 @@
 import { themes as prismThemes } from "prism-react-renderer";
 import type { Config } from "@docusaurus/types";
 import type * as Preset from "@docusaurus/preset-classic";
-import type * as Plugin from "@docusaurus/types/src/plugin";
 import type * as OpenApiPlugin from "docusaurus-plugin-openapi-docs";
+import fs from "fs";
 
 const config: Config = {
   title: "TNO Security Gateway",
@@ -84,6 +84,33 @@ const config: Config = {
         },
       },
     ],
+    async function jsonLdContextPlugin(context, options) {
+      const copyJson = (inputDir: string, outputDir: string) => {
+        fs.mkdirSync(outputDir, { recursive: true });
+        fs.readdirSync(inputDir)
+          .filter((f) => f.endsWith(".json"))
+          .forEach((file) => {
+            fs.copyFileSync(`${inputDir}/${file}`, `${outputDir}/${file}`);
+          });
+      };
+      return {
+        name: "jsonld-context-plugin",
+        async postBuild() {
+          copyJson(
+            `${context.siteDir}/docs`,
+            `${context.outDir}/contexts/next`,
+          );
+          fs.readdirSync(`${context.siteDir}/versioned_docs`).forEach(
+            (directory) => {
+              copyJson(
+                `${context.siteDir}/versioned_docs/${directory}`,
+                `${context.outDir}/contexts/${directory.slice(8)}`,
+              );
+            },
+          );
+        },
+      };
+    },
   ],
 
   themeConfig: {
@@ -94,7 +121,7 @@ const config: Config = {
       logo: {
         alt: "TNO Security Gateway",
         src: "img/logo.svg",
-        srcDark: "img/logoDark.svg"
+        srcDark: "img/logoDark.svg",
       },
       items: [
         {

@@ -20,6 +20,7 @@ try {
 // https://vitejs.dev/config/
 export default defineConfig({
   base: "",
+  envPrefix: "TSG_STATIC_",
   plugins: [vue()],
   resolve: {
     alias: {

@@ -6,13 +6,14 @@ import {
   ValidateIf,
   ValidateNested,
 } from "class-validator";
-import { Namespace, Serializable } from "../../decorators";
+import { LDType, Namespace, Serializable } from "../../decorators";
 import {
   IReference,
   Multilanguage,
   Reference,
   SerializableClass,
   Value,
+  withExtraProps,
 } from "../common";
 import { ContractAgreementVerificationMessage } from "./messages";
 import {
@@ -33,6 +34,7 @@ import {
   AgreementDto,
 } from "./negotiation.dto";
 import { ContractNegotiationState, HashedMessage } from "./messages.dto";
+import { OrArray } from "../../../utils/unions";
 
 export interface IConstraint {
   leftOperand: ODRLLeftOperand | string;
@@ -60,8 +62,8 @@ export class Constraint extends SerializableClass<ConstraintDto & ContextDto> {
   @IsNotEmpty()
   rightOperandReference?: string;
 
-  constructor(value: IConstraint) {
-    super();
+  constructor(value: withExtraProps<IConstraint>) {
+    super(value);
     this.rightOperand = value.rightOperand;
     this.rightOperandReference = value.rightOperandReference;
     this.leftOperand = value.leftOperand;
@@ -71,8 +73,8 @@ export class Constraint extends SerializableClass<ConstraintDto & ContextDto> {
 
 export interface IPolicyRule {
   assigner?: string;
-  assignee?: string | string[];
-  action: ODRLAction | string | Array<ODRLAction | string>;
+  assignee?: OrArray<string>;
+  action: OrArray<ODRLAction | string>;
   target?: string;
   constraint?: Array<Constraint>;
 }
@@ -99,20 +101,21 @@ export class PolicyRule<
   @Namespace("odrl")
   @ValidateNested()
   @IsOptional()
-  assignee?: string | string[];
+  assignee?: OrArray<string>;
   @Namespace("odrl")
   @IsNotEmpty()
-  action: ODRLAction | string | Array<ODRLAction | string>;
+  action: OrArray<ODRLAction | string>;
   @Namespace("odrl")
   @IsOptional()
   target?: string;
   @Namespace("odrl")
   @ValidateNested()
   @IsOptional()
+  @LDType(() => Constraint)
   constraint?: Array<Constraint>;
 
-  constructor(value: IPolicyRule) {
-    super();
+  constructor(value: withExtraProps<IPolicyRule>) {
+    super(value);
     this.assigner = value.assigner;
     this.assignee = value.assignee;
     this.action = value.action;
@@ -126,9 +129,10 @@ export class Permission extends PolicyRule<PermissionDto & ContextDto> {
   @Namespace("odrl")
   @ValidateNested()
   @IsOptional()
+  @LDType(() => Duty)
   duty?: Array<Duty>;
 
-  constructor(value: IPermission) {
+  constructor(value: withExtraProps<IPermission>) {
     super(value);
     this.duty = createOptionalInstances(value.duty, Duty);
   }
@@ -142,8 +146,8 @@ export class Duty extends PolicyRule<DutyDto & ContextDto> {}
 
 export interface IPolicy extends IReference {
   assigner?: string;
-  assignee?: string | string[];
-  profile?: Reference;
+  assignee?: OrArray<string>;
+  profile?: string;
   permission?: Array<Permission>;
   prohibition?: Array<Prohibition>;
   obligation?: Array<Duty>;
@@ -161,28 +165,31 @@ export class Policy<
   @Namespace("odrl")
   @IsString()
   @IsOptional()
-  assignee?: string | string[];
+  assignee?: OrArray<string>;
+  @Namespace("odrl")
+  @IsString()
+  @IsOptional()
+  profile?: string;
   @Namespace("odrl")
   @ValidateNested()
   @IsOptional()
-  profile?: Reference;
-  @Namespace("odrl")
-  @ValidateNested()
-  @IsOptional()
+  @LDType(() => Permission)
   permission?: Array<Permission>;
   @Namespace("odrl")
   @ValidateNested()
   @IsOptional()
+  @LDType(() => Prohibition)
   prohibition?: Array<Prohibition>;
   @Namespace("odrl")
   @ValidateNested()
   @IsOptional()
+  @LDType(() => Duty)
   obligation?: Array<Duty>;
   @Namespace("odrl")
   @IsOptional()
   target?: string;
 
-  constructor(value: IPolicy) {
+  constructor(value: withExtraProps<IPolicy>) {
     super(value);
     this.assigner = value.assigner;
     this.assignee = value.assignee;
@@ -204,7 +211,7 @@ export class Offer extends Policy<OfferDto> {
   @IsNotEmpty()
   assigner: string;
 
-  constructor(value: IOffer) {
+  constructor(value: withExtraProps<IOffer>) {
     super(value);
     this.assigner = value.assigner;
   }
@@ -230,7 +237,7 @@ export class Agreement extends Policy<AgreementDto> {
   @IsDateString()
   timestamp: string;
 
-  constructor(value: IAgreement) {
+  constructor(value: withExtraProps<IAgreement>) {
     super(value);
     this.assigner = value.assigner;
     this.assignee = value.assignee;
@@ -263,7 +270,7 @@ export class NegotiationProcessEvent {
   hashedMessage?: HashedMessage;
   type: "local" | "remote";
 
-  constructor(value: INegotiationProcessEvent) {
+  constructor(value: withExtraProps<INegotiationProcessEvent>) {
     this.time = value.time;
     this.state = value.state;
     this.localMessage = value.localMessage;
@@ -302,7 +309,7 @@ export class NegotiationStatus {
   state: ContractNegotiationState;
   dataSet: string;
 
-  constructor(value: INegotiationStatus) {
+  constructor(value: withExtraProps<INegotiationStatus>) {
     this.localId = value.localId;
     this.remoteId = value.remoteId;
     this.remoteParty = value.remoteParty;
@@ -319,7 +326,7 @@ export class NegotiationDetail extends NegotiationStatus {
   agreementId?: string;
   events: Array<NegotiationProcessEvent>;
 
-  constructor(value: INegotiationDetail) {
+  constructor(value: withExtraProps<INegotiationDetail>) {
     super(value);
     this.offer = createOptionalInstance(value.offer, Offer);
     this.agreement = createOptionalInstance(value.agreement, Agreement);

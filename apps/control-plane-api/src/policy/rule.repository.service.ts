@@ -5,6 +5,8 @@ import { Repository } from "typeorm";
 import { Rule, RuleType } from "./rule.dto";
 import { DSPError } from "../utils/errors/error";
 import {
+  Agreement,
+  AgreementDto,
   ConstraintDto,
   DutyDto,
   ODRLOperator,

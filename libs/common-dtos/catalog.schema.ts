@@ -17,7 +17,6 @@ import {
   PolicyDto,
   PolicyRuleDto,
   ProhibitionDto,
-  ReferenceDto,
   ResourceDto,
   ValueDto,
 } from "@tsg-dsp/common-dsp";
@@ -85,7 +84,7 @@ export class PolicySchema extends ReferenceSchema implements PolicyDto {
   "odrl:assigner"?: string;
   @ApiPropertyOptional()
   "odrl:assignee"?: string;
-  @ApiPropertyOptional({ type: ReferenceSchema })
+  @ApiPropertyOptional()
   "odrl:profile"?: string;
   @ApiPropertyOptional({ type: [PermissionSchema] })
   "odrl:permission"?: Array<PermissionDto>;
@@ -100,14 +99,14 @@ export class PolicySchema extends ReferenceSchema implements PolicyDto {
 export class ResourceSchema extends ReferenceSchema implements ResourceDto {
   @ApiProperty()
   "@type": "dcat:Resource";
-  @ApiPropertyOptional({ type: ReferenceSchema })
-  "dcat:contactPoint"?: ReferenceDto;
+  @ApiPropertyOptional()
+  "dcat:contactPoint"?: string;
   @ApiPropertyOptional()
   "dcat:keyword"?: Array<string>;
-  @ApiPropertyOptional({ type: ReferenceSchema })
-  "dcat:landingPage"?: ReferenceDto;
-  @ApiPropertyOptional({ type: [ReferenceSchema] })
-  "dcat:theme"?: Array<ReferenceDto>;
+  @ApiPropertyOptional()
+  "dcat:landingPage"?: string;
+  @ApiPropertyOptional()
+  "dcat:theme"?: Array<string>;
   @ApiPropertyOptional()
   "dcat:conformsTo"?: string;
   @ApiPropertyOptional()
@@ -116,36 +115,36 @@ export class ResourceSchema extends ReferenceSchema implements ResourceDto {
   "dct:description"?: Array<string>;
   @ApiPropertyOptional()
   "dct:identifier"?: string;
-  @ApiPropertyOptional({ type: ReferenceSchema })
-  "dct:isReferencedBy"?: ReferenceDto;
+  @ApiPropertyOptional()
+  "dct:isReferencedBy"?: string;
   @ApiPropertyOptional()
   "dct:issued"?: string;
-  @ApiPropertyOptional({ type: ReferenceSchema })
-  "dct:language"?: ReferenceDto;
-  @ApiPropertyOptional({ type: ReferenceSchema })
-  "dct:license"?: ReferenceDto;
+  @ApiPropertyOptional()
+  "dct:language"?: string;
+  @ApiPropertyOptional()
+  "dct:license"?: string;
   @ApiPropertyOptional()
   "dct:modified"?: string;
   @ApiPropertyOptional()
   "dct:publisher"?: string;
-  @ApiPropertyOptional({ type: ReferenceSchema })
-  "dct:relation"?: ReferenceDto;
+  @ApiPropertyOptional()
+  "dct:relation"?: string;
   @ApiPropertyOptional()
   "dct:title"?: string;
   @ApiPropertyOptional()
   "dct:type"?: string;
   @ApiPropertyOptional({ type: [PolicySchema] })
   "odrl:hasPolicy"?: Array<PolicyDto>;
-  @ApiPropertyOptional({ type: [ReferenceSchema] })
-  "dcat:hasVersion"?: Array<ReferenceDto>;
-  @ApiPropertyOptional({ type: ReferenceSchema })
-  "dcat:isVersionOf"?: ReferenceDto;
+  @ApiPropertyOptional()
+  "dcat:hasVersion"?: Array<string>;
+  @ApiPropertyOptional()
+  "dcat:isVersionOf"?: string;
   @ApiPropertyOptional()
   "dcat:version"?: string;
-  @ApiPropertyOptional({ type: ReferenceSchema })
-  "dcat:hasCurrentVersion"?: ReferenceDto;
-  @ApiPropertyOptional({ type: ReferenceSchema })
-  "dcat:previousVersion"?: ReferenceDto;
+  @ApiPropertyOptional()
+  "dcat:hasCurrentVersion"?: string;
+  @ApiPropertyOptional()
+  "dcat:previousVersion"?: string;
 }
 
 export class DatasetSchema
@@ -156,18 +155,18 @@ export class DatasetSchema
   "@type": "dcat:Dataset";
   @ApiPropertyOptional()
   "dcat:distribution"?: Array<DistributionDto>;
-  @ApiPropertyOptional({ type: ReferenceSchema })
-  "dcat:spatialResolutionInMeters"?: ReferenceDto;
+  @ApiPropertyOptional()
+  "dcat:spatialResolutionInMeters"?: string;
   @ApiPropertyOptional({ type: DurationSchema })
   "dcat:temporalResolution"?: string;
-  @ApiPropertyOptional({ type: ReferenceSchema })
-  "dct:accrualPeriodicity"?: ReferenceDto;
-  @ApiPropertyOptional({ type: ReferenceSchema })
-  "dct:spatial"?: ReferenceDto;
-  @ApiPropertyOptional({ type: ReferenceSchema })
-  "dct:temporal"?: ReferenceDto;
-  @ApiPropertyOptional({ type: ReferenceSchema })
-  "prov:wasGeneratedBy"?: ReferenceDto;
+  @ApiPropertyOptional()
+  "dct:accrualPeriodicity"?: string;
+  @ApiPropertyOptional()
+  "dct:spatial"?: string;
+  @ApiPropertyOptional()
+  "dct:temporal"?: string;
+  @ApiPropertyOptional()
+  "prov:wasGeneratedBy"?: string;
 }
 
 export class DataServiceSchema
@@ -255,8 +254,8 @@ export class CatalogSchema
   "dcat:record"?: CatalogRecordDto;
   @ApiPropertyOptional({ type: [DataServiceSchema] })
   "dcat:service"?: Array<DataServiceDto>;
-  @ApiPropertyOptional({ type: ReferenceSchema })
-  "dcat:themeTaxonomy"?: ReferenceDto;
+  @ApiPropertyOptional()
+  "dcat:themeTaxonomy"?: string;
   @ApiPropertyOptional({ type: [ResourceSchema] })
   "dct:hasPart"?: Array<ResourceDto>;
   @ApiPropertyOptional()

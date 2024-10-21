@@ -19,6 +19,10 @@ COPY apps apps
 COPY libs libs 
 RUN pnpm run --filter "./libs/common-dsp" build 
 RUN pnpm run --filter "./libs/control-plane-dtos" build 
+ARG TSG_MODE=development
+ARG TSG_VERSION=0.0.0
+ARG TSG_STATIC_MODE=${TSG_MODE}
+ARG TSG_STATIC_VERSION=${TSG_VERSION}
 RUN pnpm run --filter "./libs/common*" -r build 
 RUN pnpm run --filter "./libs/wallet*" --parallel -r build
 RUN pnpm run --filter "./apps/wallet*" --parallel -r build
@@ -30,5 +34,9 @@ WORKDIR /app
 COPY --from=build /prod/wallet-api .
 COPY --from=build /prod/wallet-ui/dist wallet-ui/
 EXPOSE 3000
+ARG TSG_MODE=development
+ARG TSG_VERSION=0.0.0
+ENV TSG_MODE=${TSG_MODE}
+ENV TSG_VERSION=${TSG_VERSION}
 ENV EMBEDDED_FRONTEND="/app/wallet-ui"
 CMD ["npm", "run", "start"]

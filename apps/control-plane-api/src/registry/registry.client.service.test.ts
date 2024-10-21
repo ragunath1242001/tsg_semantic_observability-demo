@@ -12,6 +12,7 @@ import {
   setupMockWalletServer,
 } from "../auth/wallets/wallet.util.test";
 import { AuthClientService } from "../auth/auth.client.service";
+import { defaultContext } from "@tsg-dsp/common-dsp";
 
 describe("RegistryClientService", () => {
   let registryClientService: RegistryClientService;
@@ -26,7 +27,7 @@ describe("RegistryClientService", () => {
     http.get("http://localhost/registry", () => {
       return HttpResponse.json([
         {
-          "@context": "https://w3id.org/dspace/2024/1/context.json",
+          "@context": defaultContext(),
           "@type": "dcat:Catalog",
           "@id": "urn:uuid:a0920ac1-d08e-4ee1-acde-6dd0432b84e4",
           "dct:creator": "did:web:localhost",

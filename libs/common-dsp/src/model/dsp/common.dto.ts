@@ -1,5 +1,10 @@
+import { ContextDefinition } from "jsonld";
+import { OrArray } from "../../utils/unions";
+
+export type Contexts = string | ContextDefinition;
+
 export interface ContextDto {
-  "@context"?: "https://w3id.org/dspace/2024/1/context.json";
+  "@context"?: OrArray<Contexts>;
 }
 
 export interface ReferenceDto {

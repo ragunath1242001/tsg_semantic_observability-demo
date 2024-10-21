@@ -1,4 +1,5 @@
-import { deserialize } from "../../serialize";
+import { deserialize } from "../../deserialize";
+import { defaultContext } from "../../../jsonld/context.defaults";
 import { URI } from "../common";
 import {
   Agreement,
@@ -50,7 +51,7 @@ test("Contract offer serialization", async () => {
 
   const serialized = await offer.serialize();
   const expected: OfferDto = {
-    "@context": "https://w3id.org/dspace/2024/1/context.json",
+    "@context": defaultContext(),
     "@type": "odrl:Offer",
     "@id": "urn:uuid:8d613f77-3dde-4286-88ff-c1ab96da6d59",
     "odrl:assigner": "urn:uuid:1adde502-3c96-48ac-83ff-a02fabd24b4f",
@@ -127,7 +128,7 @@ test("Contract agreement serialization", async () => {
 
   const serialized = await agreement.serialize();
   const expected: AgreementDto = {
-    "@context": "https://w3id.org/dspace/2024/1/context.json",
+    "@context": defaultContext(),
     "@type": "odrl:Agreement",
     "@id": "urn:uuid:8d613f77-3dde-4286-88ff-c1ab96da6d59",
     "odrl:assigner": "urn:uuid:1adde502-3c96-48ac-83ff-a02fabd24b4f",

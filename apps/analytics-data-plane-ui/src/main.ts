@@ -43,6 +43,12 @@ import TabList from "primevue/tablist";
 import Tab from "primevue/tab";
 import TabPanels from "primevue/tabpanels";
 import { createPinia } from "pinia";
+import { setJsonLdDebugContexts } from "@tsg-dsp/common-dsp";
+
+setJsonLdDebugContexts(
+  import.meta.env.TSG_STATIC_MODE !== "production",
+  import.meta.env.TSG_STATIC_VERSION
+);
 
 loader.config({
   paths: {

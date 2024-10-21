@@ -1,5 +1,6 @@
 import { Type } from "class-transformer";
 import { IsOptional, IsString, ValidateNested } from "class-validator";
+import { OrArray } from "../../utils/unions";
 
 export class Signature {
   @IsString()
@@ -31,7 +32,7 @@ export class Credential<T extends CredentialSubject> {
   id?: string;
   @ValidateNested()
   @Type(() => CredentialSubject)
-  credentialSubject!: T | T[];
+  credentialSubject!: OrArray<T>;
   @IsString()
   issuer!: string;
   @IsString()

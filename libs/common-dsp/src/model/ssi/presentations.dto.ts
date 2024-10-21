@@ -7,6 +7,7 @@ import {
   IsIn,
 } from "class-validator";
 import { VerifiableCredential, CredentialSubject } from "./credentials.dto";
+import { OrArray } from "../../utils/unions";
 
 export class VerifiablePresentation<
   T extends VerifiableCredential<CredentialSubject>
@@ -20,7 +21,7 @@ export class VerifiablePresentation<
   id?: string;
   @ValidateNested()
   @Type(() => VerifiableCredential<CredentialSubject>)
-  verifiableCredential!: T[] | T;
+  verifiableCredential!: OrArray<T>;
 }
 
 export class VerifiablePresentationJwt {

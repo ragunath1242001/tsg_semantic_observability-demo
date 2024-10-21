@@ -27,6 +27,7 @@ import { DataPlaneDao } from "../model/dataPlanes.dao";
 import { HttpStatus } from "@nestjs/common";
 import { RegistryDao } from "../model/registry.dao";
 import { DSPError } from "../utils/errors/error";
+import { defaultContext } from "@tsg-dsp/common-dsp";
 
 describe("RegistryService", () => {
   let registryService: RegistryService;
@@ -74,7 +75,7 @@ describe("RegistryService", () => {
     server.use(
       http.post("http://localhost/catalog/request", () => {
         return HttpResponse.json({
-          "@context": "https://w3id.org/dspace/2024/1/context.json",
+          "@context": defaultContext(),
           "@type": "dcat:Catalog",
           "@id": "urn:uuid:a0920ac1-d08e-4ee1-acde-6dd0432b84e4",
           "dct:creator": "did:web:localhost",

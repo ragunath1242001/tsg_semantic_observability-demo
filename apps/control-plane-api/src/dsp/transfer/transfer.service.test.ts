@@ -6,6 +6,7 @@ import {
   Catalog,
   CredentialSubject,
   DataAddress,
+  defaultContext,
   EndpointProperty,
   Multilanguage,
   TransferCompletionMessage,
@@ -261,7 +262,7 @@ describe("Transfer service", () => {
         async (ctx) => {
           const reqBody = await ctx.request.json();
           return HttpResponse.json<TransferProcessDto>({
-            "@context": "https://w3id.org/dspace/2024/1/context.json",
+            "@context": defaultContext(),
             "@type": "dspace:TransferProcess",
             "dspace:consumerPid": reqBody["dspace:consumerPid"],
             "dspace:providerPid": remoteProcessId,

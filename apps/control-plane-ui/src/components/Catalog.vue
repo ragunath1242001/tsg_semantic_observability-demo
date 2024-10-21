@@ -40,12 +40,12 @@ const datasetVersionList = computed(() => {
         current: !!rootDataset["dcat:hasCurrentVersion"]
           ? datasetList.value.filter(
               (dataset) =>
-                dataset["@id"] === rootDataset["dcat:hasCurrentVersion"]["@id"]
+                dataset["@id"] === rootDataset["dcat:hasCurrentVersion"]
             )[0]
           : rootDataset,
         versions: datasetList.value.filter(
           (dataset) =>
-            dataset["dcat:isVersionOf"]?.["@id"] === rootDataset["@id"]
+            dataset["dcat:isVersionOf"] === rootDataset["@id"]
         ),
       };
     });

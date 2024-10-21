@@ -18,7 +18,9 @@ import {
   URIDto,
 } from "./common.dto";
 import { v4 as uuid } from "uuid";
-// import { Transform } from "class-transformer";
+import { compact } from "../../jsonld/jsonld";
+import { JsonLdObj } from "jsonld/jsonld-spec";
+import { deserializeSync } from "../deserialize";
 
 export class ClassValidationError extends Error {
   errors: ValidationError[];
@@ -29,6 +31,15 @@ export class ClassValidationError extends Error {
 }
 
 export class SerializableClass<OutType extends ContextDto> {
+  readonly extraProps: Record<string, any> = {};
+  constructor(value?: withExtraProps<{}> | any) {
+    if (value?.extraProps) {
+      for (const [propKey, propValue] of Object.entries(value.extraProps)) {
+        this.extraProps[propKey] = propValue;
+      }
+    }
+  }
+
   validate() {
     const validation = validateSync(this);
     if (validation.length > 0) {
@@ -39,10 +50,26 @@ export class SerializableClass<OutType extends ContextDto> {
     }
   }
 
-  async serialize(context = true): Promise<OutType> {
+  serialize(context = true): OutType {
     return serialize(this, context);
   }
+
+  async compact(
+    context: "default" | "dsp" | string | string[] = "default"
+  ): Promise<JsonLdObj> {
+    return await compact(serialize(this, true), context);
+  }
+
+  toJSON() {
+    return this.serialize();
+  }
+
+  fromJSON(json: any) {
+    return deserializeSync(json, true);
+  }
 }
+
+export type withExtraProps<T> = T & { extraProps?: Record<string, any> };
 
 export interface IReference {
   id?: string;
@@ -53,14 +80,15 @@ export interface IMultilanguage {
   language: string;
 }
 
+@Serializable("")
 export class Reference<
   OutType extends ContextDto = ReferenceDto & ContextDto
 > extends SerializableClass<OutType> {
   @Id()
   id: string;
 
-  constructor(value: IReference | string) {
-    super();
+  constructor(value: withExtraProps<IReference> | string) {
+    super(value);
     if (typeof value === "string") {
       this.id = value;
     } else {
@@ -69,15 +97,14 @@ export class Reference<
   }
 }
 
+@Serializable("")
 export class Multilanguage extends SerializableClass<
   MultilanguageDto & ContextDto
 > {
   @RdfValue()
-  // @Transform(({ obj }) => (typeof obj === "string" ? obj : obj.value))
   @IsNotEmpty()
   value: string;
   @RdfLanguage()
-  // @IsNotEmpty()
   language: string = "en";
 
   constructor(value: IMultilanguage | string) {

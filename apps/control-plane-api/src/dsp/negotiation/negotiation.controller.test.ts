@@ -14,6 +14,7 @@ import {
   ContractOfferMessage,
   ContractRequestMessage,
   ContractRequestMessageDto,
+  defaultContext,
   Multilanguage,
   NegotiationEvent,
   ODRLAction,
@@ -241,7 +242,7 @@ describe("NegotiationController", () => {
         "did:web:localhost"
       );
       expect(result).toStrictEqual({
-        "@context": "https://w3id.org/dspace/2024/1/context.json",
+        "@context": defaultContext(),
         "@id": expect.stringContaining("urn:uuid:"),
         "@type": "dspace:ContractNegotiation",
         "dspace:state": "dspace:REQUESTED",
@@ -258,7 +259,7 @@ describe("NegotiationController", () => {
         "did:web:localhost"
       );
       expect(result).toStrictEqual({
-        "@context": "https://w3id.org/dspace/2024/1/context.json",
+        "@context": defaultContext(),
         "@id": expect.stringContaining("urn:uuid:"),
         "@type": "dspace:ContractNegotiation",
         "dspace:state": "dspace:REQUESTED",
@@ -300,7 +301,7 @@ describe("NegotiationController", () => {
         "did:web:localhost"
       );
       expect(result).toStrictEqual({
-        "@context": "https://w3id.org/dspace/2024/1/context.json",
+        "@context": defaultContext(),
         "@id": expect.stringContaining("urn:uuid:"),
         "@type": "dspace:ContractNegotiation",
         "dspace:state": "dspace:REQUESTED",

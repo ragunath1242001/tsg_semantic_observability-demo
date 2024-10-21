@@ -17,7 +17,7 @@ import {
   PrimaryColumn,
   Relation,
 } from "typeorm";
-import { AutoIdEntity, MetaEntity } from "./common.dao";
+import { AutoIdEntity, jsonLdTransformer, MetaEntity } from "./common.dao";
 
 @Entity()
 export class TransferEventDao extends AutoIdEntity implements ITransferEvent {
@@ -51,13 +51,18 @@ export class TransferDetailDao extends MetaEntity implements ITransferStatus {
   remoteParty!: string;
   @Column()
   state!: TransferState;
-  @Column("simple-json")
+  @Column("simple-json", {
+    transformer: jsonLdTransformer,
+  })
   process!: TransferProcess;
   @Column()
   agreementId!: string;
   @Column({ nullable: true })
   format?: string;
-  @Column("simple-json", { nullable: true })
+  @Column("simple-json", {
+    nullable: true,
+    transformer: jsonLdTransformer,
+  })
   dataAddress?: DataAddress;
   @Column("simple-json")
   dataPlaneTransfer!: DataPlaneTransferDto;
