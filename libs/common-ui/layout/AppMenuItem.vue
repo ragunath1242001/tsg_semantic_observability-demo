@@ -37,7 +37,7 @@ watch(
   (newVal) => {
     isActiveMenu.value =
       newVal === itemKey.value || newVal.startsWith(itemKey.value + "-");
-  }
+  },
 );
 
 function itemClick(event, item) {
@@ -105,6 +105,14 @@ function checkActiveRoute(item) {
     >
       <i :class="item.icon" class="layout-menuitem-icon"></i>
       <span class="layout-menuitem-text">{{ item.label }}</span>
+      <Badge
+        v-if="item.badge"
+        :value="item.badge"
+        size="small"
+        class="ml-1"
+        severity="danger"
+      >
+      </Badge>
       <i
         class="pi pi-fw pi-angle-down layout-submenu-toggler"
         v-if="item.items"

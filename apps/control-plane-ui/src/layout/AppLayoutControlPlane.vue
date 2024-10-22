@@ -47,7 +47,7 @@ const menuList: Menu[] = [
         label: "Negotiations",
         icon: "pi pi-fw pi-comments",
         to: "/negotiations",
-        badge: negotiationsCount.value,
+        badge: negotiationsCount,
       },
       {
         label: "Transfers",
@@ -92,7 +92,7 @@ const sidebar: MenuProps = {
 </script>
 <template>
   <div class="layout-wrapper" :class="containerClass">
-    <AppLayout 
+    <AppLayout
       :topbar="{
         title: 'Control Plane',
         name: ownCatalog.title,
@@ -101,7 +101,8 @@ const sidebar: MenuProps = {
         router: useRouter(),
       }"
       :footer="footer"
-      :sidebar="sidebar" />
+      :sidebar="sidebar"
+    />
     <AppConfig />
     <div class="layout-mask animate-fadein"></div>
   </div>
