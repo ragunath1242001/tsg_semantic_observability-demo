@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, toRef } from "vue";
+import { ComputedRef, toRef } from "vue";
 
 import AppMenuItem from "./AppMenuItem.vue";
 import { RouteLocationNormalizedLoaded } from "vue-router";
@@ -8,7 +8,7 @@ interface MenuItem {
   label: string;
   icon: string;
   to: string;
-  badge?: number;
+  badge?: ComputedRef<number>;
 }
 
 export interface Menu {
