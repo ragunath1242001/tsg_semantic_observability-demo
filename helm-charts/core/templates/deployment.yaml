@@ -21,14 +21,17 @@ spec:
         - name: {{ template "tsg.name" . }}
           image: "{{ .Values.image.repository }}:{{ tpl .Values.image.tag . }}"
           imagePullPolicy: Always
-          {{- with concat .Values.env (fromYamlArray (list .Values.configFromSecrets "" | include "tsg.recurseSecretConfig"))}}
-          env: {{ toYaml . | nindent 12 }}
+          env:
             - name: SUBPATH
-              value: {{ template "tsg.subPath" $ }}
-          {{- end }}
-          resources:
-            requests:
-              memory: "100Mi"
+              value: {{ template "tsg.subPath" . }}
+            {{- if contains "Mi" .Values.resources.limits.memory}}
+            - name: NODE_OPTIONS
+              value: --max-old-space-size={{trimSuffix "Mi" .Values.resources.limits.memory | mulf 0.9 | floor}}
+            {{- end }}
+            {{- with concat .Values.env (fromYamlArray (list .Values.configFromSecrets "" | include "tsg.recurseSecretConfig"))}}
+              {{- toYaml . | nindent 12 }}
+            {{- end }}
+          resources: {{ .Values.resources | toYaml | nindent 12 }}
           ports:
             - name: http
               containerPort: {{ .Values.config.server.port | default 3000 }}
