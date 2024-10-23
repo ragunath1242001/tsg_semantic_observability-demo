@@ -105,9 +105,8 @@ export const useDspStore = defineStore("dsp", {
         this.ownCatalog.numberOfServices =
           response.data?.["dcat:service"]?.length ?? 0;
         if (response.data?.["dct:title"]) {
-          const title = `Control Plane - ${response.data?.["dct:title"]}`;
-          window.document.title = title;
-          this.ownCatalog.title = title;
+          window.document.title = `Control Plane - ${response.data?.["dct:title"]}`;
+          this.ownCatalog.title = response.data?.["dct:title"];
         }
       } catch (error) {
         // Handle error
@@ -126,6 +125,10 @@ export const useDspStore = defineStore("dsp", {
         const resp = await getTransfers();
         this.transfers = resp.transfers;
         this.ctaTransfers = resp.ctaTransfers;
+      });
+
+      socket.on("connect", async () => {
+        await this.getOwnCatalog();
       });
 
       socket.on("negotiation:update", async (negotiation) => {
