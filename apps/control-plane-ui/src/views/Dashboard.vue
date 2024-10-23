@@ -29,7 +29,6 @@ const getDataPlanes = async () => {
 const { ctaTransfersCount, ownCatalog } = storeToRefs(useDspStore());
 const initialize = async () => {
   const store = useDspStore();
-  await store.getOwnCatalog();
   getDataPlanes();
 };
 
