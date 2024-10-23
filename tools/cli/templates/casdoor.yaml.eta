@@ -114,6 +114,7 @@ initConfig:
       - username: control-plane
         secretName: casdoor-control-plane-<%= it.participant.id %>-secret
         roles:
+          - wallet_view_did
           - wallet_issue_credentials
           - wallet_use_keys
           - wallet_view_all_credentials

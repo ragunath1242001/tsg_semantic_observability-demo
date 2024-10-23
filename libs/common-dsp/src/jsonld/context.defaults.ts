@@ -3,8 +3,15 @@ import tsg from "./contexts/tsg";
 import health from "./contexts/health";
 import { JsonLd } from "jsonld/jsonld-spec";
 
-let debugContexts = process?.env?.TSG_MODE === "production" ? false : true;
-let currentVersion = process?.env?.TSG_VERSION ?? "0.0.0";
+const getOptionalEnv = (key: string, defaultValue: string) => {
+  if (typeof process === "undefined") {
+    return defaultValue;
+  }
+  return process.env[key] ?? defaultValue;
+};
+
+let debugContexts = getOptionalEnv("TSG_MODE", "development") !== "production";
+let currentVersion = getOptionalEnv("TSG_VERSION", "0.0.0");
 
 export const setJsonLdDebugContexts = (debug: boolean, useVersion?: string) => {
   debugContexts = debug;

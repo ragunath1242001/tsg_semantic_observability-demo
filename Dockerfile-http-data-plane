@@ -38,5 +38,6 @@ ARG TSG_MODE=development
 ARG TSG_VERSION=0.0.0
 ENV TSG_MODE=${TSG_MODE}
 ENV TSG_VERSION=${TSG_VERSION}
+ENV NODE_OPTIONS="--max-old-space-size=300"
 ENV EMBEDDED_FRONTEND="/app/http-data-plane-ui"
 CMD ["npm", "run", "start"]

@@ -6,6 +6,14 @@ replicaCount: 1
 casdoor: ""
 host:
 
+resources:
+  requests:
+    memory: "200Mi"
+    cpu: "200m"
+  limits:
+    memory: "350Mi"
+    cpu: "1150m"
+
 ingress:
   enabled: true
   clusterIssuer: letsencrypt
