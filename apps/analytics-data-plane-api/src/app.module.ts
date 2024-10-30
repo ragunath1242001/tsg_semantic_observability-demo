@@ -4,7 +4,8 @@ import { ConfigModule, config } from "./config.module";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { ServeStaticModule } from "@nestjs/serve-static";
 import { AuthModule } from "./auth/auth.module";
-import { LoggingModule } from "./logging/logging.module";
+import { FilesModule } from "./files/files.module";
+import { ScheduleModule } from "@nestjs/schedule";
 
 const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
   ? [
@@ -18,6 +19,7 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     DataPlaneTestModule,
     // LoggingModule,
     AuthModule,
@@ -28,6 +30,7 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
       synchronize: true,
     }),
     ...embeddedFrontend,
+    FilesModule.register(config.files),
   ],
   exports: [DataPlaneTestModule, AuthModule],
   controllers: [],

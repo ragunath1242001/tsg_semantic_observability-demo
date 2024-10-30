@@ -110,22 +110,4 @@ export class DataPlaneManagementController {
   ): Promise<void> {
     return await this.dataPlaneService.transferSuspend(id, reason);
   }
-
-  // @All("/transfers/:id/execute/:path(*)?")
-  // @HttpCode(HttpStatus.ACCEPTED)
-  // async executeTransfer(
-  //   @Param("id") id: string,
-  //   @Param("path") path: string | undefined,
-  //   @Req() request: RawBodyRequest<Request>,
-  //   @Res() response: Response,
-  //   /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-  // ): Promise<any> {
-  //   this.logger.log(`Requesting transfer execution for id ${id}`);
-  //   return await this.dataPlaneService.executeProxyRequest(
-  //     id,
-  //     path || "",
-  //     request,
-  //     response,
-  //   );
-  // }
 }
