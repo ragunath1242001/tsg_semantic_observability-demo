@@ -44,6 +44,9 @@ import Tab from "primevue/tab";
 import TabPanels from "primevue/tabpanels";
 import { createPinia } from "pinia";
 import { setJsonLdDebugContexts } from "@tsg-dsp/common-dsp";
+import FileUpload from "primevue/fileupload";
+import Badge from "primevue/badge";
+import ProgressBar from "primevue/progressbar";
 
 setJsonLdDebugContexts(
   import.meta.env.TSG_STATIC_MODE !== "production",
@@ -75,6 +78,7 @@ app.use(DialogService);
 app.directive("tooltip", Tooltip);
 
 app.component("AutoComplete", AutoComplete);
+app.component("Badge", Badge);
 app.component("Button", Button);
 app.component("ConfirmDialog", ConfirmDialog);
 app.component("Dialog", Dialog);
@@ -84,6 +88,7 @@ app.component("DynamicDialog", DynamicDialog);
 app.component("Card", Card);
 app.component("Column", Column);
 app.component("DataTable", DataTable);
+app.component("FileUpload", FileUpload);
 app.component("MultiSelect", MultiSelect);
 app.component("SelectButton", SelectButton);
 app.component("InputNumber", InputNumber);
@@ -91,6 +96,7 @@ app.component("InputText", InputText);
 app.component("Inplace", Inplace);
 app.component("Panel", Panel);
 app.component("Password", Password);
+app.component("ProgressBar", ProgressBar);
 app.component("Tab", Tab);
 app.component("Tabs", Tabs);
 app.component("TabList", TabList);

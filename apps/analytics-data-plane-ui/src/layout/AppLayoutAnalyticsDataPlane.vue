@@ -47,6 +47,21 @@ const menuList: Menu[] = [
       },
     ],
   },
+  {
+    label: "Files",
+    items: [
+      {
+        label: "Current files",
+        icon: "pi pi-fw pi-folder-open",
+        to: "/files",
+      },
+      {
+        label: "Upload",
+        icon: "pi pi-fw pi-file-arrow-up",
+        to: "/files/upload",
+      },
+    ],
+  },
 ];
 
 const footer: FooterProps = {
@@ -64,11 +79,10 @@ const sidebar: MenuProps = {
 onMounted(async () => {
   await catalogStore.getOwnCatalog();
 });
-
 </script>
 <template>
   <div class="layout-wrapper" :class="containerClass">
-    <AppLayout 
+    <AppLayout
       :topbar="{
         title: 'Analytics Data Plane',
         name: catalogStore.title,
@@ -77,7 +91,8 @@ onMounted(async () => {
         router: useRouter(),
       }"
       :footer="footer"
-      :sidebar="sidebar" />
+      :sidebar="sidebar"
+    />
     <AppConfig />
     <div class="layout-mask animate-fadein"></div>
   </div>

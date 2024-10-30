@@ -48,7 +48,18 @@ spec:
           - name: {{ template "tsg.name" . }}-config
             mountPath: "/app/config.yaml"
             subPath: "config.yaml"
+          {{- if .Values.persistentVolume}}
+          - name: {{ template "tsg.name" . }}-pvc
+          {{- with .Values.persistentVolume }}
+            mountPath: {{ .mountPath }}
+            {{- end }}
+          {{- end }}
       volumes:
       - name: {{ template "tsg.name" . }}-config
         configMap:
           name: {{ template "tsg.fullname" . }}-config
+      {{- if .Values.persistentVolume }}
+      - name: {{ template "tsg.name" . }}-pvc
+        persistentVolumeClaim:
+          claimName: {{ .Values.persistentVolume.name }}
+      {{- end }}

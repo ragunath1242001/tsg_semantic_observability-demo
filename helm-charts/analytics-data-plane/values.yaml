@@ -1,0 +1,45 @@
+image:
+  repository: registry.gitlab.com/tno-tsg/dataspace-protocol/tno-security-gateway/analytics-data-plane
+  tag: "v{{ .Chart.Version }}"
+replicaCount: 1
+
+host: example.com
+
+resources:
+  requests:
+    memory: "200Mi"
+    cpu: "200m"
+  limits:
+    memory: "350Mi"
+    cpu: "1150m"
+
+ingress:
+  enabled: true
+  clusterIssuer: letsencrypt
+  paths:
+    - path: '{{ template "tsg.subPath" $ }}/'
+      type: Prefix
+
+env: []
+configFromSecrets: {}
+
+subPath: ""
+
+persistentVolume:
+  name: "analytics-data-plane-pvc"
+  mountPath: "/uploads"
+  storageSize: 1Gi
+
+config:
+  server:
+    port: 3000
+    listen: "0.0.0.0"
+    publicDomain: "{{ .Values.host }}"
+    publicAddress: https://{{ .Values.host }}{{ template "tsg.subPath" $ }}
+  auth:
+    authorizationURL: https://{{ .Values.casdoor }}/login/oauth/authorize
+    tokenURL: https://{{ .Values.casdoor }}/api/login/oauth/access_token
+    introspectionURL: https://{{ .Values.casdoor }}/api/login/oauth/introspect
+    callbackURL: https://{{ .Values.host }}{{ template "tsg.subPath" $ }}/api/auth/callback
+    rolePath: "$.roles[*].name"
+    redirectURL: https://{{ .Values.host }}{{ template "tsg.subPath" $ }}/

@@ -15,11 +15,7 @@ import { LoggingModule } from "../logging/logging.module";
     AuthModule,
     LoggingModule,
   ],
-  controllers: [
-    DataPlaneController,
-    DataPlaneManagementController,
-    // ProxyController,
-  ],
+  controllers: [DataPlaneController, DataPlaneManagementController],
   providers: [DataPlaneService],
 })
 export class DataPlaneTestModule {}

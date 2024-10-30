@@ -10,6 +10,7 @@ import {
   IsIn,
   IsBoolean,
   ValidateIf,
+  IsArray,
 } from "class-validator";
 
 export abstract class DatabaseConfig {
@@ -105,6 +106,12 @@ export class LoggingConfig {
   public readonly debug: boolean = false;
 }
 
+export class FilesConfig {
+  @IsString()
+  @IsOptional()
+  public path: string = "/uploads";
+}
+
 export class RootConfig {
   @ValidateNested()
   @IsDefined({
@@ -139,10 +146,16 @@ export class RootConfig {
   public readonly controlPlane!: ControlPlaneConfig;
 
   @IsOptional()
+  @IsArray()
   public readonly dataset?: DatasetDto[];
 
   @ValidateNested()
   @Type(() => LoggingConfig)
   @IsOptional()
   public readonly logging: LoggingConfig = new LoggingConfig();
+
+  @ValidateNested()
+  @Type(() => FilesConfig)
+  @IsOptional()
+  public readonly files: FilesConfig = new FilesConfig();
 }
