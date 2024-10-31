@@ -3,7 +3,7 @@ import {
   HttpStatus,
   Injectable,
   Logger,
-  RawBodyRequest,
+  RawBodyRequest
 } from "@nestjs/common";
 import axios, { AxiosInstance } from "axios";
 import { RootConfig } from "../config";
@@ -36,7 +36,7 @@ import {
   TransferState,
   TransferSuspensionMessageDto,
   TransferTerminationMessageDto,
-  deserialize,
+  deserialize
 } from "@tsg-dsp/common-dsp";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
@@ -46,7 +46,7 @@ import { DataPlaneClientError, DataPlaneError } from "../utils/errors/error";
 import {
   DatasetConfig,
   PolicyConfig,
-  RuleConstraintConfig,
+  RuleConstraintConfig
 } from "@tsg-dsp/http-data-plane-dtos";
 import { AuthClientService } from "../auth/auth.client.service";
 import { resolve } from "../utils/didServiceResolver";
@@ -65,14 +65,14 @@ export class DataPlaneService {
     @InjectRepository(TransferDao)
     private readonly transferRepository: Repository<TransferDao>,
     @InjectRepository(DataPlaneStateDao)
-    private readonly stateRepository: Repository<DataPlaneStateDao>,
+    private readonly stateRepository: Repository<DataPlaneStateDao>
   ) {
     this.initialized = this.init();
     this.axiosDataPlane = authClient.axiosInstance({
-      baseURL: this.config.controlPlane.dataPlaneEndpoint,
+      baseURL: this.config.controlPlane.dataPlaneEndpoint
     });
     this.axiosManagement = authClient.axiosInstance({
-      baseURL: this.config.controlPlane.managementEndpoint,
+      baseURL: this.config.controlPlane.managementEndpoint
     });
   }
   private readonly logger = new Logger(this.constructor.name);
@@ -86,7 +86,7 @@ export class DataPlaneService {
       this.state = state;
     } else {
       this.logger.log(
-        `Creating new state (after ${this.config.controlPlane.initializationDelay}ms)`,
+        `Creating new state (after ${this.config.controlPlane.initializationDelay}ms)`
       );
       setTimeout(async () => {
         await this.registerDataplane();
@@ -104,24 +104,24 @@ export class DataPlaneService {
       managementAddress: this.config.server.publicAddress,
       managementToken: managementToken,
       catalogSynchronization: "push",
-      role: this.config.dataset ? "both" : "consumer",
+      role: this.config.dataset ? "both" : "consumer"
     };
     const details = await this.axiosDataPlane.post<DataPlaneDetailsDto>(
       `/init`,
-      dataPlaneCreation,
+      dataPlaneCreation
     );
     let datasets: Dataset[] = [];
     if (this.config.dataset) {
       datasets = await this.createDatasets(
-        this.state?.datasetConfig || this.config.dataset,
+        this.state?.datasetConfig || this.config.dataset
       );
 
       const catalog: Catalog = new Catalog({
-        dataset: datasets,
+        dataset: datasets
       });
       await this.axiosDataPlane.post<DataPlaneDetailsDto>(
         `/${details.data.identifier}/catalog`,
-        await catalog.serialize(),
+        await catalog.serialize()
       );
     }
     const state = await this.stateRepository.save({
@@ -129,7 +129,7 @@ export class DataPlaneService {
       managementToken: managementToken,
       details: details.data,
       datasetConfig: this.state?.datasetConfig || this.config.dataset,
-      dataset: await Promise.all(datasets.map((d) => d.serialize())),
+      dataset: await Promise.all(datasets.map((d) => d.serialize()))
     });
     this.state = state;
     return state;
@@ -143,7 +143,7 @@ export class DataPlaneService {
     } catch (err) {
       throw new DataPlaneClientError(
         "Fetching own catalog from control plane failed",
-        err,
+        err
       ).andLog(this.logger);
     }
   }
@@ -154,32 +154,32 @@ export class DataPlaneService {
         return new Constraint({
           leftOperand: "dspace:credentialType",
           operator: ODRLOperator.EQ,
-          rightOperand: constraint.value,
+          rightOperand: constraint.value
         });
       case "Recipient":
         return new Constraint({
           leftOperand: ODRLLeftOperand.RECIPIENT,
           operator: ODRLOperator.EQ,
-          rightOperand: constraint.value,
+          rightOperand: constraint.value
         });
       case "License":
         return new Constraint({
           leftOperand: "dspace:license",
           operator: ODRLOperator.EQ,
-          rightOperand: constraint.value,
+          rightOperand: constraint.value
         });
       default:
         return new Constraint({
           leftOperand: constraint.type,
           operator: ODRLOperator.EQ,
-          rightOperand: constraint.value,
+          rightOperand: constraint.value
         });
     }
   }
 
   private async constructOffer(
     datasetId: string,
-    policyConfig?: PolicyConfig,
+    policyConfig?: PolicyConfig
   ): Promise<Policy[] | undefined> {
     if (!policyConfig) return;
     if (policyConfig.type === "default") return;
@@ -187,7 +187,7 @@ export class DataPlaneService {
       if (!policyConfig.raw) {
         throw new DataPlaneError(
           `Property "raw" must be provided for policy configs with type "manual"`,
-          HttpStatus.BAD_REQUEST,
+          HttpStatus.BAD_REQUEST
         );
       } else {
         try {
@@ -197,7 +197,7 @@ export class DataPlaneService {
           throw new DataPlaneError(
             `Could not deserialize "raw" into a ODRL Policy`,
             HttpStatus.BAD_REQUEST,
-            err,
+            err
           );
         }
       }
@@ -208,7 +208,7 @@ export class DataPlaneService {
       catalog = await this.getControlPlaneCatalog();
     } catch (err) {
       this.logger.warn(
-        "Catalog could not be fetched from control plane, therefore, assigner fields in ODRL offers will be empty.",
+        "Catalog could not be fetched from control plane, therefore, assigner fields in ODRL offers will be empty."
       );
     }
 
@@ -220,8 +220,8 @@ export class DataPlaneService {
             action: permission.action,
             target: datasetId,
             constraint: permission.constraints?.map((constraint) =>
-              this.constructConstraint(constraint),
-            ),
+              this.constructConstraint(constraint)
+            )
           });
         }),
         prohibition: policyConfig.prohibitions?.map((prohibition) => {
@@ -229,11 +229,11 @@ export class DataPlaneService {
             action: prohibition.action,
             target: datasetId,
             constraint: prohibition.constraints?.map((constraint) =>
-              this.constructConstraint(constraint),
-            ),
+              this.constructConstraint(constraint)
+            )
           });
-        }),
-      }),
+        })
+      })
     ];
   }
 
@@ -244,23 +244,23 @@ export class DataPlaneService {
       currentState.details.role = "both";
       await this.axiosDataPlane.post<DataPlaneDetailsDto>(
         `/init`,
-        currentState.details,
+        currentState.details
       );
     }
 
     const datasets = await this.createDatasets(datasetConfig);
 
     const catalog: Catalog = new Catalog({
-      dataset: datasets,
+      dataset: datasets
     });
     await this.axiosDataPlane.post<DataPlaneDetailsDto>(
       `/${currentState.identifier}/catalog`,
-      await catalog.serialize(),
+      await catalog.serialize()
     );
     const state = await this.stateRepository.save({
       ...currentState,
       datasetConfig: datasetConfig,
-      dataset: await Promise.all(datasets.map((d) => d.serialize())),
+      dataset: await Promise.all(datasets.map((d) => d.serialize()))
     });
 
     this.state = state;
@@ -275,7 +275,7 @@ export class DataPlaneService {
 
     const currentDatasetRef =
       datasetConfig.versions.filter(
-        (v) => v.version === datasetConfig.currentVersion,
+        (v) => v.version === datasetConfig.currentVersion
       )[0]?.version ?? datasetConfig.versions[0].version;
 
     const defArray = <T>(...values: Array<T | undefined | null>): Array<T> =>
@@ -287,12 +287,12 @@ export class DataPlaneService {
       conformsTo: defArray(datasetConfig.baseSemanticModelRef),
       hasVersion: datasetConfig.versions.map((v) => `${id}:${v.version}`),
       hasCurrentVersion: `${id}:${currentDatasetRef}`,
-      hasPolicy: await this.constructOffer(id, datasetConfig.policy),
+      hasPolicy: await this.constructOffer(id, datasetConfig.policy)
     });
     const versions = datasetConfig.versions.map((v, idx) => {
       return {
         ...v,
-        previous: datasetConfig.versions.at(idx + 1),
+        previous: datasetConfig.versions.at(idx + 1)
       };
     });
     const datasets = [baseDataset];
@@ -307,7 +307,7 @@ export class DataPlaneService {
             ? `${id}:${v.previous.version}`
             : undefined,
           conformsTo: defArray(
-            v.semanticModelRef ?? datasetConfig.baseSemanticModelRef,
+            v.semanticModelRef ?? datasetConfig.baseSemanticModelRef
           ),
           distribution: v.distributions.map(
             (d) =>
@@ -320,13 +320,13 @@ export class DataPlaneService {
                 accessService: [
                   new DataService({
                     endpointURL: this.config.controlPlane.controlEndpoint,
-                    endpointDescription: "dspace:connector",
-                  }),
-                ],
-              }),
+                    endpointDescription: "dspace:connector"
+                  })
+                ]
+              })
           ),
-          hasPolicy: await this.constructOffer(id, datasetConfig.policy),
-        }),
+          hasPolicy: await this.constructOffer(id, datasetConfig.policy)
+        })
       );
     }
     return datasets;
@@ -336,7 +336,7 @@ export class DataPlaneService {
     if (!this.state) {
       throw new DataPlaneError(
         "No state available yet",
-        HttpStatus.SERVICE_UNAVAILABLE,
+        HttpStatus.SERVICE_UNAVAILABLE
       );
     }
     return this.state;
@@ -368,29 +368,29 @@ export class DataPlaneService {
   }
 
   async getMetadata(
-    id: string,
+    id: string
   ): Promise<{ agreement: AgreementDto; dataset: DatasetDto }> {
     const transfer = await this.getTransferById(id);
     let agreement: AgreementDto;
     try {
       const response = await this.axiosManagement.get<AgreementDto>(
-        `/agreements/${transfer.request["dspace:agreementId"]}`,
+        `/agreements/${transfer.request["dspace:agreementId"]}`
       );
       agreement = response.data;
     } catch (err) {
       throw new DataPlaneClientError(
         `Fetching agreement ${transfer.request["dspace:agreementId"]} failed`,
-        err,
+        err
       ).andLog(this.logger);
     }
     const did = await resolve(transfer.remoteParty);
     const connectorService = did.service?.find(
-      (s) => s.type === "connector" && typeof s.serviceEndpoint === "string",
+      (s) => s.type === "connector" && typeof s.serviceEndpoint === "string"
     );
     if (!connectorService) {
       throw new DataPlaneError(
         `No connector service defined in DID document for ${transfer.remoteParty}`,
-        HttpStatus.BAD_REQUEST,
+        HttpStatus.BAD_REQUEST
       ).andLog(new Logger("DidResolver"), "log");
     }
 
@@ -402,21 +402,21 @@ export class DataPlaneService {
           params: {
             address: connectorService.serviceEndpoint,
             id: agreement["odrl:target"],
-            audience: transfer.remoteParty,
-          },
-        },
+            audience: transfer.remoteParty
+          }
+        }
       );
       dataset = response.data;
     } catch (err) {
       throw new DataPlaneClientError(
         `Fetching dataset ${agreement["odrl:target"]} at ${connectorService.serviceEndpoint} (${transfer.remoteParty}) failed`,
-        err,
+        err
       ).andLog(this.logger);
     }
 
     return {
       agreement: agreement,
-      dataset: dataset,
+      dataset: dataset
     };
   }
 
@@ -425,7 +425,7 @@ export class DataPlaneService {
     role: "provider" | "consumer",
     processId: string,
     remoteParty: string,
-    datasetId: string,
+    datasetId: string
   ): Promise<DataPlaneRequestResponseDto> {
     const id = crypto.randomUUID();
     let dataAddress: DataPlaneAddressDto | undefined;
@@ -437,9 +437,9 @@ export class DataPlaneService {
         properties: [
           {
             name: "Authorization",
-            value: `Bearer ${secret}`,
-          },
-        ],
+            value: `Bearer ${secret}`
+          }
+        ]
       };
     }
 
@@ -455,8 +455,8 @@ export class DataPlaneService {
       response: {
         accepted: true,
         identifier: id,
-        dataAddress: dataAddress,
-      },
+        dataAddress: dataAddress
+      }
     });
 
     return transfer.response;
@@ -466,13 +466,13 @@ export class DataPlaneService {
     const transfer = await this.getTransferById(id);
     try {
       const response = await this.axiosManagement.post(
-        `/transfers/${transfer.processId}/start`,
+        `/transfers/${transfer.processId}/start`
       );
       return response.data;
     } catch (err) {
       throw new DataPlaneClientError(
         `Error starting transfer ${id}`,
-        err,
+        err
       ).andLog(this.logger);
     }
   }
@@ -481,13 +481,13 @@ export class DataPlaneService {
     const transfer = await this.getTransferById(id);
     try {
       const response = await this.axiosManagement.post(
-        `/transfers/${transfer.processId}/complete`,
+        `/transfers/${transfer.processId}/complete`
       );
       return response.data;
     } catch (err) {
       throw new DataPlaneClientError(
         `Error starting transfer ${id}`,
-        err,
+        err
       ).andLog(this.logger);
     }
   }
@@ -499,14 +499,14 @@ export class DataPlaneService {
         `/transfers/${transfer.processId}/terminate`,
         {
           code: code,
-          reason: reason,
-        },
+          reason: reason
+        }
       );
       return response.data;
     } catch (err) {
       throw new DataPlaneClientError(
         `Error starting transfer ${id}`,
-        err,
+        err
       ).andLog(this.logger);
     }
   }
@@ -517,27 +517,27 @@ export class DataPlaneService {
       const response = await this.axiosManagement.post(
         `/transfers/${transfer.processId}/suspend`,
         {
-          reason: reason,
-        },
+          reason: reason
+        }
       );
       return response.data;
     } catch (err) {
       throw new DataPlaneClientError(
         `Error starting transfer ${id}`,
-        err,
+        err
       ).andLog(this.logger);
     }
   }
 
   async handleTransferStart(
     transferStartMessage: TransferStartMessageDto,
-    processId: string,
+    processId: string
   ) {
     const transfer = await this.transferRepository.findOneBy({ id: processId });
     if (!transfer) {
       throw new HttpException(
         `Transfer ${processId} not found`,
-        HttpStatus.NOT_FOUND,
+        HttpStatus.NOT_FOUND
       );
     }
     transfer.state = TransferState.STARTED;
@@ -545,7 +545,7 @@ export class DataPlaneService {
       if (transferStartMessage["dspace:dataAddress"] === undefined) {
         throw new HttpException(
           `Expected dataAddress in TransferStartMessage`,
-          HttpStatus.BAD_REQUEST,
+          HttpStatus.BAD_REQUEST
         );
       }
       transfer.dataAddress = transferStartMessage["dspace:dataAddress"];
@@ -555,13 +555,13 @@ export class DataPlaneService {
 
   async handleTransferComplete(
     transferCompletionMessage: TransferCompletionMessageDto,
-    processId: string,
+    processId: string
   ) {
     const transfer = await this.transferRepository.findOneBy({ id: processId });
     if (!transfer) {
       throw new HttpException(
         `Transfer ${processId} not found`,
-        HttpStatus.NOT_FOUND,
+        HttpStatus.NOT_FOUND
       );
     }
     transfer.state = TransferState.COMPLETED;
@@ -570,13 +570,13 @@ export class DataPlaneService {
 
   async handleTransferTerminate(
     transferTerminationMessage: TransferTerminationMessageDto,
-    processId: string,
+    processId: string
   ) {
     const transfer = await this.transferRepository.findOneBy({ id: processId });
     if (!transfer) {
       throw new HttpException(
         `Transfer ${processId} not found`,
-        HttpStatus.NOT_FOUND,
+        HttpStatus.NOT_FOUND
       );
     }
     transfer.state = TransferState.TERMINATED;
@@ -585,13 +585,13 @@ export class DataPlaneService {
 
   async handleTransferSuspend(
     transferSuspensionMessage: TransferSuspensionMessageDto,
-    processId: string,
+    processId: string
   ) {
     const transfer = await this.transferRepository.findOneBy({ id: processId });
     if (!transfer) {
       throw new HttpException(
         `Transfer ${processId} not found`,
-        HttpStatus.NOT_FOUND,
+        HttpStatus.NOT_FOUND
       );
     }
     transfer.state = TransferState.SUSPENDED;
@@ -602,29 +602,29 @@ export class DataPlaneService {
     processId: string,
     path: string,
     request: RawBodyRequest<Request>,
-    response: Response,
+    response: Response
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   ): Promise<any> {
     const transfer = await this.transferRepository.findOneBy({ id: processId });
     if (!transfer) {
       throw new HttpException(
         `Transfer ${processId} not found`,
-        HttpStatus.NOT_FOUND,
+        HttpStatus.NOT_FOUND
       );
     }
     if (transfer.state !== TransferState.STARTED) {
       this.logger.warn(
-        `Transfer process ${processId} is in ${transfer.state} state, accessing is not allowed`,
+        `Transfer process ${processId} is in ${transfer.state} state, accessing is not allowed`
       );
       throw new HttpException(
         `Transfer process ${processId} is in ${transfer.state} state, accessing is not allowed`,
-        HttpStatus.FORBIDDEN,
+        HttpStatus.FORBIDDEN
       );
     }
     if (transfer.dataAddress === undefined) {
       throw new HttpException(
         `Transfer ${processId} does not have a data address present`,
-        HttpStatus.BAD_REQUEST,
+        HttpStatus.BAD_REQUEST
       );
     }
 
@@ -632,7 +632,7 @@ export class DataPlaneService {
       const newUrl =
         `${transfer.dataAddress["dspace:endpoint"]}/${path}`.replace(
           /([^:]\/)\/+/g,
-          "$1",
+          "$1"
         );
       const headers = request.headers;
       headers["authorization"] = transfer.dataAddress[
@@ -651,7 +651,7 @@ export class DataPlaneService {
         request.rawBody,
         request.query,
         response,
-        false,
+        false
       );
       const logEntry: LogEntry = {
         date: new Date(),
@@ -660,18 +660,18 @@ export class DataPlaneService {
         datasetId: transfer.datasetId,
         path: path,
         method: request.method,
-        status: response.statusCode,
+        status: response.statusCode
       };
       if (this.config.logging.debug) {
         logEntry.debug = {
           request: {
             headers: headers,
             query: request.query,
-            bodyLength: bodyLength,
+            bodyLength: bodyLength
           },
           response: {
-            headers: response.getHeaders(),
-          },
+            headers: response.getHeaders()
+          }
         };
       }
       await this.loggingService.insertEgressLog(logEntry);
@@ -679,7 +679,7 @@ export class DataPlaneService {
       this.logger.log(`Error in executing transfer: ${e}`);
       throw new HttpException(
         `Error in executing transfer: ${e}`,
-        HttpStatus.INTERNAL_SERVER_ERROR,
+        HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
   }
@@ -689,14 +689,14 @@ export class DataPlaneService {
     authorization: string,
     path: string,
     request: RawBodyRequest<Request>,
-    response: Response,
+    response: Response
   ) {
     const transfer = await this.transferRepository.findOneBy({ id: processId });
     if (!transfer) {
       this.logger.warn(`Transfer ${processId} not found`);
       throw new HttpException(
         `Transfer ${processId} not found`,
-        HttpStatus.NOT_FOUND,
+        HttpStatus.NOT_FOUND
       );
     }
     const state = await this.getState();
@@ -704,37 +704,37 @@ export class DataPlaneService {
     if (!dataset) {
       throw new HttpException(
         `Dataset ${transfer.datasetId} not found`,
-        HttpStatus.NOT_FOUND,
+        HttpStatus.NOT_FOUND
       );
     }
     if (!dataset["dcat:version"] && dataset["dcat:hasCurrentVersion"]) {
       dataset = state.dataset?.find(
-        (d) => d["@id"] === dataset?.["dcat:hasCurrentVersion"],
+        (d) => d["@id"] === dataset?.["dcat:hasCurrentVersion"]
       );
       if (!dataset) {
         throw new HttpException(
           `Dataset of current version ${dataset?.["dcat:hasCurrentVersion"]?.["@id"]} not found`,
-          HttpStatus.INTERNAL_SERVER_ERROR,
+          HttpStatus.INTERNAL_SERVER_ERROR
         );
       }
     }
 
     if (transfer.state !== TransferState.STARTED) {
       this.logger.warn(
-        `Transfer process ${processId} is in ${transfer.state} state, accessing is not allowed`,
+        `Transfer process ${processId} is in ${transfer.state} state, accessing is not allowed`
       );
       throw new HttpException(
         `Transfer process ${processId} is in ${transfer.state} state, accessing is not allowed`,
-        HttpStatus.FORBIDDEN,
+        HttpStatus.FORBIDDEN
       );
     }
     if (authorization !== `Bearer ${transfer.secret}`) {
       this.logger.warn(
-        `Incorrect authorization header ${authorization} vs ${`Bearer ${transfer.secret}`}`,
+        `Incorrect authorization header ${authorization} vs ${`Bearer ${transfer.secret}`}`
       );
       throw new HttpException(
         `Incorrect authorization header`,
-        HttpStatus.UNAUTHORIZED,
+        HttpStatus.UNAUTHORIZED
       );
     }
 
@@ -744,12 +744,12 @@ export class DataPlaneService {
     try {
       const headers = request.headers;
       const version = state.datasetConfig?.versions?.find(
-        (v) => v.version === dataset["dcat:version"],
+        (v) => v.version === dataset["dcat:version"]
       );
       if (!version) {
         throw new HttpException(
           `Version configuration not found`,
-          HttpStatus.INTERNAL_SERVER_ERROR,
+          HttpStatus.INTERNAL_SERVER_ERROR
         );
       }
       if (version.authorization) {
@@ -757,7 +757,7 @@ export class DataPlaneService {
       }
       const newUrl = `${version.distributions[0].backendUrl}/${path}`.replace(
         /([^:]\/)\/+/g,
-        "$1",
+        "$1"
       );
       this.logger.log(`Rewrite: ${newUrl}`);
       this.logger.log(`Headers: ${JSON.stringify(headers)}`);
@@ -772,7 +772,7 @@ export class DataPlaneService {
         request.rawBody,
         request.query,
         response,
-        version.authorization !== undefined,
+        version.authorization !== undefined
       );
       const logEntry: LogEntry = {
         date: new Date(),
@@ -781,18 +781,18 @@ export class DataPlaneService {
         datasetId: transfer.datasetId,
         path: path,
         method: request.method,
-        status: response.statusCode,
+        status: response.statusCode
       };
       if (this.config.logging.debug) {
         logEntry.debug = {
           request: {
             headers: headers,
             query: request.query,
-            bodyLength: bodyLength,
+            bodyLength: bodyLength
           },
           response: {
-            headers: response.getHeaders(),
-          },
+            headers: response.getHeaders()
+          }
         };
       }
       await this.loggingService.insertIngressLog(logEntry);
@@ -800,7 +800,7 @@ export class DataPlaneService {
       this.logger.log(`Error in executing transfer: ${e}`);
       throw new HttpException(
         `Error in executing transfer: ${e}`,
-        HttpStatus.INTERNAL_SERVER_ERROR,
+        HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
   }
@@ -813,7 +813,7 @@ export class DataPlaneService {
     body: Buffer | undefined,
     query: qs.ParsedQs,
     response: Response,
-    removeAuth: boolean,
+    removeAuth: boolean
   ) {
     delete headers["transfer-encoding"];
     delete headers["keep-alive"];
@@ -827,7 +827,7 @@ export class DataPlaneService {
     }
     try {
       this.logger.log(
-        `Proxying request ${method} ${url} (${JSON.stringify(headers)})`,
+        `Proxying request ${method} ${url} (${JSON.stringify(headers)})`
       );
       const proxyResponse = await axios({
         method: method,
@@ -836,7 +836,7 @@ export class DataPlaneService {
         data: body,
         params: query,
         responseType: "stream",
-        validateStatus: () => true,
+        validateStatus: () => true
       });
       Object.entries(proxyResponse.headers).forEach(([name, value]) => {
         if (value) {

@@ -27,19 +27,12 @@ import TabItem from "@theme/TabItem";
 <Heading
   as={"h1"}
   className={"openapi__heading"}
-  children={"DataPlaneController_requestTransfer"}
->
-</Heading>
+  children={"DataPlaneController_requestTransfer"}></Heading>
 
 <MethodEndpoint
   method={"post"}
   path={"/api/transfers/request/{role}"}
-  context={"endpoint"}
->
-  
-</MethodEndpoint>
-
-
+  context={"endpoint"}></MethodEndpoint>
 
 DataPlaneController_requestTransfer
 
@@ -47,108 +40,96 @@ DataPlaneController_requestTransfer
   id={"request"}
   as={"h2"}
   className={"openapi-tabs__heading"}
-  children={"Request"}
->
-</Heading>
+  children={"Request"}></Heading>
 
 <details
-  style={{"marginBottom":"1rem"}}
+  style={{ marginBottom: "1rem" }}
   className={"openapi-markdown__details"}
   data-collapsed={false}
-  open={true}
->
-  <summary
-    style={{}}
-  >
-    <h3
-      className={"openapi-markdown__details-summary-header-params"}
-    >
+  open={true}>
+  <summary style={{}}>
+    <h3 className={"openapi-markdown__details-summary-header-params"}>
       Path Parameters
     </h3>
-  </summary><div>
+  </summary>
+  <div>
     <ul>
       <ParamsItem
         className={"paramsItem"}
-        param={{"name":"role","required":true,"in":"path","schema":{"type":"string"},"enumDescriptions":[]}}
-      >
-        
-      </ParamsItem>
+        param={{
+          name: "role",
+          required: true,
+          in: "path",
+          schema: { type: "string" },
+          enumDescriptions: []
+        }}></ParamsItem>
     </ul>
   </div>
-</details><details
-  style={{"marginBottom":"1rem"}}
+</details>
+<details
+  style={{ marginBottom: "1rem" }}
   className={"openapi-markdown__details"}
   data-collapsed={false}
-  open={true}
->
-  <summary
-    style={{}}
-  >
-    <h3
-      className={"openapi-markdown__details-summary-header-params"}
-    >
+  open={true}>
+  <summary style={{}}>
+    <h3 className={"openapi-markdown__details-summary-header-params"}>
       Query Parameters
     </h3>
-  </summary><div>
+  </summary>
+  <div>
     <ul>
       <ParamsItem
         className={"paramsItem"}
-        param={{"name":"processId","required":true,"in":"query","schema":{"type":"string"},"enumDescriptions":[]}}
-      >
-        
-      </ParamsItem>
+        param={{
+          name: "processId",
+          required: true,
+          in: "query",
+          schema: { type: "string" },
+          enumDescriptions: []
+        }}></ParamsItem>
     </ul>
   </div>
-</details><details
-  style={{"marginBottom":"1rem"}}
+</details>
+<details
+  style={{ marginBottom: "1rem" }}
   className={"openapi-markdown__details"}
   data-collapsed={false}
-  open={true}
->
-  <summary
-    style={{}}
-  >
-    <h3
-      className={"openapi-markdown__details-summary-header-params"}
-    >
+  open={true}>
+  <summary style={{}}>
+    <h3 className={"openapi-markdown__details-summary-header-params"}>
       Header Parameters
     </h3>
-  </summary><div>
+  </summary>
+  <div>
     <ul>
       <ParamsItem
         className={"paramsItem"}
-        param={{"name":"x-remote-party","required":true,"in":"header","schema":{"type":"string"},"enumDescriptions":[]}}
-      >
-        
-      </ParamsItem><ParamsItem
+        param={{
+          name: "x-remote-party",
+          required: true,
+          in: "header",
+          schema: { type: "string" },
+          enumDescriptions: []
+        }}></ParamsItem>
+      <ParamsItem
         className={"paramsItem"}
-        param={{"name":"x-dataset-id","required":true,"in":"header","schema":{"type":"string"},"enumDescriptions":[]}}
-      >
-        
-      </ParamsItem>
+        param={{
+          name: "x-dataset-id",
+          required: true,
+          in: "header",
+          schema: { type: "string" },
+          enumDescriptions: []
+        }}></ParamsItem>
     </ul>
   </div>
-</details><div>
+</details>
+<div>
   <div>
-    <ApiTabs
-      label={undefined}
-      id={undefined}
-    >
-      <TabItem
-        label={"200"}
-        value={"200"}
-      >
-        <div>
-          
-          
-          
-          
-          
-        </div><div>
-          
-        </div>
+    <ApiTabs label={undefined} id={undefined}>
+      <TabItem label={"200"} value={"200"}>
+        <div></div>
+        <div></div>
       </TabItem>
     </ApiTabs>
   </div>
 </div>
-      

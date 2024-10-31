@@ -2,11 +2,11 @@ import { Module } from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import {
   TransferVerifiablePresentationGuard,
-  VerifiablePresentationGuard,
+  VerifiablePresentationGuard
 } from "./verifiablePresentation.guard";
 import {
   TransferVerifiablePresentationStrategy,
-  VerifiablePresentationStrategy,
+  VerifiablePresentationStrategy
 } from "./verifiablePresentation.strategy";
 import { PassportModule } from "@nestjs/passport";
 import { AuthController } from "./auth.controller";
@@ -23,7 +23,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 @Module({
   imports: [
     PassportModule.register({ session: true }),
-    TypeOrmModule.forFeature([AgreementDao, TransferMonitorDao]),
+    TypeOrmModule.forFeature([AgreementDao, TransferMonitorDao])
   ],
   controllers: [AuthController],
   providers: [
@@ -36,7 +36,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
     OAuthGuard,
     RolesGuard,
     AuthClientService,
-    SessionSerializer,
+    SessionSerializer
   ],
   exports: [
     AuthService,
@@ -44,7 +44,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
     TransferVerifiablePresentationGuard,
     OAuthGuard,
     RolesGuard,
-    AuthClientService,
-  ],
+    AuthClientService
+  ]
 })
 export class AuthModule {}

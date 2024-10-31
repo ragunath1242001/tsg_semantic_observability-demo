@@ -3,14 +3,14 @@ import {
   HttpStatus,
   Injectable,
   Logger,
-  createParamDecorator,
+  createParamDecorator
 } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
 import {
   CredentialSubject,
   VerifiableCredential,
   VerifiablePresentation,
-  toArray,
+  toArray
 } from "@tsg-dsp/common-dsp";
 import { plainToInstance } from "class-transformer";
 import { JwtPayload, decode } from "jsonwebtoken";
@@ -36,10 +36,10 @@ export const VP = createParamDecorator(
       throw new DSPError(
         `Error in retrieving VP`,
         HttpStatus.UNAUTHORIZED,
-        err,
+        err
       ).andLog(new Logger("VP Decorator"));
     }
-  },
+  }
 );
 
 export const VPId = createParamDecorator(
@@ -54,20 +54,20 @@ export const VPId = createParamDecorator(
       throw new DSPError(
         `Error in retrieving VP ID`,
         HttpStatus.UNAUTHORIZED,
-        err,
+        err
       ).andLog(new Logger("VP ID Decorator"));
     }
-  },
+  }
 );
 
 @Injectable()
 export class VerifiablePresentationStrategy extends PassportStrategy(
   Strategy,
-  "vp",
+  "vp"
 ) {
   constructor(private readonly authService: AuthService) {
     super({
-      passReqToCallback: true,
+      passReqToCallback: true
     });
   }
   private readonly logger = new Logger(this.constructor.name);
@@ -80,21 +80,21 @@ export class VerifiablePresentationStrategy extends PassportStrategy(
       throw new DSPError(
         "Malformed token",
         HttpStatus.UNAUTHORIZED,
-        err,
+        err
       ).andLog(this.logger, "warn");
     }
     if (!tokenPayload) {
       this.logger.warn(`Token could not be decoded: ${tokenPayload}`);
       throw new DSPError(
         "Token could not be decoded",
-        HttpStatus.UNAUTHORIZED,
+        HttpStatus.UNAUTHORIZED
       ).andLog(this.logger, "warn");
     }
     const valid = await this.authService.validateToken(token);
     if (!valid) {
       throw new DSPError(
         "Verifiable Presentation token not valid",
-        HttpStatus.UNAUTHORIZED,
+        HttpStatus.UNAUTHORIZED
       ).andLog(this.logger, "warn");
     }
     return valid;
@@ -104,7 +104,7 @@ export class VerifiablePresentationStrategy extends PassportStrategy(
 @Injectable()
 export class TransferVerifiablePresentationStrategy extends PassportStrategy(
   Strategy,
-  "transfervp",
+  "transfervp"
 ) {
   constructor(
     private readonly config: RootConfig,
@@ -112,10 +112,10 @@ export class TransferVerifiablePresentationStrategy extends PassportStrategy(
     @InjectRepository(AgreementDao)
     private readonly agreementRepository: Repository<AgreementDao>,
     @InjectRepository(TransferMonitorDao)
-    private readonly transferMonitorRepository: Repository<TransferMonitorDao>,
+    private readonly transferMonitorRepository: Repository<TransferMonitorDao>
   ) {
     super({
-      passReqToCallback: true,
+      passReqToCallback: true
     });
   }
   private readonly logger = new Logger(this.constructor.name);
@@ -128,14 +128,14 @@ export class TransferVerifiablePresentationStrategy extends PassportStrategy(
       throw new DSPError(
         "Malformed token",
         HttpStatus.UNAUTHORIZED,
-        err,
+        err
       ).andLog(this.logger, "warn");
     }
     if (!tokenPayload) {
       this.logger.warn(`Token could not be decoded: ${tokenPayload}`);
       throw new DSPError(
         "Token could not be decoded",
-        HttpStatus.UNAUTHORIZED,
+        HttpStatus.UNAUTHORIZED
       ).andLog(this.logger, "warn");
     }
 
@@ -144,15 +144,15 @@ export class TransferVerifiablePresentationStrategy extends PassportStrategy(
     if (req.params.id) {
       this.logger.debug(`Find agreement by param ${req.params.id}`);
       const transfer = await this.transferMonitorRepository.findOneBy({
-        id: req.params.id,
+        id: req.params.id
       });
       agreementDao = transfer?.agreement;
     } else if (req.body["dspace:agreementId"]) {
       this.logger.debug(
-        `Find agreement by body ${req.body["dspace:agreementId"]}`,
+        `Find agreement by body ${req.body["dspace:agreementId"]}`
       );
       agreementDao = await this.agreementRepository.findOneBy({
-        id: req.body["dspace:agreementId"],
+        id: req.body["dspace:agreementId"]
       });
     }
 
@@ -162,14 +162,14 @@ export class TransferVerifiablePresentationStrategy extends PassportStrategy(
         agreementDao.agreement["odrl:permission"]?.flatMap(
           (p) =>
             p["odrl:constraint"]?.filter(
-              (c) => c["odrl:leftOperand"] === "tsg:vpInputDescriptor",
-            ) ?? [],
+              (c) => c["odrl:leftOperand"] === "tsg:vpInputDescriptor"
+            ) ?? []
         ) ?? [];
       if (vpConstraints.length > 0) {
         this.logger.debug(`Found VP constraint(s)`);
         for (const vpConstraint of vpConstraints) {
           const rightOperand = RuleRepositoryService.parseRightOperand(
-            vpConstraint["odrl:rightOperand"],
+            vpConstraint["odrl:rightOperand"]
           );
           let inputDescriptor: InputDescriptor[] | undefined = undefined;
           if (rightOperand) {
@@ -184,13 +184,13 @@ export class TransferVerifiablePresentationStrategy extends PassportStrategy(
           }
           this.logger.debug(
             `Validating token with inputdescriptor: ${JSON.stringify(
-              inputDescriptor,
-            )}`,
+              inputDescriptor
+            )}`
           );
           const valid = await this.authService.validateToken(
             token,
             this.config.iam.didId,
-            inputDescriptor,
+            inputDescriptor
           );
           if (valid) {
             return valid;
@@ -199,7 +199,7 @@ export class TransferVerifiablePresentationStrategy extends PassportStrategy(
 
         throw new DSPError(
           "Verifiable Presentation token not valid",
-          HttpStatus.UNAUTHORIZED,
+          HttpStatus.UNAUTHORIZED
         ).andLog(this.logger, "warn");
       }
     }
@@ -207,7 +207,7 @@ export class TransferVerifiablePresentationStrategy extends PassportStrategy(
     if (!valid) {
       throw new DSPError(
         "Verifiable Presentation token not valid",
-        HttpStatus.UNAUTHORIZED,
+        HttpStatus.UNAUTHORIZED
       ).andLog(this.logger, "warn");
     }
     return valid;

@@ -11,7 +11,7 @@ import {
   DataServiceDao,
   DatasetDao,
   DistributionDao,
-  ResourceDao,
+  ResourceDao
 } from "../../model/catalog.dao";
 
 @Module({
@@ -24,11 +24,11 @@ import {
       DataServiceDao,
       DistributionDao,
       ResourceDao,
-      CatalogRecordDao,
-    ]),
+      CatalogRecordDao
+    ])
   ],
   controllers: [CatalogController, CatalogManagementController],
   providers: [CatalogService],
-  exports: [CatalogService],
+  exports: [CatalogService]
 })
 export class CatalogModule {}

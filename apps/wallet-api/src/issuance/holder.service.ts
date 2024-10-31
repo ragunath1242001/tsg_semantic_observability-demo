@@ -5,7 +5,7 @@ import {
   CredentialDefinition,
   CredentialIssuerMetadata,
   CredentialRequest,
-  CredentialResponse,
+  CredentialResponse
 } from "@tsg-dsp/wallet-dtos";
 // This needs to be separate since it's an enum. https://stackoverflow.com/questions/38553097/how-to-import-an-enum
 import { OfferGrants } from "@tsg-dsp/wallet-dtos";
@@ -27,7 +27,7 @@ export class HolderService {
     private readonly credentialsService: CredentialsService,
     private readonly presentationService: PresentationService,
     private readonly signatureService: SignatureService,
-    private readonly config: RootConfig,
+    private readonly config: RootConfig
   ) {
     this.initialized = this.init();
   }
@@ -41,19 +41,19 @@ export class HolderService {
       this.config.oid4vci.holder.map(async (holderConfig) => {
         if (
           existingCredentials.find((c) =>
-            c.credential.type.includes(holderConfig.credentialType),
+            c.credential.type.includes(holderConfig.credentialType)
           )
         ) {
           this.logger.log(
-            `Already holding ${holderConfig.credentialType} credential, skipping request`,
+            `Already holding ${holderConfig.credentialType} credential, skipping request`
           );
         } else {
           await this.requestCredentialWithRetry(
             holderConfig.preAuthorizationCode,
-            holderConfig.issuerUrl,
+            holderConfig.issuerUrl
           );
         }
-      }),
+      })
     );
 
     return true;
@@ -63,25 +63,25 @@ export class HolderService {
     preAuthorizedCode: string,
     issuerUrl: string,
     retry = 0,
-    backOff = 1000,
+    backOff = 1000
   ) {
     try {
       await this.requestCredential(preAuthorizedCode, issuerUrl);
     } catch (err) {
       if (retry < 5) {
         this.logger.warn(
-          `Could not request credential with code ${preAuthorizedCode} at ${issuerUrl}, retrying in 10 seconds`,
+          `Could not request credential with code ${preAuthorizedCode} at ${issuerUrl}, retrying in 10 seconds`
         );
         await new Promise((f) => setTimeout(f, backOff));
         await this.requestCredentialWithRetry(
           preAuthorizedCode,
           issuerUrl,
           ++retry,
-          backOff * 2,
+          backOff * 2
         );
       } else {
         this.logger.error(
-          `Could not request credential with code ${preAuthorizedCode} at ${issuerUrl}: ${err}`,
+          `Could not request credential with code ${preAuthorizedCode} at ${issuerUrl}: ${err}`
         );
         throw err;
       }
@@ -90,19 +90,19 @@ export class HolderService {
 
   async requestCredential(
     preAuthorizedCode: string,
-    issuerUrl: string,
+    issuerUrl: string
   ): Promise<Credentials> {
     const issuerMetadata = await this.retrieveIssuerMetadata(issuerUrl);
     const accessToken = await this.requestAccessToken(
       preAuthorizedCode,
-      issuerMetadata.token_endpoint!,
+      issuerMetadata.token_endpoint!
     );
     const credentialIdentifier =
       accessToken.authorization_details?.[0]?.credential_identifiers?.[0];
     if (!credentialIdentifier) {
       throw new AppError(
         "Access token does not contain authorization details or credential identifier",
-        HttpStatus.BAD_REQUEST,
+        HttpStatus.BAD_REQUEST
       ).andLog(this.logger);
     }
 
@@ -111,62 +111,62 @@ export class HolderService {
     if (!credentialConfig) {
       throw new AppError(
         `Credential configuration for ${accessToken.authorization_details?.[0]?.credential_identifiers?.[0]} not found`,
-        HttpStatus.BAD_REQUEST,
+        HttpStatus.BAD_REQUEST
       ).andLog(this.logger);
     }
 
     const credentialRequest = await this.generateCredentialRequest(
       accessToken.c_nonce,
       issuerUrl,
-      credentialConfig.credential_definition,
+      credentialConfig.credential_definition
     );
 
     const credentialResponse = await this.invokeCredentialEndpoint(
       issuerMetadata.credential_endpoint,
       credentialRequest,
-      accessToken.access_token,
+      accessToken.access_token
     );
 
     if ("credential" in credentialResponse) {
       const presentationCheck =
         await this.presentationService.validatePresentation({
-          vp: credentialResponse.credential,
+          vp: credentialResponse.credential
         });
       if (!presentationCheck.valid) {
         this.logger.warn(
           `Verifiable presentation token from issuer ${issuerUrl} not valid, credential will be added but might not be valid:\n${JSON.stringify(
             presentationCheck,
             null,
-            2,
-          )}`,
+            2
+          )}`
         );
       }
       const jwtPayload = decodeJwt(credentialResponse.credential);
       const vp = plainToInstance(VerifiablePresentation, jwtPayload.vp);
       this.logger.log(
-        `Importing credential ${toArray(vp.verifiableCredential)[0].id}`,
+        `Importing credential ${toArray(vp.verifiableCredential)[0].id}`
       );
       return this.credentialsService.importCredential(
-        toArray(vp.verifiableCredential)[0],
+        toArray(vp.verifiableCredential)[0]
       );
     } else {
       throw new AppError(
         "Deferred credential handling not yet supported",
-        HttpStatus.NOT_IMPLEMENTED,
+        HttpStatus.NOT_IMPLEMENTED
       ).andLog(this.logger);
     }
   }
 
   private async retrieveIssuerMetadata(
-    issuerUrl: string,
+    issuerUrl: string
   ): Promise<CredentialIssuerMetadata> {
     const credentialIssuerMetadataEndpoint = this.constructWellKnown(
       "issuer",
-      issuerUrl,
+      issuerUrl
     );
     try {
       const response = await axios.get<CredentialIssuerMetadata>(
-        credentialIssuerMetadataEndpoint,
+        credentialIssuerMetadataEndpoint
       );
 
       if (!response.data.token_endpoint) {
@@ -178,7 +178,7 @@ export class HolderService {
             if (tokenEndpoint) {
               return {
                 ...response.data,
-                token_endpoint: tokenEndpoint,
+                token_endpoint: tokenEndpoint
               };
             }
           }
@@ -187,12 +187,12 @@ export class HolderService {
         if (tokenEndpoint) {
           return {
             ...response.data,
-            token_endpoint: tokenEndpoint,
+            token_endpoint: tokenEndpoint
           };
         } else {
           throw new AppError(
             `Could not find token endpoint for ${issuerUrl}`,
-            HttpStatus.BAD_REQUEST,
+            HttpStatus.BAD_REQUEST
           ).andLog(this.logger);
         }
       }
@@ -201,21 +201,21 @@ export class HolderService {
     } catch (err) {
       throw new AppError(
         `Could not load OpenID Credential issuer metadata from ${credentialIssuerMetadataEndpoint}`,
-        HttpStatus.BAD_REQUEST,
+        HttpStatus.BAD_REQUEST
       ).andLog(this.logger);
     }
   }
 
   private async retrieveTokenEndpoint(
-    authorizationServer: string,
+    authorizationServer: string
   ): Promise<string | undefined> {
     const openIdMetadataEndpoint = this.constructWellKnown(
       "openid",
-      authorizationServer,
+      authorizationServer
     );
     const oauthMetadataEndpoint = this.constructWellKnown(
       "oauth",
-      authorizationServer,
+      authorizationServer
     );
     try {
       const response = await axios.get(openIdMetadataEndpoint);
@@ -236,21 +236,21 @@ export class HolderService {
 
   private async requestAccessToken(
     preAuthorizedCode: string,
-    tokenEndpoint: string,
+    tokenEndpoint: string
   ): Promise<AccessToken> {
     try {
       const tokenResponse = await axios.post<AccessToken>(
         tokenEndpoint,
         qs.stringify({
           grant_type: OfferGrants.PRE_AUTHORIZATION_CODE,
-          "pre-authorized_code": preAuthorizedCode,
-        }),
+          "pre-authorized_code": preAuthorizedCode
+        })
       );
       return tokenResponse.data;
     } catch (err) {
       throw new AppError(
         `Could not retrieve access token for pre authorization code ${preAuthorizedCode} at ${tokenEndpoint}`,
-        HttpStatus.BAD_REQUEST,
+        HttpStatus.BAD_REQUEST
       ).andLog(this.logger);
     }
   }
@@ -258,7 +258,7 @@ export class HolderService {
   private async generateCredentialRequest(
     nonce: string | undefined,
     issuerUrl: string,
-    credentialDefinition: CredentialDefinition,
+    credentialDefinition: CredentialDefinition
   ): Promise<CredentialRequest> {
     const jwt = await this.signatureService.signAsJwt(
       { nonce: nonce },
@@ -266,8 +266,8 @@ export class HolderService {
       {
         typ: "openid4vci-proof+jwt",
         subject: false,
-        jti: false,
-      },
+        jti: false
+      }
     );
 
     return {
@@ -275,15 +275,15 @@ export class HolderService {
       credential_definition: credentialDefinition,
       proof: {
         proof_type: "jwt",
-        jwt: jwt,
-      },
+        jwt: jwt
+      }
     };
   }
 
   private async invokeCredentialEndpoint(
     credentialEndpoint: string,
     credentialRequest: CredentialRequest,
-    accessToken: string,
+    accessToken: string
   ): Promise<CredentialResponse> {
     try {
       const response = await axios.post<CredentialResponse>(
@@ -291,22 +291,22 @@ export class HolderService {
         credentialRequest,
         {
           headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        },
+            Authorization: `Bearer ${accessToken}`
+          }
+        }
       );
       return response.data;
     } catch (err) {
       throw new AppError(
         `Error in requesting credential at ${credentialEndpoint}`,
-        HttpStatus.BAD_REQUEST,
+        HttpStatus.BAD_REQUEST
       ).andLog(this.logger);
     }
   }
 
   private constructWellKnown(
     type: "issuer" | "openid" | "oauth",
-    baseUrl: string,
+    baseUrl: string
   ) {
     let url: string;
     switch (type) {

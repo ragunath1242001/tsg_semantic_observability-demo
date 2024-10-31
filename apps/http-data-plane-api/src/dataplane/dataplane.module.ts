@@ -13,13 +13,13 @@ import { LoggingModule } from "../logging/logging.module";
   imports: [
     TypeOrmModule.forFeature([TransferDao, DataPlaneStateDao]),
     AuthModule,
-    LoggingModule,
+    LoggingModule
   ],
   controllers: [
     DataPlaneController,
     DataPlaneManagementController,
-    ProxyController,
+    ProxyController
   ],
-  providers: [DataPlaneService],
+  providers: [DataPlaneService]
 })
 export class DataPlaneTestModule {}

@@ -9,7 +9,7 @@ import { AuthModule } from "../auth/auth.module";
 import { AuthService } from "../auth/auth.service";
 import {
   mockWalletConfig,
-  setupMockWalletServer,
+  setupMockWalletServer
 } from "../auth/wallets/wallet.util.test";
 import { AuthClientService } from "../auth/auth.client.service";
 import { defaultContext } from "@tsg-dsp/common-dsp";
@@ -34,8 +34,8 @@ describe("RegistryClientService", () => {
           "dct:description": [
             {
               "@value": "Test connector",
-              "@language": "en",
-            },
+              "@language": "en"
+            }
           ],
           "dct:publisher": "did:web:localhost",
           "dct:title": "Test Catalog",
@@ -60,12 +60,12 @@ describe("RegistryClientService", () => {
                           "@type": "odrl:Constraint",
                           "odrl:rightOperand": "dspace:sameDataSpace",
                           "odrl:leftOperand": "dspace:identity",
-                          "odrl:operator": "odrl:isPartOf",
-                        },
-                      ],
-                    },
-                  ],
-                },
+                          "odrl:operator": "odrl:isPartOf"
+                        }
+                      ]
+                    }
+                  ]
+                }
               ],
               "dcat:distribution": [
                 {
@@ -75,33 +75,33 @@ describe("RegistryClientService", () => {
                     {
                       "@type": "dcat:DataService",
                       "@id": "urn:uuid:946b0e29-b006-430a-8e4d-ddf196104b67",
-                      "dcat:endpointURL": "http://localhost:3000/api/",
-                    },
+                      "dcat:endpointURL": "http://localhost:3000/api/"
+                    }
                   ],
                   "dct:conformsTo": {
-                    "@id": "https://httpbin.org/spec.json",
+                    "@id": "https://httpbin.org/spec.json"
                   },
                   "dct:format": "dspace:HTTP",
-                  "dct:title": "Version 0.9.2",
-                },
-              ],
-            },
+                  "dct:title": "Version 0.9.2"
+                }
+              ]
+            }
           ],
           "dcat:service": [
             {
               "@type": "dcat:DataService",
               "@id": "urn:uuid:a2d7d253-e1f6-4cd8-b806-742e119c6023",
               "dcat:endpointDescription": "dspace:connector",
-              "dcat:endpointURL": "https://cp.localhost/control-plane",
-            },
-          ],
-        },
+              "dcat:endpointURL": "https://cp.localhost/control-plane"
+            }
+          ]
+        }
       ]);
     })
   );
   beforeEach(async () => {
     const registryConfig = plainToClass(RegistryConfig, {
-      registryUrl: "http://localhost/registry",
+      registryUrl: "http://localhost/registry"
     });
     let iamConfig: IamConfig = mockWalletConfig();
     const module: TestingModule = await Test.createTestingModule({
@@ -114,17 +114,17 @@ describe("RegistryClientService", () => {
             new AuthClientService(
               plainToInstance(AuthConfig, { enabled: false })
             )
-          ),
+          )
         },
         {
           provide: RegistryConfig,
-          useValue: registryConfig,
-        },
-      ],
+          useValue: registryConfig
+        }
+      ]
     }).compile();
 
     server.listen({
-      onUnhandledRequest: "warn",
+      onUnhandledRequest: "warn"
     });
 
     registryClientService = module.get(RegistryClientService);
@@ -152,17 +152,17 @@ describe("RegistryClientService", () => {
               new AuthClientService(
                 plainToInstance(AuthConfig, { enabled: false })
               )
-            ),
+            )
           },
           {
             provide: RegistryConfig,
-            useValue: registryConfig,
-          },
-        ],
+            useValue: registryConfig
+          }
+        ]
       }).compile();
 
       server.listen({
-        onUnhandledRequest: "warn",
+        onUnhandledRequest: "warn"
       });
 
       registryClientService = module.get(RegistryClientService);

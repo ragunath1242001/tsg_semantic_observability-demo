@@ -11,7 +11,7 @@ import { base32 } from "multiformats/bases/base32";
 import {
   createVerificationMethods,
   DIDMethod,
-  VERIFICATION_METHOD_CONTEXT,
+  VERIFICATION_METHOD_CONTEXT
 } from "../../utils/did.js";
 import { createHash } from "crypto";
 import { canonicalize } from "json-canonicalize";
@@ -24,7 +24,7 @@ import { createSigner } from "./method/signing.js";
 export class DidTdwStrategy implements DidStrategy {
   constructor(
     @InjectRepository(DIDLogs)
-    private readonly didLogsRepository: Repository<DIDLogs>,
+    private readonly didLogsRepository: Repository<DIDLogs>
   ) {}
   private readonly logger = new Logger(this.constructor.name);
   private currUpdateKey?: VerificationMethod;
@@ -32,11 +32,11 @@ export class DidTdwStrategy implements DidStrategy {
   async getDidLog(scid: string): Promise<string> {
     const logEntries = await this.didLogsRepository.find({
       select: {
-        logEntry: true,
+        logEntry: true
       },
       where: {
-        scid: scid,
-      },
+        scid: scid
+      }
     });
     if (logEntries.length === 0) {
       throw new AppError(`DID Logs not ready yet`, HttpStatus.NOT_FOUND);
@@ -49,7 +49,7 @@ export class DidTdwStrategy implements DidStrategy {
   }
 
   private prepareAssertionMethods(
-    verificationMethods?: VerificationMethod[],
+    verificationMethods?: VerificationMethod[]
   ): VerificationMethod[] {
     if (verificationMethods == null) {
       return [];
@@ -60,7 +60,7 @@ export class DidTdwStrategy implements DidStrategy {
       vmsWithAssertionMethods.push({
         id: vmsWithAssertionMethods[i].id,
         controller: vmsWithAssertionMethods[i].controller,
-        type: "assertionMethod",
+        type: "assertionMethod"
       });
     }
     return vmsWithAssertionMethods;
@@ -70,7 +70,7 @@ export class DidTdwStrategy implements DidStrategy {
     if (!this.currUpdateKey) {
       throw new AppError(
         `No DID default key present`,
-        HttpStatus.NOT_FOUND,
+        HttpStatus.NOT_FOUND
       ).andLog(this.logger);
     }
     return this.currUpdateKey;
@@ -80,7 +80,7 @@ export class DidTdwStrategy implements DidStrategy {
     config: RootConfig,
     didId: string,
     keys: KeyMaterials[],
-    services: DidServiceConfig[],
+    services: DidServiceConfig[]
   ): Promise<{
     did: string;
     doc: DIDDocument;
@@ -92,15 +92,15 @@ export class DidTdwStrategy implements DidStrategy {
       signer: createSigner(this.getCurrUpdateKey()),
       context: VERIFICATION_METHOD_CONTEXT,
       verificationMethods: this.prepareAssertionMethods(
-        createVerificationMethods(didId, keys),
+        createVerificationMethods(didId, keys)
       ),
-      service: services,
+      service: services
     });
 
     this.didLogsRepository.clear();
     await this.didLogsRepository.save({
       scid: created.log[0][3].scid,
-      logEntry: created.log[0],
+      logEntry: created.log[0]
     });
 
     return { did: created.did, doc: created.doc, log: created.log };
@@ -110,14 +110,14 @@ export class DidTdwStrategy implements DidStrategy {
     config: RootConfig,
     didId: string,
     keys: KeyMaterials[],
-    services: DidServiceConfig[],
+    services: DidServiceConfig[]
   ): Promise<{ didId: string; didDocument: DIDDocument }> {
     this.logger.log("Creating DID document");
 
     if (keys.length === 0) {
       throw new AppError(
         `Keys not supplied for DID document creation`,
-        HttpStatus.INTERNAL_SERVER_ERROR,
+        HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
 
@@ -128,19 +128,19 @@ export class DidTdwStrategy implements DidStrategy {
     this.currUpdateKey = {
       publicKeyMultibase: jwkToMultibase(defaultKey.publicKey),
       secretKeyMultibase: jwkToMultibase(defaultKey.privateKey, true),
-      type: defaultKey.type,
+      type: defaultKey.type
     };
 
     const created = await this.createDidDocAndSaveLog(
       config,
       didId,
       keys,
-      services,
+      services
     );
 
     this.logger.log(`DID document created for ${created.did}`);
     this.logger.debug(
-      `DID document ${created.did}\n${JSON.stringify(created.doc, null, 2)}`,
+      `DID document ${created.did}\n${JSON.stringify(created.doc, null, 2)}`
     );
 
     return { didId: created.did, didDocument: created.doc };
@@ -149,15 +149,15 @@ export class DidTdwStrategy implements DidStrategy {
   async updateDidDocument(
     didDocument: DIDDocument,
     verificationMethods?: VerificationMethod[],
-    services?: Service[],
+    services?: Service[]
   ): Promise<DIDDocument> {
     this.logger.log("Updating DID document");
 
     const existingLogs = await this.didLogsRepository.find({
       select: {
         scid: true,
-        logEntry: true,
-      },
+        logEntry: true
+      }
     });
     if (existingLogs.length === 0) {
       throw new AppError(`DID Document not ready yet`, HttpStatus.NOT_FOUND);
@@ -170,17 +170,17 @@ export class DidTdwStrategy implements DidStrategy {
       signer: createSigner(this.getCurrUpdateKey()),
       context: VERIFICATION_METHOD_CONTEXT,
       verificationMethods: this.prepareAssertionMethods(verificationMethods),
-      services: services,
+      services: services
     });
 
     this.logger.log(`DID document updated for ${updated.did}`);
     this.logger.debug(
-      `DID document ${updated.did}\n${JSON.stringify(updated.doc, null, 2)}`,
+      `DID document ${updated.did}\n${JSON.stringify(updated.doc, null, 2)}`
     );
 
     await this.didLogsRepository.save({
       scid: scid,
-      logEntry: updated.log[updated.log.length - 1],
+      logEntry: updated.log[updated.log.length - 1]
     });
 
     return updated.doc;
@@ -191,7 +191,7 @@ export class DidTdwStrategy implements DidStrategy {
       this.currUpdateKey = {
         publicKeyMultibase: jwkToMultibase(key.publicKey),
         secretKeyMultibase: jwkToMultibase(key.privateKey, true),
-        type: key.type,
+        type: key.type
       };
       return;
     }
@@ -199,8 +199,8 @@ export class DidTdwStrategy implements DidStrategy {
     const existingLogs = await this.didLogsRepository.find({
       select: {
         scid: true,
-        logEntry: true,
-      },
+        logEntry: true
+      }
     });
     const logEntries = existingLogs.map((row) => row.logEntry);
     const scid = existingLogs[0].scid;
@@ -208,7 +208,7 @@ export class DidTdwStrategy implements DidStrategy {
     const newUpdateKey: VerificationMethod = {
       publicKeyMultibase: jwkToMultibase(key.publicKey),
       secretKeyMultibase: jwkToMultibase(key.privateKey, true),
-      type: key.type,
+      type: key.type
     };
 
     const prerotated = await updateDID({
@@ -216,7 +216,7 @@ export class DidTdwStrategy implements DidStrategy {
       signer: createSigner(this.getCurrUpdateKey()),
       context: VERIFICATION_METHOD_CONTEXT,
       verificationMethods: this.prepareAssertionMethods(
-        didDocument.verificationMethod,
+        didDocument.verificationMethod
       ),
       services: didDocument.service,
       prerotate: true,
@@ -224,13 +224,13 @@ export class DidTdwStrategy implements DidStrategy {
         base32.encode(
           createHash("sha256")
             .update(canonicalize(newUpdateKey.publicKeyMultibase!))
-            .digest(),
-        ),
-      ],
+            .digest()
+        )
+      ]
     });
     await this.didLogsRepository.save({
       scid: scid,
-      logEntry: prerotated.log[prerotated.log.length - 1],
+      logEntry: prerotated.log[prerotated.log.length - 1]
     });
 
     const updated = await updateDID({
@@ -238,14 +238,14 @@ export class DidTdwStrategy implements DidStrategy {
       signer: createSigner(this.getCurrUpdateKey()),
       context: VERIFICATION_METHOD_CONTEXT,
       verificationMethods: this.prepareAssertionMethods(
-        didDocument.verificationMethod,
+        didDocument.verificationMethod
       ),
       services: didDocument.service,
-      updateKeys: [newUpdateKey.publicKeyMultibase!],
+      updateKeys: [newUpdateKey.publicKeyMultibase!]
     });
     await this.didLogsRepository.save({
       scid: scid,
-      logEntry: updated.log[updated.log.length - 1],
+      logEntry: updated.log[updated.log.length - 1]
     });
 
     this.currUpdateKey = newUpdateKey;
@@ -254,7 +254,7 @@ export class DidTdwStrategy implements DidStrategy {
   getWellKnownDidDocument(doc: DIDDocument): DIDDocument {
     const did = doc.id;
     const newDoc = JSON.parse(
-      JSON.stringify(doc).replaceAll(DIDMethod.TDW, DIDMethod.WEB),
+      JSON.stringify(doc).replaceAll(DIDMethod.TDW, DIDMethod.WEB)
     );
     if (newDoc.alsoKnownAs) {
       newDoc.alsoKnownAs.push(did);

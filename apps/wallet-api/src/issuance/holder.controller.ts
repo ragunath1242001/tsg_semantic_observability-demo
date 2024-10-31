@@ -7,12 +7,12 @@ import {
   ApiOAuth2,
   ApiOkResponse,
   ApiOperation,
-  ApiTags,
+  ApiTags
 } from "@nestjs/swagger";
 import { CredentialsDto } from "../credentials/credentials.schemas.js";
 import {
   ApiBadRequestResponseDefault,
-  ApiForbiddenResponseDefault,
+  ApiForbiddenResponseDefault
 } from "@tsg-dsp/common-dtos";
 
 @Controller()
@@ -26,7 +26,7 @@ export class HolderController {
   @ApiOperation({
     summary: "Request credential via OID4VCI",
     description:
-      "Requests a new credential via the OID4VCI Pre-authorized-code flow.",
+      "Requests a new credential via the OID4VCI Pre-authorized-code flow."
   })
   @ApiOkResponse({ type: CredentialsDto })
   @ApiBadRequestResponseDefault()

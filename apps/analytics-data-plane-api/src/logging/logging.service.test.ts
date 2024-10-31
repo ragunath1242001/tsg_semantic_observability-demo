@@ -17,20 +17,20 @@ describe("Logging Service", () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
       imports: [
         TypeOrmTestHelper.instance.module([IngressLogDao, EgressLogDao]),
-        TypeOrmModule.forFeature([IngressLogDao, EgressLogDao]),
+        TypeOrmModule.forFeature([IngressLogDao, EgressLogDao])
       ],
       providers: [
         LoggingService,
         AuthClientService,
         {
           provide: AuthConfig,
-          useValue: { enabled: false },
+          useValue: { enabled: false }
         },
         {
           provide: LoggingConfig,
-          useValue: { debug: true },
-        },
-      ],
+          useValue: { debug: true }
+        }
+      ]
     }).compile();
 
     loggingService = moduleRef.get(LoggingService);
@@ -51,10 +51,10 @@ describe("Logging Service", () => {
             headers: {
               accept: "application/json, text/plain, */*",
               authorization:
-                "Bearer 0401aa089e1cfba27e92a8b0ff61ef005c15ddb02857c7cfc0e731254415f807",
+                "Bearer 0401aa089e1cfba27e92a8b0ff61ef005c15ddb02857c7cfc0e731254415f807"
             },
             query: {},
-            bodyLength: -1,
+            bodyLength: -1
           },
           response: {
             headers: {
@@ -64,10 +64,10 @@ describe("Logging Service", () => {
               "content-length": "1300",
               connection: "keep-alive",
               server: "gunicorn/19.9.0",
-              "access-control-allow-credentials": "true",
-            },
-          },
-        },
+              "access-control-allow-credentials": "true"
+            }
+          }
+        }
       };
       const log = await loggingService.insertIngressLog({ ...logEntry });
       expect(log.identifier).toBeDefined();
@@ -75,7 +75,7 @@ describe("Logging Service", () => {
         ...logEntry,
         remoteParty: "did:web:remoteparty2",
         transferId: "b1434c6a-ae44-4c91-9d0a-b7d7a8117933",
-        datasetId: "urn:uuid:c907459f-3572-43fc-8ac4-98fcbd0d3ab6",
+        datasetId: "urn:uuid:c907459f-3572-43fc-8ac4-98fcbd0d3ab6"
       });
       expect(log2.identifier).toBeDefined();
       expect(log2.identifier).toBeGreaterThan(log.identifier);
@@ -85,14 +85,14 @@ describe("Logging Service", () => {
           ...logEntry,
           remoteParty: "did:web:remoteparty2",
           transferId: "b1434c6a-ae44-4c91-9d0a-b7d7a8117933",
-          datasetId: "urn:uuid:c907459f-3572-43fc-8ac4-98fcbd0d3ab6",
+          datasetId: "urn:uuid:c907459f-3572-43fc-8ac4-98fcbd0d3ab6"
         });
       }
     });
     it("Retrieve logs", async () => {
       const page = await loggingService.getIngressLog(
         plainToInstance(PageOptionsDto, {}),
-        plainToInstance(LogFilterDto, {}),
+        plainToInstance(LogFilterDto, {})
       );
       expect(page.data).toHaveLength(10);
       expect(page.meta.itemCount).toBe(22);
@@ -104,8 +104,8 @@ describe("Logging Service", () => {
           remoteParty: "did:web:remoteparty2",
           transferId: "b1434c6a-ae44-4c91-9d0a-b7d7a8117933",
           datasetId: "urn:uuid:c907459f-3572-43fc-8ac4-98fcbd0d3ab6",
-          status: "2xx",
-        }),
+          status: "2xx"
+        })
       );
       expect(page.data).toHaveLength(10);
       expect(page.meta.itemCount).toBe(11);
@@ -115,8 +115,8 @@ describe("Logging Service", () => {
           remoteParty: "did:web:remoteparty2",
           transferId: "b1434c6a-ae44-4c91-9d0a-b7d7a8117933",
           datasetId: "urn:uuid:c907459f-3572-43fc-8ac4-98fcbd0d3ab6",
-          status: "200",
-        }),
+          status: "200"
+        })
       );
       expect(page2.data).toHaveLength(10);
       expect(page2.meta.itemCount).toBe(11);
@@ -138,10 +138,10 @@ describe("Logging Service", () => {
             headers: {
               accept: "application/json, text/plain, */*",
               authorization:
-                "Bearer 0401aa089e1cfba27e92a8b0ff61ef005c15ddb02857c7cfc0e731254415f807",
+                "Bearer 0401aa089e1cfba27e92a8b0ff61ef005c15ddb02857c7cfc0e731254415f807"
             },
             query: {},
-            bodyLength: -1,
+            bodyLength: -1
           },
           response: {
             headers: {
@@ -151,10 +151,10 @@ describe("Logging Service", () => {
               "content-length": "1300",
               connection: "keep-alive",
               server: "gunicorn/19.9.0",
-              "access-control-allow-credentials": "true",
-            },
-          },
-        },
+              "access-control-allow-credentials": "true"
+            }
+          }
+        }
       };
       const log = await loggingService.insertEgressLog({ ...logEntry });
       expect(log.identifier).toBeDefined();
@@ -162,7 +162,7 @@ describe("Logging Service", () => {
         ...logEntry,
         remoteParty: "did:web:remoteparty2",
         transferId: "b1434c6a-ae44-4c91-9d0a-b7d7a8117933",
-        datasetId: "urn:uuid:c907459f-3572-43fc-8ac4-98fcbd0d3ab6",
+        datasetId: "urn:uuid:c907459f-3572-43fc-8ac4-98fcbd0d3ab6"
       });
       expect(log2.identifier).toBeDefined();
       expect(log2.identifier).toBeGreaterThan(log.identifier);
@@ -172,14 +172,14 @@ describe("Logging Service", () => {
           ...logEntry,
           remoteParty: "did:web:remoteparty2",
           transferId: "b1434c6a-ae44-4c91-9d0a-b7d7a8117933",
-          datasetId: "urn:uuid:c907459f-3572-43fc-8ac4-98fcbd0d3ab6",
+          datasetId: "urn:uuid:c907459f-3572-43fc-8ac4-98fcbd0d3ab6"
         });
       }
     });
     it("Retrieve logs", async () => {
       const page = await loggingService.getEgressLog(
         plainToInstance(PageOptionsDto, {}),
-        plainToInstance(LogFilterDto, {}),
+        plainToInstance(LogFilterDto, {})
       );
       expect(page.data).toHaveLength(10);
       expect(page.meta.itemCount).toBe(22);
@@ -191,8 +191,8 @@ describe("Logging Service", () => {
           remoteParty: "did:web:remoteparty2",
           transferId: "b1434c6a-ae44-4c91-9d0a-b7d7a8117933",
           datasetId: "urn:uuid:c907459f-3572-43fc-8ac4-98fcbd0d3ab6",
-          status: "2xx",
-        }),
+          status: "2xx"
+        })
       );
       expect(page.data).toHaveLength(10);
       expect(page.meta.itemCount).toBe(11);
@@ -202,8 +202,8 @@ describe("Logging Service", () => {
           remoteParty: "did:web:remoteparty2",
           transferId: "b1434c6a-ae44-4c91-9d0a-b7d7a8117933",
           datasetId: "urn:uuid:c907459f-3572-43fc-8ac4-98fcbd0d3ab6",
-          status: "200",
-        }),
+          status: "200"
+        })
       );
       expect(page2.data).toHaveLength(10);
       expect(page2.meta.itemCount).toBe(11);

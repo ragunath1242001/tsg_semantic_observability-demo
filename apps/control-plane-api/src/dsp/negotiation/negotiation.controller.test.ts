@@ -18,7 +18,7 @@ import {
   Multilanguage,
   NegotiationEvent,
   ODRLAction,
-  Offer,
+  Offer
 } from "@tsg-dsp/common-dsp";
 import { plainToClass } from "class-transformer";
 import { HttpResponse, PathParams, http } from "msw";
@@ -27,7 +27,7 @@ import { AuthService } from "../../auth/auth.service";
 import { RootConfig, ServerConfig } from "../../config";
 import {
   NegotiationDetailDao,
-  NegotiationProcessEventDao,
+  NegotiationProcessEventDao
 } from "../../model/negotiation.dao";
 import { TypeOrmTestHelper } from "../../utils/testhelper";
 import { DspClientService } from "../client/client.service";
@@ -49,7 +49,7 @@ describe("NegotiationController", () => {
     server = setupServer(
       http.post("http://127.0.0.1/negotiation/callbacks/:id/:action", () => {
         return HttpResponse.json({
-          status: "OK",
+          status: "OK"
         });
       }),
       http.post<PathParams, ContractRequestMessageDto, ContractNegotiationDto>(
@@ -59,20 +59,20 @@ describe("NegotiationController", () => {
             await new ContractNegotiation({
               consumerPid: (await ctx.request.json())["dspace:consumerPid"],
               providerPid: "urn:uuid:4486d6f5-aa10-45d3-b260-2f368dfca4e2",
-              state: ContractNegotiationState.REQUESTED,
+              state: ContractNegotiationState.REQUESTED
             }).serialize()
           );
         }
       ),
       http.post("http://127.0.0.1/negotiation/:id/:action", () => {
         return HttpResponse.json({
-          status: "OK",
+          status: "OK"
         });
       })
     );
 
     server.listen({
-      onUnhandledRequest: "error",
+      onUnhandledRequest: "error"
     });
   });
 
@@ -90,7 +90,7 @@ describe("NegotiationController", () => {
           AgreementDao,
           TransferMonitorDao,
           TransferDetailDao,
-          TransferEventDao,
+          TransferEventDao
         ]),
         TypeOrmModule.forFeature([
           NegotiationDetailDao,
@@ -98,8 +98,8 @@ describe("NegotiationController", () => {
           AgreementDao,
           TransferMonitorDao,
           TransferDetailDao,
-          TransferEventDao,
-        ]),
+          TransferEventDao
+        ])
       ],
       controllers: [NegotiationController],
       providers: [
@@ -119,9 +119,9 @@ describe("NegotiationController", () => {
               clientSecret: "secret",
               credentialId:
                 "did:web:localhost#00000000-0000-0000-0000-000000000000",
-              validations: ["valid"],
-            },
-          }),
+              validations: ["valid"]
+            }
+          })
         },
         {
           provide: AgreementService,
@@ -142,9 +142,9 @@ describe("NegotiationController", () => {
                 "odrl:permission": [
                   {
                     "@type": "odrl:Permission",
-                    "odrl:action": ODRLAction.USE,
-                  },
-                ],
+                    "odrl:action": ODRLAction.USE
+                  }
+                ]
               };
             },
             syncLastEvaluation: async () => {},
@@ -164,17 +164,17 @@ describe("NegotiationController", () => {
                   "odrl:permission": [
                     {
                       "@type": "odrl:Permission",
-                      "odrl:action": ODRLAction.USE,
-                    },
-                  ],
+                      "odrl:action": ODRLAction.USE
+                    }
+                  ]
                 },
                 negotiationId: negotiationId,
-                transfers: [],
+                transfers: []
               };
-            },
-          },
-        },
-      ],
+            }
+          }
+        }
+      ]
     })
       .useMocker((token) => {
         if (token === AuthService) {
@@ -184,7 +184,7 @@ describe("NegotiationController", () => {
             },
             validateToken() {
               return true;
-            },
+            }
           };
         }
       })
@@ -204,8 +204,8 @@ describe("NegotiationController", () => {
         offer: new Offer({
           id: "urn:uuid:81a41b35-2926-4b29-8c9a-ee52665a047b",
           assigner: "urn:uuid:fcddc591-b9f1-4c75-b557-80d1cf955859",
-          target: "urn:uuid:0433ba4f-142d-494a-a7d0-74e3040ed4e6",
-        }),
+          target: "urn:uuid:0433ba4f-142d-494a-a7d0-74e3040ed4e6"
+        })
       }),
       "did:web:localhost"
     );
@@ -213,7 +213,7 @@ describe("NegotiationController", () => {
     const consumerNegotiation = await negotiationService.requestNew(
       new Offer({
         id: "urn:uuid:92928e7a-8f21-4489-adbd-d5800b7475a1",
-        assigner: "urn:uuid:fcddc591-b9f1-4c75-b557-80d1cf955859",
+        assigner: "urn:uuid:fcddc591-b9f1-4c75-b557-80d1cf955859"
       }),
       "urn:uuid:009c36f4-475c-43f0-88be-da23822f9c6d",
       "http://127.0.0.1/negotiation",
@@ -236,8 +236,8 @@ describe("NegotiationController", () => {
           offer: new Offer({
             id: "urn:uuid:81a41b35-2926-4b29-8c9a-ee52665a047b",
             assigner: "urn:uuid:fcddc591-b9f1-4c75-b557-80d1cf955859",
-            target: "urn:uuid:0433ba4f-142d-494a-a7d0-74e3040ed4e6",
-          }),
+            target: "urn:uuid:0433ba4f-142d-494a-a7d0-74e3040ed4e6"
+          })
         }),
         "did:web:localhost"
       );
@@ -247,7 +247,7 @@ describe("NegotiationController", () => {
         "@type": "dspace:ContractNegotiation",
         "dspace:state": "dspace:REQUESTED",
         "dspace:providerPid": expect.stringContaining("urn:uuid:"),
-        "dspace:consumerPid": "urn:uuid:a81bea31-55d4-4c70-b454-9758e1228fd0",
+        "dspace:consumerPid": "urn:uuid:a81bea31-55d4-4c70-b454-9758e1228fd0"
       });
     });
   });
@@ -264,7 +264,7 @@ describe("NegotiationController", () => {
         "@type": "dspace:ContractNegotiation",
         "dspace:state": "dspace:REQUESTED",
         "dspace:providerPid": providerNegotiationId,
-        "dspace:consumerPid": "urn:uuid:a81bea31-55d4-4c70-b454-9758e1228fd0",
+        "dspace:consumerPid": "urn:uuid:a81bea31-55d4-4c70-b454-9758e1228fd0"
       });
     });
     it("Negotiation request with unknown id should result in a 404", () => {
@@ -295,8 +295,8 @@ describe("NegotiationController", () => {
           offer: new Offer({
             id: "urn:uuid:81a41b35-2926-4b29-8c9a-ee52665a047b",
             assigner: "urn:uuid:fcddc591-b9f1-4c75-b557-80d1cf955859",
-            target: "urn:uuid:0433ba4f-142d-494a-a7d0-74e3040ed4e6",
-          }),
+            target: "urn:uuid:0433ba4f-142d-494a-a7d0-74e3040ed4e6"
+          })
         }),
         "did:web:localhost"
       );
@@ -306,7 +306,7 @@ describe("NegotiationController", () => {
         "@type": "dspace:ContractNegotiation",
         "dspace:state": "dspace:REQUESTED",
         "dspace:providerPid": providerNegotiationId,
-        "dspace:consumerPid": "urn:uuid:a81bea31-55d4-4c70-b454-9758e1228fd0",
+        "dspace:consumerPid": "urn:uuid:a81bea31-55d4-4c70-b454-9758e1228fd0"
       });
     });
     it("Missing processId in contract request message should result in a 400", () => {
@@ -320,8 +320,8 @@ describe("NegotiationController", () => {
             offer: new Offer({
               id: "urn:uuid:81a41b35-2926-4b29-8c9a-ee52665a047b",
               assigner: "urn:uuid:fcddc591-b9f1-4c75-b557-80d1cf955859",
-              target: "urn:uuid:0433ba4f-142d-494a-a7d0-74e3040ed4e6",
-            }),
+              target: "urn:uuid:0433ba4f-142d-494a-a7d0-74e3040ed4e6"
+            })
           }),
           "did:web:localhost"
         );
@@ -340,8 +340,8 @@ describe("NegotiationController", () => {
             offer: new Offer({
               id: "urn:uuid:81a41b35-2926-4b29-8c9a-ee52665a047b",
               assigner: "urn:uuid:fcddc591-b9f1-4c75-b557-80d1cf955859",
-              target: "urn:uuid:0433ba4f-142d-494a-a7d0-74e3040ed4e6",
-            }),
+              target: "urn:uuid:0433ba4f-142d-494a-a7d0-74e3040ed4e6"
+            })
           }),
           "did:web:localhost"
         );
@@ -362,12 +362,12 @@ describe("NegotiationController", () => {
         new ContractNegotiationEventMessage({
           consumerPid: "urn:uuid:e8f94bf2-c59d-48c8-b5b9-9d5366ae2f3d",
           providerPid: providerNegotiationId,
-          eventType: NegotiationEvent.ACCEPTED,
+          eventType: NegotiationEvent.ACCEPTED
         }),
         "did:web:localhost"
       );
       expect(result).toStrictEqual({
-        status: "OK",
+        status: "OK"
       });
     });
     it("Mismatch processId in contract request message and id path parameter should result in a 400", () => {
@@ -377,7 +377,7 @@ describe("NegotiationController", () => {
           new ContractNegotiationEventMessage({
             consumerPid: "urn:uuid:e8f94bf2-c59d-48c8-b5b9-9d5366ae2f3d",
             providerPid: "urn:uuid:e8f94bf2-c59d-48c8-b5b9-9d5366ae2f3d",
-            eventType: NegotiationEvent.ACCEPTED,
+            eventType: NegotiationEvent.ACCEPTED
           }),
           "did:web:localhost"
         );
@@ -399,13 +399,13 @@ describe("NegotiationController", () => {
           providerPid: providerNegotiationId,
           hashedMessage: {
             "dspace:algorithm": "sha256",
-            "dspace:digest": "...",
-          },
+            "dspace:digest": "..."
+          }
         }),
         "did:web:localhost"
       );
       expect(result).toStrictEqual({
-        status: "OK",
+        status: "OK"
       });
     });
     it("Mismatch processId in contract request message and id path parameter should result in a 400", () => {
@@ -417,8 +417,8 @@ describe("NegotiationController", () => {
             providerPid: "urn:uuid:e8f94bf2-c59d-48c8-b5b9-9d5366ae2f3d",
             hashedMessage: {
               "dspace:algorithm": "sha256",
-              "dspace:digest": "...",
-            },
+              "dspace:digest": "..."
+            }
           }),
           "did:web:localhost"
         );
@@ -434,12 +434,12 @@ describe("NegotiationController", () => {
         new ContractNegotiationTerminationMessage({
           consumerPid: "urn:uuid:e8f94bf2-c59d-48c8-b5b9-9d5366ae2f3d",
           providerPid: providerNegotiationId,
-          reason: [new Multilanguage("Termination test")],
+          reason: [new Multilanguage("Termination test")]
         }),
         "did:web:localhost"
       );
       expect(result).toStrictEqual({
-        status: "OK",
+        status: "OK"
       });
     });
     it("Mismatch processId in contract request message and id path parameter should result in a 400", () => {
@@ -449,7 +449,7 @@ describe("NegotiationController", () => {
           new ContractNegotiationEventMessage({
             consumerPid: consumerNegotiationId,
             providerPid: "urn:uuid:e8f94bf2-c59d-48c8-b5b9-9d5366ae2f3d",
-            eventType: NegotiationEvent.ACCEPTED,
+            eventType: NegotiationEvent.ACCEPTED
           }),
           "did:web:localhost"
         );
@@ -469,13 +469,13 @@ describe("NegotiationController", () => {
           offer: new Offer({
             id: "urn:uuid:81a41b35-2926-4b29-8c9a-ee52665a047b",
             assigner: "urn:uuid:fcddc591-b9f1-4c75-b557-80d1cf955859",
-            target: "urn:uuid:e9eeadef-a9cc-4b9c-ba57-fc182da03d63",
-          }),
+            target: "urn:uuid:e9eeadef-a9cc-4b9c-ba57-fc182da03d63"
+          })
         }),
         "did:web:localhost"
       );
       expect(result).toStrictEqual({
-        status: "OK",
+        status: "OK"
       });
     });
     it("Callback with a contract offer to an unknown identifier should return a 404", () => {
@@ -489,8 +489,8 @@ describe("NegotiationController", () => {
               "http://127.0.0.1/negotiation/callbacks/urn:uuid:63f0abdb-ef13-42a4-acb0-567ba5c2c41c",
             offer: new Offer({
               id: "urn:uuid:81a41b35-2926-4b29-8c9a-ee52665a047b",
-              assigner: "urn:uuid:fcddc591-b9f1-4c75-b557-80d1cf955859",
-            }),
+              assigner: "urn:uuid:fcddc591-b9f1-4c75-b557-80d1cf955859"
+            })
           }),
           "did:web:localhost"
         );
@@ -511,13 +511,13 @@ describe("NegotiationController", () => {
             assigner: "urn:uuid:fcddc591-b9f1-4c75-b557-80d1cf955859",
             assignee: "urn:uuid:05da26f1-6213-4c27-b104-623cd33ecde7",
             timestamp: "2023-07-21T09:26:00Z",
-            target: "urn:uuid:e9eeadef-a9cc-4b9c-ba57-fc182da03d63",
-          }),
+            target: "urn:uuid:e9eeadef-a9cc-4b9c-ba57-fc182da03d63"
+          })
         }),
         "did:web:localhost"
       );
       expect(result).toStrictEqual({
-        status: "OK",
+        status: "OK"
       });
     });
     it("Callback with a contract agreement to an unknown identifier should return a 404", () => {
@@ -532,8 +532,8 @@ describe("NegotiationController", () => {
               assigner: "urn:uuid:fcddc591-b9f1-4c75-b557-80d1cf955859",
               assignee: "urn:uuid:05da26f1-6213-4c27-b104-623cd33ecde7",
               timestamp: "2023-07-21T09:26:00Z",
-              target: "urn:uuid:e9eeadef-a9cc-4b9c-ba57-fc182da03d63",
-            }),
+              target: "urn:uuid:e9eeadef-a9cc-4b9c-ba57-fc182da03d63"
+            })
           }),
           "did:web:localhost"
         );
@@ -553,12 +553,12 @@ describe("NegotiationController", () => {
         new ContractNegotiationEventMessage({
           consumerPid: consumerNegotiationId,
           providerPid: "urn:uuid:e8f94bf2-c59d-48c8-b5b9-9d5366ae2f3d",
-          eventType: NegotiationEvent.FINALIZED,
+          eventType: NegotiationEvent.FINALIZED
         }),
         "did:web:localhost"
       );
       expect(result).toStrictEqual({
-        status: "OK",
+        status: "OK"
       });
     });
     it("Callback with a contract event to an unknown identifier should return a 404", () => {
@@ -568,7 +568,7 @@ describe("NegotiationController", () => {
           new ContractNegotiationEventMessage({
             consumerPid: consumerNegotiationId,
             providerPid: "urn:uuid:e8f94bf2-c59d-48c8-b5b9-9d5366ae2f3d",
-            eventType: NegotiationEvent.ACCEPTED,
+            eventType: NegotiationEvent.ACCEPTED
           }),
           "did:web:localhost"
         );

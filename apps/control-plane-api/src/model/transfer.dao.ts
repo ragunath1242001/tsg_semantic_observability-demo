@@ -7,7 +7,7 @@ import {
   Multilanguage,
   TransferEvent,
   TransferProcess,
-  TransferState,
+  TransferState
 } from "@tsg-dsp/common-dsp";
 import {
   Column,
@@ -15,7 +15,7 @@ import {
   ManyToOne,
   OneToMany,
   PrimaryColumn,
-  Relation,
+  Relation
 } from "typeorm";
 import { AutoIdEntity, jsonLdTransformer, MetaEntity } from "./common.dao";
 
@@ -52,7 +52,7 @@ export class TransferDetailDao extends MetaEntity implements ITransferStatus {
   @Column()
   state!: TransferState;
   @Column("simple-json", {
-    transformer: jsonLdTransformer,
+    transformer: jsonLdTransformer
   })
   process!: TransferProcess;
   @Column()
@@ -61,14 +61,14 @@ export class TransferDetailDao extends MetaEntity implements ITransferStatus {
   format?: string;
   @Column("simple-json", {
     nullable: true,
-    transformer: jsonLdTransformer,
+    transformer: jsonLdTransformer
   })
   dataAddress?: DataAddress;
   @Column("simple-json")
   dataPlaneTransfer!: DataPlaneTransferDto;
   @OneToMany(() => TransferEventDao, (event) => event._status, {
     cascade: true,
-    eager: true,
+    eager: true
   })
   events!: TransferEvent[];
 }

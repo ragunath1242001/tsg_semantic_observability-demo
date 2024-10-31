@@ -37,7 +37,7 @@ const contextForm = ref<JSONLDContextForm>({
   issuable: true,
   documentUrl: undefined,
   document: "",
-  schema: "",
+  schema: ""
 });
 
 const contextEditorHeight = computed(() => {
@@ -54,16 +54,16 @@ const schemaEditorHeight = computed(() => {
 
 const loadContexts = async () => {
   try {
-    const response = await http<JSONLDContext[]>(
-      "management/contexts"
-    );
+    const response = await http<JSONLDContext[]>("management/contexts");
     contexts.value = response.data;
   } catch (error) {
-    toast.add(toastError({
-      error,
-      summary: "Could not load contexts",
-      defaultMessage: `Error in fetching registered contexts`
-    }));
+    toast.add(
+      toastError({
+        error,
+        summary: "Could not load contexts",
+        defaultMessage: `Error in fetching registered contexts`
+      })
+    );
   }
 };
 
@@ -87,16 +87,18 @@ const deleteContext = async (contextId: string) => {
           severity: "success",
           summary: "Success",
           detail: "Context deleted",
-          life: 3000,
+          life: 3000
         });
       } catch (error) {
-        toast.add(toastError({
-          error,
-          summary: "Could not delete context",
-          defaultMessage: `Error in deleting context`
-        }));
+        toast.add(
+          toastError({
+            error,
+            summary: "Could not delete context",
+            defaultMessage: `Error in deleting context`
+          })
+        );
       }
-    },
+    }
   });
 };
 
@@ -112,19 +114,21 @@ const addContext = async () => {
       credentialType: contextForm.value.credentialType,
       issuable: contextForm.value.issuable,
       documentUrl: contextForm.value.documentUrl,
-      document: contextForm.value.document.trim() !== ""
-        ? JSON.parse(contextForm.value.document)
-        : undefined,
-      schema: contextForm.value.schema.trim() !== ""
-        ? JSON.parse(contextForm.value.schema)
-        : undefined,
+      document:
+        contextForm.value.document.trim() !== ""
+          ? JSON.parse(contextForm.value.document)
+          : undefined,
+      schema:
+        contextForm.value.schema.trim() !== ""
+          ? JSON.parse(contextForm.value.schema)
+          : undefined
     });
     await loadContexts();
     toast.add({
       severity: "success",
       summary: "Success",
       detail: "Context added",
-      life: 3000,
+      life: 3000
     });
     contextForm.value = {
       id: "",
@@ -132,14 +136,16 @@ const addContext = async () => {
       issuable: true,
       documentUrl: undefined,
       document: "",
-      schema: "",
+      schema: ""
     };
   } catch (error) {
-    toast.add(toastError({
-      error,
-      summary: "Could not add context",
-      defaultMessage: `Error in inserting new context to the wallet`
-    }));
+    toast.add(
+      toastError({
+        error,
+        summary: "Could not add context",
+        defaultMessage: `Error in inserting new context to the wallet`
+      })
+    );
   }
 };
 
@@ -179,8 +185,7 @@ onMounted(async () => {
           sort-field="id"
           :sort-order="1"
           paginator
-          :rows="10"
-        >
+          :rows="10">
           <Column expander style="width: 5rem" />
           <Column field="id" header="ID" />
           <Column field="credentialType" header="Credential Type" />
@@ -188,8 +193,7 @@ onMounted(async () => {
             <template #body="props">
               <i
                 v-if="props.data.issuable"
-                class="pi pi-check-circle text-green-500"
-              />
+                class="pi pi-check-circle text-green-500" />
               <i v-else class="pi pi-times-circle text-red-500" />
             </template>
           </Column>
@@ -197,8 +201,7 @@ onMounted(async () => {
             <template #body="props">
               <i
                 v-if="props.data.schema"
-                class="pi pi-check-circle text-green-500"
-              />
+                class="pi pi-check-circle text-green-500" />
               <i v-else class="pi pi-times-circle text-red-500" />
             </template>
           </Column>
@@ -213,8 +216,7 @@ onMounted(async () => {
               <Button
                 severity="danger"
                 icon="pi pi-times"
-                @click="deleteContext(props.data.id)"
-              />
+                @click="deleteContext(props.data.id)" />
             </template>
           </Column>
           <template #expansion="props">
@@ -227,8 +229,7 @@ onMounted(async () => {
             <FormField label="Issuable">
               <i
                 v-if="props.data.issuable"
-                class="pi pi-check-circle text-green-500"
-              />
+                class="pi pi-check-circle text-green-500" />
               <i v-else class="pi pi-times-circle text-red-500" />
             </FormField>
             <FormField label="Document URL" v-if="props.data.documentUrl">
@@ -241,16 +242,14 @@ onMounted(async () => {
                 :static="props.data.document"
                 :read-only="true"
                 :min-lines="1"
-                :max-lines="20"
-              />
+                :max-lines="20" />
             </FormField>
             <FormField label="Schema" v-if="props.data.schema">
               <MonacoEditorVue
                 :static="props.data.schema"
                 :read-only="true"
                 :min-lines="1"
-                :max-lines="20"
-              />
+                :max-lines="20" />
             </FormField>
           </template>
         </DataTable>
@@ -277,16 +276,14 @@ onMounted(async () => {
               :id="props.id"
               class="w-full"
               v-model="contextForm.id"
-              placeholder="Short context identifier"
-            />
+              placeholder="Short context identifier" />
           </FormField>
           <FormField label="Credential Type" v-slot="props">
             <InputText
               :id="props.id"
               class="w-full"
               v-model="contextForm.credentialType"
-              placeholder="Credential type associated with this context"
-            />
+              placeholder="Credential type associated with this context" />
           </FormField>
           <FormField label="Issuable context" v-slot="props">
             <ToggleSwitch :id="props.id" v-model="contextForm.issuable" />
@@ -297,18 +294,15 @@ onMounted(async () => {
               v-model="documentRef"
               :allow-empty="false"
               :options="['Referenced', 'Hosted']"
-              aria-labelledby="basic"
-            />
+              aria-labelledby="basic" />
             <div
               v-if="documentRef === 'Referenced'"
-              class="flex flex-col gap-2"
-            >
+              class="flex flex-col gap-2">
               <InputText
                 :id="props.id"
                 class="w-full"
                 v-model="contextForm.documentUrl"
-                placeholder="https://..."
-              />
+                placeholder="https://..." />
               <small
                 >Provide the https link to the JSON-LD context to be used</small
               >

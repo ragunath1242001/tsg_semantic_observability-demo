@@ -4,7 +4,7 @@ import {
   importPKCS8,
   importX509,
   generateKeyPair,
-  exportJWK,
+  exportJWK
 } from "jose";
 import { Not, Repository } from "typeorm";
 import { InitKeyConfig, RootConfig } from "../config.js";
@@ -20,7 +20,7 @@ export class KeysService {
     private readonly config: RootConfig,
     @InjectRepository(KeyMaterials)
     private readonly keyRepository: Repository<KeyMaterials>,
-    private readonly didService: DidService,
+    private readonly didService: DidService
   ) {
     this.initialized = this.init();
   }
@@ -30,11 +30,11 @@ export class KeysService {
   async init() {
     try {
       await this.didService.checkExistingDidDocument(
-        await this.getDefaultKey(),
+        await this.getDefaultKey()
       );
     } catch (e) {
       const keys = await Promise.all(
-        this.config.initKeys.map((k) => this.insertIfNotExists(k)),
+        this.config.initKeys.map((k) => this.insertIfNotExists(k))
       );
       await this.didService.createDidDocument(keys);
     }
@@ -42,10 +42,10 @@ export class KeysService {
   }
 
   private async insertIfNotExists(
-    initKeyConfig: InitKeyConfig,
+    initKeyConfig: InitKeyConfig
   ): Promise<KeyMaterials> {
     const existing = await this.keyRepository.findOneBy({
-      id: initKeyConfig.id,
+      id: initKeyConfig.id
     });
     if (!existing) {
       this.logger.log(`Creating initial key ${initKeyConfig.id}`);
@@ -65,7 +65,7 @@ export class KeysService {
     if (key === null) {
       throw new AppError(
         `Key with identifier ${keyId} can't be found`,
-        HttpStatus.NOT_FOUND,
+        HttpStatus.NOT_FOUND
       ).andLog(this.logger, "debug");
     }
     return key;
@@ -75,7 +75,7 @@ export class KeysService {
     const key = await this.keyRepository.findOneBy({ default: true });
     if (key === null) {
       throw new AppError(`No default key present`, HttpStatus.NOT_FOUND).andLog(
-        this.logger,
+        this.logger
       );
     }
     return key;
@@ -86,7 +86,7 @@ export class KeysService {
     if (existing) {
       throw new AppError(
         `Key with identifier ${keyConfig.id} already exists`,
-        HttpStatus.CONFLICT,
+        HttpStatus.CONFLICT
       ).andLog(this.logger);
     }
     const key = await this.createKeyMaterial(keyConfig);
@@ -108,7 +108,7 @@ export class KeysService {
     if (key === null) {
       throw new AppError(
         `Key with identifier ${keyId} can't be found`,
-        HttpStatus.NOT_FOUND,
+        HttpStatus.NOT_FOUND
       ).andLog(this.logger, "debug");
     }
 
@@ -123,7 +123,7 @@ export class KeysService {
 
     if (key.existingKey && key.existingCertificate) {
       this.logger.log(
-        `Loading existing PKCS#8 key and X.509 certificate for ${key.id}`,
+        `Loading existing PKCS#8 key and X.509 certificate for ${key.id}`
       );
       privateKey = await importPKCS8(key.existingKey, "RSA");
       publicKey = await importX509(key.existingCertificate, "RSA");
@@ -137,7 +137,7 @@ export class KeysService {
         default: key.default,
         privateKey: await exportJWK(privateKey),
         publicKey: publicKeyJwk,
-        caChain: key.existingCertificate,
+        caChain: key.existingCertificate
       });
     } else {
       this.logger.log(`Creating new keypair with ${key.type}`);
@@ -152,7 +152,7 @@ export class KeysService {
       default: key.default,
       privateKey: await exportJWK(privateKey),
       publicKey: await exportJWK(publicKey),
-      caChain: key.existingCertificate,
+      caChain: key.existingCertificate
     });
   }
 }

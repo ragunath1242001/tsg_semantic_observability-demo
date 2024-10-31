@@ -4,7 +4,7 @@ import {
   IsNumber,
   IsOptional,
   IsString,
-  ValidateNested,
+  ValidateNested
 } from "class-validator";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { validateOrRejectSync } from "../utils/validation.pipe";
@@ -12,13 +12,13 @@ import {
   AtomicConstraint,
   ConstraintModel,
   ConstraintType,
-  LogicalConstraint,
+  LogicalConstraint
 } from "./constraint.dto";
 
 export enum RuleType {
   PERMISSION = "PERMISSION",
   PROHIBITION = "PROHIBITION",
-  DUTY = "DUTY",
+  DUTY = "DUTY"
 }
 
 @Exclude()
@@ -45,10 +45,10 @@ export class Rule {
       property: "type",
       subTypes: [
         { value: AtomicConstraint, name: ConstraintType.ATOMIC },
-        { value: LogicalConstraint, name: ConstraintType.LOGICAL },
-      ],
+        { value: LogicalConstraint, name: ConstraintType.LOGICAL }
+      ]
     },
-    keepDiscriminatorProperty: true,
+    keepDiscriminatorProperty: true
   })
   @Expose()
   @ApiProperty({ type: [ConstraintModel] })

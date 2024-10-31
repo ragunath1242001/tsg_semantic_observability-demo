@@ -27,19 +27,12 @@ import TabItem from "@theme/TabItem";
 <Heading
   as={"h1"}
   className={"openapi__heading"}
-  children={"DataPlaneManagementController_getMetadata"}
->
-</Heading>
+  children={"DataPlaneManagementController_getMetadata"}></Heading>
 
 <MethodEndpoint
   method={"get"}
   path={"/api/management/transfers/{id}/metadata"}
-  context={"endpoint"}
->
-  
-</MethodEndpoint>
-
-
+  context={"endpoint"}></MethodEndpoint>
 
 DataPlaneManagementController_getMetadata
 
@@ -47,55 +40,39 @@ DataPlaneManagementController_getMetadata
   id={"request"}
   as={"h2"}
   className={"openapi-tabs__heading"}
-  children={"Request"}
->
-</Heading>
+  children={"Request"}></Heading>
 
 <details
-  style={{"marginBottom":"1rem"}}
+  style={{ marginBottom: "1rem" }}
   className={"openapi-markdown__details"}
   data-collapsed={false}
-  open={true}
->
-  <summary
-    style={{}}
-  >
-    <h3
-      className={"openapi-markdown__details-summary-header-params"}
-    >
+  open={true}>
+  <summary style={{}}>
+    <h3 className={"openapi-markdown__details-summary-header-params"}>
       Path Parameters
     </h3>
-  </summary><div>
+  </summary>
+  <div>
     <ul>
       <ParamsItem
         className={"paramsItem"}
-        param={{"name":"id","required":true,"in":"path","schema":{"type":"string"},"enumDescriptions":[]}}
-      >
-        
-      </ParamsItem>
+        param={{
+          name: "id",
+          required: true,
+          in: "path",
+          schema: { type: "string" },
+          enumDescriptions: []
+        }}></ParamsItem>
     </ul>
   </div>
-</details><div>
+</details>
+<div>
   <div>
-    <ApiTabs
-      label={undefined}
-      id={undefined}
-    >
-      <TabItem
-        label={"200"}
-        value={"200"}
-      >
-        <div>
-          
-          
-          
-          
-          
-        </div><div>
-          
-        </div>
+    <ApiTabs label={undefined} id={undefined}>
+      <TabItem label={"200"} value={"200"}>
+        <div></div>
+        <div></div>
       </TabItem>
     </ApiTabs>
   </div>
 </div>
-      

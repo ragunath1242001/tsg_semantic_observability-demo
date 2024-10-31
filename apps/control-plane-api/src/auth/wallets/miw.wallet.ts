@@ -3,7 +3,7 @@ import {
   CredentialSubject,
   VerifiableCredential,
   VerifiablePresentation,
-  VerifiablePresentationJwt,
+  VerifiablePresentationJwt
 } from "@tsg-dsp/common-dsp";
 import axios from "axios";
 import { plainToInstance } from "class-transformer";
@@ -35,7 +35,7 @@ export class ManagedIdentityWalletClient extends WalletClient {
     const data = qs.stringify({
       client_id: this.iamConfig.clientId,
       client_secret: this.iamConfig.clientSecret,
-      grant_type: "client_credentials",
+      grant_type: "client_credentials"
     });
     try {
       const response = await axios.post<{ access_token: string }>(
@@ -43,9 +43,9 @@ export class ManagedIdentityWalletClient extends WalletClient {
         data,
         {
           headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-        },
+            "Content-Type": "application/x-www-form-urlencoded"
+          }
+        }
       );
       this.access_token = response.data.access_token;
       const accessTokenPayload = jwt.decode(this.access_token, { json: true });
@@ -55,7 +55,7 @@ export class ManagedIdentityWalletClient extends WalletClient {
     } catch (err) {
       throw new DSPClientError(
         "Could not request access token from wallet",
-        err,
+        err
       ).andLog(this.logger, "warn");
     }
   }
@@ -64,17 +64,17 @@ export class ManagedIdentityWalletClient extends WalletClient {
     try {
       const data = await axios.get<MiWWalletDetails>(this.iamConfig.walletUrl, {
         headers: {
-          Authorization: `Bearer ${this.access_token}`,
+          Authorization: `Bearer ${this.access_token}`
         },
         params: {
-          withCredentials: "true",
-        },
+          withCredentials: "true"
+        }
       });
       return data.data;
     } catch (err) {
       throw new DSPClientError("Could not request wallet details", err).andLog(
         this.logger,
-        "warn",
+        "warn"
       );
     }
   }
@@ -89,40 +89,40 @@ export class ManagedIdentityWalletClient extends WalletClient {
     }
     const walletDetails = await this.getWallet();
     const credential = walletDetails.verifiableCredentials.find(
-      (c) => c.id === this.iamConfig.credentialId,
+      (c) => c.id === this.iamConfig.credentialId
     );
     try {
       const response = await axios.post<VerifiablePresentationJwt>(
         this.iamConfig.presentationUrl,
         {
           holderIdentifier: walletDetails.did,
-          verifiableCredentials: [credential],
+          verifiableCredentials: [credential]
         },
         {
           headers: {
-            Authorization: `Bearer ${this.access_token}`,
+            Authorization: `Bearer ${this.access_token}`
           },
           params: {
             asJwt: "true",
-            audience: audience,
-          },
-        },
+            audience: audience
+          }
+        }
       );
       return response.data.vp;
     } catch (err) {
       throw new DSPClientError("Could not request VP", err).andLog(
         this.logger,
-        "warn",
+        "warn"
       );
     }
   }
 
   async requestValidation(
     token: string,
-    audience: string,
+    audience: string
   ): Promise<VerifiablePresentation | undefined> {
     const jwt: VerifiablePresentationJwt = {
-      vp: token,
+      vp: token
     };
     if (
       !this.access_token ||
@@ -137,14 +137,14 @@ export class ManagedIdentityWalletClient extends WalletClient {
         jwt,
         {
           headers: {
-            Authorization: `Bearer ${this.access_token}`,
+            Authorization: `Bearer ${this.access_token}`
           },
           params: {
             asJwt: "true",
             audience: audience,
-            withCredentialExpiryDate: "true",
-          },
-        },
+            withCredentialExpiryDate: "true"
+          }
+        }
       );
       for (const validation of this.iamConfig.validations) {
         const validationResult = response.data[validation];
@@ -152,7 +152,7 @@ export class ManagedIdentityWalletClient extends WalletClient {
           if (validationResult instanceof Array) {
             if (validationResult.some((c) => !c)) {
               this.logger.log(
-                `Validation for ${validation} contains at least one false`,
+                `Validation for ${validation} contains at least one false`
               );
               return undefined;
             }
@@ -172,7 +172,7 @@ export class ManagedIdentityWalletClient extends WalletClient {
     } catch (err) {
       throw new DSPClientError("Could not request VP", err).andLog(
         this.logger,
-        "warn",
+        "warn"
       );
     }
   }
@@ -183,22 +183,22 @@ export class ManagedIdentityWalletClient extends WalletClient {
   async requestSignature(document: Record<string, any>): Promise<any> {
     throw new DSPError(
       `MIW does not support signing of documents`,
-      HttpStatus.NOT_IMPLEMENTED,
+      HttpStatus.NOT_IMPLEMENTED
     );
   }
   async requestSignatureValidation(
-    signedDocument: Record<string, any>,
+    signedDocument: Record<string, any>
   ): Promise<any> {
     throw new DSPError(
       `MIW does not support validation of documents`,
-      HttpStatus.NOT_IMPLEMENTED,
+      HttpStatus.NOT_IMPLEMENTED
     );
   }
 
   async resolveDidDocument(didId: string): Promise<DIDDocument> {
     throw new DSPError(
       `MIW does not support resolving DID Documents`,
-      HttpStatus.NOT_IMPLEMENTED,
+      HttpStatus.NOT_IMPLEMENTED
     );
   }
 }

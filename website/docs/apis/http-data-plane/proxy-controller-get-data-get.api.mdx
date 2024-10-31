@@ -27,104 +27,87 @@ import TabItem from "@theme/TabItem";
 <Heading
   as={"h1"}
   className={"openapi__heading"}
-  children={"Proxy a request"}
->
-</Heading>
+  children={"Proxy a request"}></Heading>
 
 <MethodEndpoint
   method={"get"}
   path={"/api/proxy/{id}/{path}"}
-  context={"endpoint"}
->
-  
-</MethodEndpoint>
+  context={"endpoint"}></MethodEndpoint>
 
-
-
-This endpoint is used if the HTTP Data Plane needs to serve as a proxy. 
+This endpoint is used if the HTTP Data Plane needs to serve as a proxy.
 
 <Heading
   id={"request"}
   as={"h2"}
   className={"openapi-tabs__heading"}
-  children={"Request"}
->
-</Heading>
+  children={"Request"}></Heading>
 
 <details
-  style={{"marginBottom":"1rem"}}
+  style={{ marginBottom: "1rem" }}
   className={"openapi-markdown__details"}
   data-collapsed={false}
-  open={true}
->
-  <summary
-    style={{}}
-  >
-    <h3
-      className={"openapi-markdown__details-summary-header-params"}
-    >
+  open={true}>
+  <summary style={{}}>
+    <h3 className={"openapi-markdown__details-summary-header-params"}>
       Path Parameters
     </h3>
-  </summary><div>
+  </summary>
+  <div>
     <ul>
       <ParamsItem
         className={"paramsItem"}
-        param={{"name":"id","required":true,"in":"path","description":"Transfer identifier","schema":{"type":"string"},"enumDescriptions":[]}}
-      >
-        
-      </ParamsItem><ParamsItem
+        param={{
+          name: "id",
+          required: true,
+          in: "path",
+          description: "Transfer identifier",
+          schema: { type: "string" },
+          enumDescriptions: []
+        }}></ParamsItem>
+      <ParamsItem
         className={"paramsItem"}
-        param={{"name":"path","required":true,"in":"path","description":"Path of receiving application","schema":{},"enumDescriptions":[]}}
-      >
-        
-      </ParamsItem>
+        param={{
+          name: "path",
+          required: true,
+          in: "path",
+          description: "Path of receiving application",
+          schema: {},
+          enumDescriptions: []
+        }}></ParamsItem>
     </ul>
   </div>
-</details><details
-  style={{"marginBottom":"1rem"}}
+</details>
+<details
+  style={{ marginBottom: "1rem" }}
   className={"openapi-markdown__details"}
   data-collapsed={false}
-  open={true}
->
-  <summary
-    style={{}}
-  >
-    <h3
-      className={"openapi-markdown__details-summary-header-params"}
-    >
+  open={true}>
+  <summary style={{}}>
+    <h3 className={"openapi-markdown__details-summary-header-params"}>
       Header Parameters
     </h3>
-  </summary><div>
+  </summary>
+  <div>
     <ul>
       <ParamsItem
         className={"paramsItem"}
-        param={{"name":"Authorization","required":true,"in":"header","schema":{"type":"string"},"enumDescriptions":[]}}
-      >
-        
-      </ParamsItem>
+        param={{
+          name: "Authorization",
+          required: true,
+          in: "header",
+          schema: { type: "string" },
+          enumDescriptions: []
+        }}></ParamsItem>
     </ul>
   </div>
-</details><div>
+</details>
+<div>
   <div>
-    <ApiTabs
-      label={undefined}
-      id={undefined}
-    >
-      <TabItem
-        label={"200"}
-        value={"200"}
-      >
-        <div>
-          
-          
-          
-          
-          
-        </div><div>
-          
-        </div>
+    <ApiTabs label={undefined} id={undefined}>
+      <TabItem label={"200"} value={"200"}>
+        <div></div>
+        <div></div>
       </TabItem>
     </ApiTabs>
   </div>
 </div>
-      

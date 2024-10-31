@@ -11,7 +11,7 @@ async function bootstrap() {
   );
 
   app.setGlobalPrefix(`${process.env["SUBPATH"] ?? ""}/api`, {
-    exclude: [".well-known/(.*)", "health"],
+    exclude: [".well-known/(.*)", "health"]
   });
   const config = new DocumentBuilder()
     .setTitle("TSG Control Plane")
@@ -45,17 +45,17 @@ async function bootstrap() {
         password: {
           scopes: {
             controlplane_admin: "controlplane_admin",
-            controlplane_dataplane: "controlplane_dataplane",
-          },
-        },
-      },
+            controlplane_dataplane: "controlplane_dataplane"
+          }
+        }
+      }
     })
     .addBearerAuth({
       type: "http",
       scheme: "bearer",
       bearerFormat: "VP",
       description:
-        "Verifiable Presentation needed to communicate between two instances of the control plane.",
+        "Verifiable Presentation needed to communicate between two instances of the control plane."
     })
 
     .build();

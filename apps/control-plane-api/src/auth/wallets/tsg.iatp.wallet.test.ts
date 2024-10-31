@@ -15,20 +15,20 @@ describe("TSG Wallet", () => {
           access_token:
             "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjb25uZWN0b3IiLCJlbWFpbCI6Im5vcmVwbHlAZGF0YXNwYWMuZXMiLCJkaWRJZCI6ImRpZDp3ZWI6d2FsbGV0LWNhdGVuYS14LmFscGhhLnNjc24uZGF0YXNwYWMuZXMiLCJyb2xlcyI6WyJ2aWV3X3ByZXNlbnRhdGlvbnMiXSwiaWF0IjoxNjkzNDIzNzgyLCJleHAiOjE2OTM0MjQ2ODJ9.UkVNT1ZFRF9TSUdOQVRVUkU",
           refresh_token:
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjb25uZWN0b3IiLCJlbWFpbCI6Im5vcmVwbHlAZGF0YXNwYWMuZXMiLCJkaWRJZCI6ImRpZDp3ZWI6d2FsbGV0LWNhdGVuYS14LmFscGhhLnNjc24uZGF0YXNwYWMuZXMiLCJyb2xlcyI6WyJ2aWV3X3ByZXNlbnRhdGlvbnMiXSwiaWF0IjoxNjkzNDIzNzgyLCJleHAiOjE2OTQwMjg1ODJ9.UkVNT1ZFRF9TSUdOQVRVUkU",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjb25uZWN0b3IiLCJlbWFpbCI6Im5vcmVwbHlAZGF0YXNwYWMuZXMiLCJkaWRJZCI6ImRpZDp3ZWI6d2FsbGV0LWNhdGVuYS14LmFscGhhLnNjc24uZGF0YXNwYWMuZXMiLCJyb2xlcyI6WyJ2aWV3X3ByZXNlbnRhdGlvbnMiXSwiaWF0IjoxNjkzNDIzNzgyLCJleHAiOjE2OTQwMjg1ODJ9.UkVNT1ZFRF9TSUdOQVRVUkU"
         });
       }),
       http.get("http://127.0.0.1/api/iatp/holder/token", () => {
         return HttpResponse.json({
           id_token:
-            "eyJhbGciOiJFZERTQSIsImtpZCI6ImRpZDp3ZWI6bG9jYWxob3N0JTNBMzAwMCNrZXktMCJ9.eyJhdWQiOiJkaWQ6d2ViOmxvY2FsaG9zdCUzQTMwMDAiLCJ0b2tlbiI6IjliYjU0YjliMmM3YWI0NjBjZTc2MGRjOTQ4OWUxNTBmZDU5NzE3NWY1OTJmYWM0N2YyZmMyMzg4ZTJmYzVkYjEyYWE4MzRhYTAxOGJjZDcyNTRmYTRhNWIzZjBiMjk1YyIsImlhdCI6MTcxMTcxNzgzMSwiaXNzIjoiZGlkOndlYjpsb2NhbGhvc3QlM0EzMDAwIiwic3ViIjoiZGlkOndlYjpsb2NhbGhvc3QlM0EzMDAwIiwianRpIjoiMDI2MDI4YTctZGE1Mi00M2Q2LTlhYzYtYWNhMTE3ZWRhYWFhIiwiZXhwIjoxNzExNzE4MTMxfQ.Aif9GVz9fwmQxrJP58PUH6FXAUZxwCWy_JFSy8-Pk7Ud2qksKqM3v42oKfQywO108MkwaQ95N_hlj-n562PPDw",
+            "eyJhbGciOiJFZERTQSIsImtpZCI6ImRpZDp3ZWI6bG9jYWxob3N0JTNBMzAwMCNrZXktMCJ9.eyJhdWQiOiJkaWQ6d2ViOmxvY2FsaG9zdCUzQTMwMDAiLCJ0b2tlbiI6IjliYjU0YjliMmM3YWI0NjBjZTc2MGRjOTQ4OWUxNTBmZDU5NzE3NWY1OTJmYWM0N2YyZmMyMzg4ZTJmYzVkYjEyYWE4MzRhYTAxOGJjZDcyNTRmYTRhNWIzZjBiMjk1YyIsImlhdCI6MTcxMTcxNzgzMSwiaXNzIjoiZGlkOndlYjpsb2NhbGhvc3QlM0EzMDAwIiwic3ViIjoiZGlkOndlYjpsb2NhbGhvc3QlM0EzMDAwIiwianRpIjoiMDI2MDI4YTctZGE1Mi00M2Q2LTlhYzYtYWNhMTE3ZWRhYWFhIiwiZXhwIjoxNzExNzE4MTMxfQ.Aif9GVz9fwmQxrJP58PUH6FXAUZxwCWy_JFSy8-Pk7Ud2qksKqM3v42oKfQywO108MkwaQ95N_hlj-n562PPDw"
         });
       }),
       http.post("http://127.0.0.1/api/iatp/verifier/verify", () => {
         return HttpResponse.json({
           "@context": [
             "https://www.w3.org/2018/credentials/v1",
-            "https://w3c.github.io/vc-jws-2020/contexts/v1/",
+            "https://w3c.github.io/vc-jws-2020/contexts/v1/"
           ],
           type: ["VerifiablePresentation"],
           id: "did:web:localhost%3A3000#c4c5c4c6-e1c8-44d9-8745-a1ce8f55c13d",
@@ -36,7 +36,7 @@ describe("TSG Wallet", () => {
             {
               "@context": [
                 "https://www.w3.org/2018/credentials/v1",
-                "https://w3c.github.io/vc-jws-2020/contexts/v1/",
+                "https://w3c.github.io/vc-jws-2020/contexts/v1/"
               ],
               type: ["VerifiableCredential"],
               id: "did:web:localhost%3A3000#test",
@@ -44,17 +44,17 @@ describe("TSG Wallet", () => {
               issuanceDate: "2024-03-29T08:17:00.122Z",
               expirationDate: "2024-06-29T08:17:00.122Z",
               credentialSubject: {
-                id: "did:web:localhost%3A3000",
+                id: "did:web:localhost%3A3000"
               },
               proof: {
                 type: "JsonWebSignature2020",
                 created: "2024-03-29T08:17:00.685Z",
                 proofPurpose: "assertionMethod",
                 jws: "eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..nirMrWvJsxFkl8KlhDLBcyTjg8aOGI1UA8wFA2iYuoFEtpf1Z1Ok3T8bwOjDJeCoYZU-lIG-9oIaGKyFIzdGAg",
-                verificationMethod: "did:web:localhost%3A3000#key-0",
-              },
-            },
-          ],
+                verificationMethod: "did:web:localhost%3A3000#key-0"
+              }
+            }
+          ]
         });
       }),
       http.get("http://127.0.0.1/api/management/credentials/dataspace", () => {
@@ -74,11 +74,11 @@ describe("TSG Wallet", () => {
                 created: "2024-07-29T16:10:20.763Z",
                 proofPurpose: "assertionMethod",
                 jws: "eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..8zL0OkKo0z1VkxF2ZVtTmHP8e5GdxdwPyCc4RrD-d155B2NhB8jsUfMiw4H0en6dnnbV6AucUTw0MfHKJJfxBA",
-                verificationMethod: "did:web:localhost%3A3000#key-0",
-              },
+                verificationMethod: "did:web:localhost%3A3000#key-0"
+              }
             });
           }
-        },
+        }
       ),
       http.post<PathParams, Record<string, any>>(
         "http://127.0.0.1/api/management/signature/validate",
@@ -89,20 +89,20 @@ describe("TSG Wallet", () => {
           } else {
             return HttpResponse.json(body.proofDocument);
           }
-        },
+        }
       ),
       http.get(
         `http://127.0.0.1/api/management/did/resolve/${encodeURI(
-          "did:web:localhost",
+          "did:web:localhost"
         )}`,
         () => {
           return HttpResponse.json(mockDidDocument());
-        },
-      ),
+        }
+      )
     );
 
     server.listen({
-      onUnhandledRequest: "bypass",
+      onUnhandledRequest: "bypass"
     });
   });
 
@@ -122,13 +122,13 @@ describe("TSG Wallet", () => {
       clientId: "admin",
       clientSecret: "test",
       typeFilter: "VerifiableCredential",
-      issuerFilter: "did:web:localhost%3A3000",
-    },
+      issuerFilter: "did:web:localhost%3A3000"
+    }
   );
   const testAudience = "did:web:localhost%3A3000";
   const tsgWalletClient = new TsgIatpWalletClient(
     iamConfig,
-    new AuthClientService(plainToInstance(AuthConfig, { enabled: false })),
+    new AuthClientService(plainToInstance(AuthConfig, { enabled: false }))
   );
 
   it("Request & Validate presentation", async () => {
@@ -145,7 +145,7 @@ describe("TSG Wallet", () => {
 
   it("Signature service", async () => {
     await expect(tsgWalletClient.requestSignature({})).rejects.toThrow(
-      "Could not sign document",
+      "Could not sign document"
     );
     await tsgWalletClient.requestSignature({
       "@context": "http://schema.org/",
@@ -153,10 +153,10 @@ describe("TSG Wallet", () => {
       name: "Jane Doe",
       jobTitle: "Professor",
       telephone: "(425) 123-4567",
-      url: "http://www.janedoe.com",
+      url: "http://www.janedoe.com"
     });
     await expect(
-      tsgWalletClient.requestSignatureValidation({}),
+      tsgWalletClient.requestSignatureValidation({})
     ).rejects.toThrow("Could not validate document");
     await tsgWalletClient.requestSignatureValidation({
       "@context": "http://schema.org/",
@@ -170,28 +170,28 @@ describe("TSG Wallet", () => {
         created: "2024-07-29T16:10:20.763Z",
         proofPurpose: "assertionMethod",
         jws: "eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..8zL0OkKo0z1VkxF2ZVtTmHP8e5GdxdwPyCc4RrD-d155B2NhB8jsUfMiw4H0en6dnnbV6AucUTw0MfHKJJfxBA",
-        verificationMethod: "did:web:localhost%3A3000#key-0",
-      },
+        verificationMethod: "did:web:localhost%3A3000#key-0"
+      }
     });
   });
 
   it("Resolve DID Document", async () => {
     await expect(tsgWalletClient.resolveDidDocument("")).rejects.toThrow(
-      "Could not resolve DID Document",
+      "Could not resolve DID Document"
     );
 
     const expectedDidDoc = mockDidDocument();
     const resolvedDidDoc = await tsgWalletClient.resolveDidDocument(
-      encodeURI("did:web:localhost"),
+      encodeURI("did:web:localhost")
     );
     expect(resolvedDidDoc).toBeDefined();
     expect(resolvedDidDoc.id).toEqual(expectedDidDoc.id);
     expect(resolvedDidDoc.verificationMethod).toEqual(
-      expectedDidDoc.verificationMethod,
+      expectedDidDoc.verificationMethod
     );
     expect(resolvedDidDoc.service).toEqual(expectedDidDoc.service);
     expect(resolvedDidDoc.assertionMethod).toEqual(
-      expectedDidDoc.assertionMethod,
+      expectedDidDoc.assertionMethod
     );
   });
 });

@@ -18,7 +18,7 @@ const dataPlaneFormDefault: IDataPlaneDto = {
   managementAddress: undefined,
   managementToken: undefined,
   catalogSynchronization: undefined,
-  role: undefined,
+  role: undefined
 };
 
 const confirm = useConfirm();
@@ -31,11 +31,13 @@ const getDataPlanes = async () => {
     dataplanes.value = response.data;
     return dataplanes;
   } catch (error) {
-    toast.add(toastError({
-      error,
-      summary: "Failed to get dataplanes",
-      defaultMessage: `Could not load dataplanes`
-    }));
+    toast.add(
+      toastError({
+        error,
+        summary: "Failed to get dataplanes",
+        defaultMessage: `Could not load dataplanes`
+      })
+    );
   }
 };
 
@@ -47,15 +49,17 @@ const addDataPlane = async () => {
       severity: "success",
       summary: "Dataplane added",
       detail: `Dataplane ${dataPlaneForm.value.identifier} successfully added`,
-      life: 3000,
+      life: 3000
     });
     await getDataPlanes();
   } catch (error) {
-    toast.add(toastError({
-      error,
-      summary: "Failed to add dataplane",
-      defaultMessage: `Could not register new dataplane to the control plane`
-    }));
+    toast.add(
+      toastError({
+        error,
+        summary: "Failed to add dataplane",
+        defaultMessage: `Could not register new dataplane to the control plane`
+      })
+    );
   }
 };
 
@@ -78,16 +82,18 @@ const deleteDataPlane = async (dataplaneId: string) => {
           severity: "success",
           summary: "Success",
           detail: "Dataplane deleted",
-          life: 3000,
+          life: 3000
         });
       } catch (error) {
-        toast.add(toastError({
-          error,
-          summary: "Could not delete dataplane",
-          defaultMessage: `Could not delete dataplane`
-        }));
+        toast.add(
+          toastError({
+            error,
+            summary: "Could not delete dataplane",
+            defaultMessage: `Could not delete dataplane`
+          })
+        );
       }
-    },
+    }
   });
 };
 
@@ -101,8 +107,7 @@ onMounted(async () => {
 <template>
   <Card
     style="border-radius: 12px; border: 1px solid var(--surface-border)"
-    class="mb-8"
-  >
+    class="mb-8">
     <template #title>Dataplanes</template>
     <template #content
       >On this page you can find the dataplanes that are linked to this Control
@@ -114,8 +119,7 @@ onMounted(async () => {
     v-for="dataplane in dataplanes"
     :key="dataplane.identifier"
     class="mb-8"
-    style="border-radius: 12px; border: 1px solid var(--surface-border)"
-  >
+    style="border-radius: 12px; border: 1px solid var(--surface-border)">
     <template #title>
       <div class="grid grid-cols-12 gap-4 mb-0">
         <div class="col-span-11 lg:col-span-8 mb-0">
@@ -125,8 +129,7 @@ onMounted(async () => {
           <Button
             severity="danger"
             icon="pi pi-trash"
-            @click="deleteDataPlane(dataplane.identifier)"
-          />
+            @click="deleteDataPlane(dataplane.identifier)" />
         </div></div
     ></template>
     <template #content>
@@ -165,62 +168,54 @@ onMounted(async () => {
             class="w-full"
             v-model="dataPlaneForm.dataplaneType"
             placeholder="Type of data plane you are using, e.g. dspace:HTTP"
-            required
-          ></InputText>
+            required></InputText>
         </FormField>
         <FormField label="Identifier" v-slot="props">
           <InputText
             :id="props.id"
             class="w-full"
             v-model="dataPlaneForm.identifier"
-            placeholder="Identifier"
-          ></InputText>
+            placeholder="Identifier"></InputText>
         </FormField>
         <FormField label="Endpoint Prefix" v-slot="props">
           <InputText
             :id="props.id"
             class="w-full"
             v-model="dataPlaneForm.endpointPrefix"
-            placeholder="Endpoint Prefix"
-          ></InputText>
+            placeholder="Endpoint Prefix"></InputText>
         </FormField>
         <FormField label="Callback Address" v-slot="props">
           <InputText
             :id="props.id"
             class="w-full"
             v-model="dataPlaneForm.callbackAddress"
-            placeholder="Callback Address"
-          ></InputText>
+            placeholder="Callback Address"></InputText>
         </FormField>
         <FormField label="Management Address" v-slot="props">
           <InputText
             :id="props.id"
             class="w-full"
             v-model="dataPlaneForm.managementAddress"
-            placeholder="Management Address"
-          ></InputText>
+            placeholder="Management Address"></InputText>
         </FormField>
         <FormField label="Management Token" v-slot="props">
           <InputText
             :id="props.id"
             class="w-full"
             v-model="dataPlaneForm.managementToken"
-            placeholder="Management Token"
-          ></InputText>
+            placeholder="Management Token"></InputText>
         </FormField>
         <FormField label="Catalog Synchronization" v-slot="props">
           <SelectButton
             v-model="dataPlaneForm.catalogSynchronization"
             required
-            :options="['push', 'pull']"
-          ></SelectButton>
+            :options="['push', 'pull']"></SelectButton>
         </FormField>
         <FormField label="Role" v-slot="props">
           <SelectButton
             v-model="dataPlaneForm.role"
             required
-            :options="['consumer', 'provider', 'both']"
-          ></SelectButton>
+            :options="['consumer', 'provider', 'both']"></SelectButton>
         </FormField>
         <FormField no-label class="mt-8">
           <Button label="Add Dataplane" severity="success" type="submit" />

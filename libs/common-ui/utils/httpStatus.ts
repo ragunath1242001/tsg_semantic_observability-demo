@@ -43,7 +43,7 @@ export const httpStatusNames = {
   "502": "Bad Gateway",
   "503": "Service Unavailable",
   "504": "Gateway Timeout",
-  "505": "HTTP Version Not Supported",
+  "505": "HTTP Version Not Supported"
 };
 
 export const httpStatusList = [
@@ -91,5 +91,5 @@ export const httpStatusList = [
   "502",
   "503",
   "504",
-  "505",
+  "505"
 ];

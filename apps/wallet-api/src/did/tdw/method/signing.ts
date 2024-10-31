@@ -16,25 +16,25 @@ export const createSigner = (vm: VerificationMethod) => {
         verificationMethod: vm.publicKeyMultibase,
         created: createDate(),
         proofPurpose: "authentication",
-        challenge,
+        challenge
       };
       const dataHash = await canonizeAndHash(doc, "JCS");
       const proofHash = await canonizeAndHash(proof, "JCS");
       const input = buffersToHex(dataHash, proofHash);
       const jwk = encodedPrivateKeyMultiBaseToJWK(
         vm.type,
-        vm.secretKeyMultibase!,
+        vm.secretKeyMultibase!
       );
       const signature = new CompactSign(
-        new TextEncoder().encode(input),
+        new TextEncoder().encode(input)
       ).setProtectedHeader({
         alg: jwk.alg!,
         b64: false,
-        crit: ["b64"],
+        crit: ["b64"]
       });
       const jws = await signature.sign(await importJWK(jwk));
       proof.proofValue = base58btc.encode(
-        Buffer.from(jws.split(".")[2], "base64url"),
+        Buffer.from(jws.split(".")[2], "base64url")
       );
       return { ...doc, proof };
     } catch (e: any) {

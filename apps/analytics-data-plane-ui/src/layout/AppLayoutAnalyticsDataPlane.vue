@@ -23,7 +23,7 @@ const containerClass = computed(() => {
       layoutState.staticMenuDesktopInactive &&
       layoutConfig.menuMode === "static",
     "layout-overlay-active": layoutState.overlayMenuActive,
-    "layout-mobile-active": layoutState.staticMenuMobileActive,
+    "layout-mobile-active": layoutState.staticMenuMobileActive
   };
 });
 const menuList: Menu[] = [
@@ -33,19 +33,19 @@ const menuList: Menu[] = [
       {
         label: "Dashboard",
         icon: "pi pi-fw pi-id-card",
-        to: "/",
+        to: "/"
       },
       {
         label: "Metadata",
         icon: "pi pi-fw pi-file",
-        to: "/metadata",
+        to: "/metadata"
       },
       {
         label: "Logging",
         icon: "pi pi-fw pi-list",
-        to: "/logging",
-      },
-    ],
+        to: "/logging"
+      }
+    ]
   },
   {
     label: "Files",
@@ -53,27 +53,27 @@ const menuList: Menu[] = [
       {
         label: "Current files",
         icon: "pi pi-fw pi-folder-open",
-        to: "/files",
+        to: "/files"
       },
       {
         label: "Upload",
         icon: "pi pi-fw pi-file-arrow-up",
-        to: "/files/upload",
-      },
-    ],
-  },
+        to: "/files/upload"
+      }
+    ]
+  }
 ];
 
 const footer: FooterProps = {
   baseLogoUrl: baseLogoUrl,
-  footerText: "TNO",
+  footerText: "TNO"
 };
 
 const route = useRoute();
 
 const sidebar: MenuProps = {
   menu: menuList,
-  route: route,
+  route: route
 };
 
 onMounted(async () => {
@@ -88,11 +88,10 @@ onMounted(async () => {
         name: catalogStore.title,
         baseLogoUrl: baseLogoUrl,
         user: userStore.user,
-        router: useRouter(),
+        router: useRouter()
       }"
       :footer="footer"
-      :sidebar="sidebar"
-    />
+      :sidebar="sidebar" />
     <AppConfig />
     <div class="layout-mask animate-fadein"></div>
   </div>

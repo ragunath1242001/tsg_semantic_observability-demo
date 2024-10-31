@@ -9,7 +9,7 @@ describe("DID Tdw Resolver", () => {
 
   beforeAll(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
-      providers: [DidTdwResolverStrategy],
+      providers: [DidTdwResolverStrategy]
     }).compile();
     didTdwResolverStrategy = await moduleRef.get(DidTdwResolverStrategy);
 
@@ -24,18 +24,18 @@ describe("DID Tdw Resolver", () => {
             {
               method: "did:tdw:1",
               scid: "bbrk2snhywl5tchhheco7lur6qpb",
-              updateKeys: ["z6MkrYBJwsthC1s4gZShGf2sfeg1obzjhMhkC99WfvQMpd4i"],
+              updateKeys: ["z6MkrYBJwsthC1s4gZShGf2sfeg1obzjhMhkC99WfvQMpd4i"]
             },
             {
               value: {
                 "@context": [
                   "https://www.w3.org/ns/did/v1",
-                  "https://w3id.org/security/suites/jws-2020/v1",
+                  "https://w3id.org/security/suites/jws-2020/v1"
                 ],
                 id: "did:tdw:example.com:bbrk2snhywl5tchhheco7lur6qpb",
                 controller: "did:tdw:example.com:bbrk2snhywl5tchhheco7lur6qpb",
                 assertionMethod: [
-                  "did:tdw:example.com:bbrk2snhywl5tchhheco7lur6qpb#key-0",
+                  "did:tdw:example.com:bbrk2snhywl5tchhheco7lur6qpb#key-0"
                 ],
                 verificationMethod: [
                   {
@@ -47,24 +47,24 @@ describe("DID Tdw Resolver", () => {
                       kty: "OKP",
                       alg: "EdDSA",
                       crv: "Ed25519",
-                      x: "s47LAif3eseCBQlcBuyB1Uo7CgHLo0efYpddvqll7R8",
-                    },
-                  },
+                      x: "s47LAif3eseCBQlcBuyB1Uo7CgHLo0efYpddvqll7R8"
+                    }
+                  }
                 ],
                 service: [
                   {
                     id: "did:tdw:example.com:bbrk2snhywl5tchhheco7lur6qpb#oid4vci",
                     type: "OID4VCI",
-                    serviceEndpoint: "http://localhost:3000",
+                    serviceEndpoint: "http://localhost:3000"
                   },
                   {
                     id: "did:tdw:example.com:bbrk2snhywl5tchhheco7lur6qpb#presentation",
                     type: "PresentationService",
                     serviceEndpoint:
-                      "http://localhost:3000/api/iatp/holder/presentation",
-                  },
-                ],
-              },
+                      "http://localhost:3000/api/iatp/holder/presentation"
+                  }
+                ]
+              }
             },
             [
               {
@@ -77,9 +77,9 @@ describe("DID Tdw Resolver", () => {
                 challenge:
                   "bpi76zcm2arwegcw4xclid6boeuyyy2mz5dmmlg6xjzejzdoejgha",
                 proofValue:
-                  "z5s4EZvvHanJDa7zrQ7qMbCyC9vsd8RPnZnQEB4EK5PTyEsBsJXrEWGBnXEsvk5gPTjXttheGyaamA14DndcEFwh5",
-              },
-            ],
+                  "z5s4EZvvHanJDa7zrQ7qMbCyC9vsd8RPnZnQEB4EK5PTyEsBsJXrEWGBnXEsvk5gPTjXttheGyaamA14DndcEFwh5"
+              }
+            ]
           ]);
         }
       ),
@@ -93,19 +93,19 @@ describe("DID Tdw Resolver", () => {
             {
               method: "did:tdw:1",
               scid: "bwrrlevohy72zhnvmuvuvkkavzgr",
-              updateKeys: ["z6MktyEcvgvQo2TPwb3BxcSrmx1FEFs3cvwF4Qe8MovdbkYM"],
+              updateKeys: ["z6MktyEcvgvQo2TPwb3BxcSrmx1FEFs3cvwF4Qe8MovdbkYM"]
             },
             {
               value: {
                 "@context": [
                   "https://www.w3.org/ns/did/v1",
-                  "https://w3id.org/security/suites/jws-2020/v1",
+                  "https://w3id.org/security/suites/jws-2020/v1"
                 ],
                 id: "did:tdw:localhost%3A3000:bwrrlevohy72zhnvmuvuvkkavzgr",
                 controller:
                   "did:tdw:localhost%3A3000:bwrrlevohy72zhnvmuvuvkkavzgr",
                 assertionMethod: [
-                  "did:tdw:localhost%3A3000:bwrrlevohy72zhnvmuvuvkkavzgr#key-0",
+                  "did:tdw:localhost%3A3000:bwrrlevohy72zhnvmuvuvkkavzgr#key-0"
                 ],
                 verificationMethod: [
                   {
@@ -117,24 +117,24 @@ describe("DID Tdw Resolver", () => {
                       kty: "OKP",
                       alg: "EdDSA",
                       crv: "Ed25519",
-                      x: "17FuANfb0PjxiR5iiixheempqgUmp3HPFfM1zq3WtFY",
-                    },
-                  },
+                      x: "17FuANfb0PjxiR5iiixheempqgUmp3HPFfM1zq3WtFY"
+                    }
+                  }
                 ],
                 service: [
                   {
                     id: "did:tdw:localhost%3A3000:bwrrlevohy72zhnvmuvuvkkavzgr#oid4vci",
                     type: "OID4VCI",
-                    serviceEndpoint: "http://localhost:3000",
+                    serviceEndpoint: "http://localhost:3000"
                   },
                   {
                     id: "did:tdw:localhost%3A3000:bwrrlevohy72zhnvmuvuvkkavzgr#presentation",
                     type: "PresentationService",
                     serviceEndpoint:
-                      "http://localhost:3000/api/iatp/holder/presentation",
-                  },
-                ],
-              },
+                      "http://localhost:3000/api/iatp/holder/presentation"
+                  }
+                ]
+              }
             },
             [
               {
@@ -147,9 +147,9 @@ describe("DID Tdw Resolver", () => {
                 challenge:
                   "b6okhmcu4qfy3bibshi7rsfwzafmiruxvyhotg22d3tbaqjrj7aga",
                 proofValue:
-                  "zDJwQNLB4ABV63ETmMyPXsuBNHDYfvPsvYV1wjpVjNebhBCyhw2yDVLXisNbnUTrKcamQSUkUYRoYyyvhC3cgaTr",
-              },
-            ],
+                  "zDJwQNLB4ABV63ETmMyPXsuBNHDYfvPsvYV1wjpVjNebhBCyhw2yDVLXisNbnUTrKcamQSUkUYRoYyyvhC3cgaTr"
+              }
+            ]
           ]);
         }
       ),
@@ -163,19 +163,19 @@ describe("DID Tdw Resolver", () => {
             {
               method: "did:tdw:1",
               scid: "bn3infyofwtaseoxmggnm5ikwiyy",
-              updateKeys: ["z6MkqLaJovzf891d3weCPyHjA9mzf7NK6JxMkzEKJYikcnYP"],
+              updateKeys: ["z6MkqLaJovzf891d3weCPyHjA9mzf7NK6JxMkzEKJYikcnYP"]
             },
             {
               value: {
                 "@context": [
                   "https://www.w3.org/ns/did/v1",
-                  "https://w3id.org/security/suites/jws-2020/v1",
+                  "https://w3id.org/security/suites/jws-2020/v1"
                 ],
                 id: "did:tdw:example.com/user/admin:bn3infyofwtaseoxmggnm5ikwiyy",
                 controller:
                   "did:tdw:example.com/user/admin:bn3infyofwtaseoxmggnm5ikwiyy",
                 assertionMethod: [
-                  "did:tdw:example.com/user/admin:bn3infyofwtaseoxmggnm5ikwiyy#key-0",
+                  "did:tdw:example.com/user/admin:bn3infyofwtaseoxmggnm5ikwiyy#key-0"
                 ],
                 verificationMethod: [
                   {
@@ -187,24 +187,24 @@ describe("DID Tdw Resolver", () => {
                       kty: "OKP",
                       alg: "EdDSA",
                       crv: "Ed25519",
-                      x: "obojzxETHGNHC-5gzWCn0UH4wPZgqw4qL8qY7v0jRng",
-                    },
-                  },
+                      x: "obojzxETHGNHC-5gzWCn0UH4wPZgqw4qL8qY7v0jRng"
+                    }
+                  }
                 ],
                 service: [
                   {
                     id: "did:tdw:example.com/user/admin:bn3infyofwtaseoxmggnm5ikwiyy#oid4vci",
                     type: "OID4VCI",
-                    serviceEndpoint: "http://localhost:3000",
+                    serviceEndpoint: "http://localhost:3000"
                   },
                   {
                     id: "did:tdw:example.com/user/admin:bn3infyofwtaseoxmggnm5ikwiyy#presentation",
                     type: "PresentationService",
                     serviceEndpoint:
-                      "http://localhost:3000/api/iatp/holder/presentation",
-                  },
-                ],
-              },
+                      "http://localhost:3000/api/iatp/holder/presentation"
+                  }
+                ]
+              }
             },
             [
               {
@@ -217,9 +217,9 @@ describe("DID Tdw Resolver", () => {
                 challenge:
                   "barhcfb7kpot6tok7z7mlicrnlezt4wmihkds76tvcw3efxuclsvq",
                 proofValue:
-                  "z5Bj7akX7KHLxLqUscFWYeeMZHZx4j1AyY57SuG5bXRCRmuRZExYPwTewFXe5sU1oVeqp4erFp4gqfj8zHT4V4RPT",
-              },
-            ],
+                  "z5Bj7akX7KHLxLqUscFWYeeMZHZx4j1AyY57SuG5bXRCRmuRZExYPwTewFXe5sU1oVeqp4erFp4gqfj8zHT4V4RPT"
+              }
+            ]
           ]);
         }
       ),
@@ -237,21 +237,19 @@ describe("DID Tdw Resolver", () => {
               {
                 method: "did:tdw:1",
                 scid: "bnlj46g5hfc4sljstitrqj2ltyvi",
-                updateKeys: [
-                  "z6MktRSKtkHHMGrzm5GU5AEQM3Z7kfXUsg4EwHyET4kdpTPL",
-                ],
+                updateKeys: ["z6MktRSKtkHHMGrzm5GU5AEQM3Z7kfXUsg4EwHyET4kdpTPL"]
               },
               {
                 value: {
                   "@context": [
                     "https://www.w3.org/ns/did/v1",
-                    "https://w3id.org/security/suites/jws-2020/v1",
+                    "https://w3id.org/security/suites/jws-2020/v1"
                   ],
                   id: "did:tdw:localhost%3A3000:bnlj46g5hfc4sljstitrqj2ltyvi",
                   controller:
                     "did:tdw:localhost%3A3000:bnlj46g5hfc4sljstitrqj2ltyvi",
                   assertionMethod: [
-                    "did:tdw:localhost%3A3000:bnlj46g5hfc4sljstitrqj2ltyvi#key-0",
+                    "did:tdw:localhost%3A3000:bnlj46g5hfc4sljstitrqj2ltyvi#key-0"
                   ],
                   verificationMethod: [
                     {
@@ -263,24 +261,24 @@ describe("DID Tdw Resolver", () => {
                         kty: "OKP",
                         alg: "EdDSA",
                         crv: "Ed25519",
-                        x: "z4wUhygl8Pq4V0OLbfijfb_o1_msO0Xn2FJKq9QJYO8",
-                      },
-                    },
+                        x: "z4wUhygl8Pq4V0OLbfijfb_o1_msO0Xn2FJKq9QJYO8"
+                      }
+                    }
                   ],
                   service: [
                     {
                       id: "did:tdw:localhost%3A3000:bnlj46g5hfc4sljstitrqj2ltyvi#oid4vci",
                       type: "OID4VCI",
-                      serviceEndpoint: "http://localhost:3000",
+                      serviceEndpoint: "http://localhost:3000"
                     },
                     {
                       id: "did:tdw:localhost%3A3000:bnlj46g5hfc4sljstitrqj2ltyvi#presentation",
                       type: "PresentationService",
                       serviceEndpoint:
-                        "http://localhost:3000/iatp/holder/presentation",
-                    },
-                  ],
-                },
+                        "http://localhost:3000/iatp/holder/presentation"
+                    }
+                  ]
+                }
               },
               [
                 {
@@ -293,9 +291,9 @@ describe("DID Tdw Resolver", () => {
                   challenge:
                     "bfq7pbeekoxhfzwp4u7rvn7dncsyrmag2ky4kmuaolozyqhjs3rmq",
                   proofValue:
-                    "z64svfc8VdMeH9LffVYC73SfFNQEtkUp1q38v5r8eC5NsPovL8TdNoQaj2237yPU7K55j4qLMFoeZbPXnZyn3sg7V",
-                },
-              ],
+                    "z64svfc8VdMeH9LffVYC73SfFNQEtkUp1q38v5r8eC5NsPovL8TdNoQaj2237yPU7K55j4qLMFoeZbPXnZyn3sg7V"
+                }
+              ]
             ]) +
               "\n" +
               JSON.stringify([
@@ -311,17 +309,17 @@ describe("DID Tdw Resolver", () => {
                       value: {
                         id: "did:tdw:localhost%3A3000:bnlj46g5hfc4sljstitrqj2ltyvi#test",
                         type: "Test",
-                        serviceEndpoint: "https://www.localhost:3000/test",
-                      },
+                        serviceEndpoint: "https://www.localhost:3000/test"
+                      }
                     },
                     {
                       op: "replace",
                       path: "/controller",
                       value: [
-                        "did:tdw:localhost%3A3000:bnlj46g5hfc4sljstitrqj2ltyvi",
-                      ],
-                    },
-                  ],
+                        "did:tdw:localhost%3A3000:bnlj46g5hfc4sljstitrqj2ltyvi"
+                      ]
+                    }
+                  ]
                 },
                 [
                   {
@@ -334,9 +332,9 @@ describe("DID Tdw Resolver", () => {
                     challenge:
                       "b6gqcov6k765h72tbr46j7ogfgfsht4yl2l5j6ozallnil5j7u2aq",
                     proofValue:
-                      "z3bUj7Kr6LUXw1hoVdoSThNRAKbMxcBGZ23d2nvyYiN7cxQECGA15BfL2YiopwhVEA5FiAHRqnVnUd9wMvXciQEhQ",
-                  },
-                ],
+                      "z3bUj7Kr6LUXw1hoVdoSThNRAKbMxcBGZ23d2nvyYiN7cxQECGA15BfL2YiopwhVEA5FiAHRqnVnUd9wMvXciQEhQ"
+                  }
+                ]
               ])
           );
         }
@@ -357,12 +355,12 @@ describe("DID Tdw Resolver", () => {
       expect(didDocument).toEqual({
         "@context": [
           "https://www.w3.org/ns/did/v1",
-          "https://w3id.org/security/suites/jws-2020/v1",
+          "https://w3id.org/security/suites/jws-2020/v1"
         ],
         id: "did:tdw:example.com:bbrk2snhywl5tchhheco7lur6qpb",
         controller: "did:tdw:example.com:bbrk2snhywl5tchhheco7lur6qpb",
         assertionMethod: [
-          "did:tdw:example.com:bbrk2snhywl5tchhheco7lur6qpb#key-0",
+          "did:tdw:example.com:bbrk2snhywl5tchhheco7lur6qpb#key-0"
         ],
         verificationMethod: [
           {
@@ -373,23 +371,23 @@ describe("DID Tdw Resolver", () => {
               kty: "OKP",
               alg: "EdDSA",
               crv: "Ed25519",
-              x: "s47LAif3eseCBQlcBuyB1Uo7CgHLo0efYpddvqll7R8",
-            },
-          },
+              x: "s47LAif3eseCBQlcBuyB1Uo7CgHLo0efYpddvqll7R8"
+            }
+          }
         ],
         service: [
           {
             id: "did:tdw:example.com:bbrk2snhywl5tchhheco7lur6qpb#oid4vci",
             type: "OID4VCI",
-            serviceEndpoint: "http://localhost:3000",
+            serviceEndpoint: "http://localhost:3000"
           },
           {
             id: "did:tdw:example.com:bbrk2snhywl5tchhheco7lur6qpb#presentation",
             type: "PresentationService",
             serviceEndpoint:
-              "http://localhost:3000/api/iatp/holder/presentation",
-          },
-        ],
+              "http://localhost:3000/api/iatp/holder/presentation"
+          }
+        ]
       });
     });
     it("Resolve localhost main DID", async () => {
@@ -399,12 +397,12 @@ describe("DID Tdw Resolver", () => {
       expect(didDocument).toEqual({
         "@context": [
           "https://www.w3.org/ns/did/v1",
-          "https://w3id.org/security/suites/jws-2020/v1",
+          "https://w3id.org/security/suites/jws-2020/v1"
         ],
         id: "did:tdw:localhost%3A3000:bwrrlevohy72zhnvmuvuvkkavzgr",
         controller: "did:tdw:localhost%3A3000:bwrrlevohy72zhnvmuvuvkkavzgr",
         assertionMethod: [
-          "did:tdw:localhost%3A3000:bwrrlevohy72zhnvmuvuvkkavzgr#key-0",
+          "did:tdw:localhost%3A3000:bwrrlevohy72zhnvmuvuvkkavzgr#key-0"
         ],
         verificationMethod: [
           {
@@ -415,23 +413,23 @@ describe("DID Tdw Resolver", () => {
               kty: "OKP",
               alg: "EdDSA",
               crv: "Ed25519",
-              x: "17FuANfb0PjxiR5iiixheempqgUmp3HPFfM1zq3WtFY",
-            },
-          },
+              x: "17FuANfb0PjxiR5iiixheempqgUmp3HPFfM1zq3WtFY"
+            }
+          }
         ],
         service: [
           {
             id: "did:tdw:localhost%3A3000:bwrrlevohy72zhnvmuvuvkkavzgr#oid4vci",
             type: "OID4VCI",
-            serviceEndpoint: "http://localhost:3000",
+            serviceEndpoint: "http://localhost:3000"
           },
           {
             id: "did:tdw:localhost%3A3000:bwrrlevohy72zhnvmuvuvkkavzgr#presentation",
             type: "PresentationService",
             serviceEndpoint:
-              "http://localhost:3000/api/iatp/holder/presentation",
-          },
-        ],
+              "http://localhost:3000/api/iatp/holder/presentation"
+          }
+        ]
       });
     });
     it("Resolve subdirectory DID", async () => {
@@ -441,13 +439,13 @@ describe("DID Tdw Resolver", () => {
       expect(didDocument).toEqual({
         "@context": [
           "https://www.w3.org/ns/did/v1",
-          "https://w3id.org/security/suites/jws-2020/v1",
+          "https://w3id.org/security/suites/jws-2020/v1"
         ],
         id: "did:tdw:example.com/user/admin:bn3infyofwtaseoxmggnm5ikwiyy",
         controller:
           "did:tdw:example.com/user/admin:bn3infyofwtaseoxmggnm5ikwiyy",
         assertionMethod: [
-          "did:tdw:example.com/user/admin:bn3infyofwtaseoxmggnm5ikwiyy#key-0",
+          "did:tdw:example.com/user/admin:bn3infyofwtaseoxmggnm5ikwiyy#key-0"
         ],
         verificationMethod: [
           {
@@ -459,23 +457,23 @@ describe("DID Tdw Resolver", () => {
               kty: "OKP",
               alg: "EdDSA",
               crv: "Ed25519",
-              x: "obojzxETHGNHC-5gzWCn0UH4wPZgqw4qL8qY7v0jRng",
-            },
-          },
+              x: "obojzxETHGNHC-5gzWCn0UH4wPZgqw4qL8qY7v0jRng"
+            }
+          }
         ],
         service: [
           {
             id: "did:tdw:example.com/user/admin:bn3infyofwtaseoxmggnm5ikwiyy#oid4vci",
             type: "OID4VCI",
-            serviceEndpoint: "http://localhost:3000",
+            serviceEndpoint: "http://localhost:3000"
           },
           {
             id: "did:tdw:example.com/user/admin:bn3infyofwtaseoxmggnm5ikwiyy#presentation",
             type: "PresentationService",
             serviceEndpoint:
-              "http://localhost:3000/api/iatp/holder/presentation",
-          },
-        ],
+              "http://localhost:3000/api/iatp/holder/presentation"
+          }
+        ]
       });
     });
     it("Resolve non existing DID", async () => {
@@ -492,12 +490,12 @@ describe("DID Tdw Resolver", () => {
       expect(didDocument).toEqual({
         "@context": [
           "https://www.w3.org/ns/did/v1",
-          "https://w3id.org/security/suites/jws-2020/v1",
+          "https://w3id.org/security/suites/jws-2020/v1"
         ],
         id: "did:tdw:localhost%3A3000:bnlj46g5hfc4sljstitrqj2ltyvi",
         controller: ["did:tdw:localhost%3A3000:bnlj46g5hfc4sljstitrqj2ltyvi"],
         assertionMethod: [
-          "did:tdw:localhost%3A3000:bnlj46g5hfc4sljstitrqj2ltyvi#key-0",
+          "did:tdw:localhost%3A3000:bnlj46g5hfc4sljstitrqj2ltyvi#key-0"
         ],
         verificationMethod: [
           {
@@ -508,27 +506,27 @@ describe("DID Tdw Resolver", () => {
               kty: "OKP",
               alg: "EdDSA",
               crv: "Ed25519",
-              x: "z4wUhygl8Pq4V0OLbfijfb_o1_msO0Xn2FJKq9QJYO8",
-            },
-          },
+              x: "z4wUhygl8Pq4V0OLbfijfb_o1_msO0Xn2FJKq9QJYO8"
+            }
+          }
         ],
         service: [
           {
             id: "did:tdw:localhost%3A3000:bnlj46g5hfc4sljstitrqj2ltyvi#oid4vci",
             type: "OID4VCI",
-            serviceEndpoint: "http://localhost:3000",
+            serviceEndpoint: "http://localhost:3000"
           },
           {
             id: "did:tdw:localhost%3A3000:bnlj46g5hfc4sljstitrqj2ltyvi#presentation",
             type: "PresentationService",
-            serviceEndpoint: "http://localhost:3000/iatp/holder/presentation",
+            serviceEndpoint: "http://localhost:3000/iatp/holder/presentation"
           },
           {
             id: "did:tdw:localhost%3A3000:bnlj46g5hfc4sljstitrqj2ltyvi#test",
             type: "Test",
-            serviceEndpoint: "https://www.localhost:3000/test",
-          },
-        ],
+            serviceEndpoint: "https://www.localhost:3000/test"
+          }
+        ]
       });
     });
   });

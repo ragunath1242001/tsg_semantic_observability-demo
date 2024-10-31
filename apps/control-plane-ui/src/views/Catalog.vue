@@ -14,9 +14,8 @@ import { toastError } from "@tsg-dsp/common-ui/utils/error";
 // Define a ref for the URL input
 const overlay = ref(null);
 
-const { catalog, urlInput, assigner, didInput } = storeToRefs(
-  useCatalogStore()
-);
+const { catalog, urlInput, assigner, didInput } =
+  storeToRefs(useCatalogStore());
 const dataAvailable = ref(false);
 const loading = ref(false);
 const manual = ref(true);
@@ -41,19 +40,21 @@ const getCatalog = async () => {
     const response = await http.get<CatalogDto>("management/catalog/request", {
       params: {
         address: urlInput.value,
-        audience: audience,
-      },
+        audience: audience
+      }
     });
     catalog.value = response.data;
     dataAvailable.value = true;
     loading.value = false;
     return catalog;
   } catch (error) {
-    toast.add(toastError({
-      error,
-      summary: "Failed to retrieve catalog",
-      defaultMessage: `Could not load catalog`
-    }));
+    toast.add(
+      toastError({
+        error,
+        summary: "Failed to retrieve catalog",
+        defaultMessage: `Could not load catalog`
+      })
+    );
     // Handle error
     console.error("Error:", error);
     throw error;
@@ -73,8 +74,7 @@ onMounted(async () => await initialize());
   <div>
     <Card
       style="border-radius: 12px; border: 1px solid var(--surface-border)"
-      class="mb-8"
-    >
+      class="mb-8">
       <template #title>Catalog Request</template>
       <template #subtitle
         >Use this page to find other catalogs. You can search for other Control
@@ -88,7 +88,9 @@ onMounted(async () => await initialize());
         >.</template
       >
       <template #content>
-        <form class="flex flex-col gap-4 mt-3" @submit.stop.prevent="getCatalog">
+        <form
+          class="flex flex-col gap-4 mt-3"
+          @submit.stop.prevent="getCatalog">
           <div class="flex flex-wrap items-start gap-4">
             <div class="field">
               <FloatLabel>
@@ -114,13 +116,11 @@ onMounted(async () => await initialize());
         :own-catalog="false"
         :assigner="assigner"
         :single-catalog="true"
-        v-if="dataAvailable"
-      />
+        v-if="dataAvailable" />
       <Skeleton
         width="100%"
         height="150px"
-        v-else-if="!dataAvailable && loading"
-      />
+        v-else-if="!dataAvailable && loading" />
       <div class="col-span-12" v-else>
         <Card
           style="border-radius: 12px; border: 1px solid var(--surface-border)"
@@ -131,8 +131,7 @@ onMounted(async () => await initialize());
               label="Go to Registry"
               @click="goToRegistry"
               icon="pi pi-external-link"
-              iconPos="right"
-            ></Button></template
+              iconPos="right"></Button></template
         ></Card>
       </div>
     </div>

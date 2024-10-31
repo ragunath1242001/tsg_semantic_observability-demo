@@ -14,12 +14,12 @@ import {
   CredentialSubject,
   JsonWebSignature2020,
   VerifiableCredential,
-  VerifiablePresentation,
+  VerifiablePresentation
 } from "@tsg-dsp/common-dsp";
 import { toArray } from "../../utils/unions.js";
 import {
   ComplianceRequest,
-  LegalRegistrationNumberRequest,
+  LegalRegistrationNumberRequest
 } from "@tsg-dsp/wallet-dtos";
 import { GaiaXService } from "./gaiax.service.js";
 import { DIDDocuments, DIDService, DIDLogs } from "../../model/did.dao.js";
@@ -39,8 +39,8 @@ describe("Credentials Service", () => {
         {
           id: "key-0",
           type: "EdDSA",
-          default: true,
-        },
+          default: true
+        }
       ],
       initCredentials: [
         {
@@ -49,10 +49,10 @@ describe("Credentials Service", () => {
           id: `did:web:localhost#test-init-credential`,
           keyId: "key-0",
           credentialSubject: {
-            id: "did:web:localhost",
-          },
-        },
-      ],
+            id: "did:web:localhost"
+          }
+        }
+      ]
     });
 
     server = setupServer(
@@ -62,7 +62,7 @@ describe("Credentials Service", () => {
           return HttpResponse.json<VerifiableCredential<JsonWebSignature2020>>({
             "@context": [
               "https://www.w3.org/2018/credentials/v1",
-              "https://w3id.org/security/suites/jws-2020/v1",
+              "https://w3id.org/security/suites/jws-2020/v1"
             ],
             type: ["VerifiableCredential"],
             id: new URL(request.url).searchParams.get("vcid") || "",
@@ -75,10 +75,10 @@ describe("Credentials Service", () => {
               proofPurpose: "assertionMethod",
               verificationMethod:
                 "did:web:registration.lab.gaia-x.eu:development#X509-JWK2020",
-              jws: "",
-            },
+              jws: ""
+            }
           });
-        },
+        }
       ),
       http.post<PathParams, VerifiablePresentation, VerifiableCredential>(
         "https://compliance.gaia-x.eu/development/api/credential-offers",
@@ -89,7 +89,7 @@ describe("Credentials Service", () => {
           return HttpResponse.json<VerifiableCredential<JsonWebSignature2020>>({
             "@context": [
               "https://www.w3.org/2018/credentials/v1",
-              "https://w3id.org/security/suites/jws-2020/v1",
+              "https://w3id.org/security/suites/jws-2020/v1"
             ],
             type: ["VerifiableCredential"],
             id: new URL(request.url).searchParams.get("vcid") || "",
@@ -105,7 +105,7 @@ describe("Credentials Service", () => {
                 "gx:type":
                   toArray(credential.credentialSubject)[0]["type"] ||
                   credential.type[0] ||
-                  "unknown",
+                  "unknown"
               };
             }),
             proof: {
@@ -114,11 +114,11 @@ describe("Credentials Service", () => {
               proofPurpose: "assertionMethod",
               verificationMethod:
                 "did:web:compliance.lab.gaia-x.eu:development#X509-JWK2020",
-              jws: "",
-            },
+              jws: ""
+            }
           });
-        },
-      ),
+        }
+      )
     );
 
     server.listen({ onUnhandledRequest: "bypass" });
@@ -130,15 +130,15 @@ describe("Credentials Service", () => {
           DIDDocuments,
           DIDService,
           KeyMaterials,
-          DIDLogs,
+          DIDLogs
         ]),
         TypeOrmModule.forFeature([
           Credentials,
           DIDDocuments,
           DIDService,
           KeyMaterials,
-          DIDLogs,
-        ]),
+          DIDLogs
+        ])
       ],
       providers: [
         CredentialsService,
@@ -149,9 +149,9 @@ describe("Credentials Service", () => {
         KeysService,
         {
           provide: RootConfig,
-          useValue: config,
-        },
-      ],
+          useValue: config
+        }
+      ]
     }).compile();
 
     gaiaXService = moduleRef.get(GaiaXService);
@@ -174,39 +174,39 @@ describe("Credentials Service", () => {
             clearingHouse: "registrationnumber.notary.gaia-x.eu/v1",
             credentialSubject: {
               "@context": [
-                "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/participant",
+                "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/participant"
               ],
               type: "gx:legalRegistrationNumber",
               id: didId,
-              "gx:vatID": "NL000099998B57",
-            },
+              "gx:vatID": "NL000099998B57"
+            }
           }),
-          undefined,
+          undefined
         );
       expect(credential).toBeDefined();
       expect(credential.id).toBe(`${didId}#LRN`);
       expect(credential.credential.issuer).toBe(
-        "did:web:registration.lab.gaia-x.eu:development",
+        "did:web:registration.lab.gaia-x.eu:development"
       );
 
       await expect(
         gaiaXService.requestLegalRegistrationNumberCredential(
           {
-            vcId: "LRN",
+            vcId: "LRN"
           } as LegalRegistrationNumberRequest,
-          "did:web:localhost",
-        ),
+          "did:web:localhost"
+        )
       ).rejects.toThrow("Can't request credential with these identifiers");
       await expect(
         gaiaXService.requestLegalRegistrationNumberCredential(
           {
             vcId: "did:web:localhost#LRN",
             credentialSubject: {
-              id: "did:web:external.com",
-            },
+              id: "did:web:external.com"
+            }
           } as LegalRegistrationNumberRequest,
-          "did:web:localhost",
-        ),
+          "did:web:localhost"
+        )
       ).rejects.toThrow("Can't request credential with these identifiers");
       await expect(
         gaiaXService.requestLegalRegistrationNumberCredential(
@@ -215,17 +215,17 @@ describe("Credentials Service", () => {
             clearingHouse: "localhost:1",
             credentialSubject: {
               "@context": [
-                "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/participant",
+                "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/participant"
               ],
               type: "gx:legalRegistrationNumber",
               id: didId,
-              "gx:vatID": "NL000099998B57",
-            },
+              "gx:vatID": "NL000099998B57"
+            }
           },
-          undefined,
-        ),
+          undefined
+        )
       ).rejects.toThrow(
-        "Error in requesting legal registration number credential",
+        "Error in requesting legal registration number credential"
       );
     });
     it("Request Gaia Compliance", async () => {
@@ -234,34 +234,34 @@ describe("Credentials Service", () => {
           vcId: `${didId}#LRN`,
           clearingHouse: "compliance.gaia-x.eu/development",
           credentials: (await credentialsService.getCredentials()).map(
-            (c) => c.credential,
-          ),
+            (c) => c.credential
+          )
         }),
-        undefined,
+        undefined
       );
       expect(credential).toBeDefined();
       expect(credential.id).toBe(`${didId}#LRN`);
       expect(credential.credential.issuer).toBe(
-        "did:web:compliance.lab.gaia-x.eu:development",
+        "did:web:compliance.lab.gaia-x.eu:development"
       );
 
       await expect(
         gaiaXService.requestComplianceCredential(
           {
-            vcId: "Compliance",
+            vcId: "Compliance"
           } as ComplianceRequest,
-          "did:web:localhost",
-        ),
+          "did:web:localhost"
+        )
       ).rejects.toThrow("Can't request credential with these identifiers");
       await expect(
         gaiaXService.requestComplianceCredential(
           {
             vcId: `${didId}#LRN`,
             clearingHouse: "localhost:1",
-            credentials: [],
+            credentials: []
           } as ComplianceRequest,
-          "did:web:localhost",
-        ),
+          "did:web:localhost"
+        )
       ).rejects.toThrow("Error in requesting compliance credential");
     });
   });

@@ -8,5 +8,5 @@ export default defineConfig({
   bundle: false,
   sourcemap: true,
   clean: true,
-  tsconfig: "./tsconfig.build.json",
+  tsconfig: "./tsconfig.build.json"
 });

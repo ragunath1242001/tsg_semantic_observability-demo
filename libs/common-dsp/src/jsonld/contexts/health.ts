@@ -7,52 +7,52 @@ export default {
     "fdp-o": "http://www.sdsd.org/schema/fdp-o#",
     "ldp:contains": {
       "@container": "@set",
-      "@type": "@id",
+      "@type": "@id"
     },
     "fdp-o:metadataIdentifier": {
-      "@type": "@id",
+      "@type": "@id"
     },
     "fdp-o:metadataIssued": {
-      "@type": "xsd:dateTime",
+      "@type": "xsd:dateTime"
     },
     "fdp-o:metadataModified": {
-      "@type": "xsd:dateTime",
+      "@type": "xsd:dateTime"
     },
     "dcat:dataset": {
       "@container": "@set",
-      "@type": "@id",
+      "@type": "@id"
     },
     "dcat:service": {
       "@container": "@set",
-      "@type": "@id",
+      "@type": "@id"
     },
     "dcat:distribution": {
       "@container": "@set",
-      "@type": "@id",
+      "@type": "@id"
     },
     "dct:conformsTo": {
       "@container": "@set",
-      "@type": "@id",
+      "@type": "@id"
     },
     "healthdcatap:hasCodingSystem": {
       "@container": "@set",
-      "@type": "@id",
+      "@type": "@id"
     },
     "prov:startedAtTime": {
-      "@type": "xsd:dateTime",
+      "@type": "xsd:dateTime"
     },
     "prov:endedAtTime": {
-      "@type": "xsd:dateTime",
+      "@type": "xsd:dateTime"
     },
     "healthdcatap:numberOfRecords": {
-      "@type": "xsd:nonNegativeInteger",
+      "@type": "xsd:nonNegativeInteger"
     },
     "healthdcatap:numberOfUniqueIndividuals": {
-      "@type": "xsd:nonNegativeInteger",
+      "@type": "xsd:nonNegativeInteger"
     },
     "healthdcatap:healthTheme": {
       "@container": "@set",
-      "@type": "@id",
-    },
-  },
+      "@type": "@id"
+    }
+  }
 };

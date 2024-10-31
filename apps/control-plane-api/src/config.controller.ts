@@ -7,7 +7,7 @@ import {
   HttpCode,
   HttpStatus,
   UsePipes,
-  ValidationPipe,
+  ValidationPipe
 } from "@nestjs/common";
 import { RuntimeConfig } from "./config";
 import { OAuthGuard } from "./auth/oauth.guard";
@@ -17,12 +17,12 @@ import {
   ApiOkResponse,
   ApiOAuth2,
   ApiTags,
-  ApiBody,
+  ApiBody
 } from "@nestjs/swagger";
 import { RuntimeConfigDto } from "./config.schemas";
 import {
   ApiForbiddenResponseDefault,
-  ApiBadRequestResponseDefault,
+  ApiBadRequestResponseDefault
 } from "@tsg-dsp/common-dtos";
 
 @UseGuards(OAuthGuard)
@@ -36,7 +36,7 @@ export class ConfigController {
   @Get()
   @ApiOperation({
     summary: "Retrieve settings",
-    description: "Retrieves the settings of the control plane.",
+    description: "Retrieves the settings of the control plane."
   })
   @ApiOkResponse({ type: RuntimeConfigDto })
   @ApiForbiddenResponseDefault()
@@ -49,7 +49,7 @@ export class ConfigController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: "Update settings",
-    description: "Updates runtime settings for the control plane.",
+    description: "Updates runtime settings for the control plane."
   })
   @ApiBody({ type: RuntimeConfigDto })
   @ApiOkResponse({ type: RuntimeConfigDto })

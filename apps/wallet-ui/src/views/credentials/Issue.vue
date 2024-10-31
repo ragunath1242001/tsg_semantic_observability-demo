@@ -1,8 +1,5 @@
 <script setup lang="ts">
-import {
-  CredentialConfig,
-  JsonLdContextConfig,
-} from "@tsg-dsp/wallet-dtos";
+import { CredentialConfig, JsonLdContextConfig } from "@tsg-dsp/wallet-dtos";
 import { useToast } from "primevue/usetoast";
 import { computed, onMounted, ref } from "vue";
 import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
@@ -36,7 +33,7 @@ const formDefault: CredentialForm = {
   keyId: undefined,
   credentialSubject: JSON.stringify(
     {
-      id: userStore.user?.didId || "",
+      id: userStore.user?.didId || ""
     },
     null,
     2
@@ -44,7 +41,7 @@ const formDefault: CredentialForm = {
   credentialSubjectObject: {},
   manualCredential: false,
   credentialValidation: undefined,
-  schema: undefined,
+  schema: undefined
 };
 
 const config = ref<CredentialConfig>();
@@ -80,11 +77,13 @@ const loadConfig = async () => {
     );
     config.value = response.data;
   } catch (error) {
-    toast.add(toastError({
-      error,
-      summary: "Could not load credential config",
-      defaultMessage: `Error in fetching credential config`
-    }));
+    toast.add(
+      toastError({
+        error,
+        summary: "Could not load credential config",
+        defaultMessage: `Error in fetching credential config`
+      })
+    );
   }
 };
 
@@ -97,7 +96,7 @@ const issueCredential = async () => {
     type: credentialForm.value.type,
     targetDid: credentialForm.value.targetDid,
     id: encodeURIComponent(credentialForm.value.id),
-    credentialSubject: credentialSubject,
+    credentialSubject: credentialSubject
   };
 
   try {
@@ -106,21 +105,23 @@ const issueCredential = async () => {
       severity: "success",
       summary: "Credential issued",
       detail: `Credential ${credentialForm.value.id} successfully issued`,
-      life: 10000,
+      life: 10000
     });
     credentialForm.value = formDefault;
   } catch (error) {
-    toast.add(toastError({
-      error,
-      summary: "Could not issue credential",
-      defaultMessage: `Error in issuing new credential`
-    }));
+    toast.add(
+      toastError({
+        error,
+        summary: "Could not issue credential",
+        defaultMessage: `Error in issuing new credential`
+      })
+    );
   }
 };
 
 const useContext = (context: JsonLdContextConfig) => {
   credentialForm.value.context = [
-    ...new Set([...credentialForm.value.context, context.documentUrl || ""]),
+    ...new Set([...credentialForm.value.context, context.documentUrl || ""])
   ];
   credentialForm.value.schema = context.schema;
   if (
@@ -128,7 +129,7 @@ const useContext = (context: JsonLdContextConfig) => {
     !context.schema?.properties?.["@type"]
   ) {
     credentialForm.value.type = [
-      ...new Set([...credentialForm.value.type, context.credentialType]),
+      ...new Set([...credentialForm.value.type, context.credentialType])
     ];
   }
 };
@@ -199,7 +200,7 @@ const validateCredentialSubject = (showToast: boolean) => {
         severity: "warn",
         summary: "Credential validation failed",
         detail: err.message,
-        life: 10000,
+        life: 10000
       });
     } else {
       credentialForm.value.credentialValidation = err.message;
@@ -249,8 +250,7 @@ onMounted(async () => {
               class="w-full"
               v-model="credentialForm.context"
               :options="issuableContexts"
-              placeholder="(Optionally) Add JSON-LD contexts"
-            />
+              placeholder="(Optionally) Add JSON-LD contexts" />
           </FormField>
           <FormField label="Type" v-slot="props">
             <MultiSelect
@@ -258,8 +258,7 @@ onMounted(async () => {
               class="w-full"
               v-model="credentialForm.type"
               :options="issuableCredentialTypes"
-              placeholder="Add a Credential type (only if not explicit in credential subject)"
-            />
+              placeholder="Add a Credential type (only if not explicit in credential subject)" />
           </FormField>
           <FormField label="Target DID" v-slot="props">
             <InputText
@@ -269,8 +268,7 @@ onMounted(async () => {
               placeholder="did:..."
               pattern="did:(web|tdw):.*"
               validation-message="Target DID must be a DID web"
-              required
-            />
+              required />
           </FormField>
           <FormField label="ID" v-slot="props">
             <InputText
@@ -278,8 +276,7 @@ onMounted(async () => {
               class="w-full"
               v-model="credentialForm.id"
               placeholder="ID"
-              required
-            />
+              required />
           </FormField>
           <FormField label="Composite ID" v-slot="props">
             <InputText
@@ -288,30 +285,25 @@ onMounted(async () => {
               :value="`${credentialForm.targetDid}#${encodeURIComponent(
                 credentialForm.id
               )}`"
-              disabled
-            />
+              disabled />
           </FormField>
           <FormField
             label="Credential"
             v-slot="props"
-            v-if="!credentialForm.schema || credentialForm.manualCredential"
-          >
+            v-if="!credentialForm.schema || credentialForm.manualCredential">
             <MonacoEditorVue
               v-model="credentialForm.credentialSubject"
-              :schema="credentialForm.schema"
-            ></MonacoEditorVue>
+              :schema="credentialForm.schema"></MonacoEditorVue>
             <Button
               severity="success"
               v-if="credentialForm.schema"
               label="Credential form"
-              @click="credentialForm.manualCredential = false"
-            />
+              @click="credentialForm.manualCredential = false" />
           </FormField>
           <FormField
             label="Credential Form"
             :label-width="12"
-            v-if="credentialForm.schema && !credentialForm.manualCredential"
-          >
+            v-if="credentialForm.schema && !credentialForm.manualCredential">
             <JsonSchemaFormElement
               v-for="(child, key) in parsedProperties"
               :schema="child"
@@ -324,15 +316,13 @@ onMounted(async () => {
                   credentialForm.credentialSubjectObject[key] = $event;
                   updateCredentialSubject();
                 }
-              "
-            ></JsonSchemaFormElement>
+              "></JsonSchemaFormElement>
             <FormField no-label>
               <Button
                 severity="warn"
                 v-if="credentialForm.schema"
                 label="Manual credential"
-                @click="credentialForm.manualCredential = true"
-              />
+                @click="credentialForm.manualCredential = true" />
             </FormField>
           </FormField>
           <FormField no-label class="mt-8">
@@ -357,8 +347,7 @@ onMounted(async () => {
             <template #body="props">
               <i
                 v-if="props.data.issuable"
-                class="pi pi-check-circle text-green-500"
-              />
+                class="pi pi-check-circle text-green-500" />
               <i v-else class="pi pi-times-circle text-red-500" />
             </template>
           </Column>
@@ -366,8 +355,7 @@ onMounted(async () => {
             <template #body="props">
               <i
                 v-if="props.data.schema"
-                class="pi pi-check-circle text-green-500"
-              />
+                class="pi pi-check-circle text-green-500" />
               <i v-else class="pi pi-times-circle text-red-500" />
             </template>
           </Column>
@@ -377,8 +365,7 @@ onMounted(async () => {
                 severity="success"
                 label="Use"
                 :disabled="props.data.default"
-                @click="useContext(props.data)"
-              />
+                @click="useContext(props.data)" />
             </template>
           </Column>
         </DataTable>

@@ -3,7 +3,7 @@ import { JWK } from "jose";
 import {
   base64urlToHex,
   hexToBase58btc,
-  hexToBase64url,
+  hexToBase64url
 } from "./typeconverter.js";
 import { encode } from "varint";
 import elliptic from "elliptic";
@@ -24,7 +24,7 @@ export const multicodecPublic: { [key: string]: string } = {
   "eddsa-rdfc-2022": "ed",
   "ecdsa-jcs-2019": "1201",
   "ecdsa-rdfc-2019": "1201",
-  "RSASSA-PSS": "1205",
+  "RSASSA-PSS": "1205"
 };
 export const multicodecPrivate: { [key: string]: string } = {
   Ed25519: "1300",
@@ -32,7 +32,7 @@ export const multicodecPrivate: { [key: string]: string } = {
   RSA: "1305",
   EdDSA: "1300",
   ES384: "1307",
-  X509: "1305",
+  X509: "1305"
 };
 
 export function varintPrefix(multicodecPrefix: string): string {
@@ -47,24 +47,24 @@ function isBase64urlEven(s: string): boolean {
 
 export function jwkOKPToMultibase(
   jwk: JWK,
-  isPrivate: boolean = false,
+  isPrivate: boolean = false
 ): string {
   if (jwk.crv !== "Ed25519") {
     throw new Error(
-      `The JWK curve algorithm (crv) ${jwk.crv} is not supported for OKP key type (kty)`,
+      `The JWK curve algorithm (crv) ${jwk.crv} is not supported for OKP key type (kty)`
     );
   }
   return hexToBase58btc(
     (isPrivate
       ? varintPrefix(multicodecPrivate[jwk.crv]) + base64urlToHex(jwk.d!)
-      : varintPrefix(multicodecPublic[jwk.crv])) + base64urlToHex(jwk.x!),
+      : varintPrefix(multicodecPublic[jwk.crv])) + base64urlToHex(jwk.x!)
   );
 }
 
 export function jwkECToMultibase(jwk: JWK, isPrivate: boolean = false): string {
   if (jwk.crv !== "P-384") {
     throw new Error(
-      `The JWK curve algorithm (crv) ${jwk.crv} is not supported for EC key type (kty)`,
+      `The JWK curve algorithm (crv) ${jwk.crv} is not supported for EC key type (kty)`
     );
   }
   return hexToBase58btc(
@@ -72,13 +72,13 @@ export function jwkECToMultibase(jwk: JWK, isPrivate: boolean = false): string {
       ? varintPrefix(multicodecPrivate[jwk.crv]) + base64urlToHex(jwk.d!)
       : varintPrefix(multicodecPublic[jwk.crv])) +
       (isBase64urlEven(jwk.y!) ? "02" : "03") +
-      base64urlToHex(jwk.x!),
+      base64urlToHex(jwk.x!)
   );
 }
 
 export function jwkRSAToMultibase(
   jwk: JWK,
-  isPrivate: boolean = false,
+  isPrivate: boolean = false
 ): string {
   return hexToBase58btc(
     (isPrivate
@@ -93,7 +93,7 @@ export function jwkRSAToMultibase(
           base64urlToHex(jwk.dp!) +
           base64urlToHex(jwk.dq!) +
           base64urlToHex(jwk.qi!)
-        : ""),
+        : "")
   );
 }
 
@@ -112,7 +112,7 @@ export function jwkToMultibase(jwk: JWK, isPrivate: boolean = false): string {
 
 export function encodedPublicKeyMultiBaseToJWK(
   alg: string,
-  encodedPublicKey: string,
+  encodedPublicKey: string
 ): JWK {
   const publicKey = Buffer.from(base58btc.decode(encodedPublicKey))
     .toString("hex")
@@ -129,7 +129,7 @@ export function publicKeyMultiBaseToJWK(alg: string, publicKey: string): JWK {
         kty: "OKP",
         alg: "EdDSA",
         x: hexToBase64url(publicKey.toString()),
-        crv: "Ed25519",
+        crv: "Ed25519"
       };
       break;
     case "ecdsa-jcs-2019":
@@ -144,9 +144,9 @@ export function publicKeyMultiBaseToJWK(alg: string, publicKey: string): JWK {
           new elliptic.ec("p384").curve
             .pointFromX(xHex, isOdd)
             .getY()
-            .toString("hex"),
+            .toString("hex")
         ),
-        crv: "P-384",
+        crv: "P-384"
       };
       break;
     case "RSASSA-PSS":
@@ -154,7 +154,7 @@ export function publicKeyMultiBaseToJWK(alg: string, publicKey: string): JWK {
         kty: "RSA",
         alg: "PS256",
         n: hexToBase64url(publicKey.slice(0, -6).toString()),
-        e: hexToBase64url(publicKey.slice(-6).toString()),
+        e: hexToBase64url(publicKey.slice(-6).toString())
       };
       break;
     default:
@@ -165,7 +165,7 @@ export function publicKeyMultiBaseToJWK(alg: string, publicKey: string): JWK {
 
 export function encodedPrivateKeyMultiBaseToJWK(
   type: string,
-  encodedPrivateKey: string,
+  encodedPrivateKey: string
 ): JWK {
   const privateKey = Buffer.from(base58btc.decode(encodedPrivateKey))
     .toString("hex")
@@ -175,7 +175,7 @@ export function encodedPrivateKeyMultiBaseToJWK(
 
 export function privateKeyMultiBaseToJWK(
   type: string,
-  privateKey: string,
+  privateKey: string
 ): JWK {
   let jwk: JWK;
   switch (type) {
@@ -185,7 +185,7 @@ export function privateKeyMultiBaseToJWK(
         alg: "EdDSA",
         x: hexToBase64url(privateKey.slice(64, privateKey.length).toString()),
         crv: "Ed25519",
-        d: hexToBase64url(privateKey.slice(0, 64).toString()),
+        d: hexToBase64url(privateKey.slice(0, 64).toString())
       };
       break;
     case "ES384":
@@ -199,10 +199,10 @@ export function privateKeyMultiBaseToJWK(
           new elliptic.ec("p384").curve
             .pointFromX(xHex, isOdd)
             .getY()
-            .toString("hex"),
+            .toString("hex")
         ),
         crv: "P-384",
-        d: hexToBase64url(privateKey.slice(0, 96).toString()),
+        d: hexToBase64url(privateKey.slice(0, 96).toString())
       };
       break;
     case "X509":
@@ -216,7 +216,7 @@ export function privateKeyMultiBaseToJWK(
         q: hexToBase64url(privateKey.slice(1286, 1542).toString()),
         dp: hexToBase64url(privateKey.slice(1542, 1798).toString()),
         dq: hexToBase64url(privateKey.slice(1798, 2054).toString()),
-        qi: hexToBase64url(privateKey.slice(2054, 2310).toString()),
+        qi: hexToBase64url(privateKey.slice(2054, 2310).toString())
       };
       break;
     default:

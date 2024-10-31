@@ -2,7 +2,7 @@ import {
   Injectable,
   CanActivate,
   ExecutionContext,
-  createParamDecorator,
+  createParamDecorator
 } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 import { Observable } from "rxjs";
@@ -32,8 +32,8 @@ export const Client = createParamDecorator(
           AppRole.MANAGE_OWN_CREDENTIALS,
           AppRole.MANAGE_ALL_CREDENTIALS,
           AppRole.ISSUE_CREDENTIALS,
-          AppRole.VIEW_PRESENTATIONS,
-        ],
+          AppRole.VIEW_PRESENTATIONS
+        ]
       };
     }
     const request = context.switchToHttp().getRequest();
@@ -45,7 +45,7 @@ export const Client = createParamDecorator(
       didId: request.user.properties?.didId || "",
       roles: jsonpath
         .query(request.user, config.auth.rolePath)
-        .filter((r) => Object.values(AppRole).includes(r)),
+        .filter((r) => Object.values(AppRole).includes(r))
     };
   }
 );

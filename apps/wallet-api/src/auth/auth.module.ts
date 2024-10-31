@@ -19,13 +19,13 @@ import { AuthClientService } from "./auth.client.service.js";
     SessionSerializer,
     {
       provide: APP_GUARD,
-      useClass: OAuthGuard,
+      useClass: OAuthGuard
     },
     {
       provide: APP_GUARD,
-      useClass: RolesGuard,
-    },
+      useClass: RolesGuard
+    }
   ],
-  exports: [AuthClientService],
+  exports: [AuthClientService]
 })
 export class AuthModule {}

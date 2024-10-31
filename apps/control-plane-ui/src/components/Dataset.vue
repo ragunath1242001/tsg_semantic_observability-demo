@@ -4,7 +4,7 @@ import {
   DatasetDto,
   OfferDto,
   PolicyDto,
-  ReferenceDto,
+  ReferenceDto
 } from "@tsg-dsp/common-dsp";
 import { useToast } from "primevue/usetoast";
 import { injectStrict } from "../utils/injectTyped";
@@ -88,9 +88,9 @@ const parsePolicies = (policies: Array<PolicyDto>): Array<FlatPolicy> => {
               return {
                 leftOperand: constraint["odrl:leftOperand"],
                 rightOperand: constraint["odrl:rightOperand"],
-                operator: constraint["odrl:operator"],
+                operator: constraint["odrl:operator"]
               };
-            }),
+            })
           } as FlatPolicy;
         })
       );
@@ -109,9 +109,9 @@ const parsePolicies = (policies: Array<PolicyDto>): Array<FlatPolicy> => {
               return {
                 leftOperand: constraint["odrl:leftOperand"],
                 rightOperand: constraint["odrl:rightOperand"],
-                operator: constraint["odrl:operator"],
+                operator: constraint["odrl:operator"]
               };
-            }),
+            })
           } as FlatPolicy;
         })
       );
@@ -135,15 +135,15 @@ const sendNegotiation = async (
         params: {
           dataSet: datasetId,
           address: address,
-          audience: audience,
-        },
+          audience: audience
+        }
       }
     );
     toast.add({
       severity: "success",
       summary: "Great!",
       detail: "Successfully sent contract negotiation request",
-      life: 3000,
+      life: 3000
     });
   } catch (error) {
     console.error(
@@ -153,7 +153,7 @@ const sendNegotiation = async (
       toastError({
         error,
         summary: "Failed to send negotiation request",
-        defaultMessage: `Could not send negotiation to address=${address}&audience=${audience} with id ${datasetId}`,
+        defaultMessage: `Could not send negotiation to address=${address}&audience=${audience} with id ${datasetId}`
       })
     );
   }
@@ -169,8 +169,7 @@ const sendNegotiation = async (
           <Button icon="pi pi-chevron-left" rounded @click="goBack()"></Button>
           <h2
             class="mx-4 bg-surface-0 dark:bg-surface-900 whitespace-nowrap overflow-hidden text-ellipsis"
-            v-tooltip.top="datasetData['dct:title']"
-          >
+            v-tooltip.top="datasetData['dct:title']">
             {{ datasetData["dct:title"] }}
           </h2>
         </div></template
@@ -180,8 +179,7 @@ const sendNegotiation = async (
       </template>
       <template #content>
         <div
-          class="grid grid-cols-12 gap-4 grid-nogutter border-t border-surface"
-        >
+          class="grid grid-cols-12 gap-4 grid-nogutter border-t border-surface">
           <DisplayField label="Versions" v-if="'dcat:hasVersion' in datasetData"
             ><div v-for="version in datasetData['dcat:hasVersion']">
               {{ version }}
@@ -192,8 +190,7 @@ const sendNegotiation = async (
             v-if="
               'dcat:hasCurrentVersion' in datasetData &&
               datasetData['dcat:hasCurrentVersion']
-            "
-          >
+            ">
             {{ datasetData["dcat:hasCurrentVersion"] }}
           </DisplayField>
           <DisplayField label="Endpoint URL">
@@ -202,8 +199,7 @@ const sendNegotiation = async (
                 datasetData['dcat:distribution'][0]['dcat:accessService'][0][
                   'dcat:endpointURL'
                 ]
-              "
-            >
+              ">
               {{
                 datasetData["dcat:distribution"][0]["dct:title"]
                   ? datasetData["dcat:distribution"][0]["dct:title"]
@@ -218,15 +214,13 @@ const sendNegotiation = async (
           </DisplayField>
           <DisplayField
             label="Conforms to"
-            v-if="'dct:conformsTo' in datasetData['dcat:distribution'][0]"
-          >
+            v-if="'dct:conformsTo' in datasetData['dcat:distribution'][0]">
             <a
               v-for="conformsTo in datasetData['dcat:distribution'][0][
                 'dct:conformsTo'
               ]"
               :href="conformsTo"
-              class="mr-2 break-all"
-            >
+              class="mr-2 break-all">
               {{ conformsTo }}</a
             >
           </DisplayField>
@@ -235,8 +229,7 @@ const sendNegotiation = async (
               class="mr-2 text-surface-900 dark:text-surface-0 bg-primary-700"
               v-for="keyword in obtainValues(datasetData['dcat:keyword'])"
               :key="keyword"
-              :value="keyword"
-            ></Tag
+              :value="keyword"></Tag
           ></DisplayField>
         </div>
         <Divider />
@@ -244,20 +237,16 @@ const sendNegotiation = async (
           v-if="
             datasetData?.['odrl:hasPolicy'] &&
             datasetData?.['odrl:hasPolicy'].length > 0
-          "
-        >
+          ">
           <div
-            class="pb-8 font-medium text-2xl text-surface-900 dark:text-surface-0"
-          >
+            class="pb-8 font-medium text-2xl text-surface-900 dark:text-surface-0">
             Policies
           </div>
 
           <template
-            v-for="policy in parsePolicies(datasetData['odrl:hasPolicy'])"
-          >
+            v-for="policy in parsePolicies(datasetData['odrl:hasPolicy'])">
             <div
-              class="px-2 font-medium text-lg text-surface-700 dark:text-surface-100"
-            >
+              class="px-2 font-medium text-lg text-surface-700 dark:text-surface-100">
               {{ stripOdrl(policy.type) }}
             </div>
             <div class="grid grid-cols-12 gap-4 grid-nogutter">
@@ -276,14 +265,12 @@ const sendNegotiation = async (
             </div>
             <div
               class="p-4 font-medium text-lg text-surface-700 dark:text-surface-100"
-              v-if="policy.constraints"
-            >
+              v-if="policy.constraints">
               Constraints
             </div>
             <div
               class="grid grid-cols-12 gap-4 grid-nogutter"
-              v-for="constraint in policy.constraints"
-            >
+              v-for="constraint in policy.constraints">
               <DisplayField label="Left Operand">
                 {{ constraint.leftOperand }}
               </DisplayField>
@@ -304,31 +291,27 @@ const sendNegotiation = async (
                 label="Negotiate Contract"
                 class="text-center p-4"
                 style="width: 100%"
-                @click="open"
-              />
+                @click="open" />
             </div>
             <Dialog
               header="Are you sure you want to send the following negotiation message?"
               v-model:visible="display"
               :breakpoints="{ '960px': '78vw' }"
-              :modal="true"
-            >
+              :modal="true">
               <div class="grid grid-cols-12 gap-4">
                 <div class="col-span-12 md:col-span-11">
                   <MonacoEditor
                     :schema="schema"
                     v-model="policy"
                     :read-only="!editable"
-                    :maxLines="25"
-                  />
+                    :maxLines="25" />
                 </div>
                 <div class="col-span-12 md:col-span-1">
                   <Button
                     icon="pi pi-pencil"
                     size="small"
                     class="p-button-rounded mt-1 mb-2"
-                    @click="changeEditable(editable)"
-                  />
+                    @click="changeEditable(editable)" />
                 </div>
               </div>
               <template #footer>
@@ -343,8 +326,7 @@ const sendNegotiation = async (
                       props.address,
                       props.didId
                     )
-                  "
-                />
+                  " />
               </template>
             </Dialog>
           </div>

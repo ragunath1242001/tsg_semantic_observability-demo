@@ -15,7 +15,7 @@ export class KeysController {
   @ApiOperation({
     summary: "Retrieve Key CA chain",
     description:
-      "Retrieves the CA chain for a given key. Only supported for keys with type `X509`",
+      "Retrieves the CA chain for a given key. Only supported for keys with type `X509`"
   })
   @Header("content-type", "application/x-x509-ca-cert")
   @ApiOkResponse()

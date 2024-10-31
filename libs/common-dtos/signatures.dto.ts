@@ -2,7 +2,7 @@ import {
   DataIntegrityProof,
   JsonWebSignature2020,
   OrArray,
-  Proof,
+  Proof
 } from "@tsg-dsp/common-dsp";
 import { Type } from "class-transformer";
 import {
@@ -12,7 +12,7 @@ import {
   IsObject,
   IsOptional,
   IsString,
-  ValidateNested,
+  ValidateNested
 } from "class-validator";
 
 export class ProofDocument {
@@ -24,10 +24,10 @@ export class ProofDocument {
       property: "type",
       subTypes: [
         { value: JsonWebSignature2020, name: "JsonWebSignature2020" },
-        { value: DataIntegrityProof, name: "DataIntegrityProof" },
-      ],
+        { value: DataIntegrityProof, name: "DataIntegrityProof" }
+      ]
     },
-    keepDiscriminatorProperty: true,
+    keepDiscriminatorProperty: true
   })
   proof!: OrArray<Proof>;
   [key: string]: any;

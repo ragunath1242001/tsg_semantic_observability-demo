@@ -4,7 +4,7 @@ import {
   HttpCode,
   Param,
   Post,
-  UseGuards,
+  UseGuards
 } from "@nestjs/common/decorators";
 import {
   CredentialSubject,
@@ -16,11 +16,11 @@ import {
   TransferSuspensionMessage,
   TransferTerminationMessage,
   VerifiableCredential,
-  VerifiablePresentation,
+  VerifiablePresentation
 } from "@tsg-dsp/common-dsp";
 import {
   TransferVerifiablePresentationGuard,
-  VerifiablePresentationGuard,
+  VerifiablePresentationGuard
 } from "../../auth/verifiablePresentation.guard";
 import { VP, VPId } from "../../auth/verifiablePresentation.strategy";
 import { DeserializePipe } from "../../utils/deserialize.pipe";
@@ -32,7 +32,7 @@ import {
   ApiBody,
   ApiParam,
   ApiBearerAuth,
-  ApiCreatedResponse,
+  ApiCreatedResponse
 } from "@nestjs/swagger";
 import {
   TransferRequestMessageSchema,
@@ -40,7 +40,7 @@ import {
   TransferCompletionMessageSchema,
   TransferStartMessageSchema,
   TransferSuspensionMessageSchema,
-  TransferTerminationMessageSchema,
+  TransferTerminationMessageSchema
 } from "@tsg-dsp/common-dtos";
 
 @ApiTags("Transfers")
@@ -60,15 +60,15 @@ export class TransferController {
     @Body(new DeserializePipe(TransferRequestMessage))
     body: TransferRequestMessage,
     @VPId() vpId: string,
-    @VP() vp: VerifiablePresentation,
+    @VP() vp: VerifiablePresentation
   ): Promise<TransferProcessDto> {
     this.logger.log(
-      `Received transfer request from ${vpId}: ${JSON.stringify(body)}`,
+      `Received transfer request from ${vpId}: ${JSON.stringify(body)}`
     );
     const result = await this.transferService.handleRequest(
       body,
       vpId,
-      toArray(vp.verifiableCredential),
+      toArray(vp.verifiableCredential)
     );
     return await result.serialize();
   }
@@ -81,7 +81,7 @@ export class TransferController {
   @ApiResponse({ type: TransferProcessSchema })
   async getTransfer(
     @Param("id") id: string,
-    @VPId() vpId: string,
+    @VPId() vpId: string
   ): Promise<TransferProcessDto> {
     this.logger.log(`Received transfer status request from ${vpId} for ${id}`);
     const transferProcess = await this.transferService.getTransfer(id, vpId);
@@ -97,15 +97,15 @@ export class TransferController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: "Transfer started successfully",
-    schema: { example: { status: "success" } },
+    schema: { example: { status: "success" } }
   })
   async startTransferProcess(
     @Param("id") id: string,
     @Body(new DeserializePipe(TransferStartMessage)) body: TransferStartMessage,
-    @VPId() vpId: string,
+    @VPId() vpId: string
   ): Promise<{ status: string }> {
     this.logger.log(
-      `Received transfer start from ${vpId} for ${id}: ${JSON.stringify(body)}`,
+      `Received transfer start from ${vpId} for ${id}: ${JSON.stringify(body)}`
     );
     return await this.transferService.handleStart(id, body, vpId);
   }
@@ -119,18 +119,18 @@ export class TransferController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: "Transfer completed successfully",
-    schema: { example: { status: "success" } },
+    schema: { example: { status: "success" } }
   })
   async completeTransferProcess(
     @Param("id") id: string,
     @Body(new DeserializePipe(TransferCompletionMessage))
     body: TransferCompletionMessage,
-    @VPId() vpId: string,
+    @VPId() vpId: string
   ): Promise<{ status: string }> {
     this.logger.log(
       `Received transfer complete from ${vpId} for ${id}: ${JSON.stringify(
-        body,
-      )}`,
+        body
+      )}`
     );
     return await this.transferService.handleComplete(id, body, vpId);
   }
@@ -144,18 +144,18 @@ export class TransferController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: "Transfer terminated successfully",
-    schema: { example: { status: "success" } },
+    schema: { example: { status: "success" } }
   })
   async terminateTransferProcess(
     @Param("id") id: string,
     @Body(new DeserializePipe(TransferTerminationMessage))
     body: TransferTerminationMessage,
-    @VPId() vpId: string,
+    @VPId() vpId: string
   ): Promise<{ status: string }> {
     this.logger.log(
       `Received transfer terminate from ${vpId} for ${id}: ${JSON.stringify(
-        body,
-      )}`,
+        body
+      )}`
     );
     return await this.transferService.handleTerminate(id, body, vpId);
   }
@@ -169,18 +169,18 @@ export class TransferController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: "Transfer suspended successfully",
-    schema: { example: { status: "success" } },
+    schema: { example: { status: "success" } }
   })
   async suspendTransferProcess(
     @Param("id") id: string,
     @Body(new DeserializePipe(TransferSuspensionMessage))
     body: TransferSuspensionMessage,
-    @VPId() vpId: string,
+    @VPId() vpId: string
   ): Promise<{ status: string }> {
     this.logger.log(
       `Received transfer suspend from ${vpId} for ${id}: ${JSON.stringify(
-        body,
-      )}`,
+        body
+      )}`
     );
     return await this.transferService.handleSuspend(id, body, vpId);
   }
@@ -194,17 +194,17 @@ export class TransferController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: "Callback started transfer successfully",
-    schema: { example: { status: "success" } },
+    schema: { example: { status: "success" } }
   })
   async callbackStartTransferProcess(
     @Param("id") id: string,
     @Body(new DeserializePipe(TransferStartMessage)) body: TransferStartMessage,
-    @VPId() vpId: string,
+    @VPId() vpId: string
   ): Promise<{ status: string }> {
     this.logger.log(
       `Received transfer callback start from ${vpId} for ${id}: ${JSON.stringify(
-        body,
-      )}`,
+        body
+      )}`
     );
     return await this.transferService.handleStart(id, body, vpId);
   }
@@ -218,18 +218,18 @@ export class TransferController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: "Callback completed transfer successfully",
-    schema: { example: { status: "success" } },
+    schema: { example: { status: "success" } }
   })
   async callbackCompleteTransferProcess(
     @Param("id") id: string,
     @Body(new DeserializePipe(TransferCompletionMessage))
     body: TransferCompletionMessage,
-    @VPId() vpId: string,
+    @VPId() vpId: string
   ): Promise<{ status: string }> {
     this.logger.log(
       `Received transfer callback complete from ${vpId} for ${id}: ${JSON.stringify(
-        body,
-      )}`,
+        body
+      )}`
     );
     return await this.transferService.handleComplete(id, body, vpId);
   }
@@ -243,18 +243,18 @@ export class TransferController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: "Callback terminated transfer successfully",
-    schema: { example: { status: "success" } },
+    schema: { example: { status: "success" } }
   })
   async callbackTerminateTransferProcess(
     @Param("id") id: string,
     @Body(new DeserializePipe(TransferTerminationMessage))
     body: TransferTerminationMessage,
-    @VPId() vpId: string,
+    @VPId() vpId: string
   ): Promise<{ status: string }> {
     this.logger.log(
       `Received transfer callback terminate from ${vpId} for ${id}: ${JSON.stringify(
-        body,
-      )}`,
+        body
+      )}`
     );
     return await this.transferService.handleTerminate(id, body, vpId);
   }
@@ -268,18 +268,18 @@ export class TransferController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: "Callback suspended transfer successfully",
-    schema: { example: { status: "success" } },
+    schema: { example: { status: "success" } }
   })
   async callbackSuspendTransferProcess(
     @Param("id") id: string,
     @Body(new DeserializePipe(TransferSuspensionMessage))
     body: TransferSuspensionMessage,
-    @VPId() vpId: string,
+    @VPId() vpId: string
   ): Promise<{ status: string }> {
     this.logger.log(
       `Received transfer callback suspend from ${vpId} for ${id}: ${JSON.stringify(
-        body,
-      )}`,
+        body
+      )}`
     );
     return await this.transferService.handleSuspend(id, body, vpId);
   }

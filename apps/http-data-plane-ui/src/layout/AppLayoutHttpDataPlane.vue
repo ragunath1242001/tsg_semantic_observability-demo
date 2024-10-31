@@ -23,7 +23,7 @@ const containerClass = computed(() => {
       layoutState.staticMenuDesktopInactive &&
       layoutConfig.menuMode === "static",
     "layout-overlay-active": layoutState.overlayMenuActive,
-    "layout-mobile-active": layoutState.staticMenuMobileActive,
+    "layout-mobile-active": layoutState.staticMenuMobileActive
   };
 });
 const menuList: Menu[] = [
@@ -33,32 +33,32 @@ const menuList: Menu[] = [
       {
         label: "Dashboard",
         icon: "pi pi-fw pi-id-card",
-        to: "/",
+        to: "/"
       },
       {
         label: "Metadata",
         icon: "pi pi-fw pi-file",
-        to: "/metadata",
+        to: "/metadata"
       },
       {
         label: "Logging",
         icon: "pi pi-fw pi-list",
-        to: "/logging",
-      },
-    ],
-  },
+        to: "/logging"
+      }
+    ]
+  }
 ];
 
 const footer: FooterProps = {
   baseLogoUrl: baseLogoUrl,
-  footerText: "TNO",
+  footerText: "TNO"
 };
 
 const route = useRoute();
 
 const sidebar: MenuProps = {
   menu: menuList,
-  route: route,
+  route: route
 };
 
 onMounted(async () => {
@@ -67,13 +67,13 @@ onMounted(async () => {
 </script>
 <template>
   <div class="layout-wrapper" :class="containerClass">
-    <AppLayout 
+    <AppLayout
       :topbar="{
         title: 'Http Data Plane',
         name: catalogStore.title,
         baseLogoUrl: baseLogoUrl,
         user: userStore.user,
-        router: useRouter(),
+        router: useRouter()
       }"
       :footer="footer"
       :sidebar="sidebar" />

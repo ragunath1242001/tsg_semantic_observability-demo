@@ -22,21 +22,21 @@ const services = ref<DIDService[]>([]);
 const serviceForm = ref<DIDService>({
   id: `${userStore.user?.didId}#`,
   type: "",
-  serviceEndpoint: "",
+  serviceEndpoint: ""
 });
 
 const loadServices = async () => {
   try {
-    const response = await http<DIDService[]>(
-      "management/did/services"
-    );
+    const response = await http<DIDService[]>("management/did/services");
     services.value = response.data;
   } catch (error) {
-    toast.add(toastError({
-      error,
-      summary: "Could not load DID services",
-      defaultMessage: `Error in fetching registered DID services`
-    }));
+    toast.add(
+      toastError({
+        error,
+        summary: "Could not load DID services",
+        defaultMessage: `Error in fetching registered DID services`
+      })
+    );
   }
 };
 
@@ -60,16 +60,18 @@ const deleteService = async (serviceId: string) => {
           severity: "success",
           summary: "Success",
           detail: "Service deleted",
-          life: 3000,
+          life: 3000
         });
       } catch (error) {
-        toast.add(toastError({
-          error,
-          summary: "Could not delete service",
-          defaultMessage: `Error in deleting DID service`
-        }));
+        toast.add(
+          toastError({
+            error,
+            summary: "Could not delete service",
+            defaultMessage: `Error in deleting DID service`
+          })
+        );
       }
-    },
+    }
   });
 };
 
@@ -81,19 +83,21 @@ const addService = async () => {
       severity: "success",
       summary: "Success",
       detail: "Service added",
-      life: 3000,
+      life: 3000
     });
     serviceForm.value = {
       id: `${userStore.user?.didId}#`,
       type: "",
-      serviceEndpoint: "",
+      serviceEndpoint: ""
     };
   } catch (error) {
-    toast.add(toastError({
-      error,
-      summary: "Could not add service",
-      defaultMessage: `Error in registering DID service`
-    }));
+    toast.add(
+      toastError({
+        error,
+        summary: "Could not add service",
+        defaultMessage: `Error in registering DID service`
+      })
+    );
   }
 };
 
@@ -125,18 +129,19 @@ onMounted(async () => {
           sort-field="id"
           :sort-order="1"
           paginator
-          :rows="10"
-        >
+          :rows="10">
           <Column field="id" class="break-all" header="ID" />
           <Column field="type" header="Type" />
-          <Column field="serviceEndpoint" class="break-all" header="Service Endpoint" />
+          <Column
+            field="serviceEndpoint"
+            class="break-all"
+            header="Service Endpoint" />
           <Column field="actions" header="Actions">
             <template #body="props">
               <Button
                 severity="danger"
                 icon="pi pi-times"
-                @click="deleteService(props.data.id)"
-              />
+                @click="deleteService(props.data.id)" />
             </template>
           </Column>
         </DataTable>
@@ -163,23 +168,20 @@ onMounted(async () => {
               :id="props.id"
               class="w-full"
               v-model="serviceForm.id"
-              :placeholder="`${userStore.user?.didId}#`"
-            />
+              :placeholder="`${userStore.user?.didId}#`" />
           </FormField>
           <FormField label="Service Type" v-slot="props">
             <InputText
               :id="props.id"
               class="w-full"
-              v-model="serviceForm.type"
-            />
+              v-model="serviceForm.type" />
           </FormField>
           <FormField label="Service Endpoint" v-slot="props">
             <InputText
               :id="props.id"
               class="w-full"
               v-model="serviceForm.serviceEndpoint"
-              placeholder="https://..."
-            />
+              placeholder="https://..." />
           </FormField>
           <FormField no-label>
             <Button label="Add service" type="submit" />

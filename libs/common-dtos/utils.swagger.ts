@@ -3,7 +3,7 @@ import {
   ApiProperty,
   ApiPropertyOptional,
   ApiResponse,
-  ApiResponseOptions,
+  ApiResponseOptions
 } from "@nestjs/swagger";
 
 export class ErrorDto {
@@ -24,7 +24,7 @@ export const ApiNotFoundResponseDefault = (options: ApiResponseOptions = {}) =>
     description: "Resource not found",
     ...options,
     status: HttpStatus.NOT_FOUND,
-    type: ErrorDto,
+    type: ErrorDto
   });
 
 export const ApiConflictResponseDefault = (options: ApiResponseOptions = {}) =>
@@ -32,7 +32,7 @@ export const ApiConflictResponseDefault = (options: ApiResponseOptions = {}) =>
     description: "Resource already exists",
     ...options,
     status: HttpStatus.CONFLICT,
-    type: ErrorDto,
+    type: ErrorDto
   });
 
 export const ApiForbiddenResponseDefault = (options: ApiResponseOptions = {}) =>
@@ -40,7 +40,7 @@ export const ApiForbiddenResponseDefault = (options: ApiResponseOptions = {}) =>
     description: "Forbidden",
     ...options,
     status: HttpStatus.FORBIDDEN,
-    type: ErrorDto,
+    type: ErrorDto
   });
 
 export const ApiBadRequestResponseDefault = (
@@ -50,5 +50,5 @@ export const ApiBadRequestResponseDefault = (
     description: "Malformed request",
     ...options,
     status: HttpStatus.BAD_REQUEST,
-    type: ErrorDto,
+    type: ErrorDto
   });

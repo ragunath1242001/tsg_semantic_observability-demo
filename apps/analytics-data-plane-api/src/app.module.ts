@@ -12,8 +12,8 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
       ServeStaticModule.forRoot({
         rootPath: process.env["EMBEDDED_FRONTEND"],
         serveRoot: process.env["SUBPATH"],
-        exclude: ["/api/(.*)"],
-      }),
+        exclude: ["/api/(.*)"]
+      })
     ]
   : [];
 
@@ -27,12 +27,12 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
     TypeOrmModule.forRoot({
       ...config.db,
       autoLoadEntities: true,
-      synchronize: true,
+      synchronize: true
     }),
     ...embeddedFrontend,
-    FilesModule.register(config.files),
+    FilesModule.register(config.files)
   ],
   exports: [DataPlaneTestModule, AuthModule],
-  controllers: [],
+  controllers: []
 })
 export class AppModule {}

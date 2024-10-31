@@ -1,12 +1,12 @@
 import {
   ComplianceRequest,
-  LegalRegistrationNumberRequest,
+  LegalRegistrationNumberRequest
 } from "@tsg-dsp/wallet-dtos";
 import { ApiProperty } from "@nestjs/swagger";
 import { CredentialSubject, VerifiableCredential } from "@tsg-dsp/common-dsp";
 import {
   DefaultCredentialSubjectDto,
-  VerifiableCredentialDto,
+  VerifiableCredentialDto
 } from "../credentials.schemas.js";
 
 export class LegalRegistrationNumberRequestDto

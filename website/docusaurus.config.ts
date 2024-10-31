@@ -28,11 +28,11 @@ const config: Config = {
   // may want to replace "en" with "zh-Hans".
   i18n: {
     defaultLocale: "en",
-    locales: ["en"],
+    locales: ["en"]
   },
 
   markdown: {
-    mermaid: true,
+    mermaid: true
   },
 
   themes: ["@docusaurus/theme-mermaid", "docusaurus-theme-openapi-docs"],
@@ -43,14 +43,14 @@ const config: Config = {
       {
         docs: {
           sidebarPath: "./sidebars.ts",
-          docItemComponent: "@theme/ApiItem",
+          docItemComponent: "@theme/ApiItem"
         },
         blog: false,
         theme: {
-          customCss: "./src/css/custom.css",
-        },
-      } satisfies Preset.Options,
-    ],
+          customCss: "./src/css/custom.css"
+        }
+      } satisfies Preset.Options
+    ]
   ],
 
   plugins: [
@@ -64,25 +64,25 @@ const config: Config = {
             specPath: "docs/apps/control-plane/openapi.yaml",
             outputDir: "docs/apis/control-plane",
             sidebarOptions: {
-              groupPathsBy: "tag",
-            },
+              groupPathsBy: "tag"
+            }
           } satisfies OpenApiPlugin.Options,
           httpDataPlane: {
             specPath: "docs/apps/http-data-plane/openapi.yaml",
             outputDir: "docs/apis/http-data-plane",
             sidebarOptions: {
-              groupPathsBy: "tag",
-            },
+              groupPathsBy: "tag"
+            }
           } satisfies OpenApiPlugin.Options,
           wallet: {
             specPath: "docs/apps/wallet/openapi.yaml",
             outputDir: "docs/apis/wallet",
             sidebarOptions: {
-              groupPathsBy: "tag",
-            },
-          } satisfies OpenApiPlugin.Options,
-        },
-      },
+              groupPathsBy: "tag"
+            }
+          } satisfies OpenApiPlugin.Options
+        }
+      }
     ],
     async function jsonLdContextPlugin(context, options) {
       const copyJson = (inputDir: string, outputDir: string) => {
@@ -98,19 +98,19 @@ const config: Config = {
         async postBuild() {
           copyJson(
             `${context.siteDir}/docs`,
-            `${context.outDir}/contexts/next`,
+            `${context.outDir}/contexts/next`
           );
           fs.readdirSync(`${context.siteDir}/versioned_docs`).forEach(
             (directory) => {
               copyJson(
                 `${context.siteDir}/versioned_docs/${directory}`,
-                `${context.outDir}/contexts/${directory.slice(8)}`,
+                `${context.outDir}/contexts/${directory.slice(8)}`
               );
-            },
+            }
           );
-        },
+        }
       };
-    },
+    }
   ],
 
   themeConfig: {
@@ -121,34 +121,34 @@ const config: Config = {
       logo: {
         alt: "TNO Security Gateway",
         src: "img/logo.svg",
-        srcDark: "img/logoDark.svg",
+        srcDark: "img/logoDark.svg"
       },
       items: [
         {
-          type: "docsVersionDropdown",
+          type: "docsVersionDropdown"
         },
         {
           type: "docSidebar",
           sidebarId: "tutorialSidebar",
           position: "left",
-          label: "Documentation",
+          label: "Documentation"
         },
         {
           type: "docSidebar",
           sidebarId: "apiSidebar",
           position: "left",
-          label: "APIs",
+          label: "APIs"
         },
         {
           href: "/contact",
-          label: "Contact",
+          label: "Contact"
         },
         {
           href: "https://gitlab.com/tno-tsg/dataspace-protocol/tno-security-gateway",
           label: "GitLab",
-          position: "right",
-        },
-      ],
+          position: "right"
+        }
+      ]
     },
     footer: {
       style: "dark",
@@ -158,17 +158,17 @@ const config: Config = {
           items: [
             {
               label: "Documentation",
-              to: "/docs/",
+              to: "/docs/"
             },
             {
               label: "APIs",
-              to: "/docs/apis/control-plane/tsg-control-plane",
+              to: "/docs/apis/control-plane/tsg-control-plane"
             },
             {
               label: "Contact",
-              to: "/contact/",
-            },
-          ],
+              to: "/contact/"
+            }
+          ]
         },
 
         {
@@ -176,22 +176,22 @@ const config: Config = {
           items: [
             {
               href: "https://gitlab.com/tno-tsg/dataspace-protocol/tno-security-gateway",
-              label: "GitLab",
+              label: "GitLab"
             },
             {
               href: "https://tno.nl",
-              label: "TNO",
-            },
-          ],
-        },
+              label: "TNO"
+            }
+          ]
+        }
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} TNO.`,
+      copyright: `Copyright © ${new Date().getFullYear()} TNO.`
     },
     prism: {
       theme: prismThemes.github,
-      darkTheme: prismThemes.dracula,
-    },
-  } satisfies Preset.ThemeConfig,
+      darkTheme: prismThemes.dracula
+    }
+  } satisfies Preset.ThemeConfig
 };
 
 export default config;

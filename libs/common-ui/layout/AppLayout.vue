@@ -62,15 +62,13 @@ function isOutsideClicked(event) {
     :name="topbar.name"
     :baseLogoUrl="topbar.baseLogoUrl"
     :user="topbar.user"
-    :router="topbar.router"
-  ></app-topbar>
+    :router="topbar.router"></app-topbar>
   <div
     class="layout-sidebar"
     style="
       border: 1px solid var(--surface-border);
       box-shadow: var(--p-card-shadow);
-    "
-  >
+    ">
     <app-sidebar :menu="sidebar.menu" :route="sidebar.route"></app-sidebar>
   </div>
   <div class="layout-main-container">
@@ -79,8 +77,7 @@ function isOutsideClicked(event) {
     </div>
     <app-footer
       :baseLogoUrl="footer.baseLogoUrl"
-      :footerText="footer.footerText"
-    ></app-footer>
+      :footerText="footer.footerText"></app-footer>
   </div>
   <Toast />
 </template>

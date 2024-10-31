@@ -6,6 +6,6 @@ import { DspGateway } from "./dsp.gateway";
 @Module({
   imports: [AuthModule],
   providers: [DspClientService, DspGateway],
-  exports: [DspClientService, DspGateway],
+  exports: [DspClientService, DspGateway]
 })
 export class DspClientModule {}

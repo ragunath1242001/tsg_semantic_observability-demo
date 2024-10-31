@@ -19,8 +19,8 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
       ServeStaticModule.forRoot({
         rootPath: process.env["EMBEDDED_FRONTEND"],
         serveRoot: process.env["SUBPATH"],
-        exclude: ["/api/(.*)", "/.well-known/(.*)"],
-      }),
+        exclude: ["/api/(.*)", "/.well-known/(.*)"]
+      })
     ]
   : [];
 
@@ -31,7 +31,7 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
     TypeOrmModule.forRoot({
       ...config.db,
       autoLoadEntities: true,
-      synchronize: true,
+      synchronize: true
     }),
     PresentationModule.register(config.presentation),
     AuthModule,
@@ -40,7 +40,7 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
     DidModule,
     KeysModule,
     IssuanceModule,
-    ...embeddedFrontend,
+    ...embeddedFrontend
   ],
   controllers: [HealthController, ConfigController],
   exports: [
@@ -48,8 +48,8 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
     CredentialsModule,
     DidModule,
     IssuanceModule,
-    KeysModule,
-  ],
+    KeysModule
+  ]
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

@@ -4,7 +4,7 @@ import {
   OnGatewayDisconnect,
   OnGatewayInit,
   WebSocketGateway,
-  WebSocketServer,
+  WebSocketServer
 } from "@nestjs/websockets";
 import { Socket, Server } from "socket.io";
 
@@ -15,9 +15,9 @@ import { Socket, Server } from "socket.io";
       "http://localhost:5174",
       "http://localhost:3000",
       "http://localhost:3001",
-      "http://localhost:3002",
-    ],
-  },
+      "http://localhost:3002"
+    ]
+  }
 })
 export class DspGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect

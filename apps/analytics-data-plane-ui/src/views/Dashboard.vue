@@ -37,31 +37,31 @@ const expandedProviderRows = ref();
 
 const getState = async () => {
   try {
-    const response = await http.get<DataPlaneStateDto>(
-      "management/state"
-    );
+    const response = await http.get<DataPlaneStateDto>("management/state");
     state.value = response.data;
   } catch (error) {
-    toast.add(toastError({
-      error,
-      summary: "Loading state failed",
-      defaultMessage: "Could not load state from the analytics data plane"
-    }));
+    toast.add(
+      toastError({
+        error,
+        summary: "Loading state failed",
+        defaultMessage: "Could not load state from the analytics data plane"
+      })
+    );
   }
 };
 
 const getTransfers = async () => {
   try {
-    const response = await http.get<TransferDto[]>(
-      "management/transfers"
-    );
+    const response = await http.get<TransferDto[]>("management/transfers");
     transfers.value = response.data;
   } catch (error) {
-    toast.add(toastError({
-      error,
-      summary: "Loading transfers failed",
-      defaultMessage: "Could not load transfers from the analytics data plane"
-    }));
+    toast.add(
+      toastError({
+        error,
+        summary: "Loading transfers failed",
+        defaultMessage: "Could not load transfers from the analytics data plane"
+      })
+    );
   }
 };
 
@@ -101,28 +101,30 @@ const action = async (
         if (action === "terminate") {
           params = {
             code: "USER_INTERVENTION",
-            reason: "Manual user intervention",
+            reason: "Manual user intervention"
           };
         }
         if (action === "suspend") {
           params = {
-            reason: "Manual user intervention",
+            reason: "Manual user intervention"
           };
         }
         await http.post(
           `management/transfers/${transfer.id}/${action}`,
           undefined,
           {
-            params,
+            params
           }
         );
         setTimeout(getTransfers, 1000);
       } catch (error) {
-        toast.add(toastError({
-          error,
-          summary: `Error during transfer ${action}`,
-          defaultMessage: `Could not ${action} transfer ${transfer.id}`
-        }));
+        toast.add(
+          toastError({
+            error,
+            summary: `Error during transfer ${action}`,
+            defaultMessage: `Could not ${action} transfer ${transfer.id}`
+          })
+        );
       }
       target.classList.remove("p-disabled");
       target.classList.remove("p-button-loading");
@@ -130,14 +132,14 @@ const action = async (
     reject: () => {
       target.classList.remove("p-disabled");
       target.classList.remove("p-button-loading");
-    },
+    }
   });
 };
 
 const showLogs = (transfer: TransferDto) => {
   logModal.value = {
     type: transfer.role === "consumer" ? "egress" : "ingress",
-    transfer: transfer.id,
+    transfer: transfer.id
   };
   showLogModal.value = true;
 };
@@ -156,8 +158,7 @@ onMounted(async () => {
     :style="{ width: '90vw', maxWidth: '100rem' }"
     v-model:visible="showLogModal"
     @hide="logModal = undefined"
-    modal
-  >
+    modal>
     <template #header>
       <span class="p-dialog-title" data-pc-section="title"
         ><span class="capitalize">{{ logModal.type }}</span> logs for transfer
@@ -167,8 +168,7 @@ onMounted(async () => {
     <PaginatedLogTable
       v-if="logModal"
       :type="logModal.type"
-      :transferId="logModal.transfer"
-    />
+      :transferId="logModal.transfer" />
   </Dialog>
   <Card>
     <template #title>State</template>
@@ -201,8 +201,7 @@ onMounted(async () => {
         sort-field="createdDate"
         :sort-order="-1"
         paginator
-        :rows="10"
-      >
+        :rows="10">
         <Column expander style="width: 5rem" />
         <Column field="remoteId" header="Remote ID">
           <template #body="props">
@@ -213,8 +212,7 @@ onMounted(async () => {
           <template #body="props">
             <Tag
               :severity="stateSeverity(props.data.state)"
-              :value="props.data.state.replace(/^dspace:/, '')"
-            />
+              :value="props.data.state.replace(/^dspace:/, '')" />
           </template>
         </Column>
         <Column field="createdDate" header="Date">
@@ -235,8 +233,7 @@ onMounted(async () => {
               aria-label="Stop"
               outlined
               @click="action($event, 'terminate', props.data)"
-              v-tooltip.bottom="'Terminate'"
-            />
+              v-tooltip.bottom="'Terminate'" />
             <Button
               v-if="props.data.state === 'dspace:STARTED'"
               class="ml-2"
@@ -245,8 +242,7 @@ onMounted(async () => {
               aria-label="Suspend"
               outlined
               @click="action($event, 'suspend', props.data)"
-              v-tooltip.bottom="'Suspend'"
-            />
+              v-tooltip.bottom="'Suspend'" />
             <Button
               v-else
               :disabled="props.data.state !== 'dspace:SUSPENDED'"
@@ -256,8 +252,7 @@ onMounted(async () => {
               aria-label="Start"
               outlined
               @click="action($event, 'start', props.data)"
-              v-tooltip.bottom="'Start'"
-            />
+              v-tooltip.bottom="'Start'" />
             <Button
               class="ml-2"
               :disabled="props.data.state !== 'dspace:STARTED'"
@@ -268,13 +263,13 @@ onMounted(async () => {
                 toast.add({
                   severity: 'error',
                   summary: 'Cannot execute transfer',
-                  detail: 'Execution of transfers is not yet supported in this data plane',
-                  life: 10000,
-                });
+                  detail:
+                    'Execution of transfers is not yet supported in this data plane',
+                  life: 10000
+                })
               "
               v-tooltip.bottom="'Execute'"
-              outlined
-            />
+              outlined />
             <Button
               class="ml-2"
               :disabled="props.data.state !== 'dspace:STARTED'"
@@ -283,8 +278,7 @@ onMounted(async () => {
               aria-label="Complete"
               outlined
               @click="action($event, 'complete', props.data)"
-              v-tooltip.bottom="'Complete'"
-            />
+              v-tooltip.bottom="'Complete'" />
             <Button
               class="ml-2"
               icon="pi pi-list"
@@ -292,8 +286,7 @@ onMounted(async () => {
               aria-label="Logs"
               outlined
               @click="showLogs(props.data)"
-              v-tooltip.bottom="'Logs'"
-            />
+              v-tooltip.bottom="'Logs'" />
           </template>
         </Column>
         <template #expansion="props">
@@ -306,8 +299,7 @@ onMounted(async () => {
             <FormField label="State">
               <Tag
                 :severity="stateSeverity(props.data.state)"
-                :value="props.data.state.replace(/^dspace:/, '')"
-              />
+                :value="props.data.state.replace(/^dspace:/, '')" />
             </FormField>
             <FormField label="Agreement">{{
               props.data.request["dspace:agreementId"]
@@ -324,8 +316,7 @@ onMounted(async () => {
                 <div
                   v-for="property in props.data.dataAddress[
                     'dspace:endpointProperties'
-                  ]"
-                >
+                  ]">
                   <strong>{{ property["dspace:name"] }}</strong
                   >: {{ property["dspace:value"] }}
                 </div>
@@ -348,8 +339,7 @@ onMounted(async () => {
         sort-field="createdDate"
         :sort-order="-1"
         paginator
-        :rows="10"
-      >
+        :rows="10">
         <Column expander style="width: 5rem" />
         <Column field="remoteId" header="Remote ID">
           <template #body="props">
@@ -360,8 +350,7 @@ onMounted(async () => {
           <template #body="props">
             <Tag
               :severity="stateSeverity(props.data.state)"
-              :value="props.data.state.replace(/^dspace:/, '')"
-            />
+              :value="props.data.state.replace(/^dspace:/, '')" />
           </template>
         </Column>
         <Column field="createdDate" header="Date">
@@ -382,8 +371,7 @@ onMounted(async () => {
               aria-label="Terminate"
               outlined
               @click="action($event, 'terminate', props.data)"
-              v-tooltip.bottom="'Terminate'"
-            />
+              v-tooltip.bottom="'Terminate'" />
             <Button
               v-if="props.data.state === 'dspace:STARTED'"
               class="ml-2"
@@ -392,8 +380,7 @@ onMounted(async () => {
               aria-label="Suspend"
               outlined
               @click="action($event, 'suspend', props.data)"
-              v-tooltip.bottom="'Suspend'"
-            />
+              v-tooltip.bottom="'Suspend'" />
             <Button
               v-else
               :disabled="
@@ -407,8 +394,7 @@ onMounted(async () => {
               aria-label="Start"
               outlined
               @click="action($event, 'start', props.data)"
-              v-tooltip.bottom="'Start'"
-            />
+              v-tooltip.bottom="'Start'" />
             <Button
               class="ml-2"
               :disabled="props.data.state !== 'dspace:STARTED'"
@@ -417,8 +403,7 @@ onMounted(async () => {
               aria-label="Complete"
               outlined
               @click="action($event, 'complete', props.data)"
-              v-tooltip.bottom="'Complete'"
-            />
+              v-tooltip.bottom="'Complete'" />
             <Button
               class="ml-2"
               icon="pi pi-list"
@@ -426,8 +411,7 @@ onMounted(async () => {
               aria-label="Logs"
               outlined
               @click="showLogs(props.data)"
-              v-tooltip.bottom="'Logs'"
-            />
+              v-tooltip.bottom="'Logs'" />
           </template>
         </Column>
         <template #expansion="props">
@@ -439,8 +423,7 @@ onMounted(async () => {
           <FormField label="State">
             <Tag
               :severity="stateSeverity(props.data.state)"
-              :value="props.data.state.replace(/^dspace:/, '')"
-            />
+              :value="props.data.state.replace(/^dspace:/, '')" />
           </FormField>
           <FormField label="Agreement">{{
             props.data.request["dspace:agreementId"]

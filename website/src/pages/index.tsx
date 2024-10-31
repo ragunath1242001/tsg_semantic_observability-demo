@@ -31,8 +31,7 @@ export default function Home(): JSX.Element {
   return (
     <Layout
       title={siteConfig.title}
-      description="TNO Security Gateway Architecture and Documentation."
-    >
+      description="TNO Security Gateway Architecture and Documentation.">
       <HomepageHeader />
       <main>
         <HomepageFeatures />

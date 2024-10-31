@@ -11,7 +11,7 @@ import { DidTdwStrategy } from "./tdw/did.tdw.strategy.js";
 import {
   createServices,
   createVerificationMethods,
-  DIDMethod,
+  DIDMethod
 } from "../utils/did.js";
 
 export interface DidStrategy {
@@ -20,12 +20,12 @@ export interface DidStrategy {
     config: RootConfig,
     didId: string,
     keys: KeyMaterials[],
-    services: DidServiceConfig[],
+    services: DidServiceConfig[]
   ): Promise<{ didId: string; didDocument: DIDDocument }>;
   updateDidDocument(
     didDocument: DIDDocument,
     verificationMethods?: VerificationMethod[],
-    services?: Service[],
+    services?: Service[]
   ): Promise<DIDDocument>;
   setDefaultKey(didDocument: DIDDocument, key: KeyMaterials): void;
 }
@@ -41,7 +41,7 @@ export class DidService {
     @InjectRepository(DIDService)
     private readonly serviceRepository: Repository<DIDService>,
     @InjectRepository(DIDLogs)
-    private readonly didLogsRepository: Repository<DIDLogs>,
+    private readonly didLogsRepository: Repository<DIDLogs>
   ) {
     this.didStrategy = this.retrieveDidStrategy(config.did.method);
     this.didId = this.didStrategy.createDid(config);
@@ -70,8 +70,8 @@ export class DidService {
     }
     const did = await this.didRepository.find({
       where: {
-        document: Like(`%"id":"${this.config.did.method}%`),
-      },
+        document: Like(`%"id":"${this.config.did.method}%`)
+      }
     });
     if (did.length === 0) {
       throw new AppError(`DID Document not ready yet`, HttpStatus.NOT_FOUND);
@@ -85,19 +85,19 @@ export class DidService {
       {
         id: `${this.didId}#oid4vci`,
         type: "OID4VCI",
-        serviceEndpoint: `https://${this.config.server.publicDomain}`,
+        serviceEndpoint: `https://${this.config.server.publicDomain}`
       },
       {
         id: `${this.didId}#presentation`,
         type: "PresentationService",
-        serviceEndpoint: `${this.config.server.publicAddress}/api/iatp/holder/presentation`,
+        serviceEndpoint: `${this.config.server.publicAddress}/api/iatp/holder/presentation`
       },
       {
         id: `${this.didId}#management`,
         type: "Management",
-        serviceEndpoint: `${this.config.server.publicAddress}/api`,
+        serviceEndpoint: `${this.config.server.publicAddress}/api`
       },
-      ...this.config.didServices,
+      ...this.config.didServices
     ];
   }
 
@@ -108,13 +108,13 @@ export class DidService {
           {
             id: service.id,
             type: service.type,
-            serviceEndpoint: service.serviceEndpoint as string,
+            serviceEndpoint: service.serviceEndpoint as string
           },
-          true,
+          true
         );
       } catch (e) {
         this.logger.debug(
-          `Service with id ${service.id} already exists, not overriding`,
+          `Service with id ${service.id} already exists, not overriding`
         );
       }
     }
@@ -123,8 +123,8 @@ export class DidService {
   async getServices() {
     return await this.serviceRepository.find({
       where: {
-        id: Like(`${this.didId}%`),
-      },
+        id: Like(`${this.didId}%`)
+      }
     });
   }
 
@@ -133,7 +133,7 @@ export class DidService {
     if (!service) {
       throw new AppError(
         `DID Service with id ${id} not found`,
-        HttpStatus.NOT_FOUND,
+        HttpStatus.NOT_FOUND
       );
     }
     return service;
@@ -141,12 +141,12 @@ export class DidService {
 
   async insertService(
     config: DidServiceConfig,
-    init?: boolean,
+    init?: boolean
   ): Promise<DIDService> {
     if (await this.serviceRepository.existsBy({ id: config.id })) {
       throw new AppError(
         `Service with id ${config.id} already exists`,
-        HttpStatus.CONFLICT,
+        HttpStatus.CONFLICT
       );
     }
     const service = await this.serviceRepository.save(config);
@@ -161,14 +161,14 @@ export class DidService {
     if (await this.serviceRepository.existsBy({ id: id })) {
       const service = await this.serviceRepository.save({
         ...config,
-        id: id,
+        id: id
       });
       await this.updateDidDocumentServices(await this.getServices());
       return service;
     } else {
       throw new AppError(
         `Service with id ${config.id} does not exists`,
-        HttpStatus.NOT_FOUND,
+        HttpStatus.NOT_FOUND
       );
     }
   }
@@ -182,22 +182,22 @@ export class DidService {
   private async saveDidDocument(didDocument: DIDDocument) {
     const existing = await this.didRepository.find({
       where: {
-        document: Like(`%"id":"${this.config.did.method}%`),
-      },
+        document: Like(`%"id":"${this.config.did.method}%`)
+      }
     });
     if (existing) {
       await Promise.allSettled(
-        existing.map(async (e) => await this.didRepository.delete(e.id)),
+        existing.map(async (e) => await this.didRepository.delete(e.id))
       );
     }
     await this.didRepository.save({
-      document: didDocument,
+      document: didDocument
     });
     this.cachedDocument = undefined;
   }
 
   async checkExistingDidDocument(
-    defaultKey: KeyMaterials,
+    defaultKey: KeyMaterials
   ): Promise<DIDDocument> {
     let existingDidDocument: DIDDocument;
     try {
@@ -212,8 +212,8 @@ export class DidService {
       `DID document ${this.didId}\n${JSON.stringify(
         existingDidDocument,
         null,
-        2,
-      )}`,
+        2
+      )}`
     );
     return existingDidDocument;
   }
@@ -223,7 +223,7 @@ export class DidService {
       this.config,
       this.didId,
       keys,
-      this.initServices(),
+      this.initServices()
     );
 
     this.didId = didId;
@@ -240,7 +240,7 @@ export class DidService {
     didDocument = await this.didStrategy.updateDidDocument(
       didDocument,
       createVerificationMethods(didDocument.id, keys),
-      didDocument.service,
+      didDocument.service
     );
     await this.saveDidDocument(didDocument);
   }
@@ -250,7 +250,7 @@ export class DidService {
     didDocument = await this.didStrategy.updateDidDocument(
       didDocument,
       didDocument.verificationMethod,
-      createServices(services),
+      createServices(services)
     );
     await this.saveDidDocument(didDocument);
   }

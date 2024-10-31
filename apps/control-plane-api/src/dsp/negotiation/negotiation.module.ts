@@ -7,7 +7,7 @@ import { DspClientModule } from "../client/client.module";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import {
   NegotiationDetailDao,
-  NegotiationProcessEventDao,
+  NegotiationProcessEventDao
 } from "../../model/negotiation.dao";
 import { PolicyModule } from "../../policy/policy.module";
 
@@ -17,12 +17,12 @@ import { PolicyModule } from "../../policy/policy.module";
     DspClientModule,
     TypeOrmModule.forFeature([
       NegotiationDetailDao,
-      NegotiationProcessEventDao,
+      NegotiationProcessEventDao
     ]),
-    PolicyModule,
+    PolicyModule
   ],
   controllers: [NegotiationController, NegotiationManagementController],
   providers: [NegotiationService],
-  exports: [NegotiationService],
+  exports: [NegotiationService]
 })
 export class NegotiationModule {}

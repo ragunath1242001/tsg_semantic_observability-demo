@@ -7,6 +7,6 @@ export interface TransferStore {
 
 export const useTransferStore = defineStore("transfer", {
   state: (): TransferStore => ({
-    transfer: null,
-  }),
+    transfer: null
+  })
 });

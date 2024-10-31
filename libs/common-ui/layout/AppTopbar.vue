@@ -8,7 +8,7 @@ const {
   toggleDarkMode,
   isDarkTheme,
   layoutConfig,
-  onConfigButtonClick,
+  onConfigButtonClick
 } = useLayout();
 
 const outsideClickListener = ref(null);
@@ -45,7 +45,7 @@ const onTopBarMenuButton = () => {
 
 const topbarMenuClasses = computed(() => {
   return {
-    "hidden": !topbarMenuActive.value,
+    hidden: !topbarMenuActive.value
   };
 });
 
@@ -91,8 +91,7 @@ const logout = () => {
     <div class="layout-topbar-logo-container">
       <button
         class="layout-menu-button layout-topbar-action"
-        @click="onMenuToggle"
-      >
+        @click="onMenuToggle">
         <i class="pi pi-bars"></i>
       </button>
       <router-link to="/" class="layout-topbar-logo">
@@ -108,18 +107,18 @@ const logout = () => {
         <button
           type="button"
           class="layout-topbar-action"
-          @click="toggleDarkMode"
-        >
+          @click="toggleDarkMode">
           <i
-            :class="['pi', { 'pi-moon': isDarkTheme, 'pi-sun': !isDarkTheme }]"
-          ></i>
+            :class="[
+              'pi',
+              { 'pi-moon': isDarkTheme, 'pi-sun': !isDarkTheme }
+            ]"></i>
         </button>
       </div>
 
       <button
         class="layout-topbar-menu-button layout-topbar-action"
-        @click="onTopBarMenuButton"
-      >
+        @click="onTopBarMenuButton">
         <i class="pi pi-ellipsis-v"></i>
       </button>
       <div class="layout-topbar-menu lg:block" :class="topbarMenuClasses">
@@ -174,7 +173,6 @@ const logout = () => {
     color: var(--primary-contrast-color);
   }
 }
-
 
 @media (max-width: 991px) {
   .layout-topbar-text {

@@ -1,6 +1,10 @@
 import { DataPlaneTransferDto } from "../../data-planes";
 import { MultilanguageDto } from "../common.dto";
-import { TransferState, TransferProcessDto, DataAddressDto } from "./messages.dto";
+import {
+  TransferState,
+  TransferProcessDto,
+  DataAddressDto
+} from "./messages.dto";
 
 export type TransferRole = "provider" | "consumer";
 

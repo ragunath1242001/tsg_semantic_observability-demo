@@ -2,7 +2,7 @@ import {
   ArrayNotEmpty,
   IsNotEmpty,
   IsOptional,
-  ValidateNested,
+  ValidateNested
 } from "class-validator";
 import { Serializable, Namespace, LDType } from "../../decorators";
 import { Multilanguage, SerializableClass, withExtraProps } from "../common";
@@ -16,7 +16,7 @@ import {
   TransferRequestMessageDto,
   TransferStartMessageDto,
   TransferSuspensionMessageDto,
-  TransferTerminationMessageDto,
+  TransferTerminationMessageDto
 } from "./messages.dto";
 
 export interface ITransferCompletionMessage {

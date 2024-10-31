@@ -25,7 +25,7 @@ export class TypeOrmTestHelper {
       database: ":memory:",
       name: "default",
       entities: entities,
-      synchronize: true,
+      synchronize: true
     });
   }
 

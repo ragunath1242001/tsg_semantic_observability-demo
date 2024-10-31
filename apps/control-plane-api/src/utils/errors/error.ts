@@ -24,7 +24,7 @@ export class DSPError extends HttpException {
         status: HttpStatus[status],
         code: status,
         message: message,
-        error: err ? `${err}` : undefined,
+        error: err ? `${err}` : undefined
       };
     } else {
       response = {
@@ -32,7 +32,7 @@ export class DSPError extends HttpException {
         status: HttpStatus[status],
         code: status,
         ...message,
-        error: err ? `${err}` : undefined,
+        error: err ? `${err}` : undefined
       };
     }
     super(response, status);

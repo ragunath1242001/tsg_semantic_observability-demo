@@ -6,18 +6,18 @@ import { PresentationDefinition } from "@tsg-dsp/common-dtos";
 import {
   VerifiablePresentation,
   VerifiableCredential,
-  CredentialSubject,
+  CredentialSubject
 } from "@tsg-dsp/common-dsp";
 import {
   ApiBody,
   ApiOAuth2,
   ApiOkResponse,
   ApiOperation,
-  ApiTags,
+  ApiTags
 } from "@nestjs/swagger";
 import {
   VerifiablePresentationDto,
-  VerificationRequestDto,
+  VerificationRequestDto
 } from "../presentation.schemas.js";
 
 @Controller("iatp/verifier")
@@ -31,7 +31,7 @@ export class IatpVerifierController {
   @ApiOperation({
     summary: "Start verification flow",
     description:
-      "Request a new IATP presentation flow to start as verifier, based on a presentation defintion and a holder SIOP token",
+      "Request a new IATP presentation flow to start as verifier, based on a presentation defintion and a holder SIOP token"
   })
   @ApiBody({ type: VerificationRequestDto })
   @ApiOkResponse({ type: VerifiablePresentationDto })
@@ -40,11 +40,11 @@ export class IatpVerifierController {
     verificationRequest: {
       presentationDefinition: PresentationDefinition;
       holderIdToken: string;
-    },
+    }
   ): Promise<VerifiablePresentation> {
     return this.iatpVerifierService.verify(
       verificationRequest.holderIdToken,
-      verificationRequest.presentationDefinition,
+      verificationRequest.presentationDefinition
     );
   }
 }

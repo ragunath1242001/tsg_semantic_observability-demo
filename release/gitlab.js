@@ -41,13 +41,13 @@ export async function createRelease(newVersion, changelog) {
         name: `v${newVersion}`,
         tag_name: `v${newVersion}`,
         description: changelog,
-        ref: "main",
+        ref: "main"
       },
       {
         headers: {
           "PRIVATE-TOKEN": process.env.GITLAB_TOKEN,
-          "Content-Type": "application/json",
-        },
+          "Content-Type": "application/json"
+        }
       }
     );
     console.log("Created release");

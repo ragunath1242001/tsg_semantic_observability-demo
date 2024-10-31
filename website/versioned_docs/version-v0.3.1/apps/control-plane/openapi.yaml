@@ -61,7 +61,8 @@ paths:
     get:
       operationId: HealthController_getHealth
       summary: Health check
-      description: Retrieves the current health of the control plane. If the control
+      description:
+        Retrieves the current health of the control plane. If the control
         plane is running it always returns an empty 200 OK
       parameters: []
       responses:
@@ -75,7 +76,8 @@ paths:
     get:
       operationId: AuthController_getUser
       summary: Retrieve current user status
-      description: Retrieves current user state, whether someone is logged in or not a
+      description:
+        Retrieves current user state, whether someone is logged in or not a
         200 result is provided. This is used in the frontend to determine
         whether certain aspects should be shown.
       parameters: []
@@ -104,7 +106,8 @@ paths:
     get:
       operationId: AuthController_logout
       summary: Logout redirect
-      description: Removes session information and redirects user the root of the
+      description:
+        Removes session information and redirects user the root of the
         frontend (`auth.redirectURL`)
       parameters: []
       responses:
@@ -115,7 +118,8 @@ paths:
     get:
       operationId: AuthController_callback
       summary: Login callback
-      description: Users are redirected from the authorization server to this endpoint
+      description:
+        Users are redirected from the authorization server to this endpoint
         which will redirect them to the frontend (`auth.redirectURL`)
       parameters: []
       responses:
@@ -2115,7 +2119,8 @@ paths:
     get:
       operationId: RegistryClientController_requestDIDDocuments
       summary: Request DID Documents
-      description: Requests all DID Documents that could be retrieved at the Wallet
+      description:
+        Requests all DID Documents that could be retrieved at the Wallet
         this Control Plane is linked to.
       parameters: []
       responses:
@@ -2237,7 +2242,8 @@ components:
       scheme: bearer
       bearerFormat: VP
       type: http
-      description: Verifiable Presentation needed to communicate between two instances
+      description:
+        Verifiable Presentation needed to communicate between two instances
         of the control plane.
   schemas:
     RuntimeConfigDto:

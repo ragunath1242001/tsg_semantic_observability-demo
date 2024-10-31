@@ -7,7 +7,7 @@ import {
   Logger,
   Param,
   Post,
-  UseGuards,
+  UseGuards
 } from "@nestjs/common";
 import { Catalog } from "@tsg-dsp/common-dsp";
 import { OAuthGuard } from "../auth/oauth.guard";
@@ -21,12 +21,12 @@ import {
   ApiTags,
   ApiOkResponse,
   ApiBadRequestResponse,
-  ApiBody,
+  ApiBody
 } from "@nestjs/swagger";
 import { DataPlaneCreationDto, DataPlaneDto } from "./dataplane.schemas.js";
 import {
   ApiForbiddenResponseDefault,
-  CatalogSchema,
+  CatalogSchema
 } from "@tsg-dsp/common-dtos";
 
 @UseGuards(OAuthGuard)
@@ -42,7 +42,7 @@ export class DataPlaneController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: "Initialize data plane",
-    description: "Initializes a new data plane with the provided details.",
+    description: "Initializes a new data plane with the provided details."
   })
   @ApiBody({ type: DataPlaneCreationDto })
   @ApiOkResponse({ type: DataPlaneDto })
@@ -61,7 +61,7 @@ export class DataPlaneController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: "Update data plane",
-    description: "Updates the details of an existing data plane.",
+    description: "Updates the details of an existing data plane."
   })
   @ApiBody({ type: DataPlaneDto })
   @ApiOkResponse({ type: DataPlaneDto })
@@ -89,7 +89,7 @@ export class DataPlaneController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: "Update catalog",
-    description: "Updates the catalog for the specified data plane.",
+    description: "Updates the catalog for the specified data plane."
   })
   @ApiBody({ type: CatalogSchema })
   @ApiOkResponse({ type: CatalogSchema })

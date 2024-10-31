@@ -1,7 +1,7 @@
 import axios, { AxiosInstance } from "axios";
 
 const axiosInstance: AxiosInstance = axios.create({
-  baseURL: "api/",
+  baseURL: "api/"
 });
 
 export default axiosInstance;

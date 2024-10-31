@@ -7,7 +7,7 @@ export async function resolve(didId: string) {
   if (!didId.startsWith("did:web:")) {
     throw new DataPlaneError(
       "Resolver only supports did:web",
-      HttpStatus.NOT_FOUND,
+      HttpStatus.NOT_FOUND
     ).andLog(new Logger("DidResolver"), "log");
   }
   let [host, ...paths] = didId.slice(8).split(":");
@@ -26,7 +26,7 @@ export async function resolve(didId: string) {
   } catch (err) {
     throw new DataPlaneError(
       `Could not load DID document for ${didId}`,
-      HttpStatus.BAD_REQUEST,
+      HttpStatus.BAD_REQUEST
     ).andLog(new Logger("DidResolver"), "log");
   }
 }

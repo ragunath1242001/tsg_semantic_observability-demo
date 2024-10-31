@@ -6,7 +6,7 @@ import {
   HttpStatus,
   Post,
   UseGuards,
-  UsePipes,
+  UsePipes
 } from "@nestjs/common";
 import { RuntimeConfig } from "./config.js";
 import { OAuthGuard } from "./auth/oauth.guard.js";
@@ -18,12 +18,12 @@ import {
   ApiOAuth2,
   ApiOkResponse,
   ApiOperation,
-  ApiTags,
+  ApiTags
 } from "@nestjs/swagger";
 import { RuntimeConfigDto } from "./config.schemas.js";
 import {
   ApiForbiddenResponseDefault,
-  ApiBadRequestResponseDefault,
+  ApiBadRequestResponseDefault
 } from "@tsg-dsp/common-dtos";
 
 @UseGuards(OAuthGuard)
@@ -37,7 +37,7 @@ export class ConfigController {
   @Get()
   @ApiOperation({
     summary: "Retrieve settings",
-    description: "Retrieve dynamic settings for this wallet",
+    description: "Retrieve dynamic settings for this wallet"
   })
   @ApiOkResponse({ type: RuntimeConfigDto })
   @ApiForbiddenResponseDefault()
@@ -48,7 +48,7 @@ export class ConfigController {
   @Post("update")
   @ApiOperation({
     summary: "Update settings",
-    description: "Update the dynamic settings for this wallet",
+    description: "Update the dynamic settings for this wallet"
   })
   @UsePipes(validationPipe)
   @HttpCode(HttpStatus.OK)

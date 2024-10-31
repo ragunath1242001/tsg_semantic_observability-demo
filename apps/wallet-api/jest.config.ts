@@ -5,16 +5,16 @@ const config: Config.InitialOptions = {
     "^.+\\.tsx?$": [
       "ts-jest",
       {
-        useESM: true,
-      },
-    ],
+        useESM: true
+      }
+    ]
   },
   testTimeout: 30000,
   testEnvironment: "node",
   extensionsToTreatAsEsm: [".ts"],
   testRegex: "/.*\\.(test|spec)?\\.(ts|tsx)$",
   moduleNameMapper: {
-    "^(\\.{1,2}/.*)\\.js$": "$1",
+    "^(\\.{1,2}/.*)\\.js$": "$1"
   },
   coverageReporters: ["text", "text-summary", "cobertura"],
   collectCoverageFrom: [
@@ -26,7 +26,7 @@ const config: Config.InitialOptions = {
     "!src/**/*.schemas.ts",
     "!src/generate-oas.ts",
     "!node_modules/**",
-    "src/did/**/*.strategy.ts",
-  ],
+    "src/did/**/*.strategy.ts"
+  ]
 };
 export default config;

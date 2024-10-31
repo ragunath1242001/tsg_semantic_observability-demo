@@ -17,6 +17,6 @@ export default {
     "dcat:isVersionOf": { "@type": "@id" },
     "dcat:hasCurrentVersion": { "@type": "@id" },
     "dcat:previousVersion": { "@type": "@id" },
-    "dcat:themeTaxonomy": { "@type": "@id" },
-  },
+    "dcat:themeTaxonomy": { "@type": "@id" }
+  }
 };

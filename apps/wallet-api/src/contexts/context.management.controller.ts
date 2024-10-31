@@ -7,7 +7,7 @@ import {
   HttpStatus,
   Param,
   Post,
-  Put,
+  Put
 } from "@nestjs/common";
 import { Roles } from "../auth/roles.guard.js";
 import { AppRole } from "@tsg-dsp/wallet-dtos";
@@ -20,14 +20,14 @@ import {
   ApiOAuth2,
   ApiOkResponse,
   ApiOperation,
-  ApiTags,
+  ApiTags
 } from "@nestjs/swagger";
 import { JSONLDContextDto, JsonLdContextConfigDto } from "./context.schemas.js";
 import {
   ApiForbiddenResponseDefault,
   ApiConflictResponseDefault,
   ApiBadRequestResponseDefault,
-  ApiNotFoundResponseDefault,
+  ApiNotFoundResponseDefault
 } from "@tsg-dsp/common-dtos";
 
 @Controller("management/contexts")
@@ -40,7 +40,7 @@ export class ContextManagementController {
   @Get()
   @ApiOperation({
     summary: "Retrieve contexts",
-    description: "Retrieve all context registered in this wallet",
+    description: "Retrieve all context registered in this wallet"
   })
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({ type: [JSONLDContextDto] })
@@ -52,7 +52,7 @@ export class ContextManagementController {
   @Post()
   @ApiOperation({
     summary: "Add context",
-    description: "Register a new context in this wallet",
+    description: "Register a new context in this wallet"
   })
   @HttpCode(HttpStatus.OK)
   @ApiBody({ type: JsonLdContextConfigDto })
@@ -69,7 +69,7 @@ export class ContextManagementController {
   @Put(":id")
   @ApiOperation({
     summary: "Update context",
-    description: "Update an existing context in this wallet",
+    description: "Update an existing context in this wallet"
   })
   @HttpCode(HttpStatus.OK)
   @ApiBody({ type: JsonLdContextConfigDto })
@@ -88,7 +88,7 @@ export class ContextManagementController {
   @Delete(":id")
   @ApiOperation({
     summary: "Delete context",
-    description: "Delete an existing context in this wallet",
+    description: "Delete an existing context in this wallet"
   })
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse()

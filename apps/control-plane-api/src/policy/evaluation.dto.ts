@@ -2,7 +2,7 @@ import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import {
   AgreementDto,
   VerifiableCredential,
-  CredentialSubject,
+  CredentialSubject
 } from "@tsg-dsp/common-dsp";
 import { Type, plainToInstance } from "class-transformer";
 import {
@@ -13,7 +13,7 @@ import {
   IsString,
   IsEnum,
   ValidateNested,
-  IsDate,
+  IsDate
 } from "class-validator";
 import { validateOrRejectSync } from "../utils/validation.pipe";
 import { EvaluationTrigger } from "./constraint.dto";
@@ -79,7 +79,7 @@ export class EvaluationContext {
   @IsObject()
   transfer?: Record<string, any>;
   static parse(
-    plain: Pick<EvaluationContext, keyof EvaluationContext>,
+    plain: Pick<EvaluationContext, keyof EvaluationContext>
   ): EvaluationContext {
     return validateOrRejectSync(plainToInstance(EvaluationContext, plain, {}));
   }
@@ -89,7 +89,7 @@ export enum EvaluationResult {
   VALID = "VALID",
   INVALID = "INVALID",
   INDECISIVE = "INDECISIVE",
-  NOT_APPLICABLE = "NOT_APPLICABLE",
+  NOT_APPLICABLE = "NOT_APPLICABLE"
 }
 
 export class EvaluationDecision {

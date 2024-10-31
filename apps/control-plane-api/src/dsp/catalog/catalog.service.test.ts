@@ -4,7 +4,7 @@ import {
   DataService,
   Dataset,
   Distribution,
-  ODRLAction,
+  ODRLAction
 } from "@tsg-dsp/common-dsp";
 import { plainToClass } from "class-transformer";
 import { InitCatalog, PolicyConfig, ServerConfig } from "../../config";
@@ -14,7 +14,7 @@ import {
   DataServiceDao,
   DatasetDao,
   DistributionDao,
-  ResourceDao,
+  ResourceDao
 } from "../../model/catalog.dao";
 import { DSPError } from "../../utils/errors/error";
 import { TypeOrmTestHelper } from "../../utils/testhelper";
@@ -30,7 +30,7 @@ describe("Catalog Service", () => {
       creator: "urn:uuid:de8e1b94-4169-4491-986d-6a1c528b867b",
       publisher: "urn:uuid:de8e1b94-4169-4491-986d-6a1c528b867b",
       title: "Test Connector",
-      description: "Connector catalog for testing purposes",
+      description: "Connector catalog for testing purposes"
     });
     const serverConfig = plainToClass(ServerConfig, {});
     const policyConfig = plainToClass(PolicyConfig, {
@@ -41,11 +41,11 @@ describe("Catalog Service", () => {
           constraints: [
             {
               type: "CredentialType",
-              value: "dataspace:MembershipCredential",
-            },
-          ],
-        },
-      ],
+              value: "dataspace:MembershipCredential"
+            }
+          ]
+        }
+      ]
     });
 
     const moduleRef: TestingModule = await Test.createTestingModule({
@@ -57,7 +57,7 @@ describe("Catalog Service", () => {
           DataServiceDao,
           DistributionDao,
           ResourceDao,
-          DataPlaneDao,
+          DataPlaneDao
         ]),
         TypeOrmModule.forFeature([
           CatalogDao,
@@ -66,24 +66,24 @@ describe("Catalog Service", () => {
           DataServiceDao,
           DistributionDao,
           ResourceDao,
-          DataPlaneDao,
-        ]),
+          DataPlaneDao
+        ])
       ],
       providers: [
         CatalogService,
         {
           provide: InitCatalog,
-          useValue: initCatalog,
+          useValue: initCatalog
         },
         {
           provide: ServerConfig,
-          useValue: serverConfig,
+          useValue: serverConfig
         },
         {
           provide: PolicyConfig,
-          useValue: policyConfig,
-        },
-      ],
+          useValue: policyConfig
+        }
+      ]
     }).compile();
 
     catalogService = moduleRef.get(CatalogService);
@@ -130,18 +130,18 @@ describe("Catalog Service", () => {
             accessService: [
               new DataService({
                 id: "urn:uuid:0d5f0685-eb04-409a-8a77-ee4ed207f2f0",
-                endpointURL: "https://httpbin.org/anything",
-              }),
-            ],
-          }),
+                endpointURL: "https://httpbin.org/anything"
+              })
+            ]
+          })
         ],
         extraProps: {
           "tsg:testExtraProp": {
             "@type": "tsg:ExtraPropClass",
             "@id": "urn:uuid:7584b2d4-e9b4-4df3-87cc-db4106bb52d8",
-            "tsg:test": "Test",
-          },
-        },
+            "tsg:test": "Test"
+          }
+        }
       });
 
       const catalogDao = await catalogService.getCatalogDao(true);
@@ -202,11 +202,11 @@ describe("Catalog Service", () => {
             accessService: [
               new DataService({
                 id: "urn:uuid:0d5f0685-eb04-409a-8a77-ee4ed207f2f0",
-                endpointURL: "https://httpbin.org/anything",
-              }),
-            ],
-          }),
-        ],
+                endpointURL: "https://httpbin.org/anything"
+              })
+            ]
+          })
+        ]
       });
       await expect(
         catalogService.updateDataset("urn:testid", dataset)
@@ -245,11 +245,11 @@ describe("Catalog Service", () => {
             accessService: [
               new DataService({
                 id: "urn:uuid:0d5f0685-eb04-409a-8a77-ee4ed207f2f1",
-                endpointURL: "https://httpbin.org/anything/update",
-              }),
-            ],
-          }),
-        ],
+                endpointURL: "https://httpbin.org/anything/update"
+              })
+            ]
+          })
+        ]
       });
       await catalogService.updateDataset(
         toBeUpdatedDataset.id,

@@ -3,7 +3,7 @@ import {
   Inject,
   Injectable,
   Logger,
-  OnApplicationBootstrap,
+  OnApplicationBootstrap
 } from "@nestjs/common";
 import { TransferState } from "@tsg-dsp/common-dsp";
 import { SchedulerRegistry } from "@nestjs/schedule";
@@ -39,7 +39,7 @@ export class AgreementMonitorService implements OnApplicationBootstrap {
       (transfer) => transfer.state === TransferState.STARTED
     )) {
       const transferMonitor = await this.transferMonitorRepository.findOneBy({
-        id: transfer.localId,
+        id: transfer.localId
       });
       if (!transferMonitor) {
         this.logger.warn(

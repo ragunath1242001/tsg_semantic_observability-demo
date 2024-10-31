@@ -12,13 +12,13 @@ export function obtainValues(
       typeof element == "object"
         ? (element as MultilanguageDto)["@value"]
         : typeof element === "string"
-        ? element
-        : (() => {
-            console.error(
-              `Could not obtain value from ${multilingualArray}, unknown type`
-            );
-            return "";
-          })()
+          ? element
+          : (() => {
+              console.error(
+                `Could not obtain value from ${multilingualArray}, unknown type`
+              );
+              return "";
+            })()
     );
   } else {
     return [];

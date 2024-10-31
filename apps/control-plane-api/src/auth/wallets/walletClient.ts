@@ -1,7 +1,7 @@
 import {
   CredentialSubject,
   VerifiableCredential,
-  VerifiablePresentation,
+  VerifiablePresentation
 } from "@tsg-dsp/common-dsp";
 import { InputDescriptor } from "@tsg-dsp/common-dtos";
 import { DIDDocument } from "did-resolver";
@@ -22,12 +22,12 @@ export abstract class WalletClient {
   abstract requestValidation(
     token: string,
     audience: string,
-    inputDescriptors?: InputDescriptor[],
+    inputDescriptors?: InputDescriptor[]
   ): Promise<VerifiablePresentation | undefined>;
   abstract getCredentials(): Promise<Credential[]>;
   abstract requestSignature(document: Record<string, any>): Promise<any>;
   abstract requestSignatureValidation(
-    signedDocument: Record<string, any>,
+    signedDocument: Record<string, any>
   ): Promise<any>;
   abstract resolveDidDocument(didId: string): Promise<DIDDocument>;
 }

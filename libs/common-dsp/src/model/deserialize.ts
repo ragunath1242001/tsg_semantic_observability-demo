@@ -5,7 +5,7 @@ import {
   serializableTypes,
   hasDecorator,
   getStringDecorator,
-  getFunctionDecorator,
+  getFunctionDecorator
 } from "./decorators";
 import { compact } from "../jsonld/jsonld";
 import { filteredKeys } from "../utils/keys";
@@ -42,7 +42,7 @@ export function deserializeSync<Type>(
     if ("@value" in obj && "@language" in obj) {
       return new Multilanguage({
         value: obj["@value"],
-        language: obj["@language"],
+        language: obj["@language"]
       }) as Type;
     } else if ("@id" in obj) {
       return new Reference({ id: obj["@id"] }) as Type;

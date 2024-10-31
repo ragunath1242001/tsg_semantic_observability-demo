@@ -3,7 +3,7 @@ import {
   ApiBadGatewayResponse,
   ApiOkResponse,
   ApiOperation,
-  ApiTags,
+  ApiTags
 } from "@nestjs/swagger";
 
 @Controller()
@@ -13,7 +13,7 @@ export class HealthController {
   @ApiOperation({
     summary: "Health check",
     description:
-      "Retrieves the current health of the control plane. If the control plane is running it always returns an empty 200 OK",
+      "Retrieves the current health of the control plane. If the control plane is running it always returns an empty 200 OK"
   })
   @ApiOkResponse()
   @ApiBadGatewayResponse()

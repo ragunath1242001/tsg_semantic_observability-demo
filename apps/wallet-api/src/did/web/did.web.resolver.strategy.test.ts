@@ -11,7 +11,7 @@ describe("DID Web Resolver", () => {
     return {
       "@context": [
         "https://www.w3.org/ns/did/v1",
-        "https://w3c-ccg.github.io/lds-jws2020/contexts/v1/",
+        "https://w3c-ccg.github.io/lds-jws2020/contexts/v1/"
       ],
       id: didId,
       verificationMethod: [
@@ -23,17 +23,17 @@ describe("DID Web Resolver", () => {
             kty: "OKP",
             alg: "EdDSA",
             crv: "Ed25519",
-            x: "51eFT_VcIKhmugYwgohttFjY9jqSZK-L8FcwTiPMGzA",
-          },
-        },
+            x: "51eFT_VcIKhmugYwgohttFjY9jqSZK-L8FcwTiPMGzA"
+          }
+        }
       ],
-      assertionMethod: [`${didId}#test-key`],
+      assertionMethod: [`${didId}#test-key`]
     };
   };
 
   beforeAll(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
-      providers: [DidWebResolverStrategy],
+      providers: [DidWebResolverStrategy]
     }).compile();
     didWebResolverStrategy = await moduleRef.get(DidWebResolverStrategy);
 
@@ -68,9 +68,8 @@ describe("DID Web Resolver", () => {
       expect(didDocument).toEqual(didGenerator("did:web:example.com"));
     });
     it("Resolve localhost main DID", async () => {
-      const didDocument = await didWebResolverStrategy.resolve(
-        "did:web:localhost"
-      );
+      const didDocument =
+        await didWebResolverStrategy.resolve("did:web:localhost");
       expect(didDocument).toEqual(didGenerator("did:web:localhost"));
     });
     it("Resolve subdirectory DID", async () => {

@@ -18,7 +18,7 @@ export class PolicyEvaluationService {
     private readonly ruleRepositoryService: RuleRepositoryService,
     @InjectRepository(TransferMonitorDao)
     private readonly transferMonitorRepository: Repository<TransferMonitorDao>,
-    private readonly agreementService: AgreementService,
+    private readonly agreementService: AgreementService
   ) {}
   private readonly logger = new Logger(this.constructor.name);
 
@@ -29,7 +29,7 @@ export class PolicyEvaluationService {
     transferId: string,
     remoteParticipant: string,
     action: string,
-    verifiableCredentials: VerifiableCredential[],
+    verifiableCredentials: VerifiableCredential[]
   ): Promise<EvaluationContext> {
     this.logger.debug(`Initializing context for ${agreementId}`);
     const agreement = await this.agreementService.getAgreementDao(agreementId);
@@ -48,18 +48,18 @@ export class PolicyEvaluationService {
         agreement: agreement.agreement,
         localSignature: agreement.localSignature,
         remoteSignature: agreement.remoteSignature,
-        signatureStatus: agreement.remoteSignature ? "verified" : "-",
-      },
+        signatureStatus: agreement.remoteSignature ? "verified" : "-"
+      }
     });
     this.logger.debug(
-      `Resulting context:\n${JSON.stringify(context, null, 2)}`,
+      `Resulting context:\n${JSON.stringify(context, null, 2)}`
     );
     return context;
   }
 
   async evaluate(context: EvaluationContext): Promise<EvaluationDecision> {
     this.logger.debug(
-      `Evaluating for context: agreement ${context.policy.agreement} & transfer ${context.transferId}`,
+      `Evaluating for context: agreement ${context.policy.agreement} & transfer ${context.transferId}`
     );
     const evaluation = new Evaluation(context, this.ruleRepositoryService);
     const decision = await evaluation.evaluate();
@@ -67,10 +67,10 @@ export class PolicyEvaluationService {
       await this.transferMonitorRepository.save({
         id: context.transferId,
         agreement: {
-          id: context.policy.agreement["@id"],
+          id: context.policy.agreement["@id"]
         },
         lastContext: context,
-        lastDecision: decision,
+        lastDecision: decision
       });
     }
     return decision;
@@ -78,14 +78,14 @@ export class PolicyEvaluationService {
 
   async evaluateDataPlane(
     transferId: string,
-    transferContext: Record<string, any>,
+    transferContext: Record<string, any>
   ): Promise<EvaluationDecision> {
     this.logger.debug(
       `Evaluating for data plane: ${transferId} & data plane context: \n${JSON.stringify(
         transferContext,
         null,
-        2,
-      )}`,
+        2
+      )}`
     );
     const context = await this.getLastContext(transferId);
     context.transfer = transferContext;
@@ -94,12 +94,12 @@ export class PolicyEvaluationService {
 
   async getLastContext(transferId: string): Promise<EvaluationContext> {
     const transferMonitor = await this.transferMonitorRepository.findOneBy({
-      id: transferId,
+      id: transferId
     });
     if (!transferMonitor?.lastContext) {
       throw new DSPError(
         `No context found for transfer ${transferId}`,
-        HttpStatus.NOT_FOUND,
+        HttpStatus.NOT_FOUND
       );
     }
     return transferMonitor.lastContext;
@@ -107,12 +107,12 @@ export class PolicyEvaluationService {
 
   async getLastDecision(transferId: string): Promise<EvaluationDecision> {
     const transferMonitor = await this.transferMonitorRepository.findOneBy({
-      id: transferId,
+      id: transferId
     });
     if (!transferMonitor?.lastDecision) {
       throw new DSPError(
         `No decision found for transfer ${transferId}`,
-        HttpStatus.NOT_FOUND,
+        HttpStatus.NOT_FOUND
       );
     }
     return transferMonitor.lastDecision;

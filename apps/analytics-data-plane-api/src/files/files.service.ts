@@ -11,7 +11,7 @@ export class FilesService {
   constructor(
     @InjectRepository(FileMetadataDao)
     private readonly fileRepository: Repository<FileMetadataDao>,
-    private readonly filesConfig: FilesConfig,
+    private readonly filesConfig: FilesConfig
   ) {}
 
   private readonly logger = new Logger(this.constructor.name);
@@ -26,7 +26,7 @@ export class FilesService {
         identifier: crypto.randomUUID(),
         fileSizeInBytes: file.size,
         fileName: file.filename,
-        presentInLastCheck: true,
+        presentInLastCheck: true
       });
     });
     await this.fileRepository.insert(fileEntries);
@@ -38,14 +38,14 @@ export class FilesService {
     try {
       const files = await fs.readdir(this.filesConfig.path);
       const missingFiles = filesToFind.filter(
-        (file) => !files.includes(file.fileName),
+        (file) => !files.includes(file.fileName)
       );
       if (missingFiles.length > 0) {
         await this.fileRepository.update(
           missingFiles.map((missingFile) => missingFile.identifier),
           {
-            presentInLastCheck: false,
-          },
+            presentInLastCheck: false
+          }
         );
       }
     } catch (err) {

@@ -5,7 +5,7 @@ import {
   createDIDDoc,
   createSCID,
   deriveHash,
-  normalizeVMs,
+  normalizeVMs
 } from "./utils.js";
 import { BASE_CONTEXT, METHOD, PLACEHOLDER, PROTOCOL } from "./constants.js";
 import { documentStateIsValid, newKeysAreValid } from "./assertions.js";
@@ -14,12 +14,12 @@ import {
   DeactivateDIDInterface,
   DIDLog,
   DIDLogEntry,
-  UpdateDIDInterface,
+  UpdateDIDInterface
 } from "./interfaces.js";
 import jsonpatch from "fast-json-patch";
 
 export const createDID = async (
-  options: CreateDIDInterface,
+  options: CreateDIDInterface
 ): Promise<{ did: string; doc: any; meta: any; log: DIDLog }> => {
   if (!options.updateKeys) {
     throw new Error("Update keys not supplied");
@@ -29,7 +29,7 @@ export const createDID = async (
     [],
     options.nextKeyHashes ?? [],
     false,
-    options.prerotate === true,
+    options.prerotate === true
   );
   const controller = `did:${METHOD}:${options.domain}:${PLACEHOLDER}`;
   const createdDate = createDate(options.created);
@@ -44,9 +44,9 @@ export const createDID = async (
       updateKeys: options.updateKeys,
       ...(options.prerotate
         ? { prerotate: true, nextKeyHashes: options.nextKeyHashes }
-        : {}),
+        : {})
     },
-    { value: doc },
+    { value: doc }
   ];
   const initialLogEntryHash = deriveHash(initialLogEntry);
   const scid = await createSCID(initialLogEntryHash);
@@ -54,7 +54,7 @@ export const createDID = async (
 
   initialLogEntry[0] = scid;
   initialLogEntry[3] = JSON.parse(
-    JSON.stringify(initialLogEntry[3]).replaceAll(PLACEHOLDER, scid),
+    JSON.stringify(initialLogEntry[3]).replaceAll(PLACEHOLDER, scid)
   );
   initialLogEntry[4] = { value: doc };
 
@@ -71,15 +71,15 @@ export const createDID = async (
       updated: initialLogEntry[2],
       ...(options.prerotate
         ? { prerotate: true, nextKeyHashes: options.nextKeyHashes }
-        : {}),
+        : {})
     },
-    log: [initialLogEntry],
+    log: [initialLogEntry]
   };
 };
 
 export const resolveDID = async (
   log: DIDLog,
-  options: { versionId?: number; versionTime?: Date } = {},
+  options: { versionId?: number; versionTime?: Date } = {}
 ): Promise<{ did: string; doc: any; meta: any }> => {
   const resolutionLog = clone(log);
   const protocol = resolutionLog[0][3].method;
@@ -101,14 +101,14 @@ export const resolveDID = async (
   for (const entry of resolutionLog) {
     if (entry[1] !== versionId + 1) {
       throw new Error(
-        `versionId '${entry[1]}' in log doesn't match expected '${versionId}'.`,
+        `versionId '${entry[1]}' in log doesn't match expected '${versionId}'.`
       );
     }
     versionId = entry[1];
     if (updated != "") {
       if (new Date(entry[2]) < new Date(updated)) {
         throw new Error(
-          `versionTime '${entry[2]}' in log is before previous versionTime '${updated}'.`,
+          `versionTime '${entry[2]}' in log is before previous versionTime '${updated}'.`
         );
       }
     }
@@ -131,14 +131,14 @@ export const resolveDID = async (
         JSON.parse(JSON.stringify(entry[3]).replaceAll(scid, PLACEHOLDER)),
         {
           value: JSON.parse(
-            JSON.stringify(newDoc).replaceAll(scid, PLACEHOLDER),
-          ),
-        },
+            JSON.stringify(newDoc).replaceAll(scid, PLACEHOLDER)
+          )
+        }
       ]);
       const derivedScid = await createSCID(initialLogEntry);
       if (scid !== derivedScid) {
         throw new Error(
-          `SCID '${scid}' not derived from initialLogEntry '${initialLogEntry}' (scid ${derivedScid})`,
+          `SCID '${scid}' not derived from initialLogEntry '${initialLogEntry}' (scid ${derivedScid})`
         );
       }
       const logEntryHash = deriveHash([
@@ -146,7 +146,7 @@ export const resolveDID = async (
         entry[1],
         entry[2],
         entry[3],
-        entry[4],
+        entry[4]
       ]);
       previousLogEntryHash = logEntryHash;
       if (logEntryHash !== entry[0]) {
@@ -155,7 +155,7 @@ export const resolveDID = async (
       const verified = await documentStateIsValid(newDoc, entry[5], updateKeys);
       if (!verified) {
         throw new Error(
-          `version ${versionId} failed verification of the proof.`,
+          `version ${versionId} failed verification of the proof.`
         );
       }
     } else {
@@ -167,7 +167,7 @@ export const resolveDID = async (
           doc,
           entry[4].patch,
           false,
-          false,
+          false
         ).newDocument;
       }
       if (
@@ -181,14 +181,14 @@ export const resolveDID = async (
         nextKeyHashes,
         entry[3].nextKeyHashes ?? [],
         prerotate,
-        entry[3].prerotate === true,
+        entry[3].prerotate === true
       );
       const logEntryHash = deriveHash([
         previousLogEntryHash,
         entry[1],
         entry[2],
         entry[3],
-        entry[4],
+        entry[4]
       ]);
       previousLogEntryHash = logEntryHash;
       if (logEntryHash !== entry[0]) {
@@ -197,7 +197,7 @@ export const resolveDID = async (
       const verified = await documentStateIsValid(newDoc, entry[5], updateKeys);
       if (!verified) {
         throw new Error(
-          `version ${versionId} failed verification of the proof.`,
+          `version ${versionId} failed verification of the proof.`
         );
       }
       if (entry[3].updateKeys) {
@@ -219,7 +219,7 @@ export const resolveDID = async (
       return {
         did,
         doc,
-        meta: { versionId, created, updated, previousLogEntryHash, scid },
+        meta: { versionId, created, updated, previousLogEntryHash, scid }
       };
     }
     if (options.versionTime && options.versionTime > new Date(updated)) {
@@ -230,13 +230,13 @@ export const resolveDID = async (
         return {
           did,
           doc,
-          meta: { versionId, created, updated, previousLogEntryHash, scid },
+          meta: { versionId, created, updated, previousLogEntryHash, scid }
         };
       } else if (!resolutionLog[i + 1]) {
         return {
           did,
           doc,
-          meta: { versionId, created, updated, previousLogEntryHash, scid },
+          meta: { versionId, created, updated, previousLogEntryHash, scid }
         };
       }
     }
@@ -256,13 +256,13 @@ export const resolveDID = async (
       scid,
       prerotate,
       nextKeyHashes,
-      ...(deactivated ? { deactivated } : {}),
-    },
+      ...(deactivated ? { deactivated } : {})
+    }
   };
 };
 
 export const updateDID = async (
-  options: UpdateDIDInterface,
+  options: UpdateDIDInterface
 ): Promise<{ did: string; doc: any; meta: any; log: DIDLog }> => {
   const {
     log,
@@ -274,7 +274,7 @@ export const updateDID = async (
     controller,
     domain,
     nextKeyHashes,
-    prerotate,
+    prerotate
   } = options;
   let { did, doc, meta } = await resolveDID(log);
   newKeysAreValid(
@@ -282,7 +282,7 @@ export const updateDID = async (
     meta.nextKeyHashes ?? [],
     nextKeyHashes ?? [],
     meta.prerotate === true,
-    prerotate === true,
+    prerotate === true
   );
 
   if (domain) {
@@ -299,7 +299,7 @@ export const updateDID = async (
       : { controller: [did] }),
     ...all,
     ...(services ? { service: services } : {}),
-    ...(alsoKnownAs ? { alsoKnownAs } : {}),
+    ...(alsoKnownAs ? { alsoKnownAs } : {})
   };
   meta.versionId++;
   meta.updated = createDate(options.updated);
@@ -310,9 +310,9 @@ export const updateDID = async (
     meta.updated,
     {
       ...(updateKeys ? { updateKeys } : {}),
-      ...(prerotate ? { prerotate: true, nextKeyHashes } : {}),
+      ...(prerotate ? { prerotate: true, nextKeyHashes } : {})
     },
-    { patch: clone(patch) },
+    { patch: clone(patch) }
   ];
   const logEntryHash = deriveHash(logEntry);
   logEntry[0] = logEntryHash;
@@ -326,14 +326,14 @@ export const updateDID = async (
       created: meta.created,
       updated: meta.updated,
       previousLogEntryHash: meta.previousLogEntryHash,
-      ...(prerotate ? { prerotate: true, nextKeyHashes } : {}),
+      ...(prerotate ? { prerotate: true, nextKeyHashes } : {})
     },
-    log: [...clone(log), clone(logEntry)],
+    log: [...clone(log), clone(logEntry)]
   };
 };
 
 export const deactivateDID = async (
-  options: DeactivateDIDInterface,
+  options: DeactivateDIDInterface
 ): Promise<{ did: string; doc: any; meta: any; log: DIDLog }> => {
   const { log } = options;
   let { did, doc, meta } = await resolveDID(log);
@@ -344,7 +344,7 @@ export const deactivateDID = async (
     capabilityInvocation: [],
     capabilityDelegation: [],
     keyAgreement: [],
-    verificationMethod: [],
+    verificationMethod: []
   };
   meta.versionId++;
   const patch = jsonpatch.compare(doc, newDoc);
@@ -353,7 +353,7 @@ export const deactivateDID = async (
     meta.versionId,
     meta.updated,
     { deactivated: true },
-    { patch: clone(patch) },
+    { patch: clone(patch) }
   ];
   const logEntryHash = deriveHash(logEntry);
   logEntry[0] = logEntryHash;
@@ -367,8 +367,8 @@ export const deactivateDID = async (
       created: meta.created,
       updated: meta.updated,
       previousLogEntryHash: meta.previousLogEntryHash,
-      deactivated: true,
+      deactivated: true
     },
-    log: [...clone(log), clone(logEntry)],
+    log: [...clone(log), clone(logEntry)]
   };
 };

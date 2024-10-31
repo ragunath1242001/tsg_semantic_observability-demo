@@ -9,7 +9,7 @@ import crypto from "crypto";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
-    logger: new AppLogger(),
+    logger: new AppLogger()
   });
   const config = app.get(ServerConfig);
   if (
@@ -17,7 +17,7 @@ async function bootstrap() {
     process.env["NODE_ENV"] !== "production"
   ) {
     app.setGlobalPrefix(`${process.env["SUBPATH"] ?? ""}/api`, {
-      exclude: [".well-known/did.json", "health"],
+      exclude: [".well-known/did.json", "health"]
     });
   }
   app.use(
@@ -25,7 +25,7 @@ async function bootstrap() {
       name: "connect.sid.tsgcp",
       secret: process.env["SESSION_SECRET"] || crypto.randomUUID(),
       resave: false,
-      saveUninitialized: false,
+      saveUninitialized: false
     })
   );
   app.use(passport.initialize());

@@ -4,7 +4,7 @@ import {
   HttpCode,
   Param,
   Post,
-  UseGuards,
+  UseGuards
 } from "@nestjs/common/decorators";
 import {
   ApiBearerAuth,
@@ -13,7 +13,7 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiParam,
-  ApiTags,
+  ApiTags
 } from "@nestjs/swagger";
 import {
   ContractAgreementMessage,
@@ -23,7 +23,7 @@ import {
   ContractNegotiationEventMessage,
   ContractNegotiationTerminationMessage,
   ContractOfferMessage,
-  ContractRequestMessage,
+  ContractRequestMessage
 } from "@tsg-dsp/common-dsp";
 import { VerifiablePresentationGuard } from "../../auth/verifiablePresentation.guard";
 import { VPId } from "../../auth/verifiablePresentation.strategy";
@@ -37,7 +37,7 @@ import {
   ContractNegotiationSchema,
   ContractNegotiationTerminationMessageSchema,
   ContractOfferMessageSchema,
-  ContractRequestMessageSchema,
+  ContractRequestMessageSchema
 } from "@tsg-dsp/common-dtos";
 
 @ApiBearerAuth()
@@ -51,7 +51,7 @@ export class NegotiationController {
   @ApiOperation({ summary: "Request a new negotiation" })
   @ApiBody({ type: ContractRequestMessageSchema })
   @ApiCreatedResponse({
-    type: ContractNegotiationSchema,
+    type: ContractNegotiationSchema
   })
   @Post("request")
   @HttpCode(HttpStatus.CREATED)
@@ -79,7 +79,7 @@ export class NegotiationController {
     return new ContractNegotiation({
       providerPid: negotiation.localId,
       consumerPid: negotiation.remoteId,
-      state: negotiation.state,
+      state: negotiation.state
     }).serialize();
   }
 
@@ -87,7 +87,7 @@ export class NegotiationController {
   @ApiParam({ name: "id", type: String })
   @ApiBody({ type: ContractRequestMessageSchema })
   @ApiOkResponse({
-    type: ContractNegotiationSchema,
+    type: ContractNegotiationSchema
   })
   @Post(":id/request")
   @HttpCode(HttpStatus.OK)

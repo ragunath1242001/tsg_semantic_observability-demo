@@ -11,11 +11,11 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiTags,
-  getSchemaPath,
+  getSchemaPath
 } from "@nestjs/swagger";
 import {
   AuthenticatedUserDto,
-  UnauthenticatedUserDto,
+  UnauthenticatedUserDto
 } from "./auth.schemas.js";
 
 @Controller("auth")
@@ -27,26 +27,26 @@ export class AuthController {
   @ApiOperation({
     summary: "Retrieve current user status",
     description:
-      "Retrieves current user state, whether someone is logged in or not a 200 result is provided. This is used in the frontend to determine whether certain aspects should be shown.",
+      "Retrieves current user state, whether someone is logged in or not a 200 result is provided. This is used in the frontend to determine whether certain aspects should be shown."
   })
   @ApiExtraModels(AuthenticatedUserDto, UnauthenticatedUserDto)
   @ApiOkResponse({
     schema: {
       oneOf: [
         { $ref: getSchemaPath(AuthenticatedUserDto) },
-        { $ref: getSchemaPath(UnauthenticatedUserDto) },
-      ],
-    },
+        { $ref: getSchemaPath(UnauthenticatedUserDto) }
+      ]
+    }
   })
   getUser(@Client() client: ClientInfo | undefined) {
     if (client) {
       return {
         state: "authenticated",
-        user: client,
+        user: client
       };
     } else {
       return {
-        state: "unauthenticated",
+        state: "unauthenticated"
       };
     }
   }
@@ -55,7 +55,7 @@ export class AuthController {
   @ApiFoundResponse()
   @ApiOperation({
     summary: "Login redirect",
-    description: "Redirects user to the correct authorization server",
+    description: "Redirects user to the correct authorization server"
   })
   login(@Res() res: Response) {
     if (!this.authConfig.enabled) {
@@ -68,7 +68,7 @@ export class AuthController {
   @ApiOperation({
     summary: "Logout redirect",
     description:
-      "Removes session information and redirects user the root of the frontend (`auth.redirectURL`)",
+      "Removes session information and redirects user the root of the frontend (`auth.redirectURL`)"
   })
   @ApiFoundResponse()
   logout(
@@ -96,7 +96,7 @@ export class AuthController {
   @ApiOperation({
     summary: "Login callback",
     description:
-      "Users are redirected from the authorization server to this endpoint which will redirect them to the frontend (`auth.redirectURL`)",
+      "Users are redirected from the authorization server to this endpoint which will redirect them to the frontend (`auth.redirectURL`)"
   })
   @ApiFoundResponse()
   callback(
@@ -106,7 +106,7 @@ export class AuthController {
   ): any {
     passport.authenticate("oauth", {
       successRedirect: this.authConfig.redirectURL,
-      failureRedirect: this.authConfig.redirectURL,
+      failureRedirect: this.authConfig.redirectURL
     })(req, res, next);
   }
 }

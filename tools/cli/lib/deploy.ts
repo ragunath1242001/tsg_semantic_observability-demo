@@ -4,7 +4,7 @@ import {
   Ecosystem,
   General,
   Participant,
-  SingleParticipant,
+  SingleParticipant
 } from "./model";
 import fs from "fs";
 import { checkbox, confirm, Separator } from "@inquirer/prompts";
@@ -230,39 +230,39 @@ export class Deploy {
           "<space>"
         )} to toggle options and ${chalk.blue("<enter>")} to confirm options)`,
         theme: {
-          helpMode: "always",
+          helpMode: "always"
         },
         choices: [
           {
             name: `use Kubernetes context ${currentContext.trim()} (will abort if not selected)`,
             value: "context",
-            checked: true,
+            checked: true
           },
           {
             name: "uninstall all resources, without redeployment (will override clean and clean database)",
             value: "uninstall",
-            checked: options.uninstall,
+            checked: options.uninstall
           },
           {
             name: "clean existing Helm releases",
             value: "clean",
-            checked: options.clean,
+            checked: options.clean
           },
           {
             name: "delete and redeploy databases",
             value: "cleanDatabase",
-            checked: options.cleanDatabase,
+            checked: options.cleanDatabase
           },
           { name: "execute Helm diff", value: "diff", checked: options.diff },
           {
             name: "dry run commands",
             value: "dryRun",
-            checked: options.dryRun,
+            checked: options.dryRun
           },
           new Separator(
             `Press ${chalk.blue("<enter>")} to confirm configuration`
-          ),
-        ],
+          )
+        ]
       });
       if (!answer.includes("context")) {
         log(
@@ -363,7 +363,7 @@ export class Deploy {
           diff ? "diff upgrade -C 5" : "upgrade",
           `--create-namespace`,
           `--install`,
-          ...flags,
+          ...flags
         ],
         dryRun,
         this.cwd,

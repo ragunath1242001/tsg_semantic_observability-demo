@@ -5,7 +5,7 @@ import {
   HttpCode,
   HttpStatus,
   Logger,
-  UseGuards,
+  UseGuards
 } from "@nestjs/common";
 import { CatalogDto } from "@tsg-dsp/common-dsp";
 import { RegistryService } from "./registry.service";
@@ -15,7 +15,7 @@ import {
   ApiBearerAuth,
   ApiOperation,
   ApiResponse,
-  ApiTags,
+  ApiTags
 } from "@nestjs/swagger";
 import { CredentialAddressDto } from "./registry.schema";
 import { CatalogSchema } from "@tsg-dsp/common-dtos";
@@ -35,7 +35,7 @@ export class RegistryController {
   @ApiResponse({
     status: 200,
     description: "Successfully fetched all catalogs",
-    type: [CatalogSchema],
+    type: [CatalogSchema]
   })
   async getCatalogs(): Promise<CatalogDto[]> {
     this.logger.log(`Received request for all catalogs.`);
@@ -47,7 +47,7 @@ export class RegistryController {
   @ApiResponse({
     status: 200,
     description: "Successfully fetched all addresses",
-    type: [CredentialAddressDto],
+    type: [CredentialAddressDto]
   })
   async requestAddresses(): Promise<CredentialAddress[]> {
     return await this.registryService.fetchAddresses();

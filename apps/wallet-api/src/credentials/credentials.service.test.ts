@@ -14,7 +14,7 @@ import {
   CredentialSubject,
   JsonWebSignature2020,
   VerifiableCredential,
-  VerifiablePresentation,
+  VerifiablePresentation
 } from "@tsg-dsp/common-dsp";
 import { toArray } from "../utils/unions.js";
 import { DIDDocuments, DIDService, DIDLogs } from "../model/did.dao.js";
@@ -34,8 +34,8 @@ describe("Credentials Service", () => {
         {
           id: "key-0",
           type: "EdDSA",
-          default: true,
-        },
+          default: true
+        }
       ],
       initCredentials: [
         {
@@ -44,24 +44,24 @@ describe("Credentials Service", () => {
           id: `did:web:localhost#test-init-credential`,
           keyId: "key-0",
           credentialSubject: {
-            id: "did:web:localhost",
-          },
-        },
+            id: "did:web:localhost"
+          }
+        }
       ],
       oid4vci: {
         holder: [
           {
             credentialType: "",
             preAuthorizationCode: "",
-            issuerUrl: "https://issuer1.example.com",
+            issuerUrl: "https://issuer1.example.com"
           },
           {
             credentialType: "",
             preAuthorizationCode: "",
-            issuerUrl: "https://issuer2.example.com",
-          },
-        ],
-      },
+            issuerUrl: "https://issuer2.example.com"
+          }
+        ]
+      }
     });
 
     server = setupServer(
@@ -71,7 +71,7 @@ describe("Credentials Service", () => {
           return HttpResponse.json<VerifiableCredential<JsonWebSignature2020>>({
             "@context": [
               "https://www.w3.org/2018/credentials/v1",
-              "https://w3id.org/security/suites/jws-2020/v1",
+              "https://w3id.org/security/suites/jws-2020/v1"
             ],
             type: ["VerifiableCredential"],
             id: new URL(request.url).searchParams.get("vcid") || "",
@@ -84,10 +84,10 @@ describe("Credentials Service", () => {
               proofPurpose: "assertionMethod",
               verificationMethod:
                 "did:web:registration.lab.gaia-x.eu:development#X509-JWK2020",
-              jws: "",
-            },
+              jws: ""
+            }
           });
-        },
+        }
       ),
       http.post<PathParams, VerifiablePresentation, VerifiableCredential>(
         "https://compliance.gaia-x.eu/development/api/credential-offers",
@@ -98,7 +98,7 @@ describe("Credentials Service", () => {
           return HttpResponse.json<VerifiableCredential<JsonWebSignature2020>>({
             "@context": [
               "https://www.w3.org/2018/credentials/v1",
-              "https://w3id.org/security/suites/jws-2020/v1",
+              "https://w3id.org/security/suites/jws-2020/v1"
             ],
             type: ["VerifiableCredential"],
             id: new URL(request.url).searchParams.get("vcid") || "",
@@ -114,7 +114,7 @@ describe("Credentials Service", () => {
                 "gx:type":
                   toArray(credential.credentialSubject)[0]["type"] ||
                   credential.type[0] ||
-                  "unknown",
+                  "unknown"
               };
             }),
             proof: {
@@ -123,11 +123,11 @@ describe("Credentials Service", () => {
               proofPurpose: "assertionMethod",
               verificationMethod:
                 "did:web:compliance.lab.gaia-x.eu:development#X509-JWK2020",
-              jws: "",
-            },
+              jws: ""
+            }
           });
-        },
-      ),
+        }
+      )
     );
 
     server.listen({ onUnhandledRequest: "bypass" });
@@ -139,15 +139,15 @@ describe("Credentials Service", () => {
           DIDDocuments,
           DIDService,
           KeyMaterials,
-          DIDLogs,
+          DIDLogs
         ]),
         TypeOrmModule.forFeature([
           Credentials,
           DIDDocuments,
           DIDService,
           KeyMaterials,
-          DIDLogs,
-        ]),
+          DIDLogs
+        ])
       ],
       providers: [
         CredentialsService,
@@ -157,9 +157,9 @@ describe("Credentials Service", () => {
         KeysService,
         {
           provide: RootConfig,
-          useValue: config,
-        },
-      ],
+          useValue: config
+        }
+      ]
     }).compile();
 
     credentialsService = moduleRef.get(CredentialsService);
@@ -184,8 +184,8 @@ describe("Credentials Service", () => {
         id: `test-credential`,
         keyId: "key-0",
         credentialSubject: {
-          id: didId,
-        },
+          id: didId
+        }
       });
       expect(credential).toBeDefined();
       const credential2 = await credentialsService.issueCredential(
@@ -194,10 +194,10 @@ describe("Credentials Service", () => {
           type: [],
           id: "did:web:external-did.com#test-credential",
           credentialSubject: {
-            id: didId,
-          },
+            id: didId
+          }
         },
-        "did:web:external-did.com",
+        "did:web:external-did.com"
       );
       expect(credential2).toBeDefined();
       await expect(
@@ -206,37 +206,37 @@ describe("Credentials Service", () => {
           type: [],
           id: `${didId}#test-credential`,
           credentialSubject: {
-            id: didId,
-          },
-        }),
+            id: didId
+          }
+        })
       ).rejects.toThrow("already exists");
       expect(await credentialsService.getCredentials()).toHaveLength(3);
     });
     it("Import credential", async () => {
       const testCredential = await credentialsService.getCredential(
-        `${didId}#test-credential`,
+        `${didId}#test-credential`
       );
 
       const importedCredential = await credentialsService.importCredential({
         ...testCredential.credential,
         id: `${didId}#imported-credential`,
-        issuer: "did:web:external-issuer.com",
+        issuer: "did:web:external-issuer.com"
       });
 
       expect(importedCredential).toBeDefined();
       expect(importedCredential.selfIssued).toBe(false);
       expect(importedCredential.credential.issuer).toBe(
-        "did:web:external-issuer.com",
+        "did:web:external-issuer.com"
       );
 
       await expect(
         credentialsService.importCredential({
           ...testCredential.credential,
           id: `imported-credential`,
-          issuer: "did:web:external-issuer.com",
-        }),
+          issuer: "did:web:external-issuer.com"
+        })
       ).rejects.toThrow(
-        "Imported credentials must be have an ID that starts with a DID appended with # and a credential ID",
+        "Imported credentials must be have an ID that starts with a DID appended with # and a credential ID"
       );
     });
     it("Update credential", async () => {
@@ -248,20 +248,20 @@ describe("Credentials Service", () => {
           id: "test-credential",
           credentialSubject: {
             id: didId,
-            "https://example.com/extraProperty": "test",
-          },
-        }),
+            "https://example.com/extraProperty": "test"
+          }
+        })
       );
       expect(credential).toBeDefined();
       expect(
         toArray(
           (await credentialsService.getCredential(`${didId}#test-credential`))
-            .credential.credentialSubject,
-        )[0]["https://example.com/extraProperty"],
+            .credential.credentialSubject
+        )[0]["https://example.com/extraProperty"]
       ).toBe("test");
 
       const testCredential = await credentialsService.getCredential(
-        `${didId}#test-credential`,
+        `${didId}#test-credential`
       );
       const updateImportedCredential =
         await credentialsService.updateCredential(
@@ -269,18 +269,18 @@ describe("Credentials Service", () => {
           {
             ...testCredential.credential,
             id: `${didId}#imported-credential`,
-            issuer: "did:web:external-issuer.com",
-          },
+            issuer: "did:web:external-issuer.com"
+          }
         );
     });
     it("Delete credential", async () => {
       await credentialsService.deleteCredential(`${didId}#test-credential`);
 
       await expect(
-        credentialsService.getCredential(`${didId}#test-credential`),
+        credentialsService.getCredential(`${didId}#test-credential`)
       ).rejects.toThrow("can't be found");
       await expect(
-        credentialsService.deleteCredential(`${didId}#test-credential`),
+        credentialsService.deleteCredential(`${didId}#test-credential`)
       ).rejects.toThrow("can't be found");
     });
   });
@@ -290,14 +290,14 @@ describe("Credentials Service", () => {
         service: [
           {
             type: "Management",
-            serviceEndpoint: "https://example.com/management",
-          },
-        ],
+            serviceEndpoint: "https://example.com/management"
+          }
+        ]
       };
 
       const mockCredentials = [
         { id: "cred1", type: ["VerifiableCredential"] },
-        { id: "cred2", type: ["VerifiableCredential"] },
+        { id: "cred2", type: ["VerifiableCredential"] }
       ];
 
       server.use(
@@ -309,13 +309,13 @@ describe("Credentials Service", () => {
         }),
         http.get("https://example.com/management/credentials/dataspace", () => {
           return HttpResponse.json(mockCredentials);
-        }),
+        })
       );
 
       const result = await credentialsService.getDataspaceCredentials();
       expect(result).toHaveLength(4); // 2 issuers * 2 credentials each
       expect(result).toEqual(
-        expect.arrayContaining(mockCredentials.concat(mockCredentials)),
+        expect.arrayContaining(mockCredentials.concat(mockCredentials))
       );
     });
 
@@ -335,11 +335,11 @@ describe("Credentials Service", () => {
       server.use(
         http.get("https://issuer1.example.com/.well-known/did.json", () => {
           return HttpResponse.json({}, { status: 404 });
-        }),
+        })
       );
 
       await expect(
-        credentialsService.getDataspaceCredentials(),
+        credentialsService.getDataspaceCredentials()
       ).rejects.toThrow(AppError);
     });
 
@@ -348,9 +348,9 @@ describe("Credentials Service", () => {
         service: [
           {
             type: "OtherService",
-            serviceEndpoint: "https://example.com/other",
-          },
-        ],
+            serviceEndpoint: "https://example.com/other"
+          }
+        ]
       };
 
       server.use(
@@ -359,7 +359,7 @@ describe("Credentials Service", () => {
         }),
         http.get("https://issuer2.example.com/.well-known/did.json", () => {
           return HttpResponse.json(mockDidDocumentWithoutManagement);
-        }),
+        })
       );
 
       const result = await credentialsService.getDataspaceCredentials();
@@ -371,18 +371,18 @@ describe("Credentials Service", () => {
         service: [
           {
             type: "Management",
-            serviceEndpoint: "https://example.com/management",
-          },
-        ],
+            serviceEndpoint: "https://example.com/management"
+          }
+        ]
       };
 
       const mockDidDocumentWithoutManagement = {
         service: [
           {
             type: "OtherService",
-            serviceEndpoint: "https://example.com/other",
-          },
-        ],
+            serviceEndpoint: "https://example.com/other"
+          }
+        ]
       };
 
       const mockCredentials = [{ id: "cred1", type: ["VerifiableCredential"] }];
@@ -396,7 +396,7 @@ describe("Credentials Service", () => {
         }),
         http.get("https://example.com/management/credentials/dataspace", () => {
           return HttpResponse.json(mockCredentials);
-        }),
+        })
       );
 
       const result = await credentialsService.getDataspaceCredentials();

@@ -22,13 +22,13 @@ export type DIDLogEntry = [
   versionId: number,
   timestamp: string,
   params: {
-    method?: string,
-    scid?: string,
-    updateKeys?: string[],
-    prerotate?: boolean,
-    nextKeyHashes?: string[]
+    method?: string;
+    scid?: string;
+    updateKeys?: string[];
+    prerotate?: boolean;
+    nextKeyHashes?: string[];
   },
-  data: {value: any} | {patch: DIDOperation[]},
+  data: { value: any } | { patch: DIDOperation[] },
   proof?: any
 ];
 export type DIDLog = DIDLogEntry[];
@@ -52,7 +52,7 @@ export interface VerificationMethod {
 export interface CreateDIDInterface {
   domain: string;
   updateKeys: string[];
-  signer: (doc: any, challenge: string) => Promise<{proof: any}>;
+  signer: (doc: any, challenge: string) => Promise<{ proof: any }>;
   controller?: string;
   context?: string[];
   verificationMethods?: VerificationMethod[];
@@ -65,12 +65,12 @@ export interface CreateDIDInterface {
 export interface SignDIDDocInterface {
   document: any;
   proof: any;
-  verificationMethod: VerificationMethod
+  verificationMethod: VerificationMethod;
 }
 
 export interface UpdateDIDInterface {
   log: DIDLog;
-  signer: (doc: any, challenge: string) => Promise<{proof: any}>;
+  signer: (doc: any, challenge: string) => Promise<{ proof: any }>;
   updateKeys?: string[];
   context?: string[];
   controller?: string[];
@@ -86,5 +86,5 @@ export interface UpdateDIDInterface {
 
 export interface DeactivateDIDInterface {
   log: DIDLog;
-  signer: (doc: any, challenge: string) => Promise<{proof: any}>;
+  signer: (doc: any, challenge: string) => Promise<{ proof: any }>;
 }

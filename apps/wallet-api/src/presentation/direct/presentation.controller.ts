@@ -6,12 +6,12 @@ import {
   HttpStatus,
   ParseBoolPipe,
   Post,
-  Query,
+  Query
 } from "@nestjs/common";
 import {
   PresentationValidation,
   VerifiablePresentationJsonLd,
-  VerifiablePresentationJwt,
+  VerifiablePresentationJwt
 } from "@tsg-dsp/common-dsp";
 import { AppError } from "../../utils/error.js";
 import { PresentationService } from "../presentation.service.js";
@@ -24,12 +24,12 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiTags,
-  getSchemaPath,
+  getSchemaPath
 } from "@nestjs/swagger";
 import {
   PresentationValidationDto,
   VerifiablePresentationJsonLdDto,
-  VerifiablePresentationJwtDto,
+  VerifiablePresentationJwtDto
 } from "../presentation.schemas.js";
 
 @Controller("presentations")
@@ -43,16 +43,16 @@ export class DirectPresentationController {
   @ApiOperation({
     summary: "Request a presentation",
     description:
-      "Generates a Veriable Presentation in Jwt or JSON-LD format for one of the credentials in this wallet",
+      "Generates a Veriable Presentation in Jwt or JSON-LD format for one of the credentials in this wallet"
   })
   @ApiExtraModels(VerifiablePresentationJwtDto, VerifiablePresentationJsonLdDto)
   @ApiOkResponse({
     schema: {
       oneOf: [
         { $ref: getSchemaPath(VerifiablePresentationJwtDto) },
-        { $ref: getSchemaPath(VerifiablePresentationJsonLdDto) },
-      ],
-    },
+        { $ref: getSchemaPath(VerifiablePresentationJsonLdDto) }
+      ]
+    }
   })
   async createPresentation(
     @Query("credentialId") credentialId: string,
@@ -84,7 +84,7 @@ export class DirectPresentationController {
   @ApiOperation({
     summary: "Validate presentation",
     description:
-      "Validates a Jwt-based Verifiable Presentation according to a fixed set of requirements",
+      "Validates a Jwt-based Verifiable Presentation according to a fixed set of requirements"
   })
   @ApiBody({ type: VerifiablePresentationJwtDto })
   @ApiOkResponse({ type: PresentationValidationDto })

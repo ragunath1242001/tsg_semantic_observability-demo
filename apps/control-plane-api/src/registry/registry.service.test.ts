@@ -1,30 +1,19 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { RegistryService } from "./registry.service";
 import { TypeOrmTestHelper } from "../utils/testhelper";
-import {
-  CatalogDao,
-  CatalogRecordDao,
-  DataServiceDao,
-  DatasetDao,
-  DistributionDao,
-  ResourceDao,
-} from "../model/catalog.dao";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { DspClientService } from "../dsp/client/client.service";
 import { AuthService } from "../auth/auth.service";
 import { plainToClass, plainToInstance } from "class-transformer";
 import { AuthConfig, IamConfig, RegistryConfig, RootConfig } from "../config";
-import { SetupServer } from "msw/lib/node";
+import { SetupServer } from "msw/node";
 import {
   mockWalletConfig,
-  setupMockWalletServer,
+  setupMockWalletServer
 } from "../auth/wallets/wallet.util.test";
 import { HttpResponse, http } from "msw";
-import { CatalogService } from "../dsp/catalog/catalog.service";
 import { ScheduleModule } from "@nestjs/schedule";
 import { AuthClientService } from "../auth/auth.client.service";
-import { DataPlaneDao } from "../model/dataPlanes.dao";
-import { HttpStatus } from "@nestjs/common";
 import { RegistryDao } from "../model/registry.dao";
 import { DSPError } from "../utils/errors/error";
 import { defaultContext } from "@tsg-dsp/common-dsp";
@@ -39,13 +28,13 @@ describe("RegistryService", () => {
     await TypeOrmTestHelper.instance.setupTestDB();
     let iamConfig: IamConfig = mockWalletConfig();
     const registryConfig = plainToClass(RegistryConfig, {
-      useRegistry: true,
+      useRegistry: true
     });
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         TypeOrmTestHelper.instance.module([RegistryDao]),
         TypeOrmModule.forFeature([RegistryDao]),
-        ScheduleModule.forRoot(),
+        ScheduleModule.forRoot()
       ],
       providers: [
         DspClientService,
@@ -57,22 +46,59 @@ describe("RegistryService", () => {
             new AuthClientService(
               plainToInstance(AuthConfig, { enabled: false })
             )
-          ),
+          )
         },
         {
           provide: IamConfig,
-          useValue: iamConfig,
+          useValue: iamConfig
         },
         {
           provide: RegistryConfig,
-          useValue: registryConfig,
-        },
-      ],
+          useValue: registryConfig
+        }
+      ]
     }).compile();
 
     server = setupMockWalletServer();
 
     server.use(
+      http.get(
+        "http://127.0.0.1/tsg/management/credentials/dataspace",
+        ({ request }) => {
+          console.log("Handler", request.method, request.url);
+          return HttpResponse.json([
+            {
+              created: "2024-03-18T10:53:21.000Z",
+              modified: "2024-03-18T10:53:21.000Z",
+              deleted: null,
+              id: "did:web:localhost#test-init-credential",
+              targetDid: "did:web:localhost",
+              credential: {
+                "@context": [
+                  "https://www.w3.org/2018/credentials/v1",
+                  "https://w3c.github.io/vc-jws-2020/contexts/v1/"
+                ],
+                type: ["VerifiableCredential"],
+                id: "did:web:localhost#test-init-credential",
+                issuer: "did:web:localhost",
+                issuanceDate: "2024-03-18T10:53:21.231Z",
+                expirationDate: "2024-06-18T09:53:21.231Z",
+                credentialSubject: {
+                  id: "did:web:localhost"
+                },
+                proof: {
+                  type: "JsonWebSignature2020",
+                  created: "2024-03-18T10:53:21.859Z",
+                  proofPurpose: "assertionMethod",
+                  jws: "eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..icXdCpZ0sHdbavYz5TxrW0nvjbD11_ZaIPGfjgP8YBA2vK8wygd_ZWr8x-kCsmCzcTQ7wFEMq31hdFHaUDK1DQ",
+                  verificationMethod: "did:web:localhost#key-0"
+                }
+              },
+              selfIssued: true
+            }
+          ]);
+        }
+      ),
       http.post("http://localhost/catalog/request", () => {
         return HttpResponse.json({
           "@context": defaultContext(),
@@ -82,8 +108,8 @@ describe("RegistryService", () => {
           "dct:description": [
             {
               "@value": "Test connector",
-              "@language": "en",
-            },
+              "@language": "en"
+            }
           ],
           "dct:publisher": "did:web:localhost",
           "dct:title": "Test Catalog",
@@ -108,12 +134,12 @@ describe("RegistryService", () => {
                           "@type": "odrl:Constraint",
                           "odrl:rightOperand": "dspace:sameDataSpace",
                           "odrl:leftOperand": "dspace:identity",
-                          "odrl:operator": "odrl:isPartOf",
-                        },
-                      ],
-                    },
-                  ],
-                },
+                          "odrl:operator": "odrl:isPartOf"
+                        }
+                      ]
+                    }
+                  ]
+                }
               ],
               "dcat:distribution": [
                 {
@@ -123,38 +149,38 @@ describe("RegistryService", () => {
                     {
                       "@type": "dcat:DataService",
                       "@id": "urn:uuid:946b0e29-b006-430a-8e4d-ddf196104b67",
-                      "dcat:endpointURL": "http://localhost:3000/api/",
-                    },
+                      "dcat:endpointURL": "http://localhost:3000/api/"
+                    }
                   ],
                   "dct:conformsTo": { "@id": "https://httpbin.org/spec.json" },
                   "dct:format": "dspace:HTTP",
-                  "dct:title": "Version 0.9.2",
-                },
-              ],
-            },
+                  "dct:title": "Version 0.9.2"
+                }
+              ]
+            }
           ],
           "dcat:service": [
             {
               "@type": "dcat:DataService",
               "@id": "urn:uuid:a2d7d253-e1f6-4cd8-b806-742e119c6023",
               "dcat:endpointDescription": "dspace:connector",
-              "dcat:endpointURL": "https://cp.localhost/control-plane",
-            },
-          ],
+              "dcat:endpointURL": "https://cp.localhost/control-plane"
+            }
+          ]
         });
       })
     );
 
     server.listen({
-      onUnhandledRequest: "warn",
+      onUnhandledRequest: "warn"
     });
 
     registryService = module.get(RegistryService);
   });
 
   afterAll(async () => {
-    await TypeOrmTestHelper.instance.teardownTestDB();
     server.close();
+    await TypeOrmTestHelper.instance.teardownTestDB();
     jest.clearAllTimers();
     jest.useRealTimers();
   });
@@ -169,7 +195,7 @@ describe("RegistryService", () => {
       expect(addresses).toHaveLength(1);
       expect(addresses[0]).toEqual({
         didId: "did:web:localhost",
-        address: "http://localhost",
+        address: "http://localhost"
       });
     });
     it("Retrieve addresses from RegistryWalletClient ready for further use", async () => {
@@ -208,7 +234,7 @@ describe("RegistryService", () => {
         imports: [
           TypeOrmTestHelper.instance.module([RegistryDao]),
           TypeOrmModule.forFeature([RegistryDao]),
-          ScheduleModule.forRoot(),
+          ScheduleModule.forRoot()
         ],
         providers: [
           DspClientService,
@@ -220,17 +246,17 @@ describe("RegistryService", () => {
               new AuthClientService(
                 plainToInstance(AuthConfig, { enabled: false })
               )
-            ),
+            )
           },
           {
             provide: IamConfig,
-            useValue: iamConfig,
+            useValue: iamConfig
           },
           {
             provide: RegistryConfig,
-            useValue: registryConf,
-          },
-        ],
+            useValue: registryConf
+          }
+        ]
       }).compile();
       registryService = module.get(RegistryService);
     });

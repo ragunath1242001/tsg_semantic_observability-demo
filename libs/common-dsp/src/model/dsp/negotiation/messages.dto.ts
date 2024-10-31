@@ -32,7 +32,7 @@ export enum ContractNegotiationState {
   AGREED = "dspace:AGREED",
   VERIFIED = "dspace:VERIFIED",
   FINALIZED = "dspace:FINALIZED",
-  TERMINATED = "dspace:TERMINATED",
+  TERMINATED = "dspace:TERMINATED"
 }
 
 export interface ContractNegotiationDto extends ContextDto, ReferenceDto {
@@ -44,7 +44,7 @@ export interface ContractNegotiationDto extends ContextDto, ReferenceDto {
 
 export enum NegotiationEvent {
   ACCEPTED = "dspace:ACCEPTED",
-  FINALIZED = "dspace:FINALIZED",
+  FINALIZED = "dspace:FINALIZED"
 }
 
 export interface ContractNegotiationEventMessageDto extends ContextDto {

@@ -7,7 +7,7 @@ export const contexts = {
   cc: "http://creativecommons.org/ns#",
   dct: "http://purl.org/dc/terms/",
   dcat: "http://www.w3.org/ns/dcat#",
-  dspace: "https://w3id.org/dspace/v0.8/",
+  dspace: "https://w3id.org/dspace/v0.8/"
 };
 
 export const toCompactUri = (uri: string) => {

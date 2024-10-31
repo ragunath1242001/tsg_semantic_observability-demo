@@ -6,7 +6,7 @@ import { KeyMaterials } from "../../model/credentials.dao.js";
 import {
   createServices,
   createVerificationMethods,
-  VERIFICATION_METHOD_CONTEXT,
+  VERIFICATION_METHOD_CONTEXT
 } from "../../utils/did.js";
 
 export class DidWebStrategy implements DidStrategy {
@@ -27,12 +27,12 @@ export class DidWebStrategy implements DidStrategy {
     const didDocument: DIDDocument = {
       "@context": [
         "https://www.w3.org/ns/did/v1",
-        ...VERIFICATION_METHOD_CONTEXT,
+        ...VERIFICATION_METHOD_CONTEXT
       ],
       id: didId,
       verificationMethod: createVerificationMethods(didId, keys),
       assertionMethod: keys.map((key) => `${didId}#${key.id}`),
-      service: createServices(services),
+      service: createServices(services)
     };
 
     this.logger.log(`DID document created for ${didId}`);

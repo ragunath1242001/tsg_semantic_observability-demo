@@ -7,21 +7,21 @@ import {
   HttpStatus,
   Param,
   Body,
-  Post,
+  Post
 } from "@nestjs/common";
 import {
   ApiTags,
   ApiOAuth2,
   ApiOkResponse,
   ApiOperation,
-  ApiBody,
+  ApiBody
 } from "@nestjs/swagger";
 import { OAuthGuard } from "../auth/oauth.guard";
 import { Roles } from "../auth/roles.guard";
 import { PolicyEvaluationService } from "./policy.evaluation.service";
 import {
   ApiForbiddenResponseDefault,
-  ApiNotFoundResponseDefault,
+  ApiNotFoundResponseDefault
 } from "@tsg-dsp/common-dtos";
 import { validationPipe } from "../utils/validation.pipe";
 import { EvaluationContext, EvaluationDecision } from "./evaluation.dto";
@@ -41,7 +41,7 @@ export class PolicyEvaluationController {
   @ApiOperation({
     summary: "Retrieve last evaluation context",
     description:
-      "Retrieve last evaluation context of the specified transfer ID.",
+      "Retrieve last evaluation context of the specified transfer ID."
   })
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({ type: EvaluationContext })
@@ -56,7 +56,7 @@ export class PolicyEvaluationController {
   @ApiOperation({
     summary: "Retrieve last evaluation decision",
     description:
-      "Retrieve last evaluation decision of the specified transfer ID.",
+      "Retrieve last evaluation decision of the specified transfer ID."
   })
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({ type: EvaluationDecision })
@@ -72,7 +72,7 @@ export class PolicyEvaluationController {
   @ApiOperation({
     summary: "Retrieve last evaluation context",
     description:
-      "Retrieve last evaluation context of the specified transfer ID.",
+      "Retrieve last evaluation context of the specified transfer ID."
   })
   @HttpCode(HttpStatus.OK)
   @ApiBody({ type: EvaluationContext })
@@ -85,7 +85,7 @@ export class PolicyEvaluationController {
   ): Promise<EvaluationDecision> {
     return this.policyEvaluationService.evaluate({
       ...context,
-      transferId: transferId,
+      transferId: transferId
     });
   }
 
@@ -93,7 +93,7 @@ export class PolicyEvaluationController {
   @ApiOperation({
     summary: "Retrieve last evaluation context",
     description:
-      "Retrieve last evaluation context of the specified transfer ID.",
+      "Retrieve last evaluation context of the specified transfer ID."
   })
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({ type: EvaluationDecision })

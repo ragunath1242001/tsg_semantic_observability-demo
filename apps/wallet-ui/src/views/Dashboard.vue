@@ -27,7 +27,7 @@ const getDidDocument = async () => {
       toastError({
         error,
         summary: "DID resolvement failed",
-        defaultMessage: `Error in resolving own DID document`,
+        defaultMessage: `Error in resolving own DID document`
       })
     );
   }
@@ -70,11 +70,9 @@ onMounted(async () => {
               </div>
               <div
                 class="flex items-center justify-center bg-yellow-100 rounded-border"
-                style="width: 2.5rem; height: 2.5rem; aspect-ratio: 1"
-              >
+                style="width: 2.5rem; height: 2.5rem; aspect-ratio: 1">
                 <i
-                  class="pi pi-exclamation-triangle text-yellow-500 text-xl"
-                ></i>
+                  class="pi pi-exclamation-triangle text-yellow-500 text-xl"></i>
               </div>
             </div>
           </template>
@@ -91,8 +89,7 @@ onMounted(async () => {
                     >Contexts</span
                   >
                   <div
-                    class="text-surface-900 dark:text-surface-0 font-medium text-sm"
-                  >
+                    class="text-surface-900 dark:text-surface-0 font-medium text-sm">
                     <ul>
                       <li v-for="context in didDocument['@context']">
                         {{ context }}
@@ -102,8 +99,7 @@ onMounted(async () => {
                 </div>
                 <div
                   class="flex items-center justify-center bg-blue-100 rounded-border"
-                  style="width: 2.5rem; height: 2.5rem; aspect-ratio: 1"
-                >
+                  style="width: 2.5rem; height: 2.5rem; aspect-ratio: 1">
                   <i class="pi pi-search-plus text-blue-500 text-xl"></i>
                 </div>
               </div>
@@ -120,15 +116,13 @@ onMounted(async () => {
                     >DID Identifier</span
                   >
                   <div
-                    class="text-surface-900 dark:text-surface-0 font-medium text-sm"
-                  >
+                    class="text-surface-900 dark:text-surface-0 font-medium text-sm">
                     {{ didDocument.id }}
                   </div>
                 </div>
                 <div
                   class="flex items-center justify-center bg-orange-100 rounded-border"
-                  style="width: 2.5rem; height: 2.5rem; aspect-ratio: 1"
-                >
+                  style="width: 2.5rem; height: 2.5rem; aspect-ratio: 1">
                   <i class="pi pi-id-card text-orange-500 text-xl"></i>
                 </div>
               </div>
@@ -145,15 +139,13 @@ onMounted(async () => {
                     >Verification Methods
                   </span>
                   <div
-                    class="text-surface-900 dark:text-surface-0 font-medium text-xl"
-                  >
+                    class="text-surface-900 dark:text-surface-0 font-medium text-xl">
                     {{ numberOfVerificationMethods }}
                   </div>
                 </div>
                 <div
                   class="flex items-center justify-center bg-cyan-100 rounded-border"
-                  style="width: 2.5rem; height: 2.5rem; aspect-ratio: 1"
-                >
+                  style="width: 2.5rem; height: 2.5rem; aspect-ratio: 1">
                   <i class="pi pi-verified text-cyan-500 text-xl"></i>
                 </div>
               </div>
@@ -170,15 +162,13 @@ onMounted(async () => {
                     >Assertion Methods
                   </span>
                   <div
-                    class="text-surface-900 dark:text-surface-0 font-medium text-xl"
-                  >
+                    class="text-surface-900 dark:text-surface-0 font-medium text-xl">
                     {{ numberOfAssertionMethods }}
                   </div>
                 </div>
                 <div
                   class="flex items-center justify-center bg-purple-100 rounded-border"
-                  style="width: 2.5rem; height: 2.5rem; aspect-ratio: 1"
-                >
+                  style="width: 2.5rem; height: 2.5rem; aspect-ratio: 1">
                   <i class="pi pi-key text-purple-500 text-xl"></i>
                 </div>
               </div>
@@ -195,15 +185,13 @@ onMounted(async () => {
                     >Services
                   </span>
                   <div
-                    class="text-surface-900 dark:text-surface-0 font-medium text-xl"
-                  >
+                    class="text-surface-900 dark:text-surface-0 font-medium text-xl">
                     {{ numberOfServices }}
                   </div>
                 </div>
                 <div
                   class="flex items-center justify-center bg-blue-100 rounded-border"
-                  style="width: 2.5rem; height: 2.5rem; aspect-ratio: 1"
-                >
+                  style="width: 2.5rem; height: 2.5rem; aspect-ratio: 1">
                   <i class="pi pi-cloud text-blue-500 text-xl"></i>
                 </div>
               </div>
@@ -216,30 +204,25 @@ onMounted(async () => {
               <div class="flex justify-between mb-4">
                 <div>
                   <div
-                    class="text-surface-900 dark:text-surface-0 font-medium text-sm"
-                  >
+                    class="text-surface-900 dark:text-surface-0 font-medium text-sm">
                     <Button
                       label="Show raw DID document"
-                      @click="didDialog = true"
-                    />
+                      @click="didDialog = true" />
                     <Dialog
                       v-model:visible="didDialog"
                       modal
                       header="Raw DID document"
-                      :style="{ width: '90vw', maxWidth: '75rem' }"
-                    >
+                      :style="{ width: '90vw', maxWidth: '75rem' }">
                       <MonacoEditorVue
                         :static="didDocument"
                         :read-only="true"
-                        :max-lines="100"
-                      />
+                        :max-lines="100" />
                     </Dialog>
                   </div>
                 </div>
                 <div
                   class="flex items-center justify-center bg-yellow-100 rounded-border"
-                  style="width: 2.5rem; height: 2.5rem; aspect-ratio: 1"
-                >
+                  style="width: 2.5rem; height: 2.5rem; aspect-ratio: 1">
                   <i class="pi pi-file text-yellow-500 text-xl"></i>
                 </div>
               </div>

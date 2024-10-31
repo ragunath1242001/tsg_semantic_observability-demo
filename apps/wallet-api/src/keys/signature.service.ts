@@ -10,14 +10,14 @@ import {
   JWK,
   JWTPayload,
   jwtVerify,
-  SignJWT,
+  SignJWT
 } from "jose";
 import { AppError } from "../utils/error.js";
 import {
   DataIntegrityProof,
   JsonWebSignature2020,
   Proof,
-  toArray,
+  toArray
 } from "@tsg-dsp/common-dsp";
 import { plainToInstance } from "class-transformer";
 import { KeyMaterials } from "../model/credentials.dao.js";
@@ -27,16 +27,16 @@ import { DidService } from "../did/did.service.js";
 import crypto from "crypto";
 import {
   encodedPublicKeyMultiBaseToJWK,
-  jwkToMultibase,
+  jwkToMultibase
 } from "../utils/keys/keyconverter.js";
 import {
   base58btcToBase64url,
   base64urlToBase58btc,
-  buffersToHex,
+  buffersToHex
 } from "../utils/keys/typeconverter.js";
 import {
   cryptoSuiteFromJws,
-  getCryptoSuite,
+  getCryptoSuite
 } from "../utils/keys/cryptosuite.js";
 import { canonizeAndHash } from "../utils/keys/canonization.js";
 import { RootConfig, SignatureType } from "../config.js";
@@ -47,7 +47,7 @@ export class SignatureService {
     private readonly config: RootConfig,
     private readonly keyService: KeysService,
     private readonly didService: DidService,
-    private readonly didResolver: DidResolverService,
+    private readonly didResolver: DidResolverService
   ) {}
   private readonly logger = new Logger(this.constructor.name);
 
@@ -62,12 +62,12 @@ export class SignatureService {
   private async parseVerificationMethod(
     verificationMethod: string,
     issuerDidId?: string,
-    cryptosuite: string = "",
+    cryptosuite: string = ""
   ): Promise<JWK> {
     if (verificationMethod.startsWith("z")) {
       return encodedPublicKeyMultiBaseToJWK(
         cryptosuite,
-        verificationMethod.split("#")[0],
+        verificationMethod.split("#")[0]
       );
     } else {
       const didId = issuerDidId ?? verificationMethod.split("#")[0];
@@ -75,19 +75,19 @@ export class SignatureService {
       const usedKey = resolvedIssuerDid.verificationMethod?.find(
         (m) =>
           m.id === verificationMethod ||
-          m.id === `${issuerDidId}#${verificationMethod}`,
+          m.id === `${issuerDidId}#${verificationMethod}`
       );
       if (usedKey?.publicKeyJwk) {
         return usedKey.publicKeyJwk;
       } else if (usedKey?.publicKeyMultibase) {
         return encodedPublicKeyMultiBaseToJWK(
           cryptosuite,
-          usedKey.publicKeyMultibase,
+          usedKey.publicKeyMultibase
         );
       } else {
         throw new AppError(
           `Could not find matching public key for "${verificationMethod}"`,
-          HttpStatus.BAD_REQUEST,
+          HttpStatus.BAD_REQUEST
         ).andLog(this.logger, "debug");
       }
     }
@@ -95,11 +95,11 @@ export class SignatureService {
 
   private async signAsJws(hash: Buffer, signingKey: KeyMaterials) {
     const signature = new CompactSign(
-      new TextEncoder().encode(hash.toString("hex")),
+      new TextEncoder().encode(hash.toString("hex"))
     ).setProtectedHeader({
       alg: signingAlgorithm(signingKey.type),
       b64: false,
-      crit: ["b64"],
+      crit: ["b64"]
     });
     const privateKey = await importJWK(signingKey.privateKey);
     return await signature.sign(privateKey);
@@ -109,7 +109,7 @@ export class SignatureService {
     jws: string,
     publicKey: JWK,
     payload: string,
-    signature?: string,
+    signature?: string
   ): Promise<CompactVerifyResult> {
     try {
       let resultingJws: string;
@@ -118,8 +118,8 @@ export class SignatureService {
           JSON.stringify({
             alg: publicKey.alg,
             b64: false,
-            crit: ["b64"],
-          }),
+            crit: ["b64"]
+          })
         ).toString("base64url");
         resultingJws = `${headerHash}.${payload}.${signature}`;
       } else {
@@ -141,14 +141,14 @@ export class SignatureService {
       expirationTime?: string;
       typ?: string;
       jti?: boolean;
-    },
+    }
   ): Promise<string> {
     const signingKey = await this.getKey(options?.key);
     const jwt = new SignJWT(body)
       .setProtectedHeader({
         alg: signingAlgorithm(signingKey.type),
         kid: `${await this.didService.getDidId()}#${signingKey.id}`,
-        typ: options?.typ,
+        typ: options?.typ
       })
       .setIssuedAt()
       .setIssuer(await this.didService.getDidId())
@@ -171,20 +171,20 @@ export class SignatureService {
     if (!header.kid) {
       throw new AppError(
         `Could not validate ID token. Missing Key ID in JWT.`,
-        HttpStatus.BAD_REQUEST,
+        HttpStatus.BAD_REQUEST
       ).andLog(this.logger, "error");
     }
     if (!payload.iss) {
       throw new AppError(
         `Could not validate ID token. Missing issuer in JWT.`,
-        HttpStatus.BAD_REQUEST,
+        HttpStatus.BAD_REQUEST
       ).andLog(this.logger, "error");
     }
     const cryptoSuite = cryptoSuiteFromJws(token);
     const verificationMethod = await this.parseVerificationMethod(
       header.kid,
       payload.iss,
-      cryptoSuite,
+      cryptoSuite
     );
     const publicKey = await importJWK(verificationMethod);
     try {
@@ -193,7 +193,7 @@ export class SignatureService {
     } catch (err) {
       throw new AppError(
         `Could not validate ID token. Invalid JWT signature for key ${header.kid}: ${err}.`,
-        HttpStatus.BAD_REQUEST,
+        HttpStatus.BAD_REQUEST
       ).andLog(this.logger, "error");
     }
   }
@@ -205,7 +205,7 @@ export class SignatureService {
     normalization: "RDFC" | "JCS" = "RDFC",
     proofPurpose: string = "assertionMethod",
     options: Partial<DataIntegrityProof> = {},
-    embeddedVerificationMethod: boolean = false,
+    embeddedVerificationMethod: boolean = false
   ): Promise<Proof> {
     const proofType =
       type ??
@@ -219,29 +219,29 @@ export class SignatureService {
         keyId,
         proofPurpose,
         options,
-        embeddedVerificationMethod,
+        embeddedVerificationMethod
       );
     } else {
       if (normalization != "RDFC") {
         this.logger.warn(
-          "JCS canonization cannot be used in combination with JsonWebSignature2020, reverting back to RDFC",
+          "JCS canonization cannot be used in combination with JsonWebSignature2020, reverting back to RDFC"
         );
       }
       if (Object.keys(options).length > 0) {
         this.logger.warn(
-          "Proof options cannot be used in combination with JsonWebSignature2020, ignoring options",
+          "Proof options cannot be used in combination with JsonWebSignature2020, ignoring options"
         );
       }
       if (embeddedVerificationMethod) {
         this.logger.warn(
-          "Embedded Verification Method cannot be used in combination with JsonWebSignature2020, ignoring",
+          "Embedded Verification Method cannot be used in combination with JsonWebSignature2020, ignoring"
         );
       }
 
       return await this.signAsJsonWebSignature2020(
         document,
         keyId,
-        proofPurpose,
+        proofPurpose
       );
     }
   }
@@ -252,7 +252,7 @@ export class SignatureService {
     keyId?: string,
     proofPurpose: string = "assertionMethod",
     options: Partial<DataIntegrityProof> = {},
-    embeddedVerificationMethod: boolean = false,
+    embeddedVerificationMethod: boolean = false
   ): Promise<DataIntegrityProof> {
     try {
       const signingKey = await this.getKey(keyId);
@@ -266,24 +266,24 @@ export class SignatureService {
         verificationMethod: verificationMethod,
         cryptosuite: getCryptoSuite(signingKey.type, normalization),
         created: new Date().toISOString(),
-        ...options,
+        ...options
       };
       let proofConfigHash;
       try {
         proofConfigHash = await canonizeAndHash(
           proof,
           normalization,
-          document["@context"],
+          document["@context"]
         );
       } catch (e) {
         document["@context"] = [
           ...toArray(document["@context"]),
-          "https://w3id.org/security/data-integrity/v2",
+          "https://w3id.org/security/data-integrity/v2"
         ];
         proofConfigHash = await canonizeAndHash(
           proof,
           normalization,
-          document["@context"],
+          document["@context"]
         );
       }
       const hash = Buffer.concat([documentHash, proofConfigHash]);
@@ -295,13 +295,13 @@ export class SignatureService {
         verificationMethod: proof.verificationMethod!,
         cryptosuite: proof.cryptosuite!,
         proofValue: base64urlToBase58btc(jws.split(".")[2]),
-        ...options,
+        ...options
       };
     } catch (e) {
       throw new AppError(
         "Could not sign data as DataIntegrityProof",
         HttpStatus.INTERNAL_SERVER_ERROR,
-        e,
+        e
       ).andLog(this.logger, "warn");
     }
   }
@@ -309,7 +309,7 @@ export class SignatureService {
   async signAsJsonWebSignature2020(
     document: any,
     keyId?: string,
-    proofPurpose: string = "assertionMethod",
+    proofPurpose: string = "assertionMethod"
   ): Promise<JsonWebSignature2020> {
     const signingKey = await this.getKey(keyId);
     const verificationMethod = `${await this.didService.getDidId()}#${signingKey.id}`;
@@ -320,14 +320,14 @@ export class SignatureService {
       created: new Date().toISOString(),
       proofPurpose: proofPurpose,
       jws: jws,
-      verificationMethod: verificationMethod,
+      verificationMethod: verificationMethod
     });
   }
 
   async validateProof(
     plainDocument: any,
     proof: Proof,
-    issuerDidId?: string,
+    issuerDidId?: string
   ): Promise<CompactVerifyResult> {
     if (
       proof instanceof DataIntegrityProof ||
@@ -336,7 +336,7 @@ export class SignatureService {
       return await this.validateDataIntegrityProof(
         plainDocument,
         proof as DataIntegrityProof,
-        issuerDidId,
+        issuerDidId
       );
     } else if (
       proof instanceof JsonWebSignature2020 ||
@@ -345,30 +345,30 @@ export class SignatureService {
       return await this.validateJsonWebSignature2020(
         plainDocument,
         proof as JsonWebSignature2020,
-        issuerDidId,
+        issuerDidId
       );
     } else {
       throw new AppError(
         `Proof type ${proof.type} not supported`,
-        HttpStatus.BAD_REQUEST,
+        HttpStatus.BAD_REQUEST
       );
     }
   }
   async validateDataIntegrityProof(
     plainDocument: any,
     proof: DataIntegrityProof,
-    issuerDidId?: string,
+    issuerDidId?: string
   ) {
     if (!proof.verificationMethod) {
       throw new AppError(
         "Only DataIntegrityProofs supported with verificationMethod present",
-        HttpStatus.BAD_REQUEST,
+        HttpStatus.BAD_REQUEST
       );
     }
     const signingKey = await this.parseVerificationMethod(
       proof.verificationMethod,
       issuerDidId,
-      proof.cryptosuite,
+      proof.cryptosuite
     );
     const normalization = proof.cryptosuite.includes("-rdfc-") ? "RDFC" : "JCS";
     const documentHash = await canonizeAndHash(plainDocument, normalization);
@@ -379,17 +379,17 @@ export class SignatureService {
       proofConfigHash = await canonizeAndHash(
         proofConfig,
         normalization,
-        plainDocument["@context"],
+        plainDocument["@context"]
       );
     } catch (e) {
       plainDocument["@context"] = [
         ...toArray(plainDocument["@context"]),
-        "https://w3id.org/security/data-integrity/v2",
+        "https://w3id.org/security/data-integrity/v2"
       ];
       proofConfigHash = await canonizeAndHash(
         proofConfig,
         normalization,
-        plainDocument["@context"],
+        plainDocument["@context"]
       );
     }
     const combinedHash = buffersToHex(documentHash, proofConfigHash);
@@ -399,7 +399,7 @@ export class SignatureService {
   async validateJsonWebSignature2020(
     plainDocument: any,
     proof: JsonWebSignature2020,
-    issuerDidId?: string,
+    issuerDidId?: string
   ): Promise<CompactVerifyResult> {
     const documentHash = await canonizeAndHash(plainDocument, "RDFC");
     const jwsWithHash = proof.jws.replace("..", `.${documentHash}.`);
@@ -407,12 +407,12 @@ export class SignatureService {
     const usedKey = await this.parseVerificationMethod(
       proof.verificationMethod,
       issuerDidId,
-      cryptoSuite,
+      cryptoSuite
     );
     return await this.verifyJws(
       proof.jws,
       usedKey,
-      documentHash.toString("hex"),
+      documentHash.toString("hex")
     );
   }
 }

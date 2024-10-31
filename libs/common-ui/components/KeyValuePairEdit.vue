@@ -14,8 +14,7 @@ const onCellEditComplete = (event) => {
   <DataTable
     :value="pairs.concat([{ key: '', value: '' }])"
     editMode="cell"
-    @cell-edit-complete="onCellEditComplete"
-  >
+    @cell-edit-complete="onCellEditComplete">
     <Column
       field="key"
       header="Key"
@@ -25,13 +24,11 @@ const onCellEditComplete = (event) => {
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
-      "
-    >
+      ">
       <template #body="props">
         <div
           style="width: 100%"
-          class="whitespace-nowrap overflow-hidden text-ellipsis"
-        >
+          class="whitespace-nowrap overflow-hidden text-ellipsis">
           <span class="text-muted-color" v-if="props.data.key.trim() === ''"
             >Key</span
           >
@@ -51,16 +48,12 @@ const onCellEditComplete = (event) => {
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
-      "
-    >
+      ">
       <template #body="props">
         <div
           style="width: 100%"
-          class="whitespace-nowrap overflow-hidden text-ellipsis"
-        >
-          <span
-            class="text-muted-color"
-            v-if="props.data.value.trim() === ''"
+          class="whitespace-nowrap overflow-hidden text-ellipsis">
+          <span class="text-muted-color" v-if="props.data.value.trim() === ''"
             >Value</span
           >
           <span v-else>{{ props.data.value }}</span>
@@ -79,8 +72,7 @@ const onCellEditComplete = (event) => {
           @click="pairs.splice(props.index, 1)"
           severity="danger"
           aria-label="Stop"
-          outlined
-        />
+          outlined />
         <span v-else></span>
       </template>
     </Column>

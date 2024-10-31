@@ -4,7 +4,7 @@ import { AppRole } from "@tsg-dsp/wallet-dtos";
 import {
   ProofDocument,
   SignRequest,
-  ValidateRequest,
+  ValidateRequest
 } from "@tsg-dsp/common-dtos";
 import { validationPipe } from "../utils/validation.pipe.js";
 import {
@@ -12,16 +12,16 @@ import {
   ApiOAuth2,
   ApiOkResponse,
   ApiOperation,
-  ApiTags,
+  ApiTags
 } from "@nestjs/swagger";
 import {
   ApiForbiddenResponseDefault,
-  ApiNotFoundResponseDefault,
+  ApiNotFoundResponseDefault
 } from "@tsg-dsp/common-dtos";
 import {
   JsonWebSignatureDto,
   SignRequestDto,
-  ValidateRequestDto,
+  ValidateRequestDto
 } from "./signature.schemas.js";
 import { SignatureService } from "./signature.service.js";
 import { toArray } from "@tsg-dsp/common-dsp";
@@ -36,7 +36,7 @@ export class SignatureManagementController {
   @Post("sign")
   @ApiOperation({
     summary: "Sign document",
-    description: "Sign a JSON document with default or defined key",
+    description: "Sign a JSON document with default or defined key"
   })
   @HttpCode(HttpStatus.OK)
   @ApiBody({ type: SignRequestDto })
@@ -44,7 +44,7 @@ export class SignatureManagementController {
   @ApiNotFoundResponseDefault()
   @ApiForbiddenResponseDefault()
   async sign(
-    @Body(validationPipe) signRequest: SignRequest,
+    @Body(validationPipe) signRequest: SignRequest
   ): Promise<ProofDocument> {
     const proof = await this.signatureService.signAsProof(
       signRequest.plainDocument,
@@ -53,25 +53,25 @@ export class SignatureManagementController {
       signRequest.normalization,
       signRequest.proofPurpose,
       signRequest.options,
-      signRequest.embeddedVerificationMethod,
+      signRequest.embeddedVerificationMethod
     );
     return {
       ...signRequest.plainDocument,
-      proof,
+      proof
     };
   }
 
   @Post("validate")
   @ApiOperation({
     summary: "Validate signed document",
-    description: "Validates a document that includes a `proof` property",
+    description: "Validates a document that includes a `proof` property"
   })
   @ApiBody({ type: ValidateRequestDto })
   @ApiOkResponse({ type: JsonWebSignatureDto })
   @ApiNotFoundResponseDefault()
   @ApiForbiddenResponseDefault()
   async validate(
-    @Body(validationPipe) validateRequest: ValidateRequest,
+    @Body(validationPipe) validateRequest: ValidateRequest
   ): Promise<ProofDocument> {
     const { proof, ...plainDocument } = validateRequest.proofDocument!;
     await this.signatureService.validateProof(plainDocument, toArray(proof)[0]);

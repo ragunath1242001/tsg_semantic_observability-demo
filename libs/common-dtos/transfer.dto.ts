@@ -2,7 +2,7 @@ import {
   DataAddressDto,
   DataPlaneRequestResponseDto,
   TransferRequestMessageDto,
-  TransferState,
+  TransferState
 } from "@tsg-dsp/common-dsp";
 
 export interface TransferDto {

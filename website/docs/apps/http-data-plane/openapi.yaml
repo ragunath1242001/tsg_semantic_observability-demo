@@ -24,7 +24,8 @@ paths:
     get:
       operationId: DataPlaneController_healthCheck
       summary: Health check
-      description: Retrieves the current health of the control plane. If the control
+      description:
+        Retrieves the current health of the control plane. If the control
         plane is running it always returns an empty 200 OK
       parameters: []
       responses:
@@ -173,7 +174,8 @@ paths:
     get:
       operationId: DataPlaneManagementController_getState
       summary: Get Data Plane state
-      description: Get the state of the data plane, consisting of the id, details and
+      description:
+        Get the state of the data plane, consisting of the id, details and
         the dataset.
       parameters: []
       responses:
@@ -219,7 +221,8 @@ paths:
     post:
       operationId: DataPlaneManagementController_refreshRegistration
       summary: (Re)register data plane
-      description: Use this endpoint to (re)register your data plane. Currently it
+      description:
+        Use this endpoint to (re)register your data plane. Currently it
         will register with defaults from the config.
       parameters: []
       responses:
@@ -461,7 +464,8 @@ paths:
     get:
       operationId: DataPlaneManagementController_executeTransfer_get
       summary: Proxy a request
-      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
+      description:
+        "This endpoint is used if the HTTP Data Plane needs to serve as a
         proxy. "
       parameters:
         - name: id
@@ -487,7 +491,8 @@ paths:
     post:
       operationId: DataPlaneManagementController_executeTransfer_post
       summary: Proxy a request
-      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
+      description:
+        "This endpoint is used if the HTTP Data Plane needs to serve as a
         proxy. "
       parameters:
         - name: id
@@ -513,7 +518,8 @@ paths:
     put:
       operationId: DataPlaneManagementController_executeTransfer_put
       summary: Proxy a request
-      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
+      description:
+        "This endpoint is used if the HTTP Data Plane needs to serve as a
         proxy. "
       parameters:
         - name: id
@@ -539,7 +545,8 @@ paths:
     delete:
       operationId: DataPlaneManagementController_executeTransfer_delete
       summary: Proxy a request
-      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
+      description:
+        "This endpoint is used if the HTTP Data Plane needs to serve as a
         proxy. "
       parameters:
         - name: id
@@ -565,7 +572,8 @@ paths:
     patch:
       operationId: DataPlaneManagementController_executeTransfer_patch
       summary: Proxy a request
-      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
+      description:
+        "This endpoint is used if the HTTP Data Plane needs to serve as a
         proxy. "
       parameters:
         - name: id
@@ -591,7 +599,8 @@ paths:
     options:
       operationId: DataPlaneManagementController_executeTransfer_options
       summary: Proxy a request
-      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
+      description:
+        "This endpoint is used if the HTTP Data Plane needs to serve as a
         proxy. "
       parameters:
         - name: id
@@ -617,7 +626,8 @@ paths:
     head:
       operationId: DataPlaneManagementController_executeTransfer_head
       summary: Proxy a request
-      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
+      description:
+        "This endpoint is used if the HTTP Data Plane needs to serve as a
         proxy. "
       parameters:
         - name: id
@@ -643,7 +653,8 @@ paths:
     search:
       operationId: DataPlaneManagementController_executeTransfer_search
       summary: Proxy a request
-      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
+      description:
+        "This endpoint is used if the HTTP Data Plane needs to serve as a
         proxy. "
       parameters:
         - name: id
@@ -670,7 +681,8 @@ paths:
     get:
       operationId: ProxyController_getData_get
       summary: Proxy a request
-      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
+      description:
+        "This endpoint is used if the HTTP Data Plane needs to serve as a
         proxy. "
       parameters:
         - name: id
@@ -697,7 +709,8 @@ paths:
     post:
       operationId: ProxyController_getData_post
       summary: Proxy a request
-      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
+      description:
+        "This endpoint is used if the HTTP Data Plane needs to serve as a
         proxy. "
       parameters:
         - name: id
@@ -723,7 +736,8 @@ paths:
     put:
       operationId: ProxyController_getData_put
       summary: Proxy a request
-      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
+      description:
+        "This endpoint is used if the HTTP Data Plane needs to serve as a
         proxy. "
       parameters:
         - name: id
@@ -749,7 +763,8 @@ paths:
     delete:
       operationId: ProxyController_getData_delete
       summary: Proxy a request
-      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
+      description:
+        "This endpoint is used if the HTTP Data Plane needs to serve as a
         proxy. "
       parameters:
         - name: id
@@ -775,7 +790,8 @@ paths:
     patch:
       operationId: ProxyController_getData_patch
       summary: Proxy a request
-      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
+      description:
+        "This endpoint is used if the HTTP Data Plane needs to serve as a
         proxy. "
       parameters:
         - name: id
@@ -801,7 +817,8 @@ paths:
     options:
       operationId: ProxyController_getData_options
       summary: Proxy a request
-      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
+      description:
+        "This endpoint is used if the HTTP Data Plane needs to serve as a
         proxy. "
       parameters:
         - name: id
@@ -827,7 +844,8 @@ paths:
     head:
       operationId: ProxyController_getData_head
       summary: Proxy a request
-      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
+      description:
+        "This endpoint is used if the HTTP Data Plane needs to serve as a
         proxy. "
       parameters:
         - name: id
@@ -853,7 +871,8 @@ paths:
     search:
       operationId: ProxyController_getData_search
       summary: Proxy a request
-      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
+      description:
+        "This endpoint is used if the HTTP Data Plane needs to serve as a
         proxy. "
       parameters:
         - name: id
@@ -880,7 +899,8 @@ paths:
     get:
       operationId: AuthController_getUser
       summary: Retrieve current user status
-      description: Retrieves current user state, whether someone is logged in or not a
+      description:
+        Retrieves current user state, whether someone is logged in or not a
         200 result is provided. This is used in the frontend to determine
         whether certain aspects should be shown.
       parameters: []
@@ -909,7 +929,8 @@ paths:
     get:
       operationId: AuthController_logout
       summary: Logout redirect
-      description: Removes session information and redirects user the root of the
+      description:
+        Removes session information and redirects user the root of the
         frontend (`auth.redirectURL`)
       parameters: []
       responses:
@@ -920,7 +941,8 @@ paths:
     get:
       operationId: AuthController_callback
       summary: Login callback
-      description: Users are redirected from the authorization server to this endpoint
+      description:
+        Users are redirected from the authorization server to this endpoint
         which will redirect them to the frontend (`auth.redirectURL`)
       parameters: []
       responses:
@@ -1083,7 +1105,8 @@ components:
       scheme: bearer
       bearerFormat: VP
       type: http
-      description: Verifiable Presentation needed to communicate between two instances
+      description:
+        Verifiable Presentation needed to communicate between two instances
         of the control plane.
   schemas:
     ErrorDto:

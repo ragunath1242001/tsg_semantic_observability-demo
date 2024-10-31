@@ -6,7 +6,10 @@ import { formatDate } from "@tsg-dsp/common-ui/utils/date";
 import { useDialog } from "primevue/usedialog";
 import JSONDialog from "./JSONDialog.vue";
 import { useToast } from "primevue/usetoast";
-import { httpStatusList, httpStatusNames } from "@tsg-dsp/common-ui/utils/httpStatus";
+import {
+  httpStatusList,
+  httpStatusNames
+} from "@tsg-dsp/common-ui/utils/httpStatus";
 import Select from "primevue/select";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
 
@@ -30,33 +33,33 @@ const columns = ref([
   "Dataset",
   "Status",
   "Method",
-  "Path",
+  "Path"
 ]);
 const selectedColumns = ref(["Date", "Remote Party", "Status", "Method"]);
 const globalFilterFields = ref([
   "remoteParty",
   "transfer",
   "datasetId",
-  "status",
+  "status"
 ]);
 const statusFilterOptions = ref(httpStatusList);
 const filters = ref({
   remoteParty: {
     value: "",
-    matchMode: "contains",
+    matchMode: "contains"
   },
   transferId: {
     value: props.transferId || "",
-    matchMode: "contains",
+    matchMode: "contains"
   },
   datasetId: {
     value: props.datasetId || "",
-    matchMode: "contains",
+    matchMode: "contains"
   },
   status: {
     value: "",
-    matchMode: "contains",
-  },
+    matchMode: "contains"
+  }
 });
 const itemCount = ref(0);
 const items = ref([]);
@@ -72,27 +75,24 @@ const lazyLoad = async (event) => {
     filters.value = event.filters;
   }
   try {
-    const result = await http.get(
-      `/management/logging/${props.type}`,
-      {
-        params: {
-          page: page.value + 1,
-          take: rows.value,
-          remoteParty: filters.value.remoteParty.value
-            ? filters.value.remoteParty.value
-            : undefined,
-          transferId: filters.value.transferId.value
-            ? filters.value.transferId.value
-            : undefined,
-          datasetId: filters.value.datasetId.value
-            ? filters.value.datasetId.value
-            : undefined,
-          status: filters.value.status.value
-            ? filters.value.status.value
-            : undefined,
-        },
+    const result = await http.get(`/management/logging/${props.type}`, {
+      params: {
+        page: page.value + 1,
+        take: rows.value,
+        remoteParty: filters.value.remoteParty.value
+          ? filters.value.remoteParty.value
+          : undefined,
+        transferId: filters.value.transferId.value
+          ? filters.value.transferId.value
+          : undefined,
+        datasetId: filters.value.datasetId.value
+          ? filters.value.datasetId.value
+          : undefined,
+        status: filters.value.status.value
+          ? filters.value.status.value
+          : undefined
       }
-    );
+    });
     itemCount.value = result.data.meta.itemCount;
     items.value = result.data.data;
   } catch (err) {
@@ -117,16 +117,18 @@ const showTransfer = async (logEntry) => {
       props: {
         header: `Transfer ${logEntry.transferId}`,
         modal: true,
-        dismissableMask: true,
+        dismissableMask: true
       },
-      data: transfer.data,
+      data: transfer.data
     });
   } catch (error) {
-    toast.add(toastError({
-      error,
-      summary: "Could not load transfer",
-      defaultMessage: `Could not load transfer with identifier ${logEntry.transferId}`
-    }));
+    toast.add(
+      toastError({
+        error,
+        summary: "Could not load transfer",
+        defaultMessage: `Could not load transfer with identifier ${logEntry.transferId}`
+      })
+    );
   }
   logEntry.transferLoading = false;
 };
@@ -143,16 +145,18 @@ const showDataset = async (logEntry) => {
       props: {
         header: `Transfer ${encodeURIComponent(logEntry.transferId)}`,
         modal: true,
-        dismissableMask: true,
+        dismissableMask: true
       },
-      data: transfer.data,
+      data: transfer.data
     });
   } catch (error) {
-    toast.add(toastError({
-      error,
-      summary: "Could not load transfer metadata",
-      defaultMessage: `Could not load transfer with identifier ${logEntry.transferId}`
-    }));
+    toast.add(
+      toastError({
+        error,
+        summary: "Could not load transfer metadata",
+        defaultMessage: `Could not load transfer with identifier ${logEntry.transferId}`
+      })
+    );
   }
   logEntry.datasetLoading = false;
 };
@@ -162,9 +166,9 @@ const showDebug = (debug) => {
     props: {
       header: `Execution debug`,
       modal: true,
-      dismissableMask: true,
+      dismissableMask: true
     },
-    data: debug,
+    data: debug
   });
 };
 
@@ -221,8 +225,7 @@ onMounted(async () => {
     :rows="rows"
     :rows-per-page-options="rowsPerPagesOptions"
     resizableColumns
-    columnResizeMode="fit"
-  >
+    columnResizeMode="fit">
     <template #paginatorend>
       <MultiSelect
         v-model="selectedColumns"
@@ -230,15 +233,13 @@ onMounted(async () => {
         placeholder="Select Columns"
         scrollHeight="350px"
         :maxSelectedLabels="0"
-        :selectedItemsLabel="`{0} of ${columns.length} columns selected`"
-      />
+        :selectedItemsLabel="`{0} of ${columns.length} columns selected`" />
     </template>
     <Column expander style="width: 5rem" />
     <Column
       field="date"
       header="Date"
-      :hidden="!selectedColumns.includes('Date')"
-    >
+      :hidden="!selectedColumns.includes('Date')">
       <template #body="props">
         {{ formatDate(props.data.date, true) }}
       </template>
@@ -248,16 +249,14 @@ onMounted(async () => {
       filterMatchMode="contains"
       :show-filter-match-modes="false"
       header="Remote Party"
-      :hidden="!selectedColumns.includes('Remote Party')"
-    >
+      :hidden="!selectedColumns.includes('Remote Party')">
       <template #filter="{ filterModel, filterCallback }">
         <InputText
           type="text"
           v-model="filterModel.value"
           @keydown.enter="filterCallback()"
           class="p-column-filter"
-          placeholder="Search"
-        />
+          placeholder="Search" />
       </template>
     </Column>
     <Column
@@ -265,21 +264,19 @@ onMounted(async () => {
       filterMatchMode="contains"
       :show-filter-match-modes="false"
       header="Transfer"
-      :hidden="!selectedColumns.includes('Transfer')"
-    >
+      :hidden="!selectedColumns.includes('Transfer')">
       <template #filter="{ filterModel, filterCallback }">
         <InputText
           type="text"
           v-model="filterModel.value"
           @keydown.enter="filterCallback()"
           class="p-column-filter"
-          placeholder="Search"
-        />
+          placeholder="Search" />
       </template>
       <template #body="props">
         <Button
           style="
-            font-family: 'Courier New', Courier, monospace;
+            font-family: &quot;Courier New&quot;, Courier, monospace;
             padding-block: 0.125rem;
           "
           class="text-xs"
@@ -287,8 +284,7 @@ onMounted(async () => {
           size="small"
           :label="props.data.transferId"
           :loading="props.data.transferLoading"
-          @click="showTransfer(props.data)"
-        />
+          @click="showTransfer(props.data)" />
       </template>
     </Column>
     <Column
@@ -296,21 +292,19 @@ onMounted(async () => {
       filterMatchMode="contains"
       :show-filter-match-modes="false"
       header="Dataset"
-      :hidden="!selectedColumns.includes('Dataset')"
-    >
+      :hidden="!selectedColumns.includes('Dataset')">
       <template #filter="{ filterModel, filterCallback }">
         <InputText
           type="text"
           v-model="filterModel.value"
           @keydown.enter="filterCallback()"
           class="p-column-filter"
-          placeholder="Search"
-        />
+          placeholder="Search" />
       </template>
       <template #body="props">
         <Button
           style="
-            font-family: 'Courier New', Courier, monospace;
+            font-family: &quot;Courier New&quot;, Courier, monospace;
             padding-block: 0.125rem;
           "
           class="text-xs"
@@ -318,8 +312,7 @@ onMounted(async () => {
           size="small"
           :label="props.data.datasetId"
           :loading="props.data.datasetLoading"
-          @click="showDataset(props.data)"
-        />
+          @click="showDataset(props.data)" />
       </template>
     </Column>
     <Column
@@ -327,41 +320,35 @@ onMounted(async () => {
       filterMatchMode="contains"
       :show-filter-match-modes="false"
       header="Status"
-      :hidden="!selectedColumns.includes('Status')"
-    >
+      :hidden="!selectedColumns.includes('Status')">
       <template #filter="{ filterModel, filterCallback }">
         <Select
           v-model="filterModel.value"
           @change="filterCallback()"
           :options="statusFilterOptions"
           editable
-          placeholder="Search"
-        />
+          placeholder="Search" />
       </template>
       <template #body="props">
         <Tag
           :severity="statusSeverity(props.data.status)"
-          :value="props.data.status"
-        />
+          :value="props.data.status" />
       </template>
     </Column>
     <Column
       field="method"
       header="Method"
-      :hidden="!selectedColumns.includes('Method')"
-    >
+      :hidden="!selectedColumns.includes('Method')">
       <template #body="props">
         <Tag
           :severity="methodSeverity(props.data.method)"
-          :value="props.data.method"
-        />
+          :value="props.data.method" />
       </template>
     </Column>
     <Column
       field="path"
       header="Path"
-      :hidden="!selectedColumns.includes('Path')"
-    >
+      :hidden="!selectedColumns.includes('Path')">
       <template #body="props">
         <code>/{{ props.data.path }}</code>
       </template>
@@ -376,28 +363,26 @@ onMounted(async () => {
       <FormField label="Transfer ID">
         <Button
           style="
-            font-family: 'Courier New', Courier, monospace;
+            font-family: &quot;Courier New&quot;, Courier, monospace;
             padding-block: 0.125rem;
             margin-left: -1.25rem;
           "
           text
           :label="props.data.transferId"
           :loading="props.data.transferLoading"
-          @click="showTransfer(props.data)"
-        />
+          @click="showTransfer(props.data)" />
       </FormField>
       <FormField label="Dataset ID">
         <Button
           style="
-            font-family: 'Courier New', Courier, monospace;
+            font-family: &quot;Courier New&quot;, Courier, monospace;
             padding-block: 0.125rem;
             margin-left: -1.25rem;
           "
           text
           :label="props.data.datasetId"
           :loading="props.data.datasetLoading"
-          @click="showDataset(props.data)"
-        />
+          @click="showDataset(props.data)" />
       </FormField>
       <FormField label="Path">
         <code>/{{ props.data.path }}</code>
@@ -406,15 +391,17 @@ onMounted(async () => {
         <code>{{ props.data.method }}</code>
       </FormField>
       <FormField label="Status">
-        <code>{{ props.data.status }} {{ httpStatusNames[props.data.status] }}</code>
+        <code
+          >{{ props.data.status }}
+          {{ httpStatusNames[props.data.status] }}</code
+        >
       </FormField>
       <FormField label="Debug" v-if="props.data.debug">
         <Button
           style="padding-block: 0.125rem; margin-left: -1.25rem"
           text
           label="Show debug"
-          @click="showDebug(props.data.debug)"
-        />
+          @click="showDebug(props.data.debug)" />
       </FormField>
     </template>
   </DataTable>

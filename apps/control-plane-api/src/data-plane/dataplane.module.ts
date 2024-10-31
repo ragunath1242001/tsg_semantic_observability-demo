@@ -15,10 +15,10 @@ import { PolicyModule } from "../policy/policy.module";
     TypeOrmModule.forFeature([DataPlaneDao]),
     AuthModule,
     NegotiationModule,
-    PolicyModule,
+    PolicyModule
   ],
   controllers: [DataPlaneController, DataplaneManagementController],
   providers: [DataPlaneService],
-  exports: [DataPlaneService],
+  exports: [DataPlaneService]
 })
 export class DataPlaneModule {}

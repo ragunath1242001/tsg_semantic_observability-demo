@@ -5,7 +5,7 @@ import {
   HttpCode,
   HttpStatus,
   Logger,
-  UseGuards,
+  UseGuards
 } from "@nestjs/common";
 import { CatalogDto } from "@tsg-dsp/common-dsp";
 import { DIDDocumentDto } from "@tsg-dsp/common-dtos";
@@ -18,12 +18,12 @@ import {
   ApiOAuth2,
   ApiOperation,
   ApiTags,
-  ApiOkResponse,
+  ApiOkResponse
 } from "@nestjs/swagger";
 import { CredentialAddressDto } from "./registry.schema";
 import {
   ApiForbiddenResponseDefault,
-  CatalogSchema,
+  CatalogSchema
 } from "@tsg-dsp/common-dtos";
 
 @UseGuards(OAuthGuard)
@@ -42,7 +42,7 @@ export class RegistryClientController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: "Request catalogs",
-    description: "Requests all available catalogs.",
+    description: "Requests all available catalogs."
   })
   @ApiOkResponse({ type: CatalogSchema })
   @ApiForbiddenResponseDefault()
@@ -54,7 +54,7 @@ export class RegistryClientController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: "Request addresses",
-    description: "Requests all available credential addresses.",
+    description: "Requests all available credential addresses."
   })
   @ApiOkResponse({ type: [CredentialAddressDto] })
   @ApiForbiddenResponseDefault()
@@ -67,7 +67,7 @@ export class RegistryClientController {
   @ApiOperation({
     summary: "Request DID Documents",
     description:
-      "Requests all DID Documents that could be retrieved at the Wallet this Control Plane is linked to.",
+      "Requests all DID Documents that could be retrieved at the Wallet this Control Plane is linked to."
   })
   @ApiOkResponse({ type: DIDDocumentDto })
   @ApiForbiddenResponseDefault()
@@ -79,7 +79,7 @@ export class RegistryClientController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: "Get catalogs",
-    description: "Fetches all catalogs from the registry.",
+    description: "Fetches all catalogs from the registry."
   })
   @ApiOkResponse({ type: CatalogSchema })
   @ApiForbiddenResponseDefault()

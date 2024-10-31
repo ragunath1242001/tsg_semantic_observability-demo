@@ -27,19 +27,12 @@ import TabItem from "@theme/TabItem";
 <Heading
   as={"h1"}
   className={"openapi__heading"}
-  children={"LoggingController_getEgressLogs"}
->
-</Heading>
+  children={"LoggingController_getEgressLogs"}></Heading>
 
 <MethodEndpoint
   method={"get"}
   path={"/api/management/logging/egress"}
-  context={"endpoint"}
->
-  
-</MethodEndpoint>
-
-
+  context={"endpoint"}></MethodEndpoint>
 
 LoggingController_getEgressLogs
 
@@ -47,65 +40,57 @@ LoggingController_getEgressLogs
   id={"request"}
   as={"h2"}
   className={"openapi-tabs__heading"}
-  children={"Request"}
->
-</Heading>
+  children={"Request"}></Heading>
 
 <details
-  style={{"marginBottom":"1rem"}}
+  style={{ marginBottom: "1rem" }}
   className={"openapi-markdown__details"}
   data-collapsed={false}
-  open={true}
->
-  <summary
-    style={{}}
-  >
-    <h3
-      className={"openapi-markdown__details-summary-header-params"}
-    >
+  open={true}>
+  <summary style={{}}>
+    <h3 className={"openapi-markdown__details-summary-header-params"}>
       Query Parameters
     </h3>
-  </summary><div>
+  </summary>
+  <div>
     <ul>
       <ParamsItem
         className={"paramsItem"}
-        param={{"name":"order","required":false,"in":"query","schema":{"default":"DESC","enum":["ASC","DESC"],"type":"string"},"enumDescriptions":[]}}
-      >
-        
-      </ParamsItem><ParamsItem
+        param={{
+          name: "order",
+          required: false,
+          in: "query",
+          schema: { default: "DESC", enum: ["ASC", "DESC"], type: "string" },
+          enumDescriptions: []
+        }}></ParamsItem>
+      <ParamsItem
         className={"paramsItem"}
-        param={{"name":"page","required":false,"in":"query","schema":{"minimum":1,"default":1,"type":"number"},"enumDescriptions":[]}}
-      >
-        
-      </ParamsItem><ParamsItem
+        param={{
+          name: "page",
+          required: false,
+          in: "query",
+          schema: { minimum: 1, default: 1, type: "number" },
+          enumDescriptions: []
+        }}></ParamsItem>
+      <ParamsItem
         className={"paramsItem"}
-        param={{"name":"take","required":false,"in":"query","schema":{"minimum":1,"maximum":50,"default":10,"type":"number"},"enumDescriptions":[]}}
-      >
-        
-      </ParamsItem>
+        param={{
+          name: "take",
+          required: false,
+          in: "query",
+          schema: { minimum: 1, maximum: 50, default: 10, type: "number" },
+          enumDescriptions: []
+        }}></ParamsItem>
     </ul>
   </div>
-</details><div>
+</details>
+<div>
   <div>
-    <ApiTabs
-      label={undefined}
-      id={undefined}
-    >
-      <TabItem
-        label={"200"}
-        value={"200"}
-      >
-        <div>
-          
-          
-          
-          
-          
-        </div><div>
-          
-        </div>
+    <ApiTabs label={undefined} id={undefined}>
+      <TabItem label={"200"} value={"200"}>
+        <div></div>
+        <div></div>
       </TabItem>
     </ApiTabs>
   </div>
 </div>
-      

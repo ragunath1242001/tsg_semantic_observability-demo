@@ -4,12 +4,12 @@ import {
   HttpCode,
   Param,
   Post,
-  UseGuards,
+  UseGuards
 } from "@nestjs/common/decorators";
 import {
   CatalogDto,
   CatalogRequestMessage,
-  DatasetDto,
+  DatasetDto
 } from "@tsg-dsp/common-dsp";
 import { VerifiablePresentationGuard } from "../../auth/verifiablePresentation.guard";
 import { DeserializePipe } from "../../utils/deserialize.pipe";
@@ -20,13 +20,13 @@ import {
   ApiOkResponse,
   ApiBadRequestResponse,
   ApiBearerAuth,
-  ApiBody,
+  ApiBody
 } from "@nestjs/swagger";
 import {
   ApiForbiddenResponseDefault,
   CatalogRequestMessageSchema,
   CatalogSchema,
-  DatasetSchema,
+  DatasetSchema
 } from "@tsg-dsp/common-dtos";
 
 @UseGuards(VerifiablePresentationGuard)
@@ -41,7 +41,7 @@ export class CatalogController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: "Request catalog",
-    description: "Requests a catalog with the provided details.",
+    description: "Requests a catalog with the provided details."
   })
   @ApiBody({ type: CatalogRequestMessageSchema })
   @ApiOkResponse({ type: CatalogSchema })
@@ -59,7 +59,7 @@ export class CatalogController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: "Get dataset",
-    description: "Fetches a dataset by ID.",
+    description: "Fetches a dataset by ID."
   })
   @ApiOkResponse({ type: DatasetSchema })
   @ApiBadRequestResponse({ description: "Invalid dataset ID" })

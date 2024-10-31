@@ -14,8 +14,7 @@ const transfers = toRef(props, "transfers");
     <div
       class="col-span-12 lg:col-span-6 xl:col-span-3"
       v-for="transfer in transfers"
-      :key="transfer.localId"
-    >
+      :key="transfer.localId">
       <TransferProceed :transfer="transfer"></TransferProceed>
     </div>
   </div>

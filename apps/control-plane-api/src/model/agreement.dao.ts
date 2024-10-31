@@ -3,7 +3,7 @@ import { Column, Entity, ManyToOne, OneToMany, PrimaryColumn } from "typeorm";
 import { instanceToPlain, plainToInstance } from "class-transformer";
 import {
   EvaluationContext,
-  EvaluationDecision,
+  EvaluationDecision
 } from "../policy/evaluation.dto";
 
 @Entity()
@@ -24,7 +24,7 @@ export class AgreementDao {
   remoteSignature?: HashedMessage;
 
   @OneToMany(() => TransferMonitorDao, (transfer) => transfer.agreement, {
-    eager: false,
+    eager: false
   })
   transfers!: TransferMonitorDao[];
 }
@@ -35,15 +35,15 @@ export class TransferMonitorDao {
   id!: string;
 
   @ManyToOne(() => AgreementDao, (agreement) => agreement.transfers, {
-    eager: true,
+    eager: true
   })
   agreement!: AgreementDao;
 
   @Column("simple-json", {
     transformer: {
       to: (instance) => instanceToPlain(instance),
-      from: (plain) => plainToInstance(EvaluationContext, plain),
-    },
+      from: (plain) => plainToInstance(EvaluationContext, plain)
+    }
   })
   lastContext!: EvaluationContext;
 

@@ -6,7 +6,7 @@ const defaultConfig = {
   surface: null,
   darkTheme:
     window.matchMedia?.("(prefers-color-scheme: dark)").matches ?? false,
-  menuMode: "static",
+  menuMode: "static"
 };
 
 const configStorageItem = `layoutConfig-${location.pathname}`;
@@ -35,7 +35,7 @@ const layoutState = reactive({
   configSidebarVisible: false,
   staticMenuMobileActive: false,
   menuHoverActive: false,
-  activeMenuItem: null,
+  activeMenuItem: null
 });
 
 let configSidebarVisible = ref(false);
@@ -125,6 +125,6 @@ export function useLayout() {
     setSurface,
     setPreset,
     resetMenu,
-    setMenuMode,
+    setMenuMode
   };
 }

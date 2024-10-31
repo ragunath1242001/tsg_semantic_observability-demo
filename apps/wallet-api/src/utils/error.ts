@@ -18,7 +18,7 @@ export class AppError extends HttpException {
         status: HttpStatus[status],
         code: status,
         message: message,
-        error: err ? `${JSON.stringify(err)}` : undefined,
+        error: err ? `${JSON.stringify(err)}` : undefined
       };
     } else {
       response = {
@@ -26,7 +26,7 @@ export class AppError extends HttpException {
         status: HttpStatus[status],
         code: status,
         ...message,
-        error: err ? `${JSON.stringify(err)}` : undefined,
+        error: err ? `${JSON.stringify(err)}` : undefined
       };
     }
     super(response, status);
@@ -58,7 +58,7 @@ export function parseNetworkError(err: unknown, task: string): AppError {
         {
           message: `Error in ${task}: ${err}`,
           code: err.response.status,
-          body: err.response.data,
+          body: err.response.data
         },
         HttpStatus.BAD_REQUEST
       ).andLog(new Logger("Axios"));

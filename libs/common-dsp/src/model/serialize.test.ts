@@ -9,7 +9,7 @@ test("Validation", async () => {
   const jsonLd = {
     "@context": defaultContext(),
     "@type": "dspace:TransferCompletionMessage",
-    "dspace:processId": "",
+    "dspace:processId": ""
   };
   expect(async () => {
     serializableTypes["dspace:TransferCompletionMessage"] =

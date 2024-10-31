@@ -2,14 +2,14 @@ import { HttpStatus, Injectable, Logger } from "@nestjs/common";
 import {
   CredentialSubject,
   VerifiableCredential,
-  VerifiablePresentation,
+  VerifiablePresentation
 } from "@tsg-dsp/common-dsp";
 import crypto from "crypto";
 import { AppError, parseNetworkError } from "../../utils/error.js";
 import { DidService } from "../../did/did.service.js";
 import {
   ComplianceRequest,
-  LegalRegistrationNumberRequest,
+  LegalRegistrationNumberRequest
 } from "@tsg-dsp/wallet-dtos";
 import axios from "axios";
 import { toArray } from "../../utils/unions.js";
@@ -19,13 +19,13 @@ import { CredentialsService } from "../credentials.service.js";
 export class GaiaXService {
   constructor(
     private readonly didService: DidService,
-    private readonly credentialsService: CredentialsService,
+    private readonly credentialsService: CredentialsService
   ) {}
   private readonly logger = new Logger(this.constructor.name);
 
   async requestLegalRegistrationNumberCredential(
     credentialConfig: LegalRegistrationNumberRequest,
-    targetDid: string | undefined,
+    targetDid: string | undefined
   ) {
     if (
       targetDid &&
@@ -34,7 +34,7 @@ export class GaiaXService {
     ) {
       throw new AppError(
         `Can't request credential with these identifiers`,
-        HttpStatus.FORBIDDEN,
+        HttpStatus.FORBIDDEN
       ).andLog(this.logger, "warn");
     }
     try {
@@ -43,30 +43,30 @@ export class GaiaXService {
         credentialConfig.credentialSubject,
         {
           params: {
-            vcid: credentialConfig.vcId,
-          },
-        },
+            vcid: credentialConfig.vcId
+          }
+        }
       );
       return await this.credentialsService.importCredential(
         response.data,
-        credentialConfig.credentialSubject.id,
+        credentialConfig.credentialSubject.id
       );
     } catch (err) {
       throw parseNetworkError(
         err,
-        "requesting legal registration number credential",
+        "requesting legal registration number credential"
       );
     }
   }
 
   async requestComplianceCredential(
     complianceRequest: ComplianceRequest,
-    targetDid: string | undefined,
+    targetDid: string | undefined
   ) {
     if (targetDid && !complianceRequest.vcId.startsWith(targetDid)) {
       throw new AppError(
         `Can't request credential with these identifiers`,
-        HttpStatus.FORBIDDEN,
+        HttpStatus.FORBIDDEN
       ).andLog(this.logger, "warn");
     }
     try {
@@ -74,20 +74,20 @@ export class GaiaXService {
         "@context": ["https://www.w3.org/2018/credentials/v1"],
         type: ["VerifiablePresentation"],
         id: `${this.didService.getDidId()}#${crypto.randomUUID()}`,
-        verifiableCredential: complianceRequest.credentials,
+        verifiableCredential: complianceRequest.credentials
       };
       const response = await axios.post<VerifiableCredential>(
         `https://${complianceRequest.clearingHouse}/api/credential-offers`,
         presentation,
         {
           params: {
-            vcid: complianceRequest.vcId,
-          },
-        },
+            vcid: complianceRequest.vcId
+          }
+        }
       );
       return await this.credentialsService.importCredential(
         response.data,
-        toArray(complianceRequest.credentials[0].credentialSubject)[0].id,
+        toArray(complianceRequest.credentials[0].credentialSubject)[0].id
       );
     } catch (err) {
       throw parseNetworkError(err, "requesting compliance credential");

@@ -20,7 +20,7 @@ const getFiles = async () => {
       toastError({
         error,
         summary: "Loading state failed",
-        defaultMessage: "Could not load state from the analytics data plane",
+        defaultMessage: "Could not load state from the analytics data plane"
       })
     );
   }
@@ -55,12 +55,10 @@ onMounted(async () => {
       class="col-span-12 lg:col-span-6 xl:col-span-3"
       v-if="filesList?.length > 0"
       v-for="(file, index) in filesList"
-      :key="file"
-    >
+      :key="file">
       <Card
         :class="calculateClass(file.presentInLastCheck)"
-        style="border-radius: 12px; border: 1px solid var(--surface-border)"
-      >
+        style="border-radius: 12px; border: 1px solid var(--surface-border)">
         <template #content>
           <div class="relative" v-if="!file.presentInLastCheck">
             <div class="absolute top-2 right-2">
@@ -71,14 +69,12 @@ onMounted(async () => {
                 outlined
                 v-tooltip.bottom="
                   'This file was not found on your disk, so it is not advertised in your Catalogue.'
-                "
-              />
+                " />
             </div>
           </div>
           <div class="flex items-center justify-center flex-col">
             <i
-              class="pi pi-file !border-2 !rounded-full !p-8 !text-4xl !text-muted-color"
-            ></i>
+              class="pi pi-file !border-2 !rounded-full !p-8 !text-4xl !text-muted-color"></i>
             <span
               class="mt-3 font-semibold text-ellipsis max-w-60 whitespace-nowrap overflow-hidden"
               >{{ file.fileName }}</span

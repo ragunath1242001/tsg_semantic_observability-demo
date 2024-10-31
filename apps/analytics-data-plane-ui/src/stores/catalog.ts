@@ -10,7 +10,7 @@ export interface CatalogStore {
 export const useCatalogStore = defineStore("catalog", {
   state: (): CatalogStore => ({
     catalog: null,
-    title: "",
+    title: ""
   }),
   actions: {
     async getOwnCatalog() {
@@ -26,6 +26,6 @@ export const useCatalogStore = defineStore("catalog", {
         console.error("Error:", error);
         throw error;
       }
-    },
-  },
+    }
+  }
 });

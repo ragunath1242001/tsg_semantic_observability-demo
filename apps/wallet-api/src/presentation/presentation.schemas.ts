@@ -1,7 +1,7 @@
 import {
   ApiProperty,
   ApiPropertyOptional,
-  getSchemaPath,
+  getSchemaPath
 } from "@nestjs/swagger";
 import {
   CredentialSubject,
@@ -9,7 +9,7 @@ import {
   VerifiableCredential,
   VerifiablePresentation,
   VerifiablePresentationJsonLd,
-  VerifiablePresentationJwt,
+  VerifiablePresentationJwt
 } from "@tsg-dsp/common-dsp";
 import {
   Constraint,
@@ -21,7 +21,7 @@ import {
   InputDescriptor,
   PresentationDefinition,
   PresentationResponse,
-  PresentationSubmission,
+  PresentationSubmission
 } from "@tsg-dsp/common-dtos";
 import { VerifiableCredentialDto } from "../credentials/credentials.schemas.js";
 
@@ -76,10 +76,10 @@ export class FormatDto implements Format {
       alg: {
         type: "array",
         items: {
-          type: "string",
-        },
-      },
-    },
+          type: "string"
+        }
+      }
+    }
   })
   jwt_vp?: { alg: string[] };
 }

@@ -12,7 +12,7 @@ describe("DID Service", () => {
     return {
       "@context": [
         "https://www.w3.org/ns/did/v1",
-        "https://w3c-ccg.github.io/lds-jws2020/contexts/v1/",
+        "https://w3c-ccg.github.io/lds-jws2020/contexts/v1/"
       ],
       id: didId,
       verificationMethod: [
@@ -24,11 +24,11 @@ describe("DID Service", () => {
             kty: "OKP",
             alg: "EdDSA",
             crv: "Ed25519",
-            x: "51eFT_VcIKhmugYwgohttFjY9jqSZK-L8FcwTiPMGzA",
-          },
-        },
+            x: "51eFT_VcIKhmugYwgohttFjY9jqSZK-L8FcwTiPMGzA"
+          }
+        }
       ],
-      assertionMethod: [`${didId}#test-key`],
+      assertionMethod: [`${didId}#test-key`]
     };
   };
   const didLog: string = JSON.stringify([
@@ -38,18 +38,18 @@ describe("DID Service", () => {
     {
       method: "did:tdw:1",
       scid: "bwrrlevohy72zhnvmuvuvkkavzgr",
-      updateKeys: ["z6MktyEcvgvQo2TPwb3BxcSrmx1FEFs3cvwF4Qe8MovdbkYM"],
+      updateKeys: ["z6MktyEcvgvQo2TPwb3BxcSrmx1FEFs3cvwF4Qe8MovdbkYM"]
     },
     {
       value: {
         "@context": [
           "https://www.w3.org/ns/did/v1",
-          "https://w3id.org/security/suites/jws-2020/v1",
+          "https://w3id.org/security/suites/jws-2020/v1"
         ],
         id: "did:tdw:localhost%3A3000:bwrrlevohy72zhnvmuvuvkkavzgr",
         controller: "did:tdw:localhost%3A3000:bwrrlevohy72zhnvmuvuvkkavzgr",
         assertionMethod: [
-          "did:tdw:localhost%3A3000:bwrrlevohy72zhnvmuvuvkkavzgr#key-0",
+          "did:tdw:localhost%3A3000:bwrrlevohy72zhnvmuvuvkkavzgr#key-0"
         ],
         verificationMethod: [
           {
@@ -60,24 +60,24 @@ describe("DID Service", () => {
               kty: "OKP",
               alg: "EdDSA",
               crv: "Ed25519",
-              x: "17FuANfb0PjxiR5iiixheempqgUmp3HPFfM1zq3WtFY",
-            },
-          },
+              x: "17FuANfb0PjxiR5iiixheempqgUmp3HPFfM1zq3WtFY"
+            }
+          }
         ],
         service: [
           {
             id: "did:tdw:localhost%3A3000:bwrrlevohy72zhnvmuvuvkkavzgr#oid4vci",
             type: "OID4VCI",
-            serviceEndpoint: "http://localhost:3000",
+            serviceEndpoint: "http://localhost:3000"
           },
           {
             id: "did:tdw:localhost%3A3000:bwrrlevohy72zhnvmuvuvkkavzgr#presentation",
             type: "PresentationService",
             serviceEndpoint:
-              "http://localhost:3000/api/iatp/holder/presentation",
-          },
-        ],
-      },
+              "http://localhost:3000/api/iatp/holder/presentation"
+          }
+        ]
+      }
     },
     [
       {
@@ -88,14 +88,14 @@ describe("DID Service", () => {
         proofPurpose: "authentication",
         challenge: "b6okhmcu4qfy3bibshi7rsfwzafmiruxvyhotg22d3tbaqjrj7aga",
         proofValue:
-          "zDJwQNLB4ABV63ETmMyPXsuBNHDYfvPsvYV1wjpVjNebhBCyhw2yDVLXisNbnUTrKcamQSUkUYRoYyyvhC3cgaTr",
-      },
-    ],
+          "zDJwQNLB4ABV63ETmMyPXsuBNHDYfvPsvYV1wjpVjNebhBCyhw2yDVLXisNbnUTrKcamQSUkUYRoYyyvhC3cgaTr"
+      }
+    ]
   ]);
 
   beforeAll(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
-      providers: [DidResolverService],
+      providers: [DidResolverService]
     }).compile();
     didResolver = await moduleRef.get(DidResolverService);
 
@@ -136,12 +136,12 @@ describe("DID Service", () => {
       expect(didDocument).toEqual({
         "@context": [
           "https://www.w3.org/ns/did/v1",
-          "https://w3id.org/security/suites/jws-2020/v1",
+          "https://w3id.org/security/suites/jws-2020/v1"
         ],
         id: "did:tdw:localhost%3A3000:bwrrlevohy72zhnvmuvuvkkavzgr",
         controller: "did:tdw:localhost%3A3000:bwrrlevohy72zhnvmuvuvkkavzgr",
         assertionMethod: [
-          "did:tdw:localhost%3A3000:bwrrlevohy72zhnvmuvuvkkavzgr#key-0",
+          "did:tdw:localhost%3A3000:bwrrlevohy72zhnvmuvuvkkavzgr#key-0"
         ],
         verificationMethod: [
           {
@@ -152,23 +152,23 @@ describe("DID Service", () => {
               kty: "OKP",
               alg: "EdDSA",
               crv: "Ed25519",
-              x: "17FuANfb0PjxiR5iiixheempqgUmp3HPFfM1zq3WtFY",
-            },
-          },
+              x: "17FuANfb0PjxiR5iiixheempqgUmp3HPFfM1zq3WtFY"
+            }
+          }
         ],
         service: [
           {
             id: "did:tdw:localhost%3A3000:bwrrlevohy72zhnvmuvuvkkavzgr#oid4vci",
             type: "OID4VCI",
-            serviceEndpoint: "http://localhost:3000",
+            serviceEndpoint: "http://localhost:3000"
           },
           {
             id: "did:tdw:localhost%3A3000:bwrrlevohy72zhnvmuvuvkkavzgr#presentation",
             type: "PresentationService",
             serviceEndpoint:
-              "http://localhost:3000/api/iatp/holder/presentation",
-          },
-        ],
+              "http://localhost:3000/api/iatp/holder/presentation"
+          }
+        ]
       });
     });
   });

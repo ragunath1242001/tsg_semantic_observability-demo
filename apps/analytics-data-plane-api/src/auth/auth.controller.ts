@@ -14,11 +14,11 @@ export class AuthController {
     if (client) {
       return {
         state: "authenticated",
-        user: client,
+        user: client
       };
     } else {
       return {
-        state: "unauthenticated",
+        state: "unauthenticated"
       };
     }
   }
@@ -34,7 +34,7 @@ export class AuthController {
   logout(
     @Req() req: Request,
     @Res() res: Response,
-    @Next() next: NextFunction,
+    @Next() next: NextFunction
   ) {
     const redirectURL = this.authConfig.redirectURL;
     if (!this.authConfig.enabled) {
@@ -55,11 +55,11 @@ export class AuthController {
   callback(
     @Req() req: Request,
     @Res() res: Response,
-    @Next() next: NextFunction,
+    @Next() next: NextFunction
   ): any {
     passport.authenticate("oauth", {
       successRedirect: this.authConfig.redirectURL,
-      failureRedirect: this.authConfig.redirectURL,
+      failureRedirect: this.authConfig.redirectURL
     })(req, res, next);
   }
 }

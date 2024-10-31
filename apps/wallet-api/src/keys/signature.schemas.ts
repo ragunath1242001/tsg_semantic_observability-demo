@@ -1,7 +1,7 @@
 import {
   ProofDocument,
   SignRequest,
-  ValidateRequest,
+  ValidateRequest
 } from "@tsg-dsp/common-dtos";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { JsonWebSignature2020Dto } from "../credentials/credentials.schemas.js";

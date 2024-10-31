@@ -8,7 +8,7 @@ import crypto from "crypto";
 export async function canonize(
   document: any,
   algorithm: "RDFC" | "JCS",
-  usingContext?: any,
+  usingContext?: any
 ): Promise<string> {
   switch (algorithm) {
     case "RDFC":
@@ -16,18 +16,18 @@ export async function canonize(
         return await jsonld.canonize(
           {
             ...document,
-            ...(usingContext ? { "@context": usingContext } : {}),
+            ...(usingContext ? { "@context": usingContext } : {})
           },
           {
             ...jsonldOptions,
-            algorithm: "URDNA2015",
-          },
+            algorithm: "URDNA2015"
+          }
         );
       } catch (e) {
         throw new AppError(
           `Could not canonize the plain document via RDF canonicalization URDNA2015`,
           HttpStatus.BAD_REQUEST,
-          e,
+          e
         );
       }
     case "JCS":
@@ -38,7 +38,7 @@ export async function canonize(
 export async function canonizeAndHash(
   document: any,
   algorithm: "RDFC" | "JCS",
-  usingContext?: any,
+  usingContext?: any
 ): Promise<Buffer> {
   const canonized = await canonize(document, algorithm, usingContext);
   return crypto.createHash("sha256").update(canonized).digest();

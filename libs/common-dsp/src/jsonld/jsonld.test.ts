@@ -4,61 +4,61 @@ import { expect, test } from "@jest/globals";
 import {
   defaultContext,
   dspContextUrl,
-  setJsonLdDebugContexts,
+  setJsonLdDebugContexts
 } from "./context.defaults";
 
 const document: JsonLdDocument = {
   "@context": [
     "https://w3id.org/dspace/2024/1/context.json",
-    "https://www.w3.org/ns/dcat.jsonld",
+    "https://www.w3.org/ns/dcat.jsonld"
   ],
   "@type": "odrl:Offer",
   "@id": "urn:uuid:8d613f77-3dde-4286-88ff-c1ab96da6d59",
   "odrl:assigner": {
-    "@id": "urn:uuid:1adde502-3c96-48ac-83ff-a02fabd24b4f",
+    "@id": "urn:uuid:1adde502-3c96-48ac-83ff-a02fabd24b4f"
   },
   "odrl:assignee": {
-    "@id": "urn:uuid:e02bb9f5-8af0-4826-b1f7-e1acbc2697b2",
+    "@id": "urn:uuid:e02bb9f5-8af0-4826-b1f7-e1acbc2697b2"
   },
   "dspace:timestamp": {
     "@type": "xsd:dateTime",
-    "@value": "2023-07-13T10:05:35.208Z",
+    "@value": "2023-07-13T10:05:35.208Z"
   },
   "odrl:permission": [
     {
       "@type": "odrl:Permission",
       "odrl:action": "odrl:use",
       "odrl:target": {
-        "@id": "urn:uuid:340eab1a-f3ee-471f-a0ad-beadddc521b6",
+        "@id": "urn:uuid:340eab1a-f3ee-471f-a0ad-beadddc521b6"
       },
       "odrl:constraint": [
         {
           "@type": "odrl:Constraint",
           "odrl:rightOperand": {
             "@type": "xsd:anyURI",
-            "@value": "http://example.com/purposeX",
+            "@value": "http://example.com/purposeX"
           },
           "odrl:leftOperand": "odrl:purpose",
-          "odrl:operator": "odrl:eq",
-        },
+          "odrl:operator": "odrl:eq"
+        }
       ],
       "odrl:duty": [
         {
           "@type": "odrl:Duty",
-          "odrl:action": "odrl:inform",
-        },
-      ],
-    },
+          "odrl:action": "odrl:inform"
+        }
+      ]
+    }
   ],
   "odrl:prohibition": [
     {
       "@type": "odrl:Prohibition",
       "odrl:action": "odrl:distribute",
       "odrl:target": {
-        "@id": "urn:uuid:340eab1a-f3ee-471f-a0ad-beadddc521b6",
-      },
-    },
-  ],
+        "@id": "urn:uuid:340eab1a-f3ee-471f-a0ad-beadddc521b6"
+      }
+    }
+  ]
 };
 
 const expected = {
@@ -78,22 +78,22 @@ const expected = {
           "odrl:operator": "odrl:eq",
           "odrl:rightOperand": {
             "@type": "xsd:anyURI",
-            "@value": "http://example.com/purposeX",
-          },
-        },
+            "@value": "http://example.com/purposeX"
+          }
+        }
       ],
       "odrl:duty": [{ "@type": "odrl:Duty", "odrl:action": "odrl:inform" }],
-      "odrl:target": "urn:uuid:340eab1a-f3ee-471f-a0ad-beadddc521b6",
-    },
+      "odrl:target": "urn:uuid:340eab1a-f3ee-471f-a0ad-beadddc521b6"
+    }
   ],
   "odrl:prohibition": [
     {
       "@type": "odrl:Prohibition",
       "odrl:action": "odrl:distribute",
-      "odrl:target": "urn:uuid:340eab1a-f3ee-471f-a0ad-beadddc521b6",
-    },
+      "odrl:target": "urn:uuid:340eab1a-f3ee-471f-a0ad-beadddc521b6"
+    }
   ],
-  "dspace:timestamp": "2023-07-13T10:05:35.208Z",
+  "dspace:timestamp": "2023-07-13T10:05:35.208Z"
 };
 const expectedOdrlContext = {
   "@context": "http://www.w3.org/ns/odrl.jsonld",
@@ -110,31 +110,31 @@ const expectedOdrlContext = {
       operator: "eq",
       rightOperand: {
         type: "xsd:anyURI",
-        "@value": "http://example.com/purposeX",
-      },
+        "@value": "http://example.com/purposeX"
+      }
     },
     duty: {
       type: "Duty",
-      action: "inform",
+      action: "inform"
     },
-    target: "urn:uuid:340eab1a-f3ee-471f-a0ad-beadddc521b6",
+    target: "urn:uuid:340eab1a-f3ee-471f-a0ad-beadddc521b6"
   },
   prohibition: {
     type: "Prohibition",
     action: "distribute",
-    target: "urn:uuid:340eab1a-f3ee-471f-a0ad-beadddc521b6",
+    target: "urn:uuid:340eab1a-f3ee-471f-a0ad-beadddc521b6"
   },
   "https://w3id.org/dspace/2024/1/timestamp": {
     type: "xsd:dateTime",
-    "@value": "2023-07-13T10:05:35.208Z",
-  },
+    "@value": "2023-07-13T10:05:35.208Z"
+  }
 };
 
 test("Compaction of JSON-Dto", async () => {
   expect(await compact(document)).toStrictEqual(expected);
   expect(await compact(document, "dsp")).toStrictEqual({
     ...expected,
-    "@context": dspContextUrl,
+    "@context": dspContextUrl
   });
   const odrlCompaction = await compact(
     document,

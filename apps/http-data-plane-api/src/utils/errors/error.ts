@@ -9,13 +9,13 @@ export class DataPlaneError extends HttpException {
   constructor(
     message: string | Record<string, any>,
     status: HttpStatus,
-    err: unknown,
+    err: unknown
   );
   constructor(
     message: string | Record<string, any>,
     status: HttpStatus,
     name = "DataPlaneError",
-    err?: unknown,
+    err?: unknown
   ) {
     let response: Record<string, any>;
     if (typeof message === "string") {
@@ -24,7 +24,7 @@ export class DataPlaneError extends HttpException {
         status: HttpStatus[status],
         code: status,
         message: message,
-        error: err ? `${err}` : undefined,
+        error: err ? `${err}` : undefined
       };
     } else {
       response = {
@@ -32,7 +32,7 @@ export class DataPlaneError extends HttpException {
         status: HttpStatus[status],
         code: status,
         ...message,
-        error: err ? `${err}` : undefined,
+        error: err ? `${err}` : undefined
       };
     }
     super(response, status);
@@ -44,13 +44,13 @@ export class DataPlaneError extends HttpException {
   andLog(
     logger: Logger,
     level: "fatal" | "error" | "warn" | "log" | "debug" | "verbose" = "warn",
-    full = false,
+    full = false
   ): DataPlaneError {
     if (full) {
       logger[level](`App Error\n:${JSON.stringify(this.appResponse, null, 2)}`);
     } else {
       logger[level](
-        `App Error: ${this.appResponse["code"]} ${this.appResponse["message"]}`,
+        `App Error: ${this.appResponse["code"]} ${this.appResponse["message"]}`
       );
     }
     return this;

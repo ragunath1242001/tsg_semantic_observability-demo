@@ -1,7 +1,7 @@
 import {
   CredentialSubject,
   VerifiableCredential,
-  VerifiablePresentation,
+  VerifiablePresentation
 } from "@tsg-dsp/common-dsp";
 import { plainToInstance } from "class-transformer";
 import crypto from "crypto";
@@ -21,14 +21,14 @@ export class DevWalletClient extends WalletClient {
     const vp = {
       "@context": [
         "https://www.w3.org/2018/credentials/v1",
-        "https://w3c.github.io/vc-jws-2020/contexts/v1/",
+        "https://w3c.github.io/vc-jws-2020/contexts/v1/"
       ],
       type: ["VerifiablePresentation"],
       verifiableCredential: {
         "@context": [
           "https://www.w3.org/2018/credentials/v1",
           "https://w3c.github.io/vc-jws-2020/contexts/v1/",
-          "https://wallet.alpha.scsn.dataspac.es/context/SCSN",
+          "https://wallet.alpha.scsn.dataspac.es/context/SCSN"
         ],
         type: ["VerifiableCredential", "SCSNCredential"],
         id: `${this.iamConfig.didId}#90277481-89fc-47c1-9fcb-7abbbe5aac6e`,
@@ -38,16 +38,16 @@ export class DevWalletClient extends WalletClient {
         credentialSubject: {
           id: `${this.iamConfig.didId}`,
           scsnIdentifier: "urn:scsn:23456789012345",
-          scsnRole: "scsn:ServiceProvider",
+          scsnRole: "scsn:ServiceProvider"
         },
         proof: {
           type: "JsonWebSignature2020",
           created: "2023-08-30T15:08:39.887Z",
           proofPurpose: "assertionMethod",
           jws: "eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..cd2eKQ0eCQJCkqLVmEHZ_pqW_mm5wkOIzaM1bB4FphIKSaIEJhEU4fHKHGmsdVFHpTdmgvQ4e52YofA00ujvAg",
-          verificationMethod: "did:web:wallet.alpha.scsn.dataspac.es#key-0",
-        },
-      },
+          verificationMethod: "did:web:wallet.alpha.scsn.dataspac.es#key-0"
+        }
+      }
     };
     const jwt = await new SignJWT({ vp: vp })
       .setProtectedHeader({ alg: "HS256" })
@@ -64,7 +64,7 @@ export class DevWalletClient extends WalletClient {
 
   async requestValidation(
     token: string,
-    audience: string,
+    audience: string
   ): Promise<VerifiablePresentation | undefined> {
     const tokenPayload = decode(token, { json: true });
     return plainToInstance(VerifiablePresentation, tokenPayload!["vp"]);
@@ -77,22 +77,22 @@ export class DevWalletClient extends WalletClient {
   async requestSignature(document: Record<string, any>): Promise<any> {
     throw new DSPError(
       `Dev Wallet does not support signing of documents`,
-      HttpStatus.NOT_IMPLEMENTED,
+      HttpStatus.NOT_IMPLEMENTED
     );
   }
   async requestSignatureValidation(
-    signedDocument: Record<string, any>,
+    signedDocument: Record<string, any>
   ): Promise<any> {
     throw new DSPError(
       `Dev Wallet does not support validation of documents`,
-      HttpStatus.NOT_IMPLEMENTED,
+      HttpStatus.NOT_IMPLEMENTED
     );
   }
 
   async resolveDidDocument(didId: string): Promise<DIDDocument> {
     throw new DSPError(
       `Dev Wallet does not support resolving DID Documents`,
-      HttpStatus.NOT_IMPLEMENTED,
+      HttpStatus.NOT_IMPLEMENTED
     );
   }
 }

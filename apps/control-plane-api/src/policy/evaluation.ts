@@ -5,7 +5,7 @@ import {
   DutyDto,
   ConstraintDto,
   ODRLOperator,
-  toArray,
+  toArray
 } from "@tsg-dsp/common-dsp";
 import jsonpath from "jsonpath";
 import { DSPError } from "../utils/errors/error";
@@ -14,7 +14,7 @@ import { AtomicConstraint, DataType } from "./constraint.dto";
 import {
   EvaluationContext,
   EvaluationDecision,
-  EvaluationResult,
+  EvaluationResult
 } from "./evaluation.dto";
 import { Field, InputDescriptor } from "@tsg-dsp/common-dtos";
 import { Ajv } from "ajv";
@@ -59,7 +59,7 @@ export class Evaluation {
       return {
         decision: "DENY",
         reason: `Target mismatch, context has target ${this.context.target} while agreement has target ${this.context.policy.agreement["odrl:target"]}`,
-        context: this.context,
+        context: this.context
       };
     }
     let expectedAssigner;
@@ -80,7 +80,7 @@ export class Evaluation {
       return {
         decision: "DENY",
         reason: `Assigner of the agreement does not match the expected participant (${this.context.policy.agreement["odrl:assigner"]} vs. ${expectedAssigner})`,
-        context: this.context,
+        context: this.context
       };
     }
     if (this.context.policy.agreement["odrl:assignee"] !== expectedAssignee) {
@@ -90,7 +90,7 @@ export class Evaluation {
       return {
         decision: "DENY",
         reason: `Assignee of the agreement does not match the expected participant (${this.context.policy.agreement["odrl:assignee"]} vs. ${expectedAssignee})`,
-        context: this.context,
+        context: this.context
       };
     }
     const permissions = await promiseMap(
@@ -114,7 +114,7 @@ export class Evaluation {
         permissions: permissions,
         prohibitions: prohibitions,
         obligations: obligations,
-        context: this.context,
+        context: this.context
       });
     }
     if (prohibitions.includes(EvaluationResult.INDECISIVE)) {
@@ -127,7 +127,7 @@ export class Evaluation {
         permissions: permissions,
         prohibitions: prohibitions,
         obligations: obligations,
-        context: this.context,
+        context: this.context
       });
     }
     if (permissions.includes(EvaluationResult.VALID)) {
@@ -137,7 +137,7 @@ export class Evaluation {
         permissions: permissions,
         prohibitions: prohibitions,
         obligations: obligations,
-        context: this.context,
+        context: this.context
       });
     }
     if (permissions.includes(EvaluationResult.INDECISIVE)) {
@@ -150,7 +150,7 @@ export class Evaluation {
         permissions: permissions,
         prohibitions: prohibitions,
         obligations: obligations,
-        context: this.context,
+        context: this.context
       });
     }
     const result = EvaluationDecision.parse({
@@ -159,7 +159,7 @@ export class Evaluation {
       permissions: permissions,
       prohibitions: prohibitions,
       obligations: obligations,
-      context: this.context,
+      context: this.context
     });
     this.logger.debug(
       `No rule could be matched and evaluated successfully:\n${JSON.stringify(

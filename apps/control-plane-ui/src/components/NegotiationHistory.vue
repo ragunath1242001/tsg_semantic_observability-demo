@@ -3,7 +3,7 @@ import { stripDspace } from "@tsg-dsp/common-ui/utils/common";
 
 import {
   NegotiationDetailDto,
-  INegotiationStatusDto,
+  INegotiationStatusDto
 } from "@tsg-dsp/control-plane-dtos";
 import { ref, toRef } from "vue";
 import { useToast } from "primevue/usetoast";
@@ -69,7 +69,7 @@ const getNegotiation = async (uuid: string) => {
         toastError({
           error,
           summary: "Failed to load negotiation",
-          defaultMessage: `Could not load negotiation with identifer ${uuid}`,
+          defaultMessage: `Could not load negotiation with identifer ${uuid}`
         })
       );
       console.error("Error:", error);
@@ -97,7 +97,7 @@ const requestTransfer = async (accNegotiation: NegotiationDetailDto) => {
         severity: "success",
         summary: "Request sent",
         detail: "Successfully requested to start transfer process.",
-        life: 3000,
+        life: 3000
       });
     }
   } catch (error) {
@@ -105,7 +105,7 @@ const requestTransfer = async (accNegotiation: NegotiationDetailDto) => {
       toastError({
         error,
         summary: "Failed to request transfer",
-        defaultMessage: "Could not load transfer",
+        defaultMessage: "Could not load transfer"
       })
     );
     console.error("Error:", error);
@@ -116,8 +116,7 @@ const requestTransfer = async (accNegotiation: NegotiationDetailDto) => {
 <template>
   <Card
     style="border-radius: 12px; border: 1px solid var(--surface-border)"
-    class="mt-4"
-  >
+    class="mt-4">
     <template #title><h5>Negotiation History</h5></template>
     <template #subtitle
       >Here you can find the history of the contract negotiations. Contracts
@@ -128,8 +127,7 @@ const requestTransfer = async (accNegotiation: NegotiationDetailDto) => {
       <Accordion @update:value="getNegotiation">
         <AccordionPanel
           v-for="(negotiation, index) in negotiations"
-          :value="negotiation.localId"
-        >
+          :value="negotiation.localId">
           <AccordionHeader>
             <span class="flex items-center justify-between w-full">
               <div>
@@ -143,8 +141,7 @@ const requestTransfer = async (accNegotiation: NegotiationDetailDto) => {
                 <Tag
                   class="ml-auto mr-6"
                   :value="stripDspace(negotiation.state)"
-                  :severity="getSeverity(negotiation.state)"
-                />
+                  :severity="getSeverity(negotiation.state)" />
                 <small class="p-text-secondary">
                   {{ new Date(negotiation.modifiedDate).toLocaleString() }}
                 </small>
@@ -154,8 +151,7 @@ const requestTransfer = async (accNegotiation: NegotiationDetailDto) => {
           <AccordionContent>
             <div
               class="flex items-stretch grid grid-cols-12 gap-4 card-container"
-              v-if="accNegotiation"
-            >
+              v-if="accNegotiation">
               <div class="p-0 col-span-12 xl:col-span-6">
                 <Tabs value="Agreement">
                   <TabList>
@@ -172,45 +168,41 @@ const requestTransfer = async (accNegotiation: NegotiationDetailDto) => {
                             : accNegotiation.offer
                         "
                         :read-only="true"
-                        :max-lines="35"
-                      />
+                        :max-lines="35" />
                     </TabPanel>
                     <TabPanel
                       value="Local Signature"
                       v-if="
                         localProof &&
                         (localProof['dspace:algorithm'] ===
-                        'JsonWebSignature2020' || localProof['dspace:algorithm'] ===
-                        'DataIntegrityProof')
-                      "
-                    >
+                          'JsonWebSignature2020' ||
+                          localProof['dspace:algorithm'] ===
+                            'DataIntegrityProof')
+                      ">
                       <MonacoEditor
                         :static="JSON.parse(localProof['dspace:digest'])"
                         :read-only="true"
-                        :max-lines="35"
-                      />
+                        :max-lines="35" />
                     </TabPanel>
                     <TabPanel
                       value="Remote Signature"
                       v-if="
                         remoteProof &&
                         (remoteProof['dspace:algorithm'] ===
-                          'JsonWebSignature2020' || remoteProof['dspace:algorithm'] ===
-                          'DataIntegrityProof')
-                      "
-                    >
+                          'JsonWebSignature2020' ||
+                          remoteProof['dspace:algorithm'] ===
+                            'DataIntegrityProof')
+                      ">
                       <MonacoEditor
                         :static="JSON.parse(remoteProof['dspace:digest'])"
                         :read-only="true"
-                        :max-lines="35"
-                      />
+                        :max-lines="35" />
                     </TabPanel>
                   </TabPanels>
                 </Tabs>
               </div>
               <div
-                class="p-0 mt-6 col-span-12 xl:col-span-6 flex flex-wrap justify-center"
-              >
+                class="p-0 mt-6 col-span-12 xl:col-span-6 flex flex-wrap justify-center">
                 <Timeline :value="accNegotiation.events">
                   <template #opposite="slotProps">
                     <small class="p-text-secondary">{{
@@ -220,8 +212,7 @@ const requestTransfer = async (accNegotiation: NegotiationDetailDto) => {
                   <template #content="slotProps">
                     <Tag
                       :value="stripDspace(slotProps.item.state)"
-                      :severity="getSeverity(slotProps.item.state)"
-                    />
+                      :severity="getSeverity(slotProps.item.state)" />
                   </template>
                 </Timeline>
                 <Button
@@ -235,8 +226,7 @@ const requestTransfer = async (accNegotiation: NegotiationDetailDto) => {
                   v-if="
                     accNegotiation.role === 'consumer' &&
                     accNegotiation.state === 'dspace:FINALIZED'
-                  "
-                ></Button>
+                  "></Button>
               </div>
             </div>
           </AccordionContent>

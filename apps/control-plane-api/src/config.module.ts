@@ -2,7 +2,7 @@ import {
   TypedConfigModule,
   dotenvLoader,
   fileLoader,
-  selectConfig,
+  selectConfig
 } from "nest-typed-config";
 import { RootConfig } from "./config";
 import { DynamicModule } from "@nestjs/common";
@@ -23,8 +23,8 @@ try {
         loaders: {
           ".js": () => null,
           ".cjs": () => null,
-          ".mjs": () => null,
-        },
+          ".mjs": () => null
+        }
       }),
       dotenvLoader({
         separator: "__",
@@ -37,8 +37,8 @@ try {
           } else {
             return "";
           }
-        },
-      }),
+        }
+      })
     ],
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     validate: (rawConfig: any) => {
@@ -47,14 +47,14 @@ try {
       const schemaErrors = validateSync(config, {
         whitelist: true,
         forbidNonWhitelisted: true,
-        skipMissingProperties: false,
+        skipMissingProperties: false
       });
 
       if (schemaErrors.length) {
         throw new Error(TypedConfigModule.getConfigErrorMessage(schemaErrors));
       }
       return config as RootConfig;
-    },
+    }
   });
 
   rootConfig = selectConfig(configModule, RootConfig);

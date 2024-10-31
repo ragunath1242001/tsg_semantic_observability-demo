@@ -6,7 +6,7 @@ import {
   IsNotEmpty,
   Matches,
   ValidationError,
-  validateSync,
+  validateSync
 } from "class-validator";
 import {
   ContextDto,
@@ -15,7 +15,7 @@ import {
   TimeDto,
   DecimalDto,
   DurationDto,
-  URIDto,
+  URIDto
 } from "./common.dto";
 import { v4 as uuid } from "uuid";
 import { compact } from "../../jsonld/jsonld";

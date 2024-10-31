@@ -59,7 +59,7 @@ const validateCredential = (showToast: boolean) => {
         severity: "warn",
         summary: "Validation error",
         detail: errorMessage,
-        life: 10000,
+        life: 10000
       });
     } else {
       credentialValidation.value = errorMessage;
@@ -83,16 +83,18 @@ const importCredential = async (validate = true) => {
       severity: "success",
       summary: "Success",
       detail: "Credential imported",
-      life: 3000,
+      life: 3000
     });
     credentialRef.value = "{}";
     credentialValidation.value = undefined;
   } catch (error) {
-    toast.add(toastError({
-      error,
-      summary: "Could not import credential",
-      defaultMessage: `Error in importing credential`
-    }));
+    toast.add(
+      toastError({
+        error,
+        summary: "Could not import credential",
+        defaultMessage: `Error in importing credential`
+      })
+    );
   }
 };
 </script>
@@ -114,7 +116,9 @@ const importCredential = async (validate = true) => {
         </p>
       </template>
       <template #content>
-        <form class="flex flex-col gap-4" @submit.prevent="importCredential(true)">
+        <form
+          class="flex flex-col gap-4"
+          @submit.prevent="importCredential(true)">
           <FormField label="Credential" v-slot="props">
             <MonacoEditorVue v-model="credentialRef"></MonacoEditorVue>
             <small class="text-yellow-400" v-if="credentialValidation">{{
@@ -127,8 +131,7 @@ const importCredential = async (validate = true) => {
               class="ml-4"
               severity="warn"
               label="Import credential without verification"
-              @click="importCredential(false)"
-            />
+              @click="importCredential(false)" />
           </FormField>
         </form>
       </template>

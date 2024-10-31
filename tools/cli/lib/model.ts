@@ -9,7 +9,7 @@ import {
   IsString,
   Matches,
   ValidateIf,
-  ValidateNested,
+  ValidateNested
 } from "class-validator";
 import "reflect-metadata";
 import { log } from "./utils";
@@ -109,16 +109,16 @@ export class Participant {
                   distributions: [
                     {
                       backendUrl: "https://httpbin.org/",
-                      openApiSpecRef: "https://httpbin.org/spec.json",
-                    },
-                  ],
-                },
+                      openApiSpecRef: "https://httpbin.org/spec.json"
+                    }
+                  ]
+                }
               ],
               policy: {
-                type: "default",
-              },
-            },
-          },
+                type: "default"
+              }
+            }
+          }
         }
       );
       this.dataPlanes.set("http-data-plane", dataPlane);

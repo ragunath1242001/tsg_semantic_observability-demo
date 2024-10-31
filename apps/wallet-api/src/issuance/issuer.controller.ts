@@ -7,7 +7,7 @@ import {
   Param,
   Put,
   HttpCode,
-  HttpStatus,
+  HttpStatus
 } from "@nestjs/common";
 import { IssuerService } from "./issuer.service.js";
 import {
@@ -17,7 +17,7 @@ import {
   CredentialOfferRequest,
   CredentialOfferStatus,
   CredentialRequest,
-  CredentialResponse,
+  CredentialResponse
 } from "@tsg-dsp/wallet-dtos";
 import { Roles } from "../auth/roles.guard.js";
 import { AppRole } from "@tsg-dsp/wallet-dtos";
@@ -30,7 +30,7 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiTags,
-  getSchemaPath,
+  getSchemaPath
 } from "@nestjs/swagger";
 import {
   AccessTokenDto,
@@ -39,11 +39,11 @@ import {
   CredentialOfferStatusDto,
   CredentialRequestDto,
   DeferredCredentialResponseDto,
-  ImmediateCredentialResponseDto,
+  ImmediateCredentialResponseDto
 } from "./issuance.schemas.js";
 import {
   ApiForbiddenResponseDefault,
-  ApiNotFoundResponseDefault,
+  ApiNotFoundResponseDefault
 } from "@tsg-dsp/common-dtos";
 
 @Controller()
@@ -63,7 +63,7 @@ export class IssuerController {
   @ApiOperation({
     summary: "Request OID4VCI access token",
     description:
-      "Requests an access token based on a pre authorizated code the holder has received off-line",
+      "Requests an access token based on a pre authorizated code the holder has received off-line"
   })
   @DisableOAuthGuard()
   @HttpCode(HttpStatus.OK)
@@ -82,7 +82,7 @@ export class IssuerController {
   @ApiOperation({
     summary: "Request OID4VCI credential",
     description:
-      "Requests a new credential based on a Credential Request via the OID4VCI flow",
+      "Requests a new credential based on a Credential Request via the OID4VCI flow"
   })
   @ApiBody({ type: CredentialRequestDto })
   @ApiExtraModels(ImmediateCredentialResponseDto, DeferredCredentialResponseDto)
@@ -90,9 +90,9 @@ export class IssuerController {
     schema: {
       oneOf: [
         { $ref: getSchemaPath(ImmediateCredentialResponseDto) },
-        { $ref: getSchemaPath(DeferredCredentialResponseDto) },
-      ],
-    },
+        { $ref: getSchemaPath(DeferredCredentialResponseDto) }
+      ]
+    }
   })
   @ApiBearerAuth()
   @DisableOAuthGuard()
@@ -111,7 +111,7 @@ export class IssuerController {
   @ApiOperation({
     summary: "Retrieve offered credentials",
     description:
-      "Retrieves all credentials offered this wallet has offered to holders",
+      "Retrieves all credentials offered this wallet has offered to holders"
   })
   @Roles(AppRole.MANAGE_ALL_CREDENTIALS)
   @ApiOkResponse({ type: [CredentialOfferStatusDto] })
@@ -125,7 +125,7 @@ export class IssuerController {
   @Post("oid4vci/offer")
   @ApiOperation({
     summary: "Add offer",
-    description: "Creates a new credential offer",
+    description: "Creates a new credential offer"
   })
   @Roles(AppRole.MANAGE_ALL_CREDENTIALS)
   @ApiBody({ type: CredentialOfferDto })
@@ -143,7 +143,7 @@ export class IssuerController {
   @ApiOperation({
     summary: "Revoke offer",
     description:
-      "Revokes an existing credential offer, so that it cannot be used anymore by the holder",
+      "Revokes an existing credential offer, so that it cannot be used anymore by the holder"
   })
   @Roles(AppRole.MANAGE_ALL_CREDENTIALS)
   @ApiOkResponse({ type: CredentialOfferStatusDto })

@@ -15,20 +15,20 @@ import { DidWebStrategy } from "./web/did.web.strategy.js";
 @Module({
   imports: [
     AuthModule,
-    TypeOrmModule.forFeature([DIDDocuments, DIDService, DIDLogs]),
+    TypeOrmModule.forFeature([DIDDocuments, DIDService, DIDLogs])
   ],
   controllers: [
     DIDManagementController,
     ...(config.did.method === DIDMethod.WEB ? [DIDWebController] : []),
-    ...(config.did.method === DIDMethod.TDW ? [DIDTdwController] : []),
+    ...(config.did.method === DIDMethod.TDW ? [DIDTdwController] : [])
   ],
   providers: [
     DidService,
     DidResolverService,
     ...(config.did.method === DIDMethod.WEB ? [DidWebStrategy] : []),
-    ...(config.did.method === DIDMethod.TDW ? [DidTdwStrategy] : []),
+    ...(config.did.method === DIDMethod.TDW ? [DidTdwStrategy] : [])
   ],
 
-  exports: [DidService, DidResolverService],
+  exports: [DidService, DidResolverService]
 })
 export class DidModule {}

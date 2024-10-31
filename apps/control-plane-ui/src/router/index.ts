@@ -19,41 +19,41 @@ const router = createRouter({
         {
           path: "/",
           name: "dashboard",
-          component: DashboardVue,
+          component: DashboardVue
         },
         {
           path: "/catalog/request",
           name: "catalogrequest",
-          component: CatalogVue,
+          component: CatalogVue
         },
         {
           path: "/negotiations",
           name: "negotiations",
-          component: NegotiationsVue,
+          component: NegotiationsVue
         },
         {
           path: "/transfers",
           name: "transfers",
-          component: TransfersVue,
+          component: TransfersVue
         },
         {
           path: "/dataplanes",
           name: "dataplanes",
-          component: DataplaneVue,
+          component: DataplaneVue
         },
         {
           path: "/registry",
           name: "registry",
-          component: Registry,
-        },
-      ],
+          component: Registry
+        }
+      ]
     },
     {
       path: "/login",
       name: "login",
-      component: LoginVue,
-    },
-  ],
+      component: LoginVue
+    }
+  ]
 });
 
 router.beforeEach(async (to) => {

@@ -17,8 +17,7 @@ const logoUrl = computed(() => {
 <template>
   <FloatingConfigurator />
   <div
-    class="bg-surface-50 dark:bg-surface-950 flex items-center justify-center min-h-screen min-w-[100vw] overflow-hidden"
-  >
+    class="bg-surface-50 dark:bg-surface-950 flex items-center justify-center min-h-screen min-w-[100vw] overflow-hidden">
     <div class="flex flex-col items-center justify-center">
       <div
         style="
@@ -29,17 +28,14 @@ const logoUrl = computed(() => {
             var(--primary-color) 10%,
             rgba(33, 150, 243, 0) 30%
           );
-        "
-      >
+        ">
         <div
           class="w-full bg-surface-0 dark:bg-surface-900 py-20 px-8 sm:px-20"
-          style="border-radius: 53px"
-        >
+          style="border-radius: 53px">
           <div class="text-center mb-8">
             <img :src="logoUrl" class="mb-6 w-40 shrink-0 mx-auto" alt="logo" />
             <div
-              class="text-surface-900 dark:text-surface-0 text-3xl font-medium mb-4"
-            >
+              class="text-surface-900 dark:text-surface-0 text-3xl font-medium mb-4">
               Welcome to the TSG Wallet UI!
             </div>
             <span class="text-muted-color font-medium"
@@ -53,8 +49,7 @@ const logoUrl = computed(() => {
               class="w-full"
               as="router-link"
               to="/"
-              @click="store.login({ redirect: true })"
-            ></Button>
+              @click="store.login({ redirect: true })"></Button>
           </div>
         </div>
       </div>

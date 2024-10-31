@@ -21,7 +21,7 @@ export const jsonldOptions: jsonld.Options.DocLoader = {
         return {
           contextUrl: undefined,
           document: cacheEntry.context,
-          documentUrl: url,
+          documentUrl: url
         };
       }
     }
@@ -29,8 +29,8 @@ export const jsonldOptions: jsonld.Options.DocLoader = {
     const loadedDocument = await nodeDocumentLoader(url);
     cachedContexts.set(url, {
       time: new Date().getTime(),
-      context: loadedDocument.document,
+      context: loadedDocument.document
     });
     return loadedDocument;
-  },
+  }
 };

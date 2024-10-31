@@ -5,12 +5,12 @@ import { DidServiceConfig } from "../config.js";
 
 export enum DIDMethod {
   WEB = "did:web:",
-  TDW = "did:tdw:",
+  TDW = "did:tdw:"
 }
 export type DIDMethodTypes = DIDMethod.WEB | DIDMethod.TDW;
 export const DIDMethodList: string[] = Object.values(DIDMethod);
 export const VERIFICATION_METHOD_CONTEXT = [
-  "https://w3id.org/security/suites/jws-2020/v1",
+  "https://w3id.org/security/suites/jws-2020/v1"
 ];
 export function createVerificationMethods(
   didId: string,
@@ -24,8 +24,8 @@ export function createVerificationMethods(
       publicKeyJwk: {
         kty: keyTypes(key.type),
         alg: signingAlgorithm(key.type),
-        ...key.publicKey,
-      },
+        ...key.publicKey
+      }
     };
   });
 }
@@ -34,7 +34,7 @@ export function createServices(services: DidServiceConfig[]): Service[] {
     return {
       id: s.id,
       type: s.type,
-      serviceEndpoint: s.serviceEndpoint,
+      serviceEndpoint: s.serviceEndpoint
     };
   });
 }

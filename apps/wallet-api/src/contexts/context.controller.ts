@@ -13,7 +13,7 @@ export class ContextController {
   @Get("context/:id")
   @ApiOperation({
     summary: "Retrieve context",
-    description: "Retrieves JSON-LD context document for the given context",
+    description: "Retrieves JSON-LD context document for the given context"
   })
   /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   async getContext(

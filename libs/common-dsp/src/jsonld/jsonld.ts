@@ -59,7 +59,7 @@ export async function frame(
     flattened,
     { "@context": usingContext, "@type": usingType },
     {
-      ...(embed ? { embed: "@always" } : {}),
+      ...(embed ? { embed: "@always" } : {})
     }
   );
 }

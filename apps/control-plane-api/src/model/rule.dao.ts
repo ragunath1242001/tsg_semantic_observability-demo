@@ -3,13 +3,13 @@ import {
   Entity,
   JoinTable,
   ManyToMany,
-  PrimaryGeneratedColumn,
+  PrimaryGeneratedColumn
 } from "typeorm";
 import { MetaEntity } from "./common.dao";
 import {
   ConstraintType,
   EvaluationTrigger,
-  DataType,
+  DataType
 } from "../policy/constraint.dto";
 
 @Entity()
@@ -31,7 +31,7 @@ export class ConstraintDao {
 
   @ManyToMany(() => ConstraintDao, {
     nullable: true,
-    cascade: true,
+    cascade: true
   })
   @JoinTable()
   constraints?: ConstraintDao[];

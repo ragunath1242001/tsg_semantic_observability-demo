@@ -9,7 +9,7 @@ import {
   Multilanguage,
   NegotiationProcessEvent,
   NegotiationRole,
-  Offer,
+  Offer
 } from "@tsg-dsp/common-dsp";
 import {
   Column,
@@ -17,7 +17,7 @@ import {
   ManyToOne,
   OneToMany,
   PrimaryColumn,
-  Relation,
+  Relation
 } from "typeorm";
 import { AutoIdEntity, jsonLdTransformer, MetaEntity } from "./common.dao";
 import { AgreementDao } from "./agreement.dao";
@@ -41,7 +41,7 @@ export class NegotiationProcessEventDao
   agreementMessage?: string;
   @Column("simple-json", {
     nullable: true,
-    transformer: jsonLdTransformer,
+    transformer: jsonLdTransformer
   })
   verification?: ContractAgreementVerificationMessage;
   @Column("simple-json", { nullable: true })
@@ -73,17 +73,17 @@ export class NegotiationDetailDao
   dataSet!: string;
   @Column("simple-json", {
     nullable: true,
-    transformer: jsonLdTransformer,
+    transformer: jsonLdTransformer
   })
   offer?: Offer;
   @ManyToOne(() => AgreementDao, {
     nullable: true,
-    eager: true,
+    eager: true
   })
   agreementDao?: AgreementDao;
   @OneToMany(() => NegotiationProcessEventDao, (event) => event._detail, {
     cascade: true,
-    eager: true,
+    eager: true
   })
   events!: Array<NegotiationProcessEvent>;
 }

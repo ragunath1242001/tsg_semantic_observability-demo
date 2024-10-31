@@ -24,66 +24,66 @@ const router = createRouter({
         {
           path: "/",
           name: "dashboard",
-          component: DashboardVue,
+          component: DashboardVue
         },
         {
           path: "/keys",
           name: "keys",
-          component: KeysVue,
+          component: KeysVue
         },
         {
           path: "/signature",
           name: "signature",
-          component: SignatureVue,
+          component: SignatureVue
         },
         {
           path: "/credentials",
           name: "credentials",
-          component: CredentialOverview,
+          component: CredentialOverview
         },
         {
           path: "/credentials/issue",
           name: "credentials-issue",
-          component: CredentialIssue,
+          component: CredentialIssue
         },
         {
           path: "/credentials/import",
           name: "credentials-import",
-          component: CredentialImport,
+          component: CredentialImport
         },
         {
           path: "/credentials/gaiax",
           name: "credentials-gaiax",
-          component: CredentialGaiaX,
+          component: CredentialGaiaX
         },
         {
           path: "/credentials/oid4vci",
           name: "credentials-oid4vci",
-          component: CredentialOID4VCI,
+          component: CredentialOID4VCI
         },
         {
           path: "/presentation",
           name: "presentation",
-          component: Presentation,
+          component: Presentation
         },
         {
           path: "/services",
           name: "services",
-          component: DIDServiceView,
+          component: DIDServiceView
         },
         {
           path: "/contexts",
           name: "contexts",
-          component: ContextView,
-        },
-      ],
+          component: ContextView
+        }
+      ]
     },
     {
       path: "/login",
       name: "login",
-      component: LoginVue,
-    },
-  ],
+      component: LoginVue
+    }
+  ]
 });
 router.beforeEach(async (to) => {
   // redirect to login page if not logged in and trying to access a restricted page

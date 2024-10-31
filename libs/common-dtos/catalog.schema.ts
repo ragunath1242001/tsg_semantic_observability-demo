@@ -18,7 +18,7 @@ import {
   PolicyRuleDto,
   ProhibitionDto,
   ResourceDto,
-  ValueDto,
+  ValueDto
 } from "@tsg-dsp/common-dsp";
 import { ApiProperty, ApiPropertyOptional, OmitType } from "@nestjs/swagger";
 import { DurationSchema, ReferenceSchema } from "./common.schema";

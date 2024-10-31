@@ -20,10 +20,10 @@ import { ContextModule } from "../contexts/context.module.js";
     CredentialsModule,
     DidModule,
     KeysModule,
-    PresentationModule,
+    PresentationModule
   ],
   controllers: [HolderController, IssuerController],
   providers: [IssuerService, HolderService],
-  exports: [IssuerService, HolderService],
+  exports: [IssuerService, HolderService]
 })
 export class IssuanceModule {}

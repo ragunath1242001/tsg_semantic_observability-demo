@@ -28,7 +28,7 @@ export class TypeOrmTestHelper {
       database: this.database,
       name: "default",
       entities: entities,
-      synchronize: true,
+      synchronize: true
     });
   }
 

@@ -34,13 +34,13 @@ describe("Presentation Service", () => {
         {
           id: "key-0",
           type: "EdDSA",
-          default: true,
+          default: true
         },
         {
           id: "key-1",
           type: "EdDSA",
-          default: false,
-        },
+          default: false
+        }
       ],
       initCredentials: [
         {
@@ -50,8 +50,8 @@ describe("Presentation Service", () => {
           keyId: "key-1",
           credentialSubject: {
             id: "did:web:localhost",
-            "urn:tsg:subjectProp": "test",
-          },
+            "urn:tsg:subjectProp": "test"
+          }
         },
         {
           context: [],
@@ -60,10 +60,10 @@ describe("Presentation Service", () => {
           keyId: "key-1",
           credentialSubject: {
             id: "did:web:localhost",
-            "urn:tsg:subjectProp": "test2",
-          },
-        },
-      ],
+            "urn:tsg:subjectProp": "test2"
+          }
+        }
+      ]
     });
     const moduleRef: TestingModule = await Test.createTestingModule({
       imports: [
@@ -73,7 +73,7 @@ describe("Presentation Service", () => {
           DIDService,
           KeyMaterials,
           SIToken,
-          DIDLogs,
+          DIDLogs
         ]),
         TypeOrmModule.forFeature([
           Credentials,
@@ -81,8 +81,8 @@ describe("Presentation Service", () => {
           DIDService,
           KeyMaterials,
           SIToken,
-          DIDLogs,
-        ]),
+          DIDLogs
+        ])
       ],
       providers: [
         SignatureService,
@@ -96,9 +96,9 @@ describe("Presentation Service", () => {
         PresentationService,
         {
           provide: RootConfig,
-          useValue: config,
-        },
-      ],
+          useValue: config
+        }
+      ]
     }).compile();
     iatpSiopService = await moduleRef.get(IatpSiopService);
     iatpHolderService = await moduleRef.get(IatpHolderService);
@@ -144,9 +144,8 @@ describe("Presentation Service", () => {
       );
       console.log(holderIdToken);
 
-      const validatedHolderIdToken = await iatpSiopService.validateIDToken(
-        holderIdToken
-      );
+      const validatedHolderIdToken =
+        await iatpSiopService.validateIDToken(holderIdToken);
       console.log(validatedHolderIdToken);
 
       const verifierIdToken = await iatpSiopService.createSelfIssuedIDToken(
@@ -178,13 +177,13 @@ describe("Presentation Service", () => {
                   path: ["$.type"],
                   filter: {
                     type: "string",
-                    pattern: "VerifiableCredential",
-                  },
-                },
-              ],
-            },
-          },
-        ],
+                    pattern: "VerifiableCredential"
+                  }
+                }
+              ]
+            }
+          }
+        ]
       });
       const vp2 = await iatpVerifierService.verify(holderIdToken, {
         id: crypto.randomUUID(),
@@ -197,27 +196,27 @@ describe("Presentation Service", () => {
                   path: ["$.type"],
                   filter: {
                     type: "string",
-                    pattern: "VerifiableCredential",
-                  },
+                    pattern: "VerifiableCredential"
+                  }
                 },
                 {
                   path: ["$.issuer"],
                   filter: {
                     type: "string",
-                    pattern: "did:web:localhost|did:web:trustedIssuer.com",
-                  },
+                    pattern: "did:web:localhost|did:web:trustedIssuer.com"
+                  }
                 },
                 {
                   path: ["$.credentialSubject['urn:tsg:subjectProp']"],
                   filter: {
                     type: "string",
-                    const: "test",
-                  },
-                },
-              ],
-            },
-          },
-        ],
+                    const: "test"
+                  }
+                }
+              ]
+            }
+          }
+        ]
       });
       const vp3 = await iatpVerifierService.verify(holderIdToken, {
         id: crypto.randomUUID(),
@@ -230,20 +229,20 @@ describe("Presentation Service", () => {
                   path: ["$.type"],
                   filter: {
                     type: "string",
-                    pattern: "VerifiableCredential",
-                  },
+                    pattern: "VerifiableCredential"
+                  }
                 },
                 {
                   path: ["$.credentialSubject['urn:tsg:subjectProp']"],
                   filter: {
                     type: "string",
-                    const: "test2",
-                  },
-                },
-              ],
-            },
-          },
-        ],
+                    const: "test2"
+                  }
+                }
+              ]
+            }
+          }
+        ]
       });
       expect(toArray(vp2.verifiableCredential)[0].id).toBe(
         "did:web:localhost#test-init-credential"

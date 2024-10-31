@@ -4,7 +4,7 @@ import {
   ApiOAuth2,
   ApiOkResponse,
   ApiOperation,
-  ApiParam,
+  ApiParam
 } from "@nestjs/swagger";
 import { OAuthGuard } from "../auth/oauth.guard";
 import { Roles } from "../auth/roles.guard";
@@ -26,7 +26,7 @@ export class AgreementManagementController {
   @ApiParam({
     name: "agreementId",
     description: "Agreement ID",
-    required: true,
+    required: true
   })
   @ApiOkResponse({ type: ContractAgreementMessageSchema })
   async getAgreement(

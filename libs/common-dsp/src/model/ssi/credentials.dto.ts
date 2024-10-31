@@ -3,7 +3,7 @@ import {
   IsDateString,
   IsOptional,
   IsString,
-  ValidateNested,
+  ValidateNested
 } from "class-validator";
 import { OrArray } from "../../utils/unions";
 
@@ -104,7 +104,7 @@ export class Credential<T extends CredentialSubject = CredentialSubject> {
 
 export class VerifiableCredential<
   P extends Proof = Proof,
-  T extends CredentialSubject = CredentialSubject,
+  T extends CredentialSubject = CredentialSubject
 > extends Credential<T> {
   @ValidateNested()
   @Type(() => Proof, {
@@ -112,10 +112,10 @@ export class VerifiableCredential<
       property: "type",
       subTypes: [
         { value: JsonWebSignature2020, name: "JsonWebSignature2020" },
-        { value: DataIntegrityProof, name: "DataIntegrityProof" },
-      ],
+        { value: DataIntegrityProof, name: "DataIntegrityProof" }
+      ]
     },
-    keepDiscriminatorProperty: true,
+    keepDiscriminatorProperty: true
   })
   proof!: OrArray<P>;
 }

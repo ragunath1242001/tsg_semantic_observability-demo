@@ -23,42 +23,42 @@ export default defineConfig({
   base: "",
   envPrefix: "TSG_STATIC_",
   define: {
-    "process.env": process.env,
+    "process.env": process.env
   },
   plugins: [vue()],
   resolve: {
     alias: {
-      "@": fileURLToPath(new URL("./src", import.meta.url)),
-    },
+      "@": fileURLToPath(new URL("./src", import.meta.url))
+    }
   },
   build: {
-    target: "ESNext",
+    target: "ESNext"
   },
   server: {
     proxy: devSessions.local
       ? {
           "/api": {
-            target: "http://localhost:3000/",
+            target: "http://localhost:3000/"
           },
           "/socket.io/": {
-            target: "http://localhost:3000/",
-          },
+            target: "http://localhost:3000/"
+          }
         }
       : {
           "/socket.io/": {
             target: devSessions.socketIoTarget,
             changeOrigin: true,
             headers: {
-              Cookie: devSessions.sessionCookie!,
-            },
+              Cookie: devSessions.sessionCookie!
+            }
           },
           "/api": {
             target: devSessions.target,
             changeOrigin: true,
             headers: {
-              Cookie: devSessions.sessionCookie!,
-            },
-          },
-        },
-  },
+              Cookie: devSessions.sessionCookie!
+            }
+          }
+        }
+  }
 });

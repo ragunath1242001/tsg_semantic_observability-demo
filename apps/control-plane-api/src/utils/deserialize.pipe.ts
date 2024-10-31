@@ -3,7 +3,7 @@ import {
   ClassValidationError,
   ContextDto,
   SerializableClass,
-  deserialize,
+  deserialize
 } from "@tsg-dsp/common-dsp";
 import { DSPError } from "./errors/error";
 
@@ -48,7 +48,7 @@ export class DeserializePipe<
               .join("")
               .split("\n")
               .map((l) => l.slice(12, -1))
-              .filter((l) => l !== ""),
+              .filter((l) => l !== "")
           },
           HttpStatus.BAD_REQUEST
         ).andLog(this.logger, "warn");

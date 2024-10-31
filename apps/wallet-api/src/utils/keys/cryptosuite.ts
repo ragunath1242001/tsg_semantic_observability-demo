@@ -3,7 +3,7 @@ import { AppError } from "../error.js";
 
 export function getCryptoSuite(
   type: "EdDSA" | "ES384" | "X509" | string,
-  normalization: "RDFC" | "JCS",
+  normalization: "RDFC" | "JCS"
 ) {
   switch (type) {
     case "EdDSA":
@@ -15,14 +15,14 @@ export function getCryptoSuite(
     default:
       throw new AppError(
         `Cannot infer cryptosuite for type ${type}`,
-        HttpStatus.BAD_REQUEST,
+        HttpStatus.BAD_REQUEST
       );
   }
 }
 
 export function cryptoSuiteFromJws(jws: string) {
   const jwsHeader = JSON.parse(
-    Buffer.from(jws.split(".")[0], "base64url").toString(),
+    Buffer.from(jws.split(".")[0], "base64url").toString()
   );
   switch (jwsHeader["alg"]) {
     case "EdDSA":

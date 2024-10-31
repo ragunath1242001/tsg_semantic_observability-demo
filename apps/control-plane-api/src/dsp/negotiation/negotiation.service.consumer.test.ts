@@ -15,7 +15,7 @@ import {
   Multilanguage,
   NegotiationEvent,
   ODRLAction,
-  Offer,
+  Offer
 } from "@tsg-dsp/common-dsp";
 import { plainToClass } from "class-transformer";
 import { HttpResponse, PathParams, http } from "msw";
@@ -24,7 +24,7 @@ import { AuthService } from "../../auth/auth.service";
 import { RootConfig, ServerConfig } from "../../config";
 import {
   NegotiationDetailDao,
-  NegotiationProcessEventDao,
+  NegotiationProcessEventDao
 } from "../../model/negotiation.dao";
 import { TypeOrmTestHelper } from "../../utils/testhelper";
 import { DspClientService } from "../client/client.service";
@@ -55,7 +55,7 @@ describe("Negotiation Service (Consumer)", () => {
           AgreementDao,
           TransferMonitorDao,
           TransferDetailDao,
-          TransferEventDao,
+          TransferEventDao
         ]),
         TypeOrmModule.forFeature([
           NegotiationDetailDao,
@@ -63,8 +63,8 @@ describe("Negotiation Service (Consumer)", () => {
           AgreementDao,
           TransferMonitorDao,
           TransferDetailDao,
-          TransferEventDao,
-        ]),
+          TransferEventDao
+        ])
       ],
       providers: [
         NegotiationService,
@@ -89,7 +89,7 @@ describe("Negotiation Service (Consumer)", () => {
                 );
               }
             }
-          })(),
+          })()
         },
         AgreementService,
         // {
@@ -145,13 +145,13 @@ describe("Negotiation Service (Consumer)", () => {
         // },
         {
           provide: RootConfig,
-          useValue: config,
+          useValue: config
         },
         {
           provide: ServerConfig,
-          useValue: serverConfig,
-        },
-      ],
+          useValue: serverConfig
+        }
+      ]
     })
       .overrideProvider(DspGateway)
       .useValue(dspGateway)
@@ -169,7 +169,7 @@ describe("Negotiation Service (Consumer)", () => {
               "dspace:consumerPid"
             ],
             "dspace:providerPid": remoteProcessId,
-            "dspace:state": ContractNegotiationState.REQUESTED,
+            "dspace:state": ContractNegotiationState.REQUESTED
           });
         }
       ),
@@ -184,7 +184,7 @@ describe("Negotiation Service (Consumer)", () => {
               "dspace:consumerPid"
             ],
             "dspace:providerPid": remoteProcessId,
-            "dspace:state": ContractNegotiationState.REQUESTED,
+            "dspace:state": ContractNegotiationState.REQUESTED
           });
         }
       ),
@@ -203,7 +203,7 @@ describe("Negotiation Service (Consumer)", () => {
     );
 
     server.listen({
-      onUnhandledRequest: "warn",
+      onUnhandledRequest: "warn"
     });
     negotiationService = moduleRef.get(NegotiationService);
     await negotiationService["negotiationDetailRepository"].query(
@@ -221,9 +221,9 @@ describe("Negotiation Service (Consumer)", () => {
         "odrl:permission": [
           {
             "@type": "odrl:Permission",
-            "odrl:action": ODRLAction.USE,
-          },
-        ],
+            "odrl:action": ODRLAction.USE
+          }
+        ]
       },
       "00000000-0000-0000-0000-000000000000"
     );
@@ -245,7 +245,7 @@ describe("Negotiation Service (Consumer)", () => {
     it("Request new negotiation", async () => {
       const offer = new Offer({
         id: "urn:uuid:b1de3dee-169d-41db-865f-b84cce26ff00",
-        assigner: "urn:uuid:c2165eeb-8fc3-4de8-aed0-a088a6fb48d0",
+        assigner: "urn:uuid:c2165eeb-8fc3-4de8-aed0-a088a6fb48d0"
       });
       const negotiationDetail = await negotiationService.requestNew(
         offer,
@@ -268,13 +268,11 @@ describe("Negotiation Service (Consumer)", () => {
     it("Retrieve negotiation", async () => {
       const negotiations = await negotiationService.getNegotiations();
       expect(negotiations).toHaveLength(1);
-      const negotiationDetail = await negotiationService.getNegotiation(
-        localProcessId
-      );
+      const negotiationDetail =
+        await negotiationService.getNegotiation(localProcessId);
       expect(negotiationDetail).toBeDefined();
-      const negotiationDto = await negotiationService.getNegotiationDto(
-        localProcessId
-      );
+      const negotiationDto =
+        await negotiationService.getNegotiationDto(localProcessId);
       expect(negotiationDto).toBeDefined();
       const negotiationDetail2 = await negotiationService.getNegotiation(
         localProcessId,
@@ -307,7 +305,7 @@ describe("Negotiation Service (Consumer)", () => {
           new ContractNegotiationEventMessage({
             consumerPid: localProcessId,
             providerPid: remoteProcessId,
-            eventType: NegotiationEvent.FINALIZED,
+            eventType: NegotiationEvent.FINALIZED
           }),
           "did:web:remoteparty.test"
         )
@@ -320,30 +318,28 @@ describe("Negotiation Service (Consumer)", () => {
         assigner: "urn:uuid:c2165eeb-8fc3-4de8-aed0-a088a6fb48d0",
         assignee: "urn:uuid:3721b819-d096-45d3-b397-8b9fdc312cf3",
         timestamp: new Date().toISOString(),
-        target: "urn:uuid:urn:uuid:b9e2af39-36a9-4e92-a02e-a05dcd94219b",
+        target: "urn:uuid:urn:uuid:b9e2af39-36a9-4e92-a02e-a05dcd94219b"
       });
       const agreementHandling = await negotiationService.handleAgreement(
         localProcessId,
         new ContractAgreementMessage({
           consumerPid: localProcessId,
           providerPid: remoteProcessId,
-          agreement: agreement,
+          agreement: agreement
         }),
         "did:web:remoteparty.test"
       );
       expect(agreementHandling.status).toBe("OK");
-      const negotiationDetail = await negotiationService.getNegotiation(
-        localProcessId
-      );
+      const negotiationDetail =
+        await negotiationService.getNegotiation(localProcessId);
       expect(negotiationDetail.state).toBe(ContractNegotiationState.AGREED);
     });
 
     it("Verify agreement", async () => {
       const verify = await negotiationService.verify(localProcessId);
       expect(verify.status).toBe("OK");
-      const negotiationDetail = await negotiationService.getNegotiation(
-        localProcessId
-      );
+      const negotiationDetail =
+        await negotiationService.getNegotiation(localProcessId);
       expect(negotiationDetail.state).toBe(ContractNegotiationState.VERIFIED);
     });
 
@@ -357,8 +353,8 @@ describe("Negotiation Service (Consumer)", () => {
             eventType: NegotiationEvent.FINALIZED,
             hashedMessage: {
               "dspace:algorithm": "JsonWebSignature2020",
-              "dspace:digest": '{"error": true}',
-            },
+              "dspace:digest": '{"error": true}'
+            }
           }),
           "did:web:remoteparty.test"
         )
@@ -371,21 +367,20 @@ describe("Negotiation Service (Consumer)", () => {
           eventType: NegotiationEvent.FINALIZED,
           hashedMessage: {
             "dspace:algorithm": "JsonWebSignature2020",
-            "dspace:digest": "{}",
-          },
+            "dspace:digest": "{}"
+          }
         }),
         "did:web:remoteparty.test"
       );
-      const negotiationDetail = await negotiationService.getNegotiation(
-        localProcessId
-      );
+      const negotiationDetail =
+        await negotiationService.getNegotiation(localProcessId);
       expect(negotiationDetail.state).toBe(ContractNegotiationState.FINALIZED);
       expect(negotiationDetail.events.map((event) => event.state)).toEqual([
         "dspace:REQUESTED",
         "dspace:FINALIZED",
         "dspace:AGREED",
         "dspace:VERIFIED",
-        "dspace:FINALIZED",
+        "dspace:FINALIZED"
       ]);
     });
   });
@@ -396,7 +391,7 @@ describe("Negotiation Service (Consumer)", () => {
     it("Request new negotiation", async () => {
       const offer = new Offer({
         id: "urn:uuid:b1de3dee-169d-41db-865f-b84cce26ff00",
-        assigner: "urn:uuid:c2165eeb-8fc3-4de8-aed0-a088a6fb48d0",
+        assigner: "urn:uuid:c2165eeb-8fc3-4de8-aed0-a088a6fb48d0"
       });
       const negotiationDetail = await negotiationService.requestNew(
         offer,
@@ -417,9 +412,8 @@ describe("Negotiation Service (Consumer)", () => {
     });
 
     it("Retrieve negotiation", async () => {
-      const negotiationDetail = await negotiationService.getNegotiation(
-        localProcessId
-      );
+      const negotiationDetail =
+        await negotiationService.getNegotiation(localProcessId);
       expect(negotiationDetail).toBeDefined();
       const negotiationDetail2 = await negotiationService.getNegotiation(
         localProcessId,
@@ -446,7 +440,7 @@ describe("Negotiation Service (Consumer)", () => {
           new ContractNegotiationEventMessage({
             consumerPid: localProcessId,
             providerPid: remoteProcessId,
-            eventType: NegotiationEvent.FINALIZED,
+            eventType: NegotiationEvent.FINALIZED
           }),
           "did:web:remoteparty.test"
         )
@@ -461,9 +455,9 @@ describe("Negotiation Service (Consumer)", () => {
           providerPid: remoteProcessId,
           offer: new Offer({
             id: "urn:uuid:81a41b35-2926-4b29-8c9a-ee52665a047b",
-            assigner: "urn:uuid:fcddc591-b9f1-4c75-b557-80d1cf955859",
+            assigner: "urn:uuid:fcddc591-b9f1-4c75-b557-80d1cf955859"
           }),
-          callbackAddress: `http://remoteparty.test/negotiation/${remoteProcessId}`,
+          callbackAddress: `http://remoteparty.test/negotiation/${remoteProcessId}`
         }),
         "did:web:remoteparty.test"
       );
@@ -473,7 +467,7 @@ describe("Negotiation Service (Consumer)", () => {
     it("Request new offer", async () => {
       const offer = new Offer({
         id: "urn:uuid:b1de3dee-169d-41db-865f-b84cce26ff00",
-        assigner: "urn:uuid:c2165eeb-8fc3-4de8-aed0-a088a6fb48d0",
+        assigner: "urn:uuid:c2165eeb-8fc3-4de8-aed0-a088a6fb48d0"
       });
       const negotiationDetail = await negotiationService.requestExisting(
         offer,
@@ -490,9 +484,9 @@ describe("Negotiation Service (Consumer)", () => {
           providerPid: remoteProcessId,
           offer: new Offer({
             id: "urn:uuid:81a41b35-2926-4b29-8c9a-ee52665a047b",
-            assigner: "urn:uuid:fcddc591-b9f1-4c75-b557-80d1cf955859",
+            assigner: "urn:uuid:fcddc591-b9f1-4c75-b557-80d1cf955859"
           }),
-          callbackAddress: `http://remoteparty.test/negotiation/${remoteProcessId}`,
+          callbackAddress: `http://remoteparty.test/negotiation/${remoteProcessId}`
         }),
         "did:web:remoteparty.test"
       );
@@ -510,30 +504,28 @@ describe("Negotiation Service (Consumer)", () => {
         assigner: "urn:uuid:c2165eeb-8fc3-4de8-aed0-a088a6fb48d0",
         assignee: "urn:uuid:3721b819-d096-45d3-b397-8b9fdc312cf3",
         timestamp: new Date().toISOString(),
-        target: "urn:uuid:urn:uuid:b9e2af39-36a9-4e92-a02e-a05dcd94219b",
+        target: "urn:uuid:urn:uuid:b9e2af39-36a9-4e92-a02e-a05dcd94219b"
       });
       const agreementHandling = await negotiationService.handleAgreement(
         localProcessId,
         new ContractAgreementMessage({
           consumerPid: localProcessId,
           providerPid: remoteProcessId,
-          agreement: agreement,
+          agreement: agreement
         }),
         "did:web:remoteparty.test"
       );
       expect(agreementHandling.status).toBe("OK");
-      const negotiationDetail = await negotiationService.getNegotiation(
-        localProcessId
-      );
+      const negotiationDetail =
+        await negotiationService.getNegotiation(localProcessId);
       expect(negotiationDetail.state).toBe(ContractNegotiationState.AGREED);
     });
 
     it("Verify agreement", async () => {
       const verify = await negotiationService.verify(localProcessId);
       expect(verify.status).toBe("OK");
-      const negotiationDetail = await negotiationService.getNegotiation(
-        localProcessId
-      );
+      const negotiationDetail =
+        await negotiationService.getNegotiation(localProcessId);
       expect(negotiationDetail.state).toBe(ContractNegotiationState.VERIFIED);
     });
 
@@ -543,13 +535,12 @@ describe("Negotiation Service (Consumer)", () => {
         new ContractNegotiationEventMessage({
           consumerPid: localProcessId,
           providerPid: remoteProcessId,
-          eventType: NegotiationEvent.FINALIZED,
+          eventType: NegotiationEvent.FINALIZED
         }),
         "did:web:remoteparty.test"
       );
-      const negotiationDetail = await negotiationService.getNegotiation(
-        localProcessId
-      );
+      const negotiationDetail =
+        await negotiationService.getNegotiation(localProcessId);
       expect(negotiationDetail.state).toBe(ContractNegotiationState.FINALIZED);
     });
   });
@@ -560,7 +551,7 @@ describe("Negotiation Service (Consumer)", () => {
     it("Provider termination", async () => {
       const offer = new Offer({
         id: "urn:uuid:b1de3dee-169d-41db-865f-b84cce26ff00",
-        assigner: "urn:uuid:c2165eeb-8fc3-4de8-aed0-a088a6fb48d0",
+        assigner: "urn:uuid:c2165eeb-8fc3-4de8-aed0-a088a6fb48d0"
       });
       const negotiationDetail = await negotiationService.requestNew(
         offer,
@@ -585,7 +576,7 @@ describe("Negotiation Service (Consumer)", () => {
           consumerPid: localProcessId,
           providerPid: remoteProcessId,
           reason: [new Multilanguage("Request termination")],
-          code: "PROVIDER_ERROR",
+          code: "PROVIDER_ERROR"
         }),
         "did:web:remoteparty.test"
       );
@@ -595,7 +586,7 @@ describe("Negotiation Service (Consumer)", () => {
     it("Consumer termination", async () => {
       const offer = new Offer({
         id: "urn:uuid:b1de3dee-169d-41db-865f-b84cce26ff00",
-        assigner: "urn:uuid:c2165eeb-8fc3-4de8-aed0-a088a6fb48d0",
+        assigner: "urn:uuid:c2165eeb-8fc3-4de8-aed0-a088a6fb48d0"
       });
       const negotiationDetail = await negotiationService.requestNew(
         offer,

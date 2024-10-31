@@ -51,7 +51,7 @@ export enum ODRLAction {
   ACCEPT_TRACKING = "odrl:acceptTracking",
   COMMERICAL_USE = "cc:CommericalUse",
   PRESENT = "odrl:present",
-  USE = "odrl:use",
+  USE = "odrl:use"
 }
 
 export enum ODRLOperator {
@@ -66,7 +66,7 @@ export enum ODRLOperator {
   IS_PART_OF = "odrl:isPartOf",
   LT = "odrl:lt",
   LTEQ = "odrl:term-lteq",
-  NEQ = "odrl:neq",
+  NEQ = "odrl:neq"
 }
 
 export enum ODRLLeftOperand {
@@ -103,7 +103,7 @@ export enum ODRLLeftOperand {
   TIME_INTERVAL = "odrl:timeInterval",
   UNIT_OF_COUNT = "odrl:unitOfCount",
   VERSION = "odrl:version",
-  VIRTUAL_LOCATION = "odrl:virtualLocation",
+  VIRTUAL_LOCATION = "odrl:virtualLocation"
 }
 
 export interface ConstraintDto {

@@ -14,9 +14,9 @@ import { SignatureManagementController } from "./signature.management.controller
   controllers: [
     KeysController,
     KeysManagementController,
-    SignatureManagementController,
+    SignatureManagementController
   ],
   providers: [KeysService, SignatureService],
-  exports: [KeysService, SignatureService],
+  exports: [KeysService, SignatureService]
 })
 export class KeysModule {}
