@@ -20,6 +20,7 @@ import { toArray } from "../utils/unions.js";
 import { DIDDocuments, DIDService, DIDLogs } from "../model/did.dao.js";
 import { DidResolverService } from "../did/did.resolver.service.js";
 import { SignatureService } from "../keys/signature.service.js";
+import { AppError } from "../utils/error.js";
 
 describe("Credentials Service", () => {
   let credentialsService: CredentialsService;
@@ -47,6 +48,20 @@ describe("Credentials Service", () => {
           },
         },
       ],
+      oid4vci: {
+        holder: [
+          {
+            credentialType: "",
+            preAuthorizationCode: "",
+            issuerUrl: "https://issuer1.example.com",
+          },
+          {
+            credentialType: "",
+            preAuthorizationCode: "",
+            issuerUrl: "https://issuer2.example.com",
+          },
+        ],
+      },
     });
 
     server = setupServer(
@@ -267,6 +282,126 @@ describe("Credentials Service", () => {
       await expect(
         credentialsService.deleteCredential(`${didId}#test-credential`),
       ).rejects.toThrow("can't be found");
+    });
+  });
+  describe("getDataspaceCredentials", () => {
+    it("should fetch dataspace credentials successfully", async () => {
+      const mockDidDocument = {
+        service: [
+          {
+            type: "Management",
+            serviceEndpoint: "https://example.com/management",
+          },
+        ],
+      };
+
+      const mockCredentials = [
+        { id: "cred1", type: ["VerifiableCredential"] },
+        { id: "cred2", type: ["VerifiableCredential"] },
+      ];
+
+      server.use(
+        http.get("https://issuer1.example.com/.well-known/did.json", () => {
+          return HttpResponse.json(mockDidDocument);
+        }),
+        http.get("https://issuer2.example.com/.well-known/did.json", () => {
+          return HttpResponse.json(mockDidDocument);
+        }),
+        http.get("https://example.com/management/credentials/dataspace", () => {
+          return HttpResponse.json(mockCredentials);
+        }),
+      );
+
+      const result = await credentialsService.getDataspaceCredentials();
+      expect(result).toHaveLength(4); // 2 issuers * 2 credentials each
+      expect(result).toEqual(
+        expect.arrayContaining(mockCredentials.concat(mockCredentials)),
+      );
+    });
+
+    it("should return an empty array when no issuer URLs are configured", async () => {
+      // Temporarily modify the config to have no holder configurations
+      const originalConfig = credentialsService["config"].oid4vci.holder;
+      credentialsService["config"].oid4vci.holder = [];
+
+      const result = await credentialsService.getDataspaceCredentials();
+      expect(result).toEqual([]);
+
+      // Restore the original config
+      credentialsService["config"].oid4vci.holder = originalConfig;
+    });
+
+    it("should throw an AppError when fetching credentials fails", async () => {
+      server.use(
+        http.get("https://issuer1.example.com/.well-known/did.json", () => {
+          return HttpResponse.json({}, { status: 404 });
+        }),
+      );
+
+      await expect(
+        credentialsService.getDataspaceCredentials(),
+      ).rejects.toThrow(AppError);
+    });
+
+    it("should handle DID documents without Management service", async () => {
+      const mockDidDocumentWithoutManagement = {
+        service: [
+          {
+            type: "OtherService",
+            serviceEndpoint: "https://example.com/other",
+          },
+        ],
+      };
+
+      server.use(
+        http.get("https://issuer1.example.com/.well-known/did.json", () => {
+          return HttpResponse.json(mockDidDocumentWithoutManagement);
+        }),
+        http.get("https://issuer2.example.com/.well-known/did.json", () => {
+          return HttpResponse.json(mockDidDocumentWithoutManagement);
+        }),
+      );
+
+      const result = await credentialsService.getDataspaceCredentials();
+      expect(result).toEqual([]);
+    });
+
+    it("should handle mixed responses from different issuers", async () => {
+      const mockDidDocumentWithManagement = {
+        service: [
+          {
+            type: "Management",
+            serviceEndpoint: "https://example.com/management",
+          },
+        ],
+      };
+
+      const mockDidDocumentWithoutManagement = {
+        service: [
+          {
+            type: "OtherService",
+            serviceEndpoint: "https://example.com/other",
+          },
+        ],
+      };
+
+      const mockCredentials = [{ id: "cred1", type: ["VerifiableCredential"] }];
+
+      server.use(
+        http.get("https://issuer1.example.com/.well-known/did.json", () => {
+          return HttpResponse.json(mockDidDocumentWithManagement);
+        }),
+        http.get("https://issuer2.example.com/.well-known/did.json", () => {
+          return HttpResponse.json(mockDidDocumentWithoutManagement);
+        }),
+        http.get("https://example.com/management/credentials/dataspace", () => {
+          return HttpResponse.json(mockCredentials);
+        }),
+      );
+
+      const result = await credentialsService.getDataspaceCredentials();
+      expect(result).toHaveLength(1);
+      expect(result).toEqual(expect.arrayContaining(mockCredentials));
     });
   });
 });
