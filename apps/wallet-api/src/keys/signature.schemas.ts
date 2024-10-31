@@ -1,29 +1,36 @@
 import {
-  JsonWebSignature,
+  ProofDocument,
   SignRequest,
   ValidateRequest,
 } from "@tsg-dsp/common-dtos";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { SignatureDto } from "../credentials/credentials.schemas.js";
+import { JsonWebSignature2020Dto } from "../credentials/credentials.schemas.js";
+import { DataIntegrityProof } from "@tsg-dsp/common-dsp";
 
 export class SignRequestDto implements SignRequest {
-  @ApiProperty()
-  type!: "JsonWebSignature";
+  @ApiPropertyOptional()
+  type?: "JsonWebSignature2020" | "DataIntegrityProof";
   @ApiProperty()
   plainDocument!: Record<string, any>;
   @ApiPropertyOptional()
   keyId?: string;
+  @ApiPropertyOptional()
+  normalization: "RDFC" | "JCS" = "RDFC";
+  @ApiPropertyOptional()
+  proofPurpose: string = "assertionMethod";
+  @ApiPropertyOptional()
+  options: Partial<DataIntegrityProof> = {};
+  @ApiPropertyOptional()
+  embeddedVerificationMethod: boolean = false;
 }
 
 export class ValidateRequestDto implements ValidateRequest {
-  @ApiProperty()
-  type!: "JsonWebSignature";
   @ApiPropertyOptional()
-  jsonWebSignature?: JsonWebSignature;
+  proofDocument?: ProofDocument;
 }
 
-export class JsonWebSignatureDto implements JsonWebSignature {
+export class JsonWebSignatureDto implements ProofDocument {
   @ApiProperty()
-  proof!: SignatureDto;
+  proof!: JsonWebSignature2020Dto;
   [key: string]: any;
 }

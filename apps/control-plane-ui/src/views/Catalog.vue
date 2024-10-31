@@ -88,7 +88,7 @@ onMounted(async () => await initialize());
         >.</template
       >
       <template #content>
-        <form class="flex flex-col gap-4" @submit.stop.prevent="getCatalog">
+        <form class="flex flex-col gap-4 mt-3" @submit.stop.prevent="getCatalog">
           <div class="flex flex-wrap items-start gap-4">
             <div class="field">
               <FloatLabel>

@@ -64,10 +64,8 @@ export class DevWalletClient extends WalletClient {
 
   async requestValidation(
     token: string,
-    audience: string
-  ): Promise<
-    VerifiablePresentation<VerifiableCredential<CredentialSubject>> | undefined
-  > {
+    audience: string,
+  ): Promise<VerifiablePresentation | undefined> {
     const tokenPayload = decode(token, { json: true });
     return plainToInstance(VerifiablePresentation, tokenPayload!["vp"]);
   }
@@ -79,22 +77,22 @@ export class DevWalletClient extends WalletClient {
   async requestSignature(document: Record<string, any>): Promise<any> {
     throw new DSPError(
       `Dev Wallet does not support signing of documents`,
-      HttpStatus.NOT_IMPLEMENTED
+      HttpStatus.NOT_IMPLEMENTED,
     );
   }
   async requestSignatureValidation(
-    signedDocument: Record<string, any>
+    signedDocument: Record<string, any>,
   ): Promise<any> {
     throw new DSPError(
       `Dev Wallet does not support validation of documents`,
-      HttpStatus.NOT_IMPLEMENTED
+      HttpStatus.NOT_IMPLEMENTED,
     );
   }
 
   async resolveDidDocument(didId: string): Promise<DIDDocument> {
     throw new DSPError(
       `Dev Wallet does not support resolving DID Documents`,
-      HttpStatus.NOT_IMPLEMENTED
+      HttpStatus.NOT_IMPLEMENTED,
     );
   }
 }

@@ -91,7 +91,7 @@ const requestVerification = async () => {
   verifierResponse.value = undefined;
   try {
     const response = await http.post<
-      VerifiablePresentation<VerifiableCredential<CredentialSubject>>
+      VerifiablePresentation
     >("iatp/verifier/verify", {
       holderIdToken: verifierForm.value.holderIDToken,
       presentationDefinition: JSON.parse(

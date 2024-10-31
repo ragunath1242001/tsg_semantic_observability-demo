@@ -13,7 +13,7 @@ export interface ValidationResult {
 export interface Credential {
   id: string;
   targetDid: string;
-  credential: VerifiableCredential<CredentialSubject>;
+  credential: VerifiableCredential;
   selfIssued: boolean;
 }
 
@@ -22,14 +22,12 @@ export abstract class WalletClient {
   abstract requestValidation(
     token: string,
     audience: string,
-    inputDescriptors?: InputDescriptor[]
-  ): Promise<
-    VerifiablePresentation<VerifiableCredential<CredentialSubject>> | undefined
-  >;
+    inputDescriptors?: InputDescriptor[],
+  ): Promise<VerifiablePresentation | undefined>;
   abstract getCredentials(): Promise<Credential[]>;
   abstract requestSignature(document: Record<string, any>): Promise<any>;
   abstract requestSignatureValidation(
-    signedDocument: Record<string, any>
+    signedDocument: Record<string, any>,
   ): Promise<any>;
   abstract resolveDidDocument(didId: string): Promise<DIDDocument>;
 }

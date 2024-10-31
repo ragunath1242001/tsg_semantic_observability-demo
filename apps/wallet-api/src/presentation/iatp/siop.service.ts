@@ -14,7 +14,7 @@ export class IatpSiopService {
     private readonly didService: DidService,
     private readonly signatureService: SignatureService,
     @InjectRepository(SIToken)
-    private readonly siTokenRepository: Repository<SIToken>
+    private readonly siTokenRepository: Repository<SIToken>,
   ) {}
   private readonly logger = new Logger(this.constructor.name);
 
@@ -22,10 +22,10 @@ export class IatpSiopService {
     audience: string,
     createAccessToken: boolean,
     scope?: string,
-    existingAccessToken?: string
+    existingAccessToken?: string,
   ): Promise<string> {
     this.logger.debug(
-      `Creating SI ID token for audience ${audience}, creating access token ${createAccessToken}, scope ${scope}`
+      `Creating SI ID token for audience ${audience}, creating access token ${createAccessToken}, scope ${scope}`,
     );
     const jwtPayload: JWTPayload = {
       aud: audience,
@@ -44,7 +44,7 @@ export class IatpSiopService {
     if (scope) {
       jwtPayload["bearer_access_scope"] = scope;
     }
-    return await this.signatureService.signJwt(jwtPayload, audience, {
+    return await this.signatureService.signAsJwt(jwtPayload, audience, {
       expirationTime: "5m",
     });
   }
@@ -56,7 +56,7 @@ export class IatpSiopService {
     if (validatedToken.aud !== didId) {
       throw new AppError(
         `Audience in ID token claim mismatch ${validatedToken.aud} vs. ${didId}`,
-        HttpStatus.BAD_REQUEST
+        HttpStatus.BAD_REQUEST,
       ).andLog(this.logger, "error");
     }
     return validatedToken;
@@ -71,7 +71,7 @@ export class IatpSiopService {
     if (!validatedToken.token) {
       throw new AppError(
         `No access token in ID token`,
-        HttpStatus.BAD_REQUEST
+        HttpStatus.BAD_REQUEST,
       ).andLog(this.logger, "error");
     }
     const siToken = await this.siTokenRepository.findOneBy({
@@ -80,13 +80,13 @@ export class IatpSiopService {
     if (!siToken) {
       throw new AppError(
         `Token in ID token not found locally`,
-        HttpStatus.BAD_REQUEST
+        HttpStatus.BAD_REQUEST,
       ).andLog(this.logger, "error");
     }
     if (siToken.audience !== validatedToken.iss) {
       throw new AppError(
         `ID Token issuer does not match the audience for the access token ${validatedToken.iss} vs. ${siToken.audience}`,
-        HttpStatus.BAD_REQUEST
+        HttpStatus.BAD_REQUEST,
       ).andLog(this.logger, "error");
     }
     return {

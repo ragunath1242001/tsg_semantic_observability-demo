@@ -18,8 +18,8 @@ async function bootstrap() {
       "keys/(.*)",
       "oid4vci/token",
       "oid4vci/credential",
-      "health",
-    ],
+      "health"
+    ]
   });
   const appRoles = Object.entries(AppRole).map((r) => [r[1], r[1]]);
   const scopes = Object.fromEntries(appRoles);
@@ -63,14 +63,17 @@ async function bootstrap() {
       type: "oauth2",
       flows: {
         password: {
-          scopes: scopes,
-        },
-      },
+          scopes: scopes
+        }
+      }
     })
     .build();
   const document = SwaggerModule.createDocument(app, config);
 
-  await fs.writeFile("../../website/docs/openapi.yaml", stringify(document));
+  await fs.writeFile(
+    "../../website/docs/apps/wallet/openapi.yaml",
+    stringify(document)
+  );
   process.exit();
 }
 

@@ -26,5 +26,5 @@ export class ComplianceRequestDto implements ComplianceRequest {
   @ApiProperty()
   clearingHouse!: string;
   @ApiProperty({ type: [VerifiableCredentialDto] })
-  credentials!: VerifiableCredential<CredentialSubject>[];
+  credentials!: VerifiableCredential[];
 }

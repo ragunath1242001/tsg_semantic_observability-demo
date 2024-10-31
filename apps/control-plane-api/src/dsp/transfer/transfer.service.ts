@@ -44,7 +44,7 @@ export class TransferService {
     @InjectRepository(TransferEventDao)
     private readonly transferEventRepository: Repository<TransferEventDao>,
     private readonly dataPlaneService: DataPlaneService,
-    private readonly policyEvaluationService: PolicyEvaluationService
+    private readonly policyEvaluationService: PolicyEvaluationService,
   ) {}
   private readonly logger = new Logger(this.constructor.name);
 
@@ -100,7 +100,7 @@ export class TransferService {
   private async checkTransition(
     direction: "remote" | "local",
     transfer: TransferDetail,
-    to: TransferState
+    to: TransferState,
   ) {
     if (
       !this.allowedTransitions[direction][transfer.role][
@@ -118,7 +118,7 @@ export class TransferService {
       await this.transferDetailRepository.save(transfer);
       throw new DSPError(
         `Transfer with process ID ${transfer.localId} cannot transition from ${transfer.state} to ${to}`,
-        HttpStatus.BAD_REQUEST
+        HttpStatus.BAD_REQUEST,
       ).andLog(this.logger, "warn");
     }
   }
@@ -151,7 +151,7 @@ export class TransferService {
 
   async getTransfer(
     processId: string,
-    audience?: string
+    audience?: string,
   ): Promise<TransferDetail> {
     const transfer = await this.transferDetailRepository.findOneBy({
       localId: processId,
@@ -167,13 +167,13 @@ export class TransferService {
     } else {
       throw new DSPError(
         `Cannot get transfer with process ID ${processId}`,
-        HttpStatus.NOT_FOUND
+        HttpStatus.NOT_FOUND,
       ).andLog(this.logger, "warn");
     }
   }
 
   async getTransfersByAgreement(
-    agreementId: string
+    agreementId: string,
   ): Promise<TransferDetailDao[]> {
     return await this.transferDetailRepository.findBy({
       agreementId: agreementId,
@@ -185,7 +185,7 @@ export class TransferService {
     format: string,
     dataAddress: DataAddress | undefined,
     remoteAddress: string,
-    audience: string
+    audience: string,
   ): Promise<{
     localId: string;
     remoteId: string;
@@ -207,7 +207,7 @@ export class TransferService {
       localId,
       audience,
       ODRLAction.USE,
-      []
+      [],
     );
     const evaluation = await this.policyEvaluationService.evaluate(context);
     if (evaluation.decision === "DENY") {
@@ -216,19 +216,19 @@ export class TransferService {
           message: `Policy evaluation denied transfer request`,
           evaluation: evaluation,
         },
-        HttpStatus.FORBIDDEN
+        HttpStatus.FORBIDDEN,
       );
     }
     const dataPlaneTransfer = await this.dataPlaneService.requestTransfer(
       transferRequestMessage,
       localId,
       "consumer",
-      audience
+      audience,
     );
     const requestTransfer = await this.dsp.requestTransfer(
       `${remoteAddress}/request`,
       transferRequestMessage,
-      audience
+      audience,
     );
     const transferProcess = await deserialize<TransferProcess>(requestTransfer);
     if (
@@ -239,7 +239,7 @@ export class TransferService {
         endpointType: dataPlaneTransfer.endpointType,
         endpoint: dataPlaneTransfer.dataAddress.endpoint,
         endpointProperties: dataPlaneTransfer.dataAddress.properties.map(
-          (p) => new EndpointProperty(p)
+          (p) => new EndpointProperty(p),
         ),
       });
     }
@@ -276,7 +276,7 @@ export class TransferService {
   async handleRequest(
     transferRequestMessage: TransferRequestMessage,
     audience: string,
-    verifiableCredentials: VerifiableCredential<CredentialSubject>[]
+    verifiableCredentials: VerifiableCredential[],
   ): Promise<TransferProcess> {
     const transferProcess = new TransferProcess({
       providerPid: `urn:uuid:provider:${crypto.randomUUID()}`,
@@ -288,7 +288,7 @@ export class TransferService {
       transferRequestMessage,
       transferProcess.providerPid,
       "provider",
-      audience
+      audience,
     );
     const transfer: TransferDetail = {
       localId: transferProcess.providerPid,
@@ -317,7 +317,7 @@ export class TransferService {
       transferProcess.providerPid,
       audience,
       ODRLAction.USE,
-      verifiableCredentials
+      verifiableCredentials,
     );
     const evaluation = await this.policyEvaluationService.evaluate(context);
     if (evaluation.decision === "DENY") {
@@ -326,7 +326,7 @@ export class TransferService {
           message: `Policy evaluation denied transfer request`,
           evaluation: evaluation,
         },
-        HttpStatus.FORBIDDEN
+        HttpStatus.FORBIDDEN,
       );
     }
     await this.transferDetailRepository.save(transfer);
@@ -335,7 +335,7 @@ export class TransferService {
         this.start(
           transferProcess.providerPid,
           dataPlaneTransfer.dataAddress,
-          false
+          false,
         );
       }, 2000);
     }
@@ -346,7 +346,7 @@ export class TransferService {
   async start(
     processId: string,
     dataPlaneAddress: DataPlaneAddressDto | undefined,
-    fromDataPlane: boolean
+    fromDataPlane: boolean,
   ): Promise<{ status: string }> {
     const transfer = await this.getTransfer(processId);
     let dataAddress: DataAddress | undefined;
@@ -355,7 +355,7 @@ export class TransferService {
         endpoint: dataPlaneAddress.endpoint,
         endpointType: transfer.dataPlaneTransfer.endpointType,
         endpointProperties: toArray(dataPlaneAddress.properties).map(
-          (p) => new EndpointProperty(p)
+          (p) => new EndpointProperty(p),
         ),
       });
     } else {
@@ -364,7 +364,7 @@ export class TransferService {
         endpointType: transfer.dataAddress?.endpointType || "",
         endpointProperties:
           transfer.dataAddress?.endpointProperties?.map(
-            (p) => new EndpointProperty(p)
+            (p) => new EndpointProperty(p),
           ) || [],
       });
     }
@@ -379,18 +379,18 @@ export class TransferService {
         time: new Date(),
         state: TransferState.STARTED,
         type: "local",
-      })
+      }),
     );
     if (!fromDataPlane) {
       await this.dataPlaneService.startTransfer(
         transfer.dataPlaneTransfer,
-        transferStartMessage
+        transferStartMessage,
       );
     }
     await this.dsp.startTransfer(
       `${transfer.remoteAddress}/start`,
       transferStartMessage,
-      transfer.remoteParty
+      transfer.remoteParty,
     );
     transfer.state = TransferState.STARTED;
     await this.transferDetailRepository.save(transfer);
@@ -403,25 +403,25 @@ export class TransferService {
   async handleStart(
     processId: string,
     transferStartMessage: TransferStartMessage,
-    audience: string
+    audience: string,
   ): Promise<{ status: string }> {
     const transfer = await this.getTransfer(processId, audience);
     await this.checkTransition("remote", transfer, TransferState.STARTED);
     this.processIdMatch(
       transferStartMessage.consumerPid,
       transferStartMessage.providerPid,
-      transfer
+      transfer,
     );
     transfer.events.push(
       this.transferEventRepository.create({
         time: new Date(),
         state: TransferState.STARTED,
         type: "remote",
-      })
+      }),
     );
     await this.dataPlaneService.startTransfer(
       transfer.dataPlaneTransfer,
-      transferStartMessage
+      transferStartMessage,
     );
     if (transferStartMessage.dataAddress) {
       transfer.dataAddress = transferStartMessage.dataAddress;
@@ -436,7 +436,7 @@ export class TransferService {
 
   async complete(
     processId: string,
-    fromDataPlane: boolean
+    fromDataPlane: boolean,
   ): Promise<{ status: string }> {
     const transfer = await this.getTransfer(processId);
     await this.checkTransition("local", transfer, TransferState.COMPLETED);
@@ -445,7 +445,7 @@ export class TransferService {
         time: new Date(),
         state: TransferState.COMPLETED,
         type: "local",
-      })
+      }),
     );
     const transferCompletionMessage = new TransferCompletionMessage({
       providerPid: this.mapId(transfer, "providerPid"),
@@ -454,13 +454,13 @@ export class TransferService {
     if (!fromDataPlane) {
       await this.dataPlaneService.completeTransfer(
         transfer.dataPlaneTransfer,
-        transferCompletionMessage
+        transferCompletionMessage,
       );
     }
     await this.dsp.completeTransfer(
       `${transfer.remoteAddress}/complete`,
       transferCompletionMessage,
-      transfer.remoteParty
+      transfer.remoteParty,
     );
     transfer.state = TransferState.COMPLETED;
     await this.transferDetailRepository.save(transfer);
@@ -473,25 +473,25 @@ export class TransferService {
   async handleComplete(
     processId: string,
     transferCompletionMessage: TransferCompletionMessage,
-    audience: string
+    audience: string,
   ): Promise<{ status: string }> {
     const transfer = await this.getTransfer(processId, audience);
     await this.checkTransition("remote", transfer, TransferState.COMPLETED);
     this.processIdMatch(
       transferCompletionMessage.consumerPid,
       transferCompletionMessage.providerPid,
-      transfer
+      transfer,
     );
     transfer.events.push(
       this.transferEventRepository.create({
         time: new Date(),
         state: TransferState.COMPLETED,
         type: "remote",
-      })
+      }),
     );
     await this.dataPlaneService.completeTransfer(
       transfer.dataPlaneTransfer,
-      transferCompletionMessage
+      transferCompletionMessage,
     );
 
     transfer.state = TransferState.COMPLETED;
@@ -506,7 +506,7 @@ export class TransferService {
     processId: string,
     code: string,
     reason: string,
-    fromDataPlane: boolean
+    fromDataPlane: boolean,
   ): Promise<{ status: string }> {
     const transfer = await this.getTransfer(processId);
     await this.checkTransition("local", transfer, TransferState.TERMINATED);
@@ -523,18 +523,18 @@ export class TransferService {
         code: code,
         reason: transferTerminationMessage.reason,
         type: "local",
-      })
+      }),
     );
     if (!fromDataPlane) {
       await this.dataPlaneService.terminateTransfer(
         transfer.dataPlaneTransfer,
-        transferTerminationMessage
+        transferTerminationMessage,
       );
     }
     await this.dsp.terminateTransfer(
       `${transfer.remoteAddress}/terminate`,
       transferTerminationMessage,
-      transfer.remoteParty
+      transfer.remoteParty,
     );
     transfer.state = TransferState.TERMINATED;
     await this.transferDetailRepository.save(transfer);
@@ -547,14 +547,14 @@ export class TransferService {
   async handleTerminate(
     processId: string,
     transferTerminationMessage: TransferTerminationMessage,
-    audience: string
+    audience: string,
   ): Promise<{ status: string }> {
     const transfer = await this.getTransfer(processId, audience);
     await this.checkTransition("remote", transfer, TransferState.TERMINATED);
     this.processIdMatch(
       transferTerminationMessage.consumerPid,
       transferTerminationMessage.providerPid,
-      transfer
+      transfer,
     );
     transfer.events.push(
       this.transferEventRepository.create({
@@ -563,11 +563,11 @@ export class TransferService {
         code: transferTerminationMessage.code,
         reason: transferTerminationMessage.reason,
         type: "remote",
-      })
+      }),
     );
     await this.dataPlaneService.terminateTransfer(
       transfer.dataPlaneTransfer,
-      transferTerminationMessage
+      transferTerminationMessage,
     );
 
     transfer.state = TransferState.TERMINATED;
@@ -594,7 +594,7 @@ export class TransferService {
   async suspend(
     processId: string,
     reason: string,
-    fromDataPlane: boolean
+    fromDataPlane: boolean,
   ): Promise<{ status: string }> {
     const transfer = await this.getTransfer(processId);
     await this.checkTransition("local", transfer, TransferState.SUSPENDED);
@@ -609,18 +609,18 @@ export class TransferService {
         state: TransferState.SUSPENDED,
         reason: transferSuspensionMessage.reason,
         type: "local",
-      })
+      }),
     );
     if (!fromDataPlane) {
       await this.dataPlaneService.suspendTransfer(
         transfer.dataPlaneTransfer,
-        transferSuspensionMessage
+        transferSuspensionMessage,
       );
     }
     await this.dsp.suspendTransfer(
       `${transfer.remoteAddress}/suspend`,
       transferSuspensionMessage,
-      transfer.remoteParty
+      transfer.remoteParty,
     );
     transfer.state = TransferState.SUSPENDED;
     await this.transferDetailRepository.save(transfer);
@@ -633,14 +633,14 @@ export class TransferService {
   async handleSuspend(
     processId: string,
     transferSuspensionMessage: TransferSuspensionMessage,
-    audience: string
+    audience: string,
   ): Promise<{ status: string }> {
     const transfer = await this.getTransfer(processId, audience);
     await this.checkTransition("remote", transfer, TransferState.SUSPENDED);
     this.processIdMatch(
       transferSuspensionMessage.consumerPid,
       transferSuspensionMessage.providerPid,
-      transfer
+      transfer,
     );
     transfer.events.push(
       this.transferEventRepository.create({
@@ -648,11 +648,11 @@ export class TransferService {
         state: TransferState.SUSPENDED,
         reason: transferSuspensionMessage.reason,
         type: "remote",
-      })
+      }),
     );
     await this.dataPlaneService.suspendTransfer(
       transfer.dataPlaneTransfer,
-      transferSuspensionMessage
+      transferSuspensionMessage,
     );
     transfer.state = TransferState.SUSPENDED;
     await this.transferDetailRepository.save(transfer);
@@ -665,7 +665,7 @@ export class TransferService {
   private processIdMatch(
     consumerPid: string,
     providerPid: string,
-    transfer: TransferDetail
+    transfer: TransferDetail,
   ) {
     if (transfer.role == "consumer") {
       if (
@@ -674,7 +674,7 @@ export class TransferService {
       ) {
         throw new DSPError(
           "Mismatch in received and stored process identifiers",
-          HttpStatus.BAD_REQUEST
+          HttpStatus.BAD_REQUEST,
         ).andLog(this.logger, "warn");
       }
     } else {
@@ -684,7 +684,7 @@ export class TransferService {
       ) {
         throw new DSPError(
           "Mismatch in received and stored process identifiers",
-          HttpStatus.BAD_REQUEST
+          HttpStatus.BAD_REQUEST,
         ).andLog(this.logger, "warn");
       }
     }

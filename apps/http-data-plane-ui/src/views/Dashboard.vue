@@ -180,13 +180,13 @@ onMounted(async () => {
     <template #subtitle>State of this HTTP data plane</template>
     <template #content>
       <div class="flex flex-col gap-4" v-if="state">
-        <FormField label="Identifier">{{ state.identifier }}</FormField>
-        <FormField label="Type">{{ state.details.dataplaneType }}</FormField>
-        <FormField label="Synchronization">{{
+        <FormField :labelWidth="3" label="Identifier">{{ state.identifier }}</FormField>
+        <FormField :labelWidth="3" label="Type">{{ state.details.dataplaneType }}</FormField>
+        <FormField :labelWidth="3" label="Synchronization">{{
           state.details.catalogSynchronization
         }}</FormField>
-        <FormField label="Role">{{ state.details.role }}</FormField>
-        <FormField label="Dataset IDs">
+        <FormField :labelWidth="3" label="Role">{{ state.details.role }}</FormField>
+        <FormField :labelWidth="3" label="Dataset IDs">
           <div v-for="dataset in state.dataset">
             {{ dataset["@id"] }}
           </div>
@@ -236,6 +236,7 @@ onMounted(async () => {
                   props.data.state
                 )
               "
+              class="mr-2 mb-1"
               severity="danger"
               aria-label="Stop"
               outlined
@@ -244,7 +245,7 @@ onMounted(async () => {
             />
             <Button
               v-if="props.data.state === 'dspace:STARTED'"
-              class="ml-2"
+              class="mr-2 mb-1"
               icon="pi pi-pause"
               severity="warn"
               aria-label="Suspend"
@@ -255,7 +256,7 @@ onMounted(async () => {
             <Button
               v-else
               :disabled="props.data.state !== 'dspace:SUSPENDED'"
-              class="ml-2"
+              class="mr-2 mb-1"
               icon="pi pi-play"
               severity="warn"
               aria-label="Start"
@@ -264,7 +265,7 @@ onMounted(async () => {
               v-tooltip.bottom="'Start'"
             />
             <Button
-              class="ml-2"
+              class="mr-2 mb-1"
               :disabled="props.data.state !== 'dspace:STARTED'"
               icon="pi pi-download"
               severity="info"
@@ -280,7 +281,7 @@ onMounted(async () => {
               outlined
             />
             <Button
-              class="ml-2"
+              class="mr-2 mb-1"
               :disabled="props.data.state !== 'dspace:STARTED'"
               icon="pi pi-check"
               severity="success"
@@ -290,7 +291,7 @@ onMounted(async () => {
               v-tooltip.bottom="'Complete'"
             />
             <Button
-              class="ml-2"
+              class="mr-2 mb-1"
               icon="pi pi-list"
               severity="help"
               aria-label="Logs"

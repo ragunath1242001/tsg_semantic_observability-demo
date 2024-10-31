@@ -16,7 +16,7 @@ import { DIDDocument } from "did-resolver";
 export class TsgWalletClient extends WalletClient {
   constructor(
     private readonly iamConfig: TsgWalletDirectConfig,
-    private readonly authClientService: AuthClientService
+    private readonly authClientService: AuthClientService,
   ) {
     super();
   }
@@ -38,17 +38,15 @@ export class TsgWalletClient extends WalletClient {
     } catch (err) {
       throw new DSPClientError("Could not request VP", err).andLog(
         this.logger,
-        "warn"
+        "warn",
       );
     }
   }
 
   async requestValidation(
     token: string,
-    audience: string
-  ): Promise<
-    VerifiablePresentation<VerifiableCredential<CredentialSubject>> | undefined
-  > {
+    audience: string,
+  ): Promise<VerifiablePresentation | undefined> {
     const jwt: VerifiablePresentationJwt = {
       vp: token,
     };
@@ -66,7 +64,7 @@ export class TsgWalletClient extends WalletClient {
           if (validationResult instanceof Array) {
             if (validationResult.some((c) => !c)) {
               this.logger.log(
-                `Validation for ${validation} contains at least one false`
+                `Validation for ${validation} contains at least one false`,
               );
               return undefined;
             }
@@ -87,7 +85,7 @@ export class TsgWalletClient extends WalletClient {
     } catch (err) {
       throw new DSPClientError("Could not request VP", err).andLog(
         this.logger,
-        "warn"
+        "warn",
       );
     }
   }
@@ -96,15 +94,15 @@ export class TsgWalletClient extends WalletClient {
     try {
       const response = await this.authClientService
         .axiosInstance()
-        .get<Credential[]>(
-          `${this.iamConfig.walletUrl}/management/credentials/dataspace`
-        );
+        .get<
+          Credential[]
+        >(`${this.iamConfig.walletUrl}/management/credentials/dataspace`);
       this.logger.debug(`Successfully requested credentials at local wallet`);
       return response.data;
     } catch (err) {
       throw new DSPClientError("Could not get credentials", err).andLog(
         this.logger,
-        "warn"
+        "warn",
       );
     }
   }
@@ -114,33 +112,31 @@ export class TsgWalletClient extends WalletClient {
       const response = await this.authClientService
         .axiosInstance()
         .post(`${this.iamConfig.walletUrl}/management/signature/sign`, {
-          type: "JsonWebSignature",
           plainDocument: document,
         });
       return response.data;
     } catch (err) {
       throw new DSPClientError("Could not sign document", err).andLog(
         this.logger,
-        "warn"
+        "warn",
       );
     }
   }
 
   async requestSignatureValidation(
-    signedDocument: Record<string, any>
+    signedDocument: Record<string, any>,
   ): Promise<any> {
     try {
       const response = await this.authClientService
         .axiosInstance()
         .post(`${this.iamConfig.walletUrl}/management/signature/validate`, {
-          type: "JsonWebSignature",
-          jsonWebSignature: signedDocument,
+          proofDocument: signedDocument,
         });
       return response.data;
     } catch (err) {
       throw new DSPClientError("Could not validate document", err).andLog(
         this.logger,
-        "warn"
+        "warn",
       );
     }
   }
@@ -151,17 +147,17 @@ export class TsgWalletClient extends WalletClient {
         .axiosInstance()
         .get<DIDDocument>(
           `${this.iamConfig.walletUrl}/management/did/resolve/${encodeURI(
-            didId
-          )}`
+            didId,
+          )}`,
         );
       this.logger.debug(
-        `Successfully resolved DID Document for ${didId} at local wallet`
+        `Successfully resolved DID Document for ${didId} at local wallet`,
       );
       return response.data;
     } catch (err) {
       throw new DSPClientError(
         `Could not resolve DID Document for ${didId}`,
-        err
+        err,
       ).andLog(this.logger, "warn");
     }
   }

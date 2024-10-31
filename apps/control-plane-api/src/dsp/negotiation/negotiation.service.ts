@@ -50,7 +50,7 @@ export class NegotiationService {
     @InjectRepository(NegotiationDetailDao)
     private readonly negotiationDetailRepository: Repository<NegotiationDetailDao>,
     @InjectRepository(NegotiationProcessEventDao)
-    private readonly negotiationProcessEventRepository: Repository<NegotiationProcessEventDao>
+    private readonly negotiationProcessEventRepository: Repository<NegotiationProcessEventDao>,
   ) {}
   private readonly logger = new Logger(this.constructor.name);
 
@@ -116,7 +116,7 @@ export class NegotiationService {
   private async checkTransition(
     direction: "remote" | "local",
     negotiation: NegotiationDetail,
-    to: ContractNegotiationState
+    to: ContractNegotiationState,
   ) {
     if (
       !this.allowedTransitions[direction][negotiation.role][
@@ -134,7 +134,7 @@ export class NegotiationService {
       await this.negotiationDetailRepository.save(negotiation);
       throw new DSPError(
         `Negotiation with process ID ${negotiation.localId} cannot transition from ${negotiation.state} to ${to}`,
-        HttpStatus.BAD_REQUEST
+        HttpStatus.BAD_REQUEST,
       ).andLog(this.logger, "warn");
     }
   }
@@ -162,7 +162,7 @@ export class NegotiationService {
 
   async getNegotiationDto(
     processId: string,
-    audience?: string
+    audience?: string,
   ): Promise<NegotiationDetailDto> {
     const negotiation = await this.negotiationDetailRepository.findOneBy({
       localId: processId,
@@ -181,7 +181,7 @@ export class NegotiationService {
               ? await e.verification.serialize()
               : undefined,
           };
-        })
+        }),
       );
       return {
         ...negotiationPlain,
@@ -194,14 +194,14 @@ export class NegotiationService {
     } else {
       throw new DSPError(
         `Cannot get negotiation with process ID ${processId} for ${audience}`,
-        HttpStatus.NOT_FOUND
+        HttpStatus.NOT_FOUND,
       ).andLog(this.logger, "warn");
     }
   }
 
   async getNegotiation(
     processId: string,
-    audience?: string
+    audience?: string,
   ): Promise<NegotiationDetail> {
     const negotiation = await this.negotiationDetailRepository.findOneBy({
       localId: processId,
@@ -223,7 +223,7 @@ export class NegotiationService {
     } else {
       throw new DSPError(
         `Cannot get negotiation with process ID ${processId} for ${audience}`,
-        HttpStatus.NOT_FOUND
+        HttpStatus.NOT_FOUND,
       ).andLog(this.logger, "warn");
     }
   }
@@ -232,7 +232,7 @@ export class NegotiationService {
     offer: Offer,
     dataSet: string,
     remoteAddress: string,
-    audience: string
+    audience: string,
   ): Promise<NegotiationDetail> {
     const consumerPid = `urn:uuid:${crypto.randomUUID()}`;
     offer.target = dataSet;
@@ -246,10 +246,10 @@ export class NegotiationService {
     const contractNegotiationResponse = await this.dsp.requestNegotiation(
       `${remoteAddress}/request`,
       contractRequestMessage,
-      audience
+      audience,
     );
     const contractNegotiation = await deserialize<ContractNegotiation>(
-      contractNegotiationResponse
+      contractNegotiationResponse,
     );
 
     const negotiation: NegotiationDetail = {
@@ -269,7 +269,7 @@ export class NegotiationService {
 
   async createNegotiationDetail(
     negotiation: NegotiationDetail,
-    type: "local" | "remote"
+    type: "local" | "remote",
   ) {
     const event = this.negotiationProcessEventRepository.create({
       time: new Date(),
@@ -284,7 +284,7 @@ export class NegotiationService {
 
   async handleNewRequest(
     requestMessage: ContractRequestMessage,
-    remoteParty: string
+    remoteParty: string,
   ): Promise<ContractNegotiation> {
     const providerPid = `urn:uuid:${crypto.randomUUID()}`;
     const contractNegotiation = new ContractNegotiation({
@@ -297,7 +297,7 @@ export class NegotiationService {
     if (requestMessage.offer.target === undefined) {
       throw new DSPError(
         "Target attribute in provided Offer must be set.",
-        HttpStatus.BAD_REQUEST
+        HttpStatus.BAD_REQUEST,
       ).andLog(this.logger, "warn");
     }
 
@@ -319,13 +319,13 @@ export class NegotiationService {
 
   async requestExisting(
     offer: Offer,
-    processId: string
+    processId: string,
   ): Promise<NegotiationDetail> {
     const negotiation = await this.getNegotiation(processId);
     await this.checkTransition(
       "local",
       negotiation,
-      ContractNegotiationState.REQUESTED
+      ContractNegotiationState.REQUESTED,
     );
     offer.target = negotiation.dataSet;
     offer.assignee = this.config.iam.didId;
@@ -338,7 +338,7 @@ export class NegotiationService {
     const contractNegotiationResponse = await this.dsp.requestNegotiation(
       `${negotiation.remoteAddress}/request`,
       contractRequestMessage,
-      negotiation.remoteParty
+      negotiation.remoteParty,
     );
 
     await deserialize<ContractNegotiation>(contractNegotiationResponse);
@@ -357,19 +357,19 @@ export class NegotiationService {
   async handleExistingRequest(
     processId: string,
     requestMessage: ContractRequestMessage,
-    audience: string
+    audience: string,
   ) {
     if (processId !== requestMessage.providerPid) {
       throw new DSPError(
         `Contract negotiation process ID mismatch ${processId} vs ${requestMessage.providerPid}`,
-        HttpStatus.BAD_REQUEST
+        HttpStatus.BAD_REQUEST,
       ).andLog(this.logger, "warn");
     }
     const negotiation = await this.getNegotiation(processId, audience);
     await this.checkTransition(
       "remote",
       negotiation,
-      ContractNegotiationState.REQUESTED
+      ContractNegotiationState.REQUESTED,
     );
     negotiation.events.push({
       time: new Date(),
@@ -390,14 +390,14 @@ export class NegotiationService {
   async offer(
     offer: Offer,
     processId: string,
-    address?: string
+    address?: string,
   ): Promise<{ status: string }> {
     // TODO: Allow provider initiated negotiations
     const negotiation = await this.getNegotiation(processId);
     await this.checkTransition(
       "local",
       negotiation,
-      ContractNegotiationState.OFFERED
+      ContractNegotiationState.OFFERED,
     );
     offer.assigner = this.config.iam.didId;
     offer.assignee = negotiation.remoteParty;
@@ -416,7 +416,7 @@ export class NegotiationService {
     await this.dsp.negotiationOffer(
       `${negotiation.remoteAddress}/offers`,
       contractOfferMessage,
-      negotiation.remoteParty
+      negotiation.remoteParty,
     );
     negotiation.offer = contractOfferMessage.offer;
     negotiation.state = ContractNegotiationState.OFFERED;
@@ -430,14 +430,14 @@ export class NegotiationService {
   async handleOffer(
     processId: string,
     contractOfferMessage: ContractOfferMessage,
-    audience: string
+    audience: string,
   ): Promise<{ status: string }> {
     // TODO: Allow provider initiated negotiations
     const negotiation = await this.getNegotiation(processId, audience);
     await this.checkTransition(
       "remote",
       negotiation,
-      ContractNegotiationState.OFFERED
+      ContractNegotiationState.OFFERED,
     );
     negotiation.events.push({
       time: new Date(),
@@ -458,7 +458,7 @@ export class NegotiationService {
     await this.checkTransition(
       "local",
       negotiation,
-      ContractNegotiationState.ACCEPTED
+      ContractNegotiationState.ACCEPTED,
     );
     negotiation.events.push({
       time: new Date(),
@@ -473,7 +473,7 @@ export class NegotiationService {
     await this.dsp.negotiationEvent(
       `${negotiation.remoteAddress}/events`,
       eventMessage,
-      negotiation.remoteParty
+      negotiation.remoteParty,
     );
     negotiation.state = ContractNegotiationState.ACCEPTED;
     await this.negotiationDetailRepository.save(negotiation);
@@ -486,7 +486,7 @@ export class NegotiationService {
   async handleEvent(
     processId: string,
     contractNegotiationEventMessage: ContractNegotiationEventMessage,
-    audience: string
+    audience: string,
   ): Promise<{ status: string }> {
     const negotiation = await this.getNegotiation(processId, audience);
     const newState =
@@ -497,7 +497,10 @@ export class NegotiationService {
     if (newState === ContractNegotiationState.FINALIZED) {
       const agreement = await negotiation.agreement?.serialize();
       const remoteHash = contractNegotiationEventMessage.hashedMessage;
-      if (remoteHash?.["dspace:algorithm"] === "JsonWebSignature2020") {
+      if (
+        remoteHash?.["dspace:algorithm"] === "JsonWebSignature2020" ||
+        remoteHash?.["dspace:algorithm"] === "DataIntegrityProof"
+      ) {
         try {
           const signature = JSON.parse(remoteHash["dspace:digest"]);
           await this.authService.requestSignatureValidation({
@@ -508,7 +511,7 @@ export class NegotiationService {
           throw new DSPError(
             `Signature validation failed for negotiation ${processId}`,
             HttpStatus.BAD_REQUEST,
-            e
+            e,
           );
         }
       }
@@ -517,7 +520,7 @@ export class NegotiationService {
         negotiation.localId,
         negotiation.events.find((e) => e.type === "local" && e.hashedMessage)
           ?.hashedMessage,
-        remoteHash
+        remoteHash,
       );
       await this.negotiationDetailRepository.save({
         ...negotiation,
@@ -543,19 +546,19 @@ export class NegotiationService {
     if (negotiation.offer === undefined) {
       throw new DSPError(
         `No offer present for negotiation ${processId}, no agreement can be created`,
-        HttpStatus.BAD_REQUEST
+        HttpStatus.BAD_REQUEST,
       ).andLog(this.logger, "warn");
     }
     if (negotiation.offer.target === undefined) {
       throw new DSPError(
         `No agreement target available`,
-        HttpStatus.INTERNAL_SERVER_ERROR
+        HttpStatus.INTERNAL_SERVER_ERROR,
       ).andLog(this.logger, "warn");
     }
     await this.checkTransition(
       "local",
       negotiation,
-      ContractNegotiationState.AGREED
+      ContractNegotiationState.AGREED,
     );
     const agreement = new Agreement({
       ...negotiation.offer,
@@ -578,14 +581,14 @@ export class NegotiationService {
     await this.dsp.negotiationAgreement(
       `${negotiation.remoteAddress}/agreement`,
       agreementMessage,
-      negotiation.remoteParty
+      negotiation.remoteParty,
     );
     negotiation.state = ContractNegotiationState.AGREED;
     negotiation.agreement = agreement;
     negotiation.agreementId = agreement.id;
     const agreementDao = await this.agreementService.storeAgreement(
       await agreement.serialize(),
-      negotiation.localId
+      negotiation.localId,
     );
     await this.negotiationDetailRepository.save({
       ...negotiation,
@@ -602,19 +605,19 @@ export class NegotiationService {
   async handleAgreement(
     processId: string,
     contractAgreementMessage: ContractAgreementMessage,
-    audience: string
+    audience: string,
   ): Promise<{ status: string }> {
     const negotiation = await this.getNegotiation(processId, audience);
     await this.checkTransition(
       "remote",
       negotiation,
-      ContractNegotiationState.AGREED
+      ContractNegotiationState.AGREED,
     );
     negotiation.events.push({
       time: new Date(),
       state: ContractNegotiationState.AGREED,
       agreementMessage: JSON.stringify(
-        await contractAgreementMessage.serialize()
+        await contractAgreementMessage.serialize(),
       ),
       type: "remote",
     });
@@ -622,7 +625,7 @@ export class NegotiationService {
     negotiation.agreementId = contractAgreementMessage.agreement.id;
     const agreementDao = await this.agreementService.storeAgreement(
       await contractAgreementMessage.agreement.serialize(),
-      negotiation.localId
+      negotiation.localId,
     );
     negotiation.state = ContractNegotiationState.AGREED;
     await this.negotiationDetailRepository.save({
@@ -640,15 +643,15 @@ export class NegotiationService {
     await this.checkTransition(
       "local",
       negotiation,
-      ContractNegotiationState.VERIFIED
+      ContractNegotiationState.VERIFIED,
     );
     const contractAgreementMessage = negotiation.events.find(
-      (e) => e.agreementMessage !== undefined
+      (e) => e.agreementMessage !== undefined,
     );
     if (contractAgreementMessage === undefined) {
       throw new DSPError(
         `No agreement message present that can be signed for verification`,
-        HttpStatus.BAD_REQUEST
+        HttpStatus.BAD_REQUEST,
       ).andLog(this.logger, "warn");
     }
     let algorithm;
@@ -657,7 +660,7 @@ export class NegotiationService {
     try {
       const signedDocument = await this.authService.requestSignature(agreement);
       digest = JSON.stringify(signedDocument["proof"]);
-      algorithm = "JsonWebSignature2020";
+      algorithm = signedDocument["proof"]["type"];
     } catch (e) {
       this.logger.warn(`Could not sign agreement: ${e}`);
       digest = this.createHash(JSON.stringify(agreement));
@@ -685,7 +688,7 @@ export class NegotiationService {
     await this.dsp.negotiationVerification(
       `${negotiation.remoteAddress}/agreement/verification`,
       contractAgreementVerificationMessage,
-      negotiation.remoteParty
+      negotiation.remoteParty,
     );
     negotiation.state = ContractNegotiationState.VERIFIED;
     await this.negotiationDetailRepository.save(negotiation);
@@ -698,22 +701,24 @@ export class NegotiationService {
   async handleVerification(
     processId: string,
     contractAgreementVerificationMessage: ContractAgreementVerificationMessage,
-    audience: string
+    audience: string,
   ): Promise<{ status: string }> {
     const negotiation = await this.getNegotiation(processId, audience);
     await this.checkTransition(
       "remote",
       negotiation,
-      ContractNegotiationState.VERIFIED
+      ContractNegotiationState.VERIFIED,
     );
     let agreement: AgreementDto | undefined;
     if (
       contractAgreementVerificationMessage.hashedMessage["dspace:algorithm"] ===
-      "JsonWebSignature2020"
+        "JsonWebSignature2020" ||
+      contractAgreementVerificationMessage.hashedMessage["dspace:algorithm"] ===
+        "DataIntegrityProof"
     ) {
       try {
         const signature = JSON.parse(
-          contractAgreementVerificationMessage.hashedMessage["dspace:digest"]
+          contractAgreementVerificationMessage.hashedMessage["dspace:digest"],
         );
         agreement = await negotiation.agreement?.serialize();
         await this.authService.requestSignatureValidation({
@@ -724,7 +729,7 @@ export class NegotiationService {
         throw new DSPError(
           `Signature validation failed for negotiation ${processId}`,
           HttpStatus.BAD_REQUEST,
-          e
+          e,
         );
       }
     }
@@ -748,7 +753,7 @@ export class NegotiationService {
     await this.checkTransition(
       "local",
       negotiation,
-      ContractNegotiationState.FINALIZED
+      ContractNegotiationState.FINALIZED,
     );
     let algorithm;
     let digest;
@@ -756,7 +761,7 @@ export class NegotiationService {
     try {
       const signedDocument = await this.authService.requestSignature(agreement);
       digest = JSON.stringify(signedDocument["proof"]);
-      algorithm = "JsonWebSignature2020";
+      algorithm = signedDocument["proof"]["type"];
     } catch (e) {
       this.logger.warn(`Could not sign agreement: ${e}`);
       digest = this.createHash(JSON.stringify(agreement));
@@ -781,7 +786,7 @@ export class NegotiationService {
     await this.dsp.negotiationEvent(
       `${negotiation.remoteAddress}/events`,
       eventMessage,
-      negotiation.remoteParty
+      negotiation.remoteParty,
     );
     negotiation.state = ContractNegotiationState.FINALIZED;
     const agreementDao = await this.agreementService.storeAgreement(
@@ -789,7 +794,7 @@ export class NegotiationService {
       negotiation.localId,
       hashedMessage,
       negotiation.events.find((e) => e.type === "remote" && e.hashedMessage)
-        ?.hashedMessage
+        ?.hashedMessage,
     );
     await this.negotiationDetailRepository.save({
       ...negotiation,
@@ -804,13 +809,13 @@ export class NegotiationService {
   async terminate(
     processId: string,
     code?: string,
-    reason?: string
+    reason?: string,
   ): Promise<{ status: string }> {
     const negotiation = await this.getNegotiation(processId);
     await this.checkTransition(
       "local",
       negotiation,
-      ContractNegotiationState.TERMINATED
+      ContractNegotiationState.TERMINATED,
     );
     negotiation.events.push({
       time: new Date(),
@@ -830,13 +835,13 @@ export class NegotiationService {
   async handleTermination(
     processId: string,
     contractNegotiationTerminationMessage: ContractNegotiationTerminationMessage,
-    audience: string
+    audience: string,
   ): Promise<{ status: string }> {
     const negotiation = await this.getNegotiation(processId, audience);
     await this.checkTransition(
       "remote",
       negotiation,
-      ContractNegotiationState.TERMINATED
+      ContractNegotiationState.TERMINATED,
     );
     negotiation.events.push({
       time: new Date(),

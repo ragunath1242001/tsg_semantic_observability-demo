@@ -24,7 +24,7 @@ export class ComplianceRequest {
   clearingHouse!: string;
 
   @ValidateNested({ each: true })
-  @Type(() => VerifiableCredential<CredentialSubject>)
+  @Type(() => VerifiableCredential)
   @IsDefined()
-  credentials!: VerifiableCredential<CredentialSubject>[];
+  credentials!: VerifiableCredential[];
 }

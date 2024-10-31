@@ -267,6 +267,23 @@ export class DidConfig {
   public readonly method: DIDMethodTypes = DIDMethod.WEB;
 }
 
+export enum SignatureType {
+  DATA_INTEGRITY_PROOF = "DATA_INTEGRITY_PROOF",
+  JSON_WEB_SIGNATURE_2020 = "JSON_WEB_SIGNATURE_2020",
+}
+
+export class SignatureConfig {
+  @IsEnum(SignatureType)
+  @IsOptional()
+  public default: SignatureType = SignatureType.DATA_INTEGRITY_PROOF;
+  @IsEnum(SignatureType)
+  @IsOptional()
+  public credentials: SignatureType = SignatureType.DATA_INTEGRITY_PROOF;
+  @IsEnum(SignatureType)
+  @IsOptional()
+  public presentations: SignatureType = SignatureType.DATA_INTEGRITY_PROOF;
+}
+
 export class RootConfig {
   @ValidateNested()
   @IsDefined({
@@ -335,4 +352,9 @@ export class RootConfig {
   @Type(() => DidConfig)
   @IsOptional()
   public readonly did: DidConfig = new DidConfig();
+
+  @ValidateNested()
+  @Type(() => SignatureConfig)
+  @IsOptional()
+  public readonly signature: SignatureConfig = new SignatureConfig();
 }

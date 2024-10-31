@@ -3,7 +3,8 @@ import { DIDDocument } from "did-resolver";
 import { AppError } from "../../utils/error.js";
 import { HttpStatus, Logger } from "@nestjs/common";
 import { DidResolverStrategy } from "../did.resolver.service.js";
-import { resolveDID, DIDLog } from "@tno-tsg/trustdidweb-ts";
+import { DIDLog } from "./method/interfaces.js";
+import { resolveDID } from "./method/method.js";
 
 export class DidTdwResolverStrategy implements DidResolverStrategy {
   private readonly logger = new Logger(this.constructor.name);
@@ -34,7 +35,7 @@ export class DidTdwResolverStrategy implements DidResolverStrategy {
     } catch (err) {
       throw new AppError(
         `Could not load DID document for ${didId}`,
-        HttpStatus.BAD_REQUEST
+        HttpStatus.BAD_REQUEST,
       ).andLog(this.logger);
     }
   }

@@ -1,28 +1,43 @@
-import { Signature } from "@tsg-dsp/common-dsp";
+import {
+  DataIntegrityProof,
+  JsonWebSignature2020,
+  OrArray,
+  Proof,
+} from "@tsg-dsp/common-dsp";
 import { Type } from "class-transformer";
 import {
+  IsBoolean,
   IsDefined,
   IsIn,
   IsObject,
   IsOptional,
   IsString,
-  ValidateIf,
   ValidateNested,
 } from "class-validator";
 
-export class JsonWebSignature {
-  @Type(() => Signature)
-  @ValidateNested()
+export class ProofDocument {
+  @Type(() => Proof)
   @IsDefined()
-  proof: Signature;
+  @ValidateNested()
+  @Type(() => Proof, {
+    discriminator: {
+      property: "type",
+      subTypes: [
+        { value: JsonWebSignature2020, name: "JsonWebSignature2020" },
+        { value: DataIntegrityProof, name: "DataIntegrityProof" },
+      ],
+    },
+    keepDiscriminatorProperty: true,
+  })
+  proof!: OrArray<Proof>;
   [key: string]: any;
 }
 
 export class SignRequest {
   @IsString()
-  @IsDefined()
-  @IsIn(["JsonWebSignature"])
-  type: "JsonWebSignature";
+  @IsOptional()
+  @IsIn(["DataIntegrityProof", "JsonWebSignature2020"])
+  type?: "JsonWebSignature2020" | "DataIntegrityProof";
 
   @IsObject()
   @IsDefined()
@@ -31,16 +46,24 @@ export class SignRequest {
   @IsString()
   @IsOptional()
   keyId?: string;
+
+  @IsString()
+  @IsOptional()
+  @IsIn(["RDFC", "JCS"])
+  normalization: "RDFC" | "JCS" = "RDFC";
+
+  @IsString()
+  @IsOptional()
+  proofPurpose: string = "assertionMethod";
+  options: Partial<DataIntegrityProof> = {};
+
+  @IsBoolean()
+  @IsOptional()
+  embeddedVerificationMethod: boolean = false;
 }
 
 export class ValidateRequest {
-  @IsString()
-  @IsDefined()
-  @IsIn(["JsonWebSignature"])
-  type: "JsonWebSignature";
-
-  @Type(() => JsonWebSignature)
+  @Type(() => ProofDocument)
   @ValidateNested()
-  @ValidateIf((v) => v.type === "JsonWebSignature")
-  jsonWebSignature?: JsonWebSignature;
+  proofDocument?: ProofDocument;
 }

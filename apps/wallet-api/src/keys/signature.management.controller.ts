@@ -2,7 +2,7 @@ import { Body, Controller, HttpCode, HttpStatus, Post } from "@nestjs/common";
 import { Roles } from "../auth/roles.guard.js";
 import { AppRole } from "@tsg-dsp/wallet-dtos";
 import {
-  JsonWebSignature,
+  ProofDocument,
   SignRequest,
   ValidateRequest,
 } from "@tsg-dsp/common-dtos";
@@ -24,6 +24,7 @@ import {
   ValidateRequestDto,
 } from "./signature.schemas.js";
 import { SignatureService } from "./signature.service.js";
+import { toArray } from "@tsg-dsp/common-dsp";
 
 @Controller("management/signature")
 @ApiTags("Management Signatures")
@@ -43,11 +44,16 @@ export class SignatureManagementController {
   @ApiNotFoundResponseDefault()
   @ApiForbiddenResponseDefault()
   async sign(
-    @Body(validationPipe) signRequest: SignRequest
-  ): Promise<JsonWebSignature> {
-    const proof = await this.signatureService.signAsJsonWebSignature(
+    @Body(validationPipe) signRequest: SignRequest,
+  ): Promise<ProofDocument> {
+    const proof = await this.signatureService.signAsProof(
       signRequest.plainDocument,
-      signRequest.keyId
+      signRequest.keyId,
+      signRequest.type,
+      signRequest.normalization,
+      signRequest.proofPurpose,
+      signRequest.options,
+      signRequest.embeddedVerificationMethod,
     );
     return {
       ...signRequest.plainDocument,
@@ -65,10 +71,10 @@ export class SignatureManagementController {
   @ApiNotFoundResponseDefault()
   @ApiForbiddenResponseDefault()
   async validate(
-    @Body(validationPipe) validateRequest: ValidateRequest
-  ): Promise<JsonWebSignature> {
-    const { proof, ...plainDocument } = validateRequest.jsonWebSignature!;
-    await this.signatureService.validateJsonWebSignature(plainDocument, proof);
-    return validateRequest.jsonWebSignature!;
+    @Body(validationPipe) validateRequest: ValidateRequest,
+  ): Promise<ProofDocument> {
+    const { proof, ...plainDocument } = validateRequest.proofDocument!;
+    await this.signatureService.validateProof(plainDocument, toArray(proof)[0]);
+    return validateRequest.proofDocument!;
   }
 }

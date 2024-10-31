@@ -33,7 +33,7 @@ export class Credentials extends MetaEntity {
   targetDid!: string;
 
   @Column("simple-json")
-  credential!: VerifiableCredential<CredentialSubject>;
+  credential!: VerifiableCredential;
 
   @Column("boolean")
   selfIssued!: boolean;

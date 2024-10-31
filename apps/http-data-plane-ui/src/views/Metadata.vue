@@ -171,20 +171,20 @@ onMounted(async () => {
     <template #subtitle>State of this HTTP data plane</template>
     <template #content>
       <div class="grid grid-cols-12 gap-4" v-if="state">
-        <div class="col-span-12 lg:col-span-8">
-          <FormField label="Identifier">{{ state.identifier }}</FormField>
-          <FormField label="Type">{{ state.details.dataplaneType }}</FormField>
-          <FormField label="Synchronization">{{
+        <div class="col-span-12 min-[1024px]:col-span-8">
+          <FormField :labelWidth="3" label="Identifier">{{ state.identifier }}</FormField>
+          <FormField :labelWidth="3" label="Type">{{ state.details.dataplaneType }}</FormField>
+          <FormField :labelWidth="3" label="Synchronization">{{
             state.details.catalogSynchronization
           }}</FormField>
-          <FormField label="Role">{{ state.details.role }}</FormField>
-          <FormField label="Dataset IDs">
+          <FormField :labelWidth="3" label="Role">{{ state.details.role }}</FormField>
+          <FormField :labelWidth="3" label="Dataset IDs">
             <div v-for="dataset in state.dataset">
               {{ dataset["@id"] }}
             </div>
           </FormField>
         </div>
-        <div class="col-span-12 lg:col-span-4">
+        <div class="col-span-12 min-[1024px]:col-span-4">
           <div>
             <Button
               icon="pi pi-refresh"

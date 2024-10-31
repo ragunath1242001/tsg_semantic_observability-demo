@@ -26,7 +26,7 @@ describe("Auth Service", () => {
   beforeEach(() => {
     authService = new AuthService(
       plainToInstance(RootConfig, { iam: iamConfig }),
-      new AuthClientService(plainToInstance(AuthConfig, { enabled: false }))
+      new AuthClientService(plainToInstance(AuthConfig, { enabled: false })),
     );
   });
 
@@ -42,7 +42,7 @@ describe("Auth Service", () => {
     const vp = {
       "@context": [
         "https://www.w3.org/2018/credentials/v1",
-        "https://w3c.github.io/vc-jws-2020/contexts/v1/",
+        "https://w3id.org/security/suites/jws-2020/v1",
       ],
       type: ["VerifiablePresentation"],
       verifiableCredential: {

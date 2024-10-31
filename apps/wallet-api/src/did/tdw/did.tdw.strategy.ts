@@ -1,19 +1,12 @@
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { DidStrategy } from "../did.service.js";
 import { DidServiceConfig, RootConfig } from "../../config.js";
-import { DIDDocument, Service, VerificationMethod } from "did-resolver";
+import { DIDDocument, Service } from "did-resolver";
 import { KeyMaterials } from "../../model/credentials.dao.js";
 import { AppError } from "../../utils/error.js";
 import { InjectRepository } from "@nestjs/typeorm";
 import { DIDLogs } from "../../model/did.dao.js";
 import { Repository } from "typeorm";
-import {
-  VerificationMethod as TdwVerificationMethod,
-  createDID,
-  createSigner,
-  updateDID,
-  DIDLog,
-} from "@tno-tsg/trustdidweb-ts";
 import { base32 } from "multiformats/bases/base32";
 import {
   createVerificationMethods,
@@ -22,16 +15,19 @@ import {
 } from "../../utils/did.js";
 import { createHash } from "crypto";
 import { canonicalize } from "json-canonicalize";
-import { jwkToMultibase } from "../../utils/keyconverter.js";
+import { jwkToMultibase } from "../../utils/keys/keyconverter.js";
+import { DIDLog, VerificationMethod } from "./method/interfaces.js";
+import { createDID, updateDID } from "./method/method.js";
+import { createSigner } from "./method/signing.js";
 
 @Injectable()
 export class DidTdwStrategy implements DidStrategy {
   constructor(
     @InjectRepository(DIDLogs)
-    private readonly didLogsRepository: Repository<DIDLogs>
+    private readonly didLogsRepository: Repository<DIDLogs>,
   ) {}
   private readonly logger = new Logger(this.constructor.name);
-  private currUpdateKey?: TdwVerificationMethod;
+  private currUpdateKey?: VerificationMethod;
 
   async getDidLog(scid: string): Promise<string> {
     const logEntries = await this.didLogsRepository.find({
@@ -53,7 +49,7 @@ export class DidTdwStrategy implements DidStrategy {
   }
 
   private prepareAssertionMethods(
-    verificationMethods?: VerificationMethod[]
+    verificationMethods?: VerificationMethod[],
   ): VerificationMethod[] {
     if (verificationMethods == null) {
       return [];
@@ -70,11 +66,11 @@ export class DidTdwStrategy implements DidStrategy {
     return vmsWithAssertionMethods;
   }
 
-  getCurrUpdateKey(): TdwVerificationMethod {
+  getCurrUpdateKey(): VerificationMethod {
     if (!this.currUpdateKey) {
       throw new AppError(
         `No DID default key present`,
-        HttpStatus.NOT_FOUND
+        HttpStatus.NOT_FOUND,
       ).andLog(this.logger);
     }
     return this.currUpdateKey;
@@ -84,7 +80,7 @@ export class DidTdwStrategy implements DidStrategy {
     config: RootConfig,
     didId: string,
     keys: KeyMaterials[],
-    services: DidServiceConfig[]
+    services: DidServiceConfig[],
   ): Promise<{
     did: string;
     doc: DIDDocument;
@@ -96,7 +92,7 @@ export class DidTdwStrategy implements DidStrategy {
       signer: createSigner(this.getCurrUpdateKey()),
       context: VERIFICATION_METHOD_CONTEXT,
       verificationMethods: this.prepareAssertionMethods(
-        createVerificationMethods(didId, keys)
+        createVerificationMethods(didId, keys),
       ),
       service: services,
     });
@@ -114,14 +110,14 @@ export class DidTdwStrategy implements DidStrategy {
     config: RootConfig,
     didId: string,
     keys: KeyMaterials[],
-    services: DidServiceConfig[]
+    services: DidServiceConfig[],
   ): Promise<{ didId: string; didDocument: DIDDocument }> {
     this.logger.log("Creating DID document");
 
     if (keys.length === 0) {
       throw new AppError(
         `Keys not supplied for DID document creation`,
-        HttpStatus.INTERNAL_SERVER_ERROR
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
 
@@ -139,12 +135,12 @@ export class DidTdwStrategy implements DidStrategy {
       config,
       didId,
       keys,
-      services
+      services,
     );
 
     this.logger.log(`DID document created for ${created.did}`);
     this.logger.debug(
-      `DID document ${created.did}\n${JSON.stringify(created.doc, null, 2)}`
+      `DID document ${created.did}\n${JSON.stringify(created.doc, null, 2)}`,
     );
 
     return { didId: created.did, didDocument: created.doc };
@@ -153,7 +149,7 @@ export class DidTdwStrategy implements DidStrategy {
   async updateDidDocument(
     didDocument: DIDDocument,
     verificationMethods?: VerificationMethod[],
-    services?: Service[]
+    services?: Service[],
   ): Promise<DIDDocument> {
     this.logger.log("Updating DID document");
 
@@ -179,7 +175,7 @@ export class DidTdwStrategy implements DidStrategy {
 
     this.logger.log(`DID document updated for ${updated.did}`);
     this.logger.debug(
-      `DID document ${updated.did}\n${JSON.stringify(updated.doc, null, 2)}`
+      `DID document ${updated.did}\n${JSON.stringify(updated.doc, null, 2)}`,
     );
 
     await this.didLogsRepository.save({
@@ -209,7 +205,7 @@ export class DidTdwStrategy implements DidStrategy {
     const logEntries = existingLogs.map((row) => row.logEntry);
     const scid = existingLogs[0].scid;
 
-    const newUpdateKey: TdwVerificationMethod = {
+    const newUpdateKey: VerificationMethod = {
       publicKeyMultibase: jwkToMultibase(key.publicKey),
       secretKeyMultibase: jwkToMultibase(key.privateKey, true),
       type: key.type,
@@ -220,7 +216,7 @@ export class DidTdwStrategy implements DidStrategy {
       signer: createSigner(this.getCurrUpdateKey()),
       context: VERIFICATION_METHOD_CONTEXT,
       verificationMethods: this.prepareAssertionMethods(
-        didDocument.verificationMethod
+        didDocument.verificationMethod,
       ),
       services: didDocument.service,
       prerotate: true,
@@ -228,7 +224,7 @@ export class DidTdwStrategy implements DidStrategy {
         base32.encode(
           createHash("sha256")
             .update(canonicalize(newUpdateKey.publicKeyMultibase!))
-            .digest()
+            .digest(),
         ),
       ],
     });
@@ -242,7 +238,7 @@ export class DidTdwStrategy implements DidStrategy {
       signer: createSigner(this.getCurrUpdateKey()),
       context: VERIFICATION_METHOD_CONTEXT,
       verificationMethods: this.prepareAssertionMethods(
-        didDocument.verificationMethod
+        didDocument.verificationMethod,
       ),
       services: didDocument.service,
       updateKeys: [newUpdateKey.publicKeyMultibase!],
@@ -258,7 +254,7 @@ export class DidTdwStrategy implements DidStrategy {
   getWellKnownDidDocument(doc: DIDDocument): DIDDocument {
     const did = doc.id;
     const newDoc = JSON.parse(
-      JSON.stringify(doc).replaceAll(DIDMethod.TDW, DIDMethod.WEB)
+      JSON.stringify(doc).replaceAll(DIDMethod.TDW, DIDMethod.WEB),
     );
     if (newDoc.alsoKnownAs) {
       newDoc.alsoKnownAs.push(did);

@@ -7,7 +7,10 @@ import {
 import {
   VerifiableCredential,
   CredentialSubject,
-  Signature,
+  JsonWebSignature2020,
+  Proof,
+  DataIntegrityProof,
+  OrArray,
 } from "@tsg-dsp/common-dsp";
 import {
   IsString,
@@ -24,10 +27,45 @@ import {
 import { Credentials } from "../model/credentials.dao.js";
 import { Type } from "class-transformer";
 import { JsonLdContextConfigDto } from "../contexts/context.schemas.js";
+import {
+  ReferenceObject,
+  SchemaObject,
+} from "@nestjs/swagger/dist/interfaces/open-api-spec.interface.js";
 
-export class SignatureDto implements Signature {
+const orArray = (
+  schema: string | SchemaObject,
+): (SchemaObject | ReferenceObject)[] => {
+  if (typeof schema === "string") {
+    return [
+      {
+        $ref: schema,
+      },
+      {
+        type: "array",
+        items: {
+          $ref: schema,
+        },
+      },
+    ];
+  } else {
+    return [
+      schema,
+      {
+        type: "array",
+        items: schema,
+      },
+    ];
+  }
+};
+
+export abstract class ProofDto implements Proof {
+  type!: "JsonWebSignature2020" | "DataIntegrityProof";
+  proofPurpose!: string;
+}
+
+export class JsonWebSignature2020Dto implements JsonWebSignature2020 {
   @ApiProperty()
-  type!: string;
+  type!: "JsonWebSignature2020";
   @ApiProperty({ format: "date-time" })
   created!: string;
   @ApiProperty()
@@ -38,15 +76,44 @@ export class SignatureDto implements Signature {
   verificationMethod!: string;
 }
 
+export class DataIntegrityProofDto implements DataIntegrityProof {
+  @ApiPropertyOptional()
+  id?: string;
+  @ApiProperty()
+  type!: "DataIntegrityProof";
+  @ApiProperty()
+  proofPurpose!: string;
+  @ApiPropertyOptional()
+  verificationMethod?: string;
+  @ApiProperty()
+  cryptosuite!: string;
+  @ApiPropertyOptional()
+  created?: string;
+  @ApiPropertyOptional()
+  expires?: string;
+  @ApiPropertyOptional({
+    oneOf: orArray({ type: "string" }),
+  })
+  domain?: OrArray<string>;
+  @ApiPropertyOptional()
+  challenge?: string;
+  @ApiProperty()
+  proofValue!: string;
+  @ApiPropertyOptional({
+    oneOf: orArray({ type: "string" }),
+  })
+  previousProof?: OrArray<string>;
+  @ApiPropertyOptional()
+  nonce?: string;
+}
+
 export class DefaultCredentialSubjectDto implements CredentialSubject {
   @ApiProperty()
   id!: string;
   [key: string]: any;
 }
 
-export class VerifiableCredentialDto
-  implements VerifiableCredential<CredentialSubject>
-{
+export class VerifiableCredentialDto implements VerifiableCredential {
   @ApiProperty({
     type: [String],
   })
@@ -58,19 +125,9 @@ export class VerifiableCredentialDto
   @ApiPropertyOptional()
   id?: string;
   @ApiProperty({
-    oneOf: [
-      { $ref: getSchemaPath(DefaultCredentialSubjectDto) },
-      {
-        type: "array",
-        items: {
-          $ref: getSchemaPath(DefaultCredentialSubjectDto),
-        },
-      },
-    ],
+    oneOf: orArray(getSchemaPath(DefaultCredentialSubjectDto)),
   })
-  credentialSubject!:
-    | DefaultCredentialSubjectDto
-    | DefaultCredentialSubjectDto[];
+  credentialSubject!: OrArray<DefaultCredentialSubjectDto>;
   @ApiProperty()
   issuer!: string;
   @ApiPropertyOptional({ format: "date-time" })
@@ -79,8 +136,19 @@ export class VerifiableCredentialDto
   issuanceDate!: string;
   @ApiPropertyOptional()
   evidence?: any;
-  @ApiProperty()
-  proof!: SignatureDto;
+  @ApiProperty({
+    oneOf: orArray({
+      oneOf: [
+        {
+          $ref: getSchemaPath(DataIntegrityProofDto),
+        },
+        {
+          $ref: getSchemaPath(JsonWebSignature2020Dto),
+        },
+      ],
+    }),
+  })
+  proof!: OrArray<ProofDto>;
 }
 
 export class TrustAnchorConfigDto implements TrustAnchorConfig {
