@@ -34,7 +34,7 @@ export class IssuerService {
     private readonly contextService: ContextService,
     private readonly credentialService: CredentialsService,
     private readonly presentationService: PresentationService,
-    private readonly didResolverService: DidResolverService
+    private readonly didResolverService: DidResolverService,
   ) {
     this.initialized = this.init();
   }
@@ -52,11 +52,11 @@ export class IssuerService {
               o.holderId === issuerConfig.holderId &&
               o.credentialType === issuerConfig.credentialType &&
               (!issuerConfig.preAuthorizationCode ||
-                o.preAuthorizedCode === issuerConfig.preAuthorizationCode)
+                o.preAuthorizedCode === issuerConfig.preAuthorizationCode),
           )
         ) {
           this.logger.log(
-            `Already created offer for ${issuerConfig.holderId} for ${issuerConfig.credentialType} credential`
+            `Already created offer for ${issuerConfig.holderId} for ${issuerConfig.credentialType} credential`,
           );
         } else {
           await this.createCredentialOfferWithRetry({
@@ -66,7 +66,7 @@ export class IssuerService {
             preAuthorizedCode: issuerConfig.preAuthorizationCode,
           });
         }
-      })
+      }),
     );
 
     return true;
@@ -74,7 +74,8 @@ export class IssuerService {
 
   async createCredentialOfferWithRetry(
     offerRequest: CredentialOfferRequest,
-    retry = 0
+    retry = 0,
+    backOff = 1000,
   ) {
     try {
       const offer = await this.createCredentialOffer(offerRequest);
@@ -85,19 +86,23 @@ export class IssuerService {
           offer.grants?.[OfferGrants.PRE_AUTHORIZATION_CODE]?.[
             "pre-authorization_code"
           ]
-        }`
+        }`,
       );
     } catch (err) {
       if (retry < 5) {
         this.logger.warn(
-          `Could not create credential offer for ${offerRequest.holderId} for ${offerRequest.credentialType} credential`
+          `Could not create credential offer for ${offerRequest.holderId} for ${offerRequest.credentialType} credential`,
         );
         this.logger.log(`Error: ${err}`);
-        await new Promise((f) => setTimeout(f, 10000));
-        await this.createCredentialOfferWithRetry(offerRequest, ++retry);
+        await new Promise((f) => setTimeout(f, backOff));
+        await this.createCredentialOfferWithRetry(
+          offerRequest,
+          ++retry,
+          backOff * 2,
+        );
       } else {
         this.logger.error(
-          `Could not create credential offer for ${offerRequest.holderId} for ${offerRequest.credentialType} credential: ${err}`
+          `Could not create credential offer for ${offerRequest.holderId} for ${offerRequest.credentialType} credential: ${err}`,
         );
         throw err;
       }
@@ -121,7 +126,6 @@ export class IssuerService {
           format: "ldp_vc",
           "@context": [
             "https://www.w3.org/2018/credentials/v1",
-            "https://w3c.github.io/vc-jws-2020/contexts/v1/",
             context.documentUrl ??
               `${this.config.server.publicAddress}/api/context/${context.id}`,
           ],
@@ -136,7 +140,6 @@ export class IssuerService {
             type: ["VerifiableCredential", context.credentialType],
             "@context": [
               "https://www.w3.org/2018/credentials/v1",
-              "https://w3c.github.io/vc-jws-2020/contexts/v1/",
               context.documentUrl ??
                 `${this.config.server.publicAddress}/api/context/${context.id}`,
             ],
@@ -162,7 +165,7 @@ export class IssuerService {
   }
 
   async createCredentialOffer(
-    offerRequest: CredentialOfferRequest
+    offerRequest: CredentialOfferRequest,
   ): Promise<CredentialOffer> {
     const code =
       offerRequest.preAuthorizedCode || crypto.randomBytes(48).toString("hex");
@@ -191,7 +194,7 @@ export class IssuerService {
     if (!issuance) {
       throw new AppError(
         `No credential issuance flow found for id ${id}`,
-        HttpStatus.NOT_FOUND
+        HttpStatus.NOT_FOUND,
       ).andLog(this.logger);
     }
     await this.issuanceRepository.update({ id: id }, { revoked: true });
@@ -214,7 +217,7 @@ export class IssuerService {
     if (!issuance) {
       throw new AppError(
         "No credential issuance flow found",
-        HttpStatus.NOT_FOUND
+        HttpStatus.NOT_FOUND,
       ).andLog(this.logger);
     }
     const expirationDate = new Date();
@@ -245,7 +248,7 @@ export class IssuerService {
 
   async handleCredentialRequest(
     access_token: string,
-    credentialRequest: CredentialRequest
+    credentialRequest: CredentialRequest,
   ): Promise<CredentialResponse> {
     try {
       const token = await this.tokenRepository.findOneBy({
@@ -258,31 +261,31 @@ export class IssuerService {
       if (credentialRequest.proof.proof_type != "jwt") {
         throw new AppError(
           "Only jwt proof types are supported at this moment",
-          HttpStatus.BAD_REQUEST
+          HttpStatus.BAD_REQUEST,
         );
       }
 
       const holderDid = await this.didResolverService.resolve(
-        issuance.holderId
+        issuance.holderId,
       );
       const parsedJwtHeader = await decodeProtectedHeader(
-        credentialRequest.proof.jwt
+        credentialRequest.proof.jwt,
       );
 
       if (!parsedJwtHeader.kid) {
         throw new AppError(
           'Only JWTs with "kid" referencing a key described in a DID document supported',
-          HttpStatus.BAD_REQUEST
+          HttpStatus.BAD_REQUEST,
         );
       }
 
       const usedJwk = holderDid.verificationMethod?.find(
-        (m) => m.id === parsedJwtHeader.kid
+        (m) => m.id === parsedJwtHeader.kid,
       );
       if (!usedJwk || !usedJwk.publicKeyJwk) {
         throw new AppError(
           `Could not find publicKeyJwk for ${parsedJwtHeader.kid} in DID document`,
-          HttpStatus.BAD_REQUEST
+          HttpStatus.BAD_REQUEST,
         );
       }
       const key = await importJWK(usedJwk.publicKeyJwk);
@@ -295,19 +298,19 @@ export class IssuerService {
       if (verifiedJwt.payload.aud !== expectedIssuer) {
         throw new AppError(
           `Audience in proof JWT does not match credential_issuer (${verifiedJwt.payload.aud} vs ${expectedIssuer}`,
-          HttpStatus.BAD_REQUEST
+          HttpStatus.BAD_REQUEST,
         );
       }
 
       if (verifiedJwt.payload.nonce !== token.nonce) {
         throw new AppError(
           "Nonce in JWT proof doesn't match registered nonce",
-          HttpStatus.BAD_REQUEST
+          HttpStatus.BAD_REQUEST,
         );
       }
 
       const context = await this.contextService.getContextByType(
-        issuance.credentialType
+        issuance.credentialType,
       );
 
       const credentialConfig = plainToInstance(InitCredentialConfig, {
@@ -321,13 +324,13 @@ export class IssuerService {
       });
       const credential = await this.credentialService.issueCredential(
         credentialConfig,
-        issuance.holderId
+        issuance.holderId,
       );
       const credentialJwt =
         await this.presentationService.createVerifiablePresentationJwt(
           credential.id,
           token.issuance.holderId,
-          true
+          true,
         );
       await this.issuanceRepository.save({
         ...issuance,
@@ -343,7 +346,7 @@ export class IssuerService {
         throw new AppError(
           `${error}`,
           HttpStatus.INTERNAL_SERVER_ERROR,
-          error
+          error,
         ).andLog(this.logger);
       }
     }

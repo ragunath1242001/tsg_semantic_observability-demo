@@ -1279,13 +1279,6 @@ components:
         - identifier
         - details
         - dataset
-    ReferenceSchema:
-      type: object
-      properties:
-        "@id":
-          type: string
-      required:
-        - "@id"
     ConstraintSchema:
       type: object
       properties:
@@ -1362,7 +1355,7 @@ components:
         odrl:assignee:
           type: string
         odrl:profile:
-          $ref: "#/components/schemas/ReferenceSchema"
+          type: string
         odrl:permission:
           type: array
           items:
@@ -1396,17 +1389,17 @@ components:
         "@id":
           type: string
         dcat:contactPoint:
-          $ref: "#/components/schemas/ReferenceSchema"
+          type: string
         dcat:keyword:
           type: array
           items:
             type: string
         dcat:landingPage:
-          $ref: "#/components/schemas/ReferenceSchema"
+          type: string
         dcat:theme:
           type: array
           items:
-            $ref: "#/components/schemas/ReferenceSchema"
+            type: string
         dcat:conformsTo:
           type: string
         dct:creator:
@@ -1418,19 +1411,19 @@ components:
         dct:identifier:
           type: string
         dct:isReferencedBy:
-          $ref: "#/components/schemas/ReferenceSchema"
+          type: string
         dct:issued:
           type: string
         dct:language:
-          $ref: "#/components/schemas/ReferenceSchema"
+          type: string
         dct:license:
-          $ref: "#/components/schemas/ReferenceSchema"
+          type: string
         dct:modified:
           type: string
         dct:publisher:
           type: string
         dct:relation:
-          $ref: "#/components/schemas/ReferenceSchema"
+          type: string
         dct:title:
           type: string
         dct:type:
@@ -1442,15 +1435,15 @@ components:
         dcat:hasVersion:
           type: array
           items:
-            $ref: "#/components/schemas/ReferenceSchema"
+            type: string
         dcat:isVersionOf:
-          $ref: "#/components/schemas/ReferenceSchema"
+          type: string
         dcat:version:
           type: string
         dcat:hasCurrentVersion:
-          $ref: "#/components/schemas/ReferenceSchema"
+          type: string
         dcat:previousVersion:
-          $ref: "#/components/schemas/ReferenceSchema"
+          type: string
         "@type":
           type: string
         dcat:distribution:
@@ -1458,17 +1451,17 @@ components:
           items:
             type: string
         dcat:spatialResolutionInMeters:
-          $ref: "#/components/schemas/ReferenceSchema"
+          type: string
         dcat:temporalResolution:
           $ref: "#/components/schemas/DurationSchema"
         dct:accrualPeriodicity:
-          $ref: "#/components/schemas/ReferenceSchema"
+          type: string
         dct:spatial:
-          $ref: "#/components/schemas/ReferenceSchema"
+          type: string
         dct:temporal:
-          $ref: "#/components/schemas/ReferenceSchema"
+          type: string
         prov:wasGeneratedBy:
-          $ref: "#/components/schemas/ReferenceSchema"
+          type: string
       required:
         - "@id"
         - "@type"
@@ -1480,17 +1473,17 @@ components:
         "@type":
           type: string
         dcat:contactPoint:
-          $ref: "#/components/schemas/ReferenceSchema"
+          type: string
         dcat:keyword:
           type: array
           items:
             type: string
         dcat:landingPage:
-          $ref: "#/components/schemas/ReferenceSchema"
+          type: string
         dcat:theme:
           type: array
           items:
-            $ref: "#/components/schemas/ReferenceSchema"
+            type: string
         dcat:conformsTo:
           type: string
         dct:creator:
@@ -1502,19 +1495,19 @@ components:
         dct:identifier:
           type: string
         dct:isReferencedBy:
-          $ref: "#/components/schemas/ReferenceSchema"
+          type: string
         dct:issued:
           type: string
         dct:language:
-          $ref: "#/components/schemas/ReferenceSchema"
+          type: string
         dct:license:
-          $ref: "#/components/schemas/ReferenceSchema"
+          type: string
         dct:modified:
           type: string
         dct:publisher:
           type: string
         dct:relation:
-          $ref: "#/components/schemas/ReferenceSchema"
+          type: string
         dct:title:
           type: string
         dct:type:
@@ -1526,15 +1519,15 @@ components:
         dcat:hasVersion:
           type: array
           items:
-            $ref: "#/components/schemas/ReferenceSchema"
+            type: string
         dcat:isVersionOf:
-          $ref: "#/components/schemas/ReferenceSchema"
+          type: string
         dcat:version:
           type: string
         dcat:hasCurrentVersion:
-          $ref: "#/components/schemas/ReferenceSchema"
+          type: string
         dcat:previousVersion:
-          $ref: "#/components/schemas/ReferenceSchema"
+          type: string
       required:
         - "@id"
         - "@type"
@@ -1572,17 +1565,17 @@ components:
         "@id":
           type: string
         dcat:contactPoint:
-          $ref: "#/components/schemas/ReferenceSchema"
+          type: string
         dcat:keyword:
           type: array
           items:
             type: string
         dcat:landingPage:
-          $ref: "#/components/schemas/ReferenceSchema"
+          type: string
         dcat:theme:
           type: array
           items:
-            $ref: "#/components/schemas/ReferenceSchema"
+            type: string
         dcat:conformsTo:
           type: string
         dct:creator:
@@ -1594,19 +1587,19 @@ components:
         dct:identifier:
           type: string
         dct:isReferencedBy:
-          $ref: "#/components/schemas/ReferenceSchema"
+          type: string
         dct:issued:
           type: string
         dct:language:
-          $ref: "#/components/schemas/ReferenceSchema"
+          type: string
         dct:license:
-          $ref: "#/components/schemas/ReferenceSchema"
+          type: string
         dct:modified:
           type: string
         dct:publisher:
           type: string
         dct:relation:
-          $ref: "#/components/schemas/ReferenceSchema"
+          type: string
         dct:title:
           type: string
         dct:type:
@@ -1618,15 +1611,15 @@ components:
         dcat:hasVersion:
           type: array
           items:
-            $ref: "#/components/schemas/ReferenceSchema"
+            type: string
         dcat:isVersionOf:
-          $ref: "#/components/schemas/ReferenceSchema"
+          type: string
         dcat:version:
           type: string
         dcat:hasCurrentVersion:
-          $ref: "#/components/schemas/ReferenceSchema"
+          type: string
         dcat:previousVersion:
-          $ref: "#/components/schemas/ReferenceSchema"
+          type: string
         "@type":
           type: string
         dcat:endpointDescription:
@@ -1646,17 +1639,17 @@ components:
         "@id":
           type: string
         dcat:contactPoint:
-          $ref: "#/components/schemas/ReferenceSchema"
+          type: string
         dcat:keyword:
           type: array
           items:
             type: string
         dcat:landingPage:
-          $ref: "#/components/schemas/ReferenceSchema"
+          type: string
         dcat:theme:
           type: array
           items:
-            $ref: "#/components/schemas/ReferenceSchema"
+            type: string
         dcat:conformsTo:
           type: string
         dct:creator:
@@ -1668,19 +1661,19 @@ components:
         dct:identifier:
           type: string
         dct:isReferencedBy:
-          $ref: "#/components/schemas/ReferenceSchema"
+          type: string
         dct:issued:
           type: string
         dct:language:
-          $ref: "#/components/schemas/ReferenceSchema"
+          type: string
         dct:license:
-          $ref: "#/components/schemas/ReferenceSchema"
+          type: string
         dct:modified:
           type: string
         dct:publisher:
           type: string
         dct:relation:
-          $ref: "#/components/schemas/ReferenceSchema"
+          type: string
         dct:title:
           type: string
         dct:type:
@@ -1692,31 +1685,31 @@ components:
         dcat:hasVersion:
           type: array
           items:
-            $ref: "#/components/schemas/ReferenceSchema"
+            type: string
         dcat:isVersionOf:
-          $ref: "#/components/schemas/ReferenceSchema"
+          type: string
         dcat:version:
           type: string
         dcat:hasCurrentVersion:
-          $ref: "#/components/schemas/ReferenceSchema"
+          type: string
         dcat:previousVersion:
-          $ref: "#/components/schemas/ReferenceSchema"
+          type: string
         dcat:distribution:
           type: array
           items:
             type: string
         dcat:spatialResolutionInMeters:
-          $ref: "#/components/schemas/ReferenceSchema"
+          type: string
         dcat:temporalResolution:
           $ref: "#/components/schemas/DurationSchema"
         dct:accrualPeriodicity:
-          $ref: "#/components/schemas/ReferenceSchema"
+          type: string
         dct:spatial:
-          $ref: "#/components/schemas/ReferenceSchema"
+          type: string
         dct:temporal:
-          $ref: "#/components/schemas/ReferenceSchema"
+          type: string
         prov:wasGeneratedBy:
-          $ref: "#/components/schemas/ReferenceSchema"
+          type: string
         "@type":
           type: string
         dcat:dataset:
@@ -1732,7 +1725,7 @@ components:
           items:
             $ref: "#/components/schemas/DataServiceSchema"
         dcat:themeTaxonomy:
-          $ref: "#/components/schemas/ReferenceSchema"
+          type: string
         dct:hasPart:
           type: array
           items:
@@ -1800,7 +1793,7 @@ components:
         odrl:assignee:
           type: string
         odrl:profile:
-          $ref: "#/components/schemas/ReferenceSchema"
+          type: string
         odrl:permission:
           type: array
           items:

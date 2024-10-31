@@ -1,7 +1,7 @@
 import { DIDDocument } from "did-resolver";
 import { Entity, PrimaryGeneratedColumn, Column, PrimaryColumn } from "typeorm";
 import { MetaEntity } from "./common.dao.js";
-import { DIDLogEntry } from "@tno-tsg/trustdidweb-ts";
+import { DIDLogEntry } from "../did/tdw/method/interfaces.js";
 
 @Entity()
 export class DIDDocuments extends MetaEntity {

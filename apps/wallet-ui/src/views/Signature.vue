@@ -7,6 +7,15 @@ import { ref } from "vue";
 
 const toast = useToast();
 
+const signOptions = ref<{
+  type: "JsonWebSignature2020" | "DataIntegrityProof",
+  normalization: "RDFC" | "JCS",
+  proofPurpose: string
+}>({
+  type: "DataIntegrityProof",
+  normalization: "RDFC",
+  proofPurpose: "assertionMethod"
+});
 const signRef = ref<string>("{}");
 const validateType = ref<"Combined" | "Separate">("Combined");
 const validateRef = ref<string>("{}");
@@ -25,7 +34,7 @@ const signDocument = async () => {
   signedDocumentErrorRef.value = undefined;
   try {
     const request = {
-      type: "JsonWebSignature",
+      ...signOptions.value,
       plainDocument: JSON.parse(signRef.value)
     }
     const response = await http.post("management/signature/sign", request);
@@ -66,7 +75,7 @@ const validateDocument = async () => {
     }
     await http.post("management/signature/validate", {
       type: "JsonWebSignature",
-      jsonWebSignature: combinedValidateDocument
+      proofDocument: combinedValidateDocument
     });
     toast.add({
       severity: "success",
@@ -84,6 +93,14 @@ const validateDocument = async () => {
   isValidating.value = false;
 }
 
+const updateContext = () => {
+  if (signOptions.value.type === "DataIntegrityProof") {
+    signRef.value = signRef.value.replace("https://www.w3.org/2018/credentials/v1", "https://w3id.org/security/data-integrity/v2")
+  } else {
+    signRef.value = signRef.value.replace("https://w3id.org/security/data-integrity/v2", "https://www.w3.org/2018/credentials/v1")
+  }
+}
+
 const onUpload = (event) => {
   isUploading.value = true;
   const file = event.files[0];
@@ -96,9 +113,12 @@ const onUpload = (event) => {
         .map((b) => b.toString(16).padStart(2, "0"))
         .join("");
       signRef.value = JSON.stringify({
-        "@context": {
-          tsg: "https://tno-tsg.gitlab.io/#"
-        },
+        "@context": [
+          {
+            tsg: "https://tno-tsg.gitlab.io/#"
+          },
+          signOptions.value.type === "DataIntegrityProof" ? "https://w3id.org/security/data-integrity/v2" : "https://www.w3.org/2018/credentials/v1"
+        ],
         "tsg:digest": hashHex,
         "tsg:fileName": file.name,
         "tsg:type": file.type
@@ -116,22 +136,28 @@ const onUpload = (event) => {
       <template #title>Sign document</template>
       <template #subtitle>
         <p>
-          The form below can be used to sign JSON-LD documents. A JsonWebSignature2020 proof is created with the default key of the wallet.
+          The form below can be used to sign JSON-LD or plain documents. A DataIntegrityProof or JsonWebSignature2020 proof is created with the default key of the wallet.
         </p>
         <p>
           To sign the digest of a file, choose a file below. The file will be processesd locally within your browser to calculate the digest. A sample JSON-LD document is generated which can be signed.
         </p>
         <p>
-          The contents of the form should match the specification in the
-          <a href="https://www.w3.org/community/reports/credentials/CG-FINAL-lds-jws2020-20220721/"
-            >JSON Web Signature 2020</a
-          >.
+          For RDF canonicalization, the input document must be valid JSON-LD. It's context should include the relevant context for the proof. For JsonWebSignature2020, the input must always be in JSON-LD form. For DataIntegrityProofs also the non JSON-LD variant JSON Canonicalization Scheme may be used.
         </p>
       </template>
       <template #content>
         <form class="flex flex-col gap-4" @submit.prevent="signDocument">
           <FormField label="Sign binary document">
             <FileUpload pt:root:style="justify-content: flex-start" mode="basic" auto name="signature" customUpload @uploader="onUpload" :disabled="isUploading" />
+          </FormField>
+          <FormField label="Signature type">
+            <SelectButton v-model="signOptions.type" @change="updateContext" :options="[{name: 'Data Integrity Proof', value: 'DataIntegrityProof'}, {name: 'JSON Web Signature 2020', value: 'JsonWebSignature2020'}]" optionLabel="name" optionValue="value" />
+          </FormField>
+          <FormField label="Normalization" v-if="signOptions.type !== 'JsonWebSignature2020'">
+            <SelectButton v-model="signOptions.normalization" :options="[{name: 'RDF Canonicalization', value: 'RDFC'}, {name: 'JSON Canonicalization Scheme', value: 'JCS'}]" optionLabel="name" optionValue="value" />
+          </FormField>
+          <FormField label="Proof purpose" v-slot="props">
+            <InputText :id="props.id" class="w-full" v-model="signOptions.proofPurpose" />
           </FormField>
           <FormField label="Plain document" v-slot="props">
             <MonacoEditorVue v-model="signRef"></MonacoEditorVue>

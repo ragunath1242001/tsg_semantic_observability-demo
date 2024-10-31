@@ -125,7 +125,7 @@ describe("Transfer service", () => {
               transferId: string,
               remoteParticipant: string,
               action: string,
-              verifiableCredentials: VerifiableCredential<CredentialSubject>[]
+              verifiableCredentials: VerifiableCredential[],
             ) {
               return EvaluationContext.parse({
                 role: role,
@@ -197,10 +197,10 @@ describe("Transfer service", () => {
     let dataPlaneConsumerFirst = true;
     server = setupServer(
       http.get("http://127.0.0.1/data-plane/health", () =>
-        HttpResponse.text("")
+        HttpResponse.text(""),
       ),
       http.get("http://127.0.0.1/data-plane/catalog", async () =>
-        HttpResponse.json(await new Catalog({}))
+        HttpResponse.json(await new Catalog({})),
       ),
       http.post<
         PathParams,
@@ -250,7 +250,7 @@ describe("Transfer service", () => {
               ],
             },
           });
-        }
+        },
       ),
       http.post("http://127.0.0.1/data-plane/transfers/ABCDEFG/:action", () => {
         return HttpResponse.json({
@@ -269,35 +269,35 @@ describe("Transfer service", () => {
             "dspace:state": TransferState.REQUESTED,
             "dspace:agreementId": reqBody["dspace:agreementId"],
           });
-        }
+        },
       ),
       http.post(
         `http://remoteparty.test/transfers/${remoteProcessId}/start`,
         () => {
           return HttpResponse.json({ status: "OK" });
-        }
+        },
       ),
       http.post(
         `http://remoteparty.test/transfers/${remoteProcessId}/suspend`,
         () => {
           return HttpResponse.json({ status: "OK" });
-        }
+        },
       ),
       http.post(
         `http://remoteparty.test/transfers/${remoteProcessId}/complete`,
         () => {
           return HttpResponse.json({ status: "OK" });
-        }
+        },
       ),
       http.post(
         `http://remoteparty.test/transfers/${remoteProcessId}/terminate`,
         () => {
           return HttpResponse.json({ status: "OK" });
-        }
+        },
       ),
       http.post("http://remoteparty.test/data-plane/:id", () => {
         return HttpResponse.json({ result: "data" });
-      })
+      }),
     );
 
     server.listen({ onUnhandledRequest: "warn" });
@@ -335,7 +335,7 @@ describe("Transfer service", () => {
         "dspace:HTTP",
         undefined,
         "http://remoteparty.test/transfers",
-        "did:web:remoteparty.test"
+        "did:web:remoteparty.test",
       );
       expect(transferProcess).toBeDefined();
       expect(transferProcess.process.providerPid).toBe(remoteProcessId);
@@ -346,20 +346,20 @@ describe("Transfer service", () => {
         "dspace:HTTP",
         undefined,
         "http://remoteparty.test/transfers",
-        "did:web:remoteparty.test"
+        "did:web:remoteparty.test",
       );
       expect(transferProcessPush).toBeDefined();
       expect(transferProcessPush.process.providerPid).toBe(remoteProcessId);
 
       const transferDetail = await transferService.getTransfer(
-        transferProcessPush.localId
+        transferProcessPush.localId,
       );
       expect(transferDetail.dataAddress).toBeDefined();
     });
 
     it("Unexpected transition", async () => {
       await expect(
-        transferService.suspend(localProcessId, "", true)
+        transferService.suspend(localProcessId, "", true),
       ).rejects.toThrow("cannot transition from");
     });
 
@@ -370,19 +370,19 @@ describe("Transfer service", () => {
       expect(transferDetail).toBeDefined();
       const transferDetail2 = await transferService.getTransfer(
         localProcessId,
-        "did:web:remoteparty.test"
+        "did:web:remoteparty.test",
       );
       expect(transferDetail2).toBeDefined();
       await expect(
         transferService.getTransfer(
           localProcessId,
-          "did:web:otherremoteparty.test"
-        )
+          "did:web:otherremoteparty.test",
+        ),
       ).rejects.toThrow("Cannot get transfer with process ID");
       await expect(
         transferService.getTransfer(
-          "urn:uuid:00000000-0000-0000-0000-000000000000"
-        )
+          "urn:uuid:00000000-0000-0000-0000-000000000000",
+        ),
       ).rejects.toThrow("Cannot get transfer with process ID");
     });
 
@@ -403,7 +403,7 @@ describe("Transfer service", () => {
             ],
           }),
         }),
-        "did:web:remoteparty.test"
+        "did:web:remoteparty.test",
       );
       const transferDetail = await transferService.getTransfer(localProcessId);
       expect(transferDetail.state).toBe(TransferState.STARTED);
@@ -427,7 +427,7 @@ describe("Transfer service", () => {
           consumerPid: localProcessId,
           reason: [new Multilanguage("Test suspending")],
         }),
-        "did:web:remoteparty.test"
+        "did:web:remoteparty.test",
       );
       const transferDetail = await transferService.getTransfer(localProcessId);
       expect(transferDetail.state).toBe(TransferState.SUSPENDED);
@@ -449,7 +449,7 @@ describe("Transfer service", () => {
             ],
           }),
         }),
-        "did:web:remoteparty.test"
+        "did:web:remoteparty.test",
       );
       const transferDetail = await transferService.getTransfer(localProcessId);
       expect(transferDetail.state).toBe(TransferState.STARTED);
@@ -482,7 +482,7 @@ describe("Transfer service", () => {
           callbackAddress: `http://remoteparty.test/transfers/${remoteProcessId}`,
         }),
         "did:web:remoteparty.test",
-        []
+        [],
       );
       localProcessId = handledRequest.providerPid;
       jest.runAllTimers();
@@ -510,7 +510,7 @@ describe("Transfer service", () => {
           consumerPid: remoteProcessId,
           reason: [new Multilanguage("Test suspending")],
         }),
-        "did:web:remoteparty.test"
+        "did:web:remoteparty.test",
       );
       const transferDetail = await transferService.getTransfer(localProcessId);
       expect(transferDetail.state).toBe(TransferState.SUSPENDED);
@@ -532,7 +532,7 @@ describe("Transfer service", () => {
             ],
           }),
         }),
-        "did:web:remoteparty.test"
+        "did:web:remoteparty.test",
       );
       const transferDetail = await transferService.getTransfer(localProcessId);
       expect(transferDetail.state).toBe(TransferState.STARTED);
@@ -544,7 +544,7 @@ describe("Transfer service", () => {
           providerPid: localProcessId,
           consumerPid: remoteProcessId,
         }),
-        "did:web:remoteparty.test"
+        "did:web:remoteparty.test",
       );
       const transferDetail = await transferService.getTransfer(localProcessId);
       expect(transferDetail.state).toBe(TransferState.COMPLETED);
@@ -558,7 +558,7 @@ describe("Transfer service", () => {
         "dspace:HTTP",
         undefined,
         "http://remoteparty.test/transfers",
-        "did:web:remoteparty.test"
+        "did:web:remoteparty.test",
       );
       await transferService.handleTerminate(
         transferProcess.localId,
@@ -568,10 +568,10 @@ describe("Transfer service", () => {
           reason: [new Multilanguage("Test termination")],
           code: "PROVIDER_TERMINATION",
         }),
-        "did:web:remoteparty.test"
+        "did:web:remoteparty.test",
       );
       const transferDetail = await transferService.getTransfer(
-        transferProcess.localId
+        transferProcess.localId,
       );
       expect(transferDetail.state).toBe(TransferState.TERMINATED);
     });
@@ -581,16 +581,16 @@ describe("Transfer service", () => {
         "dspace:HTTP",
         undefined,
         "http://remoteparty.test/transfers",
-        "did:web:remoteparty.test"
+        "did:web:remoteparty.test",
       );
       await transferService.terminate(
         transferProcess.localId,
         "CONSUMER_TERMINATION",
         "Test termination",
-        true
+        true,
       );
       const transferDetail = await transferService.getTransfer(
-        transferProcess.localId
+        transferProcess.localId,
       );
       expect(transferDetail.state).toBe(TransferState.TERMINATED);
     });

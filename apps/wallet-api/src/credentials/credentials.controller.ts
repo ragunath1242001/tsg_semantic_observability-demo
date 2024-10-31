@@ -38,8 +38,8 @@ export class CredentialsController {
   @ApiOkResponse({ type: CredentialsDto })
   @ApiNotFoundResponseDefault()
   async getCredential(
-    @Param("credentialId") credentialId: string
-  ): Promise<VerifiableCredential<CredentialSubject>> {
+    @Param("credentialId") credentialId: string,
+  ): Promise<VerifiableCredential> {
     return (await this.credentialsService.getCredential(credentialId))
       .credential;
   }

@@ -46,12 +46,12 @@ export class CredentialsManagementController {
   constructor(
     private readonly credentialsService: CredentialsService,
     private readonly contextService: ContextService,
-    private readonly config: RootConfig
+    private readonly config: RootConfig,
   ) {}
 
   private targetDid(
     action: "view" | "manage",
-    client: ClientInfo
+    client: ClientInfo,
   ): string | undefined {
     switch (action) {
       case "view":
@@ -62,7 +62,7 @@ export class CredentialsManagementController {
         } else {
           throw new AppError(
             `Not allowed to view credentials`,
-            HttpStatus.FORBIDDEN
+            HttpStatus.FORBIDDEN,
           );
         }
       case "manage":
@@ -73,7 +73,7 @@ export class CredentialsManagementController {
         } else {
           throw new AppError(
             `Not allowed to manage credentials`,
-            HttpStatus.FORBIDDEN
+            HttpStatus.FORBIDDEN,
           );
         }
     }
@@ -143,7 +143,7 @@ export class CredentialsManagementController {
   async addCredential(
     @Body(validationPipe)
     credentialConfig: InitCredentialConfig,
-    @Client() client: ClientInfo
+    @Client() client: ClientInfo,
   ): Promise<Credentials> {
     const targetDid = this.targetDid("manage", client);
     return this.credentialsService.issueCredential(credentialConfig, targetDid);
@@ -161,8 +161,8 @@ export class CredentialsManagementController {
   @ApiForbiddenResponseDefault()
   @ApiOAuth2([AppRole.MANAGE_ALL_CREDENTIALS, AppRole.MANAGE_OWN_CREDENTIALS])
   async importCredential(
-    @Body() credential: VerifiableCredential<CredentialSubject>,
-    @Client() client: ClientInfo
+    @Body() credential: VerifiableCredential,
+    @Client() client: ClientInfo,
   ): Promise<Credentials> {
     const targetDid = this.targetDid("manage", client);
     return this.credentialsService.importCredential(credential, targetDid);
@@ -180,7 +180,7 @@ export class CredentialsManagementController {
   @ApiOAuth2([AppRole.MANAGE_ALL_CREDENTIALS, AppRole.MANAGE_OWN_CREDENTIALS])
   async getCredential(
     @Param("credentialId") credentialId: string,
-    @Client() client: ClientInfo
+    @Client() client: ClientInfo,
   ): Promise<CredentialsDto> {
     const targetDid = this.targetDid("manage", client);
     return this.credentialsService.getCredential(credentialId, targetDid);
@@ -202,13 +202,13 @@ export class CredentialsManagementController {
     @Body(validationPipe)
     credentialConfig: InitCredentialConfig,
     @Param("credentialId") credentialId: string,
-    @Client() client: ClientInfo
+    @Client() client: ClientInfo,
   ): Promise<Credentials> {
     const targetDid = this.targetDid("manage", client);
     return this.credentialsService.updateCredential(
       credentialId,
       credentialConfig,
-      targetDid
+      targetDid,
     );
   }
 
@@ -223,7 +223,7 @@ export class CredentialsManagementController {
   @ApiOAuth2([AppRole.MANAGE_ALL_CREDENTIALS, AppRole.MANAGE_OWN_CREDENTIALS])
   async deleteCredential(
     @Param("credentialId") credentialId: string,
-    @Client() client: ClientInfo
+    @Client() client: ClientInfo,
   ): Promise<void> {
     const targetDid = this.targetDid("manage", client);
     return this.credentialsService.deleteCredential(credentialId, targetDid);

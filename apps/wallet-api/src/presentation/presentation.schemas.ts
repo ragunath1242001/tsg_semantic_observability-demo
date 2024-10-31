@@ -25,9 +25,7 @@ import {
 } from "@tsg-dsp/common-dtos";
 import { VerifiableCredentialDto } from "../credentials/credentials.schemas.js";
 
-export class VerifiablePresentationDto
-  implements VerifiablePresentation<VerifiableCredential<CredentialSubject>>
-{
+export class VerifiablePresentationDto implements VerifiablePresentation {
   @ApiProperty()
   "@context"!: string[];
   @ApiProperty()
@@ -35,16 +33,14 @@ export class VerifiablePresentationDto
   @ApiPropertyOptional()
   id?: string;
   @ApiProperty(elementOrArray({ $ref: getSchemaPath(VerifiableCredentialDto) }))
-  verifiableCredential!:
-    | VerifiableCredential<CredentialSubject>[]
-    | VerifiableCredential<CredentialSubject>;
+  verifiableCredential!: VerifiableCredential[] | VerifiableCredential;
 }
 
 export class VerifiablePresentationJsonLdDto
   implements VerifiablePresentationJsonLd
 {
   @ApiProperty({ type: VerifiableCredentialDto })
-  vp!: VerifiablePresentation<VerifiableCredential<CredentialSubject>>;
+  vp!: VerifiablePresentation;
 }
 
 export class VerifiablePresentationJwtDto implements VerifiablePresentationJwt {

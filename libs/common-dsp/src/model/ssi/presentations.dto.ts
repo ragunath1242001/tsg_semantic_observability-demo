@@ -6,22 +6,48 @@ import {
   IsBoolean,
   IsIn,
 } from "class-validator";
-import { VerifiableCredential, CredentialSubject } from "./credentials.dto";
+import {
+  VerifiableCredential,
+  DataIntegrityProof,
+  JsonWebSignature2020,
+  Proof,
+} from "./credentials.dto";
 import { OrArray } from "../../utils/unions";
 
 export class VerifiablePresentation<
-  T extends VerifiableCredential<CredentialSubject>
+  T extends VerifiableCredential = VerifiableCredential,
+  P extends Proof = Proof,
 > {
   @IsString({ each: true })
-  "@context": string[];
+  "@context": (
+    | "https://www.w3.org/2018/credentials/v1"
+    | "https://www.w3.org/ns/credentials/v2"
+    | "https://w3id.org/security/suites/jws-2020/v1"
+    | "https://w3id.org/security/data-integrity/v2"
+    | string
+  )[];
   @IsString({ each: true })
   type!: string[];
   @IsString()
   @IsOptional()
   id?: string;
   @ValidateNested()
-  @Type(() => VerifiableCredential<CredentialSubject>)
+  @Type(() => VerifiableCredential)
   verifiableCredential!: OrArray<T>;
+
+  @ValidateNested()
+  @IsOptional()
+  @Type(() => Proof, {
+    discriminator: {
+      property: "type",
+      subTypes: [
+        { value: JsonWebSignature2020, name: "JsonWebSignature2020" },
+        { value: DataIntegrityProof, name: "DataIntegrityProof" },
+      ],
+    },
+    keepDiscriminatorProperty: true,
+  })
+  proof?: OrArray<P>;
 }
 
 export class VerifiablePresentationJwt {
@@ -32,7 +58,7 @@ export class VerifiablePresentationJwt {
 export class VerifiablePresentationJsonLd {
   @ValidateNested()
   @Type(() => VerifiablePresentation)
-  vp!: VerifiablePresentation<VerifiableCredential<CredentialSubject>>;
+  vp!: VerifiablePresentation;
 }
 
 export class PresentationValidation extends VerifiablePresentationJwt {

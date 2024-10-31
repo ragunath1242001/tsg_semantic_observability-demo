@@ -60,15 +60,15 @@ export class TransferController {
     @Body(new DeserializePipe(TransferRequestMessage))
     body: TransferRequestMessage,
     @VPId() vpId: string,
-    @VP() vp: VerifiablePresentation<VerifiableCredential<CredentialSubject>>
+    @VP() vp: VerifiablePresentation,
   ): Promise<TransferProcessDto> {
     this.logger.log(
-      `Received transfer request from ${vpId}: ${JSON.stringify(body)}`
+      `Received transfer request from ${vpId}: ${JSON.stringify(body)}`,
     );
     const result = await this.transferService.handleRequest(
       body,
       vpId,
-      toArray(vp.verifiableCredential)
+      toArray(vp.verifiableCredential),
     );
     return await result.serialize();
   }
@@ -81,7 +81,7 @@ export class TransferController {
   @ApiResponse({ type: TransferProcessSchema })
   async getTransfer(
     @Param("id") id: string,
-    @VPId() vpId: string
+    @VPId() vpId: string,
   ): Promise<TransferProcessDto> {
     this.logger.log(`Received transfer status request from ${vpId} for ${id}`);
     const transferProcess = await this.transferService.getTransfer(id, vpId);
@@ -102,10 +102,10 @@ export class TransferController {
   async startTransferProcess(
     @Param("id") id: string,
     @Body(new DeserializePipe(TransferStartMessage)) body: TransferStartMessage,
-    @VPId() vpId: string
+    @VPId() vpId: string,
   ): Promise<{ status: string }> {
     this.logger.log(
-      `Received transfer start from ${vpId} for ${id}: ${JSON.stringify(body)}`
+      `Received transfer start from ${vpId} for ${id}: ${JSON.stringify(body)}`,
     );
     return await this.transferService.handleStart(id, body, vpId);
   }
@@ -125,12 +125,12 @@ export class TransferController {
     @Param("id") id: string,
     @Body(new DeserializePipe(TransferCompletionMessage))
     body: TransferCompletionMessage,
-    @VPId() vpId: string
+    @VPId() vpId: string,
   ): Promise<{ status: string }> {
     this.logger.log(
       `Received transfer complete from ${vpId} for ${id}: ${JSON.stringify(
-        body
-      )}`
+        body,
+      )}`,
     );
     return await this.transferService.handleComplete(id, body, vpId);
   }
@@ -150,12 +150,12 @@ export class TransferController {
     @Param("id") id: string,
     @Body(new DeserializePipe(TransferTerminationMessage))
     body: TransferTerminationMessage,
-    @VPId() vpId: string
+    @VPId() vpId: string,
   ): Promise<{ status: string }> {
     this.logger.log(
       `Received transfer terminate from ${vpId} for ${id}: ${JSON.stringify(
-        body
-      )}`
+        body,
+      )}`,
     );
     return await this.transferService.handleTerminate(id, body, vpId);
   }
@@ -175,12 +175,12 @@ export class TransferController {
     @Param("id") id: string,
     @Body(new DeserializePipe(TransferSuspensionMessage))
     body: TransferSuspensionMessage,
-    @VPId() vpId: string
+    @VPId() vpId: string,
   ): Promise<{ status: string }> {
     this.logger.log(
       `Received transfer suspend from ${vpId} for ${id}: ${JSON.stringify(
-        body
-      )}`
+        body,
+      )}`,
     );
     return await this.transferService.handleSuspend(id, body, vpId);
   }
@@ -199,12 +199,12 @@ export class TransferController {
   async callbackStartTransferProcess(
     @Param("id") id: string,
     @Body(new DeserializePipe(TransferStartMessage)) body: TransferStartMessage,
-    @VPId() vpId: string
+    @VPId() vpId: string,
   ): Promise<{ status: string }> {
     this.logger.log(
       `Received transfer callback start from ${vpId} for ${id}: ${JSON.stringify(
-        body
-      )}`
+        body,
+      )}`,
     );
     return await this.transferService.handleStart(id, body, vpId);
   }
@@ -224,12 +224,12 @@ export class TransferController {
     @Param("id") id: string,
     @Body(new DeserializePipe(TransferCompletionMessage))
     body: TransferCompletionMessage,
-    @VPId() vpId: string
+    @VPId() vpId: string,
   ): Promise<{ status: string }> {
     this.logger.log(
       `Received transfer callback complete from ${vpId} for ${id}: ${JSON.stringify(
-        body
-      )}`
+        body,
+      )}`,
     );
     return await this.transferService.handleComplete(id, body, vpId);
   }
@@ -249,12 +249,12 @@ export class TransferController {
     @Param("id") id: string,
     @Body(new DeserializePipe(TransferTerminationMessage))
     body: TransferTerminationMessage,
-    @VPId() vpId: string
+    @VPId() vpId: string,
   ): Promise<{ status: string }> {
     this.logger.log(
       `Received transfer callback terminate from ${vpId} for ${id}: ${JSON.stringify(
-        body
-      )}`
+        body,
+      )}`,
     );
     return await this.transferService.handleTerminate(id, body, vpId);
   }
@@ -274,12 +274,12 @@ export class TransferController {
     @Param("id") id: string,
     @Body(new DeserializePipe(TransferSuspensionMessage))
     body: TransferSuspensionMessage,
-    @VPId() vpId: string
+    @VPId() vpId: string,
   ): Promise<{ status: string }> {
     this.logger.log(
       `Received transfer callback suspend from ${vpId} for ${id}: ${JSON.stringify(
-        body
-      )}`
+        body,
+      )}`,
     );
     return await this.transferService.handleSuspend(id, body, vpId);
   }

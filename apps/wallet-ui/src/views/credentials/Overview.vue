@@ -12,7 +12,7 @@ import { toastError } from "@tsg-dsp/common-ui/utils/error";
 interface Credential {
   id: string;
   targetDid: string;
-  credential: VerifiableCredential<CredentialSubject>;
+  credential: VerifiableCredential;
   selfIssued: boolean;
 }
 
@@ -112,7 +112,7 @@ const copyCredentialId = (credentialId: string) => {
 };
 
 const copyCredential = (
-  credential: VerifiableCredential<CredentialSubject>
+  credential: VerifiableCredential
 ) => {
   navigator.clipboard.writeText(JSON.stringify(credential, null, 2));
   toast.add({

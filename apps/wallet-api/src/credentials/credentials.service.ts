@@ -1,8 +1,9 @@
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
-import { InitCredentialConfig, RootConfig } from "../config.js";
+import { InitCredentialConfig, RootConfig, SignatureType } from "../config.js";
 import {
   Credential,
   CredentialSubject,
+  Proof,
   VerifiableCredential,
 } from "@tsg-dsp/common-dsp";
 import { AppError } from "../utils/error.js";
@@ -38,6 +39,7 @@ export class CredentialsService {
   private async insertIfNotExists(
     initCredentialConfig: InitCredentialConfig,
     retry = 0,
+    backOff = 1000,
   ): Promise<void> {
     try {
       const existing = await this.credentialRepository.findOneBy({
@@ -62,8 +64,12 @@ export class CredentialsService {
           `Retrying creating credential ${initCredentialConfig.id}`,
         );
         this.logger.log(`Error: ${err}`);
-        await new Promise((f) => setTimeout(f, 10000));
-        await this.insertIfNotExists(initCredentialConfig, ++retry);
+        await new Promise((f) => setTimeout(f, backOff));
+        await this.insertIfNotExists(
+          initCredentialConfig,
+          ++retry,
+          backOff * 2,
+        );
       } else {
         this.logger.error(
           `Could not create credential ${initCredentialConfig.id}: ${err}`,
@@ -92,6 +98,7 @@ export class CredentialsService {
     if (credential === null) {
       throw new AppError(
         `Credential with identifier ${credentialId} can't be found`,
+        HttpStatus.NOT_FOUND,
         HttpStatus.NOT_FOUND,
       ).andLog(this.logger, "debug");
     }
@@ -134,7 +141,7 @@ export class CredentialsService {
   }
 
   async importCredential(
-    credential: VerifiableCredential<CredentialSubject>,
+    credential: VerifiableCredential,
     targetDid?: string,
   ): Promise<Credentials> {
     const didId = targetDid || (await this.didService.getDidId());
@@ -154,7 +161,7 @@ export class CredentialsService {
 
   async updateCredential(
     credentialId: string,
-    credential: InitCredentialConfig | VerifiableCredential<CredentialSubject>,
+    credential: InitCredentialConfig | VerifiableCredential,
     targetDid?: string,
   ): Promise<Credentials> {
     await this.getCredential(credentialId, targetDid);
@@ -199,10 +206,9 @@ export class CredentialsService {
       ? credentialConfig.id
       : `${target}#${credentialConfig.id}`;
     const credential: Credential<CredentialSubject> = {
-      "@context": [
-        "https://www.w3.org/2018/credentials/v1",
-        "https://w3c.github.io/vc-jws-2020/contexts/v1/",
-      ].concat(credentialConfig.context),
+      "@context": ["https://www.w3.org/2018/credentials/v1"].concat(
+        credentialConfig.context,
+      ),
       type: ["VerifiableCredential"].concat(credentialConfig.type),
       id: credentialId,
       issuer: await this.didService.getDidId(),
@@ -211,12 +217,33 @@ export class CredentialsService {
       credentialSubject: credentialConfig.credentialSubject,
     };
 
-    const proof = await this.signatureService.signAsJsonWebSignature(
-      credential,
-      credentialConfig.keyId,
-    );
+    let proof: Proof;
+    if (
+      this.config.signature.credentials === SignatureType.DATA_INTEGRITY_PROOF
+    ) {
+      credential["@context"].splice(
+        1,
+        0,
+        "https://w3id.org/security/data-integrity/v2",
+      );
+      proof = await this.signatureService.signAsDataIntegrityProof(
+        "RDFC",
+        credential,
+        credentialConfig.keyId,
+      );
+    } else {
+      credential["@context"].splice(
+        1,
+        0,
+        "https://w3id.org/security/suites/jws-2020/v1",
+      );
+      proof = await this.signatureService.signAsJsonWebSignature2020(
+        credential,
+        credentialConfig.keyId,
+      );
+    }
 
-    const verifiableCredential: VerifiableCredential<CredentialSubject> = {
+    const verifiableCredential: VerifiableCredential = {
       ...credential,
       proof: proof,
     };

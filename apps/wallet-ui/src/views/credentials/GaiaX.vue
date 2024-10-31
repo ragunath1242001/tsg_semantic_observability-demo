@@ -21,7 +21,7 @@ interface LegalRegistrationNumberForm {
 interface ComplianceCredentialForm {
   targetDid: string;
   id: string;
-  credentials: VerifiableCredential<CredentialSubject>[];
+  credentials: VerifiableCredential[];
   clearingHouse: string;
   clearingHouses: string[];
 }
@@ -29,7 +29,7 @@ interface ComplianceCredentialForm {
 interface Credential {
   id: string;
   targetDid: string;
-  credential: VerifiableCredential<CredentialSubject>;
+  credential: VerifiableCredential;
   selfIssued: boolean;
 }
 

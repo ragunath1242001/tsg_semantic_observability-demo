@@ -70,7 +70,7 @@ describe("TransferController", () => {
             callbackAddress:
               "http://127.0.0.1/data-plane/transfers/callbacks/ABCDEFG",
           });
-        }
+        },
       ),
       http.post(
         "http://127.0.0.1/data-plane/transfers/request/provider",
@@ -81,7 +81,7 @@ describe("TransferController", () => {
             callbackAddress:
               "http://127.0.0.1/data-plane/transfers/callbacks/ABCDEFG",
           });
-        }
+        },
       ),
       http.post("http://127.0.0.1/data-plane/transfers/ABCDEFG/:action", () => {
         return HttpResponse.json({
@@ -89,10 +89,10 @@ describe("TransferController", () => {
         });
       }),
       http.get("http://127.0.0.1/data-plane/health", () =>
-        HttpResponse.text("")
+        HttpResponse.text(""),
       ),
       http.get("http://127.0.0.1/data-plane/catalog", async () =>
-        HttpResponse.json(await new Catalog({}))
+        HttpResponse.json(await new Catalog({})),
       ),
       http.post<PathParams, TransferRequestMessageDto, TransferProcessDto>(
         "http://remoteparty.test/transfers/request",
@@ -106,7 +106,7 @@ describe("TransferController", () => {
             "dspace:state": TransferState.REQUESTED,
             "dspace:agreementId": reqBody["dspace:agreementId"],
           });
-        }
+        },
       ),
       http.post<PathParams, TransferRequestMessageDto, TransferProcessDto>(
         "http://127.0.0.1/transfers/request",
@@ -120,7 +120,7 @@ describe("TransferController", () => {
             "dspace:state": TransferState.REQUESTED,
             "dspace:agreementId": reqBody["dspace:agreementId"],
           });
-        }
+        },
       ),
       http.post(
         "http://127.0.0.1/transfers/callbacks/:id/:action",
@@ -128,13 +128,13 @@ describe("TransferController", () => {
           return HttpResponse.json({
             status: "OK",
           });
-        }
+        },
       ),
       http.post("http://127.0.0.1/transfers/:id/:action", async () => {
         return HttpResponse.json({
           status: "OK",
         });
-      })
+      }),
     );
 
     server.listen({
@@ -206,7 +206,7 @@ describe("TransferController", () => {
               transferId: string,
               remoteParticipant: string,
               action: string,
-              verifiableCredentials: VerifiableCredential<CredentialSubject>[]
+              verifiableCredentials: VerifiableCredential[],
             ) {
               return EvaluationContext.parse({
                 role: role,
@@ -286,7 +286,7 @@ describe("TransferController", () => {
           "http://127.0.0.1/transfers/callbacks/urn:uuid:de465939-8292-49c1-97d5-bcb643df1fdb",
       }),
       "did:web:localhost",
-      []
+      [],
     );
     transferProviderUuid = transferProviderProcess.providerPid;
     const transferConsumerProcess =
@@ -295,7 +295,7 @@ describe("TransferController", () => {
         "dspace:HTTP",
         undefined,
         "http://127.0.0.1/transfers",
-        "did:web:localhost"
+        "did:web:localhost",
       );
     transferConsumerUuid = transferConsumerProcess.localId;
     transferConsumerProviderUuid = transferConsumerProcess.remoteId;
@@ -316,7 +316,7 @@ describe("TransferController", () => {
             "http://127.0.0.1/transfers/callbacks/urn:uuid:de465939-8292-49c1-97d5-bcb643df1fdb",
         }),
         "did:web:localhost",
-        { "@context": [], type: [], verifiableCredential: [] }
+        { "@context": [], type: [], verifiableCredential: [] },
       );
       expect(result).toStrictEqual({
         "@context": defaultContext(),
@@ -333,7 +333,7 @@ describe("TransferController", () => {
     it("Transfer request with known id should result the transfer", async () => {
       const result = await transferController.getTransfer(
         transferProviderUuid,
-        "did:web:localhost"
+        "did:web:localhost",
       );
       expect(result).toStrictEqual({
         "@context": defaultContext(),
@@ -348,10 +348,10 @@ describe("TransferController", () => {
       expect(async () => {
         await transferController.getTransfer(
           "urn:uuid:00000000-0000-0000-0000-000000000000",
-          "did:web:localhost"
+          "did:web:localhost",
         );
       }).rejects.toThrowError(
-        expect.objectContaining({ status: HttpStatus.NOT_FOUND })
+        expect.objectContaining({ status: HttpStatus.NOT_FOUND }),
       );
     });
   });
@@ -366,7 +366,7 @@ describe("TransferController", () => {
           providerPid: transferProviderUuid,
           reason: [new Multilanguage("Test")],
         }),
-        "did:web:localhost"
+        "did:web:localhost",
       );
       const result = await transferController.startTransferProcess(
         transferProviderUuid,
@@ -374,7 +374,7 @@ describe("TransferController", () => {
           consumerPid: "urn:uuid:1c0c61c5-a977-40f0-84ab-eacf2c1e4b4b",
           providerPid: transferProviderUuid,
         }),
-        "did:web:localhost"
+        "did:web:localhost",
       );
       expect(result).toStrictEqual({
         status: "OK",
@@ -388,10 +388,10 @@ describe("TransferController", () => {
             consumerPid: "urn:uuid:9b17c898-5cce-49f9-944b-20488ef55776",
             providerPid: "urn:uuid:741e3479-cdf4-4f1b-b8a5-9d07980725da",
           }),
-          "did:web:localhost"
+          "did:web:localhost",
         );
       }).rejects.toThrowError(
-        expect.objectContaining({ status: HttpStatus.NOT_FOUND })
+        expect.objectContaining({ status: HttpStatus.NOT_FOUND }),
       );
     });
     it("Mismatch processId in contract request message and id path parameter should result in a 400", () => {
@@ -402,10 +402,10 @@ describe("TransferController", () => {
             consumerPid: "urn:uuid:9b17c898-5cce-49f9-944b-20488ef55776",
             providerPid: transferProviderUuid,
           }),
-          "did:web:localhost"
+          "did:web:localhost",
         );
       }).rejects.toThrowError(
-        expect.objectContaining({ status: HttpStatus.BAD_REQUEST })
+        expect.objectContaining({ status: HttpStatus.BAD_REQUEST }),
       );
     });
   });
@@ -420,7 +420,7 @@ describe("TransferController", () => {
           consumerPid: "urn:uuid:1c0c61c5-a977-40f0-84ab-eacf2c1e4b4b",
           providerPid: transferProviderUuid,
         }),
-        "did:web:localhost"
+        "did:web:localhost",
       );
       expect(result).toStrictEqual({
         status: "OK",
@@ -434,10 +434,10 @@ describe("TransferController", () => {
             consumerPid: "urn:uuid:b7987d7b-85fe-4569-8ef9-965f16e93802",
             providerPid: "urn:uuid:741e3479-cdf4-4f1b-b8a5-9d07980725da",
           }),
-          "did:web:localhost"
+          "did:web:localhost",
         );
       }).rejects.toThrowError(
-        expect.objectContaining({ status: HttpStatus.NOT_FOUND })
+        expect.objectContaining({ status: HttpStatus.NOT_FOUND }),
       );
     });
     it("Mismatch processId in contract request message and id path parameter should result in a 400", () => {
@@ -448,10 +448,10 @@ describe("TransferController", () => {
             consumerPid: transferConsumerUuid,
             providerPid: "urn:uuid:741e3479-cdf4-4f1b-b8a5-9d07980725da",
           }),
-          "did:web:localhost"
+          "did:web:localhost",
         );
       }).rejects.toThrowError(
-        expect.objectContaining({ status: HttpStatus.BAD_REQUEST })
+        expect.objectContaining({ status: HttpStatus.BAD_REQUEST }),
       );
     });
   });
@@ -466,7 +466,7 @@ describe("TransferController", () => {
           code: "123:A",
           reason: [new Multilanguage("Testing")],
         }),
-        "did:web:localhost"
+        "did:web:localhost",
       );
       expect(result).toStrictEqual({
         status: "OK",
@@ -482,10 +482,10 @@ describe("TransferController", () => {
             code: "123:A",
             reason: [new Multilanguage("Testing")],
           }),
-          "did:web:localhost"
+          "did:web:localhost",
         );
       }).rejects.toThrowError(
-        expect.objectContaining({ status: HttpStatus.NOT_FOUND })
+        expect.objectContaining({ status: HttpStatus.NOT_FOUND }),
       );
     });
     it("Mismatch processId in contract request message and id path parameter should result in a 400", () => {
@@ -498,10 +498,10 @@ describe("TransferController", () => {
             code: "123:A",
             reason: [new Multilanguage("Testing")],
           }),
-          "did:web:localhost"
+          "did:web:localhost",
         );
       }).rejects.toThrowError(
-        expect.objectContaining({ status: HttpStatus.BAD_REQUEST })
+        expect.objectContaining({ status: HttpStatus.BAD_REQUEST }),
       );
     });
   });
@@ -517,7 +517,7 @@ describe("TransferController", () => {
           providerPid: transferProviderUuid,
           reason: [new Multilanguage("Testing")],
         }),
-        "did:web:localhost"
+        "did:web:localhost",
       );
       expect(result).toStrictEqual({
         status: "OK",
@@ -532,10 +532,10 @@ describe("TransferController", () => {
             providerPid: "urn:uuid:741e3479-cdf4-4f1b-b8a5-9d07980725da",
             reason: [new Multilanguage("Testing")],
           }),
-          "did:web:localhost"
+          "did:web:localhost",
         );
       }).rejects.toThrowError(
-        expect.objectContaining({ status: HttpStatus.NOT_FOUND })
+        expect.objectContaining({ status: HttpStatus.NOT_FOUND }),
       );
     });
     it("Mismatch processId in contract request message and id path parameter should result in a 400", () => {
@@ -547,10 +547,10 @@ describe("TransferController", () => {
             providerPid: "urn:uuid:741e3479-cdf4-4f1b-b8a5-9d07980725da",
             reason: [new Multilanguage("Testing")],
           }),
-          "did:web:localhost"
+          "did:web:localhost",
         );
       }).rejects.toThrowError(
-        expect.objectContaining({ status: HttpStatus.BAD_REQUEST })
+        expect.objectContaining({ status: HttpStatus.BAD_REQUEST }),
       );
     });
   });
@@ -563,7 +563,7 @@ describe("TransferController", () => {
           consumerPid: transferConsumerUuid,
           providerPid: remoteProcessId,
         }),
-        "did:web:localhost"
+        "did:web:localhost",
       );
       expect(result).toStrictEqual({
         status: "OK",
@@ -577,10 +577,10 @@ describe("TransferController", () => {
             consumerPid: transferConsumerUuid,
             providerPid: "urn:uuid:741e3479-cdf4-4f1b-b8a5-9d07980725da",
           }),
-          "did:web:localhost"
+          "did:web:localhost",
         );
       }).rejects.toThrowError(
-        expect.objectContaining({ status: HttpStatus.NOT_FOUND })
+        expect.objectContaining({ status: HttpStatus.NOT_FOUND }),
       );
     });
   });
@@ -593,7 +593,7 @@ describe("TransferController", () => {
           consumerPid: transferConsumerUuid,
           providerPid: remoteProcessId,
         }),
-        "did:web:localhost"
+        "did:web:localhost",
       );
       const result = await transferController.callbackCompleteTransferProcess(
         transferConsumerUuid,
@@ -601,7 +601,7 @@ describe("TransferController", () => {
           consumerPid: transferConsumerUuid,
           providerPid: remoteProcessId,
         }),
-        "did:web:localhost"
+        "did:web:localhost",
       );
       expect(result).toStrictEqual({
         status: "OK",
@@ -615,10 +615,10 @@ describe("TransferController", () => {
             consumerPid: transferConsumerUuid,
             providerPid: "urn:uuid:741e3479-cdf4-4f1b-b8a5-9d07980725da",
           }),
-          "did:web:localhost"
+          "did:web:localhost",
         );
       }).rejects.toThrowError(
-        expect.objectContaining({ status: HttpStatus.NOT_FOUND })
+        expect.objectContaining({ status: HttpStatus.NOT_FOUND }),
       );
     });
   });
@@ -633,7 +633,7 @@ describe("TransferController", () => {
           code: "123:A",
           reason: [new Multilanguage("Testing")],
         }),
-        "did:web:localhost"
+        "did:web:localhost",
       );
       expect(result).toStrictEqual({
         status: "OK",
@@ -649,10 +649,10 @@ describe("TransferController", () => {
             code: "123:A",
             reason: [new Multilanguage("Testing")],
           }),
-          "did:web:localhost"
+          "did:web:localhost",
         );
       }).rejects.toThrowError(
-        expect.objectContaining({ status: HttpStatus.NOT_FOUND })
+        expect.objectContaining({ status: HttpStatus.NOT_FOUND }),
       );
     });
   });
@@ -665,7 +665,7 @@ describe("TransferController", () => {
           consumerPid: transferConsumerUuid,
           providerPid: remoteProcessId,
         }),
-        "did:web:localhost"
+        "did:web:localhost",
       );
       const result = await transferController.callbackSuspendTransferProcess(
         transferConsumerUuid,
@@ -674,7 +674,7 @@ describe("TransferController", () => {
           providerPid: remoteProcessId,
           reason: [new Multilanguage("Testing")],
         }),
-        "did:web:localhost"
+        "did:web:localhost",
       );
       expect(result).toStrictEqual({
         status: "OK",
@@ -689,10 +689,10 @@ describe("TransferController", () => {
             providerPid: "urn:uuid:741e3479-cdf4-4f1b-b8a5-9d07980725da",
             reason: [new Multilanguage("Testing")],
           }),
-          "did:web:localhost"
+          "did:web:localhost",
         );
       }).rejects.toThrowError(
-        expect.objectContaining({ status: HttpStatus.NOT_FOUND })
+        expect.objectContaining({ status: HttpStatus.NOT_FOUND }),
       );
     });
   });

@@ -65,7 +65,7 @@ export class EvaluationContext {
   @Type(() => VerifiableCredential)
   @ValidateNested()
   @ApiProperty({ type: VerifiableCredential })
-  verifiableCredentials!: VerifiableCredential<CredentialSubject>[];
+  verifiableCredentials!: VerifiableCredential[];
   @IsDate()
   @ApiProperty()
   evaluationTime!: Date;
@@ -79,7 +79,7 @@ export class EvaluationContext {
   @IsObject()
   transfer?: Record<string, any>;
   static parse(
-    plain: Pick<EvaluationContext, keyof EvaluationContext>
+    plain: Pick<EvaluationContext, keyof EvaluationContext>,
   ): EvaluationContext {
     return validateOrRejectSync(plainToInstance(EvaluationContext, plain, {}));
   }

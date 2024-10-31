@@ -40,11 +40,11 @@ export class IatpVerifierController {
     verificationRequest: {
       presentationDefinition: PresentationDefinition;
       holderIdToken: string;
-    }
-  ): Promise<VerifiablePresentation<VerifiableCredential<CredentialSubject>>> {
+    },
+  ): Promise<VerifiablePresentation> {
     return this.iatpVerifierService.verify(
       verificationRequest.holderIdToken,
-      verificationRequest.presentationDefinition
+      verificationRequest.presentationDefinition,
     );
   }
 }

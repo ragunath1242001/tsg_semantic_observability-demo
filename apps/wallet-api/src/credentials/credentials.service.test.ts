@@ -12,6 +12,7 @@ import { SetupServer, setupServer } from "msw/node";
 import { HttpResponse, PathParams, http } from "msw";
 import {
   CredentialSubject,
+  JsonWebSignature2020,
   VerifiableCredential,
   VerifiablePresentation,
 } from "@tsg-dsp/common-dsp";
@@ -49,17 +50,13 @@ describe("Credentials Service", () => {
     });
 
     server = setupServer(
-      http.post<
-        PathParams,
-        CredentialSubject,
-        VerifiableCredential<CredentialSubject>
-      >(
+      http.post<PathParams, CredentialSubject, VerifiableCredential>(
         "https://registrationnumber.notary.gaia-x.eu/v1/registrationNumberVC",
         async ({ request, params, cookies }) => {
-          return HttpResponse.json<VerifiableCredential<CredentialSubject>>({
+          return HttpResponse.json<VerifiableCredential<JsonWebSignature2020>>({
             "@context": [
               "https://www.w3.org/2018/credentials/v1",
-              "https://w3c.github.io/vc-jws-2020/contexts/v1/",
+              "https://w3id.org/security/suites/jws-2020/v1",
             ],
             type: ["VerifiableCredential"],
             id: new URL(request.url).searchParams.get("vcid") || "",
@@ -75,22 +72,18 @@ describe("Credentials Service", () => {
               jws: "",
             },
           });
-        }
+        },
       ),
-      http.post<
-        PathParams,
-        VerifiablePresentation<VerifiableCredential<CredentialSubject>>,
-        VerifiableCredential<CredentialSubject>
-      >(
+      http.post<PathParams, VerifiablePresentation, VerifiableCredential>(
         "https://compliance.gaia-x.eu/development/api/credential-offers",
         async ({ request, params, cookies }) => {
           const json = await request.json();
           const vcs = toArray(json.verifiableCredential);
 
-          return HttpResponse.json<VerifiableCredential<CredentialSubject>>({
+          return HttpResponse.json<VerifiableCredential<JsonWebSignature2020>>({
             "@context": [
               "https://www.w3.org/2018/credentials/v1",
-              "https://w3c.github.io/vc-jws-2020/contexts/v1/",
+              "https://w3id.org/security/suites/jws-2020/v1",
             ],
             type: ["VerifiableCredential"],
             id: new URL(request.url).searchParams.get("vcid") || "",
@@ -118,8 +111,8 @@ describe("Credentials Service", () => {
               jws: "",
             },
           });
-        }
-      )
+        },
+      ),
     );
 
     server.listen({ onUnhandledRequest: "bypass" });
@@ -189,7 +182,7 @@ describe("Credentials Service", () => {
             id: didId,
           },
         },
-        "did:web:external-did.com"
+        "did:web:external-did.com",
       );
       expect(credential2).toBeDefined();
       await expect(
@@ -200,13 +193,13 @@ describe("Credentials Service", () => {
           credentialSubject: {
             id: didId,
           },
-        })
+        }),
       ).rejects.toThrow("already exists");
       expect(await credentialsService.getCredentials()).toHaveLength(3);
     });
     it("Import credential", async () => {
       const testCredential = await credentialsService.getCredential(
-        `${didId}#test-credential`
+        `${didId}#test-credential`,
       );
 
       const importedCredential = await credentialsService.importCredential({
@@ -218,7 +211,7 @@ describe("Credentials Service", () => {
       expect(importedCredential).toBeDefined();
       expect(importedCredential.selfIssued).toBe(false);
       expect(importedCredential.credential.issuer).toBe(
-        "did:web:external-issuer.com"
+        "did:web:external-issuer.com",
       );
 
       await expect(
@@ -226,9 +219,9 @@ describe("Credentials Service", () => {
           ...testCredential.credential,
           id: `imported-credential`,
           issuer: "did:web:external-issuer.com",
-        })
+        }),
       ).rejects.toThrow(
-        "Imported credentials must be have an ID that starts with a DID appended with # and a credential ID"
+        "Imported credentials must be have an ID that starts with a DID appended with # and a credential ID",
       );
     });
     it("Update credential", async () => {
@@ -242,18 +235,18 @@ describe("Credentials Service", () => {
             id: didId,
             "https://example.com/extraProperty": "test",
           },
-        })
+        }),
       );
       expect(credential).toBeDefined();
       expect(
         toArray(
           (await credentialsService.getCredential(`${didId}#test-credential`))
-            .credential.credentialSubject
-        )[0]["https://example.com/extraProperty"]
+            .credential.credentialSubject,
+        )[0]["https://example.com/extraProperty"],
       ).toBe("test");
 
       const testCredential = await credentialsService.getCredential(
-        `${didId}#test-credential`
+        `${didId}#test-credential`,
       );
       const updateImportedCredential =
         await credentialsService.updateCredential(
@@ -262,17 +255,17 @@ describe("Credentials Service", () => {
             ...testCredential.credential,
             id: `${didId}#imported-credential`,
             issuer: "did:web:external-issuer.com",
-          }
+          },
         );
     });
     it("Delete credential", async () => {
       await credentialsService.deleteCredential(`${didId}#test-credential`);
 
       await expect(
-        credentialsService.getCredential(`${didId}#test-credential`)
+        credentialsService.getCredential(`${didId}#test-credential`),
       ).rejects.toThrow("can't be found");
       await expect(
-        credentialsService.deleteCredential(`${didId}#test-credential`)
+        credentialsService.deleteCredential(`${didId}#test-credential`),
       ).rejects.toThrow("can't be found");
     });
   });

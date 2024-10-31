@@ -36,7 +36,7 @@ describe("TSG Wallet", () => {
             validateJWTExpiryDate: true,
             vp: (await request.json()).vp,
           });
-        }
+        },
       ),
       http.get("http://127.0.0.1/api/management/credentials/dataspace", () => {
         return HttpResponse.json([{}]);
@@ -59,27 +59,27 @@ describe("TSG Wallet", () => {
               },
             });
           }
-        }
+        },
       ),
       http.post<PathParams, Record<string, any>>(
         "http://127.0.0.1/api/management/signature/validate",
         async ({ request }) => {
           const body = await request.json();
-          if (Object.keys(body.jsonWebSignature).length === 0) {
+          if (Object.keys(body.proofDocument).length === 0) {
             return new HttpResponse("Bad Request", { status: 400 });
           } else {
-            return HttpResponse.json(body.jsonWebSignature);
+            return HttpResponse.json(body.proofDocument);
           }
-        }
+        },
       ),
       http.get(
         `http://127.0.0.1/api/management/did/resolve/${encodeURI(
-          "did:web:localhost"
+          "did:web:localhost",
         )}`,
         () => {
           return HttpResponse.json(mockDidDocument());
-        }
-      )
+        },
+      ),
     );
 
     server.listen({
@@ -110,13 +110,12 @@ describe("TSG Wallet", () => {
   const testAudience = "did:web:test-audience.com";
   const tsgWalletClient = new TsgWalletClient(
     iamConfig,
-    new AuthClientService(plainToInstance(AuthConfig, { enabled: false }))
+    new AuthClientService(plainToInstance(AuthConfig, { enabled: false })),
   );
 
   it("Request & Validate presentation", async () => {
-    const vp = await tsgWalletClient.requestVerifiablePresentation(
-      testAudience
-    );
+    const vp =
+      await tsgWalletClient.requestVerifiablePresentation(testAudience);
     expect(vp).toStrictEqual(expect.any(String));
     const valid = await tsgWalletClient.requestValidation(vp, testAudience);
     expect(valid).toBeDefined();
@@ -129,7 +128,7 @@ describe("TSG Wallet", () => {
 
   it("Signature service", async () => {
     await expect(tsgWalletClient.requestSignature({})).rejects.toThrow(
-      "Could not sign document"
+      "Could not sign document",
     );
     await tsgWalletClient.requestSignature({
       "@context": "http://schema.org/",
@@ -140,7 +139,7 @@ describe("TSG Wallet", () => {
       url: "http://www.janedoe.com",
     });
     await expect(
-      tsgWalletClient.requestSignatureValidation({})
+      tsgWalletClient.requestSignatureValidation({}),
     ).rejects.toThrow("Could not validate document");
     await tsgWalletClient.requestSignatureValidation({
       "@context": "http://schema.org/",
@@ -161,21 +160,21 @@ describe("TSG Wallet", () => {
 
   it("Resolve DID Document", async () => {
     await expect(tsgWalletClient.resolveDidDocument("")).rejects.toThrow(
-      "Could not resolve DID Document"
+      "Could not resolve DID Document",
     );
 
     const expectedDidDoc = mockDidDocument();
     const resolvedDidDoc = await tsgWalletClient.resolveDidDocument(
-      encodeURI("did:web:localhost")
+      encodeURI("did:web:localhost"),
     );
     expect(resolvedDidDoc).toBeDefined();
     expect(resolvedDidDoc.id).toEqual(expectedDidDoc.id);
     expect(resolvedDidDoc.verificationMethod).toEqual(
-      expectedDidDoc.verificationMethod
+      expectedDidDoc.verificationMethod,
     );
     expect(resolvedDidDoc.service).toEqual(expectedDidDoc.service);
     expect(resolvedDidDoc.assertionMethod).toEqual(
-      expectedDidDoc.assertionMethod
+      expectedDidDoc.assertionMethod,
     );
   });
 });
