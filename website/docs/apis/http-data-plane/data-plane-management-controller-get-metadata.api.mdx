@@ -27,19 +27,12 @@ import TabItem from "@theme/TabItem";
 <Heading
   as={"h1"}
   className={"openapi__heading"}
-  children={"Get metadata of transfer by ID"}
->
-</Heading>
+  children={"Get metadata of transfer by ID"}></Heading>
 
 <MethodEndpoint
   method={"get"}
   path={"/api/management/transfers/{id}/metadata"}
-  context={"endpoint"}
->
-  
-</MethodEndpoint>
-
-
+  context={"endpoint"}></MethodEndpoint>
 
 Get metadata of transfer by ID
 
@@ -47,2014 +40,1773 @@ Get metadata of transfer by ID
   id={"request"}
   as={"h2"}
   className={"openapi-tabs__heading"}
-  children={"Request"}
->
-</Heading>
+  children={"Request"}></Heading>
 
 <details
-  style={{"marginBottom":"1rem"}}
+  style={{ marginBottom: "1rem" }}
   className={"openapi-markdown__details"}
   data-collapsed={false}
-  open={true}
->
-  <summary
-    style={{}}
-  >
-    <h3
-      className={"openapi-markdown__details-summary-header-params"}
-    >
+  open={true}>
+  <summary style={{}}>
+    <h3 className={"openapi-markdown__details-summary-header-params"}>
       Path Parameters
     </h3>
-  </summary><div>
+  </summary>
+  <div>
     <ul>
       <ParamsItem
         className={"paramsItem"}
-        param={{"name":"id","required":true,"in":"path","description":"Transfer identifier","schema":{"type":"string"},"enumDescriptions":[]}}
-      >
-        
-      </ParamsItem>
+        param={{
+          name: "id",
+          required: true,
+          in: "path",
+          description: "Transfer identifier",
+          schema: { type: "string" },
+          enumDescriptions: []
+        }}></ParamsItem>
     </ul>
   </div>
-</details><div>
+</details>
+<div>
   <div>
-    <ApiTabs
-      label={undefined}
-      id={undefined}
-    >
-      <TabItem
-        label={"200"}
-        value={"200"}
-      >
+    <ApiTabs label={undefined} id={undefined}>
+      <TabItem label={"200"} value={"200"}>
+        <div></div>
         <div>
-          
-          
-          
-          
-          
-        </div><div>
-          <MimeTabs
-            className={"openapi-tabs__mime"}
-            schemaType={"response"}
-          >
-            <TabItem
-              label={"application/json"}
-              value={"application/json"}
-            >
-              <SchemaTabs
-                className={"openapi-tabs__schema"}
-              >
-                <TabItem
-                  label={"Schema"}
-                  value={"Schema"}
-                >
+          <MimeTabs className={"openapi-tabs__mime"} schemaType={"response"}>
+            <TabItem label={"application/json"} value={"application/json"}>
+              <SchemaTabs className={"openapi-tabs__schema"}>
+                <TabItem label={"Schema"} value={"Schema"}>
                   <details
                     style={{}}
                     className={"openapi-markdown__details response"}
                     data-collapsed={false}
-                    open={true}
-                  >
+                    open={true}>
                     <summary
                       style={{}}
-                      className={"openapi-markdown__details-summary-response"}
-                    >
-                      <strong>
-                        Schema
-                      </strong>
-                    </summary><div
-                      style={{"textAlign":"left","marginLeft":"1rem"}}
-                    >
-                      
-                    </div><ul
-                      style={{"marginLeft":"1rem"}}
-                    >
-                      <SchemaItem
-                        collapsible={true}
-                        className={"schemaItem"}
-                      >
+                      className={"openapi-markdown__details-summary-response"}>
+                      <strong>Schema</strong>
+                    </summary>
+                    <div
+                      style={{ textAlign: "left", marginLeft: "1rem" }}></div>
+                    <ul style={{ marginLeft: "1rem" }}>
+                      <SchemaItem collapsible={true} className={"schemaItem"}>
                         <details
                           style={{}}
-                          className={"openapi-markdown__details"}
-                        >
-                          <summary
-                            style={{}}
-                          >
-                            <span
-                              className={"openapi-schema__container"}
-                            >
-                              <strong
-                                className={"openapi-schema__property"}
-                              >
+                          className={"openapi-markdown__details"}>
+                          <summary style={{}}>
+                            <span className={"openapi-schema__container"}>
+                              <strong className={"openapi-schema__property"}>
                                 agreement
-                              </strong><span
-                                className={"openapi-schema__name"}
-                              >
-                                 object
-                              </span><span
-                                className={"openapi-schema__divider"}
-                              >
-                                
-                              </span><span
-                                className={"openapi-schema__required"}
-                              >
+                              </strong>
+                              <span className={"openapi-schema__name"}>
+                                object
+                              </span>
+                              <span
+                                className={"openapi-schema__divider"}></span>
+                              <span className={"openapi-schema__required"}>
                                 required
                               </span>
                             </span>
-                          </summary><div
-                            style={{"marginLeft":"1rem"}}
-                          >
+                          </summary>
+                          <div style={{ marginLeft: "1rem" }}>
                             <SchemaItem
                               collapsible={false}
                               name={"@id"}
                               required={true}
                               schemaName={"string"}
                               qualifierMessage={undefined}
-                              schema={{"type":"string"}}
-                            >
-                              
-                            </SchemaItem><SchemaItem
+                              schema={{ type: "string" }}></SchemaItem>
+                            <SchemaItem
                               collapsible={false}
                               name={"@type"}
                               required={true}
                               schemaName={"string"}
                               qualifierMessage={undefined}
-                              schema={{"type":"string"}}
-                            >
-                              
-                            </SchemaItem><SchemaItem
+                              schema={{ type: "string" }}></SchemaItem>
+                            <SchemaItem
                               collapsible={false}
                               name={"odrl:assigner"}
                               required={false}
                               schemaName={"string"}
                               qualifierMessage={undefined}
-                              schema={{"type":"string"}}
-                            >
-                              
-                            </SchemaItem><SchemaItem
+                              schema={{ type: "string" }}></SchemaItem>
+                            <SchemaItem
                               collapsible={false}
                               name={"odrl:assignee"}
                               required={false}
                               schemaName={"string"}
                               qualifierMessage={undefined}
-                              schema={{"type":"string"}}
-                            >
-                              
-                            </SchemaItem><SchemaItem
+                              schema={{ type: "string" }}></SchemaItem>
+                            <SchemaItem
                               collapsible={true}
-                              className={"schemaItem"}
-                            >
+                              className={"schemaItem"}>
                               <details
                                 style={{}}
-                                className={"openapi-markdown__details"}
-                              >
-                                <summary
-                                  style={{}}
-                                >
-                                  <span
-                                    className={"openapi-schema__container"}
-                                  >
+                                className={"openapi-markdown__details"}>
+                                <summary style={{}}>
+                                  <span className={"openapi-schema__container"}>
                                     <strong
-                                      className={"openapi-schema__property"}
-                                    >
+                                      className={"openapi-schema__property"}>
                                       odrl:profile
-                                    </strong><span
-                                      className={"openapi-schema__name"}
-                                    >
-                                       object
+                                    </strong>
+                                    <span className={"openapi-schema__name"}>
+                                      object
                                     </span>
                                   </span>
-                                </summary><div
-                                  style={{"marginLeft":"1rem"}}
-                                >
+                                </summary>
+                                <div style={{ marginLeft: "1rem" }}>
                                   <SchemaItem
                                     collapsible={false}
                                     name={"@id"}
                                     required={true}
                                     schemaName={"string"}
                                     qualifierMessage={undefined}
-                                    schema={{"type":"string"}}
-                                  >
-                                    
-                                  </SchemaItem>
+                                    schema={{ type: "string" }}></SchemaItem>
                                 </div>
                               </details>
-                            </SchemaItem><SchemaItem
+                            </SchemaItem>
+                            <SchemaItem
                               collapsible={true}
-                              className={"schemaItem"}
-                            >
+                              className={"schemaItem"}>
                               <details
                                 style={{}}
-                                className={"openapi-markdown__details"}
-                              >
-                                <summary
-                                  style={{}}
-                                >
-                                  <span
-                                    className={"openapi-schema__container"}
-                                  >
+                                className={"openapi-markdown__details"}>
+                                <summary style={{}}>
+                                  <span className={"openapi-schema__container"}>
                                     <strong
-                                      className={"openapi-schema__property"}
-                                    >
+                                      className={"openapi-schema__property"}>
                                       odrl:permission
-                                    </strong><span
-                                      className={"openapi-schema__name"}
-                                    >
-                                       object[]
+                                    </strong>
+                                    <span className={"openapi-schema__name"}>
+                                      object[]
                                     </span>
                                   </span>
-                                </summary><div
-                                  style={{"marginLeft":"1rem"}}
-                                >
+                                </summary>
+                                <div style={{ marginLeft: "1rem" }}>
                                   <li>
                                     <div
-                                      style={{"fontSize":"var(--ifm-code-font-size)","opacity":"0.6","marginLeft":"-.5rem","paddingBottom":".5rem"}}
-                                    >
+                                      style={{
+                                        fontSize: "var(--ifm-code-font-size)",
+                                        opacity: "0.6",
+                                        marginLeft: "-.5rem",
+                                        paddingBottom: ".5rem"
+                                      }}>
                                       Array [
                                     </div>
-                                  </li><SchemaItem
+                                  </li>
+                                  <SchemaItem
                                     collapsible={false}
                                     name={"@type"}
                                     required={true}
                                     schemaName={"string"}
                                     qualifierMessage={undefined}
-                                    schema={{"type":"string"}}
-                                  >
-                                    
-                                  </SchemaItem><SchemaItem
+                                    schema={{ type: "string" }}></SchemaItem>
+                                  <SchemaItem
                                     collapsible={false}
                                     name={"odrl:assigner"}
                                     required={false}
                                     schemaName={"string"}
                                     qualifierMessage={undefined}
-                                    schema={{"type":"string"}}
-                                  >
-                                    
-                                  </SchemaItem><SchemaItem
+                                    schema={{ type: "string" }}></SchemaItem>
+                                  <SchemaItem
                                     collapsible={false}
                                     name={"odrl:assignee"}
                                     required={false}
                                     schemaName={"string"}
                                     qualifierMessage={undefined}
-                                    schema={{"type":"string"}}
-                                  >
-                                    
-                                  </SchemaItem><SchemaItem
+                                    schema={{ type: "string" }}></SchemaItem>
+                                  <SchemaItem
                                     collapsible={false}
                                     name={"odrl:action"}
                                     required={true}
                                     schemaName={"string"}
                                     qualifierMessage={undefined}
-                                    schema={{"type":"string"}}
-                                  >
-                                    
-                                  </SchemaItem><SchemaItem
+                                    schema={{ type: "string" }}></SchemaItem>
+                                  <SchemaItem
                                     collapsible={false}
                                     name={"odrl:target"}
                                     required={false}
                                     schemaName={"string"}
                                     qualifierMessage={undefined}
-                                    schema={{"type":"string"}}
-                                  >
-                                    
-                                  </SchemaItem><SchemaItem
+                                    schema={{ type: "string" }}></SchemaItem>
+                                  <SchemaItem
                                     collapsible={true}
-                                    className={"schemaItem"}
-                                  >
+                                    className={"schemaItem"}>
                                     <details
                                       style={{}}
-                                      className={"openapi-markdown__details"}
-                                    >
-                                      <summary
-                                        style={{}}
-                                      >
+                                      className={"openapi-markdown__details"}>
+                                      <summary style={{}}>
                                         <span
-                                          className={"openapi-schema__container"}
-                                        >
+                                          className={
+                                            "openapi-schema__container"
+                                          }>
                                           <strong
-                                            className={"openapi-schema__property"}
-                                          >
+                                            className={
+                                              "openapi-schema__property"
+                                            }>
                                             odrl:constraint
-                                          </strong><span
-                                            className={"openapi-schema__name"}
-                                          >
-                                             object[]
+                                          </strong>
+                                          <span
+                                            className={"openapi-schema__name"}>
+                                            object[]
                                           </span>
                                         </span>
-                                      </summary><div
-                                        style={{"marginLeft":"1rem"}}
-                                      >
+                                      </summary>
+                                      <div style={{ marginLeft: "1rem" }}>
                                         <li>
                                           <div
-                                            style={{"fontSize":"var(--ifm-code-font-size)","opacity":"0.6","marginLeft":"-.5rem","paddingBottom":".5rem"}}
-                                          >
+                                            style={{
+                                              fontSize:
+                                                "var(--ifm-code-font-size)",
+                                              opacity: "0.6",
+                                              marginLeft: "-.5rem",
+                                              paddingBottom: ".5rem"
+                                            }}>
                                             Array [
                                           </div>
-                                        </li><SchemaItem
+                                        </li>
+                                        <SchemaItem
                                           collapsible={false}
                                           name={"@type"}
                                           required={true}
                                           schemaName={"string"}
                                           qualifierMessage={undefined}
-                                          schema={{"type":"string"}}
-                                        >
-                                          
-                                        </SchemaItem><SchemaItem
+                                          schema={{
+                                            type: "string"
+                                          }}></SchemaItem>
+                                        <SchemaItem
                                           collapsible={false}
                                           name={"odrl:leftOperand"}
                                           required={true}
                                           schemaName={"string"}
                                           qualifierMessage={undefined}
-                                          schema={{"type":"string"}}
-                                        >
-                                          
-                                        </SchemaItem><SchemaItem
+                                          schema={{
+                                            type: "string"
+                                          }}></SchemaItem>
+                                        <SchemaItem
                                           collapsible={false}
                                           name={"odrl:operator"}
                                           required={true}
                                           schemaName={"string"}
                                           qualifierMessage={undefined}
-                                          schema={{"type":"string"}}
-                                        >
-                                          
-                                        </SchemaItem><SchemaItem
+                                          schema={{
+                                            type: "string"
+                                          }}></SchemaItem>
+                                        <SchemaItem
                                           collapsible={false}
                                           name={"odrl:rightOperand"}
                                           required={false}
                                           schemaName={"object"}
                                           qualifierMessage={undefined}
-                                          schema={{"type":"object"}}
-                                        >
-                                          
-                                        </SchemaItem><SchemaItem
+                                          schema={{
+                                            type: "object"
+                                          }}></SchemaItem>
+                                        <SchemaItem
                                           collapsible={false}
                                           name={"odrl:rightOperandReference"}
                                           required={false}
                                           schemaName={"string"}
                                           qualifierMessage={undefined}
-                                          schema={{"type":"string"}}
-                                        >
-                                          
-                                        </SchemaItem><li>
+                                          schema={{
+                                            type: "string"
+                                          }}></SchemaItem>
+                                        <li>
                                           <div
-                                            style={{"fontSize":"var(--ifm-code-font-size)","opacity":"0.6","marginLeft":"-.5rem"}}
-                                          >
+                                            style={{
+                                              fontSize:
+                                                "var(--ifm-code-font-size)",
+                                              opacity: "0.6",
+                                              marginLeft: "-.5rem"
+                                            }}>
                                             ]
                                           </div>
                                         </li>
                                       </div>
                                     </details>
-                                  </SchemaItem><SchemaItem
+                                  </SchemaItem>
+                                  <SchemaItem
                                     collapsible={false}
                                     name={"odrl:Duty"}
                                     required={false}
                                     schemaName={"string[]"}
                                     qualifierMessage={undefined}
-                                    schema={{"type":"array","items":{"type":"string"}}}
-                                  >
-                                    
-                                  </SchemaItem><li>
+                                    schema={{
+                                      type: "array",
+                                      items: { type: "string" }
+                                    }}></SchemaItem>
+                                  <li>
                                     <div
-                                      style={{"fontSize":"var(--ifm-code-font-size)","opacity":"0.6","marginLeft":"-.5rem"}}
-                                    >
+                                      style={{
+                                        fontSize: "var(--ifm-code-font-size)",
+                                        opacity: "0.6",
+                                        marginLeft: "-.5rem"
+                                      }}>
                                       ]
                                     </div>
                                   </li>
                                 </div>
                               </details>
-                            </SchemaItem><SchemaItem
+                            </SchemaItem>
+                            <SchemaItem
                               collapsible={true}
-                              className={"schemaItem"}
-                            >
+                              className={"schemaItem"}>
                               <details
                                 style={{}}
-                                className={"openapi-markdown__details"}
-                              >
-                                <summary
-                                  style={{}}
-                                >
-                                  <span
-                                    className={"openapi-schema__container"}
-                                  >
+                                className={"openapi-markdown__details"}>
+                                <summary style={{}}>
+                                  <span className={"openapi-schema__container"}>
                                     <strong
-                                      className={"openapi-schema__property"}
-                                    >
+                                      className={"openapi-schema__property"}>
                                       odrl:prohibition
-                                    </strong><span
-                                      className={"openapi-schema__name"}
-                                    >
-                                       object[]
+                                    </strong>
+                                    <span className={"openapi-schema__name"}>
+                                      object[]
                                     </span>
                                   </span>
-                                </summary><div
-                                  style={{"marginLeft":"1rem"}}
-                                >
+                                </summary>
+                                <div style={{ marginLeft: "1rem" }}>
                                   <li>
                                     <div
-                                      style={{"fontSize":"var(--ifm-code-font-size)","opacity":"0.6","marginLeft":"-.5rem","paddingBottom":".5rem"}}
-                                    >
+                                      style={{
+                                        fontSize: "var(--ifm-code-font-size)",
+                                        opacity: "0.6",
+                                        marginLeft: "-.5rem",
+                                        paddingBottom: ".5rem"
+                                      }}>
                                       Array [
                                     </div>
-                                  </li><SchemaItem
+                                  </li>
+                                  <SchemaItem
                                     collapsible={false}
                                     name={"@type"}
                                     required={true}
                                     schemaName={"string"}
                                     qualifierMessage={undefined}
-                                    schema={{"type":"string"}}
-                                  >
-                                    
-                                  </SchemaItem><SchemaItem
+                                    schema={{ type: "string" }}></SchemaItem>
+                                  <SchemaItem
                                     collapsible={false}
                                     name={"odrl:assigner"}
                                     required={false}
                                     schemaName={"string"}
                                     qualifierMessage={undefined}
-                                    schema={{"type":"string"}}
-                                  >
-                                    
-                                  </SchemaItem><SchemaItem
+                                    schema={{ type: "string" }}></SchemaItem>
+                                  <SchemaItem
                                     collapsible={false}
                                     name={"odrl:assignee"}
                                     required={false}
                                     schemaName={"string"}
                                     qualifierMessage={undefined}
-                                    schema={{"type":"string"}}
-                                  >
-                                    
-                                  </SchemaItem><SchemaItem
+                                    schema={{ type: "string" }}></SchemaItem>
+                                  <SchemaItem
                                     collapsible={false}
                                     name={"odrl:action"}
                                     required={true}
                                     schemaName={"string"}
                                     qualifierMessage={undefined}
-                                    schema={{"type":"string"}}
-                                  >
-                                    
-                                  </SchemaItem><SchemaItem
+                                    schema={{ type: "string" }}></SchemaItem>
+                                  <SchemaItem
                                     collapsible={false}
                                     name={"odrl:target"}
                                     required={false}
                                     schemaName={"string"}
                                     qualifierMessage={undefined}
-                                    schema={{"type":"string"}}
-                                  >
-                                    
-                                  </SchemaItem><SchemaItem
+                                    schema={{ type: "string" }}></SchemaItem>
+                                  <SchemaItem
                                     collapsible={true}
-                                    className={"schemaItem"}
-                                  >
+                                    className={"schemaItem"}>
                                     <details
                                       style={{}}
-                                      className={"openapi-markdown__details"}
-                                    >
-                                      <summary
-                                        style={{}}
-                                      >
+                                      className={"openapi-markdown__details"}>
+                                      <summary style={{}}>
                                         <span
-                                          className={"openapi-schema__container"}
-                                        >
+                                          className={
+                                            "openapi-schema__container"
+                                          }>
                                           <strong
-                                            className={"openapi-schema__property"}
-                                          >
+                                            className={
+                                              "openapi-schema__property"
+                                            }>
                                             odrl:constraint
-                                          </strong><span
-                                            className={"openapi-schema__name"}
-                                          >
-                                             object[]
+                                          </strong>
+                                          <span
+                                            className={"openapi-schema__name"}>
+                                            object[]
                                           </span>
                                         </span>
-                                      </summary><div
-                                        style={{"marginLeft":"1rem"}}
-                                      >
+                                      </summary>
+                                      <div style={{ marginLeft: "1rem" }}>
                                         <li>
                                           <div
-                                            style={{"fontSize":"var(--ifm-code-font-size)","opacity":"0.6","marginLeft":"-.5rem","paddingBottom":".5rem"}}
-                                          >
+                                            style={{
+                                              fontSize:
+                                                "var(--ifm-code-font-size)",
+                                              opacity: "0.6",
+                                              marginLeft: "-.5rem",
+                                              paddingBottom: ".5rem"
+                                            }}>
                                             Array [
                                           </div>
-                                        </li><SchemaItem
+                                        </li>
+                                        <SchemaItem
                                           collapsible={false}
                                           name={"@type"}
                                           required={true}
                                           schemaName={"string"}
                                           qualifierMessage={undefined}
-                                          schema={{"type":"string"}}
-                                        >
-                                          
-                                        </SchemaItem><SchemaItem
+                                          schema={{
+                                            type: "string"
+                                          }}></SchemaItem>
+                                        <SchemaItem
                                           collapsible={false}
                                           name={"odrl:leftOperand"}
                                           required={true}
                                           schemaName={"string"}
                                           qualifierMessage={undefined}
-                                          schema={{"type":"string"}}
-                                        >
-                                          
-                                        </SchemaItem><SchemaItem
+                                          schema={{
+                                            type: "string"
+                                          }}></SchemaItem>
+                                        <SchemaItem
                                           collapsible={false}
                                           name={"odrl:operator"}
                                           required={true}
                                           schemaName={"string"}
                                           qualifierMessage={undefined}
-                                          schema={{"type":"string"}}
-                                        >
-                                          
-                                        </SchemaItem><SchemaItem
+                                          schema={{
+                                            type: "string"
+                                          }}></SchemaItem>
+                                        <SchemaItem
                                           collapsible={false}
                                           name={"odrl:rightOperand"}
                                           required={false}
                                           schemaName={"object"}
                                           qualifierMessage={undefined}
-                                          schema={{"type":"object"}}
-                                        >
-                                          
-                                        </SchemaItem><SchemaItem
+                                          schema={{
+                                            type: "object"
+                                          }}></SchemaItem>
+                                        <SchemaItem
                                           collapsible={false}
                                           name={"odrl:rightOperandReference"}
                                           required={false}
                                           schemaName={"string"}
                                           qualifierMessage={undefined}
-                                          schema={{"type":"string"}}
-                                        >
-                                          
-                                        </SchemaItem><li>
+                                          schema={{
+                                            type: "string"
+                                          }}></SchemaItem>
+                                        <li>
                                           <div
-                                            style={{"fontSize":"var(--ifm-code-font-size)","opacity":"0.6","marginLeft":"-.5rem"}}
-                                          >
+                                            style={{
+                                              fontSize:
+                                                "var(--ifm-code-font-size)",
+                                              opacity: "0.6",
+                                              marginLeft: "-.5rem"
+                                            }}>
                                             ]
                                           </div>
                                         </li>
                                       </div>
                                     </details>
-                                  </SchemaItem><li>
+                                  </SchemaItem>
+                                  <li>
                                     <div
-                                      style={{"fontSize":"var(--ifm-code-font-size)","opacity":"0.6","marginLeft":"-.5rem"}}
-                                    >
+                                      style={{
+                                        fontSize: "var(--ifm-code-font-size)",
+                                        opacity: "0.6",
+                                        marginLeft: "-.5rem"
+                                      }}>
                                       ]
                                     </div>
                                   </li>
                                 </div>
                               </details>
-                            </SchemaItem><SchemaItem
+                            </SchemaItem>
+                            <SchemaItem
                               collapsible={true}
-                              className={"schemaItem"}
-                            >
+                              className={"schemaItem"}>
                               <details
                                 style={{}}
-                                className={"openapi-markdown__details"}
-                              >
-                                <summary
-                                  style={{}}
-                                >
-                                  <span
-                                    className={"openapi-schema__container"}
-                                  >
+                                className={"openapi-markdown__details"}>
+                                <summary style={{}}>
+                                  <span className={"openapi-schema__container"}>
                                     <strong
-                                      className={"openapi-schema__property"}
-                                    >
+                                      className={"openapi-schema__property"}>
                                       odrl:obligation
-                                    </strong><span
-                                      className={"openapi-schema__name"}
-                                    >
-                                       object[]
+                                    </strong>
+                                    <span className={"openapi-schema__name"}>
+                                      object[]
                                     </span>
                                   </span>
-                                </summary><div
-                                  style={{"marginLeft":"1rem"}}
-                                >
+                                </summary>
+                                <div style={{ marginLeft: "1rem" }}>
                                   <li>
                                     <div
-                                      style={{"fontSize":"var(--ifm-code-font-size)","opacity":"0.6","marginLeft":"-.5rem","paddingBottom":".5rem"}}
-                                    >
+                                      style={{
+                                        fontSize: "var(--ifm-code-font-size)",
+                                        opacity: "0.6",
+                                        marginLeft: "-.5rem",
+                                        paddingBottom: ".5rem"
+                                      }}>
                                       Array [
                                     </div>
-                                  </li><SchemaItem
+                                  </li>
+                                  <SchemaItem
                                     collapsible={false}
                                     name={""}
                                     required={false}
                                     schemaName={"object"}
                                     qualifierMessage={undefined}
-                                    schema={{}}
-                                  >
-                                    
-                                  </SchemaItem><li>
+                                    schema={{}}></SchemaItem>
+                                  <li>
                                     <div
-                                      style={{"fontSize":"var(--ifm-code-font-size)","opacity":"0.6","marginLeft":"-.5rem"}}
-                                    >
+                                      style={{
+                                        fontSize: "var(--ifm-code-font-size)",
+                                        opacity: "0.6",
+                                        marginLeft: "-.5rem"
+                                      }}>
                                       ]
                                     </div>
                                   </li>
                                 </div>
                               </details>
-                            </SchemaItem><SchemaItem
+                            </SchemaItem>
+                            <SchemaItem
                               collapsible={false}
                               name={"odrl:target"}
                               required={false}
                               schemaName={"string"}
                               qualifierMessage={undefined}
-                              schema={{"type":"string"}}
-                            >
-                              
-                            </SchemaItem><SchemaItem
+                              schema={{ type: "string" }}></SchemaItem>
+                            <SchemaItem
                               collapsible={false}
                               name={"dspace:timestamp"}
                               required={true}
                               schemaName={"string"}
                               qualifierMessage={undefined}
-                              schema={{"type":"string"}}
-                            >
-                              
-                            </SchemaItem>
+                              schema={{ type: "string" }}></SchemaItem>
                           </div>
                         </details>
-                      </SchemaItem><SchemaItem
-                        collapsible={true}
-                        className={"schemaItem"}
-                      >
+                      </SchemaItem>
+                      <SchemaItem collapsible={true} className={"schemaItem"}>
                         <details
                           style={{}}
-                          className={"openapi-markdown__details"}
-                        >
-                          <summary
-                            style={{}}
-                          >
-                            <span
-                              className={"openapi-schema__container"}
-                            >
-                              <strong
-                                className={"openapi-schema__property"}
-                              >
+                          className={"openapi-markdown__details"}>
+                          <summary style={{}}>
+                            <span className={"openapi-schema__container"}>
+                              <strong className={"openapi-schema__property"}>
                                 dataset
-                              </strong><span
-                                className={"openapi-schema__name"}
-                              >
-                                 object
-                              </span><span
-                                className={"openapi-schema__divider"}
-                              >
-                                
-                              </span><span
-                                className={"openapi-schema__required"}
-                              >
+                              </strong>
+                              <span className={"openapi-schema__name"}>
+                                object
+                              </span>
+                              <span
+                                className={"openapi-schema__divider"}></span>
+                              <span className={"openapi-schema__required"}>
                                 required
                               </span>
                             </span>
-                          </summary><div
-                            style={{"marginLeft":"1rem"}}
-                          >
+                          </summary>
+                          <div style={{ marginLeft: "1rem" }}>
                             <SchemaItem
                               collapsible={false}
                               name={"@id"}
                               required={true}
                               schemaName={"string"}
                               qualifierMessage={undefined}
-                              schema={{"type":"string"}}
-                            >
-                              
-                            </SchemaItem><SchemaItem
+                              schema={{ type: "string" }}></SchemaItem>
+                            <SchemaItem
                               collapsible={true}
-                              className={"schemaItem"}
-                            >
+                              className={"schemaItem"}>
                               <details
                                 style={{}}
-                                className={"openapi-markdown__details"}
-                              >
-                                <summary
-                                  style={{}}
-                                >
-                                  <span
-                                    className={"openapi-schema__container"}
-                                  >
+                                className={"openapi-markdown__details"}>
+                                <summary style={{}}>
+                                  <span className={"openapi-schema__container"}>
                                     <strong
-                                      className={"openapi-schema__property"}
-                                    >
+                                      className={"openapi-schema__property"}>
                                       dcat:contactPoint
-                                    </strong><span
-                                      className={"openapi-schema__name"}
-                                    >
-                                       object
+                                    </strong>
+                                    <span className={"openapi-schema__name"}>
+                                      object
                                     </span>
                                   </span>
-                                </summary><div
-                                  style={{"marginLeft":"1rem"}}
-                                >
+                                </summary>
+                                <div style={{ marginLeft: "1rem" }}>
                                   <SchemaItem
                                     collapsible={false}
                                     name={"@id"}
                                     required={true}
                                     schemaName={"string"}
                                     qualifierMessage={undefined}
-                                    schema={{"type":"string"}}
-                                  >
-                                    
-                                  </SchemaItem>
+                                    schema={{ type: "string" }}></SchemaItem>
                                 </div>
                               </details>
-                            </SchemaItem><SchemaItem
+                            </SchemaItem>
+                            <SchemaItem
                               collapsible={false}
                               name={"dcat:keyword"}
                               required={false}
                               schemaName={"string[]"}
                               qualifierMessage={undefined}
-                              schema={{"type":"array","items":{"type":"string"}}}
-                            >
-                              
-                            </SchemaItem><SchemaItem
+                              schema={{
+                                type: "array",
+                                items: { type: "string" }
+                              }}></SchemaItem>
+                            <SchemaItem
                               collapsible={true}
-                              className={"schemaItem"}
-                            >
+                              className={"schemaItem"}>
                               <details
                                 style={{}}
-                                className={"openapi-markdown__details"}
-                              >
-                                <summary
-                                  style={{}}
-                                >
-                                  <span
-                                    className={"openapi-schema__container"}
-                                  >
+                                className={"openapi-markdown__details"}>
+                                <summary style={{}}>
+                                  <span className={"openapi-schema__container"}>
                                     <strong
-                                      className={"openapi-schema__property"}
-                                    >
+                                      className={"openapi-schema__property"}>
                                       dcat:landingPage
-                                    </strong><span
-                                      className={"openapi-schema__name"}
-                                    >
-                                       object
+                                    </strong>
+                                    <span className={"openapi-schema__name"}>
+                                      object
                                     </span>
                                   </span>
-                                </summary><div
-                                  style={{"marginLeft":"1rem"}}
-                                >
+                                </summary>
+                                <div style={{ marginLeft: "1rem" }}>
                                   <SchemaItem
                                     collapsible={false}
                                     name={"@id"}
                                     required={true}
                                     schemaName={"string"}
                                     qualifierMessage={undefined}
-                                    schema={{"type":"string"}}
-                                  >
-                                    
-                                  </SchemaItem>
+                                    schema={{ type: "string" }}></SchemaItem>
                                 </div>
                               </details>
-                            </SchemaItem><SchemaItem
+                            </SchemaItem>
+                            <SchemaItem
                               collapsible={true}
-                              className={"schemaItem"}
-                            >
+                              className={"schemaItem"}>
                               <details
                                 style={{}}
-                                className={"openapi-markdown__details"}
-                              >
-                                <summary
-                                  style={{}}
-                                >
-                                  <span
-                                    className={"openapi-schema__container"}
-                                  >
+                                className={"openapi-markdown__details"}>
+                                <summary style={{}}>
+                                  <span className={"openapi-schema__container"}>
                                     <strong
-                                      className={"openapi-schema__property"}
-                                    >
+                                      className={"openapi-schema__property"}>
                                       dcat:theme
-                                    </strong><span
-                                      className={"openapi-schema__name"}
-                                    >
-                                       object[]
+                                    </strong>
+                                    <span className={"openapi-schema__name"}>
+                                      object[]
                                     </span>
                                   </span>
-                                </summary><div
-                                  style={{"marginLeft":"1rem"}}
-                                >
+                                </summary>
+                                <div style={{ marginLeft: "1rem" }}>
                                   <li>
                                     <div
-                                      style={{"fontSize":"var(--ifm-code-font-size)","opacity":"0.6","marginLeft":"-.5rem","paddingBottom":".5rem"}}
-                                    >
+                                      style={{
+                                        fontSize: "var(--ifm-code-font-size)",
+                                        opacity: "0.6",
+                                        marginLeft: "-.5rem",
+                                        paddingBottom: ".5rem"
+                                      }}>
                                       Array [
                                     </div>
-                                  </li><SchemaItem
+                                  </li>
+                                  <SchemaItem
                                     collapsible={false}
                                     name={"@id"}
                                     required={true}
                                     schemaName={"string"}
                                     qualifierMessage={undefined}
-                                    schema={{"type":"string"}}
-                                  >
-                                    
-                                  </SchemaItem><li>
+                                    schema={{ type: "string" }}></SchemaItem>
+                                  <li>
                                     <div
-                                      style={{"fontSize":"var(--ifm-code-font-size)","opacity":"0.6","marginLeft":"-.5rem"}}
-                                    >
+                                      style={{
+                                        fontSize: "var(--ifm-code-font-size)",
+                                        opacity: "0.6",
+                                        marginLeft: "-.5rem"
+                                      }}>
                                       ]
                                     </div>
                                   </li>
                                 </div>
                               </details>
-                            </SchemaItem><SchemaItem
+                            </SchemaItem>
+                            <SchemaItem
                               collapsible={false}
                               name={"dcat:conformsTo"}
                               required={false}
                               schemaName={"string"}
                               qualifierMessage={undefined}
-                              schema={{"type":"string"}}
-                            >
-                              
-                            </SchemaItem><SchemaItem
+                              schema={{ type: "string" }}></SchemaItem>
+                            <SchemaItem
                               collapsible={false}
                               name={"dct:creator"}
                               required={false}
                               schemaName={"string"}
                               qualifierMessage={undefined}
-                              schema={{"type":"string"}}
-                            >
-                              
-                            </SchemaItem><SchemaItem
+                              schema={{ type: "string" }}></SchemaItem>
+                            <SchemaItem
                               collapsible={false}
                               name={"dct:description"}
                               required={false}
                               schemaName={"string[]"}
                               qualifierMessage={undefined}
-                              schema={{"type":"array","items":{"type":"string"}}}
-                            >
-                              
-                            </SchemaItem><SchemaItem
+                              schema={{
+                                type: "array",
+                                items: { type: "string" }
+                              }}></SchemaItem>
+                            <SchemaItem
                               collapsible={false}
                               name={"dct:identifier"}
                               required={false}
                               schemaName={"string"}
                               qualifierMessage={undefined}
-                              schema={{"type":"string"}}
-                            >
-                              
-                            </SchemaItem><SchemaItem
+                              schema={{ type: "string" }}></SchemaItem>
+                            <SchemaItem
                               collapsible={true}
-                              className={"schemaItem"}
-                            >
+                              className={"schemaItem"}>
                               <details
                                 style={{}}
-                                className={"openapi-markdown__details"}
-                              >
-                                <summary
-                                  style={{}}
-                                >
-                                  <span
-                                    className={"openapi-schema__container"}
-                                  >
+                                className={"openapi-markdown__details"}>
+                                <summary style={{}}>
+                                  <span className={"openapi-schema__container"}>
                                     <strong
-                                      className={"openapi-schema__property"}
-                                    >
+                                      className={"openapi-schema__property"}>
                                       dct:isReferencedBy
-                                    </strong><span
-                                      className={"openapi-schema__name"}
-                                    >
-                                       object
+                                    </strong>
+                                    <span className={"openapi-schema__name"}>
+                                      object
                                     </span>
                                   </span>
-                                </summary><div
-                                  style={{"marginLeft":"1rem"}}
-                                >
+                                </summary>
+                                <div style={{ marginLeft: "1rem" }}>
                                   <SchemaItem
                                     collapsible={false}
                                     name={"@id"}
                                     required={true}
                                     schemaName={"string"}
                                     qualifierMessage={undefined}
-                                    schema={{"type":"string"}}
-                                  >
-                                    
-                                  </SchemaItem>
+                                    schema={{ type: "string" }}></SchemaItem>
                                 </div>
                               </details>
-                            </SchemaItem><SchemaItem
+                            </SchemaItem>
+                            <SchemaItem
                               collapsible={false}
                               name={"dct:issued"}
                               required={false}
                               schemaName={"string"}
                               qualifierMessage={undefined}
-                              schema={{"type":"string"}}
-                            >
-                              
-                            </SchemaItem><SchemaItem
+                              schema={{ type: "string" }}></SchemaItem>
+                            <SchemaItem
                               collapsible={true}
-                              className={"schemaItem"}
-                            >
+                              className={"schemaItem"}>
                               <details
                                 style={{}}
-                                className={"openapi-markdown__details"}
-                              >
-                                <summary
-                                  style={{}}
-                                >
-                                  <span
-                                    className={"openapi-schema__container"}
-                                  >
+                                className={"openapi-markdown__details"}>
+                                <summary style={{}}>
+                                  <span className={"openapi-schema__container"}>
                                     <strong
-                                      className={"openapi-schema__property"}
-                                    >
+                                      className={"openapi-schema__property"}>
                                       dct:language
-                                    </strong><span
-                                      className={"openapi-schema__name"}
-                                    >
-                                       object
+                                    </strong>
+                                    <span className={"openapi-schema__name"}>
+                                      object
                                     </span>
                                   </span>
-                                </summary><div
-                                  style={{"marginLeft":"1rem"}}
-                                >
+                                </summary>
+                                <div style={{ marginLeft: "1rem" }}>
                                   <SchemaItem
                                     collapsible={false}
                                     name={"@id"}
                                     required={true}
                                     schemaName={"string"}
                                     qualifierMessage={undefined}
-                                    schema={{"type":"string"}}
-                                  >
-                                    
-                                  </SchemaItem>
+                                    schema={{ type: "string" }}></SchemaItem>
                                 </div>
                               </details>
-                            </SchemaItem><SchemaItem
+                            </SchemaItem>
+                            <SchemaItem
                               collapsible={true}
-                              className={"schemaItem"}
-                            >
+                              className={"schemaItem"}>
                               <details
                                 style={{}}
-                                className={"openapi-markdown__details"}
-                              >
-                                <summary
-                                  style={{}}
-                                >
-                                  <span
-                                    className={"openapi-schema__container"}
-                                  >
+                                className={"openapi-markdown__details"}>
+                                <summary style={{}}>
+                                  <span className={"openapi-schema__container"}>
                                     <strong
-                                      className={"openapi-schema__property"}
-                                    >
+                                      className={"openapi-schema__property"}>
                                       dct:license
-                                    </strong><span
-                                      className={"openapi-schema__name"}
-                                    >
-                                       object
+                                    </strong>
+                                    <span className={"openapi-schema__name"}>
+                                      object
                                     </span>
                                   </span>
-                                </summary><div
-                                  style={{"marginLeft":"1rem"}}
-                                >
+                                </summary>
+                                <div style={{ marginLeft: "1rem" }}>
                                   <SchemaItem
                                     collapsible={false}
                                     name={"@id"}
                                     required={true}
                                     schemaName={"string"}
                                     qualifierMessage={undefined}
-                                    schema={{"type":"string"}}
-                                  >
-                                    
-                                  </SchemaItem>
+                                    schema={{ type: "string" }}></SchemaItem>
                                 </div>
                               </details>
-                            </SchemaItem><SchemaItem
+                            </SchemaItem>
+                            <SchemaItem
                               collapsible={false}
                               name={"dct:modified"}
                               required={false}
                               schemaName={"string"}
                               qualifierMessage={undefined}
-                              schema={{"type":"string"}}
-                            >
-                              
-                            </SchemaItem><SchemaItem
+                              schema={{ type: "string" }}></SchemaItem>
+                            <SchemaItem
                               collapsible={false}
                               name={"dct:publisher"}
                               required={false}
                               schemaName={"string"}
                               qualifierMessage={undefined}
-                              schema={{"type":"string"}}
-                            >
-                              
-                            </SchemaItem><SchemaItem
+                              schema={{ type: "string" }}></SchemaItem>
+                            <SchemaItem
                               collapsible={true}
-                              className={"schemaItem"}
-                            >
+                              className={"schemaItem"}>
                               <details
                                 style={{}}
-                                className={"openapi-markdown__details"}
-                              >
-                                <summary
-                                  style={{}}
-                                >
-                                  <span
-                                    className={"openapi-schema__container"}
-                                  >
+                                className={"openapi-markdown__details"}>
+                                <summary style={{}}>
+                                  <span className={"openapi-schema__container"}>
                                     <strong
-                                      className={"openapi-schema__property"}
-                                    >
+                                      className={"openapi-schema__property"}>
                                       dct:relation
-                                    </strong><span
-                                      className={"openapi-schema__name"}
-                                    >
-                                       object
+                                    </strong>
+                                    <span className={"openapi-schema__name"}>
+                                      object
                                     </span>
                                   </span>
-                                </summary><div
-                                  style={{"marginLeft":"1rem"}}
-                                >
+                                </summary>
+                                <div style={{ marginLeft: "1rem" }}>
                                   <SchemaItem
                                     collapsible={false}
                                     name={"@id"}
                                     required={true}
                                     schemaName={"string"}
                                     qualifierMessage={undefined}
-                                    schema={{"type":"string"}}
-                                  >
-                                    
-                                  </SchemaItem>
+                                    schema={{ type: "string" }}></SchemaItem>
                                 </div>
                               </details>
-                            </SchemaItem><SchemaItem
+                            </SchemaItem>
+                            <SchemaItem
                               collapsible={false}
                               name={"dct:title"}
                               required={false}
                               schemaName={"string"}
                               qualifierMessage={undefined}
-                              schema={{"type":"string"}}
-                            >
-                              
-                            </SchemaItem><SchemaItem
+                              schema={{ type: "string" }}></SchemaItem>
+                            <SchemaItem
                               collapsible={false}
                               name={"dct:type"}
                               required={false}
                               schemaName={"string"}
                               qualifierMessage={undefined}
-                              schema={{"type":"string"}}
-                            >
-                              
-                            </SchemaItem><SchemaItem
+                              schema={{ type: "string" }}></SchemaItem>
+                            <SchemaItem
                               collapsible={true}
-                              className={"schemaItem"}
-                            >
+                              className={"schemaItem"}>
                               <details
                                 style={{}}
-                                className={"openapi-markdown__details"}
-                              >
-                                <summary
-                                  style={{}}
-                                >
-                                  <span
-                                    className={"openapi-schema__container"}
-                                  >
+                                className={"openapi-markdown__details"}>
+                                <summary style={{}}>
+                                  <span className={"openapi-schema__container"}>
                                     <strong
-                                      className={"openapi-schema__property"}
-                                    >
+                                      className={"openapi-schema__property"}>
                                       odrl:hasPolicy
-                                    </strong><span
-                                      className={"openapi-schema__name"}
-                                    >
-                                       object[]
+                                    </strong>
+                                    <span className={"openapi-schema__name"}>
+                                      object[]
                                     </span>
                                   </span>
-                                </summary><div
-                                  style={{"marginLeft":"1rem"}}
-                                >
+                                </summary>
+                                <div style={{ marginLeft: "1rem" }}>
                                   <li>
                                     <div
-                                      style={{"fontSize":"var(--ifm-code-font-size)","opacity":"0.6","marginLeft":"-.5rem","paddingBottom":".5rem"}}
-                                    >
+                                      style={{
+                                        fontSize: "var(--ifm-code-font-size)",
+                                        opacity: "0.6",
+                                        marginLeft: "-.5rem",
+                                        paddingBottom: ".5rem"
+                                      }}>
                                       Array [
                                     </div>
-                                  </li><SchemaItem
+                                  </li>
+                                  <SchemaItem
                                     collapsible={false}
                                     name={"@id"}
                                     required={true}
                                     schemaName={"string"}
                                     qualifierMessage={undefined}
-                                    schema={{"type":"string"}}
-                                  >
-                                    
-                                  </SchemaItem><SchemaItem
+                                    schema={{ type: "string" }}></SchemaItem>
+                                  <SchemaItem
                                     collapsible={false}
                                     name={"@type"}
                                     required={true}
                                     schemaName={"string"}
                                     qualifierMessage={undefined}
-                                    schema={{"type":"string"}}
-                                  >
-                                    
-                                  </SchemaItem><SchemaItem
+                                    schema={{ type: "string" }}></SchemaItem>
+                                  <SchemaItem
                                     collapsible={false}
                                     name={"odrl:assigner"}
                                     required={false}
                                     schemaName={"string"}
                                     qualifierMessage={undefined}
-                                    schema={{"type":"string"}}
-                                  >
-                                    
-                                  </SchemaItem><SchemaItem
+                                    schema={{ type: "string" }}></SchemaItem>
+                                  <SchemaItem
                                     collapsible={false}
                                     name={"odrl:assignee"}
                                     required={false}
                                     schemaName={"string"}
                                     qualifierMessage={undefined}
-                                    schema={{"type":"string"}}
-                                  >
-                                    
-                                  </SchemaItem><SchemaItem
+                                    schema={{ type: "string" }}></SchemaItem>
+                                  <SchemaItem
                                     collapsible={true}
-                                    className={"schemaItem"}
-                                  >
+                                    className={"schemaItem"}>
                                     <details
                                       style={{}}
-                                      className={"openapi-markdown__details"}
-                                    >
-                                      <summary
-                                        style={{}}
-                                      >
+                                      className={"openapi-markdown__details"}>
+                                      <summary style={{}}>
                                         <span
-                                          className={"openapi-schema__container"}
-                                        >
+                                          className={
+                                            "openapi-schema__container"
+                                          }>
                                           <strong
-                                            className={"openapi-schema__property"}
-                                          >
+                                            className={
+                                              "openapi-schema__property"
+                                            }>
                                             odrl:profile
-                                          </strong><span
-                                            className={"openapi-schema__name"}
-                                          >
-                                             object
+                                          </strong>
+                                          <span
+                                            className={"openapi-schema__name"}>
+                                            object
                                           </span>
                                         </span>
-                                      </summary><div
-                                        style={{"marginLeft":"1rem"}}
-                                      >
+                                      </summary>
+                                      <div style={{ marginLeft: "1rem" }}>
                                         <SchemaItem
                                           collapsible={false}
                                           name={"@id"}
                                           required={true}
                                           schemaName={"string"}
                                           qualifierMessage={undefined}
-                                          schema={{"type":"string"}}
-                                        >
-                                          
-                                        </SchemaItem>
+                                          schema={{
+                                            type: "string"
+                                          }}></SchemaItem>
                                       </div>
                                     </details>
-                                  </SchemaItem><SchemaItem
+                                  </SchemaItem>
+                                  <SchemaItem
                                     collapsible={true}
-                                    className={"schemaItem"}
-                                  >
+                                    className={"schemaItem"}>
                                     <details
                                       style={{}}
-                                      className={"openapi-markdown__details"}
-                                    >
-                                      <summary
-                                        style={{}}
-                                      >
+                                      className={"openapi-markdown__details"}>
+                                      <summary style={{}}>
                                         <span
-                                          className={"openapi-schema__container"}
-                                        >
+                                          className={
+                                            "openapi-schema__container"
+                                          }>
                                           <strong
-                                            className={"openapi-schema__property"}
-                                          >
+                                            className={
+                                              "openapi-schema__property"
+                                            }>
                                             odrl:permission
-                                          </strong><span
-                                            className={"openapi-schema__name"}
-                                          >
-                                             object[]
+                                          </strong>
+                                          <span
+                                            className={"openapi-schema__name"}>
+                                            object[]
                                           </span>
                                         </span>
-                                      </summary><div
-                                        style={{"marginLeft":"1rem"}}
-                                      >
+                                      </summary>
+                                      <div style={{ marginLeft: "1rem" }}>
                                         <li>
                                           <div
-                                            style={{"fontSize":"var(--ifm-code-font-size)","opacity":"0.6","marginLeft":"-.5rem","paddingBottom":".5rem"}}
-                                          >
+                                            style={{
+                                              fontSize:
+                                                "var(--ifm-code-font-size)",
+                                              opacity: "0.6",
+                                              marginLeft: "-.5rem",
+                                              paddingBottom: ".5rem"
+                                            }}>
                                             Array [
                                           </div>
-                                        </li><SchemaItem
+                                        </li>
+                                        <SchemaItem
                                           collapsible={false}
                                           name={"@type"}
                                           required={true}
                                           schemaName={"string"}
                                           qualifierMessage={undefined}
-                                          schema={{"type":"string"}}
-                                        >
-                                          
-                                        </SchemaItem><SchemaItem
+                                          schema={{
+                                            type: "string"
+                                          }}></SchemaItem>
+                                        <SchemaItem
                                           collapsible={false}
                                           name={"odrl:assigner"}
                                           required={false}
                                           schemaName={"string"}
                                           qualifierMessage={undefined}
-                                          schema={{"type":"string"}}
-                                        >
-                                          
-                                        </SchemaItem><SchemaItem
+                                          schema={{
+                                            type: "string"
+                                          }}></SchemaItem>
+                                        <SchemaItem
                                           collapsible={false}
                                           name={"odrl:assignee"}
                                           required={false}
                                           schemaName={"string"}
                                           qualifierMessage={undefined}
-                                          schema={{"type":"string"}}
-                                        >
-                                          
-                                        </SchemaItem><SchemaItem
+                                          schema={{
+                                            type: "string"
+                                          }}></SchemaItem>
+                                        <SchemaItem
                                           collapsible={false}
                                           name={"odrl:action"}
                                           required={true}
                                           schemaName={"string"}
                                           qualifierMessage={undefined}
-                                          schema={{"type":"string"}}
-                                        >
-                                          
-                                        </SchemaItem><SchemaItem
+                                          schema={{
+                                            type: "string"
+                                          }}></SchemaItem>
+                                        <SchemaItem
                                           collapsible={false}
                                           name={"odrl:target"}
                                           required={false}
                                           schemaName={"string"}
                                           qualifierMessage={undefined}
-                                          schema={{"type":"string"}}
-                                        >
-                                          
-                                        </SchemaItem><SchemaItem
+                                          schema={{
+                                            type: "string"
+                                          }}></SchemaItem>
+                                        <SchemaItem
                                           collapsible={true}
-                                          className={"schemaItem"}
-                                        >
+                                          className={"schemaItem"}>
                                           <details
                                             style={{}}
-                                            className={"openapi-markdown__details"}
-                                          >
-                                            <summary
-                                              style={{}}
-                                            >
+                                            className={
+                                              "openapi-markdown__details"
+                                            }>
+                                            <summary style={{}}>
                                               <span
-                                                className={"openapi-schema__container"}
-                                              >
+                                                className={
+                                                  "openapi-schema__container"
+                                                }>
                                                 <strong
-                                                  className={"openapi-schema__property"}
-                                                >
+                                                  className={
+                                                    "openapi-schema__property"
+                                                  }>
                                                   odrl:constraint
-                                                </strong><span
-                                                  className={"openapi-schema__name"}
-                                                >
-                                                   object[]
+                                                </strong>
+                                                <span
+                                                  className={
+                                                    "openapi-schema__name"
+                                                  }>
+                                                  object[]
                                                 </span>
                                               </span>
-                                            </summary><div
-                                              style={{"marginLeft":"1rem"}}
-                                            >
+                                            </summary>
+                                            <div style={{ marginLeft: "1rem" }}>
                                               <li>
                                                 <div
-                                                  style={{"fontSize":"var(--ifm-code-font-size)","opacity":"0.6","marginLeft":"-.5rem","paddingBottom":".5rem"}}
-                                                >
+                                                  style={{
+                                                    fontSize:
+                                                      "var(--ifm-code-font-size)",
+                                                    opacity: "0.6",
+                                                    marginLeft: "-.5rem",
+                                                    paddingBottom: ".5rem"
+                                                  }}>
                                                   Array [
                                                 </div>
-                                              </li><SchemaItem
+                                              </li>
+                                              <SchemaItem
                                                 collapsible={false}
                                                 name={"@type"}
                                                 required={true}
                                                 schemaName={"string"}
                                                 qualifierMessage={undefined}
-                                                schema={{"type":"string"}}
-                                              >
-                                                
-                                              </SchemaItem><SchemaItem
+                                                schema={{
+                                                  type: "string"
+                                                }}></SchemaItem>
+                                              <SchemaItem
                                                 collapsible={false}
                                                 name={"odrl:leftOperand"}
                                                 required={true}
                                                 schemaName={"string"}
                                                 qualifierMessage={undefined}
-                                                schema={{"type":"string"}}
-                                              >
-                                                
-                                              </SchemaItem><SchemaItem
+                                                schema={{
+                                                  type: "string"
+                                                }}></SchemaItem>
+                                              <SchemaItem
                                                 collapsible={false}
                                                 name={"odrl:operator"}
                                                 required={true}
                                                 schemaName={"string"}
                                                 qualifierMessage={undefined}
-                                                schema={{"type":"string"}}
-                                              >
-                                                
-                                              </SchemaItem><SchemaItem
+                                                schema={{
+                                                  type: "string"
+                                                }}></SchemaItem>
+                                              <SchemaItem
                                                 collapsible={false}
                                                 name={"odrl:rightOperand"}
                                                 required={false}
                                                 schemaName={"object"}
                                                 qualifierMessage={undefined}
-                                                schema={{"type":"object"}}
-                                              >
-                                                
-                                              </SchemaItem><SchemaItem
+                                                schema={{
+                                                  type: "object"
+                                                }}></SchemaItem>
+                                              <SchemaItem
                                                 collapsible={false}
-                                                name={"odrl:rightOperandReference"}
+                                                name={
+                                                  "odrl:rightOperandReference"
+                                                }
                                                 required={false}
                                                 schemaName={"string"}
                                                 qualifierMessage={undefined}
-                                                schema={{"type":"string"}}
-                                              >
-                                                
-                                              </SchemaItem><li>
+                                                schema={{
+                                                  type: "string"
+                                                }}></SchemaItem>
+                                              <li>
                                                 <div
-                                                  style={{"fontSize":"var(--ifm-code-font-size)","opacity":"0.6","marginLeft":"-.5rem"}}
-                                                >
+                                                  style={{
+                                                    fontSize:
+                                                      "var(--ifm-code-font-size)",
+                                                    opacity: "0.6",
+                                                    marginLeft: "-.5rem"
+                                                  }}>
                                                   ]
                                                 </div>
                                               </li>
                                             </div>
                                           </details>
-                                        </SchemaItem><SchemaItem
+                                        </SchemaItem>
+                                        <SchemaItem
                                           collapsible={false}
                                           name={"odrl:Duty"}
                                           required={false}
                                           schemaName={"string[]"}
                                           qualifierMessage={undefined}
-                                          schema={{"type":"array","items":{"type":"string"}}}
-                                        >
-                                          
-                                        </SchemaItem><li>
+                                          schema={{
+                                            type: "array",
+                                            items: { type: "string" }
+                                          }}></SchemaItem>
+                                        <li>
                                           <div
-                                            style={{"fontSize":"var(--ifm-code-font-size)","opacity":"0.6","marginLeft":"-.5rem"}}
-                                          >
+                                            style={{
+                                              fontSize:
+                                                "var(--ifm-code-font-size)",
+                                              opacity: "0.6",
+                                              marginLeft: "-.5rem"
+                                            }}>
                                             ]
                                           </div>
                                         </li>
                                       </div>
                                     </details>
-                                  </SchemaItem><SchemaItem
+                                  </SchemaItem>
+                                  <SchemaItem
                                     collapsible={true}
-                                    className={"schemaItem"}
-                                  >
+                                    className={"schemaItem"}>
                                     <details
                                       style={{}}
-                                      className={"openapi-markdown__details"}
-                                    >
-                                      <summary
-                                        style={{}}
-                                      >
+                                      className={"openapi-markdown__details"}>
+                                      <summary style={{}}>
                                         <span
-                                          className={"openapi-schema__container"}
-                                        >
+                                          className={
+                                            "openapi-schema__container"
+                                          }>
                                           <strong
-                                            className={"openapi-schema__property"}
-                                          >
+                                            className={
+                                              "openapi-schema__property"
+                                            }>
                                             odrl:prohibition
-                                          </strong><span
-                                            className={"openapi-schema__name"}
-                                          >
-                                             object[]
+                                          </strong>
+                                          <span
+                                            className={"openapi-schema__name"}>
+                                            object[]
                                           </span>
                                         </span>
-                                      </summary><div
-                                        style={{"marginLeft":"1rem"}}
-                                      >
+                                      </summary>
+                                      <div style={{ marginLeft: "1rem" }}>
                                         <li>
                                           <div
-                                            style={{"fontSize":"var(--ifm-code-font-size)","opacity":"0.6","marginLeft":"-.5rem","paddingBottom":".5rem"}}
-                                          >
+                                            style={{
+                                              fontSize:
+                                                "var(--ifm-code-font-size)",
+                                              opacity: "0.6",
+                                              marginLeft: "-.5rem",
+                                              paddingBottom: ".5rem"
+                                            }}>
                                             Array [
                                           </div>
-                                        </li><SchemaItem
+                                        </li>
+                                        <SchemaItem
                                           collapsible={false}
                                           name={"@type"}
                                           required={true}
                                           schemaName={"string"}
                                           qualifierMessage={undefined}
-                                          schema={{"type":"string"}}
-                                        >
-                                          
-                                        </SchemaItem><SchemaItem
+                                          schema={{
+                                            type: "string"
+                                          }}></SchemaItem>
+                                        <SchemaItem
                                           collapsible={false}
                                           name={"odrl:assigner"}
                                           required={false}
                                           schemaName={"string"}
                                           qualifierMessage={undefined}
-                                          schema={{"type":"string"}}
-                                        >
-                                          
-                                        </SchemaItem><SchemaItem
+                                          schema={{
+                                            type: "string"
+                                          }}></SchemaItem>
+                                        <SchemaItem
                                           collapsible={false}
                                           name={"odrl:assignee"}
                                           required={false}
                                           schemaName={"string"}
                                           qualifierMessage={undefined}
-                                          schema={{"type":"string"}}
-                                        >
-                                          
-                                        </SchemaItem><SchemaItem
+                                          schema={{
+                                            type: "string"
+                                          }}></SchemaItem>
+                                        <SchemaItem
                                           collapsible={false}
                                           name={"odrl:action"}
                                           required={true}
                                           schemaName={"string"}
                                           qualifierMessage={undefined}
-                                          schema={{"type":"string"}}
-                                        >
-                                          
-                                        </SchemaItem><SchemaItem
+                                          schema={{
+                                            type: "string"
+                                          }}></SchemaItem>
+                                        <SchemaItem
                                           collapsible={false}
                                           name={"odrl:target"}
                                           required={false}
                                           schemaName={"string"}
                                           qualifierMessage={undefined}
-                                          schema={{"type":"string"}}
-                                        >
-                                          
-                                        </SchemaItem><SchemaItem
+                                          schema={{
+                                            type: "string"
+                                          }}></SchemaItem>
+                                        <SchemaItem
                                           collapsible={true}
-                                          className={"schemaItem"}
-                                        >
+                                          className={"schemaItem"}>
                                           <details
                                             style={{}}
-                                            className={"openapi-markdown__details"}
-                                          >
-                                            <summary
-                                              style={{}}
-                                            >
+                                            className={
+                                              "openapi-markdown__details"
+                                            }>
+                                            <summary style={{}}>
                                               <span
-                                                className={"openapi-schema__container"}
-                                              >
+                                                className={
+                                                  "openapi-schema__container"
+                                                }>
                                                 <strong
-                                                  className={"openapi-schema__property"}
-                                                >
+                                                  className={
+                                                    "openapi-schema__property"
+                                                  }>
                                                   odrl:constraint
-                                                </strong><span
-                                                  className={"openapi-schema__name"}
-                                                >
-                                                   object[]
+                                                </strong>
+                                                <span
+                                                  className={
+                                                    "openapi-schema__name"
+                                                  }>
+                                                  object[]
                                                 </span>
                                               </span>
-                                            </summary><div
-                                              style={{"marginLeft":"1rem"}}
-                                            >
+                                            </summary>
+                                            <div style={{ marginLeft: "1rem" }}>
                                               <li>
                                                 <div
-                                                  style={{"fontSize":"var(--ifm-code-font-size)","opacity":"0.6","marginLeft":"-.5rem","paddingBottom":".5rem"}}
-                                                >
+                                                  style={{
+                                                    fontSize:
+                                                      "var(--ifm-code-font-size)",
+                                                    opacity: "0.6",
+                                                    marginLeft: "-.5rem",
+                                                    paddingBottom: ".5rem"
+                                                  }}>
                                                   Array [
                                                 </div>
-                                              </li><SchemaItem
+                                              </li>
+                                              <SchemaItem
                                                 collapsible={false}
                                                 name={"@type"}
                                                 required={true}
                                                 schemaName={"string"}
                                                 qualifierMessage={undefined}
-                                                schema={{"type":"string"}}
-                                              >
-                                                
-                                              </SchemaItem><SchemaItem
+                                                schema={{
+                                                  type: "string"
+                                                }}></SchemaItem>
+                                              <SchemaItem
                                                 collapsible={false}
                                                 name={"odrl:leftOperand"}
                                                 required={true}
                                                 schemaName={"string"}
                                                 qualifierMessage={undefined}
-                                                schema={{"type":"string"}}
-                                              >
-                                                
-                                              </SchemaItem><SchemaItem
+                                                schema={{
+                                                  type: "string"
+                                                }}></SchemaItem>
+                                              <SchemaItem
                                                 collapsible={false}
                                                 name={"odrl:operator"}
                                                 required={true}
                                                 schemaName={"string"}
                                                 qualifierMessage={undefined}
-                                                schema={{"type":"string"}}
-                                              >
-                                                
-                                              </SchemaItem><SchemaItem
+                                                schema={{
+                                                  type: "string"
+                                                }}></SchemaItem>
+                                              <SchemaItem
                                                 collapsible={false}
                                                 name={"odrl:rightOperand"}
                                                 required={false}
                                                 schemaName={"object"}
                                                 qualifierMessage={undefined}
-                                                schema={{"type":"object"}}
-                                              >
-                                                
-                                              </SchemaItem><SchemaItem
+                                                schema={{
+                                                  type: "object"
+                                                }}></SchemaItem>
+                                              <SchemaItem
                                                 collapsible={false}
-                                                name={"odrl:rightOperandReference"}
+                                                name={
+                                                  "odrl:rightOperandReference"
+                                                }
                                                 required={false}
                                                 schemaName={"string"}
                                                 qualifierMessage={undefined}
-                                                schema={{"type":"string"}}
-                                              >
-                                                
-                                              </SchemaItem><li>
+                                                schema={{
+                                                  type: "string"
+                                                }}></SchemaItem>
+                                              <li>
                                                 <div
-                                                  style={{"fontSize":"var(--ifm-code-font-size)","opacity":"0.6","marginLeft":"-.5rem"}}
-                                                >
+                                                  style={{
+                                                    fontSize:
+                                                      "var(--ifm-code-font-size)",
+                                                    opacity: "0.6",
+                                                    marginLeft: "-.5rem"
+                                                  }}>
                                                   ]
                                                 </div>
                                               </li>
                                             </div>
                                           </details>
-                                        </SchemaItem><li>
+                                        </SchemaItem>
+                                        <li>
                                           <div
-                                            style={{"fontSize":"var(--ifm-code-font-size)","opacity":"0.6","marginLeft":"-.5rem"}}
-                                          >
+                                            style={{
+                                              fontSize:
+                                                "var(--ifm-code-font-size)",
+                                              opacity: "0.6",
+                                              marginLeft: "-.5rem"
+                                            }}>
                                             ]
                                           </div>
                                         </li>
                                       </div>
                                     </details>
-                                  </SchemaItem><SchemaItem
+                                  </SchemaItem>
+                                  <SchemaItem
                                     collapsible={true}
-                                    className={"schemaItem"}
-                                  >
+                                    className={"schemaItem"}>
                                     <details
                                       style={{}}
-                                      className={"openapi-markdown__details"}
-                                    >
-                                      <summary
-                                        style={{}}
-                                      >
+                                      className={"openapi-markdown__details"}>
+                                      <summary style={{}}>
                                         <span
-                                          className={"openapi-schema__container"}
-                                        >
+                                          className={
+                                            "openapi-schema__container"
+                                          }>
                                           <strong
-                                            className={"openapi-schema__property"}
-                                          >
+                                            className={
+                                              "openapi-schema__property"
+                                            }>
                                             odrl:obligation
-                                          </strong><span
-                                            className={"openapi-schema__name"}
-                                          >
-                                             object[]
+                                          </strong>
+                                          <span
+                                            className={"openapi-schema__name"}>
+                                            object[]
                                           </span>
                                         </span>
-                                      </summary><div
-                                        style={{"marginLeft":"1rem"}}
-                                      >
+                                      </summary>
+                                      <div style={{ marginLeft: "1rem" }}>
                                         <li>
                                           <div
-                                            style={{"fontSize":"var(--ifm-code-font-size)","opacity":"0.6","marginLeft":"-.5rem","paddingBottom":".5rem"}}
-                                          >
+                                            style={{
+                                              fontSize:
+                                                "var(--ifm-code-font-size)",
+                                              opacity: "0.6",
+                                              marginLeft: "-.5rem",
+                                              paddingBottom: ".5rem"
+                                            }}>
                                             Array [
                                           </div>
-                                        </li><SchemaItem
+                                        </li>
+                                        <SchemaItem
                                           collapsible={false}
                                           name={""}
                                           required={false}
                                           schemaName={"object"}
                                           qualifierMessage={undefined}
-                                          schema={{}}
-                                        >
-                                          
-                                        </SchemaItem><li>
+                                          schema={{}}></SchemaItem>
+                                        <li>
                                           <div
-                                            style={{"fontSize":"var(--ifm-code-font-size)","opacity":"0.6","marginLeft":"-.5rem"}}
-                                          >
+                                            style={{
+                                              fontSize:
+                                                "var(--ifm-code-font-size)",
+                                              opacity: "0.6",
+                                              marginLeft: "-.5rem"
+                                            }}>
                                             ]
                                           </div>
                                         </li>
                                       </div>
                                     </details>
-                                  </SchemaItem><SchemaItem
+                                  </SchemaItem>
+                                  <SchemaItem
                                     collapsible={false}
                                     name={"odrl:target"}
                                     required={false}
                                     schemaName={"string"}
                                     qualifierMessage={undefined}
-                                    schema={{"type":"string"}}
-                                  >
-                                    
-                                  </SchemaItem><li>
-                                    <div
-                                      style={{"fontSize":"var(--ifm-code-font-size)","opacity":"0.6","marginLeft":"-.5rem"}}
-                                    >
-                                      ]
-                                    </div>
-                                  </li>
-                                </div>
-                              </details>
-                            </SchemaItem><SchemaItem
-                              collapsible={true}
-                              className={"schemaItem"}
-                            >
-                              <details
-                                style={{}}
-                                className={"openapi-markdown__details"}
-                              >
-                                <summary
-                                  style={{}}
-                                >
-                                  <span
-                                    className={"openapi-schema__container"}
-                                  >
-                                    <strong
-                                      className={"openapi-schema__property"}
-                                    >
-                                      dcat:hasVersion
-                                    </strong><span
-                                      className={"openapi-schema__name"}
-                                    >
-                                       object[]
-                                    </span>
-                                  </span>
-                                </summary><div
-                                  style={{"marginLeft":"1rem"}}
-                                >
+                                    schema={{ type: "string" }}></SchemaItem>
                                   <li>
                                     <div
-                                      style={{"fontSize":"var(--ifm-code-font-size)","opacity":"0.6","marginLeft":"-.5rem","paddingBottom":".5rem"}}
-                                    >
-                                      Array [
-                                    </div>
-                                  </li><SchemaItem
-                                    collapsible={false}
-                                    name={"@id"}
-                                    required={true}
-                                    schemaName={"string"}
-                                    qualifierMessage={undefined}
-                                    schema={{"type":"string"}}
-                                  >
-                                    
-                                  </SchemaItem><li>
-                                    <div
-                                      style={{"fontSize":"var(--ifm-code-font-size)","opacity":"0.6","marginLeft":"-.5rem"}}
-                                    >
+                                      style={{
+                                        fontSize: "var(--ifm-code-font-size)",
+                                        opacity: "0.6",
+                                        marginLeft: "-.5rem"
+                                      }}>
                                       ]
                                     </div>
                                   </li>
                                 </div>
                               </details>
-                            </SchemaItem><SchemaItem
+                            </SchemaItem>
+                            <SchemaItem
                               collapsible={true}
-                              className={"schemaItem"}
-                            >
+                              className={"schemaItem"}>
                               <details
                                 style={{}}
-                                className={"openapi-markdown__details"}
-                              >
-                                <summary
-                                  style={{}}
-                                >
-                                  <span
-                                    className={"openapi-schema__container"}
-                                  >
+                                className={"openapi-markdown__details"}>
+                                <summary style={{}}>
+                                  <span className={"openapi-schema__container"}>
                                     <strong
-                                      className={"openapi-schema__property"}
-                                    >
-                                      dcat:isVersionOf
-                                    </strong><span
-                                      className={"openapi-schema__name"}
-                                    >
-                                       object
+                                      className={"openapi-schema__property"}>
+                                      dcat:hasVersion
+                                    </strong>
+                                    <span className={"openapi-schema__name"}>
+                                      object[]
                                     </span>
                                   </span>
-                                </summary><div
-                                  style={{"marginLeft":"1rem"}}
-                                >
+                                </summary>
+                                <div style={{ marginLeft: "1rem" }}>
+                                  <li>
+                                    <div
+                                      style={{
+                                        fontSize: "var(--ifm-code-font-size)",
+                                        opacity: "0.6",
+                                        marginLeft: "-.5rem",
+                                        paddingBottom: ".5rem"
+                                      }}>
+                                      Array [
+                                    </div>
+                                  </li>
                                   <SchemaItem
                                     collapsible={false}
                                     name={"@id"}
                                     required={true}
                                     schemaName={"string"}
                                     qualifierMessage={undefined}
-                                    schema={{"type":"string"}}
-                                  >
-                                    
-                                  </SchemaItem>
+                                    schema={{ type: "string" }}></SchemaItem>
+                                  <li>
+                                    <div
+                                      style={{
+                                        fontSize: "var(--ifm-code-font-size)",
+                                        opacity: "0.6",
+                                        marginLeft: "-.5rem"
+                                      }}>
+                                      ]
+                                    </div>
+                                  </li>
                                 </div>
                               </details>
-                            </SchemaItem><SchemaItem
+                            </SchemaItem>
+                            <SchemaItem
+                              collapsible={true}
+                              className={"schemaItem"}>
+                              <details
+                                style={{}}
+                                className={"openapi-markdown__details"}>
+                                <summary style={{}}>
+                                  <span className={"openapi-schema__container"}>
+                                    <strong
+                                      className={"openapi-schema__property"}>
+                                      dcat:isVersionOf
+                                    </strong>
+                                    <span className={"openapi-schema__name"}>
+                                      object
+                                    </span>
+                                  </span>
+                                </summary>
+                                <div style={{ marginLeft: "1rem" }}>
+                                  <SchemaItem
+                                    collapsible={false}
+                                    name={"@id"}
+                                    required={true}
+                                    schemaName={"string"}
+                                    qualifierMessage={undefined}
+                                    schema={{ type: "string" }}></SchemaItem>
+                                </div>
+                              </details>
+                            </SchemaItem>
+                            <SchemaItem
                               collapsible={false}
                               name={"dcat:version"}
                               required={false}
                               schemaName={"string"}
                               qualifierMessage={undefined}
-                              schema={{"type":"string"}}
-                            >
-                              
-                            </SchemaItem><SchemaItem
+                              schema={{ type: "string" }}></SchemaItem>
+                            <SchemaItem
                               collapsible={true}
-                              className={"schemaItem"}
-                            >
+                              className={"schemaItem"}>
                               <details
                                 style={{}}
-                                className={"openapi-markdown__details"}
-                              >
-                                <summary
-                                  style={{}}
-                                >
-                                  <span
-                                    className={"openapi-schema__container"}
-                                  >
+                                className={"openapi-markdown__details"}>
+                                <summary style={{}}>
+                                  <span className={"openapi-schema__container"}>
                                     <strong
-                                      className={"openapi-schema__property"}
-                                    >
+                                      className={"openapi-schema__property"}>
                                       dcat:hasCurrentVersion
-                                    </strong><span
-                                      className={"openapi-schema__name"}
-                                    >
-                                       object
+                                    </strong>
+                                    <span className={"openapi-schema__name"}>
+                                      object
                                     </span>
                                   </span>
-                                </summary><div
-                                  style={{"marginLeft":"1rem"}}
-                                >
+                                </summary>
+                                <div style={{ marginLeft: "1rem" }}>
                                   <SchemaItem
                                     collapsible={false}
                                     name={"@id"}
                                     required={true}
                                     schemaName={"string"}
                                     qualifierMessage={undefined}
-                                    schema={{"type":"string"}}
-                                  >
-                                    
-                                  </SchemaItem>
+                                    schema={{ type: "string" }}></SchemaItem>
                                 </div>
                               </details>
-                            </SchemaItem><SchemaItem
+                            </SchemaItem>
+                            <SchemaItem
                               collapsible={true}
-                              className={"schemaItem"}
-                            >
+                              className={"schemaItem"}>
                               <details
                                 style={{}}
-                                className={"openapi-markdown__details"}
-                              >
-                                <summary
-                                  style={{}}
-                                >
-                                  <span
-                                    className={"openapi-schema__container"}
-                                  >
+                                className={"openapi-markdown__details"}>
+                                <summary style={{}}>
+                                  <span className={"openapi-schema__container"}>
                                     <strong
-                                      className={"openapi-schema__property"}
-                                    >
+                                      className={"openapi-schema__property"}>
                                       dcat:previousVersion
-                                    </strong><span
-                                      className={"openapi-schema__name"}
-                                    >
-                                       object
+                                    </strong>
+                                    <span className={"openapi-schema__name"}>
+                                      object
                                     </span>
                                   </span>
-                                </summary><div
-                                  style={{"marginLeft":"1rem"}}
-                                >
+                                </summary>
+                                <div style={{ marginLeft: "1rem" }}>
                                   <SchemaItem
                                     collapsible={false}
                                     name={"@id"}
                                     required={true}
                                     schemaName={"string"}
                                     qualifierMessage={undefined}
-                                    schema={{"type":"string"}}
-                                  >
-                                    
-                                  </SchemaItem>
+                                    schema={{ type: "string" }}></SchemaItem>
                                 </div>
                               </details>
-                            </SchemaItem><SchemaItem
+                            </SchemaItem>
+                            <SchemaItem
                               collapsible={false}
                               name={"@type"}
                               required={true}
                               schemaName={"string"}
                               qualifierMessage={undefined}
-                              schema={{"type":"string"}}
-                            >
-                              
-                            </SchemaItem><SchemaItem
+                              schema={{ type: "string" }}></SchemaItem>
+                            <SchemaItem
                               collapsible={false}
                               name={"dcat:distribution"}
                               required={false}
                               schemaName={"string[]"}
                               qualifierMessage={undefined}
-                              schema={{"type":"array","items":{"type":"string"}}}
-                            >
-                              
-                            </SchemaItem><SchemaItem
+                              schema={{
+                                type: "array",
+                                items: { type: "string" }
+                              }}></SchemaItem>
+                            <SchemaItem
                               collapsible={true}
-                              className={"schemaItem"}
-                            >
+                              className={"schemaItem"}>
                               <details
                                 style={{}}
-                                className={"openapi-markdown__details"}
-                              >
-                                <summary
-                                  style={{}}
-                                >
-                                  <span
-                                    className={"openapi-schema__container"}
-                                  >
+                                className={"openapi-markdown__details"}>
+                                <summary style={{}}>
+                                  <span className={"openapi-schema__container"}>
                                     <strong
-                                      className={"openapi-schema__property"}
-                                    >
+                                      className={"openapi-schema__property"}>
                                       dcat:spatialResolutionInMeters
-                                    </strong><span
-                                      className={"openapi-schema__name"}
-                                    >
-                                       object
+                                    </strong>
+                                    <span className={"openapi-schema__name"}>
+                                      object
                                     </span>
                                   </span>
-                                </summary><div
-                                  style={{"marginLeft":"1rem"}}
-                                >
+                                </summary>
+                                <div style={{ marginLeft: "1rem" }}>
                                   <SchemaItem
                                     collapsible={false}
                                     name={"@id"}
                                     required={true}
                                     schemaName={"string"}
                                     qualifierMessage={undefined}
-                                    schema={{"type":"string"}}
-                                  >
-                                    
-                                  </SchemaItem>
+                                    schema={{ type: "string" }}></SchemaItem>
                                 </div>
                               </details>
-                            </SchemaItem><SchemaItem
+                            </SchemaItem>
+                            <SchemaItem
                               collapsible={true}
-                              className={"schemaItem"}
-                            >
+                              className={"schemaItem"}>
                               <details
                                 style={{}}
-                                className={"openapi-markdown__details"}
-                              >
-                                <summary
-                                  style={{}}
-                                >
-                                  <span
-                                    className={"openapi-schema__container"}
-                                  >
+                                className={"openapi-markdown__details"}>
+                                <summary style={{}}>
+                                  <span className={"openapi-schema__container"}>
                                     <strong
-                                      className={"openapi-schema__property"}
-                                    >
+                                      className={"openapi-schema__property"}>
                                       dcat:temporalResolution
-                                    </strong><span
-                                      className={"openapi-schema__name"}
-                                    >
-                                       object
+                                    </strong>
+                                    <span className={"openapi-schema__name"}>
+                                      object
                                     </span>
                                   </span>
-                                </summary><div
-                                  style={{"marginLeft":"1rem"}}
-                                >
+                                </summary>
+                                <div style={{ marginLeft: "1rem" }}>
                                   <SchemaItem
                                     collapsible={false}
                                     name={"@value"}
                                     required={true}
                                     schemaName={"string"}
                                     qualifierMessage={undefined}
-                                    schema={{"type":"string"}}
-                                  >
-                                    
-                                  </SchemaItem><SchemaItem
+                                    schema={{ type: "string" }}></SchemaItem>
+                                  <SchemaItem
                                     collapsible={false}
                                     name={"@type"}
                                     required={true}
                                     schemaName={"string"}
                                     qualifierMessage={undefined}
-                                    schema={{"type":"string"}}
-                                  >
-                                    
-                                  </SchemaItem>
+                                    schema={{ type: "string" }}></SchemaItem>
                                 </div>
                               </details>
-                            </SchemaItem><SchemaItem
+                            </SchemaItem>
+                            <SchemaItem
                               collapsible={true}
-                              className={"schemaItem"}
-                            >
+                              className={"schemaItem"}>
                               <details
                                 style={{}}
-                                className={"openapi-markdown__details"}
-                              >
-                                <summary
-                                  style={{}}
-                                >
-                                  <span
-                                    className={"openapi-schema__container"}
-                                  >
+                                className={"openapi-markdown__details"}>
+                                <summary style={{}}>
+                                  <span className={"openapi-schema__container"}>
                                     <strong
-                                      className={"openapi-schema__property"}
-                                    >
+                                      className={"openapi-schema__property"}>
                                       dct:accrualPeriodicity
-                                    </strong><span
-                                      className={"openapi-schema__name"}
-                                    >
-                                       object
+                                    </strong>
+                                    <span className={"openapi-schema__name"}>
+                                      object
                                     </span>
                                   </span>
-                                </summary><div
-                                  style={{"marginLeft":"1rem"}}
-                                >
+                                </summary>
+                                <div style={{ marginLeft: "1rem" }}>
                                   <SchemaItem
                                     collapsible={false}
                                     name={"@id"}
                                     required={true}
                                     schemaName={"string"}
                                     qualifierMessage={undefined}
-                                    schema={{"type":"string"}}
-                                  >
-                                    
-                                  </SchemaItem>
+                                    schema={{ type: "string" }}></SchemaItem>
                                 </div>
                               </details>
-                            </SchemaItem><SchemaItem
+                            </SchemaItem>
+                            <SchemaItem
                               collapsible={true}
-                              className={"schemaItem"}
-                            >
+                              className={"schemaItem"}>
                               <details
                                 style={{}}
-                                className={"openapi-markdown__details"}
-                              >
-                                <summary
-                                  style={{}}
-                                >
-                                  <span
-                                    className={"openapi-schema__container"}
-                                  >
+                                className={"openapi-markdown__details"}>
+                                <summary style={{}}>
+                                  <span className={"openapi-schema__container"}>
                                     <strong
-                                      className={"openapi-schema__property"}
-                                    >
+                                      className={"openapi-schema__property"}>
                                       dct:spatial
-                                    </strong><span
-                                      className={"openapi-schema__name"}
-                                    >
-                                       object
+                                    </strong>
+                                    <span className={"openapi-schema__name"}>
+                                      object
                                     </span>
                                   </span>
-                                </summary><div
-                                  style={{"marginLeft":"1rem"}}
-                                >
+                                </summary>
+                                <div style={{ marginLeft: "1rem" }}>
                                   <SchemaItem
                                     collapsible={false}
                                     name={"@id"}
                                     required={true}
                                     schemaName={"string"}
                                     qualifierMessage={undefined}
-                                    schema={{"type":"string"}}
-                                  >
-                                    
-                                  </SchemaItem>
+                                    schema={{ type: "string" }}></SchemaItem>
                                 </div>
                               </details>
-                            </SchemaItem><SchemaItem
+                            </SchemaItem>
+                            <SchemaItem
                               collapsible={true}
-                              className={"schemaItem"}
-                            >
+                              className={"schemaItem"}>
                               <details
                                 style={{}}
-                                className={"openapi-markdown__details"}
-                              >
-                                <summary
-                                  style={{}}
-                                >
-                                  <span
-                                    className={"openapi-schema__container"}
-                                  >
+                                className={"openapi-markdown__details"}>
+                                <summary style={{}}>
+                                  <span className={"openapi-schema__container"}>
                                     <strong
-                                      className={"openapi-schema__property"}
-                                    >
+                                      className={"openapi-schema__property"}>
                                       dct:temporal
-                                    </strong><span
-                                      className={"openapi-schema__name"}
-                                    >
-                                       object
+                                    </strong>
+                                    <span className={"openapi-schema__name"}>
+                                      object
                                     </span>
                                   </span>
-                                </summary><div
-                                  style={{"marginLeft":"1rem"}}
-                                >
+                                </summary>
+                                <div style={{ marginLeft: "1rem" }}>
                                   <SchemaItem
                                     collapsible={false}
                                     name={"@id"}
                                     required={true}
                                     schemaName={"string"}
                                     qualifierMessage={undefined}
-                                    schema={{"type":"string"}}
-                                  >
-                                    
-                                  </SchemaItem>
+                                    schema={{ type: "string" }}></SchemaItem>
                                 </div>
                               </details>
-                            </SchemaItem><SchemaItem
+                            </SchemaItem>
+                            <SchemaItem
                               collapsible={true}
-                              className={"schemaItem"}
-                            >
+                              className={"schemaItem"}>
                               <details
                                 style={{}}
-                                className={"openapi-markdown__details"}
-                              >
-                                <summary
-                                  style={{}}
-                                >
-                                  <span
-                                    className={"openapi-schema__container"}
-                                  >
+                                className={"openapi-markdown__details"}>
+                                <summary style={{}}>
+                                  <span className={"openapi-schema__container"}>
                                     <strong
-                                      className={"openapi-schema__property"}
-                                    >
+                                      className={"openapi-schema__property"}>
                                       prov:wasGeneratedBy
-                                    </strong><span
-                                      className={"openapi-schema__name"}
-                                    >
-                                       object
+                                    </strong>
+                                    <span className={"openapi-schema__name"}>
+                                      object
                                     </span>
                                   </span>
-                                </summary><div
-                                  style={{"marginLeft":"1rem"}}
-                                >
+                                </summary>
+                                <div style={{ marginLeft: "1rem" }}>
                                   <SchemaItem
                                     collapsible={false}
                                     name={"@id"}
                                     required={true}
                                     schemaName={"string"}
                                     qualifierMessage={undefined}
-                                    schema={{"type":"string"}}
-                                  >
-                                    
-                                  </SchemaItem>
+                                    schema={{ type: "string" }}></SchemaItem>
                                 </div>
                               </details>
                             </SchemaItem>
@@ -2063,125 +1815,87 @@ Get metadata of transfer by ID
                       </SchemaItem>
                     </ul>
                   </details>
-                </TabItem><TabItem
+                </TabItem>
+                <TabItem
                   label={"Example (from schema)"}
-                  value={"Example (from schema)"}
-                >
+                  value={"Example (from schema)"}>
                   <ResponseSamples
-                    responseExample={"{\n  \"agreement\": {\n    \"@id\": \"string\",\n    \"@type\": \"string\",\n    \"odrl:assigner\": \"string\",\n    \"odrl:assignee\": \"string\",\n    \"odrl:profile\": {\n      \"@id\": \"string\"\n    },\n    \"odrl:permission\": [\n      {\n        \"@type\": \"string\",\n        \"odrl:assigner\": \"string\",\n        \"odrl:assignee\": \"string\",\n        \"odrl:action\": \"string\",\n        \"odrl:target\": \"string\",\n        \"odrl:constraint\": [\n          {\n            \"@type\": \"string\",\n            \"odrl:leftOperand\": \"string\",\n            \"odrl:operator\": \"string\",\n            \"odrl:rightOperand\": {},\n            \"odrl:rightOperandReference\": \"string\"\n          }\n        ],\n        \"odrl:Duty\": [\n          \"string\"\n        ]\n      }\n    ],\n    \"odrl:prohibition\": [\n      {\n        \"@type\": \"string\",\n        \"odrl:assigner\": \"string\",\n        \"odrl:assignee\": \"string\",\n        \"odrl:action\": \"string\",\n        \"odrl:target\": \"string\",\n        \"odrl:constraint\": [\n          {\n            \"@type\": \"string\",\n            \"odrl:leftOperand\": \"string\",\n            \"odrl:operator\": \"string\",\n            \"odrl:rightOperand\": {},\n            \"odrl:rightOperandReference\": \"string\"\n          }\n        ]\n      }\n    ],\n    \"odrl:obligation\": [\n      {}\n    ],\n    \"odrl:target\": \"string\",\n    \"dspace:timestamp\": \"string\"\n  },\n  \"dataset\": {\n    \"@id\": \"string\",\n    \"dcat:contactPoint\": {\n      \"@id\": \"string\"\n    },\n    \"dcat:keyword\": [\n      \"string\"\n    ],\n    \"dcat:landingPage\": {\n      \"@id\": \"string\"\n    },\n    \"dcat:theme\": [\n      {\n        \"@id\": \"string\"\n      }\n    ],\n    \"dcat:conformsTo\": \"string\",\n    \"dct:creator\": \"string\",\n    \"dct:description\": [\n      \"string\"\n    ],\n    \"dct:identifier\": \"string\",\n    \"dct:isReferencedBy\": {\n      \"@id\": \"string\"\n    },\n    \"dct:issued\": \"string\",\n    \"dct:language\": {\n      \"@id\": \"string\"\n    },\n    \"dct:license\": {\n      \"@id\": \"string\"\n    },\n    \"dct:modified\": \"string\",\n    \"dct:publisher\": \"string\",\n    \"dct:relation\": {\n      \"@id\": \"string\"\n    },\n    \"dct:title\": \"string\",\n    \"dct:type\": \"string\",\n    \"odrl:hasPolicy\": [\n      {\n        \"@id\": \"string\",\n        \"@type\": \"string\",\n        \"odrl:assigner\": \"string\",\n        \"odrl:assignee\": \"string\",\n        \"odrl:profile\": {\n          \"@id\": \"string\"\n        },\n        \"odrl:permission\": [\n          {\n            \"@type\": \"string\",\n            \"odrl:assigner\": \"string\",\n            \"odrl:assignee\": \"string\",\n            \"odrl:action\": \"string\",\n            \"odrl:target\": \"string\",\n            \"odrl:constraint\": [\n              {\n                \"@type\": \"string\",\n                \"odrl:leftOperand\": \"string\",\n                \"odrl:operator\": \"string\",\n                \"odrl:rightOperand\": {},\n                \"odrl:rightOperandReference\": \"string\"\n              }\n            ],\n            \"odrl:Duty\": [\n              \"string\"\n            ]\n          }\n        ],\n        \"odrl:prohibition\": [\n          {\n            \"@type\": \"string\",\n            \"odrl:assigner\": \"string\",\n            \"odrl:assignee\": \"string\",\n            \"odrl:action\": \"string\",\n            \"odrl:target\": \"string\",\n            \"odrl:constraint\": [\n              {\n                \"@type\": \"string\",\n                \"odrl:leftOperand\": \"string\",\n                \"odrl:operator\": \"string\",\n                \"odrl:rightOperand\": {},\n                \"odrl:rightOperandReference\": \"string\"\n              }\n            ]\n          }\n        ],\n        \"odrl:obligation\": [\n          {}\n        ],\n        \"odrl:target\": \"string\"\n      }\n    ],\n    \"dcat:hasVersion\": [\n      {\n        \"@id\": \"string\"\n      }\n    ],\n    \"dcat:isVersionOf\": {\n      \"@id\": \"string\"\n    },\n    \"dcat:version\": \"string\",\n    \"dcat:hasCurrentVersion\": {\n      \"@id\": \"string\"\n    },\n    \"dcat:previousVersion\": {\n      \"@id\": \"string\"\n    },\n    \"@type\": \"string\",\n    \"dcat:distribution\": [\n      \"string\"\n    ],\n    \"dcat:spatialResolutionInMeters\": {\n      \"@id\": \"string\"\n    },\n    \"dcat:temporalResolution\": {\n      \"@value\": \"string\",\n      \"@type\": \"string\"\n    },\n    \"dct:accrualPeriodicity\": {\n      \"@id\": \"string\"\n    },\n    \"dct:spatial\": {\n      \"@id\": \"string\"\n    },\n    \"dct:temporal\": {\n      \"@id\": \"string\"\n    },\n    \"prov:wasGeneratedBy\": {\n      \"@id\": \"string\"\n    }\n  }\n}"}
-                    language={"json"}
-                  >
-                    
-                  </ResponseSamples>
+                    responseExample={
+                      '{\n  "agreement": {\n    "@id": "string",\n    "@type": "string",\n    "odrl:assigner": "string",\n    "odrl:assignee": "string",\n    "odrl:profile": {\n      "@id": "string"\n    },\n    "odrl:permission": [\n      {\n        "@type": "string",\n        "odrl:assigner": "string",\n        "odrl:assignee": "string",\n        "odrl:action": "string",\n        "odrl:target": "string",\n        "odrl:constraint": [\n          {\n            "@type": "string",\n            "odrl:leftOperand": "string",\n            "odrl:operator": "string",\n            "odrl:rightOperand": {},\n            "odrl:rightOperandReference": "string"\n          }\n        ],\n        "odrl:Duty": [\n          "string"\n        ]\n      }\n    ],\n    "odrl:prohibition": [\n      {\n        "@type": "string",\n        "odrl:assigner": "string",\n        "odrl:assignee": "string",\n        "odrl:action": "string",\n        "odrl:target": "string",\n        "odrl:constraint": [\n          {\n            "@type": "string",\n            "odrl:leftOperand": "string",\n            "odrl:operator": "string",\n            "odrl:rightOperand": {},\n            "odrl:rightOperandReference": "string"\n          }\n        ]\n      }\n    ],\n    "odrl:obligation": [\n      {}\n    ],\n    "odrl:target": "string",\n    "dspace:timestamp": "string"\n  },\n  "dataset": {\n    "@id": "string",\n    "dcat:contactPoint": {\n      "@id": "string"\n    },\n    "dcat:keyword": [\n      "string"\n    ],\n    "dcat:landingPage": {\n      "@id": "string"\n    },\n    "dcat:theme": [\n      {\n        "@id": "string"\n      }\n    ],\n    "dcat:conformsTo": "string",\n    "dct:creator": "string",\n    "dct:description": [\n      "string"\n    ],\n    "dct:identifier": "string",\n    "dct:isReferencedBy": {\n      "@id": "string"\n    },\n    "dct:issued": "string",\n    "dct:language": {\n      "@id": "string"\n    },\n    "dct:license": {\n      "@id": "string"\n    },\n    "dct:modified": "string",\n    "dct:publisher": "string",\n    "dct:relation": {\n      "@id": "string"\n    },\n    "dct:title": "string",\n    "dct:type": "string",\n    "odrl:hasPolicy": [\n      {\n        "@id": "string",\n        "@type": "string",\n        "odrl:assigner": "string",\n        "odrl:assignee": "string",\n        "odrl:profile": {\n          "@id": "string"\n        },\n        "odrl:permission": [\n          {\n            "@type": "string",\n            "odrl:assigner": "string",\n            "odrl:assignee": "string",\n            "odrl:action": "string",\n            "odrl:target": "string",\n            "odrl:constraint": [\n              {\n                "@type": "string",\n                "odrl:leftOperand": "string",\n                "odrl:operator": "string",\n                "odrl:rightOperand": {},\n                "odrl:rightOperandReference": "string"\n              }\n            ],\n            "odrl:Duty": [\n              "string"\n            ]\n          }\n        ],\n        "odrl:prohibition": [\n          {\n            "@type": "string",\n            "odrl:assigner": "string",\n            "odrl:assignee": "string",\n            "odrl:action": "string",\n            "odrl:target": "string",\n            "odrl:constraint": [\n              {\n                "@type": "string",\n                "odrl:leftOperand": "string",\n                "odrl:operator": "string",\n                "odrl:rightOperand": {},\n                "odrl:rightOperandReference": "string"\n              }\n            ]\n          }\n        ],\n        "odrl:obligation": [\n          {}\n        ],\n        "odrl:target": "string"\n      }\n    ],\n    "dcat:hasVersion": [\n      {\n        "@id": "string"\n      }\n    ],\n    "dcat:isVersionOf": {\n      "@id": "string"\n    },\n    "dcat:version": "string",\n    "dcat:hasCurrentVersion": {\n      "@id": "string"\n    },\n    "dcat:previousVersion": {\n      "@id": "string"\n    },\n    "@type": "string",\n    "dcat:distribution": [\n      "string"\n    ],\n    "dcat:spatialResolutionInMeters": {\n      "@id": "string"\n    },\n    "dcat:temporalResolution": {\n      "@value": "string",\n      "@type": "string"\n    },\n    "dct:accrualPeriodicity": {\n      "@id": "string"\n    },\n    "dct:spatial": {\n      "@id": "string"\n    },\n    "dct:temporal": {\n      "@id": "string"\n    },\n    "prov:wasGeneratedBy": {\n      "@id": "string"\n    }\n  }\n}'
+                    }
+                    language={"json"}></ResponseSamples>
                 </TabItem>
               </SchemaTabs>
             </TabItem>
           </MimeTabs>
         </div>
-      </TabItem><TabItem
-        label={"403"}
-        value={"403"}
-      >
+      </TabItem>
+      <TabItem label={"403"} value={"403"}>
+        <div>Forbidden</div>
         <div>
-          
-          
-          Forbidden
-          
-          
-        </div><div>
-          <MimeTabs
-            className={"openapi-tabs__mime"}
-            schemaType={"response"}
-          >
-            <TabItem
-              label={"application/json"}
-              value={"application/json"}
-            >
-              <SchemaTabs
-                className={"openapi-tabs__schema"}
-              >
-                <TabItem
-                  label={"Schema"}
-                  value={"Schema"}
-                >
+          <MimeTabs className={"openapi-tabs__mime"} schemaType={"response"}>
+            <TabItem label={"application/json"} value={"application/json"}>
+              <SchemaTabs className={"openapi-tabs__schema"}>
+                <TabItem label={"Schema"} value={"Schema"}>
                   <details
                     style={{}}
                     className={"openapi-markdown__details response"}
                     data-collapsed={false}
-                    open={true}
-                  >
+                    open={true}>
                     <summary
                       style={{}}
-                      className={"openapi-markdown__details-summary-response"}
-                    >
-                      <strong>
-                        Schema
-                      </strong>
-                    </summary><div
-                      style={{"textAlign":"left","marginLeft":"1rem"}}
-                    >
-                      
-                    </div><ul
-                      style={{"marginLeft":"1rem"}}
-                    >
+                      className={"openapi-markdown__details-summary-response"}>
+                      <strong>Schema</strong>
+                    </summary>
+                    <div
+                      style={{ textAlign: "left", marginLeft: "1rem" }}></div>
+                    <ul style={{ marginLeft: "1rem" }}>
                       <SchemaItem
                         collapsible={false}
                         name={"name"}
                         required={true}
                         schemaName={"string"}
                         qualifierMessage={undefined}
-                        schema={{"type":"string"}}
-                      >
-                        
-                      </SchemaItem><SchemaItem
+                        schema={{ type: "string" }}></SchemaItem>
+                      <SchemaItem
                         collapsible={false}
                         name={"status"}
                         required={true}
                         schemaName={"string"}
                         qualifierMessage={undefined}
-                        schema={{"type":"string"}}
-                      >
-                        
-                      </SchemaItem><SchemaItem
+                        schema={{ type: "string" }}></SchemaItem>
+                      <SchemaItem
                         collapsible={false}
                         name={"code"}
                         required={true}
                         schemaName={"number"}
                         qualifierMessage={undefined}
-                        schema={{"type":"number"}}
-                      >
-                        
-                      </SchemaItem><SchemaItem
+                        schema={{ type: "number" }}></SchemaItem>
+                      <SchemaItem
                         collapsible={false}
                         name={"message"}
                         required={false}
                         schemaName={"object"}
                         qualifierMessage={undefined}
-                        schema={{"type":"object"}}
-                      >
-                        
-                      </SchemaItem><SchemaItem
+                        schema={{ type: "object" }}></SchemaItem>
+                      <SchemaItem
                         collapsible={false}
                         name={"error"}
                         required={false}
                         schemaName={"string"}
                         qualifierMessage={undefined}
-                        schema={{"type":"string"}}
-                      >
-                        
-                      </SchemaItem>
+                        schema={{ type: "string" }}></SchemaItem>
                     </ul>
                   </details>
-                </TabItem><TabItem
+                </TabItem>
+                <TabItem
                   label={"Example (from schema)"}
-                  value={"Example (from schema)"}
-                >
+                  value={"Example (from schema)"}>
                   <ResponseSamples
-                    responseExample={"{\n  \"name\": \"string\",\n  \"status\": \"string\",\n  \"code\": 0,\n  \"message\": {},\n  \"error\": \"string\"\n}"}
-                    language={"json"}
-                  >
-                    
-                  </ResponseSamples>
+                    responseExample={
+                      '{\n  "name": "string",\n  "status": "string",\n  "code": 0,\n  "message": {},\n  "error": "string"\n}'
+                    }
+                    language={"json"}></ResponseSamples>
                 </TabItem>
               </SchemaTabs>
             </TabItem>
@@ -2191,4 +1905,3 @@ Get metadata of transfer by ID
     </ApiTabs>
   </div>
 </div>
-      

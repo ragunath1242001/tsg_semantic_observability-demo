@@ -17,14 +17,14 @@ import { ContextModule } from "../contexts/context.module.js";
     DidModule,
     KeysModule,
     ContextModule,
-    TypeOrmModule.forFeature([Credentials]),
+    TypeOrmModule.forFeature([Credentials])
   ],
   controllers: [
     CredentialsController,
     CredentialsManagementController,
-    GaiaXManagementController,
+    GaiaXManagementController
   ],
   providers: [CredentialsService, GaiaXService],
-  exports: [CredentialsService, GaiaXService],
+  exports: [CredentialsService, GaiaXService]
 })
 export class CredentialsModule {}

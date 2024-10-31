@@ -7,7 +7,7 @@ import {
   HttpStatus,
   Param,
   Post,
-  Put,
+  Put
 } from "@nestjs/common";
 import { DIDDocument } from "did-resolver";
 import { DidService } from "./did.service.js";
@@ -21,7 +21,7 @@ import {
   ApiOAuth2,
   ApiOkResponse,
   ApiOperation,
-  ApiTags,
+  ApiTags
 } from "@nestjs/swagger";
 import { DidServiceConfigDto } from "./did.schemas.js";
 import {
@@ -29,7 +29,7 @@ import {
   ApiConflictResponseDefault,
   ApiNotFoundResponseDefault,
   DIDDocumentDto,
-  ServiceDto,
+  ServiceDto
 } from "@tsg-dsp/common-dtos";
 import { DidResolverService } from "./did.resolver.service.js";
 
@@ -46,7 +46,7 @@ export class DIDManagementController {
   @Get()
   @ApiOperation({
     summary: "Retrieve DID document",
-    description: "Retrieves the current DID document for this wallet",
+    description: "Retrieves the current DID document for this wallet"
   })
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({ type: DIDDocumentDto })
@@ -59,7 +59,7 @@ export class DIDManagementController {
   @ApiOperation({
     summary: "Resolve DID document",
     description:
-      "Resolves the DID identifier from the path parameter into a DID Document",
+      "Resolves the DID identifier from the path parameter into a DID Document"
   })
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({ type: DIDDocumentDto })
@@ -74,7 +74,7 @@ export class DIDManagementController {
   @ApiOperation({
     summary: "Retrieve DID services",
     description:
-      "Retrieves the currently registered DID services for this wallet",
+      "Retrieves the currently registered DID services for this wallet"
   })
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({ type: [ServiceDto] })
@@ -86,7 +86,7 @@ export class DIDManagementController {
   @Post("services")
   @ApiOperation({
     summary: "Add DID service",
-    description: "Registers a new DID service for this wallet",
+    description: "Registers a new DID service for this wallet"
   })
   @HttpCode(HttpStatus.OK)
   @ApiBody({ type: DidServiceConfigDto })
@@ -102,7 +102,7 @@ export class DIDManagementController {
   @Put("services/:id")
   @ApiOperation({
     summary: "Update DID service",
-    description: "Updates an existing DID service for this wallet",
+    description: "Updates an existing DID service for this wallet"
   })
   @HttpCode(HttpStatus.OK)
   @ApiBody({ type: DidServiceConfigDto })
@@ -120,7 +120,7 @@ export class DIDManagementController {
   @Delete("services/:id")
   @ApiOperation({
     summary: "Delete DID service",
-    description: "Deletes an existing DID service for this wallet",
+    description: "Deletes an existing DID service for this wallet"
   })
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse()

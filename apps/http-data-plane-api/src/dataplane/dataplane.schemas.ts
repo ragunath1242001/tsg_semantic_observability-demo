@@ -7,7 +7,7 @@ import {
   DataPlaneStateDto,
   DatasetSchema,
   TransferDto,
-  TransferRequestMessageSchema,
+  TransferRequestMessageSchema
 } from "@tsg-dsp/common-dtos";
 
 export class DataPlaneDetailsSchema implements DataPlaneDetailsDto {

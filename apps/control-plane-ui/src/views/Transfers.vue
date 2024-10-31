@@ -9,8 +9,7 @@ const { transfers, ctaTransfers } = storeToRefs(useDspStore());
   <div>
     <Card
       style="border-radius: 12px; border: 1px solid var(--surface-border)"
-      class="mb-8"
-    >
+      class="mb-8">
       <template #title>Transfers</template>
       <template #content>
         <p>

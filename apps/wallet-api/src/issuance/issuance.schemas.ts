@@ -16,7 +16,7 @@ import {
   LdpVpProof,
   LogoDisplay,
   PreAuthorizationCodeGrant,
-  VpProof,
+  VpProof
 } from "@tsg-dsp/wallet-dtos";
 // This needs to be separate since it's an enum. https://stackoverflow.com/questions/38553097/how-to-import-an-enum
 import { OfferGrants } from "@tsg-dsp/wallet-dtos";
@@ -24,7 +24,7 @@ import {
   ApiExtraModels,
   ApiProperty,
   ApiPropertyOptional,
-  getSchemaPath,
+  getSchemaPath
 } from "@nestjs/swagger";
 import { CredentialSubject } from "@tsg-dsp/common-dsp";
 import { DefaultCredentialSubjectDto } from "../credentials/credentials.schemas.js";
@@ -128,8 +128,8 @@ export class CredentialRequestDto implements CredentialRequest {
     oneOf: [
       { $ref: getSchemaPath(JwtProofDto) },
       { $ref: getSchemaPath(CwtProofDto) },
-      { $ref: getSchemaPath(LdpVpProofDto) },
-    ],
+      { $ref: getSchemaPath(LdpVpProofDto) }
+    ]
   })
   proof!: JwtProof | CwtProof | LdpVpProof;
 }

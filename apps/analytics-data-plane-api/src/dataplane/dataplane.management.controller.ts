@@ -14,7 +14,7 @@ import {
   Body,
   Put,
   ValidationPipe,
-  Delete,
+  Delete
 } from "@nestjs/common";
 import { DataPlaneService } from "./dataplane.service";
 import { Roles } from "../auth/roles.guard";
@@ -52,7 +52,7 @@ export class DataPlaneManagementController {
     @Body()
     updatedDataset: DatasetDto,
     @Query("datasetId")
-    datasetId: string,
+    datasetId: string
   ) {
     return await this.dataPlaneService.updateDataset(datasetId, updatedDataset);
   }
@@ -79,7 +79,7 @@ export class DataPlaneManagementController {
 
   @Get("/transfers/:id/metadata")
   async getMetadata(
-    @Param("id") id: string,
+    @Param("id") id: string
   ): Promise<{ agreement: AgreementDto; dataset: DatasetDto }> {
     return await this.dataPlaneService.getMetadata(id);
   }
@@ -98,7 +98,7 @@ export class DataPlaneManagementController {
   async terminateTransfer(
     @Param("id") id: string,
     @Query("code") code: string,
-    @Query("code") reason: string,
+    @Query("code") reason: string
   ): Promise<void> {
     return await this.dataPlaneService.transferTerminate(id, code, reason);
   }
@@ -106,7 +106,7 @@ export class DataPlaneManagementController {
   @Post("/transfers/:id/suspend")
   async suspendTransfer(
     @Param("id") id: string,
-    @Query("code") reason: string,
+    @Query("code") reason: string
   ): Promise<void> {
     return await this.dataPlaneService.transferSuspend(id, reason);
   }

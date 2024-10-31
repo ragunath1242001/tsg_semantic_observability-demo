@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import PaginatedLogTable from "../components/PaginatedLogTable.vue"
+import PaginatedLogTable from "../components/PaginatedLogTable.vue";
 </script>
 
 <template>
@@ -16,8 +16,10 @@ import PaginatedLogTable from "../components/PaginatedLogTable.vue"
     <template #title>Egress logs</template>
     <template #subtitle>
       <p>All outgoing requests to other data planes</p>
-      <p><strong><em>NOTE:</em></strong> Only requests proxied via the data plane will be visible here, direct requests
-        cannot be logged</p>
+      <p>
+        <strong><em>NOTE:</em></strong> Only requests proxied via the data plane
+        will be visible here, direct requests cannot be logged
+      </p>
     </template>
     <template #content>
       <PaginatedLogTable type="egress" />

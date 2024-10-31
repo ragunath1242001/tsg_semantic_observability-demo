@@ -57,6 +57,6 @@ export default {
     "odrl:rightOperandReference": { "@type": "@id" },
     "odrl:profile": { "@container": "@set" },
     "odrl:assigner": { "@type": "@id" },
-    "odrl:assignee": { "@type": "@id" },
-  },
+    "odrl:assignee": { "@type": "@id" }
+  }
 };

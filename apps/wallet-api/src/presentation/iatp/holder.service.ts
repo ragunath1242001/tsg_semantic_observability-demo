@@ -4,7 +4,7 @@ import { IatpSiopService } from "./siop.service.js";
 import {
   Field,
   PresentationDefinition,
-  PresentationResponse,
+  PresentationResponse
 } from "@tsg-dsp/common-dtos";
 import { CredentialsService } from "../../credentials/credentials.service.js";
 import { Ajv } from "ajv";
@@ -110,11 +110,11 @@ export class IatpHolderService {
             return {
               id: inputDescriptor.id,
               format: "jwt_vc",
-              path: `$.verifiableCredential[${index}]`,
+              path: `$.verifiableCredential[${index}]`
             };
           }
-        ),
-      },
+        )
+      }
     };
   }
 

@@ -3,11 +3,11 @@ import {
   IsNumber,
   IsOptional,
   IsString,
-  ValidateNested,
+  ValidateNested
 } from "class-validator";
 import {
   createOptionalInstance,
-  createOptionalInstances,
+  createOptionalInstances
 } from "../../../utils/instances";
 import { KeepTypes, LDType, Namespace, Serializable } from "../../decorators";
 import { IReference, Reference, withExtraProps } from "../common";
@@ -19,7 +19,7 @@ import {
   DataServiceDto,
   DatasetDto,
   DistributionDto,
-  ResourceDto,
+  ResourceDto
 } from "./catalog.dto";
 
 export interface IResource extends IReference {

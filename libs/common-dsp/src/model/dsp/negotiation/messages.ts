@@ -2,7 +2,7 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
-  ValidateNested,
+  ValidateNested
 } from "class-validator";
 import { Serializable, Namespace, LDType } from "../../decorators";
 import {
@@ -10,7 +10,7 @@ import {
   Multilanguage,
   Reference,
   SerializableClass,
-  withExtraProps,
+  withExtraProps
 } from "../common";
 
 import { Agreement, Offer } from "./negotiation";
@@ -25,7 +25,7 @@ import {
   ContractNegotiationErrorDto,
   HashedMessage,
   ContractAgreementVerificationMessageDto,
-  ContractAgreementMessageDto,
+  ContractAgreementMessageDto
 } from "./messages.dto";
 import { createOptionalInstance } from "../../../utils";
 

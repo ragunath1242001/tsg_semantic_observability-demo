@@ -13,7 +13,7 @@ import {
   TransferEventDto,
   DataPlaneRequestResponseDto,
   MultilanguageDto,
-  DataPlaneAddressDto,
+  DataPlaneAddressDto
 } from "@tsg-dsp/common-dsp";
 import { TransferRole, TransferStatus } from "@tsg-dsp/control-plane-dtos";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";

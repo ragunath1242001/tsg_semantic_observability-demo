@@ -59,8 +59,8 @@ const handleUpload = async (event) => {
       { files: files },
       {
         headers: {
-          "Content-Type": "multipart/form-data",
-        },
+          "Content-Type": "multipart/form-data"
+        }
       }
     );
     if (resp.status == 201) {
@@ -68,7 +68,7 @@ const handleUpload = async (event) => {
         severity: "success",
         summary: "Success",
         detail: "File Uploaded",
-        life: 3000,
+        life: 3000
       });
     }
   } catch (error) {
@@ -76,7 +76,7 @@ const handleUpload = async (event) => {
       toastError({
         error,
         summary: "Failed to upload file",
-        defaultMessage: "Could not upload file",
+        defaultMessage: "Could not upload file"
       })
     );
     console.error("Error:", error);
@@ -93,11 +93,9 @@ const handleUpload = async (event) => {
       custom-upload
       @uploader="handleUpload"
       :multiple="true"
-      @select="onSelectedFiles"
-    >
+      @select="onSelectedFiles">
       <template
-        #header="{ chooseCallback, uploadCallback, clearCallback, files }"
-      >
+        #header="{ chooseCallback, uploadCallback, clearCallback, files }">
         <div class="flex flex-wrap justify-between items-center flex-1 gap-4">
           <div class="flex gap-2">
             <Button
@@ -105,30 +103,26 @@ const handleUpload = async (event) => {
               icon="pi pi-folder"
               rounded
               outlined
-              severity="secondary"
-            ></Button>
+              severity="secondary"></Button>
             <Button
               @click="uploadEvent(uploadCallback)"
               icon="pi pi-cloud-upload"
               rounded
               outlined
               severity="success"
-              :disabled="!files || files.length === 0"
-            ></Button>
+              :disabled="!files || files.length === 0"></Button>
             <Button
               @click="clearCallback()"
               icon="pi pi-times"
               rounded
               outlined
               severity="danger"
-              :disabled="!files || files.length === 0"
-            ></Button>
+              :disabled="!files || files.length === 0"></Button>
           </div>
           <ProgressBar
             :value="totalSizePercent"
             :showValue="false"
-            class="md:w-20rem h-1 w-full md:ml-auto"
-          >
+            class="md:w-20rem h-1 w-full md:ml-auto">
             <span class="whitespace-nowrap">{{ totalSize }}B / 1Mb</span>
           </ProgressBar>
         </div>
@@ -138,9 +132,8 @@ const handleUpload = async (event) => {
           files,
           uploadedFiles,
           removeUploadedFileCallback,
-          removeFileCallback,
-        }"
-      >
+          removeFileCallback
+        }">
         <div class="flex flex-col gap-8 pt-4">
           <div v-if="files.length > 0">
             <h5>Pending</h5>
@@ -148,8 +141,7 @@ const handleUpload = async (event) => {
               <div
                 v-for="(file, index) of files"
                 :key="file.name + file.type + file.size"
-                class="p-8 rounded-border flex flex-col border border-surface items-center gap-4"
-              >
+                class="p-8 rounded-border flex flex-col border border-surface items-center gap-4">
                 <div>
                   <i class="pi pi-file" style="font-size: 2.5rem" />
                 </div>
@@ -166,8 +158,7 @@ const handleUpload = async (event) => {
                   "
                   outlined
                   rounded
-                  severity="danger"
-                />
+                  severity="danger" />
               </div>
             </div>
           </div>
@@ -178,8 +169,7 @@ const handleUpload = async (event) => {
               <div
                 v-for="(file, index) of uploadedFiles"
                 :key="file.name + file.type + file.size"
-                class="p-8 rounded-border flex flex-col border border-surface items-center gap-4"
-              >
+                class="p-8 rounded-border flex flex-col border border-surface items-center gap-4">
                 <div>
                   <i class="pi pi-file" style="font-size: 2.5rem" />
                 </div>
@@ -194,8 +184,7 @@ const handleUpload = async (event) => {
                   @click="removeUploadedFileCallback(index)"
                   outlined
                   rounded
-                  severity="danger"
-                />
+                  severity="danger" />
               </div>
             </div>
           </div>
@@ -204,8 +193,7 @@ const handleUpload = async (event) => {
       <template #empty>
         <div class="flex items-center justify-center flex-col">
           <i
-            class="pi pi-cloud-upload !border-2 !rounded-full !p-8 !text-4xl !text-muted-color"
-          />
+            class="pi pi-cloud-upload !border-2 !rounded-full !p-8 !text-4xl !text-muted-color" />
           <p class="mt-6 mb-0">Drag and drop files to here to upload.</p>
         </div>
       </template>

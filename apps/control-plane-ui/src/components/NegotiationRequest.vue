@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {
   NegotiationDetailDto,
-  INegotiationStatusDto,
+  INegotiationStatusDto
 } from "@tsg-dsp/control-plane-dtos";
 import { useToast } from "primevue/usetoast";
 import { ref } from "vue";
@@ -51,7 +51,7 @@ const agreeNegotiation = async (negotiation: NegotiationDetailDto) => {
       severity: "success",
       summary: "Success",
       detail: "Successfully sent contract agreement",
-      life: 3000,
+      life: 3000
     });
     close();
   } catch (error) {
@@ -59,7 +59,7 @@ const agreeNegotiation = async (negotiation: NegotiationDetailDto) => {
       toastError({
         error,
         summary: "Failed to send negotiation agreement",
-        defaultMessage: "Could not send negotiation agreement",
+        defaultMessage: "Could not send negotiation agreement"
       })
     );
     console.error(`Could not send negotiation agreement. Error: ${error}`);
@@ -73,7 +73,7 @@ const declineNegotiation = async (negotiation) => {
       severity: "success",
       summary: "Success",
       detail: "Successfully declined contract offer",
-      life: 3000,
+      life: 3000
     });
     close();
   } catch (error) {
@@ -81,7 +81,7 @@ const declineNegotiation = async (negotiation) => {
       toastError({
         error,
         summary: "Failed to decline contract offer",
-        defaultMessage: "Could not decline contract offer",
+        defaultMessage: "Could not decline contract offer"
       })
     );
     console.error(`Could not decline contract offer. Error: ${error}`);
@@ -97,8 +97,7 @@ const declineNegotiation = async (negotiation) => {
         </div>
         <div
           class="flex items-center justify-center bg-blue-100 rounded-border"
-          style="width: 2.5rem; height: 2.5rem"
-        >
+          style="width: 2.5rem; height: 2.5rem">
           <i class="pi pi-file text-blue-500 text-xl"></i>
         </div></div
     ></template>
@@ -120,15 +119,13 @@ const declineNegotiation = async (negotiation) => {
           v-model:visible="display"
           :style="{ width: '50vw' }"
           :breakpoints="{ '1199px': '80vw', '575px': '97vw' }"
-          :modal="true"
-        >
+          :modal="true">
           <div class="grid grid-cols-12 gap-4">
             <div class="col-span-12">
               <MonacoEditor
                 :static="ctaNegotiation.offer"
                 :read-only="true"
-                :max-lines="35"
-              />
+                :max-lines="35" />
             </div>
           </div>
           <template #footer>
@@ -138,16 +135,14 @@ const declineNegotiation = async (negotiation) => {
               icon="pi pi-times"
               type="submit"
               class="p-button-outlined"
-              @click="declineNegotiation(ctaNegotiation)"
-            />
+              @click="declineNegotiation(ctaNegotiation)" />
             <Button
               label="Accept"
               severity="success"
               icon="pi pi-check"
               type="submit"
               class="p-button-outlined"
-              @click="agreeNegotiation(ctaNegotiation)"
-            />
+              @click="agreeNegotiation(ctaNegotiation)" />
           </template>
         </Dialog>
         <Button
@@ -155,8 +150,7 @@ const declineNegotiation = async (negotiation) => {
           label="View Contract Negotiation"
           class="text-center p-4"
           style="width: 100%"
-          @click="getNegotiation(negotiation.localId)"
-        />
+          @click="getNegotiation(negotiation.localId)" />
       </div>
     </template>
   </Card>

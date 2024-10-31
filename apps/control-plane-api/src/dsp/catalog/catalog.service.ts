@@ -13,21 +13,21 @@ import {
   Permission,
   Prohibition,
   Resource,
-  deserialize,
+  deserialize
 } from "@tsg-dsp/common-dsp";
 import { Repository } from "typeorm";
 import {
   InitCatalog,
   PolicyConfig,
   RuleConstraintConfig,
-  ServerConfig,
+  ServerConfig
 } from "../../config";
 import {
   CatalogDao,
   DataServiceDao,
   DatasetDao,
   DistributionDao,
-  ResourceDao,
+  ResourceDao
 } from "../../model/catalog.dao";
 import { DSPError } from "../../utils/errors/error";
 
@@ -60,20 +60,20 @@ export class CatalogService {
             _resource: true,
             _distribution: {
               _accessService: {
-                _resource: true,
-              },
-            },
+                _resource: true
+              }
+            }
           },
           _services: true,
           _dataset: {
             _resource: true,
             _distribution: {
               _accessService: {
-                _resource: true,
-              },
-            },
-          },
-        },
+                _resource: true
+              }
+            }
+          }
+        }
       });
     } else {
       catalog = await this.catalogRepository.find({});
@@ -96,26 +96,26 @@ export class CatalogService {
           creator: this.initCatalog.creator,
           publisher: this.initCatalog.publisher,
           title: this.initCatalog.title,
-          description: [this.initCatalog.description],
+          description: [this.initCatalog.description]
         })
       );
       const dataset = this.datasetRepository.create({
         ...new Dataset({
-          id: resource.id,
+          id: resource.id
         }),
-        _resource: resource,
+        _resource: resource
       });
       const dservice = new DataService({
         endpointDescription: "dspace:connector",
         conformsTo: ["dspace:connector"],
-        endpointURL: `${this.server.publicAddress}`,
+        endpointURL: `${this.server.publicAddress}`
       });
       this.dataservicesRepository.create({
-        ...dservice,
+        ...dservice
       });
       const catalog = this.catalogRepository.create(
         new Catalog({
-          id: dataset.id,
+          id: dataset.id
         })
       );
       catalog._services = [this.dataservicesRepository.create(dservice)];
@@ -139,25 +139,25 @@ export class CatalogService {
         return new Constraint({
           leftOperand: "dspace:credentialType",
           operator: ODRLOperator.EQ,
-          rightOperand: constraint.value,
+          rightOperand: constraint.value
         });
       case "Recipient":
         return new Constraint({
           leftOperand: ODRLLeftOperand.RECIPIENT,
           operator: ODRLOperator.EQ,
-          rightOperand: constraint.value,
+          rightOperand: constraint.value
         });
       case "License":
         return new Constraint({
           leftOperand: "dspace:license",
           operator: ODRLOperator.EQ,
-          rightOperand: constraint.value,
+          rightOperand: constraint.value
         });
       default:
         return new Constraint({
           leftOperand: constraint.type,
           operator: ODRLOperator.EQ,
-          rightOperand: constraint.value,
+          rightOperand: constraint.value
         });
     }
   }
@@ -179,7 +179,7 @@ export class CatalogService {
       catalog = await this.getCatalogDao(true);
     }
     const exist = await this.datasetRepository.findOne({
-      where: { id: dataset.id },
+      where: { id: dataset.id }
     });
     if (exist) {
       throw new DSPError(
@@ -210,7 +210,7 @@ export class CatalogService {
               target: dataset.id,
               constraint: permission.constraints?.map((constraint) =>
                 this.constructConstraint(constraint)
-              ),
+              )
             });
           }),
           prohibition: this.defaultPolicy?.prohibitions?.map((prohibition) => {
@@ -219,16 +219,16 @@ export class CatalogService {
               target: dataset.id,
               constraint: prohibition.constraints?.map((constraint) =>
                 this.constructConstraint(constraint)
-              ),
+              )
             });
-          }),
+          })
         });
         if (!offer.permission || offer.permission.length === 0) {
           offer.permission = [
             new Permission({
               action: ODRLAction.USE,
-              target: dataset.id,
-            }),
+              target: dataset.id
+            })
           ];
         }
         dataset.hasPolicy = [offer];
@@ -242,7 +242,7 @@ export class CatalogService {
       distributionObj._accessService = distribution.accessService?.map(
         (service) => {
           const resourceObj = this.resourceRepository.create({
-            id: service.id,
+            id: service.id
           });
           const serviceObj = this.dataservicesRepository.create(service);
           serviceObj._resource = resourceObj;
@@ -266,7 +266,7 @@ export class CatalogService {
     dataset: Dataset
   ): Promise<DatasetDao> {
     const existingDataset = await this.datasetRepository.findOneBy({
-      id: datasetId,
+      id: datasetId
     });
     if (!existingDataset) {
       throw new DSPError(
@@ -285,11 +285,11 @@ export class CatalogService {
           _accessService: distribution.accessService?.map((service) => {
             return this.dataservicesRepository.create({
               ...service,
-              _resource: this.resourceRepository.create({ id: service.id }),
+              _resource: this.resourceRepository.create({ id: service.id })
             });
-          }),
+          })
         });
-      }),
+      })
     });
   }
 
@@ -308,16 +308,16 @@ export class CatalogService {
   async getDataset(datasetId: string): Promise<Dataset> {
     const dataset = await this.datasetRepository.findOne({
       where: {
-        id: datasetId,
+        id: datasetId
       },
       relations: {
         _resource: true,
         _distribution: {
           _accessService: {
-            _resource: true,
-          },
-        },
-      },
+            _resource: true
+          }
+        }
+      }
     });
     if (!dataset) {
       throw new DSPError(

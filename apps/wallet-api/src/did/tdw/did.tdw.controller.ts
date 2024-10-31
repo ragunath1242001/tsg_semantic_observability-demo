@@ -19,7 +19,7 @@ export class DIDTdwController {
   @ApiOperation({
     summary: "Retrieve DID document",
     description:
-      "Retrieves the public DID document on the well-known address for this wallet",
+      "Retrieves the public DID document on the well-known address for this wallet"
   })
   @ApiOkResponse({ type: DIDDocumentDto })
   async getDid(): Promise<DIDDocument> {
@@ -33,7 +33,7 @@ export class DIDTdwController {
   @ApiOperation({
     summary: "Retrieve DID logs",
     description:
-      "Retrieves the public DID log entries for this wallet in JSON Lines format",
+      "Retrieves the public DID log entries for this wallet in JSON Lines format"
   })
   @ApiOkResponse({ type: String })
   async getDidLog(@Param("scid") scid: string): Promise<string> {

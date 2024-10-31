@@ -2,7 +2,7 @@ import { Logger } from "@nestjs/common";
 import {
   CredentialSubject,
   VerifiableCredential,
-  VerifiablePresentation,
+  VerifiablePresentation
 } from "@tsg-dsp/common-dsp";
 import crypto from "crypto";
 import { TsgWalletIatpConfig } from "../../config";
@@ -15,7 +15,7 @@ import { InputDescriptor } from "@tsg-dsp/common-dtos";
 export class TsgIatpWalletClient extends WalletClient {
   constructor(
     private readonly iamConfig: TsgWalletIatpConfig,
-    private readonly authClientService: AuthClientService,
+    private readonly authClientService: AuthClientService
   ) {
     super();
   }
@@ -27,14 +27,14 @@ export class TsgIatpWalletClient extends WalletClient {
         .axiosInstance()
         .get<{ id_token: string }>(this.iamConfig.siopUrl, {
           params: {
-            audience: audience,
-          },
+            audience: audience
+          }
         });
       return response.data.id_token;
     } catch (err) {
       throw new DSPClientError("Could not request VP", err).andLog(
         this.logger,
-        "warn",
+        "warn"
       );
     }
   }
@@ -42,7 +42,7 @@ export class TsgIatpWalletClient extends WalletClient {
   async requestValidation(
     token: string,
     audience: string,
-    inputDescriptors?: InputDescriptor[],
+    inputDescriptors?: InputDescriptor[]
   ): Promise<VerifiablePresentation | undefined> {
     try {
       if (!inputDescriptors) {
@@ -58,9 +58,9 @@ export class TsgIatpWalletClient extends WalletClient {
                         path: ["$.type"],
                         filter: {
                           type: "string",
-                          pattern: this.iamConfig.typeFilter,
-                        },
-                      },
+                          pattern: this.iamConfig.typeFilter
+                        }
+                      }
                     ]
                   : []),
                 ...(this.iamConfig.issuerFilter
@@ -69,15 +69,15 @@ export class TsgIatpWalletClient extends WalletClient {
                         path: ["$.issuer"],
                         filter: {
                           type: "string",
-                          pattern: this.iamConfig.issuerFilter,
-                        },
-                      },
+                          pattern: this.iamConfig.issuerFilter
+                        }
+                      }
                     ]
                   : []),
-                ...(this.iamConfig.customFields ?? []),
-              ],
-            },
-          },
+                ...(this.iamConfig.customFields ?? [])
+              ]
+            }
+          }
         ];
       }
 
@@ -90,28 +90,28 @@ export class TsgIatpWalletClient extends WalletClient {
             presentationDefinition: {
               id: crypto.randomUUID(),
               name: "DSP Presentation definition",
-              input_descriptors: inputDescriptors,
-            },
+              input_descriptors: inputDescriptors
+            }
           },
           {
             params: {
-              audience: audience,
-            },
-          },
+              audience: audience
+            }
+          }
         );
       this.logger.debug(
-        `Successfully requested validation for audience ${audience}`,
+        `Successfully requested validation for audience ${audience}`
       );
       return response.data;
     } catch (err) {
       throw new DSPClientError("Could not request VP", err).andLog(
         this.logger,
-        "warn",
+        "warn"
       );
     }
   }
 
-  async getCredentials() {
+  async getCredentials(): Promise<Credential[]> {
     try {
       const response = await this.authClientService
         .axiosInstance()
@@ -123,7 +123,7 @@ export class TsgIatpWalletClient extends WalletClient {
     } catch (err) {
       throw new DSPClientError("Could not get credentials", err).andLog(
         this.logger,
-        "warn",
+        "warn"
       );
     }
   }
@@ -133,31 +133,31 @@ export class TsgIatpWalletClient extends WalletClient {
       const response = await this.authClientService
         .axiosInstance()
         .post(`${this.iamConfig.walletUrl}/management/signature/sign`, {
-          plainDocument: document,
+          plainDocument: document
         });
       return response.data;
     } catch (err) {
       throw new DSPClientError("Could not sign document", err).andLog(
         this.logger,
-        "warn",
+        "warn"
       );
     }
   }
 
   async requestSignatureValidation(
-    signedDocument: Record<string, any>,
+    signedDocument: Record<string, any>
   ): Promise<any> {
     try {
       const response = await this.authClientService
         .axiosInstance()
         .post(`${this.iamConfig.walletUrl}/management/signature/validate`, {
-          proofDocument: signedDocument,
+          proofDocument: signedDocument
         });
       return response.data;
     } catch (err) {
       throw new DSPClientError("Could not validate document", err).andLog(
         this.logger,
-        "warn",
+        "warn"
       );
     }
   }
@@ -168,17 +168,17 @@ export class TsgIatpWalletClient extends WalletClient {
         .axiosInstance()
         .get<DIDDocument>(
           `${this.iamConfig.walletUrl}/management/did/resolve/${encodeURI(
-            didId,
-          )}`,
+            didId
+          )}`
         );
       this.logger.debug(
-        `Successfully resolved DID Document for ${didId} at local wallet`,
+        `Successfully resolved DID Document for ${didId} at local wallet`
       );
       return response.data;
     } catch (err) {
       throw new DSPClientError(
         `Could not resolve DID Document for ${didId}`,
-        err,
+        err
       ).andLog(this.logger, "warn");
     }
   }

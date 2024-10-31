@@ -5,7 +5,7 @@ export enum HealthStatus {
   UNRESPONSIVE,
   ERRONEOUS,
   EXITED,
-  UNKNOWN,
+  UNKNOWN
 }
 export interface IDataPlaneStatus {
   identifier: string;

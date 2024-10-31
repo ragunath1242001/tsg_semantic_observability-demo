@@ -21,13 +21,13 @@ export class OAuthBearerStrategy extends PassportStrategy(
         this.authConfig.introspectionURL,
         querystring.stringify({
           token: token,
-          token_type_hint: "access_token",
+          token_type_hint: "access_token"
         }),
         {
           auth: {
             username: this.authConfig.clientId,
-            password: this.authConfig.clientSecret,
-          },
+            password: this.authConfig.clientSecret
+          }
         }
       );
       if (response.data.active) {

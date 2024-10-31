@@ -37,7 +37,7 @@ watch(
   (newVal) => {
     isActiveMenu.value =
       newVal === itemKey.value || newVal.startsWith(itemKey.value + "-");
-  },
+  }
 );
 
 function itemClick(event, item) {
@@ -73,12 +73,13 @@ function checkActiveRoute(item) {
 
 <template>
   <li
-    :class="{ 'layout-root-menuitem': !child, 'active-menuitem': isActiveMenu }"
-  >
+    :class="{
+      'layout-root-menuitem': !child,
+      'active-menuitem': isActiveMenu
+    }">
     <div
       v-if="!child && item.visible !== false"
-      class="layout-menuitem-root-text"
-    >
+      class="layout-menuitem-root-text">
       {{ item.label }}
     </div>
     <a
@@ -87,22 +88,19 @@ function checkActiveRoute(item) {
       @click="itemClick($event, item)"
       :class="item.class"
       :target="item.target"
-      tabindex="0"
-    >
+      tabindex="0">
       <i :class="item.icon" class="layout-menuitem-icon"></i>
       <span class="layout-menuitem-text">{{ item.label }}</span>
       <i
         class="pi pi-fw pi-angle-down layout-submenu-toggler"
-        v-if="item.items"
-      ></i>
+        v-if="item.items"></i>
     </a>
     <router-link
       v-if="item.to && !item.items && item.visible !== false"
       @click="itemClick($event, item)"
       :class="[item.class, { 'active-route': checkActiveRoute(item) }]"
       tabindex="0"
-      :to="item.to"
-    >
+      :to="item.to">
       <i :class="item.icon" class="layout-menuitem-icon"></i>
       <span class="layout-menuitem-text">{{ item.label }}</span>
       <Badge
@@ -110,18 +108,15 @@ function checkActiveRoute(item) {
         :value="item.badge"
         size="small"
         class="ml-1"
-        severity="danger"
-      >
+        severity="danger">
       </Badge>
       <i
         class="pi pi-fw pi-angle-down layout-submenu-toggler"
-        v-if="item.items"
-      ></i>
+        v-if="item.items"></i>
     </router-link>
     <Transition
       v-if="item.items && item.visible !== false"
-      name="layout-submenu"
-    >
+      name="layout-submenu">
       <ul v-show="!child ? true : isActiveMenu" class="layout-submenu">
         <app-menu-item
           v-for="(child, i) in item.items"
@@ -130,8 +125,7 @@ function checkActiveRoute(item) {
           :item="child"
           :parentItemKey="itemKey"
           :child="true"
-          :route="route"
-        ></app-menu-item>
+          :route="route"></app-menu-item>
       </ul>
     </Transition>
   </li>

@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import axios, {
   AxiosInstance,
   CreateAxiosDefaults,
-  InternalAxiosRequestConfig,
+  InternalAxiosRequestConfig
 } from "axios";
 import { decodeJwt } from "jose";
 import querystring from "querystring";
@@ -53,7 +53,7 @@ export class AuthClientService {
           grant_type: "refresh_token",
           refresh_token: this.refresh_token!.jwt,
           client_id: this.authConfig.clientId,
-          client_secret: this.authConfig.clientSecret,
+          client_secret: this.authConfig.clientSecret
         });
       } else {
         params = querystring.stringify({
@@ -61,7 +61,7 @@ export class AuthClientService {
           username: this.authConfig.clientUsername,
           password: this.authConfig.clientPassword,
           client_id: this.authConfig.clientId,
-          client_secret: this.authConfig.clientSecret,
+          client_secret: this.authConfig.clientSecret
         });
       }
       const response = await axios.post(this.authConfig.tokenURL, params);
@@ -69,14 +69,14 @@ export class AuthClientService {
         const payload = decodeJwt(response.data.refresh_token);
         this.refresh_token = {
           jwt: response.data.refresh_token,
-          expiration: payload.exp,
+          expiration: payload.exp
         };
       }
       if (response.data.access_token) {
         const payload = decodeJwt(response.data.access_token);
         this.access_token = {
           jwt: response.data.access_token,
-          expiration: payload.exp,
+          expiration: payload.exp
         };
         return response.data.access_token;
       }

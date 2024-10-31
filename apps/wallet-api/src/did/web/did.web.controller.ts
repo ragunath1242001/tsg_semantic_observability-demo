@@ -19,7 +19,7 @@ export class DIDWebController {
   @ApiOperation({
     summary: "Retrieve DID document",
     description:
-      "Retrieves the public DID document on the well-known address for this wallet",
+      "Retrieves the public DID document on the well-known address for this wallet"
   })
   @ApiOkResponse({ type: DIDDocumentDto })
   async getDid(): Promise<DIDDocument> {

@@ -13,7 +13,7 @@ import { DIDDocument } from "did-resolver";
 import {
   createServices,
   createVerificationMethods,
-  DIDMethod,
+  DIDMethod
 } from "../../utils/did.js";
 import { jwkToMultibase } from "../../utils/keys/keyconverter.js";
 
@@ -24,8 +24,8 @@ describe("DID Tdw Service", () => {
   const config: RootConfig = plainToInstance(RootConfig, {
     server: {
       publicDomain: "localhost:3000",
-      publicAddress: "http://localhost:3000",
-    },
+      publicAddress: "http://localhost:3000"
+    }
   });
   let didId: string = "did:tdw:localhost%3A3000:{SCID}";
   const keyMaterialGenerator: () => Promise<KeyMaterials> = async () => {
@@ -36,20 +36,20 @@ describe("DID Tdw Service", () => {
       default: true,
       privateKey: await exportJWK(keyPair.privateKey),
       publicKey: await exportJWK(keyPair.publicKey),
-      caChain: undefined,
+      caChain: undefined
     });
   };
   const serviceGenerator: () => DidServiceConfig = () => {
     return plainToInstance(DidServiceConfig, {
       id: `${didId}#test`,
       type: "Test",
-      serviceEndpoint: config.server.publicAddress,
+      serviceEndpoint: config.server.publicAddress
     });
   };
   const mockDidLogsRepository = () => ({
     find: jest.fn(),
     save: jest.fn(),
-    clear: jest.fn(),
+    clear: jest.fn()
   });
 
   beforeAll(async () => {
@@ -59,9 +59,9 @@ describe("DID Tdw Service", () => {
         DidTdwStrategy,
         {
           provide: getRepositoryToken(DIDLogs),
-          useValue: mockDidLogsRepository(),
-        },
-      ],
+          useValue: mockDidLogsRepository()
+        }
+      ]
     }).compile();
     didTdwStrategy = await moduleRef.get(DidTdwStrategy);
     didLogsRepository = await moduleRef.get(getRepositoryToken(DIDLogs));
@@ -76,7 +76,7 @@ describe("DID Tdw Service", () => {
 
     it("Create initial DID document without key", async () => {
       await expect(
-        didTdwStrategy.createDidDocument(config, didId, [], []),
+        didTdwStrategy.createDidDocument(config, didId, [], [])
       ).rejects.toThrow("Keys not supplied for DID document creation");
     });
 
@@ -85,7 +85,7 @@ describe("DID Tdw Service", () => {
         config,
         didId,
         [await keyMaterialGenerator()],
-        [serviceGenerator()],
+        [serviceGenerator()]
       );
       expect(res).toBeDefined();
       didId = res.didId;
@@ -103,7 +103,7 @@ describe("DID Tdw Service", () => {
         config,
         didId,
         [keyMaterial],
-        [serviceGenerator()],
+        [serviceGenerator()]
       );
       expect(res).toBeDefined();
       didId = res.didId;
@@ -119,7 +119,7 @@ describe("DID Tdw Service", () => {
         config,
         didId,
         [await keyMaterialGenerator()],
-        [serviceGenerator()],
+        [serviceGenerator()]
       );
       expect(res).toBeDefined();
       didId = res.did;
@@ -137,29 +137,29 @@ describe("DID Tdw Service", () => {
           logEntry: res.log[0],
           created: new Date(),
           modified: new Date(),
-          deleted: new Date(),
-        },
+          deleted: new Date()
+        }
       ];
       jest.spyOn(didLogsRepository, "find").mockResolvedValue(didLogs);
     });
 
     it("Get DID Log", async () => {
       expect(await didTdwStrategy.getDidLog(didLogs[0].scid)).toEqual(
-        JSON.stringify(didLogs[0].logEntry),
+        JSON.stringify(didLogs[0].logEntry)
       );
     });
 
     it("Get empty DID Log", async () => {
       jest.spyOn(didLogsRepository, "find").mockResolvedValueOnce([]);
       await expect(didTdwStrategy.getDidLog(didLogs[0].scid)).rejects.toThrow(
-        "DID Logs not ready yet",
+        "DID Logs not ready yet"
       );
     });
 
     it("Update non-existing DID document", async () => {
       jest.spyOn(didLogsRepository, "find").mockResolvedValueOnce([]);
       await expect(
-        didTdwStrategy.updateDidDocument(completeDidDocument, [], []),
+        didTdwStrategy.updateDidDocument(completeDidDocument, [], [])
       ).rejects.toThrow("DID Document not ready yet");
     });
 
@@ -173,23 +173,23 @@ describe("DID Tdw Service", () => {
           plainToInstance(DidServiceConfig, {
             id: `${didId}#test-1`,
             type: "Test",
-            serviceEndpoint: config.server.publicAddress,
-          }),
-        ]),
+            serviceEndpoint: config.server.publicAddress
+          })
+        ])
       );
       expect(updatedDidDocument).toBeDefined();
       expect(updatedDidDocument.id).toEqual(didId);
       expect(updatedDidDocument.verificationMethod).toHaveLength(1);
       expect(updatedDidDocument.verificationMethod![0].id).not.toEqual(
-        completeDidDocument.verificationMethod![0].id,
+        completeDidDocument.verificationMethod![0].id
       );
       expect(updatedDidDocument.assertionMethod).toHaveLength(1);
       expect(updatedDidDocument.assertionMethod![0]).not.toEqual(
-        completeDidDocument.assertionMethod![0],
+        completeDidDocument.assertionMethod![0]
       );
       expect(updatedDidDocument.service).toHaveLength(1);
       expect(updatedDidDocument.service![0].id).not.toEqual(
-        completeDidDocument.service![0].id,
+        completeDidDocument.service![0].id
       );
     });
 
@@ -197,7 +197,7 @@ describe("DID Tdw Service", () => {
       const updatedDidDocument = await didTdwStrategy.updateDidDocument(
         completeDidDocument,
         [],
-        [],
+        []
       );
       expect(updatedDidDocument).toBeDefined();
       expect(updatedDidDocument.id).toEqual(didId);
@@ -210,7 +210,7 @@ describe("DID Tdw Service", () => {
       const updatedDidDocument = await didTdwStrategy.updateDidDocument(
         completeDidDocument,
         undefined,
-        undefined,
+        undefined
       );
       expect(updatedDidDocument).toBeDefined();
       expect(updatedDidDocument.id).toEqual(didId);
@@ -222,14 +222,14 @@ describe("DID Tdw Service", () => {
     it("Update DID default key", async () => {
       const newDefaultKey = await keyMaterialGenerator();
       expect(
-        await didTdwStrategy.setDefaultKey(completeDidDocument, newDefaultKey),
+        await didTdwStrategy.setDefaultKey(completeDidDocument, newDefaultKey)
       ).resolves;
       const currUpdateKey = didTdwStrategy.getCurrUpdateKey();
       expect(currUpdateKey.publicKeyMultibase).toEqual(
-        jwkToMultibase(newDefaultKey.publicKey),
+        jwkToMultibase(newDefaultKey.publicKey)
       );
       expect(currUpdateKey.secretKeyMultibase).toEqual(
-        jwkToMultibase(newDefaultKey.privateKey, true),
+        jwkToMultibase(newDefaultKey.privateKey, true)
       );
       expect(currUpdateKey.type).toEqual("EdDSA");
     });
@@ -238,7 +238,7 @@ describe("DID Tdw Service", () => {
       const newDidDocument =
         didTdwStrategy.getWellKnownDidDocument(completeDidDocument);
       expect(newDidDocument.id).toEqual(
-        didId.replace(DIDMethod.TDW, DIDMethod.WEB),
+        didId.replace(DIDMethod.TDW, DIDMethod.WEB)
       );
       expect(newDidDocument.alsoKnownAs).toBeDefined();
       expect(newDidDocument.alsoKnownAs).toHaveLength(1);
@@ -250,7 +250,7 @@ describe("DID Tdw Service", () => {
       const newDidDocument =
         didTdwStrategy.getWellKnownDidDocument(completeDidDocument);
       expect(newDidDocument.id).toEqual(
-        didId.replace(DIDMethod.TDW, DIDMethod.WEB),
+        didId.replace(DIDMethod.TDW, DIDMethod.WEB)
       );
       expect(newDidDocument.alsoKnownAs).toBeDefined();
       expect(newDidDocument.alsoKnownAs).toHaveLength(2);

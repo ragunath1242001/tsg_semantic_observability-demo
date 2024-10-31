@@ -17,7 +17,7 @@ export class DataPlaneDao extends MetaEntity implements IDataPlane {
   missedHealthChecks!: number;
   @OneToMany(() => DatasetDao, (dataset) => dataset._dataPlane, {
     cascade: true,
-    eager: true,
+    eager: true
   })
   _datasets?: Array<Relation<DatasetDao>> | undefined;
   get datasets(): Array<Dataset> | undefined {

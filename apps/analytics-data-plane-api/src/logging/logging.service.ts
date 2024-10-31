@@ -13,21 +13,21 @@ export class LoggingService {
     @InjectRepository(IngressLogDao)
     private readonly ingressRepository: Repository<IngressLogDao>,
     @InjectRepository(EgressLogDao)
-    private readonly egressRepository: Repository<EgressLogDao>,
+    private readonly egressRepository: Repository<EgressLogDao>
   ) {}
 
   async getIngressLog(
     pageOptions: PageOptionsDto,
-    filter: LogFilterDto,
+    filter: LogFilterDto
   ): Promise<PageDto<IngressLogDao>> {
     const whereClause = this.filterClause(filter);
     const [entities, itemCount] = await this.ingressRepository.findAndCount({
       order: {
-        date: pageOptions.order,
+        date: pageOptions.order
       },
       skip: pageOptions.skip,
       take: pageOptions.take,
-      where: whereClause,
+      where: whereClause
     });
     const meta = new PageMetaDto({ itemCount, pageOptions });
     return new PageDto(entities, meta);
@@ -35,16 +35,16 @@ export class LoggingService {
 
   async getEgressLog(
     pageOptions: PageOptionsDto,
-    filter: LogFilterDto,
+    filter: LogFilterDto
   ): Promise<PageDto<IngressLogDao>> {
     const whereClause = this.filterClause(filter);
     const [entities, itemCount] = await this.egressRepository.findAndCount({
       order: {
-        date: pageOptions.order,
+        date: pageOptions.order
       },
       skip: pageOptions.skip,
       take: pageOptions.take,
-      where: whereClause,
+      where: whereClause
     });
     const meta = new PageMetaDto({ itemCount, pageOptions });
     return new PageDto(entities, meta);

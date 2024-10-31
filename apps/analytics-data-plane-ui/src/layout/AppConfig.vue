@@ -13,8 +13,7 @@ const visible = ref(configSidebarVisible);
     v-model:visible="visible"
     position="right"
     :transitionOptions="'.3s cubic-bezier(0, 0, 0.2, 1)'"
-    class="layout-config-sidebar w-[26rem]"
-  >
+    class="layout-config-sidebar w-[26rem]">
     <p>No Settings yet.</p>
   </Drawer>
 </template>

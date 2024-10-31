@@ -22,6 +22,6 @@ export const toastError = (context: ErrorContext) => {
     severity: context.severity ?? "warn",
     summary: context.summary,
     detail: message,
-    life: context.life ?? 10000,
+    life: context.life ?? 10000
   };
 };

@@ -17,7 +17,7 @@ export class FilesModule {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       _req: any,
       file: { originalname: string },
-      cb: (arg0: null, arg1: boolean) => void,
+      cb: (arg0: null, arg1: boolean) => void
     ) => {
       if (fs.existsSync(path.join(UPLOAD_DIR, file.originalname))) {
         cb(null, false);
@@ -40,13 +40,13 @@ export class FilesModule {
             },
             filename: function (req, file, cb) {
               cb(null, file.originalname);
-            },
+            }
           }),
-          fileFilter: fileFilter,
-        }),
+          fileFilter: fileFilter
+        })
       ],
       controllers: [FilesController],
-      providers: [FilesService],
+      providers: [FilesService]
     };
     return module;
   }

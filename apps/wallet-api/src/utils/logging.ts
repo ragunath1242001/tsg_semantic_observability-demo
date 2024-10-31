@@ -3,7 +3,7 @@ import {
   NestMiddleware,
   Logger,
   ConsoleLogger,
-  LogLevel,
+  LogLevel
 } from "@nestjs/common";
 import { AsyncLocalStorage } from "async_hooks";
 import { Request, Response, NextFunction } from "express";

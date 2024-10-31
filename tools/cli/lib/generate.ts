@@ -6,7 +6,7 @@ import {
   Ecosystem,
   General,
   Participant,
-  SingleParticipant,
+  SingleParticipant
 } from "./model";
 import fs from "fs";
 import path from "path";
@@ -28,13 +28,13 @@ export class Generate {
       this.eta = new Eta({
         views: __dirname + "/../../templates",
         autoTrim: false,
-        autoEscape: false,
+        autoEscape: false
       });
     } else if (fs.existsSync(__dirname + "/../templates")) {
       this.eta = new Eta({
         views: __dirname + "/../templates",
         autoTrim: false,
-        autoEscape: false,
+        autoEscape: false
       });
     }
   }
@@ -122,7 +122,7 @@ export class Generate {
             } else {
               return "";
             }
-          },
+          }
         },
         !options.stdout
       );
@@ -142,7 +142,7 @@ export class Generate {
           ...config,
           // participant: participant,
           participants: this.participants,
-          applications: this.applications,
+          applications: this.applications
         })
       )
     );
@@ -177,24 +177,24 @@ export class Generate {
               {
                 name: "Clean",
                 value: "clean",
-                description: "Clean output directory",
+                description: "Clean output directory"
               },
               {
                 name: "Move",
                 value: "move",
-                description: `Move existing output directory to "${dir}.old"`,
+                description: `Move existing output directory to "${dir}.old"`
               },
               {
                 name: "Continue",
                 value: "continue",
-                description: "Continue without cleaning",
+                description: "Continue without cleaning"
               },
               {
                 name: "Abort",
                 value: "abort",
-                description: "Abort the operation",
-              },
-            ],
+                description: "Abort the operation"
+              }
+            ]
           });
       if (choice === "abort") {
         process.exit(0);
@@ -208,7 +208,7 @@ export class Generate {
         if (fs.existsSync(`${dir}.old`)) {
           if (
             await confirm({
-              message: `Folder ${dir}.old already exist, overwrite?`,
+              message: `Folder ${dir}.old already exist, overwrite?`
             })
           ) {
             fs.rmSync(`${dir}.old`, { recursive: true, force: true });

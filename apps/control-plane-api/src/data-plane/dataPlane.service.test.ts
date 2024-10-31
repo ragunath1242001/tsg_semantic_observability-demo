@@ -9,7 +9,7 @@ import {
   Distribution,
   ODRLAction,
   Offer,
-  Permission,
+  Permission
 } from "@tsg-dsp/common-dsp";
 import { plainToClass } from "class-transformer";
 import { AuthClientService } from "../auth/auth.client.service";
@@ -21,7 +21,7 @@ import {
   DataServiceDao,
   DatasetDao,
   DistributionDao,
-  ResourceDao,
+  ResourceDao
 } from "../model/catalog.dao";
 import { DataPlaneDao } from "../model/dataPlanes.dao";
 import { DSPError } from "../utils/errors/error";
@@ -48,7 +48,7 @@ describe("DataPlane Service", () => {
           DataServiceDao,
           DistributionDao,
           ResourceDao,
-          DataPlaneDao,
+          DataPlaneDao
         ]),
         TypeOrmModule.forFeature([
           CatalogDao,
@@ -57,8 +57,8 @@ describe("DataPlane Service", () => {
           DataServiceDao,
           DistributionDao,
           ResourceDao,
-          DataPlaneDao,
-        ]),
+          DataPlaneDao
+        ])
       ],
       providers: [
         DataPlaneService,
@@ -74,24 +74,24 @@ describe("DataPlane Service", () => {
                 "odrl:assigner": "did:web:localhost",
                 "odrl:assignee": "did:web:localhost",
                 "odrl:target": "urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0cea",
-                "dspace:timestamp": new Date().toISOString(),
+                "dspace:timestamp": new Date().toISOString()
               };
-            },
-          },
+            }
+          }
         },
         {
           provide: InitCatalog,
-          useValue: initCatalog,
+          useValue: initCatalog
         },
         {
           provide: ServerConfig,
-          useValue: serverConfig,
+          useValue: serverConfig
         },
         {
           provide: AuthConfig,
-          useValue: authConfig,
-        },
-      ],
+          useValue: authConfig
+        }
+      ]
     }).compile();
 
     dataPlaneService = moduleRef.get(DataPlaneService);
@@ -117,7 +117,7 @@ describe("DataPlane Service", () => {
         managementAddress: "https://httpbin.org/mgmt",
         managementToken: "",
         catalogSynchronization: "pull",
-        role: "consumer",
+        role: "consumer"
       };
       const addedDataPlane = await dataPlaneService.addDataPlane(dataPlane);
 
@@ -133,7 +133,7 @@ describe("DataPlane Service", () => {
         managementAddress: "https://httpbin.org/mgmt",
         managementToken: "",
         catalogSynchronization: "pull",
-        role: "consumer",
+        role: "consumer"
       };
       const addedDataPlane = await dataPlaneService.addDataPlane(dataPlane);
 
@@ -147,7 +147,7 @@ describe("DataPlane Service", () => {
           ...dpDetails,
           datasets: dpDetails.datasets
             ? await Promise.all(dpDetails.datasets.map((d) => d.serialize()))
-            : undefined,
+            : undefined
         };
 
         await dataPlaneService.updateDataPlane(dpDetailsDto);
@@ -167,7 +167,7 @@ describe("DataPlane Service", () => {
         managementAddress: "https://httpbin.org/mgmt",
         managementToken: "",
         catalogSynchronization: "pull",
-        role: "consumer",
+        role: "consumer"
       };
       const addedDataPlane = await dataPlaneService.addDataPlane(dataPlane);
       await dataPlaneService.deleteDataplane(addedDataPlane.identifier);
@@ -188,11 +188,11 @@ describe("DataPlane Service", () => {
               accessService: [
                 new DataService({
                   id: "urn:uuid:0d5f0685-eb04-409a-8a77-ee4ed207f2f0",
-                  endpointURL: "https://httpbin.org/anything",
-                }),
-              ],
-            }),
-          ],
+                  endpointURL: "https://httpbin.org/anything"
+                })
+              ]
+            })
+          ]
         });
         await expect(
           dataPlaneService.updateCatalog(
@@ -215,11 +215,11 @@ describe("DataPlane Service", () => {
               accessService: [
                 new DataService({
                   id: "urn:uuid:0d5f0685-eb04-409a-8a77-ee4ed207f2f0",
-                  endpointURL: "https://httpbin.org/anything",
-                }),
-              ],
-            }),
-          ],
+                  endpointURL: "https://httpbin.org/anything"
+                })
+              ]
+            })
+          ]
         });
 
         const dataPlane: DataPlaneCreation = {
@@ -229,7 +229,7 @@ describe("DataPlane Service", () => {
           managementAddress: "https://httpbin.org/mgmt",
           managementToken: "",
           catalogSynchronization: "pull",
-          role: "consumer",
+          role: "consumer"
         };
         const addedDataPlane = await dataPlaneService.addDataPlane(dataPlane);
 
@@ -257,10 +257,10 @@ describe("DataPlane Service", () => {
               permission: [
                 new Permission({
                   target: "everyone",
-                  action: ODRLAction.READ,
-                }),
-              ],
-            }),
+                  action: ODRLAction.READ
+                })
+              ]
+            })
           ],
           distribution: [
             new Distribution({
@@ -269,11 +269,11 @@ describe("DataPlane Service", () => {
               accessService: [
                 new DataService({
                   id: "urn:uuid:0d5f0685-eb04-409a-8a77-ee4ed207f2f1",
-                  endpointURL: "https://httpbin.org/anything",
-                }),
-              ],
-            }),
-          ],
+                  endpointURL: "https://httpbin.org/anything"
+                })
+              ]
+            })
+          ]
         });
 
         const dataPlane: DataPlaneCreation = {
@@ -283,7 +283,7 @@ describe("DataPlane Service", () => {
           managementAddress: "https://httpbin.org/mgmt",
           managementToken: "",
           catalogSynchronization: "pull",
-          role: "consumer",
+          role: "consumer"
         };
         const addedDataPlane = await dataPlaneService.addDataPlane(dataPlane);
         const createdDataset = await dataPlaneService.updateCatalog(

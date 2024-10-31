@@ -14,7 +14,7 @@ import {
   Body,
   Put,
   ValidationPipe,
-  UnprocessableEntityException,
+  UnprocessableEntityException
 } from "@nestjs/common";
 import { DataPlaneService } from "./dataplane.service";
 import { DatasetConfig } from "@tsg-dsp/http-data-plane-dtos";
@@ -25,7 +25,7 @@ import {
   ApiForbiddenResponseDefault,
   CatalogSchema,
   DataPlaneStateDto,
-  TransferDto,
+  TransferDto
 } from "@tsg-dsp/common-dtos";
 import {
   ApiOAuth2,
@@ -34,12 +34,12 @@ import {
   ApiParam,
   ApiQuery,
   ApiResponse,
-  ApiTags,
+  ApiTags
 } from "@nestjs/swagger";
 import {
   DataPlaneStateSchema,
   MetadataSchema,
-  TransferSchema,
+  TransferSchema
 } from "./dataplane.schemas.js";
 
 @ApiTags("Data Plane Management")
@@ -54,7 +54,7 @@ export class DataPlaneManagementController {
   @ApiOperation({
     summary: "Get Data Plane state",
     description:
-      "Get the state of the data plane, consisting of the id, details and the dataset.",
+      "Get the state of the data plane, consisting of the id, details and the dataset."
   })
   @ApiOkResponse({ type: DataPlaneStateSchema })
   @ApiForbiddenResponseDefault()
@@ -65,7 +65,7 @@ export class DataPlaneManagementController {
   @Get("/catalog")
   @ApiOperation({
     summary: "Get catalog",
-    description: "Get the current catalog from the Control Plane.",
+    description: "Get the current catalog from the Control Plane."
   })
   @ApiOkResponse({ type: CatalogSchema })
   @ApiForbiddenResponseDefault()
@@ -77,7 +77,7 @@ export class DataPlaneManagementController {
   @ApiOperation({
     summary: "(Re)register data plane",
     description:
-      "Use this endpoint to (re)register your data plane. Currently it will register with defaults from the config.",
+      "Use this endpoint to (re)register your data plane. Currently it will register with defaults from the config."
   })
   @ApiResponse({ status: HttpStatus.ACCEPTED })
   @ApiForbiddenResponseDefault()
@@ -89,7 +89,7 @@ export class DataPlaneManagementController {
   @Get("/dataset")
   @ApiOperation({
     summary: "Get dataset",
-    description: "Get the current dataset configuration.",
+    description: "Get the current dataset configuration."
   })
   @ApiOkResponse({ type: DatasetConfig })
   @ApiForbiddenResponseDefault()
@@ -100,21 +100,21 @@ export class DataPlaneManagementController {
   @Put("/dataset")
   @ApiOperation({
     summary: "Update dataset",
-    description: "Update the current dataset configuration.",
+    description: "Update the current dataset configuration."
   })
   @ApiOkResponse({ type: DataPlaneStateSchema })
   @ApiForbiddenResponseDefault()
   async updateDatasetConfig(
     @Body(new ValidationPipe({ transform: true, forbidUnknownValues: true }))
-    datasetConfig: DatasetConfig,
+    datasetConfig: DatasetConfig
   ) {
     if (
       !datasetConfig.versions.some(
-        (v) => v.version === datasetConfig.currentVersion,
+        (v) => v.version === datasetConfig.currentVersion
       )
     ) {
       throw new UnprocessableEntityException(
-        "Can't find given current version in given list of dataset versions",
+        "Can't find given current version in given list of dataset versions"
       );
     }
     return await this.dataPlaneService.updateDatasetConfig(datasetConfig);
@@ -142,11 +142,11 @@ export class DataPlaneManagementController {
   @ApiParam({ name: "id", required: true, description: "Transfer identifier" })
   @ApiResponse({
     status: HttpStatus.OK,
-    type: MetadataSchema,
+    type: MetadataSchema
   })
   @ApiForbiddenResponseDefault()
   async getMetadata(
-    @Param("id") id: string,
+    @Param("id") id: string
   ): Promise<{ agreement: AgreementDto; dataset: DatasetDto }> {
     return await this.dataPlaneService.getMetadata(id);
   }
@@ -182,7 +182,7 @@ export class DataPlaneManagementController {
   async terminateTransfer(
     @Param("id") id: string,
     @Query("code") code: string,
-    @Query("reason") reason: string,
+    @Query("reason") reason: string
   ): Promise<void> {
     return await this.dataPlaneService.transferTerminate(id, code, reason);
   }
@@ -196,7 +196,7 @@ export class DataPlaneManagementController {
   @HttpCode(HttpStatus.ACCEPTED)
   async suspendTransfer(
     @Param("id") id: string,
-    @Query("code") reason: string,
+    @Query("code") reason: string
   ): Promise<void> {
     return await this.dataPlaneService.transferSuspend(id, reason);
   }
@@ -206,20 +206,20 @@ export class DataPlaneManagementController {
   @ApiOperation({
     summary: "Proxy a request",
     description:
-      "This endpoint is used if the HTTP Data Plane needs to serve as a proxy. ",
+      "This endpoint is used if the HTTP Data Plane needs to serve as a proxy. "
   })
   @ApiParam({ name: "id", required: true, description: "Transfer identifier" })
   @ApiParam({
     name: "path",
     required: true,
-    description: "Path of receiving application",
+    description: "Path of receiving application"
   })
   @ApiForbiddenResponseDefault()
   async executeTransfer(
     @Param("id") id: string,
     @Param("path") path: string | undefined,
     @Req() request: RawBodyRequest<Request>,
-    @Res() response: Response,
+    @Res() response: Response
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   ): Promise<any> {
     this.logger.log(`Requesting transfer execution for id ${id}`);
@@ -227,7 +227,7 @@ export class DataPlaneManagementController {
       id,
       path || "",
       request,
-      response,
+      response
     );
   }
 }

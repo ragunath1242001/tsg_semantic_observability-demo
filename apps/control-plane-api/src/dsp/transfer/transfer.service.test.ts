@@ -17,7 +17,7 @@ import {
   TransferState,
   TransferSuspensionMessage,
   TransferTerminationMessage,
-  VerifiableCredential,
+  VerifiableCredential
 } from "@tsg-dsp/common-dsp";
 import { plainToClass } from "class-transformer";
 import { HttpResponse, PathParams, http } from "msw";
@@ -29,7 +29,7 @@ import {
   DevWalletConfig,
   IamConfig,
   InitCatalog,
-  ServerConfig,
+  ServerConfig
 } from "../../config";
 import { DataPlaneService } from "../../data-plane/dataPlane.service";
 import {
@@ -38,7 +38,7 @@ import {
   DataServiceDao,
   DatasetDao,
   DistributionDao,
-  ResourceDao,
+  ResourceDao
 } from "../../model/catalog.dao";
 import { DataPlaneDao } from "../../model/dataPlanes.dao";
 import { TransferDetailDao, TransferEventDao } from "../../model/transfer.dao";
@@ -52,7 +52,7 @@ import { PolicyEvaluationService } from "../../policy/policy.evaluation.service"
 import { EvaluationTrigger } from "../../policy/constraint.dto";
 import {
   EvaluationContext,
-  EvaluationDecision,
+  EvaluationDecision
 } from "../../policy/evaluation.dto";
 
 describe("Transfer service", () => {
@@ -79,7 +79,7 @@ describe("Transfer service", () => {
           ResourceDao,
           DataPlaneDao,
           TransferEventDao,
-          TransferDetailDao,
+          TransferDetailDao
         ]),
         TypeOrmModule.forFeature([
           CatalogDao,
@@ -90,8 +90,8 @@ describe("Transfer service", () => {
           ResourceDao,
           DataPlaneDao,
           TransferEventDao,
-          TransferDetailDao,
-        ]),
+          TransferDetailDao
+        ])
       ],
       providers: [
         TransferService,
@@ -110,10 +110,10 @@ describe("Transfer service", () => {
                 "odrl:assigner": "did:web:localhost",
                 "odrl:assignee": "did:web:localhost",
                 "odrl:target": "urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0cea",
-                "dspace:timestamp": new Date().toISOString(),
+                "dspace:timestamp": new Date().toISOString()
               };
-            },
-          },
+            }
+          }
         },
         {
           provide: PolicyEvaluationService,
@@ -125,7 +125,7 @@ describe("Transfer service", () => {
               transferId: string,
               remoteParticipant: string,
               action: string,
-              verifiableCredentials: VerifiableCredential[],
+              verifiableCredentials: VerifiableCredential[]
             ) {
               return EvaluationContext.parse({
                 role: role,
@@ -145,9 +145,9 @@ describe("Transfer service", () => {
                     "odrl:assignee": "did:web:localhost",
                     "odrl:target":
                       "urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0cea",
-                    "dspace:timestamp": new Date().toISOString(),
-                  },
-                },
+                    "dspace:timestamp": new Date().toISOString()
+                  }
+                }
               });
             },
             async evaluate() {
@@ -156,14 +156,14 @@ describe("Transfer service", () => {
                 permissions: [],
                 prohibitions: [],
                 obligations: [],
-                context: this.context,
+                context: this.context
               });
-            },
-          },
+            }
+          }
         },
         {
           provide: AuthConfig,
-          useValue: plainToClass(AuthConfig, { enabled: false }),
+          useValue: plainToClass(AuthConfig, { enabled: false })
         },
         {
           provide: AuthService,
@@ -174,21 +174,21 @@ describe("Transfer service", () => {
             async validateToken(token: string, audience?: string) {
               return true;
             }
-          })(),
+          })()
         },
         {
           provide: IamConfig,
-          useValue: iamConfig,
+          useValue: iamConfig
         },
         {
           provide: InitCatalog,
-          useValue: initCatalog,
+          useValue: initCatalog
         },
         {
           provide: ServerConfig,
-          useValue: serverConfig,
-        },
-      ],
+          useValue: serverConfig
+        }
+      ]
     })
       .overrideProvider(DspGateway)
       .useValue(dspGateway)
@@ -197,10 +197,10 @@ describe("Transfer service", () => {
     let dataPlaneConsumerFirst = true;
     server = setupServer(
       http.get("http://127.0.0.1/data-plane/health", () =>
-        HttpResponse.text(""),
+        HttpResponse.text("")
       ),
       http.get("http://127.0.0.1/data-plane/catalog", async () =>
-        HttpResponse.json(await new Catalog({})),
+        HttpResponse.json(await new Catalog({}))
       ),
       http.post<
         PathParams,
@@ -213,7 +213,7 @@ describe("Transfer service", () => {
             accepted: true,
             identifier: "ABCDEFG",
             callbackAddress:
-              "http://127.0.0.1/data-plane/transfers/callbacks/ABCDEFG",
+              "http://127.0.0.1/data-plane/transfers/callbacks/ABCDEFG"
           });
         }
         return HttpResponse.json<DataPlaneRequestResponseDto>({
@@ -226,10 +226,10 @@ describe("Transfer service", () => {
             properties: [
               {
                 name: "Authorization",
-                value: "Bearer TESTTOKEN",
-              },
-            ],
-          },
+                value: "Bearer TESTTOKEN"
+              }
+            ]
+          }
         });
       }),
       http.post(
@@ -245,16 +245,16 @@ describe("Transfer service", () => {
               properties: [
                 {
                   name: "Authorization",
-                  value: "Bearer TESTTOKEN",
-                },
-              ],
-            },
+                  value: "Bearer TESTTOKEN"
+                }
+              ]
+            }
           });
-        },
+        }
       ),
       http.post("http://127.0.0.1/data-plane/transfers/ABCDEFG/:action", () => {
         return HttpResponse.json({
-          status: "OK",
+          status: "OK"
         });
       }),
       http.post<PathParams, TransferRequestMessageDto, TransferProcessDto>(
@@ -267,37 +267,37 @@ describe("Transfer service", () => {
             "dspace:consumerPid": reqBody["dspace:consumerPid"],
             "dspace:providerPid": remoteProcessId,
             "dspace:state": TransferState.REQUESTED,
-            "dspace:agreementId": reqBody["dspace:agreementId"],
+            "dspace:agreementId": reqBody["dspace:agreementId"]
           });
-        },
+        }
       ),
       http.post(
         `http://remoteparty.test/transfers/${remoteProcessId}/start`,
         () => {
           return HttpResponse.json({ status: "OK" });
-        },
+        }
       ),
       http.post(
         `http://remoteparty.test/transfers/${remoteProcessId}/suspend`,
         () => {
           return HttpResponse.json({ status: "OK" });
-        },
+        }
       ),
       http.post(
         `http://remoteparty.test/transfers/${remoteProcessId}/complete`,
         () => {
           return HttpResponse.json({ status: "OK" });
-        },
+        }
       ),
       http.post(
         `http://remoteparty.test/transfers/${remoteProcessId}/terminate`,
         () => {
           return HttpResponse.json({ status: "OK" });
-        },
+        }
       ),
       http.post("http://remoteparty.test/data-plane/:id", () => {
         return HttpResponse.json({ result: "data" });
-      }),
+      })
     );
 
     server.listen({ onUnhandledRequest: "warn" });
@@ -312,7 +312,7 @@ describe("Transfer service", () => {
       managementAddress: "http://127.0.0.1/data-plane",
       managementToken: "DpuwVK9bnX2MVGf6MVVjlBnI4PvtQSGJ",
       catalogSynchronization: "push",
-      role: "both",
+      role: "both"
     });
   });
 
@@ -335,7 +335,7 @@ describe("Transfer service", () => {
         "dspace:HTTP",
         undefined,
         "http://remoteparty.test/transfers",
-        "did:web:remoteparty.test",
+        "did:web:remoteparty.test"
       );
       expect(transferProcess).toBeDefined();
       expect(transferProcess.process.providerPid).toBe(remoteProcessId);
@@ -346,20 +346,20 @@ describe("Transfer service", () => {
         "dspace:HTTP",
         undefined,
         "http://remoteparty.test/transfers",
-        "did:web:remoteparty.test",
+        "did:web:remoteparty.test"
       );
       expect(transferProcessPush).toBeDefined();
       expect(transferProcessPush.process.providerPid).toBe(remoteProcessId);
 
       const transferDetail = await transferService.getTransfer(
-        transferProcessPush.localId,
+        transferProcessPush.localId
       );
       expect(transferDetail.dataAddress).toBeDefined();
     });
 
     it("Unexpected transition", async () => {
       await expect(
-        transferService.suspend(localProcessId, "", true),
+        transferService.suspend(localProcessId, "", true)
       ).rejects.toThrow("cannot transition from");
     });
 
@@ -370,19 +370,19 @@ describe("Transfer service", () => {
       expect(transferDetail).toBeDefined();
       const transferDetail2 = await transferService.getTransfer(
         localProcessId,
-        "did:web:remoteparty.test",
+        "did:web:remoteparty.test"
       );
       expect(transferDetail2).toBeDefined();
       await expect(
         transferService.getTransfer(
           localProcessId,
-          "did:web:otherremoteparty.test",
-        ),
+          "did:web:otherremoteparty.test"
+        )
       ).rejects.toThrow("Cannot get transfer with process ID");
       await expect(
         transferService.getTransfer(
-          "urn:uuid:00000000-0000-0000-0000-000000000000",
-        ),
+          "urn:uuid:00000000-0000-0000-0000-000000000000"
+        )
       ).rejects.toThrow("Cannot get transfer with process ID");
     });
 
@@ -398,12 +398,12 @@ describe("Transfer service", () => {
             endpointProperties: [
               new EndpointProperty({
                 name: "Authorization",
-                value: "Bearer TESTTOKEN",
-              }),
-            ],
-          }),
+                value: "Bearer TESTTOKEN"
+              })
+            ]
+          })
         }),
-        "did:web:remoteparty.test",
+        "did:web:remoteparty.test"
       );
       const transferDetail = await transferService.getTransfer(localProcessId);
       expect(transferDetail.state).toBe(TransferState.STARTED);
@@ -425,9 +425,9 @@ describe("Transfer service", () => {
         new TransferSuspensionMessage({
           providerPid: remoteProcessId,
           consumerPid: localProcessId,
-          reason: [new Multilanguage("Test suspending")],
+          reason: [new Multilanguage("Test suspending")]
         }),
-        "did:web:remoteparty.test",
+        "did:web:remoteparty.test"
       );
       const transferDetail = await transferService.getTransfer(localProcessId);
       expect(transferDetail.state).toBe(TransferState.SUSPENDED);
@@ -444,12 +444,12 @@ describe("Transfer service", () => {
             endpointProperties: [
               new EndpointProperty({
                 name: "Authorization",
-                value: "Bearer TESTTOKEN2",
-              }),
-            ],
-          }),
+                value: "Bearer TESTTOKEN2"
+              })
+            ]
+          })
         }),
-        "did:web:remoteparty.test",
+        "did:web:remoteparty.test"
       );
       const transferDetail = await transferService.getTransfer(localProcessId);
       expect(transferDetail.state).toBe(TransferState.STARTED);
@@ -466,7 +466,7 @@ describe("Transfer service", () => {
         "dspace:STARTED",
         "dspace:SUSPENDED",
         "dspace:STARTED",
-        "dspace:COMPLETED",
+        "dspace:COMPLETED"
       ]);
     });
   });
@@ -479,10 +479,10 @@ describe("Transfer service", () => {
           consumerPid: remoteProcessId,
           agreementId: "urn:uuid:2d9ea8f0-57da-4ea8-8083-bdb8e6782fc9",
           format: "dspace:HTTP",
-          callbackAddress: `http://remoteparty.test/transfers/${remoteProcessId}`,
+          callbackAddress: `http://remoteparty.test/transfers/${remoteProcessId}`
         }),
         "did:web:remoteparty.test",
-        [],
+        []
       );
       localProcessId = handledRequest.providerPid;
       jest.runAllTimers();
@@ -508,9 +508,9 @@ describe("Transfer service", () => {
         new TransferSuspensionMessage({
           providerPid: localProcessId,
           consumerPid: remoteProcessId,
-          reason: [new Multilanguage("Test suspending")],
+          reason: [new Multilanguage("Test suspending")]
         }),
-        "did:web:remoteparty.test",
+        "did:web:remoteparty.test"
       );
       const transferDetail = await transferService.getTransfer(localProcessId);
       expect(transferDetail.state).toBe(TransferState.SUSPENDED);
@@ -527,12 +527,12 @@ describe("Transfer service", () => {
             endpointProperties: [
               new EndpointProperty({
                 name: "Authorization",
-                value: "Bearer TESTTOKEN2",
-              }),
-            ],
-          }),
+                value: "Bearer TESTTOKEN2"
+              })
+            ]
+          })
         }),
-        "did:web:remoteparty.test",
+        "did:web:remoteparty.test"
       );
       const transferDetail = await transferService.getTransfer(localProcessId);
       expect(transferDetail.state).toBe(TransferState.STARTED);
@@ -542,9 +542,9 @@ describe("Transfer service", () => {
         localProcessId,
         new TransferCompletionMessage({
           providerPid: localProcessId,
-          consumerPid: remoteProcessId,
+          consumerPid: remoteProcessId
         }),
-        "did:web:remoteparty.test",
+        "did:web:remoteparty.test"
       );
       const transferDetail = await transferService.getTransfer(localProcessId);
       expect(transferDetail.state).toBe(TransferState.COMPLETED);
@@ -558,7 +558,7 @@ describe("Transfer service", () => {
         "dspace:HTTP",
         undefined,
         "http://remoteparty.test/transfers",
-        "did:web:remoteparty.test",
+        "did:web:remoteparty.test"
       );
       await transferService.handleTerminate(
         transferProcess.localId,
@@ -566,12 +566,12 @@ describe("Transfer service", () => {
           providerPid: transferProcess.remoteId,
           consumerPid: transferProcess.localId,
           reason: [new Multilanguage("Test termination")],
-          code: "PROVIDER_TERMINATION",
+          code: "PROVIDER_TERMINATION"
         }),
-        "did:web:remoteparty.test",
+        "did:web:remoteparty.test"
       );
       const transferDetail = await transferService.getTransfer(
-        transferProcess.localId,
+        transferProcess.localId
       );
       expect(transferDetail.state).toBe(TransferState.TERMINATED);
     });
@@ -581,16 +581,16 @@ describe("Transfer service", () => {
         "dspace:HTTP",
         undefined,
         "http://remoteparty.test/transfers",
-        "did:web:remoteparty.test",
+        "did:web:remoteparty.test"
       );
       await transferService.terminate(
         transferProcess.localId,
         "CONSUMER_TERMINATION",
         "Test termination",
-        true,
+        true
       );
       const transferDetail = await transferService.getTransfer(
-        transferProcess.localId,
+        transferProcess.localId
       );
       expect(transferDetail.state).toBe(TransferState.TERMINATED);
     });

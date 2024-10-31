@@ -26,14 +26,14 @@ const containerClass = computed(() => {
       layoutState.staticMenuDesktopInactive &&
       layoutConfig.menuMode === "static",
     "layout-overlay-active": layoutState.overlayMenuActive,
-    "layout-mobile-active": layoutState.staticMenuMobileActive,
+    "layout-mobile-active": layoutState.staticMenuMobileActive
   };
 });
 
 const menuList: Menu[] = [
   {
     label: "Home",
-    items: [{ label: "Dashboard", icon: "pi pi-fw pi-home", to: "/" }],
+    items: [{ label: "Dashboard", icon: "pi pi-fw pi-home", to: "/" }]
   },
   {
     label: "Dataspace Protocol",
@@ -41,20 +41,20 @@ const menuList: Menu[] = [
       {
         label: "Catalog Request",
         icon: "pi pi-fw pi-book",
-        to: "/catalog/request",
+        to: "/catalog/request"
       },
       {
         label: "Negotiations",
         icon: "pi pi-fw pi-comments",
         to: "/negotiations",
-        badge: negotiationsCount,
+        badge: negotiationsCount
       },
       {
         label: "Transfers",
         icon: "pi pi-fw pi-arrow-right-arrow-left",
-        to: "/transfers",
-      },
-    ],
+        to: "/transfers"
+      }
+    ]
   },
   {
     label: "Dataplanes",
@@ -62,9 +62,9 @@ const menuList: Menu[] = [
       {
         label: "Dataplanes",
         icon: "pi pi-fw pi-database",
-        to: "/dataplanes",
-      },
-    ],
+        to: "/dataplanes"
+      }
+    ]
   },
   {
     label: "Registry",
@@ -72,22 +72,22 @@ const menuList: Menu[] = [
       {
         label: "Registry",
         icon: "pi pi-fw pi-address-book",
-        to: "/registry",
-      },
-    ],
-  },
+        to: "/registry"
+      }
+    ]
+  }
 ];
 
 const footer: FooterProps = {
   baseLogoUrl: baseLogoUrl,
-  footerText: "TNO",
+  footerText: "TNO"
 };
 
 const route = useRoute();
 
 const sidebar: MenuProps = {
   menu: menuList,
-  route: route,
+  route: route
 };
 </script>
 <template>
@@ -98,11 +98,10 @@ const sidebar: MenuProps = {
         name: ownCatalog.title,
         baseLogoUrl: baseLogoUrl,
         user: userStore.user,
-        router: useRouter(),
+        router: useRouter()
       }"
       :footer="footer"
-      :sidebar="sidebar"
-    />
+      :sidebar="sidebar" />
     <AppConfig />
     <div class="layout-mask animate-fadein"></div>
   </div>

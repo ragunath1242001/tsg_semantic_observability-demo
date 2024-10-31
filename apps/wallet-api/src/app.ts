@@ -26,12 +26,12 @@ async function bootstrap() {
       logLevel = "debug";
   }
   const app = await NestFactory.create(AppModule, {
-    logger: new AppLogger(logLevel),
+    logger: new AppLogger(logLevel)
   });
   const config = app.get(RootConfig);
   if (process.env["EMBEDDED_FRONTEND"]) {
     app.setGlobalPrefix(`${process.env["SUBPATH"] ?? ""}/api`, {
-      exclude: [".well-known/(.*)", "health", "(.*).jsonl"],
+      exclude: [".well-known/(.*)", "health", "(.*).jsonl"]
     });
   }
   Logger.debug(
@@ -43,14 +43,14 @@ async function bootstrap() {
       name: "connect.sid.tsgw",
       secret: process.env["SESSION_SECRET"] || crypto.randomUUID(),
       resave: false,
-      saveUninitialized: false,
+      saveUninitialized: false
     })
   );
   app.use(passport.initialize());
   app.use(passport.session());
   app.enableCors({
     allowedHeaders: "*",
-    origin: "*",
+    origin: "*"
   });
   await app.listen(config.server.port, config.server.listen);
 }

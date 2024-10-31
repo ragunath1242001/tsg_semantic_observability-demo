@@ -22,7 +22,7 @@ export class OAuthGuard
 {
   constructor(
     private readonly reflector: Reflector,
-    private readonly authConfig: AuthConfig,
+    private readonly authConfig: AuthConfig
   ) {
     super();
   }

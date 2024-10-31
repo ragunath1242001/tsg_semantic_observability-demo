@@ -10,13 +10,13 @@ import {
   Post,
   Put,
   Query,
-  UseGuards,
+  UseGuards
 } from "@nestjs/common";
 import {
   CatalogDto,
   CatalogRequestMessage,
   Dataset,
-  DatasetDto,
+  DatasetDto
 } from "@tsg-dsp/common-dsp";
 import { OAuthGuard } from "../../auth/oauth.guard";
 import { Roles } from "../../auth/roles.guard";
@@ -35,12 +35,12 @@ import {
   ApiBearerAuth,
   ApiQuery,
   ApiBody,
-  ApiParam,
+  ApiParam
 } from "@nestjs/swagger";
 import {
   ApiForbiddenResponseDefault,
   CatalogSchema,
-  DatasetSchema,
+  DatasetSchema
 } from "@tsg-dsp/common-dtos";
 
 @UseGuards(OAuthGuard)
@@ -59,17 +59,17 @@ export class CatalogManagementController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: "Request catalog",
-    description: "Requests a catalog from a remote or local connector.",
+    description: "Requests a catalog from a remote or local connector."
   })
   @ApiQuery({
     name: "address",
     required: false,
-    description: "The address of the remote connector",
+    description: "The address of the remote connector"
   })
   @ApiQuery({
     name: "audience",
     required: false,
-    description: "The audience for the request",
+    description: "The audience for the request"
   })
   @ApiOkResponse({ type: CatalogSchema })
   @ApiBadRequestResponse({ description: "Invalid request parameters" })
@@ -98,22 +98,22 @@ export class CatalogManagementController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: "Request dataset",
-    description: "Requests a dataset from a remote or local connector by ID.",
+    description: "Requests a dataset from a remote or local connector by ID."
   })
   @ApiQuery({
     name: "address",
     required: false,
-    description: "The address of the remote connector",
+    description: "The address of the remote connector"
   })
   @ApiQuery({
     name: "id",
     required: true,
-    description: "The ID of the dataset",
+    description: "The ID of the dataset"
   })
   @ApiQuery({
     name: "audience",
     required: false,
-    description: "The audience for the request",
+    description: "The audience for the request"
   })
   @ApiOkResponse({ type: DatasetSchema })
   @ApiBadRequestResponse({ description: "Invalid request parameters" })
@@ -144,7 +144,7 @@ export class CatalogManagementController {
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
     summary: "Add dataset",
-    description: "Adds a new dataset to the catalog.",
+    description: "Adds a new dataset to the catalog."
   })
   @ApiBody({ type: DatasetSchema })
   @ApiCreatedResponse({ type: DatasetSchema })
@@ -161,12 +161,12 @@ export class CatalogManagementController {
   @HttpCode(HttpStatus.ACCEPTED)
   @ApiOperation({
     summary: "Update dataset",
-    description: "Updates an existing dataset in the catalog.",
+    description: "Updates an existing dataset in the catalog."
   })
   @ApiParam({
     name: "id",
     required: true,
-    description: "The ID of the dataset to update",
+    description: "The ID of the dataset to update"
   })
   @ApiBody({ type: DatasetSchema })
   @ApiAcceptedResponse({ type: DatasetSchema })
@@ -187,12 +187,12 @@ export class CatalogManagementController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({
     summary: "Delete dataset",
-    description: "Deletes a dataset from the catalog by ID.",
+    description: "Deletes a dataset from the catalog by ID."
   })
   @ApiParam({
     name: "id",
     required: true,
-    description: "The ID of the dataset to delete",
+    description: "The ID of the dataset to delete"
   })
   @ApiNoContentResponse({ description: "Dataset deleted successfully" })
   @ApiBadRequestResponse({ description: "Invalid dataset ID" })

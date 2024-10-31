@@ -17,7 +17,7 @@ describe("DID Service", () => {
     return JSON.parse(JSON.stringify(input));
   };
   const keyMaterialGenerator: (id: string) => Promise<KeyMaterials> = async (
-    id: string,
+    id: string
   ) => {
     const keypair = await generateKeyPair("EdDSA");
     return plainToInstance(KeyMaterials, {
@@ -26,7 +26,7 @@ describe("DID Service", () => {
       default: true,
       privateKey: await exportJWK(keypair.privateKey),
       publicKey: await exportJWK(keypair.publicKey),
-      caChain: undefined,
+      caChain: undefined
     });
   };
 
@@ -37,23 +37,23 @@ describe("DID Service", () => {
         {
           id: "key-0",
           type: "EdDSA",
-          default: true,
-        },
-      ],
+          default: true
+        }
+      ]
     });
 
     const moduleRef: TestingModule = await Test.createTestingModule({
       imports: [
         TypeOrmTestHelper.instance.module([DIDDocuments, DIDService, DIDLogs]),
-        TypeOrmModule.forFeature([DIDDocuments, DIDService, DIDLogs]),
+        TypeOrmModule.forFeature([DIDDocuments, DIDService, DIDLogs])
       ],
       providers: [
         DidService,
         {
           provide: RootConfig,
-          useValue: config,
-        },
-      ],
+          useValue: config
+        }
+      ]
     }).compile();
 
     didService = await moduleRef.get(DidService);
@@ -65,15 +65,15 @@ describe("DID Service", () => {
 
     it("Retrieve non existing DID", async () => {
       await expect(didService.getDid()).rejects.toThrow(
-        "DID Document not ready yet",
+        "DID Document not ready yet"
       );
     });
 
     it("Check existing DID is empty", async () => {
       await expect(
         didService.checkExistingDidDocument(
-          await keyMaterialGenerator("test-key"),
-        ),
+          await keyMaterialGenerator("test-key")
+        )
       ).rejects.toThrow("DID Document not ready yet");
     });
 
@@ -95,7 +95,7 @@ describe("DID Service", () => {
 
     it("Create DID document with key material", async () => {
       createdDidWithKey = await didService.createDidDocument([
-        await keyMaterialGenerator("test-key"),
+        await keyMaterialGenerator("test-key")
       ]);
       expect(createdDidWithKey).toBeDefined();
       expect(createdDidWithKey.verificationMethod).toHaveLength(1);
@@ -107,18 +107,18 @@ describe("DID Service", () => {
       expect(retrievedDid.id).toEqual(createdDidWithKey.id);
       expect(retrievedDid["@context"]).toEqual(createdDidWithKey["@context"]);
       expect(retrievedDid.assertionMethod).toEqual(
-        createdDidWithKey.assertionMethod,
+        createdDidWithKey.assertionMethod
       );
       expect(retrievedDid.verificationMethod).toEqual(
-        createdDidWithKey.verificationMethod,
+        createdDidWithKey.verificationMethod
       );
     });
 
     it("Update DID default key", async () => {
       expect(
         await didService.setDidDefaultKey(
-          await keyMaterialGenerator("test-key"),
-        ),
+          await keyMaterialGenerator("test-key")
+        )
       ).resolves;
     });
 
@@ -126,13 +126,13 @@ describe("DID Service", () => {
       const prevDidDoc: DIDDocument = clone(await didService.getDid());
       expect(
         await didService.updateDidDocumentKeys([
-          await keyMaterialGenerator("test-key-new"),
-        ]),
+          await keyMaterialGenerator("test-key-new")
+        ])
       ).resolves;
       const newDidDoc: DIDDocument = clone(await didService.getDid());
       expect(newDidDoc.verificationMethod).toHaveLength(1);
       expect(newDidDoc.verificationMethod![0].id).not.toEqual(
-        prevDidDoc.verificationMethod![0].id,
+        prevDidDoc.verificationMethod![0].id
       );
       expect(newDidDoc.service).toHaveLength(prevDidDoc.service!.length);
       for (var i = 0; i < newDidDoc.service!.length; i++) {
@@ -143,12 +143,12 @@ describe("DID Service", () => {
     it("Check existing DID exists", async () => {
       const prevDid: DIDDocument = clone(await didService.getDid());
       const existingDid = await didService.checkExistingDidDocument(
-        await keyMaterialGenerator("test-key"),
+        await keyMaterialGenerator("test-key")
       );
       expect(existingDid).toBeDefined();
       expect(existingDid.id).toEqual(prevDid.id);
       expect(existingDid.verificationMethod).toEqual(
-        prevDid.verificationMethod,
+        prevDid.verificationMethod
       );
       expect(existingDid.assertionMethod).toEqual(prevDid.assertionMethod);
       expect(existingDid.service).toEqual(prevDid.service);
@@ -160,34 +160,34 @@ describe("DID Service", () => {
           {
             id: "key-0",
             type: "EdDSA",
-            default: true,
-          },
+            default: true
+          }
         ],
         did: {
-          method: DIDMethod.TDW,
-        },
+          method: DIDMethod.TDW
+        }
       });
       const moduleRef: TestingModule = await Test.createTestingModule({
         imports: [
           TypeOrmTestHelper.instance.module([
             DIDDocuments,
             DIDService,
-            DIDLogs,
+            DIDLogs
           ]),
-          TypeOrmModule.forFeature([DIDDocuments, DIDService, DIDLogs]),
+          TypeOrmModule.forFeature([DIDDocuments, DIDService, DIDLogs])
         ],
         providers: [
           DidService,
           {
             provide: RootConfig,
-            useValue: config,
-          },
-        ],
+            useValue: config
+          }
+        ]
       }).compile();
 
       const didTdwService = moduleRef.get(DidService);
       const tdwCreatedDid = await didTdwService.createDidDocument([
-        await keyMaterialGenerator("test-key"),
+        await keyMaterialGenerator("test-key")
       ]);
       expect(tdwCreatedDid).toBeDefined();
 
@@ -203,7 +203,7 @@ describe("DID Service", () => {
       const service = await didService.insertService({
         id: "did:web:localhost#TestService",
         type: "TestService",
-        serviceEndpoint: "http://localhost",
+        serviceEndpoint: "http://localhost"
       });
       const newDidDoc: DIDDocument = clone(await didService.getDid());
       expect(service.id).toBe("did:web:localhost#TestService");
@@ -217,13 +217,13 @@ describe("DID Service", () => {
         didService.insertService({
           id: "did:web:localhost#TestService",
           type: "TestService",
-          serviceEndpoint: "http://localhost",
-        }),
+          serviceEndpoint: "http://localhost"
+        })
       ).rejects.toThrow("already exists");
     });
     it("Get service", async () => {
       const service = await didService.getService(
-        "did:web:localhost#TestService",
+        "did:web:localhost#TestService"
       );
       expect(service.id).toBe("did:web:localhost#TestService");
       expect(service.type).toBe("TestService");
@@ -236,8 +236,8 @@ describe("DID Service", () => {
         {
           id: "did:web:localhost#TestService",
           type: "TestService",
-          serviceEndpoint: "http://localhost/service",
-        },
+          serviceEndpoint: "http://localhost/service"
+        }
       );
       const newDidDoc: DIDDocument = clone(await didService.getDid());
       expect(service.id).toBe("did:web:localhost#TestService");
@@ -253,7 +253,7 @@ describe("DID Service", () => {
     });
     it("Get non-existing service", async () => {
       await expect(
-        didService.getService("did:web:localhost#TestService"),
+        didService.getService("did:web:localhost#TestService")
       ).rejects.toThrow("not found");
     });
     it("Update non-existing service", async () => {
@@ -261,8 +261,8 @@ describe("DID Service", () => {
         didService.updateService("did:web:localhost#TestService", {
           id: "did:web:localhost#TestService",
           type: "TestService",
-          serviceEndpoint: "http://localhost",
-        }),
+          serviceEndpoint: "http://localhost"
+        })
       ).rejects.toThrow("does not exist");
     });
   });

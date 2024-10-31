@@ -4,7 +4,7 @@ const sidebar: SidebarsConfig = {
   apisidebar: [
     {
       type: "doc",
-      id: "apis/http-data-plane/tsg-http-data-plane",
+      id: "apis/http-data-plane/tsg-http-data-plane"
     },
     {
       type: "category",
@@ -14,27 +14,27 @@ const sidebar: SidebarsConfig = {
           type: "doc",
           id: "apis/http-data-plane/auth-controller-get-user",
           label: "Retrieve current user status",
-          className: "api-method get",
+          className: "api-method get"
         },
         {
           type: "doc",
           id: "apis/http-data-plane/auth-controller-login",
           label: "Login redirect",
-          className: "api-method get",
+          className: "api-method get"
         },
         {
           type: "doc",
           id: "apis/http-data-plane/auth-controller-logout",
           label: "Logout redirect",
-          className: "api-method get",
+          className: "api-method get"
         },
         {
           type: "doc",
           id: "apis/http-data-plane/auth-controller-callback",
           label: "Login callback",
-          className: "api-method get",
-        },
-      ],
+          className: "api-method get"
+        }
+      ]
     },
     {
       type: "category",
@@ -44,227 +44,227 @@ const sidebar: SidebarsConfig = {
           type: "doc",
           id: "apis/http-data-plane/data-plane-controller-get-catalog",
           label: "DataPlaneController_getCatalog",
-          className: "api-method get",
+          className: "api-method get"
         },
         {
           type: "doc",
           id: "apis/http-data-plane/data-plane-controller-health-check",
           label: "DataPlaneController_healthCheck",
-          className: "api-method get",
+          className: "api-method get"
         },
         {
           type: "doc",
           id: "apis/http-data-plane/data-plane-controller-request-transfer",
           label: "DataPlaneController_requestTransfer",
-          className: "api-method post",
+          className: "api-method post"
         },
         {
           type: "doc",
           id: "apis/http-data-plane/data-plane-controller-start-transfer",
           label: "DataPlaneController_startTransfer",
-          className: "api-method post",
+          className: "api-method post"
         },
         {
           type: "doc",
           id: "apis/http-data-plane/data-plane-controller-complete-transfer",
           label: "DataPlaneController_completeTransfer",
-          className: "api-method post",
+          className: "api-method post"
         },
         {
           type: "doc",
           id: "apis/http-data-plane/data-plane-controller-terminate-transfer",
           label: "DataPlaneController_terminateTransfer",
-          className: "api-method post",
+          className: "api-method post"
         },
         {
           type: "doc",
           id: "apis/http-data-plane/data-plane-controller-suspend-transfer",
           label: "DataPlaneController_suspendTransfer",
-          className: "api-method post",
+          className: "api-method post"
         },
         {
           type: "doc",
           id: "apis/http-data-plane/data-plane-management-controller-get-state",
           label: "DataPlaneManagementController_getState",
-          className: "api-method get",
+          className: "api-method get"
         },
         {
           type: "doc",
           id: "apis/http-data-plane/data-plane-management-controller-get-catalog",
           label: "DataPlaneManagementController_getCatalog",
-          className: "api-method get",
+          className: "api-method get"
         },
         {
           type: "doc",
           id: "apis/http-data-plane/data-plane-management-controller-refresh-registration",
           label: "DataPlaneManagementController_refreshRegistration",
-          className: "api-method post",
+          className: "api-method post"
         },
         {
           type: "doc",
           id: "apis/http-data-plane/data-plane-management-controller-get-dataset-config",
           label: "DataPlaneManagementController_getDatasetConfig",
-          className: "api-method get",
+          className: "api-method get"
         },
         {
           type: "doc",
           id: "apis/http-data-plane/data-plane-management-controller-update-dataset-config",
           label: "DataPlaneManagementController_updateDatasetConfig",
-          className: "api-method put",
+          className: "api-method put"
         },
         {
           type: "doc",
           id: "apis/http-data-plane/data-plane-management-controller-get-transfers",
           label: "DataPlaneManagementController_getTransfers",
-          className: "api-method get",
+          className: "api-method get"
         },
         {
           type: "doc",
           id: "apis/http-data-plane/data-plane-management-controller-get-transfer",
           label: "DataPlaneManagementController_getTransfer",
-          className: "api-method get",
+          className: "api-method get"
         },
         {
           type: "doc",
           id: "apis/http-data-plane/data-plane-management-controller-get-metadata",
           label: "DataPlaneManagementController_getMetadata",
-          className: "api-method get",
+          className: "api-method get"
         },
         {
           type: "doc",
           id: "apis/http-data-plane/data-plane-management-controller-start-transfer",
           label: "DataPlaneManagementController_startTransfer",
-          className: "api-method post",
+          className: "api-method post"
         },
         {
           type: "doc",
           id: "apis/http-data-plane/data-plane-management-controller-complete-transfer",
           label: "DataPlaneManagementController_completeTransfer",
-          className: "api-method post",
+          className: "api-method post"
         },
         {
           type: "doc",
           id: "apis/http-data-plane/data-plane-management-controller-terminate-transfer",
           label: "DataPlaneManagementController_terminateTransfer",
-          className: "api-method post",
+          className: "api-method post"
         },
         {
           type: "doc",
           id: "apis/http-data-plane/data-plane-management-controller-suspend-transfer",
           label: "DataPlaneManagementController_suspendTransfer",
-          className: "api-method post",
+          className: "api-method post"
         },
         {
           type: "doc",
           id: "apis/http-data-plane/data-plane-management-controller-execute-transfer-get",
           label: "DataPlaneManagementController_executeTransfer_get",
-          className: "api-method get",
+          className: "api-method get"
         },
         {
           type: "doc",
           id: "apis/http-data-plane/data-plane-management-controller-execute-transfer-post",
           label: "DataPlaneManagementController_executeTransfer_post",
-          className: "api-method post",
+          className: "api-method post"
         },
         {
           type: "doc",
           id: "apis/http-data-plane/data-plane-management-controller-execute-transfer-put",
           label: "DataPlaneManagementController_executeTransfer_put",
-          className: "api-method put",
+          className: "api-method put"
         },
         {
           type: "doc",
           id: "apis/http-data-plane/data-plane-management-controller-execute-transfer-delete",
           label: "DataPlaneManagementController_executeTransfer_delete",
-          className: "api-method delete",
+          className: "api-method delete"
         },
         {
           type: "doc",
           id: "apis/http-data-plane/data-plane-management-controller-execute-transfer-patch",
           label: "DataPlaneManagementController_executeTransfer_patch",
-          className: "api-method patch",
+          className: "api-method patch"
         },
         {
           type: "doc",
           id: "apis/http-data-plane/data-plane-management-controller-execute-transfer-options",
           label: "DataPlaneManagementController_executeTransfer_options",
-          className: "api-method options",
+          className: "api-method options"
         },
         {
           type: "doc",
           id: "apis/http-data-plane/data-plane-management-controller-execute-transfer-head",
           label: "DataPlaneManagementController_executeTransfer_head",
-          className: "api-method head",
+          className: "api-method head"
         },
         {
           type: "doc",
           id: "apis/http-data-plane/data-plane-management-controller-execute-transfer-search",
           label: "DataPlaneManagementController_executeTransfer_search",
-          className: "api-method search",
+          className: "api-method search"
         },
         {
           type: "doc",
           id: "apis/http-data-plane/proxy-controller-get-data-get",
           label: "ProxyController_getData_get",
-          className: "api-method get",
+          className: "api-method get"
         },
         {
           type: "doc",
           id: "apis/http-data-plane/proxy-controller-get-data-post",
           label: "ProxyController_getData_post",
-          className: "api-method post",
+          className: "api-method post"
         },
         {
           type: "doc",
           id: "apis/http-data-plane/proxy-controller-get-data-put",
           label: "ProxyController_getData_put",
-          className: "api-method put",
+          className: "api-method put"
         },
         {
           type: "doc",
           id: "apis/http-data-plane/proxy-controller-get-data-delete",
           label: "ProxyController_getData_delete",
-          className: "api-method delete",
+          className: "api-method delete"
         },
         {
           type: "doc",
           id: "apis/http-data-plane/proxy-controller-get-data-patch",
           label: "ProxyController_getData_patch",
-          className: "api-method patch",
+          className: "api-method patch"
         },
         {
           type: "doc",
           id: "apis/http-data-plane/proxy-controller-get-data-options",
           label: "ProxyController_getData_options",
-          className: "api-method options",
+          className: "api-method options"
         },
         {
           type: "doc",
           id: "apis/http-data-plane/proxy-controller-get-data-head",
           label: "ProxyController_getData_head",
-          className: "api-method head",
+          className: "api-method head"
         },
         {
           type: "doc",
           id: "apis/http-data-plane/proxy-controller-get-data-search",
           label: "ProxyController_getData_search",
-          className: "api-method search",
+          className: "api-method search"
         },
         {
           type: "doc",
           id: "apis/http-data-plane/logging-controller-get-ingress-logs",
           label: "LoggingController_getIngressLogs",
-          className: "api-method get",
+          className: "api-method get"
         },
         {
           type: "doc",
           id: "apis/http-data-plane/logging-controller-get-egress-logs",
           label: "LoggingController_getEgressLogs",
-          className: "api-method get",
-        },
-      ],
-    },
-  ],
+          className: "api-method get"
+        }
+      ]
+    }
+  ]
 };
 
 export default sidebar.apisidebar;

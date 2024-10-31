@@ -12,8 +12,8 @@ describe("DID Web Service", () => {
   const config: RootConfig = plainToInstance(RootConfig, {
     server: {
       publicDomain: "localhost:3000",
-      publicAddress: "http://localhost:3000",
-    },
+      publicAddress: "http://localhost:3000"
+    }
   });
   const didId: string = "did:web:localhost%3A3000";
   const keyMaterialGenerator: () => Promise<KeyMaterials> = async () => {
@@ -24,20 +24,20 @@ describe("DID Web Service", () => {
       default: true,
       privateKey: await exportJWK(keyPair.privateKey),
       publicKey: await exportJWK(keyPair.publicKey),
-      caChain: undefined,
+      caChain: undefined
     });
   };
   const serviceGenerator: () => DidServiceConfig = () => {
     return plainToInstance(DidServiceConfig, {
       id: `${didId}#test`,
       type: "Test",
-      serviceEndpoint: config.server.publicAddress,
+      serviceEndpoint: config.server.publicAddress
     });
   };
 
   beforeAll(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
-      providers: [DidWebStrategy],
+      providers: [DidWebStrategy]
     }).compile();
     didWebStrategy = await moduleRef.get(DidWebStrategy);
   });

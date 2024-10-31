@@ -15,8 +15,7 @@ const { urlArray, label } = toRefs(props);
       :key="index"
       :href="url"
       v-tooltip="url"
-      target="_blank"
-    >
+      target="_blank">
       <i class="mx-2 pi pi-external-link text-blue-500"> </i>
     </a>
   </div>

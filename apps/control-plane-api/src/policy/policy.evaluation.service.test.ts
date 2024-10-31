@@ -11,7 +11,7 @@ import { AgreementDao, TransferMonitorDao } from "../model/agreement.dao";
 import { TransferDetailDao, TransferEventDao } from "../model/transfer.dao";
 import {
   NegotiationDetailDao,
-  NegotiationProcessEventDao,
+  NegotiationProcessEventDao
 } from "../model/negotiation.dao";
 import { plainToClass } from "class-transformer";
 import { RootConfig } from "../config";
@@ -22,7 +22,7 @@ import {
   ConstraintModel,
   ConstraintType,
   DataType,
-  EvaluationTrigger,
+  EvaluationTrigger
 } from "./constraint.dto";
 import { EvaluationContext, EvaluationResult } from "./evaluation.dto";
 
@@ -44,7 +44,7 @@ describe("Policy Evaluation Service", () => {
           TransferDetailDao,
           TransferEventDao,
           NegotiationDetailDao,
-          NegotiationProcessEventDao,
+          NegotiationProcessEventDao
         ]),
         TypeOrmModule.forFeature([
           ConstraintDao,
@@ -54,9 +54,9 @@ describe("Policy Evaluation Service", () => {
           TransferDetailDao,
           TransferEventDao,
           NegotiationDetailDao,
-          NegotiationProcessEventDao,
+          NegotiationProcessEventDao
         ]),
-        ScheduleModule.forRoot(),
+        ScheduleModule.forRoot()
       ],
       providers: [
         RuleRepositoryService,
@@ -70,24 +70,24 @@ describe("Policy Evaluation Service", () => {
               return [
                 {
                   state: TransferState.STARTED,
-                  localId: "urn:uuid:3337c8dc-c512-4653-983a-6ea32277f870",
+                  localId: "urn:uuid:3337c8dc-c512-4653-983a-6ea32277f870"
                 },
                 {
                   state: TransferState.STARTED,
-                  localId: "urn:uuid:00000000-0000-0000-0000-000000000000",
-                },
+                  localId: "urn:uuid:00000000-0000-0000-0000-000000000000"
+                }
               ];
             },
-            async suspend() {},
-          },
+            async suspend() {}
+          }
         },
         {
           provide: RootConfig,
           useValue: plainToClass(RootConfig, {
-            iam: { type: "dev", didId: "did:web:localhost" },
-          }),
-        },
-      ],
+            iam: { type: "dev", didId: "did:web:localhost" }
+          })
+        }
+      ]
     }).compile();
 
     ruleRepositoryService = moduleRef.get(RuleRepositoryService);
@@ -107,8 +107,8 @@ describe("Policy Evaluation Service", () => {
         evaluable: [
           EvaluationTrigger.PROVIDER_ON_REQUEST,
           EvaluationTrigger.PROVIDER_CONTINUOUS,
-          EvaluationTrigger.PROVIDER_ON_EXECUTION,
-        ],
+          EvaluationTrigger.PROVIDER_ON_EXECUTION
+        ]
       })
     );
   });
@@ -138,20 +138,20 @@ describe("Policy Evaluation Service", () => {
           "odrl:permission": [
             {
               "@type": "odrl:Permission",
-              "odrl:action": ODRLAction.USE,
-            },
-          ],
+              "odrl:action": ODRLAction.USE
+            }
+          ]
         },
         localSignature: {
           "dspace:algorithm": "JsonWebSignature2020",
-          "dspace:digest": "{}",
+          "dspace:digest": "{}"
         },
         remoteSignature: {
           "dspace:algorithm": "JsonWebSignature2020",
-          "dspace:digest": "{}",
+          "dspace:digest": "{}"
         },
-        signatureStatus: "verified",
-      },
+        signatureStatus: "verified"
+      }
     };
     it("Evaluate", async () => {
       const context = EvaluationContext.parse({
@@ -160,53 +160,53 @@ describe("Policy Evaluation Service", () => {
           testString: "Test String",
           testUri: "urn:uuid:bac46e31-79f8-4744-82c3-0b09012d2d95",
           testNumber: 5,
-          testDate: "2024-08-01",
-        },
+          testDate: "2024-08-01"
+        }
       });
       const evaluation = new Evaluation(context, ruleRepositoryService);
       await expect(evaluation.evaluate()).resolves.toMatchObject({
-        decision: "ALLOW",
+        decision: "ALLOW"
       });
       evaluation["context"].target =
         "urn:uuid:00000000-0000-0000-0000-000000000000";
       await expect(evaluation.evaluate()).resolves.toMatchObject({
-        decision: "DENY",
+        decision: "DENY"
       });
       evaluation["context"].target =
         "urn:uuid:33147fb2-8896-4a53-983b-61000b6559b6";
       evaluation["context"].role = "consumer";
       await expect(evaluation.evaluate()).resolves.toMatchObject({
-        decision: "DENY",
+        decision: "DENY"
       });
       evaluation["context"].role = "provider";
       evaluation["context"].remoteParticipant = "did:web:localhost";
       await expect(evaluation.evaluate()).resolves.toMatchObject({
-        decision: "DENY",
+        decision: "DENY"
       });
       evaluation["context"].remoteParticipant = "did:web:remote.com";
       evaluation["context"]["policy"]["agreement"]["odrl:prohibition"] = [
         {
           "@type": "odrl:Prohibition",
-          "odrl:action": ODRLAction.DELETE,
-        },
+          "odrl:action": ODRLAction.DELETE
+        }
       ];
       evaluation["context"]["policy"]["agreement"]["odrl:obligation"] = [
         {
           "@type": "odrl:Duty",
-          "odrl:action": ODRLAction.INFORM,
-        },
+          "odrl:action": ODRLAction.INFORM
+        }
       ];
       await expect(evaluation.evaluate()).resolves.toMatchObject({
-        decision: "ALLOW",
+        decision: "ALLOW"
       });
       evaluation["context"]["policy"]["agreement"]["odrl:prohibition"] = [
         {
           "@type": "odrl:Prohibition",
-          "odrl:action": ODRLAction.USE,
-        },
+          "odrl:action": ODRLAction.USE
+        }
       ];
       await expect(evaluation.evaluate()).resolves.toMatchObject({
-        decision: "DENY",
+        decision: "DENY"
       });
       evaluation["context"]["policy"]["agreement"]["odrl:prohibition"] = [
         {
@@ -217,13 +217,13 @@ describe("Policy Evaluation Service", () => {
               "@type": "odrl:Constraint",
               "odrl:leftOperand": "tsg:testString2",
               "odrl:operator": "tsg:unknown",
-              "odrl:rightOperand": "unknown",
-            },
-          ],
-        },
+              "odrl:rightOperand": "unknown"
+            }
+          ]
+        }
       ];
       await expect(evaluation.evaluate()).resolves.toMatchObject({
-        decision: "DENY",
+        decision: "DENY"
       });
       evaluation["context"]["policy"]["agreement"]["odrl:prohibition"] =
         undefined;
@@ -236,18 +236,18 @@ describe("Policy Evaluation Service", () => {
               "@type": "odrl:Constraint",
               "odrl:leftOperand": "tsg:testString2",
               "odrl:operator": "tsg:unknown",
-              "odrl:rightOperand": "unknown",
-            },
-          ],
-        },
+              "odrl:rightOperand": "unknown"
+            }
+          ]
+        }
       ];
       await expect(evaluation.evaluate()).resolves.toMatchObject({
-        decision: "DENY",
+        decision: "DENY"
       });
       evaluation["context"]["policy"]["agreement"]["odrl:permission"] =
         undefined;
       await expect(evaluation.evaluate()).resolves.toMatchObject({
-        decision: "ALLOW",
+        decision: "ALLOW"
       });
     });
     it("Promise map", async () => {
@@ -277,9 +277,9 @@ describe("Policy Evaluation Service", () => {
             "odrl:permission": [
               {
                 "@type": "odrl:Permission",
-                "odrl:action": ODRLAction.USE,
-              },
-            ],
+                "odrl:action": ODRLAction.USE
+              }
+            ]
           },
           "urn:uuid:00000000-0000-0000-0000-000000000000"
         );
@@ -302,26 +302,26 @@ describe("Policy Evaluation Service", () => {
               "odrl:permission": [
                 {
                   "@type": "odrl:Permission",
-                  "odrl:action": ODRLAction.USE,
-                },
-              ],
+                  "odrl:action": ODRLAction.USE
+                }
+              ]
             },
             localSignature: {
               "dspace:algorithm": "JsonWebSignature2020",
-              "dspace:digest": "{}",
+              "dspace:digest": "{}"
             },
             remoteSignature: {
               "dspace:algorithm": "JsonWebSignature2020",
-              "dspace:digest": "{}",
+              "dspace:digest": "{}"
             },
-            signatureStatus: "verified",
+            signatureStatus: "verified"
           },
           dataPlane: {
             testString: "Test String",
             testUri: "urn:uuid:bac46e31-79f8-4744-82c3-0b09012d2d95",
             testNumber: 5,
-            testDate: "2024-08-01",
-          },
+            testDate: "2024-08-01"
+          }
         });
         const result = await policyEvaluationService.evaluate(context);
         expect(result.decision).toBe("ALLOW");
@@ -343,8 +343,8 @@ describe("Policy Evaluation Service", () => {
             testString: "Test String",
             testUri: "urn:uuid:bac46e31-79f8-4744-82c3-0b09012d2d95",
             testNumber: 5,
-            testDate: "2024-08-01",
-          },
+            testDate: "2024-08-01"
+          }
         });
         expect(result.decision).toBe("DENY");
         const result2 = await policyEvaluationService.evaluateDataPlane(
@@ -353,7 +353,7 @@ describe("Policy Evaluation Service", () => {
             testString: "Test String",
             testUri: "urn:uuid:bac46e31-79f8-4744-82c3-0b09012d2d95",
             testNumber: 5,
-            testDate: "2024-08-01",
+            testDate: "2024-08-01"
           }
         );
         expect(result2.decision).toBe("DENY");
@@ -364,7 +364,7 @@ describe("Policy Evaluation Service", () => {
               testString: "Test String",
               testUri: "urn:uuid:bac46e31-79f8-4744-82c3-0b09012d2d95",
               testNumber: 5,
-              testDate: "2024-08-01",
+              testDate: "2024-08-01"
             }
           )
         ).rejects.toThrow("No context found");

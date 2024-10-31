@@ -24,7 +24,7 @@ const containerClass = computed(() => {
       layoutState.staticMenuDesktopInactive &&
       layoutConfig.menuMode === "static",
     "layout-overlay-active": layoutState.overlayMenuActive,
-    "layout-mobile-active": layoutState.staticMenuMobileActive,
+    "layout-mobile-active": layoutState.staticMenuMobileActive
   };
 });
 const menuList: Menu[] = [
@@ -34,9 +34,9 @@ const menuList: Menu[] = [
       {
         label: "Dashboard",
         icon: "pi pi-fw pi-id-card",
-        to: "/",
-      },
-    ],
+        to: "/"
+      }
+    ]
   },
   {
     label: "DID",
@@ -44,19 +44,19 @@ const menuList: Menu[] = [
       {
         label: "Services",
         icon: "pi pi-fw pi-code",
-        to: "/services",
+        to: "/services"
       },
       {
         label: "Key management",
         icon: "pi pi-fw pi-key",
-        to: "/keys",
+        to: "/keys"
       },
       {
         label: "Signature",
         icon: "pi pi-fw pi-verified",
-        to: "/signature",
-      },
-    ],
+        to: "/signature"
+      }
+    ]
   },
   {
     label: "Credentials",
@@ -64,23 +64,23 @@ const menuList: Menu[] = [
       {
         label: "Overview",
         icon: "pi pi-fw pi-home",
-        to: "/credentials",
+        to: "/credentials"
       },
       {
         label: "Import plain credential",
         icon: "pi pi-fw pi-file-import",
-        to: "/credentials/import",
+        to: "/credentials/import"
       },
       ...(runtimeStore.gaiaXSupport
         ? [
             {
               label: "Gaia-X Credentials",
               icon: "pi pi-fw pi-verified",
-              to: "/credentials/gaiax",
-            },
+              to: "/credentials/gaiax"
+            }
           ]
-        : []),
-    ],
+        : [])
+    ]
   },
   {
     label: "Issuance",
@@ -88,14 +88,14 @@ const menuList: Menu[] = [
       {
         label: "Manual issuance",
         icon: "pi pi-fw pi-pencil",
-        to: "/credentials/issue",
+        to: "/credentials/issue"
       },
       {
         label: "OpenID 4 VCI",
         icon: "pi pi-fw pi-refresh",
-        to: "/credentials/oid4vci",
-      },
-    ],
+        to: "/credentials/oid4vci"
+      }
+    ]
   },
   {
     label: "Presentation",
@@ -103,9 +103,9 @@ const menuList: Menu[] = [
       {
         label: "Manual presentation request",
         icon: "pi pi-fw pi-wrench",
-        to: "/presentation",
-      },
-    ],
+        to: "/presentation"
+      }
+    ]
   },
   {
     label: "Contexts",
@@ -113,32 +113,32 @@ const menuList: Menu[] = [
       {
         label: "JSON-LD Contexts",
         icon: "pi pi-fw pi-search-plus",
-        to: "/contexts",
-      },
-    ],
-  },
+        to: "/contexts"
+      }
+    ]
+  }
 ];
 
 const footer: FooterProps = {
   baseLogoUrl: baseLogoUrl,
-  footerText: "TNO",
+  footerText: "TNO"
 };
 const route = useRoute();
 
 const sidebar: MenuProps = {
   menu: menuList,
-  route: route,
+  route: route
 };
 </script>
 <template>
   <div class="layout-wrapper" :class="containerClass">
-    <AppLayout 
+    <AppLayout
       :topbar="{
         title: 'Wallet',
         name: runtimeStore.title ?? '',
         baseLogoUrl: baseLogoUrl,
         user: userStore.user,
-        router: useRouter(),
+        router: useRouter()
       }"
       :footer="footer"
       :sidebar="sidebar" />

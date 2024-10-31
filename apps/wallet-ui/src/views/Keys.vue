@@ -23,21 +23,21 @@ const rawDialog = ref(false);
 const keyForm = ref<KeyForm>({
   type: "EdDSA",
   id: "key-",
-  default: false,
+  default: false
 });
 const keyTypes = ref([
   {
     value: "EdDSA",
-    label: "EdDSA (Edwards-curve DSA)",
+    label: "EdDSA (Edwards-curve DSA)"
   },
   {
     value: "ES384",
-    label: "ES384 (P-384 curve DSA)",
+    label: "ES384 (P-384 curve DSA)"
   },
   {
     value: "X509",
-    label: "RSA (X.509)",
-  },
+    label: "RSA (X.509)"
+  }
 ]);
 
 const loadKeys = async () => {
@@ -45,32 +45,34 @@ const loadKeys = async () => {
     const response = await http<KeyInfo[]>("management/keys");
     keys.value = response.data;
   } catch (error) {
-    toast.add(toastError({
-      error,
-      summary: "Could not load keys",
-      defaultMessage: `Error in fetching key configurations`
-    }));
+    toast.add(
+      toastError({
+        error,
+        summary: "Could not load keys",
+        defaultMessage: `Error in fetching key configurations`
+      })
+    );
   }
 };
 
 const setDefaultKey = async (keyId: string) => {
   try {
-    await http.put(
-      `management/keys/${encodeURIComponent(keyId)}/default`
-    );
+    await http.put(`management/keys/${encodeURIComponent(keyId)}/default`);
     await loadKeys();
     toast.add({
       severity: "success",
       summary: "Success",
       detail: "Default key updated",
-      life: 3000,
+      life: 3000
     });
   } catch (error) {
-    toast.add(toastError({
-      error,
-      summary: "Could not update default key",
-      defaultMessage: `Error in updating default key configuration`
-    }));
+    toast.add(
+      toastError({
+        error,
+        summary: "Could not update default key",
+        defaultMessage: `Error in updating default key configuration`
+      })
+    );
   }
 };
 
@@ -86,24 +88,24 @@ const deleteKey = async (keyId: string) => {
     acceptClass: "p-button-danger",
     accept: async () => {
       try {
-        await http.delete(
-          `management/keys/${encodeURIComponent(keyId)}`
-        );
+        await http.delete(`management/keys/${encodeURIComponent(keyId)}`);
         await loadKeys();
         toast.add({
           severity: "success",
           summary: "Success",
           detail: "Key deleted",
-          life: 3000,
+          life: 3000
         });
       } catch (error) {
-        toast.add(toastError({
-          error,
-          summary: "Could not delete key",
-          defaultMessage: `Error in deleting key configuration`
-        }));
+        toast.add(
+          toastError({
+            error,
+            summary: "Could not delete key",
+            defaultMessage: `Error in deleting key configuration`
+          })
+        );
       }
-    },
+    }
   });
 };
 
@@ -115,14 +117,16 @@ const addKey = async () => {
       severity: "success",
       summary: "Success",
       detail: "Key added",
-      life: 3000,
+      life: 3000
     });
   } catch (error) {
-    toast.add(toastError({
-      error,
-      summary: "Could not add key",
-      defaultMessage: `Error in registering key configuration`
-    }));
+    toast.add(
+      toastError({
+        error,
+        summary: "Could not add key",
+        defaultMessage: `Error in registering key configuration`
+      })
+    );
   }
 };
 
@@ -155,16 +159,14 @@ onMounted(async () => {
           sort-field="id"
           :sort-order="1"
           paginator
-          :rows="10"
-        >
+          :rows="10">
           <Column field="id" header="ID" />
           <Column field="type" header="Type" />
           <Column field="default" header="Default">
             <template #body="props">
               <i
                 v-if="props.data.default"
-                class="pi pi-check-circle text-green-500"
-              />
+                class="pi pi-check-circle text-green-500" />
               <i v-else class="pi pi-times-circle text-red-500" />
             </template>
           </Column>
@@ -189,8 +191,7 @@ onMounted(async () => {
                 severity="danger"
                 icon="pi pi-times"
                 :disabled="props.data.default"
-                @click="deleteKey(props.data.id)"
-              />
+                @click="deleteKey(props.data.id)" />
             </template>
           </Column>
         </DataTable>
@@ -199,8 +200,7 @@ onMounted(async () => {
           v-model:visible="rawDialog"
           modal
           header="Raw keys"
-          :style="{ width: '90vw', maxWidth: '75rem' }"
-        >
+          :style="{ width: '90vw', maxWidth: '75rem' }">
           <MonacoEditorVue :static="keys" :read-only="true" :max-lines="100" />
         </Dialog>
       </template>
@@ -225,8 +225,7 @@ onMounted(async () => {
               v-model="keyForm.type"
               :options="keyTypes"
               option-label="label"
-              option-value="value"
-            />
+              option-value="value" />
           </FormField>
           <FormField label="Key ID" v-slot="props">
             <InputText :id="props.id" class="w-full" v-model="keyForm.id" />
@@ -237,28 +236,24 @@ onMounted(async () => {
           <FormField
             label="Existing key (PKCS#8)"
             v-slot="props"
-            v-if="keyForm.type === 'X509'"
-          >
+            v-if="keyForm.type === 'X509'">
             <Textarea
               :id="props.id"
               v-model="keyForm.existingKey"
               class="w-full"
               style="font-family: monospace"
-              rows="10"
-            />
+              rows="10" />
           </FormField>
           <FormField
             label="Existing certificate (chain) (PEM)"
             v-slot="props"
-            v-if="keyForm.type === 'X509'"
-          >
+            v-if="keyForm.type === 'X509'">
             <Textarea
               :id="props.id"
               v-model="keyForm.existingCertificate"
               class="w-full"
               style="font-family: monospace"
-              rows="10"
-            />
+              rows="10" />
           </FormField>
           <FormField no-label>
             <Button label="Add key" type="submit" />

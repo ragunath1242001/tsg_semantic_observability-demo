@@ -5,7 +5,7 @@ import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
 import {
   CredentialSubject,
   VerifiableCredential,
-  VerifiablePresentation,
+  VerifiablePresentation
 } from "@tsg-dsp/common-dsp";
 import schema from "@tsg-dsp/common-ui/assets/presentation-definition.schema.json";
 import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
@@ -20,7 +20,7 @@ const holderForm = ref<{
   scope: string;
 }>({
   audience: userStore.user?.didId || "",
-  scope: "",
+  scope: ""
 });
 const holderIdToken = ref<string>();
 
@@ -41,17 +41,17 @@ const verifierForm = ref<{
                 path: ["$.type"],
                 filter: {
                   type: "string",
-                  pattern: "VerifiableCredential",
-                },
-              },
-            ],
-          },
-        },
-      ],
+                  pattern: "VerifiableCredential"
+                }
+              }
+            ]
+          }
+        }
+      ]
     },
     null,
     2
-  ),
+  )
 });
 
 const verifierResponse = ref<{
@@ -62,59 +62,61 @@ const verifierResponse = ref<{
 
 const requestHolderIDToken = async () => {
   try {
-    const response = await http<{ id_token: string }>(
-      "iatp/holder/token",
-      {
-        params: {
-          audience: holderForm.value.audience,
-          scope:
-            holderForm.value.scope.trim() === ""
-              ? undefined
-              : holderForm.value.scope,
-        },
+    const response = await http<{ id_token: string }>("iatp/holder/token", {
+      params: {
+        audience: holderForm.value.audience,
+        scope:
+          holderForm.value.scope.trim() === ""
+            ? undefined
+            : holderForm.value.scope
       }
-    );
+    });
     holderIdToken.value = response.data.id_token;
     if (holderForm.value.audience === userStore.user?.didId) {
       verifierForm.value.holderIDToken = response.data.id_token;
     }
   } catch (error) {
-    toast.add(toastError({
-      error,
-      summary: "Could not create ID token",
-      defaultMessage: `Could not create ID token for ${holderForm.value.audience}`
-    }));
+    toast.add(
+      toastError({
+        error,
+        summary: "Could not create ID token",
+        defaultMessage: `Could not create ID token for ${holderForm.value.audience}`
+      })
+    );
   }
 };
 
 const requestVerification = async () => {
   verifierResponse.value = undefined;
   try {
-    const response = await http.post<
-      VerifiablePresentation
-    >("iatp/verifier/verify", {
-      holderIdToken: verifierForm.value.holderIDToken,
-      presentationDefinition: JSON.parse(
-        verifierForm.value.presentationDefinition
-      ),
-    });
+    const response = await http.post<VerifiablePresentation>(
+      "iatp/verifier/verify",
+      {
+        holderIdToken: verifierForm.value.holderIDToken,
+        presentationDefinition: JSON.parse(
+          verifierForm.value.presentationDefinition
+        )
+      }
+    );
     verifierResponse.value = {
       success: true,
-      body: JSON.stringify(response.data, null, 2),
+      body: JSON.stringify(response.data, null, 2)
     };
   } catch (error) {
     if (error.response) {
       verifierResponse.value = {
         success: false,
         body: JSON.stringify(error.response.data, null, 2),
-        code: error.response.status,
+        code: error.response.status
       };
     } else {
-      toast.add(toastError({
-        error,
-        summary: "Could not request verification",
-        defaultMessage: `Error in requesting verification of presentation definition`
-      }));
+      toast.add(
+        toastError({
+          error,
+          summary: "Could not request verification",
+          defaultMessage: `Error in requesting verification of presentation definition`
+        })
+      );
     }
   }
 };
@@ -125,7 +127,7 @@ const copyToken = (token: string) => {
     severity: "success",
     summary: "Copied",
     detail: "Copied token to clipboard",
-    life: 3000,
+    life: 3000
   });
 };
 </script>
@@ -179,21 +181,18 @@ const copyToken = (token: string) => {
       <template #content>
         <form
           class="flex flex-col gap-4"
-          @submit.prevent="requestHolderIDToken"
-        >
+          @submit.prevent="requestHolderIDToken">
           <FormField label="Audience" v-slot="props">
             <InputText
               :id="props.id"
               class="w-full"
-              v-model="holderForm.audience"
-            />
+              v-model="holderForm.audience" />
           </FormField>
           <FormField label="Bearer scope" v-slot="props">
             <InputText
               :id="props.id"
               class="w-full"
-              v-model="holderForm.scope"
-            />
+              v-model="holderForm.scope" />
           </FormField>
           <FormField no-label>
             <Button label="Request ID token" type="submit" />
@@ -207,8 +206,7 @@ const copyToken = (token: string) => {
           <Button
             class="mr-2"
             label="Copy token"
-            @click="copyToken(holderIdToken)"
-          />
+            @click="copyToken(holderIdToken)" />
         </Panel>
       </template>
     </Card>
@@ -244,16 +242,14 @@ const copyToken = (token: string) => {
               :id="props.id"
               class="w-full"
               v-model="verifierForm.holderIDToken"
-              placeholder="eyJhb..."
-            />
+              placeholder="eyJhb..." />
           </FormField>
           <FormField label="Presentation Definition" v-slot="props">
             <MonacoEditorVue
               v-model="verifierForm.presentationDefinition"
               :schema="schema"
               :min-lines="3"
-              :max-lines="30"
-            ></MonacoEditorVue>
+              :max-lines="30"></MonacoEditorVue>
           </FormField>
           <FormField no-label>
             <Button label="Request presentation" type="submit" />
@@ -269,8 +265,7 @@ const copyToken = (token: string) => {
           <MonacoEditorVue
             :static="verifierResponse.body"
             :read-only="true"
-            :max-lines="100"
-          />
+            :max-lines="100" />
         </Panel>
       </template>
     </Card>

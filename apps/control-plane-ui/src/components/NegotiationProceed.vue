@@ -21,14 +21,14 @@ const proceedNegotiation = async (negotiation: INegotiationStatusDto) => {
       severity: "success",
       summary: "Success",
       detail: "Successfully sent contract agreement",
-      life: 3000,
+      life: 3000
     });
   } catch (error) {
     toast.add(
       toastError({
         error,
         summary: "Failed to send negotiation agreement",
-        defaultMessage: "Could not send negotiation agreement",
+        defaultMessage: "Could not send negotiation agreement"
       })
     );
     console.error(`Could not send negotiation agreement. Error: ${error}`);
@@ -42,7 +42,7 @@ const declineNegotiation = async (negotiation) => {
       severity: "success",
       summary: "Success",
       detail: "Successfully declined contract offer",
-      life: 3000,
+      life: 3000
     });
     close();
   } catch (error) {
@@ -50,7 +50,7 @@ const declineNegotiation = async (negotiation) => {
       toastError({
         error,
         summary: "Failed to decline contract offer",
-        defaultMessage: "Could not decline contract offer",
+        defaultMessage: "Could not decline contract offer"
       })
     );
     console.error(`Could not decline contract offer. Error: ${error}`);
@@ -66,8 +66,7 @@ const declineNegotiation = async (negotiation) => {
         </div>
         <div
           class="flex items-center justify-center bg-blue-100 rounded-border"
-          style="width: 2.5rem; height: 2.5rem"
-        >
+          style="width: 2.5rem; height: 2.5rem">
           <i class="pi pi-file text-blue-500 text-xl"></i>
         </div></div
     ></template>
@@ -80,8 +79,7 @@ const declineNegotiation = async (negotiation) => {
         >{{ negotiation.remoteParty.replace("%3A", ":") }}
       </span>
       <span
-        class="block text-surface-600 dark:text-surface-200 font-small mb-4"
-      >
+        class="block text-surface-600 dark:text-surface-200 font-small mb-4">
         <template v-if="endState === 'verify'">accepted/agreed to</template
         ><template v-else>verified</template> your request. Do you want to
         {{ endState }}?
@@ -93,16 +91,14 @@ const declineNegotiation = async (negotiation) => {
           icon="pi pi-times"
           type="submit"
           class="p-button-outlined"
-          @click="declineNegotiation(negotiation)"
-        />
+          @click="declineNegotiation(negotiation)" />
         <Button
           label="Sign"
           severity="success"
           icon="pi pi-check"
           type="submit"
           class="p-button-outlined"
-          @click="proceedNegotiation(negotiation)"
-        />
+          @click="proceedNegotiation(negotiation)" />
       </div>
     </template>
   </Card>

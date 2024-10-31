@@ -15,20 +15,20 @@ watch(valueRef, (newValue) => {
 const props = defineProps({
   schema: {
     type: Object,
-    required: true,
+    required: true
   },
   name: {
     type: String,
-    required: true,
+    required: true
   },
   didId: {
     type: String,
-    required: false,
+    required: false
   },
   required: {
     type: Boolean,
-    required: true,
-  },
+    required: true
+  }
 });
 
 const parsedProperties = computed(() => {
@@ -99,8 +99,7 @@ onMounted(() => {
     :label="schema.title ?? name"
     class="pl-6"
     v-slot="props"
-    :label-width="typeRef === 'object' ? 12 : 2"
-  >
+    :label-width="typeRef === 'object' ? 12 : 2">
     <template v-if="typeRef === 'const'">
       <InputText v-model="valueRef" disabled class="w-full" />
     </template>
@@ -110,8 +109,7 @@ onMounted(() => {
         class="w-full"
         v-model="valueRef"
         :placeholder="name"
-        :options="schema.enum"
-      />
+        :options="schema.enum" />
     </template>
     <template v-else-if="typeRef === 'string'">
       <InputText
@@ -125,8 +123,7 @@ onMounted(() => {
           schema.pattern
             ? `Field must conform to pattern: ${schema.pattern}`
             : undefined
-        "
-      />
+        " />
     </template>
     <template v-else-if="typeRef === 'number'">
       <InputNumber
@@ -134,8 +131,7 @@ onMounted(() => {
         class="w-full"
         v-model="valueRef"
         :placeholder="name"
-        :required="required"
-      />
+        :required="required" />
     </template>
     <template v-else-if="typeRef === 'boolean'">
       <ToggleButton :id="props.id" class="w-full" v-model="valueRef" />
@@ -147,8 +143,7 @@ onMounted(() => {
         :key="key"
         :name="key"
         :required="schema.required?.includes(key)"
-        @input="emitValue"
-      ></JsonSchemaFormElement>
+        @input="emitValue"></JsonSchemaFormElement>
     </template>
     <template v-else-if="typeRef === 'array'">
       <template v-if="getType(schema.items) !== 'string'"
@@ -160,8 +155,7 @@ onMounted(() => {
           class="w-full"
           v-model="valueRef"
           multiple
-          typeahead
-        ></AutoComplete>
+          typeahead></AutoComplete>
       </template>
     </template>
   </FormField>

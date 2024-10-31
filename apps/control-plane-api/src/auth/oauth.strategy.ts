@@ -18,10 +18,10 @@ export class OAuthStrategy extends PassportStrategy(Strategy, "oauth") {
       clientID: authConfig.clientId,
       clientSecret: authConfig.clientSecret,
       callbackURL: authConfig.callbackURL,
-      state: true,
+      state: true
     });
     Object.defineProperty(this._verify, "length", {
-      value: this.validate.length + 1,
+      value: this.validate.length + 1
     });
   }
 

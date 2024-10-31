@@ -3,7 +3,7 @@ import "reflect-metadata";
 import {
   serializableTypes,
   hasDecorator,
-  getStringDecorator,
+  getStringDecorator
 } from "./decorators";
 import { filteredKeys } from "../utils/keys";
 import { defaultContext } from "../jsonld/context.defaults";
@@ -82,6 +82,6 @@ function serializeJsonLdObject(
   }
   return {
     ...result,
-    ...obj["extraProps"],
+    ...obj["extraProps"]
   };
 }

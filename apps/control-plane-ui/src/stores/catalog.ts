@@ -13,7 +13,7 @@ export const useCatalogStore = defineStore("catalog", {
     catalog: null,
     urlInput: "",
     assigner: "",
-    didInput: "",
+    didInput: ""
   }),
 
   getters: {},
@@ -24,6 +24,6 @@ export const useCatalogStore = defineStore("catalog", {
       this.urlInput = payload.urlInput;
       this.assigner = payload.assigner;
       this.didInput = payload.didInput;
-    },
-  },
+    }
+  }
 });

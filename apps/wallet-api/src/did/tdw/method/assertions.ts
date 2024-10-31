@@ -6,7 +6,7 @@ import { canonizeAndHash } from "../../../utils/keys/canonization.js";
 
 export const keyIsAuthorized = (
   verificationMethod: string,
-  updateKeys: string[],
+  updateKeys: string[]
 ) => {
   return updateKeys.includes(verificationMethod);
 };
@@ -14,7 +14,7 @@ export const keyIsAuthorized = (
 export const documentStateIsValid = async (
   doc: any,
   proofs: any[],
-  updateKeys: string[],
+  updateKeys: string[]
 ) => {
   const allowedCcyptosuite = ["eddsa-jcs-2022", "ecdsa-jcs-2019", "RSASSA-PSS"];
   let i = 0;
@@ -22,7 +22,7 @@ export const documentStateIsValid = async (
     const proof = proofs[i];
     if (!keyIsAuthorized(proof.verificationMethod.split("#")[0], updateKeys)) {
       throw new Error(
-        `key ${proof.verificationMethod} is not authorized to update.`,
+        `key ${proof.verificationMethod} is not authorized to update.`
       );
     }
     if (proof.type !== "DataIntegrityProof") {
@@ -40,15 +40,15 @@ export const documentStateIsValid = async (
     const input = Buffer.concat([dataHash, proofHash]).toString("hex");
     const jwk = encodedPublicKeyMultiBaseToJWK(
       proof.cryptosuite,
-      proof.verificationMethod.split("#")[0],
+      proof.verificationMethod.split("#")[0]
     );
     try {
       const jwsHeader = Buffer.from(
         JSON.stringify({
           alg: jwk.alg!,
           b64: false,
-          crit: ["b64"],
-        }),
+          crit: ["b64"]
+        })
       ).toString("base64url");
       const jwsSignature = base58btcToBase64url(proofValue);
       const jws = `${jwsHeader}.${input}.${jwsSignature}`;
@@ -67,7 +67,7 @@ export const newKeysAreValid = (
   previousNextKeyHashes: string[],
   nextKeyHashes: string[],
   previousPrerotate: boolean,
-  prerotate: boolean,
+  prerotate: boolean
 ) => {
   if (prerotate && nextKeyHashes.length === 0) {
     throw new Error(`nextKeyHashes are required if prerotation enabled`);

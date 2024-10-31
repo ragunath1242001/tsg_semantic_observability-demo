@@ -18,38 +18,38 @@ const router = createRouter({
         {
           path: "/",
           name: "dashboard",
-          component: Dashboard,
+          component: Dashboard
         },
         {
           path: "/metadata",
           name: "metadata",
-          component: Metadata,
+          component: Metadata
         },
         {
           path: "/logging",
           name: "logging",
-          component: Logging,
+          component: Logging
         },
         {
           path: "/files",
-          component: Files,
+          component: Files
         },
         {
           path: "/files/upload",
           name: "fileUpload",
-          component: FilesUpload,
-        },
-      ],
+          component: FilesUpload
+        }
+      ]
     },
     {
       path: "/login",
       name: "login",
-      component: LoginVue,
-    },
+      component: LoginVue
+    }
   ],
   scrollBehavior(to, from, savedPosition) {
     return { top: 0 };
-  },
+  }
 });
 router.beforeEach(async (to) => {
   // redirect to login page if not logged in and trying to access a restricted page

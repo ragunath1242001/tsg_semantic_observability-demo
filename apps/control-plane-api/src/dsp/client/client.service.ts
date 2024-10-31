@@ -17,7 +17,7 @@ import {
   TransferRequestMessage,
   TransferStartMessage,
   TransferSuspensionMessage,
-  TransferTerminationMessage,
+  TransferTerminationMessage
 } from "@tsg-dsp/common-dsp";
 import axios, { AxiosRequestConfig } from "axios";
 import { AuthService } from "../../auth/auth.service";
@@ -29,7 +29,7 @@ export class DspClientService {
   private readonly logger = new Logger(this.constructor.name);
 
   private readonly axios = axios.create({
-    timeout: 30000,
+    timeout: 30000
   });
 
   async requestCatalog(
@@ -39,7 +39,7 @@ export class DspClientService {
     filters?: Array<any>
   ): Promise<CatalogDto> {
     const catalogRequestMessage = new CatalogRequestMessage({
-      filter: filters,
+      filter: filters
     });
     return await this.executePost<CatalogDto, CatalogRequestMessage>(
       address,
@@ -253,8 +253,8 @@ export class DspClientService {
       const response = await this.axios.get<Out>(address, {
         ...config,
         headers: {
-          Authorization: `Bearer ${await this.getToken(address, audience)}`,
-        },
+          Authorization: `Bearer ${await this.getToken(address, audience)}`
+        }
       });
       return response.data;
     } catch (err) {
@@ -274,8 +274,8 @@ export class DspClientService {
       const response = await this.axios.post<Out>(address, bodyDto, {
         ...config,
         headers: {
-          Authorization: `Bearer ${await this.getToken(address, audience)}`,
-        },
+          Authorization: `Bearer ${await this.getToken(address, audience)}`
+        }
       });
       this.logger.log(message);
       return response.data;

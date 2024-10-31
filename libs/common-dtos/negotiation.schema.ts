@@ -15,11 +15,11 @@ import {
   NegotiationEvent,
   NegotiationProcessEvent,
   NegotiationRole,
-  OfferDto,
+  OfferDto
 } from "@tsg-dsp/common-dsp";
 import {
   INegotiationStatusDto,
-  NegotiationProcessEventDto,
+  NegotiationProcessEventDto
 } from "@tsg-dsp/control-plane-dtos";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { MultilanguageSchema, ReferenceSchema } from "./common.schema";

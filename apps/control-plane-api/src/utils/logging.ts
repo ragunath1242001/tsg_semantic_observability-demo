@@ -2,7 +2,7 @@ import {
   Injectable,
   NestMiddleware,
   Logger,
-  ConsoleLogger,
+  ConsoleLogger
 } from "@nestjs/common";
 import { AsyncLocalStorage } from "async_hooks";
 import { Request, Response, NextFunction } from "express";

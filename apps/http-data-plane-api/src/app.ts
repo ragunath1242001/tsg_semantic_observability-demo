@@ -8,16 +8,16 @@ import crypto from "crypto";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
-    rawBody: true,
+    rawBody: true
   });
   const config = app.get(ServerConfig);
   Logger.log(
     `Listening on ${config.listen}:${config.port} with public address ${config.publicAddress}`,
-    "App",
+    "App"
   );
   if (process.env["EMBEDDED_FRONTEND"]) {
     app.setGlobalPrefix(`${process.env["SUBPATH"] ?? ""}/api`, {
-      exclude: ["health", "api/health"],
+      exclude: ["health", "api/health"]
     });
   }
   app.use(
@@ -25,14 +25,14 @@ async function bootstrap() {
       name: "connect.sid.tsghdp",
       secret: process.env["SESSION_SECRET"] || crypto.randomUUID(),
       resave: false,
-      saveUninitialized: false,
-    }),
+      saveUninitialized: false
+    })
   );
   app.use(passport.initialize());
   app.use(passport.session());
   app.enableCors({
     allowedHeaders: "*",
-    origin: "*",
+    origin: "*"
   });
   await app.listen(config.port, config.listen);
 }

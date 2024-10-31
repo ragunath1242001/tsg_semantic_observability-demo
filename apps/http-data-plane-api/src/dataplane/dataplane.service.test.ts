@@ -11,7 +11,7 @@ import {
   AgreementDto,
   DataPlaneCreation,
   DatasetDto,
-  OfferDto,
+  OfferDto
 } from "@tsg-dsp/common-dsp";
 import { TypeOrmTestHelper } from "../utils/testhelper";
 import { TransferDao } from "./transfer.dao";
@@ -36,7 +36,7 @@ describe("Dataplane Service", () => {
         managementEndpoint: "http://localhost:3000/management",
         controlEndpoint: "http://localhost:3000",
         authorization: "Basic YWRtaW46YWRtaW4=",
-        initializationDelay: 1,
+        initializationDelay: 1
       },
       dataset: {
         id: `urn:uuid:test`,
@@ -48,15 +48,15 @@ describe("Dataplane Service", () => {
             distributions: [
               {
                 mediaType: "http/json",
-                backendUrl: "https://httpbin.org/anything", // This URL returns anything that is passed in the request data.
-              }, //  The testcases expect this, so keep this url as backend.
-            ],
-          },
-        ],
+                backendUrl: "https://httpbin.org/anything" // This URL returns anything that is passed in the request data.
+              } //  The testcases expect this, so keep this url as backend.
+            ]
+          }
+        ]
       },
       logging: {
-        debug: true,
-      },
+        debug: true
+      }
     });
 
     server = setupServer(
@@ -67,21 +67,21 @@ describe("Dataplane Service", () => {
           managementToken = requestBody.managementToken;
           return HttpResponse.json({
             ...requestBody,
-            identifier: "urn:uuid:4ab97081-665e-447e-88a1-791a185994b9",
+            identifier: "urn:uuid:4ab97081-665e-447e-88a1-791a185994b9"
           });
-        },
+        }
       ),
       http.post(
         `${config.controlPlane.dataPlaneEndpoint}/:id/catalog`,
         ({ request, params, cookies }) => {
           return HttpResponse.json(request.json());
-        },
+        }
       ),
       http.post(
         `${config.controlPlane.managementEndpoint}/transfers/:processId/:action`,
         () => {
           return HttpResponse.json({ status: "OK" });
-        },
+        }
       ),
       http.get(
         `${config.controlPlane.managementEndpoint}/agreements/:agreementId`,
@@ -93,18 +93,18 @@ describe("Dataplane Service", () => {
             "odrl:assigner": "did:web:localhost",
             "odrl:assignee": "did:web:localhost",
             "dspace:timestamp": new Date().toISOString(),
-            "odrl:target": "urn:uuid:dataset",
+            "odrl:target": "urn:uuid:dataset"
           });
-        },
+        }
       ),
       http.get("http://localhost/.well-known/did.json", () => {
         return HttpResponse.json({
           service: [
             {
               type: "connector",
-              serviceEndpoint: "http://remotecontrolplane/",
-            },
-          ],
+              serviceEndpoint: "http://remotecontrolplane/"
+            }
+          ]
         });
       }),
       http.get(
@@ -113,14 +113,14 @@ describe("Dataplane Service", () => {
           return HttpResponse.json<DatasetDto>({
             "@context": "https://w3id.org/dspace/2024/1/context.json",
             "@type": "dcat:Dataset",
-            "@id": "urn:uuid:test",
+            "@id": "urn:uuid:test"
           });
-        },
+        }
       ),
       http.post("https://httpbin.org/anything/0.9.2/anything/test", () => {
         return HttpResponse.json({
           args: {
-            filter: "filterQueryString",
+            filter: "filterQueryString"
           },
           data: '{"test":"test2"}',
           files: {},
@@ -132,16 +132,16 @@ describe("Dataplane Service", () => {
             "Content-Type": "application/json",
             Host: "httpbin.org",
             "User-Agent": "axios/1.5.0",
-            "X-Amzn-Trace-Id": "Root=1-6571e4ca-792829da6e6bcb6115862d0b",
+            "X-Amzn-Trace-Id": "Root=1-6571e4ca-792829da6e6bcb6115862d0b"
           },
           json: {
-            test: "test2",
+            test: "test2"
           },
           method: "POST",
           origin: "0.0.0.0",
-          url: "https://httpbin.org/anything/0.9.2/anything/test",
+          url: "https://httpbin.org/anything/0.9.2/anything/test"
         });
-      }),
+      })
     );
 
     server.listen({ onUnhandledRequest: "bypass" });
@@ -152,14 +152,14 @@ describe("Dataplane Service", () => {
           TransferDao,
           DataPlaneStateDao,
           IngressLogDao,
-          EgressLogDao,
+          EgressLogDao
         ]),
         TypeOrmModule.forFeature([
           TransferDao,
           DataPlaneStateDao,
           IngressLogDao,
-          EgressLogDao,
-        ]),
+          EgressLogDao
+        ])
       ],
       controllers: [DataPlaneController],
       providers: [
@@ -168,22 +168,22 @@ describe("Dataplane Service", () => {
         AuthClientService,
         {
           provide: AuthConfig,
-          useValue: { enabled: false },
+          useValue: { enabled: false }
         },
         {
           provide: LoggingConfig,
-          useValue: { debug: true },
+          useValue: { debug: true }
         },
         {
           provide: RootConfig,
-          useValue: config,
-        },
-      ],
+          useValue: config
+        }
+      ]
     }).compile();
 
     dataPlaneService = moduleRef.get(DataPlaneService);
     await expect(dataPlaneService.getStateDto()).rejects.toThrow(
-      "No state available yet",
+      "No state available yet"
     );
 
     await new Promise((r) => setTimeout(r, 20));
@@ -202,15 +202,15 @@ describe("Dataplane Service", () => {
       path: "/0.9.2/anything/test",
       headers: {
         "content-type": "application/json",
-        accept: "application/json",
+        accept: "application/json"
       },
       query: {
-        filter: "filterQueryString",
+        filter: "filterQueryString"
       } as qs.ParsedQs,
       body: {
-        test: "test2",
+        test: "test2"
       },
-      rawBody: Buffer.from(JSON.stringify({ test: "test2" }), "utf-8"),
+      rawBody: Buffer.from(JSON.stringify({ test: "test2" }), "utf-8")
     } as RawBodyRequest<Request>;
 
     it("Get state", async () => {
@@ -229,17 +229,17 @@ describe("Dataplane Service", () => {
           "dspace:agreementId": "urn:uuid:cadb401e-4275-4d77-99a2-5aa2af93e3b7",
           "dct:format": "dspace:HTTP",
           "dspace:callbackAddress": "http://127.0.0.1/test",
-          "dspace:consumerPid": "urn:uuid:00000000-0000-0000-0000-000000000000",
+          "dspace:consumerPid": "urn:uuid:00000000-0000-0000-0000-000000000000"
         },
         "provider",
         transferProcessId,
         "did:web:localhost",
-        "urn:uuid:test",
+        "urn:uuid:test"
       );
       transferProcessId = result.identifier;
       authorization =
         result.dataAddress?.properties?.find(
-          ({ name }) => name === "Authorization",
+          ({ name }) => name === "Authorization"
         )?.value || "UNKNOWN";
       expect(result.dataAddress).toBeDefined();
     });
@@ -249,12 +249,12 @@ describe("Dataplane Service", () => {
       expect(transfers).toHaveLength(1);
 
       const existingTransfer = await dataPlaneService.getTransferById(
-        transfers[0].id,
+        transfers[0].id
       );
       expect(existingTransfer).toBeDefined();
 
       await expect(dataPlaneService.getTransferById("unknown")).rejects.toThrow(
-        "not found",
+        "not found"
       );
     });
 
@@ -266,8 +266,8 @@ describe("Dataplane Service", () => {
           authorization,
           "anything/test",
           request,
-          response.res,
-        ),
+          response.res
+        )
       ).rejects.toThrow("accessing is not allowed");
     });
 
@@ -276,9 +276,9 @@ describe("Dataplane Service", () => {
         {
           "@type": "dspace:TransferStartMessage",
           "dspace:providerPid": transferProcessId,
-          "dspace:consumerPid": "urn:uuid:00000000-0000-0000-0000-000000000000",
+          "dspace:consumerPid": "urn:uuid:00000000-0000-0000-0000-000000000000"
         },
-        transferProcessId,
+        transferProcessId
       );
     });
 
@@ -289,15 +289,15 @@ describe("Dataplane Service", () => {
         authorization,
         "anything/test",
         request,
-        response.res,
+        response.res
       );
 
       await new Promise((r) => setTimeout(r, 50));
 
       const resultBody = JSON.parse(
         Buffer.from(
-          (response.res.write as jest.Mock).mock.calls[0][0],
-        ).toString(),
+          (response.res.write as jest.Mock).mock.calls[0][0]
+        ).toString()
       );
 
       expect(resultBody["json"]["test"]).toBe("test2");
@@ -315,8 +315,8 @@ describe("Dataplane Service", () => {
           "UNKNOWN",
           "anything/test",
           request,
-          response.res,
-        ),
+          response.res
+        )
       ).rejects.toThrow("Incorrect authorization header");
     });
 
@@ -328,8 +328,8 @@ describe("Dataplane Service", () => {
           "UNKNOWN",
           "anything/test",
           request,
-          response.res,
-        ),
+          response.res
+        )
       ).rejects.toThrow("not found");
     });
 
@@ -338,9 +338,9 @@ describe("Dataplane Service", () => {
         {
           "@type": "dspace:TransferCompletionMessage",
           "dspace:providerPid": transferProcessId,
-          "dspace:consumerPid": "urn:uuid:00000000-0000-0000-0000-000000000000",
+          "dspace:consumerPid": "urn:uuid:00000000-0000-0000-0000-000000000000"
         },
-        transferProcessId,
+        transferProcessId
       );
     });
 
@@ -352,8 +352,8 @@ describe("Dataplane Service", () => {
           authorization,
           "anything/test",
           request,
-          response.res,
-        ),
+          response.res
+        )
       ).rejects.toThrow("accessing is not allowed");
     });
 
@@ -378,7 +378,7 @@ describe("Dataplane Service", () => {
       const response = await dataPlaneService.transferTerminate(
         transferProcessId,
         "CODE",
-        "REASON",
+        "REASON"
       );
       expect(response).toStrictEqual({ status: "OK" });
     });
@@ -386,7 +386,7 @@ describe("Dataplane Service", () => {
     it("Suspend transfer", async () => {
       const response = await dataPlaneService.transferSuspend(
         transferProcessId,
-        "REASON",
+        "REASON"
       );
       expect(response).toStrictEqual({ status: "OK" });
     });
@@ -399,15 +399,15 @@ describe("Dataplane Service", () => {
       path: "/anything/test",
       headers: {
         "content-type": "application/json",
-        accept: "application/json",
+        accept: "application/json"
       },
       query: {
-        filter: "filterQueryString",
+        filter: "filterQueryString"
       } as qs.ParsedQs,
       body: {
-        test: "test2",
+        test: "test2"
       },
-      rawBody: Buffer.from(JSON.stringify({ test: "test2" }), "utf-8"),
+      rawBody: Buffer.from(JSON.stringify({ test: "test2" }), "utf-8")
     } as RawBodyRequest<Request>;
 
     it("Transfer Request", async () => {
@@ -417,12 +417,12 @@ describe("Dataplane Service", () => {
           "dspace:consumerPid": "urn:uuid:00000000-0000-0000-0000-000000000000",
           "dspace:agreementId": "urn:uuid:e785d4a8-2030-4a2b-b223-9881e35c0df7",
           "dct:format": "dspace:HTTP",
-          "dspace:callbackAddress": "http://127.0.0.1/test",
+          "dspace:callbackAddress": "http://127.0.0.1/test"
         },
         "consumer",
         transferProcessId,
         "did:web:localhost",
-        "urn:uuid:test",
+        "urn:uuid:test"
       );
       transferProcessId = result.identifier;
     });
@@ -434,8 +434,8 @@ describe("Dataplane Service", () => {
           transferProcessId,
           "anything/test",
           request,
-          response.res,
-        ),
+          response.res
+        )
       ).rejects.toThrow("accessing is not allowed");
     });
 
@@ -453,12 +453,12 @@ describe("Dataplane Service", () => {
               {
                 "@type": "dspace:EndpointProperty",
                 "dspace:name": "Authorization",
-                "dspace:value": "Bearer ABCDEF",
-              },
-            ],
-          },
+                "dspace:value": "Bearer ABCDEF"
+              }
+            ]
+          }
         },
-        transferProcessId,
+        transferProcessId
       );
     });
 
@@ -470,13 +470,13 @@ describe("Dataplane Service", () => {
         transferProcessId,
         "anything/test",
         request,
-        mockedResponse,
+        mockedResponse
       );
       await new Promise((r) => setTimeout(r, 10));
 
       expect(mockedResponse.write).toHaveBeenCalledTimes(1);
       const resultBody = JSON.parse(
-        Buffer.from(mockedResponse.write.mock.lastCall![0]).toString(),
+        Buffer.from(mockedResponse.write.mock.lastCall![0]).toString()
       );
       expect(resultBody["json"]["test"]).toBe("test2");
       expect(resultBody["headers"]["Content-Type"]).toBe("application/json");
@@ -492,8 +492,8 @@ describe("Dataplane Service", () => {
           "urn:uuid:00000000-0000-0000-0000-000000000000",
           "anything/test",
           request,
-          response.res,
-        ),
+          response.res
+        )
       ).rejects.toThrow("not found");
     });
 
@@ -502,9 +502,9 @@ describe("Dataplane Service", () => {
         {
           "@type": "dspace:TransferCompletionMessage",
           "dspace:providerPid": transferProcessId,
-          "dspace:consumerPid": "urn:uuid:00000000-0000-0000-0000-000000000000",
+          "dspace:consumerPid": "urn:uuid:00000000-0000-0000-0000-000000000000"
         },
-        transferProcessId,
+        transferProcessId
       );
     });
 
@@ -515,8 +515,8 @@ describe("Dataplane Service", () => {
           transferProcessId,
           "anything/test",
           request,
-          response.res,
-        ),
+          response.res
+        )
       ).rejects.toThrow("accessing is not allowed");
     });
   });
@@ -535,9 +535,9 @@ describe("Dataplane Service", () => {
             distributions: [
               {
                 mediaType: "application/json",
-                backendUrl: "http://example.org/http",
-              },
-            ],
+                backendUrl: "http://example.org/http"
+              }
+            ]
           },
           {
             version: "0.9.1",
@@ -545,10 +545,10 @@ describe("Dataplane Service", () => {
             distributions: [
               {
                 // mediaType: "application/json",
-                backendUrl: "http://example.org/http",
-              },
-            ],
-          },
+                backendUrl: "http://example.org/http"
+              }
+            ]
+          }
         ],
         policy: {
           type: "rules",
@@ -558,29 +558,29 @@ describe("Dataplane Service", () => {
               constraints: [
                 {
                   type: "CredentialType",
-                  value: "dataspace:MembershipCredential",
-                },
-              ],
+                  value: "dataspace:MembershipCredential"
+                }
+              ]
             },
             {
-              action: "odrl:read",
-            },
+              action: "odrl:read"
+            }
           ],
           prohibitions: [
             {
-              action: "odrl:distribute",
+              action: "odrl:distribute"
             },
             {
               action: "odrl:sell",
               constraints: [
                 {
                   type: "CredentialType",
-                  value: "dataspace:CommercialCredential",
-                },
-              ],
-            },
-          ],
-        },
+                  value: "dataspace:CommercialCredential"
+                }
+              ]
+            }
+          ]
+        }
       });
       const config = await dataPlaneService.getDatasetConfig();
       expect(config.versions).toHaveLength(2);
@@ -601,14 +601,14 @@ describe("Dataplane Service", () => {
               {
                 mediaType: "application/json",
                 openApiSpecRef: "https://httpbin.org/spec.json",
-                backendUrl: "https://httpbin.org/anything",
-              },
-            ],
-          },
+                backendUrl: "https://httpbin.org/anything"
+              }
+            ]
+          }
         ],
         policy: {
-          type: "default",
-        },
+          type: "default"
+        }
       });
     });
     it("Raw policy", async () => {
@@ -625,10 +625,10 @@ describe("Dataplane Service", () => {
               {
                 mediaType: "application/json",
                 openApiSpecRef: "https://httpbin.org/spec.json",
-                backendUrl: "https://httpbin.org/anything",
-              },
-            ],
-          },
+                backendUrl: "https://httpbin.org/anything"
+              }
+            ]
+          }
         ],
         policy: {
           type: "manual",
@@ -641,11 +641,11 @@ describe("Dataplane Service", () => {
               {
                 "@type": "odrl:Permission",
                 "odrl:action": "odrl:use",
-                "odrl:target": "urn:uuid:test",
-              },
-            ],
-          },
-        },
+                "odrl:target": "urn:uuid:test"
+              }
+            ]
+          }
+        }
       });
     });
     it("Empty raw policy", async () => {
@@ -663,15 +663,15 @@ describe("Dataplane Service", () => {
                 {
                   mediaType: "application/json",
                   openApiSpecRef: "https://httpbin.org/spec.json",
-                  backendUrl: "https://httpbin.org/anything",
-                },
-              ],
-            },
+                  backendUrl: "https://httpbin.org/anything"
+                }
+              ]
+            }
           ],
           policy: {
-            type: "manual",
-          },
-        }),
+            type: "manual"
+          }
+        })
       ).rejects.toThrow("must be provided for policy");
     });
     it("Erroneous raw policy", async () => {
@@ -689,16 +689,16 @@ describe("Dataplane Service", () => {
                 {
                   mediaType: "application/json",
                   openApiSpecRef: "https://httpbin.org/spec.json",
-                  backendUrl: "https://httpbin.org/anything",
-                },
-              ],
-            },
+                  backendUrl: "https://httpbin.org/anything"
+                }
+              ]
+            }
           ],
           policy: {
             type: "manual",
-            raw: "Test" as unknown as OfferDto,
-          },
-        }),
+            raw: "Test" as unknown as OfferDto
+          }
+        })
       ).rejects.toThrow("Could not deserialize");
     });
   });
@@ -718,12 +718,12 @@ describe("Dataplane Service Consumer", () => {
         managementEndpoint: "http://localhost:3000/management",
         controlEndpoint: "http://localhost:3000",
         authorization: "Basic YWRtaW46YWRtaW4=",
-        initializationDelay: 1,
+        initializationDelay: 1
       },
       dataset: undefined,
       logging: {
-        debug: true,
-      },
+        debug: true
+      }
     });
 
     server = setupServer(
@@ -734,16 +734,16 @@ describe("Dataplane Service Consumer", () => {
           managementToken = requestBody.managementToken;
           return HttpResponse.json({
             ...requestBody,
-            identifier: "urn:uuid:4ab97081-665e-447e-88a1-791a185994b9",
+            identifier: "urn:uuid:4ab97081-665e-447e-88a1-791a185994b9"
           });
-        },
+        }
       ),
       http.post(
         `${config.controlPlane.dataPlaneEndpoint}/:id/catalog`,
         ({ request, params, cookies }) => {
           return HttpResponse.json(request.json());
-        },
-      ),
+        }
+      )
     );
 
     server.listen({ onUnhandledRequest: "error" });
@@ -754,14 +754,14 @@ describe("Dataplane Service Consumer", () => {
           TransferDao,
           DataPlaneStateDao,
           IngressLogDao,
-          EgressLogDao,
+          EgressLogDao
         ]),
         TypeOrmModule.forFeature([
           TransferDao,
           DataPlaneStateDao,
           IngressLogDao,
-          EgressLogDao,
-        ]),
+          EgressLogDao
+        ])
       ],
       controllers: [DataPlaneController],
       providers: [
@@ -770,22 +770,22 @@ describe("Dataplane Service Consumer", () => {
         AuthClientService,
         {
           provide: AuthConfig,
-          useValue: { enabled: false },
+          useValue: { enabled: false }
         },
         {
           provide: LoggingConfig,
-          useValue: { debug: true },
+          useValue: { debug: true }
         },
         {
           provide: RootConfig,
-          useValue: config,
-        },
-      ],
+          useValue: config
+        }
+      ]
     }).compile();
 
     dataPlaneService = moduleRef.get(DataPlaneService);
     await expect(dataPlaneService.getStateDto()).rejects.toThrow(
-      "No state available yet",
+      "No state available yet"
     );
 
     await new Promise((r) => setTimeout(r, 20));
@@ -800,7 +800,7 @@ describe("Dataplane Service Consumer", () => {
       await dataPlaneService.initialized;
       await new Promise((r) => setTimeout(r, 100));
       await expect(dataPlaneService.getDatasetConfig()).rejects.toThrow(
-        "No dataset configured",
+        "No dataset configured"
       );
       await dataPlaneService.updateDatasetConfig({
         id: `urn:uuid:test`,
@@ -815,11 +815,11 @@ describe("Dataplane Service Consumer", () => {
               {
                 mediaType: "application/json",
                 openApiSpecRef: "https://httpbin.org/spec.json",
-                backendUrl: "https://httpbin.org/anything",
-              },
-            ],
-          },
-        ],
+                backendUrl: "https://httpbin.org/anything"
+              }
+            ]
+          }
+        ]
       });
       const config = await dataPlaneService.getDatasetConfig();
       expect(config).toBeDefined();

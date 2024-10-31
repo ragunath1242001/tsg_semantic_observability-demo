@@ -5,7 +5,7 @@ import {
   HttpStatus,
   Query,
   UsePipes,
-  ValidationPipe,
+  ValidationPipe
 } from "@nestjs/common";
 import { PageOptionsDto, PageDto } from "../utils/pagination";
 import { LoggingService } from "./logging.service";
@@ -14,7 +14,7 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiQuery,
-  ApiTags,
+  ApiTags
 } from "@nestjs/swagger";
 
 @ApiTags("Logging")
@@ -31,7 +31,7 @@ export class LoggingController {
   @HttpCode(HttpStatus.OK)
   async getIngressLogs(
     @Query() pageOptionsDto: PageOptionsDto,
-    @Query() filter: LogFilterDto,
+    @Query() filter: LogFilterDto
   ): Promise<PageDto<LogEntry>> {
     return this.loggingService.getIngressLog(pageOptionsDto, filter);
   }
@@ -44,7 +44,7 @@ export class LoggingController {
   @HttpCode(HttpStatus.OK)
   async getEgressLogs(
     @Query() pageOptionsDto: PageOptionsDto,
-    @Query() filter: LogFilterDto,
+    @Query() filter: LogFilterDto
   ): Promise<PageDto<LogEntry>> {
     return this.loggingService.getEgressLog(pageOptionsDto, filter);
   }

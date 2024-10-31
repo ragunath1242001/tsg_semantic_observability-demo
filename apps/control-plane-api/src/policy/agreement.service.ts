@@ -4,7 +4,7 @@ import {
   AgreementDto,
   defaultContext,
   deserialize,
-  HashedMessage,
+  HashedMessage
 } from "@tsg-dsp/common-dsp";
 import { DSPError } from "../utils/errors/error";
 import { AgreementDao } from "../model/agreement.dao";
@@ -43,7 +43,7 @@ export class AgreementService {
     } else {
       const a = await deserialize<Agreement>({
         "@context": defaultContext(),
-        ...agreement.agreement,
+        ...agreement.agreement
       });
       return a;
     }
@@ -61,7 +61,7 @@ export class AgreementService {
       negotiationId: negotiationId,
       localSignature: localSignature,
       remoteSignature: remoteSignature,
-      transfers: [],
+      transfers: []
     });
   }
 }

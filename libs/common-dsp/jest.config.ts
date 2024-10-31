@@ -6,15 +6,15 @@ const config: Config.InitialOptions = {
       "ts-jest",
       {
         // useESM: true,
-      },
-    ],
+      }
+    ]
   },
   moduleDirectories: ["src", "node_modules"],
   testTimeout: 30000,
   testEnvironment: "node",
   testRegex: "/.*\\.(test|spec)?\\.(ts|tsx)$",
   moduleNameMapper: {
-    "^(\\.{1,2}/.*)\\.js$": "$1",
+    "^(\\.{1,2}/.*)\\.js$": "$1"
   },
   coverageReporters: ["text", "text-summary", "cobertura"],
   collectCoverageFrom: [
@@ -23,7 +23,7 @@ const config: Config.InitialOptions = {
     "!src/**/*.strategy.ts",
     "!src/**/*.controller.ts",
     "!src/**/*.module.ts",
-    "!node_modules/**",
-  ],
+    "!node_modules/**"
+  ]
 };
 export default config;

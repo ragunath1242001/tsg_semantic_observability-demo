@@ -10,13 +10,12 @@ import {
   IsString,
   IsUrl,
   ValidateIf,
-  ValidateNested,
+  ValidateNested
 } from "class-validator";
 import { Transform, TransformFnParams, Type } from "class-transformer";
 import fs from "fs";
 import { Logger } from "@nestjs/common";
 import { CredentialSubject } from "@tsg-dsp/common-dsp";
-import { AppRole } from "@tsg-dsp/wallet-dtos";
 import { DIDMethod, DIDMethodList, DIDMethodTypes } from "./utils/did.js";
 
 function fileTransformer(params: TransformFnParams): string | undefined {
@@ -239,7 +238,7 @@ export class DidServiceConfig {
 export enum PresentationType {
   DIRECT = "DIRECT",
   IATP = "IATP",
-  OID4VP = "OID4VP",
+  OID4VP = "OID4VP"
 }
 
 export class PresentationConfig {
@@ -247,7 +246,7 @@ export class PresentationConfig {
   @IsEnum(PresentationType, { each: true })
   public readonly types: PresentationType[] = [
     PresentationType.DIRECT,
-    PresentationType.IATP,
+    PresentationType.IATP
   ];
 }
 
@@ -269,7 +268,7 @@ export class DidConfig {
 
 export enum SignatureType {
   DATA_INTEGRITY_PROOF = "DATA_INTEGRITY_PROOF",
-  JSON_WEB_SIGNATURE_2020 = "JSON_WEB_SIGNATURE_2020",
+  JSON_WEB_SIGNATURE_2020 = "JSON_WEB_SIGNATURE_2020"
 }
 
 export class SignatureConfig {
@@ -287,22 +286,22 @@ export class SignatureConfig {
 export class RootConfig {
   @ValidateNested()
   @IsDefined({
-    message: "Either sqlite or postgres DB config must be provided",
+    message: "Either sqlite or postgres DB config must be provided"
   })
   @Type(() => DatabaseConfig, {
     discriminator: {
       property: "type",
       subTypes: [
         { value: SQLiteConfig, name: "sqlite" },
-        { value: PostgresConfig, name: "postgres" },
-      ],
-    },
+        { value: PostgresConfig, name: "postgres" }
+      ]
+    }
   })
   public readonly db!: DatabaseConfig;
 
   @ValidateNested()
   @IsDefined({
-    message: "OAuth2.0 configuration must be provided",
+    message: "OAuth2.0 configuration must be provided"
   })
   @Type(() => AuthConfig)
   public readonly auth!: AuthConfig;

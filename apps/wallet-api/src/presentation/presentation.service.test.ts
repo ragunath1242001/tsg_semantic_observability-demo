@@ -26,13 +26,13 @@ describe("Presentation Service", () => {
         {
           id: "key-0",
           type: "EdDSA",
-          default: true,
+          default: true
         },
         {
           id: "key-1",
           type: "EdDSA",
-          default: false,
-        },
+          default: false
+        }
       ],
       initCredentials: [
         {
@@ -41,10 +41,10 @@ describe("Presentation Service", () => {
           id: `did:web:localhost#test-init-credential`,
           keyId: "key-1",
           credentialSubject: {
-            id: "did:web:localhost",
-          },
-        },
-      ],
+            id: "did:web:localhost"
+          }
+        }
+      ]
     });
     const moduleRef: TestingModule = await Test.createTestingModule({
       imports: [
@@ -53,15 +53,15 @@ describe("Presentation Service", () => {
           DIDDocuments,
           DIDService,
           KeyMaterials,
-          DIDLogs,
+          DIDLogs
         ]),
         TypeOrmModule.forFeature([
           Credentials,
           DIDDocuments,
           DIDService,
           KeyMaterials,
-          DIDLogs,
-        ]),
+          DIDLogs
+        ])
       ],
       providers: [
         CredentialsService,
@@ -72,9 +72,9 @@ describe("Presentation Service", () => {
         PresentationService,
         {
           provide: RootConfig,
-          useValue: config,
-        },
-      ],
+          useValue: config
+        }
+      ]
     }).compile();
     presentationService = await moduleRef.get(PresentationService);
     const didService = await moduleRef.get(DidService);

@@ -23,7 +23,7 @@ export const setJsonLdDebugContexts = (debug: boolean, useVersion?: string) => {
 export const defaultContext = () => [
   dspContextUrl,
   tsgContextUrl(),
-  healthContextUrl(),
+  healthContextUrl()
 ];
 
 export const dspContextUrl = "https://w3id.org/dspace/2024/1/context.json";

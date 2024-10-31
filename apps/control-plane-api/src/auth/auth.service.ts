@@ -2,14 +2,14 @@ import { Injectable } from "@nestjs/common";
 import {
   CredentialSubject,
   VerifiableCredential,
-  VerifiablePresentation,
+  VerifiablePresentation
 } from "@tsg-dsp/common-dsp";
 import {
   DevWalletConfig,
   MiwConfig,
   RootConfig,
   TsgWalletDirectConfig,
-  TsgWalletIatpConfig,
+  TsgWalletIatpConfig
 } from "../config";
 import { AuthClientService } from "./auth.client.service";
 import { DevWalletClient } from "./wallets/dev.wallet";
@@ -24,7 +24,7 @@ export class AuthService {
   readonly walletClient: WalletClient;
   constructor(
     private readonly config: RootConfig,
-    private readonly authClientService: AuthClientService,
+    private readonly authClientService: AuthClientService
   ) {
     switch (config.iam.type) {
       case "dev":
@@ -33,18 +33,18 @@ export class AuthService {
       case "tsg":
         this.walletClient = new TsgWalletClient(
           config.iam as TsgWalletDirectConfig,
-          authClientService,
+          authClientService
         );
         break;
       case "tsg-iatp":
         this.walletClient = new TsgIatpWalletClient(
           config.iam as TsgWalletIatpConfig,
-          authClientService,
+          authClientService
         );
         break;
       case "miw":
         this.walletClient = new ManagedIdentityWalletClient(
-          config.iam as MiwConfig,
+          config.iam as MiwConfig
         );
         break;
     }
@@ -57,12 +57,12 @@ export class AuthService {
   async validateToken(
     token: string,
     audience?: string,
-    inputDescriptors?: InputDescriptor[],
+    inputDescriptors?: InputDescriptor[]
   ): Promise<VerifiablePresentation | undefined> {
     return await this.walletClient.requestValidation(
       token,
       audience || this.config.iam.didId,
-      inputDescriptors,
+      inputDescriptors
     );
   }
 
@@ -71,7 +71,7 @@ export class AuthService {
   }
 
   async requestSignatureValidation(
-    signedDocument: Record<string, any>,
+    signedDocument: Record<string, any>
   ): Promise<any> {
     return this.walletClient.requestSignatureValidation(signedDocument);
   }

@@ -17,37 +17,37 @@ const router = createRouter({
         {
           path: "/",
           name: "dashboard",
-          component: Dashboard,
+          component: Dashboard
         },
         {
           path: "/tester/:id",
           name: "tester",
           component: Tester,
           props: {
-            default: true,
-          },
+            default: true
+          }
         },
         {
           path: "/metadata",
           name: "metadata",
-          component: Metadata,
+          component: Metadata
         },
         {
           path: "/logging",
           name: "logging",
-          component: Logging,
-        },
-      ],
+          component: Logging
+        }
+      ]
     },
     {
       path: "/login",
       name: "login",
-      component: LoginVue,
-    },
+      component: LoginVue
+    }
   ],
   scrollBehavior(to, from, savedPosition) {
     return { top: 0 };
-  },
+  }
 });
 
 router.beforeEach(async (to) => {

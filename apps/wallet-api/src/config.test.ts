@@ -13,13 +13,13 @@ describe("Config", () => {
     plainToInstance(RootConfig, {
       db: {
         type: "sqlite",
-        database: "test",
+        database: "test"
       },
       server: {
         listen: "0.0.0.0",
         port: 3000,
         publicDomain: "localhost",
-        publicAddress: "http://localhost:3000",
+        publicAddress: "http://localhost:3000"
       },
       initClients: [
         {
@@ -27,29 +27,29 @@ describe("Config", () => {
           secret: "test",
           email: "test@test.com",
           didId: "did:web:test.com",
-          roles: ["view_did", "manage_keys", "view_own_credentials"],
-        },
+          roles: ["view_did", "manage_keys", "view_own_credentials"]
+        }
       ],
       initKeys: [
         {
           type: "EdDSA",
           id: "key-0",
-          default: true,
+          default: true
         },
         {
           type: "X509",
           id: "key-1",
           default: false,
           existingKey: "file:package.json",
-          existingCertificate: "existing-certificate",
+          existingCertificate: "existing-certificate"
         },
         {
           type: "X509",
           id: "key-2",
           default: false,
           existingKey: "file:unknown-file",
-          existingCertificate: {},
-        },
+          existingCertificate: {}
+        }
       ],
       initCredentials: [
         {
@@ -58,24 +58,24 @@ describe("Config", () => {
           id: `did:web:localhost#test-init-credential`,
           keyId: "key-0",
           credentialSubject: {
-            id: "did:web:localhost",
-          },
-        },
+            id: "did:web:localhost"
+          }
+        }
       ],
       trustAnchors: [
         {
           identifier: "did:web:localhost",
-          credentialTypes: ["VerifiableCredential", "ExampleCredentialType"],
-        },
+          credentialTypes: ["VerifiableCredential", "ExampleCredentialType"]
+        }
       ],
       contexts: [
         {
           id: "Example",
           credentialType: "ExampleCredentialType",
           issuable: true,
-          documentUrl: "https://example.com/context.json",
-        },
-      ],
+          documentUrl: "https://example.com/context.json"
+        }
+      ]
     });
   });
   it("Test postgres config", () => {
@@ -85,8 +85,8 @@ describe("Config", () => {
         host: "localhost",
         port: 5432,
         username: "username",
-        password: "password",
-      },
+        password: "password"
+      }
     });
   });
   it("Test unions", () => {
@@ -100,7 +100,7 @@ describe("Config", () => {
       message: "Error",
       name: "AppError",
       code: 500,
-      status: "INTERNAL_SERVER_ERROR",
+      status: "INTERNAL_SERVER_ERROR"
     });
     const textErrorWithCause = new AppError(
       "Error",
@@ -112,7 +112,7 @@ describe("Config", () => {
       name: "AppError",
       code: 500,
       status: "INTERNAL_SERVER_ERROR",
-      error: `${JSON.stringify({ previousError: "error" })}`,
+      error: `${JSON.stringify({ previousError: "error" })}`
     });
     const recordError = new AppError(
       { "exception-info": "error" },
@@ -122,7 +122,7 @@ describe("Config", () => {
       "exception-info": "error",
       name: "AppError",
       code: 500,
-      status: "INTERNAL_SERVER_ERROR",
+      status: "INTERNAL_SERVER_ERROR"
     });
     const recordErrorWithCause = new AppError(
       { "exception-info": "error" },
@@ -134,7 +134,7 @@ describe("Config", () => {
       name: "AppError",
       code: 500,
       status: "INTERNAL_SERVER_ERROR",
-      error: `${JSON.stringify({ previousError: "error" })}`,
+      error: `${JSON.stringify({ previousError: "error" })}`
     });
     const modifiedNameError = new AppError(
       "Error",
@@ -146,7 +146,7 @@ describe("Config", () => {
       message: "Error",
       name: "CustomErrorName",
       code: 500,
-      status: "INTERNAL_SERVER_ERROR",
+      status: "INTERNAL_SERVER_ERROR"
     });
   });
   it("Test network errors", async () => {
@@ -167,7 +167,7 @@ describe("Config", () => {
         code: 400,
         body: "Bad Request",
         name: "AppError",
-        status: "BAD_REQUEST",
+        status: "BAD_REQUEST"
       });
     }
     try {
@@ -178,7 +178,7 @@ describe("Config", () => {
         message: "Error in test: TypeError: Network error",
         code: 400,
         name: "AppError",
-        status: "BAD_REQUEST",
+        status: "BAD_REQUEST"
       });
     }
     const nonAxiosError = parseNetworkError(Error("Other error"), "test");
@@ -186,7 +186,7 @@ describe("Config", () => {
       message: "Unexpected error in test: Error: Other error",
       code: 400,
       name: "AppError",
-      status: "BAD_REQUEST",
+      status: "BAD_REQUEST"
     });
   });
 });

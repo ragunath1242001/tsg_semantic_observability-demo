@@ -4,7 +4,7 @@ import {
   ManyToOne,
   OneToMany,
   PrimaryColumn,
-  PrimaryGeneratedColumn,
+  PrimaryGeneratedColumn
 } from "typeorm";
 import { MetaEntity } from "./common.dao.js";
 import { CredentialSubject } from "@tsg-dsp/common-dsp";
@@ -51,7 +51,7 @@ export class CIAccessToken extends MetaEntity {
   nonce!: string;
 
   @ManyToOne(() => CredentialIssuance, (issuance) => issuance.tokens, {
-    eager: true,
+    eager: true
   })
   issuance!: CredentialIssuance;
 }

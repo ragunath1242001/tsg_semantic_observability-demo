@@ -25,7 +25,7 @@ const visible = ref(configSidebarVisible);
 const contractNegotiationValues = ref([
   { name: "Automatic", value: "automatic" },
   { name: "Semi-Manual", value: "semi-manual" },
-  { name: "Manual", value: "manual" },
+  { name: "Manual", value: "manual" }
 ]);
 
 const updateSettings = async () => {
@@ -33,11 +33,13 @@ const updateSettings = async () => {
   try {
     settings = (await http.post("settings/update", settings)).data;
   } catch (error) {
-    toast.add(toastError({
-      error,
-      summary: "Failed to update settings",
-      defaultMessage: `Could not update runtime settings`
-    }));
+    toast.add(
+      toastError({
+        error,
+        summary: "Failed to update settings",
+        defaultMessage: `Could not update runtime settings`
+      })
+    );
   }
 };
 const initialize = async () => {
@@ -56,15 +58,13 @@ onMounted(async () => await initialize());
     v-model:visible="visible"
     position="right"
     :transitionOptions="'.3s cubic-bezier(0, 0, 0.2, 1)'"
-    class="layout-config-sidebar w-[26rem]"
-  >
+    class="layout-config-sidebar w-[26rem]">
     <div class="text-xl mt-2">Contract Negotiation</div>
     <SelectButton
       v-model="controlPlaneInteractions"
       v-on:change="updateSettings"
       :options="contractNegotiationValues"
-      optionLabel="name"
-    />
+      optionLabel="name" />
   </Drawer>
 </template>
 

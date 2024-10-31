@@ -29,7 +29,7 @@ export interface CredentialOfferStatus {
 
 export enum OfferGrants {
   AUTHORIZATION_CODE = "authorization_code",
-  PRE_AUTHORIZATION_CODE = "urn:ietf:params:oauth:grant-type:pre-authorized_code",
+  PRE_AUTHORIZATION_CODE = "urn:ietf:params:oauth:grant-type:pre-authorized_code"
 }
 
 export interface AuthorizationCode {

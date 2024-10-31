@@ -51,7 +51,7 @@ export class PageDto<T> {
 
 export enum Order {
   ASC = "ASC",
-  DESC = "DESC",
+  DESC = "DESC"
 }
 
 export class PageOptionsDto {
@@ -62,7 +62,7 @@ export class PageOptionsDto {
 
   @ApiPropertyOptional({
     minimum: 1,
-    default: 1,
+    default: 1
   })
   @Type(() => Number)
   @IsInt()
@@ -73,7 +73,7 @@ export class PageOptionsDto {
   @ApiPropertyOptional({
     minimum: 1,
     maximum: 50,
-    default: 10,
+    default: 10
   })
   @Type(() => Number)
   @IsInt()

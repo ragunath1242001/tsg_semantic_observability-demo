@@ -8,10 +8,10 @@ import { LoggingService } from "./logging.service";
 @Module({
   imports: [
     TypeOrmModule.forFeature([IngressLogDao, EgressLogDao]),
-    AuthModule,
+    AuthModule
   ],
   controllers: [LoggingController],
   providers: [LoggingService],
-  exports: [LoggingService],
+  exports: [LoggingService]
 })
 export class LoggingModule {}

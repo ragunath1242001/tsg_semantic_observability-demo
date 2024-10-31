@@ -35,7 +35,7 @@ export class DidTdwResolverStrategy implements DidResolverStrategy {
     } catch (err) {
       throw new AppError(
         `Could not load DID document for ${didId}`,
-        HttpStatus.BAD_REQUEST,
+        HttpStatus.BAD_REQUEST
       ).andLog(this.logger);
     }
   }

@@ -45,8 +45,8 @@ setJsonLdDebugContexts(
 
 loader.config({
   paths: {
-    vs: "https://cdn.jsdelivr.net/npm/monaco-editor@0.43.0/dev/vs",
-  },
+    vs: "https://cdn.jsdelivr.net/npm/monaco-editor@0.43.0/dev/vs"
+  }
 });
 
 const pinia = createPinia();
@@ -57,9 +57,9 @@ app.use(PrimeVue, {
   theme: {
     preset: Lara,
     options: {
-      darkModeSelector: ".app-dark",
-    },
-  },
+      darkModeSelector: ".app-dark"
+    }
+  }
 });
 app.use(ToastService);
 app.use(ConfirmationService);

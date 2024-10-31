@@ -23,7 +23,7 @@ export class PresentationModule {
       global: true,
       controllers: [],
       providers: [PresentationService],
-      exports: [PresentationService],
+      exports: [PresentationService]
     };
 
     for (const type of presentationConfig.types) {
@@ -31,30 +31,30 @@ export class PresentationModule {
         case PresentationType.DIRECT:
           module.controllers = [
             ...(module.controllers ?? []),
-            DirectPresentationController,
+            DirectPresentationController
           ];
           break;
         case PresentationType.IATP:
           module.imports = [
             ...(module.imports ?? []),
-            TypeOrmModule.forFeature([SIToken]),
+            TypeOrmModule.forFeature([SIToken])
           ];
           module.controllers = [
             ...(module.controllers ?? []),
             IatpHolderController,
-            IatpVerifierController,
+            IatpVerifierController
           ];
           module.providers = [
             ...(module.providers ?? []),
             IatpSiopService,
             IatpHolderService,
-            IatpVerifierService,
+            IatpVerifierService
           ];
           module.exports = [
             ...(module.exports ?? []),
             IatpSiopService,
             IatpHolderService,
-            IatpVerifierService,
+            IatpVerifierService
           ];
           break;
         case PresentationType.OID4VP:

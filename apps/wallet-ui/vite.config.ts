@@ -24,28 +24,28 @@ export default defineConfig({
   plugins: [vue()],
   resolve: {
     alias: {
-      "@": fileURLToPath(new URL("./src", import.meta.url)),
-    },
+      "@": fileURLToPath(new URL("./src", import.meta.url))
+    }
   },
   build: {
-    target: "ESNext",
+    target: "ESNext"
   },
   server: {
     proxy: devSessions.local
       ? {
           "/api": {
             target: "http://localhost:3000",
-            rewrite: (path) => path.replace(/^\/api/, ""),
-          },
+            rewrite: (path) => path.replace(/^\/api/, "")
+          }
         }
       : {
           "/api": {
             target: devSessions.target,
             changeOrigin: true,
             headers: {
-              Cookie: devSessions.sessionCookie!,
-            },
-          },
-        },
-  },
+              Cookie: devSessions.sessionCookie!
+            }
+          }
+        }
+  }
 });

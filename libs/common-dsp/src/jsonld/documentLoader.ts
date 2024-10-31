@@ -6,7 +6,7 @@ import {
   healthContext,
   tsgContextUrl,
   healthContextUrl,
-  dspContextUrl,
+  dspContextUrl
 } from "./context.defaults";
 import * as jsonld from "jsonld";
 
@@ -28,24 +28,24 @@ export const documentLoader: jsonld.Options.DocLoader = {
         return {
           contextUrl: undefined,
           document: dspContext,
-          documentUrl: url,
+          documentUrl: url
         };
       case tsgContextUrl("debug"):
         return {
           contextUrl: undefined,
           document: tsgContext,
-          documentUrl: url,
+          documentUrl: url
         };
       case healthContextUrl("debug"):
         return {
           contextUrl: undefined,
           document: healthContext,
-          documentUrl: url,
+          documentUrl: url
         };
     }
     console.debug(`Loading JSON-LD Document: ${url}`);
     const document = await defaultDocumentLoader(url);
     documentCache[url] = document;
     return document;
-  },
+  }
 };

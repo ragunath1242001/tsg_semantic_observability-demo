@@ -20,7 +20,7 @@ import {
   KeyLike,
   SignJWT,
   exportJWK,
-  generateKeyPair,
+  generateKeyPair
 } from "jose";
 import { DIDDocument } from "did-resolver";
 import { HolderService } from "./holder.service.js";
@@ -43,17 +43,17 @@ describe("Issuer service", () => {
         {
           id: "key-0",
           type: "EdDSA",
-          default: true,
-        },
+          default: true
+        }
       ],
       contexts: [
         {
           id: "Example",
           credentialType: "ExampleCredentialType",
           issuable: true,
-          documentUrl: "https://example.com/context.json",
-        },
-      ],
+          documentUrl: "https://example.com/context.json"
+        }
+      ]
     });
 
     moduleRef = await Test.createTestingModule({
@@ -66,7 +66,7 @@ describe("Issuer service", () => {
           CredentialIssuance,
           CIAccessToken,
           JSONLDContext,
-          DIDLogs,
+          DIDLogs
         ]),
         TypeOrmModule.forFeature([
           Credentials,
@@ -76,8 +76,8 @@ describe("Issuer service", () => {
           CredentialIssuance,
           CIAccessToken,
           JSONLDContext,
-          DIDLogs,
-        ]),
+          DIDLogs
+        ])
       ],
       providers: [
         CredentialsService,
@@ -91,9 +91,9 @@ describe("Issuer service", () => {
         ContextService,
         {
           provide: RootConfig,
-          useValue: config,
-        },
-      ],
+          useValue: config
+        }
+      ]
     }).compile();
     issuerService = await moduleRef.get(IssuerService);
     holderService = await moduleRef.get(HolderService);
@@ -105,7 +105,7 @@ describe("Issuer service", () => {
     const exampleDid: DIDDocument = {
       "@context": [
         "https://www.w3.org/ns/did/v1",
-        "https://w3c-ccg.github.io/lds-jws2020/contexts/v1/",
+        "https://w3c-ccg.github.io/lds-jws2020/contexts/v1/"
       ],
       id: "did:web:example.com",
       verificationMethod: [
@@ -116,11 +116,11 @@ describe("Issuer service", () => {
           publicKeyJwk: {
             kty: "OKP",
             alg: "EdDSA",
-            ...(await exportJWK(exampleKey.publicKey)),
-          },
-        },
+            ...(await exportJWK(exampleKey.publicKey))
+          }
+        }
       ],
-      assertionMethod: ["did:web:example.com#KEY-0"],
+      assertionMethod: ["did:web:example.com#KEY-0"]
     };
 
     server = setupServer(
@@ -137,12 +137,12 @@ describe("Issuer service", () => {
             "@version": 1.1,
             ExampleCredentialType: {
               "@context": ["https://www.w3.org/2018/credentials/v1"],
-              "@id": "example:ExampleCredentialType",
+              "@id": "example:ExampleCredentialType"
             },
             example: "https://example.dataspac.es/credentials/",
             id: "@id",
-            type: "@type",
-          },
+            type: "@type"
+          }
         });
       })
     );
@@ -158,7 +158,7 @@ describe("Issuer service", () => {
       const offer = await issuerService.createCredentialOffer({
         holderId: "did:web:example.com",
         credentialType: "ExampleCredentialType",
-        credentialSubject: { id: "did:web:example.com" },
+        credentialSubject: { id: "did:web:example.com" }
       });
 
       const access_token = await issuerService.createAccessToken(
@@ -171,7 +171,7 @@ describe("Issuer service", () => {
         .setProtectedHeader({
           alg: "EdDSA",
           typ: "openid4vci-proof+jwt",
-          kid: "did:web:example.com#KEY-0",
+          kid: "did:web:example.com#KEY-0"
         })
         .setIssuer("did:web:example.com")
         .setAudience("http://localhost:3000")
@@ -184,12 +184,12 @@ describe("Issuer service", () => {
             format: "jwt_vc_json-ld",
             credential_definition: {
               "@context": [],
-              type: ["VerifiableCredential", "ExampleCredentialType"],
+              type: ["VerifiableCredential", "ExampleCredentialType"]
             },
             proof: {
               proof_type: "jwt",
-              jwt: jwt,
-            },
+              jwt: jwt
+            }
           }
         );
         console.log(JSON.stringify(credential));

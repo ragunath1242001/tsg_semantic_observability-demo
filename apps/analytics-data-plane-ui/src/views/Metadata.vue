@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import {
-  DataPlaneStateDto,
-} from "@tsg-dsp/common-dtos";
+import { DataPlaneStateDto } from "@tsg-dsp/common-dtos";
 import { ref, onMounted } from "vue";
 import { useToast } from "primevue/usetoast";
 import { useConfirm } from "primevue/useconfirm";
@@ -10,18 +8,23 @@ import { Dataset, DatasetDto, deserialize } from "@tsg-dsp/common-dsp";
 import http from "@tsg-dsp/common-ui/utils/http";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
 
-
 const toast = useToast();
 const confirm = useConfirm();
 
 const state = ref<DataPlaneStateDto>();
 const datasets = ref<DatasetDto[]>();
 const datasetStrings = ref<string[]>();
-const newDataset = ref<string>(JSON.stringify({
-  "@context": "https://w3id.org/dspace/2024/1/context.json",
-  "@id": `urn:uuid:${crypto.randomUUID()}`,
-  "@type": "dcat:Dataset",
-}, null, 2));
+const newDataset = ref<string>(
+  JSON.stringify(
+    {
+      "@context": "https://w3id.org/dspace/2024/1/context.json",
+      "@id": `urn:uuid:${crypto.randomUUID()}`,
+      "@type": "dcat:Dataset"
+    },
+    null,
+    2
+  )
+);
 
 const updateLoading = ref(false);
 const refreshLoading = ref(false);
@@ -30,32 +33,36 @@ const showDataset = ref(false);
 
 const getState = async () => {
   try {
-    const response = await http.get<DataPlaneStateDto>(
-      "management/state"
-    );
+    const response = await http.get<DataPlaneStateDto>("management/state");
     state.value = response.data;
   } catch (error) {
-    toast.add(toastError({
-      error,
-      summary: "Loading state failed",
-      defaultMessage: "Could not load state config from the Analytics data plane"
-    }));
+    toast.add(
+      toastError({
+        error,
+        summary: "Loading state failed",
+        defaultMessage:
+          "Could not load state config from the Analytics data plane"
+      })
+    );
   }
 };
 
 const getDatasetConfig = async () => {
   try {
-    const response = await http.get<DatasetDto[]>(
-      "management/dataset"
-    );
+    const response = await http.get<DatasetDto[]>("management/dataset");
     datasets.value = response.data;
-    datasetStrings.value = response.data.map(dataset => JSON.stringify(dataset, null, 2));
+    datasetStrings.value = response.data.map((dataset) =>
+      JSON.stringify(dataset, null, 2)
+    );
   } catch (error) {
-    toast.add(toastError({
-      error,
-      summary: "Loading dataset config failed",
-      defaultMessage: "Could not load dataset config from the Analytics data plane"
-    }));
+    toast.add(
+      toastError({
+        error,
+        summary: "Loading dataset config failed",
+        defaultMessage:
+          "Could not load dataset config from the Analytics data plane"
+      })
+    );
   }
 };
 
@@ -65,50 +72,56 @@ const refreshRegistration = async () => {
     await http.post("management/refresh");
     await getDatasetConfig();
   } catch (error) {
-    toast.add(toastError({
-      error,
-      summary: "Loading dataset config failed",
-      defaultMessage: "Could not refresh registration at the Analytics data plane"
-    }));
+    toast.add(
+      toastError({
+        error,
+        summary: "Loading dataset config failed",
+        defaultMessage:
+          "Could not refresh registration at the Analytics data plane"
+      })
+    );
   }
   refreshLoading.value = false;
 };
 
 const deleteDataset = async (id: string) => {
   confirm.require({
-      header: `Are you sure you want to delete this dataset?`,
-      message: "This will completely remove the dataset from this dataplane and is irreversible!",
-      icon: "pi pi-info-circle",
-      rejectLabel: "Cancel",
-      acceptLabel: "Confirm",
-      rejectClass: "p-button-secondary p-button-outlined",
-      acceptClass: "p-button-danger",
-      accept: async () => {
-        refreshLoading.value = true;
-        try {
-          await http.delete("management/dataset", {
-            params: {
-              datasetId: id
-            }
-          });
-          await getDatasetConfig();
-          toast.add({
-            severity: "success",
-            summary: "Success",
-            detail: `Successfully deleted dataset ${id}`,
-            life: 3000,
-          });
-        } catch (error) {
-          toast.add(toastError({
+    header: `Are you sure you want to delete this dataset?`,
+    message:
+      "This will completely remove the dataset from this dataplane and is irreversible!",
+    icon: "pi pi-info-circle",
+    rejectLabel: "Cancel",
+    acceptLabel: "Confirm",
+    rejectClass: "p-button-secondary p-button-outlined",
+    acceptClass: "p-button-danger",
+    accept: async () => {
+      refreshLoading.value = true;
+      try {
+        await http.delete("management/dataset", {
+          params: {
+            datasetId: id
+          }
+        });
+        await getDatasetConfig();
+        toast.add({
+          severity: "success",
+          summary: "Success",
+          detail: `Successfully deleted dataset ${id}`,
+          life: 3000
+        });
+      } catch (error) {
+        toast.add(
+          toastError({
             error,
             summary: "Dataset deletion failed",
             defaultMessage: "Could not delete dataset"
-          }));
-        }
-        refreshLoading.value = false;
-      },
-    });
-}
+          })
+        );
+      }
+      refreshLoading.value = false;
+    }
+  });
+};
 
 const updateDataset = async (id: string, updatedDataset: string) => {
   refreshLoading.value = true;
@@ -125,17 +138,19 @@ const updateDataset = async (id: string, updatedDataset: string) => {
       severity: "success",
       summary: "Success",
       detail: `Successfully updated dataset ${id}`,
-      life: 3000,
+      life: 3000
     });
   } catch (error) {
-    toast.add(toastError({
-      error,
-      summary: "Dataset update failed",
-      defaultMessage: "Could not update dataset"
-    }));
+    toast.add(
+      toastError({
+        error,
+        summary: "Dataset update failed",
+        defaultMessage: "Could not update dataset"
+      })
+    );
   }
   refreshLoading.value = false;
-}
+};
 
 const addDataset = async () => {
   refreshLoading.value = true;
@@ -147,18 +162,20 @@ const addDataset = async () => {
     toast.add({
       severity: "success",
       summary: "Success",
-      detail: `Successfully added dataset ${parsed['@id']}`,
-      life: 3000,
+      detail: `Successfully added dataset ${parsed["@id"]}`,
+      life: 3000
     });
   } catch (error) {
-    toast.add(toastError({
-      error,
-      summary: "Dataset creation failed",
-      defaultMessage: "Could not add dataset"
-    }));
+    toast.add(
+      toastError({
+        error,
+        summary: "Dataset creation failed",
+        defaultMessage: "Could not add dataset"
+      })
+    );
   }
   refreshLoading.value = false;
-}
+};
 
 onMounted(async () => {
   await getState();
@@ -192,30 +209,34 @@ onMounted(async () => {
               severity="info"
               label="Refresh state at Control Plane"
               :loading="refreshLoading"
-              @click="refreshRegistration"
-            />
+              @click="refreshRegistration" />
           </div>
         </div>
       </div>
     </template>
   </Card>
   <Card class="mt-8" v-for="(dataset, idx) in datasets">
-    <template #title>{{ dataset['dct:title'] ?? dataset['@id'] }}</template>
-    <template #subtitle
-      >Dataset registered at the data plane</template
-    >
+    <template #title>{{ dataset["dct:title"] ?? dataset["@id"] }}</template>
+    <template #subtitle>Dataset registered at the data plane</template>
     <template #content>
       <MonacoEditorVue
         v-model="datasetStrings[idx]"
         :maxLines="200"
-        style="max-height: calc(90vh - 16rem)"
-      />
+        style="max-height: calc(90vh - 16rem)" />
     </template>
     <template #footer>
-        <div class="flex gap-4 mt-1">
-          <Button label="Update" class="w-full" @click="updateDataset(dataset['@id'], datasetStrings[idx])" />
-          <Button label="Delete" severity="danger" outlined class="w-full" @click="deleteDataset(dataset['@id'])" />
-        </div>
+      <div class="flex gap-4 mt-1">
+        <Button
+          label="Update"
+          class="w-full"
+          @click="updateDataset(dataset['@id'], datasetStrings[idx])" />
+        <Button
+          label="Delete"
+          severity="danger"
+          outlined
+          class="w-full"
+          @click="deleteDataset(dataset['@id'])" />
+      </div>
     </template>
   </Card>
   <Card class="mt-8">
@@ -225,13 +246,12 @@ onMounted(async () => {
       <MonacoEditorVue
         v-model="newDataset"
         :maxLines="200"
-        style="max-height: calc(90vh - 16rem)"
-      />
+        style="max-height: calc(90vh - 16rem)" />
     </template>
     <template #footer>
-        <div class="flex gap-4 mt-1">
-          <Button label="Add" class="w-full" @click="addDataset" />
-        </div>
+      <div class="flex gap-4 mt-1">
+        <Button label="Add" class="w-full" @click="addDataset" />
+      </div>
     </template>
   </Card>
 </template>

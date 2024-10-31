@@ -17,7 +17,7 @@ describe("Managed Identity Wallet", () => {
           refresh_expires_in: 0,
           token_type: "Bearer",
           "not-before-policy": 1660280763,
-          scope: "profile email",
+          scope: "profile email"
         });
       }),
       http.get("http://127.0.0.1/miw/wallet", () => {
@@ -29,7 +29,7 @@ describe("Managed Identity Wallet", () => {
           didDocument: {
             id: "did:web:managed-identity-wallets-new.int.demo.catena-x.net:BPNL00000003AYRE",
             verificationMethod: [],
-            "@context": "https://www.w3.org/ns/did/v1",
+            "@context": "https://www.w3.org/ns/did/v1"
           },
           verifiableCredentials: [
             {
@@ -37,8 +37,8 @@ describe("Managed Identity Wallet", () => {
                 {
                   bpn: "BPNL00000003AYRE",
                   id: "did:web:managed-identity-wallets-new.int.demo.catena-x.net:BPNL00000003AYRE",
-                  type: "BpnCredential",
-                },
+                  type: "BpnCredential"
+                }
               ],
               issuanceDate: "2023-07-10T00:33:44Z",
               id: "did:web:managed-identity-wallets-new.int.demo.catena-x.net:BPNL00000003CRHK#a40ca725-3ad1-4742-a441-a2e1092a5d0b",
@@ -48,17 +48,17 @@ describe("Managed Identity Wallet", () => {
                 proofPurpose: "proofPurpose",
                 type: "JsonWebSignature2020",
                 verificationMethod:
-                  "did:web:managed-identity-wallets-new.int.demo.catena-x.net:BPNL00000003CRHK#",
+                  "did:web:managed-identity-wallets-new.int.demo.catena-x.net:BPNL00000003CRHK#"
               },
               type: ["VerifiableCredential", "BpnCredential"],
               "@context": [
                 "https://www.w3.org/2018/credentials/v1",
                 "https://catenax-ng.github.io/product-core-schemas/businessPartnerData.json",
-                "https://w3id.org/security/suites/jws-2020/v1",
+                "https://w3id.org/security/suites/jws-2020/v1"
               ],
               issuer:
                 "did:web:managed-identity-wallets-new.int.demo.catena-x.net:BPNL00000003CRHK",
-              expirationDate: "2023-10-01T00:00:00Z",
+              expirationDate: "2023-10-01T00:00:00Z"
             },
             {
               credentialSubject: [
@@ -68,8 +68,8 @@ describe("Managed Identity Wallet", () => {
                   memberOf: "Catena-X",
                   startTime: "2023-07-10T00:33:45.393261800Z",
                   status: "Active",
-                  type: "MembershipCredential",
-                },
+                  type: "MembershipCredential"
+                }
               ],
               issuanceDate: "2023-07-10T00:33:45Z",
               id: "did:web:managed-identity-wallets-new.int.demo.catena-x.net:BPNL00000003CRHK#15186cc4-531b-49ac-a29e-697706a9bc45",
@@ -79,17 +79,17 @@ describe("Managed Identity Wallet", () => {
                 proofPurpose: "proofPurpose",
                 type: "JsonWebSignature2020",
                 verificationMethod:
-                  "did:web:managed-identity-wallets-new.int.demo.catena-x.net:BPNL00000003CRHK#",
+                  "did:web:managed-identity-wallets-new.int.demo.catena-x.net:BPNL00000003CRHK#"
               },
               type: ["VerifiableCredential", "MembershipCredential"],
               "@context": [
                 "https://www.w3.org/2018/credentials/v1",
                 "https://catenax-ng.github.io/product-core-schemas/businessPartnerData.json",
-                "https://w3id.org/security/suites/jws-2020/v1",
+                "https://w3id.org/security/suites/jws-2020/v1"
               ],
               issuer:
                 "did:web:managed-identity-wallets-new.int.demo.catena-x.net:BPNL00000003CRHK",
-              expirationDate: "2023-10-01T00:00:00Z",
+              expirationDate: "2023-10-01T00:00:00Z"
             },
             {
               credentialSubject: [
@@ -98,8 +98,8 @@ describe("Managed Identity Wallet", () => {
                   holderIdentifier: "BPNL00000003AYRE",
                   id: "did:web:managed-identity-wallets-new.int.demo.catena-x.net:BPNL00000003AYRE",
                   items: ["BpnCredential", "MembershipCredential"],
-                  type: "SummaryCredential",
-                },
+                  type: "SummaryCredential"
+                }
               ],
               issuanceDate: "2023-07-10T00:33:45Z",
               id: "did:web:managed-identity-wallets-new.int.demo.catena-x.net:BPNL00000003CRHK#c67bc7be-2096-4f91-9a07-a932876b677c",
@@ -109,24 +109,24 @@ describe("Managed Identity Wallet", () => {
                 proofPurpose: "proofPurpose",
                 type: "JsonWebSignature2020",
                 verificationMethod:
-                  "did:web:managed-identity-wallets-new.int.demo.catena-x.net:BPNL00000003CRHK#",
+                  "did:web:managed-identity-wallets-new.int.demo.catena-x.net:BPNL00000003CRHK#"
               },
               type: ["VerifiableCredential", "SummaryCredential"],
               "@context": [
                 "https://www.w3.org/2018/credentials/v1",
                 "https://catenax-ng.github.io/product-core-schemas/SummaryVC.json",
-                "https://w3id.org/security/suites/jws-2020/v1",
+                "https://w3id.org/security/suites/jws-2020/v1"
               ],
               issuer:
                 "did:web:managed-identity-wallets-new.int.demo.catena-x.net:BPNL00000003CRHK",
-              expirationDate: "2023-10-01T00:00:00Z",
-            },
-          ],
+              expirationDate: "2023-10-01T00:00:00Z"
+            }
+          ]
         });
       }),
       http.post("http://127.0.0.1/miw/presentations", () => {
         return HttpResponse.json({
-          vp: "eyJraWQiOiJkaWQ6d2ViOm1hbmFnZWQtaWRlbnRpdHktd2FsbGV0cy1uZXcuaW50LmRlbW8uY2F0ZW5hLXgubmV0OkJQTkwwMDAwMDAwM0FZUkUiLCJ0eXAiOiJKV1QiLCJhbGciOiJFZERTQSJ9.eyJzdWIiOiJkaWQ6d2ViOm1hbmFnZWQtaWRlbnRpdHktd2FsbGV0cy1uZXcuaW50LmRlbW8uY2F0ZW5hLXgubmV0OkJQTkwwMDAwMDAwM0FZUkUiLCJhdWQiOiJkaWQ6d2ViOndhbGxldC1zcGEuYWxwaGEuc2Nzbi5kYXRhc3BhYy5lcyIsImlzcyI6ImRpZDp3ZWI6bWFuYWdlZC1pZGVudGl0eS13YWxsZXRzLW5ldy5pbnQuZGVtby5jYXRlbmEteC5uZXQ6QlBOTDAwMDAwMDAzQVlSRSIsInZwIjp7ImlkIjoiZGlkOndlYjptYW5hZ2VkLWlkZW50aXR5LXdhbGxldHMtbmV3LmludC5kZW1vLmNhdGVuYS14Lm5ldDpCUE5MMDAwMDAwMDNBWVJFI2NkMDk0NGI0LTkwNDYtNDdkMC1hYjM3LWE4NjBjZTc1ZWFjOCIsInR5cGUiOlsiVmVyaWZpYWJsZVByZXNlbnRhdGlvbiJdLCJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSJdLCJ2ZXJpZmlhYmxlQ3JlZGVudGlhbCI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSIsImh0dHBzOi8vY2F0ZW5heC1uZy5naXRodWIuaW8vcHJvZHVjdC1jb3JlLXNjaGVtYXMvU3VtbWFyeVZDLmpzb24iLCJodHRwczovL3czaWQub3JnL3NlY3VyaXR5L3N1aXRlcy9qd3MtMjAyMC92MSJdLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIiwiU3VtbWFyeUNyZWRlbnRpYWwiXSwiaWQiOiJkaWQ6d2ViOm1hbmFnZWQtaWRlbnRpdHktd2FsbGV0cy1uZXcuaW50LmRlbW8uY2F0ZW5hLXgubmV0OkJQTkwwMDAwMDAwM0NSSEsjYzY3YmM3YmUtMjA5Ni00ZjkxLTlhMDctYTkzMjg3NmI2NzdjIiwiaXNzdWVyIjoiZGlkOndlYjptYW5hZ2VkLWlkZW50aXR5LXdhbGxldHMtbmV3LmludC5kZW1vLmNhdGVuYS14Lm5ldDpCUE5MMDAwMDAwMDNDUkhLIiwiaXNzdWFuY2VEYXRlIjoiMjAyMy0wNy0xMFQwMDozMzo0NVoiLCJleHBpcmF0aW9uRGF0ZSI6IjIwMjMtMTAtMDFUMDA6MDA6MDBaIiwiY3JlZGVudGlhbFN1YmplY3QiOnsiaWQiOiJkaWQ6d2ViOm1hbmFnZWQtaWRlbnRpdHktd2FsbGV0cy1uZXcuaW50LmRlbW8uY2F0ZW5hLXgubmV0OkJQTkwwMDAwMDAwM0FZUkUiLCJob2xkZXJJZGVudGlmaWVyIjoiQlBOTDAwMDAwMDAzQVlSRSIsInR5cGUiOiJTdW1tYXJ5Q3JlZGVudGlhbCIsImNvbnRyYWN0VGVtcGxhdGUiOiJodHRwczovL3B1YmxpYy5jYXRlbmEteC5vcmcvY29udHJhY3RzLyIsIml0ZW1zIjpbIkJwbkNyZWRlbnRpYWwiLCJNZW1iZXJzaGlwQ3JlZGVudGlhbCJdfSwicHJvb2YiOnsicHJvb2ZQdXJwb3NlIjoicHJvb2ZQdXJwb3NlIiwidHlwZSI6Ikpzb25XZWJTaWduYXR1cmUyMDIwIiwidmVyaWZpY2F0aW9uTWV0aG9kIjoiZGlkOndlYjptYW5hZ2VkLWlkZW50aXR5LXdhbGxldHMtbmV3LmludC5kZW1vLmNhdGVuYS14Lm5ldDpCUE5MMDAwMDAwMDNDUkhLIyIsImNyZWF0ZWQiOiIyMDIzLTA3LTEwVDAwOjMzOjQ2WiIsImp3cyI6ImV5SmhiR2NpT2lKRlpFUlRRU0o5Li5KQ0RYMmtReXNrSVlHR191eVRVYzhFWVZ4RDliV3I0R1JCWEp2dy1Yak1qb2VKT0FGUDFhX0d1cFZPcVVJNTJhLWVZRVJkcExlcE9lV2hHRkhsUWxBQSJ9fX0sImV4cCI6MTY5MzQ2NzA2MCwianRpIjoiYTViMTNhNDMtZmZkZS00NDBhLTg3YzAtZjZiODFjNjQzNWY0In0.UkVNT1ZFRF9TSUdOQVRVUkU",
+          vp: "eyJraWQiOiJkaWQ6d2ViOm1hbmFnZWQtaWRlbnRpdHktd2FsbGV0cy1uZXcuaW50LmRlbW8uY2F0ZW5hLXgubmV0OkJQTkwwMDAwMDAwM0FZUkUiLCJ0eXAiOiJKV1QiLCJhbGciOiJFZERTQSJ9.eyJzdWIiOiJkaWQ6d2ViOm1hbmFnZWQtaWRlbnRpdHktd2FsbGV0cy1uZXcuaW50LmRlbW8uY2F0ZW5hLXgubmV0OkJQTkwwMDAwMDAwM0FZUkUiLCJhdWQiOiJkaWQ6d2ViOndhbGxldC1zcGEuYWxwaGEuc2Nzbi5kYXRhc3BhYy5lcyIsImlzcyI6ImRpZDp3ZWI6bWFuYWdlZC1pZGVudGl0eS13YWxsZXRzLW5ldy5pbnQuZGVtby5jYXRlbmEteC5uZXQ6QlBOTDAwMDAwMDAzQVlSRSIsInZwIjp7ImlkIjoiZGlkOndlYjptYW5hZ2VkLWlkZW50aXR5LXdhbGxldHMtbmV3LmludC5kZW1vLmNhdGVuYS14Lm5ldDpCUE5MMDAwMDAwMDNBWVJFI2NkMDk0NGI0LTkwNDYtNDdkMC1hYjM3LWE4NjBjZTc1ZWFjOCIsInR5cGUiOlsiVmVyaWZpYWJsZVByZXNlbnRhdGlvbiJdLCJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSJdLCJ2ZXJpZmlhYmxlQ3JlZGVudGlhbCI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSIsImh0dHBzOi8vY2F0ZW5heC1uZy5naXRodWIuaW8vcHJvZHVjdC1jb3JlLXNjaGVtYXMvU3VtbWFyeVZDLmpzb24iLCJodHRwczovL3czaWQub3JnL3NlY3VyaXR5L3N1aXRlcy9qd3MtMjAyMC92MSJdLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIiwiU3VtbWFyeUNyZWRlbnRpYWwiXSwiaWQiOiJkaWQ6d2ViOm1hbmFnZWQtaWRlbnRpdHktd2FsbGV0cy1uZXcuaW50LmRlbW8uY2F0ZW5hLXgubmV0OkJQTkwwMDAwMDAwM0NSSEsjYzY3YmM3YmUtMjA5Ni00ZjkxLTlhMDctYTkzMjg3NmI2NzdjIiwiaXNzdWVyIjoiZGlkOndlYjptYW5hZ2VkLWlkZW50aXR5LXdhbGxldHMtbmV3LmludC5kZW1vLmNhdGVuYS14Lm5ldDpCUE5MMDAwMDAwMDNDUkhLIiwiaXNzdWFuY2VEYXRlIjoiMjAyMy0wNy0xMFQwMDozMzo0NVoiLCJleHBpcmF0aW9uRGF0ZSI6IjIwMjMtMTAtMDFUMDA6MDA6MDBaIiwiY3JlZGVudGlhbFN1YmplY3QiOnsiaWQiOiJkaWQ6d2ViOm1hbmFnZWQtaWRlbnRpdHktd2FsbGV0cy1uZXcuaW50LmRlbW8uY2F0ZW5hLXgubmV0OkJQTkwwMDAwMDAwM0FZUkUiLCJob2xkZXJJZGVudGlmaWVyIjoiQlBOTDAwMDAwMDAzQVlSRSIsInR5cGUiOiJTdW1tYXJ5Q3JlZGVudGlhbCIsImNvbnRyYWN0VGVtcGxhdGUiOiJodHRwczovL3B1YmxpYy5jYXRlbmEteC5vcmcvY29udHJhY3RzLyIsIml0ZW1zIjpbIkJwbkNyZWRlbnRpYWwiLCJNZW1iZXJzaGlwQ3JlZGVudGlhbCJdfSwicHJvb2YiOnsicHJvb2ZQdXJwb3NlIjoicHJvb2ZQdXJwb3NlIiwidHlwZSI6Ikpzb25XZWJTaWduYXR1cmUyMDIwIiwidmVyaWZpY2F0aW9uTWV0aG9kIjoiZGlkOndlYjptYW5hZ2VkLWlkZW50aXR5LXdhbGxldHMtbmV3LmludC5kZW1vLmNhdGVuYS14Lm5ldDpCUE5MMDAwMDAwMDNDUkhLIyIsImNyZWF0ZWQiOiIyMDIzLTA3LTEwVDAwOjMzOjQ2WiIsImp3cyI6ImV5SmhiR2NpT2lKRlpFUlRRU0o5Li5KQ0RYMmtReXNrSVlHR191eVRVYzhFWVZ4RDliV3I0R1JCWEp2dy1Yak1qb2VKT0FGUDFhX0d1cFZPcVVJNTJhLWVZRVJkcExlcE9lV2hHRkhsUWxBQSJ9fX0sImV4cCI6MTY5MzQ2NzA2MCwianRpIjoiYTViMTNhNDMtZmZkZS00NDBhLTg3YzAtZjZiODFjNjQzNWY0In0.UkVNT1ZFRF9TSUdOQVRVUkU"
         });
       }),
       http.post<PathParams, VerifiablePresentationJwt>(
@@ -136,14 +136,14 @@ describe("Managed Identity Wallet", () => {
             valid: true,
             validateAudience: true,
             validateExpiryDate: true,
-            vp: (await request.json()).vp,
+            vp: (await request.json()).vp
           });
         }
       )
     );
 
     server.listen({
-      onUnhandledRequest: "bypass",
+      onUnhandledRequest: "bypass"
     });
   });
 
@@ -163,15 +163,14 @@ describe("Managed Identity Wallet", () => {
     clientSecret: "testSecret",
     credentialId:
       "did:web:managed-identity-wallets-new.int.demo.catena-x.net:BPNL00000003CRHK#c67bc7be-2096-4f91-9a07-a932876b677c",
-    validations: ["valid"],
+    validations: ["valid"]
   });
   const testAudience = "did:web:test-audience.com";
   const miwWalletClient = new ManagedIdentityWalletClient(iamConfig);
 
   it("Request & Validate presentation", async () => {
-    const vp = await miwWalletClient.requestVerifiablePresentation(
-      testAudience
-    );
+    const vp =
+      await miwWalletClient.requestVerifiablePresentation(testAudience);
     expect(vp).toStrictEqual(expect.any(String));
 
     const valid = await miwWalletClient.requestValidation(vp, testAudience);

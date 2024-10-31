@@ -2,7 +2,7 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
-  ValidateNested,
+  ValidateNested
 } from "class-validator";
 import { LDType, Namespace, Serializable } from "../../decorators";
 import { SerializableClass, withExtraProps } from "../common";
@@ -11,7 +11,7 @@ import {
   CatalogErrorDto,
   CatalogMessageDto,
   CatalogRequestMessageDto,
-  DatasetRequestMessageDto,
+  DatasetRequestMessageDto
 } from "./messages.dto";
 
 export interface ICatalogError {

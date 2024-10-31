@@ -4,19 +4,19 @@ import {
   IsOptional,
   ValidateNested,
   IsBoolean,
-  IsIn,
+  IsIn
 } from "class-validator";
 import {
   VerifiableCredential,
   DataIntegrityProof,
   JsonWebSignature2020,
-  Proof,
+  Proof
 } from "./credentials.dto";
 import { OrArray } from "../../utils/unions";
 
 export class VerifiablePresentation<
   T extends VerifiableCredential = VerifiableCredential,
-  P extends Proof = Proof,
+  P extends Proof = Proof
 > {
   @IsString({ each: true })
   "@context": (
@@ -42,10 +42,10 @@ export class VerifiablePresentation<
       property: "type",
       subTypes: [
         { value: JsonWebSignature2020, name: "JsonWebSignature2020" },
-        { value: DataIntegrityProof, name: "DataIntegrityProof" },
-      ],
+        { value: DataIntegrityProof, name: "DataIntegrityProof" }
+      ]
     },
-    keepDiscriminatorProperty: true,
+    keepDiscriminatorProperty: true
   })
   proof?: OrArray<P>;
 }

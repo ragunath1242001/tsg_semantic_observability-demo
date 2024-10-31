@@ -10,6 +10,6 @@ import { JSONLDContext } from "../model/context.dao.js";
   imports: [AuthModule, TypeOrmModule.forFeature([JSONLDContext])],
   controllers: [ContextController, ContextManagementController],
   providers: [ContextService],
-  exports: [ContextService],
+  exports: [ContextService]
 })
 export class ContextModule {}

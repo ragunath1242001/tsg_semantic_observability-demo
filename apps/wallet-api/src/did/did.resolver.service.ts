@@ -16,7 +16,7 @@ export class DidResolverService {
   constructor() {
     this.strategies = new Map<string, DidResolverStrategy>([
       [DIDMethod.WEB, new DidWebResolverStrategy()],
-      [DIDMethod.TDW, new DidTdwResolverStrategy()],
+      [DIDMethod.TDW, new DidTdwResolverStrategy()]
     ]);
   }
 

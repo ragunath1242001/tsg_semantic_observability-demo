@@ -33,16 +33,14 @@ const expandedRows = ref();
 
 const loadCredentials = async () => {
   try {
-    const response = await http<Credential[]>(
-      "management/credentials"
-    );
+    const response = await http<Credential[]>("management/credentials");
     credentials.value = response.data.map((item) => {
       const subjectTypes = toArray(item.credential.credentialSubject).flatMap(
         (s) => [...toArray(s.type), ...toArray(s["@type"])]
       );
       const credentialTypes = new Set([
         ...item.credential.type,
-        ...subjectTypes,
+        ...subjectTypes
       ]);
       const simpleTypes = [...credentialTypes]
         .map((type) => type.split(/[/#]/g).slice(-1)[0])
@@ -56,15 +54,17 @@ const loadCredentials = async () => {
             : item.credential.issuer,
         type: simpleTypes,
         expirationDate: formatDate(item.credential.expirationDate),
-        raw: item,
+        raw: item
       };
     });
   } catch (error) {
-    toast.add(toastError({
-      error,
-      summary: "Could not load credentials",
-      defaultMessage: `Error in fetching credentials`
-    }));
+    toast.add(
+      toastError({
+        error,
+        summary: "Could not load credentials",
+        defaultMessage: `Error in fetching credentials`
+      })
+    );
   }
 };
 
@@ -88,16 +88,18 @@ const deleteCredential = async (credentialId: string) => {
           severity: "success",
           summary: "Success",
           detail: "Credential deleted",
-          life: 3000,
+          life: 3000
         });
       } catch (error) {
-        toast.add(toastError({
-          error,
-          summary: "Could not delete credential",
-          defaultMessage: `Error in deleting credential`
-        }));
+        toast.add(
+          toastError({
+            error,
+            summary: "Could not delete credential",
+            defaultMessage: `Error in deleting credential`
+          })
+        );
       }
-    },
+    }
   });
 };
 
@@ -107,19 +109,17 @@ const copyCredentialId = (credentialId: string) => {
     severity: "success",
     summary: "Copied",
     detail: "Copied Credential ID to clipboard",
-    life: 3000,
+    life: 3000
   });
 };
 
-const copyCredential = (
-  credential: VerifiableCredential
-) => {
+const copyCredential = (credential: VerifiableCredential) => {
   navigator.clipboard.writeText(JSON.stringify(credential, null, 2));
   toast.add({
     severity: "success",
     summary: "Copied",
     detail: "Copied Credential JSON to clipboard",
-    life: 3000,
+    life: 3000
   });
 };
 
@@ -156,8 +156,7 @@ onMounted(async () => {
           sort-field="id"
           :sort-order="1"
           paginator
-          :rows="10"
-        >
+          :rows="10">
           <Column expander style="width: 5rem" />
           <Column field="id" header="ID">
             <template #body="props">
@@ -191,8 +190,7 @@ onMounted(async () => {
                 class="mr-1 mb-1"
                 v-for="type in props.data.type"
                 :value="type"
-                severity="info"
-              ></Tag>
+                severity="info"></Tag>
             </template>
           </Column>
           <Column field="expirationDate" header="Expiration" />
@@ -202,8 +200,7 @@ onMounted(async () => {
                 severity="danger"
                 icon="pi pi-times"
                 :disabled="props.data.default"
-                @click="deleteCredential(props.data.raw.id)"
-              />
+                @click="deleteCredential(props.data.raw.id)" />
             </template>
           </Column>
           <template #expansion="props">
@@ -211,12 +208,10 @@ onMounted(async () => {
               <Button
                 class="mr-2"
                 label="Copy Credential ID"
-                @click="copyCredentialId(props.data.raw.id)"
-              />
+                @click="copyCredentialId(props.data.raw.id)" />
               <Button
                 label="Copy Credential"
-                @click="copyCredential(props.data.raw.credential)"
-              />
+                @click="copyCredential(props.data.raw.credential)" />
             </div>
 
             <h3 class="text-2xl font-bold my-2">Proof</h3>
@@ -247,8 +242,7 @@ onMounted(async () => {
                 :static="props.data.raw.credential.credentialSubject"
                 :read-only="true"
                 :min-lines="1"
-                :max-lines="100"
-              />
+                :max-lines="100" />
             </div>
           </template>
         </DataTable>

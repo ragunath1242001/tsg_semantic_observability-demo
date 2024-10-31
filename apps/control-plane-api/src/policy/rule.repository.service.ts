@@ -12,7 +12,7 @@ import {
   ODRLOperator,
   PermissionDto,
   ProhibitionDto,
-  ValueDto,
+  ValueDto
 } from "@tsg-dsp/common-dsp";
 import { toCompactUri } from "../utils/contexts";
 import {
@@ -20,7 +20,7 @@ import {
   ConstraintModel,
   ConstraintType,
   DataType,
-  EvaluationTrigger,
+  EvaluationTrigger
 } from "./constraint.dto";
 
 @Injectable()
@@ -49,9 +49,9 @@ export class RuleRepositoryService {
           evaluable: [
             EvaluationTrigger.PROVIDER_ON_REQUEST,
             EvaluationTrigger.PROVIDER_CONTINUOUS,
-            EvaluationTrigger.PROVIDER_ON_EXECUTION,
+            EvaluationTrigger.PROVIDER_ON_EXECUTION
           ],
-          dataType: DataType.DIF_INPUT_DESCRIPTOR,
+          dataType: DataType.DIF_INPUT_DESCRIPTOR
         },
         {
           id: 1,
@@ -67,9 +67,9 @@ export class RuleRepositoryService {
             EvaluationTrigger.PROVIDER_ON_REQUEST,
             EvaluationTrigger.PROVIDER_ON_EXECUTION,
             EvaluationTrigger.CONSUMER_CONTINUOUS,
-            EvaluationTrigger.CONSUMER_ON_EXECUTION,
+            EvaluationTrigger.CONSUMER_ON_EXECUTION
           ],
-          dataType: DataType.DATETIME,
+          dataType: DataType.DATETIME
         },
         {
           id: 2,
@@ -85,9 +85,9 @@ export class RuleRepositoryService {
             EvaluationTrigger.PROVIDER_ON_EXECUTION,
             EvaluationTrigger.CONSUMER_ON_REQUEST,
             EvaluationTrigger.CONSUMER_CONTINUOUS,
-            EvaluationTrigger.CONSUMER_ON_EXECUTION,
+            EvaluationTrigger.CONSUMER_ON_EXECUTION
           ],
-          dataType: DataType.STRING,
+          dataType: DataType.STRING
         },
         {
           id: 3,
@@ -98,8 +98,8 @@ export class RuleRepositoryService {
           operator: ODRLOperator.EQ,
           contextPath: "$.transfer.setSize",
           evaluable: [EvaluationTrigger.PROVIDER_ON_EXECUTION],
-          dataType: DataType.NUMBER,
-        },
+          dataType: DataType.NUMBER
+        }
       ]);
     }
   }
@@ -114,8 +114,8 @@ export class RuleRepositoryService {
     const constraint = await this.constraintRepository.findOne({
       where: { id },
       relations: {
-        constraints: { constraints: { constraints: { constraints: true } } },
-      },
+        constraints: { constraints: { constraints: { constraints: true } } }
+      }
     });
     if (!constraint) {
       throw new DSPError(
@@ -147,7 +147,7 @@ export class RuleRepositoryService {
     const leftOperand = toCompactUri(constraintDto["odrl:leftOperand"]);
     const operator = toCompactUri(constraintDto["odrl:operator"]);
     const constraintDao = await this.constraintRepository.findOneBy({
-      leftOperand: leftOperand,
+      leftOperand: leftOperand
     });
     if (!constraintDao) {
       if (shouldThrow) {
@@ -184,7 +184,7 @@ export class RuleRepositoryService {
         "@type": "odrl:Constraint",
         "odrl:leftOperand": toCompactUri(constraint.leftOperand),
         "odrl:operator": constraint.operator,
-        "odrl:rightOperand": value ?? constraint.value,
+        "odrl:rightOperand": value ?? constraint.value
       };
     }
     throw new DSPError(
@@ -216,8 +216,8 @@ export class RuleRepositoryService {
   ): Promise<ConstraintDao[] | ConstraintModel[]> {
     const constraints = await this.constraintRepository.find({
       relations: {
-        constraints: { constraints: { constraints: { constraints: true } } },
-      },
+        constraints: { constraints: { constraints: { constraints: true } } }
+      }
     });
     if (dao) {
       return constraints;
@@ -251,8 +251,8 @@ export class RuleRepositoryService {
       where: { id },
       relations: {
         constraints: { constraints: { constraints: { constraints: true } } },
-        duties: { constraints: { constraints: { constraints: true } } },
-      },
+        duties: { constraints: { constraints: { constraints: true } } }
+      }
     });
     if (!rule) {
       throw new DSPError(
@@ -273,8 +273,8 @@ export class RuleRepositoryService {
     const rules = await this.ruleRepository.find({
       relations: {
         constraints: { constraints: { constraints: { constraints: true } } },
-        duties: { constraints: { constraints: { constraints: true } } },
-      },
+        duties: { constraints: { constraints: { constraints: true } } }
+      }
     });
     if (!dao) {
       return Rule.parse(rules);
@@ -299,7 +299,7 @@ export class RuleRepositoryService {
           "odrl:assignee": rule.assignee,
           "odrl:constraint": rule.constraints.map((constraint) =>
             this.constraintToOdrl(constraint)
-          ),
+          )
         };
       case RuleType.DUTY:
         return {
@@ -309,7 +309,7 @@ export class RuleRepositoryService {
           "odrl:assignee": rule.assignee,
           "odrl:constraint": rule.constraints.map((constraint) =>
             this.constraintToOdrl(constraint)
-          ),
+          )
         };
       case RuleType.PERMISSION:
         return {
@@ -322,7 +322,7 @@ export class RuleRepositoryService {
           ),
           "odrl:duty": rule.duties.map(
             (constraint) => this.ruleToOdrl(constraint) as DutyDto
-          ),
+          )
         };
       default:
         throw new DSPError(

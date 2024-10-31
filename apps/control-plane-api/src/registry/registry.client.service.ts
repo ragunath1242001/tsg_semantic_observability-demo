@@ -30,8 +30,8 @@ export class RegistryClientService {
         Authorization: `Bearer ${await this.authService.requestToken(
           this.registryConfig.registryDid ||
             `did:web:${this.registryConfig.registryUrl!.replace(":", "%3A")}`
-        )}`,
-      },
+        )}`
+      }
     };
   }
 

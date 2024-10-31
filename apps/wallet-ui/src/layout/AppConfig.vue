@@ -17,11 +17,13 @@ const updateSettings = async () => {
   try {
     await runtimeStore.updateRuntimeSettings();
   } catch (error) {
-    toast.add(toastError({
-      error,
-      summary: "Failed to update settings",
-      defaultMessage: `Could not update runtime settings`
-    }));
+    toast.add(
+      toastError({
+        error,
+        summary: "Failed to update settings",
+        defaultMessage: `Could not update runtime settings`
+      })
+    );
   }
 };
 </script>
@@ -31,10 +33,11 @@ const updateSettings = async () => {
     v-model:visible="visible"
     position="right"
     :transitionOptions="'.3s cubic-bezier(0, 0, 0.2, 1)'"
-    class="layout-config-sidebar w-[26rem]"
-  >
+    class="layout-config-sidebar w-[26rem]">
     <div class="text-xl mt-2">Gaia-X Support</div>
-    <ToggleSwitch v-model="runtimeStore.gaiaXSupport" @change="updateSettings" />
+    <ToggleSwitch
+      v-model="runtimeStore.gaiaXSupport"
+      @change="updateSettings" />
   </Drawer>
 </template>
 

@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import {
-  DatasetConfig,
-} from "@tsg-dsp/http-data-plane-dtos";
+import { DatasetConfig } from "@tsg-dsp/http-data-plane-dtos";
 import { ref, onMounted } from "vue";
 import { useToast } from "primevue/usetoast";
 import { useConfirm } from "primevue/useconfirm";
@@ -23,7 +21,7 @@ const odrlOfferSchema = {
   title:
     "Dataspace Protocol Message Offer (https://w3id.org/dspace/2024/1/negotiation/contract-schema.json#/definitions/MessageOffer)",
   type: "object",
-  $ref: "https://w3id.org/dspace/2024/1/negotiation/contract-schema.json#/definitions/MessageOffer",
+  $ref: "https://w3id.org/dspace/2024/1/negotiation/contract-schema.json#/definitions/MessageOffer"
 };
 
 const odrlActions = Object.values(ODRLAction);
@@ -41,16 +39,16 @@ const showDataset = ref(false);
 
 const getState = async () => {
   try {
-    const response = await http.get<DataPlaneStateDto>(
-      "management/state"
-    );
+    const response = await http.get<DataPlaneStateDto>("management/state");
     state.value = response.data;
   } catch (error) {
-    toast.add(toastError({
-      error,
-      summary: "Loading state failed",
-      defaultMessage: `Could not load state from the HTTP data plane`
-    }));
+    toast.add(
+      toastError({
+        error,
+        summary: "Loading state failed",
+        defaultMessage: `Could not load state from the HTTP data plane`
+      })
+    );
   }
 };
 
@@ -58,7 +56,7 @@ const fillFormProperties = (config: DatasetConfig) => {
   configForm.value = JSON.parse(JSON.stringify(config));
   if (!configForm.value.policy) {
     configForm.value.policy = {
-      type: "default",
+      type: "default"
     };
   }
   configString.value = JSON.stringify(config, null, 2);
@@ -71,9 +69,9 @@ const fillFormProperties = (config: DatasetConfig) => {
           "odrl:assigner": "did:web:...",
           "odrl:permission": [
             {
-              "odrl:action": "odrl:use",
-            },
-          ],
+              "odrl:action": "odrl:use"
+            }
+          ]
         },
         null,
         2
@@ -82,17 +80,17 @@ const fillFormProperties = (config: DatasetConfig) => {
 
 const getDatasetConfig = async () => {
   try {
-    const response = await http.get<DatasetConfig>(
-      "management/dataset"
-    );
+    const response = await http.get<DatasetConfig>("management/dataset");
     dataset.value = response.data;
     fillFormProperties(response.data);
   } catch (error) {
-    toast.add(toastError({
-      error,
-      summary: "Loading dataset config failed",
-      defaultMessage: `Could not load dataset config from the HTTP data plane`
-    }));
+    toast.add(
+      toastError({
+        error,
+        summary: "Loading dataset config failed",
+        defaultMessage: `Could not load dataset config from the HTTP data plane`
+      })
+    );
   }
 };
 
@@ -121,11 +119,13 @@ const update = async () => {
     await getDatasetConfig();
     await getState();
   } catch (error) {
-    toast.add(toastError({
-      error,
-      summary: "Loading dataset config failed",
-      defaultMessage: `Could not load dataset config from the HTTP data plane`
-    }));
+    toast.add(
+      toastError({
+        error,
+        summary: "Loading dataset config failed",
+        defaultMessage: `Could not load dataset config from the HTTP data plane`
+      })
+    );
   }
   updateLoading.value = false;
 };
@@ -136,11 +136,13 @@ const refreshRegistration = async () => {
     await http.post("management/refresh");
     await getDatasetConfig();
   } catch (error) {
-    toast.add(toastError({
-      error,
-      summary: "Refreshing registration failed",
-      defaultMessage: `Could not refresh registration at the HTTP data plane`
-    }));
+    toast.add(
+      toastError({
+        error,
+        summary: "Refreshing registration failed",
+        defaultMessage: `Could not refresh registration at the HTTP data plane`
+      })
+    );
   }
   refreshLoading.value = false;
 };
@@ -172,12 +174,18 @@ onMounted(async () => {
     <template #content>
       <div class="grid grid-cols-12 gap-4" v-if="state">
         <div class="col-span-12 min-[1024px]:col-span-8">
-          <FormField :labelWidth="3" label="Identifier">{{ state.identifier }}</FormField>
-          <FormField :labelWidth="3" label="Type">{{ state.details.dataplaneType }}</FormField>
+          <FormField :labelWidth="3" label="Identifier">{{
+            state.identifier
+          }}</FormField>
+          <FormField :labelWidth="3" label="Type">{{
+            state.details.dataplaneType
+          }}</FormField>
           <FormField :labelWidth="3" label="Synchronization">{{
             state.details.catalogSynchronization
           }}</FormField>
-          <FormField :labelWidth="3" label="Role">{{ state.details.role }}</FormField>
+          <FormField :labelWidth="3" label="Role">{{
+            state.details.role
+          }}</FormField>
           <FormField :labelWidth="3" label="Dataset IDs">
             <div v-for="dataset in state.dataset">
               {{ dataset["@id"] }}
@@ -191,8 +199,7 @@ onMounted(async () => {
               severity="info"
               label="Refresh state at Control Plane"
               :loading="refreshLoading"
-              @click="refreshRegistration"
-            />
+              @click="refreshRegistration" />
           </div>
           <div class="mt-4">
             <Button label="Show DCAT dataset" @click="showDataset = true" />
@@ -201,13 +208,11 @@ onMounted(async () => {
               v-model:visible="showDataset"
               modal
               header="DCAT datasets"
-              :style="{ width: '90vw', maxWidth: '75rem' }"
-            >
+              :style="{ width: '90vw', maxWidth: '75rem' }">
               <MonacoEditorVue
                 :static="state.dataset"
                 :read-only="true"
-                :max-lines="30"
-              />
+                :max-lines="30" />
             </Dialog>
           </div>
           <div class="mt-4">
@@ -216,8 +221,7 @@ onMounted(async () => {
               :loading="updateLoading"
               @click="editModal = true"
               severity="warn"
-              type="submit"
-            />
+              type="submit" />
           </div>
         </div>
       </div>
@@ -267,15 +271,13 @@ onMounted(async () => {
           <MonacoEditorVue
             :static="dataset.policy?.raw"
             :read-only="true"
-            :max-lines="15"
-          />
+            :max-lines="15" />
         </FormField>
         <div class="pl-4" v-if="dataset.policy?.type === 'rules'">
           <h5>Permissions</h5>
           <div
             class="pl-4"
-            v-for="(permission, idx) in dataset.policy?.permissions || []"
-          >
+            v-for="(permission, idx) in dataset.policy?.permissions || []">
             <hr v-if="idx !== 0" />
             <FormField label="Action">{{ permission.action }}</FormField>
             <FormField
@@ -291,8 +293,7 @@ onMounted(async () => {
           <h5>Prohibitions</h5>
           <div
             class="pl-4"
-            v-for="(prohibition, idx) in dataset.policy?.prohibitions || []"
-          >
+            v-for="(prohibition, idx) in dataset.policy?.prohibitions || []">
             <hr v-if="idx !== 0" />
             <FormField label="Action">{{ prohibition.action }}</FormField>
             <FormField
@@ -315,52 +316,46 @@ onMounted(async () => {
     modal
     :dismissableMask="true"
     header="Update Configuration"
-    :style="{ width: '95vw', maxWidth: '75rem' }"
-  >
+    :style="{ width: '95vw', maxWidth: '75rem' }">
     <div v-if="configString">
       <div class="mb-4">
         <SelectButton
           v-model="configRaw"
           :options="[
             { value: false, label: 'Form' },
-            { value: true, label: 'JSON' },
+            { value: true, label: 'JSON' }
           ]"
           option-value="value"
           option-label="label"
-          aria-labelledby="basic"
-        />
+          aria-labelledby="basic" />
       </div>
       <MonacoEditorVue
         v-if="configRaw"
         v-model="configString"
         :schema="schema"
         :maxLines="200"
-        style="max-height: calc(90vh - 16rem)"
-      />
+        style="max-height: calc(90vh - 16rem)" />
       <FormField label="Identifier" v-slot="props" v-if="!configRaw">
         <InputText
           class="w-full"
           :id="props.id"
           v-model="configForm.id"
           @change="emptyStringToUndefined(configForm, 'id')"
-          placeholder="Identifier (leave empty for an auto-generated identifier)"
-        />
+          placeholder="Identifier (leave empty for an auto-generated identifier)" />
       </FormField>
       <FormField label="Title*" v-slot="props" v-if="!configRaw">
         <InputText
           class="w-full"
           :id="props.id"
           v-model="configForm.title"
-          placeholder="Title"
-        />
+          placeholder="Title" />
       </FormField>
       <FormField label="Base semantic model" v-slot="props" v-if="!configRaw">
         <InputText
           class="w-full"
           :id="props.id"
           v-model="configForm.baseSemanticModelRef"
-          placeholder="URL to base/abstract semantic model definitions"
-        />
+          placeholder="URL to base/abstract semantic model definitions" />
       </FormField>
       <FormField label="Current version*" v-slot="props" v-if="!configRaw">
         <Select
@@ -370,8 +365,7 @@ onMounted(async () => {
           :options="configForm.versions"
           option-label="version"
           option-value="version"
-          placeholder="Current version"
-        />
+          placeholder="Current version" />
       </FormField>
       <FormField no-label>
         <small>Fields marked with an asterisk (*) are required.</small>
@@ -394,12 +388,11 @@ onMounted(async () => {
                     version: '',
                     distributions: [
                       {
-                        backendUrl: '',
-                      },
-                    ],
+                        backendUrl: ''
+                      }
+                    ]
                   })
-                "
-              />
+                " />
             </FormField>
             <div v-for="(version, idx) in configForm.versions">
               <br v-if="idx !== 0" />
@@ -409,16 +402,14 @@ onMounted(async () => {
                   :id="props.id"
                   v-model="version.id"
                   @change="emptyStringToUndefined(version, 'id')"
-                  placeholder="Identifier (leave empty for an auto-generated identifier)"
-                />
+                  placeholder="Identifier (leave empty for an auto-generated identifier)" />
               </FormField>
               <FormField label="Version*" v-slot="props">
                 <InputText
                   class="w-full"
                   :id="props.id"
                   v-model="version.version"
-                  placeholder="Version string, e.g. semver like '0.3.1'"
-                />
+                  placeholder="Version string, e.g. semver like '0.3.1'" />
               </FormField>
               <FormField label="Semantic model" v-slot="props">
                 <InputText
@@ -426,16 +417,14 @@ onMounted(async () => {
                   :id="props.id"
                   v-model="version.semanticModelRef"
                   @change="emptyStringToUndefined(version, 'semanticModelRef')"
-                  placeholder="URL to the semantic model of this dataset version"
-                />
+                  placeholder="URL to the semantic model of this dataset version" />
               </FormField>
               <FormField label="Media type" v-slot="props">
                 <InputText
                   class="w-full"
                   :id="props.id"
                   v-model="version.distributions[0].mediaType"
-                  placeholder="Media type, defaults to 'application/http'"
-                />
+                  placeholder="Media type, defaults to 'application/http'" />
               </FormField>
               <FormField label="Schema" v-slot="props">
                 <InputText
@@ -448,8 +437,7 @@ onMounted(async () => {
                       'schemaRef'
                     )
                   "
-                  placeholder="URL to the message schema of this dataset version"
-                />
+                  placeholder="URL to the message schema of this dataset version" />
               </FormField>
               <FormField label="OpenAPI specification" v-slot="props">
                 <InputText
@@ -462,8 +450,7 @@ onMounted(async () => {
                       'openApiSpecRef'
                     )
                   "
-                  placeholder="OpenAPI specification (leave empty for no specification)"
-                />
+                  placeholder="OpenAPI specification (leave empty for no specification)" />
                 <small
                   >The OpenAPI specification should refer to the JSON or YAML
                   document directly.</small
@@ -480,8 +467,7 @@ onMounted(async () => {
                       'backendUrl'
                     )
                   "
-                  placeholder="URL pointing to the data access point"
-                />
+                  placeholder="URL pointing to the data access point" />
               </FormField>
               <FormField label="Authorization" v-slot="props">
                 <Password
@@ -492,8 +478,7 @@ onMounted(async () => {
                   :input-id="props.id"
                   v-model="version.authorization"
                   @change="emptyStringToUndefined(version, 'authorization')"
-                  placeholder="Authorization header, e.g. 'Basic XXX' or 'Bearer XXX' (leave empty for no specification)"
-                />
+                  placeholder="Authorization header, e.g. 'Basic XXX' or 'Bearer XXX' (leave empty for no specification)" />
                 <small
                   >The Authorization will be used for the connection between the
                   data plane and the backend service.</small
@@ -515,20 +500,17 @@ onMounted(async () => {
                 :options="['default', 'rules', 'manual']"
                 :option-label="
                   (value) => value[0].toUpperCase() + value.slice(1)
-                "
-              />
+                " />
             </FormField>
             <FormField
               label="Manual"
-              v-if="configForm.policy?.type === 'manual'"
-            >
+              v-if="configForm.policy?.type === 'manual'">
               <MonacoEditorVue
                 v-model="rawPolicy"
                 :schema="odrlOfferSchema"
                 schema-warning
                 :maxLines="25"
-                :minLines="15"
-              />
+                :minLines="15" />
               <small
                 >The warnings are based on a opiniated JSON-Schema of ODRL from
                 the Dataspace Protocol, which does not cover all possibilities
@@ -540,8 +522,7 @@ onMounted(async () => {
             </FormField>
             <FormField
               label="Permissions"
-              v-if="configForm.policy?.type === 'rules'"
-            >
+              v-if="configForm.policy?.type === 'rules'">
               <small
                 >Permissions allow the defined action, when all constraints are
                 met.</small
@@ -554,8 +535,7 @@ onMounted(async () => {
                   editable
                   :options="odrlActions"
                   placeholder="Select or provide actions"
-                  class="w-full"
-                />
+                  class="w-full" />
                 <div class="font-bold py-2">Constraints</div>
                 <div class="grid grid-cols-12 gap-4 grid-nogutter ml-4">
                   <template v-for="(constraint, idx) in permission.constraints">
@@ -564,15 +544,13 @@ onMounted(async () => {
                         v-model="constraint.type"
                         class="w-full"
                         :options="['CredentialType', 'Recipient', 'License']"
-                        placeholder="Constraint type"
-                      />
+                        placeholder="Constraint type" />
                     </div>
                     <div class="col-span-11 md:col-span-6">
                       <InputText
                         class="w-full"
                         v-model="constraint.value"
-                        placeholder="Value"
-                      />
+                        placeholder="Value" />
                     </div>
                     <div class="col-span-1">
                       <Button
@@ -580,8 +558,7 @@ onMounted(async () => {
                         icon="pi pi-times"
                         @click="permission.constraints.splice(idx, 1)"
                         severity="danger"
-                        outlined
-                      />
+                        outlined />
                     </div>
                   </template>
                   <Button
@@ -592,18 +569,16 @@ onMounted(async () => {
                     @click="
                       pushOrCreate(permission, 'constraints', {
                         type: '',
-                        value: '',
+                        value: ''
                       })
-                    "
-                  />
+                    " />
                 </div>
                 <Button
                   class="mt-2"
                   label="Remove permission"
                   icon="pi pi-minus"
                   severity="danger"
-                  @click="configForm.policy.permissions.splice(idx, 1)"
-                />
+                  @click="configForm.policy.permissions.splice(idx, 1)" />
                 <hr />
               </div>
               <div
@@ -611,8 +586,7 @@ onMounted(async () => {
                 v-if="
                   !configForm.policy.permissions ||
                   configForm.policy.permissions.length === 0
-                "
-              >
+                ">
                 No permissions
               </div>
               <Button
@@ -622,15 +596,13 @@ onMounted(async () => {
                 @click="
                   pushOrCreate(configForm.policy, 'permissions', {
                     action: '',
-                    constraints: [],
+                    constraints: []
                   })
-                "
-              />
+                " />
             </FormField>
             <FormField
               label="Prohibitions"
-              v-if="configForm.policy?.type === 'rules'"
-            >
+              v-if="configForm.policy?.type === 'rules'">
               <small
                 >Prohibitions explicitly prohibit the defined action, when all
                 constraints are met. If both permission(s) as prohibition(s)
@@ -645,27 +617,23 @@ onMounted(async () => {
                   editable
                   :options="odrlActions"
                   placeholder="Select or provide actions"
-                  class="w-full"
-                />
+                  class="w-full" />
                 <div class="font-bold py-2">Constraints</div>
                 <div class="grid grid-cols-12 gap-4 grid-nogutter ml-4">
                   <template
-                    v-for="(constraint, idx) in prohibition.constraints"
-                  >
+                    v-for="(constraint, idx) in prohibition.constraints">
                     <div class="col-span-11 md:col-span-5">
                       <Select
                         v-model="constraint.type"
                         class="w-full"
                         :options="['CredentialType', 'Recipient', 'License']"
-                        placeholder="Constraint type"
-                      />
+                        placeholder="Constraint type" />
                     </div>
                     <div class="col-span-11 md:col-span-6">
                       <InputText
                         class="w-full"
                         v-model="constraint.value"
-                        placeholder="Value"
-                      />
+                        placeholder="Value" />
                     </div>
                     <div class="col-span-1">
                       <Button
@@ -673,8 +641,7 @@ onMounted(async () => {
                         icon="pi pi-times"
                         @click="prohibition.constraints.splice(idx, 1)"
                         severity="danger"
-                        outlined
-                      />
+                        outlined />
                     </div>
                   </template>
                   <Button
@@ -685,18 +652,16 @@ onMounted(async () => {
                     @click="
                       pushOrCreate(prohibition, 'constraints', {
                         type: '',
-                        value: '',
+                        value: ''
                       })
-                    "
-                  />
+                    " />
                 </div>
                 <Button
                   class="mt-2"
                   label="Remove prohibition"
                   icon="pi pi-minus"
                   severity="danger"
-                  @click="configForm.policy.prohibitions.splice(idx, 1)"
-                />
+                  @click="configForm.policy.prohibitions.splice(idx, 1)" />
                 <hr />
               </div>
               <div
@@ -704,8 +669,7 @@ onMounted(async () => {
                 v-if="
                   !configForm.policy.prohibitions ||
                   configForm.policy.prohibitions.length === 0
-                "
-              >
+                ">
                 No prohibitions
               </div>
               <Button
@@ -715,10 +679,9 @@ onMounted(async () => {
                 @click="
                   pushOrCreate(configForm.policy, 'prohibitions', {
                     action: '',
-                    constraints: [],
+                    constraints: []
                   })
-                "
-              />
+                " />
             </FormField>
           </TabPanel>
         </TabPanels>
@@ -729,15 +692,13 @@ onMounted(async () => {
         label="Cancel"
         text
         severity="secondary"
-        @click="editModal = false"
-      />
+        @click="editModal = false" />
       <Button
         label="Update"
         :loading="updateLoading"
         @click="update"
         severity="success"
-        type="submit"
-      />
+        type="submit" />
     </template>
   </Dialog>
 </template>

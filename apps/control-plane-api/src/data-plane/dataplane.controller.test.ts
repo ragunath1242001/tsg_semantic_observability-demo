@@ -12,7 +12,7 @@ import {
   DatasetDao,
   DataServiceDao,
   DistributionDao,
-  ResourceDao,
+  ResourceDao
 } from "../model/catalog.dao";
 import { TypeOrmTestHelper } from "../utils/testhelper";
 import { AuthClientService } from "../auth/auth.client.service";
@@ -36,7 +36,7 @@ describe("DataPlaneController", () => {
           DataServiceDao,
           DistributionDao,
           ResourceDao,
-          DataPlaneDao,
+          DataPlaneDao
         ]),
         TypeOrmModule.forFeature([
           CatalogDao,
@@ -45,8 +45,8 @@ describe("DataPlaneController", () => {
           DataServiceDao,
           DistributionDao,
           ResourceDao,
-          DataPlaneDao,
-        ]),
+          DataPlaneDao
+        ])
       ],
       controllers: [DataPlaneController],
       providers: [
@@ -63,24 +63,24 @@ describe("DataPlaneController", () => {
                 "odrl:assigner": "did:web:localhost",
                 "odrl:assignee": "did:web:localhost",
                 "odrl:target": "urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0cea",
-                "dspace:timestamp": new Date().toISOString(),
+                "dspace:timestamp": new Date().toISOString()
               };
-            },
-          },
+            }
+          }
         },
         {
           provide: InitCatalog,
-          useValue: initCatalog,
+          useValue: initCatalog
         },
         {
           provide: ServerConfig,
-          useValue: serverConfig,
+          useValue: serverConfig
         },
         {
           provide: AuthConfig,
-          useValue: authConfig,
-        },
-      ],
+          useValue: authConfig
+        }
+      ]
     }).compile();
 
     dataPlaneController = moduleRef.get(DataPlaneController);
@@ -99,7 +99,7 @@ describe("DataPlaneController", () => {
         managementAddress: "https://httpbin.org/mgmt",
         managementToken: "",
         catalogSynchronization: "pull",
-        role: "consumer",
+        role: "consumer"
       });
       expect(result.identifier).toContain("urn:uuid:");
     });

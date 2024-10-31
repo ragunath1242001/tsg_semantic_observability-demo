@@ -4,7 +4,7 @@ import {
   NegotiationDetailDto,
   INegotiationStatusDto,
   TransferDetailDto,
-  TransferStatus,
+  TransferStatus
 } from "@tsg-dsp/control-plane-dtos";
 import http from "@tsg-dsp/common-ui/utils/http";
 import { CatalogDto } from "@tsg-dsp/common-dsp";
@@ -44,7 +44,7 @@ const getNegotiations = async () => {
     );
     return {
       negotiations: negotiations,
-      ctaNegotiations: ctaNegotiations,
+      ctaNegotiations: ctaNegotiations
     };
   } catch (error) {
     console.error("Error:", error);
@@ -64,7 +64,7 @@ const getTransfers = async () => {
     );
     return {
       transfers: transfers,
-      ctaTransfers: ctaTransfers,
+      ctaTransfers: ctaTransfers
     };
   } catch (error) {
     // console.error("Error:", error);
@@ -79,17 +79,17 @@ export const useDspStore = defineStore("dsp", {
       numberOfDatasets: 0,
       numberOfServices: 0,
       title: "",
-      ownDid: "",
+      ownDid: ""
     },
     negotiations: [],
     ctaNegotiations: [],
     transfers: [],
-    ctaTransfers: [],
+    ctaTransfers: []
   }),
 
   getters: {
     negotiationsCount: (state) => state.ctaNegotiations.length,
-    ctaTransfersCount: (state) => state.ctaTransfers.length,
+    ctaTransfersCount: (state) => state.ctaTransfers.length
   },
 
   actions: {
@@ -153,6 +153,6 @@ export const useDspStore = defineStore("dsp", {
         this.transfers = resp.transfers;
         this.ctaTransfers = resp.ctaTransfers;
       });
-    },
-  },
+    }
+  }
 });

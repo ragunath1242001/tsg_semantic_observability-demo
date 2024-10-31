@@ -55,14 +55,14 @@ export const execPromise = (
       cmd,
       {
         encoding: "utf-8",
-        cwd,
+        cwd
       },
       (error: ExecException | null, stdout: string, stderr: string) => {
         if (error) {
           console.error(stderr);
           if (confirmOnError) {
             const promise = confirm({
-              message: "Error executing command, continue?",
+              message: "Error executing command, continue?"
             });
             Promise.race([
               promise,
@@ -72,7 +72,7 @@ export const execPromise = (
                   log("log", "No response within 30 seconds, continuing");
                   resolve(true);
                 }, 30000)
-              ),
+              )
             ]).then((result) => {
               promise.cancel();
               if (result) {
@@ -109,7 +109,7 @@ export const validateAndCreate = async <
   const schemaErrors = validateSync(instance, {
     whitelist: true,
     forbidNonWhitelisted: true,
-    skipMissingProperties: false,
+    skipMissingProperties: false
   });
   if (schemaErrors.length > 0) {
     throw getConfigErrorMessage(schemaErrors);
@@ -135,7 +135,7 @@ export const getConfigErrorMessage = (errors: ValidationError[]): string => {
         `  - config ${chalk.cyan(
           property
         )} does not match the following rules:`,
-        `${constraintMessage}`,
+        `${constraintMessage}`
       ].join(`\n`);
       return msg;
     })
@@ -166,7 +166,7 @@ const formatValidationError = (errors: ValidationError[]) => {
       result.push({
         property: keyPath,
         constraints,
-        value,
+        value
       });
     }
     if (children && children.length) {

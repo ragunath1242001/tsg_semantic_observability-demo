@@ -8,7 +8,7 @@ import {
   setConfig,
   setRemote,
   commitChanges,
-  createRelease,
+  createRelease
 } from "./gitlab.js";
 
 const debug = process.argv[2] === "debug";
@@ -50,7 +50,7 @@ async function readChartAndWriteVersion(path, newVersion) {
   }
   const name = /^name: (?<name>.*)$/gm.exec(chartFile).groups.name;
   return {
-    name: `@chart/${name}`,
+    name: `@chart/${name}`
   };
 }
 
@@ -63,7 +63,7 @@ function getChildFolders(path) {
 const npmfolders = [
   ...getChildFolders("apps"),
   ...getChildFolders("libs"),
-  ...getChildFolders("tools"),
+  ...getChildFolders("tools")
 ];
 const helmfolders = getChildFolders("helm-charts");
 const projects = [];
@@ -75,7 +75,7 @@ for (const folder of npmfolders) {
   projects.push({
     path: folder,
     title: pkg.name,
-    pkg: pkg,
+    pkg: pkg
   });
 }
 for (const folder of helmfolders) {
@@ -85,7 +85,7 @@ for (const folder of helmfolders) {
   );
   projects.push({
     path: folder,
-    title: chart.name,
+    title: chart.name
   });
 }
 
@@ -99,16 +99,16 @@ let changelog = `# ${process.env.TITLE} v${newVersion} (${
 for (const project of projects) {
   const stream = conventionalChangelog(
     {
-      preset: "conventionalcommits",
+      preset: "conventionalcommits"
     },
     {
       version: newVersion,
-      title: project.title,
+      title: project.title
     },
     { path: project.path },
     {},
     {
-      headerPartial: `## ${project.title}\n`,
+      headerPartial: `## ${project.title}\n`
     }
   );
   let result = "";

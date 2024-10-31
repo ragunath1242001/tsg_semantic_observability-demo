@@ -12,11 +12,11 @@ import {
   ApiOperation,
   ApiQuery,
   ApiTags,
-  getSchemaPath,
+  getSchemaPath
 } from "@nestjs/swagger";
 import {
   PresentationDefinitionDto,
-  PresentationResponseDto,
+  PresentationResponseDto
 } from "../presentation.schemas.js";
 import { ApiForbiddenResponseDefault } from "@tsg-dsp/common-dtos";
 
@@ -32,7 +32,7 @@ export class IatpHolderController {
   @ApiOperation({
     summary: "Request a SIOP token",
     description:
-      "Generates a SIOP token for the provided audience to allow it to request presentations",
+      "Generates a SIOP token for the provided audience to allow it to request presentations"
   })
   @Roles(AppRole.VIEW_PRESENTATIONS)
   @ApiOAuth2([AppRole.VIEW_PRESENTATIONS])
@@ -40,9 +40,9 @@ export class IatpHolderController {
     schema: {
       type: "object",
       properties: {
-        id_token: { type: "string" },
-      },
-    },
+        id_token: { type: "string" }
+      }
+    }
   })
   @ApiForbiddenResponseDefault()
   async createSIToken(
@@ -54,7 +54,7 @@ export class IatpHolderController {
         audience,
         true,
         scope
-      ),
+      )
     };
   }
 
@@ -62,16 +62,16 @@ export class IatpHolderController {
   @ApiOperation({
     summary: "Retrieve presentation",
     description:
-      "Request a presentation with a SIOP-token and a presentation definition",
+      "Request a presentation with a SIOP-token and a presentation definition"
   })
   @ApiExtraModels(PresentationDefinitionDto)
   @ApiQuery({
     name: "presentation_definition",
     content: {
       "application/json": {
-        schema: { $ref: getSchemaPath(PresentationResponseDto) },
-      },
-    },
+        schema: { $ref: getSchemaPath(PresentationResponseDto) }
+      }
+    }
   })
   @ApiOkResponse({ type: PresentationResponseDto })
   @ApiForbiddenResponseDefault()

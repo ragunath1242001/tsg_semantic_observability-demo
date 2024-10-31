@@ -1,7 +1,7 @@
 import {
   DurationDto,
   MultilanguageDto,
-  ReferenceDto,
+  ReferenceDto
 } from "@tsg-dsp/common-dsp";
 import { ApiProperty } from "@nestjs/swagger";
 

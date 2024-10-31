@@ -31,7 +31,7 @@ const methods = ref<string[]>([
   "PATCH",
   "DELETE",
   "HEAD",
-  "OPTIONS",
+  "OPTIONS"
 ]);
 const method = ref<
   "GET" | "POST" | "PUT" | "PATCH" | "DELETE" | "HEAD" | "OPTIONS"
@@ -61,20 +61,20 @@ const bodyTypes = computed(() => {
   return [
     {
       value: "none",
-      disabled: false,
+      disabled: false
     },
     {
       value: "form-data",
-      disabled: !["POST", "PUT", "PATCH", "DELETE"].includes(method.value),
+      disabled: !["POST", "PUT", "PATCH", "DELETE"].includes(method.value)
     },
     {
       value: "x-www-form-urlencoded",
-      disabled: !["POST", "PUT", "PATCH", "DELETE"].includes(method.value),
+      disabled: !["POST", "PUT", "PATCH", "DELETE"].includes(method.value)
     },
     {
       value: "raw",
-      disabled: !["POST", "PUT", "PATCH", "DELETE"].includes(method.value),
-    },
+      disabled: !["POST", "PUT", "PATCH", "DELETE"].includes(method.value)
+    }
   ];
 });
 
@@ -115,7 +115,7 @@ const setHeader = (header: string, value: string) => {
   } else {
     headers.value.push({
       key: header,
-      value: value,
+      value: value
     });
   }
 };
@@ -167,11 +167,13 @@ const fetchMetadata = async () => {
     }>(`management/transfers/${transfer.value.id}/metadata`);
     metadata.value = response.data;
   } catch (error) {
-    toast.add(toastError({
-      error,
-      summary: "Error fetching metadata",
-      defaultMessage: `Could not fetch metadata for this transfer ${transfer.value.id}`
-    }));
+    toast.add(
+      toastError({
+        error,
+        summary: "Error fetching metadata",
+        defaultMessage: `Could not fetch metadata for this transfer ${transfer.value.id}`
+      })
+    );
   }
   metadataLoading.value = false;
 };
@@ -203,17 +205,19 @@ const execute = async () => {
       headers: pairsToObject(headers.value),
       params: pairsToObject(query.value),
       data: data,
-      validateStatus: null,
+      validateStatus: null
     });
     const stop = new Date().getTime();
     response.value = { axios: axiosResponse, measuredTime: stop - start };
   } catch (error) {
     response.value = { error: error as Error };
-    toast.add(toastError({
-      error,
-      summary: "Error executing call",
-      defaultMessage: `Could not execute the call to the remote data plane`
-    }));
+    toast.add(
+      toastError({
+        error,
+        summary: "Error executing call",
+        defaultMessage: `Could not execute the call to the remote data plane`
+      })
+    );
   }
   loading.value = false;
 };
@@ -223,9 +227,9 @@ const showAgreementDialog = () => {
     props: {
       header: "Raw ODRL Agreement",
       modal: true,
-      dismissableMask: true,
+      dismissableMask: true
     },
-    data: metadata.value.agreement,
+    data: metadata.value.agreement
   });
 };
 
@@ -234,9 +238,9 @@ const showDatasetDialog = () => {
     props: {
       header: "Raw DCAT Dataset",
       modal: true,
-      dismissableMask: true,
+      dismissableMask: true
     },
-    data: metadata.value.dataset,
+    data: metadata.value.dataset
   });
 };
 
@@ -264,11 +268,13 @@ onMounted(async () => {
         setHeader("Authorization", authorization["dspace:value"]);
       }
     } catch (error) {
-      toast.add(toastError({
-        error,
-        summary: "Could not load transfer",
-        defaultMessage: `Could not load transfer with identifier ${route.params.id}`
-      }));
+      toast.add(
+        toastError({
+          error,
+          summary: "Could not load transfer",
+          defaultMessage: `Could not load transfer with identifier ${route.params.id}`
+        })
+      );
     }
   }
 });
@@ -284,8 +290,7 @@ onMounted(async () => {
           label="Fetch metadata"
           :loading="metadataLoading"
           @click="fetchMetadata"
-          severity="success"
-        />
+          severity="success" />
         <Tabs value="Agreement" v-if="metadata">
           <TabList>
             <Tab value="Agreement">Agreement</Tab>
@@ -326,8 +331,7 @@ onMounted(async () => {
                 <template
                   v-for="(distribution, idx) in metadata.dataset[
                     'dcat:distribution'
-                  ]"
-                >
+                  ]">
                   <hr v-if="idx === 0" />
                   <FormField label="Title" v-if="distribution['dct:title']">{{
                     distribution["dct:title"]
@@ -362,16 +366,14 @@ onMounted(async () => {
               :options="['direct', 'proxy']"
               :allowEmpty="false"
               aria-labelledby="basic"
-              @change="interactionChange"
-            />
+              @change="interactionChange" />
           </FormField>
           <FormField label="Path" v-slot="props">
             <InputText
               :id="props.id"
               class="w-full"
               v-model="path"
-              placeholder="Path"
-            />
+              placeholder="Path" />
           </FormField>
           <FormField label="Method" v-slot="props">
             <SelectButton
@@ -379,8 +381,7 @@ onMounted(async () => {
               v-model="method"
               :options="methods"
               :allowEmpty="false"
-              aria-labelledby="basic"
-            />
+              aria-labelledby="basic" />
           </FormField>
           <FormField label="Headers" class="mt-8" v-slot="props">
             <KeyValuePairEdit v-model="headers" />
@@ -398,19 +399,16 @@ onMounted(async () => {
               option-label="value"
               option-value="value"
               aria-labelledby="basic"
-              @change="bodyTypeChange"
-            />
+              @change="bodyTypeChange" />
             <KeyValuePairEdit
               v-if="
                 bodyType === 'form-data' || bodyType === 'x-www-form-urlencoded'
               "
-              v-model="bodyPairs"
-            />
+              v-model="bodyPairs" />
             <MonacoEditorVue
               v-if="bodyType === 'raw'"
               v-model="bodyRaw"
-              :raw="true"
-            />
+              :raw="true" />
           </FormField>
           <FormField no-label class="mt-8">
             <Button
@@ -418,8 +416,7 @@ onMounted(async () => {
               :loading="loading"
               @click="execute"
               severity="success"
-              type="submit"
-            />
+              type="submit" />
           </FormField>
         </form>
       </template>
@@ -449,8 +446,7 @@ onMounted(async () => {
                   overflow: hidden;
                   text-overflow: ellipsis;
                   white-space: nowrap;
-                "
-              >
+                ">
                 <template #body="props">{{ props.data[0] }}</template>
               </Column>
               <Column
@@ -461,8 +457,7 @@ onMounted(async () => {
                   overflow: hidden;
                   text-overflow: ellipsis;
                   white-space: nowrap;
-                "
-              >
+                ">
                 <template #body="props">{{ props.data[1] }}</template>
               </Column>
             </DataTable>
@@ -472,8 +467,7 @@ onMounted(async () => {
               :static="truncatedData"
               :raw="typeof truncatedData === 'string'"
               :read-only="true"
-              :max-lines="50"
-            />
+              :max-lines="50" />
           </FormField>
         </template>
       </template>

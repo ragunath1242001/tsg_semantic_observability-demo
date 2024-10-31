@@ -4,7 +4,7 @@ import {
   Injectable,
   Logger,
   OnApplicationBootstrap,
-  Optional,
+  Optional
 } from "@nestjs/common";
 import { SchedulerRegistry } from "@nestjs/schedule";
 import { InjectRepository } from "@nestjs/typeorm";
@@ -19,6 +19,7 @@ import { normalizeAddress } from "../utils/address";
 import { DSPError } from "../utils/errors/error";
 import { RegistryDao } from "../model/registry.dao";
 import { isFulfilled } from "../utils/promises";
+import { Credential } from "../auth/wallets/walletClient";
 
 @Injectable()
 export class RegistryService implements OnApplicationBootstrap {
@@ -50,10 +51,19 @@ export class RegistryService implements OnApplicationBootstrap {
   }
 
   async fetchDidDocuments(): Promise<DIDDocument[]> {
-    const credentials = await this.authService.walletClient.getCredentials();
-    this.logger.debug(
-      `Found credentials for ${credentials.map((c) => c.targetDid)}`
-    );
+    let credentials: Credential[] = [];
+    try {
+      credentials = await this.authService.walletClient.getCredentials();
+      console.log(
+        `Found credentials for ${credentials.map((c) => c.targetDid)}`
+      );
+      this.logger.debug(
+        `Found credentials for ${credentials.map((c) => c.targetDid)}`
+      );
+    } catch (err) {
+      this.logger.debug("No credentials found. Registry will not work.");
+      return [];
+    }
     const didDocuments = await Promise.all(
       credentials.map(async (credential) => {
         try {
@@ -81,7 +91,7 @@ export class RegistryService implements OnApplicationBootstrap {
         .map((service) => {
           return {
             didId: didDocument.id,
-            address: service.serviceEndpoint as string,
+            address: service.serviceEndpoint as string
           };
         });
     });
@@ -105,7 +115,7 @@ export class RegistryService implements OnApplicationBootstrap {
   async saveToDatabase(catalog: CatalogDto) {
     const registryObj = this.registryRepository.create({
       catalogId: catalog["@id"],
-      catalogJson: catalog,
+      catalogJson: catalog
     });
     await this.registryRepository.save(registryObj);
   }
@@ -117,7 +127,7 @@ export class RegistryService implements OnApplicationBootstrap {
     const results = await Promise.allSettled(
       addresses.map(async (address) => {
         try {
-          this.logger.debug(`Crawling address ${address}`);
+          this.logger.debug(`Crawling address ${JSON.stringify(address)}`);
           const catalog = await this.getCatalog(address);
           this.logger.debug(
             `Crawled address ${address.address} (${address.didId})`

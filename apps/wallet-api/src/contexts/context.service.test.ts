@@ -26,38 +26,38 @@ describe("Context Service", () => {
             properties: {
               id: {
                 type: "string",
-                pattern: "^did:web:.*",
+                pattern: "^did:web:.*"
               },
               testIdentifier: {
                 type: "string",
-                pattern: "^urn:test:.*",
+                pattern: "^urn:test:.*"
               },
               testRole: {
                 enum: [
                   "test:ServiceProvider",
                   "test:Manufacturer",
-                  "test:Administrator",
-                ],
-              },
+                  "test:Administrator"
+                ]
+              }
             },
-            required: ["id", "testIdentifier", "testRole"],
-          },
-        },
-      ],
+            required: ["id", "testIdentifier", "testRole"]
+          }
+        }
+      ]
     });
 
     const moduleRef: TestingModule = await Test.createTestingModule({
       imports: [
         TypeOrmTestHelper.instance.module([JSONLDContext]),
-        TypeOrmModule.forFeature([JSONLDContext]),
+        TypeOrmModule.forFeature([JSONLDContext])
       ],
       providers: [
         ContextService,
         {
           provide: RootConfig,
-          useValue: config,
-        },
-      ],
+          useValue: config
+        }
+      ]
     }).compile();
 
     contextService = await moduleRef.get(ContextService);
@@ -79,22 +79,22 @@ describe("Context Service", () => {
           properties: {
             id: {
               type: "string",
-              pattern: "^did:web:.*",
+              pattern: "^did:web:.*"
             },
             testIdentifier: {
               type: "string",
-              pattern: "^urn:test:.*",
+              pattern: "^urn:test:.*"
             },
             testRole: {
               enum: [
                 "test:ServiceProvider",
                 "test:Manufacturer",
-                "test:Administrator",
-              ],
-            },
+                "test:Administrator"
+              ]
+            }
           },
-          required: ["id", "testIdentifier", "testRole"],
-        },
+          required: ["id", "testIdentifier", "testRole"]
+        }
       });
       expect(context.id).toBe("Test");
       expect(context.credentialType).toBe("TestCredential");
@@ -110,7 +110,7 @@ describe("Context Service", () => {
           credentialType: "TestCredential",
           issuable: true,
           documentUrl: "http://localhost:3000/context/Test",
-          schema: {},
+          schema: {}
         })
       ).rejects.toThrow("already exists");
     });
@@ -140,22 +140,22 @@ describe("Context Service", () => {
           properties: {
             id: {
               type: "string",
-              pattern: "^did:web:.*",
+              pattern: "^did:web:.*"
             },
             testIdentifier: {
               type: "string",
-              pattern: "^urn:test:.*",
+              pattern: "^urn:test:.*"
             },
             testRole: {
               enum: [
                 "test:ServiceProvider",
                 "test:Manufacturer",
-                "test:Administrator",
-              ],
-            },
+                "test:Administrator"
+              ]
+            }
           },
-          required: ["id", "testIdentifier", "testRole"],
-        },
+          required: ["id", "testIdentifier", "testRole"]
+        }
       });
       expect(context.id).toBe("Test");
       expect(context.credentialType).toBe("TestCredentialUpdated");
@@ -179,7 +179,7 @@ describe("Context Service", () => {
           credentialType: "TestCredential",
           issuable: true,
           documentUrl: "http://localhost:3000/context/Test",
-          schema: {},
+          schema: {}
         })
       ).rejects.toThrow("does not exists");
     });

@@ -24,7 +24,7 @@ export const registerRouter = (newRouter: Router) => {
 export const useUserStore = defineStore("user", {
   state: (): UserStore => ({
     user: null,
-    returnUrl: null,
+    returnUrl: null
   }),
   actions: {
     hasRole(...roles: string[]) {
@@ -59,6 +59,6 @@ export const useUserStore = defineStore("user", {
     async logout() {
       this.user = null;
       window.location.replace("api/auth/logout");
-    },
-  },
+    }
+  }
 });

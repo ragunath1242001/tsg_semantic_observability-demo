@@ -48,7 +48,7 @@ export class ContextService {
   async getContextByType(credentialType: string): Promise<JSONLDContext> {
     const context = await this.contextRepository.findOneBy({
       credentialType: credentialType,
-      issuable: true,
+      issuable: true
     });
     if (!context) {
       throw new AppError(
@@ -76,7 +76,7 @@ export class ContextService {
     if (await this.contextRepository.existsBy({ id: config.id })) {
       return await this.contextRepository.save({
         ...config,
-        id: id,
+        id: id
       });
     } else {
       throw new AppError(

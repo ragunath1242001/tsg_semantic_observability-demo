@@ -19,11 +19,13 @@ const getDataPlanes = async () => {
     const response = await http.get("management/dataplanes/");
     dataPlanesCount.value = response.data.length;
   } catch (error) {
-    toast.add(toastError({
-      error,
-      summary: "Failed to get dataplanes",
-      defaultMessage: `Could not load dataplanes`
-    }));
+    toast.add(
+      toastError({
+        error,
+        summary: "Failed to get dataplanes",
+        defaultMessage: `Could not load dataplanes`
+      })
+    );
   }
 };
 const { ctaTransfersCount, ownCatalog } = storeToRefs(useDspStore());
@@ -38,8 +40,7 @@ onMounted(async () => await initialize());
   <div class="grid grid-cols-12 gap-8">
     <Card
       class="col-span-12"
-      style="border-radius: 12px; border: 1px solid var(--surface-border)"
-    >
+      style="border-radius: 12px; border: 1px solid var(--surface-border)">
       <template #title>Control Plane Dashboard - My Catalog</template>
       <template #content
         ><p>
@@ -50,8 +51,7 @@ onMounted(async () => await initialize());
     </Card>
     <div class="col-span-12 lg:col-span-6 xl:col-span-3">
       <Card
-        style="border-radius: 12px; border: 1px solid var(--surface-border)"
-      >
+        style="border-radius: 12px; border: 1px solid var(--surface-border)">
         <template #content>
           <div class="flex justify-between mb-6">
             <div>
@@ -59,15 +59,13 @@ onMounted(async () => await initialize());
                 >Datasets</span
               >
               <div
-                class="text-surface-900 dark:text-surface-0 font-medium text-xl"
-              >
+                class="text-surface-900 dark:text-surface-0 font-medium text-xl">
                 {{ ownCatalog.numberOfDatasets }}
               </div>
             </div>
             <div
               class="flex items-center justify-center bg-blue-100 dark:bg-blue-400/10 rounded-border"
-              style="width: 2.5rem; height: 2.5rem"
-            >
+              style="width: 2.5rem; height: 2.5rem">
               <i class="pi pi-file text-blue-500 !text-xl"></i>
             </div>
           </div>
@@ -76,8 +74,7 @@ onMounted(async () => await initialize());
     </div>
     <div class="col-span-12 lg:col-span-6 xl:col-span-3">
       <Card
-        style="border-radius: 12px; border: 1px solid var(--surface-border)"
-      >
+        style="border-radius: 12px; border: 1px solid var(--surface-border)">
         <template #content>
           <div class="flex justify-between mb-6">
             <div>
@@ -85,15 +82,13 @@ onMounted(async () => await initialize());
                 >Services</span
               >
               <div
-                class="text-surface-900 dark:text-surface-0 font-medium text-xl"
-              >
+                class="text-surface-900 dark:text-surface-0 font-medium text-xl">
                 {{ ownCatalog.numberOfServices }}
               </div>
             </div>
             <div
               class="flex items-center justify-center bg-orange-100 rounded-border"
-              style="width: 2.5rem; height: 2.5rem"
-            >
+              style="width: 2.5rem; height: 2.5rem">
               <i class="pi pi-cloud text-orange-500 !text-xl"></i>
             </div>
           </div>
@@ -102,8 +97,7 @@ onMounted(async () => await initialize());
     </div>
     <div class="col-span-12 lg:col-span-6 xl:col-span-3">
       <Card
-        style="border-radius: 12px; border: 1px solid var(--surface-border)"
-      >
+        style="border-radius: 12px; border: 1px solid var(--surface-border)">
         <template #content>
           <div class="flex justify-between mb-6">
             <div>
@@ -111,15 +105,13 @@ onMounted(async () => await initialize());
                 >Data Planes</span
               >
               <div
-                class="text-surface-900 dark:text-surface-0 font-medium text-xl"
-              >
+                class="text-surface-900 dark:text-surface-0 font-medium text-xl">
                 {{ dataPlanesCount }}
               </div>
             </div>
             <div
               class="flex items-center justify-center bg-cyan-100 rounded-border"
-              style="width: 2.5rem; height: 2.5rem"
-            >
+              style="width: 2.5rem; height: 2.5rem">
               <i class="pi pi-inbox text-cyan-500 !text-xl"></i>
             </div>
           </div>
@@ -128,8 +120,7 @@ onMounted(async () => await initialize());
     </div>
     <div class="col-span-12 lg:col-span-6 xl:col-span-3">
       <Card
-        style="border-radius: 12px; border: 1px solid var(--surface-border)"
-      >
+        style="border-radius: 12px; border: 1px solid var(--surface-border)">
         <template #content>
           <div class="flex justify-between mb-6">
             <div>
@@ -137,18 +128,15 @@ onMounted(async () => await initialize());
                 >Active Transfers</span
               >
               <div
-                class="text-surface-900 dark:text-surface-0 font-medium text-xl"
-              >
+                class="text-surface-900 dark:text-surface-0 font-medium text-xl">
                 {{ ctaTransfersCount }}
               </div>
             </div>
             <div
               class="flex items-center justify-center bg-purple-100 rounded-border"
-              style="width: 2.5rem; height: 2.5rem"
-            >
+              style="width: 2.5rem; height: 2.5rem">
               <i
-                class="pi pi-arrow-right-arrow-left text-purple-500 !text-xl"
-              ></i>
+                class="pi pi-arrow-right-arrow-left text-purple-500 !text-xl"></i>
             </div>
           </div>
         </template>
@@ -160,8 +148,7 @@ onMounted(async () => await initialize());
       :single-catalog="true"
       :own-catalog="true"
       url=""
-      assigner=""
-    />
+      assigner="" />
   </div>
 </template>
 <!-- <style scoped>

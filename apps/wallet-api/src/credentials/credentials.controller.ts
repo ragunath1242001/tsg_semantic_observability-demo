@@ -6,7 +6,7 @@ import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { CredentialsDto } from "./credentials.schemas.js";
 import {
   ApiForbiddenResponseDefault,
-  ApiNotFoundResponseDefault,
+  ApiNotFoundResponseDefault
 } from "@tsg-dsp/common-dtos";
 
 @Controller()
@@ -18,11 +18,11 @@ export class CredentialsController {
   @Get("credentials")
   @ApiOperation({
     summary: "List dataspace credentials",
-    description: "List all credentials in this dataspace.",
+    description: "List all credentials in this dataspace."
   })
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({
-    type: [CredentialsDto],
+    type: [CredentialsDto]
   })
   @ApiForbiddenResponseDefault()
   async getCredentials() {
@@ -33,12 +33,12 @@ export class CredentialsController {
   @ApiOperation({
     summary: "Retrieve credential",
     description:
-      "Retrieve a specific Verifiable Credential issued by this wallet",
+      "Retrieve a specific Verifiable Credential issued by this wallet"
   })
   @ApiOkResponse({ type: CredentialsDto })
   @ApiNotFoundResponseDefault()
   async getCredential(
-    @Param("credentialId") credentialId: string,
+    @Param("credentialId") credentialId: string
   ): Promise<VerifiableCredential> {
     return (await this.credentialsService.getCredential(credentialId))
       .credential;

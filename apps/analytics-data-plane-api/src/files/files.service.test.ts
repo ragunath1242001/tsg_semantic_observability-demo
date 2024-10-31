@@ -17,15 +17,15 @@ describe("FilesService", () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
       imports: [
         TypeOrmTestHelper.instance.module([FileMetadataDao]),
-        TypeOrmModule.forFeature([FileMetadataDao]),
+        TypeOrmModule.forFeature([FileMetadataDao])
       ],
       providers: [
         FilesService,
         {
           provide: FilesConfig,
-          useValue: { path: testUploadDir },
-        },
-      ],
+          useValue: { path: testUploadDir }
+        }
+      ]
     }).compile();
 
     filesService = moduleRef.get(FilesService);
@@ -49,7 +49,7 @@ describe("FilesService", () => {
     it("should create and insert file metadata entries", async () => {
       const mockFiles = [
         { size: 1000, filename: "file1.txt" },
-        { size: 2000, filename: "file2.txt" },
+        { size: 2000, filename: "file2.txt" }
       ] as Express.Multer.File[];
 
       await filesService.uploadFiles(mockFiles);
@@ -58,7 +58,7 @@ describe("FilesService", () => {
       expect(savedFiles.length).toBe(2);
       expect(savedFiles.map((file) => file.fileName)).toEqual([
         "file1.txt",
-        "file2.txt",
+        "file2.txt"
       ]);
     });
   });
@@ -68,14 +68,14 @@ describe("FilesService", () => {
       // Step 1: Upload initial files and verify they are in the database
       const mockFiles = [
         { size: 1000, filename: "file1.txt" },
-        { size: 2000, filename: "file2.txt" },
+        { size: 2000, filename: "file2.txt" }
       ] as Express.Multer.File[];
       await filesService.uploadFiles(mockFiles);
 
       // Step 2: Create only one file in the file system, simulating a missing file
       await fs.writeFile(
         path.join(testUploadDir, "file1.txt"),
-        "dummy content",
+        "dummy content"
       );
 
       // Step 3: Run the syncFiles method to mark missing files
@@ -95,7 +95,7 @@ describe("FilesService", () => {
       filesService["filesConfig"].path = nonExistentPath;
 
       await expect(filesService.syncFiles()).rejects.toThrow(
-        "Error reading directory",
+        "Error reading directory"
       );
 
       // Revert the path to the valid test directory

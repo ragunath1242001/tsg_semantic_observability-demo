@@ -27,19 +27,12 @@ import TabItem from "@theme/TabItem";
 <Heading
   as={"h1"}
   className={"openapi__heading"}
-  children={"Login callback"}
->
-</Heading>
+  children={"Login callback"}></Heading>
 
 <MethodEndpoint
   method={"get"}
   path={"/api/auth/callback"}
-  context={"endpoint"}
->
-  
-</MethodEndpoint>
-
-
+  context={"endpoint"}></MethodEndpoint>
 
 Users are redirected from the authorization server to this endpoint which will redirect them to the frontend (`auth.redirectURL`)
 
@@ -47,31 +40,15 @@ Users are redirected from the authorization server to this endpoint which will r
   id={"request"}
   as={"h2"}
   className={"openapi-tabs__heading"}
-  children={"Request"}
->
-</Heading>
+  children={"Request"}></Heading>
 
 <div>
   <div>
-    <ApiTabs
-      label={undefined}
-      id={undefined}
-    >
-      <TabItem
-        label={"302"}
-        value={"302"}
-      >
-        <div>
-          
-          
-          
-          
-          
-        </div><div>
-          
-        </div>
+    <ApiTabs label={undefined} id={undefined}>
+      <TabItem label={"302"} value={"302"}>
+        <div></div>
+        <div></div>
       </TabItem>
     </ApiTabs>
   </div>
 </div>
-      

@@ -8,7 +8,7 @@ import {
   Param,
   Query,
   Body,
-  Headers,
+  Headers
 } from "@nestjs/common";
 import { DataPlaneService } from "./dataplane.service";
 import {
@@ -17,7 +17,7 @@ import {
   TransferRequestMessageDto,
   TransferStartMessageDto,
   TransferSuspensionMessageDto,
-  TransferTerminationMessageDto,
+  TransferTerminationMessageDto
 } from "@tsg-dsp/common-dsp";
 import { DisableOAuthGuard } from "../auth/oauth.guard";
 import { DisableRolesGuard, Roles } from "../auth/roles.guard";
@@ -37,7 +37,7 @@ export class DataPlaneController {
 
   @Get([
     "/health",
-    ...(process.env["EMBEDDED_FRONTEND"] ? ["/api/health"] : []),
+    ...(process.env["EMBEDDED_FRONTEND"] ? ["/api/health"] : [])
   ])
   @DisableOAuthGuard()
   @DisableRolesGuard()
@@ -53,17 +53,17 @@ export class DataPlaneController {
     @Param("role") role: "provider" | "consumer",
     @Query("processId") processId: string,
     @Headers("x-remote-party") remoteParty: string,
-    @Headers("x-dataset-id") datasetId: string,
+    @Headers("x-dataset-id") datasetId: string
   ): Promise<DataPlaneRequestResponseDto> {
     this.logger.log(
-      `Requesting transfer for ${remoteParty} as ${role} with processId ${processId} and with message: ${JSON.stringify(body)}`,
+      `Requesting transfer for ${remoteParty} as ${role} with processId ${processId} and with message: ${JSON.stringify(body)}`
     );
     return await this.dataPlaneService.handleTransferRequest(
       body,
       role,
       processId,
       remoteParty,
-      datasetId,
+      datasetId
     );
   }
 
@@ -71,10 +71,10 @@ export class DataPlaneController {
   @HttpCode(HttpStatus.ACCEPTED)
   async startTransfer(
     @Body() body: TransferStartMessageDto,
-    @Param("id") id: string,
+    @Param("id") id: string
   ): Promise<void> {
     this.logger.log(
-      `Requesting transfer start for id ${id}, with message:${JSON.stringify(body)}`,
+      `Requesting transfer start for id ${id}, with message:${JSON.stringify(body)}`
     );
     return await this.dataPlaneService.handleTransferStart(body, id);
   }
@@ -83,10 +83,10 @@ export class DataPlaneController {
   @HttpCode(HttpStatus.ACCEPTED)
   async completeTransfer(
     @Body() body: TransferCompletionMessageDto,
-    @Param("id") id: string,
+    @Param("id") id: string
   ): Promise<void> {
     this.logger.log(
-      `Requesting transfer complete for id ${id}, with message:${JSON.stringify(body)}`,
+      `Requesting transfer complete for id ${id}, with message:${JSON.stringify(body)}`
     );
     await this.dataPlaneService.handleTransferComplete(body, id);
   }
@@ -95,10 +95,10 @@ export class DataPlaneController {
   @HttpCode(HttpStatus.ACCEPTED)
   async terminateTransfer(
     @Body() body: TransferTerminationMessageDto,
-    @Param("id") id: string,
+    @Param("id") id: string
   ): Promise<void> {
     this.logger.log(
-      `Requesting transfer terminate for id ${id}, with message:${JSON.stringify(body)}`,
+      `Requesting transfer terminate for id ${id}, with message:${JSON.stringify(body)}`
     );
     await this.dataPlaneService.handleTransferTerminate(body, id);
   }
@@ -107,10 +107,10 @@ export class DataPlaneController {
   @HttpCode(HttpStatus.ACCEPTED)
   async suspendTransfer(
     @Body() body: TransferSuspensionMessageDto,
-    @Param("id") id: string,
+    @Param("id") id: string
   ): Promise<void> {
     this.logger.log(
-      `Requesting transfer suspend for id ${id}, with message:${JSON.stringify(body)}`,
+      `Requesting transfer suspend for id ${id}, with message:${JSON.stringify(body)}`
     );
     await this.dataPlaneService.handleTransferSuspend(body, id);
   }

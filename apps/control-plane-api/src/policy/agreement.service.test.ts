@@ -8,7 +8,7 @@ import { AgreementDao, TransferMonitorDao } from "../model/agreement.dao";
 import { ScheduleModule } from "@nestjs/schedule";
 import {
   NegotiationDetailDao,
-  NegotiationProcessEventDao,
+  NegotiationProcessEventDao
 } from "../model/negotiation.dao";
 import { TransferDetailDao, TransferEventDao } from "../model/transfer.dao";
 
@@ -27,7 +27,7 @@ describe("Agreement Service", () => {
           TransferDetailDao,
           TransferEventDao,
           NegotiationDetailDao,
-          NegotiationProcessEventDao,
+          NegotiationProcessEventDao
         ]),
         TypeOrmModule.forFeature([
           ConstraintDao,
@@ -37,11 +37,11 @@ describe("Agreement Service", () => {
           TransferDetailDao,
           TransferEventDao,
           NegotiationDetailDao,
-          NegotiationProcessEventDao,
+          NegotiationProcessEventDao
         ]),
-        ScheduleModule.forRoot(),
+        ScheduleModule.forRoot()
       ],
-      providers: [AgreementService],
+      providers: [AgreementService]
     }).compile();
     agreementService = moduleRef.get(AgreementService);
   });
@@ -61,9 +61,9 @@ describe("Agreement Service", () => {
           "odrl:permission": [
             {
               "@type": "odrl:Permission",
-              "odrl:action": ODRLAction.USE,
-            },
-          ],
+              "odrl:action": ODRLAction.USE
+            }
+          ]
         },
         "urn:uuid:00000000-0000-0000-0000-000000000000"
       );

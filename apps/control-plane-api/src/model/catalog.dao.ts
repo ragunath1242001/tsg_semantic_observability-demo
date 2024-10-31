@@ -12,7 +12,7 @@ import {
   IResource,
   Policy,
   Resource,
-  serialize,
+  serialize
 } from "@tsg-dsp/common-dsp";
 import {
   Column,
@@ -24,7 +24,7 @@ import {
   OneToMany,
   OneToOne,
   PrimaryColumn,
-  Relation,
+  Relation
 } from "typeorm";
 import { MetaEntity, jsonLdTransformer, mapToInstances } from "./common.dao";
 import { DataPlaneDao } from "./dataPlanes.dao";
@@ -82,7 +82,7 @@ export class ResourceDao extends MetaEntity implements IResource {
   // Todo Many-to-Many, JoinTable
   @Column("simple-json", {
     nullable: true,
-    transformer: jsonLdTransformer,
+    transformer: jsonLdTransformer
   })
   hasPolicy?: Array<Policy>;
 }
@@ -229,7 +229,7 @@ export class DistributionDao extends MetaEntity implements IDistribution {
   // TODO: Relationship with PolicyDao
   @Column("simple-json", {
     nullable: true,
-    transformer: jsonLdTransformer,
+    transformer: jsonLdTransformer
   })
   hasPolicy?: Array<Policy>;
 }
@@ -415,7 +415,7 @@ export class CatalogDao extends DatasetChild implements ICatalog {
   )
   _records?: Array<CatalogRecordDao>;
   @OneToMany(() => DataServiceDao, (dataservice) => dataservice._catalog, {
-    cascade: true,
+    cascade: true
   })
   _services?: Array<DataServiceDao>;
   get service(): Array<DataService> | undefined {

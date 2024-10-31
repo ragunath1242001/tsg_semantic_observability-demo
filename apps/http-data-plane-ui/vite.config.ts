@@ -24,31 +24,31 @@ export default defineConfig({
   envPrefix: "TSG_STATIC_",
   resolve: {
     alias: {
-      "@": fileURLToPath(new URL("./src", import.meta.url)),
-    },
+      "@": fileURLToPath(new URL("./src", import.meta.url))
+    }
   },
   optimizeDeps: {
-    exclude: ["class-transformer/storage"],
+    exclude: ["class-transformer/storage"]
   },
   build: {
-    target: "ESNext",
+    target: "ESNext"
   },
   server: {
     proxy: devSessions.local
       ? {
           "/api": {
             target: "http://localhost:3001/",
-            rewrite: (path) => path.replace(/^\/api/, ""),
-          },
+            rewrite: (path) => path.replace(/^\/api/, "")
+          }
         }
       : {
           "/api": {
             target: devSessions.target,
             changeOrigin: true,
             headers: {
-              Cookie: devSessions.sessionCookie!,
-            },
-          },
-        },
-  },
+              Cookie: devSessions.sessionCookie!
+            }
+          }
+        }
+  }
 });

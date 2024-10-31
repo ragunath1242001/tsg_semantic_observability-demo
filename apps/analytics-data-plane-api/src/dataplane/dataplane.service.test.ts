@@ -9,7 +9,7 @@ import { Request } from "express";
 import {
   AgreementDto,
   DataPlaneCreation,
-  DatasetDto,
+  DatasetDto
 } from "@tsg-dsp/common-dsp";
 import { TypeOrmTestHelper } from "../utils/testhelper";
 import { TransferDao } from "./transfer.dao";
@@ -39,10 +39,10 @@ describe("Dataplane Service", () => {
           "odrl:permission": [
             {
               "@type": "odrl:Permission",
-              "odrl:action": "odrl:use",
-            },
-          ],
-        },
+              "odrl:action": "odrl:use"
+            }
+          ]
+        }
       ],
       "dcat:distribution": [
         {
@@ -52,14 +52,14 @@ describe("Dataplane Service", () => {
             {
               "@type": "dcat:DataService",
               "@id": "urn:uuid:96645550-840f-44a0-a994-427cdfd0b2d8",
-              "dcat:endpointURL": "http://localhost",
-            },
+              "dcat:endpointURL": "http://localhost"
+            }
           ],
           "dct:conformsTo": ["https://httpbin.org/spec.json"],
           "dct:format": "tsg:analytics",
-          "dct:title": "HTTPBin",
-        },
-      ],
+          "dct:title": "HTTPBin"
+        }
+      ]
     };
     const config = plainToClass(RootConfig, {
       server: {},
@@ -68,12 +68,12 @@ describe("Dataplane Service", () => {
         managementEndpoint: "http://localhost:3000/management",
         controlEndpoint: "http://localhost:3000",
         authorization: "Basic YWRtaW46YWRtaW4=",
-        initializationDelay: 1,
+        initializationDelay: 1
       },
       dataset: [initialDataset],
       logging: {
-        debug: true,
-      },
+        debug: true
+      }
     });
 
     server = setupServer(
@@ -83,21 +83,21 @@ describe("Dataplane Service", () => {
           const requestBody = await request.json();
           return HttpResponse.json({
             ...requestBody,
-            identifier: "urn:uuid:4ab97081-665e-447e-88a1-791a185994b9",
+            identifier: "urn:uuid:4ab97081-665e-447e-88a1-791a185994b9"
           });
-        },
+        }
       ),
       http.post(
         `${config.controlPlane.dataPlaneEndpoint}/:id/catalog`,
         ({ request, params, cookies }) => {
           return HttpResponse.json(request.json());
-        },
+        }
       ),
       http.post(
         `${config.controlPlane.managementEndpoint}/transfers/:processId/:action`,
         () => {
           return HttpResponse.json({ status: "OK" });
-        },
+        }
       ),
       http.get(
         `${config.controlPlane.managementEndpoint}/agreements/:agreementId`,
@@ -109,18 +109,18 @@ describe("Dataplane Service", () => {
             "odrl:assigner": "did:web:localhost",
             "odrl:assignee": "did:web:localhost",
             "dspace:timestamp": new Date().toISOString(),
-            "odrl:target": "urn:uuid:dataset",
+            "odrl:target": "urn:uuid:dataset"
           });
-        },
+        }
       ),
       http.get("http://localhost/.well-known/did.json", () => {
         return HttpResponse.json({
           service: [
             {
               type: "connector",
-              serviceEndpoint: "http://remotecontrolplane/",
-            },
-          ],
+              serviceEndpoint: "http://remotecontrolplane/"
+            }
+          ]
         });
       }),
       http.get(
@@ -129,14 +129,14 @@ describe("Dataplane Service", () => {
           return HttpResponse.json<DatasetDto>({
             "@context": "https://w3id.org/dspace/2024/1/context.json",
             "@type": "dcat:Dataset",
-            "@id": "urn:uuid:test",
+            "@id": "urn:uuid:test"
           });
-        },
+        }
       ),
       http.post("https://httpbin.org/anything/0.9.2/anything/test", () => {
         return HttpResponse.json({
           args: {
-            filter: "filterQueryString",
+            filter: "filterQueryString"
           },
           data: '{"test":"test2"}',
           files: {},
@@ -148,16 +148,16 @@ describe("Dataplane Service", () => {
             "Content-Type": "application/json",
             Host: "httpbin.org",
             "User-Agent": "axios/1.5.0",
-            "X-Amzn-Trace-Id": "Root=1-6571e4ca-792829da6e6bcb6115862d0b",
+            "X-Amzn-Trace-Id": "Root=1-6571e4ca-792829da6e6bcb6115862d0b"
           },
           json: {
-            test: "test2",
+            test: "test2"
           },
           method: "POST",
           origin: "0.0.0.0",
-          url: "https://httpbin.org/anything/0.9.2/anything/test",
+          url: "https://httpbin.org/anything/0.9.2/anything/test"
         });
-      }),
+      })
     );
 
     server.listen({ onUnhandledRequest: "bypass" });
@@ -168,14 +168,14 @@ describe("Dataplane Service", () => {
           TransferDao,
           DataPlaneStateDao,
           IngressLogDao,
-          EgressLogDao,
+          EgressLogDao
         ]),
         TypeOrmModule.forFeature([
           TransferDao,
           DataPlaneStateDao,
           IngressLogDao,
-          EgressLogDao,
-        ]),
+          EgressLogDao
+        ])
       ],
       controllers: [DataPlaneController],
       providers: [
@@ -184,22 +184,22 @@ describe("Dataplane Service", () => {
         AuthClientService,
         {
           provide: AuthConfig,
-          useValue: { enabled: false },
+          useValue: { enabled: false }
         },
         {
           provide: LoggingConfig,
-          useValue: { debug: true },
+          useValue: { debug: true }
         },
         {
           provide: RootConfig,
-          useValue: config,
-        },
-      ],
+          useValue: config
+        }
+      ]
     }).compile();
 
     dataPlaneService = moduleRef.get(DataPlaneService);
     await expect(dataPlaneService.getStateDto()).rejects.toThrow(
-      "No state available yet",
+      "No state available yet"
     );
 
     await new Promise((r) => setTimeout(r, 20));
@@ -218,15 +218,15 @@ describe("Dataplane Service", () => {
       path: "/0.9.2/anything/test",
       headers: {
         "content-type": "application/json",
-        accept: "application/json",
+        accept: "application/json"
       },
       query: {
-        filter: "filterQueryString",
+        filter: "filterQueryString"
       } as qs.ParsedQs,
       body: {
-        test: "test2",
+        test: "test2"
       },
-      rawBody: Buffer.from(JSON.stringify({ test: "test2" }), "utf-8"),
+      rawBody: Buffer.from(JSON.stringify({ test: "test2" }), "utf-8")
     } as RawBodyRequest<Request>;
 
     it("Get state", async () => {
@@ -245,17 +245,17 @@ describe("Dataplane Service", () => {
           "dspace:agreementId": "urn:uuid:cadb401e-4275-4d77-99a2-5aa2af93e3b7",
           "dct:format": "dspace:HTTP",
           "dspace:callbackAddress": "http://127.0.0.1/test",
-          "dspace:consumerPid": "urn:uuid:00000000-0000-0000-0000-000000000000",
+          "dspace:consumerPid": "urn:uuid:00000000-0000-0000-0000-000000000000"
         },
         "provider",
         transferProcessId,
         "did:web:localhost",
-        "urn:uuid:test",
+        "urn:uuid:test"
       );
       transferProcessId = result.identifier;
       authorization =
         result.dataAddress?.properties?.find(
-          ({ name }) => name === "Authorization",
+          ({ name }) => name === "Authorization"
         )?.value || "UNKNOWN";
       expect(result.dataAddress).toBeDefined();
     });
@@ -265,12 +265,12 @@ describe("Dataplane Service", () => {
       expect(transfers).toHaveLength(1);
 
       const existingTransfer = await dataPlaneService.getTransferById(
-        transfers[0].id,
+        transfers[0].id
       );
       expect(existingTransfer).toBeDefined();
 
       await expect(dataPlaneService.getTransferById("unknown")).rejects.toThrow(
-        "not found",
+        "not found"
       );
     });
 
@@ -279,9 +279,9 @@ describe("Dataplane Service", () => {
         {
           "@type": "dspace:TransferStartMessage",
           "dspace:providerPid": transferProcessId,
-          "dspace:consumerPid": "urn:uuid:00000000-0000-0000-0000-000000000000",
+          "dspace:consumerPid": "urn:uuid:00000000-0000-0000-0000-000000000000"
         },
-        transferProcessId,
+        transferProcessId
       );
     });
 
@@ -290,9 +290,9 @@ describe("Dataplane Service", () => {
         {
           "@type": "dspace:TransferCompletionMessage",
           "dspace:providerPid": transferProcessId,
-          "dspace:consumerPid": "urn:uuid:00000000-0000-0000-0000-000000000000",
+          "dspace:consumerPid": "urn:uuid:00000000-0000-0000-0000-000000000000"
         },
-        transferProcessId,
+        transferProcessId
       );
     });
 
@@ -317,7 +317,7 @@ describe("Dataplane Service", () => {
       const response = await dataPlaneService.transferTerminate(
         transferProcessId,
         "CODE",
-        "REASON",
+        "REASON"
       );
       expect(response).toStrictEqual({ status: "OK" });
     });
@@ -325,7 +325,7 @@ describe("Dataplane Service", () => {
     it("Suspend transfer", async () => {
       const response = await dataPlaneService.transferSuspend(
         transferProcessId,
-        "REASON",
+        "REASON"
       );
       expect(response).toStrictEqual({ status: "OK" });
     });
@@ -338,15 +338,15 @@ describe("Dataplane Service", () => {
       path: "/anything/test",
       headers: {
         "content-type": "application/json",
-        accept: "application/json",
+        accept: "application/json"
       },
       query: {
-        filter: "filterQueryString",
+        filter: "filterQueryString"
       } as qs.ParsedQs,
       body: {
-        test: "test2",
+        test: "test2"
       },
-      rawBody: Buffer.from(JSON.stringify({ test: "test2" }), "utf-8"),
+      rawBody: Buffer.from(JSON.stringify({ test: "test2" }), "utf-8")
     } as RawBodyRequest<Request>;
 
     it("Transfer Request", async () => {
@@ -356,12 +356,12 @@ describe("Dataplane Service", () => {
           "dspace:consumerPid": "urn:uuid:00000000-0000-0000-0000-000000000000",
           "dspace:agreementId": "urn:uuid:e785d4a8-2030-4a2b-b223-9881e35c0df7",
           "dct:format": "dspace:HTTP",
-          "dspace:callbackAddress": "http://127.0.0.1/test",
+          "dspace:callbackAddress": "http://127.0.0.1/test"
         },
         "consumer",
         transferProcessId,
         "did:web:localhost",
-        "urn:uuid:test",
+        "urn:uuid:test"
       );
       transferProcessId = result.identifier;
     });
@@ -380,12 +380,12 @@ describe("Dataplane Service", () => {
               {
                 "@type": "dspace:EndpointProperty",
                 "dspace:name": "Authorization",
-                "dspace:value": "Bearer ABCDEF",
-              },
-            ],
-          },
+                "dspace:value": "Bearer ABCDEF"
+              }
+            ]
+          }
         },
-        transferProcessId,
+        transferProcessId
       );
     });
 
@@ -394,9 +394,9 @@ describe("Dataplane Service", () => {
         {
           "@type": "dspace:TransferCompletionMessage",
           "dspace:providerPid": transferProcessId,
-          "dspace:consumerPid": "urn:uuid:00000000-0000-0000-0000-000000000000",
+          "dspace:consumerPid": "urn:uuid:00000000-0000-0000-0000-000000000000"
         },
-        transferProcessId,
+        transferProcessId
       );
     });
   });
@@ -423,12 +423,12 @@ describe("Dataplane Service Consumer", () => {
         managementEndpoint: "http://localhost:3000/management",
         controlEndpoint: "http://localhost:3000",
         authorization: "Basic YWRtaW46YWRtaW4=",
-        initializationDelay: 1,
+        initializationDelay: 1
       },
       dataset: undefined,
       logging: {
-        debug: true,
-      },
+        debug: true
+      }
     });
 
     server = setupServer(
@@ -439,16 +439,16 @@ describe("Dataplane Service Consumer", () => {
           managementToken = requestBody.managementToken;
           return HttpResponse.json({
             ...requestBody,
-            identifier: "urn:uuid:4ab97081-665e-447e-88a1-791a185994b9",
+            identifier: "urn:uuid:4ab97081-665e-447e-88a1-791a185994b9"
           });
-        },
+        }
       ),
       http.post(
         `${config.controlPlane.dataPlaneEndpoint}/:id/catalog`,
         ({ request, params, cookies }) => {
           return HttpResponse.json(request.json());
-        },
-      ),
+        }
+      )
     );
 
     server.listen({ onUnhandledRequest: "error" });
@@ -459,14 +459,14 @@ describe("Dataplane Service Consumer", () => {
           TransferDao,
           DataPlaneStateDao,
           IngressLogDao,
-          EgressLogDao,
+          EgressLogDao
         ]),
         TypeOrmModule.forFeature([
           TransferDao,
           DataPlaneStateDao,
           IngressLogDao,
-          EgressLogDao,
-        ]),
+          EgressLogDao
+        ])
       ],
       controllers: [DataPlaneController],
       providers: [
@@ -475,22 +475,22 @@ describe("Dataplane Service Consumer", () => {
         AuthClientService,
         {
           provide: AuthConfig,
-          useValue: { enabled: false },
+          useValue: { enabled: false }
         },
         {
           provide: LoggingConfig,
-          useValue: { debug: true },
+          useValue: { debug: true }
         },
         {
           provide: RootConfig,
-          useValue: config,
-        },
-      ],
+          useValue: config
+        }
+      ]
     }).compile();
 
     dataPlaneService = moduleRef.get(DataPlaneService);
     await expect(dataPlaneService.getStateDto()).rejects.toThrow(
-      "No state available yet",
+      "No state available yet"
     );
 
     await new Promise((r) => setTimeout(r, 20));
@@ -509,8 +509,8 @@ describe("Dataplane Service Consumer", () => {
         {
           "@context": "https://w3id.org/dspace/2024/1/context.json",
           "@type": "dcat:Dataset",
-          "@id": "urn:uuid:test",
-        },
+          "@id": "urn:uuid:test"
+        }
       ]);
       const config = await dataPlaneService.getDatasets();
       expect(config).toHaveLength(1);

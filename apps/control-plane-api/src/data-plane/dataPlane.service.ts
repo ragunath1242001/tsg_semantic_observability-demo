@@ -1,7 +1,7 @@
 import { DataPlaneCreation, IDataPlaneDto } from "@tsg-dsp/control-plane-dtos";
 import {
   DataPlaneRequestResponseDto,
-  DataPlaneTransferDto,
+  DataPlaneTransferDto
 } from "@tsg-dsp/common-dsp";
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { Interval } from "@nestjs/schedule";
@@ -19,12 +19,12 @@ import {
   TransferStartMessage,
   TransferSuspensionMessage,
   TransferTerminationMessage,
-  deserialize,
+  deserialize
 } from "@tsg-dsp/common-dsp";
 import axios, {
   AxiosInstance,
   AxiosRequestConfig,
-  InternalAxiosRequestConfig,
+  InternalAxiosRequestConfig
 } from "axios";
 import crypto from "crypto";
 import deepEqual from "deep-equal";
@@ -82,8 +82,8 @@ export class DataPlaneService {
         modified: true,
         health: true,
         missedHealthChecks: true,
-        etag: true,
-      },
+        etag: true
+      }
     });
     if (!dataPlane) {
       throw new DSPError(
@@ -96,7 +96,7 @@ export class DataPlaneService {
   }
   async getDataPlaneDetails(identifier: string): Promise<DataPlaneDao> {
     const dataPlaneDetails = await this.dataPlaneRepository.findOneBy({
-      identifier: identifier,
+      identifier: identifier
     });
     if (!dataPlaneDetails) {
       // TODO is DSPError a good error here or do we need a dataplane error of some kind?
@@ -130,7 +130,7 @@ export class DataPlaneService {
       managementAddress: dataPlaneCreation.managementAddress,
       managementToken: dataPlaneCreation.managementToken,
       catalogSynchronization: dataPlaneCreation.catalogSynchronization,
-      role: dataPlaneCreation.role,
+      role: dataPlaneCreation.role
     };
     await this.dataPlaneRepository.save(dataPlane);
     this.logger.debug(`Added dataplane ${dataPlane.identifier}`);
@@ -146,7 +146,7 @@ export class DataPlaneService {
       ...dataPlane,
       datasets: dataPlane.datasets
         ? await Promise.all(dataPlane.datasets.map((d) => d.serialize()))
-        : undefined,
+        : undefined
     };
   }
 
@@ -163,11 +163,11 @@ export class DataPlaneService {
         ? await Promise.all(
             dataPlaneDetails.datasets?.map((d) => deserialize<Dataset>(d))
           )
-        : undefined,
+        : undefined
     };
     await this.dataPlaneRepository.save({
       ...dataPlane,
-      ...dataPlaneDetailsObj,
+      ...dataPlaneDetailsObj
     });
     this.logger.debug(`Added dataplane ${dataPlane.identifier}`);
     switch (dataPlane.catalogSynchronization) {
@@ -182,7 +182,7 @@ export class DataPlaneService {
       ...dataPlane,
       datasets: dataPlane.datasets
         ? await Promise.all(dataPlane.datasets.map((d) => d.serialize()))
-        : undefined,
+        : undefined
     };
   }
 
@@ -256,8 +256,8 @@ export class DataPlaneService {
       const requestConfig: AxiosRequestConfig = {
         headers: {
           Authorization: await this.authorizationToken(dataPlaneStatus),
-          "If-None-Match": dataPlaneStatus.etag,
-        },
+          "If-None-Match": dataPlaneStatus.etag
+        }
       };
       const catalogJson = await this.axios.get<ICatalog>(
         `${dataPlaneStatus.managementAddress}/catalog`,
@@ -293,8 +293,8 @@ export class DataPlaneService {
     try {
       const requestConfig: AxiosRequestConfig = {
         headers: {
-          Authorization: await this.authorizationToken(dataPlaneStatus),
-        },
+          Authorization: await this.authorizationToken(dataPlaneStatus)
+        }
       };
       const datasetJson = await this.axios.get<void>(
         `${dataPlaneStatus.managementAddress}/health`,
@@ -373,7 +373,7 @@ export class DataPlaneService {
     );
     const dataPlanes = await this.dataPlaneRepository.findBy({
       dataplaneType: requestDetail.format,
-      role: In([role, "both"]),
+      role: In([role, "both"])
     });
     if (dataPlanes.length === 0) {
       throw new DSPError(
@@ -388,8 +388,8 @@ export class DataPlaneService {
           headers: {
             Authorization: await this.authorizationToken(dataPlane),
             "X-Remote-Party": remoteParty,
-            "X-Dataset-Id": agreement.target,
-          },
+            "X-Dataset-Id": agreement.target
+          }
         };
         this.logger.debug(
           `Requesting transfer at ${dataPlane.identifier} at ${dataPlane.managementAddress} for ${remoteParty} with authorization: ${requestConfig.headers?.Authorization}`
@@ -407,7 +407,7 @@ export class DataPlaneService {
           return {
             dataPlaneIdentifier: dataPlane.identifier,
             endpointType: dataPlane.dataplaneType,
-            ...dataPlaneRequestResponse.data,
+            ...dataPlaneRequestResponse.data
           };
         }
       } catch (err) {
@@ -438,8 +438,8 @@ export class DataPlaneService {
     try {
       const requestConfig: AxiosRequestConfig = {
         headers: {
-          Authorization: await this.authorizationToken(dataPlane),
-        },
+          Authorization: await this.authorizationToken(dataPlane)
+        }
       };
       await this.axios.post(
         `${dataPlane.managementAddress}/transfers/${dataPlaneTransfer.identifier}/start`,
@@ -470,8 +470,8 @@ export class DataPlaneService {
     try {
       const requestConfig: AxiosRequestConfig = {
         headers: {
-          Authorization: await this.authorizationToken(dataPlane),
-        },
+          Authorization: await this.authorizationToken(dataPlane)
+        }
       };
       await this.axios.post(
         `${dataPlane.managementAddress}/transfers/${dataPlaneTransfer.identifier}/complete`,
@@ -502,8 +502,8 @@ export class DataPlaneService {
     try {
       const requestConfig: AxiosRequestConfig = {
         headers: {
-          Authorization: await this.authorizationToken(dataPlane),
-        },
+          Authorization: await this.authorizationToken(dataPlane)
+        }
       };
       await this.axios.post(
         `${dataPlane.managementAddress}/transfers/${dataPlaneTransfer.identifier}/terminate`,
@@ -534,8 +534,8 @@ export class DataPlaneService {
     try {
       const requestConfig: AxiosRequestConfig = {
         headers: {
-          Authorization: await this.authorizationToken(dataPlane),
-        },
+          Authorization: await this.authorizationToken(dataPlane)
+        }
       };
       await this.axios.post(
         `${dataPlane.managementAddress}/transfers/${dataPlaneTransfer.identifier}/suspend`,
@@ -555,8 +555,8 @@ export class DataPlaneService {
   async pullCatalogs() {
     const dataPlanes = await this.dataPlaneRepository.find({
       where: {
-        catalogSynchronization: "pull",
-      },
+        catalogSynchronization: "pull"
+      }
     });
     const dataPlanePromises = dataPlanes.map((dataPlane) =>
       this.pullCatalog(dataPlane)
@@ -568,8 +568,8 @@ export class DataPlaneService {
   async healthChecks() {
     const dataPlanes = await this.dataPlaneRepository.find({
       where: {
-        catalogSynchronization: "push",
-      },
+        catalogSynchronization: "push"
+      }
     });
     const dataPlanePromises = dataPlanes.map((dataPlane) =>
       this.healthCheck(dataPlane)

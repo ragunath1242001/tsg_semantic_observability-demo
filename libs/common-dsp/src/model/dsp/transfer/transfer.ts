@@ -3,7 +3,7 @@ import { TransferProcess, DataAddress } from "./messages";
 import {
   createInstance,
   createInstances,
-  createOptionalInstances,
+  createOptionalInstances
 } from "../../../utils/instances";
 import { DataPlaneTransferDto } from "../../data-planes";
 import { TransferState } from "./messages.dto";

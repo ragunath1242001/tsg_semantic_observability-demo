@@ -15,10 +15,10 @@ import { PolicyModule } from "../../policy/policy.module";
     DspClientModule,
     forwardRef(() => DataPlaneModule),
     TypeOrmModule.forFeature([TransferDetailDao, TransferEventDao]),
-    forwardRef(() => PolicyModule),
+    forwardRef(() => PolicyModule)
   ],
   controllers: [TransferController, TransferManagementController],
   providers: [TransferService],
-  exports: [TransferService],
+  exports: [TransferService]
 })
 export class TransferModule {}

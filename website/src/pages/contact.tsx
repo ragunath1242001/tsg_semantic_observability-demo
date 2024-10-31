@@ -9,7 +9,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBriefcase,
   faCodeBranch,
-  faUsers,
+  faUsers
 } from "@fortawesome/free-solid-svg-icons";
 
 function ContactHeader() {
@@ -47,8 +47,7 @@ const Contact: React.FC = () => {
           <a
             href="https://gitlab.com/tno-tsg/dataspace-protocol/tno-security-gateway"
             target="_blank"
-            rel="noopener noreferrer"
-          >
+            rel="noopener noreferrer">
             Visit our GitLab
           </a>
         </p>
@@ -86,8 +85,7 @@ export default function Home(): JSX.Element {
   return (
     <Layout
       title={siteConfig.title}
-      description="TNO Security Gateway Architecture and Documentation."
-    >
+      description="TNO Security Gateway Architecture and Documentation.">
       <ContactHeader />
       <main>
         <Contact />

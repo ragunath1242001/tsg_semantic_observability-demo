@@ -3,7 +3,7 @@ import {
   Get,
   Post,
   UploadedFiles,
-  UseInterceptors,
+  UseInterceptors
 } from "@nestjs/common";
 import { FilesService } from "./files.service";
 import { AnyFilesInterceptor } from "@nestjs/platform-express";

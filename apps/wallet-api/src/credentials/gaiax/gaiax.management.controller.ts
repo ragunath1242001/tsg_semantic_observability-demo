@@ -5,7 +5,7 @@ import { AppError } from "../../utils/error.js";
 import { ClientInfo, AppRole } from "@tsg-dsp/wallet-dtos";
 import {
   ComplianceRequest,
-  LegalRegistrationNumberRequest,
+  LegalRegistrationNumberRequest
 } from "@tsg-dsp/wallet-dtos";
 import { GaiaXService } from "./gaiax.service.js";
 import { validationPipe } from "../../utils/validation.pipe.js";
@@ -14,16 +14,16 @@ import {
   ApiOAuth2,
   ApiOkResponse,
   ApiOperation,
-  ApiTags,
+  ApiTags
 } from "@nestjs/swagger";
 import {
   ComplianceRequestDto,
-  LegalRegistrationNumberRequestDto,
+  LegalRegistrationNumberRequestDto
 } from "./gaiax.schemas.js";
 import { CredentialsDto } from "../credentials.schemas.js";
 import {
   ApiBadRequestResponseDefault,
-  ApiForbiddenResponseDefault,
+  ApiForbiddenResponseDefault
 } from "@tsg-dsp/common-dtos";
 
 @Controller("management/credentials/gaiax")
@@ -69,7 +69,7 @@ export class GaiaXManagementController {
   @ApiOperation({
     summary: "Issue legal registration number credential",
     description:
-      "Self-issue a Legal Registration Number credential following the Gaia-X Trust Framework",
+      "Self-issue a Legal Registration Number credential following the Gaia-X Trust Framework"
   })
   @ApiBody({ type: LegalRegistrationNumberRequestDto })
   @ApiOkResponse({ type: CredentialsDto })
@@ -98,7 +98,7 @@ export class GaiaXManagementController {
   @ApiOperation({
     summary: "Request compliance credential",
     description:
-      "Request a compliance credential from a Gaia-X Digital Clearing House based on existing credentials within this wallet",
+      "Request a compliance credential from a Gaia-X Digital Clearing House based on existing credentials within this wallet"
   })
   @ApiBody({ type: ComplianceRequestDto })
   @ApiOkResponse({ type: CredentialsDto })

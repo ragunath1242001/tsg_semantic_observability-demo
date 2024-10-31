@@ -64,14 +64,14 @@ const sendTransfer = async (transfer: TransferStatus, nextState: string) => {
       severity: "success",
       summary: "Success",
       detail: `Successfully proceeded to ${nextState}`,
-      life: 3000,
+      life: 3000
     });
   } catch (error) {
     toast.add(
       toastError({
         error,
         summary: "Failed to send transfer",
-        defaultMessage: `Could not send transfer`,
+        defaultMessage: `Could not send transfer`
       })
     );
     console.log(error);
@@ -92,7 +92,7 @@ const proceedTransfer = async (transfer: TransferStatus) => {
       acceptClass: "p-button-success",
       accept: async () => {
         await sendTransfer(transfer, nextState);
-      },
+      }
     });
   } else {
     await sendTransfer(transfer, nextState);
@@ -117,21 +117,21 @@ const terminateTransfer = async (transfer) => {
         toastError({
           error: null,
           summary: "Failed to terminate transfer",
-          defaultMessage: `Word is not set correctly. value: ${word}`,
+          defaultMessage: `Word is not set correctly. value: ${word}`
         })
       );
       return;
     }
     const body = {
       code: code.value,
-      reason: reason.value,
+      reason: reason.value
     };
     await http.post(`management/transfers/${transfer.localId}/${word}`, body);
     toast.add({
       severity: "success",
       summary: "Success",
       detail: "Successfully terminated transfer",
-      life: 3000,
+      life: 3000
     });
     close();
   } catch (error) {
@@ -139,7 +139,7 @@ const terminateTransfer = async (transfer) => {
       toastError({
         error,
         summary: "Failed to terminate transfer",
-        defaultMessage: `Could not terminate transfer`,
+        defaultMessage: `Could not terminate transfer`
       })
     );
     console.error(`Could not terminate transfer. Error: ${error}`);
@@ -155,8 +155,7 @@ const terminateTransfer = async (transfer) => {
         </div>
         <div
           class="flex items-center justify-center bg-blue-100 rounded-border"
-          style="width: 2.5rem; height: 2.5rem"
-        >
+          style="width: 2.5rem; height: 2.5rem">
           <i class="pi pi-file text-blue-500 text-xl"></i>
         </div>
       </div>
@@ -164,8 +163,7 @@ const terminateTransfer = async (transfer) => {
     <template #subtitle>{{ transfer.localId }}</template>
     <template #content>
       <span
-        class="block text-surface-600 dark:text-surface-200 font-small mb-4"
-      >
+        class="block text-surface-600 dark:text-surface-200 font-small mb-4">
         Transfer with
       </span>
       <span
@@ -173,8 +171,7 @@ const terminateTransfer = async (transfer) => {
         >{{ transfer.remoteParty.replace("%3A", ":") }}
       </span>
       <span
-        class="block text-surface-600 dark:text-surface-200 font-small mb-4"
-      >
+        class="block text-surface-600 dark:text-surface-200 font-small mb-4">
         {{ determineWord(transfer) }}, what do you want to do?
       </span>
       <div class="flex justify-between mb-0">
@@ -184,8 +181,7 @@ const terminateTransfer = async (transfer) => {
           icon="pi pi-times"
           type="submit"
           class="p-button-outlined"
-          @click="openDialog('terminate')"
-        />
+          @click="openDialog('terminate')" />
         <Button
           v-tooltip.top="'Suspend'"
           severity="warn"
@@ -193,25 +189,24 @@ const terminateTransfer = async (transfer) => {
           type="submit"
           v-if="transfer.state === 'dspace:STARTED'"
           class="p-button-outlined"
-          @click="openDialog('suspend')"
-        />
+          @click="openDialog('suspend')" />
         <Button
           v-tooltip.top="determineTooltip(transfer)"
           severity="success"
           icon="pi pi-check"
           type="submit"
           class="p-button-outlined"
-          @click="proceedTransfer(transfer)"
-        />
+          @click="proceedTransfer(transfer)" />
         <Dialog
           :header="determineHeader()"
           v-model:visible="display"
           :breakpoints="{ '840px': '75vw' }"
-          :modal="true"
-        >
+          :modal="true">
           <Card
-            style="border-radius: 12px; border: 1px solid var(--surface-border)"
-          >
+            style="
+              border-radius: 12px;
+              border: 1px solid var(--surface-border);
+            ">
             <template #content>
               <div class="field grid grid-cols-12 gap-4">
                 <label for="code" class="col-span-12 mb-2 md:col-span-2 md:mb-0"
@@ -240,16 +235,14 @@ const terminateTransfer = async (transfer) => {
               icon="pi pi-times"
               type="submit"
               class="p-button-outlined"
-              @click="close()"
-            />
+              @click="close()" />
             <Button
               label="Proceed"
               severity="success"
               icon="pi pi-check"
               type="submit"
               class="p-button-outlined"
-              @click="terminateTransfer(transfer)"
-            />
+              @click="terminateTransfer(transfer)" />
           </template>
         </Dialog>
       </div>

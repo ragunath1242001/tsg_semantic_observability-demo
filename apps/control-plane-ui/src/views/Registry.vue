@@ -27,11 +27,13 @@ const queryAddresses = async () => {
     addresses.value = response.data;
     return addresses;
   } catch (error) {
-    toast.add(toastError({
-      error,
-      summary: "Failed to retrieve addresses",
-      defaultMessage: `Could not load the addresses from the registry`
-    }));
+    toast.add(
+      toastError({
+        error,
+        summary: "Failed to retrieve addresses",
+        defaultMessage: `Could not load the addresses from the registry`
+      })
+    );
     console.error("Error:", error);
     throw error;
   }
@@ -51,11 +53,13 @@ const getCatalogs = async () => {
     catalogs.value = response.data;
     return catalogs;
   } catch (error) {
-    toast.add(toastError({
-      error,
-      summary: "Failed to retrieve catalogs",
-      defaultMessage: `Could not load the catalogs from the registry`
-    }));
+    toast.add(
+      toastError({
+        error,
+        summary: "Failed to retrieve catalogs",
+        defaultMessage: `Could not load the catalogs from the registry`
+      })
+    );
     console.error("Error:", error);
     throw error;
   }
@@ -79,8 +83,7 @@ onMounted(async () => await initialize());
   </Card>
   <Card
     style="border-radius: 12px; border: 1px solid var(--surface-border)"
-    class="mt-8"
-  >
+    class="mt-8">
     <template #title>Addresses</template>
     <template #subtitle
       >Overview of all participants in the dataspace. Click an entry to request
@@ -94,28 +97,24 @@ onMounted(async () => await initialize());
         :paginator="true"
         :rows="5"
         @row-select="getCatalog"
-        responsiveLayout="scroll"
-      >
+        responsiveLayout="scroll">
         <Column
           field="didId"
           header="DID"
           :sortable="true"
-          headerStyle="min-width:12rem;"
-        ></Column>
+          headerStyle="min-width:12rem;"></Column>
         <Column
           field="address"
           header="Address"
           :sortable="true"
           headerStyle="min-width:12rem;"
-          class="break-all"
-        ></Column>
+          class="break-all"></Column>
       </DataTable>
     </template>
   </Card>
   <Card
     style="border-radius: 12px; border: 1px solid var(--surface-border)"
-    class="my-8"
-  >
+    class="my-8">
     <template #title>Browse Datasets</template>
     <template #content
       >In this view, all the datasets of the dataspace are shown.</template
@@ -129,8 +128,7 @@ onMounted(async () => await initialize());
         :catalog="catalog"
         :single-catalog="false"
         :own-catalog="false"
-        :assigner="assigner"
-      ></Catalog>
+        :assigner="assigner"></Catalog>
     </div>
   </div>
 </template>

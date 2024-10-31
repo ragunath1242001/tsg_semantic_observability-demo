@@ -2,7 +2,7 @@ import {
   ApiProperty,
   ApiPropertyOptional,
   ApiExtraModels,
-  getSchemaPath,
+  getSchemaPath
 } from "@nestjs/swagger";
 import {
   VerifiableCredential,
@@ -10,7 +10,7 @@ import {
   JsonWebSignature2020,
   Proof,
   DataIntegrityProof,
-  OrArray,
+  OrArray
 } from "@tsg-dsp/common-dsp";
 import { IsString, IsBoolean, IsDate, ValidateNested } from "class-validator";
 import { InitCredentialConfig, TrustAnchorConfig } from "../config.js";
@@ -19,31 +19,31 @@ import { Type } from "class-transformer";
 import { JsonLdContextConfigDto } from "../contexts/context.schemas.js";
 import {
   ReferenceObject,
-  SchemaObject,
+  SchemaObject
 } from "@nestjs/swagger/dist/interfaces/open-api-spec.interface.js";
 
 const orArray = (
-  schema: string | SchemaObject,
+  schema: string | SchemaObject
 ): (SchemaObject | ReferenceObject)[] => {
   if (typeof schema === "string") {
     return [
       {
-        $ref: schema,
+        $ref: schema
       },
       {
         type: "array",
         items: {
-          $ref: schema,
-        },
-      },
+          $ref: schema
+        }
+      }
     ];
   } else {
     return [
       schema,
       {
         type: "array",
-        items: schema,
-      },
+        items: schema
+      }
     ];
   }
 };
@@ -82,7 +82,7 @@ export class DataIntegrityProofDto implements DataIntegrityProof {
   @ApiPropertyOptional()
   expires?: string;
   @ApiPropertyOptional({
-    oneOf: orArray({ type: "string" }),
+    oneOf: orArray({ type: "string" })
   })
   domain?: OrArray<string>;
   @ApiPropertyOptional()
@@ -90,7 +90,7 @@ export class DataIntegrityProofDto implements DataIntegrityProof {
   @ApiProperty()
   proofValue!: string;
   @ApiPropertyOptional({
-    oneOf: orArray({ type: "string" }),
+    oneOf: orArray({ type: "string" })
   })
   previousProof?: OrArray<string>;
   @ApiPropertyOptional()
@@ -106,17 +106,17 @@ export class DefaultCredentialSubjectDto implements CredentialSubject {
 @ApiExtraModels(DataIntegrityProofDto)
 export class VerifiableCredentialDto implements VerifiableCredential {
   @ApiProperty({
-    type: [String],
+    type: [String]
   })
   "@context": string[];
   @ApiProperty({
-    type: [String],
+    type: [String]
   })
   type!: string[];
   @ApiPropertyOptional()
   id?: string;
   @ApiProperty({
-    oneOf: orArray(getSchemaPath(DefaultCredentialSubjectDto)),
+    oneOf: orArray(getSchemaPath(DefaultCredentialSubjectDto))
   })
   credentialSubject!: OrArray<DefaultCredentialSubjectDto>;
   @ApiProperty()
@@ -131,13 +131,13 @@ export class VerifiableCredentialDto implements VerifiableCredential {
     oneOf: orArray({
       oneOf: [
         {
-          $ref: getSchemaPath(DataIntegrityProofDto),
+          $ref: getSchemaPath(DataIntegrityProofDto)
         },
         {
-          $ref: getSchemaPath(JsonWebSignature2020Dto),
-        },
-      ],
-    }),
+          $ref: getSchemaPath(JsonWebSignature2020Dto)
+        }
+      ]
+    })
   })
   proof!: OrArray<ProofDto>;
 }
@@ -149,7 +149,7 @@ export class TrustAnchorConfigDto implements TrustAnchorConfig {
 
   @IsString()
   @ApiProperty({
-    type: [String],
+    type: [String]
   })
   credentialTypes!: string[];
 }
@@ -194,17 +194,17 @@ export class CredentialConfigDto implements InitCredentialConfig {
   @ApiPropertyOptional({
     type: [String],
     title: "JSON-LD Contexts for the credential",
-    example: ["https://dataspace.example/context"],
+    example: ["https://dataspace.example/context"]
   })
   context!: string[];
   @ApiPropertyOptional({
     type: [String],
     title: "Credential Type",
-    example: ["DataSpaceMembershipCredential"],
+    example: ["DataSpaceMembershipCredential"]
   })
   type!: string[];
   @ApiProperty({
-    title: "Credential ID",
+    title: "Credential ID"
   })
   id!: string;
   @ApiPropertyOptional()

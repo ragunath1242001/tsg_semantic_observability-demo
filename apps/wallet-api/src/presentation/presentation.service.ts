@@ -8,7 +8,7 @@ import {
   PresentationValidation,
   JsonWebSignature2020,
   DataIntegrityProof,
-  Proof,
+  Proof
 } from "@tsg-dsp/common-dsp";
 import crypto from "crypto";
 import { CredentialsService } from "../credentials/credentials.service.js";
@@ -27,13 +27,13 @@ export class PresentationService {
     private readonly credentialsService: CredentialsService,
     private readonly signatureService: SignatureService,
     private readonly didResolver: DidResolverService,
-    private readonly didService: DidService,
+    private readonly didService: DidService
   ) {}
   private readonly logger = new Logger(this.constructor.name);
 
   async createVerifiablePresentationJsonLd(
     credentialId: string,
-    unwrap: boolean,
+    unwrap: boolean
   ): Promise<VerifiablePresentationJsonLd> {
     const credential =
       await this.credentialsService.getCredential(credentialId);
@@ -43,7 +43,7 @@ export class PresentationService {
       id: `${await this.didService.getDidId()}#${crypto.randomUUID()}`,
       verifiableCredential: unwrap
         ? credential.credential
-        : [credential.credential],
+        : [credential.credential]
     };
 
     let proof: Proof;
@@ -51,30 +51,30 @@ export class PresentationService {
       this.config.signature.credentials === SignatureType.DATA_INTEGRITY_PROOF
     ) {
       verifiablePresentation["@context"].push(
-        "https://w3id.org/security/data-integrity/v2",
+        "https://w3id.org/security/data-integrity/v2"
       );
       proof = await this.signatureService.signAsDataIntegrityProof(
         "RDFC",
-        verifiablePresentation,
+        verifiablePresentation
       );
     } else {
       verifiablePresentation["@context"].push(
-        "https://w3id.org/security/suites/jws-2020/v1",
+        "https://w3id.org/security/suites/jws-2020/v1"
       );
       proof = await this.signatureService.signAsJsonWebSignature2020(
-        verifiablePresentation,
+        verifiablePresentation
       );
     }
     verifiablePresentation.proof = proof;
     return plainToInstance(VerifiablePresentationJsonLd, {
-      vp: verifiablePresentation,
+      vp: verifiablePresentation
     });
   }
 
   async createVerifiablePresentationJwt(
     credentials: string | VerifiableCredential[],
     audience: string,
-    unwrap: boolean,
+    unwrap: boolean
   ): Promise<VerifiablePresentationJwt> {
     let vcs: VerifiableCredential[];
     if (Array.isArray(credentials)) {
@@ -89,22 +89,22 @@ export class PresentationService {
       "@context": ["https://www.w3.org/2018/credentials/v1"],
       type: ["VerifiablePresentation"],
       id: `${didId}#${crypto.randomUUID()}`,
-      verifiableCredential: unwrap ? vcs[0] : vcs,
+      verifiableCredential: unwrap ? vcs[0] : vcs
     };
     return plainToInstance(VerifiablePresentationJwt, {
       vp: await this.signatureService.signAsJwt(
         { vp: verifiablePresentation },
         audience,
         {
-          expirationTime: "24h",
-        },
-      ),
+          expirationTime: "24h"
+        }
+      )
     });
   }
 
   async validatePresentation(
     vpJwt: VerifiablePresentationJwt,
-    audience?: string,
+    audience?: string
   ): Promise<PresentationValidation> {
     const jwtPayload = decodeJwt(vpJwt.vp);
     const vp = plainToInstance(VerifiablePresentation, jwtPayload.vp);
@@ -137,7 +137,7 @@ export class PresentationService {
 
         const credentialTypes =
           this.config.trustAnchors.find(
-            (trustAnchor) => trustAnchor.identifier === credential.issuer,
+            (trustAnchor) => trustAnchor.identifier === credential.issuer
           )?.credentialTypes || [];
         validTrustAnchor = credential.type
           .filter((t) => t !== "VerifiableCredential")
@@ -152,7 +152,7 @@ export class PresentationService {
             ) {
               await this.signatureService.validateJsonWebSignature2020(
                 plainCredential,
-                proofItem as JsonWebSignature2020,
+                proofItem as JsonWebSignature2020
               );
             } else if (
               proofItem instanceof DataIntegrityProof ||
@@ -160,12 +160,12 @@ export class PresentationService {
             ) {
               await this.signatureService.validateDataIntegrityProof(
                 plainCredential,
-                proofItem as DataIntegrityProof,
+                proofItem as DataIntegrityProof
               );
             } else {
               throw new AppError(
                 `Unknown proof ${proofItem.type}`,
-                HttpStatus.BAD_REQUEST,
+                HttpStatus.BAD_REQUEST
               );
             }
           }
@@ -193,7 +193,7 @@ export class PresentationService {
       validateTrustAnchors: validateTrustAnchors,
       validateJWTSignature: validateJWTSignature,
       validateJWTExpiryDate: validateJWTExpiryDate,
-      validateAudience: validateAudience,
+      validateAudience: validateAudience
     };
   }
 }

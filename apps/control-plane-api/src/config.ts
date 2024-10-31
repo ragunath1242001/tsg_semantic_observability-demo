@@ -10,7 +10,7 @@ import {
   IsString,
   IsUrl,
   ValidateIf,
-  ValidateNested,
+  ValidateNested
 } from "class-validator";
 import "reflect-metadata";
 
@@ -256,16 +256,16 @@ export class PolicyConfig {
 export class RootConfig {
   @ValidateNested()
   @IsDefined({
-    message: "Either sqlite or postgres DB config must be provided",
+    message: "Either sqlite or postgres DB config must be provided"
   })
   @Type(() => DatabaseConfig, {
     discriminator: {
       property: "type",
       subTypes: [
         { value: SQLiteConfig, name: "sqlite" },
-        { value: PostgresConfig, name: "postgres" },
-      ],
-    },
+        { value: PostgresConfig, name: "postgres" }
+      ]
+    }
   })
   public readonly db!: DatabaseConfig;
 
@@ -276,7 +276,7 @@ export class RootConfig {
 
   @ValidateNested()
   @IsDefined({
-    message: "OAuth2.0 configuration must be provided",
+    message: "OAuth2.0 configuration must be provided"
   })
   @Type(() => AuthConfig)
   public readonly auth!: AuthConfig;
@@ -293,9 +293,9 @@ export class RootConfig {
         { value: DevWalletConfig, name: "dev" },
         { value: TsgWalletDirectConfig, name: "tsg" },
         { value: TsgWalletIatpConfig, name: "tsg-iatp" },
-        { value: MiwConfig, name: "miw" },
-      ],
-    },
+        { value: MiwConfig, name: "miw" }
+      ]
+    }
   })
   @IsDefined()
   public readonly iam!: IamConfig;

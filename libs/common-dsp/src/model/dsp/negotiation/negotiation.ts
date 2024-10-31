@@ -4,7 +4,7 @@ import {
   IsOptional,
   IsString,
   ValidateIf,
-  ValidateNested,
+  ValidateNested
 } from "class-validator";
 import { LDType, Namespace, Serializable } from "../../decorators";
 import {
@@ -13,13 +13,13 @@ import {
   Reference,
   SerializableClass,
   Value,
-  withExtraProps,
+  withExtraProps
 } from "../common";
 import { ContractAgreementVerificationMessage } from "./messages";
 import {
   createInstances,
   createOptionalInstance,
-  createOptionalInstances,
+  createOptionalInstances
 } from "../../../utils/instances";
 import { ContextDto } from "../common.dto";
 import {
@@ -31,7 +31,7 @@ import {
   DutyDto,
   PolicyDto,
   OfferDto,
-  AgreementDto,
+  AgreementDto
 } from "./negotiation.dto";
 import { ContractNegotiationState, HashedMessage } from "./messages.dto";
 import { OrArray } from "../../../utils/unions";

@@ -5,25 +5,26 @@ const config: Config.InitialOptions = {
     "^.+\\.tsx?$": [
       "ts-jest",
       {
-        useESM: true,
-      },
-    ],
+        useESM: true
+      }
+    ]
   },
   transformIgnorePatterns: ["node_modules/(?!@tsg-dsp)"],
   testTimeout: 30000,
   testEnvironment: "node",
   testRegex: "/.*\\.(test|spec)?\\.(ts|tsx)$",
   moduleNameMapper: {
-    "^(\\.{1,2}/.*)\\.js$": "$1",
+    "^(\\.{1,2}/.*)\\.js$": "$1"
   },
   coverageReporters: ["text", "text-summary", "cobertura"],
   collectCoverageFrom: [
     "src/**/*.ts",
     "!src/**/*.guard.ts",
+    "!src/**/*.schemas.ts",
     "!src/**/*.strategy.ts",
     "!src/**/*.controller.ts",
     "!src/**/*.module.ts",
-    "!node_modules/**",
-  ],
+    "!node_modules/**"
+  ]
 };
 export default config;

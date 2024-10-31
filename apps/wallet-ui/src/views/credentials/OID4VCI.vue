@@ -5,7 +5,7 @@ import {
   CredentialOffer,
   CredentialOfferRequest,
   CredentialOfferStatus,
-  JsonLdContextConfig,
+  JsonLdContextConfig
 } from "@tsg-dsp/wallet-dtos";
 import JsonSchemaFormElement from "@tsg-dsp/common-ui/components/JsonSchemaFormElement.vue";
 import { useToast } from "primevue/usetoast";
@@ -41,12 +41,12 @@ const offerDefault: OfferForm = {
   credentialSubject: "",
   credentialSubjectObject: {},
   preAuthorizedCode: undefined,
-  manualCredential: false,
+  manualCredential: false
 };
 const offerForm = ref<OfferForm>(offerDefault);
 const requestForm = ref<{ preAuthorizedCode: string; issuerUrl: string }>({
   preAuthorizedCode: "",
-  issuerUrl: "",
+  issuerUrl: ""
 });
 
 const issuableCredentialTypes = computed(
@@ -62,7 +62,7 @@ const loadOffers = async () => {
       toastError({
         error,
         summary: "Could not load credential offers",
-        defaultMessage: `Error in fetching credential offers`,
+        defaultMessage: `Error in fetching credential offers`
       })
     );
   }
@@ -79,7 +79,7 @@ const loadConfig = async () => {
       toastError({
         error,
         summary: "Could not load credential config",
-        defaultMessage: `Error in fetching credential config`,
+        defaultMessage: `Error in fetching credential config`
       })
     );
   }
@@ -94,7 +94,7 @@ const revokeOffer = async (id: number) => {
       toastError({
         error,
         summary: "Could not revoke offer",
-        defaultMessage: `Error in revoking credential offer`,
+        defaultMessage: `Error in revoking credential offer`
       })
     );
   }
@@ -161,7 +161,7 @@ const validateCredentialSubject = (showToast: boolean) => {
         severity: "warn",
         summary: "Credential validation failed",
         detail: err.message,
-        life: 10000,
+        life: 10000
       });
     } else {
       offerForm.value.credentialValidation = err.message;
@@ -179,7 +179,7 @@ const createOffer = async () => {
       holderId: offerForm.value.holderId,
       credentialType: offerForm.value.credentialType.credentialType,
       credentialSubject: credentialSubject,
-      preAuthorizedCode: offerForm.value.preAuthorizedCode,
+      preAuthorizedCode: offerForm.value.preAuthorizedCode
     };
 
     const offer = await http.post<CredentialOffer>(
@@ -190,7 +190,7 @@ const createOffer = async () => {
       severity: "success",
       summary: "Offer created",
       detail: `Credential offer successfully created`,
-      life: 10000,
+      life: 10000
     });
     offerForm.value = offerDefault;
     await loadOffers();
@@ -209,7 +209,7 @@ const createOffer = async () => {
       toastError({
         error,
         summary: "Could not create offer",
-        defaultMessage: `Error in creating new credential offer`,
+        defaultMessage: `Error in creating new credential offer`
       })
     );
   }
@@ -222,18 +222,18 @@ const retrieveCredential = async () => {
       severity: "success",
       summary: "Credential retrieved",
       detail: `Credential successfully retrieved, go to the credential overview to see the credential`,
-      life: 10000,
+      life: 10000
     });
     requestForm.value = {
       issuerUrl: "",
-      preAuthorizedCode: "",
+      preAuthorizedCode: ""
     };
   } catch (error) {
     toast.add(
       toastError({
         error,
         summary: "Could not retrieve credential",
-        defaultMessage: `Error in retrieving credential`,
+        defaultMessage: `Error in retrieving credential`
       })
     );
   }
@@ -299,8 +299,7 @@ onMounted(async () => {
           sort-field="created"
           :sort-order="-1"
           paginator
-          :rows="10"
-        >
+          :rows="10">
           <Column expander style="width: 5rem" />
           <Column field="created" header="Created">
             <template #body="props">
@@ -313,8 +312,7 @@ onMounted(async () => {
             <template #body="props">
               <i
                 v-if="props.data.credentialId"
-                class="pi pi-check-circle text-green-500"
-              />
+                class="pi pi-check-circle text-green-500" />
               <i v-else class="pi pi-times-circle text-red-500" />
             </template>
           </Column>
@@ -325,15 +323,13 @@ onMounted(async () => {
                 class="ml-4"
                 severity="danger"
                 label="Revoked"
-                disabled
-              />
+                disabled />
               <Button
                 v-else
                 class="ml-4"
                 severity="danger"
                 label="&nbsp;Revoke&nbsp;"
-                @click="revokeOffer(props.data.id)"
-              />
+                @click="revokeOffer(props.data.id)" />
             </template>
           </Column>
           <template #expansion="props">
@@ -354,8 +350,7 @@ onMounted(async () => {
                 :static="props.data.credentialSubject"
                 :read-only="true"
                 :min-lines="1"
-                :max-lines="10"
-              />
+                :max-lines="10" />
             </FormField>
           </template>
         </DataTable>
@@ -388,8 +383,7 @@ onMounted(async () => {
               placeholder="did:..."
               pattern="did:(web|tdw):.*"
               validation-message="Target DID must be a DID web"
-              required
-            />
+              required />
           </FormField>
           <FormField label="Credential Type" v-slot="props">
             <Select
@@ -399,8 +393,7 @@ onMounted(async () => {
               :options="issuableCredentialTypes"
               option-label="credentialType"
               value-label="credentialType"
-              placeholder="Credential type"
-            />
+              placeholder="Credential type" />
           </FormField>
           <template v-if="offerForm.credentialType">
             <FormField
@@ -408,26 +401,22 @@ onMounted(async () => {
               v-slot="props"
               v-if="
                 !offerForm.credentialType?.schema || offerForm.manualCredential
-              "
-            >
+              ">
               <MonacoEditorVue
                 v-model="offerForm.credentialSubject"
-                :schema="offerForm.credentialType?.schema"
-              ></MonacoEditorVue>
+                :schema="offerForm.credentialType?.schema"></MonacoEditorVue>
               <Button
                 severity="success"
                 v-if="offerForm.credentialType?.schema"
                 label="Credential form"
-                @click="offerForm.manualCredential = false"
-              />
+                @click="offerForm.manualCredential = false" />
             </FormField>
             <FormField
               label="Credential Form"
               :label-width="12"
               v-if="
                 offerForm.credentialType?.schema && !offerForm.manualCredential
-              "
-            >
+              ">
               <JsonSchemaFormElement
                 v-for="(child, key) in parsedProperties"
                 :schema="child"
@@ -441,15 +430,13 @@ onMounted(async () => {
                     offerForm.credentialSubjectObject[key] = $event;
                     updateCredentialSubject();
                   }
-                "
-              ></JsonSchemaFormElement>
+                "></JsonSchemaFormElement>
               <FormField no-label>
                 <Button
                   severity="warn"
                   v-if="offerForm.credentialType?.schema"
                   label="Manual credential"
-                  @click="offerForm.manualCredential = true"
-                />
+                  @click="offerForm.manualCredential = true" />
               </FormField>
             </FormField>
           </template>
@@ -458,8 +445,7 @@ onMounted(async () => {
               :id="props.id"
               class="w-full"
               v-model="offerForm.preAuthorizedCode"
-              placeholder="Leave empty to auto generate"
-            />
+              placeholder="Leave empty to auto generate" />
           </FormField>
           <FormField no-label>
             <Button label="Create offer" type="submit" />
@@ -492,8 +478,7 @@ onMounted(async () => {
               class="w-full"
               v-model="requestForm.issuerUrl"
               placeholder="Issuer URL"
-              required
-            />
+              required />
           </FormField>
           <FormField label="Pre Authorized code" v-slot="props">
             <InputText
@@ -501,8 +486,7 @@ onMounted(async () => {
               class="w-full"
               v-model="requestForm.preAuthorizedCode"
               placeholder="Pre Authorized code received from issuer"
-              required
-            />
+              required />
           </FormField>
           <FormField no-label>
             <Button label="Request credential" type="submit" />

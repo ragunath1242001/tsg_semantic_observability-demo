@@ -19,8 +19,8 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
       ServeStaticModule.forRoot({
         rootPath: process.env["EMBEDDED_FRONTEND"],
         serveRoot: process.env["SUBPATH"],
-        exclude: ["/api/(.*)", "/.well-known/(.*)"],
-      }),
+        exclude: ["/api/(.*)", "/.well-known/(.*)"]
+      })
     ]
   : [];
 
@@ -32,7 +32,7 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
     TypeOrmModule.forRoot({
       ...config.db,
       autoLoadEntities: true,
-      synchronize: true,
+      synchronize: true
     }),
     DataPlaneModule,
     DspClientModule,
@@ -40,7 +40,7 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
     NegotiationModule,
     TransferModule,
     ...embeddedFrontend,
-    RegistryModule.register(config.registry),
+    RegistryModule.register(config.registry)
   ],
   exports: [
     AuthModule,
@@ -48,9 +48,9 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
     DspClientModule,
     CatalogModule,
     NegotiationModule,
-    TransferModule,
+    TransferModule
   ],
-  controllers: [ConfigController, HealthController],
+  controllers: [ConfigController, HealthController]
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

@@ -9,7 +9,7 @@ import {
   Param,
   Post,
   Put,
-  UseGuards,
+  UseGuards
 } from "@nestjs/common";
 import { DataPlaneService } from "./dataPlane.service";
 import { IDataPlaneDto } from "@tsg-dsp/control-plane-dtos";
@@ -23,7 +23,7 @@ import {
   ApiCreatedResponse,
   ApiAcceptedResponse,
   ApiBadRequestResponse,
-  ApiBody,
+  ApiBody
 } from "@nestjs/swagger";
 import { DataPlaneDto } from "./dataplane.schemas.js";
 import { ApiForbiddenResponseDefault } from "@tsg-dsp/common-dtos";
@@ -41,7 +41,7 @@ export class DataplaneManagementController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: "Get all dataplanes",
-    description: "Fetches all the dataplanes.",
+    description: "Fetches all the dataplanes."
   })
   @ApiOkResponse({ type: [DataPlaneDto] })
   @ApiForbiddenResponseDefault()
@@ -54,7 +54,7 @@ export class DataplaneManagementController {
           ...dataplane,
           datasets: dataplane.datasets
             ? await Promise.all(dataplane.datasets.map((d) => d.serialize()))
-            : undefined,
+            : undefined
         };
       })
     );
@@ -65,7 +65,7 @@ export class DataplaneManagementController {
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
     summary: "Add a dataplane",
-    description: "Adds a new dataplane.",
+    description: "Adds a new dataplane."
   })
   @ApiBody({ type: DataPlaneDto })
   @ApiCreatedResponse({ type: DataPlaneDto })
@@ -81,7 +81,7 @@ export class DataplaneManagementController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: "Update a dataplane",
-    description: "Updates an existing dataplane.",
+    description: "Updates an existing dataplane."
   })
   @ApiOkResponse({ type: DataPlaneDto })
   @ApiBadRequestResponse({ description: "Invalid dataplane data" })
@@ -98,7 +98,7 @@ export class DataplaneManagementController {
   @HttpCode(HttpStatus.ACCEPTED)
   @ApiOperation({
     summary: "Delete a dataplane",
-    description: "Deletes a dataplane by ID.",
+    description: "Deletes a dataplane by ID."
   })
   @ApiAcceptedResponse({ description: "Dataplane deleted successfully" })
   @ApiBadRequestResponse({ description: "Invalid dataplane ID" })

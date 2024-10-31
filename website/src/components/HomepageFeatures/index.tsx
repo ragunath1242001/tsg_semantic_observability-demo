@@ -17,7 +17,7 @@ const FeatureList: FeatureItem[] = [
         The <a href="docs">documentation</a> covers the Architecture overview,
         developer documentation and steps to deploy the Participant Agent.
       </>
-    ),
+    )
   },
   {
     title: "APIs",
@@ -28,7 +28,7 @@ const FeatureList: FeatureItem[] = [
         <a href="docs/apis/control-plane/tsg-control-plane">APIs</a> to view
         them.
       </>
-    ),
+    )
   },
   {
     title: "Contact",
@@ -38,8 +38,8 @@ const FeatureList: FeatureItem[] = [
         Interested in using the TNO Security Gateway? Get in{" "}
         <a href="contact">contact</a>!
       </>
-    ),
-  },
+    )
+  }
 ];
 
 function Feature({ title, Svg, description }: FeatureItem) {
@@ -74,8 +74,7 @@ export default function HomepageFeatures(): JSX.Element {
             European standards such as the{" "}
             <a
               href="https://docs.internationaldataspaces.org/ids-knowledgebase/dataspace-protocol"
-              target="_blank"
-            >
+              target="_blank">
               Eclipse Dataspace Protocol
             </a>
             .

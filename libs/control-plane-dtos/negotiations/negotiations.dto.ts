@@ -4,7 +4,7 @@ import {
   ContractNegotiationState,
   HashedMessage,
   MultilanguageDto,
-  OfferDto,
+  OfferDto
 } from "@tsg-dsp/common-dsp";
 
 export type NegotiationRole = "provider" | "consumer";

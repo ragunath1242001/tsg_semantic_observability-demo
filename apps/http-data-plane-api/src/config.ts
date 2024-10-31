@@ -9,7 +9,7 @@ import {
   IsUrl,
   IsIn,
   IsBoolean,
-  ValidateIf,
+  ValidateIf
 } from "class-validator";
 
 export abstract class DatabaseConfig {
@@ -110,22 +110,22 @@ export class LoggingConfig {
 export class RootConfig {
   @ValidateNested()
   @IsDefined({
-    message: "Either sqlite or postgres DB config must be provided",
+    message: "Either sqlite or postgres DB config must be provided"
   })
   @Type(() => DatabaseConfig, {
     discriminator: {
       property: "type",
       subTypes: [
         { value: SQLiteConfig, name: "sqlite" },
-        { value: PostgresConfig, name: "postgres" },
-      ],
-    },
+        { value: PostgresConfig, name: "postgres" }
+      ]
+    }
   })
   public readonly db!: DatabaseConfig;
 
   @ValidateNested()
   @IsDefined({
-    message: "OAuth2.0 configuration must be provided",
+    message: "OAuth2.0 configuration must be provided"
   })
   @Type(() => AuthConfig)
   public readonly auth!: AuthConfig;

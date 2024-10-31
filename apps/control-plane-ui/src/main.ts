@@ -64,17 +64,17 @@ app.use(PrimeVue, {
   theme: {
     preset: Lara,
     options: {
-      darkModeSelector: ".app-dark",
-    },
-  },
+      darkModeSelector: ".app-dark"
+    }
+  }
 });
 app.use(ConfirmationService);
 app.use(ToastService);
 
 loader.config({
   paths: {
-    vs: "https://cdn.jsdelivr.net/npm/monaco-editor@0.43.0/dev/vs",
-  },
+    vs: "https://cdn.jsdelivr.net/npm/monaco-editor@0.43.0/dev/vs"
+  }
 });
 app.component("Accordion", Accordion);
 app.component("AccordionContent", AccordionContent);

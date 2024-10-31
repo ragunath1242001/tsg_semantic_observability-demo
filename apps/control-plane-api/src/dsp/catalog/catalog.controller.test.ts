@@ -8,7 +8,7 @@ import {
   Dataset,
   DatasetRequestMessage,
   Distribution,
-  Multilanguage,
+  Multilanguage
 } from "@tsg-dsp/common-dsp";
 import { plainToClass } from "class-transformer";
 import { SetupServer } from "msw/lib/node";
@@ -19,7 +19,7 @@ import { VerifiablePresentationStrategy } from "../../auth/verifiablePresentatio
 import {
   mockWalletConfig,
   sampleVpToken,
-  setupMockWalletServer,
+  setupMockWalletServer
 } from "../../auth/wallets/wallet.util.test";
 import { IamConfig, InitCatalog, ServerConfig } from "../../config";
 import {
@@ -28,7 +28,7 @@ import {
   DataServiceDao,
   DatasetDao,
   DistributionDao,
-  ResourceDao,
+  ResourceDao
 } from "../../model/catalog.dao";
 import { TypeOrmTestHelper } from "../../utils/testhelper";
 import { CatalogController } from "./catalog.controller";
@@ -44,11 +44,11 @@ const dataset = new Dataset({
       format: "dspace:HTTP",
       accessService: [
         new DataService({
-          id: "urn:uuid:0d5f0685-eb04-409a-8a77-ee4ed207f2f0",
-        }),
-      ],
-    }),
-  ],
+          id: "urn:uuid:0d5f0685-eb04-409a-8a77-ee4ed207f2f0"
+        })
+      ]
+    })
+  ]
 });
 
 const catalog = new Catalog({
@@ -60,14 +60,14 @@ const catalog = new Catalog({
     new DataService({
       id: "urn:uuid:0d5f0685-eb04-409a-8a77-ee4ed207f2f0",
       endpointURL: "http://localhost/",
-      type: "connector",
-    }),
-  ],
+      type: "connector"
+    })
+  ]
 });
 
 const catalogWithDataset = new Catalog({
   ...catalog,
-  dataset: [dataset],
+  dataset: [dataset]
 });
 
 describe("CatalogController", () => {
@@ -80,7 +80,7 @@ describe("CatalogController", () => {
       creator: "urn:uuid:de8e1b94-4169-4491-986d-6a1c528b867b",
       publisher: "urn:uuid:de8e1b94-4169-4491-986d-6a1c528b867b",
       title: "Test Connector",
-      description: "Connector catalog for testing purposes",
+      description: "Connector catalog for testing purposes"
     });
     const serverConfig = plainToClass(ServerConfig, {});
 
@@ -93,7 +93,7 @@ describe("CatalogController", () => {
           DataServiceDao,
           DistributionDao,
           ResourceDao,
-          DataPlaneDao,
+          DataPlaneDao
         ]),
         TypeOrmModule.forFeature([
           CatalogDao,
@@ -102,21 +102,21 @@ describe("CatalogController", () => {
           DataServiceDao,
           DistributionDao,
           ResourceDao,
-          DataPlaneDao,
-        ]),
+          DataPlaneDao
+        ])
       ],
       controllers: [CatalogController],
       providers: [
         CatalogService,
         {
           provide: InitCatalog,
-          useValue: initCatalog,
+          useValue: initCatalog
         },
         {
           provide: ServerConfig,
-          useValue: serverConfig,
-        },
-      ],
+          useValue: serverConfig
+        }
+      ]
     }).compile();
     catalogController = moduleRef.get(CatalogController);
     catalogService = moduleRef.get(CatalogService);
@@ -184,7 +184,7 @@ describe("Catalog Module", () => {
       creator: "urn:uuid:de8e1b94-4169-4491-986d-6a1c528b867b",
       publisher: "urn:uuid:de8e1b94-4169-4491-986d-6a1c528b867b",
       title: "Test Connector",
-      description: "Connector catalog for testing purposes",
+      description: "Connector catalog for testing purposes"
     });
     const serverConfig = plainToClass(ServerConfig, {});
     const moduleRef: TestingModule = await Test.createTestingModule({
@@ -196,7 +196,7 @@ describe("Catalog Module", () => {
           DataServiceDao,
           DistributionDao,
           ResourceDao,
-          DataPlaneDao,
+          DataPlaneDao
         ]),
         TypeOrmModule.forFeature([
           CatalogDao,
@@ -205,8 +205,8 @@ describe("Catalog Module", () => {
           DataServiceDao,
           DistributionDao,
           ResourceDao,
-          DataPlaneDao,
-        ]),
+          DataPlaneDao
+        ])
       ],
       controllers: [CatalogController],
       providers: [
@@ -215,13 +215,13 @@ describe("Catalog Module", () => {
         CatalogService,
         {
           provide: InitCatalog,
-          useValue: initCatalog,
+          useValue: initCatalog
         },
         {
           provide: ServerConfig,
-          useValue: serverConfig,
-        },
-      ],
+          useValue: serverConfig
+        }
+      ]
     })
       .useMocker((token) => {
         if (token === AuthService) {
@@ -231,7 +231,7 @@ describe("Catalog Module", () => {
             },
             validateToken() {
               return true;
-            },
+            }
           };
         }
       })
@@ -272,7 +272,7 @@ describe("Catalog Module", () => {
         .set("Authorization", `Bearer ${sampleVpToken()}`)
         .send(
           await new DatasetRequestMessage({
-            dataset: "urn:uuid:5b156cfa-5800-4345-8acc-6725c7eb5bc2",
+            dataset: "urn:uuid:5b156cfa-5800-4345-8acc-6725c7eb5bc2"
           }).serialize()
         )
         .expect(400);

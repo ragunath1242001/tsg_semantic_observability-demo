@@ -8,22 +8,22 @@ export default defineConfig({
   plugins: [vue()],
   resolve: {
     alias: {
-      "@": fileURLToPath(new URL("./src", import.meta.url)),
-    },
+      "@": fileURLToPath(new URL("./src", import.meta.url))
+    }
   },
   build: {
-    target: "ESNext",
+    target: "ESNext"
   },
   server: {
     proxy: {
       "/api": {
         target: "http://localhost:3000/",
-        rewrite: (path) => path.replace(/^\/api/, ""),
+        rewrite: (path) => path.replace(/^\/api/, "")
       },
       "/.well-known": {
-        target: "http://localhost:3000/",
-      },
+        target: "http://localhost:3000/"
+      }
       // '/api': 'https://issuer.oid4vci.heracles.dataspac.es/'
-    },
-  },
+    }
+  }
 });

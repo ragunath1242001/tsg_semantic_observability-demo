@@ -2,7 +2,7 @@ import {
   Injectable,
   CanActivate,
   ExecutionContext,
-  createParamDecorator,
+  createParamDecorator
 } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 import { Observable } from "rxjs";
@@ -27,7 +27,7 @@ export const Client = createParamDecorator(
         sub: "0",
         name: "anonymous",
         email: "noreply@example.com",
-        roles: [],
+        roles: []
       };
     }
     const request = context.switchToHttp().getRequest();
@@ -36,20 +36,20 @@ export const Client = createParamDecorator(
       sub: request.user.sub || "",
       name: request.user.name || "",
       email: request.user.email || "",
-      roles: jsonpath.query(request.user, config.auth.rolePath),
+      roles: jsonpath.query(request.user, config.auth.rolePath)
     };
-  },
+  }
 );
 
 @Injectable()
 export class RolesGuard implements CanActivate {
   constructor(
     private readonly reflector: Reflector,
-    private readonly authConfig: AuthConfig,
+    private readonly authConfig: AuthConfig
   ) {}
 
   canActivate(
-    context: ExecutionContext,
+    context: ExecutionContext
   ): boolean | Promise<boolean> | Observable<boolean> {
     if (!this.authConfig.enabled) {
       return true;

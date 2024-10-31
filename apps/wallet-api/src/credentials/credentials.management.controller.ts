@@ -8,7 +8,7 @@ import {
   Param,
   Post,
   Put,
-  UsePipes,
+  UsePipes
 } from "@nestjs/common";
 import { CredentialsService } from "./credentials.service.js";
 import { InitCredentialConfig, RootConfig } from "../config.js";
@@ -23,20 +23,20 @@ import {
   ApiOAuth2,
   ApiOkResponse,
   ApiOperation,
-  ApiTags,
+  ApiTags
 } from "@nestjs/swagger";
 import {
   CredentialConfigDto,
   CredentialsConfigDto,
   CredentialsDto,
-  VerifiableCredentialDto,
+  VerifiableCredentialDto
 } from "./credentials.schemas.js";
 import { validationPipe } from "../utils/validation.pipe.js";
 import {
   ApiForbiddenResponseDefault,
   ApiConflictResponseDefault,
   ApiBadRequestResponseDefault,
-  ApiNotFoundResponseDefault,
+  ApiNotFoundResponseDefault
 } from "@tsg-dsp/common-dtos";
 
 @ApiTags("Management Credentials")
@@ -46,12 +46,12 @@ export class CredentialsManagementController {
   constructor(
     private readonly credentialsService: CredentialsService,
     private readonly contextService: ContextService,
-    private readonly config: RootConfig,
+    private readonly config: RootConfig
   ) {}
 
   private targetDid(
     action: "view" | "manage",
-    client: ClientInfo,
+    client: ClientInfo
   ): string | undefined {
     switch (action) {
       case "view":
@@ -62,7 +62,7 @@ export class CredentialsManagementController {
         } else {
           throw new AppError(
             `Not allowed to view credentials`,
-            HttpStatus.FORBIDDEN,
+            HttpStatus.FORBIDDEN
           );
         }
       case "manage":
@@ -73,7 +73,7 @@ export class CredentialsManagementController {
         } else {
           throw new AppError(
             `Not allowed to manage credentials`,
-            HttpStatus.FORBIDDEN,
+            HttpStatus.FORBIDDEN
           );
         }
     }
@@ -83,11 +83,11 @@ export class CredentialsManagementController {
   @ApiOperation({
     summary: "List credentials",
     description:
-      "List all credentials, that the current user is allowed to view, in this wallet",
+      "List all credentials, that the current user is allowed to view, in this wallet"
   })
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({
-    type: [CredentialsDto],
+    type: [CredentialsDto]
   })
   @ApiForbiddenResponseDefault()
   async getCredentials(@Client() client: ClientInfo): Promise<Credentials[]> {
@@ -98,11 +98,11 @@ export class CredentialsManagementController {
   @Get("/dataspace")
   @ApiOperation({
     summary: "List dataspace credentials",
-    description: "List all credentials in this dataspace.",
+    description: "List all credentials in this dataspace."
   })
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({
-    type: [CredentialsDto],
+    type: [CredentialsDto]
   })
   @ApiForbiddenResponseDefault()
   async getDataspaceCredentials(): Promise<Credentials[]> {
@@ -113,25 +113,25 @@ export class CredentialsManagementController {
   @ApiOperation({
     summary: "Retrieve credential configuration",
     description:
-      "Retrieves credential configuration that can be used by this wallet. Contains both trust anchors and JSON-LD contexts.",
+      "Retrieves credential configuration that can be used by this wallet. Contains both trust anchors and JSON-LD contexts."
   })
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({
-    type: CredentialConfigDto,
+    type: CredentialConfigDto
   })
   @ApiForbiddenResponseDefault()
   @UsePipes(validationPipe)
   async getConfig(): Promise<CredentialsConfigDto> {
     return {
       trustAnchors: this.config.trustAnchors,
-      contexts: await this.contextService.getContexts(),
+      contexts: await this.contextService.getContexts()
     };
   }
 
   @Post()
   @ApiOperation({
     summary: "Add credential",
-    description: "Issue a new credential within this wallet",
+    description: "Issue a new credential within this wallet"
   })
   @ApiBody({ type: CredentialConfigDto })
   @ApiOkResponse({ type: CredentialsDto })
@@ -143,7 +143,7 @@ export class CredentialsManagementController {
   async addCredential(
     @Body(validationPipe)
     credentialConfig: InitCredentialConfig,
-    @Client() client: ClientInfo,
+    @Client() client: ClientInfo
   ): Promise<Credentials> {
     const targetDid = this.targetDid("manage", client);
     return this.credentialsService.issueCredential(credentialConfig, targetDid);
@@ -152,7 +152,7 @@ export class CredentialsManagementController {
   @Post("import")
   @ApiOperation({
     summary: "Import credential",
-    description: "Import a credential issued by an external credential issuer",
+    description: "Import a credential issued by an external credential issuer"
   })
   @HttpCode(HttpStatus.OK)
   @ApiBody({ type: VerifiableCredentialDto })
@@ -162,7 +162,7 @@ export class CredentialsManagementController {
   @ApiOAuth2([AppRole.MANAGE_ALL_CREDENTIALS, AppRole.MANAGE_OWN_CREDENTIALS])
   async importCredential(
     @Body() credential: VerifiableCredential,
-    @Client() client: ClientInfo,
+    @Client() client: ClientInfo
   ): Promise<Credentials> {
     const targetDid = this.targetDid("manage", client);
     return this.credentialsService.importCredential(credential, targetDid);
@@ -171,7 +171,7 @@ export class CredentialsManagementController {
   @Get(":credentialId")
   @ApiOperation({
     summary: "Retrieve credential",
-    description: "Retrieve a specific credential within this wallet",
+    description: "Retrieve a specific credential within this wallet"
   })
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({ type: CredentialsDto })
@@ -180,7 +180,7 @@ export class CredentialsManagementController {
   @ApiOAuth2([AppRole.MANAGE_ALL_CREDENTIALS, AppRole.MANAGE_OWN_CREDENTIALS])
   async getCredential(
     @Param("credentialId") credentialId: string,
-    @Client() client: ClientInfo,
+    @Client() client: ClientInfo
   ): Promise<CredentialsDto> {
     const targetDid = this.targetDid("manage", client);
     return this.credentialsService.getCredential(credentialId, targetDid);
@@ -190,7 +190,7 @@ export class CredentialsManagementController {
   @ApiOperation({
     summary: "Update credential",
     description:
-      "Update a credential within this wallet. __*Note*__: this will either self-issue or import a credential.",
+      "Update a credential within this wallet. __*Note*__: this will either self-issue or import a credential."
   })
   @HttpCode(HttpStatus.OK)
   @ApiBody({ type: CredentialConfigDto })
@@ -202,20 +202,20 @@ export class CredentialsManagementController {
     @Body(validationPipe)
     credentialConfig: InitCredentialConfig,
     @Param("credentialId") credentialId: string,
-    @Client() client: ClientInfo,
+    @Client() client: ClientInfo
   ): Promise<Credentials> {
     const targetDid = this.targetDid("manage", client);
     return this.credentialsService.updateCredential(
       credentialId,
       credentialConfig,
-      targetDid,
+      targetDid
     );
   }
 
   @Delete(":credentialId")
   @ApiOperation({
     summary: "Delete credential",
-    description: "Deletes an existing credential within this wallet",
+    description: "Deletes an existing credential within this wallet"
   })
   @HttpCode(HttpStatus.OK)
   @ApiForbiddenResponseDefault()
@@ -223,7 +223,7 @@ export class CredentialsManagementController {
   @ApiOAuth2([AppRole.MANAGE_ALL_CREDENTIALS, AppRole.MANAGE_OWN_CREDENTIALS])
   async deleteCredential(
     @Param("credentialId") credentialId: string,
-    @Client() client: ClientInfo,
+    @Client() client: ClientInfo
   ): Promise<void> {
     const targetDid = this.targetDid("manage", client);
     return this.credentialsService.deleteCredential(credentialId, targetDid);

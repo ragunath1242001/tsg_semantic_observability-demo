@@ -20,27 +20,27 @@ import { TransferModule } from "../dsp/transfer/transfer.module";
       ConstraintDao,
       RuleDao,
       AgreementDao,
-      TransferMonitorDao,
+      TransferMonitorDao
     ]),
     AuthModule,
-    TransferModule,
+    TransferModule
   ],
   controllers: [
     AgreementManagementController,
     PolicyEvaluationController,
-    RuleRepositoryController,
+    RuleRepositoryController
   ],
   providers: [
     AgreementService,
     AgreementMonitorService,
     PolicyEvaluationService,
-    RuleRepositoryService,
+    RuleRepositoryService
   ],
   exports: [
     AgreementService,
     AgreementMonitorService,
     PolicyEvaluationService,
-    RuleRepositoryService,
-  ],
+    RuleRepositoryService
+  ]
 })
 export class PolicyModule {}

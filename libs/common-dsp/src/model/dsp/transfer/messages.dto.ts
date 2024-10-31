@@ -13,7 +13,7 @@ export enum TransferState {
   STARTED = "dspace:STARTED",
   TERMINATED = "dspace:TERMINATED",
   COMPLETED = "dspace:COMPLETED",
-  SUSPENDED = "dspace:SUSPENDED",
+  SUSPENDED = "dspace:SUSPENDED"
 }
 
 export interface DataAddressDto extends ContextDto {

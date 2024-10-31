@@ -6,7 +6,7 @@ import {
   Param,
   RawBodyRequest,
   Req,
-  Res,
+  Res
 } from "@nestjs/common";
 import { DataPlaneService } from "./dataplane.service";
 import { Request, Response } from "express";
@@ -26,20 +26,20 @@ export class ProxyController {
   @ApiOperation({
     summary: "Proxy a request",
     description:
-      "This endpoint is used if the HTTP Data Plane needs to serve as a proxy. ",
+      "This endpoint is used if the HTTP Data Plane needs to serve as a proxy. "
   })
   @ApiParam({ name: "id", required: true, description: "Transfer identifier" })
   @ApiParam({
     name: "path",
     required: true,
-    description: "Path of receiving application",
+    description: "Path of receiving application"
   })
   async getData(
     @Param("id") id: string,
     @Param("path") path: string | undefined,
     @Headers("Authorization") authorization: string,
     @Req() request: RawBodyRequest<Request>,
-    @Res() response: Response,
+    @Res() response: Response
   ) {
     this.logger.log(`Test: ${id} ${path}`);
     await this.dataPlaneService.handleProxyRequest(
@@ -47,7 +47,7 @@ export class ProxyController {
       authorization,
       path || "",
       request,
-      response,
+      response
     );
   }
 }

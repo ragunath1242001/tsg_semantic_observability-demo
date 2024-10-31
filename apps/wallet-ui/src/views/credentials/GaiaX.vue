@@ -1,5 +1,9 @@
 <script setup lang="ts">
-import { CredentialSubject, toArray, VerifiableCredential } from "@tsg-dsp/common-dsp";
+import {
+  CredentialSubject,
+  toArray,
+  VerifiableCredential
+} from "@tsg-dsp/common-dsp";
 import { onMounted, ref } from "vue";
 import { useToast } from "primevue/usetoast";
 import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
@@ -47,7 +51,7 @@ const runtimeStore = useRuntimeStore();
 const lrnClearingHouses = ["registrationnumber.notary.gaia-x.eu/v1"];
 const complianceClearingHouses = [
   "compliance.gaia-x.eu/development",
-  "compliance.gaia-x.eu/v1",
+  "compliance.gaia-x.eu/v1"
 ];
 const legalRegistrationNumberDefault: LegalRegistrationNumberForm = {
   type: undefined,
@@ -55,30 +59,28 @@ const legalRegistrationNumberDefault: LegalRegistrationNumberForm = {
   targetDid: userStore.user?.didId || "",
   id: "LRNCredential",
   clearingHouse: "registrationnumber.notary.gaia-x.eu/v1",
-  clearingHouses: lrnClearingHouses,
+  clearingHouses: lrnClearingHouses
 };
 const complianceCredentialDefault: ComplianceCredentialForm = {
   targetDid: userStore.user?.didId || "",
   id: "ComplianceCredential",
   credentials: [],
   clearingHouse: "compliance.gaia-x.eu/development",
-  clearingHouses: complianceClearingHouses,
+  clearingHouses: complianceClearingHouses
 };
 const legalRegistrationNumberForm = ref(legalRegistrationNumberDefault);
 const complianceCredentialForm = ref(complianceCredentialDefault);
 
 const loadCredentials = async () => {
   try {
-    const response = await http.get<Credential[]>(
-      "management/credentials"
-    );
+    const response = await http.get<Credential[]>("management/credentials");
     credentials.value = response.data.map((item) => {
       const subjectTypes = toArray(item.credential.credentialSubject).flatMap(
         (s) => [...toArray(s.type), ...toArray(s["@type"])]
       );
       const credentialTypes = new Set([
         ...item.credential.type,
-        ...subjectTypes,
+        ...subjectTypes
       ]);
       const simpleTypes = [...credentialTypes]
         .map((type) => type.split(/[/#]/g).slice(-1)[0])
@@ -89,15 +91,17 @@ const loadCredentials = async () => {
         name: `${item.id.replace(`${item.targetDid}#`, "")} (${simpleTypes.join(
           ", "
         )})`,
-        raw: item,
+        raw: item
       };
     });
   } catch (error) {
-    toast.add(toastError({
-      error,
-      summary: "Could not load credentials",
-      defaultMessage: `Could not load credentials`
-    }));
+    toast.add(
+      toastError({
+        error,
+        summary: "Could not load credentials",
+        defaultMessage: `Could not load credentials`
+      })
+    );
   }
 };
 
@@ -106,35 +110,34 @@ const importLRNCredential = async () => {
     const property = `gx:${legalRegistrationNumberForm.value.type}`;
     const credential = {
       "@context": [
-        "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/participant",
+        "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/participant"
       ],
       type: "gx:legalRegistrationNumber",
       id: legalRegistrationNumberForm.value.targetDid,
-      [property]: legalRegistrationNumberForm.value.value,
+      [property]: legalRegistrationNumberForm.value.value
     };
-    await http.post(
-      "management/credentials/gaiax/legalRegistrationNumber",
-      {
-        vcId: `${
-          legalRegistrationNumberForm.value.targetDid
-        }#${encodeURIComponent(legalRegistrationNumberForm.value.id)}`,
-        clearingHouse: legalRegistrationNumberForm.value.clearingHouse,
-        credentialSubject: credential,
-      }
-    );
+    await http.post("management/credentials/gaiax/legalRegistrationNumber", {
+      vcId: `${
+        legalRegistrationNumberForm.value.targetDid
+      }#${encodeURIComponent(legalRegistrationNumberForm.value.id)}`,
+      clearingHouse: legalRegistrationNumberForm.value.clearingHouse,
+      credentialSubject: credential
+    });
     toast.add({
       severity: "success",
       summary: "Success",
       detail: "Legal Registration Number credential imported",
-      life: 3000,
+      life: 3000
     });
     await loadCredentials();
   } catch (error) {
-    toast.add(toastError({
-      error,
-      summary: "Could not import credential",
-      defaultMessage: `Error in importing Legal Registration Number credential`
-    }));
+    toast.add(
+      toastError({
+        error,
+        summary: "Could not import credential",
+        defaultMessage: `Error in importing Legal Registration Number credential`
+      })
+    );
   }
 };
 
@@ -145,22 +148,23 @@ const importComplianceCredential = async () => {
         complianceCredentialForm.value.id
       )}`,
       clearingHouse: complianceCredentialForm.value.clearingHouse,
-      credentials: complianceCredentialForm.value.credentials,
+      credentials: complianceCredentialForm.value.credentials
     });
     toast.add({
       severity: "success",
       summary: "Success",
       detail: "Compliance credential imported",
-      life: 3000,
+      life: 3000
     });
     await loadCredentials();
   } catch (error) {
-    toast.add(toastError({
-      error,
-      summary: "Could not import credential",
-      defaultMessage: `Error in importing compliance credential`
-    }));
-
+    toast.add(
+      toastError({
+        error,
+        summary: "Could not import credential",
+        defaultMessage: `Error in importing compliance credential`
+      })
+    );
   }
 };
 
@@ -198,14 +202,15 @@ onMounted(async () => {
           DCH</template
         >
         <template #content>
-          <form class="flex flex-col gap-4" @submit.prevent="importLRNCredential">
+          <form
+            class="flex flex-col gap-4"
+            @submit.prevent="importLRNCredential">
             <FormField label="Legal registration number type" v-slot="props">
               <Select
                 :id="props.id"
                 v-model="legalRegistrationNumberForm.type"
                 :options="['taxID', 'EUID', 'EORI', 'vatID', 'leiCode']"
-                class="w-full"
-              />
+                class="w-full" />
             </FormField>
             <FormField label="Legal registration number" v-slot="props">
               <InputText
@@ -216,8 +221,7 @@ onMounted(async () => {
                 type="text"
                 required
                 pattern="^\d{2}-\d{7}$"
-                validation-message="Provide a correct taxID (pattern: \d{2}-\d{7})"
-              />
+                validation-message="Provide a correct taxID (pattern: \d{2}-\d{7})" />
               <InputText
                 :id="props.id"
                 class="w-full"
@@ -226,8 +230,7 @@ onMounted(async () => {
                 type="text"
                 required
                 pattern="^[A-Z]{2}\d{2}[A-Z0-9]{1,15}$"
-                validation-message="Provide a correct EUID (pattern: [A-Z]{2}\d{2}[A-Z0-9]{1,15})"
-              />
+                validation-message="Provide a correct EUID (pattern: [A-Z]{2}\d{2}[A-Z0-9]{1,15})" />
               <InputText
                 :id="props.id"
                 class="w-full"
@@ -236,8 +239,7 @@ onMounted(async () => {
                 type="text"
                 required
                 pattern="^[A-Z]{2}[A-Z0-9]{1,15}$"
-                validation-message="Provide a correct EORI (pattern: [A-Z]{2}[A-Z0-9]{1,15})"
-              />
+                validation-message="Provide a correct EORI (pattern: [A-Z]{2}[A-Z0-9]{1,15})" />
               <InputText
                 :id="props.id"
                 class="w-full"
@@ -246,8 +248,7 @@ onMounted(async () => {
                 type="text"
                 required
                 pattern="^[A-Z]{2}[A-Z0-9]{2,15}$"
-                validation-message="Provide a correct vatId (pattern: [A-Z]{2}[A-Z0-9]{2,15})"
-              />
+                validation-message="Provide a correct vatId (pattern: [A-Z]{2}[A-Z0-9]{2,15})" />
               <InputText
                 :id="props.id"
                 class="w-full"
@@ -256,8 +257,7 @@ onMounted(async () => {
                 type="text"
                 required
                 pattern="^[A-Z0-9]{20}$"
-                validation-message="Provide a correct leiCode (pattern: [A-Z0-9]{20})"
-              />
+                validation-message="Provide a correct leiCode (pattern: [A-Z0-9]{20})" />
               <InputText
                 :id="props.id"
                 class="w-full"
@@ -265,8 +265,7 @@ onMounted(async () => {
                 v-else
                 type="text"
                 disabled
-                required
-              />
+                required />
             </FormField>
             <FormField label="Target DID" v-slot="props">
               <InputText
@@ -275,8 +274,7 @@ onMounted(async () => {
                 v-model="legalRegistrationNumberForm.targetDid"
                 placeholder="did:..."
                 pattern="did:(web|tdw):.*"
-                validation-message="Target DID must be a DID web"
-              />
+                validation-message="Target DID must be a DID web" />
             </FormField>
             <FormField label="ID" v-slot="props">
               <InputText
@@ -284,8 +282,7 @@ onMounted(async () => {
                 class="w-full"
                 v-model="legalRegistrationNumberForm.id"
                 placeholder="ID"
-                required
-              />
+                required />
             </FormField>
             <FormField label="Composite ID" v-slot="props">
               <InputText
@@ -294,8 +291,7 @@ onMounted(async () => {
                 :value="`${
                   legalRegistrationNumberForm.targetDid
                 }#${encodeURIComponent(legalRegistrationNumberForm.id)}`"
-                disabled
-              />
+                disabled />
             </FormField>
             <FormField label="Clearing house" v-slot="props">
               <AutoComplete
@@ -307,14 +303,12 @@ onMounted(async () => {
                 @complete="searchLRNClearingHouses"
                 @dropdown-click="searchLRNClearingHouses"
                 placeholder="ID"
-                required
-              />
+                required />
             </FormField>
             <FormField no-label class="mt-8">
               <Button
                 label="Request and import Legal Registration Number credential"
-                type="submit"
-              />
+                type="submit" />
             </FormField>
           </form>
         </template>
@@ -325,7 +319,9 @@ onMounted(async () => {
           >Request Gaia-X compliance credential from a Gaia-X DCH</template
         >
         <template #content>
-          <form class="flex flex-col gap-4" @submit.prevent="importComplianceCredential">
+          <form
+            class="flex flex-col gap-4"
+            @submit.prevent="importComplianceCredential">
             <FormField label="Credentials" v-slot="props">
               <MultiSelect
                 v-model="complianceCredentialForm.credentials"
@@ -333,8 +329,7 @@ onMounted(async () => {
                 optionLabel="name"
                 optionValue="raw"
                 placeholder="Select credentials"
-                class="w-full"
-              />
+                class="w-full" />
             </FormField>
             <FormField label="Target DID" v-slot="props">
               <InputText
@@ -343,8 +338,7 @@ onMounted(async () => {
                 v-model="complianceCredentialForm.targetDid"
                 placeholder="did:..."
                 pattern="did:(web|tdw):.*"
-                validation-message="Target DID must be a DID web"
-              />
+                validation-message="Target DID must be a DID web" />
             </FormField>
             <FormField label="ID" v-slot="props">
               <InputText
@@ -352,8 +346,7 @@ onMounted(async () => {
                 class="w-full"
                 v-model="complianceCredentialForm.id"
                 placeholder="ID"
-                required
-              />
+                required />
             </FormField>
             <FormField label="Composite ID" v-slot="props">
               <InputText
@@ -362,8 +355,7 @@ onMounted(async () => {
                 :value="`${
                   complianceCredentialForm.targetDid
                 }#${encodeURIComponent(complianceCredentialForm.id)}`"
-                disabled
-              />
+                disabled />
             </FormField>
             <FormField label="Clearing house" v-slot="props">
               <AutoComplete
@@ -375,14 +367,12 @@ onMounted(async () => {
                 @complete="searchComplianceClearingHouses"
                 @dropdown-click="searchComplianceClearingHouses"
                 placeholder="ID"
-                required
-              />
+                required />
             </FormField>
             <FormField no-label class="mt-8">
               <Button
                 label="Request and import Compliance credential"
-                type="submit"
-              />
+                type="submit" />
             </FormField>
           </form>
         </template>

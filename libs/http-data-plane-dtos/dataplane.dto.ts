@@ -11,7 +11,7 @@ import {
   IsInt,
   ArrayNotEmpty,
   Min,
-  ArrayMaxSize,
+  ArrayMaxSize
 } from "class-validator";
 
 export class RuleConstraintConfig {

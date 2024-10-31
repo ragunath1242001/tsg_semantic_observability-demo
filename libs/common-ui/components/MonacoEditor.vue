@@ -9,26 +9,26 @@ const model = defineModel({ type: String, required: false });
 const props = defineProps({
   schema: {
     type: Object,
-    required: false,
+    required: false
   },
   readOnly: {
     type: Boolean,
     required: false,
-    default: false,
+    default: false
   },
   minLines: {
     type: Number,
     required: false,
-    default: 10,
+    default: 10
   },
   maxLines: {
     type: Number,
     required: false,
-    default: 10,
+    default: 10
   },
   static: {
-    required: false,
-  },
+    required: false
+  }
 });
 
 if (props.static) {
@@ -55,8 +55,8 @@ const handleBeforeMount = (monaco: MonacoEditor) => {
     inherit: true,
     rules: [],
     colors: {
-      "editor.background": layoutConfig.darkTheme ? "#1f2937" : "#ffffff",
-    },
+      "editor.background": layoutConfig.darkTheme ? "#1f2937" : "#ffffff"
+    }
   });
   if (props.schema) {
     monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
@@ -65,17 +65,17 @@ const handleBeforeMount = (monaco: MonacoEditor) => {
         {
           uri: "http://example/schema.json",
           fileMatch: ["**"],
-          schema: JSON.parse(JSON.stringify(props.schema)),
-        },
+          schema: JSON.parse(JSON.stringify(props.schema))
+        }
       ],
       enableSchemaRequest: false,
       schemaRequest: "ignore",
-      schemaValidation: "error",
+      schemaValidation: "error"
     });
   } else {
     monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
       validate: true,
-      schemaValidation: "ignore",
+      schemaValidation: "ignore"
     });
   }
 };
@@ -93,12 +93,11 @@ const handleBeforeMount = (monaco: MonacoEditor) => {
       tabSize: 2,
       readOnly: readOnly,
       readOnlyMessage: {
-        value: '',
+        value: ''
       },
-      scrollBeyondLastLine: false,
+      scrollBeyondLastLine: false
     }"
     language="json"
     :height="editorHeight"
-    @beforeMount="handleBeforeMount"
-  />
+    @beforeMount="handleBeforeMount" />
 </template>

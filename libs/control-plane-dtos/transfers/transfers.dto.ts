@@ -4,7 +4,7 @@ import {
   MultilanguageDto,
   TransferEventDto,
   TransferProcessDto,
-  TransferState,
+  TransferState
 } from "@tsg-dsp/common-dsp";
 
 export type TransferRole = "provider" | "consumer";

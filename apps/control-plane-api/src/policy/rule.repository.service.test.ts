@@ -9,7 +9,7 @@ import {
   DataType,
   EvaluationTrigger,
   AtomicConstraint,
-  LogicalConstraint,
+  LogicalConstraint
 } from "./constraint.dto";
 
 describe("Rule Repository Service", () => {
@@ -20,9 +20,9 @@ describe("Rule Repository Service", () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
       imports: [
         TypeOrmTestHelper.instance.module([ConstraintDao, RuleDao]),
-        TypeOrmModule.forFeature([ConstraintDao, RuleDao]),
+        TypeOrmModule.forFeature([ConstraintDao, RuleDao])
       ],
-      providers: [RuleRepositoryService],
+      providers: [RuleRepositoryService]
     }).compile();
 
     ruleRepositoryService = moduleRef.get(RuleRepositoryService);
@@ -48,8 +48,8 @@ describe("Rule Repository Service", () => {
           EvaluationTrigger.PROVIDER_ON_EXECUTION,
           EvaluationTrigger.CONSUMER_ON_REQUEST,
           EvaluationTrigger.CONSUMER_CONTINUOUS,
-          EvaluationTrigger.CONSUMER_ON_EXECUTION,
-        ],
+          EvaluationTrigger.CONSUMER_ON_EXECUTION
+        ]
       };
       expect(await ruleRepositoryService.listConstraint()).toHaveLength(0);
       const constraint = AtomicConstraint.parse(constraintTemplate);
@@ -67,8 +67,8 @@ describe("Rule Repository Service", () => {
         evaluable: [
           EvaluationTrigger.PROVIDER_ON_REQUEST,
           EvaluationTrigger.PROVIDER_CONTINUOUS,
-          EvaluationTrigger.PROVIDER_ON_EXECUTION,
-        ],
+          EvaluationTrigger.PROVIDER_ON_EXECUTION
+        ]
       });
       await ruleRepositoryService.addConstraint(constraint2);
       expect(await ruleRepositoryService.listConstraint()).toHaveLength(2);
@@ -87,9 +87,9 @@ describe("Rule Repository Service", () => {
           "PROVIDER_ON_EXECUTION",
           "CONSUMER_ON_REQUEST",
           "CONSUMER_CONTINUOUS",
-          "CONSUMER_ON_EXECUTION",
+          "CONSUMER_ON_EXECUTION"
         ],
-        leftOperand: "dspace:vc",
+        leftOperand: "dspace:vc"
       });
       expect(constraintDtos[0]).toMatchObject({
         title: "Test Constraint",
@@ -101,9 +101,9 @@ describe("Rule Repository Service", () => {
           "PROVIDER_ON_EXECUTION",
           "CONSUMER_ON_REQUEST",
           "CONSUMER_CONTINUOUS",
-          "CONSUMER_ON_EXECUTION",
+          "CONSUMER_ON_EXECUTION"
         ],
-        leftOperand: "dspace:vc",
+        leftOperand: "dspace:vc"
       });
       expect(await ruleRepositoryService.getConstraint(1)).toBeInstanceOf(
         AtomicConstraint
@@ -128,7 +128,7 @@ describe("Rule Repository Service", () => {
         "@type": "odrl:Constraint",
         "odrl:leftOperand": "dspace:vc",
         "odrl:operator": "odrl:eq",
-        "odrl:rightOperand": "tsg:MembershipCredential",
+        "odrl:rightOperand": "tsg:MembershipCredential"
       });
       expect(constraint).toBeDefined();
       expect(
@@ -136,7 +136,7 @@ describe("Rule Repository Service", () => {
           "@type": "odrl:Constraint",
           "odrl:leftOperand": "dspace:vc",
           "odrl:operator": "odrl:eq",
-          "odrl:rightOperandReference": "tsg:MembershipCredential",
+          "odrl:rightOperandReference": "tsg:MembershipCredential"
         })
       ).toBeDefined();
       expect(
@@ -144,7 +144,7 @@ describe("Rule Repository Service", () => {
           "@type": "odrl:Constraint",
           "odrl:leftOperand": "dspace:vc",
           "odrl:operator": "odrl:unknown",
-          "odrl:rightOperand": "",
+          "odrl:rightOperand": ""
         })
       ).toBeUndefined();
       expect(
@@ -152,7 +152,7 @@ describe("Rule Repository Service", () => {
           "@type": "odrl:Constraint",
           "odrl:leftOperand": "dspace:unknown",
           "odrl:operator": "odrl:eq",
-          "odrl:rightOperand": "",
+          "odrl:rightOperand": ""
         })
       ).toBeUndefined();
       await expect(
@@ -161,7 +161,7 @@ describe("Rule Repository Service", () => {
             "@type": "odrl:Constraint",
             "odrl:leftOperand": "dspace:vc",
             "odrl:operator": "odrl:unknown",
-            "odrl:rightOperand": "",
+            "odrl:rightOperand": ""
           },
           true
         )
@@ -172,7 +172,7 @@ describe("Rule Repository Service", () => {
             "@type": "odrl:Constraint",
             "odrl:leftOperand": "dspace:unknown",
             "odrl:operator": "odrl:eq",
-            "odrl:rightOperand": "",
+            "odrl:rightOperand": ""
           },
           true
         )
@@ -182,7 +182,7 @@ describe("Rule Repository Service", () => {
         "@type": "odrl:Constraint",
         "odrl:leftOperand": "dspace:vc",
         "odrl:operator": "odrl:eq",
-        "odrl:rightOperand": "tsg:MembershipCredential",
+        "odrl:rightOperand": "tsg:MembershipCredential"
       });
       expect(
         ruleRepositoryService.constraintToOdrl(
@@ -193,14 +193,14 @@ describe("Rule Repository Service", () => {
         "@type": "odrl:Constraint",
         "odrl:leftOperand": "dspace:vc",
         "odrl:operator": "odrl:eq",
-        "odrl:rightOperand": "tsg:MembershipCredential2",
+        "odrl:rightOperand": "tsg:MembershipCredential2"
       });
       expect(() =>
         ruleRepositoryService.constraintToOdrl(
           LogicalConstraint.parse({
             type: ConstraintType.LOGICAL,
             logicalOperator: "or",
-            title: "Test logical operator=",
+            title: "Test logical operator="
           })
         )
       ).toThrow("not yet supported");
@@ -211,11 +211,11 @@ describe("Rule Repository Service", () => {
           "odrl:leftOperand": "dspace:vc",
           "odrl:operator": "odrl:eq",
           "odrl:rightOperand": {
-            "@id": "tsg:MembershipCredential",
-          },
+            "@id": "tsg:MembershipCredential"
+          }
         })
       ).toMatchObject({
-        value: "tsg:MembershipCredential",
+        value: "tsg:MembershipCredential"
       });
       expect(
         await ruleRepositoryService.getConstraintByOdrl({
@@ -224,20 +224,20 @@ describe("Rule Repository Service", () => {
           "odrl:operator": "odrl:eq",
           "odrl:rightOperand": {
             "@value": "tsg:MembershipCredential",
-            "@type": "xsd:anyURI",
-          },
+            "@type": "xsd:anyURI"
+          }
         })
       ).toMatchObject({
-        value: "tsg:MembershipCredential",
+        value: "tsg:MembershipCredential"
       });
       expect(
         await ruleRepositoryService.getConstraintByOdrl({
           "@type": "odrl:Constraint",
           "odrl:leftOperand": "dspace:vc",
-          "odrl:operator": "odrl:eq",
+          "odrl:operator": "odrl:eq"
         })
       ).toMatchObject({
-        value: undefined,
+        value: undefined
       });
     });
   });
@@ -249,7 +249,7 @@ describe("Rule Repository Service", () => {
         Rule.parse({
           action: ["odrl:use"],
           assignee: ["did:web:localhost"],
-          constraints: [await ruleRepositoryService.getConstraint(1)],
+          constraints: [await ruleRepositoryService.getConstraint(1)]
         })
       );
       expect(await ruleRepositoryService.listRule()).toHaveLength(1);
@@ -271,7 +271,7 @@ describe("Rule Repository Service", () => {
         Rule.parse({
           action: ["odrl:use"],
           assignee: ["did:web:remote.com"],
-          constraints: [await ruleRepositoryService.getConstraint(1)],
+          constraints: [await ruleRepositoryService.getConstraint(1)]
         })
       );
       expect(await ruleRepositoryService.listRule()).toHaveLength(2);
@@ -298,10 +298,10 @@ describe("Rule Repository Service", () => {
             "@type": "odrl:Constraint",
             "odrl:leftOperand": "dspace:vc",
             "odrl:operator": "odrl:eq",
-            "odrl:rightOperand": "tsg:MembershipCredential",
-          },
+            "odrl:rightOperand": "tsg:MembershipCredential"
+          }
         ],
-        "odrl:target": "urn:uuid:897330e2-f317-49c9-902f-e66451355f7e",
+        "odrl:target": "urn:uuid:897330e2-f317-49c9-902f-e66451355f7e"
       });
       expect(
         ruleRepositoryService.ruleToOdrl(rule, RuleType.PROHIBITION)
@@ -314,10 +314,10 @@ describe("Rule Repository Service", () => {
             "@type": "odrl:Constraint",
             "odrl:leftOperand": "dspace:vc",
             "odrl:operator": "odrl:eq",
-            "odrl:rightOperand": "tsg:MembershipCredential",
-          },
+            "odrl:rightOperand": "tsg:MembershipCredential"
+          }
         ],
-        "odrl:target": undefined,
+        "odrl:target": undefined
       });
       expect(
         ruleRepositoryService.ruleToOdrl(
@@ -333,8 +333,8 @@ describe("Rule Repository Service", () => {
             "@type": "odrl:Constraint",
             "odrl:leftOperand": "dspace:vc",
             "odrl:operator": "odrl:eq",
-            "odrl:rightOperand": "tsg:MembershipCredential",
-          },
+            "odrl:rightOperand": "tsg:MembershipCredential"
+          }
         ],
         "odrl:target": undefined,
         "odrl:duty": [
@@ -347,12 +347,12 @@ describe("Rule Repository Service", () => {
                 "@type": "odrl:Constraint",
                 "odrl:leftOperand": "dspace:vc",
                 "odrl:operator": "odrl:eq",
-                "odrl:rightOperand": "tsg:MembershipCredential",
-              },
+                "odrl:rightOperand": "tsg:MembershipCredential"
+              }
             ],
-            "odrl:target": undefined,
-          },
-        ],
+            "odrl:target": undefined
+          }
+        ]
       });
       expect(() => ruleRepositoryService.ruleToOdrl(rule)).toThrow(
         "Type required for rule to ODRL conversion"

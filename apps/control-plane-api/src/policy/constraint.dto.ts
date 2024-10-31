@@ -6,7 +6,7 @@ import {
   IsEnum,
   IsString,
   IsIn,
-  ValidateNested,
+  ValidateNested
 } from "class-validator";
 import { validateOrRejectSync } from "../utils/validation.pipe";
 
@@ -16,7 +16,7 @@ export enum DataType {
   NUMBER = "NUMBER",
   DATE = "DATE",
   DATETIME = "DATETIME",
-  DIF_INPUT_DESCRIPTOR = "DIF_INPUT_DESCRIPTOR",
+  DIF_INPUT_DESCRIPTOR = "DIF_INPUT_DESCRIPTOR"
 }
 
 export enum EvaluationTrigger {
@@ -25,12 +25,12 @@ export enum EvaluationTrigger {
   PROVIDER_CONTINUOUS = "PROVIDER_CONTINUOUS",
   CONSUMER_CONTINUOUS = "CONSUMER_CONTINUOUS",
   PROVIDER_ON_EXECUTION = "PROVIDER_ON_EXECUTION",
-  CONSUMER_ON_EXECUTION = "CONSUMER_ON_EXECUTION",
+  CONSUMER_ON_EXECUTION = "CONSUMER_ON_EXECUTION"
 }
 
 export enum ConstraintType {
   ATOMIC = "ATOMIC",
-  LOGICAL = "LOGICAL",
+  LOGICAL = "LOGICAL"
 }
 
 @Exclude()
@@ -65,14 +65,14 @@ export abstract class ConstraintModel {
     if (Array.isArray(plain)) {
       const container = validateOrRejectSync(
         plainToInstance(ConstraintContainer, {
-          constraints: plain,
+          constraints: plain
         })
       );
       return container.constraints;
     } else {
       const container = validateOrRejectSync(
         plainToInstance(ConstraintContainer, {
-          constraints: [plain],
+          constraints: [plain]
         })
       );
       return container.constraints[0];
@@ -137,10 +137,10 @@ export class LogicalConstraint extends ConstraintModel {
       property: "type",
       subTypes: [
         { value: AtomicConstraint, name: ConstraintType.ATOMIC },
-        { value: LogicalConstraint, name: ConstraintType.LOGICAL },
-      ],
+        { value: LogicalConstraint, name: ConstraintType.LOGICAL }
+      ]
     },
-    keepDiscriminatorProperty: true,
+    keepDiscriminatorProperty: true
   })
   @Expose()
   @ApiProperty({ type: [ConstraintModel] })
@@ -156,10 +156,10 @@ export class ConstraintContainer {
 
       subTypes: [
         { value: AtomicConstraint, name: ConstraintType.ATOMIC },
-        { value: LogicalConstraint, name: ConstraintType.LOGICAL },
-      ],
+        { value: LogicalConstraint, name: ConstraintType.LOGICAL }
+      ]
     },
-    keepDiscriminatorProperty: true,
+    keepDiscriminatorProperty: true
   })
   @ValidateNested()
   @Expose()

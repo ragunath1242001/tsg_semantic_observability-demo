@@ -7,7 +7,7 @@ import {
   HttpStatus,
   Param,
   Post,
-  Put,
+  Put
 } from "@nestjs/common";
 import { InitKeyConfig } from "../config.js";
 import { KeysService } from "./keys.service.js";
@@ -20,14 +20,14 @@ import {
   ApiOAuth2,
   ApiOkResponse,
   ApiOperation,
-  ApiTags,
+  ApiTags
 } from "@nestjs/swagger";
 import { KeyConfigDto, KeyInfoDto } from "./keys.schemas.js";
 import {
   ApiForbiddenResponseDefault,
   ApiBadRequestResponseDefault,
   ApiConflictResponseDefault,
-  ApiNotFoundResponseDefault,
+  ApiNotFoundResponseDefault
 } from "@tsg-dsp/common-dtos";
 
 @Controller("management/keys")
@@ -40,7 +40,7 @@ export class KeysManagementController {
   @Get()
   @ApiOperation({
     summary: "Retrieve keys",
-    description: "Retrieves all keys registered for this wallet",
+    description: "Retrieves all keys registered for this wallet"
   })
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({ type: [KeyInfoDto] })
@@ -54,7 +54,7 @@ export class KeysManagementController {
         default: k.default,
         publicKey: k.publicKey,
         created: k.created,
-        modified: k.modified,
+        modified: k.modified
       };
     });
   }
@@ -62,7 +62,7 @@ export class KeysManagementController {
   @Post()
   @ApiOperation({
     summary: "Add key",
-    description: "Generates a new key based on the provided configuration",
+    description: "Generates a new key based on the provided configuration"
   })
   @HttpCode(HttpStatus.OK)
   @ApiBody({ type: KeyConfigDto })
@@ -80,7 +80,7 @@ export class KeysManagementController {
       default: key.default,
       publicKey: key.publicKey,
       created: key.created,
-      modified: key.modified,
+      modified: key.modified
     };
   }
 
@@ -88,7 +88,7 @@ export class KeysManagementController {
   @ApiOperation({
     summary: "Retrieve key",
     description:
-      "Retrieves key information of a specific key within this wallet",
+      "Retrieves key information of a specific key within this wallet"
   })
   @ApiOkResponse({ type: KeyInfoDto })
   @ApiNotFoundResponseDefault()
@@ -102,14 +102,14 @@ export class KeysManagementController {
       default: key.default,
       publicKey: key.publicKey,
       created: key.created,
-      modified: key.modified,
+      modified: key.modified
     };
   }
 
   @Delete(":keyId")
   @ApiOperation({
     summary: "Delete key",
-    description: "Deletes an existing key within this wallet",
+    description: "Deletes an existing key within this wallet"
   })
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse()
@@ -123,7 +123,7 @@ export class KeysManagementController {
   @ApiOperation({
     summary: "Set default key",
     description:
-      "Sets the provided key as default key within this wallet, will remove the default key flag for other keys in this wallet",
+      "Sets the provided key as default key within this wallet, will remove the default key flag for other keys in this wallet"
   })
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse()

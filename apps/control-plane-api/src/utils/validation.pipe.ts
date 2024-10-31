@@ -23,8 +23,8 @@ export const validationPipe = new ValidationPipe({
     new DSPError(
       {
         message: errors.join(", "),
-        errors: errors,
+        errors: errors
       },
       HttpStatus.BAD_REQUEST
-    ),
+    )
 });

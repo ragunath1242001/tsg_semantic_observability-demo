@@ -4,7 +4,7 @@ import { createHash } from "node:crypto";
 import {
   CreateDIDInterface,
   DIDDoc,
-  VerificationMethod,
+  VerificationMethod
 } from "./interfaces.js";
 import { BASE_CONTEXT } from "./constants.js";
 
@@ -24,7 +24,7 @@ export const deriveHash = (input: any): string => {
 };
 
 export const createDIDDoc = async (
-  options: CreateDIDInterface,
+  options: CreateDIDInterface
 ): Promise<{ doc: DIDDoc }> => {
   const { controller } = options;
   const { all } = normalizeVMs(options.verificationMethods, controller);
@@ -32,20 +32,20 @@ export const createDIDDoc = async (
     doc: {
       ...(options.context
         ? {
-            "@context": Array.from(new Set([BASE_CONTEXT, ...options.context])),
+            "@context": Array.from(new Set([BASE_CONTEXT, ...options.context]))
           }
         : { "@context": [BASE_CONTEXT] }),
       id: controller,
       controller,
       ...all,
-      service: options.service,
-    },
+      service: options.service
+    }
   };
 };
 
 export const normalizeVMs = (
   verificationMethod: VerificationMethod[] | undefined,
-  did: string | null = null,
+  did: string | null = null
 ) => {
   if (!verificationMethod) {
     return {};
@@ -56,7 +56,7 @@ export const normalizeVMs = (
     "assertionMethod",
     "keyAgreement",
     "capabilityDelegation",
-    "capabilityInvocation",
+    "capabilityInvocation"
   ];
   const authentication = verificationMethod
     ?.filter((vm) => vm.type === "authentication")
@@ -89,7 +89,7 @@ export const normalizeVMs = (
     all.capabilityInvocation = capabilityInvocation;
   }
   const realKeys = verificationMethod?.filter(
-    (vm) => !nonKeyTypes.includes(vm.type),
+    (vm) => !nonKeyTypes.includes(vm.type)
   );
   if (realKeys && realKeys.length > 0) {
     all.verificationMethod = realKeys?.map((vm) => ({
@@ -97,7 +97,7 @@ export const normalizeVMs = (
       ...(did ? { controller: vm.controller ?? did } : {}),
       type: vm.type,
       publicKeyMultibase: vm.publicKeyMultibase,
-      publicKeyJwk: vm.publicKeyJwk,
+      publicKeyJwk: vm.publicKeyJwk
     }));
   }
   return { all };

@@ -6,7 +6,7 @@ import {
   CatalogDao,
   DataServiceDao,
   DatasetDao,
-  ResourceDao,
+  ResourceDao
 } from "../model/catalog.dao";
 import { ScheduleModule } from "@nestjs/schedule";
 import { AuthModule } from "../auth/auth.module";
@@ -31,13 +31,13 @@ export class RegistryModule {
           DatasetDao,
           DataServiceDao,
           ResourceDao,
-          RegistryDao,
+          RegistryDao
         ]),
-        ScheduleModule.forRoot(),
+        ScheduleModule.forRoot()
       ],
       controllers: [RegistryClientController, RegistryController],
       providers: [RegistryClientService, RegistryService],
-      exports: [RegistryService],
+      exports: [RegistryService]
     };
     return module;
   }

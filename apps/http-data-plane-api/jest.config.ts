@@ -13,7 +13,8 @@ const config: Config.InitialOptions = {
     "!src/**/*.strategy.ts",
     "!src/**/*.controller.ts",
     "!src/**/*.module.ts",
-    "!node_modules/**",
-  ],
+    "!src/**/*.schemas.ts",
+    "!node_modules/**"
+  ]
 };
 export default config;

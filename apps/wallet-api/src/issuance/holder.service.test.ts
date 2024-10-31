@@ -18,13 +18,13 @@ import {
   AccessToken,
   CredentialRequest,
   CredentialResponse,
-  OfferGrants,
+  OfferGrants
 } from "@tsg-dsp/wallet-dtos";
 import {
   GenerateKeyPairResult,
   KeyLike,
   exportJWK,
-  generateKeyPair,
+  generateKeyPair
 } from "jose";
 import { DIDDocument } from "did-resolver";
 import { HolderService } from "./holder.service.js";
@@ -47,17 +47,17 @@ describe("Holder service", () => {
         {
           id: "key-0",
           type: "EdDSA",
-          default: true,
-        },
+          default: true
+        }
       ],
       contexts: [
         {
           id: "Example",
           credentialType: "ExampleCredentialType",
           issuable: true,
-          documentUrl: "https://example.com/context.json",
-        },
-      ],
+          documentUrl: "https://example.com/context.json"
+        }
+      ]
     });
 
     moduleRef = await Test.createTestingModule({
@@ -70,7 +70,7 @@ describe("Holder service", () => {
           CredentialIssuance,
           CIAccessToken,
           JSONLDContext,
-          DIDLogs,
+          DIDLogs
         ]),
         TypeOrmModule.forFeature([
           Credentials,
@@ -80,8 +80,8 @@ describe("Holder service", () => {
           CredentialIssuance,
           CIAccessToken,
           JSONLDContext,
-          DIDLogs,
-        ]),
+          DIDLogs
+        ])
       ],
       providers: [
         CredentialsService,
@@ -95,9 +95,9 @@ describe("Holder service", () => {
         ContextService,
         {
           provide: RootConfig,
-          useValue: config,
-        },
-      ],
+          useValue: config
+        }
+      ]
     }).compile();
     issuerService = await moduleRef.get(IssuerService);
     holderService = await moduleRef.get(HolderService);
@@ -109,7 +109,7 @@ describe("Holder service", () => {
     const exampleDid: DIDDocument = {
       "@context": [
         "https://www.w3.org/ns/did/v1",
-        "https://w3c-ccg.github.io/lds-jws2020/contexts/v1/",
+        "https://w3c-ccg.github.io/lds-jws2020/contexts/v1/"
       ],
       id: "did:web:example.com",
       verificationMethod: [
@@ -120,11 +120,11 @@ describe("Holder service", () => {
           publicKeyJwk: {
             kty: "OKP",
             alg: "EdDSA",
-            ...(await exportJWK(exampleKey.publicKey)),
-          },
-        },
+            ...(await exportJWK(exampleKey.publicKey))
+          }
+        }
       ],
-      assertionMethod: ["did:web:example.com#KEY-0"],
+      assertionMethod: ["did:web:example.com#KEY-0"]
     };
 
     server = setupServer(
@@ -141,12 +141,12 @@ describe("Holder service", () => {
             "@version": 1.1,
             ExampleCredentialType: {
               "@context": ["https://www.w3.org/2018/credentials/v1"],
-              "@id": "example:ExampleCredentialType",
+              "@id": "example:ExampleCredentialType"
             },
             example: "https://example.dataspac.es/credentials/",
             id: "@id",
-            type: "@type",
-          },
+            type: "@type"
+          }
         });
       }),
       http.get(
@@ -192,7 +192,7 @@ describe("Holder service", () => {
       const offer = await issuerService.createCredentialOffer({
         holderId: "did:web:localhost",
         credentialType: "ExampleCredentialType",
-        credentialSubject: { id: "did:web:localhost" },
+        credentialSubject: { id: "did:web:localhost" }
       });
 
       await holderService.requestCredential(

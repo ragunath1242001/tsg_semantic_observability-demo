@@ -27,19 +27,12 @@ import TabItem from "@theme/TabItem";
 <Heading
   as={"h1"}
   className={"openapi__heading"}
-  children={"Request a transfer"}
->
-</Heading>
+  children={"Request a transfer"}></Heading>
 
 <MethodEndpoint
   method={"post"}
   path={"/api/transfers/request"}
-  context={"endpoint"}
->
-  
-</MethodEndpoint>
-
-
+  context={"endpoint"}></MethodEndpoint>
 
 Request a transfer
 
@@ -47,205 +40,137 @@ Request a transfer
   id={"request"}
   as={"h2"}
   className={"openapi-tabs__heading"}
-  children={"Request"}
->
-</Heading>
+  children={"Request"}></Heading>
 
-<MimeTabs
-  className={"openapi-tabs__mime"}
->
-  <TabItem
-    label={"application/json"}
-    value={"application/json-schema"}
-  >
+<MimeTabs className={"openapi-tabs__mime"}>
+  <TabItem label={"application/json"} value={"application/json-schema"}>
     <details
       style={{}}
       className={"openapi-markdown__details mime"}
       data-collapsed={false}
-      open={true}
-    >
-      <summary
-        style={{}}
-        className={"openapi-markdown__details-summary-mime"}
-      >
-        <h3
-          className={"openapi-markdown__details-summary-header-body"}
-        >
+      open={true}>
+      <summary style={{}} className={"openapi-markdown__details-summary-mime"}>
+        <h3 className={"openapi-markdown__details-summary-header-body"}>
           Body
-        </h3><strong
-          className={"openapi-schema__required"}
-        >
-          required
-        </strong>
-      </summary><div
-        style={{"textAlign":"left","marginLeft":"1rem"}}
-      >
-        
-      </div><ul
-        style={{"marginLeft":"1rem"}}
-      >
+        </h3>
+        <strong className={"openapi-schema__required"}>required</strong>
+      </summary>
+      <div style={{ textAlign: "left", marginLeft: "1rem" }}></div>
+      <ul style={{ marginLeft: "1rem" }}>
         <SchemaItem
           collapsible={false}
           name={"@type"}
           required={true}
           schemaName={"string"}
           qualifierMessage={undefined}
-          schema={{"type":"string"}}
-        >
-          
-        </SchemaItem><SchemaItem
+          schema={{ type: "string" }}></SchemaItem>
+        <SchemaItem
           collapsible={false}
           name={"dspace:consumerPid"}
           required={true}
           schemaName={"string"}
           qualifierMessage={undefined}
-          schema={{"type":"string"}}
-        >
-          
-        </SchemaItem><SchemaItem
+          schema={{ type: "string" }}></SchemaItem>
+        <SchemaItem
           collapsible={false}
           name={"dspace:agreementId"}
           required={true}
           schemaName={"string"}
           qualifierMessage={undefined}
-          schema={{"type":"string"}}
-        >
-          
-        </SchemaItem><SchemaItem
+          schema={{ type: "string" }}></SchemaItem>
+        <SchemaItem
           collapsible={false}
           name={"dct:format"}
           required={true}
           schemaName={"string"}
           qualifierMessage={undefined}
-          schema={{"type":"string"}}
-        >
-          
-        </SchemaItem><SchemaItem
-          collapsible={true}
-          className={"schemaItem"}
-        >
-          <details
-            style={{}}
-            className={"openapi-markdown__details"}
-          >
-            <summary
-              style={{}}
-            >
-              <span
-                className={"openapi-schema__container"}
-              >
-                <strong
-                  className={"openapi-schema__property"}
-                >
+          schema={{ type: "string" }}></SchemaItem>
+        <SchemaItem collapsible={true} className={"schemaItem"}>
+          <details style={{}} className={"openapi-markdown__details"}>
+            <summary style={{}}>
+              <span className={"openapi-schema__container"}>
+                <strong className={"openapi-schema__property"}>
                   dspace:dataAddress
-                </strong><span
-                  className={"openapi-schema__name"}
-                >
-                   object
-                </span>
+                </strong>
+                <span className={"openapi-schema__name"}>object</span>
               </span>
-            </summary><div
-              style={{"marginLeft":"1rem"}}
-            >
+            </summary>
+            <div style={{ marginLeft: "1rem" }}>
               <SchemaItem
                 collapsible={false}
                 name={"@type"}
                 required={true}
                 schemaName={"string"}
                 qualifierMessage={undefined}
-                schema={{"type":"string"}}
-              >
-                
-              </SchemaItem><SchemaItem
+                schema={{ type: "string" }}></SchemaItem>
+              <SchemaItem
                 collapsible={false}
                 name={"dspace:endpointType"}
                 required={true}
                 schemaName={"string"}
                 qualifierMessage={undefined}
-                schema={{"type":"string"}}
-              >
-                
-              </SchemaItem><SchemaItem
+                schema={{ type: "string" }}></SchemaItem>
+              <SchemaItem
                 collapsible={false}
                 name={"dspace:endpoint"}
                 required={true}
                 schemaName={"string"}
                 qualifierMessage={undefined}
-                schema={{"type":"string"}}
-              >
-                
-              </SchemaItem><SchemaItem
-                collapsible={true}
-                className={"schemaItem"}
-              >
-                <details
-                  style={{}}
-                  className={"openapi-markdown__details"}
-                >
-                  <summary
-                    style={{}}
-                  >
-                    <span
-                      className={"openapi-schema__container"}
-                    >
-                      <strong
-                        className={"openapi-schema__property"}
-                      >
+                schema={{ type: "string" }}></SchemaItem>
+              <SchemaItem collapsible={true} className={"schemaItem"}>
+                <details style={{}} className={"openapi-markdown__details"}>
+                  <summary style={{}}>
+                    <span className={"openapi-schema__container"}>
+                      <strong className={"openapi-schema__property"}>
                         dspace:endpointProperties
-                      </strong><span
-                        className={"openapi-schema__name"}
-                      >
-                         object[]
-                      </span><span
-                        className={"openapi-schema__divider"}
-                      >
-                        
-                      </span><span
-                        className={"openapi-schema__required"}
-                      >
+                      </strong>
+                      <span className={"openapi-schema__name"}>object[]</span>
+                      <span className={"openapi-schema__divider"}></span>
+                      <span className={"openapi-schema__required"}>
                         required
                       </span>
                     </span>
-                  </summary><div
-                    style={{"marginLeft":"1rem"}}
-                  >
+                  </summary>
+                  <div style={{ marginLeft: "1rem" }}>
                     <li>
                       <div
-                        style={{"fontSize":"var(--ifm-code-font-size)","opacity":"0.6","marginLeft":"-.5rem","paddingBottom":".5rem"}}
-                      >
+                        style={{
+                          fontSize: "var(--ifm-code-font-size)",
+                          opacity: "0.6",
+                          marginLeft: "-.5rem",
+                          paddingBottom: ".5rem"
+                        }}>
                         Array [
                       </div>
-                    </li><SchemaItem
+                    </li>
+                    <SchemaItem
                       collapsible={false}
                       name={"@type"}
                       required={true}
                       schemaName={"string"}
                       qualifierMessage={undefined}
-                      schema={{"type":"string"}}
-                    >
-                      
-                    </SchemaItem><SchemaItem
+                      schema={{ type: "string" }}></SchemaItem>
+                    <SchemaItem
                       collapsible={false}
                       name={"dspace:name"}
                       required={true}
                       schemaName={"string"}
                       qualifierMessage={undefined}
-                      schema={{"type":"string"}}
-                    >
-                      
-                    </SchemaItem><SchemaItem
+                      schema={{ type: "string" }}></SchemaItem>
+                    <SchemaItem
                       collapsible={false}
                       name={"dspace:value"}
                       required={true}
                       schemaName={"string"}
                       qualifierMessage={undefined}
-                      schema={{"type":"string"}}
-                    >
-                      
-                    </SchemaItem><li>
+                      schema={{ type: "string" }}></SchemaItem>
+                    <li>
                       <div
-                        style={{"fontSize":"var(--ifm-code-font-size)","opacity":"0.6","marginLeft":"-.5rem"}}
-                      >
+                        style={{
+                          fontSize: "var(--ifm-code-font-size)",
+                          opacity: "0.6",
+                          marginLeft: "-.5rem"
+                        }}>
                         ]
                       </div>
                     </li>
@@ -254,129 +179,87 @@ Request a transfer
               </SchemaItem>
             </div>
           </details>
-        </SchemaItem><SchemaItem
+        </SchemaItem>
+        <SchemaItem
           collapsible={false}
           name={"dspace:callbackAddress"}
           required={true}
           schemaName={"string"}
           qualifierMessage={undefined}
-          schema={{"type":"string"}}
-        >
-          
-        </SchemaItem>
+          schema={{ type: "string" }}></SchemaItem>
       </ul>
     </details>
   </TabItem>
-</MimeTabs><div>
+</MimeTabs>
+<div>
   <div>
-    <ApiTabs
-      label={undefined}
-      id={undefined}
-    >
-      <TabItem
-        label={"201"}
-        value={"201"}
-      >
+    <ApiTabs label={undefined} id={undefined}>
+      <TabItem label={"201"} value={"201"}>
+        <div></div>
         <div>
-          
-          
-          
-          
-          
-        </div><div>
-          <MimeTabs
-            className={"openapi-tabs__mime"}
-            schemaType={"response"}
-          >
-            <TabItem
-              label={"application/json"}
-              value={"application/json"}
-            >
-              <SchemaTabs
-                className={"openapi-tabs__schema"}
-              >
-                <TabItem
-                  label={"Schema"}
-                  value={"Schema"}
-                >
+          <MimeTabs className={"openapi-tabs__mime"} schemaType={"response"}>
+            <TabItem label={"application/json"} value={"application/json"}>
+              <SchemaTabs className={"openapi-tabs__schema"}>
+                <TabItem label={"Schema"} value={"Schema"}>
                   <details
                     style={{}}
                     className={"openapi-markdown__details response"}
                     data-collapsed={false}
-                    open={true}
-                  >
+                    open={true}>
                     <summary
                       style={{}}
-                      className={"openapi-markdown__details-summary-response"}
-                    >
-                      <strong>
-                        Schema
-                      </strong>
-                    </summary><div
-                      style={{"textAlign":"left","marginLeft":"1rem"}}
-                    >
-                      
-                    </div><ul
-                      style={{"marginLeft":"1rem"}}
-                    >
+                      className={"openapi-markdown__details-summary-response"}>
+                      <strong>Schema</strong>
+                    </summary>
+                    <div
+                      style={{ textAlign: "left", marginLeft: "1rem" }}></div>
+                    <ul style={{ marginLeft: "1rem" }}>
                       <SchemaItem
                         collapsible={false}
                         name={"@type"}
                         required={true}
                         schemaName={"string"}
                         qualifierMessage={undefined}
-                        schema={{"type":"string"}}
-                      >
-                        
-                      </SchemaItem><SchemaItem
+                        schema={{ type: "string" }}></SchemaItem>
+                      <SchemaItem
                         collapsible={false}
                         name={"dspace:providerPid"}
                         required={true}
                         schemaName={"string"}
                         qualifierMessage={undefined}
-                        schema={{"type":"string"}}
-                      >
-                        
-                      </SchemaItem><SchemaItem
+                        schema={{ type: "string" }}></SchemaItem>
+                      <SchemaItem
                         collapsible={false}
                         name={"dspace:consumerPid"}
                         required={true}
                         schemaName={"string"}
                         qualifierMessage={undefined}
-                        schema={{"type":"string"}}
-                      >
-                        
-                      </SchemaItem><SchemaItem
+                        schema={{ type: "string" }}></SchemaItem>
+                      <SchemaItem
                         collapsible={false}
                         name={"dspace:agreementId"}
                         required={true}
                         schemaName={"string"}
                         qualifierMessage={undefined}
-                        schema={{"type":"string"}}
-                      >
-                        
-                      </SchemaItem><SchemaItem
+                        schema={{ type: "string" }}></SchemaItem>
+                      <SchemaItem
                         collapsible={false}
                         name={"dspace:state"}
                         required={true}
                         schemaName={"string"}
                         qualifierMessage={undefined}
-                        schema={{"type":"string"}}
-                      >
-                        
-                      </SchemaItem>
+                        schema={{ type: "string" }}></SchemaItem>
                     </ul>
                   </details>
-                </TabItem><TabItem
+                </TabItem>
+                <TabItem
                   label={"Example (from schema)"}
-                  value={"Example (from schema)"}
-                >
+                  value={"Example (from schema)"}>
                   <ResponseSamples
-                    responseExample={"{\n  \"@type\": \"string\",\n  \"dspace:providerPid\": \"string\",\n  \"dspace:consumerPid\": \"string\",\n  \"dspace:agreementId\": \"string\",\n  \"dspace:state\": \"string\"\n}"}
-                    language={"json"}
-                  >
-                    
-                  </ResponseSamples>
+                    responseExample={
+                      '{\n  "@type": "string",\n  "dspace:providerPid": "string",\n  "dspace:consumerPid": "string",\n  "dspace:agreementId": "string",\n  "dspace:state": "string"\n}'
+                    }
+                    language={"json"}></ResponseSamples>
                 </TabItem>
               </SchemaTabs>
             </TabItem>
@@ -386,4 +269,3 @@ Request a transfer
     </ApiTabs>
   </div>
 </div>
-      

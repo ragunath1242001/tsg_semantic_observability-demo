@@ -7,14 +7,14 @@ import {
   Duty,
   Offer,
   Permission,
-  Prohibition,
+  Prohibition
 } from "./negotiation";
 import {
   ODRLAction,
   ODRLLeftOperand,
   ODRLOperator,
   OfferDto,
-  AgreementDto,
+  AgreementDto
 } from "./negotiation.dto";
 import { expect, test } from "@jest/globals";
 
@@ -31,22 +31,22 @@ test("Contract offer serialization", async () => {
           new Constraint({
             leftOperand: ODRLLeftOperand.PURPOSE,
             operator: ODRLOperator.EQ,
-            rightOperand: new URI("http://example.com/purposeX"),
-          }),
+            rightOperand: new URI("http://example.com/purposeX")
+          })
         ],
         duty: [
           new Duty({
-            action: ODRLAction.INFORM,
-          }),
-        ],
-      }),
+            action: ODRLAction.INFORM
+          })
+        ]
+      })
     ],
     prohibition: [
       new Prohibition({
         action: ODRLAction.DISTRIBUTE,
-        target: "urn:uuid:340eab1a-f3ee-471f-a0ad-beadddc521b6",
-      }),
-    ],
+        target: "urn:uuid:340eab1a-f3ee-471f-a0ad-beadddc521b6"
+      })
+    ]
   });
 
   const serialized = await offer.serialize();
@@ -66,27 +66,27 @@ test("Contract offer serialization", async () => {
             "@type": "odrl:Constraint",
             "odrl:rightOperand": {
               "@type": "xsd:anyURI",
-              "@value": "http://example.com/purposeX",
+              "@value": "http://example.com/purposeX"
             },
             "odrl:leftOperand": ODRLLeftOperand.PURPOSE,
-            "odrl:operator": ODRLOperator.EQ,
-          },
+            "odrl:operator": ODRLOperator.EQ
+          }
         ],
         "odrl:duty": [
           {
             "@type": "odrl:Duty",
-            "odrl:action": ODRLAction.INFORM,
-          },
-        ],
-      },
+            "odrl:action": ODRLAction.INFORM
+          }
+        ]
+      }
     ],
     "odrl:prohibition": [
       {
         "@type": "odrl:Prohibition",
         "odrl:action": ODRLAction.DISTRIBUTE,
-        "odrl:target": "urn:uuid:340eab1a-f3ee-471f-a0ad-beadddc521b6",
-      },
-    ],
+        "odrl:target": "urn:uuid:340eab1a-f3ee-471f-a0ad-beadddc521b6"
+      }
+    ]
   };
   expect(serialized).toStrictEqual(expected);
   const deserialized = await deserialize<Offer>(serialized);
@@ -108,22 +108,22 @@ test("Contract agreement serialization", async () => {
           new Constraint({
             leftOperand: ODRLLeftOperand.PURPOSE,
             operator: ODRLOperator.EQ,
-            rightOperand: new URI("http://example.com/purposeX"),
-          }),
+            rightOperand: new URI("http://example.com/purposeX")
+          })
         ],
         duty: [
           new Duty({
-            action: ODRLAction.INFORM,
-          }),
-        ],
-      }),
+            action: ODRLAction.INFORM
+          })
+        ]
+      })
     ],
     prohibition: [
       new Prohibition({
         action: ODRLAction.DISTRIBUTE,
-        target: "urn:uuid:340eab1a-f3ee-471f-a0ad-beadddc521b6",
-      }),
-    ],
+        target: "urn:uuid:340eab1a-f3ee-471f-a0ad-beadddc521b6"
+      })
+    ]
   });
 
   const serialized = await agreement.serialize();
@@ -143,29 +143,29 @@ test("Contract agreement serialization", async () => {
             "@type": "odrl:Constraint",
             "odrl:rightOperand": {
               "@type": "xsd:anyURI",
-              "@value": "http://example.com/purposeX",
+              "@value": "http://example.com/purposeX"
             },
             "odrl:leftOperand": ODRLLeftOperand.PURPOSE,
-            "odrl:operator": ODRLOperator.EQ,
-          },
+            "odrl:operator": ODRLOperator.EQ
+          }
         ],
         "odrl:duty": [
           {
             "@type": "odrl:Duty",
-            "odrl:action": ODRLAction.INFORM,
-          },
-        ],
-      },
+            "odrl:action": ODRLAction.INFORM
+          }
+        ]
+      }
     ],
     "odrl:prohibition": [
       {
         "@type": "odrl:Prohibition",
         "odrl:action": ODRLAction.DISTRIBUTE,
-        "odrl:target": "urn:uuid:340eab1a-f3ee-471f-a0ad-beadddc521b6",
-      },
+        "odrl:target": "urn:uuid:340eab1a-f3ee-471f-a0ad-beadddc521b6"
+      }
     ],
     "dspace:timestamp": "2023-01-01T00:00:00Z",
-    "odrl:target": "urn:uuid:21d38f03-3a0d-4a64-9281-45222863a04e",
+    "odrl:target": "urn:uuid:21d38f03-3a0d-4a64-9281-45222863a04e"
   };
   expect(serialized).toStrictEqual(expected);
   const deserialized = await deserialize<Agreement>(serialized);

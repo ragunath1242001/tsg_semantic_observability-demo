@@ -11,14 +11,14 @@ import {
   Param,
   ParseIntPipe,
   Put,
-  ParseEnumPipe,
+  ParseEnumPipe
 } from "@nestjs/common";
 import {
   ApiTags,
   ApiOAuth2,
   ApiOperation,
   ApiOkResponse,
-  ApiBody,
+  ApiBody
 } from "@nestjs/swagger";
 import { OAuthGuard } from "../auth/oauth.guard";
 import { Roles } from "../auth/roles.guard";
@@ -28,14 +28,14 @@ import {
   ApiBadRequestResponseDefault,
   ApiConflictResponseDefault,
   ApiForbiddenResponseDefault,
-  ApiNotFoundResponseDefault,
+  ApiNotFoundResponseDefault
 } from "@tsg-dsp/common-dtos";
 import { validationPipe } from "../utils/validation.pipe";
 import {
   Constraint as DspConstraint,
   ConstraintDto,
   deserialize,
-  PolicyRuleDto,
+  PolicyRuleDto
 } from "@tsg-dsp/common-dsp";
 import { DSPError } from "../utils/errors/error";
 import { ConstraintModel } from "./constraint.dto";
@@ -53,7 +53,7 @@ export class RuleRepositoryController {
   @ApiOperation({
     summary: "Retrieve constraints",
     description:
-      "Retrieve constraint templates registered in this control plane",
+      "Retrieve constraint templates registered in this control plane"
   })
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({ type: [ConstraintModel] })
@@ -65,7 +65,7 @@ export class RuleRepositoryController {
   @Post("constraint/odrl")
   @ApiOperation({
     summary: "Get constraint by ODRL",
-    description: "Get constraint based on an ODRL constraint",
+    description: "Get constraint based on an ODRL constraint"
   })
   @HttpCode(HttpStatus.OK)
   @ApiBody({})
@@ -91,7 +91,7 @@ export class RuleRepositoryController {
   @Post("constraint")
   @ApiOperation({
     summary: "Add constraint",
-    description: "Add new contraint template",
+    description: "Add new contraint template"
   })
   @HttpCode(HttpStatus.OK)
   @ApiBody({ type: ConstraintModel })
@@ -110,7 +110,7 @@ export class RuleRepositoryController {
   @Get("constraint/:id")
   @ApiOperation({
     summary: "Get constraint",
-    description: "Get constraint based on its identifier",
+    description: "Get constraint based on its identifier"
   })
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({ type: ConstraintModel })
@@ -124,7 +124,7 @@ export class RuleRepositoryController {
   @Get("constraint/:id/odrl")
   @ApiOperation({
     summary: "Get constraint ODRL",
-    description: "Get constraint based on its identifier and convert to ODRL",
+    description: "Get constraint based on its identifier and convert to ODRL"
   })
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({ type: ConstraintModel })
@@ -140,7 +140,7 @@ export class RuleRepositoryController {
   @Delete("constraint/:id")
   @ApiOperation({
     summary: "Delete constraint",
-    description: "Delete constraint template",
+    description: "Delete constraint template"
   })
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse()
@@ -155,7 +155,7 @@ export class RuleRepositoryController {
   @Put("constraint/:id")
   @ApiOperation({
     summary: "Update constraint",
-    description: "Update constraint template",
+    description: "Update constraint template"
   })
   @HttpCode(HttpStatus.OK)
   @ApiBody({ type: ConstraintModel })
@@ -176,7 +176,7 @@ export class RuleRepositoryController {
   @Get("rule")
   @ApiOperation({
     summary: "Retrieve rules",
-    description: "Retrieve rule templates registered in this control plane",
+    description: "Retrieve rule templates registered in this control plane"
   })
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({ type: [Rule] })
@@ -188,7 +188,7 @@ export class RuleRepositoryController {
   @Post("rule")
   @ApiOperation({
     summary: "Add rule",
-    description: "Add new contraint template",
+    description: "Add new contraint template"
   })
   @HttpCode(HttpStatus.OK)
   @ApiBody({ type: Rule })
@@ -205,7 +205,7 @@ export class RuleRepositoryController {
   @Get("rule/:id")
   @ApiOperation({
     summary: "Get rule",
-    description: "Get rule based on its identifier",
+    description: "Get rule based on its identifier"
   })
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({ type: Rule })
@@ -217,7 +217,7 @@ export class RuleRepositoryController {
   @Get("rule/:id/odrl")
   @ApiOperation({
     summary: "Get rule ODRL",
-    description: "Get rule ODRL based on its identifier",
+    description: "Get rule ODRL based on its identifier"
   })
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({ type: Rule })
@@ -235,7 +235,7 @@ export class RuleRepositoryController {
   @Delete("rule/:id")
   @ApiOperation({
     summary: "Delete rule",
-    description: "Delete rule template",
+    description: "Delete rule template"
   })
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse()
@@ -248,7 +248,7 @@ export class RuleRepositoryController {
   @Put("rule/:id")
   @ApiOperation({
     summary: "Update rule",
-    description: "Update rule template",
+    description: "Update rule template"
   })
   @HttpCode(HttpStatus.OK)
   @ApiBody({ type: Rule })

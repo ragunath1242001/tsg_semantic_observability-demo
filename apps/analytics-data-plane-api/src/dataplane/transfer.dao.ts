@@ -2,7 +2,7 @@ import {
   DataAddressDto,
   DataPlaneRequestResponseDto,
   TransferRequestMessageDto,
-  TransferState,
+  TransferState
 } from "@tsg-dsp/common-dsp";
 import {
   Column,
@@ -10,7 +10,7 @@ import {
   DeleteDateColumn,
   Entity,
   PrimaryColumn,
-  UpdateDateColumn,
+  UpdateDateColumn
 } from "typeorm";
 
 @Entity()

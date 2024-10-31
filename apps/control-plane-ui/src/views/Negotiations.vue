@@ -11,8 +11,7 @@ const { negotiations, ctaNegotiations } = storeToRefs(useDspStore());
   <div>
     <Card
       style="border-radius: 12px; border: 1px solid var(--surface-border)"
-      class="mb-8"
-    >
+      class="mb-8">
       <template #title>Contract Negotiations</template>
       <template #content>
         This page shows (the history of) the negotiations that are present for

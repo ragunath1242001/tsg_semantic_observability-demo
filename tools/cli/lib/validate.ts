@@ -46,7 +46,7 @@ Or install specifically the latest version:
 `
       );
       const result = await confirm({
-        message: "Continue with current version?",
+        message: "Continue with current version?"
       });
       if (!result) {
         process.exit(0);

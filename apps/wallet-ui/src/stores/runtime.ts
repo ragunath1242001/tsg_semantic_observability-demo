@@ -10,7 +10,7 @@ interface RuntimeStore {
 export const useRuntimeStore = defineStore("runtime", {
   state: (): RuntimeStore => ({
     gaiaXSupport: false,
-    title: undefined,
+    title: undefined
   }),
   actions: {
     async getRuntimeSettings() {
@@ -30,13 +30,13 @@ export const useRuntimeStore = defineStore("runtime", {
           RuntimeStore
         >("/settings/update", {
           gaiaXSupport: this.gaiaXSupport,
-          title: this.title,
+          title: this.title
         });
         this.gaiaXSupport = response.data.gaiaXSupport;
         this.title = response.data.title;
       } catch (error) {
         console.debug("Error: ", error);
       }
-    },
-  },
+    }
+  }
 });

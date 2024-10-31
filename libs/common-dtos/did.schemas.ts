@@ -1,14 +1,14 @@
 import {
   ApiProperty,
   ApiPropertyOptional,
-  getSchemaPath,
+  getSchemaPath
 } from "@nestjs/swagger";
 import {
   DIDDocument,
   JsonWebKey,
   Service,
   ServiceEndpoint,
-  VerificationMethod,
+  VerificationMethod
 } from "did-resolver";
 
 export function elementOrArray<T>(schema: T) {
@@ -17,9 +17,9 @@ export function elementOrArray<T>(schema: T) {
       schema,
       {
         type: "array",
-        items: schema,
-      },
-    ],
+        items: schema
+      }
+    ]
   };
 }
 
@@ -88,9 +88,9 @@ export class DIDDocumentDto implements DIDDocument {
     items: {
       oneOf: [
         { type: "string" },
-        { $ref: getSchemaPath(VerificationMethodDto) },
-      ],
-    },
+        { $ref: getSchemaPath(VerificationMethodDto) }
+      ]
+    }
   })
   authentication?: (string | VerificationMethod)[];
   @ApiPropertyOptional({
@@ -98,9 +98,9 @@ export class DIDDocumentDto implements DIDDocument {
     items: {
       oneOf: [
         { type: "string" },
-        { $ref: getSchemaPath(VerificationMethodDto) },
-      ],
-    },
+        { $ref: getSchemaPath(VerificationMethodDto) }
+      ]
+    }
   })
   assertionMethod?: (string | VerificationMethod)[];
   @ApiPropertyOptional({
@@ -108,9 +108,9 @@ export class DIDDocumentDto implements DIDDocument {
     items: {
       oneOf: [
         { type: "string" },
-        { $ref: getSchemaPath(VerificationMethodDto) },
-      ],
-    },
+        { $ref: getSchemaPath(VerificationMethodDto) }
+      ]
+    }
   })
   keyAgreement?: (string | VerificationMethod)[];
   @ApiPropertyOptional({
@@ -118,9 +118,9 @@ export class DIDDocumentDto implements DIDDocument {
     items: {
       oneOf: [
         { type: "string" },
-        { $ref: getSchemaPath(VerificationMethodDto) },
-      ],
-    },
+        { $ref: getSchemaPath(VerificationMethodDto) }
+      ]
+    }
   })
   capabilityInvocation?: (string | VerificationMethod)[];
   @ApiPropertyOptional({
@@ -128,9 +128,9 @@ export class DIDDocumentDto implements DIDDocument {
     items: {
       oneOf: [
         { type: "string" },
-        { $ref: getSchemaPath(VerificationMethodDto) },
-      ],
-    },
+        { $ref: getSchemaPath(VerificationMethodDto) }
+      ]
+    }
   })
   capabilityDelegation?: (string | VerificationMethod)[];
 }

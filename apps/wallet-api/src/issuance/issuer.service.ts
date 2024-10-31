@@ -11,7 +11,7 @@ import {
   CredentialOfferRequest,
   CredentialOfferStatus,
   CredentialRequest,
-  CredentialResponse,
+  CredentialResponse
 } from "@tsg-dsp/wallet-dtos";
 // This needs to be separate since it's an enum. https://stackoverflow.com/questions/38553097/how-to-import-an-enum
 import { OfferGrants } from "@tsg-dsp/wallet-dtos";
@@ -34,7 +34,7 @@ export class IssuerService {
     private readonly contextService: ContextService,
     private readonly credentialService: CredentialsService,
     private readonly presentationService: PresentationService,
-    private readonly didResolverService: DidResolverService,
+    private readonly didResolverService: DidResolverService
   ) {
     this.initialized = this.init();
   }
@@ -52,21 +52,21 @@ export class IssuerService {
               o.holderId === issuerConfig.holderId &&
               o.credentialType === issuerConfig.credentialType &&
               (!issuerConfig.preAuthorizationCode ||
-                o.preAuthorizedCode === issuerConfig.preAuthorizationCode),
+                o.preAuthorizedCode === issuerConfig.preAuthorizationCode)
           )
         ) {
           this.logger.log(
-            `Already created offer for ${issuerConfig.holderId} for ${issuerConfig.credentialType} credential`,
+            `Already created offer for ${issuerConfig.holderId} for ${issuerConfig.credentialType} credential`
           );
         } else {
           await this.createCredentialOfferWithRetry({
             holderId: issuerConfig.holderId,
             credentialType: issuerConfig.credentialType,
             credentialSubject: issuerConfig.credentialSubject,
-            preAuthorizedCode: issuerConfig.preAuthorizationCode,
+            preAuthorizedCode: issuerConfig.preAuthorizationCode
           });
         }
-      }),
+      })
     );
 
     return true;
@@ -75,7 +75,7 @@ export class IssuerService {
   async createCredentialOfferWithRetry(
     offerRequest: CredentialOfferRequest,
     retry = 0,
-    backOff = 1000,
+    backOff = 1000
   ) {
     try {
       const offer = await this.createCredentialOffer(offerRequest);
@@ -86,23 +86,23 @@ export class IssuerService {
           offer.grants?.[OfferGrants.PRE_AUTHORIZATION_CODE]?.[
             "pre-authorization_code"
           ]
-        }`,
+        }`
       );
     } catch (err) {
       if (retry < 5) {
         this.logger.warn(
-          `Could not create credential offer for ${offerRequest.holderId} for ${offerRequest.credentialType} credential`,
+          `Could not create credential offer for ${offerRequest.holderId} for ${offerRequest.credentialType} credential`
         );
         this.logger.log(`Error: ${err}`);
         await new Promise((f) => setTimeout(f, backOff));
         await this.createCredentialOfferWithRetry(
           offerRequest,
           ++retry,
-          backOff * 2,
+          backOff * 2
         );
       } else {
         this.logger.error(
-          `Could not create credential offer for ${offerRequest.holderId} for ${offerRequest.credentialType} credential: ${err}`,
+          `Could not create credential offer for ${offerRequest.holderId} for ${offerRequest.credentialType} credential: ${err}`
         );
         throw err;
       }
@@ -114,7 +114,7 @@ export class IssuerService {
       credential_issuer: `https://${this.config.server.publicDomain}`,
       credential_endpoint: `${this.config.server.publicAddress}/api/oid4vci/credential`,
       token_endpoint: `${this.config.server.publicAddress}/api/oid4vci/token`,
-      credential_configurations_supported: {},
+      credential_configurations_supported: {}
     };
     const contexts = await this.contextService.getContexts();
     contexts
@@ -127,23 +127,23 @@ export class IssuerService {
           "@context": [
             "https://www.w3.org/2018/credentials/v1",
             context.documentUrl ??
-              `${this.config.server.publicAddress}/api/context/${context.id}`,
+              `${this.config.server.publicAddress}/api/context/${context.id}`
           ],
           cryptographic_binding_methods_supported: ["did:tdw", "did:web"],
           credential_signing_alg_values_supported: ["EdDSA", "ES384", "PS256"],
           proof_types_supported: {
             jwt: {
-              proof_signing_alg_values_supported: ["EdDSA", "ES384", "PS256"],
-            },
+              proof_signing_alg_values_supported: ["EdDSA", "ES384", "PS256"]
+            }
           },
           credential_definition: {
             type: ["VerifiableCredential", context.credentialType],
             "@context": [
               "https://www.w3.org/2018/credentials/v1",
               context.documentUrl ??
-                `${this.config.server.publicAddress}/api/context/${context.id}`,
-            ],
-          },
+                `${this.config.server.publicAddress}/api/context/${context.id}`
+            ]
+          }
         };
       });
     return issuerMetadata;
@@ -159,13 +159,13 @@ export class IssuerService {
         credentialType: offer.credentialType,
         credentialId: offer.credentialId,
         revoked: offer.revoked,
-        credentialSubject: offer.credentialSubject,
+        credentialSubject: offer.credentialSubject
       };
     });
   }
 
   async createCredentialOffer(
-    offerRequest: CredentialOfferRequest,
+    offerRequest: CredentialOfferRequest
   ): Promise<CredentialOffer> {
     const code =
       offerRequest.preAuthorizedCode || crypto.randomBytes(48).toString("hex");
@@ -175,7 +175,7 @@ export class IssuerService {
       holderId: offerRequest.holderId,
       credentialType: offerRequest.credentialType,
       revoked: false,
-      credentialSubject: offerRequest.credentialSubject,
+      credentialSubject: offerRequest.credentialSubject
     });
 
     return {
@@ -183,9 +183,9 @@ export class IssuerService {
       credential_configuration_ids: [offerRequest.credentialType],
       grants: {
         [OfferGrants.PRE_AUTHORIZATION_CODE]: {
-          "pre-authorization_code": code,
-        },
-      },
+          "pre-authorization_code": code
+        }
+      }
     };
   }
 
@@ -194,7 +194,7 @@ export class IssuerService {
     if (!issuance) {
       throw new AppError(
         `No credential issuance flow found for id ${id}`,
-        HttpStatus.NOT_FOUND,
+        HttpStatus.NOT_FOUND
       ).andLog(this.logger);
     }
     await this.issuanceRepository.update({ id: id }, { revoked: true });
@@ -206,18 +206,18 @@ export class IssuerService {
       credentialType: issuance.credentialType,
       credentialId: issuance.credentialId,
       revoked: true,
-      credentialSubject: issuance.credentialSubject,
+      credentialSubject: issuance.credentialSubject
     };
   }
 
   async createAccessToken(preAuthorizedCode: string): Promise<AccessToken> {
     const issuance = await this.issuanceRepository.findOneBy({
-      preAuthorizedCode: preAuthorizedCode,
+      preAuthorizedCode: preAuthorizedCode
     });
     if (!issuance) {
       throw new AppError(
         "No credential issuance flow found",
-        HttpStatus.NOT_FOUND,
+        HttpStatus.NOT_FOUND
       ).andLog(this.logger);
     }
     const expirationDate = new Date();
@@ -227,7 +227,7 @@ export class IssuerService {
       expires_at: expirationDate,
       refresh_token: crypto.randomBytes(48).toString("hex"),
       nonce: crypto.randomBytes(48).toString("hex"),
-      issuance: issuance,
+      issuance: issuance
     });
     return {
       access_token: token.access_token,
@@ -240,19 +240,19 @@ export class IssuerService {
         {
           type: "openid_credential",
           credential_configuration_id: issuance.credentialType,
-          credential_identifiers: [issuance.credentialType],
-        },
-      ],
+          credential_identifiers: [issuance.credentialType]
+        }
+      ]
     };
   }
 
   async handleCredentialRequest(
     access_token: string,
-    credentialRequest: CredentialRequest,
+    credentialRequest: CredentialRequest
   ): Promise<CredentialResponse> {
     try {
       const token = await this.tokenRepository.findOneBy({
-        access_token: access_token,
+        access_token: access_token
       });
       if (!token) {
         throw new AppError("Token not recognized", HttpStatus.UNAUTHORIZED);
@@ -261,31 +261,31 @@ export class IssuerService {
       if (credentialRequest.proof.proof_type != "jwt") {
         throw new AppError(
           "Only jwt proof types are supported at this moment",
-          HttpStatus.BAD_REQUEST,
+          HttpStatus.BAD_REQUEST
         );
       }
 
       const holderDid = await this.didResolverService.resolve(
-        issuance.holderId,
+        issuance.holderId
       );
       const parsedJwtHeader = await decodeProtectedHeader(
-        credentialRequest.proof.jwt,
+        credentialRequest.proof.jwt
       );
 
       if (!parsedJwtHeader.kid) {
         throw new AppError(
           'Only JWTs with "kid" referencing a key described in a DID document supported',
-          HttpStatus.BAD_REQUEST,
+          HttpStatus.BAD_REQUEST
         );
       }
 
       const usedJwk = holderDid.verificationMethod?.find(
-        (m) => m.id === parsedJwtHeader.kid,
+        (m) => m.id === parsedJwtHeader.kid
       );
       if (!usedJwk || !usedJwk.publicKeyJwk) {
         throw new AppError(
           `Could not find publicKeyJwk for ${parsedJwtHeader.kid} in DID document`,
-          HttpStatus.BAD_REQUEST,
+          HttpStatus.BAD_REQUEST
         );
       }
       const key = await importJWK(usedJwk.publicKeyJwk);
@@ -298,46 +298,46 @@ export class IssuerService {
       if (verifiedJwt.payload.aud !== expectedIssuer) {
         throw new AppError(
           `Audience in proof JWT does not match credential_issuer (${verifiedJwt.payload.aud} vs ${expectedIssuer}`,
-          HttpStatus.BAD_REQUEST,
+          HttpStatus.BAD_REQUEST
         );
       }
 
       if (verifiedJwt.payload.nonce !== token.nonce) {
         throw new AppError(
           "Nonce in JWT proof doesn't match registered nonce",
-          HttpStatus.BAD_REQUEST,
+          HttpStatus.BAD_REQUEST
         );
       }
 
       const context = await this.contextService.getContextByType(
-        issuance.credentialType,
+        issuance.credentialType
       );
 
       const credentialConfig = plainToInstance(InitCredentialConfig, {
         context: [
           context.documentUrl ??
-            `${this.config.server.publicAddress}/api/context/${context.id}`,
+            `${this.config.server.publicAddress}/api/context/${context.id}`
         ],
         type: [issuance.credentialType],
         id: `${issuance.holderId}#${crypto.randomUUID()}`,
-        credentialSubject: issuance.credentialSubject,
+        credentialSubject: issuance.credentialSubject
       });
       const credential = await this.credentialService.issueCredential(
         credentialConfig,
-        issuance.holderId,
+        issuance.holderId
       );
       const credentialJwt =
         await this.presentationService.createVerifiablePresentationJwt(
           credential.id,
           token.issuance.holderId,
-          true,
+          true
         );
       await this.issuanceRepository.save({
         ...issuance,
-        credentialId: credential.id,
+        credentialId: credential.id
       });
       return {
-        credential: credentialJwt.vp,
+        credential: credentialJwt.vp
       };
     } catch (error) {
       if (error instanceof AppError) {
@@ -346,7 +346,7 @@ export class IssuerService {
         throw new AppError(
           `${error}`,
           HttpStatus.INTERNAL_SERVER_ERROR,
-          error,
+          error
         ).andLog(this.logger);
       }
     }
