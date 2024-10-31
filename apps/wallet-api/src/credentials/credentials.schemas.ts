@@ -1,7 +1,7 @@
 import {
   ApiProperty,
   ApiPropertyOptional,
-  ApiPropertyOptions,
+  ApiExtraModels,
   getSchemaPath,
 } from "@nestjs/swagger";
 import {
@@ -12,18 +12,8 @@ import {
   DataIntegrityProof,
   OrArray,
 } from "@tsg-dsp/common-dsp";
-import {
-  IsString,
-  IsBoolean,
-  IsDate,
-  ValidateNested,
-  IsOptional,
-} from "class-validator";
-import {
-  InitCredentialConfig,
-  JsonLdContextConfig,
-  TrustAnchorConfig,
-} from "../config.js";
+import { IsString, IsBoolean, IsDate, ValidateNested } from "class-validator";
+import { InitCredentialConfig, TrustAnchorConfig } from "../config.js";
 import { Credentials } from "../model/credentials.dao.js";
 import { Type } from "class-transformer";
 import { JsonLdContextConfigDto } from "../contexts/context.schemas.js";
@@ -113,6 +103,7 @@ export class DefaultCredentialSubjectDto implements CredentialSubject {
   [key: string]: any;
 }
 
+@ApiExtraModels(DataIntegrityProofDto)
 export class VerifiableCredentialDto implements VerifiableCredential {
   @ApiProperty({
     type: [String],
