@@ -1517,6 +1517,46 @@ components:
           type: string
       required:
         - vp
+    DataIntegrityProofDto:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+        proofPurpose:
+          type: string
+        verificationMethod:
+          type: string
+        cryptosuite:
+          type: string
+        created:
+          type: string
+        expires:
+          type: string
+        domain:
+          oneOf:
+            - &a22
+              type: string
+            - type: array
+              items: *a22
+        challenge:
+          type: string
+        proofValue:
+          type: string
+        previousProof:
+          oneOf:
+            - &a23
+              type: string
+            - type: array
+              items: *a23
+        nonce:
+          type: string
+      required:
+        - type
+        - proofPurpose
+        - cryptosuite
+        - proofValue
     VerifiableCredentialDto:
       type: object
       properties:
@@ -1548,12 +1588,12 @@ components:
           type: object
         proof:
           oneOf:
-            - &a22
+            - &a24
               oneOf:
                 - $ref: "#/components/schemas/DataIntegrityProofDto"
                 - $ref: "#/components/schemas/JsonWebSignature2020Dto"
             - type: array
-              items: *a22
+              items: *a24
       required:
         - "@context"
         - type
@@ -1741,10 +1781,10 @@ components:
           type: string
         verifiableCredential:
           oneOf:
-            - &a23
+            - &a25
               $ref: "#/components/schemas/VerifiableCredentialDto"
             - type: array
-              items: *a23
+              items: *a25
       required:
         - "@context"
         - type
@@ -2042,10 +2082,10 @@ components:
           type: string
         serviceEndpoint:
           oneOf:
-            - &a24
+            - &a26
               type: string
             - type: array
-              items: *a24
+              items: *a26
       required:
         - id
         - type
@@ -2055,10 +2095,10 @@ components:
       properties:
         "@context":
           oneOf:
-            - &a25
+            - &a27
               type: string
             - type: array
-              items: *a25
+              items: *a27
         id:
           type: string
         alsoKnownAs:
@@ -2067,10 +2107,10 @@ components:
             type: string
         controller:
           oneOf:
-            - &a26
+            - &a28
               type: string
             - type: array
-              items: *a26
+              items: *a28
         verificationMethod:
           type: array
           items:
