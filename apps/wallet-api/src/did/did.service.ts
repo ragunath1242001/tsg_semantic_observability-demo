@@ -20,12 +20,12 @@ export interface DidStrategy {
     config: RootConfig,
     didId: string,
     keys: KeyMaterials[],
-    services: DidServiceConfig[]
+    services: DidServiceConfig[],
   ): Promise<{ didId: string; didDocument: DIDDocument }>;
   updateDidDocument(
     didDocument: DIDDocument,
     verificationMethods?: VerificationMethod[],
-    services?: Service[]
+    services?: Service[],
   ): Promise<DIDDocument>;
   setDefaultKey(didDocument: DIDDocument, key: KeyMaterials): void;
 }
@@ -41,7 +41,7 @@ export class DidService {
     @InjectRepository(DIDService)
     private readonly serviceRepository: Repository<DIDService>,
     @InjectRepository(DIDLogs)
-    private readonly didLogsRepository: Repository<DIDLogs>
+    private readonly didLogsRepository: Repository<DIDLogs>,
   ) {
     this.didStrategy = this.retrieveDidStrategy(config.did.method);
     this.didId = this.didStrategy.createDid(config);
@@ -92,6 +92,11 @@ export class DidService {
         type: "PresentationService",
         serviceEndpoint: `${this.config.server.publicAddress}/api/iatp/holder/presentation`,
       },
+      {
+        id: `${this.didId}#management`,
+        type: "Management",
+        serviceEndpoint: `${this.config.server.publicAddress}/api`,
+      },
       ...this.config.didServices,
     ];
   }
@@ -105,11 +110,11 @@ export class DidService {
             type: service.type,
             serviceEndpoint: service.serviceEndpoint as string,
           },
-          true
+          true,
         );
       } catch (e) {
         this.logger.debug(
-          `Service with id ${service.id} already exists, not overriding`
+          `Service with id ${service.id} already exists, not overriding`,
         );
       }
     }
@@ -128,7 +133,7 @@ export class DidService {
     if (!service) {
       throw new AppError(
         `DID Service with id ${id} not found`,
-        HttpStatus.NOT_FOUND
+        HttpStatus.NOT_FOUND,
       );
     }
     return service;
@@ -136,16 +141,15 @@ export class DidService {
 
   async insertService(
     config: DidServiceConfig,
-    init?: boolean
+    init?: boolean,
   ): Promise<DIDService> {
     if (await this.serviceRepository.existsBy({ id: config.id })) {
       throw new AppError(
         `Service with id ${config.id} already exists`,
-        HttpStatus.CONFLICT
+        HttpStatus.CONFLICT,
       );
     }
     const service = await this.serviceRepository.save(config);
-
     if (!init) {
       await this.updateDidDocumentServices(await this.getServices());
     }
@@ -164,7 +168,7 @@ export class DidService {
     } else {
       throw new AppError(
         `Service with id ${config.id} does not exists`,
-        HttpStatus.NOT_FOUND
+        HttpStatus.NOT_FOUND,
       );
     }
   }
@@ -182,7 +186,9 @@ export class DidService {
       },
     });
     if (existing) {
-      existing.forEach(async (e) => await this.didRepository.delete(e.id));
+      await Promise.allSettled(
+        existing.map(async (e) => await this.didRepository.delete(e.id)),
+      );
     }
     await this.didRepository.save({
       document: didDocument,
@@ -191,7 +197,7 @@ export class DidService {
   }
 
   async checkExistingDidDocument(
-    defaultKey: KeyMaterials
+    defaultKey: KeyMaterials,
   ): Promise<DIDDocument> {
     let existingDidDocument: DIDDocument;
     try {
@@ -206,8 +212,8 @@ export class DidService {
       `DID document ${this.didId}\n${JSON.stringify(
         existingDidDocument,
         null,
-        2
-      )}`
+        2,
+      )}`,
     );
     return existingDidDocument;
   }
@@ -217,12 +223,12 @@ export class DidService {
       this.config,
       this.didId,
       keys,
-      this.initServices()
+      this.initServices(),
     );
 
     this.didId = didId;
     if (didDocument.service != null) {
-      this.saveInitServices(didDocument.service!);
+      await this.saveInitServices(didDocument.service!);
     }
     await this.saveDidDocument(didDocument);
 
@@ -234,7 +240,7 @@ export class DidService {
     didDocument = await this.didStrategy.updateDidDocument(
       didDocument,
       createVerificationMethods(didDocument.id, keys),
-      didDocument.service
+      didDocument.service,
     );
     await this.saveDidDocument(didDocument);
   }
@@ -244,7 +250,7 @@ export class DidService {
     didDocument = await this.didStrategy.updateDidDocument(
       didDocument,
       didDocument.verificationMethod,
-      createServices(services)
+      createServices(services),
     );
     await this.saveDidDocument(didDocument);
   }

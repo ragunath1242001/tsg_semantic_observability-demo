@@ -17,7 +17,7 @@ describe("DID Service", () => {
     return JSON.parse(JSON.stringify(input));
   };
   const keyMaterialGenerator: (id: string) => Promise<KeyMaterials> = async (
-    id: string
+    id: string,
   ) => {
     const keypair = await generateKeyPair("EdDSA");
     return plainToInstance(KeyMaterials, {
@@ -65,15 +65,15 @@ describe("DID Service", () => {
 
     it("Retrieve non existing DID", async () => {
       await expect(didService.getDid()).rejects.toThrow(
-        "DID Document not ready yet"
+        "DID Document not ready yet",
       );
     });
 
     it("Check existing DID is empty", async () => {
       await expect(
         didService.checkExistingDidDocument(
-          await keyMaterialGenerator("test-key")
-        )
+          await keyMaterialGenerator("test-key"),
+        ),
       ).rejects.toThrow("DID Document not ready yet");
     });
 
@@ -107,18 +107,18 @@ describe("DID Service", () => {
       expect(retrievedDid.id).toEqual(createdDidWithKey.id);
       expect(retrievedDid["@context"]).toEqual(createdDidWithKey["@context"]);
       expect(retrievedDid.assertionMethod).toEqual(
-        createdDidWithKey.assertionMethod
+        createdDidWithKey.assertionMethod,
       );
       expect(retrievedDid.verificationMethod).toEqual(
-        createdDidWithKey.verificationMethod
+        createdDidWithKey.verificationMethod,
       );
     });
 
     it("Update DID default key", async () => {
       expect(
         await didService.setDidDefaultKey(
-          await keyMaterialGenerator("test-key")
-        )
+          await keyMaterialGenerator("test-key"),
+        ),
       ).resolves;
     });
 
@@ -127,12 +127,12 @@ describe("DID Service", () => {
       expect(
         await didService.updateDidDocumentKeys([
           await keyMaterialGenerator("test-key-new"),
-        ])
+        ]),
       ).resolves;
       const newDidDoc: DIDDocument = clone(await didService.getDid());
       expect(newDidDoc.verificationMethod).toHaveLength(1);
       expect(newDidDoc.verificationMethod![0].id).not.toEqual(
-        prevDidDoc.verificationMethod![0].id
+        prevDidDoc.verificationMethod![0].id,
       );
       expect(newDidDoc.service).toHaveLength(prevDidDoc.service!.length);
       for (var i = 0; i < newDidDoc.service!.length; i++) {
@@ -143,12 +143,12 @@ describe("DID Service", () => {
     it("Check existing DID exists", async () => {
       const prevDid: DIDDocument = clone(await didService.getDid());
       const existingDid = await didService.checkExistingDidDocument(
-        await keyMaterialGenerator("test-key")
+        await keyMaterialGenerator("test-key"),
       );
       expect(existingDid).toBeDefined();
       expect(existingDid.id).toEqual(prevDid.id);
       expect(existingDid.verificationMethod).toEqual(
-        prevDid.verificationMethod
+        prevDid.verificationMethod,
       );
       expect(existingDid.assertionMethod).toEqual(prevDid.assertionMethod);
       expect(existingDid.service).toEqual(prevDid.service);
@@ -199,6 +199,7 @@ describe("DID Service", () => {
   describe("DID Service management", () => {
     it("Insert service", async () => {
       const prevDidDoc: DIDDocument = clone(await didService.getDid());
+      console.log(prevDidDoc.service);
       const service = await didService.insertService({
         id: "did:web:localhost#TestService",
         type: "TestService",
@@ -208,6 +209,7 @@ describe("DID Service", () => {
       expect(service.id).toBe("did:web:localhost#TestService");
       expect(service.type).toBe("TestService");
       expect(service.serviceEndpoint).toBe("http://localhost");
+      console.log(newDidDoc.service);
       expect(newDidDoc.service!.length).toEqual(prevDidDoc.service!.length + 1);
     });
     it("Insert already existing service", async () => {
@@ -216,12 +218,12 @@ describe("DID Service", () => {
           id: "did:web:localhost#TestService",
           type: "TestService",
           serviceEndpoint: "http://localhost",
-        })
+        }),
       ).rejects.toThrow("already exists");
     });
     it("Get service", async () => {
       const service = await didService.getService(
-        "did:web:localhost#TestService"
+        "did:web:localhost#TestService",
       );
       expect(service.id).toBe("did:web:localhost#TestService");
       expect(service.type).toBe("TestService");
@@ -235,7 +237,7 @@ describe("DID Service", () => {
           id: "did:web:localhost#TestService",
           type: "TestService",
           serviceEndpoint: "http://localhost/service",
-        }
+        },
       );
       const newDidDoc: DIDDocument = clone(await didService.getDid());
       expect(service.id).toBe("did:web:localhost#TestService");
@@ -251,7 +253,7 @@ describe("DID Service", () => {
     });
     it("Get non-existing service", async () => {
       await expect(
-        didService.getService("did:web:localhost#TestService")
+        didService.getService("did:web:localhost#TestService"),
       ).rejects.toThrow("not found");
     });
     it("Update non-existing service", async () => {
@@ -260,7 +262,7 @@ describe("DID Service", () => {
           id: "did:web:localhost#TestService",
           type: "TestService",
           serviceEndpoint: "http://localhost",
-        })
+        }),
       ).rejects.toThrow("does not exist");
     });
   });

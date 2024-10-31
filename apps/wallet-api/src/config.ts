@@ -195,7 +195,7 @@ export class OID4VCIConfig {
 
   @ValidateNested({ each: true })
   @Type(() => HolderConfig)
-  public readonly holder: HolderConfig[] = [];
+  public holder: HolderConfig[] = [];
 }
 
 export class IssuerConfig {
