@@ -1,0 +1,1106 @@
+---
+id: catalog-management-controller-request-dataset
+title: "Request dataset"
+description: "Requests a dataset from a remote or local connector by ID."
+sidebar_label: "Request dataset"
+hide_title: true
+hide_table_of_contents: true
+api: eJztWF9v2zYQ/yoEn7ZCs7NsT3pql6RBgHUx0rR7CILgTJ4tNhTJkqd4huHvPpCSbVmRXCfr3vqUWLy7393xeP9W3Dr0QMqaK8lzfgYE2s4/gIE5lmjozBryVmv0Dx6/VhjoHAgCEs+4xCC8cpGZ5/ymPg4MmKxJ2MzbkgHzWFpCZj3TVoBmwhqDgqxn0yW7Oh/xjDvwUCKhDzy/W3EDJfKcg5QeQ+AZj9jKo+T5DHTAjKsI+bVCv3ymyG2BrOFkdsaowI0GW2Ce8SAKLIHnK05LF8ECeWXmfL3OtvhK7kGTr76NfHW+AZVbRx2DBZVUaAS+xtiGlc2sb8xNV3EQ+T7iBGdNwBDPT09O4p996TzjwhpCQ/EMnNNKpGAZfwmRYPUcwE6/oIjQzsfQIlWLf6tkjxYZlwIojxggaGJVDdRP9YjLhfVtMeA9RJcowjL0urfm1GCkMvMJzHFYPBVY4iuEC2tm1pfh1g7Iplx4hBh1Q+d7Tn+ZApQriYbUTOGwfBVucIY+xoj8Y3mALFQ4dE3Ji/Nq2IWUayXQhOHz0sqo5zCCq6ZaheKAJR41dNy0T0CK9LAG9ceeQyu9zgsIE6uVWB5xCS8M87eHkSEENTcDdrcpDshw3s7UgO01AfpShXBckA3Z9//bAWLwgtM5gZ9jf5pI58KaQB72U8n3NVPjjK5j3TT9t52I6sI68OoThVfzokdOo1Mf1fYZ96eDXeG4a0zoUbir3n3Gm0fDz7au+1in9fVGifOKjnkVW10OKdNccAt3so3MLq7ztlBTdWRm/BG0P4IWXh59uxjrhp+dajXvFpyXXct6B5Qe0fqbIdHVPnWhtQ1trVOlaimcmpECwmf0R+b4biejNrzXs+E26emZ+A5BAeGs8h4NPdekQ+o8Pilb9ah8TOVMIqSKH6bVa3onoDw4IAX6BoPVScaV+dCMIYN9IpbO+jbPEU/zCXTVb8WQfd0oqCX0BMJ5Vc9vm1CoOx0QwlegJ+iVlUooGm77Gh8MN02Nwb0EztunfAHhEk18mgP95XEh3UyWu2e8zvjvfWPJlXkCreRmzmGt6TGx/Pac5b31UyUlmu830tSDW49PAgFV/REkrGzzmKqcoo8HJYaw31vvMip635uRO15N+mzRG6yWey+imHOyybMxLcE8TtubmZ/thv7IFVBUPoXN3YpPEXwskHf3cW4skQobtwXzNN06oILnfAxOjcutjLGoxY5bYzD6p3rCb8lPt1071EJFxWnbBfWHjM+0XSQSByFshsAgrKsZRb2kcBoMPoAs07zc8zHb/xg1S/91qXcHtac25jexEembT5uz99aXQDznnyc826hfELlnA/tn9GqmYKqRTTwGNJSijxlEiZKRZcKWZWViVCKbIi0QDaOFZcoEAiNwu9VodGZJ1VGKB2Vm9Rja3Pntx0vWrHDYJFn0fIGgArt2aN5NrlhwKNSseRAsFHYREhIa6eJwvoXekzliH2ygzdGOFnxcReiYFaJd8TA9cQciGm/JCqszBmGDizJuhCLdhdDKBWR/W/+ozJxdelu5HXcYsWsq0HfAQuWc9aSe2lqQZSU8xkOP270ME2DYNO2Jdso1EZsxMLLLBsQ+XTFlCH3dQYQkgiKJ0yBwxNjDw5u/LOGbh4ec7blV4kyZ1GAwFZixlASZBnqKTCqPgvSSaWUeUbKFooIBC8rMdcfZ2zAYMZ7xbTXmv45ORidNhIOguvNoTeTNmumdA1EgO020lddNmIZ8PF4sFiNIxyPr5+OGN4z/vDq7+OvjxS+no5NRQaVOgeZsoBJMS3Kz/2utvTprjW3a/W+rwuZxEf5DY6dBmZgikyWrJhXdcXCKZ3yXjKJf6suNajUK3me8sIEi/Wo1hYCfvF6v4+d61RYTn1QhPtXdKm7QpuO2jr3KP+Jyb9nZNAucx/Xg8Rr8dNMUg5/Z0CLyAHwqya9E/sYS8pDRu63nDvs+/vApR6aSk/ECQab6s2r43gmBjlpczwr5XqG6vLjlGY/VpFVdOik8Sd+0j2bZkr1a1RS39hHNes03ylP8zdf36/X6X4IqHUU=
+sidebar_class_name: "get api-method"
+info_path: docs/apis/control-plane/tsg-control-plane
+custom_edit_url: null
+---
+
+import ApiTabs from "@theme/ApiTabs";
+import DiscriminatorTabs from "@theme/DiscriminatorTabs";
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import SecuritySchemes from "@theme/ApiExplorer/SecuritySchemes";
+import MimeTabs from "@theme/MimeTabs";
+import ParamsItem from "@theme/ParamsItem";
+import ResponseSamples from "@theme/ResponseSamples";
+import SchemaItem from "@theme/SchemaItem";
+import SchemaTabs from "@theme/SchemaTabs";
+import Heading from "@theme/Heading";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Request dataset"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/management/catalog/dataset"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Requests a dataset from a remote or local connector by ID.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<details
+  style={{"marginBottom":"1rem"}}
+  className={"openapi-markdown__details"}
+  data-collapsed={false}
+  open={true}
+>
+  <summary
+    style={{}}
+  >
+    <h3
+      className={"openapi-markdown__details-summary-header-params"}
+    >
+      Query Parameters
+    </h3>
+  </summary><div>
+    <ul>
+      <ParamsItem
+        className={"paramsItem"}
+        param={{"name":"address","required":false,"in":"query","description":"The address of the remote connector","schema":{"type":"string"},"enumDescriptions":[]}}
+      >
+        
+      </ParamsItem><ParamsItem
+        className={"paramsItem"}
+        param={{"name":"id","required":true,"in":"query","description":"The ID of the dataset","schema":{"type":"string"},"enumDescriptions":[]}}
+      >
+        
+      </ParamsItem><ParamsItem
+        className={"paramsItem"}
+        param={{"name":"audience","required":false,"in":"query","description":"The audience for the request","schema":{"type":"string"},"enumDescriptions":[]}}
+      >
+        
+      </ParamsItem>
+    </ul>
+  </div>
+</details><div>
+  <div>
+    <ApiTabs
+      label={undefined}
+      id={undefined}
+    >
+      <TabItem
+        label={"200"}
+        value={"200"}
+      >
+        <div>
+          
+          
+          
+          
+          
+        </div><div>
+          <MimeTabs
+            className={"openapi-tabs__mime"}
+            schemaType={"response"}
+          >
+            <TabItem
+              label={"application/json"}
+              value={"application/json"}
+            >
+              <SchemaTabs
+                className={"openapi-tabs__schema"}
+              >
+                <TabItem
+                  label={"Schema"}
+                  value={"Schema"}
+                >
+                  <details
+                    style={{}}
+                    className={"openapi-markdown__details response"}
+                    data-collapsed={false}
+                    open={true}
+                  >
+                    <summary
+                      style={{}}
+                      className={"openapi-markdown__details-summary-response"}
+                    >
+                      <strong>
+                        Schema
+                      </strong>
+                    </summary><div
+                      style={{"textAlign":"left","marginLeft":"1rem"}}
+                    >
+                      
+                    </div><ul
+                      style={{"marginLeft":"1rem"}}
+                    >
+                      <SchemaItem
+                        collapsible={false}
+                        name={"@id"}
+                        required={true}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"dcat:contactPoint"}
+                        required={false}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"dcat:keyword"}
+                        required={false}
+                        schemaName={"string[]"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"array","items":{"type":"string"}}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"dcat:landingPage"}
+                        required={false}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"dcat:theme"}
+                        required={false}
+                        schemaName={"string[]"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"array","items":{"type":"string"}}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"dcat:conformsTo"}
+                        required={false}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"dct:creator"}
+                        required={false}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"dct:description"}
+                        required={false}
+                        schemaName={"string[]"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"array","items":{"type":"string"}}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"dct:identifier"}
+                        required={false}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"dct:isReferencedBy"}
+                        required={false}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"dct:issued"}
+                        required={false}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"dct:language"}
+                        required={false}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"dct:license"}
+                        required={false}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"dct:modified"}
+                        required={false}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"dct:publisher"}
+                        required={false}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"dct:relation"}
+                        required={false}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"dct:title"}
+                        required={false}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"dct:type"}
+                        required={false}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={true}
+                        className={"schemaItem"}
+                      >
+                        <details
+                          style={{}}
+                          className={"openapi-markdown__details"}
+                        >
+                          <summary
+                            style={{}}
+                          >
+                            <span
+                              className={"openapi-schema__container"}
+                            >
+                              <strong
+                                className={"openapi-schema__property"}
+                              >
+                                odrl:hasPolicy
+                              </strong><span
+                                className={"openapi-schema__name"}
+                              >
+                                 object[]
+                              </span>
+                            </span>
+                          </summary><div
+                            style={{"marginLeft":"1rem"}}
+                          >
+                            <li>
+                              <div
+                                style={{"fontSize":"var(--ifm-code-font-size)","opacity":"0.6","marginLeft":"-.5rem","paddingBottom":".5rem"}}
+                              >
+                                Array [
+                              </div>
+                            </li><SchemaItem
+                              collapsible={false}
+                              name={"@id"}
+                              required={true}
+                              schemaName={"string"}
+                              qualifierMessage={undefined}
+                              schema={{"type":"string"}}
+                            >
+                              
+                            </SchemaItem><SchemaItem
+                              collapsible={false}
+                              name={"@type"}
+                              required={true}
+                              schemaName={"string"}
+                              qualifierMessage={undefined}
+                              schema={{"type":"string"}}
+                            >
+                              
+                            </SchemaItem><SchemaItem
+                              collapsible={false}
+                              name={"odrl:assigner"}
+                              required={false}
+                              schemaName={"string"}
+                              qualifierMessage={undefined}
+                              schema={{"type":"string"}}
+                            >
+                              
+                            </SchemaItem><SchemaItem
+                              collapsible={false}
+                              name={"odrl:assignee"}
+                              required={false}
+                              schemaName={"string"}
+                              qualifierMessage={undefined}
+                              schema={{"type":"string"}}
+                            >
+                              
+                            </SchemaItem><SchemaItem
+                              collapsible={false}
+                              name={"odrl:profile"}
+                              required={false}
+                              schemaName={"string"}
+                              qualifierMessage={undefined}
+                              schema={{"type":"string"}}
+                            >
+                              
+                            </SchemaItem><SchemaItem
+                              collapsible={true}
+                              className={"schemaItem"}
+                            >
+                              <details
+                                style={{}}
+                                className={"openapi-markdown__details"}
+                              >
+                                <summary
+                                  style={{}}
+                                >
+                                  <span
+                                    className={"openapi-schema__container"}
+                                  >
+                                    <strong
+                                      className={"openapi-schema__property"}
+                                    >
+                                      odrl:permission
+                                    </strong><span
+                                      className={"openapi-schema__name"}
+                                    >
+                                       object[]
+                                    </span>
+                                  </span>
+                                </summary><div
+                                  style={{"marginLeft":"1rem"}}
+                                >
+                                  <li>
+                                    <div
+                                      style={{"fontSize":"var(--ifm-code-font-size)","opacity":"0.6","marginLeft":"-.5rem","paddingBottom":".5rem"}}
+                                    >
+                                      Array [
+                                    </div>
+                                  </li><SchemaItem
+                                    collapsible={false}
+                                    name={"@type"}
+                                    required={true}
+                                    schemaName={"string"}
+                                    qualifierMessage={undefined}
+                                    schema={{"type":"string"}}
+                                  >
+                                    
+                                  </SchemaItem><SchemaItem
+                                    collapsible={false}
+                                    name={"odrl:assigner"}
+                                    required={false}
+                                    schemaName={"string"}
+                                    qualifierMessage={undefined}
+                                    schema={{"type":"string"}}
+                                  >
+                                    
+                                  </SchemaItem><SchemaItem
+                                    collapsible={false}
+                                    name={"odrl:assignee"}
+                                    required={false}
+                                    schemaName={"string"}
+                                    qualifierMessage={undefined}
+                                    schema={{"type":"string"}}
+                                  >
+                                    
+                                  </SchemaItem><SchemaItem
+                                    collapsible={false}
+                                    name={"odrl:action"}
+                                    required={true}
+                                    schemaName={"string"}
+                                    qualifierMessage={undefined}
+                                    schema={{"type":"string"}}
+                                  >
+                                    
+                                  </SchemaItem><SchemaItem
+                                    collapsible={false}
+                                    name={"odrl:target"}
+                                    required={false}
+                                    schemaName={"string"}
+                                    qualifierMessage={undefined}
+                                    schema={{"type":"string"}}
+                                  >
+                                    
+                                  </SchemaItem><SchemaItem
+                                    collapsible={true}
+                                    className={"schemaItem"}
+                                  >
+                                    <details
+                                      style={{}}
+                                      className={"openapi-markdown__details"}
+                                    >
+                                      <summary
+                                        style={{}}
+                                      >
+                                        <span
+                                          className={"openapi-schema__container"}
+                                        >
+                                          <strong
+                                            className={"openapi-schema__property"}
+                                          >
+                                            odrl:constraint
+                                          </strong><span
+                                            className={"openapi-schema__name"}
+                                          >
+                                             object[]
+                                          </span>
+                                        </span>
+                                      </summary><div
+                                        style={{"marginLeft":"1rem"}}
+                                      >
+                                        <li>
+                                          <div
+                                            style={{"fontSize":"var(--ifm-code-font-size)","opacity":"0.6","marginLeft":"-.5rem","paddingBottom":".5rem"}}
+                                          >
+                                            Array [
+                                          </div>
+                                        </li><SchemaItem
+                                          collapsible={false}
+                                          name={"@type"}
+                                          required={true}
+                                          schemaName={"string"}
+                                          qualifierMessage={undefined}
+                                          schema={{"type":"string"}}
+                                        >
+                                          
+                                        </SchemaItem><SchemaItem
+                                          collapsible={false}
+                                          name={"odrl:leftOperand"}
+                                          required={true}
+                                          schemaName={"string"}
+                                          qualifierMessage={undefined}
+                                          schema={{"type":"string"}}
+                                        >
+                                          
+                                        </SchemaItem><SchemaItem
+                                          collapsible={false}
+                                          name={"odrl:operator"}
+                                          required={true}
+                                          schemaName={"string"}
+                                          qualifierMessage={undefined}
+                                          schema={{"type":"string"}}
+                                        >
+                                          
+                                        </SchemaItem><SchemaItem
+                                          collapsible={false}
+                                          name={"odrl:rightOperand"}
+                                          required={false}
+                                          schemaName={"object"}
+                                          qualifierMessage={undefined}
+                                          schema={{"type":"object"}}
+                                        >
+                                          
+                                        </SchemaItem><SchemaItem
+                                          collapsible={false}
+                                          name={"odrl:rightOperandReference"}
+                                          required={false}
+                                          schemaName={"string"}
+                                          qualifierMessage={undefined}
+                                          schema={{"type":"string"}}
+                                        >
+                                          
+                                        </SchemaItem><li>
+                                          <div
+                                            style={{"fontSize":"var(--ifm-code-font-size)","opacity":"0.6","marginLeft":"-.5rem"}}
+                                          >
+                                            ]
+                                          </div>
+                                        </li>
+                                      </div>
+                                    </details>
+                                  </SchemaItem><SchemaItem
+                                    collapsible={false}
+                                    name={"odrl:Duty"}
+                                    required={false}
+                                    schemaName={"string[]"}
+                                    qualifierMessage={undefined}
+                                    schema={{"type":"array","items":{"type":"string"}}}
+                                  >
+                                    
+                                  </SchemaItem><li>
+                                    <div
+                                      style={{"fontSize":"var(--ifm-code-font-size)","opacity":"0.6","marginLeft":"-.5rem"}}
+                                    >
+                                      ]
+                                    </div>
+                                  </li>
+                                </div>
+                              </details>
+                            </SchemaItem><SchemaItem
+                              collapsible={true}
+                              className={"schemaItem"}
+                            >
+                              <details
+                                style={{}}
+                                className={"openapi-markdown__details"}
+                              >
+                                <summary
+                                  style={{}}
+                                >
+                                  <span
+                                    className={"openapi-schema__container"}
+                                  >
+                                    <strong
+                                      className={"openapi-schema__property"}
+                                    >
+                                      odrl:prohibition
+                                    </strong><span
+                                      className={"openapi-schema__name"}
+                                    >
+                                       object[]
+                                    </span>
+                                  </span>
+                                </summary><div
+                                  style={{"marginLeft":"1rem"}}
+                                >
+                                  <li>
+                                    <div
+                                      style={{"fontSize":"var(--ifm-code-font-size)","opacity":"0.6","marginLeft":"-.5rem","paddingBottom":".5rem"}}
+                                    >
+                                      Array [
+                                    </div>
+                                  </li><SchemaItem
+                                    collapsible={false}
+                                    name={"@type"}
+                                    required={true}
+                                    schemaName={"string"}
+                                    qualifierMessage={undefined}
+                                    schema={{"type":"string"}}
+                                  >
+                                    
+                                  </SchemaItem><SchemaItem
+                                    collapsible={false}
+                                    name={"odrl:assigner"}
+                                    required={false}
+                                    schemaName={"string"}
+                                    qualifierMessage={undefined}
+                                    schema={{"type":"string"}}
+                                  >
+                                    
+                                  </SchemaItem><SchemaItem
+                                    collapsible={false}
+                                    name={"odrl:assignee"}
+                                    required={false}
+                                    schemaName={"string"}
+                                    qualifierMessage={undefined}
+                                    schema={{"type":"string"}}
+                                  >
+                                    
+                                  </SchemaItem><SchemaItem
+                                    collapsible={false}
+                                    name={"odrl:action"}
+                                    required={true}
+                                    schemaName={"string"}
+                                    qualifierMessage={undefined}
+                                    schema={{"type":"string"}}
+                                  >
+                                    
+                                  </SchemaItem><SchemaItem
+                                    collapsible={false}
+                                    name={"odrl:target"}
+                                    required={false}
+                                    schemaName={"string"}
+                                    qualifierMessage={undefined}
+                                    schema={{"type":"string"}}
+                                  >
+                                    
+                                  </SchemaItem><SchemaItem
+                                    collapsible={true}
+                                    className={"schemaItem"}
+                                  >
+                                    <details
+                                      style={{}}
+                                      className={"openapi-markdown__details"}
+                                    >
+                                      <summary
+                                        style={{}}
+                                      >
+                                        <span
+                                          className={"openapi-schema__container"}
+                                        >
+                                          <strong
+                                            className={"openapi-schema__property"}
+                                          >
+                                            odrl:constraint
+                                          </strong><span
+                                            className={"openapi-schema__name"}
+                                          >
+                                             object[]
+                                          </span>
+                                        </span>
+                                      </summary><div
+                                        style={{"marginLeft":"1rem"}}
+                                      >
+                                        <li>
+                                          <div
+                                            style={{"fontSize":"var(--ifm-code-font-size)","opacity":"0.6","marginLeft":"-.5rem","paddingBottom":".5rem"}}
+                                          >
+                                            Array [
+                                          </div>
+                                        </li><SchemaItem
+                                          collapsible={false}
+                                          name={"@type"}
+                                          required={true}
+                                          schemaName={"string"}
+                                          qualifierMessage={undefined}
+                                          schema={{"type":"string"}}
+                                        >
+                                          
+                                        </SchemaItem><SchemaItem
+                                          collapsible={false}
+                                          name={"odrl:leftOperand"}
+                                          required={true}
+                                          schemaName={"string"}
+                                          qualifierMessage={undefined}
+                                          schema={{"type":"string"}}
+                                        >
+                                          
+                                        </SchemaItem><SchemaItem
+                                          collapsible={false}
+                                          name={"odrl:operator"}
+                                          required={true}
+                                          schemaName={"string"}
+                                          qualifierMessage={undefined}
+                                          schema={{"type":"string"}}
+                                        >
+                                          
+                                        </SchemaItem><SchemaItem
+                                          collapsible={false}
+                                          name={"odrl:rightOperand"}
+                                          required={false}
+                                          schemaName={"object"}
+                                          qualifierMessage={undefined}
+                                          schema={{"type":"object"}}
+                                        >
+                                          
+                                        </SchemaItem><SchemaItem
+                                          collapsible={false}
+                                          name={"odrl:rightOperandReference"}
+                                          required={false}
+                                          schemaName={"string"}
+                                          qualifierMessage={undefined}
+                                          schema={{"type":"string"}}
+                                        >
+                                          
+                                        </SchemaItem><li>
+                                          <div
+                                            style={{"fontSize":"var(--ifm-code-font-size)","opacity":"0.6","marginLeft":"-.5rem"}}
+                                          >
+                                            ]
+                                          </div>
+                                        </li>
+                                      </div>
+                                    </details>
+                                  </SchemaItem><li>
+                                    <div
+                                      style={{"fontSize":"var(--ifm-code-font-size)","opacity":"0.6","marginLeft":"-.5rem"}}
+                                    >
+                                      ]
+                                    </div>
+                                  </li>
+                                </div>
+                              </details>
+                            </SchemaItem><SchemaItem
+                              collapsible={true}
+                              className={"schemaItem"}
+                            >
+                              <details
+                                style={{}}
+                                className={"openapi-markdown__details"}
+                              >
+                                <summary
+                                  style={{}}
+                                >
+                                  <span
+                                    className={"openapi-schema__container"}
+                                  >
+                                    <strong
+                                      className={"openapi-schema__property"}
+                                    >
+                                      odrl:obligation
+                                    </strong><span
+                                      className={"openapi-schema__name"}
+                                    >
+                                       object[]
+                                    </span>
+                                  </span>
+                                </summary><div
+                                  style={{"marginLeft":"1rem"}}
+                                >
+                                  <li>
+                                    <div
+                                      style={{"fontSize":"var(--ifm-code-font-size)","opacity":"0.6","marginLeft":"-.5rem","paddingBottom":".5rem"}}
+                                    >
+                                      Array [
+                                    </div>
+                                  </li><SchemaItem
+                                    collapsible={false}
+                                    name={""}
+                                    required={false}
+                                    schemaName={"object"}
+                                    qualifierMessage={undefined}
+                                    schema={{}}
+                                  >
+                                    
+                                  </SchemaItem><li>
+                                    <div
+                                      style={{"fontSize":"var(--ifm-code-font-size)","opacity":"0.6","marginLeft":"-.5rem"}}
+                                    >
+                                      ]
+                                    </div>
+                                  </li>
+                                </div>
+                              </details>
+                            </SchemaItem><SchemaItem
+                              collapsible={false}
+                              name={"odrl:target"}
+                              required={false}
+                              schemaName={"string"}
+                              qualifierMessage={undefined}
+                              schema={{"type":"string"}}
+                            >
+                              
+                            </SchemaItem><li>
+                              <div
+                                style={{"fontSize":"var(--ifm-code-font-size)","opacity":"0.6","marginLeft":"-.5rem"}}
+                              >
+                                ]
+                              </div>
+                            </li>
+                          </div>
+                        </details>
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"dcat:hasVersion"}
+                        required={false}
+                        schemaName={"string[]"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"array","items":{"type":"string"}}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"dcat:isVersionOf"}
+                        required={false}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"dcat:version"}
+                        required={false}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"dcat:hasCurrentVersion"}
+                        required={false}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"dcat:previousVersion"}
+                        required={false}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"@type"}
+                        required={true}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"dcat:distribution"}
+                        required={false}
+                        schemaName={"string[]"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"array","items":{"type":"string"}}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"dcat:spatialResolutionInMeters"}
+                        required={false}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={true}
+                        className={"schemaItem"}
+                      >
+                        <details
+                          style={{}}
+                          className={"openapi-markdown__details"}
+                        >
+                          <summary
+                            style={{}}
+                          >
+                            <span
+                              className={"openapi-schema__container"}
+                            >
+                              <strong
+                                className={"openapi-schema__property"}
+                              >
+                                dcat:temporalResolution
+                              </strong><span
+                                className={"openapi-schema__name"}
+                              >
+                                 object
+                              </span>
+                            </span>
+                          </summary><div
+                            style={{"marginLeft":"1rem"}}
+                          >
+                            <SchemaItem
+                              collapsible={false}
+                              name={"@value"}
+                              required={true}
+                              schemaName={"string"}
+                              qualifierMessage={undefined}
+                              schema={{"type":"string"}}
+                            >
+                              
+                            </SchemaItem><SchemaItem
+                              collapsible={false}
+                              name={"@type"}
+                              required={true}
+                              schemaName={"string"}
+                              qualifierMessage={undefined}
+                              schema={{"type":"string"}}
+                            >
+                              
+                            </SchemaItem>
+                          </div>
+                        </details>
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"dct:accrualPeriodicity"}
+                        required={false}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"dct:spatial"}
+                        required={false}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"dct:temporal"}
+                        required={false}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"prov:wasGeneratedBy"}
+                        required={false}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem>
+                    </ul>
+                  </details>
+                </TabItem><TabItem
+                  label={"Example (from schema)"}
+                  value={"Example (from schema)"}
+                >
+                  <ResponseSamples
+                    responseExample={"{\n  \"@id\": \"string\",\n  \"dcat:contactPoint\": \"string\",\n  \"dcat:keyword\": [\n    \"string\"\n  ],\n  \"dcat:landingPage\": \"string\",\n  \"dcat:theme\": [\n    \"string\"\n  ],\n  \"dcat:conformsTo\": \"string\",\n  \"dct:creator\": \"string\",\n  \"dct:description\": [\n    \"string\"\n  ],\n  \"dct:identifier\": \"string\",\n  \"dct:isReferencedBy\": \"string\",\n  \"dct:issued\": \"string\",\n  \"dct:language\": \"string\",\n  \"dct:license\": \"string\",\n  \"dct:modified\": \"string\",\n  \"dct:publisher\": \"string\",\n  \"dct:relation\": \"string\",\n  \"dct:title\": \"string\",\n  \"dct:type\": \"string\",\n  \"odrl:hasPolicy\": [\n    {\n      \"@id\": \"string\",\n      \"@type\": \"string\",\n      \"odrl:assigner\": \"string\",\n      \"odrl:assignee\": \"string\",\n      \"odrl:profile\": \"string\",\n      \"odrl:permission\": [\n        {\n          \"@type\": \"string\",\n          \"odrl:assigner\": \"string\",\n          \"odrl:assignee\": \"string\",\n          \"odrl:action\": \"string\",\n          \"odrl:target\": \"string\",\n          \"odrl:constraint\": [\n            {\n              \"@type\": \"string\",\n              \"odrl:leftOperand\": \"string\",\n              \"odrl:operator\": \"string\",\n              \"odrl:rightOperand\": {},\n              \"odrl:rightOperandReference\": \"string\"\n            }\n          ],\n          \"odrl:Duty\": [\n            \"string\"\n          ]\n        }\n      ],\n      \"odrl:prohibition\": [\n        {\n          \"@type\": \"string\",\n          \"odrl:assigner\": \"string\",\n          \"odrl:assignee\": \"string\",\n          \"odrl:action\": \"string\",\n          \"odrl:target\": \"string\",\n          \"odrl:constraint\": [\n            {\n              \"@type\": \"string\",\n              \"odrl:leftOperand\": \"string\",\n              \"odrl:operator\": \"string\",\n              \"odrl:rightOperand\": {},\n              \"odrl:rightOperandReference\": \"string\"\n            }\n          ]\n        }\n      ],\n      \"odrl:obligation\": [\n        {}\n      ],\n      \"odrl:target\": \"string\"\n    }\n  ],\n  \"dcat:hasVersion\": [\n    \"string\"\n  ],\n  \"dcat:isVersionOf\": \"string\",\n  \"dcat:version\": \"string\",\n  \"dcat:hasCurrentVersion\": \"string\",\n  \"dcat:previousVersion\": \"string\",\n  \"@type\": \"string\",\n  \"dcat:distribution\": [\n    \"string\"\n  ],\n  \"dcat:spatialResolutionInMeters\": \"string\",\n  \"dcat:temporalResolution\": {\n    \"@value\": \"string\",\n    \"@type\": \"string\"\n  },\n  \"dct:accrualPeriodicity\": \"string\",\n  \"dct:spatial\": \"string\",\n  \"dct:temporal\": \"string\",\n  \"prov:wasGeneratedBy\": \"string\"\n}"}
+                    language={"json"}
+                  >
+                    
+                  </ResponseSamples>
+                </TabItem>
+              </SchemaTabs>
+            </TabItem>
+          </MimeTabs>
+        </div>
+      </TabItem><TabItem
+        label={"400"}
+        value={"400"}
+      >
+        <div>
+          
+          
+          Invalid request parameters
+          
+          
+        </div><div>
+          
+        </div>
+      </TabItem><TabItem
+        label={"403"}
+        value={"403"}
+      >
+        <div>
+          
+          
+          Forbidden
+          
+          
+        </div><div>
+          <MimeTabs
+            className={"openapi-tabs__mime"}
+            schemaType={"response"}
+          >
+            <TabItem
+              label={"application/json"}
+              value={"application/json"}
+            >
+              <SchemaTabs
+                className={"openapi-tabs__schema"}
+              >
+                <TabItem
+                  label={"Schema"}
+                  value={"Schema"}
+                >
+                  <details
+                    style={{}}
+                    className={"openapi-markdown__details response"}
+                    data-collapsed={false}
+                    open={true}
+                  >
+                    <summary
+                      style={{}}
+                      className={"openapi-markdown__details-summary-response"}
+                    >
+                      <strong>
+                        Schema
+                      </strong>
+                    </summary><div
+                      style={{"textAlign":"left","marginLeft":"1rem"}}
+                    >
+                      
+                    </div><ul
+                      style={{"marginLeft":"1rem"}}
+                    >
+                      <SchemaItem
+                        collapsible={false}
+                        name={"name"}
+                        required={true}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"status"}
+                        required={true}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"code"}
+                        required={true}
+                        schemaName={"number"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"number"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"message"}
+                        required={false}
+                        schemaName={"object"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"object"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"error"}
+                        required={false}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem>
+                    </ul>
+                  </details>
+                </TabItem><TabItem
+                  label={"Example (from schema)"}
+                  value={"Example (from schema)"}
+                >
+                  <ResponseSamples
+                    responseExample={"{\n  \"name\": \"string\",\n  \"status\": \"string\",\n  \"code\": 0,\n  \"message\": {},\n  \"error\": \"string\"\n}"}
+                    language={"json"}
+                  >
+                    
+                  </ResponseSamples>
+                </TabItem>
+              </SchemaTabs>
+            </TabItem>
+          </MimeTabs>
+        </div>
+      </TabItem>
+    </ApiTabs>
+  </div>
+</div>
+      
