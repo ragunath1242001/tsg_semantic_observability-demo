@@ -34,7 +34,7 @@ release:
   script:
     - cd release/
     - npm install
-    - VERSION=$(node version.js)
+    - VERSION=v$(node version.js)
     - echo $VERSION
     - cd ../website/
     - npm install
