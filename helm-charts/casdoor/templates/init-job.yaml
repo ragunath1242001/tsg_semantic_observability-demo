@@ -2,15 +2,15 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: { { printf "%s-init" (include "tsg.fullname" .) } }
-  labels: { { - include "tsg.labels" . | nindent 4 } }
+  name: {{ printf "%s-init" (include "tsg.fullname" .) }}
+  labels: {{- include "tsg.labels" . | nindent 4 }}
 spec:
   template:
     spec:
-      serviceAccountName: { { include "tsg.serviceAccountName" . } }
+      serviceAccountName: {{ include "tsg.serviceAccountName" . }}
       restartPolicy: "OnFailure"
       containers:
-        - image: { { .Values.initImage } }
+        - image: {{ .Values.initImage }}
           name: casdoor-init
           imagePullPolicy: Always
           args: ["while true; do sleep 5; done;"]
@@ -21,4 +21,4 @@ spec:
       volumes:
         - name: init-config
           configMap:
-            name: { { printf "%s-init-config" (include "tsg.fullname" .) } }
+            name: {{ printf "%s-init-config" (include "tsg.fullname" .) }}
