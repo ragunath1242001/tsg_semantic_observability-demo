@@ -44,8 +44,8 @@ release:
     - npm run build:gitlab
     - mv public ../public
     - git add .
-    - cd ../release/
-    - node release.js
+    - cd ..
+    - node ./release/release.js
   artifacts:
     paths:
       - public
