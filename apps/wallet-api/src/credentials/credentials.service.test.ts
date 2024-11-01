@@ -307,7 +307,7 @@ describe("Credentials Service", () => {
         http.get("https://issuer2.example.com/.well-known/did.json", () => {
           return HttpResponse.json(mockDidDocument);
         }),
-        http.get("https://example.com/management/credentials/dataspace", () => {
+        http.get("https://example.com/management/credentials", () => {
           return HttpResponse.json(mockCredentials);
         })
       );
@@ -394,7 +394,7 @@ describe("Credentials Service", () => {
         http.get("https://issuer2.example.com/.well-known/did.json", () => {
           return HttpResponse.json(mockDidDocumentWithoutManagement);
         }),
-        http.get("https://example.com/management/credentials/dataspace", () => {
+        http.get("https://example.com/management/credentials", () => {
           return HttpResponse.json(mockCredentials);
         })
       );
