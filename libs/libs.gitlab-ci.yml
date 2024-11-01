@@ -9,7 +9,7 @@
 common-dsp-package:
   extends: .npm-package
   script:
-    - echo "//registry.npmjs.org/:_authToken=${NPMJS_TOKEN}" >> ./libs/common-dsp/.npmrc
+    - echo "//registry.npmjs.org/:_authToken=${NPMJS_TOKEN}" >> ./.npmrc
     - pnpm install --frozen-lockfile
     - pnpm --filter common-dsp build
     - pnpm --filter common-dsp publish --no-git-checks
