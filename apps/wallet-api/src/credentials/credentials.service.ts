@@ -148,7 +148,7 @@ export class CredentialsService {
         const credentials = await Promise.all(
           serviceEndpoints.flatMap(async (serviceEndpoint) => {
             const response = await axios.get<Credentials[]>(
-              `${serviceEndpoint}/credentials/dataspace`
+              `${serviceEndpoint}/credentials`
             );
             return response.data;
           })

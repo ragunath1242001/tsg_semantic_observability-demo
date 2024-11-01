@@ -127,7 +127,6 @@ export class RegistryService implements OnApplicationBootstrap {
     const results = await Promise.allSettled(
       addresses.map(async (address) => {
         try {
-          this.logger.debug(`Crawling address ${JSON.stringify(address)}`);
           const catalog = await this.getCatalog(address);
           this.logger.debug(
             `Crawled address ${address.address} (${address.didId})`
