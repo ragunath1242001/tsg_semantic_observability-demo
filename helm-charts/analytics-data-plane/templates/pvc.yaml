@@ -3,7 +3,8 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ .name }}
+  name: {{ template "tsg.fullname" $ }}-pvc
+  labels: {{ include "tsg.labels" $ | nindent 4 }}
 spec:
   accessModes:
     - {{ .accessModes | default "ReadWriteOnce" }}
