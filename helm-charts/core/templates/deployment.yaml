@@ -61,5 +61,5 @@ spec:
       {{- if .Values.persistentVolume }}
       - name: {{ template "tsg.name" . }}-pvc
         persistentVolumeClaim:
-          claimName: {{ .Values.persistentVolume.name }}
+          claimName: {{ template "tsg.fullname" . }}-pvc
       {{- end }}

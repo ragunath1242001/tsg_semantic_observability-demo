@@ -59,6 +59,16 @@ helm-stable:wallet:
   variables:
     FOLDER: wallet
 
+helm-devel:analytics-data-plane:
+  extends: .helm-devel
+  variables:
+    FOLDER: analytics-data-plane
+
+helm-stable:analytics-data-plane:
+  extends: .helm-stable
+  variables:
+    FOLDER: analytics-data-plane
+
 helm-devel:http-data-plane:
   extends: .helm-devel
   variables:
