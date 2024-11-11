@@ -1,12 +1,10 @@
-import { HttpStatus, Injectable } from "@nestjs/common";
+import { HttpStatus, Injectable, OnModuleInit } from "@nestjs/common";
 import { ConstraintDao, RuleDao } from "../model/rule.dao";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Rule, RuleType } from "./rule.dto";
 import { DSPError } from "../utils/errors/error";
 import {
-  Agreement,
-  AgreementDto,
   ConstraintDto,
   DutyDto,
   ODRLOperator,
@@ -24,14 +22,16 @@ import {
 } from "./constraint.dto";
 
 @Injectable()
-export class RuleRepositoryService {
+export class RuleRepositoryService implements OnModuleInit {
   constructor(
     @InjectRepository(RuleDao)
     readonly ruleRepository: Repository<RuleDao>,
     @InjectRepository(ConstraintDao)
     readonly constraintRepository: Repository<ConstraintDao>
-  ) {
-    setTimeout(this.insertInitialConstraints.bind(this), 2000);
+  ) {}
+
+  async onModuleInit() {
+    await this.insertInitialConstraints();
   }
 
   async insertInitialConstraints() {

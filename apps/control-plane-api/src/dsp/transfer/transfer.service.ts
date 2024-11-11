@@ -264,7 +264,7 @@ export class TransferService {
       ]
     };
     await this.transferDetailRepository.save(transfer);
-    this.dspGateway.sendUpdateToClients("transfer:create", "created");
+    this.dspGateway.sendUpdateToClients("transfer:create", transfer.localId);
     return {
       localId,
       remoteId: transferProcess.providerPid,
@@ -339,7 +339,7 @@ export class TransferService {
         );
       }, 2000);
     }
-    this.dspGateway.sendUpdateToClients("transfer:create", "created");
+    this.dspGateway.sendUpdateToClients("transfer:create", transfer.localId);
     return transferProcess;
   }
 
@@ -394,7 +394,7 @@ export class TransferService {
     );
     transfer.state = TransferState.STARTED;
     await this.transferDetailRepository.save(transfer);
-    this.dspGateway.sendUpdateToClients("transfer:update", "updated");
+    this.dspGateway.sendUpdateToClients("transfer:update", transfer.localId);
     return {
       status: "OK"
     };
@@ -428,7 +428,7 @@ export class TransferService {
     }
     transfer.state = TransferState.STARTED;
     await this.transferDetailRepository.save(transfer);
-    this.dspGateway.sendUpdateToClients("transfer:update", "updated");
+    this.dspGateway.sendUpdateToClients("transfer:update", transfer.localId);
     return {
       status: "OK"
     };
@@ -464,7 +464,7 @@ export class TransferService {
     );
     transfer.state = TransferState.COMPLETED;
     await this.transferDetailRepository.save(transfer);
-    this.dspGateway.sendUpdateToClients("transfer:update", "updated");
+    this.dspGateway.sendUpdateToClients("transfer:update", transfer.localId);
     return {
       status: "OK"
     };
@@ -496,7 +496,7 @@ export class TransferService {
 
     transfer.state = TransferState.COMPLETED;
     await this.transferDetailRepository.save(transfer);
-    this.dspGateway.sendUpdateToClients("transfer:update", "updated");
+    this.dspGateway.sendUpdateToClients("transfer:update", transfer.localId);
     return {
       status: "OK"
     };
@@ -538,7 +538,7 @@ export class TransferService {
     );
     transfer.state = TransferState.TERMINATED;
     await this.transferDetailRepository.save(transfer);
-    this.dspGateway.sendUpdateToClients("transfer:update", "updated");
+    this.dspGateway.sendUpdateToClients("transfer:update", transfer.localId);
     return {
       status: "OK"
     };
@@ -572,7 +572,7 @@ export class TransferService {
 
     transfer.state = TransferState.TERMINATED;
     await this.transferDetailRepository.save(transfer);
-    this.dspGateway.sendUpdateToClients("transfer:update", "updated");
+    this.dspGateway.sendUpdateToClients("transfer:update", transfer.localId);
     return {
       status: "OK"
     };
@@ -624,7 +624,7 @@ export class TransferService {
     );
     transfer.state = TransferState.SUSPENDED;
     await this.transferDetailRepository.save(transfer);
-    this.dspGateway.sendUpdateToClients("transfer:update", "updated");
+    this.dspGateway.sendUpdateToClients("transfer:update", transfer.localId);
     return {
       status: "OK"
     };
@@ -656,7 +656,7 @@ export class TransferService {
     );
     transfer.state = TransferState.SUSPENDED;
     await this.transferDetailRepository.save(transfer);
-    this.dspGateway.sendUpdateToClients("transfer:update", "updated");
+    this.dspGateway.sendUpdateToClients("transfer:update", transfer.localId);
     return {
       status: "OK"
     };

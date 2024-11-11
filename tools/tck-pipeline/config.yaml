@@ -1,0 +1,33 @@
+db:
+  type: sqlite
+  database: ":memory:"
+
+server:
+  port: "32490"
+  listen: "0.0.0.0"
+  publicDomain: localhost:32490
+  publicAddress: http://localhost:32490/api
+
+auth:
+  enabled: false
+
+runtime:
+  controlPlaneInteractions: manual
+
+registry:
+  useRegistry: false
+
+iam:
+  type: dev
+  didId: did:web:localhost%3A3001
+  tokenUrl: http://localhost:3001/api/auth/login
+  walletUrl: http://localhost:3001/api
+  clientId: client
+  clientSecret: secret
+
+initCatalog:
+  creator: did:web:localhost%3A3001
+  publisher: did:web:localhost%3A3001
+  title: TSG Test Connector
+  description: TSG Test Connector testing Data Space Protocol support
+  datasets: []
