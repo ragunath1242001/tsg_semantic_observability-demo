@@ -36,6 +36,7 @@ export class DeserializePipe<
         err.errors.forEach((error) => {
           errorMessages[error.property] = `${error}`;
         });
+        this.logger.debug(err.message);
         throw new DSPError(
           {
             message: `Validating ${

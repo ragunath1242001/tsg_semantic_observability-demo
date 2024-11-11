@@ -29,6 +29,11 @@
     {
       "name": "common-dsp",
       "rootPath": "libs/common-dsp"
+    },
+    {
+      "name": "tck",
+      "rootPath": "tools/tck-pipeline",
+      "runMode": "on-demand"
     }
   ]
 }

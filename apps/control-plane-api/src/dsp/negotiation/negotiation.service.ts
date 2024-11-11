@@ -264,7 +264,7 @@ export class NegotiationService {
       events: []
     };
 
-    return this.createNegotiationDetail(negotiation, "local");
+    return await this.createNegotiationDetail(negotiation, "local");
   }
 
   async createNegotiationDetail(
@@ -278,7 +278,10 @@ export class NegotiationService {
     });
     negotiation.events.push(event);
     await this.negotiationDetailRepository.save(negotiation);
-    this.dspGateway.sendUpdateToClients("negotiation:create", "created");
+    this.dspGateway.sendUpdateToClients(
+      "negotiation:create",
+      negotiation.localId
+    );
     return negotiation;
   }
 
@@ -313,7 +316,6 @@ export class NegotiationService {
       events: []
     };
     await this.createNegotiationDetail(negotiation, "remote");
-    this.dspGateway.sendUpdateToClients("negotiation:create", "created");
     return contractNegotiation;
   }
 
@@ -350,7 +352,10 @@ export class NegotiationService {
     });
     negotiation.offer = offer;
     await this.negotiationDetailRepository.save(negotiation);
-    this.dspGateway.sendUpdateToClients("negotiation:create", "created");
+    this.dspGateway.sendUpdateToClients(
+      "negotiation:create",
+      negotiation.localId
+    );
     return negotiation;
   }
 
@@ -379,7 +384,10 @@ export class NegotiationService {
     negotiation.state = ContractNegotiationState.REQUESTED;
     negotiation.offer = requestMessage.offer;
     await this.negotiationDetailRepository.save(negotiation);
-    this.dspGateway.sendUpdateToClients("negotiation:update", "updated");
+    this.dspGateway.sendUpdateToClients(
+      "negotiation:update",
+      negotiation.localId
+    );
     return new ContractNegotiation({
       providerPid: negotiation.localId,
       consumerPid: negotiation.remoteId,
@@ -421,7 +429,10 @@ export class NegotiationService {
     negotiation.offer = contractOfferMessage.offer;
     negotiation.state = ContractNegotiationState.OFFERED;
     await this.negotiationDetailRepository.save(negotiation);
-    this.dspGateway.sendUpdateToClients("negotiation:update", "updated");
+    this.dspGateway.sendUpdateToClients(
+      "negotiation:update",
+      negotiation.localId
+    );
     return {
       status: "OK"
     };
@@ -447,7 +458,10 @@ export class NegotiationService {
     negotiation.offer = contractOfferMessage.offer;
     negotiation.state = ContractNegotiationState.OFFERED;
     await this.negotiationDetailRepository.save(negotiation);
-    this.dspGateway.sendUpdateToClients("negotiation:update", "updated");
+    this.dspGateway.sendUpdateToClients(
+      "negotiation:update",
+      negotiation.localId
+    );
     return {
       status: "OK"
     };
@@ -477,7 +491,10 @@ export class NegotiationService {
     );
     negotiation.state = ContractNegotiationState.ACCEPTED;
     await this.negotiationDetailRepository.save(negotiation);
-    this.dspGateway.sendUpdateToClients("negotiation:update", "updated");
+    this.dspGateway.sendUpdateToClients(
+      "negotiation:update",
+      negotiation.localId
+    );
     return {
       status: "OK"
     };
@@ -535,7 +552,10 @@ export class NegotiationService {
     });
     negotiation.state = newState;
     await this.negotiationDetailRepository.save(negotiation);
-    this.dspGateway.sendUpdateToClients("negotiation:update", "updated");
+    this.dspGateway.sendUpdateToClients(
+      "negotiation:update",
+      negotiation.localId
+    );
     return {
       status: "OK"
     };
@@ -596,7 +616,10 @@ export class NegotiationService {
         id: agreementDao.id
       }
     });
-    this.dspGateway.sendUpdateToClients("negotiation:update", "updated");
+    this.dspGateway.sendUpdateToClients(
+      "negotiation:update",
+      negotiation.localId
+    );
     return {
       status: "OK"
     };
@@ -632,7 +655,10 @@ export class NegotiationService {
       ...negotiation,
       agreementDao: agreementDao
     });
-    this.dspGateway.sendUpdateToClients("negotiation:update", "updated");
+    this.dspGateway.sendUpdateToClients(
+      "negotiation:update",
+      negotiation.localId
+    );
     return {
       status: "OK"
     };
@@ -692,7 +718,10 @@ export class NegotiationService {
     );
     negotiation.state = ContractNegotiationState.VERIFIED;
     await this.negotiationDetailRepository.save(negotiation);
-    this.dspGateway.sendUpdateToClients("negotiation:update", "updated");
+    this.dspGateway.sendUpdateToClients(
+      "negotiation:update",
+      negotiation.localId
+    );
     return {
       status: "OK"
     };
@@ -742,7 +771,10 @@ export class NegotiationService {
     });
     negotiation.state = ContractNegotiationState.VERIFIED;
     await this.negotiationDetailRepository.save(negotiation);
-    this.dspGateway.sendUpdateToClients("negotiation:update", "updated");
+    this.dspGateway.sendUpdateToClients(
+      "negotiation:update",
+      negotiation.localId
+    );
     return {
       status: "OK"
     };
@@ -800,7 +832,10 @@ export class NegotiationService {
       ...negotiation,
       agreementDao: agreementDao
     });
-    this.dspGateway.sendUpdateToClients("negotiation:update", "updated");
+    this.dspGateway.sendUpdateToClients(
+      "negotiation:update",
+      negotiation.localId
+    );
     return {
       status: "OK"
     };
@@ -826,7 +861,10 @@ export class NegotiationService {
     });
     negotiation.state = ContractNegotiationState.TERMINATED;
     await this.negotiationDetailRepository.save(negotiation);
-    this.dspGateway.sendUpdateToClients("negotiation:update", "updated");
+    this.dspGateway.sendUpdateToClients(
+      "negotiation:update",
+      negotiation.localId
+    );
     return {
       status: "OK"
     };
@@ -852,7 +890,10 @@ export class NegotiationService {
     });
     negotiation.state = ContractNegotiationState.TERMINATED;
     await this.negotiationDetailRepository.save(negotiation);
-    this.dspGateway.sendUpdateToClients("negotiation:update", "updated");
+    this.dspGateway.sendUpdateToClients(
+      "negotiation:update",
+      negotiation.localId
+    );
     return {
       status: "OK"
     };
