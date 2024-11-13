@@ -28,7 +28,9 @@
     "test:analytics-data-plane-ci": "pnpm --filter analytics-data-plane-api jest:ci",
     "test:wallet-ci": "pnpm --filter wallet-api jest:ci",
     "tck:local": "pnpm --filter tck-pipeline tck:local",
-    "tck": "pnpm --filter tck-pipeline tck"
+    "tck": "pnpm --filter tck-pipeline tck",
+    "migrations:check": "pnpm -r migrations:check",
+    "migrations:generate": "pnpm -r migrations:generate"
   },
   "keywords": [],
   "author": "",

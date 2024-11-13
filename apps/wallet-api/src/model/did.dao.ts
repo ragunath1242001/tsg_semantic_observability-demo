@@ -5,7 +5,7 @@ import { DIDLogEntry } from "../did/tdw/method/interfaces.js";
 
 @Entity()
 export class DIDDocuments extends MetaEntity {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn({ type: "integer" })
   id!: number;
 
   @Column("simple-json")
@@ -14,22 +14,22 @@ export class DIDDocuments extends MetaEntity {
 
 @Entity()
 export class DIDService extends MetaEntity {
-  @PrimaryColumn()
+  @PrimaryColumn({ type: String })
   id!: string;
 
-  @Column()
+  @Column({ type: String })
   type!: string;
 
-  @Column()
+  @Column({ type: String })
   serviceEndpoint!: string;
 }
 
 @Entity()
 export class DIDLogs extends MetaEntity {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn("increment")
   id!: number;
 
-  @Column()
+  @Column({ type: String })
   scid!: string;
 
   @Column("simple-json")

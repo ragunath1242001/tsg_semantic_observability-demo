@@ -2,15 +2,15 @@ import { Column, Entity, PrimaryColumn } from "typeorm";
 
 @Entity({ name: "metadata" })
 export class FileMetadataDao {
-  @PrimaryColumn()
+  @PrimaryColumn({ type: String })
   identifier!: string;
 
-  @Column()
+  @Column({ type: "int" })
   fileSizeInBytes!: number;
 
-  @Column()
+  @Column({ type: String })
   fileName!: string;
 
-  @Column()
+  @Column({ type: Boolean })
   presentInLastCheck!: boolean;
 }

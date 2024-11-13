@@ -4,10 +4,10 @@ import { Column, Entity, PrimaryColumn } from "typeorm";
 
 @Entity()
 export class DataPlaneStateDao {
-  @PrimaryColumn()
+  @PrimaryColumn({ type: String })
   identifier!: string;
 
-  @Column()
+  @Column({ type: String })
   managementToken!: string;
 
   @Column("simple-json")

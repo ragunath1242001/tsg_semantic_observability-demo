@@ -8,25 +8,25 @@ import { LogEntry } from "./logging.dto";
 
 @Entity()
 export class IngressLogDao implements LogEntry {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn("increment")
   identifier!: number;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: String })
   date!: Date;
 
-  @Column("varchar", { length: 100 })
+  @Column({ type: String, length: 100 })
   remoteParty!: string;
 
-  @Column("varchar", { length: 100 })
+  @Column({ type: String, length: 100 })
   transferId!: string;
 
-  @Column("varchar", { length: 100 })
+  @Column({ type: String, length: 100 })
   datasetId!: string;
 
-  @Column("varchar", { length: 100 })
+  @Column({ type: String, length: 100 })
   path!: string;
 
-  @Column("varchar", { length: 10 })
+  @Column({ type: String, length: 10 })
   method!: string;
 
   @Column("smallint")
@@ -38,25 +38,25 @@ export class IngressLogDao implements LogEntry {
 
 @Entity()
 export class EgressLogDao implements LogEntry {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn("increment")
   identifier!: number;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: String })
   date!: Date;
 
-  @Column("varchar", { length: 100 })
+  @Column({ type: String, length: 100 })
   remoteParty!: string;
 
-  @Column("varchar", { length: 100 })
+  @Column({ type: String, length: 100 })
   transferId!: string;
 
-  @Column("varchar", { length: 100 })
+  @Column({ type: String, length: 100 })
   datasetId!: string;
 
-  @Column("varchar", { length: 100 })
+  @Column({ type: String, length: 100 })
   path!: string;
 
-  @Column("varchar", { length: 10 })
+  @Column({ type: String, length: 10 })
   method!: string;
 
   @Column("smallint")

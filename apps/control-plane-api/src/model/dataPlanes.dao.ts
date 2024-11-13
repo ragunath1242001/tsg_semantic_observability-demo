@@ -5,15 +5,15 @@ import { MetaEntity } from "./common.dao";
 
 @Entity({ name: "dataplanedetails" })
 export class DataPlaneDao extends MetaEntity implements IDataPlane {
-  @PrimaryColumn()
+  @PrimaryColumn({ type: String })
   identifier!: string;
-  @Column("simple-json", { nullable: true })
+  @Column({ type: String, nullable: true })
   created?: Date;
-  @Column("simple-json", { nullable: true })
+  @Column({ type: String, nullable: true })
   modified?: Date;
-  @Column()
+  @Column({ type: "simple-enum", enum: HealthStatus })
   health!: HealthStatus;
-  @Column()
+  @Column({ type: "int" })
   missedHealthChecks!: number;
   @OneToMany(() => DatasetDao, (dataset) => dataset._dataPlane, {
     cascade: true,
@@ -23,20 +23,20 @@ export class DataPlaneDao extends MetaEntity implements IDataPlane {
   get datasets(): Array<Dataset> | undefined {
     return this._datasets?.map((dataset) => new Dataset(dataset));
   }
-  @Column({ nullable: true })
+  @Column({ type: String, nullable: true })
   etag?: string;
-  @Column()
+  @Column({ type: String })
   dataplaneType!: string;
-  @Column()
+  @Column({ type: String })
   endpointPrefix!: string;
-  @Column()
+  @Column({ type: String })
   callbackAddress!: string;
-  @Column()
+  @Column({ type: String })
   managementAddress!: string;
-  @Column()
+  @Column({ type: String })
   managementToken!: string;
-  @Column()
+  @Column({ type: String })
   catalogSynchronization!: "push" | "pull";
-  @Column()
+  @Column({ type: String })
   role!: "consumer" | "provider" | "both";
 }

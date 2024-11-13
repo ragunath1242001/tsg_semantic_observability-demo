@@ -6,7 +6,7 @@ import { CatalogDto } from "@tsg-dsp/common-dsp";
 export class RegistryDao extends MetaEntity {
   @PrimaryGeneratedColumn("increment")
   id!: number;
-  @Column()
+  @Column({ type: String })
   catalogId!: string;
   @Column("simple-json")
   catalogJson!: CatalogDto;

@@ -27,7 +27,7 @@ export class MetaEntity {
 }
 
 export class AutoIdEntity extends MetaEntity {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn({ type: "int" })
   _id!: number;
 }
 

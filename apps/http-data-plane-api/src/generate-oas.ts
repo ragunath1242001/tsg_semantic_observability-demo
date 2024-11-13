@@ -15,6 +15,7 @@ async function bootstrap() {
   });
   const config = new DocumentBuilder()
     .setTitle("TSG HTTP Data Plane")
+    .setVersion("")
     .setDescription(
       `This OpenAPI specification shows the endpoints of the HTTP Data Plane.`
     )

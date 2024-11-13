@@ -32,7 +32,9 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
     TypeOrmModule.forRoot({
       ...config.db,
       autoLoadEntities: true,
-      synchronize: true
+      synchronize: false,
+      migrations: [`dist/migrations/*-${config.db.type}{.ts,.js}`],
+      migrationsRun: true
     }),
     DataPlaneModule,
     DspClientModule,

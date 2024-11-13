@@ -21,17 +21,17 @@ import { AutoIdEntity, jsonLdTransformer, MetaEntity } from "./common.dao";
 
 @Entity()
 export class TransferEventDao extends AutoIdEntity implements ITransferEvent {
-  @Column()
+  @Column({ type: String })
   time!: Date;
-  @Column()
+  @Column({ type: "simple-enum", enum: TransferState })
   state!: TransferState;
-  @Column({ nullable: true })
+  @Column({ type: String, nullable: true })
   localMessage?: string;
-  @Column({ nullable: true })
+  @Column({ type: String, nullable: true })
   code?: string;
   @Column("simple-json", { nullable: true })
   reason?: Multilanguage[];
-  @Column()
+  @Column({ type: String })
   type!: "local" | "remote";
   @ManyToOne(() => TransferDetailDao)
   _status?: Relation<TransferDetailDao>;
@@ -39,25 +39,25 @@ export class TransferEventDao extends AutoIdEntity implements ITransferEvent {
 
 @Entity()
 export class TransferDetailDao extends MetaEntity implements ITransferStatus {
-  @PrimaryColumn()
+  @PrimaryColumn({ type: String })
   localId!: string;
-  @Column({ nullable: true })
+  @Column({ type: String, nullable: true })
   remoteId?: string;
-  @Column()
+  @Column({ type: String })
   role!: TransferRole;
-  @Column()
+  @Column({ type: String })
   remoteAddress!: string;
-  @Column()
+  @Column({ type: String })
   remoteParty!: string;
-  @Column()
+  @Column({ type: "simple-enum", enum: TransferState })
   state!: TransferState;
   @Column("simple-json", {
     transformer: jsonLdTransformer
   })
   process!: TransferProcess;
-  @Column()
+  @Column({ type: String })
   agreementId!: string;
-  @Column({ nullable: true })
+  @Column({ type: String, nullable: true })
   format?: string;
   @Column("simple-json", {
     nullable: true,

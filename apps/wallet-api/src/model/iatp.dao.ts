@@ -6,12 +6,12 @@ export class SIToken extends MetaEntity {
   @PrimaryGeneratedColumn("increment")
   id!: number;
 
-  @Column({ nullable: true })
+  @Column({ type: String, nullable: true })
   accessToken?: string;
 
-  @Column()
+  @Column({ type: String })
   audience!: string;
 
-  @Column({ nullable: true })
+  @Column({ type: String, nullable: true })
   scope?: string;
 }

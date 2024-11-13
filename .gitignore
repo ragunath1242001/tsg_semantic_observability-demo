@@ -52,3 +52,5 @@ iam/
 config.*.yaml
 
 dev.sessions.json
+
+website/docs/apis/*/**

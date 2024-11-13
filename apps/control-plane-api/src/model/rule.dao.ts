@@ -17,16 +17,16 @@ export class ConstraintDao {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column()
+  @Column({ type: "simple-enum", enum: ConstraintType })
   type!: ConstraintType;
 
-  @Column()
+  @Column({ type: String })
   title!: string;
 
-  @Column({ nullable: true })
+  @Column({ type: String, nullable: true })
   description?: string;
 
-  @Column({ nullable: true })
+  @Column({ type: String, nullable: true })
   logicalOperator?: "and" | "or";
 
   @ManyToMany(() => ConstraintDao, {
@@ -36,19 +36,19 @@ export class ConstraintDao {
   @JoinTable()
   constraints?: ConstraintDao[];
 
-  @Column({ nullable: true, unique: true })
+  @Column({ type: String, nullable: true, unique: true })
   leftOperand?: string;
 
-  @Column({ nullable: true })
+  @Column({ type: String, nullable: true })
   operator?: string;
 
-  @Column({ nullable: true })
+  @Column({ type: String, nullable: true })
   contextPath?: string;
 
   @Column("simple-array", { nullable: true })
   evaluable?: EvaluationTrigger[];
 
-  @Column({ nullable: true })
+  @Column({ type: "simple-enum", enum: DataType, nullable: true })
   dataType?: DataType;
 }
 

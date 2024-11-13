@@ -2,13 +2,13 @@ import { Exclude } from "class-transformer";
 import { CreateDateColumn, UpdateDateColumn, DeleteDateColumn } from "typeorm";
 
 export class MetaEntity {
-  @CreateDateColumn()
+  @CreateDateColumn({ type: Date })
   created!: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ type: Date })
   modified!: Date;
 
-  @DeleteDateColumn()
+  @DeleteDateColumn({ type: Date })
   @Exclude()
   deleted!: Date;
 }
