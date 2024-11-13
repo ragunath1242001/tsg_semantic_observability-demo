@@ -27,6 +27,7 @@ RUN pnpm run --filter "./libs/common*" -r build
 RUN pnpm run --filter "./libs/wallet*" --parallel -r build
 RUN pnpm run --filter "./apps/wallet*" --parallel -r build
 RUN pnpm deploy --filter wallet-api --prod /prod/wallet-api
+COPY apps/wallet-api/config.yaml /prod/wallet-api
 RUN pnpm deploy --filter wallet-ui --prod /prod/wallet-ui
 
 FROM base AS deploy 

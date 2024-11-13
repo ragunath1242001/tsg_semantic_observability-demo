@@ -27,6 +27,7 @@ RUN pnpm run --filter "./libs/common*" -r build
 RUN pnpm run --filter "./libs/http-data-plane*" --parallel -r build
 RUN pnpm run --filter "./apps/http-data-plane*" --parallel -r build
 RUN pnpm deploy --filter http-data-plane-api --prod /prod/http-data-plane-api
+COPY apps/http-data-plane-api/config.yaml /prod/http-data-plane-api
 RUN pnpm deploy --filter http-data-plane-ui --prod /prod/http-data-plane-ui
 
 FROM base AS deploy 

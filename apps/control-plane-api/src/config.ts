@@ -1,5 +1,10 @@
 import { OfferDto } from "@tsg-dsp/common-dsp";
-import { Type } from "class-transformer";
+import {
+  plainToInstance,
+  Transform,
+  TransformFnParams,
+  Type,
+} from "class-transformer";
 import {
   IsArray,
   IsBoolean,
@@ -13,6 +18,28 @@ import {
   ValidateNested
 } from "class-validator";
 import "reflect-metadata";
+
+const valueToBoolean = (params: TransformFnParams): boolean | undefined => {
+  if (params.value === null || params.value === undefined) {
+    return undefined;
+  }
+  if (typeof params.value === "boolean") {
+    return params.value;
+  }
+  if (["true", "on", "yes", "1"].includes(params.value.toLowerCase())) {
+    return true;
+  }
+  if (["false", "off", "no", "0"].includes(params.value.toLowerCase())) {
+    return false;
+  }
+  return undefined;
+};
+
+export class SSLConfig {
+  @Transform(valueToBoolean)
+  @IsBoolean()
+  public readonly rejectUnauthorized: boolean = false;
+}
 
 export abstract class DatabaseConfig {
   @IsString()
@@ -33,18 +60,32 @@ export class PostgresConfig extends DatabaseConfig {
   @IsString()
   public readonly host!: string;
   @IsNumber()
+  @Type(() => Number)
   public readonly port!: number;
   @IsString()
   public readonly username!: string;
   @IsString()
   public readonly password!: string;
+  @ValidateIf((o) => typeof o.ssl === "object")
+  @ValidateNested() // Only validate as nested if it's an object (SSLConfig)
+  @Transform(({ value }) => {
+    // Check if `value` is an object with `rejectUnauthorized` property
+    if (value && typeof value === "object" && "rejectUnauthorized" in value) {
+      // If value has `rejectUnauthorized`, transform it to an SSLConfig instance
+      return plainToInstance(SSLConfig, value);
+    } else {
+      // Otherwise, set it to `false`
+      return false;
+    }
+  })
+  public readonly ssl: SSLConfig | boolean = false;
 }
 
 export class ServerConfig {
   @IsString()
   public readonly listen: string = "0.0.0.0";
   @IsNumber()
-  @Type()
+  @Type(() => Number)
   public readonly port: number = 3000;
   @IsString()
   public readonly publicDomain: string = "localhost";
@@ -54,6 +95,7 @@ export class ServerConfig {
 
 export class AuthConfig {
   @IsBoolean()
+  @Transform(valueToBoolean)
   public readonly enabled: boolean = true;
   @ValidateIf((c) => c.enabled)
   @IsUrl({ require_tld: false, require_protocol: true, require_host: false })
@@ -89,6 +131,7 @@ export class AuthConfig {
 
 export class RegistryConfig {
   @IsBoolean()
+  @Transform(valueToBoolean)
   public readonly useRegistry: boolean = false;
 
   @IsString()
@@ -101,6 +144,7 @@ export class RegistryConfig {
   public readonly registryDid?: string;
 
   @IsNumber()
+  @Type(() => Number)
   public readonly registryIntervalInMilliseconds: number = 30000;
 }
 

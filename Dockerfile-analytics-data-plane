@@ -26,6 +26,7 @@ ARG TSG_STATIC_VERSION=${TSG_VERSION}
 RUN pnpm run --filter "./libs/common*" -r build 
 RUN pnpm run --filter "./apps/analytics-data-plane*" --parallel -r build
 RUN pnpm deploy --filter analytics-data-plane-api --prod /prod/analytics-data-plane-api
+COPY apps/analytics-data-plane-api/config.yaml /prod/analytics-data-plane-api
 RUN pnpm deploy --filter analytics-data-plane-ui --prod /prod/analytics-data-plane-ui
 
 FROM base AS deploy 

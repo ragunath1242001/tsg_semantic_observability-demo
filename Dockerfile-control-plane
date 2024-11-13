@@ -26,6 +26,7 @@ RUN pnpm run --filter "./libs/common*" -r build
 RUN pnpm run --filter "./libs/control-plane*" --parallel -r build
 RUN pnpm run --filter "./apps/control-plane*" --parallel -r build 
 RUN pnpm deploy --filter control-plane-api --prod /prod/control-plane-api
+COPY apps/control-plane-api/config.yaml /prod/control-plane-api
 RUN pnpm deploy --filter control-plane-ui --prod /prod/control-plane-ui
 
 FROM base AS deploy 
