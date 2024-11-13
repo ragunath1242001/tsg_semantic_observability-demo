@@ -31,51 +31,51 @@ import { DataPlaneDao } from "./dataPlanes.dao";
 
 @Entity({ name: "resource" })
 export class ResourceDao extends MetaEntity implements IResource {
-  @PrimaryColumn()
+  @PrimaryColumn({ type: String })
   id!: string;
-  @Column({ nullable: true })
+  @Column({ type: String, nullable: true })
   contactPoint?: string;
   @Column("simple-json", { nullable: true })
   keyword?: Array<string>;
-  @Column({ nullable: true })
+  @Column({ type: String, nullable: true })
   landingPage?: string;
   @Column("simple-json", { nullable: true })
   theme?: Array<string>;
   @Column("simple-json", { nullable: true })
   conformsTo?: Array<string>;
-  @Column({ nullable: true })
+  @Column({ type: String, nullable: true })
   creator?: string;
   @Column("simple-json", { nullable: true })
   description?: Array<string>;
-  @Column({ nullable: true })
+  @Column({ type: String, nullable: true })
   identifier?: string;
-  @Column({ nullable: true })
+  @Column({ type: String, nullable: true })
   isReferencedBy?: string;
-  @Column({ nullable: true })
+  @Column({ type: String, nullable: true })
   issued?: string;
-  @Column({ nullable: true })
+  @Column({ type: String, nullable: true })
   language?: string;
-  @Column({ nullable: true })
+  @Column({ type: String, nullable: true })
   license?: string;
-  @Column({ nullable: true })
+  @Column({ type: String, nullable: true })
   modified?: string;
-  @Column({ nullable: true })
+  @Column({ type: String, nullable: true })
   publisher?: string;
-  @Column({ nullable: true })
+  @Column({ type: String, nullable: true })
   relation?: string;
-  @Column({ nullable: true })
+  @Column({ type: String, nullable: true })
   title?: string;
-  @Column({ nullable: true })
+  @Column({ type: String, nullable: true })
   type?: string;
   @Column("simple-json", { nullable: true })
   hasVersion?: string[];
-  @Column({ nullable: true })
+  @Column({ type: String, nullable: true })
   isVersionOf?: string;
-  @Column("simple-json", { nullable: true })
+  @Column({ type: String, nullable: true })
   version?: string;
-  @Column({ nullable: true })
+  @Column({ type: String, nullable: true })
   hasCurrentVersion?: string;
-  @Column({ nullable: true })
+  @Column({ type: String, nullable: true })
   previousVersion?: string;
   @Column("simple-json", { nullable: true })
   extraProps?: Record<string, any>;
@@ -163,7 +163,7 @@ export abstract class ResourceChild extends MetaEntity {
 
 @Entity({ name: "dataservice" })
 export class DataServiceDao extends ResourceChild implements IDataService {
-  @PrimaryColumn()
+  @PrimaryColumn({ type: String })
   id!: string;
   @ManyToOne(() => CatalogDao, { nullable: true })
   _catalog?: Relation<CatalogDao>;
@@ -171,9 +171,9 @@ export class DataServiceDao extends ResourceChild implements IDataService {
   @JoinColumn()
   _resource: ResourceDao | undefined;
 
-  @Column({ nullable: true })
+  @Column({ type: String, nullable: true })
   endpointDescription?: string;
-  @Column({ nullable: true })
+  @Column({ type: String, nullable: true })
   endpointURL?: string;
   @Column("simple-json", { nullable: true })
   extraProps?: Record<string, any>;
@@ -188,7 +188,7 @@ export class DataServiceDao extends ResourceChild implements IDataService {
 
 @Entity({ name: "distribution" })
 export class DistributionDao extends MetaEntity implements IDistribution {
-  @PrimaryColumn()
+  @PrimaryColumn({ type: String })
   id!: string;
   @ManyToMany(() => DataServiceDao, { nullable: true, cascade: true })
   @JoinTable()
@@ -196,33 +196,33 @@ export class DistributionDao extends MetaEntity implements IDistribution {
   get accessService(): Array<DataService> | undefined {
     return mapToInstances(this._accessService, DataService);
   }
-  @Column({ nullable: true })
+  @Column({ type: String, nullable: true })
   accessURL?: string;
-  @Column({ nullable: true })
+  @Column({ type: String, nullable: true })
   byteSize?: string;
-  @Column({ nullable: true })
+  @Column({ type: String, nullable: true })
   compressFormat?: string;
-  @Column({ nullable: true })
+  @Column({ type: String, nullable: true })
   downloadURL?: string;
-  @Column({ nullable: true })
+  @Column({ type: String, nullable: true })
   mediaType?: string;
-  @Column({ nullable: true })
+  @Column({ type: String, nullable: true })
   packageFormat?: string;
-  @Column({ nullable: true })
+  @Column({ type: String, nullable: true })
   spatialResolutionInMeters?: string;
-  @Column({ nullable: true })
+  @Column({ type: String, nullable: true })
   temporalResolution?: string;
   @Column("simple-json", { nullable: true })
   conformsTo?: Array<string>;
   @Column("simple-json", { nullable: true })
   description?: Array<string>;
-  @Column({ nullable: true })
+  @Column({ type: String, nullable: true })
   format?: string;
-  @Column({ nullable: true })
+  @Column({ type: String, nullable: true })
   issued?: string;
-  @Column({ nullable: true })
+  @Column({ type: String, nullable: true })
   modified?: string;
-  @Column({ nullable: true })
+  @Column({ type: String, nullable: true })
   title?: string;
   @Column("simple-json", { nullable: true })
   extraProps?: Record<string, any>;
@@ -236,7 +236,7 @@ export class DistributionDao extends MetaEntity implements IDistribution {
 
 @Entity({ name: "dataset" })
 export class DatasetDao extends ResourceChild implements IDataset {
-  @PrimaryColumn()
+  @PrimaryColumn({ type: String })
   id!: string;
   @OneToOne(() => ResourceDao, { cascade: true, eager: true })
   @JoinColumn()
@@ -253,23 +253,23 @@ export class DatasetDao extends ResourceChild implements IDataset {
   get distribution(): Array<Distribution> | undefined {
     return mapToInstances(this._distribution, Distribution);
   }
-  @Column({ nullable: true })
+  @Column({ type: String, nullable: true })
   spatialResolutionInMeters?: string;
-  @Column({ nullable: true })
+  @Column({ type: String, nullable: true })
   temporalResolution?: string;
-  @Column({ nullable: true })
+  @Column({ type: String, nullable: true })
   accrualPeriodicity?: string;
-  @Column({ nullable: true })
+  @Column({ type: String, nullable: true })
   spatial?: string;
-  @Column({ nullable: true })
+  @Column({ type: String, nullable: true })
   temporal?: string;
   @Column("simple-json", { nullable: true })
   wasGeneratedBy?: any;
   @Column("simple-json", { nullable: true })
   hasCodingSystem?: string[];
-  @Column({ nullable: true })
+  @Column({ type: Number, nullable: true })
   numberOfRecords?: number;
-  @Column({ nullable: true })
+  @Column({ type: Number, nullable: true })
   numberOfUniqueIndividuals?: number;
   @Column("simple-json", { nullable: true })
   healthTheme?: string[];
@@ -284,7 +284,7 @@ export class DatasetDao extends ResourceChild implements IDataset {
 
 @Entity({ name: "catalogrecord" })
 export class CatalogRecordDao extends MetaEntity implements ICatalogRecord {
-  @PrimaryColumn()
+  @PrimaryColumn({ type: String })
   id!: string;
   @ManyToOne(() => CatalogDao, { nullable: true })
   _catalog?: Relation<CatalogDao>;
@@ -292,11 +292,11 @@ export class CatalogRecordDao extends MetaEntity implements ICatalogRecord {
   conformsTo?: Array<string>;
   @Column("simple-json", { nullable: true })
   description?: Array<string>;
-  @Column("simple-json", { nullable: true })
+  @Column({ type: String, nullable: true })
   issued?: Date;
-  @Column("simple-json", { nullable: true })
+  @Column({ type: String, nullable: true })
   modified?: Date;
-  @Column({ nullable: true })
+  @Column({ type: String, nullable: true })
   title?: string;
   @Column("simple-json", { nullable: true })
   extraProps?: Record<string, any>;
@@ -391,7 +391,7 @@ export abstract class DatasetChild extends MetaEntity {
 
 @Entity({ name: "catalog" })
 export class CatalogDao extends DatasetChild implements ICatalog {
-  @PrimaryColumn()
+  @PrimaryColumn({ type: String })
   id!: string;
   @OneToMany(() => DatasetDao, (dataset) => dataset._catalog, { cascade: true })
   _datasets?: Array<Relation<DatasetDao>>;
@@ -401,9 +401,9 @@ export class CatalogDao extends DatasetChild implements ICatalog {
   @OneToOne(() => DatasetDao, { eager: true })
   @JoinColumn()
   _dataset: Relation<DatasetDao> | undefined;
-  @Column({ nullable: true })
+  @Column({ type: String, nullable: true })
   themeTaxonomy?: string;
-  @Column({ nullable: true })
+  @Column({ type: String, nullable: true })
   homepage?: string;
   @Column("simple-json", { nullable: true })
   extraProps?: Record<string, any>;

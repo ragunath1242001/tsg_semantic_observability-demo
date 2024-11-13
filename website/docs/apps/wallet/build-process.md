@@ -60,6 +60,22 @@ docker run -p 3000:3000 control-plane
 
 And visit http://localhost:3000 to view the control plane.
 
+## Database Schema Migrations
+
+If changes are made to the data access objects (`*.dao.ts`) it is required to run the migrations scripts to ensure the database schemas can be applied / updated. The migration files are located under `src/migrations` with separate files for Postgres (`*-postgres.ts`) and SQLite (`*-sqlite.ts`).
+
+Manual creation of migrations files is supported, but automated generation of migration files is supported by running (takes some time to run):
+
+```
+pnpm --filter wallet-api migrations:generate
+```
+
+In the CI pipelines automated checks are done in the testing stage to see whether migrations are required. You can manually execute this check to quickly see whether there is a need to generate new migrations:
+
+```
+pnpm --filter wallet-api migrations:check
+```
+
 ## Continuous Integration
 
 The Continuous Integration pipelines will run every time a merge request is created. The CI pipeline consists of a few stages. Each stage will be described below.

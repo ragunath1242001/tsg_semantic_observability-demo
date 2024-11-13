@@ -5,13 +5,13 @@ import { MetaEntity } from "./common.dao.js";
 
 @Entity()
 export class KeyMaterials extends MetaEntity {
-  @PrimaryColumn()
+  @PrimaryColumn({ type: String })
   id!: string;
 
-  @Column()
+  @Column({ type: String })
   type!: "EdDSA" | "ES384" | "X509";
 
-  @Column()
+  @Column({ type: Boolean })
   default!: boolean;
 
   @Column("simple-json")
@@ -20,21 +20,21 @@ export class KeyMaterials extends MetaEntity {
   @Column("simple-json")
   publicKey!: JWK;
 
-  @Column({ nullable: true })
+  @Column({ type: String, nullable: true })
   caChain?: string;
 }
 
 @Entity()
 export class Credentials extends MetaEntity {
-  @PrimaryColumn()
+  @PrimaryColumn({ type: String })
   id!: string;
 
-  @Column()
+  @Column({ type: String })
   targetDid!: string;
 
   @Column("simple-json")
   credential!: VerifiableCredential;
 
-  @Column("boolean")
+  @Column({ type: Boolean })
   selfIssued!: boolean;
 }

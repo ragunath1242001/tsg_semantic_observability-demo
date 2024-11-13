@@ -1,8 +1,6 @@
 import {
   ContractAgreementVerificationMessage,
   ContractNegotiationState,
-  serialize,
-  deserializeSync,
   HashedMessage,
   INegotiationDetail,
   INegotiationProcessEvent,
@@ -27,17 +25,17 @@ export class NegotiationProcessEventDao
   extends AutoIdEntity
   implements INegotiationProcessEvent
 {
-  @Column()
+  @Column({ type: String })
   time!: Date;
-  @Column()
+  @Column({ type: "simple-enum", enum: ContractNegotiationState })
   state!: ContractNegotiationState;
-  @Column({ nullable: true })
+  @Column({ type: String, nullable: true })
   localMessage?: string;
-  @Column({ nullable: true })
+  @Column({ type: String, nullable: true })
   code?: string;
   @Column("simple-json", { nullable: true })
   reason?: Array<Multilanguage>;
-  @Column({ nullable: true })
+  @Column({ type: String, nullable: true })
   agreementMessage?: string;
   @Column("simple-json", {
     nullable: true,
@@ -46,7 +44,7 @@ export class NegotiationProcessEventDao
   verification?: ContractAgreementVerificationMessage;
   @Column("simple-json", { nullable: true })
   hashedMessage?: HashedMessage;
-  @Column()
+  @Column({ type: String })
   type!: "local" | "remote";
   @ManyToOne(() => NegotiationDetailDao)
   _detail?: Relation<NegotiationDetailDao>;
@@ -57,19 +55,19 @@ export class NegotiationDetailDao
   extends MetaEntity
   implements INegotiationDetail
 {
-  @PrimaryColumn()
+  @PrimaryColumn({ type: String })
   localId!: string;
-  @Column()
+  @Column({ type: String })
   remoteId!: string;
-  @Column()
+  @Column({ type: String })
   remoteParty!: string;
-  @Column()
+  @Column({ type: String })
   role!: NegotiationRole;
-  @Column()
+  @Column({ type: String })
   remoteAddress!: string;
-  @Column()
+  @Column({ type: "simple-enum", enum: ContractNegotiationState })
   state!: ContractNegotiationState;
-  @Column()
+  @Column({ type: String })
   dataSet!: string;
   @Column("simple-json", {
     nullable: true,

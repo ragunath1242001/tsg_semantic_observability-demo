@@ -39,6 +39,7 @@ variables:
     - pnpm run --filter "./libs/$APP*" --parallel -r  build
     - pnpm run --filter "./apps/$APP*" --parallel -r  build
     - NODE_OPTIONS="--experimental-vm-modules" pnpm test:$APP-ci
+    - pnpm run --filter "./apps/$APP-api" migrations:check
   coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/
   artifacts:
     reports:

@@ -25,6 +25,7 @@ async function bootstrap() {
   const scopes = Object.fromEntries(appRoles);
   const config = new DocumentBuilder()
     .setTitle("TSG Wallet")
+    .setVersion("")
     .setDescription(
       `The TSG Wallet is a SSI wallet that can issue and store verifiable credentials and create presentations to be used within data spaces.<br /><br />
     The wallet is aimed at multi-tier deployments, with one (or more) wallet that acts as trust anchor for a data space and indivual wallets for each of the participants in the data space. On this page the central wallet that issues credentials will be called the Dataspace Wallet although it is not required that there always is exactly one issuer of credentials in a dataspace.<br /><br />

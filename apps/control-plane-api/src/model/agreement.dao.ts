@@ -8,13 +8,13 @@ import {
 
 @Entity()
 export class AgreementDao {
-  @PrimaryColumn()
+  @PrimaryColumn({ type: String })
   id!: string;
 
   @Column("simple-json")
   agreement!: AgreementDto;
 
-  @Column()
+  @Column({ type: String })
   negotiationId!: string;
 
   @Column("simple-json", { nullable: true })
@@ -31,7 +31,7 @@ export class AgreementDao {
 
 @Entity()
 export class TransferMonitorDao {
-  @PrimaryColumn()
+  @PrimaryColumn({ type: String })
   id!: string;
 
   @ManyToOne(() => AgreementDao, (agreement) => agreement.transfers, {

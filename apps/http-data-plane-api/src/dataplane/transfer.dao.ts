@@ -15,25 +15,25 @@ import {
 
 @Entity()
 export class TransferDao {
-  @PrimaryColumn()
+  @PrimaryColumn({ type: String })
   id!: string;
 
-  @Column()
+  @Column({ type: String })
   role!: "provider" | "consumer";
 
-  @Column()
+  @Column({ type: String })
   processId!: string;
 
-  @Column()
+  @Column({ type: String })
   remoteParty!: string;
 
-  @Column()
+  @Column({ type: String })
   datasetId!: string;
 
-  @Column({ nullable: true })
+  @Column({ type: String, nullable: true })
   secret?: string;
 
-  @Column()
+  @Column({ type: "simple-enum", enum: TransferState })
   state!: TransferState;
 
   @Column("simple-json")
@@ -45,12 +45,12 @@ export class TransferDao {
   @Column("simple-json", { nullable: true })
   dataAddress?: DataAddressDto;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: String })
   createdDate!: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ type: String })
   modifiedDate!: Date;
 
-  @DeleteDateColumn()
+  @DeleteDateColumn({ type: String })
   deletedDate!: Date;
 }

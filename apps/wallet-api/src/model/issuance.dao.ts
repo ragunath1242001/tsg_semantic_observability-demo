@@ -14,40 +14,40 @@ export class CredentialIssuance extends MetaEntity {
   @PrimaryGeneratedColumn("increment")
   id!: number;
 
-  @Column({ unique: true })
+  @Column({ type: String, unique: true })
   preAuthorizedCode!: string;
 
   @OneToMany(() => CIAccessToken, (token) => token.issuance)
   tokens!: CIAccessToken[];
 
-  @Column()
+  @Column({ type: String })
   holderId!: string;
 
-  @Column()
+  @Column({ type: String })
   credentialType!: string;
 
-  @Column({ nullable: true })
+  @Column({ type: String, nullable: true })
   credentialId?: string;
 
-  @Column()
+  @Column({ type: Boolean })
   revoked!: boolean;
 
-  @Column("simple-json")
+  @Column({ type: "simple-json" })
   credentialSubject!: CredentialSubject;
 }
 
 @Entity()
 export class CIAccessToken extends MetaEntity {
-  @PrimaryColumn()
+  @PrimaryColumn({ type: String })
   access_token!: string;
 
-  @Column()
+  @Column({ type: Date })
   expires_at!: Date;
 
-  @Column()
+  @Column({ type: String })
   refresh_token!: string;
 
-  @Column()
+  @Column({ type: String })
   nonce!: string;
 
   @ManyToOne(() => CredentialIssuance, (issuance) => issuance.tokens, {

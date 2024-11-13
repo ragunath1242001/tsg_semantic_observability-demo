@@ -15,6 +15,7 @@ async function bootstrap() {
   });
   const config = new DocumentBuilder()
     .setTitle("TSG Control Plane")
+    .setVersion("")
     .setDescription(
       `This OpenAPI specification shows the endpoints of the Control Plane. Most of the endpoints are related to the Dataspace Protocol, as specified by the Eclipse Working Group Dataspaces. Other endpoints are supportive endpoints to make sure the data can be added to the catalog, and to make sure that UI interactions can take place.  __*Note*__: This OpenAPI definition is not intended to be directly linked with a single Control Plane instance. `
     )

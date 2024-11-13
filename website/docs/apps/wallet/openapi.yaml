@@ -75,8 +75,7 @@ paths:
     get:
       operationId: DirectPresentationController_createPresentation
       summary: Request a presentation
-      description:
-        Generates a Veriable Presentation in Jwt or JSON-LD format for one
+      description: Generates a Veriable Presentation in Jwt or JSON-LD format for one
         of the credentials in this wallet
       parameters:
         - name: credentialId
@@ -112,8 +111,7 @@ paths:
     post:
       operationId: DirectPresentationController_validatePresentation
       summary: Validate presentation
-      description:
-        Validates a Jwt-based Verifiable Presentation according to a fixed
+      description: Validates a Jwt-based Verifiable Presentation according to a fixed
         set of requirements
       parameters: []
       requestBody:
@@ -135,8 +133,7 @@ paths:
     get:
       operationId: IatpHolderController_createSIToken
       summary: Request a SIOP token
-      description:
-        Generates a SIOP token for the provided audience to allow it to
+      description: Generates a SIOP token for the provided audience to allow it to
         request presentations
       parameters:
         - name: audience
@@ -208,8 +205,7 @@ paths:
     post:
       operationId: IatpVerifierController_verify
       summary: Start verification flow
-      description:
-        Request a new IATP presentation flow to start as verifier, based on
+      description: Request a new IATP presentation flow to start as verifier, based on
         a presentation defintion and a holder SIOP token
       parameters: []
       requestBody:
@@ -234,8 +230,7 @@ paths:
     get:
       operationId: AuthController_getUser
       summary: Retrieve current user status
-      description:
-        Retrieves current user state, whether someone is logged in or not a
+      description: Retrieves current user state, whether someone is logged in or not a
         200 result is provided. This is used in the frontend to determine
         whether certain aspects should be shown.
       parameters: []
@@ -264,8 +259,7 @@ paths:
     get:
       operationId: AuthController_logout
       summary: Logout redirect
-      description:
-        Removes session information and redirects user the root of the
+      description: Removes session information and redirects user the root of the
         frontend (`auth.redirectURL`)
       parameters: []
       responses:
@@ -276,8 +270,7 @@ paths:
     get:
       operationId: AuthController_callback
       summary: Login callback
-      description:
-        Users are redirected from the authorization server to this endpoint
+      description: Users are redirected from the authorization server to this endpoint
         which will redirect them to the frontend (`auth.redirectURL`)
       parameters: []
       responses:
@@ -336,8 +329,7 @@ paths:
     get:
       operationId: CredentialsManagementController_getCredentials
       summary: List credentials
-      description:
-        List all credentials, that the current user is allowed to view, in
+      description: List all credentials, that the current user is allowed to view, in
         this wallet
       parameters: []
       responses:
@@ -431,8 +423,7 @@ paths:
     get:
       operationId: CredentialsManagementController_getConfig
       summary: Retrieve credential configuration
-      description:
-        Retrieves credential configuration that can be used by this wallet.
+      description: Retrieves credential configuration that can be used by this wallet.
         Contains both trust anchors and JSON-LD contexts.
       parameters: []
       responses:
@@ -526,8 +517,7 @@ paths:
     put:
       operationId: CredentialsManagementController_updateCredential
       summary: Update credential
-      description:
-        "Update a credential within this wallet. __*Note*__: this will
+      description: "Update a credential within this wallet. __*Note*__: this will
         either self-issue or import a credential."
       parameters:
         - name: credentialId
@@ -599,8 +589,7 @@ paths:
     post:
       operationId: GaiaXManagementController_requestLegalRegistrationNumberCredential
       summary: Issue legal registration number credential
-      description:
-        Self-issue a Legal Registration Number credential following the
+      description: Self-issue a Legal Registration Number credential following the
         Gaia-X Trust Framework
       parameters: []
       requestBody:
@@ -638,8 +627,7 @@ paths:
     post:
       operationId: GaiaXManagementController_requestComplianceCredential
       summary: Request compliance credential
-      description:
-        Request a compliance credential from a Gaia-X Digital Clearing
+      description: Request a compliance credential from a Gaia-X Digital Clearing
         House based on existing credentials within this wallet
       parameters: []
       requestBody:
@@ -673,8 +661,7 @@ paths:
     get:
       operationId: KeysController_getCaChain
       summary: Retrieve Key CA chain
-      description:
-        Retrieves the CA chain for a given key. Only supported for keys
+      description: Retrieves the CA chain for a given key. Only supported for keys
         with type `X509`
       parameters:
         - name: id
@@ -1089,8 +1076,7 @@ paths:
     get:
       operationId: DIDWebController_getDid
       summary: Retrieve DID document
-      description:
-        Retrieves the public DID document on the well-known address for
+      description: Retrieves the public DID document on the well-known address for
         this wallet
       parameters: []
       responses:
@@ -1330,8 +1316,7 @@ paths:
     post:
       operationId: IssuerController_credentialEndpoint
       summary: Request OID4VCI credential
-      description:
-        Requests a new credential based on a Credential Request via the
+      description: Requests a new credential based on a Credential Request via the
         OID4VCI flow
       parameters:
         - name: Authorization
@@ -1414,8 +1399,7 @@ paths:
     put:
       operationId: IssuerController_revokeOffer
       summary: Revoke offer
-      description:
-        Revokes an existing credential offer, so that it cannot be used
+      description: Revokes an existing credential offer, so that it cannot be used
         anymore by the holder
       parameters:
         - name: id
@@ -1447,8 +1431,8 @@ info:
     credentials and create presentations to be used within data spaces.<br /><br
     />
         The wallet is aimed at multi-tier deployments, with one (or more) wallet that acts as trust anchor for a data space and indivual wallets for each of the participants in the data space. On this page the central wallet that issues credentials will be called the Dataspace Wallet although it is not required that there always is exactly one issuer of credentials in a dataspace.<br /><br />
-        __*Note*__: This OpenAPI definition is not intended to be directly linked with a single Wallet instance.
-  version: 1.0.0
+        __*Note*__: This OpenAPI definition is not intended to be directly linked with a single Wallet instance. 
+  version: ""
   contact: {}
   license:
     name: Apache 2.0

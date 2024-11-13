@@ -3,16 +3,16 @@ import { MetaEntity } from "./common.dao.js";
 
 @Entity()
 export class JSONLDContext extends MetaEntity {
-  @PrimaryColumn()
+  @PrimaryColumn({ type: String })
   id!: string;
 
-  @Column()
+  @Column({ type: String })
   credentialType!: string;
 
-  @Column()
+  @Column({ type: Boolean })
   issuable!: boolean;
 
-  @Column({ nullable: true })
+  @Column({ type: String, nullable: true })
   documentUrl?: string;
 
   @Column("simple-json", { nullable: true })

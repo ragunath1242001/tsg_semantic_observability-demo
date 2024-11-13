@@ -3,7 +3,7 @@ import { Column, Entity, PrimaryColumn } from "typeorm";
 
 @Entity()
 export class DataPlaneStateDao {
-  @PrimaryColumn()
+  @PrimaryColumn({ type: String })
   identifier!: string;
 
   @Column("simple-json")
