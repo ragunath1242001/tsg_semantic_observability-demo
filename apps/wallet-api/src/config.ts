@@ -16,7 +16,7 @@ import {
   plainToInstance,
   Transform,
   TransformFnParams,
-  Type,
+  Type
 } from "class-transformer";
 import fs from "fs";
 import { Logger } from "@nestjs/common";
@@ -67,6 +67,10 @@ export abstract class DatabaseConfig {
 
   @IsString()
   public readonly database!: string;
+
+  @IsBoolean()
+  @IsOptional()
+  public readonly synchronize: boolean = false;
 }
 
 export class SQLiteConfig extends DatabaseConfig {

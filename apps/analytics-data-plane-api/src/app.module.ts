@@ -27,9 +27,8 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
     TypeOrmModule.forRoot({
       ...config.db,
       autoLoadEntities: true,
-      synchronize: false,
       migrations: [`dist/migrations/*-${config.db.type}{.ts,.js}`],
-      migrationsRun: true
+      migrationsRun: !config.db.synchronize
     }),
     ...embeddedFrontend,
     FilesModule.register(config.files)

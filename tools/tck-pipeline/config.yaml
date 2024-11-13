@@ -1,6 +1,7 @@
 db:
   type: sqlite
   database: ":memory:"
+  synchronize: true
 
 server:
   port: "32490"

@@ -1,6 +1,5 @@
 import axios from "axios";
 import { Test, TestingModule } from "@nestjs/testing";
-import { ContractNegotiationState, Offer } from "@tsg-dsp/common-dsp";
 import { HttpServer, INestApplication } from "@nestjs/common";
 import { NegotiationService } from "@apps/control-plane-api/src/dsp/negotiation/negotiation.service";
 import { PipelineExecutor } from "./pipeline.executor";
@@ -8,7 +7,6 @@ import { CatalogService } from "@apps/control-plane-api/src/dsp/catalog/catalog.
 import { setupApp } from "@apps/control-plane-api/src/app.setup";
 import { AppLogger } from "@apps/control-plane-api/src/utils/logging";
 import { TransferService } from "@apps/control-plane-api/src/dsp/transfer/transfer.service";
-import { DevWalletClient } from "@apps/control-plane-api/src/auth/wallets/dev.wallet";
 import { AuthService } from "@apps/control-plane-api/src/auth/auth.service";
 
 describe("TCK", () => {
@@ -22,7 +20,6 @@ describe("TCK", () => {
   let transferService: TransferService;
   beforeAll(async () => {
     try {
-      let i = 0;
       process.env.CONFIG_PATH = `${__dirname}/../config.yaml`;
       moduleRef = await Test.createTestingModule({
         imports: [
