@@ -8,6 +8,7 @@ import { RootConfig } from "./config";
 import { DynamicModule } from "@nestjs/common";
 import { plainToInstance } from "class-transformer";
 import { validateSync } from "class-validator";
+import { inspect } from "util";
 
 let configModule: DynamicModule;
 let rootConfig: RootConfig;
@@ -51,7 +52,11 @@ try {
       });
 
       if (schemaErrors.length) {
-        throw new Error(TypedConfigModule.getConfigErrorMessage(schemaErrors));
+        throw new Error(
+          TypedConfigModule.getConfigErrorMessage(schemaErrors) +
+            "\n\n" +
+            inspect(config),
+        );
       }
       return config as RootConfig;
     }

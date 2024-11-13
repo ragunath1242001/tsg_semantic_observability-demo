@@ -12,7 +12,12 @@ import {
   ValidateIf,
   ValidateNested
 } from "class-validator";
-import { Transform, TransformFnParams, Type } from "class-transformer";
+import {
+  plainToInstance,
+  Transform,
+  TransformFnParams,
+  Type,
+} from "class-transformer";
 import fs from "fs";
 import { Logger } from "@nestjs/common";
 import { CredentialSubject } from "@tsg-dsp/common-dsp";
@@ -31,6 +36,28 @@ function fileTransformer(params: TransformFnParams): string | undefined {
     return params.value;
   }
   return `${params.value}`;
+}
+
+const valueToBoolean = (params: TransformFnParams): boolean | undefined => {
+  if (params.value === null || params.value === undefined) {
+    return undefined;
+  }
+  if (typeof params.value === "boolean") {
+    return params.value;
+  }
+  if (["true", "on", "yes", "1"].includes(params.value.toLowerCase())) {
+    return true;
+  }
+  if (["false", "off", "no", "0"].includes(params.value.toLowerCase())) {
+    return false;
+  }
+  return undefined;
+};
+
+export class SSLConfig {
+  @Transform(valueToBoolean)
+  @IsBoolean()
+  public readonly rejectUnauthorized: boolean = false;
 }
 
 export abstract class DatabaseConfig {
@@ -52,15 +79,30 @@ export class PostgresConfig extends DatabaseConfig {
   @IsString()
   public readonly host!: string;
   @IsNumber()
+  @Type(() => Number)
   public readonly port!: number;
   @IsString()
   public readonly username!: string;
   @IsString()
   public readonly password!: string;
+  @ValidateIf((o) => typeof o.ssl === "object")
+  @ValidateNested() // Only validate as nested if it's an object (SSLConfig)
+  @Transform(({ value }) => {
+    // Check if `value` is an object with `rejectUnauthorized` property
+    if (value && typeof value === "object" && "rejectUnauthorized" in value) {
+      // If value has `rejectUnauthorized`, transform it to an SSLConfig instance
+      return plainToInstance(SSLConfig, value);
+    } else {
+      // Otherwise, set it to `false`
+      return false;
+    }
+  })
+  public readonly ssl: SSLConfig | boolean = false;
 }
 
 export class AuthConfig {
   @IsBoolean()
+  @Transform(valueToBoolean)
   public readonly enabled: boolean = true;
   @ValidateIf((c) => c.enabled)
   @IsUrl({ require_tld: false, require_protocol: true, require_host: false })
@@ -99,7 +141,7 @@ export class ServerConfig {
   @IsOptional()
   public readonly listen: string = "0.0.0.0";
   @IsNumber()
-  @Type()
+  @Type(() => Number)
   @IsOptional()
   public readonly port: number = 3000;
   @IsString()
@@ -123,6 +165,7 @@ export class InitKeyConfig {
 
   @IsBoolean()
   @IsOptional()
+  @Transform(valueToBoolean)
   public readonly default: boolean = false;
 
   @IsOptional()
@@ -170,6 +213,7 @@ export class JsonLdContextConfig {
   public readonly credentialType!: string;
 
   @IsBoolean()
+  @Transform(valueToBoolean)
   public readonly issuable!: boolean;
 
   @IsString()
@@ -253,6 +297,7 @@ export class PresentationConfig {
 export class RuntimeConfig {
   @IsOptional()
   @IsBoolean()
+  @Transform(valueToBoolean)
   public gaiaXSupport: boolean = false;
 
   @IsOptional()
