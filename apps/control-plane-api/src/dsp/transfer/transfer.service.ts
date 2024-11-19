@@ -1,9 +1,7 @@
-import { TransferRole } from "@tsg-dsp/control-plane-dtos";
-import { DataPlaneAddressDto } from "@tsg-dsp/common-dsp";
+import { DataPlaneAddressDto, DistributionDto } from "@tsg-dsp/common-dsp";
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import {
-  CredentialSubject,
   DataAddress,
   EndpointProperty,
   Multilanguage,
@@ -13,6 +11,7 @@ import {
   TransferEvent,
   TransferProcess,
   TransferRequestMessage,
+  TransferRole,
   TransferStartMessage,
   TransferState,
   TransferStatus,
@@ -24,7 +23,7 @@ import {
 } from "@tsg-dsp/common-dsp";
 import crypto from "crypto";
 import { Repository } from "typeorm";
-import { ServerConfig } from "../../config";
+import { RuntimeConfig, ServerConfig } from "../../config";
 import { DataPlaneService } from "../../data-plane/dataPlane.service";
 import { TransferDetailDao, TransferEventDao } from "../../model/transfer.dao";
 import { DSPError } from "../../utils/errors/error";
@@ -32,6 +31,7 @@ import { DspClientService } from "../client/client.service";
 import { DspGateway } from "../client/dsp.gateway";
 import { PolicyEvaluationService } from "../../policy/policy.evaluation.service";
 import { EvaluationTrigger } from "../../policy/constraint.dto";
+import { normalizeAddress } from "../../utils/address";
 
 @Injectable()
 export class TransferService {
@@ -39,6 +39,7 @@ export class TransferService {
     private readonly dsp: DspClientService,
     private readonly dspGateway: DspGateway,
     private readonly server: ServerConfig,
+    private readonly runtime: RuntimeConfig,
     @InjectRepository(TransferDetailDao)
     private readonly transferDetailRepository: Repository<TransferDetailDao>,
     @InjectRepository(TransferEventDao)
@@ -138,7 +139,8 @@ export class TransferService {
           state: true
         },
         agreementId: true,
-        format: true
+        format: true,
+        modifiedDate: true
       },
       order: {
         modifiedDate: {
@@ -182,10 +184,10 @@ export class TransferService {
 
   async initiateTransferProcess(
     agreementId: string,
-    format: string,
     dataAddress: DataAddress | undefined,
     remoteAddress: string,
-    audience: string
+    audience: string,
+    format?: string
   ): Promise<{
     localId: string;
     remoteId: string;
@@ -193,13 +195,6 @@ export class TransferService {
     process: TransferProcess;
   }> {
     const localId = `urn:uuid:consumer:${crypto.randomUUID()}`;
-    const transferRequestMessage = new TransferRequestMessage({
-      consumerPid: localId,
-      agreementId: agreementId,
-      format: format,
-      dataAddress: dataAddress,
-      callbackAddress: `${this.server.publicAddress}/transfers/${localId}`
-    });
     const context = await this.policyEvaluationService.initializeContext(
       agreementId,
       "consumer",
@@ -209,6 +204,34 @@ export class TransferService {
       ODRLAction.USE,
       []
     );
+    let distributions: DistributionDto[] = [];
+    if (!format) {
+      const datasetAddress = normalizeAddress(
+        remoteAddress.split("/transfers")[0],
+        0,
+        "catalog",
+        "datasets"
+      );
+      const dataset = await this.dsp.requestDataset(
+        datasetAddress,
+        context.target,
+        audience
+      );
+      distributions = dataset?.["dcat:distribution"] ?? [];
+      if (distributions.length > 1) {
+        throw new DSPError(
+          "Cannot determine format based on dataset, since there are multiple formats in the distributions.",
+          HttpStatus.BAD_REQUEST
+        );
+      } else if (distributions.length == 0) {
+        throw new DSPError(
+          "Cannot determine format based on dataset, since there are no distributions for this dataset.",
+          HttpStatus.BAD_REQUEST
+        );
+      }
+      format = distributions[0]["dct:format"] as string;
+    }
+
     const evaluation = await this.policyEvaluationService.evaluate(context);
     if (evaluation.decision === "DENY") {
       throw new DSPError(
@@ -219,6 +242,13 @@ export class TransferService {
         HttpStatus.FORBIDDEN
       );
     }
+    const transferRequestMessage = new TransferRequestMessage({
+      consumerPid: localId,
+      agreementId: agreementId,
+      format: format,
+      dataAddress: dataAddress,
+      callbackAddress: `${this.server.publicAddress}/transfers/${localId}`
+    });
     const dataPlaneTransfer = await this.dataPlaneService.requestTransfer(
       transferRequestMessage,
       localId,
@@ -261,10 +291,13 @@ export class TransferService {
           state: TransferState.REQUESTED,
           type: "local"
         })
-      ]
+      ],
+      modifiedDate: new Date()
     };
     await this.transferDetailRepository.save(transfer);
-    this.dspGateway.sendUpdateToClients("transfer:create", transfer.localId);
+    if (this.runtime.controlPlaneInteractions === "manual") {
+      this.dspGateway.sendUpdateToClients("transfer:create", transfer.localId);
+    }
     return {
       localId,
       remoteId: transferProcess.providerPid,
@@ -308,7 +341,8 @@ export class TransferService {
           state: TransferState.REQUESTED,
           type: "remote"
         })
-      ]
+      ],
+      modifiedDate: new Date()
     };
     const context = await this.policyEvaluationService.initializeContext(
       transferRequestMessage.agreementId,
@@ -331,15 +365,15 @@ export class TransferService {
     }
     await this.transferDetailRepository.save(transfer);
     if (dataPlaneTransfer.dataAddress) {
-      setTimeout(() => {
-        this.start(
-          transferProcess.providerPid,
-          dataPlaneTransfer.dataAddress,
-          false
-        );
-      }, 2000);
+      this.start(
+        transferProcess.providerPid,
+        dataPlaneTransfer.dataAddress,
+        false
+      );
     }
-    this.dspGateway.sendUpdateToClients("transfer:create", transfer.localId);
+    if (this.runtime.controlPlaneInteractions === "manual") {
+      this.dspGateway.sendUpdateToClients("transfer:create", transfer.localId);
+    }
     return transferProcess;
   }
 
@@ -394,7 +428,9 @@ export class TransferService {
     );
     transfer.state = TransferState.STARTED;
     await this.transferDetailRepository.save(transfer);
-    this.dspGateway.sendUpdateToClients("transfer:update", transfer.localId);
+    if (this.runtime.controlPlaneInteractions === "manual") {
+      this.dspGateway.sendUpdateToClients("transfer:update", transfer.localId);
+    }
     return {
       status: "OK"
     };
@@ -428,7 +464,9 @@ export class TransferService {
     }
     transfer.state = TransferState.STARTED;
     await this.transferDetailRepository.save(transfer);
-    this.dspGateway.sendUpdateToClients("transfer:update", transfer.localId);
+    if (this.runtime.controlPlaneInteractions === "manual") {
+      this.dspGateway.sendUpdateToClients("transfer:update", transfer.localId);
+    }
     return {
       status: "OK"
     };
@@ -464,7 +502,9 @@ export class TransferService {
     );
     transfer.state = TransferState.COMPLETED;
     await this.transferDetailRepository.save(transfer);
-    this.dspGateway.sendUpdateToClients("transfer:update", transfer.localId);
+    if (this.runtime.controlPlaneInteractions === "manual") {
+      this.dspGateway.sendUpdateToClients("transfer:update", transfer.localId);
+    }
     return {
       status: "OK"
     };
@@ -496,7 +536,9 @@ export class TransferService {
 
     transfer.state = TransferState.COMPLETED;
     await this.transferDetailRepository.save(transfer);
-    this.dspGateway.sendUpdateToClients("transfer:update", transfer.localId);
+    if (this.runtime.controlPlaneInteractions === "manual") {
+      this.dspGateway.sendUpdateToClients("transfer:update", transfer.localId);
+    }
     return {
       status: "OK"
     };
@@ -538,7 +580,9 @@ export class TransferService {
     );
     transfer.state = TransferState.TERMINATED;
     await this.transferDetailRepository.save(transfer);
-    this.dspGateway.sendUpdateToClients("transfer:update", transfer.localId);
+    if (this.runtime.controlPlaneInteractions === "manual") {
+      this.dspGateway.sendUpdateToClients("transfer:update", transfer.localId);
+    }
     return {
       status: "OK"
     };
@@ -572,7 +616,9 @@ export class TransferService {
 
     transfer.state = TransferState.TERMINATED;
     await this.transferDetailRepository.save(transfer);
-    this.dspGateway.sendUpdateToClients("transfer:update", transfer.localId);
+    if (this.runtime.controlPlaneInteractions === "manual") {
+      this.dspGateway.sendUpdateToClients("transfer:update", transfer.localId);
+    }
     return {
       status: "OK"
     };
@@ -624,7 +670,9 @@ export class TransferService {
     );
     transfer.state = TransferState.SUSPENDED;
     await this.transferDetailRepository.save(transfer);
-    this.dspGateway.sendUpdateToClients("transfer:update", transfer.localId);
+    if (this.runtime.controlPlaneInteractions === "manual") {
+      this.dspGateway.sendUpdateToClients("transfer:update", transfer.localId);
+    }
     return {
       status: "OK"
     };
@@ -656,7 +704,9 @@ export class TransferService {
     );
     transfer.state = TransferState.SUSPENDED;
     await this.transferDetailRepository.save(transfer);
-    this.dspGateway.sendUpdateToClients("transfer:update", transfer.localId);
+    if (this.runtime.controlPlaneInteractions === "manual") {
+      this.dspGateway.sendUpdateToClients("transfer:update", transfer.localId);
+    }
     return {
       status: "OK"
     };

@@ -10,11 +10,16 @@ import {
   NegotiationProcessEventDao
 } from "../../model/negotiation.dao";
 import { PolicyModule } from "../../policy/policy.module";
+import { NegotiationListener } from "./negotiation.listeners";
+import { TransferModule } from "../transfer/transfer.module";
+import { CatalogModule } from "../catalog/catalog.module";
 
 @Module({
   imports: [
     AuthModule,
     DspClientModule,
+    CatalogModule,
+    TransferModule,
     TypeOrmModule.forFeature([
       NegotiationDetailDao,
       NegotiationProcessEventDao
@@ -22,7 +27,7 @@ import { PolicyModule } from "../../policy/policy.module";
     PolicyModule
   ],
   controllers: [NegotiationController, NegotiationManagementController],
-  providers: [NegotiationService],
+  providers: [NegotiationService, NegotiationListener],
   exports: [NegotiationService]
 })
 export class NegotiationModule {}

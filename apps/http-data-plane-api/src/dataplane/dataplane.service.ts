@@ -15,6 +15,7 @@ import {
   Catalog,
   CatalogDto,
   Constraint,
+  ContractNegotiationDto,
   DataPlaneAddressDto,
   DataPlaneCreation,
   DataPlaneDetailsDto,
@@ -26,16 +27,17 @@ import {
   ODRLLeftOperand,
   ODRLOperator,
   Offer,
+  OfferDto,
   Permission,
   Policy,
   Prohibition,
-  Reference,
   TransferCompletionMessageDto,
   TransferRequestMessageDto,
   TransferStartMessageDto,
   TransferState,
   TransferSuspensionMessageDto,
   TransferTerminationMessageDto,
+  defaultContext,
   deserialize
 } from "@tsg-dsp/common-dsp";
 import { InjectRepository } from "@nestjs/typeorm";
@@ -49,21 +51,25 @@ import {
   RuleConstraintConfig
 } from "@tsg-dsp/http-data-plane-dtos";
 import { AuthClientService } from "../auth/auth.client.service";
-import { resolve } from "../utils/didServiceResolver";
+import { resolveControlPlaneServiceUrl } from "../utils/didServiceResolver";
 import { LoggingService } from "../logging/logging.service";
 import { LogEntry } from "../logging/logging.dto";
-import { DataPlaneStateDto, TransferDto } from "@tsg-dsp/common-dtos";
+import {
+  DataPlaneStateDto,
+  NegotiationDetailDto,
+  TransferDto
+} from "@tsg-dsp/common-dtos";
 
 @Injectable()
 export class DataPlaneService {
   private readonly axiosDataPlane: AxiosInstance;
-  private readonly axiosManagement: AxiosInstance;
+  axiosManagement: AxiosInstance;
   constructor(
     private readonly config: RootConfig,
     private readonly loggingService: LoggingService,
     authClient: AuthClientService,
     @InjectRepository(TransferDao)
-    private readonly transferRepository: Repository<TransferDao>,
+    readonly transferRepository: Repository<TransferDao>,
     @InjectRepository(DataPlaneStateDao)
     private readonly stateRepository: Repository<DataPlaneStateDao>
   ) {
@@ -75,7 +81,7 @@ export class DataPlaneService {
       baseURL: this.config.controlPlane.managementEndpoint
     });
   }
-  private readonly logger = new Logger(this.constructor.name);
+  logger = new Logger(this.constructor.name);
   initialized: Promise<void>;
   private state?: DataPlaneStateDao;
 
@@ -367,6 +373,33 @@ export class DataPlaneService {
     return transfer;
   }
 
+  async getDataset(
+    did: string,
+    datasetId: string,
+    cpAddress?: string
+  ): Promise<DatasetDto> {
+    const address = cpAddress ?? (await resolveControlPlaneServiceUrl(did));
+
+    try {
+      const response = await this.axiosManagement.get<DatasetDto>(
+        `/catalog/dataset`,
+        {
+          params: {
+            address: address,
+            id: datasetId,
+            audience: did
+          }
+        }
+      );
+      return response.data;
+    } catch (err) {
+      throw new DataPlaneClientError(
+        `Fetching dataset ${datasetId} at ${address} (${did}) failed`,
+        err
+      ).andLog(this.logger);
+    }
+  }
+
   async getMetadata(
     id: string
   ): Promise<{ agreement: AgreementDto; dataset: DatasetDto }> {
@@ -383,36 +416,11 @@ export class DataPlaneService {
         err
       ).andLog(this.logger);
     }
-    const did = await resolve(transfer.remoteParty);
-    const connectorService = did.service?.find(
-      (s) => s.type === "connector" && typeof s.serviceEndpoint === "string"
-    );
-    if (!connectorService) {
-      throw new DataPlaneError(
-        `No connector service defined in DID document for ${transfer.remoteParty}`,
-        HttpStatus.BAD_REQUEST
-      ).andLog(new Logger("DidResolver"), "log");
-    }
 
-    let dataset: DatasetDto;
-    try {
-      const response = await this.axiosManagement.get<DatasetDto>(
-        `/catalog/dataset`,
-        {
-          params: {
-            address: connectorService.serviceEndpoint,
-            id: agreement["odrl:target"],
-            audience: transfer.remoteParty
-          }
-        }
-      );
-      dataset = response.data;
-    } catch (err) {
-      throw new DataPlaneClientError(
-        `Fetching dataset ${agreement["odrl:target"]} at ${connectorService.serviceEndpoint} (${transfer.remoteParty}) failed`,
-        err
-      ).andLog(this.logger);
-    }
+    const dataset = await this.getDataset(
+      transfer.remoteParty,
+      agreement["odrl:target"]
+    );
 
     return {
       agreement: agreement,
@@ -533,13 +541,7 @@ export class DataPlaneService {
     transferStartMessage: TransferStartMessageDto,
     processId: string
   ) {
-    const transfer = await this.transferRepository.findOneBy({ id: processId });
-    if (!transfer) {
-      throw new HttpException(
-        `Transfer ${processId} not found`,
-        HttpStatus.NOT_FOUND
-      );
-    }
+    const transfer = await this.getTransferById(processId);
     transfer.state = TransferState.STARTED;
     if (transfer.role === "consumer") {
       if (transferStartMessage["dspace:dataAddress"] === undefined) {
@@ -557,13 +559,7 @@ export class DataPlaneService {
     transferCompletionMessage: TransferCompletionMessageDto,
     processId: string
   ) {
-    const transfer = await this.transferRepository.findOneBy({ id: processId });
-    if (!transfer) {
-      throw new HttpException(
-        `Transfer ${processId} not found`,
-        HttpStatus.NOT_FOUND
-      );
-    }
+    const transfer = await this.getTransferById(processId);
     transfer.state = TransferState.COMPLETED;
     await this.transferRepository.save(transfer);
   }
@@ -572,30 +568,215 @@ export class DataPlaneService {
     transferTerminationMessage: TransferTerminationMessageDto,
     processId: string
   ) {
-    const transfer = await this.transferRepository.findOneBy({ id: processId });
-    if (!transfer) {
-      throw new HttpException(
-        `Transfer ${processId} not found`,
-        HttpStatus.NOT_FOUND
-      );
-    }
+    const transfer = await this.getTransferById(processId);
     transfer.state = TransferState.TERMINATED;
     await this.transferRepository.save(transfer);
+  }
+
+  async getNegotiation(processId: string): Promise<NegotiationDetailDto> {
+    try {
+      const response = await this.axiosManagement.get<NegotiationDetailDto>(
+        `/negotiations/${processId}`
+      );
+      return response.data;
+    } catch (err) {
+      throw new DataPlaneClientError(
+        `Fetching negotiation ${processId} failed`,
+        err
+      ).andLog(this.logger);
+    }
+  }
+
+  async checkForFinalizedNegotiation(
+    negotiationId: string
+  ): Promise<NegotiationDetailDto | undefined> {
+    const negotiation = await this.getNegotiation(negotiationId);
+    if (negotiation.state === "dspace:FINALIZED") {
+      return negotiation;
+    }
+    return undefined;
+  }
+
+  async getNegotiationWithBackoff(
+    negotiationId: string,
+    maxRetries: number = 5,
+    initialDelay: number = 500
+  ): Promise<NegotiationDetailDto> {
+    let retries = 0;
+    let delay = initialDelay;
+
+    while (retries < maxRetries) {
+      try {
+        const negotiation =
+          await this.checkForFinalizedNegotiation(negotiationId);
+        if (negotiation) {
+          return negotiation;
+        }
+      } catch (err) {
+        this.logger.debug(
+          `Negotiation ${negotiationId} did not finalize after ${retries} retries`
+        );
+      }
+
+      retries++;
+      await new Promise((resolve) => setTimeout(resolve, delay));
+      delay *= 2; // Exponential backoff
+    }
+
+    throw new Error(
+      `Negotiation ${negotiationId} did not finalize after ${maxRetries} retries`
+    );
+  }
+
+  async obtainNegotiation(
+    datasetId: string,
+    address: string,
+    audience: string
+  ): Promise<NegotiationDetailDto> {
+    const dataset = await this.getDataset(audience, datasetId, address);
+    const offer = dataset["odrl:hasPolicy"]?.[0] as OfferDto;
+    if (offer) {
+      offer["@context"] = defaultContext();
+    }
+    const response = await this.axiosManagement.post<ContractNegotiationDto>(
+      "negotiations/request",
+      offer,
+      {
+        params: {
+          dataSet: datasetId,
+          address: address,
+          audience: audience
+        }
+      }
+    );
+    this.logger.debug(
+      `Contract negotiation requested for ${datasetId} at address ${address} with audience ${audience}.`
+    );
+    return await this.getNegotiationWithBackoff(
+      response.data?.["dspace:providerPid"]
+    );
   }
 
   async handleTransferSuspend(
     transferSuspensionMessage: TransferSuspensionMessageDto,
     processId: string
   ) {
-    const transfer = await this.transferRepository.findOneBy({ id: processId });
-    if (!transfer) {
-      throw new HttpException(
-        `Transfer ${processId} not found`,
-        HttpStatus.NOT_FOUND
-      );
-    }
+    const transfer = await this.getTransferById(processId);
     transfer.state = TransferState.SUSPENDED;
     await this.transferRepository.save(transfer);
+  }
+
+  async requestTransfer(
+    negotiation: NegotiationDetailDto,
+    address: string,
+    audience: string,
+    datasetId: string
+  ) {
+    try {
+      const agreementId = negotiation?.agreement?.["@id"];
+      if (!agreementId) {
+        throw new DataPlaneError(
+          `No agreement ID found for negotiation ${negotiation.localId}`,
+          HttpStatus.BAD_REQUEST
+        );
+      }
+      await this.axiosManagement.post("transfers/request", null, {
+        params: {
+          address: address,
+          agreementId: agreementId,
+          audience: audience
+        }
+      });
+
+      this.logger.debug(
+        `Transfer requested for dataset ${datasetId} with agreement ${agreementId} at address ${address} with audience ${audience}.`
+      );
+    } catch (err) {
+      throw new DataPlaneClientError("Transfer request failed", err).andLog(
+        this.logger
+      );
+    }
+  }
+  async retryFindTransfer(
+    datasetId: string,
+    maxRetries: number = 5,
+    initialDelay: number = 500
+  ): Promise<TransferDao | null> {
+    let retries = 0;
+    let delay = initialDelay;
+
+    while (retries < maxRetries) {
+      try {
+        const transfer = await this.transferRepository.findOne({
+          where: { datasetId: datasetId },
+          order: { createdDate: "DESC" }
+        });
+        if (transfer) {
+          return transfer;
+        }
+      } catch (err) {
+        this.logger.warn(
+          `Attempt ${retries + 1} failed to find transfer for dataset ${datasetId}: ${err}`
+        );
+      }
+
+      retries++;
+      await new Promise((resolve) => setTimeout(resolve, delay));
+      delay *= 2; // Exponential backoff
+    }
+
+    this.logger.error(
+      `Failed to find transfer for dataset ${datasetId} after ${maxRetries} retries`
+    );
+    return null;
+  }
+
+  async determineTransferId(
+    datasetId: string,
+    audience: string,
+    controlPlaneAddress?: string
+  ): Promise<string> {
+    let transfer: TransferDao | null;
+    let negotiation: NegotiationDetailDto | null;
+    transfer = await this.transferRepository.findOne({
+      where: { datasetId: datasetId, state: TransferState.STARTED },
+      order: { createdDate: "DESC" }
+    });
+    const address =
+      controlPlaneAddress ?? (await resolveControlPlaneServiceUrl(audience));
+    if (!transfer) {
+      this.logger.debug(
+        `Did not find active transfer for dataset ${datasetId}, checking for negotiation.`
+      );
+
+      try {
+        const resp = await this.axiosManagement.get<NegotiationDetailDto>(
+          `negotiations/dataset/${datasetId}`
+        );
+        negotiation = resp.data;
+      } catch (err) {
+        this.logger.debug(
+          `No negotiation found for dataset ${datasetId}, requesting new negotiation.`
+        );
+        negotiation = await this.obtainNegotiation(
+          datasetId,
+          address,
+          audience
+        );
+      }
+
+      await this.requestTransfer(negotiation, address, audience, datasetId);
+      transfer = await this.retryFindTransfer(datasetId);
+    }
+
+    if (!transfer) {
+      throw new DataPlaneClientError(
+        `No transfer found for dataset ${datasetId}`,
+        HttpStatus.BAD_REQUEST
+      );
+    }
+
+    return transfer.id;
   }
 
   async executeProxyRequest(
@@ -605,13 +786,8 @@ export class DataPlaneService {
     response: Response
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   ): Promise<any> {
-    const transfer = await this.transferRepository.findOneBy({ id: processId });
-    if (!transfer) {
-      throw new HttpException(
-        `Transfer ${processId} not found`,
-        HttpStatus.NOT_FOUND
-      );
-    }
+    const transfer = await this.getTransferById(processId);
+
     if (transfer.state !== TransferState.STARTED) {
       this.logger.warn(
         `Transfer process ${processId} is in ${transfer.state} state, accessing is not allowed`
@@ -691,14 +867,7 @@ export class DataPlaneService {
     request: RawBodyRequest<Request>,
     response: Response
   ) {
-    const transfer = await this.transferRepository.findOneBy({ id: processId });
-    if (!transfer) {
-      this.logger.warn(`Transfer ${processId} not found`);
-      throw new HttpException(
-        `Transfer ${processId} not found`,
-        HttpStatus.NOT_FOUND
-      );
-    }
+    const transfer = await this.getTransferById(processId);
     const state = await this.getState();
     let dataset = state.dataset?.find((d) => d["@id"] === transfer.datasetId);
     if (!dataset) {

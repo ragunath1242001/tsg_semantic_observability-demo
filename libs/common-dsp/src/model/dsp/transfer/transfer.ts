@@ -46,6 +46,7 @@ export interface ITransferStatus {
   process: TransferProcess;
   agreementId: string;
   format?: string;
+  modifiedDate: Date;
 }
 
 export class TransferStatus {
@@ -58,6 +59,7 @@ export class TransferStatus {
   process: TransferProcess;
   agreementId: string;
   format?: string;
+  modifiedDate: Date;
 
   constructor(value: ITransferStatus) {
     this.localId = value.localId;
@@ -69,6 +71,7 @@ export class TransferStatus {
     this.process = createInstance(value.process, TransferProcess);
     this.agreementId = value.agreementId;
     this.format = value.format;
+    this.modifiedDate = value.modifiedDate;
   }
 }
 

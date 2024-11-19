@@ -6,5 +6,6 @@ export * from "./did.schemas";
 export * from "./utils.swagger";
 export * from "./catalog.schema";
 export * from "./negotiation.schema";
+export * from "./negotiations.dto";
 export * from "./common.schema";
 export * from "./transfer.schemas";

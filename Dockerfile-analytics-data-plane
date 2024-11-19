@@ -11,14 +11,12 @@ COPY apps/analytics-data-plane-ui/package.json apps/analytics-data-plane-ui/
 COPY libs/common-dsp/package.json libs/common-dsp/
 COPY libs/common-dtos/package.json libs/common-dtos/
 COPY libs/common-ui/package.json libs/common-ui/
-COPY libs/control-plane-dtos/package.json libs/control-plane-dtos/
 COPY libs/http-data-plane-dtos/package.json libs/http-data-plane-dtos/
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
 COPY apps apps
 COPY libs libs 
 RUN pnpm run --filter "common-dsp" build 
-RUN pnpm run --filter "control-plane-dtos" build 
 ARG TSG_MODE=development
 ARG TSG_VERSION=0.0.0
 ARG TSG_STATIC_MODE=${TSG_MODE}

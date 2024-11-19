@@ -20,7 +20,7 @@ import {
 import {
   INegotiationStatusDto,
   NegotiationProcessEventDto
-} from "@tsg-dsp/control-plane-dtos";
+} from "./negotiations.dto";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { MultilanguageSchema, ReferenceSchema } from "./common.schema";
 import { PolicySchema } from "./catalog.schema";

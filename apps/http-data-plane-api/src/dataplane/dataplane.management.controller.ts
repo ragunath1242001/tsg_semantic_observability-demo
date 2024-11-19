@@ -9,6 +9,7 @@ import {
   Req,
   Res,
   All,
+  Headers,
   RawBodyRequest,
   Query,
   Body,
@@ -41,6 +42,7 @@ import {
   MetadataSchema,
   TransferSchema
 } from "./dataplane.schemas.js";
+import { DataPlaneClientError } from "../utils/errors/error";
 
 @ApiTags("Data Plane Management")
 @ApiOAuth2(["controlplane_dataplane"])
@@ -217,7 +219,7 @@ export class DataPlaneManagementController {
   @ApiForbiddenResponseDefault()
   async executeTransfer(
     @Param("id") id: string,
-    @Param("path") path: string | undefined,
+    @Param("path") path: string,
     @Req() request: RawBodyRequest<Request>,
     @Res() response: Response
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
@@ -225,7 +227,56 @@ export class DataPlaneManagementController {
     this.logger.log(`Requesting transfer execution for id ${id}`);
     return await this.dataPlaneService.executeProxyRequest(
       id,
-      path || "",
+      path,
+      request,
+      response
+    );
+  }
+
+  @All("/execute/:path(*)?")
+  @HttpCode(HttpStatus.ACCEPTED)
+  @ApiOperation({
+    summary: "Proxy a request without transfer ID",
+    description:
+      "This endpoint is used if the HTTP Data Plane needs to serve as a proxy and the transfer hasn't been created yet. Used for automatic handling of the DSP."
+  })
+  @ApiParam({
+    name: "path",
+    required: true,
+    description: "Path of receiving application"
+  })
+  @ApiForbiddenResponseDefault()
+  async executeTransferWithoutId(
+    @Param("path") path: string,
+    @Headers("x-dataset-id") datasetId: string,
+    @Headers("x-audience") audience: string,
+    @Headers("x-controlplane-address") controlPlaneAddress: string,
+    @Req()
+    request: RawBodyRequest<Request>,
+    @Res() response: Response
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ): Promise<any> {
+    this.logger.log(`Requesting transfer execution without transfer id`);
+    if (!datasetId || datasetId === "") {
+      throw new DataPlaneClientError(
+        "No dataset ID provided",
+        HttpStatus.BAD_REQUEST
+      ).andLog(this.logger);
+    }
+    if (!audience || audience === "") {
+      throw new DataPlaneClientError(
+        "No audience provided",
+        HttpStatus.BAD_REQUEST
+      ).andLog(this.logger);
+    }
+    const transferId = await this.dataPlaneService.determineTransferId(
+      datasetId,
+      audience,
+      controlPlaneAddress
+    );
+    return await this.dataPlaneService.executeProxyRequest(
+      transferId,
+      path,
       request,
       response
     );

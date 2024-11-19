@@ -44,6 +44,11 @@ const menuList: Menu[] = [
         label: "Logging",
         icon: "pi pi-fw pi-list",
         to: "/logging"
+      },
+      {
+        label: "Tester",
+        icon: "pi pi-fw pi-cog",
+        to: "/tester"
       }
     ]
   }

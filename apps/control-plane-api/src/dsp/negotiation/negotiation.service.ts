@@ -1,7 +1,7 @@
 import {
   INegotiationStatusDto,
   NegotiationDetailDto
-} from "@tsg-dsp/control-plane-dtos";
+} from "@tsg-dsp/common-dtos";
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import {
@@ -37,6 +37,11 @@ import { DspClientService } from "../client/client.service";
 import { DspGateway } from "../client/dsp.gateway";
 import { AuthService } from "../../auth/auth.service";
 import { AgreementService } from "../../policy/agreement.service";
+import { EventEmitter2 } from "@nestjs/event-emitter";
+import {
+  NegotiationCreatedEvent,
+  NegotiationUpdatedEvent
+} from "./negotiation.events";
 
 @Injectable()
 export class NegotiationService {
@@ -47,6 +52,7 @@ export class NegotiationService {
     private readonly dspGateway: DspGateway,
     private readonly authService: AuthService,
     private readonly agreementService: AgreementService,
+    readonly eventEmitter: EventEmitter2,
     @InjectRepository(NegotiationDetailDao)
     private readonly negotiationDetailRepository: Repository<NegotiationDetailDao>,
     @InjectRepository(NegotiationProcessEventDao)
@@ -139,6 +145,25 @@ export class NegotiationService {
     }
   }
 
+  async getNegotiationFromDataSetId(
+    datasetId: string
+  ): Promise<NegotiationDetailDto> {
+    const negotiation = await this.negotiationDetailRepository.findOne({
+      where: {
+        dataSet: datasetId,
+        state: ContractNegotiationState.FINALIZED
+      },
+      order: { modifiedDate: "DESC" }
+    });
+    if (!negotiation) {
+      throw new DSPError(
+        `No finalized negotiation found for dataset ID ${datasetId}`,
+        HttpStatus.NOT_FOUND
+      ).andLog(this.logger, "warn");
+    }
+    return this.obtainNegotiationDto(negotiation);
+  }
+
   async getNegotiations(): Promise<INegotiationStatusDto[]> {
     const negotiations = await this.negotiationDetailRepository.find({
       select: {
@@ -160,6 +185,31 @@ export class NegotiationService {
     return negotiations;
   }
 
+  async obtainNegotiationDto(
+    negotiation: NegotiationDetailDao
+  ): Promise<NegotiationDetailDto> {
+    const { offer, agreementDao, events, ...negotiationPlain } = negotiation;
+    const eventsToReturn = await Promise.all(
+      events.map(async (e) => {
+        return {
+          ...e,
+          reason: e.reason
+            ? await Promise.all(e.reason?.map((r) => r.serialize()))
+            : undefined,
+          verification: e.verification ? e.verification.serialize() : undefined
+        };
+      })
+    );
+    return {
+      ...negotiationPlain,
+      offer: offer ? offer.serialize() : undefined,
+      agreement: agreementDao?.agreement,
+      events: eventsToReturn.sort((a, b) => {
+        return new Date(a.time).valueOf() - new Date(b.time).valueOf();
+      })
+    };
+  }
+
   async getNegotiationDto(
     processId: string,
     audience?: string
@@ -169,28 +219,7 @@ export class NegotiationService {
       remoteParty: audience
     });
     if (negotiation) {
-      const { offer, agreementDao, events, ...negotiationPlain } = negotiation;
-      const eventsToReturn = await Promise.all(
-        events.map(async (e) => {
-          return {
-            ...e,
-            reason: e.reason
-              ? await Promise.all(e.reason?.map((r) => r.serialize()))
-              : undefined,
-            verification: e.verification
-              ? await e.verification.serialize()
-              : undefined
-          };
-        })
-      );
-      return {
-        ...negotiationPlain,
-        offer: offer ? await offer.serialize() : undefined,
-        agreement: agreementDao?.agreement,
-        events: eventsToReturn.sort((a, b) => {
-          return new Date(a.time).valueOf() - new Date(b.time).valueOf();
-        })
-      };
+      return this.obtainNegotiationDto(negotiation);
     } else {
       throw new DSPError(
         `Cannot get negotiation with process ID ${processId} for ${audience}`,
@@ -251,7 +280,6 @@ export class NegotiationService {
     const contractNegotiation = await deserialize<ContractNegotiation>(
       contractNegotiationResponse
     );
-
     const negotiation: NegotiationDetail = {
       localId: consumerPid,
       remoteId: contractNegotiation.providerPid,
@@ -278,10 +306,12 @@ export class NegotiationService {
     });
     negotiation.events.push(event);
     await this.negotiationDetailRepository.save(negotiation);
-    this.dspGateway.sendUpdateToClients(
-      "negotiation:create",
-      negotiation.localId
-    );
+    if (this.config.runtime?.controlPlaneInteractions === "manual") {
+      this.dspGateway.sendUpdateToClients(
+        "negotiation:create",
+        negotiation.localId
+      );
+    }
     return negotiation;
   }
 
@@ -316,6 +346,21 @@ export class NegotiationService {
       events: []
     };
     await this.createNegotiationDetail(negotiation, "remote");
+
+    if (this.config.runtime?.controlPlaneInteractions !== "manual") {
+      this.eventEmitter.emitAsync(
+        "negotiation.create",
+        new NegotiationCreatedEvent({
+          localId: providerPid,
+          offer: requestMessage.offer.serialize(),
+          datasetId: requestMessage.offer.target,
+          remoteParty: remoteParty
+        })
+      );
+    } else {
+      this.dspGateway.sendUpdateToClients("negotiation:create", "created");
+    }
+
     return contractNegotiation;
   }
 
@@ -352,10 +397,12 @@ export class NegotiationService {
     });
     negotiation.offer = offer;
     await this.negotiationDetailRepository.save(negotiation);
-    this.dspGateway.sendUpdateToClients(
-      "negotiation:create",
-      negotiation.localId
-    );
+    if (this.config.runtime?.controlPlaneInteractions === "manual") {
+      this.dspGateway.sendUpdateToClients(
+        "negotiation:create",
+        negotiation.localId
+      );
+    }
     return negotiation;
   }
 
@@ -384,10 +431,12 @@ export class NegotiationService {
     negotiation.state = ContractNegotiationState.REQUESTED;
     negotiation.offer = requestMessage.offer;
     await this.negotiationDetailRepository.save(negotiation);
-    this.dspGateway.sendUpdateToClients(
-      "negotiation:update",
-      negotiation.localId
-    );
+    if (this.config.runtime?.controlPlaneInteractions === "manual") {
+      this.dspGateway.sendUpdateToClients(
+        "negotiation:update",
+        negotiation.localId
+      );
+    }
     return new ContractNegotiation({
       providerPid: negotiation.localId,
       consumerPid: negotiation.remoteId,
@@ -429,10 +478,12 @@ export class NegotiationService {
     negotiation.offer = contractOfferMessage.offer;
     negotiation.state = ContractNegotiationState.OFFERED;
     await this.negotiationDetailRepository.save(negotiation);
-    this.dspGateway.sendUpdateToClients(
-      "negotiation:update",
-      negotiation.localId
-    );
+    if (this.config.runtime?.controlPlaneInteractions === "manual") {
+      this.dspGateway.sendUpdateToClients(
+        "negotiation:update",
+        negotiation.localId
+      );
+    }
     return {
       status: "OK"
     };
@@ -458,10 +509,12 @@ export class NegotiationService {
     negotiation.offer = contractOfferMessage.offer;
     negotiation.state = ContractNegotiationState.OFFERED;
     await this.negotiationDetailRepository.save(negotiation);
-    this.dspGateway.sendUpdateToClients(
-      "negotiation:update",
-      negotiation.localId
-    );
+    if (this.config.runtime?.controlPlaneInteractions === "manual") {
+      this.dspGateway.sendUpdateToClients(
+        "negotiation:update",
+        negotiation.localId
+      );
+    }
     return {
       status: "OK"
     };
@@ -491,10 +544,12 @@ export class NegotiationService {
     );
     negotiation.state = ContractNegotiationState.ACCEPTED;
     await this.negotiationDetailRepository.save(negotiation);
-    this.dspGateway.sendUpdateToClients(
-      "negotiation:update",
-      negotiation.localId
-    );
+    if (this.config.runtime?.controlPlaneInteractions === "manual") {
+      this.dspGateway.sendUpdateToClients(
+        "negotiation:update",
+        negotiation.localId
+      );
+    }
     return {
       status: "OK"
     };
@@ -552,10 +607,13 @@ export class NegotiationService {
     });
     negotiation.state = newState;
     await this.negotiationDetailRepository.save(negotiation);
-    this.dspGateway.sendUpdateToClients(
-      "negotiation:update",
-      negotiation.localId
-    );
+
+    if (this.config.runtime?.controlPlaneInteractions === "manual") {
+      this.dspGateway.sendUpdateToClients(
+        "negotiation:update",
+        negotiation.localId
+      );
+    }
     return {
       status: "OK"
     };
@@ -595,19 +653,15 @@ export class NegotiationService {
     negotiation.events.push({
       time: new Date(),
       state: ContractNegotiationState.AGREED,
-      agreementMessage: JSON.stringify(await agreementMessage.serialize()),
+      agreementMessage: JSON.stringify(agreementMessage.serialize()),
       type: "local"
     });
-    await this.dsp.negotiationAgreement(
-      `${negotiation.remoteAddress}/agreement`,
-      agreementMessage,
-      negotiation.remoteParty
-    );
+
     negotiation.state = ContractNegotiationState.AGREED;
     negotiation.agreement = agreement;
     negotiation.agreementId = agreement.id;
     const agreementDao = await this.agreementService.storeAgreement(
-      await agreement.serialize(),
+      agreement.serialize(),
       negotiation.localId
     );
     await this.negotiationDetailRepository.save({
@@ -616,10 +670,18 @@ export class NegotiationService {
         id: agreementDao.id
       }
     });
-    this.dspGateway.sendUpdateToClients(
-      "negotiation:update",
-      negotiation.localId
+    await this.dsp.negotiationAgreement(
+      `${negotiation.remoteAddress}/agreement`,
+      agreementMessage,
+      negotiation.remoteParty
     );
+    if (this.config.runtime?.controlPlaneInteractions === "manual") {
+      this.dspGateway.sendUpdateToClients(
+        "negotiation:update",
+        negotiation.localId
+      );
+    }
+
     return {
       status: "OK"
     };
@@ -639,9 +701,7 @@ export class NegotiationService {
     negotiation.events.push({
       time: new Date(),
       state: ContractNegotiationState.AGREED,
-      agreementMessage: JSON.stringify(
-        await contractAgreementMessage.serialize()
-      ),
+      agreementMessage: JSON.stringify(contractAgreementMessage.serialize()),
       type: "remote"
     });
     negotiation.agreement = contractAgreementMessage.agreement;
@@ -655,10 +715,20 @@ export class NegotiationService {
       ...negotiation,
       agreementDao: agreementDao
     });
-    this.dspGateway.sendUpdateToClients(
-      "negotiation:update",
-      negotiation.localId
-    );
+    if (this.config.runtime?.controlPlaneInteractions !== "manual") {
+      this.eventEmitter.emitAsync(
+        "negotiation.agree",
+        new NegotiationUpdatedEvent({
+          processId: processId
+        })
+      );
+    } else {
+      this.dspGateway.sendUpdateToClients(
+        "negotiation:update",
+        negotiation.localId
+      );
+    }
+
     return {
       status: "OK"
     };
@@ -711,17 +781,20 @@ export class NegotiationService {
         "dspace:digest": digest
       }
     });
+
+    negotiation.state = ContractNegotiationState.VERIFIED;
+    await this.negotiationDetailRepository.save(negotiation);
     await this.dsp.negotiationVerification(
       `${negotiation.remoteAddress}/agreement/verification`,
       contractAgreementVerificationMessage,
       negotiation.remoteParty
     );
-    negotiation.state = ContractNegotiationState.VERIFIED;
-    await this.negotiationDetailRepository.save(negotiation);
-    this.dspGateway.sendUpdateToClients(
-      "negotiation:update",
-      negotiation.localId
-    );
+    if (this.config.runtime?.controlPlaneInteractions === "manual") {
+      this.dspGateway.sendUpdateToClients(
+        "negotiation:update",
+        negotiation.localId
+      );
+    }
     return {
       status: "OK"
     };
@@ -771,10 +844,20 @@ export class NegotiationService {
     });
     negotiation.state = ContractNegotiationState.VERIFIED;
     await this.negotiationDetailRepository.save(negotiation);
-    this.dspGateway.sendUpdateToClients(
-      "negotiation:update",
-      negotiation.localId
-    );
+    if (this.config.runtime?.controlPlaneInteractions !== "manual") {
+      this.eventEmitter.emitAsync(
+        "negotiation.verify",
+        new NegotiationUpdatedEvent({
+          processId: processId
+        })
+      );
+    } else {
+      this.dspGateway.sendUpdateToClients(
+        "negotiation:update",
+        negotiation.localId
+      );
+    }
+
     return {
       status: "OK"
     };
@@ -832,10 +915,12 @@ export class NegotiationService {
       ...negotiation,
       agreementDao: agreementDao
     });
-    this.dspGateway.sendUpdateToClients(
-      "negotiation:update",
-      negotiation.localId
-    );
+    if (this.config.runtime?.controlPlaneInteractions === "manual") {
+      this.dspGateway.sendUpdateToClients(
+        "negotiation:update",
+        negotiation.localId
+      );
+    }
     return {
       status: "OK"
     };
@@ -861,10 +946,12 @@ export class NegotiationService {
     });
     negotiation.state = ContractNegotiationState.TERMINATED;
     await this.negotiationDetailRepository.save(negotiation);
-    this.dspGateway.sendUpdateToClients(
-      "negotiation:update",
-      negotiation.localId
-    );
+    if (this.config.runtime?.controlPlaneInteractions === "manual") {
+      this.dspGateway.sendUpdateToClients(
+        "negotiation:update",
+        negotiation.localId
+      );
+    }
     return {
       status: "OK"
     };
@@ -890,10 +977,12 @@ export class NegotiationService {
     });
     negotiation.state = ContractNegotiationState.TERMINATED;
     await this.negotiationDetailRepository.save(negotiation);
-    this.dspGateway.sendUpdateToClients(
-      "negotiation:update",
-      negotiation.localId
-    );
+    if (this.config.runtime?.controlPlaneInteractions === "manual") {
+      this.dspGateway.sendUpdateToClients(
+        "negotiation:update",
+        negotiation.localId
+      );
+    }
     return {
       status: "OK"
     };

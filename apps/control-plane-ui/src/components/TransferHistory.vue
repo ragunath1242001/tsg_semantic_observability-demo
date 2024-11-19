@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { stripDspace } from "@tsg-dsp/common-ui/utils/common";
 
-import { TransferDetailDto, TransferStatus } from "@tsg-dsp/control-plane-dtos";
+import { TransferDetailDto, TransferStatus } from "@tsg-dsp/common-dsp";
 import { ref, toRef } from "vue";
 import { useToast } from "primevue/usetoast";
 import http from "@tsg-dsp/common-ui/utils/http";

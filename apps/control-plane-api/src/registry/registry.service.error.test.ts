@@ -70,7 +70,6 @@ describe("No error when no dataspace credentials are found", () => {
   });
   afterAll(() => server.close());
   it("No error when no dataspace credentials are found", async () => {
-    console.log("this one");
     const er = await registryService.fetchDidDocuments();
     const didDocuments = await registryService.fetchDidDocuments();
     expect(didDocuments).toHaveLength(0);

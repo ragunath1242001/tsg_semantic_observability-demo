@@ -44,6 +44,7 @@ import Tab from "primevue/tab";
 import TabPanels from "primevue/tabpanels";
 import { createPinia } from "pinia";
 import { setJsonLdDebugContexts } from "@tsg-dsp/common-dsp";
+import Badge from "primevue/badge";
 
 setJsonLdDebugContexts(
   import.meta.env.TSG_STATIC_MODE !== "production",
@@ -75,6 +76,7 @@ app.use(DialogService);
 app.directive("tooltip", Tooltip);
 
 app.component("AutoComplete", AutoComplete);
+app.component("Badge", Badge);
 app.component("Button", Button);
 app.component("ConfirmDialog", ConfirmDialog);
 app.component("Dialog", Dialog);

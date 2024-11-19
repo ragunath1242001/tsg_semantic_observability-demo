@@ -11,16 +11,20 @@ import {
   AgreementDto,
   DataPlaneCreation,
   DatasetDto,
-  OfferDto
+  OfferDto,
+  NegotiationRole,
+  ContractNegotiationState,
+  TransferState
 } from "@tsg-dsp/common-dsp";
 import { TypeOrmTestHelper } from "../utils/testhelper";
 import { TransferDao } from "./transfer.dao";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { DataPlaneStateDao } from "./dataplane.dao";
 import { AuthClientService } from "../auth/auth.client.service";
-import { RawBodyRequest } from "@nestjs/common";
+import { HttpStatus, RawBodyRequest } from "@nestjs/common";
 import { EgressLogDao, IngressLogDao } from "../logging/logging.dao";
 import { LoggingService } from "../logging/logging.service";
+import { NegotiationDetailDto } from "@tsg-dsp/common-dtos";
 
 describe("Dataplane Service", () => {
   let dataPlaneService: DataPlaneService;
@@ -141,10 +145,42 @@ describe("Dataplane Service", () => {
           origin: "0.0.0.0",
           url: "https://httpbin.org/anything/0.9.2/anything/test"
         });
+      }),
+      http.post(
+        "http://your-api-url/negotiations/request",
+        ({ request, params, cookies }) => {
+          if (request.url.includes("validDatasetId")) {
+            return HttpResponse.json(HttpStatus.OK); // successful response
+          } else {
+            return HttpResponse.json(HttpStatus.NOT_FOUND); // simulate failure for invalid datasets
+          }
+        }
+      ),
+      http.get("https://testaudience/.well-known/did.json", () => {
+        return HttpResponse.json({
+          service: [
+            {
+              type: "connector",
+              serviceEndpoint: "http://remotecontrolplane/"
+            }
+          ]
+        });
+      }),
+      http.post("http://localhost:3000/management/negotiations/request", () => {
+        return HttpResponse.json({
+          "@type": "dspace:ContractNegotiation",
+          "@id": "urn:uuid:1234",
+          "dspace:providerPid": "providerPid",
+          "dspace:consumerPid": "consumerPid",
+          "dspace:state": "dspace:REQUESTED"
+        });
+      }),
+      http.get("http://localhost:3000/management/request", () => {
+        return HttpResponse.json({});
       })
     );
 
-    server.listen({ onUnhandledRequest: "bypass" });
+    server.listen({ onUnhandledRequest: "warn" });
 
     const moduleRef: TestingModule = await Test.createTestingModule({
       imports: [
@@ -189,6 +225,9 @@ describe("Dataplane Service", () => {
     await new Promise((r) => setTimeout(r, 20));
   });
 
+  afterEach(async () => {
+    jest.restoreAllMocks();
+  });
   afterAll(async () => {
     await TypeOrmTestHelper.instance.teardownTestDB();
   });
@@ -702,127 +741,598 @@ describe("Dataplane Service", () => {
       ).rejects.toThrow("Could not deserialize");
     });
   });
-});
+  describe("getNegotiationWithBackoff", () => {
+    it("should return negotiation when finalized", async () => {
+      const negotiationId = "test-id";
+      const negotiation = {
+        localId: "test",
+        remoteId: "test",
+        events: [],
+        remoteParty: "did:web:test",
+        remoteAddress: "remoteAddress",
+        dataSet: "urn:1234",
+        modifiedDate: new Date(),
+        role: "provider" as NegotiationRole,
+        state: ContractNegotiationState.FINALIZED
+      };
+      jest
+        .spyOn(dataPlaneService, "checkForFinalizedNegotiation")
+        .mockResolvedValue(negotiation);
 
-describe("Dataplane Service Consumer", () => {
-  let dataPlaneService: DataPlaneService;
-  let server: SetupServer;
-  let managementToken: string;
+      const result =
+        await dataPlaneService.getNegotiationWithBackoff(negotiationId);
 
-  beforeAll(async () => {
-    await TypeOrmTestHelper.instance.setupTestDB();
-    const config = plainToClass(RootConfig, {
-      server: {},
-      controlPlane: {
-        dataPlaneEndpoint: "http://127.0.0.1/data-plane",
-        managementEndpoint: "http://localhost:3000/management",
-        controlEndpoint: "http://localhost:3000",
-        authorization: "Basic YWRtaW46YWRtaW4=",
-        initializationDelay: 1
-      },
-      dataset: undefined,
-      logging: {
-        debug: true
-      }
+      expect(result).toEqual(negotiation);
     });
 
-    server = setupServer(
-      http.post<PathParams, DataPlaneCreation>(
-        `${config.controlPlane.dataPlaneEndpoint}/init`,
-        async ({ request, params, cookies }) => {
-          const requestBody = await request.json();
-          managementToken = requestBody.managementToken;
-          return HttpResponse.json({
-            ...requestBody,
-            identifier: "urn:uuid:4ab97081-665e-447e-88a1-791a185994b9"
-          });
-        }
-      ),
-      http.post(
-        `${config.controlPlane.dataPlaneEndpoint}/:id/catalog`,
-        ({ request, params, cookies }) => {
-          return HttpResponse.json(request.json());
-        }
-      )
-    );
+    it("should throw an error after max retries", async () => {
+      const negotiationId = "test-id";
+      jest
+        .spyOn(dataPlaneService, "checkForFinalizedNegotiation")
+        .mockResolvedValue(undefined);
 
-    server.listen({ onUnhandledRequest: "error" });
-
-    const moduleRef: TestingModule = await Test.createTestingModule({
-      imports: [
-        TypeOrmTestHelper.instance.module([
-          TransferDao,
-          DataPlaneStateDao,
-          IngressLogDao,
-          EgressLogDao
-        ]),
-        TypeOrmModule.forFeature([
-          TransferDao,
-          DataPlaneStateDao,
-          IngressLogDao,
-          EgressLogDao
-        ])
-      ],
-      controllers: [DataPlaneController],
-      providers: [
-        DataPlaneService,
-        LoggingService,
-        AuthClientService,
-        {
-          provide: AuthConfig,
-          useValue: { enabled: false }
-        },
-        {
-          provide: LoggingConfig,
-          useValue: { debug: true }
-        },
-        {
-          provide: RootConfig,
-          useValue: config
-        }
-      ]
-    }).compile();
-
-    dataPlaneService = moduleRef.get(DataPlaneService);
-    await expect(dataPlaneService.getStateDto()).rejects.toThrow(
-      "No state available yet"
-    );
-
-    await new Promise((r) => setTimeout(r, 20));
-  });
-
-  afterAll(async () => {
-    await TypeOrmTestHelper.instance.teardownTestDB();
-  });
-
-  describe("Initial state", () => {
-    it("Add dataset config", async () => {
-      await dataPlaneService.initialized;
-      await new Promise((r) => setTimeout(r, 100));
-      await expect(dataPlaneService.getDatasetConfig()).rejects.toThrow(
-        "No dataset configured"
+      await expect(
+        dataPlaneService.getNegotiationWithBackoff(negotiationId, 5, 1)
+      ).rejects.toThrow(
+        `Negotiation ${negotiationId} did not finalize after 5 retries`
       );
-      await dataPlaneService.updateDatasetConfig({
-        id: `urn:uuid:test`,
-        title: "HTTPBin",
-        currentVersion: "0.9.2",
-        versions: [
+    });
+  });
+
+  describe("obtainNegotiation", () => {
+    it("should request a new negotiation", async () => {
+      const datasetId = "dataset-id";
+      const address = "address";
+      const audience = "audience";
+      const dataset: DatasetDto = { "odrl:hasPolicy": [{}] } as DatasetDto;
+
+      jest.spyOn(dataPlaneService, "getDataset").mockResolvedValue(dataset);
+
+      const negotiation: NegotiationDetailDto = {
+        localId: "test",
+        remoteId: "test",
+        events: [],
+        remoteParty: "did:web:test",
+        remoteAddress: "remoteAddress",
+        dataSet: "urn:uuid:1234",
+        modifiedDate: new Date(),
+        role: "provider" as NegotiationRole,
+        state: ContractNegotiationState.FINALIZED
+      };
+
+      jest
+        .spyOn(dataPlaneService, "checkForFinalizedNegotiation")
+        .mockResolvedValue(negotiation);
+
+      const result = await dataPlaneService.obtainNegotiation(
+        datasetId,
+        address,
+        audience
+      );
+
+      expect(result).toEqual(negotiation);
+    });
+
+    it("should handle missing offer", async () => {
+      const datasetId = "dataset-id";
+      const address = "address";
+      const audience = "audience";
+      const dataset: DatasetDto = {} as DatasetDto;
+
+      jest.spyOn(dataPlaneService, "getDataset").mockResolvedValue(dataset);
+
+      const negotiation: NegotiationDetailDto = {
+        localId: "test",
+        remoteId: "test",
+        events: [],
+        remoteParty: "did:web:test",
+        remoteAddress: "remoteAddress",
+        dataSet: "urn:uuid:1234",
+        modifiedDate: new Date(),
+        role: "provider" as NegotiationRole,
+        state: ContractNegotiationState.FINALIZED
+      };
+
+      jest
+        .spyOn(dataPlaneService, "checkForFinalizedNegotiation")
+        .mockResolvedValue(negotiation);
+
+      const result = await dataPlaneService.obtainNegotiation(
+        datasetId,
+        address,
+        audience
+      );
+      expect(result).toBeTruthy();
+    });
+  });
+  describe("getNegotiation", () => {
+    it("should return negotiation details when the request is successful", async () => {
+      const processId = "test-process-id";
+      const negotiationDetail: NegotiationDetailDto = {
+        localId: "test",
+        remoteId: "test",
+        events: [],
+        remoteParty: "did:web:test",
+        remoteAddress: "remoteAddress",
+        dataSet: "urn:uuid:1234",
+        modifiedDate: new Date(),
+        role: "provider" as NegotiationRole,
+        state: ContractNegotiationState.FINALIZED
+      };
+
+      jest.spyOn(dataPlaneService.axiosManagement, "get").mockResolvedValue({
+        data: negotiationDetail
+      });
+
+      const result = await dataPlaneService.getNegotiation(processId);
+      expect(result).toEqual(negotiationDetail);
+    });
+
+    it("should throw DataPlaneClientError when the request fails", async () => {
+      const processId = "test-process-id";
+      const error = new Error("Request failed");
+
+      jest
+        .spyOn(dataPlaneService.axiosManagement, "get")
+        .mockRejectedValue(error);
+
+      await expect(dataPlaneService.getNegotiation(processId)).rejects.toThrow(
+        `Fetching negotiation ${processId} failed`
+      );
+    });
+  });
+
+  describe("requestTransfer", () => {
+    let negotiation: NegotiationDetailDto;
+    let address: string;
+    let audience: string;
+    let datasetId: string;
+
+    beforeEach(() => {
+      negotiation = {
+        localId: "test",
+        remoteId: "test",
+        events: [],
+        remoteParty: "did:web:test",
+        remoteAddress: "remoteAddress",
+        dataSet: "urn:uuid:1234",
+        modifiedDate: new Date(),
+        role: "provider" as NegotiationRole,
+        state: ContractNegotiationState.FINALIZED,
+        agreement: {
+          "@id": "urn:uuid:agreement-id",
+          "@type": "odrl:Agreement",
+          "odrl:assigner": "did:web:localhost",
+          "odrl:assignee": "did:web:localhost",
+          "dspace:timestamp": new Date().toISOString(),
+          "odrl:target": "urn:uuid:dataset"
+        }
+      };
+      address = "http://localhost:3000";
+      audience = "test-audience";
+      datasetId = "urn:uuid:test-dataset";
+    });
+
+    it("should request a transfer successfully", async () => {
+      jest.spyOn(dataPlaneService.axiosManagement, "post").mockResolvedValue({
+        data: {}
+      });
+
+      await dataPlaneService.requestTransfer(
+        negotiation,
+        address,
+        audience,
+        datasetId
+      );
+
+      expect(dataPlaneService.axiosManagement.post).toHaveBeenCalledWith(
+        "transfers/request",
+        null,
+        {
+          params: {
+            address: address,
+            agreementId: negotiation.agreement!["@id"],
+            audience: audience
+          }
+        }
+      );
+    });
+
+    it("should throw an error if agreement ID is not found", async () => {
+      delete negotiation.agreement;
+
+      await expect(
+        dataPlaneService.requestTransfer(
+          negotiation,
+          address,
+          audience,
+          datasetId
+        )
+      ).rejects.toThrow(
+        `No agreement ID found for negotiation ${negotiation.localId}`
+      );
+    });
+
+    it("should throw a DataPlaneClientError if the request fails", async () => {
+      const error = new Error("Request failed");
+      jest
+        .spyOn(dataPlaneService.axiosManagement, "post")
+        .mockRejectedValue(error);
+
+      await expect(
+        dataPlaneService.requestTransfer(
+          negotiation,
+          address,
+          audience,
+          datasetId
+        )
+      ).rejects.toThrow("Transfer request failed");
+    });
+  });
+  describe("determineTransferId", () => {
+    let datasetId: string;
+    let audience: string;
+    let controlPlaneAddress: string | undefined;
+
+    beforeEach(() => {
+      datasetId = "urn:uuid:test-dataset";
+      audience = "did:web:test-audience";
+      controlPlaneAddress = "test-address";
+    });
+
+    it("should return transfer ID if an active transfer is found", async () => {
+      const transfer = {
+        id: "urn:uuid:transfer-id",
+        datasetId: datasetId,
+        state: TransferState.STARTED,
+        createdDate: new Date()
+      } as TransferDao;
+
+      jest
+        .spyOn(dataPlaneService.transferRepository, "findOne")
+        .mockResolvedValueOnce(transfer);
+
+      const result = await dataPlaneService.determineTransferId(
+        datasetId,
+        audience,
+        controlPlaneAddress
+      );
+
+      expect(result).toBe(transfer.id);
+    });
+
+    it("should request a new negotiation and transfer if no active transfer is found", async () => {
+      jest
+        .spyOn(dataPlaneService.transferRepository, "findOne")
+        .mockResolvedValueOnce(null);
+
+      const negotiation = {
+        localId: "test",
+        remoteId: "test",
+        events: [],
+        remoteParty: "did:web:test",
+        remoteAddress: "remoteAddress",
+        dataSet: "urn:uuid:1234",
+        modifiedDate: new Date(),
+        role: "provider" as NegotiationRole,
+        state: ContractNegotiationState.FINALIZED
+      } as NegotiationDetailDto;
+
+      jest
+        .spyOn(dataPlaneService, "obtainNegotiation")
+        .mockResolvedValue(negotiation);
+
+      jest
+        .spyOn(dataPlaneService, "requestTransfer")
+        .mockResolvedValue(undefined);
+
+      const transfer = {
+        id: "urn:uuid:transfer-id",
+        datasetId: datasetId,
+        state: TransferState.STARTED,
+        createdDate: new Date()
+      } as TransferDao;
+
+      jest
+        .spyOn(dataPlaneService, "retryFindTransfer")
+        .mockResolvedValue(transfer);
+
+      const result = await dataPlaneService.determineTransferId(
+        datasetId,
+        audience,
+        controlPlaneAddress
+      );
+
+      expect(result).toBe(transfer.id);
+      expect(dataPlaneService.obtainNegotiation).toHaveBeenCalledWith(
+        datasetId,
+        expect.any(String),
+        audience
+      );
+      expect(dataPlaneService.requestTransfer).toHaveBeenCalledWith(
+        negotiation,
+        expect.any(String),
+        audience,
+        datasetId
+      );
+    });
+
+    it("should throw an error if no transfer is found after retries", async () => {
+      jest
+        .spyOn(dataPlaneService.transferRepository, "findOne")
+        .mockResolvedValueOnce(null);
+
+      const negotiation = {
+        localId: "test",
+        remoteId: "test",
+        events: [],
+        remoteParty: "did:web:test",
+        remoteAddress: "remoteAddress",
+        dataSet: "urn:uuid:1234",
+        modifiedDate: new Date(),
+        role: "provider" as NegotiationRole,
+        state: ContractNegotiationState.FINALIZED
+      } as NegotiationDetailDto;
+
+      jest
+        .spyOn(dataPlaneService, "obtainNegotiation")
+        .mockResolvedValue(negotiation);
+
+      jest
+        .spyOn(dataPlaneService, "requestTransfer")
+        .mockResolvedValue(undefined);
+
+      jest.spyOn(dataPlaneService, "retryFindTransfer").mockResolvedValue(null);
+
+      await expect(
+        dataPlaneService.determineTransferId(
+          datasetId,
+          audience,
+          controlPlaneAddress
+        )
+      ).rejects.toThrow(`No transfer found for dataset ${datasetId}`);
+    });
+
+    it("should handle errors during negotiation request", async () => {
+      jest
+        .spyOn(dataPlaneService.transferRepository, "findOne")
+        .mockResolvedValueOnce(null);
+
+      jest
+        .spyOn(dataPlaneService, "obtainNegotiation")
+        .mockRejectedValue(new Error("Negotiation error"));
+
+      await expect(
+        dataPlaneService.determineTransferId(
+          datasetId,
+          audience,
+          controlPlaneAddress
+        )
+      ).rejects.toThrow("Negotiation error");
+    });
+  });
+  describe("retryFindTransfer", () => {
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    it("should return transfer if found within max retries", async () => {
+      const datasetId = "urn:uuid:test-datasetjee";
+      const transfer = {
+        id: "urn:uuid:transfer-id",
+        datasetId: datasetId,
+        state: TransferState.STARTED,
+        createdDate: new Date()
+      } as TransferDao;
+
+      jest
+        .spyOn(dataPlaneService.transferRepository, "findOne")
+        .mockResolvedValueOnce(transfer);
+
+      const result = await dataPlaneService.retryFindTransfer(datasetId, 3, 1);
+
+      expect(result).toBe(transfer);
+      expect(dataPlaneService.transferRepository.findOne).toHaveBeenCalledTimes(
+        1
+      );
+    });
+
+    it("should return null if transfer is not found after max retries", async () => {
+      const datasetId = "urn:uuid:test-dataset";
+
+      jest
+        .spyOn(dataPlaneService.transferRepository, "findOne")
+        .mockResolvedValueOnce(null);
+
+      const result = await dataPlaneService.retryFindTransfer(datasetId, 3, 1);
+
+      expect(result).toBeNull();
+      expect(dataPlaneService.transferRepository.findOne).toHaveBeenCalledTimes(
+        3
+      );
+    });
+  });
+  describe("checkForFinalizedNegotiation", () => {
+    it("should return negotiation when state is FINALIZED", async () => {
+      const negotiationId = "test-id";
+      const negotiation = {
+        localId: "test",
+        remoteId: "test",
+        events: [],
+        remoteParty: "did:web:test",
+        remoteAddress: "remoteAddress",
+        dataSet: "urn:1234",
+        modifiedDate: new Date(),
+        role: "provider" as NegotiationRole,
+        state: "dspace:FINALIZED"
+      } as NegotiationDetailDto;
+
+      jest
+        .spyOn(dataPlaneService, "getNegotiation")
+        .mockResolvedValue(negotiation);
+
+      const result =
+        await dataPlaneService.checkForFinalizedNegotiation(negotiationId);
+
+      expect(result).toEqual(negotiation);
+    });
+
+    it("should return undefined when state is not FINALIZED", async () => {
+      const negotiationId = "test-id";
+      const negotiation = {
+        localId: "test",
+        remoteId: "test",
+        events: [],
+        remoteParty: "did:web:test",
+        remoteAddress: "remoteAddress",
+        dataSet: "urn:1234",
+        modifiedDate: new Date(),
+        role: "provider" as NegotiationRole,
+        state: "dspace:REQUESTED"
+      } as NegotiationDetailDto;
+
+      jest
+        .spyOn(dataPlaneService, "getNegotiation")
+        .mockResolvedValue(negotiation);
+
+      const result =
+        await dataPlaneService.checkForFinalizedNegotiation(negotiationId);
+
+      expect(result).toBeUndefined();
+    });
+
+    it("should throw an error if getNegotiation fails", async () => {
+      const negotiationId = "test-id";
+      const error = new Error("Request failed");
+
+      jest.spyOn(dataPlaneService, "getNegotiation").mockRejectedValue(error);
+
+      await expect(
+        dataPlaneService.checkForFinalizedNegotiation(negotiationId)
+      ).rejects.toThrow("Request failed");
+    });
+  });
+
+  describe("Dataplane Service Consumer", () => {
+    let dataPlaneService: DataPlaneService;
+    let server: SetupServer;
+    let managementToken: string;
+
+    beforeAll(async () => {
+      await TypeOrmTestHelper.instance.setupTestDB();
+      const config = plainToClass(RootConfig, {
+        server: {},
+        controlPlane: {
+          dataPlaneEndpoint: "http://127.0.0.1/data-plane",
+          managementEndpoint: "http://localhost:3000/management",
+          controlEndpoint: "http://localhost:3000",
+          authorization: "Basic YWRtaW46YWRtaW4=",
+          initializationDelay: 1
+        },
+        dataset: undefined,
+        logging: {
+          debug: true
+        }
+      });
+
+      server = setupServer(
+        http.post<PathParams, DataPlaneCreation>(
+          `${config.controlPlane.dataPlaneEndpoint}/init`,
+          async ({ request, params, cookies }) => {
+            const requestBody = await request.json();
+            managementToken = requestBody.managementToken;
+            return HttpResponse.json({
+              ...requestBody,
+              identifier: "urn:uuid:4ab97081-665e-447e-88a1-791a185994b9"
+            });
+          }
+        ),
+        http.post(
+          `${config.controlPlane.dataPlaneEndpoint}/:id/catalog`,
+          ({ request, params, cookies }) => {
+            return HttpResponse.json(request.json());
+          }
+        )
+      );
+
+      server.listen({ onUnhandledRequest: "error" });
+
+      const moduleRef: TestingModule = await Test.createTestingModule({
+        imports: [
+          TypeOrmTestHelper.instance.module([
+            TransferDao,
+            DataPlaneStateDao,
+            IngressLogDao,
+            EgressLogDao
+          ]),
+          TypeOrmModule.forFeature([
+            TransferDao,
+            DataPlaneStateDao,
+            IngressLogDao,
+            EgressLogDao
+          ])
+        ],
+        controllers: [DataPlaneController],
+        providers: [
+          DataPlaneService,
+          LoggingService,
+          AuthClientService,
           {
-            version: "0.9.2",
-            authorization: "Bearer AAAAAAA",
-            semanticModelRef: "http://some-more-specific-ontology.org",
-            distributions: [
-              {
-                mediaType: "application/json",
-                openApiSpecRef: "https://httpbin.org/spec.json",
-                backendUrl: "https://httpbin.org/anything"
-              }
-            ]
+            provide: AuthConfig,
+            useValue: { enabled: false }
+          },
+          {
+            provide: LoggingConfig,
+            useValue: { debug: true }
+          },
+          {
+            provide: RootConfig,
+            useValue: config
           }
         ]
+      }).compile();
+
+      dataPlaneService = moduleRef.get(DataPlaneService);
+      await expect(dataPlaneService.getStateDto()).rejects.toThrow(
+        "No state available yet"
+      );
+
+      await new Promise((r) => setTimeout(r, 20));
+    });
+
+    afterAll(async () => {
+      await TypeOrmTestHelper.instance.teardownTestDB();
+    });
+
+    describe("Initial state", () => {
+      it("Add dataset config", async () => {
+        await dataPlaneService.initialized;
+        await new Promise((r) => setTimeout(r, 100));
+        await expect(dataPlaneService.getDatasetConfig()).rejects.toThrow(
+          "No dataset configured"
+        );
+        await dataPlaneService.updateDatasetConfig({
+          id: `urn:uuid:test`,
+          title: "HTTPBin",
+          currentVersion: "0.9.2",
+          versions: [
+            {
+              version: "0.9.2",
+              authorization: "Bearer AAAAAAA",
+              semanticModelRef: "http://some-more-specific-ontology.org",
+              distributions: [
+                {
+                  mediaType: "application/json",
+                  openApiSpecRef: "https://httpbin.org/spec.json",
+                  backendUrl: "https://httpbin.org/anything"
+                }
+              ]
+            }
+          ]
+        });
+        const config = await dataPlaneService.getDatasetConfig();
+        expect(config).toBeDefined();
       });
-      const config = await dataPlaneService.getDatasetConfig();
-      expect(config).toBeDefined();
     });
   });
 });
