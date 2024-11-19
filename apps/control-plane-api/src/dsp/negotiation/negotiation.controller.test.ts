@@ -37,6 +37,7 @@ import { NegotiationService } from "./negotiation.service";
 import { AgreementDao, TransferMonitorDao } from "../../model/agreement.dao";
 import { TransferDetailDao, TransferEventDao } from "../../model/transfer.dao";
 import { AgreementService } from "../../policy/agreement.service";
+import { EventEmitter2 } from "@nestjs/event-emitter";
 
 describe("NegotiationController", () => {
   let negotiationController: NegotiationController;
@@ -106,6 +107,7 @@ describe("NegotiationController", () => {
         NegotiationService,
         DspClientService,
         DspGateway,
+        EventEmitter2,
         { provide: ServerConfig, useValue: plainToClass(ServerConfig, {}) },
         {
           provide: RootConfig,

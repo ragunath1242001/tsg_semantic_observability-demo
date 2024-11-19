@@ -22,7 +22,7 @@ import { HttpResponse, PathParams, http } from "msw";
 import { SetupServer, setupServer } from "msw/node";
 import { AuthClientService } from "../../auth/auth.client.service";
 import { AuthService } from "../../auth/auth.service";
-import { AuthConfig, ServerConfig } from "../../config";
+import { AuthConfig, RuntimeConfig, ServerConfig } from "../../config";
 import { DataPlaneService } from "../../data-plane/dataPlane.service";
 import {
   CatalogDao,
@@ -246,7 +246,8 @@ describe("TransferController", () => {
           provide: AuthConfig,
           useValue: plainToClass(AuthConfig, { enabled: false })
         },
-        { provide: ServerConfig, useValue: plainToClass(ServerConfig, {}) }
+        { provide: ServerConfig, useValue: plainToClass(ServerConfig, {}) },
+        { provide: RuntimeConfig, useValue: plainToClass(RuntimeConfig, {}) }
       ]
     })
       .useMocker((token) => {
@@ -292,10 +293,10 @@ describe("TransferController", () => {
     const transferConsumerProcess =
       await transferService.initiateTransferProcess(
         "urn:uuid:a1b6d55e-a9ee-4e9c-9a72-ce6e0b1db099",
-        "dspace:HTTP",
         undefined,
         "http://127.0.0.1/transfers",
-        "did:web:localhost"
+        "did:web:localhost",
+        "dspace:HTTP"
       );
     transferConsumerUuid = transferConsumerProcess.localId;
     transferConsumerProviderUuid = transferConsumerProcess.remoteId;

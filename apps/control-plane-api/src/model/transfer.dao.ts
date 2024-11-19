@@ -1,4 +1,3 @@
-import { TransferRole } from "@tsg-dsp/control-plane-dtos";
 import {
   DataAddress,
   DataPlaneTransferDto,
@@ -7,6 +6,7 @@ import {
   Multilanguage,
   TransferEvent,
   TransferProcess,
+  TransferRole,
   TransferState
 } from "@tsg-dsp/common-dsp";
 import {

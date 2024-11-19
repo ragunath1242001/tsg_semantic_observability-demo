@@ -29,6 +29,7 @@ import { NegotiationService } from "./negotiation.service";
 import { AgreementDao, TransferMonitorDao } from "../../model/agreement.dao";
 import { TransferDetailDao, TransferEventDao } from "../../model/transfer.dao";
 import { AgreementService } from "../../policy/agreement.service";
+import { EventEmitter2 } from "@nestjs/event-emitter";
 
 describe("Negotiation Service (Provider)", () => {
   let negotiationService: NegotiationService;
@@ -39,7 +40,10 @@ describe("Negotiation Service (Provider)", () => {
 
   beforeAll(async () => {
     await TypeOrmTestHelper.instance.setupTestDB();
-    const config = plainToClass(RootConfig, { iam: { type: "dev" } });
+    const config = plainToClass(RootConfig, {
+      iam: { type: "dev" },
+      runtime: { controlPlaneInteractions: "automatic" }
+    });
     const serverConfig = plainToClass(ServerConfig, {});
 
     const moduleRef: TestingModule = await Test.createTestingModule({
@@ -64,6 +68,7 @@ describe("Negotiation Service (Provider)", () => {
       providers: [
         NegotiationService,
         DspClientService,
+        EventEmitter2,
         DspGateway,
         {
           provide: AuthService,
@@ -199,6 +204,10 @@ describe("Negotiation Service (Provider)", () => {
     server.close();
   });
 
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   describe("Simple negotiation interactions", () => {
     let localProcessId: string;
     it("Retrieve initial negotiations", async () => {
@@ -208,6 +217,11 @@ describe("Negotiation Service (Provider)", () => {
     });
 
     it("Handle new negotiation request", async () => {
+      const emitAsyncMock = jest.spyOn(
+        negotiationService.eventEmitter,
+        "emitAsync"
+      );
+
       const offer = new Offer({
         id: "urn:uuid:b1de3dee-169d-41db-865f-b84cce26ff00",
         assigner: "urn:uuid:c2165eeb-8fc3-4de8-aed0-a088a6fb48d0",
@@ -221,6 +235,7 @@ describe("Negotiation Service (Provider)", () => {
         }),
         "did:web:remoteparty.test"
       );
+
       expect(negotiation).toBeDefined();
       expect(negotiation.state).toBe(ContractNegotiationState.REQUESTED);
       localProcessId = negotiation.providerPid;
@@ -228,6 +243,7 @@ describe("Negotiation Service (Provider)", () => {
       const negotiationDetail =
         await negotiationService.getNegotiation(localProcessId);
       expect(negotiationDetail.state).toBe(ContractNegotiationState.REQUESTED);
+      expect(emitAsyncMock).toHaveBeenCalledTimes(1);
     });
 
     it("Retrieve negotiation", async () => {
@@ -277,7 +293,11 @@ describe("Negotiation Service (Provider)", () => {
       expect(negotiationDetail.state).toBe(ContractNegotiationState.AGREED);
     });
 
-    it("Hanlde agreement verification", async () => {
+    it("Handle agreement verification", async () => {
+      const emitAsyncMock = jest.spyOn(
+        negotiationService.eventEmitter,
+        "emitAsync"
+      );
       const verification = await negotiationService.handleVerification(
         localProcessId,
         new ContractAgreementVerificationMessage({
@@ -294,6 +314,7 @@ describe("Negotiation Service (Provider)", () => {
       const negotiationDetail =
         await negotiationService.getNegotiation(localProcessId);
       expect(negotiationDetail.state).toBe(ContractNegotiationState.VERIFIED);
+      expect(emitAsyncMock).toHaveBeenCalledTimes(1);
     });
 
     it("Finalize negotiation", async () => {
@@ -442,14 +463,6 @@ describe("Negotiation Service (Provider)", () => {
     });
 
     it("Contract agreement", async () => {
-      // const negotiationDetail2 = await negotiationService.getNegotiation(
-      //   localProcessId
-      // );
-      // const agreements = await agreementService["agreementRepository"].find({});
-      // await agreementService["agreementRepository"].delete({});
-      // const agreements2 = await agreementService["agreementRepository"].find(
-      //   {}
-      // );
       const agreement = await negotiationService.agree(localProcessId);
       expect(agreement.status).toBe("OK");
 

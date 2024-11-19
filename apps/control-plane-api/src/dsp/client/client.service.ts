@@ -56,7 +56,7 @@ export class DspClientService {
   ): Promise<DatasetDto> {
     return await this.executeGet<DatasetDto>(
       `${address}/${id}`,
-      `Request catalog at ${address}`,
+      `Request dataset at ${address}`,
       audience
     );
   }

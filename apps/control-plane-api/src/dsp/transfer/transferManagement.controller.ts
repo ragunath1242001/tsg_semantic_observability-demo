@@ -1,4 +1,3 @@
-import { TransferStatus } from "@tsg-dsp/control-plane-dtos";
 import {
   Body,
   Controller,
@@ -11,7 +10,11 @@ import {
   Query,
   UseGuards
 } from "@nestjs/common";
-import { TransferDetail, TransferProcessDto } from "@tsg-dsp/common-dsp";
+import {
+  TransferDetail,
+  TransferProcessDto,
+  TransferStatus
+} from "@tsg-dsp/common-dsp";
 import { OAuthGuard } from "../../auth/oauth.guard";
 import { Roles } from "../../auth/roles.guard";
 import { normalizeAddress } from "../../utils/address";
@@ -30,7 +33,7 @@ import {
   DataPlaneAddressSchema,
   TransferDetailSchema,
   TransferProcessSchema,
-  TransferStatusDto
+  TransferStatusSchema
 } from "@tsg-dsp/common-dtos";
 
 @ApiTags("Transfers Management")
@@ -44,15 +47,13 @@ export class TransferManagementController {
 
   @Get()
   @ApiOperation({ summary: "Get all transfers" })
-  @ApiResponse({ status: HttpStatus.OK, type: [TransferStatusDto] })
+  @ApiResponse({ status: HttpStatus.OK, type: [TransferStatusSchema] })
   async getTransfers(): Promise<TransferStatus[]> {
     const transfers = await this.transferService.getTransfers();
     return Promise.all(
       transfers.map(async (transfer) => {
         return {
-          ...transfer,
-          process: await transfer.process.serialize(),
-          modifiedDate: new Date()
+          ...transfer
         };
       })
     );
@@ -88,8 +89,8 @@ export class TransferManagementController {
   async requestTransfer(
     @Query("address") address: string,
     @Query("agreementId") agreementId: string,
-    @Query("format") format: string,
-    @Query("audience") audience: string
+    @Query("audience") audience: string,
+    @Query("format") format?: string
   ): Promise<TransferProcessDto> {
     this.logger.log(
       `Received transfer request for ${address} with agreementId ${agreementId} and format ${format}`
@@ -102,10 +103,10 @@ export class TransferManagementController {
     );
     const internalTransfer = await this.transferService.initiateTransferProcess(
       agreementId,
-      format,
       undefined,
       controlPlaneAddress,
-      audience
+      audience,
+      format
     );
     return internalTransfer.process.serialize();
   }

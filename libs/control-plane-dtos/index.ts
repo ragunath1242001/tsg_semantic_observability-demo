@@ -1,5 +1,3 @@
 export * from "./ssi/verifiablePresentations.dto";
 export * from "./data-planes/dataPlanes.dto";
-export * from "./negotiations/negotiations.dto";
 export * from "./registry/registry.dto";
-export * from "./transfers/transfers.dto";

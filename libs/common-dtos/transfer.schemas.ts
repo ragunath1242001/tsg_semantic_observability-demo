@@ -11,11 +11,13 @@ import {
   DataPlaneTransferDto,
   TransferEvent,
   TransferEventDto,
+  TransferRole,
+  TransferStatus,
   DataPlaneRequestResponseDto,
   MultilanguageDto,
-  DataPlaneAddressDto
+  DataPlaneAddressDto,
+  TransferProcess
 } from "@tsg-dsp/common-dsp";
-import { TransferRole, TransferStatus } from "@tsg-dsp/control-plane-dtos";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { MultilanguageSchema } from "./common.schema";
 
@@ -67,7 +69,7 @@ export class TransferProcessSchema implements TransferProcessDto {
   "dspace:state": TransferState;
 }
 
-export class TransferStatusDto implements TransferStatus {
+export class TransferStatusSchema implements TransferStatus {
   @ApiProperty()
   localId!: string;
   @ApiPropertyOptional()
@@ -81,7 +83,7 @@ export class TransferStatusDto implements TransferStatus {
   @ApiProperty()
   state!: TransferState;
   @ApiProperty({ type: TransferProcessSchema })
-  process!: TransferProcessDto;
+  process!: TransferProcess;
   @ApiProperty()
   agreementId!: string;
   @ApiPropertyOptional()
@@ -135,7 +137,7 @@ export class DataPlaneTransferSchema
   endpointType!: string;
 }
 
-export class TransferDetailSchema extends TransferStatusDto {
+export class TransferDetailSchema extends TransferStatusSchema {
   @ApiProperty({ type: DataAddressSchema })
   dataAddress?: DataAddressDto;
   @ApiProperty({ type: DataPlaneTransferSchema })

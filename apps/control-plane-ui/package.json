@@ -13,6 +13,7 @@
     "@guolao/vue-monaco-editor": "^1.5.1",
     "@primevue/themes": "^4.0.4",
     "@tsg-dsp/common-dsp": "workspace:*",
+    "@tsg-dsp/common-dtos": "workspace:*",
     "@tsg-dsp/common-ui": "workspace:*",
     "@tsg-dsp/control-plane-dtos": "workspace:*",
     "axios": "^1.4.0",

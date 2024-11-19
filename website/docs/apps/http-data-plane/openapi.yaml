@@ -474,7 +474,8 @@ paths:
           required: true
           in: path
           description: Path of receiving application
-          schema: {}
+          schema:
+            type: string
       responses:
         "403":
           description: Forbidden
@@ -500,7 +501,8 @@ paths:
           required: true
           in: path
           description: Path of receiving application
-          schema: {}
+          schema:
+            type: string
       responses:
         "403":
           description: Forbidden
@@ -526,7 +528,8 @@ paths:
           required: true
           in: path
           description: Path of receiving application
-          schema: {}
+          schema:
+            type: string
       responses:
         "403":
           description: Forbidden
@@ -552,7 +555,8 @@ paths:
           required: true
           in: path
           description: Path of receiving application
-          schema: {}
+          schema:
+            type: string
       responses:
         "403":
           description: Forbidden
@@ -578,7 +582,8 @@ paths:
           required: true
           in: path
           description: Path of receiving application
-          schema: {}
+          schema:
+            type: string
       responses:
         "403":
           description: Forbidden
@@ -604,7 +609,8 @@ paths:
           required: true
           in: path
           description: Path of receiving application
-          schema: {}
+          schema:
+            type: string
       responses:
         "403":
           description: Forbidden
@@ -630,7 +636,8 @@ paths:
           required: true
           in: path
           description: Path of receiving application
-          schema: {}
+          schema:
+            type: string
       responses:
         "403":
           description: Forbidden
@@ -656,7 +663,305 @@ paths:
           required: true
           in: path
           description: Path of receiving application
-          schema: {}
+          schema:
+            type: string
+      responses:
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      tags: *a3
+      security: *a4
+  /api/management/execute/{path}:
+    get:
+      operationId: DataPlaneManagementController_executeTransferWithoutId_get
+      summary: Proxy a request without transfer ID
+      description: This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy and the transfer hasn't been created yet. Used for automatic
+        handling of the DSP.
+      parameters:
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema:
+            type: string
+        - name: x-dataset-id
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: x-audience
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: x-controlplane-address
+          required: true
+          in: header
+          schema:
+            type: string
+      responses:
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      tags: *a3
+      security: *a4
+    post:
+      operationId: DataPlaneManagementController_executeTransferWithoutId_post
+      summary: Proxy a request without transfer ID
+      description: This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy and the transfer hasn't been created yet. Used for automatic
+        handling of the DSP.
+      parameters:
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema:
+            type: string
+        - name: x-dataset-id
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: x-audience
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: x-controlplane-address
+          required: true
+          in: header
+          schema:
+            type: string
+      responses:
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      tags: *a3
+      security: *a4
+    put:
+      operationId: DataPlaneManagementController_executeTransferWithoutId_put
+      summary: Proxy a request without transfer ID
+      description: This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy and the transfer hasn't been created yet. Used for automatic
+        handling of the DSP.
+      parameters:
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema:
+            type: string
+        - name: x-dataset-id
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: x-audience
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: x-controlplane-address
+          required: true
+          in: header
+          schema:
+            type: string
+      responses:
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      tags: *a3
+      security: *a4
+    delete:
+      operationId: DataPlaneManagementController_executeTransferWithoutId_delete
+      summary: Proxy a request without transfer ID
+      description: This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy and the transfer hasn't been created yet. Used for automatic
+        handling of the DSP.
+      parameters:
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema:
+            type: string
+        - name: x-dataset-id
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: x-audience
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: x-controlplane-address
+          required: true
+          in: header
+          schema:
+            type: string
+      responses:
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      tags: *a3
+      security: *a4
+    patch:
+      operationId: DataPlaneManagementController_executeTransferWithoutId_patch
+      summary: Proxy a request without transfer ID
+      description: This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy and the transfer hasn't been created yet. Used for automatic
+        handling of the DSP.
+      parameters:
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema:
+            type: string
+        - name: x-dataset-id
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: x-audience
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: x-controlplane-address
+          required: true
+          in: header
+          schema:
+            type: string
+      responses:
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      tags: *a3
+      security: *a4
+    options:
+      operationId: DataPlaneManagementController_executeTransferWithoutId_options
+      summary: Proxy a request without transfer ID
+      description: This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy and the transfer hasn't been created yet. Used for automatic
+        handling of the DSP.
+      parameters:
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema:
+            type: string
+        - name: x-dataset-id
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: x-audience
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: x-controlplane-address
+          required: true
+          in: header
+          schema:
+            type: string
+      responses:
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      tags: *a3
+      security: *a4
+    head:
+      operationId: DataPlaneManagementController_executeTransferWithoutId_head
+      summary: Proxy a request without transfer ID
+      description: This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy and the transfer hasn't been created yet. Used for automatic
+        handling of the DSP.
+      parameters:
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema:
+            type: string
+        - name: x-dataset-id
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: x-audience
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: x-controlplane-address
+          required: true
+          in: header
+          schema:
+            type: string
+      responses:
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      tags: *a3
+      security: *a4
+    search:
+      operationId: DataPlaneManagementController_executeTransferWithoutId_search
+      summary: Proxy a request without transfer ID
+      description: This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy and the transfer hasn't been created yet. Used for automatic
+        handling of the DSP.
+      parameters:
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema:
+            type: string
+        - name: x-dataset-id
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: x-audience
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: x-controlplane-address
+          required: true
+          in: header
+          schema:
+            type: string
       responses:
         "403":
           description: Forbidden

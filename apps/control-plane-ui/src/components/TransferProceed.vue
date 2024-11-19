@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { TransferStatus } from "@tsg-dsp/control-plane-dtos";
+import { TransferDetailDto } from "@tsg-dsp/common-dsp";
 import { useToast } from "primevue/usetoast";
 import { ref } from "vue";
 import { stripDspace } from "@tsg-dsp/common-ui/utils/common";
@@ -8,7 +8,7 @@ import { useConfirm } from "primevue/useconfirm";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
 
 const props = defineProps<{
-  transfer: TransferStatus;
+  transfer: TransferDetailDto;
 }>();
 
 const display = ref<boolean>(false);
@@ -20,7 +20,7 @@ const confirm = useConfirm();
 
 const toast = useToast();
 
-const determineNextHappyState = (transfer: TransferStatus) => {
+const determineNextHappyState = (transfer: TransferDetailDto) => {
   switch (transfer.state) {
     case "dspace:REQUESTED":
       return "start";
@@ -35,7 +35,7 @@ const determineHeader = () => {
   return `What is the reason for your decision to ${nextState.value}?`;
 };
 
-const determineWord = (transfer: TransferStatus) => {
+const determineWord = (transfer: TransferDetailDto) => {
   switch (transfer.state) {
     case "dspace:REQUESTED":
       return "requested";
@@ -45,7 +45,7 @@ const determineWord = (transfer: TransferStatus) => {
       return "suspended";
   }
 };
-const determineTooltip = (transfer: TransferStatus) => {
+const determineTooltip = (transfer: TransferDetailDto) => {
   switch (transfer.state) {
     case "dspace:REQUESTED":
       return "Start";
@@ -56,7 +56,7 @@ const determineTooltip = (transfer: TransferStatus) => {
   }
 };
 
-const sendTransfer = async (transfer: TransferStatus, nextState: string) => {
+const sendTransfer = async (transfer: TransferDetailDto, nextState: string) => {
   try {
     close();
     await http.post(`management/transfers/${transfer.localId}/${nextState}`);
@@ -79,7 +79,7 @@ const sendTransfer = async (transfer: TransferStatus, nextState: string) => {
   }
 };
 
-const proceedTransfer = async (transfer: TransferStatus) => {
+const proceedTransfer = async (transfer: TransferDetailDto) => {
   const nextState = determineNextHappyState(transfer);
   if (nextState == "complete") {
     confirm.require({

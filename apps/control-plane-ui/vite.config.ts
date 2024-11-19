@@ -25,6 +25,9 @@ export default defineConfig({
   define: {
     "process.env": process.env
   },
+  optimizeDeps: {
+    exclude: ["class-transformer/storage"]
+  },
   plugins: [vue()],
   resolve: {
     alias: {
@@ -38,10 +41,10 @@ export default defineConfig({
     proxy: devSessions.local
       ? {
           "/api": {
-            target: "http://localhost:3000/"
+            target: process.env.BACKEND ?? "http://localhost:3000/"
           },
           "/socket.io/": {
-            target: "http://localhost:3000/"
+            target: process.env.BACKEND ?? "http://localhost:3000/"
           }
         }
       : {

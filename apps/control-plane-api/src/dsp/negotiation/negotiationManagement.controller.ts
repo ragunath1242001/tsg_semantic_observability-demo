@@ -1,7 +1,7 @@
 import {
   INegotiationStatusDto,
   NegotiationDetailDto
-} from "@tsg-dsp/control-plane-dtos";
+} from "@tsg-dsp/common-dtos";
 import {
   Body,
   Controller,
@@ -59,6 +59,19 @@ export class NegotiationManagementController {
   })
   async getNegotiations(): Promise<INegotiationStatusDto[]> {
     return this.negotiationService.getNegotiations();
+  }
+
+  @Get("/dataset/:datasetId")
+  @ApiOperation({ summary: "Get all negotiations for a dataset" })
+  @ApiResponse({
+    status: 200,
+    description: "Successfully fetched negotiations",
+    type: [NegotiationStatusDto]
+  })
+  async getNegotiationsFromDatasetId(
+    @Param("datasetId") datasetId: string
+  ): Promise<NegotiationDetailDto> {
+    return this.negotiationService.getNegotiationFromDataSetId(datasetId);
   }
 
   @Get(":processId")

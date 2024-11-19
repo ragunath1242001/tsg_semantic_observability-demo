@@ -2,7 +2,7 @@
 import {
   NegotiationDetailDto,
   INegotiationStatusDto
-} from "@tsg-dsp/control-plane-dtos";
+} from "@tsg-dsp/common-dtos";
 import { useToast } from "primevue/usetoast";
 import { ref } from "vue";
 import { stripDspace } from "@tsg-dsp/common-ui/utils/common";

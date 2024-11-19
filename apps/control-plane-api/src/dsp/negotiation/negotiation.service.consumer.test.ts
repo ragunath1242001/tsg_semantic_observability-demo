@@ -34,6 +34,7 @@ import { AgreementDao, TransferMonitorDao } from "../../model/agreement.dao";
 import { TransferDetailDao, TransferEventDao } from "../../model/transfer.dao";
 import { AgreementService } from "../../policy/agreement.service";
 import { DSPClientError } from "../../utils/errors/error";
+import { EventEmitter2 } from "@nestjs/event-emitter";
 
 describe("Negotiation Service (Consumer)", () => {
   let negotiationService: NegotiationService;
@@ -70,6 +71,7 @@ describe("Negotiation Service (Consumer)", () => {
         NegotiationService,
         DspClientService,
         DspGateway,
+        EventEmitter2,
         {
           provide: AuthService,
           useValue: new (class {
@@ -92,57 +94,6 @@ describe("Negotiation Service (Consumer)", () => {
           })()
         },
         AgreementService,
-        // {
-        //   provide: AgreementService,
-        //   useValue: {
-        //     getAgreement: async (
-        //       id: string,
-        //       dto: boolean
-        //     ): Promise<AgreementDto> => {
-        //       return {
-        //         "@type": "odrl:Agreement",
-        //         "@id": "urn:uuid:00000000-0000-0000-0000-000000000000",
-        //         "odrl:assigner": "did:web:localhost",
-        //         "odrl:assignee": "did:web:remote.com",
-        //         "dspace:timestamp": new Date(
-        //           "2024-08-01T12:00:00Z"
-        //         ).toISOString(),
-        //         "odrl:target": "urn:uuid:33147fb2-8896-4a53-983b-61000b6559b6",
-        //         "odrl:permission": [
-        //           {
-        //             "@type": "odrl:Permission",
-        //             "odrl:action": ODRLAction.USE,
-        //           },
-        //         ],
-        //       };
-        //     },
-        //     syncLastEvaluation: async () => {},
-        //     storeAgreement: async (a: any, negotiationId: string) => {
-        //       return {
-        //         id: "urn:uuid:00000000-0000-0000-0000-000000000000",
-        //         agreement: {
-        //           "@type": "odrl:Agreement",
-        //           "@id": "urn:uuid:00000000-0000-0000-0000-000000000000",
-        //           "odrl:assigner": "did:web:localhost",
-        //           "odrl:assignee": "did:web:remote.com",
-        //           "dspace:timestamp": new Date(
-        //             "2024-08-01T12:00:00Z"
-        //           ).toISOString(),
-        //           "odrl:target":
-        //             "urn:uuid:33147fb2-8896-4a53-983b-61000b6559b6",
-        //           "odrl:permission": [
-        //             {
-        //               "@type": "odrl:Permission",
-        //               "odrl:action": ODRLAction.USE,
-        //             },
-        //           ],
-        //         },
-        //         negotiationId: negotiationId,
-        //         transfers: [],
-        //       };
-        //     },
-        //   },
-        // },
         {
           provide: RootConfig,
           useValue: config
@@ -313,6 +264,10 @@ describe("Negotiation Service (Consumer)", () => {
     });
 
     it("Handle contract agreement", async () => {
+      const emitAsyncMock = jest.spyOn(
+        negotiationService.eventEmitter,
+        "emitAsync"
+      );
       const agreement = new Agreement({
         id: "urn:uuid:73a9c260-01c1-4f2a-a29f-a7ea3b96e1f3",
         assigner: "urn:uuid:c2165eeb-8fc3-4de8-aed0-a088a6fb48d0",
@@ -333,6 +288,7 @@ describe("Negotiation Service (Consumer)", () => {
       const negotiationDetail =
         await negotiationService.getNegotiation(localProcessId);
       expect(negotiationDetail.state).toBe(ContractNegotiationState.AGREED);
+      expect(emitAsyncMock).toHaveBeenCalledTimes(1);
     });
 
     it("Verify agreement", async () => {

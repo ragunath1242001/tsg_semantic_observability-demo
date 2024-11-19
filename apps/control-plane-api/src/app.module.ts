@@ -13,6 +13,7 @@ import { TransferModule } from "./dsp/transfer/transfer.module";
 import { RegistryModule } from "./registry/registry.module";
 import { ServeStaticModule } from "@nestjs/serve-static";
 import { ConfigController } from "./config.controller";
+import { EventEmitterModule } from "@nestjs/event-emitter";
 
 const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
   ? [
@@ -27,6 +28,7 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
 @Module({
   imports: [
     ScheduleModule.forRoot(),
+    EventEmitterModule.forRoot(),
     AuthModule,
     ConfigModule,
     TypeOrmModule.forRoot({

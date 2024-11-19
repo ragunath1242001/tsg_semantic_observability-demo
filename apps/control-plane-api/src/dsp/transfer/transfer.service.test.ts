@@ -1,4 +1,4 @@
-import { DataPlaneRequestResponseDto } from "@tsg-dsp/common-dsp";
+import { DataPlaneRequestResponseDto, DatasetDto } from "@tsg-dsp/common-dsp";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import {
@@ -29,6 +29,7 @@ import {
   DevWalletConfig,
   IamConfig,
   InitCatalog,
+  RuntimeConfig,
   ServerConfig
 } from "../../config";
 import { DataPlaneService } from "../../data-plane/dataPlane.service";
@@ -54,6 +55,7 @@ import {
   EvaluationContext,
   EvaluationDecision
 } from "../../policy/evaluation.dto";
+import { DSPError } from "../../utils/errors/error";
 
 describe("Transfer service", () => {
   let transferService: TransferService;
@@ -68,6 +70,7 @@ describe("Transfer service", () => {
     const iamConfig = plainToClass(DevWalletConfig, {});
     const initCatalog = plainToClass(InitCatalog, {});
     const serverConfig = plainToClass(ServerConfig, {});
+    const runtimeConfig = plainToClass(RuntimeConfig, {});
     moduleRef = await Test.createTestingModule({
       imports: [
         TypeOrmTestHelper.instance.module([
@@ -187,6 +190,10 @@ describe("Transfer service", () => {
         {
           provide: ServerConfig,
           useValue: serverConfig
+        },
+        {
+          provide: RuntimeConfig,
+          useValue: runtimeConfig
         }
       ]
     })
@@ -257,6 +264,23 @@ describe("Transfer service", () => {
           status: "OK"
         });
       }),
+      http.get(
+        "http://remoteparty.test/catalog/datasets/urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0cea",
+        () => {
+          return HttpResponse.json<DatasetDto>({
+            "@context": "https://w3id.org/dspace/2024/1/context.json",
+            "@type": "dcat:Dataset",
+            "@id": "urn:uuid:test",
+            "dcat:distribution": [
+              {
+                "@type": "dcat:Distribution",
+                "@id": "urn:uuid:test",
+                "dct:format": "dspace:HTTP"
+              }
+            ]
+          });
+        }
+      ),
       http.post<PathParams, TransferRequestMessageDto, TransferProcessDto>(
         "http://remoteparty.test/transfers/request",
         async (ctx) => {
@@ -332,7 +356,33 @@ describe("Transfer service", () => {
     it("Request new transfer", async () => {
       const transferProcess = await transferService.initiateTransferProcess(
         "urn:uuid:2d9ea8f0-57da-4ea8-8083-bdb8e6782fc9",
-        "dspace:HTTP",
+        undefined,
+        "http://remoteparty.test/transfers",
+        "did:web:remoteparty.test",
+        "dspace:HTTP"
+      );
+      expect(transferProcess).toBeDefined();
+      expect(transferProcess.process.providerPid).toBe(remoteProcessId);
+      localProcessId = transferProcess.localId;
+
+      const transferProcessPush = await transferService.initiateTransferProcess(
+        "urn:uuid:2d9ea8f0-57da-4ea8-8083-bdb8e6782fc9",
+        undefined,
+        "http://remoteparty.test/transfers",
+        "did:web:remoteparty.test",
+        "dspace:HTTP"
+      );
+      expect(transferProcessPush).toBeDefined();
+      expect(transferProcessPush.process.providerPid).toBe(remoteProcessId);
+
+      const transferDetail = await transferService.getTransfer(
+        transferProcessPush.localId
+      );
+      expect(transferDetail.dataAddress).toBeDefined();
+    });
+    it("Request new transfer without format", async () => {
+      const transferProcess = await transferService.initiateTransferProcess(
+        "urn:uuid:2d9ea8f0-57da-4ea8-8083-bdb8e6782fc9",
         undefined,
         "http://remoteparty.test/transfers",
         "did:web:remoteparty.test"
@@ -343,7 +393,6 @@ describe("Transfer service", () => {
 
       const transferProcessPush = await transferService.initiateTransferProcess(
         "urn:uuid:2d9ea8f0-57da-4ea8-8083-bdb8e6782fc9",
-        "dspace:HTTP",
         undefined,
         "http://remoteparty.test/transfers",
         "did:web:remoteparty.test"
@@ -356,7 +405,67 @@ describe("Transfer service", () => {
       );
       expect(transferDetail.dataAddress).toBeDefined();
     });
-
+    it("Request new transfer without format and no distributions should fail", async () => {
+      server.use(
+        http.get(
+          "http://remoteparty.test/catalog/datasets/urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0cea",
+          () => {
+            return HttpResponse.json<DatasetDto>({
+              "@context": "https://w3id.org/dspace/2024/1/context.json",
+              "@type": "dcat:Dataset",
+              "@id": "urn:uuid:test",
+              "dcat:distribution": []
+            });
+          }
+        )
+      );
+      await expect(
+        transferService.initiateTransferProcess(
+          "urn:uuid:2d9ea8f0-57da-4ea8-8083-bdb8e6782fc9",
+          undefined,
+          "http://remoteparty.test/transfers",
+          "did:web:remoteparty.test"
+        )
+      ).rejects.toThrow(
+        "Cannot determine format based on dataset, since there are no distributions for this dataset."
+      );
+    });
+    it("Request new transfer without format and multiple distributions should fail", async () => {
+      server.use(
+        http.get(
+          "http://remoteparty.test/catalog/datasets/urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0cea",
+          () => {
+            return HttpResponse.json<DatasetDto>({
+              "@context": "https://w3id.org/dspace/2024/1/context.json",
+              "@type": "dcat:Dataset",
+              "@id": "urn:uuid:test",
+              "dcat:distribution": [
+                {
+                  "@type": "dcat:Distribution",
+                  "@id": "urn:uuid:test",
+                  "dct:format": "dspace:HTTP"
+                },
+                {
+                  "@type": "dcat:Distribution",
+                  "@id": "urn:uuid:test",
+                  "dct:format": "dspace:HTTP"
+                }
+              ]
+            });
+          }
+        )
+      );
+      await expect(
+        transferService.initiateTransferProcess(
+          "urn:uuid:2d9ea8f0-57da-4ea8-8083-bdb8e6782fc9",
+          undefined,
+          "http://remoteparty.test/transfers",
+          "did:web:remoteparty.test"
+        )
+      ).rejects.toThrow(
+        "Cannot determine format based on dataset, since there are multiple formats in the distributions."
+      );
+    });
     it("Unexpected transition", async () => {
       await expect(
         transferService.suspend(localProcessId, "", true)
@@ -365,7 +474,7 @@ describe("Transfer service", () => {
 
     it("Retrieve transfer", async () => {
       const transfers = await transferService.getTransfers();
-      expect(transfers).toHaveLength(2);
+      expect(transfers).toHaveLength(4);
       const transferDetail = await transferService.getTransfer(localProcessId);
       expect(transferDetail).toBeDefined();
       const transferDetail2 = await transferService.getTransfer(
@@ -555,10 +664,10 @@ describe("Transfer service", () => {
     it("Remote termination", async () => {
       const transferProcess = await transferService.initiateTransferProcess(
         "urn:uuid:2d9ea8f0-57da-4ea8-8083-bdb8e6782fc9",
-        "dspace:HTTP",
         undefined,
         "http://remoteparty.test/transfers",
-        "did:web:remoteparty.test"
+        "did:web:remoteparty.test",
+        "dspace:HTTP"
       );
       await transferService.handleTerminate(
         transferProcess.localId,
@@ -578,10 +687,10 @@ describe("Transfer service", () => {
     it("Remote termination", async () => {
       const transferProcess = await transferService.initiateTransferProcess(
         "urn:uuid:2d9ea8f0-57da-4ea8-8083-bdb8e6782fc9",
-        "dspace:HTTP",
         undefined,
         "http://remoteparty.test/transfers",
-        "did:web:remoteparty.test"
+        "did:web:remoteparty.test",
+        "dspace:HTTP"
       );
       await transferService.terminate(
         transferProcess.localId,

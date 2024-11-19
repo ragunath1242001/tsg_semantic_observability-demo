@@ -4,7 +4,7 @@ import { stripDspace } from "@tsg-dsp/common-ui/utils/common";
 import {
   NegotiationDetailDto,
   INegotiationStatusDto
-} from "@tsg-dsp/control-plane-dtos";
+} from "@tsg-dsp/common-dtos";
 import { ref, toRef } from "vue";
 import { useToast } from "primevue/usetoast";
 import http from "@tsg-dsp/common-ui/utils/http";
@@ -82,15 +82,9 @@ const requestTransfer = async (accNegotiation: NegotiationDetailDto) => {
   try {
     const address = accNegotiation.remoteAddress.split("negotiations")[0];
     const audience = accNegotiation.agreement["odrl:assigner"];
-    const dataset = (
-      await http.get<DatasetDto>(
-        `management/catalog/dataset?address=${address}&id=${accNegotiation.agreement["odrl:target"]}&audience=${audience}`
-      )
-    ).data;
     const agreementId = accNegotiation.agreement["@id"];
-    const format = dataset["dcat:distribution"][0]["dct:format"];
     const response = await http.post(
-      `management/transfers/request?address=${address}&agreementId=${agreementId}&format=${format}&audience=${audience}`
+      `management/transfers/request?address=${address}&agreementId=${agreementId}&audience=${audience}`
     );
     if (response.status == 200) {
       toast.add({

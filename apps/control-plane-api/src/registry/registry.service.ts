@@ -54,9 +54,6 @@ export class RegistryService implements OnApplicationBootstrap {
     let credentials: Credential[] = [];
     try {
       credentials = await this.authService.walletClient.getCredentials();
-      console.log(
-        `Found credentials for ${credentials.map((c) => c.targetDid)}`
-      );
       this.logger.debug(
         `Found credentials for ${credentials.map((c) => c.targetDid)}`
       );
