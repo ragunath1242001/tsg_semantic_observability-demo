@@ -83,9 +83,9 @@ const requestTransfer = async (accNegotiation: NegotiationDetailDto) => {
     const address = accNegotiation.remoteAddress.split("negotiations")[0];
     const audience = accNegotiation.agreement["odrl:assigner"];
     const agreementId = accNegotiation.agreement["@id"];
-    const response = await http.post(
-      `management/transfers/request?address=${address}&agreementId=${agreementId}&audience=${audience}`
-    );
+    const response = await http.post(`management/transfers/request`, null, {
+      params: { address: address, agreementId: agreementId, audience: audience }
+    });
     if (response.status == 200) {
       toast.add({
         severity: "success",
