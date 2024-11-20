@@ -265,7 +265,7 @@ describe("Transfer service", () => {
         });
       }),
       http.get(
-        "http://remoteparty.test/catalog/datasets/urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0cea",
+        "http://remoteparty.test/catalog/datasets/urn%3Auuid%3A08844168-b568-4eb6-b018-aaf6d9cf0cea",
         () => {
           return HttpResponse.json<DatasetDto>({
             "@context": "https://w3id.org/dspace/2024/1/context.json",
@@ -408,7 +408,7 @@ describe("Transfer service", () => {
     it("Request new transfer without format and no distributions should fail", async () => {
       server.use(
         http.get(
-          "http://remoteparty.test/catalog/datasets/urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0cea",
+          "http://remoteparty.test/catalog/datasets/urn%3Auuid%3A08844168-b568-4eb6-b018-aaf6d9cf0cea",
           () => {
             return HttpResponse.json<DatasetDto>({
               "@context": "https://w3id.org/dspace/2024/1/context.json",
@@ -433,7 +433,7 @@ describe("Transfer service", () => {
     it("Request new transfer without format and multiple distributions should fail", async () => {
       server.use(
         http.get(
-          "http://remoteparty.test/catalog/datasets/urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0cea",
+          "http://remoteparty.test/catalog/datasets/urn%3Auuid%3A08844168-b568-4eb6-b018-aaf6d9cf0cea",
           () => {
             return HttpResponse.json<DatasetDto>({
               "@context": "https://w3id.org/dspace/2024/1/context.json",
