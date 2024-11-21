@@ -50,6 +50,11 @@ export class VerifiablePresentation<
   proof?: OrArray<P>;
 }
 
+export class VerifiableCredentialJwt {
+  @IsString()
+  vc!: string;
+}
+
 export class VerifiablePresentationJwt {
   @IsString()
   vp!: string;

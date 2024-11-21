@@ -70,7 +70,8 @@ export class SignatureService {
         verificationMethod.split("#")[0]
       );
     } else {
-      const didId = issuerDidId ?? verificationMethod.split("#")[0];
+      const didId =
+        issuerDidId?.split("#")?.[0] ?? verificationMethod.split("#")[0];
       const resolvedIssuerDid = await this.didResolver.resolve(didId);
       const usedKey = resolvedIssuerDid.verificationMethod?.find(
         (m) =>
@@ -85,6 +86,9 @@ export class SignatureService {
           usedKey.publicKeyMultibase
         );
       } else {
+        this.logger.debug(
+          `Resolved DID (${didId}): ${JSON.stringify(resolvedIssuerDid)}`
+        );
         throw new AppError(
           `Could not find matching public key for "${verificationMethod}"`,
           HttpStatus.BAD_REQUEST
@@ -134,13 +138,13 @@ export class SignatureService {
 
   async signAsJwt(
     body: JWTPayload,
-    audience: string | string[],
+    audience: string | string[] | undefined,
     options?: {
       key?: string;
-      subject?: boolean;
+      subject?: boolean | string;
       expirationTime?: string;
       typ?: string;
-      jti?: boolean;
+      jti?: boolean | string;
     }
   ): Promise<string> {
     const signingKey = await this.getKey(options?.key);
@@ -151,16 +155,26 @@ export class SignatureService {
         typ: options?.typ
       })
       .setIssuedAt()
-      .setIssuer(await this.didService.getDidId())
-      .setAudience(audience);
+      .setIssuer(await this.didService.getDidId());
+    if (audience) {
+      jwt.setAudience(audience);
+    }
     if (options?.subject !== false) {
-      jwt.setSubject(await this.didService.getDidId());
+      if (typeof options?.subject === "string") {
+        jwt.setSubject(options.subject);
+      } else {
+        jwt.setSubject(await this.didService.getDidId());
+      }
     }
     if (options?.expirationTime) {
       jwt.setExpirationTime(options.expirationTime);
     }
     if (options?.jti !== false) {
-      jwt.setJti(crypto.randomUUID());
+      if (typeof options?.jti === "string") {
+        jwt.setJti(options.jti);
+      } else {
+        jwt.setJti(crypto.randomUUID());
+      }
     }
     return await jwt.sign(await importJWK(signingKey.privateKey));
   }

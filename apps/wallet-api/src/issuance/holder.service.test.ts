@@ -195,12 +195,13 @@ describe("Holder service", () => {
         credentialSubject: { id: "did:web:localhost" }
       });
 
-      await holderService.requestCredential(
-        offer.grants?.[OfferGrants.PRE_AUTHORIZATION_CODE]?.[
-          "pre-authorization_code"
-        ]!,
-        "http://localhost:3000"
-      );
+      await holderService.requestCredential({
+        issuerUrl: "http://localhost:3000",
+        preAuthorizedCode:
+          offer.grants?.[OfferGrants.PRE_AUTHORIZATION_CODE]?.[
+            "pre-authorization_code"
+          ]!
+      });
 
       const credentials = await moduleRef
         .get(CredentialsService)
