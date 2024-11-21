@@ -32,9 +32,19 @@ export class HolderController {
   @ApiBadRequestResponseDefault()
   @ApiForbiddenResponseDefault()
   async requestCredential(
-    @Body("preAuthorizedCode") preAuthorizedCode: string,
-    @Body("issuerUrl") issuerUrl: string
+    @Body("issuerUrl") issuerUrl: string,
+    @Body("preAuthorizedCode") preAuthorizedCode?: string,
+    @Body("authorized")
+    authorized?: {
+      accessToken: string;
+      credentialIdentifier: string;
+      additionalRequestParams?: { [key: string]: any };
+    }
   ): Promise<Credentials> {
-    return this.holderService.requestCredential(preAuthorizedCode, issuerUrl);
+    return this.holderService.requestCredential({
+      issuerUrl,
+      preAuthorizedCode,
+      authorized
+    });
   }
 }

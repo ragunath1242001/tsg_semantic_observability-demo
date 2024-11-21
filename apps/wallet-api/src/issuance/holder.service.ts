@@ -2,7 +2,7 @@ import { HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { CredentialsService } from "../credentials/credentials.service.js";
 import {
   AccessToken,
-  CredentialDefinition,
+  CredentialConfiguration,
   CredentialIssuerMetadata,
   CredentialRequest,
   CredentialResponse
@@ -12,14 +12,13 @@ import { OfferGrants } from "@tsg-dsp/wallet-dtos";
 import axios from "axios";
 import { AppError } from "../utils/error.js";
 import qs from "querystring";
-import { decodeJwt } from "jose";
 import { PresentationService } from "../presentation/presentation.service.js";
-import { VerifiablePresentation } from "@tsg-dsp/common-dsp";
+import { VerifiableCredential } from "@tsg-dsp/common-dsp";
 import { plainToInstance } from "class-transformer";
-import { toArray } from "../utils/unions.js";
 import { RootConfig } from "../config.js";
 import { Credentials } from "../model/credentials.dao.js";
 import { SignatureService } from "../keys/signature.service.js";
+import crypto from "crypto";
 
 @Injectable()
 export class HolderService {
@@ -66,7 +65,7 @@ export class HolderService {
     backOff = 1000
   ) {
     try {
-      await this.requestCredential(preAuthorizedCode, issuerUrl);
+      await this.requestCredential({ issuerUrl, preAuthorizedCode });
     } catch (err) {
       if (retry < 5) {
         this.logger.warn(
@@ -88,15 +87,40 @@ export class HolderService {
     }
   }
 
-  async requestCredential(
-    preAuthorizedCode: string,
-    issuerUrl: string
-  ): Promise<Credentials> {
-    const issuerMetadata = await this.retrieveIssuerMetadata(issuerUrl);
-    const accessToken = await this.requestAccessToken(
-      preAuthorizedCode,
-      issuerMetadata.token_endpoint!
-    );
+  async requestCredential(config: {
+    issuerUrl: string;
+    preAuthorizedCode?: string;
+    authorized?: {
+      accessToken: string;
+      credentialIdentifier: string;
+      additionalRequestParams?: { [key: string]: any };
+    };
+  }): Promise<Credentials> {
+    const issuerMetadata = await this.retrieveIssuerMetadata(config.issuerUrl);
+    let accessToken: AccessToken;
+    if (config.authorized) {
+      accessToken = {
+        access_token: config.authorized.accessToken,
+        c_nonce: crypto.randomBytes(48).toString("hex"),
+        authorization_details: [
+          {
+            type: "openid_credential",
+            credential_configuration_id: config.authorized.credentialIdentifier,
+            credential_identifiers: [config.authorized.credentialIdentifier]
+          }
+        ]
+      };
+    } else if (config.preAuthorizedCode) {
+      accessToken = await this.requestAccessToken(
+        config.preAuthorizedCode,
+        issuerMetadata.token_endpoint!
+      );
+    } else {
+      throw new AppError(
+        "Either pre-authorized code or access token must be provided",
+        HttpStatus.BAD_REQUEST
+      ).andLog(this.logger);
+    }
     const credentialIdentifier =
       accessToken.authorization_details?.[0]?.credential_identifiers?.[0];
     if (!credentialIdentifier) {
@@ -117,8 +141,10 @@ export class HolderService {
 
     const credentialRequest = await this.generateCredentialRequest(
       accessToken.c_nonce,
-      issuerUrl,
-      credentialConfig.credential_definition
+      config.issuerUrl,
+      credentialConfig,
+      config.authorized?.credentialIdentifier,
+      config.authorized?.additionalRequestParams
     );
 
     const credentialResponse = await this.invokeCredentialEndpoint(
@@ -128,27 +154,25 @@ export class HolderService {
     );
 
     if ("credential" in credentialResponse) {
-      const presentationCheck =
-        await this.presentationService.validatePresentation({
-          vp: credentialResponse.credential
-        });
-      if (!presentationCheck.valid) {
-        this.logger.warn(
-          `Verifiable presentation token from issuer ${issuerUrl} not valid, credential will be added but might not be valid:\n${JSON.stringify(
-            presentationCheck,
-            null,
-            2
-          )}`
+      this.logger.debug(
+        `Received credential as string, attempting to parse as JWT`
+      );
+      const payload = await this.signatureService.validateJwt(
+        credentialResponse.credential
+      );
+      if (payload.vc) {
+        this.logger.debug(
+          `Received credential as JWT, parsing as VerifiableCredential`
+        );
+        return this.credentialsService.importCredential(
+          plainToInstance(VerifiableCredential, payload.vc)
         );
       }
-      const jwtPayload = decodeJwt(credentialResponse.credential);
-      const vp = plainToInstance(VerifiablePresentation, jwtPayload.vp);
-      this.logger.log(
-        `Importing credential ${toArray(vp.verifiableCredential)[0].id}`
-      );
-      return this.credentialsService.importCredential(
-        toArray(vp.verifiableCredential)[0]
-      );
+      this.logger.debug(`JWT payload: ${JSON.stringify(payload, null, 2)}`);
+      throw new AppError(
+        "Non parseable credential response",
+        HttpStatus.NOT_IMPLEMENTED
+      ).andLog(this.logger);
     } else {
       throw new AppError(
         "Deferred credential handling not yet supported",
@@ -258,7 +282,9 @@ export class HolderService {
   private async generateCredentialRequest(
     nonce: string | undefined,
     issuerUrl: string,
-    credentialDefinition: CredentialDefinition
+    credentialConfiguration: CredentialConfiguration,
+    credentialIdentifier?: string,
+    additionalRequestParams?: { [key: string]: any }
   ): Promise<CredentialRequest> {
     const jwt = await this.signatureService.signAsJwt(
       { nonce: nonce },
@@ -269,15 +295,36 @@ export class HolderService {
         jti: false
       }
     );
+    if (
+      credentialConfiguration.format !== "jwt_vc_json" &&
+      credentialConfiguration.format !== "jwt_vc_json-ld"
+    ) {
+      throw new AppError(
+        `Unsupported credential format: ${credentialConfiguration.format}`,
+        HttpStatus.BAD_REQUEST
+      ).andLog(this.logger);
+    }
 
-    return {
-      format: "jwt_vc_json-ld",
-      credential_definition: credentialDefinition,
+    const response: CredentialRequest = {
+      format: credentialConfiguration.format,
+      credential_definition: credentialConfiguration.credential_definition,
       proof: {
         proof_type: "jwt",
         jwt: jwt
       }
     };
+    if (credentialIdentifier) {
+      response.credential_identifier = credentialIdentifier;
+    }
+    if (additionalRequestParams) {
+      Object.entries(additionalRequestParams).forEach(([key, value]) => {
+        response[key] = value;
+      });
+    }
+    this.logger.debug(
+      `Credential request: ${JSON.stringify(response, null, 2)}`
+    );
+    return response;
   }
 
   private async invokeCredentialEndpoint(
@@ -295,8 +342,14 @@ export class HolderService {
           }
         }
       );
+      this.logger.debug(
+        `Credential response: ${JSON.stringify(response.data)}`
+      );
       return response.data;
-    } catch (err) {
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        this.logger.error(error.response?.data);
+      }
       throw new AppError(
         `Error in requesting credential at ${credentialEndpoint}`,
         HttpStatus.BAD_REQUEST

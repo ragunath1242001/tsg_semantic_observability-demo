@@ -65,9 +65,10 @@ export interface AuthorizationDetail {
 }
 
 export interface CredentialRequest {
-  format: "jwt_vc_json-ld";
+  format: "jwt_vc_json-ld" | "jwt_vc_json";
   credential_definition: CredentialDefinition;
   proof: JwtProof | CwtProof | LdpVpProof;
+  [key: string]: any;
 }
 
 export interface CredentialDefinition {

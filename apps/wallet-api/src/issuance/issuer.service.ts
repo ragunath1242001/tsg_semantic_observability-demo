@@ -22,6 +22,7 @@ import { PresentationService } from "../presentation/presentation.service.js";
 import { DidResolverService } from "../did/did.resolver.service.js";
 import { decodeProtectedHeader, importJWK, jwtVerify } from "jose";
 import { ContextService } from "../contexts/context.service.js";
+import { SignatureService } from "../keys/signature.service.js";
 
 @Injectable()
 export class IssuerService {
@@ -34,7 +35,8 @@ export class IssuerService {
     private readonly contextService: ContextService,
     private readonly credentialService: CredentialsService,
     private readonly presentationService: PresentationService,
-    private readonly didResolverService: DidResolverService
+    private readonly didResolverService: DidResolverService,
+    private readonly signatureService: SignatureService
   ) {
     this.initialized = this.init();
   }
@@ -123,7 +125,7 @@ export class IssuerService {
         issuerMetadata.credential_configurations_supported[
           context.credentialType
         ] = {
-          format: "ldp_vc",
+          format: "jwt_vc_json-ld",
           "@context": [
             "https://www.w3.org/2018/credentials/v1",
             context.documentUrl ??
@@ -326,18 +328,24 @@ export class IssuerService {
         credentialConfig,
         issuance.holderId
       );
-      const credentialJwt =
-        await this.presentationService.createVerifiablePresentationJwt(
-          credential.id,
-          token.issuance.holderId,
-          true
-        );
+
+      const credentialJwt = await this.signatureService.signAsJwt(
+        {
+          vc: credential.credential
+        },
+        undefined,
+        {
+          jti: credential.id,
+          subject: issuance.holderId
+        }
+      );
+
       await this.issuanceRepository.save({
         ...issuance,
         credentialId: credential.id
       });
       return {
-        credential: credentialJwt.vp
+        credential: credentialJwt
       };
     } catch (error) {
       if (error instanceof AppError) {
