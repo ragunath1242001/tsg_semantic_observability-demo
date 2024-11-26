@@ -4,7 +4,7 @@ import {
   ExecutionContext,
   createParamDecorator
 } from "@nestjs/common";
-import { Reflector } from "@nestjs/core";
+import { APP_GUARD, Reflector } from "@nestjs/core";
 import { Observable } from "rxjs";
 import jsonpath from "jsonpath";
 import { config } from "../config.module.js";
@@ -81,5 +81,12 @@ export class RolesGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const roles = jsonpath.query(request.user, config.auth.rolePath);
     return [allowedRoles].flat().some((r: string) => roles.includes(r));
+  }
+
+  static asGlobalGuard() {
+    return {
+      provide: APP_GUARD,
+      useClass: RolesGuard
+    };
   }
 }

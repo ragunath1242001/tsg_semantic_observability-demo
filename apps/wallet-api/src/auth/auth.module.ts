@@ -16,8 +16,8 @@ import { AuthClientService } from "./auth.client.service.js";
     ...(config.auth.enabled ? [OAuthStrategy, OAuthBearerStrategy] : []),
     AuthClientService,
     SessionSerializer,
-    OAuthGuard,
-    RolesGuard
+    OAuthGuard.asGlobalGuard(),
+    RolesGuard.asGlobalGuard()
   ],
   exports: [AuthClientService]
 })
