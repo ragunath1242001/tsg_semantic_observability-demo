@@ -1,5 +1,5 @@
 import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
-import { Reflector } from "@nestjs/core";
+import { APP_GUARD, Reflector } from "@nestjs/core";
 import { AuthGuard } from "@nestjs/passport";
 import { Request } from "express";
 import { AuthConfig } from "../config.js";
@@ -42,5 +42,12 @@ export class OAuthGuard
       return true;
     }
     return super.canActivate(context);
+  }
+
+  static asGlobalGuard() {
+    return {
+      provide: APP_GUARD,
+      useClass: OAuthGuard
+    };
   }
 }
