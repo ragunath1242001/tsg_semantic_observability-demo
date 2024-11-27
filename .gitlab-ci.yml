@@ -38,7 +38,7 @@ renovate:
   rules:
     - if: '$RENOVATE_CHECK == "true" && $CI_COMMIT_BRANCH == "main"'
   variables:
-    RENOVATE_CONFIG_FILE: .gitlab/renovate-config.js
+    RENOVATE_CONFIG_FILE: .gitlab/renovate-config.cjs
 
 release:
   image: node:22
