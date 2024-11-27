@@ -56,7 +56,9 @@ export class DataPlaneController {
     @Headers("x-dataset-id") datasetId: string
   ): Promise<DataPlaneRequestResponseDto> {
     this.logger.log(
-      `Requesting transfer for ${remoteParty} as ${role} with processId ${processId} and with message: ${JSON.stringify(body)}`
+      `Requesting transfer for ${remoteParty} as ${role} with processId ${processId} and with message: ${JSON.stringify(
+        body
+      )}`
     );
     return await this.dataPlaneService.handleTransferRequest(
       body,
@@ -74,7 +76,9 @@ export class DataPlaneController {
     @Param("id") id: string
   ): Promise<void> {
     this.logger.log(
-      `Requesting transfer start for id ${id}, with message:${JSON.stringify(body)}`
+      `Requesting transfer start for id ${id}, with message:${JSON.stringify(
+        body
+      )}`
     );
     return await this.dataPlaneService.handleTransferStart(body, id);
   }
@@ -86,7 +90,9 @@ export class DataPlaneController {
     @Param("id") id: string
   ): Promise<void> {
     this.logger.log(
-      `Requesting transfer complete for id ${id}, with message:${JSON.stringify(body)}`
+      `Requesting transfer complete for id ${id}, with message:${JSON.stringify(
+        body
+      )}`
     );
     await this.dataPlaneService.handleTransferComplete(body, id);
   }
@@ -98,7 +104,9 @@ export class DataPlaneController {
     @Param("id") id: string
   ): Promise<void> {
     this.logger.log(
-      `Requesting transfer terminate for id ${id}, with message:${JSON.stringify(body)}`
+      `Requesting transfer terminate for id ${id}, with message:${JSON.stringify(
+        body
+      )}`
     );
     await this.dataPlaneService.handleTransferTerminate(body, id);
   }
@@ -110,7 +118,9 @@ export class DataPlaneController {
     @Param("id") id: string
   ): Promise<void> {
     this.logger.log(
-      `Requesting transfer suspend for id ${id}, with message:${JSON.stringify(body)}`
+      `Requesting transfer suspend for id ${id}, with message:${JSON.stringify(
+        body
+      )}`
     );
     await this.dataPlaneService.handleTransferSuspend(body, id);
   }

@@ -226,12 +226,12 @@ export class JsonLdContextConfig {
 
   @IsObject()
   @IsOptional()
-  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public readonly document?: Record<string, any>;
 
   @IsObject()
   @IsOptional()
-  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public readonly schema?: Record<string, any>;
 }
 

@@ -32,7 +32,7 @@
     "@rushstack/eslint-patch": "^1.1.4",
     "@types/node": "^22.7.7",
     "@vitejs/plugin-vue": "^5.0.5",
-    "@vue/eslint-config-prettier": "^7.0.0",
+    "@vue/eslint-config-prettier": "^10.1.0",
     "@vue/tsconfig": "^0.5.1",
     "@tsconfig/node22": "^22.0.0",
     "autoprefixer": "^10.4.20",
@@ -40,7 +40,7 @@
     "eslint-plugin-vue": "^9.3.0",
     "npm-run-all": "^4.1.5",
     "postcss": "^8.4.40",
-    "prettier": "^2.7.1",
+    "prettier": "^3.4.1",
     "sass": "^1.55.0",
     "typescript": "~5.5.3",
     "vue-tsc": "^2.0.26"

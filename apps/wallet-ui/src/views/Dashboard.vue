@@ -4,6 +4,7 @@ import { DIDDocument } from "did-resolver";
 import { useToast } from "primevue/usetoast";
 import http from "@tsg-dsp/common-ui/utils/http";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
+import Status from "@/components/Status.vue";
 
 const toast = useToast();
 
@@ -230,6 +231,7 @@ onMounted(async () => {
           </Card>
         </div>
       </template>
+      <Status />
     </div>
   </div>
 </template>
@@ -241,6 +243,7 @@ onMounted(async () => {
 
 .card {
   flex: 1 1 auto;
-  margin-right: 1rem; /* Adjust margin as needed */
+  margin-right: 1rem;
+  /* Adjust margin as needed */
 }
 </style>

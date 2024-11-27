@@ -49,6 +49,8 @@ import AccordionPanel from "primevue/accordionpanel";
 import AccordionContent from "primevue/accordioncontent";
 import AccordionHeader from "primevue/accordionheader";
 import { setJsonLdDebugContexts } from "@tsg-dsp/common-dsp";
+import MeterGroup from "primevue/metergroup";
+import Chart from "primevue/chart";
 
 setJsonLdDebugContexts(
   import.meta.env.TSG_STATIC_MODE !== "production",
@@ -85,6 +87,7 @@ app.component("Badge", Badge);
 app.component("Button", Button);
 app.component("Card", Card);
 app.component("CatalogVue", CatalogVue);
+app.component("Chart", Chart);
 app.component("Column", Column);
 app.component("ConfirmDialog", ConfirmDialog);
 app.component("DataTable", DataTable);
@@ -94,6 +97,7 @@ app.component("Divider", Divider);
 app.component("Drawer", Drawer);
 app.component("FloatLabel", FloatLabel);
 app.component("InputText", InputText);
+app.component("MeterGroup", MeterGroup);
 app.component("MonacoEditorVue", MonacoEditorVue);
 app.component("MultiSelect", MultiSelect);
 app.component("Panel", Panel);

@@ -7,6 +7,7 @@ import { useToast } from "primevue/usetoast";
 import { storeToRefs } from "pinia";
 import { useDspStore } from "../stores/dsp";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
+import Status from "../components/Status.vue";
 
 const dataPlanesCount = ref(0);
 
@@ -41,13 +42,10 @@ onMounted(async () => await initialize());
     <Card
       class="col-span-12"
       style="border-radius: 12px; border: 1px solid var(--surface-border)">
-      <template #title>Control Plane Dashboard - My Catalog</template>
-      <template #content
-        ><p>
-          This page displays the Catalog that is available through your control
-          plane. It shows the datasets that are part of your catalog.
-        </p></template
-      >
+      <template #title>Control Plane Dashboard</template>
+      <template #content>
+        <p>This page displays the overview of the current control plane.</p>
+      </template>
     </Card>
     <div class="col-span-12 lg:col-span-6 xl:col-span-3">
       <Card
@@ -142,23 +140,6 @@ onMounted(async () => await initialize());
         </template>
       </Card>
     </div>
-    <Catalog
-      :catalog="ownCatalog.catalog"
-      v-if="ownCatalog.catalog"
-      :single-catalog="true"
-      :own-catalog="true"
-      url=""
-      assigner="" />
+    <Status />
   </div>
 </template>
-<!-- <style scoped>
-.card-container {
-  display: flex;
-  flex-wrap: wrap;
-}
-
-.card {
-  flex: 1 1 auto;
-  margin-right: 1rem;
-} 
-</style> -->

@@ -222,8 +222,8 @@ export class SignatureService {
     embeddedVerificationMethod: boolean = false
   ): Promise<Proof> {
     const proofType =
-      type ??
-      this.config.signature.default === SignatureType.DATA_INTEGRITY_PROOF
+      (type ??
+      this.config.signature.default === SignatureType.DATA_INTEGRITY_PROOF)
         ? "DataIntegrityProof"
         : "JsonWebSignature2020";
     if (proofType == "DataIntegrityProof") {
@@ -326,7 +326,9 @@ export class SignatureService {
     proofPurpose: string = "assertionMethod"
   ): Promise<JsonWebSignature2020> {
     const signingKey = await this.getKey(keyId);
-    const verificationMethod = `${await this.didService.getDidId()}#${signingKey.id}`;
+    const verificationMethod = `${await this.didService.getDidId()}#${
+      signingKey.id
+    }`;
     const documentHash = await canonizeAndHash(document, "RDFC");
     const jws = await this.signAsJws(documentHash, signingKey);
     return plainToInstance(JsonWebSignature2020, {

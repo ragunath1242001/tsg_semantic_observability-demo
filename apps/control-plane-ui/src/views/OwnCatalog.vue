@@ -1,0 +1,29 @@
+<script setup lang="ts">
+import Catalog from "../components/Catalog.vue";
+import { storeToRefs } from "pinia";
+import { useDspStore } from "../stores/dsp";
+
+const { ownCatalog } = storeToRefs(useDspStore());
+</script>
+<template>
+  <div class="grid grid-cols-12 gap-8">
+    <Card
+      class="col-span-12"
+      style="border-radius: 12px; border: 1px solid var(--surface-border)">
+      <template #title>Control Plane - Own Catalog</template>
+      <template #content>
+        <p>
+          This page displays the Catalog that is available through your control
+          plane. It shows the datasets that are part of your catalog.
+        </p>
+      </template>
+    </Card>
+    <Catalog
+      :catalog="ownCatalog.catalog"
+      v-if="ownCatalog.catalog"
+      :single-catalog="true"
+      :own-catalog="true"
+      url=""
+      assigner="" />
+  </div>
+</template>

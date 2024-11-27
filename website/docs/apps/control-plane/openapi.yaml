@@ -69,8 +69,80 @@ paths:
           description: ""
         "502":
           description: ""
+        "503":
+          description: The Health Check is not successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: error
+                  info:
+                    type: object
+                    example:
+                      database: &a3
+                        status: up
+                    additionalProperties:
+                      type: object
+                      required:
+                        - status
+                      properties:
+                        status:
+                          type: string
+                      additionalProperties: true
+                    nullable: true
+                  error:
+                    type: object
+                    example:
+                      redis: &a4
+                        status: down
+                        message: Could not connect
+                    additionalProperties:
+                      type: object
+                      required:
+                        - status
+                      properties:
+                        status:
+                          type: string
+                      additionalProperties: true
+                    nullable: true
+                  details:
+                    type: object
+                    example:
+                      database: *a3
+                      redis: *a4
+                    additionalProperties:
+                      type: object
+                      required:
+                        - status
+                      properties:
+                        status:
+                          type: string
+                      additionalProperties: true
       tags:
         - Health
+  /api/status:
+    get:
+      operationId: StatusController_getStatus
+      summary: Appplication status
+      description: Retrieves the current health of the control plane. With additional
+        status information
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StatusDto"
+      responses:
+        "200":
+          description: ""
+        "502":
+          description: ""
+      tags:
+        - Status
   /api/auth/user:
     get:
       operationId: AuthController_getUser
@@ -88,7 +160,7 @@ paths:
                 oneOf:
                   - $ref: "#/components/schemas/AuthenticatedUserDto"
                   - $ref: "#/components/schemas/UnauthenticatedUserDto"
-      tags: &a3
+      tags: &a5
         - Authentication
   /api/auth/login:
     get:
@@ -99,7 +171,7 @@ paths:
       responses:
         "200":
           description: ""
-      tags: *a3
+      tags: *a5
   /api/auth/logout:
     get:
       operationId: AuthController_logout
@@ -110,7 +182,7 @@ paths:
       responses:
         "302":
           description: ""
-      tags: *a3
+      tags: *a5
   /api/auth/callback:
     get:
       operationId: AuthController_callback
@@ -121,7 +193,7 @@ paths:
       responses:
         "302":
           description: ""
-      tags: *a3
+      tags: *a5
   /api/data-plane/init:
     post:
       operationId: DataPlaneController_init
@@ -149,9 +221,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: &a4
+      tags: &a6
         - Data Plane
-      security: &a5
+      security: &a7
         - oauth2:
             - controlplane_admin
             - controlplane_dataplane
@@ -187,8 +259,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a4
-      security: *a5
+      tags: *a6
+      security: *a7
   /api/data-plane/{id}/catalog:
     post:
       operationId: DataPlaneController_updateCatalog
@@ -221,8 +293,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a4
-      security: *a5
+      tags: *a6
+      security: *a7
   /api/management/dataplanes:
     get:
       operationId: DataplaneManagementController_getDataPlanes
@@ -244,9 +316,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: &a6
+      tags: &a8
         - Data Plane Management
-      security: &a7
+      security: &a9
         - oauth2:
             - controlplane_admin
             - controlplane_dataplane
@@ -276,8 +348,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a6
-      security: *a7
+      tags: *a8
+      security: *a9
   /api/management/dataplanes/{id}:
     put:
       operationId: DataplaneManagementController_updateDataplane
@@ -310,8 +382,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a6
-      security: *a7
+      tags: *a8
+      security: *a9
     delete:
       operationId: DataplaneManagementController_deleteDataPlane
       summary: Delete a dataplane
@@ -333,8 +405,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a6
-      security: *a7
+      tags: *a8
+      security: *a9
   /api/catalog/request:
     post:
       operationId: CatalogController_request
@@ -362,9 +434,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: &a8
+      tags: &a10
         - Catalog
-      security: &a9
+      security: &a11
         - bearer: []
   /api/catalog/datasets/{id}:
     get:
@@ -392,8 +464,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a8
-      security: *a9
+      tags: *a10
+      security: *a11
   /api/management/catalog/request:
     get:
       operationId: CatalogManagementController_requestCatalog
@@ -427,9 +499,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: &a10
+      tags: &a12
         - Catalog Management
-      security: &a11
+      security: &a13
         - bearer: []
   /api/management/catalog/dataset:
     get:
@@ -470,8 +542,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a10
-      security: *a11
+      tags: *a12
+      security: *a13
     post:
       operationId: CatalogManagementController_addDataset
       summary: Add dataset
@@ -498,8 +570,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a10
-      security: *a11
+      tags: *a12
+      security: *a13
   /api/management/catalog/dataset/{id}:
     put:
       operationId: CatalogManagementController_updateDataset
@@ -533,8 +605,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a10
-      security: *a11
+      tags: *a12
+      security: *a13
     delete:
       operationId: CatalogManagementController_deleteDataset
       summary: Delete dataset
@@ -557,8 +629,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a10
-      security: *a11
+      tags: *a12
+      security: *a13
   /api/negotiations/request:
     post:
       operationId: NegotiationController_request
@@ -577,9 +649,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ContractNegotiationSchema"
-      tags: &a12
+      tags: &a14
         - Negotiations
-      security: &a13
+      security: &a15
         - bearer: []
   /api/negotiations/{id}:
     get:
@@ -598,8 +670,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ContractNegotiationSchema"
-      tags: *a12
-      security: *a13
+      tags: *a14
+      security: *a15
   /api/negotiations/{id}/request:
     post:
       operationId: NegotiationController_requestWithId
@@ -623,8 +695,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ContractNegotiationSchema"
-      tags: *a12
-      security: *a13
+      tags: *a14
+      security: *a15
   /api/negotiations/{id}/events:
     post:
       operationId: NegotiationController_negotiationEvent
@@ -649,8 +721,8 @@ paths:
               schema:
                 example:
                   status: string
-      tags: *a12
-      security: *a13
+      tags: *a14
+      security: *a15
   /api/negotiations/{id}/agreement/verification:
     post:
       operationId: NegotiationController_agreementVerification
@@ -675,8 +747,8 @@ paths:
               schema:
                 example:
                   status: string
-      tags: *a12
-      security: *a13
+      tags: *a14
+      security: *a15
   /api/negotiations/{id}/termination:
     post:
       operationId: NegotiationController_negotiationTermination
@@ -701,8 +773,8 @@ paths:
               schema:
                 example:
                   status: string
-      tags: *a12
-      security: *a13
+      tags: *a14
+      security: *a15
   /api/negotiations/callbacks/{id}/offer:
     post:
       operationId: NegotiationController_callbackOffer
@@ -727,8 +799,8 @@ paths:
               schema:
                 example:
                   status: string
-      tags: *a12
-      security: *a13
+      tags: *a14
+      security: *a15
   /api/negotiations/callbacks/{id}/agreement:
     post:
       operationId: NegotiationController_callbackAgreement
@@ -753,8 +825,8 @@ paths:
               schema:
                 example:
                   status: string
-      tags: *a12
-      security: *a13
+      tags: *a14
+      security: *a15
   /api/negotiations/callbacks/{id}/events:
     post:
       operationId: NegotiationController_callbackEvent
@@ -779,8 +851,8 @@ paths:
               schema:
                 example:
                   status: string
-      tags: *a12
-      security: *a13
+      tags: *a14
+      security: *a15
   /api/management/negotiations:
     get:
       operationId: NegotiationManagementController_getNegotiations
@@ -795,9 +867,9 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/NegotiationStatusDto"
-      tags: &a14
+      tags: &a16
         - Negotiations Management
-      security: &a15
+      security: &a17
         - oauth2:
             - controlplane_admin
             - controlplane_dataplane
@@ -820,8 +892,8 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/NegotiationStatusDto"
-      tags: *a14
-      security: *a15
+      tags: *a16
+      security: *a17
   /api/management/negotiations/{processId}:
     get:
       operationId: NegotiationManagementController_getNegotiation
@@ -840,8 +912,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/NegotiationDetailSchema"
-      tags: *a14
-      security: *a15
+      tags: *a16
+      security: *a17
   /api/management/negotiations/request:
     post:
       operationId: NegotiationManagementController_requestNewNegotiation
@@ -879,8 +951,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ContractNegotiationSchema"
-      tags: *a14
-      security: *a15
+      tags: *a16
+      security: *a17
   /api/management/negotiations/{processId}/request:
     post:
       operationId: NegotiationManagementController_requestExistingNegotiation
@@ -906,8 +978,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ContractNegotiationSchema"
-      tags: *a14
-      security: *a15
+      tags: *a16
+      security: *a17
   /api/management/negotiations/{processId}/offer:
     post:
       operationId: NegotiationManagementController_offer
@@ -940,8 +1012,8 @@ paths:
               schema:
                 example:
                   status: string
-      tags: *a14
-      security: *a15
+      tags: *a16
+      security: *a17
   /api/management/negotiations/{processId}/agreement:
     post:
       operationId: NegotiationManagementController_agree
@@ -961,8 +1033,8 @@ paths:
               schema:
                 example:
                   status: string
-      tags: *a14
-      security: *a15
+      tags: *a16
+      security: *a17
   /api/management/negotiations/{processId}/verify:
     post:
       operationId: NegotiationManagementController_verify
@@ -982,8 +1054,8 @@ paths:
               schema:
                 example:
                   status: string
-      tags: *a14
-      security: *a15
+      tags: *a16
+      security: *a17
   /api/management/negotiations/{processId}/finalize:
     post:
       operationId: NegotiationManagementController_finalize
@@ -1003,8 +1075,8 @@ paths:
               schema:
                 example:
                   status: string
-      tags: *a14
-      security: *a15
+      tags: *a16
+      security: *a17
   /api/management/negotiations/{processId}/terminate:
     post:
       operationId: NegotiationManagementController_terminate
@@ -1033,8 +1105,8 @@ paths:
               schema:
                 example:
                   status: string
-      tags: *a14
-      security: *a15
+      tags: *a16
+      security: *a17
   /api/transfers/request:
     post:
       operationId: TransferController_request
@@ -1053,9 +1125,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/TransferProcessSchema"
-      tags: &a16
+      tags: &a18
         - Transfers
-      security: &a17
+      security: &a19
         - bearer: []
   /api/transfers/{id}:
     get:
@@ -1075,8 +1147,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/TransferProcessSchema"
-      tags: *a16
-      security: *a17
+      tags: *a18
+      security: *a19
   /api/transfers/{id}/start:
     post:
       operationId: TransferController_startTransferProcess
@@ -1102,8 +1174,8 @@ paths:
               schema:
                 example:
                   status: success
-      tags: *a16
-      security: *a17
+      tags: *a18
+      security: *a19
   /api/transfers/{id}/complete:
     post:
       operationId: TransferController_completeTransferProcess
@@ -1129,8 +1201,8 @@ paths:
               schema:
                 example:
                   status: success
-      tags: *a16
-      security: *a17
+      tags: *a18
+      security: *a19
   /api/transfers/{id}/terminate:
     post:
       operationId: TransferController_terminateTransferProcess
@@ -1156,8 +1228,8 @@ paths:
               schema:
                 example:
                   status: success
-      tags: *a16
-      security: *a17
+      tags: *a18
+      security: *a19
   /api/transfers/{id}/suspend:
     post:
       operationId: TransferController_suspendTransferProcess
@@ -1183,8 +1255,8 @@ paths:
               schema:
                 example:
                   status: success
-      tags: *a16
-      security: *a17
+      tags: *a18
+      security: *a19
   /api/transfers/callbacks/{id}/start:
     post:
       operationId: TransferController_callbackStartTransferProcess
@@ -1210,8 +1282,8 @@ paths:
               schema:
                 example:
                   status: success
-      tags: *a16
-      security: *a17
+      tags: *a18
+      security: *a19
   /api/transfers/callbacks/{id}/complete:
     post:
       operationId: TransferController_callbackCompleteTransferProcess
@@ -1237,8 +1309,8 @@ paths:
               schema:
                 example:
                   status: success
-      tags: *a16
-      security: *a17
+      tags: *a18
+      security: *a19
   /api/transfers/callbacks/{id}/terminate:
     post:
       operationId: TransferController_callbackTerminateTransferProcess
@@ -1264,8 +1336,8 @@ paths:
               schema:
                 example:
                   status: success
-      tags: *a16
-      security: *a17
+      tags: *a18
+      security: *a19
   /api/transfers/callbacks/{id}/suspend:
     post:
       operationId: TransferController_callbackSuspendTransferProcess
@@ -1291,8 +1363,8 @@ paths:
               schema:
                 example:
                   status: success
-      tags: *a16
-      security: *a17
+      tags: *a18
+      security: *a19
   /api/management/transfers:
     get:
       operationId: TransferManagementController_getTransfers
@@ -1307,9 +1379,9 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/TransferStatusSchema"
-      tags: &a18
+      tags: &a20
         - Transfers Management
-      security: &a19
+      security: &a21
         - oauth2:
             - controlplane_admin
             - controlplane_dataplane
@@ -1331,8 +1403,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/TransferDetailSchema"
-      tags: *a18
-      security: *a19
+      tags: *a20
+      security: *a21
   /api/management/transfers/request:
     post:
       operationId: TransferManagementController_requestTransfer
@@ -1369,8 +1441,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/TransferProcessSchema"
-      tags: *a18
-      security: *a19
+      tags: *a20
+      security: *a21
   /api/management/transfers/{processId}/start:
     post:
       operationId: TransferManagementController_startTransfer
@@ -1396,8 +1468,8 @@ paths:
               schema:
                 example:
                   status: success
-      tags: *a18
-      security: *a19
+      tags: *a20
+      security: *a21
   /api/management/transfers/{processId}/complete:
     post:
       operationId: TransferManagementController_completeTransfer
@@ -1417,8 +1489,8 @@ paths:
               schema:
                 example:
                   status: success
-      tags: *a18
-      security: *a19
+      tags: *a20
+      security: *a21
   /api/management/transfers/{processId}/terminate:
     post:
       operationId: TransferManagementController_terminateTransfer
@@ -1446,8 +1518,8 @@ paths:
               schema:
                 example:
                   status: success
-      tags: *a18
-      security: *a19
+      tags: *a20
+      security: *a21
   /api/management/transfers/{processId}/suspend:
     post:
       operationId: TransferManagementController_suspendTransfer
@@ -1474,8 +1546,8 @@ paths:
               schema:
                 example:
                   status: success
-      tags: *a18
-      security: *a19
+      tags: *a20
+      security: *a21
   /api/management/agreements/{agreementId}:
     get:
       operationId: AgreementManagementController_getAgreement
@@ -1529,9 +1601,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: &a20
+      tags: &a22
         - Evaluation
-      security: &a21
+      security: &a23
         - oauth2:
             - controlplane_admin
   /api/management/policy/evaluation/{transferId}/lastDecision:
@@ -1564,8 +1636,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a20
-      security: *a21
+      tags: *a22
+      security: *a23
   /api/management/policy/evaluation/{transferId}/evaluate:
     post:
       operationId: PolicyEvaluationController_evaluate
@@ -1602,8 +1674,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a20
-      security: *a21
+      tags: *a22
+      security: *a23
   /api/management/policy/evaluation/{transferId}/evaluate/data-plane:
     post:
       operationId: PolicyEvaluationController_evaluateDataPlane
@@ -1634,8 +1706,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a20
-      security: *a21
+      tags: *a22
+      security: *a23
   /api/management/policy/constraint:
     get:
       operationId: RuleRepositoryController_getConstraints
@@ -1657,9 +1729,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: &a22
+      tags: &a24
         - Evaluation
-      security: &a23
+      security: &a25
         - oauth2:
             - controlplane_admin
     post:
@@ -1698,8 +1770,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a22
-      security: *a23
+      tags: *a24
+      security: *a25
   /api/management/policy/constraint/odrl:
     post:
       operationId: RuleRepositoryController_getConstraintByOdrl
@@ -1731,8 +1803,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a22
-      security: *a23
+      tags: *a24
+      security: *a25
   /api/management/policy/constraint/{id}:
     get:
       operationId: RuleRepositoryController_getConstraint
@@ -1763,8 +1835,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a22
-      security: *a23
+      tags: *a24
+      security: *a25
     delete:
       operationId: RuleRepositoryController_deleteConstraint
       summary: Delete constraint
@@ -1790,8 +1862,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a22
-      security: *a23
+      tags: *a24
+      security: *a25
     put:
       operationId: RuleRepositoryController_updateConstraint
       summary: Update constraint
@@ -1839,8 +1911,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a22
-      security: *a23
+      tags: *a24
+      security: *a25
   /api/management/policy/constraint/{id}/odrl:
     get:
       operationId: RuleRepositoryController_getConstraintOdrl
@@ -1871,8 +1943,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a22
-      security: *a23
+      tags: *a24
+      security: *a25
   /api/management/policy/rule:
     get:
       operationId: RuleRepositoryController_getRules
@@ -1894,8 +1966,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a22
-      security: *a23
+      tags: *a24
+      security: *a25
     post:
       operationId: RuleRepositoryController_addRule
       summary: Add rule
@@ -1932,8 +2004,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a22
-      security: *a23
+      tags: *a24
+      security: *a25
   /api/management/policy/rule/{id}:
     get:
       operationId: RuleRepositoryController_getRule
@@ -1964,8 +2036,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a22
-      security: *a23
+      tags: *a24
+      security: *a25
     delete:
       operationId: RuleRepositoryController_deleteRule
       summary: Delete rule
@@ -1991,8 +2063,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a22
-      security: *a23
+      tags: *a24
+      security: *a25
     put:
       operationId: RuleRepositoryController_updateRule
       summary: Update rule
@@ -2040,8 +2112,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a22
-      security: *a23
+      tags: *a24
+      security: *a25
   /api/management/policy/rule/{id}/odrl:
     get:
       operationId: RuleRepositoryController_getRuleOdrl
@@ -2082,8 +2154,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a22
-      security: *a23
+      tags: *a24
+      security: *a25
   /api/management/registry:
     get:
       operationId: RegistryClientController_requestCatalogs
@@ -2103,9 +2175,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: &a24
+      tags: &a26
         - Registry Management
-      security: &a25
+      security: &a27
         - oauth2:
             - controlplane_admin
             - controlplane_dataplane
@@ -2130,8 +2202,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a24
-      security: *a25
+      tags: *a26
+      security: *a27
   /api/management/registry/didDocuments:
     get:
       operationId: RegistryClientController_requestDIDDocuments
@@ -2152,8 +2224,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a24
-      security: *a25
+      tags: *a26
+      security: *a27
   /api/management/registry/catalogs:
     get:
       operationId: RegistryClientController_getCatalogs
@@ -2173,8 +2245,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a24
-      security: *a25
+      tags: *a26
+      security: *a27
   /api/registry:
     get:
       operationId: RegistryController_getCatalogs
@@ -2189,9 +2261,9 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/CatalogSchema"
-      tags: &a26
+      tags: &a28
         - Registry
-      security: &a27
+      security: &a29
         - bearer: []
   /api/registry/addresses:
     get:
@@ -2207,8 +2279,8 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/CredentialAddressDto"
-      tags: *a26
-      security: *a27
+      tags: *a28
+      security: *a29
 info:
   title: TSG Control Plane
   description: "This OpenAPI specification shows the endpoints of the Control
@@ -2291,6 +2363,120 @@ components:
         - name
         - status
         - code
+    DatabaseStatusDto:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+    MemoryUsageDto:
+      type: object
+      properties:
+        does_zap_garbage:
+          type: number
+        external_memory:
+          type: number
+        heap_size_limit:
+          type: number
+        malloced_memory:
+          type: number
+        number_of_detached_contexts:
+          type: number
+        number_of_native_contexts:
+          type: number
+        peak_malloced_memory:
+          type: number
+        total_available_size:
+          type: number
+        total_global_handles_size:
+          type: number
+        total_heap_size:
+          type: number
+        total_heap_size_executable:
+          type: number
+        total_physical_size:
+          type: number
+        used_global_handles_size:
+          type: number
+        used_heap_size:
+          type: number
+      required:
+        - does_zap_garbage
+        - external_memory
+        - heap_size_limit
+        - malloced_memory
+        - number_of_detached_contexts
+        - number_of_native_contexts
+        - peak_malloced_memory
+        - total_available_size
+        - total_global_handles_size
+        - total_heap_size
+        - total_heap_size_executable
+        - total_physical_size
+        - used_global_handles_size
+        - used_heap_size
+    NegotiationStatusDto:
+      type: object
+      properties:
+        localId:
+          type: string
+        remoteId:
+          type: string
+        remoteParty:
+          type: string
+        role:
+          type: string
+        remoteAddress:
+          type: string
+        state:
+          type: string
+        dataSet:
+          type: string
+        modifiedDate:
+          format: date-time
+          type: string
+      required:
+        - localId
+        - remoteId
+        - remoteParty
+        - role
+        - remoteAddress
+        - state
+        - dataSet
+        - modifiedDate
+    TransferStatusDto:
+      type: object
+      properties:
+        role:
+          type: string
+        state:
+          type: string
+        count:
+          type: number
+      required:
+        - role
+        - state
+        - count
+    StatusDto:
+      type: object
+      properties:
+        database:
+          $ref: "#/components/schemas/DatabaseStatusDto"
+        memoryUsage:
+          $ref: "#/components/schemas/MemoryUsageDto"
+        uptime:
+          type: number
+        negotiations:
+          $ref: "#/components/schemas/NegotiationStatusDto"
+        transfers:
+          $ref: "#/components/schemas/TransferStatusDto"
+      required:
+        - database
+        - memoryUsage
+        - uptime
+        - negotiations
+        - transfers
     ClientInfoDto:
       type: object
       properties:
@@ -3052,35 +3238,6 @@ components:
         - dspace:consumerPid
         - dspace:providerPid
         - dspace:agreement
-    NegotiationStatusDto:
-      type: object
-      properties:
-        localId:
-          type: string
-        remoteId:
-          type: string
-        remoteParty:
-          type: string
-        role:
-          type: string
-        remoteAddress:
-          type: string
-        state:
-          type: string
-        dataSet:
-          type: string
-        modifiedDate:
-          format: date-time
-          type: string
-      required:
-        - localId
-        - remoteId
-        - remoteParty
-        - role
-        - remoteAddress
-        - state
-        - dataSet
-        - modifiedDate
     NegotiationProcessEventSchema:
       type: object
       properties:
@@ -3582,10 +3739,10 @@ components:
           type: string
         serviceEndpoint:
           oneOf:
-            - &a28
+            - &a30
               type: string
             - type: array
-              items: *a28
+              items: *a30
       required:
         - id
         - type
@@ -3595,10 +3752,10 @@ components:
       properties:
         "@context":
           oneOf:
-            - &a29
+            - &a31
               type: string
             - type: array
-              items: *a29
+              items: *a31
         id:
           type: string
         alsoKnownAs:
@@ -3607,10 +3764,10 @@ components:
             type: string
         controller:
           oneOf:
-            - &a30
+            - &a32
               type: string
             - type: array
-              items: *a30
+              items: *a32
         verificationMethod:
           type: array
           items:

@@ -8,6 +8,7 @@ import TransfersVue from "../views/Transfers.vue";
 import DataplaneVue from "../views/Dataplane.vue";
 import { registerRouter, useUserStore } from "@tsg-dsp/common-ui/stores/user";
 import Registry from "../views/Registry.vue";
+import OwnCatalog from "../views/OwnCatalog.vue";
 
 const router = createRouter({
   history: createWebHashHistory(),
@@ -20,6 +21,11 @@ const router = createRouter({
           path: "/",
           name: "dashboard",
           component: DashboardVue
+        },
+        {
+          path: "/catalog",
+          name: "owncatalog",
+          component: OwnCatalog
         },
         {
           path: "/catalog/request",

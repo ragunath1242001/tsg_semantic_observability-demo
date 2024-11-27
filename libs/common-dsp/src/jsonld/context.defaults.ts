@@ -30,12 +30,12 @@ export const dspContextUrl = "https://w3id.org/dspace/2024/1/context.json";
 
 export const tsgContextUrl = (version?: string) =>
   `https://tsg.dataspac.es/contexts/${
-    version ?? debugContexts ? "next" : currentVersion
+    (version ?? debugContexts) ? "next" : currentVersion
   }/tsg.json`;
 
 export const healthContextUrl = (version?: string) =>
   `https://tsg.dataspac.es/contexts/${
-    version ?? debugContexts ? "next" : currentVersion
+    (version ?? debugContexts) ? "next" : currentVersion
   }/health.json`;
 
 export const dspContext: JsonLd = <JsonLd>dsp;

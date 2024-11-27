@@ -14,6 +14,10 @@ import { RegistryModule } from "./registry/registry.module";
 import { ServeStaticModule } from "@nestjs/serve-static";
 import { ConfigController } from "./config.controller";
 import { EventEmitterModule } from "@nestjs/event-emitter";
+import { TerminusModule } from "@nestjs/terminus";
+import { StatusController } from "./status.controller";
+import { NegotiationDetailDao } from "./model/negotiation.dao";
+import { TransferDetailDao } from "./model/transfer.dao";
 
 const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
   ? [
@@ -37,13 +41,15 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
       migrations: [`dist/migrations/*-${config.db.type}{.ts,.js}`],
       migrationsRun: !config.db.synchronize
     }),
+    TypeOrmModule.forFeature([NegotiationDetailDao, TransferDetailDao]),
     DataPlaneModule,
     DspClientModule,
     CatalogModule,
     NegotiationModule,
     TransferModule,
     ...embeddedFrontend,
-    RegistryModule.register(config.registry)
+    RegistryModule.register(config.registry),
+    TerminusModule
   ],
   exports: [
     AuthModule,
@@ -53,7 +59,7 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
     NegotiationModule,
     TransferModule
   ],
-  controllers: [ConfigController, HealthController]
+  controllers: [ConfigController, HealthController, StatusController]
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
