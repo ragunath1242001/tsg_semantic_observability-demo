@@ -20,6 +20,14 @@ variables:
     paths:
       - .pnpm-store
 
+prettier:
+  extends: .base-rules
+  stage: test
+  script:
+    - npx prettier@^3.4.1 --check .
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+
 release:
   image: node:22
   stage: release

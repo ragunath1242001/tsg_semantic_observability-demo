@@ -37,6 +37,7 @@ import { createPinia } from "pinia";
 import { loader } from "@guolao/vue-monaco-editor";
 import Drawer from "primevue/drawer";
 import { setJsonLdDebugContexts } from "@tsg-dsp/common-dsp";
+import MeterGroup from "primevue/metergroup";
 
 setJsonLdDebugContexts(
   import.meta.env.TSG_STATIC_MODE !== "production",
@@ -75,6 +76,7 @@ app.component("FileUpload", FileUpload);
 app.component("Card", Card);
 app.component("Column", Column);
 app.component("DataTable", DataTable);
+app.component("MeterGroup", MeterGroup);
 app.component("MultiSelect", MultiSelect);
 app.component("Message", Message);
 app.component("InputNumber", InputNumber);

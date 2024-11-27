@@ -33,7 +33,18 @@ const containerClass = computed(() => {
 const menuList: Menu[] = [
   {
     label: "Home",
-    items: [{ label: "Dashboard", icon: "pi pi-fw pi-home", to: "/" }]
+    items: [
+      {
+        label: "Dashboard",
+        icon: "pi pi-fw pi-home",
+        to: "/"
+      },
+      {
+        label: "Own Catalog",
+        icon: "pi pi-fw pi-warehouse",
+        to: "/catalog"
+      }
+    ]
   },
   {
     label: "Dataspace Protocol",

@@ -1,4 +1,9 @@
 apps/*/dist/**
 libs/*/dist/**
+tools/*/dist/**
 apps/frontend/public/**
 helm-charts/**/*
+website/**/*
+apps/*/src/migrations/**
+.pnpm-store/**/*
+pnpm-lock.yaml

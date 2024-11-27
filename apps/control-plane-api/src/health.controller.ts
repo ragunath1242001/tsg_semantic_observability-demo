@@ -5,10 +5,19 @@ import {
   ApiOperation,
   ApiTags
 } from "@nestjs/swagger";
+import {
+  HealthCheck,
+  HealthCheckService,
+  TypeOrmHealthIndicator
+} from "@nestjs/terminus";
 
 @Controller()
 @ApiTags("Health")
 export class HealthController {
+  constructor(
+    private readonly health: HealthCheckService,
+    private readonly db: TypeOrmHealthIndicator
+  ) {}
   @Get("/health")
   @ApiOperation({
     summary: "Health check",
@@ -17,5 +26,20 @@ export class HealthController {
   })
   @ApiOkResponse()
   @ApiBadGatewayResponse()
-  async getHealth() {}
+  @HealthCheck()
+  async getHealth() {
+    const { heapUsed, rss } = process.memoryUsage();
+    return this.health.check([
+      async () => this.db.pingCheck("database", { timeout: 300 }),
+      async () => {
+        return {
+          memory: {
+            status: "up",
+            heapMb: heapUsed >> 20,
+            rssMb: rss >> 20
+          }
+        };
+      }
+    ]);
+  }
 }

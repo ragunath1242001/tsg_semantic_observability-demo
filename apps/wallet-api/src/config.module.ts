@@ -55,7 +55,7 @@ try {
         throw new Error(
           TypedConfigModule.getConfigErrorMessage(schemaErrors) +
             "\n\n" +
-            inspect(config),
+            inspect(config)
         );
       }
       return config as RootConfig;

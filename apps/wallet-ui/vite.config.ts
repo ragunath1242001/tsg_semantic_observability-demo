@@ -27,6 +27,9 @@ export default defineConfig({
       "@": fileURLToPath(new URL("./src", import.meta.url))
     }
   },
+  optimizeDeps: {
+    exclude: ["class-transformer/storage"]
+  },
   build: {
     target: "ESNext"
   },

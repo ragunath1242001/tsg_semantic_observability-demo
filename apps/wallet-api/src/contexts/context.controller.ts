@@ -15,9 +15,9 @@ export class ContextController {
     summary: "Retrieve context",
     description: "Retrieves JSON-LD context document for the given context"
   })
-  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   async getContext(
     @Param("id") id: string
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ): Promise<Record<string, any> | void> {
     const context = await this.contextService.getContext(id);
     if (context.document) {

@@ -319,7 +319,9 @@ export class DataPlaneService {
             (d) =>
               new Distribution({
                 id: `${id}:${v.version}:${d.mediaType ?? "application/http"}`,
-                title: `${datasetConfig.title} ${v.version} (${d.mediaType ?? "application/http"})`,
+                title: `${datasetConfig.title} ${v.version} (${
+                  d.mediaType ?? "application/http"
+                })`,
                 format: "dspace:HTTP",
                 mediaType: `iana:${d.mediaType ?? "application/http"}`,
                 conformsTo: defArray(d.schemaRef, d.openApiSpecRef),
@@ -716,7 +718,9 @@ export class DataPlaneService {
         }
       } catch (err) {
         this.logger.warn(
-          `Attempt ${retries + 1} failed to find transfer for dataset ${datasetId}: ${err}`
+          `Attempt ${
+            retries + 1
+          } failed to find transfer for dataset ${datasetId}: ${err}`
         );
       }
 

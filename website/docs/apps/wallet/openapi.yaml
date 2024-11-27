@@ -12,6 +12,58 @@ paths:
           description: ""
         "502":
           description: ""
+        "503":
+          description: The Health Check is not successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: error
+                  info:
+                    type: object
+                    example:
+                      database: &a1
+                        status: up
+                    additionalProperties:
+                      type: object
+                      required:
+                        - status
+                      properties:
+                        status:
+                          type: string
+                      additionalProperties: true
+                    nullable: true
+                  error:
+                    type: object
+                    example:
+                      redis: &a2
+                        status: down
+                        message: Could not connect
+                    additionalProperties:
+                      type: object
+                      required:
+                        - status
+                      properties:
+                        status:
+                          type: string
+                      additionalProperties: true
+                    nullable: true
+                  details:
+                    type: object
+                    example:
+                      database: *a1
+                      redis: *a2
+                    additionalProperties:
+                      type: object
+                      required:
+                        - status
+                      properties:
+                        status:
+                          type: string
+                      additionalProperties: true
       tags:
         - Health
   /api/settings:
@@ -33,9 +85,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: &a1
+      tags: &a3
         - Settings
-      security: &a2
+      security: &a4
         - oauth2:
             - wallet_issue_credentials
   /api/settings/update:
@@ -69,8 +121,28 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a1
-      security: *a2
+      tags: *a3
+      security: *a4
+  /api/status:
+    get:
+      operationId: StatusController_getStatus
+      summary: Appplication status
+      description: Retrieves the current health of the control plane. With additional
+        status information
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StatusDto"
+      responses:
+        "200":
+          description: ""
+        "502":
+          description: ""
+      tags:
+        - Status
   /api/presentations:
     get:
       operationId: DirectPresentationController_createPresentation
@@ -102,9 +174,9 @@ paths:
                 oneOf:
                   - $ref: "#/components/schemas/VerifiablePresentationJwtDto"
                   - $ref: "#/components/schemas/VerifiablePresentationJsonLdDto"
-      tags: &a3
+      tags: &a5
         - Presentation Direct
-      security: &a4
+      security: &a6
         - oauth2:
             - wallet_view_presentations
   /api/presentations/validate:
@@ -127,8 +199,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PresentationValidationDto"
-      tags: *a3
-      security: *a4
+      tags: *a5
+      security: *a6
   /api/iatp/holder/token:
     get:
       operationId: IatpHolderController_createSIToken
@@ -162,7 +234,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: &a5
+      tags: &a7
         - Presentation IATP
       security:
         - oauth2:
@@ -200,7 +272,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a5
+      tags: *a7
   /api/iatp/verifier/verify:
     post:
       operationId: IatpVerifierController_verify
@@ -243,7 +315,7 @@ paths:
                 oneOf:
                   - $ref: "#/components/schemas/AuthenticatedUserDto"
                   - $ref: "#/components/schemas/UnauthenticatedUserDto"
-      tags: &a6
+      tags: &a8
         - Authentication
   /api/auth/login:
     get:
@@ -254,7 +326,7 @@ paths:
       responses:
         "302":
           description: ""
-      tags: *a6
+      tags: *a8
   /api/auth/logout:
     get:
       operationId: AuthController_logout
@@ -265,7 +337,7 @@ paths:
       responses:
         "302":
           description: ""
-      tags: *a6
+      tags: *a8
   /api/auth/callback:
     get:
       operationId: AuthController_callback
@@ -276,7 +348,7 @@ paths:
       responses:
         "302":
           description: ""
-      tags: *a6
+      tags: *a8
   /api/credentials:
     get:
       operationId: CredentialsController_getCredentials
@@ -298,7 +370,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: &a7
+      tags: &a9
         - Credentials
   /api/credentials/{credentialId}:
     get:
@@ -324,7 +396,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a7
+      tags: *a9
   /api/management/credentials:
     get:
       operationId: CredentialsManagementController_getCredentials
@@ -347,10 +419,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: &a8
+      tags: &a10
         - Management Credentials
-      security: &a10
-        - &a9
+      security: &a12
+        - &a11
           oauth2:
             - wallet_view_all_credentials
             - wallet_view_own_credentials
@@ -390,9 +462,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a8
+      tags: *a10
       security:
-        - *a9
+        - *a11
         - oauth2:
             - wallet_manage_all_credentials
             - wallet_manage_own_credentials
@@ -417,8 +489,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a8
-      security: *a10
+      tags: *a10
+      security: *a12
   /api/management/credentials/config:
     get:
       operationId: CredentialsManagementController_getConfig
@@ -439,8 +511,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a8
-      security: *a10
+      tags: *a10
+      security: *a12
   /api/management/credentials/import:
     post:
       operationId: CredentialsManagementController_importCredential
@@ -472,9 +544,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a8
+      tags: *a10
       security:
-        - *a9
+        - *a11
         - oauth2:
             - wallet_manage_all_credentials
             - wallet_manage_own_credentials
@@ -508,9 +580,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a8
+      tags: *a10
       security:
-        - *a9
+        - *a11
         - oauth2:
             - wallet_manage_all_credentials
             - wallet_manage_own_credentials
@@ -550,9 +622,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a8
+      tags: *a10
       security:
-        - *a9
+        - *a11
         - oauth2:
             - wallet_manage_all_credentials
             - wallet_manage_own_credentials
@@ -579,9 +651,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a8
+      tags: *a10
       security:
-        - *a9
+        - *a11
         - oauth2:
             - wallet_manage_all_credentials
             - wallet_manage_own_credentials
@@ -617,9 +689,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: &a11
+      tags: &a13
         - Management Gaia-X Credentials
-      security: &a12
+      security: &a14
         - oauth2:
             - wallet_manage_all_credentials
             - wallet_manage_own_credentials
@@ -655,8 +727,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a11
-      security: *a12
+      tags: *a13
+      security: *a14
   /keys/{id}:
     get:
       operationId: KeysController_getCaChain
@@ -701,9 +773,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: &a13
+      tags: &a15
         - Management Keys
-      security: &a14
+      security: &a16
         - oauth2:
             - wallet_manage_keys
     post:
@@ -742,8 +814,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a13
-      security: *a14
+      tags: *a15
+      security: *a16
   /api/management/keys/{keyId}:
     get:
       operationId: KeysManagementController_getKey
@@ -774,8 +846,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a13
-      security: *a14
+      tags: *a15
+      security: *a16
     delete:
       operationId: KeysManagementController_deleteKey
       summary: Delete key
@@ -801,8 +873,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a13
-      security: *a14
+      tags: *a15
+      security: *a16
   /api/management/keys/{keyId}/default:
     put:
       operationId: KeysManagementController_setDefaultKey
@@ -830,8 +902,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a13
-      security: *a14
+      tags: *a15
+      security: *a16
   /api/management/signature/sign:
     post:
       operationId: SignatureManagementController_sign
@@ -863,9 +935,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: &a15
+      tags: &a17
         - Management Signatures
-      security: &a16
+      security: &a18
         - oauth2:
             - wallet_use_keys
             - wallet_manage_keys
@@ -900,8 +972,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a15
-      security: *a16
+      tags: *a17
+      security: *a18
   /api/management/did:
     get:
       operationId: DIDManagementController_getDidDocument
@@ -921,9 +993,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: &a17
+      tags: &a19
         - Management DID
-      security: &a18
+      security: &a20
         - oauth2:
             - wallet_view_did
   /api/management/did/resolve/{didId}:
@@ -950,8 +1022,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a17
-      security: *a18
+      tags: *a19
+      security: *a20
   /api/management/did/services:
     get:
       operationId: DIDManagementController_getServices
@@ -973,8 +1045,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a17
-      security: *a18
+      tags: *a19
+      security: *a20
     post:
       operationId: DIDManagementController_addService
       summary: Add DID service
@@ -1005,8 +1077,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a17
-      security: *a18
+      tags: *a19
+      security: *a20
   /api/management/did/services/{id}:
     put:
       operationId: DIDManagementController_updateService
@@ -1043,8 +1115,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a17
-      security: *a18
+      tags: *a19
+      security: *a20
     delete:
       operationId: DIDManagementController_deleteService
       summary: Delete DID service
@@ -1070,8 +1142,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a17
-      security: *a18
+      tags: *a19
+      security: *a20
   /.well-known/did.json:
     get:
       operationId: DIDWebController_getDid
@@ -1125,9 +1197,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: &a19
+      tags: &a21
         - Management Contexts
-      security: &a20
+      security: &a22
         - oauth2:
             - wallet_view_did
     post:
@@ -1166,8 +1238,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a19
-      security: *a20
+      tags: *a21
+      security: *a22
   /api/management/contexts/{id}:
     put:
       operationId: ContextManagementController_updateContext
@@ -1210,8 +1282,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a19
-      security: *a20
+      tags: *a21
+      security: *a22
     delete:
       operationId: ContextManagementController_deleteContext
       summary: Delete context
@@ -1237,8 +1309,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a19
-      security: *a20
+      tags: *a21
+      security: *a22
   /api/oid4vci/holder/request:
     post:
       operationId: HolderController_requestCredential
@@ -1281,7 +1353,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/CredentialIssuerMetadataDto"
-      tags: &a21
+      tags: &a23
         - OpenID 4 Verifiable Credential Issuance
   /oid4vci/token:
     post:
@@ -1309,7 +1381,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a21
+      tags: *a23
       security:
         - bearer: []
   /oid4vci/credential:
@@ -1339,7 +1411,7 @@ paths:
                 oneOf:
                   - $ref: "#/components/schemas/ImmediateCredentialResponseDto"
                   - $ref: "#/components/schemas/DeferredCredentialResponseDto"
-      tags: *a21
+      tags: *a23
       security:
         - bearer: []
   /api/oid4vci/offer:
@@ -1363,7 +1435,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a21
+      tags: *a23
       security:
         - oauth2:
             - wallet_manage_all_credentials
@@ -1391,7 +1463,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a21
+      tags: *a23
       security:
         - oauth2:
             - wallet_manage_all_credentials
@@ -1420,7 +1492,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a21
+      tags: *a23
       security:
         - oauth2:
             - wallet_manage_all_credentials
@@ -1510,6 +1582,101 @@ components:
         - name
         - status
         - code
+    DatabaseStatusDto:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+    MemoryUsageDto:
+      type: object
+      properties:
+        does_zap_garbage:
+          type: number
+        external_memory:
+          type: number
+        heap_size_limit:
+          type: number
+        malloced_memory:
+          type: number
+        number_of_detached_contexts:
+          type: number
+        number_of_native_contexts:
+          type: number
+        peak_malloced_memory:
+          type: number
+        total_available_size:
+          type: number
+        total_global_handles_size:
+          type: number
+        total_heap_size:
+          type: number
+        total_heap_size_executable:
+          type: number
+        total_physical_size:
+          type: number
+        used_global_handles_size:
+          type: number
+        used_heap_size:
+          type: number
+      required:
+        - does_zap_garbage
+        - external_memory
+        - heap_size_limit
+        - malloced_memory
+        - number_of_detached_contexts
+        - number_of_native_contexts
+        - peak_malloced_memory
+        - total_available_size
+        - total_global_handles_size
+        - total_heap_size
+        - total_heap_size_executable
+        - total_physical_size
+        - used_global_handles_size
+        - used_heap_size
+    IssuanceStatusDto:
+      type: object
+      properties:
+        issued:
+          type: number
+        open:
+          type: number
+      required:
+        - issued
+        - open
+    CredentialStatusDto:
+      type: object
+      properties:
+        selfSigned:
+          type: number
+        thirdParty:
+          type: number
+      required:
+        - selfSigned
+        - thirdParty
+    StatusDto:
+      type: object
+      properties:
+        database:
+          $ref: "#/components/schemas/DatabaseStatusDto"
+        uptime:
+          type: number
+        memoryUsage:
+          $ref: "#/components/schemas/MemoryUsageDto"
+        issuance:
+          $ref: "#/components/schemas/IssuanceStatusDto"
+        credentials:
+          $ref: "#/components/schemas/CredentialStatusDto"
+        keys:
+          type: number
+      required:
+        - database
+        - uptime
+        - memoryUsage
+        - issuance
+        - credentials
+        - keys
     VerifiablePresentationJwtDto:
       type: object
       properties:
@@ -1536,20 +1703,20 @@ components:
           type: string
         domain:
           oneOf:
-            - &a22
+            - &a24
               type: string
             - type: array
-              items: *a22
+              items: *a24
         challenge:
           type: string
         proofValue:
           type: string
         previousProof:
           oneOf:
-            - &a23
+            - &a25
               type: string
             - type: array
-              items: *a23
+              items: *a25
         nonce:
           type: string
       required:
@@ -1588,12 +1755,12 @@ components:
           type: object
         proof:
           oneOf:
-            - &a24
+            - &a26
               oneOf:
                 - $ref: "#/components/schemas/DataIntegrityProofDto"
                 - $ref: "#/components/schemas/JsonWebSignature2020Dto"
             - type: array
-              items: *a24
+              items: *a26
       required:
         - "@context"
         - type
@@ -1781,10 +1948,10 @@ components:
           type: string
         verifiableCredential:
           oneOf:
-            - &a25
+            - &a27
               $ref: "#/components/schemas/VerifiableCredentialDto"
             - type: array
-              items: *a25
+              items: *a27
       required:
         - "@context"
         - type
@@ -2082,10 +2249,10 @@ components:
           type: string
         serviceEndpoint:
           oneOf:
-            - &a26
+            - &a28
               type: string
             - type: array
-              items: *a26
+              items: *a28
       required:
         - id
         - type
@@ -2095,10 +2262,10 @@ components:
       properties:
         "@context":
           oneOf:
-            - &a27
+            - &a29
               type: string
             - type: array
-              items: *a27
+              items: *a29
         id:
           type: string
         alsoKnownAs:
@@ -2107,10 +2274,10 @@ components:
             type: string
         controller:
           oneOf:
-            - &a28
+            - &a30
               type: string
             - type: array
-              items: *a28
+              items: *a30
         verificationMethod:
           type: array
           items:

@@ -13,6 +13,10 @@ import { KeysModule } from "./keys/keys.module.js";
 import { PresentationModule } from "./presentation/presentation.module.js";
 import { ConfigController } from "./config.controller.js";
 import { ContextModule } from "./contexts/context.module.js";
+import { Credentials, KeyMaterials } from "./model/credentials.dao.js";
+import { CredentialIssuance } from "./model/issuance.dao.js";
+import { TerminusModule } from "@nestjs/terminus";
+import { StatusController } from "./status.controller.js";
 
 const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
   ? [
@@ -34,6 +38,7 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
       migrations: [`dist/migrations/*-${config.db.type}{.ts,.js}`],
       migrationsRun: !config.db.synchronize
     }),
+    TypeOrmModule.forFeature([CredentialIssuance, Credentials, KeyMaterials]),
     PresentationModule.register(config.presentation),
     AuthModule,
     ContextModule,
@@ -41,9 +46,10 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
     DidModule,
     KeysModule,
     IssuanceModule,
-    ...embeddedFrontend
+    ...embeddedFrontend,
+    TerminusModule
   ],
-  controllers: [HealthController, ConfigController],
+  controllers: [HealthController, ConfigController, StatusController],
   exports: [
     AuthModule,
     CredentialsModule,

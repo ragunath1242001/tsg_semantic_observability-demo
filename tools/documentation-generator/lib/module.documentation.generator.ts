@@ -6,7 +6,9 @@ export class ModuleDocumentationGenerator {
     appName: string,
     modules: { [className: string]: ModuleStructure }
   ) {
-    let markdown = `# ${appName.replace("-", " ").replace(/\b\w/g, (l: string) => l.toUpperCase())}\n`;
+    let markdown = `# ${appName
+      .replace("-", " ")
+      .replace(/\b\w/g, (l: string) => l.toUpperCase())}\n`;
     markdown += `This document outlines the modules and their dependencies for the ${appName} application.\n`;
 
     const moduleList: ModuleStructure[] = Object.values(modules);
