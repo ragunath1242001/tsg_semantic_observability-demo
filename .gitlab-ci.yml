@@ -3,6 +3,7 @@ stages:
   - test
   - package
   - release
+  - check
 
 variables:
   RULES_CHANGES_PATH: "**/*"
@@ -27,6 +28,16 @@ prettier:
     - npx prettier@^3.4.1 --check .
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+
+renovate:
+  stage: check
+  image: ghcr.io/renovatebot/renovate:39.33.0
+  script:
+    - renovate
+  rules:
+    - if: '$RENOVATE_CHECK == "true" && $CI_COMMIT_BRANCH == "main"'
+  variables:
+    RENOVATE_CONFIG_FILE: .gitlab/renovate-config.js
 
 release:
   image: node:22
