@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   platform: "gitlab",
   endpoint: process.env.CI_API_V4_URL,
   token: process.env.RENOVATE_TOKEN,
