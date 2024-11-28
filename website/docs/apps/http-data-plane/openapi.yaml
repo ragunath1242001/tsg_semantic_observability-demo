@@ -2,9 +2,8 @@ openapi: 3.0.0
 paths:
   /api/catalog:
     get:
-      operationId: DataPlaneController_getCatalog
-      summary: Get catalog
       description: Get catalog, currently not implemented.
+      operationId: DataPlaneController_getCatalog
       parameters: []
       responses:
         "403":
@@ -15,30 +14,30 @@ paths:
                 $ref: "#/components/schemas/ErrorDto"
         "501":
           description: ""
-      tags: &a1
-        - Data Plane
-      security: &a2
+      security: &a1
         - oauth2:
             - controlplane_dataplane
+      summary: Get catalog
+      tags: &a2
+        - Data Plane
   /health:
     get:
-      operationId: DataPlaneController_healthCheck
-      summary: Health check
       description: Retrieves the current health of the control plane. If the control
         plane is running it always returns an empty 200 OK
+      operationId: DataPlaneController_healthCheck
       parameters: []
       responses:
         "200":
           description: ""
         "502":
           description: ""
-      tags: *a1
-      security: *a2
+      security: *a1
+      summary: Health check
+      tags: *a2
   /api/transfers/request/{role}:
     post:
-      operationId: DataPlaneController_requestTransfer
-      summary: Request Transfer
       description: Requests a transfer from control plane to data plane.
+      operationId: DataPlaneController_requestTransfer
       parameters:
         - name: role
           required: true
@@ -79,12 +78,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a1
-      security: *a2
+      security: *a1
+      summary: Request Transfer
+      tags: *a2
   /api/transfers/{id}/start:
     post:
       operationId: DataPlaneController_startTransfer
-      summary: Start transfer process
       parameters:
         - name: id
           required: true
@@ -101,12 +100,12 @@ paths:
       responses:
         "202":
           description: Transfer started successfully
-      tags: *a1
-      security: *a2
+      security: *a1
+      summary: Start transfer process
+      tags: *a2
   /api/transfers/{id}/complete:
     post:
       operationId: DataPlaneController_completeTransfer
-      summary: Complete transfer process
       parameters:
         - name: id
           required: true
@@ -123,12 +122,12 @@ paths:
       responses:
         "202":
           description: Transfer completed successfully
-      tags: *a1
-      security: *a2
+      security: *a1
+      summary: Complete transfer process
+      tags: *a2
   /api/transfers/{id}/terminate:
     post:
       operationId: DataPlaneController_terminateTransfer
-      summary: Terminate transfer process
       parameters:
         - name: id
           required: true
@@ -145,12 +144,12 @@ paths:
       responses:
         "202":
           description: Transfer terminated successfully
-      tags: *a1
-      security: *a2
+      security: *a1
+      summary: Terminate transfer process
+      tags: *a2
   /api/transfers/{id}/suspend:
     post:
       operationId: DataPlaneController_suspendTransfer
-      summary: Suspend transfer process
       parameters:
         - name: id
           required: true
@@ -167,14 +166,14 @@ paths:
       responses:
         "202":
           description: Transfer suspended successfully
-      tags: *a1
-      security: *a2
+      security: *a1
+      summary: Suspend transfer process
+      tags: *a2
   /api/management/state:
     get:
-      operationId: DataPlaneManagementController_getState
-      summary: Get Data Plane state
       description: Get the state of the data plane, consisting of the id, details and
         the dataset.
+      operationId: DataPlaneManagementController_getState
       parameters: []
       responses:
         "200":
@@ -189,16 +188,16 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: &a3
-        - Data Plane Management
-      security: &a4
+      security: &a3
         - oauth2:
             - controlplane_dataplane
+      summary: Get Data Plane state
+      tags: &a4
+        - Data Plane Management
   /api/management/catalog:
     get:
-      operationId: DataPlaneManagementController_getCatalog
-      summary: Get catalog
       description: Get the current catalog from the Control Plane.
+      operationId: DataPlaneManagementController_getCatalog
       parameters: []
       responses:
         "200":
@@ -213,14 +212,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a3
-      security: *a4
+      security: *a3
+      summary: Get catalog
+      tags: *a4
   /api/management/refresh:
     post:
-      operationId: DataPlaneManagementController_refreshRegistration
-      summary: (Re)register data plane
       description: Use this endpoint to (re)register your data plane. Currently it
         will register with defaults from the config.
+      operationId: DataPlaneManagementController_refreshRegistration
       parameters: []
       responses:
         "202":
@@ -231,13 +230,13 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a3
-      security: *a4
+      security: *a3
+      summary: (Re)register data plane
+      tags: *a4
   /api/management/dataset:
     get:
-      operationId: DataPlaneManagementController_getDatasetConfig
-      summary: Get dataset
       description: Get the current dataset configuration.
+      operationId: DataPlaneManagementController_getDatasetConfig
       parameters: []
       responses:
         "200":
@@ -252,12 +251,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a3
-      security: *a4
+      security: *a3
+      summary: Get dataset
+      tags: *a4
     put:
-      operationId: DataPlaneManagementController_updateDatasetConfig
-      summary: Update dataset
       description: Update the current dataset configuration.
+      operationId: DataPlaneManagementController_updateDatasetConfig
       parameters: []
       requestBody:
         required: true
@@ -278,12 +277,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a3
-      security: *a4
+      security: *a3
+      summary: Update dataset
+      tags: *a4
   /api/management/transfers:
     get:
       operationId: DataPlaneManagementController_getTransfers
-      summary: Get all transfers
       parameters: []
       responses:
         "200":
@@ -300,12 +299,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a3
-      security: *a4
+      security: *a3
+      summary: Get all transfers
+      tags: *a4
   /api/management/transfers/{id}:
     get:
       operationId: DataPlaneManagementController_getTransfer
-      summary: Get transfer by ID
       parameters:
         - name: id
           required: true
@@ -326,12 +325,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a3
-      security: *a4
+      security: *a3
+      summary: Get transfer by ID
+      tags: *a4
   /api/management/transfers/{id}/metadata:
     get:
       operationId: DataPlaneManagementController_getMetadata
-      summary: Get metadata of transfer by ID
       parameters:
         - name: id
           required: true
@@ -352,12 +351,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a3
-      security: *a4
+      security: *a3
+      summary: Get metadata of transfer by ID
+      tags: *a4
   /api/management/transfers/{id}/start:
     post:
       operationId: DataPlaneManagementController_startTransfer
-      summary: Start a transfer by ID
       parameters:
         - name: id
           required: true
@@ -374,12 +373,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a3
-      security: *a4
+      security: *a3
+      summary: Start a transfer by ID
+      tags: *a4
   /api/management/transfers/{id}/complete:
     post:
       operationId: DataPlaneManagementController_completeTransfer
-      summary: Complete a transfer by ID
       parameters:
         - name: id
           required: true
@@ -396,12 +395,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a3
-      security: *a4
+      security: *a3
+      summary: Complete a transfer by ID
+      tags: *a4
   /api/management/transfers/{id}/terminate:
     post:
       operationId: DataPlaneManagementController_terminateTransfer
-      summary: Terminate a transfer by ID
       parameters:
         - name: id
           required: true
@@ -428,12 +427,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a3
-      security: *a4
+      security: *a3
+      summary: Terminate a transfer by ID
+      tags: *a4
   /api/management/transfers/{id}/suspend:
     post:
       operationId: DataPlaneManagementController_suspendTransfer
-      summary: Suspend a transfer by ID
       parameters:
         - name: id
           required: true
@@ -455,14 +454,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a3
-      security: *a4
+      security: *a3
+      summary: Suspend a transfer by ID
+      tags: *a4
   /api/management/transfers/{id}/execute/{path}:
     get:
+      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy. "
       operationId: DataPlaneManagementController_executeTransfer_get
-      summary: Proxy a request
-      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
-        proxy. "
       parameters:
         - name: id
           required: true
@@ -483,13 +482,13 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a3
-      security: *a4
+      security: *a3
+      summary: Proxy a request
+      tags: *a4
     post:
+      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy. "
       operationId: DataPlaneManagementController_executeTransfer_post
-      summary: Proxy a request
-      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
-        proxy. "
       parameters:
         - name: id
           required: true
@@ -510,13 +509,13 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a3
-      security: *a4
+      security: *a3
+      summary: Proxy a request
+      tags: *a4
     put:
+      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy. "
       operationId: DataPlaneManagementController_executeTransfer_put
-      summary: Proxy a request
-      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
-        proxy. "
       parameters:
         - name: id
           required: true
@@ -537,13 +536,13 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a3
-      security: *a4
+      security: *a3
+      summary: Proxy a request
+      tags: *a4
     delete:
+      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy. "
       operationId: DataPlaneManagementController_executeTransfer_delete
-      summary: Proxy a request
-      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
-        proxy. "
       parameters:
         - name: id
           required: true
@@ -564,13 +563,13 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a3
-      security: *a4
+      security: *a3
+      summary: Proxy a request
+      tags: *a4
     patch:
+      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy. "
       operationId: DataPlaneManagementController_executeTransfer_patch
-      summary: Proxy a request
-      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
-        proxy. "
       parameters:
         - name: id
           required: true
@@ -591,13 +590,13 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a3
-      security: *a4
+      security: *a3
+      summary: Proxy a request
+      tags: *a4
     options:
+      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy. "
       operationId: DataPlaneManagementController_executeTransfer_options
-      summary: Proxy a request
-      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
-        proxy. "
       parameters:
         - name: id
           required: true
@@ -618,13 +617,13 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a3
-      security: *a4
+      security: *a3
+      summary: Proxy a request
+      tags: *a4
     head:
+      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy. "
       operationId: DataPlaneManagementController_executeTransfer_head
-      summary: Proxy a request
-      description: "This endpoint is used if the HTTP Data Plane needs to serve as a
-        proxy. "
       parameters:
         - name: id
           required: true
@@ -645,13 +644,13 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a3
-      security: *a4
+      security: *a3
+      summary: Proxy a request
+      tags: *a4
     search:
-      operationId: DataPlaneManagementController_executeTransfer_search
-      summary: Proxy a request
       description: "This endpoint is used if the HTTP Data Plane needs to serve as a
         proxy. "
+      operationId: DataPlaneManagementController_executeTransfer_search
       parameters:
         - name: id
           required: true
@@ -672,15 +671,15 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a3
-      security: *a4
+      security: *a3
+      summary: Proxy a request
+      tags: *a4
   /api/management/execute/{path}:
     get:
+      description: This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy and the transfer hasn't been created yet. Used for automatic
+        handling of the DSP.
       operationId: DataPlaneManagementController_executeTransferWithoutId_get
-      summary: Proxy a request without transfer ID
-      description: This endpoint is used if the HTTP Data Plane needs to serve as a
-        proxy and the transfer hasn't been created yet. Used for automatic
-        handling of the DSP.
       parameters:
         - name: path
           required: true
@@ -710,14 +709,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a3
-      security: *a4
+      security: *a3
+      summary: Proxy a request without transfer ID
+      tags: *a4
     post:
+      description: This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy and the transfer hasn't been created yet. Used for automatic
+        handling of the DSP.
       operationId: DataPlaneManagementController_executeTransferWithoutId_post
-      summary: Proxy a request without transfer ID
-      description: This endpoint is used if the HTTP Data Plane needs to serve as a
-        proxy and the transfer hasn't been created yet. Used for automatic
-        handling of the DSP.
       parameters:
         - name: path
           required: true
@@ -747,14 +746,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a3
-      security: *a4
+      security: *a3
+      summary: Proxy a request without transfer ID
+      tags: *a4
     put:
+      description: This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy and the transfer hasn't been created yet. Used for automatic
+        handling of the DSP.
       operationId: DataPlaneManagementController_executeTransferWithoutId_put
-      summary: Proxy a request without transfer ID
-      description: This endpoint is used if the HTTP Data Plane needs to serve as a
-        proxy and the transfer hasn't been created yet. Used for automatic
-        handling of the DSP.
       parameters:
         - name: path
           required: true
@@ -784,14 +783,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a3
-      security: *a4
+      security: *a3
+      summary: Proxy a request without transfer ID
+      tags: *a4
     delete:
+      description: This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy and the transfer hasn't been created yet. Used for automatic
+        handling of the DSP.
       operationId: DataPlaneManagementController_executeTransferWithoutId_delete
-      summary: Proxy a request without transfer ID
-      description: This endpoint is used if the HTTP Data Plane needs to serve as a
-        proxy and the transfer hasn't been created yet. Used for automatic
-        handling of the DSP.
       parameters:
         - name: path
           required: true
@@ -821,14 +820,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a3
-      security: *a4
+      security: *a3
+      summary: Proxy a request without transfer ID
+      tags: *a4
     patch:
+      description: This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy and the transfer hasn't been created yet. Used for automatic
+        handling of the DSP.
       operationId: DataPlaneManagementController_executeTransferWithoutId_patch
-      summary: Proxy a request without transfer ID
-      description: This endpoint is used if the HTTP Data Plane needs to serve as a
-        proxy and the transfer hasn't been created yet. Used for automatic
-        handling of the DSP.
       parameters:
         - name: path
           required: true
@@ -858,14 +857,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a3
-      security: *a4
+      security: *a3
+      summary: Proxy a request without transfer ID
+      tags: *a4
     options:
+      description: This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy and the transfer hasn't been created yet. Used for automatic
+        handling of the DSP.
       operationId: DataPlaneManagementController_executeTransferWithoutId_options
-      summary: Proxy a request without transfer ID
-      description: This endpoint is used if the HTTP Data Plane needs to serve as a
-        proxy and the transfer hasn't been created yet. Used for automatic
-        handling of the DSP.
       parameters:
         - name: path
           required: true
@@ -895,14 +894,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a3
-      security: *a4
+      security: *a3
+      summary: Proxy a request without transfer ID
+      tags: *a4
     head:
+      description: This endpoint is used if the HTTP Data Plane needs to serve as a
+        proxy and the transfer hasn't been created yet. Used for automatic
+        handling of the DSP.
       operationId: DataPlaneManagementController_executeTransferWithoutId_head
-      summary: Proxy a request without transfer ID
-      description: This endpoint is used if the HTTP Data Plane needs to serve as a
-        proxy and the transfer hasn't been created yet. Used for automatic
-        handling of the DSP.
       parameters:
         - name: path
           required: true
@@ -932,14 +931,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a3
-      security: *a4
+      security: *a3
+      summary: Proxy a request without transfer ID
+      tags: *a4
     search:
-      operationId: DataPlaneManagementController_executeTransferWithoutId_search
-      summary: Proxy a request without transfer ID
       description: This endpoint is used if the HTTP Data Plane needs to serve as a
         proxy and the transfer hasn't been created yet. Used for automatic
         handling of the DSP.
+      operationId: DataPlaneManagementController_executeTransferWithoutId_search
       parameters:
         - name: path
           required: true
@@ -969,14 +968,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a3
-      security: *a4
+      security: *a3
+      summary: Proxy a request without transfer ID
+      tags: *a4
   /api/proxy/{id}/{path}:
     get:
-      operationId: ProxyController_getData_get
-      summary: Proxy a request
       description: "This endpoint is used if the HTTP Data Plane needs to serve as a
         proxy. "
+      operationId: ProxyController_getData_get
       parameters:
         - name: id
           required: true
@@ -997,13 +996,13 @@ paths:
       responses:
         "200":
           description: ""
+      summary: Proxy a request
       tags: &a5
         - Proxy
     post:
-      operationId: ProxyController_getData_post
-      summary: Proxy a request
       description: "This endpoint is used if the HTTP Data Plane needs to serve as a
         proxy. "
+      operationId: ProxyController_getData_post
       parameters:
         - name: id
           required: true
@@ -1024,12 +1023,12 @@ paths:
       responses:
         "200":
           description: ""
+      summary: Proxy a request
       tags: *a5
     put:
-      operationId: ProxyController_getData_put
-      summary: Proxy a request
       description: "This endpoint is used if the HTTP Data Plane needs to serve as a
         proxy. "
+      operationId: ProxyController_getData_put
       parameters:
         - name: id
           required: true
@@ -1050,12 +1049,12 @@ paths:
       responses:
         "200":
           description: ""
+      summary: Proxy a request
       tags: *a5
     delete:
-      operationId: ProxyController_getData_delete
-      summary: Proxy a request
       description: "This endpoint is used if the HTTP Data Plane needs to serve as a
         proxy. "
+      operationId: ProxyController_getData_delete
       parameters:
         - name: id
           required: true
@@ -1076,12 +1075,12 @@ paths:
       responses:
         "200":
           description: ""
+      summary: Proxy a request
       tags: *a5
     patch:
-      operationId: ProxyController_getData_patch
-      summary: Proxy a request
       description: "This endpoint is used if the HTTP Data Plane needs to serve as a
         proxy. "
+      operationId: ProxyController_getData_patch
       parameters:
         - name: id
           required: true
@@ -1102,12 +1101,12 @@ paths:
       responses:
         "200":
           description: ""
+      summary: Proxy a request
       tags: *a5
     options:
-      operationId: ProxyController_getData_options
-      summary: Proxy a request
       description: "This endpoint is used if the HTTP Data Plane needs to serve as a
         proxy. "
+      operationId: ProxyController_getData_options
       parameters:
         - name: id
           required: true
@@ -1128,12 +1127,12 @@ paths:
       responses:
         "200":
           description: ""
+      summary: Proxy a request
       tags: *a5
     head:
-      operationId: ProxyController_getData_head
-      summary: Proxy a request
       description: "This endpoint is used if the HTTP Data Plane needs to serve as a
         proxy. "
+      operationId: ProxyController_getData_head
       parameters:
         - name: id
           required: true
@@ -1154,12 +1153,12 @@ paths:
       responses:
         "200":
           description: ""
+      summary: Proxy a request
       tags: *a5
     search:
-      operationId: ProxyController_getData_search
-      summary: Proxy a request
       description: "This endpoint is used if the HTTP Data Plane needs to serve as a
         proxy. "
+      operationId: ProxyController_getData_search
       parameters:
         - name: id
           required: true
@@ -1180,14 +1179,14 @@ paths:
       responses:
         "200":
           description: ""
+      summary: Proxy a request
       tags: *a5
   /api/auth/user:
     get:
-      operationId: AuthController_getUser
-      summary: Retrieve current user status
       description: Retrieves current user state, whether someone is logged in or not a
         200 result is provided. This is used in the frontend to determine
         whether certain aspects should be shown.
+      operationId: AuthController_getUser
       parameters: []
       responses:
         "200":
@@ -1198,51 +1197,51 @@ paths:
                 oneOf:
                   - $ref: "#/components/schemas/AuthenticatedUserDto"
                   - $ref: "#/components/schemas/UnauthenticatedUserDto"
+      summary: Retrieve current user status
       tags: &a6
         - Authentication
   /api/auth/login:
     get:
-      operationId: AuthController_login
-      summary: Login redirect
       description: Redirects user to the correct authorization server
+      operationId: AuthController_login
       parameters: []
       responses:
         "200":
           description: ""
+      summary: Login redirect
       tags: *a6
   /api/auth/logout:
     get:
-      operationId: AuthController_logout
-      summary: Logout redirect
       description: Removes session information and redirects user the root of the
         frontend (`auth.redirectURL`)
+      operationId: AuthController_logout
       parameters: []
       responses:
         "302":
           description: ""
+      summary: Logout redirect
       tags: *a6
   /api/auth/callback:
     get:
-      operationId: AuthController_callback
-      summary: Login callback
       description: Users are redirected from the authorization server to this endpoint
         which will redirect them to the frontend (`auth.redirectURL`)
+      operationId: AuthController_callback
       parameters: []
       responses:
         "302":
           description: ""
+      summary: Login callback
       tags: *a6
   /api/management/logging/ingress:
     get:
       operationId: LoggingController_getIngressLogs
-      summary: Get ingress logs
       parameters:
         - name: order
           required: false
           in: query
           schema:
             default: DESC
-            enum: &a7
+            enum:
               - ASC
               - DESC
             type: string
@@ -1266,15 +1265,12 @@ paths:
           in: query
           schema:
             default: DESC
-            enum: *a7
-            type: string
         - required: false
           name: page
           in: query
           schema:
             minimum: 1
             default: 1
-            type: number
         - required: false
           name: take
           in: query
@@ -1282,7 +1278,6 @@ paths:
             minimum: 1
             maximum: 50
             default: 10
-            type: number
       responses:
         "200":
           description: ""
@@ -1290,19 +1285,19 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PageDto"
-      tags: &a9
+      summary: Get ingress logs
+      tags: &a7
         - Logging
   /api/management/logging/egress:
     get:
       operationId: LoggingController_getEgressLogs
-      summary: Get egress logs
       parameters:
         - name: order
           required: false
           in: query
           schema:
             default: DESC
-            enum: &a8
+            enum:
               - ASC
               - DESC
             type: string
@@ -1326,15 +1321,12 @@ paths:
           in: query
           schema:
             default: DESC
-            enum: *a8
-            type: string
         - required: false
           name: page
           in: query
           schema:
             minimum: 1
             default: 1
-            type: number
         - required: false
           name: take
           in: query
@@ -1342,7 +1334,6 @@ paths:
             minimum: 1
             maximum: 50
             default: 10
-            type: number
       responses:
         "200":
           description: ""
@@ -1350,7 +1341,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PageDto"
-      tags: *a9
+      summary: Get egress logs
+      tags: *a7
 info:
   title: TSG HTTP Data Plane
   description: This OpenAPI specification shows the endpoints of the HTTP Data Plane.

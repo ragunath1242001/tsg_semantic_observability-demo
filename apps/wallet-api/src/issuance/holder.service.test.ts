@@ -118,7 +118,6 @@ describe("Holder service", () => {
           type: "JsonWebKey2020",
           controller: "did:web:example.com",
           publicKeyJwk: {
-            kty: "OKP",
             alg: "EdDSA",
             ...(await exportJWK(exampleKey.publicKey))
           }

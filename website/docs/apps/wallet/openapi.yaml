@@ -2,10 +2,9 @@ openapi: 3.0.0
 paths:
   /health:
     get:
-      operationId: HealthController_getHealth
-      summary: Health check
       description: Retrieves the current health of the wallet. If the wallet is
         running it always returns an empty 200 OK
+      operationId: HealthController_getHealth
       parameters: []
       responses:
         "200":
@@ -64,13 +63,13 @@ paths:
                         status:
                           type: string
                       additionalProperties: true
+      summary: Health check
       tags:
         - Health
   /api/settings:
     get:
-      operationId: ConfigController_getSettings
-      summary: Retrieve settings
       description: Retrieve dynamic settings for this wallet
+      operationId: ConfigController_getSettings
       parameters: []
       responses:
         "200":
@@ -85,16 +84,16 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: &a3
-        - Settings
-      security: &a4
+      security: &a3
         - oauth2:
             - wallet_issue_credentials
+      summary: Retrieve settings
+      tags: &a4
+        - Settings
   /api/settings/update:
     post:
-      operationId: ConfigController_updateSettings
-      summary: Update settings
       description: Update the dynamic settings for this wallet
+      operationId: ConfigController_updateSettings
       parameters: []
       requestBody:
         required: true
@@ -121,14 +120,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a3
-      security: *a4
+      security: *a3
+      summary: Update settings
+      tags: *a4
   /api/status:
     get:
-      operationId: StatusController_getStatus
-      summary: Appplication status
       description: Retrieves the current health of the control plane. With additional
         status information
+      operationId: StatusController_getStatus
       parameters: []
       requestBody:
         required: true
@@ -141,14 +140,14 @@ paths:
           description: ""
         "502":
           description: ""
+      summary: Appplication status
       tags:
         - Status
   /api/presentations:
     get:
-      operationId: DirectPresentationController_createPresentation
-      summary: Request a presentation
       description: Generates a Veriable Presentation in Jwt or JSON-LD format for one
         of the credentials in this wallet
+      operationId: DirectPresentationController_createPresentation
       parameters:
         - name: credentialId
           required: true
@@ -174,17 +173,17 @@ paths:
                 oneOf:
                   - $ref: "#/components/schemas/VerifiablePresentationJwtDto"
                   - $ref: "#/components/schemas/VerifiablePresentationJsonLdDto"
-      tags: &a5
-        - Presentation Direct
-      security: &a6
+      security: &a5
         - oauth2:
             - wallet_view_presentations
+      summary: Request a presentation
+      tags: &a6
+        - Presentation Direct
   /api/presentations/validate:
     post:
-      operationId: DirectPresentationController_validatePresentation
-      summary: Validate presentation
       description: Validates a Jwt-based Verifiable Presentation according to a fixed
         set of requirements
+      operationId: DirectPresentationController_validatePresentation
       parameters: []
       requestBody:
         required: true
@@ -199,14 +198,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PresentationValidationDto"
-      tags: *a5
-      security: *a6
+      security: *a5
+      summary: Validate presentation
+      tags: *a6
   /api/iatp/holder/token:
     get:
-      operationId: IatpHolderController_createSIToken
-      summary: Request a SIOP token
       description: Generates a SIOP token for the provided audience to allow it to
         request presentations
+      operationId: IatpHolderController_createSIToken
       parameters:
         - name: audience
           required: true
@@ -234,16 +233,16 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: &a7
-        - Presentation IATP
       security:
         - oauth2:
             - wallet_view_presentations
+      summary: Request a SIOP token
+      tags: &a7
+        - Presentation IATP
   /api/iatp/holder/presentation:
     get:
-      operationId: IatpHolderController_getPresentation
-      summary: Retrieve presentation
       description: Request a presentation with a SIOP-token and a presentation definition
+      operationId: IatpHolderController_getPresentation
       parameters:
         - name: presentation_definition
           required: true
@@ -252,8 +251,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PresentationResponseDto"
-          schema:
-            type: string
         - name: Authorization
           required: true
           in: header
@@ -272,13 +269,13 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
+      summary: Retrieve presentation
       tags: *a7
   /api/iatp/verifier/verify:
     post:
-      operationId: IatpVerifierController_verify
-      summary: Start verification flow
       description: Request a new IATP presentation flow to start as verifier, based on
         a presentation defintion and a holder SIOP token
+      operationId: IatpVerifierController_verify
       parameters: []
       requestBody:
         required: true
@@ -293,18 +290,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/VerifiablePresentationDto"
-      tags:
-        - Presentation IATP
       security:
         - oauth2:
             - wallet_view_presentations
+      summary: Start verification flow
+      tags:
+        - Presentation IATP
   /api/auth/user:
     get:
-      operationId: AuthController_getUser
-      summary: Retrieve current user status
       description: Retrieves current user state, whether someone is logged in or not a
         200 result is provided. This is used in the frontend to determine
         whether certain aspects should be shown.
+      operationId: AuthController_getUser
       parameters: []
       responses:
         "200":
@@ -315,45 +312,45 @@ paths:
                 oneOf:
                   - $ref: "#/components/schemas/AuthenticatedUserDto"
                   - $ref: "#/components/schemas/UnauthenticatedUserDto"
+      summary: Retrieve current user status
       tags: &a8
         - Authentication
   /api/auth/login:
     get:
-      operationId: AuthController_login
-      summary: Login redirect
       description: Redirects user to the correct authorization server
+      operationId: AuthController_login
       parameters: []
       responses:
         "302":
           description: ""
+      summary: Login redirect
       tags: *a8
   /api/auth/logout:
     get:
-      operationId: AuthController_logout
-      summary: Logout redirect
       description: Removes session information and redirects user the root of the
         frontend (`auth.redirectURL`)
+      operationId: AuthController_logout
       parameters: []
       responses:
         "302":
           description: ""
+      summary: Logout redirect
       tags: *a8
   /api/auth/callback:
     get:
-      operationId: AuthController_callback
-      summary: Login callback
       description: Users are redirected from the authorization server to this endpoint
         which will redirect them to the frontend (`auth.redirectURL`)
+      operationId: AuthController_callback
       parameters: []
       responses:
         "302":
           description: ""
+      summary: Login callback
       tags: *a8
   /api/credentials:
     get:
-      operationId: CredentialsController_getCredentials
-      summary: List dataspace credentials
       description: List all credentials in this dataspace.
+      operationId: CredentialsController_getCredentials
       parameters: []
       responses:
         "200":
@@ -370,13 +367,13 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
+      summary: List dataspace credentials
       tags: &a9
         - Credentials
   /api/credentials/{credentialId}:
     get:
-      operationId: CredentialsController_getCredential
-      summary: Retrieve credential
       description: Retrieve a specific Verifiable Credential issued by this wallet
+      operationId: CredentialsController_getCredential
       parameters:
         - name: credentialId
           required: true
@@ -396,13 +393,13 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
+      summary: Retrieve credential
       tags: *a9
   /api/management/credentials:
     get:
-      operationId: CredentialsManagementController_getCredentials
-      summary: List credentials
       description: List all credentials, that the current user is allowed to view, in
         this wallet
+      operationId: CredentialsManagementController_getCredentials
       parameters: []
       responses:
         "200":
@@ -419,17 +416,17 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: &a10
-        - Management Credentials
       security: &a12
-        - &a11
+        - &a10
           oauth2:
             - wallet_view_all_credentials
             - wallet_view_own_credentials
+      summary: List credentials
+      tags: &a11
+        - Management Credentials
     post:
-      operationId: CredentialsManagementController_addCredential
-      summary: Add credential
       description: Issue a new credential within this wallet
+      operationId: CredentialsManagementController_addCredential
       parameters: []
       requestBody:
         required: true
@@ -462,17 +459,17 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a10
       security:
-        - *a11
+        - *a10
         - oauth2:
             - wallet_manage_all_credentials
             - wallet_manage_own_credentials
+      summary: Add credential
+      tags: *a11
   /api/management/credentials/dataspace:
     get:
-      operationId: CredentialsManagementController_getDataspaceCredentials
-      summary: List dataspace credentials
       description: List all credentials in this dataspace.
+      operationId: CredentialsManagementController_getDataspaceCredentials
       parameters: []
       responses:
         "200":
@@ -489,14 +486,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a10
       security: *a12
+      summary: List dataspace credentials
+      tags: *a11
   /api/management/credentials/config:
     get:
-      operationId: CredentialsManagementController_getConfig
-      summary: Retrieve credential configuration
       description: Retrieves credential configuration that can be used by this wallet.
         Contains both trust anchors and JSON-LD contexts.
+      operationId: CredentialsManagementController_getConfig
       parameters: []
       responses:
         "200":
@@ -511,13 +508,13 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a10
       security: *a12
+      summary: Retrieve credential configuration
+      tags: *a11
   /api/management/credentials/import:
     post:
-      operationId: CredentialsManagementController_importCredential
-      summary: Import credential
       description: Import a credential issued by an external credential issuer
+      operationId: CredentialsManagementController_importCredential
       parameters: []
       requestBody:
         required: true
@@ -544,17 +541,17 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a10
       security:
-        - *a11
+        - *a10
         - oauth2:
             - wallet_manage_all_credentials
             - wallet_manage_own_credentials
+      summary: Import credential
+      tags: *a11
   /api/management/credentials/{credentialId}:
     get:
-      operationId: CredentialsManagementController_getCredential
-      summary: Retrieve credential
       description: Retrieve a specific credential within this wallet
+      operationId: CredentialsManagementController_getCredential
       parameters:
         - name: credentialId
           required: true
@@ -580,17 +577,17 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a10
       security:
-        - *a11
+        - *a10
         - oauth2:
             - wallet_manage_all_credentials
             - wallet_manage_own_credentials
+      summary: Retrieve credential
+      tags: *a11
     put:
-      operationId: CredentialsManagementController_updateCredential
-      summary: Update credential
       description: "Update a credential within this wallet. __*Note*__: this will
         either self-issue or import a credential."
+      operationId: CredentialsManagementController_updateCredential
       parameters:
         - name: credentialId
           required: true
@@ -622,16 +619,16 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a10
       security:
-        - *a11
+        - *a10
         - oauth2:
             - wallet_manage_all_credentials
             - wallet_manage_own_credentials
+      summary: Update credential
+      tags: *a11
     delete:
-      operationId: CredentialsManagementController_deleteCredential
-      summary: Delete credential
       description: Deletes an existing credential within this wallet
+      operationId: CredentialsManagementController_deleteCredential
       parameters:
         - name: credentialId
           required: true
@@ -651,18 +648,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a10
       security:
-        - *a11
+        - *a10
         - oauth2:
             - wallet_manage_all_credentials
             - wallet_manage_own_credentials
+      summary: Delete credential
+      tags: *a11
   /api/management/credentials/gaiax/legalRegistrationNumber:
     post:
-      operationId: GaiaXManagementController_requestLegalRegistrationNumberCredential
-      summary: Issue legal registration number credential
       description: Self-issue a Legal Registration Number credential following the
         Gaia-X Trust Framework
+      operationId: GaiaXManagementController_requestLegalRegistrationNumberCredential
       parameters: []
       requestBody:
         required: true
@@ -689,18 +686,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: &a13
-        - Management Gaia-X Credentials
-      security: &a14
+      security: &a13
         - oauth2:
             - wallet_manage_all_credentials
             - wallet_manage_own_credentials
+      summary: Issue legal registration number credential
+      tags: &a14
+        - Management Gaia-X Credentials
   /api/management/credentials/gaiax/compliance:
     post:
-      operationId: GaiaXManagementController_requestComplianceCredential
-      summary: Request compliance credential
       description: Request a compliance credential from a Gaia-X Digital Clearing
         House based on existing credentials within this wallet
+      operationId: GaiaXManagementController_requestComplianceCredential
       parameters: []
       requestBody:
         required: true
@@ -727,14 +724,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a13
-      security: *a14
+      security: *a13
+      summary: Request compliance credential
+      tags: *a14
   /keys/{id}:
     get:
-      operationId: KeysController_getCaChain
-      summary: Retrieve Key CA chain
       description: Retrieves the CA chain for a given key. Only supported for keys
         with type `X509`
+      operationId: KeysController_getCaChain
       parameters:
         - name: id
           required: true
@@ -750,13 +747,13 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
+      summary: Retrieve Key CA chain
       tags:
         - Keys
   /api/management/keys:
     get:
-      operationId: KeysManagementController_getKeys
-      summary: Retrieve keys
       description: Retrieves all keys registered for this wallet
+      operationId: KeysManagementController_getKeys
       parameters: []
       responses:
         "200":
@@ -773,15 +770,15 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: &a15
-        - Management Keys
-      security: &a16
+      security: &a15
         - oauth2:
             - wallet_manage_keys
+      summary: Retrieve keys
+      tags: &a16
+        - Management Keys
     post:
-      operationId: KeysManagementController_addKey
-      summary: Add key
       description: Generates a new key based on the provided configuration
+      operationId: KeysManagementController_addKey
       parameters: []
       requestBody:
         required: true
@@ -814,13 +811,13 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a15
-      security: *a16
+      security: *a15
+      summary: Add key
+      tags: *a16
   /api/management/keys/{keyId}:
     get:
-      operationId: KeysManagementController_getKey
-      summary: Retrieve key
       description: Retrieves key information of a specific key within this wallet
+      operationId: KeysManagementController_getKey
       parameters:
         - name: keyId
           required: true
@@ -846,12 +843,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a15
-      security: *a16
+      security: *a15
+      summary: Retrieve key
+      tags: *a16
     delete:
-      operationId: KeysManagementController_deleteKey
-      summary: Delete key
       description: Deletes an existing key within this wallet
+      operationId: KeysManagementController_deleteKey
       parameters:
         - name: keyId
           required: true
@@ -873,14 +870,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a15
-      security: *a16
+      security: *a15
+      summary: Delete key
+      tags: *a16
   /api/management/keys/{keyId}/default:
     put:
-      operationId: KeysManagementController_setDefaultKey
-      summary: Set default key
       description: Sets the provided key as default key within this wallet, will
         remove the default key flag for other keys in this wallet
+      operationId: KeysManagementController_setDefaultKey
       parameters:
         - name: keyId
           required: true
@@ -902,13 +899,13 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a15
-      security: *a16
+      security: *a15
+      summary: Set default key
+      tags: *a16
   /api/management/signature/sign:
     post:
-      operationId: SignatureManagementController_sign
-      summary: Sign document
       description: Sign a JSON document with default or defined key
+      operationId: SignatureManagementController_sign
       parameters: []
       requestBody:
         required: true
@@ -935,17 +932,17 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: &a17
-        - Management Signatures
-      security: &a18
+      security: &a17
         - oauth2:
             - wallet_use_keys
             - wallet_manage_keys
+      summary: Sign document
+      tags: &a18
+        - Management Signatures
   /api/management/signature/validate:
     post:
-      operationId: SignatureManagementController_validate
-      summary: Validate signed document
       description: Validates a document that includes a `proof` property
+      operationId: SignatureManagementController_validate
       parameters: []
       requestBody:
         required: true
@@ -972,13 +969,13 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a17
-      security: *a18
+      security: *a17
+      summary: Validate signed document
+      tags: *a18
   /api/management/did:
     get:
-      operationId: DIDManagementController_getDidDocument
-      summary: Retrieve DID document
       description: Retrieves the current DID document for this wallet
+      operationId: DIDManagementController_getDidDocument
       parameters: []
       responses:
         "200":
@@ -993,16 +990,16 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: &a19
-        - Management DID
-      security: &a20
+      security: &a19
         - oauth2:
             - wallet_view_did
+      summary: Retrieve DID document
+      tags: &a20
+        - Management DID
   /api/management/did/resolve/{didId}:
     get:
-      operationId: DIDManagementController_resolveDidDocument
-      summary: Resolve DID document
       description: Resolves the DID identifier from the path parameter into a DID Document
+      operationId: DIDManagementController_resolveDidDocument
       parameters:
         - name: didId
           required: true
@@ -1022,13 +1019,13 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a19
-      security: *a20
+      security: *a19
+      summary: Resolve DID document
+      tags: *a20
   /api/management/did/services:
     get:
-      operationId: DIDManagementController_getServices
-      summary: Retrieve DID services
       description: Retrieves the currently registered DID services for this wallet
+      operationId: DIDManagementController_getServices
       parameters: []
       responses:
         "200":
@@ -1045,12 +1042,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a19
-      security: *a20
+      security: *a19
+      summary: Retrieve DID services
+      tags: *a20
     post:
-      operationId: DIDManagementController_addService
-      summary: Add DID service
       description: Registers a new DID service for this wallet
+      operationId: DIDManagementController_addService
       parameters: []
       requestBody:
         required: true
@@ -1077,13 +1074,13 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a19
-      security: *a20
+      security: *a19
+      summary: Add DID service
+      tags: *a20
   /api/management/did/services/{id}:
     put:
-      operationId: DIDManagementController_updateService
-      summary: Update DID service
       description: Updates an existing DID service for this wallet
+      operationId: DIDManagementController_updateService
       parameters:
         - name: id
           required: true
@@ -1115,12 +1112,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a19
-      security: *a20
+      security: *a19
+      summary: Update DID service
+      tags: *a20
     delete:
-      operationId: DIDManagementController_deleteService
-      summary: Delete DID service
       description: Deletes an existing DID service for this wallet
+      operationId: DIDManagementController_deleteService
       parameters:
         - name: id
           required: true
@@ -1142,14 +1139,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a19
-      security: *a20
+      security: *a19
+      summary: Delete DID service
+      tags: *a20
   /.well-known/did.json:
     get:
-      operationId: DIDWebController_getDid
-      summary: Retrieve DID document
       description: Retrieves the public DID document on the well-known address for
         this wallet
+      operationId: DIDWebController_getDid
       parameters: []
       responses:
         "200":
@@ -1158,13 +1155,13 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/DIDDocumentDto"
+      summary: Retrieve DID document
       tags:
         - DID Web
   /context/{id}:
     get:
-      operationId: ContextController_getContext
-      summary: Retrieve context
       description: Retrieves JSON-LD context document for the given context
+      operationId: ContextController_getContext
       parameters:
         - name: id
           required: true
@@ -1174,13 +1171,13 @@ paths:
       responses:
         "200":
           description: ""
+      summary: Retrieve context
       tags:
         - Contexts
   /api/management/contexts:
     get:
-      operationId: ContextManagementController_getContexts
-      summary: Retrieve contexts
       description: Retrieve all context registered in this wallet
+      operationId: ContextManagementController_getContexts
       parameters: []
       responses:
         "200":
@@ -1197,15 +1194,15 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: &a21
-        - Management Contexts
-      security: &a22
+      security: &a21
         - oauth2:
             - wallet_view_did
+      summary: Retrieve contexts
+      tags: &a22
+        - Management Contexts
     post:
-      operationId: ContextManagementController_addContext
-      summary: Add context
       description: Register a new context in this wallet
+      operationId: ContextManagementController_addContext
       parameters: []
       requestBody:
         required: true
@@ -1238,13 +1235,13 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a21
-      security: *a22
+      security: *a21
+      summary: Add context
+      tags: *a22
   /api/management/contexts/{id}:
     put:
-      operationId: ContextManagementController_updateContext
-      summary: Update context
       description: Update an existing context in this wallet
+      operationId: ContextManagementController_updateContext
       parameters:
         - name: id
           required: true
@@ -1282,12 +1279,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a21
-      security: *a22
+      security: *a21
+      summary: Update context
+      tags: *a22
     delete:
-      operationId: ContextManagementController_deleteContext
-      summary: Delete context
       description: Delete an existing context in this wallet
+      operationId: ContextManagementController_deleteContext
       parameters:
         - name: id
           required: true
@@ -1309,13 +1306,13 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a21
-      security: *a22
+      security: *a21
+      summary: Delete context
+      tags: *a22
   /api/oid4vci/holder/request:
     post:
-      operationId: HolderController_requestCredential
-      summary: Request credential via OID4VCI
       description: Requests a new credential via the OID4VCI Pre-authorized-code flow.
+      operationId: HolderController_requestCredential
       parameters: []
       responses:
         "200":
@@ -1336,12 +1333,13 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags:
-        - OpenID 4 Verifiable Credential Issuance
       security:
         - oauth2:
             - wallet_manage_own_credentials
             - wallet_manage_all_credentials
+      summary: Request credential via OID4VCI
+      tags:
+        - OpenID 4 Verifiable Credential Issuance
   /.well-known/openid-credential-issuer:
     get:
       operationId: IssuerController_issuerMetadata
@@ -1357,10 +1355,9 @@ paths:
         - OpenID 4 Verifiable Credential Issuance
   /oid4vci/token:
     post:
-      operationId: IssuerController_tokenEndpoint
-      summary: Request OID4VCI access token
       description: Requests an access token based on a pre authorizated code the
         holder has received off-line
+      operationId: IssuerController_tokenEndpoint
       parameters: []
       responses:
         "200":
@@ -1381,15 +1378,15 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a23
       security:
         - bearer: []
+      summary: Request OID4VCI access token
+      tags: *a23
   /oid4vci/credential:
     post:
-      operationId: IssuerController_credentialEndpoint
-      summary: Request OID4VCI credential
       description: Requests a new credential based on a Credential Request via the
         OID4VCI flow
+      operationId: IssuerController_credentialEndpoint
       parameters:
         - name: Authorization
           required: true
@@ -1411,14 +1408,14 @@ paths:
                 oneOf:
                   - $ref: "#/components/schemas/ImmediateCredentialResponseDto"
                   - $ref: "#/components/schemas/DeferredCredentialResponseDto"
-      tags: *a23
       security:
         - bearer: []
+      summary: Request OID4VCI credential
+      tags: *a23
   /api/oid4vci/offer:
     get:
-      operationId: IssuerController_listOffers
-      summary: Retrieve offered credentials
       description: Retrieves all credentials offered this wallet has offered to holders
+      operationId: IssuerController_listOffers
       parameters: []
       responses:
         "200":
@@ -1435,14 +1432,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a23
       security:
         - oauth2:
             - wallet_manage_all_credentials
+      summary: Retrieve offered credentials
+      tags: *a23
     post:
-      operationId: IssuerController_offerEndpoint
-      summary: Add offer
       description: Creates a new credential offer
+      operationId: IssuerController_offerEndpoint
       parameters: []
       requestBody:
         required: true
@@ -1463,16 +1460,16 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a23
       security:
         - oauth2:
             - wallet_manage_all_credentials
+      summary: Add offer
+      tags: *a23
   /api/oid4vci/offer/{id}/revoke:
     put:
-      operationId: IssuerController_revokeOffer
-      summary: Revoke offer
       description: Revokes an existing credential offer, so that it cannot be used
         anymore by the holder
+      operationId: IssuerController_revokeOffer
       parameters:
         - name: id
           required: true
@@ -1492,10 +1489,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a23
       security:
         - oauth2:
             - wallet_manage_all_credentials
+      summary: Revoke offer
+      tags: *a23
 info:
   title: TSG Wallet
   description: >-
@@ -2136,7 +2134,8 @@ components:
         id:
           type: string
         type:
-          $ref: "#/components/schemas/KeyType"
+          allOf:
+            - $ref: "#/components/schemas/KeyType"
         default:
           type: boolean
         publicKey:
@@ -2158,7 +2157,8 @@ components:
       type: object
       properties:
         type:
-          $ref: "#/components/schemas/KeyType"
+          allOf:
+            - $ref: "#/components/schemas/KeyType"
         id:
           type: string
         default:

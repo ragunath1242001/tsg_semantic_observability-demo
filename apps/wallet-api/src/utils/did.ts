@@ -22,7 +22,6 @@ export function createVerificationMethods(
       type: "JsonWebKey2020",
       controller: didId,
       publicKeyJwk: {
-        kty: keyTypes(key.type),
         alg: signingAlgorithm(key.type),
         ...key.publicKey
       }
