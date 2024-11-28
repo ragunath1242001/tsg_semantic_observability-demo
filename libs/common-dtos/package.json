@@ -19,7 +19,7 @@
     "class-validator": "^0.14.0",
     "did-resolver": "^4.1.0",
     "jose": "^4.14.4",
-    "reflect-metadata": "^0.1.14",
+    "reflect-metadata": "^0.2.0",
     "tslib": "^2.6.2",
     "typescript": "^5.5.3"
   }
