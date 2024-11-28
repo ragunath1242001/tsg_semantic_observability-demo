@@ -305,7 +305,7 @@ describe("Dataplane Service", () => {
           authorization,
           "anything/test",
           request,
-          response.res
+          response.res as unknown as Response
         )
       ).rejects.toThrow("accessing is not allowed");
     });
@@ -328,7 +328,7 @@ describe("Dataplane Service", () => {
         authorization,
         "anything/test",
         request,
-        response.res
+        response.res as unknown as Response
       );
 
       await new Promise((r) => setTimeout(r, 50));
@@ -354,7 +354,7 @@ describe("Dataplane Service", () => {
           "UNKNOWN",
           "anything/test",
           request,
-          response.res
+          response.res as unknown as Response
         )
       ).rejects.toThrow("Incorrect authorization header");
     });
@@ -367,7 +367,7 @@ describe("Dataplane Service", () => {
           "UNKNOWN",
           "anything/test",
           request,
-          response.res
+          response.res as unknown as Response
         )
       ).rejects.toThrow("not found");
     });
@@ -391,7 +391,7 @@ describe("Dataplane Service", () => {
           authorization,
           "anything/test",
           request,
-          response.res
+          response.res as unknown as Response
         )
       ).rejects.toThrow("accessing is not allowed");
     });
@@ -473,7 +473,7 @@ describe("Dataplane Service", () => {
           transferProcessId,
           "anything/test",
           request,
-          response.res
+          response.res as unknown as Response
         )
       ).rejects.toThrow("accessing is not allowed");
     });
@@ -502,14 +502,14 @@ describe("Dataplane Service", () => {
     });
 
     it("Transfer execution", async () => {
-      const mockedResponse = getMockRes().res as jest.MockedObject<
+      const mockedResponse = getMockRes().res as unknown as jest.MockedObject<
         Response<any, Record<string, any>>
       >;
       await dataPlaneService.executeProxyRequest(
         transferProcessId,
         "anything/test",
         request,
-        mockedResponse
+        mockedResponse as unknown as Response
       );
       await new Promise((r) => setTimeout(r, 10));
 
@@ -531,7 +531,7 @@ describe("Dataplane Service", () => {
           "urn:uuid:00000000-0000-0000-0000-000000000000",
           "anything/test",
           request,
-          response.res
+          response.res as unknown as Response
         )
       ).rejects.toThrow("not found");
     });
@@ -554,7 +554,7 @@ describe("Dataplane Service", () => {
           transferProcessId,
           "anything/test",
           request,
-          response.res
+          response.res as unknown as Response
         )
       ).rejects.toThrow("accessing is not allowed");
     });
