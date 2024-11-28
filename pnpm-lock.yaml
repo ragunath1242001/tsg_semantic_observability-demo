@@ -144,8 +144,8 @@ importers:
         specifier: ^1.4.15
         version: 1.4.17
       '@types/supertest':
-        specifier: ^2.0.12
-        version: 2.0.16
+        specifier: ^6.0.0
+        version: 6.0.2
       '@typescript-eslint/eslint-plugin':
         specifier: ^6.5.0
         version: 6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.5.3))(eslint@8.57.0)(typescript@5.5.3)
@@ -458,8 +458,8 @@ importers:
         specifier: ^6.9.11
         version: 6.9.15
       '@types/supertest':
-        specifier: ^2.0.12
-        version: 2.0.16
+        specifier: ^6.0.0
+        version: 6.0.2
       '@typescript-eslint/eslint-plugin':
         specifier: ^6.4.0
         version: 6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.5.3))(eslint@8.57.0)(typescript@5.5.3)
@@ -739,8 +739,8 @@ importers:
         specifier: ^1.4.15
         version: 1.4.17
       '@types/supertest':
-        specifier: ^2.0.12
-        version: 2.0.16
+        specifier: ^6.0.0
+        version: 6.0.2
       '@typescript-eslint/eslint-plugin':
         specifier: ^6.5.0
         version: 6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.5.3))(eslint@8.57.0)(typescript@5.5.3)
@@ -1725,8 +1725,8 @@ importers:
         specifier: ^6.9.11
         version: 6.9.15
       '@types/supertest':
-        specifier: ^2.0.12
-        version: 2.0.16
+        specifier: ^6.0.0
+        version: 6.0.2
       '@typescript-eslint/eslint-plugin':
         specifier: ^6.4.0
         version: 6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.5.3))(eslint@8.57.0)(typescript@5.5.3)
@@ -3067,8 +3067,8 @@ packages:
   '@types/superagent@8.1.7':
     resolution: {integrity: sha512-NmIsd0Yj4DDhftfWvvAku482PZum4DBW7U51OvS8gvOkDDY0WT1jsVyDV3hK+vplrsYw8oDwi9QxOM7U68iwww==}
 
-  '@types/supertest@2.0.16':
-    resolution: {integrity: sha512-6c2ogktZ06tr2ENoZivgm7YnprnhYE4ZoXGMY+oA7IuAf17M8FWvujXZGmxLv8y0PTyts4x5A+erSwVUFA8XSg==}
+  '@types/supertest@6.0.2':
+    resolution: {integrity: sha512-137ypx2lk/wTQbW6An6safu9hXmajAifU/s7szAHLN/FeIm5w7yR0Wkl9fdJMRSHwOn4HLAI0DaB2TOORuhPDg==}
 
   '@types/validator@13.11.10':
     resolution: {integrity: sha512-e2PNXoXLr6Z+dbfx5zSh9TRlXJrELycxiaXznp4S5+D2M3b9bqJEitNHA5923jhnB2zzFiZHa2f0SI1HoIahpg==}
@@ -8548,8 +8548,9 @@ snapshots:
       '@types/methods': 1.1.4
       '@types/node': 22.7.7
 
-  '@types/supertest@2.0.16':
+  '@types/supertest@6.0.2':
     dependencies:
+      '@types/methods': 1.1.4
       '@types/superagent': 8.1.7
 
   '@types/validator@13.11.10': {}
