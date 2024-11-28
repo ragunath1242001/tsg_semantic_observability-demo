@@ -31,7 +31,7 @@ prettier:
 
 renovate:
   stage: check
-  image: ghcr.io/renovatebot/renovate:39.33.0
+  image: ghcr.io/renovatebot/renovate:39.35.0
   needs: []
   script:
     - renovate

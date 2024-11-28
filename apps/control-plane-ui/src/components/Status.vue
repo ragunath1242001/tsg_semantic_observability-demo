@@ -162,9 +162,11 @@ onMounted(async () => await loadStatus());
 
 const options = {
   cutout: "75%",
+  aspectRatio: 1.5,
   plugins: {
     legend: {
-      position: "left"
+      position: "left",
+      maxWidth: 200
     },
     tooltip: {
       callbacks: {
@@ -233,7 +235,7 @@ const options = {
               type="doughnut"
               :data="providerNegotiationsMeter"
               :options="options"
-              class="w-[20rem] h-[15rem] mt-[-3rem]" />
+              class="w-[20rem] h-[15rem]" />
           </DisplayField>
         </div>
         <div class="col-span-12 lg:col-span-6">
@@ -242,7 +244,7 @@ const options = {
               type="doughnut"
               :data="consumerNegotiationsMeter"
               :options="options"
-              class="w-[20rem] h-[15rem] mt-[-3rem]" />
+              class="w-[20rem] h-[15rem]" />
           </DisplayField>
         </div>
       </div>
@@ -260,7 +262,7 @@ const options = {
               type="doughnut"
               :data="providerTransfersMeter"
               :options="options"
-              class="w-[20rem] h-[15rem] mt-[-5rem]" />
+              class="w-[20rem] h-[15rem]" />
           </DisplayField>
         </div>
         <div class="col-span-12 lg:col-span-6">
@@ -269,7 +271,7 @@ const options = {
               type="doughnut"
               :data="consumerTransfersMeter"
               :options="options"
-              class="w-[20rem] h-[15rem] mt-[-5rem]" />
+              class="w-[20rem] h-[15rem]" />
           </DisplayField>
         </div>
       </div>
