@@ -11,7 +11,7 @@
     "build": "tsc -p tsconfig.json"
   },
   "dependencies": {
-    "@nestjs/swagger": "^7.3.1",
+    "@nestjs/swagger": "^8.0.0",
     "@tsg-dsp/common-dsp": "workspace:*",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
