@@ -99,8 +99,8 @@ importers:
         version: 0.3.20(pg@8.11.5)(sqlite3@5.1.7)(ts-node@10.9.2(@types/node@22.7.7)(typescript@5.5.3))
     devDependencies:
       '@jest-mock/express':
-        specifier: ^2.0.2
-        version: 2.0.2
+        specifier: ^2.1.0
+        version: 2.1.0
       '@jest/types':
         specifier: ^29.6.3
         version: 29.6.3
@@ -114,8 +114,8 @@ importers:
         specifier: ^5.0.0
         version: 5.0.2
       '@types/express':
-        specifier: ^4.17.17
-        version: 4.17.21
+        specifier: ^5.0.0
+        version: 5.0.0
       '@types/express-session':
         specifier: ^1.18.0
         version: 1.18.0
@@ -431,8 +431,8 @@ importers:
         specifier: ^1.0.1
         version: 1.0.4
       '@types/express':
-        specifier: ^4.17.17
-        version: 4.17.21
+        specifier: ^5.0.0
+        version: 5.0.0
       '@types/express-session':
         specifier: ^1.17.7
         version: 1.18.0
@@ -697,8 +697,8 @@ importers:
         version: 2.6.0
     devDependencies:
       '@jest-mock/express':
-        specifier: ^2.0.2
-        version: 2.0.2
+        specifier: ^2.1.0
+        version: 2.1.0
       '@jest/types':
         specifier: ^29.6.3
         version: 29.6.3
@@ -712,8 +712,8 @@ importers:
         specifier: ^5.0.0
         version: 5.0.2
       '@types/express':
-        specifier: ^4.17.17
-        version: 4.17.21
+        specifier: ^5.0.0
+        version: 5.0.0
       '@types/express-session':
         specifier: ^1.18.0
         version: 1.18.0
@@ -1023,8 +1023,8 @@ importers:
         specifier: ^6.4.18
         version: 6.4.18
       '@types/express':
-        specifier: ^4.17.21
-        version: 4.17.21
+        specifier: ^5.0.0
+        version: 5.0.0
       '@types/express-session':
         specifier: ^1.17.10
         version: 1.18.0
@@ -1698,8 +1698,8 @@ importers:
         specifier: ^1.0.1
         version: 1.0.4
       '@types/express':
-        specifier: ^4.17.17
-        version: 4.17.21
+        specifier: ^5.0.0
+        version: 5.0.0
       '@types/express-session':
         specifier: ^1.17.7
         version: 1.18.0
@@ -2343,8 +2343,8 @@ packages:
     resolution: {integrity: sha512-ZXRY4jNvVgSVQ8DL3LTcakaAtXwTVUxE81hslsyD2AtoXW/wVob10HkOJ1X/pAlcI7D+2YoZKg5do8G/w6RYgA==}
     engines: {node: '>=8'}
 
-  '@jest-mock/express@2.0.2':
-    resolution: {integrity: sha512-B1mjh5Tgm/HDd3BLC9s2jZNqRIxiJJD5rMWm48gEeK0K2hfUE66QZ+AxHxHlb/uaqL9H+PFJzCSjJPl46oNzDg==}
+  '@jest-mock/express@2.1.0':
+    resolution: {integrity: sha512-wwij1960SVxJL+v5Eqw3Akn3S5TLfCtHnFqs2K9Zto7RLU5I/7YhOsYDZQfNcnGyiBdisDz5iT21SRO1CVfvKA==}
 
   '@jest/console@29.7.0':
     resolution: {integrity: sha512-5Ni4CU7XHQi32IJ398EEP4RrB8eV09sXP2ROqD4bksHrnTree52PsxvX8tpL8LvTZ3pFzXyPbNQReSN41CAhOg==}
@@ -2956,11 +2956,17 @@ packages:
   '@types/express-serve-static-core@4.19.3':
     resolution: {integrity: sha512-KOzM7MhcBFlmnlr/fzISFF5vGWVSvN6fTd4T+ExOt08bA/dA5kpSzY52nMsI1KDFmUREpJelPYyuslLRSjjgCg==}
 
+  '@types/express-serve-static-core@5.0.2':
+    resolution: {integrity: sha512-vluaspfvWEtE4vcSDlKRNer52DvOGrB2xv6diXy6UKyKW0lqZiWHGNApSyxOv+8DE5Z27IzVvE7hNkxg7EXIcg==}
+
   '@types/express-session@1.18.0':
     resolution: {integrity: sha512-27JdDRgor6PoYlURY+Y5kCakqp5ulC0kmf7y+QwaY+hv9jEFuQOThgkjyA53RP3jmKuBsH5GR6qEfFmvb8mwOA==}
 
   '@types/express@4.17.21':
     resolution: {integrity: sha512-ejlPM315qwLpaQlQDTjPdsUFSc6ZsP4AN6AlWnogPjQ7CVi7PYF3YVz+CY3jE2pwYf7E/7HlDAN0rV2GxTG0HQ==}
+
+  '@types/express@5.0.0':
+    resolution: {integrity: sha512-DvZriSMehGHL1ZNLzi6MidnsDhUZM/x2pRdDIKdwbUNqqwHxMlRdkxtn6/EPKyqKpHqTl/4nRZsRNLpZxZRpPQ==}
 
   '@types/graceful-fs@4.1.9':
     resolution: {integrity: sha512-olP3sd1qOEe5dXTSaFvQG+02VdRXcdytWLAZsAq1PecU8uqQAhkrnbli7DagjtXKW/Bl7YJbUsa8MPcuc8LHEQ==}
@@ -7631,7 +7637,7 @@ snapshots:
 
   '@istanbuljs/schema@0.1.3': {}
 
-  '@jest-mock/express@2.0.2':
+  '@jest-mock/express@2.1.0':
     dependencies:
       '@types/express': 4.17.21
 
@@ -8381,7 +8387,7 @@ snapshots:
   '@types/cookies@0.9.0':
     dependencies:
       '@types/connect': 3.4.38
-      '@types/express': 4.17.21
+      '@types/express': 5.0.0
       '@types/keygrip': 1.0.6
       '@types/node': 22.7.7
 
@@ -8416,14 +8422,28 @@ snapshots:
       '@types/range-parser': 1.2.7
       '@types/send': 0.17.4
 
+  '@types/express-serve-static-core@5.0.2':
+    dependencies:
+      '@types/node': 22.7.7
+      '@types/qs': 6.9.15
+      '@types/range-parser': 1.2.7
+      '@types/send': 0.17.4
+
   '@types/express-session@1.18.0':
     dependencies:
-      '@types/express': 4.17.21
+      '@types/express': 5.0.0
 
   '@types/express@4.17.21':
     dependencies:
       '@types/body-parser': 1.19.5
       '@types/express-serve-static-core': 4.19.3
+      '@types/qs': 6.9.15
+      '@types/serve-static': 1.15.7
+
+  '@types/express@5.0.0':
+    dependencies:
+      '@types/body-parser': 1.19.5
+      '@types/express-serve-static-core': 5.0.2
       '@types/qs': 6.9.15
       '@types/serve-static': 1.15.7
 
@@ -8489,7 +8509,7 @@ snapshots:
 
   '@types/multer@1.4.12':
     dependencies:
-      '@types/express': 4.17.21
+      '@types/express': 5.0.0
 
   '@types/mute-stream@0.0.4':
     dependencies:
@@ -8513,19 +8533,19 @@ snapshots:
 
   '@types/passport-http-bearer@1.0.41':
     dependencies:
-      '@types/express': 4.17.21
+      '@types/express': 5.0.0
       '@types/koa': 2.15.0
       '@types/passport': 1.0.16
 
   '@types/passport-oauth2@1.4.17':
     dependencies:
-      '@types/express': 4.17.21
+      '@types/express': 5.0.0
       '@types/oauth': 0.9.5
       '@types/passport': 1.0.16
 
   '@types/passport@1.0.16':
     dependencies:
-      '@types/express': 4.17.21
+      '@types/express': 5.0.0
 
   '@types/qs@6.9.15': {}
 

@@ -1,4 +1,4 @@
-import chalk, { Chalk } from "chalk";
+import chalk, { ChalkInstance } from "chalk";
 import { exec, ExecException } from "child_process";
 import { ClassConstructor, plainToInstance } from "class-transformer";
 import { validateSync, ValidationError } from "class-validator";
@@ -8,7 +8,7 @@ import { confirm } from "@inquirer/prompts";
 export const log = (
   type: "log" | "warn" | "error",
   message: string,
-  color?: Chalk
+  color?: ChalkInstance
 ) => {
   let logMessage = chalk.blue("[TSG-CLI] ");
   switch (type) {

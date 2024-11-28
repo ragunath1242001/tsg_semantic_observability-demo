@@ -1,4 +1,5 @@
 /** @type {import('tailwindcss').Config} */
+import tailwindcss from "tailwindcss-primeui";
 export default {
   darkMode: ["selector", '[class*="app-dark"]'],
   content: [
@@ -12,7 +13,7 @@ export default {
       variants: ["sm", "md", "lg", "xl", "2xl"]
     }
   ],
-  plugins: [require("tailwindcss-primeui")],
+  plugins: [tailwindcss],
   theme: {
     screens: {
       sm: "576px",
