@@ -2,9 +2,8 @@ openapi: 3.0.0
 paths:
   /api/settings:
     get:
-      operationId: ConfigController_getSettings
-      summary: Retrieve settings
       description: Retrieves the settings of the control plane.
+      operationId: ConfigController_getSettings
       parameters: []
       responses:
         "200":
@@ -19,16 +18,16 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: &a1
-        - Settings
-      security: &a2
+      security: &a1
         - oauth2:
             - controlplane_admin
+      summary: Retrieve settings
+      tags: &a2
+        - Settings
   /api/settings/update:
     post:
-      operationId: ConfigController_updateSettings
-      summary: Update settings
       description: Updates runtime settings for the control plane.
+      operationId: ConfigController_updateSettings
       parameters: []
       requestBody:
         required: true
@@ -55,14 +54,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a1
-      security: *a2
+      security: *a1
+      summary: Update settings
+      tags: *a2
   /health:
     get:
-      operationId: HealthController_getHealth
-      summary: Health check
       description: Retrieves the current health of the control plane. If the control
         plane is running it always returns an empty 200 OK
+      operationId: HealthController_getHealth
       parameters: []
       responses:
         "200":
@@ -121,14 +120,14 @@ paths:
                         status:
                           type: string
                       additionalProperties: true
+      summary: Health check
       tags:
         - Health
   /api/status:
     get:
-      operationId: StatusController_getStatus
-      summary: Appplication status
       description: Retrieves the current health of the control plane. With additional
         status information
+      operationId: StatusController_getStatus
       parameters: []
       requestBody:
         required: true
@@ -141,15 +140,15 @@ paths:
           description: ""
         "502":
           description: ""
+      summary: Appplication status
       tags:
         - Status
   /api/auth/user:
     get:
-      operationId: AuthController_getUser
-      summary: Retrieve current user status
       description: Retrieves current user state, whether someone is logged in or not a
         200 result is provided. This is used in the frontend to determine
         whether certain aspects should be shown.
+      operationId: AuthController_getUser
       parameters: []
       responses:
         "200":
@@ -160,45 +159,45 @@ paths:
                 oneOf:
                   - $ref: "#/components/schemas/AuthenticatedUserDto"
                   - $ref: "#/components/schemas/UnauthenticatedUserDto"
+      summary: Retrieve current user status
       tags: &a5
         - Authentication
   /api/auth/login:
     get:
-      operationId: AuthController_login
-      summary: Login redirect
       description: Redirects user to the correct authorization server
+      operationId: AuthController_login
       parameters: []
       responses:
         "200":
           description: ""
+      summary: Login redirect
       tags: *a5
   /api/auth/logout:
     get:
-      operationId: AuthController_logout
-      summary: Logout redirect
       description: Removes session information and redirects user the root of the
         frontend (`auth.redirectURL`)
+      operationId: AuthController_logout
       parameters: []
       responses:
         "302":
           description: ""
+      summary: Logout redirect
       tags: *a5
   /api/auth/callback:
     get:
-      operationId: AuthController_callback
-      summary: Login callback
       description: Users are redirected from the authorization server to this endpoint
         which will redirect them to the frontend (`auth.redirectURL`)
+      operationId: AuthController_callback
       parameters: []
       responses:
         "302":
           description: ""
+      summary: Login callback
       tags: *a5
   /api/data-plane/init:
     post:
-      operationId: DataPlaneController_init
-      summary: Initialize data plane
       description: Initializes a new data plane with the provided details.
+      operationId: DataPlaneController_init
       parameters: []
       requestBody:
         required: true
@@ -221,17 +220,17 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: &a6
-        - Data Plane
-      security: &a7
+      security: &a6
         - oauth2:
             - controlplane_admin
             - controlplane_dataplane
+      summary: Initialize data plane
+      tags: &a7
+        - Data Plane
   /api/data-plane/{id}/update:
     post:
-      operationId: DataPlaneController_update
-      summary: Update data plane
       description: Updates the details of an existing data plane.
+      operationId: DataPlaneController_update
       parameters:
         - name: id
           required: true
@@ -259,13 +258,13 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a6
-      security: *a7
+      security: *a6
+      summary: Update data plane
+      tags: *a7
   /api/data-plane/{id}/catalog:
     post:
-      operationId: DataPlaneController_updateCatalog
-      summary: Update catalog
       description: Updates the catalog for the specified data plane.
+      operationId: DataPlaneController_updateCatalog
       parameters:
         - name: id
           required: true
@@ -293,13 +292,13 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a6
-      security: *a7
+      security: *a6
+      summary: Update catalog
+      tags: *a7
   /api/management/dataplanes:
     get:
-      operationId: DataplaneManagementController_getDataPlanes
-      summary: Get all dataplanes
       description: Fetches all the dataplanes.
+      operationId: DataplaneManagementController_getDataPlanes
       parameters: []
       responses:
         "200":
@@ -316,16 +315,16 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: &a8
-        - Data Plane Management
-      security: &a9
+      security: &a8
         - oauth2:
             - controlplane_admin
             - controlplane_dataplane
+      summary: Get all dataplanes
+      tags: &a9
+        - Data Plane Management
     post:
-      operationId: DataplaneManagementController_addDataplane
-      summary: Add a dataplane
       description: Adds a new dataplane.
+      operationId: DataplaneManagementController_addDataplane
       parameters: []
       requestBody:
         required: true
@@ -348,13 +347,13 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a8
-      security: *a9
+      security: *a8
+      summary: Add a dataplane
+      tags: *a9
   /api/management/dataplanes/{id}:
     put:
-      operationId: DataplaneManagementController_updateDataplane
-      summary: Update a dataplane
       description: Updates an existing dataplane.
+      operationId: DataplaneManagementController_updateDataplane
       parameters:
         - name: id
           required: true
@@ -382,12 +381,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a8
-      security: *a9
+      security: *a8
+      summary: Update a dataplane
+      tags: *a9
     delete:
-      operationId: DataplaneManagementController_deleteDataPlane
-      summary: Delete a dataplane
       description: Deletes a dataplane by ID.
+      operationId: DataplaneManagementController_deleteDataPlane
       parameters:
         - name: id
           required: true
@@ -405,13 +404,13 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a8
-      security: *a9
+      security: *a8
+      summary: Delete a dataplane
+      tags: *a9
   /api/catalog/request:
     post:
-      operationId: CatalogController_request
-      summary: Request catalog
       description: Requests a catalog with the provided details.
+      operationId: CatalogController_request
       parameters: []
       requestBody:
         required: true
@@ -434,15 +433,15 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: &a10
-        - Catalog
-      security: &a11
+      security: &a10
         - bearer: []
+      summary: Request catalog
+      tags: &a11
+        - Catalog
   /api/catalog/datasets/{id}:
     get:
-      operationId: CatalogController_getDataset
-      summary: Get dataset
       description: Fetches a dataset by ID.
+      operationId: CatalogController_getDataset
       parameters:
         - name: id
           required: true
@@ -464,13 +463,13 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a10
-      security: *a11
+      security: *a10
+      summary: Get dataset
+      tags: *a11
   /api/management/catalog/request:
     get:
-      operationId: CatalogManagementController_requestCatalog
-      summary: Request catalog
       description: Requests a catalog from a remote or local connector.
+      operationId: CatalogManagementController_requestCatalog
       parameters:
         - name: address
           required: false
@@ -499,15 +498,15 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: &a12
-        - Catalog Management
-      security: &a13
+      security: &a12
         - bearer: []
+      summary: Request catalog
+      tags: &a13
+        - Catalog Management
   /api/management/catalog/dataset:
     get:
-      operationId: CatalogManagementController_requestDataset
-      summary: Request dataset
       description: Requests a dataset from a remote or local connector by ID.
+      operationId: CatalogManagementController_requestDataset
       parameters:
         - name: address
           required: false
@@ -542,12 +541,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a12
-      security: *a13
+      security: *a12
+      summary: Request dataset
+      tags: *a13
     post:
-      operationId: CatalogManagementController_addDataset
-      summary: Add dataset
       description: Adds a new dataset to the catalog.
+      operationId: CatalogManagementController_addDataset
       parameters: []
       requestBody:
         required: true
@@ -570,13 +569,13 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a12
-      security: *a13
+      security: *a12
+      summary: Add dataset
+      tags: *a13
   /api/management/catalog/dataset/{id}:
     put:
-      operationId: CatalogManagementController_updateDataset
-      summary: Update dataset
       description: Updates an existing dataset in the catalog.
+      operationId: CatalogManagementController_updateDataset
       parameters:
         - name: id
           required: true
@@ -605,12 +604,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a12
-      security: *a13
+      security: *a12
+      summary: Update dataset
+      tags: *a13
     delete:
-      operationId: CatalogManagementController_deleteDataset
-      summary: Delete dataset
       description: Deletes a dataset from the catalog by ID.
+      operationId: CatalogManagementController_deleteDataset
       parameters:
         - name: id
           required: true
@@ -629,12 +628,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a12
-      security: *a13
+      security: *a12
+      summary: Delete dataset
+      tags: *a13
   /api/negotiations/request:
     post:
       operationId: NegotiationController_request
-      summary: Request a new negotiation
       parameters: []
       requestBody:
         required: true
@@ -649,14 +648,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ContractNegotiationSchema"
-      tags: &a14
-        - Negotiations
-      security: &a15
+      security: &a14
         - bearer: []
+      summary: Request a new negotiation
+      tags: &a15
+        - Negotiations
   /api/negotiations/{id}:
     get:
       operationId: NegotiationController_getNegotiation
-      summary: Get negotiation status by ID
       parameters:
         - name: id
           required: true
@@ -670,12 +669,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ContractNegotiationSchema"
-      tags: *a14
-      security: *a15
+      security: *a14
+      summary: Get negotiation status by ID
+      tags: *a15
   /api/negotiations/{id}/request:
     post:
       operationId: NegotiationController_requestWithId
-      summary: Request negotiation with ID
       parameters:
         - name: id
           required: true
@@ -695,12 +694,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ContractNegotiationSchema"
-      tags: *a14
-      security: *a15
+      security: *a14
+      summary: Request negotiation with ID
+      tags: *a15
   /api/negotiations/{id}/events:
     post:
       operationId: NegotiationController_negotiationEvent
-      summary: Handle negotiation event
       parameters:
         - name: id
           required: true
@@ -721,12 +720,12 @@ paths:
               schema:
                 example:
                   status: string
-      tags: *a14
-      security: *a15
+      security: *a14
+      summary: Handle negotiation event
+      tags: *a15
   /api/negotiations/{id}/agreement/verification:
     post:
       operationId: NegotiationController_agreementVerification
-      summary: Verify agreement
       parameters:
         - name: id
           required: true
@@ -747,12 +746,12 @@ paths:
               schema:
                 example:
                   status: string
-      tags: *a14
-      security: *a15
+      security: *a14
+      summary: Verify agreement
+      tags: *a15
   /api/negotiations/{id}/termination:
     post:
       operationId: NegotiationController_negotiationTermination
-      summary: Terminate negotiation
       parameters:
         - name: id
           required: true
@@ -773,12 +772,12 @@ paths:
               schema:
                 example:
                   status: string
-      tags: *a14
-      security: *a15
+      security: *a14
+      summary: Terminate negotiation
+      tags: *a15
   /api/negotiations/callbacks/{id}/offer:
     post:
       operationId: NegotiationController_callbackOffer
-      summary: Handle negotiation callback offer
       parameters:
         - name: id
           required: true
@@ -799,12 +798,12 @@ paths:
               schema:
                 example:
                   status: string
-      tags: *a14
-      security: *a15
+      security: *a14
+      summary: Handle negotiation callback offer
+      tags: *a15
   /api/negotiations/callbacks/{id}/agreement:
     post:
       operationId: NegotiationController_callbackAgreement
-      summary: Handle negotiation callback agreement
       parameters:
         - name: id
           required: true
@@ -825,12 +824,12 @@ paths:
               schema:
                 example:
                   status: string
-      tags: *a14
-      security: *a15
+      security: *a14
+      summary: Handle negotiation callback agreement
+      tags: *a15
   /api/negotiations/callbacks/{id}/events:
     post:
       operationId: NegotiationController_callbackEvent
-      summary: Handle negotiation callback event
       parameters:
         - name: id
           required: true
@@ -851,12 +850,12 @@ paths:
               schema:
                 example:
                   status: string
-      tags: *a14
-      security: *a15
+      security: *a14
+      summary: Handle negotiation callback event
+      tags: *a15
   /api/management/negotiations:
     get:
       operationId: NegotiationManagementController_getNegotiations
-      summary: Get all negotiations
       parameters: []
       responses:
         "200":
@@ -867,16 +866,16 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/NegotiationStatusDto"
-      tags: &a16
-        - Negotiations Management
-      security: &a17
+      security: &a16
         - oauth2:
             - controlplane_admin
             - controlplane_dataplane
+      summary: Get all negotiations
+      tags: &a17
+        - Negotiations Management
   /api/management/negotiations/dataset/{datasetId}:
     get:
       operationId: NegotiationManagementController_getNegotiationsFromDatasetId
-      summary: Get all negotiations for a dataset
       parameters:
         - name: datasetId
           required: true
@@ -892,12 +891,12 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/NegotiationStatusDto"
-      tags: *a16
-      security: *a17
+      security: *a16
+      summary: Get all negotiations for a dataset
+      tags: *a17
   /api/management/negotiations/{processId}:
     get:
       operationId: NegotiationManagementController_getNegotiation
-      summary: Get a negotiation by process ID
       parameters:
         - name: processId
           required: true
@@ -912,12 +911,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/NegotiationDetailSchema"
-      tags: *a16
-      security: *a17
+      security: *a16
+      summary: Get a negotiation by process ID
+      tags: *a17
   /api/management/negotiations/request:
     post:
       operationId: NegotiationManagementController_requestNewNegotiation
-      summary: Request a new negotiation
       parameters:
         - name: dataSet
           required: true
@@ -951,12 +950,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ContractNegotiationSchema"
-      tags: *a16
-      security: *a17
+      security: *a16
+      summary: Request a new negotiation
+      tags: *a17
   /api/management/negotiations/{processId}/request:
     post:
       operationId: NegotiationManagementController_requestExistingNegotiation
-      summary: Request an existing negotiation
       parameters:
         - name: processId
           required: true
@@ -978,12 +977,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ContractNegotiationSchema"
-      tags: *a16
-      security: *a17
+      security: *a16
+      summary: Request an existing negotiation
+      tags: *a17
   /api/management/negotiations/{processId}/offer:
     post:
       operationId: NegotiationManagementController_offer
-      summary: Submit an offer for an existing negotiation
       parameters:
         - name: processId
           required: true
@@ -1012,12 +1011,12 @@ paths:
               schema:
                 example:
                   status: string
-      tags: *a16
-      security: *a17
+      security: *a16
+      summary: Submit an offer for an existing negotiation
+      tags: *a17
   /api/management/negotiations/{processId}/agreement:
     post:
       operationId: NegotiationManagementController_agree
-      summary: Agree to a negotiation
       parameters:
         - name: processId
           required: true
@@ -1033,12 +1032,12 @@ paths:
               schema:
                 example:
                   status: string
-      tags: *a16
-      security: *a17
+      security: *a16
+      summary: Agree to a negotiation
+      tags: *a17
   /api/management/negotiations/{processId}/verify:
     post:
       operationId: NegotiationManagementController_verify
-      summary: Verify a negotiation agreement
       parameters:
         - name: processId
           required: true
@@ -1054,12 +1053,12 @@ paths:
               schema:
                 example:
                   status: string
-      tags: *a16
-      security: *a17
+      security: *a16
+      summary: Verify a negotiation agreement
+      tags: *a17
   /api/management/negotiations/{processId}/finalize:
     post:
       operationId: NegotiationManagementController_finalize
-      summary: Finalize a negotiation
       parameters:
         - name: processId
           required: true
@@ -1075,12 +1074,12 @@ paths:
               schema:
                 example:
                   status: string
-      tags: *a16
-      security: *a17
+      security: *a16
+      summary: Finalize a negotiation
+      tags: *a17
   /api/management/negotiations/{processId}/terminate:
     post:
       operationId: NegotiationManagementController_terminate
-      summary: Terminate a negotiation
       parameters:
         - name: processId
           required: true
@@ -1105,12 +1104,12 @@ paths:
               schema:
                 example:
                   status: string
-      tags: *a16
-      security: *a17
+      security: *a16
+      summary: Terminate a negotiation
+      tags: *a17
   /api/transfers/request:
     post:
       operationId: TransferController_request
-      summary: Request a transfer
       parameters: []
       requestBody:
         required: true
@@ -1125,14 +1124,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/TransferProcessSchema"
-      tags: &a18
-        - Transfers
-      security: &a19
+      security: &a18
         - bearer: []
+      summary: Request a transfer
+      tags: &a19
+        - Transfers
   /api/transfers/{id}:
     get:
       operationId: TransferController_getTransfer
-      summary: Get transfer status by ID
       parameters:
         - name: id
           required: true
@@ -1147,12 +1146,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/TransferProcessSchema"
-      tags: *a18
-      security: *a19
+      security: *a18
+      summary: Get transfer status by ID
+      tags: *a19
   /api/transfers/{id}/start:
     post:
       operationId: TransferController_startTransferProcess
-      summary: Start transfer process
       parameters:
         - name: id
           required: true
@@ -1174,12 +1173,12 @@ paths:
               schema:
                 example:
                   status: success
-      tags: *a18
-      security: *a19
+      security: *a18
+      summary: Start transfer process
+      tags: *a19
   /api/transfers/{id}/complete:
     post:
       operationId: TransferController_completeTransferProcess
-      summary: Complete transfer process
       parameters:
         - name: id
           required: true
@@ -1201,12 +1200,12 @@ paths:
               schema:
                 example:
                   status: success
-      tags: *a18
-      security: *a19
+      security: *a18
+      summary: Complete transfer process
+      tags: *a19
   /api/transfers/{id}/terminate:
     post:
       operationId: TransferController_terminateTransferProcess
-      summary: Terminate transfer process
       parameters:
         - name: id
           required: true
@@ -1228,12 +1227,12 @@ paths:
               schema:
                 example:
                   status: success
-      tags: *a18
-      security: *a19
+      security: *a18
+      summary: Terminate transfer process
+      tags: *a19
   /api/transfers/{id}/suspend:
     post:
       operationId: TransferController_suspendTransferProcess
-      summary: Suspend transfer process
       parameters:
         - name: id
           required: true
@@ -1255,12 +1254,12 @@ paths:
               schema:
                 example:
                   status: success
-      tags: *a18
-      security: *a19
+      security: *a18
+      summary: Suspend transfer process
+      tags: *a19
   /api/transfers/callbacks/{id}/start:
     post:
       operationId: TransferController_callbackStartTransferProcess
-      summary: Callback to start transfer process
       parameters:
         - name: id
           required: true
@@ -1282,12 +1281,12 @@ paths:
               schema:
                 example:
                   status: success
-      tags: *a18
-      security: *a19
+      security: *a18
+      summary: Callback to start transfer process
+      tags: *a19
   /api/transfers/callbacks/{id}/complete:
     post:
       operationId: TransferController_callbackCompleteTransferProcess
-      summary: Callback to complete transfer process
       parameters:
         - name: id
           required: true
@@ -1309,12 +1308,12 @@ paths:
               schema:
                 example:
                   status: success
-      tags: *a18
-      security: *a19
+      security: *a18
+      summary: Callback to complete transfer process
+      tags: *a19
   /api/transfers/callbacks/{id}/terminate:
     post:
       operationId: TransferController_callbackTerminateTransferProcess
-      summary: Callback to terminate transfer process
       parameters:
         - name: id
           required: true
@@ -1336,12 +1335,12 @@ paths:
               schema:
                 example:
                   status: success
-      tags: *a18
-      security: *a19
+      security: *a18
+      summary: Callback to terminate transfer process
+      tags: *a19
   /api/transfers/callbacks/{id}/suspend:
     post:
       operationId: TransferController_callbackSuspendTransferProcess
-      summary: Callback to suspend transfer process
       parameters:
         - name: id
           required: true
@@ -1363,12 +1362,12 @@ paths:
               schema:
                 example:
                   status: success
-      tags: *a18
-      security: *a19
+      security: *a18
+      summary: Callback to suspend transfer process
+      tags: *a19
   /api/management/transfers:
     get:
       operationId: TransferManagementController_getTransfers
-      summary: Get all transfers
       parameters: []
       responses:
         "200":
@@ -1379,16 +1378,16 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/TransferStatusSchema"
-      tags: &a20
-        - Transfers Management
-      security: &a21
+      security: &a20
         - oauth2:
             - controlplane_admin
             - controlplane_dataplane
+      summary: Get all transfers
+      tags: &a21
+        - Transfers Management
   /api/management/transfers/{processId}:
     get:
       operationId: TransferManagementController_getTransfer
-      summary: Get transfer details by process ID
       parameters:
         - name: processId
           required: true
@@ -1403,12 +1402,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/TransferDetailSchema"
-      tags: *a20
-      security: *a21
+      security: *a20
+      summary: Get transfer details by process ID
+      tags: *a21
   /api/management/transfers/request:
     post:
       operationId: TransferManagementController_requestTransfer
-      summary: Request a new transfer
       parameters:
         - name: address
           required: true
@@ -1441,12 +1440,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/TransferProcessSchema"
-      tags: *a20
-      security: *a21
+      security: *a20
+      summary: Request a new transfer
+      tags: *a21
   /api/management/transfers/{processId}/start:
     post:
       operationId: TransferManagementController_startTransfer
-      summary: Start a transfer process
       parameters:
         - name: processId
           required: true
@@ -1468,12 +1467,12 @@ paths:
               schema:
                 example:
                   status: success
-      tags: *a20
-      security: *a21
+      security: *a20
+      summary: Start a transfer process
+      tags: *a21
   /api/management/transfers/{processId}/complete:
     post:
       operationId: TransferManagementController_completeTransfer
-      summary: Complete a transfer process
       parameters:
         - name: processId
           required: true
@@ -1489,12 +1488,12 @@ paths:
               schema:
                 example:
                   status: success
-      tags: *a20
-      security: *a21
+      security: *a20
+      summary: Complete a transfer process
+      tags: *a21
   /api/management/transfers/{processId}/terminate:
     post:
       operationId: TransferManagementController_terminateTransfer
-      summary: Terminate a transfer process
       parameters:
         - name: processId
           required: true
@@ -1518,12 +1517,12 @@ paths:
               schema:
                 example:
                   status: success
-      tags: *a20
-      security: *a21
+      security: *a20
+      summary: Terminate a transfer process
+      tags: *a21
   /api/management/transfers/{processId}/suspend:
     post:
       operationId: TransferManagementController_suspendTransfer
-      summary: Suspend a transfer process
       parameters:
         - name: processId
           required: true
@@ -1546,12 +1545,12 @@ paths:
               schema:
                 example:
                   status: success
-      tags: *a20
-      security: *a21
+      security: *a20
+      summary: Suspend a transfer process
+      tags: *a21
   /api/management/agreements/{agreementId}:
     get:
       operationId: AgreementManagementController_getAgreement
-      summary: Get an agreement by agreement ID
       parameters:
         - name: agreementId
           required: true
@@ -1566,16 +1565,16 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ContractAgreementMessageSchema"
-      tags:
-        - Agreement
       security:
         - oauth2:
             - controlplane_admin
+      summary: Get an agreement by agreement ID
+      tags:
+        - Agreement
   /api/management/policy/evaluation/{transferId}/lastContext:
     get:
-      operationId: PolicyEvaluationController_getLastContext
-      summary: Retrieve last evaluation context
       description: Retrieve last evaluation context of the specified transfer ID.
+      operationId: PolicyEvaluationController_getLastContext
       parameters:
         - name: transferId
           required: true
@@ -1601,16 +1600,16 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: &a22
-        - Evaluation
-      security: &a23
+      security: &a22
         - oauth2:
             - controlplane_admin
+      summary: Retrieve last evaluation context
+      tags: &a23
+        - Evaluation
   /api/management/policy/evaluation/{transferId}/lastDecision:
     get:
-      operationId: PolicyEvaluationController_getLastDecision
-      summary: Retrieve last evaluation decision
       description: Retrieve last evaluation decision of the specified transfer ID.
+      operationId: PolicyEvaluationController_getLastDecision
       parameters:
         - name: transferId
           required: true
@@ -1636,13 +1635,13 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a22
-      security: *a23
+      security: *a22
+      summary: Retrieve last evaluation decision
+      tags: *a23
   /api/management/policy/evaluation/{transferId}/evaluate:
     post:
-      operationId: PolicyEvaluationController_evaluate
-      summary: Retrieve last evaluation context
       description: Retrieve last evaluation context of the specified transfer ID.
+      operationId: PolicyEvaluationController_evaluate
       parameters:
         - name: transferId
           required: true
@@ -1674,13 +1673,13 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a22
-      security: *a23
+      security: *a22
+      summary: Retrieve last evaluation context
+      tags: *a23
   /api/management/policy/evaluation/{transferId}/evaluate/data-plane:
     post:
-      operationId: PolicyEvaluationController_evaluateDataPlane
-      summary: Retrieve last evaluation context
       description: Retrieve last evaluation context of the specified transfer ID.
+      operationId: PolicyEvaluationController_evaluateDataPlane
       parameters:
         - name: transferId
           required: true
@@ -1706,13 +1705,13 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a22
-      security: *a23
+      security: *a22
+      summary: Retrieve last evaluation context
+      tags: *a23
   /api/management/policy/constraint:
     get:
-      operationId: RuleRepositoryController_getConstraints
-      summary: Retrieve constraints
       description: Retrieve constraint templates registered in this control plane
+      operationId: RuleRepositoryController_getConstraints
       parameters: []
       responses:
         "200":
@@ -1729,15 +1728,15 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: &a24
-        - Evaluation
-      security: &a25
+      security: &a24
         - oauth2:
             - controlplane_admin
+      summary: Retrieve constraints
+      tags: &a25
+        - Evaluation
     post:
-      operationId: RuleRepositoryController_addConstraint
-      summary: Add constraint
       description: Add new contraint template
+      operationId: RuleRepositoryController_addConstraint
       parameters: []
       requestBody:
         required: true
@@ -1770,13 +1769,13 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a24
-      security: *a25
+      security: *a24
+      summary: Add constraint
+      tags: *a25
   /api/management/policy/constraint/odrl:
     post:
-      operationId: RuleRepositoryController_getConstraintByOdrl
-      summary: Get constraint by ODRL
       description: Get constraint based on an ODRL constraint
+      operationId: RuleRepositoryController_getConstraintByOdrl
       parameters: []
       requestBody:
         required: true
@@ -1803,13 +1802,13 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a24
-      security: *a25
+      security: *a24
+      summary: Get constraint by ODRL
+      tags: *a25
   /api/management/policy/constraint/{id}:
     get:
-      operationId: RuleRepositoryController_getConstraint
-      summary: Get constraint
       description: Get constraint based on its identifier
+      operationId: RuleRepositoryController_getConstraint
       parameters:
         - name: id
           required: true
@@ -1835,12 +1834,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a24
-      security: *a25
+      security: *a24
+      summary: Get constraint
+      tags: *a25
     delete:
-      operationId: RuleRepositoryController_deleteConstraint
-      summary: Delete constraint
       description: Delete constraint template
+      operationId: RuleRepositoryController_deleteConstraint
       parameters:
         - name: id
           required: true
@@ -1862,12 +1861,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a24
-      security: *a25
+      security: *a24
+      summary: Delete constraint
+      tags: *a25
     put:
-      operationId: RuleRepositoryController_updateConstraint
-      summary: Update constraint
       description: Update constraint template
+      operationId: RuleRepositoryController_updateConstraint
       parameters:
         - name: id
           required: true
@@ -1911,13 +1910,13 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a24
-      security: *a25
+      security: *a24
+      summary: Update constraint
+      tags: *a25
   /api/management/policy/constraint/{id}/odrl:
     get:
-      operationId: RuleRepositoryController_getConstraintOdrl
-      summary: Get constraint ODRL
       description: Get constraint based on its identifier and convert to ODRL
+      operationId: RuleRepositoryController_getConstraintOdrl
       parameters:
         - name: id
           required: true
@@ -1943,13 +1942,13 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a24
-      security: *a25
+      security: *a24
+      summary: Get constraint ODRL
+      tags: *a25
   /api/management/policy/rule:
     get:
-      operationId: RuleRepositoryController_getRules
-      summary: Retrieve rules
       description: Retrieve rule templates registered in this control plane
+      operationId: RuleRepositoryController_getRules
       parameters: []
       responses:
         "200":
@@ -1966,12 +1965,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a24
-      security: *a25
+      security: *a24
+      summary: Retrieve rules
+      tags: *a25
     post:
-      operationId: RuleRepositoryController_addRule
-      summary: Add rule
       description: Add new contraint template
+      operationId: RuleRepositoryController_addRule
       parameters: []
       requestBody:
         required: true
@@ -2004,13 +2003,13 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a24
-      security: *a25
+      security: *a24
+      summary: Add rule
+      tags: *a25
   /api/management/policy/rule/{id}:
     get:
-      operationId: RuleRepositoryController_getRule
-      summary: Get rule
       description: Get rule based on its identifier
+      operationId: RuleRepositoryController_getRule
       parameters:
         - name: id
           required: true
@@ -2036,12 +2035,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a24
-      security: *a25
+      security: *a24
+      summary: Get rule
+      tags: *a25
     delete:
-      operationId: RuleRepositoryController_deleteRule
-      summary: Delete rule
       description: Delete rule template
+      operationId: RuleRepositoryController_deleteRule
       parameters:
         - name: id
           required: true
@@ -2063,12 +2062,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a24
-      security: *a25
+      security: *a24
+      summary: Delete rule
+      tags: *a25
     put:
-      operationId: RuleRepositoryController_updateRule
-      summary: Update rule
       description: Update rule template
+      operationId: RuleRepositoryController_updateRule
       parameters:
         - name: id
           required: true
@@ -2112,13 +2111,13 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a24
-      security: *a25
+      security: *a24
+      summary: Update rule
+      tags: *a25
   /api/management/policy/rule/{id}/odrl:
     get:
-      operationId: RuleRepositoryController_getRuleOdrl
-      summary: Get rule ODRL
       description: Get rule ODRL based on its identifier
+      operationId: RuleRepositoryController_getRuleOdrl
       parameters:
         - name: id
           required: true
@@ -2154,13 +2153,13 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a24
-      security: *a25
+      security: *a24
+      summary: Get rule ODRL
+      tags: *a25
   /api/management/registry:
     get:
-      operationId: RegistryClientController_requestCatalogs
-      summary: Request catalogs
       description: Requests all available catalogs.
+      operationId: RegistryClientController_requestCatalogs
       parameters: []
       responses:
         "200":
@@ -2175,17 +2174,17 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: &a26
-        - Registry Management
-      security: &a27
+      security: &a26
         - oauth2:
             - controlplane_admin
             - controlplane_dataplane
+      summary: Request catalogs
+      tags: &a27
+        - Registry Management
   /api/management/registry/addresses:
     get:
-      operationId: RegistryClientController_requestAddresses
-      summary: Request addresses
       description: Requests all available credential addresses.
+      operationId: RegistryClientController_requestAddresses
       parameters: []
       responses:
         "200":
@@ -2202,14 +2201,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a26
-      security: *a27
+      security: *a26
+      summary: Request addresses
+      tags: *a27
   /api/management/registry/didDocuments:
     get:
-      operationId: RegistryClientController_requestDIDDocuments
-      summary: Request DID Documents
       description: Requests all DID Documents that could be retrieved at the Wallet
         this Control Plane is linked to.
+      operationId: RegistryClientController_requestDIDDocuments
       parameters: []
       responses:
         "200":
@@ -2224,13 +2223,13 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a26
-      security: *a27
+      security: *a26
+      summary: Request DID Documents
+      tags: *a27
   /api/management/registry/catalogs:
     get:
-      operationId: RegistryClientController_getCatalogs
-      summary: Get catalogs
       description: Fetches all catalogs from the registry.
+      operationId: RegistryClientController_getCatalogs
       parameters: []
       responses:
         "200":
@@ -2245,12 +2244,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      tags: *a26
-      security: *a27
+      security: *a26
+      summary: Get catalogs
+      tags: *a27
   /api/registry:
     get:
       operationId: RegistryController_getCatalogs
-      summary: Get all catalogs
       parameters: []
       responses:
         "200":
@@ -2261,14 +2260,14 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/CatalogSchema"
-      tags: &a28
-        - Registry
-      security: &a29
+      security: &a28
         - bearer: []
+      summary: Get all catalogs
+      tags: &a29
+        - Registry
   /api/registry/addresses:
     get:
       operationId: RegistryController_requestAddresses
-      summary: Request all addresses
       parameters: []
       responses:
         "200":
@@ -2279,8 +2278,9 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/CredentialAddressDto"
-      tags: *a28
-      security: *a29
+      security: *a28
+      summary: Request all addresses
+      tags: *a29
 info:
   title: TSG Control Plane
   description: "This OpenAPI specification shows the endpoints of the Control
@@ -3633,7 +3633,8 @@ components:
         id:
           type: number
         type:
-          $ref: "#/components/schemas/ConstraintType"
+          allOf:
+            - $ref: "#/components/schemas/ConstraintType"
         title:
           type: string
         description:
@@ -3669,7 +3670,8 @@ components:
           items:
             $ref: "#/components/schemas/Rule"
         type:
-          $ref: "#/components/schemas/RuleType"
+          allOf:
+            - $ref: "#/components/schemas/RuleType"
         target:
           type: string
       required:

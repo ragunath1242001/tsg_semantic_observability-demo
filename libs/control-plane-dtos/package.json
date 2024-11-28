@@ -15,8 +15,8 @@
     "@nestjs/swagger": "^8.0.0",
     "@tsg-dsp/common-dsp": "workspace:*",
     "class-validator": "^0.14.0",
-    "jose": "^4.14.4",
-    "tslib": "^2.6.2",
+    "jose": "^5.9.6",
+    "tslib": "^2.8.1",
     "typescript": "^5.5.3"
   }
 }
