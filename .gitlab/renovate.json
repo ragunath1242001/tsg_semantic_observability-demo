@@ -4,5 +4,6 @@
   "commitMessagePrefix": "chore: Renovate",
   "commitMessageExtra": "from {{{currentVersion}}} to {{{newVersion}}}",
   "labels": ["Renovate"],
-  "prHourlyLimit": 0
+  "prHourlyLimit": 0,
+  "branchPrefix": "renovate-"
 }
