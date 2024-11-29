@@ -23,7 +23,7 @@
   "devDependencies": {
     "@types/node": "^22.10.1",
     "@types/semver": "^7.5.8",
-    "typescript": "^5.5.3"
+    "typescript": "^5.7.2"
   },
   "dependencies": {
     "@commander-js/extra-typings": "^12.1.0",

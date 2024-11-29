@@ -39,7 +39,6 @@ import { EventEmitter2 } from "@nestjs/event-emitter";
 describe("Negotiation Service (Consumer)", () => {
   let negotiationService: NegotiationService;
   let agreementService: AgreementService;
-  let dspGateway: DspGateway;
   let server: SetupServer;
   let remoteProcessId = "urn:uuid:51532177-8ae0-4d24-839e-c7bc969ddcfd";
 
@@ -103,10 +102,7 @@ describe("Negotiation Service (Consumer)", () => {
           useValue: serverConfig
         }
       ]
-    })
-      .overrideProvider(DspGateway)
-      .useValue(dspGateway)
-      .compile();
+    }).compile();
 
     server = setupServer(
       http.post<PathParams, ContractRequestMessageDto, ContractNegotiationDto>(

@@ -126,18 +126,13 @@ export function setupMockWalletServer(start: boolean = true): SetupServer {
         }
       ]);
     }),
-    http.get(
-      `http://127.0.0.1/tsg/management/did/resolve/${encodeURI(
-        "did:web:localhost"
-      )}`,
-      () => {
-        return HttpResponse.json(mockDidDocument());
-      }
-    )
+    http.get(`http://127.0.0.1/tsg/management/did/resolve/*`, () => {
+      return HttpResponse.json(mockDidDocument());
+    })
   );
   if (start) {
     server.listen({
-      onUnhandledRequest: "bypass"
+      onUnhandledRequest: "warn"
     });
   }
   return server;

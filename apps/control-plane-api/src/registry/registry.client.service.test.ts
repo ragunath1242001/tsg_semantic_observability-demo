@@ -123,10 +123,6 @@ describe("RegistryClientService", () => {
       ]
     }).compile();
 
-    server.listen({
-      onUnhandledRequest: "warn"
-    });
-
     registryClientService = module.get(RegistryClientService);
   });
 

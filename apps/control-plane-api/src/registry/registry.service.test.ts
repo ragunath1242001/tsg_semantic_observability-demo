@@ -59,7 +59,7 @@ describe("RegistryService", () => {
       ]
     }).compile();
 
-    server = setupMockWalletServer();
+    server = setupMockWalletServer(false);
 
     server.use(
       http.get(

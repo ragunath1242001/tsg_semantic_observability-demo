@@ -143,7 +143,7 @@ describe("Managed Identity Wallet", () => {
     );
 
     server.listen({
-      onUnhandledRequest: "bypass"
+      onUnhandledRequest: "warn"
     });
   });
 

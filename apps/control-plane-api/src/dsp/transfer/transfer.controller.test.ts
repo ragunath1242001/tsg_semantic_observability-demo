@@ -138,7 +138,7 @@ describe("TransferController", () => {
     );
 
     server.listen({
-      onUnhandledRequest: "bypass"
+      onUnhandledRequest: "warn"
     });
   });
 

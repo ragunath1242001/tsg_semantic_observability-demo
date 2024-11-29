@@ -91,18 +91,13 @@ describe("TSG Wallet", () => {
           }
         }
       ),
-      http.get(
-        `http://127.0.0.1/api/management/did/resolve/${encodeURI(
-          "did:web:localhost"
-        )}`,
-        () => {
-          return HttpResponse.json(mockDidDocument());
-        }
-      )
+      http.get(`http://127.0.0.1/api/management/did/resolve/did*`, () => {
+        return HttpResponse.json(mockDidDocument());
+      })
     );
 
     server.listen({
-      onUnhandledRequest: "bypass"
+      onUnhandledRequest: "warn"
     });
   });
 

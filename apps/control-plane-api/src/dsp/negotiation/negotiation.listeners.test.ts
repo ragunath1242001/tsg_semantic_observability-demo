@@ -11,14 +11,12 @@ import { DataService, Dataset, Distribution, Offer } from "@tsg-dsp/common-dsp";
 
 import { TypeOrmTestHelper } from "../../utils/testhelper";
 
-import { DspGateway } from "../client/dsp.gateway";
 import { TransferService } from "../transfer/transfer.service";
 
 describe("NegotiationListener", () => {
   let negotiationListener: NegotiationListener;
   let negotiationService: NegotiationService;
   let transferService: TransferService;
-  let dspGateway: DspGateway;
   let catalogService: CatalogService;
   let runtimeConfig: RuntimeConfig;
 
@@ -54,10 +52,7 @@ describe("NegotiationListener", () => {
           useValue: { controlPlaneInteractions: "automatic" }
         }
       ]
-    })
-      .overrideProvider(DspGateway)
-      .useValue(dspGateway)
-      .compile();
+    }).compile();
 
     catalogService = module.get(CatalogService);
     negotiationService = module.get(NegotiationService);

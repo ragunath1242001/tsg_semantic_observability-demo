@@ -85,7 +85,7 @@ describe("Presentation Service", () => {
         return HttpResponse.json(await didService.getDid());
       })
     );
-    server.listen({ onUnhandledRequest: "bypass" });
+    server.listen({ onUnhandledRequest: "warn" });
   });
   afterAll(() => {
     TypeOrmTestHelper.instance.teardownTestDB();

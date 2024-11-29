@@ -55,11 +55,9 @@ import {
   EvaluationContext,
   EvaluationDecision
 } from "../../policy/evaluation.dto";
-import { DSPError } from "../../utils/errors/error";
 
 describe("Transfer service", () => {
   let transferService: TransferService;
-  let dspGateway: DspGateway;
   let server: SetupServer;
   let remoteProcessId = "urn:uuid:6334612d-bc17-4474-b8c1-5703c7a80bb1";
   let moduleRef: TestingModule;
@@ -196,10 +194,7 @@ describe("Transfer service", () => {
           useValue: runtimeConfig
         }
       ]
-    })
-      .overrideProvider(DspGateway)
-      .useValue(dspGateway)
-      .compile();
+    }).compile();
 
     let dataPlaneConsumerFirst = true;
     server = setupServer(
