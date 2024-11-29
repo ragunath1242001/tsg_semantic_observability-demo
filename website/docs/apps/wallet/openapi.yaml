@@ -470,7 +470,14 @@ paths:
     get:
       description: List all credentials in this dataspace.
       operationId: CredentialsManagementController_getDataspaceCredentials
-      parameters: []
+      parameters:
+        - name: issuerIds
+          required: false
+          in: query
+          description: Comma-separated list of issuer IDs to retrieve dataspace
+            credentials from
+          schema:
+            type: string
       responses:
         "200":
           description: ""

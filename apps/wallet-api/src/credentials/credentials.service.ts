@@ -14,6 +14,7 @@ import { DidService } from "../did/did.service.js";
 import axios from "axios";
 import { SignatureService } from "../keys/signature.service.js";
 import { DIDDocument, ServiceEndpoint } from "did-resolver";
+import { DidResolverService } from "../did/did.resolver.service.js";
 
 @Injectable()
 export class CredentialsService {
@@ -22,6 +23,7 @@ export class CredentialsService {
     @InjectRepository(Credentials)
     private readonly credentialRepository: Repository<Credentials>,
     private readonly didService: DidService,
+    private readonly didResolver: DidResolverService,
     private readonly signatureService: SignatureService
   ) {
     this.initialized = this.init();
@@ -122,44 +124,47 @@ export class CredentialsService {
     return await this.selfIssueCredential(credentialConfig, targetDid);
   }
 
-  async getDataspaceCredentials(): Promise<Credentials[]> {
+  async getDataspaceCredentials(issuerIds?: string): Promise<Credentials[]> {
     try {
-      const issuerUrls = this.config.oid4vci.holder.map(
-        (holder) => holder.issuerUrl
-      );
-      if (issuerUrls) {
-        const didDocuments = await Promise.all(
-          issuerUrls.map(async (issuerUrl) => {
-            const response = await axios.get<DIDDocument>(
-              `${issuerUrl}/.well-known/did.json`
-            );
-            return response.data;
-          })
-        );
-        const serviceEndpoints: ServiceEndpoint[] = didDocuments
-          .map((didDocument) =>
-            didDocument?.service
-              ?.filter((service) => service.type === "Management")
-              .map((service) => service.serviceEndpoint)
-          )
-          .filter((result) => result !== undefined)
-          .flat();
-
-        const credentials = await Promise.all(
-          serviceEndpoints.flatMap(async (serviceEndpoint) => {
-            const response = await axios.get<Credentials[]>(
-              `${serviceEndpoint}/credentials`
-            );
-            return response.data;
-          })
-        );
-        return credentials.flat();
+      let issuerList: string[];
+      if (issuerIds) {
+        issuerList = issuerIds.split(",");
       } else {
-        this.logger.warn(
-          "No issuer URLs configured. Registry will not work for this instance."
+        const ownCredentials = await this.getCredentials(
+          await this.didService.getDidId()
         );
-        return [];
+        issuerList = ownCredentials
+          .filter((credential) => !credential.selfIssued)
+          .map((credential) => credential.credential.issuer);
       }
+      const didDocuments = (
+        await Promise.allSettled(
+          issuerList.map((issuerId) => this.didResolver.resolve(issuerId))
+        )
+      )
+        .filter((result) => result.status === "fulfilled")
+        .map((result) => result.value);
+
+      const serviceEndpoints: ServiceEndpoint[] = didDocuments
+        .map((didDocument) =>
+          didDocument.service
+            ?.filter((service) => service.type === "Management")
+            ?.map((service) => service.serviceEndpoint)
+        )
+        .filter((result) => result !== undefined)
+        .flat();
+
+      const credentials = await Promise.allSettled(
+        serviceEndpoints.flatMap(async (serviceEndpoint) => {
+          const response = await axios.get<Credentials[]>(
+            `${serviceEndpoint}/credentials`
+          );
+          return response.data;
+        })
+      );
+      return credentials
+        .filter((result) => result.status === "fulfilled")
+        .flatMap((result) => result.value);
     } catch (err) {
       throw new AppError(
         `Could not fetch credentials at dataspace wallet`,

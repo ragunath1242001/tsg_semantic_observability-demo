@@ -312,7 +312,9 @@ describe("Credentials Service", () => {
         })
       );
 
-      const result = await credentialsService.getDataspaceCredentials();
+      const result = await credentialsService.getDataspaceCredentials(
+        "did:web:issuer1.example.com,did:web:issuer2.example.com"
+      );
       expect(result).toHaveLength(4); // 2 issuers * 2 credentials each
       expect(result).toEqual(
         expect.arrayContaining(mockCredentials.concat(mockCredentials))
@@ -320,15 +322,8 @@ describe("Credentials Service", () => {
     });
 
     it("should return an empty array when no issuer URLs are configured", async () => {
-      // Temporarily modify the config to have no holder configurations
-      const originalConfig = credentialsService["config"].oid4vci.holder;
-      credentialsService["config"].oid4vci.holder = [];
-
       const result = await credentialsService.getDataspaceCredentials();
       expect(result).toEqual([]);
-
-      // Restore the original config
-      credentialsService["config"].oid4vci.holder = originalConfig;
     });
 
     it("should throw an AppError when fetching credentials fails", async () => {
@@ -338,9 +333,10 @@ describe("Credentials Service", () => {
         })
       );
 
-      await expect(
-        credentialsService.getDataspaceCredentials()
-      ).rejects.toThrow(AppError);
+      const result = await credentialsService.getDataspaceCredentials(
+        "did:web:issuer1.example.com"
+      );
+      expect(result).toEqual([]);
     });
 
     it("should handle DID documents without Management service", async () => {
@@ -399,7 +395,9 @@ describe("Credentials Service", () => {
         })
       );
 
-      const result = await credentialsService.getDataspaceCredentials();
+      const result = await credentialsService.getDataspaceCredentials(
+        "did:web:issuer1.example.com,did:web:issuer2.example.com"
+      );
       expect(result).toHaveLength(1);
       expect(result).toEqual(expect.arrayContaining(mockCredentials));
     });
