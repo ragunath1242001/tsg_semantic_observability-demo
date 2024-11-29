@@ -51,7 +51,7 @@ export async function createRelease(newVersion, changelog) {
       }
     );
     console.log("Created release");
-  } catch (e) {
+  } catch (error) {
     console.error("Error creating release");
     if (error.response) {
       // The request was made and the server responded with a status code
