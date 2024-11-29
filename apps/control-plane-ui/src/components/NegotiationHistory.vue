@@ -47,7 +47,7 @@ const getSeverity = (state: string) => {
     case "dspace:TERMINATED":
       return "danger";
     case "dspace:VERIFIED":
-      return "warning";
+      return "warn";
   }
 };
 

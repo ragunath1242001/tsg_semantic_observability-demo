@@ -180,7 +180,7 @@ const statusSeverity = (status: number) => {
   } else if (status >= 300 && status < 400) {
     return "info";
   } else if (status >= 400 && status < 500) {
-    return "warning";
+    return "warn";
   } else {
     return "danger";
   }
@@ -196,7 +196,7 @@ const methodSeverity = (method: string) => {
       return "success";
     case "PATCH":
     case "PUT":
-      return "warning";
+      return "warn";
     default:
       return "danger";
   }

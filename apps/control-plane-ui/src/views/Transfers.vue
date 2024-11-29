@@ -3,7 +3,12 @@ import { storeToRefs } from "pinia";
 import { useDspStore } from "../stores/dsp";
 import TransferHistory from "../components/TransferHistory.vue";
 import CTATransfer from "../components/CTATransfer.vue";
+import { onMounted } from "vue";
 const { transfers, ctaTransfers } = storeToRefs(useDspStore());
+
+onMounted(async () => {
+  await useDspStore().getTransfers();
+});
 </script>
 <template>
   <div>

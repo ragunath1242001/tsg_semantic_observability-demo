@@ -8,6 +8,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   UsePipes
 } from "@nestjs/common";
 import { CredentialsService } from "./credentials.service.js";
@@ -23,6 +24,7 @@ import {
   ApiOAuth2,
   ApiOkResponse,
   ApiOperation,
+  ApiQuery,
   ApiTags
 } from "@nestjs/swagger";
 import {
@@ -101,12 +103,20 @@ export class CredentialsManagementController {
     description: "List all credentials in this dataspace."
   })
   @HttpCode(HttpStatus.OK)
+  @ApiQuery({
+    name: "issuerIds",
+    required: false,
+    description:
+      "Comma-separated list of issuer IDs to retrieve dataspace credentials from"
+  })
   @ApiOkResponse({
     type: [CredentialsDto]
   })
   @ApiForbiddenResponseDefault()
-  async getDataspaceCredentials(): Promise<Credentials[]> {
-    return this.credentialsService.getDataspaceCredentials();
+  async getDataspaceCredentials(
+    @Query("issuerIds") issuerIds?: string
+  ): Promise<Credentials[]> {
+    return this.credentialsService.getDataspaceCredentials(issuerIds);
   }
 
   @Get("config")

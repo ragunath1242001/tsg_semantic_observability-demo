@@ -4,8 +4,13 @@ import CTANegotiation from "../components/CTANegotiation.vue";
 import { useDspStore } from "../stores/dsp";
 import { storeToRefs } from "pinia";
 import NegotiationHistory from "../components/NegotiationHistory.vue";
+import { onMounted } from "vue";
 
 const { negotiations, ctaNegotiations } = storeToRefs(useDspStore());
+
+onMounted(async () => {
+  await useDspStore().getNegotiations();
+});
 </script>
 <template>
   <div>
