@@ -1,6 +1,6 @@
 {
   "name": "@apps/wallet-api",
-  "version": "0.4.1",
+  "version": "0.1.0",
   "description": "TSG Dataspace Protocol SSI Wallet",
   "main": "index.js",
   "type": "module",

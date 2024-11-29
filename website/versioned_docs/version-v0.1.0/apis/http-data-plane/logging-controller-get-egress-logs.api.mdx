@@ -1,0 +1,71 @@
+---
+id: logging-controller-get-egress-logs
+title: "Get egress logs"
+description: "Get egress logs"
+sidebar_label: "Get egress logs"
+hide_title: true
+hide_table_of_contents: true
+api: eJy9VU1v2zgQ/SvEnLWWG2AvugWJmw2Q7RqIt5fAKGhpLLEVP0qO4gSG/vtiSFmR7aRIt0BvEjmcN3zz5nEP1qGXpKy5raCAO1vXytRX1pC3bYv+S420qD2GcGfrABk46aVGQh+geNiDkRqhAOsr9JCBx++d8lhBsZVtwAyUgQK+d+ifIYNQNqglFHuocCu7lqCA68X9FWSAptNQPMBl/IuL6wzo2XH2QF6ZGvo+GwGdrPEn8LQySjPCh+wF+8MIYDq9QX8EQPLb/wXQ8il9/zmfos1fhTsDOGH0fQT+MNXA1U9R88OEAze/QEXfr5nb4KwJGPjUxXye7hVKrxwLEgqADEprCA3xnnSuVWUUa/41cMB+AjtwazdfsSQWqmdpk0rpK0nTKOm95KoVoQ5n632fgUZ6R9pI7UvUobFZoui1DUa8sl260dku53t7t5Fh6fFR2S4sj4E31rYozRD0CZ/orYB+qumHgzYOHR2Lm5ZyDnyMwoOqqGUY/v8bSV6TPYOKLRiIPTmSwvs+ElezsxyciCOPNXGDJDA6kmiTJWmkxrJ71ZgKpwYKyKVTuZZG1qjRUN6mhHk6y4pF/5hsbM0/ZecVPd+znlJvreyouZhqIC1ksG3tbmh/CDvrq6RE69LBhsjxZV0rDX6RlY6D8tpqdrI6fp3Fv+wkmjYoPfpxAmKL09Jh76P1WrJBfF7C6DycFE4Z/YxebZXctCiWHgMaijMmDGKFlSArSqt1Z3j2UGyQdohG0M4KZQJJU2IQdiuoQVGmh0PEUmdRAspsbSRx6Pfq/kb8tVotxbUkKZbxTqcVrRoVxD8OzeXyVgSHpdoOgy9CY3chYqGpnFWGRvCTrDPIgBt8ZCWy5NHqM2hViSbEERlc7dLJskFxMZtDBp1vB7pCkee73W4m4/bM+jofzob87vZq8el+8cfFbD5rSLfxws4G0tJMMp9L9ui6o8AInyh3rVRxkGMJ+0HODyCdYq2PgoYMBknz85lEvc6gsYE4fL/fyID/+rbveTnZNL/YlQrc6hdT/4bPk/fmUbYd1wL8ALwRO5jGe0IHY3lP6O+qYM0/PuqdZ58tEyVDMzvpzGVZoqPJqbOnh7OMvnOzWEHf/we2ZCRt
+sidebar_class_name: "get api-method"
+info_path: docs/apis/http-data-plane/tsg-http-data-plane
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Get egress logs"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/management/logging/egress"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Get egress logs
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"order","required":false,"in":"query","schema":{"default":"DESC","enum":["ASC","DESC"],"type":"string"}},{"name":"page","required":false,"in":"query","schema":{"minimum":1,"default":1,"type":"number"}},{"name":"take","required":false,"in":"query","schema":{"minimum":1,"maximum":50,"default":10,"type":"number"}},{"required":false,"name":"order","in":"query","schema":{"default":"DESC"}},{"required":false,"name":"page","in":"query","schema":{"minimum":1,"default":1}},{"required":false,"name":"take","in":"query","schema":{"minimum":1,"maximum":50,"default":10}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{"data":{"type":"array","items":{"type":"array"}},"meta":{"type":"object","properties":{"page":{"type":"number"},"take":{"type":"number"},"itemCount":{"type":"number"},"pageCount":{"type":"number"},"hasPreviousPage":{"type":"boolean"},"hasNextPage":{"type":"boolean"}},"required":["page","take","itemCount","pageCount","hasPreviousPage","hasNextPage"],"title":"PageMetaDto"}},"required":["data","meta"],"title":"PageDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

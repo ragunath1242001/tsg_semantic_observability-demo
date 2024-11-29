@@ -1,0 +1,71 @@
+---
+id: negotiation-controller-negotiation-termination
+title: "Terminate negotiation"
+description: "Terminate negotiation"
+sidebar_label: "Terminate negotiation"
+hide_title: true
+hide_table_of_contents: true
+api: eJyVVk1v4zYQ/SvEnNqF1g5y1CnbNF0EaBJjk90eDCMYk2OLG4rkkqN4DUP/vSAlxfJH0/ZkmfPB4eO8N9yB8xSQtbO3Ckq4p7Vjnf9fO8vBGUPh2e5XnyjU2uZPKMBjwJqYQoRyvgOLNUEJWkEBgX40OpCCkkNDBWgLJXjkCgqIsqIaodwBb32KiBy0XUPbLrpAivybU9vkcZxHOstkOZnQe6NlrmX6PTqb1k5Su+V3kpxqDemorCkm61VnPqmgABU9Siqls7GpKcy0es/NB/eq1b+6Safe3S0Q9gfoPTAE3EIBmqmO/+E4r2ia8ztcGbTrBtfnrO34nuZDlnHMogDWbFLQXWNYD4bHDuf2JEXe4SyKZzE7RmC0X25AlHx/tvvuKMaDOnIh0TsbO0guLy7Sj6Iog/a5YUuA/9FA9BNrbzJskZGbOAau2zCSbILmbe7+JWGgAOV8kdqYcZ1IMWZUTKc7rGc4EIkRx6CAmrhyiZDexXzbiTglTNHr6cgzTndatVM+IGWk8NoxcrGvMOPUAeOw4epy3FPdQgEr4zbZxWOMGxdUB4jzXaDsFMEbtPSMqs6UPrNYHC4qZMxfx957Q4fmAGB/Ccm/Xxpsf7hQI0MJ32ZQDOVXzB6Ogf1GQa80Lg2JWaBIljM8whIpUoKdkK6uG5uun8SSeENkBW+c0DYyWklRuJXgikRfs8ilTjJpUrN82evUzb5Trg4Zdl5OTqwHKnImVp1LOWjGfE//vc+I9W9Nu2iTDK9cvvqeZE+Pn0Wv9GKW7+KkRSsdxYMn+2l2K6InqVc9Z0Ss3CZmjMgq77TlN9AOck7EnYs8mPa+GEgEMsjdjSTj78iYjydmwbGTzhQC47AvKbHcZr8babSPJP5y4UXbtfgcXOP30XEiHriicLRZbLx3gfXruAp2osaXZAyUc6e+FBKtWJJApfbFSWQ0bl0ItOo4DFl8vRXaMiXNStzMKTi5eIOSJkI8P3+4d0wfnp9LcQCropW2OmOqo7COcyLbb70koXQgyWYrjLYvpMRGcyVQRG3X5gjstwaeCCggKcGB9KFM0tcWYLQkG3PT9nP7k0dZkbicXEABTTA9t2I5nW42mwlm88SF9bSPjdM/b69v7h9vPl5OLiYV1yazI2lWjXaU+Z9k7qDT3vSI6SdPvUFt0/zKhex6BZwDeg0FjDUQCijzJBnL4KKAKklnOYfdbomRvgbTtmn5R0Nh24njK4YsEZlDSsf0raBcoYl0Utzb3IBfvvQD71exV6HDoocpbtMMH8gJBbzQtnsgZTJWhCpPjF1vuO72+PjUDdEh8GROtcUQ8UlK8vyu72I0TmYPj09JTfvHVd0pS8BNerHhpivS+Q7X9PpKazsYiUmXM11zmhqjWzuS6nyqszDsdp3Hk3sh27ZvqHD6n4Bp278BpgG2sw==
+sidebar_class_name: "post api-method"
+info_path: docs/apis/control-plane/tsg-control-plane
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Terminate negotiation"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/negotiations/{id}/termination"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Terminate negotiation
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"id","required":true,"in":"path","schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={{"required":true,"content":{"application/json":{"schema":{"type":"object","properties":{"@type":{"type":"string"},"dspace:consumerPid":{"type":"string"},"dspace:providerPid":{"type":"string"},"dspace:code":{"type":"string"},"dspace:reason":{"type":"array","items":{"type":"object","properties":{"@value":{"type":"string"},"@language":{"type":"string"}},"required":["@value","@language"],"title":"MultilanguageSchema"}}},"required":["@type","dspace:consumerPid","dspace:providerPid","dspace:reason"],"title":"ContractNegotiationTerminationMessageSchema"}}}}}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"","content":{"application/json":{"schema":{"example":{"status":"string"}}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

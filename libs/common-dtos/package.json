@@ -1,6 +1,6 @@
 {
   "name": "@tsg-dsp/common-dtos",
-  "version": "0.4.1",
+  "version": "0.1.0",
   "description": "",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

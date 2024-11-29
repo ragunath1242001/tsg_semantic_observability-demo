@@ -1,0 +1,71 @@
+---
+id: health-controller-get-health
+title: "Health check"
+description: "Retrieves the current health of the control plane. If the control plane is running it always returns an empty 200 OK"
+sidebar_label: "Health check"
+hide_title: true
+hide_table_of_contents: true
+api: eJzVVk1vGzcQ/SuDOQZbSVDRi26B6zpG29ionfRgGMKIHGkZc0mGnLUiCPrvxeyuZElxitya7mUX8/3ImTe7RcvFZJfExYAz/IslO37mAlIzmDZnDgI1k5ca4rKXxiA5ekieAo/g+hUpuAK5DcGFFTgB8mvaFMgsbQ4FKAA3STYwnUzg5nesMCbOpCVcW5zhuy7dRR/Qc56vWHoZVpgoU8PCueDs4bHCzCXFULjgbIvTyURfp5hwV+Evk+m3FD9/rbivGfqEcFGzeVI4IQqU1hguZdl6rFABcxD1ppS8Mx2A8aeiIbZYTM0N6ZdsEuMM4+ITG1EEWeGK60suQtKWI7si2YUVVshfqEleRZxzzFqtC8v4WsiD6RYtCS2o8HFsbBPudhWStU6LJH97UsN5uMyfW5fZ4uxhH+Pxe+v+dh7JLe8qDK33tNBiB0GP7t9RZbbuJC3auA5YYcOl0ErdLmLrbXdNJoagEX5cyJaFnH+1kO+5yup/fR7DU6HQSod4mHeN37DUUSlgxd2kkNQ4w3G9H/7C+fkw+YVNm51s7nTS+ooitVJPj/H0ggqXPq47k0SlrGO2/YzG1DsO7NWR15xs45QGXhFWp0K9oe7r3PpF0UNdMGXOB15Q+0G01/0Wc0OCM/x4i9W+/FokYXXGTh85u6XTfoLbzIWDdMwDgdmyBYlgYtO0QRmJYcGyZg4g6wguFKFguLxO5d3FHSjGScc993dXMFAx3HaIzuu5r12Bm8Th7e01lMTGLQcyhFLHdb9KONgUXZBD6pOYI/gzFtmrXmwpM2T2JD0uVf5KQiWRUfBRoom+Air7vGxhsensLo13qTD8HfOTrqGrHNv04l1GcCM157NkpU0pZnHPx1VIhIaeVJm5i623C4YCLBjI2pfiDAn5uKqAgj13I4EP1+CCcCajp1O6EKImyZPhEcB8/uZ9FH4zn8/g5FgtL13oBmq/izRQGFIvGKzLbMRvwLvwxBbWTmogKC6s/NlhH9pgBFihztOwDvvmJqM7bVehd4ZDzz6BupZ9m8jUDNPRBCtssx86tMzG4/V6PaJOPYp5NR58y/iP64vL93eXP01Hk1Etje96LMUiDYWjyMO2Nbptzxts+7Jq/6v/k2Echb/IOHlyQTm4O4DtQFIPWB9YrI5FVLLdKnt/yH63U/HnlvOmp65nyq5fCA+Pu0pdrbLDwxafeKMHbQwnZcBn8q1m/uoPY3fMlleX97jb/QPXG3GN
+sidebar_class_name: "get api-method"
+info_path: docs/apis/control-plane/tsg-control-plane
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Health check"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/health"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Retrieves the current health of the control plane. If the control plane is running it always returns an empty 200 OK
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":""},"502":{"description":""},"503":{"description":"The Health Check is not successful","content":{"application/json":{"schema":{"type":"object","properties":{"status":{"type":"string","example":"error"},"info":{"type":"object","example":{"database":{"status":"up"}},"additionalProperties":{"type":"object","required":["status"],"properties":{"status":{"type":"string"}},"additionalProperties":true},"nullable":true},"error":{"type":"object","example":{"redis":{"status":"down","message":"Could not connect"}},"additionalProperties":{"type":"object","required":["status"],"properties":{"status":{"type":"string"}},"additionalProperties":true},"nullable":true},"details":{"type":"object","example":{"database":{"status":"up"},"redis":{"status":"down","message":"Could not connect"}},"additionalProperties":{"type":"object","required":["status"],"properties":{"status":{"type":"string"}},"additionalProperties":true}}}}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

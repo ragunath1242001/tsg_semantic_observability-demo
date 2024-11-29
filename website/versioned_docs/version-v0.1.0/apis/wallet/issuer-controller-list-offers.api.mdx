@@ -1,0 +1,71 @@
+---
+id: issuer-controller-list-offers
+title: "Retrieve offered credentials"
+description: "Retrieves all credentials offered this wallet has offered to holders"
+sidebar_label: "Retrieve offered credentials"
+hide_title: true
+hide_table_of_contents: true
+api: eJytVttu4zYQ/ZUBn9qFYgdpnoSiwCJJFwaK3aJOtw9pYIylscUNRWqHI3tdQ/9ekLItybeiRV984dzPkHNmq3LyGetKtLMqVb+RsKYVeUBjIGPKyYpG48EtFsSUgxTawxqNIYECe+cOCmdyYq8S5SpiDC4nuUrVxPua+MFZYWcM8cxoL5+CXdCtkLEkCX/Sl9dEMfnKWU9epVt1d3sbvoZJqkRlzgpZCTKsKqOzGG38xQeFrfJZQSWGX7KpSKUKmXGjEqWFSt87d/MvlEnIgkPOotuwOu/p2LqcE6smURkTCkXZwnGJolKVo9CN6JJUsjfwwtoug0HF9L6WwrH+i/IHl1PPbafV4jbJzwq7HjxH0VWVCz6YVu6N+rK5c4bQDq2ndYvGv4NnHybG+VprDoFegs5rokSLCUqPtMDayMNxrEdx5yw7qM9h2EPsBJ+u2HOV9TLqUok3cSootW/TaUJG97c/nN68nx3PdZ6T/Q9X8AKWFsvzXfUxo/MNH96k7oKW5D0u6TRqkyhidvzPfYv5HKLvYvVwewpuejh5ymrWslHpy1Y5rKW4C27aCTEr0eKSZmjMrDdM1GsTPOIyPHn1qSI7eYR7+EysFxrnhqDrDoTpgTaLSZQkhQsjZUkRSZRCpWqMlR47nd+vMj2O8ygUQLw6zJR9ktPQlBb3faodUu1BohbGraNKhd6vHedtO13VGu4qW2laz/LwEk5OkqPq32jjO7X+4UGz9sdqh5Nk4N+t7QDJ9Kp0aHvchfSq9LiKi5EvyI/tL0a/ID/Y60Af501PRcOKKyZPVuLLPK53KNvdZm0XLt6J3W1/nn6AP6KRSo5mwXNB0IlBe0CYTid7bpQCBTK0EHMEtDl4cUyw6m55n1+DQjv0YJBZINY5Qe0ph7WWQlvIURB8hRn50Y9zhvFP7eefFgAg5LXuctIl5YACZW1E34gmhpwq4zYlWfFJ9AnOEnznGErH9P2gAszEA3oQrr0A2qxwDAvHgL00YvLa5npVo9mZ+6hFmBXgFiAFQYUsOtMVWvGgbTzrfIzgk22XiwqXFIUZWeGDwzafiKYfILfWxgSIsqCWR8tHFGwz23UHjRSuXhagIyrWCeyHXutXCmICNGvc+KBB3zATs4nIxJgcyuiH1XaHQZv+aSNms3cfndC72SyF51BYGHTvf51ATgttdejuPhcdqCRvt6g5Qa6ZYnSj7duu74DgtV2aQ0naeglzcQQqUWHUDZYjjDzeJMrojKynjmrU+wqzguBudKsSVbNRqSpEKp+Ox+v1eoRRPHK8HO9s/fiXycPTx+nTzd3odlRIaSJrVM5Libbneb89HpbC4cscvJ9tR6D/19a5G+RC32RcGdRxvYkFbndU8aKw0mE/bcki/Ip08RpWCi9BYbudo6ff2TRNOP5aE29aElkhx2cb/oWtjTAnjrT3RpuAa5ZRFebECk0dl87jtaDpU9iHp2eVqEA650jowKTdCms3Pd9HnAOn5AJHRAJXiAKuEAFcHfNwdYjDpTkNlydxsoMzMq5qkgsA7Mn5aPq3tktGK7No17w2TfM3+Sab2A==
+sidebar_class_name: "get api-method"
+info_path: docs/apis/wallet/tsg-wallet
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Retrieve offered credentials"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/oid4vci/offer"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Retrieves all credentials offered this wallet has offered to holders
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"","content":{"application/json":{"schema":{"type":"array","items":{"type":"object","properties":{"id":{"type":"number"},"created":{"format":"date-time","type":"string"},"preAuthorizedCode":{"type":"string"},"holderId":{"type":"string"},"credentialType":{"type":"string"},"credentialId":{"type":"string"},"revoked":{"type":"boolean"},"credentialSubject":{"type":"object","properties":{"id":{"type":"string"}},"required":["id"],"title":"DefaultCredentialSubjectDto"}},"required":["id","created","preAuthorizedCode","holderId","credentialType","revoked","credentialSubject"],"title":"CredentialOfferStatusDto"}}}}},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string"},"status":{"type":"string"},"code":{"type":"number"},"message":{"type":"object"},"error":{"type":"string"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

@@ -1,0 +1,71 @@
+---
+id: issuer-controller-issuer-metadata
+title: "IssuerController_issuerMetadata"
+description: "IssuerController_issuerMetadata"
+sidebar_label: "IssuerController_issuerMetadata"
+hide_title: true
+hide_table_of_contents: true
+api: eJyVVttu4zYQ/ZUBn9qFYgdBn4yiwCJZLAy0uwWStg9pIIypsTUbiuSSI2tdw/9ekPJFcpxt6gdb5tzOXM5QW+U8BRR2dl6pmZrH2FK4dVaCM4ZCyfngNxKsUFAVymPAhoRCVLPHp0IFit7ZSFHNturm+jr9VBR1YJ+8qplShdLOCllJMvTesM4Rp19iUtiqqGtqMD3JxpOaKbf4QlpStJDwCffudaCKrDCaPa6BSZTAdqV2hcJWahf4nxyjjBTWGexRE0PAjSoUCzXxgoddocQ9ky3JVt5xD/tFlAGW7+otUHRdvlW7oiWFQNWbDawTXu7r+WbAh56VZHXY7Pt0XvyxCeeHJVOIZWy9d0GoGhgtnDOENllFXlmqyuYwMxfz5OgNbv5fVwZwtLNLXrX95F5GdEhjl2b0a8shSR8vzNDlXr4t3FOhhMWkeLdH9fmIM3fi1C59CiW4SqxRnz3Z+R38BH9S4CXjwhCczCHZo9WUvI+p9N/0bEhql5i8oswflFrN1HTSkTFXz9Z1duo8Wa6uTuldHQtxJEtidiTdBpbNfWJnT0CXuHUzLHJ/UKilcV1W8Rhj50LV89r53rBDY0jKNVNXVpzwnZ8Uh5MGLa6ofKZNPKkND4+abTxXO54UI/+uswNCxbPo59KxLRrzHdtz6XkWr0Z+RX5u/2r0V+RH+9zSy6YvReOMfaBIVvpZP8t3LNuPNdulyzOxZ8LD/Uf4Kxup8wF+qAlOYuAICPf3c+hjgNQooNFCxghoK4jiAsH6RJQB8KygA6EQjJCBOFgQtJEq6FhqtpD4AdGjpjj5eRFg+kv//bcFAEi4uhMmbqgCFGhaI3wlTAEq8sZtGrISi+wTnCX4wQVoXKAfRxmglggYQUIbBdDq2gVYugA4gJHBs6143aLZm8esRahrcEuQmsBjENbs0UoEtvns5GMCn9MRR/C4oizUZCUcHfZ4cjXjqHIdG5NKpJNalS3vULBHtu8OGqldu6qBc1WsEzhs0t6v1BQI0HS4iUmDvqEWs8mV6XdKSmMYlu2+Bj38l40oy3efnNC7spzBQ0os7cr3v8+hoiVbTt09YOH0TlElLLnZFQfK0Q3b533fASGyXZljSmyjpNU6AVWotOpGryio09W5K5RhTTZSGmqLTZrp9x51TXAzuVaFaoNRM1WL+DibTruum2AWT1xYTfe2cfrr/PbDp/sPVzeT60ktjclXkXdRGrQDz/1Oh9NSP5RusNVHJDouX6FvMvUGOV+7GdR2v/Ef1WDjq0K9uvOfClW7KMliu11gpD+C2e3S8deWwqa/CdYYMvfSv12hasIqvXs9btUzbVJxtCafyL5G0+bL/Pwlb/c0uJo+fnhQu92/qYTJ4A==
+sidebar_class_name: "get api-method"
+info_path: docs/apis/wallet/tsg-wallet
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"IssuerController_issuerMetadata"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/.well-known/openid-credential-issuer"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+IssuerController_issuerMetadata
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{"credential_issuer":{"type":"string"},"authorization_servers":{"type":"array","items":{"type":"string"}},"token_endpoint":{"type":"string"},"credential_endpoint":{"type":"string"},"batch_credential_endpoint":{"type":"string"},"deferred_credential_endpoint":{"type":"string"},"notification_endpoint":{"type":"string"},"credential_response_encryption":{"type":"object"},"credential_identifiers_supported":{"type":"boolean"},"signed_metadata":{"type":"string"},"display":{"type":"array","items":{"type":"string"}},"credential_configurations_supported":{"type":"object"}},"required":["credential_issuer","credential_endpoint","credential_configurations_supported"],"title":"CredentialIssuerMetadataDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

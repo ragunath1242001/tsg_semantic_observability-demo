@@ -1,0 +1,71 @@
+---
+id: proxy-controller-get-data-search
+title: "Proxy a request"
+description: "This endpoint is used if the HTTP Data Plane needs to serve as a proxy."
+sidebar_label: "Proxy a request"
+hide_title: true
+hide_table_of_contents: true
+api: eJyNU11r3DAQ/Ctin1X7uEe/hTRtA6U15MhLCWEjrU8CW1Klddz08H8v6/toepdCniyvpJnRzs4OLBWTfWIfAzSwcb4oCjZFH1j5osZCVvlOsSP1ZbNp1UdkVG2PgVQgskVxVIXyMyksClXK8ddLpUBDTJRRYG8tNNBK/ToGzrHvKT9uiQXpsRBm40BDwowDMeUCzY8dBBwIGvAWNGT6OfpMFhrOI2nwojQhy7Uz+RlD6Sgrbymw7zxl0FCMowGh2QG/JEEtnH3YwjzrE9HVyC5m/3tR/D9OR2jfjXgQ+H7xLbJTsVOZDPlnH7YKU+q9OUo6kc7zg+CWFEOhIirWq5V8/sUTNcC4lYbu+w8PGgZiF8WRV51nBw3UmHy92FfvvJ3rndRn4RV3F1se5MeM2fPLnYjZk0cc2a1fNeNQ0ND1cVqOJCxlitnKupiY9hcdc7LImGSaHtEO+ya/UdVn1dPq4vzfnXmW9z8RZsp7XlEMzbF03PsU84AMDdy3oI9PENALg+4p+87jU0+qzVQo8GLNkgOyEgQTh2EMYhmpJ+KJKCieovKhMAZDRfyVKJl9EtQitVqc8qGLSxM99yJhc/f5PHGX8y5x/Z4oXLW3qiQyvjvMiyouTmXhOsb5RH6GWoEGMfgwNRpEHBqWSdPQe0OhkCg7RiWhcaTW1Qo0jLk/tKs0dT1NU4XLdhXztj7cLfXX2+ubb3c3H9bVqnI89GLOH2/9jmA=
+sidebar_class_name: "search api-method"
+info_path: docs/apis/http-data-plane/tsg-http-data-plane
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Proxy a request"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"search"}
+  path={"/api/proxy/{id}/{path}"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+This endpoint is used if the HTTP Data Plane needs to serve as a proxy. 
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"id","required":true,"in":"path","description":"Transfer identifier","schema":{"type":"string"}},{"name":"Authorization","required":true,"in":"header","schema":{"type":"string"}},{"name":"path","required":true,"in":"path","description":"Path of receiving application","schema":{}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":""}}}
+>
+  
+</StatusCodes>
+
+
+      

@@ -1,0 +1,71 @@
+---
+id: data-plane-management-controller-execute-transfer-get
+title: "Proxy a request"
+description: "This endpoint is used if the HTTP Data Plane needs to serve as a proxy."
+sidebar_label: "Proxy a request"
+hide_title: true
+hide_table_of_contents: true
+api: eJytVduO2zYQ/RVinlqAtRbbPuktSDbpAr0YXTcvC8MYi2OLqUQy5Gi9hqB/L4aSL7HdtAjqF9sczv2cwx4MpSrawNY7KGFR26TImeCtY2WT6hIZZTeKa1I/LxZz9Q4Z1bxBR8oRmaTYq0TxhRQmhSpE/7qfKdDgA0WUsI8GShC37PUrOtxSS47fesfRNw3FFb1S1TEtIrq0objaEoOGgBFbYooJyuceHLYEJVgDGiJ97mwkAyXHjjRYKT4g16AvO5piKmvIsd1YiqAhVTW1CGUPvA8SNXG0bgvDoI+JpnD/PdUcuVZ+oyJVZF+s2yoMobFVnsJXky4lTQreJUpi/+nuR/n6Mvx7H9fWGJJQlXdMjuXSWY7iU5Kb/XUmv/5EVZ5plL2wHfOMnV7VoyExcpdumipvzn1c164piqGllHBL11kHDRSjjzfHfTbf57GeY/Yp11IDW27E7UHCvGMPg3w0JKq6aHmf8eGx4/pewlQjsoLgbWWQMf+CpcyZcStwgjMcnyApuVri2gtkDyDkGkooMNiiPV4seIJVKnprhmICcNHL9UFaEEpk4C5PZT7JWsbJH4o9zWo80LBp/C5fCZjSzkczLtSH0bFmDseWVmjajMdbp/ri9DSIy/snyzjWNWGkeASSOExHB9t7H1tkKOHjHPShBQl6RYqPFO3G4rohNY+UyHGGahYPMqIelW/bzgmESa2Jd0RO8c4r6xKjqygJp0R/prWqXOosg8e6jc9DnACyePpwKVPXiiAa93sg92b+qFKgym4m/qhU+13KuQ4aeEx+EXUGGmTBY8iJkVgJIwcNja3IJTpRDN4ErGpS97M70NDFZhpXKotit9vNMJtnPm6LyTcVvzy+ffjt6eGH+9ndrOa2yQ0Hn7hFdxZ5LoqrUAmPKPFlu/1JK/5PdZ9WzvTKRWjQOmF57qufKPMMGCxoOJFG3A60AQ1lVvKJOfI/+y011D6x+Pf9GhP9GZthkOPPHcX9SKgXjBlSmffGJvltoNxgk+gr/X/3x6Q136vbz8LNrqZDdHvZOTYdjRv/i/bjcyRvxjcV8W8PxjeUk2c4LAcNNaEREj/3k+lNVVHgM6erl2M4l78PDwvQIKp0S6WOYtvfLuiGIKl/Ep1D7Vnk8jRvhjzo4aqKlJeGTTr6biM6XmW/YTkMw992Rw+l
+sidebar_class_name: "get api-method"
+info_path: docs/apis/http-data-plane/tsg-http-data-plane
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Proxy a request"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/management/transfers/{id}/execute/{path}"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+This endpoint is used if the HTTP Data Plane needs to serve as a proxy. 
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"id","required":true,"in":"path","description":"Transfer identifier","schema":{"type":"string"}},{"name":"path","required":true,"in":"path","description":"Path of receiving application","schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string"},"status":{"type":"string"},"code":{"type":"number"},"message":{"type":"object"},"error":{"type":"string"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      
