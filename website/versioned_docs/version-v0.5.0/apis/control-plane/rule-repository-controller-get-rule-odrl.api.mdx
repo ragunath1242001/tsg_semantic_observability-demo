@@ -1,0 +1,71 @@
+---
+id: rule-repository-controller-get-rule-odrl
+title: "Get rule ODRL"
+description: "Get rule ODRL based on its identifier"
+sidebar_label: "Get rule ODRL"
+hide_title: true
+hide_table_of_contents: true
+api: eJztVktvGzcQ/ivEnJJgKxluTrq5tuIKsCNDVlIUhiGMyJHEmEsy5KxVQdj/XpC7kqxHmrgocupJKw7n9XHmm1mDoiiD9qydhR5cE4tQGRLDq9GNmGIkJZwVmqPQiizrmaYABThPAZPOQEEPRpWhEXkXNbuwunSWgzOGwmROnGRDFQwU4DFgSUwhQu9hDRZLgh5oBQUE+lrpQAp6HCoqQKdgPPICCohyQSVCbw288knDVuWUAtR1sTWSYh4n6StNRQ7azvdMMYY58b829JgUo3c2Ukzy87Oz9LMPMxQgnWWynGTovdEyw9n9EtOF9bEDN/1CMoXlQwKfdWNeqxPAFICy8bQVYQi4ggI0UxlPAgAYo55botdpSWcjB9SW4w8ovi6L5mANaMxwlmtm338BZKsSeg9wMR7eDi6hgJvh9eDy4gYeC2DNJl2+3EaYK6R+rLeyo4SK/Yc6lfCuLB4a6cbaSZe3TpHJeqraZHsaI5A6yMpgeJNa5u3r8r/rj24H9/eD4Uco4G40/H3w22Dc/Lv6NP7zZWyjTas0QDTV/t1M24Laf+9tUgfmoa6T/vuzX49L/4MLU60U2f+uB5rGPfGWkZGrU3WbXCs6WXMlxYhzOvZaF0AhuPB9rHI8W++trxcQ9ZOZK3ZbmN4fwzSi6KogSVjHYuYqq/7HK+OVwiRZBc2r3BEOK16cJzOymTveoKUJqlJbeEx0zDhPAwf6z2iqjFgyXhIvXBpeDdlnXu9BF73ulmhxTiVZ7npntFx103jprrWqu64ZZZHCczPHHnfx3Cf8G4g3Ue1AaQ4KmBm3zFc8xrh0QTUv53yjeCKJ3qnDYv9QIWP+Ory9EzTYTQkDhW21pPvt0Ub2wYUSGXrw+Q42FAQLZg8H5AifKeiZxqkhcRcokuWMrrBEipRgJ6Qry8qmOiUxJV4SWcFLJ7SNjFZSFG4meEGijVnkUDu5QrSduQxgWwXj+2vRrhbiLmd0GM94oaMYerIXdwMRPUk9a1tExIVbxuyJrPIusdfG9Z7Njrh1kTei3V0MJAIZ5CavJLxCxuhRpuQdO+lMITBu/JIS01W+15dG+0jiDxeetJ2L6+Aqv9OOHTHkBYUDZ7Hy3gXWzy+jYCdKfErCQNl2el0h0YopCVRqF5xERuPmhUCrDtWQxaeB0JYpNKweswlOV7xBSR0hJpN3Hx3Tu8mkJ/ZgVTTTVmdMdczklAzZ1vWUhNKBJJuVMNo+kRJLzQuBImo7Nwdgb8ugI6CA1E972xHKxHR1AUZLspF21AUXHuWCxHnnDAqogmkrNPa63eVy2cEs7rgw77a6sXszuOx/vO//ct456yy4bGayd5FLtC8s7y3AhxW23jHwD2/KbQMx/cVdb1DbRIw55HVLOg+AXkMBO9pJfJSJJ22haZ4W0MtrcmafxwIWLnJSXK+T40/B1HU6/lpRWDWc9Iwhd2bmSKVj+lbQm6GJ9A9ZvRm1vPxWfCv2zfZiU3SJUql5sidaNdt82qV/osft6v+T/babU96iFoQqserDuhVeSEmeX6gdzev65Qy67o+hgDQiTo2M7Yhbnw7peDyIb8yATex53mTAThrcjKaJDJRrGU3c6s4DWp5wu0HW9d9spuW3
+sidebar_class_name: "get api-method"
+info_path: docs/apis/control-plane/tsg-control-plane
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Get rule ODRL"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/management/policy/rule/{id}/odrl"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Get rule ODRL based on its identifier
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"id","required":true,"in":"path","schema":{"type":"number"}},{"name":"ruleType","required":true,"in":"path","schema":{"type":"string"}},{"name":"target","required":true,"in":"path","schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{"id":{"type":"number"},"action":{"type":"array","items":{"type":"string"}},"assignee":{"type":"array","items":{"type":"string"}},"constraints":{"type":"array","items":{"type":"object","properties":{"id":{"type":"number"},"type":{"allOf":[{"type":"string","enum":["ATOMIC","LOGICAL"],"title":"ConstraintType"}]},"title":{"type":"string"},"description":{"type":"string"}},"required":["type","title"],"title":"ConstraintModel"}},"duties":{"type":"array","items":"circular(Rule)"},"type":{"allOf":[{"type":"string","enum":["PERMISSION","PROHIBITION","DUTY"],"title":"RuleType"}]},"target":{"type":"string"}},"required":["action","constraints","duties"],"title":"Rule"}}}},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string"},"status":{"type":"string"},"code":{"type":"number"},"message":{"type":"object"},"error":{"type":"string"}},"required":["name","status","code"],"title":"ErrorDto"}}}},"404":{"description":"Resource not found","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string"},"status":{"type":"string"},"code":{"type":"number"},"message":{"type":"object"},"error":{"type":"string"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

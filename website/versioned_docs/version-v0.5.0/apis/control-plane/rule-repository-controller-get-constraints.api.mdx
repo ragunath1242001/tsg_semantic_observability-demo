@@ -1,0 +1,71 @@
+---
+id: rule-repository-controller-get-constraints
+title: "Retrieve constraints"
+description: "Retrieve constraint templates registered in this control plane"
+sidebar_label: "Retrieve constraints"
+hide_title: true
+hide_table_of_contents: true
+api: eJylVU1vGzkM/SsCj4XWDrJ7mluQuoGBpAmatHsIAoOW6Bk1GkmVOPEaxvz3heTxZxwU2PXFtki9Rz2RT2vQlFQ0gY13UME34mjojYTyLnFE41gwtcEiUxKRapOYImlhnODGpJzH0VsRLDoCCT5QxAw21Rmus/SNgk+GfVxdb3ItxVlNfL1jSCAhYMSWmGKC6vlFQqQUvEuUoFrD5cVF/jouFSRkcnKcYxiCNaowj3+mnLCGpBpqMf/iVSCoAGPEFUgwTG06WPfzn6Q4VxFz/Ww2tEYf5LiunVOEXg4La0Br7xdQPe9SEkfjapBArmuheoarp/u76TVIuL2/mV5f3cKLBDZsc/L++E95d//S72KngL08Pvq7eJ/1+tWZSDrTlugW7Szlnddkoc8fCX9d/Ple3S8+zo3W5P6DzB/I6bA9f7jEyF06G1Je09lLaCklrOk9ay+BYvTx9zKVenbsA9eBXJMM85n9VqdEqouGV+XKPXbcXGaYYQLKAMxQt8bBS59hsM69DJM3tF1RLIO3xI3Po1FTUQi5gQrGGMy4RYc1teR4HLw1ajXeD2Guk+Lbbjy2tTxm7TfybivaC7JZkLCwfllSAqa09FFvbs2HzcYzB6jOLcrjRY2Mm6mvPgpsdJsTRoq7Tsn5w9I29sXHFhkq+PEA2/mChjnASefDD4pmYXBuSTxESuS4KCsckSYt2Avl27ZzuUdJzImXRE7w0gvjEqNTlIRfCG7o2LlGpTuMW/gi4NABT483YjAt8TAY3HE9T9kD7wO5q4epSIGUWQzjIVLjl6kwkdPBZ5/bUh9hjsSdT7wN7XMxkoiUjbecKwc/I2MKqPLhPXvlrRSYtrykxXxV8ibKmpBI/O3jq3G1uIm+C/vdaSTuuaF4Qpa6EHxk83ZYBXvR4msORirY+XaFQifmJFDrfXEKGa2vpUCnT7chi+9TYRxTRJXVSQWCc0qwqGgkxGz26atn+jSbVeJIVk0L40zR1CThPBcgN1DPSWgTSbFdCWvcK2mxNNwIFMm42p6IvWuDkQAJeZ6OHhNU2eV6CdYocon2tgVXAVVD4nJ0ARK6aIcOTdV4vFwuR1jCIx/r8bA3jW+n15Ovj5M/LkcXo4ZbW3os+MQtugPkM29uOm209d6E//8bPQwY0z88DhaNy6ZZjrQeDOkZMBiQsLek7FXFlDZKbW3pRULjE+cd6/UcE32Ptu/z8q+O4mpjVm8Yy8jmf72EhlBnP3hewyutsrRKUcgM2SnLO336yvSHznkzeQIJ2dzOmd3OmPevvlsdYL83NvGBe8mhvOKU0MsPALemOlORNDk2aNNubx3R8YyHF77v/wUgSU+v
+sidebar_class_name: "get api-method"
+info_path: docs/apis/control-plane/tsg-control-plane
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Retrieve constraints"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/management/policy/constraint"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Retrieve constraint templates registered in this control plane
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"","content":{"application/json":{"schema":{"type":"array","items":{"type":"object","properties":{"id":{"type":"number"},"type":{"allOf":[{"type":"string","enum":["ATOMIC","LOGICAL"],"title":"ConstraintType"}]},"title":{"type":"string"},"description":{"type":"string"}},"required":["type","title"],"title":"ConstraintModel"}}}}},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string"},"status":{"type":"string"},"code":{"type":"number"},"message":{"type":"object"},"error":{"type":"string"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

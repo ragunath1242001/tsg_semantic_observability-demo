@@ -1,0 +1,71 @@
+---
+id: dataplane-management-controller-get-data-planes
+title: "Get all dataplanes"
+description: "Fetches all the dataplanes."
+sidebar_label: "Get all dataplanes"
+hide_title: true
+hide_table_of_contents: true
+api: eJyVVk1v2zgQ/SvEHAutHGT3pFvQJkGAbRsgafcQBMaYHFusKZIlR3G9hv77gpQsf2PTXJJwhvPx5s2jNqAoyqA9a2ehgjtiWVMUaIzgmoRCRm/QUiyhAOcpYPJ8UFDBp63tM1pcUEOWPzrLwRlDYbogTg6P+TIU4DFgQ0whQvXyWkCg6J2NFKHawPXVVfp1WAsUIJ1lspxs6L3RMmef/IjJYQNR1tRg+ovXnqACDAHXUIBmauLeuZv9IMmpipB6YN2nTd1F4viOCJGDtgvougJGTJ6z6cSlALLKO235MdBc/zrrItGYGcrljVKB4rlMBTQjru/zenZLsheyMRq3eFpbWQdn9b/YY3zGNThzvimtyLKeawrnYQn0s9WBFFQvRxCdAHLa/rlmT1u72MhQ9kGRrwWw5tQMjET8xA669FPAX1d/nlLuzoWZVqpP9Zvcu8Axi815PCMjt+dHKp3av2PbZkYhz5pixAWdZk2kC8G9YzS5njH7kGsPq9sUZg+nSLINmtdQvWzAYcv1dQoj+03PQ56iavQWsvFw5AC8dik+LtLm51mIPAyx041UQENcu6QrC8ooItdQwQS9nux4MNkJUmqCwtsoKNtCn9Jgeuy35e7Q6g8KmBu3yi4eY1y5oPqROt9fPNNd9VstV5cMPagzwtDvUaZR8h+OtrY7FxpkqOD7IxTb8mtmD8URZ79T0HONM0PiMVAky5mowhIpUoKdkK5pWpsITGJGvCKygldOaBsZraQo3Dyr/VCzyKWWmTrazl0GcKDH89O9GFS+n+JJPc+1juKrJ3vz+CCiJ6nnw+6IWLtVzJm2gjCmPohZis8u8ta088VAIpBB7vtKxkSn6FGm5h076UwhMG7zkhKzdfa7lUb7SOIfF5baLsR9cK3f3Y6l+Mo1haNksfXeBdZv+1WwEw0ukzHQ+EgKiVbMSKBSu+IGtSoEWnV8DVl8exDaMgWUCZ2YQ3By8QYllUJMpx++OKYP02klDmBVNNdWZ0x1FNZxDmSH1DMSSgeSbNbCaLskJVaaa4EiarswR2CPNCgFFJD26eD5RZkksCvAaEk20k7T4MajrElcl1dQQBvMwNBYTSar1arEbC5dWEyGu3Hy98PH2y9Pt39cl1dlzY3JHPMucoN2L/I9cf4EOdj2A5ptdvr8Px8tw+4w/eKJN6htEstc7WYQmRdArw+eG9h75WMSp9pFTo6bzQwjfQum69Lxz5bCupefNwx5CdN/XQE1oUob/rKBJa0TWFKST4Hf0LT5S+P4Uen2RfD+9hkKSHJ1Tr5GHd59t9j1XuxTqRIX9KgYysvaB11xIeBWJqcyUH5i0cTx7iKg5Wm+1712XfcfNS6hEA==
+sidebar_class_name: "get api-method"
+info_path: docs/apis/control-plane/tsg-control-plane
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Get all dataplanes"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/management/dataplanes"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Fetches all the dataplanes.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"","content":{"application/json":{"schema":{"type":"array","items":{"type":"object","properties":{"datasets":{"type":"array","items":{"type":"string"}},"dataplaneType":{"type":"string"},"endpointPrefix":{"type":"string"},"callbackAddress":{"type":"string"},"managementAddress":{"type":"string"},"managementToken":{"type":"string"},"catalogSynchronization":{"type":"string"},"role":{"type":"string"},"identifier":{"type":"string"}},"required":["dataplaneType","endpointPrefix","callbackAddress","managementAddress","managementToken","catalogSynchronization","role","identifier"],"title":"DataPlaneDto"}}}}},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string"},"status":{"type":"string"},"code":{"type":"number"},"message":{"type":"object"},"error":{"type":"string"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

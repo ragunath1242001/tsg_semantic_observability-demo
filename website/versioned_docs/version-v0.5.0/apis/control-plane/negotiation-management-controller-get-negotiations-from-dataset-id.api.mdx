@@ -1,0 +1,71 @@
+---
+id: negotiation-management-controller-get-negotiations-from-dataset-id
+title: "Get all negotiations for a dataset"
+description: "Get all negotiations for a dataset"
+sidebar_label: "Get all negotiations for a dataset"
+hide_title: true
+hide_table_of_contents: true
+api: eJyVVk1vGzkM/SuETrvF1A5ynFvQpEGAbRqs0+4hMAxaoj1qNJIqceI1jPnvC2nGM/5K0c0ltihSj+Tjo3fCeQrI2tkHJUrxSGvHOn//ghbXVJPlT85ycMZQWKyJD67Ez8HVt8gYiR+UKITHgDUxhSjKl52wWJMohTq4EehnowMpUXJoqBDailJ45EoUIsqKahTlTvDWJ8fIQdu1aNt5coze2Ugx2a+vrtI/RVEG7RMUUYpZIyXFuGqM2cKKWFakwB6gFYWQzjJZTs7ovdEyW6Y/YoqwO0eAIeBWFEIz1fHg3C1/kOSUcUgFZN3hMk6iSYU8SyElUDumXxqfMPD2st0Z+oXjjVKBYrx4IzLyZd/UlxnxRVvtlF5pUre988qFGrlrJn1kXZMoztp02N6XoRgHqR8n2qd1msQe8gjwBM68EKw5FeSQrzNGbuItO9Hmv0JEkk3QqaIvO+Gw4eo64ZIdnb1BSwtUtbY9MYbD9G7+JOaJeozrxOfDxyKM45HwHDPxnhjQmCPywcoFQOhnIaVEXLk0c+v8Nc9AKabo9bQeYk8PQ0x75+lumKg2VYvCWzdx8zHnWWJyR8p95iN5u4NCrIzb5CseY9y4oLoZcL5zvFCo8n9Vr3zP0PVnSRgoDHOX7vdHe9vnPeu+P410q5i9OC35dwp6pXFpCJ4CRbKcawaWSJECdiBdXTc2TTzBknhDZIE3DrSNjFZSBLcCrgh6zJChTjKttV25XMCeds+ze+hVEZ5yRqd4nisd4asne/P0ANGT1KtebCBWbhPzS2SVd9ry8PRRzAl8cZH3pvEuBoJABrnLKxmzBnuUKXnHTjpTAMb9u6Rguc337qTRPhL848Krtmu4D67xo3ecwFeuKJw8FhvvXWD9doiCHdT4moyBcuzUXZBoYUmASo3gJDIaty4ArTp1Q4ZvD6AtU0DZzUkKwemKNyhpArBYfHh0TB8WixKOyqpopa3ONdURrOMcyPZPLwmUDiTZbMFo+0oKNporQIjars1JsQcaTEAUIs1T18ee3CiTTLaFMFqSjVkS++1241FWBNeTK1GIJpieobGcTjebzQSzeeLCetr7xulfD5/uHmd3H68nV5OKa5M55l3kGu1B5N+SkSPaDSPO9C9PvUFtk5hnVLteYl4Eep30ZxSwQpysyTF8OS7veSEqFzlF2O2WGOlbMG2bjn82FLad/rxhyFOYNVfpmD4rUa7QRDoDO2xj8cff/eL4E8ZBP05iv5FtWhxvaBrq2vNK26PfGO28LURFqJK0vOx6+42U5PnA82z9J6UfNPn+7lkUIunkJd0cdsnuMqpzjYR3hHAPP4uuaIt3Au71eSEDKbKs0cTBdx3Q8iL7tfO2bf8DKdhzoA==
+sidebar_class_name: "get api-method"
+info_path: docs/apis/control-plane/tsg-control-plane
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Get all negotiations for a dataset"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/management/negotiations/dataset/{datasetId}"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Get all negotiations for a dataset
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"datasetId","required":true,"in":"path","schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"Successfully fetched negotiations","content":{"application/json":{"schema":{"type":"array","items":{"type":"object","properties":{"localId":{"type":"string"},"remoteId":{"type":"string"},"remoteParty":{"type":"string"},"role":{"type":"string"},"remoteAddress":{"type":"string"},"state":{"type":"string"},"dataSet":{"type":"string"},"modifiedDate":{"format":"date-time","type":"string"}},"required":["localId","remoteId","remoteParty","role","remoteAddress","state","dataSet","modifiedDate"],"title":"NegotiationStatusDto"}}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

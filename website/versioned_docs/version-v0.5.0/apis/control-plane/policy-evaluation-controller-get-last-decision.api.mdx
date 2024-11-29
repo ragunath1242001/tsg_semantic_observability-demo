@@ -1,0 +1,71 @@
+---
+id: policy-evaluation-controller-get-last-decision
+title: "Retrieve last evaluation decision"
+description: "Retrieve last evaluation decision of the specified transfer ID."
+sidebar_label: "Retrieve last evaluation decision"
+hide_title: true
+hide_table_of_contents: true
+api: eJztV0tvGzcQ/isET22wkQw3J90C2zEMpInhOMnBEIQROdIy5pIMOWtVEPa/F8NdafVY1WiRY09acDivjzPfjDZSY1LRBDLeyYl8QIoGX1BYSCTwBWwNLBIalUn84ReCShQpoDILg1pQBJcWGMXd9UgW0geMWeVOy4m899ao9c3OzpV3FL21GGdLpI+Q6LozLAsZIEKFhDHJydNGOqhQTuTW/p2WhYz4szYRtZxQrLGQhoMOQKUsZFIlViAnG0nrwJqJonFL2TRTVkzBu4SJ5ZcXF/xzmLospPKO0BHLIARrVI55/CPxhc2pAz//gYo48shpk2nNb7EaCIUDgXRGFDBWJrFm2pNDjLCWhTSEVRrKLrsvzdzQv9f0c2uW8B8UM1R/0etg7D3fUM7WK7D3EMkoE8DRGcwqT/jaLYK4xGERKDr3Hi8YzcLA3OJVRI2ODNj0alrszpDlC98GDLDhvnkeDRfyRi58rIDkRGogfEt8WgxA29f40yk8Q2DsUt8lei6tk6imfR6HTcpvexzMrq4HtXaN3DSs+O7ij9Me++Dj3GiN7tc1W8sSAw+bCKgeql52rfd1XF3NMbKgwpRgiade+T1j9HG4GfZByvHsvHe+9gFjM9fkdzC9O4XpAZOvo0LhPImFr53+H6+MF4eJqo6G1nlEeKipvGQzqh0swYLDGejKODll3idY8jTZq1M2XiGVnudT2zV5gEzkGIIZV+BgiRU6Goc8vMZ9y4w3PZs1Y3s4vRLGl3Z0Tfsov/CrtMBvY+2hag8KubB+la8ESGnlo27f04dWcSC1ydBhcXiogSB/Hd/uBS2ic4SIcVdDfL872so+bInr233PWCVRkMVR5fZkKO4jJnTUrg8OUfOu4IXyVVU7rl4Uc6QVohO08sK4ROAUpu2G0cUscqijXDfGLXwGsKuNxy+3otsoxH3O6Diex9Ik8Tmge39/t91Z2sYRqfSrlD2h08EbRzvXBzZH4k+faCvq70JEEdECtXmx8BoIUgDFyXvyyttCQNrblebrfO9GWRMSiu8+Phu3FLfR16HXTiPxmUqMR85SHYKPZF72oyAvKnhmYcRsm19XKHBijgK07oNTQGD9shDg9LEakPh6J4wjjO0ESdkE8ZVgQeFIiNnszSdP+GY2m4gDWDUujMvLhzApUxYbcp3rOQptIiqya2GNe0YtVoZKASIZt7RHYO/KYCTaIZYOljNQ1A5faxS6hD2hyfcBVInicnQhC1lH21VomozHq9VqBFk88nE57nTT+OPd1c2nLzdvL0cXo5Iq2+5SPlEFbs/yqzvxcdVteq7+BQt11248kcfBgnFMrjnBTUdcTxKCkYXsqYs5LZPXwcSXBa/Ne9v0AYNNC1n6RGxus5lDwq/RNg0f/6wxrltee4GYuzuzrzaJv7WcLMAm/AcUfnvoGP93cS6j7erpOGYOGdtnf8b14Z+AZtoUskTQzFlPm+7Ce6Uw0J7qyYxs9nn/9uaRt6Wa4Tsl5N1Y2QyHdUq+4gzDbuPPbC6b4ozBLfHP1MGy1uouIziaZb1m2jTN34TszpM=
+sidebar_class_name: "get api-method"
+info_path: docs/apis/control-plane/tsg-control-plane
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Retrieve last evaluation decision"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/management/policy/evaluation/{transferId}/lastDecision"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Retrieve last evaluation decision of the specified transfer ID.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"transferId","required":true,"in":"path","schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{"decision":{"type":"string"},"reason":{"type":"string"},"permissions":{"type":"array","items":{"type":"string"}},"prohibitions":{"type":"array","items":{"type":"string"}},"obligations":{"type":"array","items":{"type":"string"}},"context":{"type":"object","properties":{"transferId":{"type":"string"},"localParticipant":{"type":"string"},"remoteParticipant":{"type":"string"},"target":{"type":"string"},"action":{"type":"string"},"verifiableCredentials":{"type":"object","properties":{},"title":"VerifiableCredential"},"evaluationTime":{"format":"date-time","type":"string"}},"required":["localParticipant","remoteParticipant","target","action","verifiableCredentials","evaluationTime"],"title":"EvaluationContext"}},"required":["decision"],"title":"EvaluationDecision"}}}},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string"},"status":{"type":"string"},"code":{"type":"number"},"message":{"type":"object"},"error":{"type":"string"}},"required":["name","status","code"],"title":"ErrorDto"}}}},"404":{"description":"Resource not found","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string"},"status":{"type":"string"},"code":{"type":"number"},"message":{"type":"object"},"error":{"type":"string"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

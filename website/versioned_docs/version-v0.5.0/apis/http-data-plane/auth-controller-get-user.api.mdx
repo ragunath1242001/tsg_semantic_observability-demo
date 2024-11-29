@@ -1,0 +1,71 @@
+---
+id: auth-controller-get-user
+title: "Retrieve current user status"
+description: "Retrieves current user state, whether someone is logged in or not a 200 result is provided. This is used in the frontend to determine whether certain aspects should be shown."
+sidebar_label: "Retrieve current user status"
+hide_title: true
+hide_table_of_contents: true
+api: eJzVVUuP4kYQ/iutOjsYcfRtNDvZHSnKogyzFzRaFXaBe9Pu7q0u4yDk/x5VG2YZ4JRbTrTr/fjq4wgNpZptFBs8VPAXCVvaUzJ1z0xeTJ+ITRIUKszQkrT6GToKnoxNxoXdjhpjvQlsfBCDZjGfG6bUO1GDyGFvG2pmZtXapJI+TQ7Sktly8EK+MRJMQ0LcWU/veWpiQesNpki1JJPa0LvGbEhfg59BASESoxb/3EAFD720j8ELB+eIv+9IXhMxFBCRsdP4Car1WwFMKQafKEF1hMV8rj8fJwEF1Lk2UR3G6GydE5U/khocIdUtdaiv4OnrFqr1EeQQCSoImx9Ui+ZlLVDslCiPUR8fzcYCdMq3ihv/fnNhlISt36m3x47uKqhD6+5qOLgp5kmDzHiAAqxQl+54jOpDP3vL1EC1zqWcEp/TnIO+FSBWnHo/Oktenv02fJIANzHyOE7NX3jpFsmLzpsaXWB2Lv7rdO9mvUj36vFuwrdxzG0L7hQ1l2UpRN4K6EjaoLjbUS4HpYUKSoy21JBlP4EvEe/fkZeo7tnK4UXRMxUe1HhxWfkkKGDrwpBNIqY0BG4m3IU4ObYisUHB6NDTd2w6q8i9Jy2upO+vG/tfmqn7DSFP2Mx4V4eT6Kz7PXCHAhV8W0JxbkGDQnF1U9+I7dbixpFZMiXykkdpPFFDmQPq0HW9z4swG5KByBsZgrE+CfqakgnbTBz1dOUmlzrLS7Z+G/IQT3tdvXw2X1arpfmEgmaZe7quKHPS10j+YflslGXs9rTfTDEp5yLfxGC9vCe/iqo8pAv+QBxYK3GMBThbk08ZmNOdwkPEuiWzmM0V/OxO40pVWQ7DMMOsngXelSffVP7x/Pj058vTb4vZfNZK53LDMSTp0F9EPtP3LXv36br34y9++//R/gllQv9IGR1an0mU3XQreoZrwGihAD2lC45pQxJVHo8bTPTKbhxV/LMnPkwHukfOENWvsYCWsFH8r4/wNx10e3VNUc99j67P1Hn93zBeUsPnpxWM478J45Vi
+sidebar_class_name: "get api-method"
+info_path: docs/apis/http-data-plane/tsg-http-data-plane
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Retrieve current user status"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/auth/user"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Retrieves current user state, whether someone is logged in or not a 200 result is provided. This is used in the frontend to determine whether certain aspects should be shown.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"","content":{"application/json":{"schema":{"oneOf":[{"type":"object","properties":{"state":{"type":"object"},"user":{"type":"object","properties":{"sub":{"type":"string"},"name":{"type":"string"},"email":{"type":"string"},"roles":{"type":"array","items":{"type":"string"}}},"required":["sub","name","email","roles"],"title":"ClientInfoDto"}},"required":["state","user"],"title":"AuthenticatedUserDto"},{"type":"object","properties":{"state":{"type":"object"}},"required":["state"],"title":"UnauthenticatedUserDto"}]}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

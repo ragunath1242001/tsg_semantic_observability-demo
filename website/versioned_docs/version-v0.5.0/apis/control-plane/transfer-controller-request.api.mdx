@@ -1,0 +1,71 @@
+---
+id: transfer-controller-request
+title: "Request a transfer"
+description: "Request a transfer"
+sidebar_label: "Request a transfer"
+hide_title: true
+hide_table_of_contents: true
+api: eJy9V01v2zgQ/SsEj4VqZ3PUabOptwiwbYwm7R6MwBiTY4s1RbLkKK5h6L8vSEm2ZDtuCgR7ssT55MybN/KOW4ceSFlzJ3nOHz2YsER/aw15qzX6uccfFQbiGXfgoURCH3g+e8p4K/nLyi3Pd+lVeZQ8J19hxoU1hIaiCJzTSqQw4+/BmngWRIElxCfaOuQ5t4vvKFIcH5MihSFK/2zEe7VAXpkVrzMugwOBubAmVCX6qZKX1GDlEUs0dPeCmqB8aX0JdMmLBIIbKT2G8Aapo5HOKkOPr9R7jc50kEKrDd7DlmdcEZZvkbiB8qL8GXR1TqHOejCZtXGGXo98PGWcFOnoZDK84fahQVD9C6+DIp+W9FIBe8E/HBrfxT0gELRegFifAuN19+4j+CxeB+h8MWwv226OvzQj+glDgBUeCpbyCc6a0DT8+uqP+CMxCK9cnFOec/7/zbDz9lnJX87wW416oxYI6PdB2k/1tzrYD3qmVVNvRQ9cTZMCisor2vJ8tuMLBI8+cm8d7WEVeXhvn/o/bGDbfQaMWiWe8RKpsJHrnW1ZnQqe8zE4Ne7UwvjA+gH9857yu3xSlk1vLVRUXPcx0BxkfKntJqk4CGFjvWwgY11jKJod4zQYnIMsVUz5zGE2PIwMnJ6OtQ+CpnZduVqYRv32qJP93dI9/zblWZd+QeT4cSW/oVdLBQuNbOoxoKE0CMwgSpSMLBO2LCsTBwTZAmmDaBhtLFMmEBiBgdklowJZmzNLqY4S2uI4fTks08lPKJ3G3uB00Dw/CCfSAf570t6GO7E5WmwvBR5urBfFF0T9/TR7OVCzYU6O28Wyn9WnCyzcm3hlljZBtBu6h4+s/cZh04SZ444/Fiqwe4fmZnrHgkOhli37sVDYTUi97O60b+7A54h9soE60UEXPDKPGqhBThTG7ZJuwabekhVWZwxCFxclW2yT3kRo5QKyf61fK7NiH72t3ME6jNg9FeiPgoXKOetJPfezIMtKWEehx+Q7IoAJMGyBDKQ8JCeAQNtVxsDIYzMg9vWOKUPoQcTqhOSCoorTIHDE2Hz+7rMlfDef52xQVolLZVSqqQrMWEqOTBt6gUwqj4L0lmll1ijZRlHBgAVlVvqo2PtBGzGe8chYgyUGIi6xOuNaCTQhDVcLsRsHokB2PbriGa+8bjkg5OPxZrMZQRKPrF+NW9sw/ufudvL5YfL+enQ1KqjUaYojn5Zgep7P8u8AZnvSJPxJY6dBmQjXlMWupeYZB6ciP+2Jfv/pHSm/iDSez/hut4CAX72u63j8o0K/bUj7GXyirrQ5Ml4gyLRGdnyNW57z22bJv28/kLoRO1n4ddZZ3AiBji7qPvU2zfT+4TGSbvtHobQy2njYxJvApumSTSVJ5JPOdlyDWVWwirqNz1jluFx6dTti9HSr7pvXbHsZ7naNxqNdo6lrnrVXofgeeaSu/wNjXJkr
+sidebar_class_name: "post api-method"
+info_path: docs/apis/control-plane/tsg-control-plane
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Request a transfer"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/transfers/request"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Request a transfer
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={{"required":true,"content":{"application/json":{"schema":{"type":"object","properties":{"@type":{"type":"string"},"dspace:consumerPid":{"type":"string"},"dspace:agreementId":{"type":"string"},"dct:format":{"type":"string"},"dspace:dataAddress":{"type":"object","properties":{"@type":{"type":"string"},"dspace:endpointType":{"type":"string"},"dspace:endpoint":{"type":"string"},"dspace:endpointProperties":{"type":"array","items":{"type":"object","properties":{"@type":{"type":"string"},"dspace:name":{"type":"string"},"dspace:value":{"type":"string"}},"required":["@type","dspace:name","dspace:value"],"title":"EndpointPropertySchema"}}},"required":["@type","dspace:endpointType","dspace:endpoint","dspace:endpointProperties"],"title":"DataAddressSchema"},"dspace:callbackAddress":{"type":"string"}},"required":["@type","dspace:consumerPid","dspace:agreementId","dct:format","dspace:callbackAddress"],"title":"TransferRequestMessageSchema"}}}}}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"201":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{"@type":{"type":"string"},"dspace:providerPid":{"type":"string"},"dspace:consumerPid":{"type":"string"},"dspace:agreementId":{"type":"string"},"dspace:state":{"type":"string"}},"required":["@type","dspace:providerPid","dspace:consumerPid","dspace:agreementId","dspace:state"],"title":"TransferProcessSchema"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

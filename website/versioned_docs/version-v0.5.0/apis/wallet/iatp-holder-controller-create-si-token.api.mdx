@@ -1,0 +1,71 @@
+---
+id: iatp-holder-controller-create-si-token
+title: "Request a SIOP token"
+description: "Generates a SIOP token for the provided audience to allow it to request presentations"
+sidebar_label: "Request a SIOP token"
+hide_title: true
+hide_table_of_contents: true
+api: eJy1Vktv20YQ/iuDOSUBIxluT0JRwEjcVECRGLGLHlJBGJEjcePlLrM7NCMI+u/BLGmJkixd2uhgyTuvbx6732yw4JgHU4vxDif4gR0HEo5AcD/9dAfiH9nB0geQkqEO/skUXAA1hWGXM4gHsta3YER/B/7WcBSoA0d2Quo2Yoa+VrfGu2mBE5yS1H96W3B4550Eby2HeR6YhO+nDxoRM6wpUMXCIeLkywYdVYwTfA6MGWosE7jAiYSGMzSawLeGwxozjHnJFeFkg7Ku1TBKMG6F22228xVzX/8HRzO1jLV3kaPKr6+u9OuwoJhh7p2wE5VRXVuTp0KMv0ZV2JwG8IuvnItWIGjZxHTuTTFPzXgJin4y/PXql1MAf/iwMEWRSvo/IenKd4IiwygkTXxRlPtiaOOaasFBBRXHSCs+jbrNkEPw4cUeDnr2pcOzi97HmmUoRqya3aqb9+Kxr1PkvAlG1mmuPDVSXqublqxlmT8ZbueH8zvTXgutdBLxbiCC6c3DnYaqWEqvo73iVC+SEic4ptqMDUk9LtO0j6Wf7cjhqRvs2R7OvZa/q/AzqH1NuoMMl9a3SaWmGFsfiq5xvu4MhzkURgEdn2TPJxU5WvH8kddxrzY83Gk28Vhtd5Id+Pet02tcsBNDNh5FP5Ye2pK1F2yPpcdZnI18Rn5sfzb6GfnO3sTY8Mump6LswoxNLsj6uTVu6dNM9HP9cP8B/klGmB3d+oeSYS8Gk97z+yl0MUBKEsjJQcII5AqI4gPDEwezNLSwDAPgSaF7nw9fdn3yFwxN5AJaI6VxUJAQxJpyjqPfFgHGv3d//3UAAIqr3WMylXKJQNVYMW/FcICCa+vXFTuJWfIJ3jG88gEqH/j1QQaUSwSKIKGJAuTy0ofEVTSAkcAbV5inhmxvHpMWU16CX3bMRkFMbmpyEsG4dLb3MYJPemQi1LTiJMzZSdg57PCkasaDyrXGWi1RrmpFsnxPQh2yvjtkpfTNqlQONRGcF3h+3jq/UnJgINvSOqoGf6dc7DpVJsUMmsYwrHF9DTr4p42Yz9989MJv5vMJPGhin2p2N3dTKHhpnEmPW4/FKGko6XfNLkzgFN0a99j3HQiicSu7S8m4KOS0cJihPnUHbEi5ctA2Q2tydpH3pII3NeUlw/XoCjNsgsUJliJ1nIzHbduOKIlHPqzGvW0c/zV9d/vx/vbt9ehqVEplEz/UPkpFbuD5c7+aDBeb43uz2VPkT1uF+hdd+LuMa0vGKdOlTDc9b3xBqg1mqMyBGXbcoZYJ8kxPoqjaZrOgyH8Hu93qcbeyKKkVJuodLnCyJBv5QpavPveT9hrOYXvk9eHi9US2UTXUXeonhHrey/ZxZvpPSO+ScuY2w5JJi6LJdkY3ec61DKxONpztkKc/3D5ghsqqL7HsbinYicitB76PSBVO2ROOmBIuMCFcYDq4yGNwkaXgHBHBeao57IE2+MUCPG8fR/TW2a4COZknu+1su93+AMywaTo=
+sidebar_class_name: "get api-method"
+info_path: docs/apis/wallet/tsg-wallet
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Request a SIOP token"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/iatp/holder/token"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Generates a SIOP token for the provided audience to allow it to request presentations
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"audience","required":true,"in":"query","schema":{"type":"string"}},{"name":"scope","required":true,"in":"query","schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{"id_token":{"type":"string"}}}}}},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string"},"status":{"type":"string"},"code":{"type":"number"},"message":{"type":"object"},"error":{"type":"string"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

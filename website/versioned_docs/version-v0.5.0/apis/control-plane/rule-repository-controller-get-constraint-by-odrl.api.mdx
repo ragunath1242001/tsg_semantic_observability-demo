@@ -1,0 +1,71 @@
+---
+id: rule-repository-controller-get-constraint-by-odrl
+title: "Get constraint by ODRL"
+description: "Get constraint based on an ODRL constraint"
+sidebar_label: "Get constraint by ODRL"
+hide_title: true
+hide_table_of_contents: true
+api: eJztlktv2zgQx78KMcdCtYNsT7qliRsESOogSbsHIzDG5NhiQ5EsOYprGPruC1Ly27uLAnvcix+c4Tz+JH/kGhRFGbRn7SyUcEsspLORA2rLYoaRlHBWoBXjm6f7PRsU4DwFTBPvFJTw1Bh6Iu+iZhdW185ycMZQmC6Ir7fTPq/GKhgowGPAmphChHLyWkCgnw1F/uzUCsp1/qsDKSg5NFSAdJbJcjKh90bLnHj4I6ay1xBlRTWmX7zyBCVEDtouoG3bNsWO3tlIMTlcXlykr8O+4fczuNkPkkkGH5IQrLvwWu352KaeUYC26AfWgMaM51BOjgstgGxTQzmBq5fxw901FHA/vr27vrqH1wJYs0nOOx1f0uz2td3aTjovDls8VabYE3nSWTfRzqZ8cIpMr+iniz9ORfziwkwrRfa/U9Nifb63yMhNPGuSTtHZNagpRlzQada2AArBhX9XKdezzd7n2lNrlMLcsNvK9OlUpieKrgmShHUs5q6x6n+9sl6pTJJN0LzKJ8Rhw9VlCiM7mniDlqaoam3htU1hcJHwAaN3NE1WLAWviSuXkORdzBIhV1DCEL0e1mhxQTVZHnpntFwNd0gbug5NkcL7lkubip7TCnQib+raydINFDA3bpldPMa4dEF1a+d8N/FMG+W5weJwUCFj/nXsvTN06s0IA4Xtfkn+/dDG9sWFGhlK+P4IGyhBxezhCBfwnYKea5wZEo+BIlnO+gpLpEgJdkK6um5s2qkkZsRLIit46YS2kdFKisLNBVck+ppFLnWQ90ja10874o9+Ye3NAQ61nbsscb9TXp5vRX+piMfc83HFL5WOYuzJXj3eiehJ6nl/jESs3DLmWsgq77TlbXEHMQfiwUXemHa+GEgEMshd58l4g4zRo0zyOHbSmUJg3OQlJWar7DeSRvtI4k8X3rRdiNvgGr+bHQdizBWFo2Sx8d4F1u/7VbATNb4lY6AcO62/kGjFjAQqtStOIqNxi0KgVcfTkMW3O6EtU0CZ1Ik5BCcXb1DSQIjp9MNXx/RhOi3FgayK5trqrKmOGWApkO1Tz0goHUiyWQmj7RspsdRcCRRR24U5Enu7UQYCCkgn7uAuRplo2BZgtCQbaYc3uPIoKxKXgwsooAmm38OxHA6Xy+UAs3ngwmLYz43D+7vr0dfn0cfLwcWg4trkXZj4UKPdi3z8/lnlZ8/xVlvvcP17L6b+wDH94qE3qG1CaW5g3VNqAug1FLDjVAJYJlWny97zK9HqtYAqUa6cwHqdkn8Lpm3T8M+Gwqpj2DuGfJLTv7aAilAlTEzW8Ear7o5P3Xx86d4ACaapzJOLqC02M66kJM//6LsP4sfx80tiUP+4q/ONAwGXUOTPvOguq5tBmcfWYNAumnwDQRczLVpi7Tn2bm+LrQntaq/CU86Kv4Fp0TeZwZ2bPhtww/ipDKTIskYTt3MXAS1PuX+lte1f93L6NQ==
+sidebar_class_name: "post api-method"
+info_path: docs/apis/control-plane/tsg-control-plane
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Get constraint by ODRL"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/management/policy/constraint/odrl"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Get constraint based on an ODRL constraint
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={{"required":true,"content":{"application/json":{"schema":{"type":"string"}}}}}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{"id":{"type":"number"},"type":{"allOf":[{"type":"string","enum":["ATOMIC","LOGICAL"],"title":"ConstraintType"}]},"title":{"type":"string"},"description":{"type":"string"}},"required":["type","title"],"title":"ConstraintModel"}}}},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string"},"status":{"type":"string"},"code":{"type":"number"},"message":{"type":"object"},"error":{"type":"string"}},"required":["name","status","code"],"title":"ErrorDto"}}}},"404":{"description":"Resource not found","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string"},"status":{"type":"string"},"code":{"type":"number"},"message":{"type":"object"},"error":{"type":"string"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

@@ -1,0 +1,71 @@
+---
+id: did-web-controller-get-did
+title: "Retrieve DID document"
+description: "Retrieves the public DID document on the well-known address for this wallet"
+sidebar_label: "Retrieve DID document"
+hide_title: true
+hide_table_of_contents: true
+api: eJztWUtv4zYQ/isDntqF1g5yNIqiwTpYeLfdFE3aHNLAGFNji2uK1JIjawXD/70gJTuSH8kWSLcXX/KY5zfDj6I0XIuUvHSqYGWNGIk/iJ2iFXngjKAoZ1pJGE/GkFpZ5mQYrImqirR+uzS2MoBp6sh7mFsHnCkPFWpNLBJhC3IYIk9SMRLjyfieZu+sYWe1JjddEI9VKhJRoMOcmJwXo4fHRDjyhTWevBitxeXFRfjVxykSIa1hMhx0WBRayZhp+NkHg7XwMqMcw19cFyRGws4+kwyoChdwsWrC/xLjfI1xrKGbuRg97Hw8O2UWYpPsJOgc1iIRiin3nehby83jJhEqPaJJBGpvP4aWXXU9X4zYlNr07DVRrsipedu234gzm34DqhNdPFFxIzii6Fd0oG6I95HqD9Xy5eSoF8eTuNVR+XFILQda+cxaTWiCYkn11Bb/csmWJzqy5Pqo3ByVlv441q9Hpccib8Ju+lIqR6kYPcT0j4lgxTpYffDW3NPsI9VjtgfGcW/GeL0F6/j/dUChbRxPbqUkfT9GtQmvTVpYZV5xOz/TlP2cnc7cNqptO3aEPm+x8xZ7pS2GJWdkuNU917tv2Ahn0p1J9yLp4sMQvQ9L9C3vDGfenXn3arxbUn21cER5+9J/Jt2ZdP856SQWOFNacT0xK3s+ac/k+1/INyZNizP5zuT7XuQ7DNVxG0/G43Yc2OSN9oyLML4LWrinWXDI2zdEsYjjwAI5EyMxHDwND4epSgdxZNd8Te9GgJ5k6RTXt2GM1/DEhg+eyy6fGkEi5tpW0aRA7yvr4tp5aYvGsZlHTleKqmkaFvZAkmwlORpc0HRJtX8y6wp3lqXfN9tJkl58W5mpdJSGTzXUfi/7vrbvi1o/47uv3a/iZOYT+n3/k9lP6Hf+yvuSjrseqvoVF448GY6U3K+3r2tpp8zcRk605Ly7fQ/32wF0f2h8lxE8qUF5QLi9nbTzauAMGSQaiBgBTQqerSNoBqU40wQd4NFAOkIm6CEDtjAjKD2lUCnOlIEUGcEXKMkPfpo5GP7c/PzbAAAEXNUTJpVTCsiQl5rVW1bkIKVC2zpsOJ/EmGANwQ/WQW4d/dirACV7QA/sSs+ARmbWxdk8dmBE8MqkalWibt2bCT6hzMDOm/k/OlZSFWjYg2oG/08xBnBjmoF/gQuKSkmG3S5ggyd20/c6VymtQ4tkMEuj5xgZG2Tt6qDmzJaLDFTsirEM2ydSE5czcgSoK6x9sKCvKFnXsTMxpwtldNMq0/aggX+4ENPpm0+W6c10OoK7UNhNQebq9wmkNFdGhdXdYlHh8iENWOJip8pRzK6VWbbrDghemYXelaSMZzShcSJO333vLgNlOMA2idBKkmlODoN54PRVgTIjuBxciESUTouRyJgLPxoOq6oaYFQPrFsMW18//HXy7vrT7fXby8HFIONcN1NI6zlH04m8ve/p3fHsb5z1013LK18QtQ/ycP8yLDSqeGDHAtftafEgOqdFALY9Lx4TkVnPwWK9nqGnP53ebIL4S0mubk6RFbq4b8N/m0RkhGl4ZXlYh7eC0FgpqQhAVqjL+Gqwf5O06R5j76/vxGbzDx23Z6U=
+sidebar_class_name: "get api-method"
+info_path: docs/apis/wallet/tsg-wallet
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Retrieve DID document"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/.well-known/did.json"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Retrieves the public DID document on the well-known address for this wallet
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{"@context":{"oneOf":[{"type":"string"},{"type":"array","items":{"type":"string"}}]},"id":{"type":"string"},"alsoKnownAs":{"type":"array","items":{"type":"string"}},"controller":{"oneOf":[{"type":"string"},{"type":"array","items":{"type":"string"}}]},"verificationMethod":{"type":"array","items":{"type":"object","properties":{"id":{"type":"string"},"type":{"type":"string"},"controller":{"type":"string"},"publicKeyJwk":{"type":"object","properties":{"alg":{"type":"string"},"crv":{"type":"string"},"e":{"type":"string"},"ext":{"type":"boolean"},"key_ops":{"type":"array","items":{"type":"string"}},"kid":{"type":"string"},"kty":{"type":"string"},"n":{"type":"string"},"use":{"type":"string"},"x":{"type":"string"},"y":{"type":"string"}},"required":["kty"],"title":"JsonWebKeyDto"}},"required":["id","type","controller"],"title":"VerificationMethodDto"}},"service":{"type":"array","items":{"type":"object","properties":{"id":{"type":"string"},"type":{"type":"string"},"serviceEndpoint":{"oneOf":[{"type":"string"},{"type":"array","items":{"type":"string"}}]}},"required":["id","type","serviceEndpoint"],"title":"ServiceDto"}},"publicKey":{"type":"array","items":{"type":"object","properties":{"id":{"type":"string"},"type":{"type":"string"},"controller":{"type":"string"},"publicKeyJwk":{"type":"object","properties":{"alg":{"type":"string"},"crv":{"type":"string"},"e":{"type":"string"},"ext":{"type":"boolean"},"key_ops":{"type":"array","items":{"type":"string"}},"kid":{"type":"string"},"kty":{"type":"string"},"n":{"type":"string"},"use":{"type":"string"},"x":{"type":"string"},"y":{"type":"string"}},"required":["kty"],"title":"JsonWebKeyDto"}},"required":["id","type","controller"],"title":"VerificationMethodDto"}},"authentication":{"type":"array","items":{"oneOf":[{"type":"string"},{"type":"object","properties":{"id":{"type":"string"},"type":{"type":"string"},"controller":{"type":"string"},"publicKeyJwk":{"type":"object","properties":{"alg":{"type":"string"},"crv":{"type":"string"},"e":{"type":"string"},"ext":{"type":"boolean"},"key_ops":{"type":"array","items":{"type":"string"}},"kid":{"type":"string"},"kty":{"type":"string"},"n":{"type":"string"},"use":{"type":"string"},"x":{"type":"string"},"y":{"type":"string"}},"required":["kty"],"title":"JsonWebKeyDto"}},"required":["id","type","controller"],"title":"VerificationMethodDto"}]}},"assertionMethod":{"type":"array","items":{"oneOf":[{"type":"string"},{"type":"object","properties":{"id":{"type":"string"},"type":{"type":"string"},"controller":{"type":"string"},"publicKeyJwk":{"type":"object","properties":{"alg":{"type":"string"},"crv":{"type":"string"},"e":{"type":"string"},"ext":{"type":"boolean"},"key_ops":{"type":"array","items":{"type":"string"}},"kid":{"type":"string"},"kty":{"type":"string"},"n":{"type":"string"},"use":{"type":"string"},"x":{"type":"string"},"y":{"type":"string"}},"required":["kty"],"title":"JsonWebKeyDto"}},"required":["id","type","controller"],"title":"VerificationMethodDto"}]}},"keyAgreement":{"type":"array","items":{"oneOf":[{"type":"string"},{"type":"object","properties":{"id":{"type":"string"},"type":{"type":"string"},"controller":{"type":"string"},"publicKeyJwk":{"type":"object","properties":{"alg":{"type":"string"},"crv":{"type":"string"},"e":{"type":"string"},"ext":{"type":"boolean"},"key_ops":{"type":"array","items":{"type":"string"}},"kid":{"type":"string"},"kty":{"type":"string"},"n":{"type":"string"},"use":{"type":"string"},"x":{"type":"string"},"y":{"type":"string"}},"required":["kty"],"title":"JsonWebKeyDto"}},"required":["id","type","controller"],"title":"VerificationMethodDto"}]}},"capabilityInvocation":{"type":"array","items":{"oneOf":[{"type":"string"},{"type":"object","properties":{"id":{"type":"string"},"type":{"type":"string"},"controller":{"type":"string"},"publicKeyJwk":{"type":"object","properties":{"alg":{"type":"string"},"crv":{"type":"string"},"e":{"type":"string"},"ext":{"type":"boolean"},"key_ops":{"type":"array","items":{"type":"string"}},"kid":{"type":"string"},"kty":{"type":"string"},"n":{"type":"string"},"use":{"type":"string"},"x":{"type":"string"},"y":{"type":"string"}},"required":["kty"],"title":"JsonWebKeyDto"}},"required":["id","type","controller"],"title":"VerificationMethodDto"}]}},"capabilityDelegation":{"type":"array","items":{"oneOf":[{"type":"string"},{"type":"object","properties":{"id":{"type":"string"},"type":{"type":"string"},"controller":{"type":"string"},"publicKeyJwk":{"type":"object","properties":{"alg":{"type":"string"},"crv":{"type":"string"},"e":{"type":"string"},"ext":{"type":"boolean"},"key_ops":{"type":"array","items":{"type":"string"}},"kid":{"type":"string"},"kty":{"type":"string"},"n":{"type":"string"},"use":{"type":"string"},"x":{"type":"string"},"y":{"type":"string"}},"required":["kty"],"title":"JsonWebKeyDto"}},"required":["id","type","controller"],"title":"VerificationMethodDto"}]}}},"required":["id"],"title":"DIDDocumentDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

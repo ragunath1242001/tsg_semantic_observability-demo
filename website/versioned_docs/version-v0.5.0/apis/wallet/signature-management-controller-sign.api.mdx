@@ -1,0 +1,71 @@
+---
+id: signature-management-controller-sign
+title: "Sign document"
+description: "Sign a JSON document with default or defined key"
+sidebar_label: "Sign document"
+hide_title: true
+hide_table_of_contents: true
+api: eJztV99v2zYQ/lcOfNoKxQ6yPgnDgK7NhhRrU9TZ+pAFxlk6W2woUiVPcTxD//tAUrZkWXaHrY97sSUe79f3ifpOW5GTy6ysWBotUjGTKw0Ib2e37yE3WV2SZlhLLiCnJdaKwVh/KTXl8EgbkQhTkUXvfpO3AZBrS+9Q44q8/2uj2RqlyM6dXGmRiAotlsRknUjvHxJh6UtNjn82+Uak23ArLeUiZVtTIjKjmTR7E1aVkllIN/3sfMlb4bKCSvRXvKlIpMIsPlPGPo/1xbEk11n3uxxbqVeiSUSlUOo3bbfHcZpEPNLGdzfiq40tUcm/MAI4Ft0as/xQ28q48fQmgO9GE1O5oDyn/A+yctk2/o64MP1qFsYoQi2aJulhdz/o6yERLFlRS9LHiPkbNqJpoqerjHYRq6vLS/93+HCIb0ZFwOQ/MJZZQqYRRhKx9ISwSEWOTBcsS/pHJHxeu9H1p3PA77YNcA/WrshB9phrNHKPorfO6E+02B+nq8ury8jVgOOA5BnHjuCXlz8cc/qLsQuZ56S/Hbkay3GMHSPX4zBnJu/76LpckPWGkpzDFY0fDmuN/TodoZ599jZXD7FrH6YP08tjmD6SM7XNCLRhWJpa5//jFfDyZVJWW8kbkd5vhcGaiysfZo1KEc9rR/NH2vhA7UoZlCEuPjQ+MK68EIhOMmD/+DqfuWwPnqiMC/ghFyIVU6zktNw7Td3OadrqjCP7tBeZXZkzT0tEfldsh1VcSMRSmfhCqNC5tbF5JNRU0bHt5EnSep5LX9lwZbTbdGwxOUIqPY1diG/Wep5ZykmzROUG2YfWQ19U6ozv0Drs4mTmE/ah/8nsJ+x7f+lcTeOux6bDjitLjjRjK7JnbO3z7M/vx24iuX7GslIjJ/R4cOgmhW7PYEDoOR9IUrfejQNf0X8/HDWJkHppQnHt8byb/QqfQo8iGbzF7gqCzgzSAcJsdgMREuACGTLUECAF1Dk4NpYgShUuFEEP57AhihwcAAlsYEFQO8rD7Cg15MgIrsKM3OTHhYXpT/H3Tw0A4OtadzXJknJAhrJWLC9Ykh85K2U2HmaXxHnUaILvjIXSWPr+oAPM2AE6YFs7BtRZYSwsjQXslRGKlzqXTzWq1t2FXYRZAWYJXBBUaFlmskLNDqQOa12MCdz6JemgwhUFY0aa7T5grCeg6Q6QW0ulPESZ35YHzzfIGCtr2UHFhalXBciAihee3Vs6xuWCLAGqNW6c30HPmLHaBGRCTuvb6KeVusUgln9MxHz+4r1hejGfp3DnG7utSL/6cBNHfunZ3dUivfblvpZAdi4thexK6seWd0BwUq/UviWpHaP2wMX5xx3MlZi1Z0jJjHSc06I2ilcVZgXB1eRSJKK2SqSiYK5cOp2u1+sJBvPE2NW09XXT325eX7+fXV9cTS4nBZcqyJzXjxJ1L3L44Nl96QwPzLaT+H/zZdS+LpieeRpeFV6EQ/XbVsLuBVZSJKITMa9aOxlrr70CFl740nux3S7Q0e9WNY1f/lKT3UR5e0IbTqi/axJREOZkgyT7YlLxOnZycReH0ydUtS/uaHBpkp3Hqyyjis/u7Wvzh9vZnUjEov2IK8OEIiyuRRJ+A8+9b52wthUK9aoOE4uIMT1PXobHZHk/XexNqDe9CgcqDMdyCwNphTPSCWekEc4KH5yVNTilXHBam5KWlDCDBJJGAdiNKwM9jL4ri5rnwa95aJrmb70xr3A=
+sidebar_class_name: "post api-method"
+info_path: docs/apis/wallet/tsg-wallet
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Sign document"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/management/signature/sign"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Sign a JSON document with default or defined key
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={{"required":true,"content":{"application/json":{"schema":{"type":"object","properties":{"type":{"type":"string"},"plainDocument":{"type":"object"},"keyId":{"type":"string"},"normalization":{"type":"string"},"proofPurpose":{"type":"string"},"options":{"type":"object"},"embeddedVerificationMethod":{"type":"boolean"}},"required":["plainDocument"],"title":"SignRequestDto"}}}}}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{"proof":{"type":"object","properties":{"type":{"type":"string"},"created":{"type":"string","format":"date-time"},"proofPurpose":{"type":"string"},"jws":{"type":"string"},"verificationMethod":{"type":"string"}},"required":["type","created","proofPurpose","jws","verificationMethod"],"title":"JsonWebSignature2020Dto"}},"required":["proof"],"title":"JsonWebSignatureDto"}}}},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string"},"status":{"type":"string"},"code":{"type":"number"},"message":{"type":"object"},"error":{"type":"string"}},"required":["name","status","code"],"title":"ErrorDto"}}}},"404":{"description":"Resource not found","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string"},"status":{"type":"string"},"code":{"type":"number"},"message":{"type":"object"},"error":{"type":"string"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

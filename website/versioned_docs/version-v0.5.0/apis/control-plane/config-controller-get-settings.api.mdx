@@ -1,0 +1,71 @@
+---
+id: config-controller-get-settings
+title: "Retrieve settings"
+description: "Retrieves the settings of the control plane."
+sidebar_label: "Retrieve settings"
+hide_title: true
+hide_table_of_contents: true
+api: eJytVdtu2zgQ/ZXBPBZaO8juk96KNA0C9BI0afchCIwxOZbYUCRLjuI1DP37grRsy7mgWGCfJHFuZ0ZnDreoOaloghjvsMZvLNHwEyeQliGxiHFNAr8q38o7id5CsOR4hhX6wJFy6LXGGi+8W5nmYudkOS4altsxBVYYKFLHwjFhff9QYeQUvEucsN7i+dlZfpyiwQpzSXaSbRSCNaqUm/9M2WGLSbXcUX6TTWCs0S9/spJcLWZwYnbpR+Q3Gfi1E46kcp40iUwSjWtwGDKyX72JrLG+fzvyoUIxYnPot96J6XjX/wfxOAw5zV9nf77s6aOPS6M1u/+vOUcdv9JIhUlI+td6zKX1NMb13ZJjNnScEjX8supQIcfo4+9HVvAcqo+1JuO6zGn2Y8owWfXRyAbr+y166qU9n0y+kG1BujMOH4achprMIDxQ6yGjltZnDjZc5kPSYo1zCmaejgxMHJ8O9NtXvc1T3g1yX/vY+u6gwpX16+ISKKW1j3r3f3w4odcUav3aYXV6qEmovD33Php2E1oyRY4HTmT/8Whv++hjR4I1/rjBag+/FQlYPSPgD45mZWhpGW4iJ3ZSWAeOWbMG8aB81/Uus5FhybJmdiBrD8YlIaf4LT3ISI1b+TLA8V/f3V7BqAhQdugFnrvWJPga2L2/uYYUWJnVuAiQWr/eKRE7Hbxxcih9knMGn32SvenoS5EhsiXZ9ZWNH0goBVK5eS9eeVsBpX1d1rDcFL9LZU1IDH/7+GhcA1fR9+EYnWbwVVqOz4qlPgQfxTxNUYiHjh6zMXLJnf8uKHKwZCCtj+AUCVnfVEBOPw8jge/XYCYKVFJIdgmWFM8AFot3X7zwu8WihpOxal4ZZ8pMTQLnpSRyY+klgzaRldgNWOMeWcPaSAsEybjGPhv2gQYzwArzPp2INamsZ0OF1ih2iY8Che8DqZbhfHaGFfbRjgxN9Xy+Xq9nVMwzH5v5GJvmn64vLr/cXv5xPjubtdLZwrHgk3TkJpn31xZMlv2EZduj1v7XO27cJeF/ZB4sGZeVsKDfjjpzjxRMkZejILU+SbZst0tK/D3aYcjHv3qOm53+PFEsW5i/hgpbJp1X/H6Lj7zJ01KKQxazJ7J9RvDiihimwnd1eYcVZr16Tb8OqnowkdtMcr/UKnhDkKoRXhE/HKo3Eu51cqEia3ZiyKZDbBPJyaLEDQ/DMPwLXdX+3Q==
+sidebar_class_name: "get api-method"
+info_path: docs/apis/control-plane/tsg-control-plane
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Retrieve settings"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/settings"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Retrieves the settings of the control plane.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{"controlPlaneInteractions":{"type":"string"}},"required":["controlPlaneInteractions"],"title":"RuntimeConfigDto"}}}},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string"},"status":{"type":"string"},"code":{"type":"number"},"message":{"type":"object"},"error":{"type":"string"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

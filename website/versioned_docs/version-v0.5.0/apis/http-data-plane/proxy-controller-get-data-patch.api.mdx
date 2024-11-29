@@ -1,0 +1,71 @@
+---
+id: proxy-controller-get-data-patch
+title: "Proxy a request"
+description: "This endpoint is used if the HTTP Data Plane needs to serve as a proxy."
+sidebar_label: "Proxy a request"
+hide_title: true
+hide_table_of_contents: true
+api: eJytVMFu2zAM/RWBpw3w4iJH34quWwsMW7BmvRRBwVh0LMyWVIlumhn+94Gyk3VptxXFTpZJiXzk42MPmmIZjGfjLBSwrE1UZLV3xrIyUXWRtDKV4prUxXK5UO+RUS0atKQskY6KnYoU7klhVKh8cA+7mYIMnKeAEvZSQwELsZ85y8E1DYXbDbFEuvXIZQ0ZeAzYElOIUNz0YLElKMBoyCDQXWcCaSg4dJSBEaAeWZ4doQ9oY0VBGU2WTWUoQAaxrKlFKHrgnZeokYOxGxiG7JDotOPaBfMjAf5TzppQvzjiBPDl4BfItXKVClSSuTd2o9D7xpR7SIekw7CSuNE7GykKivnJiXx+jydogHEjDR3bD6sMWuLa6RHD1HiuoYAcvckTeXlv9JD3Yh8krXCbWFnJT9kFw7srwTLmdthxPX/Ui8mQQdW4bbriMcatC1rOsXR+fFgze42MXmbpFnU79vgZa3ZkPZye3P/lGQYpf00YKIx5BTEUe9Pe98GFFhkKuF5Ati9Bgj7h55qCqQyuG1KLQJEsJ2aSCkiLDErXtp0VxkitibdEVvHWKWMjoy0pCr0ipHLUgUpQZ4koYyuXmmi4EQjLq4/Hens67iLWL57s6eJSRU+lqaZxUbF225hy7cV8SH4UdQYZCMHT0GQg4LBkGbQMGlOSjSTI9krxWNak5rMTyKALzdSuWOT5drudYXLPXNjk09uYf7o8O/98df5uPjuZ1dw2qWDvIrdoH0VOM6pQiWQo8nG5fUJGlv/vmpooZ3rg3DdoLAxTXf2kjRtAb0QpSUMZFGkrFcm5yqB2keVS368x0rfQDIOY7zoKu1E19xjS3KTNpk2Us4aiwibSX4p883XaHW/V84vtWeiTEa1Avcemo5HW77QbF6rsqFeB+NeCegWc1MNhNTzaS4vT5dkFDMNPTL1FJA==
+sidebar_class_name: "patch api-method"
+info_path: docs/apis/http-data-plane/tsg-http-data-plane
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Proxy a request"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"patch"}
+  path={"/api/proxy/{id}/{path}"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+This endpoint is used if the HTTP Data Plane needs to serve as a proxy. 
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"id","required":true,"in":"path","description":"Transfer identifier","schema":{"type":"string"}},{"name":"Authorization","required":true,"in":"header","schema":{"type":"string"}},{"name":"path","required":true,"in":"path","description":"Path of receiving application","schema":{}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":""}}}
+>
+  
+</StatusCodes>
+
+
+      

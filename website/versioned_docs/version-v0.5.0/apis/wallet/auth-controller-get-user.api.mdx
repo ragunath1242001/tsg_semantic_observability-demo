@@ -1,0 +1,71 @@
+---
+id: auth-controller-get-user
+title: "Retrieve current user status"
+description: "Retrieves current user state, whether someone is logged in or not a 200 result is provided. This is used in the frontend to determine whether certain aspects should be shown."
+sidebar_label: "Retrieve current user status"
+hide_title: true
+hide_table_of_contents: true
+api: eJzVVktvGzcQ/isDntpgIxk+LooChmMEBoq4iG304BrCiBxpGXNJhpzVRhD034vhrmxZloM4OfVirzivj/PgNxtlKOtkI9vgVa0+EydLK8qgu5TIM3SZEmRGpgr6hriRn6Gl4AlsBheWSzJgPYQEPjAgnJ6cQKLcORaFmMLKGjITuGlslpMuDwbcECxS8EzeAAcwxJRa6+kxjqbEaD1gjqQ5Q25C5wzMSb56P1GVCpESCvhLo2p11nFzHjyn4Byl2ZL4NlNSlYqYsBX/WdV395VKlGPwmbKqN+r05ET+Pc+EqpQu2FhkGKOzugSafsmisFFZN9SifAVPVwtV320UryOpWoX5F9IscZMAZDsEKmmUj1Etc7J+qbaVkizvCV6z7+ZHrT22x91Si9YdlRhrJGNHJCm4IdoowZRwrSplmdr80qJS5LtW1XeqR+eIZytL/cxYo6rdSYselzR7oHV+Ouzy4UkxDL2f6USGPFt0h1J07rh0DPGq9Sh/1d7m3NF3AsdEmTyXBsjqvlJs2UkWzmL8HByp7VZSR187m8hINqRWY2V2ddhlfZfjPTfnzpLnS78IHzioF75K34xdsh+840bwamQy0unFuPrZNjwadS/crcejAe+323J9xqWM1z4smaX7SrXETZABXVKBg9yoWk0x2qm4nHbDlGZKq8cRzaS7ZHl9LWM2AA+ifLo/J8NBpRYu9EUlYs59SGYY0BAHw8PWrH+sWesf6+D6jT1d/0LH1780D4cXeuu8HNq/YZ7qnxu1+juyse2sX4TSE2Ob3lx/hH+KkUzcs0f9piF4EgsZIVxfX8IQA7hBBo0eCkZAbyBzSAQrSnZhce4I9oAXBZ0ImeAZMmGzOQ1E11turAeDjJAjasqTP+YJpn8Of//1AACCq3/CZFsygAxt59i+Z0sJDEUX1i15zlXxCULAv4UEbUj0+7MboHAlZuDUZQb0ugkJFiEB7sEo4K03dtWhG81z0SLUDYRF4eeIia22ET3nHWc/+ZjAlRwJy+OSilCT5/TocMBTspmfZa63zkmKtKiZYvkBGQdkY3XQcRO6ZQO2ZEWWi93zNPiVHYEAXY/rsljQN9Ts1jCsJrmjJNfYDyu7RME/wH9ZiNns3afA9G42q4d95SqSP/v7EgwtrLdS3R0WWxYXMmOxjU1UojvrH8a6A0K2fuker2R9ZvSSOFUpeeqe7RqoZdfYVspZTT6XJ3qgdnUWUTcEp5MToYHkVK0a5pjr6bTv+wkW8SSk5XS0zdO/Ls8vPl1fvD+dnEwabl1532PI3KLf87zb+F4ufF0+nJ/N00r0/9sUR8pg+sbT6ND6snclN7CGENKdwmhVpYRU9ti2CZlFuNnMMdNtctutHH/tKK0HqlphKo+D/NpWqiE0ss7dbdQDraV6WlOU12iFris71eE6ud0nyY8XN2q7/Q+onyVU
+sidebar_class_name: "get api-method"
+info_path: docs/apis/wallet/tsg-wallet
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Retrieve current user status"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/auth/user"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Retrieves current user state, whether someone is logged in or not a 200 result is provided. This is used in the frontend to determine whether certain aspects should be shown.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"","content":{"application/json":{"schema":{"oneOf":[{"type":"object","properties":{"state":{"type":"string"},"user":{"type":"object","properties":{"sub":{"type":"string"},"name":{"type":"string"},"email":{"type":"string"},"didId":{"type":"string"},"roles":{"type":"array","items":{"type":"string","enum":["wallet_view_did","wallet_manage_keys","wallet_use_keys","wallet_view_own_credentials","wallet_view_all_credentials","wallet_manage_own_credentials","wallet_manage_all_credentials","wallet_issue_credentials","wallet_view_presentations"],"title":"AppRole"}}},"required":["sub","name","email","didId","roles"],"title":"ClientInfoDto"}},"required":["state","user"],"title":"AuthenticatedUserDto"},{"type":"object","properties":{"state":{"type":"string"}},"required":["state"],"title":"UnauthenticatedUserDto"}]}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

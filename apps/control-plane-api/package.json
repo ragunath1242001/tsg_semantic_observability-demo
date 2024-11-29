@@ -1,6 +1,6 @@
 {
   "name": "@apps/control-plane-api",
-  "version": "0.1.0",
+  "version": "0.5.0",
   "private": true,
   "scripts": {
     "watch": "tsc-watch -p tsconfig.json --onSuccess \"node ./dist/app.js\"",

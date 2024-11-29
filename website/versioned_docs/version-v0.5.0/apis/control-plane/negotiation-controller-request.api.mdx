@@ -1,0 +1,71 @@
+---
+id: negotiation-controller-request
+title: "Request a new negotiation"
+description: "Request a new negotiation"
+sidebar_label: "Request a new negotiation"
+hide_title: true
+hide_table_of_contents: true
+api: eJztWE1v2zgQ/SsEjwvV7uboU7NttgiwbYwm7R6MIBiTY4kNRbLkKK5h6L8vSMmypChuum1vPSXmDOeb856959ahB1LWXEq+4O8xt6TS59fWkLdao7/z+KXCQDzjDjyUSOgDX6xuM95K/rJyxxf79FF5lHxBvsKMC2sIDUUROKeVSJbnn4M18SyIAkuI/9HOIV9wu/6MIvnxMS5SGKL0VSPu1AJ5ZXJeZ1wGBwIXwppQleiXSp5Sc94+KPlNNQFar0Hcn0vpMYRTqnazQf+MBJ5w+HRiVnq9gBBUbgYOpjVO2HDebpQ+pYC+VCGopiWtDngPO55xRViGH2nQT8sDBA1DHMkJfI70tDyOCHlQhn5Zmho3dBWfk5nudlJq3ps9UQuv8mLCThvTlNYH3KBHI6Ziq7Peq1y1KUwEPA7vNuOkKA4Of92V7rp5sPUhiDcV7Z5Rzi6WU8G0De75XXaTOfbrvC3UWtHvof09tM8f2u+cvuOMjcfPrrXK4Yemrz46So+o/uZIjKNXMf0mh17UVxGQevFOJTwBmk9i3wjphgUmD4I+NBTgHYYAOR6LnZwHZ01o5vDs5Z/xj8QgvHJN8Tj/eRzhuyH2l3CHQEDPmehe9043pO935GWiGT3+1utEnfGAovIqbuvVnq8RfFxsq9s62oA8srk+9wvR9rBTbZsZMINbZo66POMlUmEjfXS2ZYlU8AWfg1PznmaYH4lkQP/QschDcCnkpp0WKirO+m1vDjK+0XabVByEsLVeNlNiXXNRNLTVaTB4B7JUMfiJw2x4KIEg/TfWPgqaQh5q105m1G+PDrK/rS+B+IJ/WvLsEH5B5Pi4pp/Qq42CtUa29BjQUKoTM4gSJSPLhC3LysQ3gWyNtEU0jLaWKRMIjMDA7IZRgayNmaVQZ2ne4gv6cOTnF1+hdA0RfDUczumn8Eg6eAGP745J8yONjiu/Ghp4FM0IfqcFj290THd83iO4q4nk/6e7A7aPjg/7e3TcR/Ingxhg8Uh2hOCRYIS834DabiHdDijc6nB+2wkGHOt33bq6dQXqs4DVvjseJxKfojIbm3ZZu65vrt+y9vs1W6blMl4NN4UK7MqhOV9esuBQqE2LjCwUdhvSo0cjnVWGui0wsDlj72ygg+ioCx6ZRw3UrJgofAME6ZGypbdkhdUZg3Dwi5Ktd0nvQmjlArJ/rb9XJmdvva3c8XaYsSsq0I+chco560k99KMgy0q4j0KPyXZctEyAYWtkIOUxOAEE2uYZAyPH14DYx0umDKFv5iokExRVnAaBM8bu7v54bwn/uLtbsEFZJW6USQPOVGDGUjJkWtdrZFJ5FKR3TCtzj5JtFRUMWFAm16Nidxt5xnjGI7QNCA4IamZMK4EmpC1sIKHHuQNRIDubveQZr7xuwSIs5vPtdjuDJJ5Zn8/bu2H+z+Xri/fXFy/OZi9nBZU6zVjE3hJMz/IpyB5MWweyhF9p7jQoEylNCmbfovmKg1M84308590PQJEvFBH8Fyu+368h4Eev6zoef6nQ7xqcfwCf0C4xj4wXCDLRkD2/x13LYtDQi5uGFj2ArhKzHtPCOjvcOBcCHZ3Uve3xk+XV9U3E6fbnqtLKeMfDNmYC26Zf1jXJxd+z4tmeazB5BXnUbWzGekc+0ivdiASkrA7fDMyuF+F+32jc2Hs0dc2zNhWKn+N+qev/ABGt4fo=
+sidebar_class_name: "post api-method"
+info_path: docs/apis/control-plane/tsg-control-plane
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Request a new negotiation"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/negotiations/request"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Request a new negotiation
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={{"required":true,"content":{"application/json":{"schema":{"type":"object","properties":{"@type":{"type":"string"},"dspace:consumerPid":{"type":"string"},"dspace:providerPid":{"type":"string"},"dspace:callbackAddress":{"type":"string"},"dspace:offer":{"type":"object","properties":{"@id":{"type":"string"},"@type":{"type":"string"},"odrl:assigner":{"type":"string"},"odrl:assignee":{"type":"string"},"odrl:profile":{"type":"string"},"odrl:permission":{"type":"array","items":{"type":"object","properties":{"@type":{"type":"string"},"odrl:assigner":{"type":"string"},"odrl:assignee":{"type":"string"},"odrl:action":{"type":"string"},"odrl:target":{"type":"string"},"odrl:constraint":{"type":"array","items":{"type":"object","properties":{"@type":{"type":"string"},"odrl:leftOperand":{"type":"string"},"odrl:operator":{"type":"string"},"odrl:rightOperand":{"type":"object"},"odrl:rightOperandReference":{"type":"string"}},"required":["@type","odrl:leftOperand","odrl:operator"],"title":"ConstraintSchema"}},"odrl:Duty":{"type":"array","items":{"type":"string"}}},"required":["@type","odrl:action"],"title":"PermissionSchema"}},"odrl:prohibition":{"type":"array","items":{"type":"object","properties":{"@type":{"type":"string"},"odrl:assigner":{"type":"string"},"odrl:assignee":{"type":"string"},"odrl:action":{"type":"string"},"odrl:target":{"type":"string"},"odrl:constraint":{"type":"array","items":{"type":"object","properties":{"@type":{"type":"string"},"odrl:leftOperand":{"type":"string"},"odrl:operator":{"type":"string"},"odrl:rightOperand":{"type":"object"},"odrl:rightOperandReference":{"type":"string"}},"required":["@type","odrl:leftOperand","odrl:operator"],"title":"ConstraintSchema"}}},"required":["@type","odrl:action"],"title":"ProhibitionSchema"}},"odrl:obligation":{"type":"array","items":{"type":"object","properties":{},"title":"Duty"}},"odrl:target":{"type":"string"}},"required":["@id","@type"],"title":"OfferSchema"}},"required":["@type","dspace:consumerPid","dspace:callbackAddress","dspace:offer"],"title":"ContractRequestMessageSchema"}}}}}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"201":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{"@id":{"type":"string"},"@type":{"type":"string"},"dspace:consumerPid":{"type":"string"},"dspace:providerPid":{"type":"string"},"dspace:state":{"type":"string"}},"required":["@id","@type","dspace:consumerPid","dspace:providerPid","dspace:state"],"title":"ContractNegotiationSchema"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

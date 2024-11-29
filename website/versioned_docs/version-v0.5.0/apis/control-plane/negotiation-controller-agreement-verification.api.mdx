@@ -1,0 +1,71 @@
+---
+id: negotiation-controller-agreement-verification
+title: "Verify agreement"
+description: "Verify agreement"
+sidebar_label: "Verify agreement"
+hide_title: true
+hide_table_of_contents: true
+api: eJyVVk1vGzcQ/SvEnNpgIxk+7imu6wQGGluInfZgCMKIHGkZc0mGnLUiCPvfC5KrbzVFTpY5H3x882ZmN+A8BWTt7L2CGh5o6Vjn/2+d5eCMoTDDZSBqyfLfFPRCy2yHCjwGbIkpRKhfNmCxJahBK6gg0PdOB1JQc+ioAm2hBo/cQAVRNtQi1BvgtU8RkYO2S+j7aQmkyH84tU4ep3mks0yWkwm9NwOW8bfobDo7S+3m30hywhrSS1lTTNYPxXyGoAIVPUqqpbOxaylMtPqZmw/uTav/dWswNqQ+U4y4pHN0fX9I2MuA7iKWizf/xz3TClizSRflYqLkm0uVHPyfCnd9X+BE72wsbF1fXaU/iqIM2ufi1wC/UAz6ga03+eWRkbt4WPRyYSTZBc3rrKQ5YaAA9cs0SYJxmQR2KM6YHneMJ79oLXZahQpa4sYlWXsXswaS/moYo9dje5BsvNGqH+8ix2/HMo8U3orGp3ucma1Cj8OOm+vDspaDChbGrbKLxxhXLqhCi/MlUJYW8wYtzVC1uUkuHFbHhwoZ869T772hcLqlcShF8h+OtraPLrTIib0JVFv4DbOHi/RqnBsSk0CRLGd6hCVSpAQ7IV3bdjbRRmJOvCKygldOaBsZraQo3EJwQ2LALDLUUVZ/ksyXfeff7fXy4binLjfomfWoL8+sp+2YEGi7cLmEQ8c8P30SwwgUk8zpKSPPjY7i0ZO9mdyL6EnuNCNi41Yxv5Ws8k5b3j3+KOdIfHaRt6a9LwYSgQxyYTYZ/0TGjF5MgmMnnakExu29pMR8nf3upNE+kvjHhVdtl+JTcJ3fR8eReOSGwsllsfPeBdZvhyjYiRZfkzFQzp30JSRaMSeBSu3BSWQ0blkJtOo0DFl8vRfaMqUBlNotp+Dk4g1KGgkxm717cEzvZrNaHNGqaKGtzpzqKKzjnMgOV89JKB1IslkLo+0rKbHS3AgUUdulOSF7J8SRgApSRx8NMpRpkPUVGC3Jxiy+YaPdeJQNievRFVTQBTP0SKzH49VqNcJsHrmwHA+xcfzX/e3dw9Pd++vR1ajh1mSVpzHUoj3IfGFoHYlsN1KYfvDYG9Q2rZWMYTPMsxdAr6GCw4kGFdR5MRxmPhpr0wqaNBXrF9hs5hjpazB9n46/dxTWZdi9Ycgtn4ey0jH9VlAv0EQ6Q7rbBvDbl2GZ/S72U+X4BcMh2nUChqajUolXWpdPiH7aV9AQqrwHNoPhttzx/rksyG3g2fbpq23EjZTk+ae+04NNMXl8ek7Tcfj8aJ1KMQFX6ZsGVwWk84Xk9H2SzjZg0C67PEyg5EzlTlvgoIQnoze/6iINm03xeHavZPt+xwqn/xMxff8vFM9qSA==
+sidebar_class_name: "post api-method"
+info_path: docs/apis/control-plane/tsg-control-plane
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Verify agreement"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/negotiations/{id}/agreement/verification"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Verify agreement
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"id","required":true,"in":"path","schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={{"required":true,"content":{"application/json":{"schema":{"type":"object","properties":{"@type":{"type":"string"},"dspace:consumerPid":{"type":"string"},"dspace:providerPid":{"type":"string"},"dspace:hashedMessage":{"type":"object"}},"required":["@type","dspace:consumerPid","dspace:providerPid","dspace:hashedMessage"],"title":"ContractAgreementVerificationMessageSchema"}}}}}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"","content":{"application/json":{"schema":{"example":{"status":"string"}}}}}}}
+>
+  
+</StatusCodes>
+
+
+      
