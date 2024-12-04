@@ -5,12 +5,12 @@ import {
   General,
   Participant,
   SingleParticipant
-} from "./model";
+} from "./model.js";
 import fs from "fs";
 import { checkbox, confirm, Separator } from "@inquirer/prompts";
 import chalk from "chalk";
-import { getCliVersion, getLatestRelease } from "./validate";
-import { execPromise, log, validateAndCreate } from "./utils";
+import { getCliVersion, getLatestRelease } from "./validate.js";
+import { execPromise, log, validateAndCreate } from "./utils.js";
 
 interface Options {
   file?: string;
@@ -205,7 +205,7 @@ export class Deploy {
 
   private async confirmOptions(options: Options) {
     this.latestVersion = await getLatestRelease();
-    this.currentCliVersion = getCliVersion();
+    this.currentCliVersion = await getCliVersion();
 
     if (!options.yes) {
       const currentContext: string = await execPromise(
