@@ -1,26 +1,43 @@
 import axios from "axios";
 import semver from "semver";
-import { log } from "./utils";
+import { log } from "./utils.js";
 import { confirm } from "@inquirer/prompts";
+import { fileURLToPath } from "url";
+import path from "path";
+import { existsSync, readFileSync } from "fs";
 
 let cliVersion: string | undefined;
 let releaseVersion: string | undefined;
 
-export const getCliVersion = () => {
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+export const getCliVersion = async () => {
   if (cliVersion) return cliVersion;
   try {
-    const packageInfo = require("../../package.json");
-    cliVersion = packageInfo.version;
-    return packageInfo.version;
-  } catch (e) {
-    try {
-      const packageInfo = require("../package.json");
-      cliVersion = packageInfo.version;
-      return packageInfo.version;
-    } catch (e) {
-      log("warn", "Could not retrieve current CLI version");
+    let packageJson: { version: string };
+    if (existsSync(__dirname + "/../package.json")) {
+      packageJson = JSON.parse(
+        readFileSync(__dirname + "/../package.json", "utf8")
+      );
+    } else if (existsSync(__dirname + "/../../package.json")) {
+      packageJson = JSON.parse(
+        readFileSync(__dirname + "/../../package.json", "utf8")
+      );
+    } else {
+      log(
+        "warn",
+        "Could not find package.json to retrieve current CLI version"
+      );
       return "0.0.0";
     }
+    cliVersion = packageJson.version;
+    return packageJson.version;
+  } catch (e) {
+    console.error(e);
+    log("warn", "Could not retrieve current CLI version");
+    return "0.0.0";
+    // }
   }
 };
 
@@ -31,7 +48,7 @@ export const getLatestRelease = async () => {
       "https://gitlab.com/api/v4/projects/58498367/releases"
     );
     releaseVersion = response.data[0].name.slice(1);
-    const currentCliVersion = getCliVersion();
+    const currentCliVersion = await getCliVersion();
     if (semver.compare(releaseVersion!, currentCliVersion) === 1) {
       log(
         "warn",

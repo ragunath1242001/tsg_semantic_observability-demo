@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 import { Argument, Command } from "@commander-js/extra-typings";
-import { Generate } from "../lib/generate";
-import { Deploy } from "../lib/deploy";
-import { getCliVersion, getLatestRelease } from "../lib/validate";
-import { log } from "../lib/utils";
+import { Generate } from "../lib/generate.js";
+import { Deploy } from "../lib/deploy.js";
+import { getCliVersion, getLatestRelease } from "../lib/validate.js";
+import { log } from "../lib/utils.js";
 
 const program = new Command();
 const generate = new Generate();
@@ -11,7 +11,11 @@ const deploy = new Deploy();
 
 program
   .name("tsg-cli")
-  .version(getCliVersion(), "-v, --version", "output the current version");
+  .version(
+    await getCliVersion(),
+    "-v, --version",
+    "output the current version"
+  );
 
 program
   .command("bootstrap")

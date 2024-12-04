@@ -7,12 +7,16 @@ import {
   General,
   Participant,
   SingleParticipant
-} from "./model";
+} from "./model.js";
 import fs from "fs";
 import path from "path";
 import process from "process";
 import { confirm, select } from "@inquirer/prompts";
-import { log, validateAndCreate } from "./utils";
+import { log, validateAndCreate } from "./utils.js";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
+const __dirname = path.dirname(__filename); // get the name of the directory
 
 interface Options {
   file?: string;

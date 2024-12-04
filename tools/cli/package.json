@@ -3,7 +3,7 @@
   "version": "0.5.0",
   "description": "Configuration Bootstrap CLI tool",
   "engines": {
-    "node": ">= 16.14"
+    "node": ">= 22"
   },
   "bin": {
     "tsg": "dist/bin/tsg-cli.js"
@@ -11,6 +11,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.json"
   },
+  "type": "module",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",

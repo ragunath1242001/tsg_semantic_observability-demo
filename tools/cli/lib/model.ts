@@ -12,7 +12,7 @@ import {
   ValidateNested
 } from "class-validator";
 import "reflect-metadata";
-import { log } from "./utils";
+import { log } from "./utils.js";
 
 export class DataPlane {
   @IsString()
