@@ -103,7 +103,6 @@ export class TransferManagementController {
     );
     const internalTransfer = await this.transferService.initiateTransferProcess(
       agreementId,
-      undefined,
       controlPlaneAddress,
       audience,
       format

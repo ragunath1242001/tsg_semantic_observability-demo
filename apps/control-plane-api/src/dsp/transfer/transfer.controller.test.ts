@@ -293,7 +293,6 @@ describe("TransferController", () => {
     const transferConsumerProcess =
       await transferService.initiateTransferProcess(
         "urn:uuid:a1b6d55e-a9ee-4e9c-9a72-ce6e0b1db099",
-        undefined,
         "http://127.0.0.1/transfers",
         "did:web:localhost",
         "dspace:HTTP"

@@ -351,7 +351,6 @@ describe("Transfer service", () => {
     it("Request new transfer", async () => {
       const transferProcess = await transferService.initiateTransferProcess(
         "urn:uuid:2d9ea8f0-57da-4ea8-8083-bdb8e6782fc9",
-        undefined,
         "http://remoteparty.test/transfers",
         "did:web:remoteparty.test",
         "dspace:HTTP"
@@ -362,7 +361,6 @@ describe("Transfer service", () => {
 
       const transferProcessPush = await transferService.initiateTransferProcess(
         "urn:uuid:2d9ea8f0-57da-4ea8-8083-bdb8e6782fc9",
-        undefined,
         "http://remoteparty.test/transfers",
         "did:web:remoteparty.test",
         "dspace:HTTP"
@@ -378,7 +376,6 @@ describe("Transfer service", () => {
     it("Request new transfer without format", async () => {
       const transferProcess = await transferService.initiateTransferProcess(
         "urn:uuid:2d9ea8f0-57da-4ea8-8083-bdb8e6782fc9",
-        undefined,
         "http://remoteparty.test/transfers",
         "did:web:remoteparty.test"
       );
@@ -388,7 +385,6 @@ describe("Transfer service", () => {
 
       const transferProcessPush = await transferService.initiateTransferProcess(
         "urn:uuid:2d9ea8f0-57da-4ea8-8083-bdb8e6782fc9",
-        undefined,
         "http://remoteparty.test/transfers",
         "did:web:remoteparty.test"
       );
@@ -417,7 +413,6 @@ describe("Transfer service", () => {
       await expect(
         transferService.initiateTransferProcess(
           "urn:uuid:2d9ea8f0-57da-4ea8-8083-bdb8e6782fc9",
-          undefined,
           "http://remoteparty.test/transfers",
           "did:web:remoteparty.test"
         )
@@ -453,7 +448,6 @@ describe("Transfer service", () => {
       await expect(
         transferService.initiateTransferProcess(
           "urn:uuid:2d9ea8f0-57da-4ea8-8083-bdb8e6782fc9",
-          undefined,
           "http://remoteparty.test/transfers",
           "did:web:remoteparty.test"
         )
@@ -659,7 +653,6 @@ describe("Transfer service", () => {
     it("Remote termination", async () => {
       const transferProcess = await transferService.initiateTransferProcess(
         "urn:uuid:2d9ea8f0-57da-4ea8-8083-bdb8e6782fc9",
-        undefined,
         "http://remoteparty.test/transfers",
         "did:web:remoteparty.test",
         "dspace:HTTP"
@@ -682,7 +675,6 @@ describe("Transfer service", () => {
     it("Remote termination", async () => {
       const transferProcess = await transferService.initiateTransferProcess(
         "urn:uuid:2d9ea8f0-57da-4ea8-8083-bdb8e6782fc9",
-        undefined,
         "http://remoteparty.test/transfers",
         "did:web:remoteparty.test",
         "dspace:HTTP"

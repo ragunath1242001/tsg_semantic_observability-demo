@@ -184,7 +184,6 @@ export class TransferService {
 
   async initiateTransferProcess(
     agreementId: string,
-    dataAddress: DataAddress | undefined,
     remoteAddress: string,
     audience: string,
     format?: string
@@ -194,6 +193,7 @@ export class TransferService {
     message: TransferRequestMessage;
     process: TransferProcess;
   }> {
+    let dataAddress: DataAddress | undefined;
     const localId = `urn:uuid:consumer:${crypto.randomUUID()}`;
     const context = await this.policyEvaluationService.initializeContext(
       agreementId,
@@ -255,16 +255,7 @@ export class TransferService {
       "consumer",
       audience
     );
-    const requestTransfer = await this.dsp.requestTransfer(
-      `${remoteAddress}/request`,
-      transferRequestMessage,
-      audience
-    );
-    const transferProcess = await deserialize<TransferProcess>(requestTransfer);
-    if (
-      dataAddress === undefined &&
-      dataPlaneTransfer.dataAddress !== undefined
-    ) {
+    if (dataPlaneTransfer.dataAddress !== undefined) {
       dataAddress = new DataAddress({
         endpointType: dataPlaneTransfer.endpointType,
         endpoint: dataPlaneTransfer.dataAddress.endpoint,
@@ -272,7 +263,15 @@ export class TransferService {
           (p) => new EndpointProperty(p)
         )
       });
+      transferRequestMessage.dataAddress = dataAddress;
     }
+
+    const requestTransfer = await this.dsp.requestTransfer(
+      `${remoteAddress}/request`,
+      transferRequestMessage,
+      audience
+    );
+    const transferProcess = await deserialize<TransferProcess>(requestTransfer);
     const transfer: TransferDetail = {
       localId: localId,
       remoteId: transferProcess.providerPid,
