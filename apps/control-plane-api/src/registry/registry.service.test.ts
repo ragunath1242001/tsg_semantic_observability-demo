@@ -17,12 +17,13 @@ import { AuthClientService } from "../auth/auth.client.service";
 import { RegistryDao } from "../model/registry.dao";
 import { DSPError } from "../utils/errors/error";
 import { defaultContext } from "@tsg-dsp/common-dsp";
+import { PaginationOptionsDto } from "../utils/pagination/pagination.options.dto";
 
 describe("RegistryService", () => {
   let registryService: RegistryService;
   let server: SetupServer;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     jest.useFakeTimers();
     jest.spyOn(global, "setTimeout");
     await TypeOrmTestHelper.instance.setupTestDB();
@@ -217,10 +218,12 @@ describe("RegistryService", () => {
     it("Crawl and retrieve", async () => {
       await registryService.crawl();
 
-      const catalogs = await registryService.getAllCatalogs();
-      expect(catalogs).toHaveLength(1);
-      expect(catalogs[0]["dcat:dataset"]).toHaveLength(1);
-      expect(catalogs[0]["dcat:service"]).toHaveLength(1);
+      const catalogs = await registryService.getAllCatalogs(
+        PaginationOptionsDto.NO_PAGINATION
+      );
+      expect(catalogs.total).toBe(1);
+      expect(catalogs.data[0]["dcat:dataset"]).toHaveLength(1);
+      expect(catalogs.data[0]["dcat:service"]).toHaveLength(1);
     });
   });
   describe("Crawl fails when registry is disabled", () => {
@@ -262,7 +265,9 @@ describe("RegistryService", () => {
     });
 
     it("Crawl fails when registry is disabled (default)", async () => {
-      await expect(registryService.getAllCatalogs()).rejects.toThrow(DSPError);
+      await expect(
+        registryService.getAllCatalogs(PaginationOptionsDto.NO_PAGINATION)
+      ).rejects.toThrow(DSPError);
     });
   });
 });

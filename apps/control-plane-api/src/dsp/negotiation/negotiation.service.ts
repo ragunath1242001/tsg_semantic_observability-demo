@@ -42,6 +42,8 @@ import {
   NegotiationCreatedEvent,
   NegotiationUpdatedEvent
 } from "./negotiation.events";
+import { PaginationOptionsDto } from "../../utils/pagination/pagination.options.dto";
+import { Paginated } from "../../utils/pagination/pagination.parameters";
 
 @Injectable()
 export class NegotiationService {
@@ -164,25 +166,31 @@ export class NegotiationService {
     return this.obtainNegotiationDto(negotiation);
   }
 
-  async getNegotiations(): Promise<INegotiationStatusDto[]> {
-    const negotiations = await this.negotiationDetailRepository.find({
-      select: {
-        localId: true,
-        remoteId: true,
-        role: true,
-        remoteAddress: true,
-        remoteParty: true,
-        state: true,
-        dataSet: true,
-        modifiedDate: true
-      },
-      order: {
-        modifiedDate: {
-          direction: "DESC"
+  async getNegotiations(
+    paginationOptions: PaginationOptionsDto
+  ): Promise<Paginated<INegotiationStatusDto[]>> {
+    const [negotiations, itemCount] =
+      await this.negotiationDetailRepository.findAndCount({
+        select: {
+          localId: true,
+          remoteId: true,
+          role: true,
+          remoteAddress: true,
+          remoteParty: true,
+          state: true,
+          dataSet: true,
+          modifiedDate: true
+        },
+        skip: paginationOptions.skip,
+        take: paginationOptions.take,
+        order: {
+          [paginationOptions.order_by]: paginationOptions.order
         }
-      }
-    });
-    return negotiations;
+      });
+    return {
+      data: negotiations,
+      total: itemCount
+    };
   }
 
   async obtainNegotiationDto(

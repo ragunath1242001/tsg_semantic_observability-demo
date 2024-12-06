@@ -35,6 +35,9 @@ import { DatasetDao } from "../model/catalog.dao";
 import { DataPlaneDao } from "../model/dataPlanes.dao";
 import { DSPClientError, DSPError } from "../utils/errors/error";
 import { AgreementService } from "../policy/agreement.service";
+import { Paginated } from "../utils/pagination/pagination.parameters";
+import { PaginationOptionsDto } from "../utils/pagination/pagination.options.dto";
+import { DataPlaneDto } from "./dataplane.schemas";
 
 @Injectable()
 export class DataPlaneService {
@@ -61,15 +64,39 @@ export class DataPlaneService {
   private readonly maxHealthCheckMisses = 10;
   private static readonly pullInterval = 60000;
 
-  async getDataPlanes(): Promise<DataPlane[]> {
-    const dataPlanes = await this.dataPlaneRepository.find({});
+  async getDataPlanes(
+    paginationOptions: PaginationOptionsDto
+  ): Promise<Paginated<DataPlaneDto[]>> {
+    const [dataPlanes, itemCount] = await this.dataPlaneRepository.findAndCount(
+      {
+        order: {
+          [paginationOptions.order_by]: paginationOptions.order
+        },
+        skip: paginationOptions.skip,
+        take: paginationOptions.take
+      }
+    );
     if (!dataPlanes) {
       throw new DSPError(`No dataplanes found.`, HttpStatus.NOT_FOUND).andLog(
         this.logger,
         "warn"
       );
     } else {
-      return dataPlanes;
+      return {
+        data: await Promise.all(
+          dataPlanes.map(async (dataplane) => {
+            return {
+              ...dataplane,
+              datasets: dataplane.datasets
+                ? await Promise.all(
+                    dataplane.datasets.map((d) => d.serialize())
+                  )
+                : undefined
+            };
+          })
+        ),
+        total: itemCount
+      };
     }
   }
 
@@ -364,10 +391,6 @@ export class DataPlaneService {
     role: "provider" | "consumer",
     remoteParty: string
   ): Promise<DataPlaneTransferDto> {
-    // const agreement = await this.agreementService?.getAgreement(
-    //   requestDetail.agreementId,
-    //   true
-    // );
     const agreement = await this.agreementService.getAgreement(
       requestDetail.agreementId
     );

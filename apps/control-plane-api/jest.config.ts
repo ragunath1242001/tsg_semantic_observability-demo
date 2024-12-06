@@ -24,6 +24,8 @@ const config: Config.InitialOptions = {
     "!src/**/*.strategy.ts",
     "!src/**/*.controller.ts",
     "!src/**/*.module.ts",
+    "!src/migrations/**",
+    "!src/migrations.executor.ts",
     "!node_modules/**"
   ]
 };

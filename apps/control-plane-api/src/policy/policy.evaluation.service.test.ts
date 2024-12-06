@@ -4,7 +4,12 @@ import { TypeOrmTestHelper } from "../utils/testhelper";
 import { ConstraintDao, RuleDao } from "../model/rule.dao";
 import { RuleRepositoryService } from "./rule.repository.service";
 import { AgreementService } from "./agreement.service";
-import { ODRLAction, ODRLOperator, TransferState } from "@tsg-dsp/common-dsp";
+import {
+  ODRLAction,
+  ODRLOperator,
+  TransferState,
+  TransferStatus
+} from "@tsg-dsp/common-dsp";
 import { Evaluation, promiseMap } from "./evaluation";
 import { PolicyEvaluationService } from "./policy.evaluation.service";
 import { AgreementDao, TransferMonitorDao } from "../model/agreement.dao";
@@ -25,6 +30,7 @@ import {
   EvaluationTrigger
 } from "./constraint.dto";
 import { EvaluationContext, EvaluationResult } from "./evaluation.dto";
+import { Paginated } from "../utils/pagination/pagination.parameters";
 
 describe("Policy Evaluation Service", () => {
   let ruleRepositoryService: RuleRepositoryService;
@@ -66,17 +72,20 @@ describe("Policy Evaluation Service", () => {
         {
           provide: TransferService,
           useValue: {
-            async getTransfers() {
-              return [
-                {
-                  state: TransferState.STARTED,
-                  localId: "urn:uuid:3337c8dc-c512-4653-983a-6ea32277f870"
-                },
-                {
-                  state: TransferState.STARTED,
-                  localId: "urn:uuid:00000000-0000-0000-0000-000000000000"
-                }
-              ];
+            async getTransfers(): Promise<Paginated<TransferStatus[]>> {
+              return {
+                data: [
+                  {
+                    state: TransferState.STARTED,
+                    localId: "urn:uuid:3337c8dc-c512-4653-983a-6ea32277f870"
+                  } as unknown as TransferStatus,
+                  {
+                    state: TransferState.STARTED,
+                    localId: "urn:uuid:00000000-0000-0000-0000-000000000000"
+                  } as unknown as TransferStatus
+                ],
+                total: 2
+              };
             },
             async suspend() {}
           }
@@ -387,6 +396,9 @@ describe("Policy Evaluation Service", () => {
     it("", async () => {
       agreementMonitorService.onApplicationBootstrap();
       await agreementMonitorService.monitorAgreements();
+      agreementMonitorService["schedulerRegistry"].deleteInterval(
+        "monitorAgreements"
+      );
     });
   });
 });

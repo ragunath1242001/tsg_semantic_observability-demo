@@ -13,6 +13,7 @@ import { Repository } from "typeorm";
 import { TransferService } from "../dsp/transfer/transfer.service";
 import { PolicyEvaluationService } from "./policy.evaluation.service";
 import { EvaluationTrigger } from "./constraint.dto";
+import { PaginationOptionsDto } from "../utils/pagination/pagination.options.dto";
 
 @Injectable()
 export class AgreementMonitorService implements OnApplicationBootstrap {
@@ -34,10 +35,12 @@ export class AgreementMonitorService implements OnApplicationBootstrap {
 
   async monitorAgreements() {
     this.logger.log(`Interval based monitoring active agreement transfers`);
-    const transfers = await this.transferService.getTransfers();
-    for (const transfer of transfers.filter(
-      (transfer) => transfer.state === TransferState.STARTED
-    )) {
+    const transfers = await this.transferService.getTransfers(
+      PaginationOptionsDto.NO_PAGINATION,
+      true
+    );
+    // TODO: Use pagination to fetch batches of transfers instead of all at once
+    for (const transfer of transfers.data) {
       const transferMonitor = await this.transferMonitorRepository.findOneBy({
         id: transfer.localId
       });

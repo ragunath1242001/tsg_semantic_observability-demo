@@ -11,6 +11,7 @@ import {
   AtomicConstraint,
   LogicalConstraint
 } from "./constraint.dto";
+import { PaginationOptionsDto } from "../utils/pagination/pagination.options.dto";
 
 describe("Rule Repository Service", () => {
   let ruleRepositoryService: RuleRepositoryService;
@@ -51,10 +52,22 @@ describe("Rule Repository Service", () => {
           EvaluationTrigger.CONSUMER_ON_EXECUTION
         ]
       };
-      expect(await ruleRepositoryService.listConstraint()).toHaveLength(0);
+      expect(
+        (
+          await ruleRepositoryService.listConstraint(
+            PaginationOptionsDto.NO_PAGINATION
+          )
+        ).total
+      ).toBe(0);
       const constraint = AtomicConstraint.parse(constraintTemplate);
       await ruleRepositoryService.addConstraint(constraint);
-      expect(await ruleRepositoryService.listConstraint()).toHaveLength(1);
+      expect(
+        (
+          await ruleRepositoryService.listConstraint(
+            PaginationOptionsDto.NO_PAGINATION
+          )
+        ).total
+      ).toBe(1);
       constraint.id = undefined;
       await expect(
         ruleRepositoryService.addConstraint(constraint)
@@ -71,10 +84,22 @@ describe("Rule Repository Service", () => {
         ]
       });
       await ruleRepositoryService.addConstraint(constraint2);
-      expect(await ruleRepositoryService.listConstraint()).toHaveLength(2);
+      expect(
+        (
+          await ruleRepositoryService.listConstraint(
+            PaginationOptionsDto.NO_PAGINATION
+          )
+        ).total
+      ).toBe(2);
 
-      const constraints = await ruleRepositoryService.listConstraint(true);
-      const constraintDtos = await ruleRepositoryService.listConstraint(false);
+      const constraints = await ruleRepositoryService.listConstraint(
+        PaginationOptionsDto.NO_PAGINATION,
+        true
+      );
+      const constraintDtos = await ruleRepositoryService.listConstraint(
+        PaginationOptionsDto.NO_PAGINATION,
+        false
+      );
 
       expect(constraints[0]).toMatchObject({
         type: ConstraintType.ATOMIC,
@@ -91,7 +116,7 @@ describe("Rule Repository Service", () => {
         ],
         leftOperand: "dspace:vc"
       });
-      expect(constraintDtos[0]).toMatchObject({
+      expect(constraintDtos.data[0]).toMatchObject({
         title: "Test Constraint",
         contextPath: "$.verifiableCredentials[*]",
         description: "Test constraint description",
@@ -118,10 +143,22 @@ describe("Rule Repository Service", () => {
         AtomicConstraint.parse({ ...constraintTemplate, leftOperand: "test" })
       );
 
-      expect(await ruleRepositoryService.listConstraint()).toHaveLength(3);
+      expect(
+        (
+          await ruleRepositoryService.listConstraint(
+            PaginationOptionsDto.NO_PAGINATION
+          )
+        ).total
+      ).toBe(3);
       await ruleRepositoryService.deleteConstraint(3);
 
-      expect(await ruleRepositoryService.listConstraint()).toHaveLength(2);
+      expect(
+        (
+          await ruleRepositoryService.listConstraint(
+            PaginationOptionsDto.NO_PAGINATION
+          )
+        ).total
+      ).toBe(2);
     });
     it("ODRL", async () => {
       const constraint = await ruleRepositoryService.getConstraintByOdrl({
@@ -244,7 +281,13 @@ describe("Rule Repository Service", () => {
 
   describe("Rules", () => {
     it("CRUD", async () => {
-      expect(await ruleRepositoryService.listRule()).toHaveLength(0);
+      expect(
+        (
+          await ruleRepositoryService.listRule(
+            PaginationOptionsDto.NO_PAGINATION
+          )
+        ).total
+      ).toBe(0);
       await ruleRepositoryService.addRule(
         Rule.parse({
           action: ["odrl:use"],
@@ -252,7 +295,13 @@ describe("Rule Repository Service", () => {
           constraints: [await ruleRepositoryService.getConstraint(1)]
         })
       );
-      expect(await ruleRepositoryService.listRule()).toHaveLength(1);
+      expect(
+        (
+          await ruleRepositoryService.listRule(
+            PaginationOptionsDto.NO_PAGINATION
+          )
+        ).total
+      ).toBe(1);
       expect(await ruleRepositoryService.getRule(1)).toBeDefined();
       await expect(ruleRepositoryService.getRule(2)).rejects.toThrow(
         "Could not find rule"
@@ -263,9 +312,14 @@ describe("Rule Repository Service", () => {
       expect(await ruleRepositoryService.getRule(1, true)).toBeInstanceOf(
         RuleDao
       );
-      expect((await ruleRepositoryService.listRule(true))[0]).toBeInstanceOf(
-        RuleDao
-      );
+      expect(
+        (
+          await ruleRepositoryService.listRule(
+            PaginationOptionsDto.NO_PAGINATION,
+            true
+          )
+        )[0]
+      ).toBeInstanceOf(RuleDao);
 
       await ruleRepositoryService.addRule(
         Rule.parse({
@@ -274,10 +328,22 @@ describe("Rule Repository Service", () => {
           constraints: [await ruleRepositoryService.getConstraint(1)]
         })
       );
-      expect(await ruleRepositoryService.listRule()).toHaveLength(2);
+      expect(
+        (
+          await ruleRepositoryService.listRule(
+            PaginationOptionsDto.NO_PAGINATION
+          )
+        ).total
+      ).toBe(2);
       await ruleRepositoryService.deleteRule(2);
 
-      expect(await ruleRepositoryService.listRule()).toHaveLength(1);
+      expect(
+        (
+          await ruleRepositoryService.listRule(
+            PaginationOptionsDto.NO_PAGINATION
+          )
+        ).total
+      ).toBe(1);
     });
     it("ODRL", async () => {
       const rule = await ruleRepositoryService.getRule(1);

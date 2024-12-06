@@ -13,7 +13,7 @@ import {
 } from "../policy/constraint.dto";
 
 @Entity()
-export class ConstraintDao {
+export class ConstraintDao extends MetaEntity {
   @PrimaryGeneratedColumn()
   id!: number;
 

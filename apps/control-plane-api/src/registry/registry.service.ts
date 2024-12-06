@@ -20,6 +20,8 @@ import { DSPError } from "../utils/errors/error";
 import { RegistryDao } from "../model/registry.dao";
 import { isFulfilled } from "../utils/promises";
 import { Credential } from "../auth/wallets/walletClient";
+import { PaginationOptionsDto } from "../utils/pagination/pagination.options.dto";
+import { Paginated } from "../utils/pagination/pagination.parameters";
 
 @Injectable()
 export class RegistryService implements OnApplicationBootstrap {
@@ -154,14 +156,26 @@ export class RegistryService implements OnApplicationBootstrap {
     );
   }
 
-  async getAllCatalogs(): Promise<CatalogDto[]> {
+  async getAllCatalogs(
+    paginationOptions: PaginationOptionsDto
+  ): Promise<Paginated<CatalogDto[]>> {
     if (!this.registryConfig?.useRegistry) {
       throw new DSPError(
         "Registry not enabled in settings",
         HttpStatus.NOT_IMPLEMENTED
       );
     }
-    const registryDaos = await this.registryRepository.find({});
-    return registryDaos.map((reg) => reg.catalogJson);
+    const [registryDaos, itemCount] =
+      await this.registryRepository.findAndCount({
+        skip: paginationOptions.skip,
+        take: paginationOptions.take,
+        order: {
+          [paginationOptions.order_by]: paginationOptions.order
+        }
+      });
+    return {
+      data: registryDaos.map((reg) => reg.catalogJson),
+      total: itemCount
+    };
   }
 }

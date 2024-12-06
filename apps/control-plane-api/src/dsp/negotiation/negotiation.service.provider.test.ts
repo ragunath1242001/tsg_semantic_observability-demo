@@ -30,6 +30,7 @@ import { AgreementDao, TransferMonitorDao } from "../../model/agreement.dao";
 import { TransferDetailDao, TransferEventDao } from "../../model/transfer.dao";
 import { AgreementService } from "../../policy/agreement.service";
 import { EventEmitter2 } from "@nestjs/event-emitter";
+import { PaginationOptionsDto } from "../../utils/pagination/pagination.options.dto";
 
 describe("Negotiation Service (Provider)", () => {
   let negotiationService: NegotiationService;
@@ -207,9 +208,11 @@ describe("Negotiation Service (Provider)", () => {
   describe("Simple negotiation interactions", () => {
     let localProcessId: string;
     it("Retrieve initial negotiations", async () => {
-      const negotiations = await negotiationService.getNegotiations();
+      const negotiations = await negotiationService.getNegotiations(
+        new PaginationOptionsDto()
+      );
 
-      expect(negotiations).toHaveLength(0);
+      expect(negotiations.total).toBe(0);
     });
 
     it("Handle new negotiation request", async () => {
@@ -243,8 +246,10 @@ describe("Negotiation Service (Provider)", () => {
     });
 
     it("Retrieve negotiation", async () => {
-      const negotiations = await negotiationService.getNegotiations();
-      expect(negotiations).toHaveLength(1);
+      const negotiations = await negotiationService.getNegotiations(
+        new PaginationOptionsDto()
+      );
+      expect(negotiations.total).toBe(1);
       const negotiationDetail =
         await negotiationService.getNegotiation(localProcessId);
       expect(negotiationDetail).toBeDefined();

@@ -299,10 +299,71 @@ paths:
     get:
       description: Fetches all the dataplanes.
       operationId: DataplaneManagementController_getDataPlanes
-      parameters: []
+      parameters:
+        - name: order
+          required: false
+          in: query
+          schema:
+            default: DESC
+            enum:
+              - ASC
+              - DESC
+            type: string
+        - name: order_by
+          required: false
+          in: query
+          schema:
+            default: updated
+            type: string
+        - name: page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            default: 1
+            type: number
+        - name: per_page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            default: 100
+            type: number
       responses:
         "200":
           description: ""
+          headers:
+            x-page:
+              description: Index of the current page (starting at 1)
+              schema:
+                type: integer
+            x-prev-page:
+              description: Index of the previous page
+              schema:
+                type: integer
+              required: false
+            x-next-page:
+              description: Index of the next page
+              schema:
+                type: integer
+              required: false
+            x-per-page:
+              description: Number of items per page
+              schema:
+                type: integer
+            x-total-pages:
+              description: Total number of pages
+              schema:
+                type: integer
+            x-total:
+              description: Total number of items
+              schema:
+                type: integer
+            link:
+              description: Web Linking to other pages of this resource
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -411,7 +472,37 @@ paths:
     post:
       description: Requests a catalog with the provided details.
       operationId: CatalogController_request
-      parameters: []
+      parameters:
+        - name: order
+          required: false
+          in: query
+          schema:
+            default: DESC
+            enum:
+              - ASC
+              - DESC
+            type: string
+        - name: order_by
+          required: false
+          in: query
+          schema:
+            default: updated
+            type: string
+        - name: page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            default: 1
+            type: number
+        - name: per_page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            default: 100
+            type: number
       requestBody:
         required: true
         content:
@@ -421,6 +512,37 @@ paths:
       responses:
         "200":
           description: ""
+          headers:
+            x-page:
+              description: Index of the current page (starting at 1)
+              schema:
+                type: integer
+            x-prev-page:
+              description: Index of the previous page
+              schema:
+                type: integer
+              required: false
+            x-next-page:
+              description: Index of the next page
+              schema:
+                type: integer
+              required: false
+            x-per-page:
+              description: Number of items per page
+              schema:
+                type: integer
+            x-total-pages:
+              description: Total number of pages
+              schema:
+                type: integer
+            x-total:
+              description: Total number of items
+              schema:
+                type: integer
+            link:
+              description: Web Linking to other pages of this resource
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -471,6 +593,36 @@ paths:
       description: Requests a catalog from a remote or local connector.
       operationId: CatalogManagementController_requestCatalog
       parameters:
+        - name: order
+          required: false
+          in: query
+          schema:
+            default: DESC
+            enum:
+              - ASC
+              - DESC
+            type: string
+        - name: order_by
+          required: false
+          in: query
+          schema:
+            default: updated
+            type: string
+        - name: page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            default: 1
+            type: number
+        - name: per_page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            default: 100
+            type: number
         - name: address
           required: false
           in: query
@@ -486,6 +638,37 @@ paths:
       responses:
         "200":
           description: ""
+          headers:
+            x-page:
+              description: Index of the current page (starting at 1)
+              schema:
+                type: integer
+            x-prev-page:
+              description: Index of the previous page
+              schema:
+                type: integer
+              required: false
+            x-next-page:
+              description: Index of the next page
+              schema:
+                type: integer
+              required: false
+            x-per-page:
+              description: Number of items per page
+              schema:
+                type: integer
+            x-total-pages:
+              description: Total number of pages
+              schema:
+                type: integer
+            x-total:
+              description: Total number of items
+              schema:
+                type: integer
+            link:
+              description: Web Linking to other pages of this resource
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -856,10 +1039,71 @@ paths:
   /api/management/negotiations:
     get:
       operationId: NegotiationManagementController_getNegotiations
-      parameters: []
+      parameters:
+        - name: order
+          required: false
+          in: query
+          schema:
+            default: DESC
+            enum:
+              - ASC
+              - DESC
+            type: string
+        - name: order_by
+          required: false
+          in: query
+          schema:
+            default: updated
+            type: string
+        - name: page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            default: 1
+            type: number
+        - name: per_page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            default: 100
+            type: number
       responses:
         "200":
           description: Successfully fetched negotiations
+          headers:
+            x-page:
+              description: Index of the current page (starting at 1)
+              schema:
+                type: integer
+            x-prev-page:
+              description: Index of the previous page
+              schema:
+                type: integer
+              required: false
+            x-next-page:
+              description: Index of the next page
+              schema:
+                type: integer
+              required: false
+            x-per-page:
+              description: Number of items per page
+              schema:
+                type: integer
+            x-total-pages:
+              description: Total number of pages
+              schema:
+                type: integer
+            x-total:
+              description: Total number of items
+              schema:
+                type: integer
+            link:
+              description: Web Linking to other pages of this resource
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -1368,10 +1612,71 @@ paths:
   /api/management/transfers:
     get:
       operationId: TransferManagementController_getTransfers
-      parameters: []
+      parameters:
+        - name: order
+          required: false
+          in: query
+          schema:
+            default: DESC
+            enum:
+              - ASC
+              - DESC
+            type: string
+        - name: order_by
+          required: false
+          in: query
+          schema:
+            default: updated
+            type: string
+        - name: page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            default: 1
+            type: number
+        - name: per_page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            default: 100
+            type: number
       responses:
         "200":
           description: ""
+          headers:
+            x-page:
+              description: Index of the current page (starting at 1)
+              schema:
+                type: integer
+            x-prev-page:
+              description: Index of the previous page
+              schema:
+                type: integer
+              required: false
+            x-next-page:
+              description: Index of the next page
+              schema:
+                type: integer
+              required: false
+            x-per-page:
+              description: Number of items per page
+              schema:
+                type: integer
+            x-total-pages:
+              description: Total number of pages
+              schema:
+                type: integer
+            x-total:
+              description: Total number of items
+              schema:
+                type: integer
+            link:
+              description: Web Linking to other pages of this resource
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -1712,10 +2017,71 @@ paths:
     get:
       description: Retrieve constraint templates registered in this control plane
       operationId: RuleRepositoryController_getConstraints
-      parameters: []
+      parameters:
+        - name: order
+          required: false
+          in: query
+          schema:
+            default: DESC
+            enum:
+              - ASC
+              - DESC
+            type: string
+        - name: order_by
+          required: false
+          in: query
+          schema:
+            default: updated
+            type: string
+        - name: page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            default: 1
+            type: number
+        - name: per_page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            default: 100
+            type: number
       responses:
         "200":
           description: ""
+          headers:
+            x-page:
+              description: Index of the current page (starting at 1)
+              schema:
+                type: integer
+            x-prev-page:
+              description: Index of the previous page
+              schema:
+                type: integer
+              required: false
+            x-next-page:
+              description: Index of the next page
+              schema:
+                type: integer
+              required: false
+            x-per-page:
+              description: Number of items per page
+              schema:
+                type: integer
+            x-total-pages:
+              description: Total number of pages
+              schema:
+                type: integer
+            x-total:
+              description: Total number of items
+              schema:
+                type: integer
+            link:
+              description: Web Linking to other pages of this resource
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -1949,10 +2315,71 @@ paths:
     get:
       description: Retrieve rule templates registered in this control plane
       operationId: RuleRepositoryController_getRules
-      parameters: []
+      parameters:
+        - name: order
+          required: false
+          in: query
+          schema:
+            default: DESC
+            enum:
+              - ASC
+              - DESC
+            type: string
+        - name: order_by
+          required: false
+          in: query
+          schema:
+            default: updated
+            type: string
+        - name: page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            default: 1
+            type: number
+        - name: per_page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            default: 100
+            type: number
       responses:
         "200":
           description: ""
+          headers:
+            x-page:
+              description: Index of the current page (starting at 1)
+              schema:
+                type: integer
+            x-prev-page:
+              description: Index of the previous page
+              schema:
+                type: integer
+              required: false
+            x-next-page:
+              description: Index of the next page
+              schema:
+                type: integer
+              required: false
+            x-per-page:
+              description: Number of items per page
+              schema:
+                type: integer
+            x-total-pages:
+              description: Total number of pages
+              schema:
+                type: integer
+            x-total:
+              description: Total number of items
+              schema:
+                type: integer
+            link:
+              description: Web Linking to other pages of this resource
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -2230,10 +2657,71 @@ paths:
     get:
       description: Fetches all catalogs from the registry.
       operationId: RegistryClientController_getCatalogs
-      parameters: []
+      parameters:
+        - name: order
+          required: false
+          in: query
+          schema:
+            default: DESC
+            enum:
+              - ASC
+              - DESC
+            type: string
+        - name: order_by
+          required: false
+          in: query
+          schema:
+            default: updated
+            type: string
+        - name: page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            default: 1
+            type: number
+        - name: per_page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            default: 100
+            type: number
       responses:
         "200":
           description: ""
+          headers:
+            x-page:
+              description: Index of the current page (starting at 1)
+              schema:
+                type: integer
+            x-prev-page:
+              description: Index of the previous page
+              schema:
+                type: integer
+              required: false
+            x-next-page:
+              description: Index of the next page
+              schema:
+                type: integer
+              required: false
+            x-per-page:
+              description: Number of items per page
+              schema:
+                type: integer
+            x-total-pages:
+              description: Total number of pages
+              schema:
+                type: integer
+            x-total:
+              description: Total number of items
+              schema:
+                type: integer
+            link:
+              description: Web Linking to other pages of this resource
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -2250,10 +2738,71 @@ paths:
   /api/registry:
     get:
       operationId: RegistryController_getCatalogs
-      parameters: []
+      parameters:
+        - name: order
+          required: false
+          in: query
+          schema:
+            default: DESC
+            enum:
+              - ASC
+              - DESC
+            type: string
+        - name: order_by
+          required: false
+          in: query
+          schema:
+            default: updated
+            type: string
+        - name: page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            default: 1
+            type: number
+        - name: per_page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            default: 100
+            type: number
       responses:
         "200":
           description: Successfully fetched all catalogs
+          headers:
+            x-page:
+              description: Index of the current page (starting at 1)
+              schema:
+                type: integer
+            x-prev-page:
+              description: Index of the previous page
+              schema:
+                type: integer
+              required: false
+            x-next-page:
+              description: Index of the next page
+              schema:
+                type: integer
+              required: false
+            x-per-page:
+              description: Number of items per page
+              schema:
+                type: integer
+            x-total-pages:
+              description: Total number of pages
+              schema:
+                type: integer
+            x-total:
+              description: Total number of items
+              schema:
+                type: integer
+            link:
+              description: Web Linking to other pages of this resource
+              schema:
+                type: string
           content:
             application/json:
               schema:

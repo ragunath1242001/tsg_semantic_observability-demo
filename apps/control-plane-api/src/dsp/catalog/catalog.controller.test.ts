@@ -34,6 +34,7 @@ import { TypeOrmTestHelper } from "../../utils/testhelper";
 import { CatalogController } from "./catalog.controller";
 import { CatalogService } from "./catalog.service";
 import { DataPlaneDao } from "../../model/dataPlanes.dao";
+import { PaginationOptionsDto } from "../../utils/pagination/pagination.options.dto";
 
 const dataset = new Dataset({
   id: "urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0cea",
@@ -130,17 +131,19 @@ describe("CatalogController", () => {
   describe("/request", () => {
     it("Empty catalog request should return empty catalog", async () => {
       const result = await catalogController.request(
+        new PaginationOptionsDto(),
         new CatalogRequestMessage({})
       );
       expect(result).toBeDefined();
-      expect(result["dcat:service"]?.length).toBe(1);
-      expect(result["dct:creator"]).toBe(
+      expect(result.total).toBe(0);
+      expect(result.data["dcat:service"]?.length).toBe(1);
+      expect(result.data["dct:creator"]).toBe(
         "urn:uuid:de8e1b94-4169-4491-986d-6a1c528b867b"
       );
-      expect(result["dct:publisher"]).toBe(
+      expect(result.data["dct:publisher"]).toBe(
         "urn:uuid:de8e1b94-4169-4491-986d-6a1c528b867b"
       );
-      expect(result["dct:title"]).toBe("Test Connector");
+      expect(result.data["dct:title"]).toBe("Test Connector");
     });
   });
   describe("/datasets", () => {
@@ -257,14 +260,14 @@ describe("Catalog Module", () => {
         .send(await new CatalogRequestMessage({}).serialize())
         .expect(200);
 
-      expect(response.body["dcat:service"].length).toBe(1);
-      expect(response.body["dct:creator"]).toBe(
+      expect(response.body.data["dcat:service"].length).toBe(1);
+      expect(response.body.data["dct:creator"]).toBe(
         "urn:uuid:de8e1b94-4169-4491-986d-6a1c528b867b"
       );
-      expect(response.body["dct:publisher"]).toBe(
+      expect(response.body.data["dct:publisher"]).toBe(
         "urn:uuid:de8e1b94-4169-4491-986d-6a1c528b867b"
       );
-      expect(response.body["dct:title"]).toBe("Test Connector");
+      expect(response.body.data["dct:title"]).toBe("Test Connector");
     });
     it("Invalid body should result in a 400", async () => {
       request(app.getHttpServer())
@@ -279,15 +282,14 @@ describe("Catalog Module", () => {
     });
   });
   describe("/datasets", () => {
-    //TODO fix when https://ci.tno.nl/gitlab/ids/dataspace-protocol/control-plane/-/issues/26 is fixed.
-    // it("Dataset request with known id should result a dataset", async () => {
-    //   const response = await request(app.getHttpServer())
-    //     .get("/catalog/datasets/urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0cea")
-    //     .set('Authorization', `Bearer ${sampleVpToken()}`)
-    //     .expect(200);
+    it("Dataset request with known id should result a dataset", async () => {
+      const response = await request(app.getHttpServer())
+        .get("/catalog/datasets/urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0cea")
+        .set("Authorization", `Bearer ${sampleVpToken()}`)
+        .expect(200);
 
-    //   expect(response.body).toStrictEqual(await dataset.serialize());
-    // });
+      expect(response.body).toStrictEqual(await dataset.serialize());
+    });
     it("Dataset request with unknown id should result in a 404", async () => {
       request(app.getHttpServer())
         .get("/catalog/datasets/urn:uuid:00000000-0000-0000-0000-000000000000")

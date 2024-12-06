@@ -28,6 +28,10 @@ import {
   CatalogSchema,
   DatasetSchema
 } from "@tsg-dsp/common-dtos";
+import { UsePagination } from "../../utils/pagination/pagination.interceptor.decorator";
+import { PaginationQuery } from "../../utils/pagination/pagination.query.decorator";
+import { PaginationOptionsDto } from "../../utils/pagination/pagination.options.dto";
+import { Paginated } from "../../utils/pagination/pagination.parameters";
 
 @UseGuards(VerifiablePresentationGuard)
 @Controller("catalog")
@@ -38,6 +42,7 @@ export class CatalogController {
   private readonly logger = new Logger(this.constructor.name);
 
   @Post("request")
+  @UsePagination()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: "Request catalog",
@@ -48,11 +53,12 @@ export class CatalogController {
   @ApiBadRequestResponse({ description: "Invalid catalog request data" })
   @ApiForbiddenResponseDefault()
   async request(
+    @PaginationQuery() paginationOptions: PaginationOptionsDto,
     @Body(new DeserializePipe(CatalogRequestMessage))
     body: CatalogRequestMessage
-  ): Promise<CatalogDto> {
+  ): Promise<Paginated<CatalogDto>> {
     this.logger.log(`Received catalog request`);
-    return (await this.catalogService.request(body)).serialize();
+    return await this.catalogService.request(body, paginationOptions);
   }
 
   @Get("datasets/:id")
