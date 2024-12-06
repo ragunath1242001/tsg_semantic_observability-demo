@@ -25,6 +25,10 @@ import {
   ApiForbiddenResponseDefault,
   CatalogSchema
 } from "@tsg-dsp/common-dtos";
+import { UsePagination } from "../utils/pagination/pagination.interceptor.decorator";
+import { PaginationOptionsDto } from "../utils/pagination/pagination.options.dto";
+import { Paginated } from "../utils/pagination/pagination.parameters";
+import { PaginationQuery } from "../utils/pagination/pagination.query.decorator";
 
 @UseGuards(OAuthGuard)
 @Roles(["controlplane_admin", "controlplane_dataplane"])
@@ -76,6 +80,7 @@ export class RegistryClientController {
   }
 
   @Get("catalogs")
+  @UsePagination()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: "Get catalogs",
@@ -83,8 +88,10 @@ export class RegistryClientController {
   })
   @ApiOkResponse({ type: CatalogSchema })
   @ApiForbiddenResponseDefault()
-  async getCatalogs(): Promise<CatalogDto[]> {
+  async getCatalogs(
+    @PaginationQuery() paginationOptions: PaginationOptionsDto
+  ): Promise<Paginated<CatalogDto[]>> {
     this.logger.log(`Received request for all catalogs.`);
-    return await this.registryService.getAllCatalogs();
+    return await this.registryService.getAllCatalogs(paginationOptions);
   }
 }

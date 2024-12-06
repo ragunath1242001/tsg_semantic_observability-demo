@@ -17,6 +17,21 @@ export const validateOrRejectSync = <T extends object>(
   return object;
 };
 
+export const strictValidationPipe = new ValidationPipe({
+  transform: true,
+  transformOptions: {
+    excludeExtraneousValues: true
+  },
+  exceptionFactory: (errors) =>
+    new DSPError(
+      {
+        message: errors.join(", "),
+        errors: errors
+      },
+      HttpStatus.BAD_REQUEST
+    )
+});
+
 export const validationPipe = new ValidationPipe({
   transform: true,
   exceptionFactory: (errors) =>

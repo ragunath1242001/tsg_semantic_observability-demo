@@ -14,6 +14,8 @@ const config: Config.InitialOptions = {
     "!src/**/*.controller.ts",
     "!src/**/*.module.ts",
     "!src/**/*.schemas.ts",
+    "!src/migrations/**",
+    "!src/migrations.executor.ts",
     "!node_modules/**"
   ]
 };

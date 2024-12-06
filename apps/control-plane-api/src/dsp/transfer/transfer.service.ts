@@ -32,6 +32,8 @@ import { DspGateway } from "../client/dsp.gateway";
 import { PolicyEvaluationService } from "../../policy/policy.evaluation.service";
 import { EvaluationTrigger } from "../../policy/constraint.dto";
 import { normalizeAddress } from "../../utils/address";
+import { PaginationOptionsDto } from "../../utils/pagination/pagination.options.dto";
+import { Paginated } from "../../utils/pagination/pagination.parameters";
 
 @Injectable()
 export class TransferService {
@@ -124,31 +126,39 @@ export class TransferService {
     }
   }
 
-  async getTransfers(): Promise<TransferStatus[]> {
-    const transfers = await this.transferDetailRepository.find({
-      select: {
-        localId: true,
-        remoteId: true,
-        role: true,
-        remoteAddress: true,
-        remoteParty: true,
-        state: true,
-        process: {
-          consumerPid: true,
-          providerPid: true,
-          state: true
+  async getTransfers(
+    paginationOptions: PaginationOptionsDto,
+    filterStarted: boolean = false
+  ): Promise<Paginated<TransferStatus[]>> {
+    const [transfers, itemCount] =
+      await this.transferDetailRepository.findAndCount({
+        select: {
+          localId: true,
+          remoteId: true,
+          role: true,
+          remoteAddress: true,
+          remoteParty: true,
+          state: true,
+          process: {
+            consumerPid: true,
+            providerPid: true,
+            state: true
+          },
+          agreementId: true,
+          format: true,
+          modifiedDate: true
         },
-        agreementId: true,
-        format: true,
-        modifiedDate: true
-      },
-      order: {
-        modifiedDate: {
-          direction: "DESC"
-        }
-      }
-    });
-    return transfers.map((transfer) => new TransferStatus(transfer));
+        skip: paginationOptions.skip,
+        take: paginationOptions.take,
+        order: {
+          [paginationOptions.order_by]: paginationOptions.order
+        },
+        ...(filterStarted ? { where: { state: TransferState.STARTED } } : {})
+      });
+    return {
+      data: transfers.map((transfer) => new TransferStatus(transfer)),
+      total: itemCount
+    };
   }
 
   async getTransfer(

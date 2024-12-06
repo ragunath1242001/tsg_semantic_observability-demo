@@ -39,6 +39,10 @@ import {
 } from "@tsg-dsp/common-dsp";
 import { DSPError } from "../utils/errors/error";
 import { ConstraintModel } from "./constraint.dto";
+import { Paginated } from "../utils/pagination/pagination.parameters";
+import { PaginationQuery } from "../utils/pagination/pagination.query.decorator";
+import { PaginationOptionsDto } from "../utils/pagination/pagination.options.dto";
+import { UsePagination } from "../utils/pagination/pagination.interceptor.decorator";
 
 @UseGuards(OAuthGuard)
 @Roles(["controlplane_admin"])
@@ -50,6 +54,7 @@ export class RuleRepositoryController {
   constructor(private readonly ruleRepositoryService: RuleRepositoryService) {}
 
   @Get("constraint")
+  @UsePagination()
   @ApiOperation({
     summary: "Retrieve constraints",
     description:
@@ -58,8 +63,10 @@ export class RuleRepositoryController {
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({ type: [ConstraintModel] })
   @ApiForbiddenResponseDefault()
-  async getConstraints(): Promise<ConstraintModel[]> {
-    return this.ruleRepositoryService.listConstraint();
+  async getConstraints(
+    @PaginationQuery() paginationOptions: PaginationOptionsDto
+  ): Promise<Paginated<ConstraintModel[]>> {
+    return this.ruleRepositoryService.listConstraint(paginationOptions);
   }
 
   @Post("constraint/odrl")
@@ -174,6 +181,7 @@ export class RuleRepositoryController {
   }
 
   @Get("rule")
+  @UsePagination()
   @ApiOperation({
     summary: "Retrieve rules",
     description: "Retrieve rule templates registered in this control plane"
@@ -181,8 +189,10 @@ export class RuleRepositoryController {
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({ type: [Rule] })
   @ApiForbiddenResponseDefault()
-  async getRules(): Promise<Rule[]> {
-    return this.ruleRepositoryService.listRule();
+  async getRules(
+    @PaginationQuery() paginationOptions: PaginationOptionsDto
+  ): Promise<Paginated<Rule[]>> {
+    return this.ruleRepositoryService.listRule(paginationOptions);
   }
 
   @Post("rule")

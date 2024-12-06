@@ -2,6 +2,7 @@ import { HttpStatus, Injectable, Logger, Optional } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import {
   Catalog,
+  CatalogDto,
   CatalogRequestMessage,
   Constraint,
   DataService,
@@ -30,6 +31,8 @@ import {
   ResourceDao
 } from "../../model/catalog.dao";
 import { DSPError } from "../../utils/errors/error";
+import { PaginationOptionsDto } from "../../utils/pagination/pagination.options.dto";
+import { Paginated } from "../../utils/pagination/pagination.parameters";
 
 @Injectable()
 export class CatalogService {
@@ -51,41 +54,62 @@ export class CatalogService {
   initialized = this.initializeCatalog();
   private readonly logger = new Logger(this.constructor.name);
 
-  async getCatalogDao(relations?: boolean): Promise<CatalogDao> {
-    let catalog;
-    if (relations) {
-      catalog = await this.catalogRepository.find({
-        relations: {
-          _datasets: {
-            _resource: true,
-            _distribution: {
-              _accessService: {
-                _resource: true
-              }
-            }
-          },
-          _services: true,
-          _dataset: {
-            _resource: true,
-            _distribution: {
-              _accessService: {
-                _resource: true
-              }
+  async getCatalogDao(
+    paginationOptions?: PaginationOptionsDto
+  ): Promise<Paginated<CatalogDao>> {
+    const catalogs = await this.catalogRepository.find({
+      relations: {
+        _services: true,
+        _dataset: {
+          _resource: true,
+          _distribution: {
+            _accessService: {
+              _resource: true
             }
           }
         }
-      });
-    } else {
-      catalog = await this.catalogRepository.find({});
-    }
+      }
+    });
+    const catalog = catalogs[0];
 
-    if (!catalog[0]) {
+    if (!catalog) {
       throw new DSPError(
         "Catalog not (yet) available",
         HttpStatus.NOT_FOUND
       ).andLog(this.logger, "warn");
     }
-    return catalog[0];
+
+    if (!paginationOptions) {
+      paginationOptions = new PaginationOptionsDto();
+    }
+
+    const [datasets, itemCount] = await this.datasetRepository.findAndCount({
+      order: {
+        [paginationOptions.order_by]: paginationOptions.order
+      },
+      skip: paginationOptions.skip,
+      take: paginationOptions.take,
+      relations: {
+        _resource: true,
+        _distribution: {
+          _accessService: {
+            _resource: true
+          }
+        }
+      },
+      where: {
+        _catalog: {
+          id: catalog.id
+        }
+      }
+    });
+
+    catalog._datasets = datasets;
+
+    return {
+      data: catalog,
+      total: itemCount
+    };
   }
 
   async initializeCatalog() {
@@ -130,7 +154,8 @@ export class CatalogService {
   }
 
   async modifyCatalog(catalog: CatalogDao): Promise<void> {
-    await this.catalogRepository.update({ id: catalog.id }, catalog);
+    const { _datasets, _records, _services, ...catalogRemainder } = catalog;
+    await this.catalogRepository.update({ id: catalog.id }, catalogRemainder);
   }
 
   private constructConstraint(constraint: RuleConstraintConfig): Constraint {
@@ -162,22 +187,8 @@ export class CatalogService {
     }
   }
 
-  async addDataset(
-    dataset: Dataset,
-    catalogId?: string | undefined
-  ): Promise<DatasetDao> {
-    let catalog: CatalogDao | null;
-    if (catalogId) {
-      catalog = await this.catalogRepository.findOneBy({ id: catalogId });
-      if (!catalog) {
-        throw new DSPError(
-          `Could not find catalog with id ${catalogId}`,
-          HttpStatus.BAD_REQUEST
-        ).andLog(this.logger, "warn");
-      }
-    } else {
-      catalog = await this.getCatalogDao(true);
-    }
+  async addDataset(dataset: Dataset): Promise<DatasetDao> {
+    const catalog = await this.getCatalogDao();
     const exist = await this.datasetRepository.findOne({
       where: { id: dataset.id }
     });
@@ -203,7 +214,10 @@ export class CatalogService {
       } else {
         const offer = new Offer({
           assigner:
-            dataset.publisher || dataset.creator || catalog.publisher || "",
+            dataset.publisher ||
+            dataset.creator ||
+            catalog.data.publisher ||
+            "",
           permission: this.defaultPolicy?.permissions?.map((permission) => {
             return new Permission({
               action: permission.action,
@@ -251,12 +265,8 @@ export class CatalogService {
       );
       return distributionObj;
     });
-    if (catalog._datasets) {
-      catalog._datasets.push(newDataset);
-    } else {
-      catalog._datasets = [newDataset];
-    }
-    await this.catalogRepository.save(catalog);
+    newDataset._catalog = catalog.data;
+    await this.datasetRepository.save(newDataset);
     this.logger.debug(`Added dataset ${dataset.id}`);
     return newDataset;
   }
@@ -297,12 +307,18 @@ export class CatalogService {
     await this.datasetRepository.delete({ id: datasetId });
   }
 
-  async request(requestMessage: CatalogRequestMessage): Promise<Catalog> {
+  async request(
+    requestMessage: CatalogRequestMessage,
+    paginationOptions: PaginationOptionsDto
+  ): Promise<Paginated<CatalogDto>> {
     requestMessage.filter?.forEach((filter) => {
       console.log(filter);
     });
-    const catalog = await this.getCatalogDao(true);
-    return new Catalog(catalog);
+    const catalog = await this.getCatalogDao(paginationOptions);
+    return {
+      data: new Catalog(catalog.data).serialize(),
+      total: catalog.total
+    };
   }
 
   async getDataset(datasetId: string): Promise<Dataset> {

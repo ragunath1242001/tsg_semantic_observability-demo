@@ -103,20 +103,20 @@ describe("Catalog Service", () => {
       await catalogService.initialized;
       const catalog = await catalogService.getCatalogDao();
 
-      expect(catalog).toBeDefined();
-      expect(catalog.title).toBe("Test Connector");
-      expect(catalog.publisher).toBe(
+      expect(catalog.data).toBeDefined();
+      expect(catalog.data.title).toBe("Test Connector");
+      expect(catalog.data.publisher).toBe(
         "urn:uuid:de8e1b94-4169-4491-986d-6a1c528b867b"
       );
     });
 
     it("Modify catalog", async () => {
       const catalogDao = await catalogService.getCatalogDao();
-      catalogDao.homepage = "https://tno.nl/";
-      await catalogService.modifyCatalog(catalogDao);
+      catalogDao.data.homepage = "https://tno.nl/";
+      await catalogService.modifyCatalog(catalogDao.data);
 
       const catalogModified = await catalogService.getCatalogDao();
-      expect(catalogModified.homepage).toEqual("https://tno.nl/");
+      expect(catalogModified.data.homepage).toEqual("https://tno.nl/");
     });
 
     it("Add dataset", async () => {
@@ -144,38 +144,41 @@ describe("Catalog Service", () => {
         }
       });
 
-      const catalogDao = await catalogService.getCatalogDao(true);
-      expect(catalogDao.dataset?.length).toEqual(0);
+      const catalogDao = await catalogService.getCatalogDao();
+      expect(catalogDao.data.dataset?.length).toEqual(0);
       await catalogService.addDataset(dataset);
 
-      const updatedCatalogDao = await catalogService.getCatalogDao(true);
-      expect(updatedCatalogDao.dataset).toHaveLength(1);
-      expect(updatedCatalogDao.dataset?.[0]?.title).toBe("Test HTTP dataset");
-      expect(updatedCatalogDao.dataset?.[0]?.distribution).toHaveLength(1);
+      const updatedCatalogDao = await catalogService.getCatalogDao();
+      expect(updatedCatalogDao.data.dataset).toHaveLength(1);
+      expect(updatedCatalogDao.data.dataset?.[0]?.title).toBe(
+        "Test HTTP dataset"
+      );
+      expect(updatedCatalogDao.data.dataset?.[0]?.distribution).toHaveLength(1);
       expect(
-        updatedCatalogDao.dataset?.[0]?.distribution?.[0]?.accessService
+        updatedCatalogDao.data.dataset?.[0]?.distribution?.[0]?.accessService
       ).toHaveLength(1);
       expect(
-        updatedCatalogDao.dataset?.[0]?.distribution?.[0]?.accessService?.[0]
-          ?.endpointURL
+        updatedCatalogDao.data.dataset?.[0]?.distribution?.[0]
+          ?.accessService?.[0]?.endpointURL
       ).toBe("https://httpbin.org/anything");
 
       //    A policy should be auto generated since we haven't defined one.
-      expect(updatedCatalogDao.dataset?.[0].hasPolicy).toHaveLength(1);
+      expect(updatedCatalogDao.data.dataset?.[0].hasPolicy).toHaveLength(1);
       expect(
-        updatedCatalogDao.dataset?.[0]?.hasPolicy?.[0].permission?.[0]?.action
+        updatedCatalogDao.data.dataset?.[0]?.hasPolicy?.[0].permission?.[0]
+          ?.action
       ).toBe("odrl:use");
       expect(
-        updatedCatalogDao.dataset?.[0]?.hasPolicy?.[0].permission?.[0]
+        updatedCatalogDao.data.dataset?.[0]?.hasPolicy?.[0].permission?.[0]
           ?.constraint?.[0]?.leftOperand
       ).toBe("dspace:credentialType");
       expect(
-        updatedCatalogDao.dataset?.[0]?.hasPolicy?.[0].permission?.[0]
+        updatedCatalogDao.data.dataset?.[0]?.hasPolicy?.[0].permission?.[0]
           ?.constraint?.[0]?.rightOperand
       ).toBe("dataspace:MembershipCredential");
 
       expect(
-        updatedCatalogDao.dataset?.[0]?.extraProps["tsg:testExtraProp"]?.[
+        updatedCatalogDao.data.dataset?.[0]?.extraProps["tsg:testExtraProp"]?.[
           "tsg:test"
         ]
       ).toBe("Test");
@@ -272,8 +275,8 @@ describe("Catalog Service", () => {
       await catalogService.removeDataset(
         "urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0cea"
       );
-      const catalog = await catalogService.getCatalogDao(true);
-      expect(catalog.dataset?.length).toBe(0);
+      const catalog = await catalogService.getCatalogDao();
+      expect(catalog.data.dataset?.length).toBe(0);
     });
   });
 });

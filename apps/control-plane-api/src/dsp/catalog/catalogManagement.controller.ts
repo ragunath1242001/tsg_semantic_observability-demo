@@ -42,6 +42,10 @@ import {
   CatalogSchema,
   DatasetSchema
 } from "@tsg-dsp/common-dtos";
+import { PaginationQuery } from "../../utils/pagination/pagination.query.decorator";
+import { UsePagination } from "../../utils/pagination/pagination.interceptor.decorator";
+import { PaginationOptionsDto } from "../../utils/pagination/pagination.options.dto";
+import { Paginated } from "../../utils/pagination/pagination.parameters";
 
 @UseGuards(OAuthGuard)
 @Roles(["controlplane_admin", "controlplane_dataplane"])
@@ -57,6 +61,7 @@ export class CatalogManagementController {
 
   @Get("request")
   @HttpCode(HttpStatus.OK)
+  @UsePagination()
   @ApiOperation({
     summary: "Request catalog",
     description: "Requests a catalog from a remote or local connector."
@@ -75,22 +80,27 @@ export class CatalogManagementController {
   @ApiBadRequestResponse({ description: "Invalid request parameters" })
   @ApiForbiddenResponseDefault()
   async requestCatalog(
+    @PaginationQuery() paginationOptions: PaginationOptionsDto,
     @Query("address") address?: string,
     @Query("audience") audience?: string
-  ): Promise<CatalogDto> {
+  ): Promise<Paginated<CatalogDto>> {
     if (address) {
       this.logger.log(
         `Received catalog request for remote connector at ${address}`
       );
-      return await this.dsp.requestCatalog(
-        normalizeAddress(address, 0, "catalog", "request"),
-        audience
-      );
+      return {
+        data: await this.dsp.requestCatalog(
+          normalizeAddress(address, 0, "catalog", "request"),
+          audience
+        ),
+        total: -1
+      };
     } else {
       this.logger.log(`Received catalog request for local connector`);
-      return (
-        await this.catalogService.request(new CatalogRequestMessage({}))
-      ).serialize();
+      return await this.catalogService.request(
+        new CatalogRequestMessage({}),
+        paginationOptions
+      );
     }
   }
 

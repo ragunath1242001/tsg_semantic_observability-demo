@@ -35,6 +35,10 @@ import {
   TransferProcessSchema,
   TransferStatusSchema
 } from "@tsg-dsp/common-dtos";
+import { UsePagination } from "../../utils/pagination/pagination.interceptor.decorator";
+import { PaginationQuery } from "../../utils/pagination/pagination.query.decorator";
+import { PaginationOptionsDto } from "../../utils/pagination/pagination.options.dto";
+import { Paginated } from "../../utils/pagination/pagination.parameters";
 
 @ApiTags("Transfers Management")
 @ApiOAuth2(["controlplane_admin", "controlplane_dataplane"])
@@ -46,17 +50,13 @@ export class TransferManagementController {
   private readonly logger = new Logger(this.constructor.name);
 
   @Get()
+  @UsePagination()
   @ApiOperation({ summary: "Get all transfers" })
   @ApiResponse({ status: HttpStatus.OK, type: [TransferStatusSchema] })
-  async getTransfers(): Promise<TransferStatus[]> {
-    const transfers = await this.transferService.getTransfers();
-    return Promise.all(
-      transfers.map(async (transfer) => {
-        return {
-          ...transfer
-        };
-      })
-    );
+  async getTransfers(
+    @PaginationQuery() paginationOptions: PaginationOptionsDto
+  ): Promise<Paginated<TransferStatus[]>> {
+    return await this.transferService.getTransfers(paginationOptions);
   }
 
   @Get(":processId")

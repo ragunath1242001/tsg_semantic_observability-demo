@@ -27,6 +27,10 @@ import {
 } from "@nestjs/swagger";
 import { DataPlaneDto } from "./dataplane.schemas.js";
 import { ApiForbiddenResponseDefault } from "@tsg-dsp/common-dtos";
+import { UsePagination } from "../utils/pagination/pagination.interceptor.decorator";
+import { PaginationQuery } from "../utils/pagination/pagination.query.decorator";
+import { PaginationOptionsDto } from "../utils/pagination/pagination.options.dto";
+import { Paginated } from "../utils/pagination/pagination.parameters";
 
 @UseGuards(OAuthGuard)
 @Roles(["controlplane_admin", "controlplane_dataplane"])
@@ -38,6 +42,7 @@ export class DataplaneManagementController {
   private readonly logger = new Logger(this.constructor.name);
 
   @Get()
+  @UsePagination()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: "Get all dataplanes",
@@ -45,20 +50,11 @@ export class DataplaneManagementController {
   })
   @ApiOkResponse({ type: [DataPlaneDto] })
   @ApiForbiddenResponseDefault()
-  async getDataPlanes(): Promise<IDataPlaneDto[]> {
+  async getDataPlanes(
+    @PaginationQuery() paginationOptions: PaginationOptionsDto
+  ): Promise<Paginated<IDataPlaneDto[]>> {
     this.logger.log("Received call to fetch all dataplanes.");
-    const dataPlanes = await this.dataplaneService.getDataPlanes();
-    const dataPlanesDtosPromise = Promise.all(
-      dataPlanes.map(async (dataplane) => {
-        return {
-          ...dataplane,
-          datasets: dataplane.datasets
-            ? await Promise.all(dataplane.datasets.map((d) => d.serialize()))
-            : undefined
-        };
-      })
-    );
-    return dataPlanesDtosPromise;
+    return await this.dataplaneService.getDataPlanes(paginationOptions);
   }
 
   @Post()

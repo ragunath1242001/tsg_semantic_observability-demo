@@ -239,9 +239,10 @@ describe("DataPlane Service", () => {
         );
 
         expect(createdDataset).toBeDefined();
-        const catalog = await catalogService.getCatalogDao(true);
-        expect(catalog._datasets?.length).toEqual(1);
-        expect(catalog._datasets?.[0].hasPolicy).toHaveLength(1);
+        const catalog = await catalogService.getCatalogDao();
+        expect(catalog.total).toEqual(1);
+        expect(catalog.data._datasets?.length).toEqual(1);
+        expect(catalog.data._datasets?.[0].hasPolicy).toHaveLength(1);
       });
 
       it("updates dataset when one exists", async () => {
@@ -293,17 +294,17 @@ describe("DataPlane Service", () => {
         createdDataset!.title = "Updated Test HTTP Dataset";
         expect(createdDataset).toBeDefined();
 
-        let catalog = await catalogService.getCatalogDao(true);
-        const lengthToMatch = catalog._datasets?.length;
+        let catalog = await catalogService.getCatalogDao();
+        const lengthToMatch = catalog.data._datasets?.length;
         const updatedDataset = await dataPlaneService.updateCatalog(
           addedDataPlane.identifier,
           createdDataset!
         );
 
         expect(updatedDataset).toBeDefined();
-        catalog = await catalogService.getCatalogDao(true);
-        expect(catalog._datasets?.length).toEqual(lengthToMatch);
-        const datasetToCheck = catalog._datasets?.find(
+        catalog = await catalogService.getCatalogDao();
+        expect(catalog.data._datasets?.length).toEqual(lengthToMatch);
+        const datasetToCheck = catalog.data._datasets?.find(
           (dataset) =>
             dataset.id === "urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0ceb"
         );

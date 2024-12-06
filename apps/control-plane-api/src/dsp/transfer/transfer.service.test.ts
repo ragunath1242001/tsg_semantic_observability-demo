@@ -55,6 +55,7 @@ import {
   EvaluationContext,
   EvaluationDecision
 } from "../../policy/evaluation.dto";
+import { PaginationOptionsDto } from "../../utils/pagination/pagination.options.dto";
 
 describe("Transfer service", () => {
   let transferService: TransferService;
@@ -344,8 +345,10 @@ describe("Transfer service", () => {
   describe("Consumer interactions", () => {
     let localProcessId: string;
     it("Retrieve initial transfers", async () => {
-      const transfers = await transferService.getTransfers();
-      expect(transfers).toHaveLength(0);
+      const transfers = await transferService.getTransfers(
+        new PaginationOptionsDto()
+      );
+      expect(transfers.total).toBe(0);
     });
 
     it("Request new transfer", async () => {
@@ -468,8 +471,10 @@ describe("Transfer service", () => {
     });
 
     it("Retrieve transfer", async () => {
-      const transfers = await transferService.getTransfers();
-      expect(transfers).toHaveLength(4);
+      const transfers = await transferService.getTransfers(
+        new PaginationOptionsDto()
+      );
+      expect(transfers.total).toBe(4);
       const transferDetail = await transferService.getTransfer(localProcessId);
       expect(transferDetail).toBeDefined();
       const transferDetail2 = await transferService.getTransfer(

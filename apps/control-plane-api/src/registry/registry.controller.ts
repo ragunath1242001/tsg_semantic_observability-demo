@@ -19,6 +19,10 @@ import {
 } from "@nestjs/swagger";
 import { CredentialAddressDto } from "./registry.schema";
 import { CatalogSchema } from "@tsg-dsp/common-dtos";
+import { UsePagination } from "../utils/pagination/pagination.interceptor.decorator";
+import { PaginationQuery } from "../utils/pagination/pagination.query.decorator";
+import { PaginationOptionsDto } from "../utils/pagination/pagination.options.dto";
+import { Paginated } from "../utils/pagination/pagination.parameters";
 
 @ApiTags("Registry")
 @ApiBearerAuth()
@@ -30,6 +34,7 @@ export class RegistryController {
   private readonly logger = new Logger(this.constructor.name);
 
   @Get()
+  @UsePagination()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "Get all catalogs" })
   @ApiResponse({
@@ -37,9 +42,11 @@ export class RegistryController {
     description: "Successfully fetched all catalogs",
     type: [CatalogSchema]
   })
-  async getCatalogs(): Promise<CatalogDto[]> {
+  async getCatalogs(
+    @PaginationQuery() paginationOptions: PaginationOptionsDto
+  ): Promise<Paginated<CatalogDto[]>> {
     this.logger.log(`Received request for all catalogs.`);
-    return await this.registryService.getAllCatalogs();
+    return await this.registryService.getAllCatalogs(paginationOptions);
   }
 
   @Get("addresses")

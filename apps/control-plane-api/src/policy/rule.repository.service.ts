@@ -20,6 +20,8 @@ import {
   DataType,
   EvaluationTrigger
 } from "./constraint.dto";
+import { PaginationOptionsDto } from "../utils/pagination/pagination.options.dto";
+import { Paginated } from "../utils/pagination/pagination.parameters";
 
 @Injectable()
 export class RuleRepositoryService implements OnModuleInit {
@@ -208,21 +210,39 @@ export class RuleRepositoryService implements OnModuleInit {
     return undefined;
   }
 
-  async listConstraint(): Promise<ConstraintModel[]>;
-  async listConstraint(dao: false): Promise<ConstraintModel[]>;
-  async listConstraint(dao: true): Promise<ConstraintDao[]>;
   async listConstraint(
+    paginationOptions: PaginationOptionsDto
+  ): Promise<Paginated<ConstraintModel[]>>;
+  async listConstraint(
+    paginationOptions: PaginationOptionsDto,
+    dao: false
+  ): Promise<Paginated<ConstraintModel[]>>;
+  async listConstraint(
+    paginationOptions: PaginationOptionsDto,
+    dao: true
+  ): Promise<ConstraintDao[]>;
+  async listConstraint(
+    paginationOptions: PaginationOptionsDto,
     dao: boolean = false
-  ): Promise<ConstraintDao[] | ConstraintModel[]> {
-    const constraints = await this.constraintRepository.find({
-      relations: {
-        constraints: { constraints: { constraints: { constraints: true } } }
-      }
-    });
+  ): Promise<ConstraintDao[] | Paginated<ConstraintModel[]>> {
+    const [constraints, itemCount] =
+      await this.constraintRepository.findAndCount({
+        relations: {
+          constraints: { constraints: { constraints: { constraints: true } } }
+        },
+        take: paginationOptions.take,
+        skip: paginationOptions.skip,
+        order: {
+          [paginationOptions.order_by]: paginationOptions.order
+        }
+      });
     if (dao) {
       return constraints;
     } else {
-      return ConstraintModel.parse(constraints);
+      return {
+        data: ConstraintModel.parse(constraints),
+        total: itemCount
+      };
     }
   }
 
@@ -266,18 +286,37 @@ export class RuleRepositoryService implements OnModuleInit {
     return rule;
   }
 
-  async listRule(): Promise<Rule[]>;
-  async listRule(dao: false): Promise<Rule[]>;
-  async listRule(dao: true): Promise<RuleDao[]>;
-  async listRule(dao: boolean = false): Promise<RuleDao[] | Rule[]> {
-    const rules = await this.ruleRepository.find({
+  async listRule(
+    paginationOptions: PaginationOptionsDto
+  ): Promise<Paginated<Rule[]>>;
+  async listRule(
+    paginationOptions: PaginationOptionsDto,
+    dao: false
+  ): Promise<Paginated<Rule[]>>;
+  async listRule(
+    paginationOptions: PaginationOptionsDto,
+    dao: true
+  ): Promise<RuleDao[]>;
+  async listRule(
+    paginationOptions: PaginationOptionsDto,
+    dao: boolean = false
+  ): Promise<RuleDao[] | Paginated<Rule[]>> {
+    const [rules, itemCount] = await this.ruleRepository.findAndCount({
       relations: {
         constraints: { constraints: { constraints: { constraints: true } } },
         duties: { constraints: { constraints: { constraints: true } } }
+      },
+      skip: paginationOptions.skip,
+      take: paginationOptions.take,
+      order: {
+        [paginationOptions.order_by]: paginationOptions.order
       }
     });
     if (!dao) {
-      return Rule.parse(rules);
+      return {
+        data: Rule.parse(rules),
+        total: itemCount
+      };
     }
     return rules;
   }

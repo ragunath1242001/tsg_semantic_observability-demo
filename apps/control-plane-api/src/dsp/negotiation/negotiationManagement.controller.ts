@@ -40,6 +40,10 @@ import {
   NegotiationStatusDto,
   OfferSchema
 } from "@tsg-dsp/common-dtos";
+import { UsePagination } from "../../utils/pagination/pagination.interceptor.decorator";
+import { Paginated } from "../../utils/pagination/pagination.parameters";
+import { PaginationOptionsDto } from "../../utils/pagination/pagination.options.dto";
+import { PaginationQuery } from "../../utils/pagination/pagination.query.decorator";
 
 @ApiTags("Negotiations Management")
 @UseGuards(OAuthGuard)
@@ -51,14 +55,17 @@ export class NegotiationManagementController {
   private readonly logger = new Logger(this.constructor.name);
 
   @Get()
+  @UsePagination()
   @ApiOperation({ summary: "Get all negotiations" })
   @ApiResponse({
     status: 200,
     description: "Successfully fetched negotiations",
     type: [NegotiationStatusDto]
   })
-  async getNegotiations(): Promise<INegotiationStatusDto[]> {
-    return this.negotiationService.getNegotiations();
+  async getNegotiations(
+    @PaginationQuery() paginationOptions: PaginationOptionsDto
+  ): Promise<Paginated<INegotiationStatusDto[]>> {
+    return this.negotiationService.getNegotiations(paginationOptions);
   }
 
   @Get("/dataset/:datasetId")
