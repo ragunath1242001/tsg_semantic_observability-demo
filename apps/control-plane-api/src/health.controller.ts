@@ -7,6 +7,7 @@ import {
 } from "@nestjs/swagger";
 import {
   HealthCheck,
+  HealthCheckResult,
   HealthCheckService,
   TypeOrmHealthIndicator
 } from "@nestjs/terminus";
@@ -24,10 +25,25 @@ export class HealthController {
     description:
       "Retrieves the current health of the control plane. If the control plane is running it always returns an empty 200 OK"
   })
-  @ApiOkResponse()
+  @ApiOkResponse({
+    schema: {
+      type: "object",
+      properties: {
+        memory: {
+          type: "object",
+          properties: {
+            status: { type: "string" },
+            heapMb: { type: "number" },
+            rssMb: { type: "number" }
+          }
+        }
+      }
+    },
+    example: { memory: { status: "up", heapMb: 8000, rssMb: 80000 } }
+  })
   @ApiBadGatewayResponse()
   @HealthCheck()
-  async getHealth() {
+  async getHealth(): Promise<HealthCheckResult> {
     const { heapUsed, rss } = process.memoryUsage();
     return this.health.check([
       async () => this.db.pingCheck("database", { timeout: 300 }),

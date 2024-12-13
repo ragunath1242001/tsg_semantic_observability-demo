@@ -75,6 +75,7 @@ export class DataplaneManagementController {
 
   @Put(":id")
   @HttpCode(HttpStatus.OK)
+  @ApiBody({ type: DataPlaneDto })
   @ApiOperation({
     summary: "Update a dataplane",
     description: "Updates an existing dataplane."

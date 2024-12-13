@@ -29,6 +29,7 @@ import {
   TransferDto
 } from "@tsg-dsp/common-dtos";
 import {
+  ApiBody,
   ApiOAuth2,
   ApiOkResponse,
   ApiOperation,
@@ -104,6 +105,7 @@ export class DataPlaneManagementController {
     summary: "Update dataset",
     description: "Update the current dataset configuration."
   })
+  @ApiBody({ type: DatasetConfig })
   @ApiOkResponse({ type: DataPlaneStateSchema })
   @ApiForbiddenResponseDefault()
   async updateDatasetConfig(

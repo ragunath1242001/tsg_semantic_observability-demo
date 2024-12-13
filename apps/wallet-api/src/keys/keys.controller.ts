@@ -18,7 +18,7 @@ export class KeysController {
       "Retrieves the CA chain for a given key. Only supported for keys with type `X509`"
   })
   @Header("content-type", "application/x-x509-ca-cert")
-  @ApiOkResponse()
+  @ApiOkResponse({ schema: { type: "string" } })
   @ApiNotFoundResponseDefault()
   async getCaChain(@Param("id") id: string): Promise<string> {
     const key = await this.keyService.getKey(id);

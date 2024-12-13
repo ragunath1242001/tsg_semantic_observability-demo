@@ -117,7 +117,13 @@ export class NegotiationController {
   @ApiOperation({ summary: "Handle negotiation event" })
   @ApiParam({ name: "id", type: String })
   @ApiBody({ type: ContractNegotiationEventMessageSchema })
-  @ApiOkResponse({ schema: { example: { status: "string" } } })
+  @ApiOkResponse({
+    schema: {
+      type: "object",
+      properties: { status: { type: "string" } },
+      example: { status: "string" }
+    }
+  })
   @Post(":id/events")
   @HttpCode(HttpStatus.OK)
   async negotiationEvent(
@@ -142,7 +148,13 @@ export class NegotiationController {
   @ApiOperation({ summary: "Verify agreement" })
   @ApiParam({ name: "id", type: String })
   @ApiBody({ type: ContractAgreementVerificationMessageSchema })
-  @ApiOkResponse({ schema: { example: { status: "string" } } })
+  @ApiOkResponse({
+    schema: {
+      type: "object",
+      properties: { status: { type: "string" } },
+      example: { status: "string" }
+    }
+  })
   @Post(":id/agreement/verification")
   @HttpCode(HttpStatus.OK)
   async agreementVerification(
@@ -172,7 +184,13 @@ export class NegotiationController {
   @ApiOperation({ summary: "Terminate negotiation" })
   @ApiParam({ name: "id", type: String })
   @ApiBody({ type: ContractNegotiationTerminationMessageSchema })
-  @ApiOkResponse({ schema: { example: { status: "string" } } })
+  @ApiOkResponse({
+    schema: {
+      type: "object",
+      properties: { status: { type: "string" } },
+      example: { status: "string" }
+    }
+  })
   @Post(":id/termination")
   @HttpCode(HttpStatus.OK)
   async negotiationTermination(
@@ -201,7 +219,13 @@ export class NegotiationController {
   @ApiOperation({ summary: "Handle negotiation callback offer" })
   @ApiParam({ name: "id", type: String })
   @ApiBody({ type: ContractOfferMessageSchema })
-  @ApiCreatedResponse({ schema: { example: { status: "string" } } })
+  @ApiOkResponse({
+    schema: {
+      type: "object",
+      properties: { status: { type: "string" } },
+      example: { status: "string" }
+    }
+  })
   @Post("callbacks/:id/offer")
   async callbackOffer(
     @Param("id") id: string,
@@ -218,7 +242,13 @@ export class NegotiationController {
   @ApiOperation({ summary: "Handle negotiation callback agreement" })
   @ApiParam({ name: "id", type: String })
   @ApiBody({ type: ContractAgreementMessageSchema })
-  @ApiCreatedResponse({ schema: { example: { status: "string" } } })
+  @ApiOkResponse({
+    schema: {
+      type: "object",
+      properties: { status: { type: "string" } },
+      example: { status: "string" }
+    }
+  })
   @Post("callbacks/:id/agreement")
   async callbackAgreement(
     @Param("id") id: string,
@@ -242,7 +272,13 @@ export class NegotiationController {
   @ApiOperation({ summary: "Handle negotiation callback event" })
   @ApiParam({ name: "id", type: String })
   @ApiBody({ type: ContractNegotiationEventMessageSchema })
-  @ApiCreatedResponse({ schema: { example: { status: "string" } } })
+  @ApiOkResponse({
+    schema: {
+      type: "object",
+      properties: { status: { type: "string" } },
+      example: { status: "string" }
+    }
+  })
   @Post("callbacks/:id/events")
   async callbackEvent(
     @Param("id") id: string,

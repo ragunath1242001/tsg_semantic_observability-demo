@@ -97,7 +97,11 @@ export class TransferController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: "Transfer started successfully",
-    schema: { example: { status: "success" } }
+    schema: {
+      type: "object",
+      properties: { status: { type: "string" } },
+      example: { status: "success" }
+    }
   })
   async startTransferProcess(
     @Param("id") id: string,
@@ -119,7 +123,11 @@ export class TransferController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: "Transfer completed successfully",
-    schema: { example: { status: "success" } }
+    schema: {
+      type: "object",
+      properties: { status: { type: "string" } },
+      example: { status: "success" }
+    }
   })
   async completeTransferProcess(
     @Param("id") id: string,
@@ -144,7 +152,11 @@ export class TransferController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: "Transfer terminated successfully",
-    schema: { example: { status: "success" } }
+    schema: {
+      type: "object",
+      properties: { status: { type: "string" } },
+      example: { status: "success" }
+    }
   })
   async terminateTransferProcess(
     @Param("id") id: string,
@@ -169,7 +181,11 @@ export class TransferController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: "Transfer suspended successfully",
-    schema: { example: { status: "success" } }
+    schema: {
+      type: "object",
+      properties: { status: { type: "string" } },
+      example: { status: "success" }
+    }
   })
   async suspendTransferProcess(
     @Param("id") id: string,
@@ -194,7 +210,11 @@ export class TransferController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: "Callback started transfer successfully",
-    schema: { example: { status: "success" } }
+    schema: {
+      type: "object",
+      properties: { status: { type: "string" } },
+      example: { status: "success" }
+    }
   })
   async callbackStartTransferProcess(
     @Param("id") id: string,
@@ -218,7 +238,11 @@ export class TransferController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: "Callback completed transfer successfully",
-    schema: { example: { status: "success" } }
+    schema: {
+      type: "object",
+      properties: { status: { type: "string" } },
+      example: { status: "success" }
+    }
   })
   async callbackCompleteTransferProcess(
     @Param("id") id: string,
@@ -243,7 +267,11 @@ export class TransferController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: "Callback terminated transfer successfully",
-    schema: { example: { status: "success" } }
+    schema: {
+      type: "object",
+      properties: { status: { type: "string" } },
+      example: { status: "success" }
+    }
   })
   async callbackTerminateTransferProcess(
     @Param("id") id: string,
@@ -268,7 +296,11 @@ export class TransferController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: "Callback suspended transfer successfully",
-    schema: { example: { status: "success" } }
+    schema: {
+      type: "object",
+      properties: { status: { type: "string" } },
+      example: { status: "success" }
+    }
   })
   async callbackSuspendTransferProcess(
     @Param("id") id: string,

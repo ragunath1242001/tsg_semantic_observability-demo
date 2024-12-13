@@ -118,7 +118,11 @@ export class TransferManagementController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: "Transfer started successfully",
-    schema: { example: { status: "success" } }
+    schema: {
+      type: "object",
+      properties: { status: { type: "string" } },
+      example: { status: "success" }
+    }
   })
   async startTransfer(
     @Param("processId") processId: string,
@@ -140,7 +144,11 @@ export class TransferManagementController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: "Transfer completed successfully",
-    schema: { example: { status: "success" } }
+    schema: {
+      type: "object",
+      properties: { status: { type: "string" } },
+      example: { status: "success" }
+    }
   })
   async completeTransfer(
     @Param("processId") processId: string
@@ -155,13 +163,18 @@ export class TransferManagementController {
   @ApiParam({ name: "processId", required: true, description: "Process ID" })
   @ApiBody({
     schema: {
+      type: "object",
+      properties: {
+        code: { type: "string" },
+        reason: { type: "string" }
+      },
       example: { code: "TERMINATION_CODE", reason: "Reason for termination" }
     }
   })
   @ApiResponse({
     status: HttpStatus.OK,
     description: "Transfer terminated successfully",
-    schema: { example: { status: "success" } }
+    schema: { type: "object", example: { status: "success" } }
   })
   async terminateTransfer(
     @Param("processId") processId: string,
@@ -183,11 +196,21 @@ export class TransferManagementController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "Suspend a transfer process" })
   @ApiParam({ name: "processId", required: true, description: "Process ID" })
-  @ApiBody({ schema: { example: { reason: "Reason for suspension" } } })
+  @ApiBody({
+    schema: {
+      type: "object",
+      properties: { reason: { type: "string" } },
+      example: { reason: "Reason for suspension" }
+    }
+  })
   @ApiResponse({
     status: HttpStatus.OK,
     description: "Transfer suspended successfully",
-    schema: { example: { status: "success" } }
+    schema: {
+      type: "object",
+      properties: { status: { type: "string" } },
+      example: { status: "success" }
+    }
   })
   async suspendTransfer(
     @Param("processId") processId: string,

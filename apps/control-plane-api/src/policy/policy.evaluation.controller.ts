@@ -96,6 +96,7 @@ export class PolicyEvaluationController {
       "Retrieve last evaluation context of the specified transfer ID."
   })
   @HttpCode(HttpStatus.OK)
+  @ApiBody({ schema: { type: "object" } })
   @ApiOkResponse({ type: EvaluationDecision })
   @ApiNotFoundResponseDefault()
   @ApiForbiddenResponseDefault()

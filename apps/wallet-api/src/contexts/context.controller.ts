@@ -2,7 +2,7 @@ import { Controller, Get, HttpStatus, Param } from "@nestjs/common";
 import { DisableOAuthGuard } from "../auth/oauth.guard.js";
 import { ContextService } from "./context.service.js";
 import { AppError } from "../utils/error.js";
-import { ApiOperation, ApiTags } from "@nestjs/swagger";
+import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 
 @Controller()
 @DisableOAuthGuard()
@@ -15,6 +15,7 @@ export class ContextController {
     summary: "Retrieve context",
     description: "Retrieves JSON-LD context document for the given context"
   })
+  @ApiOkResponse({ schema: { type: "object" } })
   async getContext(
     @Param("id") id: string
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
