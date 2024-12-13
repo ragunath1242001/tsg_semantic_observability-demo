@@ -260,14 +260,14 @@ describe("Catalog Module", () => {
         .send(await new CatalogRequestMessage({}).serialize())
         .expect(200);
 
-      expect(response.body.data["dcat:service"].length).toBe(1);
-      expect(response.body.data["dct:creator"]).toBe(
+      expect(response.body["dcat:service"].length).toBe(1);
+      expect(response.body["dct:creator"]).toBe(
         "urn:uuid:de8e1b94-4169-4491-986d-6a1c528b867b"
       );
-      expect(response.body.data["dct:publisher"]).toBe(
+      expect(response.body["dct:publisher"]).toBe(
         "urn:uuid:de8e1b94-4169-4491-986d-6a1c528b867b"
       );
-      expect(response.body.data["dct:title"]).toBe("Test Connector");
+      expect(response.body["dct:title"]).toBe("Test Connector");
     });
     it("Invalid body should result in a 400", async () => {
       request(app.getHttpServer())

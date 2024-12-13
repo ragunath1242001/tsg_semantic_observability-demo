@@ -1,6 +1,6 @@
 import { UseInterceptors } from "@nestjs/common";
 import { PaginationInterceptor } from "./pagination.interceptor";
-import { ApiResponse, ApiResponseMetadata } from "@nestjs/swagger";
+import { ApiResponseMetadata } from "@nestjs/swagger";
 import { DECORATORS } from "@nestjs/swagger/dist/constants";
 import { HeadersObject } from "@nestjs/swagger/dist/interfaces/open-api-spec.interface";
 
@@ -73,6 +73,7 @@ export function UsePagination(): MethodDecorator {
     propertyKey: string | symbol,
     descriptor: PropertyDescriptor
   ) {
+    UseInterceptors(PaginationInterceptor)(target, propertyKey, descriptor);
     if (descriptor) {
       const responses: { [status: number]: ApiResponseMetadata } =
         Reflect.getMetadata(DECORATORS.API_RESPONSE, descriptor.value) || {};
