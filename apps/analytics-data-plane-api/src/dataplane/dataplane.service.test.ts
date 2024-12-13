@@ -445,8 +445,8 @@ describe("Dataplane Service Consumer", () => {
       ),
       http.post(
         `${config.controlPlane.dataPlaneEndpoint}/:id/catalog`,
-        ({ request, params, cookies }) => {
-          return HttpResponse.json(request.json());
+        async ({ request, params, cookies }) => {
+          return HttpResponse.json(await request.json());
         }
       )
     );

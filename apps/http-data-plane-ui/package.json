@@ -17,7 +17,7 @@
     "@tsg-dsp/common-ui": "workspace:*",
     "@tsg-dsp/http-data-plane-dtos": "workspace:*",
     "axios": "^1.7.8",
-    "chart.js": "4.4.6",
+    "chart.js": "4.4.7",
     "did-resolver": "^4.1.0",
     "pinia": "^2.2.8",
     "primeicons": "^7.0.0",

@@ -8,6 +8,7 @@ import { CatalogService } from "@apps/control-plane-api/src/dsp/catalog/catalog.
 import { setupApp } from "@apps/control-plane-api/src/app.setup";
 import { AppLogger } from "@apps/control-plane-api/src/utils/logging";
 import { TransferService } from "@apps/control-plane-api/src/dsp/transfer/transfer.service";
+import { PaginationOptionsDto } from "@apps/control-plane-api/src/utils/pagination/pagination.options.dto";
 
 describe("TCK Local", () => {
   let server: HttpServer;
@@ -86,10 +87,12 @@ describe("TCK Local", () => {
 
     await pipelineExecutor.pipelines.ACN0101.completed;
 
-    const negotiations = await negotiationService.getNegotiations();
-    expect(negotiations.length).toBe(2);
-    expect(negotiations[0].state).toBe(ContractNegotiationState.AGREED);
-    expect(negotiations[1].state).toBe(ContractNegotiationState.AGREED);
+    const negotiations = await negotiationService.getNegotiations(
+      PaginationOptionsDto.NO_PAGINATION
+    );
+    expect(negotiations.data.length).toBe(2);
+    expect(negotiations.data[0].state).toBe(ContractNegotiationState.AGREED);
+    expect(negotiations.data[1].state).toBe(ContractNegotiationState.AGREED);
   });
 
   it("ACN0102", async () => {
@@ -103,10 +106,12 @@ describe("TCK Local", () => {
 
     await pipelineExecutor.pipelines.ACN0102.completed;
 
-    const negotiations = await negotiationService.getNegotiations();
-    expect(negotiations.length).toBe(2);
-    expect(negotiations[0].state).toBe(ContractNegotiationState.VERIFIED);
-    expect(negotiations[1].state).toBe(ContractNegotiationState.VERIFIED);
+    const negotiations = await negotiationService.getNegotiations(
+      PaginationOptionsDto.NO_PAGINATION
+    );
+    expect(negotiations.data.length).toBe(2);
+    expect(negotiations.data[0].state).toBe(ContractNegotiationState.VERIFIED);
+    expect(negotiations.data[1].state).toBe(ContractNegotiationState.VERIFIED);
   });
 
   it("ACN0103", async () => {
@@ -120,9 +125,11 @@ describe("TCK Local", () => {
 
     await pipelineExecutor.pipelines.ACN0103.completed;
 
-    const negotiations = await negotiationService.getNegotiations();
-    expect(negotiations.length).toBe(2);
-    expect(negotiations[0].state).toBe(ContractNegotiationState.FINALIZED);
-    expect(negotiations[1].state).toBe(ContractNegotiationState.FINALIZED);
+    const negotiations = await negotiationService.getNegotiations(
+      PaginationOptionsDto.NO_PAGINATION
+    );
+    expect(negotiations.data.length).toBe(2);
+    expect(negotiations.data[0].state).toBe(ContractNegotiationState.FINALIZED);
+    expect(negotiations.data[1].state).toBe(ContractNegotiationState.FINALIZED);
   });
 });
