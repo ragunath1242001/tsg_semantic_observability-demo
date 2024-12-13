@@ -1,4 +1,4 @@
-image: casbin/casdoor:v1.758.0
+image: casbin/casdoor:v1.766.0
 initImage: registry.gitlab.com/tno-tsg/dataspace-protocol/utils/casdoor-init:main
 
 host:

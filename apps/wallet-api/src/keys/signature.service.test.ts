@@ -84,6 +84,7 @@ describe("Key Service", () => {
   });
   afterAll(() => {
     TypeOrmTestHelper.instance.teardownTestDB();
+    server.close();
   });
 
   describe("Signature service", () => {
