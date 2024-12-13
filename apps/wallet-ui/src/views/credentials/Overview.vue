@@ -39,7 +39,7 @@ const loadCredentials = async () => {
         (s) => [...toArray(s.type), ...toArray(s["@type"])]
       );
       const credentialTypes = new Set([
-        ...item.credential.type,
+        ...toArray(item.credential.type),
         ...subjectTypes
       ]);
       const simpleTypes = [...credentialTypes]

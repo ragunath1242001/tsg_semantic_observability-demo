@@ -44,9 +44,24 @@ const offerDefault: OfferForm = {
   manualCredential: false
 };
 const offerForm = ref<OfferForm>(offerDefault);
-const requestForm = ref<{ preAuthorizedCode: string; issuerUrl: string }>({
+const requestForm = ref<{
+  preAuthorizedCode: string;
+  issuerUrl: string;
+  flow: string;
+  authorized?: {
+    accessToken: string;
+    credentialIdentifier: string;
+    additionalRequestParams?: string;
+  };
+}>({
   preAuthorizedCode: "",
-  issuerUrl: ""
+  issuerUrl: "",
+  flow: "pre-authorized-code",
+  authorized: {
+    accessToken: "",
+    credentialIdentifier: "",
+    additionalRequestParams: ""
+  }
 });
 
 const issuableCredentialTypes = computed(
@@ -217,7 +232,38 @@ const createOffer = async () => {
 
 const retrieveCredential = async () => {
   try {
-    await http.post("oid4vci/holder/request", requestForm.value);
+    const { flow, ...request } = JSON.parse(JSON.stringify(requestForm.value));
+    if (flow === "pre-authorized-code") {
+      if (!request.preAuthorizedCode) {
+        throw Error("Pre authorized code is required for this flow");
+      }
+      delete request.authorized;
+    } else if (flow === "authorization-code") {
+      if (
+        !request.authorized?.accessToken ||
+        !request.authorized?.credentialIdentifier
+      ) {
+        throw Error(
+          "Access token and credential identifier are required for this flow"
+        );
+      }
+      if (
+        request.authorized?.additionalRequestParams &&
+        request.authorized?.additionalRequestParams !== ""
+      ) {
+        try {
+          request.authorized.additionalRequestParams = JSON.parse(
+            request.authorized.additionalRequestParams
+          );
+        } catch (error) {
+          throw Error("Request parameters must be a valid JSON document");
+        }
+      }
+      delete request.preAuthorizedCode;
+    } else {
+      throw Error("Invalid flow");
+    }
+    await http.post("oid4vci/holder/request", request);
     toast.add({
       severity: "success",
       summary: "Credential retrieved",
@@ -226,7 +272,13 @@ const retrieveCredential = async () => {
     });
     requestForm.value = {
       issuerUrl: "",
-      preAuthorizedCode: ""
+      preAuthorizedCode: "",
+      authorized: {
+        accessToken: "",
+        credentialIdentifier: "",
+        additionalRequestParams: ""
+      },
+      flow: "pre-authorized-code"
     };
   } catch (error) {
     toast.add(
@@ -461,17 +513,39 @@ onMounted(async () => {
           issuer that has created a credential offer.
         </p>
         <p>
-          The supported flow is based on the
+          Both the Pre-authorized code flow as the Authorization code flow of
           <a
-            href="https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0.html#name-pre-authorized-code-flow"
-            target="_blank"
-            >Pre-Authorized Code Flow</a
-          >. The pre authorized code should be provided by the issuer in an
-          out-of-band manner before you start this flow as holder.
+            href="https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0.html"
+            >OID4VCI</a
+          >
+          are supported. For the pre authorized code should be provided by the
+          issuer in an out-of-band manner before you start this flow as holder.
+          For the Authorization code flow at least an access token and
+          credential identifier should be provided, with optional addtional
+          request parameters.
         </p>
       </template>
       <template #content>
         <form class="flex flex-col gap-4" @submit.prevent="retrieveCredential">
+          <FormField label="Flow" v-slot="props">
+            <Select
+              :id="props.id"
+              class="w-full"
+              v-model="requestForm.flow"
+              :options="[
+                {
+                  label: 'Pre Authorized Code Flow',
+                  value: 'pre-authorized-code'
+                },
+                {
+                  label: 'Authorization Code Flow',
+                  value: 'authorization-code'
+                }
+              ]"
+              option-label="label"
+              option-value="value"
+              placeholder="Flow" />
+          </FormField>
           <FormField label="Issuer URL" v-slot="props">
             <InputText
               :id="props.id"
@@ -480,13 +554,47 @@ onMounted(async () => {
               placeholder="Issuer URL"
               required />
           </FormField>
-          <FormField label="Pre Authorized code" v-slot="props">
+          <FormField
+            v-if="requestForm.flow === 'pre-authorized-code'"
+            label="Pre Authorized code"
+            v-slot="props">
             <InputText
               :id="props.id"
               class="w-full"
               v-model="requestForm.preAuthorizedCode"
               placeholder="Pre Authorized code received from issuer"
               required />
+          </FormField>
+          <FormField
+            v-if="requestForm.flow === 'authorization-code'"
+            label="Access token"
+            v-slot="props">
+            <InputText
+              :id="props.id"
+              class="w-full"
+              v-model="requestForm.authorized.accessToken"
+              placeholder="Access token"
+              required />
+          </FormField>
+          <FormField
+            v-if="requestForm.flow === 'authorization-code'"
+            label="Credential ID"
+            v-slot="props">
+            <InputText
+              :id="props.id"
+              class="w-full"
+              v-model="requestForm.authorized.credentialIdentifier"
+              placeholder="Credential ID"
+              required />
+          </FormField>
+          <FormField
+            v-if="requestForm.flow === 'authorization-code'"
+            label="Request parameters"
+            v-slot="props">
+            <MonacoEditorVue
+              v-model="
+                requestForm.authorized.additionalRequestParams
+              "></MonacoEditorVue>
           </FormField>
           <FormField no-label>
             <Button label="Request credential" type="submit" />

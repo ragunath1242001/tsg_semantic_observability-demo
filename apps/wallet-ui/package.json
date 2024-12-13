@@ -20,7 +20,7 @@
     "chart.js": "4.4.7",
     "dayjs": "^1.11.13",
     "did-resolver": "^4.1.0",
-    "pinia": "^2.2.8",
+    "pinia": "^2.3.0",
     "primeicons": "^7.0.0",
     "primevue": "4.2.4",
     "tailwindcss": "^3.4.15",
