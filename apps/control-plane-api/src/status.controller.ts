@@ -34,7 +34,7 @@ export class StatusController {
   ) {}
   @Get("/status")
   @ApiOperation({
-    summary: "Appplication status",
+    summary: "Application status",
     description:
       "Retrieves the current health of the control plane. With additional status information"
   })

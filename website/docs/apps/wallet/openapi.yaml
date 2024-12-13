@@ -129,18 +129,16 @@ paths:
         status information
       operationId: StatusController_getStatus
       parameters: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/StatusDto"
       responses:
         "200":
           description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StatusDto"
         "502":
           description: ""
-      summary: Appplication status
+      summary: Application status
       tags:
         - Status
   /api/presentations:
@@ -748,6 +746,10 @@ paths:
       responses:
         "200":
           description: ""
+          content:
+            application/json:
+              schema:
+                type: string
         "404":
           description: Resource not found
           content:
@@ -1178,6 +1180,10 @@ paths:
       responses:
         "200":
           description: ""
+          content:
+            application/json:
+              schema:
+                type: object
       summary: Retrieve context
       tags:
         - Contexts
@@ -1321,6 +1327,29 @@ paths:
       description: Requests a new credential via the OID4VCI Pre-authorized-code flow.
       operationId: HolderController_requestCredential
       parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                issuerUrl:
+                  type: string
+                preAuthorizedCode:
+                  type: string
+                authorized:
+                  type: object
+                  required:
+                    - accessToken
+                    - credentialIdentifier
+                  properties:
+                    accessToken:
+                      type: string
+                    credentialIdentifier:
+                      type: string
+                    additionalRequestParams:
+                      type: object
       responses:
         "200":
           description: ""
@@ -1366,6 +1395,15 @@ paths:
         holder has received off-line
       operationId: IssuerController_tokenEndpoint
       parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                pre-authorized_code:
+                  type: string
       responses:
         "200":
           description: ""

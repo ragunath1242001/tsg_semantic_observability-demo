@@ -67,6 +67,12 @@ export class IssuerController {
   })
   @DisableOAuthGuard()
   @HttpCode(HttpStatus.OK)
+  @ApiBody({
+    schema: {
+      type: "object",
+      properties: { "pre-authorized_code": { type: "string" } }
+    }
+  })
   @ApiOkResponse({ type: AccessTokenDto })
   @ApiForbiddenResponseDefault()
   @ApiNotFoundResponseDefault()

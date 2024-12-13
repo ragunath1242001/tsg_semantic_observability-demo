@@ -28,7 +28,8 @@ import {
   ApiBadRequestResponseDefault,
   ApiConflictResponseDefault,
   ApiForbiddenResponseDefault,
-  ApiNotFoundResponseDefault
+  ApiNotFoundResponseDefault,
+  ConstraintSchema
 } from "@tsg-dsp/common-dtos";
 import { validationPipe } from "../utils/validation.pipe";
 import {
@@ -75,7 +76,7 @@ export class RuleRepositoryController {
     description: "Get constraint based on an ODRL constraint"
   })
   @HttpCode(HttpStatus.OK)
-  @ApiBody({})
+  @ApiBody({ type: ConstraintSchema })
   @ApiOkResponse({ type: ConstraintModel })
   @ApiNotFoundResponseDefault()
   @ApiForbiddenResponseDefault()

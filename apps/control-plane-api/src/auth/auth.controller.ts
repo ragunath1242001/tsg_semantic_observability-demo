@@ -49,6 +49,7 @@ export class AuthController {
   }
 
   @Get("login")
+  @ApiFoundResponse()
   @ApiOperation({
     summary: "Login redirect",
     description: "Redirects user to the correct authorization server"

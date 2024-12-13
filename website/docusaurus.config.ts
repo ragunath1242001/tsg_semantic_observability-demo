@@ -62,6 +62,8 @@ const config: Config = {
         config: {
           controlPlane: {
             specPath: "docs/apps/control-plane/openapi.yaml",
+            hideSendButton: true,
+            showExtensions: false,
             outputDir: "docs/apis/control-plane",
             sidebarOptions: {
               groupPathsBy: "tag"
@@ -69,6 +71,8 @@ const config: Config = {
           } satisfies OpenApiPlugin.Options,
           httpDataPlane: {
             specPath: "docs/apps/http-data-plane/openapi.yaml",
+            hideSendButton: true,
+            showExtensions: false,
             outputDir: "docs/apis/http-data-plane",
             sidebarOptions: {
               groupPathsBy: "tag"
@@ -76,6 +80,8 @@ const config: Config = {
           } satisfies OpenApiPlugin.Options,
           wallet: {
             specPath: "docs/apps/wallet/openapi.yaml",
+            hideSendButton: true,
+            showExtensions: false,
             outputDir: "docs/apis/wallet",
             sidebarOptions: {
               groupPathsBy: "tag"
@@ -114,6 +120,14 @@ const config: Config = {
   ],
 
   themeConfig: {
+    languageTabs: [
+      {
+        language: "curl",
+      },
+      {
+        language: "http"
+      }
+    ],
     // Replace with your project's social card
     image: "img/docusaurus-social-card.jpg",
     navbar: {

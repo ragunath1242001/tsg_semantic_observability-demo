@@ -195,7 +195,13 @@ export class NegotiationManagementController {
     description: "Address for the negotiation",
     required: false
   })
-  @ApiOkResponse({ schema: { example: { status: "string" } } })
+  @ApiOkResponse({
+    schema: {
+      type: "object",
+      properties: { status: { type: "string" } },
+      example: { status: "string" }
+    }
+  })
   async offer(
     @Body(new DeserializePipe(Offer)) body: Offer,
     @Param("processId") processId: string,
@@ -225,7 +231,13 @@ export class NegotiationManagementController {
     description: "Process ID of the negotiation",
     required: true
   })
-  @ApiOkResponse({ schema: { example: { status: "string" } } })
+  @ApiOkResponse({
+    schema: {
+      type: "object",
+      properties: { status: { type: "string" } },
+      example: { status: "string" }
+    }
+  })
   async agree(
     @Param("processId") processId: string
   ): Promise<{ status: string }> {
@@ -242,7 +254,13 @@ export class NegotiationManagementController {
     description: "Process ID of the negotiation",
     required: true
   })
-  @ApiOkResponse({ schema: { example: { status: "string" } } })
+  @ApiOkResponse({
+    schema: {
+      type: "object",
+      properties: { status: { type: "string" } },
+      example: { status: "string" }
+    }
+  })
   async verify(
     @Param("processId") processId: string
   ): Promise<{ status: string }> {
@@ -261,7 +279,13 @@ export class NegotiationManagementController {
     description: "Process ID of the negotiation",
     required: true
   })
-  @ApiOkResponse({ schema: { example: { status: "string" } } })
+  @ApiOkResponse({
+    schema: {
+      type: "object",
+      properties: { status: { type: "string" } },
+      example: { status: "string" }
+    }
+  })
   async finalize(
     @Param("processId") processId: string
   ): Promise<{ status: string }> {
@@ -283,7 +307,13 @@ export class NegotiationManagementController {
     description: "Termination details",
     schema: { example: { code: "string", reason: "string" } }
   })
-  @ApiOkResponse({ schema: { example: { status: "string" } } })
+  @ApiOkResponse({
+    schema: {
+      type: "object",
+      properties: { status: { type: "string" } },
+      example: { status: "string" }
+    }
+  })
   async terminate(
     @Param("processId") processId: string,
     @Body() body: { code: string; reason: string }

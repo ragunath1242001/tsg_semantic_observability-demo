@@ -4,6 +4,7 @@ import { AppRole } from "@tsg-dsp/wallet-dtos";
 import { HolderService } from "./holder.service.js";
 import { Credentials } from "../model/credentials.dao.js";
 import {
+  ApiBody,
   ApiOAuth2,
   ApiOkResponse,
   ApiOperation,
@@ -27,6 +28,24 @@ export class HolderController {
     summary: "Request credential via OID4VCI",
     description:
       "Requests a new credential via the OID4VCI Pre-authorized-code flow."
+  })
+  @ApiBody({
+    schema: {
+      type: "object",
+      properties: {
+        issuerUrl: { type: "string" },
+        preAuthorizedCode: { type: "string" },
+        authorized: {
+          type: "object",
+          required: ["accessToken", "credentialIdentifier"],
+          properties: {
+            accessToken: { type: "string" },
+            credentialIdentifier: { type: "string" },
+            additionalRequestParams: { type: "object" }
+          }
+        }
+      }
+    }
   })
   @ApiOkResponse({ type: CredentialsDto })
   @ApiBadRequestResponseDefault()
