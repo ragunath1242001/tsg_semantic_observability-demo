@@ -755,7 +755,12 @@ export class DataPlaneService {
 
       try {
         const resp = await this.axiosManagement.get<NegotiationDetailDto>(
-          `negotiations/dataset/${datasetId}`
+          `negotiations/dataset/${datasetId}`,
+          {
+            params: {
+              remoteParty: audience
+            }
+          }
         );
         negotiation = resp.data;
       } catch (err) {

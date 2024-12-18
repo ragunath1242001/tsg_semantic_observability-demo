@@ -148,11 +148,13 @@ export class NegotiationService {
   }
 
   async getNegotiationFromDataSetId(
-    datasetId: string
+    datasetId: string,
+    remoteParty?: string
   ): Promise<NegotiationDetailDto> {
     const negotiation = await this.negotiationDetailRepository.findOne({
       where: {
         dataSet: datasetId,
+        remoteParty: remoteParty,
         state: ContractNegotiationState.FINALIZED
       },
       order: { modifiedDate: "DESC" }

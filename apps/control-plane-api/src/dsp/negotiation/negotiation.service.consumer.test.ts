@@ -33,7 +33,7 @@ import { NegotiationService } from "./negotiation.service";
 import { AgreementDao, TransferMonitorDao } from "../../model/agreement.dao";
 import { TransferDetailDao, TransferEventDao } from "../../model/transfer.dao";
 import { AgreementService } from "../../policy/agreement.service";
-import { DSPClientError } from "../../utils/errors/error";
+import { DSPClientError, DSPError } from "../../utils/errors/error";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 import { PaginationOptionsDto } from "../../utils/pagination/pagination.options.dto";
 
@@ -499,6 +499,37 @@ describe("Negotiation Service (Consumer)", () => {
       const negotiationDetail =
         await negotiationService.getNegotiation(localProcessId);
       expect(negotiationDetail.state).toBe(ContractNegotiationState.FINALIZED);
+    });
+
+    it("should return negotiation with remote party when found", async () => {
+      const datasetId = "urn:uuid:b9e2af39-36a9-4e92-a02e-a05dcd94219b";
+
+      const result = await negotiationService.getNegotiationFromDataSetId(
+        datasetId,
+        "did:web:remoteparty.test"
+      );
+      console.log(result);
+
+      expect(result).toBeDefined();
+    });
+
+    it("should return negotiation without remote party when found", async () => {
+      const datasetId = "urn:uuid:b9e2af39-36a9-4e92-a02e-a05dcd94219b";
+
+      const result =
+        await negotiationService.getNegotiationFromDataSetId(datasetId);
+      console.log(result);
+
+      expect(result).toBeDefined();
+    });
+
+    it("should throw DSPError when no negotiation is found", async () => {
+      const datasetId = "test-dataset-id";
+      const remoteParty = "test-remote-party";
+
+      await expect(
+        negotiationService.getNegotiationFromDataSetId(datasetId, remoteParty)
+      ).rejects.toThrow(DSPError);
     });
   });
 
