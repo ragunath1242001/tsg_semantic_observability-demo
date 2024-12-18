@@ -70,15 +70,29 @@ export class NegotiationManagementController {
 
   @Get("/dataset/:datasetId")
   @ApiOperation({ summary: "Get all negotiations for a dataset" })
+  @ApiParam({
+    name: "datasetId",
+    description: "Dataset ID you want to find a negotiation for",
+    required: true
+  })
+  @ApiQuery({
+    name: "remoteParty",
+    description: "Remote party you want a negotiation to find for",
+    required: false
+  })
   @ApiResponse({
     status: 200,
     description: "Successfully fetched negotiations",
     type: [NegotiationStatusDto]
   })
   async getNegotiationsFromDatasetId(
-    @Param("datasetId") datasetId: string
+    @Param("datasetId") datasetId: string,
+    @Query("remoteParty") remoteParty?: string
   ): Promise<NegotiationDetailDto> {
-    return this.negotiationService.getNegotiationFromDataSetId(datasetId);
+    return this.negotiationService.getNegotiationFromDataSetId(
+      datasetId,
+      remoteParty
+    );
   }
 
   @Get(":processId")
