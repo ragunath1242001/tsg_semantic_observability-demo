@@ -13,12 +13,6 @@ import { DidResolverService } from "../did/did.resolver.service.js";
 import { SignatureService } from "./signature.service.js";
 import { setupServer, SetupServer } from "msw/node";
 import { http, HttpResponse } from "msw";
-import {
-  encodedPublicKeyMultiBaseToJWK,
-  jwkToMultibase,
-  publicKeyMultiBaseToJWK
-} from "../utils/keys/keyconverter.js";
-import { JWK } from "jose";
 
 describe("Key Service", () => {
   let signatureService: SignatureService;
@@ -151,7 +145,7 @@ describe("Key Service", () => {
       await signatureService["verifyJws"](
         jwsDefault,
         defaultKey.publicKey,
-        Buffer.from("123456").toString("hex")
+        Buffer.from("123456")
       );
       const jwsKey0 = await signatureService["signAsJws"](
         Buffer.from("123456"),
@@ -160,13 +154,13 @@ describe("Key Service", () => {
       await signatureService["verifyJws"](
         jwsKey0,
         key0.publicKey,
-        Buffer.from("123456").toString("hex")
+        Buffer.from("123456")
       );
       await expect(
         signatureService["verifyJws"](
           jwsKey0,
           defaultKey.publicKey,
-          Buffer.from("123456").toString("hex")
+          Buffer.from("123456")
         )
       ).rejects.toThrow("Verification failed");
     });

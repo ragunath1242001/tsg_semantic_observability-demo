@@ -51,7 +51,9 @@ const requestForm = ref<{
   authorized?: {
     accessToken: string;
     credentialIdentifier: string;
-    additionalRequestParams?: string;
+    additionalRequestParams: {
+      credential: string;
+    };
   };
 }>({
   preAuthorizedCode: "",
@@ -60,7 +62,9 @@ const requestForm = ref<{
   authorized: {
     accessToken: "",
     credentialIdentifier: "",
-    additionalRequestParams: ""
+    additionalRequestParams: {
+      credential: ""
+    }
   }
 });
 
@@ -248,16 +252,16 @@ const retrieveCredential = async () => {
         );
       }
       if (
-        request.authorized?.additionalRequestParams &&
-        request.authorized?.additionalRequestParams !== ""
+        request.authorized?.additionalRequestParams?.credential &&
+        request.authorized?.additionalRequestParams?.credential?.trim() !== ""
       ) {
         try {
-          request.authorized.additionalRequestParams = JSON.parse(
-            request.authorized.additionalRequestParams
-          );
+          JSON.parse(request.authorized.additionalRequestParams.credential);
         } catch (error) {
           throw Error("Request parameters must be a valid JSON document");
         }
+      } else {
+        delete request.authorized.additionalRequestParams;
       }
       delete request.preAuthorizedCode;
     } else {
@@ -276,7 +280,9 @@ const retrieveCredential = async () => {
       authorized: {
         accessToken: "",
         credentialIdentifier: "",
-        additionalRequestParams: ""
+        additionalRequestParams: {
+          credential: ""
+        }
       },
       flow: "pre-authorized-code"
     };
@@ -593,7 +599,7 @@ onMounted(async () => {
             v-slot="props">
             <MonacoEditorVue
               v-model="
-                requestForm.authorized.additionalRequestParams
+                requestForm.authorized.additionalRequestParams.credential
               "></MonacoEditorVue>
           </FormField>
           <FormField no-label>

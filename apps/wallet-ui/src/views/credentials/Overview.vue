@@ -235,15 +235,28 @@ onMounted(async () => {
                 props.data.raw.credential.proof.verificationMethod
               }}</code></FormField
             >
-
-            <h3 class="text-2xl font-bold my-2">Credential subject</h3>
-            <div>
-              <MonacoEditorVue
-                :static="props.data.raw.credential.credentialSubject"
-                :read-only="true"
-                :min-lines="1"
-                :max-lines="100" />
-            </div>
+            <Tabs class="mt-3" value="CredentialSubject">
+              <TabList>
+                <Tab value="CredentialSubject">Credential Subject</Tab>
+                <Tab value="Credential">Full credential</Tab>
+              </TabList>
+              <TabPanels>
+                <TabPanel value="CredentialSubject">
+                  <MonacoEditorVue
+                    :static="props.data.raw.credential.credentialSubject"
+                    :read-only="true"
+                    :min-lines="1"
+                    :max-lines="100" />
+                </TabPanel>
+                <TabPanel value="Credential">
+                  <MonacoEditorVue
+                    :static="props.data.raw.credential"
+                    :read-only="true"
+                    :min-lines="1"
+                    :max-lines="100" />
+                </TabPanel>
+              </TabPanels>
+            </Tabs>
           </template>
         </DataTable>
       </template>

@@ -29,6 +29,9 @@ import ConfirmationService from "primevue/confirmationservice";
 import Panel from "primevue/panel";
 import SelectButton from "primevue/selectbutton";
 import MonacoEditorVue from "@tsg-dsp/common-ui/components/MonacoEditor.vue";
+import Tab from "primevue/tab";
+import Tabs from "primevue/tabs";
+import TabPanel from "primevue/tabpanel";
 
 import "@tsg-dsp/common-ui/assets/styles.scss";
 import "@tsg-dsp/common-ui/assets/tailwind.css";
@@ -89,6 +92,9 @@ app.component("ToggleSwitch", ToggleSwitch);
 app.component("Tree", Tree);
 app.component("Panel", Panel);
 app.component("SelectButton", SelectButton);
+app.component("Tab", Tab);
+app.component("Tabs", Tabs);
+app.component("TabPanel", TabPanel);
 app.component("MonacoEditorVue", MonacoEditorVue);
 
 app.mount("#app");
