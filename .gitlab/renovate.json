@@ -9,7 +9,7 @@
   "packageRules": [
     {
       "description": "Disable vue-tsc updates due to typescript version mismatch",
-      "packagePatterns": ["vue-tsc**"],
+      "packagePatterns": ["vue-tsc"],
       "enabled": false
     }
   ]
