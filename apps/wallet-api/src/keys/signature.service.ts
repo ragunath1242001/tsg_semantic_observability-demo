@@ -2,10 +2,10 @@ import { HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { KeysService } from "./keys.service.js";
 import {
   CompactSign,
-  compactVerify,
-  CompactVerifyResult,
   decodeJwt,
   decodeProtectedHeader,
+  flattenedVerify,
+  FlattenedVerifyResult,
   importJWK,
   JWK,
   JWTPayload,
@@ -31,8 +31,7 @@ import {
 } from "../utils/keys/keyconverter.js";
 import {
   base58btcToBase64url,
-  base64urlToBase58btc,
-  buffersToHex
+  base64urlToBase58btc
 } from "../utils/keys/typeconverter.js";
 import {
   cryptoSuiteFromJws,
@@ -97,10 +96,24 @@ export class SignatureService {
     }
   }
 
+  private async computeProofConfigHash(
+    proofConfig: any,
+    algorithm: "RDFC" | "JCS",
+    context: string | string[],
+    proofContext: string
+  ) {
+    let proofConfigHash;
+    try {
+      proofConfigHash = await canonizeAndHash(proofConfig, algorithm, context);
+    } catch (e) {
+      proofConfig["@context"] = [...toArray(context), proofContext];
+      proofConfigHash = await canonizeAndHash(proofConfig, algorithm, context);
+    }
+    return proofConfigHash;
+  }
+
   private async signAsJws(hash: Buffer, signingKey: KeyMaterials) {
-    const signature = new CompactSign(
-      new TextEncoder().encode(hash.toString("hex"))
-    ).setProtectedHeader({
+    const signature = new CompactSign(hash).setProtectedHeader({
       alg: signingAlgorithm(signingKey.type),
       b64: false,
       crit: ["b64"]
@@ -112,24 +125,30 @@ export class SignatureService {
   private async verifyJws(
     jws: string,
     publicKey: JWK,
-    payload: string,
+    payload: string | Uint8Array<ArrayBufferLike>,
     signature?: string
-  ): Promise<CompactVerifyResult> {
+  ): Promise<FlattenedVerifyResult> {
     try {
-      let resultingJws: string;
+      let protectedHeader;
       if (signature) {
-        const headerHash = Buffer.from(
+        protectedHeader = Buffer.from(
           JSON.stringify({
             alg: publicKey.alg,
             b64: false,
             crit: ["b64"]
           })
         ).toString("base64url");
-        resultingJws = `${headerHash}.${payload}.${signature}`;
       } else {
-        resultingJws = jws.replace("..", `.${payload}.`);
+        protectedHeader = jws.split(".")[0];
       }
-      return await compactVerify(resultingJws, await importJWK(publicKey));
+      return await flattenedVerify(
+        {
+          protected: protectedHeader,
+          signature: signature ?? jws.split(".")[2],
+          payload: payload
+        },
+        await importJWK(publicKey)
+      );
     } catch (e) {
       this.logger.debug(`Verification failed: ${e}`);
       throw new AppError(`Verification failed`, HttpStatus.BAD_REQUEST, e);
@@ -274,7 +293,7 @@ export class SignatureService {
         ? jwkToMultibase(signingKey.publicKey, false)
         : `${await this.didService.getDidId()}#${signingKey.id}`;
       const documentHash = await canonizeAndHash(document, normalization);
-      const proof: Partial<DataIntegrityProof> = {
+      const proof: Omit<DataIntegrityProof, "proofValue"> = {
         type: "DataIntegrityProof",
         proofPurpose: proofPurpose,
         verificationMethod: verificationMethod,
@@ -282,35 +301,18 @@ export class SignatureService {
         created: new Date().toISOString(),
         ...options
       };
-      let proofConfigHash;
-      try {
-        proofConfigHash = await canonizeAndHash(
-          proof,
-          normalization,
-          document["@context"]
-        );
-      } catch (e) {
-        document["@context"] = [
-          ...toArray(document["@context"]),
-          "https://w3id.org/security/data-integrity/v2"
-        ];
-        proofConfigHash = await canonizeAndHash(
-          proof,
-          normalization,
-          document["@context"]
-        );
-      }
-      const hash = Buffer.concat([documentHash, proofConfigHash]);
+      const proofConfigHash = await this.computeProofConfigHash(
+        proof,
+        normalization,
+        document["@context"],
+        "https://w3id.org/security/data-integrity/v2"
+      );
+      const hash = Buffer.concat([proofConfigHash, documentHash]);
       const jws = await this.signAsJws(hash, signingKey);
-      return {
-        type: "DataIntegrityProof",
-        proofPurpose: proofPurpose,
-        created: proof.created!,
-        verificationMethod: proof.verificationMethod!,
-        cryptosuite: proof.cryptosuite!,
-        proofValue: base64urlToBase58btc(jws.split(".")[2]),
-        ...options
-      };
+      return plainToInstance(DataIntegrityProof, {
+        ...proof,
+        proofValue: base64urlToBase58btc(jws.split(".")[2])
+      });
     } catch (e) {
       throw new AppError(
         "Could not sign data as DataIntegrityProof",
@@ -330,13 +332,23 @@ export class SignatureService {
       signingKey.id
     }`;
     const documentHash = await canonizeAndHash(document, "RDFC");
-    const jws = await this.signAsJws(documentHash, signingKey);
-    return plainToInstance(JsonWebSignature2020, {
+    const proofConfig: Omit<JsonWebSignature2020, "jws"> = {
       type: "JsonWebSignature2020",
       created: new Date().toISOString(),
       proofPurpose: proofPurpose,
-      jws: jws,
       verificationMethod: verificationMethod
+    };
+    const proofConfigHash = await this.computeProofConfigHash(
+      proofConfig,
+      "RDFC",
+      document["@context"],
+      "https://w3id.org/security/suites/jws-2020/v1"
+    );
+    const combinedHash = Buffer.concat([proofConfigHash, documentHash]);
+    const jws = await this.signAsJws(combinedHash, signingKey);
+    return plainToInstance(JsonWebSignature2020, {
+      ...proofConfig,
+      jws
     });
   }
 
@@ -344,7 +356,7 @@ export class SignatureService {
     plainDocument: any,
     proof: Proof,
     issuerDidId?: string
-  ): Promise<CompactVerifyResult> {
+  ): Promise<FlattenedVerifyResult> {
     if (
       proof instanceof DataIntegrityProof ||
       proof.type === "DataIntegrityProof"
@@ -390,25 +402,13 @@ export class SignatureService {
     const documentHash = await canonizeAndHash(plainDocument, normalization);
     const { proofValue, ...proofConfig } = proof;
     const jwsSignature = base58btcToBase64url(proofValue);
-    let proofConfigHash;
-    try {
-      proofConfigHash = await canonizeAndHash(
-        proofConfig,
-        normalization,
-        plainDocument["@context"]
-      );
-    } catch (e) {
-      plainDocument["@context"] = [
-        ...toArray(plainDocument["@context"]),
-        "https://w3id.org/security/data-integrity/v2"
-      ];
-      proofConfigHash = await canonizeAndHash(
-        proofConfig,
-        normalization,
-        plainDocument["@context"]
-      );
-    }
-    const combinedHash = buffersToHex(documentHash, proofConfigHash);
+    const proofConfigHash = await this.computeProofConfigHash(
+      proofConfig,
+      normalization,
+      plainDocument["@context"],
+      "https://w3id.org/security/data-integrity/v2"
+    );
+    const combinedHash = Buffer.concat([proofConfigHash, documentHash]);
     return await this.verifyJws("", signingKey, combinedHash, jwsSignature);
   }
 
@@ -416,19 +416,22 @@ export class SignatureService {
     plainDocument: any,
     proof: JsonWebSignature2020,
     issuerDidId?: string
-  ): Promise<CompactVerifyResult> {
+  ): Promise<FlattenedVerifyResult> {
     const documentHash = await canonizeAndHash(plainDocument, "RDFC");
-    const jwsWithHash = proof.jws.replace("..", `.${documentHash}.`);
-    const cryptoSuite = cryptoSuiteFromJws(jwsWithHash);
+    const { jws, ...proofConfig } = proof;
+    const proofConfigHash = await this.computeProofConfigHash(
+      proofConfig,
+      "RDFC",
+      plainDocument["@context"],
+      "https://w3id.org/security/suites/jws-2020/v1"
+    );
+    const combinedHash = Buffer.concat([proofConfigHash, documentHash]);
+    const cryptoSuite = cryptoSuiteFromJws(jws);
     const usedKey = await this.parseVerificationMethod(
       proof.verificationMethod,
       issuerDidId,
       cryptoSuite
     );
-    return await this.verifyJws(
-      proof.jws,
-      usedKey,
-      documentHash.toString("hex")
-    );
+    return await this.verifyJws(proof.jws, usedKey, combinedHash);
   }
 }
