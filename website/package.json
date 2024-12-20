@@ -15,7 +15,7 @@
     "write-heading-ids": "docusaurus write-heading-ids",
     "typecheck": "tsc"
   },
-  "packageManager": "npm@10.9.2",
+  "packageManager": "npm@11.0.0",
   "resolutions": {
     "postman-code-generators": "1.10.1"
   },
