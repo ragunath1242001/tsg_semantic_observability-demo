@@ -99,7 +99,7 @@ describe("DataPlane Service", () => {
   });
 
   afterAll(async () => {
-    await TypeOrmTestHelper.instance.teardownTestDB();
+    TypeOrmTestHelper.instance.teardownTestDB();
     jest.useRealTimers();
   });
 
@@ -215,6 +215,7 @@ describe("DataPlane Service", () => {
               accessService: [
                 new DataService({
                   id: "urn:uuid:0d5f0685-eb04-409a-8a77-ee4ed207f2f0",
+                  endpointDescription: "dspace:connector",
                   endpointURL: "https://httpbin.org/anything"
                 })
               ]
@@ -243,6 +244,9 @@ describe("DataPlane Service", () => {
         expect(catalog.total).toEqual(1);
         expect(catalog.data._datasets?.length).toEqual(1);
         expect(catalog.data._datasets?.[0].hasPolicy).toHaveLength(1);
+        expect(
+          catalog.data._datasets?.[0]._distribution?.[0]?._accessService?.[0]
+        ).toEqual(catalog.data._services?.[0]);
       });
 
       it("updates dataset when one exists", async () => {
@@ -287,21 +291,23 @@ describe("DataPlane Service", () => {
           role: "consumer"
         };
         const addedDataPlane = await dataPlaneService.addDataPlane(dataPlane);
-        const createdDataset = await dataPlaneService.updateCatalog(
+        const createdCatalog = await dataPlaneService.updateCatalog(
           addedDataPlane.identifier,
           new Catalog({ dataset: [dataset] })
         );
-        createdDataset!.title = "Updated Test HTTP Dataset";
-        expect(createdDataset).toBeDefined();
+        createdCatalog!.title = "Updated Test HTTP Dataset";
+        expect(createdCatalog).toBeDefined();
 
         let catalog = await catalogService.getCatalogDao();
         const lengthToMatch = catalog.data._datasets?.length;
-        const updatedDataset = await dataPlaneService.updateCatalog(
+        createdCatalog.dataset![0].distribution![0].accessService![0].endpointDescription =
+          "dspace:connector";
+        const updatedCatalog = await dataPlaneService.updateCatalog(
           addedDataPlane.identifier,
-          createdDataset!
+          createdCatalog
         );
 
-        expect(updatedDataset).toBeDefined();
+        expect(updatedCatalog).toBeDefined();
         catalog = await catalogService.getCatalogDao();
         expect(catalog.data._datasets?.length).toEqual(lengthToMatch);
         const datasetToCheck = catalog.data._datasets?.find(
@@ -309,6 +315,10 @@ describe("DataPlane Service", () => {
             dataset.id === "urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0ceb"
         );
         expect(datasetToCheck?.hasPolicy?.[0].assigner).toEqual("me");
+        expect(createdCatalog.title).toEqual(updatedCatalog.title);
+        expect(
+          catalog?.data.dataset?.[0].distribution?.[0]?.accessService?.[0]
+        ).toEqual(new DataService(catalog.data._services![0]));
       });
     });
 });
