@@ -30,7 +30,11 @@ export class DidWebStrategy implements DidStrategy {
         ...VERIFICATION_METHOD_CONTEXT
       ],
       id: didId,
-      verificationMethod: createVerificationMethods(didId, keys),
+      verificationMethod: createVerificationMethods(
+        didId,
+        keys,
+        config.did.keyFormat
+      ),
       assertionMethod: keys.map((key) => `${didId}#${key.id}`),
       service: createServices(services)
     };

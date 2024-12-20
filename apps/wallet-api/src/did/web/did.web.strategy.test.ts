@@ -80,7 +80,7 @@ describe("DID Web Service", () => {
     it("Update DID document", async () => {
       const updatedDidDocument = await didWebStrategy.updateDidDocument(
         emptyDidDocument,
-        createVerificationMethods(didId, [await keyMaterialGenerator()]),
+        createVerificationMethods(didId, [await keyMaterialGenerator()], "JWK"),
         createServices([serviceGenerator()])
       );
       expect(updatedDidDocument).toBeDefined();
