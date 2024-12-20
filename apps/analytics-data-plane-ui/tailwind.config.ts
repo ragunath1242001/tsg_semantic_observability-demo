@@ -1,5 +1,5 @@
-/** @type {import('tailwindcss').Config} */
-import tailwindcss from "tailwindcss-primeui";
+import type { Config } from "tailwindcss";
+
 export default {
   darkMode: ["selector", '[class*="app-dark"]'],
   content: [
@@ -13,7 +13,7 @@ export default {
       variants: ["sm", "md", "lg", "xl", "2xl"]
     }
   ],
-  plugins: [tailwindcss],
+  plugins: [require("tailwindcss-primeui")],
   theme: {
     screens: {
       sm: "576px",
@@ -23,4 +23,4 @@ export default {
       "2xl": "1920px"
     }
   }
-};
+} satisfies Config;
