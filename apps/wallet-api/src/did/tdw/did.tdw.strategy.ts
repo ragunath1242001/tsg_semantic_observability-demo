@@ -92,7 +92,7 @@ export class DidTdwStrategy implements DidStrategy {
       signer: createSigner(this.getCurrUpdateKey()),
       context: VERIFICATION_METHOD_CONTEXT,
       verificationMethods: this.prepareAssertionMethods(
-        createVerificationMethods(didId, keys)
+        createVerificationMethods(didId, keys, config.did.keyFormat)
       ),
       service: services
     });

@@ -313,6 +313,10 @@ export class DidConfig {
   @IsString()
   @IsIn(DIDMethodList)
   public readonly method: DIDMethodTypes = DIDMethod.WEB;
+
+  @IsString()
+  @IsIn(["JWK", "Multikey"])
+  public readonly keyFormat: "JWK" | "Multikey" = "JWK";
 }
 
 export enum SignatureType {

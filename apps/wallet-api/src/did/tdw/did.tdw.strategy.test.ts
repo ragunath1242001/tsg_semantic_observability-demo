@@ -168,7 +168,7 @@ describe("DID Tdw Service", () => {
       keyMaterial.id = "test-key-1";
       const updatedDidDocument = await didTdwStrategy.updateDidDocument(
         completeDidDocument,
-        createVerificationMethods(didId, [keyMaterial]),
+        createVerificationMethods(didId, [keyMaterial], "JWK"),
         createServices([
           plainToInstance(DidServiceConfig, {
             id: `${didId}#test-1`,

@@ -239,7 +239,11 @@ export class DidService {
     let didDocument = await this.getDid();
     didDocument = await this.didStrategy.updateDidDocument(
       didDocument,
-      createVerificationMethods(didDocument.id, keys),
+      createVerificationMethods(
+        didDocument.id,
+        keys,
+        this.config.did.keyFormat
+      ),
       didDocument.service
     );
     await this.saveDidDocument(didDocument);

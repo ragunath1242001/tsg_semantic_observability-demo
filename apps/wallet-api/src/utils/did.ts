@@ -1,7 +1,8 @@
-import { keyTypes, signingAlgorithm } from "./keymapping.js";
+import { signingAlgorithm } from "./keymapping.js";
 import { Service, VerificationMethod } from "did-resolver";
 import { KeyMaterials } from "../model/credentials.dao.js";
 import { DidServiceConfig } from "../config.js";
+import { jwkToMultibase } from "./keys/keyconverter.js";
 
 export enum DIDMethod {
   WEB = "did:web:",
@@ -10,22 +11,33 @@ export enum DIDMethod {
 export type DIDMethodTypes = DIDMethod.WEB | DIDMethod.TDW;
 export const DIDMethodList: string[] = Object.values(DIDMethod);
 export const VERIFICATION_METHOD_CONTEXT = [
-  "https://w3id.org/security/suites/jws-2020/v1"
+  "https://w3id.org/security/suites/jws-2020/v1",
+  "https://w3id.org/security/multikey/v1"
 ];
 export function createVerificationMethods(
   didId: string,
-  keyMaterials: KeyMaterials[]
+  keyMaterials: KeyMaterials[],
+  keyFormat: "JWK" | "Multikey"
 ): VerificationMethod[] {
   return keyMaterials.map((key) => {
-    return {
-      id: `${didId}#${key.id}`,
-      type: "JsonWebKey2020",
-      controller: didId,
-      publicKeyJwk: {
-        alg: signingAlgorithm(key.type),
-        ...key.publicKey
-      }
-    };
+    if (keyFormat === "Multikey") {
+      return {
+        id: key.id,
+        type: "Multikey",
+        controller: didId,
+        publicKeyMultibase: jwkToMultibase(key.publicKey)
+      };
+    } else {
+      return {
+        id: `${didId}#${key.id}`,
+        type: "JsonWebKey2020",
+        controller: didId,
+        publicKeyJwk: {
+          alg: signingAlgorithm(key.type),
+          ...key.publicKey
+        }
+      };
+    }
   });
 }
 export function createServices(services: DidServiceConfig[]): Service[] {

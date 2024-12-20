@@ -100,6 +100,12 @@ describe("DID Service", () => {
       expect(createdDidWithKey).toBeDefined();
       expect(createdDidWithKey.verificationMethod).toHaveLength(1);
       expect(createdDidWithKey.assertionMethod).toHaveLength(1);
+      expect(createdDidWithKey["@context"]).toEqual(
+        expect.arrayContaining(["https://w3id.org/security/suites/jws-2020/v1"])
+      );
+      expect(createdDidWithKey.verificationMethod![0].type).toBe(
+        "JsonWebKey2020"
+      );
     });
 
     it("Retrieve created DID document with key", async () => {
@@ -264,6 +270,106 @@ describe("DID Service", () => {
           serviceEndpoint: "http://localhost"
         })
       ).rejects.toThrow("does not exist");
+    });
+  });
+});
+
+describe("DID Service Multikey-based", () => {
+  let didService: DidService;
+  const clone: (input: any) => any = (input: any) => {
+    return JSON.parse(JSON.stringify(input));
+  };
+  const keyMaterialGenerator: (id: string) => Promise<KeyMaterials> = async (
+    id: string
+  ) => {
+    const keypair = await generateKeyPair("EdDSA");
+    return plainToInstance(KeyMaterials, {
+      id: id,
+      type: "EdDSA",
+      default: true,
+      privateKey: await exportJWK(keypair.privateKey),
+      publicKey: await exportJWK(keypair.publicKey),
+      caChain: undefined
+    });
+  };
+
+  beforeAll(async () => {
+    await TypeOrmTestHelper.instance.setupTestDB();
+    const config = plainToInstance(RootConfig, {
+      initKeys: [
+        {
+          id: "key-0",
+          type: "EdDSA",
+          default: true
+        }
+      ],
+      did: {
+        keyFormat: "Multikey"
+      }
+    });
+
+    const moduleRef: TestingModule = await Test.createTestingModule({
+      imports: [
+        TypeOrmTestHelper.instance.module([DIDDocuments, DIDService, DIDLogs]),
+        TypeOrmModule.forFeature([DIDDocuments, DIDService, DIDLogs])
+      ],
+      providers: [
+        DidService,
+        {
+          provide: RootConfig,
+          useValue: config
+        }
+      ]
+    }).compile();
+
+    didService = await moduleRef.get(DidService);
+  });
+
+  describe("DID Document testing", () => {
+    let initialCreatedDid: DIDDocument;
+    let createdDidWithKey: DIDDocument;
+
+    it("Retrieve non existing DID", async () => {
+      await expect(didService.getDid()).rejects.toThrow(
+        "DID Document not ready yet"
+      );
+    });
+
+    it("Check existing DID is empty", async () => {
+      await expect(
+        didService.checkExistingDidDocument(
+          await keyMaterialGenerator("test-key")
+        )
+      ).rejects.toThrow("DID Document not ready yet");
+    });
+
+    it("Create initial DID document", async () => {
+      initialCreatedDid = await didService.createDidDocument([]);
+      expect(initialCreatedDid).toBeDefined();
+    });
+
+    it("Get DID ID", async () => {
+      const didId = await didService.getDidId();
+      expect(didId).toBe("did:web:localhost");
+    });
+
+    it("Retrieve created DID document", async () => {
+      const retrievedDid = await didService.getDid();
+      expect(retrievedDid.id).toEqual(initialCreatedDid.id);
+      expect(retrievedDid["@context"]).toEqual(initialCreatedDid["@context"]);
+    });
+
+    it("Create DID document with key material", async () => {
+      createdDidWithKey = await didService.createDidDocument([
+        await keyMaterialGenerator("test-key")
+      ]);
+      expect(createdDidWithKey).toBeDefined();
+      expect(createdDidWithKey.verificationMethod).toHaveLength(1);
+      expect(createdDidWithKey.assertionMethod).toHaveLength(1);
+      expect(createdDidWithKey["@context"]).toEqual(
+        expect.arrayContaining(["https://w3id.org/security/multikey/v1"])
+      );
+      expect(createdDidWithKey.verificationMethod![0].type).toBe("Multikey");
     });
   });
 });
