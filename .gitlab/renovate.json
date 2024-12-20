@@ -5,12 +5,5 @@
   "commitMessageExtra": "from {{{currentVersion}}} to {{{newVersion}}}",
   "labels": ["Renovate"],
   "prHourlyLimit": 0,
-  "branchPrefix": "renovate-",
-  "packageRules": [
-    {
-      "description": "Disable vue-tsc updates due to typescript version mismatch",
-      "packagePatterns": ["vue-tsc"],
-      "enabled": false
-    }
-  ]
+  "branchPrefix": "renovate-"
 }

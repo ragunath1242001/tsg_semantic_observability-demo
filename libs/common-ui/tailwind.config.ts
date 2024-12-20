@@ -1,4 +1,5 @@
-/** @type {import('tailwindcss').Config} */
+import type { Config } from "tailwindcss";
+
 export default {
   darkMode: ["selector", '[class*="app-dark"]'],
   content: ["./**/*.{vue,js,ts,jsx,tsx}"],
@@ -12,4 +13,4 @@ export default {
       "2xl": "1920px"
     }
   }
-};
+} satisfies Config;
