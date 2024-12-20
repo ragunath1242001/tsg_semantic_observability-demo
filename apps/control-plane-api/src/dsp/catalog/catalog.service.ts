@@ -255,6 +255,11 @@ export class CatalogService {
       const distributionObj = this.distributionRepository.create(distribution);
       distributionObj._accessService = distribution.accessService?.map(
         (service) => {
+          if (service.endpointDescription === "dspace:connector") {
+            if (catalog.data?._services?.[0]) {
+              return catalog.data._services[0];
+            }
+          }
           const resourceObj = this.resourceRepository.create({
             id: service.id
           });
@@ -285,6 +290,7 @@ export class CatalogService {
       ).andLog(this.logger, "warn");
     }
     const newResource = this.resourceRepository.create(dataset);
+    const catalog = await this.getCatalogDao();
     this.logger.debug(`Updated dataset ${datasetId}`);
     return await this.datasetRepository.save({
       ...dataset,
@@ -293,6 +299,11 @@ export class CatalogService {
         return this.distributionRepository.create({
           ...distribution,
           _accessService: distribution.accessService?.map((service) => {
+            if (service.endpointDescription === "dspace:connector") {
+              if (catalog.data?._services?.[0]) {
+                service = new DataService(catalog.data._services[0]);
+              }
+            }
             return this.dataservicesRepository.create({
               ...service,
               _resource: this.resourceRepository.create({ id: service.id })
