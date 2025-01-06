@@ -1416,8 +1416,8 @@ importers:
   tools/cli:
     dependencies:
       '@commander-js/extra-typings':
-        specifier: ^12.1.0
-        version: 12.1.0(commander@12.1.0)
+        specifier: ^13.0.0
+        version: 13.0.0(commander@12.1.0)
       '@inquirer/prompts':
         specifier: ^7.0.0
         version: 7.2.0(@types/node@22.10.2)
@@ -1471,8 +1471,8 @@ importers:
   tools/documentation-generator:
     dependencies:
       '@commander-js/extra-typings':
-        specifier: ^12.1.0
-        version: 12.1.0(commander@12.1.0)
+        specifier: ^13.0.0
+        version: 13.0.0(commander@12.1.0)
       '@inquirer/prompts':
         specifier: ^7.0.0
         version: 7.2.0(@types/node@22.10.2)
@@ -1535,8 +1535,8 @@ importers:
         specifier: workspace:*
         version: link:../../apps/control-plane-api
       '@commander-js/extra-typings':
-        specifier: ^12.1.0
-        version: 12.1.0(commander@12.1.0)
+        specifier: ^13.0.0
+        version: 13.0.0(commander@12.1.0)
       '@inquirer/prompts':
         specifier: ^7.0.0
         version: 7.2.0(@types/node@22.10.2)
@@ -1992,10 +1992,10 @@ packages:
     resolution: {integrity: sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==}
     engines: {node: '>=0.1.90'}
 
-  '@commander-js/extra-typings@12.1.0':
-    resolution: {integrity: sha512-wf/lwQvWAA0goIghcb91dQYpkLBcyhOhQNqG/VgWhnKzgt+UOMvra7EX/2fv70arm5RW+PUHoQHHDa6/p77Eqg==}
+  '@commander-js/extra-typings@13.0.0':
+    resolution: {integrity: sha512-4or44L3saI49QRBvdSzfCtzqONlFg0/qy0Cfl+LRynDaxlGs7r2KRTLCELaAoKh4oQguICxRwQfm77/Up+0wTw==}
     peerDependencies:
-      commander: ~12.1.0
+      commander: ~13.0.0
 
   '@cspotcode/source-map-support@0.8.1':
     resolution: {integrity: sha512-IchNf6dN4tHoMFIn/7OE8LWZ19Y6q/67Bmf6vnGREv8RSbBVb9LPJxEcnwrcwX6ixSvaiGoomAUvu4YSxXrVgw==}
@@ -7596,7 +7596,7 @@ snapshots:
   '@colors/colors@1.5.0':
     optional: true
 
-  '@commander-js/extra-typings@12.1.0(commander@12.1.0)':
+  '@commander-js/extra-typings@13.0.0(commander@12.1.0)':
     dependencies:
       commander: 12.1.0
 

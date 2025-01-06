@@ -27,7 +27,7 @@
     "typescript": "^5.7.2"
   },
   "dependencies": {
-    "@commander-js/extra-typings": "^12.1.0",
+    "@commander-js/extra-typings": "^13.0.0",
     "@inquirer/prompts": "^7.0.0",
     "axios": "^1.7.8",
     "chalk": "^5.0.0",
