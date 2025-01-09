@@ -45,6 +45,7 @@ import TabPanels from "primevue/tabpanels";
 import { createPinia } from "pinia";
 import { setJsonLdDebugContexts } from "@tsg-dsp/common-dsp";
 import Badge from "primevue/badge";
+import { ColorPicker, FileUpload } from "primevue";
 
 setJsonLdDebugContexts(
   import.meta.env.TSG_STATIC_MODE !== "production",
@@ -78,9 +79,11 @@ app.directive("tooltip", Tooltip);
 app.component("AutoComplete", AutoComplete);
 app.component("Badge", Badge);
 app.component("Button", Button);
+app.component("ColorPicker", ColorPicker);
 app.component("ConfirmDialog", ConfirmDialog);
 app.component("Dialog", Dialog);
 app.component("Drawer", Drawer);
+app.component("FileUpload", FileUpload);
 app.component("Select", Select);
 app.component("DynamicDialog", DynamicDialog);
 app.component("Card", Card);

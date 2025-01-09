@@ -41,6 +41,7 @@ import { loader } from "@guolao/vue-monaco-editor";
 import Drawer from "primevue/drawer";
 import { setJsonLdDebugContexts } from "@tsg-dsp/common-dsp";
 import MeterGroup from "primevue/metergroup";
+import { ColorPicker } from "primevue";
 
 setJsonLdDebugContexts(
   import.meta.env.TSG_STATIC_MODE !== "production",
@@ -71,6 +72,7 @@ app.use(ConfirmationService);
 app.component("AutoComplete", AutoComplete);
 app.component("Badge", Badge);
 app.component("Button", Button);
+app.component("ColorPicker", ColorPicker);
 app.component("ConfirmDialog", ConfirmDialog);
 app.component("Dialog", Dialog);
 app.component("Drawer", Drawer);

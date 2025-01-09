@@ -1,10 +1,10 @@
 import { defineStore } from "pinia";
 import http from "@tsg-dsp/common-ui/utils/http";
 import { AxiosResponse } from "axios";
+import { updateColorPalette } from "@tsg-dsp/common-ui/utils/color";
 
 interface RuntimeStore {
-  gaiaXSupport: boolean;
-  title?: string;
+  controlPlaneInteractions?: "automatic" | "semi-manual" | "manual";
   color?: string;
   darkThemeUrl?: string;
   lightThemeUrl?: string;
@@ -12,8 +12,7 @@ interface RuntimeStore {
 
 export const useRuntimeStore = defineStore("runtime", {
   state: (): RuntimeStore => ({
-    gaiaXSupport: false,
-    title: undefined,
+    controlPlaneInteractions: undefined,
     color: undefined,
     darkThemeUrl: undefined,
     lightThemeUrl: undefined
@@ -22,8 +21,7 @@ export const useRuntimeStore = defineStore("runtime", {
     async getRuntimeSettings() {
       try {
         const response = await http.get<RuntimeStore>("/settings");
-        this.gaiaXSupport = response.data.gaiaXSupport;
-        this.title = response.data.title;
+        this.controlPlaneInteractions = response.data.controlPlaneInteractions;
         this.color = response.data.color;
         this.darkThemeUrl = response.data.darkThemeUrl;
         this.lightThemeUrl = response.data.lightThemeUrl;
@@ -38,17 +36,17 @@ export const useRuntimeStore = defineStore("runtime", {
           AxiosResponse<RuntimeStore>,
           RuntimeStore
         >("/settings/update", {
-          gaiaXSupport: this.gaiaXSupport,
-          title: this.title,
+          controlPlaneInteractions: this.controlPlaneInteractions,
           color: this.color,
           darkThemeUrl: this.darkThemeUrl,
           lightThemeUrl: this.lightThemeUrl
         });
-        this.gaiaXSupport = response.data.gaiaXSupport;
-        this.title = response.data.title;
+
+        this.controlPlaneInteractions = response.data.controlPlaneInteractions;
         this.color = response.data.color;
         this.lightThemeUrl = response.data.lightThemeUrl;
         this.darkThemeUrl = response.data.darkThemeUrl;
+        updateColorPalette(this.color);
       } catch (error) {
         console.debug("Error: ", error);
       }

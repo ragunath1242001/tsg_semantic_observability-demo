@@ -10,7 +10,8 @@ server:
   publicAddress: http://localhost:3002/api
 
 runtime:
-  controlPlaneInteractions: manual
+  controlPlaneInteractions: automatic
+  color: "#3B8BF6"
 
 iam:
   type: dev
@@ -20,12 +21,16 @@ iam:
   clientId: client
   clientSecret: secret
 
+registry:
+  useRegistry: true
+  registryIntervalInMilliseconds: 3000
+
 auth:
   enabled: false
 
 initCatalog:
   creator: did:web:localhost%3A3002
   publisher: did:web:localhost%3A3002
-  title: TSG Test Connector
+  title: Party 2
   description: TSG Test Connector testing Data Space Protocol support
   datasets: []

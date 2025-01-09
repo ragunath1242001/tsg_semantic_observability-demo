@@ -160,6 +160,17 @@ export class FilesConfig {
   public path: string = "/uploads";
 }
 
+export class RuntimeConfig {
+  @IsString()
+  public color: string = "#3B8BF6";
+  @IsOptional()
+  @IsString()
+  lightThemeUrl?: string;
+  @IsOptional()
+  @IsString()
+  darkThemeUrl?: string;
+}
+
 export class RootConfig {
   @ValidateNested()
   @IsDefined({
@@ -206,4 +217,9 @@ export class RootConfig {
   @Type(() => FilesConfig)
   @IsOptional()
   public readonly files: FilesConfig = new FilesConfig();
+
+  @ValidateNested()
+  @Type(() => RuntimeConfig)
+  @IsDefined()
+  public readonly runtime!: RuntimeConfig;
 }

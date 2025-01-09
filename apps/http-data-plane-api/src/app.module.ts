@@ -5,6 +5,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { ServeStaticModule } from "@nestjs/serve-static";
 import { AuthModule } from "./auth/auth.module";
 import { LoggingModule } from "./logging/logging.module";
+import { ConfigController } from "./config.controller";
 
 const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
   ? [
@@ -31,6 +32,6 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
     ...embeddedFrontend
   ],
   exports: [DataPlaneTestModule, AuthModule],
-  controllers: []
+  controllers: [ConfigController]
 })
 export class AppModule {}

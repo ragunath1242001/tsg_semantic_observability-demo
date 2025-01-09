@@ -23,7 +23,8 @@ auth:
   # redirectURL: http://localhost:5173/
 
 runtime:
-  controlPlaneInteractions: manual
+  controlPlaneInteractions: automatic
+  color: "#3B8BF6"
 
 registry:
   useRegistry: true
@@ -40,6 +41,6 @@ iam:
 initCatalog:
   creator: did:web:localhost%3A3001
   publisher: did:web:localhost%3A3001
-  title: TSG Test Connector
+  title: Party 1
   description: TSG Test Connector testing Data Space Protocol support
   datasets: []

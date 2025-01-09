@@ -20,6 +20,9 @@ controlPlane:
   managementEndpoint: http://localhost:3000/api/management
   controlEndpoint: http://localhost:3000
 
+runtime:
+  color: "#3B8BF6"
+
 dataset:
   - title: HTTP Dataset
     versions:

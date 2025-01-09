@@ -51,6 +51,7 @@ import AccordionHeader from "primevue/accordionheader";
 import { setJsonLdDebugContexts } from "@tsg-dsp/common-dsp";
 import MeterGroup from "primevue/metergroup";
 import Chart from "primevue/chart";
+import { ColorPicker, FileUpload } from "primevue";
 
 setJsonLdDebugContexts(
   import.meta.env.TSG_STATIC_MODE !== "production",
@@ -88,6 +89,7 @@ app.component("Button", Button);
 app.component("Card", Card);
 app.component("CatalogVue", CatalogVue);
 app.component("Chart", Chart);
+app.component("ColorPicker", ColorPicker);
 app.component("Column", Column);
 app.component("ConfirmDialog", ConfirmDialog);
 app.component("DataTable", DataTable);
@@ -95,6 +97,7 @@ app.component("DataView", DataView);
 app.component("Dialog", Dialog);
 app.component("Divider", Divider);
 app.component("Drawer", Drawer);
+app.component("FileUpload", FileUpload);
 app.component("FloatLabel", FloatLabel);
 app.component("InputText", InputText);
 app.component("MeterGroup", MeterGroup);

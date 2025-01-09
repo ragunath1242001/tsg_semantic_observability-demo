@@ -17,26 +17,20 @@ const topbarMenuActive = ref(false);
 export interface TopbarProps {
   title: string;
   name: string;
-  baseLogoUrl: string;
+  logoUrl: string;
   user: { name: string };
   router: Router;
 }
 
 const props = defineProps<TopbarProps>();
 
-const { title, baseLogoUrl, user, router } = toRefs(props);
+const { title, logoUrl, user, router } = toRefs(props);
 onMounted(() => {
   bindOutsideClickListener();
 });
 
 onBeforeUnmount(() => {
   unbindOutsideClickListener();
-});
-
-const logoUrl = computed(() => {
-  return `${baseLogoUrl.value}/${
-    layoutConfig.darkTheme ? "logo-white" : "logo-dark"
-  }.svg`;
 });
 
 const onTopBarMenuButton = () => {

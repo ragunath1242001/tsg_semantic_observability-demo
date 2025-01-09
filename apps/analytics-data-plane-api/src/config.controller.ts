@@ -1,28 +1,27 @@
 import {
-  Body,
   Controller,
+  Post,
+  Body,
+  UseGuards,
   Get,
   HttpCode,
   HttpStatus,
-  Post,
-  UploadedFile,
-  UseGuards,
+  UsePipes,
+  ValidationPipe,
   UseInterceptors,
-  UsePipes
+  UploadedFile
 } from "@nestjs/common";
-import { RuntimeConfig } from "./config.js";
-import { OAuthGuard } from "./auth/oauth.guard.js";
-import { AppRole } from "@tsg-dsp/wallet-dtos";
-import { Roles } from "./auth/roles.guard.js";
-import { validationPipe } from "./utils/validation.pipe.js";
+import { RuntimeConfig } from "./config";
+import { OAuthGuard } from "./auth/oauth.guard";
+import { Roles } from "./auth/roles.guard";
 import {
-  ApiBody,
-  ApiOAuth2,
-  ApiOkResponse,
   ApiOperation,
-  ApiTags
+  ApiOkResponse,
+  ApiOAuth2,
+  ApiTags,
+  ApiBody
 } from "@nestjs/swagger";
-import { RuntimeConfigDto } from "./config.schemas.js";
+import { RuntimeConfigDto } from "./config.schemas";
 import {
   ApiForbiddenResponseDefault,
   ApiBadRequestResponseDefault
@@ -30,17 +29,17 @@ import {
 import { FileInterceptor } from "@nestjs/platform-express";
 
 @UseGuards(OAuthGuard)
-@Roles(AppRole.ISSUE_CREDENTIALS)
+@Roles("controlplane_admin")
 @Controller("settings")
 @ApiTags("Settings")
-@ApiOAuth2([AppRole.ISSUE_CREDENTIALS])
+@ApiOAuth2(["controlplane_admin"])
 export class ConfigController {
   constructor(private readonly runtimeConfig: RuntimeConfig) {}
 
   @Get()
   @ApiOperation({
     summary: "Retrieve settings",
-    description: "Retrieve dynamic settings for this wallet"
+    description: "Retrieves the settings of the control plane."
   })
   @ApiOkResponse({ type: RuntimeConfigDto })
   @ApiForbiddenResponseDefault()
@@ -49,12 +48,12 @@ export class ConfigController {
   }
 
   @Post("update")
+  @UsePipes(new ValidationPipe())
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: "Update settings",
-    description: "Update the dynamic settings for this wallet"
+    description: "Updates runtime settings for the control plane."
   })
-  @UsePipes(validationPipe)
-  @HttpCode(HttpStatus.OK)
   @ApiBody({ type: RuntimeConfigDto })
   @ApiOkResponse({ type: RuntimeConfigDto })
   @ApiBadRequestResponseDefault()
@@ -62,8 +61,6 @@ export class ConfigController {
   async updateSettings(
     @Body() settings: RuntimeConfig
   ): Promise<RuntimeConfig> {
-    this.runtimeConfig.gaiaXSupport = settings.gaiaXSupport;
-    this.runtimeConfig.title = settings.title;
     this.runtimeConfig.color = settings.color;
     this.runtimeConfig.darkThemeUrl = settings.darkThemeUrl;
     this.runtimeConfig.lightThemeUrl = settings.lightThemeUrl;

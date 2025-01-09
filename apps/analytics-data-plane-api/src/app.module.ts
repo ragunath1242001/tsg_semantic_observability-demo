@@ -6,6 +6,7 @@ import { ServeStaticModule } from "@nestjs/serve-static";
 import { AuthModule } from "./auth/auth.module";
 import { FilesModule } from "./files/files.module";
 import { ScheduleModule } from "@nestjs/schedule";
+import { ConfigController } from "./config.controller";
 
 const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
   ? [
@@ -34,6 +35,6 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
     FilesModule.register(config.files)
   ],
   exports: [DataPlaneTestModule, AuthModule],
-  controllers: []
+  controllers: [ConfigController]
 })
 export class AppModule {}

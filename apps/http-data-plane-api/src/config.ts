@@ -155,6 +155,17 @@ export class LoggingConfig {
   public readonly debug: boolean = false;
 }
 
+export class RuntimeConfig {
+  @IsString()
+  public color: string = "#3B8BF6";
+  @IsOptional()
+  @IsString()
+  lightThemeUrl?: string;
+  @IsOptional()
+  @IsString()
+  darkThemeUrl?: string;
+}
+
 export class RootConfig {
   @ValidateNested()
   @IsDefined({
@@ -197,4 +208,9 @@ export class RootConfig {
   @Type(() => LoggingConfig)
   @IsOptional()
   public readonly logging: LoggingConfig = new LoggingConfig();
+
+  @ValidateNested()
+  @Type(() => RuntimeConfig)
+  @IsDefined()
+  public readonly runtime!: RuntimeConfig;
 }

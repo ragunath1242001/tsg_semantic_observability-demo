@@ -307,6 +307,15 @@ export class RuntimeConfig {
   @IsOptional()
   @IsString()
   public title?: string;
+
+  @IsString()
+  public color: string = "#3B8BF6";
+  @IsOptional()
+  @IsString()
+  lightThemeUrl?: string;
+  @IsOptional()
+  @IsString()
+  darkThemeUrl?: string;
 }
 
 export class DidConfig {
@@ -397,8 +406,8 @@ export class RootConfig {
 
   @ValidateNested()
   @Type(() => RuntimeConfig)
-  @IsOptional()
-  public readonly runtime: RuntimeConfig = new RuntimeConfig();
+  @IsDefined()
+  public readonly runtime!: RuntimeConfig;
 
   @ValidateNested()
   @Type(() => DidConfig)

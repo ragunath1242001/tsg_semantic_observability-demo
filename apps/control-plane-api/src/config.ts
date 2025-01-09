@@ -244,6 +244,14 @@ export class RuntimeConfig {
   @IsIn(["automatic", "semi-manual", "manual"])
   public controlPlaneInteractions: "automatic" | "semi-manual" | "manual" =
     "automatic";
+  @IsString()
+  public color: string = "#3B8BF6";
+  @IsOptional()
+  @IsString()
+  lightThemeUrl?: string;
+  @IsOptional()
+  @IsString()
+  darkThemeUrl?: string;
 }
 
 export class InitCatalog {

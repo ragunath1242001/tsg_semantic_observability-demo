@@ -27,6 +27,9 @@ db:
   type: sqlite
   database: wallet.sqlite
 
+runtime:
+  color: "#3B8BF6"
+
 trustAnchors:
   - identifier: did:web:localhost%3A3000
     credentialTypes:

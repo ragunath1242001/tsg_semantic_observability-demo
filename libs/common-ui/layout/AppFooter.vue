@@ -5,19 +5,13 @@ import { computed, toRefs } from "vue";
 const { layoutConfig } = useLayout();
 
 export interface FooterProps {
-  baseLogoUrl: string;
+  logoUrl: string;
   footerText: string;
 }
 
 const props = defineProps<FooterProps>();
 
-const { baseLogoUrl, footerText } = toRefs(props);
-
-const logoUrl = computed(() => {
-  return `${baseLogoUrl.value}/${
-    layoutConfig.darkTheme ? "logo-white" : "logo-dark"
-  }.svg`;
-});
+const { logoUrl, footerText } = toRefs(props);
 </script>
 
 <template>
