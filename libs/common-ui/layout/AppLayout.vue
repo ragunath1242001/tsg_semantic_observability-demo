@@ -60,7 +60,7 @@ function isOutsideClicked(event) {
   <app-topbar
     :title="topbar.title"
     :name="topbar.name"
-    :baseLogoUrl="topbar.baseLogoUrl"
+    :logoUrl="topbar.logoUrl"
     :user="topbar.user"
     :router="topbar.router"></app-topbar>
   <div
@@ -76,7 +76,7 @@ function isOutsideClicked(event) {
       <router-view></router-view>
     </div>
     <app-footer
-      :baseLogoUrl="footer.baseLogoUrl"
+      :logoUrl="footer.logoUrl"
       :footerText="footer.footerText"></app-footer>
   </div>
   <Toast />

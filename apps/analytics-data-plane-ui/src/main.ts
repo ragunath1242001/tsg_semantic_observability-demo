@@ -47,6 +47,7 @@ import { setJsonLdDebugContexts } from "@tsg-dsp/common-dsp";
 import FileUpload from "primevue/fileupload";
 import Badge from "primevue/badge";
 import ProgressBar from "primevue/progressbar";
+import { ColorPicker } from "primevue";
 
 setJsonLdDebugContexts(
   import.meta.env.TSG_STATIC_MODE !== "production",
@@ -80,6 +81,7 @@ app.directive("tooltip", Tooltip);
 app.component("AutoComplete", AutoComplete);
 app.component("Badge", Badge);
 app.component("Button", Button);
+app.component("ColorPicker", ColorPicker);
 app.component("ConfirmDialog", ConfirmDialog);
 app.component("Dialog", Dialog);
 app.component("Drawer", Drawer);

@@ -7,7 +7,9 @@ import {
   HttpCode,
   HttpStatus,
   UsePipes,
-  ValidationPipe
+  ValidationPipe,
+  UseInterceptors,
+  UploadedFile
 } from "@nestjs/common";
 import { RuntimeConfig } from "./config";
 import { OAuthGuard } from "./auth/oauth.guard";
@@ -24,6 +26,8 @@ import {
   ApiForbiddenResponseDefault,
   ApiBadRequestResponseDefault
 } from "@tsg-dsp/common-dtos";
+import { FileInterceptor } from "@nestjs/platform-express";
+import { diskStorage } from "multer";
 
 @UseGuards(OAuthGuard)
 @Roles("controlplane_admin")
@@ -31,7 +35,7 @@ import {
 @ApiTags("Settings")
 @ApiOAuth2(["controlplane_admin"])
 export class ConfigController {
-  constructor(private readonly configService: RuntimeConfig) {}
+  constructor(private readonly runtimeConfig: RuntimeConfig) {}
 
   @Get()
   @ApiOperation({
@@ -41,7 +45,7 @@ export class ConfigController {
   @ApiOkResponse({ type: RuntimeConfigDto })
   @ApiForbiddenResponseDefault()
   async getSettings(): Promise<RuntimeConfig> {
-    return this.configService;
+    return this.runtimeConfig;
   }
 
   @Post("update")
@@ -58,8 +62,23 @@ export class ConfigController {
   async updateSettings(
     @Body() settings: RuntimeConfig
   ): Promise<RuntimeConfig> {
-    this.configService.controlPlaneInteractions =
+    this.runtimeConfig.color = settings.color;
+    this.runtimeConfig.controlPlaneInteractions =
       settings.controlPlaneInteractions;
-    return settings;
+    this.runtimeConfig.darkThemeUrl = settings.darkThemeUrl;
+    this.runtimeConfig.lightThemeUrl = settings.lightThemeUrl;
+    return this.runtimeConfig;
+  }
+
+  @Post("upload")
+  @UseInterceptors(FileInterceptor("file[]"))
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: "Upload logo",
+    description:
+      "Uploads logo for the control plane, receive a base64 encoded url."
+  })
+  uploadFile(@UploadedFile() file: Express.Multer.File) {
+    return `data:image/svg+xml;base64,${file.buffer.toString("base64")}`;
   }
 }

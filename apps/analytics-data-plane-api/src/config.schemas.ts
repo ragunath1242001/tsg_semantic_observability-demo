@@ -3,8 +3,6 @@ import { RuntimeConfig } from "./config";
 
 export class RuntimeConfigDto implements RuntimeConfig {
   @ApiProperty()
-  controlPlaneInteractions!: "automatic" | "semi-manual" | "manual";
-  @ApiProperty()
   color: string = "#3B8BF6";
   @ApiPropertyOptional()
   darkThemeUrl?: string;

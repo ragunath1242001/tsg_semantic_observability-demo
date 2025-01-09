@@ -1,24 +1,14 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { ref } from "vue";
 import { useLayout } from "@tsg-dsp/common-ui/layout/composables/layout";
-import { injectStrict } from "../utils/injectTyped";
-import { AxiosKey } from "../utils/symbols";
-import { useToast } from "primevue/usetoast";
-import { toastError } from "@tsg-dsp/common-ui/utils/error";
+
+import { useRuntimeStore } from "../stores/runtime";
+
+import BaseAppConfig from "@tsg-dsp/common-ui/layout/BaseAppConfig.vue";
 
 const { configSidebarVisible } = useLayout();
 
-const http = injectStrict(AxiosKey);
-
-interface RuntimeConfig {
-  controlPlaneInteractions: "automatic" | "semi-manual" | "manual";
-}
-
-var settings = { controlPlaneInteractions: "" };
-
-const toast = useToast();
-
-const controlPlaneInteractions = ref({ name: "", value: "" });
+const runtimeStore = useRuntimeStore();
 
 const visible = ref(configSidebarVisible);
 
@@ -29,28 +19,9 @@ const contractNegotiationValues = ref([
 ]);
 
 const updateSettings = async () => {
-  settings.controlPlaneInteractions = controlPlaneInteractions.value.value;
-  try {
-    settings = (await http.post("settings/update", settings)).data;
-  } catch (error) {
-    toast.add(
-      toastError({
-        error,
-        summary: "Failed to update settings",
-        defaultMessage: `Could not update runtime settings`
-      })
-    );
-  }
+  await runtimeStore.updateRuntimeSettings();
+  visible.value = false;
 };
-const initialize = async () => {
-  const resp = await http.get("settings");
-  settings = resp.data as RuntimeConfig;
-  controlPlaneInteractions.value = contractNegotiationValues.value.find(
-    (c) => c.value === settings.controlPlaneInteractions
-  );
-};
-
-onMounted(async () => await initialize());
 </script>
 
 <template>
@@ -61,10 +32,17 @@ onMounted(async () => await initialize());
     class="layout-config-sidebar w-[26rem]">
     <div class="text-xl mt-2">Contract Negotiation</div>
     <SelectButton
-      v-model="controlPlaneInteractions"
-      v-on:change="updateSettings"
+      v-model="runtimeStore.controlPlaneInteractions"
       :options="contractNegotiationValues"
-      optionLabel="name" />
+      optionLabel="name"
+      optionValue="value"
+      dataKey="value" />
+    <BaseAppConfig
+      v-model:color="runtimeStore.color"
+      v-model:darkThemeUrl="runtimeStore.darkThemeUrl"
+      v-model:lightThemeUrl="runtimeStore.lightThemeUrl"
+      :runtimeStore="runtimeStore" />
+    <Button label="Save Settings" @click="updateSettings" class="mt-4" />
   </Drawer>
 </template>
 

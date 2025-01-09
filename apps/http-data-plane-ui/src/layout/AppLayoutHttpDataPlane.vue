@@ -8,13 +8,27 @@ import { FooterProps } from "@tsg-dsp/common-ui/layout/AppFooter.vue";
 import { useRoute, useRouter } from "vue-router";
 import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
 import { useCatalogStore } from "../stores/catalog";
+import { useRuntimeStore } from "../stores/runtime";
 
 const { layoutConfig, layoutState } = useLayout();
+
+const runtimeStore = useRuntimeStore();
+runtimeStore.getRuntimeSettings();
 
 const userStore = useUserStore();
 const catalogStore = useCatalogStore();
 
-const baseLogoUrl = "layout/images";
+const logoUrl = computed(() => {
+  if (layoutConfig.darkTheme && runtimeStore.darkThemeUrl) {
+    return runtimeStore.darkThemeUrl;
+  } else if (!layoutConfig.darkTheme && runtimeStore.lightThemeUrl) {
+    return runtimeStore.lightThemeUrl;
+  }
+  return `layout/images/${
+    layoutConfig.darkTheme ? "logo-white" : "logo-dark"
+  }.svg`;
+});
+
 const containerClass = computed(() => {
   return {
     "layout-overlay": layoutConfig.menuMode === "overlay",
@@ -55,7 +69,7 @@ const menuList: Menu[] = [
 ];
 
 const footer: FooterProps = {
-  baseLogoUrl: baseLogoUrl,
+  logoUrl: logoUrl.value,
   footerText: "TNO"
 };
 
@@ -76,7 +90,7 @@ onMounted(async () => {
       :topbar="{
         title: 'Http Data Plane',
         name: catalogStore.title,
-        baseLogoUrl: baseLogoUrl,
+        logoUrl: logoUrl,
         user: userStore.user,
         router: useRouter()
       }"

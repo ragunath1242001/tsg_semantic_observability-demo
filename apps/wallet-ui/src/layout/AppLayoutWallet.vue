@@ -15,7 +15,16 @@ const userStore = useUserStore();
 const runtimeStore = useRuntimeStore();
 runtimeStore.getRuntimeSettings();
 
-const baseLogoUrl = "layout/images";
+const logoUrl = computed(() => {
+  if (layoutConfig.darkTheme && runtimeStore.darkThemeUrl) {
+    return runtimeStore.darkThemeUrl;
+  } else if (!layoutConfig.darkTheme && runtimeStore.lightThemeUrl) {
+    return runtimeStore.lightThemeUrl;
+  }
+  return `layout/images/${
+    layoutConfig.darkTheme ? "logo-white" : "logo-dark"
+  }.svg`;
+});
 const containerClass = computed(() => {
   return {
     "layout-overlay": layoutConfig.menuMode === "overlay",
@@ -120,7 +129,7 @@ const menuList: Menu[] = [
 ];
 
 const footer: FooterProps = {
-  baseLogoUrl: baseLogoUrl,
+  logoUrl: logoUrl.value,
   footerText: "TNO"
 };
 const route = useRoute();
@@ -136,7 +145,7 @@ const sidebar: MenuProps = {
       :topbar="{
         title: 'Wallet',
         name: runtimeStore.title ?? '',
-        baseLogoUrl: baseLogoUrl,
+        logoUrl: logoUrl,
         user: userStore.user,
         router: useRouter()
       }"
