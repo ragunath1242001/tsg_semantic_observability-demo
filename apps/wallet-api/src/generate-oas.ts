@@ -58,7 +58,7 @@ async function bootstrap() {
       "OpenID 4 Verifiable Credential Issuance",
       "OpenID 4 Verifiable Credential Issuance Controller"
     )
-    .addTag("Presentation IATP", "Presentation IATP Controller")
+    .addTag("Presentation DCP", "Presentation DCP Controller")
     .addTag("Presentation Direct", "Presentation Direct Controller")
     .addOAuth2({
       type: "oauth2",

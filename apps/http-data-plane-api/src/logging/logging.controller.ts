@@ -7,9 +7,9 @@ import {
   UsePipes,
   ValidationPipe
 } from "@nestjs/common";
-import { PageOptionsDto, PageDto } from "../utils/pagination";
-import { LoggingService } from "./logging.service";
-import { LogFilterDto, LogEntry } from "./logging.dto";
+import { PageOptionsDto, PageDto } from "../utils/pagination.js";
+import { LoggingService } from "./logging.service.js";
+import { LogFilterDto, LogEntry } from "./logging.dto.js";
 import {
   ApiOkResponse,
   ApiOperation,

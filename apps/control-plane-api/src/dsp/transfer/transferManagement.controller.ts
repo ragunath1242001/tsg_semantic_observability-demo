@@ -11,14 +11,18 @@ import {
   UseGuards
 } from "@nestjs/common";
 import {
+  DataPlaneAddressDto,
   TransferDetail,
+  TransferDetailDto,
   TransferProcessDto,
-  TransferStatus
+  TransferProcessSchema,
+  TransferStatus,
+  TransferStatusDto
 } from "@tsg-dsp/common-dsp";
-import { OAuthGuard } from "../../auth/oauth.guard";
-import { Roles } from "../../auth/roles.guard";
-import { normalizeAddress } from "../../utils/address";
-import { TransferService } from "./transfer.service";
+import { OAuthGuard } from "../../auth/oauth.guard.js";
+import { Roles } from "../../auth/roles.guard.js";
+import { normalizeAddress } from "../../utils/address.js";
+import { TransferService } from "./transfer.service.js";
 import {
   ApiTags,
   ApiOperation,
@@ -28,17 +32,10 @@ import {
   ApiQuery,
   ApiOAuth2
 } from "@nestjs/swagger";
-import {
-  DataPlaneAddressDto,
-  DataPlaneAddressSchema,
-  TransferDetailSchema,
-  TransferProcessSchema,
-  TransferStatusSchema
-} from "@tsg-dsp/common-dtos";
-import { UsePagination } from "../../utils/pagination/pagination.interceptor.decorator";
-import { PaginationQuery } from "../../utils/pagination/pagination.query.decorator";
-import { PaginationOptionsDto } from "../../utils/pagination/pagination.options.dto";
-import { Paginated } from "../../utils/pagination/pagination.parameters";
+import { UsePagination } from "../../utils/pagination/pagination.interceptor.decorator.js";
+import { PaginationQuery } from "../../utils/pagination/pagination.query.decorator.js";
+import { PaginationOptionsDto } from "../../utils/pagination/pagination.options.dto.js";
+import { Paginated } from "../../utils/pagination/pagination.parameters.js";
 
 @ApiTags("Transfers Management")
 @ApiOAuth2(["controlplane_admin", "controlplane_dataplane"])
@@ -52,7 +49,7 @@ export class TransferManagementController {
   @Get()
   @UsePagination()
   @ApiOperation({ summary: "Get all transfers" })
-  @ApiResponse({ status: HttpStatus.OK, type: [TransferStatusSchema] })
+  @ApiResponse({ status: HttpStatus.OK, type: [TransferStatusDto] })
   async getTransfers(
     @PaginationQuery() paginationOptions: PaginationOptionsDto
   ): Promise<Paginated<TransferStatus[]>> {
@@ -62,7 +59,7 @@ export class TransferManagementController {
   @Get(":processId")
   @ApiOperation({ summary: "Get transfer details by process ID" })
   @ApiParam({ name: "processId", required: true, description: "Process ID" })
-  @ApiResponse({ status: HttpStatus.OK, type: TransferDetailSchema })
+  @ApiResponse({ status: HttpStatus.OK, type: TransferDetailDto })
   async getTransfer(
     @Param("processId") processId: string
   ): Promise<TransferDetail> {
@@ -114,7 +111,7 @@ export class TransferManagementController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "Start a transfer process" })
   @ApiParam({ name: "processId", required: true, description: "Process ID" })
-  @ApiBody({ type: DataPlaneAddressSchema, required: false })
+  @ApiBody({ type: DataPlaneAddressDto, required: false })
   @ApiResponse({
     status: HttpStatus.OK,
     description: "Transfer started successfully",

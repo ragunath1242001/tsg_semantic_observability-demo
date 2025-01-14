@@ -1,13 +1,13 @@
 import { Module } from "@nestjs/common";
-import { DataPlaneController } from "./dataplane.controller";
-import { DataPlaneService } from "./dataPlane.service";
-import { CatalogModule } from "../dsp/catalog/catalog.module";
+import { DataPlaneController } from "./dataplane.controller.js";
+import { DataPlaneService } from "./dataPlane.service.js";
+import { CatalogModule } from "../dsp/catalog/catalog.module.js";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { DataPlaneDao } from "../model/dataPlanes.dao";
-import { DataplaneManagementController } from "./dataPlaneManagement.controller";
-import { AuthModule } from "../auth/auth.module";
-import { NegotiationModule } from "../dsp/negotiation/negotiation.module";
-import { PolicyModule } from "../policy/policy.module";
+import { DataPlaneDao } from "../model/dataPlanes.dao.js";
+import { DataplaneManagementController } from "./dataPlaneManagement.controller.js";
+import { AuthModule } from "../auth/auth.module.js";
+import { NegotiationModule } from "../dsp/negotiation/negotiation.module.js";
+import { PolicyModule } from "../policy/policy.module.js";
 
 @Module({
   imports: [

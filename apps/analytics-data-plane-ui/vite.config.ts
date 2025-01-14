@@ -5,6 +5,9 @@ import vue from "@vitejs/plugin-vue";
 import { readFileSync } from "fs";
 import path from "path";
 
+const swaggerShimFile =
+  "node_modules/@nestjs/swagger/dist/extra/swagger-shim.js";
+
 interface DevSession {
   local: boolean;
   target?: string;
@@ -24,7 +27,8 @@ export default defineConfig({
   envPrefix: "TSG_STATIC_",
   resolve: {
     alias: {
-      "@": fileURLToPath(new URL("./src", import.meta.url))
+      "@": fileURLToPath(new URL("./src", import.meta.url)),
+      "@nestjs/swagger": path.resolve(__dirname, swaggerShimFile)
     }
   },
   optimizeDeps: {

@@ -1,17 +1,22 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { plainToClass, plainToInstance } from "class-transformer";
-import { AuthConfig, IamConfig, RegistryConfig, RootConfig } from "../config";
+import {
+  AuthConfig,
+  IamConfig,
+  RegistryConfig,
+  RootConfig
+} from "../config.js";
 import { SetupServer, setupServer } from "msw/node";
 import { HttpResponse, http } from "msw";
-import { RegistryClientService } from "./registry.client.service";
-import { DSPError } from "../utils/errors/error";
-import { AuthModule } from "../auth/auth.module";
-import { AuthService } from "../auth/auth.service";
+import { RegistryClientService } from "./registry.client.service.js";
+import { DSPError } from "../utils/errors/error.js";
+import { AuthModule } from "../auth/auth.module.js";
+import { AuthService } from "../auth/auth.service.js";
 import {
   mockWalletConfig,
   setupMockWalletServer
-} from "../auth/wallets/wallet.util.test";
-import { AuthClientService } from "../auth/auth.client.service";
+} from "../auth/wallets/wallet.util.test.js";
+import { AuthClientService } from "../auth/auth.client.service.js";
 import { defaultContext } from "@tsg-dsp/common-dsp";
 
 describe("RegistryClientService", () => {

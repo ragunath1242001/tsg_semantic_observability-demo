@@ -1,5 +1,5 @@
-import { deserialize } from "../../deserialize";
-import { Multilanguage } from "../common";
+import { deserialize } from "../../deserialize.js";
+import { Multilanguage } from "../common.js";
 import {
   ContractAgreementMessage,
   ContractAgreementVerificationMessage,
@@ -9,8 +9,8 @@ import {
   ContractNegotiationTerminationMessage,
   ContractOfferMessage,
   ContractRequestMessage
-} from "./messages";
-import { Agreement, Offer } from "./negotiation";
+} from "./messages.js";
+import { Agreement, Offer } from "./negotiation.js";
 import {
   ContractRequestMessageDto,
   ContractOfferMessageDto,
@@ -22,9 +22,9 @@ import {
   ContractNegotiationErrorDto,
   ContractAgreementVerificationMessageDto,
   ContractAgreementMessageDto
-} from "./messages.dto";
+} from "./messages.dto.js";
 import { expect, test } from "@jest/globals";
-import { defaultContext } from "../../../jsonld/context.defaults";
+import { defaultContext } from "../../../jsonld/context.defaults.js";
 
 test("Contract Request Message", async () => {
   const contractRequestMessage = new ContractRequestMessage({

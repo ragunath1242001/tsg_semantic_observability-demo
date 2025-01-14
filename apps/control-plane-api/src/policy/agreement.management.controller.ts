@@ -6,11 +6,10 @@ import {
   ApiOperation,
   ApiParam
 } from "@nestjs/swagger";
-import { OAuthGuard } from "../auth/oauth.guard";
-import { Roles } from "../auth/roles.guard";
-import { AgreementService } from "./agreement.service";
-import { AgreementDto } from "@tsg-dsp/common-dsp";
-import { ContractAgreementMessageSchema } from "@tsg-dsp/common-dtos";
+import { OAuthGuard } from "../auth/oauth.guard.js";
+import { Roles } from "../auth/roles.guard.js";
+import { AgreementService } from "./agreement.service.js";
+import { AgreementDto, AgreementSchema } from "@tsg-dsp/common-dsp";
 
 @UseGuards(OAuthGuard)
 @Roles(["controlplane_admin"])
@@ -28,7 +27,7 @@ export class AgreementManagementController {
     description: "Agreement ID",
     required: true
   })
-  @ApiOkResponse({ type: ContractAgreementMessageSchema })
+  @ApiOkResponse({ type: AgreementSchema })
   async getAgreement(
     @Param("agreementId") agreementId: string
   ): Promise<AgreementDto> {

@@ -1,21 +1,21 @@
 import { DynamicModule, Module } from "@nestjs/common";
-import { RegistryController } from "./registry.controller";
-import { RegistryService } from "./registry.service";
+import { RegistryController } from "./registry.controller.js";
+import { RegistryService } from "./registry.service.js";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import {
   CatalogDao,
   DataServiceDao,
   DatasetDao,
   ResourceDao
-} from "../model/catalog.dao";
+} from "../model/catalog.dao.js";
 import { ScheduleModule } from "@nestjs/schedule";
-import { AuthModule } from "../auth/auth.module";
-import { DspClientModule } from "../dsp/client/client.module";
-import { CatalogModule } from "../dsp/catalog/catalog.module";
-import { RegistryClientController } from "./registry.client.controller";
-import { RegistryClientService } from "./registry.client.service";
-import { RegistryConfig } from "../config";
-import { RegistryDao } from "../model/registry.dao";
+import { AuthModule } from "../auth/auth.module.js";
+import { DspClientModule } from "../dsp/client/client.module.js";
+import { CatalogModule } from "../dsp/catalog/catalog.module.js";
+import { RegistryClientController } from "./registry.client.controller.js";
+import { RegistryClientService } from "./registry.client.service.js";
+import { RegistryConfig } from "../config.js";
+import { RegistryDao } from "../model/registry.dao.js";
 
 @Module({})
 export class RegistryModule {

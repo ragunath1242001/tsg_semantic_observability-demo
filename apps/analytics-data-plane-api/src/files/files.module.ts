@@ -1,13 +1,13 @@
 import { DynamicModule, Module } from "@nestjs/common";
-import { FilesController } from "./files.controller";
-import { FilesService } from "./files.service";
+import { FilesController } from "./files.controller.js";
+import { FilesService } from "./files.service.js";
 import { MulterModule } from "@nestjs/platform-express";
 import { diskStorage } from "multer";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { FileMetadataDao } from "./filesMetadata.dao";
+import { FileMetadataDao } from "./filesMetadata.dao.js";
 import fs from "fs";
 import path from "path";
-import { FilesConfig } from "../config";
+import { FilesConfig } from "../config.js";
 
 @Module({})
 export class FilesModule {

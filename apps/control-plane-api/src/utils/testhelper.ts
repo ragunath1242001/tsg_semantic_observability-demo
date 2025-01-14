@@ -20,13 +20,14 @@ export class TypeOrmTestHelper {
 
   /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   module(entities: any[]) {
-    return TypeOrmModule.forRoot({
+    const module = TypeOrmModule.forRoot({
       type: "sqlite",
       database: ":memory:",
       name: "default",
       entities: entities,
       synchronize: true
     });
+    return module;
   }
 
   teardownTestDB() {

@@ -1,5 +1,5 @@
-import { ContextDto, ReferenceDto } from "../common.dto";
-import { PolicyDto } from "../negotiation/negotiation.dto";
+import { ContextDto, ReferenceDto } from "../common.dto.js";
+import { PolicyDto } from "../negotiation/negotiation.dto.js";
 
 export interface ResourceDto extends ContextDto, ReferenceDto {
   "@type": "dcat:Resource";

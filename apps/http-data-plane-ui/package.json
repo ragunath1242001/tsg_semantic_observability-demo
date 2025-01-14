@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@guolao/vue-monaco-editor": "^1.5.4",
+    "@nestjs/swagger": "^8.0.0",
     "@primevue/themes": "^4.2.4",
     "@tsg-dsp/common-dsp": "workspace:*",
     "@tsg-dsp/common-dtos": "workspace:*",

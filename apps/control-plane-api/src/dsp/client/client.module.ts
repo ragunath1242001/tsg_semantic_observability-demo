@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common";
-import { AuthModule } from "../../auth/auth.module";
-import { DspClientService } from "./client.service";
-import { DspGateway } from "./dsp.gateway";
+import { AuthModule } from "../../auth/auth.module.js";
+import { DspClientService } from "./client.service.js";
+import { DspGateway } from "./dsp.gateway.js";
 
 @Module({
   imports: [AuthModule],

@@ -1,4 +1,4 @@
-import { ServerConfig } from "./config";
+import { ServerConfig } from "./config.js";
 import { INestApplication, Logger } from "@nestjs/common";
 import session from "express-session";
 import passport from "passport";

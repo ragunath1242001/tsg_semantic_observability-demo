@@ -20,30 +20,30 @@ import {
   ApiOkResponse,
   ApiBody
 } from "@nestjs/swagger";
-import { OAuthGuard } from "../auth/oauth.guard";
-import { Roles } from "../auth/roles.guard";
-import { RuleRepositoryService } from "./rule.repository.service";
-import { Rule, RuleType } from "./rule.dto";
+import { OAuthGuard } from "../auth/oauth.guard.js";
+import { Roles } from "../auth/roles.guard.js";
+import { RuleRepositoryService } from "./rule.repository.service.js";
+import { Rule, RuleType } from "./rule.dto.js";
 import {
   ApiBadRequestResponseDefault,
   ApiConflictResponseDefault,
   ApiForbiddenResponseDefault,
-  ApiNotFoundResponseDefault,
-  ConstraintSchema
+  ApiNotFoundResponseDefault
 } from "@tsg-dsp/common-dtos";
-import { validationPipe } from "../utils/validation.pipe";
+import { validationPipe } from "../utils/validation.pipe.js";
 import {
   Constraint as DspConstraint,
   ConstraintDto,
   deserialize,
-  PolicyRuleDto
+  PolicyRuleDto,
+  ConstraintSchema
 } from "@tsg-dsp/common-dsp";
-import { DSPError } from "../utils/errors/error";
-import { ConstraintModel } from "./constraint.dto";
-import { Paginated } from "../utils/pagination/pagination.parameters";
-import { PaginationQuery } from "../utils/pagination/pagination.query.decorator";
-import { PaginationOptionsDto } from "../utils/pagination/pagination.options.dto";
-import { UsePagination } from "../utils/pagination/pagination.interceptor.decorator";
+import { DSPError } from "../utils/errors/error.js";
+import { ConstraintModel } from "./constraint.dto.js";
+import { Paginated } from "../utils/pagination/pagination.parameters.js";
+import { PaginationQuery } from "../utils/pagination/pagination.query.decorator.js";
+import { PaginationOptionsDto } from "../utils/pagination/pagination.options.dto.js";
+import { UsePagination } from "../utils/pagination/pagination.interceptor.decorator.js";
 
 @UseGuards(OAuthGuard)
 @Roles(["controlplane_admin"])

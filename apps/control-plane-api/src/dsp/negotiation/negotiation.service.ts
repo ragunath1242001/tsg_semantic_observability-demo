@@ -1,5 +1,5 @@
 import {
-  INegotiationStatusDto,
+  NegotiationStatusDto,
   NegotiationDetailDto
 } from "@tsg-dsp/common-dtos";
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
@@ -27,23 +27,23 @@ import {
 } from "@tsg-dsp/common-dsp";
 import crypto from "crypto";
 import { Repository } from "typeorm";
-import { RootConfig, ServerConfig } from "../../config";
+import { RootConfig, ServerConfig } from "../../config.js";
 import {
   NegotiationDetailDao,
   NegotiationProcessEventDao
-} from "../../model/negotiation.dao";
-import { DSPError } from "../../utils/errors/error";
-import { DspClientService } from "../client/client.service";
-import { DspGateway } from "../client/dsp.gateway";
-import { AuthService } from "../../auth/auth.service";
-import { AgreementService } from "../../policy/agreement.service";
+} from "../../model/negotiation.dao.js";
+import { DSPError } from "../../utils/errors/error.js";
+import { DspClientService } from "../client/client.service.js";
+import { DspGateway } from "../client/dsp.gateway.js";
+import { AuthService } from "../../auth/auth.service.js";
+import { AgreementService } from "../../policy/agreement.service.js";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 import {
   NegotiationCreatedEvent,
   NegotiationUpdatedEvent
-} from "./negotiation.events";
-import { PaginationOptionsDto } from "../../utils/pagination/pagination.options.dto";
-import { Paginated } from "../../utils/pagination/pagination.parameters";
+} from "./negotiation.events.js";
+import { PaginationOptionsDto } from "../../utils/pagination/pagination.options.dto.js";
+import { Paginated } from "../../utils/pagination/pagination.parameters.js";
 
 @Injectable()
 export class NegotiationService {
@@ -170,7 +170,7 @@ export class NegotiationService {
 
   async getNegotiations(
     paginationOptions: PaginationOptionsDto
-  ): Promise<Paginated<INegotiationStatusDto[]>> {
+  ): Promise<Paginated<NegotiationStatusDto[]>> {
     const [negotiations, itemCount] =
       await this.negotiationDetailRepository.findAndCount({
         select: {

@@ -1,23 +1,29 @@
+import { jest } from "@jest/globals";
 import { Test, TestingModule } from "@nestjs/testing";
-import { RegistryService } from "./registry.service";
-import { TypeOrmTestHelper } from "../utils/testhelper";
+import { RegistryService } from "./registry.service.js";
+import { TypeOrmTestHelper } from "../utils/testhelper.js";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { DspClientService } from "../dsp/client/client.service";
-import { AuthService } from "../auth/auth.service";
+import { DspClientService } from "../dsp/client/client.service.js";
+import { AuthService } from "../auth/auth.service.js";
 import { plainToClass, plainToInstance } from "class-transformer";
-import { AuthConfig, IamConfig, RegistryConfig, RootConfig } from "../config";
+import {
+  AuthConfig,
+  IamConfig,
+  RegistryConfig,
+  RootConfig
+} from "../config.js";
 import { SetupServer } from "msw/node";
 import {
   mockWalletConfig,
   setupMockWalletServer
-} from "../auth/wallets/wallet.util.test";
+} from "../auth/wallets/wallet.util.test.js";
 import { HttpResponse, http } from "msw";
 import { ScheduleModule } from "@nestjs/schedule";
-import { AuthClientService } from "../auth/auth.client.service";
-import { RegistryDao } from "../model/registry.dao";
-import { DSPError } from "../utils/errors/error";
+import { AuthClientService } from "../auth/auth.client.service.js";
+import { RegistryDao } from "../model/registry.dao.js";
+import { DSPError } from "../utils/errors/error.js";
 import { defaultContext } from "@tsg-dsp/common-dsp";
-import { PaginationOptionsDto } from "../utils/pagination/pagination.options.dto";
+import { PaginationOptionsDto } from "../utils/pagination/pagination.options.dto.js";
 
 describe("RegistryService", () => {
   let registryService: RegistryService;

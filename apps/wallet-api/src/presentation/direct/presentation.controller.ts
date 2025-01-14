@@ -26,11 +26,6 @@ import {
   ApiTags,
   getSchemaPath
 } from "@nestjs/swagger";
-import {
-  PresentationValidationDto,
-  VerifiablePresentationJsonLdDto,
-  VerifiablePresentationJwtDto
-} from "../presentation.schemas.js";
 
 @Controller("presentations")
 @Roles(AppRole.VIEW_PRESENTATIONS)
@@ -45,12 +40,12 @@ export class DirectPresentationController {
     description:
       "Generates a Veriable Presentation in Jwt or JSON-LD format for one of the credentials in this wallet"
   })
-  @ApiExtraModels(VerifiablePresentationJwtDto, VerifiablePresentationJsonLdDto)
+  @ApiExtraModels(VerifiablePresentationJwt, VerifiablePresentationJsonLd)
   @ApiOkResponse({
     schema: {
       oneOf: [
-        { $ref: getSchemaPath(VerifiablePresentationJwtDto) },
-        { $ref: getSchemaPath(VerifiablePresentationJsonLdDto) }
+        { $ref: getSchemaPath(VerifiablePresentationJwt) },
+        { $ref: getSchemaPath(VerifiablePresentationJsonLd) }
       ]
     }
   })
@@ -86,8 +81,8 @@ export class DirectPresentationController {
     description:
       "Validates a Jwt-based Verifiable Presentation according to a fixed set of requirements"
   })
-  @ApiBody({ type: VerifiablePresentationJwtDto })
-  @ApiOkResponse({ type: PresentationValidationDto })
+  @ApiBody({ type: VerifiablePresentationJwt })
+  @ApiOkResponse({ type: PresentationValidation })
   async validatePresentation(
     @Body() presentation: VerifiablePresentationJwt,
     @Query("audience") audience: string | undefined

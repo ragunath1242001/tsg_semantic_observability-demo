@@ -1,19 +1,26 @@
-import { Body, Controller, HttpStatus, Logger } from "@nestjs/common";
 import {
+  Body,
+  Controller,
+  HttpStatus,
+  Logger,
   Get,
   HttpCode,
   Param,
   Post,
   UseGuards
-} from "@nestjs/common/decorators";
+} from "@nestjs/common";
 import {
   CatalogDto,
   CatalogRequestMessage,
-  DatasetDto
+  CatalogRequestMessageDto,
+  CatalogRequestMessageSchema,
+  CatalogSchema,
+  DatasetDto,
+  DatasetSchema
 } from "@tsg-dsp/common-dsp";
-import { VerifiablePresentationGuard } from "../../auth/verifiablePresentation.guard";
-import { DeserializePipe } from "../../utils/deserialize.pipe";
-import { CatalogService } from "./catalog.service";
+import { VerifiablePresentationGuard } from "../../auth/verifiablePresentation.guard.js";
+import { DeserializePipe } from "../../utils/deserialize.pipe.js";
+import { CatalogService } from "./catalog.service.js";
 import {
   ApiOperation,
   ApiTags,
@@ -22,16 +29,11 @@ import {
   ApiBearerAuth,
   ApiBody
 } from "@nestjs/swagger";
-import {
-  ApiForbiddenResponseDefault,
-  CatalogRequestMessageSchema,
-  CatalogSchema,
-  DatasetSchema
-} from "@tsg-dsp/common-dtos";
-import { UsePagination } from "../../utils/pagination/pagination.interceptor.decorator";
-import { PaginationQuery } from "../../utils/pagination/pagination.query.decorator";
-import { PaginationOptionsDto } from "../../utils/pagination/pagination.options.dto";
-import { Paginated } from "../../utils/pagination/pagination.parameters";
+import { ApiForbiddenResponseDefault } from "@tsg-dsp/common-dtos";
+import { UsePagination } from "../../utils/pagination/pagination.interceptor.decorator.js";
+import { PaginationQuery } from "../../utils/pagination/pagination.query.decorator.js";
+import { PaginationOptionsDto } from "../../utils/pagination/pagination.options.dto.js";
+import { Paginated } from "../../utils/pagination/pagination.parameters.js";
 
 @UseGuards(VerifiablePresentationGuard)
 @Controller("catalog")

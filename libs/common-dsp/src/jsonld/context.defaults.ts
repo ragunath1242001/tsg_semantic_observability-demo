@@ -1,7 +1,7 @@
-import dsp from "./contexts/dsp.2024-1";
-import tsg from "./contexts/tsg";
-import health from "./contexts/health";
-import { JsonLd } from "jsonld/jsonld-spec";
+import dsp from "./contexts/dsp.2024-1.js";
+import tsg from "./contexts/tsg.js";
+import health from "./contexts/health.js";
+import { JsonLd } from "jsonld/jsonld-spec.js";
 
 const getOptionalEnv = (key: string, defaultValue: string) => {
   if (typeof process === "undefined") {

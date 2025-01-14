@@ -7,28 +7,24 @@ import {
   Logger,
   UseGuards
 } from "@nestjs/common";
-import { CatalogDto } from "@tsg-dsp/common-dsp";
+import { CatalogDto, CatalogSchema } from "@tsg-dsp/common-dsp";
 import { DIDDocumentDto } from "@tsg-dsp/common-dtos";
 import { DIDDocument } from "did-resolver";
-import { OAuthGuard } from "../auth/oauth.guard";
-import { Roles } from "../auth/roles.guard";
-import { RegistryClientService } from "./registry.client.service";
-import { RegistryService } from "./registry.service";
+import { OAuthGuard } from "../auth/oauth.guard.js";
+import { Roles } from "../auth/roles.guard.js";
+import { RegistryClientService } from "./registry.client.service.js";
+import { RegistryService } from "./registry.service.js";
 import {
   ApiOAuth2,
   ApiOperation,
   ApiTags,
   ApiOkResponse
 } from "@nestjs/swagger";
-import { CredentialAddressDto } from "./registry.schema";
-import {
-  ApiForbiddenResponseDefault,
-  CatalogSchema
-} from "@tsg-dsp/common-dtos";
-import { UsePagination } from "../utils/pagination/pagination.interceptor.decorator";
-import { PaginationOptionsDto } from "../utils/pagination/pagination.options.dto";
-import { Paginated } from "../utils/pagination/pagination.parameters";
-import { PaginationQuery } from "../utils/pagination/pagination.query.decorator";
+import { ApiForbiddenResponseDefault } from "@tsg-dsp/common-dtos";
+import { UsePagination } from "../utils/pagination/pagination.interceptor.decorator.js";
+import { PaginationOptionsDto } from "../utils/pagination/pagination.options.dto.js";
+import { Paginated } from "../utils/pagination/pagination.parameters.js";
+import { PaginationQuery } from "../utils/pagination/pagination.query.decorator.js";
 
 @UseGuards(OAuthGuard)
 @Roles(["controlplane_admin", "controlplane_dataplane"])
@@ -48,7 +44,7 @@ export class RegistryClientController {
     summary: "Request catalogs",
     description: "Requests all available catalogs."
   })
-  @ApiOkResponse({ type: CatalogSchema })
+  @ApiOkResponse({ type: [CatalogSchema] })
   @ApiForbiddenResponseDefault()
   async requestCatalogs(): Promise<CatalogDto[]> {
     return await this.registryClientService.requestCatalogs();
@@ -60,7 +56,7 @@ export class RegistryClientController {
     summary: "Request addresses",
     description: "Requests all available credential addresses."
   })
-  @ApiOkResponse({ type: [CredentialAddressDto] })
+  @ApiOkResponse({ type: [CredentialAddress] })
   @ApiForbiddenResponseDefault()
   async requestAddresses(): Promise<CredentialAddress[]> {
     return await this.registryClientService.requestAddresses();

@@ -1,36 +1,36 @@
 import { TestingModule, Test } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { TypeOrmTestHelper } from "../utils/testhelper";
-import { ConstraintDao, RuleDao } from "../model/rule.dao";
-import { RuleRepositoryService } from "./rule.repository.service";
-import { AgreementService } from "./agreement.service";
+import { TypeOrmTestHelper } from "../utils/testhelper.js";
+import { ConstraintDao, RuleDao } from "../model/rule.dao.js";
+import { RuleRepositoryService } from "./rule.repository.service.js";
+import { AgreementService } from "./agreement.service.js";
 import {
   ODRLAction,
   ODRLOperator,
   TransferState,
   TransferStatus
 } from "@tsg-dsp/common-dsp";
-import { Evaluation, promiseMap } from "./evaluation";
-import { PolicyEvaluationService } from "./policy.evaluation.service";
-import { AgreementDao, TransferMonitorDao } from "../model/agreement.dao";
-import { TransferDetailDao, TransferEventDao } from "../model/transfer.dao";
+import { Evaluation, promiseMap } from "./evaluation.js";
+import { PolicyEvaluationService } from "./policy.evaluation.service.js";
+import { AgreementDao, TransferMonitorDao } from "../model/agreement.dao.js";
+import { TransferDetailDao, TransferEventDao } from "../model/transfer.dao.js";
 import {
   NegotiationDetailDao,
   NegotiationProcessEventDao
-} from "../model/negotiation.dao";
+} from "../model/negotiation.dao.js";
 import { plainToClass } from "class-transformer";
-import { RootConfig } from "../config";
-import { AgreementMonitorService } from "./agreement.monitor.service";
+import { RootConfig } from "../config.js";
+import { AgreementMonitorService } from "./agreement.monitor.service.js";
 import { ScheduleModule } from "@nestjs/schedule";
-import { TransferService } from "../dsp/transfer/transfer.service";
+import { TransferService } from "../dsp/transfer/transfer.service.js";
 import {
   ConstraintModel,
   ConstraintType,
   DataType,
   EvaluationTrigger
-} from "./constraint.dto";
-import { EvaluationContext, EvaluationResult } from "./evaluation.dto";
-import { Paginated } from "../utils/pagination/pagination.parameters";
+} from "./constraint.dto.js";
+import { EvaluationContext, EvaluationResult } from "./evaluation.dto.js";
+import { Paginated } from "../utils/pagination/pagination.parameters.js";
 
 describe("Policy Evaluation Service", () => {
   let ruleRepositoryService: RuleRepositoryService;

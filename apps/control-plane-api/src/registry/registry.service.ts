@@ -11,17 +11,17 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { CatalogDto } from "@tsg-dsp/common-dsp";
 import { DIDDocument } from "did-resolver";
 import { Repository } from "typeorm";
-import { AuthService } from "../auth/auth.service";
-import { RegistryConfig } from "../config";
-import { DspClientService } from "../dsp/client/client.service";
+import { AuthService } from "../auth/auth.service.js";
+import { RegistryConfig } from "../config.js";
+import { DspClientService } from "../dsp/client/client.service.js";
 
-import { normalizeAddress } from "../utils/address";
-import { DSPError } from "../utils/errors/error";
-import { RegistryDao } from "../model/registry.dao";
-import { isFulfilled } from "../utils/promises";
-import { Credential } from "../auth/wallets/walletClient";
-import { PaginationOptionsDto } from "../utils/pagination/pagination.options.dto";
-import { Paginated } from "../utils/pagination/pagination.parameters";
+import { normalizeAddress } from "../utils/address.js";
+import { DSPError } from "../utils/errors/error.js";
+import { RegistryDao } from "../model/registry.dao.js";
+import { isFulfilled } from "../utils/promises.js";
+import { Credential } from "../auth/wallets/walletClient.js";
+import { PaginationOptionsDto } from "../utils/pagination/pagination.options.dto.js";
+import { Paginated } from "../utils/pagination/pagination.parameters.js";
 
 @Injectable()
 export class RegistryService implements OnApplicationBootstrap {

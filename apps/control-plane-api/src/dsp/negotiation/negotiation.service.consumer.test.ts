@@ -1,3 +1,4 @@
+import { jest } from "@jest/globals";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import {
@@ -20,22 +21,25 @@ import {
 import { plainToClass } from "class-transformer";
 import { HttpResponse, PathParams, http } from "msw";
 import { SetupServer, setupServer } from "msw/node";
-import { AuthService } from "../../auth/auth.service";
-import { RootConfig, ServerConfig } from "../../config";
+import { AuthService } from "../../auth/auth.service.js";
+import { RootConfig, ServerConfig } from "../../config.js";
 import {
   NegotiationDetailDao,
   NegotiationProcessEventDao
-} from "../../model/negotiation.dao";
-import { TypeOrmTestHelper } from "../../utils/testhelper";
-import { DspClientService } from "../client/client.service";
-import { DspGateway } from "../client/dsp.gateway";
-import { NegotiationService } from "./negotiation.service";
-import { AgreementDao, TransferMonitorDao } from "../../model/agreement.dao";
-import { TransferDetailDao, TransferEventDao } from "../../model/transfer.dao";
-import { AgreementService } from "../../policy/agreement.service";
-import { DSPClientError, DSPError } from "../../utils/errors/error";
+} from "../../model/negotiation.dao.js";
+import { TypeOrmTestHelper } from "../../utils/testhelper.js";
+import { DspClientService } from "../client/client.service.js";
+import { DspGateway } from "../client/dsp.gateway.js";
+import { NegotiationService } from "./negotiation.service.js";
+import { AgreementDao, TransferMonitorDao } from "../../model/agreement.dao.js";
+import {
+  TransferDetailDao,
+  TransferEventDao
+} from "../../model/transfer.dao.js";
+import { AgreementService } from "../../policy/agreement.service.js";
+import { DSPClientError, DSPError } from "../../utils/errors/error.js";
 import { EventEmitter2 } from "@nestjs/event-emitter";
-import { PaginationOptionsDto } from "../../utils/pagination/pagination.options.dto";
+import { PaginationOptionsDto } from "../../utils/pagination/pagination.options.dto.js";
 
 describe("Negotiation Service (Consumer)", () => {
   let negotiationService: NegotiationService;

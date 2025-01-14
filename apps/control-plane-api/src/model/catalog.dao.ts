@@ -26,8 +26,8 @@ import {
   PrimaryColumn,
   Relation
 } from "typeorm";
-import { MetaEntity, jsonLdTransformer, mapToInstances } from "./common.dao";
-import { DataPlaneDao } from "./dataPlanes.dao";
+import { MetaEntity, jsonLdTransformer, mapToInstances } from "./common.dao.js";
+import { DataPlaneDao } from "./dataPlanes.dao.js";
 
 @Entity({ name: "resource" })
 export class ResourceDao extends MetaEntity implements IResource {
@@ -169,7 +169,7 @@ export class DataServiceDao extends ResourceChild implements IDataService {
   _catalog?: Relation<CatalogDao>;
   @OneToOne(() => ResourceDao, { cascade: true, eager: true })
   @JoinColumn()
-  _resource: ResourceDao | undefined;
+  declare _resource: ResourceDao | undefined;
 
   @Column({ type: String, nullable: true })
   endpointDescription?: string;
@@ -240,7 +240,7 @@ export class DatasetDao extends ResourceChild implements IDataset {
   id!: string;
   @OneToOne(() => ResourceDao, { cascade: true, eager: true })
   @JoinColumn()
-  _resource: ResourceDao | undefined;
+  declare _resource: ResourceDao | undefined;
 
   @ManyToOne(() => DataPlaneDao, { nullable: true })
   _dataPlane?: Relation<DataPlaneDao>;
@@ -400,7 +400,7 @@ export class CatalogDao extends DatasetChild implements ICatalog {
   }
   @OneToOne(() => DatasetDao, { eager: true })
   @JoinColumn()
-  _dataset: Relation<DatasetDao> | undefined;
+  declare _dataset: Relation<DatasetDao> | undefined;
   @Column({ type: String, nullable: true })
   themeTaxonomy?: string;
   @Column({ type: String, nullable: true })

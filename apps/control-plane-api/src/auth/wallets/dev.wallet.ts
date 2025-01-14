@@ -7,10 +7,10 @@ import { plainToInstance } from "class-transformer";
 import crypto from "crypto";
 import { SignJWT } from "jose";
 import { decode } from "jsonwebtoken";
-import { DevWalletConfig } from "../../config";
-import { Credential, WalletClient } from "./walletClient";
+import { DevWalletConfig } from "../../config.js";
+import { Credential, WalletClient } from "./walletClient.js";
 import { HttpStatus, Logger } from "@nestjs/common";
-import { DSPError } from "../../utils/errors/error";
+import { DSPError } from "../../utils/errors/error.js";
 import { DIDDocument } from "did-resolver";
 
 export class DevWalletClient extends WalletClient {
@@ -65,9 +65,9 @@ export class DevWalletClient extends WalletClient {
   async requestValidation(
     token: string,
     audience: string
-  ): Promise<VerifiablePresentation | undefined> {
+  ): Promise<VerifiablePresentation[] | undefined> {
     const tokenPayload = decode(token, { json: true });
-    return plainToInstance(VerifiablePresentation, tokenPayload!["vp"]);
+    return [plainToInstance(VerifiablePresentation, tokenPayload!["vp"])];
   }
 
   async getCredentials(): Promise<Credential[]> {

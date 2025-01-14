@@ -123,6 +123,17 @@ paths:
       security: *a3
       summary: Update settings
       tags: *a4
+  /api/settings/upload:
+    post:
+      description: Uploads logo for the control plane, receive a base64 encoded url.
+      operationId: ConfigController_uploadFile
+      parameters: []
+      responses:
+        "200":
+          description: ""
+      security: *a3
+      summary: Upload logo
+      tags: *a4
   /api/status:
     get:
       description: Retrieves the current health of the control plane. With additional
@@ -169,8 +180,8 @@ paths:
             application/json:
               schema:
                 oneOf:
-                  - $ref: "#/components/schemas/VerifiablePresentationJwtDto"
-                  - $ref: "#/components/schemas/VerifiablePresentationJsonLdDto"
+                  - $ref: "#/components/schemas/VerifiablePresentationJwt"
+                  - $ref: "#/components/schemas/VerifiablePresentationJsonLd"
       security: &a5
         - oauth2:
             - wallet_view_presentations
@@ -188,22 +199,54 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/VerifiablePresentationJwtDto"
+              $ref: "#/components/schemas/VerifiablePresentationJwt"
       responses:
         "200":
           description: ""
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PresentationValidationDto"
+                $ref: "#/components/schemas/PresentationValidation"
       security: *a5
       summary: Validate presentation
       tags: *a6
-  /api/iatp/holder/token:
+  /api/dcp/presentations/query:
+    post:
+      description: Request a presentation with a SIOP-token and a PresentationQueryMessage
+      operationId: DCPHolderController_presentationQuery
+      parameters:
+        - name: Authorization
+          required: true
+          in: header
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PresentationQueryMessage"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PresentationResponseMessage"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      summary: Retrieve presentation
+      tags:
+        - Presentation DCP
+  /api/management/dcp/holder/token:
     get:
       description: Generates a SIOP token for the provided audience to allow it to
         request presentations
-      operationId: IatpHolderController_createSIToken
+      operationId: DCPHolderManagementController_createSIToken
       parameters:
         - name: audience
           required: true
@@ -235,65 +278,35 @@ paths:
         - oauth2:
             - wallet_view_presentations
       summary: Request a SIOP token
-      tags: &a7
-        - Presentation IATP
-  /api/iatp/holder/presentation:
-    get:
-      description: Request a presentation with a SIOP-token and a presentation definition
-      operationId: IatpHolderController_getPresentation
-      parameters:
-        - name: presentation_definition
-          required: true
-          in: query
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/PresentationResponseDto"
-        - name: Authorization
-          required: true
-          in: header
-          schema:
-            type: string
-      responses:
-        "200":
-          description: ""
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/PresentationResponseDto"
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorDto"
-      summary: Retrieve presentation
-      tags: *a7
-  /api/iatp/verifier/verify:
+      tags:
+        - Presentation DCP
+  /api/management/dcp/verifier/verify:
     post:
-      description: Request a new IATP presentation flow to start as verifier, based on
+      description: Request a new DCP presentation flow to start as verifier, based on
         a presentation defintion and a holder SIOP token
-      operationId: IatpVerifierController_verify
+      operationId: DCPVerifierManagementController_verify
       parameters: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/VerificationRequestDto"
+              $ref: "#/components/schemas/VerificationRequest"
       responses:
         "200":
           description: ""
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/VerifiablePresentationDto"
+                type: array
+                items:
+                  $ref: "#/components/schemas/VerifiablePresentation"
       security:
         - oauth2:
             - wallet_view_presentations
       summary: Start verification flow
       tags:
-        - Presentation IATP
+        - Presentation DCP
   /api/auth/user:
     get:
       description: Retrieves current user state, whether someone is logged in or not a
@@ -311,7 +324,7 @@ paths:
                   - $ref: "#/components/schemas/AuthenticatedUserDto"
                   - $ref: "#/components/schemas/UnauthenticatedUserDto"
       summary: Retrieve current user status
-      tags: &a8
+      tags: &a7
         - Authentication
   /api/auth/login:
     get:
@@ -322,7 +335,7 @@ paths:
         "302":
           description: ""
       summary: Login redirect
-      tags: *a8
+      tags: *a7
   /api/auth/logout:
     get:
       description: Removes session information and redirects user the root of the
@@ -333,7 +346,7 @@ paths:
         "302":
           description: ""
       summary: Logout redirect
-      tags: *a8
+      tags: *a7
   /api/auth/callback:
     get:
       description: Users are redirected from the authorization server to this endpoint
@@ -344,7 +357,7 @@ paths:
         "302":
           description: ""
       summary: Login callback
-      tags: *a8
+      tags: *a7
   /api/credentials:
     get:
       description: List all credentials in this dataspace.
@@ -366,7 +379,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
       summary: List dataspace credentials
-      tags: &a9
+      tags: &a8
         - Credentials
   /api/credentials/{credentialId}:
     get:
@@ -392,7 +405,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
       summary: Retrieve credential
-      tags: *a9
+      tags: *a8
   /api/management/credentials:
     get:
       description: List all credentials, that the current user is allowed to view, in
@@ -414,13 +427,13 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: &a12
-        - &a10
+      security: &a11
+        - &a9
           oauth2:
             - wallet_view_all_credentials
             - wallet_view_own_credentials
       summary: List credentials
-      tags: &a11
+      tags: &a10
         - Management Credentials
     post:
       description: Issue a new credential within this wallet
@@ -458,12 +471,12 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
       security:
-        - *a10
+        - *a9
         - oauth2:
             - wallet_manage_all_credentials
             - wallet_manage_own_credentials
       summary: Add credential
-      tags: *a11
+      tags: *a10
   /api/management/credentials/dataspace:
     get:
       description: List all credentials in this dataspace.
@@ -491,9 +504,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a12
+      security: *a11
       summary: List dataspace credentials
-      tags: *a11
+      tags: *a10
   /api/management/credentials/config:
     get:
       description: Retrieves credential configuration that can be used by this wallet.
@@ -513,9 +526,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a12
+      security: *a11
       summary: Retrieve credential configuration
-      tags: *a11
+      tags: *a10
   /api/management/credentials/import:
     post:
       description: Import a credential issued by an external credential issuer
@@ -526,7 +539,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/VerifiableCredentialDto"
+              $ref: "#/components/schemas/VerifiableCredential"
       responses:
         "200":
           description: ""
@@ -547,12 +560,12 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
       security:
-        - *a10
+        - *a9
         - oauth2:
             - wallet_manage_all_credentials
             - wallet_manage_own_credentials
       summary: Import credential
-      tags: *a11
+      tags: *a10
   /api/management/credentials/{credentialId}:
     get:
       description: Retrieve a specific credential within this wallet
@@ -583,12 +596,12 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
       security:
-        - *a10
+        - *a9
         - oauth2:
             - wallet_manage_all_credentials
             - wallet_manage_own_credentials
       summary: Retrieve credential
-      tags: *a11
+      tags: *a10
     put:
       description: "Update a credential within this wallet. __*Note*__: this will
         either self-issue or import a credential."
@@ -625,12 +638,12 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
       security:
-        - *a10
+        - *a9
         - oauth2:
             - wallet_manage_all_credentials
             - wallet_manage_own_credentials
       summary: Update credential
-      tags: *a11
+      tags: *a10
     delete:
       description: Deletes an existing credential within this wallet
       operationId: CredentialsManagementController_deleteCredential
@@ -654,12 +667,12 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
       security:
-        - *a10
+        - *a9
         - oauth2:
             - wallet_manage_all_credentials
             - wallet_manage_own_credentials
       summary: Delete credential
-      tags: *a11
+      tags: *a10
   /api/management/credentials/gaiax/legalRegistrationNumber:
     post:
       description: Self-issue a Legal Registration Number credential following the
@@ -671,7 +684,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/LegalRegistrationNumberRequestDto"
+              $ref: "#/components/schemas/LegalRegistrationNumberRequest"
       responses:
         "200":
           description: ""
@@ -691,12 +704,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: &a13
+      security: &a12
         - oauth2:
             - wallet_manage_all_credentials
             - wallet_manage_own_credentials
       summary: Issue legal registration number credential
-      tags: &a14
+      tags: &a13
         - Management Gaia-X Credentials
   /api/management/credentials/gaiax/compliance:
     post:
@@ -709,7 +722,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ComplianceRequestDto"
+              $ref: "#/components/schemas/ComplianceRequest"
       responses:
         "200":
           description: ""
@@ -729,9 +742,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a13
+      security: *a12
       summary: Request compliance credential
-      tags: *a14
+      tags: *a13
   /keys/{id}:
     get:
       description: Retrieves the CA chain for a given key. Only supported for keys
@@ -779,11 +792,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: &a15
+      security: &a14
         - oauth2:
             - wallet_manage_keys
       summary: Retrieve keys
-      tags: &a16
+      tags: &a15
         - Management Keys
     post:
       description: Generates a new key based on the provided configuration
@@ -820,9 +833,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a15
+      security: *a14
       summary: Add key
-      tags: *a16
+      tags: *a15
   /api/management/keys/{keyId}:
     get:
       description: Retrieves key information of a specific key within this wallet
@@ -852,9 +865,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a15
+      security: *a14
       summary: Retrieve key
-      tags: *a16
+      tags: *a15
     delete:
       description: Deletes an existing key within this wallet
       operationId: KeysManagementController_deleteKey
@@ -879,9 +892,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a15
+      security: *a14
       summary: Delete key
-      tags: *a16
+      tags: *a15
   /api/management/keys/{keyId}/default:
     put:
       description: Sets the provided key as default key within this wallet, will
@@ -908,9 +921,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a15
+      security: *a14
       summary: Set default key
-      tags: *a16
+      tags: *a15
   /api/management/signature/sign:
     post:
       description: Sign a JSON document with default or defined key
@@ -921,14 +934,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/SignRequestDto"
+              $ref: "#/components/schemas/SignRequest"
       responses:
         "200":
           description: ""
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/JsonWebSignatureDto"
+                $ref: "#/components/schemas/ProofDocument"
         "403":
           description: Forbidden
           content:
@@ -941,12 +954,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: &a17
+      security: &a16
         - oauth2:
             - wallet_use_keys
             - wallet_manage_keys
       summary: Sign document
-      tags: &a18
+      tags: &a17
         - Management Signatures
   /api/management/signature/validate:
     post:
@@ -958,14 +971,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ValidateRequestDto"
+              $ref: "#/components/schemas/ValidateRequest"
       responses:
         "200":
           description: ""
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/JsonWebSignatureDto"
+                $ref: "#/components/schemas/ProofDocument"
         "403":
           description: Forbidden
           content:
@@ -978,9 +991,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a17
+      security: *a16
       summary: Validate signed document
-      tags: *a18
+      tags: *a17
   /api/management/did:
     get:
       description: Retrieves the current DID document for this wallet
@@ -999,11 +1012,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: &a19
+      security: &a18
         - oauth2:
             - wallet_view_did
       summary: Retrieve DID document
-      tags: &a20
+      tags: &a19
         - Management DID
   /api/management/did/resolve/{didId}:
     get:
@@ -1028,9 +1041,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a19
+      security: *a18
       summary: Resolve DID document
-      tags: *a20
+      tags: *a19
   /api/management/did/services:
     get:
       description: Retrieves the currently registered DID services for this wallet
@@ -1051,9 +1064,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a19
+      security: *a18
       summary: Retrieve DID services
-      tags: *a20
+      tags: *a19
     post:
       description: Registers a new DID service for this wallet
       operationId: DIDManagementController_addService
@@ -1083,9 +1096,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a19
+      security: *a18
       summary: Add DID service
-      tags: *a20
+      tags: *a19
   /api/management/did/services/{id}:
     put:
       description: Updates an existing DID service for this wallet
@@ -1121,9 +1134,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a19
+      security: *a18
       summary: Update DID service
-      tags: *a20
+      tags: *a19
     delete:
       description: Deletes an existing DID service for this wallet
       operationId: DIDManagementController_deleteService
@@ -1148,9 +1161,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a19
+      security: *a18
       summary: Delete DID service
-      tags: *a20
+      tags: *a19
   /.well-known/did.json:
     get:
       description: Retrieves the public DID document on the well-known address for
@@ -1207,11 +1220,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: &a21
+      security: &a20
         - oauth2:
             - wallet_view_did
       summary: Retrieve contexts
-      tags: &a22
+      tags: &a21
         - Management Contexts
     post:
       description: Register a new context in this wallet
@@ -1248,9 +1261,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a21
+      security: *a20
       summary: Add context
-      tags: *a22
+      tags: *a21
   /api/management/contexts/{id}:
     put:
       description: Update an existing context in this wallet
@@ -1292,9 +1305,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a21
+      security: *a20
       summary: Update context
-      tags: *a22
+      tags: *a21
     delete:
       description: Delete an existing context in this wallet
       operationId: ContextManagementController_deleteContext
@@ -1319,9 +1332,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a21
+      security: *a20
       summary: Delete context
-      tags: *a22
+      tags: *a21
   /api/oid4vci/holder/request:
     post:
       description: Requests a new credential via the OID4VCI Pre-authorized-code flow.
@@ -1386,8 +1399,8 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/CredentialIssuerMetadataDto"
-      tags: &a23
+                $ref: "#/components/schemas/CredentialIssuerMetadata"
+      tags: &a22
         - OpenID 4 Verifiable Credential Issuance
   /oid4vci/token:
     post:
@@ -1410,7 +1423,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/AccessTokenDto"
+                $ref: "#/components/schemas/AccessToken"
         "403":
           description: Forbidden
           content:
@@ -1426,7 +1439,7 @@ paths:
       security:
         - bearer: []
       summary: Request OID4VCI access token
-      tags: *a23
+      tags: *a22
   /oid4vci/credential:
     post:
       description: Requests a new credential based on a Credential Request via the
@@ -1443,7 +1456,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CredentialRequestDto"
+              $ref: "#/components/schemas/CredentialRequest"
       responses:
         "200":
           description: ""
@@ -1451,12 +1464,12 @@ paths:
             application/json:
               schema:
                 oneOf:
-                  - $ref: "#/components/schemas/ImmediateCredentialResponseDto"
-                  - $ref: "#/components/schemas/DeferredCredentialResponseDto"
+                  - $ref: "#/components/schemas/ImmediateCredentialResponse"
+                  - $ref: "#/components/schemas/DeferredCredentialResponse"
       security:
         - bearer: []
       summary: Request OID4VCI credential
-      tags: *a23
+      tags: *a22
   /api/oid4vci/offer:
     get:
       description: Retrieves all credentials offered this wallet has offered to holders
@@ -1470,7 +1483,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/CredentialOfferStatusDto"
+                  $ref: "#/components/schemas/CredentialOfferStatus"
         "403":
           description: Forbidden
           content:
@@ -1481,7 +1494,7 @@ paths:
         - oauth2:
             - wallet_manage_all_credentials
       summary: Retrieve offered credentials
-      tags: *a23
+      tags: *a22
     post:
       description: Creates a new credential offer
       operationId: IssuerController_offerEndpoint
@@ -1491,14 +1504,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CredentialOfferDto"
+              $ref: "#/components/schemas/CredentialOffer"
       responses:
         "200":
           description: ""
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/CredentialOfferStatusDto"
+                $ref: "#/components/schemas/CredentialOfferStatus"
         "403":
           description: Forbidden
           content:
@@ -1509,7 +1522,7 @@ paths:
         - oauth2:
             - wallet_manage_all_credentials
       summary: Add offer
-      tags: *a23
+      tags: *a22
   /api/oid4vci/offer/{id}/revoke:
     put:
       description: Revokes an existing credential offer, so that it cannot be used
@@ -1527,7 +1540,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/CredentialOfferStatusDto"
+                $ref: "#/components/schemas/CredentialOfferStatus"
         "403":
           description: Forbidden
           content:
@@ -1538,7 +1551,7 @@ paths:
         - oauth2:
             - wallet_manage_all_credentials
       summary: Revoke offer
-      tags: *a23
+      tags: *a22
 info:
   title: TSG Wallet
   description: >-
@@ -1579,8 +1592,8 @@ tags:
     description: Management Gaia-X Credentials Controller
   - name: OpenID 4 Verifiable Credential Issuance
     description: OpenID 4 Verifiable Credential Issuance Controller
-  - name: Presentation IATP
-    description: Presentation IATP Controller
+  - name: Presentation DCP
+    description: Presentation DCP Controller
   - name: Presentation Direct
     description: Presentation Direct Controller
 servers: []
@@ -1606,8 +1619,20 @@ components:
       properties:
         gaiaXSupport:
           type: boolean
+        title:
+          type: string
+        color:
+          type: string
+        darkThemeUrl:
+          type: string
+        lightThemeUrl:
+          type: string
       required:
         - gaiaXSupport
+        - title
+        - color
+        - darkThemeUrl
+        - lightThemeUrl
     ErrorDto:
       type: object
       properties:
@@ -1720,21 +1745,44 @@ components:
         - issuance
         - credentials
         - keys
-    VerifiablePresentationJwtDto:
+    VerifiablePresentationJwt:
       type: object
       properties:
         vp:
           type: string
       required:
         - vp
-    DataIntegrityProofDto:
+    JsonWebSignature2020:
       type: object
       properties:
-        id:
-          type: string
         type:
           type: string
+          enum:
+            - JsonWebSignature2020
         proofPurpose:
+          type: string
+        created:
+          type: string
+        jws:
+          type: string
+        verificationMethod:
+          type: string
+      required:
+        - type
+        - proofPurpose
+        - created
+        - jws
+        - verificationMethod
+    DataIntegrityProof:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: &a24
+            - DataIntegrityProof
+        proofPurpose:
+          type: string
+        id:
           type: string
         verificationMethod:
           type: string
@@ -1745,21 +1793,17 @@ components:
         expires:
           type: string
         domain:
-          oneOf:
-            - &a24
-              type: string
-            - type: array
-              items: *a24
+          type: array
+          items:
+            type: string
         challenge:
           type: string
         proofValue:
           type: string
         previousProof:
-          oneOf:
-            - &a25
-              type: string
-            - type: array
-              items: *a25
+          type: array
+          items:
+            type: string
         nonce:
           type: string
       required:
@@ -1767,7 +1811,73 @@ components:
         - proofPurpose
         - cryptosuite
         - proofValue
-    VerifiableCredentialDto:
+    CredentialSubject:
+      type: object
+      properties:
+        id:
+          type: string
+      required:
+        - id
+    Proof:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - JsonWebSignature2020
+            - DataIntegrityProof
+        proofPurpose:
+          type: string
+      required:
+        - type
+        - proofPurpose
+    VerifiableCredential:
+      type: object
+      properties:
+        "@context":
+          type: array
+          items:
+            type: string
+            enum:
+              - https://www.w3.org/2018/credentials/v1
+              - https://www.w3.org/ns/credentials/v2
+              - https://w3id.org/security/suites/jws-2020/v1
+              - https://w3id.org/security/data-integrity/v2
+              - string
+        type:
+          type: array
+          items:
+            type: string
+        id:
+          type: string
+        credentialSubject:
+          additionalProperties: true
+          allOf:
+            - $ref: "#/components/schemas/CredentialSubject"
+        issuer:
+          type: string
+        issuanceDate:
+          type: string
+        expirationDate:
+          type: string
+        validFrom:
+          type: string
+        validUntil:
+          type: string
+        evidence:
+          type: object
+          additionalProperties: true
+        proof:
+          type: array
+          items:
+            $ref: "#/components/schemas/Proof"
+      required:
+        - "@context"
+        - type
+        - credentialSubject
+        - issuer
+        - proof
+    VerifiablePresentation:
       type: object
       properties:
         "@context":
@@ -1780,47 +1890,33 @@ components:
             type: string
         id:
           type: string
-        credentialSubject:
+        verifiableCredential:
           oneOf:
-            - $ref: "#/components/schemas/DefaultCredentialSubjectDto"
+            - &a23
+              $ref: "#/components/schemas/VerifiableCredential"
             - type: array
-              items:
-                $ref: "#/components/schemas/DefaultCredentialSubjectDto"
-        issuer:
-          type: string
-        expirationDate:
-          type: string
-          format: date-time
-        issuanceDate:
-          type: string
-          format: date-time
-        evidence:
-          type: object
+              items: *a23
         proof:
           oneOf:
-            - &a26
-              oneOf:
-                - $ref: "#/components/schemas/DataIntegrityProofDto"
-                - $ref: "#/components/schemas/JsonWebSignature2020Dto"
-            - type: array
-              items: *a26
+            - $ref: "#/components/schemas/JsonWebSignature2020"
+            - $ref: "#/components/schemas/DataIntegrityProof"
       required:
         - "@context"
         - type
-        - credentialSubject
-        - issuer
-        - issuanceDate
+        - verifiableCredential
         - proof
-    VerifiablePresentationJsonLdDto:
+    VerifiablePresentationJsonLd:
       type: object
       properties:
         vp:
-          $ref: "#/components/schemas/VerifiableCredentialDto"
+          $ref: "#/components/schemas/VerifiablePresentation"
       required:
         - vp
-    PresentationValidationDto:
+    PresentationValidation:
       type: object
       properties:
+        vp:
+          type: string
         valid:
           type: boolean
         validateJWTSignature:
@@ -1841,27 +1937,95 @@ components:
             type: boolean
         validateAudience:
           type: boolean
-        vp:
-          type: string
       required:
+        - vp
         - valid
         - validateJWTSignature
         - validateJWTExpiryDate
         - validateTrustAnchors
         - validateExpiryDate
         - validateCredentials
-        - vp
-    FormatDto:
+    JwtVpClaimFormat:
+      type: object
+      properties:
+        alg:
+          type: array
+          items:
+            type: string
+      required:
+        - alg
+    Format:
       type: object
       properties:
         jwt_vp:
+          $ref: "#/components/schemas/JwtVpClaimFormat"
+    FilterItems:
+      type: object
+      properties:
+        const:
           type: object
-          properties:
-            alg:
-              type: array
-              items:
-                type: string
-    FieldDto:
+        enum:
+          type: array
+          items:
+            type: number
+        exclusiveMinimum:
+          type: object
+        exclusiveMaximum:
+          type: object
+        format:
+          type: string
+        minLength:
+          type: number
+        maxLength:
+          type: number
+        minimum:
+          type: object
+        maximum:
+          type: object
+        not:
+          $ref: "#/components/schemas/FilterItems"
+        pattern:
+          type: string
+        contains:
+          $ref: "#/components/schemas/FilterItems"
+        items:
+          type: object
+    Filter:
+      type: object
+      properties:
+        const:
+          type: object
+        enum:
+          type: array
+          items:
+            type: number
+        exclusiveMinimum:
+          type: object
+        exclusiveMaximum:
+          type: object
+        format:
+          type: string
+        minLength:
+          type: number
+        maxLength:
+          type: number
+        minimum:
+          type: object
+        maximum:
+          type: object
+        not:
+          $ref: "#/components/schemas/FilterItems"
+        pattern:
+          type: string
+        contains:
+          $ref: "#/components/schemas/FilterItems"
+        items:
+          type: object
+        type:
+          type: string
+      required:
+        - type
+    Field:
       type: object
       properties:
         path:
@@ -1875,24 +2039,24 @@ components:
         name:
           type: string
         filter:
-          type: object
+          $ref: "#/components/schemas/Filter"
         optional:
           type: boolean
       required:
         - path
-    ConstraintDto:
+    Constraint:
       type: object
       properties:
         fields:
           type: array
           items:
-            $ref: "#/components/schemas/FieldDto"
+            $ref: "#/components/schemas/Field"
         limit_disclosure:
           type: string
           enum:
             - required
             - preferred
-    InputDescriptorDto:
+    InputDescriptor:
       type: object
       properties:
         id:
@@ -1902,13 +2066,13 @@ components:
         purpose:
           type: string
         format:
-          $ref: "#/components/schemas/FormatDto"
+          $ref: "#/components/schemas/Format"
         constraints:
-          $ref: "#/components/schemas/ConstraintDto"
+          $ref: "#/components/schemas/Constraint"
       required:
         - id
         - constraints
-    PresentationDefinitionDto:
+    PresentationDefinition:
       type: object
       properties:
         id:
@@ -1916,67 +2080,17 @@ components:
         input_descriptors:
           type: array
           items:
-            $ref: "#/components/schemas/InputDescriptorDto"
+            $ref: "#/components/schemas/InputDescriptor"
         name:
           type: string
         purpose:
           type: string
         format:
-          $ref: "#/components/schemas/FormatDto"
+          $ref: "#/components/schemas/Format"
       required:
         - id
         - input_descriptors
-    DescriptorMapDto:
-      type: object
-      properties:
-        id:
-          type: string
-        format:
-          type: string
-        path:
-          type: string
-        path_nested:
-          $ref: "#/components/schemas/DescriptorMapDto"
-      required:
-        - id
-        - format
-        - path
-    PresentationSubmissionDto:
-      type: object
-      properties:
-        id:
-          type: string
-        definition_id:
-          type: string
-        descriptor_map:
-          type: array
-          items:
-            $ref: "#/components/schemas/DescriptorMapDto"
-      required:
-        - id
-        - definition_id
-        - descriptor_map
-    PresentationResponseDto:
-      type: object
-      properties:
-        vp_token:
-          type: string
-        presentation_submission:
-          $ref: "#/components/schemas/PresentationSubmissionDto"
-      required:
-        - vp_token
-        - presentation_submission
-    VerificationRequestDto:
-      type: object
-      properties:
-        presentationDefinition:
-          $ref: "#/components/schemas/PresentationDefinitionDto"
-        holderIdToken:
-          type: string
-      required:
-        - presentationDefinition
-        - holderIdToken
-    VerifiablePresentationDto:
+    PresentationQueryMessage:
       type: object
       properties:
         "@context":
@@ -1984,21 +2098,45 @@ components:
           items:
             type: string
         type:
+          type: string
+        presentationDefinition:
+          $ref: "#/components/schemas/PresentationDefinition"
+        scope:
           type: array
           items:
             type: string
-        id:
-          type: string
-        verifiableCredential:
-          oneOf:
-            - &a27
-              $ref: "#/components/schemas/VerifiableCredentialDto"
-            - type: array
-              items: *a27
       required:
         - "@context"
         - type
-        - verifiableCredential
+    PresentationResponseMessage:
+      type: object
+      properties:
+        "@context":
+          type: array
+          items:
+            type: string
+        type:
+          type: string
+        presentation:
+          type: array
+          items:
+            oneOf:
+              - type: string
+              - $ref: "#/components/schemas/VerifiablePresentation"
+      required:
+        - "@context"
+        - type
+        - presentation
+    VerificationRequest:
+      type: object
+      properties:
+        presentationDefinition:
+          $ref: "#/components/schemas/PresentationDefinition"
+        holderIdToken:
+          type: string
+      required:
+        - presentationDefinition
+        - holderIdToken
     AppRole:
       type: string
       enum:
@@ -2057,7 +2195,7 @@ components:
         targetDid:
           type: string
         credential:
-          $ref: "#/components/schemas/VerifiableCredentialDto"
+          $ref: "#/components/schemas/VerifiableCredential"
         selfIssued:
           type: boolean
         created:
@@ -2076,13 +2214,6 @@ components:
         - selfIssued
         - created
         - modified
-    DefaultCredentialSubjectDto:
-      type: object
-      properties:
-        id:
-          type: string
-      required:
-        - id
     CredentialConfigDto:
       type: object
       properties:
@@ -2106,11 +2237,11 @@ components:
         keyId:
           type: string
         credentialSubject:
-          $ref: "#/components/schemas/DefaultCredentialSubjectDto"
+          $ref: "#/components/schemas/CredentialSubject"
       required:
         - id
         - credentialSubject
-    LegalRegistrationNumberRequestDto:
+    LegalRegistrationNumberRequest:
       type: object
       properties:
         vcId:
@@ -2118,12 +2249,12 @@ components:
         clearingHouse:
           type: string
         credentialSubject:
-          $ref: "#/components/schemas/DefaultCredentialSubjectDto"
+          $ref: "#/components/schemas/CredentialSubject"
       required:
         - vcId
         - clearingHouse
         - credentialSubject
-    ComplianceRequestDto:
+    ComplianceRequest:
       type: object
       properties:
         vcId:
@@ -2133,7 +2264,7 @@ components:
         credentials:
           type: array
           items:
-            $ref: "#/components/schemas/VerifiableCredentialDto"
+            $ref: "#/components/schemas/VerifiableCredential"
       required:
         - vcId
         - clearingHouse
@@ -2216,56 +2347,78 @@ components:
         - type
         - id
         - default
-    SignRequestDto:
+    PartialTypeClass:
       type: object
       properties:
         type:
           type: string
+          enum: *a24
+        proofPurpose:
+          type: string
+        id:
+          type: string
+        verificationMethod:
+          type: string
+        cryptosuite:
+          type: string
+        created:
+          type: string
+        expires:
+          type: string
+        domain:
+          type: array
+          items:
+            type: string
+        challenge:
+          type: string
+        proofValue:
+          type: string
+        previousProof:
+          type: array
+          items:
+            type: string
+        nonce:
+          type: string
+    SignRequest:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - JsonWebSignature2020
+            - DataIntegrityProof
         plainDocument:
           type: object
         keyId:
           type: string
         normalization:
           type: string
+          enum:
+            - RDFC
+            - JCS
+          default: RDFC
         proofPurpose:
           type: string
+          default: assertionMethod
         options:
-          type: object
+          $ref: "#/components/schemas/PartialTypeClass"
         embeddedVerificationMethod:
           type: boolean
+          default: false
       required:
         - plainDocument
-    JsonWebSignature2020Dto:
-      type: object
-      properties:
-        type:
-          type: string
-        created:
-          type: string
-          format: date-time
-        proofPurpose:
-          type: string
-        jws:
-          type: string
-        verificationMethod:
-          type: string
-      required:
-        - type
-        - created
-        - proofPurpose
-        - jws
-        - verificationMethod
-    JsonWebSignatureDto:
+    ProofDocument:
       type: object
       properties:
         proof:
-          $ref: "#/components/schemas/JsonWebSignature2020Dto"
+          oneOf:
+            - &a25
+              $ref: "#/components/schemas/Proof"
+            - type: array
+              items: *a25
       required:
         - proof
-    ProofDocument:
-      type: object
-      properties: {}
-    ValidateRequestDto:
+    ValidateRequest:
       type: object
       properties:
         proofDocument:
@@ -2294,10 +2447,10 @@ components:
           type: string
         serviceEndpoint:
           oneOf:
-            - &a28
+            - &a26
               type: string
             - type: array
-              items: *a28
+              items: *a26
       required:
         - id
         - type
@@ -2307,10 +2460,10 @@ components:
       properties:
         "@context":
           oneOf:
-            - &a29
+            - &a27
               type: string
             - type: array
-              items: *a29
+              items: *a27
         id:
           type: string
         alsoKnownAs:
@@ -2319,10 +2472,10 @@ components:
             type: string
         controller:
           oneOf:
-            - &a30
+            - &a28
               type: string
             - type: array
-              items: *a30
+              items: *a28
         verificationMethod:
           type: array
           items:
@@ -2429,7 +2582,123 @@ components:
         - id
         - credentialType
         - issuable
-    CredentialIssuerMetadataDto:
+    CredentialSubjectDefinition:
+      type: object
+      properties: {}
+    CredentialDefinition:
+      type: object
+      properties:
+        "@context":
+          type: array
+          items:
+            type: string
+        type:
+          type: array
+          items:
+            type: string
+        credentialSubject:
+          $ref: "#/components/schemas/CredentialSubjectDefinition"
+      required:
+        - "@context"
+        - type
+    Logo:
+      type: object
+      properties:
+        uri:
+          type: string
+        alt_text:
+          type: string
+      required:
+        - uri
+    Image:
+      type: object
+      properties:
+        uri:
+          type: string
+      required:
+        - uri
+    ExtendedDisplay:
+      type: object
+      properties:
+        name:
+          type: string
+        locale:
+          type: string
+        logo:
+          $ref: "#/components/schemas/Logo"
+        description:
+          type: string
+        background_color:
+          type: string
+        background_image:
+          $ref: "#/components/schemas/Image"
+        text_color:
+          type: string
+    CredentialConfiguration:
+      type: object
+      properties:
+        format:
+          type: string
+        "@context":
+          type: array
+          items:
+            type: string
+        scope:
+          type: string
+        cryptographic_binding_methods_supported:
+          type: array
+          items:
+            type: string
+        credential_signing_alg_values_supported:
+          type: array
+          items:
+            type: string
+        proof_types_supported:
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              proof_signing_alg_values_supported:
+                type: array
+                items:
+                  type: string
+        credential_definition:
+          $ref: "#/components/schemas/CredentialDefinition"
+        display:
+          type: array
+          items:
+            $ref: "#/components/schemas/ExtendedDisplay"
+      required:
+        - format
+        - "@context"
+        - credential_definition
+    CredentialResponseEncryption:
+      type: object
+      properties:
+        alg_values_supported:
+          type: array
+          items:
+            type: string
+        enc_values_supported:
+          type: array
+          items:
+            type: string
+        encryption_required:
+          type: boolean
+      required:
+        - alg_values_supported
+        - enc_values_supported
+        - encryption_required
+    LogoDisplay:
+      type: object
+      properties:
+        name:
+          type: string
+        locale:
+          type: string
+        logo:
+          $ref: "#/components/schemas/Logo"
+    CredentialIssuerMetadata:
       type: object
       properties:
         credential_issuer:
@@ -2449,7 +2718,7 @@ components:
         notification_endpoint:
           type: string
         credential_response_encryption:
-          type: object
+          $ref: "#/components/schemas/CredentialResponseEncryption"
         credential_identifiers_supported:
           type: boolean
         signed_metadata:
@@ -2457,14 +2726,16 @@ components:
         display:
           type: array
           items:
-            type: string
+            $ref: "#/components/schemas/LogoDisplay"
         credential_configurations_supported:
           type: object
+          additionalProperties:
+            $ref: "#/components/schemas/CredentialConfiguration"
       required:
         - credential_issuer
         - credential_endpoint
         - credential_configurations_supported
-    AuthorizationDetailDto:
+    AuthorizationDetail:
       type: object
       properties:
         type:
@@ -2479,7 +2750,7 @@ components:
         - type
         - credential_configuration_id
         - credential_identifiers
-    AccessTokenDto:
+    AccessToken:
       type: object
       properties:
         access_token:
@@ -2497,11 +2768,11 @@ components:
         authorization_details:
           type: array
           items:
-            $ref: "#/components/schemas/AuthorizationDetailDto"
+            $ref: "#/components/schemas/AuthorizationDetail"
       required:
         - access_token
         - authorization_details
-    ImmediateCredentialResponseDto:
+    ImmediateCredentialResponse:
       type: object
       properties:
         credential:
@@ -2512,7 +2783,7 @@ components:
           type: number
       required:
         - credential
-    DeferredCredentialResponseDto:
+    DeferredCredentialResponse:
       type: object
       properties:
         transaction_id:
@@ -2523,29 +2794,27 @@ components:
           type: number
       required:
         - transaction_id
-    JwtProofDto:
+    JwtProof:
       type: object
       properties:
         proof_type:
           type: string
-          pattern: jwt
         jwt:
           type: string
       required:
         - proof_type
         - jwt
-    CwtProofDto:
+    CwtProof:
       type: object
       properties:
         proof_type:
           type: string
-          pattern: cbt
         cbt:
           type: string
       required:
         - proof_type
         - cbt
-    VpProofDto:
+    VpProof:
       type: object
       properties:
         "@context":
@@ -2559,41 +2828,42 @@ components:
         holder:
           type: string
         proof:
-          type: object
+          $ref: "#/components/schemas/DataIntegrityProof"
       required:
         - "@context"
         - type
         - holder
         - proof
-    LdpVpProofDto:
+    LdpVpProof:
       type: object
       properties:
         proof_type:
           type: string
-          pattern: ldp_vp
         ldp_vp:
-          $ref: "#/components/schemas/VpProofDto"
+          $ref: "#/components/schemas/VpProof"
       required:
         - proof_type
         - ldp_vp
-    CredentialRequestDto:
+    CredentialRequest:
       type: object
       properties:
         format:
           type: string
-          pattern: jwt_vc_json-ld
+          enum:
+            - jwt_vc_json-ld
+            - jwt_vc_json
         credential_definition:
-          type: object
+          $ref: "#/components/schemas/CredentialDefinition"
         proof:
           oneOf:
-            - $ref: "#/components/schemas/JwtProofDto"
-            - $ref: "#/components/schemas/CwtProofDto"
-            - $ref: "#/components/schemas/LdpVpProofDto"
+            - $ref: "#/components/schemas/JwtProof"
+            - $ref: "#/components/schemas/CwtProof"
+            - $ref: "#/components/schemas/LdpVpProof"
       required:
         - format
         - credential_definition
         - proof
-    CredentialOfferStatusDto:
+    CredentialOfferStatus:
       type: object
       properties:
         id:
@@ -2612,7 +2882,7 @@ components:
         revoked:
           type: boolean
         credentialSubject:
-          $ref: "#/components/schemas/DefaultCredentialSubjectDto"
+          $ref: "#/components/schemas/CredentialSubject"
       required:
         - id
         - created
@@ -2621,34 +2891,43 @@ components:
         - credentialType
         - revoked
         - credentialSubject
-    PreAuthorizationCodeGrantDto:
+    TransactionCode:
+      type: object
+      properties:
+        input_mode:
+          type: string
+        length:
+          type: number
+        description:
+          type: string
+    PreAuthorizationCodeGrant:
       type: object
       properties:
         pre-authorization_code:
           type: string
-        authorization_server:
-          type: string
+        tx_code:
+          $ref: "#/components/schemas/TransactionCode"
         interval:
           type: number
-        tx_code:
-          type: object
-      required:
-        - pre-authorization_code
-    AuthorizationCodeDto:
-      type: object
-      properties:
         authorization_server:
           type: string
+      required:
+        - pre-authorization_code
+    AuthorizationCode:
+      type: object
+      properties:
         issuer_state:
           type: string
-    OfferGrantsDto:
+        authorization_server:
+          type: string
+    CredentialOfferGrants:
       type: object
       properties:
         urn:ietf:params:oauth:grant-type:pre-authorized_code:
-          $ref: "#/components/schemas/PreAuthorizationCodeGrantDto"
+          $ref: "#/components/schemas/PreAuthorizationCodeGrant"
         authorization_code:
-          $ref: "#/components/schemas/AuthorizationCodeDto"
-    CredentialOfferDto:
+          $ref: "#/components/schemas/AuthorizationCode"
+    CredentialOffer:
       type: object
       properties:
         credential_issuer:
@@ -2658,7 +2937,7 @@ components:
           items:
             type: string
         grants:
-          $ref: "#/components/schemas/OfferGrantsDto"
+          $ref: "#/components/schemas/CredentialOfferGrants"
       required:
         - credential_issuer
         - credential_configuration_ids

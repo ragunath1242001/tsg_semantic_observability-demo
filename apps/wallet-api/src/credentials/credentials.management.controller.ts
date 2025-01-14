@@ -30,8 +30,7 @@ import {
 import {
   CredentialConfigDto,
   CredentialsConfigDto,
-  CredentialsDto,
-  VerifiableCredentialDto
+  CredentialsDto
 } from "./credentials.schemas.js";
 import { validationPipe } from "../utils/validation.pipe.js";
 import {
@@ -165,7 +164,7 @@ export class CredentialsManagementController {
     description: "Import a credential issued by an external credential issuer"
   })
   @HttpCode(HttpStatus.OK)
-  @ApiBody({ type: VerifiableCredentialDto })
+  @ApiBody({ type: VerifiableCredential })
   @ApiOkResponse({ type: CredentialsDto })
   @ApiConflictResponseDefault()
   @ApiForbiddenResponseDefault()

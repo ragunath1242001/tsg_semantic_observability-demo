@@ -6,8 +6,8 @@ import {
   deserialize,
   HashedMessage
 } from "@tsg-dsp/common-dsp";
-import { DSPError } from "../utils/errors/error";
-import { AgreementDao } from "../model/agreement.dao";
+import { DSPError } from "../utils/errors/error.js";
+import { AgreementDao } from "../model/agreement.dao.js";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 

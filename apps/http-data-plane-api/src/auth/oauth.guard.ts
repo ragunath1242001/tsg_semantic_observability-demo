@@ -2,7 +2,7 @@ import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
 import { APP_GUARD, Reflector } from "@nestjs/core";
 import { AuthGuard } from "@nestjs/passport";
 import { Request } from "express";
-import { AuthConfig } from "../config";
+import { AuthConfig } from "../config.js";
 
 export const DisableOAuthGuard = Reflector.createDecorator<boolean>();
 

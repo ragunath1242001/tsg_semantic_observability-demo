@@ -2,7 +2,7 @@ import { defineStore } from "pinia";
 import { socket } from "../socket";
 import {
   NegotiationDetailDto,
-  INegotiationStatusDto
+  NegotiationStatusDto
 } from "@tsg-dsp/common-dtos";
 import http from "@tsg-dsp/common-ui/utils/http";
 import {
@@ -21,7 +21,7 @@ interface Catalog {
 
 interface IDspStore {
   ownCatalog: Catalog;
-  negotiations: INegotiationStatusDto[];
+  negotiations: NegotiationStatusDto[];
   ctaNegotiations: NegotiationDetailDto[];
   transfers: TransferStatus[];
   ctaTransfers: TransferDetailDto[];
@@ -74,7 +74,7 @@ export const useDspStore = defineStore("dsp", {
         const response = await http.get("management/negotiations/");
         const negotiations = response.data;
         const ctaNegotiations = response.data.filter(
-          (negotiation: INegotiationStatusDto) =>
+          (negotiation: NegotiationStatusDto) =>
             (negotiation.role == "provider" &&
               negotiation.state == "dspace:REQUESTED") ||
             (negotiation.role == "consumer" &&

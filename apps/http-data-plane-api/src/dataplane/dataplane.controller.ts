@@ -10,18 +10,23 @@ import {
   Body,
   Headers
 } from "@nestjs/common";
-import { DataPlaneService } from "./dataplane.service";
+import { DataPlaneService } from "./dataplane.service.js";
 import {
   DataPlaneRequestResponseDto,
   TransferCompletionMessageDto,
+  TransferCompletionMessageSchema,
   TransferRequestMessageDto,
+  TransferRequestMessageSchema,
   TransferStartMessageDto,
+  TransferStartMessageSchema,
   TransferSuspensionMessageDto,
-  TransferTerminationMessageDto
+  TransferSuspensionMessageSchema,
+  TransferTerminationMessageDto,
+  TransferTerminationMessageSchema
 } from "@tsg-dsp/common-dsp";
 
-import { DisableOAuthGuard } from "../auth/oauth.guard";
-import { DisableRolesGuard, Roles } from "../auth/roles.guard";
+import { DisableOAuthGuard } from "../auth/oauth.guard.js";
+import { DisableRolesGuard, Roles } from "../auth/roles.guard.js";
 import {
   ApiBadGatewayResponse,
   ApiBody,
@@ -33,15 +38,7 @@ import {
   ApiResponse,
   ApiTags
 } from "@nestjs/swagger";
-import {
-  ApiForbiddenResponseDefault,
-  TransferRequestMessageSchema,
-  DataPlaneRequestResponseSchema,
-  TransferStartMessageSchema,
-  TransferCompletionMessageSchema,
-  TransferTerminationMessageSchema,
-  TransferSuspensionMessageSchema
-} from "@tsg-dsp/common-dtos";
+import { ApiForbiddenResponseDefault } from "@tsg-dsp/common-dtos";
 
 @Controller()
 @ApiTags("Data Plane")
@@ -89,7 +86,7 @@ export class DataPlaneController {
     description: "Requests a transfer from control plane to data plane."
   })
   @ApiBody({ type: TransferRequestMessageSchema })
-  @ApiOkResponse({ type: DataPlaneRequestResponseSchema })
+  @ApiOkResponse({ type: DataPlaneRequestResponseDto })
   @ApiForbiddenResponseDefault()
   async requestTransfer(
     @Body() body: TransferRequestMessageDto,

@@ -1,11 +1,11 @@
 import { Module } from "@nestjs/common";
-import { DataPlaneTestModule } from "./dataplane/dataplane.module";
-import { ConfigModule, config } from "./config.module";
+import { DataPlaneTestModule } from "./dataplane/dataplane.module.js";
+import { ConfigModule, config } from "./config.module.js";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { ServeStaticModule } from "@nestjs/serve-static";
-import { AuthModule } from "./auth/auth.module";
-import { LoggingModule } from "./logging/logging.module";
-import { ConfigController } from "./config.controller";
+import { AuthModule } from "./auth/auth.module.js";
+import { LoggingModule } from "./logging/logging.module.js";
+import { ConfigController } from "./config.controller.js";
 
 const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
   ? [

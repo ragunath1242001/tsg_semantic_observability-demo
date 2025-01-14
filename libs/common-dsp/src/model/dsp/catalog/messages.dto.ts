@@ -1,5 +1,5 @@
-import { ContextDto } from "../common.dto";
-import { CatalogDto } from "./catalog.dto";
+import { ContextDto } from "../common.dto.js";
+import { CatalogDto } from "./catalog.dto.js";
 
 export interface CatalogErrorDto extends ContextDto {
   "@type": "dspace:CatalogError";

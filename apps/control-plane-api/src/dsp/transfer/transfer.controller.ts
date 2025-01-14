@@ -1,30 +1,37 @@
-import { Body, Controller, HttpStatus, Logger } from "@nestjs/common";
 import {
+  Body,
+  Controller,
+  HttpStatus,
+  Logger,
   Get,
   HttpCode,
   Param,
   Post,
   UseGuards
-} from "@nestjs/common/decorators";
+} from "@nestjs/common";
 import {
-  CredentialSubject,
   toArray,
   TransferCompletionMessage,
+  TransferCompletionMessageSchema,
   TransferProcessDto,
+  TransferProcessSchema,
   TransferRequestMessage,
+  TransferRequestMessageSchema,
   TransferStartMessage,
+  TransferStartMessageSchema,
   TransferSuspensionMessage,
+  TransferSuspensionMessageSchema,
   TransferTerminationMessage,
-  VerifiableCredential,
+  TransferTerminationMessageSchema,
   VerifiablePresentation
 } from "@tsg-dsp/common-dsp";
 import {
   TransferVerifiablePresentationGuard,
   VerifiablePresentationGuard
-} from "../../auth/verifiablePresentation.guard";
-import { VP, VPId } from "../../auth/verifiablePresentation.strategy";
-import { DeserializePipe } from "../../utils/deserialize.pipe";
-import { TransferService } from "./transfer.service";
+} from "../../auth/verifiablePresentation.guard.js";
+import { VP, VPId } from "../../auth/verifiablePresentation.strategy.js";
+import { DeserializePipe } from "../../utils/deserialize.pipe.js";
+import { TransferService } from "./transfer.service.js";
 import {
   ApiTags,
   ApiOperation,
@@ -34,14 +41,6 @@ import {
   ApiBearerAuth,
   ApiCreatedResponse
 } from "@nestjs/swagger";
-import {
-  TransferRequestMessageSchema,
-  TransferProcessSchema,
-  TransferCompletionMessageSchema,
-  TransferStartMessageSchema,
-  TransferSuspensionMessageSchema,
-  TransferTerminationMessageSchema
-} from "@tsg-dsp/common-dtos";
 
 @ApiTags("Transfers")
 @ApiBearerAuth()

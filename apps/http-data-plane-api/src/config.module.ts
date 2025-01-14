@@ -1,10 +1,8 @@
-import {
-  TypedConfigModule,
-  dotenvLoader,
-  fileLoader,
-  selectConfig
-} from "nest-typed-config";
-import { RootConfig } from "./config";
+import { dotenvLoader } from "nest-typed-config/dist/loader/dotenv-loader.js";
+import { fileLoader } from "nest-typed-config/dist/loader/file-loader.js";
+import { TypedConfigModule } from "nest-typed-config/dist/typed-config.module.js";
+import { selectConfig } from "nest-typed-config/dist/utils/select-config.util.js";
+import { RootConfig } from "./config.js";
 import { DynamicModule } from "@nestjs/common";
 import { plainToInstance } from "class-transformer";
 import { validateSync } from "class-validator";

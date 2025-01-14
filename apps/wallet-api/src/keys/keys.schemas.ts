@@ -11,7 +11,7 @@ export class KeyInfoDto implements KeyInfo {
   type!: "EdDSA" | "ES384" | "X509";
   @ApiProperty()
   default!: boolean;
-  @ApiProperty({ type: JsonWebKeyDto })
+  @ApiProperty({ type: () => JsonWebKeyDto })
   publicKey!: JWK;
   @ApiProperty()
   created!: Date;

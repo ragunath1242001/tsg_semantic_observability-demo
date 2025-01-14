@@ -1,5 +1,6 @@
-import { DataPlaneCreation, IDataPlaneDto } from "@tsg-dsp/control-plane-dtos";
 import {
+  DataPlaneCreation,
+  DataPlaneDetailsDto,
   DataPlaneRequestResponseDto,
   DataPlaneTransferDto
 } from "@tsg-dsp/common-dsp";
@@ -29,15 +30,14 @@ import axios, {
 import crypto from "crypto";
 import deepEqual from "deep-equal";
 import { In, Repository } from "typeorm";
-import { AuthClientService } from "../auth/auth.client.service";
-import { CatalogService } from "../dsp/catalog/catalog.service";
-import { DatasetDao } from "../model/catalog.dao";
-import { DataPlaneDao } from "../model/dataPlanes.dao";
-import { DSPClientError, DSPError } from "../utils/errors/error";
-import { AgreementService } from "../policy/agreement.service";
-import { Paginated } from "../utils/pagination/pagination.parameters";
-import { PaginationOptionsDto } from "../utils/pagination/pagination.options.dto";
-import { DataPlaneDto } from "./dataplane.schemas";
+import { AuthClientService } from "../auth/auth.client.service.js";
+import { CatalogService } from "../dsp/catalog/catalog.service.js";
+import { DatasetDao } from "../model/catalog.dao.js";
+import { DataPlaneDao } from "../model/dataPlanes.dao.js";
+import { DSPClientError, DSPError } from "../utils/errors/error.js";
+import { AgreementService } from "../policy/agreement.service.js";
+import { Paginated } from "../utils/pagination/pagination.parameters.js";
+import { PaginationOptionsDto } from "../utils/pagination/pagination.options.dto.js";
 
 @Injectable()
 export class DataPlaneService {
@@ -66,7 +66,7 @@ export class DataPlaneService {
 
   async getDataPlanes(
     paginationOptions: PaginationOptionsDto
-  ): Promise<Paginated<DataPlaneDto[]>> {
+  ): Promise<Paginated<DataPlaneDetailsDto[]>> {
     const [dataPlanes, itemCount] = await this.dataPlaneRepository.findAndCount(
       {
         order: {
@@ -138,7 +138,7 @@ export class DataPlaneService {
 
   async addDataPlane(
     dataPlaneCreation: DataPlaneCreation
-  ): Promise<IDataPlaneDto> {
+  ): Promise<DataPlaneDetailsDto> {
     const dataPlane: DataPlane = {
       datasets: dataPlaneCreation.datasets
         ? await Promise.all(
@@ -178,8 +178,8 @@ export class DataPlaneService {
   }
 
   async updateDataPlane(
-    dataPlaneDetails: IDataPlaneDto
-  ): Promise<IDataPlaneDto> {
+    dataPlaneDetails: DataPlaneDetailsDto
+  ): Promise<DataPlaneDetailsDto> {
     const dataPlane = await this.getDataPlaneDetails(
       dataPlaneDetails.identifier
     );

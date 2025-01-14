@@ -1,5 +1,73 @@
 openapi: 3.0.0
 paths:
+  /api/settings:
+    get:
+      description: Retrieves the settings of the control plane.
+      operationId: ConfigController_getSettings
+      parameters: []
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RuntimeConfigDto"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: &a1
+        - oauth2:
+            - controlplane_admin
+      summary: Retrieve settings
+      tags: &a2
+        - Settings
+  /api/settings/update:
+    post:
+      description: Updates runtime settings for the control plane.
+      operationId: ConfigController_updateSettings
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RuntimeConfigDto"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RuntimeConfigDto"
+        "400":
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a1
+      summary: Update settings
+      tags: *a2
+  /api/settings/upload:
+    post:
+      description: Uploads logo for the control plane, receive a base64 encoded url.
+      operationId: ConfigController_uploadFile
+      parameters: []
+      responses:
+        "200":
+          description: ""
+      security: *a1
+      summary: Upload logo
+      tags: *a2
   /api/catalog:
     get:
       description: Get catalog, currently not implemented.
@@ -14,11 +82,11 @@ paths:
                 $ref: "#/components/schemas/ErrorDto"
         "501":
           description: ""
-      security: &a1
+      security: &a3
         - oauth2:
             - controlplane_dataplane
       summary: Get catalog
-      tags: &a2
+      tags: &a4
         - Data Plane
   /health:
     get:
@@ -31,9 +99,9 @@ paths:
           description: ""
         "502":
           description: ""
-      security: *a1
+      security: *a3
       summary: Health check
-      tags: *a2
+      tags: *a4
   /api/transfers/request/{role}:
     post:
       description: Requests a transfer from control plane to data plane.
@@ -71,16 +139,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/DataPlaneRequestResponseSchema"
+                $ref: "#/components/schemas/DataPlaneRequestResponseDto"
         "403":
           description: Forbidden
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a1
+      security: *a3
       summary: Request Transfer
-      tags: *a2
+      tags: *a4
   /api/transfers/{id}/start:
     post:
       operationId: DataPlaneController_startTransfer
@@ -100,9 +168,9 @@ paths:
       responses:
         "202":
           description: Transfer started successfully
-      security: *a1
+      security: *a3
       summary: Start transfer process
-      tags: *a2
+      tags: *a4
   /api/transfers/{id}/complete:
     post:
       operationId: DataPlaneController_completeTransfer
@@ -122,9 +190,9 @@ paths:
       responses:
         "202":
           description: Transfer completed successfully
-      security: *a1
+      security: *a3
       summary: Complete transfer process
-      tags: *a2
+      tags: *a4
   /api/transfers/{id}/terminate:
     post:
       operationId: DataPlaneController_terminateTransfer
@@ -144,9 +212,9 @@ paths:
       responses:
         "202":
           description: Transfer terminated successfully
-      security: *a1
+      security: *a3
       summary: Terminate transfer process
-      tags: *a2
+      tags: *a4
   /api/transfers/{id}/suspend:
     post:
       operationId: DataPlaneController_suspendTransfer
@@ -166,9 +234,9 @@ paths:
       responses:
         "202":
           description: Transfer suspended successfully
-      security: *a1
+      security: *a3
       summary: Suspend transfer process
-      tags: *a2
+      tags: *a4
   /api/management/state:
     get:
       description: Get the state of the data plane, consisting of the id, details and
@@ -181,18 +249,18 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/DataPlaneStateSchema"
+                $ref: "#/components/schemas/DataPlaneStateDto"
         "403":
           description: Forbidden
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: &a3
+      security: &a5
         - oauth2:
             - controlplane_dataplane
       summary: Get Data Plane state
-      tags: &a4
+      tags: &a6
         - Data Plane Management
   /api/management/catalog:
     get:
@@ -212,9 +280,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a3
+      security: *a5
       summary: Get catalog
-      tags: *a4
+      tags: *a6
   /api/management/refresh:
     post:
       description: Use this endpoint to (re)register your data plane. Currently it
@@ -230,9 +298,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a3
+      security: *a5
       summary: (Re)register data plane
-      tags: *a4
+      tags: *a6
   /api/management/dataset:
     get:
       description: Get the current dataset configuration.
@@ -251,9 +319,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a3
+      security: *a5
       summary: Get dataset
-      tags: *a4
+      tags: *a6
     put:
       description: Update the current dataset configuration.
       operationId: DataPlaneManagementController_updateDatasetConfig
@@ -270,16 +338,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/DataPlaneStateSchema"
+                $ref: "#/components/schemas/DataPlaneStateDto"
         "403":
           description: Forbidden
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a3
+      security: *a5
       summary: Update dataset
-      tags: *a4
+      tags: *a6
   /api/management/transfers:
     get:
       operationId: DataPlaneManagementController_getTransfers
@@ -292,16 +360,16 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/TransferSchema"
+                  $ref: "#/components/schemas/TransferDto"
         "403":
           description: Forbidden
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a3
+      security: *a5
       summary: Get all transfers
-      tags: *a4
+      tags: *a6
   /api/management/transfers/{id}:
     get:
       operationId: DataPlaneManagementController_getTransfer
@@ -318,16 +386,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TransferSchema"
+                $ref: "#/components/schemas/TransferDto"
         "403":
           description: Forbidden
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a3
+      security: *a5
       summary: Get transfer by ID
-      tags: *a4
+      tags: *a6
   /api/management/transfers/{id}/metadata:
     get:
       operationId: DataPlaneManagementController_getMetadata
@@ -344,16 +412,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/MetadataSchema"
+                $ref: "#/components/schemas/MetadataDto"
         "403":
           description: Forbidden
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a3
+      security: *a5
       summary: Get metadata of transfer by ID
-      tags: *a4
+      tags: *a6
   /api/management/transfers/{id}/start:
     post:
       operationId: DataPlaneManagementController_startTransfer
@@ -373,9 +441,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a3
+      security: *a5
       summary: Start a transfer by ID
-      tags: *a4
+      tags: *a6
   /api/management/transfers/{id}/complete:
     post:
       operationId: DataPlaneManagementController_completeTransfer
@@ -395,9 +463,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a3
+      security: *a5
       summary: Complete a transfer by ID
-      tags: *a4
+      tags: *a6
   /api/management/transfers/{id}/terminate:
     post:
       operationId: DataPlaneManagementController_terminateTransfer
@@ -427,9 +495,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a3
+      security: *a5
       summary: Terminate a transfer by ID
-      tags: *a4
+      tags: *a6
   /api/management/transfers/{id}/suspend:
     post:
       operationId: DataPlaneManagementController_suspendTransfer
@@ -454,9 +522,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a3
+      security: *a5
       summary: Suspend a transfer by ID
-      tags: *a4
+      tags: *a6
   /api/management/transfers/{id}/execute/{path}:
     get:
       description: "This endpoint is used if the HTTP Data Plane needs to serve as a
@@ -482,9 +550,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a3
+      security: *a5
       summary: Proxy a request
-      tags: *a4
+      tags: *a6
     post:
       description: "This endpoint is used if the HTTP Data Plane needs to serve as a
         proxy. "
@@ -509,9 +577,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a3
+      security: *a5
       summary: Proxy a request
-      tags: *a4
+      tags: *a6
     put:
       description: "This endpoint is used if the HTTP Data Plane needs to serve as a
         proxy. "
@@ -536,9 +604,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a3
+      security: *a5
       summary: Proxy a request
-      tags: *a4
+      tags: *a6
     delete:
       description: "This endpoint is used if the HTTP Data Plane needs to serve as a
         proxy. "
@@ -563,9 +631,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a3
+      security: *a5
       summary: Proxy a request
-      tags: *a4
+      tags: *a6
     patch:
       description: "This endpoint is used if the HTTP Data Plane needs to serve as a
         proxy. "
@@ -590,9 +658,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a3
+      security: *a5
       summary: Proxy a request
-      tags: *a4
+      tags: *a6
     options:
       description: "This endpoint is used if the HTTP Data Plane needs to serve as a
         proxy. "
@@ -617,9 +685,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a3
+      security: *a5
       summary: Proxy a request
-      tags: *a4
+      tags: *a6
     head:
       description: "This endpoint is used if the HTTP Data Plane needs to serve as a
         proxy. "
@@ -644,9 +712,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a3
+      security: *a5
       summary: Proxy a request
-      tags: *a4
+      tags: *a6
     search:
       description: "This endpoint is used if the HTTP Data Plane needs to serve as a
         proxy. "
@@ -671,9 +739,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a3
+      security: *a5
       summary: Proxy a request
-      tags: *a4
+      tags: *a6
   /api/management/execute/{path}:
     get:
       description: This endpoint is used if the HTTP Data Plane needs to serve as a
@@ -709,9 +777,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a3
+      security: *a5
       summary: Proxy a request without transfer ID
-      tags: *a4
+      tags: *a6
     post:
       description: This endpoint is used if the HTTP Data Plane needs to serve as a
         proxy and the transfer hasn't been created yet. Used for automatic
@@ -746,9 +814,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a3
+      security: *a5
       summary: Proxy a request without transfer ID
-      tags: *a4
+      tags: *a6
     put:
       description: This endpoint is used if the HTTP Data Plane needs to serve as a
         proxy and the transfer hasn't been created yet. Used for automatic
@@ -783,9 +851,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a3
+      security: *a5
       summary: Proxy a request without transfer ID
-      tags: *a4
+      tags: *a6
     delete:
       description: This endpoint is used if the HTTP Data Plane needs to serve as a
         proxy and the transfer hasn't been created yet. Used for automatic
@@ -820,9 +888,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a3
+      security: *a5
       summary: Proxy a request without transfer ID
-      tags: *a4
+      tags: *a6
     patch:
       description: This endpoint is used if the HTTP Data Plane needs to serve as a
         proxy and the transfer hasn't been created yet. Used for automatic
@@ -857,9 +925,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a3
+      security: *a5
       summary: Proxy a request without transfer ID
-      tags: *a4
+      tags: *a6
     options:
       description: This endpoint is used if the HTTP Data Plane needs to serve as a
         proxy and the transfer hasn't been created yet. Used for automatic
@@ -894,9 +962,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a3
+      security: *a5
       summary: Proxy a request without transfer ID
-      tags: *a4
+      tags: *a6
     head:
       description: This endpoint is used if the HTTP Data Plane needs to serve as a
         proxy and the transfer hasn't been created yet. Used for automatic
@@ -931,9 +999,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a3
+      security: *a5
       summary: Proxy a request without transfer ID
-      tags: *a4
+      tags: *a6
     search:
       description: This endpoint is used if the HTTP Data Plane needs to serve as a
         proxy and the transfer hasn't been created yet. Used for automatic
@@ -968,9 +1036,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a3
+      security: *a5
       summary: Proxy a request without transfer ID
-      tags: *a4
+      tags: *a6
   /api/proxy/{id}/{path}:
     get:
       description: "This endpoint is used if the HTTP Data Plane needs to serve as a
@@ -997,7 +1065,7 @@ paths:
         "200":
           description: ""
       summary: Proxy a request
-      tags: &a5
+      tags: &a7
         - Proxy
     post:
       description: "This endpoint is used if the HTTP Data Plane needs to serve as a
@@ -1024,7 +1092,7 @@ paths:
         "200":
           description: ""
       summary: Proxy a request
-      tags: *a5
+      tags: *a7
     put:
       description: "This endpoint is used if the HTTP Data Plane needs to serve as a
         proxy. "
@@ -1050,7 +1118,7 @@ paths:
         "200":
           description: ""
       summary: Proxy a request
-      tags: *a5
+      tags: *a7
     delete:
       description: "This endpoint is used if the HTTP Data Plane needs to serve as a
         proxy. "
@@ -1076,7 +1144,7 @@ paths:
         "200":
           description: ""
       summary: Proxy a request
-      tags: *a5
+      tags: *a7
     patch:
       description: "This endpoint is used if the HTTP Data Plane needs to serve as a
         proxy. "
@@ -1102,7 +1170,7 @@ paths:
         "200":
           description: ""
       summary: Proxy a request
-      tags: *a5
+      tags: *a7
     options:
       description: "This endpoint is used if the HTTP Data Plane needs to serve as a
         proxy. "
@@ -1128,7 +1196,7 @@ paths:
         "200":
           description: ""
       summary: Proxy a request
-      tags: *a5
+      tags: *a7
     head:
       description: "This endpoint is used if the HTTP Data Plane needs to serve as a
         proxy. "
@@ -1154,7 +1222,7 @@ paths:
         "200":
           description: ""
       summary: Proxy a request
-      tags: *a5
+      tags: *a7
     search:
       description: "This endpoint is used if the HTTP Data Plane needs to serve as a
         proxy. "
@@ -1180,7 +1248,7 @@ paths:
         "200":
           description: ""
       summary: Proxy a request
-      tags: *a5
+      tags: *a7
   /api/auth/user:
     get:
       description: Retrieves current user state, whether someone is logged in or not a
@@ -1198,7 +1266,7 @@ paths:
                   - $ref: "#/components/schemas/AuthenticatedUserDto"
                   - $ref: "#/components/schemas/UnauthenticatedUserDto"
       summary: Retrieve current user status
-      tags: &a6
+      tags: &a8
         - Authentication
   /api/auth/login:
     get:
@@ -1209,7 +1277,7 @@ paths:
         "302":
           description: ""
       summary: Login redirect
-      tags: *a6
+      tags: *a8
   /api/auth/logout:
     get:
       description: Removes session information and redirects user the root of the
@@ -1220,7 +1288,7 @@ paths:
         "302":
           description: ""
       summary: Logout redirect
-      tags: *a6
+      tags: *a8
   /api/auth/callback:
     get:
       description: Users are redirected from the authorization server to this endpoint
@@ -1231,7 +1299,7 @@ paths:
         "302":
           description: ""
       summary: Login callback
-      tags: *a6
+      tags: *a8
   /api/management/logging/ingress:
     get:
       operationId: LoggingController_getIngressLogs
@@ -1286,7 +1354,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/PageDto"
       summary: Get ingress logs
-      tags: &a7
+      tags: &a9
         - Logging
   /api/management/logging/egress:
     get:
@@ -1342,7 +1410,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/PageDto"
       summary: Get egress logs
-      tags: *a7
+      tags: *a9
 info:
   title: TSG HTTP Data Plane
   description: This OpenAPI specification shows the endpoints of the HTTP Data Plane.
@@ -1383,6 +1451,17 @@ components:
       description: Verifiable Presentation needed to communicate between two instances
         of the control plane.
   schemas:
+    RuntimeConfigDto:
+      type: object
+      properties:
+        color:
+          type: string
+        darkThemeUrl:
+          type: string
+        lightThemeUrl:
+          type: string
+      required:
+        - color
     ErrorDto:
       type: object
       properties:
@@ -1452,7 +1531,29 @@ components:
         - dspace:agreementId
         - dct:format
         - dspace:callbackAddress
-    DataPlaneRequestResponseSchema:
+    DataPlaneProperty:
+      type: object
+      properties:
+        name:
+          type: string
+        value:
+          type: string
+      required:
+        - name
+        - value
+    DataPlaneAddressDto:
+      type: object
+      properties:
+        endpoint:
+          type: string
+        properties:
+          type: array
+          items:
+            $ref: "#/components/schemas/DataPlaneProperty"
+      required:
+        - endpoint
+        - properties
+    DataPlaneRequestResponseDto:
       type: object
       properties:
         accepted:
@@ -1460,7 +1561,7 @@ components:
         identifier:
           type: string
         dataAddress:
-          $ref: "#/components/schemas/DataAddressSchema"
+          $ref: "#/components/schemas/DataPlaneAddressDto"
         callbackAddress:
           type: string
       required:
@@ -1533,49 +1634,6 @@ components:
         - dspace:providerPid
         - dspace:consumerPid
         - dspace:reason
-    DataPlaneDetailsSchema:
-      type: object
-      properties:
-        identifier:
-          type: string
-        dataplaneType:
-          type: string
-        endpointPrefix:
-          type: string
-        callbackAddress:
-          type: string
-        managementAddress:
-          type: string
-        managementToken:
-          type: string
-        catalogSynchronization:
-          type: string
-        role:
-          type: string
-      required:
-        - identifier
-        - dataplaneType
-        - endpointPrefix
-        - callbackAddress
-        - managementAddress
-        - managementToken
-        - catalogSynchronization
-        - role
-    DataPlaneStateSchema:
-      type: object
-      properties:
-        identifier:
-          type: string
-        details:
-          $ref: "#/components/schemas/DataPlaneDetailsSchema"
-        dataset:
-          type: array
-          items:
-            type: string
-      required:
-        - identifier
-        - details
-        - dataset
     ConstraintSchema:
       type: object
       properties:
@@ -1762,6 +1820,60 @@ components:
       required:
         - "@id"
         - "@type"
+    DataPlaneDetailsDto:
+      type: object
+      properties:
+        datasets:
+          type: array
+          items:
+            $ref: "#/components/schemas/DatasetSchema"
+        dataplaneType:
+          type: string
+        endpointPrefix:
+          type: string
+        callbackAddress:
+          type: string
+        managementAddress:
+          type: string
+        managementToken:
+          type: string
+        catalogSynchronization:
+          type: string
+          enum:
+            - push
+            - pull
+        role:
+          type: string
+          enum:
+            - consumer
+            - provider
+            - both
+        identifier:
+          type: string
+      required:
+        - dataplaneType
+        - endpointPrefix
+        - callbackAddress
+        - managementAddress
+        - managementToken
+        - catalogSynchronization
+        - role
+        - identifier
+    DataPlaneStateDto:
+      type: object
+      properties:
+        identifier:
+          type: string
+        details:
+          $ref: "#/components/schemas/DataPlaneDetailsDto"
+        dataset:
+          type: array
+          items:
+            $ref: "#/components/schemas/DatasetSchema"
+      required:
+        - identifier
+        - details
+        - dataset
     ResourceSchema:
       type: object
       properties:
@@ -2035,13 +2147,16 @@ components:
     DatasetConfig:
       type: object
       properties: {}
-    TransferSchema:
+    TransferDto:
       type: object
       properties:
         id:
           type: string
         role:
           type: string
+          enum:
+            - provider
+            - consumer
         processId:
           type: string
         remoteParty:
@@ -2050,10 +2165,16 @@ components:
           type: string
         state:
           type: string
+          enum:
+            - dspace:REQUESTED
+            - dspace:STARTED
+            - dspace:TERMINATED
+            - dspace:COMPLETED
+            - dspace:SUSPENDED
         request:
           $ref: "#/components/schemas/TransferRequestMessageSchema"
         response:
-          $ref: "#/components/schemas/DataPlaneRequestResponseSchema"
+          $ref: "#/components/schemas/DataPlaneRequestResponseDto"
         dataAddress:
           $ref: "#/components/schemas/DataAddressSchema"
         createdDate:
@@ -2070,11 +2191,9 @@ components:
         - role
         - processId
         - remoteParty
-        - secret
         - state
         - request
         - response
-        - dataAddress
         - createdDate
         - modifiedDate
         - deletedDate
@@ -2111,7 +2230,7 @@ components:
         - "@id"
         - "@type"
         - dspace:timestamp
-    MetadataSchema:
+    MetadataDto:
       type: object
       properties:
         agreement:

@@ -17,7 +17,9 @@ import {
   CredentialOfferRequest,
   CredentialOfferStatus,
   CredentialRequest,
-  CredentialResponse
+  CredentialResponse,
+  DeferredCredentialResponse,
+  ImmediateCredentialResponse
 } from "@tsg-dsp/wallet-dtos";
 import { Roles } from "../auth/roles.guard.js";
 import { AppRole } from "@tsg-dsp/wallet-dtos";
@@ -33,15 +35,6 @@ import {
   getSchemaPath
 } from "@nestjs/swagger";
 import {
-  AccessTokenDto,
-  CredentialIssuerMetadataDto,
-  CredentialOfferDto,
-  CredentialOfferStatusDto,
-  CredentialRequestDto,
-  DeferredCredentialResponseDto,
-  ImmediateCredentialResponseDto
-} from "./issuance.schemas.js";
-import {
   ApiForbiddenResponseDefault,
   ApiNotFoundResponseDefault
 } from "@tsg-dsp/common-dtos";
@@ -53,7 +46,7 @@ export class IssuerController {
 
   @Get(".well-known/openid-credential-issuer")
   @DisableOAuthGuard()
-  @ApiOkResponse({ type: CredentialIssuerMetadataDto })
+  @ApiOkResponse({ type: CredentialIssuerMetadata })
   @HttpCode(HttpStatus.OK)
   async issuerMetadata(): Promise<CredentialIssuerMetadata> {
     return this.issuerService.issuerMetadata();
@@ -73,7 +66,7 @@ export class IssuerController {
       properties: { "pre-authorized_code": { type: "string" } }
     }
   })
-  @ApiOkResponse({ type: AccessTokenDto })
+  @ApiOkResponse({ type: AccessToken })
   @ApiForbiddenResponseDefault()
   @ApiNotFoundResponseDefault()
   @ApiBearerAuth()
@@ -90,13 +83,13 @@ export class IssuerController {
     description:
       "Requests a new credential based on a Credential Request via the OID4VCI flow"
   })
-  @ApiBody({ type: CredentialRequestDto })
-  @ApiExtraModels(ImmediateCredentialResponseDto, DeferredCredentialResponseDto)
+  @ApiBody({ type: CredentialRequest })
+  @ApiExtraModels(ImmediateCredentialResponse, DeferredCredentialResponse)
   @ApiOkResponse({
     schema: {
       oneOf: [
-        { $ref: getSchemaPath(ImmediateCredentialResponseDto) },
-        { $ref: getSchemaPath(DeferredCredentialResponseDto) }
+        { $ref: getSchemaPath(ImmediateCredentialResponse) },
+        { $ref: getSchemaPath(DeferredCredentialResponse) }
       ]
     }
   })
@@ -120,7 +113,7 @@ export class IssuerController {
       "Retrieves all credentials offered this wallet has offered to holders"
   })
   @Roles(AppRole.MANAGE_ALL_CREDENTIALS)
-  @ApiOkResponse({ type: [CredentialOfferStatusDto] })
+  @ApiOkResponse({ type: [CredentialOfferStatus] })
   @ApiForbiddenResponseDefault()
   @ApiOAuth2([AppRole.MANAGE_ALL_CREDENTIALS])
   @HttpCode(HttpStatus.OK)
@@ -134,8 +127,8 @@ export class IssuerController {
     description: "Creates a new credential offer"
   })
   @Roles(AppRole.MANAGE_ALL_CREDENTIALS)
-  @ApiBody({ type: CredentialOfferDto })
-  @ApiOkResponse({ type: CredentialOfferStatusDto })
+  @ApiBody({ type: CredentialOffer })
+  @ApiOkResponse({ type: CredentialOfferStatus })
   @ApiForbiddenResponseDefault()
   @ApiOAuth2([AppRole.MANAGE_ALL_CREDENTIALS])
   @HttpCode(HttpStatus.OK)
@@ -152,7 +145,7 @@ export class IssuerController {
       "Revokes an existing credential offer, so that it cannot be used anymore by the holder"
   })
   @Roles(AppRole.MANAGE_ALL_CREDENTIALS)
-  @ApiOkResponse({ type: CredentialOfferStatusDto })
+  @ApiOkResponse({ type: CredentialOfferStatus })
   @ApiForbiddenResponseDefault()
   @ApiOAuth2([AppRole.MANAGE_ALL_CREDENTIALS])
   @HttpCode(HttpStatus.OK)

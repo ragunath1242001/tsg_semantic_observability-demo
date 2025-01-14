@@ -15,8 +15,8 @@ import {
   ValidateNested,
   IsDate
 } from "class-validator";
-import { validateOrRejectSync } from "../utils/validation.pipe";
-import { EvaluationTrigger } from "./constraint.dto";
+import { validateOrRejectSync } from "../utils/validation.pipe.js";
+import { EvaluationTrigger } from "./constraint.dto.js";
 
 export class PolicyContext {
   @IsObject()
@@ -64,7 +64,7 @@ export class EvaluationContext {
   action!: string;
   @Type(() => VerifiableCredential)
   @ValidateNested()
-  @ApiProperty({ type: VerifiableCredential })
+  @ApiProperty({ type: () => VerifiableCredential })
   verifiableCredentials!: VerifiableCredential[];
   @IsDate()
   @ApiProperty()

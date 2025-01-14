@@ -88,9 +88,9 @@ export class DidService {
         serviceEndpoint: `https://${this.config.server.publicDomain}`
       },
       {
-        id: `${this.didId}#presentation`,
-        type: "PresentationService",
-        serviceEndpoint: `${this.config.server.publicAddress}/api/iatp/holder/presentation`
+        id: `${this.didId}#credentialService`,
+        type: "CredentialService",
+        serviceEndpoint: `${this.config.server.publicAddress}/api/dcp`
       },
       {
         id: `${this.didId}#management`,

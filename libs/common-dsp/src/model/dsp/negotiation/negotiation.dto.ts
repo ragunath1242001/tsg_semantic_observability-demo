@@ -1,5 +1,5 @@
-import { OrArray } from "../../../utils/unions";
-import { ValueDto, ReferenceDto, ContextDto } from "../common.dto";
+import { OrArray } from "../../../utils/unions.js";
+import { ValueDto, ReferenceDto, ContextDto } from "../common.dto.js";
 
 export enum ODRLAction {
   DELETE = "odrl:delete",
@@ -125,7 +125,6 @@ export interface PolicyRuleDto {
 
 export interface ProhibitionDto extends PolicyRuleDto {
   "@type": "odrl:Prohibition";
-  // "odrl:target": string;
 }
 
 export interface DutyDto extends PolicyRuleDto {
@@ -134,7 +133,6 @@ export interface DutyDto extends PolicyRuleDto {
 
 export interface PermissionDto extends PolicyRuleDto {
   "@type": "odrl:Permission";
-  // "odrl:target": string;
   "odrl:duty"?: Array<DutyDto>;
 }
 

@@ -1,20 +1,20 @@
-import { deserialize } from "../../deserialize";
-import { Multilanguage } from "../common";
-import { Catalog } from "./catalog";
+import { deserialize } from "../../deserialize.js";
+import { Multilanguage } from "../common.js";
+import { Catalog } from "./catalog.js";
 import {
   CatalogErrorDto,
   CatalogMessageDto,
   CatalogRequestMessageDto,
   DatasetRequestMessageDto
-} from "./messages.dto";
+} from "./messages.dto.js";
 import {
   CatalogError,
   CatalogMessage,
   CatalogRequestMessage,
   DatasetRequestMessage
-} from "./messages";
+} from "./messages.js";
 import { expect, test } from "@jest/globals";
-import { defaultContext } from "../../../jsonld/context.defaults";
+import { defaultContext } from "../../../jsonld/context.defaults.js";
 
 test("Catalog Error", async () => {
   const catalogError = new CatalogError({

@@ -121,13 +121,13 @@ describe("Presentation Service", () => {
         vpJwt,
         "did:web:external.com"
       );
-      expect(validationResult.valid).toBe(true);
       expect(validationResult.validateExpiryDate).toEqual([true]);
       expect(validationResult.validateCredentials).toEqual([true]);
       expect(validationResult.validateTrustAnchors).toEqual([true]);
       expect(validationResult.validateJWTSignature).toBe(true);
       expect(validationResult.validateJWTExpiryDate).toBe(true);
       expect(validationResult.validateAudience).toBe(true);
+      expect(validationResult.valid).toBe(true);
     });
   });
 });

@@ -7,22 +7,20 @@ import {
   Logger,
   UseGuards
 } from "@nestjs/common";
-import { CatalogDto } from "@tsg-dsp/common-dsp";
-import { RegistryService } from "./registry.service";
-import { OAuthGuard } from "../auth/oauth.guard";
-import { Roles } from "../auth/roles.guard";
+import { CatalogDto, CatalogSchema } from "@tsg-dsp/common-dsp";
+import { RegistryService } from "./registry.service.js";
+import { OAuthGuard } from "../auth/oauth.guard.js";
+import { Roles } from "../auth/roles.guard.js";
 import {
   ApiBearerAuth,
   ApiOperation,
   ApiResponse,
   ApiTags
 } from "@nestjs/swagger";
-import { CredentialAddressDto } from "./registry.schema";
-import { CatalogSchema } from "@tsg-dsp/common-dtos";
-import { UsePagination } from "../utils/pagination/pagination.interceptor.decorator";
-import { PaginationQuery } from "../utils/pagination/pagination.query.decorator";
-import { PaginationOptionsDto } from "../utils/pagination/pagination.options.dto";
-import { Paginated } from "../utils/pagination/pagination.parameters";
+import { UsePagination } from "../utils/pagination/pagination.interceptor.decorator.js";
+import { PaginationQuery } from "../utils/pagination/pagination.query.decorator.js";
+import { PaginationOptionsDto } from "../utils/pagination/pagination.options.dto.js";
+import { Paginated } from "../utils/pagination/pagination.parameters.js";
 
 @ApiTags("Registry")
 @ApiBearerAuth()
@@ -54,7 +52,7 @@ export class RegistryController {
   @ApiResponse({
     status: 200,
     description: "Successfully fetched all addresses",
-    type: [CredentialAddressDto]
+    type: [CredentialAddress]
   })
   async requestAddresses(): Promise<CredentialAddress[]> {
     return await this.registryService.fetchAddresses();

@@ -37,7 +37,6 @@ export const getCliVersion = async () => {
     console.error(e);
     log("warn", "Could not retrieve current CLI version");
     return "0.0.0";
-    // }
   }
 };
 

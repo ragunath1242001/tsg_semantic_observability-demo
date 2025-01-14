@@ -11,13 +11,21 @@ import {
   DataIntegrityProof,
   JsonWebSignature2020,
   Proof
-} from "./credentials.dto";
-import { OrArray } from "../../utils/unions";
+} from "./credentials.dto.js";
+import { elementOrArray, OrArray } from "../../utils/unions.js";
+import {
+  ApiExtraModels,
+  ApiProperty,
+  ApiPropertyOptional,
+  getSchemaPath
+} from "@nestjs/swagger";
 
+@ApiExtraModels(JsonWebSignature2020, DataIntegrityProof, VerifiableCredential)
 export class VerifiablePresentation<
   T extends VerifiableCredential = VerifiableCredential,
   P extends Proof = Proof
 > {
+  @ApiProperty({ type: () => [String] })
   @IsString({ each: true })
   "@context": (
     | "https://www.w3.org/2018/credentials/v1"
@@ -26,15 +34,24 @@ export class VerifiablePresentation<
     | "https://w3id.org/security/data-integrity/v2"
     | string
   )[];
+  @ApiProperty({ type: () => [String] })
   @IsString({ each: true })
   type!: string[];
+  @ApiPropertyOptional()
   @IsString()
   @IsOptional()
   id?: string;
+  @ApiProperty(elementOrArray({ $ref: getSchemaPath(VerifiableCredential) }))
   @ValidateNested()
   @Type(() => VerifiableCredential)
   verifiableCredential!: OrArray<T>;
 
+  @ApiProperty({
+    oneOf: [
+      { $ref: getSchemaPath(JsonWebSignature2020) },
+      { $ref: getSchemaPath(DataIntegrityProof) }
+    ]
+  })
   @ValidateNested()
   @IsOptional()
   @Type(() => Proof, {
@@ -51,40 +68,50 @@ export class VerifiablePresentation<
 }
 
 export class VerifiableCredentialJwt {
+  @ApiProperty()
   @IsString()
   vc!: string;
 }
 
 export class VerifiablePresentationJwt {
+  @ApiProperty()
   @IsString()
   vp!: string;
 }
 
 export class VerifiablePresentationJsonLd {
+  @ApiProperty({ type: () => VerifiablePresentation })
   @ValidateNested()
   @Type(() => VerifiablePresentation)
   vp!: VerifiablePresentation;
 }
 
 export class PresentationValidation extends VerifiablePresentationJwt {
+  @ApiProperty()
   @IsBoolean()
   valid!: boolean;
 
+  @ApiProperty()
   @IsBoolean()
   validateJWTSignature!: boolean;
 
+  @ApiProperty()
   @IsBoolean()
   validateJWTExpiryDate!: boolean;
 
+  @ApiProperty({ type: () => [Boolean] })
   @IsBoolean({ each: true })
   validateTrustAnchors!: Array<boolean>;
 
-  @IsIn([true, false, "undefined"])
-  validateExpiryDate!: Array<boolean | "undefined">;
+  @ApiProperty({ type: () => [Boolean] })
+  @IsBoolean({ each: true })
+  validateExpiryDate!: Array<boolean>;
 
+  @ApiProperty({ type: () => [Boolean] })
   @IsBoolean({ each: true })
   validateCredentials!: Array<boolean>;
 
+  @ApiPropertyOptional()
   @IsBoolean()
   @IsOptional()
   validateAudience?: boolean;

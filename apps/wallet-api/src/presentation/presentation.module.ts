@@ -6,13 +6,14 @@ import { CredentialsModule } from "../credentials/credentials.module.js";
 import { KeysModule } from "../keys/keys.module.js";
 import { DidModule } from "../did/did.module.js";
 import { PresentationConfig, PresentationType } from "../config.js";
-import { IatpHolderController } from "./iatp/holder.controller.js";
-import { IatpVerifierController } from "./iatp/verifier.controller.js";
-import { IatpVerifierService } from "./iatp/verifier.service.js";
-import { IatpSiopService } from "./iatp/siop.service.js";
-import { SIToken } from "../model/iatp.dao.js";
+import { DCPHolderController } from "./dcp/holder.controller.js";
+import { DCPVerifierManagementController } from "./dcp/verifier.management.controller.js";
+import { DCPVerifierService } from "./dcp/verifier.service.js";
+import { DCPSiopService } from "./dcp/siop.service.js";
+import { SIToken } from "../model/dcp.dao.js";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { IatpHolderService } from "./iatp/holder.service.js";
+import { DCPHolderService } from "./dcp/holder.service.js";
+import { DCPHolderManagementController } from "./dcp/holder.management.controller.js";
 
 @Module({})
 export class PresentationModule {
@@ -34,27 +35,28 @@ export class PresentationModule {
             DirectPresentationController
           ];
           break;
-        case PresentationType.IATP:
+        case PresentationType.DCP:
           module.imports = [
             ...(module.imports ?? []),
             TypeOrmModule.forFeature([SIToken])
           ];
           module.controllers = [
             ...(module.controllers ?? []),
-            IatpHolderController,
-            IatpVerifierController
+            DCPHolderController,
+            DCPHolderManagementController,
+            DCPVerifierManagementController
           ];
           module.providers = [
             ...(module.providers ?? []),
-            IatpSiopService,
-            IatpHolderService,
-            IatpVerifierService
+            DCPSiopService,
+            DCPHolderService,
+            DCPVerifierService
           ];
           module.exports = [
             ...(module.exports ?? []),
-            IatpSiopService,
-            IatpHolderService,
-            IatpVerifierService
+            DCPSiopService,
+            DCPHolderService,
+            DCPVerifierService
           ];
           break;
         case PresentationType.OID4VP:

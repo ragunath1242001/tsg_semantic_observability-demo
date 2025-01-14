@@ -3,7 +3,7 @@ import { stripDspace } from "@tsg-dsp/common-ui/utils/common";
 
 import {
   NegotiationDetailDto,
-  INegotiationStatusDto
+  NegotiationStatusDto
 } from "@tsg-dsp/common-dtos";
 import { ref, toRef } from "vue";
 import { useToast } from "primevue/usetoast";
@@ -13,7 +13,7 @@ import MonacoEditor from "@tsg-dsp/common-ui/components/MonacoEditor.vue";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
 
 const props = defineProps<{
-  negotiations: INegotiationStatusDto[];
+  negotiations: NegotiationStatusDto[];
 }>();
 
 const negotiations = toRef(props, "negotiations");

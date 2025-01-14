@@ -1,10 +1,8 @@
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { Database } from "sqlite3";
-import fs from "fs";
+import sqlite3 from "sqlite3";
 
 export class TypeOrmTestHelper {
   private static _instance: TypeOrmTestHelper;
-  database: string = ":memory:";
 
   private constructor() {}
 
@@ -14,32 +12,25 @@ export class TypeOrmTestHelper {
     return this._instance;
   }
 
-  testdb!: Database;
+  private testdb!: sqlite3.Database;
 
-  async setupTestDB(database: string = ":memory:") {
-    this.database = database;
-    this.testdb = new Database(this.database);
+  async setupTestDB() {
+    this.testdb = new sqlite3.Database(":memory:");
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   module(entities: any[]) {
-    return TypeOrmModule.forRoot({
+    const module = TypeOrmModule.forRoot({
       type: "sqlite",
-      database: this.database,
+      database: ":memory:",
       name: "default",
       entities: entities,
       synchronize: true
     });
+    return module;
   }
 
-  async teardownTestDB() {
-    await new Promise<void>((resolve) => {
-      this.testdb.close(() => {
-        resolve();
-      });
-    });
-    if (this.database != ":memory:") {
-      fs.rmSync(this.database);
-    }
+  teardownTestDB() {
+    this.testdb.close();
   }
 }

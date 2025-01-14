@@ -1,9 +1,13 @@
 import { Controller, Get, Next, Req, Res, UseGuards } from "@nestjs/common";
 import { NextFunction, Request, Response } from "express";
 import passport from "passport";
-import { AuthConfig } from "../config";
-import { DisableOAuthGuard, OAuthGuard, OAuthLoginGuard } from "./oauth.guard";
-import { Client, ClientInfo } from "./roles.guard";
+import { AuthConfig } from "../config.js";
+import {
+  DisableOAuthGuard,
+  OAuthGuard,
+  OAuthLoginGuard
+} from "./oauth.guard.js";
+import { Client, ClientInfo } from "./roles.guard.js";
 import {
   ApiExtraModels,
   ApiFoundResponse,
@@ -12,7 +16,10 @@ import {
   ApiTags,
   getSchemaPath
 } from "@nestjs/swagger";
-import { AuthenticatedUserDto, UnauthenticatedUserDto } from "./auth.schemas";
+import {
+  AuthenticatedUserDto,
+  UnauthenticatedUserDto
+} from "./auth.schemas.js";
 
 @Controller("auth")
 @UseGuards(OAuthGuard)

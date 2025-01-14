@@ -1,8 +1,8 @@
 import { UseInterceptors } from "@nestjs/common";
-import { PaginationInterceptor } from "./pagination.interceptor";
+import { PaginationInterceptor } from "./pagination.interceptor.js";
 import { ApiResponseMetadata } from "@nestjs/swagger";
-import { DECORATORS } from "@nestjs/swagger/dist/constants";
-import { HeadersObject } from "@nestjs/swagger/dist/interfaces/open-api-spec.interface";
+import { DECORATORS } from "@nestjs/swagger/dist/constants.js";
+import { HeadersObject } from "@nestjs/swagger/dist/interfaces/open-api-spec.interface.js";
 
 const paginationHeaders: HeadersObject = {
   "x-page": {

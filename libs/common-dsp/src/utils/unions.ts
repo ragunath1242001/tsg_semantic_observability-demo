@@ -9,3 +9,15 @@ export function toArray<T>(arrayUnion: T | T[] | undefined): T[] {
   }
   return [arrayUnion];
 }
+
+export function elementOrArray<T>(schema: T) {
+  return {
+    oneOf: [
+      schema,
+      {
+        type: "array",
+        items: schema
+      }
+    ]
+  };
+}

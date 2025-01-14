@@ -17,14 +17,18 @@ import {
   ValidationPipe,
   UnprocessableEntityException
 } from "@nestjs/common";
-import { DataPlaneService } from "./dataplane.service";
+import { DataPlaneService } from "./dataplane.service.js";
 import { DatasetConfig } from "@tsg-dsp/http-data-plane-dtos";
-import { Roles } from "../auth/roles.guard";
+import { Roles } from "../auth/roles.guard.js";
 import { Request, Response } from "express";
-import { AgreementDto, CatalogDto, DatasetDto } from "@tsg-dsp/common-dsp";
+import {
+  AgreementDto,
+  CatalogDto,
+  CatalogSchema,
+  DatasetDto
+} from "@tsg-dsp/common-dsp";
 import {
   ApiForbiddenResponseDefault,
-  CatalogSchema,
   DataPlaneStateDto,
   TransferDto
 } from "@tsg-dsp/common-dtos";
@@ -38,12 +42,8 @@ import {
   ApiResponse,
   ApiTags
 } from "@nestjs/swagger";
-import {
-  DataPlaneStateSchema,
-  MetadataSchema,
-  TransferSchema
-} from "./dataplane.schemas.js";
-import { DataPlaneClientError } from "../utils/errors/error";
+import { DataPlaneClientError } from "../utils/errors/error.js";
+import { MetadataDto } from "./dataplane.schemas.js";
 
 @ApiTags("Data Plane Management")
 @ApiOAuth2(["controlplane_dataplane"])
@@ -59,7 +59,7 @@ export class DataPlaneManagementController {
     description:
       "Get the state of the data plane, consisting of the id, details and the dataset."
   })
-  @ApiOkResponse({ type: DataPlaneStateSchema })
+  @ApiOkResponse({ type: DataPlaneStateDto })
   @ApiForbiddenResponseDefault()
   async getState(): Promise<DataPlaneStateDto> {
     return await this.dataPlaneService.getStateDto();
@@ -106,7 +106,7 @@ export class DataPlaneManagementController {
     description: "Update the current dataset configuration."
   })
   @ApiBody({ type: DatasetConfig })
-  @ApiOkResponse({ type: DataPlaneStateSchema })
+  @ApiOkResponse({ type: DataPlaneStateDto })
   @ApiForbiddenResponseDefault()
   async updateDatasetConfig(
     @Body(new ValidationPipe({ transform: true, forbidUnknownValues: true }))
@@ -126,7 +126,7 @@ export class DataPlaneManagementController {
 
   @Get("/transfers")
   @ApiOperation({ summary: "Get all transfers" })
-  @ApiResponse({ status: HttpStatus.OK, type: [TransferSchema] })
+  @ApiResponse({ status: HttpStatus.OK, type: [TransferDto] })
   @ApiForbiddenResponseDefault()
   async getTransfers(): Promise<TransferDto[]> {
     return await this.dataPlaneService.getTransfers();
@@ -135,7 +135,7 @@ export class DataPlaneManagementController {
   @Get("/transfers/:id")
   @ApiOperation({ summary: "Get transfer by ID" })
   @ApiParam({ name: "id", required: true, description: "Transfer identifier" })
-  @ApiResponse({ status: HttpStatus.OK, type: TransferSchema })
+  @ApiResponse({ status: HttpStatus.OK, type: TransferDto })
   @ApiForbiddenResponseDefault()
   async getTransfer(@Param("id") id: string): Promise<TransferDto> {
     return await this.dataPlaneService.getTransferById(id);
@@ -146,7 +146,7 @@ export class DataPlaneManagementController {
   @ApiParam({ name: "id", required: true, description: "Transfer identifier" })
   @ApiResponse({
     status: HttpStatus.OK,
-    type: MetadataSchema
+    type: MetadataDto
   })
   @ApiForbiddenResponseDefault()
   async getMetadata(

@@ -11,10 +11,9 @@ import {
   Put,
   UseGuards
 } from "@nestjs/common";
-import { DataPlaneService } from "./dataPlane.service";
-import { IDataPlaneDto } from "@tsg-dsp/control-plane-dtos";
-import { OAuthGuard } from "../auth/oauth.guard";
-import { Roles } from "../auth/roles.guard";
+import { DataPlaneService } from "./dataPlane.service.js";
+import { OAuthGuard } from "../auth/oauth.guard.js";
+import { Roles } from "../auth/roles.guard.js";
 import {
   ApiOAuth2,
   ApiOperation,
@@ -25,12 +24,12 @@ import {
   ApiBadRequestResponse,
   ApiBody
 } from "@nestjs/swagger";
-import { DataPlaneDto } from "./dataplane.schemas.js";
 import { ApiForbiddenResponseDefault } from "@tsg-dsp/common-dtos";
-import { UsePagination } from "../utils/pagination/pagination.interceptor.decorator";
-import { PaginationQuery } from "../utils/pagination/pagination.query.decorator";
-import { PaginationOptionsDto } from "../utils/pagination/pagination.options.dto";
-import { Paginated } from "../utils/pagination/pagination.parameters";
+import { UsePagination } from "../utils/pagination/pagination.interceptor.decorator.js";
+import { PaginationQuery } from "../utils/pagination/pagination.query.decorator.js";
+import { PaginationOptionsDto } from "../utils/pagination/pagination.options.dto.js";
+import { Paginated } from "../utils/pagination/pagination.parameters.js";
+import { DataPlaneDetailsDto } from "@tsg-dsp/common-dsp";
 
 @UseGuards(OAuthGuard)
 @Roles(["controlplane_admin", "controlplane_dataplane"])
@@ -48,11 +47,11 @@ export class DataplaneManagementController {
     summary: "Get all dataplanes",
     description: "Fetches all the dataplanes."
   })
-  @ApiOkResponse({ type: [DataPlaneDto] })
+  @ApiOkResponse({ type: [DataPlaneDetailsDto] })
   @ApiForbiddenResponseDefault()
   async getDataPlanes(
     @PaginationQuery() paginationOptions: PaginationOptionsDto
-  ): Promise<Paginated<IDataPlaneDto[]>> {
+  ): Promise<Paginated<DataPlaneDetailsDto[]>> {
     this.logger.log("Received call to fetch all dataplanes.");
     return await this.dataplaneService.getDataPlanes(paginationOptions);
   }
@@ -63,11 +62,13 @@ export class DataplaneManagementController {
     summary: "Add a dataplane",
     description: "Adds a new dataplane."
   })
-  @ApiBody({ type: DataPlaneDto })
-  @ApiCreatedResponse({ type: DataPlaneDto })
+  @ApiBody({ type: DataPlaneDetailsDto })
+  @ApiCreatedResponse({ type: DataPlaneDetailsDto })
   @ApiBadRequestResponse({ description: "Invalid dataplane data" })
   @ApiForbiddenResponseDefault()
-  async addDataplane(@Body() dataplane: IDataPlaneDto): Promise<IDataPlaneDto> {
+  async addDataplane(
+    @Body() dataplane: DataPlaneDetailsDto
+  ): Promise<DataPlaneDetailsDto> {
     this.logger.log("Received call to add dataplane.");
     this.logger.log(dataplane);
     return await this.dataplaneService.addDataPlane(dataplane);
@@ -75,18 +76,18 @@ export class DataplaneManagementController {
 
   @Put(":id")
   @HttpCode(HttpStatus.OK)
-  @ApiBody({ type: DataPlaneDto })
+  @ApiBody({ type: DataPlaneDetailsDto })
   @ApiOperation({
     summary: "Update a dataplane",
     description: "Updates an existing dataplane."
   })
-  @ApiOkResponse({ type: DataPlaneDto })
+  @ApiOkResponse({ type: DataPlaneDetailsDto })
   @ApiBadRequestResponse({ description: "Invalid dataplane data" })
   @ApiForbiddenResponseDefault()
   async updateDataplane(
     @Param("id") id: string,
-    @Body() dataplane: DataPlaneDto
-  ): Promise<IDataPlaneDto> {
+    @Body() dataplane: DataPlaneDetailsDto
+  ): Promise<DataPlaneDetailsDto> {
     this.logger.log("Received call to update dataplane");
     return await this.dataplaneService.updateDataPlane(dataplane);
   }

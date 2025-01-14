@@ -8,7 +8,7 @@ import {
   IsIn,
   ValidateNested
 } from "class-validator";
-import { validateOrRejectSync } from "../utils/validation.pipe";
+import { validateOrRejectSync } from "../utils/validation.pipe.js";
 
 export enum DataType {
   STRING = "STRING",
@@ -143,7 +143,7 @@ export class LogicalConstraint extends ConstraintModel {
     keepDiscriminatorProperty: true
   })
   @Expose()
-  @ApiProperty({ type: [ConstraintModel] })
+  @ApiProperty({ type: () => [ConstraintModel] })
   @ValidateNested()
   constraints!: Array<ConstraintModel>;
 }

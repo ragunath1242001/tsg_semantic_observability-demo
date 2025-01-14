@@ -1,9 +1,9 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { FileMetadataDao } from "./filesMetadata.dao";
+import { FileMetadataDao } from "./filesMetadata.dao.js";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import fs from "fs/promises";
-import { FilesConfig } from "../config";
+import { FilesConfig } from "../config.js";
 import { Cron, CronExpression } from "@nestjs/schedule";
 
 @Injectable()

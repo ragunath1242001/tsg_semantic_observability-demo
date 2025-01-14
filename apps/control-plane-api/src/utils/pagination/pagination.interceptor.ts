@@ -4,7 +4,7 @@ import { Request, Response } from "express";
 import {
   Paginated,
   PaginationParametersExtended
-} from "./pagination.parameters";
+} from "./pagination.parameters.js";
 
 export class PaginationInterceptor<T>
   implements NestInterceptor<Paginated<T>, T>

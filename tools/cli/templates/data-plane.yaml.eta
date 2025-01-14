@@ -73,6 +73,9 @@ config:
     dataPlaneEndpoint: "{{ .Values.controlPlaneEndpoint }}/data-plane"
     managementEndpoint: "{{ .Values.controlPlaneEndpoint }}/management"
     controlEndpoint: "{{ .Values.controlPlaneEndpoint }}/"
+
+  runtime:
+    color: "#3B8BF6"
 <% if (it.participant.hasDebugLogging) { %>
   logging:
     debug: true

@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { ClientInfo } from "./roles.guard";
+import { ClientInfo } from "./roles.guard.js";
 
 export class ClientInfoDto implements ClientInfo {
   @ApiProperty()

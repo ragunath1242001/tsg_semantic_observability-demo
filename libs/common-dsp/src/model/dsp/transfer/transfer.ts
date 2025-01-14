@@ -1,13 +1,13 @@
-import { Multilanguage } from "../common";
-import { TransferProcess, DataAddress } from "./messages";
+import { Multilanguage } from "../common.js";
+import { TransferProcess, DataAddress } from "./messages.js";
 import {
   createInstance,
   createInstances,
   createOptionalInstances
-} from "../../../utils/instances";
-import { DataPlaneTransferDto } from "../../data-planes";
-import { TransferState } from "./messages.dto";
-import { TransferRole } from "./transfers.dto";
+} from "../../../utils/instances.js";
+import { DataPlaneTransferDto } from "../../data-planes/index.js";
+import { TransferState } from "./messages.dto.js";
+import { TransferRole } from "./transfers.dto.js";
 
 export interface ITransferEvent {
   time: Date;

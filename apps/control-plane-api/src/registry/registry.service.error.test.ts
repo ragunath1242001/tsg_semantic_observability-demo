@@ -1,17 +1,23 @@
+import { jest } from "@jest/globals";
 import { Logger } from "@nestjs/common";
 import { ScheduleModule } from "@nestjs/schedule";
 import { TestingModule, Test } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { plainToClass, plainToInstance } from "class-transformer";
 import { SetupServer, setupServer } from "msw/node";
-import { AuthClientService } from "../auth/auth.client.service";
-import { AuthService } from "../auth/auth.service";
-import { mockWalletConfig } from "../auth/wallets/wallet.util.test";
-import { IamConfig, RegistryConfig, RootConfig, AuthConfig } from "../config";
-import { DspClientService } from "../dsp/client/client.service";
-import { RegistryDao } from "../model/registry.dao";
-import { TypeOrmTestHelper } from "../utils/testhelper";
-import { RegistryService } from "./registry.service";
+import { AuthClientService } from "../auth/auth.client.service.js";
+import { AuthService } from "../auth/auth.service.js";
+import { mockWalletConfig } from "../auth/wallets/wallet.util.test.js";
+import {
+  IamConfig,
+  RegistryConfig,
+  RootConfig,
+  AuthConfig
+} from "../config.js";
+import { DspClientService } from "../dsp/client/client.service.js";
+import { RegistryDao } from "../model/registry.dao.js";
+import { TypeOrmTestHelper } from "../utils/testhelper.js";
+import { RegistryService } from "./registry.service.js";
 import { http, HttpResponse } from "msw";
 
 describe("No error when no dataspace credentials are found", () => {

@@ -1,5 +1,4 @@
 import {
-  CredentialSubject,
   VerifiableCredential,
   VerifiablePresentation
 } from "@tsg-dsp/common-dsp";
@@ -23,7 +22,7 @@ export abstract class WalletClient {
     token: string,
     audience: string,
     inputDescriptors?: InputDescriptor[]
-  ): Promise<VerifiablePresentation | undefined>;
+  ): Promise<VerifiablePresentation[] | undefined>;
   abstract getCredentials(): Promise<Credential[]>;
   abstract requestSignature(document: Record<string, any>): Promise<any>;
   abstract requestSignatureValidation(

@@ -1,6 +1,6 @@
-import { deserialize } from "../../deserialize";
-import { defaultContext } from "../../../jsonld/context.defaults";
-import { Multilanguage } from "../common";
+import { deserialize } from "../../deserialize.js";
+import { defaultContext } from "../../../jsonld/context.defaults.js";
+import { Multilanguage } from "../common.js";
 import {
   DataAddress,
   EndpointProperty,
@@ -11,7 +11,7 @@ import {
   TransferStartMessage,
   TransferSuspensionMessage,
   TransferTerminationMessage
-} from "./messages";
+} from "./messages.js";
 import {
   TransferCompletionMessageDto,
   TransferErrorDto,
@@ -21,7 +21,7 @@ import {
   TransferStartMessageDto,
   TransferSuspensionMessageDto,
   TransferTerminationMessageDto
-} from "./messages.dto";
+} from "./messages.dto.js";
 
 import { expect, test } from "@jest/globals";
 

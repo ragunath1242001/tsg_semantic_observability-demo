@@ -7,8 +7,8 @@ import {
 import { Reflector } from "@nestjs/core";
 import { Observable } from "rxjs";
 import jsonpath from "jsonpath";
-import { config } from "../config.module";
-import { AuthConfig } from "../config";
+import { config } from "../config.module.js";
+import { AuthConfig } from "../config.js";
 
 export const Roles = Reflector.createDecorator<string | string[]>();
 export const DisableRolesGuard = Reflector.createDecorator<boolean>();

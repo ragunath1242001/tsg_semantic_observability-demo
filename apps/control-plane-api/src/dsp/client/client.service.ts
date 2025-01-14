@@ -20,8 +20,8 @@ import {
   TransferTerminationMessage
 } from "@tsg-dsp/common-dsp";
 import axios, { AxiosRequestConfig } from "axios";
-import { AuthService } from "../../auth/auth.service";
-import { DSPClientError } from "../../utils/errors/error";
+import { AuthService } from "../../auth/auth.service.js";
+import { DSPClientError } from "../../utils/errors/error.js";
 
 @Injectable()
 export class DspClientService {

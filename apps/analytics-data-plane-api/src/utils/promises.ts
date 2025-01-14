@@ -1,5 +1,5 @@
 import { HttpStatus } from "@nestjs/common";
-import { DataPlaneError } from "./errors/error";
+import { DataPlaneError } from "./errors/error.js";
 
 export const promiseMap = async <T, U>(
   array: T[] | undefined,

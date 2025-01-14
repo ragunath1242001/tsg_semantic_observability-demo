@@ -1,13 +1,16 @@
 import { forwardRef, Module } from "@nestjs/common";
-import { AuthModule } from "../../auth/auth.module";
-import { DspClientModule } from "../client/client.module";
-import { DataPlaneModule } from "../../data-plane/dataplane.module";
-import { TransferService } from "./transfer.service";
-import { TransferController } from "./transfer.controller";
-import { TransferManagementController } from "./transferManagement.controller";
+import { AuthModule } from "../../auth/auth.module.js";
+import { DspClientModule } from "../client/client.module.js";
+import { DataPlaneModule } from "../../data-plane/dataplane.module.js";
+import { TransferService } from "./transfer.service.js";
+import { TransferController } from "./transfer.controller.js";
+import { TransferManagementController } from "./transferManagement.controller.js";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { TransferDetailDao, TransferEventDao } from "../../model/transfer.dao";
-import { PolicyModule } from "../../policy/policy.module";
+import {
+  TransferDetailDao,
+  TransferEventDao
+} from "../../model/transfer.dao.js";
+import { PolicyModule } from "../../policy/policy.module.js";
 
 @Module({
   imports: [

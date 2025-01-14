@@ -10,7 +10,7 @@ import {
   Body,
   Headers
 } from "@nestjs/common";
-import { DataPlaneService } from "./dataplane.service";
+import { DataPlaneService } from "./dataplane.service.js";
 import {
   DataPlaneRequestResponseDto,
   TransferCompletionMessageDto,
@@ -19,8 +19,8 @@ import {
   TransferSuspensionMessageDto,
   TransferTerminationMessageDto
 } from "@tsg-dsp/common-dsp";
-import { DisableOAuthGuard } from "../auth/oauth.guard";
-import { DisableRolesGuard, Roles } from "../auth/roles.guard";
+import { DisableOAuthGuard } from "../auth/oauth.guard.js";
+import { DisableRolesGuard, Roles } from "../auth/roles.guard.js";
 
 @Controller()
 @Roles("controlplane_dataplane")

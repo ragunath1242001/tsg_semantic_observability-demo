@@ -1,9 +1,9 @@
 import { Controller, Get, Next, Req, Res, UseGuards } from "@nestjs/common";
-import { DisableOAuthGuard, OAuthLoginGuard } from "./oauth.guard";
+import { DisableOAuthGuard, OAuthLoginGuard } from "./oauth.guard.js";
 import { NextFunction, Request, Response } from "express";
 import passport from "passport";
-import { Client, ClientInfo } from "./roles.guard";
-import { AuthConfig } from "../config";
+import { Client, ClientInfo } from "./roles.guard.js";
+import { AuthConfig } from "../config.js";
 
 @Controller("auth")
 export class AuthController {

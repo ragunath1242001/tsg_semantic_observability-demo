@@ -8,13 +8,14 @@
   "author": "",
   "license": "ISC",
   "private": true,
+  "type": "module",
   "scripts": {
     "build": "tsc -p tsconfig.json"
   },
   "dependencies": {
+    "@tsg-dsp/common-dsp": "workspace:*",
     "@nestjs/common": "^10.4.11",
     "@nestjs/swagger": "^8.0.0",
-    "@tsg-dsp/common-dsp": "workspace:*",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
     "did-resolver": "^4.1.0",

@@ -8,16 +8,16 @@ export const keepTypesSymbol = Symbol("custom:keepTypes");
 export const ldTypeSymbol = Symbol("custom:ldType");
 export const serializableTypes: { [key: string]: Function } = {};
 
-export function symbolMap(
-  key:
-    | "id"
-    | "language"
-    | "value"
-    | "keepTypes"
-    | "serializable"
-    | "namespace"
-    | "ldType"
-): Symbol {
+export type Keys =
+  | "id"
+  | "language"
+  | "value"
+  | "keepTypes"
+  | "serializable"
+  | "namespace"
+  | "ldType";
+
+export function symbolMap(key: Keys): Symbol {
   switch (key) {
     case "id":
       return idSymbol;
@@ -36,14 +36,26 @@ export function symbolMap(
   }
 }
 
+function getMetadata(
+  key: Keys,
+  target: Object,
+  propertyKey?: string | symbol
+): any {
+  const symbol = symbolMap(key);
+  if (propertyKey) {
+    return Reflect.getMetadata(symbol, target, propertyKey);
+  } else {
+    return Reflect.getMetadata(symbol, target);
+  }
+}
+
 export function hasDecorator(
   key: "id" | "language" | "value" | "keepTypes" | "serializable",
   target: Object,
   propertyKey?: string | symbol
 ): boolean {
   try {
-    const symbol = symbolMap(key);
-    return Reflect.getMetadata(symbol, target, propertyKey) ? true : false;
+    return getMetadata(key, target, propertyKey) ? true : false;
   } catch (e) {
     return false;
   }
@@ -55,8 +67,7 @@ export function getStringDecorator(
   propertyKey?: string | symbol
 ): string | undefined {
   try {
-    const symbol = symbolMap(key);
-    const metadata = Reflect.getMetadata(symbol, target, propertyKey);
+    const metadata = getMetadata(key, target, propertyKey);
     if (metadata !== undefined && typeof metadata === "string") {
       return metadata;
     }
@@ -72,8 +83,7 @@ export function getFunctionDecorator(
   propertyKey?: string | symbol
 ): Function | undefined {
   try {
-    const symbol = symbolMap(key);
-    const metadata = Reflect.getMetadata(symbol, target, propertyKey);
+    const metadata = getMetadata(key, target, propertyKey);
     if (metadata !== undefined && typeof metadata === "function") {
       return metadata;
     }

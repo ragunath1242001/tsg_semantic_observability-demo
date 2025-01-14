@@ -58,7 +58,7 @@ export class DataPlaneError extends HttpException {
 }
 
 export class DataPlaneClientError extends DataPlaneError {
-  err: unknown;
+  declare err: unknown;
   constructor(message: string, err: unknown) {
     let errorMessage;
     let status: HttpStatus;

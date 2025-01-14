@@ -8,14 +8,14 @@ import {
   toArray
 } from "@tsg-dsp/common-dsp";
 import jsonpath from "jsonpath";
-import { DSPError } from "../utils/errors/error";
-import { RuleRepositoryService } from "./rule.repository.service";
-import { AtomicConstraint, DataType } from "./constraint.dto";
+import { DSPError } from "../utils/errors/error.js";
+import { RuleRepositoryService } from "./rule.repository.service.js";
+import { AtomicConstraint, DataType } from "./constraint.dto.js";
 import {
   EvaluationContext,
   EvaluationDecision,
   EvaluationResult
-} from "./evaluation.dto";
+} from "./evaluation.dto.js";
 import { Field, InputDescriptor } from "@tsg-dsp/common-dtos";
 import { Ajv } from "ajv";
 

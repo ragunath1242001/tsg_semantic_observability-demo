@@ -9,15 +9,15 @@ import {
 import { TypeOrmHealthIndicator } from "@nestjs/terminus";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { NegotiationDetailDao } from "./model/negotiation.dao";
-import { TransferDetailDao } from "./model/transfer.dao";
+import { NegotiationDetailDao } from "./model/negotiation.dao.js";
+import { TransferDetailDao } from "./model/transfer.dao.js";
 import {
   ContractNegotiationState,
   NegotiationRole,
   TransferRole,
   TransferState
 } from "@tsg-dsp/common-dsp";
-import { OAuthGuard } from "./auth/oauth.guard";
+import { OAuthGuard } from "./auth/oauth.guard.js";
 import { StatusDto } from "@tsg-dsp/control-plane-dtos";
 import { getHeapStatistics } from "v8";
 

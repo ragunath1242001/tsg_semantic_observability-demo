@@ -3,12 +3,12 @@ import { OnEvent } from "@nestjs/event-emitter";
 import {
   NegotiationCreatedEvent,
   NegotiationUpdatedEvent
-} from "./negotiation.events";
-import { NegotiationService } from "./negotiation.service";
-import { CatalogService } from "../catalog/catalog.service";
-import { RuntimeConfig } from "../../config";
+} from "./negotiation.events.js";
+import { NegotiationService } from "./negotiation.service.js";
+import { CatalogService } from "../catalog/catalog.service.js";
+import { RuntimeConfig } from "../../config.js";
 import { DatasetDto } from "@tsg-dsp/common-dsp";
-import { TransferService } from "../transfer/transfer.service";
+import { TransferService } from "../transfer/transfer.service.js";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function deepSubset(obj1: any, obj2: any, excludedKeys: string[] = []) {

@@ -14,10 +14,12 @@ export async function canonize(
     case "RDFC":
       try {
         return await jsonld.canonize(
-          {
-            ...document,
-            ...(usingContext ? { "@context": usingContext } : {})
-          },
+          JSON.parse(
+            JSON.stringify({
+              ...document,
+              ...(usingContext ? { "@context": usingContext } : {})
+            })
+          ),
           {
             ...jsonldOptions,
             algorithm: "URDNA2015"

@@ -18,13 +18,8 @@ import {
   ApiForbiddenResponseDefault,
   ApiNotFoundResponseDefault
 } from "@tsg-dsp/common-dtos";
-import {
-  JsonWebSignatureDto,
-  SignRequestDto,
-  ValidateRequestDto
-} from "./signature.schemas.js";
 import { SignatureService } from "./signature.service.js";
-import { toArray } from "@tsg-dsp/common-dsp";
+import { JsonWebSignature2020, toArray } from "@tsg-dsp/common-dsp";
 
 @Controller("management/signature")
 @ApiTags("Management Signatures")
@@ -39,8 +34,8 @@ export class SignatureManagementController {
     description: "Sign a JSON document with default or defined key"
   })
   @HttpCode(HttpStatus.OK)
-  @ApiBody({ type: SignRequestDto })
-  @ApiOkResponse({ type: JsonWebSignatureDto })
+  @ApiBody({ type: SignRequest })
+  @ApiOkResponse({ type: ProofDocument })
   @ApiNotFoundResponseDefault()
   @ApiForbiddenResponseDefault()
   async sign(
@@ -66,8 +61,8 @@ export class SignatureManagementController {
     summary: "Validate signed document",
     description: "Validates a document that includes a `proof` property"
   })
-  @ApiBody({ type: ValidateRequestDto })
-  @ApiOkResponse({ type: JsonWebSignatureDto })
+  @ApiBody({ type: ValidateRequest })
+  @ApiOkResponse({ type: ProofDocument })
   @ApiNotFoundResponseDefault()
   @ApiForbiddenResponseDefault()
   async validate(

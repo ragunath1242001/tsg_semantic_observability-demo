@@ -16,8 +16,8 @@ import {
   ValidationPipe,
   Delete
 } from "@nestjs/common";
-import { DataPlaneService } from "./dataplane.service";
-import { Roles } from "../auth/roles.guard";
+import { DataPlaneService } from "./dataplane.service.js";
+import { Roles } from "../auth/roles.guard.js";
 import { AgreementDto, CatalogDto, DatasetDto } from "@tsg-dsp/common-dsp";
 import { DataPlaneStateDto, TransferDto } from "@tsg-dsp/common-dtos";
 
