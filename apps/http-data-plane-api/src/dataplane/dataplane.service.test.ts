@@ -1,8 +1,9 @@
+import { jest } from "@jest/globals";
 import { Test, TestingModule } from "@nestjs/testing";
-import { DataPlaneService } from "./dataplane.service";
-import { DataPlaneController } from "./dataplane.controller";
+import { DataPlaneService } from "./dataplane.service.js";
+import { DataPlaneController } from "./dataplane.controller.js";
 import { plainToClass } from "class-transformer";
-import { AuthConfig, LoggingConfig, RootConfig } from "../config";
+import { AuthConfig, LoggingConfig, RootConfig } from "../config.js";
 import { SetupServer, setupServer } from "msw/node";
 import { HttpResponse, PathParams, http } from "msw";
 import { Request, Response } from "express";
@@ -16,20 +17,19 @@ import {
   ContractNegotiationState,
   TransferState
 } from "@tsg-dsp/common-dsp";
-import { TypeOrmTestHelper } from "../utils/testhelper";
-import { TransferDao } from "./transfer.dao";
+import { TypeOrmTestHelper } from "../utils/testhelper.js";
+import { TransferDao } from "./transfer.dao.js";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { DataPlaneStateDao } from "./dataplane.dao";
-import { AuthClientService } from "../auth/auth.client.service";
+import { DataPlaneStateDao } from "./dataplane.dao.js";
+import { AuthClientService } from "../auth/auth.client.service.js";
 import { HttpStatus, RawBodyRequest } from "@nestjs/common";
-import { EgressLogDao, IngressLogDao } from "../logging/logging.dao";
-import { LoggingService } from "../logging/logging.service";
+import { EgressLogDao, IngressLogDao } from "../logging/logging.dao.js";
+import { LoggingService } from "../logging/logging.service.js";
 import { NegotiationDetailDto } from "@tsg-dsp/common-dtos";
 
 describe("Dataplane Service", () => {
   let dataPlaneService: DataPlaneService;
   let server: SetupServer;
-  let managementToken: string;
 
   beforeAll(async () => {
     await TypeOrmTestHelper.instance.setupTestDB();
@@ -68,7 +68,6 @@ describe("Dataplane Service", () => {
         `${config.controlPlane.dataPlaneEndpoint}/init`,
         async ({ request, params, cookies }) => {
           const requestBody = await request.json();
-          managementToken = requestBody.managementToken;
           return HttpResponse.json({
             ...requestBody,
             identifier: "urn:uuid:4ab97081-665e-447e-88a1-791a185994b9"
@@ -228,8 +227,9 @@ describe("Dataplane Service", () => {
   afterEach(async () => {
     jest.restoreAllMocks();
   });
-  afterAll(async () => {
-    await TypeOrmTestHelper.instance.teardownTestDB();
+  afterAll(() => {
+    TypeOrmTestHelper.instance.teardownTestDB();
+    server.close();
   });
 
   describe("Provider process", () => {
@@ -335,7 +335,7 @@ describe("Dataplane Service", () => {
 
       const resultBody = JSON.parse(
         Buffer.from(
-          (response.res.write as jest.Mock).mock.calls[0][0]
+          (response.res.write as jest.Mock).mock.calls[0][0] as any
         ).toString()
       );
 
@@ -1212,127 +1212,128 @@ describe("Dataplane Service", () => {
       ).rejects.toThrow("Request failed");
     });
   });
+});
 
-  describe("Dataplane Service Consumer", () => {
-    let dataPlaneService: DataPlaneService;
-    let server: SetupServer;
-    let managementToken: string;
+describe("Dataplane Service Consumer", () => {
+  let dataPlaneService: DataPlaneService;
+  let server: SetupServer;
+  let managementToken: string;
 
-    beforeAll(async () => {
-      await TypeOrmTestHelper.instance.setupTestDB();
-      const config = plainToClass(RootConfig, {
-        server: {},
-        controlPlane: {
-          dataPlaneEndpoint: "http://127.0.0.1/data-plane",
-          managementEndpoint: "http://localhost:3000/management",
-          controlEndpoint: "http://localhost:3000",
-          authorization: "Basic YWRtaW46YWRtaW4=",
-          initializationDelay: 1
-        },
-        dataset: undefined,
-        logging: {
-          debug: true
+  beforeAll(async () => {
+    await TypeOrmTestHelper.instance.setupTestDB();
+    const config = plainToClass(RootConfig, {
+      server: {},
+      controlPlane: {
+        dataPlaneEndpoint: "http://127.0.0.1/data-plane",
+        managementEndpoint: "http://localhost:3000/management",
+        controlEndpoint: "http://localhost:3000",
+        authorization: "Basic YWRtaW46YWRtaW4=",
+        initializationDelay: 1
+      },
+      dataset: undefined,
+      logging: {
+        debug: true
+      }
+    });
+
+    server = setupServer(
+      http.post<PathParams, DataPlaneCreation>(
+        `${config.controlPlane.dataPlaneEndpoint}/init`,
+        async ({ request, params, cookies }) => {
+          const requestBody = await request.json();
+          managementToken = requestBody.managementToken;
+          return HttpResponse.json({
+            ...requestBody,
+            identifier: "urn:uuid:4ab97081-665e-447e-88a1-791a185994b9"
+          });
         }
-      });
+      ),
+      http.post(
+        `${config.controlPlane.dataPlaneEndpoint}/:id/catalog`,
+        async ({ request, params, cookies }) => {
+          return HttpResponse.json(await request.json());
+        }
+      )
+    );
 
-      server = setupServer(
-        http.post<PathParams, DataPlaneCreation>(
-          `${config.controlPlane.dataPlaneEndpoint}/init`,
-          async ({ request, params, cookies }) => {
-            const requestBody = await request.json();
-            managementToken = requestBody.managementToken;
-            return HttpResponse.json({
-              ...requestBody,
-              identifier: "urn:uuid:4ab97081-665e-447e-88a1-791a185994b9"
-            });
-          }
-        ),
-        http.post(
-          `${config.controlPlane.dataPlaneEndpoint}/:id/catalog`,
-          async ({ request, params, cookies }) => {
-            return HttpResponse.json(await request.json());
-          }
-        )
+    server.listen({ onUnhandledRequest: "error" });
+
+    const moduleRef: TestingModule = await Test.createTestingModule({
+      imports: [
+        TypeOrmTestHelper.instance.module([
+          TransferDao,
+          DataPlaneStateDao,
+          IngressLogDao,
+          EgressLogDao
+        ]),
+        TypeOrmModule.forFeature([
+          TransferDao,
+          DataPlaneStateDao,
+          IngressLogDao,
+          EgressLogDao
+        ])
+      ],
+      controllers: [DataPlaneController],
+      providers: [
+        DataPlaneService,
+        LoggingService,
+        AuthClientService,
+        {
+          provide: AuthConfig,
+          useValue: { enabled: false }
+        },
+        {
+          provide: LoggingConfig,
+          useValue: { debug: true }
+        },
+        {
+          provide: RootConfig,
+          useValue: config
+        }
+      ]
+    }).compile();
+
+    dataPlaneService = moduleRef.get(DataPlaneService);
+    await expect(dataPlaneService.getStateDto()).rejects.toThrow(
+      "No state available yet"
+    );
+
+    await new Promise((r) => setTimeout(r, 20));
+  });
+
+  afterAll(() => {
+    TypeOrmTestHelper.instance.teardownTestDB();
+    server.close();
+  });
+
+  describe("Initial state", () => {
+    it("Add dataset config", async () => {
+      await dataPlaneService.initialized;
+      await new Promise((r) => setTimeout(r, 100));
+      await expect(dataPlaneService.getDatasetConfig()).rejects.toThrow(
+        "No dataset configured"
       );
-
-      server.listen({ onUnhandledRequest: "error" });
-
-      const moduleRef: TestingModule = await Test.createTestingModule({
-        imports: [
-          TypeOrmTestHelper.instance.module([
-            TransferDao,
-            DataPlaneStateDao,
-            IngressLogDao,
-            EgressLogDao
-          ]),
-          TypeOrmModule.forFeature([
-            TransferDao,
-            DataPlaneStateDao,
-            IngressLogDao,
-            EgressLogDao
-          ])
-        ],
-        controllers: [DataPlaneController],
-        providers: [
-          DataPlaneService,
-          LoggingService,
-          AuthClientService,
+      await dataPlaneService.updateDatasetConfig({
+        id: `urn:uuid:test`,
+        title: "HTTPBin",
+        currentVersion: "0.9.2",
+        versions: [
           {
-            provide: AuthConfig,
-            useValue: { enabled: false }
-          },
-          {
-            provide: LoggingConfig,
-            useValue: { debug: true }
-          },
-          {
-            provide: RootConfig,
-            useValue: config
+            version: "0.9.2",
+            authorization: "Bearer AAAAAAA",
+            semanticModelRef: "http://some-more-specific-ontology.org",
+            distributions: [
+              {
+                mediaType: "application/json",
+                openApiSpecRef: "https://httpbin.org/spec.json",
+                backendUrl: "https://httpbin.org/anything"
+              }
+            ]
           }
         ]
-      }).compile();
-
-      dataPlaneService = moduleRef.get(DataPlaneService);
-      await expect(dataPlaneService.getStateDto()).rejects.toThrow(
-        "No state available yet"
-      );
-
-      await new Promise((r) => setTimeout(r, 20));
-    });
-
-    afterAll(async () => {
-      await TypeOrmTestHelper.instance.teardownTestDB();
-    });
-
-    describe("Initial state", () => {
-      it("Add dataset config", async () => {
-        await dataPlaneService.initialized;
-        await new Promise((r) => setTimeout(r, 100));
-        await expect(dataPlaneService.getDatasetConfig()).rejects.toThrow(
-          "No dataset configured"
-        );
-        await dataPlaneService.updateDatasetConfig({
-          id: `urn:uuid:test`,
-          title: "HTTPBin",
-          currentVersion: "0.9.2",
-          versions: [
-            {
-              version: "0.9.2",
-              authorization: "Bearer AAAAAAA",
-              semanticModelRef: "http://some-more-specific-ontology.org",
-              distributions: [
-                {
-                  mediaType: "application/json",
-                  openApiSpecRef: "https://httpbin.org/spec.json",
-                  backendUrl: "https://httpbin.org/anything"
-                }
-              ]
-            }
-          ]
-        });
-        const config = await dataPlaneService.getDatasetConfig();
-        expect(config).toBeDefined();
       });
+      const config = await dataPlaneService.getDatasetConfig();
+      expect(config).toBeDefined();
     });
   });
 });

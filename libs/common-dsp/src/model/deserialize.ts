@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import "reflect-metadata";
-import { Multilanguage, Reference } from "./dsp/common";
+import { Multilanguage, Reference } from "./dsp/common.js";
 import {
   serializableTypes,
   hasDecorator,
   getStringDecorator,
   getFunctionDecorator
-} from "./decorators";
-import { compact } from "../jsonld/jsonld";
-import { filteredKeys } from "../utils/keys";
+} from "./decorators.js";
+import { compact } from "../jsonld/jsonld.js";
+import { filteredKeys } from "../utils/keys.js";
 
 export async function deserialize<Type>(
   obj: any,
@@ -27,7 +27,7 @@ export function deserializeSync<Type>(
   useType?: Function
 ): Type {
   if (obj === null) {
-    return null;
+    return null as Type;
   }
   if (Array.isArray(obj)) {
     return obj.map((entry) => deserializeSync(entry, false, useType)) as Type;

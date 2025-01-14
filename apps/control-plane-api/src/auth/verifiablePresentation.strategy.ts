@@ -15,14 +15,14 @@ import {
 import { plainToInstance } from "class-transformer";
 import { JwtPayload, decode } from "jsonwebtoken";
 import { Strategy } from "passport-http-bearer";
-import { DSPError } from "../utils/errors/error";
-import { AuthService } from "./auth.service";
+import { DSPError } from "../utils/errors/error.js";
+import { AuthService } from "./auth.service.js";
 import { Request } from "express";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { AgreementDao, TransferMonitorDao } from "../model/agreement.dao";
-import { RootConfig } from "../config";
-import { RuleRepositoryService } from "../policy/rule.repository.service";
+import { AgreementDao, TransferMonitorDao } from "../model/agreement.dao.js";
+import { RootConfig } from "../config.js";
+import { RuleRepositoryService } from "../policy/rule.repository.service.js";
 import { InputDescriptor } from "@tsg-dsp/common-dtos";
 
 export const VP = createParamDecorator(
@@ -84,14 +84,14 @@ export class VerifiablePresentationStrategy extends PassportStrategy(
       ).andLog(this.logger, "warn");
     }
     if (!tokenPayload) {
-      this.logger.warn(`Token could not be decoded: ${tokenPayload}`);
+      this.logger.warn(`Token could not be decoded: ${token}`);
       throw new DSPError(
         "Token could not be decoded",
         HttpStatus.UNAUTHORIZED
       ).andLog(this.logger, "warn");
     }
     const valid = await this.authService.validateToken(token);
-    if (!valid) {
+    if (!valid || valid.length === 0) {
       throw new DSPError(
         "Verifiable Presentation token not valid",
         HttpStatus.UNAUTHORIZED
@@ -132,7 +132,7 @@ export class TransferVerifiablePresentationStrategy extends PassportStrategy(
       ).andLog(this.logger, "warn");
     }
     if (!tokenPayload) {
-      this.logger.warn(`Token could not be decoded: ${tokenPayload}`);
+      this.logger.warn(`Token could not be decoded: ${token}`);
       throw new DSPError(
         "Token could not be decoded",
         HttpStatus.UNAUTHORIZED
@@ -192,7 +192,7 @@ export class TransferVerifiablePresentationStrategy extends PassportStrategy(
             this.config.iam.didId,
             inputDescriptor
           );
-          if (valid) {
+          if (valid && valid.length > 0) {
             return valid;
           }
         }
@@ -204,7 +204,7 @@ export class TransferVerifiablePresentationStrategy extends PassportStrategy(
       }
     }
     const valid = await this.authService.validateToken(token);
-    if (!valid) {
+    if (!valid || valid.length === 0) {
       throw new DSPError(
         "Verifiable Presentation token not valid",
         HttpStatus.UNAUTHORIZED

@@ -1,30 +1,18 @@
 import { Injectable } from "@nestjs/common";
-import {
-  CredentialSubject,
-  VerifiableCredential,
-  VerifiablePresentation
-} from "@tsg-dsp/common-dsp";
-import {
-  DevWalletConfig,
-  MiwConfig,
-  RootConfig,
-  TsgWalletDirectConfig,
-  TsgWalletIatpConfig
-} from "../config";
-import { AuthClientService } from "./auth.client.service";
-import { DevWalletClient } from "./wallets/dev.wallet";
-import { ManagedIdentityWalletClient } from "./wallets/miw.wallet";
-import { TsgIatpWalletClient } from "./wallets/tsg.iatp.wallet";
-import { TsgWalletClient } from "./wallets/tsg.wallet";
-import { WalletClient } from "./wallets/walletClient";
+import { VerifiablePresentation } from "@tsg-dsp/common-dsp";
+import { DevWalletConfig, RootConfig, TsgWalletConfig } from "../config.js";
+import { AuthClientService } from "./auth.client.service.js";
+import { DevWalletClient } from "./wallets/dev.wallet.js";
+import { WalletClient } from "./wallets/walletClient.js";
 import { InputDescriptor } from "@tsg-dsp/common-dtos";
+import { TsgWalletClient } from "./wallets/tsg.wallet.js";
 
 @Injectable()
 export class AuthService {
   readonly walletClient: WalletClient;
   constructor(
     private readonly config: RootConfig,
-    private readonly authClientService: AuthClientService
+    authClientService: AuthClientService
   ) {
     switch (config.iam.type) {
       case "dev":
@@ -32,19 +20,8 @@ export class AuthService {
         break;
       case "tsg":
         this.walletClient = new TsgWalletClient(
-          config.iam as TsgWalletDirectConfig,
+          config.iam as TsgWalletConfig,
           authClientService
-        );
-        break;
-      case "tsg-iatp":
-        this.walletClient = new TsgIatpWalletClient(
-          config.iam as TsgWalletIatpConfig,
-          authClientService
-        );
-        break;
-      case "miw":
-        this.walletClient = new ManagedIdentityWalletClient(
-          config.iam as MiwConfig
         );
         break;
     }
@@ -58,7 +35,7 @@ export class AuthService {
     token: string,
     audience?: string,
     inputDescriptors?: InputDescriptor[]
-  ): Promise<VerifiablePresentation | undefined> {
+  ): Promise<VerifiablePresentation[] | undefined> {
     return await this.walletClient.requestValidation(
       token,
       audience || this.config.iam.didId,

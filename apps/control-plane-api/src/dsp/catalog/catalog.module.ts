@@ -1,10 +1,10 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { AuthModule } from "../../auth/auth.module";
-import { CatalogService } from "./catalog.service";
-import { CatalogController } from "./catalog.controller";
-import { CatalogManagementController } from "./catalogManagement.controller";
-import { DspClientModule } from "../client/client.module";
+import { AuthModule } from "../../auth/auth.module.js";
+import { CatalogService } from "./catalog.service.js";
+import { CatalogController } from "./catalog.controller.js";
+import { CatalogManagementController } from "./catalogManagement.controller.js";
+import { DspClientModule } from "../client/client.module.js";
 import {
   CatalogDao,
   CatalogRecordDao,
@@ -12,7 +12,7 @@ import {
   DatasetDao,
   DistributionDao,
   ResourceDao
-} from "../../model/catalog.dao";
+} from "../../model/catalog.dao.js";
 
 @Module({
   imports: [

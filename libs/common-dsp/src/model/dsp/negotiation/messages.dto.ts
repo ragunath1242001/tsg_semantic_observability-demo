@@ -1,5 +1,5 @@
-import { ContextDto, MultilanguageDto, ReferenceDto } from "../common.dto";
-import { AgreementDto, OfferDto } from "./negotiation.dto";
+import { ContextDto, MultilanguageDto, ReferenceDto } from "../common.dto.js";
+import { AgreementDto, OfferDto } from "./negotiation.dto.js";
 
 export interface ContractRequestMessageDto extends ContextDto {
   "@type": "dspace:ContractRequestMessage";

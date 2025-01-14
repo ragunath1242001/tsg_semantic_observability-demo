@@ -1,3 +1,4 @@
+import { jest } from "@jest/globals";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import {
@@ -16,21 +17,24 @@ import {
 import { plainToClass } from "class-transformer";
 import { HttpResponse, PathParams, http } from "msw";
 import { SetupServer, setupServer } from "msw/node";
-import { AuthService } from "../../auth/auth.service";
-import { RootConfig, ServerConfig } from "../../config";
+import { AuthService } from "../../auth/auth.service.js";
+import { RootConfig, ServerConfig } from "../../config.js";
 import {
   NegotiationDetailDao,
   NegotiationProcessEventDao
-} from "../../model/negotiation.dao";
-import { TypeOrmTestHelper } from "../../utils/testhelper";
-import { DspClientService } from "../client/client.service";
-import { DspGateway } from "../client/dsp.gateway";
-import { NegotiationService } from "./negotiation.service";
-import { AgreementDao, TransferMonitorDao } from "../../model/agreement.dao";
-import { TransferDetailDao, TransferEventDao } from "../../model/transfer.dao";
-import { AgreementService } from "../../policy/agreement.service";
+} from "../../model/negotiation.dao.js";
+import { TypeOrmTestHelper } from "../../utils/testhelper.js";
+import { DspClientService } from "../client/client.service.js";
+import { DspGateway } from "../client/dsp.gateway.js";
+import { NegotiationService } from "./negotiation.service.js";
+import { AgreementDao, TransferMonitorDao } from "../../model/agreement.dao.js";
+import {
+  TransferDetailDao,
+  TransferEventDao
+} from "../../model/transfer.dao.js";
+import { AgreementService } from "../../policy/agreement.service.js";
 import { EventEmitter2 } from "@nestjs/event-emitter";
-import { PaginationOptionsDto } from "../../utils/pagination/pagination.options.dto";
+import { PaginationOptionsDto } from "../../utils/pagination/pagination.options.dto.js";
 
 describe("Negotiation Service (Provider)", () => {
   let negotiationService: NegotiationService;
@@ -82,57 +86,6 @@ describe("Negotiation Service (Provider)", () => {
           })()
         },
         AgreementService,
-        // {
-        //   provide: AgreementService,
-        //   useValue: {
-        //     getAgreement: async (
-        //       id: string,
-        //       dto: boolean
-        //     ): Promise<AgreementDto> => {
-        //       return {
-        //         "@type": "odrl:Agreement",
-        //         "@id": "urn:uuid:00000000-0000-0000-0000-000000000000",
-        //         "odrl:assigner": "did:web:localhost",
-        //         "odrl:assignee": "did:web:remote.com",
-        //         "dspace:timestamp": new Date(
-        //           "2024-08-01T12:00:00Z"
-        //         ).toISOString(),
-        //         "odrl:target": "urn:uuid:33147fb2-8896-4a53-983b-61000b6559b6",
-        //         "odrl:permission": [
-        //           {
-        //             "@type": "odrl:Permission",
-        //             "odrl:action": ODRLAction.USE,
-        //           },
-        //         ],
-        //       };
-        //     },
-        //     syncLastEvaluation: async () => {},
-        //     storeAgreement: async (a: any, negotiationId: string) => {
-        //       return {
-        //         id: "urn:uuid:00000000-0000-0000-0000-000000000000",
-        //         agreement: {
-        //           "@type": "odrl:Agreement",
-        //           "@id": "urn:uuid:00000000-0000-0000-0000-000000000000",
-        //           "odrl:assigner": "did:web:localhost",
-        //           "odrl:assignee": "did:web:remote.com",
-        //           "dspace:timestamp": new Date(
-        //             "2024-08-01T12:00:00Z"
-        //           ).toISOString(),
-        //           "odrl:target":
-        //             "urn:uuid:33147fb2-8896-4a53-983b-61000b6559b6",
-        //           "odrl:permission": [
-        //             {
-        //               "@type": "odrl:Permission",
-        //               "odrl:action": ODRLAction.USE,
-        //             },
-        //           ],
-        //         },
-        //         negotiationId: negotiationId,
-        //         transfers: [],
-        //       };
-        //     },
-        //   },
-        // },
         {
           provide: RootConfig,
           useValue: config

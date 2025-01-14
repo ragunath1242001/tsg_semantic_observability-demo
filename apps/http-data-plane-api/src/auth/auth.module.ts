@@ -1,13 +1,13 @@
 import { Module } from "@nestjs/common";
 import { PassportModule } from "@nestjs/passport";
-import { AuthController } from "./auth.controller";
-import { OAuthBearerStrategy } from "./oauth.bearer.strategy";
-import { OAuthStrategy } from "./oauth.strategy";
-import { SessionSerializer } from "./session.serializer";
-import { OAuthGuard } from "./oauth.guard";
-import { RolesGuard } from "./roles.guard";
-import { config } from "../config.module";
-import { AuthClientService } from "./auth.client.service";
+import { AuthController } from "./auth.controller.js";
+import { OAuthBearerStrategy } from "./oauth.bearer.strategy.js";
+import { OAuthStrategy } from "./oauth.strategy.js";
+import { SessionSerializer } from "./session.serializer.js";
+import { OAuthGuard } from "./oauth.guard.js";
+import { RolesGuard } from "./roles.guard.js";
+import { config } from "../config.module.js";
+import { AuthClientService } from "./auth.client.service.js";
 
 @Module({
   imports: [PassportModule.register({ session: true })],

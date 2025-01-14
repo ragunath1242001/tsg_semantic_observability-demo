@@ -1,9 +1,9 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { AuthModule } from "../auth/auth.module";
-import { LoggingController } from "./logging.controller";
-import { EgressLogDao, IngressLogDao } from "./logging.dao";
-import { LoggingService } from "./logging.service";
+import { AuthModule } from "../auth/auth.module.js";
+import { LoggingController } from "./logging.controller.js";
+import { EgressLogDao, IngressLogDao } from "./logging.dao.js";
+import { LoggingService } from "./logging.service.js";
 
 @Module({
   imports: [

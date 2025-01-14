@@ -2,9 +2,9 @@ import { CredentialAddress } from "@tsg-dsp/control-plane-dtos";
 import { HttpStatus, Injectable, Logger, Optional } from "@nestjs/common";
 import { CatalogDto } from "@tsg-dsp/common-dsp";
 import axios from "axios";
-import { AuthService } from "../auth/auth.service";
-import { RegistryConfig } from "../config";
-import { DSPClientError, DSPError } from "../utils/errors/error";
+import { AuthService } from "../auth/auth.service.js";
+import { RegistryConfig } from "../config.js";
+import { DSPClientError, DSPError } from "../utils/errors/error.js";
 
 @Injectable()
 export class RegistryClientService {

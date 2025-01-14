@@ -1,2 +1,2 @@
-export * from "./dataPlanes.dto";
-export * from "./dataPlanes";
+export * from "./dataPlanes.dto.js";
+export * from "./dataPlanes.js";

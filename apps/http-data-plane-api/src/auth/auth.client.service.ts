@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { AuthConfig } from "../config";
+import { AuthConfig } from "../config.js";
 import axios, {
   AxiosInstance,
   CreateAxiosDefaults,

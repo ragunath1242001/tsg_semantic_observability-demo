@@ -15,15 +15,17 @@ import {
 import {
   CatalogDto,
   CatalogRequestMessage,
+  CatalogSchema,
   Dataset,
-  DatasetDto
+  DatasetDto,
+  DatasetSchema
 } from "@tsg-dsp/common-dsp";
-import { OAuthGuard } from "../../auth/oauth.guard";
-import { Roles } from "../../auth/roles.guard";
-import { normalizeAddress } from "../../utils/address";
-import { DeserializePipe } from "../../utils/deserialize.pipe";
-import { DspClientService } from "../client/client.service";
-import { CatalogService } from "./catalog.service";
+import { OAuthGuard } from "../../auth/oauth.guard.js";
+import { Roles } from "../../auth/roles.guard.js";
+import { normalizeAddress } from "../../utils/address.js";
+import { DeserializePipe } from "../../utils/deserialize.pipe.js";
+import { DspClientService } from "../client/client.service.js";
+import { CatalogService } from "./catalog.service.js";
 import {
   ApiOperation,
   ApiTags,
@@ -37,15 +39,11 @@ import {
   ApiBody,
   ApiParam
 } from "@nestjs/swagger";
-import {
-  ApiForbiddenResponseDefault,
-  CatalogSchema,
-  DatasetSchema
-} from "@tsg-dsp/common-dtos";
-import { PaginationQuery } from "../../utils/pagination/pagination.query.decorator";
-import { UsePagination } from "../../utils/pagination/pagination.interceptor.decorator";
-import { PaginationOptionsDto } from "../../utils/pagination/pagination.options.dto";
-import { Paginated } from "../../utils/pagination/pagination.parameters";
+import { ApiForbiddenResponseDefault } from "@tsg-dsp/common-dtos";
+import { PaginationQuery } from "../../utils/pagination/pagination.query.decorator.js";
+import { UsePagination } from "../../utils/pagination/pagination.interceptor.decorator.js";
+import { PaginationOptionsDto } from "../../utils/pagination/pagination.options.dto.js";
+import { Paginated } from "../../utils/pagination/pagination.parameters.js";
 
 @UseGuards(OAuthGuard)
 @Roles(["controlplane_admin", "controlplane_dataplane"])

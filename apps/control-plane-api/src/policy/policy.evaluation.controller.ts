@@ -16,15 +16,15 @@ import {
   ApiOperation,
   ApiBody
 } from "@nestjs/swagger";
-import { OAuthGuard } from "../auth/oauth.guard";
-import { Roles } from "../auth/roles.guard";
-import { PolicyEvaluationService } from "./policy.evaluation.service";
+import { OAuthGuard } from "../auth/oauth.guard.js";
+import { Roles } from "../auth/roles.guard.js";
+import { PolicyEvaluationService } from "./policy.evaluation.service.js";
 import {
   ApiForbiddenResponseDefault,
   ApiNotFoundResponseDefault
 } from "@tsg-dsp/common-dtos";
-import { validationPipe } from "../utils/validation.pipe";
-import { EvaluationContext, EvaluationDecision } from "./evaluation.dto";
+import { validationPipe } from "../utils/validation.pipe.js";
+import { EvaluationContext, EvaluationDecision } from "./evaluation.dto.js";
 
 @UseGuards(OAuthGuard)
 @Roles(["controlplane_admin"])

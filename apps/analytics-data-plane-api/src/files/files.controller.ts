@@ -5,10 +5,10 @@ import {
   UploadedFiles,
   UseInterceptors
 } from "@nestjs/common";
-import { FilesService } from "./files.service";
+import { FilesService } from "./files.service.js";
 import { AnyFilesInterceptor } from "@nestjs/platform-express";
-import { FileMetadataDao } from "./filesMetadata.dao";
-import { Roles } from "../auth/roles.guard";
+import { FileMetadataDao } from "./filesMetadata.dao.js";
+import { Roles } from "../auth/roles.guard.js";
 
 @Controller("files")
 @Roles("controlplane_dataplane")

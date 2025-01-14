@@ -1,16 +1,16 @@
 import { expect, test } from "@jest/globals";
-import { deserialize } from "../../deserialize";
-import { Constraint, Offer, Permission } from "../negotiation/negotiation";
-import { ODRLAction, ODRLOperator } from "../negotiation/negotiation.dto";
+import { deserialize } from "../../deserialize.js";
+import { Constraint, Offer, Permission } from "../negotiation/negotiation.js";
+import { ODRLAction, ODRLOperator } from "../negotiation/negotiation.dto.js";
 import {
   Catalog,
   DataService,
   Dataset,
   Distribution,
   Resource
-} from "./catalog";
-import { CatalogDto, ResourceDto } from "./catalog.dto";
-import { defaultContext } from "../../../jsonld/context.defaults";
+} from "./catalog.js";
+import { CatalogDto, ResourceDto } from "./catalog.dto.js";
+import { defaultContext } from "../../../jsonld/context.defaults.js";
 
 test("Resource serialization", async () => {
   const resource = new Resource({
@@ -34,7 +34,7 @@ test("Resource serialization", async () => {
     ]
   });
   resource.extraProps["dcat:test"] = "Test";
-  resource.hasPolicy[0].extraProps["dcat:test2"] = {
+  resource.hasPolicy![0].extraProps["dcat:test2"] = {
     "@id": "urn:uuid:ab07632c-68c3-4665-8708-533552b51e91"
   };
   const serialized = await resource.serialize();
@@ -62,7 +62,7 @@ test("Resource serialization", async () => {
     ]
   };
   expected["dcat:test"] = "Test";
-  expected["odrl:hasPolicy"][0]["dcat:test2"] = {
+  expected["odrl:hasPolicy"]![0]["dcat:test2"] = {
     "@id": "urn:uuid:ab07632c-68c3-4665-8708-533552b51e91"
   };
   expect(serialized).toStrictEqual(expected);
@@ -125,9 +125,6 @@ test("Catalog serialization", async () => {
     ]
   });
   const serialized = await catalog.serialize();
-  const serializedJson = JSON.stringify(serialized);
-  // const serializedJson2 = JSON.stringify(catalog);
-  // expect(serializedJson).toStrictEqual(serializedJson2);
   const expected: CatalogDto = {
     "@context": defaultContext(),
     "@type": "dcat:Catalog",
@@ -321,9 +318,7 @@ test("Heracles", async () => {
     ]
   };
   const deserialized = await deserialize<Catalog>(dto);
-  // console.log(inspect(deserialized, false, null));
   const serialized = await deserialized.serialize(true);
-  // console.log(inspect(serialized, false, null));
 
   expect(serialized).toStrictEqual(dto);
 });

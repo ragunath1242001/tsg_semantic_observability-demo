@@ -6,7 +6,7 @@ import {
   RawBodyRequest
 } from "@nestjs/common";
 import axios, { AxiosInstance } from "axios";
-import { RootConfig } from "../config";
+import { RootConfig } from "../config.js";
 import crypto from "crypto";
 import { Request, Response } from "express";
 import { IncomingHttpHeaders } from "http";
@@ -42,18 +42,18 @@ import {
 } from "@tsg-dsp/common-dsp";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { TransferDao } from "./transfer.dao";
-import { DataPlaneStateDao } from "./dataplane.dao";
-import { DataPlaneClientError, DataPlaneError } from "../utils/errors/error";
+import { TransferDao } from "./transfer.dao.js";
+import { DataPlaneStateDao } from "./dataplane.dao.js";
+import { DataPlaneClientError, DataPlaneError } from "../utils/errors/error.js";
 import {
   DatasetConfig,
   PolicyConfig,
   RuleConstraintConfig
 } from "@tsg-dsp/http-data-plane-dtos";
-import { AuthClientService } from "../auth/auth.client.service";
-import { resolveControlPlaneServiceUrl } from "../utils/didServiceResolver";
-import { LoggingService } from "../logging/logging.service";
-import { LogEntry } from "../logging/logging.dto";
+import { AuthClientService } from "../auth/auth.client.service.js";
+import { resolveControlPlaneServiceUrl } from "../utils/didServiceResolver.js";
+import { LoggingService } from "../logging/logging.service.js";
+import { LogEntry } from "../logging/logging.dto.js";
 import {
   DataPlaneStateDto,
   NegotiationDetailDto,

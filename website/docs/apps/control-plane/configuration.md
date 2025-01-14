@@ -35,7 +35,7 @@ Authentication for frontend services can be done via Casdoor. This helps users w
 | `registryDid`                            | String            | DID (Decentralized Identifier) of the registry.                                             |                           |
 | `registryIntervalInMilliseconds`         | Number            | Interval in milliseconds for registry updates.                                              | `30000`                   |
 | **IAM Configuration**                    |                   |                                                                                             |                           |
-| `type`                                   | String            | Type of IAM. Options: `"tsg"`, `"tsg-iatp"`, `"miw"`, `"dev"`.                              |                           |
+| `type`                                   | String            | Type of IAM. Options: `"tsg"` or `"dev"`.                                                   |                           |
 | `didId`                                  | String            | Identifier for the DID.                                                                     |                           |
 | `clientId`                               | String            | Client ID for authentication.                                                               |                           |
 | `clientSecret`                           | String            | Client secret for authentication.                                                           |                           |

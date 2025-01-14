@@ -142,8 +142,6 @@ export class ControlPlaneConfig {
   @IsString()
   @IsUrl({ require_tld: false })
   public readonly controlEndpoint!: string;
-  // @IsString()
-  // public readonly authorization!: string;
   @IsNumber()
   @Type(() => Number)
   public readonly initializationDelay: number = 5000;

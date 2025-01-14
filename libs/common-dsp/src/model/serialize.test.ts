@@ -1,9 +1,9 @@
-import { TransferCompletionMessage } from "./dsp/transfer/messages";
-import { deserialize } from "./deserialize";
-import { ClassValidationError } from "./dsp/common";
+import { TransferCompletionMessage } from "./dsp/transfer/messages.js";
+import { deserialize } from "./deserialize.js";
+import { ClassValidationError } from "./dsp/common.js";
 import { expect, test } from "@jest/globals";
-import { defaultContext } from "../jsonld/context.defaults";
-import { serializableTypes } from "./decorators";
+import { defaultContext } from "../jsonld/context.defaults.js";
+import { serializableTypes } from "./decorators.js";
 
 test("Validation", async () => {
   const jsonLd = {

@@ -1,5 +1,5 @@
-import { Id, RdfLanguage, Serializable, RdfValue } from "../decorators";
-import { serialize } from "../serialize";
+import { Id, RdfLanguage, Serializable, RdfValue } from "../decorators.js";
+import { serialize } from "../serialize.js";
 import {
   IsDateString,
   IsDecimal,
@@ -16,11 +16,11 @@ import {
   DecimalDto,
   DurationDto,
   URIDto
-} from "./common.dto";
+} from "./common.dto.js";
 import { v4 as uuid } from "uuid";
-import { compact } from "../../jsonld/jsonld";
-import { JsonLdObj } from "jsonld/jsonld-spec";
-import { deserializeSync } from "../deserialize";
+import { compact } from "../../jsonld/jsonld.js";
+import { JsonLdObj } from "jsonld/jsonld-spec.js";
+import { deserializeSync } from "../deserialize.js";
 
 export class ClassValidationError extends Error {
   errors: ValidationError[];

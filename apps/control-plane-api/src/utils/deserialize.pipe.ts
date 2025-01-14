@@ -5,7 +5,7 @@ import {
   SerializableClass,
   deserialize
 } from "@tsg-dsp/common-dsp";
-import { DSPError } from "./errors/error";
+import { DSPError } from "./errors/error.js";
 
 /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
 type Constructor<T> = new (...args: any[]) => T;

@@ -4,9 +4,9 @@ import {
   serializableTypes,
   hasDecorator,
   getStringDecorator
-} from "./decorators";
-import { filteredKeys } from "../utils/keys";
-import { defaultContext } from "../jsonld/context.defaults";
+} from "./decorators.js";
+import { filteredKeys } from "../utils/keys.js";
+import { defaultContext } from "../jsonld/context.defaults.js";
 
 export function serialize(obj: any, root = true, serializeType = false): any {
   if (obj === null) {

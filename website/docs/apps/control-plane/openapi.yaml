@@ -57,6 +57,17 @@ paths:
       security: *a1
       summary: Update settings
       tags: *a2
+  /api/settings/upload:
+    post:
+      description: Uploads logo for the control plane, receive a base64 encoded url.
+      operationId: ConfigController_uploadFile
+      parameters: []
+      responses:
+        "200":
+          description: ""
+      security: *a1
+      summary: Upload logo
+      tags: *a2
   /health:
     get:
       description: Retrieves the current health of the control plane. If the control
@@ -223,14 +234,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/DataPlaneCreationDto"
+              $ref: "#/components/schemas/DataPlaneCreation"
       responses:
         "200":
           description: ""
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/DataPlaneDto"
+                $ref: "#/components/schemas/DataPlaneDetailsDto"
         "400":
           description: Invalid data plane details provided
         "403":
@@ -261,14 +272,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/DataPlaneDto"
+              $ref: "#/components/schemas/DataPlaneDetailsDto"
       responses:
         "200":
           description: ""
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/DataPlaneDto"
+                $ref: "#/components/schemas/DataPlaneDetailsDto"
         "400":
           description: Identifier mismatch or invalid data
         "403":
@@ -388,7 +399,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/DataPlaneDto"
+                  $ref: "#/components/schemas/DataPlaneDetailsDto"
         "403":
           description: Forbidden
           content:
@@ -411,14 +422,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/DataPlaneDto"
+              $ref: "#/components/schemas/DataPlaneDetailsDto"
       responses:
         "201":
           description: ""
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/DataPlaneDto"
+                $ref: "#/components/schemas/DataPlaneDetailsDto"
         "400":
           description: Invalid dataplane data
         "403":
@@ -445,14 +456,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/DataPlaneDto"
+              $ref: "#/components/schemas/DataPlaneDetailsDto"
       responses:
         "200":
           description: ""
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/DataPlaneDto"
+                $ref: "#/components/schemas/DataPlaneDetailsDto"
         "400":
           description: Invalid dataplane data
         "403":
@@ -1167,6 +1178,13 @@ paths:
         - name: datasetId
           required: true
           in: path
+          description: Dataset ID you want to find a negotiation for
+          schema:
+            type: string
+        - name: remoteParty
+          required: false
+          in: query
+          description: Remote party you want a negotiation to find for
           schema:
             type: string
       responses:
@@ -1197,7 +1215,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/NegotiationDetailSchema"
+                $ref: "#/components/schemas/NegotiationDetailDto"
       security: *a16
       summary: Get a negotiation by process ID
       tags: *a17
@@ -1777,7 +1795,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/TransferStatusSchema"
+                  $ref: "#/components/schemas/TransferStatusDto"
       security: &a20
         - oauth2:
             - controlplane_admin
@@ -1801,7 +1819,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TransferDetailSchema"
+                $ref: "#/components/schemas/TransferDetailDto"
       security: *a20
       summary: Get transfer details by process ID
       tags: *a21
@@ -1858,7 +1876,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/DataPlaneAddressSchema"
+              $ref: "#/components/schemas/DataPlaneAddressDto"
       responses:
         "200":
           description: Transfer started successfully
@@ -1987,7 +2005,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ContractAgreementMessageSchema"
+                $ref: "#/components/schemas/AgreementSchema"
       security:
         - oauth2:
             - controlplane_admin
@@ -2718,7 +2736,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/CatalogSchema"
+                type: array
+                items:
+                  $ref: "#/components/schemas/CatalogSchema"
         "403":
           description: Forbidden
           content:
@@ -2745,7 +2765,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/CredentialAddressDto"
+                  $ref: "#/components/schemas/CredentialAddress"
         "403":
           description: Forbidden
           content:
@@ -2950,7 +2970,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/CredentialAddressDto"
+                  $ref: "#/components/schemas/CredentialAddress"
       security: *a28
       summary: Request all addresses
       tags: *a29
@@ -3017,8 +3037,15 @@ components:
       properties:
         controlPlaneInteractions:
           type: string
+        color:
+          type: string
+        darkThemeUrl:
+          type: string
+        lightThemeUrl:
+          type: string
       required:
         - controlPlaneInteractions
+        - color
     ErrorDto:
       type: object
       properties:
@@ -3100,10 +3127,21 @@ components:
           type: string
         role:
           type: string
+          enum: &a32
+            - provider
+            - consumer
         remoteAddress:
           type: string
         state:
           type: string
+          enum: &a33
+            - dspace:REQUESTED
+            - dspace:OFFERED
+            - dspace:ACCEPTED
+            - dspace:AGREED
+            - dspace:VERIFIED
+            - dspace:FINALIZED
+            - dspace:TERMINATED
         dataSet:
           type: string
         modifiedDate:
@@ -3121,16 +3159,42 @@ components:
     TransferStatusDto:
       type: object
       properties:
+        localId:
+          type: string
+        remoteId:
+          type: string
         role:
+          type: string
+        remoteAddress:
+          type: string
+        remoteParty:
           type: string
         state:
           type: string
-        count:
-          type: number
+          enum: &a34
+            - dspace:REQUESTED
+            - dspace:STARTED
+            - dspace:TERMINATED
+            - dspace:COMPLETED
+            - dspace:SUSPENDED
+        process:
+          $ref: "#/components/schemas/TransferProcessSchema"
+        agreementId:
+          type: string
+        format:
+          type: string
+        modifiedDate:
+          format: date-time
+          type: string
       required:
+        - localId
         - role
+        - remoteAddress
+        - remoteParty
         - state
-        - count
+        - process
+        - agreementId
+        - modifiedDate
     StatusDto:
       type: object
       properties:
@@ -3185,69 +3249,6 @@ components:
           type: object
       required:
         - state
-    DataPlaneCreationDto:
-      type: object
-      properties:
-        datasets:
-          type: array
-          items:
-            type: string
-        dataplaneType:
-          type: string
-        endpointPrefix:
-          type: string
-        callbackAddress:
-          type: string
-        managementAddress:
-          type: string
-        managementToken:
-          type: string
-        catalogSynchronization:
-          type: string
-        role:
-          type: string
-        identifier:
-          type: string
-      required:
-        - dataplaneType
-        - endpointPrefix
-        - callbackAddress
-        - managementAddress
-        - managementToken
-        - catalogSynchronization
-        - role
-    DataPlaneDto:
-      type: object
-      properties:
-        datasets:
-          type: array
-          items:
-            type: string
-        dataplaneType:
-          type: string
-        endpointPrefix:
-          type: string
-        callbackAddress:
-          type: string
-        managementAddress:
-          type: string
-        managementToken:
-          type: string
-        catalogSynchronization:
-          type: string
-        role:
-          type: string
-        identifier:
-          type: string
-      required:
-        - dataplaneType
-        - endpointPrefix
-        - callbackAddress
-        - managementAddress
-        - managementToken
-        - catalogSynchronization
-        - role
-        - identifier
     ConstraintSchema:
       type: object
       properties:
@@ -3434,6 +3435,78 @@ components:
       required:
         - "@id"
         - "@type"
+    DataPlaneCreation:
+      type: object
+      properties:
+        datasets:
+          type: array
+          items:
+            $ref: "#/components/schemas/DatasetSchema"
+        dataplaneType:
+          type: string
+        endpointPrefix:
+          type: string
+        callbackAddress:
+          type: string
+        managementAddress:
+          type: string
+        managementToken:
+          type: string
+        catalogSynchronization:
+          type: string
+          enum: &a30
+            - push
+            - pull
+        role:
+          type: string
+          enum: &a31
+            - consumer
+            - provider
+            - both
+        identifier:
+          type: string
+      required:
+        - dataplaneType
+        - endpointPrefix
+        - callbackAddress
+        - managementAddress
+        - managementToken
+        - catalogSynchronization
+        - role
+    DataPlaneDetailsDto:
+      type: object
+      properties:
+        datasets:
+          type: array
+          items:
+            $ref: "#/components/schemas/DatasetSchema"
+        dataplaneType:
+          type: string
+        endpointPrefix:
+          type: string
+        callbackAddress:
+          type: string
+        managementAddress:
+          type: string
+        managementToken:
+          type: string
+        catalogSynchronization:
+          type: string
+          enum: *a30
+        role:
+          type: string
+          enum: *a31
+        identifier:
+          type: string
+      required:
+        - dataplaneType
+        - endpointPrefix
+        - callbackAddress
+        - managementAddress
+        - managementToken
+        - catalogSynchronization
+        - role
+        - identifier
     ResourceSchema:
       type: object
       properties:
@@ -3798,6 +3871,16 @@ components:
         - dspace:consumerPid
         - dspace:providerPid
         - dspace:eventType
+    HashedMessageSchema:
+      type: object
+      properties:
+        dspace:digest:
+          type: string
+        dspace:algorithm:
+          type: string
+      required:
+        - dspace:digest
+        - dspace:algorithm
     ContractAgreementVerificationMessageSchema:
       type: object
       properties:
@@ -3808,7 +3891,7 @@ components:
         dspace:providerPid:
           type: string
         dspace:hashedMessage:
-          type: object
+          $ref: "#/components/schemas/HashedMessageSchema"
       required:
         - "@type"
         - dspace:consumerPid
@@ -3911,7 +3994,7 @@ components:
         - dspace:consumerPid
         - dspace:providerPid
         - dspace:agreement
-    NegotiationProcessEventSchema:
+    NegotiationProcessEventDto:
       type: object
       properties:
         time:
@@ -3919,6 +4002,14 @@ components:
           type: string
         state:
           type: string
+          enum:
+            - dspace:REQUESTED
+            - dspace:OFFERED
+            - dspace:ACCEPTED
+            - dspace:AGREED
+            - dspace:VERIFIED
+            - dspace:FINALIZED
+            - dspace:TERMINATED
         localMessage:
           type: string
         code:
@@ -3931,13 +4022,18 @@ components:
           type: string
         verification:
           $ref: "#/components/schemas/ContractAgreementVerificationMessageSchema"
+        hashedMessage:
+          $ref: "#/components/schemas/HashedMessageSchema"
         type:
           type: string
+          enum:
+            - local
+            - remote
       required:
         - time
         - state
         - type
-    NegotiationDetailSchema:
+    NegotiationDetailDto:
       type: object
       properties:
         localId:
@@ -3948,10 +4044,12 @@ components:
           type: string
         role:
           type: string
+          enum: *a32
         remoteAddress:
           type: string
         state:
           type: string
+          enum: *a33
         dataSet:
           type: string
         modifiedDate:
@@ -3964,7 +4062,7 @@ components:
         events:
           type: array
           items:
-            $ref: "#/components/schemas/NegotiationProcessEventSchema"
+            $ref: "#/components/schemas/NegotiationProcessEventDto"
       required:
         - localId
         - remoteId
@@ -3974,8 +4072,6 @@ components:
         - state
         - dataSet
         - modifiedDate
-        - offer
-        - agreement
         - events
     EndpointPropertySchema:
       type: object
@@ -4115,40 +4211,29 @@ components:
         - dspace:providerPid
         - dspace:consumerPid
         - dspace:reason
-    TransferStatusSchema:
+    DataPlaneProperty:
       type: object
       properties:
-        localId:
+        name:
           type: string
-        remoteId:
-          type: string
-        role:
-          type: string
-        remoteAddress:
-          type: string
-        remoteParty:
-          type: string
-        state:
-          type: string
-        process:
-          $ref: "#/components/schemas/TransferProcessSchema"
-        agreementId:
-          type: string
-        format:
-          type: string
-        modifiedDate:
-          format: date-time
+        value:
           type: string
       required:
-        - localId
-        - role
-        - remoteAddress
-        - remoteParty
-        - state
-        - process
-        - agreementId
-        - modifiedDate
-    DataPlaneTransferSchema:
+        - name
+        - value
+    DataPlaneAddressDto:
+      type: object
+      properties:
+        endpoint:
+          type: string
+        properties:
+          type: array
+          items:
+            $ref: "#/components/schemas/DataPlaneProperty"
+      required:
+        - endpoint
+        - properties
+    DataPlaneTransferDto:
       type: object
       properties:
         accepted:
@@ -4156,7 +4241,7 @@ components:
         identifier:
           type: string
         dataAddress:
-          $ref: "#/components/schemas/DataAddressSchema"
+          $ref: "#/components/schemas/DataPlaneAddressDto"
         callbackAddress:
           type: string
         dataPlaneIdentifier:
@@ -4168,7 +4253,7 @@ components:
         - identifier
         - dataPlaneIdentifier
         - endpointType
-    TransferEventSchema:
+    TransferEventDto:
       type: object
       properties:
         time:
@@ -4176,6 +4261,12 @@ components:
           type: string
         state:
           type: string
+          enum:
+            - dspace:REQUESTED
+            - dspace:STARTED
+            - dspace:TERMINATED
+            - dspace:COMPLETED
+            - dspace:SUSPENDED
         localMessage:
           type: string
         code:
@@ -4184,13 +4275,14 @@ components:
           $ref: "#/components/schemas/MultilanguageSchema"
         type:
           type: string
+          enum:
+            - local
+            - remote
       required:
         - time
         - state
-        - localMessage
-        - code
         - type
-    TransferDetailSchema:
+    TransferDetailDto:
       type: object
       properties:
         localId:
@@ -4205,6 +4297,7 @@ components:
           type: string
         state:
           type: string
+          enum: *a34
         process:
           $ref: "#/components/schemas/TransferProcessSchema"
         agreementId:
@@ -4217,9 +4310,11 @@ components:
         dataAddress:
           $ref: "#/components/schemas/DataAddressSchema"
         dataPlaneTransfer:
-          $ref: "#/components/schemas/DataPlaneTransferSchema"
+          $ref: "#/components/schemas/DataPlaneTransferDto"
         events:
-          $ref: "#/components/schemas/TransferEventSchema"
+          type: array
+          items:
+            $ref: "#/components/schemas/TransferEventDto"
       required:
         - localId
         - role
@@ -4229,24 +4324,74 @@ components:
         - process
         - agreementId
         - modifiedDate
-        - dataAddress
         - dataPlaneTransfer
         - events
-    DataPlaneAddressSchema:
+    CredentialSubject:
       type: object
       properties:
-        endpoint:
+        id:
           type: string
-        properties:
+      required:
+        - id
+    Proof:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - JsonWebSignature2020
+            - DataIntegrityProof
+        proofPurpose:
+          type: string
+      required:
+        - type
+        - proofPurpose
+    VerifiableCredential:
+      type: object
+      properties:
+        "@context":
           type: array
           items:
             type: string
+            enum:
+              - https://www.w3.org/2018/credentials/v1
+              - https://www.w3.org/ns/credentials/v2
+              - https://w3id.org/security/suites/jws-2020/v1
+              - https://w3id.org/security/data-integrity/v2
+              - string
+        type:
+          type: array
+          items:
+            type: string
+        id:
+          type: string
+        credentialSubject:
+          additionalProperties: true
+          allOf:
+            - $ref: "#/components/schemas/CredentialSubject"
+        issuer:
+          type: string
+        issuanceDate:
+          type: string
+        expirationDate:
+          type: string
+        validFrom:
+          type: string
+        validUntil:
+          type: string
+        evidence:
+          type: object
+          additionalProperties: true
+        proof:
+          type: array
+          items:
+            $ref: "#/components/schemas/Proof"
       required:
-        - endpoint
-        - properties
-    VerifiableCredential:
-      type: object
-      properties: {}
+        - "@context"
+        - type
+        - credentialSubject
+        - issuer
+        - proof
     EvaluationContext:
       type: object
       properties:
@@ -4351,7 +4496,7 @@ components:
         - action
         - constraints
         - duties
-    CredentialAddressDto:
+    CredentialAddress:
       type: object
       properties:
         didId:
@@ -4414,10 +4559,10 @@ components:
           type: string
         serviceEndpoint:
           oneOf:
-            - &a30
+            - &a35
               type: string
             - type: array
-              items: *a30
+              items: *a35
       required:
         - id
         - type
@@ -4427,10 +4572,10 @@ components:
       properties:
         "@context":
           oneOf:
-            - &a31
+            - &a36
               type: string
             - type: array
-              items: *a31
+              items: *a36
         id:
           type: string
         alsoKnownAs:
@@ -4439,10 +4584,10 @@ components:
             type: string
         controller:
           oneOf:
-            - &a32
+            - &a37
               type: string
             - type: array
-              items: *a32
+              items: *a37
         verificationMethod:
           type: array
           items:

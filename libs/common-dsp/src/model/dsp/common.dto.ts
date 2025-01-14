@@ -1,5 +1,5 @@
 import { ContextDefinition } from "jsonld";
-import { OrArray } from "../../utils/unions";
+import { OrArray } from "../../utils/unions.js";
 
 export type Contexts = string | ContextDefinition;
 

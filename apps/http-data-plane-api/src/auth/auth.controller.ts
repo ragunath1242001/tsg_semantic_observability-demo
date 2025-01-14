@@ -1,9 +1,9 @@
 import { Controller, Get, Next, Req, Res, UseGuards } from "@nestjs/common";
-import { DisableOAuthGuard, OAuthLoginGuard } from "./oauth.guard";
+import { DisableOAuthGuard, OAuthLoginGuard } from "./oauth.guard.js";
 import { NextFunction, Request, Response } from "express";
 import passport from "passport";
-import { Client, ClientInfo } from "./roles.guard";
-import { AuthConfig } from "../config";
+import { Client, ClientInfo } from "./roles.guard.js";
+import { AuthConfig } from "../config.js";
 import {
   ApiExtraModels,
   ApiFoundResponse,
@@ -12,7 +12,10 @@ import {
   ApiTags,
   getSchemaPath
 } from "@nestjs/swagger";
-import { AuthenticatedUserDto, UnauthenticatedUserDto } from "./auth.schemas";
+import {
+  AuthenticatedUserDto,
+  UnauthenticatedUserDto
+} from "./auth.schemas.js";
 
 @Controller("auth")
 @ApiTags("Authentication")

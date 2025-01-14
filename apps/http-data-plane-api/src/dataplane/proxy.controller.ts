@@ -8,10 +8,10 @@ import {
   Req,
   Res
 } from "@nestjs/common";
-import { DataPlaneService } from "./dataplane.service";
+import { DataPlaneService } from "./dataplane.service.js";
 import { Request, Response } from "express";
-import { DisableOAuthGuard } from "../auth/oauth.guard";
-import { DisableRolesGuard } from "../auth/roles.guard";
+import { DisableOAuthGuard } from "../auth/oauth.guard.js";
+import { DisableRolesGuard } from "../auth/roles.guard.js";
 import { ApiOperation, ApiParam, ApiTags } from "@nestjs/swagger";
 
 @ApiTags("Proxy")

@@ -1,13 +1,11 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
-import { Strategy, VerifyFunction } from "passport-oauth2";
-import { AuthConfig } from "../config";
+import { Strategy } from "passport-oauth2";
+import { AuthConfig } from "../config.js";
 import { decodeJwt } from "jose";
 
 @Injectable()
-export class OAuthStrategy extends PassportStrategy(Strategy, "oauth") {
-  _verify!: VerifyFunction;
-
+export class OAuthStrategy extends PassportStrategy(Strategy, "oauth", 5) {
   constructor(authConfig: AuthConfig) {
     if (!authConfig.enabled) {
       throw Error();
@@ -19,9 +17,6 @@ export class OAuthStrategy extends PassportStrategy(Strategy, "oauth") {
       clientSecret: authConfig.clientSecret,
       callbackURL: authConfig.callbackURL,
       state: true
-    });
-    Object.defineProperty(this._verify, "length", {
-      value: this.validate.length + 1
     });
   }
 

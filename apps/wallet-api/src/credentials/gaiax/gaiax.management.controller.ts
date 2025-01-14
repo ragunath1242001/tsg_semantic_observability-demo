@@ -16,10 +16,6 @@ import {
   ApiOperation,
   ApiTags
 } from "@nestjs/swagger";
-import {
-  ComplianceRequestDto,
-  LegalRegistrationNumberRequestDto
-} from "./gaiax.schemas.js";
 import { CredentialsDto } from "../credentials.schemas.js";
 import {
   ApiBadRequestResponseDefault,
@@ -71,7 +67,7 @@ export class GaiaXManagementController {
     description:
       "Self-issue a Legal Registration Number credential following the Gaia-X Trust Framework"
   })
-  @ApiBody({ type: LegalRegistrationNumberRequestDto })
+  @ApiBody({ type: LegalRegistrationNumberRequest })
   @ApiOkResponse({ type: CredentialsDto })
   @ApiBadRequestResponseDefault()
   @ApiForbiddenResponseDefault()
@@ -100,7 +96,7 @@ export class GaiaXManagementController {
     description:
       "Request a compliance credential from a Gaia-X Digital Clearing House based on existing credentials within this wallet"
   })
-  @ApiBody({ type: ComplianceRequestDto })
+  @ApiBody({ type: ComplianceRequest })
   @ApiOkResponse({ type: CredentialsDto })
   @ApiBadRequestResponseDefault()
   @ApiForbiddenResponseDefault()

@@ -154,8 +154,8 @@ export class RegistryConfig {
 
 export abstract class IamConfig {
   @IsString()
-  @IsIn(["tsg", "tsg-iatp", "miw", "dev"])
-  public readonly type!: "tsg" | "tsg-iatp" | "miw" | "dev";
+  @IsIn(["tsg", "dev"])
+  public readonly type!: "tsg" | "dev";
 
   @IsString()
   public readonly didId!: string;
@@ -179,26 +179,8 @@ export class DevWalletConfig extends IamConfig {
   override readonly type: "dev" = "dev" as const;
 }
 
-export class TsgWalletDirectConfig extends IamConfig {
+export class TsgWalletConfig extends IamConfig {
   override readonly type: "tsg" = "tsg" as const;
-
-  @IsString()
-  public readonly credentialId!: string;
-
-  @IsString()
-  @IsUrl({ require_tld: false, require_protocol: true, require_host: false })
-  public readonly presentationUrl!: string;
-
-  @IsString()
-  @IsUrl({ require_tld: false, require_protocol: true, require_host: false })
-  public readonly validationUrl!: string;
-
-  @IsString({ each: true })
-  public readonly validations!: string[];
-}
-
-export class TsgWalletIatpConfig extends IamConfig {
-  override readonly type: "tsg-iatp" = "tsg-iatp" as const;
 
   @IsString()
   @IsUrl({ require_tld: false, require_protocol: true, require_host: false })
@@ -219,24 +201,6 @@ export class TsgWalletIatpConfig extends IamConfig {
   @IsOptional()
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public readonly customFields?: any[];
-}
-
-export class MiwConfig extends IamConfig {
-  override readonly type: "miw" = "miw" as const;
-
-  @IsString()
-  @IsUrl({ require_tld: false, require_protocol: true, require_host: false })
-  public readonly presentationUrl!: string;
-
-  @IsString()
-  @IsUrl({ require_tld: false, require_protocol: true, require_host: false })
-  public readonly validationUrl!: string;
-
-  @IsString()
-  public readonly credentialId!: string;
-
-  @IsString({ each: true })
-  public readonly validations!: string[];
 }
 
 export class RuntimeConfig {
@@ -347,9 +311,7 @@ export class RootConfig {
       property: "type",
       subTypes: [
         { value: DevWalletConfig, name: "dev" },
-        { value: TsgWalletDirectConfig, name: "tsg" },
-        { value: TsgWalletIatpConfig, name: "tsg-iatp" },
-        { value: MiwConfig, name: "miw" }
+        { value: TsgWalletConfig, name: "tsg" }
       ]
     }
   })

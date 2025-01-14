@@ -1,21 +1,16 @@
 import { Logger } from "@nestjs/common";
-import {
-  CredentialSubject,
-  VerifiableCredential,
-  VerifiablePresentation,
-  VerifiablePresentationJwt
-} from "@tsg-dsp/common-dsp";
-import { plainToInstance } from "class-transformer";
-import { decode } from "jsonwebtoken";
-import { TsgWalletDirectConfig } from "../../config";
-import { DSPClientError } from "../../utils/errors/error";
-import { AuthClientService } from "../auth.client.service";
-import { Credential, ValidationResult, WalletClient } from "./walletClient";
+import { VerifiablePresentation } from "@tsg-dsp/common-dsp";
+import crypto from "crypto";
+import { TsgWalletConfig } from "../../config.js";
+import { DSPClientError } from "../../utils/errors/error.js";
+import { AuthClientService } from "../auth.client.service.js";
+import { Credential, WalletClient } from "./walletClient.js";
 import { DIDDocument } from "did-resolver";
+import { InputDescriptor } from "@tsg-dsp/common-dtos";
 
 export class TsgWalletClient extends WalletClient {
   constructor(
-    private readonly iamConfig: TsgWalletDirectConfig,
+    private readonly iamConfig: TsgWalletConfig,
     private readonly authClientService: AuthClientService
   ) {
     super();
@@ -26,15 +21,12 @@ export class TsgWalletClient extends WalletClient {
     try {
       const response = await this.authClientService
         .axiosInstance()
-        .get<VerifiablePresentationJwt>(this.iamConfig.presentationUrl, {
+        .get<{ id_token: string }>(this.iamConfig.siopUrl, {
           params: {
-            credentialId: this.iamConfig.credentialId,
-            asJwt: "true",
             audience: audience
           }
         });
-      this.logger.debug(`Successfully requested Verifiable Presentation`);
-      return response.data.vp;
+      return response.data.id_token;
     } catch (err) {
       throw new DSPClientError("Could not request VP", err).andLog(
         this.logger,
@@ -45,43 +37,68 @@ export class TsgWalletClient extends WalletClient {
 
   async requestValidation(
     token: string,
-    audience: string
-  ): Promise<VerifiablePresentation | undefined> {
-    const jwt: VerifiablePresentationJwt = {
-      vp: token
-    };
+    audience: string,
+    inputDescriptors?: InputDescriptor[]
+  ): Promise<VerifiablePresentation[] | undefined> {
     try {
+      if (!inputDescriptors) {
+        inputDescriptors = [
+          {
+            id: crypto.randomUUID(),
+            name: "Primary credential descriptor",
+            constraints: {
+              fields: [
+                ...(this.iamConfig.typeFilter
+                  ? [
+                      {
+                        path: ["$.type"],
+                        filter: {
+                          type: "string",
+                          pattern: this.iamConfig.typeFilter
+                        }
+                      }
+                    ]
+                  : []),
+                ...(this.iamConfig.issuerFilter
+                  ? [
+                      {
+                        path: ["$.issuer"],
+                        filter: {
+                          type: "string",
+                          pattern: this.iamConfig.issuerFilter
+                        }
+                      }
+                    ]
+                  : []),
+                ...(this.iamConfig.customFields ?? [])
+              ]
+            }
+          }
+        ];
+      }
+
       const response = await this.authClientService
         .axiosInstance()
-        .post<ValidationResult>(this.iamConfig.validationUrl, jwt, {
-          params: {
-            audience: audience
-          }
-        });
-      for (const validation of this.iamConfig.validations) {
-        const validationResult = response.data[validation];
-        if (validationResult) {
-          if (validationResult instanceof Array) {
-            if (validationResult.some((c) => !c)) {
-              this.logger.log(
-                `Validation for ${validation} contains at least one false`
-              );
-              return undefined;
+        .post<VerifiablePresentation[]>(
+          this.iamConfig.verifyUrl,
+          {
+            holderIdToken: token,
+            presentationDefinition: {
+              id: crypto.randomUUID(),
+              name: "DSP Presentation definition",
+              input_descriptors: inputDescriptors
             }
-          } else {
-            if (!validationResult) {
-              this.logger.log(`Validation for ${validation} is false`);
-              return undefined;
+          },
+          {
+            params: {
+              audience: audience
             }
           }
-        } else {
-          this.logger.log(`Validation for ${validation} is false`);
-          return undefined;
-        }
-      }
-      const tokenPayload = decode(token, { json: true });
-      this.logger.debug(`Successfully validated Verifiable Presentation`);
-      return plainToInstance(VerifiablePresentation, tokenPayload!["vp"]);
+        );
+      this.logger.debug(
+        `Successfully requested validation for audience ${audience}`
+      );
+      return response.data;
     } catch (err) {
       throw new DSPClientError("Could not request VP", err).andLog(
         this.logger,
@@ -90,7 +107,7 @@ export class TsgWalletClient extends WalletClient {
     }
   }
 
-  async getCredentials() {
+  async getCredentials(): Promise<Credential[]> {
     try {
       const response = await this.authClientService
         .axiosInstance()

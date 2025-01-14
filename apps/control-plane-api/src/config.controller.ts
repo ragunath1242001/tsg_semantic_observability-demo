@@ -11,9 +11,9 @@ import {
   UseInterceptors,
   UploadedFile
 } from "@nestjs/common";
-import { RuntimeConfig } from "./config";
-import { OAuthGuard } from "./auth/oauth.guard";
-import { Roles } from "./auth/roles.guard";
+import { RuntimeConfig } from "./config.js";
+import { OAuthGuard } from "./auth/oauth.guard.js";
+import { Roles } from "./auth/roles.guard.js";
 import {
   ApiOperation,
   ApiOkResponse,
@@ -21,7 +21,7 @@ import {
   ApiTags,
   ApiBody
 } from "@nestjs/swagger";
-import { RuntimeConfigDto } from "./config.schemas";
+import { RuntimeConfigDto } from "./config.schemas.js";
 import {
   ApiForbiddenResponseDefault,
   ApiBadRequestResponseDefault

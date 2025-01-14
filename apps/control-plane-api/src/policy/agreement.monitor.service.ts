@@ -7,13 +7,13 @@ import {
 } from "@nestjs/common";
 import { TransferState } from "@tsg-dsp/common-dsp";
 import { SchedulerRegistry } from "@nestjs/schedule";
-import { TransferMonitorDao } from "../model/agreement.dao";
+import { TransferMonitorDao } from "../model/agreement.dao.js";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { TransferService } from "../dsp/transfer/transfer.service";
-import { PolicyEvaluationService } from "./policy.evaluation.service";
-import { EvaluationTrigger } from "./constraint.dto";
-import { PaginationOptionsDto } from "../utils/pagination/pagination.options.dto";
+import { TransferService } from "../dsp/transfer/transfer.service.js";
+import { PolicyEvaluationService } from "./policy.evaluation.service.js";
+import { EvaluationTrigger } from "./constraint.dto.js";
+import { PaginationOptionsDto } from "../utils/pagination/pagination.options.dto.js";
 
 @Injectable()
 export class AgreementMonitorService implements OnApplicationBootstrap {

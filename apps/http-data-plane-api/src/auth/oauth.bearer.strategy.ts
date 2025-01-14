@@ -3,7 +3,7 @@ import { PassportStrategy } from "@nestjs/passport";
 import { Strategy } from "passport-http-bearer";
 import axios from "axios";
 import querystring from "querystring";
-import { AuthConfig } from "../config";
+import { AuthConfig } from "../config.js";
 import { decodeJwt } from "jose";
 
 @Injectable()

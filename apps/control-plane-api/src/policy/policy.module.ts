@@ -1,17 +1,17 @@
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { AuthModule } from "../auth/auth.module";
-import { CatalogModule } from "../dsp/catalog/catalog.module";
-import { AgreementManagementController } from "./agreement.management.controller";
-import { AgreementService } from "./agreement.service";
-import { PolicyEvaluationController } from "./policy.evaluation.controller";
-import { PolicyEvaluationService } from "./policy.evaluation.service";
-import { ConstraintDao, RuleDao } from "../model/rule.dao";
-import { RuleRepositoryController } from "./rule.repository.controller";
-import { RuleRepositoryService } from "./rule.repository.service";
+import { AuthModule } from "../auth/auth.module.js";
+import { CatalogModule } from "../dsp/catalog/catalog.module.js";
+import { AgreementManagementController } from "./agreement.management.controller.js";
+import { AgreementService } from "./agreement.service.js";
+import { PolicyEvaluationController } from "./policy.evaluation.controller.js";
+import { PolicyEvaluationService } from "./policy.evaluation.service.js";
+import { ConstraintDao, RuleDao } from "../model/rule.dao.js";
+import { RuleRepositoryController } from "./rule.repository.controller.js";
+import { RuleRepositoryService } from "./rule.repository.service.js";
 import { Module } from "@nestjs/common";
-import { AgreementDao, TransferMonitorDao } from "../model/agreement.dao";
-import { AgreementMonitorService } from "./agreement.monitor.service";
-import { TransferModule } from "../dsp/transfer/transfer.module";
+import { AgreementDao, TransferMonitorDao } from "../model/agreement.dao.js";
+import { AgreementMonitorService } from "./agreement.monitor.service.js";
+import { TransferModule } from "../dsp/transfer/transfer.module.js";
 
 @Module({
   imports: [

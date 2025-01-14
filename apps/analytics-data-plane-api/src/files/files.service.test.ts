@@ -1,14 +1,17 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { FilesService } from "./files.service";
-import { FileMetadataDao } from "./filesMetadata.dao";
-import { TypeOrmTestHelper } from "../utils/testhelper";
+import { FilesService } from "./files.service.js";
+import { FileMetadataDao } from "./filesMetadata.dao.js";
+import { TypeOrmTestHelper } from "../utils/testhelper.js";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { FilesConfig } from "../config";
+import { FilesConfig } from "../config.js";
 import path from "path";
 import fs from "fs/promises";
+import { fileURLToPath } from "url";
 
 describe("FilesService", () => {
   let filesService: FilesService;
+  const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
+  const __dirname = path.dirname(__filename); // get the name of the directory
   const testUploadDir = path.join(__dirname, "uploads_test"); // Temporary upload directory
 
   beforeAll(async () => {
@@ -31,6 +34,7 @@ describe("FilesService", () => {
     filesService = moduleRef.get(FilesService);
   });
   afterAll(async () => {
+    TypeOrmTestHelper.instance.teardownTestDB();
     await fs.rm(testUploadDir, { recursive: true, force: true }); // Clean up the test directory
   });
 

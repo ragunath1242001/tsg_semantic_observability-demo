@@ -1,11 +1,14 @@
-import { Body, Controller, HttpStatus, Logger } from "@nestjs/common";
 import {
+  Body,
+  Controller,
+  HttpStatus,
+  Logger,
   Get,
   HttpCode,
   Param,
   Post,
   UseGuards
-} from "@nestjs/common/decorators";
+} from "@nestjs/common";
 import {
   ApiBearerAuth,
   ApiBody,
@@ -17,28 +20,32 @@ import {
 } from "@nestjs/swagger";
 import {
   ContractAgreementMessage,
+  ContractAgreementMessageDto,
+  ContractAgreementMessageSchema,
   ContractAgreementVerificationMessage,
+  ContractAgreementVerificationMessageDto,
+  ContractAgreementVerificationMessageSchema,
   ContractNegotiation,
   ContractNegotiationDto,
   ContractNegotiationEventMessage,
-  ContractNegotiationTerminationMessage,
-  ContractOfferMessage,
-  ContractRequestMessage
-} from "@tsg-dsp/common-dsp";
-import { VerifiablePresentationGuard } from "../../auth/verifiablePresentation.guard";
-import { VPId } from "../../auth/verifiablePresentation.strategy";
-import { DeserializePipe } from "../../utils/deserialize.pipe";
-import { DSPError } from "../../utils/errors/error";
-import { NegotiationService } from "./negotiation.service";
-import {
-  ContractAgreementMessageSchema,
-  ContractAgreementVerificationMessageSchema,
+  ContractNegotiationEventMessageDto,
   ContractNegotiationEventMessageSchema,
   ContractNegotiationSchema,
+  ContractNegotiationTerminationMessage,
+  ContractNegotiationTerminationMessageDto,
   ContractNegotiationTerminationMessageSchema,
+  ContractOfferMessage,
+  ContractOfferMessageDto,
   ContractOfferMessageSchema,
+  ContractRequestMessage,
+  ContractRequestMessageDto,
   ContractRequestMessageSchema
-} from "@tsg-dsp/common-dtos";
+} from "@tsg-dsp/common-dsp";
+import { VerifiablePresentationGuard } from "../../auth/verifiablePresentation.guard.js";
+import { VPId } from "../../auth/verifiablePresentation.strategy.js";
+import { DeserializePipe } from "../../utils/deserialize.pipe.js";
+import { DSPError } from "../../utils/errors/error.js";
+import { NegotiationService } from "./negotiation.service.js";
 
 @ApiBearerAuth()
 @ApiTags("Negotiations")

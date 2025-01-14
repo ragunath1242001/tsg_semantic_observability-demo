@@ -6,7 +6,7 @@ import {
   ValidateIf,
   ValidateNested
 } from "class-validator";
-import { LDType, Namespace, Serializable } from "../../decorators";
+import { LDType, Namespace, Serializable } from "../../decorators.js";
 import {
   IReference,
   Multilanguage,
@@ -14,14 +14,14 @@ import {
   SerializableClass,
   Value,
   withExtraProps
-} from "../common";
-import { ContractAgreementVerificationMessage } from "./messages";
+} from "../common.js";
+import { ContractAgreementVerificationMessage } from "./messages.js";
 import {
   createInstances,
   createOptionalInstance,
   createOptionalInstances
-} from "../../../utils/instances";
-import { ContextDto } from "../common.dto";
+} from "../../../utils/instances.js";
+import { ContextDto } from "../common.dto.js";
 import {
   ODRLLeftOperand,
   ODRLOperator,
@@ -32,9 +32,9 @@ import {
   PolicyDto,
   OfferDto,
   AgreementDto
-} from "./negotiation.dto";
-import { ContractNegotiationState, HashedMessage } from "./messages.dto";
-import { OrArray } from "../../../utils/unions";
+} from "./negotiation.dto.js";
+import { ContractNegotiationState, HashedMessage } from "./messages.dto.js";
+import { OrArray } from "../../../utils/unions.js";
 
 export interface IConstraint {
   leftOperand: ODRLLeftOperand | string;
@@ -79,14 +79,11 @@ export interface IPolicyRule {
   constraint?: Array<Constraint>;
 }
 
-export interface IProhibition extends IPolicyRule {
-  // target: string;
-}
+export interface IProhibition extends IPolicyRule {}
 
 export type IDuty = IPolicyRule;
 
 export interface IPermission extends IPolicyRule {
-  // target: string;
   duty?: Array<Duty>;
 }
 
@@ -209,7 +206,7 @@ export interface IOffer extends IPolicy {
 export class Offer extends Policy<OfferDto> {
   @Namespace("odrl")
   @IsNotEmpty()
-  assigner: string;
+  declare assigner: string;
 
   constructor(value: withExtraProps<IOffer>) {
     super(value);
@@ -228,10 +225,10 @@ export interface IAgreement extends IPolicy {
 export class Agreement extends Policy<AgreementDto> {
   @Namespace("odrl")
   @IsNotEmpty()
-  assigner: string;
+  declare assigner: string;
   @Namespace("odrl")
   @IsNotEmpty()
-  assignee: string;
+  declare assignee: string;
   @Namespace("dspace")
   @IsNotEmpty()
   @IsDateString()

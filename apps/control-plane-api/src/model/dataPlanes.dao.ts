@@ -1,7 +1,7 @@
 import { Dataset, HealthStatus, IDataPlane } from "@tsg-dsp/common-dsp";
 import { Column, Entity, OneToMany, PrimaryColumn, Relation } from "typeorm";
-import { DatasetDao } from "./catalog.dao";
-import { MetaEntity } from "./common.dao";
+import { DatasetDao } from "./catalog.dao.js";
+import { MetaEntity } from "./common.dao.js";
 
 @Entity({ name: "dataplanedetails" })
 export class DataPlaneDao extends MetaEntity implements IDataPlane {

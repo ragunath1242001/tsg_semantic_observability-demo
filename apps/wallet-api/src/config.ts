@@ -20,8 +20,8 @@ import {
 } from "class-transformer";
 import fs from "fs";
 import { Logger } from "@nestjs/common";
-import { CredentialSubject } from "@tsg-dsp/common-dsp";
 import { DIDMethod, DIDMethodList, DIDMethodTypes } from "./utils/did.js";
+import { CredentialSubject } from "@tsg-dsp/common-dsp/dist/model/ssi/credentials.dto.js";
 
 function fileTransformer(params: TransformFnParams): string | undefined {
   if (typeof params.value === "string") {
@@ -285,7 +285,7 @@ export class DidServiceConfig {
 
 export enum PresentationType {
   DIRECT = "DIRECT",
-  IATP = "IATP",
+  DCP = "DCP",
   OID4VP = "OID4VP"
 }
 
@@ -294,7 +294,7 @@ export class PresentationConfig {
   @IsEnum(PresentationType, { each: true })
   public readonly types: PresentationType[] = [
     PresentationType.DIRECT,
-    PresentationType.IATP
+    PresentationType.DCP
   ];
 }
 

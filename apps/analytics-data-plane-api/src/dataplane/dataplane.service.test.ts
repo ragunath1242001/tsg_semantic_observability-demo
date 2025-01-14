@@ -1,8 +1,8 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { DataPlaneService } from "./dataplane.service";
-import { DataPlaneController } from "./dataplane.controller";
+import { DataPlaneService } from "./dataplane.service.js";
+import { DataPlaneController } from "./dataplane.controller.js";
 import { plainToClass } from "class-transformer";
-import { AuthConfig, LoggingConfig, RootConfig } from "../config";
+import { AuthConfig, LoggingConfig, RootConfig } from "../config.js";
 import { SetupServer, setupServer } from "msw/node";
 import { HttpResponse, PathParams, http } from "msw";
 import { Request } from "express";
@@ -11,14 +11,14 @@ import {
   DataPlaneCreation,
   DatasetDto
 } from "@tsg-dsp/common-dsp";
-import { TypeOrmTestHelper } from "../utils/testhelper";
-import { TransferDao } from "./transfer.dao";
+import { TypeOrmTestHelper } from "../utils/testhelper.js";
+import { TransferDao } from "./transfer.dao.js";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { DataPlaneStateDao } from "./dataplane.dao";
-import { AuthClientService } from "../auth/auth.client.service";
+import { DataPlaneStateDao } from "./dataplane.dao.js";
+import { AuthClientService } from "../auth/auth.client.service.js";
 import { RawBodyRequest } from "@nestjs/common";
-import { EgressLogDao, IngressLogDao } from "../logging/logging.dao";
-import { LoggingService } from "../logging/logging.service";
+import { EgressLogDao, IngressLogDao } from "../logging/logging.dao.js";
+import { LoggingService } from "../logging/logging.service.js";
 
 describe("Dataplane Service", () => {
   let dataPlaneService: DataPlaneService;

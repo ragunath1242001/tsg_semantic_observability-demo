@@ -22,17 +22,18 @@ import {
   PolicyConfig,
   RuleConstraintConfig,
   ServerConfig
-} from "../../config";
+} from "../../config.js";
 import {
   CatalogDao,
   DataServiceDao,
   DatasetDao,
   DistributionDao,
   ResourceDao
-} from "../../model/catalog.dao";
-import { DSPError } from "../../utils/errors/error";
-import { PaginationOptionsDto } from "../../utils/pagination/pagination.options.dto";
-import { Paginated } from "../../utils/pagination/pagination.parameters";
+} from "../../model/catalog.dao.js";
+import { DSPError } from "../../utils/errors/error.js";
+import { PaginationOptionsDto } from "../../utils/pagination/pagination.options.dto.js";
+import { Paginated } from "../../utils/pagination/pagination.parameters.js";
+import { initialize } from "passport";
 
 @Injectable()
 export class CatalogService {
@@ -50,8 +51,11 @@ export class CatalogService {
     @Optional() private readonly initCatalog?: InitCatalog,
     @Optional() private readonly server?: ServerConfig,
     @Optional() private readonly defaultPolicy?: PolicyConfig
-  ) {}
-  initialized = this.initializeCatalog();
+  ) {
+    this.initialized = this.initializeCatalog();
+  }
+  initialized: Promise<CatalogDao | undefined>;
+
   private readonly logger = new Logger(this.constructor.name);
 
   async getCatalogDao(

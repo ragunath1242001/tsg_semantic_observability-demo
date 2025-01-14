@@ -62,7 +62,7 @@ const verifierResponse = ref<{
 
 const requestHolderIDToken = async () => {
   try {
-    const response = await http<{ id_token: string }>("iatp/holder/token", {
+    const response = await http<{ id_token: string }>("dcp/holder/token", {
       params: {
         audience: holderForm.value.audience,
         scope:
@@ -90,7 +90,7 @@ const requestVerification = async () => {
   verifierResponse.value = undefined;
   try {
     const response = await http.post<VerifiablePresentation>(
-      "iatp/verifier/verify",
+      "dcp/verifier/verify",
       {
         holderIdToken: verifierForm.value.holderIDToken,
         presentationDefinition: JSON.parse(
@@ -154,7 +154,7 @@ const copyToken = (token: string) => {
       </template>
     </Card>
     <Card class="mt-8">
-      <template #title>IATP Holder</template>
+      <template #title>DCP Holder</template>
       <template #subtitle>
         <p>
           As holder of credentials, you are required to request a token that the
@@ -211,7 +211,7 @@ const copyToken = (token: string) => {
       </template>
     </Card>
     <Card class="mt-8">
-      <template #title>IATP Verifier</template>
+      <template #title>DCP Verifier</template>
       <template #subtitle>
         <p>
           As verifier of credentials from a holder, you need to have an ID token

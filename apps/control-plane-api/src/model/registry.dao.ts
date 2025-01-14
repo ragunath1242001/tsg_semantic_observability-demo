@@ -1,5 +1,5 @@
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
-import { MetaEntity } from "./common.dao";
+import { MetaEntity } from "./common.dao.js";
 import { CatalogDto } from "@tsg-dsp/common-dsp";
 
 @Entity({ name: "registry" })

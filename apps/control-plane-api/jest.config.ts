@@ -9,10 +9,11 @@ const config: Config.InitialOptions = {
       }
     ]
   },
-  transformIgnorePatterns: ["node_modules/(?!@tsg-dsp)"],
+  // transformIgnorePatterns: ["node_modules/(?!@tsg-dsp)"],
   testTimeout: 30000,
   testEnvironment: "node",
   testRegex: "/.*\\.(test|spec)?\\.(ts|tsx)$",
+  extensionsToTreatAsEsm: [".ts"],
   moduleNameMapper: {
     "^(\\.{1,2}/.*)\\.js$": "$1"
   },

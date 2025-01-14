@@ -1,5 +1,5 @@
 import { Query } from "@nestjs/common";
-import { strictValidationPipe } from "../validation.pipe";
+import { strictValidationPipe } from "../validation.pipe.js";
 
 export function PaginationQuery(): ParameterDecorator {
   return function (

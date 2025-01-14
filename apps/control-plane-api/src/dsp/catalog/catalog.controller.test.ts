@@ -11,17 +11,16 @@ import {
   Multilanguage
 } from "@tsg-dsp/common-dsp";
 import { plainToClass } from "class-transformer";
-import { SetupServer } from "msw/lib/node";
 import request from "supertest";
-import { AuthService } from "../../auth/auth.service";
-import { VerifiablePresentationGuard } from "../../auth/verifiablePresentation.guard";
-import { VerifiablePresentationStrategy } from "../../auth/verifiablePresentation.strategy";
+import { AuthService } from "../../auth/auth.service.js";
+import { VerifiablePresentationGuard } from "../../auth/verifiablePresentation.guard.js";
+import { VerifiablePresentationStrategy } from "../../auth/verifiablePresentation.strategy.js";
 import {
   mockWalletConfig,
   sampleVpToken,
   setupMockWalletServer
-} from "../../auth/wallets/wallet.util.test";
-import { IamConfig, InitCatalog, ServerConfig } from "../../config";
+} from "../../auth/wallets/wallet.util.test.js";
+import { IamConfig, InitCatalog, ServerConfig } from "../../config.js";
 import {
   CatalogDao,
   CatalogRecordDao,
@@ -29,12 +28,13 @@ import {
   DatasetDao,
   DistributionDao,
   ResourceDao
-} from "../../model/catalog.dao";
-import { TypeOrmTestHelper } from "../../utils/testhelper";
-import { CatalogController } from "./catalog.controller";
-import { CatalogService } from "./catalog.service";
-import { DataPlaneDao } from "../../model/dataPlanes.dao";
-import { PaginationOptionsDto } from "../../utils/pagination/pagination.options.dto";
+} from "../../model/catalog.dao.js";
+import { TypeOrmTestHelper } from "../../utils/testhelper.js";
+import { CatalogController } from "./catalog.controller.js";
+import { CatalogService } from "./catalog.service.js";
+import { DataPlaneDao } from "../../model/dataPlanes.dao.js";
+import { PaginationOptionsDto } from "../../utils/pagination/pagination.options.dto.js";
+import { SetupServer } from "msw/node";
 
 const dataset = new Dataset({
   id: "urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0cea",

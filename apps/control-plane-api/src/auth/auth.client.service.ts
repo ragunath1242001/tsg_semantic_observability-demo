@@ -6,7 +6,7 @@ import axios, {
 } from "axios";
 import { decodeJwt } from "jose";
 import querystring from "querystring";
-import { AuthConfig } from "../config";
+import { AuthConfig } from "../config.js";
 
 interface Token {
   jwt: string;

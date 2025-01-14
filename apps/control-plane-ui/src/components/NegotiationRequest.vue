@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {
   NegotiationDetailDto,
-  INegotiationStatusDto
+  NegotiationStatusDto
 } from "@tsg-dsp/common-dtos";
 import { useToast } from "primevue/usetoast";
 import { ref } from "vue";
@@ -11,7 +11,7 @@ import MonacoEditor from "@tsg-dsp/common-ui/components/MonacoEditor.vue";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
 
 const props = defineProps<{
-  negotiation: INegotiationStatusDto;
+  negotiation: NegotiationStatusDto;
 }>();
 const display = ref(false);
 

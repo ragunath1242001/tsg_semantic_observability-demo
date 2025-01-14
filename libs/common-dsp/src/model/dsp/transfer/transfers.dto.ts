@@ -1,37 +1,59 @@
-import { DataPlaneTransferDto } from "../../data-planes";
-import { MultilanguageDto } from "../common.dto";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { MultilanguageDto } from "../common.dto.js";
 import {
   TransferState,
   TransferProcessDto,
   DataAddressDto
-} from "./messages.dto";
+} from "./messages.dto.js";
+import { DataAddressSchema, TransferProcessSchema } from "./transfer.schema.js";
+import { MultilanguageSchema } from "../common.schema.js";
+import { DataPlaneTransferDto } from "../../data-planes/index.js";
 
 export type TransferRole = "provider" | "consumer";
 
-export interface TransferStatusDto {
-  localId: string;
+export class TransferStatusDto {
+  @ApiProperty()
+  localId!: string;
+  @ApiPropertyOptional()
   remoteId?: string;
-  role: TransferRole;
-  remoteAddress: string;
-  remoteParty: string;
-  state: TransferState;
-  process: TransferProcessDto;
-  agreementId: string;
+  @ApiProperty()
+  role!: TransferRole;
+  @ApiProperty()
+  remoteAddress!: string;
+  @ApiProperty()
+  remoteParty!: string;
+  @ApiProperty({ enum: TransferState })
+  state!: TransferState;
+  @ApiProperty({ type: TransferProcessSchema })
+  process!: TransferProcessDto;
+  @ApiProperty()
+  agreementId!: string;
+  @ApiPropertyOptional()
   format?: string;
-  modifiedDate: Date;
+  @ApiProperty()
+  modifiedDate!: Date;
 }
 
-export interface TransferEventDto {
-  time: Date;
-  state: TransferState;
+export class TransferEventDto {
+  @ApiProperty()
+  time!: Date;
+  @ApiProperty({ enum: TransferState })
+  state!: TransferState;
+  @ApiPropertyOptional()
   localMessage?: string;
+  @ApiPropertyOptional()
   code?: string;
+  @ApiPropertyOptional({ type: MultilanguageSchema })
   reason?: MultilanguageDto[];
-  type: "local" | "remote";
+  @ApiProperty({ enum: ["local", "remote"] })
+  type!: "local" | "remote";
 }
 
-export interface TransferDetailDto extends TransferStatusDto {
+export class TransferDetailDto extends TransferStatusDto {
+  @ApiPropertyOptional({ type: DataAddressSchema })
   dataAddress?: DataAddressDto;
-  dataPlaneTransfer: DataPlaneTransferDto;
-  events: TransferEventDto[];
+  @ApiProperty({ type: DataPlaneTransferDto })
+  dataPlaneTransfer!: DataPlaneTransferDto;
+  @ApiProperty({ type: [TransferEventDto] })
+  events!: TransferEventDto[];
 }

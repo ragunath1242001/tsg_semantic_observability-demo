@@ -1,10 +1,21 @@
 import type { Config } from "@jest/types";
 
 const config: Config.InitialOptions = {
-  transform: { "^.+\\.ts?$": "ts-jest" },
+  transform: {
+    "^.+\\.tsx?$": [
+      "ts-jest",
+      {
+        useESM: true
+      }
+    ]
+  },
   transformIgnorePatterns: [],
   testEnvironment: "node",
   testRegex: "/.*\\.(test|spec)?\\.(ts|tsx)$",
+  extensionsToTreatAsEsm: [".ts"],
+  moduleNameMapper: {
+    "^(\\.{1,2}/.*)\\.js$": "$1"
+  },
   moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"],
   coverageReporters: ["text", "text-summary", "cobertura"],
   collectCoverageFrom: [

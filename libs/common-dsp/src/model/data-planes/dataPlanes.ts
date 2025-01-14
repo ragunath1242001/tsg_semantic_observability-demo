@@ -1,4 +1,4 @@
-import { Dataset } from "../dsp/catalog/catalog";
+import { Dataset } from "../dsp/catalog/catalog.js";
 
 export enum HealthStatus {
   HEALTHY,

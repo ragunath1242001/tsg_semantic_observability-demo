@@ -1,5 +1,5 @@
 import {
-  INegotiationStatusDto,
+  NegotiationStatusDto,
   NegotiationDetailDto
 } from "@tsg-dsp/common-dtos";
 import {
@@ -17,13 +17,16 @@ import {
 import {
   ContractNegotiation,
   ContractNegotiationDto,
-  Offer
+  ContractNegotiationSchema,
+  Offer,
+  OfferDto,
+  OfferSchema
 } from "@tsg-dsp/common-dsp";
-import { OAuthGuard } from "../../auth/oauth.guard";
-import { Roles } from "../../auth/roles.guard";
-import { normalizeAddress } from "../../utils/address";
-import { DeserializePipe } from "../../utils/deserialize.pipe";
-import { NegotiationService } from "./negotiation.service";
+import { OAuthGuard } from "../../auth/oauth.guard.js";
+import { Roles } from "../../auth/roles.guard.js";
+import { normalizeAddress } from "../../utils/address.js";
+import { DeserializePipe } from "../../utils/deserialize.pipe.js";
+import { NegotiationService } from "./negotiation.service.js";
 import {
   ApiOperation,
   ApiResponse,
@@ -34,16 +37,10 @@ import {
   ApiOkResponse,
   ApiOAuth2
 } from "@nestjs/swagger";
-import {
-  ContractNegotiationSchema,
-  NegotiationDetailSchema,
-  NegotiationStatusDto,
-  OfferSchema
-} from "@tsg-dsp/common-dtos";
-import { UsePagination } from "../../utils/pagination/pagination.interceptor.decorator";
-import { Paginated } from "../../utils/pagination/pagination.parameters";
-import { PaginationOptionsDto } from "../../utils/pagination/pagination.options.dto";
-import { PaginationQuery } from "../../utils/pagination/pagination.query.decorator";
+import { UsePagination } from "../../utils/pagination/pagination.interceptor.decorator.js";
+import { Paginated } from "../../utils/pagination/pagination.parameters.js";
+import { PaginationOptionsDto } from "../../utils/pagination/pagination.options.dto.js";
+import { PaginationQuery } from "../../utils/pagination/pagination.query.decorator.js";
 
 @ApiTags("Negotiations Management")
 @UseGuards(OAuthGuard)
@@ -64,7 +61,7 @@ export class NegotiationManagementController {
   })
   async getNegotiations(
     @PaginationQuery() paginationOptions: PaginationOptionsDto
-  ): Promise<Paginated<INegotiationStatusDto[]>> {
+  ): Promise<Paginated<NegotiationStatusDto[]>> {
     return this.negotiationService.getNegotiations(paginationOptions);
   }
 
@@ -105,7 +102,7 @@ export class NegotiationManagementController {
   @ApiResponse({
     status: 200,
     description: "Successfully fetched negotiation",
-    type: NegotiationDetailSchema
+    type: NegotiationDetailDto
   })
   async getNegotiation(
     @Param("processId") processId: string

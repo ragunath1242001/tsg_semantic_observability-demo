@@ -70,12 +70,12 @@ config:
     registryIntervalInMilliseconds: 300000
    
   iam:
-    type: tsg-iatp
+    type: tsg
     didId: did:web:{{ .Values.wallet }}
     walletUrl: "{{ .Values.walletEndpoint }}"
     tokenUrl: "{{ .Values.walletEndpoint }}/auth/login"
-    siopUrl: "{{ .Values.walletEndpoint }}/iatp/holder/token"
-    verifyUrl: "{{ .Values.walletEndpoint }}/iatp/verifier/verify"
+    siopUrl: "{{ .Values.walletEndpoint }}/management/dcp/holder/token"
+    verifyUrl: "{{ .Values.walletEndpoint }}/management/dcp/verifier/verify"
     typeFilter: <%= it.general.credentialType %>
     issuerFilter: "did:web:<%= it.general.authorityDomain %>"
     clientId: "null"

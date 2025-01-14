@@ -1,23 +1,23 @@
 import { MiddlewareConsumer, Module, NestModule } from "@nestjs/common";
-import { DataPlaneModule } from "./data-plane/dataplane.module";
+import { DataPlaneModule } from "./data-plane/dataplane.module.js";
 import { ScheduleModule } from "@nestjs/schedule";
-import { RequestContextMiddleware, LoggerMiddleware } from "./utils/logging";
-import { AuthModule } from "./auth/auth.module";
-import { ConfigModule, config } from "./config.module";
-import { HealthController } from "./health.controller";
+import { RequestContextMiddleware, LoggerMiddleware } from "./utils/logging.js";
+import { AuthModule } from "./auth/auth.module.js";
+import { ConfigModule, config } from "./config.module.js";
+import { HealthController } from "./health.controller.js";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { DspClientModule } from "./dsp/client/client.module";
-import { CatalogModule } from "./dsp/catalog/catalog.module";
-import { NegotiationModule } from "./dsp/negotiation/negotiation.module";
-import { TransferModule } from "./dsp/transfer/transfer.module";
-import { RegistryModule } from "./registry/registry.module";
+import { DspClientModule } from "./dsp/client/client.module.js";
+import { CatalogModule } from "./dsp/catalog/catalog.module.js";
+import { NegotiationModule } from "./dsp/negotiation/negotiation.module.js";
+import { TransferModule } from "./dsp/transfer/transfer.module.js";
+import { RegistryModule } from "./registry/registry.module.js";
 import { ServeStaticModule } from "@nestjs/serve-static";
-import { ConfigController } from "./config.controller";
+import { ConfigController } from "./config.controller.js";
 import { EventEmitterModule } from "@nestjs/event-emitter";
 import { TerminusModule } from "@nestjs/terminus";
-import { StatusController } from "./status.controller";
-import { NegotiationDetailDao } from "./model/negotiation.dao";
-import { TransferDetailDao } from "./model/transfer.dao";
+import { StatusController } from "./status.controller.js";
+import { NegotiationDetailDao } from "./model/negotiation.dao.js";
+import { TransferDetailDao } from "./model/transfer.dao.js";
 
 const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
   ? [

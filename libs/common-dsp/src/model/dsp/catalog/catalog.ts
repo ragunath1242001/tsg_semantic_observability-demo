@@ -8,11 +8,16 @@ import {
 import {
   createOptionalInstance,
   createOptionalInstances
-} from "../../../utils/instances";
-import { KeepTypes, LDType, Namespace, Serializable } from "../../decorators";
-import { IReference, Reference, withExtraProps } from "../common";
-import { ContextDto } from "../common.dto";
-import { Offer, Policy } from "../negotiation/negotiation";
+} from "../../../utils/instances.js";
+import {
+  KeepTypes,
+  LDType,
+  Namespace,
+  Serializable
+} from "../../decorators.js";
+import { IReference, Reference, withExtraProps } from "../common.js";
+import { ContextDto } from "../common.dto.js";
+import { Offer, Policy } from "../negotiation/negotiation.js";
 import {
   CatalogDto,
   CatalogRecordDto,
@@ -20,7 +25,7 @@ import {
   DatasetDto,
   DistributionDto,
   ResourceDto
-} from "./catalog.dto";
+} from "./catalog.dto.js";
 
 export interface IResource extends IReference {
   contactPoint?: string;

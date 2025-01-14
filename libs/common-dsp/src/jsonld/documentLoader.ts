@@ -1,5 +1,5 @@
 import { FlatCache } from "flat-cache";
-import { RemoteDocument } from "jsonld/jsonld-spec";
+import { RemoteDocument } from "jsonld/jsonld-spec.js";
 import {
   dspContext,
   tsgContext,
@@ -7,7 +7,7 @@ import {
   tsgContextUrl,
   healthContextUrl,
   dspContextUrl
-} from "./context.defaults";
+} from "./context.defaults.js";
 import * as jsonld from "jsonld";
 
 const documentCache: Record<string, RemoteDocument> = {};

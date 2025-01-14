@@ -58,7 +58,7 @@ export class DSPError extends HttpException {
 }
 
 export class DSPClientError extends DSPError {
-  err: unknown;
+  declare err: unknown;
   constructor(message: string, err: unknown) {
     let errorMessage;
     let status: HttpStatus;

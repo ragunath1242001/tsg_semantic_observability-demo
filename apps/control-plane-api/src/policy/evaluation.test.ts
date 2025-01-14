@@ -10,12 +10,12 @@ import {
   ConstraintType,
   DataType,
   AtomicConstraint
-} from "./constraint.dto";
-import { Evaluation } from "./evaluation";
-import { EvaluationContext, EvaluationResult } from "./evaluation.dto";
-import { RuleRepositoryService } from "./rule.repository.service";
+} from "./constraint.dto.js";
+import { Evaluation } from "./evaluation.js";
+import { EvaluationContext, EvaluationResult } from "./evaluation.dto.js";
+import { RuleRepositoryService } from "./rule.repository.service.js";
 import { HttpStatus } from "@nestjs/common";
-import { DSPError } from "../utils/errors/error";
+import { DSPError } from "../utils/errors/error.js";
 
 describe("Constraint Evaluation", () => {
   const ruleRepositoryService: RuleRepositoryService = {

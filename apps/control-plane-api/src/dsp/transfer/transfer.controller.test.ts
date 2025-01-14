@@ -20,10 +20,10 @@ import {
 import { plainToClass } from "class-transformer";
 import { HttpResponse, PathParams, http } from "msw";
 import { SetupServer, setupServer } from "msw/node";
-import { AuthClientService } from "../../auth/auth.client.service";
-import { AuthService } from "../../auth/auth.service";
-import { AuthConfig, RuntimeConfig, ServerConfig } from "../../config";
-import { DataPlaneService } from "../../data-plane/dataPlane.service";
+import { AuthClientService } from "../../auth/auth.client.service.js";
+import { AuthService } from "../../auth/auth.service.js";
+import { AuthConfig, RuntimeConfig, ServerConfig } from "../../config.js";
+import { DataPlaneService } from "../../data-plane/dataPlane.service.js";
 import {
   CatalogDao,
   CatalogRecordDao,
@@ -31,22 +31,25 @@ import {
   DatasetDao,
   DistributionDao,
   ResourceDao
-} from "../../model/catalog.dao";
-import { DataPlaneDao } from "../../model/dataPlanes.dao";
-import { TransferDetailDao, TransferEventDao } from "../../model/transfer.dao";
-import { TypeOrmTestHelper } from "../../utils/testhelper";
-import { CatalogService } from "../catalog/catalog.service";
-import { DspClientService } from "../client/client.service";
-import { DspGateway } from "../client/dsp.gateway";
-import { TransferController } from "./transfer.controller";
-import { TransferService } from "./transfer.service";
-import { AgreementService } from "../../policy/agreement.service";
-import { PolicyEvaluationService } from "../../policy/policy.evaluation.service";
-import { EvaluationTrigger } from "../../policy/constraint.dto";
+} from "../../model/catalog.dao.js";
+import { DataPlaneDao } from "../../model/dataPlanes.dao.js";
+import {
+  TransferDetailDao,
+  TransferEventDao
+} from "../../model/transfer.dao.js";
+import { TypeOrmTestHelper } from "../../utils/testhelper.js";
+import { CatalogService } from "../catalog/catalog.service.js";
+import { DspClientService } from "../client/client.service.js";
+import { DspGateway } from "../client/dsp.gateway.js";
+import { TransferController } from "./transfer.controller.js";
+import { TransferService } from "./transfer.service.js";
+import { AgreementService } from "../../policy/agreement.service.js";
+import { PolicyEvaluationService } from "../../policy/policy.evaluation.service.js";
+import { EvaluationTrigger } from "../../policy/constraint.dto.js";
 import {
   EvaluationContext,
   EvaluationDecision
-} from "../../policy/evaluation.dto";
+} from "../../policy/evaluation.dto.js";
 
 describe("TransferController", () => {
   let transferController: TransferController;

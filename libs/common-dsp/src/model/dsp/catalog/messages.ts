@@ -4,15 +4,15 @@ import {
   IsString,
   ValidateNested
 } from "class-validator";
-import { LDType, Namespace, Serializable } from "../../decorators";
-import { SerializableClass, withExtraProps } from "../common";
-import { Catalog } from "./catalog";
+import { LDType, Namespace, Serializable } from "../../decorators.js";
+import { SerializableClass, withExtraProps } from "../common.js";
+import { Catalog } from "./catalog.js";
 import {
   CatalogErrorDto,
   CatalogMessageDto,
   CatalogRequestMessageDto,
   DatasetRequestMessageDto
-} from "./messages.dto";
+} from "./messages.dto.js";
 
 export interface ICatalogError {
   code?: string;

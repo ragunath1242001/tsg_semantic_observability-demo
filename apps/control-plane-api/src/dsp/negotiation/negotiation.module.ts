@@ -1,18 +1,18 @@
 import { Module } from "@nestjs/common";
-import { AuthModule } from "../../auth/auth.module";
-import { NegotiationService } from "./negotiation.service";
-import { NegotiationController } from "./negotiation.controller";
-import { NegotiationManagementController } from "./negotiationManagement.controller";
-import { DspClientModule } from "../client/client.module";
+import { AuthModule } from "../../auth/auth.module.js";
+import { NegotiationService } from "./negotiation.service.js";
+import { NegotiationController } from "./negotiation.controller.js";
+import { NegotiationManagementController } from "./negotiationManagement.controller.js";
+import { DspClientModule } from "../client/client.module.js";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import {
   NegotiationDetailDao,
   NegotiationProcessEventDao
-} from "../../model/negotiation.dao";
-import { PolicyModule } from "../../policy/policy.module";
-import { NegotiationListener } from "./negotiation.listeners";
-import { TransferModule } from "../transfer/transfer.module";
-import { CatalogModule } from "../catalog/catalog.module";
+} from "../../model/negotiation.dao.js";
+import { PolicyModule } from "../../policy/policy.module.js";
+import { NegotiationListener } from "./negotiation.listeners.js";
+import { TransferModule } from "../transfer/transfer.module.js";
+import { CatalogModule } from "../catalog/catalog.module.js";
 
 @Module({
   imports: [

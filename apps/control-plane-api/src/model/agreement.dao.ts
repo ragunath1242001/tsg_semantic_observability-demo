@@ -4,7 +4,7 @@ import { instanceToPlain, plainToInstance } from "class-transformer";
 import {
   EvaluationContext,
   EvaluationDecision
-} from "../policy/evaluation.dto";
+} from "../policy/evaluation.dto.js";
 
 @Entity()
 export class AgreementDao {

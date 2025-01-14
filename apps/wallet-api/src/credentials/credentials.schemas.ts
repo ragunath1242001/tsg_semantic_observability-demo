@@ -1,146 +1,10 @@
-import {
-  ApiProperty,
-  ApiPropertyOptional,
-  ApiExtraModels,
-  getSchemaPath
-} from "@nestjs/swagger";
-import {
-  VerifiableCredential,
-  CredentialSubject,
-  JsonWebSignature2020,
-  Proof,
-  DataIntegrityProof,
-  OrArray
-} from "@tsg-dsp/common-dsp";
-import { IsString, IsBoolean, IsDate, ValidateNested } from "class-validator";
-import { InitCredentialConfig, TrustAnchorConfig } from "../config.js";
+import { IsBoolean, IsDate, IsString, ValidateNested } from "class-validator";
 import { Credentials } from "../model/credentials.dao.js";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { CredentialSubject, VerifiableCredential } from "@tsg-dsp/common-dsp";
+import { InitCredentialConfig, TrustAnchorConfig } from "../config.js";
 import { Type } from "class-transformer";
 import { JsonLdContextConfigDto } from "../contexts/context.schemas.js";
-import {
-  ReferenceObject,
-  SchemaObject
-} from "@nestjs/swagger/dist/interfaces/open-api-spec.interface.js";
-
-const orArray = (
-  schema: string | SchemaObject
-): (SchemaObject | ReferenceObject)[] => {
-  if (typeof schema === "string") {
-    return [
-      {
-        $ref: schema
-      },
-      {
-        type: "array",
-        items: {
-          $ref: schema
-        }
-      }
-    ];
-  } else {
-    return [
-      schema,
-      {
-        type: "array",
-        items: schema
-      }
-    ];
-  }
-};
-
-export abstract class ProofDto implements Proof {
-  type!: "JsonWebSignature2020" | "DataIntegrityProof";
-  proofPurpose!: string;
-}
-
-export class JsonWebSignature2020Dto implements JsonWebSignature2020 {
-  @ApiProperty()
-  type!: "JsonWebSignature2020";
-  @ApiProperty({ format: "date-time" })
-  created!: string;
-  @ApiProperty()
-  proofPurpose!: string;
-  @ApiProperty()
-  jws!: string;
-  @ApiProperty()
-  verificationMethod!: string;
-}
-
-export class DataIntegrityProofDto implements DataIntegrityProof {
-  @ApiPropertyOptional()
-  id?: string;
-  @ApiProperty()
-  type!: "DataIntegrityProof";
-  @ApiProperty()
-  proofPurpose!: string;
-  @ApiPropertyOptional()
-  verificationMethod?: string;
-  @ApiProperty()
-  cryptosuite!: string;
-  @ApiPropertyOptional()
-  created?: string;
-  @ApiPropertyOptional()
-  expires?: string;
-  @ApiPropertyOptional({
-    oneOf: orArray({ type: "string" })
-  })
-  domain?: OrArray<string>;
-  @ApiPropertyOptional()
-  challenge?: string;
-  @ApiProperty()
-  proofValue!: string;
-  @ApiPropertyOptional({
-    oneOf: orArray({ type: "string" })
-  })
-  previousProof?: OrArray<string>;
-  @ApiPropertyOptional()
-  nonce?: string;
-}
-
-export class DefaultCredentialSubjectDto implements CredentialSubject {
-  @ApiProperty()
-  id!: string;
-  [key: string]: any;
-}
-
-@ApiExtraModels(DataIntegrityProofDto)
-export class VerifiableCredentialDto implements VerifiableCredential {
-  @ApiProperty({
-    type: [String]
-  })
-  "@context": string[];
-  @ApiProperty({
-    type: [String]
-  })
-  type!: string[];
-  @ApiPropertyOptional()
-  id?: string;
-  @ApiProperty({
-    oneOf: orArray(getSchemaPath(DefaultCredentialSubjectDto))
-  })
-  credentialSubject!: OrArray<DefaultCredentialSubjectDto>;
-  @ApiProperty()
-  issuer!: string;
-  @ApiPropertyOptional({ format: "date-time" })
-  expirationDate?: string;
-  @ApiProperty({ format: "date-time" })
-  issuanceDate!: string;
-  @ApiPropertyOptional()
-  evidence?: any;
-  @ApiProperty({
-    oneOf: orArray({
-      oneOf: [
-        {
-          $ref: getSchemaPath(DataIntegrityProofDto)
-        },
-        {
-          $ref: getSchemaPath(JsonWebSignature2020Dto)
-        }
-      ]
-    })
-  })
-  proof!: OrArray<ProofDto>;
-}
 
 export class TrustAnchorConfigDto implements TrustAnchorConfig {
   @IsString()
@@ -174,8 +38,8 @@ export class CredentialsDto implements Credentials {
   @ApiProperty()
   targetDid!: string;
   @IsString()
-  @ApiProperty()
-  credential!: VerifiableCredentialDto;
+  @ApiProperty({ type: () => VerifiableCredential })
+  credential!: VerifiableCredential;
   @IsBoolean()
   @ApiProperty()
   selfIssued!: boolean;
@@ -209,6 +73,6 @@ export class CredentialConfigDto implements InitCredentialConfig {
   id!: string;
   @ApiPropertyOptional()
   keyId?: string;
-  @ApiProperty()
-  credentialSubject!: DefaultCredentialSubjectDto;
+  @ApiProperty({ type: () => CredentialSubject })
+  credentialSubject!: CredentialSubject;
 }

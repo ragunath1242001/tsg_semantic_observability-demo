@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import http from "@tsg-dsp/common-ui/utils/http";
-import { IDataPlaneDto } from "@tsg-dsp/control-plane-dtos";
 import { onMounted, ref } from "vue";
 import { useToast } from "primevue/usetoast";
 import { useConfirm } from "primevue/useconfirm";
 import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
 import DisplayField from "@tsg-dsp/common-ui/components/DisplayField.vue";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
+import { DataPlaneDetailsDto } from "@tsg-dsp/common-dsp";
 
-const dataplanes = ref<IDataPlaneDto[]>();
+const dataplanes = ref<DataPlaneDetailsDto[]>();
 
-const dataPlaneFormDefault: IDataPlaneDto = {
+const dataPlaneFormDefault: DataPlaneDetailsDto = {
   identifier: "",
   dataplaneType: "",
   endpointPrefix: undefined,
@@ -27,7 +27,9 @@ const toast = useToast();
 
 const getDataPlanes = async () => {
   try {
-    const response = await http.get<IDataPlaneDto[]>("management/dataplanes");
+    const response = await http.get<DataPlaneDetailsDto[]>(
+      "management/dataplanes"
+    );
     dataplanes.value = response.data;
     return dataplanes;
   } catch (error) {

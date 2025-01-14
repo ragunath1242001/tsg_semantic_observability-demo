@@ -4,8 +4,8 @@ import {
   IsOptional,
   ValidateNested
 } from "class-validator";
-import { Serializable, Namespace, LDType } from "../../decorators";
-import { Multilanguage, SerializableClass, withExtraProps } from "../common";
+import { Serializable, Namespace, LDType } from "../../decorators.js";
+import { Multilanguage, SerializableClass, withExtraProps } from "../common.js";
 import {
   TransferCompletionMessageDto,
   TransferErrorDto,
@@ -17,7 +17,7 @@ import {
   TransferStartMessageDto,
   TransferSuspensionMessageDto,
   TransferTerminationMessageDto
-} from "./messages.dto";
+} from "./messages.dto.js";
 
 export interface ITransferCompletionMessage {
   providerPid: string;
@@ -183,7 +183,6 @@ export class TransferRequestMessage extends SerializableClass<TransferRequestMes
   }
 }
 
-// In discussion: https://github.com/International-Data-Spaces-Association/ids-specification/issues/107
 export interface IEndpointProperty {
   name: string;
   value: string;

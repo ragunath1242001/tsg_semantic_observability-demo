@@ -2,6 +2,7 @@
   "name": "@apps/control-plane-api",
   "version": "0.5.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "watch": "tsc-watch -p tsconfig.json --onSuccess \"node ./dist/app.js\"",
     "start": "node ./dist/app.js",
@@ -67,6 +68,7 @@
     "yaml": "^2.6.1"
   },
   "devDependencies": {
+    "@jest/globals": "^29.7.0",
     "@jest/types": "^29.6.3",
     "@nestjs/cli": "^10.4.8",
     "@nestjs/testing": "^10.4.11",

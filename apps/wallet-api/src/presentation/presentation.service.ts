@@ -108,7 +108,6 @@ export class PresentationService {
   ): Promise<PresentationValidation> {
     const jwtPayload = decodeJwt(vpJwt.vp);
     const vp = plainToInstance(VerifiablePresentation, jwtPayload.vp);
-    const resolvedDid = await this.didResolver.resolve(jwtPayload.iss!);
 
     let validateJWTSignature;
     try {
@@ -123,67 +122,42 @@ export class PresentationService {
       ? jwtPayload.exp > new Date().getTime() / 1000
       : false;
 
-    const validateExpiryDate: Array<boolean | "undefined"> = [];
-    const validateCredentials: boolean[] = [];
-    const validateTrustAnchors: boolean[] = [];
-    for (const credential of toArray(vp.verifiableCredential)) {
-      let validExpiryDate: boolean | "undefined" = false;
-      let validTrustAnchor = false;
-      let validCredential = false;
-      try {
-        validExpiryDate = credential.expirationDate
-          ? new Date(credential.expirationDate).getTime() > new Date().getTime()
-          : "undefined";
-
-        const credentialTypes =
-          this.config.trustAnchors.find(
-            (trustAnchor) => trustAnchor.identifier === credential.issuer
-          )?.credentialTypes || [];
-        validTrustAnchor = credential.type
-          .filter((t) => t !== "VerifiableCredential")
-          .every((type) => credentialTypes.includes(type));
-
-        const { proof, ...plainCredential } = credential;
-        try {
-          for (const proofItem of toArray(proof)) {
-            if (
-              proofItem instanceof JsonWebSignature2020 ||
-              proofItem.type === "JsonWebSignature2020"
-            ) {
-              await this.signatureService.validateJsonWebSignature2020(
-                plainCredential,
-                proofItem as JsonWebSignature2020
-              );
-            } else if (
-              proofItem instanceof DataIntegrityProof ||
-              proofItem.type === "DataIntegrityProof"
-            ) {
-              await this.signatureService.validateDataIntegrityProof(
-                plainCredential,
-                proofItem as DataIntegrityProof
-              );
-            } else {
-              throw new AppError(
-                `Unknown proof ${proofItem.type}`,
-                HttpStatus.BAD_REQUEST
-              );
-            }
-          }
-          validCredential = true;
-        } catch (e) {}
-      } finally {
-        validateExpiryDate.push(validExpiryDate);
-        validateTrustAnchors.push(validTrustAnchor);
-        validateCredentials.push(validCredential);
+    const { validateExpiryDate, validateTrustAnchors, validateCredentials } = (
+      await Promise.all(
+        toArray(vp.verifiableCredential).map((vc) =>
+          this.validateCredential(vc)
+        )
+      )
+    ).reduce(
+      (acc, current) => {
+        return {
+          validateExpiryDate: [
+            ...acc.validateExpiryDate,
+            current.validateExpiryDate
+          ],
+          validateTrustAnchors: [
+            ...acc.validateTrustAnchors,
+            current.validateTrustAnchors
+          ],
+          validateCredentials: [
+            ...acc.validateCredentials,
+            current.validateCredentials
+          ]
+        };
+      },
+      {
+        validateExpiryDate: [] as boolean[],
+        validateTrustAnchors: [] as boolean[],
+        validateCredentials: [] as boolean[]
       }
-    }
+    );
 
     const valid =
       validateJWTSignature &&
       (validateAudience !== undefined ? validateAudience : true) &&
       validateJWTExpiryDate &&
       validateCredentials.every((r) => r) &&
-      validateExpiryDate.every((r) => r === true);
+      validateExpiryDate.every((r) => r);
 
     return {
       vp: vpJwt.vp,
@@ -195,5 +169,69 @@ export class PresentationService {
       validateJWTExpiryDate: validateJWTExpiryDate,
       validateAudience: validateAudience
     };
+  }
+
+  private async validateCredential(credential: VerifiableCredential): Promise<{
+    validateExpiryDate: boolean;
+    validateTrustAnchors: boolean;
+    validateCredentials: boolean;
+  }> {
+    let validateExpiryDate = false;
+    let validateTrustAnchors = false;
+    let validateCredentials = false;
+    try {
+      if (credential.validUntil) {
+        validateExpiryDate =
+          new Date(credential.validUntil).getTime() > new Date().getTime();
+      } else if (credential.expirationDate) {
+        validateExpiryDate =
+          new Date(credential.expirationDate).getTime() > new Date().getTime();
+      } else {
+        validateExpiryDate = true;
+      }
+
+      const credentialTypes =
+        this.config.trustAnchors.find(
+          (trustAnchor) => trustAnchor.identifier === credential.issuer
+        )?.credentialTypes || [];
+      validateTrustAnchors = credential.type
+        .filter((t) => t !== "VerifiableCredential")
+        .every((type) => credentialTypes.includes(type));
+
+      const { proof, ...plainCredential } = credential;
+      try {
+        for (const proofItem of toArray(proof)) {
+          if (
+            proofItem instanceof JsonWebSignature2020 ||
+            proofItem.type === "JsonWebSignature2020"
+          ) {
+            await this.signatureService.validateJsonWebSignature2020(
+              plainCredential,
+              proofItem as JsonWebSignature2020
+            );
+          } else if (
+            proofItem instanceof DataIntegrityProof ||
+            proofItem.type === "DataIntegrityProof"
+          ) {
+            await this.signatureService.validateDataIntegrityProof(
+              plainCredential,
+              proofItem as DataIntegrityProof
+            );
+          } else {
+            throw new AppError(
+              `Unknown proof ${proofItem.type}`,
+              HttpStatus.BAD_REQUEST
+            );
+          }
+        }
+        validateCredentials = true;
+      } catch (e) {}
+    } finally {
+      return {
+        validateExpiryDate,
+        validateTrustAnchors,
+        validateCredentials
+      };
+    }
   }
 }

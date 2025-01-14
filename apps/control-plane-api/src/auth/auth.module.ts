@@ -1,23 +1,23 @@
 import { Module } from "@nestjs/common";
-import { AuthService } from "./auth.service";
+import { AuthService } from "./auth.service.js";
 import {
   TransferVerifiablePresentationGuard,
   VerifiablePresentationGuard
-} from "./verifiablePresentation.guard";
+} from "./verifiablePresentation.guard.js";
 import {
   TransferVerifiablePresentationStrategy,
   VerifiablePresentationStrategy
-} from "./verifiablePresentation.strategy";
+} from "./verifiablePresentation.strategy.js";
 import { PassportModule } from "@nestjs/passport";
-import { AuthController } from "./auth.controller";
-import { config } from "../config.module";
-import { OAuthStrategy } from "./oauth.strategy";
-import { OAuthBearerStrategy } from "./oauth.bearer.strategy";
-import { RolesGuard } from "./roles.guard";
-import { OAuthGuard } from "./oauth.guard";
-import { AuthClientService } from "./auth.client.service";
-import { SessionSerializer } from "./session.serializer";
-import { AgreementDao, TransferMonitorDao } from "../model/agreement.dao";
+import { AuthController } from "./auth.controller.js";
+import { config } from "../config.module.js";
+import { OAuthStrategy } from "./oauth.strategy.js";
+import { OAuthBearerStrategy } from "./oauth.bearer.strategy.js";
+import { RolesGuard } from "./roles.guard.js";
+import { OAuthGuard } from "./oauth.guard.js";
+import { AuthClientService } from "./auth.client.service.js";
+import { SessionSerializer } from "./session.serializer.js";
+import { AgreementDao, TransferMonitorDao } from "../model/agreement.dao.js";
 import { TypeOrmModule } from "@nestjs/typeorm";
 
 @Module({

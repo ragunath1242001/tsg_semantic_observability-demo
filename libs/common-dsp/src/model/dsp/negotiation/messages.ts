@@ -4,16 +4,16 @@ import {
   IsString,
   ValidateNested
 } from "class-validator";
-import { Serializable, Namespace, LDType } from "../../decorators";
+import { Serializable, Namespace, LDType } from "../../decorators.js";
 import {
   IReference,
   Multilanguage,
   Reference,
   SerializableClass,
   withExtraProps
-} from "../common";
+} from "../common.js";
 
-import { Agreement, Offer } from "./negotiation";
+import { Agreement, Offer } from "./negotiation.js";
 import {
   ContractRequestMessageDto,
   ContractOfferMessageDto,
@@ -26,8 +26,11 @@ import {
   HashedMessage,
   ContractAgreementVerificationMessageDto,
   ContractAgreementMessageDto
-} from "./messages.dto";
-import { createOptionalInstance } from "../../../utils";
+} from "./messages.dto.js";
+import {
+  createInstance,
+  createOptionalInstance
+} from "../../../utils/instances.js";
 
 export interface IContractRequestMessage {
   consumerPid: string;
@@ -59,7 +62,7 @@ export class ContractRequestMessage extends SerializableClass<ContractRequestMes
     super(value);
     this.consumerPid = value.consumerPid;
     this.providerPid = value.providerPid;
-    this.offer = createOptionalInstance(value.offer, Offer);
+    this.offer = createOptionalInstance(value.offer, Offer) as Offer;
     this.callbackAddress = value.callbackAddress;
   }
 }
@@ -94,7 +97,7 @@ export class ContractOfferMessage extends SerializableClass<ContractOfferMessage
     super(value);
     this.consumerPid = value.consumerPid;
     this.providerPid = value.providerPid;
-    this.offer = createOptionalInstance(value.offer, Offer);
+    this.offer = createOptionalInstance(value.offer, Offer) as Offer;
     this.callbackAddress = value.callbackAddress;
   }
 }
@@ -283,6 +286,9 @@ export class ContractAgreementMessage extends SerializableClass<ContractAgreemen
     super(value);
     this.consumerPid = value.consumerPid;
     this.providerPid = value.providerPid;
-    this.agreement = createOptionalInstance(value.agreement, Agreement);
+    this.agreement = createOptionalInstance(
+      value.agreement,
+      Agreement
+    ) as Agreement;
   }
 }
