@@ -8,6 +8,7 @@ WORKDIR /app
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY apps/analytics-data-plane-api/package.json apps/analytics-data-plane-api/
 COPY apps/analytics-data-plane-ui/package.json apps/analytics-data-plane-ui/
+COPY libs/common-api/package.json libs/common-api/
 COPY libs/common-dsp/package.json libs/common-dsp/
 COPY libs/common-dtos/package.json libs/common-dtos/
 COPY libs/common-ui/package.json libs/common-ui/
@@ -17,6 +18,7 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 COPY apps apps
 COPY libs libs 
 RUN pnpm run --filter "common-dsp" build 
+RUN pnpm run --filter "common-api" build 
 ARG TSG_MODE=development
 ARG TSG_VERSION=0.0.0
 ARG TSG_STATIC_MODE=${TSG_MODE}

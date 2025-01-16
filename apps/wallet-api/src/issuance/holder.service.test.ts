@@ -1,6 +1,5 @@
 import { describe, beforeAll, afterAll, it } from "@jest/globals";
 import { IssuerService } from "./issuer.service.js";
-import { TypeOrmTestHelper } from "../utils/testhelper.js";
 import { plainToInstance } from "class-transformer";
 import { RootConfig } from "../config.js";
 import { Test, TestingModule } from "@nestjs/testing";
@@ -32,6 +31,7 @@ import { DIDDocuments, DIDLogs, DIDService } from "../model/did.dao.js";
 import { ContextService } from "../contexts/context.service.js";
 import { JSONLDContext } from "../model/context.dao.js";
 import { SignatureService } from "../keys/signature.service.js";
+import { TypeOrmTestHelper } from "@tsg-dsp/common-api";
 
 describe("Holder service", () => {
   let issuerService: IssuerService;

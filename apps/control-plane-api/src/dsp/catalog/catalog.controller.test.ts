@@ -12,15 +12,15 @@ import {
 } from "@tsg-dsp/common-dsp";
 import { plainToClass } from "class-transformer";
 import request from "supertest";
-import { AuthService } from "../../auth/auth.service.js";
-import { VerifiablePresentationGuard } from "../../auth/verifiablePresentation.guard.js";
-import { VerifiablePresentationStrategy } from "../../auth/verifiablePresentation.strategy.js";
+import { VCAuthService } from "../../vc-auth/vc.auth.service.js";
+import { VerifiablePresentationGuard } from "../../vc-auth/verifiablePresentation.guard.js";
+import { VerifiablePresentationStrategy } from "../../vc-auth/verifiablePresentation.strategy.js";
 import {
   mockWalletConfig,
   sampleVpToken,
   setupMockWalletServer
-} from "../../auth/wallets/wallet.util.test.js";
-import { IamConfig, InitCatalog, ServerConfig } from "../../config.js";
+} from "../../vc-auth/wallets/wallet.util.test.js";
+import { IamConfig, InitCatalog } from "../../config.js";
 import {
   CatalogDao,
   CatalogRecordDao,
@@ -29,12 +29,15 @@ import {
   DistributionDao,
   ResourceDao
 } from "../../model/catalog.dao.js";
-import { TypeOrmTestHelper } from "../../utils/testhelper.js";
 import { CatalogController } from "./catalog.controller.js";
 import { CatalogService } from "./catalog.service.js";
 import { DataPlaneDao } from "../../model/dataPlanes.dao.js";
-import { PaginationOptionsDto } from "../../utils/pagination/pagination.options.dto.js";
 import { SetupServer } from "msw/node";
+import {
+  TypeOrmTestHelper,
+  ServerConfig,
+  PaginationOptionsDto
+} from "@tsg-dsp/common-api";
 
 const dataset = new Dataset({
   id: "urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0cea",
@@ -227,7 +230,7 @@ describe("Catalog Module", () => {
       ]
     })
       .useMocker((token) => {
-        if (token === AuthService) {
+        if (token === VCAuthService) {
           return {
             requestToken() {
               return "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjb25uZWN0b3IiLCJlbWFpbCI6Im5vcmVwbHlAZGF0YXNwYWMuZXMiLCJkaWRJZCI6ImRpZDp3ZWI6d2FsbGV0LWNhdGVuYS14LmFscGhhLnNjc24uZGF0YXNwYWMuZXMiLCJyb2xlcyI6WyJ2aWV3X3ByZXNlbnRhdGlvbnMiXSwiaWF0IjoxNjkzNDIzNzgyLCJleHAiOjE2OTM0MjQ2ODJ9.UkVNT1ZFRF9TSUdOQVRVUkU";

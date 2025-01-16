@@ -2,25 +2,24 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { CredentialsService } from "./credentials.service.js";
 import { plainToInstance } from "class-transformer";
 import { InitCredentialConfig, RootConfig } from "../config.js";
-import { TypeOrmTestHelper } from "../utils/testhelper.js";
 import { Credentials, KeyMaterials } from "../model/credentials.dao.js";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { DidService } from "../did/did.service.js";
 import { KeysService } from "../keys/keys.service.js";
-import { describe, expect, beforeAll, afterAll, it, jest } from "@jest/globals";
+import { describe, expect, beforeAll, afterAll, it } from "@jest/globals";
 import { SetupServer, setupServer } from "msw/node";
 import { HttpResponse, PathParams, http } from "msw";
 import {
   CredentialSubject,
   JsonWebSignature2020,
+  toArray,
   VerifiableCredential,
   VerifiablePresentation
 } from "@tsg-dsp/common-dsp";
-import { toArray } from "../utils/unions.js";
 import { DIDDocuments, DIDService, DIDLogs } from "../model/did.dao.js";
 import { DidResolverService } from "../did/did.resolver.service.js";
 import { SignatureService } from "../keys/signature.service.js";
-import { AppError } from "../utils/error.js";
+import { TypeOrmTestHelper } from "@tsg-dsp/common-api";
 
 describe("Credentials Service", () => {
   let credentialsService: CredentialsService;

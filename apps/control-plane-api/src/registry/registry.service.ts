@@ -11,17 +11,19 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { CatalogDto } from "@tsg-dsp/common-dsp";
 import { DIDDocument } from "did-resolver";
 import { Repository } from "typeorm";
-import { AuthService } from "../auth/auth.service.js";
 import { RegistryConfig } from "../config.js";
 import { DspClientService } from "../dsp/client/client.service.js";
 
 import { normalizeAddress } from "../utils/address.js";
 import { DSPError } from "../utils/errors/error.js";
 import { RegistryDao } from "../model/registry.dao.js";
-import { isFulfilled } from "../utils/promises.js";
-import { Credential } from "../auth/wallets/walletClient.js";
-import { PaginationOptionsDto } from "../utils/pagination/pagination.options.dto.js";
-import { Paginated } from "../utils/pagination/pagination.parameters.js";
+import { Credential } from "../vc-auth/wallets/walletClient.js";
+import { VCAuthService } from "../vc-auth/vc.auth.service.js";
+import {
+  isFulfilled,
+  Paginated,
+  PaginationOptionsDto
+} from "@tsg-dsp/common-api";
 
 @Injectable()
 export class RegistryService implements OnApplicationBootstrap {
@@ -30,7 +32,7 @@ export class RegistryService implements OnApplicationBootstrap {
     private readonly registryRepository: Repository<RegistryDao>,
     private readonly dsp: DspClientService,
     private readonly schedulerRegistry: SchedulerRegistry,
-    private readonly authService: AuthService,
+    private readonly vcAuthService: VCAuthService,
     @Optional()
     private readonly registryConfig?: RegistryConfig
   ) {}
@@ -55,7 +57,7 @@ export class RegistryService implements OnApplicationBootstrap {
   async fetchDidDocuments(): Promise<DIDDocument[]> {
     let credentials: Credential[] = [];
     try {
-      credentials = await this.authService.walletClient.getCredentials();
+      credentials = await this.vcAuthService.walletClient.getCredentials();
       this.logger.debug(
         `Found credentials for ${credentials.map((c) => c.targetDid)}`
       );
@@ -66,7 +68,7 @@ export class RegistryService implements OnApplicationBootstrap {
     const didDocuments = await Promise.all(
       credentials.map(async (credential) => {
         try {
-          return await this.authService.walletClient.resolveDidDocument(
+          return await this.vcAuthService.walletClient.resolveDidDocument(
             credential.targetDid
           );
         } catch (e) {

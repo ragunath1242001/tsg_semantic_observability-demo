@@ -1263,8 +1263,8 @@ paths:
             application/json:
               schema:
                 oneOf:
-                  - $ref: "#/components/schemas/AuthenticatedUserDto"
-                  - $ref: "#/components/schemas/UnauthenticatedUserDto"
+                  - $ref: "#/components/schemas/AuthenticatedUser"
+                  - $ref: "#/components/schemas/UnauthenticatedUser"
       summary: Retrieve current user status
       tags: &a8
         - Authentication
@@ -2240,7 +2240,7 @@ components:
       required:
         - agreement
         - dataset
-    ClientInfoDto:
+    ClientInfo:
       type: object
       properties:
         sub:
@@ -2249,30 +2249,34 @@ components:
           type: string
         email:
           type: string
+        didId:
+          type: string
         roles:
           type: array
           items:
             type: string
+        refreshToken:
+          type: string
       required:
         - sub
         - name
         - email
         - roles
-    AuthenticatedUserDto:
+    AuthenticatedUser:
       type: object
       properties:
         state:
-          type: object
+          type: string
         user:
-          $ref: "#/components/schemas/ClientInfoDto"
+          $ref: "#/components/schemas/ClientInfo"
       required:
         - state
         - user
-    UnauthenticatedUserDto:
+    UnauthenticatedUser:
       type: object
       properties:
         state:
-          type: object
+          type: string
       required:
         - state
     PageMetaDto:

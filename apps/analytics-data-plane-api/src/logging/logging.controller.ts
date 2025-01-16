@@ -10,9 +10,10 @@ import {
 import { PageOptionsDto, PageDto } from "../utils/pagination.js";
 import { LoggingService } from "./logging.service.js";
 import { LogFilterDto, LogEntry } from "./logging.dto.js";
+import { validationPipe } from "@tsg-dsp/common-api";
 
 @Controller("/management/logging")
-@UsePipes(new ValidationPipe({ transform: true }))
+@UsePipes(validationPipe)
 export class LoggingController {
   constructor(private readonly loggingService: LoggingService) {}
 

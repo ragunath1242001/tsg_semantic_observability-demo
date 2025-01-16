@@ -4,10 +4,9 @@ import {
   PresentationResponseMessage
 } from "@tsg-dsp/common-dtos";
 import { DCPHolderService } from "./holder.service.js";
-import { DisableOAuthGuard } from "../../auth/oauth.guard.js";
 import { ApiBody, ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { ApiForbiddenResponseDefault } from "@tsg-dsp/common-dtos";
-import { validationPipe } from "../../utils/validation.pipe.js";
+import { DisableOAuthGuard, validationPipe } from "@tsg-dsp/common-api";
 
 @Controller("dcp/presentations")
 @ApiTags("Presentation DCP")

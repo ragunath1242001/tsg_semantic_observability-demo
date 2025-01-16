@@ -28,6 +28,8 @@ The development view provides an overview of the different modules inside the co
 ### Wallet Clients `src/auth/wallets`
 
 - `dev.wallet.ts`: Development wallet to enable local development without deploying an actual wallet.
+- `miw.wallet.ts`: Managed Identity Wallet client.
+- `tsg.iatp.wallet.ts`: TSG Identity and Authentication Protocol wallet client.
 - `tsg.wallet.ts`: TSG Wallet client.
 - `walletClient.ts`: Generic Wallet Client to abstract away similar methods for the wallet clients listed above.
 

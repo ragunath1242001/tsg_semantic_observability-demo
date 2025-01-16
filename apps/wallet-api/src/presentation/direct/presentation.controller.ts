@@ -15,7 +15,6 @@ import {
 } from "@tsg-dsp/common-dsp";
 import { AppError } from "../../utils/error.js";
 import { PresentationService } from "../presentation.service.js";
-import { Roles } from "../../auth/roles.guard.js";
 import { AppRole } from "@tsg-dsp/wallet-dtos";
 import {
   ApiBody,
@@ -26,6 +25,7 @@ import {
   ApiTags,
   getSchemaPath
 } from "@nestjs/swagger";
+import { Roles } from "@tsg-dsp/common-api";
 
 @Controller("presentations")
 @Roles(AppRole.VIEW_PRESENTATIONS)

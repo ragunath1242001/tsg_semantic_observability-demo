@@ -1,10 +1,7 @@
 import { MiddlewareConsumer, Module, NestModule } from "@nestjs/common";
 import { DataPlaneModule } from "./data-plane/dataplane.module.js";
 import { ScheduleModule } from "@nestjs/schedule";
-import { RequestContextMiddleware, LoggerMiddleware } from "./utils/logging.js";
-import { AuthModule } from "./auth/auth.module.js";
-import { ConfigModule, config } from "./config.module.js";
-import { HealthController } from "./health.controller.js";
+import { VCAuthModule } from "./vc-auth/vc.auth.module.js";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { DspClientModule } from "./dsp/client/client.module.js";
 import { CatalogModule } from "./dsp/catalog/catalog.module.js";
@@ -18,6 +15,14 @@ import { TerminusModule } from "@nestjs/terminus";
 import { StatusController } from "./status.controller.js";
 import { NegotiationDetailDao } from "./model/negotiation.dao.js";
 import { TransferDetailDao } from "./model/transfer.dao.js";
+import {
+  AuthModule,
+  GenericConfigModule,
+  HealthController,
+  LoggerMiddleware,
+  RequestContextMiddleware
+} from "@tsg-dsp/common-api";
+import { RootConfig } from "./config.js";
 
 const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
   ? [
@@ -33,13 +38,16 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
   imports: [
     ScheduleModule.forRoot(),
     EventEmitterModule.forRoot(),
-    AuthModule,
-    ConfigModule,
+    AuthModule.register(RootConfig),
+    VCAuthModule,
+    GenericConfigModule.register(RootConfig),
     TypeOrmModule.forRoot({
-      ...config.db,
+      ...GenericConfigModule.get(RootConfig).db,
       autoLoadEntities: true,
-      migrations: [`dist/migrations/*-${config.db.type}{.ts,.js}`],
-      migrationsRun: !config.db.synchronize
+      migrations: [
+        `dist/migrations/*-${GenericConfigModule.get(RootConfig).db.type}{.ts,.js}`
+      ],
+      migrationsRun: !GenericConfigModule.get(RootConfig).db.synchronize
     }),
     TypeOrmModule.forFeature([NegotiationDetailDao, TransferDetailDao]),
     DataPlaneModule,
@@ -48,7 +56,7 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
     NegotiationModule,
     TransferModule,
     ...embeddedFrontend,
-    RegistryModule.register(config.registry),
+    RegistryModule.register(GenericConfigModule.get(RootConfig).registry),
     TerminusModule
   ],
   exports: [

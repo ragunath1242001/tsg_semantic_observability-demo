@@ -22,142 +22,15 @@ import fs from "fs";
 import { Logger } from "@nestjs/common";
 import { DIDMethod, DIDMethodList, DIDMethodTypes } from "./utils/did.js";
 import { CredentialSubject } from "@tsg-dsp/common-dsp/dist/model/ssi/credentials.dto.js";
-
-function fileTransformer(params: TransformFnParams): string | undefined {
-  if (typeof params.value === "string") {
-    if (params.value.startsWith("file:")) {
-      try {
-        return fs.readFileSync(params.value.slice(5)).toString();
-      } catch (err) {
-        Logger.warn(`Could not load ${params.value}: ${err}`, "Config");
-        return undefined;
-      }
-    }
-    return params.value;
-  }
-  return `${params.value}`;
-}
-
-const valueToBoolean = (params: TransformFnParams): boolean | undefined => {
-  if (params.value === null || params.value === undefined) {
-    return undefined;
-  }
-  if (typeof params.value === "boolean") {
-    return params.value;
-  }
-  if (["true", "on", "yes", "1"].includes(params.value.toLowerCase())) {
-    return true;
-  }
-  if (["false", "off", "no", "0"].includes(params.value.toLowerCase())) {
-    return false;
-  }
-  return undefined;
-};
-
-export class SSLConfig {
-  @Transform(valueToBoolean)
-  @IsBoolean()
-  public readonly rejectUnauthorized: boolean = false;
-}
-
-export abstract class DatabaseConfig {
-  @IsString()
-  @IsIn(["sqlite", "postgres"])
-  public readonly type!: "sqlite" | "postgres";
-
-  @IsString()
-  public readonly database!: string;
-
-  @IsBoolean()
-  @IsOptional()
-  public readonly synchronize: boolean = false;
-}
-
-export class SQLiteConfig extends DatabaseConfig {
-  override readonly type: "sqlite" = "sqlite" as const;
-}
-
-export class PostgresConfig extends DatabaseConfig {
-  override readonly type: "postgres" = "postgres" as const;
-
-  @IsString()
-  public readonly host!: string;
-  @IsNumber()
-  @Type(() => Number)
-  public readonly port!: number;
-  @IsString()
-  public readonly username!: string;
-  @IsString()
-  public readonly password!: string;
-  @ValidateIf((o) => typeof o.ssl === "object")
-  @ValidateNested() // Only validate as nested if it's an object (SSLConfig)
-  @Transform(({ value }) => {
-    // Check if `value` is an object with `rejectUnauthorized` property
-    if (value && typeof value === "object" && "rejectUnauthorized" in value) {
-      // If value has `rejectUnauthorized`, transform it to an SSLConfig instance
-      return plainToInstance(SSLConfig, value);
-    } else {
-      // Otherwise, set it to `false`
-      return false;
-    }
-  })
-  public readonly ssl: SSLConfig | boolean = false;
-}
-
-export class AuthConfig {
-  @IsBoolean()
-  @Transform(valueToBoolean)
-  public readonly enabled: boolean = true;
-  @ValidateIf((c) => c.enabled)
-  @IsUrl({ require_tld: false, require_protocol: true, require_host: false })
-  public readonly authorizationURL!: string;
-  @ValidateIf((c) => c.enabled)
-  @IsUrl({ require_tld: false, require_protocol: true, require_host: false })
-  public readonly tokenURL!: string;
-  @ValidateIf((c) => c.enabled)
-  @IsUrl({ require_tld: false, require_protocol: true, require_host: false })
-  public readonly introspectionURL!: string;
-  @ValidateIf((c) => c.enabled)
-  @IsUrl({ require_tld: false, require_protocol: true, require_host: false })
-  public readonly callbackURL!: string;
-  @ValidateIf((c) => c.enabled)
-  @IsUrl({ require_tld: false, require_protocol: true, require_host: false })
-  public readonly redirectURL!: string;
-  @ValidateIf((c) => c.enabled)
-  @IsString()
-  public readonly clientId!: string;
-  @ValidateIf((c) => c.enabled)
-  @IsString()
-  public readonly clientSecret!: string;
-  @ValidateIf((c) => c.enabled)
-  @IsString()
-  public readonly clientUsername!: string;
-  @ValidateIf((c) => c.enabled)
-  @IsString()
-  public readonly clientPassword!: string;
-  @ValidateIf((c) => c.enabled)
-  @IsString()
-  public readonly rolePath: string = "$.roles[*].name";
-}
-
-export class ServerConfig {
-  @IsString()
-  @IsOptional()
-  public readonly listen: string = "0.0.0.0";
-  @IsNumber()
-  @Type(() => Number)
-  @IsOptional()
-  public readonly port: number = 3000;
-  @IsString()
-  @IsOptional()
-  public readonly publicDomain: string = "localhost";
-  @IsString()
-  @IsOptional()
-  public readonly publicAddress: string = `http://localhost:3000`;
-  @IsString()
-  @IsOptional()
-  public readonly subPath?: string;
-}
+import {
+  AuthConfig,
+  DatabaseConfig,
+  fileTransformer,
+  PostgresConfig,
+  ServerConfig,
+  SQLiteConfig,
+  valueToBoolean
+} from "@tsg-dsp/common-api";
 
 export class InitKeyConfig {
   @IsString()

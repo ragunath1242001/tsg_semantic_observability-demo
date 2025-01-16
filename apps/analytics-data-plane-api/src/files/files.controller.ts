@@ -8,7 +8,7 @@ import {
 import { FilesService } from "./files.service.js";
 import { AnyFilesInterceptor } from "@nestjs/platform-express";
 import { FileMetadataDao } from "./filesMetadata.dao.js";
-import { Roles } from "../auth/roles.guard.js";
+import { Roles } from "@tsg-dsp/common-api";
 
 @Controller("files")
 @Roles("controlplane_dataplane")

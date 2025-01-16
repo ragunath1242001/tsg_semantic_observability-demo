@@ -13,7 +13,7 @@ import { Repository } from "typeorm";
 import { DidService } from "../did/did.service.js";
 import axios from "axios";
 import { SignatureService } from "../keys/signature.service.js";
-import { DIDDocument, ServiceEndpoint } from "did-resolver";
+import { ServiceEndpoint } from "did-resolver";
 import { DidResolverService } from "../did/did.resolver.service.js";
 
 @Injectable()

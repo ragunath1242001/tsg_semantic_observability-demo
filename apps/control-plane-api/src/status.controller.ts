@@ -17,9 +17,9 @@ import {
   TransferRole,
   TransferState
 } from "@tsg-dsp/common-dsp";
-import { OAuthGuard } from "./auth/oauth.guard.js";
 import { StatusDto } from "@tsg-dsp/control-plane-dtos";
 import { getHeapStatistics } from "v8";
+import { OAuthGuard } from "@tsg-dsp/common-api";
 
 @Controller()
 @ApiTags("Status")

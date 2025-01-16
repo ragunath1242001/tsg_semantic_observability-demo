@@ -11,10 +11,8 @@ import {
 } from "@nestjs/common";
 import { InitKeyConfig } from "../config.js";
 import { KeysService } from "./keys.service.js";
-import { Roles } from "../auth/roles.guard.js";
 import { AppRole } from "@tsg-dsp/wallet-dtos";
 import { KeyInfo } from "@tsg-dsp/wallet-dtos";
-import { validationPipe } from "../utils/validation.pipe.js";
 import {
   ApiBody,
   ApiOAuth2,
@@ -29,6 +27,7 @@ import {
   ApiConflictResponseDefault,
   ApiNotFoundResponseDefault
 } from "@tsg-dsp/common-dtos";
+import { Roles, validationPipe } from "@tsg-dsp/common-api";
 
 @Controller("management/keys")
 @ApiTags("Management Keys")

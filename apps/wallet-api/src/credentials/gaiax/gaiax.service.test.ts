@@ -2,7 +2,6 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { CredentialsService } from "../credentials.service.js";
 import { plainToInstance } from "class-transformer";
 import { RootConfig } from "../../config.js";
-import { TypeOrmTestHelper } from "../../utils/testhelper.js";
 import { Credentials, KeyMaterials } from "../../model/credentials.dao.js";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { DidService } from "../../did/did.service.js";
@@ -13,10 +12,10 @@ import { HttpResponse, PathParams, http } from "msw";
 import {
   CredentialSubject,
   JsonWebSignature2020,
+  toArray,
   VerifiableCredential,
   VerifiablePresentation
 } from "@tsg-dsp/common-dsp";
-import { toArray } from "../../utils/unions.js";
 import {
   ComplianceRequest,
   LegalRegistrationNumberRequest
@@ -25,6 +24,7 @@ import { GaiaXService } from "./gaiax.service.js";
 import { DIDDocuments, DIDService, DIDLogs } from "../../model/did.dao.js";
 import { DidResolverService } from "../../did/did.resolver.service.js";
 import { SignatureService } from "../../keys/signature.service.js";
+import { TypeOrmTestHelper } from "@tsg-dsp/common-api";
 
 describe("Credentials Service", () => {
   let gaiaXService: GaiaXService;

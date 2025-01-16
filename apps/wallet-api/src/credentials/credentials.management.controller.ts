@@ -14,8 +14,7 @@ import {
 import { CredentialsService } from "./credentials.service.js";
 import { InitCredentialConfig, RootConfig } from "../config.js";
 import { Credentials } from "../model/credentials.dao.js";
-import { CredentialSubject, VerifiableCredential } from "@tsg-dsp/common-dsp";
-import { Client } from "../auth/roles.guard.js";
+import { VerifiableCredential } from "@tsg-dsp/common-dsp";
 import { AppError } from "../utils/error.js";
 import { ClientInfo, AppRole } from "@tsg-dsp/wallet-dtos";
 import { ContextService } from "../contexts/context.service.js";
@@ -32,13 +31,13 @@ import {
   CredentialsConfigDto,
   CredentialsDto
 } from "./credentials.schemas.js";
-import { validationPipe } from "../utils/validation.pipe.js";
 import {
   ApiForbiddenResponseDefault,
   ApiConflictResponseDefault,
   ApiBadRequestResponseDefault,
   ApiNotFoundResponseDefault
 } from "@tsg-dsp/common-dtos";
+import { Client, validationPipe } from "@tsg-dsp/common-api";
 
 @ApiTags("Management Credentials")
 @ApiOAuth2([AppRole.VIEW_ALL_CREDENTIALS, AppRole.VIEW_OWN_CREDENTIALS])

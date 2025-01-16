@@ -50,7 +50,6 @@ import {
   PolicyConfig,
   RuleConstraintConfig
 } from "@tsg-dsp/http-data-plane-dtos";
-import { AuthClientService } from "../auth/auth.client.service.js";
 import { resolveControlPlaneServiceUrl } from "../utils/didServiceResolver.js";
 import { LoggingService } from "../logging/logging.service.js";
 import { LogEntry } from "../logging/logging.dto.js";
@@ -59,6 +58,7 @@ import {
   NegotiationDetailDto,
   TransferDto
 } from "@tsg-dsp/common-dtos";
+import { AuthClientService } from "@tsg-dsp/common-api";
 
 @Injectable()
 export class DataPlaneService {

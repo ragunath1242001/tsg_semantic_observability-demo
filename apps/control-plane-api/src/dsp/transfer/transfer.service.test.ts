@@ -23,15 +23,12 @@ import {
 import { plainToClass } from "class-transformer";
 import { HttpResponse, PathParams, http } from "msw";
 import { SetupServer, setupServer } from "msw/node";
-import { AuthClientService } from "../../auth/auth.client.service.js";
-import { AuthService } from "../../auth/auth.service.js";
+import { VCAuthService } from "../../vc-auth/vc.auth.service.js";
 import {
-  AuthConfig,
   DevWalletConfig,
   IamConfig,
   InitCatalog,
-  RuntimeConfig,
-  ServerConfig
+  RuntimeConfig
 } from "../../config.js";
 import { DataPlaneService } from "../../data-plane/dataPlane.service.js";
 import {
@@ -47,7 +44,6 @@ import {
   TransferDetailDao,
   TransferEventDao
 } from "../../model/transfer.dao.js";
-import { TypeOrmTestHelper } from "../../utils/testhelper.js";
 import { CatalogService } from "../catalog/catalog.service.js";
 import { DspClientService } from "../client/client.service.js";
 import { DspGateway } from "../client/dsp.gateway.js";
@@ -59,7 +55,13 @@ import {
   EvaluationContext,
   EvaluationDecision
 } from "../../policy/evaluation.dto.js";
-import { PaginationOptionsDto } from "../../utils/pagination/pagination.options.dto.js";
+import {
+  TypeOrmTestHelper,
+  ServerConfig,
+  AuthClientService,
+  AuthConfig,
+  PaginationOptionsDto
+} from "@tsg-dsp/common-api";
 
 describe("Transfer service", () => {
   let transferService: TransferService;
@@ -172,7 +174,7 @@ describe("Transfer service", () => {
           useValue: plainToClass(AuthConfig, { enabled: false })
         },
         {
-          provide: AuthService,
+          provide: VCAuthService,
           useValue: new (class {
             async requestToken(audience: string) {
               return "TEST_TOKEN";

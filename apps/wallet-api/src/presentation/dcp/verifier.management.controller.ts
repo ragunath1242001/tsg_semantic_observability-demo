@@ -1,7 +1,6 @@
 import { Body, Controller, Post } from "@nestjs/common";
 import { DCPVerifierService } from "./verifier.service.js";
 import { AppRole } from "@tsg-dsp/wallet-dtos";
-import { Roles } from "../../auth/roles.guard.js";
 import { VerificationRequest } from "@tsg-dsp/common-dtos";
 import { VerifiablePresentation } from "@tsg-dsp/common-dsp";
 import {
@@ -11,6 +10,7 @@ import {
   ApiOperation,
   ApiTags
 } from "@nestjs/swagger";
+import { Roles } from "@tsg-dsp/common-api";
 
 @Controller("management/dcp/verifier")
 @ApiTags("Presentation DCP")

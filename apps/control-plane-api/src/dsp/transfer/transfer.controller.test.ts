@@ -4,7 +4,6 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import {
   AgreementDto,
   Catalog,
-  CredentialSubject,
   defaultContext,
   Multilanguage,
   TransferCompletionMessage,
@@ -20,9 +19,8 @@ import {
 import { plainToClass } from "class-transformer";
 import { HttpResponse, PathParams, http } from "msw";
 import { SetupServer, setupServer } from "msw/node";
-import { AuthClientService } from "../../auth/auth.client.service.js";
-import { AuthService } from "../../auth/auth.service.js";
-import { AuthConfig, RuntimeConfig, ServerConfig } from "../../config.js";
+import { VCAuthService } from "../../vc-auth/vc.auth.service.js";
+import { RuntimeConfig } from "../../config.js";
 import { DataPlaneService } from "../../data-plane/dataPlane.service.js";
 import {
   CatalogDao,
@@ -37,7 +35,6 @@ import {
   TransferDetailDao,
   TransferEventDao
 } from "../../model/transfer.dao.js";
-import { TypeOrmTestHelper } from "../../utils/testhelper.js";
 import { CatalogService } from "../catalog/catalog.service.js";
 import { DspClientService } from "../client/client.service.js";
 import { DspGateway } from "../client/dsp.gateway.js";
@@ -50,6 +47,12 @@ import {
   EvaluationContext,
   EvaluationDecision
 } from "../../policy/evaluation.dto.js";
+import {
+  TypeOrmTestHelper,
+  AuthClientService,
+  AuthConfig,
+  ServerConfig
+} from "@tsg-dsp/common-api";
 
 describe("TransferController", () => {
   let transferController: TransferController;
@@ -254,7 +257,7 @@ describe("TransferController", () => {
       ]
     })
       .useMocker((token) => {
-        if (token === AuthService) {
+        if (token === VCAuthService) {
           return {
             requestToken() {
               return "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjb25uZWN0b3IiLCJlbWFpbCI6Im5vcmVwbHlAZGF0YXNwYWMuZXMiLCJkaWRJZCI6ImRpZDp3ZWI6d2FsbGV0LWNhdGVuYS14LmFscGhhLnNjc24uZGF0YXNwYWMuZXMiLCJyb2xlcyI6WyJ2aWV3X3ByZXNlbnRhdGlvbnMiXSwiaWF0IjoxNjkzNDIzNzgyLCJleHAiOjE2OTM0MjQ2ODJ9.UkVNT1ZFRF9TSUdOQVRVUkU";

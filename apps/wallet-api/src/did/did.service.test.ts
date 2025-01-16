@@ -1,6 +1,5 @@
 import { describe, expect, beforeAll, it } from "@jest/globals";
 import { DidService } from "./did.service.js";
-import { TypeOrmTestHelper } from "../utils/testhelper.js";
 import { plainToInstance } from "class-transformer";
 import { RootConfig } from "../config.js";
 import { TestingModule, Test } from "@nestjs/testing";
@@ -10,6 +9,7 @@ import { DIDDocument } from "did-resolver";
 import { generateKeyPair, exportJWK } from "jose";
 import { DIDDocuments, DIDLogs, DIDService } from "../model/did.dao.js";
 import { DIDMethod } from "../utils/did.js";
+import { TypeOrmTestHelper } from "@tsg-dsp/common-api";
 
 describe("DID Service", () => {
   let didService: DidService;

@@ -1,12 +1,9 @@
 import { describe, expect, it } from "@jest/globals";
 import { plainToInstance } from "class-transformer";
 import { RootConfig } from "./config.js";
-import { toArray } from "./utils/unions.js";
-import { AppError, parseNetworkError } from "./utils/error.js";
+import { AppError } from "./utils/error.js";
 import { HttpStatus } from "@nestjs/common";
-import { setupServer } from "msw/node";
-import { HttpResponse, http } from "msw";
-import axios from "axios";
+import { toArray } from "@tsg-dsp/common-dsp";
 
 describe("Config", () => {
   it("Test complete config", () => {

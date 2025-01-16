@@ -1,5 +1,5 @@
 import { forwardRef, Module } from "@nestjs/common";
-import { AuthModule } from "../../auth/auth.module.js";
+import { VCAuthModule } from "../../vc-auth/vc.auth.module.js";
 import { DspClientModule } from "../client/client.module.js";
 import { DataPlaneModule } from "../../data-plane/dataplane.module.js";
 import { TransferService } from "./transfer.service.js";
@@ -11,10 +11,12 @@ import {
   TransferEventDao
 } from "../../model/transfer.dao.js";
 import { PolicyModule } from "../../policy/policy.module.js";
+import { AuthModule } from "@tsg-dsp/common-api";
 
 @Module({
   imports: [
     AuthModule,
+    VCAuthModule,
     DspClientModule,
     forwardRef(() => DataPlaneModule),
     TypeOrmModule.forFeature([TransferDetailDao, TransferEventDao]),

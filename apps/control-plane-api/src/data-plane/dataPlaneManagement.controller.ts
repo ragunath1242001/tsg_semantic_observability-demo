@@ -12,8 +12,6 @@ import {
   UseGuards
 } from "@nestjs/common";
 import { DataPlaneService } from "./dataPlane.service.js";
-import { OAuthGuard } from "../auth/oauth.guard.js";
-import { Roles } from "../auth/roles.guard.js";
 import {
   ApiOAuth2,
   ApiOperation,
@@ -25,11 +23,15 @@ import {
   ApiBody
 } from "@nestjs/swagger";
 import { ApiForbiddenResponseDefault } from "@tsg-dsp/common-dtos";
-import { UsePagination } from "../utils/pagination/pagination.interceptor.decorator.js";
-import { PaginationQuery } from "../utils/pagination/pagination.query.decorator.js";
-import { PaginationOptionsDto } from "../utils/pagination/pagination.options.dto.js";
-import { Paginated } from "../utils/pagination/pagination.parameters.js";
 import { DataPlaneDetailsDto } from "@tsg-dsp/common-dsp";
+import {
+  OAuthGuard,
+  Roles,
+  UsePagination,
+  PaginationQuery,
+  PaginationOptionsDto,
+  Paginated
+} from "@tsg-dsp/common-api";
 
 @UseGuards(OAuthGuard)
 @Roles(["controlplane_admin", "controlplane_dataplane"])

@@ -1,8 +1,8 @@
 import { Controller, Get, HttpStatus, Param } from "@nestjs/common";
-import { DisableOAuthGuard } from "../auth/oauth.guard.js";
 import { ContextService } from "./context.service.js";
 import { AppError } from "../utils/error.js";
 import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { DisableOAuthGuard } from "@tsg-dsp/common-api";
 
 @Controller()
 @DisableOAuthGuard()

@@ -5,20 +5,18 @@ import { TestingModule, Test } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { plainToClass, plainToInstance } from "class-transformer";
 import { SetupServer, setupServer } from "msw/node";
-import { AuthClientService } from "../auth/auth.client.service.js";
-import { AuthService } from "../auth/auth.service.js";
-import { mockWalletConfig } from "../auth/wallets/wallet.util.test.js";
-import {
-  IamConfig,
-  RegistryConfig,
-  RootConfig,
-  AuthConfig
-} from "../config.js";
+import { VCAuthService } from "../vc-auth/vc.auth.service.js";
+import { mockWalletConfig } from "../vc-auth/wallets/wallet.util.test.js";
+import { IamConfig, RegistryConfig, RootConfig } from "../config.js";
 import { DspClientService } from "../dsp/client/client.service.js";
 import { RegistryDao } from "../model/registry.dao.js";
-import { TypeOrmTestHelper } from "../utils/testhelper.js";
 import { RegistryService } from "./registry.service.js";
 import { http, HttpResponse } from "msw";
+import {
+  TypeOrmTestHelper,
+  AuthClientService,
+  AuthConfig
+} from "@tsg-dsp/common-api";
 
 describe("No error when no dataspace credentials are found", () => {
   let registryService: RegistryService;
@@ -44,8 +42,8 @@ describe("No error when no dataspace credentials are found", () => {
         RegistryService,
         Logger,
         {
-          provide: AuthService,
-          useValue: new AuthService(
+          provide: VCAuthService,
+          useValue: new VCAuthService(
             plainToInstance(RootConfig, { iam: iamConfig }),
             new AuthClientService(
               plainToInstance(AuthConfig, { enabled: false })

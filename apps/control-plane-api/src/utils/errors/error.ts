@@ -1,10 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { HttpException, HttpStatus, Logger } from "@nestjs/common";
+import { AppError } from "@tsg-dsp/common-api";
 import axios from "axios";
 
-export class DSPError extends HttpException {
-  err: unknown;
-  appResponse: Record<string, any>;
+export class DSPError extends AppError {
   constructor(message: string | Record<string, any>, status: HttpStatus);
   constructor(
     message: string | Record<string, any>,
@@ -14,50 +13,14 @@ export class DSPError extends HttpException {
   constructor(
     message: string | Record<string, any>,
     status: HttpStatus,
-    name = "DSPError",
+    name: string = "DSPError",
     err?: unknown
   ) {
-    let response: Record<string, any>;
-    if (typeof message === "string") {
-      response = {
-        name: name,
-        status: HttpStatus[status],
-        code: status,
-        message: message,
-        error: err ? `${err}` : undefined
-      };
-    } else {
-      response = {
-        name: name,
-        status: HttpStatus[status],
-        code: status,
-        ...message,
-        error: err ? `${err}` : undefined
-      };
-    }
-    super(response, status);
-    this.err = err;
-    this.name = name;
-    this.appResponse = response;
-  }
-
-  andLog(
-    logger: Logger,
-    level: "fatal" | "error" | "warn" | "log" | "debug" | "verbose" = "warn",
-    full = false
-  ): DSPError {
-    if (full) {
-      logger[level](`App Error\n:${JSON.stringify(this.appResponse, null, 2)}`);
-    } else {
-      logger[level](
-        `App Error: ${this.appResponse["code"]} ${this.appResponse["message"]}`
-      );
-    }
-    return this;
+    super(message, status, err, name);
   }
 }
 
-export class DSPClientError extends DSPError {
+export class DSPClientError extends AppError {
   declare err: unknown;
   constructor(message: string, err: unknown) {
     let errorMessage;
@@ -77,6 +40,6 @@ export class DSPClientError extends DSPError {
       status = HttpStatus.INTERNAL_SERVER_ERROR;
     }
 
-    super(errorMessage, status, err);
+    super(errorMessage, status, err, "DSPClientError");
   }
 }

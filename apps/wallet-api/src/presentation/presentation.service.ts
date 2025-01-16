@@ -8,15 +8,14 @@ import {
   PresentationValidation,
   JsonWebSignature2020,
   DataIntegrityProof,
-  Proof
+  Proof,
+  toArray
 } from "@tsg-dsp/common-dsp";
 import crypto from "crypto";
 import { CredentialsService } from "../credentials/credentials.service.js";
-import { DidResolverService } from "../did/did.resolver.service.js";
 import { RootConfig, SignatureType } from "../config.js";
 import { DidService } from "../did/did.service.js";
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
-import { toArray } from "../utils/unions.js";
 import { SignatureService } from "../keys/signature.service.js";
 import { AppError } from "../utils/error.js";
 
@@ -26,7 +25,6 @@ export class PresentationService {
     private readonly config: RootConfig,
     private readonly credentialsService: CredentialsService,
     private readonly signatureService: SignatureService,
-    private readonly didResolver: DidResolverService,
     private readonly didService: DidService
   ) {}
   private readonly logger = new Logger(this.constructor.name);

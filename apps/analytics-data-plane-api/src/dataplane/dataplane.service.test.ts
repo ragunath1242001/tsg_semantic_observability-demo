@@ -2,7 +2,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { DataPlaneService } from "./dataplane.service.js";
 import { DataPlaneController } from "./dataplane.controller.js";
 import { plainToClass } from "class-transformer";
-import { AuthConfig, LoggingConfig, RootConfig } from "../config.js";
+import { LoggingConfig, RootConfig } from "../config.js";
 import { SetupServer, setupServer } from "msw/node";
 import { HttpResponse, PathParams, http } from "msw";
 import { Request } from "express";
@@ -11,14 +11,17 @@ import {
   DataPlaneCreation,
   DatasetDto
 } from "@tsg-dsp/common-dsp";
-import { TypeOrmTestHelper } from "../utils/testhelper.js";
 import { TransferDao } from "./transfer.dao.js";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { DataPlaneStateDao } from "./dataplane.dao.js";
-import { AuthClientService } from "../auth/auth.client.service.js";
 import { RawBodyRequest } from "@nestjs/common";
 import { EgressLogDao, IngressLogDao } from "../logging/logging.dao.js";
 import { LoggingService } from "../logging/logging.service.js";
+import {
+  TypeOrmTestHelper,
+  AuthClientService,
+  AuthConfig
+} from "@tsg-dsp/common-api";
 
 describe("Dataplane Service", () => {
   let dataPlaneService: DataPlaneService;

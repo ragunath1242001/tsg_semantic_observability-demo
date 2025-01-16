@@ -12,13 +12,12 @@ import {
 import {
   CatalogDto,
   CatalogRequestMessage,
-  CatalogRequestMessageDto,
   CatalogRequestMessageSchema,
   CatalogSchema,
   DatasetDto,
   DatasetSchema
 } from "@tsg-dsp/common-dsp";
-import { VerifiablePresentationGuard } from "../../auth/verifiablePresentation.guard.js";
+import { VerifiablePresentationGuard } from "../../vc-auth/verifiablePresentation.guard.js";
 import { DeserializePipe } from "../../utils/deserialize.pipe.js";
 import { CatalogService } from "./catalog.service.js";
 import {
@@ -30,10 +29,12 @@ import {
   ApiBody
 } from "@nestjs/swagger";
 import { ApiForbiddenResponseDefault } from "@tsg-dsp/common-dtos";
-import { UsePagination } from "../../utils/pagination/pagination.interceptor.decorator.js";
-import { PaginationQuery } from "../../utils/pagination/pagination.query.decorator.js";
-import { PaginationOptionsDto } from "../../utils/pagination/pagination.options.dto.js";
-import { Paginated } from "../../utils/pagination/pagination.parameters.js";
+import {
+  UsePagination,
+  PaginationQuery,
+  PaginationOptionsDto,
+  Paginated
+} from "@tsg-dsp/common-api";
 
 @UseGuards(VerifiablePresentationGuard)
 @Controller("catalog")

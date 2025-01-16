@@ -23,7 +23,7 @@ import {
 } from "@tsg-dsp/common-dsp";
 import crypto from "crypto";
 import { Repository } from "typeorm";
-import { RuntimeConfig, ServerConfig } from "../../config.js";
+import { RuntimeConfig } from "../../config.js";
 import { DataPlaneService } from "../../data-plane/dataPlane.service.js";
 import {
   TransferDetailDao,
@@ -35,8 +35,11 @@ import { DspGateway } from "../client/dsp.gateway.js";
 import { PolicyEvaluationService } from "../../policy/policy.evaluation.service.js";
 import { EvaluationTrigger } from "../../policy/constraint.dto.js";
 import { normalizeAddress } from "../../utils/address.js";
-import { PaginationOptionsDto } from "../../utils/pagination/pagination.options.dto.js";
-import { Paginated } from "../../utils/pagination/pagination.parameters.js";
+import {
+  ServerConfig,
+  PaginationOptionsDto,
+  Paginated
+} from "@tsg-dsp/common-api";
 
 @Injectable()
 export class TransferService {

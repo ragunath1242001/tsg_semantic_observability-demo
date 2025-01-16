@@ -2,14 +2,14 @@ import { CredentialAddress } from "@tsg-dsp/control-plane-dtos";
 import { HttpStatus, Injectable, Logger, Optional } from "@nestjs/common";
 import { CatalogDto } from "@tsg-dsp/common-dsp";
 import axios from "axios";
-import { AuthService } from "../auth/auth.service.js";
+import { VCAuthService } from "../vc-auth/vc.auth.service.js";
 import { RegistryConfig } from "../config.js";
 import { DSPClientError, DSPError } from "../utils/errors/error.js";
 
 @Injectable()
 export class RegistryClientService {
   constructor(
-    private readonly authService: AuthService,
+    private readonly vcAuthService: VCAuthService,
     @Optional()
     private readonly registryConfig: RegistryConfig
   ) {}
@@ -27,7 +27,7 @@ export class RegistryClientService {
   private async axiosHeaders() {
     return {
       headers: {
-        Authorization: `Bearer ${await this.authService.requestToken(
+        Authorization: `Bearer ${await this.vcAuthService.requestToken(
           this.registryConfig.registryDid ||
             `did:web:${this.registryConfig.registryUrl!.replace(":", "%3A")}`
         )}`

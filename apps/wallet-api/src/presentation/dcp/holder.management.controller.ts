@@ -1,7 +1,6 @@
 import { Controller, Get, Query } from "@nestjs/common";
 import { DCPSiopService } from "./siop.service.js";
 import { AppRole } from "@tsg-dsp/wallet-dtos";
-import { Roles } from "../../auth/roles.guard.js";
 import {
   ApiOAuth2,
   ApiOkResponse,
@@ -9,6 +8,7 @@ import {
   ApiTags
 } from "@nestjs/swagger";
 import { ApiForbiddenResponseDefault } from "@tsg-dsp/common-dtos";
+import { Roles } from "@tsg-dsp/common-api";
 
 @Controller("management/dcp/holder")
 @ApiTags("Presentation DCP")

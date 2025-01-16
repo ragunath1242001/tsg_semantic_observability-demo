@@ -8,6 +8,7 @@ WORKDIR /app
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY apps/control-plane-api/package.json apps/control-plane-api/
 COPY apps/control-plane-ui/package.json apps/control-plane-ui/
+COPY libs/common-api/package.json libs/common-api/
 COPY libs/common-dsp/package.json libs/common-dsp/
 COPY libs/common-dtos/package.json libs/common-dtos/
 COPY libs/common-ui/package.json libs/common-ui/
@@ -18,6 +19,7 @@ COPY apps apps
 COPY libs libs
 RUN pnpm run --filter "common-dsp" build  
 RUN pnpm run --filter "control-plane-dtos" build 
+RUN pnpm run --filter "common-api" build  
 ARG TSG_MODE=development
 ARG TSG_VERSION=0.0.0
 ARG TSG_STATIC_MODE=${TSG_MODE}

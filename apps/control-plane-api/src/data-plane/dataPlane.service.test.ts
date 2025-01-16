@@ -13,8 +13,7 @@ import {
   Permission
 } from "@tsg-dsp/common-dsp";
 import { plainToClass } from "class-transformer";
-import { AuthClientService } from "../auth/auth.client.service.js";
-import { AuthConfig, InitCatalog, ServerConfig } from "../config.js";
+import { InitCatalog } from "../config.js";
 import { CatalogService } from "../dsp/catalog/catalog.service.js";
 import {
   CatalogDao,
@@ -26,9 +25,14 @@ import {
 } from "../model/catalog.dao.js";
 import { DataPlaneDao } from "../model/dataPlanes.dao.js";
 import { DSPError } from "../utils/errors/error.js";
-import { TypeOrmTestHelper } from "../utils/testhelper.js";
 import { DataPlaneService } from "./dataPlane.service.js";
 import { AgreementService } from "../policy/agreement.service.js";
+import {
+  TypeOrmTestHelper,
+  ServerConfig,
+  AuthConfig,
+  AuthClientService
+} from "@tsg-dsp/common-api";
 
 describe("DataPlane Service", () => {
   let dataPlaneService: DataPlaneService;

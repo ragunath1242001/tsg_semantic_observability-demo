@@ -9,12 +9,10 @@ import {
   Post,
   Put
 } from "@nestjs/common";
-import { Roles } from "../auth/roles.guard.js";
 import { AppRole } from "@tsg-dsp/wallet-dtos";
 import { ContextService } from "./context.service.js";
 import { JSONLDContext } from "../model/context.dao.js";
 import { JsonLdContextConfig } from "../config.js";
-import { validationPipe } from "../utils/validation.pipe.js";
 import {
   ApiBody,
   ApiOAuth2,
@@ -29,6 +27,7 @@ import {
   ApiBadRequestResponseDefault,
   ApiNotFoundResponseDefault
 } from "@tsg-dsp/common-dtos";
+import { Roles, validationPipe } from "@tsg-dsp/common-api";
 
 @Controller("management/contexts")
 @ApiTags("Management Contexts")

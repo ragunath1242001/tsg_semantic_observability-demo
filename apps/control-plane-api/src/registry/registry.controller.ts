@@ -9,18 +9,20 @@ import {
 } from "@nestjs/common";
 import { CatalogDto, CatalogSchema } from "@tsg-dsp/common-dsp";
 import { RegistryService } from "./registry.service.js";
-import { OAuthGuard } from "../auth/oauth.guard.js";
-import { Roles } from "../auth/roles.guard.js";
 import {
   ApiBearerAuth,
   ApiOperation,
   ApiResponse,
   ApiTags
 } from "@nestjs/swagger";
-import { UsePagination } from "../utils/pagination/pagination.interceptor.decorator.js";
-import { PaginationQuery } from "../utils/pagination/pagination.query.decorator.js";
-import { PaginationOptionsDto } from "../utils/pagination/pagination.options.dto.js";
-import { Paginated } from "../utils/pagination/pagination.parameters.js";
+import {
+  OAuthGuard,
+  Roles,
+  UsePagination,
+  PaginationQuery,
+  PaginationOptionsDto,
+  Paginated
+} from "@tsg-dsp/common-api";
 
 @ApiTags("Registry")
 @ApiBearerAuth()

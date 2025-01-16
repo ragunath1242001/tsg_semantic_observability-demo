@@ -20,29 +20,23 @@ import {
 } from "@nestjs/swagger";
 import {
   ContractAgreementMessage,
-  ContractAgreementMessageDto,
   ContractAgreementMessageSchema,
   ContractAgreementVerificationMessage,
-  ContractAgreementVerificationMessageDto,
   ContractAgreementVerificationMessageSchema,
   ContractNegotiation,
   ContractNegotiationDto,
   ContractNegotiationEventMessage,
-  ContractNegotiationEventMessageDto,
   ContractNegotiationEventMessageSchema,
   ContractNegotiationSchema,
   ContractNegotiationTerminationMessage,
-  ContractNegotiationTerminationMessageDto,
   ContractNegotiationTerminationMessageSchema,
   ContractOfferMessage,
-  ContractOfferMessageDto,
   ContractOfferMessageSchema,
   ContractRequestMessage,
-  ContractRequestMessageDto,
   ContractRequestMessageSchema
 } from "@tsg-dsp/common-dsp";
-import { VerifiablePresentationGuard } from "../../auth/verifiablePresentation.guard.js";
-import { VPId } from "../../auth/verifiablePresentation.strategy.js";
+import { VerifiablePresentationGuard } from "../../vc-auth/verifiablePresentation.guard.js";
+import { VPId } from "../../vc-auth/verifiablePresentation.strategy.js";
 import { DeserializePipe } from "../../utils/deserialize.pipe.js";
 import { DSPError } from "../../utils/errors/error.js";
 import { NegotiationService } from "./negotiation.service.js";

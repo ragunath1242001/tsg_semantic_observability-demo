@@ -1,12 +1,12 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { FilesService } from "./files.service.js";
 import { FileMetadataDao } from "./filesMetadata.dao.js";
-import { TypeOrmTestHelper } from "../utils/testhelper.js";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { FilesConfig } from "../config.js";
 import path from "path";
 import fs from "fs/promises";
 import { fileURLToPath } from "url";
+import { TypeOrmTestHelper } from "@tsg-dsp/common-api";
 
 describe("FilesService", () => {
   let filesService: FilesService;

@@ -20,8 +20,6 @@ import {
   ApiOkResponse,
   ApiBody
 } from "@nestjs/swagger";
-import { OAuthGuard } from "../auth/oauth.guard.js";
-import { Roles } from "../auth/roles.guard.js";
 import { RuleRepositoryService } from "./rule.repository.service.js";
 import { Rule, RuleType } from "./rule.dto.js";
 import {
@@ -30,7 +28,6 @@ import {
   ApiForbiddenResponseDefault,
   ApiNotFoundResponseDefault
 } from "@tsg-dsp/common-dtos";
-import { validationPipe } from "../utils/validation.pipe.js";
 import {
   Constraint as DspConstraint,
   ConstraintDto,
@@ -40,10 +37,15 @@ import {
 } from "@tsg-dsp/common-dsp";
 import { DSPError } from "../utils/errors/error.js";
 import { ConstraintModel } from "./constraint.dto.js";
-import { Paginated } from "../utils/pagination/pagination.parameters.js";
-import { PaginationQuery } from "../utils/pagination/pagination.query.decorator.js";
-import { PaginationOptionsDto } from "../utils/pagination/pagination.options.dto.js";
-import { UsePagination } from "../utils/pagination/pagination.interceptor.decorator.js";
+import {
+  OAuthGuard,
+  Roles,
+  UsePagination,
+  PaginationQuery,
+  PaginationOptionsDto,
+  Paginated,
+  validationPipe
+} from "@tsg-dsp/common-api";
 
 @UseGuards(OAuthGuard)
 @Roles(["controlplane_admin"])

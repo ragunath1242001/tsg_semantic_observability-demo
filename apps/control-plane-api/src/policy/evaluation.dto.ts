@@ -1,9 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import {
-  AgreementDto,
-  VerifiableCredential,
-  CredentialSubject
-} from "@tsg-dsp/common-dsp";
+import { AgreementDto, VerifiableCredential } from "@tsg-dsp/common-dsp";
 import { Type, plainToInstance } from "class-transformer";
 import {
   IsObject,
@@ -15,8 +11,8 @@ import {
   ValidateNested,
   IsDate
 } from "class-validator";
-import { validateOrRejectSync } from "../utils/validation.pipe.js";
 import { EvaluationTrigger } from "./constraint.dto.js";
+import { validateOrRejectSync } from "@tsg-dsp/common-api";
 
 export class PolicyContext {
   @IsObject()

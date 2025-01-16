@@ -6,10 +6,9 @@ import {
   ApiOperation,
   ApiParam
 } from "@nestjs/swagger";
-import { OAuthGuard } from "../auth/oauth.guard.js";
-import { Roles } from "../auth/roles.guard.js";
 import { AgreementService } from "./agreement.service.js";
 import { AgreementDto, AgreementSchema } from "@tsg-dsp/common-dsp";
+import { OAuthGuard, Roles } from "@tsg-dsp/common-api";
 
 @UseGuards(OAuthGuard)
 @Roles(["controlplane_admin"])

@@ -5,7 +5,7 @@ The following processes are further detailed on this page:
 - Authentication flow
 - Issuance flow
 - Direct Presentation flow
-- DCP Presentation flow
+- IATP Presentation flow
 
 ## Authentication flow
 
@@ -136,8 +136,8 @@ Different protocols for exchanging Verifiable Presentations between the _holder_
 Currently three protocols are implemented or are candidates for implementation in the Wallet:
 
 - Direct protocol: a simple protocol for exchaning verifiable presentations
-- [Decentralized Trust Protocol](https://eclipse-dataspace-dcp.github.io/decentralized-claims-protocol): a protocol based on the Digital Identity Foundations Presentation Exchange specfication
-- OpenID 4 Verifiable Presentations: a draft specification from the OpenID foundation (not yet implemented)
+- Identity and Trust Protocol: a protocol based on the Digital Identity Foundations Presentation Exchange specfication
+- OpenID 4 Verifiable Presentations: a draft specification from the OpenID foundation
 
 ### Direct
 
@@ -148,8 +148,6 @@ While this is a simple way of presenting credentials to the verifier, there are 
 - HTTP headers are often limited in size by the HTTP server implementations, resulting in maximum header sizes of 8kb (default for Nginx and Apache).
 - No authentication of the verifier is executed in this flow.
 - No handles for specifying which credential the verifier needs to approve the request.
-
-> Note: The direct presentation protocol is likely to be deprecated
 
 ```mermaid
 ---
@@ -176,11 +174,15 @@ sequenceDiagram
     vs -->> hs: Resource response
 ```
 
-### Decentralized Claims Protocol
+### Identity and Trust Protocol (IATP)
 
-The Decentralized Claims Protocol (DCP) defines the flow of requesting and presenting Verifiable Presentations between _verifier_ and _holder_. The protocol is described at [Eclipse Decentralized Claims Protocol](https://eclipse-dataspace-dcp.github.io/decentralized-claims-protocol)
+The identity and trust protocol (IATP) defines the flow of requesting and presenting Verifiable Presentations between _verifier_ and _holder_. This protocol is largely based on the [Eclipse Tractus-X IATP](https://github.com/eclipse-tractusx/identity-trust/), and uses the following wider standards/specifications:
 
-The sequence diagram below shows the interactions between the wallets and control planes of the verifier and holder from a perspective of the TSG components. Which also includes the management interfaces that are not part of the DCP itself.
+- [W3C Decentralized Identifiers (DIDs) v1.0](https://www.w3.org/TR/did-core/)
+- [W3C Verifiable Credentials Data Model v1.1](https://www.w3.org/TR/vc-data-model/)
+- [DIF Presentation Exchange 2.0.0](https://identity.foundation/presentation-exchange/spec/v2.0.0/)
+
+The sequence diagram below shows the interactions between the wallets and control planes of the verifier and holder.
 
 ```mermaid
 ---
@@ -198,17 +200,17 @@ sequenceDiagram
     end
     participant vs as External System
 
-    hs ->> hw: SIOP ID token request<br />(with presentation access token)<br />GET /api/management/dcp/holder/token
+    hs ->> hw: SIOP ID token request<br />(with presentation access token)<br />GET /iatp/holder/token
     hw -->> hs: id_token
     hs ->> vs: Resource Request (with id_token)
-    vs ->> vw: Request authorization<br />(with id_token & credential definition)<br />POST /api/management/dcp/verifier/verify
+    vs ->> vw: Request authorization<br />(with id_token & credential definition)<br />POST /iatp/verifier/verify
     vw ->> vw: Validate id_token
     vw ->> vw: Create SIOP ID token (including holder's access_token)
-    vw ->> vw: Get CredentialService from Holder DID
-    vw ->> hw: Request presentation<br />(with PresentationQueryMessage & id_token)<br />GET /api/dcp/presentations/query
+    vw ->> vw: Get presentation service from Holder DID
+    vw ->> hw: Request presentation<br />(with presentation definition & id_token)<br />GET /iatp/holder/presentation
     hw ->> hw: Validate id_token and access token
     hw ->> hw: Find matching credentials and create VP
-    hw -->> vw: PresentationResponseMessage
+    hw -->> vw: vp_token & presentation_submission
     vw ->> vw: Validate
     vw -->> vs: Validation result
     vs -->> hs: Resource response
@@ -223,11 +225,12 @@ A more detailed explanation of the steps in the sequence diagram is provided in 
 4. Verification request with the holder's `id_token` and a presentation definition according the [DIF Presentation Definition specification](https://identity.foundation/presentation-exchange/spec/v2.0.0/#presentation-definition).
 5. Validation of the holder's `id_token`, which additionally requires resolvement of the DID document of the holder to retrieve the public key material used to sign the `id_token`.
 6. Create a Self Issued ID token targeted at the holder (_audience_) incorporating the access token from the holder's `id_token`.
-7. Retrieve the `"CredentialService"` service from the holder's DID document to find the service endpoint for requesting the presentation.
-8. Request the presentation at the service endpoint with a DCP `PresentationQueryMessage` and the `id_token` as `Bearer` token in the `Authorization` header.
+7. Retrieve the `"Presentation"` service from the holder's DID document to find the service endpoint for requesting the presentation.
+8. Request the presentation at the service endpoint with the presentation definition and the `id_token` as `Bearer` token in the `Authorization` header.
 9. Validate the verifier's `id_token` and the access token inside the `id_token`.
-10. Find matching credentials based on the presentation definition and the scope of the access token.
-11. Return the Verifiable Presentation in a DCP `PresentationResponseMessage`.
+10. Find matching credentials based on the presentation definition and the scope of the access token. And generate a presentation submission according the [DIF Presentation Submission specification](https://identity.foundation/presentation-exchange/spec/v2.0.0/#presentation-submission).  
+    _**Note**_: Scopes are currently accepted but not used.
+11. Return the Verifiable Presentation in JWT format accompanied by the pesentation submission.
 12. Validate the Verifiable Presentation and validate whether it matches the requested presentation definition.
 13. Return the Verifiable Presentation when all checks are successful.
 14. Response of the original DSP request.

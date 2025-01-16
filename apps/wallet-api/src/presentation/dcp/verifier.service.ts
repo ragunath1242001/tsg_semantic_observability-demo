@@ -3,7 +3,6 @@ import { DCPSiopService } from "./siop.service.js";
 import { AppError, parseNetworkError } from "../../utils/error.js";
 import { DidResolverService } from "../../did/did.resolver.service.js";
 import axios from "axios";
-import { toArray } from "../../utils/unions.js";
 import { PresentationService } from "../presentation.service.js";
 import { decodeJwt } from "jose";
 import { Ajv } from "ajv";
@@ -15,7 +14,7 @@ import {
   PresentationQueryMessage,
   PresentationResponseMessage
 } from "@tsg-dsp/common-dtos";
-import { VerifiablePresentation } from "@tsg-dsp/common-dsp";
+import { toArray, VerifiablePresentation } from "@tsg-dsp/common-dsp";
 import { instanceToPlain, plainToInstance } from "class-transformer";
 import { SignatureService } from "../../keys/signature.service.js";
 

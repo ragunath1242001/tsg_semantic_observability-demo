@@ -1,12 +1,10 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from "@nestjs/common";
-import { Roles } from "../auth/roles.guard.js";
 import { AppRole } from "@tsg-dsp/wallet-dtos";
 import {
   ProofDocument,
   SignRequest,
   ValidateRequest
 } from "@tsg-dsp/common-dtos";
-import { validationPipe } from "../utils/validation.pipe.js";
 import {
   ApiBody,
   ApiOAuth2,
@@ -19,7 +17,8 @@ import {
   ApiNotFoundResponseDefault
 } from "@tsg-dsp/common-dtos";
 import { SignatureService } from "./signature.service.js";
-import { JsonWebSignature2020, toArray } from "@tsg-dsp/common-dsp";
+import { toArray } from "@tsg-dsp/common-dsp";
+import { Roles, validationPipe } from "@tsg-dsp/common-api";
 
 @Controller("management/signature")
 @ApiTags("Management Signatures")
