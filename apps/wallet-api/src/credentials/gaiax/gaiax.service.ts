@@ -1,6 +1,7 @@
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
 import {
   CredentialSubject,
+  toArray,
   VerifiableCredential,
   VerifiablePresentation
 } from "@tsg-dsp/common-dsp";
@@ -12,7 +13,6 @@ import {
   LegalRegistrationNumberRequest
 } from "@tsg-dsp/wallet-dtos";
 import axios from "axios";
-import { toArray } from "../../utils/unions.js";
 import { CredentialsService } from "../credentials.service.js";
 
 @Injectable()

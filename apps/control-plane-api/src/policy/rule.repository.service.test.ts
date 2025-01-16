@@ -1,5 +1,4 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { TypeOrmTestHelper } from "../utils/testhelper.js";
 import { ConstraintDao, RuleDao } from "../model/rule.dao.js";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { RuleRepositoryService } from "./rule.repository.service.js";
@@ -11,7 +10,7 @@ import {
   AtomicConstraint,
   LogicalConstraint
 } from "./constraint.dto.js";
-import { PaginationOptionsDto } from "../utils/pagination/pagination.options.dto.js";
+import { TypeOrmTestHelper, PaginationOptionsDto } from "@tsg-dsp/common-api";
 
 describe("Rule Repository Service", () => {
   let ruleRepositoryService: RuleRepositoryService;

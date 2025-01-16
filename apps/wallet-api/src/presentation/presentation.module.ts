@@ -1,11 +1,10 @@
 import { DynamicModule, Logger, Module } from "@nestjs/common";
-import { AuthModule } from "../auth/auth.module.js";
 import { DirectPresentationController } from "./direct/presentation.controller.js";
 import { PresentationService } from "./presentation.service.js";
 import { CredentialsModule } from "../credentials/credentials.module.js";
 import { KeysModule } from "../keys/keys.module.js";
 import { DidModule } from "../did/did.module.js";
-import { PresentationConfig, PresentationType } from "../config.js";
+import { PresentationConfig, PresentationType, RootConfig } from "../config.js";
 import { DCPHolderController } from "./dcp/holder.controller.js";
 import { DCPVerifierManagementController } from "./dcp/verifier.management.controller.js";
 import { DCPVerifierService } from "./dcp/verifier.service.js";
@@ -14,13 +13,19 @@ import { SIToken } from "../model/dcp.dao.js";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { DCPHolderService } from "./dcp/holder.service.js";
 import { DCPHolderManagementController } from "./dcp/holder.management.controller.js";
+import { AuthModule } from "@tsg-dsp/common-api";
 
 @Module({})
 export class PresentationModule {
   static register(presentationConfig: PresentationConfig): DynamicModule {
     const module: DynamicModule = {
       module: PresentationModule,
-      imports: [AuthModule, CredentialsModule, KeysModule, DidModule],
+      imports: [
+        AuthModule.register(RootConfig),
+        CredentialsModule,
+        KeysModule,
+        DidModule
+      ],
       global: true,
       controllers: [],
       providers: [PresentationService],

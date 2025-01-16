@@ -9,10 +9,8 @@ import {
   NegotiationUpdatedEvent
 } from "./negotiation.events.js";
 import { DataService, Dataset, Distribution, Offer } from "@tsg-dsp/common-dsp";
-
-import { TypeOrmTestHelper } from "../../utils/testhelper.js";
-
 import { TransferService } from "../transfer/transfer.service.js";
+import { TypeOrmTestHelper } from "@tsg-dsp/common-api";
 
 describe("NegotiationListener", () => {
   let negotiationListener: NegotiationListener;

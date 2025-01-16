@@ -22,8 +22,6 @@ import {
   OfferDto,
   OfferSchema
 } from "@tsg-dsp/common-dsp";
-import { OAuthGuard } from "../../auth/oauth.guard.js";
-import { Roles } from "../../auth/roles.guard.js";
 import { normalizeAddress } from "../../utils/address.js";
 import { DeserializePipe } from "../../utils/deserialize.pipe.js";
 import { NegotiationService } from "./negotiation.service.js";
@@ -37,10 +35,14 @@ import {
   ApiOkResponse,
   ApiOAuth2
 } from "@nestjs/swagger";
-import { UsePagination } from "../../utils/pagination/pagination.interceptor.decorator.js";
-import { Paginated } from "../../utils/pagination/pagination.parameters.js";
-import { PaginationOptionsDto } from "../../utils/pagination/pagination.options.dto.js";
-import { PaginationQuery } from "../../utils/pagination/pagination.query.decorator.js";
+import {
+  OAuthGuard,
+  Roles,
+  UsePagination,
+  PaginationQuery,
+  PaginationOptionsDto,
+  Paginated
+} from "@tsg-dsp/common-api";
 
 @ApiTags("Negotiations Management")
 @UseGuards(OAuthGuard)

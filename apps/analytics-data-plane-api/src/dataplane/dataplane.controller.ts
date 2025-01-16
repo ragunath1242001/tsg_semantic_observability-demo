@@ -19,8 +19,11 @@ import {
   TransferSuspensionMessageDto,
   TransferTerminationMessageDto
 } from "@tsg-dsp/common-dsp";
-import { DisableOAuthGuard } from "../auth/oauth.guard.js";
-import { DisableRolesGuard, Roles } from "../auth/roles.guard.js";
+import {
+  Roles,
+  DisableOAuthGuard,
+  DisableRolesGuard
+} from "@tsg-dsp/common-api";
 
 @Controller()
 @Roles("controlplane_dataplane")

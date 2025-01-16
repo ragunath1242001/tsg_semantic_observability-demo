@@ -1,15 +1,9 @@
 import { TestingModule, Test } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { TypeOrmTestHelper } from "../utils/testhelper.js";
 import { ConstraintDao, RuleDao } from "../model/rule.dao.js";
 import { RuleRepositoryService } from "./rule.repository.service.js";
 import { AgreementService } from "./agreement.service.js";
-import {
-  ODRLAction,
-  ODRLOperator,
-  TransferState,
-  TransferStatus
-} from "@tsg-dsp/common-dsp";
+import { ODRLAction, TransferState, TransferStatus } from "@tsg-dsp/common-dsp";
 import { Evaluation, promiseMap } from "./evaluation.js";
 import { PolicyEvaluationService } from "./policy.evaluation.service.js";
 import { AgreementDao, TransferMonitorDao } from "../model/agreement.dao.js";
@@ -29,8 +23,8 @@ import {
   DataType,
   EvaluationTrigger
 } from "./constraint.dto.js";
-import { EvaluationContext, EvaluationResult } from "./evaluation.dto.js";
-import { Paginated } from "../utils/pagination/pagination.parameters.js";
+import { EvaluationContext } from "./evaluation.dto.js";
+import { TypeOrmTestHelper, Paginated } from "@tsg-dsp/common-api";
 
 describe("Policy Evaluation Service", () => {
   let ruleRepositoryService: RuleRepositoryService;

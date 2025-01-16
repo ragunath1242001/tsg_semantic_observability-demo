@@ -14,8 +14,6 @@ import {
   DataPlaneCreation,
   DataPlaneDetailsDto
 } from "@tsg-dsp/common-dsp";
-import { OAuthGuard } from "../auth/oauth.guard.js";
-import { Roles } from "../auth/roles.guard.js";
 import { DeserializePipe } from "../utils/deserialize.pipe.js";
 import { DSPError } from "../utils/errors/error.js";
 import { DataPlaneService } from "./dataPlane.service.js";
@@ -28,6 +26,7 @@ import {
   ApiBody
 } from "@nestjs/swagger";
 import { ApiForbiddenResponseDefault } from "@tsg-dsp/common-dtos";
+import { OAuthGuard, Roles } from "@tsg-dsp/common-api";
 
 @UseGuards(OAuthGuard)
 @Roles(["controlplane_admin", "controlplane_dataplane"])

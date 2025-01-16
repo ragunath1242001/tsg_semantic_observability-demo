@@ -1,13 +1,16 @@
 import { TestingModule, Test } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { AuthClientService } from "../auth/auth.client.service.js";
-import { AuthConfig, LoggingConfig } from "../config.js";
-import { TypeOrmTestHelper } from "../utils/testhelper.js";
+import { LoggingConfig } from "../config.js";
 import { IngressLogDao, EgressLogDao } from "./logging.dao.js";
 import { LoggingService } from "./logging.service.js";
 import { PageOptionsDto } from "../utils/pagination.js";
 import { plainToInstance } from "class-transformer";
 import { LogEntry, LogFilterDto } from "./logging.dto.js";
+import {
+  TypeOrmTestHelper,
+  AuthClientService,
+  AuthConfig
+} from "@tsg-dsp/common-api";
 
 describe("Logging Service", () => {
   let loggingService: LoggingService;

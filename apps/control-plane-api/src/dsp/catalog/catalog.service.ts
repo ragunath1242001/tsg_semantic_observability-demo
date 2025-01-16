@@ -20,8 +20,7 @@ import { Repository } from "typeorm";
 import {
   InitCatalog,
   PolicyConfig,
-  RuleConstraintConfig,
-  ServerConfig
+  RuleConstraintConfig
 } from "../../config.js";
 import {
   CatalogDao,
@@ -31,9 +30,11 @@ import {
   ResourceDao
 } from "../../model/catalog.dao.js";
 import { DSPError } from "../../utils/errors/error.js";
-import { PaginationOptionsDto } from "../../utils/pagination/pagination.options.dto.js";
-import { Paginated } from "../../utils/pagination/pagination.parameters.js";
-import { initialize } from "passport";
+import {
+  ServerConfig,
+  PaginationOptionsDto,
+  Paginated
+} from "@tsg-dsp/common-api";
 
 @Injectable()
 export class CatalogService {

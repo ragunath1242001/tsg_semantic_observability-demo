@@ -23,13 +23,12 @@ import {
 import { plainToClass } from "class-transformer";
 import { HttpResponse, PathParams, http } from "msw";
 import { SetupServer, setupServer } from "msw/node";
-import { AuthService } from "../../auth/auth.service.js";
-import { RootConfig, ServerConfig } from "../../config.js";
+import { VCAuthService } from "../../vc-auth/vc.auth.service.js";
+import { RootConfig } from "../../config.js";
 import {
   NegotiationDetailDao,
   NegotiationProcessEventDao
 } from "../../model/negotiation.dao.js";
-import { TypeOrmTestHelper } from "../../utils/testhelper.js";
 import { DspClientService } from "../client/client.service.js";
 import { DspGateway } from "../client/dsp.gateway.js";
 import { NegotiationController } from "./negotiation.controller.js";
@@ -41,6 +40,7 @@ import {
 } from "../../model/transfer.dao.js";
 import { AgreementService } from "../../policy/agreement.service.js";
 import { EventEmitter2 } from "@nestjs/event-emitter";
+import { ServerConfig, TypeOrmTestHelper } from "@tsg-dsp/common-api";
 
 describe("NegotiationController", () => {
   let negotiationController: NegotiationController;
@@ -182,7 +182,7 @@ describe("NegotiationController", () => {
       ]
     })
       .useMocker((token) => {
-        if (token === AuthService) {
+        if (token === VCAuthService) {
           return {
             requestToken() {
               return "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjb25uZWN0b3IiLCJlbWFpbCI6Im5vcmVwbHlAZGF0YXNwYWMuZXMiLCJkaWRJZCI6ImRpZDp3ZWI6d2FsbGV0LWNhdGVuYS14LmFscGhhLnNjc24uZGF0YXNwYWMuZXMiLCJyb2xlcyI6WyJ2aWV3X3ByZXNlbnRhdGlvbnMiXSwiaWF0IjoxNjkzNDIzNzgyLCJleHAiOjE2OTM0MjQ2ODJ9.UkVNT1ZFRF9TSUdOQVRVUkU";

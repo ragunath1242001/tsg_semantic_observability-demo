@@ -1,6 +1,5 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from "@nestjs/common";
 import { RuntimeConfig } from "../../config.js";
-import { Client } from "../../auth/roles.guard.js";
 import { AppError } from "../../utils/error.js";
 import { ClientInfo, AppRole } from "@tsg-dsp/wallet-dtos";
 import {
@@ -8,7 +7,6 @@ import {
   LegalRegistrationNumberRequest
 } from "@tsg-dsp/wallet-dtos";
 import { GaiaXService } from "./gaiax.service.js";
-import { validationPipe } from "../../utils/validation.pipe.js";
 import {
   ApiBody,
   ApiOAuth2,
@@ -21,6 +19,7 @@ import {
   ApiBadRequestResponseDefault,
   ApiForbiddenResponseDefault
 } from "@tsg-dsp/common-dtos";
+import { validationPipe, Client } from "@tsg-dsp/common-api";
 
 @Controller("management/credentials/gaiax")
 @ApiOAuth2([AppRole.MANAGE_ALL_CREDENTIALS, AppRole.MANAGE_OWN_CREDENTIALS])

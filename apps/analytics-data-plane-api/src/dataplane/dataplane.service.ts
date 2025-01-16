@@ -26,10 +26,9 @@ import { TransferDao } from "./transfer.dao.js";
 import { DataPlaneStateDao } from "./dataplane.dao.js";
 import { DataPlaneClientError, DataPlaneError } from "../utils/errors/error.js";
 import { DataPlaneStateDto, TransferDto } from "@tsg-dsp/common-dtos";
-import { AuthClientService } from "../auth/auth.client.service.js";
 import { resolve } from "../utils/didServiceResolver.js";
 import { LoggingService } from "../logging/logging.service.js";
-import { promiseMap } from "../utils/promises.js";
+import { AuthClientService, promiseMap } from "@tsg-dsp/common-api";
 
 @Injectable()
 export class DataPlaneService {

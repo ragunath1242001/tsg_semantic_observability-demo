@@ -11,10 +11,6 @@ import {
   UsePipes
 } from "@nestjs/common";
 import { RuntimeConfig } from "./config.js";
-import { OAuthGuard } from "./auth/oauth.guard.js";
-import { AppRole } from "@tsg-dsp/wallet-dtos";
-import { Roles } from "./auth/roles.guard.js";
-import { validationPipe } from "./utils/validation.pipe.js";
 import {
   ApiBody,
   ApiOAuth2,
@@ -28,6 +24,8 @@ import {
   ApiBadRequestResponseDefault
 } from "@tsg-dsp/common-dtos";
 import { FileInterceptor } from "@nestjs/platform-express";
+import { OAuthGuard, Roles, validationPipe } from "@tsg-dsp/common-api";
+import { AppRole } from "@tsg-dsp/wallet-dtos";
 
 @UseGuards(OAuthGuard)
 @Roles(AppRole.ISSUE_CREDENTIALS)

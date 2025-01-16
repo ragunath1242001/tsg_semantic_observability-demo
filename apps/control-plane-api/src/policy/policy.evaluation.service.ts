@@ -6,7 +6,7 @@ import { TransferMonitorDao } from "../model/agreement.dao.js";
 import { Evaluation } from "./evaluation.js";
 import { DSPError } from "../utils/errors/error.js";
 import { AgreementService } from "./agreement.service.js";
-import { CredentialSubject, VerifiableCredential } from "@tsg-dsp/common-dsp";
+import { VerifiableCredential } from "@tsg-dsp/common-dsp";
 import { RootConfig } from "../config.js";
 import { EvaluationTrigger } from "./constraint.dto.js";
 import { EvaluationContext, EvaluationDecision } from "./evaluation.dto.js";

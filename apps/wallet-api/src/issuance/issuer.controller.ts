@@ -21,9 +21,7 @@ import {
   DeferredCredentialResponse,
   ImmediateCredentialResponse
 } from "@tsg-dsp/wallet-dtos";
-import { Roles } from "../auth/roles.guard.js";
 import { AppRole } from "@tsg-dsp/wallet-dtos";
-import { DisableOAuthGuard } from "../auth/oauth.guard.js";
 import {
   ApiBearerAuth,
   ApiBody,
@@ -38,6 +36,7 @@ import {
   ApiForbiddenResponseDefault,
   ApiNotFoundResponseDefault
 } from "@tsg-dsp/common-dtos";
+import { DisableOAuthGuard, Roles } from "@tsg-dsp/common-api";
 
 @Controller()
 @ApiTags("OpenID 4 Verifiable Credential Issuance")

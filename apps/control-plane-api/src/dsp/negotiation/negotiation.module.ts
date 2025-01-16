@@ -1,5 +1,5 @@
 import { Module } from "@nestjs/common";
-import { AuthModule } from "../../auth/auth.module.js";
+import { VCAuthModule } from "../../vc-auth/vc.auth.module.js";
 import { NegotiationService } from "./negotiation.service.js";
 import { NegotiationController } from "./negotiation.controller.js";
 import { NegotiationManagementController } from "./negotiationManagement.controller.js";
@@ -13,10 +13,13 @@ import { PolicyModule } from "../../policy/policy.module.js";
 import { NegotiationListener } from "./negotiation.listeners.js";
 import { TransferModule } from "../transfer/transfer.module.js";
 import { CatalogModule } from "../catalog/catalog.module.js";
+import { AuthModule } from "@tsg-dsp/common-api";
+import { RootConfig } from "../../config.js";
 
 @Module({
   imports: [
-    AuthModule,
+    AuthModule.register(RootConfig),
+    VCAuthModule,
     DspClientModule,
     CatalogModule,
     TransferModule,

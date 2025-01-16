@@ -1,12 +1,12 @@
 import { Module } from "@nestjs/common";
 import { DataPlaneTestModule } from "./dataplane/dataplane.module.js";
-import { ConfigModule, config } from "./config.module.js";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { ServeStaticModule } from "@nestjs/serve-static";
-import { AuthModule } from "./auth/auth.module.js";
 import { FilesModule } from "./files/files.module.js";
 import { ScheduleModule } from "@nestjs/schedule";
 import { ConfigController } from "./config.controller.js";
+import { AuthModule, GenericConfigModule } from "@tsg-dsp/common-api";
+import { RootConfig } from "./config.js";
 
 const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
   ? [
@@ -22,18 +22,20 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
   imports: [
     ScheduleModule.forRoot(),
     DataPlaneTestModule,
-    AuthModule,
-    ConfigModule,
+    AuthModule.register(RootConfig),
+    GenericConfigModule.register(RootConfig),
     TypeOrmModule.forRoot({
-      ...config.db,
+      ...GenericConfigModule.get(RootConfig).db,
       autoLoadEntities: true,
-      migrations: [`dist/migrations/*-${config.db.type}{.ts,.js}`],
-      migrationsRun: !config.db.synchronize
+      migrations: [
+        `dist/migrations/*-${GenericConfigModule.get(RootConfig).db.type}{.ts,.js}`
+      ],
+      migrationsRun: !GenericConfigModule.get(RootConfig).db.synchronize
     }),
     ...embeddedFrontend,
-    FilesModule.register(config.files)
+    FilesModule.register(GenericConfigModule.get(RootConfig).files)
   ],
-  exports: [DataPlaneTestModule, AuthModule],
+  exports: [DataPlaneTestModule],
   controllers: [ConfigController]
 })
 export class AppModule {}

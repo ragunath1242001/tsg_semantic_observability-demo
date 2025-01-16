@@ -19,7 +19,6 @@ import {
 } from "@nestjs/common";
 import { DataPlaneService } from "./dataplane.service.js";
 import { DatasetConfig } from "@tsg-dsp/http-data-plane-dtos";
-import { Roles } from "../auth/roles.guard.js";
 import { Request, Response } from "express";
 import {
   AgreementDto,
@@ -44,6 +43,7 @@ import {
 } from "@nestjs/swagger";
 import { DataPlaneClientError } from "../utils/errors/error.js";
 import { MetadataDto } from "./dataplane.schemas.js";
+import { Roles } from "@tsg-dsp/common-api";
 
 @ApiTags("Data Plane Management")
 @ApiOAuth2(["controlplane_dataplane"])

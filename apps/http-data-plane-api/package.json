@@ -33,6 +33,7 @@
     "@nestjs/serve-static": "^4.0.2",
     "@nestjs/swagger": "^8.0.0",
     "@nestjs/typeorm": "^10.0.2",
+    "@tsg-dsp/common-api": "workspace:*",
     "@tsg-dsp/common-dsp": "workspace:*",
     "@tsg-dsp/common-dtos": "workspace:*",
     "@tsg-dsp/http-data-plane-dtos": "workspace:*",

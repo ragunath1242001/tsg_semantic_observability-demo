@@ -10,8 +10,6 @@ import {
 import { CatalogDto, CatalogSchema } from "@tsg-dsp/common-dsp";
 import { DIDDocumentDto } from "@tsg-dsp/common-dtos";
 import { DIDDocument } from "did-resolver";
-import { OAuthGuard } from "../auth/oauth.guard.js";
-import { Roles } from "../auth/roles.guard.js";
 import { RegistryClientService } from "./registry.client.service.js";
 import { RegistryService } from "./registry.service.js";
 import {
@@ -21,10 +19,14 @@ import {
   ApiOkResponse
 } from "@nestjs/swagger";
 import { ApiForbiddenResponseDefault } from "@tsg-dsp/common-dtos";
-import { UsePagination } from "../utils/pagination/pagination.interceptor.decorator.js";
-import { PaginationOptionsDto } from "../utils/pagination/pagination.options.dto.js";
-import { Paginated } from "../utils/pagination/pagination.parameters.js";
-import { PaginationQuery } from "../utils/pagination/pagination.query.decorator.js";
+import {
+  OAuthGuard,
+  Roles,
+  UsePagination,
+  PaginationQuery,
+  PaginationOptionsDto,
+  Paginated
+} from "@tsg-dsp/common-api";
 
 @UseGuards(OAuthGuard)
 @Roles(["controlplane_admin", "controlplane_dataplane"])

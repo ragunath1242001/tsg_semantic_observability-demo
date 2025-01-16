@@ -2,24 +2,17 @@ import {
   Controller,
   Logger,
   Get,
-  HttpCode,
-  HttpStatus,
   Param,
   Post,
-  Req,
-  Res,
-  All,
-  RawBodyRequest,
   Query,
   Body,
   Put,
-  ValidationPipe,
   Delete
 } from "@nestjs/common";
 import { DataPlaneService } from "./dataplane.service.js";
-import { Roles } from "../auth/roles.guard.js";
 import { AgreementDto, CatalogDto, DatasetDto } from "@tsg-dsp/common-dsp";
 import { DataPlaneStateDto, TransferDto } from "@tsg-dsp/common-dtos";
+import { Roles } from "@tsg-dsp/common-api";
 
 @Controller("/management")
 @Roles("controlplane_dataplane")

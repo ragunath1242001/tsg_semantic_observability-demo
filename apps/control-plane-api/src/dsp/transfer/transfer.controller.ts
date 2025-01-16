@@ -28,8 +28,8 @@ import {
 import {
   TransferVerifiablePresentationGuard,
   VerifiablePresentationGuard
-} from "../../auth/verifiablePresentation.guard.js";
-import { VP, VPId } from "../../auth/verifiablePresentation.strategy.js";
+} from "../../vc-auth/verifiablePresentation.guard.js";
+import { VP, VPId } from "../../vc-auth/verifiablePresentation.strategy.js";
 import { DeserializePipe } from "../../utils/deserialize.pipe.js";
 import { TransferService } from "./transfer.service.js";
 import {

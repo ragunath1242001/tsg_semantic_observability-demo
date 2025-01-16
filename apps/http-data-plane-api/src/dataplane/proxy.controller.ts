@@ -10,9 +10,8 @@ import {
 } from "@nestjs/common";
 import { DataPlaneService } from "./dataplane.service.js";
 import { Request, Response } from "express";
-import { DisableOAuthGuard } from "../auth/oauth.guard.js";
-import { DisableRolesGuard } from "../auth/roles.guard.js";
 import { ApiOperation, ApiParam, ApiTags } from "@nestjs/swagger";
+import { DisableOAuthGuard, DisableRolesGuard } from "@tsg-dsp/common-api";
 
 @ApiTags("Proxy")
 @Controller()

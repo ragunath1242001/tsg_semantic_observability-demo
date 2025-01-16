@@ -1,11 +1,7 @@
 import { Module, NestModule, MiddlewareConsumer } from "@nestjs/common";
 import { ScheduleModule } from "@nestjs/schedule";
-import { RequestContextMiddleware, LoggerMiddleware } from "./utils/logging.js";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { ConfigModule, config } from "./config.module.js";
-import { AuthModule } from "./auth/auth.module.js";
 import { ServeStaticModule } from "@nestjs/serve-static";
-import { HealthController } from "./health.controller.js";
 import { CredentialsModule } from "./credentials/credentials.module.js";
 import { DidModule } from "./did/did.module.js";
 import { IssuanceModule } from "./issuance/issuance.module.js";
@@ -17,6 +13,14 @@ import { Credentials, KeyMaterials } from "./model/credentials.dao.js";
 import { CredentialIssuance } from "./model/issuance.dao.js";
 import { TerminusModule } from "@nestjs/terminus";
 import { StatusController } from "./status.controller.js";
+import { PresentationConfig, RootConfig } from "./config.js";
+import {
+  GenericConfigModule,
+  AuthModule,
+  HealthController,
+  RequestContextMiddleware,
+  LoggerMiddleware
+} from "@tsg-dsp/common-api";
 
 const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
   ? [
@@ -31,16 +35,18 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
 @Module({
   imports: [
     ScheduleModule.forRoot(),
-    ConfigModule,
+    GenericConfigModule.register(RootConfig),
     TypeOrmModule.forRoot({
-      ...config.db,
+      ...GenericConfigModule.get(RootConfig).db,
       autoLoadEntities: true,
-      migrations: [`dist/migrations/*-${config.db.type}{.ts,.js}`],
-      migrationsRun: !config.db.synchronize
+      migrations: [
+        `dist/migrations/*-${GenericConfigModule.get(RootConfig).db.type}{.ts,.js}`
+      ],
+      migrationsRun: !GenericConfigModule.get(RootConfig).db.synchronize
     }),
     TypeOrmModule.forFeature([CredentialIssuance, Credentials, KeyMaterials]),
-    PresentationModule.register(config.presentation),
-    AuthModule,
+    PresentationModule.register(GenericConfigModule.get(PresentationConfig)),
+    AuthModule.register(RootConfig),
     ContextModule,
     CredentialsModule,
     DidModule,
@@ -50,13 +56,7 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
     TerminusModule
   ],
   controllers: [HealthController, ConfigController, StatusController],
-  exports: [
-    AuthModule,
-    CredentialsModule,
-    DidModule,
-    IssuanceModule,
-    KeysModule
-  ]
+  exports: [CredentialsModule, DidModule, IssuanceModule, KeysModule]
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

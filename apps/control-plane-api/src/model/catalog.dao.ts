@@ -2,7 +2,6 @@ import {
   DataService,
   Dataset,
   DatasetDto,
-  deserializeSync,
   Distribution,
   ICatalog,
   ICatalogRecord,
@@ -11,8 +10,7 @@ import {
   IDistribution,
   IResource,
   Policy,
-  Resource,
-  serialize
+  Resource
 } from "@tsg-dsp/common-dsp";
 import {
   Column,

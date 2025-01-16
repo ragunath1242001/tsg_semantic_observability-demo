@@ -2,7 +2,6 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { CredentialsService } from "../credentials/credentials.service.js";
 import { plainToInstance } from "class-transformer";
 import { RootConfig } from "../config.js";
-import { TypeOrmTestHelper } from "../utils/testhelper.js";
 import { Credentials, KeyMaterials } from "../model/credentials.dao.js";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { DidService } from "../did/did.service.js";
@@ -13,6 +12,7 @@ import { DidResolverService } from "../did/did.resolver.service.js";
 import { SignatureService } from "./signature.service.js";
 import { setupServer, SetupServer } from "msw/node";
 import { http, HttpResponse } from "msw";
+import { TypeOrmTestHelper } from "@tsg-dsp/common-api";
 
 describe("Key Service", () => {
   let signatureService: SignatureService;

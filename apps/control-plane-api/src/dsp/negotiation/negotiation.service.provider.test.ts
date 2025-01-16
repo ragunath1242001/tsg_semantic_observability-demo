@@ -17,13 +17,12 @@ import {
 import { plainToClass } from "class-transformer";
 import { HttpResponse, PathParams, http } from "msw";
 import { SetupServer, setupServer } from "msw/node";
-import { AuthService } from "../../auth/auth.service.js";
-import { RootConfig, ServerConfig } from "../../config.js";
+import { VCAuthService } from "../../vc-auth/vc.auth.service.js";
+import { RootConfig } from "../../config.js";
 import {
   NegotiationDetailDao,
   NegotiationProcessEventDao
 } from "../../model/negotiation.dao.js";
-import { TypeOrmTestHelper } from "../../utils/testhelper.js";
 import { DspClientService } from "../client/client.service.js";
 import { DspGateway } from "../client/dsp.gateway.js";
 import { NegotiationService } from "./negotiation.service.js";
@@ -34,7 +33,11 @@ import {
 } from "../../model/transfer.dao.js";
 import { AgreementService } from "../../policy/agreement.service.js";
 import { EventEmitter2 } from "@nestjs/event-emitter";
-import { PaginationOptionsDto } from "../../utils/pagination/pagination.options.dto.js";
+import {
+  TypeOrmTestHelper,
+  ServerConfig,
+  PaginationOptionsDto
+} from "@tsg-dsp/common-api";
 
 describe("Negotiation Service (Provider)", () => {
   let negotiationService: NegotiationService;
@@ -75,7 +78,7 @@ describe("Negotiation Service (Provider)", () => {
         EventEmitter2,
         DspGateway,
         {
-          provide: AuthService,
+          provide: VCAuthService,
           useValue: new (class {
             async requestToken(audience: string) {
               return "TEST_TOKEN";

@@ -1,4 +1,5 @@
 import { ApiPropertyOptional, ApiProperty } from "@nestjs/swagger";
+import { validateOrRejectSync } from "@tsg-dsp/common-api";
 import { Exclude, Expose, plainToInstance, Type } from "class-transformer";
 import {
   IsNumber,
@@ -8,7 +9,6 @@ import {
   IsIn,
   ValidateNested
 } from "class-validator";
-import { validateOrRejectSync } from "../utils/validation.pipe.js";
 
 export enum DataType {
   STRING = "STRING",

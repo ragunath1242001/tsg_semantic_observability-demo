@@ -20,8 +20,7 @@ import {
   DataType,
   EvaluationTrigger
 } from "./constraint.dto.js";
-import { PaginationOptionsDto } from "../utils/pagination/pagination.options.dto.js";
-import { Paginated } from "../utils/pagination/pagination.parameters.js";
+import { PaginationOptionsDto, Paginated } from "@tsg-dsp/common-api";
 
 @Injectable()
 export class RuleRepositoryService implements OnModuleInit {

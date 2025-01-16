@@ -2,8 +2,8 @@ openapi: 3.0.0
 paths:
   /health:
     get:
-      description: Retrieves the current health of the wallet. If the wallet is
-        running it always returns an empty 200 OK
+      description: Retrieves the current health of the app. If the app is running and
+        it is connected to the database it always returns an empty 200 OK
       operationId: HealthController_getHealth
       parameters: []
       responses:
@@ -321,8 +321,8 @@ paths:
             application/json:
               schema:
                 oneOf:
-                  - $ref: "#/components/schemas/AuthenticatedUserDto"
-                  - $ref: "#/components/schemas/UnauthenticatedUserDto"
+                  - $ref: "#/components/schemas/AuthenticatedUser"
+                  - $ref: "#/components/schemas/UnauthenticatedUser"
       summary: Retrieve current user status
       tags: &a7
         - Authentication
@@ -2137,19 +2137,7 @@ components:
       required:
         - presentationDefinition
         - holderIdToken
-    AppRole:
-      type: string
-      enum:
-        - wallet_view_did
-        - wallet_manage_keys
-        - wallet_use_keys
-        - wallet_view_own_credentials
-        - wallet_view_all_credentials
-        - wallet_manage_own_credentials
-        - wallet_manage_all_credentials
-        - wallet_issue_credentials
-        - wallet_view_presentations
-    ClientInfoDto:
+    ClientInfo:
       type: object
       properties:
         sub:
@@ -2163,24 +2151,25 @@ components:
         roles:
           type: array
           items:
-            $ref: "#/components/schemas/AppRole"
+            type: string
+        refreshToken:
+          type: string
       required:
         - sub
         - name
         - email
-        - didId
         - roles
-    AuthenticatedUserDto:
+    AuthenticatedUser:
       type: object
       properties:
         state:
           type: string
         user:
-          $ref: "#/components/schemas/ClientInfoDto"
+          $ref: "#/components/schemas/ClientInfo"
       required:
         - state
         - user
-    UnauthenticatedUserDto:
+    UnauthenticatedUser:
       type: object
       properties:
         state:

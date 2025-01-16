@@ -12,10 +12,8 @@ import {
 import { DIDDocument } from "did-resolver";
 import { DidService } from "./did.service.js";
 import { DidServiceConfig } from "../config.js";
-import { Roles } from "../auth/roles.guard.js";
 import { AppRole } from "@tsg-dsp/wallet-dtos";
 import { DIDService } from "../model/did.dao.js";
-import { validationPipe } from "../utils/validation.pipe.js";
 import {
   ApiBody,
   ApiOAuth2,
@@ -32,6 +30,7 @@ import {
   ServiceDto
 } from "@tsg-dsp/common-dtos";
 import { DidResolverService } from "./did.resolver.service.js";
+import { Roles, validationPipe } from "@tsg-dsp/common-api";
 
 @Controller("management/did")
 @Roles(AppRole.VIEW_DID)

@@ -25,8 +25,6 @@ import {
   TransferTerminationMessageSchema
 } from "@tsg-dsp/common-dsp";
 
-import { DisableOAuthGuard } from "../auth/oauth.guard.js";
-import { DisableRolesGuard, Roles } from "../auth/roles.guard.js";
 import {
   ApiBadGatewayResponse,
   ApiBody,
@@ -39,6 +37,11 @@ import {
   ApiTags
 } from "@nestjs/swagger";
 import { ApiForbiddenResponseDefault } from "@tsg-dsp/common-dtos";
+import {
+  Roles,
+  DisableOAuthGuard,
+  DisableRolesGuard
+} from "@tsg-dsp/common-api";
 
 @Controller()
 @ApiTags("Data Plane")

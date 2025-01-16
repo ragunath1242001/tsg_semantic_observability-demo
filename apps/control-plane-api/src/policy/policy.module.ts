@@ -1,5 +1,4 @@
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { AuthModule } from "../auth/auth.module.js";
 import { CatalogModule } from "../dsp/catalog/catalog.module.js";
 import { AgreementManagementController } from "./agreement.management.controller.js";
 import { AgreementService } from "./agreement.service.js";
@@ -12,6 +11,8 @@ import { Module } from "@nestjs/common";
 import { AgreementDao, TransferMonitorDao } from "../model/agreement.dao.js";
 import { AgreementMonitorService } from "./agreement.monitor.service.js";
 import { TransferModule } from "../dsp/transfer/transfer.module.js";
+import { AuthModule } from "@tsg-dsp/common-api";
+import { RootConfig } from "../config.js";
 
 @Module({
   imports: [
@@ -22,7 +23,7 @@ import { TransferModule } from "../dsp/transfer/transfer.module.js";
       AgreementDao,
       TransferMonitorDao
     ]),
-    AuthModule,
+    AuthModule.register(RootConfig),
     TransferModule
   ],
   controllers: [

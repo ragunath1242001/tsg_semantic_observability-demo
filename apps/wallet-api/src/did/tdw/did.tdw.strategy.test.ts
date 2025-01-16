@@ -3,7 +3,6 @@ import { DidServiceConfig, RootConfig } from "../../config.js";
 import { DidTdwStrategy } from "./did.tdw.strategy.js";
 import { KeyMaterials } from "../../model/credentials.dao.js";
 import { exportJWK, generateKeyPair } from "jose";
-import { TypeOrmTestHelper } from "../../utils/testhelper.js";
 import { Test, TestingModule } from "@nestjs/testing";
 import { DIDLogs } from "../../model/did.dao.js";
 import { getRepositoryToken } from "@nestjs/typeorm";
@@ -16,6 +15,7 @@ import {
   DIDMethod
 } from "../../utils/did.js";
 import { jwkToMultibase } from "../../utils/keys/keyconverter.js";
+import { TypeOrmTestHelper } from "@tsg-dsp/common-api";
 
 describe("DID Tdw Service", () => {
   let didTdwStrategy: DidTdwStrategy;

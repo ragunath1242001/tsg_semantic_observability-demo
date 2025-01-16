@@ -1,5 +1,4 @@
 import { Body, Controller, Post } from "@nestjs/common";
-import { Roles } from "../auth/roles.guard.js";
 import { AppRole } from "@tsg-dsp/wallet-dtos";
 import { HolderService } from "./holder.service.js";
 import { Credentials } from "../model/credentials.dao.js";
@@ -15,6 +14,7 @@ import {
   ApiBadRequestResponseDefault,
   ApiForbiddenResponseDefault
 } from "@tsg-dsp/common-dtos";
+import { Roles } from "@tsg-dsp/common-api";
 
 @Controller()
 @ApiTags("OpenID 4 Verifiable Credential Issuance")

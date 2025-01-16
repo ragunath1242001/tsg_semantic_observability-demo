@@ -1,5 +1,4 @@
 import { Module } from "@nestjs/common";
-import { AuthModule } from "../auth/auth.module.js";
 import { KeyMaterials } from "../model/credentials.dao.js";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { KeysController } from "./keys.controller.js";
@@ -8,9 +7,15 @@ import { DidModule } from "../did/did.module.js";
 import { KeysManagementController } from "./keys.management.controller.js";
 import { SignatureService } from "./signature.service.js";
 import { SignatureManagementController } from "./signature.management.controller.js";
+import { AuthModule } from "@tsg-dsp/common-api";
+import { RootConfig } from "../config.js";
 
 @Module({
-  imports: [AuthModule, DidModule, TypeOrmModule.forFeature([KeyMaterials])],
+  imports: [
+    AuthModule.register(RootConfig),
+    DidModule,
+    TypeOrmModule.forFeature([KeyMaterials])
+  ],
   controllers: [
     KeysController,
     KeysManagementController,

@@ -9,7 +9,7 @@ import {
 import { TypeOrmHealthIndicator } from "@nestjs/terminus";
 import { InjectRepository } from "@nestjs/typeorm";
 import { IsNull, Not, Repository } from "typeorm";
-import { OAuthGuard } from "./auth/oauth.guard.js";
+import { OAuthGuard } from "@tsg-dsp/common-api";
 import { CredentialIssuance } from "./model/issuance.dao.js";
 import { Credentials, KeyMaterials } from "./model/credentials.dao.js";
 import { getHeapStatistics } from "v8";

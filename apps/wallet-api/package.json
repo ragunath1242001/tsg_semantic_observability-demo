@@ -34,6 +34,7 @@
     "@nestjs/swagger": "^8.0.0",
     "@nestjs/terminus": "^10.2.3",
     "@nestjs/typeorm": "^10.0.1",
+    "@tsg-dsp/common-api": "workspace:*",
     "@tsg-dsp/common-dsp": "workspace:*",
     "@tsg-dsp/common-dtos": "workspace:*",
     "@tsg-dsp/wallet-dtos": "workspace:*",

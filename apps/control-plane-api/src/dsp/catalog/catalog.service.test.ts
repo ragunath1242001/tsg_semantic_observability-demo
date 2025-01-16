@@ -8,7 +8,7 @@ import {
   ODRLAction
 } from "@tsg-dsp/common-dsp";
 import { plainToClass } from "class-transformer";
-import { InitCatalog, PolicyConfig, ServerConfig } from "../../config.js";
+import { InitCatalog, PolicyConfig } from "../../config.js";
 import {
   CatalogDao,
   CatalogRecordDao,
@@ -18,9 +18,9 @@ import {
   ResourceDao
 } from "../../model/catalog.dao.js";
 import { DSPError } from "../../utils/errors/error.js";
-import { TypeOrmTestHelper } from "../../utils/testhelper.js";
 import { CatalogService } from "./catalog.service.js";
 import { DataPlaneDao } from "../../model/dataPlanes.dao.js";
+import { TypeOrmTestHelper, ServerConfig } from "@tsg-dsp/common-api";
 
 describe("Catalog Service", () => {
   let catalogService: CatalogService;

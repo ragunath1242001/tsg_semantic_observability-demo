@@ -30,14 +30,16 @@ import axios, {
 import crypto from "crypto";
 import deepEqual from "deep-equal";
 import { In, Repository } from "typeorm";
-import { AuthClientService } from "../auth/auth.client.service.js";
 import { CatalogService } from "../dsp/catalog/catalog.service.js";
 import { DatasetDao } from "../model/catalog.dao.js";
 import { DataPlaneDao } from "../model/dataPlanes.dao.js";
 import { DSPClientError, DSPError } from "../utils/errors/error.js";
 import { AgreementService } from "../policy/agreement.service.js";
-import { Paginated } from "../utils/pagination/pagination.parameters.js";
-import { PaginationOptionsDto } from "../utils/pagination/pagination.options.dto.js";
+import {
+  AuthClientService,
+  PaginationOptionsDto,
+  Paginated
+} from "@tsg-dsp/common-api";
 
 @Injectable()
 export class DataPlaneService {

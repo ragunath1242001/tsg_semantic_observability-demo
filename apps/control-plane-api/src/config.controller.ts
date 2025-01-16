@@ -12,8 +12,6 @@ import {
   UploadedFile
 } from "@nestjs/common";
 import { RuntimeConfig } from "./config.js";
-import { OAuthGuard } from "./auth/oauth.guard.js";
-import { Roles } from "./auth/roles.guard.js";
 import {
   ApiOperation,
   ApiOkResponse,
@@ -27,7 +25,7 @@ import {
   ApiBadRequestResponseDefault
 } from "@tsg-dsp/common-dtos";
 import { FileInterceptor } from "@nestjs/platform-express";
-import { diskStorage } from "multer";
+import { OAuthGuard, Roles } from "@tsg-dsp/common-api";
 
 @UseGuards(OAuthGuard)
 @Roles("controlplane_admin")

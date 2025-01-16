@@ -20,12 +20,12 @@ import {
   TransferTerminationMessage
 } from "@tsg-dsp/common-dsp";
 import axios, { AxiosRequestConfig } from "axios";
-import { AuthService } from "../../auth/auth.service.js";
+import { VCAuthService } from "../../vc-auth/vc.auth.service.js";
 import { DSPClientError } from "../../utils/errors/error.js";
 
 @Injectable()
 export class DspClientService {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: VCAuthService) {}
   private readonly logger = new Logger(this.constructor.name);
 
   private readonly axios = axios.create({

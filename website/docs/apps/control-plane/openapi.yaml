@@ -70,32 +70,13 @@ paths:
       tags: *a2
   /health:
     get:
-      description: Retrieves the current health of the control plane. If the control
-        plane is running it always returns an empty 200 OK
+      description: Retrieves the current health of the app. If the app is running and
+        it is connected to the database it always returns an empty 200 OK
       operationId: HealthController_getHealth
       parameters: []
       responses:
         "200":
           description: ""
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  memory:
-                    type: object
-                    properties:
-                      status:
-                        type: string
-                      heapMb:
-                        type: number
-                      rssMb:
-                        type: number
-              example:
-                memory:
-                  status: up
-                  heapMb: 8000
-                  rssMb: 80000
         "502":
           description: ""
         "503":
@@ -187,8 +168,8 @@ paths:
             application/json:
               schema:
                 oneOf:
-                  - $ref: "#/components/schemas/AuthenticatedUserDto"
-                  - $ref: "#/components/schemas/UnauthenticatedUserDto"
+                  - $ref: "#/components/schemas/AuthenticatedUser"
+                  - $ref: "#/components/schemas/UnauthenticatedUser"
       summary: Retrieve current user status
       tags: &a5
         - Authentication
@@ -3214,7 +3195,7 @@ components:
         - uptime
         - negotiations
         - transfers
-    ClientInfoDto:
+    ClientInfo:
       type: object
       properties:
         sub:
@@ -3223,30 +3204,34 @@ components:
           type: string
         email:
           type: string
+        didId:
+          type: string
         roles:
           type: array
           items:
             type: string
+        refreshToken:
+          type: string
       required:
         - sub
         - name
         - email
         - roles
-    AuthenticatedUserDto:
+    AuthenticatedUser:
       type: object
       properties:
         state:
-          type: object
+          type: string
         user:
-          $ref: "#/components/schemas/ClientInfoDto"
+          $ref: "#/components/schemas/ClientInfo"
       required:
         - state
         - user
-    UnauthenticatedUserDto:
+    UnauthenticatedUser:
       type: object
       properties:
         state:
-          type: object
+          type: string
       required:
         - state
     ConstraintSchema:

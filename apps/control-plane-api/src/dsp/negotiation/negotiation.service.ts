@@ -27,7 +27,7 @@ import {
 } from "@tsg-dsp/common-dsp";
 import crypto from "crypto";
 import { Repository } from "typeorm";
-import { RootConfig, ServerConfig } from "../../config.js";
+import { RootConfig } from "../../config.js";
 import {
   NegotiationDetailDao,
   NegotiationProcessEventDao
@@ -35,15 +35,18 @@ import {
 import { DSPError } from "../../utils/errors/error.js";
 import { DspClientService } from "../client/client.service.js";
 import { DspGateway } from "../client/dsp.gateway.js";
-import { AuthService } from "../../auth/auth.service.js";
+import { VCAuthService } from "../../vc-auth/vc.auth.service.js";
 import { AgreementService } from "../../policy/agreement.service.js";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 import {
   NegotiationCreatedEvent,
   NegotiationUpdatedEvent
 } from "./negotiation.events.js";
-import { PaginationOptionsDto } from "../../utils/pagination/pagination.options.dto.js";
-import { Paginated } from "../../utils/pagination/pagination.parameters.js";
+import {
+  ServerConfig,
+  PaginationOptionsDto,
+  Paginated
+} from "@tsg-dsp/common-api";
 
 @Injectable()
 export class NegotiationService {
@@ -52,7 +55,7 @@ export class NegotiationService {
     private readonly server: ServerConfig,
     private readonly config: RootConfig,
     private readonly dspGateway: DspGateway,
-    private readonly authService: AuthService,
+    private readonly authService: VCAuthService,
     private readonly agreementService: AgreementService,
     readonly eventEmitter: EventEmitter2,
     @InjectRepository(NegotiationDetailDao)

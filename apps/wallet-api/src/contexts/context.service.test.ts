@@ -1,11 +1,11 @@
 import { describe, expect, beforeAll, it } from "@jest/globals";
 import { plainToInstance } from "class-transformer";
-import { TypeOrmTestHelper } from "../utils/testhelper.js";
 import { ContextService } from "./context.service.js";
 import { RootConfig } from "../config.js";
 import { JSONLDContext } from "../model/context.dao.js";
 import { TestingModule, Test } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
+import { TypeOrmTestHelper } from "@tsg-dsp/common-api";
 
 describe("Context Service", () => {
   let contextService: ContextService;

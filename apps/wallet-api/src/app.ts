@@ -1,32 +1,14 @@
 import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module.js";
-import { AppLogger } from "./utils/logging.js";
 import { RootConfig } from "./config.js";
 import { Logger } from "@nestjs/common";
 import session from "express-session";
 import passport from "passport";
+import { AppLogger } from "@tsg-dsp/common-api";
 
 async function bootstrap() {
-  const logLevelConfig =
-    process.env["LOG_LEVEL"]?.toLowerCase() ||
-    (process.env.NODE_ENV === "production" ? "info" : "debug");
-  let logLevel: "log" | "debug" | "verbose";
-  switch (logLevelConfig) {
-    case "info":
-    case "log":
-      logLevel = "log";
-      break;
-    case "debug":
-      logLevel = "debug";
-      break;
-    case "verbose":
-      logLevel = "verbose";
-      break;
-    default:
-      logLevel = "debug";
-  }
   const app = await NestFactory.create(AppModule, {
-    logger: new AppLogger(logLevel)
+    logger: new AppLogger()
   });
   const config = app.get(RootConfig);
   if (process.env["EMBEDDED_FRONTEND"]) {

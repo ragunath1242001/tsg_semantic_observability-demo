@@ -1,23 +1,17 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { plainToClass, plainToInstance } from "class-transformer";
-import {
-  AuthConfig,
-  IamConfig,
-  RegistryConfig,
-  RootConfig
-} from "../config.js";
+import { IamConfig, RegistryConfig, RootConfig } from "../config.js";
 import { SetupServer, setupServer } from "msw/node";
 import { HttpResponse, http } from "msw";
 import { RegistryClientService } from "./registry.client.service.js";
 import { DSPError } from "../utils/errors/error.js";
-import { AuthModule } from "../auth/auth.module.js";
-import { AuthService } from "../auth/auth.service.js";
+import { VCAuthService } from "../vc-auth/vc.auth.service.js";
 import {
   mockWalletConfig,
   setupMockWalletServer
-} from "../auth/wallets/wallet.util.test.js";
-import { AuthClientService } from "../auth/auth.client.service.js";
+} from "../vc-auth/wallets/wallet.util.test.js";
 import { defaultContext } from "@tsg-dsp/common-dsp";
+import { AuthClientService, AuthConfig } from "@tsg-dsp/common-api";
 
 describe("RegistryClientService", () => {
   let registryClientService: RegistryClientService;
@@ -114,8 +108,8 @@ describe("RegistryClientService", () => {
       providers: [
         RegistryClientService,
         {
-          provide: AuthService,
-          useValue: new AuthService(
+          provide: VCAuthService,
+          useValue: new VCAuthService(
             plainToInstance(RootConfig, { iam: iamConfig }),
             new AuthClientService(
               plainToInstance(AuthConfig, { enabled: false })
@@ -148,8 +142,8 @@ describe("RegistryClientService", () => {
         providers: [
           RegistryClientService,
           {
-            provide: AuthService,
-            useValue: new AuthService(
+            provide: VCAuthService,
+            useValue: new VCAuthService(
               plainToInstance(RootConfig, { iam: iamConfig }),
               new AuthClientService(
                 plainToInstance(AuthConfig, { enabled: false })
