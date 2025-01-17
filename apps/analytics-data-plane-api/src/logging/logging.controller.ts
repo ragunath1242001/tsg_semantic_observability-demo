@@ -4,8 +4,7 @@ import {
   HttpCode,
   HttpStatus,
   Query,
-  UsePipes,
-  ValidationPipe
+  UsePipes
 } from "@nestjs/common";
 import { PageOptionsDto, PageDto } from "../utils/pagination.js";
 import { LoggingService } from "./logging.service.js";

@@ -16,7 +16,6 @@ import { DisableOAuthGuard, DisableRolesGuard } from "@tsg-dsp/common-api";
 @ApiTags("Proxy")
 @Controller()
 @DisableOAuthGuard()
-@DisableRolesGuard()
 export class ProxyController {
   constructor(private readonly dataPlaneService: DataPlaneService) {}
   private readonly logger = new Logger(this.constructor.name);

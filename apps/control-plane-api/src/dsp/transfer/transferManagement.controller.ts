@@ -7,8 +7,7 @@ import {
   Logger,
   Param,
   Post,
-  Query,
-  UseGuards
+  Query
 } from "@nestjs/common";
 import {
   DataPlaneAddressDto,
@@ -31,7 +30,6 @@ import {
   ApiOAuth2
 } from "@nestjs/swagger";
 import {
-  OAuthGuard,
   Roles,
   UsePagination,
   PaginationQuery,
@@ -41,7 +39,6 @@ import {
 
 @ApiTags("Transfers Management")
 @ApiOAuth2(["controlplane_admin", "controlplane_dataplane"])
-@UseGuards(OAuthGuard)
 @Roles(["controlplane_admin", "controlplane_dataplane"])
 @Controller("management/transfers")
 export class TransferManagementController {

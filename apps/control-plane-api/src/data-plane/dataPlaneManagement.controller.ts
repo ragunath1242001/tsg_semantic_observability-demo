@@ -8,8 +8,7 @@ import {
   Logger,
   Param,
   Post,
-  Put,
-  UseGuards
+  Put
 } from "@nestjs/common";
 import { DataPlaneService } from "./dataPlane.service.js";
 import {
@@ -25,7 +24,6 @@ import {
 import { ApiForbiddenResponseDefault } from "@tsg-dsp/common-dtos";
 import { DataPlaneDetailsDto } from "@tsg-dsp/common-dsp";
 import {
-  OAuthGuard,
   Roles,
   UsePagination,
   PaginationQuery,
@@ -33,7 +31,6 @@ import {
   Paginated
 } from "@tsg-dsp/common-api";
 
-@UseGuards(OAuthGuard)
 @Roles(["controlplane_admin", "controlplane_dataplane"])
 @Controller("management/dataplanes")
 @ApiTags("Data Plane Management")

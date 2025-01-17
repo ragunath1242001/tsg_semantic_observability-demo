@@ -1,12 +1,5 @@
 import { CredentialAddress } from "@tsg-dsp/control-plane-dtos";
-import {
-  Controller,
-  Get,
-  HttpCode,
-  HttpStatus,
-  Logger,
-  UseGuards
-} from "@nestjs/common";
+import { Controller, Get, HttpCode, HttpStatus, Logger } from "@nestjs/common";
 import { CatalogDto, CatalogSchema } from "@tsg-dsp/common-dsp";
 import { DIDDocumentDto } from "@tsg-dsp/common-dtos";
 import { DIDDocument } from "did-resolver";
@@ -20,7 +13,6 @@ import {
 } from "@nestjs/swagger";
 import { ApiForbiddenResponseDefault } from "@tsg-dsp/common-dtos";
 import {
-  OAuthGuard,
   Roles,
   UsePagination,
   PaginationQuery,
@@ -28,7 +20,6 @@ import {
   Paginated
 } from "@tsg-dsp/common-api";
 
-@UseGuards(OAuthGuard)
 @Roles(["controlplane_admin", "controlplane_dataplane"])
 @Controller("management/registry")
 @ApiTags("Registry Management")

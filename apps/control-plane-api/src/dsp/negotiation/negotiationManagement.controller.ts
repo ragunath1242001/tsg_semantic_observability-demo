@@ -11,15 +11,13 @@ import {
   Logger,
   Param,
   Post,
-  Query,
-  UseGuards
+  Query
 } from "@nestjs/common";
 import {
   ContractNegotiation,
   ContractNegotiationDto,
   ContractNegotiationSchema,
   Offer,
-  OfferDto,
   OfferSchema
 } from "@tsg-dsp/common-dsp";
 import { normalizeAddress } from "../../utils/address.js";
@@ -36,7 +34,6 @@ import {
   ApiOAuth2
 } from "@nestjs/swagger";
 import {
-  OAuthGuard,
   Roles,
   UsePagination,
   PaginationQuery,
@@ -45,7 +42,6 @@ import {
 } from "@tsg-dsp/common-api";
 
 @ApiTags("Negotiations Management")
-@UseGuards(OAuthGuard)
 @Roles(["controlplane_admin", "controlplane_dataplane"])
 @ApiOAuth2(["controlplane_admin", "controlplane_dataplane"])
 @Controller("management/negotiations")

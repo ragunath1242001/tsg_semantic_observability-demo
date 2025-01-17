@@ -9,8 +9,7 @@ import {
   Param,
   Post,
   Put,
-  Query,
-  UseGuards
+  Query
 } from "@nestjs/common";
 import {
   CatalogDto,
@@ -39,7 +38,6 @@ import {
 } from "@nestjs/swagger";
 import { ApiForbiddenResponseDefault } from "@tsg-dsp/common-dtos";
 import {
-  OAuthGuard,
   Roles,
   UsePagination,
   PaginationQuery,
@@ -47,7 +45,6 @@ import {
   Paginated
 } from "@tsg-dsp/common-api";
 
-@UseGuards(OAuthGuard)
 @Roles(["controlplane_admin", "controlplane_dataplane"])
 @Controller("management/catalog")
 @ApiTags("Catalog Management")

@@ -41,10 +41,12 @@ import {
   ApiBearerAuth,
   ApiCreatedResponse
 } from "@nestjs/swagger";
+import { DisableOAuthGuard, DisableRolesGuard } from "@tsg-dsp/common-api";
 
 @ApiTags("Transfers")
 @ApiBearerAuth()
 @Controller("transfers")
+@DisableOAuthGuard()
 export class TransferController {
   constructor(private readonly transferService: TransferService) {}
   private readonly logger = new Logger(this.constructor.name);

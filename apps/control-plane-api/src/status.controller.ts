@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards } from "@nestjs/common";
+import { Controller, Get } from "@nestjs/common";
 import {
   ApiBadGatewayResponse,
   ApiBody,
@@ -19,11 +19,9 @@ import {
 } from "@tsg-dsp/common-dsp";
 import { StatusDto } from "@tsg-dsp/control-plane-dtos";
 import { getHeapStatistics } from "v8";
-import { OAuthGuard } from "@tsg-dsp/common-api";
 
 @Controller()
 @ApiTags("Status")
-@UseGuards(OAuthGuard)
 export class StatusController {
   constructor(
     private readonly db: TypeOrmHealthIndicator,

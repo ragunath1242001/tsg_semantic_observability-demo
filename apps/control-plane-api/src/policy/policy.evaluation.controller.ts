@@ -1,5 +1,4 @@
 import {
-  UseGuards,
   Controller,
   Logger,
   Get,
@@ -22,9 +21,8 @@ import {
   ApiNotFoundResponseDefault
 } from "@tsg-dsp/common-dtos";
 import { EvaluationContext, EvaluationDecision } from "./evaluation.dto.js";
-import { OAuthGuard, Roles, validationPipe } from "@tsg-dsp/common-api";
+import { Roles, validationPipe } from "@tsg-dsp/common-api";
 
-@UseGuards(OAuthGuard)
 @Roles(["controlplane_admin"])
 @Controller("management/policy/evaluation")
 @ApiTags("Evaluation")

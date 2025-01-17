@@ -1,4 +1,4 @@
-import { UseGuards, Controller, Logger, Get, Param } from "@nestjs/common";
+import { Controller, Logger, Get, Param } from "@nestjs/common";
 import {
   ApiTags,
   ApiOAuth2,
@@ -8,9 +8,8 @@ import {
 } from "@nestjs/swagger";
 import { AgreementService } from "./agreement.service.js";
 import { AgreementDto, AgreementSchema } from "@tsg-dsp/common-dsp";
-import { OAuthGuard, Roles } from "@tsg-dsp/common-api";
+import { Roles } from "@tsg-dsp/common-api";
 
-@UseGuards(OAuthGuard)
 @Roles(["controlplane_admin"])
 @Controller("management/agreements")
 @ApiTags("Agreement")
