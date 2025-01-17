@@ -1,0 +1,72 @@
+---
+id: data-plane-management-controller-refresh-registration
+title: "(Re)register data plane"
+description: "Use this endpoint to (re)register your data plane. Currently it will register with defaults from the config."
+sidebar_label: "(Re)register data plane"
+hide_title: true
+hide_table_of_contents: true
+api: eJy9VE2P4kYQ/SutOm2kDoxITr6tZmeTkZIs2mH3ghAq7AL3xu7urS6Pg5D/e1S2MYRhr+ECdH3Xe69OUFDK2UVxwUMGXxIZKV0y5IsYnBcjwbxj+onp4JIQm2No2BQoaGKFnmbmsWEmL9XRODGtqyoz+bZOSlPQHptKktlzqI2UZPLg9+4wAwshEqOWfi4ggw8ouNSkf6LHA9Xk5TF44VBVxFumPVMqP/fJhyiwEJGxJiFOkK03FphSDD5RguwEi4eFfv13ROgs/Prwy1vDx8A7VxSkafPghbyoE8ZYubyvN/+W1PMEKS+pRv0lx0iQQdh9o1y0H9aZxA0NeKzpyisJO3/QBpKgNOmuKQ/FdYxv6h2xGmpKCQ/0tmpngZgD30nX6Ua+N46pgGw99DNVH2ttLIiTSsOeNM0HCdDpx0KivGEnR8jWJwjYSLnQNPmASk+ArXKh/wWbTlPhQaHowTQ9muYCp9aqScqgcMeQ+o2hlJDBHKOb15PnfIRbuyV+nfA9d/SiCAxLPvd1WcvwYGFfhbZ3iZhSG7gYsAtxCCxF4tT9FovaKQ3uvdqb18vMt/4Xy7DBHSETT5zRgPHpbPsYuEaBDL4uwZ5H0KRgbwj6ldjtHe4qMkumRF56VhpPVFChSs1DXTde2UpmR9ISeSNtMM4nQZ9TMmF/lqAiOGq454nz+9AvceTC6uU38/tqtTQXJN90tNJT8SmSf798NilS7vajVEwqQ5v6WudTMhW/yaqHQAEe5TmID3MVX2ehcjn5RBc1wfuIeUlmMXsACw1X47pSNp+3bTvD3jwLfJiPsWn+x/Pj018vTz8vZg+zUuqqH1j5V6O/yvzu89Whu9y427FPl/Pwfx/MkR5C/8g8Vui8ir/fwWkU0howOrBwkRLoDRjEtLFQquqyNZxOO0z0hauu0+fvDfFxkNgrck8y/ddZKAkLZfD6BH/TUfef5xQ16ytWjXbz5kJ21zJffnpZgQXV5D2NTldlMqE/XiW/I0fzI8nZscNe4tDZH6Q8X4NtzlSQF4dVmmIPjF62fVy36bruX7VZfb8=
+sidebar_class_name: "post api-method"
+info_path: docs/apis/http-data-plane/tsg-http-data-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"(Re)register data plane"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/management/refresh"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Use this endpoint to (re)register your data plane. Currently it will register with defaults from the config.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"202":{"description":""},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string"},"status":{"type":"string"},"code":{"type":"number"},"message":{"type":"object"},"error":{"type":"string"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

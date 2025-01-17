@@ -1,0 +1,72 @@
+---
+id: context-management-controller-delete-context
+title: "Delete context"
+description: "Delete an existing context in this wallet"
+sidebar_label: "Delete context"
+hide_title: true
+hide_table_of_contents: true
+api: eJztVt9vGzcM/lcIPrXF1Q6yPh2GAUGTDQG6dmgy7CEzDFqifWp00lXixTWM+98L6c6/YwN730sciPzIj6So79aoOapgGjHeYYm3bFkYyAH/MFGMW4DyTviHgHEglYmwJGtZsEDfcKCEu9dY4sfe7U9ytOCanaSD4K3lMNU56uCBBTYUqGbhELF8WqOjmrFEo7HAwN9bE1hjKaHlAk1i1ZBUWGBUFdeE5Rpl1SRElGDcArtukoCx8S5yTPbrq6v0c1gbdgV+uPrl1PC7DzOjNTssMFfrJDlR01ijcoXjbzF5rk8p+Nk3VrmmkPohpifQl3RCtMAoJG181aS83se4tp5xSIaaY6QFn2btCuQQfHitJfutfOr5bLMPuSYFihGbYHcpzK147Lout+nDaZu+cvRtUAzOC8x96/T//cr9SjRZtcHIKt9nT61U1ylMvyvTF8PLqTYaJ+mmCi3SvcfdqsCwGjGlqFkqnzaq35q8LlJhiWNqzLjegsbDYsbx2ugukeXw0q/UZEfoIQ2g7/GG1q4r/UGBc+uX2aWhGJc+6H50vumBx1WUJyfF5qSnN33mVdy57R9uPdt47LY9KQ7i+6WbqsCanRiy8Sj7sfUQS9ZewB5bj6s4m/mM/Rh/NvsZ+xZvYmz5deip6bDiJnBkJ3kLj+s9tA0317i5z3diuNmPD3/AP5sn/vABeKwYdmYwEQgeHu4HRQCpSECRg8wRyGmI4gPDCwczNzSzDHvEs4MKTMJwwAzEw4yhjaxhaaQyDjQJQWxIcRz9Ogsw/q3/+68DAEi8ljtOpmYNJFC3Vsx7MRxAc2P9Km1NLHJM8I7hjQ9Q+8BvDyogJREogoQ2CpBTlQ8w9wFoj0Ymb5w2Ly3ZAR6zF5OqwM9BKoaGghhlGnISe/3kvRgj+DJIakMLzkbFTsI2YM8ndzMedG5prE0tUslNZ+QtCfXMhumQlcq3iwpM7kp6szcPXB9XKg4MZJe0ismDf5ASu8qdyTlDKmM/rXFDD3r6p4OYTt999sLvptMSHlNhXxp2N3/dg+a5cSZNd8PFJNnQiUsetjaBc3Zr3PMwdyCIxi3stiTjopBLjcMC01M36HqvQqSSCnUFWqPYRd7JCt40pCqG69EVFtgGiyVWIk0sx+PlcjmibB75sBgP2Dj+dP/x7vPD3fvr0dWoktpmhWh8lJrcXuThe0ltP20ONma9k8f/9GU1vM/JOG4sGZeUK/NeD2LwhNQYLHAnBxstTipSYJnEpsDKR0nO6/WMIv8dbNel4+8th1WvEy8U8mZm4dImpv81lnOykS9U8+brcJfewjm+wyG5VZoW2Zb7WT3zqv/Y6yZdgRWT5pCz94YbpbiRPcjJZ0W3L5K3d5/uHu+wwKRlr2nbVozXrzM6kjI41Sw40ie4oD9wQV/gonrARW2Ac88/nH/gN63OQo5dcaYBG80/EpUeuwjkZJpx3aTrup9aNFVL
+sidebar_class_name: "delete api-method"
+info_path: docs/apis/wallet/tsg-wallet
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Delete context"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"delete"}
+  path={"/api/management/contexts/{id}"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Delete an existing context in this wallet
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"id","required":true,"in":"path","schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":""},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string"},"status":{"type":"string"},"code":{"type":"number"},"message":{"type":"object"},"error":{"type":"string"}},"required":["name","status","code"],"title":"ErrorDto"}}}},"404":{"description":"Resource not found","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string"},"status":{"type":"string"},"code":{"type":"number"},"message":{"type":"object"},"error":{"type":"string"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

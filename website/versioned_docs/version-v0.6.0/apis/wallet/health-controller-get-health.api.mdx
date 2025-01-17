@@ -1,0 +1,72 @@
+---
+id: health-controller-get-health
+title: "Health check"
+description: "Retrieves the current health of the app. If the app is running and it is connected to the database it always returns an empty 200 OK"
+sidebar_label: "Health check"
+hide_title: true
+hide_table_of_contents: true
+api: eJzVVt1vGkcQ/1dG+9RGF0BUfUFVpci1UqtVHNWu+uBaaNgduI33djc7c1wQ4n+vdu/AgE2Ux5QHQPP5+83dfGyVIdbJRrHBq5n6iyRZWhOD1AS6TYm8QE3opIawLFKMcQQ3h/9gGVLrvfUrQG/ASpbo4D1pIQMSiqVBwQUyZT26DjcMiaRNngE9UBNlA9PJBG7/UJUKkRJmSDdGzdTvJf1V8JKCc5TmK5JepioVMWFDQonV7OGxUok4Bs/EarZV08kk/5xyVLtK/TyZXlL89FJxXxP0CeGqJv2UCfogwK3WxLxsnaqUDl7IS/bGGJ3VhcD4E+cQW8W6pgbzP9lEUjMVFp9IS2aQMl2xPWQWlJaP7FiS9StVKfqCTXRZRCmFlNFavwyvhTyYbtW+7sexVRvVblcpNMZmkOg+nmA4D5foc2sTGTV72Md4/Fbcl/NIamlXKd86h4sMdhD07L7OKpGxJ2mVCZ1XlWqIGVfZ7Sq0zpTHNLyL3zFlQ4LWvQrkWx5l9b+ux/CplOAqN/HQ7zl+Q1KHPAJWVDoFpVYzNa73zc+U1ofOZ9JtsrK5y53WIwrYSj095tMLKrV0oSsmEZm7kEzfoyH2jh06RzJfW+rmxmYE55JqL2nQ44rmT7ThZ7Nj4cGy5XOzg6Q6iR86P9eJDHmx6Pgs+7n21Bed+4rvufacxcXMF/Tn/hezX9Af/C1zS6+7vlSdMo6JmLyUcXvO91Q3vGeHqWmljNP7u/fwT3FS1SuT/1md5z7C3d0N9DlAahTQ6KFgLOuPJSSCNSW7tLnH4Qh4MdCJUAhOkOUluSBomQx0Vmrry74EjqiJR78sEox/7b//9QAAGVf3jMk2ZAAFmtaJfSuWEhiKLmwa8sJViQnBE/wQEjQh0Y8nDFALAzJIalkAva5DgmVIgEcw+uXujV236AZ3LlaE+nAcRExitY3ohcH6w+rvY4zgNossQ8QV9TcGeUmHgD2eUk0+qVxnncsl0tnMFM/fULBHNjydPBRCu6qHEySPuv3Y6uNKTYn214dloC+oxW1KZUrOlGkcp7V+qEEP/+WDmM/ffAhCb+bzGdxnYreR/LuPN2BoaX0ZeXssNt8Hpr+IFgTGJirZnfVPw3MHBLZ+5Q6UrGdBnwunKpVH3XCp9OcG6nxu7CrlrCbfLwaPTX6n30XUNcF0NFGVapNTM1WLRJ6Nx13XjbCoRyGtxoMvj/+8ubr+cHf9djqajGppXJnbMbA06I8iD4eQzofQeb9sn6+g7+WUHAa/0BcZR4fW53VZCrId9smDqg8Lpw4sWbLd5gR/J7fbZfHnltKm3zJrTLbf3Q+Puyq7Gkpq9rBVT7TJhdeaYh4ka3RtzvziGNwdL7b31/dqt/sPk+4YDw==
+sidebar_class_name: "get api-method"
+info_path: docs/apis/wallet/tsg-wallet
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Health check"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/health"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Retrieves the current health of the app. If the app is running and it is connected to the database it always returns an empty 200 OK
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":""},"502":{"description":""},"503":{"description":"The Health Check is not successful","content":{"application/json":{"schema":{"type":"object","properties":{"status":{"type":"string","example":"error"},"info":{"type":"object","example":{"database":{"status":"up"}},"additionalProperties":{"type":"object","required":["status"],"properties":{"status":{"type":"string"}},"additionalProperties":true},"nullable":true},"error":{"type":"object","example":{"redis":{"status":"down","message":"Could not connect"}},"additionalProperties":{"type":"object","required":["status"],"properties":{"status":{"type":"string"}},"additionalProperties":true},"nullable":true},"details":{"type":"object","example":{"database":{"status":"up"},"redis":{"status":"down","message":"Could not connect"}},"additionalProperties":{"type":"object","required":["status"],"properties":{"status":{"type":"string"}},"additionalProperties":true}}}}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

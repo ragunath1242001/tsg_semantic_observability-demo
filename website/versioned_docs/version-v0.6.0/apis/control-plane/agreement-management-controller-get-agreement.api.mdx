@@ -1,0 +1,72 @@
+---
+id: agreement-management-controller-get-agreement
+title: "Get an agreement by agreement ID"
+description: "Get an agreement by agreement ID"
+sidebar_label: "Get an agreement by agreement ID"
+hide_title: true
+hide_table_of_contents: true
+api: eJztV0tv2zgQ/ivEnHYLrR3kqFODJg0CbBujSbuHwDDG1FhiQ5EsOYrXMPTfF6Rk+ZmsF4veerLMGc6LH78ZrsE68sjKmrsCcrgqPVFNhj+hwTJ9fbCGvdWa/KwkHhQgA4cea2LyAfKnNRisCXLAjcZdARl4+tEoTwXk7BvKQBnIwSFXkEFBQXrlovNd1+LuGjIIsqIaIV8Dr1y0G9grU0LbTqPV4KwJFKL88uIi/uxbgwykNRwDzdeAzmklU5rj7yEqrI8d2Pl3kikvH4vCqjP/XhUnosjgfbdyQmILr3MMQZWG/L9qvGHDebtQ+i0F8rUKQXUZ9TroPa4gA8VUhzPy+/l5oOT9EA/kjL4kfl0urQnsURn+aWlqWvB9vArm9Gknpe6u2Ddq4VVZnbDTx3RK6wstyJORp2Jrd+/PU5/CiYAPw5tmwIojcODDULqHDu/tJojrhldnlHOI5a1g+gPe8TsZkHno13lbqbniX6D9BdrzQfsf0bfF2CH87FyrEv8X+tqto3SJ2jMgUQSHknJWNQXG2p1ROBVrtEn0aP9OtkPn3FYrGgskG6/iJX9ag8WGq8toV3b93Gk0NMOiVgamsacylrGPb61FF/tN9ZZYoBFDhxfz1c6f1LZr4srGSSIWIus6fQ5jdGpcDyPFeNgUxuudeaGNfZ/8SzdRTLcppMS6K7FJZHtG3UIGC22XScVhCEvri67LW9dtPJF3fmox218skDF9HWpvBV2554S+Y5w0WUT9fmkj+2h9jQw5fJtAtgm/YnZHs9A38mqhcK5JTDwFMpwQKwxRQYVgK6St68bEmYbEnHhJZAQvrVAmMBpJQdiF4IpEH7NIoY4SypRZ2FTAHj+PD7ein/LEJGV0GM9jpYK4d2SuJnciOJJq0Y9TIlR2GZInMoWzyvDges/mSHyygTeirS56Ep40cpdXFF4jY4K7mHjLVlqdCQwbv1RE2EW9G6mVCyT+sv5ZmVLcetu47e4wEvdckT9wFhrnrGf1shsFW1HjcxR6Srbj6QqJRsxJYFFsg5PIqG2ZCTTF4TZk8fVOKMPkO04KyQRHFadR0kiI2ezdZ8v0bjbLxV5ZC1ookyhLqCCM5WTI9K7nJArlSbJeCa3MMxViqbgSKIIypT4o9gCDkYAM4n3am4pRckdjWkkyIbF4P71fOZQVicvRBWTQeN0jNOTj8XK5HGESj6wvx/3eMP7z7sPN54ebPy5HF6OKa50w5mzgGs2O5TPIYw90wwVn+pvHTqMykUhTTOueWJ4AnYqsM1ALZNsHSIAM8t3nyDSDygaO+9brOQb66nXbxuUfDflVxzkv6NPNS7RZqBC/C8gXqAMdhTi8MeC3Lz13/y4OXjIn09g0HhPbzgvqhrrjeabVwRuqnbYZVIRFJJenda9xJSU53tl79MSJnD6w8e3NY6xME4t2zJxDc1ifjuuYJcUrVLhJINEutNkrBjcMPZOeCjKsUIdhb+nR8Czta6dt2/4Dq0YgPg==
+sidebar_class_name: "get api-method"
+info_path: docs/apis/control-plane/tsg-control-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Get an agreement by agreement ID"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/management/agreements/{agreementId}"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Get an agreement by agreement ID
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"agreementId","required":true,"in":"path","description":"Agreement ID","schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{"@id":{"type":"string"},"@type":{"type":"string"},"odrl:assigner":{"type":"string"},"odrl:assignee":{"type":"string"},"odrl:profile":{"type":"string"},"odrl:permission":{"type":"array","items":{"type":"object","properties":{"@type":{"type":"string"},"odrl:assigner":{"type":"string"},"odrl:assignee":{"type":"string"},"odrl:action":{"type":"string"},"odrl:target":{"type":"string"},"odrl:constraint":{"type":"array","items":{"type":"object","properties":{"@type":{"type":"string"},"odrl:leftOperand":{"type":"string"},"odrl:operator":{"type":"string"},"odrl:rightOperand":{"type":"object"},"odrl:rightOperandReference":{"type":"string"}},"required":["@type","odrl:leftOperand","odrl:operator"],"title":"ConstraintSchema"}},"odrl:Duty":{"type":"array","items":{"type":"string"}}},"required":["@type","odrl:action"],"title":"PermissionSchema"}},"odrl:prohibition":{"type":"array","items":{"type":"object","properties":{"@type":{"type":"string"},"odrl:assigner":{"type":"string"},"odrl:assignee":{"type":"string"},"odrl:action":{"type":"string"},"odrl:target":{"type":"string"},"odrl:constraint":{"type":"array","items":{"type":"object","properties":{"@type":{"type":"string"},"odrl:leftOperand":{"type":"string"},"odrl:operator":{"type":"string"},"odrl:rightOperand":{"type":"object"},"odrl:rightOperandReference":{"type":"string"}},"required":["@type","odrl:leftOperand","odrl:operator"],"title":"ConstraintSchema"}}},"required":["@type","odrl:action"],"title":"ProhibitionSchema"}},"odrl:obligation":{"type":"array","items":{"type":"object","properties":{},"title":"Duty"}},"odrl:target":{"type":"string"},"dspace:timestamp":{"type":"string"}},"required":["@id","@type","dspace:timestamp"],"title":"AgreementSchema"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

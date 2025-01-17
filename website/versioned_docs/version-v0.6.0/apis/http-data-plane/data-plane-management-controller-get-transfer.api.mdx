@@ -1,0 +1,72 @@
+---
+id: data-plane-management-controller-get-transfer
+title: "Get transfer by ID"
+description: "Get transfer by ID"
+sidebar_label: "Get transfer by ID"
+hide_title: true
+hide_table_of_contents: true
+api: eJztWEtv2zgQ/ivCnHYB1Q6ye9Jpg9jNBmhSb+L0YhjBWBzbbCVSJcfxGob+e0HqHcl5ADn2ZIGPb17fDGd8BJ2RQZZaXQuIYIKMswQV3aDCDaWk+FIrNjpJyDxuiOcGlV2TgRAyNJgSk7EQLY6gMCWIQAoIwdDPnTQkIGKzoxCkgggy5C2EIMjGRmZOJERQ4QVSkGK5lh7axltKEaIj8CFzqJaNVBvI86UDt5lWlqzbPz87cz9dUAgh1opJsdvDLEtk7G0cf7fuwLEvQK++U8zOKuM8wrKAl2JAiRCMTqi/EQKpXQrRwoE8SeFNibWyu5QMLHMPHpO11ydQKdVMMzR8GNy3FBvi4S1GflEjYTOMKbqb/vcwvZ9PJy4QxdL9/OKuszCf3t1c31501i6/3sy+TLv3Hu5n09vJdOItcxEny6979J9ie8CGErdy2OyE78tjuDHk+XnCmSLmaK1NisMOK1EEMl4IYcjaD1CdlMi0VDx/47m3nJl1VChPozF4gBAkU/oRihe5e3r/CZPd0IG8neqLUk4X9RnGMgSW7LIHpl0LD/dFTuavoHac3HfpSw5sCZ80ga/kNgzEJFlh/KNPjLfZ3WbwIF877DwptqVtVSXviiy7IWtxQ43iVUl8nQoYx5QxtXNmpXVCqBxOqwgPsuE92fIiybMPYPVJ0r6RrSU9e7ys38CKmH1KttiWnaSXxyjdNWHtNHs3s+pwdWIzJKikxl3JhFLg7/r2u741ZSI2hExiUvYK1fPoWEKfWHprei5KtXCse+ctQQm9U9QztxSNpGu02n1Tt0uqGp+m/2jVwq69zwzpajhQan0C+Vj9ffZXv8X8rM1KCkHq43rNkyR1Nu6GioUTLdp31C5dkfFRK56IvtQ8BDJGDxX44fpYSi9ltfntYCo3Fe3pzkjXuy6OoHHH23MHExfzQ+aK1KOrR/4Llq6VZ9y44cGzNfBlLGgGDyer6/Qr4oCrgWF1CK5dO5oSb7WbXTbkfeqmjAjGmMlxWmONq2t2fJQid2aReSpGl2Wjuk+VIhqVAY3/ioUQ1one+yMZWrvXRhRB1llxccuc1WY+okj98DO0Gj5bbZzz/HyzU7h6RWiKN9qTy7/ixVK197lKuG+zJtMcaG8C+0ZGriWuEgpmhiwp9vQNFJEgEbAOYp2mO+VoTcGKeE+kAt7rQCrLqGKygV4HvKWgDHXgVR15Qkm11t6JVXrdXwX/zuezoAl5fybcSht8zUhdzK4Dm1Es12VOBXar99bLqspfLfwZ6sg97WRsZyLE2GVpHkIiYyr7pXJuvcgw3lJwPjqDEHYmKd1lo/F4v9+P0G+PtNmMy7t2/OX6cnp7P/10PjobbTlNvMGZtpyiaiEPsrZjcc0xpv95nCUofTfmtTiWjF4AZtLRvcmPEGpWQwiRFC5jttpNYQs4Hldo6cEkee6Wf+7IHAqyP6Hx4fZ5KqR13wKiNSaWeorVtQ3+uCtrw5/B8NA+aEP1oKtD3Wr5aPygQ/FnQe6mxy2hm5adQsXGhe97Wld6hdWVjzr1r6ZzCMEl6FDC1rXoOKzOQG4Gp/Kv0tznO+ThCciqNDzGhryPMLH13Y1BxY/+Xr7M8/wXnfsXVw==
+sidebar_class_name: "get api-method"
+info_path: docs/apis/http-data-plane/tsg-http-data-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Get transfer by ID"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/management/transfers/{id}"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Get transfer by ID
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"id","required":true,"in":"path","description":"Transfer identifier","schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{"id":{"type":"string"},"role":{"type":"string","enum":["provider","consumer"]},"processId":{"type":"string"},"remoteParty":{"type":"string"},"secret":{"type":"string"},"state":{"type":"string","enum":["dspace:REQUESTED","dspace:STARTED","dspace:TERMINATED","dspace:COMPLETED","dspace:SUSPENDED"]},"request":{"type":"object","properties":{"@type":{"type":"string"},"dspace:consumerPid":{"type":"string"},"dspace:agreementId":{"type":"string"},"dct:format":{"type":"string"},"dspace:dataAddress":{"type":"object","properties":{"@type":{"type":"string"},"dspace:endpointType":{"type":"string"},"dspace:endpoint":{"type":"string"},"dspace:endpointProperties":{"type":"array","items":{"type":"object","properties":{"@type":{"type":"string"},"dspace:name":{"type":"string"},"dspace:value":{"type":"string"}},"required":["@type","dspace:name","dspace:value"],"title":"EndpointPropertySchema"}}},"required":["@type","dspace:endpointType","dspace:endpoint","dspace:endpointProperties"],"title":"DataAddressSchema"},"dspace:callbackAddress":{"type":"string"}},"required":["@type","dspace:consumerPid","dspace:agreementId","dct:format","dspace:callbackAddress"],"title":"TransferRequestMessageSchema"},"response":{"type":"object","properties":{"accepted":{"type":"boolean"},"identifier":{"type":"string"},"dataAddress":{"type":"object","properties":{"endpoint":{"type":"string"},"properties":{"type":"array","items":{"type":"object","properties":{"name":{"type":"string"},"value":{"type":"string"}},"required":["name","value"],"title":"DataPlaneProperty"}}},"required":["endpoint","properties"],"title":"DataPlaneAddressDto"},"callbackAddress":{"type":"string"}},"required":["accepted","identifier"],"title":"DataPlaneRequestResponseDto"},"dataAddress":{"type":"object","properties":{"@type":{"type":"string"},"dspace:endpointType":{"type":"string"},"dspace:endpoint":{"type":"string"},"dspace:endpointProperties":{"type":"array","items":{"type":"object","properties":{"@type":{"type":"string"},"dspace:name":{"type":"string"},"dspace:value":{"type":"string"}},"required":["@type","dspace:name","dspace:value"],"title":"EndpointPropertySchema"}}},"required":["@type","dspace:endpointType","dspace:endpoint","dspace:endpointProperties"],"title":"DataAddressSchema"},"createdDate":{"format":"date-time","type":"string"},"modifiedDate":{"format":"date-time","type":"string"},"deletedDate":{"format":"date-time","type":"string"}},"required":["id","role","processId","remoteParty","state","request","response","createdDate","modifiedDate","deletedDate"],"title":"TransferDto"}}}},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string"},"status":{"type":"string"},"code":{"type":"number"},"message":{"type":"object"},"error":{"type":"string"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

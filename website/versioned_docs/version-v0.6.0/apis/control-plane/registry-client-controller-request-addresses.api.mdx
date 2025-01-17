@@ -1,0 +1,72 @@
+---
+id: registry-client-controller-request-addresses
+title: "Request addresses"
+description: "Requests all available credential addresses."
+sidebar_label: "Request addresses"
+hide_title: true
+hide_table_of_contents: true
+api: eJydVcFuGzcQ/ZXBHIOtZLg97S1wHMNAkxi1kx4MQxiRo13GXJImZ60Kwv57QWq1kmUbRaqLJA5n5s3j4+MWNScVTRDjHdb4Fz/1nCQBWQv0TMbS0jKoyJqdGLJAWkdOidMMK/SBI+XUa12SG5Mkbi6sYScX3kn01nJcxF3Vj/tUrDBQpI6FY8L6/qHCyCl4l2P1Fs/PzvLXS2hYofJO2EmOUQjWqNJ7/jPlDVtMquWO8i/ZBMYaKUbaYIVGuEtH6375k5VkFDFPIGbXVhud55i2JYnGNThUOA79RmzI0J96E1ljfT+WOCQ8VChGbM64mDgcecAhfyr84+z319N+9nFptGb3P8Z+ZzxHHb85XRKS/q3hcmt9nOP6bskxBzpOiRp+3XWokGP08b+5Knim7mOvI8Iuc5lP4vc8JVZ9NLLB+n6Lnnppz3MZtdNZsOR4Qboze8qmRU1C5Rc+DLk+NVl0k1zhCzlquMsUP+TJpPVZzg0XDklarHFOwcy7aeM8jslzOhJ14vg8KXoP9zYfz+4E9qAPnO0WKlxZvy5bAqW09lHvDtaHXeIbM9a/NHj9XmBH7ZIpcpzElPePS/vYZx87Eqzxxw1We/itSMDqRLk/OJqVKbZxEzmxkyJXcMyaNYgH5buud1nGDEuWNbMDWXswLgk5xQn8CqRlGDFDgTorAjJu5QuBo0jubq9gdBq4KROd4rlrTYJvgd3Hm2tIgZVZjTcIUuvXqXRip4M3TqbWL2rO4ItPsg8d9lJkiGxJdnPl4CcSSoFUHt6LV95WQGnflzUsN2XfpbImJIa/fXw0roGr6PtwyE4z+CYtx5NmqQ/BRzHPxyjEQ0ePORi51M6nC4ocLDnb9QGcIiHrmwrI6dM0Evh+DcYJR1KZnVRKSN4SLCmeASwWH7564Q+LRQ0vaNW8Ms4UTk0C56UUcmPrJYM2kZXYDVjjHlnD2kgLBMm4xp6QPclgBlhhvk8v/J9UNsKhQmsUu8QHZ8OPgVTLcD47wwr7aEeFpno+X6/XMyrhmY/NfMxN8z+vLy6/3l7+dj47m7XS2aKx4JN05I4qj88iHF/2FyrbHkz6V9/Q8S4J/yPzYMm4bKEF/XY0n3ukYLDCg/1gdtKdAR0eGy7PTeuT5JTtdkmJv0c7DHn5qee42RnTM8VyPfO/ocKWSee7f7/FR95kGpXikFs8k+3LM3r66AzHNnl1eZcx9Bnpa2ObfPrwKLvNUe3XJgbvOFU1wiuuiEP1TsG9gS4OfKcpt4nkZFHyhodhGP4F9NcpNQ==
+sidebar_class_name: "get api-method"
+info_path: docs/apis/control-plane/tsg-control-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Request addresses"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/management/registry/addresses"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Requests all available credential addresses.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"","content":{"application/json":{"schema":{"type":"array","items":{"type":"object","properties":{"didId":{"type":"string"},"address":{"type":"string"}},"required":["didId","address"],"title":"CredentialAddress"}}}}},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string"},"status":{"type":"string"},"code":{"type":"number"},"message":{"type":"object"},"error":{"type":"string"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

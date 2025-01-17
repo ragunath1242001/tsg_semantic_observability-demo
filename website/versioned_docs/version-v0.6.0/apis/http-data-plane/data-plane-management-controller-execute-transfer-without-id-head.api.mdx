@@ -1,0 +1,72 @@
+---
+id: data-plane-management-controller-execute-transfer-without-id-head
+title: "Proxy a request without transfer ID"
+description: "This endpoint is used if the HTTP Data Plane needs to serve as a proxy and the transfer hasn't been created yet. Used for automatic handling of the DSP."
+sidebar_label: "Proxy a request without transfer ID"
+hide_title: true
+hide_table_of_contents: true
+api: eJzNVdtuGzcQ/RViXpoCa8lw+7RvRuw0BnoRaid9MARhRI60THdJhpy1LAj778FwVxdLclO0DVC9aMHhzDmcy5kNGEo62sDWOyjhobJJkTPBW8fKJtUmMsouFFek3j88TNQNMqpJjY6UIzJJsVeJ4hMpTApViP55rdCZ7MERXVpQVBUm9x2rOZFTOhIyGbUmHqkPEn/ho8KWfYNstarQmdq6pfI97M39ZAQF+EARheadgRKERmbxCzpcUkOO33rH0dc1xRk9k26ZHgb4PyxXvuU7M6sIDRQQMGJDTDFB+bgBhw1BCQG5ggIifW5tJAMlx5YKsG5ve5mtCXIlLCNpsk9CGUOorc40oYCkK2oQyg3wOghC4mjdErqu2IE+XxhkTMQX1rwGLqwp/u2A2BpLTtN/FE73eQ2S7Qs0JlJK/yL0VFxT8C5REvuPlz/I38vMvvNxbo0hyaLgk2O5dJDe8ackNzenSH7+iTRLlaP0DNsep3/PCZ8CEiO36axJe3Po49pmTlEMDaWESzpF7QqgGH08m9SDnD32fHboA9a0ALZci9uthLlhD538Ckik22h5nTvWY8vVlYQ5rM5MWil/wVTyzLiUBoeDmd2Pi2A1xJU3Q93yXHAFJYwx2HGzuzkexmm8EXsnpGXg8/BM98TupRB9rrf09tnpDwpY1H6VrwRMaeWj6UvoQ+9YMYfdI2Zomr6rzpwWR6f7px/f31v6RM4JI8Vd64jDcLS1vfOxQYYSPk6g2D5Bgp4owEeKdmFxXpOaRErkODdnlkYyoo3aN03rpGlJzYlXooC88sq6xOg0pa3MDYVUmeoot4t1C5+TOLTEw/1PxyJ8wigr+G+B3PXkTqVA2i6GiVGp8quUsbYKvwM/iip6KwXuQw4ziFpmsCugtppcov1QwXVAXZG6Gl1CAW2sh3SlcjxerVYjzOaRj8vx4JvGP9+9vf31/vbianQ5qrip84ODT9ygO4g86feJksmhxGrVS/l+s9zdHKdgs1eM//M+G9qK6ZnHoUbrRDty7jbDHD4CBgsF7CcRChhmEQoo861pAZVPLLc3mzkm+hDrrpPjzy3FdT+iTxhzk2btMDbJt4FygXWiv8jem98HvfpefW3VnX3NcIhuLf2EdUt9N/1J6+1K7aZdsd0a/5jca/g9ztGG3fGQJfdN4A7277cHe2U7vwDu715rTYEPbCfbtDtcCe9vr2W0RLjPCfluA23Ol/mMZqvXdHn7mrwHMuOzIbcrY6YjGXJssU4732VEx7Ps1027rvsCgrjAWA==
+sidebar_class_name: "head api-method"
+info_path: docs/apis/http-data-plane/tsg-http-data-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Proxy a request without transfer ID"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"head"}
+  path={"/api/management/execute/{path}"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+This endpoint is used if the HTTP Data Plane needs to serve as a proxy and the transfer hasn't been created yet. Used for automatic handling of the DSP.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"path","required":true,"in":"path","description":"Path of receiving application","schema":{"type":"string"}},{"name":"x-dataset-id","required":true,"in":"header","schema":{"type":"string"}},{"name":"x-audience","required":true,"in":"header","schema":{"type":"string"}},{"name":"x-controlplane-address","required":true,"in":"header","schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string"},"status":{"type":"string"},"code":{"type":"number"},"message":{"type":"object"},"error":{"type":"string"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

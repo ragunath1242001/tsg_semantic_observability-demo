@@ -1,0 +1,72 @@
+---
+id: config-controller-get-settings
+title: "Retrieve settings"
+description: "Retrieves the settings of the control plane."
+sidebar_label: "Retrieve settings"
+hide_title: true
+hide_table_of_contents: true
+api: eJytVU1v2zgQ/SvEHAutHWT3pFuRpkGAfgRN2j0EgTGmxhIbimTJUbyGof++GEq2ZccpsMCeLHO+Hh8fH7dQUdLRBDbeQQnfiKOhF0qKG1KJmI2rk/Kr/F97x9FbFSw6mkEBPlBEKb2toIQr71amvhqSLMVFTXw/toACAkZsiSkmKB+fCoiUgneJEpRbuLy4kJ9jNFCAjCTHEsMQrNF53PxnkoQtJN1Qi/LFm0BQgl/+JM0yLQo4NkP7EfmdAL91TBG19EmTysTRuBp6mWl9PBupMD4/NNTS92jPJlhTN/ybjF62/aszkSooH9+GtQPxVAAbttLiW+fYtDSQ/IE99L20++viz9fEffRxaaqK3P/HoMOWzm45MXL3FpHVtMZ17ZKiBFpKCWt6PbUvgGI8y/4JdRnPfvo4a0LXtbTZ0SQwSXfR8AbKxy147Li5nJxAVvQCq9Y4eOqlDdYiU9jr90lQc+NF6DVlfpAbKGGOwczTQeaJ4ste47up98LyQORu9mHrw0IBK+vXOSVgSmsfq+F8fDjS8BRqeW6xOF6skDF/nWYfAgNDS8JIca8JyR+XdrGPPrbIUMKPOyh28BvmAMWJAH9QNCuDS0vqLlIix1l1yhFVVCn2Svu27ZyokdSSeE3kFK+9Mi4xOk1vmY4gNW7lM4HjWT/c36jRdlS+S6/wPDQmqa+B3Pu7W5UCabMaL4JKjV8PdkeuCt443o8+6jlTn33iXeiQi5FUJIs87EuCH5AxBdSyec9ee1soTLu5VKnlJudda2tCIvW3j8/G1eom+i4cqtNMfeWG4smw1IXgI5uXKQr2qsVnCUbKveV0lUanlqSwqg7gNDJaXxcKXXVahqy+3yozcaLcgiUlWNQ0U2qxePfFM71bLEp1RGtFK+NM5tQk5TznRm4cvSRVmUia7UZZ456pUmvDjUKVjKvtCdl7GcwUFCD36ehFQC1+lv1Wk0t0MCh4H1A3pC5nF1BAJyacFZrK+Xy9Xs8wh2c+1vOxNs0/3V5df7m//uNydjFruLVZY8EnbtFNOu/eRjW57Ecq2x689r8+pONdYvqH58GiceKE3fCEDD7zCBhMtpeDITU+sUS22yUmeXH6XpZ/dRQ3g/+8YMy3UP71BTSElVzxxy0800bY0pqCmNkL2k4QvHoi+qnx3Vw/QAHiV+f8a++q+xC6zaT3a69SbxhSMcLL5gd98UbDnU8udKSKHBu0aV9bR3S8yHX9U9/3/wJ0qyHX
+sidebar_class_name: "get api-method"
+info_path: docs/apis/control-plane/tsg-control-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Retrieve settings"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/settings"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Retrieves the settings of the control plane.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{"controlPlaneInteractions":{"type":"string"},"color":{"type":"string"},"darkThemeUrl":{"type":"string"},"lightThemeUrl":{"type":"string"}},"required":["controlPlaneInteractions","color"],"title":"RuntimeConfigDto"}}}},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string"},"status":{"type":"string"},"code":{"type":"number"},"message":{"type":"object"},"error":{"type":"string"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

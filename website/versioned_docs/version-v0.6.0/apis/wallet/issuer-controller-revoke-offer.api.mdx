@@ -1,0 +1,72 @@
+---
+id: issuer-controller-revoke-offer
+title: "Revoke offer"
+description: "Revokes an existing credential offer, so that it cannot be used anymore by the holder"
+sidebar_label: "Revoke offer"
+hide_title: true
+hide_table_of_contents: true
+api: eJy1Vm2P2zYM/iuEPrWFmxxu/WQMAw7XbggwtEXv2n3ogoCxmFg9WXIl+tIs8H8fKDtx3ocB25fEEN8ekhIfbpSmWARTs/FO5eoTPfsnioAO6IeJbNwSikCaHBu04BcLChlED1wig2Eo0DnPMCdoImlAt658IJivgUuC0ltNQWXK1xRQYky0ytUkxobCvXccvLUUZiGF/SDeVaZqDFgRU4gq/7pRDitSuTJaZSrQ98YE0irn0FCmjICukUuVqViUVKHKN4rXtVi4pppTUG07FcNYexcpivz25kb+DlNXmSq8Y3IsMqxra4oEefwtisLmNICff6OCBXGQBNl07o0+AyJTRSBkSrKFDxWyypVGptdsKlLZ1iByMG4pBnWgu4ZLH8xfpO+9pj23g1ZX44k+Kxx695hEV1Uu+Oiasy+be28J3aH1Q9NV49+VZxum3e/tV9GZZooNW1G6PwlyRn8o8LnK7dXppCpDiufyOYsjXdUHRm6ialtB8+bmp9M79asPc6M1uf/ucnWv4UybYofmbIsP785wJSuKEZd0GrXNFIXgwz93KuHZRe9j7dXsnbh5yz6VSWBS0QTD6/S0PTZc3oqbFVpLPKvQ4ZJmaO1s6ERUU3nCjEsZCOpDTW7yFt7AFwpmYXBuCYbOgAwXdEUCURGXXiZO3aRKyqDI1RhrM/ZGv3kuzDiNtPHG6Hbc3QJJhsJzN32mA+AHaVDXgy3soWrdQaYW1q+SSo0xrnzQXWt93Rn2WT4bWs20vIOTk+yoEk+0joPa/uFOs4nHaruT7MC/X7mDquZXpYe2xx3Jr0qPs7gY+YL82P5i9Avynb0Rpjlveio6zLgOFMlxeqXH+R7K+ptt3MKnO9Hf/MeH3+CPZKSyo7nwWBIMYjAREB4eJtDF6Mi1QAcJI6DTEFlo9Xm48XvAk0I3/OAAGbDfMfPKcGkcaGSEWGNBcfTzPMD4l+73TwcAILhWAyZTCaUzVI1l85oNBdBUW7+uyHHMkk/wjuCFDyC8//IgAyw4Akbg0EQGdEXpAyx8ANyDkcAbp81zg7Y3j0mLsCjBL9IiUWNgU5gaHUcwLp0NPkbwQY5MhBqXlIQFOQ47h/26ItWMB5VbGWulRIWo6WT5Fhk7ZH130HLpm2Up646JIOvOdgB2frmkQIB2hesoGvQDC7brVJkUM0ga+2GN62vQwT9txGz26r1nejWb5fAoicnQu/s4AU0L44x0d4vFCK1owZKarU2gFN0a99T3HRCicUu7S8m4yDIjR6AyJaPuYAXCxOJtpqwpyEUaaEfd1ViUBLejG5WpJliVq5K5jvl4vFqtRpjEIx+W4942jn+f3L97//Du9e3oZlRyZROD1D5yhW7Pc7d5dhvm8XvZDOT5v22o/SRn+sHj2qJJ203KcNPzxleFtZFdtmMO+erB5v1umuhjKqtGZNHfbOYY6XOwbSvH3xsK645UnjGkZ5xYUJso31rlC7SRriT/4lN/8V7CJcj9Ibq1tBZtQ11jn2jdLdHtVJZGQklboneCu6KgmvdMTnaUdp9PP35+VJkS1jvHgjta35yHc0R6cMpucMRkcIWp4AoTwVWegassApeIAi5TwbbOifJVm10owHY7OKKfznYZ0PEs2bXTtm3/BpUc2IY=
+sidebar_class_name: "put api-method"
+info_path: docs/apis/wallet/tsg-wallet
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Revoke offer"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"put"}
+  path={"/api/oid4vci/offer/{id}/revoke"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Revokes an existing credential offer, so that it cannot be used anymore by the holder
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"id","required":true,"in":"path","schema":{"type":"number"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{"id":{"type":"number"},"created":{"format":"date-time","type":"string"},"preAuthorizedCode":{"type":"string"},"holderId":{"type":"string"},"credentialType":{"type":"string"},"credentialId":{"type":"string"},"revoked":{"type":"boolean"},"credentialSubject":{"type":"object","properties":{"id":{"type":"string"}},"required":["id"],"title":"CredentialSubject"}},"required":["id","created","preAuthorizedCode","holderId","credentialType","revoked","credentialSubject"],"title":"CredentialOfferStatus"}}}},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string"},"status":{"type":"string"},"code":{"type":"number"},"message":{"type":"object"},"error":{"type":"string"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      
