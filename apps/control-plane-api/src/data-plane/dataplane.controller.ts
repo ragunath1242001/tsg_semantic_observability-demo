@@ -5,8 +5,7 @@ import {
   HttpStatus,
   Logger,
   Param,
-  Post,
-  UseGuards
+  Post
 } from "@nestjs/common";
 import {
   Catalog,
@@ -26,9 +25,8 @@ import {
   ApiBody
 } from "@nestjs/swagger";
 import { ApiForbiddenResponseDefault } from "@tsg-dsp/common-dtos";
-import { OAuthGuard, Roles } from "@tsg-dsp/common-api";
+import { Roles } from "@tsg-dsp/common-api";
 
-@UseGuards(OAuthGuard)
 @Roles(["controlplane_admin", "controlplane_dataplane"])
 @Controller("data-plane")
 @ApiTags("Data Plane")

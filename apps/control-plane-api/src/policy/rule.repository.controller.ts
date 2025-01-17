@@ -1,5 +1,4 @@
 import {
-  UseGuards,
   Controller,
   Logger,
   HttpCode,
@@ -38,7 +37,6 @@ import {
 import { DSPError } from "../utils/errors/error.js";
 import { ConstraintModel } from "./constraint.dto.js";
 import {
-  OAuthGuard,
   Roles,
   UsePagination,
   PaginationQuery,
@@ -47,7 +45,6 @@ import {
   validationPipe
 } from "@tsg-dsp/common-api";
 
-@UseGuards(OAuthGuard)
 @Roles(["controlplane_admin"])
 @Controller("management/policy")
 @ApiTags("Evaluation")

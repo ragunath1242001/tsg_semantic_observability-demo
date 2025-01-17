@@ -11,15 +11,19 @@ import { PageOptionsDto, PageDto } from "../utils/pagination.js";
 import { LoggingService } from "./logging.service.js";
 import { LogFilterDto, LogEntry } from "./logging.dto.js";
 import {
+  ApiOAuth2,
   ApiOkResponse,
   ApiOperation,
   ApiQuery,
   ApiTags
 } from "@nestjs/swagger";
+import { Roles } from "@tsg-dsp/common-api";
 
 @ApiTags("Logging")
 @Controller("/management/logging")
 @UsePipes(new ValidationPipe({ transform: true }))
+@ApiOAuth2(["controlplane_dataplane"])
+@Roles("controlplane_dataplane")
 export class LoggingController {
   constructor(private readonly loggingService: LoggingService) {}
 

@@ -6,7 +6,6 @@ import {
   HttpStatus,
   Post,
   UploadedFile,
-  UseGuards,
   UseInterceptors,
   UsePipes
 } from "@nestjs/common";
@@ -24,10 +23,14 @@ import {
   ApiBadRequestResponseDefault
 } from "@tsg-dsp/common-dtos";
 import { FileInterceptor } from "@nestjs/platform-express";
-import { OAuthGuard, Roles, validationPipe } from "@tsg-dsp/common-api";
+import {
+  DisableOAuthGuard,
+  DisableRolesGuard,
+  Roles,
+  validationPipe
+} from "@tsg-dsp/common-api";
 import { AppRole } from "@tsg-dsp/wallet-dtos";
 
-@UseGuards(OAuthGuard)
 @Roles(AppRole.ISSUE_CREDENTIALS)
 @Controller("settings")
 @ApiTags("Settings")
@@ -42,6 +45,8 @@ export class ConfigController {
   })
   @ApiOkResponse({ type: RuntimeConfigDto })
   @ApiForbiddenResponseDefault()
+  @DisableOAuthGuard()
+  @DisableRolesGuard()
   async getSettings(): Promise<RuntimeConfig> {
     return this.runtimeConfig;
   }

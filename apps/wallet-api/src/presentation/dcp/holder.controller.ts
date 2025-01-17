@@ -10,6 +10,7 @@ import { DisableOAuthGuard, validationPipe } from "@tsg-dsp/common-api";
 
 @Controller("dcp/presentations")
 @ApiTags("Presentation DCP")
+@DisableOAuthGuard()
 export class DCPHolderController {
   constructor(private readonly holderService: DCPHolderService) {}
 
@@ -22,7 +23,6 @@ export class DCPHolderController {
   @ApiBody({ type: () => PresentationQueryMessage })
   @ApiOkResponse({ type: () => PresentationResponseMessage })
   @ApiForbiddenResponseDefault()
-  @DisableOAuthGuard()
   async presentationQuery(
     @Body(validationPipe)
     presentationQueryMessage: PresentationQueryMessage,

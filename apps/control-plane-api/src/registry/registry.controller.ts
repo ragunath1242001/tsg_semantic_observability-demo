@@ -1,12 +1,5 @@
 import { CredentialAddress } from "@tsg-dsp/control-plane-dtos";
-import {
-  Controller,
-  Get,
-  HttpCode,
-  HttpStatus,
-  Logger,
-  UseGuards
-} from "@nestjs/common";
+import { Controller, Get, HttpCode, HttpStatus, Logger } from "@nestjs/common";
 import { CatalogDto, CatalogSchema } from "@tsg-dsp/common-dsp";
 import { RegistryService } from "./registry.service.js";
 import {
@@ -16,7 +9,6 @@ import {
   ApiTags
 } from "@nestjs/swagger";
 import {
-  OAuthGuard,
   Roles,
   UsePagination,
   PaginationQuery,
@@ -26,7 +18,6 @@ import {
 
 @ApiTags("Registry")
 @ApiBearerAuth()
-@UseGuards(OAuthGuard)
 @Roles(["controlplane_admin", "controlplane_dataplane"])
 @Controller("registry")
 export class RegistryController {

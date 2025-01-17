@@ -40,10 +40,12 @@ import { VPId } from "../../vc-auth/verifiablePresentation.strategy.js";
 import { DeserializePipe } from "../../utils/deserialize.pipe.js";
 import { DSPError } from "../../utils/errors/error.js";
 import { NegotiationService } from "./negotiation.service.js";
+import { DisableOAuthGuard, DisableRolesGuard } from "@tsg-dsp/common-api";
 
 @ApiBearerAuth()
 @ApiTags("Negotiations")
 @UseGuards(VerifiablePresentationGuard)
+@DisableOAuthGuard()
 @Controller("negotiations")
 export class NegotiationController {
   constructor(private readonly negotiationService: NegotiationService) {}

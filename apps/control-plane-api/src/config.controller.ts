@@ -2,7 +2,6 @@ import {
   Controller,
   Post,
   Body,
-  UseGuards,
   Get,
   HttpCode,
   HttpStatus,
@@ -25,9 +24,12 @@ import {
   ApiBadRequestResponseDefault
 } from "@tsg-dsp/common-dtos";
 import { FileInterceptor } from "@nestjs/platform-express";
-import { OAuthGuard, Roles } from "@tsg-dsp/common-api";
+import {
+  DisableOAuthGuard,
+  DisableRolesGuard,
+  Roles
+} from "@tsg-dsp/common-api";
 
-@UseGuards(OAuthGuard)
 @Roles("controlplane_admin")
 @Controller("settings")
 @ApiTags("Settings")
@@ -42,6 +44,8 @@ export class ConfigController {
   })
   @ApiOkResponse({ type: RuntimeConfigDto })
   @ApiForbiddenResponseDefault()
+  @DisableOAuthGuard()
+  @DisableRolesGuard()
   async getSettings(): Promise<RuntimeConfig> {
     return this.runtimeConfig;
   }

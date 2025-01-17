@@ -33,10 +33,12 @@ import {
   UsePagination,
   PaginationQuery,
   PaginationOptionsDto,
-  Paginated
+  Paginated,
+  DisableOAuthGuard
 } from "@tsg-dsp/common-api";
 
 @UseGuards(VerifiablePresentationGuard)
+@DisableOAuthGuard()
 @Controller("catalog")
 @ApiTags("Catalog")
 @ApiBearerAuth()

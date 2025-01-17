@@ -1,7 +1,6 @@
-import { Controller, Get, UseGuards } from "@nestjs/common";
+import { Controller, Get } from "@nestjs/common";
 import {
   ApiBadGatewayResponse,
-  ApiBody,
   ApiOkResponse,
   ApiOperation,
   ApiTags
@@ -9,7 +8,6 @@ import {
 import { TypeOrmHealthIndicator } from "@nestjs/terminus";
 import { InjectRepository } from "@nestjs/typeorm";
 import { IsNull, Not, Repository } from "typeorm";
-import { OAuthGuard } from "@tsg-dsp/common-api";
 import { CredentialIssuance } from "./model/issuance.dao.js";
 import { Credentials, KeyMaterials } from "./model/credentials.dao.js";
 import { getHeapStatistics } from "v8";
@@ -17,7 +15,6 @@ import { StatusDto } from "@tsg-dsp/wallet-dtos";
 
 @Controller()
 @ApiTags("Status")
-@UseGuards(OAuthGuard)
 export class StatusController {
   constructor(
     private readonly db: TypeOrmHealthIndicator,
