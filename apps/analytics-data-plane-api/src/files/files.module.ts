@@ -8,6 +8,7 @@ import { FileMetadataDao } from "./filesMetadata.dao.js";
 import fs from "fs";
 import path from "path";
 import { FilesConfig } from "../config.js";
+import { DataPlaneTestModule } from "../dataplane/dataplane.module.js";
 
 @Module({})
 export class FilesModule {
@@ -30,6 +31,7 @@ export class FilesModule {
       module: FilesModule,
       imports: [
         TypeOrmModule.forFeature([FileMetadataDao]),
+        DataPlaneTestModule,
         MulterModule.register({
           storage: diskStorage({
             destination: function (req, file, cb) {

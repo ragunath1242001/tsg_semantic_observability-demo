@@ -2,11 +2,12 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { FilesService } from "./files.service.js";
 import { FileMetadataDao } from "./filesMetadata.dao.js";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { FilesConfig } from "../config.js";
+import { FilesConfig, RootConfig } from "../config.js";
 import path from "path";
 import fs from "fs/promises";
 import { fileURLToPath } from "url";
 import { TypeOrmTestHelper } from "@tsg-dsp/common-api";
+import { DataPlaneService } from "../dataplane/dataplane.service.js";
 
 describe("FilesService", () => {
   let filesService: FilesService;
@@ -23,15 +24,32 @@ describe("FilesService", () => {
         TypeOrmModule.forFeature([FileMetadataDao])
       ],
       providers: [
+        {
+          provide: DataPlaneService,
+          useValue: {
+            async getControlPlaneCatalog() {
+              return {
+                provider: "hello"
+              };
+            },
+            async updateDatasets() {
+              return {};
+            }
+          }
+        },
         FilesService,
         {
           provide: FilesConfig,
           useValue: { path: testUploadDir }
-        }
+        },
+        RootConfig
       ]
     }).compile();
 
     filesService = moduleRef.get(FilesService);
+  });
+  afterEach(async () => {
+    await filesService["fileRepository"].delete({});
   });
   afterAll(async () => {
     TypeOrmTestHelper.instance.teardownTestDB();
@@ -104,6 +122,88 @@ describe("FilesService", () => {
 
       // Revert the path to the valid test directory
       filesService["filesConfig"].path = testUploadDir;
+    });
+  });
+  describe("processFile", () => {
+    it("should process a CSV file and return its records", async () => {
+      const mockFile = { filename: "test.csv" } as Express.Multer.File;
+      const mockContent = "col1,col2\nval1,val2\nval3,val4";
+      await fs.writeFile(
+        path.join(testUploadDir, mockFile.filename),
+        mockContent
+      );
+      const records = await filesService.processFile(mockFile);
+      expect(records).toEqual([
+        ["col1", "col2"],
+        ["val1", "val2"],
+        ["val3", "val4"]
+      ]);
+      await fs.rm(path.join(testUploadDir, mockFile.filename));
+    });
+  });
+
+  describe("createMetadata", () => {
+    it("should create metadata for uploaded files", async () => {
+      const mockFiles = [
+        { size: 1000, filename: "file1.csv" },
+        { size: 2000, filename: "file2.csv" }
+      ] as Express.Multer.File[];
+
+      const mockContent = "col1,col2\nval1,val2\nval3,val4";
+      mockFiles.forEach(async (mockFile) => {
+        await fs.writeFile(
+          path.join(testUploadDir, mockFile.filename),
+          mockContent
+        );
+      });
+
+      await filesService.uploadFiles(mockFiles);
+      await filesService.createMetadata(mockFiles);
+
+      const savedFiles = await filesService.getAllFileMetadata();
+      expect(savedFiles.length).toBe(2);
+      expect(savedFiles[0].csvw).toBeDefined();
+      expect(savedFiles[1].csvw).toBeDefined();
+    });
+  });
+
+  describe("getCSVW", () => {
+    it("should return CSVW metadata for a given file identifier", async () => {
+      const mockFile = {
+        filename: "test.csv",
+        size: 1000
+      } as Express.Multer.File;
+      const mockContent = "col1,col2\nval1,val2\nval3,val4";
+      await fs.writeFile(
+        path.join(testUploadDir, mockFile.filename),
+        mockContent
+      );
+      await filesService.uploadFiles([mockFile]);
+      await filesService.createMetadata([mockFile]);
+      const dbEntry = await filesService.getAllFileMetadata();
+
+      const csvw = await filesService.getCSVW(dbEntry[0].identifier);
+      expect(csvw).toBeDefined();
+      await fs.rm(path.join(testUploadDir, mockFile.filename));
+    });
+
+    it("should throw an error if file not found", async () => {
+      await expect(filesService.getCSVW("non-existent-id")).rejects.toThrow(
+        "File not found"
+      );
+    });
+
+    it("should throw an error if CSVW not found", async () => {
+      const mockFile = {
+        filename: "test.csv",
+        size: 1000
+      } as Express.Multer.File;
+      await filesService.uploadFiles([mockFile]);
+      const dbEntry = await filesService.getAllFileMetadata();
+
+      await expect(filesService.getCSVW(dbEntry[0].identifier)).rejects.toThrow(
+        "CSVW not found"
+      );
     });
   });
 });

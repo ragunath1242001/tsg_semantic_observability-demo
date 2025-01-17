@@ -1,6 +1,7 @@
 import {
   Controller,
   Get,
+  Param,
   Post,
   UploadedFiles,
   UseInterceptors
@@ -23,11 +24,17 @@ export class FilesController {
   @Post("upload")
   @UseInterceptors(AnyFilesInterceptor())
   async uploadFile(@UploadedFiles() files: Array<Express.Multer.File>) {
-    return await this.filesService.uploadFiles(files);
+    await this.filesService.uploadFiles(files);
+    return await this.filesService.createMetadata(files);
   }
 
   @Post("sync")
   async syncFiles() {
     return await this.filesService.syncFiles();
+  }
+
+  @Get(":id/csvw")
+  async getCSVW(@Param("id") id: string) {
+    return await this.filesService.getCSVW(id);
   }
 }

@@ -16,6 +16,7 @@ import { RootConfig } from "../config.js";
     LoggingModule
   ],
   controllers: [DataPlaneController, DataPlaneManagementController],
-  providers: [DataPlaneService]
+  providers: [DataPlaneService],
+  exports: [DataPlaneService]
 })
 export class DataPlaneTestModule {}
