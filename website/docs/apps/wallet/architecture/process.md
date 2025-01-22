@@ -92,6 +92,12 @@ sequenceDiagram
     vw ->> i: Retrieve DID document
     i -->> vw: DID document
     vw -> vw: Validate credential signature
+    opt Credential has credentialStatus(es)
+      vw -> vw: Extract credentialStatus
+      vw -> i: Fetch BitstringStatusListCredential
+      i ->> vw: BitstringStatusListCredential
+      vw ->> vw: Verify status at index of credential
+    end
   end
 ```
 
@@ -234,3 +240,11 @@ A more detailed explanation of the steps in the sequence diagram is provided in 
 12. Validate the Verifiable Presentation and validate whether it matches the requested presentation definition.
 13. Return the Verifiable Presentation when all checks are successful.
 14. Response of the original DSP request.
+
+## Credential status protocols
+
+### BitstringStatusList
+
+The TSG Wallet has support for the [Bitstring Status List v1.0](https://www.w3.org/TR/vc-bitstring-status-list/) that allows for providing dynamic statuses for credentials from the perspective of the issuer.
+
+The current implementation supports the `revocation` status purpose for credentials of which the TSG Wallet is the issuer. For credentials issued by external wallet implementations, the TSG Wallet has support to additionally evaluate `refresh`, `suspension`, and `message` purposes.

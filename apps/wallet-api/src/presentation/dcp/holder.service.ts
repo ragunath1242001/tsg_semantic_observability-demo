@@ -11,7 +11,7 @@ import {
 import { CredentialsService } from "../../credentials/credentials.service.js";
 import { Ajv } from "ajv";
 import jsonpath from "jsonpath";
-import { Credentials } from "../../model/credentials.dao.js";
+import { CredentialDao } from "../../model/credentials.dao.js";
 import { AppError } from "../../utils/error.js";
 
 @Injectable()
@@ -35,7 +35,7 @@ export class DCPHolderService {
     this.logger.log(
       `Received presentation request from ${validatedIdToken.tokenPayload.iss}`
     );
-    let matchedCredentials: Credentials[] = [];
+    let matchedCredentials: CredentialDao[] = [];
     if (presentationQueryMessage.presentationDefinition) {
       matchedCredentials = await this.evaluatePresentationDefinition(
         presentationQueryMessage.presentationDefinition
@@ -103,7 +103,7 @@ export class DCPHolderService {
     };
   }
 
-  async getCredentialsByScope(scope: string[]): Promise<Credentials[]> {
+  async getCredentialsByScope(scope: string[]): Promise<CredentialDao[]> {
     const desctructuredScopes = scope.map((scope) => {
       const [alias, ...discriminator] = scope.split(":");
       return {
@@ -162,9 +162,9 @@ export class DCPHolderService {
 
   async evaluatePresentationDefinition(
     presentationDefinition: PresentationDefinition
-  ): Promise<Credentials[]> {
+  ): Promise<CredentialDao[]> {
     const credentials = await this.credentialService.getCredentials();
-    const matchedCredentials: Credentials[] = [];
+    const matchedCredentials: CredentialDao[] = [];
 
     for (const inputDescriptor of presentationDefinition.input_descriptors) {
       this.logger.debug(
@@ -173,7 +173,7 @@ export class DCPHolderService {
         }`
       );
       let matchedInputDescriptorCredentials: {
-        credential: Credentials;
+        credential: CredentialDao;
         weight: number;
       }[] = credentials.map((c) => {
         return {
@@ -251,10 +251,10 @@ export class DCPHolderService {
 
   matchCredential(
     fieldDescriptor: Field,
-    credential: Credentials,
+    credential: CredentialDao,
     // @ts-expect-error: ajv error
     validateFunction?: Ajv.ValidateFunction
-  ): Credentials | undefined {
+  ): CredentialDao | undefined {
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
     let field: any | undefined = undefined;
     for (const path of fieldDescriptor.path) {

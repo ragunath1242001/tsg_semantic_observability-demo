@@ -1,7 +1,7 @@
 import { DidWebStrategy } from "./did.web.strategy.js";
 import { DidServiceConfig, RootConfig } from "../../config.js";
 import { plainToInstance } from "class-transformer";
-import { KeyMaterials } from "../../model/credentials.dao.js";
+import { KeyMaterialDao } from "../../model/credentials.dao.js";
 import { exportJWK, generateKeyPair } from "jose";
 import { DIDDocument } from "did-resolver";
 import { createServices, createVerificationMethods } from "../../utils/did.js";
@@ -16,9 +16,9 @@ describe("DID Web Service", () => {
     }
   });
   const didId: string = "did:web:localhost%3A3000";
-  const keyMaterialGenerator: () => Promise<KeyMaterials> = async () => {
+  const keyMaterialGenerator: () => Promise<KeyMaterialDao> = async () => {
     const keyPair = await generateKeyPair("EdDSA");
-    return plainToInstance(KeyMaterials, {
+    return plainToInstance(KeyMaterialDao, {
       id: "test-key",
       type: "EdDSA",
       default: true,

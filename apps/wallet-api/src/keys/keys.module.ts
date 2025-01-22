@@ -1,5 +1,5 @@
 import { Module } from "@nestjs/common";
-import { KeyMaterials } from "../model/credentials.dao.js";
+import { KeyMaterialDao } from "../model/credentials.dao.js";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { KeysController } from "./keys.controller.js";
 import { KeysService } from "./keys.service.js";
@@ -14,7 +14,7 @@ import { RootConfig } from "../config.js";
   imports: [
     AuthModule.register(RootConfig),
     DidModule,
-    TypeOrmModule.forFeature([KeyMaterials])
+    TypeOrmModule.forFeature([KeyMaterialDao])
   ],
   controllers: [
     KeysController,

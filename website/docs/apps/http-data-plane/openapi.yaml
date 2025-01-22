@@ -1353,8 +1353,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PageDto"
+      security: &a9
+        - oauth2:
+            - controlplane_dataplane
       summary: Get ingress logs
-      tags: &a9
+      tags: &a10
         - Logging
   /api/management/logging/egress:
     get:
@@ -1409,8 +1412,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PageDto"
+      security: *a9
       summary: Get egress logs
-      tags: *a9
+      tags: *a10
 info:
   title: TSG HTTP Data Plane
   description: This OpenAPI specification shows the endpoints of the HTTP Data Plane.

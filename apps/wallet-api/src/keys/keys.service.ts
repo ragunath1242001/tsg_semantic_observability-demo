@@ -8,7 +8,7 @@ import {
 } from "jose";
 import { Not, Repository } from "typeorm";
 import { InitKeyConfig, RootConfig } from "../config.js";
-import { KeyMaterials } from "../model/credentials.dao.js";
+import { KeyMaterialDao } from "../model/credentials.dao.js";
 import { AppError } from "../utils/error.js";
 import { InjectRepository } from "@nestjs/typeorm";
 import { DidService } from "../did/did.service.js";
@@ -18,8 +18,8 @@ import { JsonWebKey } from "crypto";
 export class KeysService {
   constructor(
     private readonly config: RootConfig,
-    @InjectRepository(KeyMaterials)
-    private readonly keyRepository: Repository<KeyMaterials>,
+    @InjectRepository(KeyMaterialDao)
+    private readonly keyRepository: Repository<KeyMaterialDao>,
     private readonly didService: DidService
   ) {
     this.initialized = this.init();
@@ -43,7 +43,7 @@ export class KeysService {
 
   private async insertIfNotExists(
     initKeyConfig: InitKeyConfig
-  ): Promise<KeyMaterials> {
+  ): Promise<KeyMaterialDao> {
     const existing = await this.keyRepository.findOneBy({
       id: initKeyConfig.id
     });
@@ -56,11 +56,11 @@ export class KeysService {
     }
   }
 
-  async getKeys(): Promise<KeyMaterials[]> {
+  async getKeys(): Promise<KeyMaterialDao[]> {
     return this.keyRepository.find({});
   }
 
-  async getKey(keyId: string): Promise<KeyMaterials> {
+  async getKey(keyId: string): Promise<KeyMaterialDao> {
     const key = await this.keyRepository.findOneBy({ id: keyId });
     if (key === null) {
       throw new AppError(
@@ -71,7 +71,7 @@ export class KeysService {
     return key;
   }
 
-  async getDefaultKey(): Promise<KeyMaterials> {
+  async getDefaultKey(): Promise<KeyMaterialDao> {
     const key = await this.keyRepository.findOneBy({ default: true });
     if (key === null) {
       throw new AppError(`No default key present`, HttpStatus.NOT_FOUND).andLog(
@@ -81,7 +81,7 @@ export class KeysService {
     return key;
   }
 
-  async addKey(keyConfig: InitKeyConfig): Promise<KeyMaterials> {
+  async addKey(keyConfig: InitKeyConfig): Promise<KeyMaterialDao> {
     const existing = await this.keyRepository.findOneBy({ id: keyConfig.id });
     if (existing) {
       throw new AppError(
@@ -116,7 +116,7 @@ export class KeysService {
     await this.didService.updateDidDocumentKeys(await this.getKeys());
   }
 
-  async createKeyMaterial(key: InitKeyConfig): Promise<KeyMaterials> {
+  async createKeyMaterial(key: InitKeyConfig): Promise<KeyMaterialDao> {
     this.logger.log(`Loading key material for key ${key.id}`);
     let privateKey: KeyLike;
     let publicKey: KeyLike;

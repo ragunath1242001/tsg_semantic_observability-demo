@@ -54,6 +54,7 @@ async function bootstrap() {
       "Management Gaia-X Credentials",
       "Management Gaia-X Credentials Controller"
     )
+    .addTag("Management Presentation", "Management Presentation Controller")
     .addTag(
       "OpenID 4 Verifiable Credential Issuance",
       "OpenID 4 Verifiable Credential Issuance Controller"

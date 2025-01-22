@@ -9,7 +9,7 @@ import { TypeOrmHealthIndicator } from "@nestjs/terminus";
 import { InjectRepository } from "@nestjs/typeorm";
 import { IsNull, Not, Repository } from "typeorm";
 import { CredentialIssuance } from "./model/issuance.dao.js";
-import { Credentials, KeyMaterials } from "./model/credentials.dao.js";
+import { CredentialDao, KeyMaterialDao } from "./model/credentials.dao.js";
 import { getHeapStatistics } from "v8";
 import { StatusDto } from "@tsg-dsp/wallet-dtos";
 
@@ -20,10 +20,10 @@ export class StatusController {
     private readonly db: TypeOrmHealthIndicator,
     @InjectRepository(CredentialIssuance)
     private readonly issuanceRepository: Repository<CredentialIssuance>,
-    @InjectRepository(Credentials)
-    private readonly credentialRepository: Repository<Credentials>,
-    @InjectRepository(KeyMaterials)
-    private readonly keyRepository: Repository<KeyMaterials>
+    @InjectRepository(CredentialDao)
+    private readonly credentialRepository: Repository<CredentialDao>,
+    @InjectRepository(KeyMaterialDao)
+    private readonly keyRepository: Repository<KeyMaterialDao>
   ) {}
   @Get("/status")
   @ApiOperation({

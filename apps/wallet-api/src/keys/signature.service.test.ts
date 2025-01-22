@@ -2,7 +2,11 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { CredentialsService } from "../credentials/credentials.service.js";
 import { plainToInstance } from "class-transformer";
 import { RootConfig } from "../config.js";
-import { Credentials, KeyMaterials } from "../model/credentials.dao.js";
+import {
+  CredentialDao,
+  KeyMaterialDao,
+  StatusListCredentialDao
+} from "../model/credentials.dao.js";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { DidService } from "../did/did.service.js";
 import { KeysService } from "./keys.service.js";
@@ -36,17 +40,19 @@ describe("Key Service", () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
       imports: [
         TypeOrmTestHelper.instance.module([
-          Credentials,
+          CredentialDao,
+          StatusListCredentialDao,
           DIDDocuments,
           DIDService,
-          KeyMaterials,
+          KeyMaterialDao,
           DIDLogs
         ]),
         TypeOrmModule.forFeature([
-          Credentials,
+          CredentialDao,
+          StatusListCredentialDao,
           DIDDocuments,
           DIDService,
-          KeyMaterials,
+          KeyMaterialDao,
           DIDLogs
         ])
       ],

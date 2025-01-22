@@ -41,7 +41,7 @@ import { loader } from "@guolao/vue-monaco-editor";
 import Drawer from "primevue/drawer";
 import { setJsonLdDebugContexts } from "@tsg-dsp/common-dsp";
 import MeterGroup from "primevue/metergroup";
-import { ColorPicker } from "primevue";
+import { ColorPicker, TabList, TabPanels } from "primevue";
 
 setJsonLdDebugContexts(
   import.meta.env.TSG_STATIC_MODE !== "production",
@@ -96,7 +96,9 @@ app.component("Panel", Panel);
 app.component("SelectButton", SelectButton);
 app.component("Tab", Tab);
 app.component("Tabs", Tabs);
+app.component("TabList", TabList);
 app.component("TabPanel", TabPanel);
+app.component("TabPanels", TabPanels);
 app.component("MonacoEditorVue", MonacoEditorVue);
 
 app.mount("#app");

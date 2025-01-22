@@ -308,6 +308,16 @@ const parsedProperties = computed(() => {
   }
 });
 
+const copyPreAuthorizedCode = (preAuthorizedCode: string) => {
+  navigator.clipboard.writeText(preAuthorizedCode);
+  toast.add({
+    severity: "success",
+    summary: "Copied",
+    detail: "Copied pre authorized code to clipboard",
+    life: 3000
+  });
+};
+
 onMounted(async () => {
   await loadOffers();
   await loadConfig();
@@ -377,14 +387,17 @@ onMounted(async () => {
           <Column field="revoked" header="Revoked">
             <template #body="props">
               <Button
+                class="mr-2"
+                severity="help"
+                icon="pi pi-copy"
+                @click="copyPreAuthorizedCode(props.data.preAuthorizedCode)" />
+              <Button
                 v-if="props.data.revoked"
-                class="ml-4"
                 severity="danger"
                 label="Revoked"
                 disabled />
               <Button
                 v-else
-                class="ml-4"
                 severity="danger"
                 label="&nbsp;Revoke&nbsp;"
                 @click="revokeOffer(props.data.id)" />

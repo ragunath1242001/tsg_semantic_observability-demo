@@ -9,7 +9,8 @@ import {
   JsonWebSignature2020,
   DataIntegrityProof,
   Proof,
-  toArray
+  toArray,
+  BitstringStatusList
 } from "@tsg-dsp/common-dsp";
 import crypto from "crypto";
 import { CredentialsService } from "../credentials/credentials.service.js";
@@ -18,6 +19,15 @@ import { DidService } from "../did/did.service.js";
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { SignatureService } from "../keys/signature.service.js";
 import { AppError } from "../utils/error.js";
+import { Bitstring } from "@digitalbazaar/bitstring";
+import axios from "axios";
+import { base58btcToBase64url } from "../utils/keys/typeconverter.js";
+import { VerifiedCredentialStatus } from "@tsg-dsp/wallet-dtos";
+
+interface CacheEntry {
+  time: number;
+  context: VerifiableCredential<Proof, BitstringStatusList>;
+}
 
 @Injectable()
 export class PresentationService {
@@ -28,6 +38,7 @@ export class PresentationService {
     private readonly didService: DidService
   ) {}
   private readonly logger = new Logger(this.constructor.name);
+  readonly cachedStatusCredentials = new Map<string, CacheEntry>();
 
   async createVerifiablePresentationJsonLd(
     credentialId: string,
@@ -120,7 +131,7 @@ export class PresentationService {
       ? jwtPayload.exp > new Date().getTime() / 1000
       : false;
 
-    const { validateExpiryDate, validateTrustAnchors, validateCredentials } = (
+    const { validExpiryDate, validTrustAnchors, validProof, validStatus } = (
       await Promise.all(
         toArray(vp.verifiableCredential).map((vc) =>
           this.validateCredential(vc)
@@ -129,24 +140,20 @@ export class PresentationService {
     ).reduce(
       (acc, current) => {
         return {
-          validateExpiryDate: [
-            ...acc.validateExpiryDate,
-            current.validateExpiryDate
+          validExpiryDate: [...acc.validExpiryDate, current.validExpiryDate],
+          validTrustAnchors: [
+            ...acc.validTrustAnchors,
+            current.validTrustAnchors
           ],
-          validateTrustAnchors: [
-            ...acc.validateTrustAnchors,
-            current.validateTrustAnchors
-          ],
-          validateCredentials: [
-            ...acc.validateCredentials,
-            current.validateCredentials
-          ]
+          validProof: [...acc.validProof, current.validProof],
+          validStatus: [...acc.validStatus, current.validStatus]
         };
       },
       {
-        validateExpiryDate: [] as boolean[],
-        validateTrustAnchors: [] as boolean[],
-        validateCredentials: [] as boolean[]
+        validExpiryDate: [] as boolean[],
+        validTrustAnchors: [] as boolean[],
+        validProof: [] as boolean[],
+        validStatus: [] as boolean[]
       }
     );
 
@@ -154,45 +161,66 @@ export class PresentationService {
       validateJWTSignature &&
       (validateAudience !== undefined ? validateAudience : true) &&
       validateJWTExpiryDate &&
-      validateCredentials.every((r) => r) &&
-      validateExpiryDate.every((r) => r);
+      validProof.every((r) => r) &&
+      validExpiryDate.every((r) => r) &&
+      validStatus.every((r) => r);
 
     return {
       vp: vpJwt.vp,
       valid: valid,
-      validateExpiryDate: validateExpiryDate,
-      validateCredentials: validateCredentials,
-      validateTrustAnchors: validateTrustAnchors,
+      validExpiryDate: validExpiryDate,
+      validProof: validProof,
+      validStatus: validStatus,
+      validTrustAnchors: validTrustAnchors,
       validateJWTSignature: validateJWTSignature,
       validateJWTExpiryDate: validateJWTExpiryDate,
       validateAudience: validateAudience
     };
   }
 
-  private async validateCredential(credential: VerifiableCredential): Promise<{
-    validateExpiryDate: boolean;
-    validateTrustAnchors: boolean;
-    validateCredentials: boolean;
+  async validateCredential(credential: VerifiableCredential): Promise<{
+    validExpiryDate: boolean;
+    validTrustAnchors: boolean;
+    validProof: boolean;
+    validStatus: boolean;
   }> {
-    let validateExpiryDate = false;
-    let validateTrustAnchors = false;
-    let validateCredentials = false;
+    let validExpiryDate = false;
+    let validTrustAnchors = false;
+    let validProof = false;
+    let validStatus = true;
     try {
       if (credential.validUntil) {
-        validateExpiryDate =
+        validExpiryDate =
           new Date(credential.validUntil).getTime() > new Date().getTime();
       } else if (credential.expirationDate) {
-        validateExpiryDate =
+        validExpiryDate =
           new Date(credential.expirationDate).getTime() > new Date().getTime();
       } else {
-        validateExpiryDate = true;
+        validExpiryDate = true;
+      }
+
+      if (credential.credentialStatus) {
+        for (const status of toArray(credential.credentialStatus)) {
+          if (
+            status.type === "BitstringStatusListEntry" &&
+            ["revocation", "suspension"].includes(status.statusPurpose)
+          ) {
+            const verifiedStatus = await this.verifyCredentialStatus(
+              status.id,
+              status.statusListIndex
+            );
+            if (verifiedStatus.status) {
+              validStatus = false;
+            }
+          }
+        }
       }
 
       const credentialTypes =
         this.config.trustAnchors.find(
           (trustAnchor) => trustAnchor.identifier === credential.issuer
         )?.credentialTypes || [];
-      validateTrustAnchors = credential.type
+      validTrustAnchors = credential.type
         .filter((t) => t !== "VerifiableCredential")
         .every((type) => credentialTypes.includes(type));
 
@@ -222,14 +250,98 @@ export class PresentationService {
             );
           }
         }
-        validateCredentials = true;
+        validProof = true;
       } catch (e) {}
     } finally {
       return {
-        validateExpiryDate,
-        validateTrustAnchors,
-        validateCredentials
+        validExpiryDate: validExpiryDate,
+        validTrustAnchors: validTrustAnchors,
+        validProof: validProof,
+        validStatus: validStatus
       };
+    }
+  }
+
+  private async getStatusCredential(
+    statusListCredential: string,
+    disableCache: boolean = false
+  ): Promise<VerifiableCredential<Proof, BitstringStatusList>> {
+    const cacheEntry = this.cachedStatusCredentials.get(statusListCredential);
+    if (!disableCache && cacheEntry) {
+      if (cacheEntry.time + 24 * 60 * 60 * 1000 > new Date().getTime()) {
+        return cacheEntry.context;
+      }
+    }
+    try {
+      const response =
+        await axios.get<VerifiableCredential<Proof, BitstringStatusList>>(
+          statusListCredential
+        );
+      const parsedCredential = plainToInstance(
+        VerifiableCredential<Proof, BitstringStatusList>,
+        response.data
+      );
+      const validationResult = await this.validateCredential(parsedCredential);
+      if (!validationResult.validProof || !validationResult.validExpiryDate) {
+        throw new AppError(
+          `Could not validate StatusListCredential ${statusListCredential}`,
+          HttpStatus.BAD_REQUEST
+        );
+      }
+      this.cachedStatusCredentials.set(statusListCredential, {
+        time: new Date().getTime(),
+        context: parsedCredential
+      });
+      return parsedCredential;
+    } catch (error) {
+      if (error instanceof AppError) {
+        throw error;
+      }
+      if (axios.isAxiosError(error)) {
+        throw new AppError(
+          `Could not fetch StatusListCredential ${statusListCredential}`,
+          HttpStatus.BAD_REQUEST,
+          error
+        );
+      }
+      throw new AppError(
+        `Unknown error during retrieval of StatusListCredential ${statusListCredential}`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        error
+      );
+    }
+  }
+
+  async verifyCredentialStatus(
+    statusListCredential: string,
+    position: string,
+    disableCache: boolean = false
+  ) {
+    const credential = await this.getStatusCredential(
+      statusListCredential,
+      disableCache
+    );
+    try {
+      let encodedList = toArray(credential.credentialSubject)[0].encodedList;
+      if (encodedList.startsWith("z")) {
+        encodedList = base58btcToBase64url(encodedList.slice(1));
+      } else {
+        encodedList = encodedList.slice(1);
+      }
+      const buffer = await Bitstring.decodeBits({ encoded: encodedList });
+      const bitstring = new Bitstring({ buffer });
+      return plainToInstance(VerifiedCredentialStatus, {
+        statusListCredential: statusListCredential,
+        statusListIndex: position,
+        statusPurpose: toArray(credential.credentialSubject)[0].statusPurpose,
+        status: bitstring.get(parseInt(position))
+      });
+    } catch (error) {
+      throw new AppError(
+        `Could not verify position ${position} in StatusListCredential ${statusListCredential}`,
+        HttpStatus.BAD_REQUEST,
+        error
+      );
     }
   }
 }

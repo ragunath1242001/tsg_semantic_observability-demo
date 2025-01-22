@@ -1,6 +1,6 @@
 import { signingAlgorithm } from "./keymapping.js";
 import { Service, VerificationMethod } from "did-resolver";
-import { KeyMaterials } from "../model/credentials.dao.js";
+import { KeyMaterialDao } from "../model/credentials.dao.js";
 import { DidServiceConfig } from "../config.js";
 import { jwkToMultibase } from "./keys/keyconverter.js";
 
@@ -16,10 +16,10 @@ export const VERIFICATION_METHOD_CONTEXT = [
 ];
 export function createVerificationMethods(
   didId: string,
-  keyMaterials: KeyMaterials[],
+  KeyMaterialDao: KeyMaterialDao[],
   keyFormat: "JWK" | "Multikey"
 ): VerificationMethod[] {
-  return keyMaterials.map((key) => {
+  return KeyMaterialDao.map((key) => {
     if (keyFormat === "Multikey") {
       return {
         id: key.id,

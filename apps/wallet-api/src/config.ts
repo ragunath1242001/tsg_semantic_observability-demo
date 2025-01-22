@@ -70,6 +70,10 @@ export class InitCredentialConfig {
   @IsOptional()
   public readonly keyId?: string;
 
+  @IsBoolean()
+  @IsOptional()
+  public readonly revocable: boolean = true;
+
   @Allow()
   public readonly credentialSubject!: CredentialSubject;
 }

@@ -13,7 +13,7 @@ import {
 } from "@nestjs/common";
 import { CredentialsService } from "./credentials.service.js";
 import { InitCredentialConfig, RootConfig } from "../config.js";
-import { Credentials } from "../model/credentials.dao.js";
+import { CredentialDao } from "../model/credentials.dao.js";
 import { VerifiableCredential } from "@tsg-dsp/common-dsp";
 import { AppError } from "../utils/error.js";
 import { ClientInfo, AppRole } from "@tsg-dsp/wallet-dtos";
@@ -90,7 +90,7 @@ export class CredentialsManagementController {
     type: [CredentialsDto]
   })
   @ApiForbiddenResponseDefault()
-  async getCredentials(@Client() client: ClientInfo): Promise<Credentials[]> {
+  async getCredentials(@Client() client: ClientInfo): Promise<CredentialDao[]> {
     const targetDid = this.targetDid("view", client);
     return this.credentialsService.getCredentials(targetDid);
   }
@@ -113,7 +113,7 @@ export class CredentialsManagementController {
   @ApiForbiddenResponseDefault()
   async getDataspaceCredentials(
     @Query("issuerIds") issuerIds?: string
-  ): Promise<Credentials[]> {
+  ): Promise<CredentialDao[]> {
     return this.credentialsService.getDataspaceCredentials(issuerIds);
   }
 
@@ -152,7 +152,7 @@ export class CredentialsManagementController {
     @Body(validationPipe)
     credentialConfig: InitCredentialConfig,
     @Client() client: ClientInfo
-  ): Promise<Credentials> {
+  ): Promise<CredentialDao> {
     const targetDid = this.targetDid("manage", client);
     return this.credentialsService.issueCredential(credentialConfig, targetDid);
   }
@@ -171,7 +171,7 @@ export class CredentialsManagementController {
   async importCredential(
     @Body() credential: VerifiableCredential,
     @Client() client: ClientInfo
-  ): Promise<Credentials> {
+  ): Promise<CredentialDao> {
     const targetDid = this.targetDid("manage", client);
     return this.credentialsService.importCredential(credential, targetDid);
   }
@@ -211,13 +211,31 @@ export class CredentialsManagementController {
     credentialConfig: InitCredentialConfig,
     @Param("credentialId") credentialId: string,
     @Client() client: ClientInfo
-  ): Promise<Credentials> {
+  ): Promise<CredentialDao> {
     const targetDid = this.targetDid("manage", client);
     return this.credentialsService.updateCredential(
       credentialId,
       credentialConfig,
       targetDid
     );
+  }
+
+  @Post(":credentialId/revoke")
+  @ApiOperation({
+    summary: "Revoke credential",
+    description: "Revoke credential via BitstringStatusList"
+  })
+  @HttpCode(HttpStatus.OK)
+  @ApiOkResponse()
+  @ApiForbiddenResponseDefault()
+  @ApiNotFoundResponseDefault()
+  @ApiOAuth2([AppRole.MANAGE_ALL_CREDENTIALS, AppRole.MANAGE_OWN_CREDENTIALS])
+  async revokeCredential(
+    @Param("credentialId") credentialId: string,
+    @Client() client: ClientInfo
+  ): Promise<void> {
+    const targetDid = this.targetDid("manage", client);
+    return this.credentialsService.revokeCredential(credentialId, targetDid);
   }
 
   @Delete(":credentialId")

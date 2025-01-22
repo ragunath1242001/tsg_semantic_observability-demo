@@ -1,5 +1,14 @@
-import { IsBoolean, IsDate, IsString, ValidateNested } from "class-validator";
-import { Credentials } from "../model/credentials.dao.js";
+import {
+  IsBoolean,
+  IsDate,
+  IsNumber,
+  IsString,
+  ValidateNested
+} from "class-validator";
+import {
+  CredentialDao,
+  StatusListCredentialDao
+} from "../model/credentials.dao.js";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { CredentialSubject, VerifiableCredential } from "@tsg-dsp/common-dsp";
 import { InitCredentialConfig, TrustAnchorConfig } from "../config.js";
@@ -30,7 +39,7 @@ export class CredentialsConfigDto {
   contexts!: JsonLdContextConfigDto[];
 }
 
-export class CredentialsDto implements Credentials {
+export class CredentialsDto implements CredentialDao {
   @IsString()
   @ApiProperty()
   id!: string;
@@ -43,6 +52,12 @@ export class CredentialsDto implements Credentials {
   @IsBoolean()
   @ApiProperty()
   selfIssued!: boolean;
+  @IsBoolean()
+  @ApiProperty()
+  revoked!: boolean;
+  @ApiPropertyOptional()
+  @IsNumber()
+  statusListIndex?: number;
   @IsDate()
   @ApiProperty()
   created!: Date;
@@ -75,4 +90,6 @@ export class CredentialConfigDto implements InitCredentialConfig {
   keyId?: string;
   @ApiProperty({ type: () => CredentialSubject })
   credentialSubject!: CredentialSubject;
+  @ApiProperty()
+  revocable!: boolean;
 }

@@ -16,7 +16,7 @@ import { PresentationService } from "../presentation/presentation.service.js";
 import { VerifiableCredential } from "@tsg-dsp/common-dsp";
 import { plainToInstance } from "class-transformer";
 import { RootConfig } from "../config.js";
-import { Credentials } from "../model/credentials.dao.js";
+import { CredentialDao } from "../model/credentials.dao.js";
 import { SignatureService } from "../keys/signature.service.js";
 import crypto from "crypto";
 
@@ -95,7 +95,7 @@ export class HolderService {
       credentialIdentifier: string;
       additionalRequestParams?: { [key: string]: any };
     };
-  }): Promise<Credentials> {
+  }): Promise<CredentialDao> {
     const issuerMetadata = await this.retrieveIssuerMetadata(config.issuerUrl);
     let accessToken: AccessToken;
     if (config.authorized) {

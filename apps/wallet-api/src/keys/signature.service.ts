@@ -20,7 +20,7 @@ import {
   toArray
 } from "@tsg-dsp/common-dsp";
 import { plainToInstance } from "class-transformer";
-import { KeyMaterials } from "../model/credentials.dao.js";
+import { KeyMaterialDao } from "../model/credentials.dao.js";
 import { signingAlgorithm } from "../utils/keymapping.js";
 import { DidResolverService } from "../did/did.resolver.service.js";
 import { DidService } from "../did/did.service.js";
@@ -112,7 +112,7 @@ export class SignatureService {
     return proofConfigHash;
   }
 
-  private async signAsJws(hash: Buffer, signingKey: KeyMaterials) {
+  private async signAsJws(hash: Buffer, signingKey: KeyMaterialDao) {
     const signature = new CompactSign(hash).setProtectedHeader({
       alg: signingAlgorithm(signingKey.type),
       b64: false,

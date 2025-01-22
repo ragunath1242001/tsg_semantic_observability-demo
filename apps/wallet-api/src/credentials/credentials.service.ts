@@ -8,23 +8,30 @@ import {
 } from "@tsg-dsp/common-dsp";
 import { AppError } from "../utils/error.js";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Credentials } from "../model/credentials.dao.js";
-import { Repository } from "typeorm";
+import {
+  CredentialDao,
+  StatusListCredentialDao
+} from "../model/credentials.dao.js";
+import { Equal, Or, Repository } from "typeorm";
 import { DidService } from "../did/did.service.js";
 import axios from "axios";
 import { SignatureService } from "../keys/signature.service.js";
 import { ServiceEndpoint } from "did-resolver";
 import { DidResolverService } from "../did/did.resolver.service.js";
+import { Bitstring } from "@digitalbazaar/bitstring";
+import { randomInt } from "crypto";
 
 @Injectable()
 export class CredentialsService {
   constructor(
     readonly config: RootConfig,
-    @InjectRepository(Credentials)
-    private readonly credentialRepository: Repository<Credentials>,
+    @InjectRepository(CredentialDao)
+    private readonly credentialRepository: Repository<CredentialDao>,
     private readonly didService: DidService,
     private readonly didResolver: DidResolverService,
-    private readonly signatureService: SignatureService
+    private readonly signatureService: SignatureService,
+    @InjectRepository(StatusListCredentialDao)
+    private readonly statusListCredentialRepository: Repository<StatusListCredentialDao>
   ) {
     this.initialized = this.init();
   }
@@ -33,10 +40,14 @@ export class CredentialsService {
 
   async init() {
     this.logger.log("Initializing CredentialService");
-    await Promise.all(
-      this.config.initCredentials.map((c) => this.insertIfNotExists(c))
-    );
+    for (const key of this.config.initCredentials) {
+      await this.insertIfNotExists(key);
+    }
     return true;
+  }
+
+  private credentialAddress(): string {
+    return `${this.config.server.publicAddress}${process.env["EMBEDDED_FRONTEND"] ? "/api" : ""}/credentials`;
   }
 
   private async insertIfNotExists(
@@ -82,7 +93,7 @@ export class CredentialsService {
     }
   }
 
-  async getCredentials(targetDid?: string): Promise<Credentials[]> {
+  async getCredentials(targetDid?: string): Promise<CredentialDao[]> {
     return this.credentialRepository.find({
       where: {
         targetDid: targetDid
@@ -93,9 +104,12 @@ export class CredentialsService {
   async getCredential(
     credentialId: string,
     targetDid?: string
-  ): Promise<Credentials> {
+  ): Promise<CredentialDao> {
     const credential = await this.credentialRepository.findOneBy({
-      id: credentialId,
+      id: Or(
+        Equal(credentialId),
+        Equal(`${this.credentialAddress()}/${credentialId}`)
+      ),
       targetDid: targetDid
     });
     if (credential === null) {
@@ -111,7 +125,7 @@ export class CredentialsService {
   async issueCredential(
     credentialConfig: InitCredentialConfig,
     targetDid?: string
-  ): Promise<Credentials> {
+  ): Promise<CredentialDao> {
     const existing = await this.credentialRepository.findOneBy({
       id: credentialConfig.id
     });
@@ -124,7 +138,7 @@ export class CredentialsService {
     return await this.selfIssueCredential(credentialConfig, targetDid);
   }
 
-  async getDataspaceCredentials(issuerIds?: string): Promise<Credentials[]> {
+  async getDataspaceCredentials(issuerIds?: string): Promise<CredentialDao[]> {
     try {
       let issuerList: string[];
       if (issuerIds) {
@@ -156,7 +170,7 @@ export class CredentialsService {
 
       const credentials = await Promise.allSettled(
         serviceEndpoints.flatMap(async (serviceEndpoint) => {
-          const response = await axios.get<Credentials[]>(
+          const response = await axios.get<CredentialDao[]>(
             `${serviceEndpoint}/credentials`
           );
           return response.data;
@@ -176,11 +190,14 @@ export class CredentialsService {
   async importCredential(
     credential: VerifiableCredential,
     targetDid?: string
-  ): Promise<Credentials> {
+  ): Promise<CredentialDao> {
     const didId = targetDid || (await this.didService.getDidId());
-    if (!credential.id?.startsWith(`${didId}#`)) {
+    if (
+      !credential.id?.startsWith(`${didId}#`) &&
+      !credential.id?.startsWith("http")
+    ) {
       throw new AppError(
-        "Imported credentials must be have an ID that starts with a DID appended with # and a credential ID",
+        "Imported credentials must be have an ID that starts with a DID appended with # and a credential ID or be a full URL",
         HttpStatus.BAD_REQUEST
       ).andLog(this.logger, "warn");
     }
@@ -196,7 +213,7 @@ export class CredentialsService {
     credentialId: string,
     credential: InitCredentialConfig | VerifiableCredential,
     targetDid?: string
-  ): Promise<Credentials> {
+  ): Promise<CredentialDao> {
     await this.getCredential(credentialId, targetDid);
     if (credential instanceof InitCredentialConfig) {
       return await this.selfIssueCredential(credential, targetDid);
@@ -211,23 +228,24 @@ export class CredentialsService {
   }
 
   async deleteCredential(credentialId: string, targetDid?: string) {
-    const credential = await this.credentialRepository.findOneBy({
-      id: credentialId,
-      targetDid: targetDid
-    });
-    if (credential === null) {
-      throw new AppError(
-        `Credential with identifier ${credentialId} can't be found`,
-        HttpStatus.NOT_FOUND
-      ).andLog(this.logger, "debug");
-    }
+    const credential = await this.getCredential(credentialId, targetDid);
     await this.credentialRepository.remove(credential);
+  }
+
+  private normalizeCredentialId(targetDid: string, credentialId: string) {
+    if (credentialId.startsWith("http")) {
+      return credentialId;
+    }
+    if (credentialId.startsWith(targetDid)) {
+      return credentialId;
+    }
+    return `${targetDid}#${credentialId}`;
   }
 
   async selfIssueCredential(
     credentialConfig: InitCredentialConfig,
     targetDid?: string
-  ): Promise<Credentials> {
+  ): Promise<CredentialDao> {
     this.logger.log(
       `Creating verifiable credential for ${credentialConfig.id}`
     );
@@ -235,13 +253,16 @@ export class CredentialsService {
     const expirationDate = new Date();
     expirationDate.setMonth(expirationDate.getMonth() + 3);
     const target = targetDid ? targetDid : await this.didService.getDidId();
-    const credentialId = credentialConfig.id.startsWith(target)
-      ? credentialConfig.id
-      : `${target}#${credentialConfig.id}`;
+    const credentialId = this.normalizeCredentialId(
+      target,
+      credentialConfig.id
+    );
+
     const credential: Credential<CredentialSubject> = {
-      "@context": ["https://www.w3.org/2018/credentials/v1"].concat(
-        credentialConfig.context
-      ),
+      "@context": [
+        "https://www.w3.org/2018/credentials/v1",
+        "https://www.w3.org/ns/credentials/status/v1"
+      ].concat(credentialConfig.context),
       type: ["VerifiableCredential"].concat(credentialConfig.type),
       id: credentialId,
       issuer: await this.didService.getDidId(),
@@ -249,6 +270,20 @@ export class CredentialsService {
       expirationDate: expirationDate.toISOString(),
       credentialSubject: credentialConfig.credentialSubject
     };
+    let statusListIndex: number | undefined = undefined;
+    let statusListCredential: StatusListCredentialDao | undefined = undefined;
+    if (credentialConfig.revocable) {
+      const statusList = await this.assignStatusListIndex();
+      credential.credentialStatus = {
+        id: `${statusList.statusListCredential.id}#${statusList.statusListIndex}`,
+        type: "BitstringStatusListEntry",
+        statusPurpose: "revocation",
+        statusListIndex: statusList.statusListIndex.toString(),
+        statusListCredential: statusList.statusListCredential.id
+      };
+      statusListIndex = statusList.statusListIndex;
+      statusListCredential = statusList.statusListCredential;
+    }
 
     let proof: Proof;
     if (
@@ -291,7 +326,111 @@ export class CredentialsService {
       id: credentialId,
       targetDid: credentialId.split("#")?.[0],
       credential: verifiableCredential,
-      selfIssued: true
+      selfIssued: true,
+      statusListIndex,
+      statusListCredential
     });
+  }
+
+  private async createEncodedBitstring(revoked: number[]): Promise<string> {
+    const bitstring = new Bitstring({ length: 16384 });
+    for (const position of revoked) {
+      bitstring.set(position, true);
+    }
+    return `u${await bitstring.encodeBits()}`;
+  }
+
+  private async updateStatusListCredential(
+    credentialId: string,
+    revoked: number[]
+  ) {
+    return await this.selfIssueCredential({
+      context: [],
+      type: ["BitstringStatusListCredential"],
+      id: credentialId,
+      keyId: undefined,
+      credentialSubject: {
+        id: `${credentialId}#list`,
+        type: "BitstringStatusList",
+        statusPurpose: "revocation",
+        encodedList: await this.createEncodedBitstring(revoked)
+      },
+      revocable: false
+    });
+  }
+
+  private async createNewStatusListCredential() {
+    try {
+      const index = await this.statusListCredentialRepository.count();
+      const credentialId = `${this.credentialAddress()}/status-${index}`;
+      const credential = await this.updateStatusListCredential(
+        credentialId,
+        []
+      );
+      return await this.statusListCredentialRepository.save({
+        id: credentialId,
+        revoked: [],
+        full: false,
+        credential: credential
+      });
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  async assignStatusListIndex() {
+    let statusListCredential =
+      await this.statusListCredentialRepository.findOneBy({
+        full: false
+      });
+    if (!statusListCredential) {
+      statusListCredential = await this.createNewStatusListCredential();
+    }
+    const linkedCredentialsCount = await this.credentialRepository.countBy({
+      statusListCredential: {
+        id: statusListCredential.id
+      }
+    });
+    if (linkedCredentialsCount >= 1000) {
+      statusListCredential.full = true;
+      await this.statusListCredentialRepository.save(statusListCredential);
+      statusListCredential = await this.createNewStatusListCredential();
+    }
+    let available: boolean;
+    let newIndex: number;
+    do {
+      newIndex = randomInt(0, 16384);
+      available =
+        (await this.credentialRepository.countBy({
+          statusListCredential: {
+            id: statusListCredential.id
+          },
+          statusListIndex: newIndex
+        })) === 0;
+    } while (!available);
+    return {
+      statusListCredential: statusListCredential,
+      statusListIndex: newIndex
+    };
+  }
+
+  async revokeCredential(credentialId: string, targetDid?: string) {
+    const credential = await this.getCredential(credentialId, targetDid);
+    if (!credential.statusListCredential || !credential.statusListIndex) {
+      throw new AppError(
+        `Credential ${credential.id} has no statusListCredential`,
+        HttpStatus.BAD_REQUEST
+      );
+    }
+    const statusListCredential = credential.statusListCredential;
+    statusListCredential.revoked.push(credential.statusListIndex);
+
+    await this.updateStatusListCredential(
+      credential.statusListCredential.id,
+      statusListCredential.revoked
+    );
+    await this.statusListCredentialRepository.save(statusListCredential);
+    credential.revoked = true;
+    await this.credentialRepository.save(credential);
   }
 }

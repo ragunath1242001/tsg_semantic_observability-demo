@@ -1,7 +1,7 @@
 import { Body, Controller, Post } from "@nestjs/common";
 import { AppRole } from "@tsg-dsp/wallet-dtos";
 import { HolderService } from "./holder.service.js";
-import { Credentials } from "../model/credentials.dao.js";
+import { CredentialDao } from "../model/credentials.dao.js";
 import {
   ApiBody,
   ApiOAuth2,
@@ -59,7 +59,7 @@ export class HolderController {
       credentialIdentifier: string;
       additionalRequestParams?: { [key: string]: any };
     }
-  ): Promise<Credentials> {
+  ): Promise<CredentialDao> {
     return this.holderService.requestCredential({
       issuerUrl,
       preAuthorizedCode,

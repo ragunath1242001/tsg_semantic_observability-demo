@@ -1,10 +1,18 @@
 import { JWK } from "jose";
-import { Column, Entity, PrimaryColumn } from "typeorm";
-import { VerifiableCredential, CredentialSubject } from "@tsg-dsp/common-dsp";
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToOne,
+  PrimaryColumn,
+  Relation
+} from "typeorm";
+import { VerifiableCredential } from "@tsg-dsp/common-dsp";
 import { MetaEntity } from "./common.dao.js";
 
-@Entity()
-export class KeyMaterials extends MetaEntity {
+@Entity({ name: "key_materials" })
+export class KeyMaterialDao extends MetaEntity {
   @PrimaryColumn({ type: String })
   id!: string;
 
@@ -24,8 +32,8 @@ export class KeyMaterials extends MetaEntity {
   caChain?: string;
 }
 
-@Entity()
-export class Credentials extends MetaEntity {
+@Entity({ name: "credentials" })
+export class CredentialDao extends MetaEntity {
   @PrimaryColumn({ type: String })
   id!: string;
 
@@ -37,4 +45,30 @@ export class Credentials extends MetaEntity {
 
   @Column({ type: Boolean })
   selfIssued!: boolean;
+
+  @Column({ type: Boolean, default: false })
+  revoked!: boolean;
+
+  @Column({ type: Number, nullable: true })
+  statusListIndex?: number;
+
+  @ManyToOne(() => StatusListCredentialDao, { nullable: true, eager: true })
+  @JoinColumn()
+  statusListCredential?: Relation<StatusListCredentialDao>;
+}
+
+@Entity()
+export class StatusListCredentialDao extends MetaEntity {
+  @PrimaryColumn({ type: String })
+  id!: string;
+
+  @Column({ type: "simple-json" })
+  revoked!: Array<number>;
+
+  @Column({ type: Boolean })
+  full!: boolean;
+
+  @OneToOne(() => CredentialDao)
+  @JoinColumn()
+  credential!: CredentialDao;
 }
