@@ -152,6 +152,36 @@ paths:
       summary: Application status
       tags:
         - Status
+  /api/management/presentation/status:
+    post:
+      description: Get the status of a credential
+      operationId: PresentationManagementController_status
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CredentialStatusRequest"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VerifiedCredentialStatus"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security:
+        - oauth2:
+            - wallet_view_presentations
+      summary: Get the status of a credential
+      tags:
+        - Management Presentation
   /api/presentations:
     get:
       description: Generates a Veriable Presentation in Jwt or JSON-LD format for one
@@ -672,6 +702,38 @@ paths:
             - wallet_manage_all_credentials
             - wallet_manage_own_credentials
       summary: Delete credential
+      tags: *a10
+  /api/management/credentials/{credentialId}/revoke:
+    post:
+      description: Revoke credential via BitstringStatusList
+      operationId: CredentialsManagementController_revokeCredential
+      parameters:
+        - name: credentialId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security:
+        - *a9
+        - oauth2:
+            - wallet_manage_all_credentials
+            - wallet_manage_own_credentials
+      summary: Revoke credential
       tags: *a10
   /api/management/credentials/gaiax/legalRegistrationNumber:
     post:
@@ -1590,6 +1652,8 @@ tags:
     description: Management Credentials Controller
   - name: Management Gaia-X Credentials
     description: Management Gaia-X Credentials Controller
+  - name: Management Presentation
+    description: Management Presentation Controller
   - name: OpenID 4 Verifiable Credential Issuance
     description: OpenID 4 Verifiable Credential Issuance Controller
   - name: Presentation DCP
@@ -1745,6 +1809,37 @@ components:
         - issuance
         - credentials
         - keys
+    CredentialStatusRequest:
+      type: object
+      properties:
+        statusListCredential:
+          type: string
+        statusListIndex:
+          type: string
+      required:
+        - statusListCredential
+        - statusListIndex
+    VerifiedCredentialStatus:
+      type: object
+      properties:
+        statusListCredential:
+          type: string
+        statusListIndex:
+          type: string
+        statusPurpose:
+          type: string
+          enum:
+            - refresh
+            - revocation
+            - suspension
+            - message
+        status:
+          type: boolean
+      required:
+        - statusListCredential
+        - statusListIndex
+        - statusPurpose
+        - status
     VerifiablePresentationJwt:
       type: object
       properties:
@@ -1778,7 +1873,7 @@ components:
       properties:
         type:
           type: string
-          enum: &a24
+          enum: &a25
             - DataIntegrityProof
         proofPurpose:
           type: string
@@ -1867,6 +1962,12 @@ components:
         evidence:
           type: object
           additionalProperties: true
+        credentialStatus:
+          oneOf:
+            - &a23
+              $ref: "#/components/schemas/CredentialStatus"
+            - type: array
+              items: *a23
         proof:
           type: array
           items:
@@ -1892,10 +1993,10 @@ components:
           type: string
         verifiableCredential:
           oneOf:
-            - &a23
+            - &a24
               $ref: "#/components/schemas/VerifiableCredential"
             - type: array
-              items: *a23
+              items: *a24
         proof:
           oneOf:
             - $ref: "#/components/schemas/JsonWebSignature2020"
@@ -1923,15 +2024,19 @@ components:
           type: boolean
         validateJWTExpiryDate:
           type: boolean
-        validateTrustAnchors:
+        validTrustAnchors:
           type: array
           items:
             type: boolean
-        validateExpiryDate:
+        validExpiryDate:
           type: array
           items:
             type: boolean
-        validateCredentials:
+        validProof:
+          type: array
+          items:
+            type: boolean
+        validStatus:
           type: array
           items:
             type: boolean
@@ -1942,9 +2047,10 @@ components:
         - valid
         - validateJWTSignature
         - validateJWTExpiryDate
-        - validateTrustAnchors
-        - validateExpiryDate
-        - validateCredentials
+        - validTrustAnchors
+        - validExpiryDate
+        - validProof
+        - validStatus
     JwtVpClaimFormat:
       type: object
       properties:
@@ -2187,6 +2293,10 @@ components:
           $ref: "#/components/schemas/VerifiableCredential"
         selfIssued:
           type: boolean
+        revoked:
+          type: boolean
+        statusListIndex:
+          type: number
         created:
           format: date-time
           type: string
@@ -2201,6 +2311,7 @@ components:
         - targetDid
         - credential
         - selfIssued
+        - revoked
         - created
         - modified
     CredentialConfigDto:
@@ -2227,9 +2338,12 @@ components:
           type: string
         credentialSubject:
           $ref: "#/components/schemas/CredentialSubject"
+        revocable:
+          type: boolean
       required:
         - id
         - credentialSubject
+        - revocable
     LegalRegistrationNumberRequest:
       type: object
       properties:
@@ -2341,7 +2455,7 @@ components:
       properties:
         type:
           type: string
-          enum: *a24
+          enum: *a25
         proofPurpose:
           type: string
         id:
@@ -2401,10 +2515,10 @@ components:
       properties:
         proof:
           oneOf:
-            - &a25
+            - &a26
               $ref: "#/components/schemas/Proof"
             - type: array
-              items: *a25
+              items: *a26
       required:
         - proof
     ValidateRequest:
@@ -2436,10 +2550,10 @@ components:
           type: string
         serviceEndpoint:
           oneOf:
-            - &a26
+            - &a27
               type: string
             - type: array
-              items: *a26
+              items: *a27
       required:
         - id
         - type
@@ -2449,10 +2563,10 @@ components:
       properties:
         "@context":
           oneOf:
-            - &a27
+            - &a28
               type: string
             - type: array
-              items: *a27
+              items: *a28
         id:
           type: string
         alsoKnownAs:
@@ -2461,10 +2575,10 @@ components:
             type: string
         controller:
           oneOf:
-            - &a28
+            - &a29
               type: string
             - type: array
-              items: *a28
+              items: *a29
         verificationMethod:
           type: array
           items:

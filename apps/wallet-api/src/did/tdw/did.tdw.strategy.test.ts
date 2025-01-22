@@ -1,7 +1,7 @@
 import { plainToInstance } from "class-transformer";
 import { DidServiceConfig, RootConfig } from "../../config.js";
 import { DidTdwStrategy } from "./did.tdw.strategy.js";
-import { KeyMaterials } from "../../model/credentials.dao.js";
+import { KeyMaterialDao } from "../../model/credentials.dao.js";
 import { exportJWK, generateKeyPair } from "jose";
 import { Test, TestingModule } from "@nestjs/testing";
 import { DIDLogs } from "../../model/did.dao.js";
@@ -28,9 +28,9 @@ describe("DID Tdw Service", () => {
     }
   });
   let didId: string = "did:tdw:localhost%3A3000:{SCID}";
-  const keyMaterialGenerator: () => Promise<KeyMaterials> = async () => {
+  const keyMaterialGenerator: () => Promise<KeyMaterialDao> = async () => {
     const keyPair = await generateKeyPair("EdDSA");
-    return plainToInstance(KeyMaterials, {
+    return plainToInstance(KeyMaterialDao, {
       id: "test-key",
       type: "EdDSA",
       default: true,

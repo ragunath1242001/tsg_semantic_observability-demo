@@ -4,7 +4,7 @@ import { plainToInstance } from "class-transformer";
 import { RootConfig } from "../config.js";
 import { TestingModule, Test } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { KeyMaterials } from "../model/credentials.dao.js";
+import { KeyMaterialDao } from "../model/credentials.dao.js";
 import { DIDDocument } from "did-resolver";
 import { generateKeyPair, exportJWK } from "jose";
 import { DIDDocuments, DIDLogs, DIDService } from "../model/did.dao.js";
@@ -16,11 +16,11 @@ describe("DID Service", () => {
   const clone: (input: any) => any = (input: any) => {
     return JSON.parse(JSON.stringify(input));
   };
-  const keyMaterialGenerator: (id: string) => Promise<KeyMaterials> = async (
+  const keyMaterialGenerator: (id: string) => Promise<KeyMaterialDao> = async (
     id: string
   ) => {
     const keypair = await generateKeyPair("EdDSA");
-    return plainToInstance(KeyMaterials, {
+    return plainToInstance(KeyMaterialDao, {
       id: id,
       type: "EdDSA",
       default: true,
@@ -279,11 +279,11 @@ describe("DID Service Multikey-based", () => {
   const clone: (input: any) => any = (input: any) => {
     return JSON.parse(JSON.stringify(input));
   };
-  const keyMaterialGenerator: (id: string) => Promise<KeyMaterials> = async (
+  const keyMaterialGenerator: (id: string) => Promise<KeyMaterialDao> = async (
     id: string
   ) => {
     const keypair = await generateKeyPair("EdDSA");
-    return plainToInstance(KeyMaterials, {
+    return plainToInstance(KeyMaterialDao, {
       id: id,
       type: "EdDSA",
       default: true,

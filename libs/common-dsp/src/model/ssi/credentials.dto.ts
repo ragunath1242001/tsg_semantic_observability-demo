@@ -1,12 +1,22 @@
 import { Type } from "class-transformer";
 import {
   IsDateString,
+  IsEnum,
+  IsHexadecimal,
+  IsIn,
+  IsNumber,
+  IsNumberString,
   IsOptional,
   IsString,
+  IsUrl,
   ValidateNested
 } from "class-validator";
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { OrArray } from "../../utils/unions.js";
+import {
+  ApiProperty,
+  ApiPropertyOptional,
+  getSchemaPath
+} from "@nestjs/swagger";
+import { elementOrArray, OrArray } from "../../utils/unions.js";
 
 export abstract class Proof {
   @ApiProperty({ enum: ["JsonWebSignature2020", "DataIntegrityProof"] })
@@ -105,6 +115,75 @@ export class CredentialSubject {
   [key: string]: any;
 }
 
+export class BitstringStatusList extends CredentialSubject {
+  @ApiProperty({ enum: ["BitstringStatusList"] })
+  @IsEnum(["BitstringStatusList"])
+  type!: "BitstringStatusList";
+
+  @ApiProperty({
+    type: "string",
+    enum: ["refresh", "revocation", "suspension", "message"]
+  })
+  @IsEnum(["refresh", "revocation", "suspension", "message"])
+  statusPurpose!: "refresh" | "revocation" | "suspension" | "message";
+
+  @ApiProperty({ type: "string" })
+  @IsString()
+  encodedList!: string;
+
+  @ApiPropertyOptional()
+  @IsNumber()
+  ttl!: number;
+}
+
+export class CredentialStatus {
+  @ApiProperty()
+  @IsString()
+  id!: string;
+
+  @ApiProperty({ enum: ["BitstringStatusListEntry"] })
+  @IsIn(["BitstringStatusListEntry"])
+  type!: "BitstringStatusListEntry";
+
+  @ApiProperty({ enum: ["refresh", "revocation", "suspension", "message"] })
+  @IsIn(["refresh", "revocation", "suspension", "message"])
+  statusPurpose!: "refresh" | "revocation" | "suspension" | "message";
+
+  @ApiProperty()
+  @IsString()
+  statusListIndex!: string;
+
+  @ApiProperty()
+  @IsString()
+  statusListCredential!: string;
+
+  @ApiPropertyOptional()
+  @IsNumberString()
+  @IsOptional()
+  statusSize?: string;
+
+  @ApiPropertyOptional({ type: () => [StatusMessage] })
+  @ValidateNested()
+  @Type(() => StatusMessage)
+  @IsOptional()
+  statusMessage?: Array<StatusMessage>;
+
+  @ApiPropertyOptional()
+  @IsUrl()
+  @IsOptional()
+  statusReference?: string;
+}
+
+export class StatusMessage {
+  @ApiProperty()
+  @IsHexadecimal()
+  status!: string;
+
+  @ApiProperty()
+  @IsString()
+  message!: string;
+}
+
 export class Credential<T extends CredentialSubject = CredentialSubject> {
   @ApiProperty({
     type: [String],
@@ -161,6 +240,14 @@ export class Credential<T extends CredentialSubject = CredentialSubject> {
   @IsOptional()
   /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   evidence?: any;
+
+  @ApiPropertyOptional(
+    elementOrArray({ $ref: getSchemaPath(CredentialStatus) })
+  )
+  @ValidateNested()
+  @Type(() => CredentialStatus)
+  @IsOptional()
+  credentialStatus?: OrArray<CredentialStatus>;
 }
 
 export class VerifiableCredential<

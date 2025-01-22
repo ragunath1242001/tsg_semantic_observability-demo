@@ -4367,6 +4367,12 @@ components:
         evidence:
           type: object
           additionalProperties: true
+        credentialStatus:
+          oneOf:
+            - &a35
+              $ref: "#/components/schemas/CredentialStatus"
+            - type: array
+              items: *a35
         proof:
           type: array
           items:
@@ -4544,10 +4550,10 @@ components:
           type: string
         serviceEndpoint:
           oneOf:
-            - &a35
+            - &a36
               type: string
             - type: array
-              items: *a35
+              items: *a36
       required:
         - id
         - type
@@ -4557,10 +4563,10 @@ components:
       properties:
         "@context":
           oneOf:
-            - &a36
+            - &a37
               type: string
             - type: array
-              items: *a36
+              items: *a37
         id:
           type: string
         alsoKnownAs:
@@ -4569,10 +4575,10 @@ components:
             type: string
         controller:
           oneOf:
-            - &a37
+            - &a38
               type: string
             - type: array
-              items: *a37
+              items: *a38
         verificationMethod:
           type: array
           items:

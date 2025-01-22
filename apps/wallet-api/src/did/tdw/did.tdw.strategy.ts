@@ -2,7 +2,7 @@ import { HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { DidStrategy } from "../did.service.js";
 import { DidServiceConfig, RootConfig } from "../../config.js";
 import { DIDDocument, Service } from "did-resolver";
-import { KeyMaterials } from "../../model/credentials.dao.js";
+import { KeyMaterialDao } from "../../model/credentials.dao.js";
 import { AppError } from "../../utils/error.js";
 import { InjectRepository } from "@nestjs/typeorm";
 import { DIDLogs } from "../../model/did.dao.js";
@@ -79,7 +79,7 @@ export class DidTdwStrategy implements DidStrategy {
   async createDidDocAndSaveLog(
     config: RootConfig,
     didId: string,
-    keys: KeyMaterials[],
+    keys: KeyMaterialDao[],
     services: DidServiceConfig[]
   ): Promise<{
     did: string;
@@ -109,7 +109,7 @@ export class DidTdwStrategy implements DidStrategy {
   async createDidDocument(
     config: RootConfig,
     didId: string,
-    keys: KeyMaterials[],
+    keys: KeyMaterialDao[],
     services: DidServiceConfig[]
   ): Promise<{ didId: string; didDocument: DIDDocument }> {
     this.logger.log("Creating DID document");
@@ -186,7 +186,7 @@ export class DidTdwStrategy implements DidStrategy {
     return updated.doc;
   }
 
-  async setDefaultKey(didDocument: DIDDocument, key: KeyMaterials) {
+  async setDefaultKey(didDocument: DIDDocument, key: KeyMaterialDao) {
     if (!this.currUpdateKey) {
       this.currUpdateKey = {
         publicKeyMultibase: jwkToMultibase(key.publicKey),

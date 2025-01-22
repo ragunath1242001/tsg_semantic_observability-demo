@@ -1,6 +1,6 @@
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { DIDDocument, Service, VerificationMethod } from "did-resolver";
-import { KeyMaterials } from "../model/credentials.dao.js";
+import { KeyMaterialDao } from "../model/credentials.dao.js";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Like, Repository } from "typeorm";
 import { DidServiceConfig, RootConfig } from "../config.js";
@@ -19,7 +19,7 @@ export interface DidStrategy {
   createDidDocument(
     config: RootConfig,
     didId: string,
-    keys: KeyMaterials[],
+    keys: KeyMaterialDao[],
     services: DidServiceConfig[]
   ): Promise<{ didId: string; didDocument: DIDDocument }>;
   updateDidDocument(
@@ -27,7 +27,7 @@ export interface DidStrategy {
     verificationMethods?: VerificationMethod[],
     services?: Service[]
   ): Promise<DIDDocument>;
-  setDefaultKey(didDocument: DIDDocument, key: KeyMaterials): void;
+  setDefaultKey(didDocument: DIDDocument, key: KeyMaterialDao): void;
 }
 
 @Injectable()
@@ -197,7 +197,7 @@ export class DidService {
   }
 
   async checkExistingDidDocument(
-    defaultKey: KeyMaterials
+    defaultKey: KeyMaterialDao
   ): Promise<DIDDocument> {
     let existingDidDocument: DIDDocument;
     try {
@@ -218,7 +218,7 @@ export class DidService {
     return existingDidDocument;
   }
 
-  async createDidDocument(keys: KeyMaterials[]): Promise<DIDDocument> {
+  async createDidDocument(keys: KeyMaterialDao[]): Promise<DIDDocument> {
     const { didId, didDocument } = await this.didStrategy.createDidDocument(
       this.config,
       this.didId,
@@ -235,7 +235,7 @@ export class DidService {
     return didDocument;
   }
 
-  async updateDidDocumentKeys(keys: KeyMaterials[]) {
+  async updateDidDocumentKeys(keys: KeyMaterialDao[]) {
     let didDocument = await this.getDid();
     didDocument = await this.didStrategy.updateDidDocument(
       didDocument,
@@ -259,7 +259,7 @@ export class DidService {
     await this.saveDidDocument(didDocument);
   }
 
-  async setDidDefaultKey(key: KeyMaterials) {
+  async setDidDefaultKey(key: KeyMaterialDao) {
     this.didStrategy.setDefaultKey(await this.getDid(), key);
   }
 }

@@ -2,7 +2,11 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { CredentialsService } from "../../credentials/credentials.service.js";
 import { plainToInstance } from "class-transformer";
 import { RootConfig } from "../../config.js";
-import { Credentials, KeyMaterials } from "../../model/credentials.dao.js";
+import {
+  CredentialDao,
+  KeyMaterialDao,
+  StatusListCredentialDao
+} from "../../model/credentials.dao.js";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { DidService } from "../../did/did.service.js";
 import { KeysService } from "../../keys/keys.service.js";
@@ -69,18 +73,20 @@ describe("Presentation Service", () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
       imports: [
         TypeOrmTestHelper.instance.module([
-          Credentials,
+          CredentialDao,
+          StatusListCredentialDao,
           DIDDocuments,
           DIDService,
-          KeyMaterials,
+          KeyMaterialDao,
           SIToken,
           DIDLogs
         ]),
         TypeOrmModule.forFeature([
-          Credentials,
+          CredentialDao,
+          StatusListCredentialDao,
           DIDDocuments,
           DIDService,
-          KeyMaterials,
+          KeyMaterialDao,
           SIToken,
           DIDLogs
         ])
@@ -124,7 +130,13 @@ describe("Presentation Service", () => {
           );
           return HttpResponse.json(result);
         }
-      )
+      ),
+      http.get("http://localhost:3000/credentials/status-0", async () => {
+        const credentialDao = await moduleRef
+          .get(CredentialsService)
+          .getCredential("http://localhost:3000/credentials/status-0");
+        return HttpResponse.json(credentialDao.credential);
+      })
     );
     server.listen({ onUnhandledRequest: "warn" });
   });

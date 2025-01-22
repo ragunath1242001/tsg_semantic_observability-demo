@@ -2,7 +2,10 @@ import { Module } from "@nestjs/common";
 import { CredentialsController } from "./credentials.controller.js";
 import { CredentialsService } from "./credentials.service.js";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { Credentials } from "../model/credentials.dao.js";
+import {
+  CredentialDao,
+  StatusListCredentialDao
+} from "../model/credentials.dao.js";
 import { DidModule } from "../did/did.module.js";
 import { KeysModule } from "../keys/keys.module.js";
 import { CredentialsManagementController } from "./credentials.management.controller.js";
@@ -18,7 +21,7 @@ import { RootConfig } from "../config.js";
     DidModule,
     KeysModule,
     ContextModule,
-    TypeOrmModule.forFeature([Credentials])
+    TypeOrmModule.forFeature([CredentialDao, StatusListCredentialDao])
   ],
   controllers: [
     CredentialsController,

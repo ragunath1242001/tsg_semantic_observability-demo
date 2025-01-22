@@ -101,15 +101,19 @@ export class PresentationValidation extends VerifiablePresentationJwt {
 
   @ApiProperty({ type: () => [Boolean] })
   @IsBoolean({ each: true })
-  validateTrustAnchors!: Array<boolean>;
+  validTrustAnchors!: Array<boolean>;
 
   @ApiProperty({ type: () => [Boolean] })
   @IsBoolean({ each: true })
-  validateExpiryDate!: Array<boolean>;
+  validExpiryDate!: Array<boolean>;
 
   @ApiProperty({ type: () => [Boolean] })
   @IsBoolean({ each: true })
-  validateCredentials!: Array<boolean>;
+  validProof!: Array<boolean>;
+
+  @ApiProperty({ type: () => [Boolean] })
+  @IsBoolean({ each: true })
+  validStatus!: Array<boolean>;
 
   @ApiPropertyOptional()
   @IsBoolean()

@@ -2,7 +2,11 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { CredentialsService } from "./credentials.service.js";
 import { plainToInstance } from "class-transformer";
 import { InitCredentialConfig, RootConfig } from "../config.js";
-import { Credentials, KeyMaterials } from "../model/credentials.dao.js";
+import {
+  CredentialDao,
+  KeyMaterialDao,
+  StatusListCredentialDao
+} from "../model/credentials.dao.js";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { DidService } from "../did/did.service.js";
 import { KeysService } from "../keys/keys.service.js";
@@ -134,17 +138,19 @@ describe("Credentials Service", () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
       imports: [
         TypeOrmTestHelper.instance.module([
-          Credentials,
+          CredentialDao,
+          StatusListCredentialDao,
           DIDDocuments,
           DIDService,
-          KeyMaterials,
+          KeyMaterialDao,
           DIDLogs
         ]),
         TypeOrmModule.forFeature([
-          Credentials,
+          CredentialDao,
+          StatusListCredentialDao,
           DIDDocuments,
           DIDService,
-          KeyMaterials,
+          KeyMaterialDao,
           DIDLogs
         ])
       ],
@@ -164,6 +170,7 @@ describe("Credentials Service", () => {
     credentialsService = moduleRef.get(CredentialsService);
     await credentialsService.initialized;
     await credentialsService.init();
+    await moduleRef.get(KeysService).initialized;
     didId = await moduleRef.get(DidService).getDidId();
   });
 
@@ -174,7 +181,7 @@ describe("Credentials Service", () => {
 
   describe("Credentials CRUD", () => {
     it("Get credentials initial credentials", async () => {
-      expect(await credentialsService.getCredentials()).toHaveLength(1);
+      expect(await credentialsService.getCredentials()).toHaveLength(2);
     });
     it("Issue Credential", async () => {
       const credential = await credentialsService.issueCredential({
@@ -182,6 +189,7 @@ describe("Credentials Service", () => {
         type: [],
         id: `test-credential`,
         keyId: "key-0",
+        revocable: false,
         credentialSubject: {
           id: didId
         }
@@ -192,6 +200,7 @@ describe("Credentials Service", () => {
           context: [],
           type: [],
           id: "did:web:external-did.com#test-credential",
+          revocable: false,
           credentialSubject: {
             id: didId
           }
@@ -204,12 +213,13 @@ describe("Credentials Service", () => {
           context: [],
           type: [],
           id: `${didId}#test-credential`,
+          revocable: false,
           credentialSubject: {
             id: didId
           }
         })
       ).rejects.toThrow("already exists");
-      expect(await credentialsService.getCredentials()).toHaveLength(3);
+      expect(await credentialsService.getCredentials()).toHaveLength(4);
     });
     it("Import credential", async () => {
       const testCredential = await credentialsService.getCredential(
@@ -399,6 +409,75 @@ describe("Credentials Service", () => {
       );
       expect(result).toHaveLength(1);
       expect(result).toEqual(expect.arrayContaining(mockCredentials));
+    });
+  });
+  describe("Credential Revocation", () => {
+    it("Generate test credentials", async () => {
+      const credentials = [];
+      for (let i = 0; i < 5; i++) {
+        credentials.push(
+          await credentialsService.issueCredential({
+            context: [],
+            type: [],
+            id: `test-credential-${i}`,
+            keyId: "key-0",
+            revocable: true,
+            credentialSubject: {
+              id: didId
+            }
+          })
+        );
+      }
+      const statusCredentialPreRevocation =
+        await credentialsService.getCredential(
+          credentials[0].statusListCredential!.id
+        );
+      await credentialsService.revokeCredential(credentials[2].id);
+      const statusListCredential = await credentialsService[
+        "statusListCredentialRepository"
+      ].findOneBy({ id: credentials[0].statusListCredential!.id });
+      expect(statusListCredential!.revoked).toContain(
+        credentials[2].statusListIndex!
+      );
+
+      const statusCredentialPostRevocation =
+        await credentialsService.getCredential(
+          credentials[0].statusListCredential!.id
+        );
+      expect(
+        toArray(statusCredentialPreRevocation.credential.credentialSubject)[0]
+          .encodedList
+      ).not.toBe(
+        toArray(statusCredentialPostRevocation.credential.credentialSubject)[0]
+          .encodedList
+      );
+    });
+    it("Generate test credentials", async () => {
+      const credentials = [];
+      const start = new Date().getTime();
+      for (let i = 0; i < 1100; i++) {
+        const credential = await credentialsService.issueCredential({
+          context: [],
+          type: [],
+          id: `test-credential-${i}`,
+          keyId: "key-0",
+          revocable: true,
+          credentialSubject: {
+            id: didId
+          }
+        });
+        if (i % 100 === 0) {
+          console.log(
+            `Issued ${i} credentials after ${new Date().getTime() - start}ms`
+          );
+        }
+        if (i == 0 || i == 1099) {
+          credentials.push(credential);
+        }
+      }
+      expect(credentials[0].statusListCredential?.id).not.toBe(
+        credentials[1].statusListCredential?.id
+      );
     });
   });
 });

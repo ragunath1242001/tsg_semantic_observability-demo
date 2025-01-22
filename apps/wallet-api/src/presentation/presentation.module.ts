@@ -14,6 +14,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { DCPHolderService } from "./dcp/holder.service.js";
 import { DCPHolderManagementController } from "./dcp/holder.management.controller.js";
 import { AuthModule } from "@tsg-dsp/common-api";
+import { PresentationManagementController } from "./presentation.management.controller.js";
 
 @Module({})
 export class PresentationModule {
@@ -27,7 +28,7 @@ export class PresentationModule {
         DidModule
       ],
       global: true,
-      controllers: [],
+      controllers: [PresentationManagementController],
       providers: [PresentationService],
       exports: [PresentationService]
     };

@@ -4,7 +4,11 @@ import { plainToInstance } from "class-transformer";
 import { RootConfig } from "../config.js";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { Credentials, KeyMaterials } from "../model/credentials.dao.js";
+import {
+  CredentialDao,
+  KeyMaterialDao,
+  StatusListCredentialDao
+} from "../model/credentials.dao.js";
 import { CredentialsService } from "../credentials/credentials.service.js";
 import { DidService } from "../did/did.service.js";
 import { DidResolverService } from "../did/did.resolver.service.js";
@@ -59,20 +63,22 @@ describe("Issuer service", () => {
     moduleRef = await Test.createTestingModule({
       imports: [
         TypeOrmTestHelper.instance.module([
-          Credentials,
+          CredentialDao,
+          StatusListCredentialDao,
           DIDDocuments,
           DIDService,
-          KeyMaterials,
+          KeyMaterialDao,
           CredentialIssuance,
           CIAccessToken,
           JSONLDContext,
           DIDLogs
         ]),
         TypeOrmModule.forFeature([
-          Credentials,
+          CredentialDao,
+          StatusListCredentialDao,
           DIDDocuments,
           DIDService,
-          KeyMaterials,
+          KeyMaterialDao,
           CredentialIssuance,
           CIAccessToken,
           JSONLDContext,

@@ -18,7 +18,7 @@ C4Component
         Rel(issuance, keys, "")
         %% Rel(issuance, db, "CredentialIssuance,CIAccessTokens")
         Rel(keys, did, "")
-        %% Rel(keys, db, "KeyMaterials")
+        %% Rel(keys, db, "KeyMaterialDao")
         Rel(presentation, cred, "")
         Rel(presentation, keys, "")
         %% Rel(presentation, db, "SITokens")

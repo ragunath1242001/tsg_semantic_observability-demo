@@ -2,7 +2,7 @@ import { Logger } from "@nestjs/common";
 import { DidStrategy } from "../did.service.js";
 import { DidServiceConfig, RootConfig } from "../../config.js";
 import { DIDDocument, Service, VerificationMethod } from "did-resolver";
-import { KeyMaterials } from "../../model/credentials.dao.js";
+import { KeyMaterialDao } from "../../model/credentials.dao.js";
 import {
   createServices,
   createVerificationMethods,
@@ -19,7 +19,7 @@ export class DidWebStrategy implements DidStrategy {
   async createDidDocument(
     config: RootConfig,
     didId: string,
-    keys: KeyMaterials[],
+    keys: KeyMaterialDao[],
     services: DidServiceConfig[]
   ): Promise<{ didId: string; didDocument: DIDDocument }> {
     this.logger.log("Creating DID document");
@@ -68,7 +68,7 @@ export class DidWebStrategy implements DidStrategy {
     return didDocument;
   }
 
-  async setDefaultKey(didDocument: DIDDocument, key: KeyMaterials) {}
+  async setDefaultKey(didDocument: DIDDocument, key: KeyMaterialDao) {}
 
   getWellKnownDidDocument(doc: DIDDocument): DIDDocument {
     return doc;
