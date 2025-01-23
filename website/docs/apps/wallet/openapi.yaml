@@ -1906,6 +1906,50 @@ components:
         - proofPurpose
         - cryptosuite
         - proofValue
+    StatusMessage:
+      type: object
+      properties:
+        status:
+          type: string
+        message:
+          type: string
+      required:
+        - status
+        - message
+    CredentialStatus:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          enum:
+            - BitstringStatusListEntry
+        statusPurpose:
+          type: string
+          enum:
+            - refresh
+            - revocation
+            - suspension
+            - message
+        statusListIndex:
+          type: string
+        statusListCredential:
+          type: string
+        statusSize:
+          type: string
+        statusMessage:
+          type: array
+          items:
+            $ref: "#/components/schemas/StatusMessage"
+        statusReference:
+          type: string
+      required:
+        - id
+        - type
+        - statusPurpose
+        - statusListIndex
+        - statusListCredential
     CredentialSubject:
       type: object
       properties:
