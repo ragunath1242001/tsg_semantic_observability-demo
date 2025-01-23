@@ -12,6 +12,7 @@ import {
   ValidateNested
 } from "class-validator";
 import {
+  ApiExtraModels,
   ApiProperty,
   ApiPropertyOptional,
   getSchemaPath
@@ -184,6 +185,7 @@ export class StatusMessage {
   message!: string;
 }
 
+@ApiExtraModels(CredentialStatus)
 export class Credential<T extends CredentialSubject = CredentialSubject> {
   @ApiProperty({
     type: [String],

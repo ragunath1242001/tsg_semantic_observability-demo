@@ -62,15 +62,18 @@ const verifierResponse = ref<{
 
 const requestHolderIDToken = async () => {
   try {
-    const response = await http<{ id_token: string }>("dcp/holder/token", {
-      params: {
-        audience: holderForm.value.audience,
-        scope:
-          holderForm.value.scope.trim() === ""
-            ? undefined
-            : holderForm.value.scope
+    const response = await http<{ id_token: string }>(
+      "management/dcp/holder/token",
+      {
+        params: {
+          audience: holderForm.value.audience,
+          scope:
+            holderForm.value.scope.trim() === ""
+              ? undefined
+              : holderForm.value.scope
+        }
       }
-    });
+    );
     holderIdToken.value = response.data.id_token;
     if (holderForm.value.audience === userStore.user?.didId) {
       verifierForm.value.holderIDToken = response.data.id_token;
@@ -90,7 +93,7 @@ const requestVerification = async () => {
   verifierResponse.value = undefined;
   try {
     const response = await http.post<VerifiablePresentation>(
-      "dcp/verifier/verify",
+      "management/dcp/verifier/verify",
       {
         holderIdToken: verifierForm.value.holderIDToken,
         presentationDefinition: JSON.parse(

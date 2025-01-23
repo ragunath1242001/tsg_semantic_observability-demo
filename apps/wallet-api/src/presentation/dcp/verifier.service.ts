@@ -60,17 +60,17 @@ export class DCPVerifierService {
     const didDocument = await this.didResolver.resolve(
       verifiedHolderIdToken.iss!
     );
-    const presentationService = didDocument.service?.find(
+    const credentialService = didDocument.service?.find(
       (s) => s.type === "CredentialService"
     );
 
-    if (!presentationService) {
+    if (!credentialService) {
       throw new AppError(
-        `No presentation service present in holder DID document`,
+        `No credential service present in holder DID document`,
         HttpStatus.BAD_REQUEST
       ).andLog(this.logger, "error");
     }
-    const serviceEndpoint = toArray(presentationService.serviceEndpoint)[0];
+    const serviceEndpoint = toArray(credentialService.serviceEndpoint)[0];
 
     if (!serviceEndpoint || typeof serviceEndpoint !== "string") {
       throw new AppError(
