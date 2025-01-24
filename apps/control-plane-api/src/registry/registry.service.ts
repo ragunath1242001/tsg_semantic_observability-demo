@@ -65,15 +65,14 @@ export class RegistryService implements OnApplicationBootstrap {
       this.logger.debug("No credentials found. Registry will not work.");
       return [];
     }
+    const uniqueDids = [...new Set(credentials.map((c) => c.targetDid))];
     const didDocuments = await Promise.all(
-      credentials.map(async (credential) => {
+      uniqueDids.map(async (did) => {
         try {
-          return await this.vcAuthService.walletClient.resolveDidDocument(
-            credential.targetDid
-          );
+          return await this.vcAuthService.walletClient.resolveDidDocument(did);
         } catch (e) {
           this.logger.warn(
-            `Could not resolve did document for ${credential.targetDid}, error: ${e}`
+            `Could not resolve did document for ${did}, error: ${e}`
           );
         }
       })
@@ -86,15 +85,17 @@ export class RegistryService implements OnApplicationBootstrap {
   async fetchAddresses(): Promise<CredentialAddress[]> {
     const didDocuments = await this.fetchDidDocuments();
     const credentialAddresses = didDocuments.flatMap((didDocument) => {
-      return didDocument
-        .service!.filter((service) => service.type === "connector")
-        .filter((service) => typeof service.serviceEndpoint === "string")
-        .map((service) => {
-          return {
-            didId: didDocument.id,
-            address: service.serviceEndpoint as string
-          };
-        });
+      return (
+        didDocument.service
+          ?.filter((service) => service.type === "connector")
+          ?.filter((service) => typeof service.serviceEndpoint === "string")
+          ?.map((service) => {
+            return {
+              didId: didDocument.id,
+              address: service.serviceEndpoint as string
+            };
+          }) ?? []
+      );
     });
 
     // Return unique addresses

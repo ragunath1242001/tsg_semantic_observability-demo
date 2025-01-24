@@ -4,6 +4,7 @@ import { DidWebResolverStrategy } from "./web/did.web.resolver.strategy.js";
 import { DidTdwResolverStrategy } from "./tdw/did.tdw.resolver.strategy.js";
 import { DIDMethod } from "../utils/did.js";
 import { AppError } from "../utils/error.js";
+import { DidKeyResolverStrategy } from "./key/did.key.resolver.strategy.js";
 
 export interface DidResolverStrategy {
   resolve(didId: string): Promise<DIDDocument>;
@@ -16,7 +17,8 @@ export class DidResolverService {
   constructor() {
     this.strategies = new Map<string, DidResolverStrategy>([
       [DIDMethod.WEB, new DidWebResolverStrategy()],
-      [DIDMethod.TDW, new DidTdwResolverStrategy()]
+      [DIDMethod.TDW, new DidTdwResolverStrategy()],
+      [DIDMethod.KEY, new DidKeyResolverStrategy()]
     ]);
   }
 

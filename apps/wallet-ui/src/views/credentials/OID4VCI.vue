@@ -14,6 +14,7 @@ import Ajv, { JSONSchemaType } from "ajv";
 import http from "@tsg-dsp/common-ui/utils/http";
 import { formatDate } from "@tsg-dsp/common-ui/utils/date";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
+import QRCode from "qrcode";
 
 interface OfferForm {
   holderId: string;
@@ -25,9 +26,14 @@ interface OfferForm {
   credentialValidation?: string;
 }
 
+type CredentialOfferStatusEnhanced = CredentialOfferStatus & {
+  credentialOfferUrl?: string;
+  credentialOfferQr?: string;
+};
+
 const toast = useToast();
 
-const offers = ref<CredentialOfferStatus[]>();
+const offers = ref<CredentialOfferStatusEnhanced[]>();
 const config = ref<CredentialConfig>();
 const expandedRows = ref<Array<any>>();
 const issuerUrl = ref(window.location.origin);
@@ -76,6 +82,20 @@ const loadOffers = async () => {
   try {
     const response = await http<CredentialOfferStatus[]>("oid4vci/offer");
     offers.value = response.data;
+    for (const status of offers.value) {
+      const credentialOffer = {
+        credential_issuer: issuerUrl.value,
+        credential_configuration_ids: [status.credentialType],
+        grants: {
+          "urn:ietf:params:oauth:grant-type:pre-authorized_code": {
+            "pre-authorized_code": status.preAuthorizedCode
+          }
+        }
+      };
+      const url = `openid-credential-offer://?credential_offer=${encodeURIComponent(JSON.stringify(credentialOffer))}`;
+      status.credentialOfferUrl = url;
+      status.credentialOfferQr = await QRCode.toDataURL(url);
+    }
   } catch (error) {
     toast.add(
       toastError({
@@ -128,7 +148,7 @@ const updateCredentialSubject = () => {
 };
 
 const validateCredentialSubject = (showToast: boolean) => {
-  const didMethods: string[] = ["did:web:", "did:tdw:"];
+  const didMethods: string[] = ["did:web:", "did:tdw:", "did:key:"];
   try {
     let credentialSubject;
     try {
@@ -416,6 +436,11 @@ onMounted(async () => {
             <FormField label="Credential Type"
               ><code>{{ props.data.credentialType }}</code></FormField
             >
+            <FormField label="Credential Offer QR">
+              <a :href="props.data.credentialOfferUrl" target="_blank"
+                ><img :src="props.data.credentialOfferQr"
+              /></a>
+            </FormField>
             <FormField label="Credential Subject">
               <MonacoEditorVue
                 :static="props.data.credentialSubject"
@@ -452,7 +477,7 @@ onMounted(async () => {
               class="w-full"
               v-model="offerForm.holderId"
               placeholder="did:..."
-              pattern="did:(web|tdw):.*"
+              pattern="did:(web|tdw|key):.*"
               validation-message="Target DID must be a DID web"
               required />
           </FormField>

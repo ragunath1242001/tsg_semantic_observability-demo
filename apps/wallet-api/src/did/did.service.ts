@@ -56,7 +56,9 @@ export class DidService {
       case DIDMethod.TDW:
         return new DidTdwStrategy(this.didLogsRepository);
       default:
-        throw Error("DID method is not supported");
+        throw Error(
+          `DID method ${didMethod} is not supported to provide DID from the TSG Wallet`
+        );
     }
   }
 
