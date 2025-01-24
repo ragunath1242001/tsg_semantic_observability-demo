@@ -49,7 +49,7 @@ contexts:
       properties:
         id:
           type: string
-          pattern: "^did:web:.*"
+          pattern: "^did:.*"
         scsnIdentifier:
           type: string
           pattern: "^urn:scsn:.*"
@@ -79,7 +79,7 @@ contexts:
           const: "gx:LegalParticipant"
         id:
           type: string
-          pattern: "^did:web:.*"
+          pattern: "^did:.*"
         gx:legalName:
           type: string
         gx:legalRegistrationNumber:
@@ -130,7 +130,7 @@ contexts:
           const: "gx:GaiaXTermsAndConditions"
         id:
           type: string
-          pattern: "^did:web:.*"
+          pattern: "^did:.*"
         gx:termsAndConditions:
           type: string
       required:

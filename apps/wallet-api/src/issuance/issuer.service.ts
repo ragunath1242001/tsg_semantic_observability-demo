@@ -213,6 +213,12 @@ export class IssuerService {
   }
 
   async createAccessToken(preAuthorizedCode: string): Promise<AccessToken> {
+    if (!preAuthorizedCode) {
+      throw new AppError(
+        "No pre-authorization code provided",
+        HttpStatus.BAD_REQUEST
+      ).andLog(this.logger);
+    }
     const issuance = await this.issuanceRepository.findOneBy({
       preAuthorizedCode: preAuthorizedCode
     });
@@ -288,7 +294,7 @@ export class IssuerService {
         throw new AppError(
           `Could not find publicKeyJwk for ${parsedJwtHeader.kid} in DID document`,
           HttpStatus.BAD_REQUEST
-        );
+        ).andLog(this.logger);
       }
       const key = await importJWK(usedJwk.publicKeyJwk);
       const verifiedJwt = await jwtVerify(credentialRequest.proof.jwt, key);
