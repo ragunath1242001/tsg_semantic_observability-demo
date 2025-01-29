@@ -1,7 +1,16 @@
 <script setup lang="ts">
+import { DataTableCellEditCompleteEvent } from "primevue";
+
 const pairs = defineModel<{ key: string; value: string }[]>();
 
-const onCellEditComplete = (event) => {
+const onValueChange = (field: string, newValue: string) => {
+  const pair = pairs.value.find((pair) => pair.key === field);
+  if (pair) {
+    pair.value = newValue;
+  }
+};
+
+const onCellEditComplete = (event: DataTableCellEditCompleteEvent) => {
   let { data, newValue, field, index } = event;
   data[field] = newValue;
   if (index == pairs.value.length && (data.key != "" || data.value != "")) {
@@ -60,7 +69,13 @@ const onCellEditComplete = (event) => {
         </div>
       </template>
       <template #editor="props">
-        <InputText v-model="props.data.value" autofocus class="w-full" />
+        <InputText
+          v-model="props.data.value"
+          autofocus
+          class="w-full"
+          @value-change="
+            (newValue) => onValueChange(props.data.key, newValue)
+          " />
       </template>
     </Column>
     <Column style="width: 10%">

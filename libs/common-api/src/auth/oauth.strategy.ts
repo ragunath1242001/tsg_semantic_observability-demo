@@ -30,6 +30,7 @@ export class OAuthStrategy extends PassportStrategy(Strategy, "oauth", 5) {
       if (profile["access_token"]) {
         return decodeJwt(profile["access_token"]);
       }
+      Logger.debug("No access token found in profile", "OAuthStrategy");
     } catch (err) {
       Logger.log(`Error in validating: ${err}`, "OAuthStrategy");
     }
