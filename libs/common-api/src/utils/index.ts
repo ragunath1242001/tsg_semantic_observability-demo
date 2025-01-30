@@ -6,3 +6,4 @@ export * from "./promises.js";
 export * from "./testhelper.js";
 export * from "./unions.js";
 export * from "./validation.pipe.js";
+export * from "./nonEmptyString.pipe.js";

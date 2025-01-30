@@ -42,7 +42,8 @@ import {
   UsePagination,
   PaginationQuery,
   PaginationOptionsDto,
-  Paginated
+  Paginated,
+  nonEmptyStringPipe
 } from "@tsg-dsp/common-api";
 
 @Roles(["controlplane_admin", "controlplane_dataplane"])
@@ -126,8 +127,8 @@ export class CatalogManagementController {
   @ApiBadRequestResponse({ description: "Invalid request parameters" })
   @ApiForbiddenResponseDefault()
   async requestDataset(
-    @Query("address") address: string,
-    @Query("id") id: string,
+    @Query("address", nonEmptyStringPipe) address: string,
+    @Query("id", nonEmptyStringPipe) id: string,
     @Query("audience") audience?: string
   ): Promise<DatasetDto> {
     if (address) {

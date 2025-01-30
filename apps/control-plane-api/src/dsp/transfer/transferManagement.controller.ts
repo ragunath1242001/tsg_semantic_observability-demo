@@ -34,7 +34,8 @@ import {
   UsePagination,
   PaginationQuery,
   PaginationOptionsDto,
-  Paginated
+  Paginated,
+  nonEmptyStringPipe
 } from "@tsg-dsp/common-api";
 
 @ApiTags("Transfers Management")
@@ -83,9 +84,9 @@ export class TransferManagementController {
   @ApiQuery({ name: "audience", required: true, description: "Audience" })
   @ApiResponse({ type: TransferProcessSchema })
   async requestTransfer(
-    @Query("address") address: string,
-    @Query("agreementId") agreementId: string,
-    @Query("audience") audience: string,
+    @Query("address", nonEmptyStringPipe) address: string,
+    @Query("agreementId", nonEmptyStringPipe) agreementId: string,
+    @Query("audience", nonEmptyStringPipe) audience: string,
     @Query("format") format?: string,
     @Query("dataPlaneIdentifier") dataPlaneIdentifier?: string
   ): Promise<TransferProcessDto> {

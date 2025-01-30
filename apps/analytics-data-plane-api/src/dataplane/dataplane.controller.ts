@@ -22,7 +22,8 @@ import {
 import {
   Roles,
   DisableOAuthGuard,
-  DisableRolesGuard
+  DisableRolesGuard,
+  nonEmptyStringPipe
 } from "@tsg-dsp/common-api";
 
 @Controller()
@@ -54,7 +55,7 @@ export class DataPlaneController {
   async requestTransfer(
     @Body() body: TransferRequestMessageDto,
     @Param("role") role: "provider" | "consumer",
-    @Query("processId") processId: string,
+    @Query("processId", nonEmptyStringPipe) processId: string,
     @Headers("x-remote-party") remoteParty: string,
     @Headers("x-dataset-id") datasetId: string
   ): Promise<DataPlaneRequestResponseDto> {

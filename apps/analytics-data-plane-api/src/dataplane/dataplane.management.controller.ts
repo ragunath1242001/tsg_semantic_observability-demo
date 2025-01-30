@@ -12,7 +12,7 @@ import {
 import { DataPlaneService } from "./dataplane.service.js";
 import { AgreementDto, CatalogDto, DatasetDto } from "@tsg-dsp/common-dsp";
 import { DataPlaneStateDto, TransferDto } from "@tsg-dsp/common-dtos";
-import { Roles } from "@tsg-dsp/common-api";
+import { nonEmptyStringPipe, Roles } from "@tsg-dsp/common-api";
 
 @Controller("/management")
 @Roles("controlplane_dataplane")
@@ -44,7 +44,7 @@ export class DataPlaneManagementController {
   async updateDatasetConfig(
     @Body()
     updatedDataset: DatasetDto,
-    @Query("datasetId")
+    @Query("datasetId", nonEmptyStringPipe)
     datasetId: string
   ) {
     return await this.dataPlaneService.updateDataset(datasetId, updatedDataset);
@@ -56,7 +56,9 @@ export class DataPlaneManagementController {
   }
 
   @Delete("/dataset")
-  async deleteDataset(@Query("datasetId") datasetId: string) {
+  async deleteDataset(
+    @Query("datasetId", nonEmptyStringPipe) datasetId: string
+  ) {
     return await this.dataPlaneService.deleteDataset(datasetId);
   }
 
@@ -90,8 +92,8 @@ export class DataPlaneManagementController {
   @Post("/transfers/:id/terminate")
   async terminateTransfer(
     @Param("id") id: string,
-    @Query("code") code: string,
-    @Query("code") reason: string
+    @Query("code", nonEmptyStringPipe) code: string,
+    @Query("code", nonEmptyStringPipe) reason: string
   ): Promise<void> {
     return await this.dataPlaneService.transferTerminate(id, code, reason);
   }
@@ -99,7 +101,7 @@ export class DataPlaneManagementController {
   @Post("/transfers/:id/suspend")
   async suspendTransfer(
     @Param("id") id: string,
-    @Query("code") reason: string
+    @Query("code", nonEmptyStringPipe) reason: string
   ): Promise<void> {
     return await this.dataPlaneService.transferSuspend(id, reason);
   }

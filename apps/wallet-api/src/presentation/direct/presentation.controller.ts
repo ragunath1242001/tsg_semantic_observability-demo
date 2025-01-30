@@ -25,7 +25,7 @@ import {
   ApiTags,
   getSchemaPath
 } from "@nestjs/swagger";
-import { Roles } from "@tsg-dsp/common-api";
+import { nonEmptyStringPipe, Roles } from "@tsg-dsp/common-api";
 
 @Controller("presentations")
 @Roles(AppRole.VIEW_PRESENTATIONS)
@@ -50,7 +50,7 @@ export class DirectPresentationController {
     }
   })
   async createPresentation(
-    @Query("credentialId") credentialId: string,
+    @Query("credentialId", nonEmptyStringPipe) credentialId: string,
     @Query("audience") audience: string | undefined,
     @Query("asJwt", new DefaultValuePipe(false), ParseBoolPipe) asJwt: boolean,
     @Query("unwrap", new DefaultValuePipe(true), ParseBoolPipe) unwrap: boolean

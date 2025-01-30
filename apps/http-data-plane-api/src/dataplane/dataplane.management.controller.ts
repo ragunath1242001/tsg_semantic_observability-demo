@@ -43,7 +43,7 @@ import {
 } from "@nestjs/swagger";
 import { DataPlaneClientError } from "../utils/errors/error.js";
 import { MetadataDto } from "./dataplane.schemas.js";
-import { Roles } from "@tsg-dsp/common-api";
+import { nonEmptyStringPipe, Roles } from "@tsg-dsp/common-api";
 
 @ApiTags("Data Plane Management")
 @ApiOAuth2(["controlplane_dataplane"])
@@ -185,8 +185,8 @@ export class DataPlaneManagementController {
   @HttpCode(HttpStatus.ACCEPTED)
   async terminateTransfer(
     @Param("id") id: string,
-    @Query("code") code: string,
-    @Query("reason") reason: string
+    @Query("code", nonEmptyStringPipe) code: string,
+    @Query("reason", nonEmptyStringPipe) reason: string
   ): Promise<void> {
     return await this.dataPlaneService.transferTerminate(id, code, reason);
   }
@@ -200,7 +200,7 @@ export class DataPlaneManagementController {
   @HttpCode(HttpStatus.ACCEPTED)
   async suspendTransfer(
     @Param("id") id: string,
-    @Query("code") reason: string
+    @Query("code", nonEmptyStringPipe) reason: string
   ): Promise<void> {
     return await this.dataPlaneService.transferSuspend(id, reason);
   }
