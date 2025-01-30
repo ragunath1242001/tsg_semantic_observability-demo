@@ -38,7 +38,8 @@ import {
   UsePagination,
   PaginationQuery,
   PaginationOptionsDto,
-  Paginated
+  Paginated,
+  nonEmptyStringPipe
 } from "@tsg-dsp/common-api";
 
 @ApiTags("Negotiations Management")
@@ -132,9 +133,9 @@ export class NegotiationManagementController {
   @ApiOkResponse({ type: ContractNegotiationSchema })
   async requestNewNegotiation(
     @Body(new DeserializePipe(Offer)) body: Offer,
-    @Query("dataSet") dataSet: string,
-    @Query("address") address: string,
-    @Query("audience") audience: string
+    @Query("dataSet", nonEmptyStringPipe) dataSet: string,
+    @Query("address", nonEmptyStringPipe) address: string,
+    @Query("audience", nonEmptyStringPipe) audience: string
   ): Promise<ContractNegotiationDto> {
     this.logger.log(
       `Received negotiation request for ${address} with offer ${JSON.stringify(

@@ -8,7 +8,7 @@ import {
   ApiTags
 } from "@nestjs/swagger";
 import { ApiForbiddenResponseDefault } from "@tsg-dsp/common-dtos";
-import { Roles } from "@tsg-dsp/common-api";
+import { nonEmptyStringPipe, Roles } from "@tsg-dsp/common-api";
 
 @Controller("management/dcp/holder")
 @ApiTags("Presentation DCP")
@@ -33,7 +33,7 @@ export class DCPHolderManagementController {
   })
   @ApiForbiddenResponseDefault()
   async createSIToken(
-    @Query("audience") audience: string,
+    @Query("audience", nonEmptyStringPipe) audience: string,
     @Query("scope") scope?: string
   ): Promise<{ id_token: string }> {
     return {
