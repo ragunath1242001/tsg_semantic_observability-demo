@@ -202,7 +202,8 @@ export class TransferService {
     agreementId: string,
     remoteAddress: string,
     audience: string,
-    format?: string
+    format?: string,
+    dataPlaneIdentifier?: string
   ): Promise<{
     localId: string;
     remoteId: string;
@@ -269,7 +270,8 @@ export class TransferService {
       transferRequestMessage,
       localId,
       "consumer",
-      audience
+      audience,
+      dataPlaneIdentifier
     );
     if (dataPlaneTransfer.dataAddress !== undefined) {
       dataAddress = new DataAddress({
@@ -336,7 +338,8 @@ export class TransferService {
       transferRequestMessage,
       transferProcess.providerPid,
       "provider",
-      audience
+      audience,
+      undefined
     );
     const transfer: TransferDetail = {
       localId: transferProcess.providerPid,

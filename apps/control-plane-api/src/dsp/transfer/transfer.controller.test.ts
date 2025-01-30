@@ -281,7 +281,29 @@ describe("TransferController", () => {
       managementAddress: "http://127.0.0.1/data-plane",
       managementToken: "DpuwVK9bnX2MVGf6MVVjlBnI4PvtQSGJ",
       catalogSynchronization: "push",
-      role: "both"
+      role: "both",
+      datasets: [
+        {
+          "@context": defaultContext(),
+          "@type": "dcat:Dataset",
+          "@id": "urn:uuid:a1b6d55e-a9ee-4e9c-9a72-ce6e0b1db099",
+          "dct:title": "Test Dataset",
+          "dcat:distribution": [
+            {
+              "@type": "dcat:Distribution",
+              "@id": "urn:uuid:de465939-8292-49c1-97d5-bcb643df1fdb",
+              "dct:format": "dspace:HTTP",
+              "dcat:accessService": [
+                {
+                  "@type": "dcat:DataService",
+                  "@id": "urn:uuid:1c0c61c5-a977-40f0-84ab-eacf2c1e4b4b",
+                  "dcat:endpointURL": "https://httpbin.org/anything"
+                }
+              ]
+            }
+          ]
+        }
+      ]
     });
 
     const transferProviderProcess = await transferService.handleRequest(

@@ -29,7 +29,7 @@ import axios, {
 } from "axios";
 import crypto from "crypto";
 import deepEqual from "deep-equal";
-import { In, Repository } from "typeorm";
+import { FindOptionsWhere, In, Repository } from "typeorm";
 import { CatalogService } from "../dsp/catalog/catalog.service.js";
 import { DatasetDao } from "../model/catalog.dao.js";
 import { DataPlaneDao } from "../model/dataPlanes.dao.js";
@@ -391,15 +391,23 @@ export class DataPlaneService {
     requestDetail: TransferRequestMessage,
     processId: string,
     role: "provider" | "consumer",
-    remoteParty: string
+    remoteParty: string,
+    dataPlaneIdentifier?: string
   ): Promise<DataPlaneTransferDto> {
     const agreement = await this.agreementService.getAgreement(
       requestDetail.agreementId
     );
-    const dataPlanes = await this.dataPlaneRepository.findBy({
+    const findOptions: FindOptionsWhere<DataPlaneDao> = {
+      identifier: dataPlaneIdentifier,
       dataplaneType: requestDetail.format,
       role: In([role, "both"])
-    });
+    };
+    if (role === "provider") {
+      findOptions._datasets = {
+        id: agreement.target
+      };
+    }
+    const dataPlanes = await this.dataPlaneRepository.findBy(findOptions);
     if (dataPlanes.length === 0) {
       throw new DSPError(
         `Dataplane for type '${requestDetail.format}' cannot be found`,

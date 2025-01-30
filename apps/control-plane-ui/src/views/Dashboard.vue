@@ -1,24 +1,19 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
-import { injectStrict } from "../utils/injectTyped";
-import { AxiosKey } from "../utils/symbols";
-import Catalog from "../components/Catalog.vue";
+import { onMounted } from "vue";
 import { useToast } from "primevue/usetoast";
 import { storeToRefs } from "pinia";
 import { useDspStore } from "../stores/dsp";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import Status from "../components/Status.vue";
-
-const dataPlanesCount = ref(0);
-
-const http = injectStrict(AxiosKey);
+import { useDataPlaneStore } from "../stores/dataplane";
 
 const toast = useToast();
 
-const getDataPlanes = async () => {
+const { ctaTransfersCount, ownCatalog } = storeToRefs(useDspStore());
+const { dataPlanes } = storeToRefs(useDataPlaneStore());
+const initialize = async () => {
   try {
-    const response = await http.get("management/dataplanes/");
-    dataPlanesCount.value = response.data.length;
+    useDataPlaneStore().getDataPlanes();
   } catch (error) {
     toast.add(
       toastError({
@@ -28,11 +23,6 @@ const getDataPlanes = async () => {
       })
     );
   }
-};
-const { ctaTransfersCount, ownCatalog } = storeToRefs(useDspStore());
-const initialize = async () => {
-  const store = useDspStore();
-  getDataPlanes();
 };
 
 onMounted(async () => await initialize());
@@ -104,7 +94,7 @@ onMounted(async () => await initialize());
               >
               <div
                 class="text-surface-900 dark:text-surface-0 font-medium text-xl">
-                {{ dataPlanesCount }}
+                {{ dataPlanes.length }}
               </div>
             </div>
             <div
