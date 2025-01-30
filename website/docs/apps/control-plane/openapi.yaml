@@ -1832,6 +1832,11 @@ paths:
           description: Format
           schema:
             type: string
+        - name: dataPlaneIdentifier
+          required: true
+          in: query
+          schema:
+            type: string
       responses:
         default:
           description: ""

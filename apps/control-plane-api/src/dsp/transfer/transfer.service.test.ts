@@ -464,6 +464,37 @@ describe("Transfer service", () => {
         "Cannot determine format based on dataset, since there are multiple formats in the distributions."
       );
     });
+
+    it("Request new transfer for unknown dataplane should fail", async () => {
+      await expect(
+        transferService.initiateTransferProcess(
+          "urn:uuid:42c1e38d-6069-4111-81c9-edde2ee270b9",
+          "http://remoteparty.test/transfers",
+          "did:web:remoteparty.test",
+          "dspace:HTTP",
+          "urn:uuid:00000000-0000-0000-0000-000000000000"
+        )
+      ).rejects.toThrow("Dataplane for type 'dspace:HTTP' cannot be found");
+      const dataPlaneId = (
+        await moduleRef
+          .get(DataPlaneService)
+          .getDataPlanes(PaginationOptionsDto.NO_PAGINATION)
+      ).data[0].identifier;
+      const transferProcessPush = await transferService.initiateTransferProcess(
+        "urn:uuid:3ecd19d6-3cf6-4540-84fa-3ea226230b2f",
+        "http://remoteparty.test/transfers",
+        "did:web:remoteparty.test",
+        "dspace:HTTP",
+        dataPlaneId
+      );
+      expect(transferProcessPush).toBeDefined();
+      expect(transferProcessPush.process.providerPid).toBe(remoteProcessId);
+
+      const transferDetail = await transferService.getTransfer(
+        transferProcessPush.localId
+      );
+      expect(transferDetail.dataAddress).toBeDefined();
+    });
     it("Unexpected transition", async () => {
       await expect(
         transferService.suspend(localProcessId, "", true)
@@ -474,7 +505,7 @@ describe("Transfer service", () => {
       const transfers = await transferService.getTransfers(
         new PaginationOptionsDto()
       );
-      expect(transfers.total).toBe(4);
+      expect(transfers.total).toBe(5);
       const transferDetail = await transferService.getTransfer(localProcessId);
       expect(transferDetail).toBeDefined();
       const transferDetail2 = await transferService.getTransfer(

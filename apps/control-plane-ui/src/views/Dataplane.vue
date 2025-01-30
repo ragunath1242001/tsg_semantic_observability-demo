@@ -7,8 +7,8 @@ import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
 import DisplayField from "@tsg-dsp/common-ui/components/DisplayField.vue";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import { DataPlaneDetailsDto } from "@tsg-dsp/common-dsp";
-
-const dataplanes = ref<DataPlaneDetailsDto[]>();
+import { useDataPlaneStore } from "../stores/dataplane";
+import { storeToRefs } from "pinia";
 
 const dataPlaneFormDefault: DataPlaneDetailsDto = {
   identifier: "",
@@ -24,24 +24,8 @@ const dataPlaneFormDefault: DataPlaneDetailsDto = {
 const confirm = useConfirm();
 const dataPlaneForm = ref(dataPlaneFormDefault);
 const toast = useToast();
-
-const getDataPlanes = async () => {
-  try {
-    const response = await http.get<DataPlaneDetailsDto[]>(
-      "management/dataplanes"
-    );
-    dataplanes.value = response.data;
-    return dataplanes;
-  } catch (error) {
-    toast.add(
-      toastError({
-        error,
-        summary: "Failed to get dataplanes",
-        defaultMessage: `Could not load dataplanes`
-      })
-    );
-  }
-};
+const dataPlaneStore = useDataPlaneStore();
+const { dataPlanes } = storeToRefs(dataPlaneStore);
 
 const addDataPlane = async () => {
   try {
@@ -53,7 +37,7 @@ const addDataPlane = async () => {
       detail: `Dataplane ${dataPlaneForm.value.identifier} successfully added`,
       life: 3000
     });
-    await getDataPlanes();
+    await dataPlaneStore.fetchDataPlanes();
   } catch (error) {
     toast.add(
       toastError({
@@ -79,7 +63,7 @@ const deleteDataPlane = async (dataplaneId: string) => {
         await http.delete(
           `management/dataplanes/${encodeURIComponent(dataplaneId)}`
         );
-        await getDataPlanes();
+        await dataPlaneStore.fetchDataPlanes();
         toast.add({
           severity: "success",
           summary: "Success",
@@ -100,7 +84,7 @@ const deleteDataPlane = async (dataplaneId: string) => {
 };
 
 const initialize = async () => {
-  getDataPlanes();
+  await dataPlaneStore.fetchDataPlanes();
 };
 onMounted(async () => {
   await initialize();
@@ -118,7 +102,7 @@ onMounted(async () => {
     >
   </Card>
   <Card
-    v-for="dataplane in dataplanes"
+    v-for="dataplane in dataPlanes"
     :key="dataplane.identifier"
     class="mb-8"
     style="border-radius: 12px; border: 1px solid var(--surface-border)">

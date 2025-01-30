@@ -86,7 +86,8 @@ export class TransferManagementController {
     @Query("address") address: string,
     @Query("agreementId") agreementId: string,
     @Query("audience") audience: string,
-    @Query("format") format?: string
+    @Query("format") format?: string,
+    @Query("dataPlaneIdentifier") dataPlaneIdentifier?: string
   ): Promise<TransferProcessDto> {
     this.logger.log(
       `Received transfer request for ${address} with agreementId ${agreementId} and format ${format}`
@@ -101,7 +102,8 @@ export class TransferManagementController {
       agreementId,
       controlPlaneAddress,
       audience,
-      format
+      format,
+      dataPlaneIdentifier
     );
     return internalTransfer.process.serialize();
   }

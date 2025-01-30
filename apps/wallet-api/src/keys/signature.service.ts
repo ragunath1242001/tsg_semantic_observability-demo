@@ -102,14 +102,10 @@ export class SignatureService {
     context: string | string[],
     proofContext: string
   ) {
-    let proofConfigHash;
-    try {
-      proofConfigHash = await canonizeAndHash(proofConfig, algorithm, context);
-    } catch (e) {
-      proofConfig["@context"] = [...toArray(context), proofContext];
-      proofConfigHash = await canonizeAndHash(proofConfig, algorithm, context);
-    }
-    return proofConfigHash;
+    return await canonizeAndHash(proofConfig, algorithm, [
+      ...toArray(context),
+      proofContext
+    ]);
   }
 
   private async signAsJws(hash: Buffer, signingKey: KeyMaterialDao) {
@@ -122,6 +118,25 @@ export class SignatureService {
     return await signature.sign(privateKey);
   }
 
+  private estimateAlgorithm(key: JWK) {
+    switch (key.kty) {
+      case "RSA":
+        return "PS256";
+      case "OKP":
+        return key.crv === "Ed25519" ? "EdDSA" : "BLS";
+      case "EC":
+        switch (key.crv) {
+          case "P-256":
+            return "ES256";
+          case "P-384":
+            return "ES384";
+          case "P-521":
+            return "ES512";
+        }
+        break;
+    }
+  }
+
   private async verifyJws(
     jws: string,
     publicKey: JWK,
@@ -131,6 +146,9 @@ export class SignatureService {
     try {
       let protectedHeader;
       if (signature) {
+        if (!publicKey.alg) {
+          publicKey.alg = this.estimateAlgorithm(publicKey);
+        }
         protectedHeader = Buffer.from(
           JSON.stringify({
             alg: publicKey.alg,
@@ -289,9 +307,13 @@ export class SignatureService {
   ): Promise<DataIntegrityProof> {
     try {
       const signingKey = await this.getKey(keyId);
-      const verificationMethod = embeddedVerificationMethod
-        ? jwkToMultibase(signingKey.publicKey, false)
-        : `${await this.didService.getDidId()}#${signingKey.id}`;
+      let verificationMethod: string;
+      if (embeddedVerificationMethod) {
+        const multibase = jwkToMultibase(signingKey.publicKey, false);
+        verificationMethod = `did:key:${multibase}#${multibase}`;
+      } else {
+        verificationMethod = `${await this.didService.getDidId()}#${signingKey.id}`;
+      }
       const documentHash = await canonizeAndHash(document, normalization);
       const proof: Omit<DataIntegrityProof, "proofValue"> = {
         type: "DataIntegrityProof",

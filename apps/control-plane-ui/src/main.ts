@@ -51,7 +51,7 @@ import AccordionHeader from "primevue/accordionheader";
 import { setJsonLdDebugContexts } from "@tsg-dsp/common-dsp";
 import MeterGroup from "primevue/metergroup";
 import Chart from "primevue/chart";
-import { ColorPicker, FileUpload } from "primevue";
+import { ColorPicker, FileUpload, Select } from "primevue";
 
 setJsonLdDebugContexts(
   import.meta.env.TSG_STATIC_MODE !== "production",
@@ -107,6 +107,7 @@ app.component("Panel", Panel);
 app.component("Password", Password);
 app.component("ProgressSpinner", ProgressSpinner);
 app.component("SelectButton", SelectButton);
+app.component("Select", Select);
 app.component("Skeleton", Skeleton);
 app.component("Tag", Tag);
 app.component("Textarea", Textarea);

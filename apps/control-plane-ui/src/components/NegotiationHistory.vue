@@ -8,9 +8,11 @@ import {
 import { ref, toRef } from "vue";
 import { useToast } from "primevue/usetoast";
 import http from "@tsg-dsp/common-ui/utils/http";
-import { DatasetDto, HashedMessage } from "@tsg-dsp/common-dsp";
+import { HashedMessage } from "@tsg-dsp/common-dsp";
 import MonacoEditor from "@tsg-dsp/common-ui/components/MonacoEditor.vue";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
+import { useDataPlaneStore } from "../stores/dataplane";
+import { ConfirmDialog, useConfirm } from "primevue";
 
 const props = defineProps<{
   negotiations: NegotiationStatusDto[];
@@ -21,7 +23,13 @@ const accNegotiation = ref<NegotiationDetailDto>();
 const localProof = ref<HashedMessage>();
 const remoteProof = ref<HashedMessage>();
 
+const dataPlaneStore = useDataPlaneStore();
+
 const toast = useToast();
+const confirm = useConfirm();
+
+const dataPlaneSelection = ref<string>("auto");
+const dataPlaneSelectionOptions = ref<{ label: string; value: string }[]>([]);
 
 const calculateColor = (index: number) => {
   const colors = ["blue", "orange", "cyan", "purple"];
@@ -78,13 +86,56 @@ const getNegotiation = async (uuid: string) => {
   }
 };
 
+const selectDataPlane = async (): Promise<string | undefined> => {
+  dataPlaneSelectionOptions.value = [
+    { label: "Auto", value: "auto" },
+    ...(await dataPlaneStore.getDataPlanes()).map((dp) => {
+      return {
+        label: `${dp.managementAddress} (${dp.dataplaneType})`,
+        value: dp.identifier
+      };
+    })
+  ];
+  return await new Promise((resolve, reject) => {
+    confirm.require({
+      group: "selectDataplane",
+      header: "Select Data Plane",
+      message: "Select the data plane to use for the transfer",
+      icon: "pi pi-info-circle",
+      acceptLabel: "Select",
+      rejectLabel: "Cancel",
+      acceptClass: "p-button-success",
+      rejectClass: "p-button-secondary",
+      accept: () => {
+        let value = dataPlaneSelection.value;
+        if (value === "auto") {
+          value = undefined;
+        }
+        resolve(value);
+        dataPlaneSelection.value = "auto";
+      },
+      reject: () => {
+        reject();
+      }
+    });
+  });
+};
+
 const requestTransfer = async (accNegotiation: NegotiationDetailDto) => {
   try {
     const address = accNegotiation.remoteAddress.split("negotiations")[0];
     const audience = accNegotiation.agreement["odrl:assigner"];
     const agreementId = accNegotiation.agreement["@id"];
+    let dataPlaneIdentifier = dataPlaneStore.hasDuplicateTypes
+      ? await selectDataPlane()
+      : undefined;
     const response = await http.post(`management/transfers/request`, null, {
-      params: { address: address, agreementId: agreementId, audience: audience }
+      params: {
+        address: address,
+        agreementId: agreementId,
+        audience: audience,
+        dataPlaneIdentifier: dataPlaneIdentifier
+      }
     });
     if (response.status == 200) {
       toast.add({
@@ -226,6 +277,24 @@ const requestTransfer = async (accNegotiation: NegotiationDetailDto) => {
           </AccordionContent>
         </AccordionPanel>
       </Accordion>
+      <ConfirmDialog group="selectDataplane">
+        <template #message="slotProps">
+          <div
+            class="flex flex-col items-center w-full gap-4 border-b border-surface-200 dark:border-surface-700">
+            <p>
+              Multiple data planes with the same type present. Select one of the
+              data planes or keep at auto to let the control plane choose.
+            </p>
+            <Select
+              v-model="dataPlaneSelection"
+              :options="dataPlaneSelectionOptions"
+              option-label="label"
+              option-value="value"
+              placeholder="Select Data Plane"
+              class="w-full" />
+          </div>
+        </template>
+      </ConfirmDialog>
     </template>
     <template #content v-else> There is no history to display</template>
   </Card>
