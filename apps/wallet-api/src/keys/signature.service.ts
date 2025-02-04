@@ -221,13 +221,13 @@ export class SignatureService {
     const payload = decodeJwt(token);
     if (!header.kid) {
       throw new AppError(
-        `Could not validate ID token. Missing Key ID in JWT.`,
+        `Could not validate JWT. Missing Key ID in JWT.`,
         HttpStatus.BAD_REQUEST
       ).andLog(this.logger, "error");
     }
     if (!payload.iss) {
       throw new AppError(
-        `Could not validate ID token. Missing issuer in JWT.`,
+        `Could not validate JWT. Missing issuer in JWT.`,
         HttpStatus.BAD_REQUEST
       ).andLog(this.logger, "error");
     }
@@ -243,7 +243,7 @@ export class SignatureService {
       return payload;
     } catch (err) {
       throw new AppError(
-        `Could not validate ID token. Invalid JWT signature for key ${header.kid}: ${err}.`,
+        `Could not validate JWT. Invalid JWT signature for key ${header.kid}: ${err}.`,
         HttpStatus.BAD_REQUEST
       ).andLog(this.logger, "error");
     }

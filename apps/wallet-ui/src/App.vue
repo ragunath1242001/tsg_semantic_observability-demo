@@ -21,6 +21,7 @@ onBeforeMount(async () => {
 <template>
   <Toast />
   <ConfirmDialog />
+  <DynamicDialog />
   <router-view />
 </template>
 

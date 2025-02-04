@@ -35,5 +35,6 @@
       "rootPath": "tools/tck-pipeline",
       "runMode": "on-demand"
     }
-  ]
+  ],
+  "svg.preview.background": "black"
 }

@@ -41,7 +41,7 @@ import { loader } from "@guolao/vue-monaco-editor";
 import Drawer from "primevue/drawer";
 import { setJsonLdDebugContexts } from "@tsg-dsp/common-dsp";
 import MeterGroup from "primevue/metergroup";
-import { ColorPicker, TabList, TabPanels } from "primevue";
+import { ColorPicker, DynamicDialog, TabList, TabPanels } from "primevue";
 
 setJsonLdDebugContexts(
   import.meta.env.TSG_STATIC_MODE !== "production",
@@ -75,6 +75,7 @@ app.component("Button", Button);
 app.component("ColorPicker", ColorPicker);
 app.component("ConfirmDialog", ConfirmDialog);
 app.component("Dialog", Dialog);
+app.component("DynamicDialog", DynamicDialog);
 app.component("Drawer", Drawer);
 app.component("Select", Select);
 app.component("FileUpload", FileUpload);

@@ -15,6 +15,10 @@ import { DCPHolderService } from "./dcp/holder.service.js";
 import { DCPHolderManagementController } from "./dcp/holder.management.controller.js";
 import { AuthModule } from "@tsg-dsp/common-api";
 import { PresentationManagementController } from "./presentation.management.controller.js";
+import { OID4VPVerifierService } from "./oid4vp/verifier.service.js";
+import { OID4VPVerifierController } from "./oid4vp/verifier.controller.js";
+import { OID4VPVerifierManagementController } from "./oid4vp/verifier.management.controller.js";
+import { AuthorizationRequestDao } from "../model/presentation.dao.js";
 
 @Module({})
 export class PresentationModule {
@@ -25,11 +29,16 @@ export class PresentationModule {
         AuthModule.register(RootConfig),
         CredentialsModule,
         KeysModule,
-        DidModule
+        DidModule,
+        TypeOrmModule.forFeature([AuthorizationRequestDao])
       ],
       global: true,
-      controllers: [PresentationManagementController],
-      providers: [PresentationService],
+      controllers: [
+        PresentationManagementController,
+        OID4VPVerifierController,
+        OID4VPVerifierManagementController
+      ],
+      providers: [PresentationService, OID4VPVerifierService],
       exports: [PresentationService]
     };
 

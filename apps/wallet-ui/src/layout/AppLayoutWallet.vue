@@ -110,9 +110,14 @@ const menuList: Menu[] = [
     label: "Presentation",
     items: [
       {
-        label: "Manual presentation request",
+        label: "DCP",
         icon: "pi pi-fw pi-wrench",
-        to: "/presentation"
+        to: "/presentations/dcp"
+      },
+      {
+        label: "OID4VP",
+        icon: "pi pi-fw pi-qrcode",
+        to: "/presentations/oid4vp"
       }
     ]
   },
