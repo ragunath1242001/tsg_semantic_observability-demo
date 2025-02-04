@@ -12,7 +12,7 @@ variables:
   image: node:22
   before_script:
     - corepack enable
-    - corepack prepare pnpm@latest-9 --activate
+    - corepack prepare pnpm@9.15.0 --activate
     - pnpm config set store-dir .pnpm-store
   cache:
     key:

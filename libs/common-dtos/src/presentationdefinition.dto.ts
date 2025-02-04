@@ -6,9 +6,11 @@ import {
   ValidateNested,
   IsEnum,
   IsObject,
-  IsBoolean
+  IsBoolean,
+  IsIn
 } from "class-validator";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { VerifiablePresentationJwt } from "@tsg-dsp/common-dsp";
 
 export class JwtVpClaimFormat {
   @ApiProperty({ type: [String] })
@@ -240,4 +242,42 @@ export class DescriptorMap {
   @ValidateNested()
   @Type(() => DescriptorMap)
   path_nested?: DescriptorMap;
+}
+
+export class AuthorizationRequest {
+  @ApiProperty()
+  @IsString()
+  client_id!: string;
+
+  @ApiProperty()
+  @IsString()
+  response_uri!: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsIn(["vp_token"])
+  response_type = "vp_token";
+
+  @ApiProperty()
+  @IsString()
+  @IsIn(["direct_post"])
+  response_mode = "direct_post";
+
+  @ApiProperty()
+  @IsString()
+  presentation_definition!: PresentationDefinition;
+
+  @ApiProperty()
+  @IsString()
+  nonce!: string;
+
+  @ApiProperty()
+  @IsString()
+  state!: string;
+}
+
+export class AuthorizationResponse extends PresentationResponse {
+  @ApiProperty()
+  @IsString()
+  state!: string;
 }

@@ -1,0 +1,80 @@
+import { HttpStatus, Injectable, Logger } from "@nestjs/common";
+import { AppError, ServerConfig } from "@tsg-dsp/common-api";
+import {
+  AuthorizationRequest,
+  AuthorizationResponse,
+  PresentationDefinition,
+  PresentationSubmission
+} from "@tsg-dsp/common-dtos";
+import crypto from "crypto";
+import { Auth, In, Repository } from "typeorm";
+import { InjectRepository } from "@nestjs/typeorm";
+import { AuthorizationRequestDao } from "../../model/presentation.dao.js";
+import { DCPVerifierService } from "../dcp/verifier.service.js";
+import { VerifiablePresentation } from "@tsg-dsp/common-dsp";
+import { PresentationService } from "../presentation.service.js";
+@Injectable()
+export class OID4VPVerifierService {
+  constructor(
+    private readonly serverConfig: ServerConfig,
+    @InjectRepository(AuthorizationRequestDao)
+    public authorizationRequestRepository: Repository<AuthorizationRequestDao>,
+    private readonly presentationService: PresentationService
+  ) {}
+  private readonly logger = new Logger(this.constructor.name);
+
+  async createAuthorizationRequest(
+    presentationDefinition: PresentationDefinition
+  ): Promise<string> {
+    const id = crypto.randomUUID();
+    await this.authorizationRequestRepository.save({
+      identifier: id,
+      nonce: crypto.randomBytes(48).toString("hex"),
+      presentationDefinition: presentationDefinition
+    });
+    return `oid4vp://?client_id=${this.serverConfig.publicAddress}&request_uri=${this.serverConfig.publicAddress}/api/oid4vp/ar/${id}`;
+  }
+
+  async getAuthorizationRequest(id: string): Promise<AuthorizationRequest> {
+    const authorizationRequest =
+      await this.authorizationRequestRepository.findOneBy({
+        identifier: id
+      });
+    if (!authorizationRequest) {
+      throw new AppError(
+        `Could not find the authorization request with id ${id}`,
+        HttpStatus.NOT_FOUND
+      ).andLog(this.logger, "warn");
+    }
+    return {
+      state: authorizationRequest.identifier,
+      nonce: authorizationRequest.nonce,
+      presentation_definition: authorizationRequest.presentationDefinition,
+      client_id: `${this.serverConfig.publicAddress}`,
+      response_uri: `${this.serverConfig.publicAddress}/api/oid4vp/authorize`,
+      response_type: "vp_token",
+      response_mode: "direct_post"
+    };
+  }
+
+  async verify(authorizationResponse: AuthorizationResponse): Promise<string> {
+    const obj = await this.authorizationRequestRepository.findOneBy({
+      identifier: authorizationResponse.state
+    });
+    if (!obj) {
+      throw new AppError(
+        `Could not find the authorization request with id ${authorizationResponse.state}`,
+        HttpStatus.NOT_FOUND
+      ).andLog(this.logger, "warn");
+    }
+    const presentationDefinition = obj.presentationDefinition;
+    await this.presentationService.evaluatePresentationResponse(
+      presentationDefinition,
+      {
+        vp_token: authorizationResponse.vp_token,
+        presentation_submission: authorizationResponse.presentation_submission
+      }
+    );
+    return "Your Verifiable Presentation has been validated, you may now proceed.";
+  }
+}

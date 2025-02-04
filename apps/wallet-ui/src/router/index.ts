@@ -11,7 +11,8 @@ import CredentialGaiaX from "../views/credentials/GaiaX.vue";
 import CredentialOID4VCI from "../views/credentials/OID4VCI.vue";
 import DIDServiceView from "../views/DIDServices.vue";
 import ContextView from "../views/Contexts.vue";
-import Presentation from "../views/Presentation.vue";
+import DCP from "../views/DCP.vue";
+import OID4VP from "../views/OID4VP.vue";
 import { registerRouter, useUserStore } from "@tsg-dsp/common-ui/stores/user";
 
 const router = createRouter({
@@ -62,9 +63,14 @@ const router = createRouter({
           component: CredentialOID4VCI
         },
         {
-          path: "/presentation",
-          name: "presentation",
-          component: Presentation
+          path: "presentations/dcp",
+          name: "dcp",
+          component: DCP
+        },
+        {
+          path: "presentations/oid4vp",
+          name: "oid4vp",
+          component: OID4VP
         },
         {
           path: "/services",

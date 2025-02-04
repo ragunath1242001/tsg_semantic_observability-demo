@@ -109,12 +109,12 @@ describe("Key Service", () => {
       const emptyJsonEncoded = toBase64({});
       await expect(
         signatureService.validateJwt(`${emptyJsonEncoded}.${emptyJsonEncoded}.`)
-      ).rejects.toThrow("Could not validate ID token. Missing Key ID in JWT");
+      ).rejects.toThrow("Could not validate JWT. Missing Key ID in JWT");
       await expect(
         signatureService.validateJwt(
           `${toBase64({ kid: "key-0" })}.${emptyJsonEncoded}.`
         )
-      ).rejects.toThrow("Could not validate ID token. Missing issuer in JWT");
+      ).rejects.toThrow("Could not validate JWT. Missing issuer in JWT");
 
       const [header, body, signature] = (
         await signatureService.signAsJwt(
