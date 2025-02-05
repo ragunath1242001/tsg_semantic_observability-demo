@@ -4,46 +4,39 @@ import {
   Get,
   HttpCode,
   HttpStatus,
-  Param,
   Post,
-  Req,
-  Res,
-  All,
-  Headers,
-  RawBodyRequest,
-  Query,
   Body,
   Put,
-  ValidationPipe,
-  UnprocessableEntityException
+  Delete,
+  Param
 } from "@nestjs/common";
 import { DataPlaneService } from "./dataplane.service.js";
-import { DatasetConfig } from "@tsg-dsp/http-data-plane-dtos";
-import { Request, Response } from "express";
 import {
-  AgreementDto,
-  CatalogDto,
-  CatalogSchema,
-  DatasetDto
-} from "@tsg-dsp/common-dsp";
+  DatasetConfig,
+  DatasetConfigWrapper,
+  DatasetItem,
+  DatasetItemWithDto
+} from "@tsg-dsp/http-data-plane-dtos";
+import { CatalogDto, CatalogSchema } from "@tsg-dsp/common-dsp";
 import {
   ApiForbiddenResponseDefault,
-  DataPlaneStateDto,
-  TransferDto
+  DataPlaneStateDto
 } from "@tsg-dsp/common-dtos";
 import {
   ApiBody,
   ApiOAuth2,
   ApiOkResponse,
   ApiOperation,
-  ApiParam,
-  ApiQuery,
   ApiResponse,
   ApiTags
 } from "@nestjs/swagger";
-import { DataPlaneClientError } from "../utils/errors/error.js";
-import { MetadataDto } from "./dataplane.schemas.js";
-import { nonEmptyStringPipe, Roles } from "@tsg-dsp/common-api";
+import {
+  Roles,
+  validateOrRejectSync,
+  validationPipe
+} from "@tsg-dsp/common-api";
+import { plainToInstance } from "class-transformer";
+import { DatasetItemDao } from "./dataplane.dao.js";
 
 @ApiTags("Data Plane Management")
 @ApiOAuth2(["controlplane_dataplane"])
@@ -89,7 +82,7 @@ export class DataPlaneManagementController {
     return await this.dataPlaneService.registerDataplane();
   }
 
-  @Get("/dataset")
+  @Get("/config")
   @ApiOperation({
     summary: "Get dataset",
     description: "Get the current dataset configuration."
@@ -97,10 +90,10 @@ export class DataPlaneManagementController {
   @ApiOkResponse({ type: DatasetConfig })
   @ApiForbiddenResponseDefault()
   async getDatasetConfig(): Promise<DatasetConfig> {
-    return await this.dataPlaneService.getDatasetConfig();
+    return this.dataPlaneService.getDatasetConfig();
   }
 
-  @Put("/dataset")
+  @Put("/config")
   @ApiOperation({
     summary: "Update dataset",
     description: "Update the current dataset configuration."
@@ -109,178 +102,79 @@ export class DataPlaneManagementController {
   @ApiOkResponse({ type: DataPlaneStateDto })
   @ApiForbiddenResponseDefault()
   async updateDatasetConfig(
-    @Body(new ValidationPipe({ transform: true, forbidUnknownValues: true }))
-    datasetConfig: DatasetConfig
+    @Body()
+    datasetConfig: any
   ) {
-    if (
-      !datasetConfig.versions.some(
-        (v) => v.version === datasetConfig.currentVersion
-      )
-    ) {
-      throw new UnprocessableEntityException(
-        "Can't find given current version in given list of dataset versions"
-      );
-    }
-    return await this.dataPlaneService.updateDatasetConfig(datasetConfig);
+    const wrapper = validateOrRejectSync(
+      plainToInstance(DatasetConfigWrapper, {
+        datasetConfig: datasetConfig
+      })
+    );
+
+    return await this.dataPlaneService.updateDatasetConfig(
+      wrapper.datasetConfig
+    );
   }
 
-  @Get("/transfers")
-  @ApiOperation({ summary: "Get all transfers" })
-  @ApiResponse({ status: HttpStatus.OK, type: [TransferDto] })
-  @ApiForbiddenResponseDefault()
-  async getTransfers(): Promise<TransferDto[]> {
-    return await this.dataPlaneService.getTransfers();
-  }
-
-  @Get("/transfers/:id")
-  @ApiOperation({ summary: "Get transfer by ID" })
-  @ApiParam({ name: "id", required: true, description: "Transfer identifier" })
-  @ApiResponse({ status: HttpStatus.OK, type: TransferDto })
-  @ApiForbiddenResponseDefault()
-  async getTransfer(@Param("id") id: string): Promise<TransferDto> {
-    return await this.dataPlaneService.getTransferById(id);
-  }
-
-  @Get("/transfers/:id/metadata")
-  @ApiOperation({ summary: "Get metadata of transfer by ID" })
-  @ApiParam({ name: "id", required: true, description: "Transfer identifier" })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    type: MetadataDto
-  })
-  @ApiForbiddenResponseDefault()
-  async getMetadata(
-    @Param("id") id: string
-  ): Promise<{ agreement: AgreementDto; dataset: DatasetDto }> {
-    return await this.dataPlaneService.getMetadata(id);
-  }
-
-  @Post("/transfers/:id/start")
-  @ApiOperation({ summary: "Start a transfer by ID" })
-  @ApiParam({ name: "id", required: true, description: "Transfer identifier" })
-  @ApiResponse({ status: HttpStatus.ACCEPTED })
-  @ApiForbiddenResponseDefault()
-  @HttpCode(HttpStatus.ACCEPTED)
-  async startTransfer(@Param("id") id: string): Promise<void> {
-    return await this.dataPlaneService.transferStart(id);
-  }
-
-  @Post("/transfers/:id/complete")
-  @ApiOperation({ summary: "Complete a transfer by ID" })
-  @ApiParam({ name: "id", required: true, description: "Transfer identifier" })
-  @ApiResponse({ status: HttpStatus.ACCEPTED })
-  @ApiForbiddenResponseDefault()
-  @HttpCode(HttpStatus.ACCEPTED)
-  async completeTransfer(@Param("id") id: string): Promise<void> {
-    return await this.dataPlaneService.transferComplete(id);
-  }
-
-  @Post("/transfers/:id/terminate")
-  @ApiOperation({ summary: "Terminate a transfer by ID" })
-  @ApiParam({ name: "id", required: true, description: "Transfer identifier" })
-  @ApiQuery({ name: "code", type: String })
-  @ApiQuery({ name: "reason", type: String })
-  @ApiResponse({ status: HttpStatus.ACCEPTED })
-  @ApiForbiddenResponseDefault()
-  @HttpCode(HttpStatus.ACCEPTED)
-  async terminateTransfer(
-    @Param("id") id: string,
-    @Query("code", nonEmptyStringPipe) code: string,
-    @Query("reason", nonEmptyStringPipe) reason: string
-  ): Promise<void> {
-    return await this.dataPlaneService.transferTerminate(id, code, reason);
-  }
-
-  @Post("/transfers/:id/suspend")
-  @ApiOperation({ summary: "Suspend a transfer by ID" })
-  @ApiParam({ name: "id", required: true, description: "Transfer identifier" })
-  @ApiQuery({ name: "code", type: String })
-  @ApiResponse({ status: HttpStatus.ACCEPTED })
-  @ApiForbiddenResponseDefault()
-  @HttpCode(HttpStatus.ACCEPTED)
-  async suspendTransfer(
-    @Param("id") id: string,
-    @Query("code", nonEmptyStringPipe) reason: string
-  ): Promise<void> {
-    return await this.dataPlaneService.transferSuspend(id, reason);
-  }
-
-  @All("/transfers/:id/execute/:path(*)?")
-  @HttpCode(HttpStatus.ACCEPTED)
+  @Get("/datasets")
   @ApiOperation({
-    summary: "Proxy a request",
-    description:
-      "This endpoint is used if the HTTP Data Plane needs to serve as a proxy. "
+    summary: "Get datasets",
+    description: "Retrieve all datasets."
   })
-  @ApiParam({ name: "id", required: true, description: "Transfer identifier" })
-  @ApiParam({
-    name: "path",
-    required: true,
-    description: "Path of receiving application"
-  })
+  @ApiOkResponse({ type: [DatasetItem] })
   @ApiForbiddenResponseDefault()
-  async executeTransfer(
-    @Param("id") id: string,
-    @Param("path") path: string,
-    @Req() request: RawBodyRequest<Request>,
-    @Res() response: Response
-    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-  ): Promise<any> {
-    this.logger.log(`Requesting transfer execution for id ${id}`);
-    return await this.dataPlaneService.executeProxyRequest(
-      id,
-      path,
-      request,
-      response
-    );
+  async getDatasets(): Promise<DatasetItemWithDto[]> {
+    return await this.dataPlaneService.getDatasetItems();
   }
 
-  @All("/execute/:path(*)?")
-  @HttpCode(HttpStatus.ACCEPTED)
+  @Get("/datasets/:id")
   @ApiOperation({
-    summary: "Proxy a request without transfer ID",
-    description:
-      "This endpoint is used if the HTTP Data Plane needs to serve as a proxy and the transfer hasn't been created yet. Used for automatic handling of the DSP."
+    summary: "Get dataset",
+    description: "Retrieve a specific dataset by id."
   })
-  @ApiParam({
-    name: "path",
-    required: true,
-    description: "Path of receiving application"
-  })
+  @ApiOkResponse({ type: DatasetConfig })
   @ApiForbiddenResponseDefault()
-  async executeTransferWithoutId(
-    @Param("path") path: string,
-    @Headers("x-dataset-id") datasetId: string,
-    @Headers("x-audience") audience: string,
-    @Headers("x-controlplane-address") controlPlaneAddress: string,
-    @Req()
-    request: RawBodyRequest<Request>,
-    @Res() response: Response
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ): Promise<any> {
-    this.logger.log(`Requesting transfer execution without transfer id`);
-    if (!datasetId || datasetId === "") {
-      throw new DataPlaneClientError(
-        "No dataset ID provided",
-        HttpStatus.BAD_REQUEST
-      ).andLog(this.logger);
-    }
-    if (!audience || audience === "") {
-      throw new DataPlaneClientError(
-        "No audience provided",
-        HttpStatus.BAD_REQUEST
-      ).andLog(this.logger);
-    }
-    const transferId = await this.dataPlaneService.determineTransferId(
-      datasetId,
-      audience,
-      controlPlaneAddress
-    );
-    return await this.dataPlaneService.executeProxyRequest(
-      transferId,
-      path,
-      request,
-      response
-    );
+  async getDataset(@Param("id") id: string): Promise<DatasetItemWithDto> {
+    return await this.dataPlaneService.getDatasetItem(id);
+  }
+
+  @Post("/datasets")
+  @ApiOperation({
+    summary: "Create dataset",
+    description: "Create a new dataset."
+  })
+  @ApiBody({ type: DatasetItem })
+  @ApiOkResponse({ type: DatasetItem })
+  @ApiForbiddenResponseDefault()
+  async createDataset(
+    @Body(validationPipe) datasetItem: DatasetItem
+  ): Promise<DatasetItemDao> {
+    return await this.dataPlaneService.addDatasetItem(datasetItem);
+  }
+
+  @Put("/datasets/:id")
+  @ApiOperation({
+    summary: "Update dataset",
+    description: "Update an existing dataset by id."
+  })
+  @ApiBody({ type: DatasetItem })
+  @ApiOkResponse({ type: DatasetItem })
+  @ApiForbiddenResponseDefault()
+  async updateDataset(
+    @Param("id") id: string,
+    @Body(validationPipe) datasetItem: DatasetItem
+  ): Promise<DatasetItemWithDto> {
+    return await this.dataPlaneService.updateDatasetItem(id, datasetItem);
+  }
+
+  @Delete("/datasets/:id")
+  @ApiOperation({
+    summary: "Delete dataset",
+    description: "Delete an existing dataset by id."
+  })
+  @ApiOkResponse({ type: DatasetItemWithDto })
+  @ApiForbiddenResponseDefault()
+  async deleteDataset(@Param("id") id: string): Promise<DatasetItemWithDto> {
+    return await this.dataPlaneService.removeDatasetItem(id);
   }
 }

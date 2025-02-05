@@ -8,16 +8,16 @@ import {
   Req,
   Res
 } from "@nestjs/common";
-import { DataPlaneService } from "./dataplane.service.js";
 import { Request, Response } from "express";
 import { ApiOperation, ApiParam, ApiTags } from "@nestjs/swagger";
-import { DisableOAuthGuard, DisableRolesGuard } from "@tsg-dsp/common-api";
+import { DisableOAuthGuard } from "@tsg-dsp/common-api";
+import { TransferService } from "./transfer.service.js";
 
 @ApiTags("Proxy")
 @Controller()
 @DisableOAuthGuard()
 export class ProxyController {
-  constructor(private readonly dataPlaneService: DataPlaneService) {}
+  constructor(private readonly transferService: TransferService) {}
   private readonly logger = new Logger(this.constructor.name);
 
   @All("/proxy/:id/:path(*)?")
@@ -40,7 +40,7 @@ export class ProxyController {
     @Res() response: Response
   ) {
     this.logger.log(`Test: ${id} ${path}`);
-    await this.dataPlaneService.handleProxyRequest(
+    await this.transferService.handleProxyRequest(
       id,
       authorization,
       path || "",

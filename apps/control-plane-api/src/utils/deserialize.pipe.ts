@@ -26,7 +26,7 @@ export class DeserializePipe<
         return transformed;
       } else {
         throw new DSPError(
-          `Incorrect deserialization of ${this.type.name}`,
+          `Incorrect JSON-LD deserialization of ${this.type.name} from ${typeof value}`,
           HttpStatus.INTERNAL_SERVER_ERROR
         ).andLog(this.logger, "warn");
       }

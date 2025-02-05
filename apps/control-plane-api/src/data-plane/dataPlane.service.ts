@@ -220,6 +220,36 @@ export class DataPlaneService {
     await this.dataPlaneRepository.delete({ identifier: dataPlane.identifier });
   }
 
+  async addDataset(dataPlaneId: string, dataset: Dataset): Promise<DatasetDao> {
+    const dataPlane = await this.getDataPlaneDetails(dataPlaneId);
+    const newDataset = await this.catalogService.addDataset(dataset, dataPlane);
+    this.logger.debug(
+      `Added dataset ${dataset.id} to dataplane ${dataPlaneId}`
+    );
+    return newDataset;
+  }
+
+  async updateDataset(
+    dataPlaneId: string,
+    datasetId: string,
+    dataset: Dataset
+  ): Promise<DatasetDao> {
+    const dataPlane = await this.getDataPlaneDetails(dataPlaneId);
+    const updatedDataset = await this.catalogService.updateDataset(
+      datasetId,
+      dataset,
+      dataPlane
+    );
+    return updatedDataset;
+  }
+
+  async deleteDataset(dataPlaneId: string, datasetId: string): Promise<void> {
+    await this.catalogService.removeDataset(datasetId);
+    this.logger.debug(
+      `Deleted dataset ${datasetId} from dataplane ${dataPlaneId}`
+    );
+  }
+
   async updateCatalog(
     identifier: string,
     catalog: Catalog,

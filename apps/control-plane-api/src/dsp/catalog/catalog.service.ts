@@ -35,6 +35,7 @@ import {
   PaginationOptionsDto,
   Paginated
 } from "@tsg-dsp/common-api";
+import { DataPlaneDao } from "../../model/dataPlanes.dao.js";
 
 @Injectable()
 export class CatalogService {
@@ -192,7 +193,10 @@ export class CatalogService {
     }
   }
 
-  async addDataset(dataset: Dataset): Promise<DatasetDao> {
+  async addDataset(
+    dataset: Dataset,
+    dataPlaneDao: DataPlaneDao | undefined = undefined
+  ): Promise<DatasetDao> {
     const catalog = await this.getCatalogDao();
     const exist = await this.datasetRepository.findOne({
       where: { id: dataset.id }
@@ -276,6 +280,7 @@ export class CatalogService {
       return distributionObj;
     });
     newDataset._catalog = catalog.data;
+    newDataset._dataPlane = dataPlaneDao;
     await this.datasetRepository.save(newDataset);
     this.logger.debug(`Added dataset ${dataset.id}`);
     return newDataset;
@@ -283,15 +288,36 @@ export class CatalogService {
 
   async updateDataset(
     datasetId: string,
-    dataset: Dataset
+    dataset: Dataset,
+    dataPlaneDao: DataPlaneDao | undefined = undefined
   ): Promise<DatasetDao> {
-    const existingDataset = await this.datasetRepository.findOneBy({
-      id: datasetId
+    const existingDataset = await this.datasetRepository.findOne({
+      where: {
+        id: datasetId
+      },
+      relations: {
+        _dataPlane: true,
+        _resource: true,
+        _distribution: {
+          _accessService: {
+            _resource: true
+          }
+        }
+      }
     });
     if (!existingDataset) {
       throw new DSPError(
         `Can't update a dataset, as dataset with id ${datasetId} does not exist yet`,
         HttpStatus.NOT_FOUND
+      ).andLog(this.logger, "warn");
+    }
+    if (
+      dataPlaneDao &&
+      existingDataset._dataPlane?.identifier !== dataPlaneDao.identifier
+    ) {
+      throw new DSPError(
+        `Can't update a dataset, as dataset with id ${datasetId} is not associated with the data plane with id ${dataPlaneDao.identifier}`,
+        HttpStatus.BAD_REQUEST
       ).andLog(this.logger, "warn");
     }
     const newResource = this.resourceRepository.create(dataset);
@@ -320,7 +346,14 @@ export class CatalogService {
   }
 
   async removeDataset(datasetId: string): Promise<void> {
-    await this.datasetRepository.delete({ id: datasetId });
+    const dataset = await this.datasetRepository.findOneBy({ id: datasetId });
+    if (!dataset) {
+      throw new DSPError(
+        `Could not find dataset with id ${datasetId}`,
+        HttpStatus.NOT_FOUND
+      ).andLog(this.logger, "warn");
+    }
+    await this.datasetRepository.remove(dataset);
   }
 
   async request(

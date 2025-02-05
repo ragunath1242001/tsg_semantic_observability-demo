@@ -306,6 +306,101 @@ paths:
       security: *a6
       summary: Update catalog
       tags: *a7
+  /api/data-plane/{id}/dataset:
+    post:
+      description: Adds a new dataset to the specified data plane.
+      operationId: DataPlaneController_addDataset
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        description: Dataset details
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DatasetSchema"
+      responses:
+        "200":
+          description: Dataset added successfully
+        "400":
+          description: Invalid dataset details provided
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a6
+      summary: Add dataset
+      tags: *a7
+  /api/data-plane/{id}/dataset/{datasetId}:
+    put:
+      description: Updates an existing dataset for the specified data plane.
+      operationId: DataPlaneController_updateDataset
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: datasetId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        description: Updated dataset details
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DatasetSchema"
+      responses:
+        "200":
+          description: Dataset updated successfully
+        "400":
+          description: Identifier mismatch or invalid dataset data
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a6
+      summary: Update dataset
+      tags: *a7
+    delete:
+      description: Deletes a dataset from the specified data plane.
+      operationId: DataPlaneController_deleteDataset
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: datasetId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Dataset deleted successfully
+        "400":
+          description: Invalid dataset identifier
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a6
+      summary: Delete dataset
+      tags: *a7
   /api/management/dataplanes:
     get:
       description: Fetches all the dataplanes.
@@ -702,16 +797,16 @@ paths:
       description: Requests a dataset from a remote or local connector by ID.
       operationId: CatalogManagementController_requestDataset
       parameters:
-        - name: address
-          required: false
-          in: query
-          description: The address of the remote connector
-          schema:
-            type: string
         - name: id
           required: true
           in: query
           description: The ID of the dataset
+          schema:
+            type: string
+        - name: address
+          required: false
+          in: query
+          description: The address of the remote connector
           schema:
             type: string
         - name: audience
