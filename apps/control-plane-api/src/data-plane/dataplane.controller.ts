@@ -1,17 +1,21 @@
 import {
   Body,
   Controller,
+  Delete,
   HttpCode,
   HttpStatus,
   Logger,
   Param,
-  Post
+  Post,
+  Put
 } from "@nestjs/common";
 import {
   Catalog,
   CatalogSchema,
   DataPlaneCreation,
-  DataPlaneDetailsDto
+  DataPlaneDetailsDto,
+  Dataset,
+  DatasetSchema
 } from "@tsg-dsp/common-dsp";
 import { DeserializePipe } from "../utils/deserialize.pipe.js";
 import { DSPError } from "../utils/errors/error.js";
@@ -102,5 +106,73 @@ export class DataPlaneController {
       catalog
     );
     return catalogUpdate;
+  }
+
+  @Post("/:id/dataset")
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: "Add dataset",
+    description: "Adds a new dataset to the specified data plane."
+  })
+  @ApiBody({ description: "Dataset details", type: DatasetSchema })
+  @ApiOkResponse({ description: "Dataset added successfully" })
+  @ApiBadRequestResponse({ description: "Invalid dataset details provided" })
+  @ApiForbiddenResponseDefault()
+  async addDataset(
+    @Param("id") id: string,
+    @Body(new DeserializePipe(Dataset)) dataset: Dataset
+  ): Promise<void> {
+    this.logger.log(
+      `Received new dataset for data plane ${id}: ${JSON.stringify(dataset)}`
+    );
+    await this.dataPlaneService.addDataset(id, dataset);
+  }
+
+  @Put("/:id/dataset/:datasetId")
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: "Update dataset",
+    description: "Updates an existing dataset for the specified data plane."
+  })
+  @ApiBody({ description: "Updated dataset details", type: DatasetSchema })
+  @ApiOkResponse({ description: "Dataset updated successfully" })
+  @ApiBadRequestResponse({
+    description: "Identifier mismatch or invalid dataset data"
+  })
+  @ApiForbiddenResponseDefault()
+  async updateDataset(
+    @Param("id") id: string,
+    @Param("datasetId") datasetId: string,
+    @Body(new DeserializePipe(Dataset)) dataset: Dataset
+  ): Promise<void> {
+    this.logger.log(
+      `Received dataset update for data plane ${id}, dataset ${datasetId}: ${JSON.stringify(dataset)}`
+    );
+    if (datasetId !== dataset.id) {
+      throw new DSPError(
+        "Identifier in path and in body do not match",
+        HttpStatus.BAD_REQUEST
+      ).andLog(this.logger, "warn");
+    }
+    await this.dataPlaneService.updateDataset(id, datasetId, dataset);
+  }
+
+  @Delete("/:id/dataset/:datasetId")
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: "Delete dataset",
+    description: "Deletes a dataset from the specified data plane."
+  })
+  @ApiOkResponse({ description: "Dataset deleted successfully" })
+  @ApiBadRequestResponse({ description: "Invalid dataset identifier" })
+  @ApiForbiddenResponseDefault()
+  async deleteDataset(
+    @Param("id") id: string,
+    @Param("datasetId") datasetId: string
+  ): Promise<void> {
+    this.logger.log(
+      `Received dataset deletion for data plane ${id}, dataset ${datasetId}`
+    );
+    await this.dataPlaneService.deleteDataset(id, datasetId);
   }
 }

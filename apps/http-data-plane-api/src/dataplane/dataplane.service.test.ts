@@ -6,29 +6,28 @@ import { plainToClass } from "class-transformer";
 import { LoggingConfig, RootConfig } from "../config.js";
 import { SetupServer, setupServer } from "msw/node";
 import { HttpResponse, PathParams, http } from "msw";
-import { Request, Response } from "express";
-import { getMockRes } from "@jest-mock/express";
 import {
   AgreementDto,
   DataPlaneCreation,
   DatasetDto,
-  OfferDto,
-  NegotiationRole,
-  ContractNegotiationState,
-  TransferState
+  OfferDto
 } from "@tsg-dsp/common-dsp";
-import { TransferDao } from "./transfer.dao.js";
+import { TransferDao } from "../transfer/transfer.dao.js";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { DataPlaneStateDao } from "./dataplane.dao.js";
-import { HttpStatus, RawBodyRequest } from "@nestjs/common";
+import { DataPlaneStateDao, DatasetItemDao } from "./dataplane.dao.js";
+import { HttpStatus } from "@nestjs/common";
 import { EgressLogDao, IngressLogDao } from "../logging/logging.dao.js";
 import { LoggingService } from "../logging/logging.service.js";
-import { NegotiationDetailDto } from "@tsg-dsp/common-dtos";
 import {
   TypeOrmTestHelper,
   AuthClientService,
-  AuthConfig
+  AuthConfig,
+  validateOrRejectSync
 } from "@tsg-dsp/common-api";
+import {
+  DatasetConfig,
+  VersionedDatasetConfig
+} from "@tsg-dsp/http-data-plane-dtos";
 
 describe("Dataplane Service", () => {
   let dataPlaneService: DataPlaneService;
@@ -46,6 +45,7 @@ describe("Dataplane Service", () => {
         initializationDelay: 1
       },
       dataset: {
+        type: "versioned",
         id: `urn:uuid:test`,
         title: "HTTPBin",
         versions: [
@@ -179,6 +179,9 @@ describe("Dataplane Service", () => {
       }),
       http.get("http://localhost:3000/management/request", () => {
         return HttpResponse.json({});
+      }),
+      http.get("http://localhost:3000/management/catalog/request", () => {
+        return HttpResponse.text("", { status: 400 });
       })
     );
 
@@ -189,12 +192,14 @@ describe("Dataplane Service", () => {
         TypeOrmTestHelper.instance.module([
           TransferDao,
           DataPlaneStateDao,
+          DatasetItemDao,
           IngressLogDao,
           EgressLogDao
         ]),
         TypeOrmModule.forFeature([
           TransferDao,
           DataPlaneStateDao,
+          DatasetItemDao,
           IngressLogDao,
           EgressLogDao
         ])
@@ -223,7 +228,7 @@ describe("Dataplane Service", () => {
     await expect(dataPlaneService.getStateDto()).rejects.toThrow(
       "No state available yet"
     );
-
+    await dataPlaneService.initialized;
     await new Promise((r) => setTimeout(r, 20));
   });
 
@@ -235,26 +240,7 @@ describe("Dataplane Service", () => {
     server.close();
   });
 
-  describe("Provider process", () => {
-    let transferProcessId = "urn:uuid:4904fd10-05c0-40fe-99f8-ce4a7d336c4f";
-    let authorization = "";
-
-    const request = {
-      method: "POST",
-      path: "/0.9.2/anything/test",
-      headers: {
-        "content-type": "application/json",
-        accept: "application/json"
-      },
-      query: {
-        filter: "filterQueryString"
-      } as qs.ParsedQs,
-      body: {
-        test: "test2"
-      },
-      rawBody: Buffer.from(JSON.stringify({ test: "test2" }), "utf-8")
-    } as RawBodyRequest<Request>;
-
+  describe("Config management", () => {
     it("Get state", async () => {
       await dataPlaneService.initialized;
       await new Promise((r) => setTimeout(r, 100));
@@ -263,961 +249,218 @@ describe("Dataplane Service", () => {
       expect(state.identifier).toBeDefined();
       expect(state.details).toBeDefined();
     });
-
-    it("Transfer request", async () => {
-      const result = await dataPlaneService.handleTransferRequest(
-        {
-          "@type": "dspace:TransferRequestMessage",
-          "dspace:agreementId": "urn:uuid:cadb401e-4275-4d77-99a2-5aa2af93e3b7",
-          "dct:format": "dspace:HTTP",
-          "dspace:callbackAddress": "http://127.0.0.1/test",
-          "dspace:consumerPid": "urn:uuid:00000000-0000-0000-0000-000000000000"
-        },
-        "provider",
-        transferProcessId,
-        "did:web:localhost",
-        "urn:uuid:test"
-      );
-      transferProcessId = result.identifier;
-      authorization =
-        result.dataAddress?.properties?.find(
-          ({ name }) => name === "Authorization"
-        )?.value || "UNKNOWN";
-      expect(result.dataAddress).toBeDefined();
-    });
-
-    it("Get transfers for transport", async () => {
-      const transfers = await dataPlaneService.getTransfers();
-      expect(transfers).toHaveLength(1);
-
-      const existingTransfer = await dataPlaneService.getTransferById(
-        transfers[0].id
-      );
-      expect(existingTransfer).toBeDefined();
-
-      await expect(dataPlaneService.getTransferById("unknown")).rejects.toThrow(
-        "not found"
-      );
-    });
-
-    it("Transfer execution on requested", async () => {
-      const response = getMockRes();
-      await expect(
-        dataPlaneService.handleProxyRequest(
-          transferProcessId,
-          authorization,
-          "anything/test",
-          request,
-          response.res as unknown as Response
-        )
-      ).rejects.toThrow("accessing is not allowed");
-    });
-
-    it("Transfer start", async () => {
-      await dataPlaneService.handleTransferStart(
-        {
-          "@type": "dspace:TransferStartMessage",
-          "dspace:providerPid": transferProcessId,
-          "dspace:consumerPid": "urn:uuid:00000000-0000-0000-0000-000000000000"
-        },
-        transferProcessId
-      );
-    });
-
-    it("Transfer execution", async () => {
-      const response = getMockRes();
-      await dataPlaneService.handleProxyRequest(
-        transferProcessId,
-        authorization,
-        "anything/test",
-        request,
-        response.res as unknown as Response
-      );
-
-      await new Promise((r) => setTimeout(r, 50));
-
-      const resultBody = JSON.parse(
-        Buffer.from(
-          (response.res.write as jest.Mock).mock.calls[0][0] as any
-        ).toString()
-      );
-
-      expect(resultBody["json"]["test"]).toBe("test2");
-      expect(resultBody["headers"]["Content-Type"]).toBe("application/json");
-      expect(resultBody["headers"]["Accept"]).toBe("application/json");
-      expect(resultBody["args"]["filter"]).toBe("filterQueryString");
-      expect((response.res.status as jest.Mock).mock.calls[0][0]).toBe(200);
-    });
-
-    it("Transfer execution without authorization", async () => {
-      const response = getMockRes();
-      await expect(
-        dataPlaneService.handleProxyRequest(
-          transferProcessId,
-          "UNKNOWN",
-          "anything/test",
-          request,
-          response.res as unknown as Response
-        )
-      ).rejects.toThrow("Incorrect authorization header");
-    });
-
-    it("Transfer execution on unknown transfer", async () => {
-      const response = getMockRes();
-      await expect(
-        dataPlaneService.handleProxyRequest(
-          "urn:uuid:00000000-0000-0000-0000-000000000000",
-          "UNKNOWN",
-          "anything/test",
-          request,
-          response.res as unknown as Response
-        )
-      ).rejects.toThrow("not found");
-    });
-
-    it("Transfer completion", async () => {
-      await dataPlaneService.handleTransferComplete(
-        {
-          "@type": "dspace:TransferCompletionMessage",
-          "dspace:providerPid": transferProcessId,
-          "dspace:consumerPid": "urn:uuid:00000000-0000-0000-0000-000000000000"
-        },
-        transferProcessId
-      );
-    });
-
-    it("Transfer execution on completed", async () => {
-      const response = getMockRes();
-      await expect(
-        dataPlaneService.handleProxyRequest(
-          transferProcessId,
-          authorization,
-          "anything/test",
-          request,
-          response.res as unknown as Response
-        )
-      ).rejects.toThrow("accessing is not allowed");
-    });
-
-    it("Request metadata", async () => {
-      const metadata = await dataPlaneService.getMetadata(transferProcessId);
-      expect(metadata.agreement).toBeDefined();
-      expect(metadata.dataset).toBeDefined();
-    });
-
-    it("Start transfer", async () => {
-      const response = await dataPlaneService.transferStart(transferProcessId);
-      expect(response).toStrictEqual({ status: "OK" });
-    });
-
-    it("Complete transfer", async () => {
-      const response =
-        await dataPlaneService.transferComplete(transferProcessId);
-      expect(response).toStrictEqual({ status: "OK" });
-    });
-
-    it("Terminate transfer", async () => {
-      const response = await dataPlaneService.transferTerminate(
-        transferProcessId,
-        "CODE",
-        "REASON"
-      );
-      expect(response).toStrictEqual({ status: "OK" });
-    });
-
-    it("Suspend transfer", async () => {
-      const response = await dataPlaneService.transferSuspend(
-        transferProcessId,
-        "REASON"
-      );
-      expect(response).toStrictEqual({ status: "OK" });
-    });
-  });
-
-  describe("Consumer process", () => {
-    let transferProcessId = "urn:uuid:dab7264b-7ff4-4182-9e89-6238a57b5006";
-    const request = {
-      method: "POST",
-      path: "/anything/test",
-      headers: {
-        "content-type": "application/json",
-        accept: "application/json"
-      },
-      query: {
-        filter: "filterQueryString"
-      } as qs.ParsedQs,
-      body: {
-        test: "test2"
-      },
-      rawBody: Buffer.from(JSON.stringify({ test: "test2" }), "utf-8")
-    } as RawBodyRequest<Request>;
-
-    it("Transfer Request", async () => {
-      const result = await dataPlaneService.handleTransferRequest(
-        {
-          "@type": "dspace:TransferRequestMessage",
-          "dspace:consumerPid": "urn:uuid:00000000-0000-0000-0000-000000000000",
-          "dspace:agreementId": "urn:uuid:e785d4a8-2030-4a2b-b223-9881e35c0df7",
-          "dct:format": "dspace:HTTP",
-          "dspace:callbackAddress": "http://127.0.0.1/test"
-        },
-        "consumer",
-        transferProcessId,
-        "did:web:localhost",
-        "urn:uuid:test"
-      );
-      transferProcessId = result.identifier;
-    });
-
-    it("Transfer execution on requested", async () => {
-      const response = getMockRes();
-      await expect(
-        dataPlaneService.executeProxyRequest(
-          transferProcessId,
-          "anything/test",
-          request,
-          response.res as unknown as Response
-        )
-      ).rejects.toThrow("accessing is not allowed");
-    });
-
-    it("Transfer start", async () => {
-      await dataPlaneService.handleTransferStart(
-        {
-          "@type": "dspace:TransferStartMessage",
-          "dspace:providerPid": transferProcessId,
-          "dspace:consumerPid": "urn:uuid:00000000-0000-0000-0000-000000000000",
-          "dspace:dataAddress": {
-            "@type": "dspace:DataAddress",
-            "dspace:endpoint": "https://httpbin.org/anything",
-            "dspace:endpointType": "dspace:HTTP",
-            "dspace:endpointProperties": [
-              {
-                "@type": "dspace:EndpointProperty",
-                "dspace:name": "Authorization",
-                "dspace:value": "Bearer ABCDEF"
-              }
-            ]
-          }
-        },
-        transferProcessId
-      );
-    });
-
-    it("Transfer execution", async () => {
-      const mockedResponse = getMockRes().res as unknown as jest.MockedObject<
-        Response<any, Record<string, any>>
-      >;
-      await dataPlaneService.executeProxyRequest(
-        transferProcessId,
-        "anything/test",
-        request,
-        mockedResponse as unknown as Response
-      );
-      await new Promise((r) => setTimeout(r, 10));
-
-      expect(mockedResponse.write).toHaveBeenCalledTimes(1);
-      const resultBody = JSON.parse(
-        Buffer.from(mockedResponse.write.mock.lastCall![0]).toString()
-      );
-      expect(resultBody["json"]["test"]).toBe("test2");
-      expect(resultBody["headers"]["Content-Type"]).toBe("application/json");
-      expect(resultBody["headers"]["Accept"]).toBe("application/json");
-      expect(resultBody["args"]["filter"]).toBe("filterQueryString");
-      expect(mockedResponse.status).toHaveBeenLastCalledWith(200);
-    });
-
-    it("Transfer execution on unknown transfer", async () => {
-      const response = getMockRes();
-      await expect(
-        dataPlaneService.executeProxyRequest(
-          "urn:uuid:00000000-0000-0000-0000-000000000000",
-          "anything/test",
-          request,
-          response.res as unknown as Response
-        )
-      ).rejects.toThrow("not found");
-    });
-
-    it("Transfer completion", async () => {
-      await dataPlaneService.handleTransferComplete(
-        {
-          "@type": "dspace:TransferCompletionMessage",
-          "dspace:providerPid": transferProcessId,
-          "dspace:consumerPid": "urn:uuid:00000000-0000-0000-0000-000000000000"
-        },
-        transferProcessId
-      );
-    });
-
-    it("Transfer execution on completed", async () => {
-      const response = getMockRes();
-      await expect(
-        dataPlaneService.executeProxyRequest(
-          transferProcessId,
-          "anything/test",
-          request,
-          response.res as unknown as Response
-        )
-      ).rejects.toThrow("accessing is not allowed");
-    });
-  });
-  describe("Config management", () => {
     it("Update config", async () => {
-      await dataPlaneService.updateDatasetConfig({
-        id: `urn:uuid:test`,
-        title: "HTTPBin",
-        baseSemanticModelRef: "https://some-ontology.org",
-        currentVersion: "0.9.2",
-        versions: [
+      await dataPlaneService.updateDatasetConfig(
+        DatasetConfig.parse(
           {
-            version: "0.9.2",
-            semanticModelRef: "http://example.org/semantics",
-            authorization: "Bearer AAAAAAA",
-            distributions: [
+            type: "versioned",
+            id: `urn:uuid:test`,
+            title: "HTTPBin",
+            baseSemanticModelRef: "https://some-ontology.org",
+            currentVersion: "0.9.2",
+            versions: [
               {
-                mediaType: "application/json",
-                backendUrl: "http://example.org/http"
+                version: "0.9.2",
+                semanticModelRef: "http://example.org/semantics",
+                authorization: "Bearer AAAAAAA",
+                distributions: [
+                  {
+                    mediaType: "application/json",
+                    backendUrl: "http://example.org/http"
+                  }
+                ]
+              },
+              {
+                version: "0.9.1",
+                authorization: "Bearer AAAAAAA",
+                distributions: [
+                  {
+                    // mediaType: "application/json",
+                    backendUrl: "http://example.org/http"
+                  }
+                ]
               }
-            ]
+            ],
+            policy: {
+              type: "rules",
+              permissions: [
+                {
+                  action: "odrl:use",
+                  constraints: [
+                    {
+                      type: "CredentialType",
+                      value: "dataspace:MembershipCredential"
+                    }
+                  ]
+                },
+                {
+                  action: "odrl:read"
+                }
+              ],
+              prohibitions: [
+                {
+                  action: "odrl:distribute"
+                },
+                {
+                  action: "odrl:sell",
+                  constraints: [
+                    {
+                      type: "CredentialType",
+                      value: "dataspace:CommercialCredential"
+                    }
+                  ]
+                }
+              ]
+            }
           },
-          {
-            version: "0.9.1",
-            authorization: "Bearer AAAAAAA",
-            distributions: [
-              {
-                // mediaType: "application/json",
-                backendUrl: "http://example.org/http"
-              }
-            ]
-          }
-        ],
-        policy: {
-          type: "rules",
-          permissions: [
-            {
-              action: "odrl:use",
-              constraints: [
-                {
-                  type: "CredentialType",
-                  value: "dataspace:MembershipCredential"
-                }
-              ]
-            },
-            {
-              action: "odrl:read"
-            }
-          ],
-          prohibitions: [
-            {
-              action: "odrl:distribute"
-            },
-            {
-              action: "odrl:sell",
-              constraints: [
-                {
-                  type: "CredentialType",
-                  value: "dataspace:CommercialCredential"
-                }
-              ]
-            }
-          ]
-        }
-      });
-      const config = await dataPlaneService.getDatasetConfig();
+          validateOrRejectSync
+        )
+      );
+      const config: VersionedDatasetConfig =
+        dataPlaneService.getDatasetConfig() as VersionedDatasetConfig;
       expect(config.versions).toHaveLength(2);
       expect(config.baseSemanticModelRef).toEqual("https://some-ontology.org");
       expect(config.policy).toBeDefined();
     });
     it("Default policy", async () => {
-      await dataPlaneService.updateDatasetConfig({
-        id: `urn:uuid:test`,
-        title: "HTTPBin",
-        currentVersion: "0.9.2",
-        versions: [
+      await dataPlaneService.updateDatasetConfig(
+        DatasetConfig.parse(
           {
-            version: "0.9.2",
-            authorization: "Bearer AAAAAAA",
-            semanticModelRef: "http://some-more-specific-ontology.org",
-            distributions: [
+            type: "versioned",
+            id: `urn:uuid:test`,
+            title: "HTTPBin",
+            currentVersion: "0.9.2",
+            versions: [
               {
-                mediaType: "application/json",
-                openApiSpecRef: "https://httpbin.org/spec.json",
-                backendUrl: "https://httpbin.org/anything"
+                version: "0.9.2",
+                authorization: "Bearer AAAAAAA",
+                semanticModelRef: "http://some-more-specific-ontology.org",
+                distributions: [
+                  {
+                    mediaType: "application/json",
+                    openApiSpecRef: "https://httpbin.org/spec.json",
+                    backendUrl: "https://httpbin.org/anything"
+                  }
+                ]
               }
-            ]
-          }
-        ],
-        policy: {
-          type: "default"
-        }
-      });
+            ],
+            policy: {
+              type: "default"
+            }
+          },
+          validateOrRejectSync
+        )
+      );
     });
     it("Raw policy", async () => {
-      await dataPlaneService.updateDatasetConfig({
-        id: `urn:uuid:test`,
-        title: "HTTPBin",
-        currentVersion: "0.9.2",
-        versions: [
+      await dataPlaneService.updateDatasetConfig(
+        DatasetConfig.parse(
           {
-            version: "0.9.2",
-            authorization: "Bearer AAAAAAA",
-            semanticModelRef: "http://some-more-specific-ontology.org",
-            distributions: [
+            type: "versioned",
+            id: `urn:uuid:test`,
+            title: "HTTPBin",
+            currentVersion: "0.9.2",
+            versions: [
               {
-                mediaType: "application/json",
-                openApiSpecRef: "https://httpbin.org/spec.json",
-                backendUrl: "https://httpbin.org/anything"
+                version: "0.9.2",
+                authorization: "Bearer AAAAAAA",
+                semanticModelRef: "http://some-more-specific-ontology.org",
+                distributions: [
+                  {
+                    mediaType: "application/json",
+                    openApiSpecRef: "https://httpbin.org/spec.json",
+                    backendUrl: "https://httpbin.org/anything"
+                  }
+                ]
               }
-            ]
-          }
-        ],
-        policy: {
-          type: "manual",
-          raw: {
-            "@context": "https://w3id.org/dspace/2024/1/context.json",
-            "@type": "odrl:Offer",
-            "@id": "urn:uuid:65d23eb8-6536-42ff-b292-78ab2a991f66",
-            "odrl:assigner": "did:web:...",
-            "odrl:permission": [
-              {
-                "@type": "odrl:Permission",
-                "odrl:action": "odrl:use",
-                "odrl:target": "urn:uuid:test"
+            ],
+            policy: {
+              type: "manual",
+              raw: {
+                "@context": "https://w3id.org/dspace/2024/1/context.json",
+                "@type": "odrl:Offer",
+                "@id": "urn:uuid:65d23eb8-6536-42ff-b292-78ab2a991f66",
+                "odrl:assigner": "did:web:...",
+                "odrl:permission": [
+                  {
+                    "@type": "odrl:Permission",
+                    "odrl:action": "odrl:use",
+                    "odrl:target": "urn:uuid:test"
+                  }
+                ]
               }
-            ]
-          }
-        }
-      });
+            }
+          },
+          validateOrRejectSync
+        )
+      );
     });
     it("Empty raw policy", async () => {
       await expect(
-        dataPlaneService.updateDatasetConfig({
-          id: `urn:uuid:test`,
-          title: "HTTPBin",
-          currentVersion: "0.9.2",
-          versions: [
+        dataPlaneService.updateDatasetConfig(
+          DatasetConfig.parse(
             {
-              version: "0.9.2",
-              authorization: "Bearer AAAAAAA",
-              semanticModelRef: "http://some-more-specific-ontology.org",
-              distributions: [
+              type: "versioned",
+              id: `urn:uuid:test`,
+              title: "HTTPBin",
+              currentVersion: "0.9.2",
+              versions: [
                 {
-                  mediaType: "application/json",
-                  openApiSpecRef: "https://httpbin.org/spec.json",
-                  backendUrl: "https://httpbin.org/anything"
+                  version: "0.9.2",
+                  authorization: "Bearer AAAAAAA",
+                  semanticModelRef: "http://some-more-specific-ontology.org",
+                  distributions: [
+                    {
+                      mediaType: "application/json",
+                      openApiSpecRef: "https://httpbin.org/spec.json",
+                      backendUrl: "https://httpbin.org/anything"
+                    }
+                  ]
                 }
-              ]
-            }
-          ],
-          policy: {
-            type: "manual"
-          }
-        })
+              ],
+              policy: {
+                type: "manual"
+              }
+            },
+            validateOrRejectSync
+          )
+        )
       ).rejects.toThrow("must be provided for policy");
     });
     it("Erroneous raw policy", async () => {
       await expect(
-        dataPlaneService.updateDatasetConfig({
-          id: `urn:uuid:test`,
-          title: "HTTPBin",
-          currentVersion: "0.9.2",
-          versions: [
-            {
-              version: "0.9.2",
-              authorization: "Bearer AAAAAAA",
-              semanticModelRef: "http://some-more-specific-ontology.org",
-              distributions: [
-                {
-                  mediaType: "application/json",
-                  openApiSpecRef: "https://httpbin.org/spec.json",
-                  backendUrl: "https://httpbin.org/anything"
-                }
-              ]
+        dataPlaneService.updateDatasetConfig(
+          DatasetConfig.parse({
+            type: "versioned",
+            id: `urn:uuid:test`,
+            title: "HTTPBin",
+            currentVersion: "0.9.2",
+            versions: [
+              {
+                version: "0.9.2",
+                authorization: "Bearer AAAAAAA",
+                semanticModelRef: "http://some-more-specific-ontology.org",
+                distributions: [
+                  {
+                    mediaType: "application/json",
+                    openApiSpecRef: "https://httpbin.org/spec.json",
+                    backendUrl: "https://httpbin.org/anything"
+                  }
+                ]
+              }
+            ],
+            policy: {
+              type: "manual",
+              raw: "Test" as unknown as OfferDto
             }
-          ],
-          policy: {
-            type: "manual",
-            raw: "Test" as unknown as OfferDto
-          }
-        })
+          })
+        )
       ).rejects.toThrow("Could not deserialize");
-    });
-  });
-  describe("getNegotiationWithBackoff", () => {
-    it("should return negotiation when finalized", async () => {
-      const negotiationId = "test-id";
-      const negotiation = {
-        localId: "test",
-        remoteId: "test",
-        events: [],
-        remoteParty: "did:web:test",
-        remoteAddress: "remoteAddress",
-        dataSet: "urn:1234",
-        modifiedDate: new Date(),
-        role: "provider" as NegotiationRole,
-        state: ContractNegotiationState.FINALIZED
-      };
-      jest
-        .spyOn(dataPlaneService, "checkForFinalizedNegotiation")
-        .mockResolvedValue(negotiation);
-
-      const result =
-        await dataPlaneService.getNegotiationWithBackoff(negotiationId);
-
-      expect(result).toEqual(negotiation);
-    });
-
-    it("should throw an error after max retries", async () => {
-      const negotiationId = "test-id";
-      jest
-        .spyOn(dataPlaneService, "checkForFinalizedNegotiation")
-        .mockResolvedValue(undefined);
-
-      await expect(
-        dataPlaneService.getNegotiationWithBackoff(negotiationId, 5, 1)
-      ).rejects.toThrow(
-        `Negotiation ${negotiationId} did not finalize after 5 retries`
-      );
-    });
-  });
-
-  describe("obtainNegotiation", () => {
-    it("should request a new negotiation", async () => {
-      const datasetId = "dataset-id";
-      const address = "address";
-      const audience = "audience";
-      const dataset: DatasetDto = { "odrl:hasPolicy": [{}] } as DatasetDto;
-
-      jest.spyOn(dataPlaneService, "getDataset").mockResolvedValue(dataset);
-
-      const negotiation: NegotiationDetailDto = {
-        localId: "test",
-        remoteId: "test",
-        events: [],
-        remoteParty: "did:web:test",
-        remoteAddress: "remoteAddress",
-        dataSet: "urn:uuid:1234",
-        modifiedDate: new Date(),
-        role: "provider" as NegotiationRole,
-        state: ContractNegotiationState.FINALIZED
-      };
-
-      jest
-        .spyOn(dataPlaneService, "checkForFinalizedNegotiation")
-        .mockResolvedValue(negotiation);
-
-      const result = await dataPlaneService.obtainNegotiation(
-        datasetId,
-        address,
-        audience
-      );
-
-      expect(result).toEqual(negotiation);
-    });
-
-    it("should handle missing offer", async () => {
-      const datasetId = "dataset-id";
-      const address = "address";
-      const audience = "audience";
-      const dataset: DatasetDto = {} as DatasetDto;
-
-      jest.spyOn(dataPlaneService, "getDataset").mockResolvedValue(dataset);
-
-      const negotiation: NegotiationDetailDto = {
-        localId: "test",
-        remoteId: "test",
-        events: [],
-        remoteParty: "did:web:test",
-        remoteAddress: "remoteAddress",
-        dataSet: "urn:uuid:1234",
-        modifiedDate: new Date(),
-        role: "provider" as NegotiationRole,
-        state: ContractNegotiationState.FINALIZED
-      };
-
-      jest
-        .spyOn(dataPlaneService, "checkForFinalizedNegotiation")
-        .mockResolvedValue(negotiation);
-
-      const result = await dataPlaneService.obtainNegotiation(
-        datasetId,
-        address,
-        audience
-      );
-      expect(result).toBeTruthy();
-    });
-  });
-  describe("getNegotiation", () => {
-    it("should return negotiation details when the request is successful", async () => {
-      const processId = "test-process-id";
-      const negotiationDetail: NegotiationDetailDto = {
-        localId: "test",
-        remoteId: "test",
-        events: [],
-        remoteParty: "did:web:test",
-        remoteAddress: "remoteAddress",
-        dataSet: "urn:uuid:1234",
-        modifiedDate: new Date(),
-        role: "provider" as NegotiationRole,
-        state: ContractNegotiationState.FINALIZED
-      };
-
-      jest.spyOn(dataPlaneService.axiosManagement, "get").mockResolvedValue({
-        data: negotiationDetail
-      });
-
-      const result = await dataPlaneService.getNegotiation(processId);
-      expect(result).toEqual(negotiationDetail);
-    });
-
-    it("should throw DataPlaneClientError when the request fails", async () => {
-      const processId = "test-process-id";
-      const error = new Error("Request failed");
-
-      jest
-        .spyOn(dataPlaneService.axiosManagement, "get")
-        .mockRejectedValue(error);
-
-      await expect(dataPlaneService.getNegotiation(processId)).rejects.toThrow(
-        `Fetching negotiation ${processId} failed`
-      );
-    });
-  });
-
-  describe("requestTransfer", () => {
-    let negotiation: NegotiationDetailDto;
-    let address: string;
-    let audience: string;
-    let datasetId: string;
-
-    beforeEach(() => {
-      negotiation = {
-        localId: "test",
-        remoteId: "test",
-        events: [],
-        remoteParty: "did:web:test",
-        remoteAddress: "remoteAddress",
-        dataSet: "urn:uuid:1234",
-        modifiedDate: new Date(),
-        role: "provider" as NegotiationRole,
-        state: ContractNegotiationState.FINALIZED,
-        agreement: {
-          "@id": "urn:uuid:agreement-id",
-          "@type": "odrl:Agreement",
-          "odrl:assigner": "did:web:localhost",
-          "odrl:assignee": "did:web:localhost",
-          "dspace:timestamp": new Date().toISOString(),
-          "odrl:target": "urn:uuid:dataset"
-        }
-      };
-      address = "http://localhost:3000";
-      audience = "test-audience";
-      datasetId = "urn:uuid:test-dataset";
-    });
-
-    it("should request a transfer successfully", async () => {
-      jest.spyOn(dataPlaneService.axiosManagement, "post").mockResolvedValue({
-        data: {}
-      });
-
-      await dataPlaneService.requestTransfer(
-        negotiation,
-        address,
-        audience,
-        datasetId
-      );
-
-      expect(dataPlaneService.axiosManagement.post).toHaveBeenCalledWith(
-        "transfers/request",
-        null,
-        {
-          params: {
-            address: address,
-            agreementId: negotiation.agreement!["@id"],
-            audience: audience
-          }
-        }
-      );
-    });
-
-    it("should throw an error if agreement ID is not found", async () => {
-      delete negotiation.agreement;
-
-      await expect(
-        dataPlaneService.requestTransfer(
-          negotiation,
-          address,
-          audience,
-          datasetId
-        )
-      ).rejects.toThrow(
-        `No agreement ID found for negotiation ${negotiation.localId}`
-      );
-    });
-
-    it("should throw a DataPlaneClientError if the request fails", async () => {
-      const error = new Error("Request failed");
-      jest
-        .spyOn(dataPlaneService.axiosManagement, "post")
-        .mockRejectedValue(error);
-
-      await expect(
-        dataPlaneService.requestTransfer(
-          negotiation,
-          address,
-          audience,
-          datasetId
-        )
-      ).rejects.toThrow("Transfer request failed");
-    });
-  });
-  describe("determineTransferId", () => {
-    let datasetId: string;
-    let audience: string;
-    let controlPlaneAddress: string | undefined;
-
-    beforeEach(() => {
-      datasetId = "urn:uuid:test-dataset";
-      audience = "did:web:test-audience";
-      controlPlaneAddress = "test-address";
-    });
-
-    it("should return transfer ID if an active transfer is found", async () => {
-      const transfer = {
-        id: "urn:uuid:transfer-id",
-        datasetId: datasetId,
-        state: TransferState.STARTED,
-        createdDate: new Date()
-      } as TransferDao;
-
-      jest
-        .spyOn(dataPlaneService.transferRepository, "findOne")
-        .mockResolvedValueOnce(transfer);
-
-      const result = await dataPlaneService.determineTransferId(
-        datasetId,
-        audience,
-        controlPlaneAddress
-      );
-
-      expect(result).toBe(transfer.id);
-    });
-
-    it("should request a new negotiation and transfer if no active transfer is found", async () => {
-      jest
-        .spyOn(dataPlaneService.transferRepository, "findOne")
-        .mockResolvedValueOnce(null);
-
-      const negotiation = {
-        localId: "test",
-        remoteId: "test",
-        events: [],
-        remoteParty: "did:web:test",
-        remoteAddress: "remoteAddress",
-        dataSet: "urn:uuid:1234",
-        modifiedDate: new Date(),
-        role: "provider" as NegotiationRole,
-        state: ContractNegotiationState.FINALIZED
-      } as NegotiationDetailDto;
-
-      jest
-        .spyOn(dataPlaneService, "obtainNegotiation")
-        .mockResolvedValue(negotiation);
-
-      jest
-        .spyOn(dataPlaneService, "requestTransfer")
-        .mockResolvedValue(undefined);
-
-      const transfer = {
-        id: "urn:uuid:transfer-id",
-        datasetId: datasetId,
-        state: TransferState.STARTED,
-        createdDate: new Date()
-      } as TransferDao;
-
-      jest
-        .spyOn(dataPlaneService, "retryFindTransfer")
-        .mockResolvedValue(transfer);
-
-      const result = await dataPlaneService.determineTransferId(
-        datasetId,
-        audience,
-        controlPlaneAddress
-      );
-
-      expect(result).toBe(transfer.id);
-      expect(dataPlaneService.obtainNegotiation).toHaveBeenCalledWith(
-        datasetId,
-        expect.any(String),
-        audience
-      );
-      expect(dataPlaneService.requestTransfer).toHaveBeenCalledWith(
-        negotiation,
-        expect.any(String),
-        audience,
-        datasetId
-      );
-    });
-
-    it("should throw an error if no transfer is found after retries", async () => {
-      jest
-        .spyOn(dataPlaneService.transferRepository, "findOne")
-        .mockResolvedValueOnce(null);
-
-      const negotiation = {
-        localId: "test",
-        remoteId: "test",
-        events: [],
-        remoteParty: "did:web:test",
-        remoteAddress: "remoteAddress",
-        dataSet: "urn:uuid:1234",
-        modifiedDate: new Date(),
-        role: "provider" as NegotiationRole,
-        state: ContractNegotiationState.FINALIZED
-      } as NegotiationDetailDto;
-
-      jest
-        .spyOn(dataPlaneService, "obtainNegotiation")
-        .mockResolvedValue(negotiation);
-
-      jest
-        .spyOn(dataPlaneService, "requestTransfer")
-        .mockResolvedValue(undefined);
-
-      jest.spyOn(dataPlaneService, "retryFindTransfer").mockResolvedValue(null);
-
-      await expect(
-        dataPlaneService.determineTransferId(
-          datasetId,
-          audience,
-          controlPlaneAddress
-        )
-      ).rejects.toThrow(`No transfer found for dataset ${datasetId}`);
-    });
-
-    it("should handle errors during negotiation request", async () => {
-      jest
-        .spyOn(dataPlaneService.transferRepository, "findOne")
-        .mockResolvedValueOnce(null);
-
-      jest
-        .spyOn(dataPlaneService, "obtainNegotiation")
-        .mockRejectedValue(new Error("Negotiation error"));
-
-      await expect(
-        dataPlaneService.determineTransferId(
-          datasetId,
-          audience,
-          controlPlaneAddress
-        )
-      ).rejects.toThrow("Negotiation error");
-    });
-  });
-  describe("retryFindTransfer", () => {
-    afterEach(() => {
-      jest.restoreAllMocks();
-    });
-
-    it("should return transfer if found within max retries", async () => {
-      const datasetId = "urn:uuid:test-datasetjee";
-      const transfer = {
-        id: "urn:uuid:transfer-id",
-        datasetId: datasetId,
-        state: TransferState.STARTED,
-        createdDate: new Date()
-      } as TransferDao;
-
-      jest
-        .spyOn(dataPlaneService.transferRepository, "findOne")
-        .mockResolvedValueOnce(transfer);
-
-      const result = await dataPlaneService.retryFindTransfer(datasetId, 3, 1);
-
-      expect(result).toBe(transfer);
-      expect(dataPlaneService.transferRepository.findOne).toHaveBeenCalledTimes(
-        1
-      );
-    });
-
-    it("should return null if transfer is not found after max retries", async () => {
-      const datasetId = "urn:uuid:test-dataset";
-
-      jest
-        .spyOn(dataPlaneService.transferRepository, "findOne")
-        .mockResolvedValueOnce(null);
-
-      const result = await dataPlaneService.retryFindTransfer(datasetId, 3, 1);
-
-      expect(result).toBeNull();
-      expect(dataPlaneService.transferRepository.findOne).toHaveBeenCalledTimes(
-        3
-      );
-    });
-  });
-  describe("checkForFinalizedNegotiation", () => {
-    it("should return negotiation when state is FINALIZED", async () => {
-      const negotiationId = "test-id";
-      const negotiation = {
-        localId: "test",
-        remoteId: "test",
-        events: [],
-        remoteParty: "did:web:test",
-        remoteAddress: "remoteAddress",
-        dataSet: "urn:1234",
-        modifiedDate: new Date(),
-        role: "provider" as NegotiationRole,
-        state: "dspace:FINALIZED"
-      } as NegotiationDetailDto;
-
-      jest
-        .spyOn(dataPlaneService, "getNegotiation")
-        .mockResolvedValue(negotiation);
-
-      const result =
-        await dataPlaneService.checkForFinalizedNegotiation(negotiationId);
-
-      expect(result).toEqual(negotiation);
-    });
-
-    it("should return undefined when state is not FINALIZED", async () => {
-      const negotiationId = "test-id";
-      const negotiation = {
-        localId: "test",
-        remoteId: "test",
-        events: [],
-        remoteParty: "did:web:test",
-        remoteAddress: "remoteAddress",
-        dataSet: "urn:1234",
-        modifiedDate: new Date(),
-        role: "provider" as NegotiationRole,
-        state: "dspace:REQUESTED"
-      } as NegotiationDetailDto;
-
-      jest
-        .spyOn(dataPlaneService, "getNegotiation")
-        .mockResolvedValue(negotiation);
-
-      const result =
-        await dataPlaneService.checkForFinalizedNegotiation(negotiationId);
-
-      expect(result).toBeUndefined();
-    });
-
-    it("should throw an error if getNegotiation fails", async () => {
-      const negotiationId = "test-id";
-      const error = new Error("Request failed");
-
-      jest.spyOn(dataPlaneService, "getNegotiation").mockRejectedValue(error);
-
-      await expect(
-        dataPlaneService.checkForFinalizedNegotiation(negotiationId)
-      ).rejects.toThrow("Request failed");
     });
   });
 });
 
-describe("Dataplane Service Consumer", () => {
+describe("Starting without initial dataset configuration", () => {
   let dataPlaneService: DataPlaneService;
   let server: SetupServer;
   let managementToken: string;
@@ -1266,12 +509,14 @@ describe("Dataplane Service Consumer", () => {
         TypeOrmTestHelper.instance.module([
           TransferDao,
           DataPlaneStateDao,
+          DatasetItemDao,
           IngressLogDao,
           EgressLogDao
         ]),
         TypeOrmModule.forFeature([
           TransferDao,
           DataPlaneStateDao,
+          DatasetItemDao,
           IngressLogDao,
           EgressLogDao
         ])
@@ -1312,31 +557,36 @@ describe("Dataplane Service Consumer", () => {
   describe("Initial state", () => {
     it("Add dataset config", async () => {
       await dataPlaneService.initialized;
-      await new Promise((r) => setTimeout(r, 100));
-      await expect(dataPlaneService.getDatasetConfig()).rejects.toThrow(
+      await new Promise((r) => setTimeout(r, 1000));
+      expect(() => dataPlaneService.getDatasetConfig()).toThrow(
         "No dataset configured"
       );
-      await dataPlaneService.updateDatasetConfig({
-        id: `urn:uuid:test`,
-        title: "HTTPBin",
-        currentVersion: "0.9.2",
-        versions: [
+      await dataPlaneService.updateDatasetConfig(
+        DatasetConfig.parse(
           {
-            version: "0.9.2",
-            authorization: "Bearer AAAAAAA",
-            semanticModelRef: "http://some-more-specific-ontology.org",
-            distributions: [
+            type: "versioned",
+            id: `urn:uuid:test`,
+            title: "HTTPBin",
+            currentVersion: "0.9.2",
+            versions: [
               {
-                mediaType: "application/json",
-                openApiSpecRef: "https://httpbin.org/spec.json",
-                backendUrl: "https://httpbin.org/anything"
+                version: "0.9.2",
+                authorization: "Bearer AAAAAAA",
+                semanticModelRef: "http://some-more-specific-ontology.org",
+                distributions: [
+                  {
+                    mediaType: "application/json",
+                    openApiSpecRef: "https://httpbin.org/spec.json",
+                    backendUrl: "https://httpbin.org/anything"
+                  }
+                ]
               }
             ]
-          }
-        ]
-      });
-      const config = await dataPlaneService.getDatasetConfig();
-      expect(config).toBeDefined();
+          },
+          validateOrRejectSync
+        )
+      );
+      expect(dataPlaneService.getDatasetConfig()).toBeDefined();
     });
   });
 });

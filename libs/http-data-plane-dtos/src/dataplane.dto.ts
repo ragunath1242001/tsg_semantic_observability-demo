@@ -1,5 +1,6 @@
-import { OfferDto } from "@tsg-dsp/common-dsp";
-import { Type } from "class-transformer";
+import "reflect-metadata";
+import { DatasetDto, OfferDto } from "@tsg-dsp/common-dsp";
+import { plainToInstance, Type } from "class-transformer";
 import {
   IsString,
   IsDefined,
@@ -10,7 +11,8 @@ import {
   IsUrl,
   ArrayNotEmpty,
   ArrayMaxSize,
-  IsObject
+  IsObject,
+  ValidatorOptions
 } from "class-validator";
 
 export class RuleConstraintConfig {
@@ -98,7 +100,32 @@ export class VersionConfig {
   public distributions!: DistributionConfig[];
 }
 
-export class DatasetConfig {
+export abstract class DatasetConfig {
+  @IsString()
+  @IsIn(["versioned", "collection"])
+  @IsDefined()
+  public type!: "versioned" | "collection";
+
+  static parse(
+    plain: any,
+    validator?: (
+      object: DatasetConfig,
+      validatorOptions?: ValidatorOptions
+    ) => DatasetConfig
+  ): DatasetConfig {
+    const wrapper = plainToInstance(DatasetConfigWrapper, {
+      datasetConfig: plain
+    });
+    if (validator) {
+      validator(wrapper.datasetConfig);
+    }
+    return wrapper.datasetConfig;
+  }
+}
+
+export class VersionedDatasetConfig extends DatasetConfig {
+  override type: "versioned" = "versioned" as const;
+
   @IsString()
   @IsOptional()
   public id?: string;
@@ -125,4 +152,98 @@ export class DatasetConfig {
   @Type(() => PolicyConfig)
   @IsOptional()
   public policy?: PolicyConfig;
+}
+
+export class CollectionDatasetConfig extends DatasetConfig {
+  override type: "collection" = "collection" as const;
+
+  @IsString()
+  @IsOptional()
+  @IsUrl()
+  public baseSemanticModelRef?: string;
+
+  @ValidateNested()
+  @Type(() => PolicyConfig)
+  @IsOptional()
+  public basePolicy?: PolicyConfig;
+
+  @IsString()
+  @IsOptional()
+  public authorization?: string;
+
+  @IsString()
+  @IsOptional()
+  public mediaType?: string;
+
+  @IsString()
+  @IsOptional()
+  @IsUrl()
+  public schemaRef?: string;
+
+  @IsString()
+  @IsUrl()
+  @IsOptional()
+  public openApiSpecRef?: string;
+}
+
+export class DatasetConfigWrapper {
+  @ValidateNested()
+  @Type(() => DatasetConfig, {
+    discriminator: {
+      property: "type",
+      subTypes: [
+        { value: VersionedDatasetConfig, name: "versioned" },
+        { value: CollectionDatasetConfig, name: "collection" }
+      ]
+    }
+  })
+  @IsDefined()
+  public datasetConfig!: DatasetConfig;
+}
+
+export class DatasetItem {
+  @IsString()
+  @IsOptional()
+  public id!: string | null;
+
+  @IsString()
+  @IsDefined()
+  public title!: string;
+
+  @IsString()
+  @IsDefined()
+  public version!: string;
+
+  @IsString()
+  @IsUrl({ require_tld: false })
+  public backendUrl!: string;
+
+  @IsString()
+  @IsOptional()
+  public authorization!: string | null;
+
+  @IsString()
+  @IsOptional()
+  public mediaType!: string | null;
+
+  @IsString()
+  @IsOptional()
+  @IsUrl()
+  public schemaRef!: string | null;
+
+  @IsString()
+  @IsUrl()
+  @IsOptional()
+  public openApiSpecRef!: string | null;
+
+  @ValidateNested()
+  @Type(() => PolicyConfig)
+  @IsOptional()
+  public policy!: PolicyConfig[] | null;
+}
+
+export class DatasetItemWithDto extends DatasetItem {
+  @IsObject()
+  @IsOptional()
+  public dataset!: DatasetDto | null;
 }

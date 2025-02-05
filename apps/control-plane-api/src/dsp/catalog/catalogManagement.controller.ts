@@ -127,8 +127,8 @@ export class CatalogManagementController {
   @ApiBadRequestResponse({ description: "Invalid request parameters" })
   @ApiForbiddenResponseDefault()
   async requestDataset(
-    @Query("address", nonEmptyStringPipe) address: string,
     @Query("id", nonEmptyStringPipe) id: string,
+    @Query("address") address?: string,
     @Query("audience") audience?: string
   ): Promise<DatasetDto> {
     if (address) {

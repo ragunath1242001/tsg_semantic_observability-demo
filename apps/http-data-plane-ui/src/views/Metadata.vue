@@ -1,46 +1,30 @@
 <script setup lang="ts">
-import { DatasetConfig } from "@tsg-dsp/http-data-plane-dtos";
+import {
+  CollectionDatasetConfig,
+  DatasetConfig,
+  VersionedDatasetConfig
+} from "@tsg-dsp/http-data-plane-dtos";
 import { ref, onMounted } from "vue";
 import { useToast } from "primevue/usetoast";
 import { useConfirm } from "primevue/useconfirm";
-import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
-import schema from "@tsg-dsp/common-ui/assets/dataset-config.schema.json";
 import { DataPlaneStateDto } from "@tsg-dsp/common-dtos";
 import http from "@tsg-dsp/common-ui/utils/http";
-import { ODRLAction } from "@tsg-dsp/common-dsp";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
+import VersionedDatasetManagement from "../components/VersionedDatasetManagement.vue";
+import { plainToInstance } from "class-transformer";
+import CollectionDatasetManagement from "../components/CollectionDatasetManagement.vue";
 
 const toast = useToast();
 const confirm = useConfirm();
 
 const state = ref<DataPlaneStateDto>();
-const dataset = ref<DatasetConfig>();
-
-const odrlOfferSchema = {
-  $schema: "http://json-schema.org/draft-07/schema#",
-  title:
-    "Dataspace Protocol Message Offer (https://w3id.org/dspace/2024/1/negotiation/contract-schema.json#/definitions/MessageOffer)",
-  type: "object",
-  $ref: "https://w3id.org/dspace/2024/1/negotiation/contract-schema.json#/definitions/MessageOffer"
-};
-
-const odrlActions = Object.values(ODRLAction);
-
-const configRaw = ref(false);
-const configString = ref<string>();
-const configForm = ref<DatasetConfig>();
-const rawPolicy = ref("{}");
-const editModal = ref(false);
-
-const updateLoading = ref(false);
-const refreshLoading = ref(false);
-
-const showDataset = ref(false);
+const versionedConfig = ref<VersionedDatasetConfig>();
+const collectionConfig = ref<CollectionDatasetConfig>();
 
 const getState = async () => {
   try {
     const response = await http.get<DataPlaneStateDto>("management/state");
-    state.value = response.data;
+    state.value = plainToInstance(DataPlaneStateDto, response.data);
   } catch (error) {
     toast.add(
       toastError({
@@ -51,73 +35,17 @@ const getState = async () => {
     );
   }
 };
-
-const fillFormProperties = (config: DatasetConfig) => {
-  configForm.value = JSON.parse(JSON.stringify(config));
-  if (!configForm.value.policy) {
-    configForm.value.policy = {
-      type: "default"
-    };
-  }
-  configString.value = JSON.stringify(config, null, 2);
-  rawPolicy.value = configForm.value.policy.raw
-    ? JSON.stringify(configForm.value.policy.raw, null, 2)
-    : JSON.stringify(
-        {
-          "@type": "odrl:Offer",
-          "@id": `urn:uuid:${crypto.randomUUID()}`,
-          "odrl:assigner": "did:web:...",
-          "odrl:permission": [
-            {
-              "odrl:action": "odrl:use"
-            }
-          ]
-        },
-        null,
-        2
-      );
-};
-
 const getDatasetConfig = async () => {
   try {
-    const response = await http.get<DatasetConfig>("management/dataset");
-    dataset.value = response.data;
-    fillFormProperties(response.data);
-  } catch (error) {
-    toast.add(
-      toastError({
-        error,
-        summary: "Loading dataset config failed",
-        defaultMessage: `Could not load dataset config from the HTTP data plane`
-      })
-    );
-  }
-};
-
-const update = async () => {
-  updateLoading.value = true;
-  try {
-    let config: DatasetConfig;
-    if (configRaw.value) {
-      config = JSON.parse(configString.value);
-    } else {
-      config = configForm.value;
-      if (config.policy?.type === "manual") {
-        config.policy.raw = JSON.parse(rawPolicy.value);
-        config.policy.permissions = undefined;
-        config.policy.prohibitions = undefined;
-      } else if (config.policy?.type === "rules") {
-        config.policy.raw = undefined;
-      } else if (config.policy?.type === "default") {
-        config.policy.permissions = undefined;
-        config.policy.prohibitions = undefined;
-        config.policy.raw = undefined;
-      }
+    const response = await http.get<DatasetConfig>("management/config");
+    const config = DatasetConfig.parse(response.data);
+    if (config instanceof VersionedDatasetConfig) {
+      versionedConfig.value = config;
+      collectionConfig.value = undefined;
+    } else if (config instanceof CollectionDatasetConfig) {
+      collectionConfig.value = config;
+      versionedConfig.value = undefined;
     }
-    await http.put("management/dataset", config);
-    editModal.value = false;
-    await getDatasetConfig();
-    await getState();
   } catch (error) {
     toast.add(
       toastError({
@@ -127,578 +55,34 @@ const update = async () => {
       })
     );
   }
-  updateLoading.value = false;
 };
 
-const refreshRegistration = async () => {
-  refreshLoading.value = true;
-  try {
-    await http.post("management/refresh");
-    await getDatasetConfig();
-  } catch (error) {
-    toast.add(
-      toastError({
-        error,
-        summary: "Refreshing registration failed",
-        defaultMessage: `Could not refresh registration at the HTTP data plane`
-      })
-    );
-  }
-  refreshLoading.value = false;
-};
-
-const emptyStringToUndefined = (containing, property) => {
-  if (containing[property] == "") {
-    containing[property] = undefined;
-  }
-};
-
-const pushOrCreate = (containing, property, element) => {
-  if (containing[property]) {
-    containing[property].push(element);
-  } else {
-    containing[property] = [element];
-  }
+const refresh = async () => {
+  await getState();
+  await getDatasetConfig();
 };
 
 onMounted(async () => {
-  await getState();
-  await getDatasetConfig();
+  await refresh();
 });
 </script>
 
 <template>
-  <Card>
+  <Card v-if="!versionedConfig && !collectionConfig">
     <template #title>State</template>
     <template #subtitle>State of this HTTP data plane</template>
     <template #content>
-      <div class="grid grid-cols-12 gap-4" v-if="state">
-        <div class="col-span-12 min-[1024px]:col-span-8">
-          <FormField :labelWidth="3" label="Identifier">{{
-            state.identifier
-          }}</FormField>
-          <FormField :labelWidth="3" label="Type">{{
-            state.details.dataplaneType
-          }}</FormField>
-          <FormField :labelWidth="3" label="Synchronization">{{
-            state.details.catalogSynchronization
-          }}</FormField>
-          <FormField :labelWidth="3" label="Role">{{
-            state.details.role
-          }}</FormField>
-          <FormField :labelWidth="3" label="Dataset IDs">
-            <div v-for="dataset in state.dataset">
-              {{ dataset["@id"] }}
-            </div>
-          </FormField>
-        </div>
-        <div class="col-span-12 min-[1024px]:col-span-4">
-          <div>
-            <Button
-              icon="pi pi-refresh"
-              severity="info"
-              label="Refresh state at Control Plane"
-              :loading="refreshLoading"
-              @click="refreshRegistration" />
-          </div>
-          <div class="mt-4">
-            <Button label="Show DCAT dataset" @click="showDataset = true" />
-            <Dialog
-              :dismissableMask="true"
-              v-model:visible="showDataset"
-              modal
-              header="DCAT datasets"
-              :style="{ width: '90vw', maxWidth: '75rem' }">
-              <MonacoEditorVue
-                :static="state.dataset"
-                :read-only="true"
-                :max-lines="30" />
-            </Dialog>
-          </div>
-          <div class="mt-4">
-            <Button
-              label="Update configuration"
-              :loading="updateLoading"
-              @click="editModal = true"
-              severity="warn"
-              type="submit" />
-          </div>
-        </div>
-      </div>
+      <p>Loading...</p>
     </template>
   </Card>
-  <Card class="mt-8">
-    <template #title>Dataset Configuration</template>
-    <template #subtitle
-      >Configuration of the datasets provided by this data plane</template
-    >
-    <template #content>
-      <div v-if="dataset">
-        <FormField label="Identifier">{{
-          dataset.id || "Auto-generated"
-        }}</FormField>
-        <FormField label="Title">{{ dataset.title }}</FormField>
-        <FormField label="Conforms To" v-if="dataset.baseSemanticModelRef"
-          ><a :href="dataset.baseSemanticModelRef" target="_blank">{{
-            dataset.baseSemanticModelRef
-          }}</a></FormField
-        >
-        <h4>Versions</h4>
-        <div class="pl-4" v-for="(version, idx) in dataset.versions">
-          <hr v-if="idx !== 0" />
-          <FormField label="Identifier">{{
-            version.id || "Auto-generated"
-          }}</FormField>
-          <FormField label="Version">{{ version.version }}</FormField>
-          <FormField label="Message model URL">{{
-            version.semanticModelRef
-          }}</FormField>
-          <FormField label="Authorization">
-            <Inplace v-if="version.authorization">
-              <template #display>Show authorization header</template>
-              <template #content>{{ version.authorization }}</template>
-            </Inplace>
-            <template v-else>None</template>
-          </FormField>
-        </div>
-        <h4>Policy</h4>
-        <FormField label="Type"
-          ><span class="capitalize">{{
-            dataset.policy?.type || "default"
-          }}</span></FormField
-        >
-        <FormField label="Raw" v-if="dataset.policy?.type === 'manual'">
-          <MonacoEditorVue
-            :static="dataset.policy?.raw"
-            :read-only="true"
-            :max-lines="15" />
-        </FormField>
-        <div class="pl-4" v-if="dataset.policy?.type === 'rules'">
-          <h5>Permissions</h5>
-          <div
-            class="pl-4"
-            v-for="(permission, idx) in dataset.policy?.permissions || []">
-            <hr v-if="idx !== 0" />
-            <FormField label="Action">{{ permission.action }}</FormField>
-            <FormField
-              label="Constraint"
-              v-for="constraint in permission.constraints"
-              ><em>{{ constraint.type }}</em
-              >: {{ constraint.value }}</FormField
-            >
-          </div>
-          <div v-if="(dataset.policy?.permissions || []).length === 0">
-            No permissions
-          </div>
-          <h5>Prohibitions</h5>
-          <div
-            class="pl-4"
-            v-for="(prohibition, idx) in dataset.policy?.prohibitions || []">
-            <hr v-if="idx !== 0" />
-            <FormField label="Action">{{ prohibition.action }}</FormField>
-            <FormField
-              label="Constraint"
-              v-for="constraint in prohibition.constraints"
-              ><em>{{ constraint.type }}</em
-              >: {{ constraint.value }}</FormField
-            >
-          </div>
-          <div v-if="(dataset.policy?.prohibitions ?? []).length === 0">
-            No prohibitions
-          </div>
-        </div>
-      </div>
-      <div v-else>No provided datasets configured</div>
-    </template>
-  </Card>
-  <Dialog
-    v-model:visible="editModal"
-    modal
-    :dismissableMask="true"
-    header="Update Configuration"
-    :style="{ width: '95vw', maxWidth: '75rem' }">
-    <div v-if="configString">
-      <div class="mb-4">
-        <SelectButton
-          v-model="configRaw"
-          :options="[
-            { value: false, label: 'Form' },
-            { value: true, label: 'JSON' }
-          ]"
-          option-value="value"
-          option-label="label"
-          aria-labelledby="basic" />
-      </div>
-      <MonacoEditorVue
-        v-if="configRaw"
-        v-model="configString"
-        :schema="schema"
-        :maxLines="200"
-        style="max-height: calc(90vh - 16rem)" />
-      <FormField label="Identifier" v-slot="props" v-if="!configRaw">
-        <InputText
-          class="w-full"
-          :id="props.id"
-          v-model="configForm.id"
-          @change="emptyStringToUndefined(configForm, 'id')"
-          placeholder="Identifier (leave empty for an auto-generated identifier)" />
-      </FormField>
-      <FormField label="Title*" v-slot="props" v-if="!configRaw">
-        <InputText
-          class="w-full"
-          :id="props.id"
-          v-model="configForm.title"
-          placeholder="Title" />
-      </FormField>
-      <FormField label="Base semantic model" v-slot="props" v-if="!configRaw">
-        <InputText
-          class="w-full"
-          :id="props.id"
-          v-model="configForm.baseSemanticModelRef"
-          placeholder="URL to base/abstract semantic model definitions" />
-      </FormField>
-      <FormField label="Current version*" v-slot="props" v-if="!configRaw">
-        <Select
-          class="w-full"
-          :id="props.id"
-          v-model="configForm.currentVersion"
-          :options="configForm.versions"
-          option-label="version"
-          option-value="version"
-          placeholder="Current version" />
-      </FormField>
-      <FormField no-label>
-        <small>Fields marked with an asterisk (*) are required.</small>
-      </FormField>
-      <br />
-      <Tabs value="Versions" v-if="!configRaw">
-        <TabList>
-          <Tab value="Versions">Versions</Tab>
-          <Tab value="Policy">Policy</Tab>
-        </TabList>
-        <TabPanels>
-          <TabPanel value="Versions">
-            <FormField no-label>
-              <Button
-                label="Add version"
-                icon="pi pi-plus"
-                severity="success"
-                @click="
-                  configForm.versions.unshift({
-                    version: '',
-                    distributions: [
-                      {
-                        backendUrl: ''
-                      }
-                    ]
-                  })
-                " />
-            </FormField>
-            <div v-for="(version, idx) in configForm.versions">
-              <br v-if="idx !== 0" />
-              <FormField label="Identifier" v-slot="props">
-                <InputText
-                  class="w-full"
-                  :id="props.id"
-                  v-model="version.id"
-                  @change="emptyStringToUndefined(version, 'id')"
-                  placeholder="Identifier (leave empty for an auto-generated identifier)" />
-              </FormField>
-              <FormField label="Version*" v-slot="props">
-                <InputText
-                  class="w-full"
-                  :id="props.id"
-                  v-model="version.version"
-                  placeholder="Version string, e.g. semver like '0.3.1'" />
-              </FormField>
-              <FormField label="Semantic model" v-slot="props">
-                <InputText
-                  class="w-full"
-                  :id="props.id"
-                  v-model="version.semanticModelRef"
-                  @change="emptyStringToUndefined(version, 'semanticModelRef')"
-                  placeholder="URL to the semantic model of this dataset version" />
-              </FormField>
-              <FormField label="Media type" v-slot="props">
-                <InputText
-                  class="w-full"
-                  :id="props.id"
-                  v-model="version.distributions[0].mediaType"
-                  placeholder="Media type, defaults to 'application/http'" />
-              </FormField>
-              <FormField label="Schema" v-slot="props">
-                <InputText
-                  class="w-full"
-                  :id="props.id"
-                  v-model="version.distributions[0].schemaRef"
-                  @change="
-                    emptyStringToUndefined(
-                      version.distributions[0],
-                      'schemaRef'
-                    )
-                  "
-                  placeholder="URL to the message schema of this dataset version" />
-              </FormField>
-              <FormField label="OpenAPI specification" v-slot="props">
-                <InputText
-                  class="w-full"
-                  :id="props.id"
-                  v-model="version.distributions[0].openApiSpecRef"
-                  @change="
-                    emptyStringToUndefined(
-                      version.distributions[0],
-                      'openApiSpecRef'
-                    )
-                  "
-                  placeholder="OpenAPI specification (leave empty for no specification)" />
-                <small
-                  >The OpenAPI specification should refer to the JSON or YAML
-                  document directly.</small
-                >
-              </FormField>
-              <FormField label="Backend URL*" v-slot="props">
-                <InputText
-                  class="w-full"
-                  :id="props.id"
-                  v-model="version.distributions[0].backendUrl"
-                  @change="
-                    emptyStringToUndefined(
-                      version.distributions[0],
-                      'backendUrl'
-                    )
-                  "
-                  placeholder="URL pointing to the data access point" />
-              </FormField>
-              <FormField label="Authorization" v-slot="props">
-                <Password
-                  class="w-full"
-                  input-class="w-full"
-                  toggleMask
-                  :feedback="false"
-                  :input-id="props.id"
-                  v-model="version.authorization"
-                  @change="emptyStringToUndefined(version, 'authorization')"
-                  placeholder="Authorization header, e.g. 'Basic XXX' or 'Bearer XXX' (leave empty for no specification)" />
-                <small
-                  >The Authorization will be used for the connection between the
-                  data plane and the backend service.</small
-                >
-              </FormField>
-              <FormField no-label
-                ><Button
-                  label="Remove version"
-                  icon="pi pi-minus"
-                  severity="danger"
-                  @click="configForm.versions.splice(idx, 1)"
-              /></FormField>
-            </div>
-          </TabPanel>
-          <TabPanel value="Policy">
-            <FormField label="Type">
-              <SelectButton
-                v-model="configForm.policy.type"
-                :options="['default', 'rules', 'manual']"
-                :option-label="
-                  (value) => value[0].toUpperCase() + value.slice(1)
-                " />
-            </FormField>
-            <FormField
-              label="Manual"
-              v-if="configForm.policy?.type === 'manual'">
-              <MonacoEditorVue
-                v-model="rawPolicy"
-                :schema="odrlOfferSchema"
-                schema-warning
-                :maxLines="25"
-                :minLines="15" />
-              <small
-                >The warnings are based on a opiniated JSON-Schema of ODRL from
-                the Dataspace Protocol, which does not cover all possibilities
-                present in the JSON-LD structure.<br />So warnings might be
-                presented regardless of whether the input is actually correct.
-                And vice-versa, even when no warnings are presented the request
-                might be rejected.</small
-              >
-            </FormField>
-            <FormField
-              label="Permissions"
-              v-if="configForm.policy?.type === 'rules'">
-              <small
-                >Permissions allow the defined action, when all constraints are
-                met.</small
-              >
-              <hr />
-              <div v-for="(permission, idx) in configForm.policy.permissions">
-                <div class="font-bold py-2">Action</div>
-                <Select
-                  v-model="permission.action"
-                  editable
-                  :options="odrlActions"
-                  placeholder="Select or provide actions"
-                  class="w-full" />
-                <div class="font-bold py-2">Constraints</div>
-                <div class="grid grid-cols-12 gap-4 grid-nogutter ml-4">
-                  <template v-for="(constraint, idx) in permission.constraints">
-                    <div class="col-span-11 md:col-span-5">
-                      <Select
-                        v-model="constraint.type"
-                        class="w-full"
-                        :options="['CredentialType', 'Recipient', 'License']"
-                        placeholder="Constraint type" />
-                    </div>
-                    <div class="col-span-11 md:col-span-6">
-                      <InputText
-                        class="w-full"
-                        v-model="constraint.value"
-                        placeholder="Value" />
-                    </div>
-                    <div class="col-span-1">
-                      <Button
-                        size="small"
-                        icon="pi pi-times"
-                        @click="permission.constraints.splice(idx, 1)"
-                        severity="danger"
-                        outlined />
-                    </div>
-                  </template>
-                  <Button
-                    class="mt-2"
-                    label="Add constraint"
-                    icon="pi pi-plus"
-                    severity="info"
-                    @click="
-                      pushOrCreate(permission, 'constraints', {
-                        type: '',
-                        value: ''
-                      })
-                    " />
-                </div>
-                <Button
-                  class="mt-2"
-                  label="Remove permission"
-                  icon="pi pi-minus"
-                  severity="danger"
-                  @click="configForm.policy.permissions.splice(idx, 1)" />
-                <hr />
-              </div>
-              <div
-                class="py-2"
-                v-if="
-                  !configForm.policy.permissions ||
-                  configForm.policy.permissions.length === 0
-                ">
-                No permissions
-              </div>
-              <Button
-                label="Add permission"
-                icon="pi pi-plus"
-                severity="success"
-                @click="
-                  pushOrCreate(configForm.policy, 'permissions', {
-                    action: '',
-                    constraints: []
-                  })
-                " />
-            </FormField>
-            <FormField
-              label="Prohibitions"
-              v-if="configForm.policy?.type === 'rules'">
-              <small
-                >Prohibitions explicitly prohibit the defined action, when all
-                constraints are met. If both permission(s) as prohibition(s)
-                match for a given transfer, the prohibition(s) take
-                precedence.</small
-              >
-              <hr />
-              <div v-for="(prohibition, idx) in configForm.policy.prohibitions">
-                <div class="font-bold py-2">Action</div>
-                <Select
-                  v-model="prohibition.action"
-                  editable
-                  :options="odrlActions"
-                  placeholder="Select or provide actions"
-                  class="w-full" />
-                <div class="font-bold py-2">Constraints</div>
-                <div class="grid grid-cols-12 gap-4 grid-nogutter ml-4">
-                  <template
-                    v-for="(constraint, idx) in prohibition.constraints">
-                    <div class="col-span-11 md:col-span-5">
-                      <Select
-                        v-model="constraint.type"
-                        class="w-full"
-                        :options="['CredentialType', 'Recipient', 'License']"
-                        placeholder="Constraint type" />
-                    </div>
-                    <div class="col-span-11 md:col-span-6">
-                      <InputText
-                        class="w-full"
-                        v-model="constraint.value"
-                        placeholder="Value" />
-                    </div>
-                    <div class="col-span-1">
-                      <Button
-                        size="small"
-                        icon="pi pi-times"
-                        @click="prohibition.constraints.splice(idx, 1)"
-                        severity="danger"
-                        outlined />
-                    </div>
-                  </template>
-                  <Button
-                    class="mt-2"
-                    label="Add constraint"
-                    icon="pi pi-plus"
-                    severity="info"
-                    @click="
-                      pushOrCreate(prohibition, 'constraints', {
-                        type: '',
-                        value: ''
-                      })
-                    " />
-                </div>
-                <Button
-                  class="mt-2"
-                  label="Remove prohibition"
-                  icon="pi pi-minus"
-                  severity="danger"
-                  @click="configForm.policy.prohibitions.splice(idx, 1)" />
-                <hr />
-              </div>
-              <div
-                class="py-2"
-                v-if="
-                  !configForm.policy.prohibitions ||
-                  configForm.policy.prohibitions.length === 0
-                ">
-                No prohibitions
-              </div>
-              <Button
-                label="Add prohibition"
-                icon="pi pi-plus"
-                severity="success"
-                @click="
-                  pushOrCreate(configForm.policy, 'prohibitions', {
-                    action: '',
-                    constraints: []
-                  })
-                " />
-            </FormField>
-          </TabPanel>
-        </TabPanels>
-      </Tabs>
-    </div>
-    <template #footer>
-      <Button
-        label="Cancel"
-        text
-        severity="secondary"
-        @click="editModal = false" />
-      <Button
-        label="Update"
-        :loading="updateLoading"
-        @click="update"
-        severity="success"
-        type="submit" />
-    </template>
-  </Dialog>
+  <VersionedDatasetManagement
+    v-if="versionedConfig"
+    :state="state"
+    :config="versionedConfig"
+    @update="refresh" />
+  <CollectionDatasetManagement
+    v-if="collectionConfig"
+    :state="state"
+    :config="collectionConfig"
+    @update="refresh" />
 </template>

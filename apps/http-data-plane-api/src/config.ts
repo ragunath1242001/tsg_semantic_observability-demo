@@ -1,4 +1,9 @@
-import { DatasetConfig } from "@tsg-dsp/http-data-plane-dtos";
+import {
+  CollectionDatasetConfig,
+  DatasetConfig,
+  DatasetItem,
+  VersionedDatasetConfig
+} from "@tsg-dsp/http-data-plane-dtos";
 import { Type } from "class-transformer";
 import {
   IsString,
@@ -83,9 +88,22 @@ export class RootConfig {
   public readonly controlPlane!: ControlPlaneConfig;
 
   @ValidateNested()
-  @Type(() => DatasetConfig)
   @IsOptional()
+  @Type(() => DatasetConfig, {
+    discriminator: {
+      property: "type",
+      subTypes: [
+        { value: VersionedDatasetConfig, name: "versioned" },
+        { value: CollectionDatasetConfig, name: "collection" }
+      ]
+    }
+  })
   public readonly dataset?: DatasetConfig;
+
+  @ValidateNested()
+  @IsOptional()
+  @Type(() => DatasetItem)
+  public readonly initCollection?: DatasetItem[];
 
   @ValidateNested()
   @Type(() => LoggingConfig)

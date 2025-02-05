@@ -31,7 +31,8 @@ import {
   TypeOrmTestHelper,
   ServerConfig,
   AuthConfig,
-  AuthClientService
+  AuthClientService,
+  PaginationOptionsDto
 } from "@tsg-dsp/common-api";
 
 describe("DataPlane Service", () => {
@@ -324,6 +325,64 @@ describe("DataPlane Service", () => {
         expect(
           catalog?.data.dataset?.[0].distribution?.[0]?.accessService?.[0]
         ).toEqual(new DataService(catalog.data._services![0]));
+      });
+
+      it("Update single dataset", async () => {
+        const dataPlane = await dataPlaneService.getDataPlanes(
+          PaginationOptionsDto.NO_PAGINATION
+        );
+        const dataplaneId = dataPlane.data[0]!.identifier;
+
+        const dataset = new Dataset({
+          id: "urn:uuid:7e2a79c3-cbbe-4cb3-83a1-788521b0c980",
+          title: "Test collection HTTP dataset",
+          publisher: "me",
+          hasPolicy: [
+            new Offer({
+              assigner: "me",
+              permission: [
+                new Permission({
+                  target: "everyone",
+                  action: ODRLAction.READ
+                })
+              ]
+            })
+          ],
+          distribution: [
+            new Distribution({
+              id: "urn:uuid:dd58de12-9118-4651-bdaa-8d5bd4dc070e",
+              format: "dspace:HTTP",
+              accessService: [
+                new DataService({
+                  id: "urn:uuid:2d6f9fbb-5c79-4c8b-8b91-b3f917fe4272",
+                  endpointURL: "https://httpbin.org/anything"
+                })
+              ]
+            })
+          ]
+        });
+
+        await dataPlaneService.addDataset(dataplaneId, dataset);
+        dataset.title = "Updated Test collection HTTP Dataset";
+        await dataPlaneService.updateDataset(dataplaneId, dataset.id, dataset);
+        await expect(
+          dataPlaneService.updateDataset(
+            dataplaneId,
+            "urn:uuid:0000000-0000-0000-0000-000000000000",
+            dataset
+          )
+        ).rejects.toThrow("does not exist");
+        await expect(
+          dataPlaneService.updateDataset(
+            dataPlane.data[1]!.identifier,
+            dataset.id,
+            dataset
+          )
+        ).rejects.toThrow("is not associated with the data plane with id");
+        await dataPlaneService.deleteDataset(dataplaneId, dataset.id);
+        await expect(
+          dataPlaneService.deleteDataset(dataplaneId, dataset.id)
+        ).rejects.toThrow("Could not find dataset with id");
       });
     });
 });
