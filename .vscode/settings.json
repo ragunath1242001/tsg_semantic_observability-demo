@@ -27,6 +27,10 @@
       "rootPath": "apps/analytics-data-plane-api"
     },
     {
+      "name": "oauth-server",
+      "rootPath": "apps/oauth-server-api"
+    },
+    {
       "name": "common-dsp",
       "rootPath": "libs/common-dsp"
     },

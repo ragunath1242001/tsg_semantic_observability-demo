@@ -18,6 +18,7 @@
     "dev:analytics-data-plane-ui": "pnpm --filter analytics-data-plane-ui dev",
     "dev:analytics-data-plane-api": "pnpm --filter analytics-data-plane-api dev",
     "dev:analytics-data-plane": "npm-run-all --parallel \"dev:analytics-data-plane-api --noClear\" \"dev:analytics-data-plane-ui --clearScreen=false\"",
+    "dev:oauth-server-api": "pnpm --filter oauth-server-api dev",
     "dev": "pnpm -r dev",
     "dev:embedded": "pnpm --filter frontend build && CONFIG_PATH=\"./config.yaml\" EMBEDDED_FRONTEND=\"../frontend/dist\" pnpm run --filter backend watch",
     "start:control-plane": "pnpm --filter control-plane-api build && pnpm --filter control-plane-api start",
