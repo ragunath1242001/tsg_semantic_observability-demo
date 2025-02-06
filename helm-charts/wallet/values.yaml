@@ -21,11 +21,11 @@ ingress:
     - path: '{{ template "tsg.subPath" $ }}/'
       type: Prefix
     - path: /.well-known/did.json
-      type: Exact
+      type: ImplementationSpecific
     - path: /.well-known/did.jsonl
-      type: Exact
+      type: ImplementationSpecific
     - path: /.well-known/openid-credential-issuer
-      type: Exact
+      type: ImplementationSpecific
 
 env: []
 configFromSecrets: {}
