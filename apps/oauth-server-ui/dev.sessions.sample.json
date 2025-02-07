@@ -1,5 +1,0 @@
-{
-  "local": false,
-  "target": "https://example.com/oauth-server",
-  "sessionCookie": "connect.sid.tsgos=..."
-}

@@ -1,0 +1,5 @@
+{
+  "local": false,
+  "target": "https://example.com/sso-bridge",
+  "sessionCookie": "connect.sid.tsgos=..."
+}

@@ -1,0 +1,23 @@
+server:
+  port: 3004
+  listen: "0.0.0.0"
+  publicAddress: http://localhost:3004
+
+db:
+  type: "sqlite"
+  database: "oauth-db.sqlite"
+
+initClients:
+  - clientId: "test-client"
+    clientSecret: "test-secret"
+    roles:
+      - "admin"
+    name: "Test Client"
+    description: "This is a test client"
+
+initUsers:
+  - username: "alice"
+    password: "password"
+    email: "alice@example.com"
+    roles:
+      - "admin"

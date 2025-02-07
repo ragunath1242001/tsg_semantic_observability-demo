@@ -1,8 +1,0 @@
-server:
-  port: 3004
-  listen: "0.0.0.0"
-  publicDomain: localhost:3004
-
-db:
-  type: "sqlite"
-  database: "oauth-db.sqlite"
