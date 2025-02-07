@@ -186,24 +186,24 @@ analytics-data-plane-package-version:
   variables:
     APP: analytics-data-plane
 
-oauth-server-build:
+sso-bridge-build:
   extends:
     - .build
   variables:
-    APP: oauth-server
+    APP: sso-bridge
 
-oauth-server-test:
+sso-bridge-test:
   extends:
     - .test
   variables:
-    APP: oauth-server
+    APP: sso-bridge
 
-oauth-server-package:
+sso-bridge-package:
   extends: .package
   variables:
-    APP: oauth-server
+    APP: sso-bridge
 
-oauth-server-package-version:
+sso-bridge-package-version:
   extends: .package-version
   variables:
-    APP: oauth-server
+    APP: sso-bridge

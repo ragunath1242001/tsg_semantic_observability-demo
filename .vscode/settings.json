@@ -27,8 +27,8 @@
       "rootPath": "apps/analytics-data-plane-api"
     },
     {
-      "name": "oauth-server",
-      "rootPath": "apps/oauth-server-api"
+      "name": "sso-bridge",
+      "rootPath": "apps/sso-bridge-api"
     },
     {
       "name": "common-dsp",
