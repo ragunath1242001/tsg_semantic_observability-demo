@@ -1,0 +1,21 @@
+{
+  "include": ["env.d.ts", "src/**/*", "src/**/*.vue"],
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true /* skipLibCheck, because of an error in Pinia with higher typescript versions https://github.com/vuejs/pinia/discussions/2605 */,
+    "baseUrl": ".",
+    "experimentalDecorators": true /* Enable experimental support for legacy experimental decorators. */,
+    "paths": {
+      "@/*": ["./*"]
+    }
+  },
+  "references": [
+    {
+      "path": "./tsconfig.config.json"
+    }
+  ]
+}

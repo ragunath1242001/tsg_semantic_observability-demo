@@ -185,3 +185,25 @@ analytics-data-plane-package-version:
   extends: .package-version
   variables:
     APP: analytics-data-plane
+
+oauth-server-build:
+  extends:
+    - .build
+  variables:
+    APP: oauth-server
+
+oauth-server-test:
+  extends:
+    - .test
+  variables:
+    APP: oauth-server
+
+oauth-server-package:
+  extends: .package
+  variables:
+    APP: oauth-server
+
+oauth-server-package-version:
+  extends: .package-version
+  variables:
+    APP: oauth-server

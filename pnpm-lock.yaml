@@ -1057,6 +1057,97 @@ importers:
         specifier: ^5.7.2
         version: 5.7.2
 
+  apps/oauth-server-ui:
+    dependencies:
+      '@nestjs/swagger':
+        specifier: ^8.0.0
+        version: 8.1.0(@nestjs/common@10.4.15(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.4.15)(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)
+      '@primevue/themes':
+        specifier: ^4.2.4
+        version: 4.2.5
+      '@tsg-dsp/common-ui':
+        specifier: workspace:*
+        version: link:../../libs/common-ui
+      '@tsg-dsp/oauth-server-dtos':
+        specifier: workspace:*
+        version: link:../../libs/oauth-server-dtos
+      axios:
+        specifier: ^1.7.8
+        version: 1.7.9
+      class-transformer:
+        specifier: ^0.5.1
+        version: 0.5.1
+      pinia:
+        specifier: ^2.3.0
+        version: 2.3.0(typescript@5.7.2)(vue@3.5.13(typescript@5.7.2))
+      primeicons:
+        specifier: ^7.0.0
+        version: 7.0.0
+      primevue:
+        specifier: ^4.2.5
+        version: 4.2.5(vue@3.5.13(typescript@5.7.2))
+      tailwindcss:
+        specifier: ^3.4.15
+        version: 3.4.17(ts-node@10.9.2(@types/node@22.10.5)(typescript@5.7.2))
+      tailwindcss-primeui:
+        specifier: ^0.3.4
+        version: 0.3.4(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@22.10.5)(typescript@5.7.2)))
+      vite:
+        specifier: ^6.0.1
+        version: 6.0.7(@types/node@22.10.5)(jiti@1.21.7)(sass@1.83.1)(terser@5.37.0)(yaml@2.7.0)
+      vue:
+        specifier: ^3.5.13
+        version: 3.5.13(typescript@5.7.2)
+      vue-router:
+        specifier: ^4.5.0
+        version: 4.5.0(vue@3.5.13(typescript@5.7.2))
+    devDependencies:
+      '@rushstack/eslint-patch':
+        specifier: ^1.10.4
+        version: 1.10.4
+      '@tsconfig/node22':
+        specifier: ^22.0.0
+        version: 22.0.0
+      '@types/node':
+        specifier: ^22.10.1
+        version: 22.10.5
+      '@vitejs/plugin-vue':
+        specifier: ^5.2.1
+        version: 5.2.1(vite@6.0.7(@types/node@22.10.5)(jiti@1.21.7)(sass@1.83.1)(terser@5.37.0)(yaml@2.7.0))(vue@3.5.13(typescript@5.7.2))
+      '@vue/eslint-config-prettier':
+        specifier: ^10.1.0
+        version: 10.1.0(@types/eslint@9.6.1)(eslint@9.17.0(jiti@1.21.7))(prettier@3.4.2)
+      '@vue/tsconfig':
+        specifier: ^0.7.0
+        version: 0.7.0(typescript@5.7.2)(vue@3.5.13(typescript@5.7.2))
+      autoprefixer:
+        specifier: ^10.4.20
+        version: 10.4.20(postcss@8.4.49)
+      eslint:
+        specifier: ^9.15.0
+        version: 9.17.0(jiti@1.21.7)
+      eslint-plugin-vue:
+        specifier: ^9.31.0
+        version: 9.32.0(eslint@9.17.0(jiti@1.21.7))
+      npm-run-all2:
+        specifier: ^7.0.1
+        version: 7.0.2
+      postcss:
+        specifier: ^8.4.49
+        version: 8.4.49
+      prettier:
+        specifier: ^3.4.1
+        version: 3.4.2
+      sass:
+        specifier: ^1.81.0
+        version: 1.83.1
+      typescript:
+        specifier: ~5.7.2
+        version: 5.7.2
+      vue-tsc:
+        specifier: ^2.1.10
+        version: 2.2.0(typescript@5.7.2)
+
   apps/wallet-api:
     dependencies:
       '@digitalbazaar/bitstring':

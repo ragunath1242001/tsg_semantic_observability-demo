@@ -1,8 +1,19 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsString, IsNotEmpty, IsArray } from "class-validator";
+import {
+  IsString,
+  IsNotEmpty,
+  IsArray,
+  IsNumber,
+  IsOptional
+} from "class-validator";
 import { GrantType } from "./grants.js";
 
 export class UserDto {
+  @ApiProperty()
+  @IsNumber()
+  @IsOptional()
+  id?: number;
+
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
