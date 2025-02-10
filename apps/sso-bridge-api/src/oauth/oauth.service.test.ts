@@ -1,3 +1,4 @@
+import { jest } from "@jest/globals";
 import { Test, TestingModule } from "@nestjs/testing";
 import { OauthService } from "./oauth.service.js";
 import { plainToInstance } from "class-transformer";
@@ -20,6 +21,7 @@ import { decodeJwt, decodeProtectedHeader, jwtVerify } from "jose";
 import { KeyDao } from "../model/keys.dao.js";
 import { TokenService } from "./token.service.js";
 import { RootConfig } from "../config.js";
+import { Request, Response } from "express";
 
 describe("Oauth", () => {
   let oauth: OauthService;
@@ -101,10 +103,10 @@ describe("Oauth", () => {
     };
     const response = await oauth.authorize(authorizationRequest);
     expect(response).toBeDefined();
-    expect(response).toContain("test-client");
-    expect(response).toContain("http://localhost:3000");
-    expect(response).toContain('"openid"');
-    expect(response).toContain('"1234"');
+    expect(response.url).toContain("test-client");
+    expect(response.url).toContain("http://localhost:3000");
+    expect(response.url).toContain("openid");
+    expect(response.url).toContain("1234");
   });
   describe("Login", () => {
     it("Response modes", async () => {
@@ -204,6 +206,66 @@ describe("Oauth", () => {
       expect(redirectUrl.searchParams.get("code_verifier")).toEqual(
         "yPvgXdlPrGZTzb3Y2ye04NWx62FsnDiWbfvuFdJf628"
       );
+    });
+    it("Login handler", async () => {
+      const request = {
+        session: {}
+      } as unknown as Request;
+      const response = {
+        redirect: jest.fn(),
+        status: jest.fn(),
+        json: jest.fn()
+      } as unknown as Response;
+      const authorizationRequest: AuthorizationRequest = {
+        response_type: "code",
+        response_mode: "query",
+        client_id: "test-client",
+        redirect_uri: "http://localhost:3000",
+        state: "1234"
+      };
+      await oauth.loginHandler(
+        request,
+        response,
+        authorizationRequest,
+        false,
+        "Alice",
+        "password",
+        undefined
+      );
+      expect(response.status).toHaveBeenCalledWith(200);
+      expect(response.redirect).not.toHaveBeenCalled();
+      jest.clearAllMocks();
+      await oauth.loginHandler(
+        request,
+        response,
+        authorizationRequest,
+        true,
+        undefined,
+        undefined,
+        {
+          id: 1,
+          username: "Alice",
+          email: "alice@example.com",
+          roles: ["user"],
+          grants: ["authorization_code"]
+        } as OauthUser
+      );
+      expect(response.redirect).toHaveBeenCalled();
+      expect(response.status).not.toHaveBeenCalled();
+      jest.clearAllMocks();
+      await expect(
+        oauth.loginHandler(
+          request,
+          response,
+          authorizationRequest,
+          false,
+          undefined,
+          undefined,
+          undefined
+        )
+      ).rejects.toThrow("Invalid login request");
+      expect(response.redirect).not.toHaveBeenCalled();
+      expect(response.status).not.toHaveBeenCalled();
     });
   });
   describe("Authorization code flow", () => {

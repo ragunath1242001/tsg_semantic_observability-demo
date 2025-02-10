@@ -13,8 +13,11 @@ import { UsersService } from "../users/users.service.js";
 import { OauthUser } from "../model/user.dao.js";
 import crypto, { createHash } from "crypto";
 import { ClientsService } from "../clients/clients.service.js";
-import { decodeJwt, JWK } from "jose";
+import { decodeJwt } from "jose";
 import { TokenService } from "./token.service.js";
+import { encodeParams } from "../utils/params.js";
+import { Request, Response } from "express";
+import { getSession } from "../utils/session.js";
 
 @Injectable()
 export class OauthService {
@@ -27,49 +30,15 @@ export class OauthService {
   private readonly codes = new Map<string, OauthUser>();
 
   async authorize(request: AuthorizationRequest) {
-    // TODO: Redirect to /#/authorize?QUERY_PARAMS
-    // TODO: What to do if user is already logged in? Redirect with code or show UI to let user decide?
-    return `
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-      <meta charset="UTF-8">
-      <title>Login</title>
-    </head>
-    <body>
-      <h1>Login</h1>
-      <form method="POST" action="login">
-        <input type="hidden" name="response_type" value="${request.response_type}" />
-        <input type="hidden" name="client_id" value="${request.client_id}" />
-        <input type="hidden" name="redirect_uri" value="${request.redirect_uri}" />
-        ${request.response_mode ? `<input type="hidden" name="response_mode" value="${request.response_mode}" />` : ""}
-        ${request.scope ? `<input type="hidden" name="scope" value="${request.scope}" />` : ""}
-        ${request.state ? `<input type="hidden" name="state" value="${request.state}" />` : ""}
-        ${request.nonce ? `<input type="hidden" name="nonce" value="${request.nonce}" />` : ""}
-        ${request.code_challenge ? `<input type="hidden" name="code_challenge" value="${request.code_challenge}" />` : ""}
-        ${request.code_challenge_method ? `<input type="hidden" name="code_challenge_method" value="${request.code_challenge_method}" />` : ""}
-        <div>
-          <label for="username">Username:</label>
-          <input type="text" id="username" name="username" required />
-        </div>
-        <div>
-          <label for="password">Password:</label>
-          <input type="password" id="password" name="password" required />
-        </div>
-        <div>
-          <button type="submit">Login</button>
-        </div>
-      </form>
-    </body>
-    </html>`;
+    return {
+      url: `${this.serverConfig.publicAddress}/#/authorize?${encodeParams({ ...request })}`
+    };
   }
 
-  async login(
-    username: string,
-    password: string,
-    request: AuthorizationRequest
+  async handleAuthorizationRequest(
+    request: AuthorizationRequest,
+    user: OauthUser
   ) {
-    const user = await this.usersService.validateUser(username, password);
     const parameters: Record<string, string> = {};
     if (request.state) {
       parameters.state = request.state;
@@ -111,17 +80,54 @@ export class OauthService {
     }
     let url: string;
     if (request.response_mode === "fragment") {
-      url = `${request.redirect_uri}#${Object.entries(parameters)
-        .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
-        .join("&")}`;
+      url = `${request.redirect_uri}#${encodeParams(parameters)}`;
     } else {
-      url = `${request.redirect_uri}?${Object.entries(parameters)
-        .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
-        .join("&")}`;
+      url = `${request.redirect_uri}?${encodeParams(parameters)}`;
     }
     return {
-      url
+      url,
+      user
     };
+  }
+  async login(
+    username: string,
+    password: string,
+    request: AuthorizationRequest
+  ) {
+    const user = await this.usersService.validateUser(username, password);
+    const loginResult = await this.handleAuthorizationRequest(request, user);
+    return loginResult;
+  }
+  async loginHandler(
+    request: Request,
+    response: Response,
+    authorizationRequest: AuthorizationRequest,
+    redirect: boolean,
+    username?: string,
+    password?: string,
+    currentUser?: OauthUser
+  ) {
+    let loginResult: { url: string; user: OauthUser };
+    if (username && password) {
+      loginResult = await this.login(username, password, authorizationRequest);
+      const session = getSession(request);
+      if (session && !session.user) {
+        session.user = loginResult.user;
+      }
+    } else if (currentUser) {
+      loginResult = await this.handleAuthorizationRequest(
+        authorizationRequest,
+        currentUser
+      );
+    } else {
+      throw new AppError("Invalid login request", HttpStatus.BAD_REQUEST);
+    }
+    if (redirect) {
+      response.redirect(loginResult.url);
+    } else {
+      response.status(HttpStatus.OK);
+      response.json(loginResult);
+    }
   }
 
   private async codeTokenRequest(

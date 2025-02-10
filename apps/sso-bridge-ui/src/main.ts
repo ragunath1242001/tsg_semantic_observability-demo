@@ -16,9 +16,6 @@ import ConfirmDialog from "primevue/confirmdialog";
 import DynamicDialog from "primevue/dynamicdialog";
 import Tooltip from "primevue/tooltip";
 import SelectButton from "primevue/selectbutton";
-
-const app = createApp(App);
-app.provide(AxiosKey, http);
 import StyleClass from "primevue/styleclass";
 import Card from "primevue/card";
 import {
@@ -31,9 +28,15 @@ import {
   Password,
   Toolbar
 } from "primevue";
+import { createPinia } from "pinia";
+
+const pinia = createPinia();
+const app = createApp(App);
+app.provide(AxiosKey, http);
 
 app.directive("styleclass", StyleClass);
 
+app.use(pinia);
 app.use(router);
 app.use(ConfirmationService);
 app.use(ToastService);

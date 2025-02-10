@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onBeforeMount } from "vue";
 import { updatePreset, updateSurfacePalette } from "@primevue/themes";
+import { useAuthStore } from "./stores/user";
 
 const initialPreset = () => {
   const color = {
@@ -75,7 +76,10 @@ const initialPreset = () => {
   updateSurfacePalette(surface.palette);
 };
 
-onBeforeMount(() => {
+const userStore = useAuthStore();
+
+onBeforeMount(async () => {
+  await userStore.getUserInfo();
   initialPreset();
 });
 </script>

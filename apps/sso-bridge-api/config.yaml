@@ -5,7 +5,7 @@ server:
 
 db:
   type: "sqlite"
-  database: "oauth-db.sqlite"
+  database: "sso-bridge-db.sqlite"
 
 initClients:
   - clientId: "test-client"
@@ -21,3 +21,9 @@ initUsers:
     email: "alice@example.com"
     roles:
       - "admin"
+
+  - username: "bob"
+    password: "password"
+    email: "bob@example.com"
+    roles:
+      - "user"
