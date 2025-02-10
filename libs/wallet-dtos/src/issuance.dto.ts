@@ -7,8 +7,8 @@ import {
 } from "@nestjs/swagger";
 
 export class CredentialOfferRequest {
-  @ApiProperty()
-  holderId!: string;
+  @ApiPropertyOptional()
+  holderId?: string;
 
   @ApiProperty()
   credentialType!: string;
@@ -86,8 +86,8 @@ export class CredentialOfferStatus {
   @ApiProperty()
   preAuthorizedCode!: string;
 
-  @ApiProperty()
-  holderId!: string;
+  @ApiPropertyOptional()
+  holderId?: string;
 
   @ApiProperty()
   credentialType!: string;

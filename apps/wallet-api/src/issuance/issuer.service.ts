@@ -273,19 +273,29 @@ export class IssuerService {
         );
       }
 
-      const holderDid = await this.didResolverService.resolve(
-        issuance.holderId
-      );
-      const parsedJwtHeader = await decodeProtectedHeader(
+      const parsedJwtHeader = decodeProtectedHeader(
         credentialRequest.proof.jwt
       );
-
       if (!parsedJwtHeader.kid) {
         throw new AppError(
-          'Only JWTs with "kid" referencing a key described in a DID document supported',
+          'Only JWTs with "kid" referencing a key described in a DID document are supported',
           HttpStatus.BAD_REQUEST
         );
       }
+      if (!issuance.holderId) {
+        issuance.holderId = parsedJwtHeader.kid.split("#")[0];
+        issuance.credentialSubject.id = issuance.holderId;
+
+        if (!issuance.holderId.startsWith("did:")) {
+          throw new AppError(
+            `Holder ID ${issuance.holderId} does not start with "did:"`,
+            HttpStatus.BAD_REQUEST
+          );
+        }
+      }
+      const holderDid = await this.didResolverService.resolve(
+        issuance.holderId
+      );
 
       const usedJwk = holderDid.verificationMethod?.find(
         (m) => m.id === parsedJwtHeader.kid

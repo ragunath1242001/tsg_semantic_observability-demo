@@ -59,7 +59,6 @@ contexts:
             - scsn:Manufacturer
             - scsn:Administrator
       required:
-        - id
         - scsnIdentifier
         - scsnRole
   - id: Catena-X

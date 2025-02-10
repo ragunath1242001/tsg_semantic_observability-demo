@@ -17,7 +17,7 @@ import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import QRCode from "qrcode";
 
 interface OfferForm {
-  holderId: string;
+  holderId?: string;
   credentialType?: JsonLdContextConfig;
   credentialSubject: string;
   credentialSubjectObject: Record<string, any>;
@@ -42,7 +42,7 @@ const isIssuer = computed(() => {
 });
 
 const offerDefault: OfferForm = {
-  holderId: "",
+  holderId: undefined,
   credentialType: undefined,
   credentialSubject: "",
   credentialSubjectObject: {},
@@ -159,17 +159,19 @@ const validateCredentialSubject = (showToast: boolean) => {
     if (typeof credentialSubject !== "object") {
       throw Error("Credential subject must be a valid JSON object");
     }
-    if (
-      !credentialSubject["id"] ||
-      typeof credentialSubject["id"] !== "string" ||
-      !didMethods.some((method) =>
-        credentialSubject["id"].startsWith(method)
-      ) ||
-      credentialSubject["id"] !== offerForm.value.holderId
-    ) {
-      throw Error(
-        "Credential subject must contain an identifier pointing to the target DID"
-      );
+    if (offerForm.value.holderId) {
+      if (
+        !credentialSubject["id"] ||
+        typeof credentialSubject["id"] !== "string" ||
+        !didMethods.some((method) =>
+          credentialSubject["id"].startsWith(method)
+        ) ||
+        credentialSubject["id"] !== offerForm.value.holderId
+      ) {
+        throw Error(
+          "Credential subject must contain an identifier pointing to the target DID"
+        );
+      }
     }
 
     if (!showToast) {
@@ -478,8 +480,7 @@ onMounted(async () => {
               v-model="offerForm.holderId"
               placeholder="did:..."
               pattern="did:(web|tdw|key):.*"
-              validation-message="Target DID must be a DID web"
-              required />
+              validation-message="Target DID must be one of DID web, tdw or key." />
           </FormField>
           <FormField label="Credential Type" v-slot="props">
             <Select

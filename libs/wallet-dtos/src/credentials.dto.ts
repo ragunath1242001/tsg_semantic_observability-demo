@@ -28,7 +28,7 @@ export interface TrustAnchorConfig {
 }
 
 export interface JsonLdContextConfig {
-  id: string;
+  id?: string;
   credentialType: string;
   issuable: boolean;
   documentUrl?: string;

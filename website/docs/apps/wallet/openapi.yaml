@@ -3151,7 +3151,6 @@ components:
         - id
         - created
         - preAuthorizedCode
-        - holderId
         - credentialType
         - revoked
         - credentialSubject

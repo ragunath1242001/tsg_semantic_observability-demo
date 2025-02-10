@@ -20,8 +20,8 @@ export class CredentialIssuance extends MetaEntity {
   @OneToMany(() => CIAccessToken, (token) => token.issuance)
   tokens!: CIAccessToken[];
 
-  @Column({ type: String })
-  holderId!: string;
+  @Column({ type: String, nullable: true })
+  holderId?: string;
 
   @Column({ type: String })
   credentialType!: string;
