@@ -1,54 +1,47 @@
 import { defineStore } from "pinia";
 import http from "../utils/http";
 import router from "../router";
+import { UserDto } from "@tsg-dsp/sso-bridge-dtos";
 
 interface UserStore {
-  user: {
-    name: string;
-    email: string;
-    roles: [];
-    sub: string;
-  } | null;
+  user: UserDto | false | null;
   returnUrl: string;
 }
 
-export const useUserStore = defineStore("user", {
+export const useAuthStore = defineStore("auth", {
   state: (): UserStore => ({
-    user: {
-      name: "",
-      email: "",
-      roles: [],
-      sub: ""
-    },
+    user: null,
     returnUrl: ""
   }),
-  getters: {},
+  getters: {
+    async getUser() {}
+  },
   actions: {
-    async login(payload: { redirect: boolean }) {
+    async getUserInfo() {
       try {
-        const response = await http.get("/auth/user");
-        if (
-          response.data.state === "unauthenticated" &&
-          payload.redirect === true
-        ) {
-          window.location.replace("api/auth/login");
-        } else {
-          this.userInfo(response.data.user);
-          router.push(this.returnUrl || "/");
-        }
+        const response = await http.get<{ user: UserDto }>("/auth/user");
+        this.user = response.data.user;
+      } catch (error) {
+        this.user = false;
+      }
+    },
+    async login(username: string, password: string) {
+      try {
+        const params = new URLSearchParams();
+        params.append("username", username);
+        params.append("password", password);
+        const response = await http.post<UserDto>("/auth/login", params);
+        this.user = response.data;
+        router.push(this.returnUrl || "/");
       } catch (e) {
         console.log(e);
         throw new Error("Login failed");
       }
     },
     async logout() {
-      this.userInfo(null);
-      window.location.replace("api/auth/logout");
-    },
-    userInfo(
-      payload: { name: string; email: string; roles: []; sub: string } | null
-    ) {
-      this.user = payload;
+      this.user = null;
+      await http.get("auth/logout");
+      window.location.replace("/");
     }
   }
 });

@@ -1,8 +1,8 @@
 import { createRouter, createWebHashHistory } from "vue-router";
 import AppLayout from "@/layout/AppLayout.vue";
-// import LoginVue from '../views/Login.vue'
-import { useUserStore } from "../stores/user.js";
+import { useAuthStore } from "../stores/user.js";
 import Dashboard from "../views/Dashboard.vue";
+import LoginVue from "../views/Login.vue";
 
 const router = createRouter({
   history: createWebHashHistory(),
@@ -27,22 +27,30 @@ const router = createRouter({
           component: () => import("../views/Users.vue")
         }
       ]
+    },
+    {
+      path: "/login",
+      name: "login",
+      component: LoginVue
+    },
+    {
+      path: "/authorize",
+      name: "authorize",
+      component: LoginVue
     }
-    // {
-    //   path: '/login',
-    //   name: 'login',
-    //   component: LoginVue
-    // }
   ]
 });
-// router.beforeEach(async (to) => {
-//   // redirect to login page if not logged in and trying to access a restricted page
-//   const publicPages = ['/login']
-//   const store = useUserStore()
-//   const authRequired = !publicPages.includes(to.path)
-//   if (authRequired && !store.user) {
-//     store.returnUrl = to.fullPath
-//     return '/login'
-//   }
-// })
+router.beforeEach(async (to) => {
+  // redirect to login page if not logged in and trying to access a restricted page
+  const publicPages = ["/login", "/authorize"];
+  const store = useAuthStore();
+  const authRequired = !publicPages.includes(to.path);
+  while (store.user === null) {
+    await new Promise((resolve) => setTimeout(resolve, 10));
+  }
+  if (authRequired && !store.user) {
+    store.returnUrl = to.fullPath;
+    return "/login";
+  }
+});
 export default router;

@@ -5,14 +5,18 @@ import {
   Get,
   Param,
   Patch,
-  Post
+  Post,
+  UseGuards
 } from "@nestjs/common";
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from "@nestjs/swagger";
 import { ClientsService } from "./clients.service.js";
 import { ClientDto } from "@tsg-dsp/sso-bridge-dtos";
+import { AuthGuard, ManagementRoles } from "../auth/auth.guard.js";
 
 @ApiTags("Clients")
 @Controller("clients")
+@UseGuards(AuthGuard)
+@ManagementRoles("admin")
 export class ClientsController {
   constructor(private readonly clientsService: ClientsService) {}
 

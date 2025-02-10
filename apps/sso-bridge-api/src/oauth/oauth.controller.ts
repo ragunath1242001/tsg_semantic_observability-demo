@@ -1,12 +1,17 @@
 import {
   Body,
   Controller,
+  DefaultValuePipe,
   Get,
   HttpCode,
   HttpStatus,
+  ParseBoolPipe,
   Post,
   Query,
-  Redirect
+  Redirect,
+  Req,
+  Res,
+  UseGuards
 } from "@nestjs/common";
 import { OauthService } from "./oauth.service.js";
 import {
@@ -15,6 +20,7 @@ import {
   TokenRequestWrapper
 } from "@tsg-dsp/sso-bridge-dtos";
 import {
+  AppError,
   nonEmptyStringPipe,
   validateOrRejectSync,
   validationPipe
@@ -25,6 +31,10 @@ import {
   ApiOkResponse,
   ApiBadGatewayResponse
 } from "@nestjs/swagger";
+import { AuthGuard, ManagementRoles, User } from "../auth/auth.guard.js";
+import { Request, Response } from "express";
+import { OauthUser } from "../model/user.dao.js";
+import { getSession } from "../utils/session.js";
 
 @Controller("oauth")
 export class OauthController {
@@ -32,6 +42,7 @@ export class OauthController {
 
   @Get("authorize")
   @HttpCode(HttpStatus.OK)
+  @Redirect(undefined, HttpStatus.FOUND)
   async authorize(
     @Query(validationPipe) authorizationRequest: AuthorizationRequest
   ) {
@@ -39,13 +50,25 @@ export class OauthController {
   }
 
   @Post("login")
-  @Redirect(undefined, HttpStatus.FOUND)
   async login(
-    @Body(validationPipe) authorizationRequest: AuthorizationRequest,
-    @Body("username", nonEmptyStringPipe) username: string,
-    @Body("password", nonEmptyStringPipe) password: string
+    @Req() req: Request,
+    @Res() res: Response,
+    @Query(validationPipe) authorizationRequest: AuthorizationRequest,
+    @Query("redirect", new DefaultValuePipe(false), ParseBoolPipe)
+    redirect: boolean,
+    @Body("username") username?: string,
+    @Body("password") password?: string,
+    @User() user?: OauthUser
   ) {
-    return this.oauthService.login(username, password, authorizationRequest);
+    await this.oauthService.loginHandler(
+      req,
+      res,
+      authorizationRequest,
+      redirect,
+      username,
+      password,
+      user
+    );
   }
 
   @Post("token")
@@ -73,6 +96,8 @@ export class OauthController {
 
   @Post("introspect")
   @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthGuard)
+  @ManagementRoles("admin")
   async introspect(
     @Body("token", nonEmptyStringPipe) token: string,
     @Body("token_type_hint") tokenTypeHint?: string
@@ -88,6 +113,8 @@ export class OauthController {
 
   @Post("revocation")
   @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthGuard)
+  @ManagementRoles("admin")
   async revocation(
     @Body("token", nonEmptyStringPipe) token: string,
     @Body("token_type_hint") tokenTypeHint?: string
