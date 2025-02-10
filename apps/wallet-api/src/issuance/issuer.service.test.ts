@@ -182,26 +182,130 @@ describe("Issuer service", () => {
         .setAudience("http://localhost:3000")
         .setIssuedAt()
         .sign(exampleKey.privateKey);
-      try {
-        const credential = await issuerService.handleCredentialRequest(
-          access_token.access_token,
-          {
-            format: "jwt_vc_json-ld",
-            credential_definition: {
-              "@context": [],
-              type: ["VerifiableCredential", "ExampleCredentialType"]
-            },
-            proof: {
-              proof_type: "jwt",
-              jwt: jwt
-            }
+      expect(
+        await issuerService.handleCredentialRequest(access_token.access_token, {
+          format: "jwt_vc_json-ld",
+          credential_definition: {
+            "@context": [],
+            type: ["VerifiableCredential", "ExampleCredentialType"]
+          },
+          proof: {
+            proof_type: "jwt",
+            jwt: jwt
           }
-        );
-        console.log(JSON.stringify(credential));
-      } catch (err) {
-        console.log(err);
-        throw err;
-      }
+        })
+      ).toBeTruthy();
+    });
+    it("Create offer without Holder ID", async () => {
+      const offer = await issuerService.createCredentialOffer({
+        credentialType: "ExampleCredentialType",
+        credentialSubject: { id: "did:web:example.com" }
+      });
+
+      const access_token = await issuerService.createAccessToken(
+        offer.grants?.[OfferGrants.PRE_AUTHORIZATION_CODE]?.[
+          "pre-authorization_code"
+        ] ?? ""
+      );
+
+      const jwt = await new SignJWT({ nonce: access_token.c_nonce })
+        .setProtectedHeader({
+          alg: "EdDSA",
+          typ: "openid4vci-proof+jwt",
+          kid: "did:web:example.com#KEY-0"
+        })
+        .setIssuer("did:web:example.com")
+        .setAudience("http://localhost:3000")
+        .setIssuedAt()
+        .sign(exampleKey.privateKey);
+      expect(
+        await issuerService.handleCredentialRequest(access_token.access_token, {
+          format: "jwt_vc_json-ld",
+          credential_definition: {
+            "@context": [],
+            type: ["VerifiableCredential", "ExampleCredentialType"]
+          },
+          proof: {
+            proof_type: "jwt",
+            jwt: jwt
+          }
+        })
+      ).toBeTruthy();
+    });
+
+    it("Should error without kid in header", async () => {
+      const offer = await issuerService.createCredentialOffer({
+        credentialType: "ExampleCredentialType",
+        credentialSubject: { id: "did:web:example.com" }
+      });
+
+      const access_token = await issuerService.createAccessToken(
+        offer.grants?.[OfferGrants.PRE_AUTHORIZATION_CODE]?.[
+          "pre-authorization_code"
+        ] ?? ""
+      );
+
+      const jwt = await new SignJWT({ nonce: access_token.c_nonce })
+        .setProtectedHeader({
+          alg: "EdDSA",
+          typ: "openid4vci-proof+jwt"
+        })
+        .setIssuer("did:web:example.com")
+        .setAudience("http://localhost:3000")
+        .setIssuedAt()
+        .sign(exampleKey.privateKey);
+      expect(
+        issuerService.handleCredentialRequest(access_token.access_token, {
+          format: "jwt_vc_json-ld",
+          credential_definition: {
+            "@context": [],
+            type: ["VerifiableCredential", "ExampleCredentialType"]
+          },
+          proof: {
+            proof_type: "jwt",
+            jwt: jwt
+          }
+        })
+      ).rejects.toThrow(
+        'Only JWTs with "kid" referencing a key described in a DID document are supported'
+      );
+    });
+
+    it("Should error kid without did in header", async () => {
+      const offer = await issuerService.createCredentialOffer({
+        credentialType: "ExampleCredentialType",
+        credentialSubject: { id: "did:web:example.com" }
+      });
+
+      const access_token = await issuerService.createAccessToken(
+        offer.grants?.[OfferGrants.PRE_AUTHORIZATION_CODE]?.[
+          "pre-authorization_code"
+        ] ?? ""
+      );
+
+      const jwt = await new SignJWT({ nonce: access_token.c_nonce })
+        .setProtectedHeader({
+          alg: "EdDSA",
+          typ: "openid4vci-proof+jwt",
+          kid: "test1234234"
+        })
+        .setIssuer("did:web:example.com")
+        .setAudience("http://localhost:3000")
+        .setIssuedAt()
+        .sign(exampleKey.privateKey);
+      expect(
+        issuerService.handleCredentialRequest(access_token.access_token, {
+          format: "jwt_vc_json-ld",
+          credential_definition: {
+            "@context": [],
+            type: ["VerifiableCredential", "ExampleCredentialType"]
+          },
+          proof: {
+            proof_type: "jwt",
+            jwt: jwt
+          }
+        })
+      ).rejects.toThrow('Holder ID test1234234 does not start with "did:"');
     });
 
     it("Issuer Metadata", async () => {
