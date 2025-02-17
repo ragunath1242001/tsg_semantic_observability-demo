@@ -17,10 +17,7 @@ import { OauthService } from "./oauth.service.js";
 import {
   AuthorizationRequest,
   JWKS,
-  TokenRequestWrapper
-} from "@tsg-dsp/sso-bridge-dtos";
-import {
-  AppError,
+  TokenRequestWrapper,
   nonEmptyStringPipe,
   validateOrRejectSync,
   validationPipe

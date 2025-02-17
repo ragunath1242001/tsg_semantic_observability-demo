@@ -13,8 +13,8 @@ primary:
   initdb:
     scripts:
       create-dbs.sql: |-
-        CREATE DATABASE casdoor;
-        GRANT ALL PRIVILEGES ON DATABASE casdoor TO postgres;
+        CREATE DATABASE "sso-bridge";
+        GRANT ALL PRIVILEGES ON DATABASE "sso-bridge" TO postgres;
         CREATE DATABASE wallet;
         GRANT ALL PRIVILEGES ON DATABASE wallet TO postgres;
         CREATE DATABASE "control-plane";

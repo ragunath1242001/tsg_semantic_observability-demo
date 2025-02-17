@@ -53,7 +53,7 @@ export class Deploy {
         await this.uninstallParticipant(participant, options.dryRun, true);
       }
       await execPromise(
-        `kubectl get secrets -n ${this.general.namespace} -o name | grep 'secret/casdoor-' | xargs -L 1 kubectl delete -n ${this.general.namespace}`,
+        `kubectl get secrets -n ${this.general.namespace} -o name | grep 'secret/sso-' | xargs -L 1 kubectl delete -n ${this.general.namespace}`,
         options.dryRun,
         this.cwd
       );
@@ -80,7 +80,7 @@ export class Deploy {
         );
       }
       await execPromise(
-        `kubectl get secrets -n ${this.general.namespace} -o name | grep 'secret/casdoor-' | xargs -L 1 kubectl delete -n ${this.general.namespace}`,
+        `kubectl get secrets -n ${this.general.namespace} -o name | grep 'secret/sso-' | xargs -L 1 kubectl delete -n ${this.general.namespace}`,
         options.dryRun,
         this.cwd
       );
@@ -164,7 +164,7 @@ export class Deploy {
         options.cleanDatabase
       );
       await execPromise(
-        `kubectl get secrets -n ${this.general.namespace} -o name | grep 'secret/casdoor-' | xargs -L 1 kubectl delete -n ${this.general.namespace}`,
+        `kubectl get secrets -n ${this.general.namespace} -o name | grep 'secret/sso-' | xargs -L 1 kubectl delete -n ${this.general.namespace}`,
         options.dryRun,
         this.cwd
       );
@@ -303,7 +303,7 @@ export class Deploy {
         );
       }
       await execPromise(
-        `helm delete -n ${this.general.namespace} ${participant.id}-casdoor`,
+        `helm delete -n ${this.general.namespace} ${participant.id}-sso-bridge`,
         dryRun,
         this.cwd,
         false
@@ -381,18 +381,18 @@ export class Deploy {
     );
 
     await helmCommand(
-      wait ? "--wait --wait-for-jobs" : "",
-      `-f ${config}/${participant.id}/values.casdoor.yaml`,
+      wait ? "--wait" : "",
+      `-f ${config}/${participant.id}/values.sso-bridge.yaml`,
       `-n ${this.general.namespace}`,
       `--repo ${this.helmRepository(
         "tsg",
-        this.applications?.casdoor?.developmentChart ?? false
+        this.applications?.ssoBridge?.developmentChart ?? false
       )}`,
       `--version ${
-        this.applications?.casdoor?.chartVersion ?? this.currentCliVersion
+        this.applications?.ssoBridge?.chartVersion ?? this.currentCliVersion
       }`,
-      `${participant.id}-casdoor`,
-      this.applications?.casdoor?.chartName ?? `casdoor`
+      `${participant.id}-sso-bridge`,
+      this.applications?.ssoBridge?.chartName ?? `tsg-sso-bridge`
     );
 
     await helmCommand(

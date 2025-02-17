@@ -1,6 +1,6 @@
 import { JsonLdDocument } from "jsonld";
 import { compact } from "./jsonld.js";
-import { expect, test } from "@jest/globals";
+import { describe, expect, test } from "@jest/globals";
 import {
   defaultContext,
   dspContextUrl,
@@ -10,7 +10,7 @@ import {
 const document: JsonLdDocument = {
   "@context": [
     "https://w3id.org/dspace/2024/1/context.json",
-    "https://www.w3.org/ns/dcat.jsonld"
+    "https://www.w3.org/ns/dcat3.jsonld"
   ],
   "@type": "odrl:Offer",
   "@id": "urn:uuid:8d613f77-3dde-4286-88ff-c1ab96da6d59",
@@ -130,23 +130,25 @@ const expectedOdrlContext = {
   }
 };
 
-test("Compaction of JSON-Dto", async () => {
-  expect(await compact(document)).toStrictEqual(expected);
-  expect(await compact(document, "dsp")).toStrictEqual({
-    ...expected,
-    "@context": dspContextUrl
+describe("JSON LD Tests", () => {
+  test("Compaction of JSON-Dto", async () => {
+    expect(await compact(document)).toStrictEqual(expected);
+    expect(await compact(document, "dsp")).toStrictEqual({
+      ...expected,
+      "@context": dspContextUrl
+    });
+    const odrlCompaction = await compact(
+      document,
+      "http://www.w3.org/ns/odrl.jsonld"
+    );
+    expect(odrlCompaction).toStrictEqual(expectedOdrlContext);
   });
-  const odrlCompaction = await compact(
-    document,
-    "http://www.w3.org/ns/odrl.jsonld"
-  );
-  expect(odrlCompaction).toStrictEqual(expectedOdrlContext);
-});
 
-test("Version error", async () => {
-  expect(await compact(document)).toStrictEqual(expected);
-  setJsonLdDebugContexts(false, "0.0.0");
-  await expect(compact(document)).rejects.toThrowError(
-    "Dereferencing a URL did not result in a valid JSON-LD object."
-  );
+  test("Version error", async () => {
+    expect(await compact(document)).toStrictEqual(expected);
+    setJsonLdDebugContexts(false, "0.0.0");
+    await expect(compact(document)).rejects.toThrowError(
+      "Dereferencing a URL did not result in a valid JSON-LD object."
+    );
+  });
 });

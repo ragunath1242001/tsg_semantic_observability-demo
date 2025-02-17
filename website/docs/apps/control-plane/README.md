@@ -42,6 +42,5 @@ The main dependencies of the backend are:
 - [Class-transformer](https://github.com/typestack/class-transformer) & [class-validator](https://github.com/typestack/class-validator)
 - [JSON-lD](https://github.com/digitalbazaar/jsonld.js)
 - [Jose](https://github.com/panva/jose)
-- [Passport](https://www.passportjs.org/)
 - [Express](https://expressjs.com/)
 - [Axios](https://axios-http.com/docs/intro)

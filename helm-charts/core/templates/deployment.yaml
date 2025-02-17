@@ -17,6 +17,9 @@ spec:
       annotations:
         checksum/config: {{ tpl (toYaml .Values.config) . | sha256sum }}
     spec:
+      {{- if .Values.serviceAccount.create }}
+      serviceAccountName: {{ include "tsg.serviceAccountName" . }}
+      {{- end }}
       containers:
         - name: {{ template "tsg.name" . }}
           image: "{{ .Values.image.repository }}:{{ tpl .Values.image.tag . }}"

@@ -1,6 +1,5 @@
 import { INestApplication, Logger } from "@nestjs/common";
 import session from "express-session";
-import passport from "passport";
 import crypto from "crypto";
 import { ServerConfig } from "@tsg-dsp/common-api";
 
@@ -22,8 +21,6 @@ export function setupApp(app: INestApplication) {
       saveUninitialized: false
     })
   );
-  app.use(passport.initialize());
-  app.use(passport.session());
   Logger.log(
     `Listening on ${config.listen}:${config.port} with public address ${config.publicAddress}`,
     "App"

@@ -13,7 +13,7 @@ import { DataPlaneModule } from "../dataplane/dataplane.module.js";
 @Module({
   imports: [
     TypeOrmModule.forFeature([TransferDao]),
-    AuthModule.register(RootConfig),
+    AuthModule,
     LoggingModule,
     DataPlaneModule
   ],

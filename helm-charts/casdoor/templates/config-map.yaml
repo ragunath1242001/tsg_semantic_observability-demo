@@ -1,8 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: {{ template "tsg.fullname" . }}-config
-  labels: {{ include "tsg.labels" $ | nindent 4 }}
-data:
-  app.conf: |-
-    {{- tpl (.Values.config | toToml) $ | replace ".0" "" | nindent 4}}

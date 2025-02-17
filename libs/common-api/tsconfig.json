@@ -19,6 +19,5 @@
     "noImplicitAny": false,
     "skipLibCheck": true
   },
-  "include": ["."],
-  "exclude": ["dist", "jest.config.ts"]
+  "exclude": ["dist", "jest.config.ts", "coverage/"]
 }

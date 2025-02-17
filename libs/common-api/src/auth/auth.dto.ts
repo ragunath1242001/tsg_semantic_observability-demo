@@ -1,4 +1,4 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { JsonWebKeyDto } from "@tsg-dsp/common-dtos";
 import { Type } from "class-transformer";
 import {
@@ -7,7 +7,8 @@ import {
   IsIn,
   IsDefined,
   ValidateNested,
-  IsInt
+  IsInt,
+  IsUrl
 } from "class-validator";
 import { JWK } from "jose";
 
@@ -85,6 +86,56 @@ export class AuthorizationRequest {
   code_challenge_method?: "plain" | "S256";
 }
 
+export class AuthorizationResponse {
+  @ApiPropertyOptional({
+    example: "randomState",
+    description: "The state parameter"
+  })
+  @IsString()
+  @IsOptional()
+  state?: string;
+  @ApiPropertyOptional({
+    example: "code",
+    description: "The authorization code"
+  })
+  @IsString()
+  @IsOptional()
+  code?: string;
+  @ApiPropertyOptional({
+    description: "The access token"
+  })
+  @IsString()
+  @IsOptional()
+  access_token?: string;
+  @ApiPropertyOptional({
+    example: "Bearer",
+    description: "The token type"
+  })
+  @IsString()
+  @IsOptional()
+  token_type?: string;
+  @ApiPropertyOptional({
+    example: 3600,
+    description: "The token expiration in seconds"
+  })
+  @IsString()
+  @IsOptional()
+  expires_in?: string;
+  @ApiPropertyOptional({
+    description: "The ID token"
+  })
+  @IsString()
+  @IsOptional()
+  id_token?: string;
+  @ApiPropertyOptional({
+    example: "randomChallengeVerifier",
+    description: "The code verifier"
+  })
+  @IsString()
+  @IsOptional()
+  code_verifier?: string;
+}
+
 export abstract class TokenRequest {
   @ApiProperty({
     description: "The grant type of the token request",
@@ -121,6 +172,14 @@ export class CodeTokenRequest extends TokenRequest {
   })
   @IsString()
   redirect_uri!: string;
+
+  @ApiPropertyOptional({
+    example: "randomChallengeVerifier",
+    description: "The code verifier"
+  })
+  @IsString()
+  @IsOptional()
+  code_verifier?: string;
 }
 
 export class RefreshTokenRequest extends TokenRequest {
@@ -225,68 +284,91 @@ export class JWKS {
 
 export class OpenIDConfiguration {
   @ApiProperty({ description: "Issuer of the OpenID configuration" })
+  @IsUrl()
   issuer!: string;
 
   @ApiProperty({ description: "Authorization endpoint" })
+  @IsUrl()
   authorization_endpoint!: string;
 
   @ApiProperty({ description: "Token endpoint" })
+  @IsUrl()
   token_endpoint!: string;
 
-  @ApiProperty({ description: "Userinfo endpoint" })
-  userinfo_endpoint!: string;
+  @ApiPropertyOptional({ description: "Userinfo endpoint" })
+  @IsUrl()
+  @IsOptional()
+  userinfo_endpoint?: string;
 
-  @ApiProperty({ description: "Introspection endpoint" })
-  introspection_endpoint!: string;
+  @ApiPropertyOptional({ description: "Introspection endpoint" })
+  @IsUrl()
+  @IsOptional()
+  introspection_endpoint?: string;
 
-  @ApiProperty({ description: "Device authorization endpoint" })
-  device_authorization_endpoint!: string;
+  @ApiPropertyOptional({ description: "Device authorization endpoint" })
+  @IsUrl()
+  @IsOptional()
+  device_authorization_endpoint?: string;
 
-  @ApiProperty({ description: "Revocation endpoint" })
-  revocation_endpoint!: string;
+  @ApiPropertyOptional({ description: "Revocation endpoint" })
+  @IsUrl()
+  @IsOptional()
+  revocation_endpoint?: string;
 
   @ApiProperty({ description: "JWKS URI" })
+  @IsUrl()
   jwks_uri!: string;
 
   @ApiProperty({
     description: "Supported response types",
     type: [String]
   })
+  @IsString({ each: true })
   response_types_supported!: string[];
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: "Supported response modes",
     type: [String]
   })
-  response_modes_supported!: string[];
+  @IsString({ each: true })
+  @IsOptional()
+  response_modes_supported?: string[];
 
   @ApiProperty({
     description: "Supported ID token signing algorithms",
     type: [String]
   })
+  @IsString({ each: true })
   id_token_signing_alg_values_supported!: string[];
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: "Supported scopes",
     type: [String]
   })
-  scopes_supported!: string[];
+  @IsString({ each: true })
+  @IsOptional()
+  scopes_supported?: string[];
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: "Supported grant types",
     type: [String]
   })
-  grant_types_supported!: string[];
+  @IsString({ each: true })
+  @IsOptional()
+  grant_types_supported?: string[];
 
   @ApiProperty({
     description: "Supported subject types",
     type: [String]
   })
+  @IsString({ each: true })
   subject_types_supported!: string[];
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: "Supported claims",
     type: [String]
   })
-  claims_supported!: string[];
+  @IsString({ each: true })
+  @IsOptional()
+  claims_supported?: string[];
 }

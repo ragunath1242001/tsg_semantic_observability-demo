@@ -17,13 +17,11 @@ The development view provides an overview of the different modules inside the co
 - `auth.controller.ts`: Controller handling authentication related requests
 - `auth.module.ts`: Authentication module
 - `auth.service.ts`: Authentication service handling authentication for several wallet clients.
-- `oauth.bearer.strategy.ts`: Passport strategy for handling Bearer token authentication
-- `oauth.strategy.ts`: Passport strategy for handling session-based authentication
 - `oauth.guard.ts`: Guards controlling required authentication
 - `roles.guard.ts`: Guard limiting access to specific roles
 - `session.serializer.ts`: Session serialization for browser-based interactions
 - `verifiablePresentation.guard.ts`: Guard controlling required authentication based on Verifiable Presentations
-- `verfiablePresentation.strategy.ts`: Passport strategy for handling Verifiable Presentation based authentication
+- `transferVerifiablePresentation.guard.ts`: Guard controlling required authentication based on Verifiable Presentations
 
 ### Wallet Clients `src/auth/wallets`
 

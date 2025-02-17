@@ -179,7 +179,6 @@ This document outlines the modules and their dependencies for the wallet applica
 
 
 ### Imports
-- PassportModule
 
 ### Controllers
 - AuthController

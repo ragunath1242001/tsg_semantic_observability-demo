@@ -6,7 +6,7 @@ import {
   ApiTags
 } from "@nestjs/swagger";
 import { OauthService } from "./oauth.service.js";
-import { OpenIDConfiguration } from "@tsg-dsp/sso-bridge-dtos";
+import { OpenIDConfiguration } from "@tsg-dsp/common-api";
 
 @Controller()
 @ApiTags("Well-known endpoint")

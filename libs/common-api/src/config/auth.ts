@@ -7,14 +7,8 @@ export class AuthConfig {
   @Transform(valueToBoolean)
   public readonly enabled: boolean = true;
   @ValidateIf((c) => c.enabled)
-  @IsUrl({ require_tld: false, require_protocol: true, require_host: false })
-  public readonly authorizationURL!: string;
-  @ValidateIf((c) => c.enabled)
-  @IsUrl({ require_tld: false, require_protocol: true, require_host: false })
-  public readonly tokenURL!: string;
-  @ValidateIf((c) => c.enabled)
-  @IsUrl({ require_tld: false, require_protocol: true, require_host: false })
-  public readonly introspectionURL!: string;
+  @IsString()
+  public readonly openIdConfigurationURL!: string;
   @ValidateIf((c) => c.enabled)
   @IsUrl({ require_tld: false, require_protocol: true, require_host: false })
   public readonly callbackURL!: string;
@@ -29,11 +23,5 @@ export class AuthConfig {
   public readonly clientSecret!: string;
   @ValidateIf((c) => c.enabled)
   @IsString()
-  public readonly clientUsername!: string;
-  @ValidateIf((c) => c.enabled)
-  @IsString()
-  public readonly clientPassword!: string;
-  @ValidateIf((c) => c.enabled)
-  @IsString()
-  public readonly rolePath: string = "$.roles[*].name";
+  public readonly rolePath: string = "$.roles[*]";
 }

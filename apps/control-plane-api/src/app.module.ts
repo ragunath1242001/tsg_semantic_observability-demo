@@ -38,8 +38,6 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
   imports: [
     ScheduleModule.forRoot(),
     EventEmitterModule.forRoot(),
-    AuthModule.register(RootConfig),
-    VCAuthModule,
     GenericConfigModule.register(RootConfig),
     TypeOrmModule.forRoot({
       ...GenericConfigModule.get(RootConfig).db,
@@ -49,6 +47,8 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
       ],
       migrationsRun: !GenericConfigModule.get(RootConfig).db.synchronize
     }),
+    AuthModule,
+    VCAuthModule,
     TypeOrmModule.forFeature([NegotiationDetailDao, TransferDetailDao]),
     DataPlaneModule,
     DspClientModule,

@@ -23,7 +23,7 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
     DataPlaneModule,
     TransferModule,
     LoggingModule,
-    AuthModule.register(RootConfig),
+    AuthModule,
     GenericConfigModule.register(RootConfig),
     TypeOrmModule.forRoot({
       ...GenericConfigModule.get(RootConfig).db,

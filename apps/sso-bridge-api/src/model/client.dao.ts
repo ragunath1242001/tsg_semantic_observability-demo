@@ -8,6 +8,9 @@ export class OauthClient extends MetaEntity {
   id!: number;
 
   @Column({ type: String })
+  secretName!: string;
+
+  @Column({ type: String })
   clientId!: string;
 
   @Column({ type: String })
@@ -24,4 +27,7 @@ export class OauthClient extends MetaEntity {
 
   @Column({ type: String })
   description!: string;
+
+  @Column({ type: "simple-json" })
+  redirectUris!: string[];
 }

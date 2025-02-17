@@ -1,47 +1,70 @@
-import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
+import {
+  CanActivate,
+  ExecutionContext,
+  HttpException,
+  HttpStatus,
+  Injectable
+} from "@nestjs/common";
 import { APP_GUARD, Reflector } from "@nestjs/core";
-import { AuthGuard } from "@nestjs/passport";
-import { Request } from "express";
+import { Request, Response } from "express";
 import { AuthConfig } from "../config/auth.js";
+import { OAuthService } from "./oauth.service.js";
+import { getSession } from "../utils/session.js";
 
 export const DisableOAuthGuard = Reflector.createDecorator<boolean>();
 
-@Injectable()
-export class OAuthLoginGuard extends AuthGuard("oauth") implements CanActivate {
-  async canActivate(context: ExecutionContext) {
-    const result: boolean = (await super.canActivate(context)) as boolean;
-    await super.logIn(context.switchToHttp().getRequest());
-    return result;
+declare global {
+  namespace Express {
+    interface Request {
+      user?: any;
+    }
   }
 }
 
 @Injectable()
-export class OAuthGuard
-  extends AuthGuard(["oauth-bearer", "oauth"])
-  implements CanActivate
-{
+export class OAuthGuard implements CanActivate {
   constructor(
     private readonly reflector: Reflector,
-    private readonly authConfig: AuthConfig
-  ) {
-    super();
-  }
-  canActivate(context: ExecutionContext) {
+    private readonly authConfig: AuthConfig,
+    private readonly oAuthService: OAuthService
+  ) {}
+  async canActivate(context: ExecutionContext) {
     if (!this.authConfig.enabled) {
       return true;
     }
+    const request: Request = context.switchToHttp().getRequest();
+    const response: Response = context.switchToHttp().getResponse();
     const disabled =
       this.reflector.get(DisableOAuthGuard, context.getHandler()) ||
       this.reflector.get(DisableOAuthGuard, context.getClass());
     if (disabled) {
       return true;
     }
-    const request: Request = context.switchToHttp().getRequest();
-    const session = request.session as any;
-    if (session?.passport?.user) {
+
+    const session = getSession(request);
+    if (session?.user) {
+      request.user = session.user;
       return true;
     }
-    return super.canActivate(context);
+
+    if (request.headers.authorization) {
+      if (request.headers.authorization.startsWith("Bearer ")) {
+        const token = request.headers.authorization.substring(7);
+        const user = await this.oAuthService.validateToken(token);
+        request.user = user;
+        return true;
+      } else {
+        throw new HttpException(
+          "Invalid authorization header",
+          HttpStatus.UNAUTHORIZED
+        );
+      }
+    }
+
+    const redirectUrl =
+      await this.oAuthService.generateAuthorizationRequestUrl();
+    response.setHeader("Location", redirectUrl);
+    throw new HttpException("Redirecting to login", HttpStatus.FOUND);
   }
 
   static asGlobalGuard() {

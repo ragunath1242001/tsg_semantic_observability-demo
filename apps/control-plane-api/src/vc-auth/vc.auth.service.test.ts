@@ -8,6 +8,8 @@ import {
   setupMockWalletServer
 } from "./wallets/wallet.util.test.js";
 import { AuthClientService, AuthConfig } from "@tsg-dsp/common-api";
+import { Repository } from "typeorm";
+import { AgreementDao, TransferMonitorDao } from "../model/agreement.dao.js";
 
 describe("Auth Service", () => {
   let server: SetupServer;
@@ -26,7 +28,9 @@ describe("Auth Service", () => {
   beforeEach(() => {
     vcAuthService = new VCAuthService(
       plainToInstance(RootConfig, { iam: iamConfig }),
-      new AuthClientService(plainToInstance(AuthConfig, { enabled: false }))
+      new AuthClientService(plainToInstance(AuthConfig, { enabled: false })),
+      null as unknown as Repository<AgreementDao>,
+      null as unknown as Repository<TransferMonitorDao>
     );
   });
 

@@ -48,20 +48,6 @@ export abstract class IamConfig {
 
   @IsString()
   public readonly didId!: string;
-
-  @IsString()
-  public readonly clientId!: string;
-
-  @IsString()
-  public readonly clientSecret!: string;
-
-  @IsString()
-  @IsUrl({ require_tld: false, require_protocol: true, require_host: false })
-  public readonly tokenUrl!: string;
-
-  @IsString()
-  @IsUrl({ require_tld: false, require_protocol: true, require_host: false })
-  public readonly walletUrl!: string;
 }
 
 export class DevWalletConfig extends IamConfig {
@@ -70,6 +56,10 @@ export class DevWalletConfig extends IamConfig {
 
 export class TsgWalletConfig extends IamConfig {
   override readonly type: "tsg" = "tsg" as const;
+
+  @IsString()
+  @IsUrl({ require_tld: false, require_protocol: true, require_host: false })
+  public readonly walletUrl!: string;
 
   @IsString()
   @IsUrl({ require_tld: false, require_protocol: true, require_host: false })

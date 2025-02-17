@@ -3,13 +3,13 @@ host: "cp.<%= it.participant.host %>"
 endpoint: https://cp.<%= it.participant.host %>
 wallet: "<%= it.participant.host %>"
 walletEndpoint: https://<%= it.participant.host %>/api
-casdoorEndpoint: "https://casdoor.<%= it.participant.host %>"
+ssoBridgeEndpoint: "https://sso-bridge.<%= it.participant.host %>"
 <% } else { %>
 host: "<%= it.participant.host %>"
 endpoint: https://<%= it.participant.host %>/control-plane
 wallet: "<%= it.participant.host %>"
 walletEndpoint: https://<%= it.participant.host %>/wallet/api
-casdoorEndpoint: "https://<%= it.participant.host %>"
+ssoBridgeEndpoint: "https://<%= it.participant.host %>"
 
 subPath: /control-plane
 <% } %>
@@ -34,17 +34,11 @@ configFromSecrets:
       key: postgres-password
   auth:
     clientID:
-      name: casdoor-control-plane-<%= it.participant.id %>-secret
+      name: sso-<%= it.participant.id %>-control-plane-secret
       key: clientId
     clientSecret:
-      name: casdoor-control-plane-<%= it.participant.id %>-secret
+      name: sso-<%= it.participant.id %>-control-plane-secret
       key: clientSecret
-    clientUsername:
-      name: casdoor-control-plane-<%= it.participant.id %>-secret
-      key: username
-    clientPassword:
-      name: casdoor-control-plane-<%= it.participant.id %>-secret
-      key: password
 
 config:
   db:
@@ -55,13 +49,10 @@ config:
     publicAddress: "{{ .Values.endpoint }}/api"
 
   auth:
-    authorizationURL: "{{ .Values.casdoorEndpoint }}/login/oauth/authorize"
-    tokenURL: "{{ .Values.casdoorEndpoint }}/api/login/oauth/access_token"
-    introspectionURL: "{{ .Values.casdoorEndpoint }}/api/login/oauth/introspect"
+    openIdConfigurationURL: "{{ .Values.ssoBridgeEndpoint }}/.well-known/openid-configuration"
     callbackURL: "{{ .Values.endpoint }}/api/auth/callback"
-    rolePath: "$.roles[*].name"
     redirectURL: "{{ .Values.endpoint }}/"
-  
+
   runtime:
     controlPlaneInteractions: manual
   
@@ -73,13 +64,10 @@ config:
     type: tsg
     didId: did:web:{{ .Values.wallet }}
     walletUrl: "{{ .Values.walletEndpoint }}"
-    tokenUrl: "{{ .Values.walletEndpoint }}/auth/login"
     siopUrl: "{{ .Values.walletEndpoint }}/management/dcp/holder/token"
     verifyUrl: "{{ .Values.walletEndpoint }}/management/dcp/verifier/verify"
     typeFilter: <%= it.general.credentialType %>
     issuerFilter: "did:web:<%= it.general.authorityDomain %>"
-    clientId: "null"
-    clientSecret: "null"
   
   initCatalog:
     creator: did:web:{{ .Values.wallet }}

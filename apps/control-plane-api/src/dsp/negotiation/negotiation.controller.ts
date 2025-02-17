@@ -36,11 +36,11 @@ import {
   ContractRequestMessageSchema
 } from "@tsg-dsp/common-dsp";
 import { VerifiablePresentationGuard } from "../../vc-auth/verifiablePresentation.guard.js";
-import { VPId } from "../../vc-auth/verifiablePresentation.strategy.js";
 import { DeserializePipe } from "../../utils/deserialize.pipe.js";
 import { DSPError } from "../../utils/errors/error.js";
 import { NegotiationService } from "./negotiation.service.js";
-import { DisableOAuthGuard, DisableRolesGuard } from "@tsg-dsp/common-api";
+import { DisableOAuthGuard } from "@tsg-dsp/common-api";
+import { VPId } from "../../vc-auth/vp.decorators.js";
 
 @ApiBearerAuth()
 @ApiTags("Negotiations")

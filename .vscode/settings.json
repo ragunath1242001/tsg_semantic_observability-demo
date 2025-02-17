@@ -31,6 +31,10 @@
       "rootPath": "apps/sso-bridge-api"
     },
     {
+      "name": "common-api",
+      "rootPath": "libs/common-api"
+    },
+    {
       "name": "common-dsp",
       "rootPath": "libs/common-dsp"
     },

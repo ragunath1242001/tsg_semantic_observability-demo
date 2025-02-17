@@ -43,13 +43,14 @@ export const Client = createParamDecorator(
       };
     }
     const request = context.switchToHttp().getRequest();
-    if (!request.user) return undefined;
+    const user = request.user || request.session?.user;
+    if (!user) return undefined;
     return plainToInstance(ClientInfo, {
-      sub: request.user.sub || "",
-      name: request.user.name || "",
-      email: request.user.email || "",
-      didId: request.user.properties?.didId || "",
-      roles: jsonpath.query(request.user, authConfig.rolePath)
+      sub: user.sub || "",
+      name: user.name || "",
+      email: user.email || "",
+      didId: user.properties?.didId || "",
+      roles: jsonpath.query(user, authConfig.rolePath)
     });
   }
 );

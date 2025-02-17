@@ -6,7 +6,5 @@ metadata:
   labels:
     {{- include "tsg.labels" . | nindent 4 }}
 rules:
-- apiGroups: [""]
-  resources: ["secrets"]
-  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+{{- toYaml .Values.serviceAccount.rules | nindent 2 }}
 {{- end }}

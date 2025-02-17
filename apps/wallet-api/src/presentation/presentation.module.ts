@@ -26,7 +26,7 @@ export class PresentationModule {
     const module: DynamicModule = {
       module: PresentationModule,
       imports: [
-        AuthModule.register(RootConfig),
+        AuthModule,
         CredentialsModule,
         KeysModule,
         DidModule,

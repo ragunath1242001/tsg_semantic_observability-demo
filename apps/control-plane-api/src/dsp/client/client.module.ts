@@ -6,7 +6,7 @@ import { AuthModule } from "@tsg-dsp/common-api";
 import { RootConfig } from "../../config.js";
 
 @Module({
-  imports: [AuthModule.register(RootConfig), VCAuthModule],
+  imports: [AuthModule, VCAuthModule],
   providers: [DspClientService, DspGateway],
   exports: [DspClientService, DspGateway]
 })

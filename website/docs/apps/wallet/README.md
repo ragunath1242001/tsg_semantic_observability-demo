@@ -53,7 +53,6 @@ The main dependencies of the backend are:
 - [NestJS framework](https://nestjs.com/)
 - [Class-transformer](https://github.com/typestack/class-transformer) & [class-validator](https://github.com/typestack/class-validator)
 - [Express](https://expressjs.com/)
-- [Passport](https://www.passportjs.org/)
 - [TypeORM](https://typeorm.io/)
 - [JSON Object Signing and Encryption](https://github.com/panva/jose)
 - [Axios](https://axios-http.com/docs/intro)

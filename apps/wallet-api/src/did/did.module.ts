@@ -14,7 +14,7 @@ import { AuthModule, GenericConfigModule } from "@tsg-dsp/common-api";
 
 @Module({
   imports: [
-    AuthModule.register(RootConfig),
+    AuthModule,
     TypeOrmModule.forFeature([DIDDocuments, DIDService, DIDLogs])
   ],
   controllers: [

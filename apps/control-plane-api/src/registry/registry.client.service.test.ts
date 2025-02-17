@@ -12,6 +12,8 @@ import {
 } from "../vc-auth/wallets/wallet.util.test.js";
 import { defaultContext } from "@tsg-dsp/common-dsp";
 import { AuthClientService, AuthConfig } from "@tsg-dsp/common-api";
+import { Repository } from "typeorm";
+import { AgreementDao, TransferMonitorDao } from "../model/agreement.dao.js";
 
 describe("RegistryClientService", () => {
   let registryClientService: RegistryClientService;
@@ -113,7 +115,9 @@ describe("RegistryClientService", () => {
             plainToInstance(RootConfig, { iam: iamConfig }),
             new AuthClientService(
               plainToInstance(AuthConfig, { enabled: false })
-            )
+            ),
+            null as unknown as Repository<AgreementDao>,
+            null as unknown as Repository<TransferMonitorDao>
           )
         },
         {
@@ -147,7 +151,9 @@ describe("RegistryClientService", () => {
               plainToInstance(RootConfig, { iam: iamConfig }),
               new AuthClientService(
                 plainToInstance(AuthConfig, { enabled: false })
-              )
+              ),
+              null as unknown as Repository<AgreementDao>,
+              null as unknown as Repository<TransferMonitorDao>
             )
           },
           {

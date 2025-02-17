@@ -9,7 +9,8 @@ import { LogEntry, LogFilterDto } from "./logging.dto.js";
 import {
   TypeOrmTestHelper,
   AuthClientService,
-  AuthConfig
+  AuthConfig,
+  AuthModule
 } from "@tsg-dsp/common-api";
 
 describe("Logging Service", () => {
@@ -24,7 +25,6 @@ describe("Logging Service", () => {
       ],
       providers: [
         LoggingService,
-        AuthClientService,
         {
           provide: AuthConfig,
           useValue: { enabled: false }

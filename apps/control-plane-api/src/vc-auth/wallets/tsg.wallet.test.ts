@@ -115,9 +115,6 @@ describe("TSG Wallet", () => {
       walletUrl: "http://127.0.0.1/api",
       siopUrl: "http://127.0.0.1/api/management/dcp/holder/token",
       verifyUrl: "http://127.0.0.1/api/management/dcp/verifier/verify",
-      tokenUrl: "http://127.0.0.1/api/auth/login",
-      clientId: "admin",
-      clientSecret: "test",
       typeFilter: "VerifiableCredential",
       issuerFilter: "did:web:localhost%3A3000"
     }

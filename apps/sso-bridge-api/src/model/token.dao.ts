@@ -9,14 +9,14 @@ export class TokenDao extends MetaEntity {
   @Column({ type: String })
   accessToken!: string;
 
-  @Column({ type: Number })
-  accessTokenExpiresAt!: number;
+  @Column({ type: Date })
+  accessTokenExpiresAt!: Date;
 
   @Column({ type: String, nullable: true })
   refreshToken?: string;
 
-  @Column({ type: Number, nullable: true })
-  refreshTokenExpiresAt?: number;
+  @Column({ type: Date, nullable: true })
+  refreshTokenExpiresAt?: Date;
 
   @Column({ type: String })
   scope!: string;

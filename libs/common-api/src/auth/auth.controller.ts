@@ -1,7 +1,14 @@
-import { Controller, Get, Next, Req, Res, UseGuards } from "@nestjs/common";
-import { DisableOAuthGuard, OAuthLoginGuard } from "./oauth.guard.js";
-import { NextFunction, Request, Response } from "express";
-import passport from "passport";
+import {
+  Controller,
+  Get,
+  HttpStatus,
+  Query,
+  Redirect,
+  Req,
+  Res
+} from "@nestjs/common";
+import { DisableOAuthGuard } from "./oauth.guard.js";
+import { Request, Response } from "express";
 import { Client } from "./roles.guard.js";
 import {
   ApiExtraModels,
@@ -17,11 +24,18 @@ import {
   UnauthenticatedUser,
   ClientInfo
 } from "./client.info.js";
+import { OAuthService } from "./oauth.service.js";
+import { validationPipe } from "../utils/validation.pipe.js";
+import { AuthorizationResponse } from "./auth.dto.js";
+import { getSession } from "../utils/session.js";
 
 @Controller("auth")
 @ApiTags("Authentication")
 export class AuthController {
-  constructor(private readonly authConfig: AuthConfig) {}
+  constructor(
+    private readonly authConfig: AuthConfig,
+    private readonly oAuthService: OAuthService
+  ) {}
   @Get("user")
   @DisableOAuthGuard()
   @ApiOperation({
@@ -59,9 +73,12 @@ export class AuthController {
     summary: "Login redirect",
     description: "Redirects user to the correct authorization server"
   })
+  @Redirect(undefined, HttpStatus.FOUND)
   login(@Res() res: Response) {
     if (!this.authConfig.enabled) {
-      res.redirect("/");
+      return {
+        url: "/"
+      };
     }
   }
 
@@ -73,42 +90,33 @@ export class AuthController {
       "Removes session information and redirects user the root of the frontend (`auth.redirectURL`)"
   })
   @ApiFoundResponse()
-  logout(
-    @Req() req: Request,
-    @Res() res: Response,
-    @Next() next: NextFunction
-  ) {
-    const redirectURL = this.authConfig.redirectURL;
-    if (!this.authConfig.enabled) {
-      res.redirect("/");
-      return;
-    }
-    return req.logout(function (err: any) {
-      if (err) {
-        return next(err);
+  @Redirect(undefined, HttpStatus.FOUND)
+  logout(@Req() req: Request) {
+    const redirectURL = this.authConfig.redirectURL ?? "/";
+    if (this.authConfig.enabled) {
+      const session = getSession(req);
+      if (session) {
+        session.user = undefined;
       }
-      res.redirect(redirectURL);
-    });
+    }
+    return {
+      url: redirectURL
+    };
   }
 
   @Get("callback")
   @DisableOAuthGuard()
-  @UseGuards(OAuthLoginGuard)
   @ApiFoundResponse()
   @ApiOperation({
     summary: "Login callback",
     description:
       "Users are redirected from the authorization server to this endpoint which will redirect them to the frontend (`auth.redirectURL`)"
   })
-  @ApiFoundResponse()
-  callback(
+  @Redirect(undefined, HttpStatus.FOUND)
+  async callback(
     @Req() req: Request,
-    @Res() res: Response,
-    @Next() next: NextFunction
-  ): any {
-    passport.authenticate("oauth", {
-      successRedirect: this.authConfig.redirectURL,
-      failureRedirect: this.authConfig.redirectURL
-    })(req, res, next);
+    @Query(validationPipe) authorizationResponse: AuthorizationResponse
+  ) {
+    return await this.oAuthService.callback(authorizationResponse, req);
   }
 }

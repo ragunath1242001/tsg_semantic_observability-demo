@@ -4,12 +4,11 @@ import { OauthClient } from "../model/client.dao.js";
 import { TokenDao } from "../model/token.dao.js";
 import { OauthUser } from "../model/user.dao.js";
 import { InjectRepository } from "@nestjs/typeorm";
-import { EqualOperator, FindOptionsWhere, Not, Repository } from "typeorm";
-import { AppError, ServerConfig } from "@tsg-dsp/common-api";
+import { EqualOperator, FindOptionsWhere, Repository } from "typeorm";
+import { AppError, ServerConfig, TokenResponse } from "@tsg-dsp/common-api";
 import { generateKeyPairSync, randomBytes } from "crypto";
 import { JWK, exportJWK, SignJWT } from "jose";
 import { KeyDao } from "../model/keys.dao.js";
-import { TokenResponse } from "@tsg-dsp/sso-bridge-dtos";
 
 @Injectable()
 export class TokenService {
@@ -125,7 +124,7 @@ export class TokenService {
     );
     const tokenDao: Partial<TokenDao> = {
       accessToken: accessToken,
-      accessTokenExpiresAt: Date.now() + 3600 * 1000,
+      accessTokenExpiresAt: new Date(Date.now() + 3600 * 1000),
       scope: scope,
       clientId: clientId,
       userId: userId,
@@ -137,7 +136,9 @@ export class TokenService {
         clientId,
         subject
       );
-      tokenDao.refreshTokenExpiresAt = Date.now() + 7 * 24 * 3600 * 1000;
+      tokenDao.refreshTokenExpiresAt = new Date(
+        Date.now() + 7 * 24 * 3600 * 1000
+      );
     }
     await this.tokenRepository.save(tokenDao);
     return plainToInstance(TokenResponse, {
@@ -162,7 +163,7 @@ export class TokenService {
       type === "access_token"
         ? storedToken.accessTokenExpiresAt
         : storedToken.refreshTokenExpiresAt!;
-    if (Date.now() > expiresAt) {
+    if (new Date() > expiresAt) {
       throw new AppError("Token expired", HttpStatus.BAD_REQUEST);
     }
     if (storedToken.revoked) {

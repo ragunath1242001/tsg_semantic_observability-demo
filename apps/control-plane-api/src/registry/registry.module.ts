@@ -24,7 +24,7 @@ export class RegistryModule {
     const module: DynamicModule = {
       module: RegistryModule,
       imports: [
-        AuthModule.register(RootConfig),
+        AuthModule,
         VCAuthModule,
         DspClientModule,
         CatalogModule,

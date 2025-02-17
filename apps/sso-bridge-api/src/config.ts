@@ -46,6 +46,9 @@ export class RootConfig {
   @Type(() => InitUser)
   @IsOptional()
   public readonly initUsers: InitUser[] = [];
+
+  @IsString()
+  public readonly kubernetesNamespace: string = "default";
 }
 
 export class InitClient {
@@ -53,6 +56,8 @@ export class InitClient {
   clientId!: string;
   @IsString()
   clientSecret!: string;
+  @IsString()
+  secretName!: string;
   @IsString({ each: true })
   @ArrayNotEmpty()
   roles!: string[];
@@ -64,6 +69,8 @@ export class InitClient {
   name!: string;
   @IsString()
   description!: string;
+  @IsString({ each: true })
+  redirectUris!: string[];
 }
 
 export class InitUser {

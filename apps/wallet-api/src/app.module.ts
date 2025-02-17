@@ -51,7 +51,7 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
     ]),
     TerminusModule,
     PresentationModule.register(GenericConfigModule.get(PresentationConfig)),
-    AuthModule.register(RootConfig),
+    AuthModule,
     ContextModule,
     CredentialsModule,
     DidModule,

@@ -4,8 +4,12 @@ ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
 RUN corepack prepare pnpm@9.15.0 --activate
 
-FROM base AS build
+FROM node:22 AS build
 WORKDIR /app 
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable
+RUN corepack prepare pnpm@9.15.0 --activate
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY apps/analytics-data-plane-api/package.json apps/analytics-data-plane-api/
 COPY apps/analytics-data-plane-ui/package.json apps/analytics-data-plane-ui/
@@ -18,8 +22,9 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
 COPY apps apps
 COPY libs libs 
-RUN pnpm run --filter "common-dsp" build 
-RUN pnpm run --filter "common-api" build 
+RUN pnpm run --filter "common-dsp" build
+RUN pnpm run --filter "common-dtos" build
+RUN pnpm run --filter "common-api" build
 ARG TSG_MODE=development
 ARG TSG_VERSION=0.0.0
 ARG TSG_STATIC_MODE=${TSG_MODE}

@@ -43,7 +43,7 @@ C4Component
 
 Backend components:
 
-- **Authentication**: Provides Guards with Passport strategies to secure controllers.
+- **Authentication**: Provides Guards to secure controllers.
 - **DID**: Provides the DID document of the Wallet instance, as well as resolvement of DID identifiers to documents.
 - **Keys**: Provides public-private key pairs for signing credentials, presentations, issuance requests.
 - **Credentials**: Provides Verifiable Credential management.

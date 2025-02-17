@@ -15,8 +15,6 @@ The development view provides an overview of the different modules inside the wa
 - `auth.module.ts`: Authentication module
 - `auth.client.service.ts`: Service providing an authentication client for requests to other services in the same security domain
 - `auth.controller.ts`: Controller handling authentication related requests
-- `oauth.bearer.strategy.ts`: Passport strategy for handling Bearer token authentication
-- `oauth.strategy.ts`: Passport strategy for handling session-based authentication
 - `oauth.guard.ts`: Guards controlling required authentication
 - `roles.guard.ts`: Guard limiting access to specific roles
 - `session.serializer.ts`: Session serialization for browser-based interactions
