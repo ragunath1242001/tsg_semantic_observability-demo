@@ -80,7 +80,6 @@ This document outlines the modules and their dependencies for the http-data-plan
 
 
 ### Imports
-- PassportModule
 
 ### Controllers
 - AuthController

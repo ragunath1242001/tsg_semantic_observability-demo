@@ -14,7 +14,7 @@ import { RootConfig } from "../config.js";
   imports: [
     CatalogModule,
     TypeOrmModule.forFeature([DataPlaneDao]),
-    AuthModule.register(RootConfig),
+    AuthModule,
     NegotiationModule,
     PolicyModule
   ],

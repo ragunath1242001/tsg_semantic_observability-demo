@@ -8,10 +8,7 @@ import { AuthModule } from "@tsg-dsp/common-api";
 import { RootConfig } from "../config.js";
 
 @Module({
-  imports: [
-    AuthModule.register(RootConfig),
-    TypeOrmModule.forFeature([JSONLDContext])
-  ],
+  imports: [AuthModule, TypeOrmModule.forFeature([JSONLDContext])],
   controllers: [ContextController, ContextManagementController],
   providers: [ContextService],
   exports: [ContextService]

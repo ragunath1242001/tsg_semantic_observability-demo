@@ -16,11 +16,13 @@ const clients = ref<ClientDto[]>([]);
 const clientObj = {
   id: undefined,
   name: undefined,
+  secretName: undefined,
   description: undefined,
   clientId: undefined,
   clientSecret: undefined,
   roles: [],
-  grants: []
+  grants: [],
+  redirectUris: []
 };
 
 const client = ref<ClientDto>(clientObj);
@@ -183,6 +185,7 @@ onMounted(async () => {
           :rows="10">
           <template #empty>No clients added yet.</template>
           <Column field="name" header="Name" />
+          <Column field="secretName" header="Secret Name" />
           <Column field="description" header="Description" />
           <Column field="clientId" header="Client ID" />
           <Column field="clientSecret" header="Client Secret" />
@@ -198,6 +201,12 @@ onMounted(async () => {
               <span>{{ slotProps.data.grants.toString() }}</span>
             </template></Column
           >
+          <Column field="redirectUris" header="Redirect URIs">
+            <template #body="slotProps">
+              {{ console.log(slotProps) }}
+              <span>{{ slotProps.data.redirectUris.toString() }}</span>
+            </template>
+          </Column>
           <Column field="actions" header="Actions">
             <template #body="props">
               <Button

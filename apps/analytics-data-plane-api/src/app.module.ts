@@ -22,7 +22,7 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
   imports: [
     ScheduleModule.forRoot(),
     DataPlaneTestModule,
-    AuthModule.register(RootConfig),
+    AuthModule,
     GenericConfigModule.register(RootConfig),
     TypeOrmModule.forRoot({
       ...GenericConfigModule.get(RootConfig).db,

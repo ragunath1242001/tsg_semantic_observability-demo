@@ -150,23 +150,23 @@ This will create a folder structure like this:
 ├── ecosystem.yaml
 └── output
     ├── alfa
-    │   ├── values.casdoor.yaml
+    │   ├── values.sso-bridge.yaml
     │   ├── values.control-plane.yaml
     │   ├── values.http-data-plane.yaml
     │   ├── values.postgres.yaml
     │   └── values.wallet.yaml
     ├── authority
-    │   ├── values.casdoor.yaml
+    │   ├── values.sso-bridge.yaml
     │   ├── values.postgres.yaml
     │   └── values.wallet.yaml
     ├── bravo
-    │   ├── values.casdoor.yaml
+    │   ├── values.sso-bridge.yaml
     │   ├── values.control-plane.yaml
     │   ├── values.http-data-plane.yaml
     │   ├── values.postgres.yaml
     │   └── values.wallet.yaml
     └── charlie
-        ├── values.casdoor.yaml
+        ├── values.sso-bridge.yaml
         ├── values.control-plane.yaml
         ├── values.http-data-plane.yaml
         ├── values.postgres.yaml
@@ -187,20 +187,20 @@ This will result in a list of commands the command will execute:
 ✔ Confirm or update configuration use Kubernetes context TSG-Playground (will abort if not selected), dry run commands
 [TSG-CLI] LOG   - Deploying ecosystem
 [TSG-CLI] LOG   - Dry-run: helm upgrade --create-namespace --install --wait -f output/authority/values.postgres.yaml -n tsg-ecosystem --repo https://charts.bitnami.com/bitnami --version 13.4.0 authority-postgresql postgresql
-[TSG-CLI] LOG   - Dry-run: helm upgrade --create-namespace --install --wait --wait-for-jobs -f output/authority/values.casdoor.yaml -n tsg-ecosystem --repo https://nexus.dataspac.es/repository/dsp-stable --version 0.3.0 authority-casdoor casdoor
+[TSG-CLI] LOG   - Dry-run: helm upgrade --create-namespace --install --wait -f output/authority/values.sso-bridge.yaml -n tsg-ecosystem --repo https://nexus.dataspac.es/repository/dsp-stable --version 0.3.0 authority-sso-bridge tsg-sso-bridge
 [TSG-CLI] LOG   - Dry-run: helm upgrade --create-namespace --install --wait -f output/authority/values.wallet.yaml -n tsg-ecosystem --repo https://nexus.dataspac.es/repository/dsp-stable --version 0.3.0 authority-tsg-wallet tsg-wallet
 [TSG-CLI] LOG   - Dry-run: helm upgrade --create-namespace --install --wait -f output/alfa/values.postgres.yaml -n tsg-ecosystem --repo https://charts.bitnami.com/bitnami --version 13.4.0 alfa-postgresql postgresql
-[TSG-CLI] LOG   - Dry-run: helm upgrade --create-namespace --install --wait --wait-for-jobs -f output/alfa/values.casdoor.yaml -n tsg-ecosystem --repo https://nexus.dataspac.es/repository/dsp-stable --version 0.3.0 alfa-casdoor casdoor
+[TSG-CLI] LOG   - Dry-run: helm upgrade --create-namespace --install --wait -f output/alfa/values.sso-bridge.yaml -n tsg-ecosystem --repo https://nexus.dataspac.es/repository/dsp-stable --version 0.3.0 alfa-sso-bridge tsg-sso-bridge
 [TSG-CLI] LOG   - Dry-run: helm upgrade --create-namespace --install --wait -f output/alfa/values.wallet.yaml -n tsg-ecosystem --repo https://nexus.dataspac.es/repository/dsp-stable --version 0.3.0 alfa-tsg-wallet tsg-wallet
 [TSG-CLI] LOG   - Dry-run: helm upgrade --create-namespace --install --wait -f output/alfa/values.control-plane.yaml -n tsg-ecosystem --repo https://nexus.dataspac.es/repository/dsp-stable --version 0.3.0 alfa-tsg-control-plane tsg-control-plane
 [TSG-CLI] LOG   - Dry-run: helm upgrade --create-namespace --install --wait -f output/alfa/values.http-data-plane.yaml -n tsg-ecosystem --repo https://nexus.dataspac.es/repository/dsp-stable --version 0.3.0 alfa-tsg-http-data-plane tsg-http-data-plane
 [TSG-CLI] LOG   - Dry-run: helm upgrade --create-namespace --install --wait -f output/bravo/values.postgres.yaml -n tsg-ecosystem --repo https://charts.bitnami.com/bitnami --version 13.4.0 bravo-postgresql postgresql
-[TSG-CLI] LOG   - Dry-run: helm upgrade --create-namespace --install --wait --wait-for-jobs -f output/bravo/values.casdoor.yaml -n tsg-ecosystem --repo https://nexus.dataspac.es/repository/dsp-stable --version 0.3.0 bravo-casdoor casdoor
+[TSG-CLI] LOG   - Dry-run: helm upgrade --create-namespace --install --wait -f output/bravo/values.sso-bridge.yaml -n tsg-ecosystem --repo https://nexus.dataspac.es/repository/dsp-stable --version 0.3.0 bravo-sso-bridge tsg-sso-bridge
 [TSG-CLI] LOG   - Dry-run: helm upgrade --create-namespace --install --wait -f output/bravo/values.wallet.yaml -n tsg-ecosystem --repo https://nexus.dataspac.es/repository/dsp-stable --version 0.3.0 bravo-tsg-wallet tsg-wallet
 [TSG-CLI] LOG   - Dry-run: helm upgrade --create-namespace --install --wait -f output/bravo/values.control-plane.yaml -n tsg-ecosystem --repo https://nexus.dataspac.es/repository/dsp-stable --version 0.3.0 bravo-tsg-control-plane tsg-control-plane
 [TSG-CLI] LOG   - Dry-run: helm upgrade --create-namespace --install --wait -f output/bravo/values.http-data-plane.yaml -n tsg-ecosystem --repo https://nexus.dataspac.es/repository/dsp-stable --version 0.3.0 bravo-tsg-http-data-plane tsg-http-data-plane
 [TSG-CLI] LOG   - Dry-run: helm upgrade --create-namespace --install --wait -f output/charlie/values.postgres.yaml -n tsg-ecosystem --repo https://charts.bitnami.com/bitnami --version 13.4.0 charlie-postgresql postgresql
-[TSG-CLI] LOG   - Dry-run: helm upgrade --create-namespace --install --wait --wait-for-jobs -f output/charlie/values.casdoor.yaml -n tsg-ecosystem --repo https://nexus.dataspac.es/repository/dsp-stable --version 0.3.0 charlie-casdoor casdoor
+[TSG-CLI] LOG   - Dry-run: helm upgrade --create-namespace --install --wait -f output/charlie/values.sso-bridge.yaml -n tsg-ecosystem --repo https://nexus.dataspac.es/repository/dsp-stable --version 0.3.0 charlie-sso-bridge tsg-sso-bridge
 [TSG-CLI] LOG   - Dry-run: helm upgrade --create-namespace --install --wait -f output/charlie/values.wallet.yaml -n tsg-ecosystem --repo https://nexus.dataspac.es/repository/dsp-stable --version 0.3.0 charlie-tsg-wallet tsg-wallet
 [TSG-CLI] LOG   - Dry-run: helm upgrade --create-namespace --install --wait -f output/charlie/values.control-plane.yaml -n tsg-ecosystem --repo https://nexus.dataspac.es/repository/dsp-stable --version 0.3.0 charlie-tsg-control-plane tsg-control-plane
 [TSG-CLI] LOG   - Dry-run: helm upgrade --create-namespace --install --wait -f output/charlie/values.http-data-plane.yaml -n tsg-ecosystem --repo https://nexus.dataspac.es/repository/dsp-stable --version 0.3.0 charlie-tsg-http-data-plane tsg-http-data-plane
@@ -292,7 +292,7 @@ This will create a folder structure like this:
 ├── participant.yaml
 └── output
     └── zulu
-        ├── values.casdoor.yaml
+        ├── values.sso-bridge.yaml
         ├── values.control-plane.yaml
         ├── values.http-data-plane.yaml
         ├── values.postgres.yaml
@@ -313,7 +313,7 @@ This will result in a list of commands the command will execute:
 ✔ Confirm or update configuration use Kubernetes context TSG-Playground (will abort if not selected), dry run commands
 [TSG-CLI] LOG   - Deploying participant
 [TSG-CLI] LOG   - Dry-run: helm upgrade --create-namespace --install --wait -f output/zulu/values.postgres.yaml -n tsg-participant --repo https://charts.bitnami.com/bitnami --version 13.4.0 zulu-postgresql postgresql
-[TSG-CLI] LOG   - Dry-run: helm upgrade --create-namespace --install --wait --wait-for-jobs -f output/zulu/values.casdoor.yaml -n tsg-participant --repo https://nexus.dataspac.es/repository/dsp-stable --version 0.3.0 zulu-casdoor casdoor
+[TSG-CLI] LOG   - Dry-run: helm upgrade --create-namespace --install --wait --wait-for-jobs -f output/zulu/values.sso-bridge.yaml -n tsg-participant --repo https://nexus.dataspac.es/repository/dsp-stable --version 0.3.0 zulu-sso-bridge tsg-sso-bridge
 [TSG-CLI] LOG   - Dry-run: helm upgrade --create-namespace --install --wait -f output/zulu/values.wallet.yaml -n tsg-participant --repo https://nexus.dataspac.es/repository/dsp-stable --version 0.3.0 zulu-tsg-wallet tsg-wallet
 [TSG-CLI] LOG   - Dry-run: helm upgrade --create-namespace --install --wait -f output/zulu/values.control-plane.yaml -n tsg-participant --repo https://nexus.dataspac.es/repository/dsp-stable --version 0.3.0 zulu-tsg-control-plane tsg-control-plane
 [TSG-CLI] LOG   - Dry-run: helm upgrade --create-namespace --install --wait -f output/zulu/values.http-data-plane.yaml -n tsg-participant --repo https://nexus.dataspac.es/repository/dsp-stable --version 0.3.0 zulu-tsg-http-data-plane tsg-http-data-plane

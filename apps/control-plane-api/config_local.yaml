@@ -16,10 +16,10 @@ runtime:
 iam:
   type: dev
   didId: did:web:localhost%3A3001
-  tokenUrl: http://localhost:3001/api/auth/login
-  walletUrl: http://localhost:3001/api
-  clientId: client
-  clientSecret: secret
+  # tokenUrl: http://localhost:3001/api/auth/login
+  # walletUrl: http://localhost:3001/api
+  # clientId: client
+  # clientSecret: secret
 
 registry:
   useRegistry: true

@@ -5,6 +5,8 @@ import { OauthClient } from "../model/client.dao.js";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { plainToInstance } from "class-transformer";
 import { RootConfig } from "../config.js";
+import { KubernetesService } from "../k8s/kubernetes.service.js";
+import { jest } from "@jest/globals";
 
 describe("ClientsService", () => {
   let service: ClientsService;
@@ -18,6 +20,12 @@ describe("ClientsService", () => {
       ],
       providers: [
         ClientsService,
+        {
+          provide: KubernetesService,
+          useValue: {
+            applySecret: jest.fn()
+          }
+        },
         {
           provide: RootConfig,
           useValue: plainToInstance(RootConfig, {})
@@ -36,6 +44,7 @@ describe("ClientsService", () => {
     const clientData: Partial<OauthClient> = {
       clientId: "test-client",
       clientSecret: "test-secret",
+      secretName: "test-secret",
       roles: ["user"],
       grants: [
         "password",
@@ -44,7 +53,8 @@ describe("ClientsService", () => {
         "client_credentials"
       ],
       name: "Test Client",
-      description: "A test client"
+      description: "A test client",
+      redirectUris: ["http://localhost:3000"]
     };
     const created = await service.createClient(clientData);
     expect(created).toBeDefined();
@@ -66,6 +76,7 @@ describe("ClientsService", () => {
     const clientData: Partial<OauthClient> = {
       clientId: "updateable-client",
       clientSecret: "test-secret",
+      secretName: "test-secret",
       roles: ["user"],
       grants: [
         "password",
@@ -74,7 +85,8 @@ describe("ClientsService", () => {
         "client_credentials"
       ],
       name: "Updateable Client",
-      description: "A test client"
+      description: "A test client",
+      redirectUris: ["http://localhost:3000"]
     };
     const created = await service.createClient(clientData);
     const updatedData = {
@@ -99,6 +111,7 @@ describe("ClientsService", () => {
     const clientData: Partial<OauthClient> = {
       clientId: "deletable-client",
       clientSecret: "test-secret",
+      secretName: "test-secret",
       roles: ["user"],
       grants: [
         "password",
@@ -107,7 +120,8 @@ describe("ClientsService", () => {
         "client_credentials"
       ],
       name: "Deletable Client",
-      description: "A test client"
+      description: "A test client",
+      redirectUris: ["http://localhost:3000"]
     };
     const created = await service.createClient(clientData);
     const response = await service.deleteClient(created.id);

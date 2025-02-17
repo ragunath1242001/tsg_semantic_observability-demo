@@ -23,7 +23,7 @@ import { RootConfig } from "../config.js";
       AgreementDao,
       TransferMonitorDao
     ]),
-    AuthModule.register(RootConfig),
+    AuthModule,
     TransferModule
   ],
   controllers: [

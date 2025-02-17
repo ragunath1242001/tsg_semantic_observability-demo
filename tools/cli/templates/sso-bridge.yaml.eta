@@ -1,0 +1,92 @@
+<% if (it.participant.routing === "subdomain") { %>
+host: "sso-bridge.<%= it.participant.host %>"
+<% } else { %>
+host: "<%= it.participant.host %>"
+<% } %>
+
+<% if (it.applications?.ssoBridge?.imageTag || it.applications?.ssoBridge?.imageRepository) { %>
+image:
+<%- if (it.applications?.ssoBridge?.imageTag) { %>
+  tag: <%= it.applications?.ssoBridge.imageTag %>
+<% } %>
+<%- if (it.applications?.ssoBridge?.imageRepository) { %>
+  repository: <%= it.applications?.ssoBridge.imageRepository %>
+<% } %>
+<% } %>
+
+ingress:
+  enabled: true
+
+configFromSecrets:
+  db:
+    password:
+      name: "<%= it.participant.id %>-postgresql"
+      key: postgres-password
+
+config:
+  db:
+    database: sso-bridge
+    host: "<%= it.participant.id %>-postgresql"
+  kubernetesNamespace: <%= it.general.namespace %>
+  initUsers:
+    - username: <%= it.general.username %>
+      password: <%= it.general.password %>
+      email: <%= it.general.username %>@example.com
+      roles:
+        - wallet_view_did
+        - wallet_manage_keys
+        - wallet_use_keys
+        - wallet_view_own_credentials
+        - wallet_view_all_credentials
+        - wallet_manage_own_credentials
+        - wallet_manage_all_credentials
+        - wallet_issue_credentials
+        - wallet_view_presentations
+        - wallet_manage_clients
+        - controlplane_admin
+        - controlplane_dataplane
+  initClients:
+    - clientId: wallet
+      clientSecret: wallet
+      name: <%= it.participant.name %> Wallet
+      description: <%= it.participant.name %> Wallet
+      secretName: sso-<%= it.participant.id %>-wallet-secret
+      redirectUris:
+        - https://.*<%= it.participant.host %>/.*
+      roles:
+        - wallet_view_did
+        - wallet_manage_keys
+        - wallet_use_keys
+        - wallet_view_own_credentials
+        - wallet_view_all_credentials
+        - wallet_manage_own_credentials
+        - wallet_manage_all_credentials
+        - wallet_issue_credentials
+        - wallet_view_presentations
+        - wallet_manage_clients
+    - clientId: control-plane
+      clientSecret: control-plane
+      name: <%= it.participant.name %> Control Plane
+      description: <%= it.participant.name %> Control Plane
+      secretName: sso-<%= it.participant.id %>-control-plane-secret
+      redirectUris:
+        - https://.*<%= it.participant.host %>/.*
+      roles:
+        - wallet_view_did
+        - wallet_issue_credentials
+        - wallet_use_keys
+        - wallet_view_all_credentials
+        - wallet_view_presentations
+        - controlplane_admin
+        - controlplane_dataplane
+<%- it.participant.dataPlanes.forEach((value, id) => { %>
+    - clientId: <%= id %>
+      clientSecret: <%= id %>
+      name: <%= it.participant.name %> Data Plane <%= id %>
+      description: <%= it.participant.name %> Data Plane <%= id %>
+      secretName: sso-<%= it.participant.id %>-<%= id %>-secret
+      redirectUris:
+        - https://.*<%= it.participant.host %>/.*
+      roles:
+        - controlplane_dataplane
+<%- }); %>

@@ -11,7 +11,7 @@ import { RootConfig } from "../config.js";
 @Module({
   imports: [
     TypeOrmModule.forFeature([DataPlaneStateDao, DatasetItemDao]),
-    AuthModule.register(RootConfig),
+    AuthModule,
     LoggingModule
   ],
   controllers: [DataPlaneController, DataPlaneManagementController],

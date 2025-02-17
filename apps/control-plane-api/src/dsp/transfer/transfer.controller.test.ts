@@ -20,7 +20,12 @@ import { plainToClass } from "class-transformer";
 import { HttpResponse, PathParams, http } from "msw";
 import { SetupServer, setupServer } from "msw/node";
 import { VCAuthService } from "../../vc-auth/vc.auth.service.js";
-import { RuntimeConfig } from "../../config.js";
+import {
+  DevWalletConfig,
+  IamConfig,
+  RuntimeConfig,
+  TsgWalletConfig
+} from "../../config.js";
 import { DataPlaneService } from "../../data-plane/dataPlane.service.js";
 import {
   CatalogDao,
@@ -53,6 +58,7 @@ import {
   AuthConfig,
   ServerConfig
 } from "@tsg-dsp/common-api";
+import { AgreementDao, TransferMonitorDao } from "../../model/agreement.dao.js";
 
 describe("TransferController", () => {
   let transferController: TransferController;
@@ -165,7 +171,9 @@ describe("TransferController", () => {
           ResourceDao,
           DataPlaneDao,
           TransferEventDao,
-          TransferDetailDao
+          TransferDetailDao,
+          AgreementDao,
+          TransferMonitorDao
         ]),
         TypeOrmModule.forFeature([
           CatalogDao,
@@ -176,7 +184,9 @@ describe("TransferController", () => {
           ResourceDao,
           DataPlaneDao,
           TransferEventDao,
-          TransferDetailDao
+          TransferDetailDao,
+          AgreementDao,
+          TransferMonitorDao
         ])
       ],
       controllers: [TransferController],
@@ -251,6 +261,12 @@ describe("TransferController", () => {
         {
           provide: AuthConfig,
           useValue: plainToClass(AuthConfig, { enabled: false })
+        },
+        {
+          provide: IamConfig,
+          useValue: plainToClass(DevWalletConfig, {
+            didId: "did:web:localhost"
+          })
         },
         { provide: ServerConfig, useValue: plainToClass(ServerConfig, {}) },
         { provide: RuntimeConfig, useValue: plainToClass(RuntimeConfig, {}) }

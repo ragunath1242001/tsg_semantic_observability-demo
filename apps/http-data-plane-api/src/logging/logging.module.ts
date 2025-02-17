@@ -9,7 +9,7 @@ import { RootConfig } from "../config.js";
 @Module({
   imports: [
     TypeOrmModule.forFeature([IngressLogDao, EgressLogDao]),
-    AuthModule.register(RootConfig)
+    AuthModule
   ],
   controllers: [LoggingController],
   providers: [LoggingService],

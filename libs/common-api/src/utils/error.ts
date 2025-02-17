@@ -51,7 +51,11 @@ export class AppError extends HttpException {
   }
 }
 
-export function parseNetworkError(err: unknown, task: string): AppError {
+export function parseNetworkError(
+  err: unknown,
+  task: string,
+  status: number = HttpStatus.BAD_REQUEST
+): AppError {
   if (axios.isAxiosError(err)) {
     if (err.response) {
       return new AppError(
@@ -60,17 +64,15 @@ export function parseNetworkError(err: unknown, task: string): AppError {
           code: err.response.status,
           body: err.response.data
         },
-        HttpStatus.BAD_REQUEST
+        status
       ).andLog(new Logger("Axios"));
     } else {
-      return new AppError(
-        `Error in ${task}: ${err}`,
-        HttpStatus.BAD_REQUEST
-      ).andLog(new Logger("Axios"));
+      return new AppError(`Error in ${task}: ${err}`, status).andLog(
+        new Logger("Axios")
+      );
     }
   }
-  return new AppError(
-    `Unexpected error in ${task}: ${err}`,
-    HttpStatus.BAD_REQUEST
-  ).andLog(new Logger("Axios"));
+  return new AppError(`Unexpected error in ${task}: ${err}`, status).andLog(
+    new Logger("Axios")
+  );
 }

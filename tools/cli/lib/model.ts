@@ -101,6 +101,7 @@ export class Participant {
           subPath: "http-data-plane",
           config: {
             dataset: {
+              type: "versioned",
               title: `${this.name} HTTPBin`,
               currentVersion: "0.9.2",
               versions: [
@@ -180,7 +181,7 @@ export class Applications {
   @ValidateNested()
   @IsOptional()
   @Type(() => Application)
-  public readonly casdoor?: Application;
+  public readonly ssoBridge?: Application;
   @ValidateNested()
   @IsOptional()
   @Type(() => Application)

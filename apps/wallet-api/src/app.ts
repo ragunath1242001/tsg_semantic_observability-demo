@@ -3,7 +3,6 @@ import { AppModule } from "./app.module.js";
 import { RootConfig } from "./config.js";
 import { Logger } from "@nestjs/common";
 import session from "express-session";
-import passport from "passport";
 import { AppLogger } from "@tsg-dsp/common-api";
 
 async function bootstrap() {
@@ -28,8 +27,6 @@ async function bootstrap() {
       saveUninitialized: false
     })
   );
-  app.use(passport.initialize());
-  app.use(passport.session());
   app.enableCors({
     allowedHeaders: "*",
     origin: "*"

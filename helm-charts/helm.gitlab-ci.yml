@@ -59,6 +59,16 @@ helm-stable:wallet:
   variables:
     FOLDER: wallet
 
+helm-devel:sso-bridge:
+  extends: .helm-devel
+  variables:
+    FOLDER: sso-bridge
+
+helm-stable:sso-bridge:
+  extends: .helm-stable
+  variables:
+    FOLDER: sso-bridge
+
 helm-devel:analytics-data-plane:
   extends: .helm-devel
   variables:
@@ -78,13 +88,3 @@ helm-stable:http-data-plane:
   extends: .helm-stable
   variables:
     FOLDER: http-data-plane
-
-helm-devel:casdoor:
-  extends: .helm-devel
-  variables:
-    FOLDER: casdoor
-
-helm-stable:casdoor:
-  extends: .helm-stable
-  variables:
-    FOLDER: casdoor

@@ -25,11 +25,6 @@ import {
   TransferTerminationMessageSchema,
   VerifiablePresentation
 } from "@tsg-dsp/common-dsp";
-import {
-  TransferVerifiablePresentationGuard,
-  VerifiablePresentationGuard
-} from "../../vc-auth/verifiablePresentation.guard.js";
-import { VP, VPId } from "../../vc-auth/verifiablePresentation.strategy.js";
 import { DeserializePipe } from "../../utils/deserialize.pipe.js";
 import { TransferService } from "./transfer.service.js";
 import {
@@ -41,7 +36,10 @@ import {
   ApiBearerAuth,
   ApiCreatedResponse
 } from "@nestjs/swagger";
-import { DisableOAuthGuard, DisableRolesGuard } from "@tsg-dsp/common-api";
+import { DisableOAuthGuard } from "@tsg-dsp/common-api";
+import { TransferVerifiablePresentationGuard } from "../../vc-auth/transferVerifiablePresentation.guard.js";
+import { VerifiablePresentationGuard } from "../../vc-auth/verifiablePresentation.guard.js";
+import { VPId, VP } from "../../vc-auth/vp.decorators.js";
 
 @ApiTags("Transfers")
 @ApiBearerAuth()

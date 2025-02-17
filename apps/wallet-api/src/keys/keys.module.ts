@@ -11,11 +11,7 @@ import { AuthModule } from "@tsg-dsp/common-api";
 import { RootConfig } from "../config.js";
 
 @Module({
-  imports: [
-    AuthModule.register(RootConfig),
-    DidModule,
-    TypeOrmModule.forFeature([KeyMaterialDao])
-  ],
+  imports: [AuthModule, DidModule, TypeOrmModule.forFeature([KeyMaterialDao])],
   controllers: [
     KeysController,
     KeysManagementController,

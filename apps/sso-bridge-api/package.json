@@ -23,6 +23,7 @@
     "migrations:check": "npx tsx src/migrations.executor.ts --check"
   },
   "dependencies": {
+    "@kubernetes/client-node": "^1.0.0",
     "@nestjs/common": "^10.4.11",
     "@nestjs/core": "^10.4.11",
     "@nestjs/platform-express": "^10.4.11",

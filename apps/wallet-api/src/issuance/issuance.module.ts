@@ -15,7 +15,7 @@ import { RootConfig } from "../config.js";
 
 @Module({
   imports: [
-    AuthModule.register(RootConfig),
+    AuthModule,
     TypeOrmModule.forFeature([CredentialIssuance, CIAccessToken]),
     ContextModule,
     CredentialsModule,

@@ -2,7 +2,6 @@ import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module.js";
 import { Logger } from "@nestjs/common";
 import session from "express-session";
-import passport from "passport";
 import crypto from "crypto";
 import { ServerConfig } from "@tsg-dsp/common-api";
 
@@ -28,8 +27,6 @@ async function bootstrap() {
       saveUninitialized: false
     })
   );
-  app.use(passport.initialize());
-  app.use(passport.session());
   app.enableCors({
     allowedHeaders: "*",
     origin: "*"

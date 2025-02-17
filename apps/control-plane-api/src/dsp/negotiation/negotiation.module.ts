@@ -18,7 +18,7 @@ import { RootConfig } from "../../config.js";
 
 @Module({
   imports: [
-    AuthModule.register(RootConfig),
+    AuthModule,
     VCAuthModule,
     DspClientModule,
     CatalogModule,

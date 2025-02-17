@@ -17,6 +17,8 @@ import {
   AuthClientService,
   AuthConfig
 } from "@tsg-dsp/common-api";
+import { Repository } from "typeorm";
+import { AgreementDao, TransferMonitorDao } from "../model/agreement.dao.js";
 
 describe("No error when no dataspace credentials are found", () => {
   let registryService: RegistryService;
@@ -47,7 +49,9 @@ describe("No error when no dataspace credentials are found", () => {
             plainToInstance(RootConfig, { iam: iamConfig }),
             new AuthClientService(
               plainToInstance(AuthConfig, { enabled: false })
-            )
+            ),
+            null as unknown as Repository<AgreementDao>,
+            null as unknown as Repository<TransferMonitorDao>
           )
         },
         {

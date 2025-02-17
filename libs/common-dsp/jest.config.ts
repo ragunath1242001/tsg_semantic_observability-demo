@@ -5,13 +5,13 @@ const config: Config.InitialOptions = {
     "^.+\\.tsx?$": [
       "ts-jest",
       {
-        // useESM: true,
+        useESM: true
       }
     ]
   },
-  moduleDirectories: ["src", "node_modules"],
   testTimeout: 30000,
   testEnvironment: "node",
+  extensionsToTreatAsEsm: [".ts"],
   testRegex: "/.*\\.(test|spec)?\\.(ts|tsx)$",
   moduleNameMapper: {
     "^(\\.{1,2}/.*)\\.js$": "$1"
@@ -23,7 +23,12 @@ const config: Config.InitialOptions = {
     "!src/**/*.strategy.ts",
     "!src/**/*.controller.ts",
     "!src/**/*.module.ts",
-    "!node_modules/**"
+    "!src/**/*.schemas.ts",
+    "!src/migrations/**",
+    "!src/migrations.executor.ts",
+    "!src/generate-oas.ts",
+    "!node_modules/**",
+    "src/did/**/*.strategy.ts"
   ]
 };
 export default config;

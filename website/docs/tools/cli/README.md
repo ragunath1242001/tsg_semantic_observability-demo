@@ -95,7 +95,7 @@ Configuration for the CLI tool starts either at [Ecosystem](#ecosystem-ecosystem
 | Name           | Data Type                                  | Required                | Explanation                                                        | Default |
 | -------------- | ------------------------------------------ | ----------------------- | ------------------------------------------------------------------ | ------- |
 | `postgres`     | [Application](#application)                |                         | Postgres [application](#application), defaults to Bitnami Postgres |         |
-| `casdoor`      | [Application](#application)                |                         | Casdoor OAuth [application](#application)                          |         |
+| `ssoBridge`    | [Application](#application)                |                         | SSO Bridge [application](#application)                             |         |
 | `wallet`       | [Application](#application)                |                         | TSG Wallet                                                         |         |
 | `controlPlane` | [Application](#application)                |                         | TSG Control Plane                                                  |         |
 | `dataPlanes`   | [`Map<String, Application>`](#application) | Data plane applications |                                                                    |         |

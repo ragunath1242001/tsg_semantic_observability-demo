@@ -4,12 +4,12 @@
 <% if (it.participant.routing === "subdomain") { %>
 host: "<%= it.dataPlane.dnsPrefix ?? it.id %>.<%= it.participant.host %>"
 endpoint: https://dp.<%= it.participant.host %>
-casdoorEndpoint: "https://casdoor.<%= it.participant.host %>"
+ssoBridgeEndpoint: "https://sso-bridge.<%= it.participant.host %>"
 controlPlaneEndpoint: "http://<%= it.participant.id %>-tsg-control-plane:3000/api"
 <% } else { %>
 host: "<%= it.participant.host %>"
 endpoint: https://<%= it.participant.host %>/<%= it.dataPlane.subPath ?? it.id %>
-casdoorEndpoint: "https://<%= it.participant.host %>"
+ssoBridgeEndpoint: "https://<%= it.participant.host %>"
 controlPlaneEndpoint: "http://<%= it.participant.id %>-tsg-control-plane:3000/control-plane/api"
 
 
@@ -38,17 +38,11 @@ configFromSecrets:
       key: postgres-password
   auth:
     clientID:
-      name: casdoor-<%= it.id %>-<%= it.participant.id %>-secret
+      name: sso-<%= it.participant.id %>-<%= it.id %>-secret
       key: clientId
     clientSecret:
-      name: casdoor-<%= it.id %>-<%= it.participant.id %>-secret
+      name: sso-<%= it.participant.id %>-<%= it.id %>-secret
       key: clientSecret
-    clientUsername:
-      name: casdoor-<%= it.id %>-<%= it.participant.id %>-secret
-      key: username
-    clientPassword:
-      name: casdoor-<%= it.id %>-<%= it.participant.id %>-secret
-      key: password
 
 config:
   db:
@@ -62,11 +56,8 @@ config:
     publicAddress: "{{ .Values.endpoint }}/api"
 
   auth:
-    authorizationURL: "{{ .Values.casdoorEndpoint }}/login/oauth/authorize"
-    tokenURL: "{{ .Values.casdoorEndpoint }}/api/login/oauth/access_token"
-    introspectionURL: "{{ .Values.casdoorEndpoint }}/api/login/oauth/introspect"
+    openIdConfigurationURL: "{{ .Values.ssoBridgeEndpoint }}/.well-known/openid-configuration"
     callbackURL: "{{ .Values.endpoint }}/api/auth/callback"
-    rolePath: "$.roles[*].name"
     redirectURL: "{{ .Values.endpoint }}/"
   
   controlPlane:

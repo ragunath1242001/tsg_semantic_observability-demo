@@ -6,6 +6,42 @@
       when: never
     - if: $CI_COMMIT_TAG
 
+.libs-test:
+  extends: .base-rules
+  stage: test
+  tags:
+    - saas-linux-medium-amd64
+  rules:
+    - if: $CI_COMMIT_BRANCH != "main"
+      changes:
+        - "libs/$LIB/**/*"
+        - libs/libs.gitlab-ci.yml
+        - .gitlab-ci.yml
+  script:
+    - pnpm install --frozen-lockfile
+    - pnpm run --filter "./libs/common*" -r  build
+    - NODE_OPTIONS="--experimental-vm-modules" pnpm test:$LIB-ci
+  coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/
+  artifacts:
+    reports:
+      junit:
+        - libs/$LIB/junit.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: libs/$LIB/coverage/cobertura-coverage.xml
+
+common-api-test:
+  extends:
+    - .libs-test
+  variables:
+    LIB: common-api
+
+common-dsp-test:
+  extends:
+    - .libs-test
+  variables:
+    LIB: common-dsp
+
 common-dsp-package:
   extends: .npm-package
   script:

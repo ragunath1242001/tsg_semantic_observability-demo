@@ -8,10 +8,13 @@ host:
 resources:
   requests:
     memory: "200Mi"
-    cpu: "200m"
+    cpu: "100m"
   limits:
     memory: "350Mi"
     cpu: "1150m"
+
+serviceAccount:
+  create: false
 
 ingress:
   enabled: true
@@ -20,9 +23,9 @@ ingress:
     - path: '{{ template "tsg.subPath" $ }}/'
       type: Prefix
     - path: /.well-known/dspace-version
-      type: Prefix
+      type: ImplementationSpecific
     - path: /socket.io
-      type: Prefix
+      type: ImplementationSpecific
 
 env: []
 configFromSecrets: {}
@@ -42,9 +45,7 @@ config:
     port: 5432
     username: postgres
   auth:
-    authorizationURL: https://{{ .Values.casdoor }}/login/oauth/authorize
-    tokenURL: https://{{ .Values.casdoor }}/api/login/oauth/access_token
-    introspectionURL: https://{{ .Values.casdoor }}/api/login/oauth/introspect
+    openIdConfigurationURL: "https://{{ .Values.host }}/.well-known/openid-configuration"
     callbackURL: https://{{ .Values.host }}{{ template "tsg.subPath" $ }}/api/auth/callback
-    rolePath: "$.roles[*].name"
     redirectURL: https://{{ .Values.host }}{{ template "tsg.subPath" $ }}/
+    rolePath: "$.roles[*]"

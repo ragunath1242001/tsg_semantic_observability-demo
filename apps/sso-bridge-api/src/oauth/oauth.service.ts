@@ -1,14 +1,15 @@
 import { HttpStatus, Injectable } from "@nestjs/common";
-import { AppError, ServerConfig } from "@tsg-dsp/common-api";
 import {
+  AppError,
   AuthorizationRequest,
   ClientCredentialsTokenRequest,
   CodeTokenRequest,
   OpenIDConfiguration,
   RefreshTokenRequest,
+  ServerConfig,
   TokenRequest,
   TokenResponse
-} from "@tsg-dsp/sso-bridge-dtos";
+} from "@tsg-dsp/common-api";
 import { UsersService } from "../users/users.service.js";
 import { OauthUser } from "../model/user.dao.js";
 import crypto, { createHash } from "crypto";
@@ -39,14 +40,14 @@ export class OauthService {
     request: AuthorizationRequest,
     user: OauthUser
   ) {
-    const parameters: Record<string, string> = {};
+    const response: Record<string, string> = {};
     if (request.state) {
-      parameters.state = request.state;
+      response.state = request.state;
     }
     if (request.response_type.split(" ").includes("code")) {
       const code = crypto.randomBytes(16).toString("hex");
       this.codes.set(code, user);
-      parameters.code = code;
+      response.code = code;
     }
     if (
       request.response_type.split(" ").includes("token") ||
@@ -61,28 +62,28 @@ export class OauthService {
         request.nonce
       );
       if (request.response_type.split(" ").includes("token")) {
-        parameters.access_token = token.access_token;
-        parameters.token_type = "Bearer";
-        parameters.expires_in = "3600";
+        response.access_token = token.access_token;
+        response.token_type = "Bearer";
+        response.expires_in = "3600";
       }
       if (request.response_type.split(" ").includes("id_token")) {
-        parameters.id_token = token.access_token;
+        response.id_token = token.access_token;
       }
     }
     if (request.code_challenge) {
       if (request.code_challenge_method === "S256") {
-        parameters.code_verifier = createHash("sha256")
+        response.code_verifier = createHash("sha256")
           .update(request.code_challenge)
           .digest("base64url");
       } else if (request.code_challenge_method === "plain") {
-        parameters.code_verifier = request.code_challenge;
+        response.code_verifier = request.code_challenge;
       }
     }
     let url: string;
     if (request.response_mode === "fragment") {
-      url = `${request.redirect_uri}#${encodeParams(parameters)}`;
+      url = `${request.redirect_uri}#${encodeParams(response)}`;
     } else {
-      url = `${request.redirect_uri}?${encodeParams(parameters)}`;
+      url = `${request.redirect_uri}?${encodeParams(response)}`;
     }
     return {
       url,

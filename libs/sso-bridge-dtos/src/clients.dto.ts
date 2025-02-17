@@ -22,6 +22,11 @@ export class ClientDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
+  secretName!: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
   description!: string;
 
   @ApiProperty()
@@ -43,4 +48,8 @@ export class ClientDto {
   @IsArray()
   @IsNotEmpty()
   grants!: GrantType[];
+
+  @ApiProperty()
+  @IsArray()
+  redirectUris!: string[];
 }

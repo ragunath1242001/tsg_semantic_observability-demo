@@ -17,7 +17,7 @@ import { RootConfig } from "../config.js";
 
 @Module({
   imports: [
-    AuthModule.register(RootConfig),
+    AuthModule,
     DidModule,
     KeysModule,
     ContextModule,

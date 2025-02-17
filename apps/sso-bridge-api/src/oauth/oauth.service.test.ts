@@ -2,7 +2,6 @@ import { jest } from "@jest/globals";
 import { Test, TestingModule } from "@nestjs/testing";
 import { OauthService } from "./oauth.service.js";
 import { plainToInstance } from "class-transformer";
-import { ServerConfig, TypeOrmTestHelper } from "@tsg-dsp/common-api";
 import { UsersService } from "../users/users.service.js";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { OauthUser } from "../model/user.dao.js";
@@ -10,18 +9,21 @@ import { ClientsService } from "../clients/clients.service.js";
 import { OauthClient } from "../model/client.dao.js";
 import { TokenDao } from "../model/token.dao.js";
 import {
+  ServerConfig,
+  TypeOrmTestHelper,
   AuthorizationRequest,
   ClientCredentialsTokenRequest,
   CodeTokenRequest,
   RefreshTokenRequest,
   TokenRequest,
   TokenResponse
-} from "@tsg-dsp/sso-bridge-dtos";
+} from "@tsg-dsp/common-api";
 import { decodeJwt, decodeProtectedHeader, jwtVerify } from "jose";
 import { KeyDao } from "../model/keys.dao.js";
 import { TokenService } from "./token.service.js";
 import { RootConfig } from "../config.js";
 import { Request, Response } from "express";
+import { KubernetesService } from "../k8s/kubernetes.service.js";
 
 describe("Oauth", () => {
   let oauth: OauthService;
@@ -42,6 +44,12 @@ describe("Oauth", () => {
       providers: [
         OauthService,
         UsersService,
+        {
+          provide: KubernetesService,
+          useValue: {
+            applySecret: jest.fn()
+          }
+        },
         ClientsService,
         TokenService,
         {
@@ -67,6 +75,7 @@ describe("Oauth", () => {
     await module.get(ClientsService).createClient({
       clientId: "test-client",
       clientSecret: "test-secret",
+      secretName: "test-secret",
       roles: ["user"],
       grants: [
         "password",
@@ -75,7 +84,8 @@ describe("Oauth", () => {
         "client_credentials"
       ],
       name: "Test Client",
-      description: "A test client"
+      description: "A test client",
+      redirectUris: ["http://localhost:3000"]
     });
   });
 

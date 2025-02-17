@@ -84,8 +84,8 @@ export class Generate {
   private writeParticipant = (participant: Participant, options: Options) => {
     log("log", `Creating configuration for participant ${participant.name}`);
     this.writeConfig(
-      "casdoor",
-      `${options.output}/${participant.id}/values.casdoor.yaml`,
+      "sso-bridge",
+      `${options.output}/${participant.id}/values.sso-bridge.yaml`,
       { participant },
       !options.stdout
     );

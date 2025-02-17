@@ -1,13 +1,13 @@
 host: "<%= it.participant.host %>"
 <% if (it.participant.routing === "subdomain") { %>
 endpoint: https://<%= it.participant.host %>
-casdoorEndpoint: "https://casdoor.<%= it.participant.host %>"
+ssoBridgeEndpoint: "https://sso-bridge.<%= it.participant.host %>"
   <% if (it.participant.hasControlPlane) { %>
 controlPlaneEndpoint: https://cp.<%= it.participant.host %>/api
   <% } %>
 <% } else { %>
 endpoint: https://<%= it.participant.host %>/wallet
-casdoorEndpoint: "https://<%= it.participant.host %>"
+ssoBridgeEndpoint: "https://<%= it.participant.host %>"
   <% if (it.participant.hasControlPlane) { %>
 controlPlaneEndpoint: https://<%= it.participant.host %>/control-plane/api
   <% } %>
@@ -34,17 +34,11 @@ configFromSecrets:
       key: postgres-password
   auth:
     clientID:
-      name: casdoor-wallet-<%= it.participant.id %>-secret
+      name: sso-<%= it.participant.id %>-wallet-secret
       key: clientId
     clientSecret:
-      name: casdoor-wallet-<%= it.participant.id %>-secret
+      name: sso-<%= it.participant.id %>-wallet-secret
       key: clientSecret
-    clientUsername:
-      name: casdoor-wallet-<%= it.participant.id %>-secret
-      key: username
-    clientPassword:
-      name: casdoor-wallet-<%= it.participant.id %>-secret
-      key: password
 
 config:
   db:
@@ -55,11 +49,8 @@ config:
     publicAddress: "{{ .Values.endpoint }}"
 
   auth:
-    authorizationURL: "{{ .Values.casdoorEndpoint }}/login/oauth/authorize"
-    tokenURL: "{{ .Values.casdoorEndpoint }}/api/login/oauth/access_token"
-    introspectionURL: "{{ .Values.casdoorEndpoint }}/api/login/oauth/introspect"
+    openIdConfigurationURL: "{{ .Values.ssoBridgeEndpoint }}/.well-known/openid-configuration"
     callbackURL: "{{ .Values.endpoint }}/api/auth/callback"
-    rolePath: "$.roles[*].name"
     redirectURL: "{{ .Values.endpoint }}/"
   
   runtime:

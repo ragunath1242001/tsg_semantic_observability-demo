@@ -1,0 +1,50 @@
+image:
+  repository: registry.gitlab.com/tno-tsg/dataspace-protocol/tno-security-gateway/sso-bridge
+  tag: "v{{ .Chart.Version }}"
+replicaCount: 1
+
+host:
+
+resources:
+  requests:
+    memory: "200Mi"
+    cpu: "100m"
+  limits:
+    memory: "350Mi"
+    cpu: "1150m"
+
+serviceAccount:
+  create: true
+  annotations: {}
+  automount: true
+  rules:
+    - apiGroups: [""]
+      resources: ["secrets"]
+      verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+
+ingress:
+  enabled: true
+  clusterIssuer: letsencrypt
+  paths:
+    - path: '{{ template "tsg.subPath" $ }}/'
+      type: Prefix
+    - path: /.well-known/openid-configuration
+      type: ImplementationSpecific
+
+env: []
+configFromSecrets: {}
+
+subPath: ""
+
+config:
+  server:
+    port: 3000
+    listen: "0.0.0.0"
+    publicDomain: "{{ .Values.host }}"
+    publicAddress: "https://{{ .Values.host }}"
+  db:
+    type: postgres
+    database: sso-bridge
+    host: postgresql
+    port: 5432
+    username: postgres

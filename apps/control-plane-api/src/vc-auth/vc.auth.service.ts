@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { VerifiablePresentation } from "@tsg-dsp/common-dsp";
 import { DevWalletConfig, RootConfig, TsgWalletConfig } from "../config.js";
 import { DevWalletClient } from "./wallets/dev.wallet.js";
@@ -6,13 +6,24 @@ import { WalletClient } from "./wallets/walletClient.js";
 import { InputDescriptor } from "@tsg-dsp/common-dtos";
 import { TsgWalletClient } from "./wallets/tsg.wallet.js";
 import { AuthClientService } from "@tsg-dsp/common-api";
+import { JwtPayload, decode } from "jsonwebtoken";
+import { DSPError } from "../utils/errors/error.js";
+import { Request } from "express";
+import { AgreementDao, TransferMonitorDao } from "../model/agreement.dao.js";
+import { RuleRepositoryService } from "../policy/rule.repository.service.js";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
 
 @Injectable()
 export class VCAuthService {
   readonly walletClient: WalletClient;
   constructor(
     private readonly config: RootConfig,
-    authClientService: AuthClientService
+    authClientService: AuthClientService,
+    @InjectRepository(AgreementDao)
+    private readonly agreementRepository: Repository<AgreementDao>,
+    @InjectRepository(TransferMonitorDao)
+    private readonly transferMonitorRepository: Repository<TransferMonitorDao>
   ) {
     switch (config.iam.type) {
       case "dev":
@@ -26,6 +37,7 @@ export class VCAuthService {
         break;
     }
   }
+  private readonly logger = new Logger(VCAuthService.name);
 
   async requestToken(audience: string): Promise<string> {
     return await this.walletClient.requestVerifiablePresentation(audience);
@@ -51,5 +63,126 @@ export class VCAuthService {
     signedDocument: Record<string, any>
   ): Promise<any> {
     return this.walletClient.requestSignatureValidation(signedDocument);
+  }
+
+  async validateVP(token: string) {
+    let tokenPayload: JwtPayload | null = null;
+    try {
+      tokenPayload = decode(token, { json: true });
+    } catch (err) {
+      throw new DSPError(
+        "Malformed token",
+        HttpStatus.UNAUTHORIZED,
+        err
+      ).andLog(this.logger, "warn");
+    }
+    if (!tokenPayload) {
+      this.logger.warn(`Token could not be decoded: ${token}`);
+      throw new DSPError(
+        "Token could not be decoded",
+        HttpStatus.UNAUTHORIZED
+      ).andLog(this.logger, "warn");
+    }
+    const valid = await this.validateToken(token);
+    if (!valid || valid.length === 0) {
+      throw new DSPError(
+        "Verifiable Presentation token not valid",
+        HttpStatus.UNAUTHORIZED
+      ).andLog(this.logger, "warn");
+    }
+    return valid;
+  }
+
+  async validateTransferVP(req: Request, token: string) {
+    let tokenPayload: JwtPayload | null = null;
+    try {
+      tokenPayload = decode(token, { json: true });
+    } catch (err) {
+      throw new DSPError(
+        "Malformed token",
+        HttpStatus.UNAUTHORIZED,
+        err
+      ).andLog(this.logger, "warn");
+    }
+    if (!tokenPayload) {
+      this.logger.warn(`Token could not be decoded: ${token}`);
+      throw new DSPError(
+        "Token could not be decoded",
+        HttpStatus.UNAUTHORIZED
+      ).andLog(this.logger, "warn");
+    }
+
+    this.logger.debug(`Find agreement for url ${req.url}`);
+    let agreementDao: AgreementDao | null | undefined;
+    if (req.params.id) {
+      this.logger.debug(`Find agreement by param ${req.params.id}`);
+      const transfer = await this.transferMonitorRepository.findOneBy({
+        id: req.params.id
+      });
+      agreementDao = transfer?.agreement;
+    } else if (req.body["dspace:agreementId"]) {
+      this.logger.debug(
+        `Find agreement by body ${req.body["dspace:agreementId"]}`
+      );
+      agreementDao = await this.agreementRepository.findOneBy({
+        id: req.body["dspace:agreementId"]
+      });
+    }
+
+    if (agreementDao) {
+      this.logger.debug(`Found agreement ${agreementDao.id}`);
+      const vpConstraints =
+        agreementDao.agreement["odrl:permission"]?.flatMap(
+          (p) =>
+            p["odrl:constraint"]?.filter(
+              (c) => c["odrl:leftOperand"] === "tsg:vpInputDescriptor"
+            ) ?? []
+        ) ?? [];
+      if (vpConstraints.length > 0) {
+        this.logger.debug(`Found VP constraint(s)`);
+        for (const vpConstraint of vpConstraints) {
+          const rightOperand = RuleRepositoryService.parseRightOperand(
+            vpConstraint["odrl:rightOperand"]
+          );
+          let inputDescriptor: InputDescriptor[] | undefined = undefined;
+          if (rightOperand) {
+            try {
+              const parsedOperand = JSON.parse(rightOperand);
+              if (Array.isArray(parsedOperand)) {
+                inputDescriptor = parsedOperand;
+              } else {
+                inputDescriptor = [parsedOperand];
+              }
+            } catch (e) {}
+          }
+          this.logger.debug(
+            `Validating token with inputdescriptor: ${JSON.stringify(
+              inputDescriptor
+            )}`
+          );
+          const valid = await this.validateToken(
+            token,
+            this.config.iam.didId,
+            inputDescriptor
+          );
+          if (valid && valid.length > 0) {
+            return valid;
+          }
+        }
+
+        throw new DSPError(
+          "Verifiable Presentation token not valid",
+          HttpStatus.UNAUTHORIZED
+        ).andLog(this.logger, "warn");
+      }
+    }
+    const valid = await this.validateToken(token);
+    if (!valid || valid.length === 0) {
+      throw new DSPError(
+        "Verifiable Presentation token not valid",
+        HttpStatus.UNAUTHORIZED
+      ).andLog(this.logger, "warn");
+    }
+    return valid;
   }
 }

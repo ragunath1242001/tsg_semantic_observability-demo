@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger, Optional } from "@nestjs/common";
 import axios, {
   AxiosInstance,
   CreateAxiosDefaults,
@@ -7,6 +7,7 @@ import axios, {
 import querystring from "querystring";
 import { decodeJwt } from "jose";
 import { AuthConfig } from "../config/auth.js";
+import { OpenIDConfigurationService } from "./openid.configuration.service.js";
 
 interface Token {
   jwt: string;
@@ -15,9 +16,19 @@ interface Token {
 
 @Injectable()
 export class AuthClientService {
-  constructor(private readonly authConfig: AuthConfig) {}
+  constructor(
+    private readonly authConfig: AuthConfig,
+    @Optional()
+    private readonly openIDConfigurationService?: OpenIDConfigurationService
+  ) {
+    if (authConfig.enabled && !openIDConfigurationService) {
+      throw new Error(
+        `OpenIDConfigurationService is required when auth is enabled`
+      );
+    }
+  }
+  private readonly logger = new Logger(AuthClientService.name);
   private access_token?: Token;
-  private refresh_token?: Token;
   private _axiosInstance?: AxiosInstance;
 
   axiosInstance(
@@ -47,38 +58,30 @@ export class AuthClientService {
       if (this.valid(this.access_token)) {
         return this.access_token!.jwt;
       }
-      var params: string;
-      if (this.valid(this.refresh_token)) {
-        params = querystring.stringify({
-          grant_type: "refresh_token",
-          refresh_token: this.refresh_token!.jwt,
-          client_id: this.authConfig.clientId,
-          client_secret: this.authConfig.clientSecret
-        });
-      } else {
-        params = querystring.stringify({
-          grant_type: "password",
-          username: this.authConfig.clientUsername,
-          password: this.authConfig.clientPassword,
-          client_id: this.authConfig.clientId,
-          client_secret: this.authConfig.clientSecret
-        });
-      }
-      const response = await axios.post(this.authConfig.tokenURL, params);
-      if (response.data.refresh_token) {
-        const payload = decodeJwt(response.data.refresh_token);
-        this.refresh_token = {
-          jwt: response.data.refresh_token,
-          expiration: payload.exp
-        };
-      }
-      if (response.data.access_token) {
-        const payload = decodeJwt(response.data.access_token);
-        this.access_token = {
-          jwt: response.data.access_token,
-          expiration: payload.exp
-        };
-        return response.data.access_token;
+      const metadata =
+        await this.openIDConfigurationService!.getOpenIdConfiguration();
+
+      const params = querystring.stringify({
+        grant_type: "client_credentials",
+        client_id: this.authConfig.clientId,
+        client_secret: this.authConfig.clientSecret
+      });
+      try {
+        const response = await axios.post(metadata.token_endpoint, params);
+        if (response.data.access_token) {
+          const payload = decodeJwt(response.data.access_token);
+          this.access_token = {
+            jwt: response.data.access_token,
+            expiration: payload.exp
+          };
+          return response.data.access_token;
+        } else {
+          this.logger.error(`Error getting access token`);
+          return undefined;
+        }
+      } catch (error) {
+        this.logger.error(`Error getting token: ${error}`);
+        return undefined;
       }
     }
     return undefined;

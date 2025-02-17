@@ -8,7 +8,7 @@ import {
   healthContextUrl,
   dspContextUrl
 } from "./context.defaults.js";
-import * as jsonld from "jsonld";
+import jsonld from "jsonld";
 
 const documentCache: Record<string, RemoteDocument> = {};
 

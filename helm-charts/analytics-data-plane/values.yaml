@@ -8,10 +8,22 @@ host: example.com
 resources:
   requests:
     memory: "200Mi"
-    cpu: "200m"
+    cpu: "100m"
   limits:
     memory: "350Mi"
     cpu: "1150m"
+
+serviceAccount:
+  create: true
+  annotations: {}
+  automount: true
+  rules:
+    - apiGroups: ["batch"]
+      resources: ["jobs"]
+      verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+    - apiGroups: [""]
+      resources: ["pods"]
+      verbs: ["get", "list", "watch"]
 
 ingress:
   enabled: true
@@ -37,9 +49,7 @@ config:
     publicDomain: "{{ .Values.host }}"
     publicAddress: https://{{ .Values.host }}{{ template "tsg.subPath" $ }}
   auth:
-    authorizationURL: https://{{ .Values.casdoor }}/login/oauth/authorize
-    tokenURL: https://{{ .Values.casdoor }}/api/login/oauth/access_token
-    introspectionURL: https://{{ .Values.casdoor }}/api/login/oauth/introspect
+    openIdConfigurationURL: "https://{{ .Values.host }}/.well-known/openid-configuration"
     callbackURL: https://{{ .Values.host }}{{ template "tsg.subPath" $ }}/api/auth/callback
-    rolePath: "$.roles[*].name"
     redirectURL: https://{{ .Values.host }}{{ template "tsg.subPath" $ }}/
+    rolePath: "$.roles[*]"

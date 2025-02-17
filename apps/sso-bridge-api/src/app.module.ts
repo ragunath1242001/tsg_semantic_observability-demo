@@ -14,6 +14,7 @@ import { OauthModule } from "./oauth/oauth.module.js";
 import { UsersModule } from "./users/users.module.js";
 import { ClientsModule } from "./clients/clients.module.js";
 import { AuthModule } from "./auth/auth.module.js";
+import { KubernetesModule } from "./k8s/kubernetes.module.js";
 
 const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
   ? [
@@ -39,6 +40,7 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
     }),
     AuthModule,
     OauthModule,
+    KubernetesModule,
     UsersModule,
     ClientsModule,
     ...embeddedFrontend,
