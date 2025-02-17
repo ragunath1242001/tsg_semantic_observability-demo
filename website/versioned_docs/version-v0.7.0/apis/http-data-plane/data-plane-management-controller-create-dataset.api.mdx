@@ -1,0 +1,72 @@
+---
+id: data-plane-management-controller-create-dataset
+title: "Create dataset"
+description: "Create a new dataset."
+sidebar_label: "Create dataset"
+hide_title: true
+hide_table_of_contents: true
+api: eJy9VU2P2zYQ/SvEnBnb2PSk23Z30y6QNkbXzcUwFmNpbDGVSIYcRTEE/fdiKFny7jo5Fb3YEufrcea9UQcFxTwYz8ZZyOAuEDIpVJZaVSBjJF6ABucpoPg8FpDBPTKuK7T0B1o8Uk2W75zl4KqKwnOectwPwaDBY8CamEKEbLvTEOhrQ5F/dcUJsi69mkAFZBwa0pA7y2RZTOh9ZfJUd/klCsAOYl5SjfLEJ0+Qgdt/oTzVCYKSDUXIul4DG65oRBuJH5lq6Pu+FwTROxuTI9ysVvL3sg/wv+D4ZfX+bekPLuxNUZD9zzCAxZouvCIHY4/Qa4iM3MSrptwVlzG2qfcUxFBTjHikt1V7DRSCC1fS9fpizNsBz1R9rLWbO/Ugae7ZpTYJTMqbYPgE2bYDhw2XN5ImHzjnhYnPQtb0BLteUuFR6JaarhJX1UxWqVUTl07I7F0cWMolZLBEb5b15LkcNSAoI4VvE4nPkJ5kBEOXz8DmvgwHGg6Va5OLxxhbF4pheM4PgSWzn+A/Y1Eb4cG1U/3qdL70a//ZMrRwTxgoTKSRgPHobPvgQo0MGXxegz5fQZKCfsXQzxTMweC+IrUOFMlyoqWyRAUVip3KXV03VuhKak/cElnFrVPGRkabU1TuoLgkNY5QJaiLRBQh91/zinj4jrUXVoiUjD241OCRKJun39Tvm81azWN+g3ZTmqg+ebK360cVPeXmMOpIxdK1MeEgW3hnLE/AXmWVHSjDf7EdMOcBVmVyspFmqcGtx7wkdbNYgYYmVGMrY7Zctm27wGReuHBcjrFx+fHx7uHPp4d3N4vVouS6Ss0QctZoLzKPG7qY1uuL23bzyvjhLh9Hy/Sdl75CY0W5CWM3qmAL6A1omHUgdc5K2GkoRTPZFrpuj5H+DlXfy/HXhsJp0Mc3DIkh8tZrKAkLod+2g3/oJOAGmO82Akbcq0ZAvdlyvT5H3OY5ef6p76Ws15+eNsLt8StTp3UGAVvQ6TdN0aW2JRGmsw4qtMcmrTcYcsoURMfXdD2tosmE9nSB8IqE1Y9kqsdrprWQrn015XmDyFe2IMsGqzjFHgNafk5x/a7v+38BxuW7/Q==
+sidebar_class_name: "post api-method"
+info_path: docs/apis/http-data-plane/tsg-http-data-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Create dataset"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/management/datasets"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Create a new dataset.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={{"required":true,"content":{"application/json":{"schema":{"type":"object","properties":{},"title":"DatasetItem"}}}}}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{},"title":"DatasetItem"}}}},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string"},"status":{"type":"string"},"code":{"type":"number"},"message":{"type":"object"},"error":{"type":"string"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

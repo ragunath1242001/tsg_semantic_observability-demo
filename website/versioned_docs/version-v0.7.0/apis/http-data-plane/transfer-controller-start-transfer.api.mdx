@@ -1,0 +1,72 @@
+---
+id: transfer-controller-start-transfer
+title: "Start transfer process"
+description: "Start transfer process"
+sidebar_label: "Start transfer process"
+hide_title: true
+hide_table_of_contents: true
+api: eJytVkuP2zYQ/ivEnFpAsRc+6tTtZtMu0DZG7OZiGMZYHFtMJZIhqXUMQf+9GFLy25sccpIwM5wHZ75v2IKx5DAoo18k5DB3qP2G3JPRwZmqIrfyAV0Y5JCBRYc1BXIe8kULGmuCHJSEDBx9bZQjCXlwDWWgNORgMZSQgSRfOGU50kkc8fIeMvBFSTVC3kLYW/bmg1N6C123TE7Jh9+N3LPFZYzC6EA6sAqtrVQRixl/8RynvXZt1l+oCFyH49KDIs/a35L6KoMMpLdYUG6deVWS3FTJt8wKo31Tf9dMYsBHKR15/xNyIy2tUTrMf9DuR2ymZyn01ugc7iEDFaj+GYmn4bmvf8WquWXQnc7aoo9z7vXCxzKDoELFTp7PK9zP0oh03/F6dsnXV/rWBZ4Ef39s/CHum2FP5+7mlJ04H1A1Y8j+Td7jlo7VxTjeGu1TdyYPE/7cAWaEPUnhm6Ig7zdNVe1jrp6Kxqmwj+g32IRywmkXiTFshZpWPN7xD5YM4YBbJotYvJgm+SUjxJxFGMJbZzgsZFBTKA1zkzU+jhjzSQ5jtGo8mPtxq2Q3jjkzn5B7Tfy0POYbLyJVPmR9nN8kyGBTmV00sej9zjiZOMTYdLAMwR5qW6GsI8PdkmYX0uONXNofNalHa0JH7sBdfKAXDboPxtUYIIfPU8iGEtjpFc1+Jqc2CtcViakjTzpEdhSaSJIUwYjC1HWjmTVJrCnsiLQIOyOU9gF1QV6YjQglib6/IqY6ipPAHPvpyM7P37C2FZ0Af8DrbRK90p5x55X2gjLvhTjnwrvqN1SnzLe4H6hffJfinrIOVLXkm1J6Y+K4DUCd/SH+nM+n4gQRVyuyVF58tKQfpy/CWyrUpl9uwpdm52NXhpwPbbrwOoIMGArJJaR1iQVvgC6DShWkfexYX82jxaIkMRk9QAaNq/rB8vl4vNvtRhjVI+O24/6sH//18vT8z+z53WT0MCpDXcXRYKzWqE8838X3WdUHRAb6Fsa2QqV5HcRM2h76C0CrePAH8EMGeWTHhP9lBiVTRb6Atl2jp39d1XUs/tqQ2ydWeEUXcRFbLJXnfwn5BitPVzkd3hjwy6eeqX8V50+Ym2kPW1PzzhwGAzL4j/bpydQtuwxKQsmAX7S94imFe9dvmuHg1fOGqfXAjtOPszkzRP9Mqo3kMw53/C7DXQpsYkkRP1HWQoV62+CWbZNP7h6z4S12PLB9e7u0G0Qo7pHdcAuRXKHL7rgceHhVOJKkg8LKH85uHeqwiucYZ93/9fTI/g==
+sidebar_class_name: "post api-method"
+info_path: docs/apis/http-data-plane/tsg-http-data-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Start transfer process"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/transfers/{id}/start"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Start transfer process
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"id","required":true,"in":"path","description":"Transfer ID","schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={{"required":true,"content":{"application/json":{"schema":{"type":"object","properties":{"@type":{"type":"string"},"dspace:providerPid":{"type":"string"},"dspace:consumerPid":{"type":"string"},"dspace:dataAddress":{"type":"object","properties":{"@type":{"type":"string"},"dspace:endpointType":{"type":"string"},"dspace:endpoint":{"type":"string"},"dspace:endpointProperties":{"type":"array","items":{"type":"object","properties":{"@type":{"type":"string"},"dspace:name":{"type":"string"},"dspace:value":{"type":"string"}},"required":["@type","dspace:name","dspace:value"],"title":"EndpointPropertySchema"}}},"required":["@type","dspace:endpointType","dspace:endpoint","dspace:endpointProperties"],"title":"DataAddressSchema"}},"required":["@type","dspace:providerPid","dspace:consumerPid"],"title":"TransferStartMessageSchema"}}}}}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"202":{"description":"Transfer started successfully"}}}
+>
+  
+</StatusCodes>
+
+
+      

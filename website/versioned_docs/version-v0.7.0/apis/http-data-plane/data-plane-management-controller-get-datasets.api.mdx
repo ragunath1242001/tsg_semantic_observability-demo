@@ -1,0 +1,72 @@
+---
+id: data-plane-management-controller-get-datasets
+title: "Get datasets"
+description: "Retrieve all datasets."
+sidebar_label: "Get datasets"
+hide_title: true
+hide_table_of_contents: true
+api: eJydVE2P2zgM/SsCz2ocTPfkW9GZzg7QbYOdbC9BEDA2E6u1JVWkJxsY/u8LyU6cyWQum0sSih+P5HvsoCQugvFinIUc/iYJhl5IYV2rEgWZhGegwXkKGJ2eSsjhHgUXNVr6Cy3uqSErn52V4OqawmZPcj+GggaPARsSCgz5aq0hEHtnmRjyDu7m8/j1GgRoKJwVshLf0PvaFKl29pOjQwdcVNRg/CVHT5ADhoBH0GCEGr6wu+1PKiSiCLEDMalsr0GM1DR2wiRPQg308aPhj/nHt5i+uLA1ZUn2f4C7DQIsNnThxRKM3UOvgQWl5ZtPhSsvY2zbbCnEh4aYcU9vq/YaKAQXbqTr4zJ+tyZQCflqwHOuPtZaT6N6iGnuxZ3mxFS0wcgR8lUHDlup7mKaYiCCj/TYRAqlX7DuYyrcRxakqatEIDUxKNZqSCoXGbanNDCUCnLI0JusOTtm5cQupvByptYJ0XPcwDDkE65pLINBw652h+TikfngQjnszvkhsBLxZ/QbLBsTaXDLqq+sU8/X/tPLMMEtYaBw5kwMGE2nty8uNCiQw48F6FMLMSnoK4L+oGB2Brc1qUUgJiuJlcoSlVQqcapwTdPayFZSW5IDkVVycMpYFrQFsXI7JRWpcYMqQZ0lnhi7c2mIIxeWz4/qz+VyoaZNvkG0rAyr757sp8WTYk+F2Y1SUVy5A6daZEvvjJVz8aus8fbEBb+6DFjIoOLaFGSZJjXBJ49FRepuNgcNbajHcXGeZYfDYYbpeebCPhtjOfv69Pnh2/PDh7vZfFZJU6eGvWNp0F5kfiRRF8R71Ws33YT3T+i4PaF/JfM1Ghu1mSB2I9FXgN6AhonqsdCp5lpD5ViiW9dtkemfUPd9NP9uKRwHCbxgSCSI/3oNFWEZGbbq4Bcd43yKgnxM+4J1my7n9QXrL2X4+LAEDVEytyR0Fv10h+3xIvcNtaj3FKFHgEmB0Ot3Up7EuikClWTFYM3n2H1AK5sU16/7vv8PUHBilw==
+sidebar_class_name: "get api-method"
+info_path: docs/apis/http-data-plane/tsg-http-data-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Get datasets"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/management/datasets"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Retrieve all datasets.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"","content":{"application/json":{"schema":{"type":"array","items":{"type":"object","properties":{},"title":"DatasetItem"}}}}},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string"},"status":{"type":"string"},"code":{"type":"number"},"message":{"type":"object"},"error":{"type":"string"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

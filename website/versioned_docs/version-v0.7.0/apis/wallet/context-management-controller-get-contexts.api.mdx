@@ -1,0 +1,72 @@
+---
+id: context-management-controller-get-contexts
+title: "Retrieve contexts"
+description: "Retrieve all context registered in this wallet"
+sidebar_label: "Retrieve contexts"
+hide_title: true
+hide_table_of_contents: true
+api: eJydVt+PGjcQ/ldGfmqjDZyufUJVpSi5RlelSdW7qA/XExrWAzuJ13bsWShC+79X9i6wLHBSygMgz6/Pnz3zeac0xTKwF3ZWzdRfJIFpTYDGQOms0L8CgVYchQJpYAtScYQNGkOiCuU8BUzB91rN1Nsu4g+0uKKarKSF4IyhMF+R9OaoCuUxYE1CIarZ03OhAkXvbKSoZjt1e3OTfk6hqUJlQFaSDb03XObK0y8xOexULCuqMf2TrSc1UxgCblWhWKiOg3W3+EJlQu9Dwi/clWU98IkS2K5UW6gykCYrjOYxmy64cIwNLszQuHDOENpk1a5sEhmfg7kYvbefI2yL800dTWUgFMqgly7UKGqmNAq9Fq5JFeeFaqd5yd8TocnQd5Ro00F+azikkKdE6Bl9A7KOOxhAey6UsCQq1e8Pnz5+eNdfmnfiVJs+hfr55qfz6/GbCwvWmuz/uCdX7oPF+vJxR0Fp4uXL4vQwxjb1gkLmnmLEFV08SArBhQvpRnRmPIfqfa0BX3cpzYCnSGUTWLZq9rRTDhupblOarnfna6bNXLNWz23KgavUierYunDo1ueEXiqXOnyVu96jVGqmpuh5Wh8ipuWxvyOF9aG590AeEvEdt3s4Rza6hUItjdtkF48xblzQ3ZE53wWO0c/OVor9Sods/pW28eg2XDx4NnHsdlgpTvK7jZ0fL3QcVR9bT2PRmBdix9bxLq5WvmIfx1+tfsV+iE/tSpdDz02nO/aBIlnJ3Tfe76mtv7Fsly7fif5GPz68h7/3UnPa748VwdEMHAHh4eG+VyaQCgVKtJAxAloNUVwgWFPgJaf5AwPg2aGbRnCCDMTBgqCJpGHDUrEFjYIQPZYUJ78sAkx/7b7/sQAACdfmiIlr0oACdWOEXwtTAE3euG1qmFjknOAswQ8uQO0C/XiyAywlAkaQ0EQBtGXlAixdABzAyODZal43aPrwmL0IywrcEqQi8BiES/ZoJXY6ToMcE/jUS7vHFWVjSVbCIWGHJ7MZT5jbsDGJojK56Rz5DgU7ZP3poJHKNasKOLNiXXpUdIOtyysVhfTo2OA2Jg/6F0sx28xMrhnSNoZl2fYcdPDPD2I+f/XRCb2az2fwmDb2yZN98+c9aFqy5XS6eyyc5EInLPmwNQfK1Q3br/25A0JkuzKHLbGNgjYRpwqVRt3JKwXLpD5toQyXZCMd5US98VhWBLeTG1WoJj0JVCXi42w63Ww2E8zmiQuraR8bpx/u3959fLh7fTu5mVRSm6wM3kWp0Q4yHx5vgzl80jS7ozJ+/0uvn9PJb+oNcn7aNN2TptODJ4Wek5YfFGGvxb2KVC5KctvtFhjpczBtm5a/NRS2nVKsMXD3kHp6bgtVEWoKWb++0jaRV5bkU9o1miY/8cb63g7V6v3doypUUpZLSnOQxOOD0W4HuUfCAucKAiO1gBfUAF6Y9vDiLIcXJzVcG8ZwfdwWPZ1ZVlVbXCFgr8CjEd/FrgJamee49rlt2/8AUbFitQ==
+sidebar_class_name: "get api-method"
+info_path: docs/apis/wallet/tsg-wallet
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Retrieve contexts"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/management/contexts"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Retrieve all context registered in this wallet
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"","content":{"application/json":{"schema":{"type":"array","items":{"type":"object","properties":{"id":{"type":"string"},"credentialType":{"type":"string"},"issuable":{"type":"boolean"},"documentUrl":{"type":"string"},"document":{"type":"object"},"schema":{"type":"object"},"created":{"format":"date-time","type":"string"},"modified":{"format":"date-time","type":"string"},"deleted":{"format":"date-time","type":"string"}},"required":["id","credentialType","issuable","created","modified"],"title":"JSONLDContextDto"}}}}},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string"},"status":{"type":"string"},"code":{"type":"number"},"message":{"type":"object"},"error":{"type":"string"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

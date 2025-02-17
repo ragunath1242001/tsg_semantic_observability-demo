@@ -1,0 +1,72 @@
+---
+id: dataplane-management-controller-delete-data-plane
+title: "Delete a dataplane"
+description: "Deletes a dataplane by ID."
+sidebar_label: "Delete a dataplane"
+hide_title: true
+hide_table_of_contents: true
+api: eJyVVU1v2zgQ/SuDOe0WWjvI7km3oHELA/0INmn3EBjGmBxbbCiSJUfxGob++4KSLDt2UmB9kcH5fvP4uEfNSUUTxHiHJd6yZeEEBJqEgiXHsNrB/HaCBfrAkbLjXGfXg8NncrThmp28906it5bjUneJss9d9sECA0WqWTgmLB/36KhmLNFoLDDyz8ZE1lhKbLhAk1sJJBUWmFTFNWG5R9mFHJEkGrfBtl3kwBS8S5yy/frqOn/OBhrH6DvSkBqlOKV1Y+0O2wL/urq6DJu7Z7JGn6Awv+2d/7x0/uDjymjNDgtU3gk7yU4UgjWqA2z6I2XP/eU0fvWDlWR4YoZXTD9Lj87FzAUmIWnSqybl9WmMa+oVx2yoOSXa8GXVtkCO0cfX0D3dymPfz1h9qLUoUIzYHDbLaW7FY5t/BSZWTTSy61btqZHqOqdRPUE6RJeka3OAbDwcAcdFXrDQJtOlWyN0TIIj3XIDNUvlMx379XY8kwpLnFIw03r0nY6J03RvdJuH4fjcs3FxbPg+L6jfwaHtI2r9QYFr67edS6CUtj7qfrU+9IGvTFn+r9HLtww9uCumyHGkU/Yfjg62Dz7WJFji9zssDu1XIgGLM+5+52jWhlaW4S5yYicdYcExa9YgHpSv68ZlIjOsWLbMDmTrwbgk5BQn8GuQimHoGbpWJx2FjFv7DsCBJg/3H2EQCTjowst+HiqT4Gtgd3M3hxRYmfVwhyBVfpu6Sux08MbJWPpFzgl89kkOpqMvRYbIlqSfKxszrVIglYf34pW3BVA61GWdtS/7zZQ1ITH84+OTcRv4GH0TjtFpAl+l4nhWLDUh+Cjm+bQL8VDTUzZG7nLn7YIiBysG0vrYnCIh6zcFkNPnYSTwbQ7GCUdSGZ3UpZDsEiwpngAsl+++eOF3y2UJL2DVvDbOdJiaBM5Ll8gNpVcM2kRWYndgjXtiDVsjFRAk4zb2DOyRBhPAAvN96vc4kJtUlsK2QGsUu8RHbcObQKpiuJ5cYYFNtANDUzmdbrfbCXXmiY+b6RCbpp/m72df7md/XE+uJpXUtuNY8ElqcieZ+0fs9A07p9n+qNO/fvKGqyP8r0yDJeOyZnbN7geheUQKBgs8Sk0uNooNFlganZWq8kmy+36/osTfom3bfPyz4bjrNeiZYncTO9HUJuX/Gss12cS/GOC3vweh/h3e6ng4JLfLSyLbcL+iJ971b3C7aAusmHTWlcf9YLhRioOchFw8ae2pBN/OPs0eZlhg1snXdHN8CPavd3SpkfCGEB5a70QX2+KNhAd9XqrImp0YsmmM3URysuzi2kXbtv8BdiAlsA==
+sidebar_class_name: "delete api-method"
+info_path: docs/apis/control-plane/tsg-control-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Delete a dataplane"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"delete"}
+  path={"/api/management/dataplanes/{id}"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Deletes a dataplane by ID.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"id","required":true,"in":"path","schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"202":{"description":"Dataplane deleted successfully"},"400":{"description":"Invalid dataplane ID"},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string"},"status":{"type":"string"},"code":{"type":"number"},"message":{"type":"object"},"error":{"type":"string"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

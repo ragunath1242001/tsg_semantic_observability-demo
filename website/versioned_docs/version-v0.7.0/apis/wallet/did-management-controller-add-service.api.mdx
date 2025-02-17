@@ -1,0 +1,72 @@
+---
+id: did-management-controller-add-service
+title: "Add DID service"
+description: "Registers a new DID service for this wallet"
+sidebar_label: "Add DID service"
+hide_title: true
+hide_table_of_contents: true
+api: eJztV89vKzUQ/ldGPsHTNqkKF1YIqTQFVYLXp6aIQ6miyXqS9avX9rNnu42i/O/I3k2y2SRFIA4cuKSN5/dnz3yTtZAUCq8cK2tELh5oqQKTD4BgqIHJ3QQC+VdVECysBy5VgAa1JhaZsI48Rss7KXIxuZv8igaXVJHhG2vYW63Jz1DKaetCZMKhx4piBJE/PWfC05eaAv9o5Urk6/RVeZIiZ19TJgprmAxHETqnVZHCjT+HmO1ahKKkCuN/vHIkcmHnn6mIqTkfk2NFIUqV7OkE9sosxSbrDk4IupJvjXRWteEHOpusl+tTDNC5OzZ+zgQr1tF6orZQ3FizUMsJW7HZtM6Csya06V5dXsY/h1cj/ktoWEP3C5E/HWvvTtB7XIlMKKYqnELw+R+C2CG4x+7by2+O4frJ+rmSksy/h5vB6gxAjFyfqjGGln0bU1dz8lFQUQi4pOOom0yQ99b/9aNL+eyid7F6QN1GN32YvjuG6YGCrX1BgNoTyhXQmwoc/gctgZYef1F7xav02C3WXF5FN+0MnL0qamZSSfG8iT5wGcea2I/BOECj94q4tHFIOhsSRsilyMUYnRpXO+2xVHLcvfzQNcFuUm4TmUbgW2y36ezRaA8ysdC2SSoOQ2isl+2VWdcaDrPPj06y7Umb3eyFVmGv1j/cadZhqLY7yQ7828bMCk+SDCvUYRB9KD20Ra3fsR1Kh1WcjXxGPrQ/G/2MfGevQqjptOmx6LBi5ymQ4dR9w3oPZd2LjR36sKfV2zesnKbt4N/2RTbokxNjvteRyixsemddlzxOf4bft2vA4UR5LAn2YlBxlZhO77qtAbhEhgINpLoBjYTA1hO8klcLhXNN0AMjKRSekAkOqgW2MCeoA0loFJfKgERGCA4LCqPv5x7GP7SffxgAgJhXs89JVSQBGapas7pgRR4kOW1XsRFDlnyCNQRfWQ+V9fT1QQVYcAAMwL4ODGiK0vq0IWEvjZS8MlK91qg785C0CIsS7AK4JHDoWRXKoeEAyqSzvY8R3Jt27XK4pCQsyLDfOWzzSWiGA+QapXWEqIhqMllOkLHNrLsd1FzaelmCSqgYy7Adlq1fLslHcmhwFaIGvWHBepWQSTF9LKMfVpkOgzb944uYzT58tEwfZrMcHmNh947M9ac7kLRQRsXb3eaiIgXJmEu6bKk8pehamZfu3gEhKLPUu5KUCYwmAicyEcfnwfqERWS0TSa0KsgE2lOUuHZYlARXo0uRidprkYuS2YV8PG6aZoRJPLJ+Oe5sw/iXu5vbj9Pbi6vR5ajkSie2iSO+QtP3LGV/kx62zHrPtX9zAe9amOmNx06jMrFXU+rrjmKeBDolMrEnmRg9Dfgd0Txnooy0lD+J9XqOgX7zerOJx19q8quWfl7Rp+aM3zaZKAkl+USKL7QSubhpS7h4bPe3V9R12gKHq0PcEFuL66Igx+/q9pnz0/30UWRi3v1SqNKOIDw2Ikuf6Yqt68bkuj1bC41mWaedQbQ+4xVFmjxFmzt+32+xZtXLcMCScEyHMKA+eIfa4B3qgneJCd6lHTjHLHCeO7LuUtKOcLDGHwCwXScGfNXaLj0aniW7uNxv/gSJpRc3
+sidebar_class_name: "post api-method"
+info_path: docs/apis/wallet/tsg-wallet
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Add DID service"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/management/did/services"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Registers a new DID service for this wallet
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={{"required":true,"content":{"application/json":{"schema":{"type":"object","properties":{"id":{"type":"string"},"type":{"type":"string"},"serviceEndpoint":{"type":"string"}},"required":["id","type","serviceEndpoint"],"title":"DidServiceConfigDto"}}}}}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{"id":{"type":"string"},"type":{"type":"string"},"serviceEndpoint":{"oneOf":[{"type":"string"},{"type":"array","items":{"type":"string"}}]}},"required":["id","type","serviceEndpoint"],"title":"ServiceDto"}}}},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string"},"status":{"type":"string"},"code":{"type":"number"},"message":{"type":"object"},"error":{"type":"string"}},"required":["name","status","code"],"title":"ErrorDto"}}}},"409":{"description":"Resource already exists","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string"},"status":{"type":"string"},"code":{"type":"number"},"message":{"type":"object"},"error":{"type":"string"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

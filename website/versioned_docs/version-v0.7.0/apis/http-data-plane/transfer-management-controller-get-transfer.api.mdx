@@ -1,0 +1,72 @@
+---
+id: transfer-management-controller-get-transfer
+title: "Get transfer by ID"
+description: "Get transfer by ID"
+sidebar_label: "Get transfer by ID"
+hide_title: true
+hide_table_of_contents: true
+api: eJztWEtv2zgQ/ivEnHYB1Q6ye9Jpg9jNGmhSr+30YhgBLY4tthKpkuN4DUP/vSAlWZIl5wHk2FMMDjnP7xvN5Ag6Q8NJajUREMLCcGU3aO654ltMUdGtVmR0kqB52iJVcggg44anSGgshMsjKJ4ihCAFBGDw504aFBCS2WEAUkEIGacYAhBoIyMzZ7Fhj0mBiuRGetU2ijHlEB6BDpnTaslItYU8XznlNtPKonXy66sr96etFAKItCJU5GQ8yxIZ+RCH3627cOwa0OvvGJGLyriEkCzUS9HjRABGJ9gVBIBql0K4dEqepfChRFrZXYoGVrlXHqG1kwtaMdWEU27o0Cu3GBmkfhFxetEjYTMeYTgb//c4ni/GI1eI4mi+uJm1Dhbj2f3k4aZ1dvv1fvpl3H73OJ+OH0bjkY/MVRwtvZ7RfwpxTwyl3iph0wu5L6/xrUGPzwvJFBGFG21S3p+wUovgxG+EMGjtB7iOSmRaKlq88d5b7kxbLpS3uTH8AAFIwvQjHC+4e1n+zJNd34W8SfVlaaet9UzHKgCS5NgD43aEh3nByfwVra0kd1P6UgIbxkd14Su7NQJ5kqx59KMLjLfF3URwL15b6LxotuFt1SVnBcvu0Vq+xdrxqiW+DgUeRZgRNjmz1jpBrpyeRhPuRcN72PIiyLMPQPVF0L4RrSU8O7h00JgmXGEFzC4kG2jLLsLL6yjTNSLtPHs3sk7latWmz1AJjVmJhNLg7/72u7/VbSIyyAnFqJwVqs+jQwl+Iumj6aQo1cKh7p2vBCb4TlNnaSkGSTdoNeem9pRUDT71/NHohe14zwJpe9jTaj2BfK3+vvqrO2J+1mYthUD1cbPmRZC6GHd9zcKZFs03apeu0fiqFZ+IrtU8ADRG9zX4/v5YWi9tNfHt1FRpKsbTnZFudl0eQfMdxddOTVTsD5lrUk+uH/lfsHKjPPGtWx48WplvY6xePJytdtLvkBhVC8P6wCZuHE2RYu1Wly36nLotI4Qhz+QwPekaVs/s8ChF7sJC81ysLqvadU+VohpVAHX+ioMANone+ysZt3avjSiKrLPiYUyUncJ84iL1y0/faXB2Wifn/H4tKVK9Rm6Kb7QHl/+KF0eV7HNFuG/TmmlOaWcD+4ZGbiRfJ8imBi0q8vBlClGgYKRZpNN0pxyska2R9oiK0V4zqSxxFaFlesMoRlaWmnlXBx5QUm20T2JFr/kd+3exmLK65N2dMJaWfc1Q3UwnzGYYyU3JKWZjvbfeVtX+TsbPtA7cpx2NbW2EPHIszQNIZITlvFTurTcZj2Jk14MrCGBnkjJdNhwO9/v9gHvxQJvtsHxrh18mt+OH+fjT9eBqEFOa+IAzbSnlqqG5F7WtiE8YI/yfhlnCpZ/GvBfHEtFL4Jl0cK/5EcAJ1RBAKIVjTKzdFraE43HNLT6aJM/d8c8dmkMB9mdufLk9T4W07reAcMMTix3HTr0N/piVveFP1r+098ZQfdDV4TRq+Wr8wEPxz4LcbY8xcrctO4cKwY2fexpPOo3VtY8T9e/GCwjAEbSPsKdedOx3p4eb7BL/Ks893yEPLqisWsNTZNDniCf29HZruKIn/y5f5Xn+CxGJFzI=
+sidebar_class_name: "get api-method"
+info_path: docs/apis/http-data-plane/tsg-http-data-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Get transfer by ID"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/management/transfers/{id}"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Get transfer by ID
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"id","required":true,"in":"path","description":"Transfer identifier","schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{"id":{"type":"string"},"role":{"type":"string","enum":["provider","consumer"]},"processId":{"type":"string"},"remoteParty":{"type":"string"},"secret":{"type":"string"},"state":{"type":"string","enum":["dspace:REQUESTED","dspace:STARTED","dspace:TERMINATED","dspace:COMPLETED","dspace:SUSPENDED"]},"request":{"type":"object","properties":{"@type":{"type":"string"},"dspace:consumerPid":{"type":"string"},"dspace:agreementId":{"type":"string"},"dct:format":{"type":"string"},"dspace:dataAddress":{"type":"object","properties":{"@type":{"type":"string"},"dspace:endpointType":{"type":"string"},"dspace:endpoint":{"type":"string"},"dspace:endpointProperties":{"type":"array","items":{"type":"object","properties":{"@type":{"type":"string"},"dspace:name":{"type":"string"},"dspace:value":{"type":"string"}},"required":["@type","dspace:name","dspace:value"],"title":"EndpointPropertySchema"}}},"required":["@type","dspace:endpointType","dspace:endpoint","dspace:endpointProperties"],"title":"DataAddressSchema"},"dspace:callbackAddress":{"type":"string"}},"required":["@type","dspace:consumerPid","dspace:agreementId","dct:format","dspace:callbackAddress"],"title":"TransferRequestMessageSchema"},"response":{"type":"object","properties":{"accepted":{"type":"boolean"},"identifier":{"type":"string"},"dataAddress":{"type":"object","properties":{"endpoint":{"type":"string"},"properties":{"type":"array","items":{"type":"object","properties":{"name":{"type":"string"},"value":{"type":"string"}},"required":["name","value"],"title":"DataPlaneProperty"}}},"required":["endpoint","properties"],"title":"DataPlaneAddressDto"},"callbackAddress":{"type":"string"}},"required":["accepted","identifier"],"title":"DataPlaneRequestResponseDto"},"dataAddress":{"type":"object","properties":{"@type":{"type":"string"},"dspace:endpointType":{"type":"string"},"dspace:endpoint":{"type":"string"},"dspace:endpointProperties":{"type":"array","items":{"type":"object","properties":{"@type":{"type":"string"},"dspace:name":{"type":"string"},"dspace:value":{"type":"string"}},"required":["@type","dspace:name","dspace:value"],"title":"EndpointPropertySchema"}}},"required":["@type","dspace:endpointType","dspace:endpoint","dspace:endpointProperties"],"title":"DataAddressSchema"},"createdDate":{"format":"date-time","type":"string"},"modifiedDate":{"format":"date-time","type":"string"},"deletedDate":{"format":"date-time","type":"string"}},"required":["id","role","processId","remoteParty","state","request","response","createdDate","modifiedDate","deletedDate"],"title":"TransferDto"}}}},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string"},"status":{"type":"string"},"code":{"type":"number"},"message":{"type":"object"},"error":{"type":"string"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

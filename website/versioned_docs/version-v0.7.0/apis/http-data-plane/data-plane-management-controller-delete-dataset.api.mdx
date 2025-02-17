@@ -1,0 +1,72 @@
+---
+id: data-plane-management-controller-delete-dataset
+title: "Delete dataset"
+description: "Delete an existing dataset by id."
+sidebar_label: "Delete dataset"
+hide_title: true
+hide_table_of_contents: true
+api: eJytVU2P2zYQ/SvEnBqAtYxtT7otsk66QNoaXTc9LAxjLI4tphLJkKM4hsD/XpCSLe/aW/TQkwXO15uZN889KAqV1461NVDCAzXEJNAI+q4Da7MXChkDsdgehVYzkGAdeUz+jypFIOOyQUO/osE9tWT4vTXsbdOQ36ic72FIARIcemyJyQcon3sw2BKUoBVI8PS1054UlOw7kqATHodcg4RQ1dQilD3w0aWIwF6bPcS4ToHBWRMoJPvdfJ5+XnYFEiprmAwnGzrX6Cp3UHwJyaG/LmC3X6jKiH3ql3VOHyWw5obGvgPxI1P7l+b6gS3EGKOEn+c/XSP4YP1WK0Xmf4Myzu5qIhICI3fhpqmy6jLGdO2WfDK0FALu6bpqlEDeW39r9pc7ex7wnKuPtdbTwBYpzWlMCSZVndd8zESw2HF9l9JUA3lcotQmcS9/wTptmnGfeJNnLzLpxMS6VKslrm1i5cC7TDiuoYQCnS7as28xkjoUvVYxoSb/bSDlekL2lDYxDPuEbxrP8CBh19hDdnEYwsF6NezQuiGwZnbnLjao2kzrW6/y1evU+2v/yTJMckvoyZ+5kwLGp5Ptg/UtMpTweQny1EJKCvIVUT+T1zuN24bE0lMgw5mdwhApUoKtqGzbdiaxlsSW+EBkBB+s0CYwmoqCsDvBNYlxkyJDnWW+aLOzeYgjJ1ZPH8Uvq9VSTBu9QrSqdRC/OzL3y0cRHFV6N56MCLU9hFyLjHJWGz4Xf5U16VZa8As9wIqHm250RSbQdFVw77CqSdzN5iCh8804rlAWxeFwmGE2z6zfF2NsKD49vl/89rT48W42n9XcNrlhZwO3aC4yjwqrzpL4ott+Uof/pMXjKpm+c+Ea1CYdbMbbj9R/BnQaJEzkTzVH+oOEUqt0ObUNnJz7fouB/vRNjOn5a0f+OFzFN/SZF/lelQ7pW0G5wybQv3Txwx+jRrwTb+EdH9Ec05aw6WjY0d90HP4c4jpKqAlVYvlzPxruq4ocX4RcqWm8lISHxafFagES0uXeuuSzBvW3Ed04WvHWYZ7AZyGAKN9IedKMTeVJkWGNTTjH7j0a3uS4uI4x/gNKUKbq
+sidebar_class_name: "delete api-method"
+info_path: docs/apis/http-data-plane/tsg-http-data-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Delete dataset"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"delete"}
+  path={"/api/management/datasets/{id}"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Delete an existing dataset by id.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"id","required":true,"in":"path","schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{},"title":"DatasetItemWithDto"}}}},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string"},"status":{"type":"string"},"code":{"type":"number"},"message":{"type":"object"},"error":{"type":"string"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

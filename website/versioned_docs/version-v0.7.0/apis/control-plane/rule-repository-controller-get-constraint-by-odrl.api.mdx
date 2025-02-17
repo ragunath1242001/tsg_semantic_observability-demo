@@ -1,0 +1,72 @@
+---
+id: rule-repository-controller-get-constraint-by-odrl
+title: "Get constraint by ODRL"
+description: "Get constraint based on an ODRL constraint"
+sidebar_label: "Get constraint by ODRL"
+hide_title: true
+hide_table_of_contents: true
+api: eJztVktv2zgQ/ivEHAvVDrI96dQ0TYMAaR0kafcQBMaYHFtsKJIlR3ENQ/99QUp+RFG3WKDHvfjBeX8cfjNbUBRl0J61s1DCJbGQzkYOqC2LBUZSwlmBVsw+3l4fyaAA5ylgMrxSUMJtY+iWvIuaXdicO8vBGUNhviI+35t92MxUMFCAx4A1MYUI5cNjAYF+NBT5g1MbKLf5rw6koOTQUAHSWSbLSYTeGy1z4On3mNLeQpQV1Zh+8cYTlOAW30mmJH1IabKmmKTvO/FeLXLQdgVtAU4FUxpa8ixVZdWvlbqyXfi1RtCrasRPn9OY1i0tKZCVY7m1xREaD30JIwkP03ssgDWb5OqA/10HVNt2bqN3NnbQnJ6cpK+X/QB/DHl9jIRt6gWFhMTuPtCY2RLKh2H1BZBt6lT32f3s89U5FHA9u7w6P7ser+8+WbeP7V42ckcvSvwd3D3anbfRkJ+dItMj+u7kr9cgfnJhoZUi++fQtFiP1xYZuYmjIukUjd5BTTHiikY7lUIY7fQBSjmfffQ+1hFaF8nNR3Z7mN69humWomuCJGEdi6Vrckv/j1cGLJJsguZNfiEOG65OkxvZsaw3aGmOqtYWHtvkBleJVuHiGU2TEUvOa+LKJar2LmaIkCsoYYpeT2u0uKKaLE+9M1pupgeqn7qOsiOF5z1f7zLKhNKBvMvrAEt3UMDSuHVW8Rjj2gXV3Z3zneFIGeXYYfHyUCFj/jXUPgg69BaEgcK+X5J+f7STfXKhRoYSvt3AjpSgYvYwoAv4RkEvNS4MiZtAkSxnfIUlUqQEOyFdXTc2dSqJBfGayApeO6FtZLSSonBLwRWJPmeRU53kHkl9fXuYhBc/sfYdi70f8uLrgTWQHebUQDAYT7+ZR0cvQtuly9fbd+n93aXoB724yXgP0bqvdBQzT/bs5kpET1Iv+ycsYuXWMeNAVnmnLe+BeeFzIj67yDvRQRcDiUAGuUM9CT8iY/Qo09U4dtKZQmDcxSUlFpusdyGN9pHE3y48absSl8E1/mAdJ2LGFYVBsNh47wLr5+Ms2Ikan5IwUPadek9ItGJBApU6JCeR0bhVIdCqoRmy+HoltGUKKBM6MbvgpOINSpoIMZ+/+eKY3sznpXgBq6KltjpjqmMmz+TI9qEXJJQOJNlshNH2iZRYa64EiqjtygzA3jfpREAB6bW/2ANQctcwRkuykQ7UCmceZUXidHICBTTB9O8nltPper2eYBZPXFhNe9s4vb46v/hyd/H2dHIyqbg2+QUkbqrRHnke7qSbvIoOW217GBX/bYvt3xXTT556g9qmTs8FbHuGfAD0Ggo4cGQiz8ySHS5HK3FiyscCqsSw5QNstyn412DaNh3/aChsOv58xpBZJP1rC6gIVaKohy080abbL1I1b++7/SMReUrz1RBsi53FmZTk+V91j4fAzezuPvFfv3DXedpBwDUU+TNfusvoZpLOZ1swaFdNnn7Q+UyXlnh+jPf3k2ovQrs5yvA1x4tfEHnRF5mHRi561OFuvsxlIEWWNZq4t10FtDznfkNs238A5heKGg==
+sidebar_class_name: "post api-method"
+info_path: docs/apis/control-plane/tsg-control-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Get constraint by ODRL"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/management/policy/constraint/odrl"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Get constraint based on an ODRL constraint
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={{"required":true,"content":{"application/json":{"schema":{"type":"object","properties":{"@type":{"type":"string"},"odrl:leftOperand":{"type":"string"},"odrl:operator":{"type":"string"},"odrl:rightOperand":{"type":"object"},"odrl:rightOperandReference":{"type":"string"}},"required":["@type","odrl:leftOperand","odrl:operator"],"title":"ConstraintSchema"}}}}}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{"id":{"type":"number"},"type":{"allOf":[{"type":"string","enum":["ATOMIC","LOGICAL"],"title":"ConstraintType"}]},"title":{"type":"string"},"description":{"type":"string"}},"required":["type","title"],"title":"ConstraintModel"}}}},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string"},"status":{"type":"string"},"code":{"type":"number"},"message":{"type":"object"},"error":{"type":"string"}},"required":["name","status","code"],"title":"ErrorDto"}}}},"404":{"description":"Resource not found","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string"},"status":{"type":"string"},"code":{"type":"number"},"message":{"type":"object"},"error":{"type":"string"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

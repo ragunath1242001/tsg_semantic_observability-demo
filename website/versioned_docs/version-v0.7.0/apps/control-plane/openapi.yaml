@@ -1,0 +1,4772 @@
+openapi: 3.0.0
+paths:
+  /api/settings:
+    get:
+      description: Retrieves the settings of the control plane.
+      operationId: ConfigController_getSettings
+      parameters: []
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RuntimeConfigDto"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: &a1
+        - oauth2:
+            - controlplane_admin
+      summary: Retrieve settings
+      tags: &a2
+        - Settings
+  /api/settings/update:
+    post:
+      description: Updates runtime settings for the control plane.
+      operationId: ConfigController_updateSettings
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RuntimeConfigDto"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RuntimeConfigDto"
+        "400":
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a1
+      summary: Update settings
+      tags: *a2
+  /api/settings/upload:
+    post:
+      description: Uploads logo for the control plane, receive a base64 encoded url.
+      operationId: ConfigController_uploadFile
+      parameters: []
+      responses:
+        "200":
+          description: ""
+      security: *a1
+      summary: Upload logo
+      tags: *a2
+  /health:
+    get:
+      description: Retrieves the current health of the app. If the app is running and
+        it is connected to the database it always returns an empty 200 OK
+      operationId: HealthController_getHealth
+      parameters: []
+      responses:
+        "200":
+          description: ""
+        "502":
+          description: ""
+        "503":
+          description: The Health Check is not successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: error
+                  info:
+                    type: object
+                    example:
+                      database: &a3
+                        status: up
+                    additionalProperties:
+                      type: object
+                      required:
+                        - status
+                      properties:
+                        status:
+                          type: string
+                      additionalProperties: true
+                    nullable: true
+                  error:
+                    type: object
+                    example:
+                      redis: &a4
+                        status: down
+                        message: Could not connect
+                    additionalProperties:
+                      type: object
+                      required:
+                        - status
+                      properties:
+                        status:
+                          type: string
+                      additionalProperties: true
+                    nullable: true
+                  details:
+                    type: object
+                    example:
+                      database: *a3
+                      redis: *a4
+                    additionalProperties:
+                      type: object
+                      required:
+                        - status
+                      properties:
+                        status:
+                          type: string
+                      additionalProperties: true
+      summary: Health check
+      tags:
+        - Health
+  /api/status:
+    get:
+      description: Retrieves the current health of the control plane. With additional
+        status information
+      operationId: StatusController_getStatus
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StatusDto"
+      responses:
+        "200":
+          description: ""
+        "502":
+          description: ""
+      summary: Application status
+      tags:
+        - Status
+  /api/auth/user:
+    get:
+      description: Retrieves current user state, whether someone is logged in or not a
+        200 result is provided. This is used in the frontend to determine
+        whether certain aspects should be shown.
+      operationId: AuthController_getUser
+      parameters: []
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/AuthenticatedUser"
+                  - $ref: "#/components/schemas/UnauthenticatedUser"
+      summary: Retrieve current user status
+      tags: &a5
+        - Authentication
+  /api/auth/login:
+    get:
+      description: Redirects user to the correct authorization server
+      operationId: AuthController_login
+      parameters: []
+      responses:
+        "302":
+          description: ""
+      summary: Login redirect
+      tags: *a5
+  /api/auth/logout:
+    get:
+      description: Removes session information and redirects user the root of the
+        frontend (`auth.redirectURL`)
+      operationId: AuthController_logout
+      parameters: []
+      responses:
+        "302":
+          description: ""
+      summary: Logout redirect
+      tags: *a5
+  /api/auth/callback:
+    get:
+      description: Users are redirected from the authorization server to this endpoint
+        which will redirect them to the frontend (`auth.redirectURL`)
+      operationId: AuthController_callback
+      parameters: []
+      responses:
+        "302":
+          description: ""
+      summary: Login callback
+      tags: *a5
+  /api/data-plane/init:
+    post:
+      description: Initializes a new data plane with the provided details.
+      operationId: DataPlaneController_init
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DataPlaneCreation"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DataPlaneDetailsDto"
+        "400":
+          description: Invalid data plane details provided
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: &a6
+        - oauth2:
+            - controlplane_admin
+            - controlplane_dataplane
+      summary: Initialize data plane
+      tags: &a7
+        - Data Plane
+  /api/data-plane/{id}/update:
+    post:
+      description: Updates the details of an existing data plane.
+      operationId: DataPlaneController_update
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DataPlaneDetailsDto"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DataPlaneDetailsDto"
+        "400":
+          description: Identifier mismatch or invalid data
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a6
+      summary: Update data plane
+      tags: *a7
+  /api/data-plane/{id}/catalog:
+    post:
+      description: Updates the catalog for the specified data plane.
+      operationId: DataPlaneController_updateCatalog
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CatalogSchema"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CatalogSchema"
+        "400":
+          description: Invalid catalog data
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a6
+      summary: Update catalog
+      tags: *a7
+  /api/data-plane/{id}/dataset:
+    post:
+      description: Adds a new dataset to the specified data plane.
+      operationId: DataPlaneController_addDataset
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        description: Dataset details
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DatasetSchema"
+      responses:
+        "200":
+          description: Dataset added successfully
+        "400":
+          description: Invalid dataset details provided
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a6
+      summary: Add dataset
+      tags: *a7
+  /api/data-plane/{id}/dataset/{datasetId}:
+    put:
+      description: Updates an existing dataset for the specified data plane.
+      operationId: DataPlaneController_updateDataset
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: datasetId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        description: Updated dataset details
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DatasetSchema"
+      responses:
+        "200":
+          description: Dataset updated successfully
+        "400":
+          description: Identifier mismatch or invalid dataset data
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a6
+      summary: Update dataset
+      tags: *a7
+    delete:
+      description: Deletes a dataset from the specified data plane.
+      operationId: DataPlaneController_deleteDataset
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: datasetId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Dataset deleted successfully
+        "400":
+          description: Invalid dataset identifier
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a6
+      summary: Delete dataset
+      tags: *a7
+  /api/management/dataplanes:
+    get:
+      description: Fetches all the dataplanes.
+      operationId: DataplaneManagementController_getDataPlanes
+      parameters:
+        - name: order
+          required: false
+          in: query
+          schema:
+            default: DESC
+            enum:
+              - ASC
+              - DESC
+            type: string
+        - name: order_by
+          required: false
+          in: query
+          schema:
+            default: modifiedDate
+            type: string
+        - name: page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            default: 1
+            type: number
+        - name: per_page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            default: 100
+            type: number
+      responses:
+        "200":
+          description: ""
+          headers:
+            x-page:
+              description: Index of the current page (starting at 1)
+              schema:
+                type: integer
+            x-prev-page:
+              description: Index of the previous page
+              schema:
+                type: integer
+              required: false
+            x-next-page:
+              description: Index of the next page
+              schema:
+                type: integer
+              required: false
+            x-per-page:
+              description: Number of items per page
+              schema:
+                type: integer
+            x-total-pages:
+              description: Total number of pages
+              schema:
+                type: integer
+            x-total:
+              description: Total number of items
+              schema:
+                type: integer
+            link:
+              description: Web Linking to other pages of this resource
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DataPlaneDetailsDto"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: &a8
+        - oauth2:
+            - controlplane_admin
+            - controlplane_dataplane
+      summary: Get all dataplanes
+      tags: &a9
+        - Data Plane Management
+    post:
+      description: Adds a new dataplane.
+      operationId: DataplaneManagementController_addDataplane
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DataPlaneDetailsDto"
+      responses:
+        "201":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DataPlaneDetailsDto"
+        "400":
+          description: Invalid dataplane data
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a8
+      summary: Add a dataplane
+      tags: *a9
+  /api/management/dataplanes/{id}:
+    put:
+      description: Updates an existing dataplane.
+      operationId: DataplaneManagementController_updateDataplane
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DataPlaneDetailsDto"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DataPlaneDetailsDto"
+        "400":
+          description: Invalid dataplane data
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a8
+      summary: Update a dataplane
+      tags: *a9
+    delete:
+      description: Deletes a dataplane by ID.
+      operationId: DataplaneManagementController_deleteDataPlane
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "202":
+          description: Dataplane deleted successfully
+        "400":
+          description: Invalid dataplane ID
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a8
+      summary: Delete a dataplane
+      tags: *a9
+  /api/catalog/request:
+    post:
+      description: Requests a catalog with the provided details.
+      operationId: CatalogController_request
+      parameters:
+        - name: order
+          required: false
+          in: query
+          schema:
+            default: DESC
+            enum:
+              - ASC
+              - DESC
+            type: string
+        - name: order_by
+          required: false
+          in: query
+          schema:
+            default: modifiedDate
+            type: string
+        - name: page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            default: 1
+            type: number
+        - name: per_page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            default: 100
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CatalogRequestMessageSchema"
+      responses:
+        "200":
+          description: ""
+          headers:
+            x-page:
+              description: Index of the current page (starting at 1)
+              schema:
+                type: integer
+            x-prev-page:
+              description: Index of the previous page
+              schema:
+                type: integer
+              required: false
+            x-next-page:
+              description: Index of the next page
+              schema:
+                type: integer
+              required: false
+            x-per-page:
+              description: Number of items per page
+              schema:
+                type: integer
+            x-total-pages:
+              description: Total number of pages
+              schema:
+                type: integer
+            x-total:
+              description: Total number of items
+              schema:
+                type: integer
+            link:
+              description: Web Linking to other pages of this resource
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CatalogSchema"
+        "400":
+          description: Invalid catalog request data
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: &a10
+        - bearer: []
+      summary: Request catalog
+      tags: &a11
+        - Catalog
+  /api/catalog/datasets/{id}:
+    get:
+      description: Fetches a dataset by ID.
+      operationId: CatalogController_getDataset
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DatasetSchema"
+        "400":
+          description: Invalid dataset ID
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a10
+      summary: Get dataset
+      tags: *a11
+  /api/management/catalog/request:
+    get:
+      description: Requests a catalog from a remote or local connector.
+      operationId: CatalogManagementController_requestCatalog
+      parameters:
+        - name: order
+          required: false
+          in: query
+          schema:
+            default: DESC
+            enum:
+              - ASC
+              - DESC
+            type: string
+        - name: order_by
+          required: false
+          in: query
+          schema:
+            default: modifiedDate
+            type: string
+        - name: page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            default: 1
+            type: number
+        - name: per_page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            default: 100
+            type: number
+        - name: address
+          required: false
+          in: query
+          description: The address of the remote connector
+          schema:
+            type: string
+        - name: audience
+          required: false
+          in: query
+          description: The audience for the request
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          headers:
+            x-page:
+              description: Index of the current page (starting at 1)
+              schema:
+                type: integer
+            x-prev-page:
+              description: Index of the previous page
+              schema:
+                type: integer
+              required: false
+            x-next-page:
+              description: Index of the next page
+              schema:
+                type: integer
+              required: false
+            x-per-page:
+              description: Number of items per page
+              schema:
+                type: integer
+            x-total-pages:
+              description: Total number of pages
+              schema:
+                type: integer
+            x-total:
+              description: Total number of items
+              schema:
+                type: integer
+            link:
+              description: Web Linking to other pages of this resource
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CatalogSchema"
+        "400":
+          description: Invalid request parameters
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: &a12
+        - bearer: []
+      summary: Request catalog
+      tags: &a13
+        - Catalog Management
+  /api/management/catalog/dataset:
+    get:
+      description: Requests a dataset from a remote or local connector by ID.
+      operationId: CatalogManagementController_requestDataset
+      parameters:
+        - name: id
+          required: true
+          in: query
+          description: The ID of the dataset
+          schema:
+            type: string
+        - name: address
+          required: false
+          in: query
+          description: The address of the remote connector
+          schema:
+            type: string
+        - name: audience
+          required: false
+          in: query
+          description: The audience for the request
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DatasetSchema"
+        "400":
+          description: Invalid request parameters
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a12
+      summary: Request dataset
+      tags: *a13
+    post:
+      description: Adds a new dataset to the catalog.
+      operationId: CatalogManagementController_addDataset
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DatasetSchema"
+      responses:
+        "201":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DatasetSchema"
+        "400":
+          description: Invalid dataset data
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a12
+      summary: Add dataset
+      tags: *a13
+  /api/management/catalog/dataset/{id}:
+    put:
+      description: Updates an existing dataset in the catalog.
+      operationId: CatalogManagementController_updateDataset
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: The ID of the dataset to update
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DatasetSchema"
+      responses:
+        "202":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DatasetSchema"
+        "400":
+          description: Invalid dataset data
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a12
+      summary: Update dataset
+      tags: *a13
+    delete:
+      description: Deletes a dataset from the catalog by ID.
+      operationId: CatalogManagementController_deleteDataset
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: The ID of the dataset to delete
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Dataset deleted successfully
+        "400":
+          description: Invalid dataset ID
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a12
+      summary: Delete dataset
+      tags: *a13
+  /api/negotiations/request:
+    post:
+      operationId: NegotiationController_request
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContractRequestMessageSchema"
+      responses:
+        "201":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContractNegotiationSchema"
+      security: &a14
+        - bearer: []
+      summary: Request a new negotiation
+      tags: &a15
+        - Negotiations
+  /api/negotiations/{id}:
+    get:
+      operationId: NegotiationController_getNegotiation
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContractNegotiationSchema"
+      security: *a14
+      summary: Get negotiation status by ID
+      tags: *a15
+  /api/negotiations/{id}/request:
+    post:
+      operationId: NegotiationController_requestWithId
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContractRequestMessageSchema"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContractNegotiationSchema"
+      security: *a14
+      summary: Request negotiation with ID
+      tags: *a15
+  /api/negotiations/{id}/events:
+    post:
+      operationId: NegotiationController_negotiationEvent
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContractNegotiationEventMessageSchema"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                example:
+                  status: string
+      security: *a14
+      summary: Handle negotiation event
+      tags: *a15
+  /api/negotiations/{id}/agreement/verification:
+    post:
+      operationId: NegotiationController_agreementVerification
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContractAgreementVerificationMessageSchema"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                example:
+                  status: string
+      security: *a14
+      summary: Verify agreement
+      tags: *a15
+  /api/negotiations/{id}/termination:
+    post:
+      operationId: NegotiationController_negotiationTermination
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContractNegotiationTerminationMessageSchema"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                example:
+                  status: string
+      security: *a14
+      summary: Terminate negotiation
+      tags: *a15
+  /api/negotiations/callbacks/{id}/offer:
+    post:
+      operationId: NegotiationController_callbackOffer
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContractOfferMessageSchema"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                example:
+                  status: string
+      security: *a14
+      summary: Handle negotiation callback offer
+      tags: *a15
+  /api/negotiations/callbacks/{id}/agreement:
+    post:
+      operationId: NegotiationController_callbackAgreement
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContractAgreementMessageSchema"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                example:
+                  status: string
+      security: *a14
+      summary: Handle negotiation callback agreement
+      tags: *a15
+  /api/negotiations/callbacks/{id}/events:
+    post:
+      operationId: NegotiationController_callbackEvent
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContractNegotiationEventMessageSchema"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                example:
+                  status: string
+      security: *a14
+      summary: Handle negotiation callback event
+      tags: *a15
+  /api/management/negotiations:
+    get:
+      operationId: NegotiationManagementController_getNegotiations
+      parameters:
+        - name: order
+          required: false
+          in: query
+          schema:
+            default: DESC
+            enum:
+              - ASC
+              - DESC
+            type: string
+        - name: order_by
+          required: false
+          in: query
+          schema:
+            default: modifiedDate
+            type: string
+        - name: page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            default: 1
+            type: number
+        - name: per_page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            default: 100
+            type: number
+      responses:
+        "200":
+          description: Successfully fetched negotiations
+          headers:
+            x-page:
+              description: Index of the current page (starting at 1)
+              schema:
+                type: integer
+            x-prev-page:
+              description: Index of the previous page
+              schema:
+                type: integer
+              required: false
+            x-next-page:
+              description: Index of the next page
+              schema:
+                type: integer
+              required: false
+            x-per-page:
+              description: Number of items per page
+              schema:
+                type: integer
+            x-total-pages:
+              description: Total number of pages
+              schema:
+                type: integer
+            x-total:
+              description: Total number of items
+              schema:
+                type: integer
+            link:
+              description: Web Linking to other pages of this resource
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/NegotiationStatusDto"
+      security: &a16
+        - oauth2:
+            - controlplane_admin
+            - controlplane_dataplane
+      summary: Get all negotiations
+      tags: &a17
+        - Negotiations Management
+  /api/management/negotiations/dataset/{datasetId}:
+    get:
+      operationId: NegotiationManagementController_getNegotiationsFromDatasetId
+      parameters:
+        - name: datasetId
+          required: true
+          in: path
+          description: Dataset ID you want to find a negotiation for
+          schema:
+            type: string
+        - name: remoteParty
+          required: false
+          in: query
+          description: Remote party you want a negotiation to find for
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successfully fetched negotiations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/NegotiationStatusDto"
+      security: *a16
+      summary: Get all negotiations for a dataset
+      tags: *a17
+  /api/management/negotiations/{processId}:
+    get:
+      operationId: NegotiationManagementController_getNegotiation
+      parameters:
+        - name: processId
+          required: true
+          in: path
+          description: Process ID of the negotiation
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successfully fetched negotiation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NegotiationDetailDto"
+      security: *a16
+      summary: Get a negotiation by process ID
+      tags: *a17
+  /api/management/negotiations/request:
+    post:
+      operationId: NegotiationManagementController_requestNewNegotiation
+      parameters:
+        - name: dataSet
+          required: true
+          in: query
+          description: Dataset for the negotiation
+          schema:
+            type: string
+        - name: address
+          required: true
+          in: query
+          description: Address for the negotiation
+          schema:
+            type: string
+        - name: audience
+          required: true
+          in: query
+          description: Audience for the negotiation
+          schema:
+            type: string
+      requestBody:
+        required: true
+        description: Offer details
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OfferSchema"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContractNegotiationSchema"
+      security: *a16
+      summary: Request a new negotiation
+      tags: *a17
+  /api/management/negotiations/{processId}/request:
+    post:
+      operationId: NegotiationManagementController_requestExistingNegotiation
+      parameters:
+        - name: processId
+          required: true
+          in: path
+          description: Process ID of the negotiation
+          schema:
+            type: string
+      requestBody:
+        required: true
+        description: Offer details
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OfferSchema"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContractNegotiationSchema"
+      security: *a16
+      summary: Request an existing negotiation
+      tags: *a17
+  /api/management/negotiations/{processId}/offer:
+    post:
+      operationId: NegotiationManagementController_offer
+      parameters:
+        - name: processId
+          required: true
+          in: path
+          description: Process ID of the negotiation
+          schema:
+            type: string
+        - name: address
+          required: false
+          in: query
+          description: Address for the negotiation
+          schema:
+            type: string
+      requestBody:
+        required: true
+        description: Offer details
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OfferSchema"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                example:
+                  status: string
+      security: *a16
+      summary: Submit an offer for an existing negotiation
+      tags: *a17
+  /api/management/negotiations/{processId}/agreement:
+    post:
+      operationId: NegotiationManagementController_agree
+      parameters:
+        - name: processId
+          required: true
+          in: path
+          description: Process ID of the negotiation
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                example:
+                  status: string
+      security: *a16
+      summary: Agree to a negotiation
+      tags: *a17
+  /api/management/negotiations/{processId}/verify:
+    post:
+      operationId: NegotiationManagementController_verify
+      parameters:
+        - name: processId
+          required: true
+          in: path
+          description: Process ID of the negotiation
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                example:
+                  status: string
+      security: *a16
+      summary: Verify a negotiation agreement
+      tags: *a17
+  /api/management/negotiations/{processId}/finalize:
+    post:
+      operationId: NegotiationManagementController_finalize
+      parameters:
+        - name: processId
+          required: true
+          in: path
+          description: Process ID of the negotiation
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                example:
+                  status: string
+      security: *a16
+      summary: Finalize a negotiation
+      tags: *a17
+  /api/management/negotiations/{processId}/terminate:
+    post:
+      operationId: NegotiationManagementController_terminate
+      parameters:
+        - name: processId
+          required: true
+          in: path
+          description: Process ID of the negotiation
+          schema:
+            type: string
+      requestBody:
+        required: true
+        description: Termination details
+        content:
+          application/json:
+            schema:
+              example:
+                code: string
+                reason: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                example:
+                  status: string
+      security: *a16
+      summary: Terminate a negotiation
+      tags: *a17
+  /api/transfers/request:
+    post:
+      operationId: TransferController_request
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransferRequestMessageSchema"
+      responses:
+        "201":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransferProcessSchema"
+      security: &a18
+        - bearer: []
+      summary: Request a transfer
+      tags: &a19
+        - Transfers
+  /api/transfers/{id}:
+    get:
+      operationId: TransferController_getTransfer
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer ID
+          schema:
+            type: string
+      responses:
+        default:
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransferProcessSchema"
+      security: *a18
+      summary: Get transfer status by ID
+      tags: *a19
+  /api/transfers/{id}/start:
+    post:
+      operationId: TransferController_startTransferProcess
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer ID
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransferStartMessageSchema"
+      responses:
+        "200":
+          description: Transfer started successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                example:
+                  status: success
+      security: *a18
+      summary: Start transfer process
+      tags: *a19
+  /api/transfers/{id}/complete:
+    post:
+      operationId: TransferController_completeTransferProcess
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer ID
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransferCompletionMessageSchema"
+      responses:
+        "200":
+          description: Transfer completed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                example:
+                  status: success
+      security: *a18
+      summary: Complete transfer process
+      tags: *a19
+  /api/transfers/{id}/terminate:
+    post:
+      operationId: TransferController_terminateTransferProcess
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer ID
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransferTerminationMessageSchema"
+      responses:
+        "200":
+          description: Transfer terminated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                example:
+                  status: success
+      security: *a18
+      summary: Terminate transfer process
+      tags: *a19
+  /api/transfers/{id}/suspend:
+    post:
+      operationId: TransferController_suspendTransferProcess
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer ID
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransferSuspensionMessageSchema"
+      responses:
+        "200":
+          description: Transfer suspended successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                example:
+                  status: success
+      security: *a18
+      summary: Suspend transfer process
+      tags: *a19
+  /api/transfers/callbacks/{id}/start:
+    post:
+      operationId: TransferController_callbackStartTransferProcess
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer ID
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransferStartMessageSchema"
+      responses:
+        "200":
+          description: Callback started transfer successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                example:
+                  status: success
+      security: *a18
+      summary: Callback to start transfer process
+      tags: *a19
+  /api/transfers/callbacks/{id}/complete:
+    post:
+      operationId: TransferController_callbackCompleteTransferProcess
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer ID
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransferCompletionMessageSchema"
+      responses:
+        "200":
+          description: Callback completed transfer successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                example:
+                  status: success
+      security: *a18
+      summary: Callback to complete transfer process
+      tags: *a19
+  /api/transfers/callbacks/{id}/terminate:
+    post:
+      operationId: TransferController_callbackTerminateTransferProcess
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer ID
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransferTerminationMessageSchema"
+      responses:
+        "200":
+          description: Callback terminated transfer successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                example:
+                  status: success
+      security: *a18
+      summary: Callback to terminate transfer process
+      tags: *a19
+  /api/transfers/callbacks/{id}/suspend:
+    post:
+      operationId: TransferController_callbackSuspendTransferProcess
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer ID
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransferSuspensionMessageSchema"
+      responses:
+        "200":
+          description: Callback suspended transfer successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                example:
+                  status: success
+      security: *a18
+      summary: Callback to suspend transfer process
+      tags: *a19
+  /api/management/transfers:
+    get:
+      operationId: TransferManagementController_getTransfers
+      parameters:
+        - name: order
+          required: false
+          in: query
+          schema:
+            default: DESC
+            enum:
+              - ASC
+              - DESC
+            type: string
+        - name: order_by
+          required: false
+          in: query
+          schema:
+            default: modifiedDate
+            type: string
+        - name: page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            default: 1
+            type: number
+        - name: per_page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            default: 100
+            type: number
+      responses:
+        "200":
+          description: ""
+          headers:
+            x-page:
+              description: Index of the current page (starting at 1)
+              schema:
+                type: integer
+            x-prev-page:
+              description: Index of the previous page
+              schema:
+                type: integer
+              required: false
+            x-next-page:
+              description: Index of the next page
+              schema:
+                type: integer
+              required: false
+            x-per-page:
+              description: Number of items per page
+              schema:
+                type: integer
+            x-total-pages:
+              description: Total number of pages
+              schema:
+                type: integer
+            x-total:
+              description: Total number of items
+              schema:
+                type: integer
+            link:
+              description: Web Linking to other pages of this resource
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TransferStatusDto"
+      security: &a20
+        - oauth2:
+            - controlplane_admin
+            - controlplane_dataplane
+      summary: Get all transfers
+      tags: &a21
+        - Transfers Management
+  /api/management/transfers/{processId}:
+    get:
+      operationId: TransferManagementController_getTransfer
+      parameters:
+        - name: processId
+          required: true
+          in: path
+          description: Process ID
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransferDetailDto"
+      security: *a20
+      summary: Get transfer details by process ID
+      tags: *a21
+  /api/management/transfers/request:
+    post:
+      operationId: TransferManagementController_requestTransfer
+      parameters:
+        - name: address
+          required: true
+          in: query
+          description: Control plane address
+          schema:
+            type: string
+        - name: agreementId
+          required: true
+          in: query
+          description: Agreement ID
+          schema:
+            type: string
+        - name: audience
+          required: true
+          in: query
+          description: Audience
+          schema:
+            type: string
+        - name: format
+          required: true
+          in: query
+          description: Format
+          schema:
+            type: string
+        - name: dataPlaneIdentifier
+          required: true
+          in: query
+          schema:
+            type: string
+      responses:
+        default:
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransferProcessSchema"
+      security: *a20
+      summary: Request a new transfer
+      tags: *a21
+  /api/management/transfers/{processId}/start:
+    post:
+      operationId: TransferManagementController_startTransfer
+      parameters:
+        - name: processId
+          required: true
+          in: path
+          description: Process ID
+          schema:
+            type: string
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DataPlaneAddressDto"
+      responses:
+        "200":
+          description: Transfer started successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                example:
+                  status: success
+      security: *a20
+      summary: Start a transfer process
+      tags: *a21
+  /api/management/transfers/{processId}/complete:
+    post:
+      operationId: TransferManagementController_completeTransfer
+      parameters:
+        - name: processId
+          required: true
+          in: path
+          description: Process ID
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Transfer completed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                example:
+                  status: success
+      security: *a20
+      summary: Complete a transfer process
+      tags: *a21
+  /api/management/transfers/{processId}/terminate:
+    post:
+      operationId: TransferManagementController_terminateTransfer
+      parameters:
+        - name: processId
+          required: true
+          in: path
+          description: Process ID
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                reason:
+                  type: string
+              example:
+                code: TERMINATION_CODE
+                reason: Reason for termination
+      responses:
+        "200":
+          description: Transfer terminated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  status: success
+      security: *a20
+      summary: Terminate a transfer process
+      tags: *a21
+  /api/management/transfers/{processId}/suspend:
+    post:
+      operationId: TransferManagementController_suspendTransfer
+      parameters:
+        - name: processId
+          required: true
+          in: path
+          description: Process ID
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason:
+                  type: string
+              example:
+                reason: Reason for suspension
+      responses:
+        "200":
+          description: Transfer suspended successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                example:
+                  status: success
+      security: *a20
+      summary: Suspend a transfer process
+      tags: *a21
+  /api/management/agreements/{agreementId}:
+    get:
+      operationId: AgreementManagementController_getAgreement
+      parameters:
+        - name: agreementId
+          required: true
+          in: path
+          description: Agreement ID
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AgreementSchema"
+      security:
+        - oauth2:
+            - controlplane_admin
+      summary: Get an agreement by agreement ID
+      tags:
+        - Agreement
+  /api/management/policy/evaluation/{transferId}/lastContext:
+    get:
+      description: Retrieve last evaluation context of the specified transfer ID.
+      operationId: PolicyEvaluationController_getLastContext
+      parameters:
+        - name: transferId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EvaluationContext"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: &a22
+        - oauth2:
+            - controlplane_admin
+      summary: Retrieve last evaluation context
+      tags: &a23
+        - Evaluation
+  /api/management/policy/evaluation/{transferId}/lastDecision:
+    get:
+      description: Retrieve last evaluation decision of the specified transfer ID.
+      operationId: PolicyEvaluationController_getLastDecision
+      parameters:
+        - name: transferId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EvaluationDecision"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a22
+      summary: Retrieve last evaluation decision
+      tags: *a23
+  /api/management/policy/evaluation/{transferId}/evaluate:
+    post:
+      description: Retrieve last evaluation context of the specified transfer ID.
+      operationId: PolicyEvaluationController_evaluate
+      parameters:
+        - name: transferId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EvaluationContext"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EvaluationDecision"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a22
+      summary: Retrieve last evaluation context
+      tags: *a23
+  /api/management/policy/evaluation/{transferId}/evaluate/data-plane:
+    post:
+      description: Retrieve last evaluation context of the specified transfer ID.
+      operationId: PolicyEvaluationController_evaluateDataPlane
+      parameters:
+        - name: transferId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EvaluationDecision"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a22
+      summary: Retrieve last evaluation context
+      tags: *a23
+  /api/management/policy/constraint:
+    get:
+      description: Retrieve constraint templates registered in this control plane
+      operationId: RuleRepositoryController_getConstraints
+      parameters:
+        - name: order
+          required: false
+          in: query
+          schema:
+            default: DESC
+            enum:
+              - ASC
+              - DESC
+            type: string
+        - name: order_by
+          required: false
+          in: query
+          schema:
+            default: modifiedDate
+            type: string
+        - name: page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            default: 1
+            type: number
+        - name: per_page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            default: 100
+            type: number
+      responses:
+        "200":
+          description: ""
+          headers:
+            x-page:
+              description: Index of the current page (starting at 1)
+              schema:
+                type: integer
+            x-prev-page:
+              description: Index of the previous page
+              schema:
+                type: integer
+              required: false
+            x-next-page:
+              description: Index of the next page
+              schema:
+                type: integer
+              required: false
+            x-per-page:
+              description: Number of items per page
+              schema:
+                type: integer
+            x-total-pages:
+              description: Total number of pages
+              schema:
+                type: integer
+            x-total:
+              description: Total number of items
+              schema:
+                type: integer
+            link:
+              description: Web Linking to other pages of this resource
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ConstraintModel"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: &a24
+        - oauth2:
+            - controlplane_admin
+      summary: Retrieve constraints
+      tags: &a25
+        - Evaluation
+    post:
+      description: Add new contraint template
+      operationId: RuleRepositoryController_addConstraint
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConstraintModel"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConstraintModel"
+        "400":
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "409":
+          description: Resource already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a24
+      summary: Add constraint
+      tags: *a25
+  /api/management/policy/constraint/odrl:
+    post:
+      description: Get constraint based on an ODRL constraint
+      operationId: RuleRepositoryController_getConstraintByOdrl
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConstraintSchema"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConstraintModel"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a24
+      summary: Get constraint by ODRL
+      tags: *a25
+  /api/management/policy/constraint/{id}:
+    get:
+      description: Get constraint based on its identifier
+      operationId: RuleRepositoryController_getConstraint
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConstraintModel"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a24
+      summary: Get constraint
+      tags: *a25
+    delete:
+      description: Delete constraint template
+      operationId: RuleRepositoryController_deleteConstraint
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+      responses:
+        "200":
+          description: ""
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a24
+      summary: Delete constraint
+      tags: *a25
+    put:
+      description: Update constraint template
+      operationId: RuleRepositoryController_updateConstraint
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConstraintModel"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConstraintModel"
+        "400":
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "409":
+          description: Resource already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a24
+      summary: Update constraint
+      tags: *a25
+  /api/management/policy/constraint/{id}/odrl:
+    get:
+      description: Get constraint based on its identifier and convert to ODRL
+      operationId: RuleRepositoryController_getConstraintOdrl
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConstraintModel"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a24
+      summary: Get constraint ODRL
+      tags: *a25
+  /api/management/policy/rule:
+    get:
+      description: Retrieve rule templates registered in this control plane
+      operationId: RuleRepositoryController_getRules
+      parameters:
+        - name: order
+          required: false
+          in: query
+          schema:
+            default: DESC
+            enum:
+              - ASC
+              - DESC
+            type: string
+        - name: order_by
+          required: false
+          in: query
+          schema:
+            default: modifiedDate
+            type: string
+        - name: page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            default: 1
+            type: number
+        - name: per_page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            default: 100
+            type: number
+      responses:
+        "200":
+          description: ""
+          headers:
+            x-page:
+              description: Index of the current page (starting at 1)
+              schema:
+                type: integer
+            x-prev-page:
+              description: Index of the previous page
+              schema:
+                type: integer
+              required: false
+            x-next-page:
+              description: Index of the next page
+              schema:
+                type: integer
+              required: false
+            x-per-page:
+              description: Number of items per page
+              schema:
+                type: integer
+            x-total-pages:
+              description: Total number of pages
+              schema:
+                type: integer
+            x-total:
+              description: Total number of items
+              schema:
+                type: integer
+            link:
+              description: Web Linking to other pages of this resource
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Rule"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a24
+      summary: Retrieve rules
+      tags: *a25
+    post:
+      description: Add new contraint template
+      operationId: RuleRepositoryController_addRule
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Rule"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Rule"
+        "400":
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "409":
+          description: Resource already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a24
+      summary: Add rule
+      tags: *a25
+  /api/management/policy/rule/{id}:
+    get:
+      description: Get rule based on its identifier
+      operationId: RuleRepositoryController_getRule
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Rule"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a24
+      summary: Get rule
+      tags: *a25
+    delete:
+      description: Delete rule template
+      operationId: RuleRepositoryController_deleteRule
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+      responses:
+        "200":
+          description: ""
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a24
+      summary: Delete rule
+      tags: *a25
+    put:
+      description: Update rule template
+      operationId: RuleRepositoryController_updateRule
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Rule"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Rule"
+        "400":
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "409":
+          description: Resource already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a24
+      summary: Update rule
+      tags: *a25
+  /api/management/policy/rule/{id}/odrl:
+    get:
+      description: Get rule ODRL based on its identifier
+      operationId: RuleRepositoryController_getRuleOdrl
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+        - name: ruleType
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: target
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Rule"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a24
+      summary: Get rule ODRL
+      tags: *a25
+  /api/management/registry:
+    get:
+      description: Requests all available catalogs.
+      operationId: RegistryClientController_requestCatalogs
+      parameters: []
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CatalogSchema"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: &a26
+        - oauth2:
+            - controlplane_admin
+            - controlplane_dataplane
+      summary: Request catalogs
+      tags: &a27
+        - Registry Management
+  /api/management/registry/addresses:
+    get:
+      description: Requests all available credential addresses.
+      operationId: RegistryClientController_requestAddresses
+      parameters: []
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CredentialAddress"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a26
+      summary: Request addresses
+      tags: *a27
+  /api/management/registry/didDocuments:
+    get:
+      description: Requests all DID Documents that could be retrieved at the Wallet
+        this Control Plane is linked to.
+      operationId: RegistryClientController_requestDIDDocuments
+      parameters: []
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DIDDocumentDto"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a26
+      summary: Request DID Documents
+      tags: *a27
+  /api/management/registry/catalogs:
+    get:
+      description: Fetches all catalogs from the registry.
+      operationId: RegistryClientController_getCatalogs
+      parameters:
+        - name: order
+          required: false
+          in: query
+          schema:
+            default: DESC
+            enum:
+              - ASC
+              - DESC
+            type: string
+        - name: order_by
+          required: false
+          in: query
+          schema:
+            default: modifiedDate
+            type: string
+        - name: page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            default: 1
+            type: number
+        - name: per_page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            default: 100
+            type: number
+      responses:
+        "200":
+          description: ""
+          headers:
+            x-page:
+              description: Index of the current page (starting at 1)
+              schema:
+                type: integer
+            x-prev-page:
+              description: Index of the previous page
+              schema:
+                type: integer
+              required: false
+            x-next-page:
+              description: Index of the next page
+              schema:
+                type: integer
+              required: false
+            x-per-page:
+              description: Number of items per page
+              schema:
+                type: integer
+            x-total-pages:
+              description: Total number of pages
+              schema:
+                type: integer
+            x-total:
+              description: Total number of items
+              schema:
+                type: integer
+            link:
+              description: Web Linking to other pages of this resource
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CatalogSchema"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a26
+      summary: Get catalogs
+      tags: *a27
+  /api/registry:
+    get:
+      operationId: RegistryController_getCatalogs
+      parameters:
+        - name: order
+          required: false
+          in: query
+          schema:
+            default: DESC
+            enum:
+              - ASC
+              - DESC
+            type: string
+        - name: order_by
+          required: false
+          in: query
+          schema:
+            default: modifiedDate
+            type: string
+        - name: page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            default: 1
+            type: number
+        - name: per_page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            default: 100
+            type: number
+      responses:
+        "200":
+          description: Successfully fetched all catalogs
+          headers:
+            x-page:
+              description: Index of the current page (starting at 1)
+              schema:
+                type: integer
+            x-prev-page:
+              description: Index of the previous page
+              schema:
+                type: integer
+              required: false
+            x-next-page:
+              description: Index of the next page
+              schema:
+                type: integer
+              required: false
+            x-per-page:
+              description: Number of items per page
+              schema:
+                type: integer
+            x-total-pages:
+              description: Total number of pages
+              schema:
+                type: integer
+            x-total:
+              description: Total number of items
+              schema:
+                type: integer
+            link:
+              description: Web Linking to other pages of this resource
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CatalogSchema"
+      security: &a28
+        - bearer: []
+      summary: Get all catalogs
+      tags: &a29
+        - Registry
+  /api/registry/addresses:
+    get:
+      operationId: RegistryController_requestAddresses
+      parameters: []
+      responses:
+        "200":
+          description: Successfully fetched all addresses
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CredentialAddress"
+      security: *a28
+      summary: Request all addresses
+      tags: *a29
+info:
+  title: TSG Control Plane
+  description: "This OpenAPI specification shows the endpoints of the Control
+    Plane. Most of the endpoints are related to the Dataspace Protocol, as
+    specified by the Eclipse Working Group Dataspaces. Other endpoints are
+    supportive endpoints to make sure the data can be added to the catalog, and
+    to make sure that UI interactions can take place.  __*Note*__: This OpenAPI
+    definition is not intended to be directly linked with a single Control Plane
+    instance. "
+  version: ""
+  contact: {}
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+tags:
+  - name: Health
+    description: Health Controller
+  - name: Settings
+    description: Settings Controller
+  - name: Authentication
+    description: Authentication Controller
+  - name: Data Plane
+    description: Data Plane Management Controller
+  - name: Data Plane Management
+    description: Data Plane Management Controller
+  - name: Catalog
+    description: Catalog Controller
+  - name: Catalog Management
+    description: Catalog Management Controller
+  - name: Negotiations
+    description: Negotiations Controller
+  - name: Negotiations Management
+    description: Negotiations Management Controller
+  - name: Transfers
+    description: Transfers Controller
+  - name: Transfers Management
+    description: Transfers Management Controller
+  - name: Registry
+    description: Registry Controller
+  - name: Registry Management
+    description: Registry Management Controller
+servers: []
+components:
+  securitySchemes:
+    oauth2:
+      type: oauth2
+      flows:
+        password:
+          scopes:
+            controlplane_admin: controlplane_admin
+            controlplane_dataplane: controlplane_dataplane
+    bearer:
+      scheme: bearer
+      bearerFormat: VP
+      type: http
+      description: Verifiable Presentation needed to communicate between two instances
+        of the control plane.
+  schemas:
+    RuntimeConfigDto:
+      type: object
+      properties:
+        controlPlaneInteractions:
+          type: string
+        color:
+          type: string
+        darkThemeUrl:
+          type: string
+        lightThemeUrl:
+          type: string
+      required:
+        - controlPlaneInteractions
+        - color
+    ErrorDto:
+      type: object
+      properties:
+        name:
+          type: string
+        status:
+          type: string
+        code:
+          type: number
+        message:
+          type: object
+        error:
+          type: string
+      required:
+        - name
+        - status
+        - code
+    DatabaseStatusDto:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+    MemoryUsageDto:
+      type: object
+      properties:
+        does_zap_garbage:
+          type: number
+        external_memory:
+          type: number
+        heap_size_limit:
+          type: number
+        malloced_memory:
+          type: number
+        number_of_detached_contexts:
+          type: number
+        number_of_native_contexts:
+          type: number
+        peak_malloced_memory:
+          type: number
+        total_available_size:
+          type: number
+        total_global_handles_size:
+          type: number
+        total_heap_size:
+          type: number
+        total_heap_size_executable:
+          type: number
+        total_physical_size:
+          type: number
+        used_global_handles_size:
+          type: number
+        used_heap_size:
+          type: number
+      required:
+        - does_zap_garbage
+        - external_memory
+        - heap_size_limit
+        - malloced_memory
+        - number_of_detached_contexts
+        - number_of_native_contexts
+        - peak_malloced_memory
+        - total_available_size
+        - total_global_handles_size
+        - total_heap_size
+        - total_heap_size_executable
+        - total_physical_size
+        - used_global_handles_size
+        - used_heap_size
+    NegotiationStatusDto:
+      type: object
+      properties:
+        localId:
+          type: string
+        remoteId:
+          type: string
+        remoteParty:
+          type: string
+        role:
+          type: string
+          enum: &a32
+            - provider
+            - consumer
+        remoteAddress:
+          type: string
+        state:
+          type: string
+          enum: &a33
+            - dspace:REQUESTED
+            - dspace:OFFERED
+            - dspace:ACCEPTED
+            - dspace:AGREED
+            - dspace:VERIFIED
+            - dspace:FINALIZED
+            - dspace:TERMINATED
+        dataSet:
+          type: string
+        modifiedDate:
+          format: date-time
+          type: string
+      required:
+        - localId
+        - remoteId
+        - remoteParty
+        - role
+        - remoteAddress
+        - state
+        - dataSet
+        - modifiedDate
+    TransferStatusDto:
+      type: object
+      properties:
+        localId:
+          type: string
+        remoteId:
+          type: string
+        role:
+          type: string
+        remoteAddress:
+          type: string
+        remoteParty:
+          type: string
+        state:
+          type: string
+          enum: &a34
+            - dspace:REQUESTED
+            - dspace:STARTED
+            - dspace:TERMINATED
+            - dspace:COMPLETED
+            - dspace:SUSPENDED
+        process:
+          $ref: "#/components/schemas/TransferProcessSchema"
+        agreementId:
+          type: string
+        format:
+          type: string
+        modifiedDate:
+          format: date-time
+          type: string
+      required:
+        - localId
+        - role
+        - remoteAddress
+        - remoteParty
+        - state
+        - process
+        - agreementId
+        - modifiedDate
+    StatusDto:
+      type: object
+      properties:
+        database:
+          $ref: "#/components/schemas/DatabaseStatusDto"
+        memoryUsage:
+          $ref: "#/components/schemas/MemoryUsageDto"
+        uptime:
+          type: number
+        negotiations:
+          $ref: "#/components/schemas/NegotiationStatusDto"
+        transfers:
+          $ref: "#/components/schemas/TransferStatusDto"
+      required:
+        - database
+        - memoryUsage
+        - uptime
+        - negotiations
+        - transfers
+    ClientInfo:
+      type: object
+      properties:
+        sub:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        didId:
+          type: string
+        roles:
+          type: array
+          items:
+            type: string
+        refreshToken:
+          type: string
+      required:
+        - sub
+        - name
+        - email
+        - roles
+    AuthenticatedUser:
+      type: object
+      properties:
+        state:
+          type: string
+        user:
+          $ref: "#/components/schemas/ClientInfo"
+      required:
+        - state
+        - user
+    UnauthenticatedUser:
+      type: object
+      properties:
+        state:
+          type: string
+      required:
+        - state
+    ConstraintSchema:
+      type: object
+      properties:
+        "@type":
+          type: string
+        odrl:leftOperand:
+          type: string
+        odrl:operator:
+          type: string
+        odrl:rightOperand:
+          type: object
+        odrl:rightOperandReference:
+          type: string
+      required:
+        - "@type"
+        - odrl:leftOperand
+        - odrl:operator
+    PermissionSchema:
+      type: object
+      properties:
+        "@type":
+          type: string
+        odrl:assigner:
+          type: string
+        odrl:assignee:
+          type: string
+        odrl:action:
+          type: string
+        odrl:target:
+          type: string
+        odrl:constraint:
+          type: array
+          items:
+            $ref: "#/components/schemas/ConstraintSchema"
+        odrl:Duty:
+          type: array
+          items:
+            type: string
+      required:
+        - "@type"
+        - odrl:action
+    ProhibitionSchema:
+      type: object
+      properties:
+        "@type":
+          type: string
+        odrl:assigner:
+          type: string
+        odrl:assignee:
+          type: string
+        odrl:action:
+          type: string
+        odrl:target:
+          type: string
+        odrl:constraint:
+          type: array
+          items:
+            $ref: "#/components/schemas/ConstraintSchema"
+      required:
+        - "@type"
+        - odrl:action
+    Duty:
+      type: object
+      properties: {}
+    PolicySchema:
+      type: object
+      properties:
+        "@id":
+          type: string
+        "@type":
+          type: string
+        odrl:assigner:
+          type: string
+        odrl:assignee:
+          type: string
+        odrl:profile:
+          type: string
+        odrl:permission:
+          type: array
+          items:
+            $ref: "#/components/schemas/PermissionSchema"
+        odrl:prohibition:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProhibitionSchema"
+        odrl:obligation:
+          type: array
+          items:
+            $ref: "#/components/schemas/Duty"
+        odrl:target:
+          type: string
+      required:
+        - "@id"
+        - "@type"
+    DurationSchema:
+      type: object
+      properties:
+        "@value":
+          type: string
+        "@type":
+          type: string
+      required:
+        - "@value"
+        - "@type"
+    DatasetSchema:
+      type: object
+      properties:
+        "@id":
+          type: string
+        dcat:contactPoint:
+          type: string
+        dcat:keyword:
+          type: array
+          items:
+            type: string
+        dcat:landingPage:
+          type: string
+        dcat:theme:
+          type: array
+          items:
+            type: string
+        dcat:conformsTo:
+          type: string
+        dct:creator:
+          type: string
+        dct:description:
+          type: array
+          items:
+            type: string
+        dct:identifier:
+          type: string
+        dct:isReferencedBy:
+          type: string
+        dct:issued:
+          type: string
+        dct:language:
+          type: string
+        dct:license:
+          type: string
+        dct:modified:
+          type: string
+        dct:publisher:
+          type: string
+        dct:relation:
+          type: string
+        dct:title:
+          type: string
+        dct:type:
+          type: string
+        odrl:hasPolicy:
+          type: array
+          items:
+            $ref: "#/components/schemas/PolicySchema"
+        dcat:hasVersion:
+          type: array
+          items:
+            type: string
+        dcat:isVersionOf:
+          type: string
+        dcat:version:
+          type: string
+        dcat:hasCurrentVersion:
+          type: string
+        dcat:previousVersion:
+          type: string
+        "@type":
+          type: string
+        dcat:distribution:
+          type: array
+          items:
+            type: string
+        dcat:spatialResolutionInMeters:
+          type: string
+        dcat:temporalResolution:
+          $ref: "#/components/schemas/DurationSchema"
+        dct:accrualPeriodicity:
+          type: string
+        dct:spatial:
+          type: string
+        dct:temporal:
+          type: string
+        prov:wasGeneratedBy:
+          type: string
+      required:
+        - "@id"
+        - "@type"
+    DataPlaneCreation:
+      type: object
+      properties:
+        datasets:
+          type: array
+          items:
+            $ref: "#/components/schemas/DatasetSchema"
+        dataplaneType:
+          type: string
+        endpointPrefix:
+          type: string
+        callbackAddress:
+          type: string
+        managementAddress:
+          type: string
+        managementToken:
+          type: string
+        catalogSynchronization:
+          type: string
+          enum: &a30
+            - push
+            - pull
+        role:
+          type: string
+          enum: &a31
+            - consumer
+            - provider
+            - both
+        identifier:
+          type: string
+      required:
+        - dataplaneType
+        - endpointPrefix
+        - callbackAddress
+        - managementAddress
+        - managementToken
+        - catalogSynchronization
+        - role
+    DataPlaneDetailsDto:
+      type: object
+      properties:
+        datasets:
+          type: array
+          items:
+            $ref: "#/components/schemas/DatasetSchema"
+        dataplaneType:
+          type: string
+        endpointPrefix:
+          type: string
+        callbackAddress:
+          type: string
+        managementAddress:
+          type: string
+        managementToken:
+          type: string
+        catalogSynchronization:
+          type: string
+          enum: *a30
+        role:
+          type: string
+          enum: *a31
+        identifier:
+          type: string
+      required:
+        - dataplaneType
+        - endpointPrefix
+        - callbackAddress
+        - managementAddress
+        - managementToken
+        - catalogSynchronization
+        - role
+        - identifier
+    ResourceSchema:
+      type: object
+      properties:
+        "@id":
+          type: string
+        "@type":
+          type: string
+        dcat:contactPoint:
+          type: string
+        dcat:keyword:
+          type: array
+          items:
+            type: string
+        dcat:landingPage:
+          type: string
+        dcat:theme:
+          type: array
+          items:
+            type: string
+        dcat:conformsTo:
+          type: string
+        dct:creator:
+          type: string
+        dct:description:
+          type: array
+          items:
+            type: string
+        dct:identifier:
+          type: string
+        dct:isReferencedBy:
+          type: string
+        dct:issued:
+          type: string
+        dct:language:
+          type: string
+        dct:license:
+          type: string
+        dct:modified:
+          type: string
+        dct:publisher:
+          type: string
+        dct:relation:
+          type: string
+        dct:title:
+          type: string
+        dct:type:
+          type: string
+        odrl:hasPolicy:
+          type: array
+          items:
+            $ref: "#/components/schemas/PolicySchema"
+        dcat:hasVersion:
+          type: array
+          items:
+            type: string
+        dcat:isVersionOf:
+          type: string
+        dcat:version:
+          type: string
+        dcat:hasCurrentVersion:
+          type: string
+        dcat:previousVersion:
+          type: string
+      required:
+        - "@id"
+        - "@type"
+    CatalogRecordSchema:
+      type: object
+      properties:
+        "@id":
+          type: string
+        "@type":
+          type: string
+        dct:conformsTo:
+          type: array
+          items:
+            type: string
+        dct:description:
+          type: array
+          items:
+            type: string
+        dct:issued:
+          format: date-time
+          type: string
+        dct:modified:
+          format: date-time
+          type: string
+        dct:title:
+          type: string
+        foaf:primaryTopic:
+          $ref: "#/components/schemas/ResourceSchema"
+      required:
+        - "@id"
+        - "@type"
+    DataServiceSchema:
+      type: object
+      properties:
+        "@id":
+          type: string
+        dcat:contactPoint:
+          type: string
+        dcat:keyword:
+          type: array
+          items:
+            type: string
+        dcat:landingPage:
+          type: string
+        dcat:theme:
+          type: array
+          items:
+            type: string
+        dcat:conformsTo:
+          type: string
+        dct:creator:
+          type: string
+        dct:description:
+          type: array
+          items:
+            type: string
+        dct:identifier:
+          type: string
+        dct:isReferencedBy:
+          type: string
+        dct:issued:
+          type: string
+        dct:language:
+          type: string
+        dct:license:
+          type: string
+        dct:modified:
+          type: string
+        dct:publisher:
+          type: string
+        dct:relation:
+          type: string
+        dct:title:
+          type: string
+        dct:type:
+          type: string
+        odrl:hasPolicy:
+          type: array
+          items:
+            $ref: "#/components/schemas/PolicySchema"
+        dcat:hasVersion:
+          type: array
+          items:
+            type: string
+        dcat:isVersionOf:
+          type: string
+        dcat:version:
+          type: string
+        dcat:hasCurrentVersion:
+          type: string
+        dcat:previousVersion:
+          type: string
+        "@type":
+          type: string
+        dcat:endpointDescription:
+          type: string
+        dcat:endpointURL:
+          type: string
+        dcat:servesDataset:
+          type: array
+          items:
+            $ref: "#/components/schemas/DatasetSchema"
+      required:
+        - "@id"
+        - "@type"
+    CatalogSchema:
+      type: object
+      properties:
+        "@id":
+          type: string
+        dcat:contactPoint:
+          type: string
+        dcat:keyword:
+          type: array
+          items:
+            type: string
+        dcat:landingPage:
+          type: string
+        dcat:theme:
+          type: array
+          items:
+            type: string
+        dcat:conformsTo:
+          type: string
+        dct:creator:
+          type: string
+        dct:description:
+          type: array
+          items:
+            type: string
+        dct:identifier:
+          type: string
+        dct:isReferencedBy:
+          type: string
+        dct:issued:
+          type: string
+        dct:language:
+          type: string
+        dct:license:
+          type: string
+        dct:modified:
+          type: string
+        dct:publisher:
+          type: string
+        dct:relation:
+          type: string
+        dct:title:
+          type: string
+        dct:type:
+          type: string
+        odrl:hasPolicy:
+          type: array
+          items:
+            $ref: "#/components/schemas/PolicySchema"
+        dcat:hasVersion:
+          type: array
+          items:
+            type: string
+        dcat:isVersionOf:
+          type: string
+        dcat:version:
+          type: string
+        dcat:hasCurrentVersion:
+          type: string
+        dcat:previousVersion:
+          type: string
+        dcat:distribution:
+          type: array
+          items:
+            type: string
+        dcat:spatialResolutionInMeters:
+          type: string
+        dcat:temporalResolution:
+          $ref: "#/components/schemas/DurationSchema"
+        dct:accrualPeriodicity:
+          type: string
+        dct:spatial:
+          type: string
+        dct:temporal:
+          type: string
+        prov:wasGeneratedBy:
+          type: string
+        "@type":
+          type: string
+        dcat:dataset:
+          type: array
+          items:
+            $ref: "#/components/schemas/DatasetSchema"
+        dcat:record:
+          type: array
+          items:
+            $ref: "#/components/schemas/CatalogRecordSchema"
+        dcat:service:
+          type: array
+          items:
+            $ref: "#/components/schemas/DataServiceSchema"
+        dcat:themeTaxonomy:
+          type: string
+        dct:hasPart:
+          type: array
+          items:
+            $ref: "#/components/schemas/ResourceSchema"
+        foaf:homepage:
+          type: string
+      required:
+        - "@id"
+        - "@type"
+    CatalogRequestMessageSchema:
+      type: object
+      properties:
+        "@type":
+          type: string
+        dspace:filter:
+          type: array
+          items:
+            type: string
+      required:
+        - "@type"
+    OfferSchema:
+      type: object
+      properties:
+        "@id":
+          type: string
+        "@type":
+          type: string
+        odrl:assigner:
+          type: string
+        odrl:assignee:
+          type: string
+        odrl:profile:
+          type: string
+        odrl:permission:
+          type: array
+          items:
+            $ref: "#/components/schemas/PermissionSchema"
+        odrl:prohibition:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProhibitionSchema"
+        odrl:obligation:
+          type: array
+          items:
+            $ref: "#/components/schemas/Duty"
+        odrl:target:
+          type: string
+      required:
+        - "@id"
+        - "@type"
+    ContractRequestMessageSchema:
+      type: object
+      properties:
+        "@type":
+          type: string
+        dspace:consumerPid:
+          type: string
+        dspace:providerPid:
+          type: string
+        dspace:callbackAddress:
+          type: string
+        dspace:offer:
+          $ref: "#/components/schemas/OfferSchema"
+      required:
+        - "@type"
+        - dspace:consumerPid
+        - dspace:callbackAddress
+        - dspace:offer
+    ContractNegotiationSchema:
+      type: object
+      properties:
+        "@id":
+          type: string
+        "@type":
+          type: string
+        dspace:consumerPid:
+          type: string
+        dspace:providerPid:
+          type: string
+        dspace:state:
+          type: string
+      required:
+        - "@id"
+        - "@type"
+        - dspace:consumerPid
+        - dspace:providerPid
+        - dspace:state
+    ContractNegotiationEventMessageSchema:
+      type: object
+      properties:
+        "@type":
+          type: string
+        dspace:consumerPid:
+          type: string
+        dspace:providerPid:
+          type: string
+        dspace:eventType:
+          type: string
+      required:
+        - "@type"
+        - dspace:consumerPid
+        - dspace:providerPid
+        - dspace:eventType
+    HashedMessageSchema:
+      type: object
+      properties:
+        dspace:digest:
+          type: string
+        dspace:algorithm:
+          type: string
+      required:
+        - dspace:digest
+        - dspace:algorithm
+    ContractAgreementVerificationMessageSchema:
+      type: object
+      properties:
+        "@type":
+          type: string
+        dspace:consumerPid:
+          type: string
+        dspace:providerPid:
+          type: string
+        dspace:hashedMessage:
+          $ref: "#/components/schemas/HashedMessageSchema"
+      required:
+        - "@type"
+        - dspace:consumerPid
+        - dspace:providerPid
+        - dspace:hashedMessage
+    MultilanguageSchema:
+      type: object
+      properties:
+        "@value":
+          type: string
+        "@language":
+          type: string
+      required:
+        - "@value"
+        - "@language"
+    ContractNegotiationTerminationMessageSchema:
+      type: object
+      properties:
+        "@type":
+          type: string
+        dspace:consumerPid:
+          type: string
+        dspace:providerPid:
+          type: string
+        dspace:code:
+          type: string
+        dspace:reason:
+          type: array
+          items:
+            $ref: "#/components/schemas/MultilanguageSchema"
+      required:
+        - "@type"
+        - dspace:consumerPid
+        - dspace:providerPid
+        - dspace:reason
+    ContractOfferMessageSchema:
+      type: object
+      properties:
+        "@type":
+          type: string
+        dspace:consumerPid:
+          type: string
+        dspace:providerPid:
+          type: string
+        dspace:offer:
+          $ref: "#/components/schemas/OfferSchema"
+        dspace:callbackAddress:
+          type: string
+      required:
+        - "@type"
+        - dspace:providerPid
+        - dspace:offer
+        - dspace:callbackAddress
+    AgreementSchema:
+      type: object
+      properties:
+        "@id":
+          type: string
+        "@type":
+          type: string
+        odrl:assigner:
+          type: string
+        odrl:assignee:
+          type: string
+        odrl:profile:
+          type: string
+        odrl:permission:
+          type: array
+          items:
+            $ref: "#/components/schemas/PermissionSchema"
+        odrl:prohibition:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProhibitionSchema"
+        odrl:obligation:
+          type: array
+          items:
+            $ref: "#/components/schemas/Duty"
+        odrl:target:
+          type: string
+        dspace:timestamp:
+          type: string
+      required:
+        - "@id"
+        - "@type"
+        - dspace:timestamp
+    ContractAgreementMessageSchema:
+      type: object
+      properties:
+        "@type":
+          type: string
+        dspace:consumerPid:
+          type: string
+        dspace:providerPid:
+          type: string
+        dspace:agreement:
+          $ref: "#/components/schemas/AgreementSchema"
+      required:
+        - "@type"
+        - dspace:consumerPid
+        - dspace:providerPid
+        - dspace:agreement
+    NegotiationProcessEventDto:
+      type: object
+      properties:
+        time:
+          format: date-time
+          type: string
+        state:
+          type: string
+          enum:
+            - dspace:REQUESTED
+            - dspace:OFFERED
+            - dspace:ACCEPTED
+            - dspace:AGREED
+            - dspace:VERIFIED
+            - dspace:FINALIZED
+            - dspace:TERMINATED
+        localMessage:
+          type: string
+        code:
+          type: string
+        reason:
+          type: array
+          items:
+            $ref: "#/components/schemas/MultilanguageSchema"
+        agreementMessage:
+          type: string
+        verification:
+          $ref: "#/components/schemas/ContractAgreementVerificationMessageSchema"
+        hashedMessage:
+          $ref: "#/components/schemas/HashedMessageSchema"
+        type:
+          type: string
+          enum:
+            - local
+            - remote
+      required:
+        - time
+        - state
+        - type
+    NegotiationDetailDto:
+      type: object
+      properties:
+        localId:
+          type: string
+        remoteId:
+          type: string
+        remoteParty:
+          type: string
+        role:
+          type: string
+          enum: *a32
+        remoteAddress:
+          type: string
+        state:
+          type: string
+          enum: *a33
+        dataSet:
+          type: string
+        modifiedDate:
+          format: date-time
+          type: string
+        offer:
+          $ref: "#/components/schemas/OfferSchema"
+        agreement:
+          $ref: "#/components/schemas/AgreementSchema"
+        events:
+          type: array
+          items:
+            $ref: "#/components/schemas/NegotiationProcessEventDto"
+      required:
+        - localId
+        - remoteId
+        - remoteParty
+        - role
+        - remoteAddress
+        - state
+        - dataSet
+        - modifiedDate
+        - events
+    EndpointPropertySchema:
+      type: object
+      properties:
+        "@type":
+          type: string
+        dspace:name:
+          type: string
+        dspace:value:
+          type: string
+      required:
+        - "@type"
+        - dspace:name
+        - dspace:value
+    DataAddressSchema:
+      type: object
+      properties:
+        "@type":
+          type: string
+        dspace:endpointType:
+          type: string
+        dspace:endpoint:
+          type: string
+        dspace:endpointProperties:
+          type: array
+          items:
+            $ref: "#/components/schemas/EndpointPropertySchema"
+      required:
+        - "@type"
+        - dspace:endpointType
+        - dspace:endpoint
+        - dspace:endpointProperties
+    TransferRequestMessageSchema:
+      type: object
+      properties:
+        "@type":
+          type: string
+        dspace:consumerPid:
+          type: string
+        dspace:agreementId:
+          type: string
+        dct:format:
+          type: string
+        dspace:dataAddress:
+          $ref: "#/components/schemas/DataAddressSchema"
+        dspace:callbackAddress:
+          type: string
+      required:
+        - "@type"
+        - dspace:consumerPid
+        - dspace:agreementId
+        - dct:format
+        - dspace:callbackAddress
+    TransferProcessSchema:
+      type: object
+      properties:
+        "@type":
+          type: string
+        dspace:providerPid:
+          type: string
+        dspace:consumerPid:
+          type: string
+        dspace:agreementId:
+          type: string
+        dspace:state:
+          type: string
+      required:
+        - "@type"
+        - dspace:providerPid
+        - dspace:consumerPid
+        - dspace:agreementId
+        - dspace:state
+    TransferStartMessageSchema:
+      type: object
+      properties:
+        "@type":
+          type: string
+        dspace:providerPid:
+          type: string
+        dspace:consumerPid:
+          type: string
+        dspace:dataAddress:
+          $ref: "#/components/schemas/DataAddressSchema"
+      required:
+        - "@type"
+        - dspace:providerPid
+        - dspace:consumerPid
+    TransferCompletionMessageSchema:
+      type: object
+      properties:
+        "@type":
+          type: string
+        dspace:providerPid:
+          type: string
+        dspace:consumerPid:
+          type: string
+      required:
+        - "@type"
+        - dspace:providerPid
+        - dspace:consumerPid
+    TransferTerminationMessageSchema:
+      type: object
+      properties:
+        "@type":
+          type: string
+        dspace:providerPid:
+          type: string
+        dspace:consumerPid:
+          type: string
+        dspace:code:
+          type: string
+        dspace:reason:
+          type: array
+          items:
+            type: string
+      required:
+        - "@type"
+        - dspace:providerPid
+        - dspace:consumerPid
+        - dspace:code
+        - dspace:reason
+    TransferSuspensionMessageSchema:
+      type: object
+      properties:
+        "@type":
+          type: string
+        dspace:providerPid:
+          type: string
+        dspace:consumerPid:
+          type: string
+        dspace:reason:
+          type: array
+          items:
+            type: string
+      required:
+        - "@type"
+        - dspace:providerPid
+        - dspace:consumerPid
+        - dspace:reason
+    DataPlaneProperty:
+      type: object
+      properties:
+        name:
+          type: string
+        value:
+          type: string
+      required:
+        - name
+        - value
+    DataPlaneAddressDto:
+      type: object
+      properties:
+        endpoint:
+          type: string
+        properties:
+          type: array
+          items:
+            $ref: "#/components/schemas/DataPlaneProperty"
+      required:
+        - endpoint
+        - properties
+    DataPlaneTransferDto:
+      type: object
+      properties:
+        accepted:
+          type: boolean
+        identifier:
+          type: string
+        dataAddress:
+          $ref: "#/components/schemas/DataPlaneAddressDto"
+        callbackAddress:
+          type: string
+        dataPlaneIdentifier:
+          type: string
+        endpointType:
+          type: string
+      required:
+        - accepted
+        - identifier
+        - dataPlaneIdentifier
+        - endpointType
+    TransferEventDto:
+      type: object
+      properties:
+        time:
+          format: date-time
+          type: string
+        state:
+          type: string
+          enum:
+            - dspace:REQUESTED
+            - dspace:STARTED
+            - dspace:TERMINATED
+            - dspace:COMPLETED
+            - dspace:SUSPENDED
+        localMessage:
+          type: string
+        code:
+          type: string
+        reason:
+          $ref: "#/components/schemas/MultilanguageSchema"
+        type:
+          type: string
+          enum:
+            - local
+            - remote
+      required:
+        - time
+        - state
+        - type
+    TransferDetailDto:
+      type: object
+      properties:
+        localId:
+          type: string
+        remoteId:
+          type: string
+        role:
+          type: string
+        remoteAddress:
+          type: string
+        remoteParty:
+          type: string
+        state:
+          type: string
+          enum: *a34
+        process:
+          $ref: "#/components/schemas/TransferProcessSchema"
+        agreementId:
+          type: string
+        format:
+          type: string
+        modifiedDate:
+          format: date-time
+          type: string
+        dataAddress:
+          $ref: "#/components/schemas/DataAddressSchema"
+        dataPlaneTransfer:
+          $ref: "#/components/schemas/DataPlaneTransferDto"
+        events:
+          type: array
+          items:
+            $ref: "#/components/schemas/TransferEventDto"
+      required:
+        - localId
+        - role
+        - remoteAddress
+        - remoteParty
+        - state
+        - process
+        - agreementId
+        - modifiedDate
+        - dataPlaneTransfer
+        - events
+    StatusMessage:
+      type: object
+      properties:
+        status:
+          type: string
+        message:
+          type: string
+      required:
+        - status
+        - message
+    CredentialStatus:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          enum:
+            - BitstringStatusListEntry
+        statusPurpose:
+          type: string
+          enum:
+            - refresh
+            - revocation
+            - suspension
+            - message
+        statusListIndex:
+          type: string
+        statusListCredential:
+          type: string
+        statusSize:
+          type: string
+        statusMessage:
+          type: array
+          items:
+            $ref: "#/components/schemas/StatusMessage"
+        statusReference:
+          type: string
+      required:
+        - id
+        - type
+        - statusPurpose
+        - statusListIndex
+        - statusListCredential
+    CredentialSubject:
+      type: object
+      properties:
+        id:
+          type: string
+      required:
+        - id
+    Proof:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - JsonWebSignature2020
+            - DataIntegrityProof
+        proofPurpose:
+          type: string
+      required:
+        - type
+        - proofPurpose
+    VerifiableCredential:
+      type: object
+      properties:
+        "@context":
+          type: array
+          items:
+            type: string
+            enum:
+              - https://www.w3.org/2018/credentials/v1
+              - https://www.w3.org/ns/credentials/v2
+              - https://w3id.org/security/suites/jws-2020/v1
+              - https://w3id.org/security/data-integrity/v2
+              - string
+        type:
+          type: array
+          items:
+            type: string
+        id:
+          type: string
+        credentialSubject:
+          additionalProperties: true
+          allOf:
+            - $ref: "#/components/schemas/CredentialSubject"
+        issuer:
+          type: string
+        issuanceDate:
+          type: string
+        expirationDate:
+          type: string
+        validFrom:
+          type: string
+        validUntil:
+          type: string
+        evidence:
+          type: object
+          additionalProperties: true
+        credentialStatus:
+          oneOf:
+            - &a35
+              $ref: "#/components/schemas/CredentialStatus"
+            - type: array
+              items: *a35
+        proof:
+          type: array
+          items:
+            $ref: "#/components/schemas/Proof"
+      required:
+        - "@context"
+        - type
+        - credentialSubject
+        - issuer
+        - proof
+    EvaluationContext:
+      type: object
+      properties:
+        transferId:
+          type: string
+        localParticipant:
+          type: string
+        remoteParticipant:
+          type: string
+        target:
+          type: string
+        action:
+          type: string
+        verifiableCredentials:
+          $ref: "#/components/schemas/VerifiableCredential"
+        evaluationTime:
+          format: date-time
+          type: string
+      required:
+        - localParticipant
+        - remoteParticipant
+        - target
+        - action
+        - verifiableCredentials
+        - evaluationTime
+    EvaluationDecision:
+      type: object
+      properties:
+        decision:
+          type: string
+        reason:
+          type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        prohibitions:
+          type: array
+          items:
+            type: string
+        obligations:
+          type: array
+          items:
+            type: string
+        context:
+          $ref: "#/components/schemas/EvaluationContext"
+      required:
+        - decision
+    ConstraintType:
+      type: string
+      enum:
+        - ATOMIC
+        - LOGICAL
+    ConstraintModel:
+      type: object
+      properties:
+        id:
+          type: number
+        type:
+          allOf:
+            - $ref: "#/components/schemas/ConstraintType"
+        title:
+          type: string
+        description:
+          type: string
+      required:
+        - type
+        - title
+    RuleType:
+      type: string
+      enum:
+        - PERMISSION
+        - PROHIBITION
+        - DUTY
+    Rule:
+      type: object
+      properties:
+        id:
+          type: number
+        action:
+          type: array
+          items:
+            type: string
+        assignee:
+          type: array
+          items:
+            type: string
+        constraints:
+          type: array
+          items:
+            $ref: "#/components/schemas/ConstraintModel"
+        duties:
+          type: array
+          items:
+            $ref: "#/components/schemas/Rule"
+        type:
+          allOf:
+            - $ref: "#/components/schemas/RuleType"
+        target:
+          type: string
+      required:
+        - action
+        - constraints
+        - duties
+    CredentialAddress:
+      type: object
+      properties:
+        didId:
+          type: string
+        address:
+          type: string
+      required:
+        - didId
+        - address
+    JsonWebKeyDto:
+      type: object
+      properties:
+        alg:
+          type: string
+        crv:
+          type: string
+        e:
+          type: string
+        ext:
+          type: boolean
+        key_ops:
+          type: array
+          items:
+            type: string
+        kid:
+          type: string
+        kty:
+          type: string
+        n:
+          type: string
+        use:
+          type: string
+        x:
+          type: string
+        y:
+          type: string
+      required:
+        - kty
+    VerificationMethodDto:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+        controller:
+          type: string
+        publicKeyJwk:
+          $ref: "#/components/schemas/JsonWebKeyDto"
+      required:
+        - id
+        - type
+        - controller
+    ServiceDto:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+        serviceEndpoint:
+          oneOf:
+            - &a36
+              type: string
+            - type: array
+              items: *a36
+      required:
+        - id
+        - type
+        - serviceEndpoint
+    DIDDocumentDto:
+      type: object
+      properties:
+        "@context":
+          oneOf:
+            - &a37
+              type: string
+            - type: array
+              items: *a37
+        id:
+          type: string
+        alsoKnownAs:
+          type: array
+          items:
+            type: string
+        controller:
+          oneOf:
+            - &a38
+              type: string
+            - type: array
+              items: *a38
+        verificationMethod:
+          type: array
+          items:
+            $ref: "#/components/schemas/VerificationMethodDto"
+        service:
+          type: array
+          items:
+            $ref: "#/components/schemas/ServiceDto"
+        publicKey:
+          type: array
+          items:
+            $ref: "#/components/schemas/VerificationMethodDto"
+        authentication:
+          type: array
+          items:
+            oneOf:
+              - type: string
+              - $ref: "#/components/schemas/VerificationMethodDto"
+        assertionMethod:
+          type: array
+          items:
+            oneOf:
+              - type: string
+              - $ref: "#/components/schemas/VerificationMethodDto"
+        keyAgreement:
+          type: array
+          items:
+            oneOf:
+              - type: string
+              - $ref: "#/components/schemas/VerificationMethodDto"
+        capabilityInvocation:
+          type: array
+          items:
+            oneOf:
+              - type: string
+              - $ref: "#/components/schemas/VerificationMethodDto"
+        capabilityDelegation:
+          type: array
+          items:
+            oneOf:
+              - type: string
+              - $ref: "#/components/schemas/VerificationMethodDto"
+      required:
+        - id
+externalDocs:
+  description: Git Repository
+  url: https://gitlab.com/tno-tsg/dataspace-protocol/tno-security-gateway

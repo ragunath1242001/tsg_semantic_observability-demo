@@ -1,0 +1,72 @@
+---
+id: negotiation-controller-negotiation-event
+title: "Handle negotiation event"
+description: "Handle negotiation event"
+sidebar_label: "Handle negotiation event"
+hide_title: true
+hide_table_of_contents: true
+api: eJytVk1v2zgQ/SvEnHYL1Q5y1KndbLYbYJsYjds9BIYxFscWG4pkyVFcQ9B/L0jKsfyB7GVPlueDM3x888gOrCOPrKy5k1DCPW0sq/T/xhr2VmvyS3Ow3r6QYSjAoceGmHyA8qkDgw1BCUpCAZ5+tMqThJJ9SwUoAyU45BoKCFVNDULZAe9czAjsldlA3y9yIgX+w8pdjDhdp7KGY/GyA3ROqyo1NP0erIm2s6Xt6jtVqVcfN8mKQvR+yO6zDgqQwWFFZWVNaBvyMyXfCnPevij5n2EUAZtfLtmPwXoaOrvYx8WqF2osCmDFOhZJ54cV358c3mcKATf0mOHq+9xFcNaEDND11VX8kRQqr1zMgxLgf8M/MHIbLqNBP7FxmsZhB3duNVDVesW7RLsVoScP5dMi8odxE9k4JnGIiBzv5G80UpMYcVrQQOqGuLZxDJwNmeRcQwlTdGo6ig/TTsl+mrJCJDX5lzwIi0N/Cd+8Y4st19djZLKhgLW22xTiMISt9TIDaV1OrPIIOo2GliibNEkXjMWxUSJj+jqNPjgylnv4hsOL8YNp7/vL+gYZSvg2g2Lffs3s4BTWb+TVWuFKk5h5CmQ4Y2uIJEnBVlS2aVoTaUNiRbwlMoK3VigTGE1FQdi14JrE0LNIrU4SMSLJvhzk4fbAkw/HLLo8xWfeo+E9845mdjTQyqxtOsRhwOaPn8QgkmKWUD3FZF6rIB4cmY+zOxEcVWo9TI0Itd2GtFsy0lll+HX7R2tOxGcbeO86xKIn4UkjZ2yj809kTP2LmbdsK6sLgWFfl6RY7VLcbaWVCyT+tf5ZmY345G3rDtlhIh64Jn9SLLTOWc/qZdwFW9Hgc3R6SmtHhokKjViRQCkPzVXIqO2mEGjkaRqy+HonlGGKehUHLC3BMcRprGgixHL57t4yvVsuS3EEq6S1MiphqoIwltNCZii9IiGVp4r1TmhlnkmKreJaoAjKbPQJ2K9UnAgoIM70kfhhFcWvL0CrikxI9Bsuvo8Oq5rE9eQKCmi9HqYklNPpdrudYHJPrN9Mh9ww/efu5vb+8fb99eRqUnOjE8+j8DRoRiu/IVdHZHsVF6afPHUalYmkTb10g5I9AToFBYy1DAoo010yyNmigDqqX/kEXbfCQF+97vto/tGS32WRe0GfRj2JsFQhfkso16gDnfX1em/Ab1+G2+53cVCT434HI5pdPAHULWX8n2mX3xf9oi+gJpRJ97vBcZNrvJ/nG3SfeHZP9cU+42NVkeM3YxejG2H28DiPqji8TRorY47HbXzw4DY3aV2GND5eoq0DjWbT4ibG5jXjIUf1Hx3YieSmXV2EoetyxNw+k+n7V1Q4/o/A9P0vgUBxdQ==
+sidebar_class_name: "post api-method"
+info_path: docs/apis/control-plane/tsg-control-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Handle negotiation event"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/negotiations/{id}/events"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Handle negotiation event
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"id","required":true,"in":"path","schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={{"required":true,"content":{"application/json":{"schema":{"type":"object","properties":{"@type":{"type":"string"},"dspace:consumerPid":{"type":"string"},"dspace:providerPid":{"type":"string"},"dspace:eventType":{"type":"string"}},"required":["@type","dspace:consumerPid","dspace:providerPid","dspace:eventType"],"title":"ContractNegotiationEventMessageSchema"}}}}}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{"status":{"type":"string"}},"example":{"status":"string"}}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

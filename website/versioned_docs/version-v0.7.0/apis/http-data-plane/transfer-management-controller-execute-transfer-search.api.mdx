@@ -1,0 +1,72 @@
+---
+id: transfer-management-controller-execute-transfer-search
+title: "Proxy a request"
+description: "This endpoint is used if the HTTP Data Plane needs to serve as a proxy."
+sidebar_label: "Proxy a request"
+hide_title: true
+hide_table_of_contents: true
+api: eJyNVMlu20AM/ZUBz6oUpD3pFmRpA3QxECOXwAjoEWVNIM1Mh1ScwPC/F5TkpXZQ1BcZQ/I9Lo/cQEVsk4vigocS5o1jQ76KwXkxjk3PVBlXG2nIfJvPZ+YGBc2sRU/GE1VsJBim9EoG2aCJKby95wYyCJESKux9pcAJPdeUfqDHFXXk5Tp4SaFtKT3TG9leaOfzzITJNpBBxIQdCSWG8mkDHjuCElwFGST63btEFZSSesrAafoRRcNOappgjavIi6sdJciAbUMdQrkBeY+KypKcX8F2m+2JJrj/p5qhNCbUJpEl9+r8ymCMrbNDH/5JulAajsEzsdq/XHzWz9/wdyEtXVWRQtnghbyo0xFH8cLquTlnCssXsqI9TToZcSPPWOlZPhmwoPT8ocmG6jjG992Skho6YsYVnbNuM6CUQvqw3Uf9fRrz2bNPXIsMxEmrYbcKcyMBtvrLgMn2ycn7oI+AvTSXCmNHcUXV6XOFgsM/WGifBVcqJzhS8kGVytWRNEFFe6RDaaCEAqMrur1vIZOyuNi4altMMi426r7VKnQvBu0uDpk+6GTG5u/yPbRrfMigbsN6cInIvA6pGmca4hjYiMR9Vc9YdYMkP3rNTl4PvTj1P1jGzi4JE6W9ljRgetrZ7kLqUKCExxlkuxIU9GwvHim52uGyJTNLxORlUOtwQajSE2JD1/VeVUxmSbIm8kbWwTjPgt4S61rpEZoma4ZU80E/ztdhaOKkkfnD19NbdX4U9ND9iuSvZveGI1lXTytkuAlrHrh2h3BPfoKaQwY64BFyWkq0upTbDFpnyTMdtgyuItqGzGV+ARn0qZ3axWVRrNfrHAdzHtKqmGK5+H5/ffvz4fbTZX6RN9K1Opw/CeT+fQ==
+sidebar_class_name: "search api-method"
+info_path: docs/apis/http-data-plane/tsg-http-data-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Proxy a request"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"search"}
+  path={"/api/management/transfers/{id}/execute/{path}"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+This endpoint is used if the HTTP Data Plane needs to serve as a proxy. 
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"id","required":true,"in":"path","description":"Transfer identifier","schema":{"type":"string"}},{"name":"path","required":true,"in":"path","description":"Path of receiving application","schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string"},"status":{"type":"string"},"code":{"type":"number"},"message":{"type":"object"},"error":{"type":"string"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

@@ -1,0 +1,72 @@
+---
+id: data-plane-controller-delete-dataset
+title: "Delete dataset"
+description: "Deletes a dataset from the specified data plane."
+sidebar_label: "Delete dataset"
+hide_title: true
+hide_table_of_contents: true
+api: eJy9Vk1vGzcQ/SvEnNqAkQy3p70ZsRIYSBOjdtKDIQgjcqRlzCUZctaqsNj/XpC7+ogkF2gO1UUCh/P15vGNOtCUVDSBjXdQwS1ZYkoChUbGRCxW0TeCaxIpkDIrQ7qYRLDoaAISfKCI2f1O5wDIeJ9N77zj6K2luNAl6O0QECQEjNgQU0xQPXXgsCGowGiQEOl7ayJpqDi2JMHkogJyDRKSqqlBqDrgbcgeiaNxa+h7uQ8yVn3387Hm2TEF7xKlbL++uspfJzCN4AydaZFapSilVWvtFnoJv19yunMvaI3eI2s0Oc6IxsHlt3OX9z4ujdbkQILyjslxvoQhWKMK6NNvKd/szjvyy2+kCtwxj4jN0M8A1FnfEhIjt+miSXl97OPaZjkU3VBKuKbzrL0EitHHi9M6mszTUM8++5hrLoEN2+w2y2Fu2UOfPxISqTYa3hbqeGy5vs5h1EC3wsoF6sbsINsfZtjLL5jnITOuM/3KKMX9cJ4b4tpnHg+TLWTlGiqYYjDTHOJtiTHtjO6n4ySn3Z52fW6F4svA7fmh3Ic8nmECu6IPmA0HElbWb8qVgCltfNTDYH0YHC/0WP2nxqvXDAO0S8JIcU+mfH882tne+9ggQwVf70Huyq+ZA8gT5n6laFYGl5bEfaREjgtdhSPSpAV7oXzTtC7TmMSSeEPkBG+8MC4xOkVJ+FURnrHmneLkSo1b+QLgSJLHhw9iFJxxlqf1PNYmic+B3M393U7KhhckUu03qWQip4M3jvepf4g5EX/4xDvT4S5GEpEs8tBXNhZ9CKhy85698lYKTEcSutyWezNlTUgk/vLx2bi1+BB9Gw7eaSI+c03xJFlqQ/CRzctxFexFg8/ZGKnELiqt0IklCdT6UJxCRuvXUqDTp27I4sudMI4posropBKC85VgUdFEiMXizSfP9GaxqMQPsGpaGWcKpiYJ57kEcmPqJQltIim2W2GNeyYtNoZrgSIZt7YnYO9pMBEgIb+nYY4juVFlIewlWKPIJTooG9wEVDWJ68kVSGijHRmaqul0s9lMsJgnPq6no2+afrx7N/v0MHt7Pbma1NzYwrHgEzfojiIPy3Gn36cU6w4K/TNrdHxMTH/zNFg0LmtoKb8bNegJMJicda9CIKEqa/NQUnXYgHMJtU+cHbtuiYm+RNv3+fh7S3E76NMLxvJKi5xqk/JvDdUKbaJ/afCXP0cJ/1W8Vvt4iG6bB4i2pWF8z7Qdtn1e2/9jxgMw/byXUBPqLHZP3Wi/UYoCH3mebdn+eEHczj7OHmcgIYv3JTHf76bucmHnwi1eUeddB2UTFNguBtwtjYWKVP5aoE1733VEx4vi18/7vv8HACZ2OA==
+sidebar_class_name: "delete api-method"
+info_path: docs/apis/control-plane/tsg-control-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Delete dataset"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"delete"}
+  path={"/api/data-plane/{id}/dataset/{datasetId}"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Deletes a dataset from the specified data plane.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"id","required":true,"in":"path","schema":{"type":"string"}},{"name":"datasetId","required":true,"in":"path","schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"Dataset deleted successfully"},"400":{"description":"Invalid dataset identifier"},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string"},"status":{"type":"string"},"code":{"type":"number"},"message":{"type":"object"},"error":{"type":"string"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

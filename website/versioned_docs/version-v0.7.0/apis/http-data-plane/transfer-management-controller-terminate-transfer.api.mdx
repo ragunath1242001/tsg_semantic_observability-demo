@@ -1,0 +1,72 @@
+---
+id: transfer-management-controller-terminate-transfer
+title: "Terminate a transfer by ID"
+description: "Terminate a transfer by ID"
+sidebar_label: "Terminate a transfer by ID"
+hide_title: true
+hide_table_of_contents: true
+api: eJy1VU2P2zYQ/SvEnFqAtRZuT7otspt2gbYxuttcDMMYS2OLqUQy5DiuIei/F0N9eddOUQSoL7Y5nO/3HltwngKycfaphBxeAtq4p/AbWjxQQ5bfOcvB1TWFLVNojEWm8RZo8BiwIaYQIV+3YLEhyMGUoCHQ56MJVELO4UgajIUcPHIFGkqKRTBe8l5kVaYky2ZvUuhYVNQg5C3w2UvUyMHYA3SdnhIVrqSvpfp8pHD+j3ECYXT22yNtxDN6ZyNFsS/vlvL1uk3oNPx09+O14b0LO1OWJAUUzjJZlkvofW2KtJzsk5SXt9cluN0nKlg2EWSVbPoC+r6uCtUQGfkYb5rSMGeDPTY7CmJoKEY80HXWTgOF4MLN4V7Mct3XM2Ufcm00sOFa3B4lzAM76OSjIVJxDIbPCVUOj1wtJUzRo9HXaGlbImP6BRtZAONBQAgPyKhWcq5mGEuuN6Ab0axQ8QjA3Vk9PYB0zJUTQngX03AFtjlk6E3WTEGz0S9mrSm7bCKIdErhS8+KzdzNs2yvX9DY0zzS/kDDvnandMVjjCcXyn7vzveOFbOfOt9i2SSI3jrVb07neb29P1v66e8IA4UJb+IwHI229y40yJDDxxXosQUJekXujxTM3uCuJrUKFMlyQrSyRCWVip0qXNMcrSCd1I74RGQVn5wyNjLagqJye8UVqWH7KpW6SBgzdu/SEAccvTz/rH55eVmpGQXXclOZqD54sverJxU9FWY/0EzFyp1iykW29M5YnpK/iboADbLggdo9cbEQ4nYaalOQjTQzEe49FhWp5eIONBxDPYwr5ll2Op0WmMwLFw7Z4BuzX5/ePf7+/PjDcnG3qLipU8MCyAbtReR/BfKrziesMf3Nma/RWKFwqqYdML4G9EYYMFNHw4Rz0JAncZ+hvtFQCUnyNbTtDiP9Gequk+NeNoXApYkCgBLyPdaRrsqaRA+++2MQje/VjKvX5f5F51n5v2B9pF5b/5c008MwJ9rIn5AQ/e3N3X7ybhYyHKI9X5YxFmhK6DadhoqwFMqu28FwXxTk+cLl6jmRTiahW314fgENIkK3RGmS4PZ2PTf0R31NY8bSk6alxd0MOcrftgiUhoR1nHwPAS1vk1+36bruH6/5B6s=
+sidebar_class_name: "post api-method"
+info_path: docs/apis/http-data-plane/tsg-http-data-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Terminate a transfer by ID"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/management/transfers/{id}/terminate"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Terminate a transfer by ID
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"id","required":true,"in":"path","description":"Transfer identifier","schema":{"type":"string"}},{"name":"code","required":true,"in":"query","schema":{"type":"string"}},{"name":"reason","required":true,"in":"query","schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"202":{"description":""},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string"},"status":{"type":"string"},"code":{"type":"number"},"message":{"type":"object"},"error":{"type":"string"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

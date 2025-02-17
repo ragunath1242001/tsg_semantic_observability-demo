@@ -1,0 +1,72 @@
+---
+id: transfer-management-controller-terminate-transfer
+title: "Terminate a transfer process"
+description: "Terminate a transfer process"
+sidebar_label: "Terminate a transfer process"
+hide_title: true
+hide_table_of_contents: true
+api: eJytVttuGzcQ/ZXBPLXBRjL8uG+u7QYCGtuwnfTBEIQRd6RlzCUZctaKIOy/F+Re5FtaFK1fvCDneubwjA7oPAcS7eyiwhLvA9m44fCZLG25YSvnzkpwxnBYCYdGWxIerbBAT4EaFg4Ry4cDWmoYS/TBKY5xUWGBgb+3OnCFpYSWC9Q2GZDUWGDFUQXtU3os8ab3gsUFFhhVzQ1heUDZ+xQzStB2i1237GNylN9ctU8Wr1MoZ4WtpCvy3miVG5x/iynN4W1ot/7GSlI3IcEhmmO6Va7idwpI6WkI9bq2AvkHNd7w0R/vL28/L67O7hfXV6vz64tLPAbA2/wBGxdgRDdh0aW/ZBa9s7Gv5vTkJP17Cdk4icmbK4itSjBuWmP2+B/AeNZJFJI2pkb72H2BXYGRVRu07PPwHbVSn2L5kHMGZ7whyyuqGm2HQqbDioTyFy7TQIW2iUBTPxGODMTla6Lcj80CgYwIDJzDAhuW2iU2exfzVBPZSpyT1/NmCjsfPeP8MPG1m09AJg5yeOqZvTy2epcA60cyNnzErj8ocGPcLpt4inHnQtVD7fzIrDf4lP8KtPJnF/1Y1kyBwzTeZD8cjXe/u9CQYIlfb7AYy69F/JtX+ZWD3mhaG4abwJGtZAKBZa64AnGgXNO0NhGLYc2yY7YgOwfaRiGrOILbgNQMQ82QS53l55JoeHt8zZf/y+tJIrNxeS5aTI5y9wkGJYObDNQbTtU6wrVne3azgOhZ6c3wVCDWbhdzA2wr77SVqaMXMWfw2UUZr462FBgCm/w4xeXLCxKKnlTC1IlTzhRAcczLFaz32e5SGe0jw58uPGq7hU/Btf7oHWdwLTWHV8li670Lop+eVyEOGnpMl4Fz7EQaUGRhzUBVdSxOkZBx2wLIVq/dSODLArQVDqQSOjGHkGTiDSmeAaxWH66c8IfVqoQXsFa80VZnTHUE6yQHskPqNUOlAysxezDaPnIFOy01EERtt+YV2BO7ZoAFpmfaz3F4M6SS4nUFGq3YxsyoYTmdeVI1w+nsBAtsgxmIH8v5fLfbzShfz1zYzgffOP9jcX55dXf58XR2MqulMZm6SV0ass8i/4MuvSDcpBnCP2TuDelM3FzPYZCsBySvk6AdtbDASbawwPL5oj0q17LAOklf+YCHw5oifwmm69Lx95bDvtezJwr5VWfprnRM3xWWGzKR39Q6LRH85XZYtr/Ci339bjfDIdm0iJ7ItNxP6JH3L34ldMuuwJqpSqL1cBjuz/ukH+9TlKP/my3WFaPHmVLs5W9tl8/2w8313X1SxOFnRNMrTqBdEhna9bW6DEKW7Xx2QEN229I22fYxExuS8r+3CaaleHgfjbeqDz+R9hG2vEZy0+8GHDfOSgWu2IomEyffbSArq+zXLbuu+wuio4J8
+sidebar_class_name: "post api-method"
+info_path: docs/apis/control-plane/tsg-control-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Terminate a transfer process"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/management/transfers/{processId}/terminate"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Terminate a transfer process
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"processId","required":true,"in":"path","description":"Process ID","schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={{"required":true,"content":{"application/json":{"schema":{"type":"object","properties":{"code":{"type":"string"},"reason":{"type":"string"}},"example":{"code":"TERMINATION_CODE","reason":"Reason for termination"}}}}}}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"Transfer terminated successfully","content":{"application/json":{"schema":{"type":"object","example":{"status":"success"}}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

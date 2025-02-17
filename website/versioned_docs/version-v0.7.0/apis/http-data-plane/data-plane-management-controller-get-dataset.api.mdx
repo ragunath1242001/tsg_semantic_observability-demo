@@ -1,0 +1,72 @@
+---
+id: data-plane-management-controller-get-dataset
+title: "Get dataset"
+description: "Retrieve a specific dataset by id."
+sidebar_label: "Get dataset"
+hide_title: true
+hide_table_of_contents: true
+api: eJytVU2P4zYM/SsCTy2gxsG0J98GO7PTAfoR7KR7GQQBIzGxtraklehJA8P/vZDsxNkks+ihpxikSD6Sjy8daIoqGM/GWSjhE3Ew9EYCRfSkzNYooZExEovNQRg9AwnOU8AU8KyhhAdkXNRo6Xe0uKOGLH9wloOrawrrHfHDEA8SPAZsiClEKF87sNgQlGA0SAj0tTWBNJQcWpJgEhqPXIGEqCpqEMoO+OBTRORg7A76fpUCo3c2Ukz+u/k8/XzbE0hQzjJZTj70vjYqwy++xPSguy7gNl9IZcQhNcsmp+8lsOGaxqYjpUa3JgHpewm/zH++Lv7RhY3Rmuz/hmIc29UwJERGbuNNl3L6PMa2zYZCcjQUI+7oumovgUJw4dbYz9f1OuA5VR9rraZZPaY0D+zymBJMUm0wfMgccNhydZfSqIE0PlFpnTiXv2CVlsy4S5TJYxeZbGJiW6rVEFcusXE3Eo0rKKFAb4rm9LAYmRyLzug+QabwNpBxNcF6SWsYJn0EN81mMEjY1m6fn3iMce+CHhbo/BBYMftTC2vUTabzLau8sE6NX76fPMMYN4SBwok4KWA0HX0fXWiQoYTPC5DHFlJSkBcs/UzBbA1uahKLQJEsZ2oKS6RJC3ZCuaZpbaIsiQ3xnsgK3jthbGS0iqJwW8EViXGNIkOdZbIYu3V5iCMhli9P4tflciGmdV4hWlYmij892fvF80mKBlCxcvuYa5HV3hnLp+IXWZNYpQV/owOoeLjl2iiykaaTgnuPqiJxN5uDhDbU47hiWRT7/X6G2T1zYVeMsbH47fnD4x8vjz/dzeazips6N+xd5AbtWeYn4qOOXrbaTbrw3+R3XCTTP1z4Go1Nt5rRdiPxXwG9AQkT9VPRkfwgoTQ6HU3lIqfHXbfBSH+Fuu+T+WtL4TDcxBuGzIp8qtrE9K2h3GId6Ttt/PBplIcfxXt4RyPaQ9oR1i0NG/qbDsNfQr/qJVSEOnH8tRsd90qR57OQKyHtz9Xg6XEJEtLR3jrik/Z0t+HcuFfx3k0ekWcNgF6+k/IoF2sVSJNlg3U8xe4CWl7nuH7V9/2/FUuhQg==
+sidebar_class_name: "get api-method"
+info_path: docs/apis/http-data-plane/tsg-http-data-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Get dataset"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/management/datasets/{id}"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Retrieve a specific dataset by id.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"id","required":true,"in":"path","schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{},"title":"DatasetConfig"}}}},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string"},"status":{"type":"string"},"code":{"type":"number"},"message":{"type":"object"},"error":{"type":"string"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

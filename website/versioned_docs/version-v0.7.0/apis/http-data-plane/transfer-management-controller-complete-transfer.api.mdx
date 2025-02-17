@@ -1,0 +1,72 @@
+---
+id: transfer-management-controller-complete-transfer
+title: "Complete a transfer by ID"
+description: "Complete a transfer by ID"
+sidebar_label: "Complete a transfer by ID"
+hide_title: true
+hide_table_of_contents: true
+api: eJx9VU2P2kgQ/SutOm2kXjwie/JtNDPZjJRs0A6bC0KosAvcid3d6S6HRZb/+6raxjADWS6gqq7P917RgfMUkI2zzyXksAxo447CZ7S4p4YsPzjLwdU1hU3hGl8T0+kRaPAYsCGmECFfdWCxIcjBlKAh0I/WBCoh59CSBmMhB49cgYaSYhGMl7IXRZUpybLZmZQ6FhU1CHkHfPSSNXIwdg99v5bk0TsbKYp/fjeXr9dJodfwx937a8cHF7amLMmChsJZJsvyCL2vTZE2kX2L8rK7bsFtv1HBMneQvbEZGhjGvmpUQ2TkNt50Fa68jLFts6UgjoZixD1dV+01UAgu3FrJ5bpXQz9T9bHWWgMbriXsSdI8soNePhoiFW0wfEwYOmy5mkuaYoDe12hpUyJj+gVrAYBxL5DDIzKqhdjVmTNS6/XSH0bqKFR8Qnt7VM+PIANz5YR83sW0W+FIDhl6kzVTzuwUF7POlH12IqPMSeHnwMD1eZYXwW6A5zTReaGDQcOudof0xGOMBxfKAXXnh8CK2U9zb7BsEodvWfUb63lbb9+fPcPut4SBwsQ2CRhNJ98HFxpkyOHrAvRpBEl6JaSvFMzO4LYmtQgUyXLis7JEJZWKnSpc07RWeE5qS3wgsooPThkbGW1BUbmd4orUiL1Krc4Sw4zdubTEkUXLlz/Vx+Vyoc4cuJZ2ZaL64sneL55V9FSY3SgyFSt3iKkW2dI7Y3kq/ibrDDQIwKOwB9liIbLtNdSmIBvprEO491hUpOazO9DQhnpcV8yz7HA4zDC5Zy7sszE2Zp+eH57+enn6fT67m1Xc1Glg4WOD9iLz/9H41eAT1Zj+5czXaKzoNzXTjQxfAXoj/D/rRsPEctCQpzs6EX2toRKF5Cvoui1G+ifUfS/mHy2F40D/nxgSAZKUSxPldwn5DutIVz1O5w9++3s8H+/U7Wt8c5zRiPYoCGHd0oDPdzoO/wL9utdQEZbC8FU3Ou6LgjxfhFzdXrkw01lYfHlZggbR7C0NT/equ93PDbmqX0ny1Ho6AdDrX6Q8XYtNESgtCes4xe4DWt6kuH7d9/1/6ROPNA==
+sidebar_class_name: "post api-method"
+info_path: docs/apis/http-data-plane/tsg-http-data-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Complete a transfer by ID"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/management/transfers/{id}/complete"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Complete a transfer by ID
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"id","required":true,"in":"path","description":"Transfer identifier","schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"202":{"description":""},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string"},"status":{"type":"string"},"code":{"type":"number"},"message":{"type":"object"},"error":{"type":"string"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

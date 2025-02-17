@@ -1,0 +1,72 @@
+---
+id: signature-management-controller-validate
+title: "Validate signed document"
+description: "Validates a document that includes a `proof` property"
+sidebar_label: "Validate signed document"
+hide_title: true
+hide_table_of_contents: true
+api: eJztV91v2zYQ/1cOfNoKNQ6yPgnDgK7NhgxbEzTZ+pAF7lk6W2wpUiVPcQxD//twpCzbip0ORR82oC/+4PG+fsfj77hWJYXC64a1sypXf6HRJTIFQChd0dZkGbhCBm0L05ZR8L7xzs3fQ+NdQ55XKlPyA8XGRalyda0XFrn19AdaXJAYeeUse2cM+el970NlqkGPNTH5oPLbu0x5+tRS4J9duVL5Ov7VnkqVs28pU4WzTJZFhE1jdBFdTj4EiX2tQlFRjfKLVw2pXLnZBypY/KRINQWRxvBf99n9y+3yw1m6nKv89nMKSTrsCuy1XahMkW1rld+q34Kz72g2oHR2enaqMvUaGS8s08JrXl1Fp3ddltxftb5x4YDVrst2YLpN0pHSXaZYsxGtZLbLBjPoPUoBNVMdPo/Ffz+17m6sl+o33jnUX7ZvJJvj/zadQ9V1yVhonA0JgbPTU/nabxv1dc/mt8P2P0ntCw6bKLw4/eHxGfrF+ZkuS7Jf7zBZrA+lmqnAyG04KCpcuatj23pGXgQ1hYALeuy1yxR57/znQY3xDN57XztYnYuZ1+wGmF48huktBdf6gsA6hrlrbfkNr4iXhElFK4c+XhsOW67OxMwSjSGetoGmH2klhvqVOtJzWrzrxDAuhInVlrdh6K4gnmviygnFNy5E/JArlasJNnpSD0qTsFGa7JB9IH8/MP0m1GspTUJ/E/AWr7SQqblxy3Q7YghL58tUVNckxT6be03LaakluvHKwYzzQ4vZI7Ty4/hF+25pp4WnkixrNGHkfSzd10VjntAdS8dZHPV8RD7WP+r9iHzQ1yG0dFj1sWg/48ZTIMuxP8f57sv6My09/HY7Fp4/YN0YOjjGDdzZn58j/LBPBNve6zKl7dxFA32D3Vz/Cu9ihCob3UM3FcFWDFoG4+vrC0gJpZm5QAsREEBbQmDnCe7J67nGmSHYQSluKDwhE+zBAOxgRtAGKmGpudIWSmSE0GBB4eTHmYfJT+nzbwsAIHEttzHpmkpAhro1rJ+zJg8lNcatBLSQRZvgLMF3zkPtPH2/lwEWHAADsG8DA9qich7mzsvzYAgjBq9tqe9bNL16iLsIiwrcHLgiaNCzLnSDlgNoG9e2Nk7gUpZ0gAYXFIUFWfaDwf4VImiGPeSW2hiBqJBtZdSUCSBF1lcHDVeuXVSgIypCHZt7NtnlijwBmiWuguygByzYrCIy0aeXNHbdattjkMJ/XIjp9Nkbx/RsOs3hRhK7bMi+vLqAkubaaqnuJhYt7FVKLLHYpfYUvRttP/Z1B4Sg7cIMKWkbGK0ApzIl9+reJIqFdESXKaMLsmngSeymXjZYVARnJ9ILrTcqVxVzE/LJZLlcnmAUnzi/mPS6YfL7xavzN9fnz89OTk8qrk0kKmGAGu2O5c30DHL9Uzk8IMe9s97y9Rc/OPsWZ3rgSWNQW6HVmM26J6VbhY1WmdrSknDQ5i4Q0DbUdJepSugsv1Xr9QwD/elN18nyp5b8KhHWPfrYtfKvy1RFWJKPRPuRVipXr1JKz2/S4HiPpo0j73gckXE4abwsCmr4yb27jHt1eX2jMjXr38Z1nDuUx6XK4mesvWv6i3Wd1tbKoF20cQ5RyabUToj1ENEOM8N2ZLernQhHvAqPCRRGZAlPkCE8QXbwJJXBk0QFx7gIjrNN1hclThV7b5Y9ADYDyIjhku7Co+Vp1JOHQfcPRLQqlA==
+sidebar_class_name: "post api-method"
+info_path: docs/apis/wallet/tsg-wallet
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Validate signed document"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/management/signature/validate"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Validates a document that includes a `proof` property
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={{"required":true,"content":{"application/json":{"schema":{"type":"object","properties":{"proofDocument":{"type":"object","properties":{"proof":{"oneOf":[{"type":"object","properties":{"type":{"type":"string","enum":["JsonWebSignature2020","DataIntegrityProof"]},"proofPurpose":{"type":"string"}},"required":["type","proofPurpose"],"title":"Proof"},{"type":"array","items":{"type":"object","properties":{"type":{"type":"string","enum":["JsonWebSignature2020","DataIntegrityProof"]},"proofPurpose":{"type":"string"}},"required":["type","proofPurpose"],"title":"Proof"}}]}},"required":["proof"],"title":"ProofDocument"}},"title":"ValidateRequest"}}}}}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{"proof":{"oneOf":[{"type":"object","properties":{"type":{"type":"string","enum":["JsonWebSignature2020","DataIntegrityProof"]},"proofPurpose":{"type":"string"}},"required":["type","proofPurpose"],"title":"Proof"},{"type":"array","items":{"type":"object","properties":{"type":{"type":"string","enum":["JsonWebSignature2020","DataIntegrityProof"]},"proofPurpose":{"type":"string"}},"required":["type","proofPurpose"],"title":"Proof"}}]}},"required":["proof"],"title":"ProofDocument"}}}},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string"},"status":{"type":"string"},"code":{"type":"number"},"message":{"type":"object"},"error":{"type":"string"}},"required":["name","status","code"],"title":"ErrorDto"}}}},"404":{"description":"Resource not found","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string"},"status":{"type":"string"},"code":{"type":"number"},"message":{"type":"object"},"error":{"type":"string"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      
