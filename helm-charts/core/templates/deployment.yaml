@@ -20,6 +20,11 @@ spec:
       {{- if .Values.serviceAccount.create }}
       serviceAccountName: {{ include "tsg.serviceAccountName" . }}
       {{- end }}
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
       containers:
         - name: {{ template "tsg.name" . }}
           image: "{{ .Values.image.repository }}:{{ tpl .Values.image.tag . }}"
@@ -47,6 +52,13 @@ spec:
             httpGet:
               path: /health
               port: {{ .Values.config.server.port | default 3000 }}
+          startupProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.config.server.port | default 3000 }}
+            initialDelaySeconds: 2
+            periodSeconds: 2
+            failureThreshold: 60
           volumeMounts:
           - name: {{ template "tsg.name" . }}-config
             mountPath: "/app/config.yaml"
