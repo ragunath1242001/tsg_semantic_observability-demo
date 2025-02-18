@@ -1,50 +1,51 @@
-FROM node:22-slim AS base
+# Build image
+FROM node:22-slim AS build
+# Install pnpm
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable
-RUN corepack prepare pnpm@9.15.0 --activate
+WORKDIR /app
+RUN corepack enable && corepack prepare pnpm@9.15.0 --activate
 
-FROM node:22 AS build
-WORKDIR /app 
-ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable
-RUN corepack prepare pnpm@9.15.0 --activate
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY apps/wallet-api/package.json apps/wallet-api/
-COPY apps/wallet-ui/package.json apps/wallet-ui/
-COPY libs/common-api/package.json libs/common-api/
-COPY libs/common-dsp/package.json libs/common-dsp/
-COPY libs/common-dtos/package.json libs/common-dtos/
-COPY libs/common-ui/package.json libs/common-ui/
-COPY libs/wallet-dtos/package.json libs/wallet-dtos/
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
-
+# Fetch and install dependencies
+COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm fetch
+COPY libs libs
 COPY apps apps
-COPY libs libs 
-RUN pnpm run --filter "common-dsp" build 
-RUN pnpm run --filter "common-dtos" build
-RUN pnpm run --filter "common-api" build 
-ARG TSG_MODE=development
+RUN pnpm install --frozen-lockfile --offline -r
+
+# Set build arguments, TSG_STATIC used during compilation of the UI 
+ARG TSG_MODE=development 
 ARG TSG_VERSION=0.0.0
 ARG TSG_STATIC_MODE=${TSG_MODE}
 ARG TSG_STATIC_VERSION=${TSG_VERSION}
-RUN pnpm run --filter "./libs/common*" -r build 
-RUN pnpm run --filter "./libs/wallet*" --parallel -r build
-RUN pnpm run --filter "./apps/wallet*" --parallel -r build
-RUN pnpm deploy --filter wallet-api --prod /prod/wallet-api
-COPY apps/wallet-api/config.yaml /prod/wallet-api
-RUN pnpm deploy --filter wallet-ui --prod /prod/wallet-ui
 
-FROM base AS deploy 
+# Build all libs
+RUN pnpm run --filter "./libs/*" -r build
+
+# Build API and UI
+RUN pnpm run --filter "./apps/wallet*" --parallel -r build
+
+# Package production dependencies and build of API
+RUN pnpm deploy --filter wallet-api --prod /app/prod/wallet-api
+
+
+# Deploy image
+FROM node:22-slim AS deploy
 WORKDIR /app
-COPY --from=build /prod/wallet-api .
-COPY --from=build /prod/wallet-ui/dist wallet-ui/
+# Run as non-root user
+RUN chown -R node:node /app
+USER node
+
+# Copy API and UI
+COPY --chown=node:node --from=build /app/prod/wallet-api .
+COPY --chown=node:node --from=build /app/apps/wallet-ui/dist wallet-ui/
+
+# Set exposed port and enviornment variables. TSG_MODE and TSG_VERSION are used at runtime by the API
 EXPOSE 3000
-ARG TSG_MODE=development
+ARG TSG_MODE=development 
 ARG TSG_VERSION=0.0.0
 ENV TSG_MODE=${TSG_MODE}
 ENV TSG_VERSION=${TSG_VERSION}
 ENV NODE_OPTIONS="--max-old-space-size=300"
 ENV EMBEDDED_FRONTEND="/app/wallet-ui"
-CMD ["npm", "run", "start"]
+CMD ["node", "./dist/app.js"]
