@@ -4,11 +4,10 @@ import {
   HttpStatus,
   Query,
   Redirect,
-  Req,
-  Res
+  Req
 } from "@nestjs/common";
 import { DisableOAuthGuard } from "./oauth.guard.js";
-import { Request, Response } from "express";
+import { Request } from "express";
 import { Client } from "./roles.guard.js";
 import {
   ApiExtraModels,
@@ -74,7 +73,7 @@ export class AuthController {
     description: "Redirects user to the correct authorization server"
   })
   @Redirect(undefined, HttpStatus.FOUND)
-  login(@Res() res: Response) {
+  login() {
     if (!this.authConfig.enabled) {
       return {
         url: "/"

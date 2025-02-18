@@ -53,7 +53,7 @@ const hideDialog = () => {
 
 const editClient = (data: ClientDto) => {
   client.value = { ...data };
-  // @ts-ignore
+  // @ts-expect-error Grants should be annotated with label and value
   client.value.grants = client.value.grants.map((grant) => ({
     label: grant,
     value: grant
@@ -72,7 +72,7 @@ const createClient = async () => {
       life: 3000
     });
     hideDialog();
-  } catch (error) {
+  } catch (_) {
     toast.add({
       severity: "error",
       summary: "Error",
@@ -92,7 +92,7 @@ const updateClient = async () => {
       life: 3000
     });
     hideDialog();
-  } catch (error) {
+  } catch (_) {
     toast.add({
       severity: "error",
       summary: "Error",
@@ -107,7 +107,7 @@ const saveClient = async () => {
 
   if (client?.value.clientId?.trim()) {
     if (client?.value.grants) {
-      // @ts-ignore
+      // @ts-expect-error Grants should be strings
       client.value.grants = client.value.grants.map((grant) => grant.value);
     }
     if (client.value.id) {
@@ -131,7 +131,7 @@ const deleteClient = async () => {
     });
     deleteClientDialog.value = false;
     await getClients();
-  } catch (error) {
+  } catch (_) {
     toast.add({
       severity: "error",
       summary: "Error",
@@ -149,7 +149,7 @@ const getClients = async () => {
   try {
     const { data } = await http.get("/clients");
     clients.value = data;
-  } catch (error) {
+  } catch (_) {
     toast.add({
       severity: "error",
       summary: "Error",
@@ -283,7 +283,7 @@ onMounted(async () => {
           <MultiSelect
             id="roles"
             v-model="client.roles"
-            optionLabel="label"
+            option-label="label"
             placeholder="Select Roles"
             fluid></MultiSelect>
         </div>
@@ -294,7 +294,7 @@ onMounted(async () => {
             id="grants"
             v-model="client.grants"
             :options="clientGrants"
-            optionLabel="label"
+            option-label="label"
             placeholder="Select Grants"
             fluid>
           </MultiSelect>

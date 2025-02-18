@@ -163,24 +163,24 @@ onMounted(async () => {
       </template>
       <template #content>
         <form class="flex flex-col gap-4" @submit.prevent="addService">
-          <FormField label="Service ID" v-slot="props">
+          <FormField v-slot="props" label="Service ID">
             <InputText
               :id="props.id"
-              class="w-full"
               v-model="serviceForm.id"
+              class="w-full"
               :placeholder="`${userStore.user?.didId}#`" />
           </FormField>
-          <FormField label="Service Type" v-slot="props">
+          <FormField v-slot="props" label="Service Type">
             <InputText
               :id="props.id"
-              class="w-full"
-              v-model="serviceForm.type" />
+              v-model="serviceForm.type"
+              class="w-full" />
           </FormField>
-          <FormField label="Service Endpoint" v-slot="props">
+          <FormField v-slot="props" label="Service Endpoint">
             <InputText
               :id="props.id"
-              class="w-full"
               v-model="serviceForm.serviceEndpoint"
+              class="w-full"
               placeholder="https://..." />
           </FormField>
           <FormField no-label>

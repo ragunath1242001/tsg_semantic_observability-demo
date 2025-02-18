@@ -47,7 +47,7 @@ const router = createRouter({
       component: LoginVue
     }
   ],
-  scrollBehavior(to, from, savedPosition) {
+  scrollBehavior(_to, _from, _savedPosition) {
     return { top: 0 };
   }
 });

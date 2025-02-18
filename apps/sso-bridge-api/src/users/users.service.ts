@@ -3,7 +3,7 @@ import { Repository } from "typeorm";
 import { OauthUser } from "../model/user.dao.js";
 import { AppError } from "@tsg-dsp/common-api";
 import { InjectRepository } from "@nestjs/typeorm";
-import { compare, hash, hashSync } from "bcrypt";
+import { compare, hash } from "bcrypt";
 import { RootConfig } from "../config.js";
 
 @Injectable()

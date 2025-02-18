@@ -49,71 +49,56 @@ describe("OAuthService", () => {
       ]
     }).compile();
     server = setupServer(
-      http.get(
-        "https://example.com/.well-known/openid-configuration",
-        ({ request, params, cookies }) => {
-          return HttpResponse.json<OpenIDConfiguration>({
-            issuer: "https://example.com",
-            authorization_endpoint: "https://example.com/authorize",
-            token_endpoint: "https://example.com/token",
-            userinfo_endpoint: "https://example.com/userinfo",
-            introspection_endpoint: "https://example.com/introspect",
-            device_authorization_endpoint:
-              "https://example.com/device_authorization",
-            revocation_endpoint: "https://example.com/revoke",
-            jwks_uri: "https://example.com/.well-known/jwks.json",
-            response_types_supported: ["code"],
-            response_modes_supported: ["query"],
-            id_token_signing_alg_values_supported: ["RS256"],
-            scopes_supported: ["openid"],
-            grant_types_supported: [
-              "authorization_code",
-              "refresh_token",
-              "client_credentials"
-            ],
-            subject_types_supported: ["public"],
-            claims_supported: [
-              "aud",
-              "exp",
-              "iat",
-              "iss",
-              "sub",
-              "username",
-              "email",
-              "roles"
-            ]
-          });
-        }
-      ),
-      http.get(
-        "https://example.com/.well-known/jwks.json",
-        ({ request, params, cookies }) => {
-          return HttpResponse.json({
-            keys: publicKeys
-          });
-        }
-      ),
-      http.get(
-        "https://example.com/authorize",
-        ({ request, params, cookies }) => {
-          return HttpResponse.json({});
-        }
-      ),
-      http.post("https://example.com/token", ({ request, params, cookies }) => {
+      http.get("https://example.com/.well-known/openid-configuration", () => {
+        return HttpResponse.json<OpenIDConfiguration>({
+          issuer: "https://example.com",
+          authorization_endpoint: "https://example.com/authorize",
+          token_endpoint: "https://example.com/token",
+          userinfo_endpoint: "https://example.com/userinfo",
+          introspection_endpoint: "https://example.com/introspect",
+          device_authorization_endpoint:
+            "https://example.com/device_authorization",
+          revocation_endpoint: "https://example.com/revoke",
+          jwks_uri: "https://example.com/.well-known/jwks.json",
+          response_types_supported: ["code"],
+          response_modes_supported: ["query"],
+          id_token_signing_alg_values_supported: ["RS256"],
+          scopes_supported: ["openid"],
+          grant_types_supported: [
+            "authorization_code",
+            "refresh_token",
+            "client_credentials"
+          ],
+          subject_types_supported: ["public"],
+          claims_supported: [
+            "aud",
+            "exp",
+            "iat",
+            "iss",
+            "sub",
+            "username",
+            "email",
+            "roles"
+          ]
+        });
+      }),
+      http.get("https://example.com/.well-known/jwks.json", () => {
+        return HttpResponse.json({
+          keys: publicKeys
+        });
+      }),
+      http.get("https://example.com/authorize", () => {
         return HttpResponse.json({});
       }),
-      http.post(
-        "https://example.com/introspect",
-        ({ request, params, cookies }) => {
-          return HttpResponse.json({});
-        }
-      ),
-      http.get(
-        "https://example.com/unknown",
-        ({ request, params, cookies }) => {
-          return HttpResponse.text("", { status: 404 });
-        }
-      )
+      http.post("https://example.com/token", () => {
+        return HttpResponse.json({});
+      }),
+      http.post("https://example.com/introspect", () => {
+        return HttpResponse.json({});
+      }),
+      http.get("https://example.com/unknown", () => {
+        return HttpResponse.text("", { status: 404 });
+      })
     );
 
     server.listen({ onUnhandledRequest: "error" });

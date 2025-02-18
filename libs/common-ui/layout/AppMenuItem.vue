@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { ref, onBeforeMount, watch, onMounted, computed } from "vue";
+import { ref, onBeforeMount, watch } from "vue";
 import { RouteLocationNormalizedLoaded } from "vue-router";
 import { useLayout } from "./composables/layout";
 
-const { layoutConfig, layoutState, setActiveMenuItem, onMenuToggle } =
-  useLayout();
+const { layoutState, setActiveMenuItem, onMenuToggle } = useLayout();
 
 interface MenuItemProps {
   item?: any;
@@ -85,22 +84,22 @@ function checkActiveRoute(item) {
     <a
       v-if="(!item.to || item.items) && item.visible !== false"
       :href="item.url"
-      @click="itemClick($event, item)"
       :class="item.class"
       :target="item.target"
-      tabindex="0">
+      tabindex="0"
+      @click="itemClick($event, item)">
       <i :class="item.icon" class="layout-menuitem-icon"></i>
       <span class="layout-menuitem-text">{{ item.label }}</span>
       <i
-        class="pi pi-fw pi-angle-down layout-submenu-toggler"
-        v-if="item.items"></i>
+        v-if="item.items"
+        class="pi pi-fw pi-angle-down layout-submenu-toggler"></i>
     </a>
     <router-link
       v-if="item.to && !item.items && item.visible !== false"
-      @click="itemClick($event, item)"
       :class="[item.class, { 'active-route': checkActiveRoute(item) }]"
       tabindex="0"
-      :to="item.to">
+      :to="item.to"
+      @click="itemClick($event, item)">
       <i :class="item.icon" class="layout-menuitem-icon"></i>
       <span class="layout-menuitem-text">{{ item.label }}</span>
       <Badge
@@ -111,8 +110,8 @@ function checkActiveRoute(item) {
         severity="danger">
       </Badge>
       <i
-        class="pi pi-fw pi-angle-down layout-submenu-toggler"
-        v-if="item.items"></i>
+        v-if="item.items"
+        class="pi pi-fw pi-angle-down layout-submenu-toggler"></i>
     </router-link>
     <Transition
       v-if="item.items && item.visible !== false"
@@ -123,7 +122,7 @@ function checkActiveRoute(item) {
           :key="child"
           :index="i"
           :item="child"
-          :parentItemKey="itemKey"
+          :parent-item-key="itemKey"
           :child="true"
           :route="route"></app-menu-item>
       </ul>

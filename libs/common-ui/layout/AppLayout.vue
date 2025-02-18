@@ -6,7 +6,7 @@ import AppSidebar from "./AppSidebar.vue";
 import { useLayout } from "./composables/layout";
 import { MenuProps } from "./AppMenu.vue";
 
-const { layoutConfig, layoutState, isSidebarActive, resetMenu } = useLayout();
+const { isSidebarActive, resetMenu } = useLayout();
 
 const props = defineProps<{
   topbar: TopbarProps;
@@ -60,7 +60,7 @@ function isOutsideClicked(event) {
   <app-topbar
     :title="topbar.title"
     :name="topbar.name"
-    :logoUrl="topbar.logoUrl"
+    :logo-url="topbar.logoUrl"
     :user="topbar.user"
     :router="topbar.router"></app-topbar>
   <div
@@ -76,8 +76,8 @@ function isOutsideClicked(event) {
       <router-view></router-view>
     </div>
     <app-footer
-      :logoUrl="footer.logoUrl"
-      :footerText="footer.footerText"></app-footer>
+      :logo-url="footer.logoUrl"
+      :footer-text="footer.footerText"></app-footer>
   </div>
   <Toast />
 </template>

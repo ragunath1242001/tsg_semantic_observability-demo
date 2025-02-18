@@ -114,7 +114,7 @@ export class DidService {
           },
           true
         );
-      } catch (e) {
+      } catch (_) {
         this.logger.debug(
           `Service with id ${service.id} already exists, not overriding`
         );
@@ -204,7 +204,7 @@ export class DidService {
     let existingDidDocument: DIDDocument;
     try {
       existingDidDocument = await this.getDid();
-    } catch (e) {
+    } catch (_) {
       throw new AppError(`DID Document not ready yet`, HttpStatus.NOT_FOUND);
     }
     this.didId = existingDidDocument.id;

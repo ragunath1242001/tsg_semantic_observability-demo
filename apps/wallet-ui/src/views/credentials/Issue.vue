@@ -148,7 +148,7 @@ const validateCredentialSubject = (showToast: boolean) => {
     let credentialSubject;
     try {
       credentialSubject = JSON.parse(credentialForm.value.credentialSubject);
-    } catch (err) {
+    } catch (_) {
       throw Error("Credential subject must be a valid JSON document");
     }
     if (typeof credentialSubject !== "object") {
@@ -244,41 +244,41 @@ onMounted(async () => {
       </template>
       <template #content>
         <form class="flex flex-col gap-4" @submit.prevent="issueCredential">
-          <FormField label="Contexts" v-slot="props">
+          <FormField v-slot="props" label="Contexts">
             <MultiSelect
               :id="props.id"
-              class="w-full"
               v-model="credentialForm.context"
+              class="w-full"
               :options="issuableContexts"
               placeholder="(Optionally) Add JSON-LD contexts" />
           </FormField>
-          <FormField label="Type" v-slot="props">
+          <FormField v-slot="props" label="Type">
             <MultiSelect
               :id="props.id"
-              class="w-full"
               v-model="credentialForm.type"
+              class="w-full"
               :options="issuableCredentialTypes"
               placeholder="Add a Credential type (only if not explicit in credential subject)" />
           </FormField>
-          <FormField label="Target DID" v-slot="props">
+          <FormField v-slot="props" label="Target DID">
             <InputText
               :id="props.id"
-              class="w-full"
               v-model="credentialForm.targetDid"
+              class="w-full"
               placeholder="did:..."
               pattern="did:(web|tdw):.*"
               validation-message="Target DID must be a DID web"
               required />
           </FormField>
-          <FormField label="ID" v-slot="props">
+          <FormField v-slot="props" label="ID">
             <InputText
               :id="props.id"
-              class="w-full"
               v-model="credentialForm.id"
+              class="w-full"
               placeholder="ID"
               required />
           </FormField>
-          <FormField label="Composite ID" v-slot="props">
+          <FormField v-slot="props" label="Composite ID">
             <InputText
               :id="props.id"
               class="w-full"
@@ -288,29 +288,28 @@ onMounted(async () => {
               disabled />
           </FormField>
           <FormField
-            label="Credential"
-            v-slot="props"
-            v-if="!credentialForm.schema || credentialForm.manualCredential">
+            v-if="!credentialForm.schema || credentialForm.manualCredential"
+            label="Credential">
             <MonacoEditorVue
               v-model="credentialForm.credentialSubject"
               :schema="credentialForm.schema"></MonacoEditorVue>
             <Button
-              severity="success"
               v-if="credentialForm.schema"
+              severity="success"
               label="Credential form"
               @click="credentialForm.manualCredential = false" />
           </FormField>
           <FormField
+            v-if="credentialForm.schema && !credentialForm.manualCredential"
             label="Credential Form"
-            :label-width="12"
-            v-if="credentialForm.schema && !credentialForm.manualCredential">
+            :label-width="12">
             <JsonSchemaFormElement
               v-for="(child, key) in parsedProperties"
-              :schema="child"
               :key="key"
+              :schema="child"
               :required="credentialForm.schema.required.includes(key)"
               :name="key"
-              :didId="didId"
+              :did-id="didId"
               @input="
                 ($event) => {
                   credentialForm.credentialSubjectObject[key] = $event;
@@ -319,8 +318,8 @@ onMounted(async () => {
               "></JsonSchemaFormElement>
             <FormField no-label>
               <Button
-                severity="warn"
                 v-if="credentialForm.schema"
+                severity="warn"
                 label="Manual credential"
                 @click="credentialForm.manualCredential = true" />
             </FormField>

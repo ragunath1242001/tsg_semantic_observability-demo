@@ -21,7 +21,7 @@ export class ContextService {
     for (const context of this.config.contexts) {
       try {
         await this.insertContext(context);
-      } catch (e) {
+      } catch (_) {
         this.logger.debug(
           `Context with id ${context.id} already exists, not overriding`
         );

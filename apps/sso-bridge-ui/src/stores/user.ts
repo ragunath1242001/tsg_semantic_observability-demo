@@ -21,7 +21,7 @@ export const useAuthStore = defineStore("auth", {
       try {
         const response = await http.get<{ user: UserDto }>("/auth/user");
         this.user = response.data.user;
-      } catch (error) {
+      } catch (_) {
         this.user = false;
       }
     },

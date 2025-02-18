@@ -94,21 +94,17 @@ export const useDspStore = defineStore("dsp", {
       }
     },
     async getTransfers() {
-      try {
-        const response = await http.get("management/transfers");
-        const transfers = response.data;
-        const ctaTransfers = response.data.filter(
-          (transfer: TransferStatus) =>
-            (transfer.role == "provider" &&
-              transfer.state == "dspace:REQUESTED") ||
-            transfer.state == "dspace:STARTED" ||
-            transfer.state == "dspace:SUSPENDED"
-        );
-        this.transfers = transfers;
-        this.ctaTransfers = ctaTransfers;
-      } catch (error) {
-        throw error;
-      }
+      const response = await http.get("management/transfers");
+      const transfers = response.data;
+      const ctaTransfers = response.data.filter(
+        (transfer: TransferStatus) =>
+          (transfer.role == "provider" &&
+            transfer.state == "dspace:REQUESTED") ||
+          transfer.state == "dspace:STARTED" ||
+          transfer.state == "dspace:SUSPENDED"
+      );
+      this.transfers = transfers;
+      this.ctaTransfers = ctaTransfers;
     },
     bindEvents() {
       socket.on("connect", async () => {
@@ -123,18 +119,18 @@ export const useDspStore = defineStore("dsp", {
         await this.getOwnCatalog();
       });
 
-      socket.on("negotiation:update", async (negotiation) => {
+      socket.on("negotiation:update", async () => {
         await this.getNegotiations();
       });
 
-      socket.on("negotiation:create", async (negotiation) => {
+      socket.on("negotiation:create", async () => {
         await this.getNegotiations();
       });
-      socket.on("transfer:update", async (transfer) => {
+      socket.on("transfer:update", async () => {
         await this.getTransfers();
       });
 
-      socket.on("transfer:create", async (transfer) => {
+      socket.on("transfer:create", async () => {
         await this.getTransfers();
       });
     }

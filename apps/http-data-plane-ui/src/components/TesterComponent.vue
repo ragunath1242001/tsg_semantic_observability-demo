@@ -59,13 +59,14 @@ const execute = async () => {
   response.value = undefined;
   let data: string | Record<string, string> | FormData | undefined = undefined;
   switch (bodyType.value) {
-    case "form-data":
+    case "form-data": {
       const form = new FormData();
       bodyPairs.value.forEach(({ key, value }) => {
         form.append(key, value);
       });
       data = form;
       break;
+    }
     case "x-www-form-urlencoded":
       data = pairsToObject(bodyPairs.value);
       break;
@@ -186,6 +187,8 @@ const truncatedData = computed(() => {
     } else {
       return data;
     }
+  } else {
+    return "";
   }
 });
 
@@ -207,22 +210,22 @@ const removeHeader = (header: string) => {
         <FormField label="URL">
           {{ fullUrl }}
         </FormField>
-        <FormField label="Interaction" v-if="transfer">
+        <FormField v-if="transfer" label="Interaction">
           <SelectButton
             v-model="interaction"
             :options="['direct', 'proxy']"
-            :allowEmpty="false"
+            :allow-empty="false"
             aria-labelledby="basic"
             @change="interactionChange" />
         </FormField>
         <FormField label="Path">
-          <InputText class="w-full" v-model="path" placeholder="Path" />
+          <InputText v-model="path" class="w-full" placeholder="Path" />
         </FormField>
         <FormField label="Method">
           <SelectButton
             v-model="method"
             :options="methods"
-            :allowEmpty="false"
+            :allow-empty="false"
             aria-labelledby="basic" />
         </FormField>
         <FormField label="Headers" class="mt-8">
@@ -235,8 +238,8 @@ const removeHeader = (header: string) => {
           <SelectButton
             v-model="bodyType"
             :options="bodyTypes"
-            :allowEmpty="false"
-            optionDisabled="disabled"
+            :allow-empty="false"
+            option-disabled="disabled"
             option-label="value"
             option-value="value"
             aria-labelledby="basic"
@@ -255,14 +258,14 @@ const removeHeader = (header: string) => {
           <Button
             label="Execute"
             :loading="loading"
-            @click="execute"
             severity="success"
-            type="submit" />
+            type="submit"
+            @click="execute" />
         </FormField>
       </form>
     </template>
   </Card>
-  <Card class="mt-8" v-if="response">
+  <Card v-if="response" class="mt-8">
     <template #title>Response</template>
     <template #subtitle>HTTP Response</template>
     <template #content>

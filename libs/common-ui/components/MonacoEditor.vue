@@ -99,5 +99,5 @@ const handleBeforeMount = (monaco: MonacoEditor) => {
     }"
     language="json"
     :height="editorHeight"
-    @beforeMount="handleBeforeMount" />
+    @before-mount="handleBeforeMount" />
 </template>

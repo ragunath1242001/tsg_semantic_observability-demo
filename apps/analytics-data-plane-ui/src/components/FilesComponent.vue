@@ -3,7 +3,7 @@ import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import http from "@tsg-dsp/common-ui/utils/http";
 import { usePrimeVue } from "primevue/config";
 import { useToast } from "primevue/usetoast";
-import { onMounted, reactive, ref } from "vue";
+import { onMounted, ref } from "vue";
 
 const $primevue = usePrimeVue();
 
@@ -50,26 +50,27 @@ onMounted(async () => {
 });
 </script>
 <template>
-  <div class="grid grid-cols-12 gap-8 card-container mb-4">
+  <div
+    v-if="filesList?.length > 0"
+    class="grid grid-cols-12 gap-8 card-container mb-4">
     <div
-      class="col-span-12 lg:col-span-6 xl:col-span-3"
-      v-if="filesList?.length > 0"
-      v-for="(file, index) in filesList"
-      :key="file">
+      v-for="file in filesList"
+      :key="file"
+      class="col-span-12 lg:col-span-6 xl:col-span-3">
       <Card
         :class="calculateClass(file.presentInLastCheck)"
         style="border-radius: 12px; border: 1px solid var(--surface-border)">
         <template #content>
-          <div class="relative" v-if="!file.presentInLastCheck">
+          <div v-if="!file.presentInLastCheck" class="relative">
             <div class="absolute top-2 right-2">
               <Button
+                v-tooltip.bottom="
+                  'This file was not found on your disk, so it is not advertised in your Catalogue.'
+                "
                 icon="pi pi-info"
                 severity="danger"
                 rounded
-                outlined
-                v-tooltip.bottom="
-                  'This file was not found on your disk, so it is not advertised in your Catalogue.'
-                " />
+                outlined />
             </div>
           </div>
           <div class="flex items-center justify-center flex-col">
@@ -84,14 +85,14 @@ onMounted(async () => {
         </template>
       </Card>
     </div>
-    <div class="col-span-12" v-else>
-      <Card>
-        <template #title>No files found</template>
-        <template #content>
-          <p>No files were found on the system.</p>
-        </template>
-      </Card>
-    </div>
+  </div>
+  <div v-else class="col-span-12">
+    <Card>
+      <template #title>No files found</template>
+      <template #content>
+        <p>No files were found on the system.</p>
+      </template>
+    </Card>
   </div>
 </template>
 <style>

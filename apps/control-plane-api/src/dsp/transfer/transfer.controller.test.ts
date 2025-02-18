@@ -20,12 +20,7 @@ import { plainToClass } from "class-transformer";
 import { HttpResponse, PathParams, http } from "msw";
 import { SetupServer, setupServer } from "msw/node";
 import { VCAuthService } from "../../vc-auth/vc.auth.service.js";
-import {
-  DevWalletConfig,
-  IamConfig,
-  RuntimeConfig,
-  TsgWalletConfig
-} from "../../config.js";
+import { DevWalletConfig, IamConfig, RuntimeConfig } from "../../config.js";
 import { DataPlaneService } from "../../data-plane/dataPlane.service.js";
 import {
   CatalogDao,
@@ -67,9 +62,8 @@ describe("TransferController", () => {
 
   let transferProviderUuid: string;
   let transferConsumerUuid: string;
-  let transferConsumerProviderUuid: string;
   let server: SetupServer;
-  let remoteProcessId = "urn:uuid:6334612d-bc17-4474-b8c1-5703c7a80bb1";
+  const remoteProcessId = "urn:uuid:6334612d-bc17-4474-b8c1-5703c7a80bb1";
 
   beforeAll(async () => {
     server = setupServer(
@@ -216,7 +210,7 @@ describe("TransferController", () => {
           provide: PolicyEvaluationService,
           useValue: {
             async initializeContext(
-              agreementId: string,
+              _agreementId: string,
               role: "consumer" | "provider",
               scope: EvaluationTrigger,
               transferId: string,
@@ -342,7 +336,6 @@ describe("TransferController", () => {
         "dspace:HTTP"
       );
     transferConsumerUuid = transferConsumerProcess.localId;
-    transferConsumerProviderUuid = transferConsumerProcess.remoteId;
   });
 
   afterEach(async () => {

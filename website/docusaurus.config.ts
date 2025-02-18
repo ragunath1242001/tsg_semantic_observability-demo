@@ -90,7 +90,7 @@ const config: Config = {
         }
       }
     ],
-    async function jsonLdContextPlugin(context, options) {
+    async function jsonLdContextPlugin(context) {
       const copyJson = (inputDir: string, outputDir: string) => {
         fs.mkdirSync(outputDir, { recursive: true });
         fs.readdirSync(inputDir)

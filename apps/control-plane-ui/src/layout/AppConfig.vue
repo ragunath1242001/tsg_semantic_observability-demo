@@ -28,21 +28,21 @@ const updateSettings = async () => {
   <Drawer
     v-model:visible="visible"
     position="right"
-    :transitionOptions="'.3s cubic-bezier(0, 0, 0.2, 1)'"
+    :transition-options="'.3s cubic-bezier(0, 0, 0.2, 1)'"
     class="layout-config-sidebar w-[26rem]">
     <div class="text-xl mt-2">Contract Negotiation</div>
     <SelectButton
       v-model="runtimeStore.controlPlaneInteractions"
       :options="contractNegotiationValues"
-      optionLabel="name"
-      optionValue="value"
-      dataKey="value" />
+      option-label="name"
+      option-value="value"
+      data-key="value" />
     <BaseAppConfig
       v-model:color="runtimeStore.color"
-      v-model:darkThemeUrl="runtimeStore.darkThemeUrl"
-      v-model:lightThemeUrl="runtimeStore.lightThemeUrl"
-      :runtimeStore="runtimeStore" />
-    <Button label="Save Settings" @click="updateSettings" class="mt-4" />
+      v-model:dark-theme-url="runtimeStore.darkThemeUrl"
+      v-model:light-theme-url="runtimeStore.lightThemeUrl"
+      :runtime-store="runtimeStore" />
+    <Button label="Save Settings" class="mt-4" @click="updateSettings" />
   </Drawer>
 </template>
 

@@ -8,7 +8,7 @@ import {
 import { filteredKeys } from "../utils/keys.js";
 import { defaultContext } from "../jsonld/context.defaults.js";
 
-export function serialize(obj: any, root = true, serializeType = false): any {
+export function serialize(obj: any, root = true): any {
   if (obj === null) {
     return null;
   }
@@ -25,7 +25,7 @@ export function serialize(obj: any, root = true, serializeType = false): any {
       serializableTypes[obj["@type"]]?.prototype
     );
   if (serializableType !== undefined) {
-    return serializeJsonLdObject(obj, serializableType, root, serializeType);
+    return serializeJsonLdObject(obj, serializableType, root);
   } else {
     return obj;
   }
@@ -34,10 +34,9 @@ export function serialize(obj: any, root = true, serializeType = false): any {
 function serializeJsonLdObject(
   obj: object,
   serializableType: string,
-  root: boolean,
-  serializeType: boolean
+  root: boolean
 ): object {
-  let result: { [name: string]: any } = {};
+  const result: { [name: string]: any } = {};
   if (root) {
     result["@context"] = defaultContext();
   }
@@ -72,7 +71,7 @@ function serializeJsonLdObject(
             }
           }
         }
-      } catch (error) {
+      } catch (_error) {
         const serializedValue = serialize(value, false);
         if (serializedValue != null) {
           result[`${property}`] = serializedValue;

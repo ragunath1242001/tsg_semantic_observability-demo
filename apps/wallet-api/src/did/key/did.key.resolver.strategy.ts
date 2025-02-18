@@ -1,30 +1,12 @@
-import axios from "axios";
 import { DIDDocument } from "did-resolver";
 import { AppError } from "../../utils/error.js";
 import { HttpStatus, Logger } from "@nestjs/common";
 import { DidResolverStrategy } from "../did.resolver.service.js";
-import {
-  base64urlToHex,
-  hexToBase64url
-} from "../../utils/keys/typeconverter.js";
+import { hexToBase64url } from "../../utils/keys/typeconverter.js";
 import { JWK } from "jose";
 import { base58btc } from "multiformats/bases/base58";
-import {
-  multicodecPublic,
-  varintPrefix
-} from "../../utils/keys/keyconverter.js";
-import elliptic from "elliptic";
 
-const prefixes = {
-  z6Mk: "Ed25519",
-  zQ3s: "secp256k1",
-  zUC7: "Bls12381G2",
-  zDn: "P-256",
-  z82: "P-384",
-  z2J9: "P-521",
-  z4MX: "RSA",
-  zgg: "RSA"
-};
+import elliptic from "elliptic";
 
 export class DidKeyResolverStrategy implements DidResolverStrategy {
   private readonly logger = new Logger(this.constructor.name);

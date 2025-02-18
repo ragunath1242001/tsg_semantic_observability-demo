@@ -60,6 +60,7 @@
     "@nestjs/swagger": "^8.0.0",
     "@nestjs/typeorm": "^10.0.0",
     "@nestjs/websockets": "^10.4.11",
+    "@tsg-dsp/common-api": "workspace:*",
     "@tsg-dsp/common-dsp": "workspace:*",
     "@tsg-dsp/common-dtos": "workspace:*",
     "@tsg-dsp/control-plane-dtos": "workspace:*",

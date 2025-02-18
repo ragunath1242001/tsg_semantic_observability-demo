@@ -4,7 +4,7 @@ import { PresentationService } from "./presentation.service.js";
 import { CredentialsModule } from "../credentials/credentials.module.js";
 import { KeysModule } from "../keys/keys.module.js";
 import { DidModule } from "../did/did.module.js";
-import { PresentationConfig, PresentationType, RootConfig } from "../config.js";
+import { PresentationConfig, PresentationType } from "../config.js";
 import { DCPHolderController } from "./dcp/holder.controller.js";
 import { DCPVerifierManagementController } from "./dcp/verifier.management.controller.js";
 import { DCPVerifierService } from "./dcp/verifier.service.js";

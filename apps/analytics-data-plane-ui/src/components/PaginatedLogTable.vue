@@ -210,30 +210,30 @@ onMounted(async () => {
 <template>
   <DataTable
     v-model:expanded-rows="expandedRows"
+    v-model:filters="filters"
     :value="items"
     lazy
     paginator
-    v-model:filters="filters"
     :total-records="itemCount"
     :loading="loading"
     :first="first"
     data-key="identifier"
-    @page="onPage"
-    @filter="onFilter"
     filter-display="menu"
     :global-filter-fields="globalFilterFields"
     :rows="rows"
     :rows-per-page-options="rowsPerPagesOptions"
-    resizableColumns
-    columnResizeMode="fit">
+    resizable-columns
+    column-resize-mode="fit"
+    @page="onPage"
+    @filter="onFilter">
     <template #paginatorend>
       <MultiSelect
         v-model="selectedColumns"
         :options="columns"
         placeholder="Select Columns"
-        scrollHeight="350px"
-        :maxSelectedLabels="0"
-        :selectedItemsLabel="`{0} of ${columns.length} columns selected`" />
+        scroll-height="350px"
+        :max-selected-labels="0"
+        :selected-items-label="`{0} of ${columns.length} columns selected`" />
     </template>
     <Column expander style="width: 5rem" />
     <Column
@@ -246,32 +246,32 @@ onMounted(async () => {
     </Column>
     <Column
       field="remoteParty"
-      filterMatchMode="contains"
+      filter-match-mode="contains"
       :show-filter-match-modes="false"
       header="Remote Party"
       :hidden="!selectedColumns.includes('Remote Party')">
       <template #filter="{ filterModel, filterCallback }">
         <InputText
-          type="text"
           v-model="filterModel.value"
-          @keydown.enter="filterCallback()"
+          type="text"
           class="p-column-filter"
-          placeholder="Search" />
+          placeholder="Search"
+          @keydown.enter="filterCallback()" />
       </template>
     </Column>
     <Column
       field="transferId"
-      filterMatchMode="contains"
+      filter-match-mode="contains"
       :show-filter-match-modes="false"
       header="Transfer"
       :hidden="!selectedColumns.includes('Transfer')">
       <template #filter="{ filterModel, filterCallback }">
         <InputText
-          type="text"
           v-model="filterModel.value"
-          @keydown.enter="filterCallback()"
+          type="text"
           class="p-column-filter"
-          placeholder="Search" />
+          placeholder="Search"
+          @keydown.enter="filterCallback()" />
       </template>
       <template #body="props">
         <Button
@@ -289,17 +289,17 @@ onMounted(async () => {
     </Column>
     <Column
       field="datasetId"
-      filterMatchMode="contains"
+      filter-match-mode="contains"
       :show-filter-match-modes="false"
       header="Dataset"
       :hidden="!selectedColumns.includes('Dataset')">
       <template #filter="{ filterModel, filterCallback }">
         <InputText
-          type="text"
           v-model="filterModel.value"
-          @keydown.enter="filterCallback()"
+          type="text"
           class="p-column-filter"
-          placeholder="Search" />
+          placeholder="Search"
+          @keydown.enter="filterCallback()" />
       </template>
       <template #body="props">
         <Button
@@ -317,17 +317,17 @@ onMounted(async () => {
     </Column>
     <Column
       field="status"
-      filterMatchMode="contains"
+      filter-match-mode="contains"
       :show-filter-match-modes="false"
       header="Status"
       :hidden="!selectedColumns.includes('Status')">
       <template #filter="{ filterModel, filterCallback }">
         <Select
           v-model="filterModel.value"
-          @change="filterCallback()"
           :options="statusFilterOptions"
           editable
-          placeholder="Search" />
+          placeholder="Search"
+          @change="filterCallback()" />
       </template>
       <template #body="props">
         <Tag
@@ -396,7 +396,7 @@ onMounted(async () => {
           {{ httpStatusNames[props.data.status] }}</code
         >
       </FormField>
-      <FormField label="Debug" v-if="props.data.debug">
+      <FormField v-if="props.data.debug" label="Debug">
         <Button
           style="padding-block: 0.125rem; margin-left: -1.25rem"
           text

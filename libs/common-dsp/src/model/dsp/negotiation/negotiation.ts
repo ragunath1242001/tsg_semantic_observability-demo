@@ -79,7 +79,9 @@ export interface IPolicyRule {
   constraint?: Array<Constraint>;
 }
 
-export interface IProhibition extends IPolicyRule {}
+export interface IProhibition extends IPolicyRule {
+  remedy?: Array<Duty>;
+}
 
 export type IDuty = IPolicyRule;
 

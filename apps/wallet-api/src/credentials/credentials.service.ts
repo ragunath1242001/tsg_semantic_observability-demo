@@ -179,7 +179,7 @@ export class CredentialsService {
       return credentials
         .filter((result) => result.status === "fulfilled")
         .flatMap((result) => result.value);
-    } catch (err) {
+    } catch (_) {
       throw new AppError(
         `Could not fetch credentials at dataspace wallet`,
         HttpStatus.BAD_REQUEST
@@ -360,22 +360,15 @@ export class CredentialsService {
   }
 
   private async createNewStatusListCredential() {
-    try {
-      const index = await this.statusListCredentialRepository.count();
-      const credentialId = `${this.credentialAddress()}/status-${index}`;
-      const credential = await this.updateStatusListCredential(
-        credentialId,
-        []
-      );
-      return await this.statusListCredentialRepository.save({
-        id: credentialId,
-        revoked: [],
-        full: false,
-        credential: credential
-      });
-    } catch (err) {
-      throw err;
-    }
+    const index = await this.statusListCredentialRepository.count();
+    const credentialId = `${this.credentialAddress()}/status-${index}`;
+    const credential = await this.updateStatusListCredential(credentialId, []);
+    return await this.statusListCredentialRepository.save({
+      id: credentialId,
+      revoked: [],
+      full: false,
+      credential: credential
+    });
   }
 
   async assignStatusListIndex() {

@@ -96,9 +96,9 @@ onMounted(() => {
 
 <template>
   <FormField
+    v-slot="props"
     :label="schema.title ?? name"
     class="pl-6"
-    v-slot="props"
     :label-width="typeRef === 'object' ? 12 : 2">
     <template v-if="typeRef === 'const'">
       <InputText v-model="valueRef" disabled class="w-full" />
@@ -106,16 +106,16 @@ onMounted(() => {
     <template v-else-if="typeRef === 'enum'">
       <Select
         :id="props.id"
-        class="w-full"
         v-model="valueRef"
+        class="w-full"
         :placeholder="name"
         :options="schema.enum" />
     </template>
     <template v-else-if="typeRef === 'string'">
       <InputText
         :id="props.id"
-        class="w-full"
         v-model="valueRef"
+        class="w-full"
         :placeholder="name"
         :required="required"
         :pattern="schema.pattern"
@@ -128,19 +128,19 @@ onMounted(() => {
     <template v-else-if="typeRef === 'number'">
       <InputNumber
         :id="props.id"
-        class="w-full"
         v-model="valueRef"
+        class="w-full"
         :placeholder="name"
         :required="required" />
     </template>
     <template v-else-if="typeRef === 'boolean'">
-      <ToggleButton :id="props.id" class="w-full" v-model="valueRef" />
+      <ToggleButton :id="props.id" v-model="valueRef" class="w-full" />
     </template>
     <template v-else-if="typeRef === 'object'">
       <JsonSchemaFormElement
         v-for="(child, key) in parsedProperties"
-        :schema="child"
         :key="key"
+        :schema="child"
         :name="key"
         :required="schema.required?.includes(key)"
         @input="emitValue"></JsonSchemaFormElement>
@@ -152,8 +152,8 @@ onMounted(() => {
       <template v-else>
         <AutoComplete
           :id="props.id"
-          class="w-full"
           v-model="valueRef"
+          class="w-full"
           multiple
           typeahead></AutoComplete>
       </template>

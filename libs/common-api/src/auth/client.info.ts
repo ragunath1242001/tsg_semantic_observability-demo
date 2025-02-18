@@ -17,7 +17,7 @@ export class ClientInfo {
   didId?: string;
   @ApiProperty({ type: [String] })
   @IsString({ each: true })
-  roles!: String[];
+  roles!: string[];
   @ApiPropertyOptional()
   @IsString()
   @IsOptional()
@@ -26,7 +26,7 @@ export class ClientInfo {
 
 export class AuthenticatedUser {
   @ApiProperty()
-  state: "authenticated" = "authenticated";
+  state = "authenticated" as const;
 
   @ApiProperty()
   user!: ClientInfo;
@@ -34,5 +34,5 @@ export class AuthenticatedUser {
 
 export class UnauthenticatedUser {
   @ApiProperty()
-  state: "unauthenticated" = "unauthenticated";
+  state = "unauthenticated" as const;
 }

@@ -14,6 +14,7 @@ import { getSession } from "../utils/session.js";
 export const DisableOAuthGuard = Reflector.createDecorator<boolean>();
 
 declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Express {
     interface Request {
       user?: any;

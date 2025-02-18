@@ -1,7 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { plainToClass, plainToInstance } from "class-transformer";
 import { IamConfig, RegistryConfig, RootConfig } from "../config.js";
-import { SetupServer, setupServer } from "msw/node";
+import { SetupServer } from "msw/node";
 import { HttpResponse, http } from "msw";
 import { RegistryClientService } from "./registry.client.service.js";
 import { DSPError } from "../utils/errors/error.js";
@@ -105,7 +105,7 @@ describe("RegistryClientService", () => {
     const registryConfig = plainToClass(RegistryConfig, {
       registryUrl: "http://localhost/registry"
     });
-    let iamConfig: IamConfig = mockWalletConfig();
+    const iamConfig: IamConfig = mockWalletConfig();
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         RegistryClientService,
@@ -141,7 +141,7 @@ describe("RegistryClientService", () => {
   describe("Should error without registry URL", () => {
     beforeEach(async () => {
       const registryConfig = plainToClass(RegistryConfig, {});
-      let iamConfig: IamConfig = mockWalletConfig();
+      const iamConfig: IamConfig = mockWalletConfig();
       const module: TestingModule = await Test.createTestingModule({
         providers: [
           RegistryClientService,

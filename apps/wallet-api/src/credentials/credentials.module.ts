@@ -13,7 +13,6 @@ import { GaiaXManagementController } from "./gaiax/gaiax.management.controller.j
 import { GaiaXService } from "./gaiax/gaiax.service.js";
 import { ContextModule } from "../contexts/context.module.js";
 import { AuthModule } from "@tsg-dsp/common-api";
-import { RootConfig } from "../config.js";
 
 @Module({
   imports: [

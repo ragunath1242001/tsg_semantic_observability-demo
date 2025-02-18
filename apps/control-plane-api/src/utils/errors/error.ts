@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { HttpException, HttpStatus, Logger } from "@nestjs/common";
+import { HttpStatus } from "@nestjs/common";
 import { AppError } from "@tsg-dsp/common-api";
 import axios from "axios";
 

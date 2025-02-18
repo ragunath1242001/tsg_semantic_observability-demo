@@ -1,11 +1,7 @@
 <script setup lang="ts">
 import { toArray } from "@tsg-dsp/common-ui/utils/union.js";
 import { formatDate } from "@tsg-dsp/common-ui/utils/date.js";
-import {
-  CredentialStatus,
-  CredentialSubject,
-  VerifiableCredential
-} from "@tsg-dsp/common-dsp";
+import { CredentialStatus, VerifiableCredential } from "@tsg-dsp/common-dsp";
 import { useConfirm } from "primevue/useconfirm";
 import { useToast } from "primevue/usetoast";
 import { onMounted, ref } from "vue";
@@ -335,8 +331,9 @@ onMounted(async () => {
           <Column field="type" header="Type">
             <template #body="props">
               <Tag
-                class="mr-1 mb-1"
                 v-for="type in props.data.type"
+                :key="type"
+                class="mr-1 mb-1"
                 :value="type"
                 severity="info"></Tag>
             </template>
@@ -371,11 +368,11 @@ onMounted(async () => {
                 icon="pi pi-copy"
                 @click="copyCredential(props.data.raw.credential)" />
               <Button
-                severity="danger"
-                icon="pi pi-times"
                 v-if="
                   props.data.raw.selfIssued && props.data.raw.statusListIndex
                 "
+                severity="danger"
+                icon="pi pi-times"
                 :disabled="props.data.raw.revoked"
                 @click="revokeCredential(props.data.raw.id)" />
             </template>

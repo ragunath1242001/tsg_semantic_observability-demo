@@ -13,7 +13,7 @@ describe("ClientsService", () => {
 
   beforeAll(async () => {
     await TypeOrmTestHelper.instance.setupTestDB();
-    let module: TestingModule = await Test.createTestingModule({
+    const module: TestingModule = await Test.createTestingModule({
       imports: [
         TypeOrmTestHelper.instance.module([OauthClient]),
         TypeOrmModule.forFeature([OauthClient])

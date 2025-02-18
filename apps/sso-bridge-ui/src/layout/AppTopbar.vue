@@ -63,13 +63,13 @@ const logout = () => {
       </button>
       <div class="layout-topbar-menu lg:block" :class="topbarMenuClasses">
         <div class="layout-topbar-menu-content">
-          <div class="layout-topbar-text" v-if="user">
+          <div v-if="user" class="layout-topbar-text">
             <div>
               <i class="pi pi-user"></i>
               {{ user.username }}
             </div>
           </div>
-          <button @click="logout()" class="layout-topbar-action">
+          <button class="layout-topbar-action" @click="logout()">
             <i class="pi pi-sign-out"></i>
             <span>Sign out</span>
           </button>

@@ -128,7 +128,7 @@ export class OAuthService {
   async validateToken(token: string): Promise<any> {
     try {
       return await this.validateTokenViaJwk(token);
-    } catch (error) {
+    } catch (_) {
       return await this.validateTokenViaIntrospection(token);
     }
   }
@@ -139,7 +139,7 @@ export class OAuthService {
       const key = await this.openIDConfigurationService.getKey(header.kid);
       const verificationResult = await jwtVerify(token, key);
       return verificationResult.payload;
-    } catch (error) {
+    } catch (_) {
       throw new AppError("Invalid token", HttpStatus.UNAUTHORIZED);
     }
   }

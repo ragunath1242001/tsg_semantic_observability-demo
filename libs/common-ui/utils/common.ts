@@ -5,7 +5,7 @@ export const stripDspace = (inputStr: string): string => {
 };
 
 export function obtainValues(
-  multilingualArray: Array<MultilanguageDto | String>
+  multilingualArray: Array<MultilanguageDto | string>
 ) {
   if (multilingualArray !== undefined && Array.isArray(multilingualArray)) {
     return multilingualArray.map((element) =>

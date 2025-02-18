@@ -125,7 +125,7 @@ describe("DID Service", () => {
         await didService.setDidDefaultKey(
           await keyMaterialGenerator("test-key")
         )
-      ).resolves;
+      );
     });
 
     it("Update DID document keys", async () => {
@@ -134,14 +134,14 @@ describe("DID Service", () => {
         await didService.updateDidDocumentKeys([
           await keyMaterialGenerator("test-key-new")
         ])
-      ).resolves;
+      );
       const newDidDoc: DIDDocument = clone(await didService.getDid());
       expect(newDidDoc.verificationMethod).toHaveLength(1);
       expect(newDidDoc.verificationMethod![0].id).not.toEqual(
         prevDidDoc.verificationMethod![0].id
       );
       expect(newDidDoc.service).toHaveLength(prevDidDoc.service!.length);
-      for (var i = 0; i < newDidDoc.service!.length; i++) {
+      for (let i = 0; i < newDidDoc.service!.length; i++) {
         expect(newDidDoc.service![0].id).toEqual(prevDidDoc.service![0].id);
       }
     });
@@ -276,9 +276,6 @@ describe("DID Service", () => {
 
 describe("DID Service Multikey-based", () => {
   let didService: DidService;
-  const clone: (input: any) => any = (input: any) => {
-    return JSON.parse(JSON.stringify(input));
-  };
   const keyMaterialGenerator: (id: string) => Promise<KeyMaterialDao> = async (
     id: string
   ) => {

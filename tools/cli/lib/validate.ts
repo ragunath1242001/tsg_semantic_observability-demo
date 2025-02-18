@@ -71,7 +71,7 @@ Or install specifically the latest version:
 
     return releaseVersion!;
   } catch (e) {
-    log("warn", "Could not retrieve latest release of TSG");
+    log("warn", `Could not retrieve latest release of TSG: ${e}`);
     return "0.0.0";
   }
 };

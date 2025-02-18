@@ -5,7 +5,6 @@ import { ContextManagementController } from "./context.management.controller.js"
 import { ContextService } from "./context.service.js";
 import { JSONLDContext } from "../model/context.dao.js";
 import { AuthModule } from "@tsg-dsp/common-api";
-import { RootConfig } from "../config.js";
 
 @Module({
   imports: [AuthModule, TypeOrmModule.forFeature([JSONLDContext])],

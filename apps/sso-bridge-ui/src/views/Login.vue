@@ -42,7 +42,7 @@ const login = async (currentUser: boolean = false) => {
     } else {
       await store.login(username.value, password.value);
     }
-  } catch (error) {
+  } catch (_) {
     toast.add({
       severity: "error",
       summary: "Error",
@@ -108,10 +108,10 @@ const logoUrl = computed(() => {
               >
               <InputText
                 id="email1"
+                v-model="username"
                 type="text"
                 placeholder="Username"
-                class="w-full mb-8"
-                v-model="username" />
+                class="w-full mb-8" />
 
               <label
                 for="password1"
@@ -122,7 +122,7 @@ const logoUrl = computed(() => {
                 id="password1"
                 v-model="password"
                 placeholder="Password"
-                :toggleMask="true"
+                :toggle-mask="true"
                 class="w-full mb-4"
                 fluid
                 :feedback="false"></Password>

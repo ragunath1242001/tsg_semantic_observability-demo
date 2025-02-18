@@ -134,9 +134,9 @@ onMounted(async () => {
         <Button
           label="Fetch metadata"
           :loading="metadataLoading"
-          @click="fetchMetadata"
-          severity="success" />
-        <Tabs value="Agreement" v-if="metadata">
+          severity="success"
+          @click="fetchMetadata" />
+        <Tabs v-if="metadata" value="Agreement">
           <TabList>
             <Tab value="Agreement">Agreement</Tab>
             <Tab value="Dataset">Dataset</Tab>
@@ -169,19 +169,20 @@ onMounted(async () => {
             </TabPanel>
             <TabPanel value="Dataset">
               <FormField label="ID">{{ metadata.dataset["@id"] }}</FormField>
-              <FormField label="Title" v-if="metadata.dataset['dct:title']"
+              <FormField v-if="metadata.dataset['dct:title']" label="Title"
                 >{{ metadata.dataset["dct:title"] }}
               </FormField>
               <FormField label="Distributions">
                 <template
                   v-for="(distribution, idx) in metadata.dataset[
                     'dcat:distribution'
-                  ]">
+                  ]"
+                  :key="idx">
                   <hr v-if="idx === 0" />
-                  <FormField label="Title" v-if="distribution['dct:title']">{{
+                  <FormField v-if="distribution['dct:title']" label="Title">{{
                     distribution["dct:title"]
                   }}</FormField>
-                  <FormField label="Spec" v-if="distribution['dct:conformsTo']">
+                  <FormField v-if="distribution['dct:conformsTo']" label="Spec">
                     {{ distribution["dct:conformsTo"][0] }}</FormField
                   >
                   <hr />

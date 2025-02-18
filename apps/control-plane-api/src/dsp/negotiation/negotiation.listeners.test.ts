@@ -15,7 +15,6 @@ import { TypeOrmTestHelper } from "@tsg-dsp/common-api";
 describe("NegotiationListener", () => {
   let negotiationListener: NegotiationListener;
   let negotiationService: NegotiationService;
-  let transferService: TransferService;
   let catalogService: CatalogService;
   let runtimeConfig: RuntimeConfig;
 
@@ -56,7 +55,6 @@ describe("NegotiationListener", () => {
     catalogService = module.get(CatalogService);
     negotiationService = module.get(NegotiationService);
     negotiationListener = module.get(NegotiationListener);
-    transferService = module.get(TransferService);
     runtimeConfig = module.get(RuntimeConfig);
   });
   afterAll(async () => {

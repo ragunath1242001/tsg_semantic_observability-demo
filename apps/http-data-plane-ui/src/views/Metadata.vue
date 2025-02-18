@@ -6,7 +6,6 @@ import {
 } from "@tsg-dsp/http-data-plane-dtos";
 import { ref, onMounted } from "vue";
 import { useToast } from "primevue/usetoast";
-import { useConfirm } from "primevue/useconfirm";
 import { DataPlaneStateDto } from "@tsg-dsp/common-dtos";
 import http from "@tsg-dsp/common-ui/utils/http";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
@@ -15,7 +14,6 @@ import { plainToInstance } from "class-transformer";
 import CollectionDatasetManagement from "../components/CollectionDatasetManagement.vue";
 
 const toast = useToast();
-const confirm = useConfirm();
 
 const state = ref<DataPlaneStateDto>();
 const versionedConfig = ref<VersionedDatasetConfig>();

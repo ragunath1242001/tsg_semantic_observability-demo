@@ -182,7 +182,7 @@ const options = {
     class="col-span-12"
     style="border-radius: 12px; border: 1px solid var(--surface-border)">
     <template #title>Service status</template>
-    <template #content v-if="status">
+    <template v-if="status" #content>
       <div class="grid grid-cols-12 gap-4">
         <div class="col-span-12 lg:col-span-6">
           <DisplayField label="Database">{{
@@ -202,9 +202,10 @@ const options = {
                   class="p-metergroup-label-list p-metergroup-label-list-horizontal"
                   data-pc-section="labellist">
                   <li
+                    v-for="(val, index) in props.value"
+                    :key="index"
                     class="p-metergroup-label"
-                    data-pc-section="label"
-                    v-for="(val, index) in props.value">
+                    data-pc-section="label">
                     <span
                       class="p-metergroup-label-marker"
                       data-pc-section="labelmarker"
@@ -227,7 +228,7 @@ const options = {
     class="col-span-12"
     style="border-radius: 12px; border: 1px solid var(--surface-border)">
     <template #title>Negotiations</template>
-    <template #content v-if="status">
+    <template v-if="status" #content>
       <div class="grid grid-cols-12 gap-4">
         <div class="col-span-12 lg:col-span-6">
           <DisplayField label="Incoming">
@@ -254,7 +255,7 @@ const options = {
     class="col-span-12"
     style="border-radius: 12px; border: 1px solid var(--surface-border)">
     <template #title>Transfers</template>
-    <template #content v-if="status">
+    <template v-if="status" #content>
       <div class="grid grid-cols-12 gap-4">
         <div class="col-span-12 lg:col-span-6">
           <DisplayField label="Incoming">

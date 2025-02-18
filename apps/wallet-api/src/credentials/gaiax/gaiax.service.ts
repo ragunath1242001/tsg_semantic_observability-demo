@@ -1,6 +1,5 @@
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
 import {
-  CredentialSubject,
   toArray,
   VerifiableCredential,
   VerifiablePresentation

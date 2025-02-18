@@ -75,6 +75,6 @@ describe("Auth Service", () => {
       }
     };
 
-    const instance = plainToInstance(VerifiablePresentation, vp);
+    plainToInstance(VerifiablePresentation, vp);
   });
 });

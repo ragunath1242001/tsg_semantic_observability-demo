@@ -168,10 +168,11 @@ const requestTransfer = async (accNegotiation: NegotiationDetailDto) => {
       that are finalized also allow the option to start a Transfer
       Process.</template
     >
-    <template #content v-if="negotiations.length > 0">
+    <template v-if="negotiations.length > 0" #content>
       <Accordion @update:value="getNegotiation">
         <AccordionPanel
           v-for="(negotiation, index) in negotiations"
+          :key="index"
           :value="negotiation.localId">
           <AccordionHeader>
             <span class="flex items-center justify-between w-full">
@@ -195,8 +196,8 @@ const requestTransfer = async (accNegotiation: NegotiationDetailDto) => {
           </AccordionHeader>
           <AccordionContent>
             <div
-              class="flex items-stretch grid grid-cols-12 gap-4 card-container"
-              v-if="accNegotiation">
+              v-if="accNegotiation"
+              class="flex items-stretch grid grid-cols-12 gap-4 card-container">
               <div class="p-0 col-span-12 xl:col-span-6">
                 <Tabs value="Agreement">
                   <TabList>
@@ -216,28 +217,28 @@ const requestTransfer = async (accNegotiation: NegotiationDetailDto) => {
                         :max-lines="35" />
                     </TabPanel>
                     <TabPanel
-                      value="Local Signature"
                       v-if="
                         localProof &&
                         (localProof['dspace:algorithm'] ===
                           'JsonWebSignature2020' ||
                           localProof['dspace:algorithm'] ===
                             'DataIntegrityProof')
-                      ">
+                      "
+                      value="Local Signature">
                       <MonacoEditor
                         :static="JSON.parse(localProof['dspace:digest'])"
                         :read-only="true"
                         :max-lines="35" />
                     </TabPanel>
                     <TabPanel
-                      value="Remote Signature"
                       v-if="
                         remoteProof &&
                         (remoteProof['dspace:algorithm'] ===
                           'JsonWebSignature2020' ||
                           remoteProof['dspace:algorithm'] ===
                             'DataIntegrityProof')
-                      ">
+                      "
+                      value="Remote Signature">
                       <MonacoEditor
                         :static="JSON.parse(remoteProof['dspace:digest'])"
                         :read-only="true"
@@ -261,24 +262,24 @@ const requestTransfer = async (accNegotiation: NegotiationDetailDto) => {
                   </template>
                 </Timeline>
                 <Button
-                  @click="requestTransfer(accNegotiation)"
+                  v-if="
+                    accNegotiation.role === 'consumer' &&
+                    accNegotiation.state === 'dspace:FINALIZED'
+                  "
                   raised
                   type="button"
                   class="m-12 flex text-center justify-center p-4"
                   style="width: 60%; max-width: 60%"
                   label="Request Transfer"
                   severity="success"
-                  v-if="
-                    accNegotiation.role === 'consumer' &&
-                    accNegotiation.state === 'dspace:FINALIZED'
-                  "></Button>
+                  @click="requestTransfer(accNegotiation)"></Button>
               </div>
             </div>
           </AccordionContent>
         </AccordionPanel>
       </Accordion>
       <ConfirmDialog group="selectDataplane">
-        <template #message="slotProps">
+        <template #message>
           <div
             class="flex flex-col items-center w-full gap-4 border-b border-surface-200 dark:border-surface-700">
             <p>
@@ -296,6 +297,6 @@ const requestTransfer = async (accNegotiation: NegotiationDetailDto) => {
         </template>
       </ConfirmDialog>
     </template>
-    <template #content v-else> There is no history to display</template>
+    <template v-else #content> There is no history to display</template>
   </Card>
 </template>

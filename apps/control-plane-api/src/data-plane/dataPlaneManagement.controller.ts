@@ -88,7 +88,7 @@ export class DataplaneManagementController {
     @Body() dataplane: DataPlaneDetailsDto
   ): Promise<DataPlaneDetailsDto> {
     this.logger.log("Received call to update dataplane");
-    return await this.dataplaneService.updateDataPlane(dataplane);
+    return await this.dataplaneService.updateDataPlane(id, dataplane);
   }
 
   @Delete(":id")

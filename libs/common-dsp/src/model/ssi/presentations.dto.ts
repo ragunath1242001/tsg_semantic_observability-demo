@@ -3,8 +3,7 @@ import {
   IsString,
   IsOptional,
   ValidateNested,
-  IsBoolean,
-  IsIn
+  IsBoolean
 } from "class-validator";
 import {
   VerifiableCredential,

@@ -71,10 +71,11 @@ const getTransfer = async (uuid: string) => {
     <template #subtitle
       >Here you can find the history of the transfers.</template
     >
-    <template #content v-if="transfers.length > 0">
+    <template v-if="transfers.length > 0" #content>
       <Accordion @update:value="getTransfer">
         <AccordionPanel
           v-for="(transfer, index) in transfers"
+          :key="transfer.localId"
           :value="transfer.localId">
           <AccordionHeader>
             <span class="flex items-center justify-between w-full">
@@ -98,8 +99,8 @@ const getTransfer = async (uuid: string) => {
           </AccordionHeader>
           <AccordionContent>
             <div
-              class="flex items-stretch grid grid-cols-12 gap-4 card-container"
-              v-if="accTransfer">
+              v-if="accTransfer"
+              class="flex items-stretch grid grid-cols-12 gap-4 card-container">
               <div
                 class="p-0 mt-6 col-span-12 xl:col-span-6 flex flex-wrap justify-center">
                 <Timeline :value="accTransfer.events">
@@ -120,6 +121,6 @@ const getTransfer = async (uuid: string) => {
         </AccordionPanel>
       </Accordion>
     </template>
-    <template #content v-else> There is no history to display</template>
+    <template v-else #content> There is no history to display</template>
   </Card>
 </template>

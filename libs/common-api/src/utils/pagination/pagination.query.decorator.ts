@@ -3,7 +3,7 @@ import { strictValidationPipe } from "../validation.pipe.js";
 
 export function PaginationQuery(): ParameterDecorator {
   return function (
-    target: Object,
+    target: object,
     propertyKey: string | symbol | undefined,
     parameterIndex: number
   ) {

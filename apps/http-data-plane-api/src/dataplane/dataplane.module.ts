@@ -6,7 +6,6 @@ import { DataPlaneStateDao, DatasetItemDao } from "./dataplane.dao.js";
 import { DataPlaneManagementController } from "./dataplane.management.controller.js";
 import { LoggingModule } from "../logging/logging.module.js";
 import { AuthModule } from "@tsg-dsp/common-api";
-import { RootConfig } from "../config.js";
 
 @Module({
   imports: [

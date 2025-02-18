@@ -10,7 +10,6 @@ import {
   IsIn
 } from "class-validator";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { VerifiablePresentationJwt } from "@tsg-dsp/common-dsp";
 
 export class JwtVpClaimFormat {
   @ApiProperty({ type: [String] })

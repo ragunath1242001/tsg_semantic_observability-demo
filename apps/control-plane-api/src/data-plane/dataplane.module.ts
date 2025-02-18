@@ -8,7 +8,6 @@ import { DataplaneManagementController } from "./dataPlaneManagement.controller.
 import { NegotiationModule } from "../dsp/negotiation/negotiation.module.js";
 import { PolicyModule } from "../policy/policy.module.js";
 import { AuthModule } from "@tsg-dsp/common-api";
-import { RootConfig } from "../config.js";
 
 @Module({
   imports: [

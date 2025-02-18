@@ -5,10 +5,7 @@ import {
   IsString,
   ValidateNested
 } from "class-validator";
-import {
-  CredentialDao,
-  StatusListCredentialDao
-} from "../model/credentials.dao.js";
+import { CredentialDao } from "../model/credentials.dao.js";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { CredentialSubject, VerifiableCredential } from "@tsg-dsp/common-dsp";
 import { InitCredentialConfig, TrustAnchorConfig } from "../config.js";

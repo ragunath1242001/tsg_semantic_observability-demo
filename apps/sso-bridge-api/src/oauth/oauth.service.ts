@@ -158,7 +158,7 @@ export class OauthService {
     if (!token.userId) {
       throw new AppError("Invalid token", HttpStatus.BAD_REQUEST);
     }
-    let subject = await this.usersService.getUser(token.userId);
+    const subject = await this.usersService.getUser(token.userId);
     const tokenResponse = await this.tokenService.createToken(
       token.clientId,
       subject,
@@ -209,7 +209,7 @@ export class OauthService {
         active: true,
         ...decodeJwt(token)
       };
-    } catch (e) {
+    } catch (_) {
       return {
         active: false
       };

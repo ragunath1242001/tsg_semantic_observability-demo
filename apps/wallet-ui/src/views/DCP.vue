@@ -2,11 +2,7 @@
 import { ref } from "vue";
 import { useToast } from "primevue/usetoast";
 import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
-import {
-  CredentialSubject,
-  VerifiableCredential,
-  VerifiablePresentation
-} from "@tsg-dsp/common-dsp";
+import { VerifiablePresentation } from "@tsg-dsp/common-dsp";
 import schema from "@tsg-dsp/common-ui/assets/presentation-definition.schema.json";
 import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
 import http from "@tsg-dsp/common-ui/utils/http";
@@ -185,17 +181,17 @@ const copyToken = (token: string) => {
         <form
           class="flex flex-col gap-4"
           @submit.prevent="requestHolderIDToken">
-          <FormField label="Audience" v-slot="props">
+          <FormField v-slot="props" label="Audience">
             <InputText
               :id="props.id"
-              class="w-full"
-              v-model="holderForm.audience" />
+              v-model="holderForm.audience"
+              class="w-full" />
           </FormField>
-          <FormField label="Bearer scope" v-slot="props">
+          <FormField v-slot="props" label="Bearer scope">
             <InputText
               :id="props.id"
-              class="w-full"
-              v-model="holderForm.scope" />
+              v-model="holderForm.scope"
+              class="w-full" />
           </FormField>
           <FormField no-label>
             <Button label="Request ID token" type="submit" />
@@ -240,14 +236,14 @@ const copyToken = (token: string) => {
       </template>
       <template #content>
         <form class="flex flex-col gap-4" @submit.prevent="requestVerification">
-          <FormField label="Holder ID Token" v-slot="props">
+          <FormField v-slot="props" label="Holder ID Token">
             <InputText
               :id="props.id"
-              class="w-full"
               v-model="verifierForm.holderIDToken"
+              class="w-full"
               placeholder="eyJhb..." />
           </FormField>
-          <FormField label="Presentation Definition" v-slot="props">
+          <FormField label="Presentation Definition">
             <MonacoEditorVue
               v-model="verifierForm.presentationDefinition"
               :schema="schema"
@@ -262,7 +258,7 @@ const copyToken = (token: string) => {
           <FormField label="Status">{{
             verifierResponse.success ? "Success" : "Error"
           }}</FormField>
-          <FormField label="Code" v-if="verifierResponse.code">{{
+          <FormField v-if="verifierResponse.code" label="Code">{{
             verifierResponse.code
           }}</FormField>
           <MonacoEditorVue

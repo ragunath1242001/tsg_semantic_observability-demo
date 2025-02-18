@@ -56,7 +56,7 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
     NegotiationModule,
     TransferModule,
     ...embeddedFrontend,
-    RegistryModule.register(GenericConfigModule.get(RootConfig).registry),
+    RegistryModule.register(),
     TerminusModule
   ],
   exports: [

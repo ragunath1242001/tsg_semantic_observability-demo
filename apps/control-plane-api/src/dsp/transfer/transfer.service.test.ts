@@ -5,7 +5,6 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import {
   AgreementDto,
   Catalog,
-  CredentialSubject,
   DataAddress,
   defaultContext,
   EndpointProperty,
@@ -66,7 +65,7 @@ import {
 describe("Transfer service", () => {
   let transferService: TransferService;
   let server: SetupServer;
-  let remoteProcessId = "urn:uuid:6334612d-bc17-4474-b8c1-5703c7a80bb1";
+  const remoteProcessId = "urn:uuid:6334612d-bc17-4474-b8c1-5703c7a80bb1";
   let moduleRef: TestingModule;
 
   beforeAll(async () => {
@@ -127,7 +126,7 @@ describe("Transfer service", () => {
           provide: PolicyEvaluationService,
           useValue: {
             async initializeContext(
-              agreementId: string,
+              _agreementId: string,
               role: "consumer" | "provider",
               scope: EvaluationTrigger,
               transferId: string,
@@ -176,10 +175,10 @@ describe("Transfer service", () => {
         {
           provide: VCAuthService,
           useValue: new (class {
-            async requestToken(audience: string) {
+            async requestToken() {
               return "TEST_TOKEN";
             }
-            async validateToken(token: string, audience?: string) {
+            async validateToken() {
               return true;
             }
           })()

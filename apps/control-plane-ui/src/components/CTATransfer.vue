@@ -10,11 +10,11 @@ const props = defineProps<{
 const transfers = toRef(props, "transfers");
 </script>
 <template>
-  <div class="grid grid-cols-12 gap-4" v-if="transfers.length > 0">
+  <div v-if="transfers.length > 0" class="grid grid-cols-12 gap-4">
     <div
-      class="col-span-12 lg:col-span-6 xl:col-span-3"
       v-for="transfer in transfers"
-      :key="transfer.localId">
+      :key="transfer.localId"
+      class="col-span-12 lg:col-span-6 xl:col-span-3">
       <TransferProceed :transfer="transfer"></TransferProceed>
     </div>
   </div>

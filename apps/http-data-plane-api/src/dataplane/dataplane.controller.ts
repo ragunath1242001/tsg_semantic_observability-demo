@@ -1,47 +1,19 @@
-import {
-  Controller,
-  Logger,
-  Get,
-  HttpCode,
-  HttpStatus,
-  Post,
-  Param,
-  Query,
-  Body,
-  Headers
-} from "@nestjs/common";
+import { Controller, Logger, Get, HttpCode, HttpStatus } from "@nestjs/common";
 import { DataPlaneService } from "./dataplane.service.js";
-import {
-  DataPlaneRequestResponseDto,
-  TransferCompletionMessageDto,
-  TransferCompletionMessageSchema,
-  TransferRequestMessageDto,
-  TransferRequestMessageSchema,
-  TransferStartMessageDto,
-  TransferStartMessageSchema,
-  TransferSuspensionMessageDto,
-  TransferSuspensionMessageSchema,
-  TransferTerminationMessageDto,
-  TransferTerminationMessageSchema
-} from "@tsg-dsp/common-dsp";
 
 import {
   ApiBadGatewayResponse,
-  ApiBody,
   ApiNotImplementedResponse,
   ApiOAuth2,
   ApiOkResponse,
   ApiOperation,
-  ApiParam,
-  ApiResponse,
   ApiTags
 } from "@nestjs/swagger";
 import { ApiForbiddenResponseDefault } from "@tsg-dsp/common-dtos";
 import {
   Roles,
   DisableOAuthGuard,
-  DisableRolesGuard,
-  nonEmptyStringPipe
+  DisableRolesGuard
 } from "@tsg-dsp/common-api";
 
 @Controller()

@@ -1,8 +1,5 @@
 <script setup lang="ts">
-import { useLayout } from "./composables/layout";
-import { computed, toRefs } from "vue";
-
-const { layoutConfig } = useLayout();
+import { toRefs } from "vue";
 
 export interface FooterProps {
   logoUrl: string;

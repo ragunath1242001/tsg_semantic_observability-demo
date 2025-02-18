@@ -71,20 +71,6 @@ const loadStatus = async () => {
   }
 };
 onMounted(async () => await loadStatus());
-
-const options = {
-  cutout: "75%",
-  plugins: {
-    legend: {
-      position: "left"
-    },
-    tooltip: {
-      callbacks: {
-        label: (context) => " " + context.label
-      }
-    }
-  }
-};
 </script>
 
 <template>
@@ -92,7 +78,7 @@ const options = {
     class="col-span-12"
     style="border-radius: 12px; border: 1px solid var(--surface-border)">
     <template #title>Service status</template>
-    <template #content v-if="status">
+    <template v-if="status" #content>
       <div class="grid grid-cols-12 gap-4">
         <div class="col-span-12 lg:col-span-6">
           <DisplayField label="Database">{{
@@ -112,9 +98,10 @@ const options = {
                   class="p-metergroup-label-list p-metergroup-label-list-horizontal"
                   data-pc-section="labellist">
                   <li
+                    v-for="(val, index) in props.value"
+                    :key="index"
                     class="p-metergroup-label"
-                    data-pc-section="label"
-                    v-for="(val, index) in props.value">
+                    data-pc-section="label">
                     <span
                       class="p-metergroup-label-marker"
                       data-pc-section="labelmarker"
@@ -134,7 +121,7 @@ const options = {
     </template>
   </Card>
   <Card class="col-span-12 lg:col-span-6 xl:col-span-4 h-full">
-    <template #content v-if="status">
+    <template v-if="status" #content>
       <div class="flex justify-between mb-4">
         <div>
           <span
@@ -159,7 +146,7 @@ const options = {
     </template>
   </Card>
   <Card class="col-span-12 lg:col-span-6 xl:col-span-4 h-full">
-    <template #content v-if="status">
+    <template v-if="status" #content>
       <div class="flex justify-between mb-4">
         <div>
           <span
@@ -180,7 +167,7 @@ const options = {
     </template>
   </Card>
   <Card class="col-span-12 lg:col-span-6 xl:col-span-4 h-full">
-    <template #content v-if="status">
+    <template v-if="status" #content>
       <div class="flex justify-between mb-4">
         <div>
           <span

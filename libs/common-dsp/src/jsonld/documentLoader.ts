@@ -1,4 +1,3 @@
-import { FlatCache } from "flat-cache";
 import { RemoteDocument } from "jsonld/jsonld-spec.js";
 import {
   dspContext,
@@ -12,7 +11,6 @@ import jsonld from "jsonld";
 
 const documentCache: Record<string, RemoteDocument> = {};
 
-/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
 const defaultDocumentLoader =
   (jsonld as any).documentLoaders?.node?.() ||
   (jsonld as any).documentLoaders?.xhr?.();

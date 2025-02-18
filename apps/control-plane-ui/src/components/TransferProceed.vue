@@ -7,7 +7,7 @@ import http from "@tsg-dsp/common-ui/utils/http";
 import { useConfirm } from "primevue/useconfirm";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
 
-const props = defineProps<{
+defineProps<{
   transfer: TransferDetailDto;
 }>();
 
@@ -183,11 +183,11 @@ const terminateTransfer = async (transfer) => {
           class="p-button-outlined"
           @click="openDialog('terminate')" />
         <Button
+          v-if="transfer.state === 'dspace:STARTED'"
           v-tooltip.top="'Suspend'"
           severity="warn"
           icon="pi pi-pause"
           type="submit"
-          v-if="transfer.state === 'dspace:STARTED'"
           class="p-button-outlined"
           @click="openDialog('suspend')" />
         <Button
@@ -198,8 +198,8 @@ const terminateTransfer = async (transfer) => {
           class="p-button-outlined"
           @click="proceedTransfer(transfer)" />
         <Dialog
-          :header="determineHeader()"
           v-model:visible="display"
+          :header="determineHeader()"
           :breakpoints="{ '840px': '75vw' }"
           :modal="true">
           <Card
@@ -213,7 +213,7 @@ const terminateTransfer = async (transfer) => {
                   >Code</label
                 >
                 <div class="col-span-12 md:col-span-10">
-                  <InputText id="code" type="text" v-model="code" />
+                  <InputText id="code" v-model="code" type="text" />
                 </div>
               </div>
               <div class="field grid grid-cols-12 gap-4">
@@ -223,7 +223,7 @@ const terminateTransfer = async (transfer) => {
                   >Reason</label
                 >
                 <div class="col-span-12 md:col-span-10">
-                  <InputText id="reason" type="text" v-model="reason" />
+                  <InputText id="reason" v-model="reason" type="text" />
                 </div>
               </div>
             </template>

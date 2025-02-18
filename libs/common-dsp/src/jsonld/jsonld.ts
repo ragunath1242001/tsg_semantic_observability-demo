@@ -49,7 +49,7 @@ export async function frame(
 ): Promise<JsonLdObj> {
   const flattened = await flatten(document);
   const usingContext = compactingContext(context);
-  let usingType = type || document["@type"];
+  const usingType = type || document["@type"];
   if (!usingType) {
     throw Error(
       "Could not frame document, missing type in function call and document"

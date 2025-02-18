@@ -35,7 +35,6 @@ import { TypeOrmTestHelper } from "@tsg-dsp/common-api";
 
 describe("Issuer service", () => {
   let issuerService: IssuerService;
-  let holderService: HolderService;
   let server: SetupServer;
   let moduleRef: TestingModule;
   let exampleKey: GenerateKeyPairResult<KeyLike>;
@@ -102,7 +101,6 @@ describe("Issuer service", () => {
       ]
     }).compile();
     issuerService = await moduleRef.get(IssuerService);
-    holderService = await moduleRef.get(HolderService);
 
     const didService = await moduleRef.get(DidService);
     await moduleRef.get(KeysService).initialized;

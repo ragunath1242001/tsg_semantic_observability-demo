@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-function-type */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export const serializableSymbol = Symbol("custom:serializable");
 export const idSymbol = Symbol("custom:id");
@@ -17,7 +18,7 @@ export type Keys =
   | "namespace"
   | "ldType";
 
-export function symbolMap(key: Keys): Symbol {
+export function symbolMap(key: Keys): symbol {
   switch (key) {
     case "id":
       return idSymbol;
@@ -38,7 +39,7 @@ export function symbolMap(key: Keys): Symbol {
 
 function getMetadata(
   key: Keys,
-  target: Object,
+  target: object,
   propertyKey?: string | symbol
 ): any {
   const symbol = symbolMap(key);
@@ -51,12 +52,12 @@ function getMetadata(
 
 export function hasDecorator(
   key: "id" | "language" | "value" | "keepTypes" | "serializable",
-  target: Object,
+  target: object,
   propertyKey?: string | symbol
 ): boolean {
   try {
     return getMetadata(key, target, propertyKey) ? true : false;
-  } catch (e) {
+  } catch (_) {
     return false;
   }
 }
@@ -72,7 +73,7 @@ export function getStringDecorator(
       return metadata;
     }
     return undefined;
-  } catch (e) {
+  } catch (_) {
     return undefined;
   }
 }
@@ -88,7 +89,7 @@ export function getFunctionDecorator(
       return metadata;
     }
     return undefined;
-  } catch (e) {
+  } catch (_) {
     return undefined;
   }
 }

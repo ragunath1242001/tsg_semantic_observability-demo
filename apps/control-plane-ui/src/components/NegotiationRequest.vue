@@ -10,7 +10,7 @@ import http from "@tsg-dsp/common-ui/utils/http";
 import MonacoEditor from "@tsg-dsp/common-ui/components/MonacoEditor.vue";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
 
-const props = defineProps<{
+defineProps<{
   negotiation: NegotiationStatusDto;
 }>();
 const display = ref(false);
@@ -115,8 +115,8 @@ const declineNegotiation = async (negotiation) => {
       </span>
       <div class="flex justify-between mb-0">
         <Dialog
-          header="Do you agree with the following offer?"
           v-model:visible="display"
+          header="Do you agree with the following offer?"
           :style="{ width: '50vw' }"
           :breakpoints="{ '1199px': '80vw', '575px': '97vw' }"
           :modal="true">

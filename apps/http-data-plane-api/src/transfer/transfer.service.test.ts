@@ -72,7 +72,7 @@ describe("Transfer Service", () => {
     server = setupServer(
       http.post<PathParams, DataPlaneCreation>(
         `${config.controlPlane.dataPlaneEndpoint}/init`,
-        async ({ request, params, cookies }) => {
+        async ({ request }) => {
           const requestBody = await request.json();
           return HttpResponse.json({
             ...requestBody,
@@ -82,7 +82,7 @@ describe("Transfer Service", () => {
       ),
       http.post(
         `${config.controlPlane.dataPlaneEndpoint}/:id/catalog`,
-        ({ request, params, cookies }) => {
+        ({ request }) => {
           return HttpResponse.json(request.json());
         }
       ),
@@ -151,16 +151,13 @@ describe("Transfer Service", () => {
           url: "https://httpbin.org/anything/anything/test"
         });
       }),
-      http.post(
-        "http://your-api-url/negotiations/request",
-        ({ request, params, cookies }) => {
-          if (request.url.includes("validDatasetId")) {
-            return HttpResponse.json(HttpStatus.OK); // successful response
-          } else {
-            return HttpResponse.json(HttpStatus.NOT_FOUND); // simulate failure for invalid datasets
-          }
+      http.post("http://your-api-url/negotiations/request", ({ request }) => {
+        if (request.url.includes("validDatasetId")) {
+          return HttpResponse.json(HttpStatus.OK); // successful response
+        } else {
+          return HttpResponse.json(HttpStatus.NOT_FOUND); // simulate failure for invalid datasets
         }
-      ),
+      }),
       http.get("https://testaudience/.well-known/did.json", () => {
         return HttpResponse.json({
           service: [

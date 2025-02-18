@@ -10,8 +10,7 @@ import { AppRole } from "@tsg-dsp/wallet-dtos";
 import { Body, Controller, HttpCode, HttpStatus, Post } from "@nestjs/common";
 import {
   ApiForbiddenResponseDefault,
-  PresentationDefinition,
-  AuthorizationRequest
+  PresentationDefinition
 } from "@tsg-dsp/common-dtos";
 import { OID4VPVerifierService } from "./verifier.service.js";
 

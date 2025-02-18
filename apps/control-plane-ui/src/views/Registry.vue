@@ -91,23 +91,23 @@ onMounted(async () => await initialize());
     >
     <template #content>
       <DataTable
-        :value="addresses"
         v-model:selection="selection"
-        selectionMode="single"
+        :value="addresses"
+        selection-mode="single"
         :paginator="true"
         :rows="5"
-        @row-select="getCatalog"
-        responsiveLayout="scroll">
+        responsive-layout="scroll"
+        @row-select="getCatalog">
         <Column
           field="didId"
           header="DID"
           :sortable="true"
-          headerStyle="min-width:12rem;"></Column>
+          header-style="min-width:12rem;"></Column>
         <Column
           field="address"
           header="Address"
           :sortable="true"
-          headerStyle="min-width:12rem;"
+          header-style="min-width:12rem;"
           class="break-all"></Column>
       </DataTable>
     </template>
@@ -120,7 +120,7 @@ onMounted(async () => await initialize());
       >In this view, all the datasets of the dataspace are shown.</template
     >
   </Card>
-  <div v-for="catalog in catalogs">
+  <div v-for="catalog in catalogs" :key="catalog['@id']">
     <!-- TODO get catalogs and make sure the component supports merging data sets. -->
     <div class="grid grid-cols-12 gap-8 card-container mb-4">
       <Catalog

@@ -26,13 +26,13 @@ export class DidTdwResolverStrategy implements DidResolverStrategy {
       if (typeof response.data === "object") {
         rawLogResponse = JSON.stringify(response.data);
       }
-      let didLog: DIDLog = rawLogResponse
+      const didLog: DIDLog = rawLogResponse
         .trim()
         .split("\n")
         .map((logEntry) => JSON.parse(logEntry));
       const { doc } = await resolveDID(didLog);
       return doc;
-    } catch (err) {
+    } catch (_) {
       throw new AppError(
         `Could not load DID document for ${didId}`,
         HttpStatus.BAD_REQUEST

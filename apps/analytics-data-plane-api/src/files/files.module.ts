@@ -34,13 +34,13 @@ export class FilesModule {
         DataPlaneTestModule,
         MulterModule.register({
           storage: diskStorage({
-            destination: function (req, file, cb) {
+            destination: function (_req, _file, cb) {
               if (!fs.existsSync(UPLOAD_DIR)) {
                 fs.mkdirSync(UPLOAD_DIR);
               }
               cb(null, UPLOAD_DIR);
             },
-            filename: function (req, file, cb) {
+            filename: function (_req, file, cb) {
               cb(null, file.originalname);
             }
           }),

@@ -18,12 +18,6 @@ const onRemoveTemplatingFile = (file, removeFileCallback, index) => {
   totalSizePercent.value = totalSize.value / 10;
 };
 
-const onClearTemplatingUpload = (clear) => {
-  clear();
-  totalSize.value = 0;
-  totalSizePercent.value = 0;
-};
-
 const onSelectedFiles = (event) => {
   files.value = event.files;
   files.value.forEach((file) => {
@@ -91,37 +85,37 @@ const handleUpload = async (event) => {
     <FileUpload
       name="files[]"
       custom-upload
-      @uploader="handleUpload"
       :multiple="true"
+      @uploader="handleUpload"
       @select="onSelectedFiles">
       <template
         #header="{ chooseCallback, uploadCallback, clearCallback, files }">
         <div class="flex flex-wrap justify-between items-center flex-1 gap-4">
           <div class="flex gap-2">
             <Button
-              @click="chooseCallback()"
               icon="pi pi-folder"
               rounded
               outlined
-              severity="secondary"></Button>
+              severity="secondary"
+              @click="chooseCallback()"></Button>
             <Button
-              @click="uploadEvent(uploadCallback)"
               icon="pi pi-cloud-upload"
               rounded
               outlined
               severity="success"
-              :disabled="!files || files.length === 0"></Button>
+              :disabled="!files || files.length === 0"
+              @click="uploadEvent(uploadCallback)"></Button>
             <Button
-              @click="clearCallback()"
               icon="pi pi-times"
               rounded
               outlined
               severity="danger"
-              :disabled="!files || files.length === 0"></Button>
+              :disabled="!files || files.length === 0"
+              @click="clearCallback()"></Button>
           </div>
           <ProgressBar
             :value="totalSizePercent"
-            :showValue="false"
+            :show-value="false"
             class="md:w-20rem h-1 w-full md:ml-auto">
             <span class="whitespace-nowrap">{{ totalSize }}B / 1Mb</span>
           </ProgressBar>
@@ -153,12 +147,12 @@ const handleUpload = async (event) => {
                 <Badge value="Pending" severity="warn" />
                 <Button
                   icon="pi pi-times"
-                  @click="
-                    onRemoveTemplatingFile(file, removeFileCallback, index)
-                  "
                   outlined
                   rounded
-                  severity="danger" />
+                  severity="danger"
+                  @click="
+                    onRemoveTemplatingFile(file, removeFileCallback, index)
+                  " />
               </div>
             </div>
           </div>
@@ -181,10 +175,10 @@ const handleUpload = async (event) => {
                 <Badge value="Completed" class="mt-4" severity="success" />
                 <Button
                   icon="pi pi-times"
-                  @click="removeUploadedFileCallback(index)"
                   outlined
                   rounded
-                  severity="danger" />
+                  severity="danger"
+                  @click="removeUploadedFileCallback(index)" />
               </div>
             </div>
           </div>

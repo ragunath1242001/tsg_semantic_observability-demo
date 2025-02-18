@@ -59,7 +59,7 @@ onMounted(async () => {
       </template>
     </Card>
     <div class="flex grid grid-cols-12 gap-4 mt-8">
-      <div class="col-span-12 lg:col-span-6 xl:col-span-4" v-if="!didDocument">
+      <div v-if="!didDocument" class="col-span-12 lg:col-span-6 xl:col-span-4">
         <Card>
           <template #content>
             <div class="flex justify-between mb-4">
@@ -92,7 +92,9 @@ onMounted(async () => {
                   <div
                     class="text-surface-900 dark:text-surface-0 font-medium text-sm">
                     <ul>
-                      <li v-for="context in didDocument['@context']">
+                      <li
+                        v-for="context in didDocument['@context']"
+                        :key="context">
                         {{ context }}
                       </li>
                     </ul>

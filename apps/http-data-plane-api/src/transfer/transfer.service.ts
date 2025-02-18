@@ -248,7 +248,7 @@ export class TransferService {
   }
 
   async handleTransferComplete(
-    transferCompletionMessage: TransferCompletionMessageDto,
+    _transferCompletionMessage: TransferCompletionMessageDto,
     processId: string
   ) {
     const transfer = await this.getTransferById(processId);
@@ -257,7 +257,7 @@ export class TransferService {
   }
 
   async handleTransferTerminate(
-    transferTerminationMessage: TransferTerminationMessageDto,
+    _transferTerminationMessage: TransferTerminationMessageDto,
     processId: string
   ) {
     const transfer = await this.getTransferById(processId);
@@ -304,7 +304,7 @@ export class TransferService {
         if (negotiation) {
           return negotiation;
         }
-      } catch (err) {
+      } catch (_) {
         this.logger.debug(
           `Negotiation ${negotiationId} did not finalize after ${retries} retries`
         );
@@ -350,7 +350,7 @@ export class TransferService {
   }
 
   async handleTransferSuspend(
-    transferSuspensionMessage: TransferSuspensionMessageDto,
+    _transferSuspensionMessage: TransferSuspensionMessageDto,
     processId: string
   ) {
     const transfer = await this.getTransferById(processId);
@@ -453,7 +453,7 @@ export class TransferService {
           }
         );
         negotiation = resp.data;
-      } catch (err) {
+      } catch (_) {
         this.logger.debug(
           `No negotiation found for dataset ${datasetId}, requesting new negotiation.`
         );
@@ -652,7 +652,7 @@ export class TransferService {
     method: string,
     url: string,
     headers: IncomingHttpHeaders,
-    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+
     body: Buffer | undefined,
     query: qs.ParsedQs,
     response: Response,

@@ -3,7 +3,7 @@ import axios from "axios";
 
 export function execPromise(command, options = { encoding: "UTF-8" }) {
   return new Promise(function (resolve, reject) {
-    exec(command, options, (error, stdout, stderr) => {
+    exec(command, options, (error, stdout, _stderr) => {
       if (error) {
         reject(error);
         return;

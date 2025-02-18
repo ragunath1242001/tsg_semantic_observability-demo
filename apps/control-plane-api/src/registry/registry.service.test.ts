@@ -33,7 +33,7 @@ describe("RegistryService", () => {
     jest.useFakeTimers();
     jest.spyOn(global, "setTimeout");
     await TypeOrmTestHelper.instance.setupTestDB();
-    let iamConfig: IamConfig = mockWalletConfig();
+    const iamConfig: IamConfig = mockWalletConfig();
     const registryConfig = plainToClass(RegistryConfig, {
       useRegistry: true
     });
@@ -239,7 +239,7 @@ describe("RegistryService", () => {
       jest.useFakeTimers();
       jest.spyOn(global, "setTimeout");
       await TypeOrmTestHelper.instance.setupTestDB();
-      let iamConfig: IamConfig = mockWalletConfig();
+      const iamConfig: IamConfig = mockWalletConfig();
       const registryConf = plainToClass(RegistryConfig, { useRegistry: false });
       const module: TestingModule = await Test.createTestingModule({
         imports: [

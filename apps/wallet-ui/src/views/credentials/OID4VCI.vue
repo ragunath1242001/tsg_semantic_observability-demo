@@ -153,7 +153,7 @@ const validateCredentialSubject = (showToast: boolean) => {
     let credentialSubject;
     try {
       credentialSubject = JSON.parse(offerForm.value.credentialSubject);
-    } catch (err) {
+    } catch (_) {
       throw Error("Credential subject must be a valid JSON document");
     }
     if (typeof credentialSubject !== "object") {
@@ -279,7 +279,7 @@ const retrieveCredential = async () => {
       ) {
         try {
           JSON.parse(request.authorized.additionalRequestParams.credential);
-        } catch (error) {
+        } catch (_) {
           throw Error("Request parameters must be a valid JSON document");
         }
       } else {
@@ -384,7 +384,7 @@ onMounted(async () => {
       <template #content>
         <DataTable
           v-model:expanded-rows="expandedRows"
-          dataKey="id"
+          data-key="id"
           :value="offers"
           sort-field="created"
           :sort-order="-1"
@@ -454,7 +454,7 @@ onMounted(async () => {
         </DataTable>
       </template>
     </Card>
-    <Card class="mt-8" v-if="isIssuer">
+    <Card v-if="isIssuer" class="mt-8">
       <template #title>Create credential offer</template>
       <template #subtitle>
         <p>
@@ -473,20 +473,20 @@ onMounted(async () => {
       </template>
       <template #content>
         <form class="flex flex-col gap-4" @submit.prevent="createOffer">
-          <FormField label="Holder ID" v-slot="props">
+          <FormField v-slot="props" label="Holder ID">
             <InputText
               :id="props.id"
-              class="w-full"
               v-model="offerForm.holderId"
+              class="w-full"
               placeholder="did:..."
               pattern="did:(web|tdw|key):.*"
               validation-message="Target DID must be one of DID web, tdw or key." />
           </FormField>
-          <FormField label="Credential Type" v-slot="props">
+          <FormField v-slot="props" label="Credential Type">
             <Select
               :id="props.id"
-              class="w-full"
               v-model="offerForm.credentialType"
+              class="w-full"
               :options="issuableCredentialTypes"
               option-label="credentialType"
               value-label="credentialType"
@@ -494,30 +494,29 @@ onMounted(async () => {
           </FormField>
           <template v-if="offerForm.credentialType">
             <FormField
-              label="Credential"
-              v-slot="props"
               v-if="
                 !offerForm.credentialType?.schema || offerForm.manualCredential
-              ">
+              "
+              label="Credential">
               <MonacoEditorVue
                 v-model="offerForm.credentialSubject"
                 :schema="offerForm.credentialType?.schema"></MonacoEditorVue>
               <Button
-                severity="success"
                 v-if="offerForm.credentialType?.schema"
+                severity="success"
                 label="Credential form"
                 @click="offerForm.manualCredential = false" />
             </FormField>
             <FormField
-              label="Credential Form"
-              :label-width="12"
               v-if="
                 offerForm.credentialType?.schema && !offerForm.manualCredential
-              ">
+              "
+              label="Credential Form"
+              :label-width="12">
               <JsonSchemaFormElement
                 v-for="(child, key) in parsedProperties"
-                :schema="child"
                 :key="key"
+                :schema="child"
                 :required="
                   offerForm.credentialType?.schema.required.includes(key)
                 "
@@ -530,18 +529,18 @@ onMounted(async () => {
                 "></JsonSchemaFormElement>
               <FormField no-label>
                 <Button
-                  severity="warn"
                   v-if="offerForm.credentialType?.schema"
+                  severity="warn"
                   label="Manual credential"
                   @click="offerForm.manualCredential = true" />
               </FormField>
             </FormField>
           </template>
-          <FormField label="Pre Authorized code" v-slot="props">
+          <FormField v-slot="props" label="Pre Authorized code">
             <InputText
               :id="props.id"
-              class="w-full"
               v-model="offerForm.preAuthorizedCode"
+              class="w-full"
               placeholder="Leave empty to auto generate" />
           </FormField>
           <FormField no-label>
@@ -572,11 +571,11 @@ onMounted(async () => {
       </template>
       <template #content>
         <form class="flex flex-col gap-4" @submit.prevent="retrieveCredential">
-          <FormField label="Flow" v-slot="props">
+          <FormField v-slot="props" label="Flow">
             <Select
               :id="props.id"
-              class="w-full"
               v-model="requestForm.flow"
+              class="w-full"
               :options="[
                 {
                   label: 'Pre Authorized Code Flow',
@@ -591,51 +590,50 @@ onMounted(async () => {
               option-value="value"
               placeholder="Flow" />
           </FormField>
-          <FormField label="Issuer URL" v-slot="props">
+          <FormField v-slot="props" label="Issuer URL">
             <InputText
               :id="props.id"
-              class="w-full"
               v-model="requestForm.issuerUrl"
+              class="w-full"
               placeholder="Issuer URL"
               required />
           </FormField>
           <FormField
             v-if="requestForm.flow === 'pre-authorized-code'"
-            label="Pre Authorized code"
-            v-slot="props">
+            v-slot="props"
+            label="Pre Authorized code">
             <InputText
               :id="props.id"
-              class="w-full"
               v-model="requestForm.preAuthorizedCode"
+              class="w-full"
               placeholder="Pre Authorized code received from issuer"
               required />
           </FormField>
           <FormField
             v-if="requestForm.flow === 'authorization-code'"
-            label="Access token"
-            v-slot="props">
+            v-slot="props"
+            label="Access token">
             <InputText
               :id="props.id"
-              class="w-full"
               v-model="requestForm.authorized.accessToken"
+              class="w-full"
               placeholder="Access token"
               required />
           </FormField>
           <FormField
             v-if="requestForm.flow === 'authorization-code'"
-            label="Credential ID"
-            v-slot="props">
+            v-slot="props"
+            label="Credential ID">
             <InputText
               :id="props.id"
-              class="w-full"
               v-model="requestForm.authorized.credentialIdentifier"
+              class="w-full"
               placeholder="Credential ID"
               required />
           </FormField>
           <FormField
             v-if="requestForm.flow === 'authorization-code'"
-            label="Request parameters"
-            v-slot="props">
+            label="Request parameters">
             <MonacoEditorVue
               v-model="
                 requestForm.authorized.additionalRequestParams.credential

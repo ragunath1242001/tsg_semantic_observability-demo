@@ -22,7 +22,7 @@ const onCellEditComplete = (event: DataTableCellEditCompleteEvent) => {
 <template>
   <DataTable
     :value="pairs.concat([{ key: '', value: '' }])"
-    editMode="cell"
+    edit-mode="cell"
     @cell-edit-complete="onCellEditComplete">
     <Column
       field="key"
@@ -38,7 +38,7 @@ const onCellEditComplete = (event: DataTableCellEditCompleteEvent) => {
         <div
           style="width: 100%"
           class="whitespace-nowrap overflow-hidden text-ellipsis">
-          <span class="text-muted-color" v-if="props.data.key.trim() === ''"
+          <span v-if="props.data.key.trim() === ''" class="text-muted-color"
             >Key</span
           >
           <span v-else>{{ props.data.key }}</span>
@@ -62,7 +62,7 @@ const onCellEditComplete = (event: DataTableCellEditCompleteEvent) => {
         <div
           style="width: 100%"
           class="whitespace-nowrap overflow-hidden text-ellipsis">
-          <span class="text-muted-color" v-if="props.data.value.trim() === ''"
+          <span v-if="props.data.value.trim() === ''" class="text-muted-color"
             >Value</span
           >
           <span v-else>{{ props.data.value }}</span>
@@ -84,10 +84,10 @@ const onCellEditComplete = (event: DataTableCellEditCompleteEvent) => {
           v-if="props.index < pairs.length"
           size="small"
           icon="pi pi-times"
-          @click="pairs.splice(props.index, 1)"
           severity="danger"
           aria-label="Stop"
-          outlined />
+          outlined
+          @click="pairs.splice(props.index, 1)" />
         <span v-else></span>
       </template>
     </Column>

@@ -3,15 +3,12 @@ import { AppError, ServerConfig } from "@tsg-dsp/common-api";
 import {
   AuthorizationRequest,
   AuthorizationResponse,
-  PresentationDefinition,
-  PresentationSubmission
+  PresentationDefinition
 } from "@tsg-dsp/common-dtos";
 import crypto from "crypto";
-import { Auth, In, Repository } from "typeorm";
+import { Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
 import { AuthorizationRequestDao } from "../../model/presentation.dao.js";
-import { DCPVerifierService } from "../dcp/verifier.service.js";
-import { VerifiablePresentation } from "@tsg-dsp/common-dsp";
 import { PresentationService } from "../presentation.service.js";
 @Injectable()
 export class OID4VPVerifierService {

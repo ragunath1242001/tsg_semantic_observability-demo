@@ -7,9 +7,8 @@ interface CacheEntry {
   context: JsonLd;
 }
 
-const cachedContexts = new Map<String, CacheEntry>();
+const cachedContexts = new Map<string, CacheEntry>();
 
-/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
 const nodeDocumentLoader: (url: string) => Promise<RemoteDocument> = (
   jsonld as any
 ).documentLoaders.node();

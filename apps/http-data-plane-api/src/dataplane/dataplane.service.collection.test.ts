@@ -20,7 +20,6 @@ import {
 describe("Dataplane with CollectionDatasetConfig", () => {
   let dataPlaneService: DataPlaneService;
   let server: SetupServer;
-  let managementToken: string;
 
   beforeAll(async () => {
     await TypeOrmTestHelper.instance.setupTestDB();
@@ -62,9 +61,8 @@ describe("Dataplane with CollectionDatasetConfig", () => {
     server = setupServer(
       http.post<PathParams, DataPlaneCreation>(
         `${config.controlPlane.dataPlaneEndpoint}/init`,
-        async ({ request, params, cookies }) => {
+        async ({ request }) => {
           const requestBody = await request.json();
-          managementToken = requestBody.managementToken;
           return HttpResponse.json({
             ...requestBody,
             identifier: "urn:uuid:4ab97081-665e-447e-88a1-791a185994b9"
@@ -73,25 +71,25 @@ describe("Dataplane with CollectionDatasetConfig", () => {
       ),
       http.post(
         `${config.controlPlane.dataPlaneEndpoint}/:id/catalog`,
-        async ({ request, params, cookies }) => {
+        async ({ request }) => {
           return HttpResponse.json(await request.json());
         }
       ),
       http.post(
         `${config.controlPlane.dataPlaneEndpoint}/:id/dataset`,
-        async ({ request, params, cookies }) => {
+        async () => {
           return HttpResponse.text();
         }
       ),
       http.put(
         `${config.controlPlane.dataPlaneEndpoint}/:id/dataset/:datasetId`,
-        async ({ request, params, cookies }) => {
+        async () => {
           return HttpResponse.text();
         }
       ),
       http.delete(
         `${config.controlPlane.dataPlaneEndpoint}/:id/dataset/:datasetId`,
-        async ({ request, params, cookies }) => {
+        async () => {
           return HttpResponse.text();
         }
       )

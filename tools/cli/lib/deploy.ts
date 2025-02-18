@@ -49,9 +49,13 @@ export class Deploy {
 
     if (options.uninstall) {
       log("log", `Uninstalling ecosystem`);
+      const promises = [];
       for (const participant of participants) {
-        await this.uninstallParticipant(participant, options.dryRun, true);
+        promises.push(
+          this.uninstallParticipant(participant, options.dryRun, true)
+        );
       }
+      await Promise.all(promises);
       await execPromise(
         `kubectl get secrets -n ${this.general.namespace} -o name | grep 'secret/sso-' | xargs -L 1 kubectl delete -n ${this.general.namespace}`,
         options.dryRun,
@@ -72,13 +76,17 @@ export class Deploy {
 
     if (options.clean) {
       log("log", `Cleaning ecosystem`);
+      const promises = [];
       for (const participant of participants) {
-        await this.uninstallParticipant(
-          participant,
-          options.dryRun,
-          options.cleanDatabase
+        promises.push(
+          this.uninstallParticipant(
+            participant,
+            options.dryRun,
+            options.cleanDatabase
+          )
         );
       }
+      await Promise.all(promises);
       await execPromise(
         `kubectl get secrets -n ${this.general.namespace} -o name | grep 'secret/sso-' | xargs -L 1 kubectl delete -n ${this.general.namespace}`,
         options.dryRun,
@@ -89,6 +97,7 @@ export class Deploy {
     if (options.diff) {
       log("log", `Determining differences for ecosystem`);
       for (const participant of participants) {
+        // eslint-disable-next-line no-await-in-loop
         await this.installParticipant(
           participant,
           options.config,
@@ -101,6 +110,7 @@ export class Deploy {
       if (options.yes || (await confirm({ message: "Execute upgrade?" }))) {
         log("log", `Deploying ecosystem`);
         for (const participant of participants) {
+          // eslint-disable-next-line no-await-in-loop
           await this.installParticipant(
             participant,
             options.config,
@@ -114,6 +124,7 @@ export class Deploy {
     } else {
       log("log", `Deploying ecosystem`);
       for (const participant of participants) {
+        // eslint-disable-next-line no-await-in-loop
         await this.installParticipant(
           participant,
           options.config,
@@ -322,15 +333,21 @@ export class Deploy {
           false
         );
       }
+      const promises = [];
       for (const [id] of participant.dataPlanes) {
-        await execPromise(
-          `helm delete -n ${this.general.namespace} ${participant.id}-tsg-${id}`,
-          dryRun,
-          this.cwd,
-          false
+        promises.push(
+          execPromise(
+            `helm delete -n ${this.general.namespace} ${participant.id}-tsg-${id}`,
+            dryRun,
+            this.cwd,
+            false
+          )
         );
       }
-    } catch (e) {}
+      await Promise.all(promises);
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   private helmRepository = (
@@ -430,6 +447,7 @@ export class Deploy {
 
     for (const [id, dataPlane] of participant.dataPlanes) {
       const type = dataPlane.type ?? id;
+      // eslint-disable-next-line no-await-in-loop
       await helmCommand(
         wait ? "--wait" : "",
         `-f ${config}/${participant.id}/values.${id}.yaml`,

@@ -32,7 +32,7 @@ export class KeysService {
       await this.didService.checkExistingDidDocument(
         await this.getDefaultKey()
       );
-    } catch (e) {
+    } catch (_) {
       const keys = await Promise.all(
         this.config.initKeys.map((k) => this.insertIfNotExists(k))
       );

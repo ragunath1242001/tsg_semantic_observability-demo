@@ -1,17 +1,11 @@
 import {
   ApiBody,
-  ApiOAuth2,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
   ApiParam
 } from "@nestjs/swagger";
-import {
-  DisableOAuthGuard,
-  DisableRolesGuard,
-  Roles
-} from "@tsg-dsp/common-api";
-import { AppRole } from "@tsg-dsp/wallet-dtos";
+import { DisableOAuthGuard, DisableRolesGuard } from "@tsg-dsp/common-api";
 import {
   Body,
   Controller,

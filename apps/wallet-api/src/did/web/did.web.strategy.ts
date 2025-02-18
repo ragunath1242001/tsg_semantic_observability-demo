@@ -68,7 +68,7 @@ export class DidWebStrategy implements DidStrategy {
     return didDocument;
   }
 
-  async setDefaultKey(didDocument: DIDDocument, key: KeyMaterialDao) {}
+  async setDefaultKey(_didDocument: DIDDocument, _key: KeyMaterialDao) {}
 
   getWellKnownDidDocument(doc: DIDDocument): DIDDocument {
     return doc;

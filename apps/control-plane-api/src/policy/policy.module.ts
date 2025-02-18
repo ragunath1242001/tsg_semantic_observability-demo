@@ -12,7 +12,6 @@ import { AgreementDao, TransferMonitorDao } from "../model/agreement.dao.js";
 import { AgreementMonitorService } from "./agreement.monitor.service.js";
 import { TransferModule } from "../dsp/transfer/transfer.module.js";
 import { AuthModule } from "@tsg-dsp/common-api";
-import { RootConfig } from "../config.js";
 
 @Module({
   imports: [

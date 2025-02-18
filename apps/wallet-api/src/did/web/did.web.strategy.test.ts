@@ -122,7 +122,7 @@ describe("DID Web Service", () => {
           completeDidDocument,
           await keyMaterialGenerator()
         )
-      ).resolves;
+      );
     });
 
     it("Get .well-known path DID Document", async () => {
