@@ -62,7 +62,7 @@ describe("Credentials Service", () => {
     server = setupServer(
       http.post<PathParams, CredentialSubject, VerifiableCredential>(
         "https://registrationnumber.notary.gaia-x.eu/v1/registrationNumberVC",
-        async ({ request, params, cookies }) => {
+        async ({ request }) => {
           return HttpResponse.json<VerifiableCredential<JsonWebSignature2020>>({
             "@context": [
               "https://www.w3.org/2018/credentials/v1",
@@ -86,7 +86,7 @@ describe("Credentials Service", () => {
       ),
       http.post<PathParams, VerifiablePresentation, VerifiableCredential>(
         "https://compliance.gaia-x.eu/development/api/credential-offers",
-        async ({ request, params, cookies }) => {
+        async ({ request }) => {
           const json = await request.json();
           const vcs = toArray(json.verifiableCredential);
 

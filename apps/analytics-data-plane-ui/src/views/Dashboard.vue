@@ -154,11 +154,11 @@ onMounted(async () => {
 
 <template>
   <Dialog
-    :dismissableMask="true"
-    :style="{ width: '90vw', maxWidth: '100rem' }"
     v-model:visible="showLogModal"
-    @hide="logModal = undefined"
-    modal>
+    :dismissable-mask="true"
+    :style="{ width: '90vw', maxWidth: '100rem' }"
+    modal
+    @hide="logModal = undefined">
     <template #header>
       <span class="p-dialog-title" data-pc-section="title"
         ><span class="capitalize">{{ logModal.type }}</span> logs for transfer
@@ -168,13 +168,13 @@ onMounted(async () => {
     <PaginatedLogTable
       v-if="logModal"
       :type="logModal.type"
-      :transferId="logModal.transfer" />
+      :transfer-id="logModal.transfer" />
   </Dialog>
   <Card>
     <template #title>State</template>
     <template #subtitle>State of this HTTP data plane</template>
     <template #content>
-      <div class="flex flex-col gap-4" v-if="state">
+      <div v-if="state" class="flex flex-col gap-4">
         <FormField label="Identifier">{{ state.identifier }}</FormField>
         <FormField label="Type">{{ state.details.dataplaneType }}</FormField>
         <FormField label="Synchronization">{{
@@ -182,14 +182,14 @@ onMounted(async () => {
         }}</FormField>
         <FormField label="Role">{{ state.details.role }}</FormField>
         <FormField label="Dataset IDs">
-          <div v-for="dataset in state.dataset">
+          <div v-for="dataset in state.dataset" :key="dataset['@id']">
             {{ dataset["@id"] }}
           </div>
         </FormField>
       </div>
     </template>
   </Card>
-  <Card class="mt-8" v-if="showConsumer">
+  <Card v-if="showConsumer" class="mt-8">
     <template #title>Consuming Transfers</template>
     <template #subtitle
       >Transfers executed by this data plane acting as consumer</template
@@ -223,6 +223,7 @@ onMounted(async () => {
         <Column header="Quick actions">
           <template #body="props">
             <Button
+              v-tooltip.bottom="'Terminate'"
               icon="pi pi-times"
               :disabled="
                 ['dspace:COMPLETED', 'dspace:TERMINATED'].includes(
@@ -232,33 +233,34 @@ onMounted(async () => {
               severity="danger"
               aria-label="Stop"
               outlined
-              @click="action($event, 'terminate', props.data)"
-              v-tooltip.bottom="'Terminate'" />
+              @click="action($event, 'terminate', props.data)" />
             <Button
               v-if="props.data.state === 'dspace:STARTED'"
+              v-tooltip.bottom="'Suspend'"
               class="ml-2"
               icon="pi pi-pause"
               severity="warn"
               aria-label="Suspend"
               outlined
-              @click="action($event, 'suspend', props.data)"
-              v-tooltip.bottom="'Suspend'" />
+              @click="action($event, 'suspend', props.data)" />
             <Button
               v-else
+              v-tooltip.bottom="'Start'"
               :disabled="props.data.state !== 'dspace:SUSPENDED'"
               class="ml-2"
               icon="pi pi-play"
               severity="warn"
               aria-label="Start"
               outlined
-              @click="action($event, 'start', props.data)"
-              v-tooltip.bottom="'Start'" />
+              @click="action($event, 'start', props.data)" />
             <Button
+              v-tooltip.bottom="'Execute'"
               class="ml-2"
               :disabled="props.data.state !== 'dspace:STARTED'"
               icon="pi pi-download"
               severity="info"
               aria-label="Execute"
+              outlined
               @click="
                 toast.add({
                   severity: 'error',
@@ -267,26 +269,24 @@ onMounted(async () => {
                     'Execution of transfers is not yet supported in this data plane',
                   life: 10000
                 })
-              "
-              v-tooltip.bottom="'Execute'"
-              outlined />
+              " />
             <Button
+              v-tooltip.bottom="'Complete'"
               class="ml-2"
               :disabled="props.data.state !== 'dspace:STARTED'"
               icon="pi pi-check"
               severity="success"
               aria-label="Complete"
               outlined
-              @click="action($event, 'complete', props.data)"
-              v-tooltip.bottom="'Complete'" />
+              @click="action($event, 'complete', props.data)" />
             <Button
+              v-tooltip.bottom="'Logs'"
               class="ml-2"
               icon="pi pi-list"
               severity="help"
               aria-label="Logs"
               outlined
-              @click="showLogs(props.data)"
-              v-tooltip.bottom="'Logs'" />
+              @click="showLogs(props.data)" />
           </template>
         </Column>
         <template #expansion="props">
@@ -316,7 +316,8 @@ onMounted(async () => {
                 <div
                   v-for="property in props.data.dataAddress[
                     'dspace:endpointProperties'
-                  ]">
+                  ]"
+                  :key="property['dspace:name']">
                   <strong>{{ property["dspace:name"] }}</strong
                   >: {{ property["dspace:value"] }}
                 </div>
@@ -327,7 +328,7 @@ onMounted(async () => {
       </DataTable>
     </template>
   </Card>
-  <Card class="mt-8" v-if="showProvider">
+  <Card v-if="showProvider" class="mt-8">
     <template #title>Providing Transfers</template>
     <template #subtitle
       >Transfers executed by this data plane acting as provider</template
@@ -361,6 +362,7 @@ onMounted(async () => {
         <Column header="Quick actions">
           <template #body="props">
             <Button
+              v-tooltip.bottom="'Terminate'"
               icon="pi pi-times"
               :disabled="
                 ['dspace:COMPLETED', 'dspace:TERMINATED'].includes(
@@ -370,19 +372,19 @@ onMounted(async () => {
               severity="danger"
               aria-label="Terminate"
               outlined
-              @click="action($event, 'terminate', props.data)"
-              v-tooltip.bottom="'Terminate'" />
+              @click="action($event, 'terminate', props.data)" />
             <Button
               v-if="props.data.state === 'dspace:STARTED'"
+              v-tooltip.bottom="'Suspend'"
               class="ml-2"
               icon="pi pi-pause"
               severity="warn"
               aria-label="Suspend"
               outlined
-              @click="action($event, 'suspend', props.data)"
-              v-tooltip.bottom="'Suspend'" />
+              @click="action($event, 'suspend', props.data)" />
             <Button
               v-else
+              v-tooltip.bottom="'Start'"
               :disabled="
                 !['dspace:SUSPENDED', 'dspace:REQUESTED'].includes(
                   props.data.state
@@ -393,25 +395,24 @@ onMounted(async () => {
               severity="warn"
               aria-label="Start"
               outlined
-              @click="action($event, 'start', props.data)"
-              v-tooltip.bottom="'Start'" />
+              @click="action($event, 'start', props.data)" />
             <Button
+              v-tooltip.bottom="'Complete'"
               class="ml-2"
               :disabled="props.data.state !== 'dspace:STARTED'"
               icon="pi pi-check"
               severity="success"
               aria-label="Complete"
               outlined
-              @click="action($event, 'complete', props.data)"
-              v-tooltip.bottom="'Complete'" />
+              @click="action($event, 'complete', props.data)" />
             <Button
+              v-tooltip.bottom="'Logs'"
               class="ml-2"
               icon="pi pi-list"
               severity="help"
               aria-label="Logs"
               outlined
-              @click="showLogs(props.data)"
-              v-tooltip.bottom="'Logs'" />
+              @click="showLogs(props.data)" />
           </template>
         </Column>
         <template #expansion="props">

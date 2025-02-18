@@ -261,15 +261,18 @@ export class PresentationService {
           }
         }
         validProof = true;
-      } catch (e) {}
-    } finally {
-      return {
-        validExpiryDate: validExpiryDate,
-        validTrustAnchors: validTrustAnchors,
-        validProof: validProof,
-        validStatus: validStatus
-      };
+      } catch (e) {
+        this.logger.verbose(e);
+      }
+    } catch (e) {
+      this.logger.verbose(e);
     }
+    return {
+      validExpiryDate: validExpiryDate,
+      validTrustAnchors: validTrustAnchors,
+      validProof: validProof,
+      validStatus: validStatus
+    };
   }
 
   private async getStatusCredential(
@@ -355,7 +358,6 @@ export class PresentationService {
     }
   }
 
-  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   validateField(
     fieldDescriptor: Field,
     vpJson: any,

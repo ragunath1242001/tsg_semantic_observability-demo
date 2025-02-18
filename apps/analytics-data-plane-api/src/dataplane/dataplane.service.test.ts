@@ -5,7 +5,6 @@ import { plainToClass } from "class-transformer";
 import { LoggingConfig, RootConfig } from "../config.js";
 import { SetupServer, setupServer } from "msw/node";
 import { HttpResponse, PathParams, http } from "msw";
-import { Request } from "express";
 import {
   AgreementDto,
   DataPlaneCreation,
@@ -14,7 +13,6 @@ import {
 import { TransferDao } from "./transfer.dao.js";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { DataPlaneStateDao } from "./dataplane.dao.js";
-import { RawBodyRequest } from "@nestjs/common";
 import { EgressLogDao, IngressLogDao } from "../logging/logging.dao.js";
 import { LoggingService } from "../logging/logging.service.js";
 import {
@@ -82,7 +80,7 @@ describe("Dataplane Service", () => {
     server = setupServer(
       http.post<PathParams, DataPlaneCreation>(
         `${config.controlPlane.dataPlaneEndpoint}/init`,
-        async ({ request, params, cookies }) => {
+        async ({ request }) => {
           const requestBody = await request.json();
           return HttpResponse.json({
             ...requestBody,
@@ -92,7 +90,7 @@ describe("Dataplane Service", () => {
       ),
       http.post(
         `${config.controlPlane.dataPlaneEndpoint}/:id/catalog`,
-        ({ request, params, cookies }) => {
+        ({ request }) => {
           return HttpResponse.json(request.json());
         }
       ),
@@ -214,23 +212,6 @@ describe("Dataplane Service", () => {
 
   describe("Provider process", () => {
     let transferProcessId = "urn:uuid:4904fd10-05c0-40fe-99f8-ce4a7d336c4f";
-    let authorization = "";
-
-    const request = {
-      method: "POST",
-      path: "/0.9.2/anything/test",
-      headers: {
-        "content-type": "application/json",
-        accept: "application/json"
-      },
-      query: {
-        filter: "filterQueryString"
-      } as qs.ParsedQs,
-      body: {
-        test: "test2"
-      },
-      rawBody: Buffer.from(JSON.stringify({ test: "test2" }), "utf-8")
-    } as RawBodyRequest<Request>;
 
     it("Get state", async () => {
       await dataPlaneService.initialized;
@@ -256,10 +237,6 @@ describe("Dataplane Service", () => {
         "urn:uuid:test"
       );
       transferProcessId = result.identifier;
-      authorization =
-        result.dataAddress?.properties?.find(
-          ({ name }) => name === "Authorization"
-        )?.value || "UNKNOWN";
       expect(result.dataAddress).toBeDefined();
     });
 
@@ -336,21 +313,6 @@ describe("Dataplane Service", () => {
 
   describe("Consumer process", () => {
     let transferProcessId = "urn:uuid:dab7264b-7ff4-4182-9e89-6238a57b5006";
-    const request = {
-      method: "POST",
-      path: "/anything/test",
-      headers: {
-        "content-type": "application/json",
-        accept: "application/json"
-      },
-      query: {
-        filter: "filterQueryString"
-      } as qs.ParsedQs,
-      body: {
-        test: "test2"
-      },
-      rawBody: Buffer.from(JSON.stringify({ test: "test2" }), "utf-8")
-    } as RawBodyRequest<Request>;
 
     it("Transfer Request", async () => {
       const result = await dataPlaneService.handleTransferRequest(
@@ -415,7 +377,6 @@ describe("Dataplane Service", () => {
 describe("Dataplane Service Consumer", () => {
   let dataPlaneService: DataPlaneService;
   let server: SetupServer;
-  let managementToken: string;
 
   beforeAll(async () => {
     await TypeOrmTestHelper.instance.setupTestDB();
@@ -437,9 +398,8 @@ describe("Dataplane Service Consumer", () => {
     server = setupServer(
       http.post<PathParams, DataPlaneCreation>(
         `${config.controlPlane.dataPlaneEndpoint}/init`,
-        async ({ request, params, cookies }) => {
+        async ({ request }) => {
           const requestBody = await request.json();
-          managementToken = requestBody.managementToken;
           return HttpResponse.json({
             ...requestBody,
             identifier: "urn:uuid:4ab97081-665e-447e-88a1-791a185994b9"
@@ -448,7 +408,7 @@ describe("Dataplane Service Consumer", () => {
       ),
       http.post(
         `${config.controlPlane.dataPlaneEndpoint}/:id/catalog`,
-        async ({ request, params, cookies }) => {
+        async ({ request }) => {
           return HttpResponse.json(await request.json());
         }
       )

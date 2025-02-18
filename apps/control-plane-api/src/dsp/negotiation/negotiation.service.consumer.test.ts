@@ -3,7 +3,6 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import {
   Agreement,
-  AgreementDto,
   ContractAgreementMessage,
   ContractAgreementVerificationMessageDto,
   ContractNegotiationDto,
@@ -48,7 +47,7 @@ describe("Negotiation Service (Consumer)", () => {
   let negotiationService: NegotiationService;
   let agreementService: AgreementService;
   let server: SetupServer;
-  let remoteProcessId = "urn:uuid:51532177-8ae0-4d24-839e-c7bc969ddcfd";
+  const remoteProcessId = "urn:uuid:51532177-8ae0-4d24-839e-c7bc969ddcfd";
 
   beforeAll(async () => {
     await TypeOrmTestHelper.instance.setupTestDB();
@@ -82,10 +81,10 @@ describe("Negotiation Service (Consumer)", () => {
         {
           provide: VCAuthService,
           useValue: new (class {
-            async requestToken(audience: string) {
+            async requestToken() {
               return "TEST_TOKEN";
             }
-            async validateToken(token: string, audience?: string) {
+            async validateToken() {
               return true;
             }
             async requestSignatureValidation(

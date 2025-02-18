@@ -31,7 +31,6 @@ import {
 import { AuthGuard, ManagementRoles, User } from "../auth/auth.guard.js";
 import { Request, Response } from "express";
 import { OauthUser } from "../model/user.dao.js";
-import { getSession } from "../utils/session.js";
 
 @Controller("oauth")
 export class OauthController {

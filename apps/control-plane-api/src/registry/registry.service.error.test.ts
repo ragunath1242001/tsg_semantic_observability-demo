@@ -23,13 +23,12 @@ import { AgreementDao, TransferMonitorDao } from "../model/agreement.dao.js";
 describe("No error when no dataspace credentials are found", () => {
   let registryService: RegistryService;
   let server: SetupServer;
-  let logger: Logger;
 
   beforeAll(async () => {
     jest.useFakeTimers();
     jest.spyOn(global, "setTimeout");
     await TypeOrmTestHelper.instance.setupTestDB();
-    let iamConfig: IamConfig = mockWalletConfig();
+    const iamConfig: IamConfig = mockWalletConfig();
     const registryConfig = plainToClass(RegistryConfig, {
       useRegistry: true
     });
@@ -74,11 +73,10 @@ describe("No error when no dataspace credentials are found", () => {
       onUnhandledRequest: "warn"
     });
     registryService = module.get(RegistryService);
-    logger = module.get<Logger>(Logger);
   });
   afterAll(() => server.close());
   it("No error when no dataspace credentials are found", async () => {
-    const er = await registryService.fetchDidDocuments();
+    await registryService.fetchDidDocuments();
     const didDocuments = await registryService.fetchDidDocuments();
     expect(didDocuments).toHaveLength(0);
   });

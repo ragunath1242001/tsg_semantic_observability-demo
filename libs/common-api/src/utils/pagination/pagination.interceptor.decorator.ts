@@ -69,7 +69,7 @@ function injectPaginationHeaders(responses: {
  */
 export function UsePagination(): MethodDecorator {
   return function (
-    target: Object,
+    target: object,
     propertyKey: string | symbol,
     descriptor: PropertyDescriptor
   ) {

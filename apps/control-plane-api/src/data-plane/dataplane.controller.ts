@@ -83,7 +83,7 @@ export class DataPlaneController {
         HttpStatus.BAD_REQUEST
       ).andLog(this.logger, "warn");
     }
-    return await this.dataPlaneService.updateDataPlane(dataPlaneDetails);
+    return await this.dataPlaneService.updateDataPlane(id, dataPlaneDetails);
   }
 
   @Post("/:id/catalog")

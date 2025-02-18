@@ -275,6 +275,7 @@ export const updateDID = async (
     nextKeyHashes,
     prerotate
   } = options;
+  // eslint-disable-next-line prefer-const
   let { did, doc, meta } = await resolveDID(log);
   newKeysAreValid(
     updateKeys ?? [],
@@ -335,7 +336,7 @@ export const deactivateDID = async (
   options: DeactivateDIDInterface
 ): Promise<{ did: string; doc: any; meta: any; log: DIDLog }> => {
   const { log } = options;
-  let { did, doc, meta } = await resolveDID(log);
+  const { did, doc, meta } = await resolveDID(log);
   const newDoc = {
     ...doc,
     authentication: [],

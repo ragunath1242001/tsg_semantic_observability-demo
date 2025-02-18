@@ -3,7 +3,7 @@ import { onMounted, ref } from "vue";
 import { injectStrict } from "../utils/injectTyped";
 import { AxiosKey } from "../utils/symbols";
 import { useToast } from "primevue/usetoast";
-import { UserDto, GrantType } from "@tsg-dsp/sso-bridge-dtos";
+import { UserDto } from "@tsg-dsp/sso-bridge-dtos";
 
 const http = injectStrict(AxiosKey);
 
@@ -53,7 +53,7 @@ const hideDialog = () => {
 
 const editUser = (data: UserDto) => {
   user.value = { ...data };
-  // @ts-ignore
+  // @ts-expect-error Grants should be annotated with label and value
   user.value.grants = user.value.grants.map((grant) => ({
     label: grant,
     value: grant
@@ -72,7 +72,7 @@ const createUser = async () => {
       life: 3000
     });
     hideDialog();
-  } catch (error) {
+  } catch (_) {
     toast.add({
       severity: "error",
       summary: "Error",
@@ -92,7 +92,7 @@ const updateUser = async () => {
       life: 3000
     });
     hideDialog();
-  } catch (error) {
+  } catch (_) {
     toast.add({
       severity: "error",
       summary: "Error",
@@ -107,7 +107,7 @@ const saveUser = async () => {
 
   if (user?.value.username?.trim()) {
     if (user?.value.grants) {
-      // @ts-ignore
+      // @ts-expect-error Grants should be annotated with label and value
       user.value.grants = user.value.grants.map((grant) => grant.value);
     }
     if (user.value.id) {
@@ -137,7 +137,7 @@ const deleteUser = async () => {
     });
     deleteUserDialog.value = false;
     await getUsers();
-  } catch (error) {
+  } catch (_) {
     toast.add({
       severity: "error",
       summary: "Error",
@@ -156,7 +156,7 @@ const getUsers = async () => {
   try {
     const { data } = await http.get("/users");
     users.value = data;
-  } catch (error) {
+  } catch (_) {
     toast.add({
       severity: "error",
       summary: "Error",
@@ -271,7 +271,7 @@ onMounted(async () => {
           <MultiSelect
             id="roles"
             v-model="user.roles"
-            optionLabel="label"
+            option-label="label"
             placeholder="Select Roles"
             fluid></MultiSelect>
         </div>
@@ -282,7 +282,7 @@ onMounted(async () => {
             id="grants"
             v-model="user.grants"
             :options="userGrants"
-            optionLabel="label"
+            option-label="label"
             placeholder="Select Grants"
             fluid>
           </MultiSelect>

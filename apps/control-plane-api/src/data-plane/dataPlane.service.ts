@@ -180,11 +180,10 @@ export class DataPlaneService {
   }
 
   async updateDataPlane(
+    identifier: string,
     dataPlaneDetails: DataPlaneDetailsDto
   ): Promise<DataPlaneDetailsDto> {
-    const dataPlane = await this.getDataPlaneDetails(
-      dataPlaneDetails.identifier
-    );
+    const dataPlane = await this.getDataPlaneDetails(identifier);
     dataPlane.modified = new Date();
     const dataPlaneDetailsObj = {
       ...dataPlaneDetails,
@@ -334,7 +333,7 @@ export class DataPlaneService {
           }
         }
         await this.updateHealth(dataPlaneStatus, HealthStatus.HEALTHY);
-      } catch (err) {
+      } catch (_) {
         await this.updateHealth(dataPlaneStatus, HealthStatus.ERRONEOUS);
       }
     } catch (err) {

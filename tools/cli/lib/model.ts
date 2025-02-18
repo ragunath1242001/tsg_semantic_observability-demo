@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Exclude, plainToInstance, Type } from "class-transformer";
 import {
   IsBoolean,

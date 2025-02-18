@@ -245,7 +245,7 @@ export class DataPlaneService {
         !dataset["dcat:version"] &&
         dataset["dcat:hasCurrentVersion"]
       ) {
-        let currentVersionDataset = this.state.dataset.find(
+        const currentVersionDataset = this.state.dataset.find(
           (d) => d["@id"] === dataset["dcat:hasCurrentVersion"]
         );
         if (!currentVersionDataset) {
@@ -440,7 +440,7 @@ export class DataPlaneService {
   ): Promise<Dataset[]> {
     const items = await this.itemRepository.find();
     const datasets: Dataset[] = [];
-    for (let item of items) {
+    for (const item of items) {
       datasets.push(await this.createCollectionDataset(item, datasetConfig));
     }
     return datasets;
@@ -458,7 +458,7 @@ export class DataPlaneService {
     }
     let policies: Policy[] | undefined = undefined;
     if (policyConfigs.length > 0) {
-      let intermediatePolicies = await Promise.all(
+      const intermediatePolicies = await Promise.all(
         policyConfigs.map((policyConfig) =>
           this.constructOffer(item.id, policyConfig)
         )
@@ -593,7 +593,7 @@ export class DataPlaneService {
     let catalog: CatalogDto | undefined = undefined;
     try {
       catalog = await this.getControlPlaneCatalog();
-    } catch (err) {
+    } catch (_) {
       this.logger.warn(
         "Catalog could not be fetched from control plane, therefore, assigner fields in ODRL offers will be empty."
       );

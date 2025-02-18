@@ -23,6 +23,7 @@
     "dev:sso-bridge": "npm-run-all --parallel \"dev:sso-bridge-api --noClear\" \"dev:sso-bridge-ui --clearScreen=false\"",
     "dev": "pnpm -r dev",
     "dev:embedded": "pnpm --filter frontend build && CONFIG_PATH=\"./config.yaml\" EMBEDDED_FRONTEND=\"../frontend/dist\" pnpm run --filter backend watch",
+    "lint": "eslint .",
     "start:control-plane": "pnpm --filter control-plane-api build && pnpm --filter control-plane-api start",
     "start:http-data-plane": "pnpm --filter http-data-plane-api build && pnpm --filter http-data-plane-api start",
     "start:analytics-data-plane": "pnpm --filter analytics-data-plane-api build && pnpm --filter analytics-data-plane-api start",
@@ -55,6 +56,12 @@
     }
   },
   "devDependencies": {
-    "npm-run-all2": "^7.0.1"
+    "@eslint/js": "^9.20.0",
+    "eslint": "^9.15.0",
+    "eslint-config-prettier": "^10.0.1",
+    "eslint-plugin-vue": "^9.31.0",
+    "globals": "^15.15.0",
+    "npm-run-all2": "^7.0.1",
+    "typescript-eslint": "^8.24.0"
   }
 }

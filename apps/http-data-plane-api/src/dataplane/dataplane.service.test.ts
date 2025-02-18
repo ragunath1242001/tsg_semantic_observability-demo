@@ -69,7 +69,7 @@ describe("Dataplane Service", () => {
     server = setupServer(
       http.post<PathParams, DataPlaneCreation>(
         `${config.controlPlane.dataPlaneEndpoint}/init`,
-        async ({ request, params, cookies }) => {
+        async ({ request }) => {
           const requestBody = await request.json();
           return HttpResponse.json({
             ...requestBody,
@@ -79,7 +79,7 @@ describe("Dataplane Service", () => {
       ),
       http.post(
         `${config.controlPlane.dataPlaneEndpoint}/:id/catalog`,
-        ({ request, params, cookies }) => {
+        ({ request }) => {
           return HttpResponse.json(request.json());
         }
       ),
@@ -148,16 +148,13 @@ describe("Dataplane Service", () => {
           url: "https://httpbin.org/anything/0.9.2/anything/test"
         });
       }),
-      http.post(
-        "http://your-api-url/negotiations/request",
-        ({ request, params, cookies }) => {
-          if (request.url.includes("validDatasetId")) {
-            return HttpResponse.json(HttpStatus.OK); // successful response
-          } else {
-            return HttpResponse.json(HttpStatus.NOT_FOUND); // simulate failure for invalid datasets
-          }
+      http.post("http://your-api-url/negotiations/request", ({ request }) => {
+        if (request.url.includes("validDatasetId")) {
+          return HttpResponse.json(HttpStatus.OK); // successful response
+        } else {
+          return HttpResponse.json(HttpStatus.NOT_FOUND); // simulate failure for invalid datasets
         }
-      ),
+      }),
       http.get("https://testaudience/.well-known/did.json", () => {
         return HttpResponse.json({
           service: [
@@ -463,7 +460,6 @@ describe("Dataplane Service", () => {
 describe("Starting without initial dataset configuration", () => {
   let dataPlaneService: DataPlaneService;
   let server: SetupServer;
-  let managementToken: string;
 
   beforeAll(async () => {
     await TypeOrmTestHelper.instance.setupTestDB();
@@ -485,9 +481,8 @@ describe("Starting without initial dataset configuration", () => {
     server = setupServer(
       http.post<PathParams, DataPlaneCreation>(
         `${config.controlPlane.dataPlaneEndpoint}/init`,
-        async ({ request, params, cookies }) => {
+        async ({ request }) => {
           const requestBody = await request.json();
-          managementToken = requestBody.managementToken;
           return HttpResponse.json({
             ...requestBody,
             identifier: "urn:uuid:4ab97081-665e-447e-88a1-791a185994b9"
@@ -496,7 +491,7 @@ describe("Starting without initial dataset configuration", () => {
       ),
       http.post(
         `${config.controlPlane.dataPlaneEndpoint}/:id/catalog`,
-        async ({ request, params, cookies }) => {
+        async ({ request }) => {
           return HttpResponse.json(await request.json());
         }
       )

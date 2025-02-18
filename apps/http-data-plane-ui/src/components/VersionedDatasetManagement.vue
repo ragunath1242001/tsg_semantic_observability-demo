@@ -102,22 +102,22 @@ onMounted(() => {
     <template #title>State</template>
     <template #subtitle>State of this HTTP data plane</template>
     <template #content>
-      <div class="grid grid-cols-12 gap-4" v-if="state">
+      <div v-if="state" class="grid grid-cols-12 gap-4">
         <div class="col-span-12 min-[1024px]:col-span-8">
-          <FormField class="mb-1" :labelWidth="3" label="Identifier">{{
+          <FormField class="mb-1" :label-width="3" label="Identifier">{{
             state.identifier
           }}</FormField>
-          <FormField class="mb-1" :labelWidth="3" label="Type">{{
+          <FormField class="mb-1" :label-width="3" label="Type">{{
             state.details.dataplaneType
           }}</FormField>
-          <FormField class="mb-1" :labelWidth="3" label="Synchronization">{{
+          <FormField class="mb-1" :label-width="3" label="Synchronization">{{
             state.details.catalogSynchronization
           }}</FormField>
-          <FormField class="mb-1" :labelWidth="3" label="Role">{{
+          <FormField class="mb-1" :label-width="3" label="Role">{{
             state.details.role
           }}</FormField>
-          <FormField class="mb-1" :labelWidth="3" label="Dataset IDs">
-            <div v-for="dataset in state.dataset">
+          <FormField class="mb-1" :label-width="3" label="Dataset IDs">
+            <div v-for="dataset in state.dataset" :key="dataset['@id']">
               {{ dataset["@id"] }}
             </div>
           </FormField>
@@ -134,8 +134,8 @@ onMounted(() => {
           <div class="mt-4">
             <Button label="Show DCAT dataset" @click="showDataset = true" />
             <Dialog
-              :dismissableMask="true"
               v-model:visible="showDataset"
+              :dismissable-mask="true"
               modal
               header="DCAT datasets"
               :style="{ width: '90vw', maxWidth: '75rem' }">
@@ -149,9 +149,9 @@ onMounted(() => {
             <Button
               label="Update configuration"
               :loading="updateLoading"
-              @click="editModal = true"
               severity="warn"
-              type="submit" />
+              type="submit"
+              @click="editModal = true" />
           </div>
         </div>
       </div>
@@ -169,9 +169,9 @@ onMounted(() => {
         }}</FormField>
         <FormField class="mb-1" label="Title">{{ config.title }}</FormField>
         <FormField
+          v-if="config.baseSemanticModelRef"
           class="mb-1"
-          label="Conforms To"
-          v-if="config.baseSemanticModelRef">
+          label="Conforms To">
           <div class="truncate">
             <a :href="config.baseSemanticModelRef" target="_blank">{{
               config.baseSemanticModelRef
@@ -179,7 +179,7 @@ onMounted(() => {
           </div>
         </FormField>
         <h4>Versions</h4>
-        <div class="pl-4" v-for="(version, idx) in config.versions">
+        <div v-for="(version, idx) in config.versions" :key="idx" class="pl-4">
           <hr v-if="idx !== 0" />
           <FormField class="mb-1" label="Identifier">{{
             version.id || "Auto-generated"
@@ -207,7 +207,7 @@ onMounted(() => {
   <Dialog
     v-model:visible="editModal"
     modal
-    :dismissableMask="true"
+    :dismissable-mask="true"
     header="Update Configuration"
     :style="{ width: '95vw', maxWidth: '75rem' }">
     <div v-if="configString">
@@ -226,47 +226,47 @@ onMounted(() => {
         v-if="configRaw"
         v-model="configString"
         :schema="schema"
-        :maxLines="200"
+        :max-lines="200"
         style="max-height: calc(90vh - 16rem)" />
       <FormField
-        class="mb-1"
-        label="Identifier"
+        v-if="!configRaw"
         v-slot="props"
-        v-if="!configRaw">
+        class="mb-1"
+        label="Identifier">
         <InputText
-          class="w-full"
           :id="props.id"
           v-model="configForm.id"
-          @change="emptyStringToUndefined(configForm, 'id')"
-          placeholder="Identifier (leave empty for an auto-generated identifier)" />
-      </FormField>
-      <FormField class="mb-1" label="Title*" v-slot="props" v-if="!configRaw">
-        <InputText
           class="w-full"
+          placeholder="Identifier (leave empty for an auto-generated identifier)"
+          @change="emptyStringToUndefined(configForm, 'id')" />
+      </FormField>
+      <FormField v-if="!configRaw" v-slot="props" class="mb-1" label="Title*">
+        <InputText
           :id="props.id"
           v-model="configForm.title"
+          class="w-full"
           placeholder="Title" />
       </FormField>
       <FormField
-        class="mb-1"
-        label="Base semantic model"
+        v-if="!configRaw"
         v-slot="props"
-        v-if="!configRaw">
+        class="mb-1"
+        label="Base semantic model">
         <InputText
-          class="w-full"
           :id="props.id"
           v-model="configForm.baseSemanticModelRef"
+          class="w-full"
           placeholder="URL to base/abstract semantic model definitions" />
       </FormField>
       <FormField
-        class="mb-1"
-        label="Current version*"
+        v-if="!configRaw"
         v-slot="props"
-        v-if="!configRaw">
+        class="mb-1"
+        label="Current version*">
         <Select
-          class="w-full"
           :id="props.id"
           v-model="configForm.currentVersion"
+          class="w-full"
           :options="configForm.versions"
           option-label="version"
           option-value="version"
@@ -276,7 +276,7 @@ onMounted(() => {
         <small>Fields marked with an asterisk (*) are required.</small>
       </FormField>
       <br />
-      <Tabs value="Versions" v-if="!configRaw">
+      <Tabs v-if="!configRaw" value="Versions">
         <TabList>
           <Tab value="Versions">Versions</Tab>
           <Tab value="Policy">Policy</Tab>
@@ -299,94 +299,96 @@ onMounted(() => {
                   })
                 " />
             </FormField>
-            <div v-for="(version, idx) in configForm.versions">
+            <div v-for="(version, idx) in configForm.versions" :key="idx">
               <br v-if="idx !== 0" />
-              <FormField class="mb-1" label="Identifier" v-slot="props">
+              <FormField v-slot="props" class="mb-1" label="Identifier">
                 <InputText
-                  class="w-full"
                   :id="props.id"
                   v-model="version.id"
-                  @change="emptyStringToUndefined(version, 'id')"
-                  placeholder="Identifier (leave empty for an auto-generated identifier)" />
-              </FormField>
-              <FormField class="mb-1" label="Version*" v-slot="props">
-                <InputText
                   class="w-full"
+                  placeholder="Identifier (leave empty for an auto-generated identifier)"
+                  @change="emptyStringToUndefined(version, 'id')" />
+              </FormField>
+              <FormField v-slot="props" class="mb-1" label="Version*">
+                <InputText
                   :id="props.id"
                   v-model="version.version"
+                  class="w-full"
                   placeholder="Version string, e.g. semver like '0.3.1'" />
               </FormField>
-              <FormField class="mb-1" label="Semantic model" v-slot="props">
+              <FormField v-slot="props" class="mb-1" label="Semantic model">
                 <InputText
-                  class="w-full"
                   :id="props.id"
                   v-model="version.semanticModelRef"
-                  @change="emptyStringToUndefined(version, 'semanticModelRef')"
-                  placeholder="URL to the semantic model of this dataset version" />
-              </FormField>
-              <FormField class="mb-1" label="Media type" v-slot="props">
-                <InputText
                   class="w-full"
+                  placeholder="URL to the semantic model of this dataset version"
+                  @change="
+                    emptyStringToUndefined(version, 'semanticModelRef')
+                  " />
+              </FormField>
+              <FormField v-slot="props" class="mb-1" label="Media type">
+                <InputText
                   :id="props.id"
                   v-model="version.distributions[0].mediaType"
+                  class="w-full"
                   placeholder="Media type, defaults to 'application/http'" />
               </FormField>
-              <FormField class="mb-1" label="Schema" v-slot="props">
+              <FormField v-slot="props" class="mb-1" label="Schema">
                 <InputText
-                  class="w-full"
                   :id="props.id"
                   v-model="version.distributions[0].schemaRef"
+                  class="w-full"
+                  placeholder="URL to the message schema of this dataset version"
                   @change="
                     emptyStringToUndefined(
                       version.distributions[0],
                       'schemaRef'
                     )
-                  "
-                  placeholder="URL to the message schema of this dataset version" />
+                  " />
               </FormField>
               <FormField
+                v-slot="props"
                 class="mb-1"
-                label="OpenAPI specification"
-                v-slot="props">
+                label="OpenAPI specification">
                 <InputText
-                  class="w-full"
                   :id="props.id"
                   v-model="version.distributions[0].openApiSpecRef"
+                  class="w-full"
+                  placeholder="OpenAPI specification (leave empty for no specification)"
                   @change="
                     emptyStringToUndefined(
                       version.distributions[0],
                       'openApiSpecRef'
                     )
-                  "
-                  placeholder="OpenAPI specification (leave empty for no specification)" />
+                  " />
                 <small
                   >The OpenAPI specification should refer to the JSON or YAML
                   document directly.</small
                 >
               </FormField>
-              <FormField class="mb-1" label="Backend URL*" v-slot="props">
+              <FormField v-slot="props" class="mb-1" label="Backend URL*">
                 <InputText
-                  class="w-full"
                   :id="props.id"
                   v-model="version.distributions[0].backendUrl"
+                  class="w-full"
+                  placeholder="URL pointing to the data access point"
                   @change="
                     emptyStringToUndefined(
                       version.distributions[0],
                       'backendUrl'
                     )
-                  "
-                  placeholder="URL pointing to the data access point" />
+                  " />
               </FormField>
-              <FormField class="mb-1" label="Authorization" v-slot="props">
+              <FormField v-slot="props" class="mb-1" label="Authorization">
                 <Password
+                  v-model="version.authorization"
                   class="w-full"
                   input-class="w-full"
-                  toggleMask
+                  toggle-mask
                   :feedback="false"
                   :input-id="props.id"
-                  v-model="version.authorization"
-                  @change="emptyStringToUndefined(version, 'authorization')"
-                  placeholder="Authorization header, e.g. 'Basic XXX' or 'Bearer XXX' (leave empty for no specification)" />
+                  placeholder="Authorization header, e.g. 'Basic XXX' or 'Bearer XXX' (leave empty for no specification)"
+                  @change="emptyStringToUndefined(version, 'authorization')" />
                 <small
                   >The Authorization will be used for the connection between the
                   data plane and the backend service.</small
@@ -416,9 +418,9 @@ onMounted(() => {
       <Button
         label="Update"
         :loading="updateLoading"
-        @click="update"
         severity="success"
-        type="submit" />
+        type="submit"
+        @click="update" />
     </template>
   </Dialog>
 </template>

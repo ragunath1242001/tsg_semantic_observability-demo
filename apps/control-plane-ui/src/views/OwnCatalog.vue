@@ -19,8 +19,8 @@ const { ownCatalog } = storeToRefs(useDspStore());
       </template>
     </Card>
     <Catalog
-      :catalog="ownCatalog.catalog"
       v-if="ownCatalog.catalog"
+      :catalog="ownCatalog.catalog"
       :single-catalog="true"
       :own-catalog="true"
       url=""

@@ -11,7 +11,7 @@ describe("UsersService Tests", () => {
 
   beforeAll(async () => {
     await TypeOrmTestHelper.instance.setupTestDB();
-    let module: TestingModule = await Test.createTestingModule({
+    const module: TestingModule = await Test.createTestingModule({
       imports: [
         TypeOrmTestHelper.instance.module([OauthUser]),
         TypeOrmModule.forFeature([OauthUser])

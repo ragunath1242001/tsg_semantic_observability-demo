@@ -11,7 +11,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { DidService } from "../../did/did.service.js";
 import { KeysService } from "../../keys/keys.service.js";
 import { PresentationService } from "../presentation.service.js";
-import { describe, expect, beforeAll, afterAll, it, jest } from "@jest/globals";
+import { describe, expect, beforeAll, afterAll, it } from "@jest/globals";
 import { DidResolverService } from "../../did/did.resolver.service.js";
 import { SetupServer, setupServer } from "msw/node";
 import { HttpResponse, http } from "msw";
@@ -27,7 +27,6 @@ import { TypeOrmTestHelper } from "@tsg-dsp/common-api";
 import { toArray } from "@tsg-dsp/common-dsp";
 
 describe("Presentation Service", () => {
-  let presentationService: PresentationService;
   let dcpSiopService: DCPSiopService;
   let dcpHolderService: DCPHolderService;
   let dcpVerifierService: DCPVerifierService;
@@ -110,7 +109,6 @@ describe("Presentation Service", () => {
     dcpSiopService = await moduleRef.get(DCPSiopService);
     dcpHolderService = await moduleRef.get(DCPHolderService);
     dcpVerifierService = await moduleRef.get(DCPVerifierService);
-    presentationService = await moduleRef.get(PresentationService);
     const didService = await moduleRef.get(DidService);
     await moduleRef.get(KeysService).initialized;
     await moduleRef.get(CredentialsService).initialized;
@@ -202,7 +200,7 @@ describe("Presentation Service", () => {
         "did:web:localhost",
         true
       );
-      const vp = await dcpVerifierService.verify(holderIdToken, {
+      await dcpVerifierService.verify(holderIdToken, {
         id: crypto.randomUUID(),
         input_descriptors: [
           {

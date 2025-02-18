@@ -205,7 +205,7 @@ describe("Holder service", () => {
         preAuthorizedCode:
           offer.grants?.[OfferGrants.PRE_AUTHORIZATION_CODE]?.[
             "pre-authorization_code"
-          ]!
+          ]
       });
 
       const credentials = await moduleRef

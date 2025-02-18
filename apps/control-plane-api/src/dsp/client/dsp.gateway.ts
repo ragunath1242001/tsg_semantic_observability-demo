@@ -29,8 +29,7 @@ export class DspGateway
     this.logger.log("Initialized Dsp Gateway.");
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  handleConnection(client: Socket, ...args: any[]) {
+  handleConnection(client: Socket) {
     this.logger.log(`Client connected: ${client.id}`);
   }
 

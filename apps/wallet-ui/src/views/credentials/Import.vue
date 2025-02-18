@@ -16,7 +16,7 @@ const validateCredential = (showToast: boolean) => {
     let credential;
     try {
       credential = JSON.parse(credentialRef.value);
-    } catch (err) {
+    } catch (_) {
       throw Error("Credential subject must be a valid JSON document");
     }
     if (typeof credential !== "object") {
@@ -119,9 +119,9 @@ const importCredential = async (validate = true) => {
         <form
           class="flex flex-col gap-4"
           @submit.prevent="importCredential(true)">
-          <FormField label="Credential" v-slot="props">
+          <FormField label="Credential">
             <MonacoEditorVue v-model="credentialRef"></MonacoEditorVue>
-            <small class="text-yellow-400" v-if="credentialValidation">{{
+            <small v-if="credentialValidation" class="text-yellow-400">{{
               credentialValidation
             }}</small>
           </FormField>

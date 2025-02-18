@@ -14,7 +14,6 @@ import { NegotiationListener } from "./negotiation.listeners.js";
 import { TransferModule } from "../transfer/transfer.module.js";
 import { CatalogModule } from "../catalog/catalog.module.js";
 import { AuthModule } from "@tsg-dsp/common-api";
-import { RootConfig } from "../../config.js";
 
 @Module({
   imports: [

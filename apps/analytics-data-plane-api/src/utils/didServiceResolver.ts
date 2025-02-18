@@ -23,7 +23,7 @@ export async function resolve(didId: string) {
   try {
     const response = await axios.get<DIDDocument>(url);
     return response.data;
-  } catch (err) {
+  } catch (_) {
     throw new DataPlaneError(
       `Could not load DID document for ${didId}`,
       HttpStatus.BAD_REQUEST

@@ -1,9 +1,5 @@
 <script setup lang="ts">
-import {
-  CredentialSubject,
-  toArray,
-  VerifiableCredential
-} from "@tsg-dsp/common-dsp";
+import { toArray, VerifiableCredential } from "@tsg-dsp/common-dsp";
 import { onMounted, ref } from "vue";
 import { useToast } from "primevue/usetoast";
 import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
@@ -205,86 +201,86 @@ onMounted(async () => {
           <form
             class="flex flex-col gap-4"
             @submit.prevent="importLRNCredential">
-            <FormField label="Legal registration number type" v-slot="props">
+            <FormField v-slot="props" label="Legal registration number type">
               <Select
                 :id="props.id"
                 v-model="legalRegistrationNumberForm.type"
                 :options="['taxID', 'EUID', 'EORI', 'vatID', 'leiCode']"
                 class="w-full" />
             </FormField>
-            <FormField label="Legal registration number" v-slot="props">
+            <FormField v-slot="props" label="Legal registration number">
               <InputText
-                :id="props.id"
-                class="w-full"
-                v-model="legalRegistrationNumberForm.value"
                 v-if="legalRegistrationNumberForm.type === 'taxID'"
+                :id="props.id"
+                v-model="legalRegistrationNumberForm.value"
+                class="w-full"
                 type="text"
                 required
                 pattern="^\d{2}-\d{7}$"
                 validation-message="Provide a correct taxID (pattern: \d{2}-\d{7})" />
               <InputText
-                :id="props.id"
-                class="w-full"
-                v-model="legalRegistrationNumberForm.value"
                 v-else-if="legalRegistrationNumberForm.type === 'EUID'"
+                :id="props.id"
+                v-model="legalRegistrationNumberForm.value"
+                class="w-full"
                 type="text"
                 required
                 pattern="^[A-Z]{2}\d{2}[A-Z0-9]{1,15}$"
                 validation-message="Provide a correct EUID (pattern: [A-Z]{2}\d{2}[A-Z0-9]{1,15})" />
               <InputText
-                :id="props.id"
-                class="w-full"
-                v-model="legalRegistrationNumberForm.value"
                 v-else-if="legalRegistrationNumberForm.type === 'EORI'"
+                :id="props.id"
+                v-model="legalRegistrationNumberForm.value"
+                class="w-full"
                 type="text"
                 required
                 pattern="^[A-Z]{2}[A-Z0-9]{1,15}$"
                 validation-message="Provide a correct EORI (pattern: [A-Z]{2}[A-Z0-9]{1,15})" />
               <InputText
-                :id="props.id"
-                class="w-full"
-                v-model="legalRegistrationNumberForm.value"
                 v-else-if="legalRegistrationNumberForm.type === 'vatID'"
+                :id="props.id"
+                v-model="legalRegistrationNumberForm.value"
+                class="w-full"
                 type="text"
                 required
                 pattern="^[A-Z]{2}[A-Z0-9]{2,15}$"
                 validation-message="Provide a correct vatId (pattern: [A-Z]{2}[A-Z0-9]{2,15})" />
               <InputText
-                :id="props.id"
-                class="w-full"
-                v-model="legalRegistrationNumberForm.value"
                 v-else-if="legalRegistrationNumberForm.type === 'leiCode'"
+                :id="props.id"
+                v-model="legalRegistrationNumberForm.value"
+                class="w-full"
                 type="text"
                 required
                 pattern="^[A-Z0-9]{20}$"
                 validation-message="Provide a correct leiCode (pattern: [A-Z0-9]{20})" />
               <InputText
-                :id="props.id"
-                class="w-full"
-                v-model="legalRegistrationNumberForm.value"
                 v-else
+                :id="props.id"
+                v-model="legalRegistrationNumberForm.value"
+                class="w-full"
                 type="text"
                 disabled
                 required />
             </FormField>
-            <FormField label="Target DID" v-slot="props">
+            <FormField v-slot="props" label="Target DID">
               <InputText
                 :id="props.id"
-                class="w-full"
                 v-model="legalRegistrationNumberForm.targetDid"
+                class="w-full"
                 placeholder="did:..."
                 pattern="did:(web|tdw):.*"
                 validation-message="Target DID must be a DID web" />
             </FormField>
-            <FormField label="ID" v-slot="props">
+            <FormField v-slot="props" label="ID">
               <InputText
                 :id="props.id"
-                class="w-full"
                 v-model="legalRegistrationNumberForm.id"
+                class="w-full"
                 placeholder="ID"
                 required />
             </FormField>
-            <FormField label="Composite ID" v-slot="props">
+            <FormField v-slot="props" label="Composite ID">
               <InputText
                 :id="props.id"
                 class="w-full"
@@ -293,17 +289,17 @@ onMounted(async () => {
                 }#${encodeURIComponent(legalRegistrationNumberForm.id)}`"
                 disabled />
             </FormField>
-            <FormField label="Clearing house" v-slot="props">
+            <FormField v-slot="props" label="Clearing house">
               <AutoComplete
                 :id="props.id"
-                class="w-full"
                 v-model="legalRegistrationNumberForm.clearingHouse"
+                class="w-full"
                 dropdown
                 :suggestions="legalRegistrationNumberForm.clearingHouses"
-                @complete="searchLRNClearingHouses"
-                @dropdown-click="searchLRNClearingHouses"
                 placeholder="ID"
-                required />
+                required
+                @complete="searchLRNClearingHouses"
+                @dropdown-click="searchLRNClearingHouses" />
             </FormField>
             <FormField no-label class="mt-8">
               <Button
@@ -322,33 +318,33 @@ onMounted(async () => {
           <form
             class="flex flex-col gap-4"
             @submit.prevent="importComplianceCredential">
-            <FormField label="Credentials" v-slot="props">
+            <FormField label="Credentials">
               <MultiSelect
                 v-model="complianceCredentialForm.credentials"
                 :options="credentials"
-                optionLabel="name"
-                optionValue="raw"
+                option-label="name"
+                option-value="raw"
                 placeholder="Select credentials"
                 class="w-full" />
             </FormField>
-            <FormField label="Target DID" v-slot="props">
+            <FormField v-slot="props" label="Target DID">
               <InputText
                 :id="props.id"
-                class="w-full"
                 v-model="complianceCredentialForm.targetDid"
+                class="w-full"
                 placeholder="did:..."
                 pattern="did:(web|tdw):.*"
                 validation-message="Target DID must be a DID web" />
             </FormField>
-            <FormField label="ID" v-slot="props">
+            <FormField v-slot="props" label="ID">
               <InputText
                 :id="props.id"
-                class="w-full"
                 v-model="complianceCredentialForm.id"
+                class="w-full"
                 placeholder="ID"
                 required />
             </FormField>
-            <FormField label="Composite ID" v-slot="props">
+            <FormField v-slot="props" label="Composite ID">
               <InputText
                 :id="props.id"
                 class="w-full"
@@ -357,17 +353,17 @@ onMounted(async () => {
                 }#${encodeURIComponent(complianceCredentialForm.id)}`"
                 disabled />
             </FormField>
-            <FormField label="Clearing house" v-slot="props">
+            <FormField v-slot="props" label="Clearing house">
               <AutoComplete
                 :id="props.id"
-                class="w-full"
                 v-model="complianceCredentialForm.clearingHouse"
+                class="w-full"
                 dropdown
                 :suggestions="complianceCredentialForm.clearingHouses"
-                @complete="searchComplianceClearingHouses"
-                @dropdown-click="searchComplianceClearingHouses"
                 placeholder="ID"
-                required />
+                required
+                @complete="searchComplianceClearingHouses"
+                @dropdown-click="searchComplianceClearingHouses" />
             </FormField>
             <FormField no-label class="mt-8">
               <Button

@@ -1,6 +1,5 @@
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import Layout from "@theme/Layout";
-import HomepageFeatures from "../components/HomepageFeatures";
 import clsx from "clsx";
 import Heading from "@theme/Heading";
 import styles from "./index.module.css";
@@ -13,7 +12,6 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 function ContactHeader() {
-  const { siteConfig } = useDocusaurusContext();
   return (
     <header className={clsx("hero", styles.heroBanner)}>
       <div className="container">

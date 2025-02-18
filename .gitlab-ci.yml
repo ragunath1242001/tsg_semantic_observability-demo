@@ -21,11 +21,12 @@ variables:
     paths:
       - .pnpm-store
 
-prettier:
+lint:
   extends: .base-rules
   stage: test
   script:
-    - npx prettier@^3.4.1 --check .
+    - pnpm install --frozen-lockfile
+    - npx prettier@^3.4.1 --check . && pnpm eslint --quiet
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
 

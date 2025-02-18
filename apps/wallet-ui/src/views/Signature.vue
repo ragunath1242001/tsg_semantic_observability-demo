@@ -178,14 +178,13 @@ const onUpload = (event) => {
               mode="basic"
               auto
               name="signature"
-              customUpload
-              @uploader="onUpload"
-              :disabled="isUploading" />
+              custom-upload
+              :disabled="isUploading"
+              @uploader="onUpload" />
           </FormField>
           <FormField label="Signature type">
             <SelectButton
               v-model="signOptions.type"
-              @change="updateContext"
               :options="[
                 { name: 'Data Integrity Proof', value: 'DataIntegrityProof' },
                 {
@@ -193,38 +192,39 @@ const onUpload = (event) => {
                   value: 'JsonWebSignature2020'
                 }
               ]"
-              optionLabel="name"
-              optionValue="value" />
+              option-label="name"
+              option-value="value"
+              @change="updateContext" />
           </FormField>
           <FormField
-            label="Normalization"
-            v-if="signOptions.type !== 'JsonWebSignature2020'">
+            v-if="signOptions.type !== 'JsonWebSignature2020'"
+            label="Normalization">
             <SelectButton
               v-model="signOptions.normalization"
               :options="[
                 { name: 'RDF Canonicalization', value: 'RDFC' },
                 { name: 'JSON Canonicalization Scheme', value: 'JCS' }
               ]"
-              optionLabel="name"
-              optionValue="value" />
+              option-label="name"
+              option-value="value" />
           </FormField>
-          <FormField label="Proof purpose" v-slot="props">
+          <FormField v-slot="props" label="Proof purpose">
             <InputText
               :id="props.id"
-              class="w-full"
-              v-model="signOptions.proofPurpose" />
+              v-model="signOptions.proofPurpose"
+              class="w-full" />
           </FormField>
-          <FormField label="Plain document" v-slot="props">
+          <FormField label="Plain document">
             <MonacoEditorVue v-model="signRef"></MonacoEditorVue>
           </FormField>
 
-          <FormField label="Signed document" v-if="signedDocumentRef">
+          <FormField v-if="signedDocumentRef" label="Signed document">
             <MonacoEditorVue
               :static="signedDocumentRef"
               :read-only="true"
               :max-lines="35" />
           </FormField>
-          <FormField label="Error" v-if="signedDocumentErrorRef">
+          <FormField v-if="signedDocumentErrorRef" label="Error">
             <MonacoEditorVue
               :static="signedDocumentErrorRef"
               :read-only="true"
@@ -262,16 +262,10 @@ const onUpload = (event) => {
             label="Combined document">
             <MonacoEditorVue v-model="validateRef"></MonacoEditorVue>
           </FormField>
-          <FormField
-            v-if="validateType === 'Separate'"
-            label="Plain document"
-            v-slot="props">
+          <FormField v-if="validateType === 'Separate'" label="Plain document">
             <MonacoEditorVue v-model="validateDocRef"></MonacoEditorVue>
           </FormField>
-          <FormField
-            v-if="validateType === 'Separate'"
-            label="Proof"
-            v-slot="props">
+          <FormField v-if="validateType === 'Separate'" label="Proof">
             <MonacoEditorVue v-model="validateRef"></MonacoEditorVue>
           </FormField>
           <FormField no-label class="mt-8">

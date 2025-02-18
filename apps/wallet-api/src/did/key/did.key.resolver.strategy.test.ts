@@ -1,13 +1,6 @@
-import { setupServer, SetupServer } from "msw/node";
 import { DidKeyResolverStrategy } from "./did.key.resolver.strategy.js";
-import { http, HttpResponse } from "msw";
-import { DIDDocument } from "did-resolver";
+
 import { Test, TestingModule } from "@nestjs/testing";
-import {
-  multicodecPublic,
-  varintPrefix
-} from "../../utils/keys/keyconverter.js";
-import { hexToBase58btc } from "../../utils/keys/typeconverter.js";
 
 describe("DID Key Resolver", () => {
   let didKeyResolverStrategy: DidKeyResolverStrategy;

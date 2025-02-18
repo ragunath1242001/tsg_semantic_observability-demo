@@ -153,7 +153,9 @@ export class VCAuthService {
               } else {
                 inputDescriptor = [parsedOperand];
               }
-            } catch (e) {}
+            } catch (e) {
+              console.error(e);
+            }
           }
           this.logger.debug(
             `Validating token with inputdescriptor: ${JSON.stringify(

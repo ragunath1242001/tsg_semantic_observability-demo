@@ -18,7 +18,9 @@ try {
   devSessions = JSON.parse(
     readFileSync(path.join(__dirname, "/dev.sessions.json"), "utf-8")
   );
-} catch (e) {}
+} catch (e) {
+  console.log(e);
+}
 
 // https://vitejs.dev/config/
 export default defineConfig({

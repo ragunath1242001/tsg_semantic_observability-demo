@@ -21,8 +21,7 @@ import { Ajv } from "ajv";
 
 export const promiseMap = async <T, U>(
   array: T[] | undefined,
-  callbackfn: (value: T, index: number, array: T[]) => Promise<U>,
-  thisArg?: any
+  callbackfn: (value: T, index: number, array: T[]) => Promise<U>
 ): Promise<U[]> => {
   if (!array) return [];
   const promises = await Promise.allSettled(array.map(callbackfn));

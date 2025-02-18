@@ -150,7 +150,7 @@ export abstract class TokenRequest {
 }
 
 export class CodeTokenRequest extends TokenRequest {
-  override grant_type: "authorization_code" = "authorization_code";
+  override grant_type = "authorization_code" as const;
 
   @ApiProperty({
     example: "code",
@@ -183,7 +183,7 @@ export class CodeTokenRequest extends TokenRequest {
 }
 
 export class RefreshTokenRequest extends TokenRequest {
-  override grant_type: "refresh_token" = "refresh_token";
+  override grant_type = "refresh_token" as const;
 
   @ApiProperty({
     example: "refresh_token",
@@ -194,7 +194,7 @@ export class RefreshTokenRequest extends TokenRequest {
 }
 
 export class ClientCredentialsTokenRequest extends TokenRequest {
-  override grant_type: "client_credentials" = "client_credentials";
+  override grant_type = "client_credentials" as const;
 
   @ApiProperty({
     example: "client-id",

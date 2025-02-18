@@ -11,23 +11,25 @@ const props = defineProps<{ policy: PolicyConfig }>();
       props.policy?.type || "default"
     }}</span></FormField
   >
-  <FormField class="mb-1" label="Raw" v-if="props.policy?.type === 'manual'">
+  <FormField v-if="props.policy?.type === 'manual'" class="mb-1" label="Raw">
     <MonacoEditorVue
       :static="props.policy?.raw"
       :read-only="true"
       :max-lines="15" />
   </FormField>
-  <div class="pl-4" v-if="props.policy?.type === 'rules'">
+  <div v-if="props.policy?.type === 'rules'" class="pl-4">
     <h5>Permissions</h5>
     <div
-      class="pl-4"
-      v-for="(permission, idx) in props.policy?.permissions || []">
+      v-for="(permission, idx) in props.policy?.permissions || []"
+      :key="permission.action"
+      class="pl-4">
       <hr v-if="idx !== 0" />
       <FormField class="mb-1" label="Action">{{ permission.action }}</FormField>
       <FormField
+        v-for="constraint in permission.constraints"
+        :key="constraint.type"
         class="mb-1"
         label="Constraint"
-        v-for="constraint in permission.constraints"
         ><em>{{ constraint.type }}</em
         >: {{ constraint.value }}</FormField
       >
@@ -37,16 +39,18 @@ const props = defineProps<{ policy: PolicyConfig }>();
     </div>
     <h5>Prohibitions</h5>
     <div
-      class="pl-4"
-      v-for="(prohibition, idx) in props.policy?.prohibitions || []">
+      v-for="(prohibition, idx) in props.policy?.prohibitions || []"
+      :key="idx"
+      class="pl-4">
       <hr v-if="idx !== 0" />
       <FormField class="mb-1" label="Action">{{
         prohibition.action
       }}</FormField>
       <FormField
+        v-for="constraint in prohibition.constraints"
+        :key="constraint.type"
         class="mb-1"
         label="Constraint"
-        v-for="constraint in prohibition.constraints"
         ><em>{{ constraint.type }}</em
         >: {{ constraint.value }}</FormField
       >

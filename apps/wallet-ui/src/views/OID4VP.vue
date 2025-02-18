@@ -2,7 +2,6 @@
 import { ref } from "vue";
 import { useToast } from "primevue/usetoast";
 import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
-import { AuthorizationRequest } from "@tsg-dsp/common-dtos";
 import schema from "@tsg-dsp/common-ui/assets/presentation-definition.schema.json";
 import http from "@tsg-dsp/common-ui/utils/http";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
@@ -92,7 +91,7 @@ const createAuthorizationRequest = async () => {
         <form
           class="flex flex-col gap-4"
           @submit.prevent="createAuthorizationRequest">
-          <FormField label="Presentation Definition" v-slot="props">
+          <FormField label="Presentation Definition">
             <MonacoEditorVue
               v-model="verifierForm.presentationDefinition"
               :schema="schema"
@@ -104,11 +103,11 @@ const createAuthorizationRequest = async () => {
           </FormField>
         </form>
         <Dialog
-          :dismissableMask="true"
-          :style="{ width: '15%', maxWidth: '100rem' }"
           v-model:visible="visible"
-          @hide="visible = undefined"
-          modal>
+          :dismissable-mask="true"
+          :style="{ width: '15%', maxWidth: '100rem' }"
+          modal
+          @hide="visible = undefined">
           <template #header>
             <span class="p-dialog-title" data-pc-section="title">
               Authorization Request</span

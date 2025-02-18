@@ -54,9 +54,9 @@ export class DidTdwStrategy implements DidStrategy {
     if (verificationMethods == null) {
       return [];
     }
-    let vmsWithAssertionMethods: VerificationMethod[] =
+    const vmsWithAssertionMethods: VerificationMethod[] =
       verificationMethods.slice();
-    for (var i = 0; i < verificationMethods.length; i++) {
+    for (let i = 0; i < verificationMethods.length; i++) {
       vmsWithAssertionMethods.push({
         id: vmsWithAssertionMethods[i].id,
         controller: vmsWithAssertionMethods[i].controller,
@@ -151,7 +151,7 @@ export class DidTdwStrategy implements DidStrategy {
     verificationMethods?: VerificationMethod[],
     services?: Service[]
   ): Promise<DIDDocument> {
-    this.logger.log("Updating DID document");
+    this.logger.log(`Updating DID document ${didDocument.id}`);
 
     const existingLogs = await this.didLogsRepository.find({
       select: {

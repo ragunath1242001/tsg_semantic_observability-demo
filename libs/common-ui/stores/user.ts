@@ -1,4 +1,4 @@
-import { defineStore, Store } from "pinia";
+import { defineStore } from "pinia";
 import http from "../utils/http";
 import { Router } from "vue-router";
 

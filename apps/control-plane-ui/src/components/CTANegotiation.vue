@@ -11,22 +11,22 @@ const props = defineProps<{
 const negotiations = toRef(props, "negotiations");
 </script>
 <template>
-  <div class="grid grid-cols-12 gap-4" v-if="negotiations.length > 0">
+  <div v-if="negotiations.length > 0" class="grid grid-cols-12 gap-4">
     <div
-      class="col-span-12 lg:col-span-6 xl:col-span-3"
       v-for="negotiation in negotiations"
-      :key="negotiation.localId">
+      :key="negotiation.localId"
+      class="col-span-12 lg:col-span-6 xl:col-span-3">
       <NegotiationRequest
         v-if="negotiation.state === 'dspace:REQUESTED'"
         :negotiation="negotiation"></NegotiationRequest>
       <NegotiationProceed
         v-if="negotiation.state === 'dspace:AGREED'"
         :negotiation="negotiation"
-        endState="verify"></NegotiationProceed>
+        end-state="verify"></NegotiationProceed>
       <NegotiationProceed
         v-if="negotiation.state === 'dspace:VERIFIED'"
         :negotiation="negotiation"
-        endState="finalize"></NegotiationProceed>
+        end-state="finalize"></NegotiationProceed>
     </div>
   </div>
 </template>

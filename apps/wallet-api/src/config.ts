@@ -4,22 +4,13 @@ import {
   IsDefined,
   IsEnum,
   IsIn,
-  IsNumber,
   IsObject,
   IsOptional,
   IsString,
   IsUrl,
-  ValidateIf,
   ValidateNested
 } from "class-validator";
-import {
-  plainToInstance,
-  Transform,
-  TransformFnParams,
-  Type
-} from "class-transformer";
-import fs from "fs";
-import { Logger } from "@nestjs/common";
+import { Transform, Type } from "class-transformer";
 import { DIDMethod, DIDMethodList, DIDMethodTypes } from "./utils/did.js";
 import { CredentialSubject } from "@tsg-dsp/common-dsp/dist/model/ssi/credentials.dto.js";
 import {

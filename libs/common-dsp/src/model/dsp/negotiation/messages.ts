@@ -27,10 +27,7 @@ import {
   ContractAgreementVerificationMessageDto,
   ContractAgreementMessageDto
 } from "./messages.dto.js";
-import {
-  createInstance,
-  createOptionalInstance
-} from "../../../utils/instances.js";
+import { createOptionalInstance } from "../../../utils/instances.js";
 
 export interface IContractRequestMessage {
   consumerPid: string;

@@ -131,10 +131,7 @@ describe("NegotiationController", () => {
         {
           provide: AgreementService,
           useValue: {
-            getAgreement: async (
-              id: string,
-              dto: boolean
-            ): Promise<AgreementDto> => {
+            getAgreement: async (): Promise<AgreementDto> => {
               return {
                 "@type": "odrl:Agreement",
                 "@id": "urn:uuid:00000000-0000-0000-0000-000000000000",
@@ -153,7 +150,7 @@ describe("NegotiationController", () => {
               };
             },
             syncLastEvaluation: async () => {},
-            storeAgreement: async (a: any, negotiationId: string) => {
+            storeAgreement: async (negotiationId: string) => {
               return {
                 id: "urn:uuid:00000000-0000-0000-0000-000000000000",
                 agreement: {

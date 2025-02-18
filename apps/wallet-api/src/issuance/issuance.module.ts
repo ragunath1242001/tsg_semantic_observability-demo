@@ -11,7 +11,6 @@ import { HolderController } from "./holder.controller.js";
 import { IssuerController } from "./issuer.controller.js";
 import { ContextModule } from "../contexts/context.module.js";
 import { AuthModule } from "@tsg-dsp/common-api";
-import { RootConfig } from "../config.js";
 
 @Module({
   imports: [

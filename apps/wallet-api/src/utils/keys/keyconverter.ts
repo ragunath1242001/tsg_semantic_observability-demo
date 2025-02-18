@@ -133,7 +133,7 @@ export function publicKeyMultiBaseToJWK(alg: string, publicKey: string): JWK {
       };
       break;
     case "ecdsa-jcs-2019":
-    case "ecdsa-rdfc-2019":
+    case "ecdsa-rdfc-2019": {
       const isOdd = publicKey.slice(0, 2).toString() === "03";
       const xHex = publicKey.slice(2, publicKey.length).toString();
       jwk = {
@@ -149,6 +149,7 @@ export function publicKeyMultiBaseToJWK(alg: string, publicKey: string): JWK {
         crv: "P-384"
       };
       break;
+    }
     case "RSASSA-PSS":
       jwk = {
         kty: "RSA",
@@ -188,7 +189,7 @@ export function privateKeyMultiBaseToJWK(
         d: hexToBase64url(privateKey.slice(0, 64).toString())
       };
       break;
-    case "ES384":
+    case "ES384": {
       const isOdd = privateKey.slice(96, 98).toString() === "03";
       const xHex = privateKey.slice(98, privateKey.length).toString();
       jwk = {
@@ -205,6 +206,7 @@ export function privateKeyMultiBaseToJWK(
         d: hexToBase64url(privateKey.slice(0, 96).toString())
       };
       break;
+    }
     case "X509":
       jwk = {
         kty: "RSA",

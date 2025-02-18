@@ -14,7 +14,6 @@ import {
   ResourceDao
 } from "../../model/catalog.dao.js";
 import { AuthModule } from "@tsg-dsp/common-api";
-import { RootConfig } from "../../config.js";
 
 @Module({
   imports: [

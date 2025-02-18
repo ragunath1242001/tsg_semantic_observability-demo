@@ -86,7 +86,7 @@ export class FilesService {
         if (!dbentry) {
           throw Error("File not found in database");
         }
-        let csvwurl = await this.createCSVW(file, dbentry);
+        const csvwurl = await this.createCSVW(file, dbentry);
         const catalog = await this.dataplaneService.getControlPlaneCatalog();
 
         datasets.push(

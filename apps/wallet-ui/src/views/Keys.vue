@@ -182,8 +182,8 @@ onMounted(async () => {
             <template #body="props">
               <Button
                 severity="primary"
-                @click="setDefaultKey(props.data.id)"
                 :disabled="props.data.default"
+                @click="setDefaultKey(props.data.id)"
                 >Default</Button
               >
               <Button
@@ -219,7 +219,7 @@ onMounted(async () => {
       </template>
       <template #content>
         <form class="flex flex-col gap-4" @submit.prevent="addKey">
-          <FormField label="Type" v-slot="props">
+          <FormField v-slot="props" label="Type">
             <Select
               :id="props.id"
               v-model="keyForm.type"
@@ -227,16 +227,16 @@ onMounted(async () => {
               option-label="label"
               option-value="value" />
           </FormField>
-          <FormField label="Key ID" v-slot="props">
-            <InputText :id="props.id" class="w-full" v-model="keyForm.id" />
+          <FormField v-slot="props" label="Key ID">
+            <InputText :id="props.id" v-model="keyForm.id" class="w-full" />
           </FormField>
-          <FormField label="Default" v-slot="props">
+          <FormField v-slot="props" label="Default">
             <ToggleSwitch :id="props.id" v-model="keyForm.default" />
           </FormField>
           <FormField
-            label="Existing key (PKCS#8)"
+            v-if="keyForm.type === 'X509'"
             v-slot="props"
-            v-if="keyForm.type === 'X509'">
+            label="Existing key (PKCS#8)">
             <Textarea
               :id="props.id"
               v-model="keyForm.existingKey"
@@ -245,9 +245,9 @@ onMounted(async () => {
               rows="10" />
           </FormField>
           <FormField
-            label="Existing certificate (chain) (PEM)"
+            v-if="keyForm.type === 'X509'"
             v-slot="props"
-            v-if="keyForm.type === 'X509'">
+            label="Existing certificate (chain) (PEM)">
             <Textarea
               :id="props.id"
               v-model="keyForm.existingCertificate"

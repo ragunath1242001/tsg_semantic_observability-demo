@@ -136,6 +136,7 @@ export class Generate {
   private writeConfig = (
     templateFile: string,
     outfile: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     config: any,
     writeFile: boolean
   ) => {

@@ -97,7 +97,7 @@ describe("DID Tdw Service", () => {
     });
 
     it("Create initial DID document without default key", async () => {
-      let keyMaterial = await keyMaterialGenerator();
+      const keyMaterial = await keyMaterialGenerator();
       keyMaterial.default = false;
       const res = await didTdwStrategy.createDidDocument(
         config,
@@ -164,7 +164,7 @@ describe("DID Tdw Service", () => {
     });
 
     it("Update DID document", async () => {
-      let keyMaterial = await keyMaterialGenerator();
+      const keyMaterial = await keyMaterialGenerator();
       keyMaterial.id = "test-key-1";
       const updatedDidDocument = await didTdwStrategy.updateDidDocument(
         completeDidDocument,
@@ -223,7 +223,7 @@ describe("DID Tdw Service", () => {
       const newDefaultKey = await keyMaterialGenerator();
       expect(
         await didTdwStrategy.setDefaultKey(completeDidDocument, newDefaultKey)
-      ).resolves;
+      );
       const currUpdateKey = didTdwStrategy.getCurrUpdateKey();
       expect(currUpdateKey.publicKeyMultibase).toEqual(
         jwkToMultibase(newDefaultKey.publicKey)

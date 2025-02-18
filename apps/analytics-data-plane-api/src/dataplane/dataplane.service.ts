@@ -445,7 +445,7 @@ export class DataPlaneService {
   }
 
   async handleTransferComplete(
-    transferCompletionMessage: TransferCompletionMessageDto,
+    _transferCompletionMessage: TransferCompletionMessageDto,
     processId: string
   ) {
     const transfer = await this.transferRepository.findOneBy({ id: processId });
@@ -460,7 +460,7 @@ export class DataPlaneService {
   }
 
   async handleTransferTerminate(
-    transferTerminationMessage: TransferTerminationMessageDto,
+    _transferTerminationMessage: TransferTerminationMessageDto,
     processId: string
   ) {
     const transfer = await this.transferRepository.findOneBy({ id: processId });
@@ -475,7 +475,7 @@ export class DataPlaneService {
   }
 
   async handleTransferSuspend(
-    transferSuspensionMessage: TransferSuspensionMessageDto,
+    _transferSuspensionMessage: TransferSuspensionMessageDto,
     processId: string
   ) {
     const transfer = await this.transferRepository.findOneBy({ id: processId });

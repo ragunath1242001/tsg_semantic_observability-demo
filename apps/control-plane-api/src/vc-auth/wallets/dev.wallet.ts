@@ -5,7 +5,7 @@ import { SignJWT } from "jose";
 import { decode } from "jsonwebtoken";
 import { DevWalletConfig } from "../../config.js";
 import { Credential, WalletClient } from "./walletClient.js";
-import { HttpStatus, Logger } from "@nestjs/common";
+import { HttpStatus } from "@nestjs/common";
 import { DSPError } from "../../utils/errors/error.js";
 import { DIDDocument } from "did-resolver";
 
@@ -60,7 +60,7 @@ export class DevWalletClient extends WalletClient {
 
   async requestValidation(
     token: string,
-    audience: string
+    _audience: string
   ): Promise<VerifiablePresentation[] | undefined> {
     const tokenPayload = decode(token, { json: true });
     return [plainToInstance(VerifiablePresentation, tokenPayload!["vp"])];
@@ -70,14 +70,14 @@ export class DevWalletClient extends WalletClient {
     return [];
   }
 
-  async requestSignature(document: Record<string, any>): Promise<any> {
+  async requestSignature(_document: Record<string, any>): Promise<any> {
     throw new DSPError(
       `Dev Wallet does not support signing of documents`,
       HttpStatus.NOT_IMPLEMENTED
     );
   }
   async requestSignatureValidation(
-    signedDocument: Record<string, any>
+    _signedDocument: Record<string, any>
   ): Promise<any> {
     throw new DSPError(
       `Dev Wallet does not support validation of documents`,
@@ -85,7 +85,7 @@ export class DevWalletClient extends WalletClient {
     );
   }
 
-  async resolveDidDocument(didId: string): Promise<DIDDocument> {
+  async resolveDidDocument(_didId: string): Promise<DIDDocument> {
     throw new DSPError(
       `Dev Wallet does not support resolving DID Documents`,
       HttpStatus.NOT_IMPLEMENTED

@@ -9,7 +9,7 @@ import { DIDTdwController } from "./tdw/did.tdw.controller.js";
 import { DidTdwStrategy } from "./tdw/did.tdw.strategy.js";
 import { DIDMethod } from "../utils/did.js";
 import { DidWebStrategy } from "./web/did.web.strategy.js";
-import { DidConfig, RootConfig } from "../config.js";
+import { RootConfig } from "../config.js";
 import { AuthModule, GenericConfigModule } from "@tsg-dsp/common-api";
 
 @Module({

@@ -184,10 +184,7 @@ export class CatalogManagementController {
     @Param("id") id: string,
     @Body(new DeserializePipe(Dataset)) dataset: Dataset
   ): Promise<DatasetDto> {
-    const datasetdao = await this.catalogService.updateDataset(
-      dataset.id,
-      dataset
-    );
+    const datasetdao = await this.catalogService.updateDataset(id, dataset);
     return new Dataset(datasetdao).serialize();
   }
 

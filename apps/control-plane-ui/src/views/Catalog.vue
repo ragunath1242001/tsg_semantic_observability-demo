@@ -94,13 +94,13 @@ onMounted(async () => await initialize());
           <div class="flex flex-wrap items-start gap-4">
             <div class="field">
               <FloatLabel>
-                <InputText id="url" type="text" v-model="urlInput" />
+                <InputText id="url" v-model="urlInput" type="text" />
                 <label for="url">Url of Catalog to Request</label>
               </FloatLabel>
             </div>
             <div class="field">
               <FloatLabel>
-                <InputText id="did" type="text" v-model="didInput" />
+                <InputText id="did" v-model="didInput" type="text" />
                 <label for="did">DID identifier</label>
               </FloatLabel>
             </div>
@@ -111,17 +111,17 @@ onMounted(async () => await initialize());
     </Card>
     <div class="grid grid-cols-12 gap-4 card-container">
       <Catalog
+        v-if="dataAvailable"
         :catalog="catalog"
         :url="urlInput"
         :own-catalog="false"
         :assigner="assigner"
-        :single-catalog="true"
-        v-if="dataAvailable" />
+        :single-catalog="true" />
       <Skeleton
+        v-else-if="!dataAvailable && loading"
         width="100%"
-        height="150px"
-        v-else-if="!dataAvailable && loading" />
-      <div class="col-span-12" v-else>
+        height="150px" />
+      <div v-else class="col-span-12">
         <Card
           style="border-radius: 12px; border: 1px solid var(--surface-border)"
           ><template #title><h5>Find others</h5></template>
@@ -129,9 +129,9 @@ onMounted(async () => await initialize());
             <Button
               type="button"
               label="Go to Registry"
-              @click="goToRegistry"
               icon="pi pi-external-link"
-              iconPos="right"></Button></template
+              icon-pos="right"
+              @click="goToRegistry"></Button></template
         ></Card>
       </div>
     </div>

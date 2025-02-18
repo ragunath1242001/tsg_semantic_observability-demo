@@ -460,7 +460,7 @@ export class NegotiationService {
   async offer(
     offer: Offer,
     processId: string,
-    address?: string
+    _address?: string
   ): Promise<{ status: string }> {
     // TODO: Allow provider initiated negotiations
     const negotiation = await this.getNegotiation(processId);

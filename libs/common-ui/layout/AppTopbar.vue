@@ -3,13 +3,8 @@ import { ref, computed, onMounted, onBeforeUnmount, toRefs } from "vue";
 import { useLayout } from "./composables/layout";
 import { Router } from "vue-router";
 
-const {
-  onMenuToggle,
-  toggleDarkMode,
-  isDarkTheme,
-  layoutConfig,
-  onConfigButtonClick
-} = useLayout();
+const { onMenuToggle, toggleDarkMode, isDarkTheme, onConfigButtonClick } =
+  useLayout();
 
 const outsideClickListener = ref(null);
 const topbarMenuActive = ref(false);
@@ -93,7 +88,7 @@ const logout = () => {
         <span class="pr-2"> {{ title }}</span>
       </router-link>
     </div>
-    <span class="layout-topbar-logo" v-if="name">
+    <span v-if="name" class="layout-topbar-logo">
       {{ name }}
     </span>
     <div class="layout-topbar-actions">
@@ -117,17 +112,17 @@ const logout = () => {
       </button>
       <div class="layout-topbar-menu lg:block" :class="topbarMenuClasses">
         <div class="layout-topbar-menu-content">
-          <div class="layout-topbar-text" v-if="user">
+          <div v-if="user" class="layout-topbar-text">
             <div>
               <i class="pi pi-user"></i>
               {{ user.name }}
             </div>
           </div>
-          <button @click="onConfigButtonClick" class="layout-topbar-action">
+          <button class="layout-topbar-action" @click="onConfigButtonClick">
             <i class="pi pi-cog"></i>
             <span>Settings</span>
           </button>
-          <button @click="logout()" class="layout-topbar-action">
+          <button class="layout-topbar-action" @click="logout()">
             <i class="pi pi-sign-out"></i>
             <span>Sign out</span>
           </button>

@@ -119,7 +119,7 @@ onMounted(async () => {
         </div></div
     ></template>
     <template #content>
-      <div class="grid flex-wrap grid-cols-12 gap-4" v-if="dataplane">
+      <div v-if="dataplane" class="grid flex-wrap grid-cols-12 gap-4">
         <DisplayField label="Identifier">{{
           dataplane.identifier
         }}</DisplayField>
@@ -148,56 +148,56 @@ onMounted(async () => {
     <template #subtitle> Link a data plane to this Control Plane </template>
     <template #content>
       <form class="flex flex-col gap-4" @submit.prevent="addDataPlane">
-        <FormField label="Type" v-slot="props">
+        <FormField v-slot="props" label="Type">
           <InputText
             :id="props.id"
-            class="w-full"
             v-model="dataPlaneForm.dataplaneType"
+            class="w-full"
             placeholder="Type of data plane you are using, e.g. dspace:HTTP"
             required></InputText>
         </FormField>
-        <FormField label="Identifier" v-slot="props">
+        <FormField v-slot="props" label="Identifier">
           <InputText
             :id="props.id"
-            class="w-full"
             v-model="dataPlaneForm.identifier"
+            class="w-full"
             placeholder="Identifier"></InputText>
         </FormField>
-        <FormField label="Endpoint Prefix" v-slot="props">
+        <FormField v-slot="props" label="Endpoint Prefix">
           <InputText
             :id="props.id"
-            class="w-full"
             v-model="dataPlaneForm.endpointPrefix"
+            class="w-full"
             placeholder="Endpoint Prefix"></InputText>
         </FormField>
-        <FormField label="Callback Address" v-slot="props">
+        <FormField v-slot="props" label="Callback Address">
           <InputText
             :id="props.id"
-            class="w-full"
             v-model="dataPlaneForm.callbackAddress"
+            class="w-full"
             placeholder="Callback Address"></InputText>
         </FormField>
-        <FormField label="Management Address" v-slot="props">
+        <FormField v-slot="props" label="Management Address">
           <InputText
             :id="props.id"
-            class="w-full"
             v-model="dataPlaneForm.managementAddress"
+            class="w-full"
             placeholder="Management Address"></InputText>
         </FormField>
-        <FormField label="Management Token" v-slot="props">
+        <FormField v-slot="props" label="Management Token">
           <InputText
             :id="props.id"
-            class="w-full"
             v-model="dataPlaneForm.managementToken"
+            class="w-full"
             placeholder="Management Token"></InputText>
         </FormField>
-        <FormField label="Catalog Synchronization" v-slot="props">
+        <FormField label="Catalog Synchronization">
           <SelectButton
             v-model="dataPlaneForm.catalogSynchronization"
             required
             :options="['push', 'pull']"></SelectButton>
         </FormField>
-        <FormField label="Role" v-slot="props">
+        <FormField label="Role">
           <SelectButton
             v-model="dataPlaneForm.role"
             required

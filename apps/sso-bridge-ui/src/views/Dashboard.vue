@@ -1,12 +1,4 @@
-<script setup lang="ts">
-import { injectStrict } from "../utils/injectTyped";
-import { AxiosKey } from "../utils/symbols";
-import { useToast } from "primevue/usetoast";
-
-const http = injectStrict(AxiosKey);
-
-const toast = useToast();
-</script>
+<script setup lang="ts"></script>
 <template>
   <div class="grid grid-cols-12 gap-8">
     <Card

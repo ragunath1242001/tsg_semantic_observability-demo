@@ -6,12 +6,7 @@ import { LoggingService } from "./logging.service.js";
 import { PageOptionsDto } from "../utils/pagination.js";
 import { plainToInstance } from "class-transformer";
 import { LogEntry, LogFilterDto } from "./logging.dto.js";
-import {
-  TypeOrmTestHelper,
-  AuthClientService,
-  AuthConfig,
-  AuthModule
-} from "@tsg-dsp/common-api";
+import { TypeOrmTestHelper, AuthConfig } from "@tsg-dsp/common-api";
 
 describe("Logging Service", () => {
   let loggingService: LoggingService;

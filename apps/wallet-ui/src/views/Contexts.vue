@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
+import { onMounted, ref } from "vue";
 import { useToast } from "primevue/usetoast";
 import { useConfirm } from "primevue/useconfirm";
 import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
@@ -38,18 +38,6 @@ const contextForm = ref<JSONLDContextForm>({
   documentUrl: undefined,
   document: "",
   schema: ""
-});
-
-const contextEditorHeight = computed(() => {
-  const lines = contextForm.value.document?.split("\n")?.length || 0;
-  const editorHeight = Math.min(Math.max(lines, 10), 25);
-  return `${editorHeight}rem`;
-});
-
-const schemaEditorHeight = computed(() => {
-  const lines = contextForm.value.document?.split("\n")?.length || 0;
-  const editorHeight = Math.min(Math.max(lines, 10), 25);
-  return `${editorHeight}rem`;
 });
 
 const loadContexts = async () => {
@@ -232,19 +220,19 @@ onMounted(async () => {
                 class="pi pi-check-circle text-green-500" />
               <i v-else class="pi pi-times-circle text-red-500" />
             </FormField>
-            <FormField label="Document URL" v-if="props.data.documentUrl">
+            <FormField v-if="props.data.documentUrl" label="Document URL">
               <a :href="props.data.documentUrl" target="_blank">
                 <code>{{ props.data.documentUrl }}</code>
               </a>
             </FormField>
-            <FormField label="Document" v-if="props.data.document">
+            <FormField v-if="props.data.document" label="Document">
               <MonacoEditorVue
                 :static="props.data.document"
                 :read-only="true"
                 :min-lines="1"
                 :max-lines="20" />
             </FormField>
-            <FormField label="Schema" v-if="props.data.schema">
+            <FormField v-if="props.data.schema" label="Schema">
               <MonacoEditorVue
                 :static="props.data.schema"
                 :read-only="true"
@@ -271,27 +259,27 @@ onMounted(async () => {
       </template>
       <template #content>
         <form class="flex flex-col gap-4" @submit.prevent="addContext">
-          <FormField label="Context ID" v-slot="props">
+          <FormField v-slot="props" label="Context ID">
             <InputText
               :id="props.id"
-              class="w-full"
               v-model="contextForm.id"
+              class="w-full"
               placeholder="Short context identifier" />
           </FormField>
-          <FormField label="Credential Type" v-slot="props">
+          <FormField v-slot="props" label="Credential Type">
             <InputText
               :id="props.id"
-              class="w-full"
               v-model="contextForm.credentialType"
+              class="w-full"
               placeholder="Credential type associated with this context" />
           </FormField>
-          <FormField label="Issuable context" v-slot="props">
+          <FormField v-slot="props" label="Issuable context">
             <ToggleSwitch :id="props.id" v-model="contextForm.issuable" />
           </FormField>
-          <FormField label="Document" v-slot="props">
+          <FormField v-slot="props" label="Document">
             <SelectButton
-              class="mb-2"
               v-model="documentRef"
+              class="mb-2"
               :allow-empty="false"
               :options="['Referenced', 'Hosted']"
               aria-labelledby="basic" />
@@ -300,8 +288,8 @@ onMounted(async () => {
               class="flex flex-col gap-2">
               <InputText
                 :id="props.id"
-                class="w-full"
                 v-model="contextForm.documentUrl"
+                class="w-full"
                 placeholder="https://..." />
               <small
                 >Provide the https link to the JSON-LD context to be used</small

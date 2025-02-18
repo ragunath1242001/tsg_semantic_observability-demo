@@ -218,25 +218,25 @@ onMounted(async () => {
     <template #title>State</template>
     <template #subtitle>State of this HTTP data plane</template>
     <template #content>
-      <div class="grid grid-cols-12 gap-4" v-if="state">
+      <div v-if="state" class="grid grid-cols-12 gap-4">
         <div class="col-span-12 min-[1024px]:col-span-8">
-          <FormField class="mb-1" :labelWidth="3" label="Identifier">
+          <FormField class="mb-1" :label-width="3" label="Identifier">
             {{ state.identifier }}
           </FormField>
-          <FormField class="mb-1" :labelWidth="3" label="Type">
+          <FormField class="mb-1" :label-width="3" label="Type">
             {{ state.details.dataplaneType }}
           </FormField>
-          <FormField class="mb-1" :labelWidth="3" label="Synchronization">
+          <FormField class="mb-1" :label-width="3" label="Synchronization">
             {{ state.details.catalogSynchronization }}
           </FormField>
-          <FormField class="mb-1" :labelWidth="3" label="Role">
+          <FormField class="mb-1" :label-width="3" label="Role">
             {{ state.details.role }}
           </FormField>
           <FormField
+            v-if="config?.baseSemanticModelRef"
             class="mb-1"
-            :labelWidth="3"
-            label="Semantic model"
-            v-if="config?.baseSemanticModelRef">
+            :label-width="3"
+            label="Semantic model">
             <div class="truncate">
               <a :href="config?.baseSemanticModelRef" target="_blank">
                 {{ config?.baseSemanticModelRef }}
@@ -244,24 +244,24 @@ onMounted(async () => {
             </div>
           </FormField>
           <FormField
+            v-if="config?.authorization"
             class="mb-1"
-            :labelWidth="3"
-            label="Authorization"
-            v-if="config?.authorization">
+            :label-width="3"
+            label="Authorization">
             {{ config?.authorization }}
           </FormField>
           <FormField
+            v-if="config?.mediaType"
             class="mb-1"
-            :labelWidth="3"
-            label="Media type"
-            v-if="config?.mediaType">
+            :label-width="3"
+            label="Media type">
             {{ config?.mediaType }}
           </FormField>
           <FormField
+            v-if="config?.schemaRef"
             class="mb-1"
-            :labelWidth="3"
-            label="Message schema"
-            v-if="config?.schemaRef">
+            :label-width="3"
+            label="Message schema">
             <div class="truncate">
               <a :href="config?.schemaRef" target="_blank">
                 {{ config?.schemaRef }}
@@ -269,10 +269,10 @@ onMounted(async () => {
             </div>
           </FormField>
           <FormField
+            v-if="config?.openApiSpecRef"
             class="mb-1"
-            :labelWidth="3"
-            label="OpenAPI spec"
-            v-if="config?.openApiSpecRef">
+            :label-width="3"
+            label="OpenAPI spec">
             <div class="truncate">
               <a :href="config?.openApiSpecRef" target="_blank">
                 {{ config?.openApiSpecRef }}
@@ -280,10 +280,10 @@ onMounted(async () => {
             </div>
           </FormField>
           <FormField
+            v-if="config?.basePolicy"
             class="mb-1"
-            :labelWidth="3"
-            label="Policy"
-            v-if="config?.basePolicy">
+            :label-width="3"
+            label="Policy">
             <PolicyView :policy="config.basePolicy" />
           </FormField>
         </div>
@@ -301,21 +301,21 @@ onMounted(async () => {
               label="Update configuration"
               :loading="updateLoading"
               severity="warn"
-              @click="openConfigEditModal"
-              type="submit" />
+              type="submit"
+              @click="openConfigEditModal" />
           </div>
           <div class="mt-4">
             <Button
               label="Add new dataset"
-              @click="openDatasetEditModal(undefined)"
               severity="success"
-              type="submit" />
+              type="submit"
+              @click="openDatasetEditModal(undefined)" />
           </div>
         </div>
       </div>
     </template>
   </Card>
-  <Card class="mt-5" v-for="dataset in datasets" :key="dataset.id">
+  <Card v-for="dataset in datasets" :key="dataset.id" class="mt-5">
     <template #title>
       <div class="grid grid-cols-12 gap-4">
         <div class="col-span-9 md:col-span-10 lg:col-span-8">
@@ -324,18 +324,18 @@ onMounted(async () => {
         <div class="col-span-3 md:col-span-2 lg:col-span-4">
           <Button
             icon="pi pi-info-circle"
-            @click="openDatasetDto(dataset)"
-            severity="info" />
+            severity="info"
+            @click="openDatasetDto(dataset)" />
           <Button
             class="ml-2"
             icon="pi pi-pencil"
-            @click="openDatasetEditModal(dataset)"
-            severity="warn" />
+            severity="warn"
+            @click="openDatasetEditModal(dataset)" />
           <Button
             class="ml-2"
             icon="pi pi-trash"
-            @click="removeDataset(dataset.id)"
-            severity="danger" />
+            severity="danger"
+            @click="removeDataset(dataset.id)" />
         </div>
       </div>
       Dataset {{ dataset.title }}
@@ -355,9 +355,9 @@ onMounted(async () => {
         {{ dataset.backendUrl }}
       </FormField>
       <FormField
+        v-if="dataset.openApiSpecRef"
         class="mb-1"
-        label="OpenAPI Spec"
-        v-if="dataset.openApiSpecRef">
+        label="OpenAPI Spec">
         <a
           class="font-medium text-blue-600 dark:text-blue-500 hover:underline"
           :href="dataset.openApiSpecRef"
@@ -366,15 +366,15 @@ onMounted(async () => {
         >
       </FormField>
       <FormField
+        v-if="dataset.authorization"
         class="mb-1"
-        label="Authorization"
-        v-if="dataset.authorization">
+        label="Authorization">
         {{ dataset.authorization }}
       </FormField>
-      <FormField class="mb-1" label="Media Type" v-if="dataset.mediaType">
+      <FormField v-if="dataset.mediaType" class="mb-1" label="Media Type">
         {{ dataset.mediaType }}
       </FormField>
-      <FormField class="mb-1" label="Schema reference" v-if="dataset.schemaRef">
+      <FormField v-if="dataset.schemaRef" class="mb-1" label="Schema reference">
         <a
           class="font-medium text-blue-600 dark:text-blue-500 hover:underline"
           :href="dataset.schemaRef"
@@ -382,14 +382,14 @@ onMounted(async () => {
           >{{ dataset.schemaRef }}</a
         >
       </FormField>
-      <FormField class="mb-1" label="Policy" v-if="dataset.policy">
+      <FormField v-if="dataset.policy" class="mb-1" label="Policy">
         <div
           v-if="dataset.policy && dataset.policy.length"
           class="flex flex-col gap-2 divide-y divide-surface-200 dark:divide-surface-700">
           <div
-            class="pt-2"
             v-for="(policy, idx) of dataset.policy"
-            :key="`${dataset.id}-policy-${idx}`">
+            :key="`${dataset.id}-policy-${idx}`"
+            class="pt-2">
             <PolicyView :policy="policy" />
           </div>
         </div>
@@ -400,7 +400,7 @@ onMounted(async () => {
   <Dialog
     v-model:visible="editConfigModal"
     modal
-    :dismissableMask="true"
+    :dismissable-mask="true"
     header="Edit configuration"
     :style="{ width: '95vw', maxWidth: '75rem' }">
     <p class="italic pb-4">
@@ -453,7 +453,7 @@ onMounted(async () => {
   <Dialog
     v-model:visible="editDatasetModal"
     modal
-    :dismissableMask="true"
+    :dismissable-mask="true"
     :header="datasetForm?.isNew ? 'Add dataset' : 'Edit dataset'"
     :style="{ width: '95vw', maxWidth: '75rem' }">
     <form class="flex flex-col gap-4" @submit.prevent="datasetFormSubmit">
@@ -510,12 +510,12 @@ onMounted(async () => {
       </FormField>
       <FormField label="Policy">
         <div
-          class="flex flex-col gap-2 divide-y divide-surface-200 dark:divide-surface-700"
-          v-if="datasetForm.policy">
+          v-if="datasetForm.policy"
+          class="flex flex-col gap-2 divide-y divide-surface-200 dark:divide-surface-700">
           <div
-            class="pt-2"
             v-for="(_, idx) in datasetForm.policy"
-            :key="`modal-policy-${idx}`">
+            :key="`modal-policy-${idx}`"
+            class="pt-2">
             <PolicyEditor v-model="datasetForm.policy[idx]" />
             <Button
               icon="pi pi-minus"
@@ -530,14 +530,14 @@ onMounted(async () => {
           @click="pushOrCreate(datasetForm, 'policy', { type: 'default' })" />
       </FormField>
 
-      <FormField no-label class="mt-8" v-if="datasetForm.isNew">
+      <FormField v-if="datasetForm.isNew" no-label class="mt-8">
         <Button
           label="Add dataset"
           severity="success"
           type="submit"
           :loading="editModalLoading" />
       </FormField>
-      <FormField no-label class="mt-8" v-else="datasetForm.new">
+      <FormField v-else no-label class="mt-8">
         <Button
           label="Update dataset"
           severity="success"

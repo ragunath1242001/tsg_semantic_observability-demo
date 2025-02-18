@@ -8,7 +8,6 @@ import { KeysManagementController } from "./keys.management.controller.js";
 import { SignatureService } from "./signature.service.js";
 import { SignatureManagementController } from "./signature.management.controller.js";
 import { AuthModule } from "@tsg-dsp/common-api";
-import { RootConfig } from "../config.js";
 
 @Module({
   imports: [AuthModule, DidModule, TypeOrmModule.forFeature([KeyMaterialDao])],

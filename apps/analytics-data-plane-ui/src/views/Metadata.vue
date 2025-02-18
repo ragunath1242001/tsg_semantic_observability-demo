@@ -26,10 +26,7 @@ const newDataset = ref<string>(
   )
 );
 
-const updateLoading = ref(false);
 const refreshLoading = ref(false);
-
-const showDataset = ref(false);
 
 const getState = async () => {
   try {
@@ -188,7 +185,7 @@ onMounted(async () => {
     <template #title>State</template>
     <template #subtitle>State of this HTTP data plane</template>
     <template #content>
-      <div class="grid grid-cols-12 gap-4" v-if="state">
+      <div v-if="state" class="grid grid-cols-12 gap-4">
         <div class="col-span-12 lg:col-span-8">
           <FormField label="Identifier">{{ state.identifier }}</FormField>
           <FormField label="Type">{{ state.details.dataplaneType }}</FormField>
@@ -197,7 +194,7 @@ onMounted(async () => {
           }}</FormField>
           <FormField label="Role">{{ state.details.role }}</FormField>
           <FormField label="Dataset IDs">
-            <div v-for="dataset in datasets">
+            <div v-for="dataset in datasets" :key="dataset['@id']">
               {{ dataset["@id"] }}
             </div>
           </FormField>
@@ -215,13 +212,13 @@ onMounted(async () => {
       </div>
     </template>
   </Card>
-  <Card class="mt-8" v-for="(dataset, idx) in datasets">
+  <Card v-for="(dataset, idx) in datasets" :key="idx" class="mt-8">
     <template #title>{{ dataset["dct:title"] ?? dataset["@id"] }}</template>
     <template #subtitle>Dataset registered at the data plane</template>
     <template #content>
       <MonacoEditorVue
         v-model="datasetStrings[idx]"
-        :maxLines="200"
+        :max-lines="200"
         style="max-height: calc(90vh - 16rem)" />
     </template>
     <template #footer>
@@ -245,7 +242,7 @@ onMounted(async () => {
     <template #content>
       <MonacoEditorVue
         v-model="newDataset"
-        :maxLines="200"
+        :max-lines="200"
         style="max-height: calc(90vh - 16rem)" />
     </template>
     <template #footer>

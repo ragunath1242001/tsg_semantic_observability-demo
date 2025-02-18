@@ -1,6 +1,6 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { PresentationService } from "../presentation.service.js";
-import { describe, expect, beforeAll, afterAll, it, jest } from "@jest/globals";
+import { describe, expect, beforeAll, afterAll, it } from "@jest/globals";
 import { plainToInstance } from "class-transformer";
 import { ServerConfig, TypeOrmTestHelper } from "@tsg-dsp/common-api";
 import { AuthorizationRequestDao } from "../../model/presentation.dao.js";
@@ -10,7 +10,6 @@ import { DIDDocuments, DIDService, DIDLogs } from "../../model/did.dao.js";
 import { OID4VPVerifierService } from "./verifier.service.js";
 import {
   PresentationDefinition,
-  AuthorizationRequest,
   AuthorizationResponse
 } from "@tsg-dsp/common-dtos";
 import { TypeOrmModule } from "@nestjs/typeorm";
@@ -27,9 +26,7 @@ import { http, HttpResponse } from "msw";
 
 describe("OID4VPVerifierService", () => {
   let service: OID4VPVerifierService;
-  let credentialsService: CredentialsService;
   let presentationService: PresentationService;
-  let serverConfig: ServerConfig;
   let server: SetupServer;
 
   beforeAll(async () => {
@@ -104,7 +101,6 @@ describe("OID4VPVerifierService", () => {
     service = moduleRef.get<OID4VPVerifierService>(OID4VPVerifierService);
     presentationService =
       moduleRef.get<PresentationService>(PresentationService);
-    serverConfig = moduleRef.get<ServerConfig>(ServerConfig);
     const credentialService = await moduleRef.get(CredentialsService);
     const didService = await moduleRef.get(DidService);
     await moduleRef.get(KeysService).initialized;

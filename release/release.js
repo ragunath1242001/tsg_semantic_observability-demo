@@ -67,7 +67,9 @@ const npmfolders = [
 ];
 const helmfolders = getChildFolders("helm-charts");
 const projects = [];
+
 for (const folder of npmfolders) {
+  // eslint-disable-next-line no-await-in-loop
   const pkg = await readPkgAndWriteVersion(
     `${folder}/package.json`,
     newVersion
@@ -78,7 +80,9 @@ for (const folder of npmfolders) {
     pkg: pkg
   });
 }
+
 for (const folder of helmfolders) {
+  // eslint-disable-next-line no-await-in-loop
   const chart = await readChartAndWriteVersion(
     `${folder}/Chart.yaml`,
     newVersion
@@ -112,6 +116,7 @@ for (const project of projects) {
     }
   );
   let result = "";
+  // eslint-disable-next-line no-await-in-loop
   for await (const line of stream) {
     result += line.toString();
   }

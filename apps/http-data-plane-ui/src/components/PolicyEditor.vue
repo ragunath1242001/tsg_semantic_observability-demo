@@ -31,7 +31,9 @@ const rawPolicy = ref<string>();
 watch(rawPolicy, (value) => {
   try {
     policy.value.raw = JSON.parse(value);
-  } catch (error) {}
+  } catch (error) {
+    console.log(error);
+  }
 });
 
 watch(
@@ -65,13 +67,13 @@ onMounted(() => {
       :options="['default', 'rules', 'manual']"
       :option-label="(value) => value[0].toUpperCase() + value.slice(1)" />
   </FormField>
-  <FormField label="Manual" v-if="policy.type === 'manual'">
+  <FormField v-if="policy.type === 'manual'" label="Manual">
     <MonacoEditorVue
       v-model="rawPolicy"
       :schema="odrlOfferSchema"
       schema-warning
-      :maxLines="25"
-      :minLines="15" />
+      :max-lines="25"
+      :min-lines="15" />
     <small
       >The warnings are based on a opiniated JSON-Schema of ODRL from the
       Dataspace Protocol, which does not cover all possibilities present in the
@@ -80,13 +82,13 @@ onMounted(() => {
       warnings are presented the request might be rejected.</small
     >
   </FormField>
-  <FormField label="Permissions" v-if="policy.type === 'rules'">
+  <FormField v-if="policy.type === 'rules'" label="Permissions">
     <small
       >Permissions allow the defined action, when all constraints are
       met.</small
     >
     <hr />
-    <div v-for="(permission, idx) in policy.permissions">
+    <div v-for="(permission, idx) in policy.permissions" :key="idx">
       <div class="font-bold py-2">Action</div>
       <Select
         v-model="permission.action"
@@ -96,7 +98,7 @@ onMounted(() => {
         class="w-full" />
       <div class="font-bold py-2">Constraints</div>
       <div class="grid grid-cols-12 gap-4 grid-nogutter ml-4">
-        <template v-for="(constraint, idx) in permission.constraints">
+        <template v-for="(constraint, i) in permission.constraints" :key="i">
           <div class="col-span-11 md:col-span-5">
             <Select
               v-model="constraint.type"
@@ -106,17 +108,17 @@ onMounted(() => {
           </div>
           <div class="col-span-11 md:col-span-6">
             <InputText
-              class="w-full"
               v-model="constraint.value"
+              class="w-full"
               placeholder="Value" />
           </div>
           <div class="col-span-1">
             <Button
               size="small"
               icon="pi pi-times"
-              @click="permission.constraints.splice(idx, 1)"
               severity="danger"
-              outlined />
+              outlined
+              @click="permission.constraints.splice(i, 1)" />
           </div>
         </template>
         <div class="col-span-12">
@@ -144,8 +146,8 @@ onMounted(() => {
       <hr />
     </div>
     <div
-      class="py-2"
-      v-if="!policy.permissions || policy.permissions.length === 0">
+      v-if="!policy.permissions || policy.permissions.length === 0"
+      class="py-2">
       No permissions
     </div>
     <Button
@@ -161,14 +163,14 @@ onMounted(() => {
         })
       " />
   </FormField>
-  <FormField label="Prohibitions" v-if="policy.type === 'rules'">
+  <FormField v-if="policy.type === 'rules'" label="Prohibitions">
     <small
       >Prohibitions explicitly prohibit the defined action, when all constraints
       are met. If both permission(s) as prohibition(s) match for a given
       transfer, the prohibition(s) take precedence.</small
     >
     <hr />
-    <div v-for="(prohibition, idx) in policy.prohibitions">
+    <div v-for="(prohibition, idx) in policy.prohibitions" :key="idx">
       <div class="font-bold py-2">Action</div>
       <Select
         v-model="prohibition.action"
@@ -178,7 +180,7 @@ onMounted(() => {
         class="w-full" />
       <div class="font-bold py-2">Constraints</div>
       <div class="grid grid-cols-12 gap-4 grid-nogutter ml-4">
-        <template v-for="(constraint, idx) in prohibition.constraints">
+        <template v-for="(constraint, i) in prohibition.constraints" :key="i">
           <div class="col-span-11 md:col-span-5">
             <Select
               v-model="constraint.type"
@@ -188,17 +190,17 @@ onMounted(() => {
           </div>
           <div class="col-span-11 md:col-span-6">
             <InputText
-              class="w-full"
               v-model="constraint.value"
+              class="w-full"
               placeholder="Value" />
           </div>
           <div class="col-span-1">
             <Button
               size="small"
               icon="pi pi-times"
-              @click="prohibition.constraints.splice(idx, 1)"
               severity="danger"
-              outlined />
+              outlined
+              @click="prohibition.constraints.splice(i, 1)" />
           </div>
         </template>
         <div class="col-span-12">
@@ -226,8 +228,8 @@ onMounted(() => {
       <hr />
     </div>
     <div
-      class="py-2"
-      v-if="!policy.prohibitions || policy.prohibitions.length === 0">
+      v-if="!policy.prohibitions || policy.prohibitions.length === 0"
+      class="py-2">
       No prohibitions
     </div>
     <Button

@@ -32,7 +32,7 @@ export class ClassValidationError extends Error {
 
 export class SerializableClass<OutType extends ContextDto> {
   readonly extraProps: Record<string, any> = {};
-  constructor(value?: withExtraProps<{}> | any) {
+  constructor(value?: withExtraProps<object> | any) {
     if (value?.extraProps) {
       for (const [propKey, propValue] of Object.entries(value.extraProps)) {
         this.extraProps[propKey] = propValue;

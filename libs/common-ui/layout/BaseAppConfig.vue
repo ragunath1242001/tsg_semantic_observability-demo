@@ -61,11 +61,8 @@ const handleUploadDark = async (event) => {
 <template>
   <div>
     <div class="text-xl mt-2">Color</div>
-    <ColorPicker
-      v-model="color"
-      v-on:change="updateColorPalette(color!)"
-      inline />
-    <InputText v-model="color" v-on:change="updateColorPalette(color!)" />
+    <ColorPicker v-model="color" inline @change="updateColorPalette(color!)" />
+    <InputText v-model="color" @change="updateColorPalette(color!)" />
     <div class="text-xl mt-2">Logo Dark Theme</div>
     <div>
       <FormField label="Use URL" :label-width="4">
@@ -81,18 +78,18 @@ const handleUploadDark = async (event) => {
       </div>
 
       <FileUpload
+        v-if="!useDarkThemeUrl"
         mode="basic"
         name="file"
-        chooseIcon="pi pi-pencil"
-        v-if="!useDarkThemeUrl"
+        choose-icon="pi pi-pencil"
         accept="image/svg+xml"
         class="ml-2"
-        :maxFileSize="1000000"
-        @uploader="handleUploadDark"
+        :max-file-size="1000000"
         custom-upload
         :auto="true"
-        chooseLabel="Change" />
-      <InputText v-else class="ml-2" v-model="darkThemeUrl" />
+        choose-label="Change"
+        @uploader="handleUploadDark" />
+      <InputText v-else v-model="darkThemeUrl" class="ml-2" />
     </div>
 
     <div class="text-xl mt-2">Logo Light Theme</div>
@@ -107,18 +104,18 @@ const handleUploadDark = async (event) => {
           style="height: 3rem" />
       </div>
       <FileUpload
+        v-if="!useLightThemeUrl"
         mode="basic"
         name="file"
-        chooseIcon="pi pi-pencil"
+        choose-icon="pi pi-pencil"
         custom-upload
-        v-if="!useLightThemeUrl"
         accept="image/svg+xml"
         class="ml-2"
-        :maxFileSize="1000000"
+        :max-file-size="1000000"
         :auto="true"
-        @uploader="handleUpload"
-        chooseLabel="Change" />
-      <InputText v-else class="ml-2" v-model="lightThemeUrl" />
+        choose-label="Change"
+        @uploader="handleUpload" />
+      <InputText v-else v-model="lightThemeUrl" class="ml-2" />
     </div>
   </div>
 </template>

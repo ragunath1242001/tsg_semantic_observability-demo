@@ -104,7 +104,7 @@ export const validateAndCreate = async <
   T extends Ecosystem | SingleParticipant
 >(
   cls: ClassConstructor<T>,
-  json: any
+  json: object
 ): Promise<T> => {
   const instance = plainToInstance(cls, json);
   const schemaErrors = validateSync(instance, {

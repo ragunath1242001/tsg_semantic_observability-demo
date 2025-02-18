@@ -12,7 +12,6 @@ import { OfferGrants } from "@tsg-dsp/wallet-dtos";
 import axios from "axios";
 import { AppError } from "../utils/error.js";
 import qs from "querystring";
-import { PresentationService } from "../presentation/presentation.service.js";
 import { VerifiableCredential } from "@tsg-dsp/common-dsp";
 import { plainToInstance } from "class-transformer";
 import { RootConfig } from "../config.js";
@@ -24,7 +23,6 @@ import crypto from "crypto";
 export class HolderService {
   constructor(
     private readonly credentialsService: CredentialsService,
-    private readonly presentationService: PresentationService,
     private readonly signatureService: SignatureService,
     private readonly config: RootConfig
   ) {
@@ -222,7 +220,7 @@ export class HolderService {
       }
 
       return response.data;
-    } catch (err) {
+    } catch (_) {
       throw new AppError(
         `Could not load OpenID Credential issuer metadata from ${credentialIssuerMetadataEndpoint}`,
         HttpStatus.BAD_REQUEST
@@ -253,7 +251,7 @@ export class HolderService {
           return undefined;
         }
       }
-    } catch (err) {
+    } catch (_) {
       return undefined;
     }
   }
@@ -271,7 +269,7 @@ export class HolderService {
         })
       );
       return tokenResponse.data;
-    } catch (err) {
+    } catch (_) {
       throw new AppError(
         `Could not retrieve access token for pre authorization code ${preAuthorizedCode} at ${tokenEndpoint}`,
         HttpStatus.BAD_REQUEST

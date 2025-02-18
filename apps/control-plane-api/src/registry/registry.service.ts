@@ -61,7 +61,7 @@ export class RegistryService implements OnApplicationBootstrap {
       this.logger.debug(
         `Found credentials for ${credentials.map((c) => c.targetDid)}`
       );
-    } catch (err) {
+    } catch (_) {
       this.logger.debug("No credentials found. Registry will not work.");
       return [];
     }

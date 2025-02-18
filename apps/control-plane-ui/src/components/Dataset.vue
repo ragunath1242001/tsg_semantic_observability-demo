@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { toRefs, ref, toRef, watch, reactive } from "vue";
+import { ref, toRef, reactive } from "vue";
 import {
   DatasetDto,
   OfferDto,
@@ -30,7 +30,7 @@ interface FlatPolicy {
 }
 
 const props = defineProps<{
-  datasetData: DatasetDto;
+  datasetDataProp: DatasetDto;
   policy: string;
   address: string;
   didId: string;
@@ -42,7 +42,7 @@ const http = injectStrict(AxiosKey);
 
 const toast = useToast();
 
-const datasetDataRo = toRef(props, "datasetData");
+const datasetDataRo = toRef(props, "datasetDataProp");
 const datasetData = reactive(datasetDataRo.value);
 
 const policy = toRef(props, "policy");
@@ -168,8 +168,8 @@ const sendNegotiation = async (
         ><div class="flex items-center">
           <Button icon="pi pi-chevron-left" rounded @click="goBack()"></Button>
           <h2
-            class="mx-4 bg-surface-0 dark:bg-surface-900 whitespace-nowrap overflow-hidden text-ellipsis"
-            v-tooltip.top="datasetData['dct:title']">
+            v-tooltip.top="datasetData['dct:title']"
+            class="mx-4 bg-surface-0 dark:bg-surface-900 whitespace-nowrap overflow-hidden text-ellipsis">
             {{ datasetData["dct:title"] }}
           </h2>
         </div></template
@@ -180,17 +180,19 @@ const sendNegotiation = async (
       <template #content>
         <div
           class="grid grid-cols-12 gap-4 grid-nogutter border-t border-surface">
-          <DisplayField label="Versions" v-if="'dcat:hasVersion' in datasetData"
-            ><div v-for="version in datasetData['dcat:hasVersion']">
+          <DisplayField v-if="'dcat:hasVersion' in datasetData" label="Versions"
+            ><div
+              v-for="version in datasetData['dcat:hasVersion']"
+              :key="version">
               {{ version }}
             </div>
           </DisplayField>
           <DisplayField
-            label="Current Version"
             v-if="
               'dcat:hasCurrentVersion' in datasetData &&
               datasetData['dcat:hasCurrentVersion']
-            ">
+            "
+            label="Current Version">
             {{ datasetData["dcat:hasCurrentVersion"] }}
           </DisplayField>
           <DisplayField label="Endpoint URL">
@@ -213,12 +215,13 @@ const sendNegotiation = async (
             {{ datasetData["dcat:distribution"][0]["dct:format"] }}
           </DisplayField>
           <DisplayField
-            label="Conforms to"
-            v-if="'dct:conformsTo' in datasetData['dcat:distribution'][0]">
+            v-if="'dct:conformsTo' in datasetData['dcat:distribution'][0]"
+            label="Conforms to">
             <a
               v-for="conformsTo in datasetData['dcat:distribution'][0][
                 'dct:conformsTo'
               ]"
+              :key="conformsTo"
               :href="conformsTo"
               class="mr-2 break-all">
               {{ conformsTo }}</a
@@ -226,9 +229,9 @@ const sendNegotiation = async (
           </DisplayField>
           <DisplayField label="Keywords"
             ><Tag
-              class="mr-2 text-surface-900 dark:text-surface-0 bg-primary-700"
               v-for="keyword in obtainValues(datasetData['dcat:keyword'])"
               :key="keyword"
+              class="mr-2 text-surface-900 dark:text-surface-0 bg-primary-700"
               :value="keyword"></Tag
           ></DisplayField>
         </div>
@@ -244,7 +247,8 @@ const sendNegotiation = async (
           </div>
 
           <template
-            v-for="policy in parsePolicies(datasetData['odrl:hasPolicy'])">
+            v-for="policy in parsePolicies(datasetData['odrl:hasPolicy'])"
+            :key="policy">
             <div
               class="px-2 font-medium text-lg text-surface-700 dark:text-surface-100">
               {{ stripOdrl(policy.type) }}
@@ -264,13 +268,14 @@ const sendNegotiation = async (
               </DisplayField>
             </div>
             <div
-              class="p-4 font-medium text-lg text-surface-700 dark:text-surface-100"
-              v-if="policy.constraints">
+              v-if="policy.constraints"
+              class="p-4 font-medium text-lg text-surface-700 dark:text-surface-100">
               Constraints
             </div>
             <div
-              class="grid grid-cols-12 gap-4 grid-nogutter"
-              v-for="constraint in policy.constraints">
+              v-for="(constraint, idx) in policy.constraints"
+              :key="idx"
+              class="grid grid-cols-12 gap-4 grid-nogutter">
               <DisplayField label="Left Operand">
                 {{ constraint.leftOperand }}
               </DisplayField>
@@ -283,7 +288,7 @@ const sendNegotiation = async (
             </div>
             <Divider />
           </template>
-          <div class="grid grid-cols-7" v-if="!props.ownDataset">
+          <div v-if="!props.ownDataset" class="grid grid-cols-7">
             <div class="col-span-1 col-start-4">
               <Button
                 severity="success"
@@ -294,17 +299,17 @@ const sendNegotiation = async (
                 @click="open" />
             </div>
             <Dialog
-              header="Are you sure you want to send the following negotiation message?"
               v-model:visible="display"
+              header="Are you sure you want to send the following negotiation message?"
               :breakpoints="{ '960px': '78vw' }"
               :modal="true">
               <div class="grid grid-cols-12 gap-4">
                 <div class="col-span-12 md:col-span-11">
                   <MonacoEditor
-                    :schema="schema"
                     v-model="policy"
+                    :schema="schema"
                     :read-only="!editable"
-                    :maxLines="25" />
+                    :max-lines="25" />
                 </div>
                 <div class="col-span-12 md:col-span-1">
                   <Button

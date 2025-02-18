@@ -4,7 +4,6 @@ import { LoggingController } from "./logging.controller.js";
 import { EgressLogDao, IngressLogDao } from "./logging.dao.js";
 import { LoggingService } from "./logging.service.js";
 import { AuthModule } from "@tsg-dsp/common-api";
-import { RootConfig } from "../config.js";
 
 @Module({
   imports: [

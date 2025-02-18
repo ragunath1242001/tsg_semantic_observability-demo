@@ -48,7 +48,7 @@ describe("KubernetesService", () => {
       const fakeSecret: V1Secret = { ...secretBody };
       jest
         .spyOn(fakeCoreV1Api, "createNamespacedSecret")
-        // @ts-expect-error
+        // @ts-expect-error - mockResolvedValueOnce is not recognized
         .mockResolvedValueOnce(fakeSecret);
 
       // Simulate successful creation
@@ -66,13 +66,13 @@ describe("KubernetesService", () => {
       const conflictError = new ApiException(409, "Conflict", "{}", {});
 
       // Simulate create returning a conflict error
-      // @ts-expect-error
+      // @ts-expect-error - mockRejectedValueOnce is not recognized
       fakeCoreV1Api.createNamespacedSecret.mockRejectedValue(conflictError);
 
       const fakeUpdatedSecret: V1Secret = { ...secretBody };
       // Simulate update success
       fakeCoreV1Api.replaceNamespacedSecret.mockResolvedValue(
-        // @ts-expect-error
+        // @ts-expect-error - mockResolvedValueOnce is not recognized
         fakeUpdatedSecret
       );
 
@@ -92,11 +92,11 @@ describe("KubernetesService", () => {
 
     it("should throw update error when secret update fails", async () => {
       const conflictError = new ApiException(409, "Conflict", "{}", {});
-      // @ts-expect-error
+      // @ts-expect-error - mockRejectedValueOnce is not recognized
       fakeCoreV1Api.createNamespacedSecret.mockRejectedValue(conflictError);
 
       const updateError: any = new Error("Update failed");
-      // @ts-expect-error
+      // @ts-expect-error - mockRejectedValueOnce is not recognized
       fakeCoreV1Api.replaceNamespacedSecret.mockRejectedValue(updateError);
 
       await expect(service.applySecret(secretName, data)).rejects.toThrow(
@@ -116,7 +116,7 @@ describe("KubernetesService", () => {
 
     it("should throw error if createNamespacedSecret fails with non-conflict error", async () => {
       const otherError = new ApiException(500, "Other error", "{}", {});
-      // @ts-expect-error
+      // @ts-expect-error - mockRejectedValueOnce is not recognized
       fakeCoreV1Api.createNamespacedSecret.mockRejectedValue(otherError);
 
       await expect(service.applySecret(secretName, data)).rejects.toThrow(
