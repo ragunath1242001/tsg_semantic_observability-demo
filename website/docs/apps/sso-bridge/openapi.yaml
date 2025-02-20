@@ -1,0 +1,611 @@
+openapi: 3.0.0
+paths:
+  /health:
+    get:
+      description: Retrieves the current health of the app. If the app is running and
+        it is connected to the database it always returns an empty 200 OK
+      operationId: HealthController_getHealth
+      parameters: []
+      responses:
+        "200":
+          description: ""
+        "502":
+          description: ""
+        "503":
+          description: The Health Check is not successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: error
+                  info:
+                    type: object
+                    example:
+                      database: &a1
+                        status: up
+                    additionalProperties:
+                      type: object
+                      required:
+                        - status
+                      properties:
+                        status:
+                          type: string
+                      additionalProperties: true
+                    nullable: true
+                  error:
+                    type: object
+                    example:
+                      redis: &a2
+                        status: down
+                        message: Could not connect
+                    additionalProperties:
+                      type: object
+                      required:
+                        - status
+                      properties:
+                        status:
+                          type: string
+                      additionalProperties: true
+                    nullable: true
+                  details:
+                    type: object
+                    example:
+                      database: *a1
+                      redis: *a2
+                    additionalProperties:
+                      type: object
+                      required:
+                        - status
+                      properties:
+                        status:
+                          type: string
+                      additionalProperties: true
+      summary: Health check
+      tags:
+        - Health
+  /api/auth/user:
+    get:
+      operationId: AuthController_getUser
+      parameters: []
+      responses:
+        "200":
+          description: ""
+      tags: &a3
+        - Auth
+  /api/auth/login:
+    post:
+      operationId: AuthController_login
+      parameters: []
+      responses:
+        "200":
+          description: ""
+      tags: *a3
+  /api/auth/logout:
+    get:
+      operationId: AuthController_logout
+      parameters: []
+      responses:
+        "200":
+          description: ""
+      tags: *a3
+  /api/users:
+    get:
+      operationId: UsersController_getUsers
+      parameters: []
+      responses:
+        "200":
+          description: List of users returned.
+      summary: Get all users
+      tags: &a4
+        - users
+  /api/users/create:
+    post:
+      operationId: UsersController_createUser
+      parameters: []
+      responses:
+        "201":
+          description: The user has been successfully created.
+      summary: Create a new user
+      tags: *a4
+  /api/users/{id}:
+    delete:
+      operationId: UsersController_deleteUser
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: User id
+          schema:
+            type: number
+      responses:
+        "200":
+          description: User successfully deleted.
+      summary: Delete a user
+      tags: *a4
+  /api/users/update/{id}:
+    patch:
+      operationId: UsersController_updateUser
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: User id
+          schema:
+            type: number
+      responses:
+        "200":
+          description: User successfully updated.
+      summary: Update an existing user
+      tags: *a4
+  /api/oauth/authorize:
+    get:
+      operationId: OauthController_authorize
+      parameters:
+        - name: response_type
+          required: true
+          in: query
+          description: The response type of the authorization
+          schema:
+            example: code
+            type: string
+        - name: response_mode
+          required: true
+          in: query
+          description: The response mode of the authorization
+          schema:
+            example: query
+            enum:
+              - query
+              - fragment
+            type: string
+        - name: client_id
+          required: true
+          in: query
+          description: The client identifier issuing the authorization request
+          schema:
+            example: client-id
+            type: string
+        - name: redirect_uri
+          required: true
+          in: query
+          description: The URI to redirect to after authorization
+          schema:
+            example: https://example.com/redirect
+            type: string
+        - name: scope
+          required: false
+          in: query
+          description: Optional scope
+          schema:
+            example: openid profile email
+            type: string
+        - name: state
+          required: false
+          in: query
+          description: Optional state parameter
+          schema:
+            example: randomState
+            type: string
+        - name: nonce
+          required: false
+          in: query
+          description: Optional nonce parameter
+          schema:
+            example: randomNonce
+            type: string
+        - name: code_challenge
+          required: false
+          in: query
+          description: Optional challenge parameter
+          schema:
+            example: randomChallenge
+            type: string
+        - name: code_challenge_method
+          required: false
+          in: query
+          description: Optional challenge method
+          schema:
+            example: S256
+            enum:
+              - plain
+              - S256
+            type: string
+      responses:
+        "200":
+          description: ""
+      tags: &a5
+        - Oauth
+  /api/oauth/login:
+    post:
+      operationId: OauthController_login
+      parameters:
+        - name: response_type
+          required: true
+          in: query
+          description: The response type of the authorization
+          schema:
+            example: code
+            type: string
+        - name: response_mode
+          required: true
+          in: query
+          description: The response mode of the authorization
+          schema:
+            example: query
+            enum:
+              - query
+              - fragment
+            type: string
+        - name: client_id
+          required: true
+          in: query
+          description: The client identifier issuing the authorization request
+          schema:
+            example: client-id
+            type: string
+        - name: redirect_uri
+          required: true
+          in: query
+          description: The URI to redirect to after authorization
+          schema:
+            example: https://example.com/redirect
+            type: string
+        - name: scope
+          required: false
+          in: query
+          description: Optional scope
+          schema:
+            example: openid profile email
+            type: string
+        - name: state
+          required: false
+          in: query
+          description: Optional state parameter
+          schema:
+            example: randomState
+            type: string
+        - name: nonce
+          required: false
+          in: query
+          description: Optional nonce parameter
+          schema:
+            example: randomNonce
+            type: string
+        - name: code_challenge
+          required: false
+          in: query
+          description: Optional challenge parameter
+          schema:
+            example: randomChallenge
+            type: string
+        - name: code_challenge_method
+          required: false
+          in: query
+          description: Optional challenge method
+          schema:
+            example: S256
+            enum:
+              - plain
+              - S256
+            type: string
+        - name: redirect
+          required: true
+          in: query
+          schema:
+            type: boolean
+      responses:
+        "201":
+          description: ""
+      tags: *a5
+  /api/oauth/token:
+    post:
+      operationId: OauthController_token
+      parameters: []
+      responses:
+        "200":
+          description: ""
+      tags: *a5
+  /api/oauth/userinfo:
+    get:
+      operationId: OauthController_userinfoGet
+      parameters:
+        - name: token
+          required: true
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+      tags: *a5
+    post:
+      operationId: OauthController_userinfoPost
+      parameters: []
+      responses:
+        "200":
+          description: ""
+      tags: *a5
+  /api/oauth/introspect:
+    post:
+      operationId: OauthController_introspect
+      parameters: []
+      responses:
+        "200":
+          description: ""
+      tags: *a5
+  /api/oauth/device_authorization:
+    post:
+      operationId: OauthController_deviceAuthorization
+      parameters: []
+      responses:
+        "200":
+          description: ""
+      tags: *a5
+  /api/oauth/revocation:
+    post:
+      operationId: OauthController_revocation
+      parameters: []
+      responses:
+        "200":
+          description: ""
+      tags: *a5
+  /api/oauth/jwks:
+    get:
+      description: Get the JWKS for the OAuth server
+      operationId: OauthController_getJWKS
+      parameters: []
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JWKS"
+        "502":
+          description: ""
+      summary: Get JWKS
+      tags: *a5
+  /api/.well-known/openid-configuration:
+    get:
+      description: Find all the open ID metadata for the OAuth server
+      operationId: MetadataController_getOpenIDConfiguration
+      parameters: []
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OpenIDConfiguration"
+        "502":
+          description: ""
+      summary: Open ID Configuration
+      tags:
+        - Well-known endpoint
+  /api/clients:
+    get:
+      operationId: ClientsController_getClients
+      parameters: []
+      responses:
+        "200":
+          description: List of clients returned successfully.
+      summary: Retrieve all clients
+      tags: &a6
+        - Clients
+  /api/clients/create:
+    post:
+      operationId: ClientsController_createUser
+      parameters: []
+      requestBody:
+        required: true
+        description: Data for the new client
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClientDto"
+      responses:
+        "201":
+          description: Client created successfully.
+      summary: Create a new client
+      tags: *a6
+  /api/clients/{id}:
+    delete:
+      operationId: ClientsController_deleteClient
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+      responses:
+        "200":
+          description: Client deleted successfully.
+      summary: Delete a client by id
+      tags: *a6
+  /api/clients/update/{id}:
+    patch:
+      operationId: ClientsController_updateClient
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+      requestBody:
+        required: true
+        description: Updated client data
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClientDto"
+      responses:
+        "200":
+          description: Client updated successfully.
+      summary: Update an existing client
+      tags: *a6
+info:
+  title: TSG SSO Bridge
+  description: "TSG SSO Bridge API Documentation "
+  version: ""
+  contact: {}
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+tags:
+  - name: Health
+    description: Health controller
+servers: []
+components:
+  schemas:
+    JsonWebKeyDto:
+      type: object
+      properties:
+        alg:
+          type: string
+        crv:
+          type: string
+        e:
+          type: string
+        ext:
+          type: boolean
+        key_ops:
+          type: array
+          items:
+            type: string
+        kid:
+          type: string
+        kty:
+          type: string
+        n:
+          type: string
+        use:
+          type: string
+        x:
+          type: string
+        y:
+          type: string
+      required:
+        - kty
+    JWKS:
+      type: object
+      properties:
+        keys:
+          description: The key set
+          type: array
+          items:
+            $ref: "#/components/schemas/JsonWebKeyDto"
+      required:
+        - keys
+    OpenIDConfiguration:
+      type: object
+      properties:
+        issuer:
+          type: string
+          description: Issuer of the OpenID configuration
+        authorization_endpoint:
+          type: string
+          description: Authorization endpoint
+        token_endpoint:
+          type: string
+          description: Token endpoint
+        userinfo_endpoint:
+          type: string
+          description: Userinfo endpoint
+        introspection_endpoint:
+          type: string
+          description: Introspection endpoint
+        device_authorization_endpoint:
+          type: string
+          description: Device authorization endpoint
+        revocation_endpoint:
+          type: string
+          description: Revocation endpoint
+        jwks_uri:
+          type: string
+          description: JWKS URI
+        response_types_supported:
+          description: Supported response types
+          type: array
+          items:
+            type: string
+        response_modes_supported:
+          description: Supported response modes
+          type: array
+          items:
+            type: string
+        id_token_signing_alg_values_supported:
+          description: Supported ID token signing algorithms
+          type: array
+          items:
+            type: string
+        scopes_supported:
+          description: Supported scopes
+          type: array
+          items:
+            type: string
+        grant_types_supported:
+          description: Supported grant types
+          type: array
+          items:
+            type: string
+        subject_types_supported:
+          description: Supported subject types
+          type: array
+          items:
+            type: string
+        claims_supported:
+          description: Supported claims
+          type: array
+          items:
+            type: string
+      required:
+        - issuer
+        - authorization_endpoint
+        - token_endpoint
+        - jwks_uri
+        - response_types_supported
+        - id_token_signing_alg_values_supported
+        - subject_types_supported
+    ClientDto:
+      type: object
+      properties:
+        id:
+          type: number
+        name:
+          type: string
+        secretName:
+          type: string
+        description:
+          type: string
+        clientId:
+          type: string
+        clientSecret:
+          type: string
+        roles:
+          type: array
+          items:
+            type: string
+        grants:
+          type: array
+          items:
+            type: string
+        redirectUris:
+          type: array
+          items:
+            type: string
+      required:
+        - id
+        - name
+        - secretName
+        - description
+        - clientId
+        - clientSecret
+        - roles
+        - grants
+        - redirectUris
+externalDocs:
+  description: Git Repository
+  url: https://gitlab.com/tno-tsg/dataspace-protocol/tno-security-gateway

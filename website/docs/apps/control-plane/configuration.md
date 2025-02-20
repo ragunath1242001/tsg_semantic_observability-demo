@@ -1,3 +1,7 @@
+---
+[comment]: # (This file is auto generated)
+hide_table_of_contents: true
+---
 # Configuration
 
 In this section, the configuration of the control plane is explained. Configuration is used based on a `config.yaml` file which should be placed in the `apps/backend/src` folder. This `config.yaml` file is loaded when booting the application. The values get type checked, and it gives a clear error message if there is a configuration field missing or provided incorrectly. Next to the `config.yaml` file, you can also set environment variables. These override the values that are listed in the `config.yaml` file.
@@ -10,59 +14,94 @@ By default, the development database is sqlite. We use postgres databases for pr
 
 Authentication for frontend services can be done via the SSO Bridge. This helps users who need to login to several components to authenticate themselves faster.
 
-### Possible configuration parameters
+## Configuration parameters
 
-| Name                                     | Data Type        | Required              | Explanation                                                                                                                  | Default                   |
-| ---------------------------------------- | ---------------- | --------------------- | ---------------------------------------------------------------------------------------------------------------------------- | ------------------------- |
-| **Database Configuration**               |                  |                       |                                                                                                                              |                           |
-| `db.type`                                | String           | Yes                   | Type of the database. Must be `"sqlite"` or `"postgres"`.                                                                    |                           |
-| `db.database`                            | String           | Yes                   | Name of the database. Used as filename when `"sqlite"` is provided as database type                                          |                           |
-| `db.synchronize`                         | Boolean          | No                    | Whether or not the database should be synchronized, _MUST_ only be `true` in test scenarios                                  | `false`                   |
-| `db.host`                                | String           | If type is `postgres` | Hostname of the database                                                                                                     |                           |
-| `db.port`                                | Integer          | If type is `postgres` | Port of the database                                                                                                         |                           |
-| `db.username`                            | String           | If type is `postgres` | Username of the user in the database                                                                                         |                           |
-| `db.password`                            | String           | If type is `postgres` | Password of the user in the database                                                                                         |                           |
-| `db.ssl`                                 | Boolean /Object  | No                    | Boolean if SSL is not used, else object with options                                                                         | `false`                   |
-| `db.ssl.rejectUnauthorized`              | Boolean          | No                    | Whether unauthorized requests should be rejected.                                                                            | `false`                   |
-| **Auth Configuration**                   |                  |                       |                                                                                                                              |                           |
-| `auth.enabled`                           | Boolean          |                       | Boolean indicating whether an external OAuth server should be used. If false, all other properties under `auth` are not used | `true`                    |
-| `auth.openIdConfigurationURL`            | URL              | If `auth` is enabled  | OpenID Configuration URL                                                                                                     |                           |
-| `auth.callbackURL`                       | URL              | If `auth` is enabled  | Callback URL of the data plane on which it expects callback requests to arrive                                               |                           |
-| `auth.redirectURL`                       | URL              | If `auth` is enabled  | Redirect URL of the data plane which it used to redirect a user that has logged in                                           |                           |
-| `auth.clientId`                          | String           | If `auth` is enabled  | OAuth client ID                                                                                                              |                           |
-| `auth.clientSecret`                      | String           | If `auth` is enabled  | OAuth client secret                                                                                                          |                           |
-| `auth.rolePath`                          | String           |                       | JSON Path used to translate roles into a simple array of roles, with as starting point the access token JWT payload          | `"$.roles[*]"`            |
-| **Server Configuration**                 |                  |                       |                                                                                                                              |                           |
-| `listen`                                 | String           | No                    | IP address to listen on.                                                                                                     | `"0.0.0.0"`               |
-| `port`                                   | Number           | No                    | Port number for the server.                                                                                                  | `3000`                    |
-| `publicDomain`                           | String           | No                    | Public domain of the server.                                                                                                 | `"localhost"`             |
-| `publicAddress`                          | String           | No                    | Public address of the server.                                                                                                | `"http://localhost:3000"` |
-| **Registry Configuration**               |                  |                       |                                                                                                                              |                           |
-| `isRegistry`                             | Boolean          | No                    | Indicates whether it's a registry.                                                                                           | `false`                   |
-| `registryUrl`                            | String           | No                    | URL of the registry.                                                                                                         |                           |
-| `registryDid`                            | String           | No                    | DID (Decentralized Identifier) of the registry.                                                                              |                           |
-| `registryIntervalInMilliseconds`         | Number           | No                    | Interval in milliseconds for registry updates.                                                                               | `30000`                   |
-| **IAM Configuration**                    |                  |                       |                                                                                                                              |                           |
-| `type`                                   | String           | Yes                   | Type of IAM. Options: `"tsg"` or `"dev"`.                                                                                    |                           |
-| `didId`                                  | String           | Yes                   | Identifier for the DID.                                                                                                      |                           |
-| `walletUrl`                              | String           | Yes                   | Root URL for Wallet management.                                                                                              |                           |
-| `siopUrl`                                | String           | Yes                   | URL for SIOP management.                                                                                                     |                           |
-| `verifyUrl`                              | String           | Yes                   | URL for token verification.                                                                                                  |                           |
-| `typeFilter`                             | String           | No                    | Default accepted credential type.                                                                                            |                           |
-| `issuerFilter`                           | String           | No                    | Default accepted issuer.                                                                                                     |                           |
-| **Runtime Configuration**                |                  |                       |                                                                                                                              |                           |
-| `controlPlaneInteractions`               | String           | No                    | Mode of control plane interactions. Options: `"automatic"`, `"semi-manual"`, `"manual"`.                                     | `"automatic"`             |
-| **Initialization Catalog Configuration** |                  |                       |                                                                                                                              |                           |
-| `creator`                                | String           | Yes                   | Creator of the catalog.                                                                                                      |                           |
-| `publisher`                              | String           | Yes                   | Publisher of the catalog.                                                                                                    |                           |
-| `title`                                  | String           | Yes                   | Title of the catalog.                                                                                                        |                           |
-| `description`                            | String           | Yes                   | Description of the catalog.                                                                                                  |                           |
-| `datasets`                               | Array of Strings | No                    | Array of dataset names.                                                                                                      |                           |
-| **Root Configuration**                   |                  |                       |                                                                                                                              |                           |
-| `db`                                     | Object           | Yes                   | Database configuration.                                                                                                      |                           |
-| `server`                                 | Object           | Yes                   | Server configuration.                                                                                                        |                           |
-| `auth`                                   | Object           | Yes                   | Authentication configuration.                                                                                                |                           |
-| `registry`                               | Object           | No                    | Registry configuration.                                                                                                      |                           |
-| `iam`                                    | Object           | Yes                   | IAM configuration.                                                                                                           |                           |
-| `initCatalog`                            | Object           | Yes                   | Initialization catalog configuration.                                                                                        |                           |
-| `runtime`                                | Object           | No                    | Runtime configuration.                                                                                                       |                           |
+| Key                                                | Required | Type                                       | Description                                       | Default                   |
+| -------------------------------------------------- | -------- | ------------------------------------------ | ------------------------------------------------- | ------------------------- |
+| **`DatabaseConfig`**                               |          |                                            |                                                   |                           |
+| `db`                                               |          | `DatabaseConfig`                           | Database configuration                            |                           |
+| `db.type`                                          |          | `"sqlite" \| "postgres"`                   | Type of database                                  |                           |
+| `db.database`                                      |          | `String`                                   | Name of the database                              |                           |
+| `db.synchronize`                                   | Yes      | `Boolean`                                  | Synchronize database schema                       |                           |
+| `db{type=sqlite}`                                  |          | `SQLiteConfig`                             | Database configuration                            |                           |
+| `db{type=sqlite}.type`                             |          | `"sqlite" \| "postgres"`                   | Type of database                                  | `"sqlite"`                |
+| `db{type=sqlite}.database`                         |          | `String`                                   | Name of the database                              |                           |
+| `db{type=sqlite}.synchronize`                      | Yes      | `Boolean`                                  | Synchronize database schema                       |                           |
+| `db{type=postgres}`                                |          | `PostgresConfig`                           | Database configuration                            |                           |
+| `db{type=postgres}.host`                           |          | `String`                                   | Host of the database                              |                           |
+| `db{type=postgres}.port`                           |          | `Number`                                   | Port of the database                              |                           |
+| `db{type=postgres}.username`                       |          | `String`                                   | Username of the database                          |                           |
+| `db{type=postgres}.password`                       |          | `String`                                   | Password of the database                          |                           |
+| `db{type=postgres}.ssl`                            | Yes      | `Unknown`                                  | SSL configuration of the database                 |                           |
+| `db{type=postgres}.type`                           |          | `"sqlite" \| "postgres"`                   | Type of database                                  | `"postgres"`              |
+| `db{type=postgres}.database`                       |          | `String`                                   | Name of the database                              |                           |
+| `db{type=postgres}.synchronize`                    | Yes      | `Boolean`                                  | Synchronize database schema                       |                           |
+| **`ServerConfig`**                                 |          |                                            |                                                   |                           |
+| `server`                                           | Yes      | `ServerConfig`                             | Server configuration                              |                           |
+| `server.listen`                                    | Yes      | `String`                                   | IP address the server listens on                  | `"0.0.0.0"`               |
+| `server.port`                                      | Yes      | `Number`                                   | Port the server listens on                        | `3000`                    |
+| `server.publicDomain`                              | Yes      | `String`                                   | Public domain of the server                       | `"localhost"`             |
+| `server.publicAddress`                             | Yes      | `String`                                   | Public address of the server                      | `"http://localhost:3000"` |
+| `server.subPath`                                   | Yes      | `String`                                   | Sub path of the server                            |                           |
+| **`AuthConfig`**                                   |          |                                            |                                                   |                           |
+| `auth`                                             |          | `AuthConfig`                               | Management authentication configuration           |                           |
+| `auth.enabled`                                     |          | `Boolean`                                  | Enable authentication                             | `true`                    |
+| `auth.openIdConfigurationURL`                      | Yes      | `String`                                   | OpenID configuration URL                          |                           |
+| `auth.callbackURL`                                 | Yes      | `URL`                                      | Callback URL the auth service will redirect users |                           |
+| `auth.redirectURL`                                 | Yes      | `URL`                                      | Redirect URL to UI after login/logout             |                           |
+| `auth.clientId`                                    | Yes      | `String`                                   | Client ID                                         |                           |
+| `auth.clientSecret`                                | Yes      | `String`                                   | Client secret                                     |                           |
+| `auth.rolePath`                                    | Yes      | `String`                                   | JSON path to extract roles from the token         | `"$.roles[*]"`            |
+| **`RegistryConfig`**                               |          |                                            |                                                   |                           |
+| `registry`                                         |          | `RegistryConfig`                           | Registry configuration                            |                           |
+| `registry.useRegistry`                             |          | `Boolean`                                  | Use registry to crawl catalogs                    |                           |
+| `registry.registryUrl`                             | Yes      | `String`                                   | URL of the registry                               |                           |
+| `registry.registryDid`                             | Yes      | `String`                                   | DID of the registry                               |                           |
+| `registry.registryIntervalInMilliseconds`          |          | `Number`                                   | Interval in milliseconds to fetch registry        | `30000`                   |
+| **`IamConfig`**                                    |          |                                            |                                                   |                           |
+| `iam`                                              |          | `IamConfig`                                | IAM wallet configuration                          |                           |
+| `iam.type`                                         |          | `"tsg" \| "dev"`                           | Type of IAM service                               |                           |
+| `iam.didId`                                        |          | `String`                                   | DID identifier of the IAM service                 |                           |
+| `iam{type=dev}`                                    |          | `DevWalletConfig`                          | IAM wallet configuration                          |                           |
+| `iam{type=dev}.type`                               |          | `"tsg" \| "dev"`                           | Type of IAM service                               | `"dev"`                   |
+| `iam{type=dev}.didId`                              |          | `String`                                   | DID identifier of the IAM service                 |                           |
+| `iam{type=tsg}`                                    |          | `TsgWalletConfig`                          | IAM wallet configuration                          |                           |
+| `iam{type=tsg}.walletUrl`                          |          | `URL`                                      | URL of the wallet management endpoint             |                           |
+| `iam{type=tsg}.siopUrl`                            |          | `URL`                                      | URL of the SIOP token endpoint                    |                           |
+| `iam{type=tsg}.verifyUrl`                          |          | `URL`                                      | URL of the verification endpoint                  |                           |
+| `iam{type=tsg}.typeFilter`                         | Yes      | `String`                                   | Credential type filter used as default            |                           |
+| `iam{type=tsg}.issuerFilter`                       | Yes      | `String`                                   | Issuer filter used as default                     |                           |
+| `iam{type=tsg}.customFields`                       | Yes      | `Array`                                    | Custom presentation definition fields             |                           |
+| `iam{type=tsg}.type`                               |          | `"tsg" \| "dev"`                           | Type of IAM service                               | `"tsg"`                   |
+| `iam{type=tsg}.didId`                              |          | `String`                                   | DID identifier of the IAM service                 |                           |
+| **`InitCatalog`**                                  |          |                                            |                                                   |                           |
+| `initCatalog`                                      |          | `InitCatalog`                              | Initial catalog configuration                     |                           |
+| `initCatalog.creator`                              |          | `String`                                   | Creator of the catalog                            |                           |
+| `initCatalog.publisher`                            |          | `String`                                   | Publisher of the catalog                          |                           |
+| `initCatalog.title`                                |          | `String`                                   | Title of the catalog                              |                           |
+| `initCatalog.description`                          |          | `String`                                   | Description of the catalog                        |                           |
+| `initCatalog.datasets`                             | Yes      | `String`                                   | Serialized initial datasets                       |                           |
+| **`PolicyConfig`**                                 |          |                                            |                                                   |                           |
+| `defaultPolicy`                                    | Yes      | `PolicyConfig`                             | Default policy configuration                      |                           |
+| `defaultPolicy.type`                               |          | `"rules" \| "manual"`                      | Definition type of the policy                     | `"rules"`                 |
+| **`PolicyRuleConfig`**                             |          |                                            |                                                   |                           |
+| `defaultPolicy.permissions`                        | Yes      | `PolicyRuleConfig[]`                       | Permissions of the policy                         |                           |
+| `defaultPolicy.permissions[].action`               |          | `String`                                   | Action of the rule                                |                           |
+| **`RuleConstraintConfig`**                         |          |                                            |                                                   |                           |
+| `defaultPolicy.permissions[].constraints`          | Yes      | `RuleConstraintConfig[]`                   | Constraints of the rule                           |                           |
+| `defaultPolicy.permissions[].constraints[].type`   |          | `String`                                   | Type of the constraint                            |                           |
+| `defaultPolicy.permissions[].constraints[].value`  |          | `String`                                   | Value of the constraint                           |                           |
+| **`PolicyRuleConfig`**                             |          |                                            |                                                   |                           |
+| `defaultPolicy.prohibitions`                       | Yes      | `PolicyRuleConfig[]`                       | Prohibitions of the policy                        |                           |
+| `defaultPolicy.prohibitions[].action`              |          | `String`                                   | Action of the rule                                |                           |
+| **`RuleConstraintConfig`**                         |          |                                            |                                                   |                           |
+| `defaultPolicy.prohibitions[].constraints`         | Yes      | `RuleConstraintConfig[]`                   | Constraints of the rule                           |                           |
+| `defaultPolicy.prohibitions[].constraints[].type`  |          | `String`                                   | Type of the constraint                            |                           |
+| `defaultPolicy.prohibitions[].constraints[].value` |          | `String`                                   | Value of the constraint                           |                           |
+| `defaultPolicy.raw`                                | Yes      | `Object`                                   | Raw ODRL policy                                   |                           |
+| **`RuntimeConfig`**                                |          |                                            |                                                   |                           |
+| `runtime`                                          |          | `RuntimeConfig`                            | Runtime configuration                             |                           |
+| `runtime.controlPlaneInteractions`                 |          | `"automatic" \| "semi-manual" \| "manual"` | Mode of control plane interactions                | `"automatic"`             |
+| `runtime.color`                                    |          | `String`                                   | Primary UI color                                  | `"#3B8BF6"`               |
+| `runtime.lightThemeUrl`                            | Yes      | `String`                                   | Light theme logo URL                              |                           |
+| `runtime.darkThemeUrl`                             | Yes      | `String`                                   | Dark theme logo URL                               |                           |

@@ -10,6 +10,7 @@ import { Type } from "class-transformer";
 
 import {
   DatabaseConfig,
+  Description,
   PostgresConfig,
   ServerConfig,
   SQLiteConfig
@@ -17,6 +18,7 @@ import {
 import { GrantType } from "@tsg-dsp/sso-bridge-dtos";
 
 export class RootConfig {
+  @Description("Database configuration")
   @ValidateNested()
   @IsDefined({
     message: "Either sqlite or postgres DB config must be provided"
@@ -32,57 +34,75 @@ export class RootConfig {
   })
   public readonly db!: DatabaseConfig;
 
+  @Description("Server configuration")
   @ValidateNested()
   @Type(() => ServerConfig)
   @IsOptional()
   public readonly server: ServerConfig = new ServerConfig();
 
+  @Description("Initial client configurations")
   @ValidateNested({ each: true })
   @Type(() => InitClient)
   @IsOptional()
   public readonly initClients: InitClient[] = [];
 
+  @Description("Initial user configurations")
   @ValidateNested({ each: true })
   @Type(() => InitUser)
   @IsOptional()
   public readonly initUsers: InitUser[] = [];
 
+  @Description("Kubernetes namespace")
   @IsString()
   public readonly kubernetesNamespace: string = "default";
 }
 
 export class InitClient {
+  @Description("Client ID")
   @IsString()
   clientId!: string;
+  @Description("Client secret")
   @IsString()
   clientSecret!: string;
+  @Description("Kubernetes secret name")
   @IsString()
   secretName!: string;
+  @Description("Client roles")
   @IsString({ each: true })
   @ArrayNotEmpty()
   roles!: string[];
+  @Description("Client grants types supported")
   @IsString({ each: true })
   @ArrayNotEmpty()
   @IsOptional()
   grants: GrantType[] = ["client_credentials"];
+  @Description("Client name")
   @IsString()
   name!: string;
+  @Description("Client description")
   @IsString()
   description!: string;
+  @Description("Allowed Client redirect URIs regex")
   @IsString({ each: true })
   redirectUris!: string[];
 }
 
 export class InitUser {
+  @Description("Username")
   @IsString()
   username!: string;
+  @Description("Password")
   @IsString()
   password!: string;
+  @Description("Email")
+  @IsString()
   @IsEmail()
   email!: string;
+  @Description("User roles")
   @IsString({ each: true })
   @ArrayNotEmpty()
   roles!: string[];
+  @Description("Grant types supported")
   @IsString({ each: true })
   @ArrayNotEmpty()
   @IsOptional()

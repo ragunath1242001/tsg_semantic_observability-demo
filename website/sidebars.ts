@@ -1,6 +1,8 @@
 import type { SidebarsConfig } from "@docusaurus/plugin-content-docs";
 import controlPlaneItems from "./docs/apis/control-plane/sidebar";
 import httpdataPlaneItems from "./docs/apis/http-data-plane/sidebar";
+import analyticsdataPlaneItems from "./docs/apis/http-data-plane/sidebar";
+import ssoBridgeItems from "./docs/apis/sso-bridge/sidebar";
 import walletItems from "./docs/apis/wallet/sidebar";
 
 const sidebars: SidebarsConfig = {
@@ -18,6 +20,8 @@ const sidebars: SidebarsConfig = {
   apiSidebar: [
     { type: "category", items: controlPlaneItems, label: "Control Plane" },
     { type: "category", items: httpdataPlaneItems, label: "HTTP Data Plane" },
+    { type: "category", items: analyticsdataPlaneItems, label: "Analytics Data Plane" },
+    { type: "category", items: ssoBridgeItems, label: "SSO Bridge" },
     { type: "category", items: walletItems, label: "Wallet" }
   ]
 };

@@ -16,6 +16,7 @@
     "jest:coverage": "jest --coverage --coverage-reporters text",
     "jest:ci": "jest --coverage --coverage-reporters cobertura --coverage-reporters text --ci --reporters=default --reporters=jest-junit",
     "swagger": "tsc -p tsconfig.json && node dist/generate-oas.js",
+    "configDocs": "tsc -p tsconfig.json && node dist/generate-config-documentation.js",
     "migrations:generate": "npx tsx src/migrations.executor.ts",
     "migrations:check": "npx tsx src/migrations.executor.ts --check"
   },

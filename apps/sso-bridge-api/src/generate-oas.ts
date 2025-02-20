@@ -14,9 +14,9 @@ async function bootstrap() {
     exclude: ["health"]
   });
   const config = new DocumentBuilder()
-    .setTitle("TSG Oauth Server")
+    .setTitle("TSG SSO Bridge")
     .setVersion("")
-    .setDescription("TSG Oauth Server API Documentation ")
+    .setDescription("TSG SSO Bridge API Documentation ")
     .setLicense(
       "Apache 2.0",
       "https://www.apache.org/licenses/LICENSE-2.0.html"
