@@ -20,7 +20,7 @@ export class ProxyController {
   constructor(private readonly transferService: TransferService) {}
   private readonly logger = new Logger(this.constructor.name);
 
-  @All("/proxy/:id/:path(*)?")
+  @All("/proxy/:id{/*path}")
   @ApiOperation({
     summary: "Proxy a request",
     description:

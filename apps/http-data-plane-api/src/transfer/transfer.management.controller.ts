@@ -118,7 +118,7 @@ export class TransferManagementController {
     return await this.transferService.transferSuspend(id, reason);
   }
 
-  @All("/transfers/:id/execute/:path(*)?")
+  @All("/transfers/:id/execute{/*path}")
   @HttpCode(HttpStatus.ACCEPTED)
   @ApiOperation({
     summary: "Proxy a request",
@@ -148,7 +148,7 @@ export class TransferManagementController {
     );
   }
 
-  @All("/execute/:path(*)?")
+  @All("/execute{/*path}")
   @HttpCode(HttpStatus.ACCEPTED)
   @ApiOperation({
     summary: "Proxy a request without transfer ID",

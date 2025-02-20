@@ -458,10 +458,10 @@ paths:
           in: query
           schema:
             default: DESC
+            type: string
             enum:
               - ASC
               - DESC
-            type: string
         - name: order_by
           required: false
           in: query
@@ -631,10 +631,10 @@ paths:
           in: query
           schema:
             default: DESC
+            type: string
             enum:
               - ASC
               - DESC
-            type: string
         - name: order_by
           required: false
           in: query
@@ -751,10 +751,10 @@ paths:
           in: query
           schema:
             default: DESC
+            type: string
             enum:
               - ASC
               - DESC
-            type: string
         - name: order_by
           required: false
           in: query
@@ -1222,10 +1222,10 @@ paths:
           in: query
           schema:
             default: DESC
+            type: string
             enum:
               - ASC
               - DESC
-            type: string
         - name: order_by
           required: false
           in: query
@@ -1854,10 +1854,10 @@ paths:
           in: query
           schema:
             default: DESC
+            type: string
             enum:
               - ASC
               - DESC
-            type: string
         - name: order_by
           required: false
           in: query
@@ -2293,10 +2293,10 @@ paths:
           in: query
           schema:
             default: DESC
+            type: string
             enum:
               - ASC
               - DESC
-            type: string
         - name: order_by
           required: false
           in: query
@@ -2591,10 +2591,10 @@ paths:
           in: query
           schema:
             default: DESC
+            type: string
             enum:
               - ASC
               - DESC
-            type: string
         - name: order_by
           required: false
           in: query
@@ -2935,10 +2935,10 @@ paths:
           in: query
           schema:
             default: DESC
+            type: string
             enum:
               - ASC
               - DESC
-            type: string
         - name: order_by
           required: false
           in: query
@@ -3016,10 +3016,10 @@ paths:
           in: query
           schema:
             default: DESC
+            type: string
             enum:
               - ASC
               - DESC
-            type: string
         - name: order_by
           required: false
           in: query

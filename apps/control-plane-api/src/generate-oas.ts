@@ -11,7 +11,7 @@ async function bootstrap() {
   );
 
   app.setGlobalPrefix(`${process.env["SUBPATH"] ?? ""}/api`, {
-    exclude: [".well-known/(.*)", "health"]
+    exclude: [".well-known/*paths", "health"]
   });
   const config = new DocumentBuilder()
     .setTitle("TSG Control Plane")

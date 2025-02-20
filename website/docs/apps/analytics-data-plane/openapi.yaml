@@ -432,10 +432,10 @@ paths:
           in: query
           schema:
             default: DESC
+            type: string
             enum:
               - ASC
               - DESC
-            type: string
         - name: page
           required: false
           in: query
@@ -465,10 +465,10 @@ paths:
           in: query
           schema:
             default: DESC
+            type: string
             enum:
               - ASC
               - DESC
-            type: string
         - name: page
           required: false
           in: query
