@@ -53,7 +53,7 @@ lint:
 
 renovate:
   stage: check
-  image: ghcr.io/renovatebot/renovate:39.90.5
+  image: ghcr.io/renovatebot/renovate:39.176.4
   needs: []
   script:
     - renovate

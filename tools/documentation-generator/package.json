@@ -20,14 +20,14 @@
   },
   "devDependencies": {
     "@jest/types": "^29.6.3",
-    "@nestjs/cli": "^10.4.8",
-    "@nestjs/testing": "^10.4.11",
+    "@nestjs/cli": "^11.0.4",
+    "@nestjs/testing": "^11.0.10",
     "@types/deep-equal": "^1.0.1",
     "@types/jest": "^29.5.14",
-    "@types/node": "^22.10.1",
-    "@typescript-eslint/eslint-plugin": "^8.16.0",
-    "@typescript-eslint/parser": "^8.16.0",
-    "eslint": "^9.15.0",
+    "@types/node": "^22.13.4",
+    "@typescript-eslint/eslint-plugin": "^8.24.1",
+    "@typescript-eslint/parser": "^8.24.1",
+    "eslint": "^9.20.1",
     "jest": "^29.7.0",
     "jest-junit": "^16.0.0",
     "msw": "^2.6.6",
@@ -38,7 +38,7 @@
     "typescript": "^5.7.3"
   },
   "dependencies": {
-    "@commander-js/extra-typings": "^13.0.0",
-    "@inquirer/prompts": "^7.0.0"
+    "@commander-js/extra-typings": "^13.1.0",
+    "@inquirer/prompts": "^7.3.2"
   }
 }

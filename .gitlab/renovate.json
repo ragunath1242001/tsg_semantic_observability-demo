@@ -5,5 +5,13 @@
   "commitMessageExtra": "from {{{currentVersion}}} to {{{newVersion}}}",
   "labels": ["Renovate"],
   "prHourlyLimit": 0,
-  "branchPrefix": "renovate-"
+  "branchPrefix": "renovate-",
+  "packageRules": [
+    {
+      "description": "Disable tailwindcss updates until primeui works with tailwindcss 4",
+      "packagePatterns": ["tailwindcss"],
+      "matchUpdateTypes": ["major"],
+      "enabled": false
+    }
+  ]
 }

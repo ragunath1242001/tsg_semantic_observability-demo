@@ -1,10 +1,15 @@
-import { Module } from "@nestjs/common";
+import { MiddlewareConsumer, Module } from "@nestjs/common";
 import { DataPlaneModule } from "./dataplane/dataplane.module.js";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { ServeStaticModule } from "@nestjs/serve-static";
 import { LoggingModule } from "./logging/logging.module.js";
 import { ConfigController } from "./config.controller.js";
-import { AuthModule, GenericConfigModule } from "@tsg-dsp/common-api";
+import {
+  AuthModule,
+  GenericConfigModule,
+  LoggerMiddleware,
+  RequestContextMiddleware
+} from "@tsg-dsp/common-api";
 import { RootConfig } from "./config.js";
 import { TransferModule } from "./transfer/transfer.module.js";
 
@@ -13,7 +18,7 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
       ServeStaticModule.forRoot({
         rootPath: process.env["EMBEDDED_FRONTEND"],
         serveRoot: process.env["SUBPATH"],
-        exclude: ["/api/(.*)"]
+        exclude: ["/api/*paths"]
       })
     ]
   : [];
@@ -38,4 +43,9 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
   exports: [],
   controllers: [ConfigController]
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(RequestContextMiddleware).forRoutes("{*path}");
+    consumer.apply(LoggerMiddleware).forRoutes("{*path}");
+  }
+}

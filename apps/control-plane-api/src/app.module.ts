@@ -29,7 +29,7 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
       ServeStaticModule.forRoot({
         rootPath: process.env["EMBEDDED_FRONTEND"],
         serveRoot: process.env["SUBPATH"],
-        exclude: ["/api/(.*)", "/.well-known/(.*)"]
+        exclude: ["/api/*paths", "/.well-known/*paths"]
       })
     ]
   : [];
@@ -71,7 +71,7 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(RequestContextMiddleware).forRoutes("*");
-    consumer.apply(LoggerMiddleware).forRoutes("*");
+    consumer.apply(RequestContextMiddleware).forRoutes("{*path}");
+    consumer.apply(LoggerMiddleware).forRoutes("{*path}");
   }
 }

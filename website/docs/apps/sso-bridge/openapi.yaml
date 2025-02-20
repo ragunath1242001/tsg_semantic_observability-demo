@@ -157,10 +157,10 @@ paths:
           description: The response mode of the authorization
           schema:
             example: query
+            type: string
             enum:
               - query
               - fragment
-            type: string
         - name: client_id
           required: true
           in: query
@@ -209,10 +209,10 @@ paths:
           description: Optional challenge method
           schema:
             example: S256
+            type: string
             enum:
               - plain
               - S256
-            type: string
       responses:
         "200":
           description: ""
@@ -235,10 +235,10 @@ paths:
           description: The response mode of the authorization
           schema:
             example: query
+            type: string
             enum:
               - query
               - fragment
-            type: string
         - name: client_id
           required: true
           in: query
@@ -287,10 +287,10 @@ paths:
           description: Optional challenge method
           schema:
             example: S256
+            type: string
             enum:
               - plain
               - S256
-            type: string
         - name: redirect
           required: true
           in: query
