@@ -21,6 +21,27 @@ variables:
     paths:
       - .pnpm-store
 
+openapi:
+  extends: .base-rules
+  stage: test
+  script:
+    - pnpm install --frozen-lockfile
+    - pnpm --filter "./libs/*" build
+    - pnpm -r swagger
+    - git diff --exit-code
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+
+config_docs:
+  extends: .base-rules
+  stage: test
+  script:
+    - pnpm install --frozen-lockfile
+    - pnpm --filter "./libs/*" build
+    - pnpm -r configDocs
+    - git diff --exit-code
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
 lint:
   extends: .base-rules
   stage: test

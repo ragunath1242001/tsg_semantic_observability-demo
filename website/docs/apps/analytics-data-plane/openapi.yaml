@@ -1,0 +1,638 @@
+openapi: 3.0.0
+paths:
+  /api/settings:
+    get:
+      description: Retrieves the settings of the control plane.
+      operationId: ConfigController_getSettings
+      parameters: []
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RuntimeConfigDto"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: &a1
+        - oauth2:
+            - controlplane_admin
+      summary: Retrieve settings
+      tags: &a2
+        - Settings
+  /api/settings/update:
+    post:
+      description: Updates runtime settings for the control plane.
+      operationId: ConfigController_updateSettings
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RuntimeConfigDto"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RuntimeConfigDto"
+        "400":
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a1
+      summary: Update settings
+      tags: *a2
+  /api/settings/upload:
+    post:
+      description: Uploads logo for the control plane, receive a base64 encoded url.
+      operationId: ConfigController_uploadFile
+      parameters: []
+      responses:
+        "200":
+          description: ""
+      security: *a1
+      summary: Upload logo
+      tags: *a2
+  /api/catalog:
+    get:
+      operationId: DataPlaneController_getCatalog
+      parameters: []
+      responses:
+        "501":
+          description: ""
+      tags: &a3
+        - DataPlane
+  /health:
+    get:
+      operationId: DataPlaneController_healthCheck
+      parameters: []
+      responses:
+        "200":
+          description: ""
+      tags: *a3
+  /api/transfers/request/{role}:
+    post:
+      operationId: DataPlaneController_requestTransfer
+      parameters:
+        - name: role
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: processId
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: x-remote-party
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: x-dataset-id
+          required: true
+          in: header
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+      tags: *a3
+  /api/transfers/{id}/start:
+    post:
+      operationId: DataPlaneController_startTransfer
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "202":
+          description: ""
+      tags: *a3
+  /api/transfers/{id}/complete:
+    post:
+      operationId: DataPlaneController_completeTransfer
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "202":
+          description: ""
+      tags: *a3
+  /api/transfers/{id}/terminate:
+    post:
+      operationId: DataPlaneController_terminateTransfer
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "202":
+          description: ""
+      tags: *a3
+  /api/transfers/{id}/suspend:
+    post:
+      operationId: DataPlaneController_suspendTransfer
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "202":
+          description: ""
+      tags: *a3
+  /api/management/state:
+    get:
+      operationId: DataPlaneManagementController_getState
+      parameters: []
+      responses:
+        "200":
+          description: ""
+      tags: &a4
+        - DataPlaneManagement
+  /api/management/catalog:
+    get:
+      operationId: DataPlaneManagementController_getCatalog
+      parameters: []
+      responses:
+        "200":
+          description: ""
+      tags: *a4
+  /api/management/refresh:
+    post:
+      operationId: DataPlaneManagementController_refreshRegistration
+      parameters: []
+      responses:
+        "201":
+          description: ""
+      tags: *a4
+  /api/management/dataset:
+    get:
+      operationId: DataPlaneManagementController_getDatasetConfig
+      parameters: []
+      responses:
+        "200":
+          description: ""
+      tags: *a4
+    put:
+      operationId: DataPlaneManagementController_updateDatasetConfig
+      parameters:
+        - name: datasetId
+          required: true
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+      tags: *a4
+    post:
+      operationId: DataPlaneManagementController_addDataset
+      parameters: []
+      responses:
+        "201":
+          description: ""
+      tags: *a4
+    delete:
+      operationId: DataPlaneManagementController_deleteDataset
+      parameters:
+        - name: datasetId
+          required: true
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+      tags: *a4
+  /api/management/transfers:
+    get:
+      operationId: DataPlaneManagementController_getTransfers
+      parameters: []
+      responses:
+        "200":
+          description: ""
+      tags: *a4
+  /api/management/transfers/{id}:
+    get:
+      operationId: DataPlaneManagementController_getTransfer
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+      tags: *a4
+  /api/management/transfers/{id}/metadata:
+    get:
+      operationId: DataPlaneManagementController_getMetadata
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+      tags: *a4
+  /api/management/transfers/{id}/start:
+    post:
+      operationId: DataPlaneManagementController_startTransfer
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "201":
+          description: ""
+      tags: *a4
+  /api/management/transfers/{id}/complete:
+    post:
+      operationId: DataPlaneManagementController_completeTransfer
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "201":
+          description: ""
+      tags: *a4
+  /api/management/transfers/{id}/terminate:
+    post:
+      operationId: DataPlaneManagementController_terminateTransfer
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: code
+          required: true
+          in: query
+          schema:
+            type: string
+      responses:
+        "201":
+          description: ""
+      tags: *a4
+  /api/management/transfers/{id}/suspend:
+    post:
+      operationId: DataPlaneManagementController_suspendTransfer
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: code
+          required: true
+          in: query
+          schema:
+            type: string
+      responses:
+        "201":
+          description: ""
+      tags: *a4
+  /api/auth/user:
+    get:
+      description: Retrieves current user state, whether someone is logged in or not a
+        200 result is provided. This is used in the frontend to determine
+        whether certain aspects should be shown.
+      operationId: AuthController_getUser
+      parameters: []
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/AuthenticatedUser"
+                  - $ref: "#/components/schemas/UnauthenticatedUser"
+      summary: Retrieve current user status
+      tags: &a5
+        - Authentication
+  /api/auth/login:
+    get:
+      description: Redirects user to the correct authorization server
+      operationId: AuthController_login
+      parameters: []
+      responses:
+        "302":
+          description: ""
+      summary: Login redirect
+      tags: *a5
+  /api/auth/logout:
+    get:
+      description: Removes session information and redirects user the root of the
+        frontend (`auth.redirectURL`)
+      operationId: AuthController_logout
+      parameters: []
+      responses:
+        "302":
+          description: ""
+      summary: Logout redirect
+      tags: *a5
+  /api/auth/callback:
+    get:
+      description: Users are redirected from the authorization server to this endpoint
+        which will redirect them to the frontend (`auth.redirectURL`)
+      operationId: AuthController_callback
+      parameters:
+        - name: state
+          required: false
+          in: query
+          description: The state parameter
+          schema:
+            example: randomState
+            type: string
+        - name: code
+          required: false
+          in: query
+          description: The authorization code
+          schema:
+            example: code
+            type: string
+        - name: access_token
+          required: false
+          in: query
+          description: The access token
+          schema:
+            type: string
+        - name: token_type
+          required: false
+          in: query
+          description: The token type
+          schema:
+            example: Bearer
+            type: string
+        - name: expires_in
+          required: false
+          in: query
+          description: The token expiration in seconds
+          schema:
+            example: 3600
+            type: string
+        - name: id_token
+          required: false
+          in: query
+          description: The ID token
+          schema:
+            type: string
+        - name: code_verifier
+          required: false
+          in: query
+          description: The code verifier
+          schema:
+            example: randomChallengeVerifier
+            type: string
+      responses:
+        "302":
+          description: ""
+      summary: Login callback
+      tags: *a5
+  /api/management/logging/ingress:
+    get:
+      operationId: LoggingController_getIngressLogs
+      parameters:
+        - name: order
+          required: false
+          in: query
+          schema:
+            default: DESC
+            enum:
+              - ASC
+              - DESC
+            type: string
+        - name: page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            default: 1
+            type: number
+        - name: take
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 50
+            default: 10
+            type: number
+      responses:
+        "200":
+          description: ""
+      tags: &a6
+        - Logging
+  /api/management/logging/egress:
+    get:
+      operationId: LoggingController_getEgressLogs
+      parameters:
+        - name: order
+          required: false
+          in: query
+          schema:
+            default: DESC
+            enum:
+              - ASC
+              - DESC
+            type: string
+        - name: page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            default: 1
+            type: number
+        - name: take
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 50
+            default: 10
+            type: number
+      responses:
+        "200":
+          description: ""
+      tags: *a6
+  /api/files:
+    get:
+      operationId: FilesController_getFiles
+      parameters: []
+      responses:
+        "200":
+          description: ""
+      tags: &a7
+        - Files
+  /api/files/upload:
+    post:
+      operationId: FilesController_uploadFile
+      parameters: []
+      responses:
+        "201":
+          description: ""
+      tags: *a7
+  /api/files/sync:
+    post:
+      operationId: FilesController_syncFiles
+      parameters: []
+      responses:
+        "201":
+          description: ""
+      tags: *a7
+  /api/files/{id}/csvw:
+    get:
+      operationId: FilesController_getCSVW
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+      tags: *a7
+info:
+  title: TSG Analytics Data Plane
+  description: This OpenAPI specification shows the endpoints of the Analytics Data Plane.
+  version: ""
+  contact: {}
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+tags:
+  - name: Health
+    description: Health Controller
+  - name: Settings
+    description: Settings Controller
+  - name: Authentication
+    description: Authentication Controller
+  - name: Data Plane
+    description: Data Plane Controller
+  - name: Data Plane Management
+    description: Data Plane Management Controller
+  - name: Proxy
+    description: Proxy Controller
+  - name: Logging
+    description: Logging Controller
+servers: []
+components:
+  securitySchemes:
+    oauth2:
+      type: oauth2
+      flows:
+        password:
+          scopes:
+            analyticsdataplane_admin: analyticsdataplane_admin
+            analyticsdataplane_dataplane: analyticsdataplane_dataplane
+    bearer:
+      scheme: bearer
+      bearerFormat: VP
+      type: http
+      description: Verifiable Presentation needed to communicate between two instances
+        of the control plane.
+  schemas:
+    RuntimeConfigDto:
+      type: object
+      properties:
+        color:
+          type: string
+        darkThemeUrl:
+          type: string
+        lightThemeUrl:
+          type: string
+      required:
+        - color
+    ErrorDto:
+      type: object
+      properties:
+        name:
+          type: string
+        status:
+          type: string
+        code:
+          type: number
+        message:
+          type: object
+        error:
+          type: string
+      required:
+        - name
+        - status
+        - code
+    ClientInfo:
+      type: object
+      properties:
+        sub:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        didId:
+          type: string
+        roles:
+          type: array
+          items:
+            type: string
+        refreshToken:
+          type: string
+      required:
+        - sub
+        - name
+        - email
+        - roles
+    AuthenticatedUser:
+      type: object
+      properties:
+        state:
+          type: object
+        user:
+          $ref: "#/components/schemas/ClientInfo"
+      required:
+        - state
+        - user
+    UnauthenticatedUser:
+      type: object
+      properties:
+        state:
+          type: object
+      required:
+        - state
+externalDocs:
+  description: Git Repository
+  url: https://gitlab.com/tno-tsg/dataspace-protocol/tno-security-gateway

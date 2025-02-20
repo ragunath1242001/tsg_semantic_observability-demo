@@ -1,4 +1,5 @@
 export * from "./config.js";
+export * from "./configToMarkdown.js";
 export * from "./error.js";
 export * from "./logging.js";
 export * from "./pagination/index.js";

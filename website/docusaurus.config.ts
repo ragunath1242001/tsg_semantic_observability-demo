@@ -60,6 +60,15 @@ const config: Config = {
         id: "api",
         docsPluginId: "classic",
         config: {
+          analyticsDataPlane: {
+            specPath: "docs/apps/analytics-data-plane/openapi.yaml",
+            hideSendButton: true,
+            showExtensions: false,
+            outputDir: "docs/apis/analytics-data-plane",
+            sidebarOptions: {
+              groupPathsBy: "tag"
+            }
+          } satisfies OpenApiPlugin.Options,
           controlPlane: {
             specPath: "docs/apps/control-plane/openapi.yaml",
             hideSendButton: true,
@@ -74,6 +83,15 @@ const config: Config = {
             hideSendButton: true,
             showExtensions: false,
             outputDir: "docs/apis/http-data-plane",
+            sidebarOptions: {
+              groupPathsBy: "tag"
+            }
+          } satisfies OpenApiPlugin.Options,
+          ssoBridge: {
+            specPath: "docs/apps/sso-bridge/openapi.yaml",
+            hideSendButton: true,
+            showExtensions: false,
+            outputDir: "docs/apis/sso-bridge",
             sidebarOptions: {
               groupPathsBy: "tag"
             }

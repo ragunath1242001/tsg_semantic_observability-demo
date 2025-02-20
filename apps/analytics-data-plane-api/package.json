@@ -12,6 +12,8 @@
     "dev": "pnpm watch",
     "tsc": "tsc -p tsconfig.build.json",
     "lint": "eslint . --fix --ext .ts",
+    "swagger": "tsc -p tsconfig.json && node dist/generate-oas.js",
+    "configDocs": "tsc -p tsconfig.json && node dist/generate-config-documentation.js",
     "jest": "jest",
     "jest:coverage": "jest --coverage --coverage-reporters text",
     "jest:ci": "jest --coverage --coverage-reporters cobertura --coverage-reporters text --ci --reporters=default --reporters=jest-junit",
@@ -51,7 +53,8 @@
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1",
     "sqlite3": "^5.1.7",
-    "typeorm": "^0.3.20"
+    "typeorm": "^0.3.20",
+    "yaml": "^2.6.1"
   },
   "devDependencies": {
     "@jest-mock/express": "^2.1.0",

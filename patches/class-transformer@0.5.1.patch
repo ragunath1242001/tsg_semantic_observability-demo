@@ -1,0 +1,49 @@
+diff --git a/cjs/index.js b/cjs/index.js
+index 9bc700d985177f7301c16c1beaee162a4e467cf8..4f340283320fee67a2a39f88b1ed55dd396573ee 100644
+--- a/cjs/index.js
++++ b/cjs/index.js
+@@ -17,6 +17,7 @@ Object.defineProperty(exports, "ClassTransformer", { enumerable: true, get: func
+ __exportStar(require("./decorators"), exports);
+ __exportStar(require("./interfaces"), exports);
+ __exportStar(require("./enums"), exports);
++__exportStar(require("./storage"), exports);
+ const classTransformer = new ClassTransformer_1.ClassTransformer();
+ function classToPlain(object, options) {
+     return classTransformer.instanceToPlain(object, options);
+diff --git a/esm2015/index.js b/esm2015/index.js
+index 515bf9731bdd3f47fe79755b885832dbd70bae5a..34cb63dbab52e30396a2ca72f71b05b044a7c984 100644
+--- a/esm2015/index.js
++++ b/esm2015/index.js
+@@ -3,6 +3,7 @@ export { ClassTransformer } from './ClassTransformer';
+ export * from './decorators';
+ export * from './interfaces';
+ export * from './enums';
++export * from './storage';
+ const classTransformer = new ClassTransformer();
+ export function classToPlain(object, options) {
+     return classTransformer.instanceToPlain(object, options);
+diff --git a/esm5/index.js b/esm5/index.js
+index b394896951c0bf1931989d97dd9b04d483eebd50..2eba7237f7c0234eea919f0fa03802ce1023c5a4 100644
+--- a/esm5/index.js
++++ b/esm5/index.js
+@@ -3,6 +3,7 @@ export { ClassTransformer } from './ClassTransformer';
+ export * from './decorators';
+ export * from './interfaces';
+ export * from './enums';
++export * from './storage';
+ var classTransformer = new ClassTransformer();
+ export function classToPlain(object, options) {
+     return classTransformer.instanceToPlain(object, options);
+diff --git a/types/index.d.ts b/types/index.d.ts
+index 184ba1cf853f6f1013ec8d00b2bd167a594978c4..e870780ee6a16683434e1379c1baed8c7e7363f5 100644
+--- a/types/index.d.ts
++++ b/types/index.d.ts
+@@ -4,6 +4,8 @@ export { ClassTransformer } from './ClassTransformer';
+ export * from './decorators';
+ export * from './interfaces';
+ export * from './enums';
++export * from "./storage";
++export { MetadataStorage } from "./MetadataStorage";
+ /**
+  * Converts class (constructor) object to plain (literal) object. Also works with arrays.
+  *
