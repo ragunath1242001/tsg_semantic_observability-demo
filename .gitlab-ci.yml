@@ -12,7 +12,7 @@ variables:
   image: node:22
   before_script:
     - corepack enable
-    - corepack prepare pnpm@9.15.0 --activate
+    - corepack prepare pnpm@10.4.1 --activate
     - pnpm config set store-dir .pnpm-store
   cache:
     key:
@@ -47,7 +47,7 @@ lint:
   stage: test
   script:
     - pnpm install --frozen-lockfile
-    - npx prettier@^3.4.1 --check . && pnpm eslint --quiet
+    - pnpm prettier --check . && pnpm eslint --quiet
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
 
