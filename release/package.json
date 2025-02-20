@@ -16,7 +16,7 @@
     "conventional-changelog-writer": "^8.0.0",
     "conventional-commits-filter": "^5.0.0",
     "conventional-commits-parser": "^6.0.0",
-    "conventional-recommended-bump": "^10.0.0",
+    "conventional-recommended-bump": "^11.0.0",
     "prettier": "^3.4.1",
     "semantic-release": "^24.0.0",
     "semantic-release-monorepo": "^8.0.2",
