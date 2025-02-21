@@ -1,0 +1,31 @@
+db:
+  type: sqlite
+  # database: ":memory:"
+  database: control-plane-b.sqlite
+
+server:
+  port: "3003"
+  listen: "0.0.0.0"
+  publicDomain: localhost:3003
+  publicAddress: http://localhost:3003/api
+
+runtime:
+  controlPlaneInteractions: manual
+
+iam:
+  type: dev
+  didId: did:web:localhost%3A3001
+  tokenUrl: http://localhost:3001/api/auth/login
+  walletUrl: http://localhost:3001/api
+  clientId: client
+  clientSecret: secret
+
+auth:
+  enabled: false
+
+initCatalog:
+  creator: did:web:localhost%3A3003
+  publisher: did:web:localhost%3A3003
+  title: Organization B
+  description: Data Space Control Plane for Organization B
+  datasets: []

@@ -68,6 +68,13 @@ export class RuntimeConfig {
   darkThemeUrl?: string;
 }
 
+export class KubernetesConfig {
+  @Description("Kubernetes namespace")
+  @IsString()
+  @IsOptional()
+  public readonly namespace: string = "default";
+}
+
 export class RootConfig {
   @Description("Database configuration")
   @ValidateNested()
@@ -127,4 +134,9 @@ export class RootConfig {
   @Type(() => RuntimeConfig)
   @IsDefined()
   public readonly runtime!: RuntimeConfig;
+
+  @Description("Kubernetes configuration")
+  @Type(() => KubernetesConfig)
+  @IsOptional()
+  public readonly kubernetesConfig: KubernetesConfig = new KubernetesConfig();
 }

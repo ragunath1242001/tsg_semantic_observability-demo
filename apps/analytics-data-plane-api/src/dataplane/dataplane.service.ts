@@ -29,11 +29,22 @@ import { DataPlaneStateDto, TransferDto } from "@tsg-dsp/common-dtos";
 import { resolve } from "../utils/didServiceResolver.js";
 import { LoggingService } from "../logging/logging.service.js";
 import { AuthClientService, promiseMap } from "@tsg-dsp/common-api";
+import { Writable } from "stream";
+import {
+  BatchV1Api,
+  CoreV1Api,
+  KubeConfig,
+  Log
+} from "@kubernetes/client-node";
 
 @Injectable()
 export class DataPlaneService {
   private readonly axiosDataPlane: AxiosInstance;
   private readonly axiosManagement: AxiosInstance;
+  private readonly batchV1Api: BatchV1Api;
+  private readonly coreV1Api: CoreV1Api;
+  private kubeConfig: KubeConfig;
+
   constructor(
     private readonly config: RootConfig,
     private readonly loggingService: LoggingService,
@@ -50,6 +61,18 @@ export class DataPlaneService {
     this.axiosManagement = authClient.axiosInstance({
       baseURL: this.config.controlPlane.managementEndpoint
     });
+
+    this.kubeConfig = new KubeConfig();
+    try {
+      // Load the kubeconfig from the default location (e.g. ~/.kube/config) or within cluster
+      this.kubeConfig.loadFromDefault();
+      this.coreV1Api = this.kubeConfig.makeApiClient(CoreV1Api);
+      this.batchV1Api = this.kubeConfig.makeApiClient(BatchV1Api);
+      this.logger.debug("KubeConfig loaded successfully");
+    } catch (error) {
+      this.logger.error("Failed to load kubeconfig", error);
+      throw error;
+    }
   }
   private readonly logger = new Logger(this.constructor.name);
   initialized: Promise<void>;
@@ -487,5 +510,129 @@ export class DataPlaneService {
     }
     transfer.state = TransferState.SUSPENDED;
     await this.transferRepository.save(transfer);
+  }
+
+  async watchPodLogs({
+    podName,
+    containerName
+  }: {
+    podName: string;
+    containerName: string;
+  }) {
+    // Set up a stream to the Pod's logs
+    const logStream = new Log(this.kubeConfig);
+
+    // Stream options
+    const streamOptions = {
+      follow: true, // Stream logs in real-time
+      pretty: true, // Avoid extra formatting
+      tailLines: 10 // Optional: Start with the last 10 lines of logs
+    };
+
+    // Create a readable stream for logs
+    const logStreamWritable = new Writable({
+      write(chunk, _encoding, callback) {
+        console.log(chunk.toString()); // Output the log data
+        callback();
+      }
+    });
+
+    await logStream.log(
+      this.config.kubernetesConfig.namespace,
+      podName,
+      containerName,
+      logStreamWritable,
+      streamOptions
+    );
+
+    logStreamWritable.on("finish", () => {
+      console.log("Log stream finished.");
+    });
+  }
+
+  async spawnJob() {
+    const jobName = `analytics-dp-job-${new Date().getTime()}`;
+    const containerName = "analytics-dp-container";
+    const namespace = this.config.kubernetesConfig.namespace;
+    const image = "busybox";
+
+    const command = [
+      "sh",
+      "-c",
+      "echo Hello from the Kubernetes cluster! && sleep 5"
+    ];
+
+    const jobManifest = {
+      apiVersion: "batch/v1",
+      kind: "Job",
+      metadata: {
+        name: jobName,
+        namespace
+      },
+      spec: {
+        backoffLimit: 3,
+        template: {
+          metadata: {
+            labels: {
+              app: jobName
+            }
+          },
+          spec: {
+            restartPolicy: "Never",
+            containers: [
+              {
+                name: containerName,
+                image,
+                command
+              }
+            ]
+          }
+        }
+      }
+    };
+
+    await this.batchV1Api.createNamespacedJob({
+      namespace,
+      body: jobManifest
+    });
+
+    let attempts = 0;
+    const maxAttempts = 10;
+    const delay = (ms: number) =>
+      new Promise((resolve) => setTimeout(resolve, ms));
+
+    while (attempts < maxAttempts) {
+      try {
+        const podList = await this.coreV1Api.listNamespacedPod({
+          namespace: namespace,
+          labelSelector: `app=${jobName}`
+        });
+
+        const podNames = podList.items.map((pod) => pod.metadata?.name);
+
+        if (podNames.length === 0) {
+          throw new Error(`No pods found for job ${jobName}`);
+        }
+
+        if (podNames.length > 1) {
+          throw new Error(`Multiple pods found for job ${jobName}`);
+        }
+
+        const podName = podNames[0]!;
+
+        await this.watchPodLogs({ podName, containerName });
+        break; // Exit loop if successful
+      } catch (_err) {
+        console.log("Error watching pod logs:", _err);
+        attempts++;
+        if (attempts < maxAttempts) {
+          console.log(`Retrying in ${attempts * 500}ms...`);
+
+          await delay(attempts * 500); // Exponential backoff
+        } else {
+          console.error("Max attempts reached. Could not watch pod logs.");
+        }
+      }
+    }
   }
 }

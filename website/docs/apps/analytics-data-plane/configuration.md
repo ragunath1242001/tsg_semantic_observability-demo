@@ -69,3 +69,6 @@ Authentication for frontend services can be done via OAuth. This helps users who
 | `runtime.color`                    |          | `String`                 | Primary UI color                                  | `"#3B8BF6"`               |
 | `runtime.lightThemeUrl`            | Yes      | `String`                 | Light theme logo URL                              |                           |
 | `runtime.darkThemeUrl`             | Yes      | `String`                 | Dark theme logo URL                               |                           |
+| **`KubernetesConfig`**             |          |                          |                                                   |                           |
+| `kubernetesConfig`                 | Yes      | `KubernetesConfig`       | Kubernetes configuration                          |                           |
+| `kubernetesConfig.namespace`       | Yes      | `String`                 | Kubernetes namespace                              | `"default"`               |

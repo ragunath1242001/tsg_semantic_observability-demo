@@ -40,3 +40,6 @@ dataset:
         openApiSpec: "https://httpbin.org/spec.json"
 files:
   path: "./uploads"
+
+kubernetesConfig:
+  namespace: analytics-dataplane-test
