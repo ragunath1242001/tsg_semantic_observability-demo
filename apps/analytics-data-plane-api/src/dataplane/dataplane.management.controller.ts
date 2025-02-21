@@ -105,4 +105,9 @@ export class DataPlaneManagementController {
   ): Promise<void> {
     return await this.dataPlaneService.transferSuspend(id, reason);
   }
+
+  @Get("/k8s/spawn-job")
+  async spawnJob() {
+    return await this.dataPlaneService.spawnJob();
+  }
 }

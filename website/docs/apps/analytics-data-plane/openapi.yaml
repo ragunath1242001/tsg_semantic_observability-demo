@@ -325,6 +325,14 @@ paths:
         "201":
           description: ""
       tags: *a4
+  /api/management/k8s/spawn-job:
+    get:
+      operationId: DataPlaneManagementController_spawnJob
+      parameters: []
+      responses:
+        "200":
+          description: ""
+      tags: *a4
   /api/auth/user:
     get:
       description: Retrieves current user state, whether someone is logged in or not a

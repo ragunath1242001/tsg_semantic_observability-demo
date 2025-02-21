@@ -11,6 +11,9 @@ controlPlane:
   managementEndpoint: http://localhost:3002/api/management
   controlEndpoint: http://localhost:3002
 
+runtime:
+  color: "#3B8BF6"
+
 users:
   - username: admin
     password: $2a$12$/1aqZWSslSi8E556dpChNOxOyEv3hPA.k8asnRk9iIN2bxH6VGUE6 # admin
@@ -27,3 +30,6 @@ dataset:
     - backend: https://httpbin.org/anything
       version: "0.9.0"
       openApiSpec: "https://httpbin.org/spec.json"
+
+kubernetesConfig:
+  namespace: analytics-dataplane-test

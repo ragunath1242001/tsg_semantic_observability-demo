@@ -8,6 +8,9 @@ import { formatDate } from "@tsg-dsp/common-ui/utils/date.js";
 import PaginatedLogTable from "../components/PaginatedLogTable.vue";
 import http from "@tsg-dsp/common-ui/utils/http.js";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
+import { useK8sStore } from "../stores/k8s";
+
+const k8sStore = useK8sStore();
 
 const toast = useToast();
 const confirm = useConfirm();
@@ -134,6 +137,21 @@ const action = async (
       target.classList.remove("p-button-loading");
     }
   });
+};
+
+const spawnK8sJob = async (_transfer: TransferDto) => {
+  try {
+    // TODO: Pass relevant data to the job
+    await k8sStore.spawnJob();
+  } catch (error) {
+    toast.add(
+      toastError({
+        error,
+        summary: "Error spawning job",
+        defaultMessage: "Could not spawn job for transfer"
+      })
+    );
+  }
 };
 
 const showLogs = (transfer: TransferDto) => {
@@ -413,6 +431,15 @@ onMounted(async () => {
               aria-label="Logs"
               outlined
               @click="showLogs(props.data)" />
+            <Button
+              class="ml-2"
+              :disabled="props.data.state !== 'dspace:STARTED'"
+              icon="pi pi-play"
+              severity="info"
+              aria-label="Execute"
+              @click="spawnK8sJob(props.data)"
+              v-tooltip.bottom="'Execute'"
+              outlined />
           </template>
         </Column>
         <template #expansion="props">
