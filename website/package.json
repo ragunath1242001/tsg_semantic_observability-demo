@@ -17,7 +17,7 @@
   },
   "packageManager": "npm@11.1.0",
   "resolutions": {
-    "postman-code-generators": "1.14.1"
+    "postman-code-generators": "1.14.2"
   },
   "dependencies": {
     "@docusaurus/core": "3.7.0",
