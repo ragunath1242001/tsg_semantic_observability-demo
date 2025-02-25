@@ -20,7 +20,6 @@ import { SetupServer, setupServer } from "msw/node";
 import { OfferGrants } from "@tsg-dsp/wallet-dtos";
 import {
   GenerateKeyPairResult,
-  KeyLike,
   SignJWT,
   exportJWK,
   generateKeyPair
@@ -37,7 +36,7 @@ describe("Issuer service", () => {
   let issuerService: IssuerService;
   let server: SetupServer;
   let moduleRef: TestingModule;
-  let exampleKey: GenerateKeyPairResult<KeyLike>;
+  let exampleKey: GenerateKeyPairResult;
 
   beforeAll(async () => {
     await TypeOrmTestHelper.instance.setupTestDB();

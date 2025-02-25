@@ -114,7 +114,7 @@ export class SignatureService {
       b64: false,
       crit: ["b64"]
     });
-    const privateKey = await importJWK(signingKey.privateKey);
+    const privateKey = await importJWK(signingKey.privateKey, signingKey.type);
     return await signature.sign(privateKey);
   }
 
@@ -145,10 +145,10 @@ export class SignatureService {
   ): Promise<FlattenedVerifyResult> {
     try {
       let protectedHeader;
+      if (!publicKey.alg) {
+        publicKey.alg = this.estimateAlgorithm(publicKey);
+      }
       if (signature) {
-        if (!publicKey.alg) {
-          publicKey.alg = this.estimateAlgorithm(publicKey);
-        }
         protectedHeader = Buffer.from(
           JSON.stringify({
             alg: publicKey.alg,
@@ -165,7 +165,7 @@ export class SignatureService {
           signature: signature ?? jws.split(".")[2],
           payload: payload
         },
-        await importJWK(publicKey)
+        await importJWK(publicKey, publicKey.alg)
       );
     } catch (e) {
       this.logger.debug(`Verification failed: ${e}`);
@@ -213,7 +213,9 @@ export class SignatureService {
         jwt.setJti(crypto.randomUUID());
       }
     }
-    return await jwt.sign(await importJWK(signingKey.privateKey));
+    return await jwt.sign(
+      await importJWK(signingKey.privateKey, signingKey.type)
+    );
   }
 
   async validateJwt(token: string): Promise<JWTPayload> {
@@ -237,7 +239,10 @@ export class SignatureService {
       payload.iss,
       cryptoSuite
     );
-    const publicKey = await importJWK(verificationMethod);
+    const publicKey = await importJWK(
+      verificationMethod,
+      verificationMethod.alg
+    );
     try {
       await jwtVerify(token, publicKey);
       return payload;

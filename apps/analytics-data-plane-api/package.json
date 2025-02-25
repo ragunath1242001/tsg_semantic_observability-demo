@@ -45,7 +45,7 @@
     "csv-parse": "^5.6.0",
     "did-resolver": "^4.1.0",
     "express-session": "^1.18.1",
-    "jose": "^5.10.0",
+    "jose": "^6.0.0",
     "jsonld": "^8.2.1",
     "jsonpath": "^1.1.1",
     "multer": "1.4.5-lts.1",

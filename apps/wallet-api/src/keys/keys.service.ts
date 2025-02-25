@@ -1,10 +1,10 @@
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
 import {
-  KeyLike,
   importPKCS8,
   importX509,
   generateKeyPair,
-  exportJWK
+  exportJWK,
+  CryptoKey
 } from "jose";
 import { Not, Repository } from "typeorm";
 import { InitKeyConfig, RootConfig } from "../config.js";
@@ -118,15 +118,19 @@ export class KeysService {
 
   async createKeyMaterial(key: InitKeyConfig): Promise<KeyMaterialDao> {
     this.logger.log(`Loading key material for key ${key.id}`);
-    let privateKey: KeyLike;
-    let publicKey: KeyLike;
+    let privateKey: CryptoKey;
+    let publicKey: CryptoKey;
 
     if (key.existingKey && key.existingCertificate) {
       this.logger.log(
         `Loading existing PKCS#8 key and X.509 certificate for ${key.id}`
       );
-      privateKey = await importPKCS8(key.existingKey, "RSA");
-      publicKey = await importX509(key.existingCertificate, "RSA");
+      privateKey = await importPKCS8(key.existingKey, "PS256", {
+        extractable: true
+      });
+      publicKey = await importX509(key.existingCertificate, "PS256", {
+        extractable: true
+      });
       const publicKeyJwk = (await exportJWK(publicKey)) as JsonWebKey;
       publicKeyJwk.x5u = `${
         this.config.server.publicAddress
@@ -141,7 +145,7 @@ export class KeysService {
       });
     } else {
       this.logger.log(`Creating new keypair with ${key.type}`);
-      const keypair = await generateKeyPair(key.type);
+      const keypair = await generateKeyPair(key.type, { extractable: true });
       privateKey = keypair.privateKey;
       publicKey = keypair.publicKey;
     }
