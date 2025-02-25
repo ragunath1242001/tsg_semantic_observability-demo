@@ -43,18 +43,22 @@ export abstract class ConstraintModel {
 
   @IsEnum(ConstraintType)
   @Expose()
-  @ApiProperty({ enum: ConstraintType, enumName: "ConstraintType" })
+  @ApiProperty({
+    enum: ConstraintType,
+    enumName: "ConstraintType",
+    example: "ATOMIC"
+  })
   type!: ConstraintType;
 
   @IsString()
   @Expose()
-  @ApiProperty()
+  @ApiProperty({ example: "Constraint title" })
   title!: string;
 
   @IsString()
   @IsOptional()
   @Expose()
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "Constraint description" })
   description?: string;
 
   static parse(plain: unknown[]): ConstraintModel[];
@@ -84,34 +88,42 @@ export abstract class ConstraintModel {
 export class AtomicConstraint extends ConstraintModel {
   @IsString()
   @Expose()
-  @ApiProperty()
+  @ApiProperty({ example: "spatial" })
   leftOperand!: string;
 
   @IsString()
   @Expose()
-  @ApiProperty()
+  @ApiProperty({ example: "eq" })
   operator!: string;
 
   @IsString()
   @Expose()
-  @ApiProperty()
+  @ApiProperty({ example: "http://example.com/context" })
   contextPath!: string;
 
   @IsEnum(EvaluationTrigger, { each: true })
   @Expose()
-  @ApiProperty({ enum: EvaluationTrigger, enumName: "EvaluationScope" })
+  @ApiProperty({
+    enum: EvaluationTrigger,
+    enumName: "EvaluationScope",
+    example: ["PROVIDER_ON_REQUEST"]
+  })
   evaluable!: EvaluationTrigger[];
 
   @IsEnum(DataType)
   @IsOptional()
   @Expose()
-  @ApiPropertyOptional({ enum: DataType, enumName: "DataType" })
+  @ApiPropertyOptional({
+    enum: DataType,
+    enumName: "DataType",
+    example: "STRING"
+  })
   dataType?: DataType;
 
   @IsString()
   @Expose({ groups: ["instance"] })
   @IsOptional()
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "value" })
   value?: string;
 
   static parse(plain: unknown[]): AtomicConstraint[];
@@ -130,7 +142,7 @@ export class LogicalConstraint extends ConstraintModel {
   @IsString()
   @IsIn(["and", "or"])
   @Expose()
-  @ApiProperty()
+  @ApiProperty({ example: "and" })
   logicalOperator!: "and" | "or";
   @Type(() => ConstraintModel, {
     discriminator: {

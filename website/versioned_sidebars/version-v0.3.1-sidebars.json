@@ -24,7 +24,17 @@
       ]
     }
   ],
-  "apiSidebar": [
+  "analyticsdataPlaneSidebar": [{
+    "type": "doc",
+    "id": "apis/analytics-data-plane/tsg-analytics-data-plane"
+  }],
+  "ssoBridgeSidebar": [
+    {
+      "type": "doc",
+      "id": "apis/sso-bridge/tsg-sso-bridge"
+    }
+  ],
+  "controlPlaneSidebar": [
     {
       "type": "category",
       "items": [
@@ -604,7 +614,8 @@
         }
       ],
       "label": "Control Plane"
-    },
+    }],
+    "httpDataPlaneSidebar": [
     {
       "type": "category",
       "items": [
@@ -872,7 +883,8 @@
         }
       ],
       "label": "HTTP Data Plane"
-    },
+    }],
+    "walletSidebar": [
     {
       "type": "category",
       "items": [

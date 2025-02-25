@@ -12,61 +12,67 @@ import { DatasetDto } from "../dsp/catalog/catalog.dto.js";
 import { DatasetSchema } from "../dsp/catalog/catalog.schema.js";
 
 class DataPlaneBaseDto {
-  @ApiPropertyOptional({ type: () => [DatasetSchema] })
+  @ApiPropertyOptional({
+    type: () => [DatasetSchema],
+    example: [{ id: "dataset-123", name: "Example Dataset" }]
+  })
   @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => DatasetSchema)
   datasets?: DatasetDto[];
 
-  @ApiProperty()
+  @ApiProperty({ example: "exampleType" })
   @IsString()
   dataplaneType!: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: "/api/v1/dataplane" })
   @IsString()
   endpointPrefix!: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: "http://localhost/callback" })
   @IsString()
   callbackAddress!: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: "http://localhost/manage" })
   @IsString()
   managementAddress!: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: "token123" })
   @IsString()
   managementToken!: string;
 
-  @ApiProperty({ enum: ["push", "pull"] })
+  @ApiProperty({ enum: ["push", "pull"], example: "push" })
   @IsEnum(["push", "pull"])
   catalogSynchronization!: "push" | "pull";
 
-  @ApiProperty({ enum: ["consumer", "provider", "both"] })
+  @ApiProperty({ enum: ["consumer", "provider", "both"], example: "consumer" })
   @IsEnum(["consumer", "provider", "both"])
   role!: "consumer" | "provider" | "both";
 }
 
 export class DataPlaneDetailsDto extends DataPlaneBaseDto {
-  @ApiProperty()
+  @ApiProperty({ example: "dp-12345" })
   @IsString()
   identifier!: string;
 }
 
 export class DataPlaneCreation extends DataPlaneBaseDto {
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "dp-optional-12345" })
   @IsOptional()
   @IsString()
   identifier?: string;
 }
 
 export class DataPlaneAddressDto {
-  @ApiProperty()
+  @ApiProperty({ example: "http://data-plane-endpoint" })
   @IsString()
   endpoint!: string;
 
-  @ApiProperty({ type: () => [DataPlaneProperty] })
+  @ApiProperty({
+    type: () => [DataPlaneProperty],
+    example: [{ name: "propertyName", value: "propertyValue" }]
+  })
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => DataPlaneProperty)
@@ -74,42 +80,48 @@ export class DataPlaneAddressDto {
 }
 
 export class DataPlaneProperty {
-  @ApiProperty()
+  @ApiProperty({ example: "propertyName" })
   @IsString()
   name!: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: "propertyValue" })
   @IsString()
   value!: string;
 }
 
 export class DataPlaneRequestResponseDto {
-  @ApiProperty()
+  @ApiProperty({ example: true })
   @IsBoolean()
   accepted!: boolean;
 
-  @ApiProperty()
+  @ApiProperty({ example: "req-identifier" })
   @IsString()
   identifier!: string;
 
-  @ApiPropertyOptional({ type: () => DataPlaneAddressDto })
+  @ApiPropertyOptional({
+    type: () => DataPlaneAddressDto,
+    example: {
+      endpoint: "http://address",
+      properties: [{ name: "key", value: "value" }]
+    }
+  })
   @IsOptional()
   @ValidateNested()
   @Type(() => DataPlaneAddressDto)
   dataAddress?: DataPlaneAddressDto;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "http://callback-address" })
   @IsOptional()
   @IsString()
   callbackAddress?: string;
 }
 
 export class DataPlaneTransferDto extends DataPlaneRequestResponseDto {
-  @ApiProperty()
+  @ApiProperty({ example: "transfer-identifier" })
   @IsString()
   dataPlaneIdentifier!: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: "type1" })
   @IsString()
   endpointType!: string;
 }

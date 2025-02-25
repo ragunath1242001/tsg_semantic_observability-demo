@@ -34,7 +34,7 @@ export class PresentationQueryMessage {
   @ArrayContains(["https://w3id.org/dspace-dcp/v1.0/dcp.jsonld"])
   "@context": string[];
 
-  @ApiProperty()
+  @ApiProperty({ example: "PresentationQueryMessage" })
   @IsString()
   @Equals("PresentationQueryMessage")
   type!: "PresentationQueryMessage";
@@ -45,7 +45,10 @@ export class PresentationQueryMessage {
   @Type(() => PresentationDefinition)
   presentationDefinition?: PresentationDefinition;
 
-  @ApiPropertyOptional({ type: [String] })
+  @ApiPropertyOptional({
+    type: [String],
+    example: ["https://example.com/credential-1"]
+  })
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
@@ -54,13 +57,13 @@ export class PresentationQueryMessage {
 
 @ApiExtraModels(VerifiablePresentation)
 export class PresentationResponseMessage {
-  @ApiProperty()
+  @ApiProperty({ example: ["https://w3id.org/dspace-dcp/v1.0/dcp.jsonld"] })
   @IsString({ each: true })
   @ArrayMinSize(1)
   @ArrayContains(["https://w3id.org/dspace-dcp/v1.0/dcp.jsonld"])
   "@context": string[];
 
-  @ApiProperty()
+  @ApiProperty({ example: "PresentationResponseMessage" })
   @IsString()
   @Equals("PresentationResponseMessage")
   type!: "PresentationResponseMessage";

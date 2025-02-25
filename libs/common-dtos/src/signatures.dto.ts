@@ -43,26 +43,32 @@ export class ProofDocument {
 
 export class SignRequest {
   @ApiPropertyOptional({
-    enum: ["JsonWebSignature2020", "DataIntegrityProof"]
+    enum: ["JsonWebSignature2020", "DataIntegrityProof"],
+    example: { type: "JsonWebSignature2020" }
   })
   @IsString()
   @IsOptional()
   @IsIn(["DataIntegrityProof", "JsonWebSignature2020"])
   type?: "JsonWebSignature2020" | "DataIntegrityProof";
 
-  @ApiProperty()
+  @ApiProperty({
+    example: { id: "document1", content: "This is a sample document" }
+  })
   @IsObject()
   @IsDefined()
   plainDocument!: Record<string, any>;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({
+    example: "did:example:12345"
+  })
   @IsString()
   @IsOptional()
   keyId?: string;
 
   @ApiPropertyOptional({
     enum: ["RDFC", "JCS"],
-    default: "RDFC"
+    default: "RDFC",
+    example: "RDFC"
   })
   @IsString()
   @IsOptional()
@@ -70,19 +76,25 @@ export class SignRequest {
   normalization: "RDFC" | "JCS" = "RDFC";
 
   @ApiPropertyOptional({
-    default: "assertionMethod"
+    default: "assertionMethod",
+    example: "assertionMethod"
   })
   @IsString()
   @IsOptional()
   proofPurpose: string = "assertionMethod";
 
   @ApiPropertyOptional({
-    type: PartialType(DataIntegrityProof)
+    type: PartialType(DataIntegrityProof),
+    example: {
+      created: "2023-10-12T18:25:43.511Z",
+      proofPurpose: "assertionMethod"
+    }
   })
   options: Partial<DataIntegrityProof> = {};
 
   @ApiPropertyOptional({
-    default: false
+    default: false,
+    example: false
   })
   @IsBoolean()
   @IsOptional()
@@ -91,7 +103,15 @@ export class SignRequest {
 
 export class ValidateRequest {
   @ApiPropertyOptional({
-    type: ProofDocument
+    type: ProofDocument,
+    example: {
+      proof: {
+        type: "JsonWebSignature2020",
+        created: "2023-10-12T18:25:43.511Z",
+        proofPurpose: "assertionMethod",
+        jws: "eyJ..."
+      }
+    }
   })
   @Type(() => ProofDocument)
   @ValidateNested()

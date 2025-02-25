@@ -3,22 +3,22 @@ import { Type } from "class-transformer";
 import { IsArray, IsEnum, IsInt, IsOptional, Max, Min } from "class-validator";
 
 export class PageMetaDto {
-  @ApiProperty()
+  @ApiProperty({ example: 1 })
   readonly page: number;
 
-  @ApiProperty()
+  @ApiProperty({ example: 10 })
   readonly take: number;
 
-  @ApiProperty()
+  @ApiProperty({ example: 100 })
   readonly itemCount: number;
 
-  @ApiProperty()
+  @ApiProperty({ example: 10 })
   readonly pageCount: number;
 
-  @ApiProperty()
+  @ApiProperty({ example: false })
   readonly hasPreviousPage: boolean;
 
-  @ApiProperty()
+  @ApiProperty({ example: true })
   readonly hasNextPage: boolean;
 
   constructor({ pageOptions, itemCount }: PageMetaDtoParameters) {

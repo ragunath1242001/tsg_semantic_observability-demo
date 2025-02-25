@@ -1,4 +1,4 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import {
   IsString,
   IsNotEmpty,
@@ -9,47 +9,47 @@ import {
 import { GrantType } from "./grants.js";
 
 export class ClientDto {
-  @ApiProperty()
+  @ApiPropertyOptional({ example: 1 })
   @IsNumber()
   @IsOptional()
   id?: number;
 
-  @ApiProperty()
+  @ApiProperty({ example: "Example Client" })
   @IsString()
   @IsNotEmpty()
   name!: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: "SecretExample" })
   @IsString()
   @IsNotEmpty()
   secretName!: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: "A sample client used for demonstration purposes." })
   @IsString()
   @IsNotEmpty()
   description!: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: "client-id-123" })
   @IsString()
   @IsNotEmpty()
   clientId!: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: "client-secret-abc" })
   @IsString()
   @IsNotEmpty()
   clientSecret!: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: ["admin", "user"] })
   @IsArray()
   @IsNotEmpty()
   roles!: string[];
 
-  @ApiProperty()
+  @ApiProperty({ example: ["authorization_code", "client_credentials"] })
   @IsArray()
   @IsNotEmpty()
   grants!: GrantType[];
 
-  @ApiProperty()
+  @ApiProperty({ example: ["https://example.com/callback"] })
   @IsArray()
   redirectUris!: string[];
 }

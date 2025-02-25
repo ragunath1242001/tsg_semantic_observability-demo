@@ -26,6 +26,11 @@ async function bootstrap() {
       "https://gitlab.com/tno-tsg/dataspace-protocol/tno-security-gateway"
     )
     .addTag("Health", "Health controller")
+    .addTag("Auth", "Authentication controller")
+    .addTag("Users", "Users controller")
+    .addTag("Oauth", "Oauth controller")
+    .addTag("Clients", "Clients controller")
+
     .build();
   const document = SwaggerModule.createDocument(app, config);
 

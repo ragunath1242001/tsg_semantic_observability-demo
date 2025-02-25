@@ -1650,10 +1650,13 @@ components:
       properties:
         color:
           type: string
+          example: "#3B8BF6"
         darkThemeUrl:
           type: string
+          example: https://example.com/darktheme.png
         lightThemeUrl:
           type: string
+          example: https://example.com/lighttheme.png
       required:
         - color
     ErrorDto:
@@ -1661,14 +1664,19 @@ components:
       properties:
         name:
           type: string
+          example: ResourceNotFound
         status:
           type: string
+          example: 404 Not Found
         code:
           type: number
+          example: 404
         message:
           type: object
+          example: The requested resource does not exist.
         error:
           type: string
+          example: Not Found
       required:
         - name
         - status
@@ -1678,14 +1686,20 @@ components:
       properties:
         "@type":
           type: string
+          example: odrl:Constraint
         odrl:leftOperand:
           type: string
+          example: odrl:leftOperandExample
         odrl:operator:
           type: string
+          example: odrl:operatorExample
         odrl:rightOperand:
           type: object
+          example:
+            value: rightOperandExample
         odrl:rightOperandReference:
           type: string
+          example: rightOperandReferenceExample
       required:
         - "@type"
         - odrl:leftOperand
@@ -1695,19 +1709,26 @@ components:
       properties:
         "@type":
           type: string
+          example: odrl:Permission
         odrl:assigner:
           type: string
+          example: assignerExample
         odrl:assignee:
           type: string
+          example: assigneeExample
         odrl:action:
           type: string
+          example: odrl:actionExample
         odrl:target:
           type: string
+          example: targetExample
         odrl:constraint:
+          example: &a15 []
           type: array
           items:
             $ref: "#/components/schemas/ConstraintSchema"
         odrl:Duty:
+          example: []
           type: array
           items:
             type: string
@@ -1719,51 +1740,89 @@ components:
       properties:
         "@type":
           type: string
+          example: odrl:Prohibition
         odrl:assigner:
           type: string
+          example: assignerExample
         odrl:assignee:
           type: string
+          example: assigneeExample
         odrl:action:
           type: string
+          example: odrl:actionExample
         odrl:target:
           type: string
+          example: targetExample
         odrl:constraint:
+          example: *a15
           type: array
           items:
             $ref: "#/components/schemas/ConstraintSchema"
       required:
         - "@type"
         - odrl:action
-    Duty:
+    DutySchema:
       type: object
-      properties: {}
+      properties:
+        "@type":
+          type: string
+          example: odrl:Duty
+        odrl:assigner:
+          type: string
+          example: assignerExample
+        odrl:assignee:
+          type: string
+          example: assigneeExample
+        odrl:action:
+          type: string
+          example: odrl:actionExample
+        odrl:target:
+          type: string
+          example: targetExample
+        odrl:constraint:
+          example: *a15
+          type: array
+          items:
+            $ref: "#/components/schemas/ConstraintSchema"
+      required:
+        - "@type"
+        - odrl:action
     PolicySchema:
       type: object
       properties:
         "@id":
           type: string
+          example: 3f2592da-ffc9-40cb-a336-a9daa9343ce8
         "@type":
           type: string
+          example: odrl:Offer
         odrl:assigner:
           type: string
+          example: assignerExample
         odrl:assignee:
           type: string
+          example: assigneeExample
         odrl:profile:
           type: string
+          example: profileExample
         odrl:permission:
+          example: &a21 []
           type: array
           items:
             $ref: "#/components/schemas/PermissionSchema"
         odrl:prohibition:
+          example: &a22 []
           type: array
           items:
             $ref: "#/components/schemas/ProhibitionSchema"
         odrl:obligation:
+          example: &a23 []
           type: array
           items:
-            $ref: "#/components/schemas/Duty"
+            $ref: "#/components/schemas/DutySchema"
         odrl:target:
           type: string
+          example: targetExample
       required:
         - "@id"
         - "@type"
@@ -1772,8 +1831,10 @@ components:
       properties:
         "@value":
           type: string
+          example: P3Y6M4DT12H30M5S
         "@type":
           type: string
+          example: xsd:duration
       required:
         - "@value"
         - "@type"
@@ -1782,80 +1843,120 @@ components:
       properties:
         "@id":
           type: string
+          example: 3f2592da-ffc9-40cb-a336-a9daa9343ce8
         dcat:contactPoint:
           type: string
+          example: contactPointExample
         dcat:keyword:
+          example: &a16
+            - keyword1
+            - keyword2
           type: array
           items:
             type: string
         dcat:landingPage:
           type: string
+          example: landingPageExample
         dcat:theme:
+          example: &a17
+            - theme1
+            - theme2
           type: array
           items:
             type: string
         dcat:conformsTo:
           type: string
+          example: conformsToExample
         dct:creator:
           type: string
+          example: creatorExample
         dct:description:
+          example: &a18
+            - description1
+            - description2
           type: array
           items:
             type: string
         dct:identifier:
           type: string
+          example: identifierExample
         dct:isReferencedBy:
           type: string
+          example: isReferencedByExample
         dct:issued:
           type: string
+          example: 2020-01-01
         dct:language:
           type: string
+          example: en
         dct:license:
           type: string
+          example: licenseExample
         dct:modified:
           type: string
+          example: 2020-01-02
         dct:publisher:
           type: string
+          example: publisherExample
         dct:relation:
           type: string
+          example: relationExample
         dct:title:
           type: string
+          example: titleExample
         dct:type:
           type: string
+          example: typeExample
         odrl:hasPolicy:
+          example: &a19 []
           type: array
           items:
             $ref: "#/components/schemas/PolicySchema"
         dcat:hasVersion:
+          example: &a20
+            - version1
+            - version2
           type: array
           items:
             type: string
         dcat:isVersionOf:
           type: string
+          example: isVersionOfExample
         dcat:version:
           type: string
+          example: versionExample
         dcat:hasCurrentVersion:
           type: string
+          example: hasCurrentVersionExample
         dcat:previousVersion:
           type: string
+          example: previousVersionExample
         "@type":
           type: string
+          example: dcat:Dataset
         dcat:distribution:
           type: array
           items:
             type: string
         dcat:spatialResolutionInMeters:
           type: string
+          example: "100"
         dcat:temporalResolution:
-          $ref: "#/components/schemas/DurationSchema"
+          example: P1Y
+          allOf:
+            - $ref: "#/components/schemas/DurationSchema"
         dct:accrualPeriodicity:
           type: string
+          example: accrualPeriodicityExample
         dct:spatial:
           type: string
+          example: spatialExample
         dct:temporal:
           type: string
+          example: temporalExample
         prov:wasGeneratedBy:
           type: string
+          example: wasGeneratedByExample
       required:
         - "@id"
         - "@type"
@@ -1863,32 +1964,43 @@ components:
       type: object
       properties:
         datasets:
+          example:
+            - id: dataset-123
+              name: Example Dataset
           type: array
           items:
             $ref: "#/components/schemas/DatasetSchema"
         dataplaneType:
           type: string
+          example: exampleType
         endpointPrefix:
           type: string
+          example: /api/v1/dataplane
         callbackAddress:
           type: string
+          example: http://localhost/callback
         managementAddress:
           type: string
+          example: http://localhost/manage
         managementToken:
           type: string
+          example: token123
         catalogSynchronization:
           type: string
           enum:
             - push
             - pull
+          example: push
         role:
           type: string
           enum:
             - consumer
             - provider
             - both
+          example: consumer
         identifier:
           type: string
+          example: dp-12345
       required:
         - dataplaneType
         - endpointPrefix
@@ -1903,6 +2015,7 @@ components:
       properties:
         identifier:
           type: string
+          example: 44d1f3d6-f65d-4a7c-84db-f92ba826305e
         details:
           $ref: "#/components/schemas/DataPlaneDetailsDto"
         dataset:
@@ -1918,64 +2031,89 @@ components:
       properties:
         "@id":
           type: string
+          example: 3f2592da-ffc9-40cb-a336-a9daa9343ce8
         "@type":
           type: string
+          example: dcat:Resource
         dcat:contactPoint:
           type: string
+          example: contactPointExample
         dcat:keyword:
+          example: *a16
           type: array
           items:
             type: string
         dcat:landingPage:
           type: string
+          example: landingPageExample
         dcat:theme:
+          example: *a17
           type: array
           items:
             type: string
         dcat:conformsTo:
           type: string
+          example: conformsToExample
         dct:creator:
           type: string
+          example: creatorExample
         dct:description:
+          example: *a18
           type: array
           items:
             type: string
         dct:identifier:
           type: string
+          example: identifierExample
         dct:isReferencedBy:
           type: string
+          example: isReferencedByExample
         dct:issued:
           type: string
+          example: 2020-01-01
         dct:language:
           type: string
+          example: en
         dct:license:
           type: string
+          example: licenseExample
         dct:modified:
           type: string
+          example: 2020-01-02
         dct:publisher:
           type: string
+          example: publisherExample
         dct:relation:
           type: string
+          example: relationExample
         dct:title:
           type: string
+          example: titleExample
         dct:type:
           type: string
+          example: typeExample
         odrl:hasPolicy:
+          example: *a19
           type: array
           items:
             $ref: "#/components/schemas/PolicySchema"
         dcat:hasVersion:
+          example: *a20
           type: array
           items:
             type: string
         dcat:isVersionOf:
           type: string
+          example: isVersionOfExample
         dcat:version:
           type: string
+          example: versionExample
         dcat:hasCurrentVersion:
           type: string
+          example: hasCurrentVersionExample
         dcat:previousVersion:
           type: string
+          example: previousVersionExample
       required:
         - "@id"
         - "@type"
@@ -1984,26 +2122,37 @@ components:
       properties:
         "@id":
           type: string
+          example: 3f2592da-ffc9-40cb-a336-a9daa9343ce8
         "@type":
           type: string
+          example: dcat:CatalogRecord
         dct:conformsTo:
+          example:
+            - conformsToExample
           type: array
           items:
             type: string
         dct:description:
+          example:
+            - Record description
           type: array
           items:
             type: string
         dct:issued:
           format: date-time
           type: string
+          example: 2020-03-01T00:00:00Z
         dct:modified:
           format: date-time
           type: string
+          example: 2020-03-02T00:00:00Z
         dct:title:
           type: string
+          example: Catalog title example
         foaf:primaryTopic:
-          $ref: "#/components/schemas/ResourceSchema"
+          example: {}
+          allOf:
+            - $ref: "#/components/schemas/ResourceSchema"
       required:
         - "@id"
         - "@type"
@@ -2012,69 +2161,97 @@ components:
       properties:
         "@id":
           type: string
+          example: 3f2592da-ffc9-40cb-a336-a9daa9343ce8
         dcat:contactPoint:
           type: string
+          example: contactPointExample
         dcat:keyword:
+          example: *a16
           type: array
           items:
             type: string
         dcat:landingPage:
           type: string
+          example: landingPageExample
         dcat:theme:
+          example: *a17
           type: array
           items:
             type: string
         dcat:conformsTo:
           type: string
+          example: conformsToExample
         dct:creator:
           type: string
+          example: creatorExample
         dct:description:
+          example: *a18
           type: array
           items:
             type: string
         dct:identifier:
           type: string
+          example: identifierExample
         dct:isReferencedBy:
           type: string
+          example: isReferencedByExample
         dct:issued:
           type: string
+          example: 2020-01-01
         dct:language:
           type: string
+          example: en
         dct:license:
           type: string
+          example: licenseExample
         dct:modified:
           type: string
+          example: 2020-01-02
         dct:publisher:
           type: string
+          example: publisherExample
         dct:relation:
           type: string
+          example: relationExample
         dct:title:
           type: string
+          example: titleExample
         dct:type:
           type: string
+          example: typeExample
         odrl:hasPolicy:
+          example: *a19
           type: array
           items:
             $ref: "#/components/schemas/PolicySchema"
         dcat:hasVersion:
+          example: *a20
           type: array
           items:
             type: string
         dcat:isVersionOf:
           type: string
+          example: isVersionOfExample
         dcat:version:
           type: string
+          example: versionExample
         dcat:hasCurrentVersion:
           type: string
+          example: hasCurrentVersionExample
         dcat:previousVersion:
           type: string
+          example: previousVersionExample
         "@type":
           type: string
+          example: dcat:DataService
         dcat:endpointDescription:
           type: string
+          example: endpointDescriptionExample
         dcat:endpointURL:
           type: string
+          example: https://example.com/api
         dcat:servesDataset:
+          example: []
           type: array
           items:
             $ref: "#/components/schemas/DatasetSchema"
@@ -2086,100 +2263,138 @@ components:
       properties:
         "@id":
           type: string
+          example: 3f2592da-ffc9-40cb-a336-a9daa9343ce8
         dcat:contactPoint:
           type: string
+          example: contactPointExample
         dcat:keyword:
+          example: *a16
           type: array
           items:
             type: string
         dcat:landingPage:
           type: string
+          example: landingPageExample
         dcat:theme:
+          example: *a17
           type: array
           items:
             type: string
         dcat:conformsTo:
           type: string
+          example: conformsToExample
         dct:creator:
           type: string
+          example: creatorExample
         dct:description:
+          example: *a18
           type: array
           items:
             type: string
         dct:identifier:
           type: string
+          example: identifierExample
         dct:isReferencedBy:
           type: string
+          example: isReferencedByExample
         dct:issued:
           type: string
+          example: 2020-01-01
         dct:language:
           type: string
+          example: en
         dct:license:
           type: string
+          example: licenseExample
         dct:modified:
           type: string
+          example: 2020-01-02
         dct:publisher:
           type: string
+          example: publisherExample
         dct:relation:
           type: string
+          example: relationExample
         dct:title:
           type: string
+          example: titleExample
         dct:type:
           type: string
+          example: typeExample
         odrl:hasPolicy:
+          example: *a19
           type: array
           items:
             $ref: "#/components/schemas/PolicySchema"
         dcat:hasVersion:
+          example: *a20
           type: array
           items:
             type: string
         dcat:isVersionOf:
           type: string
+          example: isVersionOfExample
         dcat:version:
           type: string
+          example: versionExample
         dcat:hasCurrentVersion:
           type: string
+          example: hasCurrentVersionExample
         dcat:previousVersion:
           type: string
+          example: previousVersionExample
         dcat:distribution:
           type: array
           items:
             type: string
         dcat:spatialResolutionInMeters:
           type: string
+          example: "100"
         dcat:temporalResolution:
-          $ref: "#/components/schemas/DurationSchema"
+          example: P1Y
+          allOf:
+            - $ref: "#/components/schemas/DurationSchema"
         dct:accrualPeriodicity:
           type: string
+          example: accrualPeriodicityExample
         dct:spatial:
           type: string
+          example: spatialExample
         dct:temporal:
           type: string
+          example: temporalExample
         prov:wasGeneratedBy:
           type: string
+          example: wasGeneratedByExample
         "@type":
           type: string
+          example: dcat:Catalog
         dcat:dataset:
+          example: []
           type: array
           items:
             $ref: "#/components/schemas/DatasetSchema"
         dcat:record:
+          example: {}
           type: array
           items:
             $ref: "#/components/schemas/CatalogRecordSchema"
         dcat:service:
+          example: []
           type: array
           items:
             $ref: "#/components/schemas/DataServiceSchema"
         dcat:themeTaxonomy:
           type: string
+          example: themeTaxonomyExample
         dct:hasPart:
+          example: []
           type: array
           items:
             $ref: "#/components/schemas/ResourceSchema"
         foaf:homepage:
           type: string
+          example: https://example.com/homepage
       required:
         - "@id"
         - "@type"
@@ -2197,18 +2412,26 @@ components:
       properties:
         sub:
           type: string
+          example: user-id-123
         name:
           type: string
+          example: John Doe
         email:
           type: string
+          example: john.doe@example.com
         didId:
           type: string
+          example: did:example:123456789
         roles:
+          example:
+            - admin
+            - user
           type: array
           items:
             type: string
         refreshToken:
           type: string
+          example: refresh-token-abc123
       required:
         - sub
         - name
@@ -2219,8 +2442,19 @@ components:
       properties:
         state:
           type: object
+          example: authenticated
         user:
-          $ref: "#/components/schemas/ClientInfo"
+          example:
+            sub: user-id-123
+            name: John Doe
+            email: john.doe@example.com
+            roles:
+              - admin
+              - user
+            didId: did:example:123456789
+            refreshToken: refresh-token-abc123
+          allOf:
+            - $ref: "#/components/schemas/ClientInfo"
       required:
         - state
         - user
@@ -2229,6 +2463,7 @@ components:
       properties:
         state:
           type: object
+          example: unauthenticated
       required:
         - state
     PageMetaDto:
@@ -2236,16 +2471,22 @@ components:
       properties:
         page:
           type: number
+          example: 1
         take:
           type: number
+          example: 10
         itemCount:
           type: number
+          example: 100
         pageCount:
           type: number
+          example: 10
         hasPreviousPage:
           type: boolean
+          example: false
         hasNextPage:
           type: boolean
+          example: true
       required:
         - page
         - take
@@ -2270,10 +2511,13 @@ components:
       properties:
         "@type":
           type: string
+          example: dspace:EndpointProperty
         dspace:name:
           type: string
+          example: endpointName
         dspace:value:
           type: string
+          example: endpointValue
       required:
         - "@type"
         - dspace:name
@@ -2283,11 +2527,18 @@ components:
       properties:
         "@type":
           type: string
+          example: dspace:DataAddress
         dspace:endpointType:
           type: string
+          example: http
         dspace:endpoint:
           type: string
+          example: https://api.example.com
         dspace:endpointProperties:
+          example:
+            - "@type": dspace:EndpointProperty
+              dspace:name: endpointName
+              dspace:value: endpointValue
           type: array
           items:
             $ref: "#/components/schemas/EndpointPropertySchema"
@@ -2301,16 +2552,30 @@ components:
       properties:
         "@type":
           type: string
+          example: dspace:TransferRequestMessage
         dspace:consumerPid:
           type: string
+          example: consumer-pid-123
         dspace:agreementId:
           type: string
+          example: agreement-id-456
         dct:format:
           type: string
+          example: application/json
         dspace:dataAddress:
-          $ref: "#/components/schemas/DataAddressSchema"
+          example:
+            "@type": dspace:DataAddress
+            dspace:endpointType: http
+            dspace:endpoint: https://api.example.com
+            dspace:endpointProperties:
+              - "@type": dspace:EndpointProperty
+                dspace:name: name
+                dspace:value: value
+          allOf:
+            - $ref: "#/components/schemas/DataAddressSchema"
         dspace:callbackAddress:
           type: string
+          example: https://callback.example.com
       required:
         - "@type"
         - dspace:consumerPid
@@ -2322,8 +2587,10 @@ components:
       properties:
         name:
           type: string
+          example: propertyName
         value:
           type: string
+          example: propertyValue
       required:
         - name
         - value
@@ -2332,7 +2599,11 @@ components:
       properties:
         endpoint:
           type: string
+          example: http://data-plane-endpoint
         properties:
+          example:
+            - name: propertyName
+              value: propertyValue
           type: array
           items:
             $ref: "#/components/schemas/DataPlaneProperty"
@@ -2344,12 +2615,21 @@ components:
       properties:
         accepted:
           type: boolean
+          example: true
         identifier:
           type: string
+          example: req-identifier
         dataAddress:
-          $ref: "#/components/schemas/DataPlaneAddressDto"
+          example:
+            endpoint: http://address
+            properties:
+              - name: key
+                value: value
+          allOf:
+            - $ref: "#/components/schemas/DataPlaneAddressDto"
         callbackAddress:
           type: string
+          example: http://callback-address
       required:
         - accepted
         - identifier
@@ -2358,12 +2638,24 @@ components:
       properties:
         "@type":
           type: string
+          example: dspace:TransferStartMessage
         dspace:providerPid:
           type: string
+          example: provider-pid-789
         dspace:consumerPid:
           type: string
+          example: consumer-pid-123
         dspace:dataAddress:
-          $ref: "#/components/schemas/DataAddressSchema"
+          example:
+            "@type": dspace:DataAddress
+            dspace:endpointType: http
+            dspace:endpoint: https://api.example.com
+            dspace:endpointProperties:
+              - "@type": dspace:EndpointProperty
+                dspace:name: name
+                dspace:value: value
+          allOf:
+            - $ref: "#/components/schemas/DataAddressSchema"
       required:
         - "@type"
         - dspace:providerPid
@@ -2373,10 +2665,13 @@ components:
       properties:
         "@type":
           type: string
+          example: dspace:TransferCompletionMessage
         dspace:providerPid:
           type: string
+          example: provider-pid-789
         dspace:consumerPid:
           type: string
+          example: consumer-pid-123
       required:
         - "@type"
         - dspace:providerPid
@@ -2386,13 +2681,19 @@ components:
       properties:
         "@type":
           type: string
+          example: dspace:TransferTerminationMessage
         dspace:providerPid:
           type: string
+          example: provider-pid-789
         dspace:consumerPid:
           type: string
+          example: consumer-pid-123
         dspace:code:
           type: string
+          example: TERMINATED
         dspace:reason:
+          example:
+            - Contract breach
           type: array
           items:
             type: string
@@ -2407,11 +2708,16 @@ components:
       properties:
         "@type":
           type: string
+          example: dspace:TransferSuspensionMessage
         dspace:providerPid:
           type: string
+          example: provider-pid-789
         dspace:consumerPid:
           type: string
+          example: consumer-pid-123
         dspace:reason:
+          example:
+            - Technical issue
           type: array
           items:
             type: string
@@ -2425,17 +2731,22 @@ components:
       properties:
         id:
           type: string
+          example: 123e4567-e89b-12d3-a456-426614174000
         role:
           type: string
           enum:
             - provider
             - consumer
+          example: provider
         processId:
           type: string
+          example: process-001
         remoteParty:
           type: string
+          example: remote-system
         secret:
           type: string
+          example: secret-key
         state:
           type: string
           enum:
@@ -2444,21 +2755,31 @@ components:
             - dspace:TERMINATED
             - dspace:COMPLETED
             - dspace:SUSPENDED
+          example: REQUESTED
         request:
-          $ref: "#/components/schemas/TransferRequestMessageSchema"
+          example: {}
+          allOf:
+            - $ref: "#/components/schemas/TransferRequestMessageSchema"
         response:
-          $ref: "#/components/schemas/DataPlaneRequestResponseDto"
+          example: {}
+          allOf:
+            - $ref: "#/components/schemas/DataPlaneRequestResponseDto"
         dataAddress:
-          $ref: "#/components/schemas/DataAddressSchema"
+          example: {}
+          allOf:
+            - $ref: "#/components/schemas/DataAddressSchema"
         createdDate:
           format: date-time
           type: string
+          example: 2023-01-01T00:00:00.000Z
         modifiedDate:
           format: date-time
           type: string
+          example: 2023-01-02T00:00:00.000Z
         deletedDate:
           format: date-time
           type: string
+          example: 2023-01-03T00:00:00.000Z
       required:
         - id
         - role
@@ -2475,30 +2796,40 @@ components:
       properties:
         "@id":
           type: string
+          example: 3f2592da-ffc9-40cb-a336-a9daa9343ce8
         "@type":
           type: string
+          example: odrl:Agreement
         odrl:assigner:
           type: string
+          example: did:example:assigner
         odrl:assignee:
           type: string
+          example: did:example:assignee
         odrl:profile:
           type: string
+          example: profileExample
         odrl:permission:
+          example: *a21
           type: array
           items:
             $ref: "#/components/schemas/PermissionSchema"
         odrl:prohibition:
+          example: *a22
           type: array
           items:
             $ref: "#/components/schemas/ProhibitionSchema"
         odrl:obligation:
+          example: *a23
           type: array
           items:
-            $ref: "#/components/schemas/Duty"
+            $ref: "#/components/schemas/DutySchema"
         odrl:target:
           type: string
+          example: urn:example:target
         dspace:timestamp:
           type: string
+          example: 2023-10-01T12:34:56Z
       required:
         - "@id"
         - "@type"

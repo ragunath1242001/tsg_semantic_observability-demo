@@ -17,22 +17,34 @@ import { validateOrRejectSync } from "@tsg-dsp/common-api";
 export class PolicyContext {
   @IsObject()
   @IsDefined()
-  @ApiProperty()
+  @ApiProperty({
+    example: {
+      "@type": "odrl:Agreement",
+      "odrl:assigner": "did:example:assigner",
+      "odrl:assignee": "did:example:assignee",
+      "dspace:timestamp": "2021-06-01T00:00:00Z",
+      "odrl:target": "did:example:target"
+    }
+  })
   agreement!: AgreementDto;
   @IsOptional()
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({
+    example: { "dspace:algorithm": "SHA-256", "dspace:digest": "..." }
+  })
   localSignature?: {
     "dspace:algorithm": string;
     "dspace:digest": string;
   };
   @IsOptional()
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({
+    example: { "dspace:algorithm": "SHA-256", "dspace:digest": "..." }
+  })
   remoteSignature?: {
     "dspace:algorithm": string;
     "dspace:digest": string;
   };
   @IsOptional()
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "VALID" })
   signatureStatus?: string;
 }
 
@@ -44,26 +56,26 @@ export class EvaluationContext {
   scope!: EvaluationTrigger;
   @IsString()
   @IsOptional()
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "b86483f3-3792-4a54-b11e-f1c6face9935" })
   transferId?: string;
   @IsString()
-  @ApiProperty()
+  @ApiProperty({ example: "did:example:localParticipant" })
   localParticipant!: string;
   @IsString()
-  @ApiProperty()
+  @ApiProperty({ example: "did:example:remoteParticipant" })
   remoteParticipant!: string;
   @IsString()
-  @ApiProperty()
+  @ApiProperty({ example: "randomDataSetID" })
   target!: string;
   @IsString()
-  @ApiProperty()
+  @ApiProperty({ example: "USE" })
   action!: string;
   @Type(() => VerifiableCredential)
   @ValidateNested()
   @ApiProperty({ type: () => VerifiableCredential })
   verifiableCredentials!: VerifiableCredential[];
   @IsDate()
-  @ApiProperty()
+  @ApiProperty({ example: "2025-02-21T10:26:42.206Z" })
   evaluationTime!: Date;
   @ValidateNested()
   @Type(() => PolicyContext)
@@ -91,28 +103,28 @@ export enum EvaluationResult {
 export class EvaluationDecision {
   @IsIn(["ALLOW", "DENY"])
   @IsString()
-  @ApiProperty()
+  @ApiProperty({ example: "DENY" })
   decision!: "ALLOW" | "DENY";
   @IsString()
   @IsOptional()
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "Invalid signature" })
   reason?: string;
   @IsEnum(EvaluationResult, { each: true })
   @IsOptional()
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: ["VALID"] })
   permissions?: EvaluationResult[];
   @IsEnum(EvaluationResult, { each: true })
   @IsOptional()
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: ["INVALID"] })
   prohibitions?: EvaluationResult[];
   @IsEnum(EvaluationResult, { each: true })
   @IsOptional()
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: ["INDECISIVE"] })
   obligations?: EvaluationResult[];
   @ValidateNested()
   @Type(() => EvaluationContext)
   @IsOptional()
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ type: () => EvaluationContext })
   context?: EvaluationContext;
   static parse(plain: unknown): EvaluationDecision {
     return validateOrRejectSync(plainToInstance(EvaluationDecision, plain, {}));

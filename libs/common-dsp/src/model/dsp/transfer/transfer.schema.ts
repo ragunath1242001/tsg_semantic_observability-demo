@@ -12,85 +12,122 @@ import {
 } from "./messages.dto.js";
 
 export class EndpointPropertySchema implements EndpointPropertyDto {
-  @ApiProperty()
+  @ApiProperty({ example: "dspace:EndpointProperty" })
   "@type": "dspace:EndpointProperty";
-  @ApiProperty()
+  @ApiProperty({ example: "endpointName" })
   "dspace:name": string;
-  @ApiProperty()
+  @ApiProperty({ example: "endpointValue" })
   "dspace:value": string;
 }
 
 export class DataAddressSchema implements DataAddressDto {
-  @ApiProperty()
+  @ApiProperty({ example: "dspace:DataAddress" })
   "@type": "dspace:DataAddress";
-  @ApiProperty()
+  @ApiProperty({ example: "http" })
   "dspace:endpointType": string;
-  @ApiProperty()
+  @ApiProperty({ example: "https://api.example.com" })
   "dspace:endpoint": string;
-  @ApiProperty({ type: [EndpointPropertySchema] })
+  @ApiProperty({
+    type: [EndpointPropertySchema],
+    example: [
+      {
+        "@type": "dspace:EndpointProperty",
+        "dspace:name": "endpointName",
+        "dspace:value": "endpointValue"
+      }
+    ]
+  })
   "dspace:endpointProperties": Array<EndpointPropertyDto>;
 }
 
 export class TransferRequestMessageSchema implements TransferRequestMessageDto {
-  @ApiProperty()
+  @ApiProperty({ example: "dspace:TransferRequestMessage" })
   "@type": "dspace:TransferRequestMessage";
-  @ApiProperty()
+  @ApiProperty({ example: "consumer-pid-123" })
   "dspace:consumerPid": string;
-  @ApiProperty()
+  @ApiProperty({ example: "agreement-id-456" })
   "dspace:agreementId": string;
-  @ApiProperty()
+  @ApiProperty({ example: "application/json" })
   "dct:format": string;
-  @ApiPropertyOptional({ type: DataAddressSchema })
+  @ApiPropertyOptional({
+    type: DataAddressSchema,
+    example: {
+      "@type": "dspace:DataAddress",
+      "dspace:endpointType": "http",
+      "dspace:endpoint": "https://api.example.com",
+      "dspace:endpointProperties": [
+        {
+          "@type": "dspace:EndpointProperty",
+          "dspace:name": "name",
+          "dspace:value": "value"
+        }
+      ]
+    }
+  })
   "dspace:dataAddress"?: DataAddressDto;
-  @ApiProperty()
+  @ApiProperty({ example: "https://callback.example.com" })
   "dspace:callbackAddress": string;
 }
 
 export class TransferProcessSchema implements TransferProcessDto {
-  @ApiProperty()
+  @ApiProperty({ example: "dspace:TransferProcess" })
   "@type": "dspace:TransferProcess";
-  @ApiProperty()
+  @ApiProperty({ example: "provider-pid-789" })
   "dspace:providerPid": string;
-  @ApiProperty()
+  @ApiProperty({ example: "consumer-pid-123" })
   "dspace:consumerPid": string;
-  @ApiProperty()
+  @ApiProperty({ example: "agreement-id-456" })
   "dspace:agreementId": string;
-  @ApiProperty()
+  @ApiProperty({ example: "COMPLETED" })
   "dspace:state": TransferState;
 }
 
 export class TransferStartMessageSchema implements TransferStartMessageDto {
-  @ApiProperty()
+  @ApiProperty({ example: "dspace:TransferStartMessage" })
   "@type": "dspace:TransferStartMessage";
-  @ApiProperty()
+  @ApiProperty({ example: "provider-pid-789" })
   "dspace:providerPid": string;
-  @ApiProperty()
+  @ApiProperty({ example: "consumer-pid-123" })
   "dspace:consumerPid": string;
-  @ApiPropertyOptional({ type: DataAddressSchema })
+  @ApiPropertyOptional({
+    type: DataAddressSchema,
+    example: {
+      "@type": "dspace:DataAddress",
+      "dspace:endpointType": "http",
+      "dspace:endpoint": "https://api.example.com",
+      "dspace:endpointProperties": [
+        {
+          "@type": "dspace:EndpointProperty",
+          "dspace:name": "name",
+          "dspace:value": "value"
+        }
+      ]
+    }
+  })
   "dspace:dataAddress"?: DataAddressDto;
 }
 
 export class TransferCompletionMessageSchema
   implements TransferCompletionMessageDto
 {
-  @ApiProperty()
+  @ApiProperty({ example: "dspace:TransferCompletionMessage" })
   "@type": "dspace:TransferCompletionMessage";
-  @ApiProperty()
+  @ApiProperty({ example: "provider-pid-789" })
   "dspace:providerPid": string;
-  @ApiProperty()
+  @ApiProperty({ example: "consumer-pid-123" })
   "dspace:consumerPid": string;
 }
 
 export class TransferSuspensionMessageSchema
   implements TransferSuspensionMessageDto
 {
-  @ApiProperty()
+  @ApiProperty({ example: "dspace:TransferSuspensionMessage" })
   "@type": "dspace:TransferSuspensionMessage";
-  @ApiProperty()
+  @ApiProperty({ example: "provider-pid-789" })
   "dspace:providerPid": string;
-  @ApiProperty()
+  @ApiProperty({ example: "consumer-pid-123" })
   "dspace:consumerPid": string;
-  @ApiProperty()
+  @ApiProperty({ example: ["Technical issue"] })
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   "dspace:reason": Array<any>;
 }
@@ -98,15 +135,15 @@ export class TransferSuspensionMessageSchema
 export class TransferTerminationMessageSchema
   implements TransferTerminationMessageDto
 {
-  @ApiProperty()
+  @ApiProperty({ example: "dspace:TransferTerminationMessage" })
   "@type": "dspace:TransferTerminationMessage";
-  @ApiProperty()
+  @ApiProperty({ example: "provider-pid-789" })
   "dspace:providerPid": string;
-  @ApiProperty()
+  @ApiProperty({ example: "consumer-pid-123" })
   "dspace:consumerPid": string;
-  @ApiProperty()
+  @ApiProperty({ example: "TERMINATED" })
   "dspace:code": string;
-  @ApiProperty()
+  @ApiProperty({ example: ["Contract breach"] })
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   "dspace:reason": Array<any>;
 }

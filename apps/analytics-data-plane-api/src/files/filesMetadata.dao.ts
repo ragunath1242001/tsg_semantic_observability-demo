@@ -1,20 +1,6 @@
 import { IsOptional } from "class-validator";
 import { Column, Entity, PrimaryColumn } from "typeorm";
-
-export interface CSVW {
-  "@context": string[];
-  tables: {
-    url: string;
-    tableSchema: {
-      columns: {
-        name: string;
-      }[];
-    };
-    dialect: {
-      header: boolean;
-    };
-  }[];
-}
+import { CSVW } from "./files.dto.js";
 
 @Entity({ name: "metadata" })
 export class FileMetadataDao {

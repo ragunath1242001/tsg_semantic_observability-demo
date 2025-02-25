@@ -31,13 +31,13 @@ export class Rule {
 
   @IsString({ each: true })
   @Expose()
-  @ApiProperty({ type: [String] })
+  @ApiProperty({ type: [String], example: ["READ", "USE"] })
   action!: string[];
 
   @IsString({ each: true })
   @IsOptional()
   @Expose()
-  @ApiPropertyOptional({ type: [String] })
+  @ApiPropertyOptional({ type: [String], example: ["did:example:assignee"] })
   assignee?: string[];
 
   @Type(() => ConstraintModel, {

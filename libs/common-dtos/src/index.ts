@@ -6,3 +6,4 @@ export * from "./transfer.dto.js";
 export * from "./did.schemas.js";
 export * from "./utils.swagger.js";
 export * from "./negotiations.dto.js";
+export * from "./metadata.dto.js";
