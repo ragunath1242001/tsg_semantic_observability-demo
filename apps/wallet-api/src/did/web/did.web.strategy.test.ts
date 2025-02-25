@@ -17,7 +17,7 @@ describe("DID Web Service", () => {
   });
   const didId: string = "did:web:localhost%3A3000";
   const keyMaterialGenerator: () => Promise<KeyMaterialDao> = async () => {
-    const keyPair = await generateKeyPair("EdDSA");
+    const keyPair = await generateKeyPair("EdDSA", { extractable: true });
     return plainToInstance(KeyMaterialDao, {
       id: "test-key",
       type: "EdDSA",

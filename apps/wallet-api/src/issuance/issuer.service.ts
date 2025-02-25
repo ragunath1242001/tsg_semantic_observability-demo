@@ -306,7 +306,10 @@ export class IssuerService {
           HttpStatus.BAD_REQUEST
         ).andLog(this.logger);
       }
-      const key = await importJWK(usedJwk.publicKeyJwk);
+      const key = await importJWK(
+        usedJwk.publicKeyJwk,
+        usedJwk.publicKeyJwk.type
+      );
       const verifiedJwt = await jwtVerify(credentialRequest.proof.jwt, key);
 
       const expectedIssuer =

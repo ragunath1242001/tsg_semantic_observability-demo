@@ -19,7 +19,7 @@ describe("DID Service", () => {
   const keyMaterialGenerator: (id: string) => Promise<KeyMaterialDao> = async (
     id: string
   ) => {
-    const keypair = await generateKeyPair("EdDSA");
+    const keypair = await generateKeyPair("EdDSA", { extractable: true });
     return plainToInstance(KeyMaterialDao, {
       id: id,
       type: "EdDSA",
@@ -279,7 +279,7 @@ describe("DID Service Multikey-based", () => {
   const keyMaterialGenerator: (id: string) => Promise<KeyMaterialDao> = async (
     id: string
   ) => {
-    const keypair = await generateKeyPair("EdDSA");
+    const keypair = await generateKeyPair("EdDSA", { extractable: true });
     return plainToInstance(KeyMaterialDao, {
       id: id,
       type: "EdDSA",

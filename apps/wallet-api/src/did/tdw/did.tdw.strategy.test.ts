@@ -29,7 +29,7 @@ describe("DID Tdw Service", () => {
   });
   let didId: string = "did:tdw:localhost%3A3000:{SCID}";
   const keyMaterialGenerator: () => Promise<KeyMaterialDao> = async () => {
-    const keyPair = await generateKeyPair("EdDSA");
+    const keyPair = await generateKeyPair("EdDSA", { extractable: true });
     return plainToInstance(KeyMaterialDao, {
       id: "test-key",
       type: "EdDSA",

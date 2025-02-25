@@ -23,12 +23,7 @@ import {
   CredentialResponse,
   OfferGrants
 } from "@tsg-dsp/wallet-dtos";
-import {
-  GenerateKeyPairResult,
-  KeyLike,
-  exportJWK,
-  generateKeyPair
-} from "jose";
+import { GenerateKeyPairResult, exportJWK, generateKeyPair } from "jose";
 import { DIDDocument } from "did-resolver";
 import { HolderService } from "./holder.service.js";
 import { DIDDocuments, DIDLogs, DIDService } from "../model/did.dao.js";
@@ -42,7 +37,7 @@ describe("Holder service", () => {
   let holderService: HolderService;
   let server: SetupServer;
   let moduleRef: TestingModule;
-  let exampleKey: GenerateKeyPairResult<KeyLike>;
+  let exampleKey: GenerateKeyPairResult;
 
   beforeAll(async () => {
     await TypeOrmTestHelper.instance.setupTestDB();
