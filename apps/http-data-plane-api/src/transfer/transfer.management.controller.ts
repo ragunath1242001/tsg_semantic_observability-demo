@@ -16,7 +16,11 @@ import {
 import { TransferService } from "./transfer.service.js";
 import { Request, Response } from "express";
 import { AgreementDto, DatasetDto } from "@tsg-dsp/common-dsp";
-import { ApiForbiddenResponseDefault, TransferDto } from "@tsg-dsp/common-dtos";
+import {
+  ApiForbiddenResponseDefault,
+  MetadataDto,
+  TransferDto
+} from "@tsg-dsp/common-dtos";
 import {
   ApiOAuth2,
   ApiOperation,
@@ -27,7 +31,6 @@ import {
 } from "@nestjs/swagger";
 import { DataPlaneClientError } from "../utils/errors/error.js";
 import { nonEmptyStringPipe, Roles } from "@tsg-dsp/common-api";
-import { MetadataDto } from "../dataplane/dataplane.schemas.js";
 
 @ApiTags("Data Plane Management")
 @ApiOAuth2(["controlplane_dataplane"])

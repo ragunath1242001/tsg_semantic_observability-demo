@@ -12,48 +12,111 @@ import { DataPlaneTransferDto } from "../../data-planes/index.js";
 export type TransferRole = "provider" | "consumer";
 
 export class TransferStatusDto {
-  @ApiProperty()
+  @ApiProperty({ example: "local-12345" })
   localId!: string;
-  @ApiPropertyOptional()
+
+  @ApiPropertyOptional({ example: "remote-98765" })
   remoteId?: string;
-  @ApiProperty()
+
+  @ApiProperty({ example: "provider" })
   role!: TransferRole;
-  @ApiProperty()
+
+  @ApiProperty({ example: "http://example.com/" })
   remoteAddress!: string;
-  @ApiProperty()
+
+  @ApiProperty({ example: "party-identifier-001" })
   remoteParty!: string;
-  @ApiProperty({ enum: TransferState })
+
+  @ApiProperty({ enum: TransferState, example: TransferState.REQUESTED })
   state!: TransferState;
-  @ApiProperty({ type: TransferProcessSchema })
+
+  @ApiProperty({
+    type: TransferProcessSchema,
+    example: {
+      // Adjust the following sample according to TransferProcessDto properties
+      step: "upload",
+      progress: 50
+    }
+  })
   process!: TransferProcessDto;
-  @ApiProperty()
+
+  @ApiProperty({ example: "agreement-45678" })
   agreementId!: string;
-  @ApiPropertyOptional()
+
+  @ApiPropertyOptional({ example: "application/json" })
   format?: string;
-  @ApiProperty()
+
+  @ApiProperty({ example: "2023-10-01T12:34:56Z" })
   modifiedDate!: Date;
 }
 
 export class TransferEventDto {
-  @ApiProperty()
+  @ApiProperty({ example: "2023-10-01T12:00:00Z" })
   time!: Date;
-  @ApiProperty({ enum: TransferState })
+
+  @ApiProperty({ enum: TransferState, example: TransferState.COMPLETED })
   state!: TransferState;
-  @ApiPropertyOptional()
+
+  @ApiPropertyOptional({ example: "The transfer completed successfully." })
   localMessage?: string;
-  @ApiPropertyOptional()
+
+  @ApiPropertyOptional({ example: "ERR_NONE" })
   code?: string;
-  @ApiPropertyOptional({ type: MultilanguageSchema })
+
+  @ApiPropertyOptional({
+    type: MultilanguageSchema,
+    example: [
+      {
+        language: "en",
+        value: "Operation successful"
+      }
+    ]
+  })
   reason?: MultilanguageDto[];
-  @ApiProperty({ enum: ["local", "remote"] })
+
+  @ApiProperty({ enum: ["local", "remote"], example: "local" })
   type!: "local" | "remote";
 }
 
 export class TransferDetailDto extends TransferStatusDto {
-  @ApiPropertyOptional({ type: DataAddressSchema })
+  @ApiPropertyOptional({
+    type: DataAddressSchema,
+    example: {
+      // Adjust this sample to reflect the real structure of DataAddressDto
+      type: "S3",
+      bucketName: "example-bucket",
+      region: "us-east-1"
+    }
+  })
   dataAddress?: DataAddressDto;
-  @ApiProperty({ type: DataPlaneTransferDto })
+
+  @ApiProperty({
+    type: DataPlaneTransferDto,
+    example: {
+      // Adjust this sample to reflect the real structure of DataPlaneTransferDto
+      transportProtocol: "HTTP",
+      endpoint: "https://data-plane.example.com/transfer"
+    }
+  })
   dataPlaneTransfer!: DataPlaneTransferDto;
-  @ApiProperty({ type: [TransferEventDto] })
+
+  @ApiProperty({
+    type: [TransferEventDto],
+    example: [
+      {
+        time: "2023-10-01T12:00:00Z",
+        state: TransferState.STARTED,
+        localMessage: "Upload started.",
+        code: "STARTED",
+        reason: [
+          {
+            language: "en",
+            value: "Transfer initiated"
+          }
+        ],
+        type: "local"
+      }
+    ]
+  })
   events!: TransferEventDto[];
 }

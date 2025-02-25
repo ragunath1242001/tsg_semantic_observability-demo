@@ -10,32 +10,32 @@ import {
 import { GrantType } from "./grants.js";
 
 export class UserDto {
-  @ApiProperty()
+  @ApiProperty({ example: 1 })
   @IsNumber()
   @IsOptional()
   id?: number;
 
-  @ApiProperty()
+  @ApiProperty({ example: "johndoe" })
   @IsString()
   @IsNotEmpty()
   username!: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: "secretpassword" })
   @IsString()
   @IsNotEmpty()
   password!: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: "johndoe@example.com" })
   @IsEmail()
   @IsNotEmpty()
   email!: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: ["admin", "user"] })
   @IsArray()
   @IsNotEmpty()
   roles!: string[];
 
-  @ApiProperty()
+  @ApiProperty({ example: ["read", "write"] })
   @IsArray()
   @IsNotEmpty()
   grants!: GrantType[];

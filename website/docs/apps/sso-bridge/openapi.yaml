@@ -68,28 +68,72 @@ paths:
         - Health
   /api/auth/user:
     get:
+      description: Get the current user and their roles and grants.
       operationId: AuthController_getUser
       parameters: []
       responses:
         "200":
           description: ""
+      summary: Get user
       tags: &a3
         - Auth
   /api/auth/login:
     post:
+      description: Login with username and password.
       operationId: AuthController_login
       parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  example: admin
+                  type: string
+                password:
+                  example: hunter2
+                  type: string
+              required:
+                - username
+                - password
       responses:
         "200":
           description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    example: b86483f3-3792-4a54-b11e-f1c6face9935
+                    type: string
+                  username:
+                    example: admin
+                    type: string
+                  email:
+                    example: admin@example.com
+                    type: string
+                  roles:
+                    type: array
+                    items:
+                      type: string
+                  grants:
+                    type: array
+                    items:
+                      type: string
+      summary: Login
       tags: *a3
   /api/auth/logout:
     get:
+      description: Logout the current user.
       operationId: AuthController_logout
       parameters: []
       responses:
         "200":
           description: ""
+      summary: Logout
       tags: *a3
   /api/users:
     get:
@@ -100,7 +144,7 @@ paths:
           description: List of users returned.
       summary: Get all users
       tags: &a4
-        - users
+        - Users
   /api/users/create:
     post:
       operationId: UsersController_createUser
@@ -142,6 +186,7 @@ paths:
       tags: *a4
   /api/oauth/authorize:
     get:
+      description: Authorize a client and redirect to the client's redirect_uri.
       operationId: OauthController_authorize
       parameters:
         - name: response_type
@@ -216,10 +261,12 @@ paths:
       responses:
         "200":
           description: ""
+      summary: Authorize
       tags: &a5
         - Oauth
   /api/oauth/login:
     post:
+      description: Login a user and redirect to the client's redirect_uri.
       operationId: OauthController_login
       parameters:
         - name: response_type
@@ -299,17 +346,21 @@ paths:
       responses:
         "201":
           description: ""
+      summary: Login
       tags: *a5
   /api/oauth/token:
     post:
+      description: Get a token for the client.
       operationId: OauthController_token
       parameters: []
       responses:
         "200":
           description: ""
+      summary: Token
       tags: *a5
   /api/oauth/userinfo:
     get:
+      description: Get the userinfo for the token.
       operationId: OauthController_userinfoGet
       parameters:
         - name: token
@@ -320,37 +371,46 @@ paths:
       responses:
         "200":
           description: ""
+      summary: Get Userinfo
       tags: *a5
     post:
+      description: Get the userinfo for the token.
       operationId: OauthController_userinfoPost
       parameters: []
       responses:
         "200":
           description: ""
+      summary: Get Userinfo
       tags: *a5
   /api/oauth/introspect:
     post:
+      description: Introspect the token.
       operationId: OauthController_introspect
       parameters: []
       responses:
         "200":
           description: ""
+      summary: Introspect
       tags: *a5
   /api/oauth/device_authorization:
     post:
+      description: Device Authorization
       operationId: OauthController_deviceAuthorization
       parameters: []
       responses:
         "200":
           description: ""
+      summary: Device Authorization
       tags: *a5
   /api/oauth/revocation:
     post:
+      description: Revocation of the token.
       operationId: OauthController_revocation
       parameters: []
       responses:
         "200":
           description: ""
+      summary: Revocation
       tags: *a5
   /api/oauth/jwks:
     get:
@@ -457,6 +517,14 @@ info:
 tags:
   - name: Health
     description: Health controller
+  - name: Auth
+    description: Authentication controller
+  - name: Users
+    description: Users controller
+  - name: Oauth
+    description: Oauth controller
+  - name: Clients
+    description: Clients controller
 servers: []
 components:
   schemas:
@@ -465,28 +533,41 @@ components:
       properties:
         alg:
           type: string
+          example: RS256
         crv:
           type: string
+          example: P-256
         e:
           type: string
+          example: AQAB
         ext:
           type: boolean
+          example: false
         key_ops:
+          example:
+            - sign
+            - verify
           type: array
           items:
             type: string
         kid:
           type: string
+          example: bdfd4c8e-3a44-4b9f-bc3e-1a8e26e3e99d
         kty:
           type: string
+          example: RSA
         n:
           type: string
+          example: sample_modulus
         use:
           type: string
+          example: sig
         x:
           type: string
+          example: sample_x_coordinate
         y:
           type: string
+          example: sample_y_coordinate
       required:
         - kty
     JWKS:
@@ -574,30 +655,43 @@ components:
       properties:
         id:
           type: number
+          example: 1
         name:
           type: string
+          example: Example Client
         secretName:
           type: string
+          example: SecretExample
         description:
           type: string
+          example: A sample client used for demonstration purposes.
         clientId:
           type: string
+          example: client-id-123
         clientSecret:
           type: string
+          example: client-secret-abc
         roles:
+          example:
+            - admin
+            - user
           type: array
           items:
             type: string
         grants:
+          example:
+            - authorization_code
+            - client_credentials
           type: array
           items:
             type: string
         redirectUris:
+          example:
+            - https://example.com/callback
           type: array
           items:
             type: string
       required:
-        - id
         - name
         - secretName
         - description

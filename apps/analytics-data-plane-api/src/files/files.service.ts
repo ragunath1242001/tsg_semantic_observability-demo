@@ -1,5 +1,6 @@
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
-import { CSVW, FileMetadataDao } from "./filesMetadata.dao.js";
+import { CSVW } from "./files.dto.js";
+import { FileMetadataDao } from "./filesMetadata.dao.js";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import fs from "fs";

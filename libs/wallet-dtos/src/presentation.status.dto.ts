@@ -1,33 +1,55 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { IsBoolean, IsEnum, IsNumberString, IsString } from "class-validator";
 
 export class CredentialStatusRequest {
-  @ApiProperty()
+  @ApiProperty({
+    example: "credential-identifier-123"
+  })
   @IsString()
   statusListCredential!: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    example: "1"
+  })
   @IsNumberString()
   statusListIndex!: string;
+
+  @ApiPropertyOptional({
+    example: "Additional optional data"
+  })
+  @IsString()
+  optionalField?: string;
 }
 
 export class VerifiedCredentialStatus {
-  @ApiProperty()
+  @ApiProperty({
+    example: "credential-identifier-123"
+  })
   @IsString()
   statusListCredential!: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    example: "1"
+  })
   @IsNumberString()
   statusListIndex!: string;
 
   @ApiProperty({
-    type: "string",
+    example: "refresh",
     enum: ["refresh", "revocation", "suspension", "message"]
   })
   @IsEnum(["refresh", "revocation", "suspension", "message"])
   statusPurpose!: "refresh" | "revocation" | "suspension" | "message";
 
-  @ApiProperty()
+  @ApiProperty({
+    example: true
+  })
   @IsBoolean()
   status!: boolean;
+
+  @ApiPropertyOptional({
+    example: "Optional verification message"
+  })
+  @IsString()
+  message?: string;
 }

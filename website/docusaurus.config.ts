@@ -62,52 +62,97 @@ const config: Config = {
         config: {
           analyticsDataPlane: {
             specPath: "docs/apps/analytics-data-plane/openapi.yaml",
+            downloadUrl: "openapi.yaml",
+            showSchemas: true,
             hideSendButton: true,
             showExtensions: false,
             outputDir: "docs/apis/analytics-data-plane",
             sidebarOptions: {
-              groupPathsBy: "tag"
+              groupPathsBy: "tag",
+              sidebarCollapsed: false
             }
           } satisfies OpenApiPlugin.Options,
           controlPlane: {
             specPath: "docs/apps/control-plane/openapi.yaml",
+            downloadUrl: "openapi.yaml",
+            showSchemas: true,
             hideSendButton: true,
             showExtensions: false,
             outputDir: "docs/apis/control-plane",
             sidebarOptions: {
-              groupPathsBy: "tag"
+              groupPathsBy: "tag",
+              sidebarCollapsed: false
             }
           } satisfies OpenApiPlugin.Options,
           httpDataPlane: {
             specPath: "docs/apps/http-data-plane/openapi.yaml",
+            downloadUrl: "openapi.yaml",
+            showSchemas: true,
             hideSendButton: true,
             showExtensions: false,
             outputDir: "docs/apis/http-data-plane",
             sidebarOptions: {
-              groupPathsBy: "tag"
+              groupPathsBy: "tag",
+              sidebarCollapsed: false
             }
           } satisfies OpenApiPlugin.Options,
           ssoBridge: {
             specPath: "docs/apps/sso-bridge/openapi.yaml",
+            downloadUrl: "openapi.yaml",
+            showSchemas: true,
             hideSendButton: true,
             showExtensions: false,
             outputDir: "docs/apis/sso-bridge",
             sidebarOptions: {
-              groupPathsBy: "tag"
+              groupPathsBy: "tag",
+              sidebarCollapsed: false
             }
           } satisfies OpenApiPlugin.Options,
           wallet: {
             specPath: "docs/apps/wallet/openapi.yaml",
+            downloadUrl: "openapi.yaml",
+            showSchemas: true,
             hideSendButton: true,
             showExtensions: false,
             outputDir: "docs/apis/wallet",
             sidebarOptions: {
-              groupPathsBy: "tag"
+              groupPathsBy: "tag",
+              sidebarCollapsed: false
             }
           } satisfies OpenApiPlugin.Options
         }
       }
     ],
+    async function openApiYamlPlugin(context) {
+      const copyYaml = (inputDir: string, outputDir: string) => {
+        fs.mkdirSync(outputDir, { recursive: true });
+        fs.readdirSync(inputDir)
+          .filter((f) => f.endsWith(".yaml"))
+          .forEach((file) => {
+            fs.copyFileSync(`${inputDir}/${file}`, `${outputDir}/${file}`);
+          });
+      }
+      return {
+        name: "openapi-yaml-plugin",
+        async postBuild() {
+          ["analytics-data-plane", "control-plane", "http-data-plane", "sso-bridge", "wallet"].forEach((api) => {
+            copyYaml(
+              `${context.siteDir}/docs/apps/${api}`,
+              `${context.outDir}/docs/next/apis/${api}`
+            );
+            fs.readdirSync(`${context.siteDir}/versioned_docs`).forEach(
+              (directory) => {
+                copyYaml(
+                  `${context.siteDir}/versioned_docs/${directory}/apps/${api}`,
+                  `${context.outDir}/docs/${directory.slice(8)}/apis/${api}`
+                );
+              });
+          });
+        }
+      }
+          
+        
+    },
     async function jsonLdContextPlugin(context) {
       const copyJson = (inputDir: string, outputDir: string) => {
         fs.mkdirSync(outputDir, { recursive: true });
@@ -166,10 +211,37 @@ const config: Config = {
           label: "Documentation"
         },
         {
-          type: "docSidebar",
-          sidebarId: "apiSidebar",
+          type: "dropdown",
           position: "left",
-          label: "APIs"
+          label: "APIs",
+          items: [
+            {
+              type: "docSidebar",
+              sidebarId: "controlPlaneSidebar",
+              label: "Control Plane"
+            },
+            {
+              type: "docSidebar",
+              sidebarId: "httpDataPlaneSidebar",
+              label: "HTTP Data Plane"
+            },
+            {
+              type: "docSidebar",
+              sidebarId: "walletSidebar",
+              label: "Wallet"
+              
+            },
+            {
+              type: "docSidebar",
+              sidebarId: "analyticsdataPlaneSidebar",
+              label: "Analytics Data Plane"
+            },
+            {
+              type: "docSidebar",
+              sidebarId: "ssoBridgeSidebar",
+              label: "SSO Bridge"
+            }
+          ]
         },
         {
           href: "/contact",

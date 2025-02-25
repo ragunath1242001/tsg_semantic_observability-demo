@@ -26,17 +26,23 @@ import { plainToInstance } from "class-transformer";
 import {
   ApiOperation,
   ApiOkResponse,
-  ApiBadGatewayResponse
+  ApiBadGatewayResponse,
+  ApiTags
 } from "@nestjs/swagger";
 import { AuthGuard, ManagementRoles, User } from "../auth/auth.guard.js";
 import { Request, Response } from "express";
 import { OauthUser } from "../model/user.dao.js";
 
+@ApiTags("Oauth")
 @Controller("oauth")
 export class OauthController {
   constructor(private readonly oauthService: OauthService) {}
 
   @Get("authorize")
+  @ApiOperation({
+    summary: "Authorize",
+    description: "Authorize a client and redirect to the client's redirect_uri."
+  })
   @HttpCode(HttpStatus.OK)
   @Redirect(undefined, HttpStatus.FOUND)
   async authorize(
@@ -46,6 +52,10 @@ export class OauthController {
   }
 
   @Post("login")
+  @ApiOperation({
+    summary: "Login",
+    description: "Login a user and redirect to the client's redirect_uri."
+  })
   async login(
     @Req() req: Request,
     @Res() res: Response,
@@ -68,6 +78,10 @@ export class OauthController {
   }
 
   @Post("token")
+  @ApiOperation({
+    summary: "Token",
+    description: "Get a token for the client."
+  })
   @HttpCode(HttpStatus.OK)
   async token(@Body() request: any) {
     const wrapper = validateOrRejectSync(
@@ -79,18 +93,30 @@ export class OauthController {
   }
 
   @Get("userinfo")
+  @ApiOperation({
+    summary: "Get Userinfo",
+    description: "Get the userinfo for the token."
+  })
   @HttpCode(HttpStatus.OK)
   async userinfoGet(@Query("token", nonEmptyStringPipe) token: string) {
     return this.oauthService.userinfo(token);
   }
 
   @Post("userinfo")
+  @ApiOperation({
+    summary: "Get Userinfo",
+    description: "Get the userinfo for the token."
+  })
   @HttpCode(HttpStatus.OK)
   async userinfoPost(@Body("token", nonEmptyStringPipe) token: string) {
     return this.oauthService.userinfo(token);
   }
 
   @Post("introspect")
+  @ApiOperation({
+    summary: "Introspect",
+    description: "Introspect the token."
+  })
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
   @ManagementRoles("admin")
@@ -102,12 +128,20 @@ export class OauthController {
   }
 
   @Post("device_authorization")
+  @ApiOperation({
+    summary: "Device Authorization",
+    description: "Device Authorization"
+  })
   @HttpCode(HttpStatus.OK)
   async deviceAuthorization() {
     return this.oauthService.deviceAuthorization();
   }
 
   @Post("revocation")
+  @ApiOperation({
+    summary: "Revocation",
+    description: "Revocation of the token."
+  })
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
   @ManagementRoles("admin")

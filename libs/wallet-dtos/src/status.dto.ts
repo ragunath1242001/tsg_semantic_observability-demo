@@ -1,66 +1,89 @@
 import { ApiProperty } from "@nestjs/swagger";
 
 export class MemoryUsageDto {
-  @ApiProperty()
+  @ApiProperty({ example: 1024 })
   does_zap_garbage!: number;
-  @ApiProperty()
+  @ApiProperty({ example: 2048 })
   external_memory!: number;
-  @ApiProperty()
+  @ApiProperty({ example: 4096 })
   heap_size_limit!: number;
-  @ApiProperty()
+  @ApiProperty({ example: 512 })
   malloced_memory!: number;
-  @ApiProperty()
+  @ApiProperty({ example: 0 })
   number_of_detached_contexts!: number;
-  @ApiProperty()
+  @ApiProperty({ example: 2 })
   number_of_native_contexts!: number;
-  @ApiProperty()
+  @ApiProperty({ example: 1024 })
   peak_malloced_memory!: number;
-  @ApiProperty()
+  @ApiProperty({ example: 8192 })
   total_available_size!: number;
-  @ApiProperty()
+  @ApiProperty({ example: 256 })
   total_global_handles_size!: number;
-  @ApiProperty()
+  @ApiProperty({ example: 16384 })
   total_heap_size!: number;
-  @ApiProperty()
+  @ApiProperty({ example: 4096 })
   total_heap_size_executable!: number;
-  @ApiProperty()
+  @ApiProperty({ example: 32768 })
   total_physical_size!: number;
-  @ApiProperty()
+  @ApiProperty({ example: 128 })
   used_global_handles_size!: number;
-  @ApiProperty()
+  @ApiProperty({ example: 8192 })
   used_heap_size!: number;
 }
-
 export class IssuanceStatusDto {
-  @ApiProperty()
+  @ApiProperty({ example: 10 })
   issued!: number;
-  @ApiProperty()
+  @ApiProperty({ example: 2 })
   open!: number;
 }
 
 export class CredentialStatusDto {
-  @ApiProperty()
+  @ApiProperty({ example: 5 })
   selfSigned!: number;
-  @ApiProperty()
+  @ApiProperty({ example: 1 })
   thirdParty!: number;
 }
 
 export class DatabaseStatusDto {
-  @ApiProperty()
+  @ApiProperty({ example: "online" })
   status!: string;
 }
 
 export class StatusDto {
-  @ApiProperty({ type: () => DatabaseStatusDto })
+  @ApiProperty({ type: () => DatabaseStatusDto, example: { status: "online" } })
   database!: DatabaseStatusDto;
-  @ApiProperty()
+  @ApiProperty({ example: 3600 })
   uptime!: number;
-  @ApiProperty({ type: () => MemoryUsageDto })
+  @ApiProperty({
+    type: () => MemoryUsageDto,
+    example: {
+      does_zap_garbage: 1024,
+      external_memory: 2048,
+      heap_size_limit: 4096,
+      malloced_memory: 512,
+      number_of_detached_contexts: 0,
+      number_of_native_contexts: 2,
+      peak_malloced_memory: 1024,
+      total_available_size: 8192,
+      total_global_handles_size: 256,
+      total_heap_size: 16384,
+      total_heap_size_executable: 4096,
+      total_physical_size: 32768,
+      used_global_handles_size: 128,
+      used_heap_size: 8192
+    }
+  })
   memoryUsage!: MemoryUsageDto;
-  @ApiProperty({ type: () => IssuanceStatusDto })
+  @ApiProperty({
+    type: () => IssuanceStatusDto,
+    example: { issued: 10, open: 2 }
+  })
   issuance!: IssuanceStatusDto;
-  @ApiProperty({ type: () => CredentialStatusDto })
+  @ApiProperty({
+    type: () => CredentialStatusDto,
+    example: { selfSigned: 5, thirdParty: 1 }
+  })
   credentials!: CredentialStatusDto;
-  @ApiProperty()
+  @ApiProperty({ example: 3 })
   keys!: number;
 }

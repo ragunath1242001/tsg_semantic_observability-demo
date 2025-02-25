@@ -8,7 +8,7 @@ import { Type } from "class-transformer";
 import { IsString, ValidateNested, IsArray } from "class-validator";
 
 export class DataPlaneStateDto {
-  @ApiProperty()
+  @ApiProperty({ example: "44d1f3d6-f65d-4a7c-84db-f92ba826305e" })
   @IsString()
   identifier!: string;
 

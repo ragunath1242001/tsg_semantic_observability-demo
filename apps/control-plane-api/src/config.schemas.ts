@@ -2,12 +2,12 @@ import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { RuntimeConfig } from "./config.js";
 
 export class RuntimeConfigDto implements RuntimeConfig {
-  @ApiProperty()
+  @ApiProperty({ example: "automatic" })
   controlPlaneInteractions!: "automatic" | "semi-manual" | "manual";
-  @ApiProperty()
+  @ApiProperty({ example: "#3B8BF6" })
   color: string = "#3B8BF6";
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "https://example.com/darktheme.png" })
   darkThemeUrl?: string;
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "https://example.com/lighttheme.png" })
   lightThemeUrl?: string;
 }

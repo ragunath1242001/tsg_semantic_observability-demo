@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional, OmitType } from "@nestjs/swagger";
 import { DurationSchema, ReferenceSchema } from "../common.schema.js";
 import { ValueDto } from "../common.dto.js";
-import { Duty, Policy } from "../negotiation/negotiation.js";
+import { Policy } from "../negotiation/negotiation.js";
 import {
   ConstraintDto,
   ODRLLeftOperand,
@@ -24,35 +24,35 @@ import {
 import { CatalogRequestMessageDto, Filter } from "./messages.dto.js";
 
 export class ConstraintSchema implements ConstraintDto {
-  @ApiProperty()
+  @ApiProperty({ example: "odrl:Constraint" })
   "@type": "odrl:Constraint";
-  @ApiProperty()
+  @ApiProperty({ example: "odrl:leftOperandExample" })
   "odrl:leftOperand": ODRLLeftOperand | string;
-  @ApiProperty()
+  @ApiProperty({ example: "odrl:operatorExample" })
   "odrl:operator": ODRLOperator | string;
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: { value: "rightOperandExample" } })
   "odrl:rightOperand"?: ValueDto | string;
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "rightOperandReferenceExample" })
   "odrl:rightOperandReference"?: string;
 }
 
 export class PolicyRuleSchema implements PolicyRuleDto {
-  @ApiProperty()
+  @ApiProperty({ example: "odrl:Permission" })
   "@type": "odrl:Prohibition" | "odrl:Duty" | "odrl:Permission";
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "assignerExample" })
   "odrl:assigner"?: string;
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "assigneeExample" })
   "odrl:assignee"?: string;
-  @ApiProperty()
+  @ApiProperty({ example: "odrl:actionExample" })
   "odrl:action": ODRLAction | string;
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "targetExample" })
   "odrl:target"?: string;
-  @ApiPropertyOptional({ type: [ConstraintSchema] })
+  @ApiPropertyOptional({ type: [ConstraintSchema], example: [] })
   "odrl:constraint"?: Array<ConstraintDto>;
 }
 
 export class DutySchema extends PolicyRuleSchema implements DutyDto {
-  @ApiProperty()
+  @ApiProperty({ example: "odrl:Duty" })
   declare "@type": "odrl:Duty";
 }
 
@@ -60,11 +60,11 @@ export class PermissionSchema
   extends PolicyRuleSchema
   implements PermissionDto
 {
-  @ApiProperty()
+  @ApiProperty({ example: "odrl:Permission" })
   declare "@type": "odrl:Permission";
-  @ApiProperty()
+  @ApiProperty({ example: "targetExample" })
   declare "odrl:target": string;
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: [] })
   "odrl:Duty"?: Array<DutyDto>;
 }
 
@@ -72,78 +72,79 @@ export class ProhibitionSchema
   extends PolicyRuleSchema
   implements ProhibitionDto
 {
-  @ApiProperty()
+  @ApiProperty({ example: "odrl:Prohibition" })
   declare "@type": "odrl:Prohibition";
-  @ApiProperty()
+  @ApiProperty({ example: "targetExample" })
   declare "odrl:target": string;
 }
+
 export class PolicySchema extends ReferenceSchema implements PolicyDto {
-  @ApiProperty()
+  @ApiProperty({ example: "odrl:Offer" }) // or "odrl:Agreement"
   "@type": "odrl:Offer" | "odrl:Agreement";
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "assignerExample" })
   "odrl:assigner"?: string;
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "assigneeExample" })
   "odrl:assignee"?: string;
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "profileExample" })
   "odrl:profile"?: string;
-  @ApiPropertyOptional({ type: [PermissionSchema] })
+  @ApiPropertyOptional({ type: [PermissionSchema], example: [] })
   "odrl:permission"?: Array<PermissionDto>;
-  @ApiPropertyOptional({ type: [ProhibitionSchema] })
+  @ApiPropertyOptional({ type: [ProhibitionSchema], example: [] })
   "odrl:prohibition"?: Array<ProhibitionDto>;
-  @ApiPropertyOptional({ type: [Duty] })
+  @ApiPropertyOptional({ type: [DutySchema], example: [] })
   "odrl:obligation"?: Array<DutyDto>;
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "targetExample" })
   "odrl:target"?: string;
 }
 
 export class ResourceSchema extends ReferenceSchema implements ResourceDto {
-  @ApiProperty()
+  @ApiProperty({ example: "dcat:Resource" })
   "@type": "dcat:Resource";
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "contactPointExample" })
   "dcat:contactPoint"?: string;
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: ["keyword1", "keyword2"] })
   "dcat:keyword"?: Array<string>;
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "landingPageExample" })
   "dcat:landingPage"?: string;
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: ["theme1", "theme2"] })
   "dcat:theme"?: Array<string>;
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "conformsToExample" })
   "dcat:conformsTo"?: string;
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "creatorExample" })
   "dct:creator"?: string;
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: ["description1", "description2"] })
   "dct:description"?: Array<string>;
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "identifierExample" })
   "dct:identifier"?: string;
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "isReferencedByExample" })
   "dct:isReferencedBy"?: string;
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "2020-01-01" })
   "dct:issued"?: string;
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "en" })
   "dct:language"?: string;
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "licenseExample" })
   "dct:license"?: string;
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "2020-01-02" })
   "dct:modified"?: string;
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "publisherExample" })
   "dct:publisher"?: string;
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "relationExample" })
   "dct:relation"?: string;
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "titleExample" })
   "dct:title"?: string;
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "typeExample" })
   "dct:type"?: string;
-  @ApiPropertyOptional({ type: [PolicySchema] })
+  @ApiPropertyOptional({ type: [PolicySchema], example: [] })
   "odrl:hasPolicy"?: Array<PolicyDto>;
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: ["version1", "version2"] })
   "dcat:hasVersion"?: Array<string>;
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "isVersionOfExample" })
   "dcat:isVersionOf"?: string;
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "versionExample" })
   "dcat:version"?: string;
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "hasCurrentVersionExample" })
   "dcat:hasCurrentVersion"?: string;
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "previousVersionExample" })
   "dcat:previousVersion"?: string;
 }
 
@@ -151,21 +152,21 @@ export class DatasetSchema
   extends OmitType(ResourceSchema, ["@type"])
   implements DatasetDto
 {
-  @ApiProperty()
+  @ApiProperty({ example: "dcat:Dataset" })
   "@type": "dcat:Dataset";
   @ApiPropertyOptional()
   "dcat:distribution"?: Array<DistributionDto>;
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "100" })
   "dcat:spatialResolutionInMeters"?: string;
-  @ApiPropertyOptional({ type: DurationSchema })
+  @ApiPropertyOptional({ type: DurationSchema, example: "P1Y" })
   "dcat:temporalResolution"?: string;
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "accrualPeriodicityExample" })
   "dct:accrualPeriodicity"?: string;
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "spatialExample" })
   "dct:spatial"?: string;
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "temporalExample" })
   "dct:temporal"?: string;
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "wasGeneratedByExample" })
   "prov:wasGeneratedBy"?: string;
 }
 
@@ -173,13 +174,13 @@ export class DataServiceSchema
   extends OmitType(ResourceSchema, ["@type"])
   implements DataServiceDto
 {
-  @ApiProperty()
+  @ApiProperty({ example: "dcat:DataService" })
   "@type": "dcat:DataService";
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "endpointDescriptionExample" })
   "dcat:endpointDescription"?: string;
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "https://example.com/api" })
   "dcat:endpointURL"?: string;
-  @ApiPropertyOptional({ type: [DatasetSchema] })
+  @ApiPropertyOptional({ type: [DatasetSchema], example: [] })
   "dcat:servesDataset"?: Array<DatasetDto>;
 }
 
@@ -187,39 +188,41 @@ export class DistributionSchema
   extends ReferenceSchema
   implements DistributionDto
 {
-  @ApiProperty()
+  @ApiProperty({ example: "dcat:Distribution" })
   "@type": "dcat:Distribution";
-  @ApiPropertyOptional({ type: [DataServiceSchema] })
+  @ApiPropertyOptional({ type: [DataServiceSchema], example: [] })
   "dcat:accessService"?: Array<DataServiceDto>;
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "https://example.com/access" })
   "dcat:accessURL"?: string;
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "12345" })
   "dcat:byteSize"?: string;
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "zip" })
   "dcat:compressFormat"?: string;
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "https://example.com/download" })
   "dcat:downloadURL"?: string;
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "application/json" })
   "dcat:mediaType"?: string;
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "packageFormatExample" })
   "dcat:packageFormat"?: string;
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "200" })
   "dcat:spatialResolutionInMeters"?: string;
-  @ApiPropertyOptional({ type: DurationSchema })
+  @ApiPropertyOptional({ type: DurationSchema, example: "P2M" })
   "dcat:temporalResolution"?: string;
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({
+    example: ["conformsToExample1", "conformsToExample2"]
+  })
   "dct:conformsTo"?: string[];
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: ["First description", "Second description"] })
   "dct:description"?: Array<string>;
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "formatExample" })
   "dct:format"?: string;
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "2020-02-01" })
   "dct:issued"?: string;
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "2020-02-02" })
   "dct:modified"?: string;
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "Title example" })
   "dct:title"?: string;
-  @ApiPropertyOptional({ type: [PolicySchema] })
+  @ApiPropertyOptional({ type: [PolicySchema], example: [] })
   "dct:hasPolicy"?: Array<Policy>;
 }
 
@@ -227,44 +230,45 @@ export class CatalogRecordSchema
   extends ReferenceSchema
   implements CatalogRecordDto
 {
-  @ApiProperty()
+  @ApiProperty({ example: "dcat:CatalogRecord" })
   "@type": "dcat:CatalogRecord";
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: ["conformsToExample"] })
   "dct:conformsTo"?: string[];
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: ["Record description"] })
   "dct:description"?: Array<string>;
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "2020-03-01T00:00:00Z" })
   "dct:issued"?: Date;
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "2020-03-02T00:00:00Z" })
   "dct:modified"?: Date;
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "Catalog title example" })
   "dct:title"?: string;
-  @ApiPropertyOptional({ type: ResourceSchema })
+  @ApiPropertyOptional({ type: ResourceSchema, example: {} })
   "foaf:primaryTopic"?: ResourceDto;
 }
+
 export class CatalogSchema
   extends OmitType(DatasetSchema, ["@type"])
   implements CatalogDto
 {
-  @ApiProperty()
+  @ApiProperty({ example: "dcat:Catalog" })
   "@type": "dcat:Catalog";
-  @ApiPropertyOptional({ type: [DatasetSchema] })
+  @ApiPropertyOptional({ type: [DatasetSchema], example: [] })
   "dcat:dataset"?: Array<DatasetDto>;
-  @ApiPropertyOptional({ type: [CatalogRecordSchema] })
+  @ApiPropertyOptional({ type: [CatalogRecordSchema], example: {} })
   "dcat:record"?: CatalogRecordDto;
-  @ApiPropertyOptional({ type: [DataServiceSchema] })
+  @ApiPropertyOptional({ type: [DataServiceSchema], example: [] })
   "dcat:service"?: Array<DataServiceDto>;
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "themeTaxonomyExample" })
   "dcat:themeTaxonomy"?: string;
-  @ApiPropertyOptional({ type: [ResourceSchema] })
+  @ApiPropertyOptional({ type: [ResourceSchema], example: [] })
   "dct:hasPart"?: Array<ResourceDto>;
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "https://example.com/homepage" })
   "foaf:homepage"?: string;
 }
 
 export class CatalogRequestMessageSchema implements CatalogRequestMessageDto {
-  @ApiProperty()
+  @ApiProperty({ example: "dspace:CatalogRequestMessage" })
   "@type": "dspace:CatalogRequestMessage";
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: [] })
   "dspace:filter"?: Array<Filter>;
 }

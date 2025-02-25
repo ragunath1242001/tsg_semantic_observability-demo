@@ -1,15 +1,15 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { RuntimeConfig } from "./config.js";
 
 export class RuntimeConfigDto implements RuntimeConfig {
-  @ApiProperty()
+  @ApiProperty({ example: false })
   gaiaXSupport!: boolean;
-  @ApiProperty()
+  @ApiProperty({ example: "My Company Wallet" })
   title!: string;
-  @ApiProperty()
+  @ApiProperty({ example: "#3B8BF6" })
   color: string = "#3B8BF6";
-  @ApiProperty()
+  @ApiPropertyOptional({ example: "https://example.com/darktheme.png" })
   darkThemeUrl?: string;
-  @ApiProperty()
+  @ApiPropertyOptional({ example: "https://example.com/lighttheme.png" })
   lightThemeUrl?: string;
 }

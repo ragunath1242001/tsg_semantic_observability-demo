@@ -13,7 +13,7 @@ import { UsersService } from "./users.service.js";
 import { UserDto } from "@tsg-dsp/sso-bridge-dtos";
 import { AuthGuard, ManagementRoles } from "../auth/auth.guard.js";
 
-@ApiTags("users")
+@ApiTags("Users")
 @Controller("users")
 @UseGuards(AuthGuard)
 @ManagementRoles("admin")

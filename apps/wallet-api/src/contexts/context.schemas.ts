@@ -5,44 +5,60 @@ import { JSONLDContext } from "../model/context.dao.js";
 
 export class JsonLdContextConfigDto implements JsonLdContextConfig {
   @IsString()
-  @ApiProperty()
+  @ApiProperty({ example: "http://example.com/context" })
   id!: string;
+
   @IsString()
-  @ApiProperty()
+  @ApiProperty({ example: "VerifiableCredential" })
   credentialType!: string;
+
   @IsBoolean()
-  @ApiProperty()
+  @ApiProperty({ example: true })
   issuable!: boolean;
+
   @IsString()
   @IsOptional()
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "http://example.com/document" })
   documentUrl?: string;
+
   @IsOptional()
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: { "@context": "http://schema.org" } })
   document?: Record<string, any>;
+
   @IsOptional()
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({
+    example: { type: "object", properties: { name: { type: "string" } } }
+  })
   schema?: Record<string, any>;
 }
 
 export class JSONLDContextDto implements JSONLDContext {
-  @ApiProperty()
+  @ApiProperty({ example: "http://example.com/context" })
   id!: string;
-  @ApiProperty()
+
+  @ApiProperty({ example: "VerifiableCredential" })
   credentialType!: string;
-  @ApiProperty()
+
+  @ApiProperty({ example: true })
   issuable!: boolean;
-  @ApiPropertyOptional()
+
+  @ApiPropertyOptional({ example: "http://example.com/document" })
   documentUrl?: string;
-  @ApiPropertyOptional()
+
+  @ApiPropertyOptional({ example: { "@context": "http://schema.org" } })
   document?: Record<string, any>;
-  @ApiPropertyOptional()
+
+  @ApiPropertyOptional({
+    example: { type: "object", properties: { name: { type: "string" } } }
+  })
   schema?: Record<string, any>;
-  @ApiProperty()
+
+  @ApiProperty({ example: "2023-10-01T12:00:00Z" })
   created!: Date;
-  @ApiProperty()
+
+  @ApiProperty({ example: "2023-10-05T15:30:00Z" })
   modified!: Date;
-  @ApiProperty()
-  @ApiPropertyOptional()
+
+  @ApiPropertyOptional({ example: "2023-10-10T08:45:00Z" })
   deleted!: Date;
 }

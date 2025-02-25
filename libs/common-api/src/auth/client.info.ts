@@ -2,37 +2,51 @@ import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { IsEmail, IsOptional, IsString } from "class-validator";
 
 export class ClientInfo {
-  @ApiProperty()
+  @ApiProperty({ example: "user-id-123" })
   @IsString()
   sub!: string;
-  @ApiProperty()
+
+  @ApiProperty({ example: "John Doe" })
   @IsString()
   name!: string;
-  @ApiProperty()
+
+  @ApiProperty({ example: "john.doe@example.com" })
   @IsEmail()
   email!: string;
-  @ApiPropertyOptional()
+
+  @ApiPropertyOptional({ example: "did:example:123456789" })
   @IsString()
   @IsOptional()
   didId?: string;
-  @ApiProperty({ type: [String] })
+
+  @ApiProperty({ type: [String], example: ["admin", "user"] })
   @IsString({ each: true })
   roles!: string[];
-  @ApiPropertyOptional()
+
+  @ApiPropertyOptional({ example: "refresh-token-abc123" })
   @IsString()
   @IsOptional()
   refreshToken?: string;
 }
 
 export class AuthenticatedUser {
-  @ApiProperty()
+  @ApiProperty({ example: "authenticated" })
   state = "authenticated" as const;
 
-  @ApiProperty()
+  @ApiProperty({
+    example: {
+      sub: "user-id-123",
+      name: "John Doe",
+      email: "john.doe@example.com",
+      roles: ["admin", "user"],
+      didId: "did:example:123456789",
+      refreshToken: "refresh-token-abc123"
+    }
+  })
   user!: ClientInfo;
 }
 
 export class UnauthenticatedUser {
-  @ApiProperty()
+  @ApiProperty({ example: "unauthenticated" })
   state = "unauthenticated" as const;
 }

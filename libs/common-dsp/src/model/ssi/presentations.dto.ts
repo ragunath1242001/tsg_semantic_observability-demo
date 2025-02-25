@@ -24,7 +24,10 @@ export class VerifiablePresentation<
   T extends VerifiableCredential = VerifiableCredential,
   P extends Proof = Proof
 > {
-  @ApiProperty({ type: () => [String] })
+  @ApiProperty({
+    type: () => [String],
+    example: { "@context": "https://www.w3.org/ns/credentials/v2" }
+  })
   @IsString({ each: true })
   "@context": (
     | "https://www.w3.org/2018/credentials/v1"
@@ -33,10 +36,10 @@ export class VerifiablePresentation<
     | "https://w3id.org/security/data-integrity/v2"
     | string
   )[];
-  @ApiProperty({ type: () => [String] })
+  @ApiProperty({ type: () => [String], example: ["VerifiablePresentation"] })
   @IsString({ each: true })
   type!: string[];
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "3f2592da-ffc9-40cb-a336-a9daa9343ce8" })
   @IsString()
   @IsOptional()
   id?: string;
@@ -49,7 +52,8 @@ export class VerifiablePresentation<
     oneOf: [
       { $ref: getSchemaPath(JsonWebSignature2020) },
       { $ref: getSchemaPath(DataIntegrityProof) }
-    ]
+    ],
+    example: { type: "JsonWebSignature2020" }
   })
   @ValidateNested()
   @IsOptional()
@@ -86,35 +90,35 @@ export class VerifiablePresentationJsonLd {
 }
 
 export class PresentationValidation extends VerifiablePresentationJwt {
-  @ApiProperty()
+  @ApiProperty({ example: true })
   @IsBoolean()
   valid!: boolean;
 
-  @ApiProperty()
+  @ApiProperty({ example: true })
   @IsBoolean()
   validateJWTSignature!: boolean;
 
-  @ApiProperty()
+  @ApiProperty({ example: true })
   @IsBoolean()
   validateJWTExpiryDate!: boolean;
 
-  @ApiProperty({ type: () => [Boolean] })
+  @ApiProperty({ type: () => [Boolean], example: [true] })
   @IsBoolean({ each: true })
   validTrustAnchors!: Array<boolean>;
 
-  @ApiProperty({ type: () => [Boolean] })
+  @ApiProperty({ type: () => [Boolean], example: [true] })
   @IsBoolean({ each: true })
   validExpiryDate!: Array<boolean>;
 
-  @ApiProperty({ type: () => [Boolean] })
+  @ApiProperty({ type: () => [Boolean], example: [true] })
   @IsBoolean({ each: true })
   validProof!: Array<boolean>;
 
-  @ApiProperty({ type: () => [Boolean] })
+  @ApiProperty({ type: () => [Boolean], example: [true] })
   @IsBoolean({ each: true })
   validStatus!: Array<boolean>;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: true })
   @IsBoolean()
   @IsOptional()
   validateAudience?: boolean;

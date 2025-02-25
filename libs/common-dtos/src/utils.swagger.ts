@@ -7,15 +7,19 @@ import {
 } from "@nestjs/swagger";
 
 export class ErrorDto {
-  @ApiProperty()
+  @ApiProperty({ example: "ResourceNotFound" })
   name!: string;
-  @ApiProperty()
+
+  @ApiProperty({ example: "404 Not Found" })
   status!: string;
-  @ApiProperty()
+
+  @ApiProperty({ example: 404 })
   code!: number;
-  @ApiPropertyOptional()
+
+  @ApiPropertyOptional({ example: "The requested resource does not exist." })
   message?: string | Record<string, any>;
-  @ApiPropertyOptional()
+
+  @ApiPropertyOptional({ example: "Not Found" })
   error?: string;
 }
 

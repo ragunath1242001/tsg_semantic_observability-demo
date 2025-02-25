@@ -13,66 +13,113 @@ import {
   VerificationMethod
 } from "did-resolver";
 
+const randomUUID = "bdfd4c8e-3a44-4b9f-bc3e-1a8e26e3e99d";
+
 export class JsonWebKeyDto implements JsonWebKey {
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "RS256" })
   alg?: string;
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "P-256" })
   crv?: string;
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "AQAB" })
   e?: string;
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: false })
   ext?: boolean;
-  @ApiPropertyOptional({ type: [String] })
+  @ApiPropertyOptional({ type: [String], example: ["sign", "verify"] })
   key_ops?: string[];
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: randomUUID })
   kid?: string;
-  @ApiProperty()
+  @ApiProperty({ example: "RSA" })
   kty!: string;
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "sample_modulus" })
   n?: string;
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "sig" })
   use?: string;
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "sample_x_coordinate" })
   x?: string;
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "sample_y_coordinate" })
   y?: string;
 }
 
 export class VerificationMethodDto implements VerificationMethod {
-  @ApiProperty()
+  @ApiProperty({ example: randomUUID })
   id!: string;
-  @ApiProperty()
+  @ApiProperty({ example: "Ed25519VerificationKey2020" })
   type!: string;
-  @ApiProperty()
+  @ApiProperty({ example: randomUUID })
   controller!: string;
   @ApiPropertyOptional()
   publicKeyJwk?: JsonWebKeyDto;
 }
 
 export class ServiceDto implements Service {
-  @ApiProperty()
+  @ApiProperty({ example: randomUUID })
   id!: string;
-  @ApiProperty()
+  @ApiProperty({ example: "LinkedDomains" })
   type!: string;
-  @ApiProperty(elementOrArray({ type: "string" }))
+  @ApiProperty({
+    example: "https://example.com",
+    ...elementOrArray({ type: "string" })
+  })
   serviceEndpoint!: ServiceEndpoint | ServiceEndpoint[];
 }
 
 @ApiExtraModels(VerificationMethodDto)
 export class DIDDocumentDto implements DIDDocument {
-  @ApiPropertyOptional(elementOrArray({ type: "string" }))
+  @ApiPropertyOptional({
+    example: "https://www.w3.org/ns/did/v1",
+    ...elementOrArray({ type: "string" })
+  })
   "@context"?: string | string[];
-  @ApiProperty()
+  @ApiProperty({ example: randomUUID })
   id!: string;
-  @ApiPropertyOptional({ type: [String] })
+  @ApiPropertyOptional({
+    type: [String],
+    example: ["https://example.com/profile"]
+  })
   alsoKnownAs?: string[];
-  @ApiPropertyOptional(elementOrArray({ type: "string" }))
+  @ApiPropertyOptional({
+    example: randomUUID,
+    ...elementOrArray({ type: "string" })
+  })
   controller?: string | string[];
-  @ApiPropertyOptional({ type: () => [VerificationMethodDto] })
+  @ApiPropertyOptional({
+    type: () => [VerificationMethodDto],
+    example: [
+      {
+        id: randomUUID,
+        type: "Ed25519VerificationKey2020",
+        controller: randomUUID,
+        publicKeyJwk: {
+          kty: "RSA"
+        }
+      }
+    ]
+  })
   verificationMethod?: VerificationMethod[];
-  @ApiPropertyOptional({ type: [ServiceDto] })
+  @ApiPropertyOptional({
+    type: [ServiceDto],
+    example: [
+      {
+        id: randomUUID,
+        type: "LinkedDomains",
+        serviceEndpoint: "https://example.com"
+      }
+    ]
+  })
   service?: Service[];
-  @ApiPropertyOptional({ type: () => [VerificationMethodDto] })
+  @ApiPropertyOptional({
+    type: () => [VerificationMethodDto],
+    example: [
+      {
+        id: randomUUID,
+        type: "Ed25519VerificationKey2020",
+        controller: randomUUID,
+        publicKeyJwk: {
+          kty: "RSA"
+        }
+      }
+    ]
+  })
   publicKey?: VerificationMethod[];
   @ApiPropertyOptional({
     type: "array",

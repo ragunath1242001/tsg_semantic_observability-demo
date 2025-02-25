@@ -24,104 +24,151 @@ import {
 export type NegotiationRole = "provider" | "consumer";
 
 export class NegotiationProcessEventDto {
-  @ApiProperty()
+  @ApiProperty({
+    example: "2023-10-11T00:00:00.000Z"
+  })
   @IsDate()
   @Type(() => Date)
   time!: Date;
 
-  @ApiProperty({ enum: ContractNegotiationState })
+  @ApiProperty({
+    enum: ContractNegotiationState,
+    example: Object.values(ContractNegotiationState)[0]
+  })
   @IsEnum(ContractNegotiationState)
   state!: ContractNegotiationState;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({
+    example: "A local message example"
+  })
   @IsOptional()
   @IsString()
   localMessage?: string;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({
+    example: "ERR_CODE"
+  })
   @IsOptional()
   @IsString()
   code?: string;
 
-  @ApiPropertyOptional({ type: () => [MultilanguageSchema] })
+  @ApiPropertyOptional({
+    type: () => [MultilanguageSchema],
+    example: []
+  })
   @IsOptional()
   @ValidateNested({ each: true })
   @Type(() => MultilanguageSchema)
   reason?: MultilanguageDto[];
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({
+    example: "Agreement reached on event"
+  })
   @IsOptional()
   @IsString()
   agreementMessage?: string;
 
   @ApiPropertyOptional({
-    type: () => ContractAgreementVerificationMessageSchema
+    type: () => ContractAgreementVerificationMessageSchema,
+    example: {} // add a valid ContractAgreementVerificationMessageDto example if available
   })
   @IsOptional()
   @ValidateNested()
   @Type(() => ContractAgreementVerificationMessageSchema)
   verification?: ContractAgreementVerificationMessageDto;
 
-  @ApiPropertyOptional({ type: () => HashedMessageSchema })
+  @ApiPropertyOptional({
+    type: () => HashedMessageSchema,
+    example: {} // add a valid HashedMessage example if available
+  })
   @IsOptional()
   @ValidateNested()
   @Type(() => HashedMessageSchema)
   hashedMessage?: HashedMessage;
 
-  @ApiProperty({ enum: ["local", "remote"] })
+  @ApiProperty({
+    enum: ["local", "remote"],
+    example: "local"
+  })
   @IsEnum(["local", "remote"])
   type!: "local" | "remote";
 }
 
 export class NegotiationStatusDto {
-  @ApiProperty()
+  @ApiProperty({
+    example: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+  })
   @IsString()
   localId!: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    example: "3fa85f64-5717-4562-b3fc-2c963f66afa7"
+  })
   @IsString()
   remoteId!: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    example: "Remote Party Name"
+  })
   @IsString()
   remoteParty!: string;
 
-  @ApiProperty({ enum: ["provider", "consumer"] })
+  @ApiProperty({
+    enum: ["provider", "consumer"],
+    example: "provider"
+  })
   @IsEnum(["provider", "consumer"])
   role!: NegotiationRole;
 
-  @ApiProperty()
+  @ApiProperty({
+    example: "192.168.1.100"
+  })
   @IsString()
   remoteAddress!: string;
 
-  @ApiProperty({ enum: ContractNegotiationState })
+  @ApiProperty({
+    enum: ContractNegotiationState,
+    example: Object.values(ContractNegotiationState)[0]
+  })
   @IsEnum(ContractNegotiationState)
   state!: ContractNegotiationState;
 
-  @ApiProperty()
+  @ApiProperty({
+    example: "defaultDataSet"
+  })
   @IsString()
   dataSet!: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    example: "2023-10-11T00:00:00.000Z"
+  })
   @IsDate()
   @Type(() => Date)
   modifiedDate!: Date;
 }
 
 export class NegotiationDetailDto extends NegotiationStatusDto {
-  @ApiPropertyOptional({ type: () => OfferSchema })
+  @ApiPropertyOptional({
+    type: () => OfferSchema,
+    example: {} // add a valid OfferDto example if available
+  })
   @IsOptional()
   @ValidateNested()
   @Type(() => OfferSchema)
   offer?: OfferDto;
 
-  @ApiPropertyOptional({ type: () => AgreementSchema })
+  @ApiPropertyOptional({
+    type: () => AgreementSchema,
+    example: {} // add a valid AgreementDto example if available
+  })
   @IsOptional()
   @ValidateNested()
   @Type(() => AgreementSchema)
   agreement?: AgreementDto;
 
-  @ApiProperty({ type: () => [NegotiationProcessEventDto] })
+  @ApiProperty({
+    type: () => [NegotiationProcessEventDto]
+  })
   @ValidateNested({ each: true })
   @Type(() => NegotiationProcessEventDto)
   events!: Array<NegotiationProcessEventDto>;
