@@ -17,6 +17,37 @@ export class TsgWalletClient extends WalletClient {
   }
   readonly logger = new Logger(this.constructor.name);
 
+  private etagCache = new Map<string, { etag: string; data: any }>();
+
+  private async cachedGet<T>(url: string, cacheKey: string): Promise<T> {
+    const cached = this.etagCache.get(cacheKey);
+    const headers: Record<string, string> = {};
+    if (cached?.etag) {
+      headers["If-None-Match"] = cached.etag;
+    }
+    try {
+      const response = await this.authClientService
+        .axiosInstance()
+        .get<T>(url, { headers });
+      const etag = response.headers["etag"] as string;
+      if (etag) {
+        this.etagCache.set(cacheKey, { etag, data: response.data });
+      }
+      return response.data;
+    } catch (err: any) {
+      if (err.response && err.response.status === 304 && cached) {
+        this.logger.debug(
+          `${cacheKey} not modified; returning cached version.`
+        );
+        return cached.data as T;
+      }
+      throw new DSPClientError(`Cached GET failed for ${cacheKey}`, err).andLog(
+        this.logger,
+        "warn"
+      );
+    }
+  }
+
   async requestVerifiablePresentation(audience: string): Promise<string> {
     try {
       const response = await this.authClientService
@@ -108,20 +139,8 @@ export class TsgWalletClient extends WalletClient {
   }
 
   async getCredentials(): Promise<Credential[]> {
-    try {
-      const response = await this.authClientService
-        .axiosInstance()
-        .get<
-          Credential[]
-        >(`${this.iamConfig.walletUrl}/management/credentials/dataspace`);
-      this.logger.debug(`Successfully requested credentials at local wallet`);
-      return response.data;
-    } catch (err) {
-      throw new DSPClientError("Could not get credentials", err).andLog(
-        this.logger,
-        "warn"
-      );
-    }
+    const url = `${this.iamConfig.walletUrl}/management/credentials/dataspace`;
+    return await this.cachedGet<Credential[]>(url, "credentials");
   }
 
   async requestSignature(document: Record<string, any>): Promise<any> {
@@ -159,23 +178,7 @@ export class TsgWalletClient extends WalletClient {
   }
 
   async resolveDidDocument(didId: string): Promise<DIDDocument> {
-    try {
-      const response = await this.authClientService
-        .axiosInstance()
-        .get<DIDDocument>(
-          `${this.iamConfig.walletUrl}/management/did/resolve/${encodeURI(
-            didId
-          )}`
-        );
-      this.logger.debug(
-        `Successfully resolved DID Document for ${didId} at local wallet`
-      );
-      return response.data;
-    } catch (err) {
-      throw new DSPClientError(
-        `Could not resolve DID Document for ${didId}`,
-        err
-      ).andLog(this.logger, "warn");
-    }
+    const url = `${this.iamConfig.walletUrl}/management/did/resolve/${encodeURI(didId)}`;
+    return await this.cachedGet<DIDDocument>(url, `did:${didId}`);
   }
 }
