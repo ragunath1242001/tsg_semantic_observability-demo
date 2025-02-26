@@ -171,7 +171,7 @@ describe("TSG Wallet", () => {
 
   it("Resolve DID Document", async () => {
     await expect(tsgWalletClient.resolveDidDocument("")).rejects.toThrow(
-      "Could not resolve DID Document"
+      "Cached GET failed for did: (request): connect ECONNREFUSED 127.0.0.1:80"
     );
 
     const expectedDidDoc = mockDidDocument();
