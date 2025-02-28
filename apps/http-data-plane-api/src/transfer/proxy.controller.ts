@@ -1,7 +1,6 @@
 import {
   All,
   Controller,
-  Headers,
   Logger,
   Param,
   RawBodyRequest,
@@ -35,14 +34,12 @@ export class ProxyController {
   async getData(
     @Param("id") id: string,
     @Param("path") path: string | undefined,
-    @Headers("Authorization") authorization: string,
     @Req() request: RawBodyRequest<Request>,
     @Res() response: Response
   ) {
     this.logger.log(`Test: ${id} ${path}`);
     await this.transferService.handleProxyRequest(
       id,
-      authorization,
       path || "",
       request,
       response

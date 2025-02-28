@@ -136,7 +136,7 @@ export class TransferService {
         endpoint: `${this.config.server.publicAddress}/proxy/${id}`,
         properties: [
           {
-            name: "Authorization",
+            name: this.config.authorizationHeader,
             value: `Bearer ${secret}`
           }
         ]
@@ -510,9 +510,9 @@ export class TransferService {
           "$1"
         );
       const headers = request.headers;
-      headers["authorization"] = transfer.dataAddress[
-        "dspace:endpointProperties"
-      ].find((p) => p["dspace:name"] === "Authorization")?.["dspace:value"];
+      transfer.dataAddress["dspace:endpointProperties"].forEach((p) => {
+        headers[p["dspace:name"].toLowerCase()] = p["dspace:value"];
+      });
 
       let bodyLength = -1;
       if (this.config.logging.debug && request.rawBody) {
@@ -561,13 +561,14 @@ export class TransferService {
 
   async handleProxyRequest(
     processId: string,
-    authorization: string,
     path: string,
     request: RawBodyRequest<Request>,
     response: Response
   ) {
     const transfer = await this.getTransferById(processId);
     const dataset = await this.dataPlaneService.getDataset(transfer.datasetId);
+    const authorization =
+      request.headers[this.config.authorizationHeader.toLowerCase()];
 
     if (transfer.state !== TransferState.STARTED) {
       this.logger.warn(
@@ -580,7 +581,7 @@ export class TransferService {
     }
     if (authorization !== `Bearer ${transfer.secret}`) {
       this.logger.warn(
-        `Incorrect authorization header ${authorization} vs ${`Bearer ${transfer.secret}`}`
+        `Incorrect ${this.config.authorizationHeader} header ${authorization} vs ${`Bearer ${transfer.secret}`}`
       );
       throw new HttpException(
         `Incorrect authorization header`,
@@ -615,7 +616,8 @@ export class TransferService {
         request.rawBody,
         request.query,
         response,
-        backendConfig.authorization !== undefined
+        backendConfig.authorization !== undefined &&
+          this.config.authorizationHeader.toLowerCase() === "authorization"
       );
       const logEntry: LogEntry = {
         date: new Date(),
@@ -666,7 +668,7 @@ export class TransferService {
     delete headers["host"];
     delete headers["cookie"];
     if (removeAuth) {
-      delete headers["authorization"];
+      delete headers[this.config.authorizationHeader.toLowerCase()];
     }
     try {
       this.logger.log(
