@@ -131,4 +131,9 @@ export class RootConfig {
   @Type(() => RuntimeConfig)
   @IsDefined()
   public readonly runtime!: RuntimeConfig;
+
+  @Description("Authorization header used in provider proxy")
+  @IsOptional()
+  @IsString()
+  public readonly authorizationHeader: string = "Authorization";
 }

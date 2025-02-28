@@ -108,15 +108,22 @@ const interactionChange = () => {
   if (interaction.value === "direct") {
     if (transfer.value) {
       url.value = transfer.value.dataAddress?.["dspace:endpoint"];
-      const authorization = transfer.value.dataAddress?.[
-        "dspace:endpointProperties"
-      ]?.find((p) => p["dspace:name"] === "Authorization");
-      if (authorization) {
-        setHeader("Authorization", authorization["dspace:value"]);
-      }
+      transfer.value.dataAddress?.["dspace:endpointProperties"]?.forEach(
+        (p) => {
+          setHeader(p["dspace:name"], p["dspace:value"]);
+        }
+      );
     }
   } else {
-    removeHeader("Authorization");
+    if (transfer.value) {
+      transfer.value.dataAddress?.["dspace:endpointProperties"]?.forEach(
+        (p) => {
+          removeHeader(p["dspace:name"]);
+        }
+      );
+    } else {
+      removeHeader("Authorization");
+    }
   }
 };
 

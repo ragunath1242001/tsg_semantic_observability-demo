@@ -1407,11 +1407,6 @@ paths:
           description: Transfer identifier
           schema:
             type: string
-        - name: Authorization
-          required: true
-          in: header
-          schema:
-            type: string
         - name: path
           required: true
           in: path
@@ -1432,11 +1427,6 @@ paths:
           required: true
           in: path
           description: Transfer identifier
-          schema:
-            type: string
-        - name: Authorization
-          required: true
-          in: header
           schema:
             type: string
         - name: path
@@ -1460,11 +1450,6 @@ paths:
           description: Transfer identifier
           schema:
             type: string
-        - name: Authorization
-          required: true
-          in: header
-          schema:
-            type: string
         - name: path
           required: true
           in: path
@@ -1484,11 +1469,6 @@ paths:
           required: true
           in: path
           description: Transfer identifier
-          schema:
-            type: string
-        - name: Authorization
-          required: true
-          in: header
           schema:
             type: string
         - name: path
@@ -1512,11 +1492,6 @@ paths:
           description: Transfer identifier
           schema:
             type: string
-        - name: Authorization
-          required: true
-          in: header
-          schema:
-            type: string
         - name: path
           required: true
           in: path
@@ -1536,11 +1511,6 @@ paths:
           required: true
           in: path
           description: Transfer identifier
-          schema:
-            type: string
-        - name: Authorization
-          required: true
-          in: header
           schema:
             type: string
         - name: path
@@ -1564,11 +1534,6 @@ paths:
           description: Transfer identifier
           schema:
             type: string
-        - name: Authorization
-          required: true
-          in: header
-          schema:
-            type: string
         - name: path
           required: true
           in: path
@@ -1588,11 +1553,6 @@ paths:
           required: true
           in: path
           description: Transfer identifier
-          schema:
-            type: string
-        - name: Authorization
-          required: true
-          in: header
           schema:
             type: string
         - name: path

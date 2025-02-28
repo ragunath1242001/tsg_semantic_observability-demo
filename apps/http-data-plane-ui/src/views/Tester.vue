@@ -88,12 +88,9 @@ onMounted(async () => {
   transfer.value = useTransferStore().transfer;
   if (transfer.value) {
     url.value = transfer.value.dataAddress?.["dspace:endpoint"];
-    const authorization = transfer.value.dataAddress?.[
-      "dspace:endpointProperties"
-    ]?.find((p) => p["dspace:name"] === "Authorization");
-    if (authorization) {
-      setHeader("Authorization", authorization["dspace:value"]);
-    }
+    transfer.value.dataAddress?.["dspace:endpointProperties"]?.forEach((p) => {
+      setHeader(p["dspace:name"], p["dspace:value"]);
+    });
   } else if (route.params.id) {
     try {
       const transferResponse = await http.get(
@@ -101,12 +98,11 @@ onMounted(async () => {
       );
       transfer.value = transferResponse.data;
       url.value = transfer.value.dataAddress?.["dspace:endpoint"];
-      const authorization = transfer.value.dataAddress?.[
-        "dspace:endpointProperties"
-      ]?.find((p) => p["dspace:name"] === "Authorization");
-      if (authorization) {
-        setHeader("Authorization", authorization["dspace:value"]);
-      }
+      transfer.value.dataAddress?.["dspace:endpointProperties"]?.forEach(
+        (p) => {
+          setHeader(p["dspace:name"], p["dspace:value"]);
+        }
+      );
     } catch (error) {
       toast.add(
         toastError({
