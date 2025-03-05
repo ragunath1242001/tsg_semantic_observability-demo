@@ -14,7 +14,14 @@ export class PaginationOptionsDto {
     page: 1,
     per_page: Number.MAX_SAFE_INTEGER,
     skip: 0,
-    take: Number.MAX_SAFE_INTEGER
+    take: Number.MAX_SAFE_INTEGER,
+    typeOrm: {
+      take: Number.MAX_SAFE_INTEGER,
+      skip: 0,
+      order: {
+        modifiedDate: Order.DESC
+      }
+    }
   };
 
   @ApiPropertyOptional({ enum: Order, default: Order.DESC })
@@ -58,4 +65,30 @@ export class PaginationOptionsDto {
   get take() {
     return this.per_page;
   }
+
+  @Exclude()
+  get typeOrm(): {
+    take: number;
+    skip: number;
+    order: OrderBy;
+  } {
+    return {
+      take: this.take,
+      skip: this.skip,
+      order: dotToObject(this.order_by.split("."), this.order)
+    };
+  }
+}
+
+type OrderBy = { [key: string]: Order | OrderBy };
+
+function dotToObject(parts: string[], value: Order): OrderBy {
+  if (parts.length === 1) {
+    return {
+      [parts[0]]: value
+    };
+  }
+  return {
+    [parts[0]]: dotToObject(parts.slice(1), value)
+  };
 }

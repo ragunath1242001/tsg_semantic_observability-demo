@@ -562,10 +562,71 @@ paths:
       description: List all credentials, that the current user is allowed to view, in
         this wallet
       operationId: CredentialsManagementController_getCredentials
-      parameters: []
+      parameters:
+        - name: order
+          required: false
+          in: query
+          schema:
+            default: DESC
+            type: string
+            enum:
+              - ASC
+              - DESC
+        - name: order_by
+          required: false
+          in: query
+          schema:
+            default: modifiedDate
+            type: string
+        - name: page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            default: 1
+            type: number
+        - name: per_page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            default: 100
+            type: number
       responses:
         "200":
           description: ""
+          headers:
+            x-page:
+              description: Index of the current page (starting at 1)
+              schema:
+                type: integer
+            x-prev-page:
+              description: Index of the previous page
+              schema:
+                type: integer
+              required: false
+            x-next-page:
+              description: Index of the next page
+              schema:
+                type: integer
+              required: false
+            x-per-page:
+              description: Number of items per page
+              schema:
+                type: integer
+            x-total-pages:
+              description: Total number of pages
+              schema:
+                type: integer
+            x-total:
+              description: Total number of items
+              schema:
+                type: integer
+            link:
+              description: Web Linking to other pages of this resource
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -953,10 +1014,71 @@ paths:
     get:
       description: Retrieves all keys registered for this wallet
       operationId: KeysManagementController_getKeys
-      parameters: []
+      parameters:
+        - name: order
+          required: false
+          in: query
+          schema:
+            default: DESC
+            type: string
+            enum:
+              - ASC
+              - DESC
+        - name: order_by
+          required: false
+          in: query
+          schema:
+            default: modifiedDate
+            type: string
+        - name: page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            default: 1
+            type: number
+        - name: per_page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            default: 100
+            type: number
       responses:
         "200":
           description: ""
+          headers:
+            x-page:
+              description: Index of the current page (starting at 1)
+              schema:
+                type: integer
+            x-prev-page:
+              description: Index of the previous page
+              schema:
+                type: integer
+              required: false
+            x-next-page:
+              description: Index of the next page
+              schema:
+                type: integer
+              required: false
+            x-per-page:
+              description: Number of items per page
+              schema:
+                type: integer
+            x-total-pages:
+              description: Total number of pages
+              schema:
+                type: integer
+            x-total:
+              description: Total number of items
+              schema:
+                type: integer
+            link:
+              description: Web Linking to other pages of this resource
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -1225,10 +1347,71 @@ paths:
     get:
       description: Retrieves the currently registered DID services for this wallet
       operationId: DIDManagementController_getServices
-      parameters: []
+      parameters:
+        - name: order
+          required: false
+          in: query
+          schema:
+            default: DESC
+            type: string
+            enum:
+              - ASC
+              - DESC
+        - name: order_by
+          required: false
+          in: query
+          schema:
+            default: modifiedDate
+            type: string
+        - name: page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            default: 1
+            type: number
+        - name: per_page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            default: 100
+            type: number
       responses:
         "200":
           description: ""
+          headers:
+            x-page:
+              description: Index of the current page (starting at 1)
+              schema:
+                type: integer
+            x-prev-page:
+              description: Index of the previous page
+              schema:
+                type: integer
+              required: false
+            x-next-page:
+              description: Index of the next page
+              schema:
+                type: integer
+              required: false
+            x-per-page:
+              description: Number of items per page
+              schema:
+                type: integer
+            x-total-pages:
+              description: Total number of pages
+              schema:
+                type: integer
+            x-total:
+              description: Total number of items
+              schema:
+                type: integer
+            link:
+              description: Web Linking to other pages of this resource
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -2808,17 +2991,17 @@ components:
           type: number
           example: 0
           description: Optional status list index
-        created:
+        createdDate:
           format: date-time
           type: string
           example: 2023-10-01T00:00:00Z
           description: Creation timestamp
-        modified:
+        modifiedDate:
           format: date-time
           type: string
           example: 2023-10-02T00:00:00Z
           description: Modification timestamp
-        deleted:
+        deletedDate:
           format: date-time
           type: string
           example: 2023-10-03T00:00:00Z
@@ -2829,8 +3012,8 @@ components:
         - credential
         - selfIssued
         - revoked
-        - created
-        - modified
+        - createdDate
+        - modifiedDate
     CredentialConfigDto:
       type: object
       properties:
@@ -2997,11 +3180,11 @@ components:
             n: 0vx7agoebGcQSuuPiLJXZptN9nndrmyq0ctuV5m
           allOf:
             - $ref: "#/components/schemas/JsonWebKeyDto"
-        created:
+        createdDate:
           format: date-time
           type: string
           example: 2025-02-21T10:26:42.206Z
-        modified:
+        modifiedDate:
           format: date-time
           type: string
           example: 2025-02-21T10:26:42.206Z
@@ -3010,8 +3193,8 @@ components:
         - type
         - default
         - publicKey
-        - created
-        - modified
+        - createdDate
+        - modifiedDate
     KeyConfigDto:
       type: object
       properties:
@@ -3309,15 +3492,15 @@ components:
             properties:
               name:
                 type: string
-        created:
+        createdDate:
           format: date-time
           type: string
           example: 2023-10-01T12:00:00Z
-        modified:
+        modifiedDate:
           format: date-time
           type: string
           example: 2023-10-05T15:30:00Z
-        deleted:
+        deletedDate:
           format: date-time
           type: string
           example: 2023-10-10T08:45:00Z
@@ -3325,8 +3508,8 @@ components:
         - id
         - credentialType
         - issuable
-        - created
-        - modified
+        - createdDate
+        - modifiedDate
     JsonLdContextConfigDto:
       type: object
       properties:
@@ -3859,7 +4042,7 @@ components:
         id:
           type: number
           example: 1
-        created:
+        createdDate:
           format: date-time
           type: string
           example: 2023-10-01T00:00:00Z
@@ -3886,7 +4069,7 @@ components:
             - $ref: "#/components/schemas/CredentialSubject"
       required:
         - id
-        - created
+        - createdDate
         - preAuthorizedCode
         - credentialType
         - revoked

@@ -1,4 +1,4 @@
-interface ErrorContext {
+export interface ErrorContext {
   error: any;
   summary: string;
   defaultMessage?: string;

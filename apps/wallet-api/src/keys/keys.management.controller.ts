@@ -27,7 +27,14 @@ import {
   ApiConflictResponseDefault,
   ApiNotFoundResponseDefault
 } from "@tsg-dsp/common-dtos";
-import { Roles, validationPipe } from "@tsg-dsp/common-api";
+import {
+  Paginated,
+  PaginationOptionsDto,
+  PaginationQuery,
+  Roles,
+  UsePagination,
+  validationPipe
+} from "@tsg-dsp/common-api";
 
 @Controller("management/keys")
 @ApiTags("Management Keys")
@@ -37,6 +44,7 @@ export class KeysManagementController {
   constructor(private readonly keyService: KeysService) {}
 
   @Get()
+  @UsePagination()
   @ApiOperation({
     summary: "Retrieve keys",
     description: "Retrieves all keys registered for this wallet"
@@ -44,18 +52,10 @@ export class KeysManagementController {
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({ type: [KeyInfoDto] })
   @ApiForbiddenResponseDefault()
-  async getKeys(): Promise<KeyInfo[]> {
-    const keys = await this.keyService.getKeys();
-    return keys.map((k) => {
-      return {
-        id: k.id,
-        type: k.type,
-        default: k.default,
-        publicKey: k.publicKey,
-        created: k.created,
-        modified: k.modified
-      };
-    });
+  async getKeys(
+    @PaginationQuery() paginationOptions: PaginationOptionsDto
+  ): Promise<Paginated<KeyInfo[]>> {
+    return await this.keyService.getPaginatedKeys(paginationOptions);
   }
 
   @Post()
@@ -78,8 +78,8 @@ export class KeysManagementController {
       type: key.type,
       default: key.default,
       publicKey: key.publicKey,
-      created: key.created,
-      modified: key.modified
+      createdDate: key.createdDate,
+      modifiedDate: key.modifiedDate
     };
   }
 
@@ -100,8 +100,8 @@ export class KeysManagementController {
       type: key.type,
       default: key.default,
       publicKey: key.publicKey,
-      created: key.created,
-      modified: key.modified
+      createdDate: key.createdDate,
+      modifiedDate: key.modifiedDate
     };
   }
 

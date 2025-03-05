@@ -9,10 +9,9 @@ const config: Config.InitialOptions = {
       }
     ]
   },
-  verbose: true,
-  transformIgnorePatterns: ["node_modules/(?!@tsg-dsp)"],
   testTimeout: 30000,
   testEnvironment: "node",
+  extensionsToTreatAsEsm: [".ts"],
   testRegex: "/.*\\.(test|spec)?\\.(ts|tsx)$",
   moduleNameMapper: {
     "^(\\.{1,2}/.*)\\.js$": "$1"
@@ -21,11 +20,15 @@ const config: Config.InitialOptions = {
   collectCoverageFrom: [
     "src/**/*.ts",
     "!src/**/*.guard.ts",
-    "!src/**/*.schemas.ts",
     "!src/**/*.strategy.ts",
     "!src/**/*.controller.ts",
     "!src/**/*.module.ts",
-    "!node_modules/**"
+    "!src/**/*.schemas.ts",
+    "!src/migrations/**",
+    "!src/migrations.executor.ts",
+    "!src/generate-oas.ts",
+    "!node_modules/**",
+    "src/did/**/*.strategy.ts"
   ]
 };
 export default config;

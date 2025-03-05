@@ -1,7 +1,7 @@
 import { HttpStatus, Injectable } from "@nestjs/common";
 import { Repository } from "typeorm";
 import { OauthUser } from "../model/user.dao.js";
-import { AppError } from "@tsg-dsp/common-api";
+import { AppError, PaginationOptionsDto } from "@tsg-dsp/common-api";
 import { InjectRepository } from "@nestjs/typeorm";
 import { compare, hash } from "bcrypt";
 import { RootConfig } from "../config.js";
@@ -30,8 +30,14 @@ export class UsersService {
     }
   }
 
-  async getUsers() {
-    return await this.userRepository.find();
+  async getUsers(paginationOptions: PaginationOptionsDto) {
+    const [data, total] = await this.userRepository.findAndCount(
+      paginationOptions.typeOrm
+    );
+    return {
+      data,
+      total
+    };
   }
 
   async getUser(userId: number): Promise<OauthUser> {

@@ -54,11 +54,11 @@ export class JSONLDContextDto implements JSONLDContext {
   schema?: Record<string, any>;
 
   @ApiProperty({ example: "2023-10-01T12:00:00Z" })
-  created!: Date;
+  createdDate!: Date;
 
   @ApiProperty({ example: "2023-10-05T15:30:00Z" })
-  modified!: Date;
+  modifiedDate!: Date;
 
   @ApiPropertyOptional({ example: "2023-10-10T08:45:00Z" })
-  deleted!: Date;
+  deletedDate!: Date;
 }

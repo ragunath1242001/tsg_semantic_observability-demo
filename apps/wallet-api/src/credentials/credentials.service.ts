@@ -20,6 +20,7 @@ import { ServiceEndpoint } from "did-resolver";
 import { DidResolverService } from "../did/did.resolver.service.js";
 import { Bitstring } from "@digitalbazaar/bitstring";
 import { randomInt } from "crypto";
+import { PaginationOptionsDto } from "@tsg-dsp/common-api";
 
 @Injectable()
 export class CredentialsService {
@@ -91,6 +92,23 @@ export class CredentialsService {
         throw err;
       }
     }
+  }
+
+  async getPaginatedCredentials(
+    paginationOptions: PaginationOptionsDto,
+    targetDid?: string
+  ) {
+    const [credentials, itemCount] =
+      await this.credentialRepository.findAndCount({
+        where: {
+          targetDid: targetDid
+        },
+        ...paginationOptions.typeOrm
+      });
+    return {
+      data: credentials,
+      total: itemCount
+    };
   }
 
   async getCredentials(targetDid?: string): Promise<CredentialDao[]> {

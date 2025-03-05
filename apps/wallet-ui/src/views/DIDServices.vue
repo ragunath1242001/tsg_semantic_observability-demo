@@ -6,6 +6,8 @@ import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
 import http from "@tsg-dsp/common-ui/utils/http";
 import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
+import { setupPagination } from "@tsg-dsp/common-ui/utils/pagination";
+import { formatRelative } from "@tsg-dsp/common-ui/utils/date";
 
 interface DIDService {
   id: string;
@@ -18,27 +20,21 @@ const confirm = useConfirm();
 
 const userStore = useUserStore();
 
-const services = ref<DIDService[]>([]);
 const serviceForm = ref<DIDService>({
   id: `${userStore.user?.didId}#`,
   type: "",
   serviceEndpoint: ""
 });
 
-const loadServices = async () => {
-  try {
-    const response = await http<DIDService[]>("management/did/services");
-    services.value = response.data;
-  } catch (error) {
-    toast.add(
-      toastError({
-        error,
-        summary: "Could not load DID services",
-        defaultMessage: `Error in fetching registered DID services`
-      })
-    );
+const { data, loading, total, perPage, load } = setupPagination({
+  fetch: async (params) => {
+    return http<DIDService[]>("management/did/services", { params });
+  },
+  errorContext: {
+    summary: "Could not load DID services",
+    defaultMessage: `Error in fetching registered DID services`
   }
-};
+});
 
 const deleteService = async (serviceId: string) => {
   confirm.require({
@@ -55,7 +51,7 @@ const deleteService = async (serviceId: string) => {
         await http.delete(
           `management/did/services/${encodeURIComponent(serviceId)}`
         );
-        await loadServices();
+        await load();
         toast.add({
           severity: "success",
           summary: "Success",
@@ -78,7 +74,7 @@ const deleteService = async (serviceId: string) => {
 const addService = async () => {
   try {
     await http.post("management/did/services", serviceForm.value);
-    await loadServices();
+    await load();
     toast.add({
       severity: "success",
       summary: "Success",
@@ -102,7 +98,7 @@ const addService = async () => {
 };
 
 onMounted(async () => {
-  await loadServices();
+  await load();
 });
 </script>
 
@@ -125,17 +121,36 @@ onMounted(async () => {
       </template>
       <template #content>
         <DataTable
-          :value="services"
-          sort-field="id"
-          :sort-order="1"
+          :value="data"
+          lazy
+          :loading="loading"
           paginator
-          :rows="10">
-          <Column field="id" class="break-all" header="ID" />
-          <Column field="type" header="Type" />
+          :rows-per-page-options="[5, 10, 25, 50]"
+          :total-records="total"
+          :first="0"
+          :rows="perPage"
+          data-key="id"
+          sort-field="createdDate"
+          :sort-order="1"
+          @page="load"
+          @sort="load">
+          <Column field="id" class="break-all" header="ID" sortable />
+          <Column field="type" header="Type" sortable />
           <Column
             field="serviceEndpoint"
             class="break-all"
-            header="Service Endpoint" />
+            header="Service Endpoint"
+            sortable />
+          <Column field="createdDate" header="Created" sortable>
+            <template #body="props">
+              {{ formatRelative(props.data.createdDate) }}
+            </template>
+          </Column>
+          <Column field="updatedDate" header="Updated" sortable>
+            <template #body="props">
+              {{ formatRelative(props.data.updatedDate) }}
+            </template>
+          </Column>
           <Column field="actions" header="Actions">
             <template #body="props">
               <Button

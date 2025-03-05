@@ -16,12 +16,12 @@ export const VP = createParamDecorator(
         Logger.warn("No VP found in request", "VP-Decorator");
         return undefined;
       }
-      if (request.user[0]! instanceof VerifiablePresentation) {
-        Logger.warn("No VP found in request user", "VP-Decorator");
-        Logger.debug(request.user, "VP-Decorator");
-        return undefined;
+      if (request.user[0] instanceof VerifiablePresentation) {
+        return request.user[0];
       }
-      return request.user[0];
+      Logger.warn("No VP found in request user", "VP-Decorator");
+      Logger.debug(request.user, "VP-Decorator");
+      return undefined;
     } catch (err) {
       Logger.error("Error in retrieving VP", err, "VP-Decorator");
       throw new DSPError(
@@ -42,14 +42,14 @@ export const VPId = createParamDecorator(
         Logger.warn("No VP found in request", "VPId-Decorator");
         return undefined;
       }
-      if (request.user[0]! instanceof VerifiablePresentation) {
-        Logger.warn("No VP found in request user", "VPId-Decorator");
-        Logger.debug(request.user, "VPId-Decorator");
-        return undefined;
+      if (request.user[0] instanceof VerifiablePresentation) {
+        return toArray(
+          toArray(request.user[0]?.verifiableCredential)[0]?.credentialSubject
+        )[0]?.id;
       }
-      return toArray(
-        toArray(request.user[0]?.verifiableCredential)[0]?.credentialSubject
-      )[0]?.id;
+      Logger.warn("No VP found in request user", "VPId-Decorator");
+      Logger.debug(request.user, "VPId-Decorator");
+      return undefined;
     } catch (err) {
       Logger.error("Error in retrieving VP ID", err, "VPId-Decorator");
       throw new DSPError(

@@ -2,7 +2,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { UsersService } from "./users.service.js";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { OauthUser } from "../model/user.dao.js";
-import { TypeOrmTestHelper } from "@tsg-dsp/common-api";
+import { PaginationOptionsDto, TypeOrmTestHelper } from "@tsg-dsp/common-api";
 import { RootConfig } from "../config.js";
 import { plainToInstance } from "class-transformer";
 
@@ -54,8 +54,8 @@ describe("UsersService Tests", () => {
         roles: ["user"],
         grants: ["authorization_code"]
       });
-      const users = await service.getUsers();
-      expect(users.length).toBeGreaterThanOrEqual(1);
+      const users = await service.getUsers(PaginationOptionsDto.NO_PAGINATION);
+      expect(users.total).toBeGreaterThanOrEqual(1);
     });
 
     it("should update an existing user", async () => {

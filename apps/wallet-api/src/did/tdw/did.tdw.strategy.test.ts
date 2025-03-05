@@ -135,9 +135,9 @@ describe("DID Tdw Service", () => {
           id: 1,
           scid: res.log[0][3].scid!,
           logEntry: res.log[0],
-          created: new Date(),
-          modified: new Date(),
-          deleted: new Date()
+          createdDate: new Date(),
+          modifiedDate: new Date(),
+          deletedDate: new Date()
         }
       ];
       jest.spyOn(didLogsRepository, "find").mockResolvedValue(didLogs);

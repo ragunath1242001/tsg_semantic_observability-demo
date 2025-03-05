@@ -4,14 +4,14 @@ import { injectStrict } from "../utils/injectTyped";
 import { AxiosKey } from "../utils/symbols";
 import { useToast } from "primevue/usetoast";
 import { ClientDto } from "@tsg-dsp/sso-bridge-dtos";
+import { setupPagination } from "@tsg-dsp/common-ui/utils/pagination";
+import { formatRelative } from "@tsg-dsp/common-ui/utils/date";
 
 const http = injectStrict(AxiosKey);
 
 const toast = useToast();
 
 const submitted = ref(false);
-
-const clients = ref<ClientDto[]>([]);
 
 const clientObj = {
   id: undefined,
@@ -117,7 +117,7 @@ const saveClient = async () => {
     }
   }
   client.value = clientObj;
-  await getClients();
+  await load();
 };
 
 const deleteClient = async () => {
@@ -130,7 +130,7 @@ const deleteClient = async () => {
       life: 3000
     });
     deleteClientDialog.value = false;
-    await getClients();
+    await load();
   } catch (_) {
     toast.add({
       severity: "error",
@@ -145,22 +145,18 @@ const openDeleteClientDialog = (data) => {
   deleteClientDialog.value = true;
 };
 
-const getClients = async () => {
-  try {
-    const { data } = await http.get("/clients");
-    clients.value = data;
-  } catch (_) {
-    toast.add({
-      severity: "error",
-      summary: "Error",
-      detail: "Clients not fetched"
-    });
+const { data, loading, total, perPage, load } = setupPagination({
+  fetch: async (params) => {
+    return http.get<ClientDto[]>("/clients", { params });
+  },
+  errorContext: {
+    summary: "Could not load clients",
+    defaultMessage: `Error in fetching clients`
   }
-};
+});
 
 onMounted(async () => {
-  await getClients();
-  console.log("clients", clients.value);
+  await load();
 });
 </script>
 <template>
@@ -178,17 +174,34 @@ onMounted(async () => {
           </template>
         </Toolbar>
         <DataTable
-          :value="clients"
-          sort-field="id"
-          :sort-order="1"
+          :value="data"
+          lazy
+          :loading="loading"
           paginator
-          :rows="10">
+          :rows-per-page-options="[5, 10, 25, 50]"
+          :total-records="total"
+          :first="0"
+          :rows="perPage"
+          data-key="id"
+          sort-field="createdDate"
+          :sort-order="1"
+          @page="load"
+          @sort="load">
           <template #empty>No clients added yet.</template>
           <Column field="name" header="Name" />
           <Column field="secretName" header="Secret Name" />
           <Column field="description" header="Description" />
           <Column field="clientId" header="Client ID" />
-          <Column field="clientSecret" header="Client Secret" />
+          <Column field="clientSecret" header="Client Secret">
+            <template #body="slotProps">
+              <Inplace>
+                <template #display> Show secret </template>
+                <template #content>
+                  <p class="m-0">{{ slotProps.data.clientSecret }}</p>
+                </template>
+              </Inplace>
+            </template>
+          </Column>
           <Column field="roles" class="break-all" header="Roles">
             <template #body="slotProps">
               {{ console.log(slotProps) }}
@@ -205,6 +218,11 @@ onMounted(async () => {
             <template #body="slotProps">
               {{ console.log(slotProps) }}
               <span>{{ slotProps.data.redirectUris.toString() }}</span>
+            </template>
+          </Column>
+          <Column field="createdDate" header="Created" sortable>
+            <template #body="props">
+              {{ formatRelative(props.data.createdDate) }}
             </template>
           </Column>
           <Column field="actions" header="Actions">

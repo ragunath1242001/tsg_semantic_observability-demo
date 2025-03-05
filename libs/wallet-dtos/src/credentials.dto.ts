@@ -16,10 +16,10 @@ export class KeyInfo {
   publicKey!: JWK;
 
   @IsDate()
-  created!: Date;
+  createdDate!: Date;
 
   @IsDate()
-  modified!: Date;
+  modifiedDate!: Date;
 }
 
 export interface TrustAnchorConfig {

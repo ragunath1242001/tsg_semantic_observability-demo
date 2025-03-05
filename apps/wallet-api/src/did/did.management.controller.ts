@@ -30,7 +30,14 @@ import {
   ServiceDto
 } from "@tsg-dsp/common-dtos";
 import { DidResolverService } from "./did.resolver.service.js";
-import { Roles, validationPipe } from "@tsg-dsp/common-api";
+import {
+  Paginated,
+  PaginationOptionsDto,
+  PaginationQuery,
+  Roles,
+  UsePagination,
+  validationPipe
+} from "@tsg-dsp/common-api";
 
 @Controller("management/did")
 @Roles(AppRole.VIEW_DID)
@@ -70,6 +77,7 @@ export class DIDManagementController {
   }
 
   @Get("services")
+  @UsePagination()
   @ApiOperation({
     summary: "Retrieve DID services",
     description:
@@ -78,8 +86,10 @@ export class DIDManagementController {
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({ type: [ServiceDto] })
   @ApiForbiddenResponseDefault()
-  async getServices(): Promise<Array<DIDService>> {
-    return await this.didService.getServices();
+  async getServices(
+    @PaginationQuery() paginationOptions: PaginationOptionsDto
+  ): Promise<Paginated<DIDService[]>> {
+    return await this.didService.getPaginatedServices(paginationOptions);
   }
 
   @Post("services")

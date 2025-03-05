@@ -1,6 +1,6 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { ClientsService } from "./clients.service.js";
-import { TypeOrmTestHelper } from "@tsg-dsp/common-api";
+import { PaginationOptionsDto, TypeOrmTestHelper } from "@tsg-dsp/common-api";
 import { OauthClient } from "../model/client.dao.js";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { plainToInstance } from "class-transformer";
@@ -63,11 +63,13 @@ describe("ClientsService", () => {
   });
 
   it("should retrieve clients (including the recently created one)", async () => {
-    const clients = await service.getClients();
-    expect(Array.isArray(clients)).toBeTruthy();
-    expect(clients.length).toBeGreaterThan(0);
+    const clients = await service.getClients(
+      PaginationOptionsDto.NO_PAGINATION
+    );
+    expect(Array.isArray(clients.data)).toBeTruthy();
+    expect(clients.total).toBeGreaterThan(0);
     // Verify that at least one client has the name "Test Client"
-    const found = clients.find((client) => client.name === "Test Client");
+    const found = clients.data.find((client) => client.name === "Test Client");
     expect(found).toBeDefined();
   });
 

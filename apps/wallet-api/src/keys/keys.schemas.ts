@@ -29,10 +29,10 @@ export class KeyInfoDto implements KeyInfo {
   publicKey!: JWK;
 
   @ApiProperty({ example: "2025-02-21T10:26:42.206Z" })
-  created!: Date;
+  createdDate!: Date;
 
   @ApiProperty({ example: "2025-02-21T10:26:42.206Z" })
-  modified!: Date;
+  modifiedDate!: Date;
 }
 
 export class KeyConfigDto implements InitKeyConfig {

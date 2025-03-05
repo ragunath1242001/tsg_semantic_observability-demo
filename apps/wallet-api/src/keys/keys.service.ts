@@ -13,6 +13,8 @@ import { AppError } from "../utils/error.js";
 import { InjectRepository } from "@nestjs/typeorm";
 import { DidService } from "../did/did.service.js";
 import { JsonWebKey } from "crypto";
+import { Paginated, PaginationOptionsDto } from "@tsg-dsp/common-api";
+import { KeyInfo } from "@tsg-dsp/wallet-dtos";
 
 @Injectable()
 export class KeysService {
@@ -56,7 +58,27 @@ export class KeysService {
     }
   }
 
-  async getKeys(): Promise<KeyMaterialDao[]> {
+  async getPaginatedKeys(
+    paginationOptions: PaginationOptionsDto
+  ): Promise<Paginated<KeyInfo[]>> {
+    const [keys, itemCount] = await this.keyRepository.findAndCount({
+      select: [
+        "id",
+        "type",
+        "default",
+        "publicKey",
+        "createdDate",
+        "modifiedDate"
+      ],
+      ...paginationOptions.typeOrm
+    });
+    return {
+      data: keys,
+      total: itemCount
+    };
+  }
+
+  private async getKeys(): Promise<KeyMaterialDao[]> {
     return this.keyRepository.find({});
   }
 

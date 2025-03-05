@@ -1,5 +1,26 @@
-import { Query } from "@nestjs/common";
-import { strictValidationPipe } from "../validation.pipe.js";
+import { HttpStatus, PipeTransform, Query } from "@nestjs/common";
+import { AppError } from "../error.js";
+import { PaginationOptionsDto } from "./pagination.options.dto.js";
+import { plainToInstance } from "class-transformer";
+import { validateSync } from "class-validator";
+
+const paginationValidationPipe: PipeTransform<any> = {
+  transform(value: any): PaginationOptionsDto {
+    const transform = plainToInstance(PaginationOptionsDto, value);
+
+    const errors = validateSync(transform, {});
+    if (errors.length) {
+      throw new AppError(
+        {
+          message: errors.join(", "),
+          errors: errors
+        },
+        HttpStatus.BAD_REQUEST
+      );
+    }
+    return transform;
+  }
+};
 
 export function PaginationQuery(): ParameterDecorator {
   return function (
@@ -7,6 +28,6 @@ export function PaginationQuery(): ParameterDecorator {
     propertyKey: string | symbol | undefined,
     parameterIndex: number
   ) {
-    Query(strictValidationPipe)(target, propertyKey, parameterIndex);
+    Query(paginationValidationPipe)(target, propertyKey, parameterIndex);
   };
 }

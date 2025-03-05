@@ -386,14 +386,14 @@ onMounted(async () => {
           v-model:expanded-rows="expandedRows"
           data-key="id"
           :value="offers"
-          sort-field="created"
+          sort-field="createdDate"
           :sort-order="-1"
           paginator
           :rows="10">
           <Column expander style="width: 5rem" />
-          <Column field="created" header="Created">
+          <Column field="createdDate" header="Created">
             <template #body="props">
-              {{ formatDate(props.data.created) }}
+              {{ formatDate(props.data.createdDate) }}
             </template>
           </Column>
           <Column field="holderId" header="Holder ID" />
