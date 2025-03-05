@@ -1,6 +1,6 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from "@nestjs/common";
 import { RuntimeConfig } from "../../config.js";
-import { AppError } from "../../utils/error.js";
+import { AppError } from "@tsg-dsp/common-api";
 import { ClientInfo, AppRole } from "@tsg-dsp/wallet-dtos";
 import {
   ComplianceRequest,

@@ -1,4 +1,5 @@
 export * from "./dcp.dto.js";
+export * from "./presentation.status.dto.js";
 export * from "./presentationdefinition.dto.js";
 export * from "./signatures.dto.js";
 export * from "./dataplane.dto.js";

@@ -3,11 +3,8 @@ import { DidStrategy } from "../did.service.js";
 import { DidServiceConfig, RootConfig } from "../../config.js";
 import { DIDDocument, Service, VerificationMethod } from "did-resolver";
 import { KeyMaterialDao } from "../../model/credentials.dao.js";
-import {
-  createServices,
-  createVerificationMethods,
-  VERIFICATION_METHOD_CONTEXT
-} from "../../utils/did.js";
+import { createServices, createVerificationMethods } from "../../utils/did.js";
+import { VERIFICATION_METHOD_CONTEXT } from "@tsg-dsp/common-signing-and-validation";
 
 export class DidWebStrategy implements DidStrategy {
   private readonly logger = new Logger(this.constructor.name);

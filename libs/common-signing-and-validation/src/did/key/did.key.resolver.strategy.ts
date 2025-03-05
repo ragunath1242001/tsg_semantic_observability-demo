@@ -1,8 +1,8 @@
 import { DIDDocument } from "did-resolver";
-import { AppError } from "../../utils/error.js";
+import { AppError } from "@tsg-dsp/common-api";
 import { HttpStatus, Logger } from "@nestjs/common";
-import { DidResolverStrategy } from "../did.resolver.service.js";
-import { hexToBase64url } from "../../utils/keys/typeconverter.js";
+import { DidResolverStrategy } from "../did.resolver.js";
+import { hexToBase64url } from "../../utils/typeconverter.js";
 import { JWK } from "jose";
 import { base58btc } from "multiformats/bases/base58";
 
@@ -30,6 +30,7 @@ export class DidKeyResolverStrategy implements DidResolverStrategy {
     const xHex = publicKey.slice(2, publicKey.length).toString();
     return {
       kty: "EC",
+      alg: "ES384",
       x: hexToBase64url(xHex),
       y: hexToBase64url(
         new elliptic.ec(curve.replace("-", "").toLowerCase()).curve

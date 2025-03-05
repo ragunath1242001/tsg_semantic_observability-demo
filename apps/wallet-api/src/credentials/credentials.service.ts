@@ -6,7 +6,7 @@ import {
   Proof,
   VerifiableCredential
 } from "@tsg-dsp/common-dsp";
-import { AppError } from "../utils/error.js";
+import { AppError } from "@tsg-dsp/common-api";
 import { InjectRepository } from "@nestjs/typeorm";
 import {
   CredentialDao,
@@ -17,9 +17,9 @@ import { DidService } from "../did/did.service.js";
 import axios from "axios";
 import { SignatureService } from "../keys/signature.service.js";
 import { ServiceEndpoint } from "did-resolver";
-import { DidResolverService } from "../did/did.resolver.service.js";
 import { Bitstring } from "@digitalbazaar/bitstring";
 import { randomInt } from "crypto";
+import { resolveDid } from "@tsg-dsp/common-signing-and-validation";
 import { PaginationOptionsDto } from "@tsg-dsp/common-api";
 
 @Injectable()
@@ -29,7 +29,6 @@ export class CredentialsService {
     @InjectRepository(CredentialDao)
     private readonly credentialRepository: Repository<CredentialDao>,
     private readonly didService: DidService,
-    private readonly didResolver: DidResolverService,
     private readonly signatureService: SignatureService,
     @InjectRepository(StatusListCredentialDao)
     private readonly statusListCredentialRepository: Repository<StatusListCredentialDao>
@@ -171,7 +170,7 @@ export class CredentialsService {
       }
       const didDocuments = (
         await Promise.allSettled(
-          issuerList.map((issuerId) => this.didResolver.resolve(issuerId))
+          issuerList.map((issuerId) => resolveDid(issuerId))
         )
       )
         .filter((result) => result.status === "fulfilled")

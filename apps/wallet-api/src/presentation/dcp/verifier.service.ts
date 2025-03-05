@@ -1,7 +1,7 @@
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { DCPSiopService } from "./siop.service.js";
-import { AppError, parseNetworkError } from "../../utils/error.js";
-import { DidResolverService } from "../../did/did.resolver.service.js";
+import { AppError, parseNetworkError } from "@tsg-dsp/common-api";
+
 import axios from "axios";
 import { PresentationService } from "../presentation.service.js";
 import { decodeJwt } from "jose";
@@ -12,15 +12,17 @@ import {
 } from "@tsg-dsp/common-dtos";
 import { toArray, VerifiablePresentation } from "@tsg-dsp/common-dsp";
 import { instanceToPlain, plainToInstance } from "class-transformer";
-import { SignatureService } from "../../keys/signature.service.js";
+import {
+  resolveDid,
+  validateField,
+  validateProof
+} from "@tsg-dsp/common-signing-and-validation";
 
 @Injectable()
 export class DCPVerifierService {
   constructor(
     private readonly siopService: DCPSiopService,
-    private readonly didResolver: DidResolverService,
-    private readonly presentationService: PresentationService,
-    private readonly signatureService: SignatureService
+    private readonly presentationService: PresentationService
   ) {}
   private readonly logger = new Logger(this.constructor.name);
 
@@ -51,9 +53,7 @@ export class DCPVerifierService {
       verifiedHolderIdToken.token as string
     );
 
-    const didDocument = await this.didResolver.resolve(
-      verifiedHolderIdToken.iss!
-    );
+    const didDocument = await resolveDid(verifiedHolderIdToken.iss!);
     const credentialService = didDocument.service?.find(
       (s) => s.type === "CredentialService"
     );
@@ -128,11 +128,7 @@ export class DCPVerifierService {
         } else {
           const parsedVp = plainToInstance(VerifiablePresentation, vp);
           const { proof, ...plainVp } = parsedVp;
-          if (proof)
-            await this.signatureService.validateProof(
-              plainVp,
-              toArray(proof)[0]
-            );
+          if (proof) await validateProof(plainVp, toArray(proof)[0]);
           presentations.push(parsedVp);
         }
       } catch (error) {
@@ -145,7 +141,7 @@ export class DCPVerifierService {
     for (const inputDescriptor of definition.input_descriptors) {
       for (const fieldDescriptor of inputDescriptor.constraints.fields ?? []) {
         const result = credentials.map((vc) =>
-          this.presentationService.validateField(fieldDescriptor, vc, false)
+          validateField(fieldDescriptor, vc, false)
         );
         if (result.every((r) => r.error)) {
           this.logger.debug(

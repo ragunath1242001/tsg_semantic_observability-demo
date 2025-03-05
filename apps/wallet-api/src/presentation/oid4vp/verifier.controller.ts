@@ -17,7 +17,7 @@ import {
 } from "@nestjs/common";
 import {
   ApiForbiddenResponseDefault,
-  AuthorizationRequest,
+  PresentationAuthorizationRequest,
   AuthorizationResponse
 } from "@tsg-dsp/common-dtos";
 import { OID4VPVerifierService } from "./verifier.service.js";
@@ -41,7 +41,7 @@ export class OID4VPVerifierController {
   @ApiForbiddenResponseDefault()
   async getAuthorizationRequest(
     @Param("id") id: string
-  ): Promise<AuthorizationRequest> {
+  ): Promise<PresentationAuthorizationRequest> {
     return this.oid4vpVerifierService.getAuthorizationRequest(id);
   }
 

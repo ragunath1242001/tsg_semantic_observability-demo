@@ -1,8 +1,9 @@
-import { compactVerify, importJWK } from "jose";
-import { encodedPublicKeyMultiBaseToJWK } from "../../../utils/keys/keyconverter.js";
-import { base58btcToBase64url } from "../../../utils/keys/typeconverter.js";
 import { deriveHash } from "./utils.js";
-import { canonizeAndHash } from "../../../utils/keys/canonization.js";
+
+import { compactVerify, importJWK } from "jose";
+import { encodedPublicKeyMultiBaseToJWK } from "../../../utils/keyconverter.js";
+import { base58btcToBase64url } from "../../../utils/typeconverter.js";
+import { canonizeAndHash } from "../../../utils/canonization.js";
 
 export const keyIsAuthorized = (
   verificationMethod: string,

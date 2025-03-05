@@ -10,7 +10,7 @@ import {
 // This needs to be separate since it's an enum. https://stackoverflow.com/questions/38553097/how-to-import-an-enum
 import { OfferGrants } from "@tsg-dsp/wallet-dtos";
 import axios from "axios";
-import { AppError } from "../utils/error.js";
+import { AppError } from "@tsg-dsp/common-api";
 import qs from "querystring";
 import { VerifiableCredential } from "@tsg-dsp/common-dsp";
 import { plainToInstance } from "class-transformer";
@@ -18,6 +18,7 @@ import { RootConfig } from "../config.js";
 import { CredentialDao } from "../model/credentials.dao.js";
 import { SignatureService } from "../keys/signature.service.js";
 import crypto from "crypto";
+import { validateJwt } from "@tsg-dsp/common-signing-and-validation";
 
 @Injectable()
 export class HolderService {
@@ -155,9 +156,7 @@ export class HolderService {
       this.logger.debug(
         `Received credential as string, attempting to parse as JWT`
       );
-      const payload = await this.signatureService.validateJwt(
-        credentialResponse.credential
-      );
+      const payload = await validateJwt(credentialResponse.credential);
       if (payload.vc) {
         this.logger.debug(
           `Received credential as JWT, parsing as VerifiableCredential`

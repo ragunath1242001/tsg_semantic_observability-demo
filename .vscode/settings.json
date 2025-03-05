@@ -42,6 +42,10 @@
       "rootPath": "libs/common-dsp"
     },
     {
+      "name": "common-signing-and-validation",
+      "rootPath": "libs/common-signing-and-validation"
+    },
+    {
       "name": "tck",
       "rootPath": "tools/tck-pipeline",
       "runMode": "on-demand"

@@ -294,7 +294,7 @@ export class DescriptorMap {
   path_nested?: DescriptorMap;
 }
 
-export class AuthorizationRequest {
+export class PresentationAuthorizationRequest {
   @ApiProperty({ example: "client123" })
   @IsString()
   client_id!: string;

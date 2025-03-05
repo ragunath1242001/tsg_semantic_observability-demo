@@ -1317,32 +1317,6 @@ paths:
       summary: Retrieve DID document
       tags: &a20
         - Management DID
-  /api/management/did/resolve/{didId}:
-    get:
-      description: Resolves the DID identifier from the path parameter into a DID Document
-      operationId: DIDManagementController_resolveDidDocument
-      parameters:
-        - name: didId
-          required: true
-          in: path
-          schema:
-            type: string
-      responses:
-        "200":
-          description: ""
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/DIDDocumentDto"
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorDto"
-      security: *a19
-      summary: Resolve DID document
-      tags: *a20
   /api/management/did/services:
     get:
       description: Retrieves the currently registered DID services for this wallet

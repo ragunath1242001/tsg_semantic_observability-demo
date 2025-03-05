@@ -1,7 +1,7 @@
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { AppError, ServerConfig } from "@tsg-dsp/common-api";
 import {
-  AuthorizationRequest,
+  PresentationAuthorizationRequest,
   AuthorizationResponse,
   PresentationDefinition
 } from "@tsg-dsp/common-dtos";
@@ -20,6 +20,22 @@ export class OID4VPVerifierService {
   ) {}
   private readonly logger = new Logger(this.constructor.name);
 
+  private async getAuthorizationRequestFromDB(
+    id: string
+  ): Promise<AuthorizationRequestDao> {
+    const authorizationRequest =
+      await this.authorizationRequestRepository.findOneBy({
+        identifier: id
+      });
+    if (!authorizationRequest) {
+      throw new AppError(
+        `Could not find the authorization request with id ${id}`,
+        HttpStatus.NOT_FOUND
+      ).andLog(this.logger, "warn");
+    }
+    return authorizationRequest;
+  }
+
   async createAuthorizationRequest(
     presentationDefinition: PresentationDefinition
   ): Promise<string> {
@@ -32,17 +48,10 @@ export class OID4VPVerifierService {
     return `oid4vp://?client_id=${this.serverConfig.publicAddress}&request_uri=${this.serverConfig.publicAddress}/api/oid4vp/ar/${id}`;
   }
 
-  async getAuthorizationRequest(id: string): Promise<AuthorizationRequest> {
-    const authorizationRequest =
-      await this.authorizationRequestRepository.findOneBy({
-        identifier: id
-      });
-    if (!authorizationRequest) {
-      throw new AppError(
-        `Could not find the authorization request with id ${id}`,
-        HttpStatus.NOT_FOUND
-      ).andLog(this.logger, "warn");
-    }
+  async getAuthorizationRequest(
+    id: string
+  ): Promise<PresentationAuthorizationRequest> {
+    const authorizationRequest = await this.getAuthorizationRequestFromDB(id);
     return {
       state: authorizationRequest.identifier,
       nonce: authorizationRequest.nonce,
@@ -55,18 +64,11 @@ export class OID4VPVerifierService {
   }
 
   async verify(authorizationResponse: AuthorizationResponse): Promise<string> {
-    const obj = await this.authorizationRequestRepository.findOneBy({
-      identifier: authorizationResponse.state
-    });
-    if (!obj) {
-      throw new AppError(
-        `Could not find the authorization request with id ${authorizationResponse.state}`,
-        HttpStatus.NOT_FOUND
-      ).andLog(this.logger, "warn");
-    }
-    const presentationDefinition = obj.presentationDefinition;
+    const obj = await this.getAuthorizationRequestFromDB(
+      authorizationResponse.state
+    );
     await this.presentationService.evaluatePresentationResponse(
-      presentationDefinition,
+      obj.presentationDefinition,
       {
         vp_token: authorizationResponse.vp_token,
         presentation_submission: authorizationResponse.presentation_submission

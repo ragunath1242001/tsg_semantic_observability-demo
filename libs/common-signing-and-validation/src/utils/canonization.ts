@@ -1,6 +1,6 @@
 import jsonld from "jsonld";
-import { jsonldOptions } from "../cachingContextLoader.js";
-import { AppError } from "../error.js";
+import { jsonldOptions } from "./cachingContextLoader.js";
+import { AppError } from "@tsg-dsp/common-api";
 import { HttpStatus } from "@nestjs/common";
 import { canonicalize } from "json-canonicalize";
 import crypto from "crypto";

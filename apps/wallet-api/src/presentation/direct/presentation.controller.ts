@@ -13,7 +13,7 @@ import {
   VerifiablePresentationJsonLd,
   VerifiablePresentationJwt
 } from "@tsg-dsp/common-dsp";
-import { AppError } from "../../utils/error.js";
+import { AppError } from "@tsg-dsp/common-api";
 import { PresentationService } from "../presentation.service.js";
 import { AppRole } from "@tsg-dsp/wallet-dtos";
 import {

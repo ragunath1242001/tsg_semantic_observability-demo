@@ -27,6 +27,11 @@ import {
   InputText,
   MultiSelect,
   Password,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
   Toolbar
 } from "primevue";
 import { createPinia } from "pinia";
@@ -62,6 +67,11 @@ app.component("InputText", InputText);
 app.component("MultiSelect", MultiSelect);
 app.component("Password", Password);
 app.component("SelectButton", SelectButton);
+app.component("Tab", Tab);
+app.component("Tabs", Tabs);
+app.component("TabList", TabList);
+app.component("TabPanel", TabPanel);
+app.component("TabPanels", TabPanels);
 app.component("Toast", Toast);
 app.component("Toolbar", Toolbar);
 

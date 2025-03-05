@@ -56,6 +56,9 @@ describe("UsersService Tests", () => {
       });
       const users = await service.getUsers(PaginationOptionsDto.NO_PAGINATION);
       expect(users.total).toBeGreaterThanOrEqual(1);
+
+      const user = await service.getUserByEmail("bob@example.com");
+      expect(user.username).toEqual("Bob");
     });
 
     it("should update an existing user", async () => {

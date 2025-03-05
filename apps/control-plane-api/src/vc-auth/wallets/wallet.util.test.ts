@@ -145,7 +145,7 @@ export function setupMockWalletServer(start: boolean = true): SetupServer {
         }
       ]);
     }),
-    http.get(`http://127.0.0.1/api/management/did/resolve/*`, () => {
+    http.get(`http://localhost/.well-known/did.json`, () => {
       return HttpResponse.json(mockDidDocument());
     })
   );

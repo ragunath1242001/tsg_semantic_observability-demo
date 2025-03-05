@@ -12,13 +12,13 @@ import { DidService } from "../did/did.service.js";
 import { KeysService } from "../keys/keys.service.js";
 import { PresentationService } from "./presentation.service.js";
 import { describe, expect, beforeAll, afterAll, it } from "@jest/globals";
-import { DidResolverService } from "../did/did.resolver.service.js";
 import { VerifiablePresentationJwt } from "@tsg-dsp/common-dsp";
 import { SetupServer, setupServer } from "msw/node";
 import { HttpResponse, http } from "msw";
 import { DIDDocuments, DIDService, DIDLogs } from "../model/did.dao.js";
 import { SignatureService } from "../keys/signature.service.js";
 import { TypeOrmTestHelper } from "@tsg-dsp/common-api";
+import { cachedStatusCredentials } from "@tsg-dsp/common-signing-and-validation";
 
 describe("Presentation Service", () => {
   let presentationService: PresentationService;
@@ -73,7 +73,6 @@ describe("Presentation Service", () => {
       providers: [
         CredentialsService,
         DidService,
-        DidResolverService,
         KeysService,
         SignatureService,
         PresentationService,
@@ -144,7 +143,7 @@ describe("Presentation Service", () => {
       expect(validationResult.valid).toBe(true);
     });
     it("Revocation checks", async () => {
-      presentationService["cachedStatusCredentials"].clear();
+      cachedStatusCredentials.clear();
       await credentialService.revokeCredential(
         "did:web:localhost#test-init-credential"
       );

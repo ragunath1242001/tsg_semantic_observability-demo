@@ -55,6 +55,28 @@ export class RootConfig {
   @Description("Kubernetes namespace")
   @IsString()
   public readonly kubernetesNamespace: string = "default";
+
+  @Description("Presentation Definition for OID4VP")
+  @IsString()
+  public readonly presentationDefinition: string = JSON.stringify({
+    id: "ac60a5c8-5677-420e-931f-58d769fc3b83",
+    input_descriptors: [
+      {
+        id: "14322c69-1bce-4d7f-b6c2-ecc29b2c123b",
+        constraints: {
+          fields: [
+            {
+              path: ["$.type"],
+              filter: {
+                type: "string",
+                pattern: "VerifiableCredential"
+              }
+            }
+          ]
+        }
+      }
+    ]
+  });
 }
 
 export class InitClient {

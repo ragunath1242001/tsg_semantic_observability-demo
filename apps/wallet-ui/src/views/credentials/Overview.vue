@@ -8,7 +8,7 @@ import { onMounted, ref } from "vue";
 import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
 import http from "@tsg-dsp/common-ui/utils/http";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
-import { VerifiedCredentialStatus } from "@tsg-dsp/wallet-dtos";
+import { VerifiedCredentialStatus } from "@tsg-dsp/common-dtos";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { AxiosResponse } from "axios";

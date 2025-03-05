@@ -53,6 +53,7 @@ describe("Key Utils test", () => {
     it("ES384", () => {
       const jwk: JWK = {
         kty: "EC",
+        alg: "ES384",
         x: "HvAXo6qRLSn9yosyiMJR126nlWSCJNIhFAAVPQ4qrsqokOttWC1AvE04pmbRE777",
         y: "cgdrE53Vgcdkn0Q1iljf9fNnJX5LDmFoxwTTPY6iG3S01t0e-4hDlim-G-OT0zEr",
         crv: "P-384",

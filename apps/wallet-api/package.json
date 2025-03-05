@@ -38,6 +38,7 @@
     "@tsg-dsp/common-api": "workspace:*",
     "@tsg-dsp/common-dsp": "workspace:*",
     "@tsg-dsp/common-dtos": "workspace:*",
+    "@tsg-dsp/common-signing-and-validation": "workspace:*",
     "@tsg-dsp/wallet-dtos": "workspace:*",
     "@tufjs/canonical-json": "^2.0.0",
     "@types/varint": "^6.0.3",

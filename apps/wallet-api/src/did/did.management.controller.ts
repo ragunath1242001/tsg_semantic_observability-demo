@@ -29,7 +29,6 @@ import {
   DIDDocumentDto,
   ServiceDto
 } from "@tsg-dsp/common-dtos";
-import { DidResolverService } from "./did.resolver.service.js";
 import {
   Paginated,
   PaginationOptionsDto,
@@ -44,10 +43,7 @@ import {
 @ApiTags("Management DID")
 @ApiOAuth2([AppRole.VIEW_DID])
 export class DIDManagementController {
-  constructor(
-    private readonly didService: DidService,
-    private readonly didResolverService: DidResolverService
-  ) {}
+  constructor(private readonly didService: DidService) {}
 
   @Get()
   @ApiOperation({
@@ -59,21 +55,6 @@ export class DIDManagementController {
   @ApiForbiddenResponseDefault()
   async getDidDocument(): Promise<DIDDocument> {
     return await this.didService.getDid();
-  }
-
-  @Get("resolve/:didId")
-  @ApiOperation({
-    summary: "Resolve DID document",
-    description:
-      "Resolves the DID identifier from the path parameter into a DID Document"
-  })
-  @HttpCode(HttpStatus.OK)
-  @ApiOkResponse({ type: DIDDocumentDto })
-  @ApiForbiddenResponseDefault()
-  async resolveDidDocument(
-    @Param("didId") didId: string
-  ): Promise<DIDDocument> {
-    return await this.didResolverService.resolve(didId);
   }
 
   @Get("services")

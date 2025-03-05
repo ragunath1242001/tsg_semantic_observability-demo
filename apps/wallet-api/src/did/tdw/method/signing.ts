@@ -1,11 +1,13 @@
 import { base58btc } from "multiformats/bases/base58";
-import { VerificationMethod } from "./interfaces.js";
 import { CompactSign, importJWK } from "jose";
-import { encodedPrivateKeyMultiBaseToJWK } from "../../../utils/keys/keyconverter.js";
-import { buffersToHex } from "../../../utils/keys/typeconverter.js";
+import {
+  buffersToHex,
+  canonizeAndHash,
+  getCryptoSuite,
+  encodedPrivateKeyMultiBaseToJWK,
+  VerificationMethod
+} from "@tsg-dsp/common-signing-and-validation";
 import { createDate } from "./utils.js";
-import { getCryptoSuite } from "../../../utils/keys/cryptosuite.js";
-import { canonizeAndHash } from "../../../utils/keys/canonization.js";
 
 export const createSigner = (vm: VerificationMethod) => {
   return async (doc: any, challenge: string) => {

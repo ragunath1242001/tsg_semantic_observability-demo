@@ -4,9 +4,10 @@ import { SIToken } from "../../model/dcp.dao.js";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import crypto from "crypto";
-import { AppError } from "../../utils/error.js";
+import { AppError } from "@tsg-dsp/common-api";
 import { DidService } from "../../did/did.service.js";
 import { JWTPayload } from "jose";
+import { validateJwt } from "@tsg-dsp/common-signing-and-validation";
 
 @Injectable()
 export class DCPSiopService {
@@ -51,7 +52,7 @@ export class DCPSiopService {
 
   async validateIDToken(idToken: string): Promise<JWTPayload> {
     const didId = await this.didService.getDidId();
-    const validatedToken = await this.signatureService.validateJwt(idToken);
+    const validatedToken = await validateJwt(idToken);
 
     if (validatedToken.aud !== didId) {
       throw new AppError(

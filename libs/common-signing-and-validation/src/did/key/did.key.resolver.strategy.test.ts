@@ -31,6 +31,7 @@ describe("DID Key Resolver", () => {
       didId: "did:key:zQ3shokFTS3brHcDQrn82RUDfCZESWL1ZdCEJwekUDPQiYBme",
       jwk: {
         kty: "EC",
+        alg: "ES384",
         crv: "secp256k1",
         x: "h0wVx_2iDlOcblulc8E5iEw1EYh5n1RYtLQfeSTyNc0",
         y: "O2EATIGbu6DezKFptj5scAIRntgfecanVNXxat1rnwE"
@@ -41,6 +42,7 @@ describe("DID Key Resolver", () => {
       didId: "did:key:zDnaerDaTF5BXEavCrfRZEk316dpbLsfPDZ3WJ5hRTPFU2169",
       jwk: {
         kty: "EC",
+        alg: "ES384",
         crv: "P-256",
         x: "fyNYMN0976ci7xqiSdag3buk-ZCwgXU4kz9XNkBlNUI",
         y: "hW2ojTNfH7Jbi8--CJUo3OCbH3y5n91g-IMA9MLMbTU"
@@ -52,6 +54,7 @@ describe("DID Key Resolver", () => {
         "did:key:z82Lm1MpAkeJcix9K8TMiLd5NMAhnwkjjCBeWHXyu3U4oT2MVJJKXkcVBgjGhnLBn2Kaau9",
       jwk: {
         kty: "EC",
+        alg: "ES384",
         crv: "P-384",
         x: "lInTxl8fjLKp_UCrxI0WDklahi-7-_6JbtiHjiRvMvhedhKVdHBfi2HCY8t_QJyc",
         y: "y6N1IC-2mXxHreETBW7K3mBcw0qGr3CWHCs-yl09yCQRLcyfGv7XhqAngHOu51Zv"
@@ -63,6 +66,7 @@ describe("DID Key Resolver", () => {
         "did:key:z2J9gaYxrKVpdoG9A4gRnmpnRCcxU6agDtFVVBVdn1JedouoZN7SzcyREXXzWgt3gGiwpoHq7K68X4m32D8HgzG8wv3sY5j7",
       jwk: {
         kty: "EC",
+        alg: "ES384",
         crv: "P-521",
         x: "ASUHPMyichQ0QbHZ9ofNx_l4y7luncn5feKLo3OpJ2nSbZoC7mffolj5uy7s6KSKXFmnNWxGJ42IOrjZ47qqwqyS",
         y: "AW9ziIC4ZQQVSNmLlp59yYKrjRY0_VqO-GOIYQ9tYpPraBKUloEId6cI_vynCzlZWZtWpgOM3HPhYEgawQ703RjC"

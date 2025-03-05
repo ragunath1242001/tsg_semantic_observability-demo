@@ -1,5 +1,6 @@
 import { HttpStatus } from "@nestjs/common";
-import { AppError } from "../error.js";
+import { AppError } from "@tsg-dsp/common-api";
+import { JWK } from "jose";
 
 export function getCryptoSuite(
   type: "EdDSA" | "ES384" | "X509" | string,
@@ -32,5 +33,24 @@ export function cryptoSuiteFromJws(jws: string) {
     case "PS256":
     default:
       return "RSASSA-PSS";
+  }
+}
+
+export function estimateAlgorithm(key: JWK) {
+  switch (key.kty) {
+    case "RSA":
+      return "PS256";
+    case "OKP":
+      return key.crv === "Ed25519" ? "EdDSA" : "BLS";
+    case "EC":
+      switch (key.crv) {
+        case "P-256":
+          return "ES256";
+        case "P-384":
+          return "ES384";
+        case "P-521":
+          return "ES512";
+      }
+      break;
   }
 }

@@ -1,12 +1,10 @@
-import { DidResolverService } from "./did.resolver.service.js";
+import { resolveDid } from "./did.resolver.js";
 import { describe, expect, beforeAll, afterAll, it } from "@jest/globals";
-import { TestingModule, Test } from "@nestjs/testing";
 import { SetupServer, setupServer } from "msw/node";
 import { HttpResponse, http } from "msw";
 import { DIDDocument } from "did-resolver";
 
 describe("DID Service", () => {
-  let didResolver: DidResolverService;
   let server: SetupServer;
   const didGenerator: (didId: string) => DIDDocument = (didId: string) => {
     return {
@@ -94,11 +92,6 @@ describe("DID Service", () => {
   ]);
 
   beforeAll(async () => {
-    const moduleRef: TestingModule = await Test.createTestingModule({
-      providers: [DidResolverService]
-    }).compile();
-    didResolver = await moduleRef.get(DidResolverService);
-
     server = setupServer(
       http.get("http://localhost:3000/.well-known/did.json", () => {
         return HttpResponse.json(didGenerator("did:web:localhost%3A3000"));
@@ -120,17 +113,15 @@ describe("DID Service", () => {
   describe("DID Resolvement", () => {
     it("Non supported DID resolvement", async () => {
       await expect(
-        didResolver.resolve(
-          "did:keri:EXq5YqaL6L48pf0fu7IUhL0JRaU2_RxFP0AL43wYn148"
-        )
+        resolveDid("did:keri:EXq5YqaL6L48pf0fu7IUhL0JRaU2_RxFP0AL43wYn148")
       ).rejects.toThrow("Resolver does not support the did:keri: method");
     });
     it("Resolve DID Web", async () => {
-      const didDocument = await didResolver.resolve("did:web:localhost%3A3000");
+      const didDocument = await resolveDid("did:web:localhost%3A3000");
       expect(didDocument).toEqual(didGenerator("did:web:localhost%3A3000"));
     });
     it("Resolve DID Tdw", async () => {
-      const didDocument = await didResolver.resolve(
+      const didDocument = await resolveDid(
         "did:tdw:localhost%3A3000:bwrrlevohy72zhnvmuvuvkkavzgr"
       );
       expect(didDocument).toEqual({

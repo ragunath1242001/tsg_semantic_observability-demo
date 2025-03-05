@@ -11,7 +11,11 @@ import {
   ValidateNested
 } from "class-validator";
 import { Transform, Type } from "class-transformer";
-import { DIDMethod, DIDMethodList, DIDMethodTypes } from "./utils/did.js";
+import {
+  DIDMethod,
+  DIDMethodList,
+  DIDMethodTypes
+} from "@tsg-dsp/common-signing-and-validation";
 import { CredentialSubject } from "@tsg-dsp/common-dsp/dist/model/ssi/credentials.dto.js";
 import {
   AuthConfig,

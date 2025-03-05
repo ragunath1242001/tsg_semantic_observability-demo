@@ -9,6 +9,7 @@ import {
 import { SchedulerRegistry } from "@nestjs/schedule";
 import { InjectRepository } from "@nestjs/typeorm";
 import { CatalogDto } from "@tsg-dsp/common-dsp";
+import { resolveDid } from "@tsg-dsp/common-signing-and-validation";
 import { DIDDocument } from "did-resolver";
 import { Repository } from "typeorm";
 import { RegistryConfig } from "../config.js";
@@ -69,7 +70,7 @@ export class RegistryService implements OnApplicationBootstrap {
     const didDocuments = await Promise.all(
       uniqueDids.map(async (did) => {
         try {
-          return await this.vcAuthService.walletClient.resolveDidDocument(did);
+          return await resolveDid(did);
         } catch (e) {
           this.logger.warn(
             `Could not resolve did document for ${did}, error: ${e}`
