@@ -126,7 +126,7 @@ export class CredentialOfferStatus {
   id!: number;
 
   @ApiProperty({ example: "2023-10-01T00:00:00Z" })
-  created!: Date;
+  createdDate!: Date;
 
   @ApiProperty({ example: "preauth-code-abc" })
   preAuthorizedCode!: string;

@@ -12,6 +12,11 @@ import { ApiTags, ApiOperation, ApiResponse, ApiBody } from "@nestjs/swagger";
 import { ClientsService } from "./clients.service.js";
 import { ClientDto } from "@tsg-dsp/sso-bridge-dtos";
 import { AuthGuard, ManagementRoles } from "../auth/auth.guard.js";
+import {
+  PaginationOptionsDto,
+  PaginationQuery,
+  UsePagination
+} from "@tsg-dsp/common-api";
 
 @ApiTags("Clients")
 @Controller("clients")
@@ -21,13 +26,14 @@ export class ClientsController {
   constructor(private readonly clientsService: ClientsService) {}
 
   @Get()
+  @UsePagination()
   @ApiOperation({ summary: "Retrieve all clients" })
   @ApiResponse({
     status: 200,
     description: "List of clients returned successfully."
   })
-  async getClients() {
-    return await this.clientsService.getClients();
+  async getClients(@PaginationQuery() paginationOptions: PaginationOptionsDto) {
+    return await this.clientsService.getClients(paginationOptions);
   }
 
   @Post("create")

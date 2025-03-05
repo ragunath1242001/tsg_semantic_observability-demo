@@ -14,7 +14,7 @@ import { describe, expect, beforeAll, afterAll, it } from "@jest/globals";
 import { DIDDocuments, DIDService, DIDLogs } from "../model/did.dao.js";
 import { DidResolverService } from "../did/did.resolver.service.js";
 import { SignatureService } from "./signature.service.js";
-import { TypeOrmTestHelper } from "@tsg-dsp/common-api";
+import { PaginationOptionsDto, TypeOrmTestHelper } from "@tsg-dsp/common-api";
 
 describe("Key Service", () => {
   let keyService: KeysService;
@@ -70,8 +70,13 @@ describe("Key Service", () => {
 
   describe("Key management", () => {
     it("Get initial keys", async () => {
-      const keys = await keyService.getKeys();
+      const keys = await keyService["getKeys"]();
       expect(keys).toHaveLength(1);
+
+      const paginatedKeys = await keyService.getPaginatedKeys(
+        PaginationOptionsDto.NO_PAGINATION
+      );
+      expect(paginatedKeys.total).toBe(1);
 
       const key = await keyService.getKey("key-0");
       expect(key).toBeDefined();

@@ -114,21 +114,21 @@ export class CredentialsDto implements CredentialDao {
     example: "2023-10-01T00:00:00Z",
     description: "Creation timestamp"
   })
-  created!: Date;
+  createdDate!: Date;
 
   @IsDate()
   @ApiProperty({
     example: "2023-10-02T00:00:00Z",
     description: "Modification timestamp"
   })
-  modified!: Date;
+  modifiedDate!: Date;
 
   @IsDate()
   @ApiPropertyOptional({
     example: "2023-10-03T00:00:00Z",
     description: "Optional deletion timestamp"
   })
-  deleted!: Date;
+  deletedDate!: Date;
 }
 
 export class CredentialConfigDto implements InitCredentialConfig {

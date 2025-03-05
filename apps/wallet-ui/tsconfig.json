@@ -1,5 +1,10 @@
 {
-  "include": ["env.d.ts", "src/**/*", "src/**/*.vue"],
+  "include": [
+    "env.d.ts",
+    "src/**/*",
+    "src/**/*.vue",
+    "../../libs/common-ui/utils/pagination.ts"
+  ],
   "compilerOptions": {
     "skipLibCheck": true /* skipLibCheck, because of an error in Pinia with higher typescript versions https://github.com/vuejs/pinia/discussions/2605 */,
     "target": "esnext",

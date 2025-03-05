@@ -29,7 +29,8 @@
   },
   "dependencies": {
     "@primevue/themes": "^4.2.4",
-    "axios": "^1.7.8"
+    "axios": "^1.7.8",
+    "dayjs": "^1.11.13"
   },
   "devDependencies": {
     "postcss": "^8.5.3",

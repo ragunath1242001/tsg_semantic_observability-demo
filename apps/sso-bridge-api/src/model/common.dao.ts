@@ -3,12 +3,12 @@ import { CreateDateColumn, UpdateDateColumn, DeleteDateColumn } from "typeorm";
 
 export class MetaEntity {
   @CreateDateColumn({ type: Date })
-  created!: Date;
+  createdDate!: Date;
 
   @UpdateDateColumn({ type: Date })
-  modified!: Date;
+  modifiedDate!: Date;
 
   @DeleteDateColumn({ type: Date })
   @Exclude()
-  deleted!: Date;
+  deletedDate!: Date;
 }

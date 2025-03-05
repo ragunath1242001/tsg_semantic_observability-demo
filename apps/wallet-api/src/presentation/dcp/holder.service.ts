@@ -238,7 +238,8 @@ export class DCPHolderService {
         const sortedCredentials = matchedInputDescriptorCredentials.sort(
           (a, b) =>
             b.weight - a.weight ||
-            b.credential.created.getTime() - a.credential.created.getTime()
+            b.credential.createdDate.getTime() -
+              a.credential.createdDate.getTime()
         );
         matchedCredentials.push(sortedCredentials[0].credential);
       }

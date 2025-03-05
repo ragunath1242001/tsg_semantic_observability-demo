@@ -13,6 +13,7 @@ import {
   createVerificationMethods,
   DIDMethod
 } from "../utils/did.js";
+import { PaginationOptionsDto } from "@tsg-dsp/common-api";
 
 export interface DidStrategy {
   createDid(config: RootConfig): string;
@@ -122,7 +123,20 @@ export class DidService {
     }
   }
 
-  async getServices() {
+  async getPaginatedServices(paginationOptions: PaginationOptionsDto) {
+    const [services, itemCount] = await this.serviceRepository.findAndCount({
+      where: {
+        id: Like(`${this.didId}%`)
+      },
+      ...paginationOptions.typeOrm
+    });
+    return {
+      data: services,
+      total: itemCount
+    };
+  }
+
+  private async getServices() {
     return await this.serviceRepository.find({
       where: {
         id: Like(`${this.didId}%`)

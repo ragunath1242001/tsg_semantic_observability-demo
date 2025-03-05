@@ -6,6 +6,8 @@ import { useConfirm } from "primevue/useconfirm";
 import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
 import http from "@tsg-dsp/common-ui/utils/http";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
+import { setupPagination } from "@tsg-dsp/common-ui/utils/pagination";
+import { formatRelative } from "@tsg-dsp/common-ui/utils/date";
 
 interface KeyForm {
   type: "EdDSA" | "ES384" | "X509";
@@ -18,7 +20,6 @@ interface KeyForm {
 const toast = useToast();
 const confirm = useConfirm();
 
-const keys = ref<KeyInfo[]>([]);
 const rawDialog = ref(false);
 const keyForm = ref<KeyForm>({
   type: "EdDSA",
@@ -40,25 +41,20 @@ const keyTypes = ref([
   }
 ]);
 
-const loadKeys = async () => {
-  try {
-    const response = await http<KeyInfo[]>("management/keys");
-    keys.value = response.data;
-  } catch (error) {
-    toast.add(
-      toastError({
-        error,
-        summary: "Could not load keys",
-        defaultMessage: `Error in fetching key configurations`
-      })
-    );
+const { data, loading, total, perPage, load } = setupPagination({
+  fetch: async (params) => {
+    return http<KeyInfo[]>("management/keys", { params });
+  },
+  errorContext: {
+    summary: "Could not load keys",
+    defaultMessage: `Error in fetching key configurations`
   }
-};
+});
 
 const setDefaultKey = async (keyId: string) => {
   try {
     await http.put(`management/keys/${encodeURIComponent(keyId)}/default`);
-    await loadKeys();
+    await load();
     toast.add({
       severity: "success",
       summary: "Success",
@@ -89,7 +85,7 @@ const deleteKey = async (keyId: string) => {
     accept: async () => {
       try {
         await http.delete(`management/keys/${encodeURIComponent(keyId)}`);
-        await loadKeys();
+        await load();
         toast.add({
           severity: "success",
           summary: "Success",
@@ -112,7 +108,7 @@ const deleteKey = async (keyId: string) => {
 const addKey = async () => {
   try {
     await http.post("management/keys", keyForm.value);
-    await loadKeys();
+    await load();
     toast.add({
       severity: "success",
       summary: "Success",
@@ -131,7 +127,7 @@ const addKey = async () => {
 };
 
 onMounted(async () => {
-  await loadKeys();
+  await load();
 });
 </script>
 
@@ -155,14 +151,22 @@ onMounted(async () => {
       </template>
       <template #content>
         <DataTable
-          :value="keys"
-          sort-field="id"
-          :sort-order="1"
+          :value="data"
+          lazy
+          :loading="loading"
           paginator
-          :rows="10">
-          <Column field="id" header="ID" />
-          <Column field="type" header="Type" />
-          <Column field="default" header="Default">
+          :rows-per-page-options="[5, 10, 25, 50]"
+          :total-records="total"
+          :first="0"
+          :rows="perPage"
+          data-key="id"
+          sort-field="createdDate"
+          :sort-order="1"
+          @page="load"
+          @sort="load">
+          <Column field="id" header="ID" sortable />
+          <Column field="type" header="Type" sortable />
+          <Column field="default" header="Default" sortable>
             <template #body="props">
               <i
                 v-if="props.data.default"
@@ -176,6 +180,11 @@ onMounted(async () => {
                 >{{ props.data.publicKey.kty }}
                 {{ props.data.publicKey.crv || props.data.publicKey.alg }}</code
               >
+            </template>
+          </Column>
+          <Column field="createdDate" header="Created" sortable>
+            <template #body="props">
+              {{ formatRelative(props.data.createdDate) }}
             </template>
           </Column>
           <Column field="actions" header="Actions">
@@ -201,7 +210,7 @@ onMounted(async () => {
           modal
           header="Raw keys"
           :style="{ width: '90vw', maxWidth: '75rem' }">
-          <MonacoEditorVue :static="keys" :read-only="true" :max-lines="100" />
+          <MonacoEditorVue :static="data" :read-only="true" :max-lines="100" />
         </Dialog>
       </template>
     </Card>

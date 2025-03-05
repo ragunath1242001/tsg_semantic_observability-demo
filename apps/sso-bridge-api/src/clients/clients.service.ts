@@ -1,7 +1,7 @@
 import { HttpStatus, Injectable } from "@nestjs/common";
 import { Repository } from "typeorm";
 import { OauthClient } from "../model/client.dao.js";
-import { AppError } from "@tsg-dsp/common-api";
+import { AppError, PaginationOptionsDto } from "@tsg-dsp/common-api";
 import { InjectRepository } from "@nestjs/typeorm";
 import { RootConfig } from "../config.js";
 import { KubernetesService } from "../k8s/kubernetes.service.js";
@@ -30,8 +30,14 @@ export class ClientsService {
       );
     }
   }
-  async getClients() {
-    return await this.clientsRepository.find();
+  async getClients(paginationOptions: PaginationOptionsDto) {
+    const [data, total] = await this.clientsRepository.findAndCount(
+      paginationOptions.typeOrm
+    );
+    return {
+      data,
+      total
+    };
   }
 
   async getClient(clientId: string): Promise<OauthClient> {

@@ -41,6 +41,10 @@ import {
   Client,
   DisableOAuthGuard,
   DisableRolesGuard,
+  Paginated,
+  PaginationOptionsDto,
+  PaginationQuery,
+  UsePagination,
   validationPipe
 } from "@tsg-dsp/common-api";
 
@@ -85,6 +89,7 @@ export class CredentialsManagementController {
   }
 
   @Get()
+  @UsePagination()
   @ApiOperation({
     summary: "List credentials",
     description:
@@ -95,9 +100,15 @@ export class CredentialsManagementController {
     type: [CredentialsDto]
   })
   @ApiForbiddenResponseDefault()
-  async getCredentials(@Client() client: ClientInfo): Promise<CredentialDao[]> {
+  async getCredentials(
+    @Client() client: ClientInfo,
+    @PaginationQuery() paginationOptions: PaginationOptionsDto
+  ): Promise<Paginated<CredentialDao[]>> {
     const targetDid = this.targetDid("view", client);
-    return this.credentialsService.getCredentials(targetDid);
+    return this.credentialsService.getPaginatedCredentials(
+      paginationOptions,
+      targetDid
+    );
   }
 
   @Get("/dataspace")

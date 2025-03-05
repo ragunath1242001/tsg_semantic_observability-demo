@@ -12,6 +12,11 @@ import { ApiTags, ApiOperation, ApiResponse, ApiParam } from "@nestjs/swagger";
 import { UsersService } from "./users.service.js";
 import { UserDto } from "@tsg-dsp/sso-bridge-dtos";
 import { AuthGuard, ManagementRoles } from "../auth/auth.guard.js";
+import {
+  PaginationOptionsDto,
+  PaginationQuery,
+  UsePagination
+} from "@tsg-dsp/common-api";
 
 @ApiTags("Users")
 @Controller("users")
@@ -21,10 +26,11 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
+  @UsePagination()
   @ApiOperation({ summary: "Get all users" })
   @ApiResponse({ status: 200, description: "List of users returned." })
-  async getUsers() {
-    return await this.usersService.getUsers();
+  async getUsers(@PaginationQuery() paginationOptions: PaginationOptionsDto) {
+    return await this.usersService.getUsers(paginationOptions);
   }
 
   @Post("create")

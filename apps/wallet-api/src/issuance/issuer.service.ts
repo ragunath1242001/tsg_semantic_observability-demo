@@ -153,7 +153,16 @@ export class IssuerService {
 
   async credentialOfferStatus(): Promise<CredentialOfferStatus[]> {
     return (await this.issuanceRepository.find()).map((offer) => {
-      return new CredentialOfferStatus(offer);
+      return {
+        id: offer.id,
+        createdDate: offer.createdDate,
+        preAuthorizedCode: offer.preAuthorizedCode,
+        holderId: offer.holderId,
+        credentialType: offer.credentialType,
+        credentialId: offer.credentialId,
+        revoked: offer.revoked,
+        credentialSubject: offer.credentialSubject
+      };
     });
   }
 
@@ -230,7 +239,7 @@ export class IssuerService {
     await this.issuanceRepository.update({ id: id }, { revoked: true });
     return {
       id: issuance.id,
-      created: issuance.created,
+      createdDate: issuance.createdDate,
       preAuthorizedCode: issuance.preAuthorizedCode,
       holderId: issuance.holderId,
       credentialType: issuance.credentialType,

@@ -4,14 +4,14 @@ import { injectStrict } from "../utils/injectTyped";
 import { AxiosKey } from "../utils/symbols";
 import { useToast } from "primevue/usetoast";
 import { UserDto } from "@tsg-dsp/sso-bridge-dtos";
+import { setupPagination } from "@tsg-dsp/common-ui/utils/pagination";
+import { formatRelative } from "@tsg-dsp/common-ui/utils/date";
 
 const http = injectStrict(AxiosKey);
 
 const toast = useToast();
 
 const submitted = ref(false);
-
-const users = ref<UserDto[]>([]);
 
 const user = ref<UserDto>({
   username: undefined,
@@ -123,7 +123,7 @@ const saveUser = async () => {
     roles: [],
     grants: []
   };
-  await getUsers();
+  await load();
 };
 
 const deleteUser = async () => {
@@ -136,7 +136,7 @@ const deleteUser = async () => {
       life: 3000
     });
     deleteUserDialog.value = false;
-    await getUsers();
+    await load();
   } catch (_) {
     toast.add({
       severity: "error",
@@ -152,23 +152,18 @@ const openDeleteUserDialog = (data) => {
   deleteUserDialog.value = true;
 };
 
-const getUsers = async () => {
-  try {
-    const { data } = await http.get("/users");
-    users.value = data;
-  } catch (_) {
-    toast.add({
-      severity: "error",
-      summary: "Error",
-      detail: "Users not fetched",
-      life: 3000
-    });
+const { data, loading, total, perPage, load } = setupPagination({
+  fetch: async (params) => {
+    return http.get<UserDto[]>("/users", { params });
+  },
+  errorContext: {
+    summary: "Could not load users",
+    defaultMessage: `Error in fetching users`
   }
-};
+});
 
 onMounted(async () => {
-  await getUsers();
-  console.log("users", users.value);
+  await load();
 });
 </script>
 <template>
@@ -186,13 +181,21 @@ onMounted(async () => {
           </template>
         </Toolbar>
         <DataTable
-          :value="users"
-          sort-field="id"
-          :sort-order="1"
+          :value="data"
+          lazy
+          :loading="loading"
           paginator
-          :rows="10">
+          :rows-per-page-options="[5, 10, 25, 50]"
+          :total-records="total"
+          :first="0"
+          :rows="perPage"
+          data-key="id"
+          sort-field="createdDate"
+          :sort-order="1"
+          @page="load"
+          @sort="load">
           <template #empty>No users added yet.</template>
-          <Column field="username" header="Username" />
+          <Column field="username" header="Username" sortable />
           <Column field="roles" class="break-all" header="Roles">
             <template #body="slotProps">
               {{ console.log(slotProps) }}
@@ -205,6 +208,11 @@ onMounted(async () => {
               <span>{{ slotProps.data.grants.toString() }}</span>
             </template></Column
           >
+          <Column field="createdDate" header="Created" sortable>
+            <template #body="props">
+              {{ formatRelative(props.data.createdDate) }}
+            </template>
+          </Column>
           <Column field="actions" header="Actions">
             <template #body="props">
               <Button

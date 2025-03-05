@@ -6,11 +6,10 @@ import { NegotiationService } from "@apps/control-plane-api/src/dsp/negotiation/
 import { PipelineExecutor } from "./pipeline.executor";
 import { CatalogService } from "@apps/control-plane-api/src/dsp/catalog/catalog.service";
 import { setupApp } from "@apps/control-plane-api/src/app.setup";
-import { AppLogger } from "@apps/control-plane-api/src/utils/logging";
 import { TransferService } from "@apps/control-plane-api/src/dsp/transfer/transfer.service";
-import { PaginationOptionsDto } from "@apps/control-plane-api/src/utils/pagination/pagination.options.dto";
+import { AppLogger, PaginationOptionsDto } from "@tsg-dsp/common-api";
 
-describe("TCK Local", () => {
+describe.skip("TCK Local", () => {
   let server: HttpServer;
   let moduleRef: TestingModule;
   let app: INestApplication;

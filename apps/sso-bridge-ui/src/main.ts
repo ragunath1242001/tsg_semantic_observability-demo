@@ -23,6 +23,7 @@ import {
   Column,
   DataTable,
   Dialog,
+  Inplace,
   InputText,
   MultiSelect,
   Password,
@@ -56,6 +57,7 @@ app.component("ConfirmDialog", ConfirmDialog);
 app.component("DataTable", DataTable);
 app.component("Dialog", Dialog);
 app.component("DynamicDialog", DynamicDialog);
+app.component("Inplace", Inplace);
 app.component("InputText", InputText);
 app.component("MultiSelect", MultiSelect);
 app.component("Password", Password);

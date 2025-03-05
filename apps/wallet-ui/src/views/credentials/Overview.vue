@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { toArray } from "@tsg-dsp/common-ui/utils/union.js";
-import { formatDate } from "@tsg-dsp/common-ui/utils/date.js";
+import { formatDate, formatRelative } from "@tsg-dsp/common-ui/utils/date.js";
 import { CredentialStatus, VerifiableCredential } from "@tsg-dsp/common-dsp";
 import { useConfirm } from "primevue/useconfirm";
 import { useToast } from "primevue/usetoast";
@@ -11,6 +11,9 @@ import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import { VerifiedCredentialStatus } from "@tsg-dsp/wallet-dtos";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import { AxiosResponse } from "axios";
+import { setupPagination } from "@tsg-dsp/common-ui/utils/pagination";
+import { DataTableSortEvent } from "primevue/datatable";
 
 dayjs.extend(relativeTime);
 
@@ -44,13 +47,14 @@ interface CredentialParsed {
 const toast = useToast();
 const confirm = useConfirm();
 
-const credentials = ref<CredentialParsed[]>();
 const expandedRows = ref();
 
-const loadCredentials = async () => {
-  try {
-    const response = await http<Credential[]>("management/credentials");
-    credentials.value = response.data.map((item) => {
+const { data, loading, total, perPage, load } = setupPagination({
+  fetch: async (params) => {
+    const response = await http<Credential[]>("management/credentials", {
+      params
+    });
+    const parsedCredentials: CredentialParsed[] = response.data.map((item) => {
       const subjectTypes = toArray(item.credential.credentialSubject).flatMap(
         (s) => [...toArray(s.type), ...toArray(s["@type"])]
       );
@@ -75,7 +79,6 @@ const loadCredentials = async () => {
         targetDid: item.targetDid,
         issuer: item.selfIssued ? "self" : item.credential.issuer,
         type: simpleTypes,
-        // expirationDate: formatDate(item.credential.expirationDate),
         expirationDate: dayjs(
           item.credential.expirationDate ?? item.credential.validUntil
         ).fromNow(),
@@ -85,17 +88,17 @@ const loadCredentials = async () => {
         status: {}
       };
     });
-  } catch (error) {
-    console.error(error);
-    toast.add(
-      toastError({
-        error,
-        summary: "Could not load credentials",
-        defaultMessage: `Error in fetching credentials`
-      })
-    );
+    const parsedResponse = response as unknown as AxiosResponse<
+      CredentialParsed[]
+    >;
+    parsedResponse.data = parsedCredentials;
+    return parsedResponse;
+  },
+  errorContext: {
+    summary: "Could not load credentials",
+    defaultMessage: `Error in fetching credentials`
   }
-};
+});
 
 const deleteCredential = async (credentialId: string) => {
   confirm.require({
@@ -112,7 +115,7 @@ const deleteCredential = async (credentialId: string) => {
         await http.delete(
           `management/credentials/${encodeURIComponent(credentialId)}`
         );
-        await loadCredentials();
+        await load();
         toast.add({
           severity: "success",
           summary: "Success",
@@ -146,7 +149,7 @@ const revokeCredential = async (credentialId: string) => {
         await http.post(
           `management/credentials/${encodeURIComponent(credentialId)}/revoke`
         );
-        await loadCredentials();
+        await load();
         toast.add({
           severity: "success",
           summary: "Success",
@@ -268,7 +271,12 @@ const verifyStatusses = async (credential: CredentialParsed) => {
 };
 
 onMounted(async () => {
-  await loadCredentials();
+  await load({
+    page: 0,
+    rows: 10,
+    sortField: "createdDate",
+    sortOrder: 1
+  } as unknown as DataTableSortEvent);
 });
 </script>
 
@@ -296,13 +304,21 @@ onMounted(async () => {
       <template #content>
         <DataTable
           v-model:expanded-rows="expandedRows"
-          :value="credentials"
-          sort-field="id"
-          :sort-order="1"
+          :value="data"
+          lazy
+          :loading="loading"
           paginator
-          :rows="10">
+          :rows-per-page-options="[5, 10, 25, 50]"
+          :total-records="total"
+          :first="0"
+          :rows="perPage"
+          data-key="id"
+          sort-field="createdDate"
+          :sort-order="1"
+          @page="load"
+          @sort="load">
           <Column expander style="width: 5rem" />
-          <Column field="id" header="ID">
+          <Column field="id" header="ID" sortable>
             <template #body="props">
               <code
                 class="text-sm block whitespace-nowrap overflow-hidden text-ellipsis"
@@ -313,7 +329,11 @@ onMounted(async () => {
               >
             </template>
           </Column>
-          <Column field="targetDid" header="Target (Issuer)" class="text-sm">
+          <Column
+            field="targetDid"
+            header="Target (Issuer)"
+            class="text-sm"
+            sortable>
             <template #body="props">
               <code
                 class="block whitespace-nowrap overflow-hidden text-ellipsis"
@@ -339,7 +359,23 @@ onMounted(async () => {
             </template>
           </Column>
           <Column
-            field="expirationDate"
+            field="createdDate"
+            header="Issuance"
+            style="width: 8rem; text-align: center"
+            sortable>
+            <template #body="props">
+              <Tag
+                v-if="props.data.raw.credential.issuanceDate"
+                severity="secondary"
+                >{{
+                  formatRelative(props.data.raw.credential.issuanceDate)
+                }}</Tag
+              >
+              <Tag v-else severity="warn">-</Tag>
+            </template>
+          </Column>
+          <Column
+            field="credential.expirationDate"
             header="Expiration"
             style="width: 8rem; text-align: center">
             <template #body="props">
