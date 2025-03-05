@@ -15,6 +15,7 @@ export interface UserStore {
   returnUrl: string | null;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 let router: Router | undefined = undefined;
 
 export const registerRouter = (newRouter: Router) => {
@@ -38,18 +39,12 @@ export const useUserStore = defineStore("user", {
         const response = await http.get<{ state: string; user: User }>(
           "/auth/user"
         );
-        if (
-          response.data.state === "unauthenticated" &&
-          payload.redirect === true
-        ) {
-          window.location.replace("api/auth/login");
+        if (response.data.state === "unauthenticated") {
+          if (payload.redirect === true) {
+            window.location.replace("api/auth/login");
+          }
         } else {
           this.user = response.data.user;
-          if (router) {
-            router.push(this.returnUrl || "/");
-          } else {
-            window.location.hash = `#${this.returnUrl || "/"}`;
-          }
         }
       } catch (e) {
         console.log(e);

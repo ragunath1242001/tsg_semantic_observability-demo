@@ -37,7 +37,12 @@ import {
   ApiBadRequestResponseDefault,
   ApiNotFoundResponseDefault
 } from "@tsg-dsp/common-dtos";
-import { Client, validationPipe } from "@tsg-dsp/common-api";
+import {
+  Client,
+  DisableOAuthGuard,
+  DisableRolesGuard,
+  validationPipe
+} from "@tsg-dsp/common-api";
 
 @ApiTags("Management Credentials")
 @ApiOAuth2([AppRole.VIEW_ALL_CREDENTIALS, AppRole.VIEW_OWN_CREDENTIALS])
@@ -127,7 +132,8 @@ export class CredentialsManagementController {
   @ApiOkResponse({
     type: CredentialConfigDto
   })
-  @ApiForbiddenResponseDefault()
+  @DisableOAuthGuard()
+  @DisableRolesGuard()
   @UsePipes(validationPipe)
   async getConfig(): Promise<CredentialsConfigDto> {
     return {

@@ -51,6 +51,16 @@ const logoUrl = computed(() => {
               to="/"
               @click="store.login({ redirect: true })"></Button>
           </div>
+          <div class="text-center mt-4">
+            <span class="text-muted-color font-medium"
+              >Don't have an account yet?</span
+            >
+            <Button
+              label="Proceed without login"
+              class="w-full mt-3"
+              as="router-link"
+              to="/home"></Button>
+          </div>
         </div>
       </div>
     </div>

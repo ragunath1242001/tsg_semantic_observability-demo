@@ -12,7 +12,7 @@ async function bootstrap() {
   const config = app.get(RootConfig);
   if (process.env["EMBEDDED_FRONTEND"]) {
     app.setGlobalPrefix(`${process.env["SUBPATH"] ?? ""}/api`, {
-      exclude: [".well-known/(.*)", "health", "(.*).jsonl"]
+      exclude: [".well-known/*paths", "health", "{*jsonl}.jsonl"]
     });
   }
   Logger.debug(

@@ -65,6 +65,16 @@ Two DID methods are currently supported: `did:web` and `did:tdw`. A comparison b
 | `auth.clientId`                         | Yes      | `String`                                              | Client ID                                         |                           |
 | `auth.clientSecret`                     | Yes      | `String`                                              | Client secret                                     |                           |
 | `auth.rolePath`                         | Yes      | `String`                                              | JSON path to extract roles from the token         | `"$.roles[*]"`            |
+| **`NodemailerConfiguration`**           |          |                                                       |                                                   |                           |
+| `email`                                 | Yes      | `NodemailerConfiguration`                             | Email configuration                               |                           |
+| `email.enabled`                         |          | `Boolean`                                             | Enable email sending                              |                           |
+| `email.smtpFrom`                        | Yes      | `String`                                              | Email address to send emails from                 |                           |
+| `email.smtpPort`                        | Yes      | `Number`                                              | SMTP port                                         | `465`                     |
+| `email.smtpSecure`                      | Yes      | `Boolean`                                             | SMTP secure connection                            | `true`                    |
+| `email.smtpServer`                      | Yes      | `String`                                              | SMTP server                                       |                           |
+| `email.smtpUser`                        | Yes      | `String`                                              | SMTP user                                         |                           |
+| `email.smtpPassword`                    | Yes      | `String`                                              | SMTP password                                     |                           |
+| `email.title`                           | Yes      | `String`                                              | Title                                             |                           |
 | **`InitKeyConfig`**                     |          |                                                       |                                                   |                           |
 | `initKeys`                              | Yes      | `InitKeyConfig[]`                                     | Initial key configurations                        |                           |
 | `initKeys[].type`                       |          | `"EdDSA" \| "ES384" \| "X509"`                        | Type of key                                       |                           |

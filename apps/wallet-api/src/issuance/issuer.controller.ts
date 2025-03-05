@@ -29,6 +29,7 @@ import {
   ApiOAuth2,
   ApiOkResponse,
   ApiOperation,
+  ApiParam,
   ApiTags,
   getSchemaPath
 } from "@nestjs/swagger";
@@ -36,7 +37,11 @@ import {
   ApiForbiddenResponseDefault,
   ApiNotFoundResponseDefault
 } from "@tsg-dsp/common-dtos";
-import { DisableOAuthGuard, Roles } from "@tsg-dsp/common-api";
+import {
+  DisableOAuthGuard,
+  DisableRolesGuard,
+  Roles
+} from "@tsg-dsp/common-api";
 
 @Controller()
 @ApiTags("OpenID 4 Verifiable Credential Issuance")
@@ -120,6 +125,22 @@ export class IssuerController {
     return this.issuerService.credentialOfferStatus();
   }
 
+  @Get("oid4vci/offer/:id")
+  @ApiOperation({
+    summary: "Retrieve offered credential",
+    description: "Retrieves a specific credential offer"
+  })
+  @ApiParam({ name: "id", required: true, type: Number })
+  @DisableOAuthGuard()
+  @DisableRolesGuard()
+  @ApiOkResponse({ type: [CredentialOfferStatus] })
+  @HttpCode(HttpStatus.OK)
+  async listGeneralOffers(
+    @Param("id") id: number
+  ): Promise<CredentialOfferStatus> {
+    return this.issuerService.credentialOfferById(id);
+  }
+
   @Post("oid4vci/offer")
   @ApiOperation({
     summary: "Add offer",
@@ -128,8 +149,8 @@ export class IssuerController {
   @Roles(AppRole.MANAGE_ALL_CREDENTIALS)
   @ApiBody({ type: CredentialOffer })
   @ApiOkResponse({ type: CredentialOfferStatus })
-  @ApiForbiddenResponseDefault()
-  @ApiOAuth2([AppRole.MANAGE_ALL_CREDENTIALS])
+  @DisableOAuthGuard()
+  @DisableRolesGuard()
   @HttpCode(HttpStatus.OK)
   async offerEndpoint(
     @Body() offerRequest: CredentialOfferRequest

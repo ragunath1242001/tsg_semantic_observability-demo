@@ -4,6 +4,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { CredentialsService } from "../credentials/credentials.service.js";
 import { InitCredentialConfig, RootConfig } from "../config.js";
+import { EmailService, TemplateParameters } from "@tsg-dsp/common-api";
 import {
   AccessToken,
   CredentialIssuerMetadata,
@@ -18,7 +19,6 @@ import { OfferGrants } from "@tsg-dsp/wallet-dtos";
 import crypto from "crypto";
 import { AppError } from "../utils/error.js";
 import { plainToInstance } from "class-transformer";
-import { PresentationService } from "../presentation/presentation.service.js";
 import { DidResolverService } from "../did/did.resolver.service.js";
 import { decodeProtectedHeader, importJWK, jwtVerify } from "jose";
 import { ContextService } from "../contexts/context.service.js";
@@ -32,9 +32,9 @@ export class IssuerService {
     private readonly issuanceRepository: Repository<CredentialIssuance>,
     @InjectRepository(CIAccessToken)
     private readonly tokenRepository: Repository<CIAccessToken>,
+    private readonly emailService: EmailService,
     private readonly contextService: ContextService,
     private readonly credentialService: CredentialsService,
-    private readonly presentationService: PresentationService,
     private readonly didResolverService: DidResolverService,
     private readonly signatureService: SignatureService
   ) {
@@ -153,17 +153,17 @@ export class IssuerService {
 
   async credentialOfferStatus(): Promise<CredentialOfferStatus[]> {
     return (await this.issuanceRepository.find()).map((offer) => {
-      return {
-        id: offer.id,
-        created: offer.created,
-        preAuthorizedCode: offer.preAuthorizedCode,
-        holderId: offer.holderId,
-        credentialType: offer.credentialType,
-        credentialId: offer.credentialId,
-        revoked: offer.revoked,
-        credentialSubject: offer.credentialSubject
-      };
+      return new CredentialOfferStatus(offer);
     });
+  }
+
+  async credentialOfferById(
+    identifier: number
+  ): Promise<CredentialOfferStatus> {
+    const offer = await this.issuanceRepository.findOneByOrFail({
+      id: identifier
+    });
+    return new CredentialOfferStatus(offer);
   }
 
   async createCredentialOffer(
@@ -172,13 +172,41 @@ export class IssuerService {
     const code =
       offerRequest.preAuthorizedCode || crypto.randomBytes(48).toString("hex");
 
-    await this.issuanceRepository.save({
+    const offer = await this.issuanceRepository.save({
       preAuthorizedCode: code,
       holderId: offerRequest.holderId,
       credentialType: offerRequest.credentialType,
       revoked: false,
       credentialSubject: offerRequest.credentialSubject
     });
+
+    if (offerRequest.credentialSubject.email && this.config.email.enabled) {
+      const emailParameters: TemplateParameters = {
+        email: offerRequest.credentialSubject.email,
+        sender: `"${this.config.runtime.title} Wallet" <noreply@dataspac.es>`,
+        title: `${this.config.runtime.title} - Retrieve your credential`,
+        summary: `Retrieve your credential for ${this.config.runtime.title}`,
+        link: `${this.config.server.publicAddress}`,
+        img: `${this.config.server.publicAddress}/layout/images/logo-dark.svg`,
+        header: `Retrieve your credential`,
+        content: [
+          {
+            paragraphs: [
+              `You have been offered a credential for ${this.config.runtime.title}.`,
+              `Please click the link below to retrieve your credential.`
+            ]
+          },
+          {
+            button: {
+              url: `${this.config.server.publicAddress}/#/retrieve-credential/${offer.id}`,
+              text: "Retrieve Credential"
+            }
+          }
+        ],
+        footer: `This email was sent to ${offerRequest.credentialSubject.email} because you asked for a credential for ${this.config.runtime.title}. If you did not expect this email, please ignore it.`
+      };
+      this.emailService.sendMail(emailParameters);
+    }
 
     return {
       credential_issuer: `https://${this.config.server.publicDomain}`,
@@ -306,10 +334,7 @@ export class IssuerService {
           HttpStatus.BAD_REQUEST
         ).andLog(this.logger);
       }
-      const key = await importJWK(
-        usedJwk.publicKeyJwk,
-        usedJwk.publicKeyJwk.type
-      );
+      const key = await importJWK(usedJwk.publicKeyJwk, parsedJwtHeader.alg);
       const verifiedJwt = await jwtVerify(credentialRequest.proof.jwt, key);
 
       const expectedIssuer =

@@ -14,6 +14,9 @@ import ContextView from "../views/Contexts.vue";
 import DCP from "../views/DCP.vue";
 import OID4VP from "../views/OID4VP.vue";
 import { registerRouter, useUserStore } from "@tsg-dsp/common-ui/stores/user";
+import AppLayoutWalletUnauthenticated from "@/layout/AppLayoutWalletUnauthenticated.vue";
+import RetrieveCredential from "@/views/credentials/RetrieveCredential.vue";
+import EmailQR from "@/views/credentials/EmailQR.vue";
 
 const router = createRouter({
   history: createWebHashHistory(),
@@ -23,42 +26,42 @@ const router = createRouter({
       component: AppLayout,
       children: [
         {
-          path: "/",
+          path: "",
           name: "dashboard",
           component: DashboardVue
         },
         {
-          path: "/keys",
+          path: "keys",
           name: "keys",
           component: KeysVue
         },
         {
-          path: "/signature",
+          path: "signature",
           name: "signature",
           component: SignatureVue
         },
         {
-          path: "/credentials",
+          path: "credentials",
           name: "credentials",
           component: CredentialOverview
         },
         {
-          path: "/credentials/issue",
+          path: "credentials/issue",
           name: "credentials-issue",
           component: CredentialIssue
         },
         {
-          path: "/credentials/import",
+          path: "credentials/import",
           name: "credentials-import",
           component: CredentialImport
         },
         {
-          path: "/credentials/gaiax",
+          path: "credentials/gaiax",
           name: "credentials-gaiax",
           component: CredentialGaiaX
         },
         {
-          path: "/credentials/oid4vci",
+          path: "credentials/oid4vci",
           name: "credentials-oid4vci",
           component: CredentialOID4VCI
         },
@@ -73,12 +76,12 @@ const router = createRouter({
           component: OID4VP
         },
         {
-          path: "/services",
+          path: "services",
           name: "services",
           component: DIDServiceView
         },
         {
-          path: "/contexts",
+          path: "contexts",
           name: "contexts",
           component: ContextView
         }
@@ -88,14 +91,36 @@ const router = createRouter({
       path: "/login",
       name: "login",
       component: LoginVue
+    },
+    {
+      path: "/",
+      component: AppLayoutWalletUnauthenticated,
+      children: [
+        {
+          path: "retrieve-credential",
+          name: "RetrieveCredential",
+          component: RetrieveCredential
+        },
+        {
+          path: "retrieve-credential/:id",
+          component: EmailQR
+        }
+      ]
     }
   ]
 });
 router.beforeEach(async (to) => {
+  console.log("route naviation", to);
   // redirect to login page if not logged in and trying to access a restricted page
-  const publicPages = ["/login"];
+  const publicPages = ["/login", "/retrieve-credential"];
+
+  // Check if the path starts with any of these prefixes to handle dynamic routes
+  const publicPrefixes = ["/retrieve-credential/"];
+
+  const authRequired =
+    !publicPages.includes(to.path) &&
+    !publicPrefixes.some((prefix) => to.path.startsWith(prefix));
   const store = useUserStore();
-  const authRequired = !publicPages.includes(to.path);
 
   if (authRequired && !store.user) {
     store.returnUrl = to.fullPath;

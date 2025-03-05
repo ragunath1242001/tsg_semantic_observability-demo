@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable, Logger } from "@nestjs/common";
+import { HttpStatus, Injectable } from "@nestjs/common";
 import { AuthConfig } from "../config/auth.js";
 import { createHash, randomBytes } from "crypto";
 import { AppError, parseNetworkError } from "../utils/error.js";
@@ -25,7 +25,6 @@ export class OAuthService {
     private readonly authConfig: AuthConfig,
     private readonly openIDConfigurationService: OpenIDConfigurationService
   ) {}
-  private readonly logger = new Logger(OAuthService.name);
   private readonly redirects: Map<string, Redirect> = new Map();
 
   async generateAuthorizationRequestUrl(): Promise<string> {

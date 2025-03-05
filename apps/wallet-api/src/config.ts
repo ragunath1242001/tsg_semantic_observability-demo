@@ -18,6 +18,7 @@ import {
   DatabaseConfig,
   Description,
   fileTransformer,
+  NodemailerConfiguration,
   PostgresConfig,
   ServerConfig,
   SQLiteConfig,
@@ -288,6 +289,13 @@ export class RootConfig {
   })
   @Type(() => AuthConfig)
   public readonly auth!: AuthConfig;
+
+  @Description("Email configuration")
+  @ValidateNested()
+  @Type(() => NodemailerConfiguration)
+  @IsOptional()
+  public readonly email: NodemailerConfiguration =
+    new NodemailerConfiguration();
 
   @Description("Initial key configurations")
   @ValidateNested({ each: true })
