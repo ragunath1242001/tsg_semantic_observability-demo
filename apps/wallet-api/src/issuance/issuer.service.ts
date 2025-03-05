@@ -17,9 +17,10 @@ import {
 // This needs to be separate since it's an enum. https://stackoverflow.com/questions/38553097/how-to-import-an-enum
 import { OfferGrants } from "@tsg-dsp/wallet-dtos";
 import crypto from "crypto";
-import { AppError } from "../utils/error.js";
+import { AppError } from "@tsg-dsp/common-api";
 import { plainToInstance } from "class-transformer";
-import { DidResolverService } from "../did/did.resolver.service.js";
+
+import { resolveDid } from "@tsg-dsp/common-signing-and-validation";
 import { decodeProtectedHeader, importJWK, jwtVerify } from "jose";
 import { ContextService } from "../contexts/context.service.js";
 import { SignatureService } from "../keys/signature.service.js";
@@ -35,7 +36,6 @@ export class IssuerService {
     private readonly emailService: EmailService,
     private readonly contextService: ContextService,
     private readonly credentialService: CredentialsService,
-    private readonly didResolverService: DidResolverService,
     private readonly signatureService: SignatureService
   ) {
     this.initialized = this.init();
@@ -330,9 +330,7 @@ export class IssuerService {
           );
         }
       }
-      const holderDid = await this.didResolverService.resolve(
-        issuance.holderId
-      );
+      const holderDid = await resolveDid(issuance.holderId);
 
       const usedJwk = holderDid.verificationMethod?.find(
         (m) => m.id === parsedJwtHeader.kid

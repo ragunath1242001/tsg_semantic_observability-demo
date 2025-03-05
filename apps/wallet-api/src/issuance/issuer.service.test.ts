@@ -11,7 +11,6 @@ import {
 } from "../model/credentials.dao.js";
 import { CredentialsService } from "../credentials/credentials.service.js";
 import { DidService } from "../did/did.service.js";
-import { DidResolverService } from "../did/did.resolver.service.js";
 import { KeysService } from "../keys/keys.service.js";
 import { CIAccessToken, CredentialIssuance } from "../model/issuance.dao.js";
 import { http, HttpResponse } from "msw";
@@ -92,7 +91,6 @@ describe("Issuer service", () => {
       providers: [
         CredentialsService,
         DidService,
-        DidResolverService,
         EmailService,
         KeysService,
         SignatureService,

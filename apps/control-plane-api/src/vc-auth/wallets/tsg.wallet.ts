@@ -4,7 +4,6 @@ import crypto from "crypto";
 import { TsgWalletConfig } from "../../config.js";
 import { DSPClientError } from "../../utils/errors/error.js";
 import { Credential, WalletClient } from "./walletClient.js";
-import { DIDDocument } from "did-resolver";
 import { InputDescriptor } from "@tsg-dsp/common-dtos";
 import { AuthClientService } from "@tsg-dsp/common-api";
 
@@ -175,10 +174,5 @@ export class TsgWalletClient extends WalletClient {
         "warn"
       );
     }
-  }
-
-  async resolveDidDocument(didId: string): Promise<DIDDocument> {
-    const url = `${this.iamConfig.walletUrl}/management/did/resolve/${encodeURI(didId)}`;
-    return await this.cachedGet<DIDDocument>(url, `did:${didId}`);
   }
 }

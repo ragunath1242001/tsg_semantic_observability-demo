@@ -1,8 +1,8 @@
 import axios from "axios";
 import { DIDDocument } from "did-resolver";
-import { AppError } from "../../utils/error.js";
+import { AppError } from "@tsg-dsp/common-api";
 import { HttpStatus, Logger } from "@nestjs/common";
-import { DidResolverStrategy } from "../did.resolver.service.js";
+import { DidResolverStrategy } from "../did.resolver.js";
 
 export class DidWebResolverStrategy implements DidResolverStrategy {
   private readonly logger = new Logger(this.constructor.name);

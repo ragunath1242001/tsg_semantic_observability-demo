@@ -628,6 +628,175 @@ paths:
           description: Client updated successfully.
       summary: Update an existing client
       tags: *a6
+  /api/oid4vp/ar/{id}:
+    get:
+      description: Get the Authorization Request according to the OID4VP specification.
+      operationId: OID4VPVerifierController_getAuthorizationRequest
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      summary: Get the Authorization Request
+      tags: &a7
+        - OID4VP
+  /api/oid4vp/status/{id}:
+    get:
+      description: Get the Authorization Request Status.
+      operationId: OID4VPVerifierController_status
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      summary: Get the Authorization Request Status
+      tags: *a7
+  /api/oid4vp/redirect/{id}:
+    get:
+      description: Redirect to the Authorization Request.
+      operationId: OID4VPVerifierController_redirect
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+      summary: Redirect to the Authorization Request
+      tags: *a7
+  /api/oid4vp/authorize:
+    post:
+      description: Add an Authorization Request according to the OID4VP specification.
+      operationId: OID4VPVerifierController_authorize
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AuthorizationResponse"
+      responses:
+        "200":
+          description: ""
+      summary: Add an Authorization Request
+      tags: *a7
+  /api/management/oid4vp/verifier/{id}:
+    get:
+      description: Obtain an Authorization Request according to the OID4VP specification.
+      operationId: OID4VPVerifierManagementController_status
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: response_type
+          required: true
+          in: query
+          description: The response type of the authorization
+          schema:
+            example: code
+            type: string
+        - name: response_mode
+          required: true
+          in: query
+          description: The response mode of the authorization
+          schema:
+            example: query
+            type: string
+            enum:
+              - query
+              - fragment
+        - name: client_id
+          required: true
+          in: query
+          description: The client identifier issuing the authorization request
+          schema:
+            example: client-id
+            type: string
+        - name: redirect_uri
+          required: true
+          in: query
+          description: The URI to redirect to after authorization
+          schema:
+            example: https://example.com/redirect
+            type: string
+        - name: scope
+          required: false
+          in: query
+          description: Optional scope
+          schema:
+            example: openid profile email
+            type: string
+        - name: state
+          required: false
+          in: query
+          description: Optional state parameter
+          schema:
+            example: randomState
+            type: string
+        - name: nonce
+          required: false
+          in: query
+          description: Optional nonce parameter
+          schema:
+            example: randomNonce
+            type: string
+        - name: code_challenge
+          required: false
+          in: query
+          description: Optional challenge parameter
+          schema:
+            example: randomChallenge
+            type: string
+        - name: code_challenge_method
+          required: false
+          in: query
+          description: Optional challenge method
+          schema:
+            example: S256
+            type: string
+            enum:
+              - plain
+              - S256
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: string
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      summary: Obtain an Authorization Request
+      tags:
+        - OID4VP
 info:
   title: TSG SSO Bridge
   description: "TSG SSO Bridge API Documentation "
@@ -822,6 +991,92 @@ components:
         - roles
         - grants
         - redirectUris
+    ErrorDto:
+      type: object
+      properties:
+        name:
+          type: string
+          example: ResourceNotFound
+        status:
+          type: string
+          example: 404 Not Found
+        code:
+          type: number
+          example: 404
+        message:
+          type: object
+          example: The requested resource does not exist.
+        error:
+          type: string
+          example: Not Found
+      required:
+        - name
+        - status
+        - code
+    DescriptorMap:
+      type: object
+      properties:
+        id:
+          type: string
+          example: desc1
+        format:
+          type: string
+          example: jwt
+        path:
+          type: string
+          example: $.credential
+        path_nested:
+          example:
+            id: desc-nested
+            format: jwt
+            path: $.nested
+          allOf:
+            - $ref: "#/components/schemas/DescriptorMap"
+      required:
+        - id
+        - format
+        - path
+    PresentationSubmission:
+      type: object
+      properties:
+        id:
+          type: string
+          example: submission-id
+        definition_id:
+          type: string
+          example: definition-id
+        descriptor_map:
+          example:
+            - id: desc1
+              format: jwt
+              path: $.credential
+          type: array
+          items:
+            $ref: "#/components/schemas/DescriptorMap"
+      required:
+        - id
+        - definition_id
+        - descriptor_map
+    AuthorizationResponse:
+      type: object
+      properties:
+        vp_token:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+        presentation_submission:
+          example:
+            id: submission-id
+            definition_id: definition-id
+            descriptor_map: []
+          allOf:
+            - $ref: "#/components/schemas/PresentationSubmission"
+        state:
+          type: string
+          example: state123
+      required:
+        - vp_token
+        - presentation_submission
+        - state
 externalDocs:
   description: Git Repository
   url: https://gitlab.com/tno-tsg/dataspace-protocol/tno-security-gateway

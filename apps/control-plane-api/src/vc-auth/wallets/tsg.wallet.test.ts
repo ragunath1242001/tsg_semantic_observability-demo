@@ -168,24 +168,4 @@ describe("TSG Wallet", () => {
       }
     });
   });
-
-  it("Resolve DID Document", async () => {
-    await expect(tsgWalletClient.resolveDidDocument("")).rejects.toThrow(
-      "Cached GET failed for did: (request): connect ECONNREFUSED 127.0.0.1:80"
-    );
-
-    const expectedDidDoc = mockDidDocument();
-    const resolvedDidDoc = await tsgWalletClient.resolveDidDocument(
-      encodeURI("did:web:localhost")
-    );
-    expect(resolvedDidDoc).toBeDefined();
-    expect(resolvedDidDoc.id).toEqual(expectedDidDoc.id);
-    expect(resolvedDidDoc.verificationMethod).toEqual(
-      expectedDidDoc.verificationMethod
-    );
-    expect(resolvedDidDoc.service).toEqual(expectedDidDoc.service);
-    expect(resolvedDidDoc.assertionMethod).toEqual(
-      expectedDidDoc.assertionMethod
-    );
-  });
 });

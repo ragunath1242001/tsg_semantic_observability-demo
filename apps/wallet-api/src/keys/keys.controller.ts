@@ -1,6 +1,6 @@
 import { Controller, Get, Header, HttpStatus, Param } from "@nestjs/common";
 import { KeysService } from "./keys.service.js";
-import { AppError } from "../utils/error.js";
+import { AppError } from "@tsg-dsp/common-api";
 import { ApiOkResponse, ApiTags, ApiOperation } from "@nestjs/swagger";
 import { ApiNotFoundResponseDefault } from "@tsg-dsp/common-dtos";
 import { DisableOAuthGuard } from "@tsg-dsp/common-api";

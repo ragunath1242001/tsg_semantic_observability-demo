@@ -40,11 +40,11 @@ const menuList: Menu[] = [
   {
     label: "Home",
     items: [
-      {
-        label: "Overview",
-        icon: "pi pi-fw pi-home",
-        to: "/"
-      },
+      // {
+      //   label: "Overview",
+      //   icon: "pi pi-fw pi-home",
+      //   to: "/"
+      // },
       {
         label: "Retrieve credential",
         icon: "pi pi-fw pi-id-card",

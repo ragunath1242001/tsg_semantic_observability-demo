@@ -51,6 +51,17 @@ export class UsersService {
     return user;
   }
 
+  async getUserByEmail(email: string): Promise<OauthUser> {
+    const user = await this.userRepository.findOneBy({ email });
+    if (!user) {
+      throw new AppError(
+        `User with email ${email} not found`,
+        HttpStatus.NOT_FOUND
+      );
+    }
+    return user;
+  }
+
   async createUser(createUserData: Partial<OauthUser>): Promise<OauthUser> {
     const user = this.userRepository.create(createUserData);
     user.password = await hash(user.password, 10);

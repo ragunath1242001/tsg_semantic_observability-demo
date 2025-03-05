@@ -3,20 +3,21 @@ import { DidStrategy } from "../did.service.js";
 import { DidServiceConfig, RootConfig } from "../../config.js";
 import { DIDDocument, Service } from "did-resolver";
 import { KeyMaterialDao } from "../../model/credentials.dao.js";
-import { AppError } from "../../utils/error.js";
+import { AppError } from "@tsg-dsp/common-api";
 import { InjectRepository } from "@nestjs/typeorm";
 import { DIDLogs } from "../../model/did.dao.js";
 import { Repository } from "typeorm";
 import { base32 } from "multiformats/bases/base32";
+import { createVerificationMethods } from "../../utils/did.js";
 import {
-  createVerificationMethods,
+  DIDLog,
   DIDMethod,
+  jwkToMultibase,
+  VerificationMethod,
   VERIFICATION_METHOD_CONTEXT
-} from "../../utils/did.js";
+} from "@tsg-dsp/common-signing-and-validation";
 import { createHash } from "crypto";
 import { canonicalize } from "json-canonicalize";
-import { jwkToMultibase } from "../../utils/keys/keyconverter.js";
-import { DIDLog, VerificationMethod } from "./method/interfaces.js";
 import { createDID, updateDID } from "./method/method.js";
 import { createSigner } from "./method/signing.js";
 

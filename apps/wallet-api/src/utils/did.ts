@@ -1,20 +1,9 @@
-import { signingAlgorithm } from "./keymapping.js";
+import { signingAlgorithm } from "@tsg-dsp/common-signing-and-validation";
 import { Service, VerificationMethod } from "did-resolver";
 import { KeyMaterialDao } from "../model/credentials.dao.js";
 import { DidServiceConfig } from "../config.js";
-import { jwkToMultibase } from "./keys/keyconverter.js";
+import { jwkToMultibase } from "@tsg-dsp/common-signing-and-validation";
 
-export enum DIDMethod {
-  WEB = "did:web:",
-  TDW = "did:tdw:",
-  KEY = "did:key:"
-}
-export type DIDMethodTypes = DIDMethod.WEB | DIDMethod.TDW | DIDMethod.KEY;
-export const DIDMethodList: string[] = [DIDMethod.WEB, DIDMethod.TDW];
-export const VERIFICATION_METHOD_CONTEXT = [
-  "https://w3id.org/security/suites/jws-2020/v1",
-  "https://w3id.org/security/multikey/v1"
-];
 export function createVerificationMethods(
   didId: string,
   KeyMaterialDao: KeyMaterialDao[],

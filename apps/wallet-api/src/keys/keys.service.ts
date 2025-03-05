@@ -9,7 +9,7 @@ import {
 import { Not, Repository } from "typeorm";
 import { InitKeyConfig, RootConfig } from "../config.js";
 import { KeyMaterialDao } from "../model/credentials.dao.js";
-import { AppError } from "../utils/error.js";
+import { AppError } from "@tsg-dsp/common-api";
 import { InjectRepository } from "@nestjs/typeorm";
 import { DidService } from "../did/did.service.js";
 import { JsonWebKey } from "crypto";

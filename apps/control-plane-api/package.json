@@ -39,6 +39,7 @@
     "@tsg-dsp/common-api": "workspace:*",
     "@tsg-dsp/common-dsp": "workspace:*",
     "@tsg-dsp/common-dtos": "workspace:*",
+    "@tsg-dsp/common-signing-and-validation": "workspace:*",
     "@tsg-dsp/control-plane-dtos": "workspace:*",
     "@types/jsonpath": "^0.2.4",
     "ajv": "^8.17.1",

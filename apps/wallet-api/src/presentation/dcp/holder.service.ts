@@ -12,7 +12,7 @@ import { CredentialsService } from "../../credentials/credentials.service.js";
 import { Ajv } from "ajv";
 import jsonpath from "jsonpath";
 import { CredentialDao } from "../../model/credentials.dao.js";
-import { AppError } from "../../utils/error.js";
+import { AppError } from "@tsg-dsp/common-api";
 
 @Injectable()
 export class DCPHolderService {

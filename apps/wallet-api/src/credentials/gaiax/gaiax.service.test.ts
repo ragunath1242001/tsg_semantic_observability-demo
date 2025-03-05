@@ -26,7 +26,6 @@ import {
 } from "@tsg-dsp/wallet-dtos";
 import { GaiaXService } from "./gaiax.service.js";
 import { DIDDocuments, DIDService, DIDLogs } from "../../model/did.dao.js";
-import { DidResolverService } from "../../did/did.resolver.service.js";
 import { SignatureService } from "../../keys/signature.service.js";
 import { TypeOrmTestHelper } from "@tsg-dsp/common-api";
 
@@ -150,7 +149,6 @@ describe("Credentials Service", () => {
         CredentialsService,
         GaiaXService,
         DidService,
-        DidResolverService,
         SignatureService,
         KeysService,
         {

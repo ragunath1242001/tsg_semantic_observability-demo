@@ -16,6 +16,7 @@ import { ClientsModule } from "../clients/clients.module.js";
     ClientsModule
   ],
   providers: [OauthService, TokenService],
-  controllers: [OauthController, MetadataController]
+  controllers: [OauthController, MetadataController],
+  exports: [OauthService]
 })
 export class OauthModule {}

@@ -19,6 +19,7 @@ import {
 import { SignatureService } from "./signature.service.js";
 import { toArray } from "@tsg-dsp/common-dsp";
 import { Roles, validationPipe } from "@tsg-dsp/common-api";
+import { validateProof } from "@tsg-dsp/common-signing-and-validation";
 
 @Controller("management/signature")
 @ApiTags("Management Signatures")
@@ -68,7 +69,7 @@ export class SignatureManagementController {
     @Body(validationPipe) validateRequest: ValidateRequest
   ): Promise<ProofDocument> {
     const { proof, ...plainDocument } = validateRequest.proofDocument!;
-    await this.signatureService.validateProof(plainDocument, toArray(proof)[0]);
+    await validateProof(plainDocument, toArray(proof)[0]);
     return validateRequest.proofDocument!;
   }
 }

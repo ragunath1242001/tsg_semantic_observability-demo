@@ -3,7 +3,7 @@ import { JSONLDContext } from "../model/context.dao.js";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { JsonLdContextConfig, RootConfig } from "../config.js";
-import { AppError } from "../utils/error.js";
+import { AppError } from "@tsg-dsp/common-api";
 
 @Injectable()
 export class ContextService {

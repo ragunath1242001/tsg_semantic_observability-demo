@@ -12,7 +12,6 @@ import { DidService } from "../../did/did.service.js";
 import { KeysService } from "../../keys/keys.service.js";
 import { PresentationService } from "../presentation.service.js";
 import { describe, expect, beforeAll, afterAll, it } from "@jest/globals";
-import { DidResolverService } from "../../did/did.resolver.service.js";
 import { SetupServer, setupServer } from "msw/node";
 import { HttpResponse, http } from "msw";
 import { DCPHolderService } from "./holder.service.js";
@@ -97,7 +96,6 @@ describe("Presentation Service", () => {
         DCPVerifierService,
         CredentialsService,
         DidService,
-        DidResolverService,
         KeysService,
         PresentationService,
         {

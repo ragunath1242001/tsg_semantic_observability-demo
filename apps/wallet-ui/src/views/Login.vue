@@ -59,7 +59,7 @@ const logoUrl = computed(() => {
               label="Proceed without login"
               class="w-full mt-3"
               as="router-link"
-              to="/home"></Button>
+              to="/retrieve-credential"></Button>
           </div>
         </div>
       </div>

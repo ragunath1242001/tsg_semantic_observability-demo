@@ -15,7 +15,7 @@ import { CredentialsService } from "./credentials.service.js";
 import { InitCredentialConfig, RootConfig } from "../config.js";
 import { CredentialDao } from "../model/credentials.dao.js";
 import { VerifiableCredential } from "@tsg-dsp/common-dsp";
-import { AppError } from "../utils/error.js";
+import { AppError } from "@tsg-dsp/common-api";
 import { ClientInfo, AppRole } from "@tsg-dsp/wallet-dtos";
 import { ContextService } from "../contexts/context.service.js";
 import {

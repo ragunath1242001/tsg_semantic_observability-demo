@@ -4,15 +4,12 @@ import { KeyMaterialDao } from "../model/credentials.dao.js";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Like, Repository } from "typeorm";
 import { DidServiceConfig, RootConfig } from "../config.js";
-import { AppError } from "../utils/error.js";
+import { AppError } from "@tsg-dsp/common-api";
 import { DIDDocuments, DIDLogs, DIDService } from "../model/did.dao.js";
 import { DidWebStrategy } from "./web/did.web.strategy.js";
 import { DidTdwStrategy } from "./tdw/did.tdw.strategy.js";
-import {
-  createServices,
-  createVerificationMethods,
-  DIDMethod
-} from "../utils/did.js";
+import { createServices, createVerificationMethods } from "../utils/did.js";
+import { DIDMethod } from "@tsg-dsp/common-signing-and-validation";
 import { PaginationOptionsDto } from "@tsg-dsp/common-api";
 
 export interface DidStrategy {

@@ -5,7 +5,7 @@ import {
   VerifiablePresentation
 } from "@tsg-dsp/common-dsp";
 import crypto from "crypto";
-import { AppError, parseNetworkError } from "../../utils/error.js";
+import { AppError, parseNetworkError } from "@tsg-dsp/common-api";
 import { DidService } from "../../did/did.service.js";
 import {
   ComplianceRequest,

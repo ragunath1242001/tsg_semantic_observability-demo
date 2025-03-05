@@ -209,7 +209,7 @@ importers:
         version: 7.0.0
       ts-jest:
         specifier: ^29.2.5
-        version: 29.2.6(@babel/core@7.26.9)(@jest/transform@29.7.0)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.26.9))(jest@29.7.0(@types/node@22.13.5)(ts-node@10.9.2(@types/node@22.13.5)(typescript@5.7.3)))(typescript@5.7.3)
+        version: 29.2.6(@babel/core@7.26.9)(@jest/transform@29.7.0)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.26.9))(jest@29.7.0(@types/node@22.13.5))(typescript@5.7.3)
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@22.13.5)(typescript@5.7.3)
@@ -370,6 +370,9 @@ importers:
       '@tsg-dsp/common-dtos':
         specifier: workspace:*
         version: link:../../libs/common-dtos
+      '@tsg-dsp/common-signing-and-validation':
+        specifier: workspace:*
+        version: link:../../libs/common-signing-and-validation
       '@tsg-dsp/control-plane-dtos':
         specifier: workspace:*
         version: link:../../libs/control-plane-dtos
@@ -517,7 +520,7 @@ importers:
         version: 7.0.0
       ts-jest:
         specifier: ^29.2.5
-        version: 29.2.6(@babel/core@7.26.9)(@jest/transform@29.7.0)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.26.9))(jest@29.7.0(@types/node@22.13.5)(ts-node@10.9.2(@types/node@22.13.5)(typescript@5.7.3)))(typescript@5.7.3)
+        version: 29.2.6(@babel/core@7.26.9)(@jest/transform@29.7.0)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.26.9))(jest@29.7.0(@types/node@22.13.5))(typescript@5.7.3)
       ts-node:
         specifier: ^10.9.2
         version: 10.9.2(@types/node@22.13.5)(typescript@5.7.3)
@@ -798,7 +801,7 @@ importers:
         version: 7.0.0
       ts-jest:
         specifier: ^29.2.5
-        version: 29.2.6(@babel/core@7.26.9)(@jest/transform@29.7.0)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.26.9))(jest@29.7.0(@types/node@22.13.5)(ts-node@10.9.2(@types/node@22.13.5)(typescript@5.7.3)))(typescript@5.7.3)
+        version: 29.2.6(@babel/core@7.26.9)(@jest/transform@29.7.0)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.26.9))(jest@29.7.0(@types/node@22.13.5))(typescript@5.7.3)
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@22.13.5)(typescript@5.7.3)
@@ -944,9 +947,15 @@ importers:
       '@tsg-dsp/common-api':
         specifier: workspace:*
         version: link:../../libs/common-api
+      '@tsg-dsp/common-dsp':
+        specifier: workspace:*
+        version: link:../../libs/common-dsp
       '@tsg-dsp/common-dtos':
         specifier: workspace:*
         version: link:../../libs/common-dtos
+      '@tsg-dsp/common-signing-and-validation':
+        specifier: workspace:*
+        version: link:../../libs/common-signing-and-validation
       '@tsg-dsp/sso-bridge-dtos':
         specifier: workspace:*
         version: link:../../libs/sso-bridge-dtos
@@ -1029,6 +1038,9 @@ importers:
       jest:
         specifier: ^29.6.4
         version: 29.7.0(@types/node@22.13.5)(ts-node@10.9.2(@types/node@22.13.5)(typescript@5.7.3))
+      msw:
+        specifier: ^2.6.6
+        version: 2.7.1(@types/node@22.13.5)(typescript@5.7.3)
       pgmock:
         specifier: ^1.0.3
         version: 1.0.3
@@ -1043,7 +1055,7 @@ importers:
         version: 7.0.0
       ts-jest:
         specifier: ^29.2.5
-        version: 29.2.6(@babel/core@7.26.9)(@jest/transform@29.7.0)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.26.9))(jest@29.7.0(@types/node@22.13.5)(ts-node@10.9.2(@types/node@22.13.5)(typescript@5.7.3)))(typescript@5.7.3)
+        version: 29.2.6(@babel/core@7.26.9)(@jest/transform@29.7.0)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.26.9))(jest@29.7.0(@types/node@22.13.5))(typescript@5.7.3)
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@22.13.5)(typescript@5.7.3)
@@ -1083,6 +1095,9 @@ importers:
       primevue:
         specifier: ^4.2.5
         version: 4.2.5(vue@3.5.13(typescript@5.7.3))
+      qrcode:
+        specifier: ^1.5.4
+        version: 1.5.4
       tailwindcss:
         specifier: ^3.4.15
         version: 3.4.17(ts-node@10.9.2(@types/node@22.13.5)(typescript@5.7.3))
@@ -1108,6 +1123,9 @@ importers:
       '@types/node':
         specifier: ^22.13.4
         version: 22.13.5
+      '@types/qrcode':
+        specifier: ^1.5.4
+        version: 1.5.5
       '@vitejs/plugin-vue':
         specifier: ^5.2.1
         version: 5.2.1(vite@6.1.1(@types/node@22.13.5)(jiti@1.21.7)(sass@1.85.0)(terser@5.39.0)(yaml@2.7.0))(vue@3.5.13(typescript@5.7.3))
@@ -1183,6 +1201,9 @@ importers:
       '@tsg-dsp/common-dtos':
         specifier: workspace:*
         version: link:../../libs/common-dtos
+      '@tsg-dsp/common-signing-and-validation':
+        specifier: workspace:*
+        version: link:../../libs/common-signing-and-validation
       '@tsg-dsp/wallet-dtos':
         specifier: workspace:*
         version: link:../../libs/wallet-dtos
@@ -1333,7 +1354,7 @@ importers:
         version: 6.0.1
       ts-jest:
         specifier: ^29.2.5
-        version: 29.2.6(@babel/core@7.26.9)(@jest/transform@29.7.0)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.26.9))(jest@29.7.0(@types/node@22.13.5)(ts-node@10.9.2(@types/node@22.13.5)(typescript@5.7.3)))(typescript@5.7.3)
+        version: 29.2.6(@babel/core@7.26.9)(@jest/transform@29.7.0)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.26.9))(jest@29.7.0(@types/node@22.13.5))(typescript@5.7.3)
       ts-node:
         specifier: ^10.9.2
         version: 10.9.2(@types/node@22.13.5)(typescript@5.7.3)
@@ -1560,7 +1581,7 @@ importers:
         version: 2.7.1(@types/node@22.13.5)(typescript@5.7.3)
       ts-jest:
         specifier: ^29.2.5
-        version: 29.2.6(@babel/core@7.26.9)(@jest/transform@29.7.0)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.26.9))(jest@29.7.0(@types/node@22.13.5)(ts-node@10.9.2(@types/node@22.13.5)(typescript@5.7.3)))(typescript@5.7.3)
+        version: 29.2.6(@babel/core@7.26.9)(@jest/transform@29.7.0)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.26.9))(jest@29.7.0(@types/node@22.13.5))(typescript@5.7.3)
       typescript:
         specifier: ^5.7.3
         version: 5.7.3
@@ -1618,7 +1639,7 @@ importers:
         version: 2.7.1(@types/node@22.13.5)(typescript@5.7.3)
       ts-jest:
         specifier: ^29.2.5
-        version: 29.2.6(@babel/core@7.26.9)(@jest/transform@29.7.0)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.26.9))(jest@29.7.0(@types/node@22.13.5)(ts-node@10.9.2(@types/node@22.13.5)(typescript@5.7.3)))(typescript@5.7.3)
+        version: 29.2.6(@babel/core@7.26.9)(@jest/transform@29.7.0)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.26.9))(jest@29.7.0(@types/node@22.13.5))(typescript@5.7.3)
       ts-node:
         specifier: ^10.9.2
         version: 10.9.2(@types/node@22.13.5)(typescript@5.7.3)
@@ -1659,6 +1680,106 @@ importers:
         specifier: ^2.8.1
         version: 2.8.1
     devDependencies:
+      typescript:
+        specifier: ^5.7.3
+        version: 5.7.3
+
+  libs/common-signing-and-validation:
+    dependencies:
+      '@digitalbazaar/bitstring':
+        specifier: ^3.1.0
+        version: 3.1.0
+      '@nestjs/common':
+        specifier: ^11.0.10
+        version: 11.0.10(class-transformer@0.5.1(patch_hash=bddc0866ebe276b1e4f0a507f140da242ee41a99a9ce03c0f3695b7eca94a2a2))(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)
+      '@tsg-dsp/common-api':
+        specifier: workspace:*
+        version: link:../common-api
+      '@tsg-dsp/common-dsp':
+        specifier: workspace:*
+        version: link:../common-dsp
+      '@tsg-dsp/common-dtos':
+        specifier: workspace:*
+        version: link:../common-dtos
+      ajv:
+        specifier: ^8.17.1
+        version: 8.17.1
+      axios:
+        specifier: ^1.7.8
+        version: 1.7.9
+      bignumber.js:
+        specifier: ^9.1.2
+        version: 9.1.2
+      class-transformer:
+        specifier: ^0.5.1
+        version: 0.5.1(patch_hash=bddc0866ebe276b1e4f0a507f140da242ee41a99a9ce03c0f3695b7eca94a2a2)
+      did-resolver:
+        specifier: ^4.1.0
+        version: 4.1.0
+      elliptic:
+        specifier: ^6.6.1
+        version: 6.6.1
+      fast-json-patch:
+        specifier: ^3.1.1
+        version: 3.1.1
+      jose:
+        specifier: ^6.0.0
+        version: 6.0.4
+      json-canonicalize:
+        specifier: ^1.0.6
+        version: 1.0.6
+      jsonld:
+        specifier: ^8.2.1
+        version: 8.3.3(web-streams-polyfill@3.3.3)
+      jsonpath:
+        specifier: ^1.1.1
+        version: 1.1.1
+      multiformats:
+        specifier: ^13.3.2
+        version: 13.3.2
+      tslib:
+        specifier: ^2.8.1
+        version: 2.8.1
+      varint:
+        specifier: ^6.0.0
+        version: 6.0.0
+    devDependencies:
+      '@jest/globals':
+        specifier: ^29.7.0
+        version: 29.7.0
+      '@jest/types':
+        specifier: ^29.6.3
+        version: 29.6.3
+      '@nestjs/testing':
+        specifier: ^11.0.10
+        version: 11.0.10(@nestjs/common@11.0.10(class-transformer@0.5.1(patch_hash=bddc0866ebe276b1e4f0a507f140da242ee41a99a9ce03c0f3695b7eca94a2a2))(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.0.10)(@nestjs/platform-express@11.0.10)
+      '@types/digitalbazaar__bitstring':
+        specifier: ^3.1.1
+        version: 3.1.1
+      '@types/elliptic':
+        specifier: ^6.4.18
+        version: 6.4.18
+      '@types/jest':
+        specifier: ^29.5.14
+        version: 29.5.14
+      '@types/jsonld':
+        specifier: ^1.5.15
+        version: 1.5.15
+      '@types/jsonpath':
+        specifier: ^0.2.4
+        version: 0.2.4
+      '@types/varint':
+        specifier: ^6.0.3
+        version: 6.0.3
+      jest:
+        specifier: ^29.7.0
+        version: 29.7.0(@types/node@22.13.5)(ts-node@10.9.2(@types/node@22.13.5)(typescript@5.7.3))
+      msw:
+        specifier: ^2.6.6
+        version: 2.7.1(@types/node@22.13.5)(typescript@5.7.3)
+      ts-jest:
+        specifier: ^29.2.5
+        version: 29.2.6(@babel/core@7.26.9)(@jest/transform@29.7.0)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.26.9))(jest@29.7.0(@types/node@22.13.5))(typescript@5.7.3)
       typescript:
         specifier: ^5.7.3
         version: 5.7.3
@@ -1935,7 +2056,7 @@ importers:
         version: 7.0.0
       ts-jest:
         specifier: ^29.2.5
-        version: 29.2.6(@babel/core@7.26.9)(@jest/transform@29.7.0)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.26.9))(jest@29.7.0(@types/node@22.13.5)(ts-node@10.9.2(@types/node@22.13.5)(typescript@5.7.3)))(typescript@5.7.3)
+        version: 29.2.6(@babel/core@7.26.9)(@jest/transform@29.7.0)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.26.9))(jest@29.7.0(@types/node@22.13.5))(typescript@5.7.3)
       ts-node:
         specifier: ^10.9.2
         version: 10.9.2(@types/node@22.13.5)(typescript@5.7.3)
@@ -2152,7 +2273,7 @@ importers:
         version: 7.0.0
       ts-jest:
         specifier: ^29.2.5
-        version: 29.2.6(@babel/core@7.26.9)(@jest/transform@29.7.0)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.26.9))(jest@29.7.0(@types/node@22.13.5)(ts-node@10.9.2(@types/node@22.13.5)(typescript@5.7.3)))(typescript@5.7.3)
+        version: 29.2.6(@babel/core@7.26.9)(@jest/transform@29.7.0)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.26.9))(jest@29.7.0(@types/node@22.13.5))(typescript@5.7.3)
       ts-node:
         specifier: ^10.9.2
         version: 10.9.2(@types/node@22.13.5)(typescript@5.7.3)
@@ -13000,7 +13121,7 @@ snapshots:
 
   ts-interface-checker@0.1.13: {}
 
-  ts-jest@29.2.6(@babel/core@7.26.9)(@jest/transform@29.7.0)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.26.9))(jest@29.7.0(@types/node@22.13.5)(ts-node@10.9.2(@types/node@22.13.5)(typescript@5.7.3)))(typescript@5.7.3):
+  ts-jest@29.2.6(@babel/core@7.26.9)(@jest/transform@29.7.0)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.26.9))(jest@29.7.0(@types/node@22.13.5))(typescript@5.7.3):
     dependencies:
       bs-logger: 0.2.6
       ejs: 3.1.10

@@ -126,11 +126,10 @@ This document outlines the modules and their dependencies for the wallet applica
 
 ### Providers
 - DidService
-- DidResolverService
+
 
 ### Exports
 - DidService
-- DidResolverService
 
 
 ## CredentialsModule

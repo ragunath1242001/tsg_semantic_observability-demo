@@ -8,7 +8,7 @@ import { KeyMaterialDao } from "../model/credentials.dao.js";
 import { DIDDocument } from "did-resolver";
 import { generateKeyPair, exportJWK } from "jose";
 import { DIDDocuments, DIDLogs, DIDService } from "../model/did.dao.js";
-import { DIDMethod } from "../utils/did.js";
+import { DIDMethod } from "@tsg-dsp/common-signing-and-validation";
 import { TypeOrmTestHelper } from "@tsg-dsp/common-api";
 
 describe("DID Service", () => {

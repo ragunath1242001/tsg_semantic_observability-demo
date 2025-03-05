@@ -1,27 +1,12 @@
-import { base32 } from "multiformats/bases/base32";
-import { canonicalize } from "json-canonicalize";
-import { createHash } from "node:crypto";
 import {
+  BASE_CONTEXT,
   CreateDIDInterface,
   DIDDoc,
   VerificationMethod
-} from "./interfaces.js";
-import { BASE_CONTEXT } from "./constants.js";
-
-export const clone = (input: any) => JSON.parse(JSON.stringify(input));
+} from "@tsg-dsp/common-signing-and-validation";
 
 export const createDate = (created?: Date) =>
   new Date(created ?? Date.now()).toISOString().slice(0, -5) + "Z";
-
-export const createSCID = async (logEntryHash: string): Promise<string> => {
-  return `${logEntryHash.slice(0, 28)}`;
-};
-
-export const deriveHash = (input: any): string => {
-  const data = canonicalize(input);
-  const hash = createHash("sha256").update(data).digest();
-  return base32.encode(hash);
-};
 
 export const createDIDDoc = async (
   options: CreateDIDInterface

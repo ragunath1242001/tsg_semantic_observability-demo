@@ -6,6 +6,16 @@ import { useToast } from "primevue";
 import { useAuthStore } from "../stores/user";
 import { useRoute } from "vue-router";
 import http from "../utils/http";
+import QRCode from "qrcode";
+import { toastError } from "@tsg-dsp/common-ui/utils/error.js";
+
+const { layoutConfig } = useLayout();
+
+const logoUrl = computed(() => {
+  return `layout/images/${
+    layoutConfig.darkTheme ? "logo-white" : "logo-dark"
+  }.svg`;
+});
 
 const route = useRoute();
 const authorizationRequest = ref<Record<string, string>>(null);
@@ -51,13 +61,56 @@ const login = async (currentUser: boolean = false) => {
   }
 };
 
-const { layoutConfig } = useLayout();
+const id = ref(crypto.randomUUID());
 
-const logoUrl = computed(() => {
-  return `layout/images/${
-    layoutConfig.darkTheme ? "logo-white" : "logo-dark"
-  }.svg`;
-});
+const oid4vpData = ref("");
+const oid4vpUrl = ref("");
+
+const createAuthorizationRequest = async (value: string) => {
+  if (value === "0") {
+    return;
+  }
+  try {
+    const queryString = new URLSearchParams(
+      route.query as Record<string, string>
+    ).toString();
+    const response = await http.get<string>(
+      `management/oid4vp/verifier/${id.value}?${queryString}`
+    );
+    if (response.status == 200) {
+      oid4vpUrl.value = response.data;
+      oid4vpData.value = await QRCode.toDataURL(response.data);
+      setTimeout(getStatus, 1000);
+    }
+  } catch (error) {
+    toast.add(
+      toastError({
+        error,
+        summary: "Could not get authorization request",
+        defaultMessage: `Error in retrieving authorization request`
+      })
+    );
+  }
+};
+
+const getStatus = async () => {
+  try {
+    const response = await http.get(`oid4vp/status/${id.value}`);
+    if (response.data.completed) {
+      window.location.replace(`api/oid4vp/redirect/${id.value}`);
+    } else {
+      setTimeout(getStatus, 1000);
+    }
+  } catch (error) {
+    toast.add(
+      toastError({
+        error,
+        summary: "Could not get status",
+        defaultMessage: `Error in retrieving status`
+      })
+    );
+  }
+};
 </script>
 
 <template>
@@ -99,37 +152,58 @@ const logoUrl = computed(() => {
               >Or sign in with a different account:</span
             >
           </div>
-          <div>
-            <form @submit.prevent="login(false)">
-              <label
-                for="email1"
-                class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2"
-                >Username</label
-              >
-              <InputText
-                id="email1"
-                v-model="username"
-                type="text"
-                placeholder="Username"
-                class="w-full mb-8" />
 
-              <label
-                for="password1"
-                class="block text-surface-900 dark:text-surface-0 font-medium text-xl mb-2"
-                >Password</label
-              >
-              <Password
-                id="password1"
-                v-model="password"
-                placeholder="Password"
-                :toggle-mask="true"
-                class="w-full mb-4"
-                fluid
-                :feedback="false"></Password>
+          <Tabs value="0" @update:value="createAuthorizationRequest">
+            <TabList>
+              <Tab value="0">Username/Password</Tab>
+              <Tab value="1">TSG Wallet App</Tab>
+            </TabList>
+            <TabPanels>
+              <TabPanel value="0">
+                <form @submit.prevent="login(false)">
+                  <label
+                    for="email1"
+                    class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2"
+                    >Username</label
+                  >
+                  <InputText
+                    id="email1"
+                    v-model="username"
+                    type="text"
+                    placeholder="Username"
+                    class="w-full mb-8" />
 
-              <Button label="Sign In" class="w-full" type="submit"></Button>
-            </form>
-          </div>
+                  <label
+                    for="password1"
+                    class="block text-surface-900 dark:text-surface-0 font-medium text-xl mb-2"
+                    >Password</label
+                  >
+                  <Password
+                    id="password1"
+                    v-model="password"
+                    placeholder="Password"
+                    :toggle-mask="true"
+                    class="w-full mb-4"
+                    fluid
+                    :feedback="false"></Password>
+
+                  <Button label="Sign In" class="w-full" type="submit"></Button>
+                </form>
+              </TabPanel>
+              <TabPanel value="1">
+                <div class="flex flex-col items-center justify-center">
+                  <div class="text-center mb-4">
+                    <span class="text-muted"
+                      >Scan the QR code with the TSG Wallet App to sign in</span
+                    >
+                  </div>
+                  <a :href="oid4vpUrl" target="_blank"
+                    ><img :src="oid4vpData" alt="QR code"
+                  /></a>
+                </div>
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
         </div>
       </div>
     </div>

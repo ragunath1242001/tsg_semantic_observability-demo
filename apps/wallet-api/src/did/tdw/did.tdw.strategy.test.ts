@@ -9,12 +9,11 @@ import { getRepositoryToken } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { jest } from "@jest/globals";
 import { DIDDocument } from "did-resolver";
+import { createServices, createVerificationMethods } from "../../utils/did.js";
 import {
-  createServices,
-  createVerificationMethods,
-  DIDMethod
-} from "../../utils/did.js";
-import { jwkToMultibase } from "../../utils/keys/keyconverter.js";
+  DIDMethod,
+  jwkToMultibase
+} from "@tsg-dsp/common-signing-and-validation";
 import { TypeOrmTestHelper } from "@tsg-dsp/common-api";
 
 describe("DID Tdw Service", () => {

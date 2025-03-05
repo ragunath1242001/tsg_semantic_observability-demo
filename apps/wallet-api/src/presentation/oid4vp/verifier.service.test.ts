@@ -19,7 +19,6 @@ import { CredentialsService } from "../../credentials/credentials.service.js";
 import { SignatureService } from "../../keys/signature.service.js";
 import { KeysService } from "../../keys/keys.service.js";
 import { DidService } from "../../did/did.service.js";
-import { DidResolverService } from "../../did/did.resolver.service.js";
 import { VerifiablePresentationJwt } from "@tsg-dsp/common-dsp";
 import { SetupServer, setupServer } from "msw/node";
 import { http, HttpResponse } from "msw";
@@ -79,7 +78,6 @@ describe("OID4VPVerifierService", () => {
       ],
       providers: [
         OID4VPVerifierService,
-        DidResolverService,
         PresentationService,
         CredentialsService,
         SignatureService,
