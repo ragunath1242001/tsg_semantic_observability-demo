@@ -41,7 +41,13 @@ import { loader } from "@guolao/vue-monaco-editor";
 import Drawer from "primevue/drawer";
 import { setJsonLdDebugContexts } from "@tsg-dsp/common-dsp";
 import MeterGroup from "primevue/metergroup";
-import { ColorPicker, DynamicDialog, TabList, TabPanels } from "primevue";
+import {
+  Checkbox,
+  ColorPicker,
+  DynamicDialog,
+  TabList,
+  TabPanels
+} from "primevue";
 
 setJsonLdDebugContexts(
   import.meta.env.TSG_STATIC_MODE !== "production",
@@ -72,6 +78,7 @@ app.use(ConfirmationService);
 app.component("AutoComplete", AutoComplete);
 app.component("Badge", Badge);
 app.component("Button", Button);
+app.component("Checkbox", Checkbox);
 app.component("ColorPicker", ColorPicker);
 app.component("ConfirmDialog", ConfirmDialog);
 app.component("Dialog", Dialog);

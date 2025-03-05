@@ -671,12 +671,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/CredentialConfigDto"
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorDto"
       security: *a12
       summary: Retrieve credential configuration
       tags: *a11
@@ -1695,16 +1689,28 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/CredentialOfferStatus"
-        "403":
-          description: Forbidden
+      summary: Add offer
+      tags: *a23
+  /api/oid4vci/offer/{id}:
+    get:
+      description: Retrieves a specific credential offer
+      operationId: IssuerController_listGeneralOffers
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+      responses:
+        "200":
+          description: ""
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
-      security:
-        - oauth2:
-            - wallet_manage_all_credentials
-      summary: Add offer
+                type: array
+                items:
+                  $ref: "#/components/schemas/CredentialOfferStatus"
+      summary: Retrieve offered credential
       tags: *a23
   /api/oid4vci/offer/{id}/revoke:
     put:

@@ -30,7 +30,11 @@ import { DIDDocuments, DIDLogs, DIDService } from "../model/did.dao.js";
 import { ContextService } from "../contexts/context.service.js";
 import { JSONLDContext } from "../model/context.dao.js";
 import { SignatureService } from "../keys/signature.service.js";
-import { TypeOrmTestHelper } from "@tsg-dsp/common-api";
+import {
+  EmailService,
+  NodemailerConfiguration,
+  TypeOrmTestHelper
+} from "@tsg-dsp/common-api";
 
 describe("Holder service", () => {
   let issuerService: IssuerService;
@@ -88,6 +92,7 @@ describe("Holder service", () => {
         CredentialsService,
         DidService,
         DidResolverService,
+        EmailService,
         KeysService,
         SignatureService,
         PresentationService,
@@ -97,6 +102,12 @@ describe("Holder service", () => {
         {
           provide: RootConfig,
           useValue: config
+        },
+        {
+          provide: NodemailerConfiguration,
+          useValue: plainToInstance(NodemailerConfiguration, {
+            enabled: false
+          })
         }
       ]
     }).compile();

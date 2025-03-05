@@ -345,7 +345,7 @@ export class SignatureService {
         "Could not sign data as DataIntegrityProof",
         HttpStatus.INTERNAL_SERVER_ERROR,
         e
-      ).andLog(this.logger, "warn");
+      ).andLog(this.logger, "warn", true);
     }
   }
 

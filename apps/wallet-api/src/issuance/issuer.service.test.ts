@@ -13,7 +13,6 @@ import { CredentialsService } from "../credentials/credentials.service.js";
 import { DidService } from "../did/did.service.js";
 import { DidResolverService } from "../did/did.resolver.service.js";
 import { KeysService } from "../keys/keys.service.js";
-import { PresentationService } from "../presentation/presentation.service.js";
 import { CIAccessToken, CredentialIssuance } from "../model/issuance.dao.js";
 import { http, HttpResponse } from "msw";
 import { SetupServer, setupServer } from "msw/node";
@@ -30,7 +29,11 @@ import { DIDDocuments, DIDLogs, DIDService } from "../model/did.dao.js";
 import { JSONLDContext } from "../model/context.dao.js";
 import { ContextService } from "../contexts/context.service.js";
 import { SignatureService } from "../keys/signature.service.js";
-import { TypeOrmTestHelper } from "@tsg-dsp/common-api";
+import {
+  EmailService,
+  NodemailerConfiguration,
+  TypeOrmTestHelper
+} from "@tsg-dsp/common-api";
 
 describe("Issuer service", () => {
   let issuerService: IssuerService;
@@ -55,7 +58,10 @@ describe("Issuer service", () => {
           issuable: true,
           documentUrl: "https://example.com/context.json"
         }
-      ]
+      ],
+      email: {
+        enabled: false
+      }
     });
 
     moduleRef = await Test.createTestingModule({
@@ -87,15 +93,21 @@ describe("Issuer service", () => {
         CredentialsService,
         DidService,
         DidResolverService,
+        EmailService,
         KeysService,
         SignatureService,
-        PresentationService,
         IssuerService,
         HolderService,
         ContextService,
         {
           provide: RootConfig,
           useValue: config
+        },
+        {
+          provide: NodemailerConfiguration,
+          useValue: plainToInstance(NodemailerConfiguration, {
+            enabled: false
+          })
         }
       ]
     }).compile();

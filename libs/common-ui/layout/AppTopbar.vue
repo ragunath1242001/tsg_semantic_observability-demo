@@ -13,13 +13,14 @@ export interface TopbarProps {
   title: string;
   name: string;
   logoUrl: string;
+  needSignin?: boolean;
   user: { name: string };
   router: Router;
 }
 
 const props = defineProps<TopbarProps>();
 
-const { title, logoUrl, user, router } = toRefs(props);
+const { title, logoUrl, user, needSignin, router } = toRefs(props);
 onMounted(() => {
   bindOutsideClickListener();
 });
@@ -68,6 +69,10 @@ const isOutsideClicked = (event) => {
   );
 };
 
+const login = () => {
+  router.value.push("/login");
+};
+
 const logout = () => {
   localStorage.removeItem("username");
   localStorage.removeItem("password");
@@ -112,17 +117,30 @@ const logout = () => {
       </button>
       <div class="layout-topbar-menu lg:block" :class="topbarMenuClasses">
         <div class="layout-topbar-menu-content">
-          <div v-if="user" class="layout-topbar-text">
+          <div v-if="user && !needSignin" class="layout-topbar-text">
             <div>
               <i class="pi pi-user"></i>
               {{ user.name }}
             </div>
           </div>
-          <button class="layout-topbar-action" @click="onConfigButtonClick">
+          <button
+            v-if="needSignin"
+            class="layout-topbar-action"
+            @click="login()">
+            <i class="pi pi-sign-in"></i>
+            <span>Sign in</span>
+          </button>
+          <button
+            v-if="!needSignin"
+            class="layout-topbar-action"
+            @click="onConfigButtonClick">
             <i class="pi pi-cog"></i>
             <span>Settings</span>
           </button>
-          <button class="layout-topbar-action" @click="logout()">
+          <button
+            v-if="!needSignin"
+            class="layout-topbar-action"
+            @click="logout()">
             <i class="pi pi-sign-out"></i>
             <span>Sign out</span>
           </button>

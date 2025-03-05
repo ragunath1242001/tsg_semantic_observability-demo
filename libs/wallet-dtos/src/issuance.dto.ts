@@ -148,6 +148,10 @@ export class CredentialOfferStatus {
     example: { id: "subject-id", name: "Sample Subject" }
   })
   credentialSubject!: CredentialSubject;
+
+  constructor(value: Partial<CredentialOfferStatus>) {
+    Object.assign(this, value);
+  }
 }
 
 export class AccessToken {
