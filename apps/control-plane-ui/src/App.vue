@@ -12,7 +12,6 @@ socket.off();
 dspStore.bindEvents();
 
 const userStore = useUserStore();
-userStore.login({ redirect: false });
 
 const initialPreset = async () => {
   const settings = await http.get("/settings");
@@ -21,6 +20,7 @@ const initialPreset = async () => {
 };
 
 onBeforeMount(async () => {
+  await userStore.fetchUserInfo();
   await initialPreset();
 });
 </script>

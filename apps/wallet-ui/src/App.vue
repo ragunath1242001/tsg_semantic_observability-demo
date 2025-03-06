@@ -5,7 +5,6 @@ import http from "@tsg-dsp/common-ui/utils/http";
 import { updateColorPalette } from "@tsg-dsp/common-ui/utils/color";
 
 const userStore = useUserStore();
-userStore.login({ redirect: false });
 
 const initialPreset = async () => {
   const settings = await http.get("/settings");
@@ -14,6 +13,7 @@ const initialPreset = async () => {
 };
 
 onBeforeMount(async () => {
+  await userStore.fetchUserInfo();
   await initialPreset();
 });
 </script>

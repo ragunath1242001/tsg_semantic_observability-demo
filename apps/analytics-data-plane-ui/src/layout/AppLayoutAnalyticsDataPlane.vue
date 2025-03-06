@@ -6,7 +6,6 @@ import { computed, onMounted } from "vue";
 import { Menu, MenuProps } from "@tsg-dsp/common-ui/layout/AppMenu.vue";
 import { FooterProps } from "@tsg-dsp/common-ui/layout/AppFooter.vue";
 import { useRoute, useRouter } from "vue-router";
-import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
 import { useCatalogStore } from "../stores/catalog";
 import { useRuntimeStore } from "../stores/runtime";
 
@@ -15,7 +14,6 @@ const { layoutConfig, layoutState } = useLayout();
 const runtimeStore = useRuntimeStore();
 runtimeStore.getRuntimeSettings();
 
-const userStore = useUserStore();
 const catalogStore = useCatalogStore();
 
 const logoUrl = computed(() => {
@@ -100,7 +98,6 @@ onMounted(async () => {
         title: 'Analytics Data Plane',
         name: catalogStore.title,
         logoUrl: logoUrl,
-        user: userStore.user,
         router: useRouter()
       }"
       :footer="footer"

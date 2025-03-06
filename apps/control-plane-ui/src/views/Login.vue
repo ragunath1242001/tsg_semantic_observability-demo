@@ -50,7 +50,7 @@ const logoUrl = computed(() => {
               class="w-full"
               as="router-link"
               to="/"
-              @click="store.login({ redirect: true })"></Button>
+              @click="store.login()"></Button>
           </div>
         </div>
       </div>

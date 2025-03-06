@@ -61,7 +61,6 @@ function isOutsideClicked(event) {
     :title="topbar.title"
     :name="topbar.name"
     :logo-url="topbar.logoUrl"
-    :user="topbar.user"
     :need-signin="topbar.needSignin"
     :router="topbar.router"></app-topbar>
   <div

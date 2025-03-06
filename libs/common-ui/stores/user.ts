@@ -1,6 +1,5 @@
 import { defineStore } from "pinia";
 import http from "../utils/http";
-import { Router } from "vue-router";
 
 export interface User {
   name: string;
@@ -13,17 +12,21 @@ export interface User {
 export interface UserStore {
   user: User | null;
   returnUrl: string | null;
+  loaded: Promise<void>;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-let router: Router | undefined = undefined;
+export interface UserInfo {
+  state: "authenticated" | "unauthenticated";
+  user: User;
+}
 
-export const registerRouter = (newRouter: Router) => {
-  router = newRouter;
-};
+let loadedResolver: () => void;
 
 export const useUserStore = defineStore("user", {
   state: (): UserStore => ({
+    loaded: new Promise<void>((resolve) => {
+      loadedResolver = resolve;
+    }),
     user: null,
     returnUrl: null
   }),
@@ -34,15 +37,23 @@ export const useUserStore = defineStore("user", {
       }
       return roles.some((role) => this.user.roles.includes(role));
     },
-    async login(payload: { redirect?: boolean }) {
+    async fetchUserInfo() {
       try {
-        const response = await http.get<{ state: string; user: User }>(
-          "/auth/user"
-        );
+        const response = await http.get<UserInfo>("/auth/user");
+        if (response.data.state === "authenticated") {
+          this.user = response.data.user;
+        }
+        loadedResolver();
+      } catch (e) {
+        console.log(e);
+        throw new Error("Login failed");
+      }
+    },
+    async login() {
+      try {
+        const response = await http.get<UserInfo>("/auth/user");
         if (response.data.state === "unauthenticated") {
-          if (payload.redirect === true) {
-            window.location.replace("api/auth/login");
-          }
+          window.location.replace("api/auth/login");
         } else {
           this.user = response.data.user;
         }

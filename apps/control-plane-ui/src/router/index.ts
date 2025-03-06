@@ -6,7 +6,7 @@ import LoginVue from "../views/Login.vue";
 import NegotiationsVue from "../views/Negotiations.vue";
 import TransfersVue from "../views/Transfers.vue";
 import DataplaneVue from "../views/Dataplane.vue";
-import { registerRouter, useUserStore } from "@tsg-dsp/common-ui/stores/user";
+import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
 import Registry from "../views/Registry.vue";
 import OwnCatalog from "../views/OwnCatalog.vue";
 
@@ -66,13 +66,12 @@ router.beforeEach(async (to) => {
   // redirect to login page if not logged in and trying to access a restricted page
   const publicPages = ["/login"];
   const store = useUserStore();
+  await store.loaded;
   const authRequired = !publicPages.includes(to.path);
   if (authRequired && !store.user) {
     store.returnUrl = to.fullPath;
     return "/login";
   }
 });
-
-registerRouter(router);
 
 export default router;

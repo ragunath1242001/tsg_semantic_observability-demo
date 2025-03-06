@@ -8,7 +8,6 @@ import AppConfig from "./AppConfig.vue";
 import { Menu, MenuProps } from "@tsg-dsp/common-ui/layout/AppMenu.vue";
 import { FooterProps } from "@tsg-dsp/common-ui/layout/AppFooter.vue";
 import { useRoute, useRouter } from "vue-router";
-import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
 import { useRuntimeStore } from "../stores/runtime";
 
 const { layoutConfig, layoutState } = useLayout();
@@ -16,8 +15,6 @@ const runtimeStore = useRuntimeStore();
 runtimeStore.getRuntimeSettings();
 
 const { negotiationsCount, ownCatalog } = storeToRefs(useDspStore());
-
-const userStore = useUserStore();
 
 const logoUrl = computed(() => {
   if (layoutConfig.darkTheme && runtimeStore.darkThemeUrl) {
@@ -120,7 +117,6 @@ const sidebar: MenuProps = {
         title: 'Control Plane',
         name: ownCatalog.title,
         logoUrl: logoUrl,
-        user: userStore.user,
         router: useRouter()
       }"
       :footer="footer"
