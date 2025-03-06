@@ -2,25 +2,29 @@
 import { ref, computed, onMounted, onBeforeUnmount, toRefs } from "vue";
 import { useLayout } from "./composables/layout";
 import { Router } from "vue-router";
+import { useUserStore } from "../stores/user";
+import { storeToRefs } from "pinia";
 
 const { onMenuToggle, toggleDarkMode, isDarkTheme, onConfigButtonClick } =
   useLayout();
 
-const outsideClickListener = ref(null);
+const outsideClickListener = ref<((ev: MouseEvent) => void) | null>(null);
 const topbarMenuActive = ref(false);
+
+const userStore = useUserStore();
+const { user } = storeToRefs(userStore);
 
 export interface TopbarProps {
   title: string;
   name: string;
   logoUrl: string;
   needSignin?: boolean;
-  user: { name: string };
   router: Router;
 }
 
 const props = defineProps<TopbarProps>();
 
-const { title, logoUrl, user, needSignin, router } = toRefs(props);
+const { title, logoUrl, needSignin, router } = toRefs(props);
 onMounted(() => {
   bindOutsideClickListener();
 });
@@ -55,17 +59,17 @@ const unbindOutsideClickListener = () => {
     outsideClickListener.value = null;
   }
 };
-const isOutsideClicked = (event) => {
+const isOutsideClicked = (event: MouseEvent) => {
   if (!topbarMenuActive.value) return;
-
+  if (!event.target) return false;
   const sidebarEl = document.querySelector(".layout-topbar-menu");
   const topbarEl = document.querySelector(".layout-topbar-menu-button");
 
   return !(
-    sidebarEl.isSameNode(event.target) ||
-    sidebarEl.contains(event.target) ||
-    topbarEl.isSameNode(event.target) ||
-    topbarEl.contains(event.target)
+    sidebarEl?.isSameNode(event.target as Node) ||
+    sidebarEl?.contains(event.target as Node) ||
+    topbarEl?.isSameNode(event.target as Node) ||
+    topbarEl?.contains(event.target as Node)
   );
 };
 
@@ -74,9 +78,7 @@ const login = () => {
 };
 
 const logout = () => {
-  localStorage.removeItem("username");
-  localStorage.removeItem("password");
-  router.value.push("/login");
+  userStore.logout();
 };
 </script>
 

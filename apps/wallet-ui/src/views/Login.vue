@@ -49,7 +49,7 @@ const logoUrl = computed(() => {
               class="w-full"
               as="router-link"
               to="/"
-              @click="store.login({ redirect: true })"></Button>
+              @click="store.login()"></Button>
           </div>
           <div class="text-center mt-4">
             <span class="text-muted-color font-medium"

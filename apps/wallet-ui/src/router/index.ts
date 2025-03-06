@@ -13,7 +13,7 @@ import DIDServiceView from "../views/DIDServices.vue";
 import ContextView from "../views/Contexts.vue";
 import DCP from "../views/DCP.vue";
 import OID4VP from "../views/OID4VP.vue";
-import { registerRouter, useUserStore } from "@tsg-dsp/common-ui/stores/user";
+import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
 import AppLayoutWalletUnauthenticated from "@/layout/AppLayoutWalletUnauthenticated.vue";
 import RetrieveCredential from "@/views/credentials/RetrieveCredential.vue";
 import EmailQR from "@/views/credentials/EmailQR.vue";
@@ -110,7 +110,6 @@ const router = createRouter({
   ]
 });
 router.beforeEach(async (to) => {
-  console.log("route naviation", to);
   // redirect to login page if not logged in and trying to access a restricted page
   const publicPages = ["/login", "/retrieve-credential"];
 
@@ -121,13 +120,11 @@ router.beforeEach(async (to) => {
     !publicPages.includes(to.path) &&
     !publicPrefixes.some((prefix) => to.path.startsWith(prefix));
   const store = useUserStore();
-
+  await store.loaded;
   if (authRequired && !store.user) {
     store.returnUrl = to.fullPath;
     return "/login";
   }
 });
-
-registerRouter(router);
 
 export default router;

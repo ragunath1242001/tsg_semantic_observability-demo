@@ -47,7 +47,7 @@ export const Client = createParamDecorator(
     if (!user) return undefined;
     return plainToInstance(ClientInfo, {
       sub: user.sub || "",
-      name: user.name || "",
+      name: user.username || "",
       email: user.email || "",
       didId: user.properties?.didId || "",
       roles: jsonpath.query(user, authConfig.rolePath)

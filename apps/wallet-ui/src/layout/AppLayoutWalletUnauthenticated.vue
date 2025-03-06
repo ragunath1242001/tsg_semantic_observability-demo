@@ -6,12 +6,10 @@ import AppConfig from "./AppConfig.vue";
 import { Menu, MenuProps } from "@tsg-dsp/common-ui/layout/AppMenu.vue";
 import { FooterProps } from "@tsg-dsp/common-ui/layout/AppFooter.vue";
 import { useRouter, useRoute } from "vue-router";
-import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
 import { useRuntimeStore } from "../stores/runtime";
 
 const { layoutConfig, layoutState } = useLayout();
 
-const userStore = useUserStore();
 const runtimeStore = useRuntimeStore();
 runtimeStore.getRuntimeSettings();
 
@@ -72,7 +70,6 @@ const sidebar: MenuProps = {
         title: 'Wallet',
         name: runtimeStore.title ?? '',
         logoUrl: logoUrl,
-        user: userStore.user,
         needSignin: true,
         router: useRouter()
       }"
