@@ -1,6 +1,6 @@
 {
   "name": "@tsg-dsp/tck-pipeline",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "description": "TCK Pipeline CLI tool",
   "engines": {
     "node": ">= 16.14"

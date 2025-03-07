@@ -1,0 +1,72 @@
+---
+id: data-plane-controller-request-transfer
+title: "Request Transfer"
+description: "Requests a transfer from control plane to data plane."
+sidebar_label: "Request Transfer"
+hide_title: true
+hide_table_of_contents: true
+api: eJzdWFtv2zYU/isEnzZAvizN9qCnZW06BNhSI8n6EhgBLR3bbCWSJak6hqH/PhyK1MWS7KxNX/bkROT5eK4fz+GBpmASzZXlUtCY3sGXAow1hBGrmTBr0GStZU4SKayWGVEZE0CsJCmzrPpvSiMqFWiGGDcpjek7ZtkCl95WUhnoJ10hP3hUGlHFNMvBgjY0fjxQwXKgMdUyAxpR3M41pDS2uoCIctROMbulETXJFnJG4wO1e4UyxmouNrQsoxpGaZmAMTfpGNaXAvT+hWDPEw25tDBRTNv9GOIWWOoMexkkOtCAnfBRFV8AuKxEwdg/ZLrHHcdIGDgQFpeYUhlPXJhmnwzG+9CHlqtPkFgMj8agWg4GV3+vlo81iCg8s1xl+Ck1iiUQhwj7VPobjGEboGUUNiRSmCIHveDpacCwcaJ4Ovnl4k0Lg200QA7C3pzBqDdOeDq5/PU3h5HYeC11zuwZ2WN/Nedj8K7SVINx3qllakeFje9aG2tpEKmSXNiHauvWWtVf9Asmns2Y4lN/xDSReX/vohWrx54O191d+0beJ6P7qT9+ZVmBX6vfcllGlGXZh7WDfq0safulHHHMKRjns77geaEhf/ZxFh2zaoRv8G1AvB30cVj96H0dBe2Z1gzBuIXcvGZ59hQujzQ+hdExpjy25iWS3tCyTXmPXv2uIkfo6BpuHdaxCfcVh5VnUDvJ1c+cUznQOryVuOHcZYvbWJatWPK5xQ3n0zEIdXPytDFtEh1kxQ7NjerXMmyYtxvfOn2MksJUKXcxn+NPt3+gr3bhsCQBZaFN7yspM2Ci7UO848qI8hSE5WsO+rTHNXyZtPZi3EaJ/IiHkTZqHlddvvWl/hmwYr+DPl/OYvFshppPXAM2qeXKHmKLuZrOyFWNJ6Sgbvj8vUx0nkQ6CpS1Bi8RGWYP0bbkqFRdG9pw3bFoq/rVaLk7DJ8k76ysYvqfK71V6JOQScfq1EnfSekhdXyV3vmKdGo56y7nb/pl+V7qFU9TEK9Xn+fjfAdGFjqBW2nfy0KkGGtjmS3OOOtyfklupSW1UCLT9lGiyFeuLa5FLueXZURz32kOqN6AP2yB+I4ZUqK9iiSVYIiQlsAzN3aKp4LW8gydtLQcTklvrjehfYUheAga+gWSQnO7d4UqWWG3Fwjjpy5X5U9Y8O4vunTlyTbIPi4lyKL6jk6wW4kzmJLGBQ1HpphiyzMLE52ZeQ/MDjhtlago6K/VILZslHHcX0U7qNS4tvoQ0XUmd26LYsbspE6rJJLK07hg2d7yxNTaP7E0d+PN6FI0tNRYPyjZLFcOXQHT1W3gEtpdH9WnsPbeTwD044LWZBda8U71fATN15ytMiALDQaEdSVDBEAKKQ7DiczzQmApAVmB3QEIYneScGEsEwkYItfEbqE7Rk9d2mDh3TUz3PXoKDEyWA3PVf3haXh26g9I3fmozxFjM9D/cvAZa+vO9G44wK+lK5fQXd3/Sa5C2pJWzR4n28OWG/JBgbha3BCjIOFr735itnJnXBoF8+u8GoLGdxks6k5nxhJk/jKiGU9AGGionF4plmyBXEznNKKFzlpW7na7KXPLU6k3My9rZn/dvL2+vb+eXEzn063NM5fQyDw5Ey1kn7Gk9fjTMfrQXErf/ALlI2/h2c5Uxrib1p0VB0+Cj5QpjjsDDdL68YRGNHYPT8uIbpE440d6OKyYgX90Vpb4uXovwiRLuUEuSGm8ZpmBE7b8dOevhJ/JmIbYM3Zfq0IWuh7sK9OOeF7/4NDdiXbPSoNCzhmuAvwj1A8yvPey1lgf/aADO+9uneOqHW8r0IkfE8OOgcegIHHluraTe9s38+LD/QPeQv7BLnfdDdVsh/nIdlUYpDPSEav7dqAZE5vC9Te0wsRaw1t46FauW4jDcKDH7l5y8moNTnTXu3PAIHjoBJ4SDa6LZZmpZTeaCfvk5MplWZb/Andt20U=
+sidebar_class_name: "post api-method"
+info_path: docs/apis/analytics-data-plane/tsg-analytics-data-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Request Transfer"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/transfers/request/{role}"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Requests a transfer from control plane to data plane.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"role","required":true,"in":"path","schema":{"type":"string"}},{"name":"processId","required":true,"in":"query","schema":{"type":"string"}},{"name":"x-remote-party","required":true,"in":"header","schema":{"type":"string"}},{"name":"x-dataset-id","required":true,"in":"header","schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={{"required":true,"content":{"application/json":{"schema":{"type":"object","properties":{"@type":{"type":"string","example":"dspace:TransferRequestMessage"},"dspace:consumerPid":{"type":"string","example":"consumer-pid-123"},"dspace:agreementId":{"type":"string","example":"agreement-id-456"},"dct:format":{"type":"string","example":"application/json"},"dspace:dataAddress":{"example":{"@type":"dspace:DataAddress","dspace:endpointType":"http","dspace:endpoint":"https://api.example.com","dspace:endpointProperties":[{"@type":"dspace:EndpointProperty","dspace:name":"name","dspace:value":"value"}]},"allOf":[{"type":"object","properties":{"@type":{"type":"string","example":"dspace:DataAddress"},"dspace:endpointType":{"type":"string","example":"http"},"dspace:endpoint":{"type":"string","example":"https://api.example.com"},"dspace:endpointProperties":{"example":[{"@type":"dspace:EndpointProperty","dspace:name":"endpointName","dspace:value":"endpointValue"}],"type":"array","items":{"type":"object","properties":{"@type":{"type":"string","example":"dspace:EndpointProperty"},"dspace:name":{"type":"string","example":"endpointName"},"dspace:value":{"type":"string","example":"endpointValue"}},"required":["@type","dspace:name","dspace:value"],"title":"EndpointPropertySchema"}}},"required":["@type","dspace:endpointType","dspace:endpoint","dspace:endpointProperties"],"title":"DataAddressSchema"}]},"dspace:callbackAddress":{"type":"string","example":"https://callback.example.com"}},"required":["@type","dspace:consumerPid","dspace:agreementId","dct:format","dspace:callbackAddress"],"title":"TransferRequestMessageSchema"}}}}}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{"accepted":{"type":"boolean","example":true},"identifier":{"type":"string","example":"req-identifier"},"dataAddress":{"example":{"endpoint":"http://address","properties":[{"name":"key","value":"value"}]},"allOf":[{"type":"object","properties":{"endpoint":{"type":"string","example":"http://data-plane-endpoint"},"properties":{"example":[{"name":"propertyName","value":"propertyValue"}],"type":"array","items":{"type":"object","properties":{"name":{"type":"string","example":"propertyName"},"value":{"type":"string","example":"propertyValue"}},"required":["name","value"],"title":"DataPlaneProperty"}}},"required":["endpoint","properties"],"title":"DataPlaneAddressDto"}]},"callbackAddress":{"type":"string","example":"http://callback-address"}},"required":["accepted","identifier"],"title":"DataPlaneRequestResponseDto"}}}},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string","example":"ResourceNotFound"},"status":{"type":"string","example":"404 Not Found"},"code":{"type":"number","example":404},"message":{"type":"object","example":"The requested resource does not exist."},"error":{"type":"string","example":"Not Found"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

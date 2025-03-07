@@ -1,0 +1,72 @@
+---
+id: transfer-controller-callback-terminate-transfer-process
+title: "Callback to terminate transfer process"
+description: "Callback to terminate transfer process"
+sidebar_label: "Callback to terminate transfer process"
+hide_title: true
+hide_table_of_contents: true
+api: eJytVk1vHDcM/SsCT20w3nXdQ5s51XXcwEDtLOxNejAMgytxdxRrJEXieLNYzH8vpJnZ76Q59OS1SFHk4+PjrMF5Csja2RsFJUwD2jincOUsB2cMhWeJxsxQvkwp1Noi0+AzCU5SjFCAx4A1MYUI5eMaLNYEJWgFBQT60uhACkoODRWgLZTgkSsoQFGUQfv0+M7T4uYdFBBlRTVCuQZe+RQtctB2AW371AWlyH86tUoeh29IZ5ksJxN6b7TM9Y0/x/TO+ji0m30myamOkNBgTTFZ/+jMhxkUQF+x9iYdqehRUjmkPkCknb2lGHFB0BaDkw/uVSsKE62+H3RwPPNanf32+9udGNLZ2NQ/EGNwzDF+ufh1L4b6j6qm1/e3N3eX0+t3O9cCYY/fxvERMk1QspgFQlnBUzGExRBwBQVopjqeamO7y43HHuyTYJ2sfr+cwyxTHpq7Yr7Zm4eOB22fS/TOxq7zF+fn6c8+P6/6ORA8DIISPHA2NjLNwrwxJlX9PzEwMnJzEr2ddm3doM8il5R8IskmaF7lqZwRBgpQPj6lEWJcpGHdwBMTZt8q2G1r3pbsN+NfE1cuqYd3MReRxruEMXo9HtzjeNCROF5r1Y43EdOwU3jtxONpm3RuT4eDw4ari128uoMC5sYts4vHGJcuqA5e57uLspMxb9DSM6o6q8+Jw2L/UCFj/nXovTV0AA+Y9i1N/v3RYPvLhRoZSvg0gc1wVMz+SP8+UdBzjTNDYhIokuVMGmGJVKKaE9LVdWMTmUjMiJdEVvDSCW0jo5UUhZsLrkj0OYuc6ijTJVHvfiub11v29DL3A1p2WsqO9eq0XB1r0oEk7erOkeyc0Jo2bZO5y7QYhv3hvehXl5jkPh1tmUpH8cGTvZzciOhJ6nk/nSJWbhkzfmSVd9ryBtC9mCNx6yIPpq0vBhKBTCcMLhvfIWOuQ0yCYyedKQTG4V1SYrbKftfSaB9J/OPCi7YL8T64xm9vx5H4wBWFg8di470LrF93s2AnanxJxkA5duKskGjFjAQqtU1OIqNxi0KgVYfXkMXHG6EtU4JcOxtzCE4u3qCkkRDPz2/uHNOb5+dS7MGqaK6tzpjqKKzjHMj2T89IKB1IslkJo+0LKbHUXAkUUduFOQB7Q+6RgAKSSnR97EcWZRLZtgCjJdmYCd1/flx6lBWJi9E5FNAE089dLMfj5XI5wmweubAY93fj+O+bq+u7h+uzi9H5qOLa5MlJolaj3Yn8w8K4R72NeDF95bE3qG1arzmzda+Zj4BeJ53YqHIBG92EAsq8+bbS+VRAlTS3fIT1eoaRPgbTtun4S0Nh1QnqK4YsK3kLKB3TbwXlHE2koxw3mwt+uu/X889i/9PsZBnD2rdp/b2iaahr0gutuk/BNs1rRajyDlr3hqvuubNpt/2Hi0dLsy2GG5dSkufv+j7trKTJh4dpEuP+U7HulCbgMn2b4rJL0uXy88bIZ2swaBdN0rwSupiJCWnp7PTxQOlzVSdhWK87j6l7Idu2G1Q4/Z+Aadt/Aap2Ci0=
+sidebar_class_name: "post api-method"
+info_path: docs/apis/control-plane/tsg-control-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Callback to terminate transfer process"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/transfers/callbacks/{id}/terminate"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Callback to terminate transfer process
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"id","required":true,"in":"path","description":"Transfer ID","schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={{"required":true,"content":{"application/json":{"schema":{"type":"object","properties":{"@type":{"type":"string","example":"dspace:TransferTerminationMessage"},"dspace:providerPid":{"type":"string","example":"provider-pid-789"},"dspace:consumerPid":{"type":"string","example":"consumer-pid-123"},"dspace:code":{"type":"string","example":"TERMINATED"},"dspace:reason":{"example":["Contract breach"],"type":"array","items":{"type":"string"}}},"required":["@type","dspace:providerPid","dspace:consumerPid","dspace:code","dspace:reason"],"title":"TransferTerminationMessageSchema"}}}}}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"Callback terminated transfer successfully","content":{"application/json":{"schema":{"type":"object","properties":{"status":{"type":"string"}},"example":{"status":"success"}}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

@@ -1,0 +1,72 @@
+---
+id: dcp-holder-management-controller-create-si-token
+title: "Request a SIOP token"
+description: "Generates a SIOP token for the provided audience to allow it to request presentations"
+sidebar_label: "Request a SIOP token"
+hide_title: true
+hide_table_of_contents: true
+api: eJy1Vt9vIjcQ/ldGfro77QFK84SqSlGSu0ZqkyhJ1YcrQsN6YH3x2nv2bAhC+79X411gIYGX9ngIxPPrm/GMv1krTTEPpmLjnRqrr+QoIFMEhMebu3tg/0wO5j4AFwRV8C9GkwastSGXE7AHtNYvwbD8DvSjpshQBYrkGMVtVJnylbg13t1oNVZXl/e/e6sp/IkOF1SS40vvOHhrKUzzQMj0ePMkoVWmKgxYElOIavxtrRyWpMZqg0BlSoKaQFqNOdSUKSOZ/KgprFSmYl5QiWq8VryqxDByMG6hmibb+oq5r/6Do4lYxsq7SFHkZ6ORfO1XVmUq947JsciwqqzJU0WG36MorN8G8LPvlLNUIEj92LTujZ6mW3kPinwydT765S2ALz7MjNappP8TkrZ8hygyRa9YVlaOHij6OuR06/mLr51WTaYiI9fxtN356BxuPcPWKPe6H8rV5YxC3+R8dN5kqqQYcUHvQd85fypo06ikIXQQQXuK4DwDvZrIA4lKIfhwGmkPZdPvoG9tdbbpdilMMsWGk+W1OL9ir7pbi5TXwfAqdbnHmoszcbNEa4mnL4aW0/2xmkjnMS5kLtR9TwRXl/cSqSQuvAzcgtLlIRdqrIZYmWG5nbyhzqthkcZxyN3IRQov7bxNdrgepSvai9+g21W5PcjU3PplUqkwxqUPuu0nX7WG/WS0EWiHJ9nmpEU4faZV3Kn1D7eadTxU255ke/790snrosmxQRsPoh9K923R2hO2h9LDLI5GPiI/tD8a/Yh8a29irOl907ei7ESzjU/IugY2bu5TT3QN/vT4Ff5ORio7eIxkBHdiMIlvHm+gjQFcIEOODhJGQKchsg8ELxTM3ODMEvSAJ4WWNvaZRyhpRlBH0rA0XBgHGhkhVphTHPw6CzD8rf37jwMAEFzLHSZTCtcxlLVl85kNBdBUWb+SwYlZ8gneEXzwAUof6ONeBphzBIzAoY4M6PLCh8Sl2IORwBunzUuNtjOPSYswL8DPW+bFwCY3FTqOYFw62/kYwJ0cmQgVLigJc3Ictg5bPKmaca9yS2OtlCgXNZ0sr5CxRdbdDloufL0ohONN+0Ru3rnWLxcUCNAucRVFg14xZ7tKlUkxg6TRD2tcV4MW/tuLmE4/3XqmT9PpGJ4ksbuK3MX9DWiaG2fSK9dhMcJlspS0l61NoBTdGvfc3TsgROMWdpuScZHRSeFUpuSp2yNpzIUam0xZk5OLtOM6dVFhXhCcDUYqU3WwaqwK5iqOh8PlcjnAJB74sBh2tnH4x83l9e3j9eezwWhQcGkTUVQ+comu5/mhW536i9fh3Kx3zP3TVrXuRWd65WFl0TghwpTpumOQbworozK14xDBmVcqUy2PiJcEfyInkcVkvZ5hpL+CbRo5brcqYTptosyzVuM52kgnMv7w0HXdRziG85lW+7vhC9pa1JSsez8h1GZ13MWZyD8hvVHCn02mCkIpiiTbGl3kOVXcs3qzhDV99v56/aQyJQz7HuNuN4WtCN2q5/uAYOEtk8IBa8IJVoQTrAcnOQ1OMhYcIyU4Tjv7dyAX/G4BNpvIAdW1touAjqfJrpk0TfMvcQ6jww==
+sidebar_class_name: "get api-method"
+info_path: docs/apis/wallet/tsg-wallet
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Request a SIOP token"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/management/dcp/holder/token"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Generates a SIOP token for the provided audience to allow it to request presentations
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"audience","required":true,"in":"query","schema":{"type":"string"}},{"name":"scope","required":true,"in":"query","schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{"id_token":{"type":"string"}}}}}},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string","example":"ResourceNotFound"},"status":{"type":"string","example":"404 Not Found"},"code":{"type":"number","example":404},"message":{"type":"object","example":"The requested resource does not exist."},"error":{"type":"string","example":"Not Found"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

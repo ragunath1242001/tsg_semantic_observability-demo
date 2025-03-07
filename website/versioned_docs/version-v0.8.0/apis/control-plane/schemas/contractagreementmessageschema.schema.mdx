@@ -1,0 +1,33 @@
+---
+id: contractagreementmessageschema
+title: "ContractAgreementMessageSchema"
+description: ""
+sidebar_label: "ContractAgreementMessageSchema"
+hide_title: true
+hide_table_of_contents: true
+schema: true
+sample: {"@type":"dspace:ContractAgreementMessage","dspace:consumerPid":"urn:example:consumerPid","dspace:providerPid":"urn:example:providerPid","dspace:agreement":{"@type":"odrl:Agreement","odrl:assigner":"urn:example:assigner","odrl:assignee":"urn:example:assignee","dspace:timestamp":"2023-10-01T12:34:56Z","odrl:target":"urn:example:target"}}
+custom_edit_url: null
+---
+
+import Schema from "@theme/Schema";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"ContractAgreementMessageSchema"}
+>
+</Heading>
+
+
+
+
+
+<Schema
+  schema={{"type":"object","properties":{"@type":{"type":"string","example":"dspace:ContractAgreementMessage"},"dspace:consumerPid":{"type":"string","example":"urn:example:consumerPid"},"dspace:providerPid":{"type":"string","example":"urn:example:providerPid"},"dspace:agreement":{"example":{"@type":"odrl:Agreement","odrl:assigner":"urn:example:assigner","odrl:assignee":"urn:example:assignee","dspace:timestamp":"2023-10-01T12:34:56Z","odrl:target":"urn:example:target"},"allOf":[{"type":"object","properties":{"@id":{"type":"string","example":"3f2592da-ffc9-40cb-a336-a9daa9343ce8"},"@type":{"type":"string","example":"odrl:Agreement"},"odrl:assigner":{"type":"string","example":"did:example:assigner"},"odrl:assignee":{"type":"string","example":"did:example:assignee"},"odrl:profile":{"type":"string","example":"profileExample"},"odrl:permission":{"example":[],"type":"array","items":{"type":"object","properties":{"@type":{"type":"string","example":"odrl:Permission"},"odrl:assigner":{"type":"string","example":"assignerExample"},"odrl:assignee":{"type":"string","example":"assigneeExample"},"odrl:action":{"type":"string","example":"odrl:actionExample"},"odrl:target":{"type":"string","example":"targetExample"},"odrl:constraint":{"example":[],"type":"array","items":{"type":"object","properties":{"@type":{"type":"string","example":"odrl:Constraint"},"odrl:leftOperand":{"type":"string","example":"odrl:leftOperandExample"},"odrl:operator":{"type":"string","example":"odrl:operatorExample"},"odrl:rightOperand":{"type":"object","example":{"value":"rightOperandExample"}},"odrl:rightOperandReference":{"type":"string","example":"rightOperandReferenceExample"}},"required":["@type","odrl:leftOperand","odrl:operator"],"title":"ConstraintSchema"}},"odrl:Duty":{"example":[],"type":"array","items":{"type":"string"}}},"required":["@type","odrl:action"],"title":"PermissionSchema"}},"odrl:prohibition":{"example":[],"type":"array","items":{"type":"object","properties":{"@type":{"type":"string","example":"odrl:Prohibition"},"odrl:assigner":{"type":"string","example":"assignerExample"},"odrl:assignee":{"type":"string","example":"assigneeExample"},"odrl:action":{"type":"string","example":"odrl:actionExample"},"odrl:target":{"type":"string","example":"targetExample"},"odrl:constraint":{"example":[],"type":"array","items":{"type":"object","properties":{"@type":{"type":"string","example":"odrl:Constraint"},"odrl:leftOperand":{"type":"string","example":"odrl:leftOperandExample"},"odrl:operator":{"type":"string","example":"odrl:operatorExample"},"odrl:rightOperand":{"type":"object","example":{"value":"rightOperandExample"}},"odrl:rightOperandReference":{"type":"string","example":"rightOperandReferenceExample"}},"required":["@type","odrl:leftOperand","odrl:operator"],"title":"ConstraintSchema"}}},"required":["@type","odrl:action"],"title":"ProhibitionSchema"}},"odrl:obligation":{"example":[],"type":"array","items":{"type":"object","properties":{"@type":{"type":"string","example":"odrl:Duty"},"odrl:assigner":{"type":"string","example":"assignerExample"},"odrl:assignee":{"type":"string","example":"assigneeExample"},"odrl:action":{"type":"string","example":"odrl:actionExample"},"odrl:target":{"type":"string","example":"targetExample"},"odrl:constraint":{"example":[],"type":"array","items":{"type":"object","properties":{"@type":{"type":"string","example":"odrl:Constraint"},"odrl:leftOperand":{"type":"string","example":"odrl:leftOperandExample"},"odrl:operator":{"type":"string","example":"odrl:operatorExample"},"odrl:rightOperand":{"type":"object","example":{"value":"rightOperandExample"}},"odrl:rightOperandReference":{"type":"string","example":"rightOperandReferenceExample"}},"required":["@type","odrl:leftOperand","odrl:operator"],"title":"ConstraintSchema"}}},"required":["@type","odrl:action"],"title":"DutySchema"}},"odrl:target":{"type":"string","example":"urn:example:target"},"dspace:timestamp":{"type":"string","example":"2023-10-01T12:34:56Z"}},"required":["@id","@type","dspace:timestamp"],"title":"AgreementSchema"}]}},"required":["@type","dspace:consumerPid","dspace:providerPid","dspace:agreement"],"title":"ContractAgreementMessageSchema"}}
+  schemaType={"response"}
+>
+  
+</Schema>
+            

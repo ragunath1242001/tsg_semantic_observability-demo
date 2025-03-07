@@ -1,0 +1,72 @@
+---
+id: keys-management-controller-set-default-key
+title: "Set default key"
+description: "Sets the provided key as default key within this wallet, will remove the default key flag for other keys in this wallet"
+sidebar_label: "Set default key"
+hide_title: true
+hide_table_of_contents: true
+api: eJztVk2P2zYQ/SsDnpJAsY3tnoSiQJCPYrHtJog36CE1jLE4tpilSIYc2WsY+u8FKdmW5bWv7aEXf3D4hm9myHmzE5JC4ZVjZY3IxZQ4AJcEztu1kiThibaAASQtsdac/m4Ul8oAlyrABrUmzmCjtAZPlV1Twvf3LzWuYGk9WC7Jx6UAp3iRCevIY2RxJ0Uu7mkb/kSDK6rI8Htr2Futyc8D8YfW9T1tRSYceqyIyQeRf98JgxWJXDzR9k6KTHj6WStPUuTsa8qEijE65FJkIhQlVSjyneCti6DAXpmVaJpZBAZnTaAQ7TeTSfw6zZRoMnE7+eXc8Mn6hZKSjMhEYQ2T4bgJndOqSBGOf4S4c3dOwS5+UBGz4XzMB6uWQBvVkGgm6Bkrp+PSVwq29gU9WP5kayMju8DIdbiOu53cwoNlOIAKK/tHmbpakO9Dbie3TSYqCgFX9BL1o/PHkiBWgAKTBN9RBGkpgLEM9KwCj+Kp5L3115n2WDb9wn5vs3MItwthlglWnJAfo/MPbEXTNKlot+dF2+cv8VqmY/6v3n+vejEvVNRe8TY9d4s1lzfRTdtH5lXqGfPYYsQsPmTGVewM4thM4D4ZYxa4tLHZuDoVLbaFXIzRqXF12D2Orsa71FCacdfVIl/y67bpzI6cpvFGtEXfMztmuF3IxFLbTdriMISN9bK9S9a1wC6QtaLNXKpIb7iSvRRs/tLiYWcdhtsOK9mJf7sx88KTJMMKdRicPrSeYlHrK9ihdRjFxZMv2If4i6dfsB/wKoSaXoaem04jdp4CGU5tYRjvqa27vMosbboT3eV+nP4Of+0V8LQjxed3NIMKgDCd3nWCCVwiQ4EGEkdAIyGw9QRr8mqpcKEJesTThsITcpT2HjNgCwuCOpDc67pERggOCwqjXxcexr+1n38bAIDIa3PkpCqSgAxVrVm9ZUUeJDltt/HxhCz5BGsIXlkPlfX0+iQCLDjE8YJ9HRjQFKX1aVTAHo1EXhmp1jXqDh7SLsKiBLtsJxb0rArl0HA3XlDPxwg+dxOHw1U7ohRk2B8ctnxSNsNJ5tJksyAo4jaZkB+QsWXWVQc1l7ZelaBSVmJ73Pe41m8cfAhQbzDOPgHoGQvW25SZdKaPYfSPVabLQUv/vBDz+ZsHy/RmPs/hMQb22ZF59+Uujl7KqFjdPRcVdSwOc22xpfKUTtfKPHV1B4SgzEofQlImMJqYOJGJ2Oq6saeVRSyiLDaZ0KogE+ioc+Kdw6IkuBlNRCZqr0UuSmYX8vF4s9mMMJlH1q/GHTaM/7h7//Fh+vHtzWgyKrnSSSScDVyh6XmeEvfnyuGT2R0F+1+cY7t2z/TMY6dRmaiQKQ27TmK+C3RKZOIoMiITXS/O95PrXmlmmSht4Ija7RYY6JvXTROXf9bkt63+rNGnF580UaoQf0uRL1EHupKkV1+7O/oaLhHvFtHEbK9R19TegZj+/ZjdzJpMlISSfCLQ2t4VBTnuoc5GqKavwV++PYpMRI18STMPOr97mdFAIuFcC2Gge3BF1+CKbsFVVYKrmgOXZAUuC8c+1WlAEE12IQH7WWIgVi125dHwPOGaWdM0/wAlkPE2
+sidebar_class_name: "put api-method"
+info_path: docs/apis/wallet/tsg-wallet
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Set default key"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"put"}
+  path={"/api/management/keys/{keyId}/default"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Sets the provided key as default key within this wallet, will remove the default key flag for other keys in this wallet
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"keyId","required":true,"in":"path","schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":""},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string","example":"ResourceNotFound"},"status":{"type":"string","example":"404 Not Found"},"code":{"type":"number","example":404},"message":{"type":"object","example":"The requested resource does not exist."},"error":{"type":"string","example":"Not Found"}},"required":["name","status","code"],"title":"ErrorDto"}}}},"404":{"description":"Resource not found","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string","example":"ResourceNotFound"},"status":{"type":"string","example":"404 Not Found"},"code":{"type":"number","example":404},"message":{"type":"object","example":"The requested resource does not exist."},"error":{"type":"string","example":"Not Found"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

@@ -1,0 +1,72 @@
+---
+id: transfer-controller-callback-complete-transfer-process
+title: "Callback to complete transfer process"
+description: "Callback to complete transfer process"
+sidebar_label: "Callback to complete transfer process"
+hide_title: true
+hide_table_of_contents: true
+api: eJytVk1vGzcQ/SvEnNpgLbnuoc2e6jpuYKCJhdhJD4YgjMiRljGXZMhZK4Kw/70gd1ffSXPoyTJnOJx58+bNbsB5Csja2TsFJTwGtHFB4cZZDs4YCjOJxsxRPt+42htiGlwmwUmKEQrwGLAmphChfNqAxZqgBK2ggEBfGh1IQcmhoQK0hRI8cgUFKIoyaJ/e3ntZ3L2BAqKsqEYoN8Brn6JFDtouoW2nXVCK/KdT6+Rx/IZ0lslyMqH3Rstc3vhzTO9sTkO7+WeSnOoICQzWFJP1j858nEEB9BUTElCCih4llTvQMkLa2XcUIy4J2mLw8cG9aEVhotX3Yw6OF16ri99+f70XQzobm/oHYgyOOcYvV79C2+634qmv7WxyZ1+bFsCac+xvFvvQ4dq23WPROxs7JK8uL9Ofw37f9LQSsueVEjxQIDYyUWvRGLOG/62hkZGbeI5Te9jt3KDPIleUfCLJJmheZ5LPCQMFKJ+miZGMy8T9LTgxIfaNetltS95V7LfDVBNXLo2idzHXkIalhDF6PR7c43gYyjjeaNWOh4Bpcii8dJM43aWce9Oh4LDh6mofre6ggIVxq+ziMcaVC6oD1/nuouwkwRu0NENV51E+c1gcHipkzL+OvXeGDt4B0b6hyb8/Gmx/uVAjQwmfJlAM6VfM/kRMPlHQC41zQ2ISKJLlTBlhiVQiWm5B3dhEJRJz4hWRFbxyQtvIaCVF4RaCKxJ9ziKnOspkScT7sNOg2x13es34b2E4rwunw39+9s8MeJLWhcttHQb14a3oZVxMMs4nklvpKO492evJnYiepF70syVi5VYx109WeactbwE5iDkS71zkwbTzxUAikEHu0E7GN8iYaxGT4NhJZwqBcXiXlJivs9+tNNpHEv+48KztUrwNrvG723Ek7rmicPRYbLx3gfXLfhbsRI3PyRgox06cExKtmJNApXbJSWQ0blkItOr4GrL4eCe0ZQooEzoxh+Dk4g1KGgkxm71675hezWalOIBV0UJbnTHVUVjHOZDtn56TUDqQZLMWRttnUmKluRIoorZLcwT2lpwjAQWkKe/62I8cyiSRbQFGS7IxE7LfxdceZUXianQJBTTB9HMTy/F4tVqNMJtHLizH/d04/vvu5vb9w+3F1ehyVHFtMvOTJtVo9yL/qKwdMG+rPUxfeewNapsYnBPb9Ir3BOh1GvOtpBawVT0ooMy7ait80wKqJJjlE2w2c4z0MZi2TcdfGgrrTg5fMGRRyAqudEy/FZQLNJFOUtxuHfjpQ786fxaHXylnq+gP0abV9YKmoa5Fz7TuvoraaVtARajy/tj0hpvuuYvHbjMPF08WXlsMN66lJM/f9Z3u7ZPJ/cNjktL+q6l2Kt0JuEqfabjqknS5/Kz3+WwDBu2ySZJVQhcz8SCtjL02Hul0ruosDJtN5/Honsm27RYVTv8nYNr2X3G6tqg=
+sidebar_class_name: "post api-method"
+info_path: docs/apis/control-plane/tsg-control-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Callback to complete transfer process"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/transfers/callbacks/{id}/complete"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Callback to complete transfer process
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"id","required":true,"in":"path","description":"Transfer ID","schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={{"required":true,"content":{"application/json":{"schema":{"type":"object","properties":{"@type":{"type":"string","example":"dspace:TransferCompletionMessage"},"dspace:providerPid":{"type":"string","example":"provider-pid-789"},"dspace:consumerPid":{"type":"string","example":"consumer-pid-123"}},"required":["@type","dspace:providerPid","dspace:consumerPid"],"title":"TransferCompletionMessageSchema"}}}}}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"Callback completed transfer successfully","content":{"application/json":{"schema":{"type":"object","properties":{"status":{"type":"string"}},"example":{"status":"success"}}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

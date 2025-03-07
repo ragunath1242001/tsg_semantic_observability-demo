@@ -1,0 +1,72 @@
+---
+id: status-controller-get-status
+title: "Application status"
+description: "Retrieves the current health of the control plane. With additional status information"
+sidebar_label: "Application status"
+hide_title: true
+hide_table_of_contents: true
+api: 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
+sidebar_class_name: "get api-method"
+info_path: docs/apis/control-plane/tsg-control-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Application status"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/status"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Retrieves the current health of the control plane. With additional status information
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={{"required":true,"content":{"application/json":{"schema":{"type":"object","properties":{"database":{"example":{"status":"connected"},"allOf":[{"type":"object","properties":{"status":{"type":"string","example":"connected"}},"required":["status"],"title":"DatabaseStatusDto"}]},"memoryUsage":{"example":{"does_zap_garbage":1024,"external_memory":2048,"heap_size_limit":4096,"malloced_memory":512,"number_of_detached_contexts":0,"number_of_native_contexts":2,"peak_malloced_memory":1024,"total_available_size":8192,"total_global_handles_size":256,"total_heap_size":16384,"total_heap_size_executable":4096,"total_physical_size":32768,"used_global_handles_size":128,"used_heap_size":8192},"allOf":[{"type":"object","properties":{"does_zap_garbage":{"type":"number","example":1024},"external_memory":{"type":"number","example":2048},"heap_size_limit":{"type":"number","example":4096},"malloced_memory":{"type":"number","example":512},"number_of_detached_contexts":{"type":"number","example":0},"number_of_native_contexts":{"type":"number","example":2},"peak_malloced_memory":{"type":"number","example":1024},"total_available_size":{"type":"number","example":8192},"total_global_handles_size":{"type":"number","example":256},"total_heap_size":{"type":"number","example":16384},"total_heap_size_executable":{"type":"number","example":4096},"total_physical_size":{"type":"number","example":32768},"used_global_handles_size":{"type":"number","example":128},"used_heap_size":{"type":"number","example":8192}},"required":["does_zap_garbage","external_memory","heap_size_limit","malloced_memory","number_of_detached_contexts","number_of_native_contexts","peak_malloced_memory","total_available_size","total_global_handles_size","total_heap_size","total_heap_size_executable","total_physical_size","used_global_handles_size","used_heap_size"],"title":"MemoryUsageDto"}]},"uptime":{"type":"number","example":3600},"negotiations":{"type":"object","properties":{"localId":{"type":"string","example":"3fa85f64-5717-4562-b3fc-2c963f66afa6"},"remoteId":{"type":"string","example":"3fa85f64-5717-4562-b3fc-2c963f66afa7"},"remoteParty":{"type":"string","example":"Remote Party Name"},"role":{"type":"string","enum":["provider","consumer"],"example":"provider"},"remoteAddress":{"type":"string","example":"192.168.1.100"},"state":{"type":"string","enum":["dspace:REQUESTED","dspace:OFFERED","dspace:ACCEPTED","dspace:AGREED","dspace:VERIFIED","dspace:FINALIZED","dspace:TERMINATED"],"example":"dspace:REQUESTED"},"dataSet":{"type":"string","example":"defaultDataSet"},"modifiedDate":{"format":"date-time","type":"string","example":"2023-10-11T00:00:00.000Z"}},"required":["localId","remoteId","remoteParty","role","remoteAddress","state","dataSet","modifiedDate"],"title":"NegotiationStatusDto"},"transfers":{"type":"object","properties":{"localId":{"type":"string","example":"local-12345"},"remoteId":{"type":"string","example":"remote-98765"},"role":{"type":"string","example":"provider"},"remoteAddress":{"type":"string","example":"http://example.com/"},"remoteParty":{"type":"string","example":"party-identifier-001"},"state":{"type":"string","enum":["dspace:REQUESTED","dspace:STARTED","dspace:TERMINATED","dspace:COMPLETED","dspace:SUSPENDED"],"example":"dspace:REQUESTED"},"process":{"example":{"step":"upload","progress":50},"allOf":[{"type":"object","properties":{"@type":{"type":"string","example":"dspace:TransferProcess"},"dspace:providerPid":{"type":"string","example":"provider-pid-789"},"dspace:consumerPid":{"type":"string","example":"consumer-pid-123"},"dspace:agreementId":{"type":"string","example":"agreement-id-456"},"dspace:state":{"type":"string","example":"COMPLETED"}},"required":["@type","dspace:providerPid","dspace:consumerPid","dspace:agreementId","dspace:state"],"title":"TransferProcessSchema"}]},"agreementId":{"type":"string","example":"agreement-45678"},"format":{"type":"string","example":"application/json"},"modifiedDate":{"format":"date-time","type":"string","example":"2023-10-01T12:34:56Z"}},"required":["localId","role","remoteAddress","remoteParty","state","process","agreementId","modifiedDate"],"title":"TransferStatusDto"}},"required":["database","memoryUsage","uptime","negotiations","transfers"],"title":"StatusDto"}}}}}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":""},"502":{"description":""}}}
+>
+  
+</StatusCodes>
+
+
+      

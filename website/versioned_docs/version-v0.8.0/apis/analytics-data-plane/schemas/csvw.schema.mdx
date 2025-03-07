@@ -1,0 +1,33 @@
+---
+id: csvw
+title: "CSVW"
+description: ""
+sidebar_label: "CSVW"
+hide_title: true
+hide_table_of_contents: true
+schema: true
+sample: {"@context":["http://example.com/csvw.json"],"tables":{"url":"http://example.com/table.csv","tableSchema":{"columns":[{"name":"http://example.com/tableSchema.json"}]},"dialect":{"header":true}}}
+custom_edit_url: null
+---
+
+import Schema from "@theme/Schema";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"CSVW"}
+>
+</Heading>
+
+
+
+
+
+<Schema
+  schema={{"type":"object","properties":{"@context":{"example":["http://example.com/csvw.json"],"type":"array","items":{"type":"string"}},"tables":{"type":"object","properties":{"url":{"type":"string","example":"http://example.com/table.csv"},"tableSchema":{"type":"object","properties":{"columns":{"example":[{"name":"http://example.com/tableSchema.json"}],"type":"array","items":{"type":"string"}}},"title":"CSVWTableSchema"},"dialect":{"type":"object","example":{"header":true}}},"required":["url"],"title":"CSVWTable"}},"required":["@context"],"title":"CSVW"}}
+  schemaType={"response"}
+>
+  
+</Schema>
+            
