@@ -6,68 +6,7 @@ The authentication is currently implemented by the means of the TSG Wallet or Ca
 
 A component diagram with the primary aspects of the control plane and the interactions with external systems is shown below.
 
-```plantuml
-node "External Connector" {
-  interface "Dataspace Protocol"
-}
+![](https://plantuml.gitlab-static.net/png/U9oDLKrFX30GlVTNJBYZTm-RcDKO3sj8C7emUsYW8h6scpBu4RF_tPO2fRGrt4ZdlPdNDpD5o9f1TlkDJ0dAOI-5O1LAbS4l0MY5Fd-bbORSKAJToNmMIgAi9C_8cH1zyauR7TTCL993mQbWblroKnQmvoqJU8IBYrqq2Ln1tx6EQFoSAuJ1GTOz7_Fgp7kDuBA1iIfdwWXvldE1agdFjc972tzWZSIMOYj5I5a6qxGf0hbgcpVSLikH37vXXuK-AYgwLwP2JNF4pnqSBzIahn5XXNBEwmROJgwDDv7J40Wqkv1VFZo7l3ybhsc4P8CsQsy6UIs_H1vj-eHTNDxX4rsVE5DnHuZrOq0xE-wdZSY6IoGCyQRvkiStRN9RZV9-YVNbgO2xdghwiaH5aJK_euy6lxBmG8LEzQ6pRANCrP-fLeJTr41OWSTnA-_00ez9r2YYXllQt0P_FCPvxbnwToDIbpwvImPhVcW-q4vDR8sMVVQG6rR2moV7SQaZ705FfO6l1OMKGBAXUQ92Zg-P4FFyYk7vTlDfdSk2bPjctBGWAv4gDA-tPTisZamt2QPVZbCercd7hM8dxJ_A4-Lj7ICa1cbpmKtyUFKpySoQVqhXTW-_9HBzCrhMyeNQ0lQUg2q4zpuDw3-o0Nkx)
 
-package "Control Plane" {
-  [DSP Client] ..> "Dataspace Protocol" : uses
-
-  package "Dataspace Protocol Module" {
-    [Catalog Controller] --> [Catalog Service]
-    [Negotiation Controller] --> [Negotiation Service]
-    [Negotiation Service] -right-> [Catalog Service]
-    [Negotiation Service] --> [DSP Client]
-    [Transfer Controller] --> [Transfer Service]
-    [Transfer Service] -right-> [Negotiation Service]
-    [Transfer Service] --> [DSP Client]
-  }
-  package "Data Plane Module" {
-    [Dataplane Controller] --> [Dataplane Service]
-    [Dataplane Service] -up--> [Transfer Service]
-  }
-  "DSP Catalog" -down- [Catalog Controller]
-  "DSP Negotiation" -down- [Negotiation Controller]
-  "DSP Transfer" -down- [Transfer Controller]
-  "Data Plane Interface" -up- [Dataplane Controller]
-
-  package "Authentication" {
-
-    [VP Guard/Strategy] --> [Auth Service]
-    [Management Guard/Strategy] --> [Auth Service]
-    package "Wallets" {
-      [Auth Service] --> [TSG Wallet]
-      [Auth Service] -->[Managed Identity Wallet]
-    }
-  }
-  "Dataspace Protocol Module" --> [Auth Service]
-
-  package "Management" {
-    [Catalog Mgmt] -up-> [DSP Client]
-    [Negotiation Mgmt] -up-> [Negotiation Service]
-    [Transfer Mgmt] -up-> [Transfer Service]
-  }
-  "Catalog Mgmt Interface" -up- [Catalog Mgmt]
-  "Negotiation Mgmt Interface" -up- [Negotiation Mgmt]
-  "Transfer Mgmt Interface" -up- [Transfer Mgmt]
-
-
-}
-
-node "Data Plane" {
-  "Dataplane Service" -down---> "Start"
-}
-node "Wallet" {
-  "TSG Wallet" --down---> "Presentation Interface"
-  "TSG Wallet" --down---> "Validation Interface"
-  "Managed Identity Wallet" --down---> "Presentation Interface"
-  "Managed Identity Wallet" --down---> "Validation Interface"
-}
-"Data Plane" ..> "Data Plane Interface" : use
-"External Connector" ..> "DSP Catalog" : use
-"External Connector" ..> "DSP Negotiation" : use
-"External Connector" ..> "DSP Transfer" : use
-```
 
 The interfaces of the control plane are largely covered by the OpenAPI descriptions in `resources/apis` and the accompanying schemas in `resources/schemas`.
