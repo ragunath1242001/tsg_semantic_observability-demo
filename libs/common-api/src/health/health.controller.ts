@@ -10,6 +10,7 @@ import {
   HealthCheckService,
   TypeOrmHealthIndicator
 } from "@nestjs/terminus";
+
 import { DisableOAuthGuard } from "../auth/oauth.guard.js";
 
 @Controller()

@@ -1,14 +1,15 @@
 <script setup lang="ts">
-import http from "@tsg-dsp/common-ui/utils/http";
-import { onMounted, ref } from "vue";
-import { useToast } from "primevue/usetoast";
-import { useConfirm } from "primevue/useconfirm";
-import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
-import DisplayField from "@tsg-dsp/common-ui/components/DisplayField.vue";
-import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import { DataPlaneDetailsDto } from "@tsg-dsp/common-dsp";
-import { useDataPlaneStore } from "../stores/dataplane";
+import DisplayField from "@tsg-dsp/common-ui/components/DisplayField.vue";
+import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
+import { toastError } from "@tsg-dsp/common-ui/utils/error";
+import http from "@tsg-dsp/common-ui/utils/http";
 import { storeToRefs } from "pinia";
+import { useConfirm } from "primevue/useconfirm";
+import { useToast } from "primevue/usetoast";
+import { onMounted, ref } from "vue";
+
+import { useDataPlaneStore } from "../stores/dataplane";
 
 const dataPlaneFormDefault: DataPlaneDetailsDto = {
   identifier: "",

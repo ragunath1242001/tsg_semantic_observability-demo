@@ -9,10 +9,6 @@ import {
   Post,
   Put
 } from "@nestjs/common";
-import { InitKeyConfig } from "../config.js";
-import { KeysService } from "./keys.service.js";
-import { AppRole } from "@tsg-dsp/wallet-dtos";
-import { KeyInfo } from "@tsg-dsp/wallet-dtos";
 import {
   ApiBody,
   ApiOAuth2,
@@ -20,13 +16,6 @@ import {
   ApiOperation,
   ApiTags
 } from "@nestjs/swagger";
-import { KeyConfigDto, KeyInfoDto } from "./keys.schemas.js";
-import {
-  ApiForbiddenResponseDefault,
-  ApiBadRequestResponseDefault,
-  ApiConflictResponseDefault,
-  ApiNotFoundResponseDefault
-} from "@tsg-dsp/common-dtos";
 import {
   Paginated,
   PaginationOptionsDto,
@@ -35,6 +24,18 @@ import {
   UsePagination,
   validationPipe
 } from "@tsg-dsp/common-api";
+import {
+  ApiBadRequestResponseDefault,
+  ApiConflictResponseDefault,
+  ApiForbiddenResponseDefault,
+  ApiNotFoundResponseDefault
+} from "@tsg-dsp/common-dtos";
+import { AppRole } from "@tsg-dsp/wallet-dtos";
+import { KeyInfo } from "@tsg-dsp/wallet-dtos";
+
+import { InitKeyConfig } from "../config.js";
+import { KeyConfigDto, KeyInfoDto } from "./keys.schemas.js";
+import { KeysService } from "./keys.service.js";
 
 @Controller("management/keys")
 @ApiTags("Management Keys")

@@ -1,6 +1,5 @@
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
-import { PresentationService } from "../presentation.service.js";
-import { DCPSiopService } from "./siop.service.js";
+import { AppError } from "@tsg-dsp/common-api";
 import {
   Field,
   PresentationDefinition,
@@ -8,11 +7,13 @@ import {
   PresentationResponse,
   PresentationResponseMessage
 } from "@tsg-dsp/common-dtos";
-import { CredentialsService } from "../../credentials/credentials.service.js";
 import { Ajv } from "ajv";
 import jsonpath from "jsonpath";
+
+import { CredentialsService } from "../../credentials/credentials.service.js";
 import { CredentialDao } from "../../model/credentials.dao.js";
-import { AppError } from "@tsg-dsp/common-api";
+import { PresentationService } from "../presentation.service.js";
+import { DCPSiopService } from "./siop.service.js";
 
 @Injectable()
 export class DCPHolderService {

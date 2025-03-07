@@ -1,29 +1,30 @@
+import { afterAll, beforeAll, describe, expect, it } from "@jest/globals";
 import { Test, TestingModule } from "@nestjs/testing";
-import { CredentialsService } from "../../credentials/credentials.service.js";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { TypeOrmTestHelper } from "@tsg-dsp/common-api";
+import { toArray } from "@tsg-dsp/common-dsp";
+import { PresentationQueryMessage } from "@tsg-dsp/common-dtos";
 import { plainToInstance } from "class-transformer";
+import crypto from "crypto";
+import { http, HttpResponse } from "msw";
+import { SetupServer, setupServer } from "msw/node";
+
 import { RootConfig } from "../../config.js";
+import { CredentialsService } from "../../credentials/credentials.service.js";
+import { DidService } from "../../did/did.service.js";
+import { KeysService } from "../../keys/keys.service.js";
+import { SignatureService } from "../../keys/signature.service.js";
 import {
   CredentialDao,
   KeyMaterialDao,
   StatusListCredentialDao
 } from "../../model/credentials.dao.js";
-import { TypeOrmModule } from "@nestjs/typeorm";
-import { DidService } from "../../did/did.service.js";
-import { KeysService } from "../../keys/keys.service.js";
-import { PresentationService } from "../presentation.service.js";
-import { describe, expect, beforeAll, afterAll, it } from "@jest/globals";
-import { SetupServer, setupServer } from "msw/node";
-import { HttpResponse, http } from "msw";
-import { DCPHolderService } from "./holder.service.js";
-import { DCPVerifierService } from "./verifier.service.js";
-import { DCPSiopService } from "./siop.service.js";
-import { SignatureService } from "../../keys/signature.service.js";
 import { SIToken } from "../../model/dcp.dao.js";
-import crypto from "crypto";
 import { DIDDocuments, DIDLogs, DIDService } from "../../model/did.dao.js";
-import { PresentationQueryMessage } from "@tsg-dsp/common-dtos";
-import { TypeOrmTestHelper } from "@tsg-dsp/common-api";
-import { toArray } from "@tsg-dsp/common-dsp";
+import { PresentationService } from "../presentation.service.js";
+import { DCPHolderService } from "./holder.service.js";
+import { DCPSiopService } from "./siop.service.js";
+import { DCPVerifierService } from "./verifier.service.js";
 
 describe("Presentation Service", () => {
   let dcpSiopService: DCPSiopService;

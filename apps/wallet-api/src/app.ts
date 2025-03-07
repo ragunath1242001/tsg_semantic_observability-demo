@@ -1,9 +1,10 @@
+import { Logger } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
+import { AppLogger } from "@tsg-dsp/common-api";
+import session from "express-session";
+
 import { AppModule } from "./app.module.js";
 import { RootConfig } from "./config.js";
-import { Logger } from "@nestjs/common";
-import session from "express-session";
-import { AppLogger } from "@tsg-dsp/common-api";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {

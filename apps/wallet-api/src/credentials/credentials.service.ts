@@ -1,26 +1,27 @@
+import { Bitstring } from "@digitalbazaar/bitstring";
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
-import { InitCredentialConfig, RootConfig, SignatureType } from "../config.js";
+import { InjectRepository } from "@nestjs/typeorm";
+import { AppError } from "@tsg-dsp/common-api";
+import { PaginationOptionsDto } from "@tsg-dsp/common-api";
 import {
   Credential,
   CredentialSubject,
   Proof,
   VerifiableCredential
 } from "@tsg-dsp/common-dsp";
-import { AppError } from "@tsg-dsp/common-api";
-import { InjectRepository } from "@nestjs/typeorm";
+import { resolveDid } from "@tsg-dsp/common-signing-and-validation";
+import axios from "axios";
+import { randomInt } from "crypto";
+import { ServiceEndpoint } from "did-resolver";
+import { Equal, Or, Repository } from "typeorm";
+
+import { InitCredentialConfig, RootConfig, SignatureType } from "../config.js";
+import { DidService } from "../did/did.service.js";
+import { SignatureService } from "../keys/signature.service.js";
 import {
   CredentialDao,
   StatusListCredentialDao
 } from "../model/credentials.dao.js";
-import { Equal, Or, Repository } from "typeorm";
-import { DidService } from "../did/did.service.js";
-import axios from "axios";
-import { SignatureService } from "../keys/signature.service.js";
-import { ServiceEndpoint } from "did-resolver";
-import { Bitstring } from "@digitalbazaar/bitstring";
-import { randomInt } from "crypto";
-import { resolveDid } from "@tsg-dsp/common-signing-and-validation";
-import { PaginationOptionsDto } from "@tsg-dsp/common-api";
 
 @Injectable()
 export class CredentialsService {

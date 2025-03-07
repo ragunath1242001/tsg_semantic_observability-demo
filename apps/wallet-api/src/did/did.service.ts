@@ -1,16 +1,17 @@
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
-import { DIDDocument, Service, VerificationMethod } from "did-resolver";
-import { KeyMaterialDao } from "../model/credentials.dao.js";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Like, Repository } from "typeorm";
-import { DidServiceConfig, RootConfig } from "../config.js";
 import { AppError } from "@tsg-dsp/common-api";
-import { DIDDocuments, DIDLogs, DIDService } from "../model/did.dao.js";
-import { DidWebStrategy } from "./web/did.web.strategy.js";
-import { DidTdwStrategy } from "./tdw/did.tdw.strategy.js";
-import { createServices, createVerificationMethods } from "../utils/did.js";
-import { DIDMethod } from "@tsg-dsp/common-signing-and-validation";
 import { PaginationOptionsDto } from "@tsg-dsp/common-api";
+import { DIDMethod } from "@tsg-dsp/common-signing-and-validation";
+import { DIDDocument, Service, VerificationMethod } from "did-resolver";
+import { Like, Repository } from "typeorm";
+
+import { DidServiceConfig, RootConfig } from "../config.js";
+import { KeyMaterialDao } from "../model/credentials.dao.js";
+import { DIDDocuments, DIDLogs, DIDService } from "../model/did.dao.js";
+import { createServices, createVerificationMethods } from "../utils/did.js";
+import { DidTdwStrategy } from "./tdw/did.tdw.strategy.js";
+import { DidWebStrategy } from "./web/did.web.strategy.js";
 
 export interface DidStrategy {
   createDid(config: RootConfig): string;

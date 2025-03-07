@@ -1,27 +1,15 @@
 import {
+  Body,
   Controller,
-  Logger,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
+  Logger,
+  Param,
   Post,
-  Body,
-  Put,
-  Delete,
-  Param
+  Put
 } from "@nestjs/common";
-import { DataPlaneService } from "./dataplane.service.js";
-import {
-  DatasetConfig,
-  DatasetConfigWrapper,
-  DatasetItem,
-  DatasetItemWithDto
-} from "@tsg-dsp/http-data-plane-dtos";
-import { CatalogDto, CatalogSchema } from "@tsg-dsp/common-dsp";
-import {
-  ApiForbiddenResponseDefault,
-  DataPlaneStateDto
-} from "@tsg-dsp/common-dtos";
 import {
   ApiBody,
   ApiOAuth2,
@@ -35,8 +23,21 @@ import {
   validateOrRejectSync,
   validationPipe
 } from "@tsg-dsp/common-api";
+import { CatalogDto, CatalogSchema } from "@tsg-dsp/common-dsp";
+import {
+  ApiForbiddenResponseDefault,
+  DataPlaneStateDto
+} from "@tsg-dsp/common-dtos";
+import {
+  DatasetConfig,
+  DatasetConfigWrapper,
+  DatasetItem,
+  DatasetItemWithDto
+} from "@tsg-dsp/http-data-plane-dtos";
 import { plainToInstance } from "class-transformer";
+
 import { DatasetItemDao } from "./dataplane.dao.js";
+import { DataPlaneService } from "./dataplane.service.js";
 
 @ApiTags("Data Plane Management")
 @ApiOAuth2(["controlplane_dataplane"])

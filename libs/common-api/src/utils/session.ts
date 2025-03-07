@@ -1,5 +1,5 @@
-import { Session, SessionData } from "express-session";
 import { Request } from "express";
+import { Session, SessionData } from "express-session";
 
 export type AuthSession = Session & Partial<SessionData> & { user?: any };
 

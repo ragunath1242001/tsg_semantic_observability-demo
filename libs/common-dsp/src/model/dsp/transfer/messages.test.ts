@@ -1,6 +1,18 @@
-import { deserialize } from "../../deserialize.js";
+import { expect, test } from "@jest/globals";
+
 import { defaultContext } from "../../../jsonld/context.defaults.js";
+import { deserialize } from "../../deserialize.js";
 import { Multilanguage } from "../common.js";
+import {
+  TransferCompletionMessageDto,
+  TransferErrorDto,
+  TransferProcessDto,
+  TransferRequestMessageDto,
+  TransferStartMessageDto,
+  TransferState,
+  TransferSuspensionMessageDto,
+  TransferTerminationMessageDto
+} from "./messages.dto.js";
 import {
   DataAddress,
   EndpointProperty,
@@ -12,18 +24,6 @@ import {
   TransferSuspensionMessage,
   TransferTerminationMessage
 } from "./messages.js";
-import {
-  TransferCompletionMessageDto,
-  TransferErrorDto,
-  TransferState,
-  TransferProcessDto,
-  TransferRequestMessageDto,
-  TransferStartMessageDto,
-  TransferSuspensionMessageDto,
-  TransferTerminationMessageDto
-} from "./messages.dto.js";
-
-import { expect, test } from "@jest/globals";
 
 test("Transfer Completion Message", async () => {
   const transferCompletionMessage = new TransferCompletionMessage({

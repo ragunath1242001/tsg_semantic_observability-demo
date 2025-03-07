@@ -1,8 +1,9 @@
 <script setup>
-import { useLayout } from "@/layout/composables/layout";
-import { computed, ref } from "vue";
-import { useAuthStore } from "@/stores/user";
 import { storeToRefs } from "pinia";
+import { computed, ref } from "vue";
+
+import { useLayout } from "@/layout/composables/layout";
+import { useAuthStore } from "@/stores/user";
 
 const { onMenuToggle, toggleDarkMode, isDarkTheme, layoutConfig } = useLayout();
 

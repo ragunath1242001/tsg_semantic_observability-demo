@@ -9,10 +9,6 @@ import {
   Post,
   Put
 } from "@nestjs/common";
-import { AppRole } from "@tsg-dsp/wallet-dtos";
-import { ContextService } from "./context.service.js";
-import { JSONLDContext } from "../model/context.dao.js";
-import { JsonLdContextConfig } from "../config.js";
 import {
   ApiBody,
   ApiOAuth2,
@@ -20,14 +16,19 @@ import {
   ApiOperation,
   ApiTags
 } from "@nestjs/swagger";
-import { JSONLDContextDto, JsonLdContextConfigDto } from "./context.schemas.js";
+import { Roles, validationPipe } from "@tsg-dsp/common-api";
 import {
-  ApiForbiddenResponseDefault,
-  ApiConflictResponseDefault,
   ApiBadRequestResponseDefault,
+  ApiConflictResponseDefault,
+  ApiForbiddenResponseDefault,
   ApiNotFoundResponseDefault
 } from "@tsg-dsp/common-dtos";
-import { Roles, validationPipe } from "@tsg-dsp/common-api";
+import { AppRole } from "@tsg-dsp/wallet-dtos";
+
+import { JsonLdContextConfig } from "../config.js";
+import { JSONLDContext } from "../model/context.dao.js";
+import { JsonLdContextConfigDto, JSONLDContextDto } from "./context.schemas.js";
+import { ContextService } from "./context.service.js";
 
 @Controller("management/contexts")
 @ApiTags("Management Contexts")

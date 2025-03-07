@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { toastError } from "@tsg-dsp/common-ui/utils/error";
-import { computed, onMounted, ref } from "vue";
-import http from "@tsg-dsp/common-ui/utils/http";
 import DisplayField from "@tsg-dsp/common-ui/components/DisplayField.vue";
-import { useToast } from "primevue/usetoast";
+import { toastError } from "@tsg-dsp/common-ui/utils/error";
+import http from "@tsg-dsp/common-ui/utils/http";
+import { StatusDto } from "@tsg-dsp/wallet-dtos";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import { StatusDto } from "@tsg-dsp/wallet-dtos";
+import { useToast } from "primevue/usetoast";
+import { computed, onMounted, ref } from "vue";
 
 dayjs.extend(relativeTime);
 

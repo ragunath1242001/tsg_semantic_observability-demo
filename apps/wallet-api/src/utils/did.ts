@@ -1,8 +1,9 @@
 import { signingAlgorithm } from "@tsg-dsp/common-signing-and-validation";
-import { Service, VerificationMethod } from "did-resolver";
-import { KeyMaterialDao } from "../model/credentials.dao.js";
-import { DidServiceConfig } from "../config.js";
 import { jwkToMultibase } from "@tsg-dsp/common-signing-and-validation";
+import { Service, VerificationMethod } from "did-resolver";
+
+import { DidServiceConfig } from "../config.js";
+import { KeyMaterialDao } from "../model/credentials.dao.js";
 
 export function createVerificationMethods(
   didId: string,

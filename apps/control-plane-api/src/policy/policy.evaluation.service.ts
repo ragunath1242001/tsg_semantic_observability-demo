@@ -1,15 +1,16 @@
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
-import { RuleRepositoryService } from "./rule.repository.service.js";
 import { InjectRepository } from "@nestjs/typeorm";
+import { VerifiableCredential } from "@tsg-dsp/common-dsp";
 import { Repository } from "typeorm";
+
+import { RootConfig } from "../config.js";
 import { TransferMonitorDao } from "../model/agreement.dao.js";
-import { Evaluation } from "./evaluation.js";
 import { DSPError } from "../utils/errors/error.js";
 import { AgreementService } from "./agreement.service.js";
-import { VerifiableCredential } from "@tsg-dsp/common-dsp";
-import { RootConfig } from "../config.js";
 import { EvaluationTrigger } from "./constraint.dto.js";
 import { EvaluationContext, EvaluationDecision } from "./evaluation.dto.js";
+import { Evaluation } from "./evaluation.js";
+import { RuleRepositoryService } from "./rule.repository.service.js";
 
 @Injectable()
 export class PolicyEvaluationService {

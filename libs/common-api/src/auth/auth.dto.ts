@@ -2,13 +2,13 @@ import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { JsonWebKeyDto } from "@tsg-dsp/common-dtos";
 import { Type } from "class-transformer";
 import {
-  IsString,
-  IsOptional,
-  IsIn,
   IsDefined,
-  ValidateNested,
+  IsIn,
   IsInt,
-  IsUrl
+  IsOptional,
+  IsString,
+  IsUrl,
+  ValidateNested
 } from "class-validator";
 import { JWK } from "jose";
 

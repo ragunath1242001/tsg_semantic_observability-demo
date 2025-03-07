@@ -1,24 +1,25 @@
 import { jest } from "@jest/globals";
 import { Logger } from "@nestjs/common";
 import { ScheduleModule } from "@nestjs/schedule";
-import { TestingModule, Test } from "@nestjs/testing";
+import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
+import {
+  AuthClientService,
+  AuthConfig,
+  TypeOrmTestHelper
+} from "@tsg-dsp/common-api";
 import { plainToClass, plainToInstance } from "class-transformer";
+import { http, HttpResponse } from "msw";
 import { SetupServer, setupServer } from "msw/node";
-import { VCAuthService } from "../vc-auth/vc.auth.service.js";
-import { mockWalletConfig } from "../vc-auth/wallets/wallet.util.test.js";
+import { Repository } from "typeorm";
+
 import { IamConfig, RegistryConfig, RootConfig } from "../config.js";
 import { DspClientService } from "../dsp/client/client.service.js";
-import { RegistryDao } from "../model/registry.dao.js";
-import { RegistryService } from "./registry.service.js";
-import { http, HttpResponse } from "msw";
-import {
-  TypeOrmTestHelper,
-  AuthClientService,
-  AuthConfig
-} from "@tsg-dsp/common-api";
-import { Repository } from "typeorm";
 import { AgreementDao, TransferMonitorDao } from "../model/agreement.dao.js";
+import { RegistryDao } from "../model/registry.dao.js";
+import { VCAuthService } from "../vc-auth/vc.auth.service.js";
+import { mockWalletConfig } from "../vc-auth/wallets/wallet.util.test.js";
+import { RegistryService } from "./registry.service.js";
 
 describe("No error when no dataspace credentials are found", () => {
   let registryService: RegistryService;

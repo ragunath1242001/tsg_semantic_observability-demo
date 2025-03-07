@@ -1,15 +1,16 @@
-import { describe, expect, beforeAll, it } from "@jest/globals";
-import { DidService } from "./did.service.js";
-import { plainToInstance } from "class-transformer";
-import { RootConfig } from "../config.js";
-import { TestingModule, Test } from "@nestjs/testing";
+import { beforeAll, describe, expect, it } from "@jest/globals";
+import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { KeyMaterialDao } from "../model/credentials.dao.js";
-import { DIDDocument } from "did-resolver";
-import { generateKeyPair, exportJWK } from "jose";
-import { DIDDocuments, DIDLogs, DIDService } from "../model/did.dao.js";
-import { DIDMethod } from "@tsg-dsp/common-signing-and-validation";
 import { TypeOrmTestHelper } from "@tsg-dsp/common-api";
+import { DIDMethod } from "@tsg-dsp/common-signing-and-validation";
+import { plainToInstance } from "class-transformer";
+import { DIDDocument } from "did-resolver";
+import { exportJWK, generateKeyPair } from "jose";
+
+import { RootConfig } from "../config.js";
+import { KeyMaterialDao } from "../model/credentials.dao.js";
+import { DIDDocuments, DIDLogs, DIDService } from "../model/did.dao.js";
+import { DidService } from "./did.service.js";
 
 describe("DID Service", () => {
   let didService: DidService;

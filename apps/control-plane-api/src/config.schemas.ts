@@ -1,4 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+
 import { RuntimeConfig } from "./config.js";
 
 export class RuntimeConfigDto implements RuntimeConfig {

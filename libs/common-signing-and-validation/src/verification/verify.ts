@@ -1,7 +1,8 @@
-import { flattenedVerify, FlattenedVerifyResult, importJWK, JWK } from "jose";
-import { estimateAlgorithm } from "../utils/cryptosuite.js";
-import { AppError } from "@tsg-dsp/common-api";
 import { HttpStatus } from "@nestjs/common";
+import { AppError } from "@tsg-dsp/common-api";
+import { flattenedVerify, FlattenedVerifyResult, importJWK, JWK } from "jose";
+
+import { estimateAlgorithm } from "../utils/cryptosuite.js";
 
 export async function verifyJws(
   jws: string,

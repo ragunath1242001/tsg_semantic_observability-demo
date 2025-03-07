@@ -5,8 +5,9 @@ import {
   Injectable,
   Logger
 } from "@nestjs/common";
-import { Request } from "express";
 import { AppError } from "@tsg-dsp/common-api";
+import { Request } from "express";
+
 import { VCAuthService } from "./vc.auth.service.js";
 
 @Injectable()

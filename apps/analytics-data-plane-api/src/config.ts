@@ -1,23 +1,23 @@
 import {
-  valueToBoolean,
-  DatabaseConfig,
-  SQLiteConfig,
-  PostgresConfig,
   AuthConfig,
+  DatabaseConfig,
+  Description,
+  PostgresConfig,
   ServerConfig,
-  Description
+  SQLiteConfig,
+  valueToBoolean
 } from "@tsg-dsp/common-api";
 import { DatasetDto } from "@tsg-dsp/common-dsp";
 import { Transform, Type } from "class-transformer";
 import {
-  IsString,
+  IsArray,
+  IsBoolean,
+  IsDefined,
   IsNumber,
   IsOptional,
-  ValidateNested,
-  IsDefined,
+  IsString,
   IsUrl,
-  IsBoolean,
-  IsArray
+  ValidateNested
 } from "class-validator";
 
 export class ControlPlaneConfig {

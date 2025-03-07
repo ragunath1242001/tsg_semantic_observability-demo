@@ -1,12 +1,4 @@
 import {
-  ApiBody,
-  ApiOkResponse,
-  ApiOperation,
-  ApiTags,
-  ApiParam
-} from "@nestjs/swagger";
-import { DisableOAuthGuard, DisableRolesGuard } from "@tsg-dsp/common-api";
-import {
   Body,
   Controller,
   Get,
@@ -16,10 +8,19 @@ import {
   Post
 } from "@nestjs/common";
 import {
+  ApiBody,
+  ApiOkResponse,
+  ApiOperation,
+  ApiParam,
+  ApiTags
+} from "@nestjs/swagger";
+import { DisableOAuthGuard, DisableRolesGuard } from "@tsg-dsp/common-api";
+import {
   ApiForbiddenResponseDefault,
-  PresentationAuthorizationRequest,
-  AuthorizationResponse
+  AuthorizationResponse,
+  PresentationAuthorizationRequest
 } from "@tsg-dsp/common-dtos";
+
 import { OID4VPVerifierService } from "./verifier.service.js";
 
 @DisableOAuthGuard()

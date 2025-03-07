@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { onBeforeMount } from "vue";
 import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
-import http from "@tsg-dsp/common-ui/utils/http";
 import { updateColorPalette } from "@tsg-dsp/common-ui/utils/color";
+import http from "@tsg-dsp/common-ui/utils/http";
+import { onBeforeMount } from "vue";
 
 const userStore = useUserStore();
 

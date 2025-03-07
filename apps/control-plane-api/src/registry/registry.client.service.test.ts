@@ -1,19 +1,20 @@
 import { Test, TestingModule } from "@nestjs/testing";
+import { AuthClientService, AuthConfig } from "@tsg-dsp/common-api";
+import { defaultContext } from "@tsg-dsp/common-dsp";
 import { plainToClass, plainToInstance } from "class-transformer";
-import { IamConfig, RegistryConfig, RootConfig } from "../config.js";
+import { http, HttpResponse } from "msw";
 import { SetupServer } from "msw/node";
-import { HttpResponse, http } from "msw";
-import { RegistryClientService } from "./registry.client.service.js";
+import { Repository } from "typeorm";
+
+import { IamConfig, RegistryConfig, RootConfig } from "../config.js";
+import { AgreementDao, TransferMonitorDao } from "../model/agreement.dao.js";
 import { DSPError } from "../utils/errors/error.js";
 import { VCAuthService } from "../vc-auth/vc.auth.service.js";
 import {
   mockWalletConfig,
   setupMockWalletServer
 } from "../vc-auth/wallets/wallet.util.test.js";
-import { defaultContext } from "@tsg-dsp/common-dsp";
-import { AuthClientService, AuthConfig } from "@tsg-dsp/common-api";
-import { Repository } from "typeorm";
-import { AgreementDao, TransferMonitorDao } from "../model/agreement.dao.js";
+import { RegistryClientService } from "./registry.client.service.js";
 
 describe("RegistryClientService", () => {
   let registryClientService: RegistryClientService;

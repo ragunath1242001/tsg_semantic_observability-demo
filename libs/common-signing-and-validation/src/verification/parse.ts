@@ -1,8 +1,9 @@
-import { JWK } from "jose";
-import { encodedPublicKeyMultiBaseToJWK } from "../utils/keyconverter.js";
-import { resolveDid } from "../did/did.resolver.js";
-import { AppError } from "@tsg-dsp/common-api";
 import { HttpStatus } from "@nestjs/common";
+import { AppError } from "@tsg-dsp/common-api";
+import { JWK } from "jose";
+
+import { resolveDid } from "../did/did.resolver.js";
+import { encodedPublicKeyMultiBaseToJWK } from "../utils/keyconverter.js";
 
 export async function parseVerificationMethod(
   verificationMethod: string,

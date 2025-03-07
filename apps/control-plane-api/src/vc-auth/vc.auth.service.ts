@@ -1,18 +1,19 @@
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
-import { VerifiablePresentation } from "@tsg-dsp/common-dsp";
-import { DevWalletConfig, RootConfig, TsgWalletConfig } from "../config.js";
-import { DevWalletClient } from "./wallets/dev.wallet.js";
-import { WalletClient } from "./wallets/walletClient.js";
-import { InputDescriptor } from "@tsg-dsp/common-dtos";
-import { TsgWalletClient } from "./wallets/tsg.wallet.js";
+import { InjectRepository } from "@nestjs/typeorm";
 import { AuthClientService } from "@tsg-dsp/common-api";
-import { JwtPayload, decode } from "jsonwebtoken";
-import { DSPError } from "../utils/errors/error.js";
+import { VerifiablePresentation } from "@tsg-dsp/common-dsp";
+import { InputDescriptor } from "@tsg-dsp/common-dtos";
 import { Request } from "express";
+import { decode, JwtPayload } from "jsonwebtoken";
+import { Repository } from "typeorm";
+
+import { DevWalletConfig, RootConfig, TsgWalletConfig } from "../config.js";
 import { AgreementDao, TransferMonitorDao } from "../model/agreement.dao.js";
 import { RuleRepositoryService } from "../policy/rule.repository.service.js";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { DSPError } from "../utils/errors/error.js";
+import { DevWalletClient } from "./wallets/dev.wallet.js";
+import { TsgWalletClient } from "./wallets/tsg.wallet.js";
+import { WalletClient } from "./wallets/walletClient.js";
 
 @Injectable()
 export class VCAuthService {

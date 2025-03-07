@@ -1,4 +1,10 @@
 import {
+  ApiProperty,
+  ApiPropertyOptional,
+  getSchemaPath,
+  PartialType
+} from "@nestjs/swagger";
+import {
   DataIntegrityProof,
   elementOrArray,
   JsonWebSignature2020,
@@ -15,12 +21,6 @@ import {
   IsString,
   ValidateNested
 } from "class-validator";
-import {
-  ApiProperty,
-  ApiPropertyOptional,
-  getSchemaPath,
-  PartialType
-} from "@nestjs/swagger";
 
 export class ProofDocument {
   @ApiProperty(elementOrArray({ $ref: getSchemaPath(Proof) }))

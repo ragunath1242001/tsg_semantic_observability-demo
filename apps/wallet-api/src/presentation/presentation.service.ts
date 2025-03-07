@@ -1,30 +1,29 @@
-import { plainToInstance } from "class-transformer";
-import {
-  VerifiablePresentationJsonLd,
-  VerifiablePresentation,
-  VerifiableCredential,
-  VerifiablePresentationJwt,
-  Proof,
-  PresentationValidation
-} from "@tsg-dsp/common-dsp";
-
-import crypto from "crypto";
-import { CredentialsService } from "../credentials/credentials.service.js";
-import { RootConfig, SignatureType } from "../config.js";
-import { DidService } from "../did/did.service.js";
 import { Injectable, Logger } from "@nestjs/common";
-import { SignatureService } from "../keys/signature.service.js";
-
 import {
-  verifyCredentialValidity,
-  verifyPresentationValidity,
-  verifyCredentialStatusValidity,
-  evaluatePresentationResponseValidity
-} from "@tsg-dsp/common-signing-and-validation";
+  PresentationValidation,
+  Proof,
+  VerifiableCredential,
+  VerifiablePresentation,
+  VerifiablePresentationJsonLd,
+  VerifiablePresentationJwt
+} from "@tsg-dsp/common-dsp";
 import {
   PresentationDefinition,
   PresentationResponse
 } from "@tsg-dsp/common-dtos";
+import {
+  evaluatePresentationResponseValidity,
+  verifyCredentialStatusValidity,
+  verifyCredentialValidity,
+  verifyPresentationValidity
+} from "@tsg-dsp/common-signing-and-validation";
+import { plainToInstance } from "class-transformer";
+import crypto from "crypto";
+
+import { RootConfig, SignatureType } from "../config.js";
+import { CredentialsService } from "../credentials/credentials.service.js";
+import { DidService } from "../did/did.service.js";
+import { SignatureService } from "../keys/signature.service.js";
 
 @Injectable()
 export class PresentationService {

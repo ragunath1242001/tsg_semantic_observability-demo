@@ -1,13 +1,14 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
-import { useLayout } from "@tsg-dsp/common-ui/layout/composables/layout.js";
 import FloatingConfigurator from "@tsg-dsp/common-ui/components/FloatingConfigurator.vue";
-import { useToast } from "primevue";
-import { useAuthStore } from "../stores/user";
-import { useRoute } from "vue-router";
-import http from "../utils/http";
-import QRCode from "qrcode";
+import { useLayout } from "@tsg-dsp/common-ui/layout/composables/layout.js";
 import { toastError } from "@tsg-dsp/common-ui/utils/error.js";
+import { useToast } from "primevue";
+import QRCode from "qrcode";
+import { computed, ref } from "vue";
+import { useRoute } from "vue-router";
+
+import { useAuthStore } from "../stores/user";
+import http from "../utils/http";
 
 const { layoutConfig } = useLayout();
 

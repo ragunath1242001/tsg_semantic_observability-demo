@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import { toArray, VerifiableCredential } from "@tsg-dsp/common-dsp";
-import { onMounted, ref } from "vue";
-import { useToast } from "primevue/usetoast";
 import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
-import { AutoCompleteCompleteEvent } from "primevue/autocomplete";
 import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
-import http from "@tsg-dsp/common-ui/utils/http";
-import { useRuntimeStore } from "@/stores/runtime";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
+import http from "@tsg-dsp/common-ui/utils/http";
+import { AutoCompleteCompleteEvent } from "primevue/autocomplete";
+import { useToast } from "primevue/usetoast";
+import { onMounted, ref } from "vue";
+
+import { useRuntimeStore } from "@/stores/runtime";
 
 interface LegalRegistrationNumberForm {
   type: string | undefined;

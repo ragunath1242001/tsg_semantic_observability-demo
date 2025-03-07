@@ -1,13 +1,14 @@
 import { BigNumber } from "bignumber.js";
+import elliptic from "elliptic";
 import { JWK } from "jose";
+import { base58btc } from "multiformats/bases/base58";
+import { encode } from "varint";
+
 import {
   base64urlToHex,
   hexToBase58btc,
   hexToBase64url
 } from "./typeconverter.js";
-import { encode } from "varint";
-import elliptic from "elliptic";
-import { base58btc } from "multiformats/bases/base58";
 
 /**
  * JWK-to-Multibase algorithm derived from: https://github.com/public-square/jwk-multibase-key-converter-js

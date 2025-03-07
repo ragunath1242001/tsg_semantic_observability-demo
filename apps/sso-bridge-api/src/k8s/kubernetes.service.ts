@@ -1,12 +1,13 @@
-import { Injectable, Logger } from "@nestjs/common";
 import {
-  KubeConfig,
+  ApiException,
   CoreV1Api,
-  V1Secret,
-  ApiException
+  KubeConfig,
+  V1Secret
 } from "@kubernetes/client-node";
-import { RootConfig } from "../config.js";
+import { Injectable, Logger } from "@nestjs/common";
 import { AppError } from "@tsg-dsp/common-api";
+
+import { RootConfig } from "../config.js";
 
 @Injectable()
 export class KubernetesService {

@@ -1,20 +1,20 @@
 <script setup lang="ts">
-import { computed, ref, toRefs } from "vue";
 import {
-  PolicyDto,
   type CatalogDto,
-  type DatasetDto
+  type DatasetDto,
+  PolicyDto
 } from "@tsg-dsp/common-dsp";
-import { injectStrict } from "../utils/injectTyped";
-import { obtainValues } from "@tsg-dsp/common-ui/utils/common";
-import { AxiosKey } from "../utils/symbols";
-import { useToast } from "primevue/usetoast";
-import { toastError } from "@tsg-dsp/common-ui/utils/error";
-
-import Links from "../components/Links.vue";
-import Dataset from "../components/Dataset.vue";
 import DisplayField from "@tsg-dsp/common-ui/components/DisplayField.vue";
 import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
+import { obtainValues } from "@tsg-dsp/common-ui/utils/common";
+import { toastError } from "@tsg-dsp/common-ui/utils/error";
+import { useToast } from "primevue/usetoast";
+import { computed, ref, toRefs } from "vue";
+
+import Dataset from "../components/Dataset.vue";
+import Links from "../components/Links.vue";
+import { injectStrict } from "../utils/injectTyped";
+import { AxiosKey } from "../utils/symbols";
 
 const props = defineProps<{
   catalog: CatalogDto;

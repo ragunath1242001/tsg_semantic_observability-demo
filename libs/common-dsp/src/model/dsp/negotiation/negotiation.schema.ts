@@ -1,20 +1,21 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { MultilanguageSchema, ReferenceSchema } from "../common.schema.js";
+
 import { PolicySchema } from "../catalog/catalog.schema.js";
 import { MultilanguageDto } from "../common.dto.js";
+import { MultilanguageSchema, ReferenceSchema } from "../common.schema.js";
 import {
-  HashedMessage,
+  ContractAgreementMessageDto,
   ContractAgreementVerificationMessageDto,
-  ContractNegotiationState,
-  ContractRequestMessageDto,
   ContractNegotiationDto,
   ContractNegotiationEventMessageDto,
-  NegotiationEvent,
+  ContractNegotiationState,
+  ContractNegotiationTerminationMessageDto,
   ContractOfferMessageDto,
-  ContractAgreementMessageDto,
-  ContractNegotiationTerminationMessageDto
+  ContractRequestMessageDto,
+  HashedMessage,
+  NegotiationEvent
 } from "./messages.dto.js";
-import { OfferDto, AgreementDto } from "./negotiation.dto.js";
+import { AgreementDto, OfferDto } from "./negotiation.dto.js";
 
 export class OfferSchema extends PolicySchema implements OfferDto {
   @ApiProperty({ example: "odrl:Offer" })

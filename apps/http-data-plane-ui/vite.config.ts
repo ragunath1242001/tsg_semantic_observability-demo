@@ -1,9 +1,9 @@
 import { fileURLToPath, URL } from "node:url";
 
-import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import { readFileSync } from "fs";
 import path from "path";
+import { defineConfig } from "vite";
 
 const swaggerShimFile =
   "node_modules/@nestjs/swagger/dist/extra/swagger-shim.js";

@@ -1,10 +1,11 @@
+import { confirm } from "@inquirer/prompts";
 import chalk from "chalk";
 import { ChalkInstance } from "chalk";
 import { exec, ExecException } from "child_process";
 import { ClassConstructor, plainToInstance } from "class-transformer";
 import { validateSync, ValidationError } from "class-validator";
+
 import { Ecosystem, SingleParticipant } from "./model.js";
-import { confirm } from "@inquirer/prompts";
 
 export const log = (
   type: "log" | "warn" | "error",

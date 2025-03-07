@@ -1,29 +1,30 @@
 import { jest } from "@jest/globals";
+import { ScheduleModule } from "@nestjs/schedule";
 import { Test, TestingModule } from "@nestjs/testing";
-import { RegistryService } from "./registry.service.js";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { DspClientService } from "../dsp/client/client.service.js";
-import { VCAuthService } from "../vc-auth/vc.auth.service.js";
+import {
+  AuthClientService,
+  AuthConfig,
+  PaginationOptionsDto,
+  TypeOrmTestHelper
+} from "@tsg-dsp/common-api";
+import { defaultContext } from "@tsg-dsp/common-dsp";
 import { plainToClass, plainToInstance } from "class-transformer";
-import { IamConfig, RegistryConfig, RootConfig } from "../config.js";
+import { http, HttpResponse } from "msw";
 import { SetupServer } from "msw/node";
+import { Repository } from "typeorm";
+
+import { IamConfig, RegistryConfig, RootConfig } from "../config.js";
+import { DspClientService } from "../dsp/client/client.service.js";
+import { AgreementDao, TransferMonitorDao } from "../model/agreement.dao.js";
+import { RegistryDao } from "../model/registry.dao.js";
+import { DSPError } from "../utils/errors/error.js";
+import { VCAuthService } from "../vc-auth/vc.auth.service.js";
 import {
   mockWalletConfig,
   setupMockWalletServer
 } from "../vc-auth/wallets/wallet.util.test.js";
-import { HttpResponse, http } from "msw";
-import { ScheduleModule } from "@nestjs/schedule";
-import { RegistryDao } from "../model/registry.dao.js";
-import { DSPError } from "../utils/errors/error.js";
-import { defaultContext } from "@tsg-dsp/common-dsp";
-import {
-  TypeOrmTestHelper,
-  AuthClientService,
-  AuthConfig,
-  PaginationOptionsDto
-} from "@tsg-dsp/common-api";
-import { Repository } from "typeorm";
-import { AgreementDao, TransferMonitorDao } from "../model/agreement.dao.js";
+import { RegistryService } from "./registry.service.js";
 
 describe("RegistryService", () => {
   let registryService: RegistryService;

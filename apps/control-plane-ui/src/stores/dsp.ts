@@ -1,15 +1,16 @@
-import { defineStore } from "pinia";
-import { socket } from "../socket";
-import {
-  NegotiationDetailDto,
-  NegotiationStatusDto
-} from "@tsg-dsp/common-dtos";
-import http from "@tsg-dsp/common-ui/utils/http";
 import {
   CatalogDto,
   TransferDetailDto,
   TransferStatus
 } from "@tsg-dsp/common-dsp";
+import {
+  NegotiationDetailDto,
+  NegotiationStatusDto
+} from "@tsg-dsp/common-dtos";
+import http from "@tsg-dsp/common-ui/utils/http";
+import { defineStore } from "pinia";
+
+import { socket } from "../socket";
 
 interface Catalog {
   catalog: CatalogDto;

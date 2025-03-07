@@ -1,4 +1,5 @@
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+
 import { MetaEntity } from "./common.dao.js";
 
 @Entity()

@@ -13,25 +13,26 @@ import {
   Res,
   UseGuards
 } from "@nestjs/common";
-import { OauthService } from "./oauth.service.js";
+import {
+  ApiBadGatewayResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags
+} from "@nestjs/swagger";
 import {
   AuthorizationRequest,
   JWKS,
-  TokenRequestWrapper,
   nonEmptyStringPipe,
+  TokenRequestWrapper,
   validateOrRejectSync,
   validationPipe
 } from "@tsg-dsp/common-api";
 import { plainToInstance } from "class-transformer";
-import {
-  ApiOperation,
-  ApiOkResponse,
-  ApiBadGatewayResponse,
-  ApiTags
-} from "@nestjs/swagger";
-import { AuthGuard, ManagementRoles, User } from "../auth/auth.guard.js";
 import { Request, Response } from "express";
+
+import { AuthGuard, ManagementRoles, User } from "../auth/auth.guard.js";
 import { OauthUser } from "../model/user.dao.js";
+import { OauthService } from "./oauth.service.js";
 
 @ApiTags("Oauth")
 @Controller("oauth")

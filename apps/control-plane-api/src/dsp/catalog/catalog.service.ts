@@ -1,22 +1,28 @@
 import { HttpStatus, Injectable, Logger, Optional } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import {
+  Paginated,
+  PaginationOptionsDto,
+  ServerConfig
+} from "@tsg-dsp/common-api";
+import {
   Catalog,
   CatalogDto,
   CatalogRequestMessage,
   Constraint,
   DataService,
   Dataset,
+  deserialize,
   ODRLAction,
   ODRLLeftOperand,
   ODRLOperator,
   Offer,
   Permission,
   Prohibition,
-  Resource,
-  deserialize
+  Resource
 } from "@tsg-dsp/common-dsp";
 import { Repository } from "typeorm";
+
 import {
   InitCatalog,
   PolicyConfig,
@@ -29,13 +35,8 @@ import {
   DistributionDao,
   ResourceDao
 } from "../../model/catalog.dao.js";
-import { DSPError } from "../../utils/errors/error.js";
-import {
-  ServerConfig,
-  PaginationOptionsDto,
-  Paginated
-} from "@tsg-dsp/common-api";
 import { DataPlaneDao } from "../../model/dataPlanes.dao.js";
+import { DSPError } from "../../utils/errors/error.js";
 
 @Injectable()
 export class CatalogService {

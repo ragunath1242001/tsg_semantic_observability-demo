@@ -1,11 +1,12 @@
-import { JsonLdDocument } from "jsonld";
-import { compact } from "./jsonld.js";
 import { describe, expect, test } from "@jest/globals";
+import { JsonLdDocument } from "jsonld";
+
 import {
   defaultContext,
   dspContextUrl,
   setJsonLdDebugContexts
 } from "./context.defaults.js";
+import { compact } from "./jsonld.js";
 
 const document: JsonLdDocument = {
   "@context": [

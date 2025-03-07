@@ -1,13 +1,14 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { Type } from "class-transformer";
 import {
-  IsString,
+  IsArray,
+  IsBoolean,
   IsEnum,
   IsOptional,
-  ValidateNested,
-  IsArray,
-  IsBoolean
+  IsString,
+  ValidateNested
 } from "class-validator";
-import { Type } from "class-transformer";
+
 import { DatasetDto } from "../dsp/catalog/catalog.dto.js";
 import { DatasetSchema } from "../dsp/catalog/catalog.schema.js";
 

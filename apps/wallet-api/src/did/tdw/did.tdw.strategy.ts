@@ -1,23 +1,24 @@
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
-import { DidStrategy } from "../did.service.js";
-import { DidServiceConfig, RootConfig } from "../../config.js";
-import { DIDDocument, Service } from "did-resolver";
-import { KeyMaterialDao } from "../../model/credentials.dao.js";
-import { AppError } from "@tsg-dsp/common-api";
 import { InjectRepository } from "@nestjs/typeorm";
-import { DIDLogs } from "../../model/did.dao.js";
-import { Repository } from "typeorm";
-import { base32 } from "multiformats/bases/base32";
-import { createVerificationMethods } from "../../utils/did.js";
+import { AppError } from "@tsg-dsp/common-api";
 import {
   DIDLog,
   DIDMethod,
   jwkToMultibase,
-  VerificationMethod,
-  VERIFICATION_METHOD_CONTEXT
+  VERIFICATION_METHOD_CONTEXT,
+  VerificationMethod
 } from "@tsg-dsp/common-signing-and-validation";
 import { createHash } from "crypto";
+import { DIDDocument, Service } from "did-resolver";
 import { canonicalize } from "json-canonicalize";
+import { base32 } from "multiformats/bases/base32";
+import { Repository } from "typeorm";
+
+import { DidServiceConfig, RootConfig } from "../../config.js";
+import { KeyMaterialDao } from "../../model/credentials.dao.js";
+import { DIDLogs } from "../../model/did.dao.js";
+import { createVerificationMethods } from "../../utils/did.js";
+import { DidStrategy } from "../did.service.js";
 import { createDID, updateDID } from "./method/method.js";
 import { createSigner } from "./method/signing.js";
 

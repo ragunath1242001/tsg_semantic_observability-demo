@@ -1,14 +1,24 @@
 import {
+  Body,
   Controller,
-  Logger,
+  Headers,
   HttpCode,
   HttpStatus,
-  Post,
+  Logger,
   Param,
-  Query,
-  Body,
-  Headers
+  Post,
+  Query
 } from "@nestjs/common";
+import {
+  ApiBody,
+  ApiOAuth2,
+  ApiOkResponse,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+  ApiTags
+} from "@nestjs/swagger";
+import { nonEmptyStringPipe, Roles } from "@tsg-dsp/common-api";
 import {
   DataPlaneRequestResponseDto,
   TransferCompletionMessageDto,
@@ -22,18 +32,8 @@ import {
   TransferTerminationMessageDto,
   TransferTerminationMessageSchema
 } from "@tsg-dsp/common-dsp";
-
-import {
-  ApiBody,
-  ApiOAuth2,
-  ApiOkResponse,
-  ApiOperation,
-  ApiParam,
-  ApiResponse,
-  ApiTags
-} from "@nestjs/swagger";
 import { ApiForbiddenResponseDefault } from "@tsg-dsp/common-dtos";
-import { Roles, nonEmptyStringPipe } from "@tsg-dsp/common-api";
+
 import { TransferService } from "./transfer.service.js";
 
 @Controller()

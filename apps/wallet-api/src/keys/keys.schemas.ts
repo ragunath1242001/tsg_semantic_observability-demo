@@ -1,7 +1,8 @@
-import { KeyInfo } from "@tsg-dsp/wallet-dtos";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { JWK } from "jose";
 import { JsonWebKeyDto } from "@tsg-dsp/common-dtos";
+import { KeyInfo } from "@tsg-dsp/wallet-dtos";
+import { JWK } from "jose";
+
 import { InitKeyConfig } from "../config.js";
 
 export class KeyInfoDto implements KeyInfo {

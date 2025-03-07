@@ -1,21 +1,21 @@
 import { MiddlewareConsumer, Module, NestModule } from "@nestjs/common";
 import { ServeStaticModule } from "@nestjs/serve-static";
+import { TerminusModule } from "@nestjs/terminus";
 import { TypeOrmModule } from "@nestjs/typeorm";
-
 import {
   GenericConfigModule,
   HealthController,
   LoggerMiddleware,
   RequestContextMiddleware
 } from "@tsg-dsp/common-api";
-import { RootConfig } from "./config.js";
-import { TerminusModule } from "@nestjs/terminus";
-import { OauthModule } from "./oauth/oauth.module.js";
-import { UsersModule } from "./users/users.module.js";
-import { ClientsModule } from "./clients/clients.module.js";
+
 import { AuthModule } from "./auth/auth.module.js";
+import { ClientsModule } from "./clients/clients.module.js";
+import { RootConfig } from "./config.js";
 import { KubernetesModule } from "./k8s/kubernetes.module.js";
+import { OauthModule } from "./oauth/oauth.module.js";
 import { PresentationModule } from "./presentation/presentation.module.js";
+import { UsersModule } from "./users/users.module.js";
 
 const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
   ? [

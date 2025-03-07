@@ -1,12 +1,13 @@
+import { HttpStatus } from "@nestjs/common";
 import { VerifiablePresentation } from "@tsg-dsp/common-dsp";
 import { plainToInstance } from "class-transformer";
 import crypto from "crypto";
 import { SignJWT } from "jose";
 import { decode } from "jsonwebtoken";
+
 import { DevWalletConfig } from "../../config.js";
-import { Credential, WalletClient } from "./walletClient.js";
-import { HttpStatus } from "@nestjs/common";
 import { DSPError } from "../../utils/errors/error.js";
+import { Credential, WalletClient } from "./walletClient.js";
 
 export class DevWalletClient extends WalletClient {
   constructor(private readonly iamConfig: DevWalletConfig) {

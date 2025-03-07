@@ -1,5 +1,6 @@
 import { Type } from "class-transformer";
-import { IsString, IsOptional, IsNumber } from "class-validator";
+import { IsNumber, IsOptional, IsString } from "class-validator";
+
 import { Description } from "../utils/configToMarkdown.js";
 
 export class ServerConfig {

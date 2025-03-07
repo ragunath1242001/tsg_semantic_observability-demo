@@ -3,9 +3,9 @@ import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import http from "@tsg-dsp/common-ui/utils/http";
 import { CredentialOfferStatus } from "@tsg-dsp/wallet-dtos";
 import { useToast } from "primevue";
+import QRCode from "qrcode";
 import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
-import QRCode from "qrcode";
 
 const issuerUrl = ref(window.location.origin);
 

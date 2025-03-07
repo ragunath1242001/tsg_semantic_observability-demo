@@ -1,10 +1,11 @@
 import { HttpStatus, Injectable } from "@nestjs/common";
-import { Repository } from "typeorm";
-import { OauthUser } from "../model/user.dao.js";
-import { AppError, PaginationOptionsDto } from "@tsg-dsp/common-api";
 import { InjectRepository } from "@nestjs/typeorm";
+import { AppError, PaginationOptionsDto } from "@tsg-dsp/common-api";
 import { compare, hash } from "bcrypt";
+import { Repository } from "typeorm";
+
 import { RootConfig } from "../config.js";
+import { OauthUser } from "../model/user.dao.js";
 
 @Injectable()
 export class UsersService {

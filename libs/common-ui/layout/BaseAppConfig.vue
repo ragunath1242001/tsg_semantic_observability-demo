@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import http from "../utils/http";
 import { useToast } from "primevue/usetoast";
-import { toastError } from "../utils/error";
-import { updateColorPalette } from "../utils/color";
-import FormField from "../components/FormField.vue";
 import { ref, toRefs } from "vue";
+
+import FormField from "../components/FormField.vue";
+import { updateColorPalette } from "../utils/color";
+import { toastError } from "../utils/error";
+import http from "../utils/http";
 
 const toast = useToast();
 

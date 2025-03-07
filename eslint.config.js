@@ -1,10 +1,11 @@
 // @ts-check
 
 import eslint from "@eslint/js";
+import eslintConfigPrettier from "eslint-config-prettier";
+import simpleImportSort from "eslint-plugin-simple-import-sort";
 import pluginVue from "eslint-plugin-vue";
 import globals from "globals";
 import tseslint from "typescript-eslint";
-import eslintConfigPrettier from "eslint-config-prettier";
 
 export default tseslint.config(
   eslint.configs.recommended,
@@ -33,8 +34,11 @@ export default tseslint.config(
     ]
   },
   {
+    plugins: { "simple-import-sort": simpleImportSort },
     rules: {
       "no-await-in-loop": "warn",
+      "simple-import-sort/imports": "error",
+      "simple-import-sort/exports": "error",
       "@typescript-eslint/no-require-imports": "off",
       "@typescript-eslint/no-explicit-any": "warn",
       "@typescript-eslint/no-unused-vars": [

@@ -1,3 +1,5 @@
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { validateOrRejectSync } from "@tsg-dsp/common-api";
 import { Exclude, Expose, plainToInstance, Type } from "class-transformer";
 import {
   IsEnum,
@@ -6,14 +8,13 @@ import {
   IsString,
   ValidateNested
 } from "class-validator";
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+
 import {
   AtomicConstraint,
   ConstraintModel,
   ConstraintType,
   LogicalConstraint
 } from "./constraint.dto.js";
-import { validateOrRejectSync } from "@tsg-dsp/common-api";
 
 export enum RuleType {
   PERMISSION = "PERMISSION",

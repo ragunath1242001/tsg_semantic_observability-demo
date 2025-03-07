@@ -1,10 +1,11 @@
 import { Logger } from "@nestjs/common";
-import { DidStrategy } from "../did.service.js";
-import { DidServiceConfig, RootConfig } from "../../config.js";
+import { VERIFICATION_METHOD_CONTEXT } from "@tsg-dsp/common-signing-and-validation";
 import { DIDDocument, Service, VerificationMethod } from "did-resolver";
+
+import { DidServiceConfig, RootConfig } from "../../config.js";
 import { KeyMaterialDao } from "../../model/credentials.dao.js";
 import { createServices, createVerificationMethods } from "../../utils/did.js";
-import { VERIFICATION_METHOD_CONTEXT } from "@tsg-dsp/common-signing-and-validation";
+import { DidStrategy } from "../did.service.js";
 
 export class DidWebStrategy implements DidStrategy {
   private readonly logger = new Logger(this.constructor.name);

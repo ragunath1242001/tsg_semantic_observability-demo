@@ -4,7 +4,9 @@ import {
   IsString,
   ValidateNested
 } from "class-validator";
-import { Serializable, Namespace, LDType } from "../../decorators.js";
+
+import { createOptionalInstance } from "../../../utils/instances.js";
+import { LDType, Namespace, Serializable } from "../../decorators.js";
 import {
   IReference,
   Multilanguage,
@@ -12,22 +14,20 @@ import {
   SerializableClass,
   withExtraProps
 } from "../common.js";
-
-import { Agreement, Offer } from "./negotiation.js";
 import {
-  ContractRequestMessageDto,
-  ContractOfferMessageDto,
-  ContractNegotiationTerminationMessageDto,
-  ContractNegotiationState,
-  ContractNegotiationDto,
-  NegotiationEvent,
-  ContractNegotiationEventMessageDto,
-  ContractNegotiationErrorDto,
-  HashedMessage,
+  ContractAgreementMessageDto,
   ContractAgreementVerificationMessageDto,
-  ContractAgreementMessageDto
+  ContractNegotiationDto,
+  ContractNegotiationErrorDto,
+  ContractNegotiationEventMessageDto,
+  ContractNegotiationState,
+  ContractNegotiationTerminationMessageDto,
+  ContractOfferMessageDto,
+  ContractRequestMessageDto,
+  HashedMessage,
+  NegotiationEvent
 } from "./messages.dto.js";
-import { createOptionalInstance } from "../../../utils/instances.js";
+import { Agreement, Offer } from "./negotiation.js";
 
 export interface IContractRequestMessage {
   consumerPid: string;

@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ComputedRef, toRef } from "vue";
+import { RouteLocationNormalizedLoaded } from "vue-router";
 
 import AppMenuItem from "./AppMenuItem.vue";
-import { RouteLocationNormalizedLoaded } from "vue-router";
 
 interface MenuItem {
   label: string;

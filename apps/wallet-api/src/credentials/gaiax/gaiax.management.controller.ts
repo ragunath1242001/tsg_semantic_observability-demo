@@ -1,12 +1,4 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from "@nestjs/common";
-import { RuntimeConfig } from "../../config.js";
-import { AppError } from "@tsg-dsp/common-api";
-import { ClientInfo, AppRole } from "@tsg-dsp/wallet-dtos";
-import {
-  ComplianceRequest,
-  LegalRegistrationNumberRequest
-} from "@tsg-dsp/wallet-dtos";
-import { GaiaXService } from "./gaiax.service.js";
 import {
   ApiBody,
   ApiOAuth2,
@@ -14,12 +6,21 @@ import {
   ApiOperation,
   ApiTags
 } from "@nestjs/swagger";
-import { CredentialsDto } from "../credentials.schemas.js";
+import { AppError } from "@tsg-dsp/common-api";
+import { Client, validationPipe } from "@tsg-dsp/common-api";
 import {
   ApiBadRequestResponseDefault,
   ApiForbiddenResponseDefault
 } from "@tsg-dsp/common-dtos";
-import { validationPipe, Client } from "@tsg-dsp/common-api";
+import { AppRole, ClientInfo } from "@tsg-dsp/wallet-dtos";
+import {
+  ComplianceRequest,
+  LegalRegistrationNumberRequest
+} from "@tsg-dsp/wallet-dtos";
+
+import { RuntimeConfig } from "../../config.js";
+import { CredentialsDto } from "../credentials.schemas.js";
+import { GaiaXService } from "./gaiax.service.js";
 
 @Controller("management/credentials/gaiax")
 @ApiOAuth2([AppRole.MANAGE_ALL_CREDENTIALS, AppRole.MANAGE_OWN_CREDENTIALS])

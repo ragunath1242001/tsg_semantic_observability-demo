@@ -1,15 +1,16 @@
+import { AuthClientService, AuthConfig } from "@tsg-dsp/common-api";
 import { VerifiablePresentation } from "@tsg-dsp/common-dsp";
 import { plainToInstance } from "class-transformer";
 import { SetupServer } from "msw/node";
+import { Repository } from "typeorm";
+
 import { IamConfig, RootConfig } from "../config.js";
+import { AgreementDao, TransferMonitorDao } from "../model/agreement.dao.js";
 import { VCAuthService } from "./vc.auth.service.js";
 import {
   mockWalletConfig,
   setupMockWalletServer
 } from "./wallets/wallet.util.test.js";
-import { AuthClientService, AuthConfig } from "@tsg-dsp/common-api";
-import { Repository } from "typeorm";
-import { AgreementDao, TransferMonitorDao } from "../model/agreement.dao.js";
 
 describe("Auth Service", () => {
   let server: SetupServer;

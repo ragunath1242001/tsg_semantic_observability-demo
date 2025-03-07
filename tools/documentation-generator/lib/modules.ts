@@ -1,5 +1,5 @@
-import { ModuleParser } from "./module.parser";
 import { ModuleDocumentationGenerator } from "./module.documentation.generator";
+import { ModuleParser } from "./module.parser";
 
 const moduleParser = new ModuleParser();
 const moduleDocumentationGenerator = new ModuleDocumentationGenerator();

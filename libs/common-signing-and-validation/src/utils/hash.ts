@@ -1,4 +1,5 @@
 import { toArray } from "@tsg-dsp/common-api";
+
 import { canonizeAndHash } from "./canonization.js";
 
 export async function computeProofConfigHash(

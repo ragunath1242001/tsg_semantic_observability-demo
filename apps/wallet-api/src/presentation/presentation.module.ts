@@ -1,24 +1,25 @@
 import { DynamicModule, Logger, Module } from "@nestjs/common";
-import { DirectPresentationController } from "./direct/presentation.controller.js";
-import { PresentationService } from "./presentation.service.js";
-import { CredentialsModule } from "../credentials/credentials.module.js";
-import { KeysModule } from "../keys/keys.module.js";
-import { DidModule } from "../did/did.module.js";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { AuthModule } from "@tsg-dsp/common-api";
+
 import { PresentationConfig, PresentationType } from "../config.js";
+import { CredentialsModule } from "../credentials/credentials.module.js";
+import { DidModule } from "../did/did.module.js";
+import { KeysModule } from "../keys/keys.module.js";
+import { SIToken } from "../model/dcp.dao.js";
+import { AuthorizationRequestDao } from "../model/presentation.dao.js";
 import { DCPHolderController } from "./dcp/holder.controller.js";
+import { DCPHolderManagementController } from "./dcp/holder.management.controller.js";
+import { DCPHolderService } from "./dcp/holder.service.js";
+import { DCPSiopService } from "./dcp/siop.service.js";
 import { DCPVerifierManagementController } from "./dcp/verifier.management.controller.js";
 import { DCPVerifierService } from "./dcp/verifier.service.js";
-import { DCPSiopService } from "./dcp/siop.service.js";
-import { SIToken } from "../model/dcp.dao.js";
-import { TypeOrmModule } from "@nestjs/typeorm";
-import { DCPHolderService } from "./dcp/holder.service.js";
-import { DCPHolderManagementController } from "./dcp/holder.management.controller.js";
-import { AuthModule } from "@tsg-dsp/common-api";
-import { PresentationManagementController } from "./presentation.management.controller.js";
-import { OID4VPVerifierService } from "./oid4vp/verifier.service.js";
+import { DirectPresentationController } from "./direct/presentation.controller.js";
 import { OID4VPVerifierController } from "./oid4vp/verifier.controller.js";
 import { OID4VPVerifierManagementController } from "./oid4vp/verifier.management.controller.js";
-import { AuthorizationRequestDao } from "../model/presentation.dao.js";
+import { OID4VPVerifierService } from "./oid4vp/verifier.service.js";
+import { PresentationManagementController } from "./presentation.management.controller.js";
+import { PresentationService } from "./presentation.service.js";
 
 @Module({})
 export class PresentationModule {

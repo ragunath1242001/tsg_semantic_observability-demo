@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import Catalog from "../components/Catalog.vue";
 import { storeToRefs } from "pinia";
+
+import Catalog from "../components/Catalog.vue";
 import { useDspStore } from "../stores/dsp";
 
 const { ownCatalog } = storeToRefs(useDspStore());

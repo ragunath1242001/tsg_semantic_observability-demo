@@ -1,4 +1,22 @@
 import {
+  AuthConfig,
+  DatabaseConfig,
+  Description,
+  fileTransformer,
+  NodemailerConfiguration,
+  PostgresConfig,
+  ServerConfig,
+  SQLiteConfig,
+  valueToBoolean
+} from "@tsg-dsp/common-api";
+import { CredentialSubject } from "@tsg-dsp/common-dsp/dist/model/ssi/credentials.dto.js";
+import {
+  DIDMethod,
+  DIDMethodList,
+  DIDMethodTypes
+} from "@tsg-dsp/common-signing-and-validation";
+import { Transform, Type } from "class-transformer";
+import {
   Allow,
   IsBoolean,
   IsDefined,
@@ -10,24 +28,6 @@ import {
   IsUrl,
   ValidateNested
 } from "class-validator";
-import { Transform, Type } from "class-transformer";
-import {
-  DIDMethod,
-  DIDMethodList,
-  DIDMethodTypes
-} from "@tsg-dsp/common-signing-and-validation";
-import { CredentialSubject } from "@tsg-dsp/common-dsp/dist/model/ssi/credentials.dto.js";
-import {
-  AuthConfig,
-  DatabaseConfig,
-  Description,
-  fileTransformer,
-  NodemailerConfiguration,
-  PostgresConfig,
-  ServerConfig,
-  SQLiteConfig,
-  valueToBoolean
-} from "@tsg-dsp/common-api";
 
 export class InitKeyConfig {
   @Description("Type of key")

@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import "reflect-metadata";
+
 import { Exclude, plainToInstance, Type } from "class-transformer";
 import {
   IsBoolean,
@@ -12,7 +14,7 @@ import {
   ValidateIf,
   ValidateNested
 } from "class-validator";
-import "reflect-metadata";
+
 import { log } from "./utils.js";
 
 export class DataPlane {

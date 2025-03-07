@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from "vue";
-import FormField from "./FormField.vue";
 import ToggleButton from "primevue/togglebutton";
+import { computed, onMounted, ref, watch } from "vue";
+
+import FormField from "./FormField.vue";
 
 const emit = defineEmits(["input"]);
 

@@ -10,26 +10,27 @@ import {
   Post,
   Put
 } from "@nestjs/common";
-import { DataPlaneService } from "./dataPlane.service.js";
 import {
-  ApiOAuth2,
-  ApiOperation,
-  ApiTags,
-  ApiOkResponse,
-  ApiCreatedResponse,
   ApiAcceptedResponse,
   ApiBadRequestResponse,
-  ApiBody
+  ApiBody,
+  ApiCreatedResponse,
+  ApiOAuth2,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags
 } from "@nestjs/swagger";
-import { ApiForbiddenResponseDefault } from "@tsg-dsp/common-dtos";
-import { DataPlaneDetailsDto } from "@tsg-dsp/common-dsp";
 import {
-  Roles,
-  UsePagination,
-  PaginationQuery,
+  Paginated,
   PaginationOptionsDto,
-  Paginated
+  PaginationQuery,
+  Roles,
+  UsePagination
 } from "@tsg-dsp/common-api";
+import { DataPlaneDetailsDto } from "@tsg-dsp/common-dsp";
+import { ApiForbiddenResponseDefault } from "@tsg-dsp/common-dtos";
+
+import { DataPlaneService } from "./dataPlane.service.js";
 
 @Roles(["controlplane_admin", "controlplane_dataplane"])
 @Controller("management/dataplanes")

@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 import { Argument, Command } from "@commander-js/extra-typings";
-import { Generate } from "../lib/generate.js";
+
 import { Deploy } from "../lib/deploy.js";
-import { getCliVersion, getLatestRelease } from "../lib/validate.js";
+import { Generate } from "../lib/generate.js";
 import { log } from "../lib/utils.js";
+import { getCliVersion, getLatestRelease } from "../lib/validate.js";
 
 const program = new Command();
 const generate = new Generate();

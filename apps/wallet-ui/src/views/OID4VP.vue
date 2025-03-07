@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { ref } from "vue";
-import { useToast } from "primevue/usetoast";
-import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
 import schema from "@tsg-dsp/common-ui/assets/presentation-definition.schema.json";
-import http from "@tsg-dsp/common-ui/utils/http";
+import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
+import http from "@tsg-dsp/common-ui/utils/http";
+import { useToast } from "primevue/usetoast";
 import QRCode from "qrcode";
+import { ref } from "vue";
 
 const toast = useToast();
 

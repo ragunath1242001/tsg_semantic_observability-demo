@@ -1,4 +1,8 @@
+import { checkbox, confirm, Separator } from "@inquirer/prompts";
+import chalk from "chalk";
+import fs from "fs";
 import { parse } from "yaml";
+
 import {
   Applications,
   Ecosystem,
@@ -6,11 +10,8 @@ import {
   Participant,
   SingleParticipant
 } from "./model.js";
-import fs from "fs";
-import { checkbox, confirm, Separator } from "@inquirer/prompts";
-import chalk from "chalk";
-import { getCliVersion, getLatestRelease } from "./validate.js";
 import { execPromise, log, validateAndCreate } from "./utils.js";
+import { getCliVersion, getLatestRelease } from "./validate.js";
 
 interface Options {
   file?: string;

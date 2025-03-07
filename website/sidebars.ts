@@ -1,7 +1,8 @@
 import type { SidebarsConfig } from "@docusaurus/plugin-content-docs";
+
+import analyticsdataPlaneItems from "./docs/apis/analytics-data-plane/sidebar";
 import controlPlaneItems from "./docs/apis/control-plane/sidebar";
 import httpdataPlaneItems from "./docs/apis/http-data-plane/sidebar";
-import analyticsdataPlaneItems from "./docs/apis/analytics-data-plane/sidebar";
 import ssoBridgeItems from "./docs/apis/sso-bridge/sidebar";
 import walletItems from "./docs/apis/wallet/sidebar";
 

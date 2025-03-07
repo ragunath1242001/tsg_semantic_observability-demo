@@ -1,4 +1,5 @@
 import { ConfigToMarkdown } from "@tsg-dsp/common-api";
+
 import { RootConfig } from "./config.js";
 
 const configToMarkdown = new ConfigToMarkdown(RootConfig);

@@ -1,13 +1,14 @@
-import { Transform, Type, plainToInstance } from "class-transformer";
+import { plainToInstance, Transform, Type } from "class-transformer";
 import {
   IsBoolean,
-  IsString,
   IsIn,
-  IsOptional,
   IsNumber,
+  IsOptional,
+  IsString,
   ValidateIf,
   ValidateNested
 } from "class-validator";
+
 import { valueToBoolean } from "../utils/config.js";
 import { Description } from "../utils/configToMarkdown.js";
 

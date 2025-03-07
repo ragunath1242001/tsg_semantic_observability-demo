@@ -1,11 +1,11 @@
-import { ApiPropertyOptional, ApiProperty } from "@nestjs/swagger";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import {
   IsArray,
-  IsOptional,
-  IsString,
-  IsObject,
+  IsBoolean,
   IsNumber,
-  IsBoolean
+  IsObject,
+  IsOptional,
+  IsString
 } from "class-validator";
 
 export class CSVWTableSchema {

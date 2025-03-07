@@ -1,53 +1,51 @@
-import { createApp } from "vue";
-import App from "./App.vue";
-import Lara from "@primevue/themes/lara";
-import router from "./router/index.js";
-
-import PrimeVue from "primevue/config";
-import AutoComplete from "primevue/autocomplete";
-import Button from "primevue/button";
-import ConfirmDialog from "primevue/confirmdialog";
-import Dialog from "primevue/dialog";
-import DynamicDialog from "primevue/dynamicdialog";
-import DialogService from "primevue/dialogservice";
-import InputNumber from "primevue/inputtext";
-import InputText from "primevue/inputtext";
-import Inplace from "primevue/inplace";
-import MultiSelect from "primevue/multiselect";
-import Select from "primevue/select";
-import SelectButton from "primevue/selectbutton";
-import Toast from "primevue/toast";
-import ToastService from "primevue/toastservice";
-import Tree from "primevue/tree";
-import ToggleSwitch from "primevue/toggleswitch";
-import Tabs from "primevue/tabs";
-import TabPanel from "primevue/tabpanel";
-import Tag from "primevue/tag";
-import Textarea from "primevue/textarea";
-import Card from "primevue/card";
-import DataTable from "primevue/datatable";
-import Column from "primevue/column";
-import Password from "primevue/password";
-import ConfirmationService from "primevue/confirmationservice";
-import Panel from "primevue/panel";
-import MonacoEditorVue from "@tsg-dsp/common-ui/components/MonacoEditor.vue";
-
-import Tooltip from "primevue/tooltip";
-
 import "@tsg-dsp/common-ui/assets/styles.scss";
 import "@tsg-dsp/common-ui/assets/tailwind.css";
 
 import { loader } from "@guolao/vue-monaco-editor";
-import Drawer from "primevue/drawer";
-import TabList from "primevue/tablist";
-import Tab from "primevue/tab";
-import TabPanels from "primevue/tabpanels";
-import { createPinia } from "pinia";
+import Lara from "@primevue/themes/lara";
 import { setJsonLdDebugContexts } from "@tsg-dsp/common-dsp";
-import FileUpload from "primevue/fileupload";
-import Badge from "primevue/badge";
-import ProgressBar from "primevue/progressbar";
+import MonacoEditorVue from "@tsg-dsp/common-ui/components/MonacoEditor.vue";
+import { createPinia } from "pinia";
 import { ColorPicker } from "primevue";
+import AutoComplete from "primevue/autocomplete";
+import Badge from "primevue/badge";
+import Button from "primevue/button";
+import Card from "primevue/card";
+import Column from "primevue/column";
+import PrimeVue from "primevue/config";
+import ConfirmationService from "primevue/confirmationservice";
+import ConfirmDialog from "primevue/confirmdialog";
+import DataTable from "primevue/datatable";
+import Dialog from "primevue/dialog";
+import DialogService from "primevue/dialogservice";
+import Drawer from "primevue/drawer";
+import DynamicDialog from "primevue/dynamicdialog";
+import FileUpload from "primevue/fileupload";
+import Inplace from "primevue/inplace";
+import InputNumber from "primevue/inputtext";
+import InputText from "primevue/inputtext";
+import MultiSelect from "primevue/multiselect";
+import Panel from "primevue/panel";
+import Password from "primevue/password";
+import ProgressBar from "primevue/progressbar";
+import Select from "primevue/select";
+import SelectButton from "primevue/selectbutton";
+import Tab from "primevue/tab";
+import TabList from "primevue/tablist";
+import TabPanel from "primevue/tabpanel";
+import TabPanels from "primevue/tabpanels";
+import Tabs from "primevue/tabs";
+import Tag from "primevue/tag";
+import Textarea from "primevue/textarea";
+import Toast from "primevue/toast";
+import ToastService from "primevue/toastservice";
+import ToggleSwitch from "primevue/toggleswitch";
+import Tooltip from "primevue/tooltip";
+import Tree from "primevue/tree";
+import { createApp } from "vue";
+
+import App from "./App.vue";
+import router from "./router/index.js";
 
 setJsonLdDebugContexts(
   import.meta.env.TSG_STATIC_MODE !== "production",

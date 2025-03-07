@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { TransferDetailDto } from "@tsg-dsp/common-dsp";
-import { useToast } from "primevue/usetoast";
-import { ref } from "vue";
 import { stripDspace } from "@tsg-dsp/common-ui/utils/common";
+import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import http from "@tsg-dsp/common-ui/utils/http";
 import { useConfirm } from "primevue/useconfirm";
-import { toastError } from "@tsg-dsp/common-ui/utils/error";
+import { useToast } from "primevue/usetoast";
+import { ref } from "vue";
 
 defineProps<{
   transfer: TransferDetailDto;

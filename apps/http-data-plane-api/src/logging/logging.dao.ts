@@ -4,6 +4,7 @@ import {
   Entity,
   PrimaryGeneratedColumn
 } from "typeorm";
+
 import { LogEntry } from "./logging.dto.js";
 
 @Entity()

@@ -1,15 +1,16 @@
 import { Module } from "@nestjs/common";
-import { DidService } from "./did.service.js";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { DIDWebController } from "./web/did.web.controller.js";
-import { DIDManagementController } from "./did.management.controller.js";
+import { AuthModule, GenericConfigModule } from "@tsg-dsp/common-api";
+import { DIDMethod } from "@tsg-dsp/common-signing-and-validation";
+
+import { RootConfig } from "../config.js";
 import { DIDDocuments, DIDLogs, DIDService } from "../model/did.dao.js";
+import { DIDManagementController } from "./did.management.controller.js";
+import { DidService } from "./did.service.js";
 import { DIDTdwController } from "./tdw/did.tdw.controller.js";
 import { DidTdwStrategy } from "./tdw/did.tdw.strategy.js";
-import { DIDMethod } from "@tsg-dsp/common-signing-and-validation";
+import { DIDWebController } from "./web/did.web.controller.js";
 import { DidWebStrategy } from "./web/did.web.strategy.js";
-import { RootConfig } from "../config.js";
-import { AuthModule, GenericConfigModule } from "@tsg-dsp/common-api";
 
 @Module({
   imports: [

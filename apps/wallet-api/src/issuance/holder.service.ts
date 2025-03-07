@@ -1,24 +1,24 @@
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
-import { CredentialsService } from "../credentials/credentials.service.js";
+import { AppError } from "@tsg-dsp/common-api";
+import { VerifiableCredential } from "@tsg-dsp/common-dsp";
+import { validateJwt } from "@tsg-dsp/common-signing-and-validation";
 import {
   AccessToken,
   CredentialConfiguration,
   CredentialIssuerMetadata,
   CredentialRequest,
-  CredentialResponse
+  CredentialResponse,
+  OfferGrants
 } from "@tsg-dsp/wallet-dtos";
-// This needs to be separate since it's an enum. https://stackoverflow.com/questions/38553097/how-to-import-an-enum
-import { OfferGrants } from "@tsg-dsp/wallet-dtos";
 import axios from "axios";
-import { AppError } from "@tsg-dsp/common-api";
-import qs from "querystring";
-import { VerifiableCredential } from "@tsg-dsp/common-dsp";
 import { plainToInstance } from "class-transformer";
-import { RootConfig } from "../config.js";
-import { CredentialDao } from "../model/credentials.dao.js";
-import { SignatureService } from "../keys/signature.service.js";
 import crypto from "crypto";
-import { validateJwt } from "@tsg-dsp/common-signing-and-validation";
+import qs from "querystring";
+
+import { RootConfig } from "../config.js";
+import { CredentialsService } from "../credentials/credentials.service.js";
+import { SignatureService } from "../keys/signature.service.js";
+import { CredentialDao } from "../model/credentials.dao.js";
 
 @Injectable()
 export class HolderService {

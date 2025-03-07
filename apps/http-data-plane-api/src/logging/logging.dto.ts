@@ -1,4 +1,4 @@
-import { IsString, IsOptional, Matches } from "class-validator";
+import { IsOptional, IsString, Matches } from "class-validator";
 
 export class LogFilterDto {
   @IsString()

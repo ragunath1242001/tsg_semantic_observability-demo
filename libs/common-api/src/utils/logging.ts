@@ -1,13 +1,13 @@
 import {
-  Injectable,
-  NestMiddleware,
-  Logger,
   ConsoleLogger,
-  LogLevel
+  Injectable,
+  Logger,
+  LogLevel,
+  NestMiddleware
 } from "@nestjs/common";
 import { AsyncLocalStorage } from "async_hooks";
-import { Request, Response, NextFunction } from "express";
 import crypto from "crypto";
+import { NextFunction, Request, Response } from "express";
 
 @Injectable()
 export class LoggerMiddleware implements NestMiddleware {

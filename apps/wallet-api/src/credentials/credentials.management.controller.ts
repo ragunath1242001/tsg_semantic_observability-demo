@@ -11,13 +11,6 @@ import {
   Query,
   UsePipes
 } from "@nestjs/common";
-import { CredentialsService } from "./credentials.service.js";
-import { InitCredentialConfig, RootConfig } from "../config.js";
-import { CredentialDao } from "../model/credentials.dao.js";
-import { VerifiableCredential } from "@tsg-dsp/common-dsp";
-import { AppError } from "@tsg-dsp/common-api";
-import { ClientInfo, AppRole } from "@tsg-dsp/wallet-dtos";
-import { ContextService } from "../contexts/context.service.js";
 import {
   ApiBody,
   ApiOAuth2,
@@ -26,17 +19,7 @@ import {
   ApiQuery,
   ApiTags
 } from "@nestjs/swagger";
-import {
-  CredentialConfigDto,
-  CredentialsConfigDto,
-  CredentialsDto
-} from "./credentials.schemas.js";
-import {
-  ApiForbiddenResponseDefault,
-  ApiConflictResponseDefault,
-  ApiBadRequestResponseDefault,
-  ApiNotFoundResponseDefault
-} from "@tsg-dsp/common-dtos";
+import { AppError } from "@tsg-dsp/common-api";
 import {
   Client,
   DisableOAuthGuard,
@@ -47,6 +30,24 @@ import {
   UsePagination,
   validationPipe
 } from "@tsg-dsp/common-api";
+import { VerifiableCredential } from "@tsg-dsp/common-dsp";
+import {
+  ApiBadRequestResponseDefault,
+  ApiConflictResponseDefault,
+  ApiForbiddenResponseDefault,
+  ApiNotFoundResponseDefault
+} from "@tsg-dsp/common-dtos";
+import { AppRole, ClientInfo } from "@tsg-dsp/wallet-dtos";
+
+import { InitCredentialConfig, RootConfig } from "../config.js";
+import { ContextService } from "../contexts/context.service.js";
+import { CredentialDao } from "../model/credentials.dao.js";
+import {
+  CredentialConfigDto,
+  CredentialsConfigDto,
+  CredentialsDto
+} from "./credentials.schemas.js";
+import { CredentialsService } from "./credentials.service.js";
 
 @ApiTags("Management Credentials")
 @ApiOAuth2([AppRole.VIEW_ALL_CREDENTIALS, AppRole.VIEW_OWN_CREDENTIALS])

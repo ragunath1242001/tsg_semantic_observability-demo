@@ -1,5 +1,5 @@
-import { defineStore } from "pinia";
 import { type CatalogDto } from "@tsg-dsp/common-dsp";
+import { defineStore } from "pinia";
 
 interface ICatalogStore {
   catalog: CatalogDto;

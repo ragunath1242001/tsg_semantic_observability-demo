@@ -1,11 +1,13 @@
+import "reflect-metadata";
+
 import {
-  valueToBoolean,
+  AuthConfig,
   DatabaseConfig,
-  SQLiteConfig,
+  Description,
   PostgresConfig,
   ServerConfig,
-  AuthConfig,
-  Description
+  SQLiteConfig,
+  valueToBoolean
 } from "@tsg-dsp/common-api";
 import { OfferDto } from "@tsg-dsp/common-dsp";
 import { Transform, Type } from "class-transformer";
@@ -22,7 +24,6 @@ import {
   ValidateIf,
   ValidateNested
 } from "class-validator";
-import "reflect-metadata";
 
 export class RegistryConfig {
   @Description("Use registry to crawl catalogs")

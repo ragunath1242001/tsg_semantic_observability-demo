@@ -1,13 +1,14 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+
+import { DataPlaneTransferDto } from "../../data-planes/index.js";
 import { MultilanguageDto } from "../common.dto.js";
+import { MultilanguageSchema } from "../common.schema.js";
 import {
-  TransferState,
+  DataAddressDto,
   TransferProcessDto,
-  DataAddressDto
+  TransferState
 } from "./messages.dto.js";
 import { DataAddressSchema, TransferProcessSchema } from "./transfer.schema.js";
-import { MultilanguageSchema } from "../common.schema.js";
-import { DataPlaneTransferDto } from "../../data-planes/index.js";
 
 export type TransferRole = "provider" | "consumer";
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, inject, onBeforeMount } from "vue";
+import { inject, onBeforeMount, onMounted, ref } from "vue";
 
 const data = ref();
 const dialogRef = inject("dialogRef") as any;

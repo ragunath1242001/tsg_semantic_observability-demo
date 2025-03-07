@@ -1,6 +1,6 @@
-import { DidKeyResolverStrategy } from "./did.key.resolver.strategy.js";
-
 import { Test, TestingModule } from "@nestjs/testing";
+
+import { DidKeyResolverStrategy } from "./did.key.resolver.strategy.js";
 
 describe("DID Key Resolver", () => {
   let didKeyResolverStrategy: DidKeyResolverStrategy;

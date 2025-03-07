@@ -1,18 +1,19 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { AgreementDto, VerifiableCredential } from "@tsg-dsp/common-dsp";
-import { Type, plainToInstance } from "class-transformer";
-import {
-  IsObject,
-  IsDefined,
-  IsOptional,
-  IsIn,
-  IsString,
-  IsEnum,
-  ValidateNested,
-  IsDate
-} from "class-validator";
-import { EvaluationTrigger } from "./constraint.dto.js";
 import { validateOrRejectSync } from "@tsg-dsp/common-api";
+import { AgreementDto, VerifiableCredential } from "@tsg-dsp/common-dsp";
+import { plainToInstance, Type } from "class-transformer";
+import {
+  IsDate,
+  IsDefined,
+  IsEnum,
+  IsIn,
+  IsObject,
+  IsOptional,
+  IsString,
+  ValidateNested
+} from "class-validator";
+
+import { EvaluationTrigger } from "./constraint.dto.js";
 
 export class PolicyContext {
   @IsObject()

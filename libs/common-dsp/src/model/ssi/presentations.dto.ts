@@ -1,23 +1,24 @@
-import { Type } from "class-transformer";
-import {
-  IsString,
-  IsOptional,
-  ValidateNested,
-  IsBoolean
-} from "class-validator";
-import {
-  VerifiableCredential,
-  DataIntegrityProof,
-  JsonWebSignature2020,
-  Proof
-} from "./credentials.dto.js";
-import { elementOrArray, OrArray } from "../../utils/unions.js";
 import {
   ApiExtraModels,
   ApiProperty,
   ApiPropertyOptional,
   getSchemaPath
 } from "@nestjs/swagger";
+import { Type } from "class-transformer";
+import {
+  IsBoolean,
+  IsOptional,
+  IsString,
+  ValidateNested
+} from "class-validator";
+
+import { elementOrArray, OrArray } from "../../utils/unions.js";
+import {
+  DataIntegrityProof,
+  JsonWebSignature2020,
+  Proof,
+  VerifiableCredential
+} from "./credentials.dto.js";
 
 @ApiExtraModels(JsonWebSignature2020, DataIntegrityProof, VerifiableCredential)
 export class VerifiablePresentation<

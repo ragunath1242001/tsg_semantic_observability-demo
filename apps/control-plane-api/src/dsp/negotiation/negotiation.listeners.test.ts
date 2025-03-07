@@ -1,16 +1,17 @@
 import { jest } from "@jest/globals";
 import { Test, TestingModule } from "@nestjs/testing";
-import { NegotiationListener } from "./negotiation.listeners.js";
-import { NegotiationService } from "./negotiation.service.js";
-import { CatalogService } from "../catalog/catalog.service.js";
+import { TypeOrmTestHelper } from "@tsg-dsp/common-api";
+import { DataService, Dataset, Distribution, Offer } from "@tsg-dsp/common-dsp";
+
 import { RuntimeConfig } from "../../config.js";
+import { CatalogService } from "../catalog/catalog.service.js";
+import { TransferService } from "../transfer/transfer.service.js";
 import {
   NegotiationCreatedEvent,
   NegotiationUpdatedEvent
 } from "./negotiation.events.js";
-import { DataService, Dataset, Distribution, Offer } from "@tsg-dsp/common-dsp";
-import { TransferService } from "../transfer/transfer.service.js";
-import { TypeOrmTestHelper } from "@tsg-dsp/common-api";
+import { NegotiationListener } from "./negotiation.listeners.js";
+import { NegotiationService } from "./negotiation.service.js";
 
 describe("NegotiationListener", () => {
   let negotiationListener: NegotiationListener;

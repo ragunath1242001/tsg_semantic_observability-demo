@@ -10,15 +10,16 @@ import {
   TokenRequest,
   TokenResponse
 } from "@tsg-dsp/common-api";
-import { UsersService } from "../users/users.service.js";
-import { OauthUser } from "../model/user.dao.js";
 import crypto, { createHash } from "crypto";
-import { ClientsService } from "../clients/clients.service.js";
-import { decodeJwt } from "jose";
-import { TokenService } from "./token.service.js";
-import { encodeParams } from "../utils/params.js";
 import { Request, Response } from "express";
+import { decodeJwt } from "jose";
+
+import { ClientsService } from "../clients/clients.service.js";
+import { OauthUser } from "../model/user.dao.js";
+import { UsersService } from "../users/users.service.js";
+import { encodeParams } from "../utils/params.js";
 import { getSession } from "../utils/session.js";
+import { TokenService } from "./token.service.js";
 
 @Injectable()
 export class OauthService {

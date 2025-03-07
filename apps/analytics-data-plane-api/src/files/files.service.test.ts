@@ -1,13 +1,14 @@
 import { Test, TestingModule } from "@nestjs/testing";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { TypeOrmTestHelper } from "@tsg-dsp/common-api";
+import fs from "fs/promises";
+import path from "path";
+import { fileURLToPath } from "url";
+
+import { FilesConfig, RootConfig } from "../config.js";
+import { DataPlaneService } from "../dataplane/dataplane.service.js";
 import { FilesService } from "./files.service.js";
 import { FileMetadataDao } from "./filesMetadata.dao.js";
-import { TypeOrmModule } from "@nestjs/typeorm";
-import { FilesConfig, RootConfig } from "../config.js";
-import path from "path";
-import fs from "fs/promises";
-import { fileURLToPath } from "url";
-import { TypeOrmTestHelper } from "@tsg-dsp/common-api";
-import { DataPlaneService } from "../dataplane/dataplane.service.js";
 
 describe("FilesService", () => {
   let filesService: FilesService;

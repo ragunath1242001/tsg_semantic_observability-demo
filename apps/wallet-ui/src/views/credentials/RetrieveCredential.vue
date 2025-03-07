@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
 import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
+import { toastError } from "@tsg-dsp/common-ui/utils/error";
+import http from "@tsg-dsp/common-ui/utils/http";
 import {
   CredentialConfig,
   CredentialOffer,
   CredentialOfferRequest
 } from "@tsg-dsp/wallet-dtos";
-import http from "@tsg-dsp/common-ui/utils/http";
 import { useToast } from "primevue";
-import { toastError } from "@tsg-dsp/common-ui/utils/error";
+import { computed, onMounted, ref } from "vue";
 
 const email = ref("");
 const sent = ref(false);

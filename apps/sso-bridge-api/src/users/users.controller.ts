@@ -8,15 +8,16 @@ import {
   Post,
   UseGuards
 } from "@nestjs/common";
-import { ApiTags, ApiOperation, ApiResponse, ApiParam } from "@nestjs/swagger";
-import { UsersService } from "./users.service.js";
-import { UserDto } from "@tsg-dsp/sso-bridge-dtos";
-import { AuthGuard, ManagementRoles } from "../auth/auth.guard.js";
+import { ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
 import {
   PaginationOptionsDto,
   PaginationQuery,
   UsePagination
 } from "@tsg-dsp/common-api";
+import { UserDto } from "@tsg-dsp/sso-bridge-dtos";
+
+import { AuthGuard, ManagementRoles } from "../auth/auth.guard.js";
+import { UsersService } from "./users.service.js";
 
 @ApiTags("Users")
 @Controller("users")

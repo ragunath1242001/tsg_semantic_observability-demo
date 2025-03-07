@@ -1,7 +1,8 @@
-import { defineStore } from "pinia";
-import http from "../utils/http";
-import router from "../router";
 import { UserDto } from "@tsg-dsp/sso-bridge-dtos";
+import { defineStore } from "pinia";
+
+import router from "../router";
+import http from "../utils/http";
 
 interface UserStore {
   user: UserDto | false | null;

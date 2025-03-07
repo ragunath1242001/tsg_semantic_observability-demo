@@ -1,7 +1,4 @@
 import { Body, Controller, Post } from "@nestjs/common";
-import { AppRole } from "@tsg-dsp/wallet-dtos";
-import { HolderService } from "./holder.service.js";
-import { CredentialDao } from "../model/credentials.dao.js";
 import {
   ApiBody,
   ApiOAuth2,
@@ -9,12 +6,16 @@ import {
   ApiOperation,
   ApiTags
 } from "@nestjs/swagger";
-import { CredentialsDto } from "../credentials/credentials.schemas.js";
+import { Roles } from "@tsg-dsp/common-api";
 import {
   ApiBadRequestResponseDefault,
   ApiForbiddenResponseDefault
 } from "@tsg-dsp/common-dtos";
-import { Roles } from "@tsg-dsp/common-api";
+import { AppRole } from "@tsg-dsp/wallet-dtos";
+
+import { CredentialsDto } from "../credentials/credentials.schemas.js";
+import { CredentialDao } from "../model/credentials.dao.js";
+import { HolderService } from "./holder.service.js";
 
 @Controller()
 @ApiTags("OpenID 4 Verifiable Credential Issuance")

@@ -1,7 +1,7 @@
-import { DatasetConfig, PolicyConfig } from "@tsg-dsp/http-data-plane-dtos";
 import { DataPlaneDetailsDto, DatasetDto } from "@tsg-dsp/common-dsp";
-import { Column, Entity, PrimaryColumn } from "typeorm";
+import { DatasetConfig, PolicyConfig } from "@tsg-dsp/http-data-plane-dtos";
 import { instanceToPlain, plainToInstance } from "class-transformer";
+import { Column, Entity, PrimaryColumn } from "typeorm";
 
 @Entity()
 export class DataPlaneStateDao {

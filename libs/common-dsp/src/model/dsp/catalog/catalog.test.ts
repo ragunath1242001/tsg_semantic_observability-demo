@@ -1,7 +1,10 @@
 import { expect, test } from "@jest/globals";
+
+import { defaultContext } from "../../../jsonld/context.defaults.js";
 import { deserialize } from "../../deserialize.js";
-import { Constraint, Offer, Permission } from "../negotiation/negotiation.js";
 import { ODRLAction, ODRLOperator } from "../negotiation/negotiation.dto.js";
+import { Constraint, Offer, Permission } from "../negotiation/negotiation.js";
+import { CatalogDto, ResourceDto } from "./catalog.dto.js";
 import {
   Catalog,
   DataService,
@@ -9,8 +12,6 @@ import {
   Distribution,
   Resource
 } from "./catalog.js";
-import { CatalogDto, ResourceDto } from "./catalog.dto.js";
-import { defaultContext } from "../../../jsonld/context.defaults.js";
 
 test("Resource serialization", async () => {
   const resource = new Resource({

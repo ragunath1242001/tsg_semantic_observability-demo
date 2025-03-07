@@ -1,29 +1,30 @@
 import { jest } from "@jest/globals";
+import { afterAll, beforeAll, describe, expect, it } from "@jest/globals";
 import { Test, TestingModule } from "@nestjs/testing";
-import { PresentationService } from "../presentation.service.js";
-import { describe, expect, beforeAll, afterAll, it } from "@jest/globals";
+import { TypeOrmModule } from "@nestjs/typeorm";
 import {
   AuthorizationRequest,
   ServerConfig,
   TypeOrmTestHelper
 } from "@tsg-dsp/common-api";
-import { OID4VPVerifierService } from "./verifier.service.js";
-import { TypeOrmModule } from "@nestjs/typeorm";
 import { AppError } from "@tsg-dsp/common-api";
-import { SetupServer, setupServer } from "msw/node";
-import { http, HttpResponse } from "msw";
-import { AuthorizationRequestDao } from "../../model/oid4vp.dao.js";
-import { UsersService } from "../../users/users.service.js";
-import { RootConfig } from "../../config.js";
-import { OauthUser } from "../../model/user.dao.js";
 import { plainToInstance } from "class-transformer";
-import { OauthService } from "../../oauth/oauth.service.js";
+import { http, HttpResponse } from "msw";
+import { SetupServer, setupServer } from "msw/node";
+
 import { ClientsService } from "../../clients/clients.service.js";
-import { TokenService } from "../../oauth/token.service.js";
+import { RootConfig } from "../../config.js";
 import { KubernetesService } from "../../k8s/kubernetes.service.js";
 import { OauthClient } from "../../model/client.dao.js";
 import { KeyDao } from "../../model/keys.dao.js";
+import { AuthorizationRequestDao } from "../../model/oid4vp.dao.js";
 import { TokenDao } from "../../model/token.dao.js";
+import { OauthUser } from "../../model/user.dao.js";
+import { OauthService } from "../../oauth/oauth.service.js";
+import { TokenService } from "../../oauth/token.service.js";
+import { UsersService } from "../../users/users.service.js";
+import { PresentationService } from "../presentation.service.js";
+import { OID4VPVerifierService } from "./verifier.service.js";
 
 describe("OID4VPVerifierService", () => {
   let service: OID4VPVerifierService;

@@ -2,6 +2,13 @@ import { jest } from "@jest/globals";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import {
+  AuthClientService,
+  AuthConfig,
+  PaginationOptionsDto,
+  ServerConfig,
+  TypeOrmTestHelper
+} from "@tsg-dsp/common-api";
+import {
   AgreementDto,
   Catalog,
   DataPlaneCreation,
@@ -13,6 +20,7 @@ import {
   Permission
 } from "@tsg-dsp/common-dsp";
 import { plainToClass } from "class-transformer";
+
 import { InitCatalog } from "../config.js";
 import { CatalogService } from "../dsp/catalog/catalog.service.js";
 import {
@@ -24,16 +32,9 @@ import {
   ResourceDao
 } from "../model/catalog.dao.js";
 import { DataPlaneDao } from "../model/dataPlanes.dao.js";
+import { AgreementService } from "../policy/agreement.service.js";
 import { DSPError } from "../utils/errors/error.js";
 import { DataPlaneService } from "./dataPlane.service.js";
-import { AgreementService } from "../policy/agreement.service.js";
-import {
-  TypeOrmTestHelper,
-  ServerConfig,
-  AuthConfig,
-  AuthClientService,
-  PaginationOptionsDto
-} from "@tsg-dsp/common-api";
 
 describe("DataPlane Service", () => {
   let dataPlaneService: DataPlaneService;

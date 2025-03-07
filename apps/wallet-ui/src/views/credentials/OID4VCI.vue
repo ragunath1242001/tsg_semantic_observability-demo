@@ -1,5 +1,9 @@
 <script setup lang="ts">
 import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
+import JsonSchemaFormElement from "@tsg-dsp/common-ui/components/JsonSchemaFormElement.vue";
+import { formatDate } from "@tsg-dsp/common-ui/utils/date";
+import { toastError } from "@tsg-dsp/common-ui/utils/error";
+import http from "@tsg-dsp/common-ui/utils/http";
 import {
   CredentialConfig,
   CredentialOffer,
@@ -7,14 +11,10 @@ import {
   CredentialOfferStatus,
   JsonLdContextConfig
 } from "@tsg-dsp/wallet-dtos";
-import JsonSchemaFormElement from "@tsg-dsp/common-ui/components/JsonSchemaFormElement.vue";
-import { useToast } from "primevue/usetoast";
-import { computed, onMounted, ref } from "vue";
 import Ajv, { JSONSchemaType } from "ajv";
-import http from "@tsg-dsp/common-ui/utils/http";
-import { formatDate } from "@tsg-dsp/common-ui/utils/date";
-import { toastError } from "@tsg-dsp/common-ui/utils/error";
+import { useToast } from "primevue/usetoast";
 import QRCode from "qrcode";
+import { computed, onMounted, ref } from "vue";
 
 interface OfferForm {
   holderId?: string;

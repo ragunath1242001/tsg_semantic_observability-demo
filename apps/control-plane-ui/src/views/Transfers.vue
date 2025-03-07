@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { storeToRefs } from "pinia";
-import { useDspStore } from "../stores/dsp";
-import TransferHistory from "../components/TransferHistory.vue";
-import CTATransfer from "../components/CTATransfer.vue";
 import { onMounted } from "vue";
+
+import CTATransfer from "../components/CTATransfer.vue";
+import TransferHistory from "../components/TransferHistory.vue";
+import { useDspStore } from "../stores/dsp";
 const { transfers, ctaTransfers } = storeToRefs(useDspStore());
 
 onMounted(async () => {

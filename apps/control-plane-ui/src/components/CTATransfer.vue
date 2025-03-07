@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { TransferDetailDto } from "@tsg-dsp/common-dsp";
-import TransferProceed from "./TransferProceed.vue";
 import { toRef } from "vue";
+
+import TransferProceed from "./TransferProceed.vue";
 
 const props = defineProps<{
   transfers: TransferDetailDto[];

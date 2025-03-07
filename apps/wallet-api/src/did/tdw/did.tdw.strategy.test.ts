@@ -1,20 +1,21 @@
-import { plainToInstance } from "class-transformer";
-import { DidServiceConfig, RootConfig } from "../../config.js";
-import { DidTdwStrategy } from "./did.tdw.strategy.js";
-import { KeyMaterialDao } from "../../model/credentials.dao.js";
-import { exportJWK, generateKeyPair } from "jose";
-import { Test, TestingModule } from "@nestjs/testing";
-import { DIDLogs } from "../../model/did.dao.js";
-import { getRepositoryToken } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
 import { jest } from "@jest/globals";
-import { DIDDocument } from "did-resolver";
-import { createServices, createVerificationMethods } from "../../utils/did.js";
+import { Test, TestingModule } from "@nestjs/testing";
+import { getRepositoryToken } from "@nestjs/typeorm";
+import { TypeOrmTestHelper } from "@tsg-dsp/common-api";
 import {
   DIDMethod,
   jwkToMultibase
 } from "@tsg-dsp/common-signing-and-validation";
-import { TypeOrmTestHelper } from "@tsg-dsp/common-api";
+import { plainToInstance } from "class-transformer";
+import { DIDDocument } from "did-resolver";
+import { exportJWK, generateKeyPair } from "jose";
+import { Repository } from "typeorm";
+
+import { DidServiceConfig, RootConfig } from "../../config.js";
+import { KeyMaterialDao } from "../../model/credentials.dao.js";
+import { DIDLogs } from "../../model/did.dao.js";
+import { createServices, createVerificationMethods } from "../../utils/did.js";
+import { DidTdwStrategy } from "./did.tdw.strategy.js";
 
 describe("DID Tdw Service", () => {
   let didTdwStrategy: DidTdwStrategy;

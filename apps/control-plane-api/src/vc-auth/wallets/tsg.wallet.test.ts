@@ -1,10 +1,11 @@
+import { AuthClientService, AuthConfig } from "@tsg-dsp/common-api";
 import { plainToInstance } from "class-transformer";
-import { TsgWalletConfig } from "../../config.js";
-import { HttpResponse, PathParams, http } from "msw";
+import { http, HttpResponse, PathParams } from "msw";
 import { SetupServer, setupServer } from "msw/node";
+
+import { TsgWalletConfig } from "../../config.js";
 import { TsgWalletClient } from "./tsg.wallet.js";
 import { mockDidDocument } from "./wallet.util.test.js";
-import { AuthClientService, AuthConfig } from "@tsg-dsp/common-api";
 
 describe("TSG Wallet", () => {
   let server: SetupServer;

@@ -1,12 +1,12 @@
-import { ApiPropertyOptional, ApiProperty } from "@nestjs/swagger";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { validateOrRejectSync } from "@tsg-dsp/common-api";
 import { Exclude, Expose, plainToInstance, Type } from "class-transformer";
 import {
+  IsEnum,
+  IsIn,
   IsNumber,
   IsOptional,
-  IsEnum,
   IsString,
-  IsIn,
   ValidateNested
 } from "class-validator";
 

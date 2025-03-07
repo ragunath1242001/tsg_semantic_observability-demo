@@ -1,34 +1,35 @@
 import {
-  Controller,
-  Post,
   Body,
+  Controller,
   Get,
   HttpCode,
   HttpStatus,
-  UsePipes,
-  ValidationPipe,
+  Post,
+  UploadedFile,
   UseInterceptors,
-  UploadedFile
+  UsePipes,
+  ValidationPipe
 } from "@nestjs/common";
-import { RuntimeConfig } from "./config.js";
-import {
-  ApiOperation,
-  ApiOkResponse,
-  ApiOAuth2,
-  ApiTags,
-  ApiBody
-} from "@nestjs/swagger";
-import { RuntimeConfigDto } from "./config.schemas.js";
-import {
-  ApiForbiddenResponseDefault,
-  ApiBadRequestResponseDefault
-} from "@tsg-dsp/common-dtos";
 import { FileInterceptor } from "@nestjs/platform-express";
+import {
+  ApiBody,
+  ApiOAuth2,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags
+} from "@nestjs/swagger";
 import {
   DisableOAuthGuard,
   DisableRolesGuard,
   Roles
 } from "@tsg-dsp/common-api";
+import {
+  ApiBadRequestResponseDefault,
+  ApiForbiddenResponseDefault
+} from "@tsg-dsp/common-dtos";
+
+import { RuntimeConfig } from "./config.js";
+import { RuntimeConfigDto } from "./config.schemas.js";
 
 @Roles("controlplane_admin")
 @Controller("settings")

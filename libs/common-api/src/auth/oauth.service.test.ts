@@ -1,14 +1,15 @@
-import { AuthConfig } from "../config/auth.js";
 import { Test, TestingModule } from "@nestjs/testing";
-import { OAuthService } from "./oauth.service.js";
-import { setupServer, SetupServer } from "msw/node";
-import { http, HttpResponse, PathParams } from "msw";
 import { plainToInstance } from "class-transformer";
-import { CodeTokenRequest, OpenIDConfiguration } from "./auth.dto.js";
-import { OpenIDConfigurationService } from "./openid.configuration.service.js";
-import { randomBytes, generateKeyPairSync, createHash } from "crypto";
-import { exportJWK, JWK, SignJWT } from "jose";
+import { createHash, generateKeyPairSync, randomBytes } from "crypto";
 import { Request } from "express";
+import { exportJWK, JWK, SignJWT } from "jose";
+import { http, HttpResponse, PathParams } from "msw";
+import { SetupServer, setupServer } from "msw/node";
+
+import { AuthConfig } from "../config/auth.js";
+import { CodeTokenRequest, OpenIDConfiguration } from "./auth.dto.js";
+import { OAuthService } from "./oauth.service.js";
+import { OpenIDConfigurationService } from "./openid.configuration.service.js";
 
 describe("OAuthService", () => {
   let oauth: OAuthService;

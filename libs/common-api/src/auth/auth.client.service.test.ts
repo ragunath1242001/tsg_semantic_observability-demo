@@ -1,11 +1,12 @@
-import { AuthConfig } from "../config/auth.js";
 import { Test, TestingModule } from "@nestjs/testing";
-import { setupServer, SetupServer } from "msw/node";
-import { http, HttpResponse } from "msw";
 import { plainToInstance } from "class-transformer";
+import { http, HttpResponse } from "msw";
+import { SetupServer, setupServer } from "msw/node";
+
+import { AuthConfig } from "../config/auth.js";
+import { AuthClientService } from "./auth.client.service.js";
 import { OpenIDConfiguration } from "./auth.dto.js";
 import { OpenIDConfigurationService } from "./openid.configuration.service.js";
-import { AuthClientService } from "./auth.client.service.js";
 
 describe("OAuthService", () => {
   let authClientService: AuthClientService;

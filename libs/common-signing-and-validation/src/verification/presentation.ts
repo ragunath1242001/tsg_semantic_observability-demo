@@ -1,16 +1,6 @@
+import { Bitstring } from "@digitalbazaar/bitstring";
 import { HttpStatus } from "@nestjs/common";
 import { AppError, toArray } from "@tsg-dsp/common-api";
-import {
-  Field,
-  PresentationDefinition,
-  PresentationResponse,
-  VerifiedCredentialStatus
-} from "@tsg-dsp/common-dtos";
-import { Bitstring } from "@digitalbazaar/bitstring";
-import jsonpath from "jsonpath";
-import { Ajv } from "ajv";
-import { decodeJwt } from "jose";
-import { plainToInstance } from "class-transformer";
 import {
   BitstringStatusList,
   DataIntegrityProof,
@@ -22,13 +12,24 @@ import {
   VerifiablePresentationJwt
 } from "@tsg-dsp/common-dsp";
 import {
+  Field,
+  PresentationDefinition,
+  PresentationResponse,
+  VerifiedCredentialStatus
+} from "@tsg-dsp/common-dtos";
+import { Ajv } from "ajv";
+import axios from "axios";
+import { plainToInstance } from "class-transformer";
+import { decodeJwt } from "jose";
+import jsonpath from "jsonpath";
+
+import { TrustAnchor } from "../model.js";
+import { base58btcToBase64url } from "../utils/typeconverter.js";
+import {
   validateDataIntegrityProof,
   validateJsonWebSignature2020,
   validateJwt
 } from "./validate.js";
-import { base58btcToBase64url } from "../utils/typeconverter.js";
-import { TrustAnchor } from "../model.js";
-import axios from "axios";
 
 const ajv = new Ajv();
 

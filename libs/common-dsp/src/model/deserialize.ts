@@ -1,15 +1,16 @@
 /* eslint-disable @typescript-eslint/no-unsafe-function-type */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import "reflect-metadata";
-import { Multilanguage, Reference } from "./dsp/common.js";
-import {
-  serializableTypes,
-  hasDecorator,
-  getStringDecorator,
-  getFunctionDecorator
-} from "./decorators.js";
+
 import { compact } from "../jsonld/jsonld.js";
 import { filteredKeys } from "../utils/keys.js";
+import {
+  getFunctionDecorator,
+  getStringDecorator,
+  hasDecorator,
+  serializableTypes
+} from "./decorators.js";
+import { Multilanguage, Reference } from "./dsp/common.js";
 
 export async function deserialize<Type>(
   obj: any,

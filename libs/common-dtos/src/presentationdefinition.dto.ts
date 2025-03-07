@@ -1,15 +1,15 @@
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { Type } from "class-transformer";
 import {
   IsArray,
+  IsBoolean,
+  IsEnum,
+  IsIn,
+  IsObject,
   IsOptional,
   IsString,
-  ValidateNested,
-  IsEnum,
-  IsObject,
-  IsBoolean,
-  IsIn
+  ValidateNested
 } from "class-validator";
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
 export class JwtVpClaimFormat {
   @ApiProperty({ type: [String], example: ["Ed25519"] })

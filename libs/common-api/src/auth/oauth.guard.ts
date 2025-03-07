@@ -7,9 +7,10 @@ import {
 } from "@nestjs/common";
 import { APP_GUARD, Reflector } from "@nestjs/core";
 import { Request, Response } from "express";
+
 import { AuthConfig } from "../config/auth.js";
-import { OAuthService } from "./oauth.service.js";
 import { getSession } from "../utils/session.js";
+import { OAuthService } from "./oauth.service.js";
 
 export const DisableOAuthGuard = Reflector.createDecorator<boolean>();
 

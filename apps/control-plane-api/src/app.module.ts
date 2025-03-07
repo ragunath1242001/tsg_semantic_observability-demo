@@ -1,20 +1,9 @@
 import { MiddlewareConsumer, Module, NestModule } from "@nestjs/common";
-import { DataPlaneModule } from "./data-plane/dataplane.module.js";
-import { ScheduleModule } from "@nestjs/schedule";
-import { VCAuthModule } from "./vc-auth/vc.auth.module.js";
-import { TypeOrmModule } from "@nestjs/typeorm";
-import { DspClientModule } from "./dsp/client/client.module.js";
-import { CatalogModule } from "./dsp/catalog/catalog.module.js";
-import { NegotiationModule } from "./dsp/negotiation/negotiation.module.js";
-import { TransferModule } from "./dsp/transfer/transfer.module.js";
-import { RegistryModule } from "./registry/registry.module.js";
-import { ServeStaticModule } from "@nestjs/serve-static";
-import { ConfigController } from "./config.controller.js";
 import { EventEmitterModule } from "@nestjs/event-emitter";
+import { ScheduleModule } from "@nestjs/schedule";
+import { ServeStaticModule } from "@nestjs/serve-static";
 import { TerminusModule } from "@nestjs/terminus";
-import { StatusController } from "./status.controller.js";
-import { NegotiationDetailDao } from "./model/negotiation.dao.js";
-import { TransferDetailDao } from "./model/transfer.dao.js";
+import { TypeOrmModule } from "@nestjs/typeorm";
 import {
   AuthModule,
   GenericConfigModule,
@@ -22,7 +11,19 @@ import {
   LoggerMiddleware,
   RequestContextMiddleware
 } from "@tsg-dsp/common-api";
+
+import { ConfigController } from "./config.controller.js";
 import { RootConfig } from "./config.js";
+import { DataPlaneModule } from "./data-plane/dataplane.module.js";
+import { CatalogModule } from "./dsp/catalog/catalog.module.js";
+import { DspClientModule } from "./dsp/client/client.module.js";
+import { NegotiationModule } from "./dsp/negotiation/negotiation.module.js";
+import { TransferModule } from "./dsp/transfer/transfer.module.js";
+import { NegotiationDetailDao } from "./model/negotiation.dao.js";
+import { TransferDetailDao } from "./model/transfer.dao.js";
+import { RegistryModule } from "./registry/registry.module.js";
+import { StatusController } from "./status.controller.js";
+import { VCAuthModule } from "./vc-auth/vc.auth.module.js";
 
 const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
   ? [

@@ -1,6 +1,7 @@
-import { IsBoolean, ValidateIf, IsUrl, IsString } from "class-validator";
-import { valueToBoolean } from "../utils/config.js";
 import { Transform } from "class-transformer";
+import { IsBoolean, IsString, IsUrl, ValidateIf } from "class-validator";
+
+import { valueToBoolean } from "../utils/config.js";
 import { Description } from "../utils/configToMarkdown.js";
 
 export class AuthConfig {

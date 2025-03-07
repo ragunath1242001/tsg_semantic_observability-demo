@@ -20,8 +20,9 @@ import {
   TransferTerminationMessage
 } from "@tsg-dsp/common-dsp";
 import axios, { AxiosRequestConfig } from "axios";
-import { VCAuthService } from "../../vc-auth/vc.auth.service.js";
+
 import { DSPClientError } from "../../utils/errors/error.js";
+import { VCAuthService } from "../../vc-auth/vc.auth.service.js";
 
 @Injectable()
 export class DspClientService {

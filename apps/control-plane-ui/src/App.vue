@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { useDspStore } from "./stores/dsp";
-import { socket } from "./socket";
 import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
-import { onBeforeMount } from "vue";
-import http from "@tsg-dsp/common-ui/utils/http";
 import { updateColorPalette } from "@tsg-dsp/common-ui/utils/color";
+import http from "@tsg-dsp/common-ui/utils/http";
+import { onBeforeMount } from "vue";
+
+import { socket } from "./socket";
+import { useDspStore } from "./stores/dsp";
 const dspStore = useDspStore();
 
 socket.off();

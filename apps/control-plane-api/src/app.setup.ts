@@ -1,7 +1,7 @@
 import { INestApplication, Logger } from "@nestjs/common";
-import session from "express-session";
-import crypto from "crypto";
 import { ServerConfig } from "@tsg-dsp/common-api";
+import crypto from "crypto";
+import session from "express-session";
 
 export function setupApp(app: INestApplication) {
   const config = app.get(ServerConfig);

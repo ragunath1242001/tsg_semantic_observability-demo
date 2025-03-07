@@ -1,7 +1,8 @@
 import { NestFactory } from "@nestjs/core";
+import { AppLogger } from "@tsg-dsp/common-api";
+
 import { AppModule } from "./app.module.js";
 import { setupApp } from "./app.setup.js";
-import { AppLogger } from "@tsg-dsp/common-api";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {

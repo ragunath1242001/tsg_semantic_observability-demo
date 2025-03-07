@@ -1,15 +1,16 @@
 <script setup lang="ts">
-import { CredentialAddress } from "@tsg-dsp/control-plane-dtos";
 import { CatalogDto } from "@tsg-dsp/common-dsp";
+import { toastError } from "@tsg-dsp/common-ui/utils/error";
+import { CredentialAddress } from "@tsg-dsp/control-plane-dtos";
+import { storeToRefs } from "pinia";
 import { useToast } from "primevue/usetoast";
 import { onMounted, ref } from "vue";
+
 import Catalog from "../components/Catalog.vue";
-import { injectStrict } from "../utils/injectTyped";
-import { AxiosKey } from "../utils/symbols";
 import router from "../router";
 import { useCatalogStore } from "../stores/catalog";
-import { storeToRefs } from "pinia";
-import { toastError } from "@tsg-dsp/common-ui/utils/error";
+import { injectStrict } from "../utils/injectTyped";
+import { AxiosKey } from "../utils/symbols";
 
 const addresses = ref<string[]>();
 const selection = ref<CredentialAddress>(null);

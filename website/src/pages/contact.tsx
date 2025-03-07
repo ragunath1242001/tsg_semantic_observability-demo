@@ -1,15 +1,17 @@
-import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
-import Layout from "@theme/Layout";
-import clsx from "clsx";
-import Heading from "@theme/Heading";
-import styles from "./index.module.css";
 import "./contact.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
+import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import {
   faBriefcase,
   faCodeBranch,
   faUsers
 } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Heading from "@theme/Heading";
+import Layout from "@theme/Layout";
+import clsx from "clsx";
+
+import styles from "./index.module.css";
 
 function ContactHeader() {
   return (

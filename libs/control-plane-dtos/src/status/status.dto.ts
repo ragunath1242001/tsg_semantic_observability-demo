@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import {
-  NegotiationRole,
   ContractNegotiationState,
+  NegotiationRole,
   TransferRole,
   TransferState
 } from "@tsg-dsp/common-dsp";

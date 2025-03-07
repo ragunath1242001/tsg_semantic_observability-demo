@@ -1,16 +1,17 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { ConstraintDao, RuleDao } from "../model/rule.dao.js";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { RuleRepositoryService } from "./rule.repository.service.js";
-import { Rule, RuleType } from "./rule.dto.js";
+import { PaginationOptionsDto, TypeOrmTestHelper } from "@tsg-dsp/common-api";
+
+import { ConstraintDao, RuleDao } from "../model/rule.dao.js";
 import {
+  AtomicConstraint,
   ConstraintType,
   DataType,
   EvaluationTrigger,
-  AtomicConstraint,
   LogicalConstraint
 } from "./constraint.dto.js";
-import { TypeOrmTestHelper, PaginationOptionsDto } from "@tsg-dsp/common-api";
+import { Rule, RuleType } from "./rule.dto.js";
+import { RuleRepositoryService } from "./rule.repository.service.js";
 
 describe("Rule Repository Service", () => {
   let ruleRepositoryService: RuleRepositoryService;

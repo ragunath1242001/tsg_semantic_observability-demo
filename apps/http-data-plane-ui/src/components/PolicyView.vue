@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { PolicyConfig } from "@tsg-dsp/http-data-plane-dtos";
 import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
+import { PolicyConfig } from "@tsg-dsp/http-data-plane-dtos";
 
 const props = defineProps<{ policy: PolicyConfig }>();
 </script>

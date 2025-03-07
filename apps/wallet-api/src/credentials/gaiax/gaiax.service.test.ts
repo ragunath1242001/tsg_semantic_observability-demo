@@ -1,18 +1,7 @@
+import { afterAll, beforeAll, describe, expect, it } from "@jest/globals";
 import { Test, TestingModule } from "@nestjs/testing";
-import { CredentialsService } from "../credentials.service.js";
-import { plainToInstance } from "class-transformer";
-import { RootConfig } from "../../config.js";
-import {
-  CredentialDao,
-  KeyMaterialDao,
-  StatusListCredentialDao
-} from "../../model/credentials.dao.js";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { DidService } from "../../did/did.service.js";
-import { KeysService } from "../../keys/keys.service.js";
-import { describe, expect, beforeAll, afterAll, it } from "@jest/globals";
-import { SetupServer, setupServer } from "msw/node";
-import { HttpResponse, PathParams, http } from "msw";
+import { TypeOrmTestHelper } from "@tsg-dsp/common-api";
 import {
   CredentialSubject,
   JsonWebSignature2020,
@@ -24,10 +13,22 @@ import {
   ComplianceRequest,
   LegalRegistrationNumberRequest
 } from "@tsg-dsp/wallet-dtos";
-import { GaiaXService } from "./gaiax.service.js";
-import { DIDDocuments, DIDService, DIDLogs } from "../../model/did.dao.js";
+import { plainToInstance } from "class-transformer";
+import { http, HttpResponse, PathParams } from "msw";
+import { SetupServer, setupServer } from "msw/node";
+
+import { RootConfig } from "../../config.js";
+import { DidService } from "../../did/did.service.js";
+import { KeysService } from "../../keys/keys.service.js";
 import { SignatureService } from "../../keys/signature.service.js";
-import { TypeOrmTestHelper } from "@tsg-dsp/common-api";
+import {
+  CredentialDao,
+  KeyMaterialDao,
+  StatusListCredentialDao
+} from "../../model/credentials.dao.js";
+import { DIDDocuments, DIDLogs, DIDService } from "../../model/did.dao.js";
+import { CredentialsService } from "../credentials.service.js";
+import { GaiaXService } from "./gaiax.service.js";
 
 describe("Credentials Service", () => {
   let gaiaXService: GaiaXService;

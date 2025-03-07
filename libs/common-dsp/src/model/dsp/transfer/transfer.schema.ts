@@ -1,12 +1,13 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+
 import {
-  EndpointPropertyDto,
   DataAddressDto,
-  TransferRequestMessageDto,
-  TransferProcessDto,
-  TransferState,
-  TransferStartMessageDto,
+  EndpointPropertyDto,
   TransferCompletionMessageDto,
+  TransferProcessDto,
+  TransferRequestMessageDto,
+  TransferStartMessageDto,
+  TransferState,
   TransferSuspensionMessageDto,
   TransferTerminationMessageDto
 } from "./messages.dto.js";

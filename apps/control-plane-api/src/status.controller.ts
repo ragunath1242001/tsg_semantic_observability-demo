@@ -8,9 +8,6 @@ import {
 } from "@nestjs/swagger";
 import { TypeOrmHealthIndicator } from "@nestjs/terminus";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { NegotiationDetailDao } from "./model/negotiation.dao.js";
-import { TransferDetailDao } from "./model/transfer.dao.js";
 import {
   ContractNegotiationState,
   NegotiationRole,
@@ -18,7 +15,11 @@ import {
   TransferState
 } from "@tsg-dsp/common-dsp";
 import { StatusDto } from "@tsg-dsp/control-plane-dtos";
+import { Repository } from "typeorm";
 import { getHeapStatistics } from "v8";
+
+import { NegotiationDetailDao } from "./model/negotiation.dao.js";
+import { TransferDetailDao } from "./model/transfer.dao.js";
 
 @Controller()
 @ApiTags("Status")

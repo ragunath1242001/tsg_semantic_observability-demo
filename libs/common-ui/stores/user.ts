@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+
 import http from "../utils/http";
 
 export interface User {

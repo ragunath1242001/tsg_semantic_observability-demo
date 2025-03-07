@@ -1,6 +1,7 @@
 import { HttpStatus, ValidationPipe } from "@nestjs/common";
+import { validateSync, ValidatorOptions } from "class-validator";
+
 import { AppError } from "./error.js";
-import { ValidatorOptions, validateSync } from "class-validator";
 
 export const validateOrRejectSync = <T extends object>(
   object: T,

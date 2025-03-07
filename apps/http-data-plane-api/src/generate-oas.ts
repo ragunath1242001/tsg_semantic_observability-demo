@@ -1,8 +1,9 @@
 import { NestFactory } from "@nestjs/core";
-import fs from "fs/promises";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
-import { AppModule } from "./app.module.js";
+import fs from "fs/promises";
 import { stringify } from "yaml";
+
+import { AppModule } from "./app.module.js";
 
 async function bootstrap() {
   const app = await NestFactory.create(

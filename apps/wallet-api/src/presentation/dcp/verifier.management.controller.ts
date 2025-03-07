@@ -1,8 +1,4 @@
 import { Body, Controller, Post } from "@nestjs/common";
-import { DCPVerifierService } from "./verifier.service.js";
-import { AppRole } from "@tsg-dsp/wallet-dtos";
-import { VerificationRequest } from "@tsg-dsp/common-dtos";
-import { VerifiablePresentation } from "@tsg-dsp/common-dsp";
 import {
   ApiBody,
   ApiOAuth2,
@@ -11,6 +7,11 @@ import {
   ApiTags
 } from "@nestjs/swagger";
 import { Roles } from "@tsg-dsp/common-api";
+import { VerifiablePresentation } from "@tsg-dsp/common-dsp";
+import { VerificationRequest } from "@tsg-dsp/common-dtos";
+import { AppRole } from "@tsg-dsp/wallet-dtos";
+
+import { DCPVerifierService } from "./verifier.service.js";
 
 @Controller("management/dcp/verifier")
 @ApiTags("Presentation DCP")

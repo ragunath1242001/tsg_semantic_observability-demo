@@ -1,17 +1,18 @@
 import { MiddlewareConsumer, Module } from "@nestjs/common";
-import { DataPlaneTestModule } from "./dataplane/dataplane.module.js";
-import { TypeOrmModule } from "@nestjs/typeorm";
-import { ServeStaticModule } from "@nestjs/serve-static";
-import { FilesModule } from "./files/files.module.js";
 import { ScheduleModule } from "@nestjs/schedule";
-import { ConfigController } from "./config.controller.js";
+import { ServeStaticModule } from "@nestjs/serve-static";
+import { TypeOrmModule } from "@nestjs/typeorm";
 import {
   AuthModule,
   GenericConfigModule,
   LoggerMiddleware,
   RequestContextMiddleware
 } from "@tsg-dsp/common-api";
+
+import { ConfigController } from "./config.controller.js";
 import { RootConfig } from "./config.js";
+import { DataPlaneTestModule } from "./dataplane/dataplane.module.js";
+import { FilesModule } from "./files/files.module.js";
 
 const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
   ? [

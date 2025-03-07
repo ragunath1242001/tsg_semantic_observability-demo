@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
-import { UsersService } from "../users/users.service.js";
 import { Request } from "express";
+
+import { UsersService } from "../users/users.service.js";
 import { getSession, getUser } from "../utils/session.js";
 
 @Injectable()

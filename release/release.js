@@ -1,14 +1,15 @@
 import { ConventionalGitClient } from "@conventional-changelog/git-client";
 import conventionalChangelog from "conventional-changelog";
-import { readdirSync } from "fs";
 import { Bumper } from "conventional-recommended-bump";
-import semver from "semver";
+import { readdirSync } from "fs";
 import fs from "fs";
+import semver from "semver";
+
 import {
-  setConfig,
-  setRemote,
   commitChanges,
-  createRelease
+  createRelease,
+  setConfig,
+  setRemote
 } from "./gitlab.js";
 
 const debug = process.argv[2] === "debug";

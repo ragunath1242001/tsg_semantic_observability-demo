@@ -1,3 +1,4 @@
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import {
   AgreementDto,
   AgreementSchema,
@@ -11,7 +12,6 @@ import {
   OfferDto,
   OfferSchema
 } from "@tsg-dsp/common-dsp";
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { Type } from "class-transformer";
 import {
   IsDate,

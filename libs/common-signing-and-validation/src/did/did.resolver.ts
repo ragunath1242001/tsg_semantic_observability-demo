@@ -1,10 +1,11 @@
-import { DIDDocument } from "did-resolver";
 import { HttpStatus } from "@nestjs/common";
-import { DidWebResolverStrategy } from "./web/did.web.resolver.strategy.js";
+import { AppError } from "@tsg-dsp/common-api";
+import { DIDDocument } from "did-resolver";
+
+import { DidKeyResolverStrategy } from "./key/did.key.resolver.strategy.js";
 import { DidTdwResolverStrategy } from "./tdw/did.tdw.resolver.strategy.js";
 import { DIDMethod } from "./types.js";
-import { AppError } from "@tsg-dsp/common-api";
-import { DidKeyResolverStrategy } from "./key/did.key.resolver.strategy.js";
+import { DidWebResolverStrategy } from "./web/did.web.resolver.strategy.js";
 
 export interface DidResolverStrategy {
   resolve(didId: string): Promise<DIDDocument>;

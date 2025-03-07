@@ -7,9 +7,10 @@ import {
   Req,
   Res
 } from "@nestjs/common";
-import { Request, Response } from "express";
 import { ApiOperation, ApiParam, ApiTags } from "@nestjs/swagger";
 import { DisableOAuthGuard } from "@tsg-dsp/common-api";
+import { Request, Response } from "express";
+
 import { TransferService } from "./transfer.service.js";
 
 @ApiTags("Proxy")

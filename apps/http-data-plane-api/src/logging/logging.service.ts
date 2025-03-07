@@ -1,10 +1,11 @@
 import { Injectable } from "@nestjs/common";
-import { LoggingConfig } from "../config.js";
-import { EgressLogDao, IngressLogDao } from "./logging.dao.js";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Between, FindOptionsWhere, ILike, Repository } from "typeorm";
+
+import { LoggingConfig } from "../config.js";
 import { PageDto, PageMetaDto, PageOptionsDto } from "../utils/pagination.js";
-import { LogFilterDto, LogEntry } from "./logging.dto.js";
+import { EgressLogDao, IngressLogDao } from "./logging.dao.js";
+import { LogEntry, LogFilterDto } from "./logging.dto.js";
 
 @Injectable()
 export class LoggingService {

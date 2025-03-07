@@ -1,11 +1,12 @@
 import { Logger } from "@nestjs/common";
+import { AuthClientService } from "@tsg-dsp/common-api";
 import { VerifiablePresentation } from "@tsg-dsp/common-dsp";
+import { InputDescriptor } from "@tsg-dsp/common-dtos";
 import crypto from "crypto";
+
 import { TsgWalletConfig } from "../../config.js";
 import { DSPClientError } from "../../utils/errors/error.js";
 import { Credential, WalletClient } from "./walletClient.js";
-import { InputDescriptor } from "@tsg-dsp/common-dtos";
-import { AuthClientService } from "@tsg-dsp/common-api";
 
 export class TsgWalletClient extends WalletClient {
   constructor(

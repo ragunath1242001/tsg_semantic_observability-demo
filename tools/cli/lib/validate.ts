@@ -1,10 +1,11 @@
-import axios from "axios";
-import semver from "semver";
-import { log } from "./utils.js";
 import { confirm } from "@inquirer/prompts";
-import { fileURLToPath } from "url";
-import path from "path";
+import axios from "axios";
 import { existsSync, readFileSync } from "fs";
+import path from "path";
+import semver from "semver";
+import { fileURLToPath } from "url";
+
+import { log } from "./utils.js";
 
 let cliVersion: string | undefined;
 let releaseVersion: string | undefined;

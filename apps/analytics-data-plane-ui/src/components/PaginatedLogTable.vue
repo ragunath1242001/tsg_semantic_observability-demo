@@ -1,17 +1,18 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
-import http from "@tsg-dsp/common-ui/utils/http";
 import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
 import { formatDate } from "@tsg-dsp/common-ui/utils/date";
-import { useDialog } from "primevue/usedialog";
-import JSONDialog from "./JSONDialog.vue";
-import { useToast } from "primevue/usetoast";
+import { toastError } from "@tsg-dsp/common-ui/utils/error";
+import http from "@tsg-dsp/common-ui/utils/http";
 import {
   httpStatusList,
   httpStatusNames
 } from "@tsg-dsp/common-ui/utils/httpStatus";
 import Select from "primevue/select";
-import { toastError } from "@tsg-dsp/common-ui/utils/error";
+import { useDialog } from "primevue/usedialog";
+import { useToast } from "primevue/usetoast";
+import { onMounted, ref } from "vue";
+
+import JSONDialog from "./JSONDialog.vue";
 
 const props = defineProps<{
   type: "ingress" | "egress";

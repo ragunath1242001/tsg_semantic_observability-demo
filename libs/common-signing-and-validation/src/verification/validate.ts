@@ -1,16 +1,10 @@
-import { parseVerificationMethod } from "./parse.js";
-import { canonizeAndHash } from "../utils/canonization.js";
-import { cryptoSuiteFromJws } from "../utils/cryptosuite.js";
-
-import { base58btcToBase64url } from "../utils/typeconverter.js";
-import { computeProofConfigHash } from "../utils/hash.js";
+import { HttpStatus } from "@nestjs/common";
+import { AppError } from "@tsg-dsp/common-api";
 import {
   DataIntegrityProof,
   JsonWebSignature2020,
   Proof
 } from "@tsg-dsp/common-dsp";
-import { AppError } from "@tsg-dsp/common-api";
-import { HttpStatus } from "@nestjs/common";
 import {
   decodeJwt,
   decodeProtectedHeader,
@@ -19,6 +13,12 @@ import {
   JWTPayload,
   jwtVerify
 } from "jose";
+
+import { canonizeAndHash } from "../utils/canonization.js";
+import { cryptoSuiteFromJws } from "../utils/cryptosuite.js";
+import { computeProofConfigHash } from "../utils/hash.js";
+import { base58btcToBase64url } from "../utils/typeconverter.js";
+import { parseVerificationMethod } from "./parse.js";
 import { verifyJws } from "./verify.js";
 
 export async function validateDataIntegrityProof(

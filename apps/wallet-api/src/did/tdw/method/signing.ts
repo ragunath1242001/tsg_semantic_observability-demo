@@ -1,12 +1,13 @@
-import { base58btc } from "multiformats/bases/base58";
-import { CompactSign, importJWK } from "jose";
 import {
   buffersToHex,
   canonizeAndHash,
-  getCryptoSuite,
   encodedPrivateKeyMultiBaseToJWK,
+  getCryptoSuite,
   VerificationMethod
 } from "@tsg-dsp/common-signing-and-validation";
+import { CompactSign, importJWK } from "jose";
+import { base58btc } from "multiformats/bases/base58";
+
 import { createDate } from "./utils.js";
 
 export const createSigner = (vm: VerificationMethod) => {

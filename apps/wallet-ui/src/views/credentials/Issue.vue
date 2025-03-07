@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { CredentialConfig, JsonLdContextConfig } from "@tsg-dsp/wallet-dtos";
-import { useToast } from "primevue/usetoast";
-import { computed, onMounted, ref } from "vue";
 import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
 import JsonSchemaFormElement from "@tsg-dsp/common-ui/components/JsonSchemaFormElement.vue";
-import Ajv, { JSONSchemaType } from "ajv";
 import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
-import http from "@tsg-dsp/common-ui/utils/http";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
+import http from "@tsg-dsp/common-ui/utils/http";
+import { CredentialConfig, JsonLdContextConfig } from "@tsg-dsp/wallet-dtos";
+import Ajv, { JSONSchemaType } from "ajv";
+import { useToast } from "primevue/usetoast";
+import { computed, onMounted, ref } from "vue";
 
 interface CredentialForm {
   context: string[];

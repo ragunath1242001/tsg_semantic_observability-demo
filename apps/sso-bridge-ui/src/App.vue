@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { onBeforeMount } from "vue";
 import { updatePreset, updateSurfacePalette } from "@primevue/themes";
+import { onBeforeMount } from "vue";
+
 import { useAuthStore } from "./stores/user";
 
 const initialPreset = () => {

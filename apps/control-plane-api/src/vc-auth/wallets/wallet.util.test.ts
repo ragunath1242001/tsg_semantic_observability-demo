@@ -1,8 +1,9 @@
 import { plainToInstance } from "class-transformer";
-import { HttpResponse, http } from "msw";
-import { SetupServer, setupServer } from "msw/node";
-import { IamConfig, TsgWalletConfig } from "../../config.js";
 import { DIDDocument } from "did-resolver";
+import { http, HttpResponse } from "msw";
+import { SetupServer, setupServer } from "msw/node";
+
+import { IamConfig, TsgWalletConfig } from "../../config.js";
 
 export function mockWalletConfig(): IamConfig {
   return plainToInstance<TsgWalletConfig, TsgWalletConfig>(TsgWalletConfig, {

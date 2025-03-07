@@ -1,22 +1,22 @@
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
-import { DCPSiopService } from "./siop.service.js";
 import { AppError, parseNetworkError } from "@tsg-dsp/common-api";
-
-import axios from "axios";
-import { PresentationService } from "../presentation.service.js";
-import { decodeJwt } from "jose";
+import { toArray, VerifiablePresentation } from "@tsg-dsp/common-dsp";
 import {
   PresentationDefinition,
   PresentationQueryMessage,
   PresentationResponseMessage
 } from "@tsg-dsp/common-dtos";
-import { toArray, VerifiablePresentation } from "@tsg-dsp/common-dsp";
-import { instanceToPlain, plainToInstance } from "class-transformer";
 import {
   resolveDid,
   validateField,
   validateProof
 } from "@tsg-dsp/common-signing-and-validation";
+import axios from "axios";
+import { instanceToPlain, plainToInstance } from "class-transformer";
+import { decodeJwt } from "jose";
+
+import { PresentationService } from "../presentation.service.js";
+import { DCPSiopService } from "./siop.service.js";
 
 @Injectable()
 export class DCPVerifierService {

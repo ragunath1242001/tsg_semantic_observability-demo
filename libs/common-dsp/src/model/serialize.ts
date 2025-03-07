@@ -1,12 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import "reflect-metadata";
-import {
-  serializableTypes,
-  hasDecorator,
-  getStringDecorator
-} from "./decorators.js";
-import { filteredKeys } from "../utils/keys.js";
+
 import { defaultContext } from "../jsonld/context.defaults.js";
+import { filteredKeys } from "../utils/keys.js";
+import {
+  getStringDecorator,
+  hasDecorator,
+  serializableTypes
+} from "./decorators.js";
 
 export function serialize(obj: any, root = true): any {
   if (obj === null) {

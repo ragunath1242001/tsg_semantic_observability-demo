@@ -1,22 +1,24 @@
-import { createRouter, createWebHashHistory } from "vue-router";
-import AppLayout from "@/layout/AppLayoutWallet.vue";
-import LoginVue from "../views/Login.vue";
-import DashboardVue from "../views/Dashboard.vue";
-import KeysVue from "../views/Keys.vue";
-import SignatureVue from "../views/Signature.vue";
-import CredentialOverview from "../views/credentials/Overview.vue";
-import CredentialIssue from "../views/credentials/Issue.vue";
-import CredentialImport from "../views/credentials/Import.vue";
-import CredentialGaiaX from "../views/credentials/GaiaX.vue";
-import CredentialOID4VCI from "../views/credentials/OID4VCI.vue";
-import DIDServiceView from "../views/DIDServices.vue";
-import ContextView from "../views/Contexts.vue";
-import DCP from "../views/DCP.vue";
-import OID4VP from "../views/OID4VP.vue";
 import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
+import { createRouter, createWebHashHistory } from "vue-router";
+
+import AppLayout from "@/layout/AppLayoutWallet.vue";
 import AppLayoutWalletUnauthenticated from "@/layout/AppLayoutWalletUnauthenticated.vue";
-import RetrieveCredential from "@/views/credentials/RetrieveCredential.vue";
 import EmailQR from "@/views/credentials/EmailQR.vue";
+import RetrieveCredential from "@/views/credentials/RetrieveCredential.vue";
+
+import ContextView from "../views/Contexts.vue";
+import CredentialGaiaX from "../views/credentials/GaiaX.vue";
+import CredentialImport from "../views/credentials/Import.vue";
+import CredentialIssue from "../views/credentials/Issue.vue";
+import CredentialOID4VCI from "../views/credentials/OID4VCI.vue";
+import CredentialOverview from "../views/credentials/Overview.vue";
+import DashboardVue from "../views/Dashboard.vue";
+import DCP from "../views/DCP.vue";
+import DIDServiceView from "../views/DIDServices.vue";
+import KeysVue from "../views/Keys.vue";
+import LoginVue from "../views/Login.vue";
+import OID4VP from "../views/OID4VP.vue";
+import SignatureVue from "../views/Signature.vue";
 
 const router = createRouter({
   history: createWebHashHistory(),

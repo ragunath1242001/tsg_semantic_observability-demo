@@ -1,6 +1,7 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
-import { MetaEntity } from "./common.dao.js";
 import { CatalogDto } from "@tsg-dsp/common-dsp";
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+
+import { MetaEntity } from "./common.dao.js";
 
 @Entity({ name: "registry" })
 export class RegistryDao extends MetaEntity {

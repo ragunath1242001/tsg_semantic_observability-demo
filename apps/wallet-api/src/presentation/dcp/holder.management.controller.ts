@@ -1,14 +1,15 @@
 import { Controller, Get, Query } from "@nestjs/common";
-import { DCPSiopService } from "./siop.service.js";
-import { AppRole } from "@tsg-dsp/wallet-dtos";
 import {
   ApiOAuth2,
   ApiOkResponse,
   ApiOperation,
   ApiTags
 } from "@nestjs/swagger";
-import { ApiForbiddenResponseDefault } from "@tsg-dsp/common-dtos";
 import { nonEmptyStringPipe, Roles } from "@tsg-dsp/common-api";
+import { ApiForbiddenResponseDefault } from "@tsg-dsp/common-dtos";
+import { AppRole } from "@tsg-dsp/wallet-dtos";
+
+import { DCPSiopService } from "./siop.service.js";
 
 @Controller("management/dcp/holder")
 @ApiTags("Presentation DCP")

@@ -1,6 +1,4 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { Type } from "class-transformer";
-import { IsDate, IsEnum, IsOptional, IsString } from "class-validator";
 import {
   DataAddressDto,
   DataAddressSchema,
@@ -9,6 +7,8 @@ import {
   TransferRequestMessageSchema,
   TransferState
 } from "@tsg-dsp/common-dsp";
+import { Type } from "class-transformer";
+import { IsDate, IsEnum, IsOptional, IsString } from "class-validator";
 
 export class TransferDto {
   @ApiProperty({ example: "123e4567-e89b-12d3-a456-426614174000" })

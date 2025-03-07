@@ -6,7 +6,15 @@ import {
   ValidateIf,
   ValidateNested
 } from "class-validator";
+
+import {
+  createInstances,
+  createOptionalInstance,
+  createOptionalInstances
+} from "../../../utils/instances.js";
+import { OrArray } from "../../../utils/unions.js";
 import { LDType, Namespace, Serializable } from "../../decorators.js";
+import { ContextDto } from "../common.dto.js";
 import {
   IReference,
   Multilanguage,
@@ -15,26 +23,19 @@ import {
   Value,
   withExtraProps
 } from "../common.js";
+import { ContractNegotiationState, HashedMessage } from "./messages.dto.js";
 import { ContractAgreementVerificationMessage } from "./messages.js";
 import {
-  createInstances,
-  createOptionalInstance,
-  createOptionalInstances
-} from "../../../utils/instances.js";
-import { ContextDto } from "../common.dto.js";
-import {
+  AgreementDto,
+  ConstraintDto,
+  DutyDto,
+  ODRLAction,
   ODRLLeftOperand,
   ODRLOperator,
-  ConstraintDto,
-  ODRLAction,
-  PermissionDto,
-  DutyDto,
-  PolicyDto,
   OfferDto,
-  AgreementDto
+  PermissionDto,
+  PolicyDto
 } from "./negotiation.dto.js";
-import { ContractNegotiationState, HashedMessage } from "./messages.dto.js";
-import { OrArray } from "../../../utils/unions.js";
 
 export interface IConstraint {
   leftOperand: ODRLLeftOperand | string;

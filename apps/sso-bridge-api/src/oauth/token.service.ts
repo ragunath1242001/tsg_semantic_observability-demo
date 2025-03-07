@@ -1,14 +1,15 @@
 import { HttpStatus, Injectable } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { AppError, ServerConfig, TokenResponse } from "@tsg-dsp/common-api";
 import { plainToInstance } from "class-transformer";
+import { generateKeyPairSync, randomBytes } from "crypto";
+import { exportJWK, JWK, SignJWT } from "jose";
+import { EqualOperator, FindOptionsWhere, Repository } from "typeorm";
+
 import { OauthClient } from "../model/client.dao.js";
+import { KeyDao } from "../model/keys.dao.js";
 import { TokenDao } from "../model/token.dao.js";
 import { OauthUser } from "../model/user.dao.js";
-import { InjectRepository } from "@nestjs/typeorm";
-import { EqualOperator, FindOptionsWhere, Repository } from "typeorm";
-import { AppError, ServerConfig, TokenResponse } from "@tsg-dsp/common-api";
-import { generateKeyPairSync, randomBytes } from "crypto";
-import { JWK, exportJWK, SignJWT } from "jose";
-import { KeyDao } from "../model/keys.dao.js";
 
 @Injectable()
 export class TokenService {

@@ -9,11 +9,6 @@ import {
   Post,
   Put
 } from "@nestjs/common";
-import { DIDDocument } from "did-resolver";
-import { DidService } from "./did.service.js";
-import { DidServiceConfig } from "../config.js";
-import { AppRole } from "@tsg-dsp/wallet-dtos";
-import { DIDService } from "../model/did.dao.js";
 import {
   ApiBody,
   ApiOAuth2,
@@ -21,14 +16,6 @@ import {
   ApiOperation,
   ApiTags
 } from "@nestjs/swagger";
-import { DidServiceConfigDto } from "./did.schemas.js";
-import {
-  ApiForbiddenResponseDefault,
-  ApiConflictResponseDefault,
-  ApiNotFoundResponseDefault,
-  DIDDocumentDto,
-  ServiceDto
-} from "@tsg-dsp/common-dtos";
 import {
   Paginated,
   PaginationOptionsDto,
@@ -37,6 +24,20 @@ import {
   UsePagination,
   validationPipe
 } from "@tsg-dsp/common-api";
+import {
+  ApiConflictResponseDefault,
+  ApiForbiddenResponseDefault,
+  ApiNotFoundResponseDefault,
+  DIDDocumentDto,
+  ServiceDto
+} from "@tsg-dsp/common-dtos";
+import { AppRole } from "@tsg-dsp/wallet-dtos";
+import { DIDDocument } from "did-resolver";
+
+import { DidServiceConfig } from "../config.js";
+import { DIDService } from "../model/did.dao.js";
+import { DidServiceConfigDto } from "./did.schemas.js";
+import { DidService } from "./did.service.js";
 
 @Controller("management/did")
 @Roles(AppRole.VIEW_DID)

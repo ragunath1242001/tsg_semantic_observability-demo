@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import NegotiationRequest from "../components/NegotiationRequest.vue";
-import NegotiationProceed from "../components/NegotiationProceed.vue";
 import { NegotiationDetailDto } from "@tsg-dsp/common-dtos";
 import { toRef } from "vue";
+
+import NegotiationProceed from "../components/NegotiationProceed.vue";
+import NegotiationRequest from "../components/NegotiationRequest.vue";
 
 const props = defineProps<{
   negotiations: NegotiationDetailDto[];

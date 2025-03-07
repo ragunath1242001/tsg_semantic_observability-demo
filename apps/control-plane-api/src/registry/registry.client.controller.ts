@@ -1,24 +1,25 @@
-import { CredentialAddress } from "@tsg-dsp/control-plane-dtos";
 import { Controller, Get, HttpCode, HttpStatus, Logger } from "@nestjs/common";
-import { CatalogDto, CatalogSchema } from "@tsg-dsp/common-dsp";
-import { DIDDocumentDto } from "@tsg-dsp/common-dtos";
-import { DIDDocument } from "did-resolver";
-import { RegistryClientService } from "./registry.client.service.js";
-import { RegistryService } from "./registry.service.js";
 import {
   ApiOAuth2,
+  ApiOkResponse,
   ApiOperation,
-  ApiTags,
-  ApiOkResponse
+  ApiTags
 } from "@nestjs/swagger";
-import { ApiForbiddenResponseDefault } from "@tsg-dsp/common-dtos";
 import {
-  Roles,
-  UsePagination,
-  PaginationQuery,
+  Paginated,
   PaginationOptionsDto,
-  Paginated
+  PaginationQuery,
+  Roles,
+  UsePagination
 } from "@tsg-dsp/common-api";
+import { CatalogDto, CatalogSchema } from "@tsg-dsp/common-dsp";
+import { DIDDocumentDto } from "@tsg-dsp/common-dtos";
+import { ApiForbiddenResponseDefault } from "@tsg-dsp/common-dtos";
+import { CredentialAddress } from "@tsg-dsp/control-plane-dtos";
+import { DIDDocument } from "did-resolver";
+
+import { RegistryClientService } from "./registry.client.service.js";
+import { RegistryService } from "./registry.service.js";
 
 @Roles(["controlplane_admin", "controlplane_dataplane"])
 @Controller("management/registry")

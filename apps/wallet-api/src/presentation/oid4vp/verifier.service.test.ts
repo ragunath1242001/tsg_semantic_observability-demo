@@ -1,27 +1,28 @@
+import { afterAll, beforeAll, describe, expect, it } from "@jest/globals";
 import { Test, TestingModule } from "@nestjs/testing";
-import { PresentationService } from "../presentation.service.js";
-import { describe, expect, beforeAll, afterAll, it } from "@jest/globals";
-import { plainToInstance } from "class-transformer";
-import { ServerConfig, TypeOrmTestHelper } from "@tsg-dsp/common-api";
-import { AuthorizationRequestDao } from "../../model/presentation.dao.js";
-import { CredentialDao, KeyMaterialDao } from "../../model/credentials.dao.js";
-import { StatusListCredentialDao } from "../../model/credentials.dao.js";
-import { DIDDocuments, DIDService, DIDLogs } from "../../model/did.dao.js";
-import { OID4VPVerifierService } from "./verifier.service.js";
-import {
-  PresentationDefinition,
-  AuthorizationResponse
-} from "@tsg-dsp/common-dtos";
 import { TypeOrmModule } from "@nestjs/typeorm";
+import { ServerConfig, TypeOrmTestHelper } from "@tsg-dsp/common-api";
 import { AppError } from "@tsg-dsp/common-api";
+import { VerifiablePresentationJwt } from "@tsg-dsp/common-dsp";
+import {
+  AuthorizationResponse,
+  PresentationDefinition
+} from "@tsg-dsp/common-dtos";
+import { plainToInstance } from "class-transformer";
+import { http, HttpResponse } from "msw";
+import { SetupServer, setupServer } from "msw/node";
+
 import { RootConfig } from "../../config.js";
 import { CredentialsService } from "../../credentials/credentials.service.js";
-import { SignatureService } from "../../keys/signature.service.js";
-import { KeysService } from "../../keys/keys.service.js";
 import { DidService } from "../../did/did.service.js";
-import { VerifiablePresentationJwt } from "@tsg-dsp/common-dsp";
-import { SetupServer, setupServer } from "msw/node";
-import { http, HttpResponse } from "msw";
+import { KeysService } from "../../keys/keys.service.js";
+import { SignatureService } from "../../keys/signature.service.js";
+import { CredentialDao, KeyMaterialDao } from "../../model/credentials.dao.js";
+import { StatusListCredentialDao } from "../../model/credentials.dao.js";
+import { DIDDocuments, DIDLogs, DIDService } from "../../model/did.dao.js";
+import { AuthorizationRequestDao } from "../../model/presentation.dao.js";
+import { PresentationService } from "../presentation.service.js";
+import { OID4VPVerifierService } from "./verifier.service.js";
 
 describe("OID4VPVerifierService", () => {
   let service: OID4VPVerifierService;

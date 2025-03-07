@@ -1,12 +1,13 @@
+import { jest } from "@jest/globals";
 import { Test, TestingModule } from "@nestjs/testing";
-import { ClientsService } from "./clients.service.js";
-import { PaginationOptionsDto, TypeOrmTestHelper } from "@tsg-dsp/common-api";
-import { OauthClient } from "../model/client.dao.js";
 import { TypeOrmModule } from "@nestjs/typeorm";
+import { PaginationOptionsDto, TypeOrmTestHelper } from "@tsg-dsp/common-api";
 import { plainToInstance } from "class-transformer";
+
 import { RootConfig } from "../config.js";
 import { KubernetesService } from "../k8s/kubernetes.service.js";
-import { jest } from "@jest/globals";
+import { OauthClient } from "../model/client.dao.js";
+import { ClientsService } from "./clients.service.js";
 
 describe("ClientsService", () => {
   let service: ClientsService;

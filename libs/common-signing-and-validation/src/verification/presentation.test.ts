@@ -1,21 +1,28 @@
-import { AppError } from "@tsg-dsp/common-api";
-import { HttpResponse, http } from "msw";
 import {
-  beforeAll,
   afterAll,
+  beforeAll,
+  beforeEach,
   describe,
-  it,
   expect,
-  beforeEach
+  it
 } from "@jest/globals";
-import { plainToInstance } from "class-transformer";
+import { AppError } from "@tsg-dsp/common-api";
+import {
+  CredentialSubject,
+  DataIntegrityProof,
+  VerifiableCredential
+} from "@tsg-dsp/common-dsp";
 import {
   Field,
   PresentationDefinition,
   PresentationResponse
 } from "@tsg-dsp/common-dtos";
+import { plainToInstance } from "class-transformer";
+import { JWTInvalid } from "jose/errors";
+import { http, HttpResponse } from "msw";
+import { SetupServer, setupServer } from "msw/node";
+
 import { TrustAnchor } from "../model.js";
-import { setupServer, SetupServer } from "msw/node";
 import {
   cachedStatusCredentials,
   evaluatePresentationResponseValidity,
@@ -25,12 +32,6 @@ import {
   verifyCredentialValidity,
   verifyPresentationValidity
 } from "./presentation.js";
-import {
-  CredentialSubject,
-  DataIntegrityProof,
-  VerifiableCredential
-} from "@tsg-dsp/common-dsp";
-import { JWTInvalid } from "jose/errors";
 
 describe("Presentation Verification", () => {
   let server: SetupServer;

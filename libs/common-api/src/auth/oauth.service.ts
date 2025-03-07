@@ -1,17 +1,18 @@
 import { HttpStatus, Injectable } from "@nestjs/common";
-import { AuthConfig } from "../config/auth.js";
-import { createHash, randomBytes } from "crypto";
-import { AppError, parseNetworkError } from "../utils/error.js";
 import axios from "axios";
-import { decodeProtectedHeader, jwtVerify } from "jose";
 import { plainToInstance } from "class-transformer";
+import { createHash, randomBytes } from "crypto";
+import { Request } from "express";
+import { decodeProtectedHeader, jwtVerify } from "jose";
+
+import { AuthConfig } from "../config/auth.js";
+import { AppError, parseNetworkError } from "../utils/error.js";
+import { getSession } from "../utils/session.js";
 import {
   AuthorizationRequest,
   AuthorizationResponse,
   CodeTokenRequest
 } from "./auth.dto.js";
-import { Request } from "express";
-import { getSession } from "../utils/session.js";
 import { OpenIDConfigurationService } from "./openid.configuration.service.js";
 
 interface Redirect {
