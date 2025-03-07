@@ -31,6 +31,8 @@ const config: Config = {
     locales: ["en"]
   },
 
+  clientModules: [require.resolve("./src/scripts/mermaid_icons.js")],
+
   markdown: {
     mermaid: true
   },
