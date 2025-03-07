@@ -1,11 +1,12 @@
+import { DataIntegrityProof, JsonWebSignature2020 } from "@tsg-dsp/common-dsp";
 import { plainToInstance } from "class-transformer";
 import { CompactSign, importJWK, JWK, JWTPayload, SignJWT } from "jose";
-import { signingAlgorithm } from "../utils/keymapping.js";
-import { DataIntegrityProof, JsonWebSignature2020 } from "@tsg-dsp/common-dsp";
-import { computeProofConfigHash } from "../utils/hash.js";
+
 import { canonizeAndHash } from "../utils/canonization.js";
-import { jwkToMultibase } from "../utils/keyconverter.js";
 import { getCryptoSuite } from "../utils/cryptosuite.js";
+import { computeProofConfigHash } from "../utils/hash.js";
+import { jwkToMultibase } from "../utils/keyconverter.js";
+import { signingAlgorithm } from "../utils/keymapping.js";
 import { base64urlToBase58btc } from "../utils/typeconverter.js";
 
 export async function signAsJws(

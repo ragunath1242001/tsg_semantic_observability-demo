@@ -1,7 +1,8 @@
-import { Session, SessionData } from "express-session";
-import { Request } from "express";
-import { OauthUser } from "../model/user.dao.js";
 import { plainToInstance } from "class-transformer";
+import { Request } from "express";
+import { Session, SessionData } from "express-session";
+
+import { OauthUser } from "../model/user.dao.js";
 
 export type AuthSession = Session & Partial<SessionData> & { user?: OauthUser };
 

@@ -1,6 +1,7 @@
-import nodemailer from "nodemailer";
-import { NodemailerConfiguration } from "../config/email.js";
 import { Injectable } from "@nestjs/common";
+import nodemailer from "nodemailer";
+
+import { NodemailerConfiguration } from "../config/email.js";
 
 /** Email content part, either paragraph(s) or a button */
 export interface Content {

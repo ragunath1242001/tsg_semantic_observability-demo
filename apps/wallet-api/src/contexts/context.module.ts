@@ -1,10 +1,11 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
+import { AuthModule } from "@tsg-dsp/common-api";
+
+import { JSONLDContext } from "../model/context.dao.js";
 import { ContextController } from "./context.controller.js";
 import { ContextManagementController } from "./context.management.controller.js";
 import { ContextService } from "./context.service.js";
-import { JSONLDContext } from "../model/context.dao.js";
-import { AuthModule } from "@tsg-dsp/common-api";
 
 @Module({
   imports: [AuthModule, TypeOrmModule.forFeature([JSONLDContext])],

@@ -1,18 +1,18 @@
 <script setup lang="ts">
-import { stripDspace } from "@tsg-dsp/common-ui/utils/common";
-
+import { HashedMessage } from "@tsg-dsp/common-dsp";
 import {
   NegotiationDetailDto,
   NegotiationStatusDto
 } from "@tsg-dsp/common-dtos";
-import { ref, toRef } from "vue";
-import { useToast } from "primevue/usetoast";
-import http from "@tsg-dsp/common-ui/utils/http";
-import { HashedMessage } from "@tsg-dsp/common-dsp";
 import MonacoEditor from "@tsg-dsp/common-ui/components/MonacoEditor.vue";
+import { stripDspace } from "@tsg-dsp/common-ui/utils/common";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
-import { useDataPlaneStore } from "../stores/dataplane";
+import http from "@tsg-dsp/common-ui/utils/http";
 import { ConfirmDialog, useConfirm } from "primevue";
+import { useToast } from "primevue/usetoast";
+import { ref, toRef } from "vue";
+
+import { useDataPlaneStore } from "../stores/dataplane";
 
 const props = defineProps<{
   negotiations: NegotiationStatusDto[];

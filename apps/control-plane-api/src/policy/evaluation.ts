@@ -1,23 +1,24 @@
 import { HttpStatus, Logger } from "@nestjs/common";
 import {
+  ConstraintDto,
+  DutyDto,
+  ODRLOperator,
   PermissionDto,
   ProhibitionDto,
-  DutyDto,
-  ConstraintDto,
-  ODRLOperator,
   toArray
 } from "@tsg-dsp/common-dsp";
+import { Field, InputDescriptor } from "@tsg-dsp/common-dtos";
+import { Ajv } from "ajv";
 import jsonpath from "jsonpath";
+
 import { DSPError } from "../utils/errors/error.js";
-import { RuleRepositoryService } from "./rule.repository.service.js";
 import { AtomicConstraint, DataType } from "./constraint.dto.js";
 import {
   EvaluationContext,
   EvaluationDecision,
   EvaluationResult
 } from "./evaluation.dto.js";
-import { Field, InputDescriptor } from "@tsg-dsp/common-dtos";
-import { Ajv } from "ajv";
+import { RuleRepositoryService } from "./rule.repository.service.js";
 
 export const promiseMap = async <T, U>(
   array: T[] | undefined,

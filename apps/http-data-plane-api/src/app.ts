@@ -1,9 +1,10 @@
-import { NestFactory } from "@nestjs/core";
-import { AppModule } from "./app.module.js";
 import { Logger } from "@nestjs/common";
-import session from "express-session";
-import crypto from "crypto";
+import { NestFactory } from "@nestjs/core";
 import { ServerConfig } from "@tsg-dsp/common-api";
+import crypto from "crypto";
+import session from "express-session";
+
+import { AppModule } from "./app.module.js";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {

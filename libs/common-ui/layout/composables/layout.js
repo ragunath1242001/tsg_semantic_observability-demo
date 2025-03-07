@@ -1,4 +1,4 @@
-import { computed, ref, reactive, readonly, watch } from "vue";
+import { computed, reactive, readonly, ref, watch } from "vue";
 
 const defaultConfig = {
   preset: "Lara",

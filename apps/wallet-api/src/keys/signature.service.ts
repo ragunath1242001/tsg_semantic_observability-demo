@@ -1,20 +1,21 @@
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
-import { KeysService } from "./keys.service.js";
-import { JWTPayload } from "jose";
 import { AppError } from "@tsg-dsp/common-api";
 import {
   DataIntegrityProof,
   JsonWebSignature2020,
   Proof
 } from "@tsg-dsp/common-dsp";
-import { KeyMaterialDao } from "../model/credentials.dao.js";
 import {
-  generateSignedJwt,
   generateSignedDataIntegrityProof,
-  generateSignedJsonWebSignature2020
+  generateSignedJsonWebSignature2020,
+  generateSignedJwt
 } from "@tsg-dsp/common-signing-and-validation";
-import { DidService } from "../did/did.service.js";
+import { JWTPayload } from "jose";
+
 import { RootConfig, SignatureType } from "../config.js";
+import { DidService } from "../did/did.service.js";
+import { KeyMaterialDao } from "../model/credentials.dao.js";
+import { KeysService } from "./keys.service.js";
 
 @Injectable()
 export class SignatureService {

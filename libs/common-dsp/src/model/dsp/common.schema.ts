@@ -1,5 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { ReferenceDto, MultilanguageDto, DurationDto } from "./common.dto.js";
+
+import { DurationDto, MultilanguageDto, ReferenceDto } from "./common.dto.js";
 
 export class ReferenceSchema implements ReferenceDto {
   @ApiProperty({

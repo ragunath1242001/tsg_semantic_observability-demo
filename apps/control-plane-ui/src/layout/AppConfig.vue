@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import BaseAppConfig from "@tsg-dsp/common-ui/layout/BaseAppConfig.vue";
 import { useLayout } from "@tsg-dsp/common-ui/layout/composables/layout";
+import { ref } from "vue";
 
 import { useRuntimeStore } from "../stores/runtime";
-
-import BaseAppConfig from "@tsg-dsp/common-ui/layout/BaseAppConfig.vue";
 
 const { configSidebarVisible } = useLayout();
 

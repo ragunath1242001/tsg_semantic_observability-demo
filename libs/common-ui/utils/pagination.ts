@@ -1,7 +1,8 @@
 import { AxiosResponse } from "axios";
-import { ErrorContext, toastError } from "./error";
 import { DataTablePageEvent, DataTableSortEvent, useToast } from "primevue";
-import { ref, Ref, UnwrapRef } from "vue";
+import { Ref, ref, UnwrapRef } from "vue";
+
+import { ErrorContext, toastError } from "./error";
 
 export interface PaginationSetup<T> {
   data: Ref<UnwrapRef<T[]>, UnwrapRef<T[]> | T[]>;

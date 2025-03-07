@@ -4,6 +4,8 @@ import {
   ApiPropertyOptional,
   getSchemaPath
 } from "@nestjs/swagger";
+import { VerifiablePresentation } from "@tsg-dsp/common-dsp";
+import { Type } from "class-transformer";
 import {
   ArrayContains,
   ArrayMinSize,
@@ -13,9 +15,8 @@ import {
   IsString,
   ValidateNested
 } from "class-validator";
+
 import { PresentationDefinition } from "./presentationdefinition.dto.js";
-import { Type } from "class-transformer";
-import { VerifiablePresentation } from "@tsg-dsp/common-dsp";
 
 export class VerificationRequest {
   @ApiProperty({ type: () => PresentationDefinition })

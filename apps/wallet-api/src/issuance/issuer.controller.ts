@@ -1,27 +1,14 @@
 import {
   Body,
   Controller,
-  Post,
-  Headers,
   Get,
-  Param,
-  Put,
+  Headers,
   HttpCode,
-  HttpStatus
+  HttpStatus,
+  Param,
+  Post,
+  Put
 } from "@nestjs/common";
-import { IssuerService } from "./issuer.service.js";
-import {
-  AccessToken,
-  CredentialIssuerMetadata,
-  CredentialOffer,
-  CredentialOfferRequest,
-  CredentialOfferStatus,
-  CredentialRequest,
-  CredentialResponse,
-  DeferredCredentialResponse,
-  ImmediateCredentialResponse
-} from "@tsg-dsp/wallet-dtos";
-import { AppRole } from "@tsg-dsp/wallet-dtos";
 import {
   ApiBearerAuth,
   ApiBody,
@@ -34,14 +21,28 @@ import {
   getSchemaPath
 } from "@nestjs/swagger";
 import {
-  ApiForbiddenResponseDefault,
-  ApiNotFoundResponseDefault
-} from "@tsg-dsp/common-dtos";
-import {
   DisableOAuthGuard,
   DisableRolesGuard,
   Roles
 } from "@tsg-dsp/common-api";
+import {
+  ApiForbiddenResponseDefault,
+  ApiNotFoundResponseDefault
+} from "@tsg-dsp/common-dtos";
+import {
+  AccessToken,
+  CredentialIssuerMetadata,
+  CredentialOffer,
+  CredentialOfferRequest,
+  CredentialOfferStatus,
+  CredentialRequest,
+  CredentialResponse,
+  DeferredCredentialResponse,
+  ImmediateCredentialResponse
+} from "@tsg-dsp/wallet-dtos";
+import { AppRole } from "@tsg-dsp/wallet-dtos";
+
+import { IssuerService } from "./issuer.service.js";
 
 @Controller()
 @ApiTags("OpenID 4 Verifiable Credential Issuance")

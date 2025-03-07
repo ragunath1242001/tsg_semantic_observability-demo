@@ -1,19 +1,20 @@
 <script setup lang="ts">
-import { ref, toRef, reactive } from "vue";
 import {
   DatasetDto,
   OfferDto,
   PolicyDto,
   ReferenceDto
 } from "@tsg-dsp/common-dsp";
-import { useToast } from "primevue/usetoast";
-import { injectStrict } from "../utils/injectTyped";
-import { AxiosKey } from "../utils/symbols";
-import { stringify, obtainValues } from "@tsg-dsp/common-ui/utils/common";
+import schema from "@tsg-dsp/common-ui/assets/odrl.schema.json";
 import DisplayField from "@tsg-dsp/common-ui/components/DisplayField.vue";
 import MonacoEditor from "@tsg-dsp/common-ui/components/MonacoEditor.vue";
-import schema from "@tsg-dsp/common-ui/assets/odrl.schema.json";
+import { obtainValues, stringify } from "@tsg-dsp/common-ui/utils/common";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
+import { useToast } from "primevue/usetoast";
+import { reactive, ref, toRef } from "vue";
+
+import { injectStrict } from "../utils/injectTyped";
+import { AxiosKey } from "../utils/symbols";
 
 interface Constraint {
   leftOperand: string;

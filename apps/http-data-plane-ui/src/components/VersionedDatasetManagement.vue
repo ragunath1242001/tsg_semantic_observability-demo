@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import { VersionedDatasetConfig } from "@tsg-dsp/http-data-plane-dtos";
-import { ref, onMounted, watch } from "vue";
-import { useToast } from "primevue/usetoast";
-import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
-import schema from "@tsg-dsp/common-ui/assets/dataset-config.schema.json";
 import { DataPlaneStateDto } from "@tsg-dsp/common-dtos";
-import http from "@tsg-dsp/common-ui/utils/http";
+import schema from "@tsg-dsp/common-ui/assets/dataset-config.schema.json";
+import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
+import http from "@tsg-dsp/common-ui/utils/http";
+import { VersionedDatasetConfig } from "@tsg-dsp/http-data-plane-dtos";
+import { useToast } from "primevue/usetoast";
+import { onMounted, ref, watch } from "vue";
+
 import { cleanPolicyConfig } from "../utils/policyconfig";
 import PolicyEditor from "./PolicyEditor.vue";
 import PolicyView from "./PolicyView.vue";

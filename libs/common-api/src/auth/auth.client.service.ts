@@ -4,8 +4,9 @@ import axios, {
   CreateAxiosDefaults,
   InternalAxiosRequestConfig
 } from "axios";
-import querystring from "querystring";
 import { decodeJwt } from "jose";
+import querystring from "querystring";
+
 import { AuthConfig } from "../config/auth.js";
 import { OpenIDConfigurationService } from "./openid.configuration.service.js";
 

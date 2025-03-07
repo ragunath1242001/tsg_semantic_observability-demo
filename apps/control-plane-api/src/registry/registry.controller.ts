@@ -1,7 +1,4 @@
-import { CredentialAddress } from "@tsg-dsp/control-plane-dtos";
 import { Controller, Get, HttpCode, HttpStatus, Logger } from "@nestjs/common";
-import { CatalogDto, CatalogSchema } from "@tsg-dsp/common-dsp";
-import { RegistryService } from "./registry.service.js";
 import {
   ApiBearerAuth,
   ApiOperation,
@@ -9,12 +6,16 @@ import {
   ApiTags
 } from "@nestjs/swagger";
 import {
-  Roles,
-  UsePagination,
-  PaginationQuery,
+  Paginated,
   PaginationOptionsDto,
-  Paginated
+  PaginationQuery,
+  Roles,
+  UsePagination
 } from "@tsg-dsp/common-api";
+import { CatalogDto, CatalogSchema } from "@tsg-dsp/common-dsp";
+import { CredentialAddress } from "@tsg-dsp/control-plane-dtos";
+
+import { RegistryService } from "./registry.service.js";
 
 @ApiTags("Registry")
 @ApiBearerAuth()

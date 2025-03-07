@@ -9,7 +9,7 @@ import {
   UseInterceptors,
   UsePipes
 } from "@nestjs/common";
-import { RuntimeConfig } from "./config.js";
+import { FileInterceptor } from "@nestjs/platform-express";
 import {
   ApiBody,
   ApiOAuth2,
@@ -17,19 +17,20 @@ import {
   ApiOperation,
   ApiTags
 } from "@nestjs/swagger";
-import { RuntimeConfigDto } from "./config.schemas.js";
-import {
-  ApiForbiddenResponseDefault,
-  ApiBadRequestResponseDefault
-} from "@tsg-dsp/common-dtos";
-import { FileInterceptor } from "@nestjs/platform-express";
 import {
   DisableOAuthGuard,
   DisableRolesGuard,
   Roles,
   validationPipe
 } from "@tsg-dsp/common-api";
+import {
+  ApiBadRequestResponseDefault,
+  ApiForbiddenResponseDefault
+} from "@tsg-dsp/common-dtos";
 import { AppRole } from "@tsg-dsp/wallet-dtos";
+
+import { RuntimeConfig } from "./config.js";
+import { RuntimeConfigDto } from "./config.schemas.js";
 
 @Roles(AppRole.ISSUE_CREDENTIALS)
 @Controller("settings")

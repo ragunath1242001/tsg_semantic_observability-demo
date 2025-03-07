@@ -1,5 +1,20 @@
+import { expect, test } from "@jest/globals";
+
+import { defaultContext } from "../../../jsonld/context.defaults.js";
 import { deserialize } from "../../deserialize.js";
 import { Multilanguage } from "../common.js";
+import {
+  ContractAgreementMessageDto,
+  ContractAgreementVerificationMessageDto,
+  ContractNegotiationDto,
+  ContractNegotiationErrorDto,
+  ContractNegotiationEventMessageDto,
+  ContractNegotiationState,
+  ContractNegotiationTerminationMessageDto,
+  ContractOfferMessageDto,
+  ContractRequestMessageDto,
+  NegotiationEvent
+} from "./messages.dto.js";
 import {
   ContractAgreementMessage,
   ContractAgreementVerificationMessage,
@@ -11,20 +26,6 @@ import {
   ContractRequestMessage
 } from "./messages.js";
 import { Agreement, Offer } from "./negotiation.js";
-import {
-  ContractRequestMessageDto,
-  ContractOfferMessageDto,
-  ContractNegotiationTerminationMessageDto,
-  ContractNegotiationState,
-  ContractNegotiationDto,
-  NegotiationEvent,
-  ContractNegotiationEventMessageDto,
-  ContractNegotiationErrorDto,
-  ContractAgreementVerificationMessageDto,
-  ContractAgreementMessageDto
-} from "./messages.dto.js";
-import { expect, test } from "@jest/globals";
-import { defaultContext } from "../../../jsonld/context.defaults.js";
 
 test("Contract Request Message", async () => {
   const contractRequestMessage = new ContractRequestMessage({

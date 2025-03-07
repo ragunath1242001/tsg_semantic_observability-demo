@@ -1,11 +1,12 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import {
-  IsString,
-  IsNotEmpty,
   IsArray,
+  IsNotEmpty,
+  IsNumber,
   IsOptional,
-  IsNumber
+  IsString
 } from "class-validator";
+
 import { GrantType } from "./grants.js";
 
 export class ClientDto {

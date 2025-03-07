@@ -1,11 +1,12 @@
-import { DidWebStrategy } from "./did.web.strategy.js";
-import { DidServiceConfig, RootConfig } from "../../config.js";
-import { plainToInstance } from "class-transformer";
-import { KeyMaterialDao } from "../../model/credentials.dao.js";
-import { exportJWK, generateKeyPair } from "jose";
-import { DIDDocument } from "did-resolver";
-import { createServices, createVerificationMethods } from "../../utils/did.js";
 import { Test, TestingModule } from "@nestjs/testing";
+import { plainToInstance } from "class-transformer";
+import { DIDDocument } from "did-resolver";
+import { exportJWK, generateKeyPair } from "jose";
+
+import { DidServiceConfig, RootConfig } from "../../config.js";
+import { KeyMaterialDao } from "../../model/credentials.dao.js";
+import { createServices, createVerificationMethods } from "../../utils/did.js";
+import { DidWebStrategy } from "./did.web.strategy.js";
 
 describe("DID Web Service", () => {
   let didWebStrategy: DidWebStrategy;

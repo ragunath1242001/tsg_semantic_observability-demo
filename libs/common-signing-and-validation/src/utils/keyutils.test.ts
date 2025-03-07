@@ -1,10 +1,11 @@
 import { JWK } from "jose";
+
+import { cryptoSuiteFromJws, getCryptoSuite } from "./cryptosuite.js";
 import {
-  jwkToMultibase,
   encodedPublicKeyMultiBaseToJWK,
+  jwkToMultibase,
   publicKeyMultiBaseToJWK
 } from "./keyconverter.js";
-import { cryptoSuiteFromJws, getCryptoSuite } from "./cryptosuite.js";
 
 describe("Key Utils test", () => {
   it("Cryptosuites", () => {

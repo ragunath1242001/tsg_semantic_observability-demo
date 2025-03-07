@@ -1,4 +1,5 @@
 import { HttpStatus } from "@nestjs/common";
+
 import { AppError } from "./error.js";
 
 export const isRejected = (

@@ -1,13 +1,14 @@
 <script setup lang="ts">
+import DisplayField from "@tsg-dsp/common-ui/components/DisplayField.vue";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import { StatusDto } from "@tsg-dsp/control-plane-dtos";
-import { computed, onMounted, ref } from "vue";
-import { injectStrict } from "../utils/injectTyped";
-import { AxiosKey } from "../utils/symbols";
-import DisplayField from "@tsg-dsp/common-ui/components/DisplayField.vue";
-import { useToast } from "primevue/usetoast";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import { useToast } from "primevue/usetoast";
+import { computed, onMounted, ref } from "vue";
+
+import { injectStrict } from "../utils/injectTyped";
+import { AxiosKey } from "../utils/symbols";
 
 dayjs.extend(relativeTime);
 

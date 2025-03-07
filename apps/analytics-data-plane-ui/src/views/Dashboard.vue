@@ -1,13 +1,14 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
-import { useToast } from "primevue/usetoast";
-import { useConfirm } from "primevue/useconfirm";
 import { DataPlaneStateDto, TransferDto } from "@tsg-dsp/common-dtos";
 import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
 import { formatDate } from "@tsg-dsp/common-ui/utils/date.js";
-import PaginatedLogTable from "../components/PaginatedLogTable.vue";
-import http from "@tsg-dsp/common-ui/utils/http.js";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
+import http from "@tsg-dsp/common-ui/utils/http.js";
+import { useConfirm } from "primevue/useconfirm";
+import { useToast } from "primevue/usetoast";
+import { computed, onMounted, ref } from "vue";
+
+import PaginatedLogTable from "../components/PaginatedLogTable.vue";
 import { useK8sStore } from "../stores/k8s";
 
 const k8sStore = useK8sStore();
@@ -432,14 +433,14 @@ onMounted(async () => {
               outlined
               @click="showLogs(props.data)" />
             <Button
+              v-tooltip.bottom="'Execute'"
               class="ml-2"
               :disabled="props.data.state !== 'dspace:STARTED'"
               icon="pi pi-play"
               severity="info"
               aria-label="Execute"
-              @click="spawnK8sJob(props.data)"
-              v-tooltip.bottom="'Execute'"
-              outlined />
+              outlined
+              @click="spawnK8sJob(props.data)" />
           </template>
         </Column>
         <template #expansion="props">

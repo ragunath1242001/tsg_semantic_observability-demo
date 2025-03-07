@@ -1,10 +1,11 @@
-import { CredentialAddress } from "@tsg-dsp/control-plane-dtos";
 import { HttpStatus, Injectable, Logger, Optional } from "@nestjs/common";
 import { CatalogDto } from "@tsg-dsp/common-dsp";
+import { CredentialAddress } from "@tsg-dsp/control-plane-dtos";
 import axios, { AxiosInstance } from "axios";
-import { VCAuthService } from "../vc-auth/vc.auth.service.js";
+
 import { RegistryConfig } from "../config.js";
 import { DSPClientError, DSPError } from "../utils/errors/error.js";
+import { VCAuthService } from "../vc-auth/vc.auth.service.js";
 
 @Injectable()
 export class RegistryClientService {

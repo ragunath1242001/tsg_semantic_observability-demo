@@ -1,8 +1,9 @@
-import { resolveDid } from "./did.resolver.js";
-import { describe, expect, beforeAll, afterAll, it } from "@jest/globals";
-import { SetupServer, setupServer } from "msw/node";
-import { HttpResponse, http } from "msw";
+import { afterAll, beforeAll, describe, expect, it } from "@jest/globals";
 import { DIDDocument } from "did-resolver";
+import { http, HttpResponse } from "msw";
+import { SetupServer, setupServer } from "msw/node";
+
+import { resolveDid } from "./did.resolver.js";
 
 describe("DID Service", () => {
   let server: SetupServer;

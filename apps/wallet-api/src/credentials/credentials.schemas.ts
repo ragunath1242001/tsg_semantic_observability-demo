@@ -1,3 +1,6 @@
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { CredentialSubject, VerifiableCredential } from "@tsg-dsp/common-dsp";
+import { Type } from "class-transformer";
 import {
   IsBoolean,
   IsDate,
@@ -5,12 +8,10 @@ import {
   IsString,
   ValidateNested
 } from "class-validator";
-import { CredentialDao } from "../model/credentials.dao.js";
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { CredentialSubject, VerifiableCredential } from "@tsg-dsp/common-dsp";
+
 import { InitCredentialConfig, TrustAnchorConfig } from "../config.js";
-import { Type } from "class-transformer";
 import { JsonLdContextConfigDto } from "../contexts/context.schemas.js";
+import { CredentialDao } from "../model/credentials.dao.js";
 
 export class TrustAnchorConfigDto implements TrustAnchorConfig {
   @IsString()

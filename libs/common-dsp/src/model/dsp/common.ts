@@ -1,26 +1,27 @@
-import { Id, RdfLanguage, Serializable, RdfValue } from "../decorators.js";
-import { serialize } from "../serialize.js";
 import {
   IsDateString,
   IsDecimal,
   IsNotEmpty,
   Matches,
-  ValidationError,
-  validateSync
+  validateSync,
+  ValidationError
 } from "class-validator";
+import { JsonLdObj } from "jsonld/jsonld-spec.js";
+import { v4 as uuid } from "uuid";
+
+import { compact } from "../../jsonld/jsonld.js";
+import { Id, RdfLanguage, RdfValue, Serializable } from "../decorators.js";
+import { deserializeSync } from "../deserialize.js";
+import { serialize } from "../serialize.js";
 import {
   ContextDto,
-  ReferenceDto,
-  MultilanguageDto,
-  TimeDto,
   DecimalDto,
   DurationDto,
+  MultilanguageDto,
+  ReferenceDto,
+  TimeDto,
   URIDto
 } from "./common.dto.js";
-import { v4 as uuid } from "uuid";
-import { compact } from "../../jsonld/jsonld.js";
-import { JsonLdObj } from "jsonld/jsonld-spec.js";
-import { deserializeSync } from "../deserialize.js";
 
 export class ClassValidationError extends Error {
   errors: ValidationError[];

@@ -4,9 +4,10 @@ import {
   HttpStatus,
   Logger
 } from "@nestjs/common";
-import { VerifiablePresentation, toArray } from "@tsg-dsp/common-dsp";
-import { DSPError } from "../utils/errors/error.js";
+import { toArray, VerifiablePresentation } from "@tsg-dsp/common-dsp";
 import { Request } from "express";
+
+import { DSPError } from "../utils/errors/error.js";
 
 export const VP = createParamDecorator(
   (_, context: ExecutionContext): VerifiablePresentation | undefined => {

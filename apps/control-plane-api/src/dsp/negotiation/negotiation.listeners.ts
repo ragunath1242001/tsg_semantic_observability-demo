@@ -1,14 +1,15 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { OnEvent } from "@nestjs/event-emitter";
+import { DatasetDto } from "@tsg-dsp/common-dsp";
+
+import { RuntimeConfig } from "../../config.js";
+import { CatalogService } from "../catalog/catalog.service.js";
+import { TransferService } from "../transfer/transfer.service.js";
 import {
   NegotiationCreatedEvent,
   NegotiationUpdatedEvent
 } from "./negotiation.events.js";
 import { NegotiationService } from "./negotiation.service.js";
-import { CatalogService } from "../catalog/catalog.service.js";
-import { RuntimeConfig } from "../../config.js";
-import { DatasetDto } from "@tsg-dsp/common-dsp";
-import { TransferService } from "../transfer/transfer.service.js";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function deepSubset(obj1: any, obj2: any, excludedKeys: string[] = []) {

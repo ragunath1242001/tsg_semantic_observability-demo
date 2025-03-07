@@ -1,17 +1,18 @@
 import {
-  Injectable,
   CanActivate,
+  createParamDecorator,
   ExecutionContext,
-  createParamDecorator
+  Injectable
 } from "@nestjs/common";
 import { APP_GUARD, Reflector } from "@nestjs/core";
-import { Observable } from "rxjs";
+import { plainToInstance } from "class-transformer";
 import jsonpath from "jsonpath";
-import { GenericConfigModule } from "../config/config.module.js";
+import { Observable } from "rxjs";
+
 import { AuthConfig } from "../config/auth.js";
+import { GenericConfigModule } from "../config/config.module.js";
 import { ServerConfig } from "../config/server.js";
 import { ClientInfo } from "./client.info.js";
-import { plainToInstance } from "class-transformer";
 
 export const Roles = Reflector.createDecorator<string | string[]>();
 export const DisableRolesGuard = Reflector.createDecorator<boolean>();

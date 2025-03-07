@@ -1,20 +1,21 @@
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
-import {
-  importPKCS8,
-  importX509,
-  generateKeyPair,
-  exportJWK,
-  CryptoKey
-} from "jose";
-import { Not, Repository } from "typeorm";
-import { InitKeyConfig, RootConfig } from "../config.js";
-import { KeyMaterialDao } from "../model/credentials.dao.js";
-import { AppError } from "@tsg-dsp/common-api";
 import { InjectRepository } from "@nestjs/typeorm";
-import { DidService } from "../did/did.service.js";
-import { JsonWebKey } from "crypto";
+import { AppError } from "@tsg-dsp/common-api";
 import { Paginated, PaginationOptionsDto } from "@tsg-dsp/common-api";
 import { KeyInfo } from "@tsg-dsp/wallet-dtos";
+import { JsonWebKey } from "crypto";
+import {
+  CryptoKey,
+  exportJWK,
+  generateKeyPair,
+  importPKCS8,
+  importX509
+} from "jose";
+import { Not, Repository } from "typeorm";
+
+import { InitKeyConfig, RootConfig } from "../config.js";
+import { DidService } from "../did/did.service.js";
+import { KeyMaterialDao } from "../model/credentials.dao.js";
 
 @Injectable()
 export class KeysService {

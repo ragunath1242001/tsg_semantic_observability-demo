@@ -1,10 +1,11 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { UsersService } from "./users.service.js";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { OauthUser } from "../model/user.dao.js";
 import { PaginationOptionsDto, TypeOrmTestHelper } from "@tsg-dsp/common-api";
-import { RootConfig } from "../config.js";
 import { plainToInstance } from "class-transformer";
+
+import { RootConfig } from "../config.js";
+import { OauthUser } from "../model/user.dao.js";
+import { UsersService } from "./users.service.js";
 
 describe("UsersService Tests", () => {
   let service: UsersService;

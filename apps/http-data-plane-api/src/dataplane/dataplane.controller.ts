@@ -1,6 +1,4 @@
-import { Controller, Logger, Get, HttpCode, HttpStatus } from "@nestjs/common";
-import { DataPlaneService } from "./dataplane.service.js";
-
+import { Controller, Get, HttpCode, HttpStatus, Logger } from "@nestjs/common";
 import {
   ApiBadGatewayResponse,
   ApiNotImplementedResponse,
@@ -9,12 +7,14 @@ import {
   ApiOperation,
   ApiTags
 } from "@nestjs/swagger";
-import { ApiForbiddenResponseDefault } from "@tsg-dsp/common-dtos";
 import {
-  Roles,
   DisableOAuthGuard,
-  DisableRolesGuard
+  DisableRolesGuard,
+  Roles
 } from "@tsg-dsp/common-api";
+import { ApiForbiddenResponseDefault } from "@tsg-dsp/common-dtos";
+
+import { DataPlaneService } from "./dataplane.service.js";
 
 @Controller()
 @ApiTags("Data Plane")

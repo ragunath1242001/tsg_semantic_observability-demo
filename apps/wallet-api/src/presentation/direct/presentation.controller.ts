@@ -9,14 +9,6 @@ import {
   Query
 } from "@nestjs/common";
 import {
-  PresentationValidation,
-  VerifiablePresentationJsonLd,
-  VerifiablePresentationJwt
-} from "@tsg-dsp/common-dsp";
-import { AppError } from "@tsg-dsp/common-api";
-import { PresentationService } from "../presentation.service.js";
-import { AppRole } from "@tsg-dsp/wallet-dtos";
-import {
   ApiBody,
   ApiExtraModels,
   ApiOAuth2,
@@ -25,7 +17,16 @@ import {
   ApiTags,
   getSchemaPath
 } from "@nestjs/swagger";
+import { AppError } from "@tsg-dsp/common-api";
 import { nonEmptyStringPipe, Roles } from "@tsg-dsp/common-api";
+import {
+  PresentationValidation,
+  VerifiablePresentationJsonLd,
+  VerifiablePresentationJwt
+} from "@tsg-dsp/common-dsp";
+import { AppRole } from "@tsg-dsp/wallet-dtos";
+
+import { PresentationService } from "../presentation.service.js";
 
 @Controller("presentations")
 @Roles(AppRole.VIEW_PRESENTATIONS)

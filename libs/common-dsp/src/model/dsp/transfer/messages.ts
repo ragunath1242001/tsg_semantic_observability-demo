@@ -4,17 +4,18 @@ import {
   IsOptional,
   ValidateNested
 } from "class-validator";
-import { Serializable, Namespace, LDType } from "../../decorators.js";
+
+import { LDType, Namespace, Serializable } from "../../decorators.js";
 import { Multilanguage, SerializableClass, withExtraProps } from "../common.js";
 import {
+  DataAddressDto,
+  EndpointPropertyDto,
   TransferCompletionMessageDto,
   TransferErrorDto,
-  TransferState,
   TransferProcessDto,
-  EndpointPropertyDto,
-  DataAddressDto,
   TransferRequestMessageDto,
   TransferStartMessageDto,
+  TransferState,
   TransferSuspensionMessageDto,
   TransferTerminationMessageDto
 } from "./messages.dto.js";

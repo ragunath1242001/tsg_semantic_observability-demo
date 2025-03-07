@@ -1,12 +1,13 @@
-import { TestingModule, Test } from "@nestjs/testing";
+import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { TypeOrmTestHelper, ServerConfig } from "@tsg-dsp/common-api";
+import { ServerConfig, TypeOrmTestHelper } from "@tsg-dsp/common-api";
 import { plainToInstance } from "class-transformer";
+import { Request } from "express";
+
 import { RootConfig } from "../config.js";
 import { OauthUser } from "../model/user.dao.js";
 import { UsersService } from "../users/users.service.js";
 import { AuthService } from "./auth.service.js";
-import { Request } from "express";
 
 describe("AuthService", () => {
   let authService: AuthService;

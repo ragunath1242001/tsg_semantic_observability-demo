@@ -7,12 +7,13 @@ import {
   Post,
   Req
 } from "@nestjs/common";
-import { AuthService } from "./auth.service.js";
-import { User } from "./auth.guard.js";
-import { OauthUser } from "../model/user.dao.js";
+import { ApiBody, ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { nonEmptyStringPipe } from "@tsg-dsp/common-api";
 import { Request } from "express";
-import { ApiBody, ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
+
+import { OauthUser } from "../model/user.dao.js";
+import { User } from "./auth.guard.js";
+import { AuthService } from "./auth.service.js";
 
 @ApiTags("Auth")
 @Controller("auth")

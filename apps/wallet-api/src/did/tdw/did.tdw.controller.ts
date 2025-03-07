@@ -1,10 +1,11 @@
 import { Controller, Get, Header, Param } from "@nestjs/common";
 import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
-import { DidTdwStrategy } from "./did.tdw.strategy.js";
+import { DisableOAuthGuard } from "@tsg-dsp/common-api";
 import { DIDDocumentDto } from "@tsg-dsp/common-dtos";
 import { DIDDocument } from "did-resolver";
+
 import { DidService } from "../did.service.js";
-import { DisableOAuthGuard } from "@tsg-dsp/common-api";
+import { DidTdwStrategy } from "./did.tdw.strategy.js";
 
 @Controller()
 @DisableOAuthGuard()

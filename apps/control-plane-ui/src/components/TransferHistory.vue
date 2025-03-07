@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import { stripDspace } from "@tsg-dsp/common-ui/utils/common";
-
 import { TransferDetailDto, TransferStatus } from "@tsg-dsp/common-dsp";
-import { ref, toRef } from "vue";
-import { useToast } from "primevue/usetoast";
-import http from "@tsg-dsp/common-ui/utils/http";
+import { stripDspace } from "@tsg-dsp/common-ui/utils/common";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
+import http from "@tsg-dsp/common-ui/utils/http";
+import { useToast } from "primevue/usetoast";
+import { ref, toRef } from "vue";
 
 const props = defineProps<{
   transfers: TransferStatus[];

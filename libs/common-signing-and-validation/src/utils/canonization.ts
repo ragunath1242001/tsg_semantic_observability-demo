@@ -1,9 +1,10 @@
-import jsonld from "jsonld";
-import { jsonldOptions } from "./cachingContextLoader.js";
-import { AppError } from "@tsg-dsp/common-api";
 import { HttpStatus } from "@nestjs/common";
-import { canonicalize } from "json-canonicalize";
+import { AppError } from "@tsg-dsp/common-api";
 import crypto from "crypto";
+import { canonicalize } from "json-canonicalize";
+import jsonld from "jsonld";
+
+import { jsonldOptions } from "./cachingContextLoader.js";
 
 export async function canonize(
   document: any,

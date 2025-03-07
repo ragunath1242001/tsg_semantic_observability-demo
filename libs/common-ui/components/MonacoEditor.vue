@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { MonacoEditor, VueMonacoEditor } from "@guolao/vue-monaco-editor";
 import { computed } from "vue";
+
 import { useLayout } from "../layout/composables/layout";
 
 const { layoutConfig } = useLayout();

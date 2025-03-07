@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import Drawer from "primevue/drawer";
-import { useLayout } from "@tsg-dsp/common-ui/layout/composables/layout";
-import { ref } from "vue";
-import { useRuntimeStore } from "../stores/runtime";
 import BaseAppConfig from "@tsg-dsp/common-ui/layout/BaseAppConfig.vue";
+import { useLayout } from "@tsg-dsp/common-ui/layout/composables/layout";
+import Drawer from "primevue/drawer";
+import { ref } from "vue";
+
+import { useRuntimeStore } from "../stores/runtime";
 
 const { configSidebarVisible } = useLayout();
 

@@ -1,14 +1,15 @@
-import { Controller, Logger, Get, Param } from "@nestjs/common";
+import { Controller, Get, Logger, Param } from "@nestjs/common";
 import {
-  ApiTags,
   ApiOAuth2,
   ApiOkResponse,
   ApiOperation,
-  ApiParam
+  ApiParam,
+  ApiTags
 } from "@nestjs/swagger";
-import { AgreementService } from "./agreement.service.js";
-import { AgreementDto, AgreementSchema } from "@tsg-dsp/common-dsp";
 import { Roles } from "@tsg-dsp/common-api";
+import { AgreementDto, AgreementSchema } from "@tsg-dsp/common-dsp";
+
+import { AgreementService } from "./agreement.service.js";
 
 @Roles(["controlplane_admin"])
 @Controller("management/agreements")

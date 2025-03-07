@@ -1,4 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
+
 import { DidServiceConfig } from "../config.js";
 
 export class DidServiceConfigDto implements DidServiceConfig {

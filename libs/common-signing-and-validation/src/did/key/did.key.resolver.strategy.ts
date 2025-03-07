@@ -1,12 +1,12 @@
-import { DIDDocument } from "did-resolver";
-import { AppError } from "@tsg-dsp/common-api";
 import { HttpStatus, Logger } from "@nestjs/common";
-import { DidResolverStrategy } from "../did.resolver.js";
-import { hexToBase64url } from "../../utils/typeconverter.js";
+import { AppError } from "@tsg-dsp/common-api";
+import { DIDDocument } from "did-resolver";
+import elliptic from "elliptic";
 import { JWK } from "jose";
 import { base58btc } from "multiformats/bases/base58";
 
-import elliptic from "elliptic";
+import { hexToBase64url } from "../../utils/typeconverter.js";
+import { DidResolverStrategy } from "../did.resolver.js";
 
 export class DidKeyResolverStrategy implements DidResolverStrategy {
   private readonly logger = new Logger(this.constructor.name);

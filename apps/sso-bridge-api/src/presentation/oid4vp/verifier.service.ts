@@ -1,21 +1,22 @@
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
 import { AppError, AuthorizationRequest } from "@tsg-dsp/common-api";
 import {
   AuthorizationResponse,
   PresentationAuthorizationRequest,
   PresentationDefinition
 } from "@tsg-dsp/common-dtos";
-import { Request, Response } from "express";
 import crypto from "crypto";
+import { Request, Response } from "express";
 import { Repository } from "typeorm";
-import { InjectRepository } from "@nestjs/typeorm";
-import { AuthorizationRequestDao } from "../../model/oid4vp.dao.js";
-import { PresentationService } from "../presentation.service.js";
-import { getSession } from "../../utils/session.js";
-import { UsersService } from "../../users/users.service.js";
-import { OauthUser } from "../../model/user.dao.js";
+
 import { RootConfig } from "../../config.js";
+import { AuthorizationRequestDao } from "../../model/oid4vp.dao.js";
+import { OauthUser } from "../../model/user.dao.js";
 import { OauthService } from "../../oauth/oauth.service.js";
+import { UsersService } from "../../users/users.service.js";
+import { getSession } from "../../utils/session.js";
+import { PresentationService } from "../presentation.service.js";
 
 @Injectable()
 export class OID4VPVerifierService {

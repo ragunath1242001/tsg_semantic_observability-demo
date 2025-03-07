@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { DataPlaneStateDto } from "@tsg-dsp/common-dtos";
+import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import http from "@tsg-dsp/common-ui/utils/http";
 import {
@@ -7,14 +8,14 @@ import {
   DatasetItem,
   DatasetItemWithDto
 } from "@tsg-dsp/http-data-plane-dtos";
-import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
 import { useConfirm, useDialog, useToast } from "primevue";
 import { onMounted, ref } from "vue";
-import PolicyEditor from "./PolicyEditor.vue";
+
 import { pushOrCreate } from "../utils/arrays";
-import PolicyView from "./PolicyView.vue";
 import { cleanPolicyConfig } from "../utils/policyconfig";
 import JSONDialog from "./JSONDialog.vue";
+import PolicyEditor from "./PolicyEditor.vue";
+import PolicyView from "./PolicyView.vue";
 
 const toast = useToast();
 const confirm = useConfirm();

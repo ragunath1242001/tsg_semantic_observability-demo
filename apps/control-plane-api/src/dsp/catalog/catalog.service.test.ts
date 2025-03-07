@@ -1,6 +1,7 @@
 import { jest } from "@jest/globals";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
+import { ServerConfig, TypeOrmTestHelper } from "@tsg-dsp/common-api";
 import {
   DataService,
   Dataset,
@@ -8,6 +9,7 @@ import {
   ODRLAction
 } from "@tsg-dsp/common-dsp";
 import { plainToClass } from "class-transformer";
+
 import { InitCatalog, PolicyConfig } from "../../config.js";
 import {
   CatalogDao,
@@ -17,10 +19,9 @@ import {
   DistributionDao,
   ResourceDao
 } from "../../model/catalog.dao.js";
+import { DataPlaneDao } from "../../model/dataPlanes.dao.js";
 import { DSPError } from "../../utils/errors/error.js";
 import { CatalogService } from "./catalog.service.js";
-import { DataPlaneDao } from "../../model/dataPlanes.dao.js";
-import { TypeOrmTestHelper, ServerConfig } from "@tsg-dsp/common-api";
 
 describe("Catalog Service", () => {
   let catalogService: CatalogService;

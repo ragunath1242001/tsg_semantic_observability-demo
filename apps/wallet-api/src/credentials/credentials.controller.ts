@@ -1,13 +1,14 @@
 import { Controller, Get, HttpCode, HttpStatus, Param } from "@nestjs/common";
-import { CredentialsService } from "./credentials.service.js";
-import { VerifiableCredential } from "@tsg-dsp/common-dsp";
 import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
-import { CredentialsDto } from "./credentials.schemas.js";
+import { DisableOAuthGuard } from "@tsg-dsp/common-api";
+import { VerifiableCredential } from "@tsg-dsp/common-dsp";
 import {
   ApiForbiddenResponseDefault,
   ApiNotFoundResponseDefault
 } from "@tsg-dsp/common-dtos";
-import { DisableOAuthGuard } from "@tsg-dsp/common-api";
+
+import { CredentialsDto } from "./credentials.schemas.js";
+import { CredentialsService } from "./credentials.service.js";
 
 @Controller()
 @DisableOAuthGuard()

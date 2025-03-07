@@ -1,10 +1,10 @@
 import {
   Body,
   Controller,
-  HttpStatus,
-  Logger,
   Get,
   HttpCode,
+  HttpStatus,
+  Logger,
   Param,
   Post,
   UseGuards
@@ -18,6 +18,7 @@ import {
   ApiParam,
   ApiTags
 } from "@nestjs/swagger";
+import { DisableOAuthGuard } from "@tsg-dsp/common-api";
 import {
   ContractAgreementMessage,
   ContractAgreementMessageSchema,
@@ -35,12 +36,12 @@ import {
   ContractRequestMessage,
   ContractRequestMessageSchema
 } from "@tsg-dsp/common-dsp";
-import { VerifiablePresentationGuard } from "../../vc-auth/verifiablePresentation.guard.js";
+
 import { DeserializePipe } from "../../utils/deserialize.pipe.js";
 import { DSPError } from "../../utils/errors/error.js";
-import { NegotiationService } from "./negotiation.service.js";
-import { DisableOAuthGuard } from "@tsg-dsp/common-api";
+import { VerifiablePresentationGuard } from "../../vc-auth/verifiablePresentation.guard.js";
 import { VPId } from "../../vc-auth/vp.decorators.js";
+import { NegotiationService } from "./negotiation.service.js";
 
 @ApiBearerAuth()
 @ApiTags("Negotiations")

@@ -1,12 +1,10 @@
-import { VerifiablePresentation } from "@tsg-dsp/common-dsp";
-
 import { Injectable, Logger } from "@nestjs/common";
-
-import { evaluatePresentationResponseValidity } from "@tsg-dsp/common-signing-and-validation";
+import { VerifiablePresentation } from "@tsg-dsp/common-dsp";
 import {
   PresentationDefinition,
   PresentationResponse
 } from "@tsg-dsp/common-dtos";
+import { evaluatePresentationResponseValidity } from "@tsg-dsp/common-signing-and-validation";
 
 @Injectable()
 export class PresentationService {

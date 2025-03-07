@@ -1,5 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsString, IsBoolean, IsOptional } from "class-validator";
+import { IsBoolean, IsOptional, IsString } from "class-validator";
+
 import { JsonLdContextConfig } from "../config.js";
 import { JSONLDContext } from "../model/context.dao.js";
 

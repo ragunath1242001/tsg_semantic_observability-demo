@@ -1,11 +1,12 @@
 <script setup lang="ts">
+import { formatRelative } from "@tsg-dsp/common-ui/utils/date";
+import { setupPagination } from "@tsg-dsp/common-ui/utils/pagination";
+import { UserDto } from "@tsg-dsp/sso-bridge-dtos";
+import { useToast } from "primevue/usetoast";
 import { onMounted, ref } from "vue";
+
 import { injectStrict } from "../utils/injectTyped";
 import { AxiosKey } from "../utils/symbols";
-import { useToast } from "primevue/usetoast";
-import { UserDto } from "@tsg-dsp/sso-bridge-dtos";
-import { setupPagination } from "@tsg-dsp/common-ui/utils/pagination";
-import { formatRelative } from "@tsg-dsp/common-ui/utils/date";
 
 const http = injectStrict(AxiosKey);
 

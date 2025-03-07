@@ -1,8 +1,9 @@
 import { jest } from "@jest/globals";
-import { Test, TestingModule } from "@nestjs/testing";
-import { KubernetesService } from "./kubernetes.service.js";
-import { RootConfig } from "../config.js";
 import { ApiException, V1Secret } from "@kubernetes/client-node";
+import { Test, TestingModule } from "@nestjs/testing";
+
+import { RootConfig } from "../config.js";
+import { KubernetesService } from "./kubernetes.service.js";
 
 describe("KubernetesService", () => {
   let service: KubernetesService;

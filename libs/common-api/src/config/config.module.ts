@@ -1,12 +1,12 @@
-import {
-  TypedConfigModule,
-  dotenvLoader,
-  fileLoader,
-  selectConfig
-} from "nest-typed-config";
 import { DynamicModule, Module } from "@nestjs/common";
 import { ClassConstructor, plainToInstance } from "class-transformer";
 import { validateSync } from "class-validator";
+import {
+  dotenvLoader,
+  fileLoader,
+  selectConfig,
+  TypedConfigModule
+} from "nest-typed-config";
 import { inspect } from "util";
 
 @Module({})

@@ -1,15 +1,16 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
 import { type CatalogDto } from "@tsg-dsp/common-dsp";
-import { injectStrict } from "../utils/injectTyped";
-import { AxiosKey } from "../utils/symbols";
-import Catalog from "../components/Catalog.vue";
-import { useToast } from "primevue/usetoast";
+import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import { CredentialAddress } from "@tsg-dsp/control-plane-dtos";
 import { storeToRefs } from "pinia";
-import { useCatalogStore } from "../stores/catalog";
+import { useToast } from "primevue/usetoast";
+import { onMounted, ref } from "vue";
+
+import Catalog from "../components/Catalog.vue";
 import router from "../router";
-import { toastError } from "@tsg-dsp/common-ui/utils/error";
+import { useCatalogStore } from "../stores/catalog";
+import { injectStrict } from "../utils/injectTyped";
+import { AxiosKey } from "../utils/symbols";
 
 // Define a ref for the URL input
 const overlay = ref(null);

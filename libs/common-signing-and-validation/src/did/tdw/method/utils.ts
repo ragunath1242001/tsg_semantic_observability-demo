@@ -1,6 +1,7 @@
-import { base32 } from "multiformats/bases/base32";
-import { canonicalize } from "json-canonicalize";
 import { createHash } from "node:crypto";
+
+import { canonicalize } from "json-canonicalize";
+import { base32 } from "multiformats/bases/base32";
 
 export const clone = (input: any) => JSON.parse(JSON.stringify(input));
 

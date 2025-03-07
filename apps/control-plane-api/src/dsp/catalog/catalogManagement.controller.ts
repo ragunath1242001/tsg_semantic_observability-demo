@@ -12,6 +12,27 @@ import {
   Query
 } from "@nestjs/common";
 import {
+  ApiAcceptedResponse,
+  ApiBadRequestResponse,
+  ApiBearerAuth,
+  ApiBody,
+  ApiCreatedResponse,
+  ApiNoContentResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiParam,
+  ApiQuery,
+  ApiTags
+} from "@nestjs/swagger";
+import {
+  nonEmptyStringPipe,
+  Paginated,
+  PaginationOptionsDto,
+  PaginationQuery,
+  Roles,
+  UsePagination
+} from "@tsg-dsp/common-api";
+import {
   CatalogDto,
   CatalogRequestMessage,
   CatalogSchema,
@@ -19,32 +40,12 @@ import {
   DatasetDto,
   DatasetSchema
 } from "@tsg-dsp/common-dsp";
+import { ApiForbiddenResponseDefault } from "@tsg-dsp/common-dtos";
+
 import { normalizeAddress } from "../../utils/address.js";
 import { DeserializePipe } from "../../utils/deserialize.pipe.js";
 import { DspClientService } from "../client/client.service.js";
 import { CatalogService } from "./catalog.service.js";
-import {
-  ApiOperation,
-  ApiTags,
-  ApiOkResponse,
-  ApiCreatedResponse,
-  ApiAcceptedResponse,
-  ApiNoContentResponse,
-  ApiBadRequestResponse,
-  ApiBearerAuth,
-  ApiQuery,
-  ApiBody,
-  ApiParam
-} from "@nestjs/swagger";
-import { ApiForbiddenResponseDefault } from "@tsg-dsp/common-dtos";
-import {
-  Roles,
-  UsePagination,
-  PaginationQuery,
-  PaginationOptionsDto,
-  Paginated,
-  nonEmptyStringPipe
-} from "@tsg-dsp/common-api";
 
 @Roles(["controlplane_admin", "controlplane_dataplane"])
 @Controller("management/catalog")

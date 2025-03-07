@@ -1,14 +1,24 @@
 import {
   Body,
   Controller,
-  HttpStatus,
-  Logger,
   Get,
   HttpCode,
+  HttpStatus,
+  Logger,
   Param,
   Post,
   UseGuards
 } from "@nestjs/common";
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiCreatedResponse,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+  ApiTags
+} from "@nestjs/swagger";
+import { DisableOAuthGuard } from "@tsg-dsp/common-api";
 import {
   toArray,
   TransferCompletionMessage,
@@ -25,21 +35,12 @@ import {
   TransferTerminationMessageSchema,
   VerifiablePresentation
 } from "@tsg-dsp/common-dsp";
+
 import { DeserializePipe } from "../../utils/deserialize.pipe.js";
-import { TransferService } from "./transfer.service.js";
-import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
-  ApiBody,
-  ApiParam,
-  ApiBearerAuth,
-  ApiCreatedResponse
-} from "@nestjs/swagger";
-import { DisableOAuthGuard } from "@tsg-dsp/common-api";
 import { TransferVerifiablePresentationGuard } from "../../vc-auth/transferVerifiablePresentation.guard.js";
 import { VerifiablePresentationGuard } from "../../vc-auth/verifiablePresentation.guard.js";
-import { VPId, VP } from "../../vc-auth/vp.decorators.js";
+import { VP, VPId } from "../../vc-auth/vp.decorators.js";
+import { TransferService } from "./transfer.service.js";
 
 @ApiTags("Transfers")
 @ApiBearerAuth()

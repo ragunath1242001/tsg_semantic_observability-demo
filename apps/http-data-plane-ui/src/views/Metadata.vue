@@ -1,17 +1,18 @@
 <script setup lang="ts">
+import { DataPlaneStateDto } from "@tsg-dsp/common-dtos";
+import { toastError } from "@tsg-dsp/common-ui/utils/error";
+import http from "@tsg-dsp/common-ui/utils/http";
 import {
   CollectionDatasetConfig,
   DatasetConfig,
   VersionedDatasetConfig
 } from "@tsg-dsp/http-data-plane-dtos";
-import { ref, onMounted } from "vue";
-import { useToast } from "primevue/usetoast";
-import { DataPlaneStateDto } from "@tsg-dsp/common-dtos";
-import http from "@tsg-dsp/common-ui/utils/http";
-import { toastError } from "@tsg-dsp/common-ui/utils/error";
-import VersionedDatasetManagement from "../components/VersionedDatasetManagement.vue";
 import { plainToInstance } from "class-transformer";
+import { useToast } from "primevue/usetoast";
+import { onMounted, ref } from "vue";
+
 import CollectionDatasetManagement from "../components/CollectionDatasetManagement.vue";
+import VersionedDatasetManagement from "../components/VersionedDatasetManagement.vue";
 
 const toast = useToast();
 

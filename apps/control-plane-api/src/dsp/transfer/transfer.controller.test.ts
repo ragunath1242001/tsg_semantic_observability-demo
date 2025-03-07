@@ -2,6 +2,12 @@ import { HttpStatus } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import {
+  AuthClientService,
+  AuthConfig,
+  ServerConfig,
+  TypeOrmTestHelper
+} from "@tsg-dsp/common-api";
+import {
   AgreementDto,
   Catalog,
   defaultContext,
@@ -17,11 +23,12 @@ import {
   VerifiableCredential
 } from "@tsg-dsp/common-dsp";
 import { plainToClass } from "class-transformer";
-import { HttpResponse, PathParams, http } from "msw";
+import { http, HttpResponse, PathParams } from "msw";
 import { SetupServer, setupServer } from "msw/node";
-import { VCAuthService } from "../../vc-auth/vc.auth.service.js";
+
 import { DevWalletConfig, IamConfig, RuntimeConfig } from "../../config.js";
 import { DataPlaneService } from "../../data-plane/dataPlane.service.js";
+import { AgreementDao, TransferMonitorDao } from "../../model/agreement.dao.js";
 import {
   CatalogDao,
   CatalogRecordDao,
@@ -35,25 +42,19 @@ import {
   TransferDetailDao,
   TransferEventDao
 } from "../../model/transfer.dao.js";
-import { CatalogService } from "../catalog/catalog.service.js";
-import { DspClientService } from "../client/client.service.js";
-import { DspGateway } from "../client/dsp.gateway.js";
-import { TransferController } from "./transfer.controller.js";
-import { TransferService } from "./transfer.service.js";
 import { AgreementService } from "../../policy/agreement.service.js";
-import { PolicyEvaluationService } from "../../policy/policy.evaluation.service.js";
 import { EvaluationTrigger } from "../../policy/constraint.dto.js";
 import {
   EvaluationContext,
   EvaluationDecision
 } from "../../policy/evaluation.dto.js";
-import {
-  TypeOrmTestHelper,
-  AuthClientService,
-  AuthConfig,
-  ServerConfig
-} from "@tsg-dsp/common-api";
-import { AgreementDao, TransferMonitorDao } from "../../model/agreement.dao.js";
+import { PolicyEvaluationService } from "../../policy/policy.evaluation.service.js";
+import { VCAuthService } from "../../vc-auth/vc.auth.service.js";
+import { CatalogService } from "../catalog/catalog.service.js";
+import { DspClientService } from "../client/client.service.js";
+import { DspGateway } from "../client/dsp.gateway.js";
+import { TransferController } from "./transfer.controller.js";
+import { TransferService } from "./transfer.service.js";
 
 describe("TransferController", () => {
   let transferController: TransferController;

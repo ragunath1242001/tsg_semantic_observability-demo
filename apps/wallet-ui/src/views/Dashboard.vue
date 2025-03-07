@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { toastError } from "@tsg-dsp/common-ui/utils/error";
+import http from "@tsg-dsp/common-ui/utils/http";
 import { DIDDocument } from "did-resolver";
 import { useToast } from "primevue/usetoast";
-import http from "@tsg-dsp/common-ui/utils/http";
-import { toastError } from "@tsg-dsp/common-ui/utils/error";
+import { onMounted, ref } from "vue";
+
 import Status from "@/components/Status.vue";
 
 const toast = useToast();

@@ -1,14 +1,4 @@
 import {
-  ArrayNotEmpty,
-  IsDefined,
-  IsEmail,
-  IsOptional,
-  IsString,
-  ValidateNested
-} from "class-validator";
-import { Type } from "class-transformer";
-
-import {
   DatabaseConfig,
   Description,
   PostgresConfig,
@@ -16,6 +6,15 @@ import {
   SQLiteConfig
 } from "@tsg-dsp/common-api";
 import { GrantType } from "@tsg-dsp/sso-bridge-dtos";
+import { Type } from "class-transformer";
+import {
+  ArrayNotEmpty,
+  IsDefined,
+  IsEmail,
+  IsOptional,
+  IsString,
+  ValidateNested
+} from "class-validator";
 
 export class RootConfig {
   @Description("Database configuration")

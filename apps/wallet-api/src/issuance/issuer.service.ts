@@ -1,10 +1,8 @@
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
-import { CIAccessToken, CredentialIssuance } from "../model/issuance.dao.js";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { CredentialsService } from "../credentials/credentials.service.js";
-import { InitCredentialConfig, RootConfig } from "../config.js";
 import { EmailService, TemplateParameters } from "@tsg-dsp/common-api";
+import { AppError } from "@tsg-dsp/common-api";
+import { resolveDid } from "@tsg-dsp/common-signing-and-validation";
 import {
   AccessToken,
   CredentialIssuerMetadata,
@@ -16,14 +14,16 @@ import {
 } from "@tsg-dsp/wallet-dtos";
 // This needs to be separate since it's an enum. https://stackoverflow.com/questions/38553097/how-to-import-an-enum
 import { OfferGrants } from "@tsg-dsp/wallet-dtos";
-import crypto from "crypto";
-import { AppError } from "@tsg-dsp/common-api";
 import { plainToInstance } from "class-transformer";
-
-import { resolveDid } from "@tsg-dsp/common-signing-and-validation";
+import crypto from "crypto";
 import { decodeProtectedHeader, importJWK, jwtVerify } from "jose";
+import { Repository } from "typeorm";
+
+import { InitCredentialConfig, RootConfig } from "../config.js";
 import { ContextService } from "../contexts/context.service.js";
+import { CredentialsService } from "../credentials/credentials.service.js";
 import { SignatureService } from "../keys/signature.service.js";
+import { CIAccessToken, CredentialIssuance } from "../model/issuance.dao.js";
 
 @Injectable()
 export class IssuerService {

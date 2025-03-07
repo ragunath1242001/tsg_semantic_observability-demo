@@ -1,4 +1,5 @@
 import { existsSync, writeFileSync } from "fs";
+
 import { ModuleStructure } from "./module.parser";
 
 export class ModuleDocumentationGenerator {

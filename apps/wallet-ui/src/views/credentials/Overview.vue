@@ -1,19 +1,19 @@
 <script setup lang="ts">
-import { toArray } from "@tsg-dsp/common-ui/utils/union.js";
-import { formatDate, formatRelative } from "@tsg-dsp/common-ui/utils/date.js";
 import { CredentialStatus, VerifiableCredential } from "@tsg-dsp/common-dsp";
+import { VerifiedCredentialStatus } from "@tsg-dsp/common-dtos";
+import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
+import { formatDate, formatRelative } from "@tsg-dsp/common-ui/utils/date.js";
+import { toastError } from "@tsg-dsp/common-ui/utils/error";
+import http from "@tsg-dsp/common-ui/utils/http";
+import { setupPagination } from "@tsg-dsp/common-ui/utils/pagination";
+import { toArray } from "@tsg-dsp/common-ui/utils/union.js";
+import { AxiosResponse } from "axios";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+import { DataTableSortEvent } from "primevue/datatable";
 import { useConfirm } from "primevue/useconfirm";
 import { useToast } from "primevue/usetoast";
 import { onMounted, ref } from "vue";
-import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
-import http from "@tsg-dsp/common-ui/utils/http";
-import { toastError } from "@tsg-dsp/common-ui/utils/error";
-import { VerifiedCredentialStatus } from "@tsg-dsp/common-dtos";
-import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
-import { AxiosResponse } from "axios";
-import { setupPagination } from "@tsg-dsp/common-ui/utils/pagination";
-import { DataTableSortEvent } from "primevue/datatable";
 
 dayjs.extend(relativeTime);
 

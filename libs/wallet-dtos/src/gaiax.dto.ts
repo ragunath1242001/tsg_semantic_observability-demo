@@ -1,13 +1,14 @@
 import "reflect-metadata";
+
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { CredentialSubject, VerifiableCredential } from "@tsg-dsp/common-dsp";
 import { Type } from "class-transformer";
 import {
-  IsString,
-  ValidateNested,
   IsDefined,
-  IsOptional
+  IsOptional,
+  IsString,
+  ValidateNested
 } from "class-validator";
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
 export class LegalRegistrationNumberRequest {
   @IsString()

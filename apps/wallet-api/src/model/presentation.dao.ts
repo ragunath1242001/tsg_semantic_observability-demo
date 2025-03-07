@@ -1,6 +1,7 @@
-import { Column, Entity, PrimaryColumn } from "typeorm";
-import { MetaEntity } from "./common.dao.js";
 import { PresentationDefinition } from "@tsg-dsp/common-dtos";
+import { Column, Entity, PrimaryColumn } from "typeorm";
+
+import { MetaEntity } from "./common.dao.js";
 
 @Entity()
 export class AuthorizationRequestDao extends MetaEntity {

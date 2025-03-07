@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import Drawer from "primevue/drawer";
-import { ref } from "vue";
-import { useLayout } from "@tsg-dsp/common-ui/layout/composables/layout";
-import { useToast } from "primevue/usetoast";
-import { useRuntimeStore } from "../stores/runtime";
-import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import BaseAppConfig from "@tsg-dsp/common-ui/layout/BaseAppConfig.vue";
+import { useLayout } from "@tsg-dsp/common-ui/layout/composables/layout";
+import { toastError } from "@tsg-dsp/common-ui/utils/error";
+import Drawer from "primevue/drawer";
+import { useToast } from "primevue/usetoast";
+import { ref } from "vue";
+
+import { useRuntimeStore } from "../stores/runtime";
 
 const { configSidebarVisible } = useLayout();
 

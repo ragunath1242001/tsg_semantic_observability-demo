@@ -1,10 +1,11 @@
 import "reflect-metadata";
-import { DataSource } from "typeorm";
-import { MigrationGenerateCommand } from "typeorm/commands/MigrationGenerateCommand.js";
-import { CommandUtils } from "typeorm/commands/CommandUtils.js";
-import path from "path";
+
 import chalk from "chalk";
+import path from "path";
 import { PostgresMock } from "pgmock";
+import { DataSource } from "typeorm";
+import { CommandUtils } from "typeorm/commands/CommandUtils.js";
+import { MigrationGenerateCommand } from "typeorm/commands/MigrationGenerateCommand.js";
 
 const datasourceDefaults = {
   entities: ["**/*.dao.ts"],

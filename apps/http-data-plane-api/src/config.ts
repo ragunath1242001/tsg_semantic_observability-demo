@@ -1,4 +1,12 @@
 import {
+  AuthConfig,
+  DatabaseConfig,
+  Description,
+  PostgresConfig,
+  ServerConfig,
+  SQLiteConfig
+} from "@tsg-dsp/common-api";
+import {
   CollectionDatasetConfig,
   DatasetConfig,
   DatasetItem,
@@ -6,22 +14,14 @@ import {
 } from "@tsg-dsp/http-data-plane-dtos";
 import { Type } from "class-transformer";
 import {
-  IsString,
+  IsBoolean,
+  IsDefined,
   IsNumber,
   IsOptional,
-  ValidateNested,
-  IsDefined,
+  IsString,
   IsUrl,
-  IsBoolean
+  ValidateNested
 } from "class-validator";
-import {
-  DatabaseConfig,
-  SQLiteConfig,
-  PostgresConfig,
-  AuthConfig,
-  ServerConfig,
-  Description
-} from "@tsg-dsp/common-api";
 
 export class ControlPlaneConfig {
   @Description("Data plane management endpoint")

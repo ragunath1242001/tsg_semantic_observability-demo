@@ -1,10 +1,10 @@
-import { CredentialSubject } from "@tsg-dsp/common-dsp";
 import {
   ApiExtraModels,
   ApiProperty,
   ApiPropertyOptional,
   getSchemaPath
 } from "@nestjs/swagger";
+import { CredentialSubject } from "@tsg-dsp/common-dsp";
 export class CredentialOfferRequest {
   @ApiPropertyOptional({ example: "holder-123" })
   holderId?: string;

@@ -1,14 +1,29 @@
 import {
   Body,
   Controller,
-  HttpStatus,
-  Logger,
   Get,
   HttpCode,
+  HttpStatus,
+  Logger,
   Param,
   Post,
   UseGuards
 } from "@nestjs/common";
+import {
+  ApiBadRequestResponse,
+  ApiBearerAuth,
+  ApiBody,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags
+} from "@nestjs/swagger";
+import {
+  DisableOAuthGuard,
+  Paginated,
+  PaginationOptionsDto,
+  PaginationQuery,
+  UsePagination
+} from "@tsg-dsp/common-api";
 import {
   CatalogDto,
   CatalogRequestMessage,
@@ -17,25 +32,11 @@ import {
   DatasetDto,
   DatasetSchema
 } from "@tsg-dsp/common-dsp";
-import { VerifiablePresentationGuard } from "../../vc-auth/verifiablePresentation.guard.js";
-import { DeserializePipe } from "../../utils/deserialize.pipe.js";
-import { CatalogService } from "./catalog.service.js";
-import {
-  ApiOperation,
-  ApiTags,
-  ApiOkResponse,
-  ApiBadRequestResponse,
-  ApiBearerAuth,
-  ApiBody
-} from "@nestjs/swagger";
 import { ApiForbiddenResponseDefault } from "@tsg-dsp/common-dtos";
-import {
-  UsePagination,
-  PaginationQuery,
-  PaginationOptionsDto,
-  Paginated,
-  DisableOAuthGuard
-} from "@tsg-dsp/common-api";
+
+import { DeserializePipe } from "../../utils/deserialize.pipe.js";
+import { VerifiablePresentationGuard } from "../../vc-auth/verifiablePresentation.guard.js";
+import { CatalogService } from "./catalog.service.js";
 
 @UseGuards(VerifiablePresentationGuard)
 @DisableOAuthGuard()

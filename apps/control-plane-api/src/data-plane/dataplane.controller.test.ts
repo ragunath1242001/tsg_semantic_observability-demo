@@ -1,27 +1,28 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { DataPlaneController } from "./dataplane.controller.js";
-import { InitCatalog } from "../config.js";
-import { plainToClass } from "class-transformer";
-import { DataPlaneService } from "./dataPlane.service.js";
-import { CatalogService } from "../dsp/catalog/catalog.service.js";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { DataPlaneDao } from "../model/dataPlanes.dao.js";
+import {
+  AuthClientService,
+  AuthConfig,
+  ServerConfig,
+  TypeOrmTestHelper
+} from "@tsg-dsp/common-api";
+import { AgreementDto } from "@tsg-dsp/common-dsp";
+import { plainToClass } from "class-transformer";
+
+import { InitCatalog } from "../config.js";
+import { CatalogService } from "../dsp/catalog/catalog.service.js";
 import {
   CatalogDao,
   CatalogRecordDao,
-  DatasetDao,
   DataServiceDao,
+  DatasetDao,
   DistributionDao,
   ResourceDao
 } from "../model/catalog.dao.js";
-import { AgreementDto } from "@tsg-dsp/common-dsp";
+import { DataPlaneDao } from "../model/dataPlanes.dao.js";
 import { AgreementService } from "../policy/agreement.service.js";
-import {
-  TypeOrmTestHelper,
-  ServerConfig,
-  AuthConfig,
-  AuthClientService
-} from "@tsg-dsp/common-api";
+import { DataPlaneController } from "./dataplane.controller.js";
+import { DataPlaneService } from "./dataPlane.service.js";
 
 describe("DataPlaneController", () => {
   let dataPlaneController: DataPlaneController;

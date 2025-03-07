@@ -1,3 +1,6 @@
+import { expect, test } from "@jest/globals";
+
+import { defaultContext } from "../../../jsonld/context.defaults.js";
 import { deserialize } from "../../deserialize.js";
 import { Multilanguage } from "../common.js";
 import { Catalog } from "./catalog.js";
@@ -13,8 +16,6 @@ import {
   CatalogRequestMessage,
   DatasetRequestMessage
 } from "./messages.js";
-import { expect, test } from "@jest/globals";
-import { defaultContext } from "../../../jsonld/context.defaults.js";
 
 test("Catalog Error", async () => {
   const catalogError = new CatalogError({

@@ -1,11 +1,11 @@
+import { ApiProperty } from "@nestjs/swagger";
 import {
   DataPlaneDetailsDto,
   DatasetDto,
   DatasetSchema
 } from "@tsg-dsp/common-dsp";
-import { ApiProperty } from "@nestjs/swagger";
 import { Type } from "class-transformer";
-import { IsString, ValidateNested, IsArray } from "class-validator";
+import { IsArray, IsString, ValidateNested } from "class-validator";
 
 export class DataPlaneStateDto {
   @ApiProperty({ example: "44d1f3d6-f65d-4a7c-84db-f92ba826305e" })

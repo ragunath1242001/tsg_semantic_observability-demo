@@ -1,3 +1,4 @@
+import { Body, Controller, HttpCode, HttpStatus, Post } from "@nestjs/common";
 import {
   ApiBody,
   ApiOAuth2,
@@ -6,12 +7,12 @@ import {
   ApiTags
 } from "@nestjs/swagger";
 import { Roles } from "@tsg-dsp/common-api";
-import { AppRole } from "@tsg-dsp/wallet-dtos";
-import { Body, Controller, HttpCode, HttpStatus, Post } from "@nestjs/common";
 import {
   ApiForbiddenResponseDefault,
   PresentationDefinition
 } from "@tsg-dsp/common-dtos";
+import { AppRole } from "@tsg-dsp/wallet-dtos";
+
 import { OID4VPVerifierService } from "./verifier.service.js";
 
 @Controller("management/oid4vp/verifier")

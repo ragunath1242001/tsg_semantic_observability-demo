@@ -1,6 +1,6 @@
-import { defineStore } from "pinia";
 import http from "@tsg-dsp/common-ui/utils/http";
 import { AxiosResponse } from "axios";
+import { defineStore } from "pinia";
 
 interface RuntimeStore {
   gaiaXSupport: boolean;

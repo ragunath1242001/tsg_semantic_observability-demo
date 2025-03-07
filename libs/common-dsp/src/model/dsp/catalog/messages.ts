@@ -4,6 +4,7 @@ import {
   IsString,
   ValidateNested
 } from "class-validator";
+
 import { LDType, Namespace, Serializable } from "../../decorators.js";
 import { SerializableClass, withExtraProps } from "../common.js";
 import { Catalog } from "./catalog.js";

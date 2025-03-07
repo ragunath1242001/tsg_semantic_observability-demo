@@ -1,3 +1,4 @@
+import { Body, Controller, HttpCode, HttpStatus, Post } from "@nestjs/common";
 import {
   ApiBody,
   ApiOAuth2,
@@ -6,14 +7,14 @@ import {
   ApiTags
 } from "@nestjs/swagger";
 import { Roles } from "@tsg-dsp/common-api";
-import { AppRole } from "@tsg-dsp/wallet-dtos";
-import { PresentationService } from "./presentation.service.js";
-import { Body, Controller, HttpCode, HttpStatus, Post } from "@nestjs/common";
 import {
   ApiForbiddenResponseDefault,
   CredentialStatusRequest,
   VerifiedCredentialStatus
 } from "@tsg-dsp/common-dtos";
+import { AppRole } from "@tsg-dsp/wallet-dtos";
+
+import { PresentationService } from "./presentation.service.js";
 
 @Controller("management/presentation")
 @ApiTags("Management Presentation")

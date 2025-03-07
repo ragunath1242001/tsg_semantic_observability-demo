@@ -1,7 +1,8 @@
-import { Column, Entity, ManyToOne, PrimaryColumn } from "typeorm";
-import { MetaEntity } from "./common.dao.js";
 import { AuthorizationRequest } from "@tsg-dsp/common-api";
 import { PresentationDefinition } from "@tsg-dsp/common-dtos";
+import { Column, Entity, ManyToOne, PrimaryColumn } from "typeorm";
+
+import { MetaEntity } from "./common.dao.js";
 import { OauthUser } from "./user.dao.js";
 
 @Entity()

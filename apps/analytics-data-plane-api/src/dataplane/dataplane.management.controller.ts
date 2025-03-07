@@ -1,17 +1,27 @@
 import {
+  Body,
   Controller,
-  Logger,
+  Delete,
   Get,
+  HttpCode,
+  HttpStatus,
+  Logger,
   Param,
   Post,
-  Query,
-  Body,
   Put,
-  Delete,
-  HttpCode,
-  HttpStatus
+  Query
 } from "@nestjs/common";
-import { DataPlaneService } from "./dataplane.service.js";
+import {
+  ApiBody,
+  ApiOAuth2,
+  ApiOkResponse,
+  ApiOperation,
+  ApiParam,
+  ApiQuery,
+  ApiResponse,
+  ApiTags
+} from "@nestjs/swagger";
+import { nonEmptyStringPipe, Roles } from "@tsg-dsp/common-api";
 import {
   AgreementDto,
   CatalogDto,
@@ -24,17 +34,8 @@ import {
   MetadataDto,
   TransferDto
 } from "@tsg-dsp/common-dtos";
-import { nonEmptyStringPipe, Roles } from "@tsg-dsp/common-api";
-import {
-  ApiTags,
-  ApiOAuth2,
-  ApiOperation,
-  ApiOkResponse,
-  ApiResponse,
-  ApiBody,
-  ApiQuery,
-  ApiParam
-} from "@nestjs/swagger";
+
+import { DataPlaneService } from "./dataplane.service.js";
 
 @ApiTags("Data Plane Management")
 @ApiOAuth2(["controlplane_dataplane"])

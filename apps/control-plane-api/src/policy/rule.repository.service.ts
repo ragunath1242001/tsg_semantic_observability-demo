@@ -1,9 +1,6 @@
 import { HttpStatus, Injectable, OnModuleInit } from "@nestjs/common";
-import { ConstraintDao, RuleDao } from "../model/rule.dao.js";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { Rule, RuleType } from "./rule.dto.js";
-import { DSPError } from "../utils/errors/error.js";
+import { Paginated, PaginationOptionsDto } from "@tsg-dsp/common-api";
 import {
   ConstraintDto,
   DutyDto,
@@ -12,7 +9,11 @@ import {
   ProhibitionDto,
   ValueDto
 } from "@tsg-dsp/common-dsp";
+import { Repository } from "typeorm";
+
+import { ConstraintDao, RuleDao } from "../model/rule.dao.js";
 import { toCompactUri } from "../utils/contexts.js";
+import { DSPError } from "../utils/errors/error.js";
 import {
   AtomicConstraint,
   ConstraintModel,
@@ -20,7 +21,7 @@ import {
   DataType,
   EvaluationTrigger
 } from "./constraint.dto.js";
-import { PaginationOptionsDto, Paginated } from "@tsg-dsp/common-api";
+import { Rule, RuleType } from "./rule.dto.js";
 
 @Injectable()
 export class RuleRepositoryService implements OnModuleInit {

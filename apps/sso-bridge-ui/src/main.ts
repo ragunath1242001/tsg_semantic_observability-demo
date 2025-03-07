@@ -1,23 +1,8 @@
-import { createApp } from "vue";
-import Lara from "@primevue/themes/lara";
-import App from "./App.vue";
-import router from "./router";
-import PrimeVue from "primevue/config";
-
-import { AxiosKey } from "./utils/symbols";
-import http from "./utils/http";
-import ConfirmationService from "primevue/confirmationservice";
-import ToastService from "primevue/toastservice";
-
 import "@tsg-dsp/common-ui/assets/styles.scss";
 import "@tsg-dsp/common-ui/assets/tailwind.css";
-import Toast from "primevue/toast";
-import ConfirmDialog from "primevue/confirmdialog";
-import DynamicDialog from "primevue/dynamicdialog";
-import Tooltip from "primevue/tooltip";
-import SelectButton from "primevue/selectbutton";
-import StyleClass from "primevue/styleclass";
-import Card from "primevue/card";
+
+import Lara from "@primevue/themes/lara";
+import { createPinia } from "pinia";
 import {
   Button,
   Column,
@@ -34,7 +19,22 @@ import {
   Tabs,
   Toolbar
 } from "primevue";
-import { createPinia } from "pinia";
+import Card from "primevue/card";
+import PrimeVue from "primevue/config";
+import ConfirmationService from "primevue/confirmationservice";
+import ConfirmDialog from "primevue/confirmdialog";
+import DynamicDialog from "primevue/dynamicdialog";
+import SelectButton from "primevue/selectbutton";
+import StyleClass from "primevue/styleclass";
+import Toast from "primevue/toast";
+import ToastService from "primevue/toastservice";
+import Tooltip from "primevue/tooltip";
+import { createApp } from "vue";
+
+import App from "./App.vue";
+import router from "./router";
+import http from "./utils/http";
+import { AxiosKey } from "./utils/symbols";
 
 const pinia = createPinia();
 const app = createApp(App);

@@ -1,3 +1,4 @@
+import { VerifiableCredential } from "@tsg-dsp/common-dsp";
 import { JWK } from "jose";
 import {
   Column,
@@ -8,7 +9,7 @@ import {
   PrimaryColumn,
   Relation
 } from "typeorm";
-import { VerifiableCredential } from "@tsg-dsp/common-dsp";
+
 import { MetaEntity } from "./common.dao.js";
 
 @Entity({ name: "key_materials" })

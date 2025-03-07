@@ -7,9 +7,6 @@ import {
   UsePipes,
   ValidationPipe
 } from "@nestjs/common";
-import { PageOptionsDto, PageDto } from "../utils/pagination.js";
-import { LoggingService } from "./logging.service.js";
-import { LogFilterDto, LogEntry } from "./logging.dto.js";
 import {
   ApiOAuth2,
   ApiOkResponse,
@@ -18,6 +15,10 @@ import {
   ApiTags
 } from "@nestjs/swagger";
 import { Roles } from "@tsg-dsp/common-api";
+
+import { PageDto, PageOptionsDto } from "../utils/pagination.js";
+import { LogEntry, LogFilterDto } from "./logging.dto.js";
+import { LoggingService } from "./logging.service.js";
 
 @ApiTags("Logging")
 @Controller("/management/logging")

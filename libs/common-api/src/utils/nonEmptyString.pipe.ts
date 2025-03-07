@@ -1,4 +1,5 @@
 import { ArgumentMetadata, HttpStatus, PipeTransform } from "@nestjs/common";
+
 import { AppError } from "./error.js";
 
 export class NonEmptyStringPipe implements PipeTransform {

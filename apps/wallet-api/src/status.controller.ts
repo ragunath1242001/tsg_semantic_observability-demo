@@ -7,11 +7,12 @@ import {
 } from "@nestjs/swagger";
 import { TypeOrmHealthIndicator } from "@nestjs/terminus";
 import { InjectRepository } from "@nestjs/typeorm";
-import { IsNull, Not, Repository } from "typeorm";
-import { CredentialIssuance } from "./model/issuance.dao.js";
-import { CredentialDao, KeyMaterialDao } from "./model/credentials.dao.js";
-import { getHeapStatistics } from "v8";
 import { StatusDto } from "@tsg-dsp/wallet-dtos";
+import { IsNull, Not, Repository } from "typeorm";
+import { getHeapStatistics } from "v8";
+
+import { CredentialDao, KeyMaterialDao } from "./model/credentials.dao.js";
+import { CredentialIssuance } from "./model/issuance.dao.js";
 
 @Controller()
 @ApiTags("Status")

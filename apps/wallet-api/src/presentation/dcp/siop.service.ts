@@ -1,13 +1,14 @@
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { AppError } from "@tsg-dsp/common-api";
+import { validateJwt } from "@tsg-dsp/common-signing-and-validation";
+import crypto from "crypto";
+import { JWTPayload } from "jose";
+import { Repository } from "typeorm";
+
+import { DidService } from "../../did/did.service.js";
 import { SignatureService } from "../../keys/signature.service.js";
 import { SIToken } from "../../model/dcp.dao.js";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import crypto from "crypto";
-import { AppError } from "@tsg-dsp/common-api";
-import { DidService } from "../../did/did.service.js";
-import { JWTPayload } from "jose";
-import { validateJwt } from "@tsg-dsp/common-signing-and-validation";
 
 @Injectable()
 export class DCPSiopService {

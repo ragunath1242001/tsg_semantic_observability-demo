@@ -1,10 +1,4 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from "@nestjs/common";
-import { AppRole } from "@tsg-dsp/wallet-dtos";
-import {
-  ProofDocument,
-  SignRequest,
-  ValidateRequest
-} from "@tsg-dsp/common-dtos";
 import {
   ApiBody,
   ApiOAuth2,
@@ -12,14 +6,21 @@ import {
   ApiOperation,
   ApiTags
 } from "@nestjs/swagger";
+import { Roles, validationPipe } from "@tsg-dsp/common-api";
+import { toArray } from "@tsg-dsp/common-dsp";
+import {
+  ProofDocument,
+  SignRequest,
+  ValidateRequest
+} from "@tsg-dsp/common-dtos";
 import {
   ApiForbiddenResponseDefault,
   ApiNotFoundResponseDefault
 } from "@tsg-dsp/common-dtos";
-import { SignatureService } from "./signature.service.js";
-import { toArray } from "@tsg-dsp/common-dsp";
-import { Roles, validationPipe } from "@tsg-dsp/common-api";
 import { validateProof } from "@tsg-dsp/common-signing-and-validation";
+import { AppRole } from "@tsg-dsp/wallet-dtos";
+
+import { SignatureService } from "./signature.service.js";
 
 @Controller("management/signature")
 @ApiTags("Management Signatures")

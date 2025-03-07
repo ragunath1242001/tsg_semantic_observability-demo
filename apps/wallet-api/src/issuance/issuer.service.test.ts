@@ -1,38 +1,39 @@
-import { describe, beforeAll, afterAll, it } from "@jest/globals";
-import { IssuerService } from "./issuer.service.js";
-import { plainToInstance } from "class-transformer";
-import { RootConfig } from "../config.js";
+import { afterAll, beforeAll, describe, it } from "@jest/globals";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import {
-  CredentialDao,
-  KeyMaterialDao,
-  StatusListCredentialDao
-} from "../model/credentials.dao.js";
-import { CredentialsService } from "../credentials/credentials.service.js";
-import { DidService } from "../did/did.service.js";
-import { KeysService } from "../keys/keys.service.js";
-import { CIAccessToken, CredentialIssuance } from "../model/issuance.dao.js";
-import { http, HttpResponse } from "msw";
-import { SetupServer, setupServer } from "msw/node";
-import { OfferGrants } from "@tsg-dsp/wallet-dtos";
-import {
-  GenerateKeyPairResult,
-  SignJWT,
-  exportJWK,
-  generateKeyPair
-} from "jose";
-import { DIDDocument } from "did-resolver";
-import { HolderService } from "./holder.service.js";
-import { DIDDocuments, DIDLogs, DIDService } from "../model/did.dao.js";
-import { JSONLDContext } from "../model/context.dao.js";
-import { ContextService } from "../contexts/context.service.js";
-import { SignatureService } from "../keys/signature.service.js";
 import {
   EmailService,
   NodemailerConfiguration,
   TypeOrmTestHelper
 } from "@tsg-dsp/common-api";
+import { OfferGrants } from "@tsg-dsp/wallet-dtos";
+import { plainToInstance } from "class-transformer";
+import { DIDDocument } from "did-resolver";
+import {
+  exportJWK,
+  generateKeyPair,
+  GenerateKeyPairResult,
+  SignJWT
+} from "jose";
+import { http, HttpResponse } from "msw";
+import { SetupServer, setupServer } from "msw/node";
+
+import { RootConfig } from "../config.js";
+import { ContextService } from "../contexts/context.service.js";
+import { CredentialsService } from "../credentials/credentials.service.js";
+import { DidService } from "../did/did.service.js";
+import { KeysService } from "../keys/keys.service.js";
+import { SignatureService } from "../keys/signature.service.js";
+import { JSONLDContext } from "../model/context.dao.js";
+import {
+  CredentialDao,
+  KeyMaterialDao,
+  StatusListCredentialDao
+} from "../model/credentials.dao.js";
+import { DIDDocuments, DIDLogs, DIDService } from "../model/did.dao.js";
+import { CIAccessToken, CredentialIssuance } from "../model/issuance.dao.js";
+import { HolderService } from "./holder.service.js";
+import { IssuerService } from "./issuer.service.js";
 
 describe("Issuer service", () => {
   let issuerService: IssuerService;

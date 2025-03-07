@@ -1,5 +1,5 @@
-import { exec } from "child_process";
 import axios from "axios";
+import { exec } from "child_process";
 
 export function execPromise(command, options = { encoding: "UTF-8" }) {
   return new Promise(function (resolve, reject) {

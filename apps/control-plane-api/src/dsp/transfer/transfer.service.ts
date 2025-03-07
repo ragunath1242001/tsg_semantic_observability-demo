@@ -1,11 +1,18 @@
-import { DataPlaneAddressDto, DistributionDto } from "@tsg-dsp/common-dsp";
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import {
+  Paginated,
+  PaginationOptionsDto,
+  ServerConfig
+} from "@tsg-dsp/common-api";
+import { DataPlaneAddressDto, DistributionDto } from "@tsg-dsp/common-dsp";
+import {
   DataAddress,
+  deserialize,
   EndpointProperty,
   Multilanguage,
   ODRLAction,
+  toArray,
   TransferCompletionMessage,
   TransferDetail,
   TransferEvent,
@@ -17,29 +24,23 @@ import {
   TransferStatus,
   TransferSuspensionMessage,
   TransferTerminationMessage,
-  VerifiableCredential,
-  deserialize,
-  toArray
+  VerifiableCredential
 } from "@tsg-dsp/common-dsp";
 import crypto from "crypto";
 import { Repository } from "typeorm";
+
 import { RuntimeConfig } from "../../config.js";
 import { DataPlaneService } from "../../data-plane/dataPlane.service.js";
 import {
   TransferDetailDao,
   TransferEventDao
 } from "../../model/transfer.dao.js";
+import { EvaluationTrigger } from "../../policy/constraint.dto.js";
+import { PolicyEvaluationService } from "../../policy/policy.evaluation.service.js";
+import { normalizeAddress } from "../../utils/address.js";
 import { DSPError } from "../../utils/errors/error.js";
 import { DspClientService } from "../client/client.service.js";
 import { DspGateway } from "../client/dsp.gateway.js";
-import { PolicyEvaluationService } from "../../policy/policy.evaluation.service.js";
-import { EvaluationTrigger } from "../../policy/constraint.dto.js";
-import { normalizeAddress } from "../../utils/address.js";
-import {
-  ServerConfig,
-  PaginationOptionsDto,
-  Paginated
-} from "@tsg-dsp/common-api";
 
 @Injectable()
 export class TransferService {

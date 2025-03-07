@@ -1,4 +1,5 @@
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
 import {
   Agreement,
   AgreementDto,
@@ -6,10 +7,10 @@ import {
   deserialize,
   HashedMessage
 } from "@tsg-dsp/common-dsp";
-import { DSPError } from "../utils/errors/error.js";
-import { AgreementDao } from "../model/agreement.dao.js";
-import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
+
+import { AgreementDao } from "../model/agreement.dao.js";
+import { DSPError } from "../utils/errors/error.js";
 
 @Injectable()
 export class AgreementService {

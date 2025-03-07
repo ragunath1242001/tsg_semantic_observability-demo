@@ -24,7 +24,8 @@ import {
   PrimaryColumn,
   Relation
 } from "typeorm";
-import { MetaEntity, jsonLdTransformer, mapToInstances } from "./common.dao.js";
+
+import { jsonLdTransformer, mapToInstances, MetaEntity } from "./common.dao.js";
 import { DataPlaneDao } from "./dataPlanes.dao.js";
 
 @Entity({ name: "resource" })

@@ -1,3 +1,9 @@
+import {
+  ApiExtraModels,
+  ApiProperty,
+  ApiPropertyOptional,
+  getSchemaPath
+} from "@nestjs/swagger";
 import { Type } from "class-transformer";
 import {
   IsDateString,
@@ -11,12 +17,7 @@ import {
   IsUrl,
   ValidateNested
 } from "class-validator";
-import {
-  ApiExtraModels,
-  ApiProperty,
-  ApiPropertyOptional,
-  getSchemaPath
-} from "@nestjs/swagger";
+
 import { elementOrArray, OrArray } from "../../utils/unions.js";
 
 export abstract class Proof {

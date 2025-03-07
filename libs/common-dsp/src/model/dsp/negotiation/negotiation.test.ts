@@ -1,6 +1,15 @@
-import { deserialize } from "../../deserialize.js";
+import { expect, test } from "@jest/globals";
+
 import { defaultContext } from "../../../jsonld/context.defaults.js";
+import { deserialize } from "../../deserialize.js";
 import { URI } from "../common.js";
+import {
+  AgreementDto,
+  ODRLAction,
+  ODRLLeftOperand,
+  ODRLOperator,
+  OfferDto
+} from "./negotiation.dto.js";
 import {
   Agreement,
   Constraint,
@@ -9,14 +18,6 @@ import {
   Permission,
   Prohibition
 } from "./negotiation.js";
-import {
-  ODRLAction,
-  ODRLLeftOperand,
-  ODRLOperator,
-  OfferDto,
-  AgreementDto
-} from "./negotiation.dto.js";
-import { expect, test } from "@jest/globals";
 
 test("Contract offer serialization", async () => {
   const offer = new Offer({

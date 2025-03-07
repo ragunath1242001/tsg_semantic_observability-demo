@@ -1,21 +1,22 @@
-import { createDate, createDIDDoc, normalizeVMs } from "./utils.js";
 import {
   BASE_CONTEXT,
-  METHOD,
-  PLACEHOLDER,
-  PROTOCOL,
   clone,
   CreateDIDInterface,
   createSCID,
-  deriveHash,
   DeactivateDIDInterface,
+  deriveHash,
   DIDLog,
   DIDLogEntry,
+  METHOD,
   newKeysAreValid,
+  PLACEHOLDER,
+  PROTOCOL,
   resolveDID,
   UpdateDIDInterface
 } from "@tsg-dsp/common-signing-and-validation";
 import jsonpatch from "fast-json-patch";
+
+import { createDate, createDIDDoc, normalizeVMs } from "./utils.js";
 
 export const createDID = async (
   options: CreateDIDInterface

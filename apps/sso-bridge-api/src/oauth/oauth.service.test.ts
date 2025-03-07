@@ -1,29 +1,30 @@
 import { jest } from "@jest/globals";
 import { Test, TestingModule } from "@nestjs/testing";
-import { OauthService } from "./oauth.service.js";
-import { plainToInstance } from "class-transformer";
-import { UsersService } from "../users/users.service.js";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { OauthUser } from "../model/user.dao.js";
-import { ClientsService } from "../clients/clients.service.js";
-import { OauthClient } from "../model/client.dao.js";
-import { TokenDao } from "../model/token.dao.js";
 import {
-  ServerConfig,
-  TypeOrmTestHelper,
   AuthorizationRequest,
   ClientCredentialsTokenRequest,
   CodeTokenRequest,
   RefreshTokenRequest,
+  ServerConfig,
   TokenRequest,
-  TokenResponse
+  TokenResponse,
+  TypeOrmTestHelper
 } from "@tsg-dsp/common-api";
-import { decodeJwt, decodeProtectedHeader, jwtVerify } from "jose";
-import { KeyDao } from "../model/keys.dao.js";
-import { TokenService } from "./token.service.js";
-import { RootConfig } from "../config.js";
+import { plainToInstance } from "class-transformer";
 import { Request, Response } from "express";
+import { decodeJwt, decodeProtectedHeader, jwtVerify } from "jose";
+
+import { ClientsService } from "../clients/clients.service.js";
+import { RootConfig } from "../config.js";
 import { KubernetesService } from "../k8s/kubernetes.service.js";
+import { OauthClient } from "../model/client.dao.js";
+import { KeyDao } from "../model/keys.dao.js";
+import { TokenDao } from "../model/token.dao.js";
+import { OauthUser } from "../model/user.dao.js";
+import { UsersService } from "../users/users.service.js";
+import { OauthService } from "./oauth.service.js";
+import { TokenService } from "./token.service.js";
 
 describe("Oauth", () => {
   let oauth: OauthService;

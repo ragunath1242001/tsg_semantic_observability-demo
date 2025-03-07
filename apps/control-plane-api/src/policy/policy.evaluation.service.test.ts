@@ -1,22 +1,21 @@
-import { TestingModule, Test } from "@nestjs/testing";
+import { ScheduleModule } from "@nestjs/schedule";
+import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { ConstraintDao, RuleDao } from "../model/rule.dao.js";
-import { RuleRepositoryService } from "./rule.repository.service.js";
-import { AgreementService } from "./agreement.service.js";
+import { Paginated, TypeOrmTestHelper } from "@tsg-dsp/common-api";
 import { ODRLAction, TransferState, TransferStatus } from "@tsg-dsp/common-dsp";
-import { Evaluation, promiseMap } from "./evaluation.js";
-import { PolicyEvaluationService } from "./policy.evaluation.service.js";
+import { plainToClass } from "class-transformer";
+
+import { RootConfig } from "../config.js";
+import { TransferService } from "../dsp/transfer/transfer.service.js";
 import { AgreementDao, TransferMonitorDao } from "../model/agreement.dao.js";
-import { TransferDetailDao, TransferEventDao } from "../model/transfer.dao.js";
 import {
   NegotiationDetailDao,
   NegotiationProcessEventDao
 } from "../model/negotiation.dao.js";
-import { plainToClass } from "class-transformer";
-import { RootConfig } from "../config.js";
+import { ConstraintDao, RuleDao } from "../model/rule.dao.js";
+import { TransferDetailDao, TransferEventDao } from "../model/transfer.dao.js";
 import { AgreementMonitorService } from "./agreement.monitor.service.js";
-import { ScheduleModule } from "@nestjs/schedule";
-import { TransferService } from "../dsp/transfer/transfer.service.js";
+import { AgreementService } from "./agreement.service.js";
 import {
   ConstraintModel,
   ConstraintType,
@@ -24,7 +23,9 @@ import {
   EvaluationTrigger
 } from "./constraint.dto.js";
 import { EvaluationContext } from "./evaluation.dto.js";
-import { TypeOrmTestHelper, Paginated } from "@tsg-dsp/common-api";
+import { Evaluation, promiseMap } from "./evaluation.js";
+import { PolicyEvaluationService } from "./policy.evaluation.service.js";
+import { RuleRepositoryService } from "./rule.repository.service.js";
 
 describe("Policy Evaluation Service", () => {
   let ruleRepositoryService: RuleRepositoryService;

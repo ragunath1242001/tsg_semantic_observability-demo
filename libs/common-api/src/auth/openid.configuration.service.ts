@@ -1,10 +1,11 @@
 import { HttpStatus, Injectable } from "@nestjs/common";
-import { AuthConfig } from "../config/auth.js";
 import axios from "axios";
-import { JWK } from "jose";
-import { AppError, parseNetworkError } from "../utils/error.js";
-import { OpenIDConfiguration, JWKS } from "./auth.dto.js";
 import { plainToInstance } from "class-transformer";
+import { JWK } from "jose";
+
+import { AuthConfig } from "../config/auth.js";
+import { AppError, parseNetworkError } from "../utils/error.js";
+import { JWKS, OpenIDConfiguration } from "./auth.dto.js";
 
 @Injectable()
 export class OpenIDConfigurationService {

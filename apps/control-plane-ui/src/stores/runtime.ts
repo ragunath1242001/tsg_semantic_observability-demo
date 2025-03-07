@@ -1,7 +1,7 @@
-import { defineStore } from "pinia";
+import { updateColorPalette } from "@tsg-dsp/common-ui/utils/color";
 import http from "@tsg-dsp/common-ui/utils/http";
 import { AxiosResponse } from "axios";
-import { updateColorPalette } from "@tsg-dsp/common-ui/utils/color";
+import { defineStore } from "pinia";
 
 interface RuntimeStore {
   controlPlaneInteractions?: "automatic" | "semi-manual" | "manual";

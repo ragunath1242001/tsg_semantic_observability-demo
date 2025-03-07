@@ -1,18 +1,17 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
-import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
-
-import { useToast } from "primevue/usetoast";
-import { useDialog } from "primevue/usedialog";
-import { TransferDto } from "@tsg-dsp/common-dtos";
 import { AgreementDto, DatasetDto } from "@tsg-dsp/common-dsp";
+import { TransferDto } from "@tsg-dsp/common-dtos";
+import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
+import { toastError } from "@tsg-dsp/common-ui/utils/error";
+import http from "@tsg-dsp/common-ui/utils/http";
+import { useDialog } from "primevue/usedialog";
+import { useToast } from "primevue/usetoast";
+import { onMounted, ref } from "vue";
+import { useRoute } from "vue-router";
 
 import JSONDialog from "../components/JSONDialog.vue";
-import { useRoute } from "vue-router";
-import http from "@tsg-dsp/common-ui/utils/http";
-import { useTransferStore } from "../stores/transfer";
-import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import TesterComponent from "../components/TesterComponent.vue";
+import { useTransferStore } from "../stores/transfer";
 
 const toast = useToast();
 const dialog = useDialog();

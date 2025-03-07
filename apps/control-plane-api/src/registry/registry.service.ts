@@ -1,4 +1,3 @@
-import { CredentialAddress } from "@tsg-dsp/control-plane-dtos";
 import {
   HttpStatus,
   Injectable,
@@ -8,23 +7,24 @@ import {
 } from "@nestjs/common";
 import { SchedulerRegistry } from "@nestjs/schedule";
 import { InjectRepository } from "@nestjs/typeorm";
-import { CatalogDto } from "@tsg-dsp/common-dsp";
-import { resolveDid } from "@tsg-dsp/common-signing-and-validation";
-import { DIDDocument } from "did-resolver";
-import { Repository } from "typeorm";
-import { RegistryConfig } from "../config.js";
-import { DspClientService } from "../dsp/client/client.service.js";
-
-import { normalizeAddress } from "../utils/address.js";
-import { DSPError } from "../utils/errors/error.js";
-import { RegistryDao } from "../model/registry.dao.js";
-import { Credential } from "../vc-auth/wallets/walletClient.js";
-import { VCAuthService } from "../vc-auth/vc.auth.service.js";
 import {
   isFulfilled,
   Paginated,
   PaginationOptionsDto
 } from "@tsg-dsp/common-api";
+import { CatalogDto } from "@tsg-dsp/common-dsp";
+import { resolveDid } from "@tsg-dsp/common-signing-and-validation";
+import { CredentialAddress } from "@tsg-dsp/control-plane-dtos";
+import { DIDDocument } from "did-resolver";
+import { Repository } from "typeorm";
+
+import { RegistryConfig } from "../config.js";
+import { DspClientService } from "../dsp/client/client.service.js";
+import { RegistryDao } from "../model/registry.dao.js";
+import { normalizeAddress } from "../utils/address.js";
+import { DSPError } from "../utils/errors/error.js";
+import { VCAuthService } from "../vc-auth/vc.auth.service.js";
+import { Credential } from "../vc-auth/wallets/walletClient.js";
 
 @Injectable()
 export class RegistryService implements OnApplicationBootstrap {

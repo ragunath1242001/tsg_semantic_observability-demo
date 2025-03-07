@@ -5,11 +5,12 @@ import {
   Injectable,
   UnauthorizedException
 } from "@nestjs/common";
-import { Request } from "express";
 import { APP_GUARD, Reflector } from "@nestjs/core";
-import { getUser } from "../utils/session.js";
-import { OauthUser } from "../model/user.dao.js";
 import { toArray } from "@tsg-dsp/common-api";
+import { Request } from "express";
+
+import { OauthUser } from "../model/user.dao.js";
+import { getUser } from "../utils/session.js";
 
 export const DisableAuthGuard = Reflector.createDecorator<boolean>();
 export const ManagementRoles = Reflector.createDecorator<string | string[]>();

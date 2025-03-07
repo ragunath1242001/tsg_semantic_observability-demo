@@ -1,20 +1,6 @@
+import { afterAll, beforeAll, describe, expect, it } from "@jest/globals";
 import { Test, TestingModule } from "@nestjs/testing";
-import { CredentialsService } from "../credentials/credentials.service.js";
-import { plainToInstance } from "class-transformer";
-import { RootConfig } from "../config.js";
-import {
-  CredentialDao,
-  KeyMaterialDao,
-  StatusListCredentialDao
-} from "../model/credentials.dao.js";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { DidService } from "../did/did.service.js";
-import { KeysService } from "./keys.service.js";
-import { describe, expect, beforeAll, afterAll, it } from "@jest/globals";
-import { DIDDocuments, DIDLogs, DIDService } from "../model/did.dao.js";
-import { SignatureService } from "./signature.service.js";
-import { setupServer, SetupServer } from "msw/node";
-import { http, HttpResponse } from "msw";
 import { TypeOrmTestHelper } from "@tsg-dsp/common-api";
 import {
   signAsJws,
@@ -23,6 +9,21 @@ import {
   validateJwt,
   verifyJws
 } from "@tsg-dsp/common-signing-and-validation";
+import { plainToInstance } from "class-transformer";
+import { http, HttpResponse } from "msw";
+import { SetupServer, setupServer } from "msw/node";
+
+import { RootConfig } from "../config.js";
+import { CredentialsService } from "../credentials/credentials.service.js";
+import { DidService } from "../did/did.service.js";
+import {
+  CredentialDao,
+  KeyMaterialDao,
+  StatusListCredentialDao
+} from "../model/credentials.dao.js";
+import { DIDDocuments, DIDLogs, DIDService } from "../model/did.dao.js";
+import { KeysService } from "./keys.service.js";
+import { SignatureService } from "./signature.service.js";
 
 describe("Key Service", () => {
   let signatureService: SignatureService;

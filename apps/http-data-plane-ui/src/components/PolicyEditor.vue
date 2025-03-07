@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { ODRLAction } from "@tsg-dsp/common-dsp";
+import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
 import { PolicyConfig } from "@tsg-dsp/http-data-plane-dtos";
 import { onMounted, ref, watch } from "vue";
-import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
+
 import { pushOrCreate } from "../utils/arrays.js";
 
 const odrlOfferSchema = {

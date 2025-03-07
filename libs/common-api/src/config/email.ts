@@ -1,4 +1,5 @@
 import { IsBoolean, IsNumber, IsString, ValidateIf } from "class-validator";
+
 import { Description } from "../utils/configToMarkdown.js";
 
 export class NodemailerConfiguration {

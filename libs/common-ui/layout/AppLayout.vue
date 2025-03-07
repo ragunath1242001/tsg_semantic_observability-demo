@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { watch, ref, toRefs } from "vue";
-import AppTopbar, { TopbarProps } from "./AppTopbar.vue";
+import { ref, toRefs, watch } from "vue";
+
 import AppFooter, { FooterProps } from "./AppFooter.vue";
-import AppSidebar from "./AppSidebar.vue";
-import { useLayout } from "./composables/layout";
 import { MenuProps } from "./AppMenu.vue";
+import AppSidebar from "./AppSidebar.vue";
+import AppTopbar, { TopbarProps } from "./AppTopbar.vue";
+import { useLayout } from "./composables/layout";
 
 const { isSidebarActive, resetMenu } = useLayout();
 

@@ -8,12 +8,13 @@ import {
   UploadedFiles,
   UseInterceptors
 } from "@nestjs/common";
-import { FilesService } from "./files.service.js";
 import { AnyFilesInterceptor } from "@nestjs/platform-express";
-import { CSVW, FileMetadataDto } from "./files.dto.js";
-import { Roles } from "@tsg-dsp/common-api";
 import { ApiOkResponse, ApiOperation } from "@nestjs/swagger";
+import { Roles } from "@tsg-dsp/common-api";
 import { ApiForbiddenResponseDefault } from "@tsg-dsp/common-dtos";
+
+import { CSVW, FileMetadataDto } from "./files.dto.js";
+import { FilesService } from "./files.service.js";
 
 @Controller("files")
 @Roles("controlplane_dataplane")

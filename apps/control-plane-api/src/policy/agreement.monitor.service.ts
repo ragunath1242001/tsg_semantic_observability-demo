@@ -6,13 +6,14 @@ import {
   OnApplicationBootstrap
 } from "@nestjs/common";
 import { SchedulerRegistry } from "@nestjs/schedule";
-import { TransferMonitorDao } from "../model/agreement.dao.js";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { TransferService } from "../dsp/transfer/transfer.service.js";
-import { PolicyEvaluationService } from "./policy.evaluation.service.js";
-import { EvaluationTrigger } from "./constraint.dto.js";
 import { PaginationOptionsDto } from "@tsg-dsp/common-api";
+import { Repository } from "typeorm";
+
+import { TransferService } from "../dsp/transfer/transfer.service.js";
+import { TransferMonitorDao } from "../model/agreement.dao.js";
+import { EvaluationTrigger } from "./constraint.dto.js";
+import { PolicyEvaluationService } from "./policy.evaluation.service.js";
 
 @Injectable()
 export class AgreementMonitorService implements OnApplicationBootstrap {

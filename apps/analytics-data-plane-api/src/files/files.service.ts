@@ -1,12 +1,6 @@
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
-import { CSVW } from "./files.dto.js";
-import { FileMetadataDao } from "./filesMetadata.dao.js";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import fs from "fs";
-import * as fsPromises from "fs/promises";
-import { FilesConfig, RootConfig } from "../config.js";
 import { Cron, CronExpression } from "@nestjs/schedule";
+import { InjectRepository } from "@nestjs/typeorm";
 import {
   Dataset,
   DatasetDto,
@@ -14,10 +8,17 @@ import {
   Offer,
   Permission
 } from "@tsg-dsp/common-dsp";
-import { DataPlaneService } from "../dataplane/dataplane.service.js";
 import { parse } from "csv-parse";
-import { DataPlaneError } from "../utils/errors/error.js";
+import fs from "fs";
+import * as fsPromises from "fs/promises";
 import { finished } from "stream/promises";
+import { Repository } from "typeorm";
+
+import { FilesConfig, RootConfig } from "../config.js";
+import { DataPlaneService } from "../dataplane/dataplane.service.js";
+import { DataPlaneError } from "../utils/errors/error.js";
+import { CSVW } from "./files.dto.js";
+import { FileMetadataDao } from "./filesMetadata.dao.js";
 
 @Injectable()
 export class FilesService {

@@ -1,7 +1,14 @@
 import { jest } from "@jest/globals";
-import { DataPlaneRequestResponseDto, DatasetDto } from "@tsg-dsp/common-dsp";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
+import {
+  AuthClientService,
+  AuthConfig,
+  PaginationOptionsDto,
+  ServerConfig,
+  TypeOrmTestHelper
+} from "@tsg-dsp/common-api";
+import { DataPlaneRequestResponseDto, DatasetDto } from "@tsg-dsp/common-dsp";
 import {
   AgreementDto,
   Catalog,
@@ -20,9 +27,9 @@ import {
   VerifiableCredential
 } from "@tsg-dsp/common-dsp";
 import { plainToClass } from "class-transformer";
-import { HttpResponse, PathParams, http } from "msw";
+import { http, HttpResponse, PathParams } from "msw";
 import { SetupServer, setupServer } from "msw/node";
-import { VCAuthService } from "../../vc-auth/vc.auth.service.js";
+
 import {
   DevWalletConfig,
   IamConfig,
@@ -43,24 +50,18 @@ import {
   TransferDetailDao,
   TransferEventDao
 } from "../../model/transfer.dao.js";
-import { CatalogService } from "../catalog/catalog.service.js";
-import { DspClientService } from "../client/client.service.js";
-import { DspGateway } from "../client/dsp.gateway.js";
-import { TransferService } from "./transfer.service.js";
 import { AgreementService } from "../../policy/agreement.service.js";
-import { PolicyEvaluationService } from "../../policy/policy.evaluation.service.js";
 import { EvaluationTrigger } from "../../policy/constraint.dto.js";
 import {
   EvaluationContext,
   EvaluationDecision
 } from "../../policy/evaluation.dto.js";
-import {
-  TypeOrmTestHelper,
-  ServerConfig,
-  AuthClientService,
-  AuthConfig,
-  PaginationOptionsDto
-} from "@tsg-dsp/common-api";
+import { PolicyEvaluationService } from "../../policy/policy.evaluation.service.js";
+import { VCAuthService } from "../../vc-auth/vc.auth.service.js";
+import { CatalogService } from "../catalog/catalog.service.js";
+import { DspClientService } from "../client/client.service.js";
+import { DspGateway } from "../client/dsp.gateway.js";
+import { TransferService } from "./transfer.service.js";
 
 describe("Transfer service", () => {
   let transferService: TransferService;

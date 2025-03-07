@@ -1,8 +1,9 @@
-import { setupServer, SetupServer } from "msw/node";
-import { DidWebResolverStrategy } from "./did.web.resolver.strategy.js";
-import { http, HttpResponse } from "msw";
-import { DIDDocument } from "did-resolver";
 import { Test, TestingModule } from "@nestjs/testing";
+import { DIDDocument } from "did-resolver";
+import { http, HttpResponse } from "msw";
+import { SetupServer, setupServer } from "msw/node";
+
+import { DidWebResolverStrategy } from "./did.web.resolver.strategy.js";
 
 describe("DID Web Resolver", () => {
   let didWebResolverStrategy: DidWebResolverStrategy;

@@ -1,13 +1,14 @@
+import jsonld from "jsonld";
 import { RemoteDocument } from "jsonld/jsonld-spec.js";
+
 import {
   dspContext,
-  tsgContext,
+  dspContextUrl,
   healthContext,
-  tsgContextUrl,
   healthContextUrl,
-  dspContextUrl
+  tsgContext,
+  tsgContextUrl
 } from "./context.defaults.js";
-import jsonld from "jsonld";
 
 const documentCache: Record<string, RemoteDocument> = {};
 

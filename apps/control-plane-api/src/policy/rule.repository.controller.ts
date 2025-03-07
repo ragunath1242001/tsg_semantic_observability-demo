@@ -1,49 +1,50 @@
 import {
+  Body,
   Controller,
-  Logger,
+  Delete,
+  Get,
   HttpCode,
   HttpStatus,
-  Get,
-  Body,
-  Post,
-  Delete,
+  Logger,
   Param,
+  ParseEnumPipe,
   ParseIntPipe,
-  Put,
-  ParseEnumPipe
+  Post,
+  Put
 } from "@nestjs/common";
 import {
-  ApiTags,
+  ApiBody,
   ApiOAuth2,
-  ApiOperation,
   ApiOkResponse,
-  ApiBody
+  ApiOperation,
+  ApiTags
 } from "@nestjs/swagger";
-import { RuleRepositoryService } from "./rule.repository.service.js";
-import { Rule, RuleType } from "./rule.dto.js";
+import {
+  Paginated,
+  PaginationOptionsDto,
+  PaginationQuery,
+  Roles,
+  UsePagination,
+  validationPipe
+} from "@tsg-dsp/common-api";
+import {
+  Constraint as DspConstraint,
+  ConstraintDto,
+  ConstraintSchema,
+  deserialize,
+  PolicyRuleDto
+} from "@tsg-dsp/common-dsp";
 import {
   ApiBadRequestResponseDefault,
   ApiConflictResponseDefault,
   ApiForbiddenResponseDefault,
   ApiNotFoundResponseDefault
 } from "@tsg-dsp/common-dtos";
-import {
-  Constraint as DspConstraint,
-  ConstraintDto,
-  deserialize,
-  PolicyRuleDto,
-  ConstraintSchema
-} from "@tsg-dsp/common-dsp";
+
 import { DSPError } from "../utils/errors/error.js";
 import { ConstraintModel } from "./constraint.dto.js";
-import {
-  Roles,
-  UsePagination,
-  PaginationQuery,
-  PaginationOptionsDto,
-  Paginated,
-  validationPipe
-} from "@tsg-dsp/common-api";
+import { Rule, RuleType } from "./rule.dto.js";
+import { RuleRepositoryService } from "./rule.repository.service.js";
 
 @Roles(["controlplane_admin"])
 @Controller("management/policy")

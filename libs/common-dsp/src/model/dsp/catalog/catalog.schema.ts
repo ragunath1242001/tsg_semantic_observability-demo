@@ -1,25 +1,26 @@
 import { ApiProperty, ApiPropertyOptional, OmitType } from "@nestjs/swagger";
-import { DurationSchema, ReferenceSchema } from "../common.schema.js";
+
 import { ValueDto } from "../common.dto.js";
-import { Policy } from "../negotiation/negotiation.js";
+import { DurationSchema, ReferenceSchema } from "../common.schema.js";
 import {
   ConstraintDto,
+  DutyDto,
+  ODRLAction,
   ODRLLeftOperand,
   ODRLOperator,
-  PolicyRuleDto,
-  ODRLAction,
-  DutyDto,
   PermissionDto,
-  ProhibitionDto,
-  PolicyDto
+  PolicyDto,
+  PolicyRuleDto,
+  ProhibitionDto
 } from "../negotiation/negotiation.dto.js";
+import { Policy } from "../negotiation/negotiation.js";
 import {
-  ResourceDto,
+  CatalogDto,
+  CatalogRecordDto,
+  DataServiceDto,
   DatasetDto,
   DistributionDto,
-  DataServiceDto,
-  CatalogRecordDto,
-  CatalogDto
+  ResourceDto
 } from "./catalog.dto.js";
 import { CatalogRequestMessageDto, Filter } from "./messages.dto.js";
 

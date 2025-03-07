@@ -1,7 +1,8 @@
-import { setupServer, SetupServer } from "msw/node";
-import { DidTdwResolverStrategy } from "./did.tdw.resolver.strategy.js";
-import { http, HttpResponse } from "msw";
 import { Test, TestingModule } from "@nestjs/testing";
+import { http, HttpResponse } from "msw";
+import { SetupServer, setupServer } from "msw/node";
+
+import { DidTdwResolverStrategy } from "./did.tdw.resolver.strategy.js";
 
 describe("DID Tdw Resolver", () => {
   let didTdwResolverStrategy: DidTdwResolverStrategy;

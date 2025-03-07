@@ -1,13 +1,14 @@
+import { Controller, Get, Param, Query } from "@nestjs/common";
 import {
   ApiOkResponse,
   ApiOperation,
   ApiParam,
   ApiTags
 } from "@nestjs/swagger";
-import { Controller, Get, Param, Query } from "@nestjs/common";
-import { ApiForbiddenResponseDefault } from "@tsg-dsp/common-dtos";
-import { OID4VPVerifierService } from "./verifier.service.js";
 import { AuthorizationRequest, validationPipe } from "@tsg-dsp/common-api";
+import { ApiForbiddenResponseDefault } from "@tsg-dsp/common-dtos";
+
+import { OID4VPVerifierService } from "./verifier.service.js";
 
 @Controller("management/oid4vp/verifier")
 @ApiTags("OID4VP")

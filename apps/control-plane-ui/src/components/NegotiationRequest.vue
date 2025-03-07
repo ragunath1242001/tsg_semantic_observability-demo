@@ -3,12 +3,12 @@ import {
   NegotiationDetailDto,
   NegotiationStatusDto
 } from "@tsg-dsp/common-dtos";
+import MonacoEditor from "@tsg-dsp/common-ui/components/MonacoEditor.vue";
+import { stripDspace } from "@tsg-dsp/common-ui/utils/common";
+import { toastError } from "@tsg-dsp/common-ui/utils/error";
+import http from "@tsg-dsp/common-ui/utils/http";
 import { useToast } from "primevue/usetoast";
 import { ref } from "vue";
-import { stripDspace } from "@tsg-dsp/common-ui/utils/common";
-import http from "@tsg-dsp/common-ui/utils/http";
-import MonacoEditor from "@tsg-dsp/common-ui/components/MonacoEditor.vue";
-import { toastError } from "@tsg-dsp/common-ui/utils/error";
 
 defineProps<{
   negotiation: NegotiationStatusDto;

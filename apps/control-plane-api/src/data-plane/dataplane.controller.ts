@@ -10,6 +10,15 @@ import {
   Put
 } from "@nestjs/common";
 import {
+  ApiBadRequestResponse,
+  ApiBody,
+  ApiOAuth2,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags
+} from "@nestjs/swagger";
+import { Roles } from "@tsg-dsp/common-api";
+import {
   Catalog,
   CatalogSchema,
   DataPlaneCreation,
@@ -17,19 +26,11 @@ import {
   Dataset,
   DatasetSchema
 } from "@tsg-dsp/common-dsp";
+import { ApiForbiddenResponseDefault } from "@tsg-dsp/common-dtos";
+
 import { DeserializePipe } from "../utils/deserialize.pipe.js";
 import { DSPError } from "../utils/errors/error.js";
 import { DataPlaneService } from "./dataPlane.service.js";
-import {
-  ApiOAuth2,
-  ApiOperation,
-  ApiTags,
-  ApiOkResponse,
-  ApiBadRequestResponse,
-  ApiBody
-} from "@nestjs/swagger";
-import { ApiForbiddenResponseDefault } from "@tsg-dsp/common-dtos";
-import { Roles } from "@tsg-dsp/common-api";
 
 @Roles(["controlplane_admin", "controlplane_dataplane"])
 @Controller("data-plane")

@@ -5,12 +5,13 @@ import {
   ManyToMany,
   PrimaryGeneratedColumn
 } from "typeorm";
-import { MetaEntity } from "./common.dao.js";
+
 import {
   ConstraintType,
-  EvaluationTrigger,
-  DataType
+  DataType,
+  EvaluationTrigger
 } from "../policy/constraint.dto.js";
+import { MetaEntity } from "./common.dao.js";
 
 @Entity()
 export class ConstraintDao extends MetaEntity {

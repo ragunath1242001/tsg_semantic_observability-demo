@@ -10,6 +10,23 @@ import {
   Query
 } from "@nestjs/common";
 import {
+  ApiBody,
+  ApiOAuth2,
+  ApiOperation,
+  ApiParam,
+  ApiQuery,
+  ApiResponse,
+  ApiTags
+} from "@nestjs/swagger";
+import {
+  nonEmptyStringPipe,
+  Paginated,
+  PaginationOptionsDto,
+  PaginationQuery,
+  Roles,
+  UsePagination
+} from "@tsg-dsp/common-api";
+import {
   DataPlaneAddressDto,
   TransferDetail,
   TransferDetailDto,
@@ -18,25 +35,9 @@ import {
   TransferStatus,
   TransferStatusDto
 } from "@tsg-dsp/common-dsp";
+
 import { normalizeAddress } from "../../utils/address.js";
 import { TransferService } from "./transfer.service.js";
-import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
-  ApiBody,
-  ApiParam,
-  ApiQuery,
-  ApiOAuth2
-} from "@nestjs/swagger";
-import {
-  Roles,
-  UsePagination,
-  PaginationQuery,
-  PaginationOptionsDto,
-  Paginated,
-  nonEmptyStringPipe
-} from "@tsg-dsp/common-api";
 
 @ApiTags("Transfers Management")
 @ApiOAuth2(["controlplane_admin", "controlplane_dataplane"])

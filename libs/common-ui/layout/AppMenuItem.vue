@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ref, onBeforeMount, watch } from "vue";
+import { onBeforeMount, ref, watch } from "vue";
 import { RouteLocationNormalizedLoaded } from "vue-router";
+
 import { useLayout } from "./composables/layout";
 
 const { layoutState, setActiveMenuItem, onMenuToggle } = useLayout();

@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onBeforeUnmount, toRefs } from "vue";
-import { useLayout } from "./composables/layout";
-import { Router } from "vue-router";
-import { useUserStore } from "../stores/user";
 import { storeToRefs } from "pinia";
+import { computed, onBeforeUnmount, onMounted, ref, toRefs } from "vue";
+import { Router } from "vue-router";
+
+import { useUserStore } from "../stores/user";
+import { useLayout } from "./composables/layout";
 
 const { onMenuToggle, toggleDarkMode, isDarkTheme, onConfigButtonClick } =
   useLayout();

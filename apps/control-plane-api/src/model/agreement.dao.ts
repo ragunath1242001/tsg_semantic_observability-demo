@@ -1,6 +1,7 @@
 import { AgreementDto, HashedMessage } from "@tsg-dsp/common-dsp";
-import { Column, Entity, ManyToOne, OneToMany, PrimaryColumn } from "typeorm";
 import { instanceToPlain, plainToInstance } from "class-transformer";
+import { Column, Entity, ManyToOne, OneToMany, PrimaryColumn } from "typeorm";
+
 import {
   EvaluationContext,
   EvaluationDecision

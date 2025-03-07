@@ -17,8 +17,9 @@ import {
   PrimaryColumn,
   Relation
 } from "typeorm";
-import { AutoIdEntity, jsonLdTransformer, MetaEntity } from "./common.dao.js";
+
 import { AgreementDao } from "./agreement.dao.js";
+import { AutoIdEntity, jsonLdTransformer, MetaEntity } from "./common.dao.js";
 
 @Entity({ name: "negotationProcessEvent" })
 export class NegotiationProcessEventDao

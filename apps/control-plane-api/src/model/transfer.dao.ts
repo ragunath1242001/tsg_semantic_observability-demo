@@ -17,6 +17,7 @@ import {
   PrimaryColumn,
   Relation
 } from "typeorm";
+
 import { AutoIdEntity, jsonLdTransformer, MetaEntity } from "./common.dao.js";
 
 @Entity()

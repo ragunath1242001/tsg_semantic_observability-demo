@@ -1,9 +1,10 @@
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
-import { JSONLDContext } from "../model/context.dao.js";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { JsonLdContextConfig, RootConfig } from "../config.js";
 import { AppError } from "@tsg-dsp/common-api";
+import { Repository } from "typeorm";
+
+import { JsonLdContextConfig, RootConfig } from "../config.js";
+import { JSONLDContext } from "../model/context.dao.js";
 
 @Injectable()
 export class ContextService {

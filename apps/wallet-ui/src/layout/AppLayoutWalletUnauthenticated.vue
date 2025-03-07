@@ -1,12 +1,13 @@
 <script setup lang="ts">
+import { FooterProps } from "@tsg-dsp/common-ui/layout/AppFooter.vue";
 import AppLayout from "@tsg-dsp/common-ui/layout/AppLayout.vue";
+import { Menu, MenuProps } from "@tsg-dsp/common-ui/layout/AppMenu.vue";
 import { useLayout } from "@tsg-dsp/common-ui/layout/composables/layout";
 import { computed } from "vue";
-import AppConfig from "./AppConfig.vue";
-import { Menu, MenuProps } from "@tsg-dsp/common-ui/layout/AppMenu.vue";
-import { FooterProps } from "@tsg-dsp/common-ui/layout/AppFooter.vue";
-import { useRouter, useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
+
 import { useRuntimeStore } from "../stores/runtime";
+import AppConfig from "./AppConfig.vue";
 
 const { layoutConfig, layoutState } = useLayout();
 

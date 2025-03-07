@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { computed, ref, toRefs } from "vue";
-import KeyValuePairEdit from "@tsg-dsp/common-ui/components/KeyValuePairEdit.vue";
-import axios, { AxiosResponse } from "axios";
-import { httpStatusNames } from "@tsg-dsp/common-ui/utils/httpStatus";
-import { useToast } from "primevue/usetoast";
-import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import { TransferDto } from "@tsg-dsp/common-dtos";
 import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
+import KeyValuePairEdit from "@tsg-dsp/common-ui/components/KeyValuePairEdit.vue";
+import { toastError } from "@tsg-dsp/common-ui/utils/error";
+import { httpStatusNames } from "@tsg-dsp/common-ui/utils/httpStatus";
+import axios, { AxiosResponse } from "axios";
+import { useToast } from "primevue/usetoast";
+import { computed, ref, toRefs } from "vue";
 
 const toast = useToast();
 

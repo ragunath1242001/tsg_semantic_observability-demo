@@ -1,26 +1,27 @@
-import { Module, NestModule, MiddlewareConsumer } from "@nestjs/common";
+import { MiddlewareConsumer, Module, NestModule } from "@nestjs/common";
 import { ScheduleModule } from "@nestjs/schedule";
-import { TypeOrmModule } from "@nestjs/typeorm";
 import { ServeStaticModule } from "@nestjs/serve-static";
+import { TerminusModule } from "@nestjs/terminus";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import {
+  AuthModule,
+  GenericConfigModule,
+  HealthController,
+  LoggerMiddleware,
+  RequestContextMiddleware
+} from "@tsg-dsp/common-api";
+
+import { ConfigController } from "./config.controller.js";
+import { PresentationConfig, RootConfig } from "./config.js";
+import { ContextModule } from "./contexts/context.module.js";
 import { CredentialsModule } from "./credentials/credentials.module.js";
 import { DidModule } from "./did/did.module.js";
 import { IssuanceModule } from "./issuance/issuance.module.js";
 import { KeysModule } from "./keys/keys.module.js";
-import { PresentationModule } from "./presentation/presentation.module.js";
-import { ConfigController } from "./config.controller.js";
-import { ContextModule } from "./contexts/context.module.js";
 import { CredentialDao, KeyMaterialDao } from "./model/credentials.dao.js";
 import { CredentialIssuance } from "./model/issuance.dao.js";
-import { TerminusModule } from "@nestjs/terminus";
+import { PresentationModule } from "./presentation/presentation.module.js";
 import { StatusController } from "./status.controller.js";
-import { PresentationConfig, RootConfig } from "./config.js";
-import {
-  GenericConfigModule,
-  AuthModule,
-  HealthController,
-  RequestContextMiddleware,
-  LoggerMiddleware
-} from "@tsg-dsp/common-api";
 
 const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
   ? [

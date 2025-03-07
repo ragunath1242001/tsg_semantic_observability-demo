@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { onMounted } from "vue";
-import { useToast } from "primevue/usetoast";
-import { storeToRefs } from "pinia";
-import { useDspStore } from "../stores/dsp";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
+import { storeToRefs } from "pinia";
+import { useToast } from "primevue/usetoast";
+import { onMounted } from "vue";
+
 import Status from "../components/Status.vue";
 import { useDataPlaneStore } from "../stores/dataplane";
+import { useDspStore } from "../stores/dsp";
 
 const toast = useToast();
 

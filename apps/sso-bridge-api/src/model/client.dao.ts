@@ -1,5 +1,6 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 import { GrantType } from "@tsg-dsp/sso-bridge-dtos";
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+
 import { MetaEntity } from "./common.dao.js";
 
 @Entity()

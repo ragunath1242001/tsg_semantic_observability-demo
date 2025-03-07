@@ -1,6 +1,12 @@
 import { jest } from "@jest/globals";
+import { EventEmitter2 } from "@nestjs/event-emitter";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
+import {
+  PaginationOptionsDto,
+  ServerConfig,
+  TypeOrmTestHelper
+} from "@tsg-dsp/common-api";
 import {
   Agreement,
   ContractAgreementMessage,
@@ -18,30 +24,25 @@ import {
   Offer
 } from "@tsg-dsp/common-dsp";
 import { plainToClass } from "class-transformer";
-import { HttpResponse, PathParams, http } from "msw";
+import { http, HttpResponse, PathParams } from "msw";
 import { SetupServer, setupServer } from "msw/node";
-import { VCAuthService } from "../../vc-auth/vc.auth.service.js";
+
 import { RootConfig } from "../../config.js";
+import { AgreementDao, TransferMonitorDao } from "../../model/agreement.dao.js";
 import {
   NegotiationDetailDao,
   NegotiationProcessEventDao
 } from "../../model/negotiation.dao.js";
-import { DspClientService } from "../client/client.service.js";
-import { DspGateway } from "../client/dsp.gateway.js";
-import { NegotiationService } from "./negotiation.service.js";
-import { AgreementDao, TransferMonitorDao } from "../../model/agreement.dao.js";
 import {
   TransferDetailDao,
   TransferEventDao
 } from "../../model/transfer.dao.js";
 import { AgreementService } from "../../policy/agreement.service.js";
 import { DSPClientError, DSPError } from "../../utils/errors/error.js";
-import { EventEmitter2 } from "@nestjs/event-emitter";
-import {
-  TypeOrmTestHelper,
-  ServerConfig,
-  PaginationOptionsDto
-} from "@tsg-dsp/common-api";
+import { VCAuthService } from "../../vc-auth/vc.auth.service.js";
+import { DspClientService } from "../client/client.service.js";
+import { DspGateway } from "../client/dsp.gateway.js";
+import { NegotiationService } from "./negotiation.service.js";
 
 describe("Negotiation Service (Consumer)", () => {
   let negotiationService: NegotiationService;

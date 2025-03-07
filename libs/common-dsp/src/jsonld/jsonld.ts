@@ -1,7 +1,8 @@
+import jsonld from "jsonld";
 import { JsonLdObj } from "jsonld/jsonld-spec.js";
+
 import { defaultContext, dspContextUrl } from "./context.defaults.js";
 import { documentLoader } from "./documentLoader.js";
-import jsonld from "jsonld";
 
 const compactingContext = (
   context: "default" | "dsp" | string | string[]

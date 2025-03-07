@@ -1,21 +1,22 @@
+import { HttpStatus } from "@nestjs/common";
 import {
   ConstraintDto,
   JsonWebSignature2020,
   ODRLAction,
   ODRLOperator
 } from "@tsg-dsp/common-dsp";
+
+import { DSPError } from "../utils/errors/error.js";
 import {
-  EvaluationTrigger,
+  AtomicConstraint,
   ConstraintModel,
   ConstraintType,
   DataType,
-  AtomicConstraint
+  EvaluationTrigger
 } from "./constraint.dto.js";
-import { Evaluation } from "./evaluation.js";
 import { EvaluationContext, EvaluationResult } from "./evaluation.dto.js";
+import { Evaluation } from "./evaluation.js";
 import { RuleRepositoryService } from "./rule.repository.service.js";
-import { HttpStatus } from "@nestjs/common";
-import { DSPError } from "../utils/errors/error.js";
 
 describe("Constraint Evaluation", () => {
   const ruleRepositoryService: RuleRepositoryService = {

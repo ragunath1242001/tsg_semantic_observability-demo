@@ -5,6 +5,7 @@ import {
   IsString,
   ValidateNested
 } from "class-validator";
+
 import {
   createOptionalInstance,
   createOptionalInstances
@@ -15,8 +16,8 @@ import {
   Namespace,
   Serializable
 } from "../../decorators.js";
-import { IReference, Reference, withExtraProps } from "../common.js";
 import { ContextDto } from "../common.dto.js";
+import { IReference, Reference, withExtraProps } from "../common.js";
 import { Offer, Policy } from "../negotiation/negotiation.js";
 import {
   CatalogDto,

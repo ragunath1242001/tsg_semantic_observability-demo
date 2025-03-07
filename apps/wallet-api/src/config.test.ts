@@ -1,9 +1,10 @@
 import { describe, expect, it } from "@jest/globals";
-import { plainToInstance } from "class-transformer";
-import { RootConfig } from "./config.js";
-import { AppError } from "@tsg-dsp/common-api";
 import { HttpStatus } from "@nestjs/common";
+import { AppError } from "@tsg-dsp/common-api";
 import { toArray } from "@tsg-dsp/common-dsp";
+import { plainToInstance } from "class-transformer";
+
+import { RootConfig } from "./config.js";
 
 describe("Config", () => {
   it("Test complete config", () => {

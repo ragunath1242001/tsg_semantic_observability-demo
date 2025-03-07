@@ -1,5 +1,5 @@
 import { OrArray } from "../../../utils/unions.js";
-import { ValueDto, ReferenceDto, ContextDto } from "../common.dto.js";
+import { ContextDto, ReferenceDto, ValueDto } from "../common.dto.js";
 
 export enum ODRLAction {
   DELETE = "odrl:delete",

@@ -1,6 +1,6 @@
 import { CatalogDto } from "@tsg-dsp/common-dsp";
-import { defineStore } from "pinia";
 import http from "@tsg-dsp/common-ui/utils/http";
+import { defineStore } from "pinia";
 
 export interface CatalogStore {
   catalog: CatalogDto | null;

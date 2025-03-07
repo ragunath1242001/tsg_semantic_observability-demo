@@ -1,14 +1,16 @@
+import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
 import { createRouter, createWebHashHistory } from "vue-router";
+
 import AppLayout from "@/layout/AppLayoutControlPlane.vue";
-import DashboardVue from "../views/Dashboard.vue";
+
 import CatalogVue from "../views/Catalog.vue";
+import DashboardVue from "../views/Dashboard.vue";
+import DataplaneVue from "../views/Dataplane.vue";
 import LoginVue from "../views/Login.vue";
 import NegotiationsVue from "../views/Negotiations.vue";
-import TransfersVue from "../views/Transfers.vue";
-import DataplaneVue from "../views/Dataplane.vue";
-import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
-import Registry from "../views/Registry.vue";
 import OwnCatalog from "../views/OwnCatalog.vue";
+import Registry from "../views/Registry.vue";
+import TransfersVue from "../views/Transfers.vue";
 
 const router = createRouter({
   history: createWebHashHistory(),

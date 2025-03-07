@@ -1,9 +1,11 @@
-import {
-  NegotiationStatusDto,
-  NegotiationDetailDto
-} from "@tsg-dsp/common-dtos";
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
+import { EventEmitter2 } from "@nestjs/event-emitter";
 import { InjectRepository } from "@nestjs/typeorm";
+import {
+  Paginated,
+  PaginationOptionsDto,
+  ServerConfig
+} from "@tsg-dsp/common-api";
 import {
   Agreement,
   AgreementDto,
@@ -15,38 +17,37 @@ import {
   ContractNegotiationTerminationMessage,
   ContractOfferMessage,
   ContractRequestMessage,
+  defaultContext,
+  deserialize,
   HashedMessage,
   Multilanguage,
   NegotiationDetail,
   NegotiationEvent,
   NegotiationProcessEvent,
   NegotiationRole,
-  Offer,
-  defaultContext,
-  deserialize
+  Offer
 } from "@tsg-dsp/common-dsp";
+import {
+  NegotiationDetailDto,
+  NegotiationStatusDto
+} from "@tsg-dsp/common-dtos";
 import crypto from "crypto";
 import { Repository } from "typeorm";
+
 import { RootConfig } from "../../config.js";
 import {
   NegotiationDetailDao,
   NegotiationProcessEventDao
 } from "../../model/negotiation.dao.js";
+import { AgreementService } from "../../policy/agreement.service.js";
 import { DSPError } from "../../utils/errors/error.js";
+import { VCAuthService } from "../../vc-auth/vc.auth.service.js";
 import { DspClientService } from "../client/client.service.js";
 import { DspGateway } from "../client/dsp.gateway.js";
-import { VCAuthService } from "../../vc-auth/vc.auth.service.js";
-import { AgreementService } from "../../policy/agreement.service.js";
-import { EventEmitter2 } from "@nestjs/event-emitter";
 import {
   NegotiationCreatedEvent,
   NegotiationUpdatedEvent
 } from "./negotiation.events.js";
-import {
-  ServerConfig,
-  PaginationOptionsDto,
-  Paginated
-} from "@tsg-dsp/common-api";
 
 @Injectable()
 export class NegotiationService {

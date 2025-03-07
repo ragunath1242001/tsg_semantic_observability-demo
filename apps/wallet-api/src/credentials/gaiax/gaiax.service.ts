@@ -1,17 +1,18 @@
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
+import { AppError, parseNetworkError } from "@tsg-dsp/common-api";
 import {
   toArray,
   VerifiableCredential,
   VerifiablePresentation
 } from "@tsg-dsp/common-dsp";
-import crypto from "crypto";
-import { AppError, parseNetworkError } from "@tsg-dsp/common-api";
-import { DidService } from "../../did/did.service.js";
 import {
   ComplianceRequest,
   LegalRegistrationNumberRequest
 } from "@tsg-dsp/wallet-dtos";
 import axios from "axios";
+import crypto from "crypto";
+
+import { DidService } from "../../did/did.service.js";
 import { CredentialsService } from "../credentials.service.js";
 
 @Injectable()

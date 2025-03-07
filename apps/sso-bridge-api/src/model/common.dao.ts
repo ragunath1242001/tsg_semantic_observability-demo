@@ -1,5 +1,5 @@
 import { Exclude } from "class-transformer";
-import { CreateDateColumn, UpdateDateColumn, DeleteDateColumn } from "typeorm";
+import { CreateDateColumn, DeleteDateColumn, UpdateDateColumn } from "typeorm";
 
 export class MetaEntity {
   @CreateDateColumn({ type: Date })

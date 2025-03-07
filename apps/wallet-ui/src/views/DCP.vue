@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { ref } from "vue";
-import { useToast } from "primevue/usetoast";
-import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
 import { VerifiablePresentation } from "@tsg-dsp/common-dsp";
 import schema from "@tsg-dsp/common-ui/assets/presentation-definition.schema.json";
+import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
 import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
-import http from "@tsg-dsp/common-ui/utils/http";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
+import http from "@tsg-dsp/common-ui/utils/http";
+import { useToast } from "primevue/usetoast";
+import { ref } from "vue";
 
 const toast = useToast();
 const userStore = useUserStore();

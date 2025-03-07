@@ -1,12 +1,13 @@
+import { HttpStatus, Logger } from "@nestjs/common";
+import { AppError } from "@tsg-dsp/common-api";
 import axios from "axios";
 import { DIDDocument } from "did-resolver";
-import { AppError } from "@tsg-dsp/common-api";
-import { HttpStatus, Logger } from "@nestjs/common";
-import { DidResolverStrategy } from "../did.resolver.js";
-import { DIDLog } from "./method/interfaces.js";
 import jsonpatch from "fast-json-patch";
+
+import { DidResolverStrategy } from "../did.resolver.js";
 import { PLACEHOLDER, PROTOCOL } from "./constants.js";
 import { documentStateIsValid, newKeysAreValid } from "./method/assertions.js";
+import { DIDLog } from "./method/interfaces.js";
 import { clone, createSCID, deriveHash } from "./method/utils.js";
 
 export const resolveDID = async (
