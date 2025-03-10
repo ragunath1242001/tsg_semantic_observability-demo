@@ -21,7 +21,7 @@ The TNO Security Gateway allows users to participate in data spaces, bridging th
 
 The overall architecture (as to how the components work together and how they interact) can be seen in the figure below:
 
-![](../static/img/component-diagram.svg)
+![Component diagram](/img/component-diagram.png)
 
 ## Specifications
 There are several protocols in the figure above that are generic. This section provides links to the relevant specifications and highlights the choices that were made for the TSG components.
@@ -39,7 +39,7 @@ The [Verfiable Presentation](https://www.w3.org/TR/vc-overview/) Protocols that 
 The Data Space Protocols between the Control Planes are limited to one implementation, namely the [Eclipse Dataspace Protocol](https://eclipse-dataspace-protocol-base.github.io/DataspaceProtocol/2025-1-RC1/).
 
 ### Data Space Component
-Within the Data Space Component we see Internal protocols between the Control Plane and the Data Plane(s). These are not specified yet and can be inspected by viewing [APIs](./apis/control-plane/) on this documentation. 
+Within the Data Space Component we see Internal protocols between the Control Plane and the Data Plane(s). These are not specified yet and can be inspected by viewing APIs on this documentation. 
 
 ### Data Exchange
 
