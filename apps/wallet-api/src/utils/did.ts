@@ -25,6 +25,7 @@ export function createVerificationMethods(
         controller: didId,
         publicKeyJwk: {
           alg: signingAlgorithm(key.type),
+          kty: key.publicKey.kty ?? "",
           ...key.publicKey
         }
       };

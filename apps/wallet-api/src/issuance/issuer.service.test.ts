@@ -116,6 +116,7 @@ describe("Issuer service", () => {
     await moduleRef.get(KeysService).initialized;
     await moduleRef.get(CredentialsService).initialized;
     exampleKey = await generateKeyPair("EdDSA");
+    const publicKey = await exportJWK(exampleKey.publicKey);
     const exampleDid: DIDDocument = {
       "@context": [
         "https://www.w3.org/ns/did/v1",
@@ -129,7 +130,8 @@ describe("Issuer service", () => {
           controller: "did:web:example.com",
           publicKeyJwk: {
             alg: "EdDSA",
-            ...(await exportJWK(exampleKey.publicKey))
+            kty: publicKey.kty ?? "",
+            ...publicKey
           }
         }
       ],
