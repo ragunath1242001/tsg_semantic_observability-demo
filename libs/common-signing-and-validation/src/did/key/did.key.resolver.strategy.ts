@@ -1,8 +1,7 @@
 import { HttpStatus, Logger } from "@nestjs/common";
 import { AppError } from "@tsg-dsp/common-api";
-import { DIDDocument } from "did-resolver";
+import { DIDDocument, JsonWebKey } from "did-resolver";
 import elliptic from "elliptic";
-import { JWK } from "jose";
 import { base58btc } from "multiformats/bases/base58";
 
 import { hexToBase64url } from "../../utils/typeconverter.js";
@@ -14,7 +13,7 @@ export class DidKeyResolverStrategy implements DidResolverStrategy {
   private generateOkpJwk(
     publicKey: string,
     curve: "Ed25519" | "Bls12381G2"
-  ): JWK {
+  ): JsonWebKey {
     return {
       kty: "OKP",
       crv: curve,
@@ -25,7 +24,7 @@ export class DidKeyResolverStrategy implements DidResolverStrategy {
   private generateEcJwk(
     publicKey: string,
     curve: "secp256k1" | "P-256" | "P-384" | "P-521"
-  ): JWK {
+  ): JsonWebKey {
     const isOdd = publicKey.slice(0, 2).toString() === "03";
     const xHex = publicKey.slice(2, publicKey.length).toString();
     return {
@@ -45,7 +44,7 @@ export class DidKeyResolverStrategy implements DidResolverStrategy {
     };
   }
 
-  private generateJwk(multibaseKey: string): JWK {
+  private generateJwk(multibaseKey: string): JsonWebKey {
     const prefixedPublicKey = Buffer.from(
       base58btc.decode(multibaseKey)
     ).toString("hex");
