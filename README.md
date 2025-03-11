@@ -10,17 +10,13 @@ This is the repository of the Dataspace Protocol implementation of TNO, called t
 
 ## Documentation
 
-For documentation, please visit the [docs](docs) folder.
+For documentation, please visit the [docs](website/docs) folder.
 
 ## Structure
 
 ### Apps
 
 The apps folder contains all the apps of the TSG components. Most of the apps have an API and a UI part, meaning to be used together. In case a Dockerfile is built, it uses both the API and the UI part and builds 1 image. All of the apps are written in Typescript. The frameworks used are `nestjs` for the APIs and `Vue` for the UIs.
-
-### Docs
-
-The docs folder contains the documentation for each of the components. In the future, these docs will be hosted on a publicly available URL as well.
 
 ### Helm Charts
 
@@ -37,6 +33,10 @@ The release folder contains logic for creating Gitlab Releases.
 ### Tools
 
 The tools folder contains the tools that can be used to enhance the TSG. At the moment of writing, only the CLI tool is added in here, which can be used to deploy (a subset of) components of the TSG very easily on Kubernetes.
+
+### Website
+
+The website folder contains the documentation for each of the components (in the `docs` subfolder) and the Docusaurus code for hosting the documentation as a website, available at [https://tsg.dataspac.es](https://tsg.dataspac.es).
 
 ## Issues
 
