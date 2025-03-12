@@ -2,7 +2,7 @@
 
 If you are participating in a data space, it is useful to advertise the datasets and services you are offering. This can be done by configuring the right datasets for each service you offer with the HTTP Data Plane. 
 
-Presuming you followed the steps in the [technical deployment documentation](./technical-deployment.md), we assume you have a `values.http-data-plane.yaml` that looks similar to the following yaml snippet:
+Presuming you followed the steps in the [technical deployment documentation](../deployment.md), we assume you have a `values.http-data-plane.yaml` that looks similar to the following yaml snippet:
 
 ```yaml 
 dataset:

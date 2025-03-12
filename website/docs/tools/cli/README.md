@@ -1,6 +1,6 @@
 # TSG CLI Tool
 
-For an example with steps to use the CLI tool see the [docs page](../../deployment/README.md).
+For an example with steps to use the CLI tool see the [docs page](../../deployment/deployment.md).
 
 ## Commands
 
