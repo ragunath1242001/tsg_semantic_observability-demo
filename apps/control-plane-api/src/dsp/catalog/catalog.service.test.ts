@@ -4,9 +4,15 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { ServerConfig, TypeOrmTestHelper } from "@tsg-dsp/common-api";
 import {
   DataService,
+  DataServiceDto,
   Dataset,
+  DatasetDto,
+  deserialize,
   Distribution,
-  ODRLAction
+  DistributionDto,
+  ODRLAction,
+  OfferDto,
+  PermissionDto
 } from "@tsg-dsp/common-dsp";
 import { plainToClass } from "class-transformer";
 
@@ -30,7 +36,7 @@ describe("Catalog Service", () => {
     await TypeOrmTestHelper.instance.setupTestDB();
     const initCatalog = plainToClass(InitCatalog, {
       creator: "urn:uuid:de8e1b94-4169-4491-986d-6a1c528b867b",
-      publisher: "urn:uuid:de8e1b94-4169-4491-986d-6a1c528b867b",
+      publisher: "did:web:localhost:3000",
       title: "Test Connector",
       description: "Connector catalog for testing purposes"
     });
@@ -92,7 +98,7 @@ describe("Catalog Service", () => {
   });
 
   afterAll(async () => {
-    await TypeOrmTestHelper.instance.teardownTestDB();
+    TypeOrmTestHelper.instance.teardownTestDB();
     jest.useRealTimers();
   });
 
@@ -107,9 +113,7 @@ describe("Catalog Service", () => {
 
       expect(catalog.data).toBeDefined();
       expect(catalog.data.title).toBe("Test Connector");
-      expect(catalog.data.publisher).toBe(
-        "urn:uuid:de8e1b94-4169-4491-986d-6a1c528b867b"
-      );
+      expect(catalog.data.publisher).toBe("did:web:localhost:3000");
     });
 
     it("Modify catalog", async () => {
@@ -152,38 +156,33 @@ describe("Catalog Service", () => {
 
       const updatedCatalogDao = await catalogService.getCatalogDao();
       expect(updatedCatalogDao.data.dataset).toHaveLength(1);
-      expect(updatedCatalogDao.data.dataset?.[0]?.title).toBe(
-        "Test HTTP dataset"
+      const updatedDataset = await catalogService.getDataset(
+        "urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0cea"
       );
-      expect(updatedCatalogDao.data.dataset?.[0]?.distribution).toHaveLength(1);
+      expect(updatedDataset.title).toBe("Test HTTP dataset");
+      expect(updatedDataset.distribution).toHaveLength(1);
+      expect(updatedDataset.distribution?.[0]?.accessService).toHaveLength(1);
       expect(
-        updatedCatalogDao.data.dataset?.[0]?.distribution?.[0]?.accessService
-      ).toHaveLength(1);
-      expect(
-        updatedCatalogDao.data.dataset?.[0]?.distribution?.[0]
-          ?.accessService?.[0]?.endpointURL
+        updatedDataset.distribution?.[0]?.accessService?.[0]?.endpointURL
       ).toBe("https://httpbin.org/anything");
 
       //    A policy should be auto generated since we haven't defined one.
-      expect(updatedCatalogDao.data.dataset?.[0].hasPolicy).toHaveLength(1);
+      expect(updatedDataset.hasPolicy).toHaveLength(1);
+      expect(updatedDataset.hasPolicy?.[0].permission?.[0]?.action).toBe(
+        "odrl:use"
+      );
       expect(
-        updatedCatalogDao.data.dataset?.[0]?.hasPolicy?.[0].permission?.[0]
-          ?.action
-      ).toBe("odrl:use");
-      expect(
-        updatedCatalogDao.data.dataset?.[0]?.hasPolicy?.[0].permission?.[0]
-          ?.constraint?.[0]?.leftOperand
+        updatedDataset.hasPolicy?.[0].permission?.[0]?.constraint?.[0]
+          ?.leftOperand
       ).toBe("dspace:credentialType");
       expect(
-        updatedCatalogDao.data.dataset?.[0]?.hasPolicy?.[0].permission?.[0]
-          ?.constraint?.[0]?.rightOperand
+        updatedDataset.hasPolicy?.[0].permission?.[0]?.constraint?.[0]
+          ?.rightOperand
       ).toBe("dataspace:MembershipCredential");
 
-      expect(
-        updatedCatalogDao.data.dataset?.[0]?.extraProps["tsg:testExtraProp"]?.[
-          "tsg:test"
-        ]
-      ).toBe("Test");
+      expect(updatedDataset.extraProps["tsg:testExtraProp"]?.["tsg:test"]).toBe(
+        "Test"
+      );
 
       const datasetDao = await catalogService.getDataset(dataset.id);
       expect(datasetDao).toBeDefined();
@@ -196,6 +195,90 @@ describe("Catalog Service", () => {
       const dto = await datasetDao.serialize();
       expect(dto["odrl:hasPolicy"]?.[0]?.["odrl:assigner"]).toBeDefined();
     });
+
+    it("Add dataset for analytics data plane", async () => {
+      const datasetId = "urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0ceb";
+      const datasetDto = {
+        "@context": [
+          "https://w3id.org/dspace/2024/1/context.json",
+          "https://tsg.dataspac.es/contexts/next/tsg.json",
+          "https://tsg.dataspac.es/contexts/next/health.json"
+        ],
+        "@id": datasetId,
+        "@type": "dcat:Dataset",
+        "dct:title": "Analytics Data Plane",
+        "dct:description": ["Default dataset for the analytics data plane"],
+        "dcat:keyword": ["analytics"],
+        "dcat:theme": ["analytics"],
+        "dct:language": "en",
+        "odrl:hasPolicy": [
+          {
+            "@type": "odrl:Offer",
+            "@id": `${datasetId}:policy`,
+            "odrl:permission": [
+              {
+                "@type": "odrl:Permission",
+                "odrl:action": "odrl:use",
+                "odrl:target": datasetId,
+                "odrl:constraint": [
+                  {
+                    "@type": "odrl:Constraint",
+                    "odrl:leftOperand": "dct:format",
+                    "odrl:operator": "odrl:eq",
+                    "odrl:rightOperand": "tsg:analytics"
+                  }
+                ]
+              } as PermissionDto
+            ]
+          } as OfferDto
+        ],
+        "dcat:distribution": [
+          {
+            "@type": "dcat:Distribution",
+            "@id": `${datasetId}:application/analytics-data-plane`,
+            "dct:title": "Analytics Data Plane (tsg:analytics)",
+            "dct:format": "tsg:analytics",
+            "dcat:accessService": [
+              {
+                "@type": "dcat:DataService",
+                "@id": `${datasetId}:analytics-service`,
+                "dct:title": "Analytics Data Plane Service",
+                "dcat:endpointDescription": "dspace:connector"
+              } as DataServiceDto
+            ]
+          } as DistributionDto
+        ]
+      } as DatasetDto;
+      const catalogDao = await catalogService.getCatalogDao();
+      expect(catalogDao.data.dataset?.length).toEqual(1);
+      await catalogService.addDataset(await deserialize<Dataset>(datasetDto));
+
+      const updatedCatalogDao = await catalogService.getCatalogDao();
+      expect(updatedCatalogDao.data.dataset).toHaveLength(2);
+      const dataset = await catalogService.getDataset(datasetId);
+      expect(dataset.title).toBe("Analytics Data Plane");
+
+      expect(dataset.distribution).toHaveLength(1);
+      expect(dataset.distribution?.[0]?.format).toBe("tsg:analytics");
+      expect(dataset.distribution?.[0]?.accessService).toHaveLength(1);
+      expect(dataset.distribution?.[0]?.accessService?.[0]?.endpointURL).toBe(
+        "http://localhost:3000"
+      );
+
+      //    A policy should be auto generated since we haven't defined one.
+      expect(dataset.hasPolicy).toHaveLength(1);
+      expect(dataset.hasPolicy?.[0].permission?.[0]?.action).toBe("odrl:use");
+      expect(
+        dataset.hasPolicy?.[0].permission?.[0]?.constraint?.[0]?.leftOperand
+      ).toBe("dct:format");
+      expect(
+        dataset.hasPolicy?.[0].permission?.[0]?.constraint?.[0]?.rightOperand
+      ).toBe("tsg:analytics");
+      expect(dataset.hasPolicy?.[0].permission?.[0]?.target).toBe(datasetId);
+      expect(dataset.hasPolicy?.[0].assigner).toBeDefined();
+      expect(dataset.hasPolicy?.[0].assigner).toBe("did:web:localhost:3000");
+    });
+
     it("Throw error when dataset isn't available", async () => {
       const dataset = new Dataset({
         id: "urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0cea",
@@ -278,7 +361,7 @@ describe("Catalog Service", () => {
         "urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0cea"
       );
       const catalog = await catalogService.getCatalogDao();
-      expect(catalog.data.dataset?.length).toBe(0);
+      expect(catalog.data.dataset?.length).toBe(1);
     });
   });
 });

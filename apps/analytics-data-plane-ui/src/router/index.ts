@@ -9,6 +9,8 @@ import FilesUpload from "../views/FilesUpload.vue";
 import Logging from "../views/Logging.vue";
 import LoginVue from "../views/Login.vue";
 import Metadata from "../views/Metadata.vue";
+import ConsumerView from "../views/transfers/ConsumerView.vue";
+import ProviderView from "../views/transfers/ProviderView.vue";
 
 const router = createRouter({
   history: createWebHashHistory(),
@@ -40,6 +42,16 @@ const router = createRouter({
           path: "/files/upload",
           name: "fileUpload",
           component: FilesUpload
+        },
+        {
+          path: "/provider/:id",
+          name: "provider",
+          component: ProviderView
+        },
+        {
+          path: "/consumer/:id",
+          name: "consumer",
+          component: ConsumerView
         }
       ]
     },

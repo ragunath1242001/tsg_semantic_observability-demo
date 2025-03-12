@@ -566,15 +566,6 @@ paths:
       security: *a5
       summary: Suspend a transfer by ID
       tags: *a6
-  /api/management/k8s/spawn-job:
-    get:
-      operationId: DataPlaneManagementController_spawnJob
-      parameters: []
-      responses:
-        "200":
-          description: ""
-      security: *a5
-      tags: *a6
   /api/auth/user:
     get:
       description: Retrieves current user state, whether someone is logged in or not a
@@ -794,6 +785,115 @@ paths:
       security: *a8
       summary: Get egress logs
       tags: *a9
+  /api/management/k8s/jobs/transfer/{transferId}:
+    get:
+      operationId: OrchestrationManagementController_getJobsForTransfer
+      parameters:
+        - name: transferId
+          required: true
+          in: path
+          description: The transfer ID
+          schema:
+            example: urn:uuid:12345678-1234-5678-1234-567812345678
+            type: string
+      responses:
+        "200":
+          description: ""
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: &a10
+        - oauth2:
+            - controlplane_dataplane
+      summary: Get jobs for transfer
+      tags: &a11
+        - Data Plane Management
+  /api/management/k8s/jobs/{jobName}/pods:
+    get:
+      operationId: OrchestrationManagementController_getJobPods
+      parameters:
+        - name: jobName
+          required: true
+          in: path
+          description: The job name
+          schema:
+            example: 12345678-1234-5678-1234-567812345678
+            type: string
+      responses:
+        "200":
+          description: ""
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a10
+      summary: Get job pods
+      tags: *a11
+  /api/management/k8s/pods/{podName}/logs:
+    get:
+      operationId: OrchestrationManagementController_getJobLogs
+      parameters:
+        - name: podName
+          required: true
+          in: path
+          description: The pod name
+          schema:
+            example: 12345678-1234-5678-1234-567812345678
+            type: string
+      responses:
+        "200":
+          description: ""
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a10
+      summary: Get job logs
+      tags: *a11
+  /api/management/k8s/spawn-job:
+    post:
+      operationId: OrchestrationManagementController_spawnJob
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                imageName:
+                  type: string
+                transferId:
+                  type: string
+                command:
+                  type: array
+                  items:
+                    type: string
+              example:
+                imageName: busybox
+                transferId: urn:uuid:12345678-1234-5678-1234-567812345678
+                command:
+                  - echo
+                  - Hello, World!
+      responses:
+        "200":
+          description: ""
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a10
+      summary: Spawn a job
+      tags: *a11
   /api/files:
     get:
       description: Get all files and their metadata.
@@ -815,7 +915,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
       summary: Get all files
-      tags: &a10
+      tags: &a12
         - Files
   /api/files/upload:
     post:
@@ -830,7 +930,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
       summary: Upload files
-      tags: *a10
+      tags: *a12
   /api/files/sync:
     post:
       description: Sync files and their metadata.
@@ -844,7 +944,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
       summary: Sync files
-      tags: *a10
+      tags: *a12
   /api/files/{id}/csvw:
     get:
       description: Get the CSVW of a file.
@@ -869,7 +969,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
       summary: Get CSVW
-      tags: *a10
+      tags: *a12
 info:
   title: TSG Analytics Data Plane
   description: This OpenAPI specification shows the endpoints of the Analytics Data Plane.
@@ -1208,7 +1308,7 @@ components:
           type: string
           example: targetExample
         odrl:constraint:
-          example: &a11 []
+          example: &a13 []
           type: array
           items:
             $ref: "#/components/schemas/ConstraintSchema"
@@ -1239,7 +1339,7 @@ components:
           type: string
           example: targetExample
         odrl:constraint:
-          example: *a11
+          example: *a13
           type: array
           items:
             $ref: "#/components/schemas/ConstraintSchema"
@@ -1265,7 +1365,7 @@ components:
           type: string
           example: targetExample
         odrl:constraint:
-          example: *a11
+          example: *a13
           type: array
           items:
             $ref: "#/components/schemas/ConstraintSchema"
@@ -1291,17 +1391,17 @@ components:
           type: string
           example: profileExample
         odrl:permission:
-          example: &a17 []
+          example: &a19 []
           type: array
           items:
             $ref: "#/components/schemas/PermissionSchema"
         odrl:prohibition:
-          example: &a18 []
+          example: &a20 []
           type: array
           items:
             $ref: "#/components/schemas/ProhibitionSchema"
         odrl:obligation:
-          example: &a19 []
+          example: &a21 []
           type: array
           items:
             $ref: "#/components/schemas/DutySchema"
@@ -1333,7 +1433,7 @@ components:
           type: string
           example: contactPointExample
         dcat:keyword:
-          example: &a12
+          example: &a14
             - keyword1
             - keyword2
           type: array
@@ -1343,7 +1443,7 @@ components:
           type: string
           example: landingPageExample
         dcat:theme:
-          example: &a13
+          example: &a15
             - theme1
             - theme2
           type: array
@@ -1356,7 +1456,7 @@ components:
           type: string
           example: creatorExample
         dct:description:
-          example: &a14
+          example: &a16
             - description1
             - description2
           type: array
@@ -1393,12 +1493,12 @@ components:
           type: string
           example: typeExample
         odrl:hasPolicy:
-          example: &a15 []
+          example: &a17 []
           type: array
           items:
             $ref: "#/components/schemas/PolicySchema"
         dcat:hasVersion:
-          example: &a16
+          example: &a18
             - version1
             - version2
           type: array
@@ -1524,7 +1624,7 @@ components:
           type: string
           example: contactPointExample
         dcat:keyword:
-          example: *a12
+          example: *a14
           type: array
           items:
             type: string
@@ -1532,7 +1632,7 @@ components:
           type: string
           example: landingPageExample
         dcat:theme:
-          example: *a13
+          example: *a15
           type: array
           items:
             type: string
@@ -1543,7 +1643,7 @@ components:
           type: string
           example: creatorExample
         dct:description:
-          example: *a14
+          example: *a16
           type: array
           items:
             type: string
@@ -1578,12 +1678,12 @@ components:
           type: string
           example: typeExample
         odrl:hasPolicy:
-          example: *a15
+          example: *a17
           type: array
           items:
             $ref: "#/components/schemas/PolicySchema"
         dcat:hasVersion:
-          example: *a16
+          example: *a18
           type: array
           items:
             type: string
@@ -1651,7 +1751,7 @@ components:
           type: string
           example: contactPointExample
         dcat:keyword:
-          example: *a12
+          example: *a14
           type: array
           items:
             type: string
@@ -1659,7 +1759,7 @@ components:
           type: string
           example: landingPageExample
         dcat:theme:
-          example: *a13
+          example: *a15
           type: array
           items:
             type: string
@@ -1670,7 +1770,7 @@ components:
           type: string
           example: creatorExample
         dct:description:
-          example: *a14
+          example: *a16
           type: array
           items:
             type: string
@@ -1705,12 +1805,12 @@ components:
           type: string
           example: typeExample
         odrl:hasPolicy:
-          example: *a15
+          example: *a17
           type: array
           items:
             $ref: "#/components/schemas/PolicySchema"
         dcat:hasVersion:
-          example: *a16
+          example: *a18
           type: array
           items:
             type: string
@@ -1753,7 +1853,7 @@ components:
           type: string
           example: contactPointExample
         dcat:keyword:
-          example: *a12
+          example: *a14
           type: array
           items:
             type: string
@@ -1761,7 +1861,7 @@ components:
           type: string
           example: landingPageExample
         dcat:theme:
-          example: *a13
+          example: *a15
           type: array
           items:
             type: string
@@ -1772,7 +1872,7 @@ components:
           type: string
           example: creatorExample
         dct:description:
-          example: *a14
+          example: *a16
           type: array
           items:
             type: string
@@ -1807,12 +1907,12 @@ components:
           type: string
           example: typeExample
         odrl:hasPolicy:
-          example: *a15
+          example: *a17
           type: array
           items:
             $ref: "#/components/schemas/PolicySchema"
         dcat:hasVersion:
-          example: *a16
+          example: *a18
           type: array
           items:
             type: string
@@ -1904,6 +2004,9 @@ components:
         secret:
           type: string
           example: secret-key
+        datasetId:
+          type: string
+          example: urn:uuid:123e4567-e89b-12d3-a456-426614174000
         state:
           type: string
           enum:
@@ -1967,17 +2070,17 @@ components:
           type: string
           example: profileExample
         odrl:permission:
-          example: *a17
+          example: *a19
           type: array
           items:
             $ref: "#/components/schemas/PermissionSchema"
         odrl:prohibition:
-          example: *a18
+          example: *a20
           type: array
           items:
             $ref: "#/components/schemas/ProhibitionSchema"
         odrl:obligation:
-          example: *a19
+          example: *a21
           type: array
           items:
             $ref: "#/components/schemas/DutySchema"

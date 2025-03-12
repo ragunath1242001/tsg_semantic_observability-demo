@@ -13,6 +13,7 @@ import { ConfigController } from "./config.controller.js";
 import { RootConfig } from "./config.js";
 import { DataPlaneTestModule } from "./dataplane/dataplane.module.js";
 import { FilesModule } from "./files/files.module.js";
+import { OrchestrationModule } from "./orchestration/orchestration.module.js";
 
 const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
   ? [
@@ -29,6 +30,7 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
     ScheduleModule.forRoot(),
     DataPlaneTestModule,
     AuthModule,
+    OrchestrationModule,
     GenericConfigModule.register(RootConfig),
     TypeOrmModule.forRoot({
       ...GenericConfigModule.get(RootConfig).db,

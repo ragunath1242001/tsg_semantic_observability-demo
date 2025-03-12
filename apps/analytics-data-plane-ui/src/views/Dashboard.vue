@@ -9,7 +9,9 @@ import { useToast } from "primevue/usetoast";
 import { computed, onMounted, ref } from "vue";
 
 import PaginatedLogTable from "../components/PaginatedLogTable.vue";
+import router from "../router";
 import { useK8sStore } from "../stores/k8s";
+import { stateSeverity } from "../utils/stateseverity";
 
 const k8sStore = useK8sStore();
 
@@ -18,6 +20,9 @@ const confirm = useConfirm();
 
 const state = ref<DataPlaneStateDto>();
 const transfers = ref<TransferDto[]>();
+
+const selectedTransfer = ref<TransferDto>();
+
 const consumerTransfers = computed(() => {
   return transfers.value?.filter((t) => t.role === "consumer");
 });
@@ -36,8 +41,15 @@ const showProvider = computed(() => {
     state.value?.details?.role === "both"
   );
 });
-const expandedConsumerRows = ref();
-const expandedProviderRows = ref();
+
+const onRowSelect = (event: { data: TransferDto }) => {
+  const role = event.data.role;
+  if (role === "provider") {
+    router.push("/provider/" + event.data.id);
+  } else {
+    router.push("/consumer/" + event.data.id);
+  }
+};
 
 const getState = async () => {
   try {
@@ -66,21 +78,6 @@ const getTransfers = async () => {
         defaultMessage: "Could not load transfers from the analytics data plane"
       })
     );
-  }
-};
-
-const stateSeverity = (state: string) => {
-  switch (state) {
-    case "dspace:STARTED":
-      return "primary";
-    case "dspace:COMPLETED":
-      return "success";
-    case "dspace:REQUESTED":
-      return "info";
-    case "dspace:TERMINATED":
-      return "danger";
-    case "dspace:SUSPENDED":
-      return "warn";
   }
 };
 
@@ -142,8 +139,16 @@ const action = async (
 
 const spawnK8sJob = async (_transfer: TransferDto) => {
   try {
-    // TODO: Pass relevant data to the job
-    await k8sStore.spawnJob();
+    await k8sStore.spawnJob("busybox", _transfer.id, [
+      "sh",
+      "-c",
+      "echo Hello from the Kubernetes cluster! && sleep 5"
+    ]);
+    console.log([
+      "sh",
+      "-c",
+      "echo Hello from the Kubernetes cluster! && sleep 5"
+    ]);
   } catch (error) {
     toast.add(
       toastError({
@@ -209,19 +214,20 @@ onMounted(async () => {
     </template>
   </Card>
   <Card v-if="showConsumer" class="mt-8">
-    <template #title>Consuming Transfers</template>
+    <template #title>Initiated Transfers</template>
     <template #subtitle
       >Transfers executed by this data plane acting as consumer</template
     >
     <template #content>
       <DataTable
-        v-model:expanded-rows="expandedConsumerRows"
+        v-model:selection="selectedTransfer"
         :value="consumerTransfers"
+        selection-mode="single"
         sort-field="createdDate"
         :sort-order="-1"
         paginator
-        :rows="10">
-        <Column expander style="width: 5rem" />
+        :rows="10"
+        @row-select="onRowSelect">
         <Column field="remoteId" header="Remote ID">
           <template #body="props">
             {{ props.data.remoteParty }}
@@ -348,19 +354,20 @@ onMounted(async () => {
     </template>
   </Card>
   <Card v-if="showProvider" class="mt-8">
-    <template #title>Providing Transfers</template>
+    <template #title>Incoming Transfers</template>
     <template #subtitle
       >Transfers executed by this data plane acting as provider</template
     >
     <template #content>
       <DataTable
-        v-model:expanded-rows="expandedProviderRows"
+        v-model:selection="selectedTransfer"
+        selection-mode="single"
         :value="providerTransfers"
         sort-field="createdDate"
         :sort-order="-1"
         paginator
-        :rows="10">
-        <Column expander style="width: 5rem" />
+        :rows="10"
+        @row-select="onRowSelect">
         <Column field="remoteId" header="Remote ID">
           <template #body="props">
             {{ props.data.remoteParty }}

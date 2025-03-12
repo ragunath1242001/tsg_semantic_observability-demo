@@ -219,8 +219,8 @@ export class CatalogService {
             HttpStatus.INTERNAL_SERVER_ERROR
           );
         }
-        const deserialized = await deserialize<Offer>(this.defaultPolicy.raw);
-        dataset.hasPolicy = [deserialized];
+        const offer = await deserialize<Offer>(this.defaultPolicy.raw);
+        dataset.hasPolicy = [offer];
       } else {
         const offer = new Offer({
           assigner:
@@ -258,6 +258,14 @@ export class CatalogService {
         dataset.hasPolicy = [offer];
       }
     }
+
+    dataset.hasPolicy.map((policy) => {
+      if (!policy.assigner) {
+        policy.assigner =
+          dataset.publisher || dataset.creator || catalog.data.publisher || "";
+      }
+    });
+
     const newResource = this.resourceRepository.create(dataset);
     const newDataset = this.datasetRepository.create(dataset);
     newDataset._resource = newResource;

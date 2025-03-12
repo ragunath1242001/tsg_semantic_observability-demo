@@ -1,9 +1,3 @@
-import {
-  BatchV1Api,
-  CoreV1Api,
-  KubeConfig,
-  Log
-} from "@kubernetes/client-node";
 import { HttpException, HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { AuthClientService, promiseMap } from "@tsg-dsp/common-api";
@@ -15,9 +9,13 @@ import {
   DataPlaneCreation,
   DataPlaneDetailsDto,
   DataPlaneRequestResponseDto,
+  DataServiceDto,
   Dataset,
   DatasetDto,
   deserialize,
+  DistributionDto,
+  OfferDto,
+  PermissionDto,
   TransferCompletionMessageDto,
   TransferRequestMessageDto,
   TransferStartMessageDto,
@@ -26,14 +24,13 @@ import {
   TransferTerminationMessageDto
 } from "@tsg-dsp/common-dsp";
 import { DataPlaneStateDto, TransferDto } from "@tsg-dsp/common-dtos";
+import { resolveDid } from "@tsg-dsp/common-signing-and-validation";
 import { AxiosInstance } from "axios";
 import crypto from "crypto";
-import { Writable } from "stream";
 import { Repository } from "typeorm";
 
 import { RootConfig } from "../config.js";
 import { LoggingService } from "../logging/logging.service.js";
-import { resolve } from "../utils/didServiceResolver.js";
 import { DataPlaneClientError, DataPlaneError } from "../utils/errors/error.js";
 import { DataPlaneStateDao } from "./dataplane.dao.js";
 import { TransferDao } from "./transfer.dao.js";
@@ -42,9 +39,6 @@ import { TransferDao } from "./transfer.dao.js";
 export class DataPlaneService {
   private readonly axiosDataPlane: AxiosInstance;
   private readonly axiosManagement: AxiosInstance;
-  private readonly batchV1Api: BatchV1Api;
-  private readonly coreV1Api: CoreV1Api;
-  private kubeConfig: KubeConfig;
 
   constructor(
     private readonly config: RootConfig,
@@ -62,22 +56,68 @@ export class DataPlaneService {
     this.axiosManagement = authClient.axiosInstance({
       baseURL: this.config.controlPlane.managementEndpoint
     });
-
-    this.kubeConfig = new KubeConfig();
-    try {
-      // Load the kubeconfig from the default location (e.g. ~/.kube/config) or within cluster
-      this.kubeConfig.loadFromDefault();
-      this.coreV1Api = this.kubeConfig.makeApiClient(CoreV1Api);
-      this.batchV1Api = this.kubeConfig.makeApiClient(BatchV1Api);
-      this.logger.debug("KubeConfig loaded successfully");
-    } catch (error) {
-      this.logger.error("Failed to load kubeconfig", error);
-      throw error;
-    }
   }
   private readonly logger = new Logger(this.constructor.name);
   initialized: Promise<void>;
   private state?: DataPlaneStateDao;
+  private defaultDataset: DatasetDto[] = this.createDataset();
+
+  private createDataset(): DatasetDto[] {
+    const datasetId = `urn:uuid:${crypto.randomUUID()}`;
+    return [
+      {
+        "@context": [
+          "https://w3id.org/dspace/2024/1/context.json",
+          "https://tsg.dataspac.es/contexts/next/tsg.json",
+          "https://tsg.dataspac.es/contexts/next/health.json"
+        ],
+        "@id": datasetId,
+        "@type": "dcat:Dataset",
+        "dct:title": "Analytics Data Plane",
+        "dct:description": ["Default dataset for the analytics data plane"],
+        "dcat:keyword": ["analytics"],
+        "dcat:theme": ["analytics"],
+        "dct:language": "en",
+        "odrl:hasPolicy": [
+          {
+            "@type": "odrl:Offer",
+            "@id": `${datasetId}:policy`,
+            "odrl:permission": [
+              {
+                "@type": "odrl:Permission",
+                "odrl:action": "odrl:use",
+                "odrl:target": datasetId,
+                "odrl:constraint": [
+                  {
+                    "@type": "odrl:Constraint",
+                    "odrl:leftOperand": "dct:format",
+                    "odrl:operator": "odrl:eq",
+                    "odrl:rightOperand": "tsg:analytics"
+                  }
+                ]
+              } as PermissionDto
+            ]
+          } as OfferDto
+        ],
+        "dcat:distribution": [
+          {
+            "@type": "dcat:Distribution",
+            "@id": `${datasetId}:application/analytics-data-plane`,
+            "dct:title": "Analytics Data Plane (tsg:analytics)",
+            "dct:format": "tsg:analytics",
+            "dcat:accessService": [
+              {
+                "@type": "dcat:DataService",
+                "@id": `${datasetId}:analytics-service`,
+                "dct:title": "Analytics Data Plane Service",
+                "dcat:endpointDescription": "dspace:connector"
+              } as DataServiceDto
+            ]
+          } as DistributionDto
+        ]
+      } as DatasetDto
+    ];
+  }
 
   async init() {
     const state = await this.stateRepository.findOneBy([]);
@@ -103,14 +143,14 @@ export class DataPlaneService {
       managementAddress: this.config.server.publicAddress,
       managementToken: "",
       catalogSynchronization: "push",
-      role: this.config.dataset ? "both" : "consumer"
+      role: "both"
     };
     const details = await this.axiosDataPlane.post<DataPlaneDetailsDto>(
       `/init`,
       dataPlaneCreation
     );
     const datasets: Dataset[] = await promiseMap(
-      this.state?.dataset ?? this.config.dataset,
+      this.state?.dataset ?? this.config.dataset ?? this.defaultDataset,
       async (datasetDto) => deserialize<Dataset>(datasetDto)
     );
     const catalog: Catalog = new Catalog({
@@ -118,12 +158,12 @@ export class DataPlaneService {
     });
     await this.axiosDataPlane.post<DataPlaneDetailsDto>(
       `/${details.data.identifier}/catalog`,
-      await catalog.serialize()
+      catalog.serialize()
     );
     const state = await this.stateRepository.save({
       identifier: details.data.identifier,
       details: details.data,
-      dataset: this.state?.dataset ?? this.config.dataset ?? []
+      dataset: this.state?.dataset ?? this.config.dataset ?? this.defaultDataset
     });
     this.state = state;
     return state;
@@ -298,7 +338,7 @@ export class DataPlaneService {
         err
       ).andLog(this.logger);
     }
-    const did = await resolve(transfer.remoteParty);
+    const did = await resolveDid(transfer.remoteParty);
     const connectorService = did.service?.find(
       (s) => s.type === "connector" && typeof s.serviceEndpoint === "string"
     );
@@ -511,129 +551,5 @@ export class DataPlaneService {
     }
     transfer.state = TransferState.SUSPENDED;
     await this.transferRepository.save(transfer);
-  }
-
-  async watchPodLogs({
-    podName,
-    containerName
-  }: {
-    podName: string;
-    containerName: string;
-  }) {
-    // Set up a stream to the Pod's logs
-    const logStream = new Log(this.kubeConfig);
-
-    // Stream options
-    const streamOptions = {
-      follow: true, // Stream logs in real-time
-      pretty: true, // Avoid extra formatting
-      tailLines: 10 // Optional: Start with the last 10 lines of logs
-    };
-
-    // Create a readable stream for logs
-    const logStreamWritable = new Writable({
-      write(chunk, _encoding, callback) {
-        console.log(chunk.toString()); // Output the log data
-        callback();
-      }
-    });
-
-    await logStream.log(
-      this.config.kubernetesConfig.namespace,
-      podName,
-      containerName,
-      logStreamWritable,
-      streamOptions
-    );
-
-    logStreamWritable.on("finish", () => {
-      console.log("Log stream finished.");
-    });
-  }
-
-  async spawnJob() {
-    const jobName = `analytics-dp-job-${new Date().getTime()}`;
-    const containerName = "analytics-dp-container";
-    const namespace = this.config.kubernetesConfig.namespace;
-    const image = "busybox";
-
-    const command = [
-      "sh",
-      "-c",
-      "echo Hello from the Kubernetes cluster! && sleep 5"
-    ];
-
-    const jobManifest = {
-      apiVersion: "batch/v1",
-      kind: "Job",
-      metadata: {
-        name: jobName,
-        namespace
-      },
-      spec: {
-        backoffLimit: 3,
-        template: {
-          metadata: {
-            labels: {
-              app: jobName
-            }
-          },
-          spec: {
-            restartPolicy: "Never",
-            containers: [
-              {
-                name: containerName,
-                image,
-                command
-              }
-            ]
-          }
-        }
-      }
-    };
-
-    await this.batchV1Api.createNamespacedJob({
-      namespace,
-      body: jobManifest
-    });
-
-    let attempts = 0;
-    const maxAttempts = 10;
-    const delay = (ms: number) =>
-      new Promise((resolve) => setTimeout(resolve, ms));
-
-    while (attempts < maxAttempts) {
-      try {
-        const podList = await this.coreV1Api.listNamespacedPod({
-          namespace: namespace,
-          labelSelector: `app=${jobName}`
-        });
-
-        const podNames = podList.items.map((pod) => pod.metadata?.name);
-
-        if (podNames.length === 0) {
-          throw new Error(`No pods found for job ${jobName}`);
-        }
-
-        if (podNames.length > 1) {
-          throw new Error(`Multiple pods found for job ${jobName}`);
-        }
-
-        const podName = podNames[0]!;
-
-        await this.watchPodLogs({ podName, containerName });
-        break; // Exit loop if successful
-      } catch (_err) {
-        console.log("Error watching pod logs:", _err);
-        attempts++;
-        if (attempts < maxAttempts) {
-          console.log(`Retrying in ${attempts * 500}ms...`);
-
-          await delay(attempts * 500); // Exponential backoff
-        } else {
-          console.error("Max attempts reached. Could not watch pod logs.");
-        }
-      }
-    }
   }
 }

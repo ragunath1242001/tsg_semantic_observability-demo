@@ -80,6 +80,9 @@ importers:
       '@tsg-dsp/common-dtos':
         specifier: workspace:*
         version: link:../../libs/common-dtos
+      '@tsg-dsp/common-signing-and-validation':
+        specifier: workspace:*
+        version: link:../../libs/common-signing-and-validation
       axios:
         specifier: ^1.7.8
         version: 1.8.2

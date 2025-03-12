@@ -32,6 +32,13 @@ export class TransferDto {
   @IsString()
   secret?: string;
 
+  @ApiPropertyOptional({
+    example: "urn:uuid:123e4567-e89b-12d3-a456-426614174000"
+  })
+  @IsOptional()
+  @IsString()
+  datasetId?: string;
+
   @ApiProperty({ enum: TransferState, example: "REQUESTED" })
   @IsEnum(TransferState)
   state!: TransferState;
