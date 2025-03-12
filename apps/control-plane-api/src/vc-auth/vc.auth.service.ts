@@ -66,7 +66,7 @@ export class VCAuthService {
     return this.walletClient.requestSignatureValidation(signedDocument);
   }
 
-  async validateVP(token: string) {
+  async validateVP(token: string): Promise<VerifiablePresentation[]> {
     let tokenPayload: JwtPayload | null = null;
     try {
       tokenPayload = decode(token, { json: true });
@@ -94,7 +94,10 @@ export class VCAuthService {
     return valid;
   }
 
-  async validateTransferVP(req: Request, token: string) {
+  async validateTransferVP(
+    req: Request,
+    token: string
+  ): Promise<VerifiablePresentation[]> {
     let tokenPayload: JwtPayload | null = null;
     try {
       tokenPayload = decode(token, { json: true });

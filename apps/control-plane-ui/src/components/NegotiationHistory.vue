@@ -269,7 +269,7 @@ const requestTransfer = async (accNegotiation: NegotiationDetailDto) => {
                   raised
                   type="button"
                   class="m-12 flex text-center justify-center p-4"
-                  style="width: 60%; max-width: 60%"
+                  style="width: 60%; max-width: 60%; max-height: 60px"
                   label="Request Transfer"
                   severity="success"
                   @click="requestTransfer(accNegotiation)"></Button>

@@ -3,10 +3,15 @@ import { defineStore } from "pinia";
 
 export const useK8sStore = defineStore("k8s", {
   actions: {
-    async spawnJob() {
+    async spawnJob(imageName: string, transferId: string, command: string[]) {
       try {
-        const response = await http.get<boolean>("management/k8s/spawn-job");
+        const response = await http.post("management/k8s/spawn-job", {
+          imageName,
+          transferId,
+          command
+        });
         console.log("Response:", response);
+        return response;
       } catch (error) {
         console.error("Error:", error);
         throw error;

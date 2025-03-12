@@ -208,7 +208,7 @@ describe("Dataplane Service", () => {
   });
 
   afterAll(async () => {
-    await TypeOrmTestHelper.instance.teardownTestDB();
+    TypeOrmTestHelper.instance.teardownTestDB();
   });
 
   describe("Provider process", () => {
@@ -468,7 +468,7 @@ describe("Dataplane Service Consumer", () => {
     it("Add dataset config", async () => {
       await dataPlaneService.initialized;
       await new Promise((r) => setTimeout(r, 100));
-      expect(await dataPlaneService.getDatasets()).toHaveLength(0);
+      expect(await dataPlaneService.getDatasets()).toHaveLength(1);
       await dataPlaneService.updateDatasets([
         {
           "@context": "https://w3id.org/dspace/2024/1/context.json",

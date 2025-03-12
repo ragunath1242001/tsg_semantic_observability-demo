@@ -38,6 +38,7 @@
     "@tsg-dsp/common-api": "workspace:*",
     "@tsg-dsp/common-dsp": "workspace:*",
     "@tsg-dsp/common-dtos": "workspace:*",
+    "@tsg-dsp/common-signing-and-validation": "workspace:*",
     "axios": "^1.7.8",
     "bcrypt": "^5.1.1",
     "class-transformer": "^0.5.1",

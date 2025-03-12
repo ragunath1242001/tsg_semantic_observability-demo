@@ -16,7 +16,7 @@ dataset:
             openApiSpecRef: https://httpbin.org/spec.json
 ```
 
-The properties in this yaml file are translated to [DCAT](https://www.w3.org/TR/vocab-dcat-3/) Datasets. The properties that are configurable can be found in [HTTP Data Plane Configuration](../apps/http-data-plane/configuration.md). 
+The properties in this yaml file are translated to [DCAT](https://www.w3.org/TR/vocab-dcat-3/) Datasets. The properties that are configurable can be found in [HTTP Data Plane Configuration](../../apps/http-data-plane/configuration.md). 
 
 ## Open API Specification
 Most properties in the dataset described above are direct links to the similar named DCAT properties. This is not the case for `backendUrl` and `openApiSpecRef`. The `backendUrl` property points towards your backend service and is used for finding the application when a Transfer is started, according to the Dataspace Protocol. This `backendUrl` is accompanied by the `openApiSpecRef`, to indicate to what OpenAPI Specification describes your API. This greatly helps future clients determine what use your service can give to them.

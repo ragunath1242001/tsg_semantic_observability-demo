@@ -2,6 +2,7 @@ import { Logger } from "@nestjs/common";
 import { AuthClientService } from "@tsg-dsp/common-api";
 import { VerifiablePresentation } from "@tsg-dsp/common-dsp";
 import { InputDescriptor } from "@tsg-dsp/common-dtos";
+import { plainToInstance } from "class-transformer";
 import crypto from "crypto";
 
 import { TsgWalletConfig } from "../../config.js";
@@ -129,7 +130,7 @@ export class TsgWalletClient extends WalletClient {
       this.logger.debug(
         `Successfully requested validation for audience ${audience}`
       );
-      return response.data;
+      return plainToInstance(VerifiablePresentation, response.data);
     } catch (err) {
       throw new DSPClientError("Could not request VP", err).andLog(
         this.logger,
