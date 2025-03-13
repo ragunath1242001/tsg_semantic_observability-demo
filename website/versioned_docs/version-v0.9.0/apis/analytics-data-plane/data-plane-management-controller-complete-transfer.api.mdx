@@ -1,0 +1,72 @@
+---
+id: data-plane-management-controller-complete-transfer
+title: "Complete a transfer by ID"
+description: "Complete a transfer by ID"
+sidebar_label: "Complete a transfer by ID"
+hide_title: true
+hide_table_of_contents: true
+api: eJx9VU1v4zYQ/SvEnFqAtQzXJ92CfBQB2qyxSfcSGMZYHFvcSiSXHK1jCPrvBakPO2snvljgaIbzZt57asE68sjamkcFOdwh46pCQ/+gwT3VZPjWGva2qshvClu7iphePJqwIw8SHHqsickHyF9bMFgT5KAVSPD0o9GeFOTsG5KgDeTgkEuQoCgUXrt4L+Qw1hNakWG906l0KEqqEfIW+Ohi1cBemz103ToWD86aQCHGF/NF/HtfFDoJy/mfl4EH67daKTIgobCGyXB8CZ2rdJFGkX0P8c32sgW7/U4FR9w+Do5130AP+9dGJdAbxolBDl8p2MYX9GT5wTZGxe4CIzfh87zlfCmeLIspqbDq/CrT1Ns0rSllOV92EmoKAfd0rfVT8ZeSRNwSBSYl/NCiUJaCMJYFvenAs3greW/9552eddmdL/+1n84Ed4CwlsCaU+Z9LH7HFrr4kxCoaLzmY2KUxYbLRSxT9ER0kZ4bhYzpCdaRDoz7SMDEX5EILE4Mjne9p8DtQGSBgkfubY/i8Q7i5Li0UQvOhrTpyNgcMnQ6q6ea2ZgXslarLhulEXGS/9nrYX3C8hyZ1JNlRHTaTH8gYVfZQ3rFYQgH61XPQev6RDRYHVkXYQK/QVUnWX0YktdCp+FdzTyF+31sCT35SQ8xazgaYw/W18iQw7cVyBFWyewupP6NvN5p3FYkVp4CGU6KE4ZIkRJsRWHrujFRiSS2xAciI/hghTaB0RQUhN0JLkkMfBCp1VlinTY7mwY7MOvl+S9xMwIUJ3JcOlCpg/jiyNysHkVwVOjd4AUilPYQ0oVklLPa8NTBtdIzkBDXP5hQbzFYRIvpJFS6IBPo5Blw47AoSSxmc5DQ+GoYXMiz7HA4zDCFZ9bvsyE3ZH8/3t4/Pd//sZjNZyXXVYIe2VqjOav8GcnfoZ+IyPTGmatQm6j51Ew78P8V0OmojpOqJEwaAAl58vxJBmsJZdRP/gptu8VA//qq6+Lxj4b8sRfHT/SJCknoSof4rCDfYRXoosfJquG3r4O5/C6ufzmuwhkO0RzjhrBqqN/Pf3Tsv1jdupNQEqrI9dd2CNwUBTk+S7n4TkT/mUxj9eX5JYquiUO7VPjkZu31fj7SsfhUpiOIZBXQyQ+Kj66yKTylcWEVpty9R8OblNetu677Hyi80Ag=
+sidebar_class_name: "post api-method"
+info_path: docs/apis/analytics-data-plane/tsg-analytics-data-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Complete a transfer by ID"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/management/transfers/{id}/complete"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Complete a transfer by ID
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"id","required":true,"in":"path","description":"Transfer identifier","schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"202":{"description":""},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string","example":"ResourceNotFound"},"status":{"type":"string","example":"404 Not Found"},"code":{"type":"number","example":404},"message":{"type":"object","example":"The requested resource does not exist."},"error":{"type":"string","example":"Not Found"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

@@ -1,0 +1,72 @@
+---
+id: config-controller-get-settings
+title: "Retrieve settings"
+description: "Retrieves the settings of the control plane."
+sidebar_label: "Retrieve settings"
+hide_title: true
+hide_table_of_contents: true
+api: eJytVt9v2zgM/lcI3dvgc4KuOBzyth9tUeCuK9pu91AUASMxtlZb0iS6WRD4fx9oO4mTtR3ucE9xRPIjRer7pI0ylHS0ga13aqZuiKOlJ0rAJUEiZuuKBH7Z/dfecfQVhAod5SpTPlBECb00aqY+eLe0xYfeqaI4L4hvBwiVqYARa2KKSc3uHzIVKQXvEiU126iT6VR+DqtRmZKU5FhsGEJldZdu8jWJw0YlXVKN8sXrQGqm/OIraZZsUYpj28MPlV9L4ZeOKaIWnDSKTBytK1Sm6DvWoZIlbNjXyFarViqpfHzd/7e37/98f/6HeBuMj3cl1fQ5Vq8HlcwhzSaTYSXXvp5INEt0HlwhcJUtSv7veF34CLCV7n9rbCSjZvcvd2e764dMseUO/qZxbGvqZ/2RvWpbgTudvv15fuc+Lqwx5P6/QTqs6fX931DyTdR05fncN85I+xIjN78Y9un0FK48wy5IezNO5Zp6QXEccjo9bTNVU0pY0HOl78HvSgLpOCUmA3EoEYynBM4z0HebOJesFOOvjtmoyqNBdt3ZbXfYwmh4ZwK+HZr0hXQTLa/V7H6jPDZcnozOQ0fzOZraOvXQCgwWwl21I/WDbJ9LL+wvqJsWcqlmaoLBTtKe+4ni047426y3MvN+rNvc+x72C5laVn7VuQRMaeWj6U+LDwfEHpc6e24xO1w0yNh9HXvvDX2HFoSR4u6Eiv+wtLWd+1gjq5n6cq2ybflCQpUd0eELRbu0uKgIriMlctxxAByRIQPsQfu6bpxwg2BBvCJywCsP1iVGp+klJZZKrVv6roHDrO9uL2DQYuiY/VM9d6VN8CmQe3d9CSmQtsuBlpBKv+rvAHImeOt4l/oAM4e/feKtae+LUc57hdzvS4wfkTEF1LJ5z177KgNM27xkYLHu/M50ZUMi+MfHR+sKuIi+CfvolMMnLikeJUtNCD6yfRpXwR5qfBRjpA5bpgsaHSwI0Jh9cRoZK19kgM4chyHD50uwI13sIFhcQoWacoD5/M2VZ3ozn8/goK2GltbZrqe2p7oAuSH1gsDYSJqrNVTWPZKBleUSEJJ1RXXU7N0xyEFlSvh0cE2iFnXtLgtNLtFeLtW7gLokOMmnKlON3CC7a2K1WuXYmXMfi8kQmyZ/XX44u7o9+/0kn+Yl11V3xoJPXKMbIW8fDDAi+8Ep2+yV/9++LgYuMX3nSajQOtHHpr//ep25VxhsJy97QSp9YrFsNgtMcl22rSx/ayiue/15wtixUP61mSoJjVD8fqMeaS3d0pqCiNkTVk33Dji+sNqx8F2c3alM3grlc/q1U9WdCd16hP2zVsELgpQN5XXip9rsBcCtTs51JEOOLVZpF1tEdDzv4tqHtm1/AKOef68=
+sidebar_class_name: "get api-method"
+info_path: docs/apis/control-plane/tsg-control-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Retrieve settings"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/settings"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Retrieves the settings of the control plane.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{"controlPlaneInteractions":{"type":"string","example":"automatic"},"color":{"type":"string","example":"#3B8BF6"},"darkThemeUrl":{"type":"string","example":"https://example.com/darktheme.png"},"lightThemeUrl":{"type":"string","example":"https://example.com/lighttheme.png"}},"required":["controlPlaneInteractions","color"],"title":"RuntimeConfigDto"}}}},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string","example":"ResourceNotFound"},"status":{"type":"string","example":"404 Not Found"},"code":{"type":"number","example":404},"message":{"type":"object","example":"The requested resource does not exist."},"error":{"type":"string","example":"Not Found"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

@@ -1,0 +1,33 @@
+---
+id: clientdto
+title: "ClientDto"
+description: ""
+sidebar_label: "ClientDto"
+hide_title: true
+hide_table_of_contents: true
+schema: true
+sample: {"id":1,"name":"Example Client","secretName":"SecretExample","description":"A sample client used for demonstration purposes.","clientId":"client-id-123","clientSecret":"client-secret-abc","roles":["admin","user"],"grants":["authorization_code","client_credentials"],"redirectUris":["https://example.com/callback"]}
+custom_edit_url: null
+---
+
+import Schema from "@theme/Schema";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"ClientDto"}
+>
+</Heading>
+
+
+
+
+
+<Schema
+  schema={{"type":"object","properties":{"id":{"type":"number","example":1},"name":{"type":"string","example":"Example Client"},"secretName":{"type":"string","example":"SecretExample"},"description":{"type":"string","example":"A sample client used for demonstration purposes."},"clientId":{"type":"string","example":"client-id-123"},"clientSecret":{"type":"string","example":"client-secret-abc"},"roles":{"example":["admin","user"],"type":"array","items":{"type":"string"}},"grants":{"example":["authorization_code","client_credentials"],"type":"array","items":{"type":"string"}},"redirectUris":{"example":["https://example.com/callback"],"type":"array","items":{"type":"string"}}},"required":["name","secretName","description","clientId","clientSecret","roles","grants","redirectUris"],"title":"ClientDto"}}
+  schemaType={"response"}
+>
+  
+</Schema>
+            

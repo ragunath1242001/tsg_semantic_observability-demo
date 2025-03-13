@@ -1,0 +1,33 @@
+---
+id: pagemetadto
+title: "PageMetaDto"
+description: ""
+sidebar_label: "PageMetaDto"
+hide_title: true
+hide_table_of_contents: true
+schema: true
+sample: {"page":1,"take":10,"itemCount":100,"pageCount":10,"hasPreviousPage":false,"hasNextPage":true}
+custom_edit_url: null
+---
+
+import Schema from "@theme/Schema";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"PageMetaDto"}
+>
+</Heading>
+
+
+
+
+
+<Schema
+  schema={{"type":"object","properties":{"page":{"type":"number","example":1},"take":{"type":"number","example":10},"itemCount":{"type":"number","example":100},"pageCount":{"type":"number","example":10},"hasPreviousPage":{"type":"boolean","example":false},"hasNextPage":{"type":"boolean","example":true}},"required":["page","take","itemCount","pageCount","hasPreviousPage","hasNextPage"],"title":"PageMetaDto"}}
+  schemaType={"response"}
+>
+  
+</Schema>
+            

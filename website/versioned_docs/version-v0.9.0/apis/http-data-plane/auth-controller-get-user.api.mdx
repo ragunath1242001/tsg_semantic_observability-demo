@@ -1,0 +1,72 @@
+---
+id: auth-controller-get-user
+title: "Retrieve current user status"
+description: "Retrieves current user state, whether someone is logged in or not a 200 result is provided. This is used in the frontend to determine whether certain aspects should be shown."
+sidebar_label: "Retrieve current user status"
+hide_title: true
+hide_table_of_contents: true
+api: eJzVVUtvGzcQ/ivEnNeSovS5pxqOm7ooGiOWcxGMYLQcaelwSYaclWII+9+L4a42siwYPfRSXbQk5/HNN689aEpVNIGNd1DCR+JoaEtJVW2M5Fi1iaJKjEyF2tXEtRx9Q96RMklZv9mQVsYpH5XzrFDNZzMVKbWWRSBEvzWa9EQtapPkpk29Atek1tE7JqcVe6WJKTbG0einoshonMIUqOKkUu1bq9WK5GvnJlCADxRRwN9oKOGy5frKO47eWoqfN8T3iSIUEDBiI/YTlMuHAiKl4F2iBOUe5rOZ/D1nAgqoMjaWNwzBmio7mj4mEdhDqmpqUL68ow9rKJd74KdAUIJfPVLF4jcKQDa9o0yjfJyK0TdsgpUrbLkmx+KLNHQFCP+iMorsIbUrKPPDhdEXb+ZvoQCHjaj/6Wun3nkSmw0aCyU8+tpNtKffBguTyjdQQPRWQC0BdWMcDI4eCtBGZy610eWgUr6Zv/3hx59+/uVXUaR1pFQv/BcSnobjBcv5AleV4OkKQGv/HScSzCiUOBq3ecbIcZzdIdDXFEYOupGE18TP8tONPLymep6ibiT3KGsveR7MYoz4BAUYpia9dNd1p4y/Buh8MrKJr62JpAWIMD7weCDogFhgGc6mrqwhxzdu7aF7eGEiF/JRLIPS5XH15tbriv+gKVp30hZn4RzhuH+u0CN56ORXAOMmF/4RWGn5hwIa4tpL7W8o40SuoYQpBjMVe9O2HyaJ4nacJImqNhp+upNp0EfkRXh+HFJ/UcDa+l0WCZjSzkfdzxEfesWaOWhkDBYdfe4Lpjx7W5zcjl8v5L+/9NGvCGM/UfL8EoXh6vD2u48NMpTw6RbGMhWjUJzMyE8UzdrgypK6jZTIcaZSOSJNeaZXvmlal7OgVsQ7Iqd455VxidFVlJRf50VQ9VNbZaiTnGEjtSckDkld3L1XfywWt+odMqrbHNMporxjPgRyl7c3SraGWQ/5zSsjZV/kdPDG8ej8xKrsFUnws0WAlSyCrgBrKnIpV+wwdC8DVjWp+WQmLRHtQFcqp9PdbjfB/DzxcTMddNP0r5ur67/vri/mk9mk5sbmgINP3KA7snxYxy+3cZtOY99/31f/vzU+VBnTN54Gi8bl1Rdt3yvShkvAYKDIC/Jo8tQ+sTzu9ytMdB9t18n115biU9+gW4y5ROXUFVATaqn/5R6+0JNkr6ooSLtv0bZ5Ip/u+u54NLy/XkDX/QP0ky2f
+sidebar_class_name: "get api-method"
+info_path: docs/apis/http-data-plane/tsg-http-data-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Retrieve current user status"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/auth/user"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Retrieves current user state, whether someone is logged in or not a 200 result is provided. This is used in the frontend to determine whether certain aspects should be shown.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"","content":{"application/json":{"schema":{"oneOf":[{"type":"object","properties":{"state":{"type":"object","example":"authenticated"},"user":{"example":{"sub":"user-id-123","name":"John Doe","email":"john.doe@example.com","roles":["admin","user"],"didId":"did:example:123456789","refreshToken":"refresh-token-abc123"},"allOf":[{"type":"object","properties":{"sub":{"type":"string","example":"user-id-123"},"name":{"type":"string","example":"John Doe"},"email":{"type":"string","example":"john.doe@example.com"},"didId":{"type":"string","example":"did:example:123456789"},"roles":{"example":["admin","user"],"type":"array","items":{"type":"string"}},"refreshToken":{"type":"string","example":"refresh-token-abc123"}},"required":["sub","name","email","roles"],"title":"ClientInfo"}]}},"required":["state","user"],"title":"AuthenticatedUser"},{"type":"object","properties":{"state":{"type":"object","example":"unauthenticated"}},"required":["state"],"title":"UnauthenticatedUser"}]}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

@@ -1,0 +1,33 @@
+---
+id: transferprocessschema
+title: "TransferProcessSchema"
+description: ""
+sidebar_label: "TransferProcessSchema"
+hide_title: true
+hide_table_of_contents: true
+schema: true
+sample: {"@type":"dspace:TransferProcess","dspace:providerPid":"provider-pid-789","dspace:consumerPid":"consumer-pid-123","dspace:agreementId":"agreement-id-456","dspace:state":"COMPLETED"}
+custom_edit_url: null
+---
+
+import Schema from "@theme/Schema";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"TransferProcessSchema"}
+>
+</Heading>
+
+
+
+
+
+<Schema
+  schema={{"type":"object","properties":{"@type":{"type":"string","example":"dspace:TransferProcess"},"dspace:providerPid":{"type":"string","example":"provider-pid-789"},"dspace:consumerPid":{"type":"string","example":"consumer-pid-123"},"dspace:agreementId":{"type":"string","example":"agreement-id-456"},"dspace:state":{"type":"string","example":"COMPLETED"}},"required":["@type","dspace:providerPid","dspace:consumerPid","dspace:agreementId","dspace:state"],"title":"TransferProcessSchema"}}
+  schemaType={"response"}
+>
+  
+</Schema>
+            

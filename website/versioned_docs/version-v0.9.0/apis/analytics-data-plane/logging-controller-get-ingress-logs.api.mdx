@@ -1,0 +1,72 @@
+---
+id: logging-controller-get-ingress-logs
+title: "Get ingress logs"
+description: "Get ingress logs"
+sidebar_label: "Get ingress logs"
+hide_title: true
+hide_table_of_contents: true
+api: eJy9VU1v4zYQ/SvCnFnbCdCLbkGSBgHSrYGkewmMYCyNJe5KJJccxTEM/fdiSFm2EydNt0VvEjkzbz7ePG7BOvLI2prbEnK4s1WlTXVpDXvbNOSfKuJbU3kK4c5WARQ49NgSkw+QP27BYEuQg/UleVDg6UenPZWQr7AJpEAbyOFHR34DCkJRU4uQb6GkFXYNQw5X1/eXoIA3TuIE9tpUoIBM10L+CBfxNhot+l6NgA4r+gd4rTa6lYhnao99NsKarl2Sh0MAxu8/C9DiS/r+dXaINjsJ9wbgVUd/roEfhh569+9b9R7A0Lv/tFULmUVw1gQKEuV8Nkt9CIXXThgMOYCCwhomw3KHzjW6iOyefgtisD1IYwCwy29UsBDbyy6wTuFL5EMr9B6lCs3Uhjfnfa+gJf5E2Nj6vdVQnQJ6wdY1BPlZr1L7PjSa9SmVS9ulUj8wFVuB/Yxtr6DGMPf0rG0X5sfJLq1tCM2hRxx7cvpCL/z3Duw7km7tmfO4o+OONGNZh2m/zesYdKGANQsCyP/vxHjFFl5DxakOs3rlksx78QhUdF7zJgqcxY7rc3Eukiq6Bg09SaT4BQuhJmMlergTUAl+zMwb4kwnIc2apKQtcW1FdStKxXINOUzR6WmLBitqyfC0SRGng7NsEvnnJL+Lfa73wuvEsV3Gey6mAwWrxq4HGoawtr5MG2FdckSDzYZ1EcbinrBs4xa/e6VOXe2bc9Jzf536vST05MftjNRJR7u736xvUcTu63wvdTWzg9d9/kperzQuG8rmngIZjvufGaKSyoxtVti27YzoAmVL4jWRyXhtM20CoykoZHaVcU3ZMO8spjqJXNJmZWNjB+I83N9kF7sCsytkzOaxsNdpPdQ6ZH84Mhfz2yw4KvRqUKYs1HYdIiCZ0llteMzgVOgJKJDxHwkeFrLZvYJGF2RCXMJBiy8cFjVl55MZKOh8MzQu5NPper2eYLyeWF9NB98wvbu9vP5yf/3L+WQ2qbltYunOBm7RHEQ+Qemjokf+Mb3w1DWoDfRDDtuB7o+ATssujIQHBQPl4wuSSL9QUNvAYr/dLjHQn77pezlOz4ssaqmDjH3/GH2nzcE7+oxNJ8mAPFzv2A5K9BnTQa0+Y/p/ZbCQHx+5L9ogskwo0NKd5HNRFOT4wOvNEylRRmG6uX6QBe9kUm/VZFTG/WtoNoex39GM7ENJ2JUXZSnWfzL4TsGeCk8lGdbYhNG38mj4Kfr1i77v/wI4nrUg
+sidebar_class_name: "get api-method"
+info_path: docs/apis/analytics-data-plane/tsg-analytics-data-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Get ingress logs"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/management/logging/ingress"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Get ingress logs
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"order","required":false,"in":"query","schema":{"default":"DESC","type":"string","enum":["ASC","DESC"]}},{"name":"page","required":false,"in":"query","schema":{"minimum":1,"default":1,"type":"number"}},{"name":"take","required":false,"in":"query","schema":{"minimum":1,"maximum":50,"default":10,"type":"number"}},{"required":false,"name":"order","in":"query","schema":{"default":"DESC","type":"string"}},{"required":false,"name":"page","in":"query","schema":{"minimum":1,"default":1,"type":"number"}},{"required":false,"name":"take","in":"query","schema":{"minimum":1,"maximum":50,"default":10,"type":"number"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{"data":{"type":"array","items":{"type":"array"}},"meta":{"type":"object","properties":{"page":{"type":"number","example":1},"take":{"type":"number","example":10},"itemCount":{"type":"number","example":100},"pageCount":{"type":"number","example":10},"hasPreviousPage":{"type":"boolean","example":false},"hasNextPage":{"type":"boolean","example":true}},"required":["page","take","itemCount","pageCount","hasPreviousPage","hasNextPage"],"title":"PageMetaDto"}},"required":["data","meta"],"title":"PageDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

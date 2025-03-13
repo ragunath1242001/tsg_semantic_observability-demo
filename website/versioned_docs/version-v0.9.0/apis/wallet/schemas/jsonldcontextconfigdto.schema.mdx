@@ -1,0 +1,33 @@
+---
+id: jsonldcontextconfigdto
+title: "JsonLdContextConfigDto"
+description: ""
+sidebar_label: "JsonLdContextConfigDto"
+hide_title: true
+hide_table_of_contents: true
+schema: true
+sample: {"id":"http://example.com/context","credentialType":"VerifiableCredential","issuable":true,"documentUrl":"http://example.com/document","document":{"@context":"http://schema.org"},"schema":{"type":"object","properties":{"name":{"type":"string"}}}}
+custom_edit_url: null
+---
+
+import Schema from "@theme/Schema";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"JsonLdContextConfigDto"}
+>
+</Heading>
+
+
+
+
+
+<Schema
+  schema={{"type":"object","properties":{"id":{"type":"string","example":"http://example.com/context"},"credentialType":{"type":"string","example":"VerifiableCredential"},"issuable":{"type":"boolean","example":true},"documentUrl":{"type":"string","example":"http://example.com/document"},"document":{"type":"object","example":{"@context":"http://schema.org"}},"schema":{"type":"object","example":{"type":"object","properties":{"name":{"type":"string"}}}}},"required":["id","credentialType","issuable"],"title":"JsonLdContextConfigDto"}}
+  schemaType={"response"}
+>
+  
+</Schema>
+            

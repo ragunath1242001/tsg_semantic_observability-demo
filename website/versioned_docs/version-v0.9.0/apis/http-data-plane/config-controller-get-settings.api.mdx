@@ -1,0 +1,72 @@
+---
+id: config-controller-get-settings
+title: "Retrieve settings"
+description: "Retrieves the settings of the control plane."
+sidebar_label: "Retrieve settings"
+hide_title: true
+hide_table_of_contents: true
+api: eJytVdtu20YQ/ZXF9JWVBEcoCr4ljp0aKFzBVvMiCMZoOSI3IXc3u0PLgsB/L4akKFq+BC36RHJ2z5nrGR4go6iD8WychRTuiIOhR4qKC1KRmI3No3Lb9ls7y8GVypdoaQIJOE8BBXqTQQqXzm5NftldKik85MT3PQUk4DFgRUwhQrpaJxAoemcjRUgPcDGbyeN5NJCAuCTLcobel0a37qbfolw4QNQFVShvvPcEKbjNN9Is3oIEx6aj1650YXQtcjA2hwToCStfiumXD59+/3T9GzQJZBi+Lwuq6O9Qvg8qmH1Mp9PeMtGumgqaBT3xNhe60uQF/3e+Fj4ibKR0P2oTKIN01ae2ToANtxx3tWVTUdeNz+ygaQQzn314WeFrFzYmy8j+f6W2WNH7Sd5RdHXQdOv42tU2kxpFRq7j+7j5bK5uHasBpF02dmXrakNhDJnP5k0CFcWIOb0W+ol8WZCSslJkylToQ1SZo6isY0VPJvJEvFIIP5ulUZRn3WqrM6TbpzBq3pWQH5smdSFdB8N7SFcHcFhzcdE1vRVZK8QHzCpjYd0IDeaiLhhkt5b0uXCiz5zabiEXkMIUvZnGkzojhcdBmkev99Lzrq1H36cadoYEtqXbtVc8xrhzIeumxfkOKCOdIeM41vRVa3JmHd5e3D+ddFXaEAYKw5QKoDcdz65dqJAhha8LSI4pCCkkZ5L4SsFsDW5KUotAkSy3OlCWKKNMsVPaVVVtRR+kNsQ7Iqt455SxkdFqemtfSqTGbl1bxL7fy/sv6o/lcqE+I6NatDmdR7QsTFR/ebIfFzcqetJm24tTxcLtul1NNvPOWB6cn7HKupYGP9usqEXu7YrSZCOd9AsfPeqC1MVkBgnUsreG5bTb7SbYHk9cyKc9Nk7/vLm8ur2/+vViMpsUXJVtwt5FrtCOmI//GDWavmcJH06r6N/+kPrGMj3x1JdorAi27rZuN/grQG/aeT8ppHCR5eRw2GCUJd00Yv5RU9h3gnjE0I6EfDUJFISZzNvqAN9pL9XSmryo6xHLWiJ4sUGbsRK/XC0hARHQa4IaZD4cod2PuF/RjnpLH0kfYKtHaJI3KI/SfdCBMrJssIwDNg9o+aHFNeumaf4B7UvY4g==
+sidebar_class_name: "get api-method"
+info_path: docs/apis/http-data-plane/tsg-http-data-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Retrieve settings"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/settings"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Retrieves the settings of the control plane.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{"color":{"type":"string","example":"#3B8BF6"},"darkThemeUrl":{"type":"string","example":"https://example.com/darktheme.png"},"lightThemeUrl":{"type":"string","example":"https://example.com/lighttheme.png"}},"required":["color"],"title":"RuntimeConfigDto"}}}},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string","example":"ResourceNotFound"},"status":{"type":"string","example":"404 Not Found"},"code":{"type":"number","example":404},"message":{"type":"object","example":"The requested resource does not exist."},"error":{"type":"string","example":"Not Found"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

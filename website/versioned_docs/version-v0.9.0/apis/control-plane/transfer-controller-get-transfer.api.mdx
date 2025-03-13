@@ -1,0 +1,72 @@
+---
+id: transfer-controller-get-transfer
+title: "Get transfer status by ID"
+description: "Get transfer status by ID"
+sidebar_label: "Get transfer status by ID"
+hide_title: true
+hide_table_of_contents: true
+api: eJyNVdtuGzcQ/RVintpgLaXufZ9q2KohIImF2kkfDEMYkSMtYy7JkLNWBGH/vSB3VzcLSfW04gzPHA7PHG7BeQrI2tmpghIeAtq4pHDtLAdnDIX5inhYhQI8BqyJKUQoH7dgsSYoQSsoINCXRgdSUHJoqABtoQSPXEEBiqIM2qc6B1XE9AYKiLKiGqHcAm98QosctF1B2z4l0OidjRRTXNESG8Pd5yEgFCCdZbI5ht4bLfOhxp9jSti+LuIWn0lyOlFILWDdlfirC59yKYC+Yu1NWlLRo6RyOMQsOEkxQlsMER/ci1YUZlp9G2lIvPBaXfz+x58HGNLZ2NT/A2NIzBg/Xf58gIGrQFST5el3MHaJF1pd/PLrbwcYkZG/04/ru/ezd5OHyQ207aEKHvtmnu3L2YOeZX5C5akA1pwLn9zAfXfFbfoVEEk2QfMmy3RBGChA+fiUNMW4Surd7Y8J9FhQt8SCB5Wmwk0Ui02n15q4cmlYVpT1kxRewhi9Hg9b4nirVZu0TeGlm5WnPaVMtJObw4ary0NZdgsFLI1b5xSPMa5dUJ2Kne82ym5AvUFLc1R1HrYzi8XxokLG/HWavQ907Rs61k9Oyu+XhtjfLtTIUMKnGRQD/YrZvxr3TxT0UuPCkJgFimQ5z6awRIqUYCekq+vGppklsSBeE1nBaye0jYxWUhRuKbgi0XMWmeooC07bpcsNHFRxfyt6+xKzfKJX9lPpKO482avZVERPUi97uxCxcuuYK5FV3mnLu9JHmCPx3kUeQvtcDCQCGeTuXCl4g4xZwGIWHDvpTCEwDnVJJV2lvIk02kcS/7rwrO1K3AbX+P3uOBJ3XFE4KRYb711g/XLIgp2o8TkFA2XsdLtCohULEqjUnpxERuNWhUCrTrchi49ToS1TQJm6EzMEpxRvUNJIiPn8zQfH9GY+L8VRWxUttdW5pzoK6zgD2b70goTSgSSbjTDaPpMSa82VQBG1XZmTZu9kMBJQQJqnI9dHmVy/LcBoSTZmt+rfpSuPsiJxOXoLBTTB9AqN5Xi8Xq9HmMMjF1bjfm8cv5teTz7cTy4uR29HFdcma8y7yDXaA+RvGcSR2naTzfSVx96gtsleM5ltbx6PgF6nIdoZUgGlVsmWKhc5JWy3C4z0MZi2TctfGgqbzlVeMOTZykandEzfCsolmkivuOxeSfjhn96ofxTHz/FZuv0i2k26ATQNdf1/pk33/LdPbQEVoco2u+0DV1KS54Mtr57m5Mc7Q72dPEAByQEP+nZiOxn9LJ3ttst4cM9k23bHjtP/RLBt/wNujxvz
+sidebar_class_name: "get api-method"
+info_path: docs/apis/control-plane/tsg-control-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Get transfer status by ID"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/transfers/{id}"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Get transfer status by ID
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"id","required":true,"in":"path","description":"Transfer ID","schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"default":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{"@type":{"type":"string","example":"dspace:TransferProcess"},"dspace:providerPid":{"type":"string","example":"provider-pid-789"},"dspace:consumerPid":{"type":"string","example":"consumer-pid-123"},"dspace:agreementId":{"type":"string","example":"agreement-id-456"},"dspace:state":{"type":"string","example":"COMPLETED"}},"required":["@type","dspace:providerPid","dspace:consumerPid","dspace:agreementId","dspace:state"],"title":"TransferProcessSchema"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

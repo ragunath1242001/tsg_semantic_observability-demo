@@ -1,0 +1,33 @@
+---
+id: catalogrecordschema
+title: "CatalogRecordSchema"
+description: ""
+sidebar_label: "CatalogRecordSchema"
+hide_title: true
+hide_table_of_contents: true
+schema: true
+sample: {"@id":"3f2592da-ffc9-40cb-a336-a9daa9343ce8","@type":"dcat:CatalogRecord","dct:conformsTo":["conformsToExample"],"dct:description":["Record description"],"dct:issued":"2020-03-01T00:00:00Z","dct:modified":"2020-03-02T00:00:00Z","dct:title":"Catalog title example","foaf:primaryTopic":{}}
+custom_edit_url: null
+---
+
+import Schema from "@theme/Schema";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"CatalogRecordSchema"}
+>
+</Heading>
+
+
+
+
+
+<Schema
+  schema={{"type":"object","properties":{"@id":{"type":"string","example":"3f2592da-ffc9-40cb-a336-a9daa9343ce8"},"@type":{"type":"string","example":"dcat:CatalogRecord"},"dct:conformsTo":{"example":["conformsToExample"],"type":"array","items":{"type":"string"}},"dct:description":{"example":["Record description"],"type":"array","items":{"type":"string"}},"dct:issued":{"format":"date-time","type":"string","example":"2020-03-01T00:00:00Z"},"dct:modified":{"format":"date-time","type":"string","example":"2020-03-02T00:00:00Z"},"dct:title":{"type":"string","example":"Catalog title example"},"foaf:primaryTopic":{"example":{},"allOf":[{"type":"object","properties":{"@id":{"type":"string","example":"3f2592da-ffc9-40cb-a336-a9daa9343ce8"},"@type":{"type":"string","example":"dcat:Resource"},"dcat:contactPoint":{"type":"string","example":"contactPointExample"},"dcat:keyword":{"example":["keyword1","keyword2"],"type":"array","items":{"type":"string"}},"dcat:landingPage":{"type":"string","example":"landingPageExample"},"dcat:theme":{"example":["theme1","theme2"],"type":"array","items":{"type":"string"}},"dcat:conformsTo":{"type":"string","example":"conformsToExample"},"dct:creator":{"type":"string","example":"creatorExample"},"dct:description":{"example":["description1","description2"],"type":"array","items":{"type":"string"}},"dct:identifier":{"type":"string","example":"identifierExample"},"dct:isReferencedBy":{"type":"string","example":"isReferencedByExample"},"dct:issued":{"type":"string","example":"2020-01-01"},"dct:language":{"type":"string","example":"en"},"dct:license":{"type":"string","example":"licenseExample"},"dct:modified":{"type":"string","example":"2020-01-02"},"dct:publisher":{"type":"string","example":"publisherExample"},"dct:relation":{"type":"string","example":"relationExample"},"dct:title":{"type":"string","example":"titleExample"},"dct:type":{"type":"string","example":"typeExample"},"odrl:hasPolicy":{"example":[],"type":"array","items":{"type":"object","properties":{"@id":{"type":"string","example":"3f2592da-ffc9-40cb-a336-a9daa9343ce8"},"@type":{"type":"string","example":"odrl:Offer"},"odrl:assigner":{"type":"string","example":"assignerExample"},"odrl:assignee":{"type":"string","example":"assigneeExample"},"odrl:profile":{"type":"string","example":"profileExample"},"odrl:permission":{"example":[],"type":"array","items":{"type":"object","properties":{"@type":{"type":"string","example":"odrl:Permission"},"odrl:assigner":{"type":"string","example":"assignerExample"},"odrl:assignee":{"type":"string","example":"assigneeExample"},"odrl:action":{"type":"string","example":"odrl:actionExample"},"odrl:target":{"type":"string","example":"targetExample"},"odrl:constraint":{"example":[],"type":"array","items":{"type":"object","properties":{"@type":{"type":"string","example":"odrl:Constraint"},"odrl:leftOperand":{"type":"string","example":"odrl:leftOperandExample"},"odrl:operator":{"type":"string","example":"odrl:operatorExample"},"odrl:rightOperand":{"type":"object","example":{"value":"rightOperandExample"}},"odrl:rightOperandReference":{"type":"string","example":"rightOperandReferenceExample"}},"required":["@type","odrl:leftOperand","odrl:operator"],"title":"ConstraintSchema"}},"odrl:Duty":{"example":[],"type":"array","items":{"type":"string"}}},"required":["@type","odrl:action"],"title":"PermissionSchema"}},"odrl:prohibition":{"example":[],"type":"array","items":{"type":"object","properties":{"@type":{"type":"string","example":"odrl:Prohibition"},"odrl:assigner":{"type":"string","example":"assignerExample"},"odrl:assignee":{"type":"string","example":"assigneeExample"},"odrl:action":{"type":"string","example":"odrl:actionExample"},"odrl:target":{"type":"string","example":"targetExample"},"odrl:constraint":{"example":[],"type":"array","items":{"type":"object","properties":{"@type":{"type":"string","example":"odrl:Constraint"},"odrl:leftOperand":{"type":"string","example":"odrl:leftOperandExample"},"odrl:operator":{"type":"string","example":"odrl:operatorExample"},"odrl:rightOperand":{"type":"object","example":{"value":"rightOperandExample"}},"odrl:rightOperandReference":{"type":"string","example":"rightOperandReferenceExample"}},"required":["@type","odrl:leftOperand","odrl:operator"],"title":"ConstraintSchema"}}},"required":["@type","odrl:action"],"title":"ProhibitionSchema"}},"odrl:obligation":{"example":[],"type":"array","items":{"type":"object","properties":{"@type":{"type":"string","example":"odrl:Duty"},"odrl:assigner":{"type":"string","example":"assignerExample"},"odrl:assignee":{"type":"string","example":"assigneeExample"},"odrl:action":{"type":"string","example":"odrl:actionExample"},"odrl:target":{"type":"string","example":"targetExample"},"odrl:constraint":{"example":[],"type":"array","items":{"type":"object","properties":{"@type":{"type":"string","example":"odrl:Constraint"},"odrl:leftOperand":{"type":"string","example":"odrl:leftOperandExample"},"odrl:operator":{"type":"string","example":"odrl:operatorExample"},"odrl:rightOperand":{"type":"object","example":{"value":"rightOperandExample"}},"odrl:rightOperandReference":{"type":"string","example":"rightOperandReferenceExample"}},"required":["@type","odrl:leftOperand","odrl:operator"],"title":"ConstraintSchema"}}},"required":["@type","odrl:action"],"title":"DutySchema"}},"odrl:target":{"type":"string","example":"targetExample"}},"required":["@id","@type"],"title":"PolicySchema"}},"dcat:hasVersion":{"example":["version1","version2"],"type":"array","items":{"type":"string"}},"dcat:isVersionOf":{"type":"string","example":"isVersionOfExample"},"dcat:version":{"type":"string","example":"versionExample"},"dcat:hasCurrentVersion":{"type":"string","example":"hasCurrentVersionExample"},"dcat:previousVersion":{"type":"string","example":"previousVersionExample"}},"required":["@id","@type"],"title":"ResourceSchema"}]}},"required":["@id","@type"],"title":"CatalogRecordSchema"}}
+  schemaType={"response"}
+>
+  
+</Schema>
+            

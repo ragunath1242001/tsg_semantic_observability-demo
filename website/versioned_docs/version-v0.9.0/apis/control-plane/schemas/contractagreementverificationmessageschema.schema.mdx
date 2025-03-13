@@ -1,0 +1,33 @@
+---
+id: contractagreementverificationmessageschema
+title: "ContractAgreementVerificationMessageSchema"
+description: ""
+sidebar_label: "ContractAgreementVerificationMessageSchema"
+hide_title: true
+hide_table_of_contents: true
+schema: true
+sample: {"@type":"dspace:ContractAgreementVerificationMessage","dspace:consumerPid":"urn:example:consumerPid","dspace:providerPid":"urn:example:providerPid","dspace:hashedMessage":{"dspace:digest":"sha256:abcdef1234567890","dspace:algorithm":"SHA-256"}}
+custom_edit_url: null
+---
+
+import Schema from "@theme/Schema";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"ContractAgreementVerificationMessageSchema"}
+>
+</Heading>
+
+
+
+
+
+<Schema
+  schema={{"type":"object","properties":{"@type":{"type":"string","example":"dspace:ContractAgreementVerificationMessage"},"dspace:consumerPid":{"type":"string","example":"urn:example:consumerPid"},"dspace:providerPid":{"type":"string","example":"urn:example:providerPid"},"dspace:hashedMessage":{"example":{"dspace:digest":"sha256:abcdef1234567890","dspace:algorithm":"SHA-256"},"allOf":[{"type":"object","properties":{"dspace:digest":{"type":"string","example":"sha256:abcdef1234567890"},"dspace:algorithm":{"type":"string","example":"SHA-256"}},"required":["dspace:digest","dspace:algorithm"],"title":"HashedMessageSchema"}]}},"required":["@type","dspace:consumerPid","dspace:providerPid","dspace:hashedMessage"],"title":"ContractAgreementVerificationMessageSchema"}}
+  schemaType={"response"}
+>
+  
+</Schema>
+            

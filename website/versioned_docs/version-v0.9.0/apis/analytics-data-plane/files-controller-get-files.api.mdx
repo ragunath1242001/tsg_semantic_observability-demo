@@ -1,0 +1,72 @@
+---
+id: files-controller-get-files
+title: "Get all files"
+description: "Get all files and their metadata."
+sidebar_label: "Get all files"
+hide_title: true
+hide_table_of_contents: true
+api: eJydVttS40YQ/ZWpfhayYb2X+CmEBYqqDaECIQ8UtdUatazZlWa0My2M49K/p3okjDAGNnmyPdPTl3O6T3sNOQXtTcPGWZjDKbHCqlKFqSgotLnikoxXNTHmyJhCAq4hj2J/lsMcTsTyyFn2rqrIf10QxyNIoEGPNTH5APOb2wQ8hcbZQAHmaziYTuXjaXhIQDvLZFnusGkqo2OoybcgBmsIuqQa5RuvGoI5oPe4ggQMUx1G5y77RpolCy8Js+nDmpwsm8KQH9kG9sYuIAG6x7qp5Gj2vnj3CbNsjz7mH/dmutjfQ73/yx7q2ezj7MOH7FPxHroEBKhL8w+d2d9WTOMEbFtn5MdO96fT6fDkHGt6PQGxSnW4kyCNp0CWz+wXDHxUkv4+eps5VxHa8WP2LXUJ6HC3fBuRXyPi9xHxjYcbKJmb+WQynKTa1RPxl0YibpO34B8q6roEGLOKfoKa1levQ7Ijpej7Aab443K7QV6Ipl3V1jY8rXoNNhLzYqjeew9C9x9QkOwMxyqOLq//vhpl2iWQG6wkxx1Jb3JbQ0mYS9tGdsWjpx+t8ZQLXQLe7Y4gsG24oXvL+pnhaFKet/moi3e259B8oxgiCr8PKvKZnWAiEWfTd89l4MT5zOQ52f+hBy/Qbd8cuD8puNZrOnd84lqbCzGBkdsdhD5RiulMnTtWm0fa5fSqDsymsy6BmkLABb1KOlyVpIQUCky58kOKKncUlHWs6N4ETiUqee/e0LRRlltc257IodyhhBF5x+J8xBrjQjS9F38xrIlLJ+tgQRF75BLmMMHGTIphGwTyd5tVEEi33vAqzkDPkMOWy4MxHP1BAkXlltGkwRCWzuc98a7pH6LFasVGB2mtpkJLXzGvjTTSi1fJrqvNt90vH697EDJC36+R2IRRi/ujh7sT52tkmMP1BWy0QqQFkq2OvyZvCiMDqy76aYptrixRTrlip7Sr69ZK+5PKiJdEVvHSKWMDo9UUlCtkWSvd72IVU00j1cYWLgI70Hl1eaoOHwpUn5FRXcTCttO6Kk1QfzRkDy/OVGhIm2IYQBVKtwwxINm8ccbyJoNdruWPg9D/ZM9j1LwugcposoEeBxUOG9QlqYN0Ckm/GSJwYT6ZLJfLFON16vxiMrwNky9nR8fnl8d7B+k0LbmuYumNC1yjHXl+8hdnu+L1o9781H+hgVMR1ElTobEyisMi64fgBrAxg17GUSldYDlerzMM9Jevuk6Of7TkV/1w3KGPrSC/umSj+zdr+E4rwUZramTM7rBqY7NuC2M3HsnT4yvoun8Bf+5opw==
+sidebar_class_name: "get api-method"
+info_path: docs/apis/analytics-data-plane/tsg-analytics-data-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Get all files"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/files"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Get all files and their metadata.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"","content":{"application/json":{"schema":{"type":"array","items":{"type":"object","properties":{"identifier":{"type":"string","example":"45f38abb-e7d7-4cf1-ac19-ac447466b8f5"},"fileSizeInBytes":{"type":"number","example":1000},"fileName":{"type":"string","example":"file.csv"},"presentInLastCheck":{"type":"boolean","example":true},"csvw":{"type":"object","properties":{"@context":{"example":["http://example.com/csvw.json"],"type":"array","items":{"type":"string"}},"tables":{"type":"object","properties":{"url":{"type":"string","example":"http://example.com/table.csv"},"tableSchema":{"type":"object","properties":{"columns":{"example":[{"name":"http://example.com/tableSchema.json"}],"type":"array","items":{"type":"string"}}},"title":"CSVWTableSchema"},"dialect":{"type":"object","example":{"header":true}}},"required":["url"],"title":"CSVWTable"}},"required":["@context"],"title":"CSVW"}},"required":["identifier","fileSizeInBytes","fileName","presentInLastCheck","csvw"],"title":"FileMetadataDto"}}}}},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string","example":"ResourceNotFound"},"status":{"type":"string","example":"404 Not Found"},"code":{"type":"number","example":404},"message":{"type":"object","example":"The requested resource does not exist."},"error":{"type":"string","example":"Not Found"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

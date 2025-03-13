@@ -1,0 +1,33 @@
+---
+id: contractnegotiationeventmessageschema
+title: "ContractNegotiationEventMessageSchema"
+description: ""
+sidebar_label: "ContractNegotiationEventMessageSchema"
+hide_title: true
+hide_table_of_contents: true
+schema: true
+sample: {"@type":"dspace:ContractNegotiationEventMessage","dspace:consumerPid":"urn:example:consumerPid","dspace:providerPid":"urn:example:providerPid","dspace:eventType":"NEGOTIATION_STARTED"}
+custom_edit_url: null
+---
+
+import Schema from "@theme/Schema";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"ContractNegotiationEventMessageSchema"}
+>
+</Heading>
+
+
+
+
+
+<Schema
+  schema={{"type":"object","properties":{"@type":{"type":"string","example":"dspace:ContractNegotiationEventMessage"},"dspace:consumerPid":{"type":"string","example":"urn:example:consumerPid"},"dspace:providerPid":{"type":"string","example":"urn:example:providerPid"},"dspace:eventType":{"type":"string","example":"NEGOTIATION_STARTED"}},"required":["@type","dspace:consumerPid","dspace:providerPid","dspace:eventType"],"title":"ContractNegotiationEventMessageSchema"}}
+  schemaType={"response"}
+>
+  
+</Schema>
+            

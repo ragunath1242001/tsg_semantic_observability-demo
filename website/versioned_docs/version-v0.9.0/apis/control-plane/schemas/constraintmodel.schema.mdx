@@ -1,0 +1,33 @@
+---
+id: constraintmodel
+title: "ConstraintModel"
+description: ""
+sidebar_label: "ConstraintModel"
+hide_title: true
+hide_table_of_contents: true
+schema: true
+sample: {"id":0,"type":"ATOMIC","title":"Constraint title","description":"Constraint description"}
+custom_edit_url: null
+---
+
+import Schema from "@theme/Schema";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"ConstraintModel"}
+>
+</Heading>
+
+
+
+
+
+<Schema
+  schema={{"type":"object","properties":{"id":{"type":"number"},"type":{"example":"ATOMIC","allOf":[{"type":"string","enum":["ATOMIC","LOGICAL"],"title":"ConstraintType"}]},"title":{"type":"string","example":"Constraint title"},"description":{"type":"string","example":"Constraint description"}},"required":["type","title"],"title":"ConstraintModel"}}
+  schemaType={"response"}
+>
+  
+</Schema>
+            
