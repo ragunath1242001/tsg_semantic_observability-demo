@@ -5,15 +5,25 @@ import { defineStore } from "pinia";
 interface RuntimeStore {
   gaiaXSupport: boolean;
   title?: string;
+  acceptUnauthenticatedCredentialRequests?: boolean;
+  issueMobileCredentials?: boolean;
   color?: string;
   darkThemeUrl?: string;
   lightThemeUrl?: string;
+  loaded?: Promise<void>;
 }
+
+let loadedResolver: () => void;
 
 export const useRuntimeStore = defineStore("runtime", {
   state: (): RuntimeStore => ({
+    loaded: new Promise<void>((resolve) => {
+      loadedResolver = resolve;
+    }),
     gaiaXSupport: false,
     title: undefined,
+    acceptUnauthenticatedCredentialRequests: undefined,
+    issueMobileCredentials: undefined,
     color: undefined,
     darkThemeUrl: undefined,
     lightThemeUrl: undefined
@@ -22,45 +32,56 @@ export const useRuntimeStore = defineStore("runtime", {
     async getRuntimeSettings() {
       try {
         const response = await http.get<RuntimeStore>("/settings");
-        this.gaiaXSupport = response.data.gaiaXSupport;
-        this.title = response.data.title;
-        this.color = response.data.color;
-        this.darkThemeUrl = response.data.darkThemeUrl;
-        this.lightThemeUrl = response.data.lightThemeUrl;
+        this.updateStoreFromResponse(response.data);
+        loadedResolver();
       } catch (error) {
         console.debug("Error: ", error);
       }
     },
+
     async updateRuntimeSettings() {
       try {
+        const payload: RuntimeStore = {
+          gaiaXSupport: this.gaiaXSupport,
+          title: this.title,
+          acceptUnauthenticatedCredentialRequests:
+            this.acceptUnauthenticatedCredentialRequests,
+          issueMobileCredentials: this.issueMobileCredentials,
+          color: this.color,
+          darkThemeUrl: this.darkThemeUrl,
+          lightThemeUrl: this.lightThemeUrl
+        };
+
         const response = await http.post<
           RuntimeStore,
           AxiosResponse<RuntimeStore>,
           RuntimeStore
-        >("/settings/update", {
-          gaiaXSupport: this.gaiaXSupport,
-          title: this.title,
-          color: this.color,
-          darkThemeUrl: this.darkThemeUrl,
-          lightThemeUrl: this.lightThemeUrl
-        });
-        this.gaiaXSupport = response.data.gaiaXSupport;
-        this.title = response.data.title;
-        this.color = response.data.color;
-        this.lightThemeUrl = response.data.lightThemeUrl;
-        this.darkThemeUrl = response.data.darkThemeUrl;
+        >("/settings/update", payload);
+
+        this.updateStoreFromResponse(response.data);
       } catch (error) {
         console.debug("Error: ", error);
       }
     },
-    logoUrl(value: "dark" | "white") {
-      if (value === "dark" && this.lightThemeUrl) {
+
+    updateStoreFromResponse(data: RuntimeStore) {
+      this.gaiaXSupport = data.gaiaXSupport;
+      this.title = data.title;
+      this.acceptUnauthenticatedCredentialRequests =
+        data.acceptUnauthenticatedCredentialRequests;
+      this.issueMobileCredentials = data.issueMobileCredentials;
+      this.color = data.color;
+      this.darkThemeUrl = data.darkThemeUrl;
+      this.lightThemeUrl = data.lightThemeUrl;
+    },
+
+    logoUrl(theme: "dark" | "white"): string {
+      if (theme === "dark" && this.lightThemeUrl) {
         return this.lightThemeUrl;
-      } else if (value === "white" && this.darkThemeUrl) {
+      } else if (theme === "white" && this.darkThemeUrl) {
         return this.darkThemeUrl;
-      } else {
-        return `layout/images/logo-${value}.svg`;
       }
+      return `layout/images/logo-${theme}.svg`;
     }
   }
 });

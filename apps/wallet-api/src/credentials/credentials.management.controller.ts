@@ -96,6 +96,7 @@ export class CredentialsManagementController {
     description:
       "List all credentials, that the current user is allowed to view, in this wallet"
   })
+  @DisableOAuthGuard()
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({
     type: [CredentialsDto]
@@ -105,6 +106,11 @@ export class CredentialsManagementController {
     @Client() client: ClientInfo,
     @PaginationQuery() paginationOptions: PaginationOptionsDto
   ): Promise<Paginated<CredentialDao[]>> {
+    if (!client) {
+      return this.credentialsService.getPaginatedCredentialsPublic(
+        paginationOptions
+      );
+    }
     const targetDid = this.targetDid("view", client);
     return this.credentialsService.getPaginatedCredentials(
       paginationOptions,

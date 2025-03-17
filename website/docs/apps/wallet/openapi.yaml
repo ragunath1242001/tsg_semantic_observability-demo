@@ -1808,7 +1808,15 @@ paths:
     post:
       description: Creates a new credential offer
       operationId: IssuanceManagementController_offerEndpoint
-      parameters: []
+      parameters:
+        - name: mobile
+          required: false
+          in: query
+          description: Whether the offer is for mobile or server applications
+          schema:
+            default: true
+            example: true
+            type: boolean
       requestBody:
         required: true
         content:
@@ -2241,6 +2249,12 @@ components:
         title:
           type: string
           example: My Company Wallet
+        acceptUnauthenticatedCredentialRequests:
+          type: boolean
+          example: false
+        issueMobileCredentials:
+          type: boolean
+          example: false
         color:
           type: string
           example: "#3B8BF6"
@@ -2253,6 +2267,8 @@ components:
       required:
         - gaiaXSupport
         - title
+        - acceptUnauthenticatedCredentialRequests
+        - issueMobileCredentials
         - color
     ErrorDto:
       type: object

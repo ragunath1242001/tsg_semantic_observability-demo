@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
 import BaseAppConfig from "@tsg-dsp/common-ui/layout/BaseAppConfig.vue";
 import { useLayout } from "@tsg-dsp/common-ui/layout/composables/layout";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
@@ -37,13 +38,24 @@ const updateSettings = async () => {
     position="right"
     :transition-options="'.3s cubic-bezier(0, 0, 0.2, 1)'"
     class="layout-config-sidebar w-[26rem]">
-    <div class="text-xl mt-2">Gaia-X Support</div>
-    <ToggleSwitch v-model="runtimeStore.gaiaXSupport" />
+    <FormField label="Gaia-X Support" :label-width="8">
+      <ToggleSwitch v-model="runtimeStore.gaiaXSupport" />
+    </FormField>
+    <FormField
+      label="Accept Unauthenticated Credential Requests"
+      :label-width="8">
+      <ToggleSwitch
+        v-model="runtimeStore.acceptUnauthenticatedCredentialRequests" />
+    </FormField>
+    <FormField label="Issue Mobile Credentials" :label-width="8">
+      <ToggleSwitch v-model="runtimeStore.issueMobileCredentials" />
+    </FormField>
     <BaseAppConfig
       v-model:color="runtimeStore.color"
       v-model:dark-theme-url="runtimeStore.darkThemeUrl"
       v-model:light-theme-url="runtimeStore.lightThemeUrl"
-      :runtime-store="runtimeStore" />
+      :runtime-store="runtimeStore"
+      :toast="toast" />
     <Button label="Save Settings" class="mt-4" @click="updateSettings" />
   </Drawer>
 </template>

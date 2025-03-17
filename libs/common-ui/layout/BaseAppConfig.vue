@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useToast } from "primevue/usetoast";
+import { ToastServiceMethods } from "primevue/toastservice";
 import { ref, toRefs } from "vue";
 
 import FormField from "../components/FormField.vue";
@@ -7,10 +7,9 @@ import { updateColorPalette } from "../utils/color";
 import { toastError } from "../utils/error";
 import http from "../utils/http";
 
-const toast = useToast();
-
 interface BaseRuntime {
   runtimeStore: any;
+  toast: ToastServiceMethods;
 }
 
 const color = defineModel<string>("color");
@@ -19,7 +18,7 @@ const lightThemeUrl = defineModel<string>("lightThemeUrl");
 
 const props = defineProps<BaseRuntime>();
 
-const { runtimeStore } = toRefs(props);
+const { runtimeStore, toast } = toRefs(props);
 
 const useDarkThemeUrl = ref(false);
 
@@ -43,7 +42,7 @@ const handleUpload = async (event, dark: boolean = false) => {
       lightThemeUrl.value = resp.data;
     }
   } catch (error) {
-    toast.add(
+    toast.value.add(
       toastError({
         error,
         summary: "Failed to upload file",

@@ -243,6 +243,16 @@ export class RuntimeConfig {
   @IsString()
   public title?: string;
 
+  @Description("Accept unauthenticated credential requests")
+  @IsOptional()
+  @IsBoolean()
+  public acceptUnauthenticatedCredentialRequests: boolean = false;
+
+  @Description("Issue mobile credentials")
+  @IsOptional()
+  @IsBoolean()
+  public issueMobileCredentials: boolean = false;
+
   @Description("Primary color of the wallet")
   @IsString()
   public color: string = "#3B8BF6";

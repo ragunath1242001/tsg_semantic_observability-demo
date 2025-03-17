@@ -30,7 +30,7 @@ async function createCredentialOffer() {
     };
 
     const response = await http.post<CredentialOffer>(
-      "oid4vci/offer",
+      "management/issuance/offers",
       offerRequest
     );
     if (response.status === 200) {

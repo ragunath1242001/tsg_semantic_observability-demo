@@ -2,10 +2,18 @@
 import FloatingConfigurator from "@tsg-dsp/common-ui/components/FloatingConfigurator.vue";
 import { useLayout } from "@tsg-dsp/common-ui/layout/composables/layout.js";
 import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
+import { storeToRefs } from "pinia";
 import { computed } from "vue";
 
+import { useRuntimeStore } from "@/stores/runtime";
+
 const store = useUserStore();
+
+const runtimeStore = useRuntimeStore();
 const { layoutConfig } = useLayout();
+
+const { acceptUnauthenticatedCredentialRequests, issueMobileCredentials } =
+  storeToRefs(runtimeStore);
 
 const logoUrl = computed(() => {
   return `layout/images/${
@@ -51,7 +59,11 @@ const logoUrl = computed(() => {
               to="/"
               @click="store.login()"></Button>
           </div>
-          <div class="text-center mt-4">
+          <div
+            v-if="
+              acceptUnauthenticatedCredentialRequests || issueMobileCredentials
+            "
+            class="text-center mt-4">
             <span class="text-muted-color font-medium"
               >Don't have an account yet?</span
             >
@@ -59,7 +71,7 @@ const logoUrl = computed(() => {
               label="Proceed without login"
               class="w-full mt-3"
               as="router-link"
-              to="/retrieve-credential"></Button>
+              to="/home"></Button>
           </div>
         </div>
       </div>
