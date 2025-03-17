@@ -8,20 +8,21 @@ import {
   CredentialIssuerMetadata,
   CredentialRequest,
   CredentialResponse,
-  OfferGrants
+  OfferGrants,
+  OID4VCICredentialRequestInitiation
 } from "@tsg-dsp/wallet-dtos";
 import axios from "axios";
 import { plainToInstance } from "class-transformer";
 import crypto from "crypto";
 import qs from "querystring";
 
-import { RootConfig } from "../config.js";
-import { CredentialsService } from "../credentials/credentials.service.js";
-import { SignatureService } from "../keys/signature.service.js";
-import { CredentialDao } from "../model/credentials.dao.js";
+import { OID4VCIHolderConfig, RootConfig } from "../../config.js";
+import { CredentialsService } from "../../credentials/credentials.service.js";
+import { SignatureService } from "../../keys/signature.service.js";
+import { CredentialDao } from "../../model/credentials.dao.js";
 
 @Injectable()
-export class HolderService {
+export class OID4VCIHolderService {
   constructor(
     private readonly credentialsService: CredentialsService,
     private readonly signatureService: SignatureService,
@@ -35,21 +36,19 @@ export class HolderService {
   async init() {
     this.logger.log("Initializing HolderService");
     const existingCredentials = await this.credentialsService.getCredentials();
+    const existingTypes = existingCredentials.flatMap((c) => c.credential.type);
     await Promise.all(
-      this.config.oid4vci.holder.map(async (holderConfig) => {
+      this.config.issuance.oid4vci.map(async (holderConfig) => {
         if (
-          existingCredentials.find((c) =>
-            c.credential.type.includes(holderConfig.credentialType)
+          holderConfig.credentialType.every((type) =>
+            existingTypes.includes(type)
           )
         ) {
           this.logger.log(
-            `Already holding ${holderConfig.credentialType} credential, skipping request`
+            `Already holding ${holderConfig.credentialType.join(", ")} credential(s), skipping request`
           );
         } else {
-          await this.requestCredentialWithRetry(
-            holderConfig.preAuthorizationCode,
-            holderConfig.issuerUrl
-          );
+          await this.requestCredentialWithRetry(holderConfig);
         }
       })
     );
@@ -58,43 +57,31 @@ export class HolderService {
   }
 
   async requestCredentialWithRetry(
-    preAuthorizedCode: string,
-    issuerUrl: string,
+    config: OID4VCIHolderConfig,
     retry = 0,
     backOff = 1000
   ) {
     try {
-      await this.requestCredential({ issuerUrl, preAuthorizedCode });
+      await this.requestCredential(config);
     } catch (err) {
       if (retry < 5) {
         this.logger.warn(
-          `Could not request credential with code ${preAuthorizedCode} at ${issuerUrl}, retrying in 10 seconds`
+          `Could not request credential with code ${config.preAuthorizedCode} at ${config.issuerUrl}, retrying in 10 seconds`
         );
         await new Promise((f) => setTimeout(f, backOff));
-        await this.requestCredentialWithRetry(
-          preAuthorizedCode,
-          issuerUrl,
-          ++retry,
-          backOff * 2
-        );
+        await this.requestCredentialWithRetry(config, ++retry, backOff * 2);
       } else {
         this.logger.error(
-          `Could not request credential with code ${preAuthorizedCode} at ${issuerUrl}: ${err}`
+          `Could not request credential with code ${config.preAuthorizedCode} at ${config.issuerUrl}: ${err}`
         );
         throw err;
       }
     }
   }
 
-  async requestCredential(config: {
-    issuerUrl: string;
-    preAuthorizedCode?: string;
-    authorized?: {
-      accessToken: string;
-      credentialIdentifier: string;
-      additionalRequestParams?: { [key: string]: any };
-    };
-  }): Promise<CredentialDao> {
+  async requestCredential(
+    config: OID4VCICredentialRequestInitiation
+  ): Promise<CredentialDao> {
     const issuerMetadata = await this.retrieveIssuerMetadata(config.issuerUrl);
     let accessToken: AccessToken;
     if (config.authorized) {

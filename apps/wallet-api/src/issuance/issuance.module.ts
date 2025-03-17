@@ -8,10 +8,16 @@ import { DidModule } from "../did/did.module.js";
 import { KeysModule } from "../keys/keys.module.js";
 import { CIAccessToken, CredentialIssuance } from "../model/issuance.dao.js";
 import { PresentationModule } from "../presentation/presentation.module.js";
-import { HolderController } from "./holder.controller.js";
-import { HolderService } from "./holder.service.js";
-import { IssuerController } from "./issuer.controller.js";
-import { IssuerService } from "./issuer.service.js";
+import { DCPHolderController } from "./dcp/holder.controller.js";
+import { DCPHolderService } from "./dcp/holder.service.js";
+import { DCPIssuerController } from "./dcp/issuer.controller.js";
+import { DCPIssuerService } from "./dcp/issuer.service.js";
+import { IssuanceManagementController } from "./issuance.management.controller.js";
+import { IssuanceService } from "./issuance.service.js";
+import { OID4VCIHolderController } from "./oid4vci/holder.controller.js";
+import { OID4VCIHolderService } from "./oid4vci/holder.service.js";
+import { OID4VCIIssuerController } from "./oid4vci/issuer.controller.js";
+import { OID4VCIIssuerService } from "./oid4vci/issuer.service.js";
 
 @Module({
   imports: [
@@ -24,8 +30,26 @@ import { IssuerService } from "./issuer.service.js";
     KeysModule,
     PresentationModule
   ],
-  controllers: [HolderController, IssuerController],
-  providers: [IssuerService, HolderService],
-  exports: [IssuerService, HolderService]
+  controllers: [
+    IssuanceManagementController,
+    DCPHolderController,
+    DCPIssuerController,
+    OID4VCIHolderController,
+    OID4VCIIssuerController
+  ],
+  providers: [
+    IssuanceService,
+    DCPIssuerService,
+    DCPHolderService,
+    OID4VCIIssuerService,
+    OID4VCIHolderService
+  ],
+  exports: [
+    IssuanceService,
+    DCPIssuerService,
+    DCPHolderService,
+    OID4VCIIssuerService,
+    OID4VCIHolderService
+  ]
 })
 export class IssuanceModule {}

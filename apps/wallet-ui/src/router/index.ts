@@ -3,22 +3,22 @@ import { createRouter, createWebHashHistory } from "vue-router";
 
 import AppLayout from "@/layout/AppLayoutWallet.vue";
 import AppLayoutWalletUnauthenticated from "@/layout/AppLayoutWalletUnauthenticated.vue";
+import ContextView from "@/views/Contexts.vue";
 import EmailQR from "@/views/credentials/EmailQR.vue";
+import CredentialGaiaX from "@/views/credentials/GaiaX.vue";
+import CredentialImport from "@/views/credentials/Import.vue";
+import CredentialOverview from "@/views/credentials/Overview.vue";
 import RetrieveCredential from "@/views/credentials/RetrieveCredential.vue";
-
-import ContextView from "../views/Contexts.vue";
-import CredentialGaiaX from "../views/credentials/GaiaX.vue";
-import CredentialImport from "../views/credentials/Import.vue";
-import CredentialIssue from "../views/credentials/Issue.vue";
-import CredentialOID4VCI from "../views/credentials/OID4VCI.vue";
-import CredentialOverview from "../views/credentials/Overview.vue";
-import DashboardVue from "../views/Dashboard.vue";
-import DCP from "../views/DCP.vue";
-import DIDServiceView from "../views/DIDServices.vue";
-import KeysVue from "../views/Keys.vue";
-import LoginVue from "../views/Login.vue";
-import OID4VP from "../views/OID4VP.vue";
-import SignatureVue from "../views/Signature.vue";
+import DashboardVue from "@/views/Dashboard.vue";
+import DCP from "@/views/DCP.vue";
+import DIDServiceView from "@/views/DIDServices.vue";
+import Manual from "@/views/issuance/Manual.vue";
+import Offers from "@/views/issuance/Offers.vue";
+import Requests from "@/views/issuance/Requests.vue";
+import KeysVue from "@/views/Keys.vue";
+import LoginVue from "@/views/Login.vue";
+import OID4VP from "@/views/OID4VP.vue";
+import SignatureVue from "@/views/Signature.vue";
 
 const router = createRouter({
   history: createWebHashHistory(),
@@ -48,11 +48,6 @@ const router = createRouter({
           component: CredentialOverview
         },
         {
-          path: "credentials/issue",
-          name: "credentials-issue",
-          component: CredentialIssue
-        },
-        {
           path: "credentials/import",
           name: "credentials-import",
           component: CredentialImport
@@ -63,9 +58,19 @@ const router = createRouter({
           component: CredentialGaiaX
         },
         {
-          path: "credentials/oid4vci",
-          name: "credentials-oid4vci",
-          component: CredentialOID4VCI
+          path: "issuance/manual",
+          name: "issuance-manual",
+          component: Manual
+        },
+        {
+          path: "issuance/offers",
+          name: "issuance-offers",
+          component: Offers
+        },
+        {
+          path: "issuance/requests",
+          name: "issuance-requests",
+          component: Requests
         },
         {
           path: "presentations/dcp",

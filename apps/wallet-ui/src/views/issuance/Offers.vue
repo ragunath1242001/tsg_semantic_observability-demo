@@ -50,29 +50,6 @@ const offerDefault: OfferForm = {
   manualCredential: false
 };
 const offerForm = ref<OfferForm>(offerDefault);
-const requestForm = ref<{
-  preAuthorizedCode: string;
-  issuerUrl: string;
-  flow: string;
-  authorized?: {
-    accessToken: string;
-    credentialIdentifier: string;
-    additionalRequestParams: {
-      credential: string;
-    };
-  };
-}>({
-  preAuthorizedCode: "",
-  issuerUrl: "",
-  flow: "pre-authorized-code",
-  authorized: {
-    accessToken: "",
-    credentialIdentifier: "",
-    additionalRequestParams: {
-      credential: ""
-    }
-  }
-});
 
 const issuableCredentialTypes = computed(
   () => config.value?.contexts?.filter((c) => c.issuable) ?? []
@@ -80,7 +57,9 @@ const issuableCredentialTypes = computed(
 
 const loadOffers = async () => {
   try {
-    const response = await http<CredentialOfferStatus[]>("oid4vci/offer");
+    const response = await http<CredentialOfferStatus[]>(
+      "management/issuance/offers"
+    );
     offers.value = response.data;
     for (const status of offers.value) {
       const credentialOffer = {
@@ -126,7 +105,9 @@ const loadConfig = async () => {
 
 const revokeOffer = async (id: number) => {
   try {
-    await http.put<CredentialOfferStatus>(`oid4vci/offer/${id}/revoke`);
+    await http.put<CredentialOfferStatus>(
+      `management/issuance/offers/${id}/revoke`
+    );
     await loadOffers();
   } catch (error) {
     toast.add(
@@ -223,8 +204,8 @@ const createOffer = async () => {
       preAuthorizedCode: offerForm.value.preAuthorizedCode
     };
 
-    const offer = await http.post<CredentialOffer>(
-      "oid4vci/offer",
+    await http.post<CredentialOffer>(
+      "management/issuance/offers",
       offerRequest
     );
     toast.add({
@@ -235,85 +216,22 @@ const createOffer = async () => {
     });
     offerForm.value = offerDefault;
     await loadOffers();
-    const offerStatus = offers.value?.find(
-      (o) =>
-        o.preAuthorizedCode ===
-        offer.data.grants?.[
-          "urn:ietf:params:oauth:grant-type:pre-authorized_code"
-        ]?.["pre-authorization_code"]
-    );
-    if (offerStatus) {
-      expandedRows.value = [...(expandedRows.value ?? []), offerStatus];
-    }
+    // const offerStatus = offers.value?.find(
+    //   (o) =>
+    //     o.preAuthorizedCode ===
+    //     offer.data.grants?.[
+    //       "urn:ietf:params:oauth:grant-type:pre-authorized_code"
+    //     ]?.["pre-authorization_code"]
+    // );
+    // if (offerStatus) {
+    //   expandedRows.value = [...(expandedRows.value ?? []), offerStatus];
+    // }
   } catch (error) {
     toast.add(
       toastError({
         error,
         summary: "Could not create offer",
         defaultMessage: `Error in creating new credential offer`
-      })
-    );
-  }
-};
-
-const retrieveCredential = async () => {
-  try {
-    const { flow, ...request } = JSON.parse(JSON.stringify(requestForm.value));
-    if (flow === "pre-authorized-code") {
-      if (!request.preAuthorizedCode) {
-        throw Error("Pre authorized code is required for this flow");
-      }
-      delete request.authorized;
-    } else if (flow === "authorization-code") {
-      if (
-        !request.authorized?.accessToken ||
-        !request.authorized?.credentialIdentifier
-      ) {
-        throw Error(
-          "Access token and credential identifier are required for this flow"
-        );
-      }
-      if (
-        request.authorized?.additionalRequestParams?.credential &&
-        request.authorized?.additionalRequestParams?.credential?.trim() !== ""
-      ) {
-        try {
-          JSON.parse(request.authorized.additionalRequestParams.credential);
-        } catch (_) {
-          throw Error("Request parameters must be a valid JSON document");
-        }
-      } else {
-        delete request.authorized.additionalRequestParams;
-      }
-      delete request.preAuthorizedCode;
-    } else {
-      throw Error("Invalid flow");
-    }
-    await http.post("oid4vci/holder/request", request);
-    toast.add({
-      severity: "success",
-      summary: "Credential retrieved",
-      detail: `Credential successfully retrieved, go to the credential overview to see the credential`,
-      life: 10000
-    });
-    requestForm.value = {
-      issuerUrl: "",
-      preAuthorizedCode: "",
-      authorized: {
-        accessToken: "",
-        credentialIdentifier: "",
-        additionalRequestParams: {
-          credential: ""
-        }
-      },
-      flow: "pre-authorized-code"
-    };
-  } catch (error) {
-    toast.add(
-      toastError({
-        error,
-        summary: "Could not retrieve credential",
-        defaultMessage: `Error in retrieving credential`
       })
     );
   }
@@ -349,24 +267,29 @@ onMounted(async () => {
 <template>
   <div>
     <Card>
-      <template #title>Open ID 4 Verifiable Credential Issuance</template>
+      <template #title>Credential Offers</template>
       <template #subtitle>
         <p>
+          This page allows issuers to create and manage credential offers. These
+          offers can be used by holders to request credentials from the issuer.
+          Currently two types of issuance protocols are supported: the
+          <a
+            href="https://eclipse-dataspace-dcp.github.io/decentralized-claims-protocol"
+            target="_blank"
+            >Decentralized Claims Protocol</a
+          >
+          and the
           <a
             href="https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0.html"
             target="_blank"
             >OpenID 4 Verifiable Credential Issuance</a
           >
-          is a protocol that combines OpenID Connect and Verifiable Credentials
-          to enable the issuance of digital credentials in a secure and
-          interoperable manner. This protocol streamlines the process of issuing
-          and managing credentials, enhancing trust and privacy in online
-          interactions.
+          protocol.
         </p>
         <Message v-if="!isIssuer" :closable="false" icon="pi pi-info-circle"
           >Since no issuable JSON-LD contexts are provided, this page only shows
           the form for requesting credentials. If you'd like to issue
-          credentials via OpenID4VCI, please add a context at
+          credentials via DCP/OpenID4VCI, please add a context at
           <RouterLink class="font-semibold" to="/contexts"
             >JSON-LD Contexts</RouterLink
           >.</Message
@@ -376,10 +299,7 @@ onMounted(async () => {
     <Card v-if="isIssuer" class="mt-8">
       <template #title>Credential offers</template>
       <template #subtitle>
-        <p>
-          Offered OpenID 4 Verifiable Credential Issuance credentials at this
-          Wallet instance as issuer.
-        </p>
+        <p>Offered credentials at this Wallet instance as issuer. Revoking</p>
       </template>
       <template #content>
         <DataTable
@@ -409,11 +329,6 @@ onMounted(async () => {
           <Column field="revoked" header="Revoked">
             <template #body="props">
               <Button
-                class="mr-2"
-                severity="help"
-                icon="pi pi-copy"
-                @click="copyPreAuthorizedCode(props.data.preAuthorizedCode)" />
-              <Button
                 v-if="props.data.revoked"
                 severity="danger"
                 label="Revoked"
@@ -423,6 +338,16 @@ onMounted(async () => {
                 severity="danger"
                 label="&nbsp;Revoke&nbsp;"
                 @click="revokeOffer(props.data.id)" />
+            </template>
+          </Column>
+          <Column field="copy" header="" style="width: 5rem">
+            <template #body="props">
+              <Button
+                class="mr-2"
+                severity="help"
+                icon="pi pi-copy"
+                size="large"
+                @click="copyPreAuthorizedCode(props.data.preAuthorizedCode)" />
             </template>
           </Column>
           <template #expansion="props">
@@ -545,102 +470,6 @@ onMounted(async () => {
           </FormField>
           <FormField no-label>
             <Button label="Create offer" type="submit" />
-          </FormField>
-        </form>
-      </template>
-    </Card>
-    <Card class="mt-8">
-      <template #title>Request credential</template>
-      <template #subtitle>
-        <p>
-          Request a new credential as intended holder of the credential from an
-          issuer that has created a credential offer.
-        </p>
-        <p>
-          Both the Pre-authorized code flow as the Authorization code flow of
-          <a
-            href="https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0.html"
-            >OID4VCI</a
-          >
-          are supported. For the pre authorized code should be provided by the
-          issuer in an out-of-band manner before you start this flow as holder.
-          For the Authorization code flow at least an access token and
-          credential identifier should be provided, with optional addtional
-          request parameters.
-        </p>
-      </template>
-      <template #content>
-        <form class="flex flex-col gap-4" @submit.prevent="retrieveCredential">
-          <FormField v-slot="props" label="Flow">
-            <Select
-              :id="props.id"
-              v-model="requestForm.flow"
-              class="w-full"
-              :options="[
-                {
-                  label: 'Pre Authorized Code Flow',
-                  value: 'pre-authorized-code'
-                },
-                {
-                  label: 'Authorization Code Flow',
-                  value: 'authorization-code'
-                }
-              ]"
-              option-label="label"
-              option-value="value"
-              placeholder="Flow" />
-          </FormField>
-          <FormField v-slot="props" label="Issuer URL">
-            <InputText
-              :id="props.id"
-              v-model="requestForm.issuerUrl"
-              class="w-full"
-              placeholder="Issuer URL"
-              required />
-          </FormField>
-          <FormField
-            v-if="requestForm.flow === 'pre-authorized-code'"
-            v-slot="props"
-            label="Pre Authorized code">
-            <InputText
-              :id="props.id"
-              v-model="requestForm.preAuthorizedCode"
-              class="w-full"
-              placeholder="Pre Authorized code received from issuer"
-              required />
-          </FormField>
-          <FormField
-            v-if="requestForm.flow === 'authorization-code'"
-            v-slot="props"
-            label="Access token">
-            <InputText
-              :id="props.id"
-              v-model="requestForm.authorized.accessToken"
-              class="w-full"
-              placeholder="Access token"
-              required />
-          </FormField>
-          <FormField
-            v-if="requestForm.flow === 'authorization-code'"
-            v-slot="props"
-            label="Credential ID">
-            <InputText
-              :id="props.id"
-              v-model="requestForm.authorized.credentialIdentifier"
-              class="w-full"
-              placeholder="Credential ID"
-              required />
-          </FormField>
-          <FormField
-            v-if="requestForm.flow === 'authorization-code'"
-            label="Request parameters">
-            <MonacoEditorVue
-              v-model="
-                requestForm.authorized.additionalRequestParams.credential
-              "></MonacoEditorVue>
-          </FormField>
-          <FormField no-label>
-            <Button label="Request credential" type="submit" />
           </FormField>
         </form>
       </template>

@@ -1,5 +1,9 @@
 import { AxiosResponse } from "axios";
-import { DataTablePageEvent, DataTableSortEvent, useToast } from "primevue";
+import {
+  DataTablePageEvent,
+  DataTableSortEvent,
+  ToastServiceMethods
+} from "primevue";
 import { Ref, ref, UnwrapRef } from "vue";
 
 import { ErrorContext, toastError } from "./error";
@@ -17,10 +21,10 @@ export interface PaginationSetup<T> {
 export interface FetchConfig<T> {
   fetch: (params: Record<string, string>) => Promise<AxiosResponse<T[]>>;
   errorContext: Omit<ErrorContext, "error">;
+  toast: ToastServiceMethods;
 }
 
 export function setupPagination<T>(config: FetchConfig<T>): PaginationSetup<T> {
-  const toast = useToast();
   const data = ref<T[]>([]);
   const loading = ref(false);
   const total = ref(0);
@@ -63,7 +67,7 @@ export function setupPagination<T>(config: FetchConfig<T>): PaginationSetup<T> {
       totalPages.value = parseInt(response.headers["x-total-pages"]);
     } catch (error) {
       loading.value = false;
-      toast.add(
+      config.toast.add(
         toastError({
           ...config.errorContext,
           error: error

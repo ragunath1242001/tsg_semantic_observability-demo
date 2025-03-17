@@ -15,13 +15,13 @@ import axios from "axios";
 import { instanceToPlain, plainToInstance } from "class-transformer";
 import { decodeJwt } from "jose";
 
+import { SecureTokenService } from "../../keys/token.service.js";
 import { PresentationService } from "../presentation.service.js";
-import { DCPSiopService } from "./siop.service.js";
 
 @Injectable()
 export class DCPVerifierService {
   constructor(
-    private readonly siopService: DCPSiopService,
+    private readonly siopService: SecureTokenService,
     private readonly presentationService: PresentationService
   ) {}
   private readonly logger = new Logger(this.constructor.name);
@@ -46,12 +46,12 @@ export class DCPVerifierService {
       ).andLog(this.logger, "error");
     }
 
-    const idToken = await this.siopService.createSelfIssuedIDToken(
-      verifiedHolderIdToken.iss!,
-      false,
-      undefined,
-      verifiedHolderIdToken.token as string
-    );
+    const idToken = await this.siopService.createSelfIssuedIDToken({
+      audience: verifiedHolderIdToken.iss!,
+      createAccessToken: false,
+      scope: undefined,
+      existingAccessToken: verifiedHolderIdToken.token as string
+    });
 
     const didDocument = await resolveDid(verifiedHolderIdToken.iss!);
     const credentialService = didDocument.service?.find(

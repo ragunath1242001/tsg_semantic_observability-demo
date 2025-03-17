@@ -5,26 +5,18 @@ import {
   Headers,
   HttpCode,
   HttpStatus,
-  Param,
-  Post,
-  Put
+  Post
 } from "@nestjs/common";
 import {
   ApiBearerAuth,
   ApiBody,
   ApiExtraModels,
-  ApiOAuth2,
   ApiOkResponse,
   ApiOperation,
-  ApiParam,
   ApiTags,
   getSchemaPath
 } from "@nestjs/swagger";
-import {
-  DisableOAuthGuard,
-  DisableRolesGuard,
-  Roles
-} from "@tsg-dsp/common-api";
+import { DisableOAuthGuard } from "@tsg-dsp/common-api";
 import {
   ApiForbiddenResponseDefault,
   ApiNotFoundResponseDefault
@@ -32,22 +24,18 @@ import {
 import {
   AccessToken,
   CredentialIssuerMetadata,
-  CredentialOffer,
-  CredentialOfferRequest,
-  CredentialOfferStatus,
   CredentialRequest,
   CredentialResponse,
   DeferredCredentialResponse,
   ImmediateCredentialResponse
 } from "@tsg-dsp/wallet-dtos";
-import { AppRole } from "@tsg-dsp/wallet-dtos";
 
-import { IssuerService } from "./issuer.service.js";
+import { OID4VCIIssuerService } from "./issuer.service.js";
 
 @Controller()
 @ApiTags("OpenID 4 Verifiable Credential Issuance")
-export class IssuerController {
-  constructor(private readonly issuerService: IssuerService) {}
+export class OID4VCIIssuerController {
+  constructor(private readonly issuerService: OID4VCIIssuerService) {}
 
   @Get(".well-known/openid-credential-issuer")
   @DisableOAuthGuard()
@@ -109,68 +97,5 @@ export class IssuerController {
       authorization.substring(7),
       credentialRequest
     );
-  }
-
-  @Get("oid4vci/offer")
-  @ApiOperation({
-    summary: "Retrieve offered credentials",
-    description:
-      "Retrieves all credentials offered this wallet has offered to holders"
-  })
-  @Roles(AppRole.MANAGE_ALL_CREDENTIALS)
-  @ApiOkResponse({ type: [CredentialOfferStatus] })
-  @ApiForbiddenResponseDefault()
-  @ApiOAuth2([AppRole.MANAGE_ALL_CREDENTIALS])
-  @HttpCode(HttpStatus.OK)
-  async listOffers(): Promise<CredentialOfferStatus[]> {
-    return this.issuerService.credentialOfferStatus();
-  }
-
-  @Get("oid4vci/offer/:id")
-  @ApiOperation({
-    summary: "Retrieve offered credential",
-    description: "Retrieves a specific credential offer"
-  })
-  @ApiParam({ name: "id", required: true, type: Number })
-  @DisableOAuthGuard()
-  @DisableRolesGuard()
-  @ApiOkResponse({ type: [CredentialOfferStatus] })
-  @HttpCode(HttpStatus.OK)
-  async listGeneralOffers(
-    @Param("id") id: number
-  ): Promise<CredentialOfferStatus> {
-    return this.issuerService.credentialOfferById(id);
-  }
-
-  @Post("oid4vci/offer")
-  @ApiOperation({
-    summary: "Add offer",
-    description: "Creates a new credential offer"
-  })
-  @Roles(AppRole.MANAGE_ALL_CREDENTIALS)
-  @ApiBody({ type: CredentialOffer })
-  @ApiOkResponse({ type: CredentialOfferStatus })
-  @DisableOAuthGuard()
-  @DisableRolesGuard()
-  @HttpCode(HttpStatus.OK)
-  async offerEndpoint(
-    @Body() offerRequest: CredentialOfferRequest
-  ): Promise<CredentialOffer> {
-    return this.issuerService.createCredentialOffer(offerRequest);
-  }
-
-  @Put("oid4vci/offer/:id/revoke")
-  @ApiOperation({
-    summary: "Revoke offer",
-    description:
-      "Revokes an existing credential offer, so that it cannot be used anymore by the holder"
-  })
-  @Roles(AppRole.MANAGE_ALL_CREDENTIALS)
-  @ApiOkResponse({ type: CredentialOfferStatus })
-  @ApiForbiddenResponseDefault()
-  @ApiOAuth2([AppRole.MANAGE_ALL_CREDENTIALS])
-  @HttpCode(HttpStatus.OK)
-  async revokeOffer(@Param("id") id: number): Promise<CredentialOfferStatus> {
-    return this.issuerService.revokeOffer(id);
   }
 }

@@ -160,7 +160,8 @@ const { data, loading, total, perPage, load } = setupPagination({
   errorContext: {
     summary: "Could not load users",
     defaultMessage: `Error in fetching users`
-  }
+  },
+  toast
 });
 
 onMounted(async () => {

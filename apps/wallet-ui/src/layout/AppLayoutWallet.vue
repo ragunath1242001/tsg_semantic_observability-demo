@@ -96,12 +96,17 @@ const menuList: Menu[] = [
       {
         label: "Manual issuance",
         icon: "pi pi-fw pi-pencil",
-        to: "/credentials/issue"
+        to: "/issuance/manual"
       },
       {
-        label: "OpenID 4 VCI",
-        icon: "pi pi-fw pi-refresh",
-        to: "/credentials/oid4vci"
+        label: "Offers",
+        icon: "pi pi-fw pi-upload",
+        to: "/issuance/offers"
+      },
+      {
+        label: "Requests",
+        icon: "pi pi-fw pi-download",
+        to: "/issuance/requests"
       }
     ]
   },

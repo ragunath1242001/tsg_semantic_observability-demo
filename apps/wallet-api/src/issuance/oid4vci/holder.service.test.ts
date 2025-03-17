@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, it } from "@jest/globals";
+import { afterAll, beforeAll, describe, it, jest } from "@jest/globals";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import {
@@ -18,27 +18,30 @@ import { exportJWK, generateKeyPair, GenerateKeyPairResult } from "jose";
 import { http, HttpResponse, PathParams } from "msw";
 import { SetupServer, setupServer } from "msw/node";
 
-import { RootConfig } from "../config.js";
-import { ContextService } from "../contexts/context.service.js";
-import { CredentialsService } from "../credentials/credentials.service.js";
-import { DidService } from "../did/did.service.js";
-import { KeysService } from "../keys/keys.service.js";
-import { SignatureService } from "../keys/signature.service.js";
-import { JSONLDContext } from "../model/context.dao.js";
+import { RootConfig } from "../../config.js";
+import { ContextService } from "../../contexts/context.service.js";
+import { CredentialsService } from "../../credentials/credentials.service.js";
+import { DidService } from "../../did/did.service.js";
+import { KeysService } from "../../keys/keys.service.js";
+import { SignatureService } from "../../keys/signature.service.js";
+import { JSONLDContext } from "../../model/context.dao.js";
 import {
   CredentialDao,
   KeyMaterialDao,
   StatusListCredentialDao
-} from "../model/credentials.dao.js";
-import { DIDDocuments, DIDLogs, DIDService } from "../model/did.dao.js";
-import { CIAccessToken, CredentialIssuance } from "../model/issuance.dao.js";
-import { PresentationService } from "../presentation/presentation.service.js";
-import { HolderService } from "./holder.service.js";
-import { IssuerService } from "./issuer.service.js";
+} from "../../model/credentials.dao.js";
+import { DIDDocuments, DIDLogs, DIDService } from "../../model/did.dao.js";
+import { CIAccessToken, CredentialIssuance } from "../../model/issuance.dao.js";
+import { PresentationService } from "../../presentation/presentation.service.js";
+import { DCPHolderService } from "../dcp/holder.service.js";
+import { IssuanceService } from "../issuance.service.js";
+import { OID4VCIHolderService } from "./holder.service.js";
+import { OID4VCIIssuerService } from "./issuer.service.js";
 
 describe("Holder service", () => {
-  let issuerService: IssuerService;
-  let holderService: HolderService;
+  let issuanceService: IssuanceService;
+  let issuerService: OID4VCIIssuerService;
+  let holderService: OID4VCIHolderService;
   let server: SetupServer;
   let moduleRef: TestingModule;
   let exampleKey: GenerateKeyPairResult;
@@ -95,8 +98,9 @@ describe("Holder service", () => {
         KeysService,
         SignatureService,
         PresentationService,
-        IssuerService,
-        HolderService,
+        IssuanceService,
+        OID4VCIIssuerService,
+        OID4VCIHolderService,
         ContextService,
         {
           provide: RootConfig,
@@ -107,18 +111,23 @@ describe("Holder service", () => {
           useValue: plainToInstance(NodemailerConfiguration, {
             enabled: false
           })
+        },
+        {
+          provide: DCPHolderService,
+          useValue: {
+            handleCredentialRequest: jest.fn()
+          }
         }
       ]
     }).compile();
-    issuerService = await moduleRef.get(IssuerService);
-    holderService = await moduleRef.get(HolderService);
+    issuanceService = await moduleRef.get(IssuanceService);
+    issuerService = await moduleRef.get(OID4VCIIssuerService);
+    holderService = await moduleRef.get(OID4VCIHolderService);
 
     const didService = await moduleRef.get(DidService);
     await moduleRef.get(KeysService).initialized;
     await moduleRef.get(CredentialsService).initialized;
     exampleKey = await generateKeyPair("EdDSA");
-    const publicKey = await exportJWK(exampleKey.publicKey);
-
     const exampleDid: DIDDocument = {
       "@context": [
         "https://www.w3.org/ns/did/v1",
@@ -132,8 +141,8 @@ describe("Holder service", () => {
           controller: "did:web:example.com",
           publicKeyJwk: {
             alg: "EdDSA",
-            kty: publicKey.kty ?? "",
-            ...publicKey
+            ...(await exportJWK(exampleKey.publicKey)),
+            kty: "OKP"
           }
         }
       ],
@@ -201,8 +210,8 @@ describe("Holder service", () => {
   });
 
   describe("Issuance process", () => {
-    it("Create offer", async () => {
-      const offer = await issuerService.createCredentialOffer({
+    it("Request credential", async () => {
+      const offer = await issuanceService.createCredentialOffer({
         holderId: "did:web:localhost",
         credentialType: "ExampleCredentialType",
         credentialSubject: { id: "did:web:localhost" }
@@ -221,6 +230,15 @@ describe("Holder service", () => {
         .getCredentials();
 
       console.log(credentials);
+    });
+    it("Request errros", async () => {
+      await expect(
+        holderService.requestCredential({
+          issuerUrl: "http://localhost:3000"
+        } as any)
+      ).rejects.toThrow(
+        "Either pre-authorized code or access token must be provided"
+      );
     });
   });
 });

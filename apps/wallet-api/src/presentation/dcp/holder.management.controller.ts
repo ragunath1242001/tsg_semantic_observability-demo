@@ -9,12 +9,12 @@ import { nonEmptyStringPipe, Roles } from "@tsg-dsp/common-api";
 import { ApiForbiddenResponseDefault } from "@tsg-dsp/common-dtos";
 import { AppRole } from "@tsg-dsp/wallet-dtos";
 
-import { DCPSiopService } from "./siop.service.js";
+import { SecureTokenService } from "../../keys/token.service.js";
 
 @Controller("management/dcp/holder")
 @ApiTags("Presentation DCP")
 export class DCPHolderManagementController {
-  constructor(private readonly siopService: DCPSiopService) {}
+  constructor(private readonly siopService: SecureTokenService) {}
 
   @Get("token")
   @ApiOperation({
@@ -38,11 +38,11 @@ export class DCPHolderManagementController {
     @Query("scope") scope?: string
   ): Promise<{ id_token: string }> {
     return {
-      id_token: await this.siopService.createSelfIssuedIDToken(
+      id_token: await this.siopService.createSelfIssuedIDToken({
         audience,
-        true,
+        createAccessToken: true,
         scope
-      )
+      })
     };
   }
 }

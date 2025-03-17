@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, it } from "@jest/globals";
+import { afterAll, beforeAll, describe, it, jest } from "@jest/globals";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import {
@@ -18,25 +18,28 @@ import {
 import { http, HttpResponse } from "msw";
 import { SetupServer, setupServer } from "msw/node";
 
-import { RootConfig } from "../config.js";
-import { ContextService } from "../contexts/context.service.js";
-import { CredentialsService } from "../credentials/credentials.service.js";
-import { DidService } from "../did/did.service.js";
-import { KeysService } from "../keys/keys.service.js";
-import { SignatureService } from "../keys/signature.service.js";
-import { JSONLDContext } from "../model/context.dao.js";
+import { RootConfig } from "../../config.js";
+import { ContextService } from "../../contexts/context.service.js";
+import { CredentialsService } from "../../credentials/credentials.service.js";
+import { DidService } from "../../did/did.service.js";
+import { KeysService } from "../../keys/keys.service.js";
+import { SignatureService } from "../../keys/signature.service.js";
+import { JSONLDContext } from "../../model/context.dao.js";
 import {
   CredentialDao,
   KeyMaterialDao,
   StatusListCredentialDao
-} from "../model/credentials.dao.js";
-import { DIDDocuments, DIDLogs, DIDService } from "../model/did.dao.js";
-import { CIAccessToken, CredentialIssuance } from "../model/issuance.dao.js";
-import { HolderService } from "./holder.service.js";
-import { IssuerService } from "./issuer.service.js";
+} from "../../model/credentials.dao.js";
+import { DIDDocuments, DIDLogs, DIDService } from "../../model/did.dao.js";
+import { CIAccessToken, CredentialIssuance } from "../../model/issuance.dao.js";
+import { DCPHolderService } from "../dcp/holder.service.js";
+import { IssuanceService } from "../issuance.service.js";
+import { OID4VCIHolderService } from "./holder.service.js";
+import { OID4VCIIssuerService } from "./issuer.service.js";
 
 describe("Issuer service", () => {
-  let issuerService: IssuerService;
+  let issuerService: OID4VCIIssuerService;
+  let issuanceService: IssuanceService;
   let server: SetupServer;
   let moduleRef: TestingModule;
   let exampleKey: GenerateKeyPairResult;
@@ -95,8 +98,9 @@ describe("Issuer service", () => {
         EmailService,
         KeysService,
         SignatureService,
-        IssuerService,
-        HolderService,
+        IssuanceService,
+        OID4VCIIssuerService,
+        OID4VCIHolderService,
         ContextService,
         {
           provide: RootConfig,
@@ -107,16 +111,22 @@ describe("Issuer service", () => {
           useValue: plainToInstance(NodemailerConfiguration, {
             enabled: false
           })
+        },
+        {
+          provide: DCPHolderService,
+          useValue: {
+            handleCredentialRequest: jest.fn()
+          }
         }
       ]
     }).compile();
-    issuerService = await moduleRef.get(IssuerService);
+    issuanceService = await moduleRef.get(IssuanceService);
+    issuerService = await moduleRef.get(OID4VCIIssuerService);
 
-    const didService = await moduleRef.get(DidService);
+    const didService = moduleRef.get(DidService);
     await moduleRef.get(KeysService).initialized;
     await moduleRef.get(CredentialsService).initialized;
     exampleKey = await generateKeyPair("EdDSA");
-    const publicKey = await exportJWK(exampleKey.publicKey);
     const exampleDid: DIDDocument = {
       "@context": [
         "https://www.w3.org/ns/did/v1",
@@ -130,8 +140,8 @@ describe("Issuer service", () => {
           controller: "did:web:example.com",
           publicKeyJwk: {
             alg: "EdDSA",
-            kty: publicKey.kty ?? "",
-            ...publicKey
+            ...(await exportJWK(exampleKey.publicKey)),
+            kty: "OKP"
           }
         }
       ],
@@ -170,7 +180,7 @@ describe("Issuer service", () => {
 
   describe("Issuance process", () => {
     it("Create offer", async () => {
-      const offer = await issuerService.createCredentialOffer({
+      const offer = await issuanceService.createCredentialOffer({
         holderId: "did:web:example.com",
         credentialType: "ExampleCredentialType",
         credentialSubject: { id: "did:web:example.com" }
@@ -207,7 +217,7 @@ describe("Issuer service", () => {
       ).toBeTruthy();
     });
     it("Create offer without Holder ID", async () => {
-      const offer = await issuerService.createCredentialOffer({
+      const offer = await issuanceService.createCredentialOffer({
         credentialType: "ExampleCredentialType",
         credentialSubject: { id: "did:web:example.com" }
       });
@@ -244,7 +254,7 @@ describe("Issuer service", () => {
     });
 
     it("Should error without kid in header", async () => {
-      const offer = await issuerService.createCredentialOffer({
+      const offer = await issuanceService.createCredentialOffer({
         credentialType: "ExampleCredentialType",
         credentialSubject: { id: "did:web:example.com" }
       });
@@ -282,7 +292,7 @@ describe("Issuer service", () => {
     });
 
     it("Should error kid without did in header", async () => {
-      const offer = await issuerService.createCredentialOffer({
+      const offer = await issuanceService.createCredentialOffer({
         credentialType: "ExampleCredentialType",
         credentialSubject: { id: "did:web:example.com" }
       });
@@ -319,8 +329,16 @@ describe("Issuer service", () => {
     });
 
     it("Issuer Metadata", async () => {
-      console.log(
-        JSON.stringify(await issuerService.issuerMetadata(), null, 2)
+      const metadata = await issuerService.issuerMetadata();
+      expect(metadata.credential_issuer).toBe("https://localhost");
+      expect(metadata.credential_endpoint).toBe(
+        "http://localhost:3000/api/oid4vci/credential"
+      );
+      expect(metadata.token_endpoint).toEqual(
+        "http://localhost:3000/api/oid4vci/token"
+      );
+      expect(metadata.credential_configurations_supported).toHaveProperty(
+        "ExampleCredentialType"
       );
     });
   });

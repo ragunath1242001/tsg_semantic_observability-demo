@@ -80,7 +80,7 @@ config:
 <% } %>
   
 <%- if (it.participant.issuer) { %>
-  oid4vci:
+  issuance:
     issuer: 
 <%- it.participants.filter((p) => !p.issuer).forEach((participant) => { %>
       - holderId: did:web:<%= participant.host %>
@@ -89,11 +89,12 @@ config:
         preAuthorizationCode: <%= participant.preAuthorizationCode %>
 <% }) %>
 <% } else { %>
-  oid4vci:
-    holder:
-      - issuerUrl: https://<%= it.general.authorityDomain %>
+  issuance:
+    dcp:
+      - issuerId: did:web:<%= it.general.authorityDomain %>
         preAuthorizationCode: <%= it.participant.preAuthorizationCode %>
-        credentialType: <%= it.general.credentialType %>
+        credentialType:
+          - <%= it.general.credentialType %>
 <% } %>
 <%- if (it.participant.hasControlPlane) { %>
   didServices:
