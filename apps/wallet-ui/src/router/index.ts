@@ -3,12 +3,11 @@ import { createRouter, createWebHashHistory } from "vue-router";
 
 import AppLayout from "@/layout/AppLayoutWallet.vue";
 import AppLayoutWalletUnauthenticated from "@/layout/AppLayoutWalletUnauthenticated.vue";
+import { useRuntimeStore } from "@/stores/runtime";
 import ContextView from "@/views/Contexts.vue";
-import EmailQR from "@/views/credentials/EmailQR.vue";
 import CredentialGaiaX from "@/views/credentials/GaiaX.vue";
 import CredentialImport from "@/views/credentials/Import.vue";
 import CredentialOverview from "@/views/credentials/Overview.vue";
-import RetrieveCredential from "@/views/credentials/RetrieveCredential.vue";
 import DashboardVue from "@/views/Dashboard.vue";
 import DCP from "@/views/DCP.vue";
 import DIDServiceView from "@/views/DIDServices.vue";
@@ -19,6 +18,9 @@ import KeysVue from "@/views/Keys.vue";
 import LoginVue from "@/views/Login.vue";
 import OID4VP from "@/views/OID4VP.vue";
 import SignatureVue from "@/views/Signature.vue";
+import EmailCredentialRequest from "@/views/unauthenticated/EmailCredentialRequest.vue";
+import Home from "@/views/unauthenticated/Home.vue";
+import RetrieveCredential from "@/views/unauthenticated/RetrieveCredential.vue";
 
 const router = createRouter({
   history: createWebHashHistory(),
@@ -104,13 +106,18 @@ const router = createRouter({
       component: AppLayoutWalletUnauthenticated,
       children: [
         {
+          path: "home",
+          name: "Home",
+          component: Home
+        },
+        {
           path: "retrieve-credential",
           name: "RetrieveCredential",
           component: RetrieveCredential
         },
         {
           path: "retrieve-credential/:id",
-          component: EmailQR
+          component: EmailCredentialRequest
         }
       ]
     }
@@ -118,10 +125,26 @@ const router = createRouter({
 });
 router.beforeEach(async (to) => {
   // redirect to login page if not logged in and trying to access a restricted page
-  const publicPages = ["/login", "/retrieve-credential"];
+  const publicPages = ["/login"];
+  const publicPrefixes = [];
 
+  const runtimeStore = useRuntimeStore();
+  await runtimeStore.loaded;
+
+  if (runtimeStore.acceptUnauthenticatedCredentialRequests) {
+    publicPages.push("/home");
+  }
+  if (runtimeStore.issueMobileCredentials) {
+    publicPages.push("/retrieve-credential");
+  }
+
+  const anyPublicPages =
+    runtimeStore.acceptUnauthenticatedCredentialRequests ||
+    runtimeStore.issueMobileCredentials;
   // Check if the path starts with any of these prefixes to handle dynamic routes
-  const publicPrefixes = ["/retrieve-credential/"];
+  if (anyPublicPages) {
+    publicPrefixes.push("/retrieve-credential/");
+  }
 
   const authRequired =
     !publicPages.includes(to.path) &&

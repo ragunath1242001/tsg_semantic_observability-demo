@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { FooterProps } from "@tsg-dsp/common-ui/layout/AppFooter.vue";
 import AppLayout from "@tsg-dsp/common-ui/layout/AppLayout.vue";
 import { Menu, MenuProps } from "@tsg-dsp/common-ui/layout/AppMenu.vue";
 import { useLayout } from "@tsg-dsp/common-ui/layout/composables/layout";
@@ -39,13 +38,13 @@ const menuList: Menu[] = [
   {
     label: "Home",
     items: [
-      // {
-      //   label: "Overview",
-      //   icon: "pi pi-fw pi-home",
-      //   to: "/"
-      // },
       {
-        label: "Retrieve credential",
+        label: "Home",
+        icon: "pi pi-fw pi-home",
+        to: "/home"
+      },
+      {
+        label: "Retrieve app credential",
         icon: "pi pi-fw pi-id-card",
         to: "/retrieve-credential"
       }
@@ -53,10 +52,6 @@ const menuList: Menu[] = [
   }
 ];
 
-const footer: FooterProps = {
-  logoUrl: logoUrl.value,
-  footerText: "TNO"
-};
 const route = useRoute();
 
 const sidebar: MenuProps = {
@@ -74,7 +69,10 @@ const sidebar: MenuProps = {
         needSignin: true,
         router: useRouter()
       }"
-      :footer="footer"
+      :footer="{
+        logoUrl: logoUrl,
+        footerText: 'TNO'
+      }"
       :sidebar="sidebar" />
     <AppConfig />
     <div class="layout-mask animate-fadein"></div>

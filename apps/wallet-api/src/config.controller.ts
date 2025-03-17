@@ -68,6 +68,9 @@ export class ConfigController {
   ): Promise<RuntimeConfig> {
     this.runtimeConfig.gaiaXSupport = settings.gaiaXSupport;
     this.runtimeConfig.title = settings.title;
+    this.runtimeConfig.acceptUnauthenticatedCredentialRequests =
+      settings.acceptUnauthenticatedCredentialRequests;
+    this.runtimeConfig.issueMobileCredentials = settings.issueMobileCredentials;
     this.runtimeConfig.color = settings.color;
     this.runtimeConfig.darkThemeUrl = settings.darkThemeUrl;
     this.runtimeConfig.lightThemeUrl = settings.lightThemeUrl;

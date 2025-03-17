@@ -7,6 +7,7 @@ import {
 } from "@nestjs/swagger";
 import { TypeOrmHealthIndicator } from "@nestjs/terminus";
 import { InjectRepository } from "@nestjs/typeorm";
+import { DisableOAuthGuard } from "@tsg-dsp/common-api";
 import { StatusDto } from "@tsg-dsp/wallet-dtos";
 import { IsNull, Not, Repository } from "typeorm";
 import { getHeapStatistics } from "v8";
@@ -27,6 +28,7 @@ export class StatusController {
     private readonly keyRepository: Repository<KeyMaterialDao>
   ) {}
   @Get("/status")
+  @DisableOAuthGuard()
   @ApiOperation({
     summary: "Application status",
     description:

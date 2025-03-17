@@ -6,7 +6,8 @@ import {
   HttpStatus,
   Param,
   Post,
-  Put
+  Put,
+  Query
 } from "@nestjs/common";
 import {
   ApiBody,
@@ -14,6 +15,7 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiParam,
+  ApiQuery,
   ApiTags
 } from "@nestjs/swagger";
 import {
@@ -118,13 +120,21 @@ export class IssuanceManagementController {
   @Roles(AppRole.MANAGE_ALL_CREDENTIALS)
   @ApiBody({ type: CredentialOffer })
   @ApiOkResponse({ type: CredentialOfferStatus })
+  @ApiQuery({
+    name: "mobile",
+    required: false,
+    default: true,
+    example: true,
+    description: "Whether the offer is for mobile or server applications"
+  })
   @DisableOAuthGuard()
   @DisableRolesGuard()
   @HttpCode(HttpStatus.OK)
   async offerEndpoint(
-    @Body() offerRequest: CredentialOfferRequest
+    @Body() offerRequest: CredentialOfferRequest,
+    @Query("mobile") mobile: boolean = true
   ): Promise<CredentialOffer> {
-    return this.issuanceService.createCredentialOffer(offerRequest);
+    return this.issuanceService.createCredentialOffer(offerRequest, mobile);
   }
 
   @Put("offers/:id/revoke")

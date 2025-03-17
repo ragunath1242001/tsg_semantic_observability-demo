@@ -7,6 +7,10 @@ export class RuntimeConfigDto implements RuntimeConfig {
   gaiaXSupport!: boolean;
   @ApiProperty({ example: "My Company Wallet" })
   title!: string;
+  @ApiProperty({ example: false })
+  acceptUnauthenticatedCredentialRequests!: boolean;
+  @ApiProperty({ example: false })
+  issueMobileCredentials!: boolean;
   @ApiProperty({ example: "#3B8BF6" })
   color: string = "#3B8BF6";
   @ApiPropertyOptional({ example: "https://example.com/darktheme.png" })

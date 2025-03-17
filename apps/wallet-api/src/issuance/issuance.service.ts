@@ -123,7 +123,8 @@ export class IssuanceService {
   }
 
   async createCredentialOffer(
-    offerRequest: CredentialOfferRequest
+    offerRequest: CredentialOfferRequest,
+    mobile?: boolean
   ): Promise<CredentialOffer> {
     const code =
       offerRequest.preAuthorizedCode || randomBytes(48).toString("hex");
@@ -136,7 +137,7 @@ export class IssuanceService {
       credentialSubject: offerRequest.credentialSubject
     });
 
-    if (offerRequest.credentialSubject.email) {
+    if (offerRequest.credentialSubject.email && this.config.email.enabled) {
       const emailParameters: TemplateParameters = {
         email: offerRequest.credentialSubject.email,
         sender: `"${this.config.runtime.title} Wallet" <noreply@dataspac.es>`,
@@ -154,7 +155,7 @@ export class IssuanceService {
           },
           {
             button: {
-              url: `${this.config.server.publicAddress}/#/retrieve-credential/${offer.id}`,
+              url: `${this.config.server.publicAddress}/#/retrieve-credential/${offer.id}?mobile=${mobile ?? true}`,
               text: "Retrieve Credential"
             }
           }

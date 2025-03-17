@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it } from "@jest/globals";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { TypeOrmTestHelper } from "@tsg-dsp/common-api";
+import { Order, TypeOrmTestHelper } from "@tsg-dsp/common-api";
 import {
   CredentialSubject,
   JsonWebSignature2020,
@@ -479,6 +479,161 @@ describe("Credentials Service", () => {
       expect(credentials[0].statusListCredential?.id).not.toBe(
         credentials[1].statusListCredential?.id
       );
+    });
+  });
+
+  describe("getPaginatedCredentials", () => {
+    it("should return paginated credentials for a target DID", async () => {
+      // Setup some test credentials
+      const targetDid = "did:web:test-target.com";
+      await credentialsService.issueCredential(
+        {
+          context: [],
+          type: [],
+          revocable: false,
+          id: "test-paginated-1",
+          keyId: "key-0",
+          credentialSubject: { id: targetDid }
+        },
+        targetDid
+      );
+
+      await credentialsService.issueCredential(
+        {
+          context: [],
+          type: [],
+          id: "test-paginated-2",
+          revocable: false,
+          keyId: "key-0",
+          credentialSubject: { id: targetDid }
+        },
+        targetDid
+      );
+
+      // Test pagination
+      const result = await credentialsService.getPaginatedCredentials(
+        {
+          page: 1,
+          typeOrm: { skip: 0, take: 10, order: { createdDate: Order.DESC } },
+          order: Order.ASC,
+          order_by: "",
+          per_page: 0,
+          skip: 0,
+          take: 0
+        },
+        targetDid
+      );
+
+      expect(result.data.length).toBe(2);
+      expect(result.total).toBe(2);
+      expect(result.data[0].targetDid).toBe(targetDid);
+      expect(result.data[1].targetDid).toBe(targetDid);
+    });
+
+    it("should return all credentials when no target DID is provided", async () => {
+      const result = await credentialsService.getPaginatedCredentials({
+        page: 1,
+        typeOrm: {
+          skip: 0,
+          take: 100,
+          order: {}
+        },
+        order: Order.ASC,
+        order_by: "",
+        per_page: 0,
+        skip: 0,
+        take: 0
+      });
+
+      // This should return all credentials in the database
+      expect(result.data.length).toBeGreaterThan(0);
+      expect(result.total).toBeGreaterThan(0);
+    });
+  });
+
+  describe("getPaginatedCredentialsPublic", () => {
+    it("should filter out credentials for mobile devices and sensitive data", async () => {
+      // Create a credential with a did:key DID (mobile device)
+      const mobileDid =
+        "did:key:z6MkiTBz1ymuepAQ4HEHYSF1H8quG5GLVVQR3djdX3mDooWp";
+      const credential = await credentialsService.issueCredential(
+        {
+          context: [],
+          type: [],
+          id: "mobile-credential",
+          keyId: "key-0",
+          credentialSubject: {
+            id: mobileDid
+          },
+          revocable: false
+        },
+        mobileDid
+      );
+      credential.credential.credentialSubject = {
+        id: mobileDid,
+        email: "test@example.com",
+        emailDomain: "example.com"
+      };
+      await credentialsService["credentialRepository"].save(credential);
+
+      // Create a regular credential with sensitive data
+      const regularDid = "did:web:regular.com";
+      const credential2 = await credentialsService.issueCredential(
+        {
+          context: [],
+          type: [],
+          id: "regular-credential",
+          keyId: "key-0",
+          credentialSubject: {
+            id: regularDid
+          },
+          revocable: false
+        },
+        regularDid
+      );
+
+      credential2.credential.credentialSubject = {
+        id: regularDid,
+        email: "test@example.com",
+        emailDomain: "example.com",
+        name: "Test User"
+      };
+      await credentialsService["credentialRepository"].save(credential2);
+
+      const result = await credentialsService.getPaginatedCredentialsPublic({
+        page: 1,
+
+        typeOrm: {
+          skip: 0,
+          take: 100,
+          order: {}
+        },
+        order: Order.ASC,
+        order_by: "",
+        per_page: 0,
+        skip: 0,
+        take: 0
+      });
+
+      // Mobile credentials should be filtered out
+      const hasMobileCredential = result.data.some(
+        (cred) => cred.targetDid === mobileDid
+      );
+      expect(hasMobileCredential).toBe(false);
+
+      // Check if sensitive data is removed from regular credentials
+      const regularCredential = result.data.find(
+        (cred) => cred.targetDid === regularDid
+      );
+
+      if (regularCredential) {
+        const subject = toArray(
+          regularCredential.credential.credentialSubject
+        )[0];
+        expect(subject.email).toBeUndefined();
+        expect(subject.emailDomain).toBeUndefined();
+        expect(subject.name).toBe("Test User"); // Non-sensitive data should remain
+      }
     });
   });
 });

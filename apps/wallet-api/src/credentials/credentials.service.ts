@@ -111,6 +111,36 @@ export class CredentialsService {
     };
   }
 
+  async getPaginatedCredentialsPublic(paginationOptions: PaginationOptionsDto) {
+    // eslint-disable-next-line prefer-const
+    let [credentials, itemCount] = await this.credentialRepository.findAndCount(
+      {
+        ...paginationOptions.typeOrm
+      }
+    );
+    // Do not show credentials handed out to mobile devices
+    credentials = credentials.filter(
+      (credential) => !credential.targetDid.startsWith("did:key:")
+    );
+    credentials.forEach((credential) => {
+      if (Array.isArray(credential.credential.credentialSubject)) {
+        credential.credential.credentialSubject.forEach(
+          (subject: CredentialSubject) => {
+            delete subject["email"];
+            delete subject["emailDomain"];
+          }
+        );
+      } else {
+        delete credential.credential.credentialSubject["email"];
+        delete credential.credential.credentialSubject["emailDomain"];
+      }
+    });
+    return {
+      data: credentials,
+      total: itemCount
+    };
+  }
+
   async getCredentials(targetDid?: string): Promise<CredentialDao[]> {
     return this.credentialRepository.find({
       where: {
