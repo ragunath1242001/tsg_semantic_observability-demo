@@ -97,7 +97,8 @@ const { data, loading, total, perPage, load } = setupPagination({
   errorContext: {
     summary: "Could not load credentials",
     defaultMessage: `Error in fetching credentials`
-  }
+  },
+  toast
 });
 
 const deleteCredential = async (credentialId: string) => {

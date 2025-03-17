@@ -48,7 +48,8 @@ const { data, loading, total, perPage, load } = setupPagination({
   errorContext: {
     summary: "Could not load keys",
     defaultMessage: `Error in fetching key configurations`
-  }
+  },
+  toast
 });
 
 const setDefaultKey = async (keyId: string) => {

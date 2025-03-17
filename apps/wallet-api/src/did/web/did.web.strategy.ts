@@ -25,6 +25,7 @@ export class DidWebStrategy implements DidStrategy {
     const didDocument: DIDDocument = {
       "@context": [
         "https://www.w3.org/ns/did/v1",
+        "https://w3id.org/dspace-dcp/v1.0/dcp.jsonld",
         ...VERIFICATION_METHOD_CONTEXT
       ],
       id: didId,

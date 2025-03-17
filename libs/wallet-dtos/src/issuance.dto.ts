@@ -5,6 +5,71 @@ import {
   getSchemaPath
 } from "@nestjs/swagger";
 import { CredentialSubject } from "@tsg-dsp/common-dsp";
+import { Type } from "class-transformer";
+import {
+  ArrayMinSize,
+  IsArray,
+  IsObject,
+  IsOptional,
+  IsString,
+  Matches,
+  ValidateNested
+} from "class-validator";
+
+export class DCPCredentialRequestInitiation {
+  @ApiProperty({
+    example: "did:web:issuer.example",
+    pattern: "^did:[a-z0-9]+:.*"
+  })
+  @IsString()
+  @Matches(/^did:[a-z0-9]+:.*/)
+  issuerId!: string;
+
+  @ApiProperty({ example: "pre-auth-code-xyz" })
+  @IsString()
+  preAuthorizedCode!: string;
+
+  @ApiProperty({ example: ["ExampleCredential"] })
+  @IsArray()
+  @IsString({ each: true })
+  @ArrayMinSize(1)
+  credentialType!: string[];
+}
+
+export class AuthorizedRequestParams {
+  @ApiProperty({ example: "access-token" })
+  @IsString()
+  accessToken!: string;
+
+  @ApiProperty({ example: "credential-type" })
+  @IsString()
+  credentialIdentifier!: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsObject()
+  additionalRequestParams?: Record<string, unknown>;
+}
+
+export class OID4VCICredentialRequestInitiation {
+  @ApiProperty({ example: "https://issuer.example.com" })
+  @IsString()
+  issuerUrl!: string;
+
+  @ApiPropertyOptional({ example: "pre-auth-code-xyz" })
+  @IsString()
+  @IsOptional()
+  preAuthorizedCode?: string;
+
+  @ApiPropertyOptional({
+    type: () => AuthorizedRequestParams
+  })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => AuthorizedRequestParams)
+  authorized?: AuthorizedRequestParams;
+}
+
 export class CredentialOfferRequest {
   @ApiPropertyOptional({ example: "holder-123" })
   holderId?: string;
@@ -148,6 +213,9 @@ export class CredentialOfferStatus {
     example: { id: "subject-id", name: "Sample Subject" }
   })
   credentialSubject!: CredentialSubject;
+
+  @ApiPropertyOptional({ example: "remote-id-123" })
+  remoteId?: string;
 
   constructor(value: Partial<CredentialOfferStatus>) {
     Object.assign(this, value);

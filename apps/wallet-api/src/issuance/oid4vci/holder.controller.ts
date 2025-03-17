@@ -13,16 +13,16 @@ import {
 } from "@tsg-dsp/common-dtos";
 import { AppRole } from "@tsg-dsp/wallet-dtos";
 
-import { CredentialsDto } from "../credentials/credentials.schemas.js";
-import { CredentialDao } from "../model/credentials.dao.js";
-import { HolderService } from "./holder.service.js";
+import { CredentialsDto } from "../../credentials/credentials.schemas.js";
+import { CredentialDao } from "../../model/credentials.dao.js";
+import { OID4VCIHolderService } from "./holder.service.js";
 
 @Controller()
 @ApiTags("OpenID 4 Verifiable Credential Issuance")
 @ApiOAuth2([AppRole.MANAGE_OWN_CREDENTIALS, AppRole.MANAGE_ALL_CREDENTIALS])
 @Roles([AppRole.MANAGE_OWN_CREDENTIALS, AppRole.MANAGE_ALL_CREDENTIALS])
-export class HolderController {
-  constructor(private readonly holderService: HolderService) {}
+export class OID4VCIHolderController {
+  constructor(private readonly holderService: OID4VCIHolderService) {}
 
   @Post("oid4vci/holder/request")
   @ApiOperation({

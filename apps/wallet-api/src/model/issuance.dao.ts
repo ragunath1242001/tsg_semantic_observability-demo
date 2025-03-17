@@ -35,6 +35,9 @@ export class CredentialIssuance extends MetaEntity {
 
   @Column({ type: "simple-json" })
   credentialSubject!: CredentialSubject;
+
+  @Column({ type: String, nullable: true })
+  remoteId?: string;
 }
 
 @Entity()

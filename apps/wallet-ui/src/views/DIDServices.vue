@@ -33,7 +33,8 @@ const { data, loading, total, perPage, load } = setupPagination({
   errorContext: {
     summary: "Could not load DID services",
     defaultMessage: `Error in fetching registered DID services`
-  }
+  },
+  toast
 });
 
 const deleteService = async (serviceId: string) => {

@@ -21,6 +21,7 @@ export function mockDidDocument(): DIDDocument {
   return {
     "@context": [
       "https://www.w3.org/ns/did/v1",
+      "https://w3id.org/dspace-dcp/v1.0/dcp.jsonld",
       "https://w3c-ccg.github.io/lds-jws2020/contexts/v1/"
     ],
     id: "did:web:localhost",
@@ -42,11 +43,6 @@ export function mockDidDocument(): DIDDocument {
       {
         id: "did:web:localhost#credentialservice",
         type: "CredentialService",
-        serviceEndpoint: "http://localhost"
-      },
-      {
-        id: "did:web:localhost#oid4vci",
-        type: "OID4VCI",
         serviceEndpoint: "http://localhost"
       },
       {

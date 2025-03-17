@@ -14,6 +14,7 @@ import { CredentialsService } from "../../credentials/credentials.service.js";
 import { DidService } from "../../did/did.service.js";
 import { KeysService } from "../../keys/keys.service.js";
 import { SignatureService } from "../../keys/signature.service.js";
+import { SecureTokenService } from "../../keys/token.service.js";
 import {
   CredentialDao,
   KeyMaterialDao,
@@ -23,11 +24,10 @@ import { SIToken } from "../../model/dcp.dao.js";
 import { DIDDocuments, DIDLogs, DIDService } from "../../model/did.dao.js";
 import { PresentationService } from "../presentation.service.js";
 import { DCPHolderService } from "./holder.service.js";
-import { DCPSiopService } from "./siop.service.js";
 import { DCPVerifierService } from "./verifier.service.js";
 
 describe("Presentation Service", () => {
-  let dcpSiopService: DCPSiopService;
+  let dcpSiopService: SecureTokenService;
   let dcpHolderService: DCPHolderService;
   let dcpVerifierService: DCPVerifierService;
   let server: SetupServer;
@@ -92,7 +92,7 @@ describe("Presentation Service", () => {
       ],
       providers: [
         SignatureService,
-        DCPSiopService,
+        SecureTokenService,
         DCPHolderService,
         DCPVerifierService,
         CredentialsService,
@@ -105,7 +105,7 @@ describe("Presentation Service", () => {
         }
       ]
     }).compile();
-    dcpSiopService = await moduleRef.get(DCPSiopService);
+    dcpSiopService = await moduleRef.get(SecureTokenService);
     dcpHolderService = await moduleRef.get(DCPHolderService);
     dcpVerifierService = await moduleRef.get(DCPVerifierService);
     const didService = await moduleRef.get(DidService);
@@ -171,22 +171,22 @@ describe("Presentation Service", () => {
 
   describe("DCP Flow", () => {
     it("SIOP Test", async () => {
-      const holderIdToken = await dcpSiopService.createSelfIssuedIDToken(
-        "did:web:localhost",
-        true
-      );
+      const holderIdToken = await dcpSiopService.createSelfIssuedIDToken({
+        audience: "did:web:localhost",
+        createAccessToken: true
+      });
       console.log(holderIdToken);
 
       const validatedHolderIdToken =
         await dcpSiopService.validateIDToken(holderIdToken);
       console.log(validatedHolderIdToken);
 
-      const verifierIdToken = await dcpSiopService.createSelfIssuedIDToken(
-        "did:web:localhost",
-        false,
-        undefined,
-        validatedHolderIdToken.token as string
-      );
+      const verifierIdToken = await dcpSiopService.createSelfIssuedIDToken({
+        audience: "did:web:localhost",
+        createAccessToken: false,
+        scope: undefined,
+        existingAccessToken: validatedHolderIdToken.token as string
+      });
       console.log(verifierIdToken);
 
       const validateVerifierIdToken =
@@ -195,10 +195,10 @@ describe("Presentation Service", () => {
     });
 
     it("Presentation flow", async () => {
-      const holderIdToken = await dcpSiopService.createSelfIssuedIDToken(
-        "did:web:localhost",
-        true
-      );
+      const holderIdToken = await dcpSiopService.createSelfIssuedIDToken({
+        audience: "did:web:localhost",
+        createAccessToken: true
+      });
       await dcpVerifierService.verify(holderIdToken, {
         id: crypto.randomUUID(),
         input_descriptors: [

@@ -84,14 +84,14 @@ export class DidService {
   private initServices(): DidServiceConfig[] {
     return [
       {
-        id: `${this.didId}#oid4vci`,
-        type: "OID4VCI",
-        serviceEndpoint: `https://${this.config.server.publicDomain}`
-      },
-      {
-        id: `${this.didId}#credentialService`,
+        id: `${this.didId}#DCP-credentialService`,
         type: "CredentialService",
         serviceEndpoint: `${this.config.server.publicAddress}/api/dcp`
+      },
+      {
+        id: `${this.didId}#DCP-issuerService`,
+        type: "IssuerService",
+        serviceEndpoint: `${this.config.server.publicAddress}/api/dcp/issuer`
       },
       {
         id: `${this.didId}#management`,

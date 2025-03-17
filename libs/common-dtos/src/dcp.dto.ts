@@ -81,3 +81,213 @@ export class PresentationResponseMessage {
   @IsArray()
   presentation!: (string | object)[];
 }
+
+export class CredentialRequestCredential {
+  @ApiProperty()
+  @IsString()
+  format!: string;
+
+  @ApiProperty()
+  @IsString()
+  credentialType!: string;
+}
+
+export class CredentialRequestMessage {
+  @ApiProperty({ example: ["https://w3id.org/dspace-dcp/v1.0/dcp.jsonld"] })
+  @IsString({ each: true })
+  @ArrayMinSize(1)
+  @ArrayContains(["https://w3id.org/dspace-dcp/v1.0/dcp.jsonld"])
+  "@context": string[];
+
+  @ApiProperty({ example: "CredentialRequestMessage" })
+  @IsString()
+  @Equals("CredentialRequestMessage")
+  type!: "CredentialRequestMessage";
+
+  @ApiProperty()
+  @IsString()
+  holderPid!: string;
+
+  @ApiProperty({ type: [CredentialRequestCredential] })
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CredentialRequestCredential)
+  @ArrayMinSize(1)
+  credentials!: CredentialRequestCredential[];
+}
+
+export class CredentialContainer {
+  @ApiProperty()
+  @IsString()
+  @Equals("CredentialContainer")
+  type!: "CredentialContainer";
+
+  @ApiProperty()
+  @IsString()
+  payload!: string;
+
+  @ApiProperty()
+  @IsString()
+  credentialType!: string;
+
+  @ApiProperty()
+  @IsString()
+  format!: string;
+}
+
+export class CredentialMessage {
+  @ApiProperty({ example: ["https://w3id.org/dspace-dcp/v1.0/dcp.jsonld"] })
+  @IsString({ each: true })
+  @ArrayMinSize(1)
+  @ArrayContains(["https://w3id.org/dspace-dcp/v1.0/dcp.jsonld"])
+  "@context": string[];
+
+  @ApiProperty({ example: "CredentialMessage" })
+  @IsString()
+  @Equals("CredentialMessage")
+  type!: "CredentialMessage";
+
+  @ApiProperty()
+  @IsString()
+  issuerPid!: string;
+
+  @ApiProperty()
+  @IsString()
+  holderPid!: string;
+
+  @ApiProperty({ enum: ["ISSUED", "REJECTED"] })
+  @IsString()
+  status!: "ISSUED" | "REJECTED";
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  rejectionReason?: string;
+
+  @ApiPropertyOptional({ type: [CredentialContainer] })
+  @IsArray()
+  @IsOptional()
+  @ValidateNested({ each: true })
+  @Type(() => CredentialContainer)
+  credentials?: CredentialContainer[];
+}
+
+export class CredentialObject {
+  @ApiProperty({
+    example: "CredentialObject",
+    description: "Type identifier"
+  })
+  @IsString()
+  @Equals("CredentialObject")
+  type!: "CredentialObject";
+
+  @ApiProperty({
+    type: [String],
+    description: "Types of credential being offered"
+  })
+  @IsArray()
+  @IsString({ each: true })
+  credentialType!: string[];
+
+  @ApiProperty({
+    description: "Reason for offering this credential"
+  })
+  @IsString()
+  offerReason!: string;
+
+  @ApiProperty({
+    type: [String],
+    description: "Supported binding methods"
+  })
+  @IsArray()
+  @IsString({ each: true })
+  bindingMethods!: string[];
+
+  @ApiProperty({
+    type: [String],
+    description: "Supported cryptographic methods"
+  })
+  @IsArray()
+  @IsString({ each: true })
+  profiles!: string[];
+
+  @ApiPropertyOptional({
+    type: () => PresentationDefinition,
+    description: "Issuance policy definition"
+  })
+  @ValidateNested()
+  @Type(() => PresentationDefinition)
+  @IsOptional()
+  issuancePolicy?: PresentationDefinition;
+}
+
+export class CredentialOfferMessage {
+  @ApiProperty({ example: ["https://w3id.org/dspace-dcp/v1.0/dcp.jsonld"] })
+  @IsString({ each: true })
+  @ArrayMinSize(1)
+  @ArrayContains(["https://w3id.org/dspace-dcp/v1.0/dcp.jsonld"])
+  "@context": string[];
+
+  @ApiProperty({ example: "CredentialOfferMessage" })
+  @IsString()
+  @Equals("CredentialOfferMessage")
+  type!: "CredentialOfferMessage";
+
+  @ApiProperty()
+  @IsString()
+  credentialIssuer!: string;
+
+  @ApiProperty({ type: [CredentialObject] })
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CredentialObject)
+  credentials!: CredentialObject[];
+}
+
+export class IssuerMetadata {
+  @ApiProperty({ example: ["https://w3id.org/dspace-dcp/v1.0/dcp.jsonld"] })
+  @IsString({ each: true })
+  @ArrayMinSize(1)
+  @ArrayContains(["https://w3id.org/dspace-dcp/v1.0/dcp.jsonld"])
+  "@context": string[];
+
+  @ApiProperty({ example: "IssuerMetadata" })
+  @IsString()
+  @Equals("IssuerMetadata")
+  type!: "IssuerMetadata";
+
+  @ApiProperty()
+  @IsString()
+  credentialIssuer!: string;
+
+  @ApiProperty({ type: [CredentialObject] })
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CredentialObject)
+  credentialsSupported!: CredentialObject[];
+}
+
+export class CredentialStatus {
+  @ApiProperty({ example: ["https://w3id.org/dspace-dcp/v1.0/dcp.jsonld"] })
+  @IsString({ each: true })
+  @ArrayMinSize(1)
+  @ArrayContains(["https://w3id.org/dspace-dcp/v1.0/dcp.jsonld"])
+  "@context": string[];
+
+  @ApiProperty({ example: "CredentialStatus" })
+  @IsString()
+  @Equals("CredentialStatus")
+  type!: "CredentialStatus";
+
+  @ApiProperty()
+  @IsString()
+  issuerPid!: string;
+
+  @ApiProperty()
+  @IsString()
+  holderPid!: string;
+
+  @ApiProperty({ enum: ["RECEIVED", "REJECTED", "ISSUED"] })
+  @IsString()
+  status!: "RECEIVED" | "REJECTED" | "ISSUED";
+}

@@ -1669,10 +1669,374 @@ paths:
       security: *a21
       summary: Delete context
       tags: *a22
+  /api/management/issuance/request/dcp:
+    post:
+      description: Requests a new credential via the Decentralized Claims Protocol
+      operationId: IssuanceManagementController_requestDCPCredential
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DCPCredentialRequestInitiation"
+      responses:
+        "200":
+          description: ""
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      summary: Request credential via DCP
+      tags: &a23
+        - Issuance Management
+  /api/management/issuance/request/oid4vci:
+    post:
+      description: Requests a new credential via the OpenID 4 Verifiable Credential
+        Issuance protocol.
+      operationId: IssuanceManagementController_requestOID4VCICredential
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OID4VCICredentialRequestInitiation"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CredentialsDto"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      summary: Request credential via OID4VCI
+      tags: *a23
+  /api/management/issuance/offers:
+    get:
+      description: Retrieves all credentials offered this wallet has offered to holders
+      operationId: IssuanceManagementController_listOffers
+      parameters:
+        - name: order
+          required: false
+          in: query
+          schema:
+            default: DESC
+            type: string
+            enum:
+              - ASC
+              - DESC
+        - name: order_by
+          required: false
+          in: query
+          schema:
+            default: modifiedDate
+            type: string
+        - name: page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            default: 1
+            type: number
+        - name: per_page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            default: 100
+            type: number
+      responses:
+        "200":
+          description: ""
+          headers:
+            x-page:
+              description: Index of the current page (starting at 1)
+              schema:
+                type: integer
+            x-prev-page:
+              description: Index of the previous page
+              schema:
+                type: integer
+              required: false
+            x-next-page:
+              description: Index of the next page
+              schema:
+                type: integer
+              required: false
+            x-per-page:
+              description: Number of items per page
+              schema:
+                type: integer
+            x-total-pages:
+              description: Total number of pages
+              schema:
+                type: integer
+            x-total:
+              description: Total number of items
+              schema:
+                type: integer
+            link:
+              description: Web Linking to other pages of this resource
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CredentialOfferStatus"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security:
+        - oauth2:
+            - wallet_manage_all_credentials
+      summary: Retrieve offered credentials
+      tags: *a23
+    post:
+      description: Creates a new credential offer
+      operationId: IssuanceManagementController_offerEndpoint
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CredentialOffer"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CredentialOfferStatus"
+      summary: Add offer
+      tags: *a23
+  /api/management/issuance/offers/{id}:
+    get:
+      description: Retrieves a specific credential offer
+      operationId: IssuanceManagementController_listGeneralOffers
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CredentialOfferStatus"
+      summary: Retrieve offered credential
+      tags: *a23
+  /api/management/issuance/offers/{id}/revoke:
+    put:
+      description: Revokes an existing credential offer, so that it cannot be used
+        anymore by the holder
+      operationId: IssuanceManagementController_revokeOffer
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CredentialOfferStatus"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security:
+        - oauth2:
+            - wallet_manage_all_credentials
+      summary: Revoke offer
+      tags: *a23
+  /api/dcp/credentials:
+    post:
+      description: Stores a new credential
+      operationId: DCPHolderController_storeCredential
+      parameters:
+        - name: Authorization
+          required: true
+          in: header
+          description: Access Token from Self-Issued ID Token
+          schema:
+            type: string
+            example: Bearer <token>
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CredentialMessage"
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      summary: Store credential
+      tags: &a24
+        - DCP Credential Issuance
+  /api/dcp/offers:
+    post:
+      description: Offers a new or updated credential
+      operationId: DCPHolderController_credentialOffer
+      parameters:
+        - name: Authorization
+          required: true
+          in: header
+          description: Self-Issued ID Token
+          schema:
+            type: string
+            example: Bearer <token>
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CredentialOfferMessage"
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      summary: Offer credential
+      tags: *a24
+  /api/dcp/issuer/metadata:
+    get:
+      description: Returns the metadata of the issuer
+      operationId: DCPIssuerController_metadata
+      parameters: []
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CredentialIssuerMetadata"
+      summary: Issuer Metadata
+      tags: &a25
+        - DCP Credential Issuance
+  /api/dcp/issuer/credentials:
+    post:
+      description: Requests a new credential
+      operationId: DCPIssuerController_credentialRequest
+      parameters:
+        - name: Authorization
+          required: true
+          in: header
+          description: Self-Issued ID Token
+          schema:
+            type: string
+            example: Bearer <token>
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CredentialRequestMessage"
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      summary: Request credential
+      tags: *a25
+  /api/dcp/issuer/requests/{requestId}:
+    get:
+      description: Returns the status of a credential request
+      operationId: DCPIssuerController_credentialStatus
+      parameters:
+        - name: Authorization
+          required: true
+          in: header
+          description: Self-Issued ID Token
+          schema:
+            type: string
+            example: Bearer <token>
+        - name: requestId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CredentialStatus"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      summary: Credential status
+      tags: *a25
   /api/oid4vci/holder/request:
     post:
       description: Requests a new credential via the OID4VCI Pre-authorized-code flow.
-      operationId: HolderController_requestCredential
+      operationId: OID4VCIHolderController_requestCredential
       parameters: []
       requestBody:
         required: true
@@ -1725,7 +2089,7 @@ paths:
         - OpenID 4 Verifiable Credential Issuance
   /.well-known/openid-credential-issuer:
     get:
-      operationId: IssuerController_issuerMetadata
+      operationId: OID4VCIIssuerController_issuerMetadata
       parameters: []
       responses:
         "200":
@@ -1734,13 +2098,13 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/CredentialIssuerMetadata"
-      tags: &a23
+      tags: &a26
         - OpenID 4 Verifiable Credential Issuance
   /oid4vci/token:
     post:
       description: Requests an access token based on a pre authorizated code the
         holder has received off-line
-      operationId: IssuerController_tokenEndpoint
+      operationId: OID4VCIIssuerController_tokenEndpoint
       parameters: []
       requestBody:
         required: true
@@ -1773,12 +2137,12 @@ paths:
       security:
         - bearer: []
       summary: Request OID4VCI access token
-      tags: *a23
+      tags: *a26
   /oid4vci/credential:
     post:
       description: Requests a new credential based on a Credential Request via the
         OID4VCI flow
-      operationId: IssuerController_credentialEndpoint
+      operationId: OID4VCIIssuerController_credentialEndpoint
       parameters:
         - name: Authorization
           required: true
@@ -1803,101 +2167,7 @@ paths:
       security:
         - bearer: []
       summary: Request OID4VCI credential
-      tags: *a23
-  /api/oid4vci/offer:
-    get:
-      description: Retrieves all credentials offered this wallet has offered to holders
-      operationId: IssuerController_listOffers
-      parameters: []
-      responses:
-        "200":
-          description: ""
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/CredentialOfferStatus"
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorDto"
-      security:
-        - oauth2:
-            - wallet_manage_all_credentials
-      summary: Retrieve offered credentials
-      tags: *a23
-    post:
-      description: Creates a new credential offer
-      operationId: IssuerController_offerEndpoint
-      parameters: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/CredentialOffer"
-      responses:
-        "200":
-          description: ""
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/CredentialOfferStatus"
-      summary: Add offer
-      tags: *a23
-  /api/oid4vci/offer/{id}:
-    get:
-      description: Retrieves a specific credential offer
-      operationId: IssuerController_listGeneralOffers
-      parameters:
-        - name: id
-          required: true
-          in: path
-          schema:
-            type: number
-      responses:
-        "200":
-          description: ""
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/CredentialOfferStatus"
-      summary: Retrieve offered credential
-      tags: *a23
-  /api/oid4vci/offer/{id}/revoke:
-    put:
-      description: Revokes an existing credential offer, so that it cannot be used
-        anymore by the holder
-      operationId: IssuerController_revokeOffer
-      parameters:
-        - name: id
-          required: true
-          in: path
-          schema:
-            type: number
-      responses:
-        "200":
-          description: ""
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/CredentialOfferStatus"
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorDto"
-      security:
-        - oauth2:
-            - wallet_manage_all_credentials
-      summary: Revoke offer
-      tags: *a23
+      tags: *a26
 info:
   title: TSG Wallet
   description: >-
@@ -2283,7 +2553,7 @@ components:
           type: object
           example: example-const
         enum:
-          example: &a24
+          example: &a27
             - 1
             - two
           type: array
@@ -2323,7 +2593,7 @@ components:
             - $ref: "#/components/schemas/FilterItems"
         items:
           type: object
-          example: &a25
+          example: &a28
             property:
               type: string
               format: default
@@ -2334,7 +2604,7 @@ components:
           type: object
           example: example-const
         enum:
-          example: *a24
+          example: *a27
           type: array
           items:
             type: number
@@ -2372,7 +2642,7 @@ components:
             - $ref: "#/components/schemas/FilterItems"
         items:
           type: object
-          example: *a25
+          example: *a28
         type:
           type: string
           example: string
@@ -2522,7 +2792,7 @@ components:
       properties:
         type:
           type: string
-          enum: &a28
+          enum: &a31
             - DataIntegrityProof
           example: DataIntegrityProof
         proofPurpose:
@@ -2544,7 +2814,7 @@ components:
           type: string
           example: 2022-01-01T00:00:00Z
         domain:
-          example: &a29
+          example: &a32
             - example.com
           type: array
           items:
@@ -2556,7 +2826,7 @@ components:
           type: string
           example: ProofValueString
         previousProof:
-          example: &a30
+          example: &a33
             - PreviousProof1
             - PreviousProof2
           type: array
@@ -2585,47 +2855,31 @@ components:
     CredentialStatus:
       type: object
       properties:
-        id:
-          type: string
-          example: did:example:credential-status
-        type:
-          type: string
-          enum:
-            - BitstringStatusListEntry
-          example: BitstringStatusListEntry
-        statusPurpose:
-          type: string
-          enum:
-            - refresh
-            - revocation
-            - suspension
-            - message
-          example: suspension
-        statusListIndex:
-          type: string
-          example: "0"
-        statusListCredential:
-          type: string
-          example: did:example:status-credential
-        statusSize:
-          type: string
-          example: "10"
-        statusMessage:
+        "@context":
           example:
-            - status: deadbeef
-              message: Status message detail
+            - https://w3id.org/dspace-dcp/v1.0/dcp.jsonld
           type: array
           items:
-            $ref: "#/components/schemas/StatusMessage"
-        statusReference:
+            type: string
+        type:
           type: string
-          example: https://example.com/status
+          example: CredentialStatus
+        issuerPid:
+          type: string
+        holderPid:
+          type: string
+        status:
+          type: string
+          enum:
+            - RECEIVED
+            - REJECTED
+            - ISSUED
       required:
-        - id
+        - "@context"
         - type
-        - statusPurpose
-        - statusListIndex
-        - statusListCredential
+        - issuerPid
+        - holderPid
+        - status
     CredentialSubject:
       type: object
       properties:
@@ -2704,10 +2958,10 @@ components:
             verifier: did:example:verifier
         credentialStatus:
           oneOf:
-            - &a26
+            - &a29
               $ref: "#/components/schemas/CredentialStatus"
             - type: array
-              items: *a26
+              items: *a29
         proof:
           example:
             - type: JsonWebSignature2020
@@ -2744,10 +2998,10 @@ components:
           example: 3f2592da-ffc9-40cb-a336-a9daa9343ce8
         verifiableCredential:
           oneOf:
-            - &a27
+            - &a30
               $ref: "#/components/schemas/VerifiableCredential"
             - type: array
-              items: *a27
+              items: *a30
         proof:
           oneOf:
             - $ref: "#/components/schemas/JsonWebSignature2020"
@@ -3197,7 +3451,7 @@ components:
       properties:
         type:
           type: string
-          enum: *a28
+          enum: *a31
           example: DataIntegrityProof
         proofPurpose:
           type: string
@@ -3218,7 +3472,7 @@ components:
           type: string
           example: 2022-01-01T00:00:00Z
         domain:
-          example: *a29
+          example: *a32
           type: array
           items:
             type: string
@@ -3229,7 +3483,7 @@ components:
           type: string
           example: ProofValueString
         previousProof:
-          example: *a30
+          example: *a33
           type: array
           items:
             type: string
@@ -3282,10 +3536,10 @@ components:
       properties:
         proof:
           oneOf:
-            - &a31
+            - &a34
               $ref: "#/components/schemas/Proof"
             - type: array
-              items: *a31
+              items: *a34
       required:
         - proof
     ValidateRequest:
@@ -3330,10 +3584,10 @@ components:
         serviceEndpoint:
           example: https://example.com
           oneOf:
-            - &a32
+            - &a35
               type: string
             - type: array
-              items: *a32
+              items: *a35
       required:
         - id
         - type
@@ -3344,10 +3598,10 @@ components:
         "@context":
           example: https://www.w3.org/ns/did/v1
           oneOf:
-            - &a33
+            - &a36
               type: string
             - type: array
-              items: *a33
+              items: *a36
         id:
           type: string
           example: bdfd4c8e-3a44-4b9f-bc3e-1a8e26e3e99d
@@ -3360,10 +3614,10 @@ components:
         controller:
           example: bdfd4c8e-3a44-4b9f-bc3e-1a8e26e3e99d
           oneOf:
-            - &a34
+            - &a37
               type: string
             - type: array
-              items: *a34
+              items: *a37
         verificationMethod:
           example:
             - id: bdfd4c8e-3a44-4b9f-bc3e-1a8e26e3e99d
@@ -3514,6 +3768,291 @@ components:
         - id
         - credentialType
         - issuable
+    DCPCredentialRequestInitiation:
+      type: object
+      properties:
+        issuerId:
+          type: string
+          example: did:web:issuer.example
+          pattern: ^did:[a-z0-9]+:.*
+        preAuthorizedCode:
+          type: string
+          example: pre-auth-code-xyz
+        credentialType:
+          example:
+            - ExampleCredential
+          type: array
+          items:
+            type: string
+      required:
+        - issuerId
+        - preAuthorizedCode
+        - credentialType
+    AuthorizedRequestParams:
+      type: object
+      properties:
+        accessToken:
+          type: string
+          example: access-token
+        credentialIdentifier:
+          type: string
+          example: credential-type
+        additionalRequestParams:
+          type: object
+      required:
+        - accessToken
+        - credentialIdentifier
+    OID4VCICredentialRequestInitiation:
+      type: object
+      properties:
+        issuerUrl:
+          type: string
+          example: https://issuer.example.com
+        preAuthorizedCode:
+          type: string
+          example: pre-auth-code-xyz
+        authorized:
+          $ref: "#/components/schemas/AuthorizedRequestParams"
+      required:
+        - issuerUrl
+    CredentialOfferStatus:
+      type: object
+      properties:
+        id:
+          type: number
+          example: 1
+        createdDate:
+          format: date-time
+          type: string
+          example: 2023-10-01T00:00:00Z
+        preAuthorizedCode:
+          type: string
+          example: preauth-code-abc
+        holderId:
+          type: string
+          example: holder-123
+        credentialType:
+          type: string
+          example: sample-credential-type
+        credentialId:
+          type: string
+          example: credential-id-xyz
+        revoked:
+          type: boolean
+          example: false
+        credentialSubject:
+          example:
+            id: subject-id
+            name: Sample Subject
+          allOf:
+            - $ref: "#/components/schemas/CredentialSubject"
+        remoteId:
+          type: string
+          example: remote-id-123
+      required:
+        - id
+        - createdDate
+        - preAuthorizedCode
+        - credentialType
+        - revoked
+        - credentialSubject
+    TransactionCode:
+      type: object
+      properties:
+        input_mode:
+          type: string
+          example: text
+        length:
+          type: number
+          example: 6
+        description:
+          type: string
+          example: Enter transaction code
+    PreAuthorizationCodeGrant:
+      type: object
+      properties:
+        pre-authorization_code:
+          type: string
+          example: pre-auth-code-xyz
+        tx_code:
+          example:
+            input_mode: numeric
+            length: 4
+            description: Sample transaction code
+          allOf:
+            - $ref: "#/components/schemas/TransactionCode"
+        interval:
+          type: number
+          example: 30
+        authorization_server:
+          type: string
+          example: authorization-server-sample
+      required:
+        - pre-authorization_code
+    AuthorizationCode:
+      type: object
+      properties:
+        issuer_state:
+          type: string
+          example: issuer-state-example
+        authorization_server:
+          type: string
+          example: authorization-server-example
+    CredentialOfferGrants:
+      type: object
+      properties:
+        urn:ietf:params:oauth:grant-type:pre-authorized_code:
+          example:
+            pre-authorization_code: pre-auth-code-xyz
+            tx_code:
+              input_mode: numeric
+              length: 4
+              description: Sample transaction code
+            interval: 30
+            authorization_server: authorization-server-sample
+          allOf:
+            - $ref: "#/components/schemas/PreAuthorizationCodeGrant"
+        authorization_code:
+          example:
+            issuer_state: issuer-state-example
+            authorization_server: authorization-server-example
+          allOf:
+            - $ref: "#/components/schemas/AuthorizationCode"
+    CredentialOffer:
+      type: object
+      properties:
+        credential_issuer:
+          type: string
+          example: credential-issuer-sample
+        credential_configuration_ids:
+          example:
+            - config-id-1
+            - config-id-2
+          type: array
+          items:
+            type: string
+        grants:
+          example:
+            urn:ietf:params:oauth:grant-type:pre-authorized_code:
+              pre-authorization_code: pre-auth-code-xyz
+              tx_code:
+                input_mode: numeric
+                length: 4
+                description: Sample transaction code
+              interval: 30
+              authorization_server: authorization-server-sample
+          allOf:
+            - $ref: "#/components/schemas/CredentialOfferGrants"
+      required:
+        - credential_issuer
+        - credential_configuration_ids
+    CredentialContainer:
+      type: object
+      properties:
+        type:
+          type: string
+        payload:
+          type: string
+        credentialType:
+          type: string
+        format:
+          type: string
+      required:
+        - type
+        - payload
+        - credentialType
+        - format
+    CredentialMessage:
+      type: object
+      properties:
+        "@context":
+          example:
+            - https://w3id.org/dspace-dcp/v1.0/dcp.jsonld
+          type: array
+          items:
+            type: string
+        type:
+          type: string
+          example: CredentialMessage
+        issuerPid:
+          type: string
+        holderPid:
+          type: string
+        status:
+          type: string
+          enum:
+            - ISSUED
+            - REJECTED
+        rejectionReason:
+          type: string
+        credentials:
+          type: array
+          items:
+            $ref: "#/components/schemas/CredentialContainer"
+      required:
+        - "@context"
+        - type
+        - issuerPid
+        - holderPid
+        - status
+    CredentialObject:
+      type: object
+      properties:
+        type:
+          type: string
+          example: CredentialObject
+          description: Type identifier
+        credentialType:
+          description: Types of credential being offered
+          type: array
+          items:
+            type: string
+        offerReason:
+          type: string
+          description: Reason for offering this credential
+        bindingMethods:
+          description: Supported binding methods
+          type: array
+          items:
+            type: string
+        profiles:
+          description: Supported cryptographic methods
+          type: array
+          items:
+            type: string
+        issuancePolicy:
+          description: Issuance policy definition
+          allOf:
+            - $ref: "#/components/schemas/PresentationDefinition"
+      required:
+        - type
+        - credentialType
+        - offerReason
+        - bindingMethods
+        - profiles
+    CredentialOfferMessage:
+      type: object
+      properties:
+        "@context":
+          example:
+            - https://w3id.org/dspace-dcp/v1.0/dcp.jsonld
+          type: array
+          items:
+            type: string
+        type:
+          type: string
+          example: CredentialOfferMessage
+        credentialIssuer:
+          type: string
+        credentials:
+          type: array
+          items:
+            $ref: "#/components/schemas/CredentialObject"
+      required:
+        - "@context"
+        - type
+        - credentialIssuer
+        - credentials
     CredentialSubjectDefinition:
       type: object
       properties: {}
@@ -3574,7 +4113,7 @@ components:
           type: string
           example: en-US
         logo:
-          example: &a35
+          example: &a38
             uri: https://example.com/logo.png
             alt_text: Logo alt text
           allOf:
@@ -3700,7 +4239,7 @@ components:
           type: string
           example: en-US
         logo:
-          example: *a35
+          example: *a38
           allOf:
             - $ref: "#/components/schemas/Logo"
     CredentialIssuerMetadata:
@@ -3802,6 +4341,39 @@ components:
         - credential_issuer
         - credential_endpoint
         - credential_configurations_supported
+    CredentialRequestCredential:
+      type: object
+      properties:
+        format:
+          type: string
+        credentialType:
+          type: string
+      required:
+        - format
+        - credentialType
+    CredentialRequestMessage:
+      type: object
+      properties:
+        "@context":
+          example:
+            - https://w3id.org/dspace-dcp/v1.0/dcp.jsonld
+          type: array
+          items:
+            type: string
+        type:
+          type: string
+          example: CredentialRequestMessage
+        holderPid:
+          type: string
+        credentials:
+          type: array
+          items:
+            $ref: "#/components/schemas/CredentialRequestCredential"
+      required:
+        - "@context"
+        - type
+        - holderPid
+        - credentials
     AuthorizationDetail:
       type: object
       properties:
@@ -4010,134 +4582,6 @@ components:
         - format
         - credential_definition
         - proof
-    CredentialOfferStatus:
-      type: object
-      properties:
-        id:
-          type: number
-          example: 1
-        createdDate:
-          format: date-time
-          type: string
-          example: 2023-10-01T00:00:00Z
-        preAuthorizedCode:
-          type: string
-          example: preauth-code-abc
-        holderId:
-          type: string
-          example: holder-123
-        credentialType:
-          type: string
-          example: sample-credential-type
-        credentialId:
-          type: string
-          example: credential-id-xyz
-        revoked:
-          type: boolean
-          example: false
-        credentialSubject:
-          example:
-            id: subject-id
-            name: Sample Subject
-          allOf:
-            - $ref: "#/components/schemas/CredentialSubject"
-      required:
-        - id
-        - createdDate
-        - preAuthorizedCode
-        - credentialType
-        - revoked
-        - credentialSubject
-    TransactionCode:
-      type: object
-      properties:
-        input_mode:
-          type: string
-          example: text
-        length:
-          type: number
-          example: 6
-        description:
-          type: string
-          example: Enter transaction code
-    PreAuthorizationCodeGrant:
-      type: object
-      properties:
-        pre-authorization_code:
-          type: string
-          example: pre-auth-code-xyz
-        tx_code:
-          example:
-            input_mode: numeric
-            length: 4
-            description: Sample transaction code
-          allOf:
-            - $ref: "#/components/schemas/TransactionCode"
-        interval:
-          type: number
-          example: 30
-        authorization_server:
-          type: string
-          example: authorization-server-sample
-      required:
-        - pre-authorization_code
-    AuthorizationCode:
-      type: object
-      properties:
-        issuer_state:
-          type: string
-          example: issuer-state-example
-        authorization_server:
-          type: string
-          example: authorization-server-example
-    CredentialOfferGrants:
-      type: object
-      properties:
-        urn:ietf:params:oauth:grant-type:pre-authorized_code:
-          example:
-            pre-authorization_code: pre-auth-code-xyz
-            tx_code:
-              input_mode: numeric
-              length: 4
-              description: Sample transaction code
-            interval: 30
-            authorization_server: authorization-server-sample
-          allOf:
-            - $ref: "#/components/schemas/PreAuthorizationCodeGrant"
-        authorization_code:
-          example:
-            issuer_state: issuer-state-example
-            authorization_server: authorization-server-example
-          allOf:
-            - $ref: "#/components/schemas/AuthorizationCode"
-    CredentialOffer:
-      type: object
-      properties:
-        credential_issuer:
-          type: string
-          example: credential-issuer-sample
-        credential_configuration_ids:
-          example:
-            - config-id-1
-            - config-id-2
-          type: array
-          items:
-            type: string
-        grants:
-          example:
-            urn:ietf:params:oauth:grant-type:pre-authorized_code:
-              pre-authorization_code: pre-auth-code-xyz
-              tx_code:
-                input_mode: numeric
-                length: 4
-                description: Sample transaction code
-              interval: 30
-              authorization_server: authorization-server-sample
-          allOf:
-            - $ref: "#/components/schemas/CredentialOfferGrants"
-      required:
-        - credential_issuer
-        - credential_configuration_ids
 externalDocs:
   description: Git Repository
   url: https://gitlab.com/tno-tsg/dataspace-protocol/wallet

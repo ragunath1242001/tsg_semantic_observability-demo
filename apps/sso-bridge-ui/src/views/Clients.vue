@@ -153,7 +153,8 @@ const { data, loading, total, perPage, load } = setupPagination({
   errorContext: {
     summary: "Could not load clients",
     defaultMessage: `Error in fetching clients`
-  }
+  },
+  toast
 });
 
 onMounted(async () => {

@@ -1,115 +1,37 @@
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { EmailService, TemplateParameters } from "@tsg-dsp/common-api";
 import { AppError } from "@tsg-dsp/common-api";
 import { resolveDid } from "@tsg-dsp/common-signing-and-validation";
 import {
   AccessToken,
   CredentialIssuerMetadata,
-  CredentialOffer,
-  CredentialOfferRequest,
-  CredentialOfferStatus,
   CredentialRequest,
   CredentialResponse
 } from "@tsg-dsp/wallet-dtos";
-// This needs to be separate since it's an enum. https://stackoverflow.com/questions/38553097/how-to-import-an-enum
-import { OfferGrants } from "@tsg-dsp/wallet-dtos";
 import { plainToInstance } from "class-transformer";
 import crypto from "crypto";
 import { decodeProtectedHeader, importJWK, jwtVerify } from "jose";
 import { Repository } from "typeorm";
 
-import { InitCredentialConfig, RootConfig } from "../config.js";
-import { ContextService } from "../contexts/context.service.js";
-import { CredentialsService } from "../credentials/credentials.service.js";
-import { SignatureService } from "../keys/signature.service.js";
-import { CIAccessToken, CredentialIssuance } from "../model/issuance.dao.js";
+import { InitCredentialConfig, RootConfig } from "../../config.js";
+import { ContextService } from "../../contexts/context.service.js";
+import { CredentialsService } from "../../credentials/credentials.service.js";
+import { SignatureService } from "../../keys/signature.service.js";
+import { CIAccessToken, CredentialIssuance } from "../../model/issuance.dao.js";
 
 @Injectable()
-export class IssuerService {
+export class OID4VCIIssuerService {
   constructor(
     private readonly config: RootConfig,
     @InjectRepository(CredentialIssuance)
     private readonly issuanceRepository: Repository<CredentialIssuance>,
     @InjectRepository(CIAccessToken)
     private readonly tokenRepository: Repository<CIAccessToken>,
-    private readonly emailService: EmailService,
     private readonly contextService: ContextService,
     private readonly credentialService: CredentialsService,
     private readonly signatureService: SignatureService
-  ) {
-    this.initialized = this.init();
-  }
+  ) {}
   private readonly logger = new Logger(this.constructor.name);
-
-  initialized: Promise<boolean>;
-  async init() {
-    this.logger.log("Initializing IssuanceService");
-    const existingOffers = await this.issuanceRepository.find({});
-    await Promise.all(
-      this.config.oid4vci.issuer.map(async (issuerConfig) => {
-        if (
-          existingOffers.find(
-            (o) =>
-              o.holderId === issuerConfig.holderId &&
-              o.credentialType === issuerConfig.credentialType &&
-              (!issuerConfig.preAuthorizationCode ||
-                o.preAuthorizedCode === issuerConfig.preAuthorizationCode)
-          )
-        ) {
-          this.logger.log(
-            `Already created offer for ${issuerConfig.holderId} for ${issuerConfig.credentialType} credential`
-          );
-        } else {
-          await this.createCredentialOfferWithRetry({
-            holderId: issuerConfig.holderId,
-            credentialType: issuerConfig.credentialType,
-            credentialSubject: issuerConfig.credentialSubject,
-            preAuthorizedCode: issuerConfig.preAuthorizationCode
-          });
-        }
-      })
-    );
-
-    return true;
-  }
-
-  async createCredentialOfferWithRetry(
-    offerRequest: CredentialOfferRequest,
-    retry = 0,
-    backOff = 1000
-  ) {
-    try {
-      const offer = await this.createCredentialOffer(offerRequest);
-      this.logger.log(
-        `Created credential offer for ${offerRequest.holderId} for ${
-          offerRequest.credentialType
-        } credential with pre authorization code ${
-          offer.grants?.[OfferGrants.PRE_AUTHORIZATION_CODE]?.[
-            "pre-authorization_code"
-          ]
-        }`
-      );
-    } catch (err) {
-      if (retry < 5) {
-        this.logger.warn(
-          `Could not create credential offer for ${offerRequest.holderId} for ${offerRequest.credentialType} credential`
-        );
-        this.logger.log(`Error: ${err}`);
-        await new Promise((f) => setTimeout(f, backOff));
-        await this.createCredentialOfferWithRetry(
-          offerRequest,
-          ++retry,
-          backOff * 2
-        );
-      } else {
-        this.logger.error(
-          `Could not create credential offer for ${offerRequest.holderId} for ${offerRequest.credentialType} credential: ${err}`
-        );
-        throw err;
-      }
-    }
-  }
 
   async issuerMetadata(): Promise<CredentialIssuerMetadata> {
     const issuerMetadata: CredentialIssuerMetadata = {
@@ -149,104 +71,6 @@ export class IssuerService {
         };
       });
     return issuerMetadata;
-  }
-
-  async credentialOfferStatus(): Promise<CredentialOfferStatus[]> {
-    return (await this.issuanceRepository.find()).map((offer) => {
-      return {
-        id: offer.id,
-        createdDate: offer.createdDate,
-        preAuthorizedCode: offer.preAuthorizedCode,
-        holderId: offer.holderId,
-        credentialType: offer.credentialType,
-        credentialId: offer.credentialId,
-        revoked: offer.revoked,
-        credentialSubject: offer.credentialSubject
-      };
-    });
-  }
-
-  async credentialOfferById(
-    identifier: number
-  ): Promise<CredentialOfferStatus> {
-    const offer = await this.issuanceRepository.findOneByOrFail({
-      id: identifier
-    });
-    return new CredentialOfferStatus(offer);
-  }
-
-  async createCredentialOffer(
-    offerRequest: CredentialOfferRequest
-  ): Promise<CredentialOffer> {
-    const code =
-      offerRequest.preAuthorizedCode || crypto.randomBytes(48).toString("hex");
-
-    const offer = await this.issuanceRepository.save({
-      preAuthorizedCode: code,
-      holderId: offerRequest.holderId,
-      credentialType: offerRequest.credentialType,
-      revoked: false,
-      credentialSubject: offerRequest.credentialSubject
-    });
-
-    if (offerRequest.credentialSubject.email && this.config.email.enabled) {
-      const emailParameters: TemplateParameters = {
-        email: offerRequest.credentialSubject.email,
-        sender: `"${this.config.runtime.title} Wallet" <noreply@dataspac.es>`,
-        title: `${this.config.runtime.title} - Retrieve your credential`,
-        summary: `Retrieve your credential for ${this.config.runtime.title}`,
-        link: `${this.config.server.publicAddress}`,
-        img: `${this.config.server.publicAddress}/layout/images/logo-dark.svg`,
-        header: `Retrieve your credential`,
-        content: [
-          {
-            paragraphs: [
-              `You have been offered a credential for ${this.config.runtime.title}.`,
-              `Please click the link below to retrieve your credential.`
-            ]
-          },
-          {
-            button: {
-              url: `${this.config.server.publicAddress}/#/retrieve-credential/${offer.id}`,
-              text: "Retrieve Credential"
-            }
-          }
-        ],
-        footer: `This email was sent to ${offerRequest.credentialSubject.email} because you asked for a credential for ${this.config.runtime.title}. If you did not expect this email, please ignore it.`
-      };
-      this.emailService.sendMail(emailParameters);
-    }
-
-    return {
-      credential_issuer: `https://${this.config.server.publicDomain}`,
-      credential_configuration_ids: [offerRequest.credentialType],
-      grants: {
-        [OfferGrants.PRE_AUTHORIZATION_CODE]: {
-          "pre-authorization_code": code
-        }
-      }
-    };
-  }
-
-  async revokeOffer(id: number): Promise<CredentialOfferStatus> {
-    const issuance = await this.issuanceRepository.findOneBy({ id: id });
-    if (!issuance) {
-      throw new AppError(
-        `No credential issuance flow found for id ${id}`,
-        HttpStatus.NOT_FOUND
-      ).andLog(this.logger);
-    }
-    await this.issuanceRepository.update({ id: id }, { revoked: true });
-    return {
-      id: issuance.id,
-      createdDate: issuance.createdDate,
-      preAuthorizedCode: issuance.preAuthorizedCode,
-      holderId: issuance.holderId,
-      credentialType: issuance.credentialType,
-      credentialId: issuance.credentialId,
-      revoked: true,
-      credentialSubject: issuance.credentialSubject
-    };
   }
 
   async createAccessToken(preAuthorizedCode: string): Promise<AccessToken> {

@@ -18,6 +18,8 @@ import {
 import { Transform, Type } from "class-transformer";
 import {
   Allow,
+  ArrayMinSize,
+  IsArray,
   IsBoolean,
   IsDefined,
   IsEnum,
@@ -129,16 +131,21 @@ export class JsonLdContextConfig {
   public readonly schema?: Record<string, any>;
 }
 
-export class OID4VCIConfig {
+export class IssuanceConfig {
   @Description("Issuer configuration")
   @ValidateNested({ each: true })
   @Type(() => IssuerConfig)
   public readonly issuer: IssuerConfig[] = [];
 
-  @Description("Holder configuration")
+  @Description("DCP Holder configuration")
   @ValidateNested({ each: true })
-  @Type(() => HolderConfig)
-  public holder: HolderConfig[] = [];
+  @Type(() => DCPHolderConfig)
+  public dcp: DCPHolderConfig[] = [];
+
+  @Description("OID4VCI Holder configuration")
+  @ValidateNested({ each: true })
+  @Type(() => OID4VCIHolderConfig)
+  public oid4vci: OID4VCIHolderConfig[] = [];
 }
 
 export class IssuerConfig {
@@ -155,24 +162,42 @@ export class IssuerConfig {
   @Allow()
   public readonly credentialSubject!: CredentialSubject;
 
-  @Description("Pre-authorization code")
+  @Description("Pre-authorized code")
   @IsString()
   @IsOptional()
-  public readonly preAuthorizationCode?: string;
+  public readonly preAuthorizedCode?: string;
 }
 
-export class HolderConfig {
-  @Description("Pre-authorization code")
+export class DCPHolderConfig {
+  @Description("Pre-authorized code")
   @IsString()
-  public readonly preAuthorizationCode!: string;
+  public readonly preAuthorizedCode!: string;
+
+  @Description("DID identifier of the issuer")
+  @IsString()
+  public readonly issuerId!: string;
+
+  @Description("Credential type to be issued")
+  @IsString({ each: true })
+  @IsArray()
+  @ArrayMinSize(1)
+  public readonly credentialType!: string[];
+}
+
+export class OID4VCIHolderConfig {
+  @Description("Pre-authorized code")
+  @IsString()
+  public readonly preAuthorizedCode!: string;
 
   @Description("Root URL of the issuer")
   @IsUrl({ require_tld: false, require_protocol: true, require_host: false })
   public readonly issuerUrl!: string;
 
-  @Description("Credential type to be issued")
-  @IsString()
-  public readonly credentialType!: string;
+  @Description("Credential type(s) to be issued")
+  @IsString({ each: true })
+  @IsArray()
+  @ArrayMinSize(1)
+  public readonly credentialType!: string[];
 }
 
 export class DidServiceConfig {
@@ -324,10 +349,10 @@ export class RootConfig {
   @Type(() => JsonLdContextConfig)
   public readonly contexts: JsonLdContextConfig[] = [];
 
-  @Description("OID4VCI configuration")
+  @Description("Issuance configuration")
   @ValidateNested()
-  @Type(() => OID4VCIConfig)
-  public readonly oid4vci: OID4VCIConfig = new OID4VCIConfig();
+  @Type(() => IssuanceConfig)
+  public readonly issuance: IssuanceConfig = new IssuanceConfig();
 
   @Description("DID service configurations")
   @ValidateNested({ each: true })

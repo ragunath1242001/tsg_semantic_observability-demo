@@ -11,16 +11,16 @@ import { Ajv } from "ajv";
 import jsonpath from "jsonpath";
 
 import { CredentialsService } from "../../credentials/credentials.service.js";
+import { SecureTokenService } from "../../keys/token.service.js";
 import { CredentialDao } from "../../model/credentials.dao.js";
 import { PresentationService } from "../presentation.service.js";
-import { DCPSiopService } from "./siop.service.js";
 
 @Injectable()
 export class DCPHolderService {
   constructor(
     private readonly credentialService: CredentialsService,
     private readonly presentationService: PresentationService,
-    private readonly siopService: DCPSiopService
+    private readonly siopService: SecureTokenService
   ) {}
   private readonly logger = new Logger(this.constructor.name);
   // @ts-expect-error ajv error
