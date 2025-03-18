@@ -1,36 +1,43 @@
 db:
   type: "sqlite"
-  database: "test2.db"
+  database: "test.db"
+
+auth:
+  enabled: false
 
 server:
   port: 3003
   publicAddress: http://localhost:3003
 
 controlPlane:
-  dataPlaneEndpoint: http://localhost:3000/api/data-plane
-  managementEndpoint: http://localhost:3000/api/management
-  controlEndpoint: http://localhost:3000
+  dataPlaneEndpoint: http://localhost:3002/api/data-plane
+  managementEndpoint: http://localhost:3002/api/management
+  controlEndpoint: http://localhost:3002
 
-users:
-  - username: admin
-    password: $2a$12$/1aqZWSslSi8E556dpChNOxOyEv3hPA.k8asnRk9iIN2bxH6VGUE6 # admin
+runtime:
+  color: "#3B8BF6"
+
+# dataset:
+#   type: collection
+
+# initCollection:
+#   - id: "urn:aasx:TestShell1"
+#     title: "Test Shell 1"
+#     version: "v1"
+#     backendUrl: "https://httpbin.org/anything/shells/urn:aasx:TestShell1"
+#     openApiSpecRef: "https://app.swaggerhub.com/apiproxy/registry/BaSyx/basyx_asset_administration_shell_repository_http_rest_api/v1"
+#   - id: "urn:aasx:TestShell2"
+#     title: "Test Shell 2"
+#     version: "v1"
+#     backendUrl: "https://httpbin.org/anything/shells/urn:aasx:TestShell2"
+#     openApiSpecRef: "https://app.swaggerhub.com/apiproxy/registry/BaSyx/basyx_asset_administration_shell_repository_http_rest_api/v1"
 
 dataset:
-  title: HTTP Dataset
+  type: versioned
+  title: Test HTTPBin B
+  currentVersion: 0.9.2
   versions:
-    - version: "0.9.2"
+    - version: 0.9.2
       distributions:
-        - mediaType: "application/json"
-          backendUrl: https://httpbin.org/anything
-          openApiSpecRef: "https://httpbin.org/spec.json"
-    - version: "0.9.1"
-      distributions:
-        - mediaType: "application/json"
-          backendUrl: https://httpbin.org/anything
-          openApiSpecRef: "https://httpbin.org/spec.json"
-    - version: "0.9.0"
-      distributions:
-        - mediaType: "application/json"
-          backendUrl: https://httpbin.org/anything
-          openApiSpecRef: "https://httpbin.org/spec.json"
-  currentVersion: "0.9.2"
+        - backendUrl: https://httpbin.org/
+          openApiSpecRef: https://httpbin.org/spec.json

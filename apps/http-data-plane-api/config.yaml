@@ -18,29 +18,26 @@ runtime:
   color: "#3B8BF6"
 
 # dataset:
-#   type: versioned
-#   title: Product Catalog Data App
-#   baseSemanticModelRef: https://zerow.semantic-treehouse.nl/ontology/Ontology_1b9b1d8d-8a2c-4012-8883-f0bfff497205
-#   currentVersion: 0.1.0
-#   versions:
-#     - version: 0.1.0
-#       distributions:
-#         - openApiSpecRef: https://app.productcatalog.zerow.dataspac.es/api-json
-#           backendUrl: https://app.productcatalog.zerow.dataspac.es
-#   policy:
-#     type: "default"
+#   type: collection
+
+# initCollection:
+#   - id: "urn:aasx:TestShell1"
+#     title: "Test Shell 1"
+#     version: "v1"
+#     backendUrl: "https://httpbin.org/anything/shells/urn:aasx:TestShell1"
+#     openApiSpecRef: "https://app.swaggerhub.com/apiproxy/registry/BaSyx/basyx_asset_administration_shell_repository_http_rest_api/v1"
+#   - id: "urn:aasx:TestShell2"
+#     title: "Test Shell 2"
+#     version: "v1"
+#     backendUrl: "https://httpbin.org/anything/shells/urn:aasx:TestShell2"
+#     openApiSpecRef: "https://app.swaggerhub.com/apiproxy/registry/BaSyx/basyx_asset_administration_shell_repository_http_rest_api/v1"
 
 dataset:
-  type: collection
-
-initCollection:
-  - id: "urn:aasx:TestShell1"
-    title: "Test Shell 1"
-    version: "v1"
-    backendUrl: "https://httpbin.org/anything/shells/urn:aasx:TestShell1"
-    openApiSpecRef: "https://app.swaggerhub.com/apiproxy/registry/BaSyx/basyx_asset_administration_shell_repository_http_rest_api/v1"
-  - id: "urn:aasx:TestShell2"
-    title: "Test Shell 2"
-    version: "v1"
-    backendUrl: "https://httpbin.org/anything/shells/urn:aasx:TestShell2"
-    openApiSpecRef: "https://app.swaggerhub.com/apiproxy/registry/BaSyx/basyx_asset_administration_shell_repository_http_rest_api/v1"
+  type: versioned
+  title: Test HTTPBin A
+  currentVersion: 0.9.2
+  versions:
+    - version: 0.9.2
+      distributions:
+        - backendUrl: https://httpbin.org/
+          openApiSpecRef: https://httpbin.org/spec.json
