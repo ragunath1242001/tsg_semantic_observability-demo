@@ -221,7 +221,7 @@ const createOffer = async () => {
     //     o.preAuthorizedCode ===
     //     offer.data.grants?.[
     //       "urn:ietf:params:oauth:grant-type:pre-authorized_code"
-    //     ]?.["pre-authorization_code"]
+    //     ]?.["pre-authorized_code"]
     // );
     // if (offerStatus) {
     //   expandedRows.value = [...(expandedRows.value ?? []), offerStatus];

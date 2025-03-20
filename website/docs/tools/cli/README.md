@@ -124,7 +124,7 @@ Configuration for the CLI tool starts either at [Ecosystem](#ecosystem-ecosystem
 | `issuer`               | Boolean                                |                           | Flag whether this participant is an issuer of credentials. Should be used only for a dataspace authority                                                      | `false`  |
 | `document`             | Object                                 | Yes if `issuer` is `true` | JSON-LD document for credentials that will be issued                                                                                                          |          |
 | `schema`               | Object                                 | Yes if `issuer` is `true` | JSON schema for credentials that will be issued                                                                                                               |          |
-| `preAuthorizationCode` | String                                 |                           | Pre-authorization code for requesting a credential via OID4VCI. Use only when also deploying a dataspace authority or when a code is received from the issuer |          |
+| `preAuthorizedCode` | String                                 |                           | Pre-authorized code for requesting a credential via OID4VCI. Use only when also deploying a dataspace authority or when a code is received from the issuer |          |
 | `dataPlanes`           | [`Map<String, DataPlane>`](#dataplane) |                           | Data planes that will be configured for this participant                                                                                                      |          |
 
 ### DataPlane

@@ -76,7 +76,7 @@ export class OID4VCIIssuerService {
   async createAccessToken(preAuthorizedCode: string): Promise<AccessToken> {
     if (!preAuthorizedCode) {
       throw new AppError(
-        "No pre-authorization code provided",
+        "No pre-authorized code provided",
         HttpStatus.BAD_REQUEST
       ).andLog(this.logger);
     }

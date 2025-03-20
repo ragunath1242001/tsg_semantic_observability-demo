@@ -84,7 +84,7 @@ export class Participant {
 
   @IsString()
   @IsOptional()
-  public readonly preAuthorizationCode?: string;
+  public readonly preAuthorizedCode?: string;
 
   @ValidateNested({ each: true })
   @IsOptional()

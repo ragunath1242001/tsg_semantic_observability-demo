@@ -89,7 +89,7 @@ export class CredentialOfferRequest {
 
 export enum OfferGrants {
   AUTHORIZATION_CODE = "authorization_code",
-  PRE_AUTHORIZATION_CODE = "urn:ietf:params:oauth:grant-type:pre-authorized_code"
+  PRE_AUTHORIZED_CODE = "urn:ietf:params:oauth:grant-type:pre-authorized_code"
 }
 
 export class AuthorizationCode {
@@ -111,9 +111,9 @@ export class TransactionCode {
   description?: string;
 }
 
-export class PreAuthorizationCodeGrant {
+export class PreAuthorizedCodeGrant {
   @ApiProperty({ example: "pre-auth-code-xyz" })
-  "pre-authorization_code": string;
+  "pre-authorized_code": string;
 
   @ApiPropertyOptional({
     type: () => TransactionCode,
@@ -134,9 +134,9 @@ export class PreAuthorizationCodeGrant {
 
 export class CredentialOfferGrants {
   @ApiPropertyOptional({
-    type: () => PreAuthorizationCodeGrant,
+    type: () => PreAuthorizedCodeGrant,
     example: {
-      "pre-authorization_code": "pre-auth-code-xyz",
+      "pre-authorized_code": "pre-auth-code-xyz",
       tx_code: {
         input_mode: "numeric",
         length: 4,
@@ -146,7 +146,7 @@ export class CredentialOfferGrants {
       authorization_server: "authorization-server-sample"
     }
   })
-  [OfferGrants.PRE_AUTHORIZATION_CODE]?: PreAuthorizationCodeGrant;
+  [OfferGrants.PRE_AUTHORIZED_CODE]?: PreAuthorizedCodeGrant;
 
   @ApiPropertyOptional({
     type: () => AuthorizationCode,
@@ -172,7 +172,7 @@ export class CredentialOffer {
     type: () => CredentialOfferGrants,
     example: {
       "urn:ietf:params:oauth:grant-type:pre-authorized_code": {
-        "pre-authorization_code": "pre-auth-code-xyz",
+        "pre-authorized_code": "pre-auth-code-xyz",
         tx_code: {
           input_mode: "numeric",
           length: 4,

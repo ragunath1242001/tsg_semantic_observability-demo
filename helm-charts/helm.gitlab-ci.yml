@@ -8,9 +8,7 @@
     - cd helm-charts/$FOLDER
     - helm dep update
     - VERSION=$(grep -m 1 '^version:' Chart.yaml | awk '{ print $2}')
-    # replace / with -
-    - BRANCH_NAME=${CI_COMMIT_REF_NAME/\//-}
-    - helm package --version "$VERSION-$BRANCH_NAME" .
+    - helm package --version "$VERSION-$CI_COMMIT_REF_SLUG" .
     - curl --request POST --user gitlab-ci-token:$CI_JOB_TOKEN --form "chart=@$( ls *.tgz | head -n1 )" "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/helm/api/devel/charts"
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"

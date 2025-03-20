@@ -187,8 +187,8 @@ describe("Issuer service", () => {
       });
 
       const access_token = await issuerService.createAccessToken(
-        offer.grants?.[OfferGrants.PRE_AUTHORIZATION_CODE]?.[
-          "pre-authorization_code"
+        offer.grants?.[OfferGrants.PRE_AUTHORIZED_CODE]?.[
+          "pre-authorized_code"
         ] ?? ""
       );
 
@@ -223,8 +223,8 @@ describe("Issuer service", () => {
       });
 
       const access_token = await issuerService.createAccessToken(
-        offer.grants?.[OfferGrants.PRE_AUTHORIZATION_CODE]?.[
-          "pre-authorization_code"
+        offer.grants?.[OfferGrants.PRE_AUTHORIZED_CODE]?.[
+          "pre-authorized_code"
         ] ?? ""
       );
 
@@ -260,8 +260,8 @@ describe("Issuer service", () => {
       });
 
       const access_token = await issuerService.createAccessToken(
-        offer.grants?.[OfferGrants.PRE_AUTHORIZATION_CODE]?.[
-          "pre-authorization_code"
+        offer.grants?.[OfferGrants.PRE_AUTHORIZED_CODE]?.[
+          "pre-authorized_code"
         ] ?? ""
       );
 
@@ -298,8 +298,8 @@ describe("Issuer service", () => {
       });
 
       const access_token = await issuerService.createAccessToken(
-        offer.grants?.[OfferGrants.PRE_AUTHORIZATION_CODE]?.[
-          "pre-authorization_code"
+        offer.grants?.[OfferGrants.PRE_AUTHORIZED_CODE]?.[
+          "pre-authorized_code"
         ] ?? ""
       );
 

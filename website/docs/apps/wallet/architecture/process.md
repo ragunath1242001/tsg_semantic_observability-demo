@@ -122,13 +122,13 @@ sequenceDiagram
   actor ha as Holder User
 
   ia ->> iw: Create credential offer
-  iw ->> iw: Generate offer and pre-authorization_code
+  iw ->> iw: Generate offer and pre-authorized_code
   iw -->> ia: Credential Offer
-  ia --> ha: Issuer URL & pre-authorization_code [offline]
+  ia --> ha: Issuer URL & pre-authorized_code [offline]
   ha ->> hw: Request credential
   hw ->> iw: Request Issuer Metadata
   iw -->> hw: Issuer Metadata
-  hw ->> iw: Request AccessToken with pre-authorization_code
+  hw ->> iw: Request AccessToken with pre-authorized_code
   iw -->> hw: Access Token
   hw ->> iw: Request Credential
   iw -->> hw: Credential Response

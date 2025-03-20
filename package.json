@@ -6,6 +6,8 @@
   "type": "module",
   "scripts": {
     "build": "pnpm -r build",
+    "build:libs": "pnpm --filter \"./libs/*\" -r build",
+    "build:apps": "pnpm --filter \"./apps/*\" -r build",
     "dev:wallet-ui": "pnpm --filter wallet-ui dev",
     "dev:wallet-api": "pnpm --filter wallet-api dev",
     "dev:wallet": "npm-run-all --parallel \"dev:wallet-api --noClear\" \"dev:wallet-ui --clearScreen=false\"",
