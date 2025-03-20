@@ -55,12 +55,12 @@ describe("Credentials Service", () => {
         holder: [
           {
             credentialType: "",
-            preAuthorizationCode: "",
+            preAuthorizedCode: "",
             issuerUrl: "https://issuer1.example.com"
           },
           {
             credentialType: "",
-            preAuthorizationCode: "",
+            preAuthorizedCode: "",
             issuerUrl: "https://issuer2.example.com"
           }
         ]

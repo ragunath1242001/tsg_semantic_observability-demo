@@ -248,8 +248,8 @@ describe("DCP Issuance", () => {
         issuerId: "did:web:localhost",
         credentialType: ["ExampleCredentialType"],
         preAuthorizedCode:
-          offer.grants?.[OfferGrants.PRE_AUTHORIZATION_CODE]?.[
-            "pre-authorization_code"
+          offer.grants?.[OfferGrants.PRE_AUTHORIZED_CODE]?.[
+            "pre-authorized_code"
           ] ?? ""
       });
       let status = await issuerService.handleCredentialStatusRequest(

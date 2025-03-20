@@ -86,13 +86,13 @@ config:
       - holderId: did:web:<%= participant.host %>
         credentialType: <%= it.general.credentialType %>
         credentialSubject: <%= JSON.stringify({...participant.credentialSubject, id: `did:web:${participant.host}`}) %>
-        preAuthorizationCode: <%= participant.preAuthorizationCode %>
+        preAuthorizedCode: <%= participant.preAuthorizedCode %>
 <% }) %>
 <% } else { %>
   issuance:
     dcp:
       - issuerId: did:web:<%= it.general.authorityDomain %>
-        preAuthorizationCode: <%= it.participant.preAuthorizationCode %>
+        preAuthorizedCode: <%= it.participant.preAuthorizedCode %>
         credentialType:
           - <%= it.general.credentialType %>
 <% } %>

@@ -176,9 +176,7 @@ describe("DCP Issuance", () => {
         "ExampleCredentialType"
       );
       expect(
-        offer.grants?.[OfferGrants.PRE_AUTHORIZATION_CODE]?.[
-          "pre-authorization_code"
-        ]
+        offer.grants?.[OfferGrants.PRE_AUTHORIZED_CODE]?.["pre-authorized_code"]
       ).toBeDefined();
     });
     it("Offer status", async () => {

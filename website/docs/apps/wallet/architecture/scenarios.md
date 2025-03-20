@@ -45,11 +45,11 @@
 | --------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
 | 1. The holder requests a new credential from the issuer in a offline setting                        |                                                                                                   |
 | 2. The issuer logs into its Wallet instance                                                         | 3. The Wallet creates a user session                                                              |
-| 4. The issuer creates a Credential Offer aimed at the holder with the credential configuration      | 5. The Wallet creates the credential offer with a generated pre-authorization_code                |
-| 6. The issuer shares the pre-authorization_code with the holder in a offline setting                |                                                                                                   |
+| 4. The issuer creates a Credential Offer aimed at the holder with the credential configuration      | 5. The Wallet creates the credential offer with a generated pre-authorized_code                |
+| 6. The issuer shares the pre-authorized_code with the holder in a offline setting                |                                                                                                   |
 | 7. The holder logs into its Wallet instance                                                         | 8. The Wallet creates a user session                                                              |
-| 9. The holder provides the issuers URL and the pre-authorization_code to start the issuance process | 10. The wallet requests the issuers metadata                                                      |
-|                                                                                                     | 11. The holders wallet requests an access token based on the pre-authorization_code at the issuer |
+| 9. The holder provides the issuers URL and the pre-authorized_code to start the issuance process | 10. The wallet requests the issuers metadata                                                      |
+|                                                                                                     | 11. The holders wallet requests an access token based on the pre-authorized_code at the issuer |
 |                                                                                                     | 12. The holders wallet requests the credential                                                    |
 |                                                                                                     | 13. The issuers wallet creates and signs the credential                                           |
 |                                                                                                     | 14. The holders wallet receives the credential                                                    |

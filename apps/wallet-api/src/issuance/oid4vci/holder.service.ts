@@ -250,7 +250,7 @@ export class OID4VCIHolderService {
       const tokenResponse = await axios.post<AccessToken>(
         tokenEndpoint,
         qs.stringify({
-          grant_type: OfferGrants.PRE_AUTHORIZATION_CODE,
+          grant_type: OfferGrants.PRE_AUTHORIZED_CODE,
           "pre-authorized_code": preAuthorizedCode
         })
       );

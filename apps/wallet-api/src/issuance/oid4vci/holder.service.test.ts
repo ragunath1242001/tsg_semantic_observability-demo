@@ -220,8 +220,8 @@ describe("Holder service", () => {
       await holderService.requestCredential({
         issuerUrl: "http://localhost:3000",
         preAuthorizedCode:
-          offer.grants?.[OfferGrants.PRE_AUTHORIZATION_CODE]?.[
-            "pre-authorization_code"
+          offer.grants?.[OfferGrants.PRE_AUTHORIZED_CODE]?.[
+            "pre-authorized_code"
           ]
       });
 

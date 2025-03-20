@@ -63,8 +63,8 @@ export class IssuanceService {
               `Created initial credential offer for ${issuerConfig.holderId} for ${
                 issuerConfig.credentialType
               } credential with pre authorization code ${
-                offer.grants?.[OfferGrants.PRE_AUTHORIZATION_CODE]?.[
-                  "pre-authorization_code"
+                offer.grants?.[OfferGrants.PRE_AUTHORIZED_CODE]?.[
+                  "pre-authorized_code"
                 ]
               }`
             );
@@ -169,8 +169,8 @@ export class IssuanceService {
       credential_issuer: `https://${this.config.server.publicDomain}`,
       credential_configuration_ids: [offerRequest.credentialType],
       grants: {
-        [OfferGrants.PRE_AUTHORIZATION_CODE]: {
-          "pre-authorization_code": code
+        [OfferGrants.PRE_AUTHORIZED_CODE]: {
+          "pre-authorized_code": code
         }
       }
     };
