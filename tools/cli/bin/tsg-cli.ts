@@ -79,6 +79,7 @@ program
   .option("--cwd <cwd>", "working directory for the configuration files")
   .option("-v, --verbose", "verbose logging", false)
   .option("-y --yes", "assume yes for all prompts", false)
+  .option("-t, --timeout <timeout>", "timeout for helm commands", "300")
   .action(async (scope, options) => {
     await getLatestRelease();
     if (options.uninstall && (options.clean || options.diff)) {
