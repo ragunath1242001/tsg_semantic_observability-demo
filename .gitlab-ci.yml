@@ -73,6 +73,10 @@ release:
     GIT_NAME: semantic-release
     GIT_DEPTH: 1000
     TITLE: TNO Security Gateway
+  before_script:
+    # TODO workaround for: https://github.com/postmanlabs/postman-code-generators/issues/772 (closed but not fixed)
+    - mv /usr/local/bin/yarn /usr/local/bin/yarn.bak
+
   script:
     - cd release/
     - npm install

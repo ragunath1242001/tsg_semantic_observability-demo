@@ -25,7 +25,7 @@ const FeatureList: FeatureItem[] = [
     Svg: require("@site/static/img/api.svg").default,
     description: (
       <>
-        The APIs are documented by OpenAPI specifications, visit{" "}
+        For the APIs, OpenAPI specifications are available, visit{" "}
         <a href="docs/apis/control-plane/tsg-control-plane">APIs</a> to view
         them.
       </>
