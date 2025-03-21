@@ -16,9 +16,6 @@
     "typecheck": "tsc"
   },
   "packageManager": "npm@11.2.0",
-  "resolutions": {
-    "postman-code-generators": "2.0.0"
-  },
   "dependencies": {
     "@docusaurus/core": "3.7.0",
     "@docusaurus/preset-classic": "3.7.0",
