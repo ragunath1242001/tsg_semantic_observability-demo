@@ -23,6 +23,7 @@ interface Options {
   cwd?: string;
   config: string;
   yes: boolean;
+  timeout: string;
 }
 
 export class Deploy {
@@ -104,8 +105,8 @@ export class Deploy {
           options.config,
           true,
           false,
-          false,
-          options.yes
+          options.yes,
+          options.timeout
         );
       }
       if (options.yes || (await confirm({ message: "Execute upgrade?" }))) {
@@ -117,8 +118,8 @@ export class Deploy {
             options.config,
             false,
             options.dryRun,
-            true,
-            options.yes
+            options.yes,
+            options.timeout
           );
         }
       }
@@ -131,8 +132,8 @@ export class Deploy {
           options.config,
           false,
           options.dryRun,
-          true,
-          options.yes
+          options.yes,
+          options.timeout
         );
       }
     }
@@ -188,8 +189,8 @@ export class Deploy {
         options.config,
         true,
         false,
-        false,
-        options.yes
+        options.yes,
+        options.timeout
       );
       if (options.yes || (await confirm({ message: "Execute upgrade?" }))) {
         log("log", `Deploying participant`);
@@ -198,8 +199,8 @@ export class Deploy {
           options.config,
           false,
           options.dryRun,
-          true,
-          options.yes
+          options.yes,
+          options.timeout
         );
       }
     } else {
@@ -209,8 +210,8 @@ export class Deploy {
         options.config,
         false,
         options.dryRun,
-        true,
-        options.yes
+        options.yes,
+        options.timeout
       );
     }
   };
@@ -315,7 +316,7 @@ export class Deploy {
         );
       }
       await execPromise(
-        `helm delete -n ${this.general.namespace} ${participant.id}-sso-bridge`,
+        `helm delete -n ${this.general.namespace} ${participant.id}-tsg-sso-bridge`,
         dryRun,
         this.cwd,
         false
@@ -366,13 +367,123 @@ export class Deploy {
     }
   };
 
+  /**
+   * Checks if Helm deployments have succeeded by verifying pod status
+   * @param participant The participant whose deployments should be verified
+   * @param namespace Kubernetes namespace where deployments exist
+   * @param timeout Maximum time to wait for deployments in seconds
+   * @returns Promise that resolves to success status and details of failing deployments
+   */
+  private async verifyHelmDeployments(
+    participant: Participant,
+    namespace: string = this.general.namespace,
+    timeout: number = 300
+  ): Promise<{ success: boolean; failedDeployments: string[] }> {
+    log("log", `Verifying deployments for ${participant.id}...`);
+
+    // List of deployments to check based on participant configuration
+    const deployments = [
+      `${participant.id}-tsg-sso-bridge`,
+      `${participant.id}-tsg-wallet`
+    ];
+
+    // Add control plane if participant has one
+    if (participant.hasControlPlane) {
+      deployments.push(`${participant.id}-tsg-control-plane`);
+    }
+
+    // Add data planes
+    participant.dataPlanes.forEach((_dataPlane, id) => {
+      deployments.push(`${participant.id}-tsg-${id}`);
+    });
+
+    const failedDeployments: string[] = [];
+    const startTime = Date.now();
+
+    // Function to check a single deployment's status
+    const checkDeploymentStatus = async (
+      deployment: string
+    ): Promise<boolean> => {
+      try {
+        // Get deployment status using kubectl
+        const statusCmd = `kubectl get deployment -n ${namespace} ${deployment} -o jsonpath='{.status.conditions[?(@.type=="Available")].status}'`;
+        const status = await execPromise(
+          statusCmd,
+          false,
+          this.cwd,
+          false,
+          undefined,
+          false
+        );
+
+        // If available status is "True", deployment is ready
+        if (status.trim() === "True") {
+          return true;
+        }
+
+        // Check if pods are in error state
+        const podsCmd = `kubectl get pods -n ${namespace} -l app=${deployment} -o jsonpath='{.items[*].status.phase}'`;
+        const podStatus = await execPromise(
+          podsCmd,
+          false,
+          this.cwd,
+          false,
+          undefined,
+          false
+        );
+
+        // If any pod is in Failed state, deployment has failed
+        if (podStatus.includes("Failed")) {
+          log("error", `Deployment ${deployment} has failed pods`);
+          return false;
+        }
+
+        // Still initializing
+        return false;
+      } catch (error) {
+        log("error", `Error checking deployment ${deployment}: ${error}`);
+        return false;
+      }
+    };
+
+    // Continue checking until timeout
+    while (Date.now() - startTime < timeout * 1000) {
+      let allReady = true;
+
+      // Check each deployment
+      for (const deployment of deployments) {
+        // eslint-disable-next-line no-await-in-loop
+        const isReady = await checkDeploymentStatus(deployment);
+
+        if (!isReady) {
+          allReady = false;
+          // Check if we've already waited past timeout
+          if (Date.now() - startTime >= timeout * 1000) {
+            failedDeployments.push(deployment);
+          }
+        }
+      }
+
+      if (allReady) {
+        return { success: true, failedDeployments: [] };
+      }
+
+      // Wait before checking again
+      await new Promise((resolve) => setTimeout(resolve, 5000));
+    }
+
+    // If we get here, timeout was reached
+    log("error", `Deployment timeout for ${participant.id} (${timeout}s)`);
+    return { success: false, failedDeployments };
+  }
+
   private installParticipant = async (
     participant: Participant,
     config: string,
     diff: boolean,
     dryRun: boolean,
-    wait: boolean,
-    yes: boolean
+    yes: boolean,
+    timeout: string
   ) => {
     const helmCommand = (...flags: string[]) =>
       execPromise(
@@ -388,8 +499,8 @@ export class Deploy {
         !yes,
         chalk.green("No changes")
       );
+
     await helmCommand(
-      wait ? "--wait" : "",
       `-f ${config}/${participant.id}/values.postgres.yaml`,
       `-n ${this.general.namespace}`,
       `--repo ${this.helmRepository("bitnami")}`,
@@ -399,7 +510,6 @@ export class Deploy {
     );
 
     await helmCommand(
-      wait ? "--wait" : "",
       `-f ${config}/${participant.id}/values.sso-bridge.yaml`,
       `-n ${this.general.namespace}`,
       `--repo ${this.helmRepository(
@@ -409,12 +519,11 @@ export class Deploy {
       `--version ${
         this.applications?.ssoBridge?.chartVersion ?? this.currentCliVersion
       }`,
-      `${participant.id}-sso-bridge`,
+      `${participant.id}-tsg-sso-bridge`,
       this.applications?.ssoBridge?.chartName ?? `tsg-sso-bridge`
     );
 
     await helmCommand(
-      wait ? "--wait" : "",
       `-f ${config}/${participant.id}/values.wallet.yaml`,
       `-n ${this.general.namespace}`,
       `--repo ${this.helmRepository(
@@ -430,7 +539,6 @@ export class Deploy {
 
     if (participant.hasControlPlane) {
       await helmCommand(
-        wait ? "--wait" : "",
         `-f ${config}/${participant.id}/values.control-plane.yaml`,
         `-n ${this.general.namespace}`,
         `--repo ${this.helmRepository(
@@ -450,7 +558,6 @@ export class Deploy {
       const type = dataPlane.type ?? id;
       // eslint-disable-next-line no-await-in-loop
       await helmCommand(
-        wait ? "--wait" : "",
         `-f ${config}/${participant.id}/values.${id}.yaml`,
         `-n ${this.general.namespace}`,
         `--repo ${this.helmRepository(
@@ -464,6 +571,42 @@ export class Deploy {
         `${participant.id}-tsg-${id}`,
         this.applications?.dataPlanes?.get(type)?.chartName ?? `tsg-${type}`
       );
+    }
+
+    // If not in diff mode and not dry run, verify deployments
+    if (!diff && !dryRun) {
+      const { success, failedDeployments } = await this.verifyHelmDeployments(
+        participant,
+        this.general.namespace,
+        parseInt(timeout)
+      );
+
+      if (!success) {
+        log(
+          "error",
+          `The following deployments failed to stabilize within the timeout period:`
+        );
+        failedDeployments.forEach((deployment) => {
+          log("error", `  - ${deployment}`);
+        });
+
+        if (!yes) {
+          const shouldContinue = await confirm({
+            message:
+              "Some deployments failed to stabilize. Continue with remaining operations?"
+          });
+
+          if (!shouldContinue) {
+            log(
+              "error",
+              "Deployment process aborted due to failing deployments"
+            );
+            process.exit(1);
+          }
+        }
+      } else {
+        log("log", `All deployments for ${participant.id} are operational`);
+      }
     }
   };
 }

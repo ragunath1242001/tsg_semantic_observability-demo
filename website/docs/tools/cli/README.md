@@ -44,20 +44,21 @@ Usage: tsg deploy [options] <scope>
 Deploy configuration to an Kubernetes cluster (requires Helm to be installed)
 
 Arguments:
-  scope              scope of deployment (choices: "ecosystem", "participant")
+  scope                    scope of deployment (choices: "ecosystem", "participant")
 
 Options:
-  -f, --file <file>  input configuration file (default: "ecosystem.yaml" or "participant.yaml")
-  --config <dir>     config file location (created by the "bootstrap" command) (default: "output")
-  -u, --uninstall    only uninstall charts and secrets (default: false)
-  -c, --clean        uninstall existing charts before installing (default: false)
-  --clean-database   uninstall database while cleaning (default: false)
-  -d, --diff         show diffs before deployment (default: false)
-  --dry-run          dry run commands (default: false)
-  --cwd <cwd>        working directory for the configuration files
-  -v, --verbose      verbose logging (default: false)
-  -y --yes           assume yes for all prompts (default: false)
-  -h, --help         display help for command
+  -f, --file <file>        input configuration file (default: "ecosystem.yaml" or "participant.yaml")
+  --config <dir>           config file location (created by the "bootstrap" command) (default: "output")
+  -u, --uninstall          only uninstall charts and secrets (default: false)
+  -c, --clean              uninstall existing charts before installing (default: false)
+  --clean-database         uninstall database while cleaning (default: false)
+  -d, --diff               show diffs before deployment (default: false)
+  --dry-run                dry run commands (default: false)
+  --cwd <cwd>              working directory for the configuration files
+  -v, --verbose            verbose logging (default: false)
+  -y --yes                 assume yes for all prompts (default: false)
+  -t, --timeout <timeout>  timeout for helm commands (default: "300")
+  -h, --help               display help for command
 ```
 
 ## Configuration
