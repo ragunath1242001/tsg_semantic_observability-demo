@@ -1,0 +1,72 @@
+---
+id: keys-controller-get-ca-chain
+title: "Retrieve Key CA chain"
+description: "Retrieves the CA chain for a given key. Only supported for keys with type `X509`"
+sidebar_label: "Retrieve Key CA chain"
+hide_title: true
+hide_table_of_contents: true
+api: eJy1VttuGzcQ/ZUBn5JgIwmG+9BFUcBw3MBI4RSxixZwDWW8HGkZc0mGMyt5Iey/F+SudXPshwJ90WVu58yFHG6UJq6iCWK8U6X6QhINrYhBaoLzM6hqNA4WPgLC0qzIwQN1E/jsbAfchuCjkM76B+oY1kZqkC4QfP37p9nPX1WhfKCIKfylVqX6RB2feyfRW0txviQ5x/OEoQoVMGJDQpFVebtRDhtSpTJaFSrS99ZE0qqU2FKhTCIbUGpVKK5qalCVG5WAValYonFL1fd3yZGDd0yc9CezWfo6TFkVqvJOyEnSYQjWVJnv9Bsng80rAH1fqNPZ6fOgX4h9GysC5wUWvnX6P8D4+29USSpMTEUUM2Qx1OWYTKHoEZtgaQ/9ystvGbsvFAtKy6/7nc5O4coLbJ0qr/ehXNvcU9x3OZ2d9oVqiBmX9CPqu+A3NUFqI3GamPhUIO2Jc5Xo0bBMEirF6OPrTPdY9vvTcTtUZ5vumMJdocRI9rxIwT+Iz93rCyW4TOOWBzPZNSS1T5O6pFz6NGOlmqbpnm6M7lNsiqthSO/Sn6qNRrrr1L2hQR5bqU/2qzEICrWwfp1NAjKvfdRD330YHNdoLcl8ZWg91yaROJYUT5IGHS5pnmjtzPaFW8uWj822kuIgvl+7eRVJkxODlo/Qj7WHvmjtK77H2uMsXkR+QX/s/yL6C/qtv2Fu6ceuz1WHGYdITE7yET7O91A3DppxC59nYhzEm+uP8Fd2UsXR7ZGOyk4NhgHh+voSBgyQGgUqdJA5AjoNLD4SrCiahcF7S7BHPBtUkVAIDpiBeLgnaJl0vriNA42CwAEr4skv9xGmvw6f/zgAgMRrveNkGtKAAk1rxbwXQxE0Beu7hpxwMSwD7wje+AiNj/T2IAOshAEZJLYsgK6qfRw3zY5GJm+cNqsW7ejO2YqwqsEv8qIKGMVUJqATBuOybBcjrSuQ2jAEXFJWVuQkbgMOfHI1+aBya2NtKlGVzHT2/ICCA7OxO2il9u2yBpOrkq6yp/toiCs1RQK0a+w4WdAjVmK7XJmMGVMa+7DGjTUY6D9vxHz+7soLvZvPS7hJiX0O5M7+uARNC+NM6u4TF5N2jk5ccrO1iZTRrXEPY98BgY1b2m1KxrGgS4VThUpX3cGmxCqtsL5Q1lTkmHY7SZ0FrGqCk8lMFaqNVpWqFglcTqfr9XqCWT3xcTkdfXn6++X5xdX1xfuTyWxSS2PzhR48S4NuL/LTwwQ+Ubd9lxwfnM1uxf4fL5nxNhd6lGmwCb8fs9yMe+JWjfdqaXRaJrVnSdLN5h6Z/oy275P4e0uxG9bHCmM+sPnFow2n31qVC7RMr2T35ss4Ym/hJWKjEF2Xmoi2paGFD9QNr6r+ri9UTagpZvRBcVZVFGTP5dlTpd/fkh8vblTf/wtjIJyx
+sidebar_class_name: "get api-method"
+info_path: docs/apis/wallet/tsg-wallet
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Retrieve Key CA chain"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/keys/{id}"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Retrieves the CA chain for a given key. Only supported for keys with type `X509`
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"id","required":true,"in":"path","schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"","content":{"application/json":{"schema":{"type":"string"}}}},"404":{"description":"Resource not found","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string","example":"ResourceNotFound"},"status":{"type":"string","example":"404 Not Found"},"code":{"type":"number","example":404},"message":{"type":"object","example":"The requested resource does not exist."},"error":{"type":"string","example":"Not Found"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

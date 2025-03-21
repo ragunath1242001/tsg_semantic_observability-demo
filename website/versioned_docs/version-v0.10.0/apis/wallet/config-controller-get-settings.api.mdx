@@ -1,0 +1,72 @@
+---
+id: config-controller-get-settings
+title: "Retrieve settings"
+description: "Retrieve dynamic settings for this wallet"
+sidebar_label: "Retrieve settings"
+hide_title: true
+hide_table_of_contents: true
+api: eJytVm1v2zYQ/isH7stWqLaRBsNgDAPaNC0CrGkRp9iALDDO1FliQ5EseYpjGPrvAylZlp3Z7YZ9aWreCx8+d3ruNiKnIL1yrKwRU3FD7BU9EuRrg5WSEIhZmSLA0nrgUgVYodbEIhPWkccYd5WLqbiwZqmKC2vYW63JzwviWRcsMuHQY0VMPojp3X0mPAVnTaAgphtxNpnEP/tQRCakNUyGow2d00qm68ZfQnTYiCBLqjD+j9eOxFTYxReSEZrzERyrNn2BCv+c1c5ZzwPvhbWa0IhM0BNWTpOYLlEHajLBiuPP3jWwV6YYeooPa7iwlUOzhj9aRppMoJTk+LPBmksyHAFTfuEpjz9Q39DXmgKH7wOhQqjpg10oTbsU3xkrrbb+9AN+ePXmlzfvfo6wc/QPtyVV9Nnr00ElswvT8bg7GUlbjWM0x+iRM0VMp1VR8n/Pl8IHCZvYLV9r5SkX07v9am5L9f3UH+V1S9p9X35xUxtWFbWt/ZataJqI5nzy6nm7vrN+ofKczP/XtwarbzThDQVbe0nXlt/Z2uSR/cDIdTgddz45h2vL0AdJmw+vMnW1ID8MOZ+cN5moKAQs6J+g75LflgS+pZty8B1EyC0FMJaBnlTgUbyVvP9Wlw5QHvRBYqd/bveEQfEuY/Jt0SIvJGuveC2mdxthY5ucxTStnM1TU8zloB/um5gMiyhYoley+0gClzZKXpFk0CGXYirG6NQ47AQvkH/s1W579yxWvi3uFsGOyfYgE0ttV8nFYQgr6/O2Z6xrAzvAj4pW81xFHIcn2fakQoMFzR9oHXZuw8Pesw6Hbv1JtpffrsweS9OT1v1Y1PpE7KH18BVHbz5iP4w/evsRe3a8NabHTfsvdp4CGU6f/+F7921dkyqztKknuia+nb3fjpfsQHDiZ7YzgwqAMJtddfMZuEQGiQYSRkCTQ2DrCR7Jq6XChSYYAE8O0hMywR4yYAsLgjpQDivFpTKQIyMEh5LC6NeFh/Fv7b9/GQCAiGu1w6QqygEZqlqzesmKPOTktF1XZDhkKSdYQ/Cj9VBZTz/tvQAlB8AA7OvAgEaW1qddBAcwEnhlcvVYo+7C242FUJZgl8AlgUPPSiqHhgMok852OUbw0bQLjsOCklGSYd8nbPEkNsMecyuldaRIRrc8Rb5FxhZZVx3UXNq6KEElVqIMbrWszcsleQLUK1yH6EFPKFmvEzPpTh+fMbxWmY6DFv7zQsznL64t04v5fAq38WEfHZnXn64gp6UyKlZ3i0XFeZVHLKnYufKUbtfKPHR1B4SgTKH7JykTGE0kTmQiSt3e2oYyjr+0DEgygXbzTLx2KEuCs9FEZKKOG0K/BqxWqxEm88j6YtzFhvHvVxeX17PLl2ejyajkSqdh4GzgCs0gc7+9DnR476PZ7Ebzv1p1O4lmeuKx06hMnF51u9y0+n8n0Kkk+7tBUdrA0bLZLDDEXahp4vHXmvy6nQuP6NOXGH81mSgJc/JpQD3QOlKVlprIL+o6Ini2TjTDgfT+8jZuQnUE9Hyu9DOvN6FZD3IfjBF4Pi/gYDbACe2HE9oOJ5UbTuoyHJNeOC6uWUdnGqKiyY4QsJ23B4LexhYeDc9TXHPfNM3fJde6EQ==
+sidebar_class_name: "get api-method"
+info_path: docs/apis/wallet/tsg-wallet
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Retrieve settings"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/settings"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Retrieve dynamic settings for this wallet
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{"gaiaXSupport":{"type":"boolean","example":false},"title":{"type":"string","example":"My Company Wallet"},"acceptUnauthenticatedCredentialRequests":{"type":"boolean","example":false},"issueMobileCredentials":{"type":"boolean","example":false},"color":{"type":"string","example":"#3B8BF6"},"darkThemeUrl":{"type":"string","example":"https://example.com/darktheme.png"},"lightThemeUrl":{"type":"string","example":"https://example.com/lighttheme.png"}},"required":["gaiaXSupport","title","acceptUnauthenticatedCredentialRequests","issueMobileCredentials","color"],"title":"RuntimeConfigDto"}}}},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string","example":"ResourceNotFound"},"status":{"type":"string","example":"404 Not Found"},"code":{"type":"number","example":404},"message":{"type":"object","example":"The requested resource does not exist."},"error":{"type":"string","example":"Not Found"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

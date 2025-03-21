@@ -1,0 +1,72 @@
+---
+id: oid-4-vp-verifier-controller-authorize
+title: "Add an Authorization Request"
+description: "Add an Authorization Request according to the OID4VP specification."
+sidebar_label: "Add an Authorization Request"
+hide_title: true
+hide_table_of_contents: true
+api: eJytVVFv2zgM/isGsYc7QI3bbjtgfuvSYnBxW4qmKwYERcDYTKzWljRJbpYZ/u8Hyk7jtFt6D8tDEokU9ZEf+amBnFxmpfFSK0jgLM8jVNFZ7Qtt5U/k7eiavtfkfIRZpm0u1SryOvIFRZP0/N3tVeQMZXIps+A9AgHakA2LNIcEOq9bsnIpyY618laXJdk59rcQCDBosSJP1kEyuxNguzs/6nwDSROW0lIOibc1Cci08qQ8m9CYsr87vnecRQMuK6hC/uc3hiABvbinzPM9lsF5SY6tj2bu9QOpgafzVqoVCKAfWJmSt2hzWSw+ZXIiL9OvP9OTLzJ1qbp+n43Tf9IH8+12fPkBWo5NjpQPUOauXlTSOdkBegrWgOSa7KxHMgcBOS2lkuFgsO/WW3vHkrbzCg2XqBWAZTlZQjJ7LUuOeCi/fTDtCzSHzu4DbV8iHeQ+65NnlxMQsNS2Qg8J3K8DaPQFJPBmlFnKSXmJJbR3Yns5WosbECA9Ve51al8HziDaHYpDzgyw3SI85LgPvjsxV+Q85b9qAwZx1Jt/X4/eYcA4ZNJmdYn2r/Oncn9G8zfcta0YDMsM5CBwH5JLKn2Au3ca2l8e3m+GFwQPol0N+n+6a/+We9V59PRKG7LLyelbeA7jaUp/P2LbCwZo9jTsmpzRyhHnGKJ3y9App8fH/LMvhAGExxXLUa9gHLwiX2hmzmg34ChGI2Mt83ePJh6qmiP7+CRpLE7XO1m72PXCTob+n9YclJo/py89ZwNiBEi11IHGvso300/RdDqJPlqZr2gQqSvjvjk6u0qjc53V1RZ7BAK4Qn3RO2HHjMexFVDKjJi0pAGFVSDVYFZQdDo6BgG1LSGBwnvjkjher9cjDOaRtqu4P+vif9PxxZfpxdHp6HhU+KoMzDJ9Faph5AMv3/O0mt3784dezH4qPP3wsSlRKq51yK/pe2wGaCS/raHLQMCuz+4EFNyOyQyaZoGOvtqybXn7e01203XfI1qJiyDDzG1BmJMNmvxAG0hg3GV0dMNI2L2sg+o+f13b4RRcTaY3IGDRv9KVzvmMxTWI8B0o1aFqYdTCXgMlqlWNq6CsISZ//gNfAPAR
+sidebar_class_name: "post api-method"
+info_path: docs/apis/sso-bridge/tsg-sso-bridge
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Add an Authorization Request"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/oid4vp/authorize"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Add an Authorization Request according to the OID4VP specification.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={{"required":true,"content":{"application/json":{"schema":{"type":"object","properties":{"vp_token":{"type":"string","example":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"},"presentation_submission":{"example":{"id":"submission-id","definition_id":"definition-id","descriptor_map":[]},"allOf":[{"type":"object","properties":{"id":{"type":"string","example":"submission-id"},"definition_id":{"type":"string","example":"definition-id"},"descriptor_map":{"example":[{"id":"desc1","format":"jwt","path":"$.credential"}],"type":"array","items":{"type":"object","properties":{"id":{"type":"string","example":"desc1"},"format":{"type":"string","example":"jwt"},"path":{"type":"string","example":"$.credential"},"path_nested":{"example":{"id":"desc-nested","format":"jwt","path":"$.nested"},"allOf":["circular(DescriptorMap)"]}},"required":["id","format","path"],"title":"DescriptorMap"}}},"required":["id","definition_id","descriptor_map"],"title":"PresentationSubmission"}]},"state":{"type":"string","example":"state123"}},"required":["vp_token","presentation_submission","state"],"title":"AuthorizationResponse"}}}}}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":""}}}
+>
+  
+</StatusCodes>
+
+
+      

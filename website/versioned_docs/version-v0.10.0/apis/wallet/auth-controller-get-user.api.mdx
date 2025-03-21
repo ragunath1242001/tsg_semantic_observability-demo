@@ -1,0 +1,72 @@
+---
+id: auth-controller-get-user
+title: "Retrieve current user status"
+description: "Retrieves current user state, whether someone is logged in or not a 200 result is provided. This is used in the frontend to determine whether certain aspects should be shown."
+sidebar_label: "Retrieve current user status"
+hide_title: true
+hide_table_of_contents: true
+api: eJzVVt9v2zYQ/lcOfNoKxU7drduEYVjQFkWGoR2WFHvIAuMsni02FKmSJ6uGof99OEp2ZOUH9rCX5cGReL+++0jxvr3SFItgajbeqVz9SRwMbSlC0YRAjqGJFCAyMmXQlsSlvPqKvCMwEazfbEiDceADOM+AsDg/h0CxsSwOdfBbo0nP4Lo0UVaa2AdwSbAO3jE5DexBE1OojKNjnYICo3GAsaaCI8TSN1bDiuSpdTOVKV9TQAF/qVWuLhou33jHwVtLYbkh/hQpqEzVGLCS/FHlN7eZChRr7yJFle/V4vxc/p0yoTJVJGwsNqxra4pUaP45isNexaKkCuXJO/q4VvnNXvGuJpUrv/pMBUvdIADZ9IUSjfIwdaOvWNVWlrDhkhxLLdKqy5TwLyFHl72KzUrlyXBm9NnLxSuVKYeVhP/mSwdvPUnOCo1VufrsSzfTnn4dMswKX6lMBW8F1I1CXRmnhkK3mdJGJy610fkQkr9cvPru+9c//PiTBNI6UCyv/R0JT8PrGcv7Ga4KwdNlCq39d5xIM0enyMG4zQkj4z67Q6PPBRw56I4kPOf+KD/dkYfnQh+nqDuSO9q1hzwPaTEE3KlMGaYqPizXdVPGnwP0+GakFF8aE0gLEGF84PFA0AGxwDKcUr2xhhxfurVX3e2DFOkgj3oZgi7Gpzd9el32H3wUjZt8Fo/CGeH4dBrQI7nt5C9TjJt08Edg5ZO/zVRFXHo5+xtKOJFLlas51mYu+eZNf5lECtvjTRKpaILh3ZXcBn1HXpwX45b6hUytrW+TS40xtj7o/h7xdR/YorXEy62hdqmNAJmuZIeVCh1uaHlHu3jvNl48ejZx6nZcyU7y+9Yti0BaOEEbJ9Wn1tNYtPaZ2Kl12sWTlZ+wT+OfrP6E/RhvYmzo8dCHptOO60CRHKezM+331DYcOyOfkpyJ4YxeX72Hv1KQyiaz57okuDfLzES4urqEvgZwiQwFOkgYAZ2GyD4QbCmYtcGVJRgBTw5FIGSCE2QydFfUz+PWcGkcaGSEWGNBcfbzKsD8l/73bwcAILjae0ymIg3IUDWWzRkbCqCptn5XkeOYpZwgOuEbH6Dygb496QBlpGMEDk1kQFeUPsDaB8ARjATeOG22DdohPCYvwqIEv04yosbApjA1Oo4HaXGfYwYfZUnECG4oGQtyHI4JezyJzXjCXGusFYoKcdMp8i0y9siG3UHLpW82JZjEimigw93U5xUpQ4C2xV3SP/QVC7Y76BVUbChIG+OyInkS/h7+w41YLl988Ewvlsu8l1Ufa3IXf1yCprVxRnb3gMUkfUV62GxtAqXq1ri7Yd8BIRq3sceWjIuMTohTmZKr7kQSYSGSqMuUNQW5mO7uQX5c1FiUBIvZuQyHIPKjZK5jPp+3bTvDZJ75sJkPsXH+++Wbdx+u3p0tZuezkiubLvfaR67QjTIfhOlDXdrE6fezv1du/z9BO4wMpq88ry0al0RgsP3UkIF0o7A2KktScTSDSx9ZjPv9CiN9CrbrZPlLQ2HXj6othnQ5yFuXqZJQi7a82as72snuFQXVchtt0TZJm0xVbzceku/fXauu+wdCL08L
+sidebar_class_name: "get api-method"
+info_path: docs/apis/wallet/tsg-wallet
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Retrieve current user status"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/auth/user"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Retrieves current user state, whether someone is logged in or not a 200 result is provided. This is used in the frontend to determine whether certain aspects should be shown.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"","content":{"application/json":{"schema":{"oneOf":[{"type":"object","properties":{"state":{"type":"object","example":"authenticated"},"user":{"example":{"sub":"user-id-123","name":"John Doe","email":"john.doe@example.com","roles":["admin","user"],"didId":"did:example:123456789","refreshToken":"refresh-token-abc123"},"allOf":[{"type":"object","properties":{"sub":{"type":"string","example":"user-id-123"},"name":{"type":"string","example":"John Doe"},"email":{"type":"string","example":"john.doe@example.com"},"didId":{"type":"string","example":"did:example:123456789"},"roles":{"example":["admin","user"],"type":"array","items":{"type":"string"}},"refreshToken":{"type":"string","example":"refresh-token-abc123"}},"required":["sub","name","email","roles"],"title":"ClientInfo"}]}},"required":["state","user"],"title":"AuthenticatedUser"},{"type":"object","properties":{"state":{"type":"object","example":"unauthenticated"}},"required":["state"],"title":"UnauthenticatedUser"}]}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

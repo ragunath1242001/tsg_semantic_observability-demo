@@ -1,0 +1,72 @@
+---
+id: transfer-controller-callback-start-transfer-process
+title: "Callback to start transfer process"
+description: "Callback to start transfer process"
+sidebar_label: "Callback to start transfer process"
+hide_title: true
+hide_table_of_contents: true
+api: eJzdV01vGzcQ/SsET22wllz30GZPdR03MNDEQuykB0MwRuRIy5hLMiTXirDY/14M90OrDztG4VNPsjnDx5nh8L3ZmluHHqKy5krynN96MGGJ/sKa6K3W6O8FaL0A8XATwcfePvNWYAg84w48lBjRB57f1dxAiTznSvKMe/xWKY+S59FXmHFleM4dxIJnXGIQXjk6eHQsu3rHMx5EgSXwvOZx4wgtRK/MijfNvAXFEP+0ckMe+2cIayKaSCZwTiuRcpt+DXROfQhtF19RRMrDUyWiwkDWP1rzfgQZx+9QOk1LMjgQmPehp/J8wBBghbzJerPz9lFJ9DMln4frHU+ckie//f52hCGsCVX5AozeMWH8cvbrCENChHMpPV1aXm/3DKn2ju9GjsNuNNJZZeJt61rE6A6NnSHk0yk4NemOmAhbHvrORtW+O4jhctdrs93ftVf6GRYfQVe02v428ybjoPX1MkG/1j2P69I8UZjnYFLNDjf+eNOxeh7izHbSGhD+Q217xI9Ha9xbv3S1zvrowXsgMBWxDK/5wA4CbvYifg5jJ5lmP5uX7OwSbcZ0dteFvxvIHjqVRsWEtZ/CTctCzQ9Qd5rrsHOe64HR4aPG7c+d/+DgMWkdZaER/DH+2+aXzgnOmtBe+9npKf3ssv9FpzAsEAZKFns5CJUgmVlWWlNvvRK5hwixCsf0JRsTY+/GuyhSPuQTUFRexU16XgsEj57nd/P0GGBFjDZUJd3EE9lG2ya8TdcNqlpiLCwJsrMhJUCqmXMigmnvHqa9NIdprWQzTWikn+gfWz2eb4NNd9Lmb6GKxdm4Tu1CxpfarpOLgxDW1su2rNa1G0U7FTgNBu9BlknQjyxmu4ukPemvfe+toS1sX8vuKsm/W+ptf1lfAinNlxkfqKeXo50yf0GvlgoWGtnMY0ATU7MwgyipxSwTtiwrQ02EbIFxjWhYXFumTIhgBAZmlywWyLqYWQp1ktqEWu7TdhK5fFJOj44Hx6eDwxHg+ARwKPNPqfz/UNobGiOXNjVvz0A371k3r7JZ6qaD8bJQgV07NOezKxYcCrXsuIOFwq5DuuU+/uHadzAn7IMNsTdtfcEj86ghtj1FRipzip7NvI1WWJ0xCP25KNlik/wuhVYuIPvH+gdlVuy9t5Xb7g4Tdh0L9HuHhco566N6HEcRLSvhgYweEzY1AhNg2AIZSLkNTkAEbVcZAyP3t0Fkn6+YMhE9CKpOSBCRXJwGgRPG7u/ffLQR39zf52ynrBKXyqhUUxWYsTEBme7oBTKpPIqoN0wr84CSrVUsGLCgzErvFXt4ghPGM05c1t5jRywgSAKajGsl0IT07LruOXcgCmRnk1Oe8crrUeOu1+sJJPPE+tW02xumf19dXH68uTw5m5xOiljq9L6JdkswI+QX0fZO2w30GvF7nDoNytAIkqKqO0a/4+AUMdmgFxkfWJ1nPE8K3BL7POMFqUF+x+t6AQE/e900tPytQr9p6f4RfCK99PakCvS35PkSdMCD+AY95T996qaBn9nut9jRFPqRz9Dz7Z8oz/gDbtpvvzSDFwgyKWPdGS7a4066eabfeCDlTdbvOBcCXXzWdz4Sy9n1zS1JRfdtWFpJezys6WMU1m2QNqWf+DGt1VyDWVXEyzlvMakDSBJHd7inQ+NPi90y1HXrcWsf0DTNUJVI/ycGa/4FVMtwFg==
+sidebar_class_name: "post api-method"
+info_path: docs/apis/control-plane/tsg-control-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Callback to start transfer process"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/transfers/callbacks/{id}/start"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Callback to start transfer process
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"id","required":true,"in":"path","description":"Transfer ID","schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={{"required":true,"content":{"application/json":{"schema":{"type":"object","properties":{"@type":{"type":"string","example":"dspace:TransferStartMessage"},"dspace:providerPid":{"type":"string","example":"provider-pid-789"},"dspace:consumerPid":{"type":"string","example":"consumer-pid-123"},"dspace:dataAddress":{"example":{"@type":"dspace:DataAddress","dspace:endpointType":"http","dspace:endpoint":"https://api.example.com","dspace:endpointProperties":[{"@type":"dspace:EndpointProperty","dspace:name":"name","dspace:value":"value"}]},"allOf":[{"type":"object","properties":{"@type":{"type":"string","example":"dspace:DataAddress"},"dspace:endpointType":{"type":"string","example":"http"},"dspace:endpoint":{"type":"string","example":"https://api.example.com"},"dspace:endpointProperties":{"example":[{"@type":"dspace:EndpointProperty","dspace:name":"endpointName","dspace:value":"endpointValue"}],"type":"array","items":{"type":"object","properties":{"@type":{"type":"string","example":"dspace:EndpointProperty"},"dspace:name":{"type":"string","example":"endpointName"},"dspace:value":{"type":"string","example":"endpointValue"}},"required":["@type","dspace:name","dspace:value"],"title":"EndpointPropertySchema"}}},"required":["@type","dspace:endpointType","dspace:endpoint","dspace:endpointProperties"],"title":"DataAddressSchema"}]}},"required":["@type","dspace:providerPid","dspace:consumerPid"],"title":"TransferStartMessageSchema"}}}}}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"Callback started transfer successfully","content":{"application/json":{"schema":{"type":"object","properties":{"status":{"type":"string"}},"example":{"status":"success"}}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

@@ -1,0 +1,72 @@
+---
+id: negotiation-controller-get-negotiation
+title: "Get negotiation status by ID"
+description: "Get negotiation status by ID"
+sidebar_label: "Get negotiation status by ID"
+hide_title: true
+hide_table_of_contents: true
+api: eJyVVdtu2zgQ/RVinnYLxg6c7mKjpwaNNwiwm7pN0n0IAmNMji02EsmSo7iGoX9fkJKvCRrUL5bmenh0ZrgG5ykgG2evNRRwQwvHJr9/dJaDqyoK0wXxngMkeAxYE1OIUDyswWJNUIDRICHQ98YE0lBwaEiCsVCARy5BQlQl1QjFGnjlU0bkYOwC2vYxJUbvbKSY/KPT0/SnKapgfO5aAEhQzjJZTj70vjIqIxp+iylg/bKBm30jxQlxSAdl05X/YPRLFBLoB9a+Sqaz+eiP85HGk/lcnZ+8P1WzEzw7+/MEzzXi+dn7M0V/QSvhQ1fiZ6V09KioyHSiOiCylRuvcjY2NYXJW8CaYIv+7SBpV8oH92z0L5baT9qVioz8xum+jD/fj2/vxpfQtvsf/yFzvCHo1XO+ivio96MENpw7vULgbfe52/STEEk1wfAqS3JGGChA8fCYtMW4SErdl3dMtQ/1dUUs7C5CJAhNFLOVuL4ECTVx6dKQLCgrKmm6gCF6M9zLisO10W0SO4XnbkAed9gy4k6DDhsuR/ta7QwS5pVb5hCPMS5d0J20ne8SVTeYvkJLU9R1nrBXjPLQqJExPx1H7xwdjxvq+nFK8b1p4/vbhRoZCvg6AbmBXzJ7OKb0KwUzNzirSEwCRbLcUWuJNGnBTihX141Ng0xiRrwksoKXThgbGa2iKNxccEmixywy1EGWm7FzlwnsJXJ3eyX6tSUm+UTHeO5KE8UnT/Zici2iJ2Xm/Q4RsXTLmDuR1d4Zy9vWBzUH4l8XeePaxWIgEahC7s6VnJfImNUsJsGxU66SAuOmL+kkrRQ3VpXxkcR/LjwZuxBXwTV+lx0H4hOXFI6axcZ7F9g876NgJ2p8Ss5AuXb6ukKhFTMSqPUOnELGyi2kQKuP05DF/bUwlilNXFJ1LsEpxFeoaCDEdPruxjG9m04LcUCrprmxJnNqorCOcyHbt56R0CaQ4molKmOfSIul4VKgiMYuqiOytzIYCJCQ5ungKkCVroJWQmUU2Zh3VX8ZXXhUJYnR4BQkNKHqFRqL4XC5XA4wuwcuLIZ9bhz+c/1xfHM7PhkNTgcl11XWmHeRa7R7ld9YEweC2w430w8e+gpN3voZz7pfIQ+A3oCE/SUCEgqj04oqXeQUs17PMNJ9qNo2mb83FFbdbnnGkCcs7z1tYnrWUMyxivQCzvYChd++9Mv6d7Eb4kOYvRHtKpGPVUMd9U+06q779rGVUBLqvGrXveNCKfK8l/Liqk47ebtOr8Z3ICEtvz2+jjZOrv4qnPW6i7hzT2TbdouO03sC2Lb/A/AqF9Q=
+sidebar_class_name: "get api-method"
+info_path: docs/apis/control-plane/tsg-control-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Get negotiation status by ID"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/negotiations/{id}"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Get negotiation status by ID
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"id","required":true,"in":"path","schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{"@id":{"type":"string","example":"3f2592da-ffc9-40cb-a336-a9daa9343ce8"},"@type":{"type":"string","example":"dspace:ContractNegotiation"},"dspace:consumerPid":{"type":"string","example":"urn:example:consumerPid"},"dspace:providerPid":{"type":"string","example":"urn:example:providerPid"},"dspace:state":{"type":"string","example":"REQUESTED"}},"required":["@id","@type","dspace:consumerPid","dspace:providerPid","dspace:state"],"title":"ContractNegotiationSchema"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

@@ -1,0 +1,72 @@
+---
+id: data-plane-management-controller-start-transfer
+title: "Start a transfer by ID"
+description: "Start a transfer by ID"
+sidebar_label: "Start a transfer by ID"
+hide_title: true
+hide_table_of_contents: true
+api: eJx9VcFu4zgM/RWBp11AGwfdnnwrpu2iwGynmHbnUgQBYzGxZmxJI9GTBoH/fUHZcdpJ2lxiiCbFR773vAcfKCJb7+4MlHCNjA8NOvoXHW6oJcefvOPom4biMjFGforo0poiaAgYsSWmmKB83oPDlqAEa0BDpJ+djWSg5NiRBuughIBcgwZDqYo2yKVQwqGesoYc27XNpVNVU4tQ7oF3QaomjtZtoO8XUjwF7xIliV/ML+TvbVHoNVzO/z4N3Pq4ssaQAw2Vd0yO5SUMobFVnkPxPcmb+9MW/Oo7VSy4o0yN7dDAAPv3RjXQC7ahkaOvlHwXK7r3fOs7Z6S7xMhd+jjvcn6p7j2rKany5vVVrmtXeVpTyuX8stfQUkq4oXOtH4s/1aRkS5SYjIpji8p4Ssp5VvRiE8/kVorRx487fdVl/3r5z8N0JrgjhIUGtpwzb6T4NXvo5achUdVFy7vMKI8d1xdSphpYGISbS4OM+QkWQgfGjRAwk1dl9qojfeWutxR4FBYrVHwg3mqn7q5Bxsa1FxUEn/Kaha4lFBhs0U4Fi0NeKvbW9EUWhSCk+GtQwuKI4lE4NNDkgOW4k+FAw7rx2/xKwJS2PpqBfT4Mieiw2bGt0gR7iabNgno3pM+FjmM7m3kMD5tYEUaKkxIkazw6xG59bJGhhG8PoA+wauZwIvJvFO3a4qoh9RApkeOsNeWIDBnFXlW+bTsnGiS1It4SOcVbr6xLjK6ipPxacU1qZILKrc4y36xb+zzYkVNPj/+oqwNAdaTFqffUNqkvgdzVw51KgSq7Hl1ApdpvU76QnAneOp46OFd6Bhpk/aP9DOaClZhLr6GxFblER7eAq4BVTepiNgcNXWzGwaWyKLbb7QxzeObjphhzU/H57tPN/ePNXxez+azmtsnQhaotuleV36X3G+gTC5leuAgNWidSz53sR+Y/AwYrujiKScPEftBQZqsfBLDQUItsymfY71eY6L/Y9L0c/+wo7gZZ/MKYSZDFbWySZwPlGptEJw1O9gx/fB0N5U91/mtxFst4iG4nu8Gmo2EzP2g3fKX6Ra+hJjTC8uf9GLiqKgr8KuXk2yCeM3nFw5fHJ5FbJxM71fbkYPvz/bynYPWhQA8gsklAr98pfvCTZRUpjwubNOVuIjpe5rx+0ff9/1JJyjE=
+sidebar_class_name: "post api-method"
+info_path: docs/apis/analytics-data-plane/tsg-analytics-data-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Start a transfer by ID"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/management/transfers/{id}/start"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Start a transfer by ID
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"id","required":true,"in":"path","description":"Transfer identifier","schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"202":{"description":""},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string","example":"ResourceNotFound"},"status":{"type":"string","example":"404 Not Found"},"code":{"type":"number","example":404},"message":{"type":"object","example":"The requested resource does not exist."},"error":{"type":"string","example":"Not Found"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

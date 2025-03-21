@@ -1,0 +1,72 @@
+---
+id: oid-4-vp-verifier-controller-get-authorization-request
+title: "Get the Authorization Request"
+description: "Get the Authorization Request according to the OID4VP specification."
+sidebar_label: "Get the Authorization Request"
+hide_title: true
+hide_table_of_contents: true
+api: eJytVF1P2zAU/SvWfdokr6lYn/LWQUGVJkCU8VJVk2vfJmaJba5vgC7Kf5+cRNDCxtPyksT36xyfY7dgMGqyga13kMMFsuASxbzh0pP9rdK6uMGHBiMLpbUnY10h2PdpV8uz2d21iAG13VndZ09Agg9I/c/SQA5D1h2S3VmkU++YfFUh/SyQjwaNc0BCUKRqZKQI+boFp2qEHKwBCYQPjSU0kDM1KMEm3EFxCRKiLrFWkLfA+5AqIpN1BXTdJhXG4F3EmOIn02l6HbOHTsJs+vV94NzT1hqDDiRo7xgdpyQVQjWyzu5jymzfQ/Dbe9Q9J0rbwnYAMFB6C1QCPqs6VGnpBqNvSOOl53PfOJPQRVbcxI/rZtOZuPQsXoq0N4ejXFNvkQ5LZtNZJ6HGGFWBf4P+2vy2REGDTGgEjRCF8RiF8yzw2UaepKlI5OljpAcou0Nh18PuvNAdKWwksOW+cpGan7GHLj0SWBXJKaPVUmaNXPrkvgIHQ3EJOWQq2MxbM3sMmaKstaZLY5AeB6ttkp92voc9jrpdXYjV6kp8I2uKBOrYGsdhMb9eijOvmxodD4cHJKTmo8MG/yid/NNJqKxGF/HVEDAPSpcoTiZTkNBQBTmUzCHmWfb09DRRfXjiqcjG2ph9X54uLleLLyeT6aTkuup3M/jItXIHnT882295ta8+/1+XwugDxmfOQqWsSy7pGbajPGtQwabroxcIJKhk09yaJGjpI6eUtt2qiD+o6rq0/NAg7QflHhVZtU2irVswNqZvA/lOVRE/oPfpZjTeZ/EvlOOicvukpqoaHLT8hfvhWuo2nYQSlUHqpw+BudYY+KDk3YXRHTr1YnELXfcHKa3iaA==
+sidebar_class_name: "get api-method"
+info_path: docs/apis/sso-bridge/tsg-sso-bridge
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Get the Authorization Request"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/oid4vp/ar/{id}"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Get the Authorization Request according to the OID4VP specification.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"id","required":true,"in":"path","schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":""},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string","example":"ResourceNotFound"},"status":{"type":"string","example":"404 Not Found"},"code":{"type":"number","example":404},"message":{"type":"object","example":"The requested resource does not exist."},"error":{"type":"string","example":"Not Found"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

@@ -1,0 +1,72 @@
+---
+id: clients-controller-update-client
+title: "Update an existing client"
+description: "Update an existing client"
+sidebar_label: "Update an existing client"
+hide_title: true
+hide_table_of_contents: true
+api: eJyVVU1v2zgQ/SvCnLoAbSXZm26pG3QDLLpFnZyCIBiTE4stRaokFccr6L8XQ8qOLQdp44sFcr7nvcceXEseo3b2WkEFC6PJxrBwNnpnDPmHrlUYKZ+DgBY9NhTJB6juerDYEFSgFQjw9LPTnhRU0XckQFuooMVYg4Aga2oQqh7itmUP2zUr8jAM99mRQvzo1JYtpnEUBel1yzVCBbepHlXIVFGhMCIIkM5GLrDqAdvWaJlaKr8H9ulP07vVd5KpH88DiJoC32p1WqIAesamNQTV+SDGjvdGIXpt14dGcJW/inFmg4BA0lP88lvPZbIb/dnxqPW3PC+LkJOOY+kCqeLR+UJR42yIecVF2/nWBQpzDp5Nr9XbkbPVTKvZ+cXfL2651D9yzd3PcCXZ3TuTZ723uwNUjbYgoAvk4V7sQqL3uAUBOlITTlMNg4C1RxtPwnWxdl7/n3p+kE4R7Mp+kJ4U2ajRhPdl8qS0JxlvvZ7mq2NsQ1WW49FcuqaUaMwK5Y/3JBkOOXSXkXYEnmNAHGxwspXdlPfzmZTPNemYdpRB+ik6zp8KCK2zIa/o4uyM/44JuBgRNvIwdFJSCI+dMdt5mlTENYvDTks422sULtAW9KxD1HY9whYENBRrp7JwyDoJTqyhghJbXWarUObcZa/VkAbkn7Ie3Qtgxn970ZMdl0Zun+/4OyXpMUcnRJzW/26yHXJtQqgpn14hzZ4zp0TZwf9dmD9G8u/gO7CQP7qE1xEzN8vPxXL5X/HRa7U+Hc/xdXH59br45GTXkI15MCCAF5atR/FGyWIyCDBakg1pY+OqLluUNRUX8zPu3Buo9iVvNps5puu58+ty9A3lv9eLqy/Lq9nF/Gxex8YkXLYuxAbtQeS3gPi69EZ6jmVrUFvWslRMP0L0DrDV+6Ez5zJMQUClFQ++diGyXd+vMNCtN8PAxz878tuM3if0GldJVXpQOvC3guoRTZg+hP3Lmwcfvo2y8RfP9tVSdxpkWYGe0HSUZ/+Dtvn9HnjTNaEin7Lni0XOMbth9xfHkzeWn/E9db9e3iz+AQGr8UFvGI0VeNwwlnGTM7vUSNKZdNaDQbvucM22OSj/fgFJ2Paw
+sidebar_class_name: "patch api-method"
+info_path: docs/apis/sso-bridge/tsg-sso-bridge
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Update an existing client"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"patch"}
+  path={"/api/clients/update/{id}"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Update an existing client
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"id","required":true,"in":"path","schema":{"type":"number"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={{"required":true,"description":"Updated client data","content":{"application/json":{"schema":{"type":"object","properties":{"id":{"type":"number","example":1},"name":{"type":"string","example":"Example Client"},"secretName":{"type":"string","example":"SecretExample"},"description":{"type":"string","example":"A sample client used for demonstration purposes."},"clientId":{"type":"string","example":"client-id-123"},"clientSecret":{"type":"string","example":"client-secret-abc"},"roles":{"example":["admin","user"],"type":"array","items":{"type":"string"}},"grants":{"example":["authorization_code","client_credentials"],"type":"array","items":{"type":"string"}},"redirectUris":{"example":["https://example.com/callback"],"type":"array","items":{"type":"string"}}},"required":["name","secretName","description","clientId","clientSecret","roles","grants","redirectUris"],"title":"ClientDto"}}}}}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"Client updated successfully."}}}
+>
+  
+</StatusCodes>
+
+
+      

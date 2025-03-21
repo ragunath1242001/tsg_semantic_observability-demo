@@ -1,0 +1,72 @@
+---
+id: direct-presentation-controller-validate-presentation
+title: "Validate presentation"
+description: "Validates a Jwt-based Verifiable Presentation according to a fixed set of requirements"
+sidebar_label: "Validate presentation"
+hide_title: true
+hide_table_of_contents: true
+api: eJy1Vm1v20YM/ivEfdoKxQ7yURgGZG0wpBjaYPbWD1lg0BJtXXu6U+8oK4ah/z7wJNuSExsr1n7xy/HlHpJHPtypnELmdcXaWZWqv9HoHJkCILxv+GqJgXL4m7xeaVwaggdPgSyj6ANmmfO5tmtgBwgr/Uw5BGJwK/D0tdaeSrIcVKJcRT4a3ecqVe+0p4yHvt46y94ZQ36x6TEMxSpRFXosickHlT4+JUouoMC/uXyr0p3q78tVyr6mRGXOMlkWEVaV0Vn0M/0cJM6dCllBJcov3lakUuWWnyljuccLVtYURLqpBjqBvbZr1bbJ4LpH0XlKFGs2onRM1jCA9w2rtu0sQ+Vs6NzfXF/L17gI6seiT1TM8ECydM4QSpLpGctKwpAk7jWR6f2n+UyvLXLt6VsN754r7bfvkL/Bcu7rwLc2K5yPgRyUHkVLst25Qe9xqxKlmcrwivt273AM4n+7e/DOrb6Lpxkj198nRmS6rXNNNvsvmX75iPcP40zZzxX1tZK9zPoocePYB80zbJl+FklPtF3rBMpqr3mr0sedclhzcSPQGzSGeLHR1CyqgYOgnlrxjWsZGSPf0E0gubokLpwMpcqF2EHIhUrVFCs9HXmb7sNXgsRvDpNoD2smXdk13h7csUG7g0StjGuiSoUhNM7nXT+7qjMcxpJLk744SfYnJVpc0+ILbcNRbXh40KzDqdrhJBn5d41dZJ5ysqzRhJPbT6VjWzTmgu2p9DSKszefkZ/an739jPxgr0Oo6XXTl6LkwltLL8j69yvj+88jbd3t+7Eb1IMBre3KxcfTt8V89jt8it5VckIW84LgKAYtzD2b3UMHBrhAhgwtxGAAbQ6BnSfYHDl9EGFUyDwhE4xCEIZfEtSyDjSaC20hR0YIFWYUJr8sPUx/7T7/sQAAgqs5YtIl5YAMZW1YX7EmDzlVxm3jgpBEn+AswU/OQ+k8/TyKADMOgAFYhgxgnDKwch5wACOC1zbXmxpNbx6iFmFWyFLCBUGFnnWmK7QcQNt4dvQxgY9ypANUuKYozMiyPzjs8MRshlHmGm2MpCgTtTxavkPGDllfHTRcuHpdgI5ZsY73e1Le+eWCPAGaBrdBNOgZMzbbmJl4p5cwhtdq2+egg/+yEIvFmw+O6c1ikcJcAvtYkb19uIecVtrqOA17LFqWjlywxGLncUaaLRhtv/R1B4Sg7docQtI2MFpJnEx18mG0w2AmO0ybKKMzsiG+dYulvOnbCrOC4GZyrRJVe6NSVTBXIZ1Om6aZYBRPnF9Pe9sw/eP+7d2H2d3VzeR6UnBpIvXJ2C7RDjzvl9jRCz5tnN1xx/pxW28//JmeeVoZ1FaaO8a663nmUWGl4942nBdHqhWGKoSY0ke12wmwv7xpWzn+WpPfdgy0QR+Byr82UQVhTj6y5BfaqlS97UK9mgue6LyOm8Xpatkme4vbLKOKL+oOufPh42yuErXsl/HS5WLjsVFJ/IwPwlX9pNx1Zztl0K5rXItu51MKKkz5GnMeCP8gQrsdIDwhSnjJiHDCfnCB3eACe8FFboKLzAPnyAXO00fSFyWuCbFIryZgv1GcUFZnu/ZoeRHt2qe2bf8FWoEEZg==
+sidebar_class_name: "post api-method"
+info_path: docs/apis/wallet/tsg-wallet
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Validate presentation"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/presentations/validate"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Validates a Jwt-based Verifiable Presentation according to a fixed set of requirements
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={{"required":true,"content":{"application/json":{"schema":{"type":"object","properties":{"vp":{"type":"string"}},"required":["vp"],"title":"VerifiablePresentationJwt"}}}}}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{"vp":{"type":"string"},"valid":{"type":"boolean","example":true},"validateJWTSignature":{"type":"boolean","example":true},"validateJWTExpiryDate":{"type":"boolean","example":true},"validTrustAnchors":{"example":[true],"type":"array","items":{"type":"boolean"}},"validExpiryDate":{"example":[true],"type":"array","items":{"type":"boolean"}},"validProof":{"example":[true],"type":"array","items":{"type":"boolean"}},"validStatus":{"example":[true],"type":"array","items":{"type":"boolean"}},"validateAudience":{"type":"boolean","example":true}},"required":["vp","valid","validateJWTSignature","validateJWTExpiryDate","validTrustAnchors","validExpiryDate","validProof","validStatus"],"title":"PresentationValidation"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

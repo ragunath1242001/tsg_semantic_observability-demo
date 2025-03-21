@@ -1,0 +1,72 @@
+---
+id: transfer-management-controller-execute-transfer-put
+title: "Proxy a request"
+description: "This endpoint is used if the HTTP Data Plane needs to serve as a proxy."
+sidebar_label: "Proxy a request"
+hide_title: true
+hide_table_of_contents: true
+api: eJytVU1v4zYQ/SvEnFqAtYI0J9+C3aQN0KbGxruXwDDG4tjiViK55CiOIei/F0PJH3XctFjUF9sk583ne9OBoVRGG9h6B1OYVzYpciZ461jZpNpERtm14orUr/P5TH1ERjWr0ZFyRCYp9ipRfCGFSaEK0b/uJgo0+EARBfbBCHBEl9YUf0eHG2rI8QfvOPq6prikVypbpv2bZWgZNASM2BBTTDB97sBhQzAFa0BDpG+tjWRgyrElDVZiD8gV6POERkxlDTm2a0sRNKSyogZh2gHvgqAmjtZtoO/1wdEI999dzZAr5dcqUkn2xbqNwhBqW+YivOt0IW5S8C5Rkvubq5/l6+/w9z6urDEkUKV3TI7l0YmP4muSl91bT371lcpc0yhtYTv4GTI9j0cDvWITajn6RMm3saRHz/e+dQZ6DYmR2/S+3c3VjXr0rA5GpTenrlzbrHInDiY3Vze9hoZSwg1dCv0IPq9ISVsoMRkVxxCV8ZSU86zo1SaeiFeK0cf3Iz2Jsj/t9vNQnUO6YwoLDWw5W94J+Ef20MtHQ6KyjZZ3eVo9tlxdC0w5zHkQyiwNMuZfsJCuM25kuOGEVEeCiK+GuPLCnz0luIIpFBhs0RweFjwOeSo6a/pipFPRyfNeUhB+ZhotjmE+yZAMc7AP9lj04UDDuvbb/CRgSlsfzTBePgyGFXM4pLRE02R2XDrVZ6fHQpy/P94MZV0RRoqHsRaD8Wh/d+9jgwxT+DIDvU9BQN9Q9AtFu7a4qknNIiVynImTlYyMSFnpm6Z1QihSK+ItkVO89cq6xOhKSsJwEcOxrSqHOsnDY93a5yKOAzJ/+uVcM9/qkwjuH4Hc7exBpUClXY9sVqny25R97QX54PwMdQIapMED5KgPWIo+9BpqW5JLdCQ83AYsK1LXkyvQ0MZ6LFeaFsV2u51gvp74uClG21T89vDh7vHp7qfrydWk4qbOCQefuEF3gjwT+Ve4p+d5ut1Ruf7PVTO2nOmVi1CjdcL9nFc3UuYZMFjQcCSNmO1pAxqmea+MzJH/2W6hofKJxb7rVpjoc6z7Xo6/tRR3A6FeMOaRyrw3NslvA9M11oneyf+HT6PW/KguL6mLWY2H6HbSc6xbGjr+J+2G5Sgb7LuC+Lf19R3h5Br2i15DRWiExM/deHVblhT4xOjNHutP5W/2eQ4aRJUuqdRBbLvLAV0QJPVPorOPPYtcruZFyL0eLstIuWlYp4PtJqLjZbbrF33f/wXPxz96
+sidebar_class_name: "put api-method"
+info_path: docs/apis/http-data-plane/tsg-http-data-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Proxy a request"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"put"}
+  path={"/api/management/transfers/{id}/execute/{path}"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+This endpoint is used if the HTTP Data Plane needs to serve as a proxy. 
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"id","required":true,"in":"path","description":"Transfer identifier","schema":{"type":"string"}},{"name":"path","required":true,"in":"path","description":"Path of receiving application","schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string","example":"ResourceNotFound"},"status":{"type":"string","example":"404 Not Found"},"code":{"type":"number","example":404},"message":{"type":"object","example":"The requested resource does not exist."},"error":{"type":"string","example":"Not Found"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

@@ -1,0 +1,72 @@
+---
+id: proxy-controller-get-data-options
+title: "Proxy a request"
+description: "This endpoint is used if the HTTP Data Plane needs to serve as a proxy."
+sidebar_label: "Proxy a request"
+hide_title: true
+hide_table_of_contents: true
+api: eJytVMFu2zAM/RWBpw3Q4qJH34au2woMa7BmvRRBwdp0LMyWNJFuFhj+94GK22VpsQ3FTlEomXx875Ej1MRVclFc8FDCqnVsyNcxOC/GsRmYauMaIy2Zj6vV0rxDQbPs0JPxRDUbCYYp3ZNBNmhiCj92CwMWQqSEmvaihhKWGj8LXlLoOkq3GxLNdBtyZQYLERP2JJQYypsRPPYEJbgaLCT6PrhENZSSBrLgFGpEacEe40/ouaFkXE1eXOMogQWuWuoRyhFkFzUrS3J+A9NkHwvN6f691BKlNaExiSpy985vDMbYuSr3fFh0mtaal2PwTKwoTk9O9Of3fIoGBDfa/p4uWFvoSdqgBB4SJS2UUGB0Raa7GF09FaPGJy2samQW1/qnGpKT3ZWi2VcPOEh7esDGHLDQdGGbn0Rk3oZU65mrEPcftiKxRsGo6t9i3Wdynovao+jj6cn7XzfTpATcESZK+7qKGMqH0MPd+5B6FCjhegn2oQVN+kSha0qucXjXkVkmYvKStcm+pVqNW4W+H7xqRuaOZEvkjWyDcZ4FfUWsAqv1q71zTYa6yFI534RMopNOIayuPhxPyFN76nhdRvJvlxeGI1WumQ1juA1bzrUexu+x+FHWBVhQgWfbWFBwWIlazULnKvJMimx29tuIVUvmdHECFobUzXRxWRTb7XaB+XoR0qaYv+Xi08XZ+eer8zeni5NFK32XG46BpUd/kDm71KDRoSGW43bHjIy8/N/FMksu9EOK2KHzMM19jfNs3ABGp5OSp8hCmbdImS/XFtrAoo/G8Q6ZvqZumjT8faC020/NPabsm7yJasd6rqFssGP6Q5Ovvszb47V5fhE9C30Ooleo99gNtJf1G+32C1C31ItA/G1FvQBO5nBaTweb6XK5urj8fAXT9BOd4iu5
+sidebar_class_name: "options api-method"
+info_path: docs/apis/http-data-plane/tsg-http-data-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Proxy a request"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"options"}
+  path={"/api/proxy/{id}/{path}"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+This endpoint is used if the HTTP Data Plane needs to serve as a proxy. 
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"id","required":true,"in":"path","description":"Transfer identifier","schema":{"type":"string"}},{"name":"path","required":true,"in":"path","description":"Path of receiving application","schema":{}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":""}}}
+>
+  
+</StatusCodes>
+
+
+      

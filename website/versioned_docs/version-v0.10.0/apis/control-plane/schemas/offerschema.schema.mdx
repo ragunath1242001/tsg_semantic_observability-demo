@@ -1,0 +1,33 @@
+---
+id: offerschema
+title: "OfferSchema"
+description: ""
+sidebar_label: "OfferSchema"
+hide_title: true
+hide_table_of_contents: true
+schema: true
+sample: {"@id":"3f2592da-ffc9-40cb-a336-a9daa9343ce8","@type":"odrl:Offer","odrl:assigner":"did:example:assigner","odrl:assignee":"assigneeExample","odrl:profile":"profileExample","odrl:permission":[],"odrl:prohibition":[],"odrl:obligation":[],"odrl:target":"targetExample"}
+custom_edit_url: null
+---
+
+import Schema from "@theme/Schema";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"OfferSchema"}
+>
+</Heading>
+
+
+
+
+
+<Schema
+  schema={{"type":"object","properties":{"@id":{"type":"string","example":"3f2592da-ffc9-40cb-a336-a9daa9343ce8"},"@type":{"type":"string","example":"odrl:Offer"},"odrl:assigner":{"type":"string","example":"did:example:assigner"},"odrl:assignee":{"type":"string","example":"assigneeExample"},"odrl:profile":{"type":"string","example":"profileExample"},"odrl:permission":{"example":[],"type":"array","items":{"type":"object","properties":{"@type":{"type":"string","example":"odrl:Permission"},"odrl:assigner":{"type":"string","example":"assignerExample"},"odrl:assignee":{"type":"string","example":"assigneeExample"},"odrl:action":{"type":"string","example":"odrl:actionExample"},"odrl:target":{"type":"string","example":"targetExample"},"odrl:constraint":{"example":[],"type":"array","items":{"type":"object","properties":{"@type":{"type":"string","example":"odrl:Constraint"},"odrl:leftOperand":{"type":"string","example":"odrl:leftOperandExample"},"odrl:operator":{"type":"string","example":"odrl:operatorExample"},"odrl:rightOperand":{"type":"object","example":{"value":"rightOperandExample"}},"odrl:rightOperandReference":{"type":"string","example":"rightOperandReferenceExample"}},"required":["@type","odrl:leftOperand","odrl:operator"],"title":"ConstraintSchema"}},"odrl:Duty":{"example":[],"type":"array","items":{"type":"string"}}},"required":["@type","odrl:action"],"title":"PermissionSchema"}},"odrl:prohibition":{"example":[],"type":"array","items":{"type":"object","properties":{"@type":{"type":"string","example":"odrl:Prohibition"},"odrl:assigner":{"type":"string","example":"assignerExample"},"odrl:assignee":{"type":"string","example":"assigneeExample"},"odrl:action":{"type":"string","example":"odrl:actionExample"},"odrl:target":{"type":"string","example":"targetExample"},"odrl:constraint":{"example":[],"type":"array","items":{"type":"object","properties":{"@type":{"type":"string","example":"odrl:Constraint"},"odrl:leftOperand":{"type":"string","example":"odrl:leftOperandExample"},"odrl:operator":{"type":"string","example":"odrl:operatorExample"},"odrl:rightOperand":{"type":"object","example":{"value":"rightOperandExample"}},"odrl:rightOperandReference":{"type":"string","example":"rightOperandReferenceExample"}},"required":["@type","odrl:leftOperand","odrl:operator"],"title":"ConstraintSchema"}}},"required":["@type","odrl:action"],"title":"ProhibitionSchema"}},"odrl:obligation":{"example":[],"type":"array","items":{"type":"object","properties":{"@type":{"type":"string","example":"odrl:Duty"},"odrl:assigner":{"type":"string","example":"assignerExample"},"odrl:assignee":{"type":"string","example":"assigneeExample"},"odrl:action":{"type":"string","example":"odrl:actionExample"},"odrl:target":{"type":"string","example":"targetExample"},"odrl:constraint":{"example":[],"type":"array","items":{"type":"object","properties":{"@type":{"type":"string","example":"odrl:Constraint"},"odrl:leftOperand":{"type":"string","example":"odrl:leftOperandExample"},"odrl:operator":{"type":"string","example":"odrl:operatorExample"},"odrl:rightOperand":{"type":"object","example":{"value":"rightOperandExample"}},"odrl:rightOperandReference":{"type":"string","example":"rightOperandReferenceExample"}},"required":["@type","odrl:leftOperand","odrl:operator"],"title":"ConstraintSchema"}}},"required":["@type","odrl:action"],"title":"DutySchema"}},"odrl:target":{"type":"string","example":"targetExample"}},"required":["@id","@type"],"title":"OfferSchema"}}
+  schemaType={"response"}
+>
+  
+</Schema>
+            
