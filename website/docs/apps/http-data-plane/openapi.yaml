@@ -898,7 +898,7 @@ paths:
           in: path
           description: Path of receiving application
           schema:
-            type: string
+            type: string | string[] | undefined
       responses:
         "403":
           description: Forbidden
@@ -925,7 +925,7 @@ paths:
           in: path
           description: Path of receiving application
           schema:
-            type: string
+            type: string | string[] | undefined
       responses:
         "403":
           description: Forbidden
@@ -952,7 +952,7 @@ paths:
           in: path
           description: Path of receiving application
           schema:
-            type: string
+            type: string | string[] | undefined
       responses:
         "403":
           description: Forbidden
@@ -979,7 +979,7 @@ paths:
           in: path
           description: Path of receiving application
           schema:
-            type: string
+            type: string | string[] | undefined
       responses:
         "403":
           description: Forbidden
@@ -1006,7 +1006,7 @@ paths:
           in: path
           description: Path of receiving application
           schema:
-            type: string
+            type: string | string[] | undefined
       responses:
         "403":
           description: Forbidden
@@ -1033,7 +1033,7 @@ paths:
           in: path
           description: Path of receiving application
           schema:
-            type: string
+            type: string | string[] | undefined
       responses:
         "403":
           description: Forbidden
@@ -1060,7 +1060,7 @@ paths:
           in: path
           description: Path of receiving application
           schema:
-            type: string
+            type: string | string[] | undefined
       responses:
         "403":
           description: Forbidden
@@ -1087,7 +1087,7 @@ paths:
           in: path
           description: Path of receiving application
           schema:
-            type: string
+            type: string | string[] | undefined
       responses:
         "403":
           description: Forbidden
@@ -1105,12 +1105,6 @@ paths:
         handling of the DSP.
       operationId: TransferManagementController_executeTransferWithoutId_get
       parameters:
-        - name: path
-          required: true
-          in: path
-          description: Path of receiving application
-          schema:
-            type: string
         - name: x-dataset-id
           required: true
           in: header
@@ -1126,6 +1120,12 @@ paths:
           in: header
           schema:
             type: string
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema:
+            type: string | string[] | undefined
       responses:
         "403":
           description: Forbidden
@@ -1142,12 +1142,6 @@ paths:
         handling of the DSP.
       operationId: TransferManagementController_executeTransferWithoutId_post
       parameters:
-        - name: path
-          required: true
-          in: path
-          description: Path of receiving application
-          schema:
-            type: string
         - name: x-dataset-id
           required: true
           in: header
@@ -1163,6 +1157,12 @@ paths:
           in: header
           schema:
             type: string
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema:
+            type: string | string[] | undefined
       responses:
         "403":
           description: Forbidden
@@ -1179,12 +1179,6 @@ paths:
         handling of the DSP.
       operationId: TransferManagementController_executeTransferWithoutId_put
       parameters:
-        - name: path
-          required: true
-          in: path
-          description: Path of receiving application
-          schema:
-            type: string
         - name: x-dataset-id
           required: true
           in: header
@@ -1200,6 +1194,12 @@ paths:
           in: header
           schema:
             type: string
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema:
+            type: string | string[] | undefined
       responses:
         "403":
           description: Forbidden
@@ -1216,12 +1216,6 @@ paths:
         handling of the DSP.
       operationId: TransferManagementController_executeTransferWithoutId_delete
       parameters:
-        - name: path
-          required: true
-          in: path
-          description: Path of receiving application
-          schema:
-            type: string
         - name: x-dataset-id
           required: true
           in: header
@@ -1237,6 +1231,12 @@ paths:
           in: header
           schema:
             type: string
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema:
+            type: string | string[] | undefined
       responses:
         "403":
           description: Forbidden
@@ -1253,12 +1253,6 @@ paths:
         handling of the DSP.
       operationId: TransferManagementController_executeTransferWithoutId_patch
       parameters:
-        - name: path
-          required: true
-          in: path
-          description: Path of receiving application
-          schema:
-            type: string
         - name: x-dataset-id
           required: true
           in: header
@@ -1274,6 +1268,12 @@ paths:
           in: header
           schema:
             type: string
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema:
+            type: string | string[] | undefined
       responses:
         "403":
           description: Forbidden
@@ -1290,12 +1290,6 @@ paths:
         handling of the DSP.
       operationId: TransferManagementController_executeTransferWithoutId_options
       parameters:
-        - name: path
-          required: true
-          in: path
-          description: Path of receiving application
-          schema:
-            type: string
         - name: x-dataset-id
           required: true
           in: header
@@ -1311,6 +1305,12 @@ paths:
           in: header
           schema:
             type: string
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema:
+            type: string | string[] | undefined
       responses:
         "403":
           description: Forbidden
@@ -1327,12 +1327,6 @@ paths:
         handling of the DSP.
       operationId: TransferManagementController_executeTransferWithoutId_head
       parameters:
-        - name: path
-          required: true
-          in: path
-          description: Path of receiving application
-          schema:
-            type: string
         - name: x-dataset-id
           required: true
           in: header
@@ -1348,6 +1342,12 @@ paths:
           in: header
           schema:
             type: string
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema:
+            type: string | string[] | undefined
       responses:
         "403":
           description: Forbidden
@@ -1364,12 +1364,6 @@ paths:
         handling of the DSP.
       operationId: TransferManagementController_executeTransferWithoutId_search
       parameters:
-        - name: path
-          required: true
-          in: path
-          description: Path of receiving application
-          schema:
-            type: string
         - name: x-dataset-id
           required: true
           in: header
@@ -1385,6 +1379,12 @@ paths:
           in: header
           schema:
             type: string
+        - name: path
+          required: true
+          in: path
+          description: Path of receiving application
+          schema:
+            type: string | string[] | undefined
       responses:
         "403":
           description: Forbidden
@@ -1411,7 +1411,8 @@ paths:
           required: true
           in: path
           description: Path of receiving application
-          schema: {}
+          schema:
+            type: string | string[] | undefined
       responses:
         "200":
           description: ""
@@ -1433,7 +1434,8 @@ paths:
           required: true
           in: path
           description: Path of receiving application
-          schema: {}
+          schema:
+            type: string | string[] | undefined
       responses:
         "200":
           description: ""
@@ -1454,7 +1456,8 @@ paths:
           required: true
           in: path
           description: Path of receiving application
-          schema: {}
+          schema:
+            type: string | string[] | undefined
       responses:
         "200":
           description: ""
@@ -1475,7 +1478,8 @@ paths:
           required: true
           in: path
           description: Path of receiving application
-          schema: {}
+          schema:
+            type: string | string[] | undefined
       responses:
         "200":
           description: ""
@@ -1496,7 +1500,8 @@ paths:
           required: true
           in: path
           description: Path of receiving application
-          schema: {}
+          schema:
+            type: string | string[] | undefined
       responses:
         "200":
           description: ""
@@ -1517,7 +1522,8 @@ paths:
           required: true
           in: path
           description: Path of receiving application
-          schema: {}
+          schema:
+            type: string | string[] | undefined
       responses:
         "200":
           description: ""
@@ -1538,7 +1544,8 @@ paths:
           required: true
           in: path
           description: Path of receiving application
-          schema: {}
+          schema:
+            type: string | string[] | undefined
       responses:
         "200":
           description: ""
@@ -1559,7 +1566,8 @@ paths:
           required: true
           in: path
           description: Path of receiving application
-          schema: {}
+          schema:
+            type: string | string[] | undefined
       responses:
         "200":
           description: ""
