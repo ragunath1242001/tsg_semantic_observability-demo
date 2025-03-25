@@ -122,7 +122,7 @@ export class TransferManagementController {
     return await this.transferService.transferSuspend(id, reason);
   }
 
-  @All("/transfers/:id/execute{/*path}")
+  @All("/transfers/:id/execute/*path")
   @HttpCode(HttpStatus.ACCEPTED)
   @ApiOperation({
     summary: "Proxy a request",
@@ -133,26 +133,30 @@ export class TransferManagementController {
   @ApiParam({
     name: "path",
     required: true,
-    description: "Path of receiving application"
+    description: "Path of receiving application",
+    schema: {
+      type: "string | string[] | undefined"
+    }
   })
   @ApiForbiddenResponseDefault()
   async executeTransfer(
     @Param("id") id: string,
-    @Param("path") path: string,
+    @Param("path") path: string | string[] | undefined,
     @Req() request: RawBodyRequest<Request>,
     @Res() response: Response
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   ): Promise<any> {
     this.logger.log(`Requesting transfer execution for id ${id}`);
+    const normalizedPath = Array.isArray(path) ? path.join("/") : path || "";
     return await this.transferService.executeProxyRequest(
       id,
-      path,
+      normalizedPath,
       request,
       response
     );
   }
 
-  @All("/execute{/*path}")
+  @All("/execute/*path")
   @HttpCode(HttpStatus.ACCEPTED)
   @ApiOperation({
     summary: "Proxy a request without transfer ID",
@@ -162,11 +166,14 @@ export class TransferManagementController {
   @ApiParam({
     name: "path",
     required: true,
-    description: "Path of receiving application"
+    description: "Path of receiving application",
+    schema: {
+      type: "string | string[] | undefined"
+    }
   })
   @ApiForbiddenResponseDefault()
   async executeTransferWithoutId(
-    @Param("path") path: string,
+    @Param("path") path: string | string[] | undefined,
     @Headers("x-dataset-id") datasetId: string,
     @Headers("x-audience") audience: string,
     @Headers("x-controlplane-address") controlPlaneAddress: string,
@@ -193,9 +200,10 @@ export class TransferManagementController {
       audience,
       controlPlaneAddress
     );
+    const normalizedPath = Array.isArray(path) ? path.join("/") : path || "";
     return await this.transferService.executeProxyRequest(
       transferId,
-      path,
+      normalizedPath,
       request,
       response
     );

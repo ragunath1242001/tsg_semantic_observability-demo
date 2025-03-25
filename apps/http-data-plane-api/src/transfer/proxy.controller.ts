@@ -20,7 +20,7 @@ export class ProxyController {
   constructor(private readonly transferService: TransferService) {}
   private readonly logger = new Logger(this.constructor.name);
 
-  @All("/proxy/:id{/*path}")
+  @All("/proxy/:id/*path")
   @ApiOperation({
     summary: "Proxy a request",
     description:
@@ -30,18 +30,22 @@ export class ProxyController {
   @ApiParam({
     name: "path",
     required: true,
-    description: "Path of receiving application"
+    description: "Path of receiving application",
+    schema: {
+      type: "string | string[] | undefined"
+    }
   })
   async getData(
     @Param("id") id: string,
-    @Param("path") path: string | undefined,
+    @Param("path") path: string | string[] | undefined,
     @Req() request: RawBodyRequest<Request>,
     @Res() response: Response
   ) {
-    this.logger.log(`Test: ${id} ${path}`);
+    const normalizedPath = Array.isArray(path) ? path.join("/") : path || "";
+
     await this.transferService.handleProxyRequest(
       id,
-      path || "",
+      normalizedPath,
       request,
       response
     );
