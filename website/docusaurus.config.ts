@@ -127,12 +127,14 @@ const config: Config = {
     ],
     async function openApiYamlPlugin(context) {
       const copyYaml = (inputDir: string, outputDir: string) => {
-        fs.mkdirSync(outputDir, { recursive: true });
-        fs.readdirSync(inputDir)
-          .filter((f) => f.endsWith(".yaml"))
-          .forEach((file) => {
-            fs.copyFileSync(`${inputDir}/${file}`, `${outputDir}/${file}`);
-          });
+        if (fs.existsSync(inputDir)) {
+          fs.mkdirSync(outputDir, { recursive: true });
+          fs.readdirSync(inputDir)
+            .filter((f) => f.endsWith(".yaml"))
+            .forEach((file) => {
+              fs.copyFileSync(`${inputDir}/${file}`, `${outputDir}/${file}`);
+            });
+        }
       }
       return {
         name: "openapi-yaml-plugin",
@@ -157,12 +159,14 @@ const config: Config = {
     },
     async function jsonLdContextPlugin(context) {
       const copyJson = (inputDir: string, outputDir: string) => {
-        fs.mkdirSync(outputDir, { recursive: true });
-        fs.readdirSync(inputDir)
-          .filter((f) => f.endsWith(".json"))
-          .forEach((file) => {
-            fs.copyFileSync(`${inputDir}/${file}`, `${outputDir}/${file}`);
-          });
+        if (fs.existsSync(inputDir)) {
+          fs.mkdirSync(outputDir, { recursive: true });
+          fs.readdirSync(inputDir)
+            .filter((f) => f.endsWith(".json"))
+            .forEach((file) => {
+              fs.copyFileSync(`${inputDir}/${file}`, `${outputDir}/${file}`);
+            });
+        }
       };
       return {
         name: "jsonld-context-plugin",
