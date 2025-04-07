@@ -46,6 +46,10 @@
       "rootPath": "libs/common-signing-and-validation"
     },
     {
+      "name": "analytics-data-plane-dtos",
+      "rootPath": "libs/analytics-data-plane-dtos"
+    },
+    {
       "name": "tck",
       "rootPath": "tools/tck-pipeline",
       "runMode": "on-demand"

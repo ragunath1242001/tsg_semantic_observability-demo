@@ -13,6 +13,7 @@
     "@guolao/vue-monaco-editor": "^1.5.4",
     "@nestjs/swagger": "^11.0.4",
     "@primevue/themes": "^4.2.4",
+    "@tsg-dsp/analytics-data-plane-dtos": "workspace:*",
     "@tsg-dsp/common-dsp": "workspace:*",
     "@tsg-dsp/common-dtos": "workspace:*",
     "@tsg-dsp/common-ui": "workspace:*",
