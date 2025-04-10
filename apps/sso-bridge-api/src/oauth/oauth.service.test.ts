@@ -86,7 +86,7 @@ describe("Oauth", () => {
       ],
       name: "Test Client",
       description: "A test client",
-      redirectUris: ["http://localhost:3000"]
+      redirectUris: ["http://localhost:3000", "http://.*.localhost:3000"]
     });
   });
 
@@ -108,7 +108,7 @@ describe("Oauth", () => {
     const authorizationRequest: AuthorizationRequest = {
       response_type: "code",
       client_id: "test-client",
-      redirect_uri: "http://localhost:3000",
+      redirect_uri: "http://test.localhost:3000",
       scope: "openid",
       state: "1234"
     };
@@ -275,6 +275,33 @@ describe("Oauth", () => {
           undefined
         )
       ).rejects.toThrow("Invalid login request");
+      expect(response.redirect).not.toHaveBeenCalled();
+      expect(response.status).not.toHaveBeenCalled();
+      jest.clearAllMocks();
+      const invalidAuthorizationRequest: AuthorizationRequest = {
+        response_type: "code",
+        response_mode: "query",
+        client_id: "test-client",
+        redirect_uri: "http://test.localhost:3001",
+        state: "1234"
+      };
+      await expect(
+        oauth.loginHandler(
+          request,
+          response,
+          invalidAuthorizationRequest,
+          true,
+          undefined,
+          undefined,
+          {
+            id: 1,
+            username: "Alice",
+            email: "alice@example.com",
+            roles: ["user"],
+            grants: ["authorization_code"]
+          } as OauthUser
+        )
+      ).rejects.toThrow("Invalid redirect uri");
       expect(response.redirect).not.toHaveBeenCalled();
       expect(response.status).not.toHaveBeenCalled();
     });
