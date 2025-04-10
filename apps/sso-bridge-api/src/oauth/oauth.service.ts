@@ -125,7 +125,17 @@ export class OauthService {
       throw new AppError("Invalid login request", HttpStatus.BAD_REQUEST);
     }
     if (redirect) {
-      response.redirect(loginResult.url);
+      const client = await this.clientsService.getClient(
+        authorizationRequest.client_id
+      );
+      const isValidRedirect = client.redirectUris.some((allowedUri) =>
+        new RegExp(allowedUri).test(authorizationRequest.redirect_uri)
+      );
+      if (isValidRedirect) {
+        response.redirect(loginResult.url);
+      } else {
+        throw new AppError("Invalid redirect uri", HttpStatus.BAD_REQUEST);
+      }
     } else {
       response.status(HttpStatus.OK);
       response.json(loginResult);
