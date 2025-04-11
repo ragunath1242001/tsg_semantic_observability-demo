@@ -1,22 +1,29 @@
 import {
   Controller,
   Get,
+  Headers,
   HttpCode,
   HttpStatus,
   Param,
   Post,
+  StreamableFile,
   UploadedFiles,
   UseInterceptors
 } from "@nestjs/common";
 import { AnyFilesInterceptor } from "@nestjs/platform-express";
-import { ApiOkResponse, ApiOperation } from "@nestjs/swagger";
-import { Roles } from "@tsg-dsp/common-api";
+import { ApiOAuth2, ApiOkResponse, ApiOperation } from "@nestjs/swagger";
+import {
+  DisableOAuthGuard,
+  DisableRolesGuard,
+  Roles
+} from "@tsg-dsp/common-api";
 import { ApiForbiddenResponseDefault } from "@tsg-dsp/common-dtos";
 
 import { CSVW, FileMetadataDto } from "./files.dto.js";
 import { FilesService } from "./files.service.js";
 
 @Controller("files")
+@ApiOAuth2(["controlplane_dataplane"])
 @Roles("controlplane_dataplane")
 export class FilesController {
   constructor(private readonly filesService: FilesService) {}
@@ -54,6 +61,32 @@ export class FilesController {
   @ApiForbiddenResponseDefault()
   async syncFiles() {
     return await this.filesService.syncFiles();
+  }
+
+  @Get(":id")
+  @ApiOperation({
+    summary: "Get file",
+    description: "Get the file by ID."
+  })
+  @ApiForbiddenResponseDefault()
+  @ApiOkResponse({
+    content: {
+      "application/octet-stream": {
+        schema: {
+          type: "string",
+          format: "binary"
+        }
+      }
+    }
+  })
+  @HttpCode(HttpStatus.OK)
+  @DisableOAuthGuard()
+  @DisableRolesGuard()
+  async getFile(
+    @Param("id") id: string,
+    @Headers("Authorization") authorizationHeader?: string
+  ): Promise<StreamableFile> {
+    return await this.filesService.getFile(id, authorizationHeader);
   }
 
   @Get(":id/csvw")

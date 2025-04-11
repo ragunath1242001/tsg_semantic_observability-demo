@@ -7,6 +7,12 @@ import { onMounted, ref } from "vue";
 
 import { useK8sStore } from "../stores/k8s";
 
+interface CreateJob {
+  imageName: string;
+  command: string;
+  fileId?: string;
+}
+
 const k8sStore = useK8sStore();
 const toast = useToast();
 
@@ -17,7 +23,7 @@ const props = defineProps<{
 
 const jobs = ref([]);
 
-const logs = ref("");
+const logs = ref<string>();
 
 const pods = ref([]);
 
@@ -27,9 +33,13 @@ const selectedPod = ref();
 
 const creating = ref(false);
 
-const imageName = ref("");
+const createJob = ref<CreateJob>({
+  imageName: "",
+  command: "",
+  fileId: undefined
+});
 
-const command = ref("");
+const filesList = ref([]);
 
 const getJobs = async (id: string) => {
   const response = await http.get(`/management/k8s/jobs/transfer/${id}`);
@@ -38,6 +48,9 @@ const getJobs = async (id: string) => {
 };
 
 const getPods = async () => {
+  if (!selectedJob.value) {
+    return;
+  }
   const response = await http.get(
     `/management/k8s/jobs/${selectedJob.value.metadata.name}/pods`
   );
@@ -91,11 +104,14 @@ const determinePodStatus = (
 };
 
 const getLogs = async (podName: string) => {
+  logs.value = undefined;
   const response = await http.get(`/management/k8s/pods/${podName}/logs`);
   logs.value = response.data;
 };
 
 const onRowSelectJob = async () => {
+  logs.value = undefined;
+  selectedPod.value = undefined;
   await getPods();
 };
 
@@ -106,9 +122,10 @@ const onRowSelectPod = async (event) => {
 const spawnK8sJob = async () => {
   try {
     const resp = await k8sStore.spawnJob(
-      imageName.value,
+      createJob.value.imageName,
       props.transferId,
-      command.value.split(",").map((c) => c.trim())
+      createJob.value.command.split(",").map((c) => c.trim()),
+      createJob.value.fileId
     );
     if (resp.status === 201) {
       toast.add({
@@ -118,8 +135,11 @@ const spawnK8sJob = async () => {
         life: 3000
       });
       creating.value = false;
-      imageName.value = "";
-      command.value = "";
+      createJob.value = {
+        imageName: "",
+        command: "",
+        fileId: undefined
+      };
       await getJobs(props.transferId);
     }
   } catch (error) {
@@ -133,8 +153,23 @@ const spawnK8sJob = async () => {
   }
 };
 
+const getFiles = async () => {
+  try {
+    const response = await http.get("files");
+    filesList.value = response.data;
+  } catch (error) {
+    toast.add(
+      toastError({
+        error,
+        summary: "Loading state failed",
+        defaultMessage: "Could not load state from the analytics data plane"
+      })
+    );
+  }
+};
+
 onMounted(async () => {
-  await getJobs(props.transferId);
+  await Promise.allSettled([getJobs(props.transferId), getFiles()]);
 });
 </script>
 <template>
@@ -146,14 +181,14 @@ onMounted(async () => {
       width="30rem">
       <div class="flex-col items-center gap-4 mb-4">
         <FormField label="Image name">
-          <InputText v-model="imageName" class="w-full" />
+          <InputText v-model="createJob.imageName" class="w-full" />
         </FormField>
       </div>
       <div class="flex-col items-center gap-4 mb-4">
         <FormField label="Command">
           <InputText
             id="command"
-            v-model="command"
+            v-model="createJob.command"
             aria-describedby="command-help"
             placeholder="sh, -c, echo hello world"
             class="w-full" />
@@ -164,6 +199,27 @@ onMounted(async () => {
             severity="secondary"
             >Command to run in the container, seperate array entries with a
             comma</Message
+          >
+        </FormField>
+      </div>
+      <div class="flex-col items-center gap-4 mb-4">
+        <FormField label="File">
+          <Select
+            id="file"
+            v-model="createJob.fileId"
+            show-clear
+            :options="filesList"
+            option-label="originalFileName"
+            option-value="identifier"
+            aria-describedby="file-help"
+            placeholder="No file selected"
+            class="w-full" />
+          <Message
+            id="file-help"
+            size="small"
+            variant="simple"
+            severity="secondary"
+            >File to be used in job, leave empty for no file</Message
           >
         </FormField>
       </div>

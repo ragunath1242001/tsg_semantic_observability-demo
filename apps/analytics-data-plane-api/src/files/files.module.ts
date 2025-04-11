@@ -1,56 +1,36 @@
-import { DynamicModule, Module } from "@nestjs/common";
+import { Module } from "@nestjs/common";
 import { MulterModule } from "@nestjs/platform-express";
 import { TypeOrmModule } from "@nestjs/typeorm";
+import { GenericConfigModule } from "@tsg-dsp/common-api";
 import fs from "fs";
 import { diskStorage } from "multer";
-import path from "path";
 
-import { FilesConfig } from "../config.js";
+import { RootConfig } from "../config.js";
 import { DataPlaneTestModule } from "../dataplane/dataplane.module.js";
 import { FilesController } from "./files.controller.js";
 import { FilesService } from "./files.service.js";
 import { FileMetadataDao } from "./filesMetadata.dao.js";
 
-@Module({})
-export class FilesModule {
-  static register(filesConfig: FilesConfig): DynamicModule {
-    const UPLOAD_DIR = filesConfig.path;
-    const fileFilter = (
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      _req: any,
-      file: { originalname: string },
-      cb: (arg0: null, arg1: boolean) => void
-    ) => {
-      if (fs.existsSync(path.join(UPLOAD_DIR, file.originalname))) {
-        cb(null, false);
-        return;
-      }
-      cb(null, true);
-    };
-
-    const module: DynamicModule = {
-      module: FilesModule,
-      imports: [
-        TypeOrmModule.forFeature([FileMetadataDao]),
-        DataPlaneTestModule,
-        MulterModule.register({
-          storage: diskStorage({
-            destination: function (_req, _file, cb) {
-              if (!fs.existsSync(UPLOAD_DIR)) {
-                fs.mkdirSync(UPLOAD_DIR);
-              }
-              cb(null, UPLOAD_DIR);
-            },
-            filename: function (_req, file, cb) {
-              cb(null, file.originalname);
-            }
-          }),
-          fileFilter: fileFilter
-        })
-      ],
-      controllers: [FilesController],
-      providers: [FilesService]
-    };
-    return module;
-  }
-}
+@Module({
+  imports: [
+    TypeOrmModule.forFeature([FileMetadataDao]),
+    DataPlaneTestModule,
+    MulterModule.register({
+      storage: diskStorage({
+        destination: function (_req, _file, cb) {
+          if (!fs.existsSync(GenericConfigModule.get(RootConfig).files.path)) {
+            fs.mkdirSync(GenericConfigModule.get(RootConfig).files.path);
+          }
+          cb(null, GenericConfigModule.get(RootConfig).files.path);
+        },
+        filename: function (_req, file, cb) {
+          cb(null, `${Date.now()}-${file.originalname}`);
+        }
+      })
+    })
+  ],
+  controllers: [FilesController],
+  providers: [FilesService],
+  exports: [FilesService]
+})
+export class FilesModule {}

@@ -71,8 +71,8 @@ describe("FilesService", () => {
   describe("uploadFiles", () => {
     it("should create and insert file metadata entries", async () => {
       const mockFiles = [
-        { size: 1000, filename: "file1.txt" },
-        { size: 2000, filename: "file2.txt" }
+        { size: 1000, filename: "file1.txt", originalname: "file1.txt" },
+        { size: 2000, filename: "file2.txt", originalname: "file2.txt" }
       ] as Express.Multer.File[];
 
       await filesService.uploadFiles(mockFiles);
@@ -90,8 +90,8 @@ describe("FilesService", () => {
     it("should mark missing files as not present", async () => {
       // Step 1: Upload initial files and verify they are in the database
       const mockFiles = [
-        { size: 1000, filename: "file1.txt" },
-        { size: 2000, filename: "file2.txt" }
+        { size: 1000, filename: "file1.txt", originalname: "file1.txt" },
+        { size: 2000, filename: "file2.txt", originalname: "file2.txt" }
       ] as Express.Multer.File[];
       await filesService.uploadFiles(mockFiles);
 
@@ -146,8 +146,8 @@ describe("FilesService", () => {
   describe("createMetadata", () => {
     it("should create metadata for uploaded files", async () => {
       const mockFiles = [
-        { size: 1000, filename: "file1.csv" },
-        { size: 2000, filename: "file2.csv" }
+        { size: 1000, filename: "file1.csv", originalname: "file1.csv" },
+        { size: 2000, filename: "file2.csv", originalname: "file2.csv" }
       ] as Express.Multer.File[];
 
       const mockContent = "col1,col2\nval1,val2\nval3,val4";
@@ -168,10 +168,153 @@ describe("FilesService", () => {
     });
   });
 
+  describe("getFileMetadata", () => {
+    it("should return metadata for a given file identifier", async () => {
+      const mockFiles = [
+        { size: 1000, filename: "file1.csv", originalname: "file1.csv" },
+        { size: 2000, filename: "file2.csv", originalname: "file2.csv" }
+      ] as Express.Multer.File[];
+
+      const mockContent = "col1,col2\nval1,val2\nval3,val4";
+      mockFiles.forEach(async (mockFile) => {
+        await fs.writeFile(
+          path.join(testUploadDir, mockFile.filename),
+          mockContent
+        );
+      });
+
+      await filesService.uploadFiles(mockFiles);
+      await filesService.createMetadata(mockFiles);
+
+      const dbEntry = await filesService.getAllFileMetadata();
+      const metadata = await filesService.getFileMetadata(
+        dbEntry[0].identifier
+      );
+      expect(metadata).toBeDefined();
+      expect(metadata.fileName).toBe(mockFiles[0].filename);
+      expect(metadata.originalFileName).toBe(mockFiles[0].originalname);
+      expect(metadata.fileSizeInBytes).toBe(mockFiles[0].size);
+      expect(metadata.presentInLastCheck).toBe(true);
+      expect(metadata.csvw).toBeDefined();
+    });
+    it("should throw an error if file not found", async () => {
+      await expect(
+        filesService.getFileMetadata("non-existent-id")
+      ).rejects.toThrow("File not found");
+    });
+  });
+
+  describe("createAccessToken", () => {
+    it("should create an access token for a given file identifier", async () => {
+      const mockFiles = [
+        { size: 1000, filename: "file1.csv", originalname: "file1.csv" },
+        { size: 2000, filename: "file2.csv", originalname: "file2.csv" }
+      ] as Express.Multer.File[];
+      const mockContent = "col1,col2\nval1,val2\nval3,val4";
+      mockFiles.forEach(async (mockFile) => {
+        await fs.writeFile(
+          path.join(testUploadDir, mockFile.filename),
+          mockContent
+        );
+      });
+      await filesService.uploadFiles(mockFiles);
+      await filesService.createMetadata(mockFiles);
+      const dbEntry = await filesService.getAllFileMetadata();
+      const token = await filesService.createAccessToken(dbEntry[0].identifier);
+      expect(token).toBeDefined();
+      expect(token).toMatch(/^[a-zA-Z0-9-]+$/);
+      expect(token.length).toBe(32);
+      expect(token).not.toBe(dbEntry[0].identifier);
+    });
+    it("should throw an error if file not found", async () => {
+      await expect(
+        filesService.createAccessToken("non-existent-id")
+      ).rejects.toThrow("File not found");
+    });
+  });
+
+  describe("getFile", () => {
+    it("should return the file path for a given identifier", async () => {
+      const mockFiles = [
+        { size: 1000, filename: "file1.csv", originalname: "file1.csv" },
+        { size: 2000, filename: "file2.csv", originalname: "file2.csv" }
+      ] as Express.Multer.File[];
+
+      const mockContent = "col1,col2\nval1,val2\nval3,val4";
+      mockFiles.forEach(async (mockFile) => {
+        await fs.writeFile(
+          path.join(testUploadDir, mockFile.filename),
+          mockContent
+        );
+      });
+
+      await filesService.uploadFiles(mockFiles);
+      await filesService.createMetadata(mockFiles);
+      const dbEntry = await filesService.getAllFileMetadata();
+
+      const fileIdentifier = dbEntry[0].identifier;
+      const accessToken = await filesService.createAccessToken(fileIdentifier);
+
+      const streamableFile = await filesService.getFile(
+        fileIdentifier,
+        `Bearer ${accessToken}`
+      );
+      expect(streamableFile).toBeDefined();
+    });
+    it("should throw an error if file not found", async () => {
+      await expect(filesService.getFile("non-existent-id")).rejects.toThrow(
+        "File not found"
+      );
+    });
+    it("should throw an error if access token is missing", async () => {
+      const mockFiles = [
+        { size: 1000, filename: "file1.csv", originalname: "file1.csv" }
+      ] as Express.Multer.File[];
+      const mockContent = "col1,col2\nval1,val2\nval3,val4";
+      mockFiles.forEach(async (mockFile) => {
+        await fs.writeFile(
+          path.join(testUploadDir, mockFile.filename),
+          mockContent
+        );
+      });
+      await filesService.uploadFiles(mockFiles);
+      await filesService.createMetadata(mockFiles);
+      const dbEntry = await filesService.getAllFileMetadata();
+
+      await expect(filesService.getFile(dbEntry[0].identifier)).rejects.toThrow(
+        "Authorization header is required"
+      );
+
+      await expect(
+        filesService.getFile(dbEntry[0].identifier, "unknown-auth-header")
+      ).rejects.toThrow("Access token is required");
+    });
+    it("should throw an error if access token is invalid", async () => {
+      const mockFiles = [
+        { size: 1000, filename: "file1.csv", originalname: "file1.csv" }
+      ] as Express.Multer.File[];
+      const mockContent = "col1,col2\nval1,val2\nval3,val4";
+      mockFiles.forEach(async (mockFile) => {
+        await fs.writeFile(
+          path.join(testUploadDir, mockFile.filename),
+          mockContent
+        );
+      });
+      await filesService.uploadFiles(mockFiles);
+      await filesService.createMetadata(mockFiles);
+      const dbEntry = await filesService.getAllFileMetadata();
+
+      await expect(
+        filesService.getFile(dbEntry[0].identifier, "Bearer invalid-token")
+      ).rejects.toThrow("Invalid access token");
+    });
+  });
+
   describe("getCSVW", () => {
     it("should return CSVW metadata for a given file identifier", async () => {
       const mockFile = {
         filename: "test.csv",
+        originalname: "test.csv",
         size: 1000
       } as Express.Multer.File;
       const mockContent = "col1,col2\nval1,val2\nval3,val4";
@@ -197,6 +340,7 @@ describe("FilesService", () => {
     it("should throw an error if CSVW not found", async () => {
       const mockFile = {
         filename: "test.csv",
+        originalname: "test.csv",
         size: 1000
       } as Express.Multer.File;
       await filesService.uploadFiles([mockFile]);

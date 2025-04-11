@@ -97,12 +97,19 @@ export class OrchestrationManagementController {
   @ApiResponse({ status: HttpStatus.OK })
   @ApiForbiddenResponseDefault()
   async spawnJob(
-    @Body() body: { imageName: string; transferId: string; command: string[] }
+    @Body()
+    body: {
+      imageName: string;
+      transferId: string;
+      command: string[];
+      fileId?: string;
+    }
   ) {
     return await this.orchestrationService.spawnJob(
       body.transferId,
       body.imageName,
-      body.command
+      body.command,
+      body.fileId
     );
   }
 }
