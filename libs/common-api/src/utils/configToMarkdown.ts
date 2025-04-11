@@ -238,13 +238,13 @@ export class ConfigToMarkdown {
     const rows: ConfigRow[] = [];
     for (const [key, value] of structure) {
       const newKey = `${parentKey}${key}`;
-      const required = value.validationMetadata.some(
+      const optional = value.validationMetadata.some(
         (metadata) => metadata.type === "conditionalValidation"
       );
       if (isProperty(value)) {
         rows.push({
           key: this.code(newKey),
-          required: required ? "Yes" : "",
+          required: optional || value.default != "" ? "" : "Yes",
           type: this.code(`${this.estimateType(value.validationMetadata)}`),
           description: this.getDescription(value),
           default: this.code(value.default)
@@ -255,7 +255,7 @@ export class ConfigToMarkdown {
       if (value.type instanceof Function) {
         rows.push({
           key: this.code(newKey),
-          required: required ? "Yes" : "",
+          required: optional ? "" : "Yes",
           type: this.code(`${value.type.name}${arrayPostfix}`),
           description: this.getDescription(value),
           default: ""
@@ -270,7 +270,7 @@ export class ConfigToMarkdown {
         });
         rows.push({
           key: this.code(newKey),
-          required: required ? "Yes" : "",
+          required: optional ? "" : "Yes",
           type: this.code(`${value.className}${arrayPostfix}`),
           description: this.getDescription(value),
           default: ""
@@ -286,7 +286,7 @@ export class ConfigToMarkdown {
             newKey,
             value,
             arrayPostfix,
-            required
+            optional
           )
         );
       }
@@ -299,7 +299,7 @@ export class ConfigToMarkdown {
     parentKey: string,
     value: ClassStructure,
     arrayPostfix: string,
-    required: boolean
+    optional: boolean
   ): ConfigRow[] {
     const rows: ConfigRow[] = [];
     for (const subType of subTypes) {
@@ -307,7 +307,7 @@ export class ConfigToMarkdown {
         key: this.code(
           `${parentKey}{${value.discriminator}=${subType.name}}${arrayPostfix}`
         ),
-        required: required ? "Yes" : "",
+        required: optional ? "" : "Yes",
         type: this.code(`${subType.className}${arrayPostfix}`),
         description: this.getDescription(value),
         default: ""
