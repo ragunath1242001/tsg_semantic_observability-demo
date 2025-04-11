@@ -19,89 +19,89 @@ Authentication for frontend services can be done via the SSO Bridge. This helps 
 | Key                                                | Required | Type                                       | Description                                       | Default                   |
 | -------------------------------------------------- | -------- | ------------------------------------------ | ------------------------------------------------- | ------------------------- |
 | **`DatabaseConfig`**                               |          |                                            |                                                   |                           |
-| `db`                                               |          | `DatabaseConfig`                           | Database configuration                            |                           |
-| `db.type`                                          |          | `"sqlite" \| "postgres"`                   | Type of database                                  |                           |
-| `db.database`                                      |          | `String`                                   | Name of the database                              |                           |
-| `db.synchronize`                                   | Yes      | `Boolean`                                  | Synchronize database schema                       |                           |
-| `db{type=sqlite}`                                  |          | `SQLiteConfig`                             | Database configuration                            |                           |
+| `db`                                               | Yes      | `DatabaseConfig`                           | Database configuration                            |                           |
+| `db.type`                                          | Yes      | `"sqlite" \| "postgres"`                   | Type of database                                  |                           |
+| `db.database`                                      | Yes      | `String`                                   | Name of the database                              |                           |
+| `db.synchronize`                                   |          | `Boolean`                                  | Synchronize database schema                       |                           |
+| `db{type=sqlite}`                                  | Yes      | `SQLiteConfig`                             | Database configuration                            |                           |
 | `db{type=sqlite}.type`                             |          | `"sqlite" \| "postgres"`                   | Type of database                                  | `"sqlite"`                |
-| `db{type=sqlite}.database`                         |          | `String`                                   | Name of the database                              |                           |
-| `db{type=sqlite}.synchronize`                      | Yes      | `Boolean`                                  | Synchronize database schema                       |                           |
-| `db{type=postgres}`                                |          | `PostgresConfig`                           | Database configuration                            |                           |
-| `db{type=postgres}.host`                           |          | `String`                                   | Host of the database                              |                           |
-| `db{type=postgres}.port`                           |          | `Number`                                   | Port of the database                              |                           |
-| `db{type=postgres}.username`                       |          | `String`                                   | Username of the database                          |                           |
-| `db{type=postgres}.password`                       |          | `String`                                   | Password of the database                          |                           |
-| `db{type=postgres}.ssl`                            | Yes      | `Unknown`                                  | SSL configuration of the database                 |                           |
+| `db{type=sqlite}.database`                         | Yes      | `String`                                   | Name of the database                              |                           |
+| `db{type=sqlite}.synchronize`                      |          | `Boolean`                                  | Synchronize database schema                       |                           |
+| `db{type=postgres}`                                | Yes      | `PostgresConfig`                           | Database configuration                            |                           |
+| `db{type=postgres}.host`                           | Yes      | `String`                                   | Host of the database                              |                           |
+| `db{type=postgres}.port`                           | Yes      | `Number`                                   | Port of the database                              |                           |
+| `db{type=postgres}.username`                       | Yes      | `String`                                   | Username of the database                          |                           |
+| `db{type=postgres}.password`                       | Yes      | `String`                                   | Password of the database                          |                           |
+| `db{type=postgres}.ssl`                            |          | `Unknown`                                  | SSL configuration of the database                 |                           |
 | `db{type=postgres}.type`                           |          | `"sqlite" \| "postgres"`                   | Type of database                                  | `"postgres"`              |
-| `db{type=postgres}.database`                       |          | `String`                                   | Name of the database                              |                           |
-| `db{type=postgres}.synchronize`                    | Yes      | `Boolean`                                  | Synchronize database schema                       |                           |
+| `db{type=postgres}.database`                       | Yes      | `String`                                   | Name of the database                              |                           |
+| `db{type=postgres}.synchronize`                    |          | `Boolean`                                  | Synchronize database schema                       |                           |
 | **`ServerConfig`**                                 |          |                                            |                                                   |                           |
-| `server`                                           | Yes      | `ServerConfig`                             | Server configuration                              |                           |
-| `server.listen`                                    | Yes      | `String`                                   | IP address the server listens on                  | `"0.0.0.0"`               |
-| `server.port`                                      | Yes      | `Number`                                   | Port the server listens on                        | `3000`                    |
-| `server.publicDomain`                              | Yes      | `String`                                   | Public domain of the server                       | `"localhost"`             |
-| `server.publicAddress`                             | Yes      | `String`                                   | Public address of the server                      | `"http://localhost:3000"` |
-| `server.subPath`                                   | Yes      | `String`                                   | Sub path of the server                            |                           |
+| `server`                                           |          | `ServerConfig`                             | Server configuration                              |                           |
+| `server.listen`                                    |          | `String`                                   | IP address the server listens on                  | `"0.0.0.0"`               |
+| `server.port`                                      |          | `Number`                                   | Port the server listens on                        | `3000`                    |
+| `server.publicDomain`                              |          | `String`                                   | Public domain of the server                       | `"localhost"`             |
+| `server.publicAddress`                             |          | `String`                                   | Public address of the server                      | `"http://localhost:3000"` |
+| `server.subPath`                                   |          | `String`                                   | Sub path of the server                            |                           |
 | **`AuthConfig`**                                   |          |                                            |                                                   |                           |
-| `auth`                                             |          | `AuthConfig`                               | Management authentication configuration           |                           |
+| `auth`                                             | Yes      | `AuthConfig`                               | Management authentication configuration           |                           |
 | `auth.enabled`                                     |          | `Boolean`                                  | Enable authentication                             | `true`                    |
-| `auth.openIdConfigurationURL`                      | Yes      | `String`                                   | OpenID configuration URL                          |                           |
-| `auth.callbackURL`                                 | Yes      | `URL`                                      | Callback URL the auth service will redirect users |                           |
-| `auth.redirectURL`                                 | Yes      | `URL`                                      | Redirect URL to UI after login/logout             |                           |
-| `auth.clientId`                                    | Yes      | `String`                                   | Client ID                                         |                           |
-| `auth.clientSecret`                                | Yes      | `String`                                   | Client secret                                     |                           |
-| `auth.rolePath`                                    | Yes      | `String`                                   | JSON path to extract roles from the token         | `"$.roles[*]"`            |
+| `auth.openIdConfigurationURL`                      |          | `String`                                   | OpenID configuration URL                          |                           |
+| `auth.callbackURL`                                 |          | `URL`                                      | Callback URL the auth service will redirect users |                           |
+| `auth.redirectURL`                                 |          | `URL`                                      | Redirect URL to UI after login/logout             |                           |
+| `auth.clientId`                                    |          | `String`                                   | Client ID                                         |                           |
+| `auth.clientSecret`                                |          | `String`                                   | Client secret                                     |                           |
+| `auth.rolePath`                                    |          | `String`                                   | JSON path to extract roles from the token         | `"$.roles[*]"`            |
 | **`RegistryConfig`**                               |          |                                            |                                                   |                           |
-| `registry`                                         |          | `RegistryConfig`                           | Registry configuration                            |                           |
-| `registry.useRegistry`                             |          | `Boolean`                                  | Use registry to crawl catalogs                    |                           |
-| `registry.registryUrl`                             | Yes      | `String`                                   | URL of the registry                               |                           |
-| `registry.registryDid`                             | Yes      | `String`                                   | DID of the registry                               |                           |
+| `registry`                                         | Yes      | `RegistryConfig`                           | Registry configuration                            |                           |
+| `registry.useRegistry`                             | Yes      | `Boolean`                                  | Use registry to crawl catalogs                    |                           |
+| `registry.registryUrl`                             |          | `String`                                   | URL of the registry                               |                           |
+| `registry.registryDid`                             |          | `String`                                   | DID of the registry                               |                           |
 | `registry.registryIntervalInMilliseconds`          |          | `Number`                                   | Interval in milliseconds to fetch registry        | `30000`                   |
 | **`IamConfig`**                                    |          |                                            |                                                   |                           |
-| `iam`                                              |          | `IamConfig`                                | IAM wallet configuration                          |                           |
-| `iam.type`                                         |          | `"tsg" \| "dev"`                           | Type of IAM service                               |                           |
-| `iam.didId`                                        |          | `String`                                   | DID identifier of the IAM service                 |                           |
-| `iam{type=dev}`                                    |          | `DevWalletConfig`                          | IAM wallet configuration                          |                           |
+| `iam`                                              | Yes      | `IamConfig`                                | IAM wallet configuration                          |                           |
+| `iam.type`                                         | Yes      | `"tsg" \| "dev"`                           | Type of IAM service                               |                           |
+| `iam.didId`                                        | Yes      | `String`                                   | DID identifier of the IAM service                 |                           |
+| `iam{type=dev}`                                    | Yes      | `DevWalletConfig`                          | IAM wallet configuration                          |                           |
 | `iam{type=dev}.type`                               |          | `"tsg" \| "dev"`                           | Type of IAM service                               | `"dev"`                   |
-| `iam{type=dev}.didId`                              |          | `String`                                   | DID identifier of the IAM service                 |                           |
-| `iam{type=tsg}`                                    |          | `TsgWalletConfig`                          | IAM wallet configuration                          |                           |
-| `iam{type=tsg}.walletUrl`                          |          | `URL`                                      | URL of the wallet management endpoint             |                           |
-| `iam{type=tsg}.siopUrl`                            |          | `URL`                                      | URL of the SIOP token endpoint                    |                           |
-| `iam{type=tsg}.verifyUrl`                          |          | `URL`                                      | URL of the verification endpoint                  |                           |
-| `iam{type=tsg}.typeFilter`                         | Yes      | `String`                                   | Credential type filter used as default            |                           |
-| `iam{type=tsg}.issuerFilter`                       | Yes      | `String`                                   | Issuer filter used as default                     |                           |
-| `iam{type=tsg}.customFields`                       | Yes      | `Array`                                    | Custom presentation definition fields             |                           |
+| `iam{type=dev}.didId`                              | Yes      | `String`                                   | DID identifier of the IAM service                 |                           |
+| `iam{type=tsg}`                                    | Yes      | `TsgWalletConfig`                          | IAM wallet configuration                          |                           |
+| `iam{type=tsg}.walletUrl`                          | Yes      | `URL`                                      | URL of the wallet management endpoint             |                           |
+| `iam{type=tsg}.siopUrl`                            | Yes      | `URL`                                      | URL of the SIOP token endpoint                    |                           |
+| `iam{type=tsg}.verifyUrl`                          | Yes      | `URL`                                      | URL of the verification endpoint                  |                           |
+| `iam{type=tsg}.typeFilter`                         |          | `String`                                   | Credential type filter used as default            |                           |
+| `iam{type=tsg}.issuerFilter`                       |          | `String`                                   | Issuer filter used as default                     |                           |
+| `iam{type=tsg}.customFields`                       |          | `Array`                                    | Custom presentation definition fields             |                           |
 | `iam{type=tsg}.type`                               |          | `"tsg" \| "dev"`                           | Type of IAM service                               | `"tsg"`                   |
-| `iam{type=tsg}.didId`                              |          | `String`                                   | DID identifier of the IAM service                 |                           |
+| `iam{type=tsg}.didId`                              | Yes      | `String`                                   | DID identifier of the IAM service                 |                           |
 | **`InitCatalog`**                                  |          |                                            |                                                   |                           |
-| `initCatalog`                                      |          | `InitCatalog`                              | Initial catalog configuration                     |                           |
-| `initCatalog.creator`                              |          | `String`                                   | Creator of the catalog                            |                           |
-| `initCatalog.publisher`                            |          | `String`                                   | Publisher of the catalog                          |                           |
-| `initCatalog.title`                                |          | `String`                                   | Title of the catalog                              |                           |
-| `initCatalog.description`                          |          | `String`                                   | Description of the catalog                        |                           |
-| `initCatalog.datasets`                             | Yes      | `String`                                   | Serialized initial datasets                       |                           |
+| `initCatalog`                                      | Yes      | `InitCatalog`                              | Initial catalog configuration                     |                           |
+| `initCatalog.creator`                              | Yes      | `String`                                   | Creator of the catalog                            |                           |
+| `initCatalog.publisher`                            | Yes      | `String`                                   | Publisher of the catalog                          |                           |
+| `initCatalog.title`                                | Yes      | `String`                                   | Title of the catalog                              |                           |
+| `initCatalog.description`                          | Yes      | `String`                                   | Description of the catalog                        |                           |
+| `initCatalog.datasets`                             |          | `String`                                   | Serialized initial datasets                       |                           |
 | **`PolicyConfig`**                                 |          |                                            |                                                   |                           |
-| `defaultPolicy`                                    | Yes      | `PolicyConfig`                             | Default policy configuration                      |                           |
+| `defaultPolicy`                                    |          | `PolicyConfig`                             | Default policy configuration                      |                           |
 | `defaultPolicy.type`                               |          | `"rules" \| "manual"`                      | Definition type of the policy                     | `"rules"`                 |
 | **`PolicyRuleConfig`**                             |          |                                            |                                                   |                           |
-| `defaultPolicy.permissions`                        | Yes      | `PolicyRuleConfig[]`                       | Permissions of the policy                         |                           |
-| `defaultPolicy.permissions[].action`               |          | `String`                                   | Action of the rule                                |                           |
+| `defaultPolicy.permissions`                        |          | `PolicyRuleConfig[]`                       | Permissions of the policy                         |                           |
+| `defaultPolicy.permissions[].action`               | Yes      | `String`                                   | Action of the rule                                |                           |
 | **`RuleConstraintConfig`**                         |          |                                            |                                                   |                           |
-| `defaultPolicy.permissions[].constraints`          | Yes      | `RuleConstraintConfig[]`                   | Constraints of the rule                           |                           |
-| `defaultPolicy.permissions[].constraints[].type`   |          | `String`                                   | Type of the constraint                            |                           |
-| `defaultPolicy.permissions[].constraints[].value`  |          | `String`                                   | Value of the constraint                           |                           |
+| `defaultPolicy.permissions[].constraints`          |          | `RuleConstraintConfig[]`                   | Constraints of the rule                           |                           |
+| `defaultPolicy.permissions[].constraints[].type`   | Yes      | `String`                                   | Type of the constraint                            |                           |
+| `defaultPolicy.permissions[].constraints[].value`  | Yes      | `String`                                   | Value of the constraint                           |                           |
 | **`PolicyRuleConfig`**                             |          |                                            |                                                   |                           |
-| `defaultPolicy.prohibitions`                       | Yes      | `PolicyRuleConfig[]`                       | Prohibitions of the policy                        |                           |
-| `defaultPolicy.prohibitions[].action`              |          | `String`                                   | Action of the rule                                |                           |
+| `defaultPolicy.prohibitions`                       |          | `PolicyRuleConfig[]`                       | Prohibitions of the policy                        |                           |
+| `defaultPolicy.prohibitions[].action`              | Yes      | `String`                                   | Action of the rule                                |                           |
 | **`RuleConstraintConfig`**                         |          |                                            |                                                   |                           |
-| `defaultPolicy.prohibitions[].constraints`         | Yes      | `RuleConstraintConfig[]`                   | Constraints of the rule                           |                           |
-| `defaultPolicy.prohibitions[].constraints[].type`  |          | `String`                                   | Type of the constraint                            |                           |
-| `defaultPolicy.prohibitions[].constraints[].value` |          | `String`                                   | Value of the constraint                           |                           |
-| `defaultPolicy.raw`                                | Yes      | `Object`                                   | Raw ODRL policy                                   |                           |
+| `defaultPolicy.prohibitions[].constraints`         |          | `RuleConstraintConfig[]`                   | Constraints of the rule                           |                           |
+| `defaultPolicy.prohibitions[].constraints[].type`  | Yes      | `String`                                   | Type of the constraint                            |                           |
+| `defaultPolicy.prohibitions[].constraints[].value` | Yes      | `String`                                   | Value of the constraint                           |                           |
+| `defaultPolicy.raw`                                |          | `Object`                                   | Raw ODRL policy                                   |                           |
 | **`RuntimeConfig`**                                |          |                                            |                                                   |                           |
-| `runtime`                                          |          | `RuntimeConfig`                            | Runtime configuration                             |                           |
+| `runtime`                                          | Yes      | `RuntimeConfig`                            | Runtime configuration                             |                           |
 | `runtime.controlPlaneInteractions`                 |          | `"automatic" \| "semi-manual" \| "manual"` | Mode of control plane interactions                | `"automatic"`             |
 | `runtime.color`                                    |          | `String`                                   | Primary UI color                                  | `"#3B8BF6"`               |
-| `runtime.lightThemeUrl`                            | Yes      | `String`                                   | Light theme logo URL                              |                           |
-| `runtime.darkThemeUrl`                             | Yes      | `String`                                   | Dark theme logo URL                               |                           |
+| `runtime.lightThemeUrl`                            |          | `String`                                   | Light theme logo URL                              |                           |
+| `runtime.darkThemeUrl`                             |          | `String`                                   | Dark theme logo URL                               |                           |
