@@ -30,6 +30,7 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
     ScheduleModule.forRoot(),
     DataPlaneTestModule,
     AuthModule,
+    FilesModule,
     OrchestrationModule,
     GenericConfigModule.register(RootConfig),
     TypeOrmModule.forRoot({
@@ -40,8 +41,7 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
       ],
       migrationsRun: !GenericConfigModule.get(RootConfig).db.synchronize
     }),
-    ...embeddedFrontend,
-    FilesModule.register(GenericConfigModule.get(RootConfig).files)
+    ...embeddedFrontend
   ],
   exports: [DataPlaneTestModule],
   controllers: [ConfigController]

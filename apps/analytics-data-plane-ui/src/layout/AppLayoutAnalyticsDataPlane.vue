@@ -72,6 +72,16 @@ const menuList: Menu[] = [
         to: "/files/upload"
       }
     ]
+  },
+  {
+    label: "Debug",
+    items: [
+      {
+        label: "Jobs",
+        icon: "pi pi-fw pi-wrench",
+        to: "/jobdebug"
+      }
+    ]
   }
 ];
 

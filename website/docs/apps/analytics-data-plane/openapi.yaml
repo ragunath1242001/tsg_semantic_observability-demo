@@ -785,6 +785,120 @@ paths:
       security: *a8
       summary: Get egress logs
       tags: *a9
+  /api/files:
+    get:
+      description: Get all files and their metadata.
+      operationId: FilesController_getFiles
+      parameters: []
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FileMetadataDto"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: &a10
+        - oauth2:
+            - controlplane_dataplane
+      summary: Get all files
+      tags: &a11
+        - Files
+  /api/files/upload:
+    post:
+      description: Upload files and create metadata.
+      operationId: FilesController_uploadFile
+      parameters: []
+      responses:
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a10
+      summary: Upload files
+      tags: *a11
+  /api/files/sync:
+    post:
+      description: Sync files and their metadata.
+      operationId: FilesController_syncFiles
+      parameters: []
+      responses:
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a10
+      summary: Sync files
+      tags: *a11
+  /api/files/{id}:
+    get:
+      description: Get the file by ID.
+      operationId: FilesController_getFile
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: Authorization
+          required: true
+          in: header
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+          description: ""
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a10
+      summary: Get file
+      tags: *a11
+  /api/files/{id}/csvw:
+    get:
+      description: Get the CSVW of a file.
+      operationId: FilesController_getCSVW
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CSVW"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a10
+      summary: Get CSVW
+      tags: *a11
   /api/management/k8s/jobs/transfer/{transferId}:
     get:
       operationId: OrchestrationManagementController_getJobsForTransfer
@@ -805,11 +919,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: &a10
+      security: &a12
         - oauth2:
             - controlplane_dataplane
       summary: Get jobs for transfer
-      tags: &a11
+      tags: &a13
         - Data Plane Management
   /api/management/k8s/jobs/{jobName}/pods:
     get:
@@ -831,9 +945,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a10
+      security: *a12
       summary: Get job pods
-      tags: *a11
+      tags: *a13
   /api/management/k8s/pods/{podName}/logs:
     get:
       operationId: OrchestrationManagementController_getJobLogs
@@ -854,9 +968,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a10
+      security: *a12
       summary: Get job logs
-      tags: *a11
+      tags: *a13
   /api/management/k8s/spawn-job:
     post:
       operationId: OrchestrationManagementController_spawnJob
@@ -891,85 +1005,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a10
+      security: *a12
       summary: Spawn a job
-      tags: *a11
-  /api/files:
-    get:
-      description: Get all files and their metadata.
-      operationId: FilesController_getFiles
-      parameters: []
-      responses:
-        "200":
-          description: ""
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/FileMetadataDto"
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorDto"
-      summary: Get all files
-      tags: &a12
-        - Files
-  /api/files/upload:
-    post:
-      description: Upload files and create metadata.
-      operationId: FilesController_uploadFile
-      parameters: []
-      responses:
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorDto"
-      summary: Upload files
-      tags: *a12
-  /api/files/sync:
-    post:
-      description: Sync files and their metadata.
-      operationId: FilesController_syncFiles
-      parameters: []
-      responses:
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorDto"
-      summary: Sync files
-      tags: *a12
-  /api/files/{id}/csvw:
-    get:
-      description: Get the CSVW of a file.
-      operationId: FilesController_getCSVW
-      parameters:
-        - name: id
-          required: true
-          in: path
-          schema:
-            type: string
-      responses:
-        "200":
-          description: ""
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/CSVW"
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorDto"
-      summary: Get CSVW
-      tags: *a12
+      tags: *a13
 info:
   title: TSG Analytics Data Plane
   description: This OpenAPI specification shows the endpoints of the Analytics Data Plane.
@@ -1308,7 +1346,7 @@ components:
           type: string
           example: targetExample
         odrl:constraint:
-          example: &a13 []
+          example: &a14 []
           type: array
           items:
             $ref: "#/components/schemas/ConstraintSchema"
@@ -1339,7 +1377,7 @@ components:
           type: string
           example: targetExample
         odrl:constraint:
-          example: *a13
+          example: *a14
           type: array
           items:
             $ref: "#/components/schemas/ConstraintSchema"
@@ -1365,7 +1403,7 @@ components:
           type: string
           example: targetExample
         odrl:constraint:
-          example: *a13
+          example: *a14
           type: array
           items:
             $ref: "#/components/schemas/ConstraintSchema"
@@ -1391,17 +1429,17 @@ components:
           type: string
           example: profileExample
         odrl:permission:
-          example: &a19 []
+          example: &a20 []
           type: array
           items:
             $ref: "#/components/schemas/PermissionSchema"
         odrl:prohibition:
-          example: &a20 []
+          example: &a21 []
           type: array
           items:
             $ref: "#/components/schemas/ProhibitionSchema"
         odrl:obligation:
-          example: &a21 []
+          example: &a22 []
           type: array
           items:
             $ref: "#/components/schemas/DutySchema"
@@ -1433,7 +1471,7 @@ components:
           type: string
           example: contactPointExample
         dcat:keyword:
-          example: &a14
+          example: &a15
             - keyword1
             - keyword2
           type: array
@@ -1443,7 +1481,7 @@ components:
           type: string
           example: landingPageExample
         dcat:theme:
-          example: &a15
+          example: &a16
             - theme1
             - theme2
           type: array
@@ -1456,7 +1494,7 @@ components:
           type: string
           example: creatorExample
         dct:description:
-          example: &a16
+          example: &a17
             - description1
             - description2
           type: array
@@ -1493,12 +1531,12 @@ components:
           type: string
           example: typeExample
         odrl:hasPolicy:
-          example: &a17 []
+          example: &a18 []
           type: array
           items:
             $ref: "#/components/schemas/PolicySchema"
         dcat:hasVersion:
-          example: &a18
+          example: &a19
             - version1
             - version2
           type: array
@@ -1624,7 +1662,7 @@ components:
           type: string
           example: contactPointExample
         dcat:keyword:
-          example: *a14
+          example: *a15
           type: array
           items:
             type: string
@@ -1632,7 +1670,7 @@ components:
           type: string
           example: landingPageExample
         dcat:theme:
-          example: *a15
+          example: *a16
           type: array
           items:
             type: string
@@ -1643,7 +1681,7 @@ components:
           type: string
           example: creatorExample
         dct:description:
-          example: *a16
+          example: *a17
           type: array
           items:
             type: string
@@ -1678,12 +1716,12 @@ components:
           type: string
           example: typeExample
         odrl:hasPolicy:
-          example: *a17
+          example: *a18
           type: array
           items:
             $ref: "#/components/schemas/PolicySchema"
         dcat:hasVersion:
-          example: *a18
+          example: *a19
           type: array
           items:
             type: string
@@ -1751,7 +1789,7 @@ components:
           type: string
           example: contactPointExample
         dcat:keyword:
-          example: *a14
+          example: *a15
           type: array
           items:
             type: string
@@ -1759,7 +1797,7 @@ components:
           type: string
           example: landingPageExample
         dcat:theme:
-          example: *a15
+          example: *a16
           type: array
           items:
             type: string
@@ -1770,7 +1808,7 @@ components:
           type: string
           example: creatorExample
         dct:description:
-          example: *a16
+          example: *a17
           type: array
           items:
             type: string
@@ -1805,12 +1843,12 @@ components:
           type: string
           example: typeExample
         odrl:hasPolicy:
-          example: *a17
+          example: *a18
           type: array
           items:
             $ref: "#/components/schemas/PolicySchema"
         dcat:hasVersion:
-          example: *a18
+          example: *a19
           type: array
           items:
             type: string
@@ -1853,7 +1891,7 @@ components:
           type: string
           example: contactPointExample
         dcat:keyword:
-          example: *a14
+          example: *a15
           type: array
           items:
             type: string
@@ -1861,7 +1899,7 @@ components:
           type: string
           example: landingPageExample
         dcat:theme:
-          example: *a15
+          example: *a16
           type: array
           items:
             type: string
@@ -1872,7 +1910,7 @@ components:
           type: string
           example: creatorExample
         dct:description:
-          example: *a16
+          example: *a17
           type: array
           items:
             type: string
@@ -1907,12 +1945,12 @@ components:
           type: string
           example: typeExample
         odrl:hasPolicy:
-          example: *a17
+          example: *a18
           type: array
           items:
             $ref: "#/components/schemas/PolicySchema"
         dcat:hasVersion:
-          example: *a18
+          example: *a19
           type: array
           items:
             type: string
@@ -2070,17 +2108,17 @@ components:
           type: string
           example: profileExample
         odrl:permission:
-          example: *a19
+          example: *a20
           type: array
           items:
             $ref: "#/components/schemas/PermissionSchema"
         odrl:prohibition:
-          example: *a20
+          example: *a21
           type: array
           items:
             $ref: "#/components/schemas/ProhibitionSchema"
         odrl:obligation:
-          example: *a21
+          example: *a22
           type: array
           items:
             $ref: "#/components/schemas/DutySchema"
@@ -2250,6 +2288,9 @@ components:
           example: 1000
         fileName:
           type: string
+          example: 1744033172435-file.csv
+        originalFileName:
+          type: string
           example: file.csv
         presentInLastCheck:
           type: boolean
@@ -2260,6 +2301,7 @@ components:
         - identifier
         - fileSizeInBytes
         - fileName
+        - originalFileName
         - presentInLastCheck
         - csvw
 externalDocs:

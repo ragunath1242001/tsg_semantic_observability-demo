@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable, Logger } from "@nestjs/common";
+import { HttpStatus, Injectable, Logger, StreamableFile } from "@nestjs/common";
 import { Cron, CronExpression } from "@nestjs/schedule";
 import { InjectRepository } from "@nestjs/typeorm";
 import {
@@ -8,8 +8,9 @@ import {
   Offer,
   Permission
 } from "@tsg-dsp/common-dsp";
+import { randomBytes } from "crypto";
 import { parse } from "csv-parse";
-import fs from "fs";
+import fs, { createReadStream } from "fs";
 import * as fsPromises from "fs/promises";
 import { finished } from "stream/promises";
 import { Repository } from "typeorm";
@@ -31,9 +32,73 @@ export class FilesService {
   ) {}
 
   private readonly logger = new Logger(this.constructor.name);
+  private readonly accessTokens = new Map<string, string>();
 
   async getAllFileMetadata(): Promise<FileMetadataDao[]> {
     return this.fileRepository.find({});
+  }
+
+  async getFileMetadata(identifier: string): Promise<FileMetadataDao> {
+    const file = await this.fileRepository.findOneBy({
+      identifier: identifier
+    });
+    if (!file) {
+      throw new DataPlaneError("File not found", HttpStatus.NOT_FOUND);
+    }
+    return file;
+  }
+
+  async getFile(
+    identifier: string,
+    authorizationHeader?: string
+  ): Promise<StreamableFile> {
+    const file = await this.fileRepository.findOneBy({
+      identifier: identifier
+    });
+    if (!file) {
+      throw new DataPlaneError("File not found", HttpStatus.NOT_FOUND);
+    }
+    if (!authorizationHeader) {
+      throw new DataPlaneError(
+        "Authorization header is required",
+        HttpStatus.UNAUTHORIZED
+      );
+    }
+    const accessToken = authorizationHeader.split(" ")[1];
+    if (!accessToken) {
+      throw new DataPlaneError(
+        "Access token is required",
+        HttpStatus.UNAUTHORIZED
+      );
+    }
+    const tokenIdentifier = this.accessTokens.get(accessToken);
+    if (!tokenIdentifier || tokenIdentifier !== file.identifier) {
+      throw new DataPlaneError("Invalid access token", HttpStatus.UNAUTHORIZED);
+    }
+    if (!file.presentInLastCheck) {
+      throw new DataPlaneError(
+        "File not present in last check",
+        HttpStatus.NOT_FOUND
+      );
+    }
+    const filePath = this.filesConfig.path + "/" + file.fileName;
+    if (!fs.existsSync(filePath)) {
+      throw new DataPlaneError("File not found", HttpStatus.NOT_FOUND);
+    }
+    const fileStream = createReadStream(filePath);
+    return new StreamableFile(fileStream);
+  }
+
+  async createAccessToken(identifier: string): Promise<string> {
+    const file = await this.fileRepository.findOneBy({
+      identifier: identifier
+    });
+    if (!file) {
+      throw new DataPlaneError("File not found", HttpStatus.NOT_FOUND);
+    }
+    const accessToken = randomBytes(16).toString("hex");
+    this.accessTokens.set(accessToken, identifier);
+    return accessToken;
   }
 
   async processFile(file: Express.Multer.File): Promise<any[]> {
@@ -142,6 +207,7 @@ export class FilesService {
         identifier: crypto.randomUUID(),
         fileSizeInBytes: file.size,
         fileName: file.filename,
+        originalFileName: file.originalname,
         presentInLastCheck: true,
         csvw: undefined
       });

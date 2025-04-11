@@ -3,12 +3,18 @@ import {
   CoreV1Api,
   KubeConfig,
   Log,
-  V1Job
+  V1EnvVar,
+  V1Job,
+  V1Volume,
+  V1VolumeMount
 } from "@kubernetes/client-node";
-import { Injectable, Logger } from "@nestjs/common";
+import { HttpStatus, Injectable, Logger } from "@nestjs/common";
+import { hostname } from "os";
 import { Writable } from "stream";
 
 import { RootConfig } from "../config.js";
+import { FilesService } from "../files/files.service.js";
+import { DataPlaneError } from "../utils/errors/error.js";
 
 @Injectable()
 export class OrchestrationService {
@@ -17,7 +23,10 @@ export class OrchestrationService {
   private kubeConfig: KubeConfig;
   private containerName: string;
 
-  constructor(private readonly config: RootConfig) {
+  constructor(
+    private readonly config: RootConfig,
+    private readonly filesService: FilesService
+  ) {
     this.kubeConfig = new KubeConfig();
     this.containerName = "analytics-dp-container";
     try {
@@ -44,11 +53,75 @@ export class OrchestrationService {
     return jobList.items;
   }
 
-  async spawnJob(transferId: string, imageName: string, command: string[]) {
+  async spawnJob(
+    transferId: string,
+    imageName: string,
+    command: string[],
+    fileId?: string
+  ) {
     const jobName = `adp-job-${transferId}-${new Date().getTime()}`;
     const namespace = this.config.kubernetesConfig.namespace;
+    const dataplaneAddress = process.env["POD_IP"] ?? hostname();
+    const localDataPlaneAddress = `http://${dataplaneAddress}:${this.config.server.port}${process.env["SUBPATH"] ?? ""}${process.env["EMBEDDED_FRONTEND"] ? "/api" : ""}`;
+    const env: V1EnvVar[] = [
+      {
+        name: "TRANSFER_ID",
+        value: transferId
+      },
+      {
+        name: "CALLBACK_URL",
+        value: localDataPlaneAddress
+      }
+    ];
+    const volumeMounts: V1VolumeMount[] = [];
+    const volumes: V1Volume[] = [];
+    if (fileId) {
+      const fileMetadata = await this.filesService.getFileMetadata(fileId);
+      if (!fileMetadata) {
+        throw new DataPlaneError(
+          `File with ID ${fileId} not found`,
+          HttpStatus.NOT_FOUND
+        );
+      }
+      if (this.config.files.pvcName) {
+        volumeMounts.push({
+          mountPath: `/data/${fileMetadata.fileName}`,
+          subPath: fileMetadata.fileName,
+          name: "data-volume"
+        });
+        volumes.push({
+          name: "data-volume",
+          persistentVolumeClaim: {
+            claimName: this.config.files.pvcName,
+            readOnly: true
+          }
+        });
+        env.push({
+          name: "DATA_TYPE",
+          value: "file"
+        });
+        env.push({
+          name: "DATA_FILE",
+          value: `/data/${fileMetadata.fileName}`
+        });
+      } else {
+        const accessToken = await this.filesService.createAccessToken(fileId);
+        env.push({
+          name: "DATA_TYPE",
+          value: "url"
+        });
+        env.push({
+          name: "DATA_URL",
+          value: `${localDataPlaneAddress}/files/${fileMetadata.identifier}`
+        });
+        env.push({
+          name: "DATA_ACCESS_TOKEN",
+          value: accessToken
+        });
+      }
+    }
 
-    const jobManifest = {
+    const jobManifest: V1Job = {
       apiVersion: "batch/v1",
       kind: "Job",
       metadata: {
@@ -70,9 +143,12 @@ export class OrchestrationService {
               {
                 name: this.containerName,
                 image: imageName,
-                command
+                env,
+                command,
+                volumeMounts
               }
-            ]
+            ],
+            volumes
           }
         }
       }

@@ -14,6 +14,9 @@ export class FileMetadataDao {
   @Column({ type: String })
   fileName!: string;
 
+  @Column({ type: String })
+  originalFileName!: string;
+
   @Column({ type: Boolean })
   presentInLastCheck!: boolean;
 

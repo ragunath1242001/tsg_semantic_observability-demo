@@ -6,6 +6,7 @@ import AppLayout from "@/layout/AppLayoutAnalyticsDataPlane.vue";
 import Dashboard from "../views/Dashboard.vue";
 import Files from "../views/Files.vue";
 import FilesUpload from "../views/FilesUpload.vue";
+import JobDebug from "../views/JobDebug.vue";
 import Logging from "../views/Logging.vue";
 import LoginVue from "../views/Login.vue";
 import Metadata from "../views/Metadata.vue";
@@ -37,6 +38,10 @@ const router = createRouter({
         {
           path: "/files",
           component: Files
+        },
+        {
+          path: "/jobdebug",
+          component: JobDebug
         },
         {
           path: "/files/upload",

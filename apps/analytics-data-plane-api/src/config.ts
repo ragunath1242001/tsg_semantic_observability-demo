@@ -52,6 +52,11 @@ export class FilesConfig {
   @IsString()
   @IsOptional()
   public path: string = "/uploads";
+
+  @Description("Persistent volume claim name for file storage")
+  @IsString()
+  @IsOptional()
+  public pvcName?: string;
 }
 
 export class RuntimeConfig {

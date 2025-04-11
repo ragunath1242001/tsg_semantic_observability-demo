@@ -14,6 +14,11 @@ By default, the development database is sqlite. We use postgres databases for pr
 
 Authentication for frontend services can be done via OAuth. This helps users who need to login to several components to authenticate themselves faster. The data plane is tested against the SSO Bridge, with an Helm chart provided alongside the Helm chart of the data plane, but other OAuth services should be usable (e.g. Keycloak, or hosted OAuth services).
 
+## Persistent Volume Claim link with Jobs
+
+The Kubernetes Persistent Volume Claim (PVC) used for file uploads can be linked with Jobs that are started by the Analytics Data Plane. To use this behavior the `files.pvcName` must be set to the same PVC name as is used for the `/uploads` folder.
+Since PVCs can have different access modes, having a incompatible access mode will result in Jobs not being able to start. Please make sure the PVC has the access mode `ReadWriteMany` (RWX) or `ReadOnlyMany` (ROX) if you want to use the PVC with Jobs. The default access mode for most volume providers is `ReadWriteOnce` (RWO), which is not compatible with Jobs.
+
 ## Configuration parameters
 | Key                                | Required | Type                     | Description                                       | Default                   |
 | ---------------------------------- | -------- | ------------------------ | ------------------------------------------------- | ------------------------- |
@@ -64,6 +69,7 @@ Authentication for frontend services can be done via OAuth. This helps users who
 | **`FilesConfig`**                  |          |                          |                                                   |                           |
 | `files`                            | Yes      | `FilesConfig`            | Files configuration                               |                           |
 | `files.path`                       | Yes      | `String`                 | Path to store uploaded files                      | `"/uploads"`              |
+| `files.pvcName`                    | Yes      | `String`                 | Persistent volume claim name for file storage     |                           |
 | **`RuntimeConfig`**                |          |                          |                                                   |                           |
 | `runtime`                          |          | `RuntimeConfig`          | Runtime configuration                             |                           |
 | `runtime.color`                    |          | `String`                 | Primary UI color                                  | `"#3B8BF6"`               |

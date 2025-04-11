@@ -53,9 +53,12 @@ export class FileMetadataDto {
   @ApiProperty({ example: 1000 })
   @IsNumber()
   fileSizeInBytes!: number;
-  @ApiProperty({ example: "file.csv" })
+  @ApiProperty({ example: "1744033172435-file.csv" })
   @IsString()
   fileName!: string;
+  @ApiProperty({ example: "file.csv" })
+  @IsString()
+  originalFileName!: string;
   @ApiProperty({ example: true })
   @IsBoolean()
   presentInLastCheck!: boolean;
