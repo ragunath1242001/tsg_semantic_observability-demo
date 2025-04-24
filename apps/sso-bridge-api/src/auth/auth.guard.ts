@@ -40,8 +40,9 @@ export class AuthGuard implements CanActivate {
       if (!allowedRoles) {
         return true;
       }
-      return toArray(allowedRoles).some((role: string) =>
-        user.roles.includes(role)
+      return (
+        user.roles?.some((role) => toArray(allowedRoles).includes(role.name)) ||
+        false
       );
     }
     throw new UnauthorizedException();

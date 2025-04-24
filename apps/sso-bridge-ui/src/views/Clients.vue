@@ -38,6 +38,25 @@ const clientGrants = [
   value: grant
 }));
 
+const clientRoles = ref<Array<{ label: string; value: string }>>([]);
+const loadRoles = async () => {
+  try {
+    const response = await http.get("/roles");
+    clientRoles.value = response.data.map((role) => ({
+      label: role.name,
+      value: role.name
+    }));
+  } catch (error) {
+    toast.add({
+      severity: "error",
+      summary: "Error",
+      detail: "Failed to load roles",
+      life: 3000
+    });
+    console.error("Error loading roles:", error);
+  }
+};
+
 const clientDialog = ref(false);
 const deleteClientDialog = ref(false);
 
@@ -59,7 +78,11 @@ const editClient = (data: ClientDto) => {
     label: grant,
     value: grant
   }));
-  console.log(client.value);
+  // @ts-expect-error Roles should be annotated with label and value
+  client.value.roles = client.value.roles.map((role) => ({
+    label: role,
+    value: role
+  }));
   clientDialog.value = true;
 };
 
@@ -106,18 +129,24 @@ const updateClient = async () => {
 const saveClient = async () => {
   submitted.value = true;
 
-  if (client?.value.clientId?.trim()) {
+  if (
+    client?.value.name?.trim() &&
+    client?.value.secretName?.trim() &&
+    client?.value.clientId?.trim() &&
+    client?.value.roles?.length > 0
+  ) {
     if (client?.value.grants) {
       // @ts-expect-error Grants should be strings
       client.value.grants = client.value.grants.map((grant) => grant.value);
     }
+    // @ts-expect-error Roles should be annotated with label and value
+    client.value.roles = client.value.roles.map((role) => role.value);
     if (client.value.id) {
       await updateClient();
     } else {
       await createClient();
     }
   }
-  client.value = clientObj;
   await load();
 };
 
@@ -158,7 +187,7 @@ const { data, loading, total, perPage, load } = setupPagination({
 });
 
 onMounted(async () => {
-  await load();
+  await Promise.all([load(), loadRoles()]);
 });
 </script>
 <template>
@@ -206,8 +235,21 @@ onMounted(async () => {
           </Column>
           <Column field="roles" class="break-all" header="Roles">
             <template #body="slotProps">
-              {{ console.log(slotProps) }}
-              <span>{{ slotProps.data.roles.toString() }}</span>
+              <div class="flex flex-wrap gap-1">
+                <span
+                  v-for="(role, index) in slotProps.data.roles"
+                  :key="index"
+                  class="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">
+                  {{ role }}
+                </span>
+              </div>
+              <span
+                v-if="
+                  !slotProps.data.roles || slotProps.data.roles.length === 0
+                "
+                class="text-gray-500 italic">
+                No roles
+              </span>
             </template>
           </Column>
           <Column field="grants" header="Grants">
@@ -266,6 +308,19 @@ onMounted(async () => {
           >
         </div>
         <div>
+          <label for="name" class="block font-bold mb-3">Secret Name</label>
+          <InputText
+            id="secretName"
+            v-model.trim="client.secretName"
+            required="true"
+            autofocus
+            :invalid="submitted && !client.secretName"
+            fluid />
+          <small v-if="submitted && !client.secretName" class="text-red-500"
+            >Secret Name is required.</small
+          >
+        </div>
+        <div>
           <label for="description" class="block font-bold mb-3"
             >Description</label
           >
@@ -299,17 +354,25 @@ onMounted(async () => {
             fluid />
         </div>
         <div>
-          <label for="Roles" class="block font-bold mb-3">Roles</label>
+          <label for="roles" class="block font-bold mb-3">Roles</label>
           <MultiSelect
             id="roles"
             v-model="client.roles"
+            :options="clientRoles"
+            required="true"
+            :invalid="submitted && !client.roles"
             option-label="label"
             placeholder="Select Roles"
-            fluid></MultiSelect>
+            fluid>
+          </MultiSelect>
+          <small
+            v-if="submitted && client.roles.length == 0"
+            class="text-red-500"
+            >You must select at least one role.</small
+          >
         </div>
-
         <div>
-          <label for="Grants" class="block font-bold mb-3">Grants</label>
+          <label for="grants" class="block font-bold mb-3">Grants</label>
           <MultiSelect
             id="grants"
             v-model="client.grants"

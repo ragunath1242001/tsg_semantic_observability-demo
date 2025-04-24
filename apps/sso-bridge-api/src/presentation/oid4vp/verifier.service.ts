@@ -14,6 +14,7 @@ import { RootConfig } from "../../config.js";
 import { AuthorizationRequestDao } from "../../model/oid4vp.dao.js";
 import { OauthUser } from "../../model/user.dao.js";
 import { OauthService } from "../../oauth/oauth.service.js";
+import { RolesService } from "../../roles/roles.service.js";
 import { UsersService } from "../../users/users.service.js";
 import { getSession } from "../../utils/session.js";
 import { PresentationService } from "../presentation.service.js";
@@ -25,6 +26,7 @@ export class OID4VPVerifierService {
     @InjectRepository(AuthorizationRequestDao)
     public authorizationRequestRepository: Repository<AuthorizationRequestDao>,
     private readonly oauthService: OauthService,
+    private readonly rolesService: RolesService,
     private readonly usersService: UsersService,
     private readonly presentationService: PresentationService
   ) {}

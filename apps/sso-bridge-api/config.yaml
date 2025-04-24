@@ -7,6 +7,12 @@ db:
   type: "sqlite"
   database: "sso-bridge-db.sqlite"
 
+initRoles:
+  - name: "ssobridge_admin"
+    description: "SSO bridge administrator role with full access"
+  - name: "ssobridge_user"
+    description: "SSO bridge regular user role with limited access"
+
 initClients:
   - clientId: "test-client"
     clientSecret: "test-secret"
@@ -14,7 +20,7 @@ initClients:
     redirectUris:
       - "http://localhost:3000"
     roles:
-      - "admin"
+      - "ssobridge_admin"
     name: "Test Client"
     description: "This is a test client"
 
@@ -23,10 +29,10 @@ initUsers:
     password: "password"
     email: "alice@example.com"
     roles:
-      - "admin"
+      - "ssobridge_admin"
 
   - username: "bob"
     password: "password"
     email: "bob@example.com"
     roles:
-      - "user"
+      - "ssobridge_user"

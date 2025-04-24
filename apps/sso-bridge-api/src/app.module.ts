@@ -15,6 +15,7 @@ import { RootConfig } from "./config.js";
 import { KubernetesModule } from "./k8s/kubernetes.module.js";
 import { OauthModule } from "./oauth/oauth.module.js";
 import { PresentationModule } from "./presentation/presentation.module.js";
+import { RolesModule } from "./roles/roles.module.js";
 import { UsersModule } from "./users/users.module.js";
 
 const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
@@ -43,6 +44,7 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
     OauthModule,
     KubernetesModule,
     UsersModule,
+    RolesModule,
     PresentationModule,
     ClientsModule,
     ...embeddedFrontend,

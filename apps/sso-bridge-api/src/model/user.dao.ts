@@ -1,7 +1,15 @@
 import { GrantType } from "@tsg-dsp/sso-bridge-dtos";
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Transform } from "class-transformer";
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  PrimaryGeneratedColumn
+} from "typeorm";
 
 import { MetaEntity } from "./common.dao.js";
+import { OauthRole } from "./role.dao.js";
 
 @Entity()
 export class OauthUser extends MetaEntity {
@@ -17,8 +25,19 @@ export class OauthUser extends MetaEntity {
   @Column({ type: String })
   email!: string;
 
-  @Column("simple-array")
-  roles!: string[];
+  @ManyToMany(() => OauthRole, { eager: true })
+  @JoinTable()
+  @Transform(
+    ({ value }) => {
+      return value?.map((role: OauthRole) => role.name) || [];
+    },
+    { toPlainOnly: true }
+  )
+  roles!: OauthRole[];
+
+  get roleNames(): string[] {
+    return this.roles?.map((role) => role.name) || [];
+  }
 
   @Column("simple-array")
   grants!: GrantType[];
