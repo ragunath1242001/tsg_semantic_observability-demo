@@ -1,5 +1,6 @@
 import { jest } from "@jest/globals";
 import { afterAll, beforeAll, describe, expect, it } from "@jest/globals";
+import { REQUEST } from "@nestjs/core";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import {
@@ -18,10 +19,12 @@ import { KubernetesService } from "../../k8s/kubernetes.service.js";
 import { OauthClient } from "../../model/client.dao.js";
 import { KeyDao } from "../../model/keys.dao.js";
 import { AuthorizationRequestDao } from "../../model/oid4vp.dao.js";
+import { OauthRole } from "../../model/role.dao.js";
 import { TokenDao } from "../../model/token.dao.js";
 import { OauthUser } from "../../model/user.dao.js";
 import { OauthService } from "../../oauth/oauth.service.js";
 import { TokenService } from "../../oauth/token.service.js";
+import { RolesService } from "../../roles/roles.service.js";
 import { UsersService } from "../../users/users.service.js";
 import { PresentationService } from "../presentation.service.js";
 import { OID4VPVerifierService } from "./verifier.service.js";
@@ -37,6 +40,7 @@ describe("OID4VPVerifierService", () => {
         TypeOrmTestHelper.instance.module([
           AuthorizationRequestDao,
           OauthUser,
+          OauthRole,
           OauthClient,
           TokenDao,
           KeyDao
@@ -44,6 +48,7 @@ describe("OID4VPVerifierService", () => {
         TypeOrmModule.forFeature([
           AuthorizationRequestDao,
           OauthUser,
+          OauthRole,
           OauthClient,
           TokenDao,
           KeyDao
@@ -54,6 +59,7 @@ describe("OID4VPVerifierService", () => {
         PresentationService,
         OauthService,
         ClientsService,
+        RolesService,
         TokenService,
         UsersService,
         {
@@ -75,6 +81,14 @@ describe("OID4VPVerifierService", () => {
           useValue: plainToInstance(ServerConfig, {
             publicAddress: "http://localhost"
           })
+        },
+        {
+          provide: REQUEST,
+          useValue: {
+            session: {
+              user: null
+            }
+          }
         }
       ]
     }).compile();

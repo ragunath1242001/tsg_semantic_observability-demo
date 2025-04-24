@@ -22,7 +22,7 @@ import { UsersService } from "./users.service.js";
 @ApiTags("Users")
 @Controller("users")
 @UseGuards(AuthGuard)
-@ManagementRoles("admin")
+@ManagementRoles("ssobridge_admin")
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
@@ -31,7 +31,12 @@ export class UsersController {
   @ApiOperation({ summary: "Get all users" })
   @ApiResponse({ status: 200, description: "List of users returned." })
   async getUsers(@PaginationQuery() paginationOptions: PaginationOptionsDto) {
-    return await this.usersService.getUsers(paginationOptions);
+    const result = await this.usersService.getUsers(paginationOptions);
+    const transformedData = result.data.map((user) => ({
+      ...user,
+      roles: user.roles?.map((role) => role.name) || []
+    }));
+    return { data: transformedData, total: result.total };
   }
 
   @Post("create")

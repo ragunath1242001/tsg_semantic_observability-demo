@@ -1,11 +1,13 @@
-import { HttpStatus, Injectable } from "@nestjs/common";
+import { HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { AppError, PaginationOptionsDto } from "@tsg-dsp/common-api";
+import { ClientDto } from "@tsg-dsp/sso-bridge-dtos";
 import { Repository } from "typeorm";
 
-import { RootConfig } from "../config.js";
+import { InitClient, RootConfig } from "../config.js";
 import { KubernetesService } from "../k8s/kubernetes.service.js";
 import { OauthClient } from "../model/client.dao.js";
+import { RolesService } from "../roles/roles.service.js";
 
 @Injectable()
 export class ClientsService {
@@ -13,28 +15,46 @@ export class ClientsService {
     private readonly rootConfig: RootConfig,
     private readonly kubernetesService: KubernetesService,
     @InjectRepository(OauthClient)
-    private readonly clientsRepository: Repository<OauthClient>
+    private readonly clientsRepository: Repository<OauthClient>,
+    private readonly rolesService: RolesService
   ) {
     this.initialized = this.init();
   }
+  private readonly logger: Logger = new Logger(this.constructor.name);
   initialized: Promise<void>;
 
   async init() {
+    await this.rolesService.initialized;
+
+    // Skip if no clients to initialize or clients already exist
     if (
-      this.rootConfig.initClients.length &&
-      (await this.clientsRepository.count()) === 0
+      !this.rootConfig.initClients.length ||
+      (await this.clientsRepository.count()) > 0
     ) {
-      await Promise.allSettled(
-        this.rootConfig.initClients.map(async (client) => {
-          await this.createClient(client);
-        })
-      );
+      return;
     }
-  }
-  async getClients(paginationOptions: PaginationOptionsDto) {
-    const [data, total] = await this.clientsRepository.findAndCount(
-      paginationOptions.typeOrm
+
+    await Promise.allSettled(
+      this.rootConfig.initClients.map(async (client) => {
+        try {
+          const createdClient = await this.createClient(client);
+          this.logger.log(`Initialized client: ${createdClient.clientId}`);
+          return createdClient;
+        } catch (error) {
+          this.logger.error(
+            `Failed to initialize client: ${client.clientId}`,
+            error
+          );
+          throw error;
+        }
+      })
     );
+  }
+
+  async getClients(paginationOptions: PaginationOptionsDto) {
+    const [data, total] = await this.clientsRepository.findAndCount({
+      ...paginationOptions.typeOrm
+    });
     return {
       data,
       total
@@ -42,7 +62,9 @@ export class ClientsService {
   }
 
   async getClient(clientId: string): Promise<OauthClient> {
-    const client = await this.clientsRepository.findOneBy({ clientId });
+    const client = await this.clientsRepository.findOne({
+      where: { clientId: clientId }
+    });
     if (!client) {
       throw new AppError(
         `Client with id ${clientId} not found`,
@@ -53,14 +75,28 @@ export class ClientsService {
   }
 
   async createClient(
-    createClientData: Partial<OauthClient>
+    createClientData: Partial<ClientDto>
   ): Promise<OauthClient> {
-    const client = this.clientsRepository.create(createClientData);
+    const client = this.clientsRepository.create(
+      await this.fromUserInput(createClientData)
+    );
     await this.kubernetesService.applySecret(client.secretName, {
       clientId: client.clientId,
       clientSecret: client.clientSecret
     });
     return await this.clientsRepository.save(client);
+  }
+
+  /**
+   * Transforms roles from string[] to OauthRole[] objects.
+   */
+  async fromUserInput(
+    clientData: Partial<InitClient> | Partial<ClientDto>
+  ): Promise<OauthClient> {
+    return {
+      ...clientData,
+      roles: await this.rolesService.getRolesByNames(clientData.roles || [])
+    } as OauthClient;
   }
 
   async deleteClient(id: number): Promise<{ deleted: boolean }> {
@@ -76,7 +112,7 @@ export class ClientsService {
 
   async updateClient(
     id: number,
-    updateData: Partial<OauthClient>
+    updateData: Partial<ClientDto>
   ): Promise<OauthClient> {
     const client = await this.clientsRepository.findOneBy({ id });
     if (!client) {
@@ -85,18 +121,22 @@ export class ClientsService {
         HttpStatus.NOT_FOUND
       );
     }
-    Object.assign(client, updateData);
     await this.kubernetesService.applySecret(client.secretName, {
       clientId: client.clientId,
       clientSecret: client.clientSecret
     });
-    return await this.clientsRepository.save(client);
+    return await this.clientsRepository.save({
+      ...client,
+      ...(await this.fromUserInput(updateData))
+    });
   }
 
   async validateClient(client_id: string, client_secret: string) {
-    const client = await this.clientsRepository.findOneBy({
-      clientId: client_id,
-      clientSecret: client_secret
+    const client = await this.clientsRepository.findOne({
+      where: {
+        clientId: client_id,
+        clientSecret: client_secret
+      }
     });
     if (!client) {
       throw new AppError(

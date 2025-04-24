@@ -1,4 +1,5 @@
 import { jest } from "@jest/globals";
+import { REQUEST } from "@nestjs/core";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import {
@@ -20,14 +21,18 @@ import { RootConfig } from "../config.js";
 import { KubernetesService } from "../k8s/kubernetes.service.js";
 import { OauthClient } from "../model/client.dao.js";
 import { KeyDao } from "../model/keys.dao.js";
+import { OauthRole } from "../model/role.dao.js";
 import { TokenDao } from "../model/token.dao.js";
 import { OauthUser } from "../model/user.dao.js";
+import { RolesService } from "../roles/roles.service.js";
 import { UsersService } from "../users/users.service.js";
 import { OauthService } from "./oauth.service.js";
 import { TokenService } from "./token.service.js";
 
 describe("Oauth", () => {
   let oauth: OauthService;
+  let rolesService: RolesService;
+  let userRole: OauthRole;
 
   beforeAll(async () => {
     await TypeOrmTestHelper.instance.setupTestDB();
@@ -37,14 +42,22 @@ describe("Oauth", () => {
         TypeOrmTestHelper.instance.module([
           OauthUser,
           OauthClient,
+          OauthRole,
           TokenDao,
           KeyDao
         ]),
-        TypeOrmModule.forFeature([OauthUser, OauthClient, TokenDao, KeyDao])
+        TypeOrmModule.forFeature([
+          OauthUser,
+          OauthClient,
+          OauthRole,
+          TokenDao,
+          KeyDao
+        ])
       ],
       providers: [
         OauthService,
         UsersService,
+        RolesService,
         {
           provide: KubernetesService,
           useValue: {
@@ -60,24 +73,38 @@ describe("Oauth", () => {
         {
           provide: ServerConfig,
           useValue: config
+        },
+        {
+          provide: REQUEST,
+          useValue: {
+            session: {
+              user: null
+            }
+          }
         }
       ]
     }).compile();
 
     oauth = module.get<OauthService>(OauthService);
 
+    rolesService = module.get<RolesService>(RolesService);
+    userRole = await rolesService.createRole({
+      name: "user",
+      description: "User role"
+    });
+
     await module.get(UsersService).createUser({
       username: "Alice",
       password: "password",
       email: "alice@example.com",
-      roles: ["user"],
+      roles: [userRole.name],
       grants: ["authorization_code"]
     });
     await module.get(ClientsService).createClient({
       clientId: "test-client",
       clientSecret: "test-secret",
       secretName: "test-secret",
-      roles: ["user"],
+      roles: [userRole.name],
       grants: [
         "password",
         "refresh_token",
@@ -257,7 +284,7 @@ describe("Oauth", () => {
           id: 1,
           username: "Alice",
           email: "alice@example.com",
-          roles: ["user"],
+          roles: [userRole],
           grants: ["authorization_code"]
         } as OauthUser
       );
@@ -297,7 +324,7 @@ describe("Oauth", () => {
             id: 1,
             username: "Alice",
             email: "alice@example.com",
-            roles: ["user"],
+            roles: [userRole],
             grants: ["authorization_code"]
           } as OauthUser
         )

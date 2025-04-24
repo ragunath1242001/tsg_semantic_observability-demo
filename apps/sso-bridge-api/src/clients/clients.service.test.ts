@@ -2,25 +2,32 @@ import { jest } from "@jest/globals";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { PaginationOptionsDto, TypeOrmTestHelper } from "@tsg-dsp/common-api";
+import { ClientDto } from "@tsg-dsp/sso-bridge-dtos/dist/clients.dto.js";
 import { plainToInstance } from "class-transformer";
 
 import { RootConfig } from "../config.js";
 import { KubernetesService } from "../k8s/kubernetes.service.js";
 import { OauthClient } from "../model/client.dao.js";
+import { OauthRole } from "../model/role.dao.js";
+import { OauthUser } from "../model/user.dao.js";
+import { RolesService } from "../roles/roles.service.js";
 import { ClientsService } from "./clients.service.js";
 
 describe("ClientsService", () => {
-  let service: ClientsService;
+  let clientsService: ClientsService;
+  let rolesService: RolesService;
+  let userRole: OauthRole;
 
   beforeAll(async () => {
     await TypeOrmTestHelper.instance.setupTestDB();
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        TypeOrmTestHelper.instance.module([OauthClient]),
-        TypeOrmModule.forFeature([OauthClient])
+        TypeOrmTestHelper.instance.module([OauthClient, OauthRole, OauthUser]),
+        TypeOrmModule.forFeature([OauthClient, OauthRole, OauthUser])
       ],
       providers: [
         ClientsService,
+        RolesService,
         {
           provide: KubernetesService,
           useValue: {
@@ -34,7 +41,12 @@ describe("ClientsService", () => {
       ]
     }).compile();
 
-    service = module.get<ClientsService>(ClientsService);
+    clientsService = module.get<ClientsService>(ClientsService);
+    rolesService = module.get<RolesService>(RolesService);
+    userRole = await rolesService.createRole({
+      name: "user",
+      description: "User role"
+    });
   });
 
   afterAll(async () => {
@@ -42,11 +54,11 @@ describe("ClientsService", () => {
   });
 
   it("should create a new client", async () => {
-    const clientData: Partial<OauthClient> = {
+    const clientData: Partial<ClientDto> = {
       clientId: "test-client",
       clientSecret: "test-secret",
       secretName: "test-secret",
-      roles: ["user"],
+      roles: [userRole.name],
       grants: [
         "password",
         "refresh_token",
@@ -57,14 +69,14 @@ describe("ClientsService", () => {
       description: "A test client",
       redirectUris: ["http://localhost:3000"]
     };
-    const created = await service.createClient(clientData);
+    const created = await clientsService.createClient(clientData);
     expect(created).toBeDefined();
     expect(created.id).toBeDefined();
     expect(created.name).toBe("Test Client");
   });
 
   it("should retrieve clients (including the recently created one)", async () => {
-    const clients = await service.getClients(
+    const clients = await clientsService.getClients(
       PaginationOptionsDto.NO_PAGINATION
     );
     expect(Array.isArray(clients.data)).toBeTruthy();
@@ -76,11 +88,11 @@ describe("ClientsService", () => {
 
   it("should update an existing client", async () => {
     // First create a client to update
-    const clientData: Partial<OauthClient> = {
+    const clientData: Partial<ClientDto> = {
       clientId: "updateable-client",
       clientSecret: "test-secret",
       secretName: "test-secret",
-      roles: ["user"],
+      roles: [userRole.name],
       grants: [
         "password",
         "refresh_token",
@@ -91,13 +103,13 @@ describe("ClientsService", () => {
       description: "A test client",
       redirectUris: ["http://localhost:3000"]
     };
-    const created = await service.createClient(clientData);
+    const created = await clientsService.createClient(clientData);
     const updatedData = {
       ...clientData,
       name: "Updated Client"
     };
 
-    const updated = await service.updateClient(created.id, updatedData);
+    const updated = await clientsService.updateClient(created.id, updatedData);
     expect(updated).toBeDefined();
     expect(updated.id).toEqual(created.id);
     expect(updated.name).toBe("Updated Client");
@@ -105,17 +117,17 @@ describe("ClientsService", () => {
 
   it("should throw error when updating a non-existent client", async () => {
     await expect(
-      service.updateClient(999999, { name: "Non-existent" })
+      clientsService.updateClient(999999, { name: "Non-existent" })
     ).rejects.toThrow();
   });
 
   it("should delete an existing client", async () => {
     // First create a client to delete
-    const clientData: Partial<OauthClient> = {
+    const clientData: Partial<ClientDto> = {
       clientId: "deletable-client",
       clientSecret: "test-secret",
       secretName: "test-secret",
-      roles: ["user"],
+      roles: [userRole.name],
       grants: [
         "password",
         "refresh_token",
@@ -126,17 +138,17 @@ describe("ClientsService", () => {
       description: "A test client",
       redirectUris: ["http://localhost:3000"]
     };
-    const created = await service.createClient(clientData);
-    const response = await service.deleteClient(created.id);
+    const created = await clientsService.createClient(clientData);
+    const response = await clientsService.deleteClient(created.id);
     expect(response).toEqual({ deleted: true });
 
     // Confirm deletion by attempting to update the deleted client
     await expect(
-      service.updateClient(created.id, { name: "Should not work" })
+      clientsService.updateClient(created.id, { name: "Should not work" })
     ).rejects.toThrow();
   });
 
   it("should throw error when deleting a non-existent client", async () => {
-    await expect(service.deleteClient(999999)).rejects.toThrow();
+    await expect(clientsService.deleteClient(999999)).rejects.toThrow();
   });
 });

@@ -14,13 +14,16 @@ const toast = useToast();
 
 const submitted = ref(false);
 
-const user = ref<UserDto>({
+const userObj = {
+  id: undefined,
   username: undefined,
   password: undefined,
   email: undefined,
   roles: [],
   grants: []
-});
+};
+
+const user = ref<UserDto>(userObj);
 
 const userGrants = [
   "authorization_code",
@@ -32,17 +35,30 @@ const userGrants = [
   value: grant
 }));
 
+const userRoles = ref<Array<{ label: string; value: string }>>([]);
+const loadRoles = async () => {
+  try {
+    const response = await http.get("/roles");
+    userRoles.value = response.data.map((role) => ({
+      label: role.name,
+      value: role.name
+    }));
+  } catch (error) {
+    toast.add({
+      severity: "error",
+      summary: "Error",
+      detail: "Failed to load roles",
+      life: 3000
+    });
+    console.error("Error loading roles:", error);
+  }
+};
+
 const userDialog = ref(false);
 const deleteUserDialog = ref(false);
 
 const openNew = () => {
-  user.value = {
-    username: undefined,
-    password: undefined,
-    email: undefined,
-    roles: [],
-    grants: []
-  };
+  user.value = userObj;
   submitted.value = false;
   userDialog.value = true;
 };
@@ -59,7 +75,11 @@ const editUser = (data: UserDto) => {
     label: grant,
     value: grant
   }));
-  console.log(user.value);
+  // @ts-expect-error Roles should be annotated with label and value
+  user.value.roles = user.value.roles.map((role) => ({
+    label: role,
+    value: role
+  }));
   userDialog.value = true;
 };
 
@@ -106,24 +126,24 @@ const updateUser = async () => {
 const saveUser = async () => {
   submitted.value = true;
 
-  if (user?.value.username?.trim()) {
+  if (
+    user?.value.username?.trim() &&
+    user?.value.password?.trim() &&
+    user?.value.email?.trim() &&
+    user?.value.roles?.length > 0
+  ) {
     if (user?.value.grants) {
       // @ts-expect-error Grants should be annotated with label and value
       user.value.grants = user.value.grants.map((grant) => grant.value);
     }
+    // @ts-expect-error Roles should be annotated with label and value
+    user.value.roles = user.value.roles.map((role) => role.value);
     if (user.value.id) {
       await updateUser();
     } else {
       await createUser();
     }
   }
-  user.value = {
-    username: undefined,
-    password: undefined,
-    email: undefined,
-    roles: [],
-    grants: []
-  };
   await load();
 };
 
@@ -165,7 +185,7 @@ const { data, loading, total, perPage, load } = setupPagination({
 });
 
 onMounted(async () => {
-  await load();
+  await Promise.all([load(), loadRoles()]);
 });
 </script>
 <template>
@@ -200,8 +220,21 @@ onMounted(async () => {
           <Column field="username" header="Username" sortable />
           <Column field="roles" class="break-all" header="Roles">
             <template #body="slotProps">
-              {{ console.log(slotProps) }}
-              <span>{{ slotProps.data.roles.toString() }}</span>
+              <div class="flex flex-wrap gap-1">
+                <span
+                  v-for="(role, index) in slotProps.data.roles"
+                  :key="index"
+                  class="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">
+                  {{ role }}
+                </span>
+              </div>
+              <span
+                v-if="
+                  !slotProps.data.roles || slotProps.data.roles.length === 0
+                "
+                class="text-gray-500 italic">
+                No roles
+              </span>
             </template>
           </Column>
           <Column field="grants" header="Grants">
@@ -241,7 +274,7 @@ onMounted(async () => {
       :modal="true">
       <div class="flex flex-col gap-6">
         <div>
-          <label for="name" class="block font-bold mb-3">Username</label>
+          <label for="username" class="block font-bold mb-3">Username</label>
           <InputText
             id="username"
             v-model.trim="user.username"
@@ -259,12 +292,16 @@ onMounted(async () => {
             id="password"
             v-model="user.password"
             :required="true"
+            :invalid="submitted && !user.password"
             rows="3"
             cols="20"
             fluid />
+          <small v-if="submitted && !user.password" class="text-red-500"
+            >Password is required.</small
+          >
         </div>
         <div>
-          <label for="name" class="block font-bold mb-3">Email</label>
+          <label for="email" class="block font-bold mb-3">Email</label>
           <InputText
             id="email"
             v-model.trim="user.email"
@@ -277,17 +314,23 @@ onMounted(async () => {
           >
         </div>
         <div>
-          <label for="Roles" class="block font-bold mb-3">Roles</label>
+          <label for="roles" class="block font-bold mb-3">Roles</label>
           <MultiSelect
             id="roles"
             v-model="user.roles"
+            :options="userRoles"
+            required="true"
+            :invalid="submitted && !user.roles"
             option-label="label"
             placeholder="Select Roles"
-            fluid></MultiSelect>
+            fluid>
+          </MultiSelect>
+          <small v-if="submitted && user.roles.length == 0" class="text-red-500"
+            >You must select at least one role.</small
+          >
         </div>
-
         <div>
-          <label for="Grants" class="block font-bold mb-3">Grants</label>
+          <label for="grants" class="block font-bold mb-3">Grants</label>
           <MultiSelect
             id="grants"
             v-model="user.grants"

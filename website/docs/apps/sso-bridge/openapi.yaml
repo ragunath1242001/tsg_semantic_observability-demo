@@ -245,6 +245,116 @@ paths:
           description: User successfully updated.
       summary: Update an existing user
       tags: *a4
+  /api/roles:
+    get:
+      operationId: RolesController_getRoles
+      parameters:
+        - name: order
+          required: false
+          in: query
+          schema:
+            default: DESC
+            type: string
+            enum:
+              - ASC
+              - DESC
+        - name: order_by
+          required: false
+          in: query
+          schema:
+            default: modifiedDate
+            type: string
+        - name: page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            default: 1
+            type: number
+        - name: per_page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            default: 100
+            type: number
+      responses:
+        "200":
+          description: List of roles returned.
+          headers:
+            x-page:
+              description: Index of the current page (starting at 1)
+              schema:
+                type: integer
+            x-prev-page:
+              description: Index of the previous page
+              schema:
+                type: integer
+              required: false
+            x-next-page:
+              description: Index of the next page
+              schema:
+                type: integer
+              required: false
+            x-per-page:
+              description: Number of items per page
+              schema:
+                type: integer
+            x-total-pages:
+              description: Total number of pages
+              schema:
+                type: integer
+            x-total:
+              description: Total number of items
+              schema:
+                type: integer
+            link:
+              description: Web Linking to other pages of this resource
+              schema:
+                type: string
+      summary: Get all roles
+      tags: &a5
+        - Roles
+  /api/roles/create:
+    post:
+      operationId: RolesController_createUser
+      parameters: []
+      responses:
+        "201":
+          description: The role has been successfully created.
+      summary: Create a new role
+      tags: *a5
+  /api/roles/{id}:
+    delete:
+      operationId: RolesController_deleteRole
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Role id
+          schema:
+            type: number
+      responses:
+        "200":
+          description: Role successfully deleted.
+      summary: Delete a role
+      tags: *a5
+  /api/roles/update/{id}:
+    patch:
+      operationId: RolesController_updateRole
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Role id
+          schema:
+            type: number
+      responses:
+        "200":
+          description: Role successfully updated.
+      summary: Update an existing role
+      tags: *a5
   /api/oauth/authorize:
     get:
       description: Authorize a client and redirect to the client's redirect_uri.
@@ -323,7 +433,7 @@ paths:
         "200":
           description: ""
       summary: Authorize
-      tags: &a5
+      tags: &a6
         - Oauth
   /api/oauth/login:
     post:
@@ -408,7 +518,7 @@ paths:
         "201":
           description: ""
       summary: Login
-      tags: *a5
+      tags: *a6
   /api/oauth/token:
     post:
       description: Get a token for the client.
@@ -418,7 +528,7 @@ paths:
         "200":
           description: ""
       summary: Token
-      tags: *a5
+      tags: *a6
   /api/oauth/userinfo:
     get:
       description: Get the userinfo for the token.
@@ -433,7 +543,7 @@ paths:
         "200":
           description: ""
       summary: Get Userinfo
-      tags: *a5
+      tags: *a6
     post:
       description: Get the userinfo for the token.
       operationId: OauthController_userinfoPost
@@ -442,7 +552,7 @@ paths:
         "200":
           description: ""
       summary: Get Userinfo
-      tags: *a5
+      tags: *a6
   /api/oauth/introspect:
     post:
       description: Introspect the token.
@@ -452,7 +562,7 @@ paths:
         "200":
           description: ""
       summary: Introspect
-      tags: *a5
+      tags: *a6
   /api/oauth/device_authorization:
     post:
       description: Device Authorization
@@ -462,7 +572,7 @@ paths:
         "200":
           description: ""
       summary: Device Authorization
-      tags: *a5
+      tags: *a6
   /api/oauth/revocation:
     post:
       description: Revocation of the token.
@@ -472,7 +582,7 @@ paths:
         "200":
           description: ""
       summary: Revocation
-      tags: *a5
+      tags: *a6
   /api/oauth/jwks:
     get:
       description: Get the JWKS for the OAuth server
@@ -488,7 +598,7 @@ paths:
         "502":
           description: ""
       summary: Get JWKS
-      tags: *a5
+      tags: *a6
   /api/.well-known/openid-configuration:
     get:
       description: Find all the open ID metadata for the OAuth server
@@ -575,7 +685,7 @@ paths:
               schema:
                 type: string
       summary: Retrieve all clients
-      tags: &a6
+      tags: &a7
         - Clients
   /api/clients/create:
     post:
@@ -592,7 +702,7 @@ paths:
         "201":
           description: Client created successfully.
       summary: Create a new client
-      tags: *a6
+      tags: *a7
   /api/clients/{id}:
     delete:
       operationId: ClientsController_deleteClient
@@ -606,7 +716,7 @@ paths:
         "200":
           description: Client deleted successfully.
       summary: Delete a client by id
-      tags: *a6
+      tags: *a7
   /api/clients/update/{id}:
     patch:
       operationId: ClientsController_updateClient
@@ -627,7 +737,7 @@ paths:
         "200":
           description: Client updated successfully.
       summary: Update an existing client
-      tags: *a6
+      tags: *a7
   /api/oid4vp/ar/{id}:
     get:
       description: Get the Authorization Request according to the OID4VP specification.
@@ -648,7 +758,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
       summary: Get the Authorization Request
-      tags: &a7
+      tags: &a8
         - OID4VP
   /api/oid4vp/status/{id}:
     get:
@@ -670,7 +780,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
       summary: Get the Authorization Request Status
-      tags: *a7
+      tags: *a8
   /api/oid4vp/redirect/{id}:
     get:
       description: Redirect to the Authorization Request.
@@ -685,7 +795,7 @@ paths:
         "200":
           description: ""
       summary: Redirect to the Authorization Request
-      tags: *a7
+      tags: *a8
   /api/oid4vp/authorize:
     post:
       description: Add an Authorization Request according to the OID4VP specification.
@@ -701,7 +811,7 @@ paths:
         "200":
           description: ""
       summary: Add an Authorization Request
-      tags: *a7
+      tags: *a8
   /api/management/oid4vp/verifier/{id}:
     get:
       description: Obtain an Authorization Request according to the OID4VP specification.

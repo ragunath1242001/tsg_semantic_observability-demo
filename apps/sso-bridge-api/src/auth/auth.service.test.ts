@@ -1,3 +1,4 @@
+import { REQUEST } from "@nestjs/core";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { ServerConfig, TypeOrmTestHelper } from "@tsg-dsp/common-api";
@@ -5,12 +6,16 @@ import { plainToInstance } from "class-transformer";
 import { Request } from "express";
 
 import { RootConfig } from "../config.js";
+import { OauthClient } from "../model/client.dao.js";
+import { OauthRole } from "../model/role.dao.js";
 import { OauthUser } from "../model/user.dao.js";
+import { RolesService } from "../roles/roles.service.js";
 import { UsersService } from "../users/users.service.js";
 import { AuthService } from "./auth.service.js";
 
 describe("AuthService", () => {
   let authService: AuthService;
+  let rolesService: RolesService;
   let usersService: UsersService;
 
   beforeAll(async () => {
@@ -18,11 +23,12 @@ describe("AuthService", () => {
     const config = plainToInstance(ServerConfig, {});
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        TypeOrmTestHelper.instance.module([OauthUser]),
-        TypeOrmModule.forFeature([OauthUser])
+        TypeOrmTestHelper.instance.module([OauthUser, OauthRole, OauthClient]),
+        TypeOrmModule.forFeature([OauthUser, OauthRole, OauthClient])
       ],
       providers: [
         AuthService,
+        RolesService,
         UsersService,
         {
           provide: RootConfig,
@@ -31,25 +37,38 @@ describe("AuthService", () => {
         {
           provide: ServerConfig,
           useValue: config
+        },
+        {
+          provide: REQUEST,
+          useValue: {
+            session: {
+              user: null
+            }
+          }
         }
       ]
     }).compile();
 
     authService = module.get<AuthService>(AuthService);
+    rolesService = module.get<RolesService>(RolesService);
     usersService = module.get<UsersService>(UsersService);
 
+    const userRole = await rolesService.createRole({
+      name: "user",
+      description: "User role"
+    });
     await usersService.createUser({
       username: "Alice",
       password: "password",
       email: "alice@example.com",
-      roles: ["user"],
+      roles: [userRole.name],
       grants: ["authorization_code"]
     });
     await usersService.createUser({
       username: "Bob",
       password: "password",
       email: "bob@example.com",
-      roles: ["user"],
+      roles: [userRole.name],
       grants: ["authorization_code"]
     });
   });
@@ -114,7 +133,12 @@ describe("AuthService", () => {
         id: user.id,
         username: user.username,
         email: user.email,
-        roles: user.roles,
+        roles: user.roles.map((role) =>
+          expect.objectContaining({
+            id: role.id,
+            name: role.name
+          })
+        ),
         grants: user.grants
       }
     });

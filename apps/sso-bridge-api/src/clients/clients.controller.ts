@@ -22,7 +22,7 @@ import { ClientsService } from "./clients.service.js";
 @ApiTags("Clients")
 @Controller("clients")
 @UseGuards(AuthGuard)
-@ManagementRoles("admin")
+@ManagementRoles("ssobridge_admin")
 export class ClientsController {
   constructor(private readonly clientsService: ClientsService) {}
 
@@ -34,7 +34,12 @@ export class ClientsController {
     description: "List of clients returned successfully."
   })
   async getClients(@PaginationQuery() paginationOptions: PaginationOptionsDto) {
-    return await this.clientsService.getClients(paginationOptions);
+    const result = await this.clientsService.getClients(paginationOptions);
+    const transformedData = result.data.map((client) => ({
+      ...client,
+      roles: client.roles?.map((role) => role.name) || []
+    }));
+    return { data: transformedData, total: result.total };
   }
 
   @Post("create")

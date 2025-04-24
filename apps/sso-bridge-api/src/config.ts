@@ -39,6 +39,12 @@ export class RootConfig {
   @IsOptional()
   public readonly server: ServerConfig = new ServerConfig();
 
+  @Description("Initial role configurations")
+  @ValidateNested({ each: true })
+  @Type(() => InitRole)
+  @IsOptional()
+  public readonly initRoles: InitRole[] = [];
+
   @Description("Initial client configurations")
   @ValidateNested({ each: true })
   @Type(() => InitClient)
@@ -76,6 +82,15 @@ export class RootConfig {
       }
     ]
   });
+}
+
+export class InitRole {
+  @Description("Role name")
+  @IsString()
+  name!: string;
+  @Description("Role description")
+  @IsString()
+  description!: string;
 }
 
 export class InitClient {
