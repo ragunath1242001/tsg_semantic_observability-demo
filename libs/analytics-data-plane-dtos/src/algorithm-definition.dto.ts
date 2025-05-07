@@ -3,6 +3,8 @@ import { Type } from "class-transformer";
 import {
   ArrayNotEmpty,
   IsDefined,
+  IsNumber,
+  IsOptional,
   IsString,
   IsUrl,
   ValidateNested
@@ -44,7 +46,7 @@ export class CsvDataRequirements extends DataRequirementsBase {
 
 export type DataRequirements = CsvDataRequirements;
 
-export class TopologyEvent {
+export class AlgorithmEvents {
   @ApiProperty({ description: "Name of the event" })
   @IsString()
   @IsDefined()
@@ -61,24 +63,61 @@ export class TopologyEvent {
   public type!: string;
 }
 
-export class CommunicationTopologyState {
+export class RoleState {
   @ApiProperty({ description: "Name of the state" })
   @IsString()
   @IsDefined()
   public name!: string;
 }
 
-export class CommunicationTopology {
-  @ApiProperty({ description: "Name of the participant (e.g., server, node)" })
+export class RoleCardinality {
+  @ApiProperty({ description: "Minimum number of participants" })
+  @IsNumber()
+  @IsDefined()
+  public min!: number;
+  @ApiProperty({ description: "Maximum number of participants" })
+  @IsNumber()
+  @IsOptional()
+  public max?: number;
+}
+
+export class RoleDefinition {
+  @ApiProperty({ description: "Name of the role (e.g., server, node)" })
   @IsString()
   @IsDefined()
   public name!: string;
 
-  @ApiProperty({ description: "List of states for the participant" })
+  @ApiProperty({ description: "List of states for the role" })
   @ValidateNested({ each: true })
-  @Type(() => CommunicationTopologyState)
+  @Type(() => RoleState)
   @ArrayNotEmpty()
-  public states!: CommunicationTopologyState[];
+  public states!: RoleState[];
+
+  @ApiProperty({ description: "Role cardinality" })
+  @ValidateNested()
+  @Type(() => RoleCardinality)
+  @IsDefined()
+  public cardinality!: RoleCardinality;
+
+  @ApiProperty({
+    description: "List of roles participants in this role sends events to"
+  })
+  @IsString({ each: true })
+  @IsDefined()
+  public communicatesToRoles!: string[];
+
+  @ApiProperty({
+    description: "Data requirements for the participants in this role"
+  })
+  @ValidateNested()
+  @Type(() => DataRequirementsBase, {
+    discriminator: {
+      property: "type",
+      subTypes: [{ value: CsvDataRequirements, name: "csv" }]
+    }
+  })
+  @IsOptional()
+  public dataRequirements?: DataRequirements;
 }
 
 export class InternalEvent {
@@ -147,28 +186,17 @@ export class AlgorithmDefinitionDto {
   @IsDefined()
   public image!: string;
 
-  @ApiProperty({ description: "Data requirements for the algorithm" })
-  @ValidateNested()
-  @Type(() => DataRequirementsBase, {
-    discriminator: {
-      property: "type",
-      subTypes: [{ value: CsvDataRequirements, name: "csv" }]
-    }
-  })
-  @IsDefined()
-  public dataRequirements!: DataRequirements;
-
-  @ApiProperty({ description: "Topology event structure of the algorithm" })
+  @ApiProperty({ description: "Algorithm event structure of the algorithm" })
   @ValidateNested({ each: true })
-  @Type(() => TopologyEvent)
+  @Type(() => AlgorithmEvents)
   @ArrayNotEmpty()
-  public topologyEvents!: TopologyEvent[];
+  public algorithmEvents!: AlgorithmEvents[];
 
-  @ApiProperty({ description: "Communication topology of the algorithm" })
+  @ApiProperty({ description: "Role definitions for the algorithm" })
   @ValidateNested({ each: true })
-  @Type(() => CommunicationTopology)
+  @Type(() => RoleDefinition)
   @ArrayNotEmpty()
-  public communicationTopology!: CommunicationTopology[];
+  public roleDefinitions!: RoleDefinition[];
 
   @ApiProperty({ description: "Internal event structure of the algorithm" })
   @ValidateNested({ each: true })
