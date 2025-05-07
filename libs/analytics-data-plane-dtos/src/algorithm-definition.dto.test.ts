@@ -15,36 +15,7 @@ describe("Algorithm Definition Service", () => {
           "Federated learning algorithm for predictive maintenance, based on the dataset available https://www.kaggle.com/code/jiejiea/ai4i-2020-predictive-maintenance",
         keywords: ["federated", "learning", "predictive", "maintenance"],
         image: "https://example.com/public-image-url",
-        dataRequirements: {
-          type: "csv",
-          columns: [
-            {
-              name: "Air temperature [K]",
-              type: "xs:float"
-            },
-            {
-              name: "Process temperature [K]",
-              type: "xs:float"
-            },
-            {
-              name: "Rotational speed [rpm]",
-              type: "xs:nonNegativeinteger"
-            },
-            {
-              name: "Torque [Nm]",
-              type: "xs:float"
-            },
-            {
-              name: "Tool wear [min]",
-              type: "xs:float"
-            },
-            {
-              name: "Failure Type",
-              type: "xs:nonNegativeinteger"
-            }
-          ]
-        },
-        topologyEvents: [
+        algorithmEvents: [
           {
             name: "data_loaded",
             description: "Data has been loaded",
@@ -76,25 +47,63 @@ describe("Algorithm Definition Service", () => {
             type: "json"
           }
         ],
-        communicationTopology: [
+        roleDefinitions: [
           {
             name: "server",
+            cardinality: {
+              min: 1,
+              max: 1
+            },
             states: [
               { name: "init" },
               { name: "waiting_for_models" },
               { name: "aggregating_models" },
               { name: "finished" }
-            ]
+            ],
+            communicatesToRoles: ["node"]
           },
           {
             name: "node",
+            cardinality: {
+              min: 2
+            },
             states: [
               { name: "init" },
               { name: "loaded_data" },
               { name: "training" },
               { name: "waiting_for_aggregation" },
               { name: "finished" }
-            ]
+            ],
+            communicatesToRoles: ["server"],
+            dataRequirements: {
+              type: "csv",
+              columns: [
+                {
+                  name: "Air temperature [K]",
+                  type: "xs:float"
+                },
+                {
+                  name: "Process temperature [K]",
+                  type: "xs:float"
+                },
+                {
+                  name: "Rotational speed [rpm]",
+                  type: "xs:nonNegativeinteger"
+                },
+                {
+                  name: "Torque [Nm]",
+                  type: "xs:float"
+                },
+                {
+                  name: "Tool wear [min]",
+                  type: "xs:float"
+                },
+                {
+                  name: "Failure Type",
+                  type: "xs:nonNegativeinteger"
+                }
+              ]
+            }
           }
         ],
         internalEvents: [
