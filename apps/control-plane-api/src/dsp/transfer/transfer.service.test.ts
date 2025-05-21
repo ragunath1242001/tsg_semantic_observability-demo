@@ -8,7 +8,12 @@ import {
   ServerConfig,
   TypeOrmTestHelper
 } from "@tsg-dsp/common-api";
-import { DataPlaneRequestResponseDto, DatasetDto } from "@tsg-dsp/common-dsp";
+import {
+  DataPlaneRequestResponseDto,
+  Dataset,
+  DatasetDto,
+  Distribution
+} from "@tsg-dsp/common-dsp";
 import {
   AgreementDto,
   Catalog,
@@ -113,12 +118,12 @@ describe("Transfer service", () => {
           useValue: {
             async getAgreement(): Promise<AgreementDto> {
               return {
-                "@type": "odrl:Agreement",
+                "@type": "Agreement",
                 "@id": "urn:uuid:24bcf50a-fb1b-4820-bbad-e015c6b8ab39",
-                "odrl:assigner": "did:web:localhost",
-                "odrl:assignee": "did:web:localhost",
-                "odrl:target": "urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0cea",
-                "dspace:timestamp": new Date().toISOString()
+                assigner: "did:web:localhost",
+                assignee: "did:web:localhost",
+                target: "urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0cea",
+                timestamp: new Date().toISOString()
               };
             }
           }
@@ -147,13 +152,12 @@ describe("Transfer service", () => {
                 evaluationTime: new Date(),
                 policy: {
                   agreement: {
-                    "@type": "odrl:Agreement",
+                    "@type": "Agreement",
                     "@id": "urn:uuid:24bcf50a-fb1b-4820-bbad-e015c6b8ab39",
-                    "odrl:assigner": "did:web:localhost",
-                    "odrl:assignee": "did:web:localhost",
-                    "odrl:target":
-                      "urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0cea",
-                    "dspace:timestamp": new Date().toISOString()
+                    assigner: "did:web:localhost",
+                    assignee: "did:web:localhost",
+                    target: "urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0cea",
+                    timestamp: new Date().toISOString()
                   }
                 }
               });
@@ -270,14 +274,14 @@ describe("Transfer service", () => {
         "http://remoteparty.test/catalog/datasets/urn%3Auuid%3A08844168-b568-4eb6-b018-aaf6d9cf0cea",
         () => {
           return HttpResponse.json<DatasetDto>({
-            "@context": "https://w3id.org/dspace/2024/1/context.json",
-            "@type": "dcat:Dataset",
+            "@context": defaultContext(),
+            "@type": "Dataset",
             "@id": "urn:uuid:test",
-            "dcat:distribution": [
+            distribution: [
               {
-                "@type": "dcat:Distribution",
+                "@type": "Distribution",
                 "@id": "urn:uuid:test",
-                "dct:format": "dspace:HTTP"
+                format: "tsg:HTTP"
               }
             ]
           });
@@ -289,34 +293,24 @@ describe("Transfer service", () => {
           const reqBody = await ctx.request.json();
           return HttpResponse.json<TransferProcessDto>({
             "@context": defaultContext(),
-            "@type": "dspace:TransferProcess",
-            "dspace:consumerPid": reqBody["dspace:consumerPid"],
-            "dspace:providerPid": remoteProcessId,
-            "dspace:state": TransferState.REQUESTED,
-            "dspace:agreementId": reqBody["dspace:agreementId"]
+            "@type": "TransferProcess",
+            consumerPid: reqBody.consumerPid,
+            providerPid: remoteProcessId,
+            state: TransferState.REQUESTED
           });
         }
       ),
+      http.post(`http://remoteparty.test/transfers/:processId/start`, () => {
+        return HttpResponse.json({ status: "OK" });
+      }),
+      http.post(`http://remoteparty.test/transfers/:processId/suspend`, () => {
+        return HttpResponse.json({ status: "OK" });
+      }),
+      http.post(`http://remoteparty.test/transfers/:processId/complete`, () => {
+        return HttpResponse.json({ status: "OK" });
+      }),
       http.post(
-        `http://remoteparty.test/transfers/${remoteProcessId}/start`,
-        () => {
-          return HttpResponse.json({ status: "OK" });
-        }
-      ),
-      http.post(
-        `http://remoteparty.test/transfers/${remoteProcessId}/suspend`,
-        () => {
-          return HttpResponse.json({ status: "OK" });
-        }
-      ),
-      http.post(
-        `http://remoteparty.test/transfers/${remoteProcessId}/complete`,
-        () => {
-          return HttpResponse.json({ status: "OK" });
-        }
-      ),
-      http.post(
-        `http://remoteparty.test/transfers/${remoteProcessId}/terminate`,
+        `http://remoteparty.test/transfers/:processId/terminate`,
         () => {
           return HttpResponse.json({ status: "OK" });
         }
@@ -332,7 +326,8 @@ describe("Transfer service", () => {
     const dataPlaneService = moduleRef.get(DataPlaneService);
 
     await dataPlaneService.addDataPlane({
-      dataplaneType: "dspace:HTTP",
+      identifier: "urn:uuid:db725fa1-584f-4d9d-91d5-0aa0b0f60848",
+      dataplaneType: "tsg:HTTP",
       endpointPrefix: "",
       callbackAddress: "http://127.0.0.1/data-plane",
       managementAddress: "http://127.0.0.1/data-plane",
@@ -362,7 +357,7 @@ describe("Transfer service", () => {
         "urn:uuid:2d9ea8f0-57da-4ea8-8083-bdb8e6782fc9",
         "http://remoteparty.test/transfers",
         "did:web:remoteparty.test",
-        "dspace:HTTP"
+        "tsg:HTTP"
       );
       expect(transferProcess).toBeDefined();
       expect(transferProcess.process.providerPid).toBe(remoteProcessId);
@@ -372,7 +367,7 @@ describe("Transfer service", () => {
         "urn:uuid:2d9ea8f0-57da-4ea8-8083-bdb8e6782fc9",
         "http://remoteparty.test/transfers",
         "did:web:remoteparty.test",
-        "dspace:HTTP"
+        "tsg:HTTP"
       );
       expect(transferProcessPush).toBeDefined();
       expect(transferProcessPush.process.providerPid).toBe(remoteProcessId);
@@ -411,10 +406,10 @@ describe("Transfer service", () => {
           "http://remoteparty.test/catalog/datasets/urn%3Auuid%3A08844168-b568-4eb6-b018-aaf6d9cf0cea",
           () => {
             return HttpResponse.json<DatasetDto>({
-              "@context": "https://w3id.org/dspace/2024/1/context.json",
-              "@type": "dcat:Dataset",
+              "@context": defaultContext(),
+              "@type": "Dataset",
               "@id": "urn:uuid:test",
-              "dcat:distribution": []
+              distribution: []
             });
           }
         )
@@ -435,19 +430,19 @@ describe("Transfer service", () => {
           "http://remoteparty.test/catalog/datasets/urn%3Auuid%3A08844168-b568-4eb6-b018-aaf6d9cf0cea",
           () => {
             return HttpResponse.json<DatasetDto>({
-              "@context": "https://w3id.org/dspace/2024/1/context.json",
-              "@type": "dcat:Dataset",
+              "@context": defaultContext(),
+              "@type": "Dataset",
               "@id": "urn:uuid:test",
-              "dcat:distribution": [
+              distribution: [
                 {
-                  "@type": "dcat:Distribution",
+                  "@type": "Distribution",
                   "@id": "urn:uuid:test",
-                  "dct:format": "dspace:HTTP"
+                  format: "tsg:HTTP"
                 },
                 {
-                  "@type": "dcat:Distribution",
+                  "@type": "Distribution",
                   "@id": "urn:uuid:test",
-                  "dct:format": "dspace:HTTP"
+                  format: "tsg:HTTP"
                 }
               ]
             });
@@ -471,10 +466,10 @@ describe("Transfer service", () => {
           "urn:uuid:42c1e38d-6069-4111-81c9-edde2ee270b9",
           "http://remoteparty.test/transfers",
           "did:web:remoteparty.test",
-          "dspace:HTTP",
+          "tsg:HTTP",
           "urn:uuid:00000000-0000-0000-0000-000000000000"
         )
-      ).rejects.toThrow("Dataplane for type 'dspace:HTTP' cannot be found");
+      ).rejects.toThrow("Dataplane for type 'tsg:HTTP' cannot be found");
       const dataPlaneId = (
         await moduleRef
           .get(DataPlaneService)
@@ -484,7 +479,7 @@ describe("Transfer service", () => {
         "urn:uuid:3ecd19d6-3cf6-4540-84fa-3ea226230b2f",
         "http://remoteparty.test/transfers",
         "did:web:remoteparty.test",
-        "dspace:HTTP",
+        "tsg:HTTP",
         dataPlaneId
       );
       expect(transferProcessPush).toBeDefined();
@@ -533,7 +528,7 @@ describe("Transfer service", () => {
           providerPid: remoteProcessId,
           consumerPid: localProcessId,
           dataAddress: new DataAddress({
-            endpointType: "dspace:HTTP",
+            endpointType: "tsg:HTTP",
             endpoint: `http://remoteparty.test/data-plane/${remoteProcessId}`,
             endpointProperties: [
               new EndpointProperty({
@@ -579,7 +574,7 @@ describe("Transfer service", () => {
           providerPid: remoteProcessId,
           consumerPid: localProcessId,
           dataAddress: new DataAddress({
-            endpointType: "dspace:HTTP",
+            endpointType: "tsg:HTTP",
             endpoint: `http://remoteparty.test/data-plane/${remoteProcessId}`,
             endpointProperties: [
               new EndpointProperty({
@@ -599,14 +594,14 @@ describe("Transfer service", () => {
       const transferDetail = await transferService.getTransfer(localProcessId);
       expect(transferDetail.state).toBe(TransferState.COMPLETED);
       expect(transferDetail.events.map((event) => event.state)).toEqual([
-        "dspace:REQUESTED",
-        "dspace:SUSPENDED",
-        "dspace:STARTED",
-        "dspace:SUSPENDED",
-        "dspace:STARTED",
-        "dspace:SUSPENDED",
-        "dspace:STARTED",
-        "dspace:COMPLETED"
+        "REQUESTED",
+        "SUSPENDED",
+        "STARTED",
+        "SUSPENDED",
+        "STARTED",
+        "SUSPENDED",
+        "STARTED",
+        "COMPLETED"
       ]);
     });
   });
@@ -614,12 +609,24 @@ describe("Transfer service", () => {
   describe("Provider interactions", () => {
     let localProcessId: string;
     it("Handle new transfer request", async () => {
+      await transferService["dataPlaneService"].addDataset(
+        "urn:uuid:db725fa1-584f-4d9d-91d5-0aa0b0f60848",
+        new Dataset({
+          id: "urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0cea",
+          distribution: [
+            new Distribution({
+              id: "urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0cea:http",
+              format: "tsg:HTTP"
+            })
+          ]
+        })
+      );
       const handledRequest = await transferService.handleRequest(
         new TransferRequestMessage({
           consumerPid: remoteProcessId,
           agreementId: "urn:uuid:2d9ea8f0-57da-4ea8-8083-bdb8e6782fc9",
-          format: "dspace:HTTP",
-          callbackAddress: `http://remoteparty.test/transfers/${remoteProcessId}`
+          format: "tsg:HTTP",
+          callbackAddress: `http://remoteparty.test`
         }),
         "did:web:remoteparty.test",
         []
@@ -662,7 +669,7 @@ describe("Transfer service", () => {
           providerPid: localProcessId,
           consumerPid: remoteProcessId,
           dataAddress: new DataAddress({
-            endpointType: "dspace:HTTP",
+            endpointType: "tsg:HTTP",
             endpoint: `http://localhost/data-plane/${remoteProcessId}`,
             endpointProperties: [
               new EndpointProperty({
@@ -697,7 +704,7 @@ describe("Transfer service", () => {
         "urn:uuid:2d9ea8f0-57da-4ea8-8083-bdb8e6782fc9",
         "http://remoteparty.test/transfers",
         "did:web:remoteparty.test",
-        "dspace:HTTP"
+        "tsg:HTTP"
       );
       await transferService.handleTerminate(
         transferProcess.localId,
@@ -719,7 +726,7 @@ describe("Transfer service", () => {
         "urn:uuid:2d9ea8f0-57da-4ea8-8083-bdb8e6782fc9",
         "http://remoteparty.test/transfers",
         "did:web:remoteparty.test",
-        "dspace:HTTP"
+        "tsg:HTTP"
       );
       await transferService.terminate(
         transferProcess.localId,

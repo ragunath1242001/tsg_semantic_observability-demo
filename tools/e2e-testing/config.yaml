@@ -1,6 +1,7 @@
 db:
   type: sqlite
   database: ":memory:"
+  # database: tck-local.db
   synchronize: true
 
 server:
@@ -20,15 +21,11 @@ registry:
 
 iam:
   type: dev
-  didId: did:web:localhost%3A3001
-  tokenUrl: http://localhost:3001/api/auth/login
-  walletUrl: http://localhost:3001/api
-  clientId: client
-  clientSecret: secret
+  didId: did:web:localhost%3A32490
 
 initCatalog:
-  creator: did:web:localhost%3A3001
-  publisher: did:web:localhost%3A3001
+  creator: did:web:localhost%3A32490
+  publisher: did:web:localhost%3A32490
   title: TSG Test Connector
   description: TSG Test Connector testing Data Space Protocol support
   datasets: []

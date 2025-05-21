@@ -2,68 +2,68 @@ import { ContextDto, ReferenceDto } from "../common.dto.js";
 import { PolicyDto } from "../negotiation/negotiation.dto.js";
 
 export interface ResourceDto extends ContextDto, ReferenceDto {
-  "@type": "dcat:Resource";
-  "dcat:contactPoint"?: string;
-  "dcat:keyword"?: Array<string>;
-  "dcat:landingPage"?: string;
-  "dcat:theme"?: Array<string>;
-  "dct:conformsTo"?: string[];
-  "dct:creator"?: string;
-  "dct:description"?: Array<string>;
-  "dct:identifier"?: string;
-  "dct:isReferencedBy"?: string;
-  "dct:issued"?: string;
-  "dct:language"?: string;
-  "dct:license"?: string;
-  "dct:modified"?: string;
-  "dct:publisher"?: string;
-  "dct:relation"?: string;
-  "dct:title"?: string;
-  "dct:type"?: string;
-  "odrl:hasPolicy"?: Array<PolicyDto>;
-  "dcat:hasVersion"?: Array<string>;
-  "dcat:isVersionOf"?: string;
-  "dcat:version"?: string;
-  "dcat:hasCurrentVersion"?: string;
-  "dcat:previousVersion"?: string;
+  "@type": "Resource";
+  contactPoint?: string;
+  keyword?: Array<string>;
+  landingPage?: string;
+  theme?: Array<string>;
+  conformsTo?: string[];
+  creator?: string;
+  description?: Array<string>;
+  identifier?: string;
+  isReferencedBy?: string;
+  issued?: string;
+  language?: string;
+  license?: string;
+  modified?: string;
+  publisher?: string;
+  relation?: string;
+  title?: string;
+  type?: string;
+  hasPolicy?: Array<PolicyDto>;
+  hasVersion?: Array<string>;
+  isVersionOf?: string;
+  version?: string;
+  hasCurrentVersion?: string;
+  previousVersion?: string;
 }
 
 export interface DataServiceDto extends Omit<ResourceDto, "@type"> {
-  "@type": "dcat:DataService";
-  "dcat:endpointDescription"?: string;
-  "dcat:endpointURL"?: string;
-  "dcat:servesDataset"?: Array<DatasetDto>;
+  "@type": "DataService";
+  endpointDescription?: string;
+  endpointURL?: string;
+  servesDataset?: Array<DatasetDto>;
 }
 
 export interface DistributionDto extends ReferenceDto {
-  "@type": "dcat:Distribution";
-  "dcat:accessService"?: Array<DataServiceDto>;
-  "dcat:accessURL"?: string;
-  "dcat:byteSize"?: string;
-  "dcat:compressFormat"?: string;
-  "dcat:downloadURL"?: string;
-  "dcat:mediaType"?: string;
-  "dcat:packageFormat"?: string;
-  "dcat:spatialResolutionInMeters"?: string;
-  "dcat:temporalResolution"?: string;
-  "dct:conformsTo"?: string[];
-  "dct:description"?: Array<string>;
-  "dct:format"?: string;
-  "dct:issued"?: string;
-  "dct:modified"?: string;
-  "dct:title"?: string;
-  "dcat:hasPolicy"?: Array<PolicyDto>;
+  "@type": "Distribution";
+  accessService?: Array<DataServiceDto>;
+  accessURL?: string;
+  byteSize?: string;
+  compressFormat?: string;
+  downloadURL?: string;
+  mediaType?: string;
+  packageFormat?: string;
+  spatialResolutionInMeters?: string;
+  temporalResolution?: string;
+  conformsTo?: string[];
+  description?: Array<string>;
+  format?: string;
+  issued?: string;
+  modified?: string;
+  title?: string;
+  hasPolicy?: Array<PolicyDto>;
 }
 
 export interface DatasetDto extends Omit<ResourceDto, "@type"> {
-  "@type": "dcat:Dataset";
-  "dcat:distribution"?: Array<DistributionDto>;
-  "dcat:spatialResolutionInMeters"?: string;
-  "dcat:temporalResolution"?: string;
-  "dct:accrualPeriodicity"?: string;
-  "dct:spatial"?: string;
-  "dct:temporal"?: string;
-  "prov:wasGeneratedBy"?: any;
+  "@type": "Dataset";
+  distribution?: Array<DistributionDto>;
+  spatialResolutionInMeters?: string;
+  temporalResolution?: string;
+  accrualPeriodicity?: string;
+  spatial?: string;
+  temporal?: string;
+  wasGeneratedBy?: any;
   "healthdcatap:hasCodingSystem"?: string[];
   "healthdcatap:numberOfRecords"?: number;
   "healthdcatap:numberOfUniqueIndividuals"?: number;
@@ -72,21 +72,22 @@ export interface DatasetDto extends Omit<ResourceDto, "@type"> {
 }
 
 export interface CatalogRecordDto extends ReferenceDto {
-  "@type": "dcat:CatalogRecord";
-  "dct:conformsTo"?: string[];
-  "dct:description"?: Array<string>;
-  "dct:issued"?: Date;
-  "dct:modified"?: Date;
-  "dct:title"?: string;
-  "foaf:primaryTopic"?: ResourceDto;
+  "@type": "CatalogRecord";
+  conformsTo?: string[];
+  description?: Array<string>;
+  issued?: Date;
+  modified?: Date;
+  title?: string;
+  primaryTopic?: ResourceDto;
 }
 
 export interface CatalogDto extends Omit<DatasetDto, "@type"> {
-  "@type": "dcat:Catalog";
-  "dcat:dataset"?: Array<DatasetDto>;
-  "dcat:record"?: CatalogRecordDto;
-  "dcat:service"?: Array<DataServiceDto>;
-  "dcat:themeTaxonomy"?: string;
-  "dct:hasPart"?: Array<ResourceDto>;
-  "foaf:homepage"?: string;
+  "@type": "Catalog";
+  participantId?: string;
+  dataset?: Array<DatasetDto>;
+  record?: CatalogRecordDto;
+  service?: Array<DataServiceDto>;
+  themeTaxonomy?: string;
+  hasPart?: Array<ResourceDto>;
+  homepage?: string;
 }

@@ -2026,7 +2026,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/CredentialStatus"
+                $ref: "#/components/schemas/DCPCredentialStatus"
         "403":
           description: Forbidden
           content:
@@ -2360,7 +2360,7 @@ components:
         - total_physical_size
         - used_global_handles_size
         - used_heap_size
-    IssuanceStatusDto:
+    StatusIssuanceDto:
       type: object
       properties:
         issued:
@@ -2372,7 +2372,7 @@ components:
       required:
         - issued
         - open
-    CredentialStatusDto:
+    StatusCredentialDto:
       type: object
       properties:
         selfSigned:
@@ -2418,13 +2418,13 @@ components:
             issued: 10
             open: 2
           allOf:
-            - $ref: "#/components/schemas/IssuanceStatusDto"
+            - $ref: "#/components/schemas/StatusIssuanceDto"
         credentials:
           example:
             selfSigned: 5
             thirdParty: 1
           allOf:
-            - $ref: "#/components/schemas/CredentialStatusDto"
+            - $ref: "#/components/schemas/StatusCredentialDto"
         keys:
           type: number
           example: 3
@@ -2871,31 +2871,47 @@ components:
     CredentialStatus:
       type: object
       properties:
-        "@context":
-          example:
-            - https://w3id.org/dspace-dcp/v1.0/dcp.jsonld
-          type: array
-          items:
-            type: string
+        id:
+          type: string
+          example: did:example:credential-status
         type:
           type: string
-          example: CredentialStatus
-        issuerPid:
-          type: string
-        holderPid:
-          type: string
-        status:
+          enum:
+            - BitstringStatusListEntry
+          example: BitstringStatusListEntry
+        statusPurpose:
           type: string
           enum:
-            - RECEIVED
-            - REJECTED
-            - ISSUED
+            - refresh
+            - revocation
+            - suspension
+            - message
+          example: suspension
+        statusListIndex:
+          type: string
+          example: "0"
+        statusListCredential:
+          type: string
+          example: did:example:status-credential
+        statusSize:
+          type: string
+          example: "10"
+        statusMessage:
+          example:
+            - status: deadbeef
+              message: Status message detail
+          type: array
+          items:
+            $ref: "#/components/schemas/StatusMessage"
+        statusReference:
+          type: string
+          example: https://example.com/status
       required:
-        - "@context"
+        - id
         - type
-        - issuerPid
-        - holderPid
-        - status
+        - statusPurpose
+        - statusListIndex
+        - statusListCredential
     CredentialSubject:
       type: object
       properties:
@@ -4390,6 +4406,34 @@ components:
         - type
         - holderPid
         - credentials
+    DCPCredentialStatus:
+      type: object
+      properties:
+        "@context":
+          example:
+            - https://w3id.org/dspace-dcp/v1.0/dcp.jsonld
+          type: array
+          items:
+            type: string
+        type:
+          type: string
+          example: CredentialStatus
+        issuerPid:
+          type: string
+        holderPid:
+          type: string
+        status:
+          type: string
+          enum:
+            - RECEIVED
+            - REJECTED
+            - ISSUED
+      required:
+        - "@context"
+        - type
+        - issuerPid
+        - holderPid
+        - status
     AuthorizationDetail:
       type: object
       properties:

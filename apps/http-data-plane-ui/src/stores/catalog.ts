@@ -17,8 +17,8 @@ export const useCatalogStore = defineStore("catalog", {
       try {
         const response = await http.get<CatalogDto>("management/catalog");
         this.catalog = response.data;
-        if (response.data?.["dct:title"]) {
-          this.title = response.data?.["dct:title"];
+        if (response.data?.title) {
+          this.title = response.data?.title;
           window.document.title = `HTTP Data Plane - ${this.title}`;
         }
       } catch (error) {

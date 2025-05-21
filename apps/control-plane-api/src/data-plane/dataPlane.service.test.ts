@@ -76,12 +76,12 @@ describe("DataPlane Service", () => {
           useValue: {
             async getAgreement(): Promise<AgreementDto> {
               return {
-                "@type": "odrl:Agreement",
+                "@type": "Agreement",
                 "@id": "urn:uuid:24bcf50a-fb1b-4820-bbad-e015c6b8ab39",
-                "odrl:assigner": "did:web:localhost",
-                "odrl:assignee": "did:web:localhost",
-                "odrl:target": "urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0cea",
-                "dspace:timestamp": new Date().toISOString()
+                assigner: "did:web:localhost",
+                assignee: "did:web:localhost",
+                target: "urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0cea",
+                timestamp: new Date().toISOString()
               };
             }
           }
@@ -131,24 +131,25 @@ describe("DataPlane Service", () => {
       const dp = await dataPlaneService.getDataPlane(addedDataPlane.identifier);
       expect(dp).toBeDefined();
     });
-
-    it("Dataplane update", async () => {
-      const dataPlane: DataPlaneCreation = {
-        dataplaneType: "http",
-        endpointPrefix: "https://",
-        callbackAddress: "https://httpbin.org/anything",
-        managementAddress: "https://httpbin.org/mgmt",
-        managementToken: "",
-        catalogSynchronization: "pull",
-        role: "consumer"
-      };
-      const addedDataPlane = await dataPlaneService.addDataPlane(dataPlane);
-
-      const dpDetails = await dataPlaneService.getDataPlaneDetails(
-        addedDataPlane.identifier
-      );
-      expect(dpDetails).toBeDefined();
-      if (dpDetails !== undefined) {
+    describe("Dataplane update", () => {
+      it("Add", async () => {
+        const dataPlane: DataPlaneCreation = {
+          identifier: "urn:uuid:f0a10802-90b4-43f5-a8d9-71ccdf907126",
+          dataplaneType: "http",
+          endpointPrefix: "https://",
+          callbackAddress: "https://httpbin.org/anything",
+          managementAddress: "https://httpbin.org/mgmt",
+          managementToken: "",
+          catalogSynchronization: "pull",
+          role: "consumer"
+        };
+        await dataPlaneService.addDataPlane(dataPlane);
+      });
+      it("Update", async () => {
+        const dpDetails = await dataPlaneService.getDataPlaneDetails(
+          "urn:uuid:f0a10802-90b4-43f5-a8d9-71ccdf907126"
+        );
+        expect(dpDetails).toBeDefined();
         dpDetails.callbackAddress = "https://google.com";
         const dpDetailsDto = {
           ...dpDetails,
@@ -158,15 +159,16 @@ describe("DataPlane Service", () => {
         };
 
         await dataPlaneService.updateDataPlane(
-          addedDataPlane.identifier,
+          "urn:uuid:f0a10802-90b4-43f5-a8d9-71ccdf907126",
           dpDetailsDto
         );
-      }
-
-      const dpDetailsUpdated = await dataPlaneService.getDataPlaneDetails(
-        addedDataPlane.identifier
-      );
-      expect(dpDetailsUpdated?.callbackAddress).toBe("https://google.com");
+      });
+      it("Verify", async () => {
+        const dpDetailsUpdated = await dataPlaneService.getDataPlaneDetails(
+          "urn:uuid:f0a10802-90b4-43f5-a8d9-71ccdf907126"
+        );
+        expect(dpDetailsUpdated?.callbackAddress).toBe("https://google.com");
+      });
     });
 
     it("Dataplane delete", async () => {
@@ -194,7 +196,7 @@ describe("DataPlane Service", () => {
         distribution: [
           new Distribution({
             id: "urn:uuid:06d7da99-68eb-4f9e-8cb6-b78666c46123",
-            format: "dspace:HTTP",
+            format: "tsg:HTTP",
             accessService: [
               new DataService({
                 id: "urn:uuid:0d5f0685-eb04-409a-8a77-ee4ed207f2f0",
@@ -221,7 +223,7 @@ describe("DataPlane Service", () => {
         distribution: [
           new Distribution({
             id: "urn:uuid:06d7da99-68eb-4f9e-8cb6-b78666c46123",
-            format: "dspace:HTTP",
+            format: "tsg:HTTP",
             accessService: [
               new DataService({
                 id: "urn:uuid:0d5f0685-eb04-409a-8a77-ee4ed207f2f0",
@@ -280,7 +282,7 @@ describe("DataPlane Service", () => {
         distribution: [
           new Distribution({
             id: "urn:uuid:06d7da99-68eb-4f9e-8cb6-b78666c46133",
-            format: "dspace:HTTP",
+            format: "tsg:HTTP",
             accessService: [
               new DataService({
                 id: "urn:uuid:0d5f0685-eb04-409a-8a77-ee4ed207f2f1",
@@ -355,7 +357,7 @@ describe("DataPlane Service", () => {
         distribution: [
           new Distribution({
             id: "urn:uuid:dd58de12-9118-4651-bdaa-8d5bd4dc070e",
-            format: "dspace:HTTP",
+            format: "tsg:HTTP",
             accessService: [
               new DataService({
                 id: "urn:uuid:2d6f9fbb-5c79-4c8b-8b91-b3f917fe4272",

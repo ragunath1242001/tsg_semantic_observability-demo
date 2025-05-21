@@ -1,7 +1,8 @@
 import { expect, test } from "@jest/globals";
 
 import { defaultContext } from "../../../jsonld/context.defaults.js";
-import { deserialize } from "../../deserialize.js";
+import { compact } from "../../../jsonld/jsonld.js";
+import { deserialize, deserializeSync } from "../../deserialize.js";
 import { Multilanguage } from "../common.js";
 import {
   ContractAgreementMessageDto,
@@ -40,15 +41,15 @@ test("Contract Request Message", async () => {
   const serialized = await contractRequestMessage.serialize();
   const expected: ContractRequestMessageDto = {
     "@context": defaultContext(),
-    "@type": "dspace:ContractRequestMessage",
-    "dspace:consumerPid": "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
-    "dspace:offer": {
-      "@type": "odrl:Offer",
+    "@type": "ContractRequestMessage",
+    consumerPid: "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
+    offer: {
+      "@type": "Offer",
       "@id": "urn:uuid:506f0e00-67ad-4b53-b9b6-5f2580b533c0",
-      "odrl:assigner": "urn:uuid:ef0ab3f8-15c9-4612-a5c3-7c574155e86f",
-      "odrl:target": "urn:uuid:3058a24a-2805-4f00-9276-c4f2234c7117"
+      assigner: "urn:uuid:ef0ab3f8-15c9-4612-a5c3-7c574155e86f",
+      target: "urn:uuid:3058a24a-2805-4f00-9276-c4f2234c7117"
     },
-    "dspace:callbackAddress": "http://example.com"
+    callbackAddress: "http://example.com"
   };
   expect(serialized).toStrictEqual(expected);
   const deserialized = await deserialize<ContractRequestMessage>(serialized);
@@ -67,14 +68,14 @@ test("Contract Offer Message", async () => {
   const serialized = await contractOfferMessage.serialize();
   const expected: ContractOfferMessageDto = {
     "@context": defaultContext(),
-    "@type": "dspace:ContractOfferMessage",
-    "dspace:providerPid": "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
-    "dspace:offer": {
-      "@type": "odrl:Offer",
+    "@type": "ContractOfferMessage",
+    providerPid: "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
+    offer: {
+      "@type": "Offer",
       "@id": "urn:uuid:506f0e00-67ad-4b53-b9b6-5f2580b533c0",
-      "odrl:assigner": "urn:uuid:ef0ab3f8-15c9-4612-a5c3-7c574155e86f"
+      assigner: "urn:uuid:ef0ab3f8-15c9-4612-a5c3-7c574155e86f"
     },
-    "dspace:callbackAddress": "http://example.com"
+    callbackAddress: "http://example.com"
   };
   expect(serialized).toStrictEqual(expected);
   const deserialized = await deserialize<ContractOfferMessage>(serialized);
@@ -92,11 +93,11 @@ test("Contract Negotiation Termination Message", async () => {
   const serialized = await contractNegotiationTerminationMessage.serialize();
   const expected: ContractNegotiationTerminationMessageDto = {
     "@context": defaultContext(),
-    "@type": "dspace:ContractNegotiationTerminationMessage",
-    "dspace:providerPid": "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
-    "dspace:consumerPid": "urn:uuid:0a66a76e-70c9-4c0c-b70d-06e3a0047a9c",
-    "dspace:code": "123:A",
-    "dspace:reason": [
+    "@type": "ContractNegotiationTerminationMessage",
+    providerPid: "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
+    consumerPid: "urn:uuid:0a66a76e-70c9-4c0c-b70d-06e3a0047a9c",
+    code: "123:A",
+    reason: [
       {
         "@value": "Could not proceed with negotiation",
         "@language": "en"
@@ -119,11 +120,11 @@ test("Contract Negotiation", async () => {
   const serialized = await contractNegotiation.serialize();
   const expected: ContractNegotiationDto = {
     "@context": defaultContext(),
-    "@type": "dspace:ContractNegotiation",
+    "@type": "ContractNegotiation",
     "@id": "urn:uuid:448790ed-f829-4994-b148-f2114d1f3a82",
-    "dspace:providerPid": "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
-    "dspace:consumerPid": "urn:uuid:0a66a76e-70c9-4c0c-b70d-06e3a0047a9c",
-    "dspace:state": ContractNegotiationState.REQUESTED
+    providerPid: "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
+    consumerPid: "urn:uuid:0a66a76e-70c9-4c0c-b70d-06e3a0047a9c",
+    state: ContractNegotiationState.REQUESTED
   };
   expect(serialized).toStrictEqual(expected);
   const deserialized = await deserialize<ContractNegotiation>(serialized);
@@ -139,10 +140,10 @@ test("Contract Negotiation Event Message", async () => {
   const serialized = await contractNegotiationEventMessage.serialize();
   const expected: ContractNegotiationEventMessageDto = {
     "@context": defaultContext(),
-    "@type": "dspace:ContractNegotiationEventMessage",
-    "dspace:providerPid": "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
-    "dspace:consumerPid": "urn:uuid:0a66a76e-70c9-4c0c-b70d-06e3a0047a9c",
-    "dspace:eventType": NegotiationEvent.ACCEPTED
+    "@type": "ContractNegotiationEventMessage",
+    providerPid: "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
+    consumerPid: "urn:uuid:0a66a76e-70c9-4c0c-b70d-06e3a0047a9c",
+    eventType: NegotiationEvent.ACCEPTED
   };
   expect(serialized).toStrictEqual(expected);
   const deserialized =
@@ -160,11 +161,11 @@ test("Contract Negotiation Error", async () => {
   const serialized = await contractNegotiationError.serialize();
   const expected: ContractNegotiationErrorDto = {
     "@context": defaultContext(),
-    "@type": "dspace:ContractNegotiationError",
-    "dspace:providerPid": "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
-    "dspace:consumerPid": "urn:uuid:0a66a76e-70c9-4c0c-b70d-06e3a0047a9c",
-    "dct:description": [{ "@language": "en", "@value": "123:A" }],
-    "dspace:reason": [
+    "@type": "ContractNegotiationError",
+    providerPid: "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
+    consumerPid: "urn:uuid:0a66a76e-70c9-4c0c-b70d-06e3a0047a9c",
+    description: [{ "@language": "en", "@value": "123:A" }],
+    reason: [
       {
         "@value": "Could not proceed with negotiation",
         "@language": "en"
@@ -182,19 +183,19 @@ test("Contract AgreementVerification Message", async () => {
       providerPid: "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
       consumerPid: "urn:uuid:0a66a76e-70c9-4c0c-b70d-06e3a0047a9c",
       hashedMessage: {
-        "dspace:algorithm": "ALG",
-        "dspace:digest": "DIGEST"
+        algorithm: "ALG",
+        digest: "DIGEST"
       }
     });
   const serialized = await contractAgreementVerificationMessage.serialize();
   const expected: ContractAgreementVerificationMessageDto = {
     "@context": defaultContext(),
-    "@type": "dspace:ContractAgreementVerificationMessage",
-    "dspace:providerPid": "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
-    "dspace:consumerPid": "urn:uuid:0a66a76e-70c9-4c0c-b70d-06e3a0047a9c",
-    "dspace:hashedMessage": {
-      "dspace:algorithm": "ALG",
-      "dspace:digest": "DIGEST"
+    "@type": "ContractAgreementVerificationMessage",
+    providerPid: "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
+    consumerPid: "urn:uuid:0a66a76e-70c9-4c0c-b70d-06e3a0047a9c",
+    hashedMessage: {
+      algorithm: "ALG",
+      digest: "DIGEST"
     }
   };
   expect(serialized).toStrictEqual(expected);
@@ -218,19 +219,23 @@ test("Contract Agreement Message", async () => {
   const serialized = await contractAgreementMessage.serialize();
   const expected: ContractAgreementMessageDto = {
     "@context": defaultContext(),
-    "@type": "dspace:ContractAgreementMessage",
-    "dspace:providerPid": "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
-    "dspace:consumerPid": "urn:uuid:0a66a76e-70c9-4c0c-b70d-06e3a0047a9c",
-    "dspace:agreement": {
-      "@type": "odrl:Agreement",
+    "@type": "ContractAgreementMessage",
+    providerPid: "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
+    consumerPid: "urn:uuid:0a66a76e-70c9-4c0c-b70d-06e3a0047a9c",
+    agreement: {
+      "@type": "Agreement",
       "@id": "urn:uuid:506f0e00-67ad-4b53-b9b6-5f2580b533c0",
-      "odrl:assigner": "urn:uuid:ef0ab3f8-15c9-4612-a5c3-7c574155e86f",
-      "odrl:assignee": "urn:uuid:86ba9a67-5501-49b5-aba7-f81a8c3b5935",
-      "dspace:timestamp": "2023-07-12T15:26:00Z",
-      "odrl:target": "urn:uuid:urn:uuid:3058a24a-2805-4f00-9276-c4f2234c7117"
+      assigner: "urn:uuid:ef0ab3f8-15c9-4612-a5c3-7c574155e86f",
+      assignee: "urn:uuid:86ba9a67-5501-49b5-aba7-f81a8c3b5935",
+      timestamp: "2023-07-12T15:26:00Z",
+      target: "urn:uuid:urn:uuid:3058a24a-2805-4f00-9276-c4f2234c7117"
     }
   };
   expect(serialized).toStrictEqual(expected);
-  const deserialized = await deserialize<ContractAgreementMessage>(serialized);
+  // const deserialized2 = deserializeSync<ContractAgreementMessage>(serialized);
+  const compacted = await compact(serialized);
+  expect(compacted).toStrictEqual(expected);
+  const deserialized = deserializeSync<ContractAgreementMessage>(compacted);
+  // const deserialized = await deserialize<ContractAgreementMessage>(serialized);
   expect(deserialized).toStrictEqual(contractAgreementMessage);
 });

@@ -154,7 +154,7 @@ onMounted(async () => {
             :id="props.id"
             v-model="dataPlaneForm.dataplaneType"
             class="w-full"
-            placeholder="Type of data plane you are using, e.g. dspace:HTTP"
+            placeholder="Type of data plane you are using, e.g. tsg:HTTP"
             required></InputText>
         </FormField>
         <FormField v-slot="props" label="Identifier">

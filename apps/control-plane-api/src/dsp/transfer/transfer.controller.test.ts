@@ -10,7 +10,10 @@ import {
 import {
   AgreementDto,
   Catalog,
+  DataService,
+  Dataset,
   defaultContext,
+  Distribution,
   Multilanguage,
   TransferCompletionMessage,
   TransferProcessDto,
@@ -26,7 +29,12 @@ import { plainToClass } from "class-transformer";
 import { http, HttpResponse, PathParams } from "msw";
 import { SetupServer, setupServer } from "msw/node";
 
-import { DevWalletConfig, IamConfig, RuntimeConfig } from "../../config.js";
+import {
+  DevWalletConfig,
+  IamConfig,
+  InitCatalog,
+  RuntimeConfig
+} from "../../config.js";
 import { DataPlaneService } from "../../data-plane/dataPlane.service.js";
 import { AgreementDao, TransferMonitorDao } from "../../model/agreement.dao.js";
 import {
@@ -107,11 +115,10 @@ describe("TransferController", () => {
           const reqBody = await ctx.request.json();
           return HttpResponse.json<TransferProcessDto>({
             "@context": defaultContext(),
-            "@type": "dspace:TransferProcess",
-            "dspace:consumerPid": reqBody["dspace:consumerPid"],
-            "dspace:providerPid": remoteProcessId,
-            "dspace:state": TransferState.REQUESTED,
-            "dspace:agreementId": reqBody["dspace:agreementId"]
+            "@type": "TransferProcess",
+            consumerPid: reqBody.consumerPid,
+            providerPid: remoteProcessId,
+            state: TransferState.REQUESTED
           });
         }
       ),
@@ -121,16 +128,15 @@ describe("TransferController", () => {
           const reqBody = await ctx.request.json();
           return HttpResponse.json<TransferProcessDto>({
             "@context": defaultContext(),
-            "@type": "dspace:TransferProcess",
-            "dspace:consumerPid": reqBody["dspace:consumerPid"],
-            "dspace:providerPid": remoteProcessId,
-            "dspace:state": TransferState.REQUESTED,
-            "dspace:agreementId": reqBody["dspace:agreementId"]
+            "@type": "TransferProcess",
+            consumerPid: reqBody.consumerPid,
+            providerPid: remoteProcessId,
+            state: TransferState.REQUESTED
           });
         }
       ),
       http.post(
-        "http://127.0.0.1/transfers/callbacks/:id/:action",
+        "http://127.0.0.1/callbacks/transfers/:id/:action",
         async () => {
           return HttpResponse.json({
             status: "OK"
@@ -197,12 +203,12 @@ describe("TransferController", () => {
           useValue: {
             async getAgreement(): Promise<AgreementDto> {
               return {
-                "@type": "odrl:Agreement",
-                "@id": "urn:uuid:24bcf50a-fb1b-4820-bbad-e015c6b8ab39",
-                "odrl:assigner": "did:web:localhost",
-                "odrl:assignee": "did:web:localhost",
-                "odrl:target": "urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0cea",
-                "dspace:timestamp": new Date().toISOString()
+                "@type": "Agreement",
+                "@id": "urn:uuid:a1b6d55e-a9ee-4e9c-9a72-ce6e0b1db099",
+                assigner: "did:web:localhost",
+                assignee: "did:web:localhost",
+                target: "urn:uuid:a1b6d55e-a9ee-4e9c-9a72-ce6e0b1db099",
+                timestamp: new Date().toISOString()
               };
             }
           }
@@ -225,19 +231,18 @@ describe("TransferController", () => {
                 transferId: transferId,
                 localParticipant: "did:web:localhost",
                 remoteParticipant: remoteParticipant,
-                target: "urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0cea",
+                target: "urn:uuid:a1b6d55e-a9ee-4e9c-9a72-ce6e0b1db099",
                 action: action,
                 verifiableCredentials: verifiableCredentials,
                 evaluationTime: new Date(),
                 policy: {
                   agreement: {
-                    "@type": "odrl:Agreement",
-                    "@id": "urn:uuid:24bcf50a-fb1b-4820-bbad-e015c6b8ab39",
-                    "odrl:assigner": "did:web:localhost",
-                    "odrl:assignee": "did:web:localhost",
-                    "odrl:target":
-                      "urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0cea",
-                    "dspace:timestamp": new Date().toISOString()
+                    "@type": "Agreement",
+                    "@id": "urn:uuid:a1b6d55e-a9ee-4e9c-9a72-ce6e0b1db099",
+                    assigner: "did:web:localhost",
+                    assignee: "did:web:localhost",
+                    target: "urn:uuid:a1b6d55e-a9ee-4e9c-9a72-ce6e0b1db099",
+                    timestamp: new Date().toISOString()
                   }
                 }
               });
@@ -264,7 +269,8 @@ describe("TransferController", () => {
           })
         },
         { provide: ServerConfig, useValue: plainToClass(ServerConfig, {}) },
-        { provide: RuntimeConfig, useValue: plainToClass(RuntimeConfig, {}) }
+        { provide: RuntimeConfig, useValue: plainToClass(RuntimeConfig, {}) },
+        { provide: InitCatalog, useValue: plainToClass(InitCatalog, {}) }
       ]
     })
       .useMocker((token) => {
@@ -285,45 +291,46 @@ describe("TransferController", () => {
     transferService = moduleRef.get(TransferService);
     dataPlaneService = moduleRef.get(DataPlaneService);
 
+    await moduleRef.get(CatalogService).initialized;
+    await moduleRef.get(CatalogService).getCatalogDao();
+
     await dataPlaneService.addDataPlane({
-      dataplaneType: "dspace:HTTP",
+      identifier: "urn:uuid:b363b656-9f63-4e2b-baab-5376a25bdc0b",
+      dataplaneType: "tsg:HTTP",
       endpointPrefix: "",
       callbackAddress: "http://127.0.0.1/data-plane",
       managementAddress: "http://127.0.0.1/data-plane",
       managementToken: "DpuwVK9bnX2MVGf6MVVjlBnI4PvtQSGJ",
       catalogSynchronization: "push",
       role: "both",
-      datasets: [
-        {
-          "@context": defaultContext(),
-          "@type": "dcat:Dataset",
-          "@id": "urn:uuid:a1b6d55e-a9ee-4e9c-9a72-ce6e0b1db099",
-          "dct:title": "Test Dataset",
-          "dcat:distribution": [
-            {
-              "@type": "dcat:Distribution",
-              "@id": "urn:uuid:de465939-8292-49c1-97d5-bcb643df1fdb",
-              "dct:format": "dspace:HTTP",
-              "dcat:accessService": [
-                {
-                  "@type": "dcat:DataService",
-                  "@id": "urn:uuid:1c0c61c5-a977-40f0-84ab-eacf2c1e4b4b",
-                  "dcat:endpointURL": "https://httpbin.org/anything"
-                }
-              ]
-            }
-          ]
-        }
-      ]
+      datasets: []
     });
+    await dataPlaneService.addDataset(
+      "urn:uuid:b363b656-9f63-4e2b-baab-5376a25bdc0b",
+      new Dataset({
+        id: "urn:uuid:a1b6d55e-a9ee-4e9c-9a72-ce6e0b1db099",
+        title: "Test Dataset",
+        distribution: [
+          new Distribution({
+            id: "urn:uuid:de465939-8292-49c1-97d5-bcb643df1fdb",
+            format: "tsg:HTTP",
+            accessService: [
+              new DataService({
+                id: "urn:uuid:1c0c61c5-a977-40f0-84ab-eacf2c1e4b4b",
+                endpointURL: "https://httpbin.org/anything"
+              })
+            ]
+          })
+        ]
+      })
+    );
 
     const transferProviderProcess = await transferService.handleRequest(
       new TransferRequestMessage({
         consumerPid: "urn:uuid:1c0c61c5-a977-40f0-84ab-eacf2c1e4b4b",
         agreementId: "urn:uuid:a1b6d55e-a9ee-4e9c-9a72-ce6e0b1db099",
-        format: "dspace:HTTP",
-        callbackAddress:
-          "http://127.0.0.1/transfers/callbacks/urn:uuid:de465939-8292-49c1-97d5-bcb643df1fdb"
+        format: "tsg:HTTP",
+        callbackAddress: "http://127.0.0.1/callbacks"
       }),
       "did:web:localhost",
       []
@@ -334,7 +341,7 @@ describe("TransferController", () => {
         "urn:uuid:a1b6d55e-a9ee-4e9c-9a72-ce6e0b1db099",
         "http://127.0.0.1/transfers",
         "did:web:localhost",
-        "dspace:HTTP"
+        "tsg:HTTP"
       );
     transferConsumerUuid = transferConsumerProcess.localId;
   });
@@ -349,20 +356,18 @@ describe("TransferController", () => {
         new TransferRequestMessage({
           consumerPid: "urn:uuid:9b17c898-5cce-49f9-944b-20488ef55776",
           agreementId: "urn:uuid:a1b6d55e-a9ee-4e9c-9a72-ce6e0b1db099",
-          format: "dspace:HTTP",
-          callbackAddress:
-            "http://127.0.0.1/transfers/callbacks/urn:uuid:de465939-8292-49c1-97d5-bcb643df1fdb"
+          format: "tsg:HTTP",
+          callbackAddress: "http://127.0.0.1/callbacks"
         }),
         "did:web:localhost",
         { "@context": [], type: [], verifiableCredential: [] }
       );
-      expect(result).toStrictEqual({
+      expect(result).toStrictEqual<TransferProcessDto>({
         "@context": defaultContext(),
-        "@type": "dspace:TransferProcess",
-        "dspace:consumerPid": "urn:uuid:9b17c898-5cce-49f9-944b-20488ef55776",
-        "dspace:providerPid": expect.stringContaining("urn:uuid:"),
-        "dspace:state": "dspace:REQUESTED",
-        "dspace:agreementId": "urn:uuid:a1b6d55e-a9ee-4e9c-9a72-ce6e0b1db099"
+        "@type": "TransferProcess",
+        consumerPid: "urn:uuid:9b17c898-5cce-49f9-944b-20488ef55776",
+        providerPid: expect.stringContaining("urn:uuid:"),
+        state: TransferState.REQUESTED
       });
     });
   });
@@ -373,13 +378,12 @@ describe("TransferController", () => {
         transferProviderUuid,
         "did:web:localhost"
       );
-      expect(result).toStrictEqual({
+      expect(result).toStrictEqual<TransferProcessDto>({
         "@context": defaultContext(),
-        "@type": "dspace:TransferProcess",
-        "dspace:consumerPid": expect.stringContaining("urn:uuid:"),
-        "dspace:providerPid": transferProviderUuid,
-        "dspace:state": "dspace:REQUESTED",
-        "dspace:agreementId": "urn:uuid:a1b6d55e-a9ee-4e9c-9a72-ce6e0b1db099"
+        "@type": "TransferProcess",
+        consumerPid: expect.stringContaining("urn:uuid:"),
+        providerPid: transferProviderUuid,
+        state: TransferState.REQUESTED
       });
     });
     it("Transfer request with unknown id should result in a 404", () => {
@@ -593,7 +597,7 @@ describe("TransferController", () => {
     });
   });
 
-  describe("/callbacks/:id/start", () => {
+  describe("/callbacks/transfers/:id/start", () => {
     it("Transfer start with specified identifier should return a status OK", async () => {
       const result = await transferController.callbackStartTransferProcess(
         transferConsumerUuid,
@@ -623,7 +627,7 @@ describe("TransferController", () => {
     });
   });
 
-  describe("/callbacks/:id/complete", () => {
+  describe("/callbacks/transfers/:id/complete", () => {
     it("Transfer complete with specified identifier should return a status OK", async () => {
       await transferService.handleStart(
         transferConsumerUuid,
@@ -661,7 +665,7 @@ describe("TransferController", () => {
     });
   });
 
-  describe("/callbacks/:id/terminate", () => {
+  describe("/callbacks/transfers/:id/terminate", () => {
     it("Transfer terminate with specified identifier should return a status OK", async () => {
       const result = await transferController.callbackTerminateTransferProcess(
         transferConsumerUuid,
@@ -695,7 +699,7 @@ describe("TransferController", () => {
     });
   });
 
-  describe("/callbacks/:id/suspend", () => {
+  describe("/callbacks/transfers/:id/suspend", () => {
     it("Transfer suspend with specified identifier should return a status OK", async () => {
       await transferService.handleStart(
         transferConsumerUuid,

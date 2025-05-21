@@ -12,6 +12,7 @@ import {
   DataServiceDto,
   Dataset,
   DatasetDto,
+  defaultContext,
   deserialize,
   DistributionDto,
   OfferDto,
@@ -66,51 +67,47 @@ export class DataPlaneService {
     const datasetId = `urn:uuid:${crypto.randomUUID()}`;
     return [
       {
-        "@context": [
-          "https://w3id.org/dspace/2024/1/context.json",
-          "https://tsg.dataspac.es/contexts/next/tsg.json",
-          "https://tsg.dataspac.es/contexts/next/health.json"
-        ],
+        "@context": defaultContext(),
         "@id": datasetId,
-        "@type": "dcat:Dataset",
-        "dct:title": "Analytics Data Plane",
-        "dct:description": ["Default dataset for the analytics data plane"],
-        "dcat:keyword": ["analytics"],
-        "dcat:theme": ["analytics"],
-        "dct:language": "en",
-        "odrl:hasPolicy": [
+        "@type": "Dataset",
+        title: "Analytics Data Plane",
+        description: ["Default dataset for the analytics data plane"],
+        keyword: ["analytics"],
+        theme: ["analytics"],
+        language: "en",
+        hasPolicy: [
           {
-            "@type": "odrl:Offer",
+            "@type": "Offer",
             "@id": `${datasetId}:policy`,
-            "odrl:permission": [
+            permission: [
               {
-                "@type": "odrl:Permission",
-                "odrl:action": "odrl:use",
-                "odrl:target": datasetId,
-                "odrl:constraint": [
+                "@type": "Permission",
+                action: "use",
+                target: datasetId,
+                constraint: [
                   {
-                    "@type": "odrl:Constraint",
-                    "odrl:leftOperand": "dct:format",
-                    "odrl:operator": "odrl:eq",
-                    "odrl:rightOperand": "tsg:analytics"
+                    "@type": "Constraint",
+                    leftOperand: "dct:format",
+                    operator: "eq",
+                    rightOperand: "tsg:analytics"
                   }
                 ]
               } as PermissionDto
             ]
           } as OfferDto
         ],
-        "dcat:distribution": [
+        distribution: [
           {
-            "@type": "dcat:Distribution",
+            "@type": "Distribution",
             "@id": `${datasetId}:application/analytics-data-plane`,
-            "dct:title": "Analytics Data Plane (tsg:analytics)",
-            "dct:format": "tsg:analytics",
-            "dcat:accessService": [
+            title: "Analytics Data Plane (tsg:analytics)",
+            format: "tsg:analytics",
+            accessService: [
               {
-                "@type": "dcat:DataService",
+                "@type": "DataService",
                 "@id": `${datasetId}:analytics-service`,
-                "dct:title": "Analytics Data Plane Service",
-                "dcat:endpointDescription": "dspace:connector"
+                title: "Analytics Data Plane Service",
+                endpointDescription: "dspace:connector"
               } as DataServiceDto
             ]
           } as DistributionDto
@@ -128,9 +125,12 @@ export class DataPlaneService {
       this.logger.log(
         `Creating new state (after ${this.config.controlPlane.initializationDelay}ms)`
       );
-      setTimeout(async () => {
-        await this.registerDataplane();
-      }, this.config.controlPlane.initializationDelay);
+      return new Promise<void>((resolve) => {
+        setTimeout(async () => {
+          await this.registerDataplane();
+          resolve();
+        }, this.config.controlPlane.initializationDelay);
+      });
     }
   }
 
@@ -329,12 +329,12 @@ export class DataPlaneService {
     let agreement: AgreementDto;
     try {
       const response = await this.axiosManagement.get<AgreementDto>(
-        `/agreements/${transfer.request["dspace:agreementId"]}`
+        `/agreements/${transfer.request.agreementId}`
       );
       agreement = response.data;
     } catch (err) {
       throw new DataPlaneClientError(
-        `Fetching agreement ${transfer.request["dspace:agreementId"]} failed`,
+        `Fetching agreement ${transfer.request.agreementId} failed`,
         err
       ).andLog(this.logger);
     }
@@ -356,7 +356,7 @@ export class DataPlaneService {
         {
           params: {
             address: connectorService.serviceEndpoint,
-            id: agreement["odrl:target"],
+            id: agreement.target,
             audience: transfer.remoteParty
           }
         }
@@ -364,7 +364,7 @@ export class DataPlaneService {
       dataset = response.data;
     } catch (err) {
       throw new DataPlaneClientError(
-        `Fetching dataset ${agreement["odrl:target"]} at ${connectorService.serviceEndpoint} (${transfer.remoteParty}) failed`,
+        `Fetching dataset ${agreement.target} at ${connectorService.serviceEndpoint} (${transfer.remoteParty}) failed`,
         err
       ).andLog(this.logger);
     }
@@ -497,13 +497,13 @@ export class DataPlaneService {
     }
     transfer.state = TransferState.STARTED;
     if (transfer.role === "consumer") {
-      if (transferStartMessage["dspace:dataAddress"] === undefined) {
+      if (transferStartMessage.dataAddress === undefined) {
         throw new HttpException(
           `Expected dataAddress in TransferStartMessage`,
           HttpStatus.BAD_REQUEST
         );
       }
-      transfer.dataAddress = transferStartMessage["dspace:dataAddress"];
+      transfer.dataAddress = transferStartMessage.dataAddress;
     }
     await this.transferRepository.save(transfer);
   }

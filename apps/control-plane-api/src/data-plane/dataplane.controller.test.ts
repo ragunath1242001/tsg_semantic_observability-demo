@@ -63,12 +63,12 @@ describe("DataPlaneController", () => {
           useValue: {
             async getAgreement(): Promise<AgreementDto> {
               return {
-                "@type": "odrl:Agreement",
+                "@type": "Agreement",
                 "@id": "urn:uuid:24bcf50a-fb1b-4820-bbad-e015c6b8ab39",
-                "odrl:assigner": "did:web:localhost",
-                "odrl:assignee": "did:web:localhost",
-                "odrl:target": "urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0cea",
-                "dspace:timestamp": new Date().toISOString()
+                assigner: "did:web:localhost",
+                assignee: "did:web:localhost",
+                target: "urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0cea",
+                timestamp: new Date().toISOString()
               };
             }
           }

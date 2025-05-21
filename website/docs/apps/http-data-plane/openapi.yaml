@@ -1654,107 +1654,107 @@ components:
       properties:
         "@type":
           type: string
-          example: odrl:Constraint
-        odrl:leftOperand:
+          example: Constraint
+        leftOperand:
           type: string
-          example: odrl:leftOperandExample
-        odrl:operator:
+          example: leftOperandExample
+        operator:
           type: string
-          example: odrl:operatorExample
-        odrl:rightOperand:
+          example: operatorExample
+        rightOperand:
           type: object
           example:
             value: rightOperandExample
-        odrl:rightOperandReference:
+        rightOperandReference:
           type: string
           example: rightOperandReferenceExample
       required:
         - "@type"
-        - odrl:leftOperand
-        - odrl:operator
+        - leftOperand
+        - operator
     PermissionSchema:
       type: object
       properties:
         "@type":
           type: string
-          example: odrl:Permission
-        odrl:assigner:
+          example: Permission
+        assigner:
           type: string
           example: assignerExample
-        odrl:assignee:
+        assignee:
           type: string
           example: assigneeExample
-        odrl:action:
+        action:
           type: string
-          example: odrl:actionExample
-        odrl:target:
+          example: actionExample
+        target:
           type: string
           example: targetExample
-        odrl:constraint:
+        constraint:
           example: &a15 []
           type: array
           items:
             $ref: "#/components/schemas/ConstraintSchema"
-        odrl:Duty:
+        Duty:
           example: []
           type: array
           items:
             type: string
       required:
         - "@type"
-        - odrl:action
+        - action
     ProhibitionSchema:
       type: object
       properties:
         "@type":
           type: string
-          example: odrl:Prohibition
-        odrl:assigner:
+          example: Prohibition
+        assigner:
           type: string
           example: assignerExample
-        odrl:assignee:
+        assignee:
           type: string
           example: assigneeExample
-        odrl:action:
+        action:
           type: string
-          example: odrl:actionExample
-        odrl:target:
+          example: actionExample
+        target:
           type: string
           example: targetExample
-        odrl:constraint:
+        constraint:
           example: *a15
           type: array
           items:
             $ref: "#/components/schemas/ConstraintSchema"
       required:
         - "@type"
-        - odrl:action
+        - action
     DutySchema:
       type: object
       properties:
         "@type":
           type: string
-          example: odrl:Duty
-        odrl:assigner:
+          example: Duty
+        assigner:
           type: string
           example: assignerExample
-        odrl:assignee:
+        assignee:
           type: string
           example: assigneeExample
-        odrl:action:
+        action:
           type: string
-          example: odrl:actionExample
-        odrl:target:
+          example: actionExample
+        target:
           type: string
           example: targetExample
-        odrl:constraint:
+        constraint:
           example: *a15
           type: array
           items:
             $ref: "#/components/schemas/ConstraintSchema"
       required:
         - "@type"
-        - odrl:action
+        - action
     PolicySchema:
       type: object
       properties:
@@ -1763,32 +1763,32 @@ components:
           example: 3f2592da-ffc9-40cb-a336-a9daa9343ce8
         "@type":
           type: string
-          example: odrl:Offer
-        odrl:assigner:
+          example: Offer
+        assigner:
           type: string
           example: assignerExample
-        odrl:assignee:
+        assignee:
           type: string
           example: assigneeExample
-        odrl:profile:
+        profile:
           type: string
           example: profileExample
-        odrl:permission:
-          example: &a21 []
-          type: array
-          items:
-            $ref: "#/components/schemas/PermissionSchema"
-        odrl:prohibition:
+        permission:
           example: &a22 []
           type: array
           items:
-            $ref: "#/components/schemas/ProhibitionSchema"
-        odrl:obligation:
+            $ref: "#/components/schemas/PermissionSchema"
+        prohibition:
           example: &a23 []
           type: array
           items:
+            $ref: "#/components/schemas/ProhibitionSchema"
+        obligation:
+          example: &a24 []
+          type: array
+          items:
             $ref: "#/components/schemas/DutySchema"
-        odrl:target:
+        target:
           type: string
           example: targetExample
       required:
@@ -1812,117 +1812,120 @@ components:
         "@id":
           type: string
           example: 3f2592da-ffc9-40cb-a336-a9daa9343ce8
-        dcat:contactPoint:
+        contactPoint:
           type: string
           example: contactPointExample
-        dcat:keyword:
+        keyword:
           example: &a16
             - keyword1
             - keyword2
           type: array
           items:
             type: string
-        dcat:landingPage:
+        landingPage:
           type: string
           example: landingPageExample
-        dcat:theme:
+        theme:
           example: &a17
             - theme1
             - theme2
           type: array
           items:
             type: string
-        dcat:conformsTo:
-          type: string
-          example: conformsToExample
-        dct:creator:
+        conformsTo:
+          example: &a18
+            - conformsToExample
+          type: array
+          items:
+            type: string
+        creator:
           type: string
           example: creatorExample
-        dct:description:
-          example: &a18
+        description:
+          example: &a19
             - description1
             - description2
           type: array
           items:
             type: string
-        dct:identifier:
+        identifier:
           type: string
           example: identifierExample
-        dct:isReferencedBy:
+        isReferencedBy:
           type: string
           example: isReferencedByExample
-        dct:issued:
+        issued:
           type: string
           example: 2020-01-01
-        dct:language:
+        language:
           type: string
           example: en
-        dct:license:
+        license:
           type: string
           example: licenseExample
-        dct:modified:
+        modified:
           type: string
           example: 2020-01-02
-        dct:publisher:
+        publisher:
           type: string
           example: publisherExample
-        dct:relation:
+        relation:
           type: string
           example: relationExample
-        dct:title:
+        title:
           type: string
           example: titleExample
-        dct:type:
+        type:
           type: string
           example: typeExample
-        odrl:hasPolicy:
-          example: &a19 []
+        hasPolicy:
+          example: &a20 []
           type: array
           items:
             $ref: "#/components/schemas/PolicySchema"
-        dcat:hasVersion:
-          example: &a20
+        hasVersion:
+          example: &a21
             - version1
             - version2
           type: array
           items:
             type: string
-        dcat:isVersionOf:
+        isVersionOf:
           type: string
           example: isVersionOfExample
-        dcat:version:
+        version:
           type: string
           example: versionExample
-        dcat:hasCurrentVersion:
+        hasCurrentVersion:
           type: string
           example: hasCurrentVersionExample
-        dcat:previousVersion:
+        previousVersion:
           type: string
           example: previousVersionExample
         "@type":
           type: string
-          example: dcat:Dataset
-        dcat:distribution:
+          example: Dataset
+        distribution:
           type: array
           items:
             type: string
-        dcat:spatialResolutionInMeters:
+        spatialResolutionInMeters:
           type: string
           example: "100"
-        dcat:temporalResolution:
+        temporalResolution:
           example: P1Y
           allOf:
             - $ref: "#/components/schemas/DurationSchema"
-        dct:accrualPeriodicity:
+        accrualPeriodicity:
           type: string
           example: accrualPeriodicityExample
-        dct:spatial:
+        spatial:
           type: string
           example: spatialExample
-        dct:temporal:
+        temporal:
           type: string
           example: temporalExample
-        prov:wasGeneratedBy:
+        wasGeneratedBy:
           type: string
           example: wasGeneratedByExample
       required:
@@ -2002,84 +2005,86 @@ components:
           example: 3f2592da-ffc9-40cb-a336-a9daa9343ce8
         "@type":
           type: string
-          example: dcat:Resource
-        dcat:contactPoint:
+          example: Resource
+        contactPoint:
           type: string
           example: contactPointExample
-        dcat:keyword:
+        keyword:
           example: *a16
           type: array
           items:
             type: string
-        dcat:landingPage:
+        landingPage:
           type: string
           example: landingPageExample
-        dcat:theme:
+        theme:
           example: *a17
           type: array
           items:
             type: string
-        dcat:conformsTo:
-          type: string
-          example: conformsToExample
-        dct:creator:
-          type: string
-          example: creatorExample
-        dct:description:
+        conformsTo:
           example: *a18
           type: array
           items:
             type: string
-        dct:identifier:
+        creator:
           type: string
-          example: identifierExample
-        dct:isReferencedBy:
-          type: string
-          example: isReferencedByExample
-        dct:issued:
-          type: string
-          example: 2020-01-01
-        dct:language:
-          type: string
-          example: en
-        dct:license:
-          type: string
-          example: licenseExample
-        dct:modified:
-          type: string
-          example: 2020-01-02
-        dct:publisher:
-          type: string
-          example: publisherExample
-        dct:relation:
-          type: string
-          example: relationExample
-        dct:title:
-          type: string
-          example: titleExample
-        dct:type:
-          type: string
-          example: typeExample
-        odrl:hasPolicy:
+          example: creatorExample
+        description:
           example: *a19
           type: array
           items:
-            $ref: "#/components/schemas/PolicySchema"
-        dcat:hasVersion:
+            type: string
+        identifier:
+          type: string
+          example: identifierExample
+        isReferencedBy:
+          type: string
+          example: isReferencedByExample
+        issued:
+          type: string
+          example: 2020-01-01
+        language:
+          type: string
+          example: en
+        license:
+          type: string
+          example: licenseExample
+        modified:
+          type: string
+          example: 2020-01-02
+        publisher:
+          type: string
+          example: publisherExample
+        relation:
+          type: string
+          example: relationExample
+        title:
+          type: string
+          example: titleExample
+        type:
+          type: string
+          example: typeExample
+        hasPolicy:
           example: *a20
           type: array
           items:
+            $ref: "#/components/schemas/PolicySchema"
+        hasVersion:
+          example: *a21
+          type: array
+          items:
             type: string
-        dcat:isVersionOf:
+        isVersionOf:
           type: string
           example: isVersionOfExample
-        dcat:version:
+        version:
           type: string
           example: versionExample
-        dcat:hasCurrentVersion:
+        hasCurrentVersion:
           type: string
           example: hasCurrentVersionExample
-        dcat:previousVersion:
+        previousVersion:
           type: string
           example: previousVersionExample
       required:
@@ -2093,31 +2098,31 @@ components:
           example: 3f2592da-ffc9-40cb-a336-a9daa9343ce8
         "@type":
           type: string
-          example: dcat:CatalogRecord
-        dct:conformsTo:
+          example: CatalogRecord
+        conformsTo:
           example:
             - conformsToExample
           type: array
           items:
             type: string
-        dct:description:
+        description:
           example:
             - Record description
           type: array
           items:
             type: string
-        dct:issued:
+        issued:
           format: date-time
           type: string
           example: 2020-03-01T00:00:00Z
-        dct:modified:
+        modified:
           format: date-time
           type: string
           example: 2020-03-02T00:00:00Z
-        dct:title:
+        title:
           type: string
           example: Catalog title example
-        foaf:primaryTopic:
+        primaryTopic:
           example: {}
           allOf:
             - $ref: "#/components/schemas/ResourceSchema"
@@ -2130,95 +2135,97 @@ components:
         "@id":
           type: string
           example: 3f2592da-ffc9-40cb-a336-a9daa9343ce8
-        dcat:contactPoint:
+        contactPoint:
           type: string
           example: contactPointExample
-        dcat:keyword:
+        keyword:
           example: *a16
           type: array
           items:
             type: string
-        dcat:landingPage:
+        landingPage:
           type: string
           example: landingPageExample
-        dcat:theme:
+        theme:
           example: *a17
           type: array
           items:
             type: string
-        dcat:conformsTo:
-          type: string
-          example: conformsToExample
-        dct:creator:
-          type: string
-          example: creatorExample
-        dct:description:
+        conformsTo:
           example: *a18
           type: array
           items:
             type: string
-        dct:identifier:
+        creator:
           type: string
-          example: identifierExample
-        dct:isReferencedBy:
-          type: string
-          example: isReferencedByExample
-        dct:issued:
-          type: string
-          example: 2020-01-01
-        dct:language:
-          type: string
-          example: en
-        dct:license:
-          type: string
-          example: licenseExample
-        dct:modified:
-          type: string
-          example: 2020-01-02
-        dct:publisher:
-          type: string
-          example: publisherExample
-        dct:relation:
-          type: string
-          example: relationExample
-        dct:title:
-          type: string
-          example: titleExample
-        dct:type:
-          type: string
-          example: typeExample
-        odrl:hasPolicy:
+          example: creatorExample
+        description:
           example: *a19
           type: array
           items:
-            $ref: "#/components/schemas/PolicySchema"
-        dcat:hasVersion:
+            type: string
+        identifier:
+          type: string
+          example: identifierExample
+        isReferencedBy:
+          type: string
+          example: isReferencedByExample
+        issued:
+          type: string
+          example: 2020-01-01
+        language:
+          type: string
+          example: en
+        license:
+          type: string
+          example: licenseExample
+        modified:
+          type: string
+          example: 2020-01-02
+        publisher:
+          type: string
+          example: publisherExample
+        relation:
+          type: string
+          example: relationExample
+        title:
+          type: string
+          example: titleExample
+        type:
+          type: string
+          example: typeExample
+        hasPolicy:
           example: *a20
           type: array
           items:
+            $ref: "#/components/schemas/PolicySchema"
+        hasVersion:
+          example: *a21
+          type: array
+          items:
             type: string
-        dcat:isVersionOf:
+        isVersionOf:
           type: string
           example: isVersionOfExample
-        dcat:version:
+        version:
           type: string
           example: versionExample
-        dcat:hasCurrentVersion:
+        hasCurrentVersion:
           type: string
           example: hasCurrentVersionExample
-        dcat:previousVersion:
+        previousVersion:
           type: string
           example: previousVersionExample
         "@type":
           type: string
-          example: dcat:DataService
-        dcat:endpointDescription:
+          example: DataService
+        endpointDescription:
           type: string
           example: endpointDescriptionExample
-        dcat:endpointURL:
+        endpointURL:
           type: string
           example: https://example.com/api
-        dcat:servesDataset:
+        servesDataset:
           example: []
           type: array
           items:
@@ -2232,135 +2239,137 @@ components:
         "@id":
           type: string
           example: 3f2592da-ffc9-40cb-a336-a9daa9343ce8
-        dcat:contactPoint:
+        contactPoint:
           type: string
           example: contactPointExample
-        dcat:keyword:
+        keyword:
           example: *a16
           type: array
           items:
             type: string
-        dcat:landingPage:
+        landingPage:
           type: string
           example: landingPageExample
-        dcat:theme:
+        theme:
           example: *a17
           type: array
           items:
             type: string
-        dcat:conformsTo:
-          type: string
-          example: conformsToExample
-        dct:creator:
-          type: string
-          example: creatorExample
-        dct:description:
+        conformsTo:
           example: *a18
           type: array
           items:
             type: string
-        dct:identifier:
+        creator:
           type: string
-          example: identifierExample
-        dct:isReferencedBy:
-          type: string
-          example: isReferencedByExample
-        dct:issued:
-          type: string
-          example: 2020-01-01
-        dct:language:
-          type: string
-          example: en
-        dct:license:
-          type: string
-          example: licenseExample
-        dct:modified:
-          type: string
-          example: 2020-01-02
-        dct:publisher:
-          type: string
-          example: publisherExample
-        dct:relation:
-          type: string
-          example: relationExample
-        dct:title:
-          type: string
-          example: titleExample
-        dct:type:
-          type: string
-          example: typeExample
-        odrl:hasPolicy:
+          example: creatorExample
+        description:
           example: *a19
           type: array
           items:
-            $ref: "#/components/schemas/PolicySchema"
-        dcat:hasVersion:
+            type: string
+        identifier:
+          type: string
+          example: identifierExample
+        isReferencedBy:
+          type: string
+          example: isReferencedByExample
+        issued:
+          type: string
+          example: 2020-01-01
+        language:
+          type: string
+          example: en
+        license:
+          type: string
+          example: licenseExample
+        modified:
+          type: string
+          example: 2020-01-02
+        publisher:
+          type: string
+          example: publisherExample
+        relation:
+          type: string
+          example: relationExample
+        title:
+          type: string
+          example: titleExample
+        type:
+          type: string
+          example: typeExample
+        hasPolicy:
           example: *a20
           type: array
           items:
-            type: string
-        dcat:isVersionOf:
-          type: string
-          example: isVersionOfExample
-        dcat:version:
-          type: string
-          example: versionExample
-        dcat:hasCurrentVersion:
-          type: string
-          example: hasCurrentVersionExample
-        dcat:previousVersion:
-          type: string
-          example: previousVersionExample
-        dcat:distribution:
+            $ref: "#/components/schemas/PolicySchema"
+        hasVersion:
+          example: *a21
           type: array
           items:
             type: string
-        dcat:spatialResolutionInMeters:
+        isVersionOf:
+          type: string
+          example: isVersionOfExample
+        version:
+          type: string
+          example: versionExample
+        hasCurrentVersion:
+          type: string
+          example: hasCurrentVersionExample
+        previousVersion:
+          type: string
+          example: previousVersionExample
+        distribution:
+          type: array
+          items:
+            type: string
+        spatialResolutionInMeters:
           type: string
           example: "100"
-        dcat:temporalResolution:
+        temporalResolution:
           example: P1Y
           allOf:
             - $ref: "#/components/schemas/DurationSchema"
-        dct:accrualPeriodicity:
+        accrualPeriodicity:
           type: string
           example: accrualPeriodicityExample
-        dct:spatial:
+        spatial:
           type: string
           example: spatialExample
-        dct:temporal:
+        temporal:
           type: string
           example: temporalExample
-        prov:wasGeneratedBy:
+        wasGeneratedBy:
           type: string
           example: wasGeneratedByExample
         "@type":
           type: string
-          example: dcat:Catalog
-        dcat:dataset:
+          example: Catalog
+        dataset:
           example: []
           type: array
           items:
             $ref: "#/components/schemas/DatasetSchema"
-        dcat:record:
+        record:
           example: {}
           type: array
           items:
             $ref: "#/components/schemas/CatalogRecordSchema"
-        dcat:service:
+        service:
           example: []
           type: array
           items:
             $ref: "#/components/schemas/DataServiceSchema"
-        dcat:themeTaxonomy:
+        themeTaxonomy:
           type: string
           example: themeTaxonomyExample
-        dct:hasPart:
+        hasPart:
           example: []
           type: array
           items:
             $ref: "#/components/schemas/ResourceSchema"
-        foaf:homepage:
+        homepage:
           type: string
           example: https://example.com/homepage
       required:
@@ -2479,77 +2488,77 @@ components:
       properties:
         "@type":
           type: string
-          example: dspace:EndpointProperty
-        dspace:name:
+          example: EndpointProperty
+        name:
           type: string
           example: endpointName
-        dspace:value:
+        value:
           type: string
           example: endpointValue
       required:
         - "@type"
-        - dspace:name
-        - dspace:value
+        - name
+        - value
     DataAddressSchema:
       type: object
       properties:
         "@type":
           type: string
-          example: dspace:DataAddress
-        dspace:endpointType:
+          example: DataAddress
+        endpointType:
           type: string
           example: http
-        dspace:endpoint:
+        endpoint:
           type: string
           example: https://api.example.com
-        dspace:endpointProperties:
+        endpointProperties:
           example:
-            - "@type": dspace:EndpointProperty
-              dspace:name: endpointName
-              dspace:value: endpointValue
+            - "@type": EndpointProperty
+              name: endpointName
+              value: endpointValue
           type: array
           items:
             $ref: "#/components/schemas/EndpointPropertySchema"
       required:
         - "@type"
-        - dspace:endpointType
-        - dspace:endpoint
-        - dspace:endpointProperties
+        - endpointType
+        - endpoint
+        - endpointProperties
     TransferRequestMessageSchema:
       type: object
       properties:
         "@type":
           type: string
-          example: dspace:TransferRequestMessage
-        dspace:consumerPid:
+          example: TransferRequestMessage
+        consumerPid:
           type: string
           example: consumer-pid-123
-        dspace:agreementId:
+        agreementId:
           type: string
           example: agreement-id-456
-        dct:format:
+        format:
           type: string
           example: application/json
-        dspace:dataAddress:
+        dataAddress:
           example:
-            "@type": dspace:DataAddress
-            dspace:endpointType: http
-            dspace:endpoint: https://api.example.com
-            dspace:endpointProperties:
-              - "@type": dspace:EndpointProperty
-                dspace:name: name
-                dspace:value: value
+            "@type": DataAddress
+            endpointType: http
+            endpoint: https://api.example.com
+            endpointProperties:
+              - "@type": EndpointProperty
+                name: name
+                value: value
           allOf:
             - $ref: "#/components/schemas/DataAddressSchema"
-        dspace:callbackAddress:
+        callbackAddress:
           type: string
           example: https://callback.example.com
       required:
         - "@type"
-        - dspace:consumerPid
-        - dspace:agreementId
-        - dct:format
-        - dspace:callbackAddress
+        - consumerPid
+        - agreementId
+        - format
+        - callbackAddress
     DataPlaneProperty:
       type: object
       properties:
@@ -2606,60 +2615,60 @@ components:
       properties:
         "@type":
           type: string
-          example: dspace:TransferStartMessage
-        dspace:providerPid:
+          example: TransferStartMessage
+        providerPid:
           type: string
           example: provider-pid-789
-        dspace:consumerPid:
+        consumerPid:
           type: string
           example: consumer-pid-123
-        dspace:dataAddress:
+        dataAddress:
           example:
-            "@type": dspace:DataAddress
-            dspace:endpointType: http
-            dspace:endpoint: https://api.example.com
-            dspace:endpointProperties:
-              - "@type": dspace:EndpointProperty
-                dspace:name: name
-                dspace:value: value
+            "@type": DataAddress
+            endpointType: http
+            endpoint: https://api.example.com
+            endpointProperties:
+              - "@type": EndpointProperty
+                name: name
+                value: value
           allOf:
             - $ref: "#/components/schemas/DataAddressSchema"
       required:
         - "@type"
-        - dspace:providerPid
-        - dspace:consumerPid
+        - providerPid
+        - consumerPid
     TransferCompletionMessageSchema:
       type: object
       properties:
         "@type":
           type: string
-          example: dspace:TransferCompletionMessage
-        dspace:providerPid:
+          example: TransferCompletionMessage
+        providerPid:
           type: string
           example: provider-pid-789
-        dspace:consumerPid:
+        consumerPid:
           type: string
           example: consumer-pid-123
       required:
         - "@type"
-        - dspace:providerPid
-        - dspace:consumerPid
+        - providerPid
+        - consumerPid
     TransferTerminationMessageSchema:
       type: object
       properties:
         "@type":
           type: string
-          example: dspace:TransferTerminationMessage
-        dspace:providerPid:
+          example: TransferTerminationMessage
+        providerPid:
           type: string
           example: provider-pid-789
-        dspace:consumerPid:
+        consumerPid:
           type: string
           example: consumer-pid-123
-        dspace:code:
+        code:
           type: string
           example: TERMINATED
-        dspace:reason:
+        reason:
           example:
             - Contract breach
           type: array
@@ -2667,23 +2676,23 @@ components:
             type: string
       required:
         - "@type"
-        - dspace:providerPid
-        - dspace:consumerPid
-        - dspace:code
-        - dspace:reason
+        - providerPid
+        - consumerPid
+        - code
+        - reason
     TransferSuspensionMessageSchema:
       type: object
       properties:
         "@type":
           type: string
-          example: dspace:TransferSuspensionMessage
-        dspace:providerPid:
+          example: TransferSuspensionMessage
+        providerPid:
           type: string
           example: provider-pid-789
-        dspace:consumerPid:
+        consumerPid:
           type: string
           example: consumer-pid-123
-        dspace:reason:
+        reason:
           example:
             - Technical issue
           type: array
@@ -2691,9 +2700,9 @@ components:
             type: string
       required:
         - "@type"
-        - dspace:providerPid
-        - dspace:consumerPid
-        - dspace:reason
+        - providerPid
+        - consumerPid
+        - reason
     TransferDto:
       type: object
       properties:
@@ -2721,11 +2730,11 @@ components:
         state:
           type: string
           enum:
-            - dspace:REQUESTED
-            - dspace:STARTED
-            - dspace:TERMINATED
-            - dspace:COMPLETED
-            - dspace:SUSPENDED
+            - REQUESTED
+            - STARTED
+            - TERMINATED
+            - COMPLETED
+            - SUSPENDED
           example: REQUESTED
         request:
           example: {}
@@ -2770,41 +2779,41 @@ components:
           example: 3f2592da-ffc9-40cb-a336-a9daa9343ce8
         "@type":
           type: string
-          example: odrl:Agreement
-        odrl:assigner:
+          example: Agreement
+        assigner:
           type: string
           example: did:example:assigner
-        odrl:assignee:
+        assignee:
           type: string
           example: did:example:assignee
-        odrl:profile:
+        profile:
           type: string
           example: profileExample
-        odrl:permission:
-          example: *a21
-          type: array
-          items:
-            $ref: "#/components/schemas/PermissionSchema"
-        odrl:prohibition:
+        permission:
           example: *a22
           type: array
           items:
-            $ref: "#/components/schemas/ProhibitionSchema"
-        odrl:obligation:
+            $ref: "#/components/schemas/PermissionSchema"
+        prohibition:
           example: *a23
           type: array
           items:
+            $ref: "#/components/schemas/ProhibitionSchema"
+        obligation:
+          example: *a24
+          type: array
+          items:
             $ref: "#/components/schemas/DutySchema"
-        odrl:target:
+        target:
           type: string
           example: urn:example:target
-        dspace:timestamp:
+        timestamp:
           type: string
           example: 2023-10-01T12:34:56Z
       required:
         - "@id"
         - "@type"
-        - dspace:timestamp
+        - timestamp
     MetadataDto:
       type: object
       properties:

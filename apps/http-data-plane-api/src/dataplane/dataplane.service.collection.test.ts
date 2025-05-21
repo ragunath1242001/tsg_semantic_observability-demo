@@ -191,7 +191,7 @@ describe("Dataplane with CollectionDatasetConfig", () => {
       });
       const datasets = await dataPlaneService.getDatasets();
       expect(datasets).toHaveLength(3);
-      expect(datasets[2]["dcat:version"]).toEqual("v2");
+      expect(datasets[2].version).toEqual("v2");
 
       await expect(
         dataPlaneService.updateDatasetItem("urn:aasx:TestShell4", {

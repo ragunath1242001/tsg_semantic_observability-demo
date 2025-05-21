@@ -2,6 +2,8 @@
 import {
   type CatalogDto,
   type DatasetDto,
+  defaultContext,
+  OfferDto,
   PolicyDto
 } from "@tsg-dsp/common-dsp";
 import DisplayField from "@tsg-dsp/common-ui/components/DisplayField.vue";
@@ -30,21 +32,20 @@ const datasetView = ref(false);
 const datasetData = ref<DatasetDto>();
 
 const { catalog, url } = toRefs(props);
-const datasetList = ref(catalog.value["dcat:dataset"]);
+const datasetList = ref(catalog.value.dataset);
 const datasetVersionList = computed(() => {
   return datasetList.value
-    .filter((dataset) => !dataset["dcat:isVersionOf"])
+    .filter((dataset) => !dataset.isVersionOf)
     .map((rootDataset) => {
       return {
         root: rootDataset,
-        current: rootDataset["dcat:hasCurrentVersion"]
+        current: rootDataset.hasCurrentVersion
           ? datasetList.value.filter(
-              (dataset) =>
-                dataset["@id"] === rootDataset["dcat:hasCurrentVersion"]
+              (dataset) => dataset["@id"] === rootDataset.hasCurrentVersion
             )[0]
           : rootDataset,
         versions: datasetList.value.filter(
-          (dataset) => dataset["dcat:isVersionOf"] === rootDataset["@id"]
+          (dataset) => dataset.isVersionOf === rootDataset["@id"]
         )
       };
     });
@@ -60,12 +61,12 @@ const getDataset = async (datasetId: string) => {
       params: {
         address: url.value,
         id: datasetId,
-        audience: catalog.value["dct:publisher"]
+        audience: catalog.value.publisher
       }
     });
     datasetData.value = response.data;
-    if (datasetData.value?.["odrl:hasPolicy"]) {
-      policy.value = createPolicy(datasetData.value?.["odrl:hasPolicy"]?.[0]);
+    if (datasetData.value?.hasPolicy) {
+      policy.value = createPolicy(datasetData.value?.hasPolicy?.[0]);
     }
     datasetView.value = true;
     return datasetData;
@@ -74,7 +75,7 @@ const getDataset = async (datasetId: string) => {
       toastError({
         error,
         summary: "Failed to send dataset request",
-        defaultMessage: `Could not retrieve dataset with id ${datasetId} at ${url.value} with audience ${catalog.value["dct:publisher"]}`
+        defaultMessage: `Could not retrieve dataset with id ${datasetId} at ${url.value} with audience ${catalog.value.publisher}`
       })
     );
   }
@@ -108,12 +109,12 @@ const closeDatasetView = () => {
 };
 
 const createPolicy = (policy: PolicyDto): string => {
-  const offer = {
+  const offer: OfferDto = {
     ...policy,
-    "@context": "https://w3id.org/dspace/2024/1/context.json",
-    "@type": "odrl:Offer",
+    "@context": defaultContext(),
+    "@type": "Offer",
     "@id": `urn:uuid:${crypto.randomUUID()}`,
-    "odrl:assigner": catalog.value["dct:publisher"]
+    assigner: catalog.value.publisher
   };
   return JSON.stringify(offer, null, 2);
 };
@@ -121,9 +122,9 @@ const createPolicy = (policy: PolicyDto): string => {
 <template>
   <div v-if="!datasetView && singleCatalog" class="col-span-12">
     <Card style="border-radius: 12px; border: 1px solid var(--surface-border)">
-      <template #title>{{ catalog["dct:title"] }}</template>
+      <template #title>{{ catalog.title }}</template>
       <template #subtitle>{{
-        obtainValues(catalog["dct:description"]).join("\r\n")
+        obtainValues(catalog.description).join("\r\n")
       }}</template>
       <template #content>
         <FormField label="Parsed View">
@@ -135,14 +136,14 @@ const createPolicy = (policy: PolicyDto): string => {
           :read-only="true"
           :max-lines="30" />
         <div v-if="parsedView" class="grid grid-cols-12 gap-4">
-          <DisplayField v-if="catalog['dct:publisher']" label="Publisher">{{
-            catalog["dct:publisher"].replace("%3A", ":")
+          <DisplayField v-if="catalog.publisher" label="Publisher">{{
+            catalog.publisher.replace("%3A", ":")
           }}</DisplayField>
           <DisplayField
-            v-if="obtainValues(catalog['dcat:keyword']).length > 0"
+            v-if="obtainValues(catalog.keyword).length > 0"
             label="Keywords">
             <Tag
-              v-for="keyword in obtainValues(catalog['dcat:keyword'])"
+              v-for="keyword in obtainValues(catalog.keyword)"
               :key="keyword"
               class="mr-2 bg-primary-700"
               :value="keyword"></Tag>
@@ -165,62 +166,58 @@ const createPolicy = (policy: PolicyDto): string => {
               <i class="pi pi-database text-xl text-primary-600"></i>
             </span>
             <div
-              v-tooltip.top="dataset.root['dct:title']"
+              v-tooltip.top="dataset.root.title"
               class="bg-surface-0 dark:bg-surface-900 whitespace-nowrap overflow-hidden text-ellipsis">
-              {{ dataset.root["dct:title"] }}
+              {{ dataset.root.title }}
             </div>
           </div>
         </template>
         <template #subtitle>
           <div>
-            {{ obtainValues(dataset.root["dct:description"]).join("\r\n") }}
+            {{ obtainValues(dataset.root.description).join("\r\n") }}
           </div>
-          <div v-if="!!dataset.current['dcat:version']">
-            Current version: {{ dataset.current["dcat:version"] }}
+          <div v-if="!!dataset.current.version">
+            Current version: {{ dataset.current.version }}
           </div>
         </template>
         <template #content>
           <div style="min-height: 4em">
             <span class="font-semibold">
-              Policies: {{ dataset.current["odrl:hasPolicy"]?.length ?? 0 }}
+              Policies: {{ dataset.current.hasPolicy?.length ?? 0 }}
             </span>
             <div class="pt-4">
               <span class="font-semibold">References</span>
               <ul>
                 <li v-if="dataset.versions.length === 0">
                   <Links
-                    :url-array="dataset.current['dct:conformsTo']"
+                    :url-array="dataset.current.conformsTo"
                     label="Model" />
                 </li>
                 <template v-else>
                   <li>
                     <Links
-                      v-if="dataset.root['dct:conformsTo']"
-                      :url-array="dataset.root['dct:conformsTo']"
+                      v-if="dataset.root.conformsTo"
+                      :url-array="dataset.root.conformsTo"
                       label="Abstract model" />
                   </li>
                   <li>
                     <Links
-                      :url-array="dataset.current['dct:conformsTo']"
+                      :url-array="dataset.current.conformsTo"
                       label="Version model" />
                   </li>
                 </template>
                 <li>
                   <Links
-                    :url-array="
-                      dataset.current['dcat:distribution']?.[0]?.[
-                        'dct:conformsTo'
-                      ]
-                    "
+                    :url-array="dataset.current.distribution?.[0]?.conformsTo"
                     label="Format" />
                 </li>
               </ul>
             </div>
           </div>
-          <template v-if="dataset.current['dcat:keyword']">
+          <template v-if="dataset.current.keyword">
             <div class="pt-4 pb-1 font-semibold">Keywords</div>
             <Tag
-              v-for="keyword in obtainValues(dataset.current['dcat:keyword'])"
+              v-for="keyword in obtainValues(dataset.current.keyword)"
               :key="keyword"
               class="mr-1"
               :value="keyword"
@@ -240,10 +237,7 @@ const createPolicy = (policy: PolicyDto): string => {
                 <ul>
                   <li v-for="version in dataset.versions" :key="version['@id']">
                     <div>
-                      {{
-                        version["dcat:distribution"]?.[0]?.["dct:title"] ??
-                        version["dct:title"]
-                      }}
+                      {{ version.distribution?.[0]?.title ?? version.title }}
                       <i
                         v-if="version['@id'] !== dataset.current['@id']"
                         class="mx-1 pi pi-trash text-red-500 cursor-pointer"
@@ -263,7 +257,7 @@ const createPolicy = (policy: PolicyDto): string => {
         <template #footer>
           <div class="flex items-center card-footer justify-right">
             <span v-if="!ownCatalog" class="flex-auto p-card-subtitle mb-0">
-              {{ catalog["dct:title"] }}
+              {{ catalog.title }}
             </span>
             <span class="flex-auto text-right">
               <Button
@@ -295,7 +289,7 @@ const createPolicy = (policy: PolicyDto): string => {
     :dataset-data-prop="datasetData"
     :policy="policy"
     :address="url"
-    :did-id="catalog['dct:publisher']"
+    :did-id="catalog.publisher"
     :dataset-view="datasetView"
     :own-dataset="ownCatalog"
     @change-dataset-view="closeDatasetView"

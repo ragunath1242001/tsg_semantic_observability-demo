@@ -3,16 +3,13 @@ import { expect, test } from "@jest/globals";
 import { defaultContext } from "../../../jsonld/context.defaults.js";
 import { deserialize } from "../../deserialize.js";
 import { Multilanguage } from "../common.js";
-import { Catalog } from "./catalog.js";
 import {
   CatalogErrorDto,
-  CatalogMessageDto,
   CatalogRequestMessageDto,
   DatasetRequestMessageDto
 } from "./messages.dto.js";
 import {
   CatalogError,
-  CatalogMessage,
   CatalogRequestMessage,
   DatasetRequestMessage
 } from "./messages.js";
@@ -30,9 +27,9 @@ test("Catalog Error", async () => {
   const serialized = await catalogError.serialize();
   const expected: CatalogErrorDto = {
     "@context": defaultContext(),
-    "@type": "dspace:CatalogError",
-    "dspace:code": "123:A",
-    "dspace:reason": [
+    "@type": "CatalogError",
+    code: "123:A",
+    reason: [
       {
         "@value": "Catalog not provisioned for this requester.",
         "@language": "en"
@@ -44,47 +41,23 @@ test("Catalog Error", async () => {
   expect(deserialized).toStrictEqual(catalogError);
 });
 
-test("Catalog Message", async () => {
-  const catalogMessage = new CatalogMessage({
-    catalog: [
-      new Catalog({
-        id: "urn:uuid:5b156cfa-5800-4345-8acc-6725c7eb5bc2"
-      })
-    ]
-  });
-  const serialized = await catalogMessage.serialize();
-  const expected: CatalogMessageDto = {
-    "@context": defaultContext(),
-    "@type": "dspace:CatalogMessage",
-    "dspace:catalog": [
-      {
-        "@type": "dcat:Catalog",
-        "@id": "urn:uuid:5b156cfa-5800-4345-8acc-6725c7eb5bc2"
-      }
-    ]
-  };
-  expect(serialized).toStrictEqual(expected);
-  const deserialized = await deserialize<CatalogMessage>(expected);
-  expect(deserialized).toStrictEqual(catalogMessage);
-});
-
 test("Catalog Request Message", async () => {
   const catalogRequestMessage = new CatalogRequestMessage({
     filter: [
       {
-        "@type": "dspace:Filter",
-        "dspace:SPARQL": "DESCRIBE * WHERE {?s ?p ?o.}"
+        "@type": "Filter",
+        "tsg:SPARQL": "DESCRIBE * WHERE {?s ?p ?o.}"
       }
     ]
   });
   const serialized = await catalogRequestMessage.serialize();
   const expected: CatalogRequestMessageDto = {
     "@context": defaultContext(),
-    "@type": "dspace:CatalogRequestMessage",
-    "dspace:filter": [
+    "@type": "CatalogRequestMessage",
+    filter: [
       {
-        "@type": "dspace:Filter",
-        "dspace:SPARQL": "DESCRIBE * WHERE {?s ?p ?o.}"
+        "@type": "Filter",
+        "tsg:SPARQL": "DESCRIBE * WHERE {?s ?p ?o.}"
       }
     ]
   };
@@ -100,8 +73,8 @@ test("Dataset Request Message", async () => {
   const serialized = await datasetRequestMessage.serialize();
   const expected: DatasetRequestMessageDto = {
     "@context": defaultContext(),
-    "@type": "dspace:DatasetRequestMessage",
-    "dspace:dataset": "urn:uuid:5b156cfa-5800-4345-8acc-6725c7eb5bc2"
+    "@type": "DatasetRequestMessage",
+    dataset: "urn:uuid:5b156cfa-5800-4345-8acc-6725c7eb5bc2"
   };
   expect(serialized).toStrictEqual(expected);
   const deserialized = await deserialize<DatasetRequestMessage>(expected);

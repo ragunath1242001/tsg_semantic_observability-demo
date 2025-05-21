@@ -18,21 +18,21 @@ const http = injectStrict(AxiosKey);
 const status = ref<StatusDto>();
 
 const negotiationStateColors = {
-  "dspace:REQUESTED": "#60a5fa",
-  "dspace:OFFERED": "#fbbf24",
-  "dspace:ACCEPTED": "#34d399",
-  "dspace:AGREED": "#38bdf8",
-  "dspace:VERIFIED": "#c084fc",
-  "dspace:FINALIZED": "#10b981",
-  "dspace:TERMINATED": "#f87171"
+  REQUESTED: "#60a5fa",
+  OFFERED: "#fbbf24",
+  ACCEPTED: "#34d399",
+  AGREED: "#38bdf8",
+  VERIFIED: "#c084fc",
+  FINALIZED: "#10b981",
+  TERMINATED: "#f87171"
 };
 
 const transferStateColors = {
-  "dspace:REQUESTED": "#60a5fa",
-  "dspace:STARTED": "#34d399",
-  "dspace:TERMINATED": "#f87171",
-  "dspace:COMPLETED": "#10b981",
-  "dspace:SUSPENDED": "#fbbf24"
+  REQUESTED: "#60a5fa",
+  STARTED: "#34d399",
+  TERMINATED: "#f87171",
+  COMPLETED: "#10b981",
+  SUSPENDED: "#fbbf24"
 };
 
 const capitalize = (s: string) => {
@@ -54,9 +54,7 @@ const mapToMeter = (
   return {
     labels: data.map(
       (negotiations) =>
-        `${capitalize(negotiations.state.replace("dspace:", ""))} (${
-          negotiations.count
-        })`
+        `${capitalize(negotiations.state)} (${negotiations.count})`
     ),
     datasets: [
       {

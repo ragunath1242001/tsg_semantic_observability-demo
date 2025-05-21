@@ -133,26 +133,26 @@ describe("Policy Evaluation Service", () => {
       evaluationTime: new Date("2024-08-01T12:00:00Z"),
       policy: {
         agreement: {
-          "@type": "odrl:Agreement",
+          "@type": "Agreement",
           "@id": "urn:uuid:00000000-0000-0000-0000-000000000000",
-          "odrl:assigner": "did:web:localhost",
-          "odrl:assignee": "did:web:remote.com",
-          "dspace:timestamp": new Date("2024-08-01T12:00:00Z").toISOString(),
-          "odrl:target": "urn:uuid:33147fb2-8896-4a53-983b-61000b6559b6",
-          "odrl:permission": [
+          assigner: "did:web:localhost",
+          assignee: "did:web:remote.com",
+          timestamp: new Date("2024-08-01T12:00:00Z").toISOString(),
+          target: "urn:uuid:33147fb2-8896-4a53-983b-61000b6559b6",
+          permission: [
             {
-              "@type": "odrl:Permission",
-              "odrl:action": ODRLAction.USE
+              "@type": "Permission",
+              action: ODRLAction.USE
             }
           ]
         },
         localSignature: {
-          "dspace:algorithm": "JsonWebSignature2020",
-          "dspace:digest": "{}"
+          algorithm: "JsonWebSignature2020",
+          digest: "{}"
         },
         remoteSignature: {
-          "dspace:algorithm": "JsonWebSignature2020",
-          "dspace:digest": "{}"
+          algorithm: "JsonWebSignature2020",
+          digest: "{}"
         },
         signatureStatus: "verified"
       }
@@ -188,40 +188,40 @@ describe("Policy Evaluation Service", () => {
         decision: "DENY"
       });
       evaluation["context"].remoteParticipant = "did:web:remote.com";
-      evaluation["context"]["policy"]["agreement"]["odrl:prohibition"] = [
+      evaluation["context"]["policy"]["agreement"]["prohibition"] = [
         {
-          "@type": "odrl:Prohibition",
-          "odrl:action": ODRLAction.DELETE
+          "@type": "Prohibition",
+          action: ODRLAction.DELETE
         }
       ];
-      evaluation["context"]["policy"]["agreement"]["odrl:obligation"] = [
+      evaluation["context"]["policy"]["agreement"]["obligation"] = [
         {
-          "@type": "odrl:Duty",
-          "odrl:action": ODRLAction.INFORM
+          "@type": "Duty",
+          action: ODRLAction.INFORM
         }
       ];
       await expect(evaluation.evaluate()).resolves.toMatchObject({
         decision: "ALLOW"
       });
-      evaluation["context"]["policy"]["agreement"]["odrl:prohibition"] = [
+      evaluation["context"]["policy"]["agreement"]["prohibition"] = [
         {
-          "@type": "odrl:Prohibition",
-          "odrl:action": ODRLAction.USE
+          "@type": "Prohibition",
+          action: ODRLAction.USE
         }
       ];
       await expect(evaluation.evaluate()).resolves.toMatchObject({
         decision: "DENY"
       });
-      evaluation["context"]["policy"]["agreement"]["odrl:prohibition"] = [
+      evaluation["context"]["policy"]["agreement"]["prohibition"] = [
         {
-          "@type": "odrl:Prohibition",
-          "odrl:action": ODRLAction.USE,
-          "odrl:constraint": [
+          "@type": "Prohibition",
+          action: ODRLAction.USE,
+          constraint: [
             {
-              "@type": "odrl:Constraint",
-              "odrl:leftOperand": "tsg:testString2",
-              "odrl:operator": "tsg:unknown",
-              "odrl:rightOperand": "unknown"
+              "@type": "Constraint",
+              leftOperand: "tsg:testString2",
+              operator: "tsg:unknown",
+              rightOperand: "unknown"
             }
           ]
         }
@@ -229,18 +229,17 @@ describe("Policy Evaluation Service", () => {
       await expect(evaluation.evaluate()).resolves.toMatchObject({
         decision: "DENY"
       });
-      evaluation["context"]["policy"]["agreement"]["odrl:prohibition"] =
-        undefined;
-      evaluation["context"]["policy"]["agreement"]["odrl:permission"] = [
+      evaluation["context"]["policy"]["agreement"]["prohibition"] = undefined;
+      evaluation["context"]["policy"]["agreement"]["permission"] = [
         {
-          "@type": "odrl:Permission",
-          "odrl:action": ODRLAction.USE,
-          "odrl:constraint": [
+          "@type": "Permission",
+          action: ODRLAction.USE,
+          constraint: [
             {
-              "@type": "odrl:Constraint",
-              "odrl:leftOperand": "tsg:testString2",
-              "odrl:operator": "tsg:unknown",
-              "odrl:rightOperand": "unknown"
+              "@type": "Constraint",
+              leftOperand: "tsg:testString2",
+              operator: "tsg:unknown",
+              rightOperand: "unknown"
             }
           ]
         }
@@ -248,8 +247,7 @@ describe("Policy Evaluation Service", () => {
       await expect(evaluation.evaluate()).resolves.toMatchObject({
         decision: "DENY"
       });
-      evaluation["context"]["policy"]["agreement"]["odrl:permission"] =
-        undefined;
+      evaluation["context"]["policy"]["agreement"]["permission"] = undefined;
       await expect(evaluation.evaluate()).resolves.toMatchObject({
         decision: "ALLOW"
       });
@@ -272,16 +270,16 @@ describe("Policy Evaluation Service", () => {
         );
         await agreementService.storeAgreement(
           {
-            "@type": "odrl:Agreement",
+            "@type": "Agreement",
             "@id": "urn:uuid:00000000-0000-0000-0000-000000000000",
-            "odrl:assigner": "did:web:localhost",
-            "odrl:assignee": "did:web:remote.com",
-            "dspace:timestamp": new Date("2024-08-01T12:00:00Z").toISOString(),
-            "odrl:target": "urn:uuid:33147fb2-8896-4a53-983b-61000b6559b6",
-            "odrl:permission": [
+            assigner: "did:web:localhost",
+            assignee: "did:web:remote.com",
+            timestamp: new Date("2024-08-01T12:00:00Z").toISOString(),
+            target: "urn:uuid:33147fb2-8896-4a53-983b-61000b6559b6",
+            permission: [
               {
-                "@type": "odrl:Permission",
-                "odrl:action": ODRLAction.USE
+                "@type": "Permission",
+                action: ODRLAction.USE
               }
             ]
           },
@@ -295,28 +293,26 @@ describe("Policy Evaluation Service", () => {
           transferId: "urn:uuid:89ce47c1-aa1c-4b97-8e82-f136e744552f",
           policy: {
             agreement: {
-              "@type": "odrl:Agreement",
+              "@type": "Agreement",
               "@id": "urn:uuid:00000000-0000-0000-0000-000000000000",
-              "odrl:assigner": "did:web:localhost",
-              "odrl:assignee": "did:web:remote.com",
-              "dspace:timestamp": new Date(
-                "2024-08-01T12:00:00Z"
-              ).toISOString(),
-              "odrl:target": "urn:uuid:33147fb2-8896-4a53-983b-61000b6559b6",
-              "odrl:permission": [
+              assigner: "did:web:localhost",
+              assignee: "did:web:remote.com",
+              timestamp: new Date("2024-08-01T12:00:00Z").toISOString(),
+              target: "urn:uuid:33147fb2-8896-4a53-983b-61000b6559b6",
+              permission: [
                 {
-                  "@type": "odrl:Permission",
-                  "odrl:action": ODRLAction.USE
+                  "@type": "Permission",
+                  action: ODRLAction.USE
                 }
               ]
             },
             localSignature: {
-              "dspace:algorithm": "JsonWebSignature2020",
-              "dspace:digest": "{}"
+              algorithm: "JsonWebSignature2020",
+              digest: "{}"
             },
             remoteSignature: {
-              "dspace:algorithm": "JsonWebSignature2020",
-              "dspace:digest": "{}"
+              algorithm: "JsonWebSignature2020",
+              digest: "{}"
             },
             signatureStatus: "verified"
           },

@@ -66,17 +66,17 @@ export class NegotiationListener {
       dataset = null;
       this.logger.error("Error fetching dataset", err);
     }
-    const datasetPolicy = dataset?.["odrl:hasPolicy"]?.[0];
+    const datasetPolicy = dataset?.hasPolicy?.[0];
     if (!datasetPolicy) {
       this.logger.error(`No policy in dataset with id ${event.datasetId}`);
       this.terminate(event);
 
       return;
     }
-    if (!datasetPolicy["odrl:target"]) {
-      datasetPolicy["odrl:target"] = dataset?.["@id"];
+    if (!datasetPolicy.target) {
+      datasetPolicy.target = dataset?.["@id"];
     }
-    datasetPolicy["odrl:assignee"] = event.remoteParty;
+    datasetPolicy.assignee = event.remoteParty;
 
     const offerIncludedInPolicy = deepSubset(datasetPolicy, event.offer, [
       "@id",

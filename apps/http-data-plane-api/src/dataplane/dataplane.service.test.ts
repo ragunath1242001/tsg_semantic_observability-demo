@@ -12,6 +12,7 @@ import {
   AgreementDto,
   DataPlaneCreation,
   DatasetDto,
+  defaultContext,
   OfferDto
 } from "@tsg-dsp/common-dsp";
 import {
@@ -94,13 +95,13 @@ describe("Dataplane Service", () => {
         `${config.controlPlane.managementEndpoint}/agreements/:agreementId`,
         () => {
           return HttpResponse.json<AgreementDto>({
-            "@context": "https://w3id.org/dspace/2024/1/context.json",
-            "@type": "odrl:Agreement",
+            "@context": defaultContext(),
+            "@type": "Agreement",
             "@id": "urn:uuid:test",
-            "odrl:assigner": "did:web:localhost",
-            "odrl:assignee": "did:web:localhost",
-            "dspace:timestamp": new Date().toISOString(),
-            "odrl:target": "urn:uuid:dataset"
+            assigner: "did:web:localhost",
+            assignee: "did:web:localhost",
+            timestamp: new Date().toISOString(),
+            target: "urn:uuid:dataset"
           });
         }
       ),
@@ -118,8 +119,8 @@ describe("Dataplane Service", () => {
         `${config.controlPlane.managementEndpoint}/catalog/dataset`,
         () => {
           return HttpResponse.json<DatasetDto>({
-            "@context": "https://w3id.org/dspace/2024/1/context.json",
-            "@type": "dcat:Dataset",
+            "@context": defaultContext(),
+            "@type": "Dataset",
             "@id": "urn:uuid:test"
           });
         }
@@ -168,11 +169,11 @@ describe("Dataplane Service", () => {
       }),
       http.post("http://localhost:3000/management/negotiations/request", () => {
         return HttpResponse.json({
-          "@type": "dspace:ContractNegotiation",
+          "@type": "ContractNegotiation",
           "@id": "urn:uuid:1234",
-          "dspace:providerPid": "providerPid",
-          "dspace:consumerPid": "consumerPid",
-          "dspace:state": "dspace:REQUESTED"
+          providerPid: "providerPid",
+          consumerPid: "consumerPid",
+          state: "REQUESTED"
         });
       }),
       http.get("http://localhost:3000/management/request", () => {
@@ -283,7 +284,7 @@ describe("Dataplane Service", () => {
               type: "rules",
               permissions: [
                 {
-                  action: "odrl:use",
+                  action: "use",
                   constraints: [
                     {
                       type: "CredentialType",
@@ -375,15 +376,15 @@ describe("Dataplane Service", () => {
             policy: {
               type: "manual",
               raw: {
-                "@context": "https://w3id.org/dspace/2024/1/context.json",
-                "@type": "odrl:Offer",
+                "@context": defaultContext(),
+                "@type": "Offer",
                 "@id": "urn:uuid:65d23eb8-6536-42ff-b292-78ab2a991f66",
-                "odrl:assigner": "did:web:...",
-                "odrl:permission": [
+                assigner: "did:web:...",
+                permission: [
                   {
-                    "@type": "odrl:Permission",
-                    "odrl:action": "odrl:use",
-                    "odrl:target": "urn:uuid:test"
+                    "@type": "Permission",
+                    action: "use",
+                    target: "urn:uuid:test"
                   }
                 ]
               }

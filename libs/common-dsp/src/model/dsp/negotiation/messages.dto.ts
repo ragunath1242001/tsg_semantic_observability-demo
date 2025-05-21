@@ -2,82 +2,82 @@ import { ContextDto, MultilanguageDto, ReferenceDto } from "../common.dto.js";
 import { AgreementDto, OfferDto } from "./negotiation.dto.js";
 
 export interface ContractRequestMessageDto extends ContextDto {
-  "@type": "dspace:ContractRequestMessage";
-  "dspace:consumerPid": string;
-  "dspace:providerPid"?: string;
-  "dspace:callbackAddress": string;
-  "dspace:offer": OfferDto;
+  "@type": "ContractRequestMessage";
+  consumerPid: string;
+  providerPid?: string;
+  callbackAddress: string;
+  offer: OfferDto;
 }
 
 export interface ContractOfferMessageDto extends ContextDto {
-  "@type": "dspace:ContractOfferMessage";
-  "dspace:consumerPid"?: string;
-  "dspace:providerPid": string;
-  "dspace:offer": OfferDto;
-  "dspace:callbackAddress": string;
+  "@type": "ContractOfferMessage";
+  consumerPid?: string;
+  providerPid: string;
+  offer: OfferDto;
+  callbackAddress: string;
 }
 
 export interface ContractNegotiationTerminationMessageDto extends ContextDto {
-  "@type": "dspace:ContractNegotiationTerminationMessage";
-  "dspace:consumerPid": string;
-  "dspace:providerPid": string;
-  "dspace:code"?: string;
-  "dspace:reason": Array<any>;
+  "@type": "ContractNegotiationTerminationMessage";
+  consumerPid: string;
+  providerPid: string;
+  code?: string;
+  reason: Array<any>;
 }
 
 export enum ContractNegotiationState {
-  REQUESTED = "dspace:REQUESTED",
-  OFFERED = "dspace:OFFERED",
-  ACCEPTED = "dspace:ACCEPTED",
-  AGREED = "dspace:AGREED",
-  VERIFIED = "dspace:VERIFIED",
-  FINALIZED = "dspace:FINALIZED",
-  TERMINATED = "dspace:TERMINATED"
+  REQUESTED = "REQUESTED",
+  OFFERED = "OFFERED",
+  ACCEPTED = "ACCEPTED",
+  AGREED = "AGREED",
+  VERIFIED = "VERIFIED",
+  FINALIZED = "FINALIZED",
+  TERMINATED = "TERMINATED"
 }
 
 export interface ContractNegotiationDto extends ContextDto, ReferenceDto {
-  "@type": "dspace:ContractNegotiation";
-  "dspace:consumerPid": string;
-  "dspace:providerPid": string;
-  "dspace:state": ContractNegotiationState;
+  "@type": "ContractNegotiation";
+  consumerPid: string;
+  providerPid: string;
+  state: ContractNegotiationState;
 }
 
 export enum NegotiationEvent {
-  ACCEPTED = "dspace:ACCEPTED",
-  FINALIZED = "dspace:FINALIZED"
+  ACCEPTED = "ACCEPTED",
+  FINALIZED = "FINALIZED"
 }
 
 export interface ContractNegotiationEventMessageDto extends ContextDto {
-  "@type": "dspace:ContractNegotiationEventMessage";
-  "dspace:consumerPid": string;
-  "dspace:providerPid": string;
-  "dspace:eventType": NegotiationEvent;
-  "dspace:hashedMessage"?: HashedMessage;
+  "@type": "ContractNegotiationEventMessage";
+  consumerPid: string;
+  providerPid: string;
+  eventType: NegotiationEvent;
+  hashedMessage?: HashedMessage;
 }
 
 export interface ContractNegotiationErrorDto extends ContextDto {
-  "@type": "dspace:ContractNegotiationError";
-  "dspace:consumerPid": string;
-  "dspace:providerPid": string;
-  "dspace:reason"?: Array<any>;
-  "dct:description"?: Array<MultilanguageDto>;
+  "@type": "ContractNegotiationError";
+  consumerPid: string;
+  providerPid: string;
+  reason?: Array<any>;
+  description?: Array<MultilanguageDto>;
 }
 
 export interface HashedMessage {
-  "dspace:digest": string;
-  "dspace:algorithm": string;
+  digest: string;
+  algorithm: string;
 }
 
 export interface ContractAgreementVerificationMessageDto extends ContextDto {
-  "@type": "dspace:ContractAgreementVerificationMessage";
-  "dspace:consumerPid": string;
-  "dspace:providerPid": string;
-  "dspace:hashedMessage": HashedMessage;
+  "@type": "ContractAgreementVerificationMessage";
+  consumerPid: string;
+  providerPid: string;
+  hashedMessage: HashedMessage;
 }
 
 export interface ContractAgreementMessageDto extends ContextDto {
-  "@type": "dspace:ContractAgreementMessage";
-  "dspace:consumerPid": string;
-  "dspace:providerPid": string;
-  "dspace:agreement": AgreementDto;
+  "@type": "ContractAgreementMessage";
+  consumerPid: string;
+  providerPid: string;
+  agreement: AgreementDto;
 }

@@ -24,15 +24,15 @@ describe("Constraint Evaluation", () => {
       constraintDto: ConstraintDto,
       shouldThrow: boolean = false
     ): Promise<ConstraintModel | undefined> {
-      if (constraintDto["odrl:operator"] === "odrl:eq") {
-        switch (constraintDto["odrl:leftOperand"]) {
+      if (constraintDto.operator === ODRLOperator.EQ) {
+        switch (constraintDto.leftOperand) {
           case "tsg:testString":
             return AtomicConstraint.parse({
               type: ConstraintType.ATOMIC,
               title: "Test Constraint",
               description: "Test constraint description",
               leftOperand: "tsg:testString",
-              operator: "odrl:eq",
+              operator: ODRLOperator.EQ,
               contextPath: "$.dataPlane.testString",
               dataType: DataType.STRING,
               evaluable: [
@@ -40,7 +40,7 @@ describe("Constraint Evaluation", () => {
                 EvaluationTrigger.PROVIDER_CONTINUOUS,
                 EvaluationTrigger.PROVIDER_ON_EXECUTION
               ],
-              value: constraintDto["odrl:rightOperand"] as string
+              value: constraintDto.rightOperand as string
             });
           case "tsg:testUri":
             return AtomicConstraint.parse({
@@ -48,7 +48,7 @@ describe("Constraint Evaluation", () => {
               title: "Test Constraint 2",
               description: "Test constraint description 2",
               leftOperand: "tsg:testUri",
-              operator: "odrl:eq",
+              operator: ODRLOperator.EQ,
               contextPath: "$.dataPlane.testUri",
               dataType: DataType.URI,
               evaluable: [
@@ -56,7 +56,7 @@ describe("Constraint Evaluation", () => {
                 EvaluationTrigger.PROVIDER_CONTINUOUS,
                 EvaluationTrigger.PROVIDER_ON_EXECUTION
               ],
-              value: constraintDto["odrl:rightOperand"] as string
+              value: constraintDto.rightOperand as string
             });
           case "tsg:testNumber":
             return AtomicConstraint.parse({
@@ -64,7 +64,7 @@ describe("Constraint Evaluation", () => {
               title: "Test Constraint 3",
               description: "Test constraint description 3",
               leftOperand: "tsg:testNumber",
-              operator: "odrl:eq",
+              operator: ODRLOperator.EQ,
               contextPath: "$.dataPlane.testNumber",
               dataType: DataType.NUMBER,
               evaluable: [
@@ -72,7 +72,7 @@ describe("Constraint Evaluation", () => {
                 EvaluationTrigger.PROVIDER_CONTINUOUS,
                 EvaluationTrigger.PROVIDER_ON_EXECUTION
               ],
-              value: constraintDto["odrl:rightOperand"] as string
+              value: constraintDto.rightOperand as string
             });
           case "tsg:testDate":
             return AtomicConstraint.parse({
@@ -80,7 +80,7 @@ describe("Constraint Evaluation", () => {
               title: "Test Constraint 4",
               description: "Test constraint description 4",
               leftOperand: "tsg:testDate",
-              operator: "odrl:eq",
+              operator: ODRLOperator.EQ,
               contextPath: "$.dataPlane.testDate",
               dataType: DataType.DATE,
               evaluable: [
@@ -88,7 +88,7 @@ describe("Constraint Evaluation", () => {
                 EvaluationTrigger.PROVIDER_CONTINUOUS,
                 EvaluationTrigger.PROVIDER_ON_EXECUTION
               ],
-              value: constraintDto["odrl:rightOperand"] as string
+              value: constraintDto.rightOperand as string
             });
           case "tsg:testDateTime":
             return AtomicConstraint.parse({
@@ -96,7 +96,7 @@ describe("Constraint Evaluation", () => {
               title: "Test Constraint 5",
               description: "Test constraint description 5",
               leftOperand: "tsg:testDateTime",
-              operator: "odrl:eq",
+              operator: ODRLOperator.EQ,
               contextPath: "$.evaluationTime",
               dataType: DataType.DATETIME,
               evaluable: [
@@ -104,7 +104,7 @@ describe("Constraint Evaluation", () => {
                 EvaluationTrigger.PROVIDER_CONTINUOUS,
                 EvaluationTrigger.PROVIDER_ON_EXECUTION
               ],
-              value: constraintDto["odrl:rightOperand"] as string
+              value: constraintDto.rightOperand as string
             });
           case "tsg:testString2":
             return AtomicConstraint.parse({
@@ -120,12 +120,10 @@ describe("Constraint Evaluation", () => {
                 EvaluationTrigger.PROVIDER_CONTINUOUS,
                 EvaluationTrigger.PROVIDER_ON_EXECUTION
               ],
-              value: constraintDto["odrl:rightOperand"] as string
+              value: constraintDto.rightOperand as string
             });
         }
-      } else if (
-        constraintDto["odrl:leftOperand"] === "tsg:vpInputDescriptor"
-      ) {
+      } else if (constraintDto.leftOperand === "tsg:vpInputDescriptor") {
         return AtomicConstraint.parse({
           type: ConstraintType.ATOMIC,
           title: "Test Constraint 7",
@@ -139,7 +137,7 @@ describe("Constraint Evaluation", () => {
             EvaluationTrigger.PROVIDER_ON_REQUEST
           ],
           dataType: DataType.DIF_INPUT_DESCRIPTOR,
-          value: constraintDto["odrl:rightOperand"] as string
+          value: constraintDto.rightOperand as string
         });
       }
       if (shouldThrow) {
@@ -163,26 +161,26 @@ describe("Constraint Evaluation", () => {
     evaluationTime: new Date("2024-08-01T12:00:00Z"),
     policy: {
       agreement: {
-        "@type": "odrl:Agreement",
+        "@type": "Agreement",
         "@id": "urn:uuid:00000000-0000-0000-0000-000000000000",
-        "odrl:assigner": "did:web:localhost",
-        "odrl:assignee": "did:web:remote.com",
-        "dspace:timestamp": new Date("2024-08-01T12:00:00Z").toISOString(),
-        "odrl:target": "urn:uuid:33147fb2-8896-4a53-983b-61000b6559b6",
-        "odrl:permission": [
+        assigner: "did:web:localhost",
+        assignee: "did:web:remote.com",
+        timestamp: new Date("2024-08-01T12:00:00Z").toISOString(),
+        target: "urn:uuid:33147fb2-8896-4a53-983b-61000b6559b6",
+        permission: [
           {
-            "@type": "odrl:Permission",
-            "odrl:action": ODRLAction.USE
+            "@type": "Permission",
+            action: ODRLAction.USE
           }
         ]
       },
       localSignature: {
-        "dspace:algorithm": "JsonWebSignature2020",
-        "dspace:digest": "{}"
+        algorithm: "JsonWebSignature2020",
+        digest: "{}"
       },
       remoteSignature: {
-        "dspace:algorithm": "JsonWebSignature2020",
-        "dspace:digest": "{}"
+        algorithm: "JsonWebSignature2020",
+        digest: "{}"
       },
       signatureStatus: "verified"
     }
@@ -337,69 +335,69 @@ describe("Constraint Evaluation", () => {
     const evaluation = new Evaluation(context, ruleRepositoryService);
     await expect(
       evaluation["evaluateConstraint"]({
-        "@type": "odrl:Constraint",
-        "odrl:leftOperand": "tsg:testString",
-        "odrl:operator": "odrl:eq",
-        "odrl:rightOperand": "Test String"
+        "@type": "Constraint",
+        leftOperand: "tsg:testString",
+        operator: ODRLOperator.EQ,
+        rightOperand: "Test String"
       })
     ).resolves.toBe(EvaluationResult.VALID);
     await expect(
       evaluation["evaluateConstraint"]({
-        "@type": "odrl:Constraint",
-        "odrl:leftOperand": "tsg:testString",
-        "odrl:operator": "odrl:eq",
-        "odrl:rightOperand": "Test String"
+        "@type": "Constraint",
+        leftOperand: "tsg:testString",
+        operator: ODRLOperator.EQ,
+        rightOperand: "Test String"
       })
     ).resolves.toBe(EvaluationResult.VALID);
     await expect(
       evaluation["evaluateConstraint"]({
-        "@type": "odrl:Constraint",
-        "odrl:leftOperand": "tsg:testUri",
-        "odrl:operator": "odrl:eq",
-        "odrl:rightOperand": "urn:uuid:bac46e31-79f8-4744-82c3-0b09012d2d95"
+        "@type": "Constraint",
+        leftOperand: "tsg:testUri",
+        operator: ODRLOperator.EQ,
+        rightOperand: "urn:uuid:bac46e31-79f8-4744-82c3-0b09012d2d95"
       })
     ).resolves.toBe(EvaluationResult.VALID);
     await expect(
       evaluation["evaluateConstraint"]({
-        "@type": "odrl:Constraint",
-        "odrl:leftOperand": "tsg:testNumber",
-        "odrl:operator": "odrl:eq",
-        "odrl:rightOperand": "5"
+        "@type": "Constraint",
+        leftOperand: "tsg:testNumber",
+        operator: ODRLOperator.EQ,
+        rightOperand: "5"
       })
     ).resolves.toBe(EvaluationResult.VALID);
     await expect(
       evaluation["evaluateConstraint"]({
-        "@type": "odrl:Constraint",
-        "odrl:leftOperand": "tsg:testDate",
-        "odrl:operator": "odrl:eq",
-        "odrl:rightOperand": "2024-08-01"
+        "@type": "Constraint",
+        leftOperand: "tsg:testDate",
+        operator: ODRLOperator.EQ,
+        rightOperand: "2024-08-01"
       })
     ).resolves.toBe(EvaluationResult.VALID);
     evaluation["context"].evaluationTime = new Date("2024-08-01T12:00:00Z");
     await expect(
       evaluation["evaluateConstraint"]({
-        "@type": "odrl:Constraint",
-        "odrl:leftOperand": "tsg:testDateTime",
-        "odrl:operator": "odrl:eq",
-        "odrl:rightOperand": "2024-08-01T12:00:00Z"
+        "@type": "Constraint",
+        leftOperand: "tsg:testDateTime",
+        operator: ODRLOperator.EQ,
+        rightOperand: "2024-08-01T12:00:00Z"
       })
     ).resolves.toBe(EvaluationResult.VALID);
 
     evaluation["context"].scope = EvaluationTrigger.CONSUMER_ON_REQUEST;
     await expect(
       evaluation["evaluateConstraint"]({
-        "@type": "odrl:Constraint",
-        "odrl:leftOperand": "tsg:testDateTime",
-        "odrl:operator": "odrl:eq",
-        "odrl:rightOperand": "2024-08-01T12:00:00Z"
+        "@type": "Constraint",
+        leftOperand: "tsg:testDateTime",
+        operator: ODRLOperator.EQ,
+        rightOperand: "2024-08-01T12:00:00Z"
       })
     ).resolves.toBe(EvaluationResult.NOT_APPLICABLE);
     await expect(
       evaluation["evaluateConstraint"]({
-        "@type": "odrl:Constraint",
-        "odrl:leftOperand": "tsg:unknown",
-        "odrl:operator": "odrl:eq",
-        "odrl:rightOperand": "2024-08-01T12:00:00Z"
+        "@type": "Constraint",
+        leftOperand: "tsg:unknown",
+        operator: ODRLOperator.EQ,
+        rightOperand: "2024-08-01T12:00:00Z"
       })
     ).resolves.toBe(EvaluationResult.INVALID);
   });
@@ -466,10 +464,10 @@ describe("Constraint Evaluation", () => {
     const evaluation = new Evaluation(context, ruleRepositoryService);
     await expect(
       evaluation["evaluateConstraint"]({
-        "@type": "odrl:Constraint",
-        "odrl:leftOperand": "tsg:vpInputDescriptor",
-        "odrl:operator": "odrl:isAnyOf",
-        "odrl:rightOperand": JSON.stringify({
+        "@type": "Constraint",
+        leftOperand: "tsg:vpInputDescriptor",
+        operator: "isAnyOf",
+        rightOperand: JSON.stringify({
           id: "A specific type of VC",
           name: "A specific type of VC",
           purpose: "We want a VC of this type",
@@ -489,10 +487,10 @@ describe("Constraint Evaluation", () => {
     ).resolves.toBe(EvaluationResult.VALID);
     await expect(
       evaluation["evaluateConstraint"]({
-        "@type": "odrl:Constraint",
-        "odrl:leftOperand": "tsg:vpInputDescriptor",
-        "odrl:operator": "odrl:isAnyOf",
-        "odrl:rightOperand": JSON.stringify({
+        "@type": "Constraint",
+        leftOperand: "tsg:vpInputDescriptor",
+        operator: "isAnyOf",
+        rightOperand: JSON.stringify({
           id: "A specific type of VC",
           name: "A specific type of VC",
           purpose: "We want a VC of this type",
@@ -512,10 +510,10 @@ describe("Constraint Evaluation", () => {
     ).resolves.toBe(EvaluationResult.VALID);
     await expect(
       evaluation["evaluateConstraint"]({
-        "@type": "odrl:Constraint",
-        "odrl:leftOperand": "tsg:vpInputDescriptor",
-        "odrl:operator": "odrl:isAnyOf",
-        "odrl:rightOperand": JSON.stringify({
+        "@type": "Constraint",
+        leftOperand: "tsg:vpInputDescriptor",
+        operator: "isAnyOf",
+        rightOperand: JSON.stringify({
           id: "A specific type of VC",
           name: "A specific type of VC",
           purpose: "We want a VC of this type",
@@ -549,10 +547,10 @@ describe("Constraint Evaluation", () => {
     ).resolves.toBe(EvaluationResult.VALID);
     await expect(
       evaluation["evaluateConstraint"]({
-        "@type": "odrl:Constraint",
-        "odrl:leftOperand": "tsg:vpInputDescriptor",
-        "odrl:operator": "odrl:isAnyOf",
-        "odrl:rightOperand": JSON.stringify({
+        "@type": "Constraint",
+        leftOperand: "tsg:vpInputDescriptor",
+        operator: "isAnyOf",
+        rightOperand: JSON.stringify({
           id: "A specific type of VC",
           name: "A specific type of VC",
           purpose: "We want a VC of this type",
@@ -616,95 +614,95 @@ describe("Constraint Evaluation", () => {
     const evaluation = new Evaluation(context, ruleRepositoryService);
     await expect(
       evaluation["evaluateRule"]({
-        "@type": "odrl:Permission",
-        "odrl:action": ODRLAction.USE
+        "@type": "Permission",
+        action: ODRLAction.USE
       })
     ).resolves.toBe(EvaluationResult.VALID);
     await expect(
       evaluation["evaluateRule"]({
-        "@type": "odrl:Permission",
-        "odrl:action": ODRLAction.USE,
-        "odrl:target": "urn:uuid:33147fb2-8896-4a53-983b-61000b6559b6"
+        "@type": "Permission",
+        action: ODRLAction.USE,
+        target: "urn:uuid:33147fb2-8896-4a53-983b-61000b6559b6"
       })
     ).resolves.toBe(EvaluationResult.VALID);
     await expect(
       evaluation["evaluateRule"]({
-        "@type": "odrl:Permission",
-        "odrl:action": ODRLAction.USE,
-        "odrl:target": "urn:uuid:00000000-0000-0000-0000-000000000000"
+        "@type": "Permission",
+        action: ODRLAction.USE,
+        target: "urn:uuid:00000000-0000-0000-0000-000000000000"
       })
     ).resolves.toBe(EvaluationResult.NOT_APPLICABLE);
     await expect(
       evaluation["evaluateRule"]({
-        "@type": "odrl:Permission",
-        "odrl:action": ODRLAction.DELETE
+        "@type": "Permission",
+        action: ODRLAction.DELETE
       })
     ).resolves.toBe(EvaluationResult.NOT_APPLICABLE);
 
     await expect(
       evaluation["evaluateRule"]({
-        "@type": "odrl:Permission",
-        "odrl:action": ODRLAction.USE,
-        "odrl:assigner": "did:web:localhost",
-        "odrl:assignee": "did:web:remote.com"
+        "@type": "Permission",
+        action: ODRLAction.USE,
+        assigner: "did:web:localhost",
+        assignee: "did:web:remote.com"
       })
     ).resolves.toBe(EvaluationResult.VALID);
     await expect(
       evaluation["evaluateRule"]({
-        "@type": "odrl:Permission",
-        "odrl:action": ODRLAction.USE,
-        "odrl:assigner": "did:web:remote.com",
-        "odrl:assignee": "did:web:localhost"
+        "@type": "Permission",
+        action: ODRLAction.USE,
+        assigner: "did:web:remote.com",
+        assignee: "did:web:localhost"
       })
     ).resolves.toBe(EvaluationResult.NOT_APPLICABLE);
     await expect(
       evaluation["evaluateRule"]({
-        "@type": "odrl:Permission",
-        "odrl:action": ODRLAction.USE,
-        "odrl:assigner": "did:web:localhost",
-        "odrl:assignee": "did:web:localhost"
+        "@type": "Permission",
+        action: ODRLAction.USE,
+        assigner: "did:web:localhost",
+        assignee: "did:web:localhost"
       })
     ).resolves.toBe(EvaluationResult.NOT_APPLICABLE);
     evaluation["context"].role = "consumer";
     await expect(
       evaluation["evaluateRule"]({
-        "@type": "odrl:Permission",
-        "odrl:action": ODRLAction.USE,
-        "odrl:assigner": "did:web:remote.com",
-        "odrl:assignee": "did:web:localhost"
+        "@type": "Permission",
+        action: ODRLAction.USE,
+        assigner: "did:web:remote.com",
+        assignee: "did:web:localhost"
       })
     ).resolves.toBe(EvaluationResult.VALID);
     evaluation["context"].role = "provider";
     await expect(
       evaluation["evaluateRule"]({
-        "@type": "odrl:Permission",
-        "odrl:action": ODRLAction.USE,
-        "odrl:constraint": [
+        "@type": "Permission",
+        action: ODRLAction.USE,
+        constraint: [
           {
-            "@type": "odrl:Constraint",
-            "odrl:leftOperand": "tsg:testString",
-            "odrl:operator": "odrl:eq",
-            "odrl:rightOperand": "Test String"
+            "@type": "Constraint",
+            leftOperand: "tsg:testString",
+            operator: ODRLOperator.EQ,
+            rightOperand: "Test String"
           }
         ],
-        "odrl:duty": [
+        duty: [
           {
-            "@type": "odrl:Duty",
-            "odrl:action": ODRLAction.INFORM
+            "@type": "Duty",
+            action: ODRLAction.INFORM
           }
         ]
       })
     ).resolves.toBe(EvaluationResult.VALID);
     await expect(
       evaluation["evaluateRule"]({
-        "@type": "odrl:Prohibition",
-        "odrl:action": ODRLAction.USE,
-        "odrl:constraint": [
+        "@type": "Prohibition",
+        action: ODRLAction.USE,
+        constraint: [
           {
-            "@type": "odrl:Constraint",
-            "odrl:leftOperand": "tsg:testString",
-            "odrl:operator": "odrl:eq",
-            "odrl:rightOperand": "Test String"
+            "@type": "Constraint",
+            leftOperand: "tsg:testString",
+            operator: ODRLOperator.EQ,
+            rightOperand: "Test String"
           }
         ]
       })

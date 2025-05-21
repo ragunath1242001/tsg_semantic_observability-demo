@@ -52,13 +52,13 @@ export class Evaluation {
 
   async evaluate(): Promise<EvaluationDecision> {
     this.logger.debug(`Evaluating:\n${JSON.stringify(this.context, null, 2)}`);
-    if (this.context.policy.agreement["odrl:target"] !== this.context.target) {
+    if (this.context.policy.agreement.target !== this.context.target) {
       this.logger.warn(
-        `Target mismatch, context has target ${this.context.target} while agreement has target ${this.context.policy.agreement["odrl:target"]}`
+        `Target mismatch, context has target ${this.context.target} while agreement has target ${this.context.policy.agreement.target}`
       );
       return {
         decision: "DENY",
-        reason: `Target mismatch, context has target ${this.context.target} while agreement has target ${this.context.policy.agreement["odrl:target"]}`,
+        reason: `Target mismatch, context has target ${this.context.target} while agreement has target ${this.context.policy.agreement.target}`,
         context: this.context
       };
     }
@@ -73,36 +73,36 @@ export class Evaluation {
         expectedAssigner = this.context.remoteParticipant;
         expectedAssignee = this.context.localParticipant;
     }
-    if (this.context.policy.agreement["odrl:assigner"] !== expectedAssigner) {
+    if (this.context.policy.agreement.assigner !== expectedAssigner) {
       this.logger.warn(
-        `Assigner of the agreement does not match the expected participant (${this.context.policy.agreement["odrl:assigner"]} vs. ${expectedAssigner})`
+        `Assigner of the agreement does not match the expected participant (${this.context.policy.agreement.assigner} vs. ${expectedAssigner})`
       );
       return {
         decision: "DENY",
-        reason: `Assigner of the agreement does not match the expected participant (${this.context.policy.agreement["odrl:assigner"]} vs. ${expectedAssigner})`,
+        reason: `Assigner of the agreement does not match the expected participant (${this.context.policy.agreement.assigner} vs. ${expectedAssigner})`,
         context: this.context
       };
     }
-    if (this.context.policy.agreement["odrl:assignee"] !== expectedAssignee) {
+    if (this.context.policy.agreement.assignee !== expectedAssignee) {
       this.logger.warn(
-        `Assignee of the agreement does not match the expected participant (${this.context.policy.agreement["odrl:assignee"]} vs. ${expectedAssignee})`
+        `Assignee of the agreement does not match the expected participant (${this.context.policy.agreement.assignee} vs. ${expectedAssignee})`
       );
       return {
         decision: "DENY",
-        reason: `Assignee of the agreement does not match the expected participant (${this.context.policy.agreement["odrl:assignee"]} vs. ${expectedAssignee})`,
+        reason: `Assignee of the agreement does not match the expected participant (${this.context.policy.agreement.assignee} vs. ${expectedAssignee})`,
         context: this.context
       };
     }
     const permissions = await promiseMap(
-      this.context.policy.agreement["odrl:permission"],
+      this.context.policy.agreement.permission,
       (rule) => this.evaluateRule(rule)
     );
     const prohibitions = await promiseMap(
-      this.context.policy.agreement["odrl:prohibition"],
+      this.context.policy.agreement.prohibition,
       (rule) => this.evaluateRule(rule)
     );
     const obligations = await promiseMap(
-      this.context.policy.agreement["odrl:obligation"],
+      this.context.policy.agreement.obligation,
       (rule) => this.evaluateRule(rule)
     );
 
@@ -174,15 +174,15 @@ export class Evaluation {
   private async evaluateRule(
     rule: PermissionDto | ProhibitionDto | DutyDto
   ): Promise<EvaluationResult> {
-    if (rule["odrl:target"] && rule["odrl:target"] !== this.context.target) {
+    if (rule.target && rule.target !== this.context.target) {
       this.logger.debug(
-        `Target mismatch: ${rule["odrl:target"]} vs ${this.context.target}`
+        `Target mismatch: ${rule.target} vs ${this.context.target}`
       );
       return EvaluationResult.NOT_APPLICABLE;
     }
-    if (!toArray(rule["odrl:action"]).includes(this.context.action)) {
+    if (!toArray(rule.action).includes(this.context.action)) {
       this.logger.debug(
-        `Action mismatch: ${rule["odrl:action"]} vs ${this.context.action}`
+        `Action mismatch: ${rule.action} vs ${this.context.action}`
       );
       return EvaluationResult.NOT_APPLICABLE;
     }
@@ -197,31 +197,30 @@ export class Evaluation {
         expectedAssigner = this.context.remoteParticipant;
         expectedAssignee = this.context.localParticipant;
     }
-    if (rule["odrl:assigner"] && rule["odrl:assigner"] !== expectedAssigner) {
+    if (rule.assigner && rule.assigner !== expectedAssigner) {
       this.logger.debug(
-        `Assigner mismatch: ${rule["odrl:assigner"]} vs ${expectedAssigner}`
+        `Assigner mismatch: ${rule.assigner} vs ${expectedAssigner}`
       );
       return EvaluationResult.NOT_APPLICABLE;
     }
     if (
-      rule["odrl:assignee"] &&
-      toArray(rule["odrl:assignee"]).length > 0 &&
-      !toArray(rule["odrl:assignee"]).includes(expectedAssignee)
+      rule.assignee &&
+      toArray(rule.assignee).length > 0 &&
+      !toArray(rule.assignee).includes(expectedAssignee)
     ) {
       this.logger.debug(
-        `Assignee mismatch: ${rule["odrl:assignee"]} vs ${expectedAssignee}`
+        `Assignee mismatch: ${rule.assignee} vs ${expectedAssignee}`
       );
       return EvaluationResult.NOT_APPLICABLE;
     }
 
-    const constraints = await promiseMap(
-      rule["odrl:constraint"],
-      (constraint) => this.evaluateConstraint(constraint)
+    const constraints = await promiseMap(rule.constraint, (constraint) =>
+      this.evaluateConstraint(constraint)
     );
     this.logger.debug(`Constraint results: ${constraints}`);
     const constraintResult = this.mapResults(constraints);
-    if (rule["@type"] === "odrl:Permission") {
-      const dutyResults = await promiseMap(rule["odrl:duty"], (rule) =>
+    if (rule["@type"] === "Permission") {
+      const dutyResults = await promiseMap(rule.duty, (rule) =>
         this.evaluateRule(rule)
       );
       const dutyResult =
@@ -276,21 +275,21 @@ export class Evaluation {
       case DataType.STRING:
       case DataType.URI:
         result = this.evaluateString(
-          constraint["odrl:operator"],
+          constraint.operator,
           constraintTemplate.value!,
           contextElements
         );
         break;
       case DataType.NUMBER:
         result = this.evaluateNumber(
-          constraint["odrl:operator"],
+          constraint.operator,
           Number(constraintTemplate.value),
           contextElements.map(Number)
         );
         break;
       case DataType.DATE:
         result = this.evaluateNumber(
-          constraint["odrl:operator"],
+          constraint.operator,
           new Date(
             new Date(constraintTemplate.value!).toDateString()
           ).getTime(),
@@ -301,14 +300,14 @@ export class Evaluation {
         break;
       case DataType.DATETIME:
         result = this.evaluateNumber(
-          constraint["odrl:operator"],
+          constraint.operator,
           new Date(constraintTemplate.value!).getTime(),
           contextElements.map((e) => new Date(e).getTime())
         );
         break;
       case DataType.DIF_INPUT_DESCRIPTOR:
         result = this.evaluateInputDescriptor(
-          constraint["odrl:operator"],
+          constraint.operator,
           constraintTemplate.value!,
           contextElements
         );

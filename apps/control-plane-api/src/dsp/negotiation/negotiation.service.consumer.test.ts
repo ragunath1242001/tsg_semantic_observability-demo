@@ -119,12 +119,10 @@ describe("Negotiation Service (Consumer)", () => {
           return HttpResponse.json<ContractNegotiationDto>({
             "@context": defaultContext(),
             "@id": remoteProcessId,
-            "@type": "dspace:ContractNegotiation",
-            "dspace:consumerPid": (await ctx.request.json())[
-              "dspace:consumerPid"
-            ],
-            "dspace:providerPid": remoteProcessId,
-            "dspace:state": ContractNegotiationState.REQUESTED
+            "@type": "ContractNegotiation",
+            consumerPid: (await ctx.request.json())["consumerPid"],
+            providerPid: remoteProcessId,
+            state: ContractNegotiationState.REQUESTED
           });
         }
       ),
@@ -134,12 +132,10 @@ describe("Negotiation Service (Consumer)", () => {
           return HttpResponse.json<ContractNegotiationDto>({
             "@context": defaultContext(),
             "@id": remoteProcessId,
-            "@type": "dspace:ContractNegotiation",
-            "dspace:consumerPid": (await ctx.request.json())[
-              "dspace:consumerPid"
-            ],
-            "dspace:providerPid": remoteProcessId,
-            "dspace:state": ContractNegotiationState.REQUESTED
+            "@type": "ContractNegotiation",
+            consumerPid: (await ctx.request.json())["consumerPid"],
+            providerPid: remoteProcessId,
+            state: ContractNegotiationState.REQUESTED
           });
         }
       ),
@@ -151,6 +147,12 @@ describe("Negotiation Service (Consumer)", () => {
       ),
       http.post<PathParams, ContractAgreementVerificationMessageDto>(
         `http://remoteparty.test/negotiation/${remoteProcessId}/events`,
+        () => {
+          return HttpResponse.json({ status: "OK" });
+        }
+      ),
+      http.post<PathParams, ContractAgreementVerificationMessageDto>(
+        `http://remoteparty.test/negotiation/${remoteProcessId}/termination`,
         () => {
           return HttpResponse.json({ status: "OK" });
         }
@@ -167,16 +169,16 @@ describe("Negotiation Service (Consumer)", () => {
     agreementService = moduleRef.get(AgreementService);
     await agreementService.storeAgreement(
       {
-        "@type": "odrl:Agreement",
+        "@type": "Agreement",
         "@id": "urn:uuid:00000000-0000-0000-0000-000000000000",
-        "odrl:assigner": "did:web:localhost",
-        "odrl:assignee": "did:web:remote.com",
-        "dspace:timestamp": new Date("2024-08-01T12:00:00Z").toISOString(),
-        "odrl:target": "urn:uuid:33147fb2-8896-4a53-983b-61000b6559b6",
-        "odrl:permission": [
+        assigner: "did:web:localhost",
+        assignee: "did:web:remote.com",
+        timestamp: new Date("2024-08-01T12:00:00Z").toISOString(),
+        target: "urn:uuid:33147fb2-8896-4a53-983b-61000b6559b6",
+        permission: [
           {
-            "@type": "odrl:Permission",
-            "odrl:action": ODRLAction.USE
+            "@type": "Permission",
+            action: ODRLAction.USE
           }
         ]
       },
@@ -316,8 +318,8 @@ describe("Negotiation Service (Consumer)", () => {
             providerPid: remoteProcessId,
             eventType: NegotiationEvent.FINALIZED,
             hashedMessage: {
-              "dspace:algorithm": "JsonWebSignature2020",
-              "dspace:digest": '{"error": true}'
+              algorithm: "JsonWebSignature2020",
+              digest: '{"error": true}'
             }
           }),
           "did:web:remoteparty.test"
@@ -330,8 +332,8 @@ describe("Negotiation Service (Consumer)", () => {
           providerPid: remoteProcessId,
           eventType: NegotiationEvent.FINALIZED,
           hashedMessage: {
-            "dspace:algorithm": "JsonWebSignature2020",
-            "dspace:digest": "{}"
+            algorithm: "JsonWebSignature2020",
+            digest: "{}"
           }
         }),
         "did:web:remoteparty.test"
@@ -340,11 +342,11 @@ describe("Negotiation Service (Consumer)", () => {
         await negotiationService.getNegotiation(localProcessId);
       expect(negotiationDetail.state).toBe(ContractNegotiationState.FINALIZED);
       expect(negotiationDetail.events.map((event) => event.state)).toEqual([
-        "dspace:REQUESTED",
-        "dspace:FINALIZED",
-        "dspace:AGREED",
-        "dspace:VERIFIED",
-        "dspace:FINALIZED"
+        "REQUESTED",
+        "FINALIZED",
+        "AGREED",
+        "VERIFIED",
+        "FINALIZED"
       ]);
     });
   });
@@ -421,7 +423,7 @@ describe("Negotiation Service (Consumer)", () => {
             id: "urn:uuid:81a41b35-2926-4b29-8c9a-ee52665a047b",
             assigner: "urn:uuid:fcddc591-b9f1-4c75-b557-80d1cf955859"
           }),
-          callbackAddress: `http://remoteparty.test/negotiation/${remoteProcessId}`
+          callbackAddress: `http://localhost/callbacks`
         }),
         "did:web:remoteparty.test"
       );
@@ -450,7 +452,7 @@ describe("Negotiation Service (Consumer)", () => {
             id: "urn:uuid:81a41b35-2926-4b29-8c9a-ee52665a047b",
             assigner: "urn:uuid:fcddc591-b9f1-4c75-b557-80d1cf955859"
           }),
-          callbackAddress: `http://remoteparty.test/negotiation/${remoteProcessId}`
+          callbackAddress: `http://localhost/callbacks`
         }),
         "did:web:remoteparty.test"
       );

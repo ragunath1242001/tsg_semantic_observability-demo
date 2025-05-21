@@ -20,29 +20,29 @@ export class PolicyContext {
   @IsDefined()
   @ApiProperty({
     example: {
-      "@type": "odrl:Agreement",
-      "odrl:assigner": "did:example:assigner",
-      "odrl:assignee": "did:example:assignee",
-      "dspace:timestamp": "2021-06-01T00:00:00Z",
-      "odrl:target": "did:example:target"
+      "@type": "Agreement",
+      assigner: "did:example:assigner",
+      assignee: "did:example:assignee",
+      timestamp: "2021-06-01T00:00:00Z",
+      target: "did:example:target"
     }
   })
   agreement!: AgreementDto;
   @IsOptional()
   @ApiPropertyOptional({
-    example: { "dspace:algorithm": "SHA-256", "dspace:digest": "..." }
+    example: { algorithm: "SHA-256", digest: "..." }
   })
   localSignature?: {
-    "dspace:algorithm": string;
-    "dspace:digest": string;
+    algorithm: string;
+    digest: string;
   };
   @IsOptional()
   @ApiPropertyOptional({
-    example: { "dspace:algorithm": "SHA-256", "dspace:digest": "..." }
+    example: { algorithm: "SHA-256", digest: "..." }
   })
   remoteSignature?: {
-    "dspace:algorithm": string;
-    "dspace:digest": string;
+    algorithm: string;
+    digest: string;
   };
   @IsOptional()
   @ApiPropertyOptional({ example: "VALID" })

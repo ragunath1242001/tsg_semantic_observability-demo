@@ -78,7 +78,7 @@ export class TokenService {
       subject instanceof OauthUser ? `${subject.id}` : subject.clientId;
 
     const claims: Record<string, any> = {
-      roles: subject.roles,
+      roles: subject.roles.map((role) => role.name),
       tokenType: type
     };
 

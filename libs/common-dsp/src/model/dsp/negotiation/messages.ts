@@ -36,7 +36,7 @@ export interface IContractRequestMessage {
   callbackAddress: string;
 }
 
-@Serializable("dspace:ContractRequestMessage")
+@Serializable("ContractRequestMessage")
 export class ContractRequestMessage extends SerializableClass<ContractRequestMessageDto> {
   @Namespace("dspace")
   @IsOptional()
@@ -71,7 +71,7 @@ export interface IContractOfferMessage {
   callbackAddress: string;
 }
 
-@Serializable("dspace:ContractOfferMessage")
+@Serializable("ContractOfferMessage")
 export class ContractOfferMessage extends SerializableClass<ContractOfferMessageDto> {
   @Namespace("dspace")
   @IsOptional()
@@ -106,7 +106,7 @@ export interface IContractNegotiationTerminationMessage {
   reason: Array<any>;
 }
 
-@Serializable("dspace:ContractNegotiationTerminationMessage")
+@Serializable("ContractNegotiationTerminationMessage")
 export class ContractNegotiationTerminationMessage extends SerializableClass<ContractNegotiationTerminationMessageDto> {
   @Namespace("dspace")
   @IsOptional()
@@ -139,7 +139,7 @@ export interface IContractNegotiation extends IReference {
   state: ContractNegotiationState;
 }
 
-@Serializable("dspace:ContractNegotiation")
+@Serializable("ContractNegotiation")
 export class ContractNegotiation extends Reference<ContractNegotiationDto> {
   @Namespace("dspace")
   @IsOptional()
@@ -168,7 +168,7 @@ export interface IContractNegotiationEventMessage {
   hashedMessage?: HashedMessage;
 }
 
-@Serializable("dspace:ContractNegotiationEventMessage")
+@Serializable("ContractNegotiationEventMessage")
 export class ContractNegotiationEventMessage extends SerializableClass<ContractNegotiationEventMessageDto> {
   @Namespace("dspace")
   @IsOptional()
@@ -201,7 +201,7 @@ export interface IContractNegotiationError {
   description?: Array<Multilanguage>;
 }
 
-@Serializable("dspace:ContractNegotiationError")
+@Serializable("ContractNegotiationError")
 export class ContractNegotiationError extends SerializableClass<ContractNegotiationErrorDto> {
   @Namespace("dspace")
   @IsOptional()
@@ -235,7 +235,7 @@ export interface IContractAgreementVerificationMessage {
   hashedMessage: HashedMessage;
 }
 
-@Serializable("dspace:ContractAgreementVerificationMessage")
+@Serializable("ContractAgreementVerificationMessage")
 export class ContractAgreementVerificationMessage extends SerializableClass<ContractAgreementVerificationMessageDto> {
   @Namespace("dspace")
   @IsOptional()
@@ -263,7 +263,7 @@ export interface IContractAgreementMessage {
   agreement: Agreement;
 }
 
-@Serializable("dspace:ContractAgreementMessage")
+@Serializable("ContractAgreementMessage")
 export class ContractAgreementMessage extends SerializableClass<ContractAgreementMessageDto> {
   @Namespace("dspace")
   @IsOptional()

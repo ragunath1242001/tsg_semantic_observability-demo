@@ -52,7 +52,7 @@ describe("NegotiationController", () => {
 
   beforeAll(async () => {
     server = setupServer(
-      http.post("http://127.0.0.1/negotiation/callbacks/:id/:action", () => {
+      http.post("http://127.0.0.1/callbacks/negotiations/:id/:action", () => {
         return HttpResponse.json({
           status: "OK"
         });
@@ -62,14 +62,14 @@ describe("NegotiationController", () => {
         async (ctx) => {
           return HttpResponse.json(
             await new ContractNegotiation({
-              consumerPid: (await ctx.request.json())["dspace:consumerPid"],
+              consumerPid: (await ctx.request.json())["consumerPid"],
               providerPid: "urn:uuid:4486d6f5-aa10-45d3-b260-2f368dfca4e2",
               state: ContractNegotiationState.REQUESTED
             }).serialize()
           );
         }
       ),
-      http.post("http://127.0.0.1/negotiation/:id/:action", () => {
+      http.post("http://127.0.0.1/negotiations/:id/:action", () => {
         return HttpResponse.json({
           status: "OK"
         });
@@ -134,18 +134,16 @@ describe("NegotiationController", () => {
           useValue: {
             getAgreement: async (): Promise<AgreementDto> => {
               return {
-                "@type": "odrl:Agreement",
+                "@type": "Agreement",
                 "@id": "urn:uuid:00000000-0000-0000-0000-000000000000",
-                "odrl:assigner": "did:web:localhost",
-                "odrl:assignee": "did:web:remote.com",
-                "dspace:timestamp": new Date(
-                  "2024-08-01T12:00:00Z"
-                ).toISOString(),
-                "odrl:target": "urn:uuid:33147fb2-8896-4a53-983b-61000b6559b6",
-                "odrl:permission": [
+                assigner: "did:web:localhost",
+                assignee: "did:web:remote.com",
+                timestamp: new Date("2024-08-01T12:00:00Z").toISOString(),
+                target: "urn:uuid:33147fb2-8896-4a53-983b-61000b6559b6",
+                permission: [
                   {
-                    "@type": "odrl:Permission",
-                    "odrl:action": ODRLAction.USE
+                    "@type": "Permission",
+                    action: ODRLAction.USE
                   }
                 ]
               };
@@ -155,19 +153,16 @@ describe("NegotiationController", () => {
               return {
                 id: "urn:uuid:00000000-0000-0000-0000-000000000000",
                 agreement: {
-                  "@type": "odrl:Agreement",
+                  "@type": "Agreement",
                   "@id": "urn:uuid:00000000-0000-0000-0000-000000000000",
-                  "odrl:assigner": "did:web:localhost",
-                  "odrl:assignee": "did:web:remote.com",
-                  "dspace:timestamp": new Date(
-                    "2024-08-01T12:00:00Z"
-                  ).toISOString(),
-                  "odrl:target":
-                    "urn:uuid:33147fb2-8896-4a53-983b-61000b6559b6",
-                  "odrl:permission": [
+                  assigner: "did:web:localhost",
+                  assignee: "did:web:remote.com",
+                  timestamp: new Date("2024-08-01T12:00:00Z").toISOString(),
+                  target: "urn:uuid:33147fb2-8896-4a53-983b-61000b6559b6",
+                  permission: [
                     {
-                      "@type": "odrl:Permission",
-                      "odrl:action": ODRLAction.USE
+                      "@type": "Permission",
+                      action: ODRLAction.USE
                     }
                   ]
                 },
@@ -202,8 +197,7 @@ describe("NegotiationController", () => {
     const providerNegotiation = await negotiationService.handleNewRequest(
       new ContractRequestMessage({
         consumerPid: "urn:uuid:a81bea31-55d4-4c70-b454-9758e1228fd0",
-        callbackAddress:
-          "http://127.0.0.1/negotiation/callbacks/urn:uuid:de465939-8292-49c1-97d5-bcb643df1fdb",
+        callbackAddress: "http://127.0.0.1/callbacks",
         offer: new Offer({
           id: "urn:uuid:81a41b35-2926-4b29-8c9a-ee52665a047b",
           assigner: "urn:uuid:fcddc591-b9f1-4c75-b557-80d1cf955859",
@@ -234,8 +228,7 @@ describe("NegotiationController", () => {
       const result = await negotiationController.request(
         new ContractRequestMessage({
           consumerPid: "urn:uuid:a81bea31-55d4-4c70-b454-9758e1228fd0",
-          callbackAddress:
-            "http://127.0.0.1/negotiation/callbacks/urn:uuid:de465939-8292-49c1-97d5-bcb643df1fdb",
+          callbackAddress: "http://127.0.0.1/callbacks",
           offer: new Offer({
             id: "urn:uuid:81a41b35-2926-4b29-8c9a-ee52665a047b",
             assigner: "urn:uuid:fcddc591-b9f1-4c75-b557-80d1cf955859",
@@ -247,10 +240,10 @@ describe("NegotiationController", () => {
       expect(result).toStrictEqual({
         "@context": defaultContext(),
         "@id": expect.stringContaining("urn:uuid:"),
-        "@type": "dspace:ContractNegotiation",
-        "dspace:state": "dspace:REQUESTED",
-        "dspace:providerPid": expect.stringContaining("urn:uuid:"),
-        "dspace:consumerPid": "urn:uuid:a81bea31-55d4-4c70-b454-9758e1228fd0"
+        "@type": "ContractNegotiation",
+        state: "REQUESTED",
+        providerPid: expect.stringContaining("urn:uuid:"),
+        consumerPid: "urn:uuid:a81bea31-55d4-4c70-b454-9758e1228fd0"
       });
     });
   });
@@ -264,10 +257,10 @@ describe("NegotiationController", () => {
       expect(result).toStrictEqual({
         "@context": defaultContext(),
         "@id": expect.stringContaining("urn:uuid:"),
-        "@type": "dspace:ContractNegotiation",
-        "dspace:state": "dspace:REQUESTED",
-        "dspace:providerPid": providerNegotiationId,
-        "dspace:consumerPid": "urn:uuid:a81bea31-55d4-4c70-b454-9758e1228fd0"
+        "@type": "ContractNegotiation",
+        state: "REQUESTED",
+        providerPid: providerNegotiationId,
+        consumerPid: "urn:uuid:a81bea31-55d4-4c70-b454-9758e1228fd0"
       });
     });
     it("Negotiation request with unknown id should result in a 404", () => {
@@ -293,8 +286,7 @@ describe("NegotiationController", () => {
         new ContractRequestMessage({
           consumerPid: "urn:uuid:a81bea31-55d4-4c70-b454-9758e1228fd0",
           providerPid: providerNegotiationId,
-          callbackAddress:
-            "http://127.0.0.1/negotiation/callbacks/urn:uuid:5d9c9c88-a86a-47b7-9ade-72913afda5e2",
+          callbackAddress: "http://127.0.0.1/callbacks",
           offer: new Offer({
             id: "urn:uuid:81a41b35-2926-4b29-8c9a-ee52665a047b",
             assigner: "urn:uuid:fcddc591-b9f1-4c75-b557-80d1cf955859",
@@ -306,10 +298,10 @@ describe("NegotiationController", () => {
       expect(result).toStrictEqual({
         "@context": defaultContext(),
         "@id": expect.stringContaining("urn:uuid:"),
-        "@type": "dspace:ContractNegotiation",
-        "dspace:state": "dspace:REQUESTED",
-        "dspace:providerPid": providerNegotiationId,
-        "dspace:consumerPid": "urn:uuid:a81bea31-55d4-4c70-b454-9758e1228fd0"
+        "@type": "ContractNegotiation",
+        state: "REQUESTED",
+        providerPid: providerNegotiationId,
+        consumerPid: "urn:uuid:a81bea31-55d4-4c70-b454-9758e1228fd0"
       });
     });
     it("Missing processId in contract request message should result in a 400", () => {
@@ -318,8 +310,7 @@ describe("NegotiationController", () => {
           "urn:uuid:5d9c9c88-a86a-47b7-9ade-72913afda5e2",
           new ContractRequestMessage({
             consumerPid: "urn:uuid:a81bea31-55d4-4c70-b454-9758e1228fd0",
-            callbackAddress:
-              "http://127.0.0.1/negotiation/callbacks/urn:uuid:5d9c9c88-a86a-47b7-9ade-72913afda5e2",
+            callbackAddress: "http://127.0.0.1/callbacks",
             offer: new Offer({
               id: "urn:uuid:81a41b35-2926-4b29-8c9a-ee52665a047b",
               assigner: "urn:uuid:fcddc591-b9f1-4c75-b557-80d1cf955859",
@@ -338,8 +329,7 @@ describe("NegotiationController", () => {
           "urn:uuid:5d9c9c88-a86a-47b7-9ade-72913afda5e2",
           new ContractRequestMessage({
             consumerPid: "urn:uuid:e8f94bf2-c59d-48c8-b5b9-9d5366ae2f3d",
-            callbackAddress:
-              "http://127.0.0.1/negotiation/callbacks/urn:uuid:5d9c9c88-a86a-47b7-9ade-72913afda5e2",
+            callbackAddress: "http://127.0.0.1/callbacks",
             offer: new Offer({
               id: "urn:uuid:81a41b35-2926-4b29-8c9a-ee52665a047b",
               assigner: "urn:uuid:fcddc591-b9f1-4c75-b557-80d1cf955859",
@@ -401,8 +391,8 @@ describe("NegotiationController", () => {
           consumerPid: "urn:uuid:e8f94bf2-c59d-48c8-b5b9-9d5366ae2f3d",
           providerPid: providerNegotiationId,
           hashedMessage: {
-            "dspace:algorithm": "sha256",
-            "dspace:digest": "..."
+            algorithm: "sha256",
+            digest: "..."
           }
         }),
         "did:web:localhost"
@@ -419,8 +409,8 @@ describe("NegotiationController", () => {
             consumerPid: "urn:uuid:e8f94bf2-c59d-48c8-b5b9-9d5366ae2f3d",
             providerPid: "urn:uuid:e8f94bf2-c59d-48c8-b5b9-9d5366ae2f3d",
             hashedMessage: {
-              "dspace:algorithm": "sha256",
-              "dspace:digest": "..."
+              algorithm: "sha256",
+              digest: "..."
             }
           }),
           "did:web:localhost"
@@ -461,14 +451,14 @@ describe("NegotiationController", () => {
       );
     });
   });
-  describe("/callbacks/:id/offer", () => {
+  describe("/callbacks/:id/offers", () => {
     it("Callback with a contract offer should return a status OK", async () => {
       const result = await negotiationController.callbackOffer(
         consumerNegotiationId,
         new ContractOfferMessage({
           consumerPid: consumerNegotiationId,
           providerPid: "urn:uuid:e8f94bf2-c59d-48c8-b5b9-9d5366ae2f3d",
-          callbackAddress: `http://127.0.0.1/negotiation/callbacks/${consumerNegotiationId}`,
+          callbackAddress: `http://127.0.0.1/callbacks`,
           offer: new Offer({
             id: "urn:uuid:81a41b35-2926-4b29-8c9a-ee52665a047b",
             assigner: "urn:uuid:fcddc591-b9f1-4c75-b557-80d1cf955859",
@@ -488,8 +478,7 @@ describe("NegotiationController", () => {
           new ContractOfferMessage({
             consumerPid: consumerNegotiationId,
             providerPid: "urn:uuid:e8f94bf2-c59d-48c8-b5b9-9d5366ae2f3d",
-            callbackAddress:
-              "http://127.0.0.1/negotiation/callbacks/urn:uuid:63f0abdb-ef13-42a4-acb0-567ba5c2c41c",
+            callbackAddress: "http://127.0.0.1/callbacks",
             offer: new Offer({
               id: "urn:uuid:81a41b35-2926-4b29-8c9a-ee52665a047b",
               assigner: "urn:uuid:fcddc591-b9f1-4c75-b557-80d1cf955859"

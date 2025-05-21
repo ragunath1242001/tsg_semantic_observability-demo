@@ -102,19 +102,25 @@ describe("Negotiation Service (Provider)", () => {
 
     server = setupServer(
       http.post<PathParams, ContractAgreementVerificationMessageDto>(
-        `http://remoteparty.test/negotiation/${remoteProcessId}/offers`,
+        `http://remoteparty.test/callbacks/negotiations/${remoteProcessId}/offers`,
         () => {
           return HttpResponse.json({ status: "OK" });
         }
       ),
       http.post<PathParams, ContractAgreementVerificationMessageDto>(
-        `http://remoteparty.test/negotiation/${remoteProcessId}/agreement`,
+        `http://remoteparty.test/callbacks/negotiations/${remoteProcessId}/agreement`,
         () => {
           return HttpResponse.json({ status: "OK" });
         }
       ),
       http.post<PathParams, ContractAgreementVerificationMessageDto>(
-        `http://remoteparty.test/negotiation/${remoteProcessId}/events`,
+        `http://remoteparty.test/callbacks/negotiations/${remoteProcessId}/events`,
+        () => {
+          return HttpResponse.json({ status: "OK" });
+        }
+      ),
+      http.post<PathParams, ContractAgreementVerificationMessageDto>(
+        `http://remoteparty.test/callbacks/negotiations/${remoteProcessId}/termination`,
         () => {
           return HttpResponse.json({ status: "OK" });
         }
@@ -129,16 +135,16 @@ describe("Negotiation Service (Provider)", () => {
     agreementService = moduleRef.get(AgreementService);
     await agreementService.storeAgreement(
       {
-        "@type": "odrl:Agreement",
+        "@type": "Agreement",
         "@id": "urn:uuid:00000000-0000-0000-0000-000000000000",
-        "odrl:assigner": "did:web:localhost",
-        "odrl:assignee": "did:web:remote.com",
-        "dspace:timestamp": new Date("2024-08-01T12:00:00Z").toISOString(),
-        "odrl:target": "urn:uuid:33147fb2-8896-4a53-983b-61000b6559b6",
-        "odrl:permission": [
+        assigner: "did:web:localhost",
+        assignee: "did:web:remote.com",
+        timestamp: new Date("2024-08-01T12:00:00Z").toISOString(),
+        target: "urn:uuid:33147fb2-8896-4a53-983b-61000b6559b6",
+        permission: [
           {
-            "@type": "odrl:Permission",
-            "odrl:action": ODRLAction.USE
+            "@type": "Permission",
+            action: ODRLAction.USE
           }
         ]
       },
@@ -186,7 +192,7 @@ describe("Negotiation Service (Provider)", () => {
         new ContractRequestMessage({
           consumerPid: remoteProcessId,
           offer: offer,
-          callbackAddress: `http://remoteparty.test/negotiation/${remoteProcessId}`
+          callbackAddress: `http://remoteparty.test/callbacks`
         }),
         "did:web:remoteparty.test"
       );
@@ -261,8 +267,8 @@ describe("Negotiation Service (Provider)", () => {
           providerPid: localProcessId,
           consumerPid: remoteProcessId,
           hashedMessage: {
-            "dspace:algorithm": "sha256",
-            "dspace:digest": "..."
+            algorithm: "sha256",
+            digest: "..."
           }
         }),
         "did:web:remoteparty.test"
@@ -281,11 +287,11 @@ describe("Negotiation Service (Provider)", () => {
         await negotiationService.getNegotiation(localProcessId);
       expect(negotiationDetail.state).toBe(ContractNegotiationState.FINALIZED);
       expect(negotiationDetail.events.map((event) => event.state)).toEqual([
-        "dspace:REQUESTED",
-        "dspace:FINALIZED",
-        "dspace:AGREED",
-        "dspace:VERIFIED",
-        "dspace:FINALIZED"
+        "REQUESTED",
+        "FINALIZED",
+        "AGREED",
+        "VERIFIED",
+        "FINALIZED"
       ]);
     });
   });
@@ -303,7 +309,7 @@ describe("Negotiation Service (Provider)", () => {
         new ContractRequestMessage({
           consumerPid: remoteProcessId,
           offer: offer,
-          callbackAddress: `http://remoteparty.test/negotiation/${remoteProcessId}`
+          callbackAddress: `http://remoteparty.test/callbacks`
         }),
         "did:web:remoteparty.test"
       );
@@ -378,7 +384,7 @@ describe("Negotiation Service (Provider)", () => {
             providerPid: remoteProcessId,
             consumerPid: localProcessId,
             offer: offer,
-            callbackAddress: `http://remoteparty.test/negotiation/${remoteProcessId}`
+            callbackAddress: `http://remoteparty.test/callbacks`
           }),
           "did:web:remoteparty.test"
         )
@@ -390,7 +396,7 @@ describe("Negotiation Service (Provider)", () => {
           providerPid: localProcessId,
           consumerPid: remoteProcessId,
           offer: offer,
-          callbackAddress: `http://remoteparty.test/negotiation/${remoteProcessId}`
+          callbackAddress: `http://remoteparty.test/callbacks`
         }),
         "did:web:remoteparty.test"
       );
@@ -435,8 +441,8 @@ describe("Negotiation Service (Provider)", () => {
           providerPid: localProcessId,
           consumerPid: remoteProcessId,
           hashedMessage: {
-            "dspace:algorithm": "sha256",
-            "dspace:digest": "..."
+            algorithm: "sha256",
+            digest: "..."
           }
         }),
         "did:web:remoteparty.test"
@@ -469,7 +475,7 @@ describe("Negotiation Service (Provider)", () => {
         new ContractRequestMessage({
           consumerPid: remoteProcessId,
           offer: offer,
-          callbackAddress: `http://remoteparty.test/negotiation/${remoteProcessId}`
+          callbackAddress: `http://remoteparty.test/callbacks`
         }),
         "did:web:remoteparty.test"
       );
@@ -500,7 +506,7 @@ describe("Negotiation Service (Provider)", () => {
         new ContractRequestMessage({
           consumerPid: remoteProcessId,
           offer: offer,
-          callbackAddress: `http://remoteparty.test/negotiation/${remoteProcessId}`
+          callbackAddress: `http://remoteparty.test/callbacks`
         }),
         "did:web:remoteparty.test"
       );

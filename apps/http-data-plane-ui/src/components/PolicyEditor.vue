@@ -9,18 +9,18 @@ import { pushOrCreate } from "../utils/arrays.js";
 const odrlOfferSchema = {
   $schema: "http://json-schema.org/draft-07/schema#",
   title:
-    "Dataspace Protocol Message Offer (https://w3id.org/dspace/2024/1/negotiation/contract-schema.json#/definitions/MessageOffer)",
+    "Dataspace Protocol Message Offer (https://w3id.org/dspace/2025/1/negotiation/contract-schema.json#/definitions/MessageOffer)",
   type: "object",
-  $ref: "https://w3id.org/dspace/2024/1/negotiation/contract-schema.json#/definitions/MessageOffer"
+  $ref: "https://w3id.org/dspace/2025/1/negotiation/contract-schema.json#/definitions/MessageOffer"
 };
 const odrlActions = Object.values(ODRLAction);
 const rawTemplate = () => ({
-  "@type": "odrl:Offer",
+  "@type": "Offer",
   "@id": `urn:uuid:${crypto.randomUUID()}`,
-  "odrl:assigner": "did:web:...",
-  "odrl:permission": [
+  assigner: "did:web:...",
+  permission: [
     {
-      "odrl:action": "odrl:use"
+      action: "use"
     }
   ]
 });

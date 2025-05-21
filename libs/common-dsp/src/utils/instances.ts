@@ -24,12 +24,15 @@ export function createInstance<Type>(
 }
 
 export function createOptionalInstances<Type>(
-  arr: Type[] | undefined,
+  arr: Type[] | Type | undefined,
   cls: ClassConstructor<Type>
 ): Type[] | undefined {
-  return arr?.map((obj) => {
-    return createInstance(obj, cls);
-  });
+  if (arr === undefined || arr === null) return undefined;
+  if (Array.isArray(arr)) {
+    return arr.map((obj) => createInstance(obj, cls));
+  } else {
+    return [createInstance(arr, cls)];
+  }
 }
 
 export function createInstances<Type>(

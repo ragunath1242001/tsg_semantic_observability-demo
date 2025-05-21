@@ -8,7 +8,8 @@ import {
 import {
   AgreementDto,
   DataPlaneCreation,
-  DatasetDto
+  DatasetDto,
+  defaultContext
 } from "@tsg-dsp/common-dsp";
 import { plainToClass } from "class-transformer";
 import { http, HttpResponse, PathParams } from "msw";
@@ -29,37 +30,37 @@ describe("Dataplane Service", () => {
   beforeAll(async () => {
     await TypeOrmTestHelper.instance.setupTestDB();
     const initialDataset: DatasetDto = {
-      "@context": "https://w3id.org/dspace/2024/1/context.json",
-      "@type": "dcat:Dataset",
+      "@context": defaultContext(),
+      "@type": "Dataset",
       "@id": "urn:uuid:test",
-      "dct:title": "HTTPBin",
-      "odrl:hasPolicy": [
+      title: "HTTPBin",
+      hasPolicy: [
         {
-          "@type": "odrl:Offer",
+          "@type": "Offer",
           "@id": "urn:uuid:3fdbf466-b2de-45ef-bc9b-215267091ed0",
-          "odrl:assigner": "did:web:localhost",
-          "odrl:permission": [
+          assigner: "did:web:localhost",
+          permission: [
             {
-              "@type": "odrl:Permission",
-              "odrl:action": "odrl:use"
+              "@type": "Permission",
+              action: "use"
             }
           ]
         }
       ],
-      "dcat:distribution": [
+      distribution: [
         {
-          "@type": "dcat:Distribution",
+          "@type": "Distribution",
           "@id": "urn:uuid:f2f7c1a0-51b9-4383-b084-d4a7e524f61f",
-          "dcat:accessService": [
+          accessService: [
             {
-              "@type": "dcat:DataService",
+              "@type": "DataService",
               "@id": "urn:uuid:96645550-840f-44a0-a994-427cdfd0b2d8",
-              "dcat:endpointURL": "http://localhost"
+              endpointURL: "http://localhost"
             }
           ],
-          "dct:conformsTo": ["https://httpbin.org/spec.json"],
-          "dct:format": "tsg:analytics",
-          "dct:title": "HTTPBin"
+          conformsTo: ["https://httpbin.org/spec.json"],
+          format: "tsg:analytics",
+          title: "HTTPBin"
         }
       ]
     };
@@ -105,13 +106,13 @@ describe("Dataplane Service", () => {
         `${config.controlPlane.managementEndpoint}/agreements/:agreementId`,
         () => {
           return HttpResponse.json<AgreementDto>({
-            "@context": "https://w3id.org/dspace/2024/1/context.json",
-            "@type": "odrl:Agreement",
+            "@context": defaultContext(),
+            "@type": "Agreement",
             "@id": "urn:uuid:test",
-            "odrl:assigner": "did:web:localhost",
-            "odrl:assignee": "did:web:localhost",
-            "dspace:timestamp": new Date().toISOString(),
-            "odrl:target": "urn:uuid:dataset"
+            assigner: "did:web:localhost",
+            assignee: "did:web:localhost",
+            timestamp: new Date().toISOString(),
+            target: "urn:uuid:dataset"
           });
         }
       ),
@@ -129,8 +130,8 @@ describe("Dataplane Service", () => {
         `${config.controlPlane.managementEndpoint}/catalog/dataset`,
         () => {
           return HttpResponse.json<DatasetDto>({
-            "@context": "https://w3id.org/dspace/2024/1/context.json",
-            "@type": "dcat:Dataset",
+            "@context": defaultContext(),
+            "@type": "Dataset",
             "@id": "urn:uuid:test"
           });
         }
@@ -226,11 +227,11 @@ describe("Dataplane Service", () => {
     it("Transfer request", async () => {
       const result = await dataPlaneService.handleTransferRequest(
         {
-          "@type": "dspace:TransferRequestMessage",
-          "dspace:agreementId": "urn:uuid:cadb401e-4275-4d77-99a2-5aa2af93e3b7",
-          "dct:format": "dspace:HTTP",
-          "dspace:callbackAddress": "http://127.0.0.1/test",
-          "dspace:consumerPid": "urn:uuid:00000000-0000-0000-0000-000000000000"
+          "@type": "TransferRequestMessage",
+          agreementId: "urn:uuid:cadb401e-4275-4d77-99a2-5aa2af93e3b7",
+          format: "tsg:HTTP",
+          callbackAddress: "http://127.0.0.1/test",
+          consumerPid: "urn:uuid:00000000-0000-0000-0000-000000000000"
         },
         "provider",
         transferProcessId,
@@ -258,9 +259,9 @@ describe("Dataplane Service", () => {
     it("Transfer start", async () => {
       await dataPlaneService.handleTransferStart(
         {
-          "@type": "dspace:TransferStartMessage",
-          "dspace:providerPid": transferProcessId,
-          "dspace:consumerPid": "urn:uuid:00000000-0000-0000-0000-000000000000"
+          "@type": "TransferStartMessage",
+          providerPid: transferProcessId,
+          consumerPid: "urn:uuid:00000000-0000-0000-0000-000000000000"
         },
         transferProcessId
       );
@@ -269,9 +270,9 @@ describe("Dataplane Service", () => {
     it("Transfer completion", async () => {
       await dataPlaneService.handleTransferComplete(
         {
-          "@type": "dspace:TransferCompletionMessage",
-          "dspace:providerPid": transferProcessId,
-          "dspace:consumerPid": "urn:uuid:00000000-0000-0000-0000-000000000000"
+          "@type": "TransferCompletionMessage",
+          providerPid: transferProcessId,
+          consumerPid: "urn:uuid:00000000-0000-0000-0000-000000000000"
         },
         transferProcessId
       );
@@ -318,11 +319,11 @@ describe("Dataplane Service", () => {
     it("Transfer Request", async () => {
       const result = await dataPlaneService.handleTransferRequest(
         {
-          "@type": "dspace:TransferRequestMessage",
-          "dspace:consumerPid": "urn:uuid:00000000-0000-0000-0000-000000000000",
-          "dspace:agreementId": "urn:uuid:e785d4a8-2030-4a2b-b223-9881e35c0df7",
-          "dct:format": "dspace:HTTP",
-          "dspace:callbackAddress": "http://127.0.0.1/test"
+          "@type": "TransferRequestMessage",
+          consumerPid: "urn:uuid:00000000-0000-0000-0000-000000000000",
+          agreementId: "urn:uuid:e785d4a8-2030-4a2b-b223-9881e35c0df7",
+          format: "tsg:HTTP",
+          callbackAddress: "http://127.0.0.1/test"
         },
         "consumer",
         transferProcessId,
@@ -335,18 +336,18 @@ describe("Dataplane Service", () => {
     it("Transfer start", async () => {
       await dataPlaneService.handleTransferStart(
         {
-          "@type": "dspace:TransferStartMessage",
-          "dspace:providerPid": transferProcessId,
-          "dspace:consumerPid": "urn:uuid:00000000-0000-0000-0000-000000000000",
-          "dspace:dataAddress": {
-            "@type": "dspace:DataAddress",
-            "dspace:endpoint": "https://httpbin.org/anything",
-            "dspace:endpointType": "dspace:HTTP",
-            "dspace:endpointProperties": [
+          "@type": "TransferStartMessage",
+          providerPid: transferProcessId,
+          consumerPid: "urn:uuid:00000000-0000-0000-0000-000000000000",
+          dataAddress: {
+            "@type": "DataAddress",
+            endpoint: "https://httpbin.org/anything",
+            endpointType: "tsg:HTTP",
+            endpointProperties: [
               {
-                "@type": "dspace:EndpointProperty",
-                "dspace:name": "Authorization",
-                "dspace:value": "Bearer ABCDEF"
+                "@type": "EndpointProperty",
+                name: "Authorization",
+                value: "Bearer ABCDEF"
               }
             ]
           }
@@ -358,9 +359,9 @@ describe("Dataplane Service", () => {
     it("Transfer completion", async () => {
       await dataPlaneService.handleTransferComplete(
         {
-          "@type": "dspace:TransferCompletionMessage",
-          "dspace:providerPid": transferProcessId,
-          "dspace:consumerPid": "urn:uuid:00000000-0000-0000-0000-000000000000"
+          "@type": "TransferCompletionMessage",
+          providerPid: transferProcessId,
+          consumerPid: "urn:uuid:00000000-0000-0000-0000-000000000000"
         },
         transferProcessId
       );
@@ -471,8 +472,8 @@ describe("Dataplane Service Consumer", () => {
       expect(await dataPlaneService.getDatasets()).toHaveLength(1);
       await dataPlaneService.updateDatasets([
         {
-          "@context": "https://w3id.org/dspace/2024/1/context.json",
-          "@type": "dcat:Dataset",
+          "@context": defaultContext(),
+          "@type": "Dataset",
           "@id": "urn:uuid:test"
         }
       ]);

@@ -51,22 +51,22 @@ export enum ODRLAction {
   ACCEPT_TRACKING = "odrl:acceptTracking",
   COMMERICAL_USE = "cc:CommericalUse",
   PRESENT = "odrl:present",
-  USE = "odrl:use"
+  USE = "use"
 }
 
 export enum ODRLOperator {
-  EQ = "odrl:eq",
-  GT = "odrl:gt",
-  GTEQ = "odrl:gteq",
-  HAS_PART = "odrl:hasPart",
-  IS_A = "odrl:isA",
-  IS_ALL_OF = "odrl:isAllOf",
-  IS_ANY_OF = "odrl:isAnyOf",
-  IS_NONE_OF = "odrl:isNoneOf",
-  IS_PART_OF = "odrl:isPartOf",
-  LT = "odrl:lt",
-  LTEQ = "odrl:term-lteq",
-  NEQ = "odrl:neq"
+  EQ = "eq",
+  GT = "gt",
+  GTEQ = "gteq",
+  HAS_PART = "hasPart",
+  IS_A = "isA",
+  IS_ALL_OF = "isAllOf",
+  IS_ANY_OF = "isAnyOf",
+  IS_NONE_OF = "isNoneOf",
+  IS_PART_OF = "isPartOf",
+  LT = "lt",
+  LTEQ = "term-lteq",
+  NEQ = "neq"
 }
 
 export enum ODRLLeftOperand {
@@ -107,55 +107,55 @@ export enum ODRLLeftOperand {
 }
 
 export interface ConstraintDto {
-  "@type": "odrl:Constraint";
-  "odrl:leftOperand": ODRLLeftOperand | string;
-  "odrl:operator": ODRLOperator | string;
-  "odrl:rightOperand"?: ValueDto | string;
-  "odrl:rightOperandReference"?: string;
+  "@type": "Constraint";
+  leftOperand: ODRLLeftOperand | string;
+  operator: ODRLOperator | string;
+  rightOperand?: ValueDto | string;
+  rightOperandReference?: string;
 }
 
 export interface PolicyRuleDto {
-  "@type": "odrl:Prohibition" | "odrl:Duty" | "odrl:Permission";
-  "odrl:assigner"?: string;
-  "odrl:assignee"?: OrArray<string>;
-  "odrl:action": OrArray<ODRLAction | string>;
-  "odrl:target"?: string;
-  "odrl:constraint"?: Array<ConstraintDto>;
+  "@type": "Prohibition" | "Duty" | "Permission";
+  assigner?: string;
+  assignee?: OrArray<string>;
+  action: OrArray<ODRLAction | string>;
+  target?: string;
+  constraint?: Array<ConstraintDto>;
 }
 
 export interface ProhibitionDto extends PolicyRuleDto {
-  "@type": "odrl:Prohibition";
+  "@type": "Prohibition";
 }
 
 export interface DutyDto extends PolicyRuleDto {
-  "@type": "odrl:Duty";
+  "@type": "Duty";
 }
 
 export interface PermissionDto extends PolicyRuleDto {
-  "@type": "odrl:Permission";
-  "odrl:duty"?: Array<DutyDto>;
+  "@type": "Permission";
+  duty?: Array<DutyDto>;
 }
 
 export interface PolicyDto extends ReferenceDto {
-  "@type": "odrl:Offer" | "odrl:Agreement";
-  "odrl:assigner"?: string;
-  "odrl:assignee"?: OrArray<string>;
-  "odrl:target"?: string;
-  "odrl:profile"?: string;
-  "odrl:permission"?: Array<PermissionDto>;
-  "odrl:prohibition"?: Array<ProhibitionDto>;
-  "odrl:obligation"?: Array<DutyDto>;
+  "@type": "Offer" | "Agreement";
+  assigner?: string;
+  assignee?: OrArray<string>;
+  target?: string;
+  profile?: string;
+  permission?: Array<PermissionDto>;
+  prohibition?: Array<ProhibitionDto>;
+  obligation?: Array<DutyDto>;
 }
 
 export interface OfferDto extends ContextDto, PolicyDto {
-  "@type": "odrl:Offer";
-  "odrl:assigner": string;
+  "@type": "Offer";
+  assigner: string;
 }
 
 export interface AgreementDto extends ContextDto, PolicyDto {
-  "@type": "odrl:Agreement";
-  "odrl:assigner": string;
-  "odrl:assignee": string;
-  "dspace:timestamp": string;
-  "odrl:target": string;
+  "@type": "Agreement";
+  assigner: string;
+  assignee: string;
+  timestamp: string;
+  target: string;
 }

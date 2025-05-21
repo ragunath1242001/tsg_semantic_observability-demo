@@ -30,14 +30,14 @@ export class MemoryUsageDto {
   @ApiProperty({ example: 8192 })
   used_heap_size!: number;
 }
-export class IssuanceStatusDto {
+export class StatusIssuanceDto {
   @ApiProperty({ example: 10 })
   issued!: number;
   @ApiProperty({ example: 2 })
   open!: number;
 }
 
-export class CredentialStatusDto {
+export class StatusCredentialDto {
   @ApiProperty({ example: 5 })
   selfSigned!: number;
   @ApiProperty({ example: 1 })
@@ -75,15 +75,15 @@ export class StatusDto {
   })
   memoryUsage!: MemoryUsageDto;
   @ApiProperty({
-    type: () => IssuanceStatusDto,
+    type: () => StatusIssuanceDto,
     example: { issued: 10, open: 2 }
   })
-  issuance!: IssuanceStatusDto;
+  issuance!: StatusIssuanceDto;
   @ApiProperty({
-    type: () => CredentialStatusDto,
+    type: () => StatusCredentialDto,
     example: { selfSigned: 5, thirdParty: 1 }
   })
-  credentials!: CredentialStatusDto;
+  credentials!: StatusCredentialDto;
   @ApiProperty({ example: 3 })
   keys!: number;
 }

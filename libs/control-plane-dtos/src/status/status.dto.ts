@@ -37,16 +37,16 @@ export class MemoryUsageDto {
   used_heap_size!: number;
 }
 
-export class NegotiationStatusDto {
+export class StatusNegotiationDto {
   @ApiProperty({ example: "provider" })
   role!: NegotiationRole;
-  @ApiProperty({ example: "dspace:OFFERED" })
+  @ApiProperty({ example: "OFFERED" })
   state!: ContractNegotiationState;
   @ApiProperty({ example: 1 })
   count!: number;
 }
 
-export class TransferStatusDto {
+export class StatusTransferDto {
   @ApiProperty({ example: "provider" })
   role!: TransferRole;
   @ApiProperty({ example: TransferState.COMPLETED })
@@ -88,8 +88,8 @@ export class StatusDto {
   memoryUsage!: MemoryUsageDto;
   @ApiProperty({ example: 3600 })
   uptime!: number;
-  @ApiProperty({ type: () => NegotiationStatusDto })
-  negotiations!: NegotiationStatusDto[];
-  @ApiProperty({ type: () => TransferStatusDto })
-  transfers!: TransferStatusDto[];
+  @ApiProperty({ type: () => StatusNegotiationDto })
+  negotiations!: StatusNegotiationDto[];
+  @ApiProperty({ type: () => StatusTransferDto })
+  transfers!: StatusTransferDto[];
 }

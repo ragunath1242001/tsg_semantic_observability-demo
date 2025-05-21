@@ -75,42 +75,42 @@ const goBack = () => {
 const parsePolicies = (policies: Array<PolicyDto>): Array<FlatPolicy> => {
   const output: Array<FlatPolicy> = [];
   for (const policy of policies) {
-    if (policy["odrl:permission"] !== undefined) {
+    if (policy.permission !== undefined) {
       output.push.apply(
         output,
-        policy["odrl:permission"].map((permission) => {
+        policy.permission.map((permission) => {
           return {
             type: permission["@type"],
-            assigner: policy["odrl:assigner"],
-            assignee: policy["odrl:assignee"] || "*",
-            target: permission["odrl:target"],
-            action: permission["odrl:action"],
-            constraints: permission["odrl:constraint"]?.map((constraint) => {
+            assigner: policy.assigner,
+            assignee: policy.assignee || "*",
+            target: permission.target,
+            action: permission.action,
+            constraints: permission.constraint?.map((constraint) => {
               return {
-                leftOperand: constraint["odrl:leftOperand"],
-                rightOperand: constraint["odrl:rightOperand"],
-                operator: constraint["odrl:operator"]
+                leftOperand: constraint.leftOperand,
+                rightOperand: constraint.rightOperand,
+                operator: constraint.operator
               };
             })
           } as FlatPolicy;
         })
       );
     }
-    if (policy["odrl:prohibition"] !== undefined) {
+    if (policy.prohibition !== undefined) {
       output.push.apply(
         output,
-        policy["odrl:prohibition"].map((prohibition) => {
+        policy.prohibition.map((prohibition) => {
           return {
             type: prohibition["@type"],
-            assigner: policy["odrl:assigner"],
-            assignee: policy["odrl:assignee"] || "*",
-            target: prohibition["odrl:target"],
-            action: prohibition["odrl:action"],
-            constraints: prohibition["odrl:constraint"]?.map((constraint) => {
+            assigner: policy.assigner,
+            assignee: policy.assignee || "*",
+            target: prohibition.target,
+            action: prohibition.action,
+            constraints: prohibition.constraint?.map((constraint) => {
               return {
-                leftOperand: constraint["odrl:leftOperand"],
-                rightOperand: constraint["odrl:rightOperand"],
-                operator: constraint["odrl:operator"]
+                leftOperand: constraint.leftOperand,
+                rightOperand: constraint.rightOperand,
+                operator: constraint.operator
               };
             })
           } as FlatPolicy;
@@ -169,59 +169,48 @@ const sendNegotiation = async (
         ><div class="flex items-center">
           <Button icon="pi pi-chevron-left" rounded @click="goBack()"></Button>
           <h2
-            v-tooltip.top="datasetData['dct:title']"
+            v-tooltip.top="datasetData.title"
             class="mx-4 bg-surface-0 dark:bg-surface-900 whitespace-nowrap overflow-hidden text-ellipsis">
-            {{ datasetData["dct:title"] }}
+            {{ datasetData.title }}
           </h2>
         </div></template
       >
       <template #subtitle>
-        {{ obtainValues(datasetData["dct:description"]).join("\r\n") }}
+        {{ obtainValues(datasetData.description).join("\r\n") }}
       </template>
       <template #content>
         <div
           class="grid grid-cols-12 gap-4 grid-nogutter border-t border-surface">
-          <DisplayField v-if="'dcat:hasVersion' in datasetData" label="Versions"
-            ><div
-              v-for="version in datasetData['dcat:hasVersion']"
-              :key="version">
+          <DisplayField v-if="'hasVersion' in datasetData" label="Versions"
+            ><div v-for="version in datasetData.hasVersion" :key="version">
               {{ version }}
             </div>
           </DisplayField>
           <DisplayField
             v-if="
-              'dcat:hasCurrentVersion' in datasetData &&
-              datasetData['dcat:hasCurrentVersion']
+              'hasCurrentVersion' in datasetData &&
+              datasetData.hasCurrentVersion
             "
             label="Current Version">
-            {{ datasetData["dcat:hasCurrentVersion"] }}
+            {{ datasetData.hasCurrentVersion }}
           </DisplayField>
           <DisplayField label="Endpoint URL">
-            <a
-              :href="
-                datasetData['dcat:distribution'][0]['dcat:accessService'][0][
-                  'dcat:endpointURL'
-                ]
-              ">
+            <a :href="datasetData.distribution[0].accessService[0].endpointURL">
               {{
-                datasetData["dcat:distribution"][0]["dct:title"]
-                  ? datasetData["dcat:distribution"][0]["dct:title"]
-                  : datasetData["dcat:distribution"][0][
-                      "dcat:accessService"
-                    ][0]["dcat:endpointURL"]
+                datasetData.distribution[0].title
+                  ? datasetData.distribution[0].title
+                  : datasetData.distribution[0].accessService[0].endpointURL
               }}</a
             >
           </DisplayField>
           <DisplayField label="Format">
-            {{ datasetData["dcat:distribution"][0]["dct:format"] }}
+            {{ datasetData.distribution[0].format }}
           </DisplayField>
           <DisplayField
-            v-if="'dct:conformsTo' in datasetData['dcat:distribution'][0]"
+            v-if="'conformsTo' in datasetData.distribution[0]"
             label="Conforms to">
             <a
-              v-for="conformsTo in datasetData['dcat:distribution'][0][
-                'dct:conformsTo'
-              ]"
+              v-for="conformsTo in datasetData.distribution[0].conformsTo"
               :key="conformsTo"
               :href="conformsTo"
               class="mr-2 break-all">
@@ -230,7 +219,7 @@ const sendNegotiation = async (
           </DisplayField>
           <DisplayField label="Keywords"
             ><Tag
-              v-for="keyword in obtainValues(datasetData['dcat:keyword'])"
+              v-for="keyword in obtainValues(datasetData.keyword)"
               :key="keyword"
               class="mr-2 text-surface-900 dark:text-surface-0 bg-primary-700"
               :value="keyword"></Tag
@@ -238,17 +227,14 @@ const sendNegotiation = async (
         </div>
         <Divider />
         <template
-          v-if="
-            datasetData?.['odrl:hasPolicy'] &&
-            datasetData?.['odrl:hasPolicy'].length > 0
-          ">
+          v-if="datasetData?.hasPolicy && datasetData?.hasPolicy.length > 0">
           <div
             class="pb-8 font-medium text-2xl text-surface-900 dark:text-surface-0">
             Policies
           </div>
 
           <template
-            v-for="policy in parsePolicies(datasetData['odrl:hasPolicy'])"
+            v-for="policy in parsePolicies(datasetData.hasPolicy)"
             :key="policy">
             <div
               class="px-2 font-medium text-lg text-surface-700 dark:text-surface-100">

@@ -146,8 +146,8 @@ export class RuleRepositoryService implements OnModuleInit {
     constraintDto: ConstraintDto,
     shouldThrow: boolean = false
   ): Promise<ConstraintModel | undefined> {
-    const leftOperand = toCompactUri(constraintDto["odrl:leftOperand"]);
-    const operator = toCompactUri(constraintDto["odrl:operator"]);
+    const leftOperand = toCompactUri(constraintDto.leftOperand);
+    const operator = toCompactUri(constraintDto.operator);
     const constraintDao = await this.constraintRepository.findOneBy({
       leftOperand: leftOperand
     });
@@ -174,8 +174,7 @@ export class RuleRepositoryService implements OnModuleInit {
     }
     const constraint = AtomicConstraint.parse(constraintDao);
     constraint.value = RuleRepositoryService.parseRightOperand(
-      constraintDto["odrl:rightOperand"] ??
-        constraintDto["odrl:rightOperandReference"]
+      constraintDto.rightOperand ?? constraintDto.rightOperandReference
     );
     return constraint;
   }
@@ -183,10 +182,10 @@ export class RuleRepositoryService implements OnModuleInit {
   constraintToOdrl(constraint: ConstraintModel, value?: string): ConstraintDto {
     if (constraint instanceof AtomicConstraint) {
       return {
-        "@type": "odrl:Constraint",
-        "odrl:leftOperand": toCompactUri(constraint.leftOperand),
-        "odrl:operator": constraint.operator,
-        "odrl:rightOperand": value ?? constraint.value
+        "@type": "Constraint",
+        leftOperand: toCompactUri(constraint.leftOperand),
+        operator: constraint.operator,
+        rightOperand: value ?? constraint.value
       };
     }
     throw new DSPError(
@@ -332,34 +331,34 @@ export class RuleRepositoryService implements OnModuleInit {
     switch (ruleType) {
       case RuleType.PROHIBITION:
         return {
-          "@type": "odrl:Prohibition",
-          "odrl:action": rule.action,
-          "odrl:target": ruleTarget,
-          "odrl:assignee": rule.assignee,
-          "odrl:constraint": rule.constraints.map((constraint) =>
+          "@type": "Prohibition",
+          action: rule.action,
+          target: ruleTarget,
+          assignee: rule.assignee,
+          constraint: rule.constraints.map((constraint) =>
             this.constraintToOdrl(constraint)
           )
         };
       case RuleType.DUTY:
         return {
-          "@type": "odrl:Duty",
-          "odrl:action": rule.action,
-          "odrl:target": ruleTarget,
-          "odrl:assignee": rule.assignee,
-          "odrl:constraint": rule.constraints.map((constraint) =>
+          "@type": "Duty",
+          action: rule.action,
+          target: ruleTarget,
+          assignee: rule.assignee,
+          constraint: rule.constraints.map((constraint) =>
             this.constraintToOdrl(constraint)
           )
         };
       case RuleType.PERMISSION:
         return {
-          "@type": "odrl:Permission",
-          "odrl:action": rule.action,
-          "odrl:target": ruleTarget,
-          "odrl:assignee": rule.assignee,
-          "odrl:constraint": rule.constraints.map((constraint) =>
+          "@type": "Permission",
+          action: rule.action,
+          target: ruleTarget,
+          assignee: rule.assignee,
+          constraint: rule.constraints.map((constraint) =>
             this.constraintToOdrl(constraint)
           ),
-          "odrl:duty": rule.duties.map(
+          duty: rule.duties.map(
             (constraint) => this.ruleToOdrl(constraint) as DutyDto
           )
         };

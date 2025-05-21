@@ -1,21 +1,21 @@
 {
-  "name": "@tsg-dsp/tck-pipeline",
+  "name": "@tsg-dsp/e2e-testing",
   "version": "0.10.0",
-  "description": "TCK Pipeline CLI tool",
+  "description": "End-to-end testing tool",
   "engines": {
     "node": ">= 16.14"
   },
   "type": "module",
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "tck:local": "jest -i lib/tck.local.test.ts",
-    "tck": "jest -i lib/tck.test.ts"
+    "e2e:local": "jest --runInBand --testNamePattern .\\* --testPathPattern lib/local --verbose",
+    "e2e:tck": "jest -i lib/tck.test.ts"
   },
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "git+https://gitlab.com/tno-tsg/dataspace-protocol/tno-security-gateway.git",
-    "directory": "tools/tck-pipeline"
+    "directory": "tools/e2e-testing"
   },
   "publishConfig": {
     "access": "public"

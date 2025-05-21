@@ -27,7 +27,6 @@ export default tseslint.config(
     ignores: [
       "**/**/node_modules",
       "**/**/dist",
-      "tools/tck-pipeline/**",
       "website/.docusaurus/**",
       "website/build/**",
       ".gitlab/**"

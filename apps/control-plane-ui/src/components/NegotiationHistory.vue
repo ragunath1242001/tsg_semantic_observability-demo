@@ -5,7 +5,6 @@ import {
   NegotiationStatusDto
 } from "@tsg-dsp/common-dtos";
 import MonacoEditor from "@tsg-dsp/common-ui/components/MonacoEditor.vue";
-import { stripDspace } from "@tsg-dsp/common-ui/utils/common";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import http from "@tsg-dsp/common-ui/utils/http";
 import { ConfirmDialog, useConfirm } from "primevue";
@@ -42,19 +41,19 @@ const calculateIcon = (index: number) => {
 
 const getSeverity = (state: string) => {
   switch (state) {
-    case "dspace:ACCEPTED":
+    case "ACCEPTED":
       return "info";
-    case "dspace:AGREED":
+    case "AGREED":
       return "primary";
-    case "dspace:FINALIZED":
+    case "FINALIZED":
       return "success";
-    case "dspace:OFFERED":
+    case "OFFERED":
       return "contrast";
-    case "dspace:REQUESTED":
+    case "REQUESTED":
       return "secondary";
-    case "dspace:TERMINATED":
+    case "TERMINATED":
       return "danger";
-    case "dspace:VERIFIED":
+    case "VERIFIED":
       return "warn";
   }
 };
@@ -124,7 +123,7 @@ const selectDataPlane = async (): Promise<string | undefined> => {
 const requestTransfer = async (accNegotiation: NegotiationDetailDto) => {
   try {
     const address = accNegotiation.remoteAddress.split("negotiations")[0];
-    const audience = accNegotiation.agreement["odrl:assigner"];
+    const audience = accNegotiation.agreement.assigner;
     const agreementId = accNegotiation.agreement["@id"];
     let dataPlaneIdentifier = dataPlaneStore.hasDuplicateTypes
       ? await selectDataPlane()
@@ -186,7 +185,7 @@ const requestTransfer = async (accNegotiation: NegotiationDetailDto) => {
               <div>
                 <Tag
                   class="ml-auto mr-6"
-                  :value="stripDspace(negotiation.state)"
+                  :value="negotiation.state"
                   :severity="getSeverity(negotiation.state)" />
                 <small class="p-text-secondary">
                   {{ new Date(negotiation.modifiedDate).toLocaleString() }}
@@ -219,28 +218,24 @@ const requestTransfer = async (accNegotiation: NegotiationDetailDto) => {
                     <TabPanel
                       v-if="
                         localProof &&
-                        (localProof['dspace:algorithm'] ===
-                          'JsonWebSignature2020' ||
-                          localProof['dspace:algorithm'] ===
-                            'DataIntegrityProof')
+                        (localProof['algorithm'] === 'JsonWebSignature2020' ||
+                          localProof['algorithm'] === 'DataIntegrityProof')
                       "
                       value="Local Signature">
                       <MonacoEditor
-                        :static="JSON.parse(localProof['dspace:digest'])"
+                        :static="JSON.parse(localProof['digest'])"
                         :read-only="true"
                         :max-lines="35" />
                     </TabPanel>
                     <TabPanel
                       v-if="
                         remoteProof &&
-                        (remoteProof['dspace:algorithm'] ===
-                          'JsonWebSignature2020' ||
-                          remoteProof['dspace:algorithm'] ===
-                            'DataIntegrityProof')
+                        (remoteProof['algorithm'] === 'JsonWebSignature2020' ||
+                          remoteProof['algorithm'] === 'DataIntegrityProof')
                       "
                       value="Remote Signature">
                       <MonacoEditor
-                        :static="JSON.parse(remoteProof['dspace:digest'])"
+                        :static="JSON.parse(remoteProof['digest'])"
                         :read-only="true"
                         :max-lines="35" />
                     </TabPanel>
@@ -257,14 +252,14 @@ const requestTransfer = async (accNegotiation: NegotiationDetailDto) => {
                   </template>
                   <template #content="slotProps">
                     <Tag
-                      :value="stripDspace(slotProps.item.state)"
+                      :value="slotProps.item.state"
                       :severity="getSeverity(slotProps.item.state)" />
                   </template>
                 </Timeline>
                 <Button
                   v-if="
                     accNegotiation.role === 'consumer' &&
-                    accNegotiation.state === 'dspace:FINALIZED'
+                    accNegotiation.state === 'FINALIZED'
                   "
                   raised
                   type="button"

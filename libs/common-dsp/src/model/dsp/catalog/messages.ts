@@ -5,12 +5,10 @@ import {
   ValidateNested
 } from "class-validator";
 
-import { LDType, Namespace, Serializable } from "../../decorators.js";
+import { Namespace, Serializable } from "../../decorators.js";
 import { SerializableClass, withExtraProps } from "../common.js";
-import { Catalog } from "./catalog.js";
 import {
   CatalogErrorDto,
-  CatalogMessageDto,
   CatalogRequestMessageDto,
   DatasetRequestMessageDto
 } from "./messages.dto.js";
@@ -21,7 +19,7 @@ export interface ICatalogError {
   reason?: Array<any>;
 }
 
-@Serializable("dspace:CatalogError")
+@Serializable("CatalogError")
 export class CatalogError extends SerializableClass<CatalogErrorDto> {
   @Namespace("dspace")
   @IsOptional()
@@ -40,30 +38,12 @@ export class CatalogError extends SerializableClass<CatalogErrorDto> {
   }
 }
 
-export interface ICatalogMessage {
-  catalog?: Array<Catalog>;
-}
-
-@Serializable("dspace:CatalogMessage")
-export class CatalogMessage extends SerializableClass<CatalogMessageDto> {
-  @Namespace("dspace")
-  @ValidateNested()
-  @IsOptional()
-  @LDType(() => Catalog)
-  catalog?: Array<Catalog>;
-
-  constructor(value: withExtraProps<ICatalogMessage>) {
-    super(value);
-    this.catalog = value.catalog;
-  }
-}
-
 export interface ICatalogRequestMessage {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   filter?: Array<any>;
 }
 
-@Serializable("dspace:CatalogRequestMessage")
+@Serializable("CatalogRequestMessage")
 export class CatalogRequestMessage extends SerializableClass<CatalogRequestMessageDto> {
   @Namespace("dspace")
   @ValidateNested()
@@ -81,7 +61,7 @@ export interface IDatasetRequestMessage {
   dataset: string;
 }
 
-@Serializable("dspace:DatasetRequestMessage")
+@Serializable("DatasetRequestMessage")
 export class DatasetRequestMessage extends SerializableClass<DatasetRequestMessageDto> {
   @Namespace("dspace")
   @IsNotEmpty()

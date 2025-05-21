@@ -235,7 +235,7 @@ export class TransferService {
         context.target,
         audience
       );
-      distributions = dataset?.["dcat:distribution"] ?? [];
+      distributions = dataset?.distribution ?? [];
       if (distributions.length > 1) {
         throw new DSPError(
           "Cannot determine format based on dataset, since there are multiple formats in the distributions.",
@@ -247,7 +247,7 @@ export class TransferService {
           HttpStatus.BAD_REQUEST
         );
       }
-      format = distributions[0]["dct:format"] as string;
+      format = distributions[0].format as string;
     }
 
     const evaluation = await this.policyEvaluationService.evaluate(context);
@@ -265,7 +265,7 @@ export class TransferService {
       agreementId: agreementId,
       format: format,
       dataAddress: dataAddress,
-      callbackAddress: `${this.server.publicAddress}/transfers/${localId}`
+      callbackAddress: `${this.server.publicAddress}/callbacks`
     });
     const dataPlaneTransfer = await this.dataPlaneService.requestTransfer(
       transferRequestMessage,
@@ -332,8 +332,7 @@ export class TransferService {
     const transferProcess = new TransferProcess({
       providerPid: `urn:uuid:provider:${crypto.randomUUID()}`,
       consumerPid: transferRequestMessage.consumerPid,
-      state: TransferState.REQUESTED,
-      agreementId: transferRequestMessage.agreementId
+      state: TransferState.REQUESTED
     });
     const dataPlaneTransfer = await this.dataPlaneService.requestTransfer(
       transferRequestMessage,
@@ -346,7 +345,7 @@ export class TransferService {
       localId: transferProcess.providerPid,
       remoteId: transferRequestMessage.consumerPid,
       role: "provider",
-      remoteAddress: transferRequestMessage.callbackAddress,
+      remoteAddress: `${transferRequestMessage.callbackAddress}/transfers/${transferProcess.consumerPid}`,
       remoteParty: audience,
       state: TransferState.REQUESTED,
       agreementId: transferRequestMessage.agreementId,

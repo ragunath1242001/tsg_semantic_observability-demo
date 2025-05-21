@@ -18,14 +18,14 @@ const negotiations = toRef(props, "negotiations");
       :key="negotiation.localId"
       class="col-span-12 lg:col-span-6 xl:col-span-3">
       <NegotiationRequest
-        v-if="negotiation.state === 'dspace:REQUESTED'"
+        v-if="negotiation.state === 'REQUESTED'"
         :negotiation="negotiation"></NegotiationRequest>
       <NegotiationProceed
-        v-if="negotiation.state === 'dspace:AGREED'"
+        v-if="negotiation.state === 'AGREED'"
         :negotiation="negotiation"
         end-state="verify"></NegotiationProceed>
       <NegotiationProceed
-        v-if="negotiation.state === 'dspace:VERIFIED'"
+        v-if="negotiation.state === 'VERIFIED'"
         :negotiation="negotiation"
         end-state="finalize"></NegotiationProceed>
     </div>

@@ -1,7 +1,8 @@
 import { JsonLd } from "jsonld/jsonld-spec.js";
 
-import dsp from "./contexts/dsp.2024-1.js";
+import dsp from "./contexts/dsp.2025-1.js";
 import health from "./contexts/health.js";
+import odrl from "./contexts/odrl-profile.js";
 import tsg from "./contexts/tsg.js";
 
 const getOptionalEnv = (key: string, defaultValue: string) => {
@@ -27,7 +28,10 @@ export const defaultContext = () => [
   healthContextUrl()
 ];
 
-export const dspContextUrl = "https://w3id.org/dspace/2024/1/context.json";
+export const dspContextUrl = "https://w3id.org/dspace/2025/1/context.jsonld";
+
+export const dspOdrlProfileContextUrl =
+  "https://w3id.org/dspace/2025/1/odrl-profile.jsonld";
 
 export const tsgContextUrl = (version?: string) =>
   `https://tsg.dataspac.es/contexts/${
@@ -39,7 +43,24 @@ export const healthContextUrl = (version?: string) =>
     (version ?? debugContexts) ? "next" : currentVersion
   }/health.json`;
 
-export const dspContext: JsonLd = <JsonLd>dsp;
+export const dspContext: JsonLd = dsp as unknown as JsonLd;
+
+export const dspOdrlProfileContext: JsonLd = <JsonLd>odrl;
+
+export const dereferencedDspContext: JsonLd = (() => {
+  const dspStringContext = JSON.stringify(dsp);
+  const odrlProfileStringContext = JSON.stringify(odrl["@context"]).slice(
+    1,
+    -1
+  );
+
+  const dereferencedDspContext = dspStringContext.replaceAll(
+    '"@import":"https://w3id.org/dspace/2025/1/odrl-profile.jsonld"',
+    odrlProfileStringContext
+  );
+
+  return JSON.parse(dereferencedDspContext) as JsonLd;
+})();
 
 export const tsgContext: JsonLd = <JsonLd>tsg;
 

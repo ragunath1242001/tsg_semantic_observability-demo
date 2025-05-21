@@ -103,7 +103,7 @@ export class DataPlaneService {
     const managementToken = ""; // TODO: should be removed, due to move towards oAuth
     const dataPlaneCreation: DataPlaneCreation = {
       identifier: this.state?.identifier,
-      dataplaneType: "dspace:HTTP",
+      dataplaneType: "tsg:HTTP",
       endpointPrefix: `${this.config.server.publicAddress}/data`,
       callbackAddress: this.config.server.publicAddress,
       managementAddress: this.config.server.publicAddress,
@@ -241,17 +241,13 @@ export class DataPlaneService {
           HttpStatus.NOT_FOUND
         );
       }
-      if (
-        currentVersion &&
-        !dataset["dcat:version"] &&
-        dataset["dcat:hasCurrentVersion"]
-      ) {
+      if (currentVersion && !dataset.version && dataset.hasCurrentVersion) {
         const currentVersionDataset = this.state.dataset.find(
-          (d) => d["@id"] === dataset["dcat:hasCurrentVersion"]
+          (d) => d["@id"] === dataset.hasCurrentVersion
         );
         if (!currentVersionDataset) {
           throw new HttpException(
-            `Dataset of current version ${dataset["dcat:hasCurrentVersion"]} not found`,
+            `Dataset of current version ${dataset.hasCurrentVersion} not found`,
             HttpStatus.INTERNAL_SERVER_ERROR
           );
         }
@@ -336,11 +332,11 @@ export class DataPlaneService {
     }
     if (this.state.datasetConfig instanceof VersionedDatasetConfig) {
       const version = this.state.datasetConfig.versions.find(
-        (v) => v.version === dataset["dcat:version"]
+        (v) => v.version === dataset.version
       );
       if (!version) {
         throw new HttpException(
-          `Version ${dataset["dcat:version"]} not found in dataset configuration`,
+          `Version ${dataset.version} not found in dataset configuration`,
           HttpStatus.INTERNAL_SERVER_ERROR
         );
       }
@@ -478,7 +474,7 @@ export class DataPlaneService {
           title: `${item.title} ${item.version} (${
             item.mediaType ?? datasetConfig.mediaType ?? "application/http"
           })`,
-          format: "dspace:HTTP",
+          format: "tsg:HTTP",
           mediaType: `iana:${item.mediaType ?? datasetConfig.mediaType ?? "application/http"}`,
           conformsTo: defArray(
             item.schemaRef ?? datasetConfig.schemaRef,
@@ -547,7 +543,7 @@ export class DataPlaneService {
                 title: `${datasetConfig.title} ${v.version} (${
                   d.mediaType ?? "application/http"
                 })`,
-                format: "dspace:HTTP",
+                format: "tsg:HTTP",
                 mediaType: `iana:${d.mediaType ?? "application/http"}`,
                 conformsTo: defArray(d.schemaRef, d.openApiSpecRef),
                 accessService: [
@@ -602,7 +598,7 @@ export class DataPlaneService {
 
     return [
       new Offer({
-        assigner: catalog?.["dct:creator"] || catalog?.["dct:publisher"] || "",
+        assigner: catalog?.creator || catalog?.publisher || "",
         permission: policyConfig.permissions?.map((permission) => {
           return new Permission({
             action: permission.action,

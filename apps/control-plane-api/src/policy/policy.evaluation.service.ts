@@ -41,7 +41,7 @@ export class PolicyEvaluationService {
       transferId: transferId,
       localParticipant: this.config.iam.didId,
       remoteParticipant: remoteParticipant,
-      target: agreement.agreement["odrl:target"],
+      target: agreement.agreement.target,
       action: action,
       verifiableCredentials: verifiableCredentials,
       evaluationTime: new Date(),
@@ -60,7 +60,7 @@ export class PolicyEvaluationService {
 
   async evaluate(context: EvaluationContext): Promise<EvaluationDecision> {
     this.logger.debug(
-      `Evaluating for context: agreement ${context.policy.agreement} & transfer ${context.transferId}`
+      `Evaluating for context: agreement ${context.policy.agreement["@id"]} & transfer ${context.transferId}`
     );
     const evaluation = new Evaluation(context, this.ruleRepositoryService);
     const decision = await evaluation.evaluate();
