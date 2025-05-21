@@ -18,22 +18,6 @@ export default {
     "fdp-o:metadataModified": {
       "@type": "xsd:dateTime"
     },
-    "dcat:dataset": {
-      "@container": "@set",
-      "@type": "@id"
-    },
-    "dcat:service": {
-      "@container": "@set",
-      "@type": "@id"
-    },
-    "dcat:distribution": {
-      "@container": "@set",
-      "@type": "@id"
-    },
-    "dct:conformsTo": {
-      "@container": "@set",
-      "@type": "@id"
-    },
     "healthdcatap:hasCodingSystem": {
       "@container": "@set",
       "@type": "@id"

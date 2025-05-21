@@ -1,14 +1,14 @@
 export const stateSeverity = (state: string) => {
   switch (state) {
-    case "dspace:STARTED":
+    case "STARTED":
       return "primary";
-    case "dspace:COMPLETED":
+    case "COMPLETED":
       return "success";
-    case "dspace:REQUESTED":
+    case "REQUESTED":
       return "info";
-    case "dspace:TERMINATED":
+    case "TERMINATED":
       return "danger";
-    case "dspace:SUSPENDED":
+    case "SUSPENDED":
       return "warn";
   }
 };

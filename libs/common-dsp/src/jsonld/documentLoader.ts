@@ -2,8 +2,10 @@ import jsonld from "jsonld";
 import { RemoteDocument } from "jsonld/jsonld-spec.js";
 
 import {
-  dspContext,
+  dereferencedDspContext,
   dspContextUrl,
+  dspOdrlProfileContext,
+  dspOdrlProfileContextUrl,
   healthContext,
   healthContextUrl,
   tsgContext,
@@ -26,7 +28,13 @@ export const documentLoader: jsonld.Options.DocLoader = {
       case dspContextUrl:
         return {
           contextUrl: undefined,
-          document: dspContext,
+          document: dereferencedDspContext,
+          documentUrl: url
+        };
+      case dspOdrlProfileContextUrl:
+        return {
+          contextUrl: undefined,
+          document: dspOdrlProfileContext,
           documentUrl: url
         };
       case tsgContextUrl("debug"):

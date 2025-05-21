@@ -50,8 +50,8 @@
       "rootPath": "libs/analytics-data-plane-dtos"
     },
     {
-      "name": "tck",
-      "rootPath": "tools/tck-pipeline",
+      "name": "e2e",
+      "rootPath": "tools/e2e-testing",
       "runMode": "on-demand"
     }
   ],

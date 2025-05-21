@@ -192,7 +192,7 @@ export class NegotiationManagementController {
     }).serialize();
   }
 
-  @Post(":processId/offer")
+  @Post(":processId/offers")
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "Submit an offer for an existing negotiation" })
   @ApiBody({ description: "Offer details", type: OfferSchema })

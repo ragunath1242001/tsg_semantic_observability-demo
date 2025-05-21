@@ -107,20 +107,16 @@ const pairsToObject = (pairs: { key: string; value: string }[]) =>
 const interactionChange = () => {
   if (interaction.value === "direct") {
     if (transfer.value) {
-      url.value = transfer.value.dataAddress?.["dspace:endpoint"];
-      transfer.value.dataAddress?.["dspace:endpointProperties"]?.forEach(
-        (p) => {
-          setHeader(p["dspace:name"], p["dspace:value"]);
-        }
-      );
+      url.value = transfer.value.dataAddress?.endpoint;
+      transfer.value.dataAddress?.endpointProperties?.forEach((p) => {
+        setHeader(p.name, p.value);
+      });
     }
   } else {
     if (transfer.value) {
-      transfer.value.dataAddress?.["dspace:endpointProperties"]?.forEach(
-        (p) => {
-          removeHeader(p["dspace:name"]);
-        }
-      );
+      transfer.value.dataAddress?.endpointProperties?.forEach((p) => {
+        removeHeader(p.name);
+      });
     } else {
       removeHeader("Authorization");
     }

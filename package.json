@@ -8,6 +8,7 @@
     "build": "pnpm -r build",
     "build:libs": "pnpm --filter \"./libs/*\" -r build",
     "build:apps": "pnpm --filter \"./apps/*\" -r build",
+    "build:apis": "pnpm --filter \"./apps/*-api\" -r build",
     "dev:wallet-ui": "pnpm --filter wallet-ui dev",
     "dev:wallet-api": "pnpm --filter wallet-api dev",
     "dev:wallet": "npm-run-all --parallel \"dev:wallet-api --noClear\" \"dev:wallet-ui --clearScreen=false\"",
@@ -41,8 +42,8 @@
     "test:wallet-ci": "pnpm --filter wallet-api jest:ci",
     "test:common-dsp-ci": "pnpm --filter common-dsp jest:ci",
     "test:common-api-ci": "pnpm --filter common-api jest:ci",
-    "tck:local": "pnpm --filter tck-pipeline tck:local",
-    "tck": "pnpm --filter tck-pipeline tck",
+    "e2e:local": "pnpm --filter e2e-testing e2e:local",
+    "e2e:tck": "pnpm --filter e2e-testing e2e:tck",
     "migrations:check": "pnpm -r migrations:check",
     "migrations:generate": "pnpm -r migrations:generate"
   },

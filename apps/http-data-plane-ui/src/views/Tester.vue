@@ -86,9 +86,9 @@ const showDatasetDialog = () => {
 onMounted(async () => {
   transfer.value = useTransferStore().transfer;
   if (transfer.value) {
-    url.value = transfer.value.dataAddress?.["dspace:endpoint"];
-    transfer.value.dataAddress?.["dspace:endpointProperties"]?.forEach((p) => {
-      setHeader(p["dspace:name"], p["dspace:value"]);
+    url.value = transfer.value.dataAddress?.endpoint;
+    transfer.value.dataAddress?.endpointProperties?.forEach((p) => {
+      setHeader(p.name, p.value);
     });
   } else if (route.params.id) {
     try {
@@ -96,12 +96,10 @@ onMounted(async () => {
         `/management/transfers/${route.params.id}`
       );
       transfer.value = transferResponse.data;
-      url.value = transfer.value.dataAddress?.["dspace:endpoint"];
-      transfer.value.dataAddress?.["dspace:endpointProperties"]?.forEach(
-        (p) => {
-          setHeader(p["dspace:name"], p["dspace:value"]);
-        }
-      );
+      url.value = transfer.value.dataAddress?.endpoint;
+      transfer.value.dataAddress?.endpointProperties?.forEach((p) => {
+        setHeader(p.name, p.value);
+      });
     } catch (error) {
       toast.add(
         toastError({
@@ -140,45 +138,39 @@ onMounted(async () => {
             <TabPanel value="Agreement">
               <FormField label="ID">{{ metadata.agreement["@id"] }}</FormField>
               <FormField label="Assigner">{{
-                metadata.agreement["odrl:assigner"]
+                metadata.agreement.assigner
               }}</FormField>
               <FormField label="Assignee">{{
-                metadata.agreement["odrl:assignee"]
+                metadata.agreement.assignee
               }}</FormField>
               <FormField label="Timestamp"
-                >{{
-                  new Date(
-                    metadata.agreement["dspace:timestamp"]
-                  ).toLocaleString()
-                }}
+                >{{ new Date(metadata.agreement.timestamp).toLocaleString() }}
               </FormField>
               <FormField label="Rules"
-                >{{ metadata.agreement["odrl:permission"]?.length ?? 0 }}
+                >{{ metadata.agreement.permission?.length ?? 0 }}
                 permissions,
-                {{ metadata.agreement["odrl:prohibition"]?.length ?? 0 }}
+                {{ metadata.agreement.prohibition?.length ?? 0 }}
                 prohibitions,
-                {{ metadata.agreement["odrl:obligation"]?.length ?? 0 }}
+                {{ metadata.agreement.obligation?.length ?? 0 }}
                 obligations</FormField
               >
               <Button label="Show agreement" @click="showAgreementDialog" />
             </TabPanel>
             <TabPanel value="Dataset">
               <FormField label="ID">{{ metadata.dataset["@id"] }}</FormField>
-              <FormField v-if="metadata.dataset['dct:title']" label="Title"
-                >{{ metadata.dataset["dct:title"] }}
+              <FormField v-if="metadata.dataset.title" label="Title"
+                >{{ metadata.dataset.title }}
               </FormField>
               <FormField label="Distributions">
                 <template
-                  v-for="(distribution, idx) in metadata.dataset[
-                    'dcat:distribution'
-                  ]"
+                  v-for="(distribution, idx) in metadata.dataset.distribution"
                   :key="idx">
                   <hr v-if="idx === 0" />
-                  <FormField v-if="distribution['dct:title']" label="Title">{{
-                    distribution["dct:title"]
+                  <FormField v-if="distribution.title" label="Title">{{
+                    distribution.title
                   }}</FormField>
-                  <FormField v-if="distribution['dct:conformsTo']" label="Spec">
-                    {{ distribution["dct:conformsTo"][0] }}</FormField
+                  <FormField v-if="distribution.conformsTo" label="Spec">
+                    {{ distribution.conformsTo[0] }}</FormField
                   >
                   <hr />
                 </template>

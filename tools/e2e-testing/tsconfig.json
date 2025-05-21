@@ -5,7 +5,6 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "module": "NodeNext",
-    "rootDir": "lib",
     "moduleResolution": "NodeNext",
     "resolveJsonModule": true,
     "allowJs": true,
@@ -15,7 +14,8 @@
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "noImplicitAny": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "isolatedModules": true
   },
   "exclude": ["jest.config.ts", "coverage/", "dist/"]
 }

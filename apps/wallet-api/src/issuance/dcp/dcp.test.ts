@@ -257,7 +257,7 @@ describe("DCP Issuance", () => {
         "1"
       );
       expect(status.status).toBe("RECEIVED");
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1500));
 
       const credentials =
         await holderService["credentialsService"].getCredentials();

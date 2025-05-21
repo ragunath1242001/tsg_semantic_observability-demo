@@ -40,7 +40,7 @@ describe("Rule Repository Service", () => {
         title: "Test Constraint",
         description: "Test constraint description",
         leftOperand: "dspace:vc",
-        operator: "odrl:eq",
+        operator: "eq",
         contextPath: "$.verifiableCredentials[*]",
         dataType: DataType.STRING,
         evaluable: [
@@ -162,43 +162,43 @@ describe("Rule Repository Service", () => {
     });
     it("ODRL", async () => {
       const constraint = await ruleRepositoryService.getConstraintByOdrl({
-        "@type": "odrl:Constraint",
-        "odrl:leftOperand": "dspace:vc",
-        "odrl:operator": "odrl:eq",
-        "odrl:rightOperand": "tsg:MembershipCredential"
+        "@type": "Constraint",
+        leftOperand: "dspace:vc",
+        operator: "eq",
+        rightOperand: "tsg:MembershipCredential"
       });
       expect(constraint).toBeDefined();
       expect(
         await ruleRepositoryService.getConstraintByOdrl({
-          "@type": "odrl:Constraint",
-          "odrl:leftOperand": "dspace:vc",
-          "odrl:operator": "odrl:eq",
-          "odrl:rightOperandReference": "tsg:MembershipCredential"
+          "@type": "Constraint",
+          leftOperand: "dspace:vc",
+          operator: "eq",
+          rightOperandReference: "tsg:MembershipCredential"
         })
       ).toBeDefined();
       expect(
         await ruleRepositoryService.getConstraintByOdrl({
-          "@type": "odrl:Constraint",
-          "odrl:leftOperand": "dspace:vc",
-          "odrl:operator": "odrl:unknown",
-          "odrl:rightOperand": ""
+          "@type": "Constraint",
+          leftOperand: "dspace:vc",
+          operator: "unknown",
+          rightOperand: ""
         })
       ).toBeUndefined();
       expect(
         await ruleRepositoryService.getConstraintByOdrl({
-          "@type": "odrl:Constraint",
-          "odrl:leftOperand": "dspace:unknown",
-          "odrl:operator": "odrl:eq",
-          "odrl:rightOperand": ""
+          "@type": "Constraint",
+          leftOperand: "dspace:unknown",
+          operator: "eq",
+          rightOperand: ""
         })
       ).toBeUndefined();
       await expect(
         ruleRepositoryService.getConstraintByOdrl(
           {
-            "@type": "odrl:Constraint",
-            "odrl:leftOperand": "dspace:vc",
-            "odrl:operator": "odrl:unknown",
-            "odrl:rightOperand": ""
+            "@type": "Constraint",
+            leftOperand: "dspace:vc",
+            operator: "unknown",
+            rightOperand: ""
           },
           true
         )
@@ -206,20 +206,20 @@ describe("Rule Repository Service", () => {
       await expect(
         ruleRepositoryService.getConstraintByOdrl(
           {
-            "@type": "odrl:Constraint",
-            "odrl:leftOperand": "dspace:unknown",
-            "odrl:operator": "odrl:eq",
-            "odrl:rightOperand": ""
+            "@type": "Constraint",
+            leftOperand: "dspace:unknown",
+            operator: "eq",
+            rightOperand: ""
           },
           true
         )
       ).rejects.toThrow("Could not find constraint");
 
       expect(ruleRepositoryService.constraintToOdrl(constraint!)).toEqual({
-        "@type": "odrl:Constraint",
-        "odrl:leftOperand": "dspace:vc",
-        "odrl:operator": "odrl:eq",
-        "odrl:rightOperand": "tsg:MembershipCredential"
+        "@type": "Constraint",
+        leftOperand: "dspace:vc",
+        operator: "eq",
+        rightOperand: "tsg:MembershipCredential"
       });
       expect(
         ruleRepositoryService.constraintToOdrl(
@@ -227,10 +227,10 @@ describe("Rule Repository Service", () => {
           "tsg:MembershipCredential2"
         )
       ).toEqual({
-        "@type": "odrl:Constraint",
-        "odrl:leftOperand": "dspace:vc",
-        "odrl:operator": "odrl:eq",
-        "odrl:rightOperand": "tsg:MembershipCredential2"
+        "@type": "Constraint",
+        leftOperand: "dspace:vc",
+        operator: "eq",
+        rightOperand: "tsg:MembershipCredential2"
       });
       expect(() =>
         ruleRepositoryService.constraintToOdrl(
@@ -244,10 +244,10 @@ describe("Rule Repository Service", () => {
 
       expect(
         await ruleRepositoryService.getConstraintByOdrl({
-          "@type": "odrl:Constraint",
-          "odrl:leftOperand": "dspace:vc",
-          "odrl:operator": "odrl:eq",
-          "odrl:rightOperand": {
+          "@type": "Constraint",
+          leftOperand: "dspace:vc",
+          operator: "eq",
+          rightOperand: {
             "@id": "tsg:MembershipCredential"
           }
         })
@@ -256,10 +256,10 @@ describe("Rule Repository Service", () => {
       });
       expect(
         await ruleRepositoryService.getConstraintByOdrl({
-          "@type": "odrl:Constraint",
-          "odrl:leftOperand": "dspace:vc",
-          "odrl:operator": "odrl:eq",
-          "odrl:rightOperand": {
+          "@type": "Constraint",
+          leftOperand: "dspace:vc",
+          operator: "eq",
+          rightOperand: {
             "@value": "tsg:MembershipCredential",
             "@type": "xsd:anyURI"
           }
@@ -269,9 +269,9 @@ describe("Rule Repository Service", () => {
       });
       expect(
         await ruleRepositoryService.getConstraintByOdrl({
-          "@type": "odrl:Constraint",
-          "odrl:leftOperand": "dspace:vc",
-          "odrl:operator": "odrl:eq"
+          "@type": "Constraint",
+          leftOperand: "dspace:vc",
+          operator: "eq"
         })
       ).toMatchObject({
         value: undefined
@@ -290,7 +290,7 @@ describe("Rule Repository Service", () => {
       ).toBe(0);
       await ruleRepositoryService.addRule(
         Rule.parse({
-          action: ["odrl:use"],
+          action: ["use"],
           assignee: ["did:web:localhost"],
           constraints: [await ruleRepositoryService.getConstraint(1)]
         })
@@ -323,7 +323,7 @@ describe("Rule Repository Service", () => {
 
       await ruleRepositoryService.addRule(
         Rule.parse({
-          action: ["odrl:use"],
+          action: ["use"],
           assignee: ["did:web:remote.com"],
           constraints: [await ruleRepositoryService.getConstraint(1)]
         })
@@ -356,34 +356,34 @@ describe("Rule Repository Service", () => {
           "urn:uuid:897330e2-f317-49c9-902f-e66451355f7e"
         )
       ).toEqual({
-        "@type": "odrl:Duty",
-        "odrl:action": ["odrl:use"],
-        "odrl:assignee": ["did:web:localhost"],
-        "odrl:constraint": [
+        "@type": "Duty",
+        action: ["use"],
+        assignee: ["did:web:localhost"],
+        constraint: [
           {
-            "@type": "odrl:Constraint",
-            "odrl:leftOperand": "dspace:vc",
-            "odrl:operator": "odrl:eq",
-            "odrl:rightOperand": "tsg:MembershipCredential"
+            "@type": "Constraint",
+            leftOperand: "dspace:vc",
+            operator: "eq",
+            rightOperand: "tsg:MembershipCredential"
           }
         ],
-        "odrl:target": "urn:uuid:897330e2-f317-49c9-902f-e66451355f7e"
+        target: "urn:uuid:897330e2-f317-49c9-902f-e66451355f7e"
       });
       expect(
         ruleRepositoryService.ruleToOdrl(rule, RuleType.PROHIBITION)
       ).toEqual({
-        "@type": "odrl:Prohibition",
-        "odrl:action": ["odrl:use"],
-        "odrl:assignee": ["did:web:localhost"],
-        "odrl:constraint": [
+        "@type": "Prohibition",
+        action: ["use"],
+        assignee: ["did:web:localhost"],
+        constraint: [
           {
-            "@type": "odrl:Constraint",
-            "odrl:leftOperand": "dspace:vc",
-            "odrl:operator": "odrl:eq",
-            "odrl:rightOperand": "tsg:MembershipCredential"
+            "@type": "Constraint",
+            leftOperand: "dspace:vc",
+            operator: "eq",
+            rightOperand: "tsg:MembershipCredential"
           }
         ],
-        "odrl:target": undefined
+        target: undefined
       });
       expect(
         ruleRepositoryService.ruleToOdrl(
@@ -391,32 +391,32 @@ describe("Rule Repository Service", () => {
           RuleType.PERMISSION
         )
       ).toEqual({
-        "@type": "odrl:Permission",
-        "odrl:action": ["odrl:use"],
-        "odrl:assignee": ["did:web:localhost"],
-        "odrl:constraint": [
+        "@type": "Permission",
+        action: ["use"],
+        assignee: ["did:web:localhost"],
+        constraint: [
           {
-            "@type": "odrl:Constraint",
-            "odrl:leftOperand": "dspace:vc",
-            "odrl:operator": "odrl:eq",
-            "odrl:rightOperand": "tsg:MembershipCredential"
+            "@type": "Constraint",
+            leftOperand: "dspace:vc",
+            operator: "eq",
+            rightOperand: "tsg:MembershipCredential"
           }
         ],
-        "odrl:target": undefined,
-        "odrl:duty": [
+        target: undefined,
+        duty: [
           {
-            "@type": "odrl:Duty",
-            "odrl:action": ["odrl:use"],
-            "odrl:assignee": ["did:web:localhost"],
-            "odrl:constraint": [
+            "@type": "Duty",
+            action: ["use"],
+            assignee: ["did:web:localhost"],
+            constraint: [
               {
-                "@type": "odrl:Constraint",
-                "odrl:leftOperand": "dspace:vc",
-                "odrl:operator": "odrl:eq",
-                "odrl:rightOperand": "tsg:MembershipCredential"
+                "@type": "Constraint",
+                leftOperand: "dspace:vc",
+                operator: "eq",
+                rightOperand: "tsg:MembershipCredential"
               }
             ],
-            "odrl:target": undefined
+            target: undefined
           }
         ]
       });

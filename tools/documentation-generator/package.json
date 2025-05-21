@@ -13,7 +13,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://gitlab.com/tno-tsg/dataspace-protocol/tno-security-gateway.git",
-    "directory": "tools/tck-pipeline"
+    "directory": "tools/documentation-generator"
   },
   "publishConfig": {
     "access": "public"

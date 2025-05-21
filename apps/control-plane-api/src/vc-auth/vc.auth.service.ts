@@ -124,29 +124,27 @@ export class VCAuthService {
         id: req.params.id
       });
       agreementDao = transfer?.agreement;
-    } else if (req.body["dspace:agreementId"]) {
-      this.logger.debug(
-        `Find agreement by body ${req.body["dspace:agreementId"]}`
-      );
+    } else if (req.body.agreementId) {
+      this.logger.debug(`Find agreement by body ${req.body.agreementId}`);
       agreementDao = await this.agreementRepository.findOneBy({
-        id: req.body["dspace:agreementId"]
+        id: req.body.agreementId
       });
     }
 
     if (agreementDao) {
       this.logger.debug(`Found agreement ${agreementDao.id}`);
       const vpConstraints =
-        agreementDao.agreement["odrl:permission"]?.flatMap(
+        agreementDao.agreement.permission?.flatMap(
           (p) =>
-            p["odrl:constraint"]?.filter(
-              (c) => c["odrl:leftOperand"] === "tsg:vpInputDescriptor"
+            p.constraint?.filter(
+              (c) => c.leftOperand === "tsg:vpInputDescriptor"
             ) ?? []
         ) ?? [];
       if (vpConstraints.length > 0) {
         this.logger.debug(`Found VP constraint(s)`);
         for (const vpConstraint of vpConstraints) {
           const rightOperand = RuleRepositoryService.parseRightOperand(
-            vpConstraint["odrl:rightOperand"]
+            vpConstraint.rightOperand
           );
           let inputDescriptor: InputDescriptor[] | undefined = undefined;
           if (rightOperand) {

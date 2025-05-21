@@ -237,7 +237,7 @@ onMounted(async () => {
           <template #body="props">
             <Tag
               :severity="stateSeverity(props.data.state)"
-              :value="props.data.state.replace(/^dspace:/, '')" />
+              :value="props.data.state" />
           </template>
         </Column>
         <Column field="createdDate" header="Date">
@@ -250,17 +250,13 @@ onMounted(async () => {
             <Button
               v-tooltip.bottom="'Terminate'"
               icon="pi pi-times"
-              :disabled="
-                ['dspace:COMPLETED', 'dspace:TERMINATED'].includes(
-                  props.data.state
-                )
-              "
+              :disabled="['COMPLETED', 'TERMINATED'].includes(props.data.state)"
               severity="danger"
               aria-label="Stop"
               outlined
               @click="action($event, 'terminate', props.data)" />
             <Button
-              v-if="props.data.state === 'dspace:STARTED'"
+              v-if="props.data.state === 'STARTED'"
               v-tooltip.bottom="'Suspend'"
               class="ml-2"
               icon="pi pi-pause"
@@ -271,7 +267,7 @@ onMounted(async () => {
             <Button
               v-else
               v-tooltip.bottom="'Start'"
-              :disabled="props.data.state !== 'dspace:SUSPENDED'"
+              :disabled="props.data.state !== 'SUSPENDED'"
               class="ml-2"
               icon="pi pi-play"
               severity="warn"
@@ -281,7 +277,7 @@ onMounted(async () => {
             <Button
               v-tooltip.bottom="'Execute'"
               class="ml-2"
-              :disabled="props.data.state !== 'dspace:STARTED'"
+              :disabled="props.data.state !== 'STARTED'"
               icon="pi pi-download"
               severity="info"
               aria-label="Execute"
@@ -298,7 +294,7 @@ onMounted(async () => {
             <Button
               v-tooltip.bottom="'Complete'"
               class="ml-2"
-              :disabled="props.data.state !== 'dspace:STARTED'"
+              :disabled="props.data.state !== 'STARTED'"
               icon="pi pi-check"
               severity="success"
               aria-label="Complete"
@@ -324,27 +320,25 @@ onMounted(async () => {
             <FormField label="State">
               <Tag
                 :severity="stateSeverity(props.data.state)"
-                :value="props.data.state.replace(/^dspace:/, '')" />
+                :value="props.data.state" />
             </FormField>
             <FormField label="Agreement">{{
-              props.data.request["dspace:agreementId"]
+              props.data.request.agreementId
             }}</FormField>
             <FormField label="Dataset ID">{{ props.data.datasetId }}</FormField>
           </div>
-          <template v-if="props.data.state === 'dspace:STARTED'">
+          <template v-if="props.data.state === 'STARTED'">
             <div class="text-xl my-2">Data address</div>
             <div class="flex flex-col gap-4">
               <FormField label="Endpoint">{{
-                props.data.dataAddress["dspace:endpoint"]
+                props.data.dataAddress.endpoint
               }}</FormField>
               <FormField label="Properties">
                 <div
-                  v-for="property in props.data.dataAddress[
-                    'dspace:endpointProperties'
-                  ]"
-                  :key="property['dspace:name']">
-                  <strong>{{ property["dspace:name"] }}</strong
-                  >: {{ property["dspace:value"] }}
+                  v-for="property in props.data.dataAddress.endpointProperties"
+                  :key="property.name">
+                  <strong>{{ property.name }}</strong
+                  >: {{ property.value }}
                 </div>
               </FormField>
             </div>
@@ -377,7 +371,7 @@ onMounted(async () => {
           <template #body="props">
             <Tag
               :severity="stateSeverity(props.data.state)"
-              :value="props.data.state.replace(/^dspace:/, '')" />
+              :value="props.data.state" />
           </template>
         </Column>
         <Column field="createdDate" header="Date">
@@ -390,17 +384,13 @@ onMounted(async () => {
             <Button
               v-tooltip.bottom="'Terminate'"
               icon="pi pi-times"
-              :disabled="
-                ['dspace:COMPLETED', 'dspace:TERMINATED'].includes(
-                  props.data.state
-                )
-              "
+              :disabled="['COMPLETED', 'TERMINATED'].includes(props.data.state)"
               severity="danger"
               aria-label="Terminate"
               outlined
               @click="action($event, 'terminate', props.data)" />
             <Button
-              v-if="props.data.state === 'dspace:STARTED'"
+              v-if="props.data.state === 'STARTED'"
               v-tooltip.bottom="'Suspend'"
               class="ml-2"
               icon="pi pi-pause"
@@ -411,11 +401,7 @@ onMounted(async () => {
             <Button
               v-else
               v-tooltip.bottom="'Start'"
-              :disabled="
-                !['dspace:SUSPENDED', 'dspace:REQUESTED'].includes(
-                  props.data.state
-                )
-              "
+              :disabled="!['SUSPENDED', 'REQUESTED'].includes(props.data.state)"
               class="ml-2"
               icon="pi pi-play"
               severity="warn"
@@ -425,7 +411,7 @@ onMounted(async () => {
             <Button
               v-tooltip.bottom="'Complete'"
               class="ml-2"
-              :disabled="props.data.state !== 'dspace:STARTED'"
+              :disabled="props.data.state !== 'STARTED'"
               icon="pi pi-check"
               severity="success"
               aria-label="Complete"
@@ -442,7 +428,7 @@ onMounted(async () => {
             <Button
               v-tooltip.bottom="'Execute'"
               class="ml-2"
-              :disabled="props.data.state !== 'dspace:STARTED'"
+              :disabled="props.data.state !== 'STARTED'"
               icon="pi pi-play"
               severity="info"
               aria-label="Execute"
@@ -459,10 +445,10 @@ onMounted(async () => {
           <FormField label="State">
             <Tag
               :severity="stateSeverity(props.data.state)"
-              :value="props.data.state.replace(/^dspace:/, '')" />
+              :value="props.data.state" />
           </FormField>
           <FormField label="Agreement">{{
-            props.data.request["dspace:agreementId"]
+            props.data.request.agreementId
           }}</FormField>
           <FormField label="Dataset ID">{{ props.data.datasetId }}</FormField>
         </template>

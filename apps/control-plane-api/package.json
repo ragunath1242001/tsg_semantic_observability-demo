@@ -3,6 +3,8 @@
   "version": "0.10.0",
   "private": true,
   "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "watch": "rimraf control-plane.sqlite && tsc-watch -p tsconfig.json --onSuccess \"node ./dist/app.js\"",
     "start": "node ./dist/app.js",
@@ -19,9 +21,6 @@
     "migrations:generate": "npx tsx src/migrations.executor.ts",
     "migrations:check": "npx tsx src/migrations.executor.ts --check"
   },
-  "files": [
-    "dist"
-  ],
   "dependencies": {
     "@nestjs/common": "^11.0.10",
     "@nestjs/core": "^11.0.10",

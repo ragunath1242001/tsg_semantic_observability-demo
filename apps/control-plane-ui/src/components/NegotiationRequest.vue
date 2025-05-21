@@ -4,7 +4,6 @@ import {
   NegotiationStatusDto
 } from "@tsg-dsp/common-dtos";
 import MonacoEditor from "@tsg-dsp/common-ui/components/MonacoEditor.vue";
-import { stripDspace } from "@tsg-dsp/common-ui/utils/common";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import http from "@tsg-dsp/common-ui/utils/http";
 import { useToast } from "primevue/usetoast";
@@ -93,7 +92,7 @@ const declineNegotiation = async (negotiation) => {
     <template #title
       ><div class="flex justify-between mb-4">
         <div>
-          {{ stripDspace(negotiation.state) }}
+          {{ negotiation.state }}
         </div>
         <div
           class="flex items-center justify-center bg-blue-100 rounded-border"

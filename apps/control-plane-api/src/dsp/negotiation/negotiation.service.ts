@@ -75,7 +75,7 @@ export class NegotiationService {
       ContractNegotiationState.AGREED,
       ContractNegotiationState.TERMINATED
     ],
-    [ContractNegotiationState.OFFERED]: [],
+    [ContractNegotiationState.OFFERED]: [ContractNegotiationState.TERMINATED],
     [ContractNegotiationState.ACCEPTED]: [
       ContractNegotiationState.AGREED,
       ContractNegotiationState.TERMINATED
@@ -283,7 +283,7 @@ export class NegotiationService {
     const contractRequestMessage = new ContractRequestMessage({
       consumerPid: consumerPid,
       offer: offer,
-      callbackAddress: `${this.server.publicAddress}/negotiations/callbacks/${consumerPid}`
+      callbackAddress: `${this.server.publicAddress}/callbacks`
     });
 
     const contractNegotiationResponse = await this.dsp.requestNegotiation(
@@ -352,7 +352,7 @@ export class NegotiationService {
       localId: providerPid,
       remoteId: requestMessage.consumerPid,
       role: "provider",
-      remoteAddress: requestMessage.callbackAddress,
+      remoteAddress: `${requestMessage.callbackAddress}/negotiations/${requestMessage.consumerPid}`,
       remoteParty: remoteParty,
       state: ContractNegotiationState.REQUESTED,
       dataSet: requestMessage.offer.target,
@@ -371,8 +371,6 @@ export class NegotiationService {
           remoteParty: remoteParty
         })
       );
-    } else {
-      this.dspGateway.sendUpdateToClients("negotiation:create", "created");
     }
 
     return contractNegotiation;
@@ -394,7 +392,7 @@ export class NegotiationService {
       providerPid: negotiation.remoteId,
       consumerPid: negotiation.localId,
       offer: offer,
-      callbackAddress: `${this.server.publicAddress}/negotiations/callbacks/${processId}`
+      callbackAddress: `${this.server.publicAddress}/callbacks`
     });
     const contractNegotiationResponse = await this.dsp.requestNegotiation(
       `${negotiation.remoteAddress}/request`,
@@ -584,11 +582,11 @@ export class NegotiationService {
       const agreement = await negotiation.agreement?.serialize();
       const remoteHash = contractNegotiationEventMessage.hashedMessage;
       if (
-        remoteHash?.["dspace:algorithm"] === "JsonWebSignature2020" ||
-        remoteHash?.["dspace:algorithm"] === "DataIntegrityProof"
+        remoteHash?.algorithm === "JsonWebSignature2020" ||
+        remoteHash?.algorithm === "DataIntegrityProof"
       ) {
         try {
-          const signature = JSON.parse(remoteHash["dspace:digest"]);
+          const signature = JSON.parse(remoteHash.digest);
           await this.authService.requestSignatureValidation({
             ...agreement,
             proof: signature
@@ -781,8 +779,8 @@ export class NegotiationService {
         providerPid: negotiation.remoteId,
         consumerPid: negotiation.localId,
         hashedMessage: {
-          "dspace:algorithm": algorithm,
-          "dspace:digest": digest
+          algorithm: algorithm,
+          digest: digest
         }
       });
     negotiation.events.push({
@@ -791,8 +789,8 @@ export class NegotiationService {
       verification: contractAgreementVerificationMessage,
       type: "local",
       hashedMessage: {
-        "dspace:algorithm": algorithm,
-        "dspace:digest": digest
+        algorithm: algorithm,
+        digest: digest
       }
     });
 
@@ -827,14 +825,14 @@ export class NegotiationService {
     );
     let agreement: AgreementDto | undefined;
     if (
-      contractAgreementVerificationMessage.hashedMessage["dspace:algorithm"] ===
+      contractAgreementVerificationMessage.hashedMessage.algorithm ===
         "JsonWebSignature2020" ||
-      contractAgreementVerificationMessage.hashedMessage["dspace:algorithm"] ===
+      contractAgreementVerificationMessage.hashedMessage.algorithm ===
         "DataIntegrityProof"
     ) {
       try {
         const signature = JSON.parse(
-          contractAgreementVerificationMessage.hashedMessage["dspace:digest"]
+          contractAgreementVerificationMessage.hashedMessage.digest
         );
         agreement = await negotiation.agreement?.serialize();
         await this.authService.requestSignatureValidation({
@@ -897,8 +895,8 @@ export class NegotiationService {
       algorithm = "sha256";
     }
     const hashedMessage: HashedMessage = {
-      "dspace:algorithm": algorithm,
-      "dspace:digest": digest
+      algorithm: algorithm,
+      digest: digest
     };
     negotiation.events.push({
       time: new Date(),
@@ -951,6 +949,18 @@ export class NegotiationService {
       negotiation,
       ContractNegotiationState.TERMINATED
     );
+    const terminationMessage = new ContractNegotiationTerminationMessage({
+      providerPid:
+        negotiation.role === "provider"
+          ? negotiation.localId
+          : negotiation.remoteId,
+      consumerPid:
+        negotiation.role === "consumer"
+          ? negotiation.localId
+          : negotiation.remoteId,
+      code: code,
+      reason: reason ? [new Multilanguage(reason)] : []
+    });
     negotiation.events.push({
       time: new Date(),
       state: ContractNegotiationState.TERMINATED,
@@ -958,6 +968,11 @@ export class NegotiationService {
       reason: reason ? [new Multilanguage(reason)] : undefined,
       type: "local"
     });
+    await this.dsp.negotiationTermination(
+      `${negotiation.remoteAddress}/termination`,
+      terminationMessage,
+      negotiation.remoteParty
+    );
     negotiation.state = ContractNegotiationState.TERMINATED;
     await this.negotiationDetailRepository.save(negotiation);
     if (this.config.runtime?.controlPlaneInteractions === "manual") {

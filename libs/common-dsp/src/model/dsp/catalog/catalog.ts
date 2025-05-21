@@ -54,7 +54,7 @@ export interface IResource extends IReference {
   previousVersion?: string;
 }
 
-@Serializable("dcat:Resource")
+@Serializable("Resource")
 export class Resource<
   OutType extends ContextDto = ResourceDto
 > extends Reference<OutType> {
@@ -173,7 +173,7 @@ export interface IDataService extends IResource {
   servesDataset?: Array<Dataset>;
 }
 
-@Serializable("dcat:DataService")
+@Serializable("DataService")
 export class DataService extends Resource<DataServiceDto> {
   @Namespace("dcat")
   @IsOptional()
@@ -215,7 +215,7 @@ export interface IDistribution extends IReference {
   hasPolicy?: Array<Policy>;
 }
 
-@Serializable("dcat:Distribution")
+@Serializable("Distribution")
 export class Distribution extends Reference<DistributionDto & ContextDto> {
   @Namespace("dcat")
   @ValidateNested()
@@ -322,7 +322,7 @@ export interface IDataset extends IResource {
   sample?: Distribution;
 }
 
-@Serializable("dcat:Dataset")
+@Serializable("Dataset")
 export class Dataset<
   OutType extends ContextDto = DatasetDto
 > extends Resource<OutType> {
@@ -404,7 +404,7 @@ export interface ICatalogRecord extends IReference {
   primaryTopic?: Resource;
 }
 
-@Serializable("dcat:CatalogRecord")
+@Serializable("CatalogRecord")
 export class CatalogRecord extends Reference<CatalogRecordDto & ContextDto> {
   @Namespace("dct")
   @IsString({ each: true })
@@ -452,7 +452,7 @@ export interface ICatalog extends IDataset {
   homepage?: string;
 }
 
-@Serializable("dcat:Catalog")
+@Serializable("Catalog")
 export class Catalog extends Dataset<CatalogDto> {
   @Namespace("dcat")
   @ValidateNested()

@@ -125,7 +125,7 @@ onMounted(async () => await initialize());
     <!-- TODO get catalogs and make sure the component supports merging data sets. -->
     <div class="grid grid-cols-12 gap-8 card-container mb-4">
       <Catalog
-        :url="catalog['dcat:service'][0]['dcat:endpointURL']"
+        :url="catalog.service[0].endpointURL"
         :catalog="catalog"
         :single-catalog="false"
         :own-catalog="false"

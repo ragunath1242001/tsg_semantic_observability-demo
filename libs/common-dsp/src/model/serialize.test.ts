@@ -4,17 +4,17 @@ import { defaultContext } from "../jsonld/context.defaults.js";
 import { serializableTypes } from "./decorators.js";
 import { deserialize } from "./deserialize.js";
 import { ClassValidationError } from "./dsp/common.js";
+import { TransferCompletionMessageDto } from "./dsp/index.js";
 import { TransferCompletionMessage } from "./dsp/transfer/messages.js";
 
 test("Validation", async () => {
-  const jsonLd = {
+  const jsonLd: Partial<TransferCompletionMessageDto> = {
     "@context": defaultContext(),
-    "@type": "dspace:TransferCompletionMessage",
-    "dspace:processId": ""
+    "@type": "TransferCompletionMessage",
+    providerPid: ""
   };
   expect(async () => {
-    serializableTypes["dspace:TransferCompletionMessage"] =
-      TransferCompletionMessage;
+    serializableTypes["TransferCompletionMessage"] = TransferCompletionMessage;
     const result = await deserialize<TransferCompletionMessage>(jsonLd);
     result.validate();
   }).rejects.toThrowError(ClassValidationError);

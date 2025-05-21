@@ -1,3 +1,4 @@
+import { Logger } from "@nestjs/common";
 import jsonld from "jsonld";
 import { JsonLdObj } from "jsonld/jsonld-spec.js";
 
@@ -26,7 +27,20 @@ export async function compact(
   document: jsonld.JsonLdDocument,
   context: "default" | "dsp" | string | string[] = "default"
 ): Promise<JsonLdObj> {
-  const expanded = await jsonld.expand(document, documentLoader);
+  const expanded = await jsonld.expand(document, {
+    ...documentLoader,
+    eventHandler: (handle) => {
+      if (typeof process !== "undefined") {
+        if (handle.event.code !== "relative @id reference") {
+          Logger.debug(
+            `JSON-LD expansion error: ${handle.event.level} ${handle.event.code} ${JSON.stringify(handle.event.details)}`,
+            "JSON-LD"
+          );
+        }
+      }
+      handle.next();
+    }
+  } as unknown as jsonld.Options.Expand);
   const usingContext = compactingContext(context);
   const compacted = await jsonld.compact(
     expanded,

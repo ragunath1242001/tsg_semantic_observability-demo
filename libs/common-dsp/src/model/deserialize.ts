@@ -81,12 +81,8 @@ function deserializeJsonLd(obj: any, resolvedType: any, root: boolean) {
       const ldType = getFunctionDecorator("ldType", resolvedType, property)?.();
       const namespace = getStringDecorator("namespace", resolvedType, property);
       if (namespace) {
-        result[property] = deserializeSync(
-          obj[`${namespace}:${property}`],
-          false,
-          ldType
-        );
-        parsedProperties.push(`${namespace}:${property}`);
+        result[property] = deserializeSync(obj[`${property}`], false, ldType);
+        parsedProperties.push(`${property}`);
       } else {
         result[property] = obj[property];
         parsedProperties.push(`${property}`);

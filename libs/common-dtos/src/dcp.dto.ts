@@ -2,6 +2,7 @@ import {
   ApiExtraModels,
   ApiProperty,
   ApiPropertyOptional,
+  ApiSchema,
   getSchemaPath
 } from "@nestjs/swagger";
 import { VerifiablePresentation } from "@tsg-dsp/common-dsp";
@@ -267,6 +268,7 @@ export class IssuerMetadata {
   credentialsSupported!: CredentialObject[];
 }
 
+@ApiSchema({ name: "DCPCredentialStatus" })
 export class CredentialStatus {
   @ApiProperty({ example: ["https://w3id.org/dspace-dcp/v1.0/dcp.jsonld"] })
   @IsString({ each: true })

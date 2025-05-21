@@ -33,9 +33,9 @@ test("Transfer Completion Message", async () => {
   const serialized = await transferCompletionMessage.serialize();
   const expected: TransferCompletionMessageDto = {
     "@context": defaultContext(),
-    "@type": "dspace:TransferCompletionMessage",
-    "dspace:providerPid": "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
-    "dspace:consumerPid": "urn:uuid:89442cfb-4d96-48fa-80d1-d7cf93bd34a3"
+    "@type": "TransferCompletionMessage",
+    providerPid: "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
+    consumerPid: "urn:uuid:89442cfb-4d96-48fa-80d1-d7cf93bd34a3"
   };
   expect(serialized).toStrictEqual(expected);
   const deserialized = await deserialize<TransferCompletionMessage>(serialized);
@@ -52,11 +52,11 @@ test("Transfer Error", async () => {
   const serialized = await transferError.serialize();
   const expected: TransferErrorDto = {
     "@context": defaultContext(),
-    "@type": "dspace:TransferError",
-    "dspace:providerPid": "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
-    "dspace:consumerPid": "urn:uuid:89442cfb-4d96-48fa-80d1-d7cf93bd34a3",
-    "dspace:code": "123:A",
-    "dspace:reason": [
+    "@type": "TransferError",
+    providerPid: "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
+    consumerPid: "urn:uuid:89442cfb-4d96-48fa-80d1-d7cf93bd34a3",
+    code: "123:A",
+    reason: [
       {
         "@value": "Could not transfer",
         "@language": "en"
@@ -72,17 +72,15 @@ test("Transfer Process", async () => {
   const transferProcess = new TransferProcess({
     providerPid: "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
     consumerPid: "urn:uuid:89442cfb-4d96-48fa-80d1-d7cf93bd34a3",
-    state: TransferState.SUSPENDED,
-    agreementId: "urn:uuid:b5c1ac04-620f-470a-a841-df11d14e5268"
+    state: TransferState.SUSPENDED
   });
   const serialized = await transferProcess.serialize();
   const expected: TransferProcessDto = {
     "@context": defaultContext(),
-    "@type": "dspace:TransferProcess",
-    "dspace:providerPid": "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
-    "dspace:consumerPid": "urn:uuid:89442cfb-4d96-48fa-80d1-d7cf93bd34a3",
-    "dspace:state": TransferState.SUSPENDED,
-    "dspace:agreementId": "urn:uuid:b5c1ac04-620f-470a-a841-df11d14e5268"
+    "@type": "TransferProcess",
+    providerPid: "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
+    consumerPid: "urn:uuid:89442cfb-4d96-48fa-80d1-d7cf93bd34a3",
+    state: TransferState.SUSPENDED
   };
   expect(serialized).toStrictEqual(expected);
   const deserialized = await deserialize<TransferProcess>(serialized);
@@ -93,7 +91,7 @@ test("Transfer Request Message", async () => {
   const transferRequestMessage = new TransferRequestMessage({
     consumerPid: "urn:uuid:89442cfb-4d96-48fa-80d1-d7cf93bd34a3",
     agreementId: "urn:uuid:1246a1af-6e5f-4c05-86e2-6d8624efeeb3",
-    format: "dspace:HTTP",
+    format: "HTTP",
     callbackAddress: "http://localhost",
     dataAddress: new DataAddress({
       endpointType: "HTTP",
@@ -109,20 +107,20 @@ test("Transfer Request Message", async () => {
   const serialized = await transferRequestMessage.serialize();
   const expected: TransferRequestMessageDto = {
     "@context": defaultContext(),
-    "@type": "dspace:TransferRequestMessage",
-    "dspace:consumerPid": "urn:uuid:89442cfb-4d96-48fa-80d1-d7cf93bd34a3",
-    "dspace:agreementId": "urn:uuid:1246a1af-6e5f-4c05-86e2-6d8624efeeb3",
-    "dct:format": "dspace:HTTP",
-    "dspace:callbackAddress": "http://localhost",
-    "dspace:dataAddress": {
-      "@type": "dspace:DataAddress",
-      "dspace:endpointType": "HTTP",
-      "dspace:endpoint": "http://example.com",
-      "dspace:endpointProperties": [
+    "@type": "TransferRequestMessage",
+    consumerPid: "urn:uuid:89442cfb-4d96-48fa-80d1-d7cf93bd34a3",
+    agreementId: "urn:uuid:1246a1af-6e5f-4c05-86e2-6d8624efeeb3",
+    format: "HTTP",
+    callbackAddress: "http://localhost",
+    dataAddress: {
+      "@type": "DataAddress",
+      endpointType: "HTTP",
+      endpoint: "http://example.com",
+      endpointProperties: [
         {
-          "@type": "dspace:EndpointProperty",
-          "dspace:name": "Authorization",
-          "dspace:value": "Bearer TOKEN-ABCDEFG"
+          "@type": "EndpointProperty",
+          name: "Authorization",
+          value: "Bearer TOKEN-ABCDEFG"
         }
       ]
     }
@@ -150,18 +148,18 @@ test("Transfer Start Message", async () => {
   const serialized = await transferStartMessage.serialize();
   const expected: TransferStartMessageDto = {
     "@context": defaultContext(),
-    "@type": "dspace:TransferStartMessage",
-    "dspace:providerPid": "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
-    "dspace:consumerPid": "urn:uuid:89442cfb-4d96-48fa-80d1-d7cf93bd34a3",
-    "dspace:dataAddress": {
-      "@type": "dspace:DataAddress",
-      "dspace:endpointType": "HTTP",
-      "dspace:endpoint": "http://example.com",
-      "dspace:endpointProperties": [
+    "@type": "TransferStartMessage",
+    providerPid: "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
+    consumerPid: "urn:uuid:89442cfb-4d96-48fa-80d1-d7cf93bd34a3",
+    dataAddress: {
+      "@type": "DataAddress",
+      endpointType: "HTTP",
+      endpoint: "http://example.com",
+      endpointProperties: [
         {
-          "@type": "dspace:EndpointProperty",
-          "dspace:name": "Authorization",
-          "dspace:value": "Bearer TOKEN-ABCDEFG"
+          "@type": "EndpointProperty",
+          name: "Authorization",
+          value: "Bearer TOKEN-ABCDEFG"
         }
       ]
     }
@@ -180,10 +178,10 @@ test("Transfer Suspension Message", async () => {
   const serialized = await transferSuspensionMessage.serialize();
   const expected: TransferSuspensionMessageDto = {
     "@context": defaultContext(),
-    "@type": "dspace:TransferSuspensionMessage",
-    "dspace:providerPid": "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
-    "dspace:consumerPid": "urn:uuid:89442cfb-4d96-48fa-80d1-d7cf93bd34a3",
-    "dspace:reason": [
+    "@type": "TransferSuspensionMessage",
+    providerPid: "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
+    consumerPid: "urn:uuid:89442cfb-4d96-48fa-80d1-d7cf93bd34a3",
+    reason: [
       {
         "@value": "Network switching",
         "@language": "en"
@@ -205,11 +203,11 @@ test("Transfer Termination Message", async () => {
   const serialized = await transferTerminationMessage.serialize();
   const expected: TransferTerminationMessageDto = {
     "@context": defaultContext(),
-    "@type": "dspace:TransferTerminationMessage",
-    "dspace:providerPid": "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
-    "dspace:consumerPid": "urn:uuid:89442cfb-4d96-48fa-80d1-d7cf93bd34a3",
-    "dspace:code": "123:A",
-    "dspace:reason": [
+    "@type": "TransferTerminationMessage",
+    providerPid: "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
+    consumerPid: "urn:uuid:89442cfb-4d96-48fa-80d1-d7cf93bd34a3",
+    code: "123:A",
+    reason: [
       {
         "@value": "Network switching",
         "@language": "en"

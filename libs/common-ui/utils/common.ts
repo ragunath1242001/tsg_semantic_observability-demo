@@ -1,9 +1,5 @@
 import { MultilanguageDto } from "@tsg-dsp/common-dsp";
 
-export const stripDspace = (inputStr: string): string => {
-  return `${inputStr.replace("dspace:", "")}`;
-};
-
 export function obtainValues(
   multilingualArray: Array<MultilanguageDto | string>
 ) {

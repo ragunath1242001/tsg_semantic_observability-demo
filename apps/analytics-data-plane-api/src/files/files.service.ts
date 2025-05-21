@@ -173,7 +173,7 @@ export class FilesService {
             identifier: dbentry.identifier,
             hasPolicy: [
               new Offer({
-                assigner: catalog["dct:publisher"] as string,
+                assigner: catalog.publisher as string,
                 permission: [
                   new Permission({
                     action: "odrl:use"

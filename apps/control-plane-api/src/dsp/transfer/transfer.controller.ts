@@ -44,13 +44,13 @@ import { TransferService } from "./transfer.service.js";
 
 @ApiTags("Transfers")
 @ApiBearerAuth()
-@Controller("transfers")
+@Controller()
 @DisableOAuthGuard()
 export class TransferController {
   constructor(private readonly transferService: TransferService) {}
   private readonly logger = new Logger(this.constructor.name);
 
-  @Post("request")
+  @Post("transfers/request")
   @UseGuards(TransferVerifiablePresentationGuard)
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: "Request a transfer" })
@@ -73,7 +73,7 @@ export class TransferController {
     return await result.serialize();
   }
 
-  @Get(":id")
+  @Get("transfers/:id")
   @UseGuards(TransferVerifiablePresentationGuard)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "Get transfer status by ID" })
@@ -88,7 +88,7 @@ export class TransferController {
     return await transferProcess.process.serialize();
   }
 
-  @Post(":id/start")
+  @Post("transfers/:id/start")
   @UseGuards(TransferVerifiablePresentationGuard)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "Start transfer process" })
@@ -114,7 +114,7 @@ export class TransferController {
     return await this.transferService.handleStart(id, body, vpId);
   }
 
-  @Post(":id/complete")
+  @Post("transfers/:id/complete")
   @UseGuards(TransferVerifiablePresentationGuard)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "Complete transfer process" })
@@ -143,7 +143,7 @@ export class TransferController {
     return await this.transferService.handleComplete(id, body, vpId);
   }
 
-  @Post(":id/terminate")
+  @Post("transfers/:id/terminate")
   @UseGuards(TransferVerifiablePresentationGuard)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "Terminate transfer process" })
@@ -172,7 +172,7 @@ export class TransferController {
     return await this.transferService.handleTerminate(id, body, vpId);
   }
 
-  @Post(":id/suspend")
+  @Post("transfers/:id/suspend")
   @UseGuards(TransferVerifiablePresentationGuard)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "Suspend transfer process" })
@@ -201,7 +201,7 @@ export class TransferController {
     return await this.transferService.handleSuspend(id, body, vpId);
   }
 
-  @Post("/callbacks/:id/start")
+  @Post("/callbacks/transfers/:id/start")
   @UseGuards(VerifiablePresentationGuard)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "Callback to start transfer process" })
@@ -229,7 +229,7 @@ export class TransferController {
     return await this.transferService.handleStart(id, body, vpId);
   }
 
-  @Post("/callbacks/:id/complete")
+  @Post("/callbacks/transfers/:id/complete")
   @UseGuards(VerifiablePresentationGuard)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "Callback to complete transfer process" })
@@ -258,7 +258,7 @@ export class TransferController {
     return await this.transferService.handleComplete(id, body, vpId);
   }
 
-  @Post("/callbacks/:id/terminate")
+  @Post("/callbacks/transfers/:id/terminate")
   @UseGuards(VerifiablePresentationGuard)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "Callback to terminate transfer process" })
@@ -287,7 +287,7 @@ export class TransferController {
     return await this.transferService.handleTerminate(id, body, vpId);
   }
 
-  @Post("/callbacks/:id/suspend")
+  @Post("/callbacks/transfers/:id/suspend")
   @UseGuards(VerifiablePresentationGuard)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "Callback to suspend transfer process" })

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { TransferDetailDto } from "@tsg-dsp/common-dsp";
-import { stripDspace } from "@tsg-dsp/common-ui/utils/common";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import http from "@tsg-dsp/common-ui/utils/http";
 import { useConfirm } from "primevue/useconfirm";
@@ -22,11 +21,11 @@ const toast = useToast();
 
 const determineNextHappyState = (transfer: TransferDetailDto) => {
   switch (transfer.state) {
-    case "dspace:REQUESTED":
+    case "REQUESTED":
       return "start";
-    case "dspace:SUSPENDED":
+    case "SUSPENDED":
       return "start";
-    case "dspace:STARTED":
+    case "STARTED":
       return "complete";
   }
 };
@@ -37,21 +36,21 @@ const determineHeader = () => {
 
 const determineWord = (transfer: TransferDetailDto) => {
   switch (transfer.state) {
-    case "dspace:REQUESTED":
+    case "REQUESTED":
       return "requested";
-    case "dspace:STARTED":
+    case "STARTED":
       return "started";
-    case "dspace:SUSPENDED":
+    case "SUSPENDED":
       return "suspended";
   }
 };
 const determineTooltip = (transfer: TransferDetailDto) => {
   switch (transfer.state) {
-    case "dspace:REQUESTED":
+    case "REQUESTED":
       return "Start";
-    case "dspace:SUSPENDED":
+    case "SUSPENDED":
       return "Restart";
-    case "dspace:STARTED":
+    case "STARTED":
       return "Complete";
   }
 };
@@ -151,7 +150,7 @@ const terminateTransfer = async (transfer) => {
     <template #title>
       <div class="flex justify-between mb-4">
         <div>
-          {{ stripDspace(transfer.state) }}
+          {{ transfer.state }}
         </div>
         <div
           class="flex items-center justify-center bg-blue-100 rounded-border"
@@ -183,7 +182,7 @@ const terminateTransfer = async (transfer) => {
           class="p-button-outlined"
           @click="openDialog('terminate')" />
         <Button
-          v-if="transfer.state === 'dspace:STARTED'"
+          v-if="transfer.state === 'STARTED'"
           v-tooltip.top="'Suspend'"
           severity="warn"
           icon="pi pi-pause"

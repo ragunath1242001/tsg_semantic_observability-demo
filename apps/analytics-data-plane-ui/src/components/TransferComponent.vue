@@ -33,7 +33,7 @@ onMounted(async () => {
           <FormField label="State">
             <Tag
               :severity="stateSeverity(transfer?.state)"
-              :value="transfer?.state.replace(/^dspace:/, '')" />
+              :value="transfer?.state" />
           </FormField>
           <FormField label="Role">{{ transfer?.role }}</FormField>
           <FormField label="Process ID">{{ transfer?.processId }}</FormField>

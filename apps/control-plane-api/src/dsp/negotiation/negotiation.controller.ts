@@ -47,7 +47,7 @@ import { NegotiationService } from "./negotiation.service.js";
 @ApiTags("Negotiations")
 @UseGuards(VerifiablePresentationGuard)
 @DisableOAuthGuard()
-@Controller("negotiations")
+@Controller()
 export class NegotiationController {
   constructor(private readonly negotiationService: NegotiationService) {}
   private readonly logger = new Logger(this.constructor.name);
@@ -57,7 +57,7 @@ export class NegotiationController {
   @ApiCreatedResponse({
     type: ContractNegotiationSchema
   })
-  @Post("request")
+  @Post("negotiations/request")
   @HttpCode(HttpStatus.CREATED)
   async request(
     @Body(new DeserializePipe(ContractRequestMessage))
@@ -72,7 +72,7 @@ export class NegotiationController {
   @ApiOperation({ summary: "Get negotiation status by ID" })
   @ApiParam({ name: "id", type: String })
   @ApiOkResponse({ type: ContractNegotiationSchema })
-  @Get(":id")
+  @Get("negotiations/:id")
   @HttpCode(HttpStatus.OK)
   async getNegotiation(
     @Param("id") id: string,
@@ -93,7 +93,7 @@ export class NegotiationController {
   @ApiOkResponse({
     type: ContractNegotiationSchema
   })
-  @Post(":id/request")
+  @Post("negotiations/:id/request")
   @HttpCode(HttpStatus.OK)
   async requestWithId(
     @Param("id") id: string,
@@ -128,7 +128,7 @@ export class NegotiationController {
       example: { status: "string" }
     }
   })
-  @Post(":id/events")
+  @Post("negotiations/:id/events")
   @HttpCode(HttpStatus.OK)
   async negotiationEvent(
     @Param("id") id: string,
@@ -159,7 +159,7 @@ export class NegotiationController {
       example: { status: "string" }
     }
   })
-  @Post(":id/agreement/verification")
+  @Post("negotiations/:id/agreement/verification")
   @HttpCode(HttpStatus.OK)
   async agreementVerification(
     @Param("id") id: string,
@@ -195,7 +195,7 @@ export class NegotiationController {
       example: { status: "string" }
     }
   })
-  @Post(":id/termination")
+  @Post("negotiations/:id/termination")
   @HttpCode(HttpStatus.OK)
   async negotiationTermination(
     @Param("id") id: string,
@@ -230,7 +230,7 @@ export class NegotiationController {
       example: { status: "string" }
     }
   })
-  @Post("callbacks/:id/offer")
+  @Post("callbacks/negotiations/:id/offers")
   async callbackOffer(
     @Param("id") id: string,
     @Body(new DeserializePipe(ContractOfferMessage)) body: ContractOfferMessage,
@@ -253,7 +253,7 @@ export class NegotiationController {
       example: { status: "string" }
     }
   })
-  @Post("callbacks/:id/agreement")
+  @Post("callbacks/negotiations/:id/agreement")
   async callbackAgreement(
     @Param("id") id: string,
     @Body(new DeserializePipe(ContractAgreementMessage))
@@ -283,7 +283,7 @@ export class NegotiationController {
       example: { status: "string" }
     }
   })
-  @Post("callbacks/:id/events")
+  @Post("callbacks/negotiations/:id/events")
   async callbackEvent(
     @Param("id") id: string,
     @Body(new DeserializePipe(ContractNegotiationEventMessage))
@@ -294,6 +294,33 @@ export class NegotiationController {
       `Received negotiation callback event for ${id}: ${JSON.stringify(body)}`
     );
     const result = await this.negotiationService.handleEvent(id, body, vpId);
+    return result;
+  }
+  @ApiOperation({ summary: "Handle negotiation callback termination" })
+  @ApiParam({ name: "id", type: String })
+  @ApiBody({ type: ContractNegotiationEventMessageSchema })
+  @ApiOkResponse({
+    schema: {
+      type: "object",
+      properties: { status: { type: "string" } },
+      example: { status: "string" }
+    }
+  })
+  @Post("callbacks/negotiations/:id/termination")
+  async callbackTermination(
+    @Param("id") id: string,
+    @Body(new DeserializePipe(ContractNegotiationTerminationMessage))
+    body: ContractNegotiationTerminationMessage,
+    @VPId() vpId: string
+  ): Promise<{ status: string }> {
+    this.logger.log(
+      `Received negotiation callback termination for ${id}: ${JSON.stringify(body)}`
+    );
+    const result = await this.negotiationService.handleTermination(
+      id,
+      body,
+      vpId
+    );
     return result;
   }
 }

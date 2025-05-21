@@ -13,6 +13,7 @@ import {
   ContractNegotiationState,
   DataPlaneCreation,
   DatasetDto,
+  defaultContext,
   NegotiationRole,
   TransferState
 } from "@tsg-dsp/common-dsp";
@@ -100,13 +101,13 @@ describe.each(["Authorization", "X-TSG-Authorization"])(
           `${config.controlPlane.managementEndpoint}/agreements/:agreementId`,
           () => {
             return HttpResponse.json<AgreementDto>({
-              "@context": "https://w3id.org/dspace/2024/1/context.json",
-              "@type": "odrl:Agreement",
+              "@context": defaultContext(),
+              "@type": "Agreement",
               "@id": "urn:uuid:test",
-              "odrl:assigner": "did:web:localhost",
-              "odrl:assignee": "did:web:localhost",
-              "dspace:timestamp": new Date().toISOString(),
-              "odrl:target": "urn:uuid:dataset"
+              assigner: "did:web:localhost",
+              assignee: "did:web:localhost",
+              timestamp: new Date().toISOString(),
+              target: "urn:uuid:dataset"
             });
           }
         ),
@@ -124,8 +125,8 @@ describe.each(["Authorization", "X-TSG-Authorization"])(
           `${config.controlPlane.managementEndpoint}/catalog/dataset`,
           () => {
             return HttpResponse.json<DatasetDto>({
-              "@context": "https://w3id.org/dspace/2024/1/context.json",
-              "@type": "dcat:Dataset",
+              "@context": defaultContext(),
+              "@type": "Dataset",
               "@id": "urn:uuid:test"
             });
           }
@@ -176,11 +177,11 @@ describe.each(["Authorization", "X-TSG-Authorization"])(
           "http://localhost:3000/management/negotiations/request",
           () => {
             return HttpResponse.json({
-              "@type": "dspace:ContractNegotiation",
+              "@type": "ContractNegotiation",
               "@id": "urn:uuid:1234",
-              "dspace:providerPid": "providerPid",
-              "dspace:consumerPid": "consumerPid",
-              "dspace:state": "dspace:REQUESTED"
+              providerPid: "providerPid",
+              consumerPid: "consumerPid",
+              state: "REQUESTED"
             });
           }
         ),
@@ -189,11 +190,11 @@ describe.each(["Authorization", "X-TSG-Authorization"])(
           () => {
             return HttpResponse.json([
               {
-                "@type": "dspace:ContractNegotiation",
+                "@type": "ContractNegotiation",
                 "@id": "urn:uuid:1234",
-                "dspace:providerPid": "providerPid",
-                "dspace:consumerPid": "consumerPid",
-                "dspace:state": "dspace:REQUESTED"
+                providerPid: "providerPid",
+                consumerPid: "consumerPid",
+                state: "REQUESTED"
               }
             ]);
           }
@@ -285,13 +286,11 @@ describe.each(["Authorization", "X-TSG-Authorization"])(
       it("Transfer request", async () => {
         const result = await transferService.handleTransferRequest(
           {
-            "@type": "dspace:TransferRequestMessage",
-            "dspace:agreementId":
-              "urn:uuid:cadb401e-4275-4d77-99a2-5aa2af93e3b7",
-            "dct:format": "dspace:HTTP",
-            "dspace:callbackAddress": "http://127.0.0.1/test",
-            "dspace:consumerPid":
-              "urn:uuid:00000000-0000-0000-0000-000000000000"
+            "@type": "TransferRequestMessage",
+            agreementId: "urn:uuid:cadb401e-4275-4d77-99a2-5aa2af93e3b7",
+            format: "tsg:HTTP",
+            callbackAddress: "http://127.0.0.1/test",
+            consumerPid: "urn:uuid:00000000-0000-0000-0000-000000000000"
           },
           "provider",
           transferProcessId,
@@ -335,10 +334,9 @@ describe.each(["Authorization", "X-TSG-Authorization"])(
       it("Transfer start", async () => {
         await transferService.handleTransferStart(
           {
-            "@type": "dspace:TransferStartMessage",
-            "dspace:providerPid": transferProcessId,
-            "dspace:consumerPid":
-              "urn:uuid:00000000-0000-0000-0000-000000000000"
+            "@type": "TransferStartMessage",
+            providerPid: transferProcessId,
+            consumerPid: "urn:uuid:00000000-0000-0000-0000-000000000000"
           },
           transferProcessId
         );
@@ -395,10 +393,9 @@ describe.each(["Authorization", "X-TSG-Authorization"])(
       it("Transfer completion", async () => {
         await transferService.handleTransferComplete(
           {
-            "@type": "dspace:TransferCompletionMessage",
-            "dspace:providerPid": transferProcessId,
-            "dspace:consumerPid":
-              "urn:uuid:00000000-0000-0000-0000-000000000000"
+            "@type": "TransferCompletionMessage",
+            providerPid: transferProcessId,
+            consumerPid: "urn:uuid:00000000-0000-0000-0000-000000000000"
           },
           transferProcessId
         );
@@ -472,13 +469,11 @@ describe.each(["Authorization", "X-TSG-Authorization"])(
       it("Transfer Request", async () => {
         const result = await transferService.handleTransferRequest(
           {
-            "@type": "dspace:TransferRequestMessage",
-            "dspace:consumerPid":
-              "urn:uuid:00000000-0000-0000-0000-000000000000",
-            "dspace:agreementId":
-              "urn:uuid:e785d4a8-2030-4a2b-b223-9881e35c0df7",
-            "dct:format": "dspace:HTTP",
-            "dspace:callbackAddress": "http://127.0.0.1/test"
+            "@type": "TransferRequestMessage",
+            consumerPid: "urn:uuid:00000000-0000-0000-0000-000000000000",
+            agreementId: "urn:uuid:e785d4a8-2030-4a2b-b223-9881e35c0df7",
+            format: "tsg:HTTP",
+            callbackAddress: "http://127.0.0.1/test"
           },
           "consumer",
           transferProcessId,
@@ -503,19 +498,18 @@ describe.each(["Authorization", "X-TSG-Authorization"])(
       it("Transfer start", async () => {
         await transferService.handleTransferStart(
           {
-            "@type": "dspace:TransferStartMessage",
-            "dspace:providerPid": transferProcessId,
-            "dspace:consumerPid":
-              "urn:uuid:00000000-0000-0000-0000-000000000000",
-            "dspace:dataAddress": {
-              "@type": "dspace:DataAddress",
-              "dspace:endpoint": "https://httpbin.org/anything",
-              "dspace:endpointType": "dspace:HTTP",
-              "dspace:endpointProperties": [
+            "@type": "TransferStartMessage",
+            providerPid: transferProcessId,
+            consumerPid: "urn:uuid:00000000-0000-0000-0000-000000000000",
+            dataAddress: {
+              "@type": "DataAddress",
+              endpoint: "https://httpbin.org/anything",
+              endpointType: "tsg:HTTP",
+              endpointProperties: [
                 {
-                  "@type": "dspace:EndpointProperty",
-                  "dspace:name": authorizationHeaderConfig,
-                  "dspace:value": "Bearer ABCDEF"
+                  "@type": "EndpointProperty",
+                  name: authorizationHeaderConfig,
+                  value: "Bearer ABCDEF"
                 }
               ]
             }
@@ -562,10 +556,9 @@ describe.each(["Authorization", "X-TSG-Authorization"])(
       it("Transfer completion", async () => {
         await transferService.handleTransferComplete(
           {
-            "@type": "dspace:TransferCompletionMessage",
-            "dspace:providerPid": transferProcessId,
-            "dspace:consumerPid":
-              "urn:uuid:00000000-0000-0000-0000-000000000000"
+            "@type": "TransferCompletionMessage",
+            providerPid: transferProcessId,
+            consumerPid: "urn:uuid:00000000-0000-0000-0000-000000000000"
           },
           transferProcessId
         );
@@ -626,7 +619,7 @@ describe.each(["Authorization", "X-TSG-Authorization"])(
         const datasetId = "dataset-id";
         const address = "address";
         const audience = "audience";
-        const dataset: DatasetDto = { "odrl:hasPolicy": [{}] } as DatasetDto;
+        const dataset: DatasetDto = { hasPolicy: [{}] } as DatasetDto;
 
         jest.spyOn(transferService, "getDataset").mockResolvedValue(dataset);
 
@@ -745,11 +738,11 @@ describe.each(["Authorization", "X-TSG-Authorization"])(
           state: ContractNegotiationState.FINALIZED,
           agreement: {
             "@id": "urn:uuid:agreement-id",
-            "@type": "odrl:Agreement",
-            "odrl:assigner": "did:web:localhost",
-            "odrl:assignee": "did:web:localhost",
-            "dspace:timestamp": new Date().toISOString(),
-            "odrl:target": "urn:uuid:dataset"
+            "@type": "Agreement",
+            assigner: "did:web:localhost",
+            assignee: "did:web:localhost",
+            timestamp: new Date().toISOString(),
+            target: "urn:uuid:dataset"
           }
         };
         address = "http://localhost:3000";
@@ -1012,7 +1005,7 @@ describe.each(["Authorization", "X-TSG-Authorization"])(
           dataSet: "urn:1234",
           modifiedDate: new Date(),
           role: "provider" as NegotiationRole,
-          state: "dspace:FINALIZED"
+          state: "FINALIZED"
         } as NegotiationDetailDto;
 
         jest
@@ -1036,7 +1029,7 @@ describe.each(["Authorization", "X-TSG-Authorization"])(
           dataSet: "urn:1234",
           modifiedDate: new Date(),
           role: "provider" as NegotiationRole,
-          state: "dspace:REQUESTED"
+          state: "REQUESTED"
         } as NegotiationDetailDto;
 
         jest

@@ -47,7 +47,7 @@ function serializeJsonLdObject(
   const properties = filteredKeys(obj, ["extraProps"]);
   for (const property of properties) {
     const value = obj[property];
-    if (value === undefined) {
+    if (value === undefined || value === null) {
       continue;
     }
     if (!Array.isArray(value) || value.length > 0) {
@@ -62,15 +62,7 @@ function serializeJsonLdObject(
           }
           result["@value"] = value;
         } else {
-          const namespace = getStringDecorator("namespace", obj, property);
-          const serializedValue = serialize(value, false);
-          if (serializedValue != null) {
-            if (namespace) {
-              result[`${namespace}:${property}`] = serializedValue;
-            } else {
-              result[`${property}`] = serializedValue;
-            }
-          }
+          result[`${property}`] = serialize(value, false);
         }
       } catch (_error) {
         const serializedValue = serialize(value, false);

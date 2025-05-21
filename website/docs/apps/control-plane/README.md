@@ -20,7 +20,7 @@ The TSG Control Plane is the TNO implementation of the Dataspace Protocol. It ha
 
 Used standards:
 
-- Dataspace Protocol [2024-1](https://docs.internationaldataspaces.org/ids-knowledgebase/dataspace-protocol)
+- Dataspace Protocol [2025-1](https://eclipse-dataspace-protocol-base.github.io/DataspaceProtocol)
 
 ### 2. Programming language & environment
 

@@ -25,7 +25,7 @@ export interface ITransferCompletionMessage {
   consumerPid: string;
 }
 
-@Serializable("dspace:TransferCompletionMessage")
+@Serializable("TransferCompletionMessage")
 export class TransferCompletionMessage extends SerializableClass<TransferCompletionMessageDto> {
   @Namespace("dspace")
   @IsNotEmpty()
@@ -48,7 +48,7 @@ export interface ITransferError {
   reason?: Array<any>;
 }
 
-@Serializable("dspace:TransferError")
+@Serializable("TransferError")
 export class TransferError extends SerializableClass<TransferErrorDto> {
   @Namespace("dspace")
   @IsNotEmpty()
@@ -77,10 +77,9 @@ export interface ITransferProcess {
   providerPid: string;
   consumerPid: string;
   state: TransferState;
-  agreementId: string;
 }
 
-@Serializable("dspace:TransferProcess")
+@Serializable("TransferProcess")
 export class TransferProcess extends SerializableClass<TransferProcessDto> {
   @Namespace("dspace")
   @IsNotEmpty()
@@ -91,20 +90,16 @@ export class TransferProcess extends SerializableClass<TransferProcessDto> {
   @Namespace("dspace")
   @IsNotEmpty()
   state: TransferState;
-  @Namespace("dspace")
-  @IsNotEmpty()
-  agreementId: string;
 
   constructor(value: withExtraProps<ITransferProcess>) {
     super(value);
     this.providerPid = value.providerPid;
     this.consumerPid = value.consumerPid;
     this.state = value.state;
-    this.agreementId = value.agreementId;
   }
 }
 
-@Serializable("dspace:EndpointProperty")
+@Serializable("EndpointProperty")
 export class EndpointProperty extends SerializableClass<EndpointPropertyDto> {
   @Namespace("dspace")
   @IsNotEmpty()
@@ -125,7 +120,7 @@ export interface IDataAddress {
   endpointProperties: Array<EndpointProperty>;
 }
 
-@Serializable("dspace:DataAddress")
+@Serializable("DataAddress")
 export class DataAddress extends SerializableClass<DataAddressDto> {
   @Namespace("dspace")
   @IsNotEmpty()
@@ -154,7 +149,7 @@ export interface ITransferRequestMessage {
   callbackAddress: string;
 }
 
-@Serializable("dspace:TransferRequestMessage")
+@Serializable("TransferRequestMessage")
 export class TransferRequestMessage extends SerializableClass<TransferRequestMessageDto> {
   @Namespace("dspace")
   @IsNotEmpty()
@@ -195,7 +190,7 @@ export interface ITransferStartMessage {
   dataAddress?: DataAddress;
 }
 
-@Serializable("dspace:TransferStartMessage")
+@Serializable("TransferStartMessage")
 export class TransferStartMessage extends SerializableClass<TransferStartMessageDto> {
   @Namespace("dspace")
   @IsNotEmpty()
@@ -223,7 +218,7 @@ export interface ITransferSuspensionMessage {
   reason: Array<any>;
 }
 
-@Serializable("dspace:TransferSuspensionMessage")
+@Serializable("TransferSuspensionMessage")
 export class TransferSuspensionMessage extends SerializableClass<TransferSuspensionMessageDto> {
   @Namespace("dspace")
   @IsNotEmpty()
@@ -251,7 +246,7 @@ export interface ITransferTerminationMessage {
   reason: Array<any>;
 }
 
-@Serializable("dspace:TransferTerminationMessage")
+@Serializable("TransferTerminationMessage")
 export class TransferTerminationMessage extends SerializableClass<TransferTerminationMessageDto> {
   @Namespace("dspace")
   @IsNotEmpty()

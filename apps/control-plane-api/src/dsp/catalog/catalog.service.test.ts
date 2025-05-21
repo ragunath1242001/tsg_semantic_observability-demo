@@ -7,6 +7,7 @@ import {
   DataServiceDto,
   Dataset,
   DatasetDto,
+  defaultContext,
   deserialize,
   Distribution,
   DistributionDto,
@@ -132,7 +133,7 @@ describe("Catalog Service", () => {
         distribution: [
           new Distribution({
             id: "urn:uuid:06d7da99-68eb-4f9e-8cb6-b78666c46123",
-            format: "dspace:HTTP",
+            format: "tsg:HTTP",
             accessService: [
               new DataService({
                 id: "urn:uuid:0d5f0685-eb04-409a-8a77-ee4ed207f2f0",
@@ -168,9 +169,7 @@ describe("Catalog Service", () => {
 
       //    A policy should be auto generated since we haven't defined one.
       expect(updatedDataset.hasPolicy).toHaveLength(1);
-      expect(updatedDataset.hasPolicy?.[0].permission?.[0]?.action).toBe(
-        "odrl:use"
-      );
+      expect(updatedDataset.hasPolicy?.[0].permission?.[0]?.action).toBe("use");
       expect(
         updatedDataset.hasPolicy?.[0].permission?.[0]?.constraint?.[0]
           ?.leftOperand
@@ -193,57 +192,53 @@ describe("Catalog Service", () => {
         datasetDao!.distribution?.[0]?.accessService?.[0]?.endpointURL
       ).toBe("https://httpbin.org/anything");
       const dto = await datasetDao.serialize();
-      expect(dto["odrl:hasPolicy"]?.[0]?.["odrl:assigner"]).toBeDefined();
+      expect(dto["hasPolicy"]?.[0]?.["assigner"]).toBeDefined();
     });
 
     it("Add dataset for analytics data plane", async () => {
       const datasetId = "urn:uuid:08844168-b568-4eb6-b018-aaf6d9cf0ceb";
       const datasetDto = {
-        "@context": [
-          "https://w3id.org/dspace/2024/1/context.json",
-          "https://tsg.dataspac.es/contexts/next/tsg.json",
-          "https://tsg.dataspac.es/contexts/next/health.json"
-        ],
+        "@context": defaultContext(),
         "@id": datasetId,
-        "@type": "dcat:Dataset",
-        "dct:title": "Analytics Data Plane",
-        "dct:description": ["Default dataset for the analytics data plane"],
-        "dcat:keyword": ["analytics"],
-        "dcat:theme": ["analytics"],
-        "dct:language": "en",
-        "odrl:hasPolicy": [
+        "@type": "Dataset",
+        title: "Analytics Data Plane",
+        description: ["Default dataset for the analytics data plane"],
+        keyword: ["analytics"],
+        theme: ["analytics"],
+        language: "en",
+        hasPolicy: [
           {
-            "@type": "odrl:Offer",
+            "@type": "Offer",
             "@id": `${datasetId}:policy`,
-            "odrl:permission": [
+            permission: [
               {
-                "@type": "odrl:Permission",
-                "odrl:action": "odrl:use",
-                "odrl:target": datasetId,
-                "odrl:constraint": [
+                "@type": "Permission",
+                action: "use",
+                target: datasetId,
+                constraint: [
                   {
-                    "@type": "odrl:Constraint",
-                    "odrl:leftOperand": "dct:format",
-                    "odrl:operator": "odrl:eq",
-                    "odrl:rightOperand": "tsg:analytics"
+                    "@type": "Constraint",
+                    leftOperand: "format",
+                    operator: "eq",
+                    rightOperand: "tsg:analytics"
                   }
                 ]
               } as PermissionDto
             ]
           } as OfferDto
         ],
-        "dcat:distribution": [
+        distribution: [
           {
-            "@type": "dcat:Distribution",
+            "@type": "Distribution",
             "@id": `${datasetId}:application/analytics-data-plane`,
-            "dct:title": "Analytics Data Plane (tsg:analytics)",
-            "dct:format": "tsg:analytics",
-            "dcat:accessService": [
+            title: "Analytics Data Plane (tsg:analytics)",
+            format: "tsg:analytics",
+            accessService: [
               {
-                "@type": "dcat:DataService",
+                "@type": "DataService",
                 "@id": `${datasetId}:analytics-service`,
-                "dct:title": "Analytics Data Plane Service",
-                "dcat:endpointDescription": "dspace:connector"
+                title: "Analytics Data Plane Service",
+                endpointDescription: "dspace:connector"
               } as DataServiceDto
             ]
           } as DistributionDto
@@ -267,10 +262,10 @@ describe("Catalog Service", () => {
 
       //    A policy should be auto generated since we haven't defined one.
       expect(dataset.hasPolicy).toHaveLength(1);
-      expect(dataset.hasPolicy?.[0].permission?.[0]?.action).toBe("odrl:use");
+      expect(dataset.hasPolicy?.[0].permission?.[0]?.action).toBe("use");
       expect(
         dataset.hasPolicy?.[0].permission?.[0]?.constraint?.[0]?.leftOperand
-      ).toBe("dct:format");
+      ).toBe("format");
       expect(
         dataset.hasPolicy?.[0].permission?.[0]?.constraint?.[0]?.rightOperand
       ).toBe("tsg:analytics");
@@ -286,7 +281,7 @@ describe("Catalog Service", () => {
         distribution: [
           new Distribution({
             id: "urn:uuid:06d7da99-68eb-4f9e-8cb6-b78666c46123",
-            format: "dspace:HTTP",
+            format: "tsg:HTTP",
             accessService: [
               new DataService({
                 id: "urn:uuid:0d5f0685-eb04-409a-8a77-ee4ed207f2f0",
@@ -329,7 +324,7 @@ describe("Catalog Service", () => {
         distribution: [
           new Distribution({
             id: "urn:uuid:06d7da99-68eb-4f9e-8cb6-b78666c46124",
-            format: "dspace:HTTP",
+            format: "tsg:HTTP",
             accessService: [
               new DataService({
                 id: "urn:uuid:0d5f0685-eb04-409a-8a77-ee4ed207f2f1",

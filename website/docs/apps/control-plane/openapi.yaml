@@ -1123,7 +1123,7 @@ paths:
       security: *a14
       summary: Terminate negotiation
       tags: *a15
-  /api/negotiations/callbacks/{id}/offer:
+  /api/callbacks/negotiations/{id}/offers:
     post:
       operationId: NegotiationController_callbackOffer
       parameters:
@@ -1153,7 +1153,7 @@ paths:
       security: *a14
       summary: Handle negotiation callback offer
       tags: *a15
-  /api/negotiations/callbacks/{id}/agreement:
+  /api/callbacks/negotiations/{id}/agreement:
     post:
       operationId: NegotiationController_callbackAgreement
       parameters:
@@ -1183,7 +1183,7 @@ paths:
       security: *a14
       summary: Handle negotiation callback agreement
       tags: *a15
-  /api/negotiations/callbacks/{id}/events:
+  /api/callbacks/negotiations/{id}/events:
     post:
       operationId: NegotiationController_callbackEvent
       parameters:
@@ -1212,6 +1212,36 @@ paths:
                   status: string
       security: *a14
       summary: Handle negotiation callback event
+      tags: *a15
+  /api/callbacks/negotiations/{id}/termination:
+    post:
+      operationId: NegotiationController_callbackTermination
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContractNegotiationEventMessageSchema"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                example:
+                  status: string
+      security: *a14
+      summary: Handle negotiation callback termination
       tags: *a15
   /api/management/negotiations:
     get:
@@ -1408,7 +1438,7 @@ paths:
       security: *a16
       summary: Request an existing negotiation
       tags: *a17
-  /api/management/negotiations/{processId}/offer:
+  /api/management/negotiations/{processId}/offers:
     post:
       operationId: NegotiationManagementController_offer
       parameters:
@@ -1721,7 +1751,7 @@ paths:
       security: *a18
       summary: Suspend transfer process
       tags: *a19
-  /api/transfers/callbacks/{id}/start:
+  /api/callbacks/transfers/{id}/start:
     post:
       operationId: TransferController_callbackStartTransferProcess
       parameters:
@@ -1752,7 +1782,7 @@ paths:
       security: *a18
       summary: Callback to start transfer process
       tags: *a19
-  /api/transfers/callbacks/{id}/complete:
+  /api/callbacks/transfers/{id}/complete:
     post:
       operationId: TransferController_callbackCompleteTransferProcess
       parameters:
@@ -1783,7 +1813,7 @@ paths:
       security: *a18
       summary: Callback to complete transfer process
       tags: *a19
-  /api/transfers/callbacks/{id}/terminate:
+  /api/callbacks/transfers/{id}/terminate:
     post:
       operationId: TransferController_callbackTerminateTransferProcess
       parameters:
@@ -1814,7 +1844,7 @@ paths:
       security: *a18
       summary: Callback to terminate transfer process
       tags: *a19
-  /api/transfers/callbacks/{id}/suspend:
+  /api/callbacks/transfers/{id}/suspend:
     post:
       operationId: TransferController_callbackSuspendTransferProcess
       parameters:
@@ -3268,106 +3298,38 @@ components:
         - total_physical_size
         - used_global_handles_size
         - used_heap_size
-    NegotiationStatusDto:
+    StatusNegotiationDto:
       type: object
       properties:
-        localId:
-          type: string
-          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
-        remoteId:
-          type: string
-          example: 3fa85f64-5717-4562-b3fc-2c963f66afa7
-        remoteParty:
-          type: string
-          example: Remote Party Name
-        role:
-          type: string
-          enum: &a42
-            - provider
-            - consumer
-          example: provider
-        remoteAddress:
-          type: string
-          example: 192.168.1.100
-        state:
-          type: string
-          enum: &a43
-            - dspace:REQUESTED
-            - dspace:OFFERED
-            - dspace:ACCEPTED
-            - dspace:AGREED
-            - dspace:VERIFIED
-            - dspace:FINALIZED
-            - dspace:TERMINATED
-          example: dspace:REQUESTED
-        dataSet:
-          type: string
-          example: defaultDataSet
-        modifiedDate:
-          format: date-time
-          type: string
-          example: 2023-10-11T00:00:00.000Z
-      required:
-        - localId
-        - remoteId
-        - remoteParty
-        - role
-        - remoteAddress
-        - state
-        - dataSet
-        - modifiedDate
-    TransferStatusDto:
-      type: object
-      properties:
-        localId:
-          type: string
-          example: local-12345
-        remoteId:
-          type: string
-          example: remote-98765
         role:
           type: string
           example: provider
-        remoteAddress:
-          type: string
-          example: http://example.com/
-        remoteParty:
-          type: string
-          example: party-identifier-001
         state:
           type: string
-          enum: &a44
-            - dspace:REQUESTED
-            - dspace:STARTED
-            - dspace:TERMINATED
-            - dspace:COMPLETED
-            - dspace:SUSPENDED
-          example: dspace:REQUESTED
-        process:
-          example: &a45
-            step: upload
-            progress: 50
-          allOf:
-            - $ref: "#/components/schemas/TransferProcessSchema"
-        agreementId:
-          type: string
-          example: agreement-45678
-        format:
-          type: string
-          example: application/json
-        modifiedDate:
-          format: date-time
-          type: string
-          example: 2023-10-01T12:34:56Z
+          example: OFFERED
+        count:
+          type: number
+          example: 1
       required:
-        - localId
         - role
-        - remoteAddress
-        - remoteParty
         - state
-        - process
-        - agreementId
-        - modifiedDate
+        - count
+    StatusTransferDto:
+      type: object
+      properties:
+        role:
+          type: string
+          example: provider
+        state:
+          type: string
+          example: COMPLETED
+        count:
+          type: number
+          example: 3
+      required:
+        - role
+        - state
+        - count
     StatusDto:
       type: object
       properties:
@@ -3398,9 +3360,9 @@ components:
           type: number
           example: 3600
         negotiations:
-          $ref: "#/components/schemas/NegotiationStatusDto"
+          $ref: "#/components/schemas/StatusNegotiationDto"
         transfers:
-          $ref: "#/components/schemas/TransferStatusDto"
+          $ref: "#/components/schemas/StatusTransferDto"
       required:
         - database
         - memoryUsage
@@ -3471,107 +3433,107 @@ components:
       properties:
         "@type":
           type: string
-          example: odrl:Constraint
-        odrl:leftOperand:
+          example: Constraint
+        leftOperand:
           type: string
-          example: odrl:leftOperandExample
-        odrl:operator:
+          example: leftOperandExample
+        operator:
           type: string
-          example: odrl:operatorExample
-        odrl:rightOperand:
+          example: operatorExample
+        rightOperand:
           type: object
           example:
             value: rightOperandExample
-        odrl:rightOperandReference:
+        rightOperandReference:
           type: string
           example: rightOperandReferenceExample
       required:
         - "@type"
-        - odrl:leftOperand
-        - odrl:operator
+        - leftOperand
+        - operator
     PermissionSchema:
       type: object
       properties:
         "@type":
           type: string
-          example: odrl:Permission
-        odrl:assigner:
+          example: Permission
+        assigner:
           type: string
           example: assignerExample
-        odrl:assignee:
+        assignee:
           type: string
           example: assigneeExample
-        odrl:action:
+        action:
           type: string
-          example: odrl:actionExample
-        odrl:target:
+          example: actionExample
+        target:
           type: string
           example: targetExample
-        odrl:constraint:
+        constraint:
           example: &a30 []
           type: array
           items:
             $ref: "#/components/schemas/ConstraintSchema"
-        odrl:Duty:
+        Duty:
           example: []
           type: array
           items:
             type: string
       required:
         - "@type"
-        - odrl:action
+        - action
     ProhibitionSchema:
       type: object
       properties:
         "@type":
           type: string
-          example: odrl:Prohibition
-        odrl:assigner:
+          example: Prohibition
+        assigner:
           type: string
           example: assignerExample
-        odrl:assignee:
+        assignee:
           type: string
           example: assigneeExample
-        odrl:action:
+        action:
           type: string
-          example: odrl:actionExample
-        odrl:target:
+          example: actionExample
+        target:
           type: string
           example: targetExample
-        odrl:constraint:
+        constraint:
           example: *a30
           type: array
           items:
             $ref: "#/components/schemas/ConstraintSchema"
       required:
         - "@type"
-        - odrl:action
+        - action
     DutySchema:
       type: object
       properties:
         "@type":
           type: string
-          example: odrl:Duty
-        odrl:assigner:
+          example: Duty
+        assigner:
           type: string
           example: assignerExample
-        odrl:assignee:
+        assignee:
           type: string
           example: assigneeExample
-        odrl:action:
+        action:
           type: string
-          example: odrl:actionExample
-        odrl:target:
+          example: actionExample
+        target:
           type: string
           example: targetExample
-        odrl:constraint:
+        constraint:
           example: *a30
           type: array
           items:
             $ref: "#/components/schemas/ConstraintSchema"
       required:
         - "@type"
-        - odrl:action
+        - action
     PolicySchema:
       type: object
       properties:
@@ -3580,32 +3542,32 @@ components:
           example: 3f2592da-ffc9-40cb-a336-a9daa9343ce8
         "@type":
           type: string
-          example: odrl:Offer
-        odrl:assigner:
+          example: Offer
+        assigner:
           type: string
           example: assignerExample
-        odrl:assignee:
+        assignee:
           type: string
           example: assigneeExample
-        odrl:profile:
+        profile:
           type: string
           example: profileExample
-        odrl:permission:
-          example: &a39 []
-          type: array
-          items:
-            $ref: "#/components/schemas/PermissionSchema"
-        odrl:prohibition:
+        permission:
           example: &a40 []
           type: array
           items:
-            $ref: "#/components/schemas/ProhibitionSchema"
-        odrl:obligation:
+            $ref: "#/components/schemas/PermissionSchema"
+        prohibition:
           example: &a41 []
           type: array
           items:
+            $ref: "#/components/schemas/ProhibitionSchema"
+        obligation:
+          example: &a42 []
+          type: array
+          items:
             $ref: "#/components/schemas/DutySchema"
-        odrl:target:
+        target:
           type: string
           example: targetExample
       required:
@@ -3629,117 +3591,120 @@ components:
         "@id":
           type: string
           example: 3f2592da-ffc9-40cb-a336-a9daa9343ce8
-        dcat:contactPoint:
+        contactPoint:
           type: string
           example: contactPointExample
-        dcat:keyword:
+        keyword:
           example: &a34
             - keyword1
             - keyword2
           type: array
           items:
             type: string
-        dcat:landingPage:
+        landingPage:
           type: string
           example: landingPageExample
-        dcat:theme:
+        theme:
           example: &a35
             - theme1
             - theme2
           type: array
           items:
             type: string
-        dcat:conformsTo:
-          type: string
-          example: conformsToExample
-        dct:creator:
+        conformsTo:
+          example: &a36
+            - conformsToExample
+          type: array
+          items:
+            type: string
+        creator:
           type: string
           example: creatorExample
-        dct:description:
-          example: &a36
+        description:
+          example: &a37
             - description1
             - description2
           type: array
           items:
             type: string
-        dct:identifier:
+        identifier:
           type: string
           example: identifierExample
-        dct:isReferencedBy:
+        isReferencedBy:
           type: string
           example: isReferencedByExample
-        dct:issued:
+        issued:
           type: string
           example: 2020-01-01
-        dct:language:
+        language:
           type: string
           example: en
-        dct:license:
+        license:
           type: string
           example: licenseExample
-        dct:modified:
+        modified:
           type: string
           example: 2020-01-02
-        dct:publisher:
+        publisher:
           type: string
           example: publisherExample
-        dct:relation:
+        relation:
           type: string
           example: relationExample
-        dct:title:
+        title:
           type: string
           example: titleExample
-        dct:type:
+        type:
           type: string
           example: typeExample
-        odrl:hasPolicy:
-          example: &a37 []
+        hasPolicy:
+          example: &a38 []
           type: array
           items:
             $ref: "#/components/schemas/PolicySchema"
-        dcat:hasVersion:
-          example: &a38
+        hasVersion:
+          example: &a39
             - version1
             - version2
           type: array
           items:
             type: string
-        dcat:isVersionOf:
+        isVersionOf:
           type: string
           example: isVersionOfExample
-        dcat:version:
+        version:
           type: string
           example: versionExample
-        dcat:hasCurrentVersion:
+        hasCurrentVersion:
           type: string
           example: hasCurrentVersionExample
-        dcat:previousVersion:
+        previousVersion:
           type: string
           example: previousVersionExample
         "@type":
           type: string
-          example: dcat:Dataset
-        dcat:distribution:
+          example: Dataset
+        distribution:
           type: array
           items:
             type: string
-        dcat:spatialResolutionInMeters:
+        spatialResolutionInMeters:
           type: string
           example: "100"
-        dcat:temporalResolution:
+        temporalResolution:
           example: P1Y
           allOf:
             - $ref: "#/components/schemas/DurationSchema"
-        dct:accrualPeriodicity:
+        accrualPeriodicity:
           type: string
           example: accrualPeriodicityExample
-        dct:spatial:
+        spatial:
           type: string
           example: spatialExample
-        dct:temporal:
+        temporal:
           type: string
           example: temporalExample
-        prov:wasGeneratedBy:
+        wasGeneratedBy:
           type: string
           example: wasGeneratedByExample
       required:
@@ -3845,84 +3810,86 @@ components:
           example: 3f2592da-ffc9-40cb-a336-a9daa9343ce8
         "@type":
           type: string
-          example: dcat:Resource
-        dcat:contactPoint:
+          example: Resource
+        contactPoint:
           type: string
           example: contactPointExample
-        dcat:keyword:
+        keyword:
           example: *a34
           type: array
           items:
             type: string
-        dcat:landingPage:
+        landingPage:
           type: string
           example: landingPageExample
-        dcat:theme:
+        theme:
           example: *a35
           type: array
           items:
             type: string
-        dcat:conformsTo:
-          type: string
-          example: conformsToExample
-        dct:creator:
-          type: string
-          example: creatorExample
-        dct:description:
+        conformsTo:
           example: *a36
           type: array
           items:
             type: string
-        dct:identifier:
+        creator:
           type: string
-          example: identifierExample
-        dct:isReferencedBy:
-          type: string
-          example: isReferencedByExample
-        dct:issued:
-          type: string
-          example: 2020-01-01
-        dct:language:
-          type: string
-          example: en
-        dct:license:
-          type: string
-          example: licenseExample
-        dct:modified:
-          type: string
-          example: 2020-01-02
-        dct:publisher:
-          type: string
-          example: publisherExample
-        dct:relation:
-          type: string
-          example: relationExample
-        dct:title:
-          type: string
-          example: titleExample
-        dct:type:
-          type: string
-          example: typeExample
-        odrl:hasPolicy:
+          example: creatorExample
+        description:
           example: *a37
           type: array
           items:
-            $ref: "#/components/schemas/PolicySchema"
-        dcat:hasVersion:
+            type: string
+        identifier:
+          type: string
+          example: identifierExample
+        isReferencedBy:
+          type: string
+          example: isReferencedByExample
+        issued:
+          type: string
+          example: 2020-01-01
+        language:
+          type: string
+          example: en
+        license:
+          type: string
+          example: licenseExample
+        modified:
+          type: string
+          example: 2020-01-02
+        publisher:
+          type: string
+          example: publisherExample
+        relation:
+          type: string
+          example: relationExample
+        title:
+          type: string
+          example: titleExample
+        type:
+          type: string
+          example: typeExample
+        hasPolicy:
           example: *a38
           type: array
           items:
+            $ref: "#/components/schemas/PolicySchema"
+        hasVersion:
+          example: *a39
+          type: array
+          items:
             type: string
-        dcat:isVersionOf:
+        isVersionOf:
           type: string
           example: isVersionOfExample
-        dcat:version:
+        version:
           type: string
           example: versionExample
-        dcat:hasCurrentVersion:
+        hasCurrentVersion:
           type: string
           example: hasCurrentVersionExample
-        dcat:previousVersion:
+        previousVersion:
           type: string
           example: previousVersionExample
       required:
@@ -3936,31 +3903,31 @@ components:
           example: 3f2592da-ffc9-40cb-a336-a9daa9343ce8
         "@type":
           type: string
-          example: dcat:CatalogRecord
-        dct:conformsTo:
+          example: CatalogRecord
+        conformsTo:
           example:
             - conformsToExample
           type: array
           items:
             type: string
-        dct:description:
+        description:
           example:
             - Record description
           type: array
           items:
             type: string
-        dct:issued:
+        issued:
           format: date-time
           type: string
           example: 2020-03-01T00:00:00Z
-        dct:modified:
+        modified:
           format: date-time
           type: string
           example: 2020-03-02T00:00:00Z
-        dct:title:
+        title:
           type: string
           example: Catalog title example
-        foaf:primaryTopic:
+        primaryTopic:
           example: {}
           allOf:
             - $ref: "#/components/schemas/ResourceSchema"
@@ -3973,95 +3940,97 @@ components:
         "@id":
           type: string
           example: 3f2592da-ffc9-40cb-a336-a9daa9343ce8
-        dcat:contactPoint:
+        contactPoint:
           type: string
           example: contactPointExample
-        dcat:keyword:
+        keyword:
           example: *a34
           type: array
           items:
             type: string
-        dcat:landingPage:
+        landingPage:
           type: string
           example: landingPageExample
-        dcat:theme:
+        theme:
           example: *a35
           type: array
           items:
             type: string
-        dcat:conformsTo:
-          type: string
-          example: conformsToExample
-        dct:creator:
-          type: string
-          example: creatorExample
-        dct:description:
+        conformsTo:
           example: *a36
           type: array
           items:
             type: string
-        dct:identifier:
+        creator:
           type: string
-          example: identifierExample
-        dct:isReferencedBy:
-          type: string
-          example: isReferencedByExample
-        dct:issued:
-          type: string
-          example: 2020-01-01
-        dct:language:
-          type: string
-          example: en
-        dct:license:
-          type: string
-          example: licenseExample
-        dct:modified:
-          type: string
-          example: 2020-01-02
-        dct:publisher:
-          type: string
-          example: publisherExample
-        dct:relation:
-          type: string
-          example: relationExample
-        dct:title:
-          type: string
-          example: titleExample
-        dct:type:
-          type: string
-          example: typeExample
-        odrl:hasPolicy:
+          example: creatorExample
+        description:
           example: *a37
           type: array
           items:
-            $ref: "#/components/schemas/PolicySchema"
-        dcat:hasVersion:
+            type: string
+        identifier:
+          type: string
+          example: identifierExample
+        isReferencedBy:
+          type: string
+          example: isReferencedByExample
+        issued:
+          type: string
+          example: 2020-01-01
+        language:
+          type: string
+          example: en
+        license:
+          type: string
+          example: licenseExample
+        modified:
+          type: string
+          example: 2020-01-02
+        publisher:
+          type: string
+          example: publisherExample
+        relation:
+          type: string
+          example: relationExample
+        title:
+          type: string
+          example: titleExample
+        type:
+          type: string
+          example: typeExample
+        hasPolicy:
           example: *a38
           type: array
           items:
+            $ref: "#/components/schemas/PolicySchema"
+        hasVersion:
+          example: *a39
+          type: array
+          items:
             type: string
-        dcat:isVersionOf:
+        isVersionOf:
           type: string
           example: isVersionOfExample
-        dcat:version:
+        version:
           type: string
           example: versionExample
-        dcat:hasCurrentVersion:
+        hasCurrentVersion:
           type: string
           example: hasCurrentVersionExample
-        dcat:previousVersion:
+        previousVersion:
           type: string
           example: previousVersionExample
         "@type":
           type: string
-          example: dcat:DataService
-        dcat:endpointDescription:
+          example: DataService
+        endpointDescription:
           type: string
           example: endpointDescriptionExample
-        dcat:endpointURL:
+        endpointURL:
           type: string
           example: https://example.com/api
-        dcat:servesDataset:
+        servesDataset:
           example: []
           type: array
           items:
@@ -4075,135 +4044,137 @@ components:
         "@id":
           type: string
           example: 3f2592da-ffc9-40cb-a336-a9daa9343ce8
-        dcat:contactPoint:
+        contactPoint:
           type: string
           example: contactPointExample
-        dcat:keyword:
+        keyword:
           example: *a34
           type: array
           items:
             type: string
-        dcat:landingPage:
+        landingPage:
           type: string
           example: landingPageExample
-        dcat:theme:
+        theme:
           example: *a35
           type: array
           items:
             type: string
-        dcat:conformsTo:
-          type: string
-          example: conformsToExample
-        dct:creator:
-          type: string
-          example: creatorExample
-        dct:description:
+        conformsTo:
           example: *a36
           type: array
           items:
             type: string
-        dct:identifier:
+        creator:
           type: string
-          example: identifierExample
-        dct:isReferencedBy:
-          type: string
-          example: isReferencedByExample
-        dct:issued:
-          type: string
-          example: 2020-01-01
-        dct:language:
-          type: string
-          example: en
-        dct:license:
-          type: string
-          example: licenseExample
-        dct:modified:
-          type: string
-          example: 2020-01-02
-        dct:publisher:
-          type: string
-          example: publisherExample
-        dct:relation:
-          type: string
-          example: relationExample
-        dct:title:
-          type: string
-          example: titleExample
-        dct:type:
-          type: string
-          example: typeExample
-        odrl:hasPolicy:
+          example: creatorExample
+        description:
           example: *a37
           type: array
           items:
-            $ref: "#/components/schemas/PolicySchema"
-        dcat:hasVersion:
+            type: string
+        identifier:
+          type: string
+          example: identifierExample
+        isReferencedBy:
+          type: string
+          example: isReferencedByExample
+        issued:
+          type: string
+          example: 2020-01-01
+        language:
+          type: string
+          example: en
+        license:
+          type: string
+          example: licenseExample
+        modified:
+          type: string
+          example: 2020-01-02
+        publisher:
+          type: string
+          example: publisherExample
+        relation:
+          type: string
+          example: relationExample
+        title:
+          type: string
+          example: titleExample
+        type:
+          type: string
+          example: typeExample
+        hasPolicy:
           example: *a38
           type: array
           items:
-            type: string
-        dcat:isVersionOf:
-          type: string
-          example: isVersionOfExample
-        dcat:version:
-          type: string
-          example: versionExample
-        dcat:hasCurrentVersion:
-          type: string
-          example: hasCurrentVersionExample
-        dcat:previousVersion:
-          type: string
-          example: previousVersionExample
-        dcat:distribution:
+            $ref: "#/components/schemas/PolicySchema"
+        hasVersion:
+          example: *a39
           type: array
           items:
             type: string
-        dcat:spatialResolutionInMeters:
+        isVersionOf:
+          type: string
+          example: isVersionOfExample
+        version:
+          type: string
+          example: versionExample
+        hasCurrentVersion:
+          type: string
+          example: hasCurrentVersionExample
+        previousVersion:
+          type: string
+          example: previousVersionExample
+        distribution:
+          type: array
+          items:
+            type: string
+        spatialResolutionInMeters:
           type: string
           example: "100"
-        dcat:temporalResolution:
+        temporalResolution:
           example: P1Y
           allOf:
             - $ref: "#/components/schemas/DurationSchema"
-        dct:accrualPeriodicity:
+        accrualPeriodicity:
           type: string
           example: accrualPeriodicityExample
-        dct:spatial:
+        spatial:
           type: string
           example: spatialExample
-        dct:temporal:
+        temporal:
           type: string
           example: temporalExample
-        prov:wasGeneratedBy:
+        wasGeneratedBy:
           type: string
           example: wasGeneratedByExample
         "@type":
           type: string
-          example: dcat:Catalog
-        dcat:dataset:
+          example: Catalog
+        dataset:
           example: []
           type: array
           items:
             $ref: "#/components/schemas/DatasetSchema"
-        dcat:record:
+        record:
           example: {}
           type: array
           items:
             $ref: "#/components/schemas/CatalogRecordSchema"
-        dcat:service:
+        service:
           example: []
           type: array
           items:
             $ref: "#/components/schemas/DataServiceSchema"
-        dcat:themeTaxonomy:
+        themeTaxonomy:
           type: string
           example: themeTaxonomyExample
-        dct:hasPart:
+        hasPart:
           example: []
           type: array
           items:
             $ref: "#/components/schemas/ResourceSchema"
-        foaf:homepage:
+        homepage:
           type: string
           example: https://example.com/homepage
       required:
@@ -4214,8 +4185,8 @@ components:
       properties:
         "@type":
           type: string
-          example: dspace:CatalogRequestMessage
-        dspace:filter:
+          example: CatalogRequestMessage
+        filter:
           example: []
           type: array
           items:
@@ -4230,32 +4201,32 @@ components:
           example: 3f2592da-ffc9-40cb-a336-a9daa9343ce8
         "@type":
           type: string
-          example: odrl:Offer
-        odrl:assigner:
+          example: Offer
+        assigner:
           type: string
           example: did:example:assigner
-        odrl:assignee:
+        assignee:
           type: string
           example: assigneeExample
-        odrl:profile:
+        profile:
           type: string
           example: profileExample
-        odrl:permission:
-          example: *a39
-          type: array
-          items:
-            $ref: "#/components/schemas/PermissionSchema"
-        odrl:prohibition:
+        permission:
           example: *a40
           type: array
           items:
-            $ref: "#/components/schemas/ProhibitionSchema"
-        odrl:obligation:
+            $ref: "#/components/schemas/PermissionSchema"
+        prohibition:
           example: *a41
           type: array
           items:
+            $ref: "#/components/schemas/ProhibitionSchema"
+        obligation:
+          example: *a42
+          type: array
+          items:
             $ref: "#/components/schemas/DutySchema"
-        odrl:target:
+        target:
           type: string
           example: targetExample
       required:
@@ -4266,27 +4237,27 @@ components:
       properties:
         "@type":
           type: string
-          example: dspace:ContractRequestMessage
-        dspace:consumerPid:
+          example: ContractRequestMessage
+        consumerPid:
           type: string
           example: urn:example:consumerPid
-        dspace:providerPid:
+        providerPid:
           type: string
           example: urn:example:providerPid
-        dspace:callbackAddress:
+        callbackAddress:
           type: string
           example: http://example.com/callback
-        dspace:offer:
+        offer:
           example:
-            "@type": odrl:Offer
-            odrl:assigner: urn:example:assigner
+            "@type": Offer
+            assigner: urn:example:assigner
           allOf:
             - $ref: "#/components/schemas/OfferSchema"
       required:
         - "@type"
-        - dspace:consumerPid
-        - dspace:callbackAddress
-        - dspace:offer
+        - consumerPid
+        - callbackAddress
+        - offer
     ContractNegotiationSchema:
       type: object
       properties:
@@ -4295,77 +4266,77 @@ components:
           example: 3f2592da-ffc9-40cb-a336-a9daa9343ce8
         "@type":
           type: string
-          example: dspace:ContractNegotiation
-        dspace:consumerPid:
+          example: ContractNegotiation
+        consumerPid:
           type: string
           example: urn:example:consumerPid
-        dspace:providerPid:
+        providerPid:
           type: string
           example: urn:example:providerPid
-        dspace:state:
+        state:
           type: string
           example: REQUESTED
       required:
         - "@id"
         - "@type"
-        - dspace:consumerPid
-        - dspace:providerPid
-        - dspace:state
+        - consumerPid
+        - providerPid
+        - state
     ContractNegotiationEventMessageSchema:
       type: object
       properties:
         "@type":
           type: string
-          example: dspace:ContractNegotiationEventMessage
-        dspace:consumerPid:
+          example: ContractNegotiationEventMessage
+        consumerPid:
           type: string
           example: urn:example:consumerPid
-        dspace:providerPid:
+        providerPid:
           type: string
           example: urn:example:providerPid
-        dspace:eventType:
+        eventType:
           type: string
           example: NEGOTIATION_STARTED
       required:
         - "@type"
-        - dspace:consumerPid
-        - dspace:providerPid
-        - dspace:eventType
+        - consumerPid
+        - providerPid
+        - eventType
     HashedMessageSchema:
       type: object
       properties:
-        dspace:digest:
+        digest:
           type: string
           example: sha256:abcdef1234567890
-        dspace:algorithm:
+        algorithm:
           type: string
           example: SHA-256
       required:
-        - dspace:digest
-        - dspace:algorithm
+        - digest
+        - algorithm
     ContractAgreementVerificationMessageSchema:
       type: object
       properties:
         "@type":
           type: string
-          example: dspace:ContractAgreementVerificationMessage
-        dspace:consumerPid:
+          example: ContractAgreementVerificationMessage
+        consumerPid:
           type: string
           example: urn:example:consumerPid
-        dspace:providerPid:
+        providerPid:
           type: string
           example: urn:example:providerPid
-        dspace:hashedMessage:
+        hashedMessage:
           example:
-            dspace:digest: sha256:abcdef1234567890
-            dspace:algorithm: SHA-256
+            digest: sha256:abcdef1234567890
+            algorithm: SHA-256
           allOf:
             - $ref: "#/components/schemas/HashedMessageSchema"
       required:
         - "@type"
-        - dspace:consumerPid
-        - dspace:providerPid
-        - dspace:hashedMessage
+        - consumerPid
+        - providerPid
+        - hashedMessage
     MultilanguageSchema:
       type: object
       properties:
@@ -4383,17 +4354,17 @@ components:
       properties:
         "@type":
           type: string
-          example: dspace:ContractNegotiationTerminationMessage
-        dspace:consumerPid:
+          example: ContractNegotiationTerminationMessage
+        consumerPid:
           type: string
           example: urn:example:consumerPid
-        dspace:providerPid:
+        providerPid:
           type: string
           example: urn:example:providerPid
-        dspace:code:
+        code:
           type: string
           example: USER_CANCELLED
-        dspace:reason:
+        reason:
           example:
             - language: en
               text: User cancelled negotiation.
@@ -4404,35 +4375,35 @@ components:
             $ref: "#/components/schemas/MultilanguageSchema"
       required:
         - "@type"
-        - dspace:consumerPid
-        - dspace:providerPid
-        - dspace:reason
+        - consumerPid
+        - providerPid
+        - reason
     ContractOfferMessageSchema:
       type: object
       properties:
         "@type":
           type: string
-          example: dspace:ContractOfferMessage
-        dspace:consumerPid:
+          example: ContractOfferMessage
+        consumerPid:
           type: string
           example: urn:example:consumerPid
-        dspace:providerPid:
+        providerPid:
           type: string
           example: urn:example:providerPid
-        dspace:offer:
+        offer:
           example:
-            "@type": odrl:Offer
-            odrl:assigner: urn:example:assigner
+            "@type": Offer
+            assigner: urn:example:assigner
           allOf:
             - $ref: "#/components/schemas/OfferSchema"
-        dspace:callbackAddress:
+        callbackAddress:
           type: string
           example: http://example.com/offer-callback
       required:
         - "@type"
-        - dspace:providerPid
-        - dspace:offer
-        - dspace:callbackAddress
+        - providerPid
+        - offer
+        - callbackAddress
     AgreementSchema:
       type: object
       properties:
@@ -4441,67 +4412,115 @@ components:
           example: 3f2592da-ffc9-40cb-a336-a9daa9343ce8
         "@type":
           type: string
-          example: odrl:Agreement
-        odrl:assigner:
+          example: Agreement
+        assigner:
           type: string
           example: did:example:assigner
-        odrl:assignee:
+        assignee:
           type: string
           example: did:example:assignee
-        odrl:profile:
+        profile:
           type: string
           example: profileExample
-        odrl:permission:
-          example: *a39
-          type: array
-          items:
-            $ref: "#/components/schemas/PermissionSchema"
-        odrl:prohibition:
+        permission:
           example: *a40
           type: array
           items:
-            $ref: "#/components/schemas/ProhibitionSchema"
-        odrl:obligation:
+            $ref: "#/components/schemas/PermissionSchema"
+        prohibition:
           example: *a41
           type: array
           items:
+            $ref: "#/components/schemas/ProhibitionSchema"
+        obligation:
+          example: *a42
+          type: array
+          items:
             $ref: "#/components/schemas/DutySchema"
-        odrl:target:
+        target:
           type: string
           example: urn:example:target
-        dspace:timestamp:
+        timestamp:
           type: string
           example: 2023-10-01T12:34:56Z
       required:
         - "@id"
         - "@type"
-        - dspace:timestamp
+        - timestamp
     ContractAgreementMessageSchema:
       type: object
       properties:
         "@type":
           type: string
-          example: dspace:ContractAgreementMessage
-        dspace:consumerPid:
+          example: ContractAgreementMessage
+        consumerPid:
           type: string
           example: urn:example:consumerPid
-        dspace:providerPid:
+        providerPid:
           type: string
           example: urn:example:providerPid
-        dspace:agreement:
+        agreement:
           example:
-            "@type": odrl:Agreement
-            odrl:assigner: urn:example:assigner
-            odrl:assignee: urn:example:assignee
-            dspace:timestamp: 2023-10-01T12:34:56Z
-            odrl:target: urn:example:target
+            "@type": Agreement
+            assigner: urn:example:assigner
+            assignee: urn:example:assignee
+            timestamp: 2023-10-01T12:34:56Z
+            target: urn:example:target
           allOf:
             - $ref: "#/components/schemas/AgreementSchema"
       required:
         - "@type"
-        - dspace:consumerPid
-        - dspace:providerPid
-        - dspace:agreement
+        - consumerPid
+        - providerPid
+        - agreement
+    NegotiationStatusDto:
+      type: object
+      properties:
+        localId:
+          type: string
+          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+        remoteId:
+          type: string
+          example: 3fa85f64-5717-4562-b3fc-2c963f66afa7
+        remoteParty:
+          type: string
+          example: Remote Party Name
+        role:
+          type: string
+          enum: &a43
+            - provider
+            - consumer
+          example: provider
+        remoteAddress:
+          type: string
+          example: 192.168.1.100
+        state:
+          type: string
+          enum: &a44
+            - REQUESTED
+            - OFFERED
+            - ACCEPTED
+            - AGREED
+            - VERIFIED
+            - FINALIZED
+            - TERMINATED
+          example: REQUESTED
+        dataSet:
+          type: string
+          example: defaultDataSet
+        modifiedDate:
+          format: date-time
+          type: string
+          example: 2023-10-11T00:00:00.000Z
+      required:
+        - localId
+        - remoteId
+        - remoteParty
+        - role
+        - remoteAddress
+        - state
+        - dataSet
+        - modifiedDate
     NegotiationProcessEventDto:
       type: object
       properties:
@@ -4512,14 +4531,14 @@ components:
         state:
           type: string
           enum:
-            - dspace:REQUESTED
-            - dspace:OFFERED
-            - dspace:ACCEPTED
-            - dspace:AGREED
-            - dspace:VERIFIED
-            - dspace:FINALIZED
-            - dspace:TERMINATED
-          example: dspace:REQUESTED
+            - REQUESTED
+            - OFFERED
+            - ACCEPTED
+            - AGREED
+            - VERIFIED
+            - FINALIZED
+            - TERMINATED
+          example: REQUESTED
         localMessage:
           type: string
           example: A local message example
@@ -4566,15 +4585,15 @@ components:
           example: Remote Party Name
         role:
           type: string
-          enum: *a42
+          enum: *a43
           example: provider
         remoteAddress:
           type: string
           example: 192.168.1.100
         state:
           type: string
-          enum: *a43
-          example: dspace:REQUESTED
+          enum: *a44
+          example: REQUESTED
         dataSet:
           type: string
           example: defaultDataSet
@@ -4609,160 +4628,160 @@ components:
       properties:
         "@type":
           type: string
-          example: dspace:EndpointProperty
-        dspace:name:
+          example: EndpointProperty
+        name:
           type: string
           example: endpointName
-        dspace:value:
+        value:
           type: string
           example: endpointValue
       required:
         - "@type"
-        - dspace:name
-        - dspace:value
+        - name
+        - value
     DataAddressSchema:
       type: object
       properties:
         "@type":
           type: string
-          example: dspace:DataAddress
-        dspace:endpointType:
+          example: DataAddress
+        endpointType:
           type: string
           example: http
-        dspace:endpoint:
+        endpoint:
           type: string
           example: https://api.example.com
-        dspace:endpointProperties:
+        endpointProperties:
           example:
-            - "@type": dspace:EndpointProperty
-              dspace:name: endpointName
-              dspace:value: endpointValue
+            - "@type": EndpointProperty
+              name: endpointName
+              value: endpointValue
           type: array
           items:
             $ref: "#/components/schemas/EndpointPropertySchema"
       required:
         - "@type"
-        - dspace:endpointType
-        - dspace:endpoint
-        - dspace:endpointProperties
+        - endpointType
+        - endpoint
+        - endpointProperties
     TransferRequestMessageSchema:
       type: object
       properties:
         "@type":
           type: string
-          example: dspace:TransferRequestMessage
-        dspace:consumerPid:
+          example: TransferRequestMessage
+        consumerPid:
           type: string
           example: consumer-pid-123
-        dspace:agreementId:
+        agreementId:
           type: string
           example: agreement-id-456
-        dct:format:
+        format:
           type: string
           example: application/json
-        dspace:dataAddress:
+        dataAddress:
           example:
-            "@type": dspace:DataAddress
-            dspace:endpointType: http
-            dspace:endpoint: https://api.example.com
-            dspace:endpointProperties:
-              - "@type": dspace:EndpointProperty
-                dspace:name: name
-                dspace:value: value
+            "@type": DataAddress
+            endpointType: http
+            endpoint: https://api.example.com
+            endpointProperties:
+              - "@type": EndpointProperty
+                name: name
+                value: value
           allOf:
             - $ref: "#/components/schemas/DataAddressSchema"
-        dspace:callbackAddress:
+        callbackAddress:
           type: string
           example: https://callback.example.com
       required:
         - "@type"
-        - dspace:consumerPid
-        - dspace:agreementId
-        - dct:format
-        - dspace:callbackAddress
+        - consumerPid
+        - agreementId
+        - format
+        - callbackAddress
     TransferProcessSchema:
       type: object
       properties:
         "@type":
           type: string
-          example: dspace:TransferProcess
-        dspace:providerPid:
+          example: TransferProcess
+        providerPid:
           type: string
           example: provider-pid-789
-        dspace:consumerPid:
+        consumerPid:
           type: string
           example: consumer-pid-123
-        dspace:agreementId:
+        agreementId:
           type: string
           example: agreement-id-456
-        dspace:state:
+        state:
           type: string
           example: COMPLETED
       required:
         - "@type"
-        - dspace:providerPid
-        - dspace:consumerPid
-        - dspace:agreementId
-        - dspace:state
+        - providerPid
+        - consumerPid
+        - agreementId
+        - state
     TransferStartMessageSchema:
       type: object
       properties:
         "@type":
           type: string
-          example: dspace:TransferStartMessage
-        dspace:providerPid:
+          example: TransferStartMessage
+        providerPid:
           type: string
           example: provider-pid-789
-        dspace:consumerPid:
+        consumerPid:
           type: string
           example: consumer-pid-123
-        dspace:dataAddress:
+        dataAddress:
           example:
-            "@type": dspace:DataAddress
-            dspace:endpointType: http
-            dspace:endpoint: https://api.example.com
-            dspace:endpointProperties:
-              - "@type": dspace:EndpointProperty
-                dspace:name: name
-                dspace:value: value
+            "@type": DataAddress
+            endpointType: http
+            endpoint: https://api.example.com
+            endpointProperties:
+              - "@type": EndpointProperty
+                name: name
+                value: value
           allOf:
             - $ref: "#/components/schemas/DataAddressSchema"
       required:
         - "@type"
-        - dspace:providerPid
-        - dspace:consumerPid
+        - providerPid
+        - consumerPid
     TransferCompletionMessageSchema:
       type: object
       properties:
         "@type":
           type: string
-          example: dspace:TransferCompletionMessage
-        dspace:providerPid:
+          example: TransferCompletionMessage
+        providerPid:
           type: string
           example: provider-pid-789
-        dspace:consumerPid:
+        consumerPid:
           type: string
           example: consumer-pid-123
       required:
         - "@type"
-        - dspace:providerPid
-        - dspace:consumerPid
+        - providerPid
+        - consumerPid
     TransferTerminationMessageSchema:
       type: object
       properties:
         "@type":
           type: string
-          example: dspace:TransferTerminationMessage
-        dspace:providerPid:
+          example: TransferTerminationMessage
+        providerPid:
           type: string
           example: provider-pid-789
-        dspace:consumerPid:
+        consumerPid:
           type: string
           example: consumer-pid-123
-        dspace:code:
+        code:
           type: string
           example: TERMINATED
-        dspace:reason:
+        reason:
           example:
             - Contract breach
           type: array
@@ -4770,23 +4789,23 @@ components:
             type: string
       required:
         - "@type"
-        - dspace:providerPid
-        - dspace:consumerPid
-        - dspace:code
-        - dspace:reason
+        - providerPid
+        - consumerPid
+        - code
+        - reason
     TransferSuspensionMessageSchema:
       type: object
       properties:
         "@type":
           type: string
-          example: dspace:TransferSuspensionMessage
-        dspace:providerPid:
+          example: TransferSuspensionMessage
+        providerPid:
           type: string
           example: provider-pid-789
-        dspace:consumerPid:
+        consumerPid:
           type: string
           example: consumer-pid-123
-        dspace:reason:
+        reason:
           example:
             - Technical issue
           type: array
@@ -4794,9 +4813,61 @@ components:
             type: string
       required:
         - "@type"
-        - dspace:providerPid
-        - dspace:consumerPid
-        - dspace:reason
+        - providerPid
+        - consumerPid
+        - reason
+    TransferStatusDto:
+      type: object
+      properties:
+        localId:
+          type: string
+          example: local-12345
+        remoteId:
+          type: string
+          example: remote-98765
+        role:
+          type: string
+          example: provider
+        remoteAddress:
+          type: string
+          example: http://example.com/
+        remoteParty:
+          type: string
+          example: party-identifier-001
+        state:
+          type: string
+          enum: &a45
+            - REQUESTED
+            - STARTED
+            - TERMINATED
+            - COMPLETED
+            - SUSPENDED
+          example: REQUESTED
+        process:
+          example: &a46
+            step: upload
+            progress: 50
+          allOf:
+            - $ref: "#/components/schemas/TransferProcessSchema"
+        agreementId:
+          type: string
+          example: agreement-45678
+        format:
+          type: string
+          example: application/json
+        modifiedDate:
+          format: date-time
+          type: string
+          example: 2023-10-01T12:34:56Z
+      required:
+        - localId
+        - role
+        - remoteAddress
+        - remoteParty
+        - state
+        - process
+        - agreementId
+        - modifiedDate
     DataPlaneProperty:
       type: object
       properties:
@@ -4866,12 +4937,12 @@ components:
         state:
           type: string
           enum:
-            - dspace:REQUESTED
-            - dspace:STARTED
-            - dspace:TERMINATED
-            - dspace:COMPLETED
-            - dspace:SUSPENDED
-          example: dspace:COMPLETED
+            - REQUESTED
+            - STARTED
+            - TERMINATED
+            - COMPLETED
+            - SUSPENDED
+          example: COMPLETED
         localMessage:
           type: string
           example: The transfer completed successfully.
@@ -4914,10 +4985,10 @@ components:
           example: party-identifier-001
         state:
           type: string
-          enum: *a44
-          example: dspace:REQUESTED
+          enum: *a45
+          example: REQUESTED
         process:
-          example: *a45
+          example: *a46
           allOf:
             - $ref: "#/components/schemas/TransferProcessSchema"
         agreementId:
@@ -4946,7 +5017,7 @@ components:
         events:
           example:
             - time: 2023-10-01T12:00:00Z
-              state: dspace:STARTED
+              state: STARTED
               localMessage: Upload started.
               code: STARTED
               reason:
@@ -5101,10 +5172,10 @@ components:
             verifier: did:example:verifier
         credentialStatus:
           oneOf:
-            - &a46
+            - &a47
               $ref: "#/components/schemas/CredentialStatus"
             - type: array
-              items: *a46
+              items: *a47
         proof:
           example:
             - type: JsonWebSignature2020
@@ -5331,10 +5402,10 @@ components:
         serviceEndpoint:
           example: https://example.com
           oneOf:
-            - &a47
+            - &a48
               type: string
             - type: array
-              items: *a47
+              items: *a48
       required:
         - id
         - type
@@ -5345,10 +5416,10 @@ components:
         "@context":
           example: https://www.w3.org/ns/did/v1
           oneOf:
-            - &a48
+            - &a49
               type: string
             - type: array
-              items: *a48
+              items: *a49
         id:
           type: string
           example: bdfd4c8e-3a44-4b9f-bc3e-1a8e26e3e99d
@@ -5361,10 +5432,10 @@ components:
         controller:
           example: bdfd4c8e-3a44-4b9f-bc3e-1a8e26e3e99d
           oneOf:
-            - &a49
+            - &a50
               type: string
             - type: array
-              items: *a49
+              items: *a50
         verificationMethod:
           example:
             - id: bdfd4c8e-3a44-4b9f-bc3e-1a8e26e3e99d

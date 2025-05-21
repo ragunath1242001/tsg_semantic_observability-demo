@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { TransferDetailDto, TransferStatus } from "@tsg-dsp/common-dsp";
-import { stripDspace } from "@tsg-dsp/common-ui/utils/common";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import http from "@tsg-dsp/common-ui/utils/http";
 import { useToast } from "primevue/usetoast";
@@ -26,15 +25,15 @@ const calculateIcon = (index: number) => {
 
 const getSeverity = (state: string) => {
   switch (state) {
-    case "dspace:STARTED":
+    case "STARTED":
       return "primary";
-    case "dspace:COMPLETED":
+    case "COMPLETED":
       return "success";
-    case "dspace:REQUESTED":
+    case "REQUESTED":
       return "secondary";
-    case "dspace:TERMINATED":
+    case "TERMINATED":
       return "danger";
-    case "dspace:SUSPENDED":
+    case "SUSPENDED":
       return "warn";
   }
 };
@@ -88,7 +87,7 @@ const getTransfer = async (uuid: string) => {
               <div>
                 <Tag
                   class="ml-auto mr-6"
-                  :value="stripDspace(transfer.state)"
+                  :value="transfer.state"
                   :severity="getSeverity(transfer.state)" />
                 <small class="p-text-secondary">
                   {{ new Date(transfer.modifiedDate).toLocaleString() }}
@@ -110,7 +109,7 @@ const getTransfer = async (uuid: string) => {
                   </template>
                   <template #content="slotProps">
                     <Tag
-                      :value="stripDspace(slotProps.item.state)"
+                      :value="slotProps.item.state"
                       :severity="getSeverity(slotProps.item.state)" />
                   </template>
                 </Timeline>

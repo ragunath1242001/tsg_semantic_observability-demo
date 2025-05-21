@@ -10,6 +10,7 @@ import { AuthClientService } from "@tsg-dsp/common-api";
 import {
   AgreementDto,
   ContractNegotiationDto,
+  ContractNegotiationState,
   DataPlaneAddressDto,
   DataPlaneRequestResponseDto,
   DatasetDto,
@@ -100,19 +101,19 @@ export class TransferService {
     let agreement: AgreementDto;
     try {
       const response = await this.axiosManagement.get<AgreementDto>(
-        `/agreements/${transfer.request["dspace:agreementId"]}`
+        `/agreements/${transfer.request.agreementId}`
       );
       agreement = response.data;
     } catch (err) {
       throw new DataPlaneClientError(
-        `Fetching agreement ${transfer.request["dspace:agreementId"]} failed`,
+        `Fetching agreement ${transfer.request.agreementId} failed`,
         err
       ).andLog(this.logger);
     }
 
     const dataset = await this.getDataset(
       transfer.remoteParty,
-      agreement["odrl:target"]
+      agreement.target
     );
 
     return {
@@ -237,13 +238,13 @@ export class TransferService {
     const transfer = await this.getTransferById(processId);
     transfer.state = TransferState.STARTED;
     if (transfer.role === "consumer") {
-      if (transferStartMessage["dspace:dataAddress"] === undefined) {
+      if (transferStartMessage.dataAddress === undefined) {
         throw new HttpException(
           `Expected dataAddress in TransferStartMessage`,
           HttpStatus.BAD_REQUEST
         );
       }
-      transfer.dataAddress = transferStartMessage["dspace:dataAddress"];
+      transfer.dataAddress = transferStartMessage.dataAddress;
     }
     await this.transferRepository.save(transfer);
   }
@@ -284,7 +285,7 @@ export class TransferService {
     negotiationId: string
   ): Promise<NegotiationDetailDto | undefined> {
     const negotiation = await this.getNegotiation(negotiationId);
-    if (negotiation.state === "dspace:FINALIZED") {
+    if (negotiation.state === ContractNegotiationState.FINALIZED) {
       return negotiation;
     }
     return undefined;
@@ -327,7 +328,7 @@ export class TransferService {
     audience: string
   ): Promise<NegotiationDetailDto> {
     const dataset = await this.getDataset(audience, datasetId, address);
-    const offer = dataset["odrl:hasPolicy"]?.[0] as OfferDto;
+    const offer = dataset.hasPolicy?.[0] as OfferDto;
     if (offer) {
       offer["@context"] = defaultContext();
     }
@@ -345,9 +346,7 @@ export class TransferService {
     this.logger.debug(
       `Contract negotiation requested for ${datasetId} at address ${address} with audience ${audience}.`
     );
-    return await this.getNegotiationWithBackoff(
-      response.data?.["dspace:providerPid"]
-    );
+    return await this.getNegotiationWithBackoff(response.data?.providerPid);
   }
 
   async handleTransferSuspend(
@@ -505,14 +504,13 @@ export class TransferService {
     }
 
     try {
-      const newUrl =
-        `${transfer.dataAddress["dspace:endpoint"]}/${path}`.replace(
-          /([^:]\/)\/+/g,
-          "$1"
-        );
+      const newUrl = `${transfer.dataAddress.endpoint}/${path}`.replace(
+        /([^:]\/)\/+/g,
+        "$1"
+      );
       const headers = request.headers;
-      transfer.dataAddress["dspace:endpointProperties"].forEach((p) => {
-        headers[p["dspace:name"].toLowerCase()] = p["dspace:value"];
+      transfer.dataAddress.endpointProperties.forEach((p) => {
+        headers[p.name.toLowerCase()] = p.value;
       });
 
       let bodyLength = -1;

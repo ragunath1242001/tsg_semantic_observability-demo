@@ -28,11 +28,42 @@ config:
     database: sso-bridge
     host: "<%= it.participant.id %>-postgresql"
   kubernetesNamespace: <%= it.general.namespace %>
+  initRoles:
+    - name: "ssobridge_admin"
+      description: "SSO bridge administrator role with full access"
+    - name: "ssobridge_user"
+      description: "SSO bridge regular user role with limited access"
+    - name: wallet_view_did
+      description: View DID
+    - name: wallet_manage_keys
+      description: Manage keys
+    - name: wallet_use_keys
+      description: Use keys
+    - name: wallet_view_own_credentials
+      description: View own credentials
+    - name: wallet_view_all_credentials
+      description: View all credentials
+    - name: wallet_manage_own_credentials
+      description: Manage own credentials
+    - name: wallet_manage_all_credentials
+      description: Manage all credentials
+    - name: wallet_issue_credentials
+      description: Issue credentials
+    - name: wallet_view_presentations
+      description: View presentations
+    - name: wallet_manage_clients
+      description: Manage clients
+    - name: controlplane_admin
+      description: Control Plane Admin role
+    - name: controlplane_dataplane
+      description: Control Plane Data Plane role
   initUsers:
     - username: <%= it.general.username %>
       password: <%= it.general.password %>
       email: <%= it.general.username %>@example.com
       roles:
+        - ssobridge_admin
+        - ssobridge_user
         - wallet_view_did
         - wallet_manage_keys
         - wallet_use_keys

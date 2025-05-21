@@ -78,7 +78,7 @@ describe("NegotiationListener", () => {
     distribution: [
       new Distribution({
         id: "urn:uuid:06d7da99-68eb-4f9e-8cb6-b78666c46123",
-        format: "dspace:HTTP",
+        format: "tsg:HTTP",
         accessService: [
           new DataService({
             id: "urn:uuid:0d5f0685-eb04-409a-8a77-ee4ed207f2f0",

@@ -13,3 +13,16 @@ cli-package:
     - pnpm install --frozen-lockfile
     - pnpm --filter cli build
     - pnpm --filter cli publish --no-git-checks
+
+e2e-local:
+  extends: .base-rules
+  stage: test
+  tags:
+    - saas-linux-medium-amd64
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+  script:
+    - pnpm install --frozen-lockfile
+    - pnpm build:libs
+    - pnpm run --filter control-plane-api build
+    - NODE_OPTIONS="--experimental-vm-modules" pnpm e2e:local

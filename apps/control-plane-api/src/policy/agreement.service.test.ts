@@ -53,16 +53,16 @@ describe("Agreement Service", () => {
       );
       await agreementService.storeAgreement(
         {
-          "@type": "odrl:Agreement",
+          "@type": "Agreement",
           "@id": "urn:uuid:00000000-0000-0000-0000-000000000000",
-          "odrl:assigner": "did:web:localhost",
-          "odrl:assignee": "did:web:remote.com",
-          "dspace:timestamp": new Date("2024-08-01T12:00:00Z").toISOString(),
-          "odrl:target": "urn:uuid:33147fb2-8896-4a53-983b-61000b6559b6",
-          "odrl:permission": [
+          assigner: "did:web:localhost",
+          assignee: "did:web:remote.com",
+          timestamp: new Date("2024-08-01T12:00:00Z").toISOString(),
+          target: "urn:uuid:33147fb2-8896-4a53-983b-61000b6559b6",
+          permission: [
             {
-              "@type": "odrl:Permission",
-              "odrl:action": ODRLAction.USE
+              "@type": "Permission",
+              action: ODRLAction.USE
             }
           ]
         },

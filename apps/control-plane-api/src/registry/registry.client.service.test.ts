@@ -1,6 +1,6 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { AuthClientService, AuthConfig } from "@tsg-dsp/common-api";
-import { defaultContext } from "@tsg-dsp/common-dsp";
+import { CatalogDto, defaultContext } from "@tsg-dsp/common-dsp";
 import { plainToClass, plainToInstance } from "class-transformer";
 import { http, HttpResponse } from "msw";
 import { SetupServer } from "msw/node";
@@ -27,74 +27,66 @@ describe("RegistryClientService", () => {
         return HttpResponse.json([{ didId: "test", address: "test" }]);
       }),
       http.get("http://localhost/registry", () => {
-        return HttpResponse.json([
+        return HttpResponse.json<CatalogDto[]>([
           {
             "@context": defaultContext(),
-            "@type": "dcat:Catalog",
+            "@type": "Catalog",
             "@id": "urn:uuid:a0920ac1-d08e-4ee1-acde-6dd0432b84e4",
-            "dct:creator": "did:web:localhost",
-            "dct:description": [
+            creator: "did:web:localhost",
+            description: ["Test connector"],
+            publisher: "did:web:localhost",
+            title: "Test Catalog",
+            dataset: [
               {
-                "@value": "Test connector",
-                "@language": "en"
-              }
-            ],
-            "dct:publisher": "did:web:localhost",
-            "dct:title": "Test Catalog",
-            "dcat:dataset": [
-              {
-                "@type": "dcat:Dataset",
+                "@type": "Dataset",
                 "@id": "urn:uuid:2ae6c8a5-ae9f-442a-87f3-29aa547113ff",
-                "dct:title": "HTTPBin",
-                "odrl:hasPolicy": [
+                title: "HTTPBin",
+                hasPolicy: [
                   {
-                    "@type": "odrl:Offer",
+                    "@type": "Offer",
                     "@id": "urn:uuid:03be4d42-fde2-40b6-8351-185dbc174fb2",
-                    "odrl:assigner": "did:web:localhost",
-                    "odrl:permission": [
+                    assigner: "did:web:localhost",
+                    permission: [
                       {
-                        "@type": "odrl:Permission",
-                        "odrl:action": "odrl:read",
-                        "odrl:target":
-                          "urn:uuid:2ae6c8a5-ae9f-442a-87f3-29aa547113ff",
-                        "odrl:constraint": [
+                        "@type": "Permission",
+                        action: "odrl:read",
+                        target: "urn:uuid:2ae6c8a5-ae9f-442a-87f3-29aa547113ff",
+                        constraint: [
                           {
-                            "@type": "odrl:Constraint",
-                            "odrl:rightOperand": "dspace:sameDataSpace",
-                            "odrl:leftOperand": "dspace:identity",
-                            "odrl:operator": "odrl:isPartOf"
+                            "@type": "Constraint",
+                            rightOperand: "dspace:sameDataSpace",
+                            leftOperand: "dspace:identity",
+                            operator: "isPartOf"
                           }
                         ]
                       }
                     ]
                   }
                 ],
-                "dcat:distribution": [
+                distribution: [
                   {
-                    "@type": "dcat:Distribution",
+                    "@type": "Distribution",
                     "@id": "urn:uuid:7ee417b1-f83a-47f8-92be-dace11bdab5f",
-                    "dcat:accessService": [
+                    accessService: [
                       {
-                        "@type": "dcat:DataService",
+                        "@type": "DataService",
                         "@id": "urn:uuid:946b0e29-b006-430a-8e4d-ddf196104b67",
-                        "dcat:endpointURL": "http://localhost:3000/api/"
+                        endpointURL: "http://localhost:3000/api/"
                       }
                     ],
-                    "dct:conformsTo": {
-                      "@id": "https://httpbin.org/spec.json"
-                    },
-                    "dct:format": "dspace:HTTP",
-                    "dct:title": "Version 0.9.2"
+                    conformsTo: ["https://httpbin.org/spec.json"],
+                    format: "tsg:HTTP",
+                    title: "Version 0.9.2"
                   }
                 ]
               }
             ],
-            "dcat:service": [
+            service: [
               {
-                "@type": "dcat:DataService",
+                "@type": "DataService",
                 "@id": "urn:uuid:a2d7d253-e1f6-4cd8-b806-742e119c6023",
-                "dcat:endpointDescription": "dspace:connector",
-                "dcat:endpointURL": "https://cp.localhost/control-plane"
+                endpointDescription: "dspace:connector",
+                endpointURL: "https://cp.localhost/control-plane"
               }
             ]
           }

@@ -54,15 +54,13 @@ export const useDspStore = defineStore("dsp", {
         const response = await http.get<CatalogDto>(
           "management/catalog/request"
         );
-        this.ownCatalog.ownDid = response.data?.["dct:publisher"] || "";
+        this.ownCatalog.ownDid = response.data?.publisher || "";
         this.ownCatalog.catalog = response.data;
-        this.ownCatalog.numberOfDatasets =
-          response.data?.["dcat:dataset"]?.length ?? 0;
-        this.ownCatalog.numberOfServices =
-          response.data?.["dcat:service"]?.length ?? 0;
-        if (response.data?.["dct:title"]) {
-          window.document.title = `Control Plane - ${response.data?.["dct:title"]}`;
-          this.ownCatalog.title = response.data?.["dct:title"];
+        this.ownCatalog.numberOfDatasets = response.data?.dataset?.length ?? 0;
+        this.ownCatalog.numberOfServices = response.data?.service?.length ?? 0;
+        if (response.data?.title) {
+          window.document.title = `Control Plane - ${response.data?.title}`;
+          this.ownCatalog.title = response.data?.title;
         }
       } catch (error) {
         // Handle error
@@ -77,15 +75,13 @@ export const useDspStore = defineStore("dsp", {
         const ctaNegotiations = response.data.filter(
           (negotiation: NegotiationStatusDto) =>
             (negotiation.role == "provider" &&
-              negotiation.state == "dspace:REQUESTED") ||
-            (negotiation.role == "consumer" &&
-              negotiation.state == "dspace:AGREED") ||
+              negotiation.state == "REQUESTED") ||
+            (negotiation.role == "consumer" && negotiation.state == "AGREED") ||
             (negotiation.role == "provider" &&
-              negotiation.state == "dspace:VERIFIED") ||
+              negotiation.state == "VERIFIED") ||
             (negotiation.role == "consumer" &&
-              negotiation.state == "dspace:OFFERED") ||
-            (negotiation.role == "provider" &&
-              negotiation.state == "dspace:ACCEPTED")
+              negotiation.state == "OFFERED") ||
+            (negotiation.role == "provider" && negotiation.state == "ACCEPTED")
         );
         this.negotiations = negotiations;
         this.ctaNegotiations = ctaNegotiations;
@@ -99,10 +95,9 @@ export const useDspStore = defineStore("dsp", {
       const transfers = response.data;
       const ctaTransfers = response.data.filter(
         (transfer: TransferStatus) =>
-          (transfer.role == "provider" &&
-            transfer.state == "dspace:REQUESTED") ||
-          transfer.state == "dspace:STARTED" ||
-          transfer.state == "dspace:SUSPENDED"
+          (transfer.role == "provider" && transfer.state == "REQUESTED") ||
+          transfer.state == "STARTED" ||
+          transfer.state == "SUSPENDED"
       );
       this.transfers = transfers;
       this.ctaTransfers = ctaTransfers;

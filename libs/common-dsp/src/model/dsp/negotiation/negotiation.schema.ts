@@ -18,178 +18,178 @@ import {
 import { AgreementDto, OfferDto } from "./negotiation.dto.js";
 
 export class OfferSchema extends PolicySchema implements OfferDto {
-  @ApiProperty({ example: "odrl:Offer" })
-  declare "@type": "odrl:Offer";
+  @ApiProperty({ example: "Offer" })
+  declare "@type": "Offer";
 
   @ApiProperty({ example: "did:example:assigner" })
-  declare "odrl:assigner": string;
+  declare "assigner": string;
 }
 
 export class AgreementSchema extends PolicySchema implements AgreementDto {
-  @ApiProperty({ example: "odrl:Agreement" })
-  declare "@type": "odrl:Agreement";
+  @ApiProperty({ example: "Agreement" })
+  declare "@type": "Agreement";
 
   @ApiProperty({ example: "did:example:assigner" })
-  declare "odrl:assigner": string;
+  declare "assigner": string;
 
   @ApiProperty({ example: "did:example:assignee" })
-  declare "odrl:assignee": string;
+  declare "assignee": string;
 
   @ApiProperty({ example: "2023-10-01T12:34:56Z" })
-  "dspace:timestamp": string;
+  "timestamp": string;
 
   @ApiProperty({ example: "urn:example:target" })
-  declare "odrl:target": string;
+  declare "target": string;
 }
 
 export class HashedMessageSchema implements HashedMessage {
   @ApiProperty({ example: "sha256:abcdef1234567890" })
-  "dspace:digest": string;
+  "digest": string;
 
   @ApiProperty({ example: "SHA-256" })
-  "dspace:algorithm": string;
+  "algorithm": string;
 }
 
 export class ContractAgreementVerificationMessageSchema
   implements ContractAgreementVerificationMessageDto
 {
-  @ApiProperty({ example: "dspace:ContractAgreementVerificationMessage" })
-  "@type": "dspace:ContractAgreementVerificationMessage";
+  @ApiProperty({ example: "ContractAgreementVerificationMessage" })
+  "@type": "ContractAgreementVerificationMessage";
 
   @ApiProperty({ example: "urn:example:consumerPid" })
-  "dspace:consumerPid": string;
+  "consumerPid": string;
 
   @ApiProperty({ example: "urn:example:providerPid" })
-  "dspace:providerPid": string;
+  "providerPid": string;
 
   @ApiProperty({
     type: HashedMessageSchema,
     example: {
-      "dspace:digest": "sha256:abcdef1234567890",
-      "dspace:algorithm": "SHA-256"
+      digest: "sha256:abcdef1234567890",
+      algorithm: "SHA-256"
     }
   })
-  "dspace:hashedMessage": HashedMessageSchema;
+  "hashedMessage": HashedMessageSchema;
 }
 
 export class ContractRequestMessageSchema implements ContractRequestMessageDto {
-  @ApiProperty({ example: "dspace:ContractRequestMessage" })
-  "@type": "dspace:ContractRequestMessage";
+  @ApiProperty({ example: "ContractRequestMessage" })
+  "@type": "ContractRequestMessage";
 
   @ApiProperty({ example: "urn:example:consumerPid" })
-  "dspace:consumerPid": string;
+  "consumerPid": string;
 
   @ApiPropertyOptional({ example: "urn:example:providerPid" })
-  "dspace:providerPid"?: string;
+  "providerPid"?: string;
 
   @ApiProperty({ example: "http://example.com/callback" })
-  "dspace:callbackAddress": string;
+  "callbackAddress": string;
 
   @ApiProperty({
     type: OfferSchema,
     example: {
-      "@type": "odrl:Offer",
-      "odrl:assigner": "urn:example:assigner"
+      "@type": "Offer",
+      assigner: "urn:example:assigner"
     }
   })
-  "dspace:offer": OfferDto;
+  "offer": OfferDto;
 }
 
 export class ContractNegotiationSchema
   extends ReferenceSchema
   implements ContractNegotiationDto
 {
-  @ApiProperty({ example: "dspace:ContractNegotiation" })
-  "@type": "dspace:ContractNegotiation";
+  @ApiProperty({ example: "ContractNegotiation" })
+  "@type": "ContractNegotiation";
 
   @ApiProperty({ example: "urn:example:consumerPid" })
-  "dspace:consumerPid"!: string;
+  "consumerPid"!: string;
 
   @ApiProperty({ example: "urn:example:providerPid" })
-  "dspace:providerPid"!: string;
+  "providerPid"!: string;
 
   @ApiProperty({ example: "REQUESTED" })
-  "dspace:state"!: ContractNegotiationState;
+  "state"!: ContractNegotiationState;
 }
 
 export class ContractNegotiationEventMessageSchema
   implements ContractNegotiationEventMessageDto
 {
-  @ApiProperty({ example: "dspace:ContractNegotiationEventMessage" })
-  "@type": "dspace:ContractNegotiationEventMessage";
+  @ApiProperty({ example: "ContractNegotiationEventMessage" })
+  "@type": "ContractNegotiationEventMessage";
 
   @ApiProperty({ example: "urn:example:consumerPid" })
-  "dspace:consumerPid": string;
+  "consumerPid": string;
 
   @ApiProperty({ example: "urn:example:providerPid" })
-  "dspace:providerPid": string;
+  "providerPid": string;
 
   @ApiProperty({ example: "NEGOTIATION_STARTED" })
-  "dspace:eventType": NegotiationEvent;
+  "eventType": NegotiationEvent;
 }
 
 export class ContractOfferMessageSchema implements ContractOfferMessageDto {
-  @ApiProperty({ example: "dspace:ContractOfferMessage" })
-  "@type": "dspace:ContractOfferMessage";
+  @ApiProperty({ example: "ContractOfferMessage" })
+  "@type": "ContractOfferMessage";
 
   @ApiPropertyOptional({ example: "urn:example:consumerPid" })
-  "dspace:consumerPid"?: string;
+  "consumerPid"?: string;
 
   @ApiProperty({ example: "urn:example:providerPid" })
-  "dspace:providerPid"!: string;
+  "providerPid"!: string;
 
   @ApiProperty({
     type: OfferSchema,
     example: {
-      "@type": "odrl:Offer",
-      "odrl:assigner": "urn:example:assigner"
+      "@type": "Offer",
+      assigner: "urn:example:assigner"
     }
   })
-  "dspace:offer"!: OfferDto;
+  "offer"!: OfferDto;
 
   @ApiProperty({ example: "http://example.com/offer-callback" })
-  "dspace:callbackAddress"!: string;
+  "callbackAddress"!: string;
 }
 
 export class ContractAgreementMessageSchema
   implements ContractAgreementMessageDto
 {
-  @ApiProperty({ example: "dspace:ContractAgreementMessage" })
-  "@type": "dspace:ContractAgreementMessage";
+  @ApiProperty({ example: "ContractAgreementMessage" })
+  "@type": "ContractAgreementMessage";
 
   @ApiProperty({ example: "urn:example:consumerPid" })
-  "dspace:consumerPid"!: string;
+  "consumerPid"!: string;
 
   @ApiProperty({ example: "urn:example:providerPid" })
-  "dspace:providerPid"!: string;
+  "providerPid"!: string;
 
   @ApiProperty({
     type: AgreementSchema,
     example: {
-      "@type": "odrl:Agreement",
-      "odrl:assigner": "urn:example:assigner",
-      "odrl:assignee": "urn:example:assignee",
-      "dspace:timestamp": "2023-10-01T12:34:56Z",
-      "odrl:target": "urn:example:target"
+      "@type": "Agreement",
+      assigner: "urn:example:assigner",
+      assignee: "urn:example:assignee",
+      timestamp: "2023-10-01T12:34:56Z",
+      target: "urn:example:target"
     }
   })
-  "dspace:agreement"!: AgreementDto;
+  "agreement"!: AgreementDto;
 }
 
 export class ContractNegotiationTerminationMessageSchema
   implements ContractNegotiationTerminationMessageDto
 {
-  @ApiProperty({ example: "dspace:ContractNegotiationTerminationMessage" })
-  "@type": "dspace:ContractNegotiationTerminationMessage";
+  @ApiProperty({ example: "ContractNegotiationTerminationMessage" })
+  "@type": "ContractNegotiationTerminationMessage";
 
   @ApiProperty({ example: "urn:example:consumerPid" })
-  "dspace:consumerPid": string;
+  "consumerPid": string;
 
   @ApiProperty({ example: "urn:example:providerPid" })
-  "dspace:providerPid": string;
+  "providerPid": string;
 
   @ApiPropertyOptional({ example: "USER_CANCELLED" })
-  "dspace:code"?: string;
+  "code"?: string;
 
   @ApiProperty({
     type: [MultilanguageSchema],
@@ -198,5 +198,5 @@ export class ContractNegotiationTerminationMessageSchema
       { language: "nl", text: "Gebruiker heeft de onderhandeling geannuleerd." }
     ]
   })
-  "dspace:reason": Array<MultilanguageDto>;
+  "reason": Array<MultilanguageDto>;
 }

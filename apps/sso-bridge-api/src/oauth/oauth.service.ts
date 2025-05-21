@@ -29,7 +29,7 @@ export class OauthService {
     private readonly clientsService: ClientsService,
     private readonly tokenService: TokenService
   ) {}
-  private readonly codes = new Map<string, OauthUser>();
+  private static readonly codes = new Map<string, OauthUser>();
 
   async authorize(request: AuthorizationRequest) {
     return {
@@ -47,7 +47,7 @@ export class OauthService {
     }
     if (request.response_type.split(" ").includes("code")) {
       const code = crypto.randomBytes(16).toString("hex");
-      this.codes.set(code, user);
+      OauthService.codes.set(code, user);
       response.code = code;
     }
     if (
@@ -145,7 +145,7 @@ export class OauthService {
   private async codeTokenRequest(
     request: CodeTokenRequest
   ): Promise<TokenResponse> {
-    const user = this.codes.get(request.code);
+    const user = OauthService.codes.get(request.code);
     if (!user) {
       throw new AppError("Invalid code", HttpStatus.BAD_REQUEST);
     }
@@ -156,7 +156,7 @@ export class OauthService {
       user.id,
       ""
     );
-    this.codes.delete(request.code);
+    OauthService.codes.delete(request.code);
     return tokenResponse;
   }
   private async refreshTokenTokenRequest(

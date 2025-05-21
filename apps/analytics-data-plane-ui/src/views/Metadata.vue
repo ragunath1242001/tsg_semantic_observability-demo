@@ -1,5 +1,10 @@
 <script setup lang="ts">
-import { Dataset, DatasetDto, deserialize } from "@tsg-dsp/common-dsp";
+import {
+  Dataset,
+  DatasetDto,
+  defaultContext,
+  deserialize
+} from "@tsg-dsp/common-dsp";
 import { DataPlaneStateDto } from "@tsg-dsp/common-dtos";
 import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
@@ -17,9 +22,9 @@ const datasetStrings = ref<string[]>();
 const newDataset = ref<string>(
   JSON.stringify(
     {
-      "@context": "https://w3id.org/dspace/2024/1/context.json",
+      "@context": defaultContext(),
       "@id": `urn:uuid:${crypto.randomUUID()}`,
-      "@type": "dcat:Dataset"
+      "@type": "Dataset"
     },
     null,
     2
@@ -213,7 +218,7 @@ onMounted(async () => {
     </template>
   </Card>
   <Card v-for="(dataset, idx) in datasets" :key="idx" class="mt-8">
-    <template #title>{{ dataset["dct:title"] ?? dataset["@id"] }}</template>
+    <template #title>{{ dataset.title ?? dataset["@id"] }}</template>
     <template #subtitle>Dataset registered at the data plane</template>
     <template #content>
       <MonacoEditorVue
