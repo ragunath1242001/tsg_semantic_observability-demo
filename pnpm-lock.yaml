@@ -2021,8 +2021,8 @@ importers:
   tools/cli:
     dependencies:
       '@commander-js/extra-typings':
-        specifier: ^13.1.0
-        version: 13.1.0(commander@14.0.0)
+        specifier: ^14.0.0
+        version: 14.0.0(commander@14.0.0)
       '@inquirer/prompts':
         specifier: ^7.3.2
         version: 7.5.2(@types/node@22.15.21)
@@ -2076,8 +2076,8 @@ importers:
   tools/documentation-generator:
     dependencies:
       '@commander-js/extra-typings':
-        specifier: ^13.1.0
-        version: 13.1.0(commander@14.0.0)
+        specifier: ^14.0.0
+        version: 14.0.0(commander@14.0.0)
       '@inquirer/prompts':
         specifier: ^7.3.2
         version: 7.5.2(@types/node@22.15.21)
@@ -2140,8 +2140,8 @@ importers:
         specifier: workspace:*
         version: link:../../apps/control-plane-api
       '@commander-js/extra-typings':
-        specifier: ^13.1.0
-        version: 13.1.0(commander@14.0.0)
+        specifier: ^14.0.0
+        version: 14.0.0(commander@14.0.0)
       '@inquirer/prompts':
         specifier: ^7.3.2
         version: 7.5.2(@types/node@22.15.21)
@@ -2581,10 +2581,10 @@ packages:
     resolution: {integrity: sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==}
     engines: {node: '>=0.1.90'}
 
-  '@commander-js/extra-typings@13.1.0':
-    resolution: {integrity: sha512-q5P52BYb1hwVWE6dtID7VvuJWrlfbCv4klj7BjUUOqMz4jbSZD4C9fJ9lRjL2jnBGTg+gDDlaXN51rkWcLk4fg==}
+  '@commander-js/extra-typings@14.0.0':
+    resolution: {integrity: sha512-hIn0ncNaJRLkZrxBIp5AsW/eXEHNKYQBh0aPdoUqNgD+Io3NIykQqpKFyKcuasZhicGaEZJX/JBSIkZ4e5x8Dg==}
     peerDependencies:
-      commander: ~13.1.0
+      commander: ~14.0.0
 
   '@cspotcode/source-map-support@0.8.1':
     resolution: {integrity: sha512-IchNf6dN4tHoMFIn/7OE8LWZ19Y6q/67Bmf6vnGREv8RSbBVb9LPJxEcnwrcwX6ixSvaiGoomAUvu4YSxXrVgw==}
@@ -8152,7 +8152,7 @@ snapshots:
   '@colors/colors@1.5.0':
     optional: true
 
-  '@commander-js/extra-typings@13.1.0(commander@14.0.0)':
+  '@commander-js/extra-typings@14.0.0(commander@14.0.0)':
     dependencies:
       commander: 14.0.0
 
