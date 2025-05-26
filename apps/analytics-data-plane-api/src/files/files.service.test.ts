@@ -50,7 +50,7 @@ describe("FilesService", () => {
     filesService = moduleRef.get(FilesService);
   });
   afterEach(async () => {
-    await filesService["fileRepository"].delete({});
+    await filesService["fileRepository"].clear();
   });
   afterAll(async () => {
     TypeOrmTestHelper.instance.teardownTestDB();
