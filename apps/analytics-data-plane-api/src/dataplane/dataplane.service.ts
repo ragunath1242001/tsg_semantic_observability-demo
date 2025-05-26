@@ -30,6 +30,7 @@ import { AxiosInstance } from "axios";
 import crypto from "crypto";
 import { Repository } from "typeorm";
 
+import { AnalysesService } from "../analyses/analyses.service.js";
 import { RootConfig } from "../config.js";
 import { LoggingService } from "../logging/logging.service.js";
 import { DataPlaneClientError, DataPlaneError } from "../utils/errors/error.js";
@@ -44,6 +45,7 @@ export class DataPlaneService {
   constructor(
     private readonly config: RootConfig,
     private readonly loggingService: LoggingService,
+    private readonly analysesService: AnalysesService,
     authClient: AuthClientService,
     @InjectRepository(TransferDao)
     private readonly transferRepository: Repository<TransferDao>,
@@ -61,6 +63,7 @@ export class DataPlaneService {
   private readonly logger = new Logger(this.constructor.name);
   initialized: Promise<void>;
   private state?: DataPlaneStateDao;
+  private participantId?: string;
   private defaultDataset: DatasetDto[] = this.createDataset();
 
   private createDataset(): DatasetDto[] {
@@ -180,6 +183,20 @@ export class DataPlaneService {
         err
       ).andLog(this.logger);
     }
+  }
+
+  async getParticipantId() {
+    if (!this.participantId) {
+      const catalog = await this.getControlPlaneCatalog();
+      if (!catalog.participantId) {
+        throw new DataPlaneError(
+          "Participant ID not found in control plane catalog",
+          HttpStatus.INTERNAL_SERVER_ERROR
+        ).andLog(this.logger, "error");
+      }
+      this.participantId = catalog.participantId;
+    }
+    return this.participantId;
   }
 
   async addDataset(dataset: DatasetDto) {
@@ -322,6 +339,19 @@ export class DataPlaneService {
     return transfer;
   }
 
+  async getTransferBySecret(secret: string) {
+    const transfer = await this.transferRepository.findOneBy({
+      secret: secret
+    });
+    if (!transfer) {
+      throw new HttpException(
+        `Invalid token, transfer by secret not found`,
+        HttpStatus.NOT_FOUND
+      );
+    }
+    return transfer;
+  }
+
   async getMetadata(
     id: string
   ): Promise<{ agreement: AgreementDto; dataset: DatasetDto }> {
@@ -380,15 +410,30 @@ export class DataPlaneService {
     role: "provider" | "consumer",
     processId: string,
     remoteParty: string,
-    datasetId: string
+    datasetId: string,
+    analysisId?: string
   ): Promise<DataPlaneRequestResponseDto> {
     const id = crypto.randomUUID();
     let dataAddress: DataPlaneAddressDto | undefined;
     let secret: string | undefined;
+
+    if (analysisId) {
+      await this.analysesService.getAnalyis(analysisId);
+    }
+
     if (role === "provider") {
       secret = crypto.randomBytes(32).toString("hex");
+
+      let endpoint: string;
+
+      if (analysisId) {
+        endpoint = `${this.config.server.publicAddress}/events/${analysisId}/algorithm-event`;
+      } else {
+        endpoint = `${this.config.server.publicAddress}/proxy/${id}`;
+      }
+
       dataAddress = {
-        endpoint: `${this.config.server.publicAddress}/proxy/${id}`,
+        endpoint,
         properties: [
           {
             name: "Authorization",
@@ -413,6 +458,13 @@ export class DataPlaneService {
         dataAddress: dataAddress
       }
     });
+
+    if (analysisId) {
+      await this.analysesService.linkTransfer({
+        analysisId,
+        transfer
+      });
+    }
 
     return transfer.response;
   }

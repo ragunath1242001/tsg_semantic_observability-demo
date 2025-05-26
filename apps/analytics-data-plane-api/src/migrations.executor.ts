@@ -124,11 +124,27 @@ async function run() {
 
   if (process.argv.includes("--check")) {
     console.log(chalk.blue("Checking for necessary migrations in database"));
+    process.env.DB_MIGRATION_TYPE = "sqlite";
     await generate("sqlite", timestamp, true);
   } else {
-    console.log(chalk.blue("Generating migrations"));
-    await generate("sqlite", timestamp);
-    await generate("postgres", timestamp);
+    if (process.argv.includes("--sqlite")) {
+      console.log(chalk.blue("Generating SQLite migrations"));
+      process.env.DB_MIGRATION_TYPE = "sqlite";
+
+      await generate("sqlite", timestamp);
+    } else if (process.argv.includes("--postgres")) {
+      console.log(chalk.blue("Generating Postgres migrations"));
+      process.env.DB_MIGRATION_TYPE = "postgres";
+
+      await generate("postgres", timestamp);
+    } else {
+      console.log(
+        chalk.red(
+          "Please specify --sqlite or --postgres to generate migrations"
+        )
+      );
+      process.exit(1);
+    }
   }
   process.exit(0);
 }

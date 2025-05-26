@@ -12,6 +12,7 @@ import { HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { hostname } from "os";
 import { Writable } from "stream";
 
+import { AnalysesService } from "../analyses/analyses.service.js";
 import { RootConfig } from "../config.js";
 import { FilesService } from "../files/files.service.js";
 import { DataPlaneError } from "../utils/errors/error.js";
@@ -25,7 +26,8 @@ export class OrchestrationService {
 
   constructor(
     private readonly config: RootConfig,
-    private readonly filesService: FilesService
+    private readonly filesService: FilesService,
+    private readonly analysesService: AnalysesService
   ) {
     this.kubeConfig = new KubeConfig();
     this.containerName = "analytics-dp-container";
@@ -42,37 +44,47 @@ export class OrchestrationService {
   }
   private readonly logger = new Logger(this.constructor.name);
 
-  async getJobsForTransfer(transferId: string): Promise<V1Job[]> {
+  async getJobsForAnalysis(analysisId: string): Promise<V1Job[]> {
     const namespace = this.config.kubernetesConfig.namespace;
 
     const jobList = await this.batchV1Api.listNamespacedJob({
       namespace,
-      labelSelector: `transferId=${transferId}`
+      labelSelector: `analysisId=${analysisId}`
     });
 
     return jobList.items;
   }
 
   async spawnJob(
-    transferId: string,
+    analysisId: string,
     imageName: string,
     command: string[],
     fileId?: string
   ) {
-    const jobName = `adp-job-${transferId}-${new Date().getTime()}`;
+    const jobName = `adp-job-${analysisId}-${new Date().getTime()}`;
     const namespace = this.config.kubernetesConfig.namespace;
+
     const dataplaneAddress = process.env["POD_IP"] ?? hostname();
     const localDataPlaneAddress = `http://${dataplaneAddress}:${this.config.server.port}${process.env["SUBPATH"] ?? ""}${process.env["EMBEDDED_FRONTEND"] ? "/api" : ""}`;
+
+    const eventsAccessToken =
+      await this.analysesService.createAccessToken(analysisId);
+
     const env: V1EnvVar[] = [
       {
-        name: "TRANSFER_ID",
-        value: transferId
+        name: "ANALYSIS_ID",
+        value: analysisId
       },
       {
         name: "CALLBACK_URL",
         value: localDataPlaneAddress
+      },
+      {
+        name: "EVENTS_ACCESS_TOKEN",
+        value: eventsAccessToken
       }
     ];
+
     const volumeMounts: V1VolumeMount[] = [];
     const volumes: V1Volume[] = [];
     if (fileId) {
@@ -105,7 +117,9 @@ export class OrchestrationService {
           value: `/data/${fileMetadata.fileName}`
         });
       } else {
-        const accessToken = await this.filesService.createAccessToken(fileId);
+        const dataAccessToken =
+          await this.filesService.createAccessToken(fileId);
+
         env.push({
           name: "DATA_TYPE",
           value: "url"
@@ -116,7 +130,7 @@ export class OrchestrationService {
         });
         env.push({
           name: "DATA_ACCESS_TOKEN",
-          value: accessToken
+          value: dataAccessToken
         });
       }
     }
@@ -134,7 +148,7 @@ export class OrchestrationService {
           metadata: {
             labels: {
               app: jobName,
-              transferId: transferId
+              analysisId
             }
           },
           spec: {
@@ -158,6 +172,10 @@ export class OrchestrationService {
       namespace,
       body: jobManifest
     });
+
+    return {
+      token: eventsAccessToken
+    };
   }
 
   async getPodsForJob(jobName: string) {

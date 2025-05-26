@@ -9,9 +9,13 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  JoinColumn,
+  ManyToOne,
   PrimaryColumn,
   UpdateDateColumn
 } from "typeorm";
+
+import { AnalysisDao } from "../analyses/dao/analysis.dao.js";
 
 @Entity()
 export class TransferDao {
@@ -53,4 +57,8 @@ export class TransferDao {
 
   @DeleteDateColumn({ type: String })
   deletedDate!: Date;
+
+  @ManyToOne("AnalysisDao", "transfers")
+  @JoinColumn()
+  analysis!: AnalysisDao;
 }
