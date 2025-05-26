@@ -120,8 +120,8 @@ importers:
         specifier: ^1.1.1
         version: 1.1.1
       multer:
-        specifier: 1.4.5-lts.2
-        version: 1.4.5-lts.2
+        specifier: 2.0.0
+        version: 2.0.0
       nest-typed-config:
         specifier: ^2.9.4
         version: 2.9.4(@nestjs/common@11.1.1(class-transformer@0.5.1(patch_hash=bddc0866ebe276b1e4f0a507f140da242ee41a99a9ce03c0f3695b7eca94a2a2))(class-validator@0.14.2)(reflect-metadata@0.2.2)(rxjs@7.8.2))(axios@1.9.0)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typescript@5.8.3)
@@ -434,8 +434,8 @@ importers:
         specifier: ^9.0.2
         version: 9.0.2
       multer:
-        specifier: 1.4.5-lts.2
-        version: 1.4.5-lts.2
+        specifier: 2.0.0
+        version: 2.0.0
       nest-typed-config:
         specifier: ^2.9.4
         version: 2.9.4(@nestjs/common@11.1.1(class-transformer@0.5.1(patch_hash=bddc0866ebe276b1e4f0a507f140da242ee41a99a9ce03c0f3695b7eca94a2a2))(class-validator@0.14.2)(reflect-metadata@0.2.2)(rxjs@7.8.2))(axios@1.9.0)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typescript@5.8.3)
@@ -718,8 +718,8 @@ importers:
         specifier: ^1.1.1
         version: 1.1.1
       multer:
-        specifier: 1.4.5-lts.2
-        version: 1.4.5-lts.2
+        specifier: 2.0.0
+        version: 2.0.0
       nest-typed-config:
         specifier: ^2.9.4
         version: 2.9.4(@nestjs/common@11.1.1(class-transformer@0.5.1(patch_hash=bddc0866ebe276b1e4f0a507f140da242ee41a99a9ce03c0f3695b7eca94a2a2))(class-validator@0.14.2)(reflect-metadata@0.2.2)(rxjs@7.8.2))(axios@1.9.0)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typescript@5.8.3)
@@ -1274,8 +1274,8 @@ importers:
         specifier: ^1.1.1
         version: 1.1.1
       multer:
-        specifier: 1.4.5-lts.2
-        version: 1.4.5-lts.2
+        specifier: 2.0.0
+        version: 2.0.0
       multiformats:
         specifier: ^13.3.2
         version: 13.3.6
@@ -6215,6 +6215,10 @@ packages:
     resolution: {integrity: sha512-VzGiVigcG9zUAoCNU+xShztrlr1auZOlurXynNvO9GiWD1/mTBbUljOKY+qMeazBqXgRnjzeEgJI/wyjJUHg9A==}
     engines: {node: '>= 6.0.0'}
     deprecated: Multer 1.x is impacted by a number of vulnerabilities, which have been patched in 2.x. You should upgrade to the latest 2.x version.
+
+  multer@2.0.0:
+    resolution: {integrity: sha512-bS8rPZurbAuHGAnApbM9d4h1wSoYqrOqkE+6a64KLMK9yWU7gJXBDDVklKQ3TPi9DRb85cRs6yXaC0+cjxRtRg==}
+    engines: {node: '>= 10.16.0'}
 
   multiformats@13.3.6:
     resolution: {integrity: sha512-yakbt9cPYj8d3vi/8o/XWm61MrOILo7fsTL0qxNx6zS0Nso6K5JqqS2WV7vK/KSuDBvrW3KfCwAdAgarAgOmww==}
@@ -12179,6 +12183,16 @@ snapshots:
   muggle-string@0.4.1: {}
 
   multer@1.4.5-lts.2:
+    dependencies:
+      append-field: 1.0.0
+      busboy: 1.6.0
+      concat-stream: 1.6.2
+      mkdirp: 0.5.6
+      object-assign: 4.1.1
+      type-is: 1.6.18
+      xtend: 4.0.2
+
+  multer@2.0.0:
     dependencies:
       append-field: 1.0.0
       busboy: 1.6.0
