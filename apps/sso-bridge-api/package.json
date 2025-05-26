@@ -37,7 +37,7 @@
     "@tsg-dsp/common-dsp": "workspace:*",
     "@tsg-dsp/common-signing-and-validation": "workspace:*",
     "@tsg-dsp/sso-bridge-dtos": "workspace:*",
-    "bcrypt": "^5.1.1",
+    "bcrypt": "^6.0.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
     "express-session": "^1.18.1",
