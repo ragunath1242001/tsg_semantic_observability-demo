@@ -48,7 +48,7 @@
   },
   "dependencies": {
     "@apps/control-plane-api": "workspace:*",
-    "@commander-js/extra-typings": "^13.1.0",
+    "@commander-js/extra-typings": "^14.0.0",
     "@inquirer/prompts": "^7.3.2",
     "@nestjs/common": "^11.0.10",
     "@nestjs/core": "^11.0.10",
