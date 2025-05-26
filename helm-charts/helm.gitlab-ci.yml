@@ -1,6 +1,6 @@
 .helm-devel:
   stage: package
-  image: dtzar/helm-kubectl:3.17
+  image: dtzar/helm-kubectl:3.18
   tags:
     - saas-linux-small-amd64
   needs: []
@@ -25,7 +25,7 @@
 
 .helm-stable:
   stage: release
-  image: dtzar/helm-kubectl:3.17
+  image: dtzar/helm-kubectl:3.18
   tags:
     - saas-linux-small-amd64
   needs: []

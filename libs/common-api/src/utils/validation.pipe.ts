@@ -7,7 +7,10 @@ export const validateOrRejectSync = <T extends object>(
   object: T,
   validatorOptions?: ValidatorOptions
 ): T => {
-  const errors = validateSync(object, validatorOptions);
+  const errors = validateSync(object, {
+    forbidUnknownValues: false,
+    ...validatorOptions
+  });
   if (errors.length) {
     throw new AppError(
       `Could not parse object: ${errors.map((e) => e.toString())}`,
@@ -35,6 +38,7 @@ export const strictValidationPipe = new ValidationPipe({
 
 export const validationPipe = new ValidationPipe({
   transform: true,
+  forbidUnknownValues: false,
   exceptionFactory: (errors) =>
     new AppError(
       {

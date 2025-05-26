@@ -42,7 +42,9 @@ export class SerializableClass<OutType extends ContextDto> {
   }
 
   validate() {
-    const validation = validateSync(this);
+    const validation = validateSync(this, {
+      forbidUnknownValues: false
+    });
     if (validation.length > 0) {
       throw new ClassValidationError(
         `Validation error:\n${validation.map((v) => v.toString()).join("")}`,
