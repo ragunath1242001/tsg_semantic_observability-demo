@@ -10,6 +10,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     rawBody: true
   });
+
   const config = app.get(ServerConfig);
   Logger.log(
     `Listening on ${config.listen}:${config.port} with public address ${config.publicAddress}`,
@@ -32,6 +33,7 @@ async function bootstrap() {
     allowedHeaders: "*",
     origin: "*"
   });
+
   await app.listen(config.port, config.listen);
 }
 bootstrap();

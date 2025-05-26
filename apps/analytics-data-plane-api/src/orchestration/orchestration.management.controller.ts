@@ -30,21 +30,21 @@ export class OrchestrationManagementController {
   constructor(private readonly orchestrationService: OrchestrationService) {}
   private readonly logger = new Logger(this.constructor.name);
 
-  @Get("/jobs/transfer/:transferId")
-  @ApiOperation({ summary: "Get jobs for transfer" })
+  @Get("/jobs/analysis/:analysisId")
+  @ApiOperation({ summary: "Get jobs for analysis" })
   @ApiParam({
-    name: "transferId",
-    description: "The transfer ID",
+    name: "analysisId",
+    description: "The analysis ID",
     example: "urn:uuid:12345678-1234-5678-1234-567812345678",
     required: true,
     type: "string"
   })
   @ApiOkResponse()
   @ApiForbiddenResponseDefault()
-  async getJobsForTransfer(
-    @Param("transferId") transferId: string
+  async getJobsForAnalysis(
+    @Param("analysisId") analysisId: string
   ): Promise<V1Job[]> {
-    return await this.orchestrationService.getJobsForTransfer(transferId);
+    return await this.orchestrationService.getJobsForAnalysis(analysisId);
   }
 
   @Get("/jobs/:jobName/pods")
@@ -84,12 +84,12 @@ export class OrchestrationManagementController {
       type: "object",
       properties: {
         imageName: { type: "string" },
-        transferId: { type: "string" },
+        analysisId: { type: "string" },
         command: { type: "array", items: { type: "string" } }
       },
       example: {
         imageName: "busybox",
-        transferId: "urn:uuid:12345678-1234-5678-1234-567812345678",
+        analysisId: "urn:uuid:12345678-1234-5678-1234-567812345678",
         command: ["echo", "Hello, World!"]
       }
     }
@@ -100,13 +100,13 @@ export class OrchestrationManagementController {
     @Body()
     body: {
       imageName: string;
-      transferId: string;
+      analysisId: string;
       command: string[];
       fileId?: string;
     }
   ) {
     return await this.orchestrationService.spawnJob(
-      body.transferId,
+      body.analysisId,
       body.imageName,
       body.command,
       body.fileId

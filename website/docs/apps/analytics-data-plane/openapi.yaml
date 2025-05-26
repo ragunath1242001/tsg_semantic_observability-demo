@@ -127,6 +127,11 @@ paths:
           in: header
           schema:
             type: string
+        - name: x-analysis-id
+          required: true
+          in: header
+          schema:
+            type: string
       requestBody:
         required: true
         content:
@@ -785,6 +790,106 @@ paths:
       security: *a8
       summary: Get egress logs
       tags: *a9
+  /api/analyses:
+    get:
+      description: Retrieve all analyses
+      operationId: AnalysesController_findAll
+      parameters: []
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AnalysisDto"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: &a10
+        - oauth2:
+            - controlplane_dataplane
+      summary: Get all analyses
+      tags: &a11
+        - Analysis
+    post:
+      description: Create a new analysis
+      operationId: AnalysesController_create
+      parameters: []
+      requestBody:
+        required: true
+        description: The analysis to create
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateAnalysisDto"
+      responses:
+        "200":
+          description: The analysis has been successfully created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalysisDto"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a10
+      summary: Create analysis
+      tags: *a11
+  /api/analyses/{id}:
+    get:
+      description: Retrieve an analysis by its ID
+      operationId: AnalysesController_findOne
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalysisDto"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a10
+      summary: Get analysis by ID
+      tags: *a11
+    delete:
+      description: Delete an analysis by its ID
+      operationId: AnalysesController_remove
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The analysis has been successfully deleted
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a10
+      summary: Delete analysis by ID
+      tags: *a11
   /api/files:
     get:
       description: Get all files and their metadata.
@@ -805,11 +910,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: &a10
+      security: &a12
         - oauth2:
             - controlplane_dataplane
       summary: Get all files
-      tags: &a11
+      tags: &a13
         - Files
   /api/files/upload:
     post:
@@ -823,9 +928,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a10
+      security: *a12
       summary: Upload files
-      tags: *a11
+      tags: *a13
   /api/files/sync:
     post:
       description: Sync files and their metadata.
@@ -838,9 +943,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a10
+      security: *a12
       summary: Sync files
-      tags: *a11
+      tags: *a13
   /api/files/{id}:
     get:
       description: Get the file by ID.
@@ -870,9 +975,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a10
+      security: *a12
       summary: Get file
-      tags: *a11
+      tags: *a13
   /api/files/{id}/csvw:
     get:
       description: Get the CSVW of a file.
@@ -896,17 +1001,17 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a10
+      security: *a12
       summary: Get CSVW
-      tags: *a11
-  /api/management/k8s/jobs/transfer/{transferId}:
+      tags: *a13
+  /api/management/k8s/jobs/analysis/{analysisId}:
     get:
-      operationId: OrchestrationManagementController_getJobsForTransfer
+      operationId: OrchestrationManagementController_getJobsForAnalysis
       parameters:
-        - name: transferId
+        - name: analysisId
           required: true
           in: path
-          description: The transfer ID
+          description: The analysis ID
           schema:
             example: urn:uuid:12345678-1234-5678-1234-567812345678
             type: string
@@ -919,11 +1024,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: &a12
+      security: &a14
         - oauth2:
             - controlplane_dataplane
-      summary: Get jobs for transfer
-      tags: &a13
+      summary: Get jobs for analysis
+      tags: &a15
         - Data Plane Management
   /api/management/k8s/jobs/{jobName}/pods:
     get:
@@ -945,9 +1050,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a12
+      security: *a14
       summary: Get job pods
-      tags: *a13
+      tags: *a15
   /api/management/k8s/pods/{podName}/logs:
     get:
       operationId: OrchestrationManagementController_getJobLogs
@@ -968,9 +1073,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a12
+      security: *a14
       summary: Get job logs
-      tags: *a13
+      tags: *a15
   /api/management/k8s/spawn-job:
     post:
       operationId: OrchestrationManagementController_spawnJob
@@ -984,7 +1089,7 @@ paths:
               properties:
                 imageName:
                   type: string
-                transferId:
+                analysisId:
                   type: string
                 command:
                   type: array
@@ -992,7 +1097,7 @@ paths:
                     type: string
               example:
                 imageName: busybox
-                transferId: urn:uuid:12345678-1234-5678-1234-567812345678
+                analysisId: urn:uuid:12345678-1234-5678-1234-567812345678
                 command:
                   - echo
                   - Hello, World!
@@ -1005,9 +1110,119 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a12
+      security: *a14
       summary: Spawn a job
-      tags: *a13
+      tags: *a15
+  /api/events/{analysisId}/internal-event:
+    post:
+      operationId: EventsController_createInternalEvent
+      parameters:
+        - name: analysisId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateInternalEventDto"
+      responses:
+        "201":
+          description: ""
+      tags: &a16
+        - Events
+  /api/events/{analysisId}/algorithm-event:
+    post:
+      description: Creates an algorithm event for the specified analysis.
+      operationId: EventsController_createAlgorithmEvent
+      parameters:
+        - name: analysisId
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: Authorization
+          required: true
+          in: header
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateAlgorithmEventDto"
+      responses:
+        "200":
+          description: The algorithm event has been successfully created.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateAlgorithmEventDto"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      summary: Create an algorithm event
+      tags: *a16
+  /api/events/{analysisId}/upload/{eventId}:
+    post:
+      description: Uploads binary algorithm event data.
+      operationId: EventsController_uploadEventData
+      parameters:
+        - name: analysisId
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: eventId
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: Authorization
+          required: true
+          in: header
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The binary algorithm event data has been successfully uploaded.
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      summary: Upload algorithm event data
+      tags: *a16
+  /api/events/{analysisId}/data/{eventId}:
+    get:
+      operationId: EventsController_getEventData
+      parameters:
+        - name: analysisId
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: eventId
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: Authorization
+          required: true
+          in: header
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+      tags: *a16
 info:
   title: TSG Analytics Data Plane
   description: This OpenAPI specification shows the endpoints of the Analytics Data Plane.
@@ -1346,7 +1561,7 @@ components:
           type: string
           example: targetExample
         constraint:
-          example: &a14 []
+          example: &a17 []
           type: array
           items:
             $ref: "#/components/schemas/ConstraintSchema"
@@ -1377,7 +1592,7 @@ components:
           type: string
           example: targetExample
         constraint:
-          example: *a14
+          example: *a17
           type: array
           items:
             $ref: "#/components/schemas/ConstraintSchema"
@@ -1403,7 +1618,7 @@ components:
           type: string
           example: targetExample
         constraint:
-          example: *a14
+          example: *a17
           type: array
           items:
             $ref: "#/components/schemas/ConstraintSchema"
@@ -1429,17 +1644,17 @@ components:
           type: string
           example: profileExample
         permission:
-          example: &a21 []
+          example: &a24 []
           type: array
           items:
             $ref: "#/components/schemas/PermissionSchema"
         prohibition:
-          example: &a22 []
+          example: &a25 []
           type: array
           items:
             $ref: "#/components/schemas/ProhibitionSchema"
         obligation:
-          example: &a23 []
+          example: &a26 []
           type: array
           items:
             $ref: "#/components/schemas/DutySchema"
@@ -1471,7 +1686,7 @@ components:
           type: string
           example: contactPointExample
         keyword:
-          example: &a15
+          example: &a18
             - keyword1
             - keyword2
           type: array
@@ -1481,14 +1696,14 @@ components:
           type: string
           example: landingPageExample
         theme:
-          example: &a16
+          example: &a19
             - theme1
             - theme2
           type: array
           items:
             type: string
         conformsTo:
-          example: &a17
+          example: &a20
             - conformsToExample
           type: array
           items:
@@ -1497,7 +1712,7 @@ components:
           type: string
           example: creatorExample
         description:
-          example: &a18
+          example: &a21
             - description1
             - description2
           type: array
@@ -1534,12 +1749,12 @@ components:
           type: string
           example: typeExample
         hasPolicy:
-          example: &a19 []
+          example: &a22 []
           type: array
           items:
             $ref: "#/components/schemas/PolicySchema"
         hasVersion:
-          example: &a20
+          example: &a23
             - version1
             - version2
           type: array
@@ -1665,7 +1880,7 @@ components:
           type: string
           example: contactPointExample
         keyword:
-          example: *a15
+          example: *a18
           type: array
           items:
             type: string
@@ -1673,12 +1888,12 @@ components:
           type: string
           example: landingPageExample
         theme:
-          example: *a16
+          example: *a19
           type: array
           items:
             type: string
         conformsTo:
-          example: *a17
+          example: *a20
           type: array
           items:
             type: string
@@ -1686,7 +1901,7 @@ components:
           type: string
           example: creatorExample
         description:
-          example: *a18
+          example: *a21
           type: array
           items:
             type: string
@@ -1721,12 +1936,12 @@ components:
           type: string
           example: typeExample
         hasPolicy:
-          example: *a19
+          example: *a22
           type: array
           items:
             $ref: "#/components/schemas/PolicySchema"
         hasVersion:
-          example: *a20
+          example: *a23
           type: array
           items:
             type: string
@@ -1794,7 +2009,7 @@ components:
           type: string
           example: contactPointExample
         keyword:
-          example: *a15
+          example: *a18
           type: array
           items:
             type: string
@@ -1802,12 +2017,12 @@ components:
           type: string
           example: landingPageExample
         theme:
-          example: *a16
+          example: *a19
           type: array
           items:
             type: string
         conformsTo:
-          example: *a17
+          example: *a20
           type: array
           items:
             type: string
@@ -1815,7 +2030,7 @@ components:
           type: string
           example: creatorExample
         description:
-          example: *a18
+          example: *a21
           type: array
           items:
             type: string
@@ -1850,12 +2065,12 @@ components:
           type: string
           example: typeExample
         hasPolicy:
-          example: *a19
+          example: *a22
           type: array
           items:
             $ref: "#/components/schemas/PolicySchema"
         hasVersion:
-          example: *a20
+          example: *a23
           type: array
           items:
             type: string
@@ -1898,7 +2113,7 @@ components:
           type: string
           example: contactPointExample
         keyword:
-          example: *a15
+          example: *a18
           type: array
           items:
             type: string
@@ -1906,12 +2121,12 @@ components:
           type: string
           example: landingPageExample
         theme:
-          example: *a16
+          example: *a19
           type: array
           items:
             type: string
         conformsTo:
-          example: *a17
+          example: *a20
           type: array
           items:
             type: string
@@ -1919,7 +2134,7 @@ components:
           type: string
           example: creatorExample
         description:
-          example: *a18
+          example: *a21
           type: array
           items:
             type: string
@@ -1954,12 +2169,12 @@ components:
           type: string
           example: typeExample
         hasPolicy:
-          example: *a19
+          example: *a22
           type: array
           items:
             $ref: "#/components/schemas/PolicySchema"
         hasVersion:
-          example: *a20
+          example: *a23
           type: array
           items:
             type: string
@@ -2117,17 +2332,17 @@ components:
           type: string
           example: profileExample
         permission:
-          example: *a21
+          example: *a24
           type: array
           items:
             $ref: "#/components/schemas/PermissionSchema"
         prohibition:
-          example: *a22
+          example: *a25
           type: array
           items:
             $ref: "#/components/schemas/ProhibitionSchema"
         obligation:
-          example: *a23
+          example: *a26
           type: array
           items:
             $ref: "#/components/schemas/DutySchema"
@@ -2250,6 +2465,106 @@ components:
       required:
         - data
         - meta
+    AlgorithmEventDto:
+      type: object
+      properties:
+        id:
+          type: string
+        analysisId:
+          type: string
+        name:
+          type: string
+        number:
+          type: number
+        timestamp:
+          type: string
+        data:
+          type: string
+          format: binary
+        createdBy:
+          type: string
+      required:
+        - id
+        - analysisId
+        - name
+        - number
+        - timestamp
+        - createdBy
+    InternalEventDto:
+      type: object
+      properties:
+        id:
+          type: string
+        analysisId:
+          type: string
+        name:
+          type: string
+        number:
+          type: number
+        timestamp:
+          type: string
+        data:
+          type: object
+          additionalProperties: true
+      required:
+        - id
+        - analysisId
+        - name
+        - number
+        - timestamp
+    AnalysisDto:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        status:
+          type: string
+        participantIds:
+          type: array
+          items:
+            type: string
+        startedAt:
+          format: date-time
+          type: string
+        finishedAt:
+          format: date-time
+          type: string
+        transfers:
+          type: array
+          items:
+            $ref: "#/components/schemas/TransferDto"
+        algorithmEvents:
+          type: array
+          items:
+            $ref: "#/components/schemas/AlgorithmEventDto"
+        internalEvents:
+          type: array
+          items:
+            $ref: "#/components/schemas/InternalEventDto"
+      required:
+        - id
+        - name
+        - status
+        - participantIds
+        - startedAt
+    CreateAnalysisDto:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Analysis Name
+        participantIds:
+          example:
+            - did:web:participant1
+            - did:web:participant2
+          type: array
+          items:
+            type: string
+      required:
+        - name
+        - participantIds
     CSVWTableSchema:
       type: object
       properties:
@@ -2313,6 +2628,43 @@ components:
         - originalFileName
         - presentInLastCheck
         - csvw
+    CreateInternalEventDto:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        number:
+          type: number
+        timestamp:
+          type: string
+        data:
+          type: object
+          additionalProperties: true
+      required:
+        - id
+        - name
+        - number
+        - timestamp
+    CreateAlgorithmEventDto:
+      type: object
+      properties:
+        eventId:
+          type: string
+        name:
+          type: string
+        number:
+          type: number
+        timestamp:
+          type: string
+        isOwnEvent:
+          type: boolean
+      required:
+        - eventId
+        - name
+        - number
+        - timestamp
 externalDocs:
   description: Git Repository
   url: https://gitlab.com/tno-tsg/dataspace-protocol/tno-security-gateway

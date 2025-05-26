@@ -15,7 +15,11 @@ import { plainToClass } from "class-transformer";
 import { http, HttpResponse, PathParams } from "msw";
 import { SetupServer, setupServer } from "msw/node";
 
+import { AnalysesService } from "../analyses/analyses.service.js";
+import { AnalysisDao } from "../analyses/dao/analysis.dao.js";
 import { LoggingConfig, RootConfig } from "../config.js";
+import { AlgorithmEventDao } from "../events/dao/algorithm-event.dao.js";
+import { InternalEventDao } from "../events/dao/internal-event.dao.js";
 import { EgressLogDao, IngressLogDao } from "../logging/logging.dao.js";
 import { LoggingService } from "../logging/logging.service.js";
 import { DataPlaneController } from "./dataplane.controller.js";
@@ -169,12 +173,18 @@ describe("Dataplane Service", () => {
       imports: [
         TypeOrmTestHelper.instance.module([
           TransferDao,
+          AnalysisDao,
+          AlgorithmEventDao,
+          InternalEventDao,
           DataPlaneStateDao,
           IngressLogDao,
           EgressLogDao
         ]),
         TypeOrmModule.forFeature([
           TransferDao,
+          AnalysisDao,
+          AlgorithmEventDao,
+          InternalEventDao,
           DataPlaneStateDao,
           IngressLogDao,
           EgressLogDao
@@ -185,6 +195,7 @@ describe("Dataplane Service", () => {
         DataPlaneService,
         LoggingService,
         AuthClientService,
+        AnalysesService,
         {
           provide: AuthConfig,
           useValue: { enabled: false }
@@ -422,12 +433,18 @@ describe("Dataplane Service Consumer", () => {
       imports: [
         TypeOrmTestHelper.instance.module([
           TransferDao,
+          AnalysisDao,
+          AlgorithmEventDao,
+          InternalEventDao,
           DataPlaneStateDao,
           IngressLogDao,
           EgressLogDao
         ]),
         TypeOrmModule.forFeature([
           TransferDao,
+          AnalysisDao,
+          AlgorithmEventDao,
+          InternalEventDao,
           DataPlaneStateDao,
           IngressLogDao,
           EgressLogDao
@@ -438,6 +455,7 @@ describe("Dataplane Service Consumer", () => {
         DataPlaneService,
         LoggingService,
         AuthClientService,
+        AnalysesService,
         {
           provide: AuthConfig,
           useValue: { enabled: false }
