@@ -78,10 +78,15 @@ function deserializeJsonLd(obj: any, resolvedType: any, root: boolean) {
       parsedProperties.push("@value");
       break;
     } else {
-      const ldType = getFunctionDecorator("ldType", resolvedType, property)?.();
+      const ldType = getFunctionDecorator("ldType", resolvedType, property);
+      const type = ldType?.type?.();
+      const referenceable = ldType?.referenceable;
       const namespace = getStringDecorator("namespace", resolvedType, property);
       if (namespace) {
-        result[property] = deserializeSync(obj[`${property}`], false, ldType);
+        if (referenceable && typeof obj[property] === "string") {
+          result[property] = obj[property];
+        }
+        result[property] = deserializeSync(obj[`${property}`], false, type);
         parsedProperties.push(`${property}`);
       } else {
         result[property] = obj[property];

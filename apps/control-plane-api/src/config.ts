@@ -118,6 +118,9 @@ export class RuntimeConfig {
 }
 
 export class InitCatalog {
+  @Description("Participant id of the catalog")
+  @IsString()
+  public readonly participantId!: string;
   @Description("Creator of the catalog")
   @IsString()
   public readonly creator!: string;

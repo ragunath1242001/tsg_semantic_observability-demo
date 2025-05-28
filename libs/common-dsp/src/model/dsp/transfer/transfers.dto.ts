@@ -3,12 +3,8 @@ import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { DataPlaneTransferDto } from "../../data-planes/index.js";
 import { MultilanguageDto } from "../common.dto.js";
 import { MultilanguageSchema } from "../common.schema.js";
-import {
-  DataAddressDto,
-  TransferProcessDto,
-  TransferState
-} from "./messages.dto.js";
-import { DataAddressSchema, TransferProcessSchema } from "./transfer.schema.js";
+import { DataAddressDto, TransferState } from "./messages.dto.js";
+import { DataAddressSchema } from "./transfer.schema.js";
 
 export type TransferRole = "provider" | "consumer";
 
@@ -30,16 +26,6 @@ export class TransferStatusDto {
 
   @ApiProperty({ enum: TransferState, example: TransferState.REQUESTED })
   state!: TransferState;
-
-  @ApiProperty({
-    type: TransferProcessSchema,
-    example: {
-      // Adjust the following sample according to TransferProcessDto properties
-      step: "upload",
-      progress: 50
-    }
-  })
-  process!: TransferProcessDto;
 
   @ApiProperty({ example: "agreement-45678" })
   agreementId!: string;

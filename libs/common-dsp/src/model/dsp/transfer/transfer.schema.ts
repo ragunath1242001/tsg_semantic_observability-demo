@@ -28,7 +28,7 @@ export class DataAddressSchema implements DataAddressDto {
   "endpointType": string;
   @ApiProperty({ example: "https://api.example.com" })
   "endpoint": string;
-  @ApiProperty({
+  @ApiPropertyOptional({
     type: [EndpointPropertySchema],
     example: [
       {
@@ -38,7 +38,7 @@ export class DataAddressSchema implements DataAddressDto {
       }
     ]
   })
-  "endpointProperties": Array<EndpointPropertyDto>;
+  "endpointProperties"?: Array<EndpointPropertyDto>;
 }
 
 export class TransferRequestMessageSchema implements TransferRequestMessageDto {
@@ -128,9 +128,9 @@ export class TransferSuspensionMessageSchema
   "providerPid": string;
   @ApiProperty({ example: "consumer-pid-123" })
   "consumerPid": string;
-  @ApiProperty({ example: ["Technical issue"] })
+  @ApiPropertyOptional({ example: ["Technical issue"] })
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  "reason": Array<any>;
+  "reason"?: Array<any>;
 }
 
 export class TransferTerminationMessageSchema
@@ -144,7 +144,7 @@ export class TransferTerminationMessageSchema
   "consumerPid": string;
   @ApiProperty({ example: "TERMINATED" })
   "code": string;
-  @ApiProperty({ example: ["Contract breach"] })
+  @ApiPropertyOptional({ example: ["Contract breach"] })
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  "reason": Array<any>;
+  "reason"?: Array<any>;
 }

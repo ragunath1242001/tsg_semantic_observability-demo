@@ -176,7 +176,7 @@ paths:
       security: *a3
       summary: Start transfer process
       tags: *a4
-  /api/transfers/{id}/complete:
+  /api/transfers/{id}/completion:
     post:
       operationId: DataPlaneController_completeTransfer
       parameters:
@@ -198,7 +198,7 @@ paths:
       security: *a3
       summary: Complete transfer process
       tags: *a4
-  /api/transfers/{id}/terminate:
+  /api/transfers/{id}/termination:
     post:
       operationId: DataPlaneController_terminateTransfer
       parameters:
@@ -220,7 +220,7 @@ paths:
       security: *a3
       summary: Terminate transfer process
       tags: *a4
-  /api/transfers/{id}/suspend:
+  /api/transfers/{id}/suspension:
     post:
       operationId: DataPlaneController_suspendTransfer
       parameters:
@@ -490,7 +490,7 @@ paths:
       security: *a5
       summary: Start a transfer by ID
       tags: *a6
-  /api/management/transfers/{id}/complete:
+  /api/management/transfers/{id}/completion:
     post:
       operationId: DataPlaneManagementController_completeTransfer
       parameters:
@@ -512,7 +512,7 @@ paths:
       security: *a5
       summary: Complete a transfer by ID
       tags: *a6
-  /api/management/transfers/{id}/terminate:
+  /api/management/transfers/{id}/termination:
     post:
       operationId: DataPlaneManagementController_terminateTransfer
       parameters:
@@ -544,7 +544,7 @@ paths:
       security: *a5
       summary: Terminate a transfer by ID
       tags: *a6
-  /api/management/transfers/{id}/suspend:
+  /api/management/transfers/{id}/suspension:
     post:
       operationId: DataPlaneManagementController_suspendTransfer
       parameters:
@@ -1339,7 +1339,6 @@ components:
         - "@type"
         - endpointType
         - endpoint
-        - endpointProperties
     TransferRequestMessageSchema:
       type: object
       properties:
@@ -1495,7 +1494,6 @@ components:
         - providerPid
         - consumerPid
         - code
-        - reason
     TransferSuspensionMessageSchema:
       type: object
       properties:
@@ -1518,7 +1516,6 @@ components:
         - "@type"
         - providerPid
         - consumerPid
-        - reason
     ConstraintSchema:
       type: object
       properties:
@@ -2216,6 +2213,9 @@ components:
         "@type":
           type: string
           example: Catalog
+        participantId:
+          type: string
+          example: did:web:example
         dataset:
           example: []
           type: array
@@ -2245,6 +2245,7 @@ components:
       required:
         - "@id"
         - "@type"
+        - participantId
     TransferDto:
       type: object
       properties:

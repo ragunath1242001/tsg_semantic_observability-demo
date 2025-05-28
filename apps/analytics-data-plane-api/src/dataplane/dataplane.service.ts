@@ -9,7 +9,6 @@ import {
   DataPlaneCreation,
   DataPlaneDetailsDto,
   DataPlaneRequestResponseDto,
-  DataServiceDto,
   Dataset,
   DatasetDto,
   defaultContext,
@@ -104,15 +103,7 @@ export class DataPlaneService {
             "@type": "Distribution",
             "@id": `${datasetId}:application/analytics-data-plane`,
             title: "Analytics Data Plane (tsg:analytics)",
-            format: "tsg:analytics",
-            accessService: [
-              {
-                "@type": "DataService",
-                "@id": `${datasetId}:analytics-service`,
-                title: "Analytics Data Plane Service",
-                endpointDescription: "dspace:connector"
-              } as DataServiceDto
-            ]
+            format: "tsg:analytics"
           } as DistributionDto
         ]
       } as DatasetDto
@@ -157,6 +148,7 @@ export class DataPlaneService {
       async (datasetDto) => deserialize<Dataset>(datasetDto)
     );
     const catalog: Catalog = new Catalog({
+      participantId: "",
       dataset: datasets
     });
     await this.axiosDataPlane.post<DataPlaneDetailsDto>(
@@ -205,6 +197,7 @@ export class DataPlaneService {
     const newDatasets = [...currentState.dataset, dataset];
 
     const catalog: Catalog = new Catalog({
+      participantId: "",
       dataset: await promiseMap(newDatasets, async (datasetDto) =>
         deserialize<Dataset>(datasetDto)
       )
@@ -236,6 +229,7 @@ export class DataPlaneService {
     );
 
     const catalog: Catalog = new Catalog({
+      participantId: "",
       dataset: await promiseMap(newDatasets, async (datasetDto) =>
         deserialize<Dataset>(datasetDto)
       )
@@ -266,6 +260,7 @@ export class DataPlaneService {
     );
 
     const catalog: Catalog = new Catalog({
+      participantId: "",
       dataset: await promiseMap(newDatasets, async (datasetDto) =>
         deserialize<Dataset>(datasetDto)
       )
@@ -287,6 +282,7 @@ export class DataPlaneService {
     const currentState = this.getState();
 
     const catalog: Catalog = new Catalog({
+      participantId: "",
       dataset: await promiseMap(datasets, async (datasetDto) =>
         deserialize<Dataset>(datasetDto)
       )
@@ -488,7 +484,7 @@ export class DataPlaneService {
     const transfer = await this.getTransferById(id);
     try {
       const response = await this.axiosManagement.post(
-        `/transfers/${transfer.processId}/complete`
+        `/transfers/${transfer.processId}/completion`
       );
       return response.data;
     } catch (err) {
@@ -503,7 +499,7 @@ export class DataPlaneService {
     const transfer = await this.getTransferById(id);
     try {
       const response = await this.axiosManagement.post(
-        `/transfers/${transfer.processId}/terminate`,
+        `/transfers/${transfer.processId}/termination`,
         {
           code: code,
           reason: reason
@@ -522,7 +518,7 @@ export class DataPlaneService {
     const transfer = await this.getTransferById(id);
     try {
       const response = await this.axiosManagement.post(
-        `/transfers/${transfer.processId}/suspend`,
+        `/transfers/${transfer.processId}/suspension`,
         {
           reason: reason
         }

@@ -70,6 +70,7 @@ config:
     issuerFilter: "did:web:<%= it.general.authorityDomain %>"
   
   initCatalog:
+    participantId: did:web:{{ .Values.wallet }}
     creator: did:web:{{ .Values.wallet }}
     publisher: did:web:{{ .Values.wallet }}
     title: "<%= it.participant.name %>"

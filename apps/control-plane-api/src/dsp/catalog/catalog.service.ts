@@ -1,6 +1,7 @@
 import { HttpStatus, Injectable, Logger, Optional } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import {
+  AppError,
   Paginated,
   PaginationOptionsDto,
   ServerConfig
@@ -8,10 +9,13 @@ import {
 import {
   Catalog,
   CatalogDto,
+  CatalogError,
+  CatalogErrorDto,
   CatalogRequestMessage,
   Constraint,
   DataService,
   Dataset,
+  DatasetDto,
   deserialize,
   ODRLAction,
   ODRLLeftOperand,
@@ -21,7 +25,7 @@ import {
   Prohibition,
   Resource
 } from "@tsg-dsp/common-dsp";
-import { Repository } from "typeorm";
+import { DeepPartial, Repository } from "typeorm";
 
 import {
   InitCatalog,
@@ -146,7 +150,8 @@ export class CatalogService {
       });
       const catalog = this.catalogRepository.create(
         new Catalog({
-          id: dataset.id
+          id: dataset.id,
+          participantId: this.initCatalog.participantId
         })
       );
       catalog._services = [this.dataservicesRepository.create(dservice)];
@@ -270,22 +275,34 @@ export class CatalogService {
     const newDataset = this.datasetRepository.create(dataset);
     newDataset._resource = newResource;
     newDataset._distribution = dataset.distribution?.map((distribution) => {
-      const distributionObj = this.distributionRepository.create(distribution);
-      distributionObj._accessService = distribution.accessService?.map(
-        (service) => {
-          if (service.endpointDescription === "dspace:connector") {
-            if (catalog.data?._services?.[0]) {
-              return catalog.data._services[0];
-            }
-          }
-          const resourceObj = this.resourceRepository.create({
-            id: service.id
-          });
-          const serviceObj = this.dataservicesRepository.create(service);
-          serviceObj._resource = resourceObj;
-          return serviceObj;
-        }
+      if (typeof distribution.accessService === "string") {
+        distribution.accessService = new DataService({
+          id: distribution.accessService
+        });
+      }
+      const distributionObj = this.distributionRepository.create(
+        distribution as unknown as DistributionDao
       );
+      if (distribution.accessService) {
+        if (
+          distribution.accessService.endpointDescription ===
+            "dspace:connector" &&
+          catalog.data?._services?.[0]
+        ) {
+          distributionObj._accessService = catalog.data?._services?.[0];
+        } else {
+          const resourceObj = this.resourceRepository.create({
+            id: distribution.accessService.id
+          });
+          const serviceObj = this.dataservicesRepository.create(
+            distribution.accessService
+          );
+          serviceObj._resource = resourceObj;
+          distributionObj._accessService = serviceObj;
+        }
+      } else {
+        distributionObj._accessService = catalog.data?._services?.[0];
+      }
       return distributionObj;
     });
     newDataset._catalog = catalog.data;
@@ -336,19 +353,35 @@ export class CatalogService {
       ...dataset,
       _resource: newResource,
       _distribution: dataset.distribution?.map((distribution) => {
-        return this.distributionRepository.create({
-          ...distribution,
-          _accessService: distribution.accessService?.map((service) => {
-            if (service.endpointDescription === "dspace:connector") {
-              if (catalog.data?._services?.[0]) {
-                service = new DataService(catalog.data._services[0]);
-              }
-            }
-            return this.dataservicesRepository.create({
-              ...service,
-              _resource: this.resourceRepository.create({ id: service.id })
+        const { accessService, ...distributionRemainder } = distribution;
+        let accessServiceDao: DeepPartial<DataServiceDao | undefined> =
+          undefined;
+        if (typeof accessService === "string") {
+          accessServiceDao = this.dataservicesRepository.create({
+            _resource: this.resourceRepository.create({
+              id: accessService
+            })
+          });
+        } else if (accessService) {
+          if (
+            accessService.endpointDescription === "dspace:connector" &&
+            catalog.data?._services?.[0]
+          ) {
+            accessServiceDao = catalog.data?._services?.[0];
+          } else {
+            accessServiceDao = this.dataservicesRepository.create({
+              ...accessService,
+              _resource: this.resourceRepository.create({
+                id: accessService.id
+              })
             });
-          })
+          }
+        } else {
+          accessServiceDao = catalog.data?._services?.[0];
+        }
+        return this.distributionRepository.create({
+          ...distributionRemainder,
+          _accessService: accessServiceDao
         });
       })
     });
@@ -400,6 +433,27 @@ export class CatalogService {
       ).andLog(this.logger, "warn");
     } else {
       return new Dataset(dataset);
+    }
+  }
+
+  async getDatasetDto(
+    datasetId: string
+  ): Promise<DatasetDto | CatalogErrorDto> {
+    try {
+      const dataset = await this.getDataset(datasetId);
+      return dataset.serialize();
+    } catch (error) {
+      if (error instanceof AppError) {
+        return new CatalogError({
+          code: error.getStatus().toString(),
+          reason: [error.message]
+        }).serialize();
+      } else {
+        return new CatalogError({
+          code: "500",
+          reason: ["Internal server error"]
+        }).serialize();
+      }
     }
   }
 }

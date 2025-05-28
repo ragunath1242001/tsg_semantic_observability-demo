@@ -306,7 +306,7 @@ export class NegotiationManagementController {
     return negotiationProcess;
   }
 
-  @Post(":processId/terminate")
+  @Post(":processId/termination")
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "Terminate a negotiation" })
   @ApiParam({

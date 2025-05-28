@@ -107,7 +107,9 @@ describe("TransferController", () => {
         HttpResponse.text("")
       ),
       http.get("http://127.0.0.1/data-plane/catalog", async () =>
-        HttpResponse.json(await new Catalog({}))
+        HttpResponse.json(
+          await new Catalog({ participantId: "did:web:localhost" })
+        )
       ),
       http.post<PathParams, TransferRequestMessageDto, TransferProcessDto>(
         "http://remoteparty.test/transfers/request",
@@ -314,12 +316,10 @@ describe("TransferController", () => {
           new Distribution({
             id: "urn:uuid:de465939-8292-49c1-97d5-bcb643df1fdb",
             format: "tsg:HTTP",
-            accessService: [
-              new DataService({
-                id: "urn:uuid:1c0c61c5-a977-40f0-84ab-eacf2c1e4b4b",
-                endpointURL: "https://httpbin.org/anything"
-              })
-            ]
+            accessService: new DataService({
+              id: "urn:uuid:1c0c61c5-a977-40f0-84ab-eacf2c1e4b4b",
+              endpointURL: "https://httpbin.org/anything"
+            })
           })
         ]
       })
@@ -452,7 +452,7 @@ describe("TransferController", () => {
     });
   });
 
-  describe("/:id/complete", () => {
+  describe("/:id/completion", () => {
     it("Transfer complete with specified identifier should return a status OK", async () => {
       await transferService.start(transferProviderUuid, undefined, true);
 
@@ -498,7 +498,7 @@ describe("TransferController", () => {
     });
   });
 
-  describe("/:id/terminate", () => {
+  describe("/:id/termination", () => {
     it("Transfer terminate with specified identifier should return a status OK", async () => {
       const result = await transferController.terminateTransferProcess(
         transferProviderUuid,
@@ -548,7 +548,7 @@ describe("TransferController", () => {
     });
   });
 
-  describe("/:id/suspend", () => {
+  describe("/:id/suspension", () => {
     it("Transfer suspend with specified identifier should return a status OK", async () => {
       await transferService.start(transferProviderUuid, undefined, true);
 
@@ -627,7 +627,7 @@ describe("TransferController", () => {
     });
   });
 
-  describe("/callbacks/transfers/:id/complete", () => {
+  describe("/callbacks/transfers/:id/completion", () => {
     it("Transfer complete with specified identifier should return a status OK", async () => {
       await transferService.handleStart(
         transferConsumerUuid,
@@ -665,7 +665,7 @@ describe("TransferController", () => {
     });
   });
 
-  describe("/callbacks/transfers/:id/terminate", () => {
+  describe("/callbacks/transfers/:id/termination", () => {
     it("Transfer terminate with specified identifier should return a status OK", async () => {
       const result = await transferController.callbackTerminateTransferProcess(
         transferConsumerUuid,
@@ -699,7 +699,7 @@ describe("TransferController", () => {
     });
   });
 
-  describe("/callbacks/transfers/:id/suspend", () => {
+  describe("/callbacks/transfers/:id/suspension", () => {
     it("Transfer suspend with specified identifier should return a status OK", async () => {
       await transferService.handleStart(
         transferConsumerUuid,

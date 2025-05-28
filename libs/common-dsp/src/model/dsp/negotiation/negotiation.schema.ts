@@ -62,14 +62,14 @@ export class ContractAgreementVerificationMessageSchema
   @ApiProperty({ example: "urn:example:providerPid" })
   "providerPid": string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     type: HashedMessageSchema,
     example: {
       digest: "sha256:abcdef1234567890",
       algorithm: "SHA-256"
     }
   })
-  "hashedMessage": HashedMessageSchema;
+  "hashedMessage"?: HashedMessageSchema;
 }
 
 export class ContractRequestMessageSchema implements ContractRequestMessageDto {
@@ -174,6 +174,8 @@ export class ContractAgreementMessageSchema
     }
   })
   "agreement"!: AgreementDto;
+  @ApiProperty({ example: "http://example.com/agreement-callback" })
+  "callbackAddress"!: string;
 }
 
 export class ContractNegotiationTerminationMessageSchema

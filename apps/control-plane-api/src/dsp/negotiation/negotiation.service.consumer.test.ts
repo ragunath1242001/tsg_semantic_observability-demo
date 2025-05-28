@@ -290,7 +290,8 @@ describe("Negotiation Service (Consumer)", () => {
         new ContractAgreementMessage({
           consumerPid: localProcessId,
           providerPid: remoteProcessId,
-          agreement: agreement
+          agreement: agreement,
+          callbackAddress: `http://localhost/callbacks`
         }),
         "did:web:remoteparty.test"
       );
@@ -477,7 +478,8 @@ describe("Negotiation Service (Consumer)", () => {
         new ContractAgreementMessage({
           consumerPid: localProcessId,
           providerPid: remoteProcessId,
-          agreement: agreement
+          agreement: agreement,
+          callbackAddress: `http://localhost/callbacks`
         }),
         "did:web:remoteparty.test"
       );

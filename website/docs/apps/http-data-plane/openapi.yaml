@@ -635,7 +635,7 @@ paths:
       security: *a10
       summary: Start transfer process
       tags: *a11
-  /api/transfers/{id}/complete:
+  /api/transfers/{id}/completion:
     post:
       operationId: TransferController_completeTransfer
       parameters:
@@ -657,7 +657,7 @@ paths:
       security: *a10
       summary: Complete transfer process
       tags: *a11
-  /api/transfers/{id}/terminate:
+  /api/transfers/{id}/termination:
     post:
       operationId: TransferController_terminateTransfer
       parameters:
@@ -679,7 +679,7 @@ paths:
       security: *a10
       summary: Terminate transfer process
       tags: *a11
-  /api/transfers/{id}/suspend:
+  /api/transfers/{id}/suspension:
     post:
       operationId: TransferController_suspendTransfer
       parameters:
@@ -800,7 +800,7 @@ paths:
       security: *a12
       summary: Start a transfer by ID
       tags: *a13
-  /api/management/transfers/{id}/complete:
+  /api/management/transfers/{id}/completion:
     post:
       operationId: TransferManagementController_completeTransfer
       parameters:
@@ -822,7 +822,7 @@ paths:
       security: *a12
       summary: Complete a transfer by ID
       tags: *a13
-  /api/management/transfers/{id}/terminate:
+  /api/management/transfers/{id}/termination:
     post:
       operationId: TransferManagementController_terminateTransfer
       parameters:
@@ -854,7 +854,7 @@ paths:
       security: *a12
       summary: Terminate a transfer by ID
       tags: *a13
-  /api/management/transfers/{id}/suspend:
+  /api/management/transfers/{id}/suspension:
     post:
       operationId: TransferManagementController_suspendTransfer
       parameters:
@@ -2346,6 +2346,9 @@ components:
         "@type":
           type: string
           example: Catalog
+        participantId:
+          type: string
+          example: did:web:example
         dataset:
           example: []
           type: array
@@ -2375,6 +2378,7 @@ components:
       required:
         - "@id"
         - "@type"
+        - participantId
     DatasetConfig:
       type: object
       properties: {}
@@ -2523,7 +2527,6 @@ components:
         - "@type"
         - endpointType
         - endpoint
-        - endpointProperties
     TransferRequestMessageSchema:
       type: object
       properties:
@@ -2679,7 +2682,6 @@ components:
         - providerPid
         - consumerPid
         - code
-        - reason
     TransferSuspensionMessageSchema:
       type: object
       properties:
@@ -2702,7 +2704,6 @@ components:
         - "@type"
         - providerPid
         - consumerPid
-        - reason
     TransferDto:
       type: object
       properties:

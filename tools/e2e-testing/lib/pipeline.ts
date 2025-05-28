@@ -31,6 +31,8 @@ export class Pipeline implements PipelineExecute {
   constructor(
     private readonly id: string,
     private readonly agreementId: string | undefined,
+    private readonly assigner: string | undefined,
+    private readonly assignee: string | undefined,
     readonly catalogService: CatalogService,
     readonly negotiationService: NegotiationService,
     readonly transferService: TransferService,
@@ -49,13 +51,13 @@ export class Pipeline implements PipelineExecute {
       distribution: [
         new Distribution({
           id: `${this.id}-dataset`,
-          format: "tsg:dummy"
+          format: "HttpData-PULL"
         })
       ],
       hasPolicy: [
         new Offer({
           id: `CD123:${this.id}:456`,
-          assigner: "did:web:localhost%3A32490",
+          assigner: this.assigner ?? "did:web:localhost%3A32490",
           permission: [
             new Permission({
               action: "use"
@@ -99,8 +101,8 @@ export class Pipeline implements PipelineExecute {
         "@context": defaultContext(),
         "@id": this.agreementId,
         "@type": "Agreement",
-        assignee: "did:web:localhost%3A32490",
-        assigner: "did:web:localhost%3A32490",
+        assignee: this.assignee ?? "did:web:localhost%3A32490",
+        assigner: this.assigner ?? "did:web:localhost%3A32490",
         target: `${this.id}`,
         timestamp: new Date().toISOString(),
         permission: [

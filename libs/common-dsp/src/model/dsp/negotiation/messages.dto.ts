@@ -72,7 +72,7 @@ export interface ContractAgreementVerificationMessageDto extends ContextDto {
   "@type": "ContractAgreementVerificationMessage";
   consumerPid: string;
   providerPid: string;
-  hashedMessage: HashedMessage;
+  hashedMessage?: HashedMessage;
 }
 
 export interface ContractAgreementMessageDto extends ContextDto {
@@ -80,4 +80,5 @@ export interface ContractAgreementMessageDto extends ContextDto {
   consumerPid: string;
   providerPid: string;
   agreement: AgreementDto;
+  callbackAddress: string;
 }

@@ -82,10 +82,15 @@ export function getFunctionDecorator(
   key: "ldType",
   target: object,
   propertyKey?: string | symbol
-): Function | undefined {
+):
+  | {
+      type: () => Function;
+      referenceable: boolean;
+    }
+  | undefined {
   try {
     const metadata = getMetadata(key, target, propertyKey);
-    if (metadata !== undefined && typeof metadata === "function") {
+    if (metadata !== undefined && typeof metadata === "object") {
       return metadata;
     }
     return undefined;
@@ -126,7 +131,18 @@ export function KeepTypes(): PropertyDecorator {
     Reflect.defineMetadata(keepTypesSymbol, true, target, propertyKey);
 }
 
-export function LDType(type: () => Function): PropertyDecorator {
+export function LDType(
+  type: () => Function,
+  referenceable: boolean = false
+): PropertyDecorator {
   return (target: any, propertyKey: string | symbol) =>
-    Reflect.defineMetadata(ldTypeSymbol, type, target, propertyKey);
+    Reflect.defineMetadata(
+      ldTypeSymbol,
+      {
+        type,
+        referenceable
+      },
+      target,
+      propertyKey
+    );
 }

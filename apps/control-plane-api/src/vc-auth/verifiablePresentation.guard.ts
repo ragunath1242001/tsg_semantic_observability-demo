@@ -13,7 +13,7 @@ import { VCAuthService } from "./vc.auth.service.js";
 @Injectable()
 export class VerifiablePresentationGuard implements CanActivate {
   constructor(private readonly vcAuthService: VCAuthService) {}
-  private readonly logger = new Logger(VerifiablePresentationGuard.name);
+  private readonly logger = new Logger(this.constructor.name);
   async canActivate(context: ExecutionContext) {
     const request: Request = context.switchToHttp().getRequest();
     if (
@@ -25,6 +25,9 @@ export class VerifiablePresentationGuard implements CanActivate {
       request.user = valid;
       return true;
     }
+    this.logger.error(
+      `Invalid VP authorization header: ${request.headers.authorization}`
+    );
     throw new AppError(
       "Invalid VP authorization header",
       HttpStatus.UNAUTHORIZED

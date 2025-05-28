@@ -197,7 +197,7 @@ export class DataService extends Resource<DataServiceDto> {
 }
 
 export interface IDistribution extends IReference {
-  accessService?: Array<DataService>;
+  accessService?: DataService | string;
   accessURL?: string;
   byteSize?: string;
   compressFormat?: string;
@@ -218,10 +218,9 @@ export interface IDistribution extends IReference {
 @Serializable("Distribution")
 export class Distribution extends Reference<DistributionDto & ContextDto> {
   @Namespace("dcat")
-  @ValidateNested()
   @IsOptional()
   @LDType(() => DataService)
-  accessService?: Array<DataService>;
+  accessService?: DataService | string;
   @Namespace("dcat")
   @IsString()
   @IsOptional()
@@ -285,10 +284,10 @@ export class Distribution extends Reference<DistributionDto & ContextDto> {
 
   constructor(value: withExtraProps<IDistribution>) {
     super(value);
-    this.accessService = createOptionalInstances(
-      value.accessService,
-      DataService
-    );
+    this.accessService =
+      typeof value.accessService === "string"
+        ? value.accessService
+        : createOptionalInstance(value.accessService, DataService);
     this.accessURL = value.accessURL;
     this.byteSize = value.byteSize;
     this.compressFormat = value.compressFormat;
@@ -444,6 +443,7 @@ export class CatalogRecord extends Reference<CatalogRecordDto & ContextDto> {
 }
 
 export interface ICatalog extends IDataset {
+  participantId: string;
   dataset?: Array<Dataset>;
   record?: Array<CatalogRecord>;
   service?: Array<DataService>;
@@ -454,6 +454,9 @@ export interface ICatalog extends IDataset {
 
 @Serializable("Catalog")
 export class Catalog extends Dataset<CatalogDto> {
+  @Namespace("dspace")
+  @IsString()
+  participantId: string;
   @Namespace("dcat")
   @ValidateNested()
   @IsOptional()
@@ -485,6 +488,7 @@ export class Catalog extends Dataset<CatalogDto> {
 
   constructor(value: withExtraProps<ICatalog>) {
     super(value);
+    this.participantId = value.participantId;
     this.dataset = createOptionalInstances(value.dataset, Dataset);
     this.record = createOptionalInstances(value.record, CatalogRecord);
     this.service = createOptionalInstances(value.service, DataService);

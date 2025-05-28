@@ -3,7 +3,8 @@ import {
   ExecutionContext,
   HttpException,
   HttpStatus,
-  Injectable
+  Injectable,
+  Logger
 } from "@nestjs/common";
 import { APP_GUARD, Reflector } from "@nestjs/core";
 import { Request, Response } from "express";
@@ -30,6 +31,8 @@ export class OAuthGuard implements CanActivate {
     private readonly authConfig: AuthConfig,
     private readonly oAuthService: OAuthService
   ) {}
+  private readonly logger = new Logger(this.constructor.name);
+
   async canActivate(context: ExecutionContext) {
     if (!this.authConfig.enabled) {
       return true;
@@ -56,6 +59,9 @@ export class OAuthGuard implements CanActivate {
         request.user = user;
         return true;
       } else {
+        this.logger.error(
+          `Invalid authorization header: ${request.headers.authorization}`
+        );
         throw new HttpException(
           "Invalid authorization header",
           HttpStatus.UNAUTHORIZED

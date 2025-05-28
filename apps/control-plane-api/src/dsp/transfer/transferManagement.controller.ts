@@ -137,7 +137,7 @@ export class TransferManagementController {
     return await this.transferService.start(processId, body, false);
   }
 
-  @Post(":processId/complete")
+  @Post(":processId/completion")
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "Complete a transfer process" })
   @ApiParam({ name: "processId", required: true, description: "Process ID" })
@@ -157,7 +157,7 @@ export class TransferManagementController {
     return await this.transferService.complete(processId, false);
   }
 
-  @Post(":processId/terminate")
+  @Post(":processId/termination")
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "Terminate a transfer process" })
   @ApiParam({ name: "processId", required: true, description: "Process ID" })
@@ -192,7 +192,7 @@ export class TransferManagementController {
     );
   }
 
-  @Post(":processId/suspend")
+  @Post(":processId/suspension")
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "Suspend a transfer process" })
   @ApiParam({ name: "processId", required: true, description: "Process ID" })

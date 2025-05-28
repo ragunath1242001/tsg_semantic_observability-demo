@@ -140,13 +140,13 @@ C->>DPC: POST http://<consumerDataPlane/transfer/<uuid>/execute/<version>/<path>
 DPC->DPP: Pull Data
 DPP-->>DPC: Resp
 alt consumer ends
-C->>CPC: POST http://<consumer>/management/transfer/<uuid>/complete
-CPC->CPP: POST http://<provider>/transfer/<uuid>/complete
+C->>CPC: POST http://<consumer>/management/transfer/<uuid>/completion
+CPC->CPP: POST http://<provider>/transfer/<uuid>/completion
 CPP-->>CPC: Resp
-CPC->DPC: POST http://<consumerDataPlane>/transfer/<uuid>/complete
+CPC->DPC: POST http://<consumerDataPlane>/transfer/<uuid>/completion
 else data plane ends
-DPC->>CPC: POST http://<consumer>/transfer/<uuid>/complete
-CPC->>CPP: POST http://<provider>/transfer/<uuid>/complete
+DPC->>CPC: POST http://<consumer>/transfer/<uuid>/completion
+CPC->>CPP: POST http://<provider>/transfer/<uuid>/completion
 CPP-->>CPC: Resp
 end
 ```

@@ -5,7 +5,6 @@ import {
   ITransferStatus,
   Multilanguage,
   TransferEvent,
-  TransferProcess,
   TransferRole,
   TransferState
 } from "@tsg-dsp/common-dsp";
@@ -52,10 +51,6 @@ export class TransferDetailDao extends MetaEntity implements ITransferStatus {
   remoteParty!: string;
   @Column({ type: "simple-enum", enum: TransferState })
   state!: TransferState;
-  @Column("simple-json", {
-    transformer: jsonLdTransformer
-  })
-  process!: TransferProcess;
   @Column({ type: String })
   agreementId!: string;
   @Column({ type: String, nullable: true })

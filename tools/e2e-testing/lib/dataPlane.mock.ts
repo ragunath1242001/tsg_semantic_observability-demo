@@ -5,14 +5,16 @@ import {
 } from "@tsg-dsp/common-dsp";
 import { http, HttpResponse, RequestHandler } from "msw";
 
+type DataPlaneMock = {
+  dataPlane: DataPlaneCreation;
+  mocks: Array<RequestHandler>;
+};
+
 export function setupDataPlaneMock(
   role: "provider" | "consumer",
   id: string,
   type: string
-): {
-  dataPlane: DataPlaneCreation;
-  mocks: Array<RequestHandler>;
-} {
+): DataPlaneMock {
   return {
     dataPlane: {
       identifier: id,
@@ -50,7 +52,7 @@ export function setupDataPlaneMock(
         HttpResponse.text("")
       ),
       http.get(`http://127.0.0.1/data-plane/${id}/catalog`, async () =>
-        HttpResponse.json(new Catalog({}))
+        HttpResponse.json(new Catalog({ participantId: "" }))
       )
     ]
   };

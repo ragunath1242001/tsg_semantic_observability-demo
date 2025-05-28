@@ -194,12 +194,17 @@ const sendNegotiation = async (
             label="Current Version">
             {{ datasetData.hasCurrentVersion }}
           </DisplayField>
-          <DisplayField label="Endpoint URL">
-            <a :href="datasetData.distribution[0].accessService[0].endpointURL">
+          <DisplayField
+            v-if="typeof datasetData.distribution[0].accessService === 'string'"
+            label="Endpoint URL">
+            <em>Inherited</em>
+          </DisplayField>
+          <DisplayField v-else label="Endpoint URL">
+            <a :href="datasetData.distribution[0].accessService.endpointURL">
               {{
                 datasetData.distribution[0].title
                   ? datasetData.distribution[0].title
-                  : datasetData.distribution[0].accessService[0].endpointURL
+                  : datasetData.distribution[0].accessService.endpointURL
               }}</a
             >
           </DisplayField>

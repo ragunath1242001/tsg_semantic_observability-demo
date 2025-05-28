@@ -214,7 +214,8 @@ test("Contract Agreement Message", async () => {
       assignee: "urn:uuid:86ba9a67-5501-49b5-aba7-f81a8c3b5935",
       timestamp: "2023-07-12T15:26:00Z",
       target: "urn:uuid:urn:uuid:3058a24a-2805-4f00-9276-c4f2234c7117"
-    })
+    }),
+    callbackAddress: "http://example.com"
   });
   const serialized = await contractAgreementMessage.serialize();
   const expected: ContractAgreementMessageDto = {
@@ -229,7 +230,8 @@ test("Contract Agreement Message", async () => {
       assignee: "urn:uuid:86ba9a67-5501-49b5-aba7-f81a8c3b5935",
       timestamp: "2023-07-12T15:26:00Z",
       target: "urn:uuid:urn:uuid:3058a24a-2805-4f00-9276-c4f2234c7117"
-    }
+    },
+    callbackAddress: "http://example.com"
   };
   expect(serialized).toStrictEqual(expected);
   // const deserialized2 = deserializeSync<ContractAgreementMessage>(serialized);

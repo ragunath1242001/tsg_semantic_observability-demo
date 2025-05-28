@@ -1,4 +1,9 @@
-import { ApiProperty, ApiPropertyOptional, OmitType } from "@nestjs/swagger";
+import {
+  ApiProperty,
+  ApiPropertyOptional,
+  getSchemaPath,
+  OmitType
+} from "@nestjs/swagger";
 
 import { ValueDto } from "../common.dto.js";
 import { DurationSchema, ReferenceSchema } from "../common.schema.js";
@@ -190,8 +195,18 @@ export class DistributionSchema
 {
   @ApiProperty({ example: "Distribution" })
   "@type": "Distribution";
-  @ApiPropertyOptional({ type: DataServiceSchema, example: [] })
-  "accessService"?: Array<DataServiceDto>;
+  @ApiPropertyOptional({
+    oneOf: [
+      {
+        type: "string",
+        example: "https://example.com/access-service"
+      },
+      {
+        $ref: getSchemaPath(DataServiceSchema)
+      }
+    ]
+  })
+  "accessService"?: DataServiceDto | string;
   @ApiPropertyOptional({ example: "https://example.com/access" })
   "accessURL"?: string;
   @ApiPropertyOptional({ example: "12345" })
@@ -252,6 +267,8 @@ export class CatalogSchema
 {
   @ApiProperty({ example: "Catalog" })
   "@type": "Catalog";
+  @ApiProperty({ example: "did:web:example" })
+  "participantId": string;
   @ApiPropertyOptional({ type: [DatasetSchema], example: [] })
   "dataset"?: Array<DatasetDto>;
   @ApiPropertyOptional({ type: [CatalogRecordSchema], example: {} })

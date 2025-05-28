@@ -24,6 +24,7 @@ auth:
   enabled: false
 
 initCatalog:
+  participantId: did:web:localhost%3A3003
   creator: did:web:localhost%3A3003
   publisher: did:web:localhost%3A3003
   title: Organization B

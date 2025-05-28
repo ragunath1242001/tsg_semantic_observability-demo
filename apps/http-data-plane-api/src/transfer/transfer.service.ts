@@ -183,7 +183,7 @@ export class TransferService {
     const transfer = await this.getTransferById(id);
     try {
       const response = await this.axiosManagement.post(
-        `/transfers/${transfer.processId}/complete`
+        `/transfers/${transfer.processId}/completion`
       );
       return response.data;
     } catch (err) {
@@ -198,7 +198,7 @@ export class TransferService {
     const transfer = await this.getTransferById(id);
     try {
       const response = await this.axiosManagement.post(
-        `/transfers/${transfer.processId}/terminate`,
+        `/transfers/${transfer.processId}/termination`,
         {
           code: code,
           reason: reason
@@ -217,7 +217,7 @@ export class TransferService {
     const transfer = await this.getTransferById(id);
     try {
       const response = await this.axiosManagement.post(
-        `/transfers/${transfer.processId}/suspend`,
+        `/transfers/${transfer.processId}/suspension`,
         {
           reason: reason
         }
@@ -509,7 +509,7 @@ export class TransferService {
         "$1"
       );
       const headers = request.headers;
-      transfer.dataAddress.endpointProperties.forEach((p) => {
+      transfer.dataAddress.endpointProperties?.forEach((p) => {
         headers[p.name.toLowerCase()] = p.value;
       });
 

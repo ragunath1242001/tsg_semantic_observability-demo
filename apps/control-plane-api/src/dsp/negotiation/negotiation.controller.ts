@@ -220,6 +220,23 @@ export class NegotiationController {
     return result;
   }
 
+  @ApiOperation({ summary: "Handle negotiation callback status" })
+  @ApiParam({ name: "id", type: String })
+  @ApiOkResponse({ type: ContractNegotiationSchema })
+  @Get("callbacks/negotiations/:id")
+  async callbackStatus(
+    @Param("id") id: string,
+    @VPId() vpId: string
+  ): Promise<ContractNegotiationDto> {
+    this.logger.log(`Received negotiation callback status request for ${id}`);
+    const negotiation = await this.negotiationService.getNegotiation(id, vpId);
+    return new ContractNegotiation({
+      providerPid: negotiation.localId,
+      consumerPid: negotiation.remoteId,
+      state: negotiation.state
+    }).serialize();
+  }
+
   @ApiOperation({ summary: "Handle negotiation callback offer" })
   @ApiParam({ name: "id", type: String })
   @ApiBody({ type: ContractOfferMessageSchema })

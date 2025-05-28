@@ -78,6 +78,7 @@ test("Resource serialization", async () => {
 test("Catalog serialization", async () => {
   const catalog = new Catalog({
     id: "urn:uuid:a0920ac1-d08e-4ee1-acde-6dd0432b84e4",
+    participantId: "did:web:localhost",
     creator: "did:web:localhost",
     description: ["Test connector"],
     publisher: "did:web:localhost",
@@ -108,12 +109,7 @@ test("Catalog serialization", async () => {
         distribution: [
           new Distribution({
             id: "urn:uuid:7ee417b1-f83a-47f8-92be-dace11bdab5f",
-            accessService: [
-              new DataService({
-                id: "urn:uuid:946b0e29-b006-430a-8e4d-ddf196104b67",
-                endpointURL: "http://localhost:3000/api"
-              })
-            ],
+            accessService: "urn:uuid:a2d7d253-e1f6-4cd8-b806-742e119c6023",
             conformsTo: ["https://httpbin.org/spec.json"],
             format: "HTTP",
             title: "Version 0.9.2"
@@ -134,6 +130,7 @@ test("Catalog serialization", async () => {
     "@context": defaultContext(),
     "@type": "Catalog",
     "@id": "urn:uuid:a0920ac1-d08e-4ee1-acde-6dd0432b84e4",
+    participantId: "did:web:localhost",
     creator: "did:web:localhost",
     description: ["Test connector"],
     publisher: "did:web:localhost",
@@ -169,13 +166,7 @@ test("Catalog serialization", async () => {
           {
             "@type": "Distribution",
             "@id": "urn:uuid:7ee417b1-f83a-47f8-92be-dace11bdab5f",
-            accessService: [
-              {
-                "@type": "DataService",
-                "@id": "urn:uuid:946b0e29-b006-430a-8e4d-ddf196104b67",
-                endpointURL: "http://localhost:3000/api"
-              }
-            ],
+            accessService: "urn:uuid:a2d7d253-e1f6-4cd8-b806-742e119c6023",
             conformsTo: ["https://httpbin.org/spec.json"],
             format: "HTTP",
             title: "Version 0.9.2"
@@ -197,15 +188,16 @@ test("Catalog serialization", async () => {
   expect(deserialized).toStrictEqual(catalog);
 });
 
-test("Heracles", async () => {
+test("HealthDCAT-AP", async () => {
   const dto: CatalogDto = {
     "@context": defaultContext(),
     "@id": "urn:uuid:a3983705-9382-4acf-bf09-36aaf4657287",
     "@type": "Catalog",
-    creator: "did:web:pharmacure.heracles.dataspac.es",
-    description: ["PharmaCure Solutions connector"],
-    publisher: "did:web:pharmacure.heracles.dataspac.es",
-    title: "PharmaCure Solutions",
+    participantId: "did:web:localhost",
+    creator: "did:web:localhost",
+    description: ["HealthDCAT-AP Catalog"],
+    publisher: "did:web:localhost",
+    title: "HealthDCAT-AP Connector",
     dataset: [
       {
         "@id": "urn:uuid:3fbde162-57c2-4923-8239-23f0df41177b",
@@ -215,62 +207,58 @@ test("Heracles", async () => {
           "@type": "Distribution",
           description: ["Sample dataset"],
           downloadURL:
-            "https://fdp.pharmacure.heracles.dataspac.es/dataset/00064cd3-1265-4762-b969-40d6a7d7fc56/sample/0",
+            "https://fdp.localhost/dataset/00064cd3-1265-4762-b969-40d6a7d7fc56/sample/0",
           mediaType: "iana:application/zip"
         },
         conformsTo: [
           "https://www.wikidata.org/wiki/Q125499706",
-          "heracles:LMF"
+          "http://ontology.localhost/#LMF"
         ],
-        title: "IKNL NCR Synthetic Dataset",
+        title: "Synthetic Health Dataset",
         description: [
-          "A synthetic dataset that mimics a part of the Netherlands Cancer Registry (NCR) is available for research purposes. This dataset does not contain data on real patients. It enables researchers to use record-level cancer data safely, while knowing that there is no risk of breaching patient confidentiality."
+          "A synthetic Health Dataset annotated with HealthDCAT-AP."
         ],
         distribution: [
           {
             "@id": "urn:uuid:3fbde162-57c2-4923-8239-23f0df41177b:fl",
             "@type": "Distribution",
             conformsTo: [
-              "https://fdp.pharmacure.heracles.dataspac.es/distribution/0ca809b3-dbce-4451-a72b-85d9a6aa5880/spec/schema.lmf"
+              "https://fdp.localhost/distribution/0ca809b3-dbce-4451-a72b-85d9a6aa5880/spec/schema.lmf"
             ],
             format: "tsg:FL",
             title: "TSG Federated Learning Data Plane",
-            accessService: [
-              {
-                "@id": "urn:uuid:2a51f635-bc3e-4853-ac09-682ef169d8fc",
-                "@type": "DataService",
-                endpointDescription: "dspace:connector",
-                endpointURL: "https://cp.pharmacure.heracles.dataspac.es"
-              }
-            ]
+            accessService: {
+              "@id": "urn:uuid:2a51f635-bc3e-4853-ac09-682ef169d8fc",
+              "@type": "DataService",
+              endpointDescription: "dspace:connector",
+              endpointURL: "http://cp.localhost"
+            }
           },
           {
             "@id":
-              "https://fdp.pharmacure.heracles.dataspac.es/distribution/5ea70128-48e6-42f1-a43f-b384ecb4ee12",
+              "https://fdp.localhost/distribution/5ea70128-48e6-42f1-a43f-b384ecb4ee12",
             "@type": "Distribution",
             conformsTo: [
-              "https://fdp.pharmacure.heracles.dataspac.es/distribution/5ea70128-48e6-42f1-a43f-b384ecb4ee12/spec/schema.lmf"
+              "https://fdp.localhost/distribution/5ea70128-48e6-42f1-a43f-b384ecb4ee12/spec/schema.lmf"
             ],
-            format: "heracles:CohortService",
+            format: "http://ontology.localhost/#CohortService",
             title: "Cohort Definition Service",
-            accessService: [
-              {
-                "@id":
-                  "https://fdp.pharmacure.heracles.dataspac.es/dataService/3d6594f9-d7d6-4340-bb8a-1d5290534fdd",
-                "@type": "DataService",
-                endpointDescription: "heracles:cohortService",
-                endpointURL:
-                  "https://fdp.pharmacure.heracles.dataspac.es/services/cohortService/00064cd3-1265-4762-b969-40d6a7d7fc56"
-              }
-            ]
+            accessService: {
+              "@id":
+                "https://fdp.localhost/dataService/3d6594f9-d7d6-4340-bb8a-1d5290534fdd",
+              "@type": "DataService",
+              endpointDescription: "http://ontology.localhost/#cohortService",
+              endpointURL:
+                "https://fdp.localhost/services/cohortService/00064cd3-1265-4762-b969-40d6a7d7fc56"
+            }
           }
         ],
-        keyword: ["Netherlands Cancer Registry", "Synthetic"],
+        keyword: ["Health Dataset", "Synthetic"],
         hasPolicy: [
           {
             "@type": "Offer",
             "@id": "urn:uuid:edddc008-f4b0-4ac3-a37e-2eda05956974",
-            assigner: "did:web:pharmacure.heracles.dataspac.es",
+            assigner: "did:web:localhost",
             permission: [
               {
                 "@type": "Permission",
@@ -287,7 +275,7 @@ test("Heracles", async () => {
             "@type": ["prov:Agent", "prov:SoftwareAgent"],
             "prov:actedOnBehalfOf": {
               "@type": ["prov:Agent", "prov:Organization"],
-              "foaf:name": "IKNL"
+              "foaf:name": "Synthetic Data Generator actor"
             },
             "foaf:name": "Synthetic Data Generator"
           }
@@ -309,20 +297,40 @@ test("Heracles", async () => {
         "@id": "urn:uuid:2a51f635-bc3e-4853-ac09-682ef169d8fc",
         "@type": "DataService",
         endpointDescription: "dspace:connector",
-        endpointURL: "https://cp.pharmacure.heracles.dataspac.es"
+        endpointURL: "http://cp.localhost"
       },
       {
         "@id":
-          "https://fdp.pharmacure.heracles.dataspac.es/dataService/3d6594f9-d7d6-4340-bb8a-1d5290534fdd",
+          "https://fdp.localhost/dataService/3d6594f9-d7d6-4340-bb8a-1d5290534fdd",
         "@type": "DataService",
-        endpointDescription: "heracles:cohortService",
+        endpointDescription: "http://ontology.localhost/#cohortService",
         endpointURL:
-          "https://fdp.pharmacure.heracles.dataspac.es/services/cohortService/00064cd3-1265-4762-b969-40d6a7d7fc56"
+          "https://fdp.localhost/services/cohortService/00064cd3-1265-4762-b969-40d6a7d7fc56"
       }
     ]
   };
   const deserialized = await deserialize<Catalog>(dto);
-  const serialized = await deserialized.serialize(true);
+  expect(
+    deserialized.dataset![0].extraProps["healthdcatap:numberOfRecords"]
+  ).toBe(84000);
+  expect(
+    deserialized.dataset![0].extraProps[
+      "healthdcatap:numberOfUniqueIndividuals"
+    ]
+  ).toBe(20000);
+  expect(
+    deserialized.dataset![0].extraProps["healthdcatap:hasCodingSystem"]
+  ).toStrictEqual([
+    "https://www.wikidata.org/wiki/Q1753883",
+    "https://www.wikidata.org/wiki/Property:P563"
+  ]);
+  expect(
+    deserialized.dataset![0].extraProps["healthdcatap:healthTheme"]
+  ).toStrictEqual([
+    "https://www.wikidata.org/wiki/Q12078",
+    "https://www.wikidata.org/wiki/Q128581"
+  ]);
+  const serialized = deserialized.serialize(true);
 
   expect(serialized).toStrictEqual(dto);
 });

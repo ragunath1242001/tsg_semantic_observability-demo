@@ -24,6 +24,7 @@ iam:
   didId: did:web:localhost%3A32490
 
 initCatalog:
+  participantId: did:web:localhost%3A32490
   creator: did:web:localhost%3A32490
   publisher: did:web:localhost%3A32490
   title: TSG Test Connector

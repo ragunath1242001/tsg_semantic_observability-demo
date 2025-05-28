@@ -57,13 +57,20 @@ export class RequestContextMiddleware
 
 @Injectable()
 export class AppLogger extends ConsoleLogger {
-  constructor() {
+  constructor(logLevel?: string) {
     super();
     const logLevelConfig =
+      logLevel ||
       process.env["LOG_LEVEL"]?.toLowerCase() ||
       (process.env.NODE_ENV === "production" ? "info" : "debug");
     let levels: LogLevel[] = [];
     switch (logLevelConfig) {
+      case "error":
+        levels = ["error", "fatal"];
+        break;
+      case "warn":
+        levels = ["warn", "error", "fatal"];
+        break;
       case "info":
       case "log":
         levels = ["log", "warn", "error", "fatal"];

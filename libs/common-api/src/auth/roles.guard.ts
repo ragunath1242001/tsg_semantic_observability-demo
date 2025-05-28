@@ -2,7 +2,8 @@ import {
   CanActivate,
   createParamDecorator,
   ExecutionContext,
-  Injectable
+  Injectable,
+  Logger
 } from "@nestjs/common";
 import { APP_GUARD, Reflector } from "@nestjs/core";
 import { plainToInstance } from "class-transformer";
@@ -62,6 +63,7 @@ export class RolesGuard implements CanActivate {
     private readonly reflector: Reflector,
     private readonly authConfig: AuthConfig
   ) {}
+  private readonly logger = new Logger(this.constructor.name);
 
   canActivate(
     context: ExecutionContext
@@ -89,7 +91,13 @@ export class RolesGuard implements CanActivate {
       request.user,
       GenericConfigModule.get(AuthConfig).rolePath
     );
-    return [allowedRoles].flat().some((r: string) => roles.includes(r));
+    const result = [allowedRoles].flat().some((r: string) => roles.includes(r));
+    if (!result) {
+      this.logger.error(
+        `User ${request.user?.sub} does not have the required roles: ${allowedRoles}`
+      );
+    }
+    return result;
   }
 
   static asGlobalGuard() {

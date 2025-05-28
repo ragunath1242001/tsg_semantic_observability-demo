@@ -1123,6 +1123,25 @@ paths:
       security: *a14
       summary: Terminate negotiation
       tags: *a15
+  /api/callbacks/negotiations/{id}:
+    get:
+      operationId: NegotiationController_callbackStatus
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContractNegotiationSchema"
+      security: *a14
+      summary: Handle negotiation callback status
+      tags: *a15
   /api/callbacks/negotiations/{id}/offers:
     post:
       operationId: NegotiationController_callbackOffer
@@ -1551,7 +1570,7 @@ paths:
       security: *a16
       summary: Finalize a negotiation
       tags: *a17
-  /api/management/negotiations/{processId}/terminate:
+  /api/management/negotiations/{processId}/termination:
     post:
       operationId: NegotiationManagementController_terminate
       parameters:
@@ -1658,7 +1677,7 @@ paths:
       security: *a18
       summary: Start transfer process
       tags: *a19
-  /api/transfers/{id}/complete:
+  /api/transfers/{id}/completion:
     post:
       operationId: TransferController_completeTransferProcess
       parameters:
@@ -1689,7 +1708,7 @@ paths:
       security: *a18
       summary: Complete transfer process
       tags: *a19
-  /api/transfers/{id}/terminate:
+  /api/transfers/{id}/termination:
     post:
       operationId: TransferController_terminateTransferProcess
       parameters:
@@ -1720,7 +1739,7 @@ paths:
       security: *a18
       summary: Terminate transfer process
       tags: *a19
-  /api/transfers/{id}/suspend:
+  /api/transfers/{id}/suspension:
     post:
       operationId: TransferController_suspendTransferProcess
       parameters:
@@ -1750,6 +1769,26 @@ paths:
                   status: success
       security: *a18
       summary: Suspend transfer process
+      tags: *a19
+  /api/callbacks/transfers/{id}:
+    get:
+      operationId: TransferController_callbackGetTransfer
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer ID
+          schema:
+            type: string
+      responses:
+        default:
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransferProcessSchema"
+      security: *a18
+      summary: Get transfer status by ID
       tags: *a19
   /api/callbacks/transfers/{id}/start:
     post:
@@ -1782,7 +1821,7 @@ paths:
       security: *a18
       summary: Callback to start transfer process
       tags: *a19
-  /api/callbacks/transfers/{id}/complete:
+  /api/callbacks/transfers/{id}/completion:
     post:
       operationId: TransferController_callbackCompleteTransferProcess
       parameters:
@@ -1813,7 +1852,7 @@ paths:
       security: *a18
       summary: Callback to complete transfer process
       tags: *a19
-  /api/callbacks/transfers/{id}/terminate:
+  /api/callbacks/transfers/{id}/termination:
     post:
       operationId: TransferController_callbackTerminateTransferProcess
       parameters:
@@ -1844,7 +1883,7 @@ paths:
       security: *a18
       summary: Callback to terminate transfer process
       tags: *a19
-  /api/callbacks/transfers/{id}/suspend:
+  /api/callbacks/transfers/{id}/suspension:
     post:
       operationId: TransferController_callbackSuspendTransferProcess
       parameters:
@@ -2050,7 +2089,7 @@ paths:
       security: *a20
       summary: Start a transfer process
       tags: *a21
-  /api/management/transfers/{processId}/complete:
+  /api/management/transfers/{processId}/completion:
     post:
       operationId: TransferManagementController_completeTransfer
       parameters:
@@ -2075,7 +2114,7 @@ paths:
       security: *a20
       summary: Complete a transfer process
       tags: *a21
-  /api/management/transfers/{processId}/terminate:
+  /api/management/transfers/{processId}/termination:
     post:
       operationId: TransferManagementController_terminateTransfer
       parameters:
@@ -2111,7 +2150,7 @@ paths:
       security: *a20
       summary: Terminate a transfer process
       tags: *a21
-  /api/management/transfers/{processId}/suspend:
+  /api/management/transfers/{processId}/suspension:
     post:
       operationId: TransferManagementController_suspendTransfer
       parameters:
@@ -4151,6 +4190,9 @@ components:
         "@type":
           type: string
           example: Catalog
+        participantId:
+          type: string
+          example: did:web:example
         dataset:
           example: []
           type: array
@@ -4180,6 +4222,7 @@ components:
       required:
         - "@id"
         - "@type"
+        - participantId
     CatalogRequestMessageSchema:
       type: object
       properties:
@@ -4336,7 +4379,6 @@ components:
         - "@type"
         - consumerPid
         - providerPid
-        - hashedMessage
     MultilanguageSchema:
       type: object
       properties:
@@ -4468,11 +4510,15 @@ components:
             target: urn:example:target
           allOf:
             - $ref: "#/components/schemas/AgreementSchema"
+        callbackAddress:
+          type: string
+          example: http://example.com/agreement-callback
       required:
         - "@type"
         - consumerPid
         - providerPid
         - agreement
+        - callbackAddress
     NegotiationStatusDto:
       type: object
       properties:
@@ -4663,7 +4709,6 @@ components:
         - "@type"
         - endpointType
         - endpoint
-        - endpointProperties
     TransferRequestMessageSchema:
       type: object
       properties:
@@ -4792,7 +4837,6 @@ components:
         - providerPid
         - consumerPid
         - code
-        - reason
     TransferSuspensionMessageSchema:
       type: object
       properties:
@@ -4815,7 +4859,6 @@ components:
         - "@type"
         - providerPid
         - consumerPid
-        - reason
     TransferStatusDto:
       type: object
       properties:
@@ -4843,12 +4886,6 @@ components:
             - COMPLETED
             - SUSPENDED
           example: REQUESTED
-        process:
-          example: &a46
-            step: upload
-            progress: 50
-          allOf:
-            - $ref: "#/components/schemas/TransferProcessSchema"
         agreementId:
           type: string
           example: agreement-45678
@@ -4865,7 +4902,6 @@ components:
         - remoteAddress
         - remoteParty
         - state
-        - process
         - agreementId
         - modifiedDate
     DataPlaneProperty:
@@ -4987,10 +5023,6 @@ components:
           type: string
           enum: *a45
           example: REQUESTED
-        process:
-          example: *a46
-          allOf:
-            - $ref: "#/components/schemas/TransferProcessSchema"
         agreementId:
           type: string
           example: agreement-45678
@@ -5033,7 +5065,6 @@ components:
         - remoteAddress
         - remoteParty
         - state
-        - process
         - agreementId
         - modifiedDate
         - dataPlaneTransfer
@@ -5172,10 +5203,10 @@ components:
             verifier: did:example:verifier
         credentialStatus:
           oneOf:
-            - &a47
+            - &a46
               $ref: "#/components/schemas/CredentialStatus"
             - type: array
-              items: *a47
+              items: *a46
         proof:
           example:
             - type: JsonWebSignature2020
@@ -5402,10 +5433,10 @@ components:
         serviceEndpoint:
           example: https://example.com
           oneOf:
-            - &a48
+            - &a47
               type: string
             - type: array
-              items: *a48
+              items: *a47
       required:
         - id
         - type
@@ -5416,10 +5447,10 @@ components:
         "@context":
           example: https://www.w3.org/ns/did/v1
           oneOf:
-            - &a49
+            - &a48
               type: string
             - type: array
-              items: *a49
+              items: *a48
         id:
           type: string
           example: bdfd4c8e-3a44-4b9f-bc3e-1a8e26e3e99d
@@ -5432,10 +5463,10 @@ components:
         controller:
           example: bdfd4c8e-3a44-4b9f-bc3e-1a8e26e3e99d
           oneOf:
-            - &a50
+            - &a49
               type: string
             - type: array
-              items: *a50
+              items: *a49
         verificationMethod:
           example:
             - id: bdfd4c8e-3a44-4b9f-bc3e-1a8e26e3e99d
