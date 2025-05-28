@@ -5,7 +5,12 @@ import {
   PaginationOptionsDto,
   ServerConfig
 } from "@tsg-dsp/common-api";
-import { DataPlaneAddressDto, DistributionDto } from "@tsg-dsp/common-dsp";
+import {
+  DataPlaneAddressDto,
+  defaultContext,
+  DistributionDto,
+  TransferProcessDto
+} from "@tsg-dsp/common-dsp";
 import {
   DataAddress,
   deserialize,
@@ -146,11 +151,6 @@ export class TransferService {
           remoteAddress: true,
           remoteParty: true,
           state: true,
-          process: {
-            consumerPid: true,
-            providerPid: true,
-            state: true
-          },
           agreementId: true,
           format: true,
           modifiedDate: true
@@ -189,6 +189,20 @@ export class TransferService {
         HttpStatus.NOT_FOUND
       ).andLog(this.logger, "warn");
     }
+  }
+
+  async getTransferProcessDto(
+    processId: string,
+    audience?: string
+  ): Promise<TransferProcessDto> {
+    const transfer = await this.getTransfer(processId, audience);
+    return {
+      "@context": defaultContext(),
+      "@type": "TransferProcess",
+      consumerPid: this.mapId(transfer, "consumerPid"),
+      providerPid: this.mapId(transfer, "providerPid"),
+      state: transfer.state
+    };
   }
 
   async getTransfersByAgreement(
@@ -302,7 +316,6 @@ export class TransferService {
       format: format,
       dataAddress: dataAddress,
       dataPlaneTransfer: dataPlaneTransfer,
-      process: transferProcess,
       events: [
         this.transferEventRepository.create({
           time: new Date(),
@@ -352,7 +365,6 @@ export class TransferService {
       format: transferRequestMessage.format,
       dataAddress: transferRequestMessage.dataAddress,
       dataPlaneTransfer: dataPlaneTransfer,
-      process: transferProcess,
       events: [
         this.transferEventRepository.create({
           time: new Date(),
@@ -514,7 +526,7 @@ export class TransferService {
       );
     }
     await this.dsp.completeTransfer(
-      `${transfer.remoteAddress}/complete`,
+      `${transfer.remoteAddress}/completion`,
       transferCompletionMessage,
       transfer.remoteParty
     );
@@ -592,7 +604,7 @@ export class TransferService {
       );
     }
     await this.dsp.terminateTransfer(
-      `${transfer.remoteAddress}/terminate`,
+      `${transfer.remoteAddress}/termination`,
       transferTerminationMessage,
       transfer.remoteParty
     );
@@ -682,7 +694,7 @@ export class TransferService {
       );
     }
     await this.dsp.suspendTransfer(
-      `${transfer.remoteAddress}/suspend`,
+      `${transfer.remoteAddress}/suspension`,
       transferSuspensionMessage,
       transfer.remoteParty
     );

@@ -232,7 +232,7 @@ export class ContractNegotiationError extends SerializableClass<ContractNegotiat
 export interface IContractAgreementVerificationMessage {
   consumerPid: string;
   providerPid: string;
-  hashedMessage: HashedMessage;
+  hashedMessage?: HashedMessage;
 }
 
 @Serializable("ContractAgreementVerificationMessage")
@@ -246,8 +246,8 @@ export class ContractAgreementVerificationMessage extends SerializableClass<Cont
   @IsString()
   providerPid: string;
   @Namespace("dspace")
-  @IsNotEmpty()
-  hashedMessage: HashedMessage;
+  @IsOptional()
+  hashedMessage?: HashedMessage;
 
   constructor(value: withExtraProps<IContractAgreementVerificationMessage>) {
     super(value);
@@ -261,6 +261,7 @@ export interface IContractAgreementMessage {
   consumerPid: string;
   providerPid: string;
   agreement: Agreement;
+  callbackAddress: string;
 }
 
 @Serializable("ContractAgreementMessage")
@@ -278,6 +279,9 @@ export class ContractAgreementMessage extends SerializableClass<ContractAgreemen
   @ValidateNested()
   @LDType(() => Agreement)
   agreement: Agreement;
+  @Namespace("dspace")
+  @IsNotEmpty()
+  callbackAddress: string;
 
   constructor(value: withExtraProps<IContractAgreementMessage>) {
     super(value);
@@ -287,5 +291,6 @@ export class ContractAgreementMessage extends SerializableClass<ContractAgreemen
       value.agreement,
       Agreement
     ) as Agreement;
+    this.callbackAddress = value.callbackAddress;
   }
 }

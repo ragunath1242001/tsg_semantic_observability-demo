@@ -9,7 +9,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "e2e:local": "jest --runInBand --testNamePattern .\\* --testPathPattern lib/local --verbose",
-    "e2e:tck": "jest -i lib/tck.test.ts"
+    "e2e:tck": "jest --runInBand --testNamePattern .\\* --testPathPattern lib/tck --verbose"
   },
   "license": "Apache-2.0",
   "repository": {

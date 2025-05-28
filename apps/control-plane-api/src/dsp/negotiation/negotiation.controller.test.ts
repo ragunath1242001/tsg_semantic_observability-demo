@@ -504,7 +504,8 @@ describe("NegotiationController", () => {
             assignee: "urn:uuid:05da26f1-6213-4c27-b104-623cd33ecde7",
             timestamp: "2023-07-21T09:26:00Z",
             target: "urn:uuid:e9eeadef-a9cc-4b9c-ba57-fc182da03d63"
-          })
+          }),
+          callbackAddress: "http://127.0.0.1/callbacks"
         }),
         "did:web:localhost"
       );
@@ -525,7 +526,8 @@ describe("NegotiationController", () => {
               assignee: "urn:uuid:05da26f1-6213-4c27-b104-623cd33ecde7",
               timestamp: "2023-07-21T09:26:00Z",
               target: "urn:uuid:e9eeadef-a9cc-4b9c-ba57-fc182da03d63"
-            })
+            }),
+            callbackAddress: "http://127.0.0.1/callbacks"
           }),
           "did:web:localhost"
         );

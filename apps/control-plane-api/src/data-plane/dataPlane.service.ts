@@ -537,7 +537,7 @@ export class DataPlaneService {
         }
       };
       await this.axios.post(
-        `${dataPlane.managementAddress}/transfers/${dataPlaneTransfer.identifier}/complete`,
+        `${dataPlane.managementAddress}/transfers/${dataPlaneTransfer.identifier}/completion`,
         transferCompletionMessage,
         requestConfig
       );
@@ -569,7 +569,7 @@ export class DataPlaneService {
         }
       };
       await this.axios.post(
-        `${dataPlane.managementAddress}/transfers/${dataPlaneTransfer.identifier}/terminate`,
+        `${dataPlane.managementAddress}/transfers/${dataPlaneTransfer.identifier}/termination`,
         transferTerminationMessage,
         requestConfig
       );
@@ -601,7 +601,7 @@ export class DataPlaneService {
         }
       };
       await this.axios.post(
-        `${dataPlane.managementAddress}/transfers/${dataPlaneTransfer.identifier}/suspend`,
+        `${dataPlane.managementAddress}/transfers/${dataPlaneTransfer.identifier}/suspension`,
         transferSuspensionMessage,
         requestConfig
       );

@@ -19,7 +19,7 @@ export interface DataAddressDto extends ContextDto {
   "@type": "DataAddress";
   endpointType: string;
   endpoint: string;
-  endpointProperties: Array<EndpointPropertyDto>;
+  endpointProperties?: Array<EndpointPropertyDto>;
 }
 
 export interface EndpointPropertyDto extends ContextDto {
@@ -48,7 +48,7 @@ export interface TransferSuspensionMessageDto extends ContextDto {
   "@type": "TransferSuspensionMessage";
   providerPid: string;
   consumerPid: string;
-  reason: Array<any>;
+  reason?: Array<any>;
 }
 
 export interface TransferCompletionMessageDto extends ContextDto {
@@ -62,7 +62,7 @@ export interface TransferTerminationMessageDto extends ContextDto {
   providerPid: string;
   consumerPid: string;
   code: string;
-  reason: Array<any>;
+  reason?: Array<any>;
 }
 
 export interface TransferErrorDto extends ContextDto {

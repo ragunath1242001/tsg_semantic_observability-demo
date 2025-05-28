@@ -40,12 +40,12 @@ describe("Local - TP_02: Transfer request provider scenarios", () => {
     const consumerDataplaneMock = setupDataPlaneMock(
       "consumer",
       "CD-1",
-      "tsg:dummy"
+      "HttpData-PULL"
     );
     const providerDataplaneMock = setupDataPlaneMock(
       "provider",
       "PD-1",
-      "tsg:dummy"
+      "HttpData-PULL"
     );
 
     mockServer = setupServer(
@@ -98,7 +98,7 @@ describe("Local - TP_02: Transfer request provider scenarios", () => {
           "ATP0201",
           "http://localhost:32490/api/transfers",
           "did:web:localhost%3A32490",
-          "tsg:dummy"
+          "HttpData-PULL"
         );
       })
       .onEvent(
@@ -154,7 +154,7 @@ describe("Local - TP_02: Transfer request provider scenarios", () => {
           "ATP0202",
           "http://localhost:32490/api/transfers",
           "did:web:localhost%3A32490",
-          "tsg:dummy"
+          "HttpData-PULL"
         );
       })
       .onEvent(
@@ -205,7 +205,7 @@ describe("Local - TP_02: Transfer request provider scenarios", () => {
           "ATP0203",
           "http://localhost:32490/api/transfers",
           "did:web:localhost%3A32490",
-          "tsg:dummy"
+          "HttpData-PULL"
         );
       })
       .onEvent(
@@ -273,7 +273,7 @@ describe("Local - TP_02: Transfer request provider scenarios", () => {
           "ATP0204",
           "http://localhost:32490/api/transfers",
           "did:web:localhost%3A32490",
-          "tsg:dummy"
+          "HttpData-PULL"
         );
       })
       .onEvent(
@@ -344,7 +344,7 @@ describe("Local - TP_02: Transfer request provider scenarios", () => {
           "ATP0205",
           "http://localhost:32490/api/transfers",
           "did:web:localhost%3A32490",
-          "tsg:dummy"
+          "HttpData-PULL"
         );
       })
       .onEvent(

@@ -213,7 +213,9 @@ describe("Transfer service", () => {
         HttpResponse.text("")
       ),
       http.get("http://127.0.0.1/data-plane/catalog", async () =>
-        HttpResponse.json(await new Catalog({}))
+        HttpResponse.json(
+          new Catalog({ participantId: "did:web:localhost" }).serialize()
+        )
       ),
       http.post<
         PathParams,
@@ -303,14 +305,20 @@ describe("Transfer service", () => {
       http.post(`http://remoteparty.test/transfers/:processId/start`, () => {
         return HttpResponse.json({ status: "OK" });
       }),
-      http.post(`http://remoteparty.test/transfers/:processId/suspend`, () => {
-        return HttpResponse.json({ status: "OK" });
-      }),
-      http.post(`http://remoteparty.test/transfers/:processId/complete`, () => {
-        return HttpResponse.json({ status: "OK" });
-      }),
       http.post(
-        `http://remoteparty.test/transfers/:processId/terminate`,
+        `http://remoteparty.test/transfers/:processId/suspension`,
+        () => {
+          return HttpResponse.json({ status: "OK" });
+        }
+      ),
+      http.post(
+        `http://remoteparty.test/transfers/:processId/completion`,
+        () => {
+          return HttpResponse.json({ status: "OK" });
+        }
+      ),
+      http.post(
+        `http://remoteparty.test/transfers/:processId/termination`,
         () => {
           return HttpResponse.json({ status: "OK" });
         }

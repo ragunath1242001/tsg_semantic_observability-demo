@@ -134,12 +134,10 @@ describe("Catalog Service", () => {
           new Distribution({
             id: "urn:uuid:06d7da99-68eb-4f9e-8cb6-b78666c46123",
             format: "tsg:HTTP",
-            accessService: [
-              new DataService({
-                id: "urn:uuid:0d5f0685-eb04-409a-8a77-ee4ed207f2f0",
-                endpointURL: "https://httpbin.org/anything"
-              })
-            ]
+            accessService: new DataService({
+              id: "urn:uuid:0d5f0685-eb04-409a-8a77-ee4ed207f2f0",
+              endpointURL: "https://httpbin.org/anything"
+            })
           })
         ],
         extraProps: {
@@ -162,10 +160,9 @@ describe("Catalog Service", () => {
       );
       expect(updatedDataset.title).toBe("Test HTTP dataset");
       expect(updatedDataset.distribution).toHaveLength(1);
-      expect(updatedDataset.distribution?.[0]?.accessService).toHaveLength(1);
-      expect(
-        updatedDataset.distribution?.[0]?.accessService?.[0]?.endpointURL
-      ).toBe("https://httpbin.org/anything");
+      expect(updatedDataset.distribution?.[0]?.accessService).toMatchObject({
+        endpointURL: "https://httpbin.org/anything"
+      });
 
       //    A policy should be auto generated since we haven't defined one.
       expect(updatedDataset.hasPolicy).toHaveLength(1);
@@ -187,10 +184,9 @@ describe("Catalog Service", () => {
       expect(datasetDao).toBeDefined();
       expect(datasetDao!.title).toBe("Test HTTP dataset");
       expect(datasetDao!.distribution).toHaveLength(1);
-      expect(datasetDao!.distribution?.[0]?.accessService).toHaveLength(1);
-      expect(
-        datasetDao!.distribution?.[0]?.accessService?.[0]?.endpointURL
-      ).toBe("https://httpbin.org/anything");
+      expect(updatedDataset.distribution?.[0]?.accessService).toMatchObject({
+        endpointURL: "https://httpbin.org/anything"
+      });
       const dto = await datasetDao.serialize();
       expect(dto["hasPolicy"]?.[0]?.["assigner"]).toBeDefined();
     });
@@ -233,14 +229,12 @@ describe("Catalog Service", () => {
             "@id": `${datasetId}:application/analytics-data-plane`,
             title: "Analytics Data Plane (tsg:analytics)",
             format: "tsg:analytics",
-            accessService: [
-              {
-                "@type": "DataService",
-                "@id": `${datasetId}:analytics-service`,
-                title: "Analytics Data Plane Service",
-                endpointDescription: "dspace:connector"
-              } as DataServiceDto
-            ]
+            accessService: {
+              "@type": "DataService",
+              "@id": `${datasetId}:analytics-service`,
+              title: "Analytics Data Plane Service",
+              endpointDescription: "dspace:connector"
+            } as DataServiceDto
           } as DistributionDto
         ]
       } as DatasetDto;
@@ -255,10 +249,10 @@ describe("Catalog Service", () => {
 
       expect(dataset.distribution).toHaveLength(1);
       expect(dataset.distribution?.[0]?.format).toBe("tsg:analytics");
-      expect(dataset.distribution?.[0]?.accessService).toHaveLength(1);
-      expect(dataset.distribution?.[0]?.accessService?.[0]?.endpointURL).toBe(
-        "http://localhost:3000"
-      );
+
+      expect(dataset.distribution?.[0]?.accessService).toMatchObject({
+        endpointURL: "http://localhost:3000"
+      });
 
       //    A policy should be auto generated since we haven't defined one.
       expect(dataset.hasPolicy).toHaveLength(1);
@@ -282,12 +276,10 @@ describe("Catalog Service", () => {
           new Distribution({
             id: "urn:uuid:06d7da99-68eb-4f9e-8cb6-b78666c46123",
             format: "tsg:HTTP",
-            accessService: [
-              new DataService({
-                id: "urn:uuid:0d5f0685-eb04-409a-8a77-ee4ed207f2f0",
-                endpointURL: "https://httpbin.org/anything"
-              })
-            ]
+            accessService: new DataService({
+              id: "urn:uuid:0d5f0685-eb04-409a-8a77-ee4ed207f2f0",
+              endpointURL: "https://httpbin.org/anything"
+            })
           })
         ]
       });
@@ -325,12 +317,10 @@ describe("Catalog Service", () => {
           new Distribution({
             id: "urn:uuid:06d7da99-68eb-4f9e-8cb6-b78666c46124",
             format: "tsg:HTTP",
-            accessService: [
-              new DataService({
-                id: "urn:uuid:0d5f0685-eb04-409a-8a77-ee4ed207f2f1",
-                endpointURL: "https://httpbin.org/anything/update"
-              })
-            ]
+            accessService: new DataService({
+              id: "urn:uuid:0d5f0685-eb04-409a-8a77-ee4ed207f2f1",
+              endpointURL: "https://httpbin.org/anything/update"
+            })
           })
         ]
       });
@@ -345,10 +335,9 @@ describe("Catalog Service", () => {
 
       expect(updatedDataset!.title).toBe("Second Updated Test HTTP Dataset");
       expect(updatedDataset!.distribution).toHaveLength(1);
-      expect(updatedDataset!.distribution![0].accessService).toHaveLength(1);
-      expect(
-        updatedDataset!.distribution![0].accessService![0].endpointURL
-      ).toBe("https://httpbin.org/anything/update");
+      expect(updatedDataset!.distribution![0].accessService).toMatchObject({
+        endpointURL: "https://httpbin.org/anything/update"
+      });
     });
 
     it("Remove dataset", async () => {

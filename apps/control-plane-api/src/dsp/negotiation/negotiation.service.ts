@@ -660,7 +660,8 @@ export class NegotiationService {
     const agreementMessage = new ContractAgreementMessage({
       providerPid: negotiation.localId,
       consumerPid: negotiation.remoteId,
-      agreement: agreement
+      agreement: agreement,
+      callbackAddress: `${this.server.publicAddress}/callbacks`
     });
     negotiation.events.push({
       time: new Date(),
@@ -825,9 +826,9 @@ export class NegotiationService {
     );
     let agreement: AgreementDto | undefined;
     if (
-      contractAgreementVerificationMessage.hashedMessage.algorithm ===
+      contractAgreementVerificationMessage.hashedMessage?.algorithm ===
         "JsonWebSignature2020" ||
-      contractAgreementVerificationMessage.hashedMessage.algorithm ===
+      contractAgreementVerificationMessage.hashedMessage?.algorithm ===
         "DataIntegrityProof"
     ) {
       try {

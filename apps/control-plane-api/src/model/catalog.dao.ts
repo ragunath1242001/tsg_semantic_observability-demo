@@ -189,11 +189,13 @@ export class DataServiceDao extends ResourceChild implements IDataService {
 export class DistributionDao extends MetaEntity implements IDistribution {
   @PrimaryColumn({ type: String })
   id!: string;
-  @ManyToMany(() => DataServiceDao, { nullable: true, cascade: true })
+  @ManyToOne(() => DataServiceDao, { nullable: true, cascade: true })
   @JoinTable()
-  _accessService?: Array<DataServiceDao>;
-  get accessService(): Array<DataService> | undefined {
-    return mapToInstances(this._accessService, DataService);
+  _accessService?: DataServiceDao;
+  get accessService(): DataService | undefined {
+    return this._accessService
+      ? new DataService(this._accessService)
+      : undefined;
   }
   @Column({ type: String, nullable: true })
   accessURL?: string;
@@ -392,6 +394,8 @@ export abstract class DatasetChild extends MetaEntity {
 export class CatalogDao extends DatasetChild implements ICatalog {
   @PrimaryColumn({ type: String })
   id!: string;
+  @Column({ type: String, nullable: true })
+  participantId!: string;
   @OneToMany(() => DatasetDao, (dataset) => dataset._catalog, { cascade: true })
   _datasets?: Array<Relation<DatasetDao>>;
   get dataset(): Array<Dataset> | undefined {

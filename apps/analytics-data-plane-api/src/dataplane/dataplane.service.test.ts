@@ -55,13 +55,6 @@ describe("Dataplane Service", () => {
         {
           "@type": "Distribution",
           "@id": "urn:uuid:f2f7c1a0-51b9-4383-b084-d4a7e524f61f",
-          accessService: [
-            {
-              "@type": "DataService",
-              "@id": "urn:uuid:96645550-840f-44a0-a994-427cdfd0b2d8",
-              endpointURL: "http://localhost"
-            }
-          ],
           conformsTo: ["https://httpbin.org/spec.json"],
           format: "tsg:analytics",
           title: "HTTPBin"

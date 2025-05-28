@@ -39,6 +39,7 @@ iam:
   # clientSecret: secret
 
 initCatalog:
+  participantId: did:web:localhost%3A3001
   creator: did:web:localhost%3A3001
   publisher: did:web:localhost%3A3001
   title: Party 1

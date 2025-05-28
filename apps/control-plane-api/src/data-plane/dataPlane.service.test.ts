@@ -197,19 +197,20 @@ describe("DataPlane Service", () => {
           new Distribution({
             id: "urn:uuid:06d7da99-68eb-4f9e-8cb6-b78666c46123",
             format: "tsg:HTTP",
-            accessService: [
-              new DataService({
-                id: "urn:uuid:0d5f0685-eb04-409a-8a77-ee4ed207f2f0",
-                endpointURL: "https://httpbin.org/anything"
-              })
-            ]
+            accessService: new DataService({
+              id: "urn:uuid:0d5f0685-eb04-409a-8a77-ee4ed207f2f0",
+              endpointURL: "https://httpbin.org/anything"
+            })
           })
         ]
       });
       await expect(
         dataPlaneService.updateCatalog(
           "test123",
-          new Catalog({ dataset: [dataset] })
+          new Catalog({
+            participantId: "did:web:localhost",
+            dataset: [dataset]
+          })
         )
       ).rejects.toThrow(DSPError);
     });
@@ -224,13 +225,11 @@ describe("DataPlane Service", () => {
           new Distribution({
             id: "urn:uuid:06d7da99-68eb-4f9e-8cb6-b78666c46123",
             format: "tsg:HTTP",
-            accessService: [
-              new DataService({
-                id: "urn:uuid:0d5f0685-eb04-409a-8a77-ee4ed207f2f0",
-                endpointDescription: "dspace:connector",
-                endpointURL: "https://httpbin.org/anything"
-              })
-            ]
+            accessService: new DataService({
+              id: "urn:uuid:0d5f0685-eb04-409a-8a77-ee4ed207f2f0",
+              endpointDescription: "dspace:connector",
+              endpointURL: "https://httpbin.org/anything"
+            })
           })
         ]
       });
@@ -248,7 +247,7 @@ describe("DataPlane Service", () => {
 
       const createdDataset = await dataPlaneService.updateCatalog(
         addedDataPlane.identifier,
-        new Catalog({ dataset: [dataset] })
+        new Catalog({ participantId: "did:web:localhost", dataset: [dataset] })
       );
 
       expect(createdDataset).toBeDefined();
@@ -257,7 +256,7 @@ describe("DataPlane Service", () => {
       expect(catalog.data._datasets?.length).toEqual(1);
       expect(catalog.data._datasets?.[0].hasPolicy).toHaveLength(1);
       expect(
-        catalog.data._datasets?.[0]._distribution?.[0]?._accessService?.[0]
+        catalog.data._datasets?.[0]._distribution?.[0]?._accessService
       ).toEqual(catalog.data._services?.[0]);
     });
 
@@ -283,12 +282,10 @@ describe("DataPlane Service", () => {
           new Distribution({
             id: "urn:uuid:06d7da99-68eb-4f9e-8cb6-b78666c46133",
             format: "tsg:HTTP",
-            accessService: [
-              new DataService({
-                id: "urn:uuid:0d5f0685-eb04-409a-8a77-ee4ed207f2f1",
-                endpointURL: "https://httpbin.org/anything"
-              })
-            ]
+            accessService: new DataService({
+              id: "urn:uuid:0d5f0685-eb04-409a-8a77-ee4ed207f2f1",
+              endpointURL: "https://httpbin.org/anything"
+            })
           })
         ]
       });
@@ -305,15 +302,17 @@ describe("DataPlane Service", () => {
       const addedDataPlane = await dataPlaneService.addDataPlane(dataPlane);
       const createdCatalog = await dataPlaneService.updateCatalog(
         addedDataPlane.identifier,
-        new Catalog({ dataset: [dataset] })
+        new Catalog({ participantId: "did:web:localhost", dataset: [dataset] })
       );
       createdCatalog!.title = "Updated Test HTTP Dataset";
       expect(createdCatalog).toBeDefined();
 
       let catalog = await catalogService.getCatalogDao();
       const lengthToMatch = catalog.data._datasets?.length;
-      createdCatalog.dataset![0].distribution![0].accessService![0].endpointDescription =
-        "dspace:connector";
+
+      (
+        createdCatalog.dataset![0].distribution![0].accessService as DataService
+      ).endpointDescription = "dspace:connector";
       const updatedCatalog = await dataPlaneService.updateCatalog(
         addedDataPlane.identifier,
         createdCatalog
@@ -329,7 +328,7 @@ describe("DataPlane Service", () => {
       expect(datasetToCheck?.hasPolicy?.[0].assigner).toEqual("me");
       expect(createdCatalog.title).toEqual(updatedCatalog.title);
       expect(
-        catalog?.data.dataset?.[0].distribution?.[0]?.accessService?.[0]
+        catalog?.data.dataset?.[0].distribution?.[0]?.accessService
       ).toEqual(new DataService(catalog.data._services![0]));
     });
 
@@ -358,12 +357,10 @@ describe("DataPlane Service", () => {
           new Distribution({
             id: "urn:uuid:dd58de12-9118-4651-bdaa-8d5bd4dc070e",
             format: "tsg:HTTP",
-            accessService: [
-              new DataService({
-                id: "urn:uuid:2d6f9fbb-5c79-4c8b-8b91-b3f917fe4272",
-                endpointURL: "https://httpbin.org/anything"
-              })
-            ]
+            accessService: new DataService({
+              id: "urn:uuid:2d6f9fbb-5c79-4c8b-8b91-b3f917fe4272",
+              endpointURL: "https://httpbin.org/anything"
+            })
           })
         ]
       });

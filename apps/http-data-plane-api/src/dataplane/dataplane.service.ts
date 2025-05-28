@@ -13,7 +13,6 @@ import {
   Constraint,
   DataPlaneCreation,
   DataPlaneDetailsDto,
-  DataService,
   Dataset,
   DatasetDto,
   deserialize,
@@ -122,6 +121,7 @@ export class DataPlaneService {
       );
 
       const catalog: Catalog = new Catalog({
+        participantId: "",
         dataset: datasets
       });
       await this.axiosDataPlane.post<DataPlaneDetailsDto>(
@@ -301,6 +301,7 @@ export class DataPlaneService {
     const datasets = await this.createDatasets(datasetConfig);
 
     const catalog: Catalog = new Catalog({
+      participantId: "",
       dataset: datasets
     });
     await this.axiosDataPlane.post<DataPlaneDetailsDto>(
@@ -479,13 +480,7 @@ export class DataPlaneService {
           conformsTo: defArray(
             item.schemaRef ?? datasetConfig.schemaRef,
             item.openApiSpecRef ?? datasetConfig.openApiSpecRef
-          ),
-          accessService: [
-            new DataService({
-              endpointURL: this.config.controlPlane.controlEndpoint,
-              endpointDescription: "dspace:connector"
-            })
-          ]
+          )
         })
       ],
       hasPolicy: policies
@@ -545,13 +540,7 @@ export class DataPlaneService {
                 })`,
                 format: "tsg:HTTP",
                 mediaType: `iana:${d.mediaType ?? "application/http"}`,
-                conformsTo: defArray(d.schemaRef, d.openApiSpecRef),
-                accessService: [
-                  new DataService({
-                    endpointURL: this.config.controlPlane.controlEndpoint,
-                    endpointDescription: "dspace:connector"
-                  })
-                ]
+                conformsTo: defArray(d.schemaRef, d.openApiSpecRef)
               })
           ),
           hasPolicy: await this.constructOffer(id, datasetConfig.policy)
@@ -598,7 +587,7 @@ export class DataPlaneService {
 
     return [
       new Offer({
-        assigner: catalog?.creator || catalog?.publisher || "",
+        assigner: catalog?.participantId || "",
         permission: policyConfig.permissions?.map((permission) => {
           return new Permission({
             action: permission.action,

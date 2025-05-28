@@ -1,12 +1,11 @@
 import {
-  createInstance,
   createInstances,
   createOptionalInstances
 } from "../../../utils/instances.js";
 import { DataPlaneTransferDto } from "../../data-planes/index.js";
 import { Multilanguage } from "../common.js";
 import { TransferState } from "./messages.dto.js";
-import { DataAddress, TransferProcess } from "./messages.js";
+import { DataAddress } from "./messages.js";
 import { TransferRole } from "./transfers.dto.js";
 
 export interface ITransferEvent {
@@ -43,7 +42,6 @@ export interface ITransferStatus {
   remoteAddress: string;
   remoteParty: string;
   state: TransferState;
-  process: TransferProcess;
   agreementId: string;
   format?: string;
   modifiedDate: Date;
@@ -56,7 +54,6 @@ export class TransferStatus {
   remoteAddress: string;
   remoteParty: string;
   state: TransferState;
-  process: TransferProcess;
   agreementId: string;
   format?: string;
   modifiedDate: Date;
@@ -68,7 +65,6 @@ export class TransferStatus {
     this.remoteAddress = value.remoteAddress;
     this.remoteParty = value.remoteParty;
     this.state = value.state;
-    this.process = createInstance(value.process, TransferProcess);
     this.agreementId = value.agreementId;
     this.format = value.format;
     this.modifiedDate = value.modifiedDate;

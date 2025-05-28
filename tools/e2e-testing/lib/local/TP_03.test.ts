@@ -46,12 +46,12 @@ describe("Local - TP_03: Transfer request provider negative scenarios", () => {
     const consumerDataplaneMock = setupDataPlaneMock(
       "consumer",
       "CD-1",
-      "tsg:dummy"
+      "HttpData-PULL"
     );
     const providerDataplaneMock = setupDataPlaneMock(
       "provider",
       "PD-1",
-      "tsg:dummy"
+      "HttpData-PULL"
     );
 
     mockServer = setupServer(
@@ -104,7 +104,7 @@ describe("Local - TP_03: Transfer request provider negative scenarios", () => {
           "ATP0301",
           "http://localhost:32490/api/transfers",
           "did:web:localhost%3A32490",
-          "tsg:dummy"
+          "HttpData-PULL"
         );
       })
       .onEvent(
@@ -119,7 +119,7 @@ describe("Local - TP_03: Transfer request provider negative scenarios", () => {
           const dsp: DspClientService = transferService["dsp"];
           await expect(
             dsp.completeTransfer(
-              `${transfer.remoteAddress}/complete`,
+              `${transfer.remoteAddress}/completion`,
               new TransferCompletionMessage({
                 providerPid: transfer.remoteId!,
                 consumerPid: transfer.localId
@@ -140,7 +140,7 @@ describe("Local - TP_03: Transfer request provider negative scenarios", () => {
           "ATP0302",
           "http://localhost:32490/api/transfers",
           "did:web:localhost%3A32490",
-          "tsg:dummy"
+          "HttpData-PULL"
         );
       })
       .onEvent(
@@ -155,7 +155,7 @@ describe("Local - TP_03: Transfer request provider negative scenarios", () => {
           const dsp: DspClientService = transferService["dsp"];
           await expect(
             dsp.suspendTransfer(
-              `${transfer.remoteAddress}/suspend`,
+              `${transfer.remoteAddress}/suspension`,
               new TransferSuspensionMessage({
                 providerPid: transfer.remoteId!,
                 consumerPid: transfer.localId,
@@ -177,7 +177,7 @@ describe("Local - TP_03: Transfer request provider negative scenarios", () => {
           "ATP0303",
           "http://localhost:32490/api/transfers",
           "did:web:localhost%3A32490",
-          "tsg:dummy"
+          "HttpData-PULL"
         );
       })
       .onEvent(
@@ -224,7 +224,7 @@ describe("Local - TP_03: Transfer request provider negative scenarios", () => {
           const dsp: DspClientService = transferService["dsp"];
           await expect(
             dsp.completeTransfer(
-              `${transfer.remoteAddress}/complete`,
+              `${transfer.remoteAddress}/completion`,
               new TransferCompletionMessage({
                 providerPid: transfer.remoteId!,
                 consumerPid: transfer.localId
@@ -245,7 +245,7 @@ describe("Local - TP_03: Transfer request provider negative scenarios", () => {
           "ATP0304",
           "http://localhost:32490/api/transfers",
           "did:web:localhost%3A32490",
-          "tsg:dummy"
+          "HttpData-PULL"
         );
       })
       .onEvent(
@@ -314,7 +314,7 @@ describe("Local - TP_03: Transfer request provider negative scenarios", () => {
           "ATP0305",
           "http://localhost:32490/api/transfers",
           "did:web:localhost%3A32490",
-          "tsg:dummy"
+          "HttpData-PULL"
         );
       })
       .onEvent(
@@ -362,7 +362,7 @@ describe("Local - TP_03: Transfer request provider negative scenarios", () => {
           const dsp: DspClientService = transferService["dsp"];
           await expect(
             dsp.suspendTransfer(
-              `${transfer.remoteAddress}/suspend`,
+              `${transfer.remoteAddress}/suspension`,
               new TransferSuspensionMessage({
                 providerPid: transfer.remoteId!,
                 consumerPid: transfer.localId,

@@ -26,6 +26,7 @@ import {
 } from "@tsg-dsp/common-api";
 import {
   CatalogDto,
+  CatalogErrorDto,
   CatalogRequestMessage,
   CatalogRequestMessageSchema,
   CatalogSchema,
@@ -76,9 +77,10 @@ export class CatalogController {
   @ApiOkResponse({ type: DatasetSchema })
   @ApiBadRequestResponse({ description: "Invalid dataset ID" })
   @ApiForbiddenResponseDefault()
-  async getDataset(@Param("id") id: string): Promise<DatasetDto> {
+  async getDataset(
+    @Param("id") id: string
+  ): Promise<DatasetDto | CatalogErrorDto> {
     this.logger.log(`Received dataset request for id ${id}`);
-    const result = (await this.catalogService.getDataset(id)).serialize();
-    return result;
+    return await this.catalogService.getDatasetDto(id);
   }
 }

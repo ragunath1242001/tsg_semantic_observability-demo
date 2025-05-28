@@ -1,9 +1,4 @@
-import {
-  ArrayNotEmpty,
-  IsNotEmpty,
-  IsOptional,
-  ValidateNested
-} from "class-validator";
+import { IsNotEmpty, IsOptional, ValidateNested } from "class-validator";
 
 import { LDType, Namespace, Serializable } from "../../decorators.js";
 import { Multilanguage, SerializableClass, withExtraProps } from "../common.js";
@@ -117,7 +112,7 @@ export class EndpointProperty extends SerializableClass<EndpointPropertyDto> {
 export interface IDataAddress {
   endpointType: string;
   endpoint: string;
-  endpointProperties: Array<EndpointProperty>;
+  endpointProperties?: Array<EndpointProperty>;
 }
 
 @Serializable("DataAddress")
@@ -129,9 +124,10 @@ export class DataAddress extends SerializableClass<DataAddressDto> {
   @IsNotEmpty()
   endpoint: string;
   @Namespace("dspace")
-  @IsNotEmpty()
+  @IsOptional()
+  @ValidateNested()
   @LDType(() => EndpointProperty)
-  endpointProperties: Array<EndpointProperty>;
+  endpointProperties?: Array<EndpointProperty>;
 
   constructor(value: withExtraProps<IDataAddress>) {
     super(value);
@@ -215,7 +211,7 @@ export class TransferStartMessage extends SerializableClass<TransferStartMessage
 export interface ITransferSuspensionMessage {
   providerPid: string;
   consumerPid: string;
-  reason: Array<any>;
+  reason?: Array<any>;
 }
 
 @Serializable("TransferSuspensionMessage")
@@ -228,8 +224,8 @@ export class TransferSuspensionMessage extends SerializableClass<TransferSuspens
   consumerPid: string;
   @Namespace("dspace")
   @ValidateNested()
-  @ArrayNotEmpty()
-  reason: Array<Multilanguage>;
+  @IsOptional()
+  reason?: Array<Multilanguage>;
 
   constructor(value: withExtraProps<ITransferSuspensionMessage>) {
     super(value);
@@ -243,7 +239,7 @@ export interface ITransferTerminationMessage {
   providerPid: string;
   consumerPid: string;
   code: string;
-  reason: Array<any>;
+  reason?: Array<any>;
 }
 
 @Serializable("TransferTerminationMessage")
@@ -258,9 +254,9 @@ export class TransferTerminationMessage extends SerializableClass<TransferTermin
   @IsNotEmpty()
   code: string;
   @Namespace("dspace")
-  @IsNotEmpty()
+  @IsOptional()
   @ValidateNested()
-  reason: Array<Multilanguage>;
+  reason?: Array<Multilanguage>;
 
   constructor(value: withExtraProps<ITransferTerminationMessage>) {
     super(value);

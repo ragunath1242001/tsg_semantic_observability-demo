@@ -37,7 +37,7 @@ export interface DataServiceDto extends Omit<ResourceDto, "@type"> {
 
 export interface DistributionDto extends ReferenceDto {
   "@type": "Distribution";
-  accessService?: Array<DataServiceDto>;
+  accessService?: DataServiceDto | string;
   accessURL?: string;
   byteSize?: string;
   compressFormat?: string;
@@ -83,7 +83,7 @@ export interface CatalogRecordDto extends ReferenceDto {
 
 export interface CatalogDto extends Omit<DatasetDto, "@type"> {
   "@type": "Catalog";
-  participantId?: string;
+  participantId: string;
   dataset?: Array<DatasetDto>;
   record?: CatalogRecordDto;
   service?: Array<DataServiceDto>;

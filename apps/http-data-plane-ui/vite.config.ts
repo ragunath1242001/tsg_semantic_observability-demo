@@ -18,8 +18,8 @@ try {
   devSessions = JSON.parse(
     readFileSync(path.join(__dirname, "/dev.sessions.json"), "utf-8")
   );
-} catch (e) {
-  console.log(e);
+} catch (_e) {
+  // ignore
 }
 
 // https://vitejs.dev/config/

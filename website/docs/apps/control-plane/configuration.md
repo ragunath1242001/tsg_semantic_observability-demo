@@ -76,6 +76,7 @@ Authentication for frontend services can be done via the SSO Bridge. This helps 
 | `iam{type=tsg}.didId`                              | Yes      | `String`                                   | DID identifier of the IAM service                 |                           |
 | **`InitCatalog`**                                  |          |                                            |                                                   |                           |
 | `initCatalog`                                      | Yes      | `InitCatalog`                              | Initial catalog configuration                     |                           |
+| `initCatalog.participantId`                        | Yes      | `String`                                   | Participant id of the catalog                     |                           |
 | `initCatalog.creator`                              | Yes      | `String`                                   | Creator of the catalog                            |                           |
 | `initCatalog.publisher`                            | Yes      | `String`                                   | Publisher of the catalog                          |                           |
 | `initCatalog.title`                                | Yes      | `String`                                   | Title of the catalog                              |                           |

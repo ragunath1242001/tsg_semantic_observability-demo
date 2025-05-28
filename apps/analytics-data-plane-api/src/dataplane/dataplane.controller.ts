@@ -137,7 +137,7 @@ export class DataPlaneController {
     return await this.dataPlaneService.handleTransferStart(body, id);
   }
 
-  @Post("/transfers/:id/complete")
+  @Post("/transfers/:id/completion")
   @HttpCode(HttpStatus.ACCEPTED)
   @ApiOperation({ summary: "Complete transfer process" })
   @ApiParam({ name: "id", required: true, description: "Transfer ID" })
@@ -158,7 +158,7 @@ export class DataPlaneController {
     await this.dataPlaneService.handleTransferComplete(body, id);
   }
 
-  @Post("/transfers/:id/terminate")
+  @Post("/transfers/:id/termination")
   @HttpCode(HttpStatus.ACCEPTED)
   @ApiOperation({ summary: "Terminate transfer process" })
   @ApiParam({ name: "id", required: true, description: "Transfer ID" })
@@ -179,7 +179,7 @@ export class DataPlaneController {
     await this.dataPlaneService.handleTransferTerminate(body, id);
   }
 
-  @Post("/transfers/:id/suspend")
+  @Post("/transfers/:id/suspension")
   @HttpCode(HttpStatus.ACCEPTED)
   @ApiOperation({ summary: "Suspend transfer process" })
   @ApiParam({ name: "id", required: true, description: "Transfer ID" })

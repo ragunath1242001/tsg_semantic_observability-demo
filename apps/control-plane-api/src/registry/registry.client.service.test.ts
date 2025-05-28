@@ -32,6 +32,7 @@ describe("RegistryClientService", () => {
             "@context": defaultContext(),
             "@type": "Catalog",
             "@id": "urn:uuid:a0920ac1-d08e-4ee1-acde-6dd0432b84e4",
+            participantId: "did:web:localhost",
             creator: "did:web:localhost",
             description: ["Test connector"],
             publisher: "did:web:localhost",
@@ -67,13 +68,11 @@ describe("RegistryClientService", () => {
                   {
                     "@type": "Distribution",
                     "@id": "urn:uuid:7ee417b1-f83a-47f8-92be-dace11bdab5f",
-                    accessService: [
-                      {
-                        "@type": "DataService",
-                        "@id": "urn:uuid:946b0e29-b006-430a-8e4d-ddf196104b67",
-                        endpointURL: "http://localhost:3000/api/"
-                      }
-                    ],
+                    accessService: {
+                      "@type": "DataService",
+                      "@id": "urn:uuid:946b0e29-b006-430a-8e4d-ddf196104b67",
+                      endpointURL: "http://localhost:3000/api/"
+                    },
                     conformsTo: ["https://httpbin.org/spec.json"],
                     format: "tsg:HTTP",
                     title: "Version 0.9.2"

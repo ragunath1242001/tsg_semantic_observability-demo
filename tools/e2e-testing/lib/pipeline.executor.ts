@@ -27,10 +27,17 @@ export class PipelineExecutor {
     this.socket?.close();
   }
 
-  newPipeline(id: string, agreementId?: string): PipelineExecute {
+  newPipeline(
+    id: string,
+    agreementId?: string,
+    assigner?: string,
+    assignee?: string
+  ): PipelineExecute {
     const pipeline = new Pipeline(
       id,
       agreementId,
+      assigner,
+      assignee,
       this.catalogService,
       this.negotiationService,
       this.transferService,
@@ -47,13 +54,15 @@ export class PipelineExecutor {
         this.logger.log("Websocket connected to server");
         return;
       }
-      this.logger.log(`Received event: ${event} - ${JSON.stringify(data)}`);
       new Promise((resolve) => setTimeout(resolve, 50)).then(async () => {
         switch (event) {
           case "negotiation:create":
           case "negotiation:update": {
             const negotiation =
               await this.negotiationService.getNegotiation(data);
+            this.logger.log(
+              `Received event: ${event} - ${negotiation.localId} - ${negotiation.state}`
+            );
             await this.pipelines[negotiation.dataSet]?.handleNegotiationEvent(
               negotiation
             );
@@ -62,6 +71,9 @@ export class PipelineExecutor {
           case "transfer:create":
           case "transfer:update": {
             const transfer = await this.transferService.getTransfer(data);
+            this.logger.log(
+              `Received event: ${event} - ${transfer.localId} - ${transfer.state}`
+            );
             await this.pipelines[transfer.agreementId]?.handleTransferEvent(
               transfer
             );
