@@ -229,8 +229,8 @@ importers:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@22.15.29)(typescript@5.8.3)
       tsc-watch:
-        specifier: ^6.2.1
-        version: 6.3.1(typescript@5.8.3)
+        specifier: ^7.0.0
+        version: 7.1.1(typescript@5.8.3)
       typescript:
         specifier: ^5.7.3
         version: 5.8.3
@@ -543,8 +543,8 @@ importers:
         specifier: ^10.9.2
         version: 10.9.2(@types/node@22.15.29)(typescript@5.8.3)
       tsc-watch:
-        specifier: ^6.2.1
-        version: 6.3.1(typescript@5.8.3)
+        specifier: ^7.0.0
+        version: 7.1.1(typescript@5.8.3)
       typescript:
         specifier: ^5.7.3
         version: 5.8.3
@@ -824,8 +824,8 @@ importers:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@22.15.29)(typescript@5.8.3)
       tsc-watch:
-        specifier: ^6.2.1
-        version: 6.3.1(typescript@5.8.3)
+        specifier: ^7.0.0
+        version: 7.1.1(typescript@5.8.3)
       typescript:
         specifier: ^5.7.3
         version: 5.8.3
@@ -1078,8 +1078,8 @@ importers:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@22.15.29)(typescript@5.8.3)
       tsc-watch:
-        specifier: ^6.2.1
-        version: 6.3.1(typescript@5.8.3)
+        specifier: ^7.0.0
+        version: 7.1.1(typescript@5.8.3)
       typescript:
         specifier: ^5.7.3
         version: 5.8.3
@@ -1377,8 +1377,8 @@ importers:
         specifier: ^10.9.2
         version: 10.9.2(@types/node@22.15.29)(typescript@5.8.3)
       tsc-watch:
-        specifier: ^6.2.1
-        version: 6.3.1(typescript@5.8.3)
+        specifier: ^7.0.0
+        version: 7.1.1(typescript@5.8.3)
       typescript:
         specifier: ^5.7.3
         version: 5.8.3
@@ -2128,8 +2128,8 @@ importers:
         specifier: ^10.9.2
         version: 10.9.2(@types/node@22.15.29)(typescript@5.8.3)
       tsc-watch:
-        specifier: ^6.2.1
-        version: 6.3.1(typescript@5.8.3)
+        specifier: ^7.0.0
+        version: 7.1.1(typescript@5.8.3)
       typescript:
         specifier: ^5.7.3
         version: 5.8.3
@@ -2345,8 +2345,8 @@ importers:
         specifier: ^10.9.2
         version: 10.9.2(@types/node@22.15.29)(typescript@5.8.3)
       tsc-watch:
-        specifier: ^6.2.1
-        version: 6.3.1(typescript@5.8.3)
+        specifier: ^7.0.0
+        version: 7.1.1(typescript@5.8.3)
       typescript:
         specifier: ^5.7.3
         version: 5.8.3
@@ -7372,8 +7372,8 @@ packages:
       '@swc/wasm':
         optional: true
 
-  tsc-watch@6.3.1:
-    resolution: {integrity: sha512-x1hNJ/m1Cln2OvNJJLPsnWI1pObm+Jq9jF6kyz0flEy/ym7Y9TvU9edg6lXLuGVkhDClwBWi8aWAFE0qgzEkzw==}
+  tsc-watch@7.1.1:
+    resolution: {integrity: sha512-r6t37Dkk4vK44HwxOe+OzjpE/gDamZAwqXhtcAJD/hPVblcjJK45NxbK0HcDASXG0U4pEnCh640JZbeDVSC6yA==}
     engines: {node: '>=12.12.0'}
     hasBin: true
     peerDependencies:
@@ -13475,7 +13475,7 @@ snapshots:
       v8-compile-cache-lib: 3.0.1
       yn: 3.1.1
 
-  tsc-watch@6.3.1(typescript@5.8.3):
+  tsc-watch@7.1.1(typescript@5.8.3):
     dependencies:
       cross-spawn: 7.0.6
       node-cleanup: 2.1.2
