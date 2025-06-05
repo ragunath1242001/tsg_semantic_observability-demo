@@ -134,6 +134,7 @@ Two DID methods are currently supported: `did:web` and `did:tdw`. A comparison b
 | `runtime.title`                                   |          | `String`                                              | Title of the wallet                               |                           |
 | `runtime.acceptUnauthenticatedCredentialRequests` |          | `Boolean`                                             | Accept unauthenticated credential requests        |                           |
 | `runtime.issueMobileCredentials`                  |          | `Boolean`                                             | Issue mobile credentials                          |                           |
+| `runtime.issueDebugCredentials`                   |          | `Boolean`                                             | Issue debug credentials                           |                           |
 | `runtime.color`                                   |          | `String`                                              | Primary color of the wallet                       | `"#3B8BF6"`               |
 | `runtime.lightThemeUrl`                           |          | `String`                                              | Light theme logo URL                              |                           |
 | `runtime.darkThemeUrl`                            |          | `String`                                              | Dark theme logo URL                               |                           |

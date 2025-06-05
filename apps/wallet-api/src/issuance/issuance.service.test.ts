@@ -195,20 +195,20 @@ describe("DCP Issuance", () => {
       expect(offer.credentialType).toBe("ExampleCredentialType");
       expect(offer.revoked).toBe(false);
 
-      await expect(issuanceService.credentialOfferById(-1)).rejects.toThrow(
-        "No credential issuance flow found for id"
-      );
+      await expect(
+        issuanceService.credentialOfferById("unknown")
+      ).rejects.toThrow("No credential issuance flow found for id");
     });
     it("Revoke offer", async () => {
       const status = await issuanceService.credentialOfferStatus(
         PaginationOptionsDto.NO_PAGINATION
       );
       await issuanceService.revokeOffer(status.data[1].id);
-      const revokedStatus = await issuanceService.credentialOfferStatus(
-        PaginationOptionsDto.NO_PAGINATION
+      const revokedStatus = await issuanceService.credentialOfferById(
+        status.data[1].id
       );
-      expect(revokedStatus.data[1].revoked).toBe(true);
-      await expect(issuanceService.revokeOffer(-1)).rejects.toThrow(
+      expect(revokedStatus.revoked).toBe(true);
+      await expect(issuanceService.revokeOffer("unknown")).rejects.toThrow(
         "No credential issuance flow found for id"
       );
     });

@@ -30,7 +30,7 @@ async function createCredentialOffer() {
     };
 
     const response = await http.post<CredentialOffer>(
-      "management/issuance/offers",
+      "management/issuance/offers/public",
       offerRequest
     );
     if (response.status === 200) {

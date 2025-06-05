@@ -104,7 +104,7 @@ export class IssuanceService {
     };
   }
 
-  private async issuanceById(id: number): Promise<CredentialIssuance> {
+  private async issuanceById(id: string): Promise<CredentialIssuance> {
     const issuance = await this.issuanceRepository.findOneBy({ id });
     if (!issuance) {
       throw new AppError(
@@ -116,7 +116,7 @@ export class IssuanceService {
   }
 
   async credentialOfferById(
-    identifier: number
+    identifier: string
   ): Promise<CredentialOfferStatus> {
     const issuance = await this.issuanceById(identifier);
     return new CredentialOfferStatus(issuance);
@@ -176,7 +176,7 @@ export class IssuanceService {
     };
   }
 
-  async revokeOffer(id: number): Promise<CredentialOfferStatus> {
+  async revokeOffer(id: string): Promise<CredentialOfferStatus> {
     const issuance = await this.issuanceById(id);
     await this.issuanceRepository.update({ id: id }, { revoked: true });
     return {

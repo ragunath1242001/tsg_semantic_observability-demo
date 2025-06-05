@@ -220,7 +220,7 @@ export class DCPIssuerService {
 
     const issuance = await this.issuanceRepository.findOneBy({
       holderId: validatedIdToken.sub,
-      id: parseInt(requestId),
+      id: requestId,
       remoteId: Not(IsNull())
     });
 

@@ -103,7 +103,7 @@ const loadConfig = async () => {
   }
 };
 
-const revokeOffer = async (id: number) => {
+const revokeOffer = async (id: string) => {
   try {
     await http.put<CredentialOfferStatus>(
       `management/issuance/offers/${id}/revoke`

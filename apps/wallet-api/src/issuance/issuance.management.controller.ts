@@ -19,6 +19,7 @@ import {
   ApiTags
 } from "@nestjs/swagger";
 import {
+  AppError,
   DisableOAuthGuard,
   DisableRolesGuard,
   Paginated,
@@ -38,6 +39,7 @@ import {
   OID4VCICredentialRequestInitiation
 } from "@tsg-dsp/wallet-dtos";
 
+import { RuntimeConfig } from "../config.js";
 import { CredentialsDto } from "../credentials/credentials.schemas.js";
 import { IssuanceService } from "./issuance.service.js";
 
@@ -45,7 +47,10 @@ import { IssuanceService } from "./issuance.service.js";
 @ApiTags("Issuance Management")
 @Roles(AppRole.MANAGE_ALL_CREDENTIALS)
 export class IssuanceManagementController {
-  constructor(private readonly issuanceService: IssuanceService) {}
+  constructor(
+    private readonly issuanceService: IssuanceService,
+    private readonly runtimeConfig: RuntimeConfig
+  ) {}
 
   @Post("request/dcp")
   @ApiOperation({
@@ -101,13 +106,13 @@ export class IssuanceManagementController {
     summary: "Retrieve offered credential",
     description: "Retrieves a specific credential offer"
   })
-  @ApiParam({ name: "id", required: true, type: Number })
+  @ApiParam({ name: "id", required: true, type: String })
   @DisableOAuthGuard()
   @DisableRolesGuard()
   @ApiOkResponse({ type: [CredentialOfferStatus] })
   @HttpCode(HttpStatus.OK)
   async listGeneralOffers(
-    @Param("id") id: number
+    @Param("id") id: string
   ): Promise<CredentialOfferStatus> {
     return this.issuanceService.credentialOfferById(id);
   }
@@ -127,13 +132,42 @@ export class IssuanceManagementController {
     example: true,
     description: "Whether the offer is for mobile or server applications"
   })
-  @DisableOAuthGuard()
-  @DisableRolesGuard()
   @HttpCode(HttpStatus.OK)
   async offerEndpoint(
     @Body() offerRequest: CredentialOfferRequest,
     @Query("mobile") mobile: boolean = true
   ): Promise<CredentialOffer> {
+    return this.issuanceService.createCredentialOffer(offerRequest, mobile);
+  }
+
+  @Post("offers/public")
+  @ApiOperation({
+    summary: "Add public offer",
+    description:
+      "Creates a new credential offer, allowed for unauthenticated requests"
+  })
+  @ApiBody({ type: CredentialOffer })
+  @ApiOkResponse({ type: CredentialOfferStatus })
+  @ApiQuery({
+    name: "mobile",
+    required: false,
+    default: true,
+    example: true,
+    description: "Whether the offer is for mobile or server applications"
+  })
+  @DisableOAuthGuard()
+  @DisableRolesGuard()
+  @HttpCode(HttpStatus.OK)
+  async publicOfferEndpoint(
+    @Body() offerRequest: CredentialOfferRequest,
+    @Query("mobile") mobile: boolean = true
+  ): Promise<CredentialOffer> {
+    if (this.runtimeConfig.acceptUnauthenticatedCredentialRequests !== true) {
+      throw new AppError(
+        "This wallet does not accept unauthenticated credential requests",
+        HttpStatus.FORBIDDEN
+      );
+    }
     return this.issuanceService.createCredentialOffer(offerRequest, mobile);
   }
 
@@ -143,12 +177,13 @@ export class IssuanceManagementController {
     description:
       "Revokes an existing credential offer, so that it cannot be used anymore by the holder"
   })
+  @ApiParam({ name: "id", required: true, type: String })
   @Roles(AppRole.MANAGE_ALL_CREDENTIALS)
   @ApiOkResponse({ type: CredentialOfferStatus })
   @ApiForbiddenResponseDefault()
   @ApiOAuth2([AppRole.MANAGE_ALL_CREDENTIALS])
   @HttpCode(HttpStatus.OK)
-  async revokeOffer(@Param("id") id: number): Promise<CredentialOfferStatus> {
+  async revokeOffer(@Param("id") id: string): Promise<CredentialOfferStatus> {
     return this.issuanceService.revokeOffer(id);
   }
 }

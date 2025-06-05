@@ -50,6 +50,9 @@ const updateSettings = async () => {
     <FormField label="Issue Mobile Credentials" :label-width="8">
       <ToggleSwitch v-model="runtimeStore.issueMobileCredentials" />
     </FormField>
+    <FormField label="Issue Debug Credentials" :label-width="8">
+      <ToggleSwitch v-model="runtimeStore.issueDebugCredentials" />
+    </FormField>
     <BaseAppConfig
       v-model:color="runtimeStore.color"
       v-model:dark-theme-url="runtimeStore.darkThemeUrl"

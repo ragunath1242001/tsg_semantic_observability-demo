@@ -5,6 +5,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import {
   EmailService,
   NodemailerConfiguration,
+  PaginationOptionsDto,
   TypeOrmTestHelper
 } from "@tsg-dsp/common-api";
 import {
@@ -239,6 +240,9 @@ describe("DCP Issuance", () => {
         credentialType: "ExampleCredentialType",
         credentialSubject: { id: "did:web:localhost" }
       });
+      const offers = await issuanceService.credentialOfferStatus(
+        PaginationOptionsDto.NO_PAGINATION
+      );
 
       await expect(
         issuerService.handleCredentialStatusRequest(`Bearer test`, "2")
@@ -254,7 +258,7 @@ describe("DCP Issuance", () => {
       });
       let status = await issuerService.handleCredentialStatusRequest(
         `Bearer test`,
-        "1"
+        offers.data[0].id
       );
       expect(status.status).toBe("RECEIVED");
       await new Promise((resolve) => setTimeout(resolve, 2000));
@@ -271,7 +275,7 @@ describe("DCP Issuance", () => {
 
       status = await issuerService.handleCredentialStatusRequest(
         `Bearer test`,
-        "1"
+        offers.data[0].id
       );
       expect(status.status).toBe("ISSUED");
       stsMock.mockRestore();

@@ -187,8 +187,8 @@ export class CredentialOffer {
 }
 
 export class CredentialOfferStatus {
-  @ApiProperty({ example: 1 })
-  id!: number;
+  @ApiProperty({ example: "1f05bade-80ff-4637-9743-5a5e9b1cc162" })
+  id!: string;
 
   @ApiProperty({ example: "2023-10-01T00:00:00Z" })
   createdDate!: Date;
