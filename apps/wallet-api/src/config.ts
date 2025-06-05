@@ -253,6 +253,11 @@ export class RuntimeConfig {
   @IsBoolean()
   public issueMobileCredentials: boolean = false;
 
+  @Description("Issue debug credentials")
+  @IsOptional()
+  @IsBoolean()
+  public issueDebugCredentials: boolean = false;
+
   @Description("Primary color of the wallet")
   @IsString()
   public color: string = "#3B8BF6";

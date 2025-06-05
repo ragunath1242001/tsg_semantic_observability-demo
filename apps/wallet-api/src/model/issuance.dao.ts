@@ -12,8 +12,8 @@ import { MetaEntity } from "./common.dao.js";
 
 @Entity()
 export class CredentialIssuance extends MetaEntity {
-  @PrimaryGeneratedColumn("increment")
-  id!: number;
+  @PrimaryGeneratedColumn("uuid")
+  id!: string;
 
   @Column({ type: String, unique: true })
   preAuthorizedCode!: string;

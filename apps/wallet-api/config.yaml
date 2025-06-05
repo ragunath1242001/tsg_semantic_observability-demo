@@ -29,6 +29,9 @@ db:
 
 runtime:
   color: "#3B8BF6"
+  acceptUnauthenticatedCredentialRequests: true
+  issueMobileCredentials: true
+  issueDebugCredentials: true
 
 trustAnchors:
   - identifier: did:web:localhost%3A3000

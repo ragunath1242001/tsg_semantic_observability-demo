@@ -7,6 +7,7 @@ interface RuntimeStore {
   title?: string;
   acceptUnauthenticatedCredentialRequests?: boolean;
   issueMobileCredentials?: boolean;
+  issueDebugCredentials?: boolean;
   color?: string;
   darkThemeUrl?: string;
   lightThemeUrl?: string;
@@ -24,6 +25,7 @@ export const useRuntimeStore = defineStore("runtime", {
     title: undefined,
     acceptUnauthenticatedCredentialRequests: undefined,
     issueMobileCredentials: undefined,
+    issueDebugCredentials: undefined,
     color: undefined,
     darkThemeUrl: undefined,
     lightThemeUrl: undefined
@@ -47,6 +49,7 @@ export const useRuntimeStore = defineStore("runtime", {
           acceptUnauthenticatedCredentialRequests:
             this.acceptUnauthenticatedCredentialRequests,
           issueMobileCredentials: this.issueMobileCredentials,
+          issueDebugCredentials: this.issueDebugCredentials,
           color: this.color,
           darkThemeUrl: this.darkThemeUrl,
           lightThemeUrl: this.lightThemeUrl
@@ -70,6 +73,7 @@ export const useRuntimeStore = defineStore("runtime", {
       this.acceptUnauthenticatedCredentialRequests =
         data.acceptUnauthenticatedCredentialRequests;
       this.issueMobileCredentials = data.issueMobileCredentials;
+      this.issueDebugCredentials = data.issueDebugCredentials;
       this.color = data.color;
       this.darkThemeUrl = data.darkThemeUrl;
       this.lightThemeUrl = data.lightThemeUrl;

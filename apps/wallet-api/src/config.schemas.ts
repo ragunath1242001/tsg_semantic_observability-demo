@@ -11,6 +11,8 @@ export class RuntimeConfigDto implements RuntimeConfig {
   acceptUnauthenticatedCredentialRequests!: boolean;
   @ApiProperty({ example: false })
   issueMobileCredentials!: boolean;
+  @ApiProperty({ example: false })
+  issueDebugCredentials!: boolean;
   @ApiProperty({ example: "#3B8BF6" })
   color: string = "#3B8BF6";
   @ApiPropertyOptional({ example: "https://example.com/darktheme.png" })

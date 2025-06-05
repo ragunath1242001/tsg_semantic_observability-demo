@@ -20,6 +20,7 @@ import OID4VP from "@/views/OID4VP.vue";
 import SignatureVue from "@/views/Signature.vue";
 import EmailCredentialRequest from "@/views/unauthenticated/EmailCredentialRequest.vue";
 import Home from "@/views/unauthenticated/Home.vue";
+import MobileDebug from "@/views/unauthenticated/MobileDebug.vue";
 import RetrieveCredential from "@/views/unauthenticated/RetrieveCredential.vue";
 
 const router = createRouter({
@@ -118,6 +119,10 @@ const router = createRouter({
         {
           path: "retrieve-credential/:id",
           component: EmailCredentialRequest
+        },
+        {
+          path: "mobile-debug",
+          component: MobileDebug
         }
       ]
     }
@@ -136,6 +141,9 @@ router.beforeEach(async (to) => {
   }
   if (runtimeStore.issueMobileCredentials) {
     publicPages.push("/retrieve-credential");
+  }
+  if (runtimeStore.issueDebugCredentials) {
+    publicPages.push("/mobile-debug");
   }
 
   const anyPublicPages =
