@@ -1,0 +1,72 @@
+---
+id: orchestration-management-controller-get-job-pods
+title: "Get job pods"
+description: "Get job pods"
+sidebar_label: "Get job pods"
+hide_title: true
+hide_table_of_contents: true
+api: eJx9VVFv4zYM/isCnzZAjbNethV+K+7aosPWC67dvRRBQdtMrNSWdBJ9aWD4vx8kO3HapM1LBNEkP5LfR7VgLDlkZfRtASl8dXlJnvub/1DjimrS/NlodqaqyD2tiP8x2dwUHiRYdFgTk/OQPragsSZIYW2yu3CS4OhHoxwVkLJrSILSkIJFLkFCQT53yoZEkMJDSWJtMqF7R5+XVCOkLdAL1rYKYf84/zT786+/L87C4ez1aWcDCby14WvPTukVdN0iwPDWaE8+BDyfTsPf6/TQSZhNPx0bro3LVFGQBgm50Uyaw0dobaXy2KVk7cOX7QHmAYLJ1pRzaJMLXWbVA+i71L4BKg8q/UbeNC6nO8PXptFFQOcZufEf+82mM3FnWOydclMcptJNnZE7dJlNZ52EmrzHFZ2CPgYPEwrzJM9UCDdAFIUhL7RhQS/K8yRkJeeM+xjpAcrukCaPsCNAX+5QwkICK46eVyH4FzbQhZ8ET3njFG8jAQ02XJ6HMHnPWFuhpqcCGeMJFoEOjKvAV/iCjGIe7sVI9ZDrNQVuiCM1bc/5mrg0QSsrirMNbE4hQauSeh8leb7wydpkPmkHNXTJ4O/J/ewFsxjR3wfu9PTY1TDOor+QsKzMJn5i0fuNcUXPOmN7R9RYbVnlfl/uExZ1lNy7JnnKNLbrpOdo7ieQETpyewUEr+FqZ7s2rkaGFL7PR4GWzPZoDXwnp5YKs4rE3JEnzVFjQhMVVAg2Ijd13eigPRIZ8YZIC94YobRn1Dl5YZaCSxIDA0SEOok8U3ppYmMHLj3c34jLXYFipMOJ7aS8+GpJX85vhbeUq+WgfuFLs/ExIenCGqV5j+BU6AlICOMf1k6/VDAPS6WTUKmctKdxS8ClxbwkcT6ZgoTGVUPjfJokm81mgtE8MW6VDL4++ff289Xd/dXZ+WQ6KbmuYunWeK5RH0R+Q+tXBe+5x/TCia1Q6SDsmL8dKP8IaFXQwygdCc8XIVYgPkhIx4cgJllIKI3n4Nq2GXr631VdF65/NOS2vSJ+oovzj3oulA/nAtIlVp6OUO43Mvz2bdghv4s3T8nJSoZL1NswD6wa6qfxTNuDB6xbdBJKwiLQ+7EdrJd5TpYP/I4eg7Bk9mvi5uohyKwJPTvW9H5jtacxvadc8aEwd4XE5QCdfCf4bo885Y4K0qyw8nvflUPNT9GvW3Rd9wtwvcyx
+sidebar_class_name: "get api-method"
+info_path: docs/apis/analytics-data-plane/tsg-analytics-data-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Get job pods"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/management/k8s/jobs/{jobName}/pods"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Get job pods
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"jobName","required":true,"in":"path","description":"The job name","schema":{"example":"12345678-1234-5678-1234-567812345678","type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":""},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string","example":"ResourceNotFound"},"status":{"type":"string","example":"404 Not Found"},"code":{"type":"number","example":404},"message":{"type":"object","example":"The requested resource does not exist."},"error":{"type":"string","example":"Not Found"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

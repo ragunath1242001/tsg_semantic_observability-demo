@@ -1,0 +1,33 @@
+---
+id: jsonwebsignature-2020
+title: "JsonWebSignature2020"
+description: ""
+sidebar_label: "JsonWebSignature2020"
+hide_title: true
+hide_table_of_contents: true
+schema: true
+sample: {"type":"JsonWebSignature2020","proofPurpose":"assertionMethod","created":"2020-01-01T00:00:00Z","jws":"eyJhbGciOiJFUzI1NiIsInR5cCI...","verificationMethod":"did:example:123456#key-1"}
+custom_edit_url: null
+---
+
+import Schema from "@theme/Schema";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"JsonWebSignature2020"}
+>
+</Heading>
+
+
+
+
+
+<Schema
+  schema={{"type":"object","properties":{"type":{"type":"string","enum":["JsonWebSignature2020"],"example":"JsonWebSignature2020"},"proofPurpose":{"type":"string","example":"assertionMethod"},"created":{"type":"string","example":"2020-01-01T00:00:00Z"},"jws":{"type":"string","example":"eyJhbGciOiJFUzI1NiIsInR5cCI..."},"verificationMethod":{"type":"string","example":"did:example:123456#key-1"}},"required":["type","proofPurpose","created","jws","verificationMethod"],"title":"JsonWebSignature2020"}}
+  schemaType={"response"}
+>
+  
+</Schema>
+            

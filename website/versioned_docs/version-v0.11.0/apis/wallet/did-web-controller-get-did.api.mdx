@@ -1,0 +1,72 @@
+---
+id: did-web-controller-get-did
+title: "Retrieve DID document"
+description: "Retrieves the public DID document on the well-known address for this wallet"
+sidebar_label: "Retrieve DID document"
+hide_title: true
+hide_table_of_contents: true
+api: eJztWm1v2zYQ/isEP22FbKdOWjTGMCyrg8Jt13Z11nzIAuNMni3WFKmSlBXB8H8fSMmOZCdOhuXDiupLXngvfO6OfE62bkU5WmZE6oRWdEA/ozMCl2iJi5Gk2VQKRoajIeGaZQkqR7QKohyl7CyUzhUBzg1aS2baEBcLS3KQEh2NqE7RgPc84nRAh6PhJU5fa+WMlhLNZI5uKDiNaAoGEnRoLB1cXUfUoE21smjpYEX7R0f+VxMnjSjTyqFyXgZpKgULO/W+Wq+wopbFmID/yxUp0gHV06/IPKrUeFxOlO5/C35ugh+8gSSVXjl2LrWDXi/P825+3NVm3lO2xwXvLZ/7wBR+nNHB1da5dUaoOV1H2xUwBgoaUeEwsTUYG8319Tqigu9LohqMKZ/xE/YKO8dwctI5mZ7OOlN2jJ3n8Ar7L/EYT085XUcUpNXvfDHObCOOq20g1VKX6aSXGj0TEul19GiwZbrLujUz9SiIT5exJRoxq2r9B7pY82bAq5DTx6Kqdjjn/Rcvnp9+qfl+h0X/qH9Em4E/1m95cd5h8TZfeHwLV/jLNT7zUTyY9XtO6lMdltLDIU8H8rF3Ev47nt1kHc4CyPnhbT+P+y9eBpxmeVjzU6fSfCAdZ3+e/R7USpaoFKdaSwRV15yBtLiO6AKLiU53r6IVc68dTnDx7y7f4qlqHw7i4eydeT11WMuGPyaJ5pnMrDfI7ANJtMJfdnrzKMc3E6a14UKBQ2/1AOjKqmhYrX0f+ZYJg9xn30fucy5cMHlrtbrE6Tsshk7vKYstOTSOe83+yx4PbfxYNEvB8Alo6b1QC+RDnYBQlm49nyueauE7313sTr8HgmlGtr4jtLuacT3Kp+ooBwq/i6lW/XEp2pR8y2BtL2p7UduL2l70f+lFkLkYlatkNeB7dX4Em7ZU0FJBSwXfJRWE5xyw1p/X+ufmlg1aNmjZ4IdkgwUWZ3ODmFTfobZU0FJBSwU/JBUwSGEqpHDFSC11+1mhpYSWElpKqChhiBLnLSW0lNBSwo9MCfuuambD0XBYzYeU+wZ9B3M/z+Gl5BKn3iCpvnmg8zAfkoKL6YD2urfTJH7GohtmOMoXMNuZEIssM8IVYz/XUV4a7b/e7NcvV7kQ0ZnUeVBJwdpcm3DOLNNpaVgOqEyWAvMJD+9odleizUoCCuY4WWBhb9Xqi1vNzO6qbVeihn+dqwkzyP0XsyDtzu670qYtSHnAdle6G8W9O98j37W/d/d75Ft7YW2Gd5vui5oRpwYtKheO5G68TVl17ISa6XAmqsN5MX5DLjcTSc0poosYya2YCEuAjMejaoCJuBgcYaBIwEhAcWKdNkjKIRSYSiQ14EGBGQSHpIGMOE2mSDKLnOTCxUIRDg6ITYGh7f4yNaT3a/nzb0UIIR5XfotJJMgJOJJk0omOE2gIx1Tqwl84GwWfRCskP2lDEm3w50YEwJwlYIkzmXUEFIu1CcNaUIMRwAvFxTIDWZmXI10ILCZ6Vg6EgXGCiRSUs0SUk2C3PrrkoyonwFKYYxAyVM5sHZZ4QjZtI3O5kNKniHk1HiyH4KBEVlUHpIt1No+JCFlR2pENI5V+XYwGCcgcCus18AaYk0XITNjT+DDq2wpV5aCEv1+IyeTZB+3w2WQyIBc+sI8pqrNPI8JxJpTw1d1gEX4ajXssodhcGAy7y/Cqu6wRECvUXG5DEso6UD5xZQe1jeE2YL4xryMqBUNVdiIFSejdKbAYSb/rXwpnRu5MrEEQh6m1ytb23o9en38Yn3f63aNu7BJZvrjW1iWgap43A4CNob/di7O6Hb574onBisj9QF4vlSBU6MI+wFXVLa5orVt4YJt+cR3RWFvnNVarKVj8y8j12i9/y9AUZRdZggn31v+3jmiMwP0D39XKP934xDKGqQeyBJmFx5jd0cJ1vY29Ob+g6/U/UPLXEw==
+sidebar_class_name: "get api-method"
+info_path: docs/apis/wallet/tsg-wallet
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Retrieve DID document"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/.well-known/did.json"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Retrieves the public DID document on the well-known address for this wallet
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{"@context":{"example":"https://www.w3.org/ns/did/v1","oneOf":[{"type":"string"},{"type":"array","items":{"type":"string"}}]},"id":{"type":"string","example":"bdfd4c8e-3a44-4b9f-bc3e-1a8e26e3e99d"},"alsoKnownAs":{"example":["https://example.com/profile"],"type":"array","items":{"type":"string"}},"controller":{"example":"bdfd4c8e-3a44-4b9f-bc3e-1a8e26e3e99d","oneOf":[{"type":"string"},{"type":"array","items":{"type":"string"}}]},"verificationMethod":{"example":[{"id":"bdfd4c8e-3a44-4b9f-bc3e-1a8e26e3e99d","type":"Ed25519VerificationKey2020","controller":"bdfd4c8e-3a44-4b9f-bc3e-1a8e26e3e99d","publicKeyJwk":{"kty":"RSA"}}],"type":"array","items":{"type":"object","properties":{"id":{"type":"string","example":"bdfd4c8e-3a44-4b9f-bc3e-1a8e26e3e99d"},"type":{"type":"string","example":"Ed25519VerificationKey2020"},"controller":{"type":"string","example":"bdfd4c8e-3a44-4b9f-bc3e-1a8e26e3e99d"},"publicKeyJwk":{"type":"object","properties":{"alg":{"type":"string","example":"RS256"},"crv":{"type":"string","example":"P-256"},"e":{"type":"string","example":"AQAB"},"ext":{"type":"boolean","example":false},"key_ops":{"example":["sign","verify"],"type":"array","items":{"type":"string"}},"kid":{"type":"string","example":"bdfd4c8e-3a44-4b9f-bc3e-1a8e26e3e99d"},"kty":{"type":"string","example":"RSA"},"n":{"type":"string","example":"sample_modulus"},"use":{"type":"string","example":"sig"},"x":{"type":"string","example":"sample_x_coordinate"},"y":{"type":"string","example":"sample_y_coordinate"}},"required":["kty"],"title":"JsonWebKeyDto"}},"required":["id","type","controller"],"title":"VerificationMethodDto"}},"service":{"example":[{"id":"bdfd4c8e-3a44-4b9f-bc3e-1a8e26e3e99d","type":"LinkedDomains","serviceEndpoint":"https://example.com"}],"type":"array","items":{"type":"object","properties":{"id":{"type":"string","example":"bdfd4c8e-3a44-4b9f-bc3e-1a8e26e3e99d"},"type":{"type":"string","example":"LinkedDomains"},"serviceEndpoint":{"example":"https://example.com","oneOf":[{"type":"string"},{"type":"array","items":{"type":"string"}}]}},"required":["id","type","serviceEndpoint"],"title":"ServiceDto"}},"publicKey":{"example":[{"id":"bdfd4c8e-3a44-4b9f-bc3e-1a8e26e3e99d","type":"Ed25519VerificationKey2020","controller":"bdfd4c8e-3a44-4b9f-bc3e-1a8e26e3e99d","publicKeyJwk":{"kty":"RSA"}}],"type":"array","items":{"type":"object","properties":{"id":{"type":"string","example":"bdfd4c8e-3a44-4b9f-bc3e-1a8e26e3e99d"},"type":{"type":"string","example":"Ed25519VerificationKey2020"},"controller":{"type":"string","example":"bdfd4c8e-3a44-4b9f-bc3e-1a8e26e3e99d"},"publicKeyJwk":{"type":"object","properties":{"alg":{"type":"string","example":"RS256"},"crv":{"type":"string","example":"P-256"},"e":{"type":"string","example":"AQAB"},"ext":{"type":"boolean","example":false},"key_ops":{"example":["sign","verify"],"type":"array","items":{"type":"string"}},"kid":{"type":"string","example":"bdfd4c8e-3a44-4b9f-bc3e-1a8e26e3e99d"},"kty":{"type":"string","example":"RSA"},"n":{"type":"string","example":"sample_modulus"},"use":{"type":"string","example":"sig"},"x":{"type":"string","example":"sample_x_coordinate"},"y":{"type":"string","example":"sample_y_coordinate"}},"required":["kty"],"title":"JsonWebKeyDto"}},"required":["id","type","controller"],"title":"VerificationMethodDto"}},"authentication":{"type":"array","items":{"oneOf":[{"type":"string"},{"type":"object","properties":{"id":{"type":"string","example":"bdfd4c8e-3a44-4b9f-bc3e-1a8e26e3e99d"},"type":{"type":"string","example":"Ed25519VerificationKey2020"},"controller":{"type":"string","example":"bdfd4c8e-3a44-4b9f-bc3e-1a8e26e3e99d"},"publicKeyJwk":{"type":"object","properties":{"alg":{"type":"string","example":"RS256"},"crv":{"type":"string","example":"P-256"},"e":{"type":"string","example":"AQAB"},"ext":{"type":"boolean","example":false},"key_ops":{"example":["sign","verify"],"type":"array","items":{"type":"string"}},"kid":{"type":"string","example":"bdfd4c8e-3a44-4b9f-bc3e-1a8e26e3e99d"},"kty":{"type":"string","example":"RSA"},"n":{"type":"string","example":"sample_modulus"},"use":{"type":"string","example":"sig"},"x":{"type":"string","example":"sample_x_coordinate"},"y":{"type":"string","example":"sample_y_coordinate"}},"required":["kty"],"title":"JsonWebKeyDto"}},"required":["id","type","controller"],"title":"VerificationMethodDto"}]}},"assertionMethod":{"type":"array","items":{"oneOf":[{"type":"string"},{"type":"object","properties":{"id":{"type":"string","example":"bdfd4c8e-3a44-4b9f-bc3e-1a8e26e3e99d"},"type":{"type":"string","example":"Ed25519VerificationKey2020"},"controller":{"type":"string","example":"bdfd4c8e-3a44-4b9f-bc3e-1a8e26e3e99d"},"publicKeyJwk":{"type":"object","properties":{"alg":{"type":"string","example":"RS256"},"crv":{"type":"string","example":"P-256"},"e":{"type":"string","example":"AQAB"},"ext":{"type":"boolean","example":false},"key_ops":{"example":["sign","verify"],"type":"array","items":{"type":"string"}},"kid":{"type":"string","example":"bdfd4c8e-3a44-4b9f-bc3e-1a8e26e3e99d"},"kty":{"type":"string","example":"RSA"},"n":{"type":"string","example":"sample_modulus"},"use":{"type":"string","example":"sig"},"x":{"type":"string","example":"sample_x_coordinate"},"y":{"type":"string","example":"sample_y_coordinate"}},"required":["kty"],"title":"JsonWebKeyDto"}},"required":["id","type","controller"],"title":"VerificationMethodDto"}]}},"keyAgreement":{"type":"array","items":{"oneOf":[{"type":"string"},{"type":"object","properties":{"id":{"type":"string","example":"bdfd4c8e-3a44-4b9f-bc3e-1a8e26e3e99d"},"type":{"type":"string","example":"Ed25519VerificationKey2020"},"controller":{"type":"string","example":"bdfd4c8e-3a44-4b9f-bc3e-1a8e26e3e99d"},"publicKeyJwk":{"type":"object","properties":{"alg":{"type":"string","example":"RS256"},"crv":{"type":"string","example":"P-256"},"e":{"type":"string","example":"AQAB"},"ext":{"type":"boolean","example":false},"key_ops":{"example":["sign","verify"],"type":"array","items":{"type":"string"}},"kid":{"type":"string","example":"bdfd4c8e-3a44-4b9f-bc3e-1a8e26e3e99d"},"kty":{"type":"string","example":"RSA"},"n":{"type":"string","example":"sample_modulus"},"use":{"type":"string","example":"sig"},"x":{"type":"string","example":"sample_x_coordinate"},"y":{"type":"string","example":"sample_y_coordinate"}},"required":["kty"],"title":"JsonWebKeyDto"}},"required":["id","type","controller"],"title":"VerificationMethodDto"}]}},"capabilityInvocation":{"type":"array","items":{"oneOf":[{"type":"string"},{"type":"object","properties":{"id":{"type":"string","example":"bdfd4c8e-3a44-4b9f-bc3e-1a8e26e3e99d"},"type":{"type":"string","example":"Ed25519VerificationKey2020"},"controller":{"type":"string","example":"bdfd4c8e-3a44-4b9f-bc3e-1a8e26e3e99d"},"publicKeyJwk":{"type":"object","properties":{"alg":{"type":"string","example":"RS256"},"crv":{"type":"string","example":"P-256"},"e":{"type":"string","example":"AQAB"},"ext":{"type":"boolean","example":false},"key_ops":{"example":["sign","verify"],"type":"array","items":{"type":"string"}},"kid":{"type":"string","example":"bdfd4c8e-3a44-4b9f-bc3e-1a8e26e3e99d"},"kty":{"type":"string","example":"RSA"},"n":{"type":"string","example":"sample_modulus"},"use":{"type":"string","example":"sig"},"x":{"type":"string","example":"sample_x_coordinate"},"y":{"type":"string","example":"sample_y_coordinate"}},"required":["kty"],"title":"JsonWebKeyDto"}},"required":["id","type","controller"],"title":"VerificationMethodDto"}]}},"capabilityDelegation":{"type":"array","items":{"oneOf":[{"type":"string"},{"type":"object","properties":{"id":{"type":"string","example":"bdfd4c8e-3a44-4b9f-bc3e-1a8e26e3e99d"},"type":{"type":"string","example":"Ed25519VerificationKey2020"},"controller":{"type":"string","example":"bdfd4c8e-3a44-4b9f-bc3e-1a8e26e3e99d"},"publicKeyJwk":{"type":"object","properties":{"alg":{"type":"string","example":"RS256"},"crv":{"type":"string","example":"P-256"},"e":{"type":"string","example":"AQAB"},"ext":{"type":"boolean","example":false},"key_ops":{"example":["sign","verify"],"type":"array","items":{"type":"string"}},"kid":{"type":"string","example":"bdfd4c8e-3a44-4b9f-bc3e-1a8e26e3e99d"},"kty":{"type":"string","example":"RSA"},"n":{"type":"string","example":"sample_modulus"},"use":{"type":"string","example":"sig"},"x":{"type":"string","example":"sample_x_coordinate"},"y":{"type":"string","example":"sample_y_coordinate"}},"required":["kty"],"title":"JsonWebKeyDto"}},"required":["id","type","controller"],"title":"VerificationMethodDto"}]}}},"required":["id"],"title":"DIDDocumentDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

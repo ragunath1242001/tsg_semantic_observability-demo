@@ -1,0 +1,33 @@
+---
+id: keyconfigdto
+title: "KeyConfigDto"
+description: ""
+sidebar_label: "KeyConfigDto"
+hide_title: true
+hide_table_of_contents: true
+schema: true
+sample: {"type":"ES384","id":"b86483f3-3792-4a54-b11e-f1c6face9935","default":false,"existingKey":"existingKey789","existingCertificate":"existingCert101112"}
+custom_edit_url: null
+---
+
+import Schema from "@theme/Schema";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"KeyConfigDto"}
+>
+</Heading>
+
+
+
+
+
+<Schema
+  schema={{"type":"object","properties":{"type":{"example":"ES384","allOf":[{"type":"string","enum":["EdDSA","ES384","X509"],"title":"KeyType"}]},"id":{"type":"string","example":"b86483f3-3792-4a54-b11e-f1c6face9935"},"default":{"type":"boolean","example":false},"existingKey":{"type":"string","example":"existingKey789"},"existingCertificate":{"type":"string","example":"existingCert101112"}},"required":["type","id","default"],"title":"KeyConfigDto"}}
+  schemaType={"response"}
+>
+  
+</Schema>
+            

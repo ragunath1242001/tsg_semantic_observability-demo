@@ -1,0 +1,33 @@
+---
+id: proofdocument
+title: "ProofDocument"
+description: ""
+sidebar_label: "ProofDocument"
+hide_title: true
+hide_table_of_contents: true
+schema: true
+sample: {"proof":{"type":"JsonWebSignature2020","proofPurpose":"assertionMethod"}}
+custom_edit_url: null
+---
+
+import Schema from "@theme/Schema";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"ProofDocument"}
+>
+</Heading>
+
+
+
+
+
+<Schema
+  schema={{"type":"object","properties":{"proof":{"oneOf":[{"type":"object","properties":{"type":{"type":"string","enum":["JsonWebSignature2020","DataIntegrityProof"],"example":"JsonWebSignature2020"},"proofPurpose":{"type":"string","example":"assertionMethod"}},"required":["type","proofPurpose"],"title":"Proof"},{"type":"array","items":{"type":"object","properties":{"type":{"type":"string","enum":["JsonWebSignature2020","DataIntegrityProof"],"example":"JsonWebSignature2020"},"proofPurpose":{"type":"string","example":"assertionMethod"}},"required":["type","proofPurpose"],"title":"Proof"}}]}},"required":["proof"],"title":"ProofDocument"}}
+  schemaType={"response"}
+>
+  
+</Schema>
+            

@@ -1,0 +1,72 @@
+---
+id: rule-repository-controller-get-constraints
+title: "Retrieve constraints"
+description: "Retrieve constraint templates registered in this control plane"
+sidebar_label: "Retrieve constraints"
+hide_title: true
+hide_table_of_contents: true
+api: eJylV9Fu2zoM/RVBT/cOXpL19ilvRdsVBbq22LrtoQgCxmJirbKkSXTTIMi/X1C2Yydpu257SyTyHIqkjui1VBjzoD1pZ+VYfkYKGh9R5M5GCqAtCcLSGyCMIuBCR8KASmgrqNCR7Sg4I7wBizKTzmMABrtUDFcZ/IzeRU0urE5rW4NhukA63TJEmUkPAUokDFGO79fSQolyLF1QGGQmA/6sdEAlx3MwETOpOdifFYaVzGTMCyxBjtdS4RwqQ3Isz86/nMpM0sozTqSg7UJmEm1VyvG9PEm7yWiy2WS7hNPZ6o84S6f0XKM6A8ID7j6LhwX+BkOprS457g9Zx/ZhS2CrcoZhlwDD9C9ISnhqfo9GfUr+t086YYronY0YGedoNKqz0m8rmckCQaXqruXT+xTbgdWlVfgk3FxQgSKvQkBLgk3FP5EgkLYLASQ+/LsTeBOQtoSLOg1MEPDxLSxsp10VRZOtl2EPMpl4LD7RW3jY7k85PIYXKK5TEZhDE5ZReAy/JkmY5AhMQo2HsHe8KewWvDZ7G+av0VKov0Iz2j4cQn3HmbjS9oEbgZxwVDQHjnWeNUtUdFXIn03B9iZuMsm6hZZ4F7w3Ok+iNfwRmWh96AshAF+YOvpu3c1+YE4sYIGlj3SdUK16Nu1daS/PWuITlN7w3sndzadL1iIw5maetO9FzWpNr24uLk9PruQkk6QpwXRiesfem8lmu/cM4Jb9tKfyyXqT7ab8jc59n81OG9/XAG00z4b8ySk0XBZ2PR79d1j4jy7MtFJo5e9X7oUK1Ur52vk+N6107eijq6zi5EQCquLrfsejY3HtSGydcqfwsB16Lsej400mS4yxueb7oXfgdwUKzi5GQrXtdqEcRmEdCXzSkQbMiiG48HqkvSj3ipaysz1uc4Re8c4Z/IxcW7WIeRU0rVIDO6ioOGKYZjpIw8EUVKmtnPCLQbDgd16eP4KpUv0YvEQqHI8NC0z1AirkWA7B62EJFhZYoqWhd0bnq2E3oHCcGB7r0WHSxfKFO6EudhtRl9l6IZNz45bJxEOMSxdU3UPO147PHGD83GK2u6iAoJ6Ixi9t1HmbIQQM275l+2ap3fvoQgk8XXy77WaKgsjLvasqv2HQcw0zg+I2YERLKbPCIipULJi5K8vK8o1BMUNaIlpBSye0jQQ2b2UUd6e6QeoObecuJbDpgLsvF6IZ6MRtM/ztCT/r8Y1He3J7KaLHXM+byypi4ZYxMaFV3vEM2FLvYA7EJxep3epsIfAt4KE0nYs3z4Agesj58I5c7kwmILa8qMRslezOc6N9RPHdhfSOXARX+c47DsRNelZ2yWLlvQukH/tRkBMlPPBmwITN1RU5WDFDAUp1weVAYNwiE2DVvhuQ+Hop+PELkHN2YoIgNvEGchwIMZ2+u3aE76bTsdhJq8K5tjrlVNcCwEC2oZ6hUDpgTmYl+EVFJZaaCgEiarswe8netsFAyEzyfdoOb9wPkLPmprc5RxuxE1F54iEvUBwNRjKTVTBNh8bxcLhcLgeQtgcuLIaNbxxeXZ6eX385f380GA0KKk3qMe8ilWB7yM98j8T9Rlt3T8Lff780F4zwiYbegLYspelI60aQ7iV4LXlIbiWJtSqJUp2pVpYmmSxcJPZYr2cQ8Wswmw0v19M3S6XSkS9sN50/4Kr33cPyyOFInu1fs60/Wd5i3syHbzLtviI68wn/CUlmWG437WSfjlP7neQ5eup5HbzTm77aX5zf8fxTcXIPBXr7mHSjmO2f9VCMxQuK2x4rqXs697OA7UMwzQMqtKTBxK3vIoClKTUz1mbzP0oLRwk=
+sidebar_class_name: "get api-method"
+info_path: docs/apis/control-plane/tsg-control-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Retrieve constraints"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/management/policy/constraint"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Retrieve constraint templates registered in this control plane
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"order","required":false,"in":"query","schema":{"default":"DESC","type":"string","enum":["ASC","DESC"]}},{"name":"order_by","required":false,"in":"query","schema":{"default":"modifiedDate","type":"string"}},{"name":"page","required":false,"in":"query","schema":{"minimum":1,"default":1,"type":"number"}},{"name":"per_page","required":false,"in":"query","schema":{"minimum":1,"maximum":100,"default":100,"type":"number"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"","headers":{"x-page":{"description":"Index of the current page (starting at 1)","schema":{"type":"integer"}},"x-prev-page":{"description":"Index of the previous page","schema":{"type":"integer"},"required":false},"x-next-page":{"description":"Index of the next page","schema":{"type":"integer"},"required":false},"x-per-page":{"description":"Number of items per page","schema":{"type":"integer"}},"x-total-pages":{"description":"Total number of pages","schema":{"type":"integer"}},"x-total":{"description":"Total number of items","schema":{"type":"integer"}},"link":{"description":"Web Linking to other pages of this resource","schema":{"type":"string"}}},"content":{"application/json":{"schema":{"type":"array","items":{"type":"object","properties":{"id":{"type":"number"},"type":{"example":"ATOMIC","allOf":[{"type":"string","enum":["ATOMIC","LOGICAL"],"title":"ConstraintType"}]},"title":{"type":"string","example":"Constraint title"},"description":{"type":"string","example":"Constraint description"}},"required":["type","title"],"title":"ConstraintModel"}}}}},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string","example":"ResourceNotFound"},"status":{"type":"string","example":"404 Not Found"},"code":{"type":"number","example":404},"message":{"type":"object","example":"The requested resource does not exist."},"error":{"type":"string","example":"Not Found"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

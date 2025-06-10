@@ -1,0 +1,33 @@
+---
+id: transferstatusdto
+title: "TransferStatusDto"
+description: ""
+sidebar_label: "TransferStatusDto"
+hide_title: true
+hide_table_of_contents: true
+schema: true
+sample: {"localId":"local-12345","remoteId":"remote-98765","role":"provider","remoteAddress":"http://example.com/","remoteParty":"party-identifier-001","state":"REQUESTED","agreementId":"agreement-45678","format":"application/json","modifiedDate":"2023-10-01T12:34:56Z"}
+custom_edit_url: null
+---
+
+import Schema from "@theme/Schema";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"TransferStatusDto"}
+>
+</Heading>
+
+
+
+
+
+<Schema
+  schema={{"type":"object","properties":{"localId":{"type":"string","example":"local-12345"},"remoteId":{"type":"string","example":"remote-98765"},"role":{"type":"string","example":"provider"},"remoteAddress":{"type":"string","example":"http://example.com/"},"remoteParty":{"type":"string","example":"party-identifier-001"},"state":{"type":"string","enum":["REQUESTED","STARTED","TERMINATED","COMPLETED","SUSPENDED"],"example":"REQUESTED"},"agreementId":{"type":"string","example":"agreement-45678"},"format":{"type":"string","example":"application/json"},"modifiedDate":{"format":"date-time","type":"string","example":"2023-10-01T12:34:56Z"}},"required":["localId","role","remoteAddress","remoteParty","state","agreementId","modifiedDate"],"title":"TransferStatusDto"}}
+  schemaType={"response"}
+>
+  
+</Schema>
+            

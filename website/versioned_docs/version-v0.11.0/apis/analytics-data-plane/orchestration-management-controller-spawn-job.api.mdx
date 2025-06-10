@@ -1,0 +1,72 @@
+---
+id: orchestration-management-controller-spawn-job
+title: "Spawn a job"
+description: "Spawn a job"
+sidebar_label: "Spawn a job"
+hide_title: true
+hide_table_of_contents: true
+api: eJzFVk1v4zYQ/SvsnOmPZt020C3NJm2KNjE26fZgGMGYmlhMJJJLjtYxDP33gpRsyVlvTgV6sWUO5+vNvCfvwDryyNqamxwyuPOqoMDtyV9ocE0VGb60hr0tS/KPweHG/GFXIMGhx4qYfIBssZTg6UtNgX+1+RayXfqpPeWQsa9JgrKGyXA0oXOlVinJ5DlYE8+CKqjC+MRbR5CBXT2T4pjHxyJZU4hWXeGabrGiwdXAXps1NBLQYLkNOsRuTpiVrSo0Qxt6j1uQoJmqcMKnaSTQK1aupDfZYVWH7cq+wnFWqL3J6lrn2Y9nH2Y//fzL+Sg+jI6f9jYY1LQAUoUFCb9TWVop/rG+zH+AZdOkKjwFZ01oUTibTuNXTkF57SKQkEHscDb98K3h2vqVznMy8J+NwZycwAAr+ETB1l7RreVrW5s8VhcYuT4B89BvNp2JW8vi4KRsPkxl6mpFfugym84aCRWFgGs6VXof/KEg0e0p5cJ3JYrcUhDGsqBXHXgcs5L31r9f6aDKRg72fdGic2i3a2EpgTUnz6sY/CNb6GYbSNVe8xayxQ4s1lycxTCq5Z0r0dBjjozpCZZNDIXryDv4iIxiHs9FT9iY63gF7iNvBYrnRN2KuLBxWZ0NabbIBWQwQacn1SHK5OU8TBLhR61bIP/1QPd9zfdxY9ql2FfeT6A9kPBU2k264jCEjfV5u2vWtY6JQKxVODT5iHmlY+HfNclTph6kk569ucV9RejJH/Y+sbo92tuura+QIYPPc5D7tgpmB28R/kxeP2lclSTmngIZTswShiinXLAVkem1iYwjsSLeEBnBGyu0CYxGURD2SXBBopu7SKWO03ZFfn7qBfbqf5YkCdo82TTpbqUf7n8TF3vERb+V3+D0UOgg7hyZi/mNCI6UfupESITCbkJCgEzurDZ8gORU6DFIiPvYqV+rbaiitjUSSq3IBOrFCi4cqoLE2XgKEmpfdpMM2WSy2WzGmMxj69eTzjdM/ry5vLq9vxqdjafjgqsyzSKSpkIziHzMrqN+D1xgeuWJK1GbKC8p/a4j3gLQ6UjLnsASXs6jcvT0W0ooIluzBex2Kwz0ty+bJh5/qclvW1J+RZ9WMP5qJBSEedzvxQ5eaAsZXLbqP3qINcXrZZ2o8vZN0Mi9x4VS5Pjdu8uBoMzv7h8iebo/AVXSbvC4AZk+05xswiYxP53toESzrpN6Qxsz4hzF45SYHASyf4ub7bDC70iGeFcRZNdwUqUEwMngewF7VJ5yMqyxDAfftUfDj8mvie/tfwFfxzUJ
+sidebar_class_name: "post api-method"
+info_path: docs/apis/analytics-data-plane/tsg-analytics-data-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Spawn a job"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/management/k8s/spawn-job"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Spawn a job
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={{"required":true,"content":{"application/json":{"schema":{"type":"object","properties":{"imageName":{"type":"string"},"analysisId":{"type":"string"},"command":{"type":"array","items":{"type":"string"}}},"example":{"imageName":"busybox","analysisId":"urn:uuid:12345678-1234-5678-1234-567812345678","command":["echo","Hello, World!"]}}}}}}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":""},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string","example":"ResourceNotFound"},"status":{"type":"string","example":"404 Not Found"},"code":{"type":"number","example":404},"message":{"type":"object","example":"The requested resource does not exist."},"error":{"type":"string","example":"Not Found"}},"required":["name","status","code"],"title":"ErrorDto"}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

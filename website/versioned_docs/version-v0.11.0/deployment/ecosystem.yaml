@@ -1,0 +1,55 @@
+general:
+  namespace: tsg-ecosystem
+  username: tsg
+  password: changeme
+  authorityDomain: authority.example.com
+  credentialType: ExampleCredential
+participants:
+  - host: authority.example.com
+    id: authority
+    name: Dataspace Authority
+    routing: subdomain
+    issuer: true
+    hasControlPlane: false
+    document:
+      "@context":
+        "@protected": true
+        "@version": 1.1
+        ExampleCredential:
+          "@context":
+            - https://www.w3.org/2018/credentials/v1
+          "@id": example:ExampleCredential
+        id: "@id"
+        example: https://authority.example.com/context/ExampleCredential
+        type: "@type"
+    schema:
+      type: object
+      title: ExampleCredential
+      additionalProperties: true
+      properties:
+        id:
+          type: string
+          pattern: "^did:web:.*"
+      required:
+        - id
+  - host: alfa.example.com
+    id: alfa
+    name: Alfa
+    hasTestService: true
+    hasControlPlane: true
+    issuer: false
+    preAuthorizedCode: 386527fd21960fd8bd3aa0208c9275a4437fde1bdae9469daaf91fb7cace67d827ff152e5f89c02ccdbde1766387feb2
+  - host: bravo.example.com
+    id: bravo
+    name: Bravo
+    hasTestService: true
+    hasControlPlane: true
+    issuer: false
+    preAuthorizedCode: 84f3eb915ac95caf5ab5edf03359d0424e3c546a51ed0a4f96691c63f24b92cd3f58c97aa35e52bc7f6429157b5d4c7b
+  - host: charlie.example.com
+    id: charlie
+    name: Charlie
+    hasTestService: true
+    hasControlPlane: true
+    issuer: false
+    preAuthorizedCode: 005bbda491036d6f3216f71c32117e126962d9f779b3f3bdcdde133f684fff2fff5f05fd7fbb32c7a470c0defffba190

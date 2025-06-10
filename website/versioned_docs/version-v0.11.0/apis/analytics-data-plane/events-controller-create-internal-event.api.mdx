@@ -1,0 +1,72 @@
+---
+id: events-controller-create-internal-event
+title: "EventsController_createInternalEvent"
+description: "EventsController_createInternalEvent"
+sidebar_label: "EventsController_createInternalEvent"
+hide_title: true
+hide_table_of_contents: true
+api: eJyNVU1v4zgM/SsCT7uAG3d79K3b6S4CDHaCaXcuQTFgbCbWjC1pJLqewPB/X1BSvtoMsLnEIkXqUXyPmsA68sjammUDFTy+kuHwYA1723Xkv9aekGlpmLzBLrqhAIcee2LyAar1BAZ7ggrQYLcPOiwbKMDTj0F7aqBiP1AB2kAFDrmFAkLdUo9QTcB7J5GBvTY7mOeXFEiB/7TNXna8zVNbwwKimgCd63QdwZffgjVie5fabr5RHTF7KZU1BfHq5srxRa7kmmPoN+TPXNkwF8C6p8DYu6uBDfJVONg0WpBjtzoDJjXO8/ntrQVqBnaEcX7oiyy4k+QP75v1gS3Mc0oZnDUhlX93+4f8NRRqr53ggApAtjHupKmZCZL9ctP/ZEhP3FphlLMhMYZbqKBEp0uKKcrpxJe51Dn+hnKCQP418etFFvXgNe+fpLupAosDt3fnN5sMBWw7O8YtDkMYrW8SL6xLgfFU1nWQzrgODX3Fpo/0/KWruOY6fl2PPLnT/W8IfWJQ5KhEZdPB95f1PTJU8GUlHU5ltcwO3jbhC3m91bjpSK08BTIcVaAMUUONYqtq2/eDEXWQ2hCPREbxaJU2gdHUFJTdKm5J1amTKkJdRAqIlj6fVPj4E3vX0UE1B24fxHK2zhq5vdDEyZ+lIEdos7Wxd5m5z09/q/vDHaoPyKhW8e7eVv7c6qA+OTL3q6UKjmq9zSNAhdaOIdZEpnFWGz4WeS31AgoQhmXup8mCtUyWuYBO12RCLDqXee+wbkndLW6hgMF3uTehKstxHBcY3Qvrd2WODeXH5cPjP0+PN3eL20XLfRdvVwTRoznLnCSlTppSSVPqICp1UNXFXRyZz/STS9ehNjJwIrQpC24N6DQUkCQHBVQXQ/qN6l4KaEWu1RqmaYOB/vXdPIv5x0B+n7T4ij4yL07+Rgf5bqDaYhfoHcLjtIbfPueR9rs6kfsSeTai2UtrsBsoNeY77S9fl/llLqAlbIRt6ylveEhn3TxLmlOCd6+EPDLH8bT69PQsAsyvTW8bifE4yhOGYwJgYz1xekTbBB2a3YA72Ztyyu8/4UOMBA==
+sidebar_class_name: "post api-method"
+info_path: docs/apis/analytics-data-plane/tsg-analytics-data-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"EventsController_createInternalEvent"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/api/events/{analysisId}/internal-event"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+EventsController_createInternalEvent
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"analysisId","required":true,"in":"path","schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={{"required":true,"content":{"application/json":{"schema":{"type":"object","properties":{"id":{"type":"string"},"name":{"type":"string"},"number":{"type":"number"},"timestamp":{"type":"string"},"data":{"type":"object","additionalProperties":true}},"required":["id","name","number","timestamp"],"title":"CreateInternalEventDto"}}}}}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"201":{"description":""}}}
+>
+  
+</StatusCodes>
+
+
+      

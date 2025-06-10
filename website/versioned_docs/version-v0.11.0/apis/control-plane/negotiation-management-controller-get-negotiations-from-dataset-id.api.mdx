@@ -1,0 +1,72 @@
+---
+id: negotiation-management-controller-get-negotiations-from-dataset-id
+title: "Get all negotiations for a dataset"
+description: "Get all negotiations for a dataset"
+sidebar_label: "Get all negotiations for a dataset"
+hide_title: true
+hide_table_of_contents: true
+api: eJytVm1v2zgM/iuCPt0Nzmu3bvO3oE2LAFvXtd0OWBEEjEzHWmXJk+hmQeD/fpDs2Ena9W6HCwJEkfjykCIfcctNgRZIGj1LeMyvcGVIhv8fQcMKc9R0ZjRZoxTaxQppT8RdWJOfA4FDmiU84gVYyJHQOh7fb7mGHHnMkz0Jiz9KaTHhMdkSIy41j3kBlPGIJ+iElYW3zGPe2GWzc7YxJVuDJkaGpVInDJjuULDUWB5xJzLMgcdbTpvCu3VkpV7xqopaJBZzQ3gNljYHWFJQbgfmR4l28wTNTdBkhVft8Bzi2KH7Jzxz79oVRjt0/nw8HPqfQ4e3pRDoXFoqtWEpksgw2ffmeMSF0YSavDIUhZIinAy+O29h+xQBWAs+NEmYu719s/yOgvz9WV8OJGtcyghQviyOQ4g4/oS8UH7rJIV3b9LT1703b0dve6/fnI57y5NU9Mbi/elJenoKKZzyKmpS/z9Ye9tZqy/yRYPNvQVJduWrwGsbf/aMmi5zHt/7NDzKBG2dYlfmaPl832or0EKZJIlF514GM3o/7o9O3/VH/dFw6HUdAb2I5Gb6+cv09m56ziP+6eJiehNWk7Oz6XW9Obm8mYbF1+nN7GIWlhezq8mH2bewvpvefJxdTbzwQQSd4SoKDXqL9DL4BFMoFZ03slXEc5PIVGJy3gSRGpsD1Q2PPZI58ugFg+Ph+KQ3GvZGo7vhMA7f/nA4/OY7dq8379s63Cui6LiV/Y0e38Uuv12AR5jnESdJAcweq90SUOnOyfAqfCLuUJRW+lK733IDJWVjj0vUvFgo0LiAJJe66cl20/sNKz73XU+w8sS478yxjmc9nkMSuERioNRB33t6YcAaUvUhIWXGk/cq/A1kGvMBFHKQt7YH+yYGjfJg21Jz5bOF9rGm7nkX860nkZoPdpF3vFFvRDxVZh1ECnBubWxS048pasVnEhX/VvbiXx3U97NEsGhbyvPyzdbu7GJXml+vu5rMiIonRP8VrUwlLBWya4sONdXkrhETTDzHC5PnpfZki2yJtEbUjNaGSe0ItEDHTMooQ9ZgZgFqP5S11KkJCWzK7u72kjXPK7sOER3jucukY58K1JPrGXMFCpk2PM9cZtYueEKdFEZqal0f2Oyzj8bR7qiTBYvMogKq4/KH4dEtQPjgDRlhVMTA7fxiwpabIDcVShYO2V/GPki9YpfWlEWn7frsE2Voj5y5siiMJfm4j4IMy+HBH1oMtv3tMgGaLZFBknTgBBAos4oY6ORYDYh9mTGpCS2Iuk+8CfIihQKBfcYWi1dXhvDVYhGzg7QmmEotQ06lY9pQMKQb10tkibQoSG2YkvoBE7aWlDFgTuqVOkp2WwZ9xiPu+6m+x6a4QXiarSKupEDtAm82w8mkAJEhG/eHPOKlVU2FungwWK/XfQjHfWNXg0bXDT7MzqZXt9PeuD/sZ5SrUGOFcZSD3rP8r2jkoOzaFif8SYNCgdSe8QOqbUMx9xwK6fmnI7CIH00onfm4mwLnEc+MI29hu12Cwy9WVZXfrmcvz7KJdL4Hu9nsCF47+vyHyezZ0B5w82RAfARVeknuyfsRbKCF34T3x03zkv3JfneifRbnbpTTBwB3+LskV/Mq4hmCn1I84vp8IgQWtKf5ZG70obYvyuX0jkfcs/xzrN++hNvnUT1lePYLGt/BD08G9wP7swZ3r8tCWExQkwTlWt2VBU2LoFfNq6r6Gwl7arw=
+sidebar_class_name: "get api-method"
+info_path: docs/apis/control-plane/tsg-control-plane
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Get all negotiations for a dataset"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/management/negotiations/dataset/{datasetId}"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Get all negotiations for a dataset
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"datasetId","required":true,"in":"path","description":"Dataset ID you want to find a negotiation for","schema":{"type":"string"}},{"name":"remoteParty","required":false,"in":"query","description":"Remote party you want a negotiation to find for","schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"Successfully fetched negotiations","content":{"application/json":{"schema":{"type":"array","items":{"type":"object","properties":{"localId":{"type":"string","example":"3fa85f64-5717-4562-b3fc-2c963f66afa6"},"remoteId":{"type":"string","example":"3fa85f64-5717-4562-b3fc-2c963f66afa7"},"remoteParty":{"type":"string","example":"Remote Party Name"},"role":{"type":"string","enum":["provider","consumer"],"example":"provider"},"remoteAddress":{"type":"string","example":"192.168.1.100"},"state":{"type":"string","enum":["REQUESTED","OFFERED","ACCEPTED","AGREED","VERIFIED","FINALIZED","TERMINATED"],"example":"REQUESTED"},"dataSet":{"type":"string","example":"defaultDataSet"},"modifiedDate":{"format":"date-time","type":"string","example":"2023-10-11T00:00:00.000Z"}},"required":["localId","remoteId","remoteParty","role","remoteAddress","state","dataSet","modifiedDate"],"title":"NegotiationStatusDto"}}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

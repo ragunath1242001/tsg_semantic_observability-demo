@@ -1,0 +1,33 @@
+---
+id: authenticateduser
+title: "AuthenticatedUser"
+description: ""
+sidebar_label: "AuthenticatedUser"
+hide_title: true
+hide_table_of_contents: true
+schema: true
+sample: {"state":"authenticated","user":{"sub":"user-id-123","name":"John Doe","email":"john.doe@example.com","roles":["admin","user"],"didId":"did:example:123456789","refreshToken":"refresh-token-abc123"}}
+custom_edit_url: null
+---
+
+import Schema from "@theme/Schema";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"AuthenticatedUser"}
+>
+</Heading>
+
+
+
+
+
+<Schema
+  schema={{"type":"object","properties":{"state":{"type":"object","example":"authenticated"},"user":{"example":{"sub":"user-id-123","name":"John Doe","email":"john.doe@example.com","roles":["admin","user"],"didId":"did:example:123456789","refreshToken":"refresh-token-abc123"},"allOf":[{"type":"object","properties":{"sub":{"type":"string","example":"user-id-123"},"name":{"type":"string","example":"John Doe"},"email":{"type":"string","example":"john.doe@example.com"},"didId":{"type":"string","example":"did:example:123456789"},"roles":{"example":["admin","user"],"type":"array","items":{"type":"string"}},"refreshToken":{"type":"string","example":"refresh-token-abc123"}},"required":["sub","name","email","roles"],"title":"ClientInfo"}]}},"required":["state","user"],"title":"AuthenticatedUser"}}
+  schemaType={"response"}
+>
+  
+</Schema>
+            
