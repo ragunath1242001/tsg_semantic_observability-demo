@@ -1,5 +1,5 @@
 import { ConventionalGitClient } from "@conventional-changelog/git-client";
-import conventionalChangelog from "conventional-changelog";
+import { ConventionalChangelog } from "conventional-changelog";
 import { Bumper } from "conventional-recommended-bump";
 import { readdirSync } from "fs";
 import fs from "fs";
@@ -103,27 +103,33 @@ let changelog = `# ${process.env.TITLE} v${newVersion} (${
 
 `;
 for (const project of projects) {
-  const stream = conventionalChangelog(
-    {
-      preset: "conventionalcommits"
-    },
-    {
-      version: newVersion,
-      title: project.title
-    },
-    { path: project.path },
-    {},
-    {
-      headerPartial: `## ${project.title}\n`
-    }
-  );
+  const generator = new ConventionalChangelog();
+  generator.loadPreset("conventionalcommits");
+  generator.commits({
+    path: project.path
+  });
+  generator.context({
+    version: newVersion,
+    title: project.title
+  });
+  if (project.pkg) {
+    generator.package(project.pkg);
+  } else {
+    generator.package({
+      name: project.title,
+      version: newVersion
+    });
+  }
+  generator.writer({
+    headerPartial: `\n## ${project.title}\n`
+  });
   let result = "";
   // eslint-disable-next-line no-await-in-loop
-  for await (const line of stream) {
-    result += line.toString();
+  for await (const line of generator.write()) {
+    result += line;
   }
   if (!result.includes("###")) {
-    result += `\n\nNo changes in ${project.title} in this release\n\n\n`;
+    result += `\n\nNo changes in ${project.title} in this release\n\n`;
   }
   changelog += result;
 }

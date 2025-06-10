@@ -13,6 +13,7 @@
     "@conventional-changelog/git-client": "^2.0.0",
     "axios": "^1.7.2",
     "conventional-changelog": "^7.0.0",
+    "conventional-changelog-conventionalcommits": "^9.0.0",
     "conventional-changelog-writer": "^8.0.0",
     "conventional-commits-filter": "^5.0.0",
     "conventional-commits-parser": "^6.0.0",
