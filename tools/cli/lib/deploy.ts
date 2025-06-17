@@ -358,9 +358,9 @@ export class Deploy {
   ) => {
     if (type === "tsg") {
       if (development) {
-        return "https://nexus.dataspac.es/repository/dsp-development";
+        return "https://gitlab.com/api/v4/projects/tno-tsg%2Fdataspace-protocol%2Ftno-security-gateway/packages/helm/devel";
       } else {
-        return "https://nexus.dataspac.es/repository/dsp-stable";
+        return "https://gitlab.com/api/v4/projects/tno-tsg%2Fdataspace-protocol%2Ftno-security-gateway/packages/helm/stable";
       }
     } else {
       return "https://charts.bitnami.com/bitnami";
