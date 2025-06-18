@@ -1,7 +1,7 @@
 import { ContractNegotiationState, Offer } from "@tsg-dsp/common-dsp";
 
 import { PipelineExecutor } from "../pipeline.executor.js";
-import { SignalController } from "./tck.test.js";
+import { SignalController } from "../signal.controller.js";
 
 export async function CN_C_01_01(
   pipelineExecutor: PipelineExecutor,

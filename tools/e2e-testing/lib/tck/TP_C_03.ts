@@ -1,7 +1,7 @@
 import { TransferState } from "@tsg-dsp/common-dsp";
 
 import { PipelineExecutor } from "../pipeline.executor.js";
-import { SignalController } from "./tck.test.js";
+import { SignalController } from "../signal.controller.js";
 
 export async function TP_C_03_01(
   pipelineExecutor: PipelineExecutor,

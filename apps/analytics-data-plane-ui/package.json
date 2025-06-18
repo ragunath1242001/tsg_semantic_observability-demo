@@ -17,6 +17,8 @@
     "@tsg-dsp/common-dsp": "workspace:*",
     "@tsg-dsp/common-dtos": "workspace:*",
     "@tsg-dsp/common-ui": "workspace:*",
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
     "axios": "^1.7.8",
     "chart.js": "^4.4.8",
     "did-resolver": "^4.1.0",
