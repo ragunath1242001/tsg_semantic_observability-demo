@@ -1,0 +1,212 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AlgorithmDefinition",
+  "type": "object",
+  "definitions": {
+    "DataRequirementColumn": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Name of the column"
+        },
+        "type": {
+          "type": "string",
+          "description": "Type of the column (e.g., xs:integer, xs:string)"
+        }
+      },
+      "required": ["name", "type"],
+      "additionalProperties": false
+    },
+    "CsvDataRequirements": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["csv"],
+          "description": "Type of the data"
+        },
+        "columns": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/DataRequirementColumn" },
+          "minItems": 1,
+          "description": "List of required columns"
+        }
+      },
+      "required": ["type", "columns"],
+      "additionalProperties": false
+    },
+    "RoleState": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Name of the state"
+        }
+      },
+      "required": ["name"],
+      "additionalProperties": false
+    },
+    "RoleCardinality": {
+      "type": "object",
+      "properties": {
+        "min": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Minimum number of participants"
+        },
+        "max": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Maximum number of participants"
+        }
+      },
+      "required": ["min"],
+      "additionalProperties": false
+    },
+    "RoleDefinition": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Name of the role (e.g., server, node)"
+        },
+        "states": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/RoleState" },
+          "minItems": 1,
+          "description": "List of states for the role"
+        },
+        "cardinality": {
+          "$ref": "#/definitions/RoleCardinality",
+          "description": "Role cardinality"
+        },
+        "communicatesToRoles": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "List of roles participants in this role sends events to"
+        },
+        "dataRequirements": {
+          "$ref": "#/definitions/CsvDataRequirements",
+          "description": "Data requirements for the participants in this role"
+        }
+      },
+      "required": ["name", "states", "cardinality", "communicatesToRoles"],
+      "additionalProperties": false
+    },
+    "AlgorithmEvents": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Name of the event"
+        },
+        "description": {
+          "type": "string",
+          "description": "Description of the event"
+        },
+        "type": {
+          "type": "string",
+          "description": "Type of the event (e.g., json, blob)"
+        }
+      },
+      "required": ["name", "description", "type"],
+      "additionalProperties": false
+    },
+    "InternalEvent": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Name of the internal event"
+        },
+        "description": {
+          "type": "string",
+          "description": "Description of the internal event"
+        },
+        "type": {
+          "type": "string",
+          "description": "Type of the internal event (e.g., counter, gauge)"
+        }
+      },
+      "required": ["name", "description", "type"],
+      "additionalProperties": false
+    },
+    "UITemplate": {
+      "type": "object",
+      "properties": {
+        "metric": {
+          "type": "string",
+          "description": "Metric associated with the UI element"
+        },
+        "description": {
+          "type": "string",
+          "description": "Description of the UI element"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["field", "line-graph", "table"],
+          "description": "Type of the UI element"
+        }
+      },
+      "required": ["metric", "description", "type"],
+      "additionalProperties": false
+    }
+  },
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Title of the algorithm"
+    },
+    "description": {
+      "type": "string",
+      "description": "Description of the algorithm"
+    },
+    "keywords": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1,
+      "description": "Keywords associated with the algorithm"
+    },
+    "image": {
+      "type": "string",
+      "format": "uri",
+      "description": "Public image URL of the algorithm"
+    },
+    "algorithmEvents": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/AlgorithmEvents" },
+      "minItems": 1,
+      "description": "Algorithm event structure of the algorithm"
+    },
+    "roleDefinitions": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/RoleDefinition" },
+      "minItems": 1,
+      "description": "Role definitions for the algorithm"
+    },
+    "internalEvents": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/InternalEvent" },
+      "minItems": 1,
+      "description": "Internal event structure of the algorithm"
+    },
+    "uiTemplate": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/UITemplate" },
+      "minItems": 1,
+      "description": "UI template for visualizing internal events"
+    }
+  },
+  "required": [
+    "title",
+    "description",
+    "keywords",
+    "image",
+    "algorithmEvents",
+    "roleDefinitions",
+    "internalEvents",
+    "uiTemplate"
+  ],
+  "additionalProperties": false
+}

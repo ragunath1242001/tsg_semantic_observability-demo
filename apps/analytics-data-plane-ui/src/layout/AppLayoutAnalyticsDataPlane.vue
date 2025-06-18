@@ -74,6 +74,16 @@ const menuList: Menu[] = [
     ]
   },
   {
+    label: "Algorithms",
+    items: [
+      {
+        label: "Create instance",
+        icon: "pi pi-fw pi-sparkles",
+        to: "/algorithms/instance"
+      }
+    ]
+  },
+  {
     label: "Debug",
     items: [
       {

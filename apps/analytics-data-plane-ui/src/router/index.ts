@@ -3,6 +3,7 @@ import { createRouter, createWebHashHistory } from "vue-router";
 
 import AppLayout from "@/layout/AppLayoutAnalyticsDataPlane.vue";
 
+import AlgorithmInstance from "../views/AlgorithmInstance.vue";
 import Dashboard from "../views/Dashboard.vue";
 import Files from "../views/Files.vue";
 import FilesUpload from "../views/FilesUpload.vue";
@@ -57,6 +58,10 @@ const router = createRouter({
           path: "/consumer/:id",
           name: "consumer",
           component: ConsumerView
+        },
+        {
+          path: "/algorithms/instance",
+          component: AlgorithmInstance
         }
       ]
     },

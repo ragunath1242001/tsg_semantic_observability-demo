@@ -102,6 +102,23 @@ paths:
       security: *a3
       summary: Health check
       tags: *a4
+  /api/participant-id:
+    get:
+      description: Retrieves the ID of the participant.
+      operationId: DataPlaneController_getParticipantId
+      parameters: []
+      responses:
+        "200":
+          description: ""
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a3
+      summary: Get participant ID
+      tags: *a4
   /api/transfers/request/{role}:
     post:
       description: Requests a transfer from control plane to data plane.
