@@ -1,4 +1,8 @@
-import { ContractNegotiationState, Offer } from "@tsg-dsp/common-dsp";
+import {
+  ContractNegotiationState,
+  Offer,
+  Permission
+} from "@tsg-dsp/common-dsp";
 
 import { PipelineExecutor } from "../pipeline.executor.js";
 import { SignalController } from "../signal.controller.js";
@@ -15,7 +19,12 @@ export async function CN_C_02_01(
       await negotiationService.requestNew(
         new Offer({
           id: signal.offerId,
-          assigner: signal.providerId
+          assigner: signal.providerId,
+          permission: [
+            new Permission({
+              action: "odrl:read"
+            })
+          ]
         }),
         signal.datasetId,
         `${signal.connectorAddress}/negotiations`,
@@ -45,7 +54,12 @@ export async function CN_C_02_02(
       await negotiationService.requestNew(
         new Offer({
           id: signal.offerId,
-          assigner: signal.providerId
+          assigner: signal.providerId,
+          permission: [
+            new Permission({
+              action: "odrl:read"
+            })
+          ]
         }),
         signal.datasetId,
         `${signal.connectorAddress}/negotiations`,
@@ -85,7 +99,12 @@ export async function CN_C_02_03(
       await negotiationService.requestNew(
         new Offer({
           id: signal.offerId,
-          assigner: signal.providerId
+          assigner: signal.providerId,
+          permission: [
+            new Permission({
+              action: "odrl:read"
+            })
+          ]
         }),
         signal.datasetId,
         `${signal.connectorAddress}/negotiations`,
@@ -123,7 +142,12 @@ export async function CN_C_02_04(
       await negotiationService.requestNew(
         new Offer({
           id: signal.offerId,
-          assigner: signal.providerId
+          assigner: signal.providerId,
+          permission: [
+            new Permission({
+              action: "odrl:read"
+            })
+          ]
         }),
         signal.datasetId,
         `${signal.connectorAddress}/negotiations`,
@@ -161,7 +185,12 @@ export async function CN_C_02_05(
       await negotiationService.requestNew(
         new Offer({
           id: signal.offerId,
-          assigner: signal.providerId
+          assigner: signal.providerId,
+          permission: [
+            new Permission({
+              action: "odrl:read"
+            })
+          ]
         }),
         signal.datasetId,
         `${signal.connectorAddress}/negotiations`,
@@ -199,7 +228,12 @@ export async function CN_C_02_06(
       await negotiationService.requestNew(
         new Offer({
           id: signal.offerId,
-          assigner: signal.providerId
+          assigner: signal.providerId,
+          permission: [
+            new Permission({
+              action: "odrl:read"
+            })
+          ]
         }),
         signal.datasetId,
         `${signal.connectorAddress}/negotiations`,

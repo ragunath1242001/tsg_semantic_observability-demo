@@ -12,86 +12,64 @@ import { AppLogger } from "@tsg-dsp/common-api";
 import { SetupServer, setupServer } from "msw/node";
 
 import { setupDataPlaneMock } from "../dataPlane.mock.js";
-import { ensureTckRuntime, execTck } from "../exec-tck.js";
+import {
+  ensureStoppedRuntime,
+  ensureTckRuntime,
+  execTck
+} from "../exec-tck.js";
 import { PipelineExecutor } from "../pipeline.executor.js";
 import { SignalController } from "../signal.controller.js";
 import { controlPlaneHealthy, setupConfigFile } from "../test.setup.js";
-import { CAT_01_01, CAT_01_02, CAT_01_03 } from "./CAT_01.js";
-import { CN_01_01, CN_01_02, CN_01_03, CN_01_04 } from "./CN_01.js";
-import {
-  CN_02_01,
-  CN_02_02,
-  CN_02_03,
-  CN_02_04,
-  CN_02_05,
-  CN_02_06,
-  CN_02_07
-} from "./CN_02.js";
-import { CN_03_01, CN_03_02, CN_03_03, CN_03_04 } from "./CN_03.js";
-import { CN_C_01_01, CN_C_01_02, CN_C_01_03, CN_C_01_04 } from "./CN_C_01.js";
-import {
-  CN_C_02_01,
-  CN_C_02_02,
-  CN_C_02_03,
-  CN_C_02_04,
-  CN_C_02_05,
-  CN_C_02_06
-} from "./CN_C_02.js";
-import {
-  CN_C_03_01,
-  CN_C_03_02,
-  CN_C_03_03,
-  CN_C_03_04,
-  CN_C_03_05,
-  CN_C_03_06
-} from "./CN_C_03.js";
-import { TP_01_01, TP_01_02, TP_01_03, TP_01_04, TP_01_05 } from "./TP_01.js";
-import { TP_02_01, TP_02_02, TP_02_03, TP_02_04, TP_02_05 } from "./TP_02.js";
-import {
-  TP_03_01,
-  TP_03_02,
-  TP_03_03,
-  TP_03_04,
-  TP_03_05,
-  TP_03_06
-} from "./TP_03.js";
-import {
-  TP_C_01_01,
-  TP_C_01_02,
-  TP_C_01_03,
-  TP_C_01_04,
-  TP_C_01_05
-} from "./TP_C_01.js";
-import {
-  TP_C_02_01,
-  TP_C_02_02,
-  TP_C_02_03,
-  TP_C_02_04,
-  TP_C_02_05
-} from "./TP_C_02.js";
-import {
-  TP_C_03_01,
-  TP_C_03_02,
-  TP_C_03_03,
-  TP_C_03_04,
-  TP_C_03_05,
-  TP_C_03_06
-} from "./TP_C_03.js";
+import * as CAT from "./CAT_01.js";
+import * as CN_01 from "./CN_01.js";
+import * as CN_02 from "./CN_02.js";
+import * as CN_03 from "./CN_03.js";
+import * as CN_C_01 from "./CN_C_01.js";
+import * as CN_C_02 from "./CN_C_02.js";
+import * as CN_C_03 from "./CN_C_03.js";
+import * as TP_01 from "./TP_01.js";
+import * as TP_02 from "./TP_02.js";
+import * as TP_03 from "./TP_03.js";
+import * as TP_C_01 from "./TP_C_01.js";
+import * as TP_C_02 from "./TP_C_02.js";
+import * as TP_C_03 from "./TP_C_03.js";
+function expectResolvesWithin(
+  name: string,
+  promise: Promise<any>,
+  timeout: number
+): Promise<void> {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) =>
+      setTimeout(() => reject(`Test ${name} not fulfilled`), timeout)
+    )
+  ]) as Promise<void>;
+}
 
 describe("TCK", () => {
+  const debug = "CI" in process.env === false;
+  const timeout = 50 * 1000;
   let server: HttpServer;
   let app: INestApplication;
   let pipelineExecutor: PipelineExecutor;
   let mockServer: SetupServer;
+  let signalController: SignalController;
+
+  const disabledTests: [string, string][] = [
+    ["TP_02_04", "Disabled in TCK runtime"],
+    ["TP_C_02_04", "Disabled in TCK runtime"]
+  ];
 
   beforeAll(async () => {
     setupConfigFile();
-    await ensureTckRuntime();
+    await ensureTckRuntime(
+      "https://dsptestcontext.blob.core.windows.net/tck/dsp-tck-runtime-2025-06-20.jar"
+    );
     const builder = Test.createTestingModule({
       imports: [AppModule],
       controllers: [SignalController]
     });
-    if ("CI" in process.env === false) {
+    if (debug) {
       builder.setLogger(new AppLogger());
     } else {
       builder.setLogger(new AppLogger("error"));
@@ -125,6 +103,8 @@ describe("TCK", () => {
       .get(DataPlaneService)
       .addDataPlane(providerDataplaneMock.dataPlane);
 
+    signalController = app.get(SignalController);
+
     pipelineExecutor = new PipelineExecutor(
       config.port,
       app.get(CatalogService),
@@ -141,94 +121,54 @@ describe("TCK", () => {
       mockServer.close();
       await server.close();
       await app.close();
+      await ensureStoppedRuntime();
     } catch (e) {
       console.error("Error cleaning up resources", e);
     }
   });
 
-  beforeEach(async () => {
-    await pipelineExecutor["negotiationService"][
-      "negotiationProcessEventRepository"
-    ].clear();
-    await pipelineExecutor["negotiationService"][
-      "negotiationDetailRepository"
-    ].clear();
-  });
-
   it(
     "Test suite",
     async () => {
-      const signalController = app.get(SignalController);
-      await Promise.all([
-        CAT_01_01(pipelineExecutor),
-        CAT_01_02(pipelineExecutor),
-        CAT_01_03(pipelineExecutor),
-        TP_01_01(pipelineExecutor),
-        TP_01_02(pipelineExecutor),
-        TP_01_03(pipelineExecutor),
-        TP_01_04(pipelineExecutor),
-        TP_01_05(pipelineExecutor),
-        TP_02_01(pipelineExecutor),
-        TP_02_02(pipelineExecutor),
-        TP_02_03(pipelineExecutor),
-        TP_02_04(pipelineExecutor),
-        TP_02_05(pipelineExecutor),
-        TP_03_01(pipelineExecutor),
-        TP_03_02(pipelineExecutor),
-        TP_03_03(pipelineExecutor),
-        TP_03_04(pipelineExecutor),
-        TP_03_05(pipelineExecutor),
-        TP_03_06(pipelineExecutor),
-        TP_C_01_01(pipelineExecutor, signalController),
-        TP_C_01_02(pipelineExecutor, signalController),
-        TP_C_01_03(pipelineExecutor, signalController),
-        TP_C_01_04(pipelineExecutor, signalController),
-        TP_C_01_05(pipelineExecutor, signalController),
-        TP_C_02_01(pipelineExecutor, signalController),
-        TP_C_02_02(pipelineExecutor, signalController),
-        TP_C_02_03(pipelineExecutor, signalController),
-        TP_C_02_04(pipelineExecutor, signalController),
-        TP_C_02_05(pipelineExecutor, signalController),
-        TP_C_03_01(pipelineExecutor, signalController),
-        TP_C_03_02(pipelineExecutor, signalController),
-        TP_C_03_03(pipelineExecutor, signalController),
-        TP_C_03_04(pipelineExecutor, signalController),
-        TP_C_03_05(pipelineExecutor, signalController),
-        TP_C_03_06(pipelineExecutor, signalController),
-        CN_C_01_01(pipelineExecutor, signalController),
-        CN_C_01_02(pipelineExecutor, signalController),
-        CN_C_01_03(pipelineExecutor, signalController),
-        CN_C_01_04(pipelineExecutor, signalController),
-        CN_C_02_01(pipelineExecutor, signalController),
-        CN_C_02_02(pipelineExecutor, signalController),
-        CN_C_02_03(pipelineExecutor, signalController),
-        CN_C_02_04(pipelineExecutor, signalController),
-        CN_C_02_05(pipelineExecutor, signalController),
-        CN_C_02_06(pipelineExecutor, signalController),
-        CN_C_03_01(pipelineExecutor, signalController),
-        CN_C_03_02(pipelineExecutor, signalController),
-        CN_C_03_03(pipelineExecutor, signalController),
-        CN_C_03_04(pipelineExecutor, signalController),
-        CN_C_03_05(pipelineExecutor, signalController),
-        CN_C_03_06(pipelineExecutor, signalController),
-        CN_01_01(pipelineExecutor),
-        CN_01_02(pipelineExecutor),
-        CN_01_03(pipelineExecutor),
-        CN_01_04(pipelineExecutor),
-        CN_02_01(pipelineExecutor),
-        CN_02_02(pipelineExecutor),
-        CN_02_03(pipelineExecutor),
-        CN_02_04(pipelineExecutor),
-        CN_02_05(pipelineExecutor),
-        CN_02_06(pipelineExecutor),
-        CN_02_07(pipelineExecutor),
-        CN_03_01(pipelineExecutor),
-        CN_03_02(pipelineExecutor),
-        CN_03_03(pipelineExecutor),
-        CN_03_04(pipelineExecutor),
-        execTck()
+      const tests = await Promise.allSettled([
+        ...getTestsFromModule(CAT),
+        ...getTestsFromModule(CN_01),
+        ...getTestsFromModule(CN_02),
+        ...getTestsFromModule(CN_03),
+        ...getTestsFromModule(CN_C_01),
+        ...getTestsFromModule(CN_C_02),
+        ...getTestsFromModule(CN_C_03),
+        ...getTestsFromModule(TP_01),
+        ...getTestsFromModule(TP_02),
+        ...getTestsFromModule(TP_03),
+        ...getTestsFromModule(TP_C_01),
+        ...getTestsFromModule(TP_C_02),
+        ...getTestsFromModule(TP_C_03),
+        expectResolvesWithin("execTck", execTck(debug), timeout)
       ]);
+      const rejectedTests = tests
+        .filter((test) => test.status === "rejected")
+        .map((test) => (test as PromiseRejectedResult).reason);
+      expect(rejectedTests).toHaveLength(0);
     },
-    10 * 60 * 10000
+    timeout + 10 * 1000
   );
+
+  function getTestsFromModule(module: {
+    [key: string]: (
+      pipelineExecutor: PipelineExecutor,
+      signalController: any
+    ) => Promise<unknown>;
+  }): Promise<unknown>[] {
+    return Object.keys(module).map((key) => {
+      if (disabledTests.some((test) => test[0] === key)) {
+        return Promise.resolve(`Test ${key} is disabled`);
+      }
+      return expectResolvesWithin(
+        key,
+        module[key](pipelineExecutor, signalController),
+        timeout
+      );
+    });
+  }
 });

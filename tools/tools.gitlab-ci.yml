@@ -40,7 +40,6 @@ e2e-tck:
   script:
     - wget -q https://download.oracle.com/java/21/latest/jdk-21_linux-x64_bin.deb
     - dpkg -i jdk-21_linux-x64_bin.deb > /dev/null
-    - wget -q -P tools/e2e-testing/assets https://dsptestcontext.blob.core.windows.net/tck/dsp-tck-runtime.jar
     - pnpm install --frozen-lockfile
     - pnpm build:libs
     - pnpm run --filter control-plane-api build

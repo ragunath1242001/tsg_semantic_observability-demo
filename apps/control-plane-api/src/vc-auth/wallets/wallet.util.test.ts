@@ -13,7 +13,10 @@ export function mockWalletConfig(): IamConfig {
     siopUrl: "http://127.0.0.1/api/management/dcp/holder/token",
     verifyUrl: "http://127.0.0.1/api/management/dcp/verifier/verify",
     typeFilter: "VerifiableCredential",
-    issuerFilter: "did:web:localhost%3A3000"
+    issuerFilter: "did:web:localhost%3A3000",
+    protocol: "DUMMY",
+    version: "0.1",
+    profile: []
   });
 }
 

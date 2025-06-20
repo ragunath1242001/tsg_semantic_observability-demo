@@ -57,6 +57,18 @@ export abstract class IamConfig {
   @Description("DID identifier of the IAM service")
   @IsString()
   public readonly didId!: string;
+
+  @Description("Protocol of the IAM service")
+  @IsString()
+  public readonly protocol: string = "DCP";
+
+  @Description("Protocol of the IAM service")
+  @IsString()
+  public readonly version: string = "1.0";
+
+  @Description("Profiles of the IAM service")
+  @IsString({ each: true })
+  public readonly profile: string[] = ["vc11-bssl/jsonld"];
 }
 
 export class DevWalletConfig extends IamConfig {
