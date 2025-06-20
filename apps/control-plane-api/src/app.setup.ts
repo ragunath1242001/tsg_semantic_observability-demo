@@ -10,7 +10,7 @@ export function setupApp(app: INestApplication) {
     process.env["NODE_ENV"] !== "production"
   ) {
     app.setGlobalPrefix(`${process.env["SUBPATH"] ?? ""}/api`, {
-      exclude: [".well-known/did.json", "health"]
+      exclude: [".well-known/dspace-version", "health"]
     });
   }
   app.use(

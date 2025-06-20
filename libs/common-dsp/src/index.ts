@@ -5,6 +5,7 @@ export * from "./model/data-planes/index.js";
 export * from "./model/decorators.js";
 export * from "./model/deserialize.js";
 export * from "./model/dsp/index.js";
+export * from "./model/protocol-version.js";
 export * from "./model/serialize.js";
 export * from "./model/ssi/index.js";
 export * from "./utils/index.js";

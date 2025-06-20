@@ -1,5 +1,20 @@
 openapi: 3.0.0
 paths:
+  /.well-known/dspace-version:
+    get:
+      description: Returns the protocol version of the control plane.
+      operationId: VersionsController_getVersions
+      parameters: []
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VersionSchema"
+      summary: Retrieve the protocol version metadata
+      tags:
+        - Versions
   /api/settings:
     get:
       description: Retrieves the settings of the control plane.
@@ -3229,6 +3244,71 @@ components:
       description: Verifiable Presentation needed to communicate between two instances
         of the control plane.
   schemas:
+    Auth:
+      type: object
+      properties:
+        protocol:
+          type: string
+          description: Authentication protocol
+        version:
+          type: string
+          description: Authentication protocol version
+        profile:
+          description: Authentication profiles
+          type: array
+          items:
+            type: string
+      required:
+        - protocol
+        - version
+    ProtocolVersion:
+      type: object
+      properties:
+        version:
+          description: The version string
+          anyOf:
+            - type: string
+              enum:
+                - "0.8"
+                - 2024-1
+                - 2025-1
+            - type: string
+          example: 2025-1
+        path:
+          type: string
+          description: The path for the protocol version
+        binding:
+          description: The binding type
+          anyOf:
+            - type: string
+              enum:
+                - HTTPS
+            - type: string
+        identifierType:
+          type: string
+          description: Identifier type
+        serviceId:
+          type: string
+          description: Service ID
+        auth:
+          description: Authentication information
+          allOf:
+            - $ref: "#/components/schemas/Auth"
+      required:
+        - version
+        - path
+        - binding
+    VersionSchema:
+      type: object
+      properties:
+        protocolVersions:
+          description: List of protocol versions
+          minItems: 1
+          type: array
+          items:
+            $ref: "#/components/schemas/ProtocolVersion"
+      required:
+        - protocolVersions
     RuntimeConfigDto:
       type: object
       properties:

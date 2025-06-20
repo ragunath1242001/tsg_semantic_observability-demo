@@ -62,9 +62,15 @@ Authentication for frontend services can be done via the SSO Bridge. This helps 
 | `iam`                                              | Yes      | `IamConfig`                                | IAM wallet configuration                          |                           |
 | `iam.type`                                         | Yes      | `"tsg" \| "dev"`                           | Type of IAM service                               |                           |
 | `iam.didId`                                        | Yes      | `String`                                   | DID identifier of the IAM service                 |                           |
+| `iam.protocol`                                     |          | `String`                                   | Protocol of the IAM service                       | `"DCP"`                   |
+| `iam.version`                                      |          | `String`                                   | Protocol of the IAM service                       | `"1.0"`                   |
+| `iam.profile`                                      |          | `String`                                   | Profiles of the IAM service                       | `["vc11-bssl/jsonld"]`    |
 | `iam{type=dev}`                                    | Yes      | `DevWalletConfig`                          | IAM wallet configuration                          |                           |
 | `iam{type=dev}.type`                               |          | `"tsg" \| "dev"`                           | Type of IAM service                               | `"dev"`                   |
 | `iam{type=dev}.didId`                              | Yes      | `String`                                   | DID identifier of the IAM service                 |                           |
+| `iam{type=dev}.protocol`                           |          | `String`                                   | Protocol of the IAM service                       | `"DCP"`                   |
+| `iam{type=dev}.version`                            |          | `String`                                   | Protocol of the IAM service                       | `"1.0"`                   |
+| `iam{type=dev}.profile`                            |          | `String`                                   | Profiles of the IAM service                       | `["vc11-bssl/jsonld"]`    |
 | `iam{type=tsg}`                                    | Yes      | `TsgWalletConfig`                          | IAM wallet configuration                          |                           |
 | `iam{type=tsg}.walletUrl`                          | Yes      | `URL`                                      | URL of the wallet management endpoint             |                           |
 | `iam{type=tsg}.siopUrl`                            | Yes      | `URL`                                      | URL of the SIOP token endpoint                    |                           |
@@ -74,6 +80,9 @@ Authentication for frontend services can be done via the SSO Bridge. This helps 
 | `iam{type=tsg}.customFields`                       |          | `Array`                                    | Custom presentation definition fields             |                           |
 | `iam{type=tsg}.type`                               |          | `"tsg" \| "dev"`                           | Type of IAM service                               | `"tsg"`                   |
 | `iam{type=tsg}.didId`                              | Yes      | `String`                                   | DID identifier of the IAM service                 |                           |
+| `iam{type=tsg}.protocol`                           |          | `String`                                   | Protocol of the IAM service                       | `"DCP"`                   |
+| `iam{type=tsg}.version`                            |          | `String`                                   | Protocol of the IAM service                       | `"1.0"`                   |
+| `iam{type=tsg}.profile`                            |          | `String`                                   | Profiles of the IAM service                       | `["vc11-bssl/jsonld"]`    |
 | **`InitCatalog`**                                  |          |                                            |                                                   |                           |
 | `initCatalog`                                      | Yes      | `InitCatalog`                              | Initial catalog configuration                     |                           |
 | `initCatalog.participantId`                        | Yes      | `String`                                   | Participant id of the catalog                     |                           |
