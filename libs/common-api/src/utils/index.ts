@@ -3,6 +3,7 @@ export * from "./configToMarkdown.js";
 export * from "./error.js";
 export * from "./logging.js";
 export * from "./nonEmptyString.pipe.js";
+export * from "./oauth.js";
 export * from "./pagination/index.js";
 export * from "./promises.js";
 export * from "./testhelper.js";

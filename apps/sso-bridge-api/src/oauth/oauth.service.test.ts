@@ -152,6 +152,7 @@ describe("Oauth", () => {
         response_type: "code",
         response_mode: "query",
         client_id: "test-client",
+        code_challenge: "randomChallenge",
         redirect_uri: "http://localhost:3000",
         state: "1234"
       });
@@ -162,6 +163,7 @@ describe("Oauth", () => {
         response_type: "code",
         response_mode: "fragment",
         client_id: "test-client",
+        code_challenge: "randomChallenge",
         redirect_uri: "http://localhost:3000",
         state: "1234"
       });
@@ -176,6 +178,7 @@ describe("Oauth", () => {
       loginRedirect = await oauth.login("Alice", "password", {
         response_type: "code",
         response_mode: "query",
+        code_challenge: "randomChallenge",
         client_id: "test-client",
         redirect_uri: "http://localhost:3000",
         state: "1234"
@@ -188,6 +191,7 @@ describe("Oauth", () => {
         response_type: "token",
         response_mode: "query",
         client_id: "test-client",
+
         redirect_uri: "http://localhost:3000",
         state: "1234"
       });
@@ -226,9 +230,6 @@ describe("Oauth", () => {
       redirectUrl = new URL(loginRedirect.url);
       expect(redirectUrl.searchParams.get("state")).toEqual("1234");
       expect(redirectUrl.searchParams.get("code")).toBeDefined();
-      expect(redirectUrl.searchParams.get("code_verifier")).toEqual(
-        "randomChallenge"
-      );
       loginRedirect = await oauth.login("Alice", "password", {
         response_type: "code",
         response_mode: "query",
@@ -241,9 +242,6 @@ describe("Oauth", () => {
       redirectUrl = new URL(loginRedirect.url);
       expect(redirectUrl.searchParams.get("state")).toEqual("1234");
       expect(redirectUrl.searchParams.get("code")).toBeDefined();
-      expect(redirectUrl.searchParams.get("code_verifier")).toEqual(
-        "yPvgXdlPrGZTzb3Y2ye04NWx62FsnDiWbfvuFdJf628"
-      );
     });
     it("Login handler", async () => {
       const request = {
@@ -258,6 +256,7 @@ describe("Oauth", () => {
         response_type: "code",
         response_mode: "query",
         client_id: "test-client",
+        code_challenge: "randomChallenge",
         redirect_uri: "http://localhost:3000",
         state: "1234"
       };
@@ -308,6 +307,7 @@ describe("Oauth", () => {
       const invalidAuthorizationRequest: AuthorizationRequest = {
         response_type: "code",
         response_mode: "query",
+        code_challenge: "randomChallenge",
         client_id: "test-client",
         redirect_uri: "http://test.localhost:3001",
         state: "1234"
@@ -340,6 +340,7 @@ describe("Oauth", () => {
       const loginRedirect = await oauth.login("Alice", "password", {
         response_type: "code",
         client_id: "test-client",
+        code_challenge: "randomChallenge",
         redirect_uri: "http://localhost:3000",
         state: "1234"
       });

@@ -10,3 +10,4 @@ It acts as the default authentication server for all management communication be
 
 - [Configuration](./configuration.md)
 - [Build process](./build-process.md)
+- [Usage in your own application](./usage.md)

@@ -18,7 +18,10 @@ export function setupApp(app: INestApplication) {
       name: "tsg.sso-bridge",
       secret: process.env["SESSION_SECRET"] || randomBytes(32).toString("hex"),
       resave: false,
-      saveUninitialized: false
+      saveUninitialized: false,
+      cookie: {
+        domain: `.${config.publicDomain}`
+      }
     })
   );
   Logger.log(
