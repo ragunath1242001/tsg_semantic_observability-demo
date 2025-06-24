@@ -1,24 +1,14 @@
 import { HttpStatus, Injectable } from "@nestjs/common";
 import axios from "axios";
-import { plainToInstance } from "class-transformer";
-import { createHash, randomBytes } from "crypto";
 import { Request } from "express";
 import { decodeProtectedHeader, jwtVerify } from "jose";
 
 import { AuthConfig } from "../config/auth.js";
 import { AppError, parseNetworkError } from "../utils/error.js";
+import { constructAuthorizationRequestUrl, getToken } from "../utils/oauth.js";
 import { getSession } from "../utils/session.js";
-import {
-  AuthorizationRequest,
-  AuthorizationResponse,
-  CodeTokenRequest
-} from "./auth.dto.js";
+import { AuthorizationResponse, Redirect } from "./auth.dto.js";
 import { OpenIDConfigurationService } from "./openid.configuration.service.js";
-
-interface Redirect {
-  code_challenge: string;
-  validUntil: number;
-}
 
 @Injectable()
 export class OAuthService {
@@ -31,28 +21,25 @@ export class OAuthService {
   async generateAuthorizationRequestUrl(): Promise<string> {
     const metadata =
       await this.openIDConfigurationService.getOpenIdConfiguration();
-    const state = randomBytes(16).toString("hex");
-    const codeChallenge = randomBytes(32).toString("hex");
-    const authorizationRequest = plainToInstance(AuthorizationRequest, {
-      response_type: "code",
-      response_mode: "query",
-      client_id: this.authConfig.clientId,
-      redirect_uri: this.authConfig.callbackURL,
-      state: state,
-      code_challenge: codeChallenge,
-      code_challenge_method: "S256"
-    });
+    const { state, code_verifier, url } =
+      await constructAuthorizationRequestUrl({
+        clientId: this.authConfig.clientId,
+        redirectUri: this.authConfig.callbackURL,
+        authorizationEndpoint: metadata.authorization_endpoint
+      });
     this.redirects.set(state, {
-      code_challenge: codeChallenge,
+      code_verifier: code_verifier,
       validUntil: Date.now() + 10 * 60000
     });
-    return `${metadata.authorization_endpoint}?${new URLSearchParams({ ...authorizationRequest }).toString()}`;
+    return url;
   }
 
   async callback(
     authorizationResponse: AuthorizationResponse,
     request: Request
   ): Promise<{ url: string }> {
+    const metadata =
+      await this.openIDConfigurationService.getOpenIdConfiguration();
     if (!authorizationResponse.state) {
       throw new AppError("No state parameter", HttpStatus.UNAUTHORIZED);
     }
@@ -63,66 +50,21 @@ export class OAuthService {
     if (redirect.validUntil < Date.now()) {
       throw new AppError("State parameter expired", HttpStatus.UNAUTHORIZED);
     }
-    if (!authorizationResponse.code_verifier) {
-      throw new AppError("No PKCE code verifier", HttpStatus.UNAUTHORIZED);
-    }
-    const expectedCodeVerifier = createHash("sha256")
-      .update(redirect.code_challenge)
-      .digest("base64url");
-    if (authorizationResponse.code_verifier !== expectedCodeVerifier) {
-      throw new AppError("Invalid PKCE code verifier", HttpStatus.UNAUTHORIZED);
-    }
-
-    if (authorizationResponse.code) {
-      return await this.exchangeCodeForToken(
-        request,
-        authorizationResponse.state,
-        authorizationResponse.code,
-        authorizationResponse.code_verifier
-      );
-    }
-
-    throw new AppError(
-      "Invalid authorization callback",
-      HttpStatus.UNAUTHORIZED
-    );
-  }
-
-  private async exchangeCodeForToken(
-    request: Request,
-    state: string,
-    code: string,
-    code_verifier?: string
-  ) {
-    const metadata =
-      await this.openIDConfigurationService.getOpenIdConfiguration();
-    const tokenRequest = plainToInstance(CodeTokenRequest, {
-      grant_type: "authorization_code",
-      code: code,
-      client_id: this.authConfig.clientId,
-      redirect_uri: this.authConfig.callbackURL,
-      code_verifier: code_verifier
+    const token = await getToken({
+      code: authorizationResponse.code!,
+      code_verifier: redirect.code_verifier,
+      tokenEndpoint: metadata.token_endpoint,
+      clientId: this.authConfig.clientId,
+      redirectURL: this.authConfig.redirectURL
     });
-    const response = await axios.post(metadata.token_endpoint, tokenRequest);
-    let user: any;
-    if (response.data.id_token) {
-      user = await this.validateToken(response.data.id_token);
-    } else if (response.data.access_token) {
-      user = await this.validateToken(response.data.access_token);
-    } else {
-      throw new AppError(
-        "No access token or id token",
-        HttpStatus.UNAUTHORIZED
-      );
-    }
+
+    const user = await this.validateToken(token);
     const session = getSession(request);
     if (session) {
       session.user = user;
     }
-    this.redirects.delete(state);
-    return {
-      url: this.authConfig.redirectURL
-    };
+    this.redirects.delete(authorizationResponse.state!);
+    return { url: this.authConfig.redirectURL };
   }
 
   async validateToken(token: string): Promise<any> {

@@ -10,7 +10,7 @@ import {
   TokenRequest,
   TokenResponse
 } from "@tsg-dsp/common-api";
-import crypto, { createHash } from "crypto";
+import crypto from "crypto";
 import { Request, Response } from "express";
 import { decodeJwt } from "jose";
 
@@ -29,7 +29,14 @@ export class OauthService {
     private readonly clientsService: ClientsService,
     private readonly tokenService: TokenService
   ) {}
-  private static readonly codes = new Map<string, OauthUser>();
+  private static readonly codes = new Map<
+    string,
+    {
+      user: OauthUser;
+      code_challenge_method: string;
+      code_challenge: string;
+    }
+  >();
 
   async authorize(request: AuthorizationRequest) {
     return {
@@ -47,7 +54,20 @@ export class OauthService {
     }
     if (request.response_type.split(" ").includes("code")) {
       const code = crypto.randomBytes(16).toString("hex");
-      OauthService.codes.set(code, user);
+      if (!request.code_challenge_method) {
+        request.code_challenge_method = "S256";
+      }
+      if (!request.code_challenge) {
+        throw new AppError(
+          "Code challenge is required for authorization code flow",
+          HttpStatus.BAD_REQUEST
+        );
+      }
+      OauthService.codes.set(code, {
+        user: user,
+        code_challenge_method: request.code_challenge_method,
+        code_challenge: request.code_challenge
+      });
       response.code = code;
     }
     if (
@@ -69,15 +89,6 @@ export class OauthService {
       }
       if (request.response_type.split(" ").includes("id_token")) {
         response.id_token = token.access_token;
-      }
-    }
-    if (request.code_challenge) {
-      if (request.code_challenge_method === "S256") {
-        response.code_verifier = createHash("sha256")
-          .update(request.code_challenge)
-          .digest("base64url");
-      } else if (request.code_challenge_method === "plain") {
-        response.code_verifier = request.code_challenge;
       }
     }
     let url: string;
@@ -149,14 +160,27 @@ export class OauthService {
     if (!user) {
       throw new AppError("Invalid code", HttpStatus.BAD_REQUEST);
     }
+    if (request.code_verifier) {
+      let codeChallenge: string;
+      if (user.code_challenge_method !== "S256") {
+        codeChallenge = request.code_verifier;
+      }
+      codeChallenge = crypto
+        .createHash("sha256")
+        .update(request.code_verifier)
+        .digest("base64url");
+      OauthService.codes.delete(request.code);
+      if (codeChallenge !== user.code_challenge) {
+        throw new AppError("Invalid code verifier", HttpStatus.BAD_REQUEST);
+      }
+    }
     const tokenResponse = await this.tokenService.createToken(
       request.client_id,
-      user,
+      user.user,
       true,
-      user.id,
+      user.user.id,
       ""
     );
-    OauthService.codes.delete(request.code);
     return tokenResponse;
   }
   private async refreshTokenTokenRequest(

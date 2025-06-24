@@ -156,7 +156,7 @@ describe("OAuthService", () => {
 
   describe("Authorization flow", () => {
     let state: string;
-    let codeChallenge: string;
+    let codeVerifier: string;
     it("Test authorization request", async () => {
       const response = await oauth.generateAuthorizationRequestUrl();
       const responseURL = new URL(response);
@@ -171,8 +171,13 @@ describe("OAuthService", () => {
       );
       state = responseURL.searchParams.get("state")!;
       expect(state).toBeDefined();
-      codeChallenge = responseURL.searchParams.get("code_challenge")!;
-      expect(codeChallenge).toBeDefined();
+      // PKCE fix: codeVerifier is generated and code_challenge is derived from it
+      codeVerifier = oauth["redirects"].get(state)?.code_verifier || "";
+      expect(codeVerifier).toBeDefined();
+      const codeChallenge = responseURL.searchParams.get("code_challenge")!;
+      expect(codeChallenge).toBe(
+        createHash("sha256").update(codeVerifier).digest("base64url")
+      );
     });
     it("Test callback", async () => {
       const request = {
@@ -183,7 +188,7 @@ describe("OAuthService", () => {
           state,
           code: "test-code",
           code_verifier: createHash("sha256")
-            .update(codeChallenge)
+            .update(codeVerifier)
             .digest("base64url")
         },
         request
@@ -192,7 +197,7 @@ describe("OAuthService", () => {
       expect(callback.url).toBeDefined();
       expect(callback.url).toBe("http://localhost/");
       oauth["redirects"].set(state, {
-        code_challenge: codeChallenge,
+        code_verifier: codeVerifier,
         validUntil: Date.now() + 1000
       });
       const callback2 = await oauth.callback(
@@ -200,7 +205,7 @@ describe("OAuthService", () => {
           state,
           code: "code-access-token",
           code_verifier: createHash("sha256")
-            .update(codeChallenge)
+            .update(codeVerifier)
             .digest("base64url")
         },
         request
@@ -220,36 +225,19 @@ describe("OAuthService", () => {
         oauth.callback({ state: "unknown" }, request)
       ).rejects.toThrow("Invalid state parameter");
       oauth["redirects"].set("expired", {
-        code_challenge: codeChallenge,
+        code_verifier: codeVerifier,
         validUntil: Date.now() - 1000
       });
       await expect(
         oauth.callback({ state: "expired" }, request)
       ).rejects.toThrow("State parameter expired");
       oauth["redirects"].set("valid", {
-        code_challenge: "codeChallenge",
+        code_verifier: "codeVerifier",
         validUntil: Date.now() + 1000
       });
-      await expect(oauth.callback({ state: "valid" }, request)).rejects.toThrow(
-        "No PKCE code verifier"
-      );
-      await expect(
-        oauth.callback({ state: "valid", code_verifier: "invalid" }, request)
-      ).rejects.toThrow("Invalid PKCE code verifier");
-      await expect(
-        oauth.callback(
-          {
-            state: "valid",
-            code_verifier: createHash("sha256")
-              .update("codeChallenge")
-              .digest("base64url")
-          },
-          request
-        )
-      ).rejects.toThrow("Invalid authorization callback");
 
       oauth["redirects"].set(state, {
-        code_challenge: codeChallenge,
+        code_verifier: codeVerifier,
         validUntil: Date.now() + 1000
       });
       await expect(
@@ -258,7 +246,7 @@ describe("OAuthService", () => {
             state,
             code: "code-error",
             code_verifier: createHash("sha256")
-              .update(codeChallenge)
+              .update(codeVerifier)
               .digest("base64url")
           },
           request

@@ -616,6 +616,96 @@ paths:
       summary: Open ID Configuration
       tags:
         - Well-known endpoint
+  /api/ingress-auth/auth-url:
+    get:
+      operationId: IngressAuthController_authUrl
+      parameters: []
+      responses:
+        "200":
+          description: ""
+      tags: &a7
+        - IngressAuth
+  /api/ingress-auth/auth-signin:
+    get:
+      operationId: IngressAuthController_authSignin
+      parameters:
+        - name: clientId
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: rd
+          required: true
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+      tags: *a7
+  /api/ingress-auth/auth-logout:
+    post:
+      operationId: IngressAuthController_authLogout
+      parameters: []
+      responses:
+        "201":
+          description: ""
+      tags: *a7
+  /api/ingress-auth/callback:
+    get:
+      operationId: IngressAuthController_authCallback
+      parameters:
+        - name: state
+          required: false
+          in: query
+          description: The state parameter
+          schema:
+            example: randomState
+            type: string
+        - name: code
+          required: false
+          in: query
+          description: The authorization code
+          schema:
+            example: code
+            type: string
+        - name: access_token
+          required: false
+          in: query
+          description: The access token
+          schema:
+            type: string
+        - name: token_type
+          required: false
+          in: query
+          description: The token type
+          schema:
+            example: Bearer
+            type: string
+        - name: expires_in
+          required: false
+          in: query
+          description: The token expiration in seconds
+          schema:
+            example: 3600
+            type: string
+        - name: id_token
+          required: false
+          in: query
+          description: The ID token
+          schema:
+            type: string
+        - name: code_verifier
+          required: false
+          in: query
+          description: The code verifier
+          schema:
+            example: randomChallengeVerifier
+            type: string
+      responses:
+        "200":
+          description: ""
+      tags: *a7
   /api/clients:
     get:
       operationId: ClientsController_getClients
@@ -685,7 +775,7 @@ paths:
               schema:
                 type: string
       summary: Retrieve all clients
-      tags: &a7
+      tags: &a8
         - Clients
   /api/clients/create:
     post:
@@ -702,7 +792,7 @@ paths:
         "201":
           description: Client created successfully.
       summary: Create a new client
-      tags: *a7
+      tags: *a8
   /api/clients/{id}:
     delete:
       operationId: ClientsController_deleteClient
@@ -716,7 +806,7 @@ paths:
         "200":
           description: Client deleted successfully.
       summary: Delete a client by id
-      tags: *a7
+      tags: *a8
   /api/clients/update/{id}:
     patch:
       operationId: ClientsController_updateClient
@@ -737,7 +827,7 @@ paths:
         "200":
           description: Client updated successfully.
       summary: Update an existing client
-      tags: *a7
+      tags: *a8
   /api/oid4vp/ar/{id}:
     get:
       description: Get the Authorization Request according to the OID4VP specification.
@@ -758,7 +848,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
       summary: Get the Authorization Request
-      tags: &a8
+      tags: &a9
         - OID4VP
   /api/oid4vp/status/{id}:
     get:
@@ -780,7 +870,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
       summary: Get the Authorization Request Status
-      tags: *a8
+      tags: *a9
   /api/oid4vp/redirect/{id}:
     get:
       description: Redirect to the Authorization Request.
@@ -795,7 +885,7 @@ paths:
         "200":
           description: ""
       summary: Redirect to the Authorization Request
-      tags: *a8
+      tags: *a9
   /api/oid4vp/authorize:
     post:
       description: Add an Authorization Request according to the OID4VP specification.
@@ -811,7 +901,7 @@ paths:
         "200":
           description: ""
       summary: Add an Authorization Request
-      tags: *a8
+      tags: *a9
   /api/management/oid4vp/verifier/{id}:
     get:
       description: Obtain an Authorization Request according to the OID4VP specification.

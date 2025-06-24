@@ -372,3 +372,8 @@ export class OpenIDConfiguration {
   @IsOptional()
   claims_supported?: string[];
 }
+
+export interface Redirect {
+  code_verifier: string;
+  validUntil: number;
+}
