@@ -28,9 +28,12 @@ export class DCPHolderService {
 
   async presentationQuery(
     presentationQueryMessage: PresentationQueryMessage,
-    verifierIdTokenHeader: string
+    verifierIdTokenHeader: string | undefined
   ): Promise<PresentationResponseMessage> {
-    const verifierIdToken = verifierIdTokenHeader.substring(7);
+    if (!verifierIdTokenHeader?.startsWith("Bearer ")) {
+      throw new AppError("Invalid authorization", HttpStatus.UNAUTHORIZED);
+    }
+    const verifierIdToken = verifierIdTokenHeader.split(" ")[1];
     const validatedIdToken =
       await this.siopService.validateIDTokenWithAccessToken(verifierIdToken);
     this.logger.log(

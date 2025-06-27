@@ -1,8 +1,10 @@
 {
   "name": "@apps/wallet-api",
   "version": "0.11.0",
+  "private": true,
   "description": "TSG Dataspace Protocol SSI Wallet",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "type": "module",
   "scripts": {
     "build": "tsc -p tsconfig.build.json",

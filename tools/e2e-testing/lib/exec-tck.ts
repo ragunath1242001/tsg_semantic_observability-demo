@@ -33,7 +33,7 @@ export const ensureStoppedRuntime = async (): Promise<void> => {
 export const execTck = async (
   debug: boolean = false,
   jarPath: string = "assets/dsp-tck-runtime.jar",
-  propertiesPath: string = "assets/tsg.tck.properties"
+  propertiesPath: string = "assets/dsp.tck.properties"
 ): Promise<string> => {
   const cmd = `java`;
   const args = ["-jar", jarPath, "-config", propertiesPath];

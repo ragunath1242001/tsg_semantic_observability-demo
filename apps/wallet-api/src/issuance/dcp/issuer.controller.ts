@@ -67,7 +67,7 @@ export class DCPIssuerController {
   @ApiBadRequestResponseDefault()
   @Redirect(undefined, HttpStatus.CREATED)
   async credentialRequest(
-    @Headers("Authorization") authorizationHeader: string,
+    @Headers("Authorization") authorizationHeader: string | undefined,
     @Body(validationPipe) credentialRequestMessage: CredentialRequestMessage
   ) {
     return await this.issuerService.handleCredentialRequest(
@@ -96,7 +96,7 @@ export class DCPIssuerController {
   @ApiNotFoundResponseDefault()
   @HttpCode(HttpStatus.OK)
   async credentialStatus(
-    @Headers("Authorization") authorizationHeader: string,
+    @Headers("Authorization") authorizationHeader: string | undefined,
     @Param("requestId") requestId: string
   ): Promise<CredentialStatus> {
     return await this.issuerService.handleCredentialStatusRequest(

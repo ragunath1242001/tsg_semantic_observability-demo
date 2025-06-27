@@ -195,11 +195,13 @@ describe("Presentation Service", () => {
     });
 
     it("Presentation flow", async () => {
-      const holderIdToken = await dcpSiopService.createSelfIssuedIDToken({
-        audience: "did:web:localhost",
-        createAccessToken: true
-      });
-      await dcpVerifierService.verify(holderIdToken, {
+      const holderToken = async () =>
+        dcpSiopService.createSelfIssuedIDToken({
+          audience: "did:web:localhost",
+          createAccessToken: true
+        });
+      const token = await holderToken();
+      await dcpVerifierService.verify(token, {
         id: crypto.randomUUID(),
         input_descriptors: [
           {
@@ -218,7 +220,28 @@ describe("Presentation Service", () => {
           }
         ]
       });
-      const vp2 = await dcpVerifierService.verify(holderIdToken, {
+      await expect(
+        dcpVerifierService.verify(token, {
+          id: crypto.randomUUID(),
+          input_descriptors: [
+            {
+              id: crypto.randomUUID(),
+              constraints: {
+                fields: [
+                  {
+                    path: ["$.type"],
+                    filter: {
+                      type: "string",
+                      pattern: "VerifiableCredential"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        })
+      ).rejects.toThrow("Could not validate JWT");
+      const vp2 = await dcpVerifierService.verify(await holderToken(), {
         id: crypto.randomUUID(),
         input_descriptors: [
           {
@@ -251,7 +274,7 @@ describe("Presentation Service", () => {
           }
         ]
       });
-      const vp3 = await dcpVerifierService.verify(holderIdToken, {
+      const vp3 = await dcpVerifierService.verify(await holderToken(), {
         id: crypto.randomUUID(),
         input_descriptors: [
           {

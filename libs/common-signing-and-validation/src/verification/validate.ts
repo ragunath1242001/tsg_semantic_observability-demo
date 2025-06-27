@@ -1,4 +1,4 @@
-import { HttpStatus } from "@nestjs/common";
+import { HttpStatus, Logger } from "@nestjs/common";
 import { AppError } from "@tsg-dsp/common-api";
 import {
   DataIntegrityProof,
@@ -11,15 +11,27 @@ import {
   FlattenedVerifyResult,
   importJWK,
   JWTPayload,
-  jwtVerify
+  jwtVerify,
+  ProtectedHeaderParameters
 } from "jose";
 
 import { canonizeAndHash } from "../utils/canonization.js";
-import { cryptoSuiteFromJws } from "../utils/cryptosuite.js";
+import { cryptoSuiteFromJws, estimateAlgorithm } from "../utils/cryptosuite.js";
 import { computeProofConfigHash } from "../utils/hash.js";
 import { base58btcToBase64url } from "../utils/typeconverter.js";
 import { parseVerificationMethod } from "./parse.js";
 import { verifyJws } from "./verify.js";
+
+const jtiCache = new Map<string, number>();
+
+function cleanupJtiCache() {
+  const now = Date.now();
+  for (const [jti, exp] of jtiCache.entries()) {
+    if (exp < now) jtiCache.delete(jti);
+  }
+}
+
+setInterval(cleanupJtiCache, 60 * 1000).unref();
 
 export async function validateDataIntegrityProof(
   plainDocument: any,
@@ -106,8 +118,17 @@ export async function validateProof(
 }
 
 export async function validateJwt(token: string): Promise<JWTPayload> {
-  const header = decodeProtectedHeader(token);
-  const payload = decodeJwt(token);
+  let header: ProtectedHeaderParameters;
+  let payload: JWTPayload;
+  try {
+    header = decodeProtectedHeader(token);
+    payload = decodeJwt(token);
+  } catch (err) {
+    throw new AppError(
+      `Could not decode JWT: ${err}`,
+      HttpStatus.BAD_REQUEST
+    ).andLog(new Logger("validateJwt"), "debug");
+  }
   if (!header.kid) {
     throw new AppError(
       `Could not validate JWT. Missing Key ID in JWT.`,
@@ -120,20 +141,34 @@ export async function validateJwt(token: string): Promise<JWTPayload> {
       HttpStatus.BAD_REQUEST
     );
   }
+  if (!payload.jti || jtiCache.has(payload.jti)) {
+    throw new AppError(
+      `Could not validate JWT, JTI error.`,
+      HttpStatus.BAD_REQUEST
+    );
+  }
   const cryptoSuite = cryptoSuiteFromJws(token);
   const verificationMethod = await parseVerificationMethod(
     header.kid,
     payload.iss,
     cryptoSuite
   );
-  const publicKey = await importJWK(verificationMethod, verificationMethod.alg);
   try {
+    const alg =
+      header.alg ||
+      verificationMethod.alg ||
+      estimateAlgorithm(verificationMethod);
+    const publicKey = await importJWK(verificationMethod, alg);
     await jwtVerify(token, publicKey);
+    jtiCache.set(
+      payload.jti,
+      payload.exp ? payload.exp * 1000 : Date.now() + 5 * 60 * 1000
+    );
     return payload;
   } catch (err) {
     throw new AppError(
       `Could not validate JWT. Invalid JWT signature for key ${header.kid}: ${err}.`,
       HttpStatus.BAD_REQUEST
-    );
+    ).andLog(new Logger("validateJwt"), "debug");
   }
 }

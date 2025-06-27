@@ -17,7 +17,10 @@ import {
   ValidateNested
 } from "class-validator";
 
-import { PresentationDefinition } from "./presentationdefinition.dto.js";
+import {
+  PresentationDefinition,
+  PresentationSubmission
+} from "./presentationdefinition.dto.js";
 
 export class VerificationRequest {
   @ApiProperty({ type: () => PresentationDefinition })
@@ -81,16 +84,25 @@ export class PresentationResponseMessage {
   })
   @IsArray()
   presentation!: (string | object)[];
+
+  @ApiPropertyOptional({
+    type: () => PresentationSubmission,
+    example: {
+      id: "submission-id",
+      definition_id: "definition-id",
+      descriptor_map: []
+    }
+  })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => PresentationSubmission)
+  presentationSubmission?: PresentationSubmission;
 }
 
 export class CredentialRequestCredential {
   @ApiProperty()
   @IsString()
-  format!: string;
-
-  @ApiProperty()
-  @IsString()
-  credentialType!: string;
+  id!: string;
 }
 
 export class CredentialRequestMessage {
@@ -118,11 +130,6 @@ export class CredentialRequestMessage {
 }
 
 export class CredentialContainer {
-  @ApiProperty()
-  @IsString()
-  @Equals("CredentialContainer")
-  type!: "CredentialContainer";
-
   @ApiProperty()
   @IsString()
   payload!: string;
@@ -175,6 +182,13 @@ export class CredentialMessage {
 
 export class CredentialObject {
   @ApiProperty({
+    example: "db8a34c7-aa42-4aae-bb57-69cd805ef01a",
+    description: "Unique identifier for the credential object"
+  })
+  @IsString()
+  id!: string;
+
+  @ApiProperty({
     example: "CredentialObject",
     description: "Type identifier"
   })
@@ -187,8 +201,8 @@ export class CredentialObject {
     description: "Types of credential being offered"
   })
   @IsArray()
-  @IsString({ each: true })
-  credentialType!: string[];
+  @IsString()
+  credentialType!: string;
 
   @ApiProperty({
     description: "Reason for offering this credential"
@@ -236,7 +250,7 @@ export class CredentialOfferMessage {
 
   @ApiProperty()
   @IsString()
-  credentialIssuer!: string;
+  issuer!: string;
 
   @ApiProperty({ type: [CredentialObject] })
   @IsArray()
@@ -259,7 +273,7 @@ export class IssuerMetadata {
 
   @ApiProperty()
   @IsString()
-  credentialIssuer!: string;
+  issuer!: string;
 
   @ApiProperty({ type: [CredentialObject] })
   @IsArray()

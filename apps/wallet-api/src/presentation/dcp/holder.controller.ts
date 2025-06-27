@@ -27,7 +27,7 @@ export class DCPHolderController {
   async presentationQuery(
     @Body(validationPipe)
     presentationQueryMessage: PresentationQueryMessage,
-    @Headers("Authorization") authorizationHeader: string
+    @Headers("Authorization") authorizationHeader: string | undefined
   ): Promise<PresentationResponseMessage> {
     return await this.holderService.presentationQuery(
       presentationQueryMessage,

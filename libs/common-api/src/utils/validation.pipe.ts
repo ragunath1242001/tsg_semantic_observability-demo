@@ -1,4 +1,4 @@
-import { HttpStatus, ValidationPipe } from "@nestjs/common";
+import { HttpStatus, Logger, ValidationPipe } from "@nestjs/common";
 import { validateSync, ValidatorOptions } from "class-validator";
 
 import { AppError } from "./error.js";
@@ -33,7 +33,7 @@ export const strictValidationPipe = new ValidationPipe({
         errors: errors
       },
       HttpStatus.BAD_REQUEST
-    )
+    ).andLog(new Logger("ValidationPipe"), "debug")
 });
 
 export const validationPipe = new ValidationPipe({
@@ -46,5 +46,5 @@ export const validationPipe = new ValidationPipe({
         errors: errors
       },
       HttpStatus.BAD_REQUEST
-    )
+    ).andLog(new Logger("ValidationPipe"), "debug")
 });

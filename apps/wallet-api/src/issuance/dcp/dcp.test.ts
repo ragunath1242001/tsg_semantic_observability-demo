@@ -289,8 +289,22 @@ describe("DCP Issuance", () => {
         })
       ).rejects.toThrow("Issuer does not support credential type");
       const tokenAttributes: Record<string, string> = {};
-      const stsMock = jest
+      const stsIssuerMock = jest
         .spyOn(issuerService["secureTokenService"], "validateIDToken")
+        .mockImplementation(async (token: string) => {
+          if (token === "test") {
+            return {
+              iss: "did:web:localhost",
+              sub: "did:web:localhost",
+              aud: "did:web:localhost",
+              ...tokenAttributes
+            };
+          } else {
+            return decodeJwt(token);
+          }
+        });
+      const stsHolderMock = jest
+        .spyOn(holderService["secureTokenService"], "validateIDToken")
         .mockImplementation(async (token: string) => {
           if (token === "test") {
             return {
@@ -337,7 +351,8 @@ describe("DCP Issuance", () => {
         issuerService.handleCredentialStatusRequest(`Bearer test`, "2")
       ).rejects.toThrow("No credential issuance flow found");
 
-      stsMock.mockRestore();
+      stsIssuerMock.mockRestore();
+      stsHolderMock.mockRestore();
     });
     it("Holder errors", async () => {
       jest
@@ -362,6 +377,19 @@ describe("DCP Issuance", () => {
                 aud: "did:web:localhost",
                 token: "test"
               }
+            };
+          } else {
+            return decodeJwt(token);
+          }
+        });
+      const stsHolderMock = jest
+        .spyOn(holderService["secureTokenService"], "validateIDToken")
+        .mockImplementation(async (token: string) => {
+          if (token === "test") {
+            return {
+              iss: "did:web:localhost",
+              sub: "did:web:localhost",
+              aud: "did:web:localhost"
             };
           } else {
             return decodeJwt(token);
@@ -420,6 +448,7 @@ describe("DCP Issuance", () => {
           })
         )
       ).rejects.toThrow("not supported");
+      stsHolderMock.mockRestore();
     });
   });
 });

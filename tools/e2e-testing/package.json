@@ -8,8 +8,9 @@
   "type": "module",
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "e2e:local": "jest --runInBand --testNamePattern .\\* --testPathPattern lib/local --verbose",
-    "e2e:tck": "jest --runInBand --testNamePattern .\\* --testPathPattern lib/tck --verbose"
+    "e2e:dsp-local": "jest --runInBand --testNamePattern .\\* --testPathPattern lib/dsp-local --verbose",
+    "e2e:dsp-tck": "jest --runInBand --testNamePattern .\\* --testPathPattern lib/dsp-tck --verbose",
+    "e2e:dcp-tck": "jest --runInBand --testNamePattern .\\* --testPathPattern lib/dcp-tck --verbose"
   },
   "license": "Apache-2.0",
   "repository": {
@@ -48,6 +49,7 @@
   },
   "dependencies": {
     "@apps/control-plane-api": "workspace:*",
+    "@apps/wallet-api": "workspace:*",
     "@commander-js/extra-typings": "^14.0.0",
     "@inquirer/prompts": "^7.3.2",
     "@nestjs/common": "^11.0.10",

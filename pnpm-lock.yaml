@@ -2148,6 +2148,9 @@ importers:
       '@apps/control-plane-api':
         specifier: workspace:*
         version: link:../../apps/control-plane-api
+      '@apps/wallet-api':
+        specifier: workspace:*
+        version: link:../../apps/wallet-api
       '@commander-js/extra-typings':
         specifier: ^14.0.0
         version: 14.0.0(commander@14.0.0)

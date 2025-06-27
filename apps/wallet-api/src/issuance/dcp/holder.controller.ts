@@ -41,7 +41,7 @@ export class DCPHolderController {
   @ApiBadRequestResponseDefault()
   @ApiForbiddenResponseDefault()
   async storeCredential(
-    @Headers("Authorization") authorizationHeader: string,
+    @Headers("Authorization") authorizationHeader: string | undefined,
     @Body(validationPipe) credentialMessage: CredentialMessage
   ): Promise<void> {
     return await this.holderService.handleCredentialMessage(
@@ -69,7 +69,7 @@ export class DCPHolderController {
   @ApiBadRequestResponseDefault()
   @ApiForbiddenResponseDefault()
   async credentialOffer(
-    @Headers("Authorization") authorizationHeader: string,
+    @Headers("Authorization") authorizationHeader: string | undefined,
     @Body(validationPipe) credentialOffer: CredentialOfferMessage
   ): Promise<void> {
     return await this.holderService.handleCredentialOfferMessage(
