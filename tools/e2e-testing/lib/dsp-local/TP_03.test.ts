@@ -1,15 +1,6 @@
-import {
-  CatalogService,
-  DataPlaneService,
-  NegotiationService,
-  setupApp,
-  TransferService
-} from "@apps/control-plane-api";
-import { AppModule } from "@apps/control-plane-api";
 import { DspClientService } from "@apps/control-plane-api/dist/dsp/client/client.service.js";
 import { HttpServer, INestApplication } from "@nestjs/common";
 import { Test } from "@nestjs/testing";
-import { AppLogger } from "@tsg-dsp/common-api";
 import {
   Multilanguage,
   TransferCompletionMessage,
@@ -30,7 +21,16 @@ describe("Local - TP_03: Transfer request provider negative scenarios", () => {
   let mockServer: SetupServer;
 
   beforeAll(async () => {
-    setupConfigFile();
+    setupConfigFile("control-plane.config.yaml");
+    const {
+      AppModule,
+      setupApp,
+      DataPlaneService,
+      CatalogService,
+      NegotiationService,
+      TransferService
+    } = await import("@apps/control-plane-api");
+    const { AppLogger } = await import("@tsg-dsp/common-api");
     const builder = Test.createTestingModule({
       imports: [AppModule]
     });

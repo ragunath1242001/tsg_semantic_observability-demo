@@ -49,13 +49,14 @@ export class DCPIssuerService {
           )
       ],
       type: "IssuerMetadata",
-      credentialIssuer: didId,
+      issuer: didId,
       credentialsSupported: contexts
         .filter((context) => context.issuable)
         .map((context) => {
           const credentialObject: CredentialObject = {
+            id: `${didId}#${context.credentialType}`,
             type: "CredentialObject",
-            credentialType: ["VerifiableCredential", context.credentialType],
+            credentialType: context.credentialType,
             offerReason: "reissue",
             bindingMethods: ["did:web", "did:tdw"],
             profiles: ["vc11-bssl/ld"]
@@ -67,10 +68,11 @@ export class DCPIssuerService {
   }
 
   async handleCredentialRequest(
-    authorizationHeader: string,
+    authorizationHeader: string | undefined,
     credentialRequestMessage: CredentialRequestMessage
   ) {
-    if (!authorizationHeader.startsWith("Bearer ")) {
+    const didId = await this.didService.getDidId();
+    if (!authorizationHeader?.startsWith("Bearer ")) {
       throw new AppError("Invalid authorization", HttpStatus.UNAUTHORIZED);
     }
     const token = authorizationHeader.split(" ")[1];
@@ -120,6 +122,16 @@ export class DCPIssuerService {
         HttpStatus.BAD_REQUEST
       );
     }
+    if (
+      credentialRequestMessage.credentials.length !== 1 ||
+      credentialRequestMessage.credentials[0].id !==
+        `${didId}#${issuance.credentialType}`
+    ) {
+      throw new AppError(
+        "Invalid credential request message",
+        HttpStatus.BAD_REQUEST
+      ).andLog(this.logger);
+    }
     await this.issuanceRepository.update(
       { id: issuance.id },
       { remoteId: credentialRequestMessage.holderPid }
@@ -155,10 +167,9 @@ export class DCPIssuerService {
             type: "CredentialMessage",
             credentials: [
               {
-                type: "CredentialContainer",
                 credentialType: issuance.credentialType,
                 payload: JSON.stringify(credential.credential),
-                format: "json-ld"
+                format: "vc11-bssl/ld"
               }
             ],
             issuerPid: randomUUID(),
@@ -208,10 +219,10 @@ export class DCPIssuerService {
   }
 
   async handleCredentialStatusRequest(
-    authorizationHeader: string,
+    authorizationHeader: string | undefined,
     requestId: string
   ): Promise<CredentialStatus> {
-    if (!authorizationHeader.startsWith("Bearer ")) {
+    if (!authorizationHeader?.startsWith("Bearer ")) {
       throw new AppError("Invalid authorization", HttpStatus.UNAUTHORIZED);
     }
     const token = authorizationHeader.split(" ")[1];

@@ -116,10 +116,14 @@ export class OID4VCIIssuerService {
   }
 
   async handleCredentialRequest(
-    access_token: string,
+    authorizationHeader: string | undefined,
     credentialRequest: CredentialRequest
   ): Promise<CredentialResponse> {
     try {
+      if (!authorizationHeader?.startsWith("Bearer ")) {
+        throw new AppError("Invalid authorization", HttpStatus.UNAUTHORIZED);
+      }
+      const access_token = authorizationHeader.split(" ")[1];
       const token = await this.tokenRepository.findOneBy({
         access_token: access_token
       });

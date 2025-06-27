@@ -1,14 +1,5 @@
-import {
-  CatalogService,
-  DataPlaneService,
-  NegotiationService,
-  setupApp,
-  TransferService
-} from "@apps/control-plane-api";
-import { AppModule } from "@apps/control-plane-api";
 import { HttpServer, INestApplication } from "@nestjs/common";
 import { Test } from "@nestjs/testing";
-import { AppLogger } from "@tsg-dsp/common-api";
 import { ContractNegotiationState, Offer } from "@tsg-dsp/common-dsp";
 
 import { PipelineExecutor } from "../pipeline.executor.js";
@@ -21,7 +12,16 @@ describe("Local - CN_C_01: Contract request scenarios", () => {
   let pipelineExecutor: PipelineExecutor;
 
   beforeAll(async () => {
-    setupConfigFile();
+    setupConfigFile("control-plane.config.yaml");
+    const {
+      AppModule,
+      setupApp,
+      DataPlaneService,
+      CatalogService,
+      NegotiationService,
+      TransferService
+    } = await import("@apps/control-plane-api");
+    const { AppLogger } = await import("@tsg-dsp/common-api");
     const builder = Test.createTestingModule({
       imports: [AppModule]
     });

@@ -1,14 +1,5 @@
-import {
-  CatalogService,
-  DataPlaneService,
-  NegotiationService,
-  setupApp,
-  TransferService
-} from "@apps/control-plane-api";
-import { AppModule } from "@apps/control-plane-api";
 import { HttpServer, INestApplication } from "@nestjs/common";
 import { Test } from "@nestjs/testing";
-import { AppLogger } from "@tsg-dsp/common-api";
 import { TransferState } from "@tsg-dsp/common-dsp";
 import { SetupServer, setupServer } from "msw/node";
 
@@ -17,14 +8,23 @@ import { PipelineExecutor } from "../pipeline.executor.js";
 import { controlPlaneHealthy, setupConfigFile } from "../test.setup.js";
 import { expectedTransferState } from "../types.js";
 
-describe("Local - TP_01: Transfer request provider scenarios", () => {
+describe("Local - TP_02: Transfer request provider scenarios", () => {
   let server: HttpServer;
   let app: INestApplication;
   let pipelineExecutor: PipelineExecutor;
   let mockServer: SetupServer;
 
   beforeAll(async () => {
-    setupConfigFile();
+    setupConfigFile("control-plane.config.yaml");
+    const {
+      AppModule,
+      setupApp,
+      DataPlaneService,
+      CatalogService,
+      NegotiationService,
+      TransferService
+    } = await import("@apps/control-plane-api");
+    const { AppLogger } = await import("@tsg-dsp/common-api");
     const builder = Test.createTestingModule({
       imports: [AppModule]
     });
@@ -90,12 +90,12 @@ describe("Local - TP_01: Transfer request provider scenarios", () => {
     ].clear();
   });
 
-  it("TP:01-01: Verify transfer request, provider started, provider terminated", async () => {
+  it("TP:02-01: Verify transfer request, provider started, consumer terminated", async () => {
     await pipelineExecutor
-      .newPipeline("ATP0101-Dataset", "ATP0101")
+      .newPipeline("ATP0201-Dataset", "ATP0201")
       .onSetup(async ({ transferService }) => {
         await transferService.initiateTransferProcess(
-          "ATP0101",
+          "ATP0201",
           "http://localhost:32490/api/transfers",
           "did:web:localhost%3A32490",
           "HttpData-PULL"
@@ -123,7 +123,7 @@ describe("Local - TP_01: Transfer request provider scenarios", () => {
       )
       .onEvent(
         "transfer",
-        "provider",
+        "consumer",
         TransferState.STARTED,
         async ({ transfer, transferService }) => {
           await transferService.terminate(
@@ -136,22 +136,22 @@ describe("Local - TP_01: Transfer request provider scenarios", () => {
       )
       .onEvent(
         "transfer",
-        "consumer",
+        "provider",
         TransferState.TERMINATED,
         async ({ logger }) => {
-          logger.log("Transfer terminated by provider, consumer notified");
+          logger.log("Transfer terminated by consumer, provider notified");
         }
       )
       .onComplete(expectedTransferState(TransferState.TERMINATED))
       .execute();
   }, 5000);
 
-  it("TP:01-02: Verify transfer request, provider started, provider completed", async () => {
+  it("TP:02-02: Verify transfer request, provider started, consumer completed", async () => {
     await pipelineExecutor
-      .newPipeline("ATP0102-Dataset", "ATP0102")
+      .newPipeline("ATP0202-Dataset", "ATP0202")
       .onSetup(async ({ transferService }) => {
         await transferService.initiateTransferProcess(
-          "ATP0102",
+          "ATP0202",
           "http://localhost:32490/api/transfers",
           "did:web:localhost%3A32490",
           "HttpData-PULL"
@@ -179,7 +179,7 @@ describe("Local - TP_01: Transfer request provider scenarios", () => {
       )
       .onEvent(
         "transfer",
-        "provider",
+        "consumer",
         TransferState.STARTED,
         async ({ transfer, transferService }) => {
           await transferService.complete(transfer.localId, true);
@@ -187,22 +187,22 @@ describe("Local - TP_01: Transfer request provider scenarios", () => {
       )
       .onEvent(
         "transfer",
-        "consumer",
+        "provider",
         TransferState.COMPLETED,
         async ({ logger }) => {
-          logger.log("Transfer completed by provider, consumer notified");
+          logger.log("Transfer completed by consumer, provider notified");
         }
       )
       .onComplete(expectedTransferState(TransferState.COMPLETED))
       .execute();
   }, 5000);
 
-  it("TP:01-03: Verify transfer request, provider started, provider suspended, provider terminated", async () => {
+  it("TP:02-03: Verify transfer request, provider started, consumer suspended, consumer terminated", async () => {
     await pipelineExecutor
-      .newPipeline("ATP0103-Dataset", "ATP0103")
+      .newPipeline("ATP0203-Dataset", "ATP0203")
       .onSetup(async ({ transferService }) => {
         await transferService.initiateTransferProcess(
-          "ATP0103",
+          "ATP0203",
           "http://localhost:32490/api/transfers",
           "did:web:localhost%3A32490",
           "HttpData-PULL"
@@ -230,7 +230,7 @@ describe("Local - TP_01: Transfer request provider scenarios", () => {
       )
       .onEvent(
         "transfer",
-        "provider",
+        "consumer",
         TransferState.STARTED,
         async ({ transfer, transferService }) => {
           await transferService.suspend(
@@ -242,7 +242,7 @@ describe("Local - TP_01: Transfer request provider scenarios", () => {
       )
       .onEvent(
         "transfer",
-        "provider",
+        "consumer",
         TransferState.SUSPENDED,
         async ({ transfer, transferService }) => {
           await transferService.terminate(
@@ -255,22 +255,22 @@ describe("Local - TP_01: Transfer request provider scenarios", () => {
       )
       .onEvent(
         "transfer",
-        "consumer",
+        "provider",
         TransferState.TERMINATED,
         async ({ logger }) => {
-          logger.log("Transfer terminated by provider, consumer notified");
+          logger.log("Transfer terminated by consumer, provider notified");
         }
       )
       .onComplete(expectedTransferState(TransferState.TERMINATED))
       .execute();
   }, 5000);
 
-  it("TP:01-04: Verify transfer request, provider started, provider suspended, provider started, provider completed", async () => {
+  it("TP:02-04: Verify transfer request, provider started, consumer suspended, consumer started, consumer completed", async () => {
     await pipelineExecutor
-      .newPipeline("ATP0104-Dataset", "ATP0104")
+      .newPipeline("ATP0204-Dataset", "ATP0204")
       .onSetup(async ({ transferService }) => {
         await transferService.initiateTransferProcess(
-          "ATP0104",
+          "ATP0204",
           "http://localhost:32490/api/transfers",
           "did:web:localhost%3A32490",
           "HttpData-PULL"
@@ -298,7 +298,7 @@ describe("Local - TP_01: Transfer request provider scenarios", () => {
       )
       .onEvent(
         "transfer",
-        "provider",
+        "consumer",
         TransferState.STARTED,
         async ({ transfer, transferService }) => {
           await transferService.suspend(
@@ -310,27 +310,15 @@ describe("Local - TP_01: Transfer request provider scenarios", () => {
       )
       .onEvent(
         "transfer",
-        "provider",
+        "consumer",
         TransferState.SUSPENDED,
         async ({ transfer, transferService }) => {
-          await transferService.start(
-            transfer.localId,
-            {
-              endpoint: "http://dataplane.test",
-              properties: [
-                {
-                  name: "token",
-                  value: "TEST_TOKEN"
-                }
-              ]
-            },
-            true
-          );
+          await transferService.start(transfer.localId, undefined, true);
         }
       )
       .onEvent(
         "transfer",
-        "provider",
+        "consumer",
         TransferState.STARTED,
         async ({ transfer, transferService }) => {
           await transferService.complete(transfer.localId, true);
@@ -338,22 +326,22 @@ describe("Local - TP_01: Transfer request provider scenarios", () => {
       )
       .onEvent(
         "transfer",
-        "consumer",
+        "provider",
         TransferState.COMPLETED,
         async ({ logger }) => {
-          logger.log("Transfer completed by provider, consumer notified");
+          logger.log("Transfer completed by consumer, provider notified");
         }
       )
       .onComplete(expectedTransferState(TransferState.COMPLETED))
       .execute();
   }, 5000);
 
-  it("TP:01-05: Verify transfer request, provider terminated", async () => {
+  it("TP:02-05: Verify transfer request, consumer terminated", async () => {
     await pipelineExecutor
-      .newPipeline("ATP0105-Dataset", "ATP0105")
+      .newPipeline("ATP0205-Dataset", "ATP0205")
       .onSetup(async ({ transferService }) => {
         await transferService.initiateTransferProcess(
-          "ATP0105",
+          "ATP0205",
           "http://localhost:32490/api/transfers",
           "did:web:localhost%3A32490",
           "HttpData-PULL"
@@ -361,10 +349,10 @@ describe("Local - TP_01: Transfer request provider scenarios", () => {
       })
       .onEvent(
         "transfer",
-        "provider",
+        "consumer",
         TransferState.REQUESTED,
         async ({ transfer, transferService }) => {
-          transferService.terminate(
+          await transferService.terminate(
             transfer.localId,
             "500",
             "Test termination",
@@ -374,10 +362,10 @@ describe("Local - TP_01: Transfer request provider scenarios", () => {
       )
       .onEvent(
         "transfer",
-        "consumer",
+        "provider",
         TransferState.TERMINATED,
         async ({ logger }) => {
-          logger.log("Transfer terminated by provider, consumer notified");
+          logger.log("Transfer terminated by consumer, provider notified");
         }
       )
       .onComplete(expectedTransferState(TransferState.TERMINATED))

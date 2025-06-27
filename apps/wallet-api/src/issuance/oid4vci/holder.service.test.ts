@@ -194,10 +194,7 @@ describe("Holder service", () => {
           const body = await ctx.request.json();
           const authorization = ctx.request.headers.get("Authorization");
           return HttpResponse.json(
-            await issuerService.handleCredentialRequest(
-              authorization!.substring(7),
-              body
-            )
+            await issuerService.handleCredentialRequest(authorization!, body)
           );
         }
       )

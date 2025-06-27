@@ -14,7 +14,7 @@ cli-package:
     - pnpm --filter cli build
     - pnpm --filter cli publish --no-git-checks
 
-e2e-local:
+e2e-dsp-local:
   extends: .base-rules
   stage: test
   tags:
@@ -25,9 +25,9 @@ e2e-local:
     - pnpm install --frozen-lockfile
     - pnpm build:libs
     - pnpm run --filter control-plane-api build
-    - NODE_OPTIONS="--experimental-vm-modules" pnpm e2e:local
+    - NODE_OPTIONS="--experimental-vm-modules" pnpm e2e:dsp-local
 
-e2e-tck:
+e2e-dsp-tck:
   extends: .base-rules
   stage: test
   allow_failure: true
@@ -43,4 +43,4 @@ e2e-tck:
     - pnpm install --frozen-lockfile
     - pnpm build:libs
     - pnpm run --filter control-plane-api build
-    - NODE_OPTIONS="--experimental-vm-modules" pnpm e2e:tck
+    - NODE_OPTIONS="--experimental-vm-modules" pnpm e2e:dsp-tck

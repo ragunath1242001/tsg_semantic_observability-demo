@@ -42,8 +42,9 @@
     "test:wallet-ci": "pnpm --filter wallet-api jest:ci",
     "test:common-dsp-ci": "pnpm --filter common-dsp jest:ci",
     "test:common-api-ci": "pnpm --filter common-api jest:ci",
-    "e2e:local": "pnpm --filter e2e-testing e2e:local",
-    "e2e:tck": "pnpm --filter e2e-testing e2e:tck",
+    "e2e:dsp-local": "pnpm --filter e2e-testing e2e:dsp-local",
+    "e2e:dsp-tck": "pnpm --filter e2e-testing e2e:dsp-tck",
+    "e2e:dcp-tck": "pnpm --filter e2e-testing e2e:dcp-tck",
     "migrations:check": "pnpm -r migrations:check",
     "migrations:generate": "pnpm -r migrations:generate"
   },

@@ -1,14 +1,5 @@
-import {
-  CatalogService,
-  DataPlaneService,
-  NegotiationService,
-  setupApp,
-  TransferService
-} from "@apps/control-plane-api";
-import { AppModule } from "@apps/control-plane-api";
 import { HttpServer, INestApplication } from "@nestjs/common";
 import { Test } from "@nestjs/testing";
-import { AppLogger } from "@tsg-dsp/common-api";
 import {
   ContractNegotiationState,
   Offer,
@@ -19,13 +10,22 @@ import { PipelineExecutor } from "../pipeline.executor.js";
 import { controlPlaneHealthy, setupConfigFile } from "../test.setup.js";
 import { expectedNegotiationState } from "../types.js";
 
-describe("Local - CN_02: Provider test scenarios", () => {
+describe("Local - CN_01: Contract request scenarios", () => {
   let server: HttpServer;
   let app: INestApplication;
   let pipelineExecutor: PipelineExecutor;
 
   beforeAll(async () => {
-    setupConfigFile();
+    setupConfigFile("control-plane.config.yaml");
+    const {
+      AppModule,
+      setupApp,
+      DataPlaneService,
+      CatalogService,
+      NegotiationService,
+      TransferService
+    } = await import("@apps/control-plane-api");
+    const { AppLogger } = await import("@tsg-dsp/common-api");
     const builder = Test.createTestingModule({
       imports: [AppModule]
     });
@@ -67,112 +67,11 @@ describe("Local - CN_02: Provider test scenarios", () => {
     ].clear();
   });
 
-  it("CN:02-01: Verify contract request, provider terminated", async () => {
+  it("CN:01-01: Verify contract request, offer received, consumer terminated", async () => {
     await pipelineExecutor
-      .newPipeline("ACN0201")
+      .newPipeline("ACN0101")
       .onSetup(async ({ catalogService, negotiationService }) => {
-        const dataset = await catalogService.getDataset("ACN0201");
-        negotiationService.requestNew(
-          dataset.hasPolicy![0] as Offer,
-          dataset.id,
-          "http://localhost:32490/api/negotiations",
-          "did:web:localhost%3A32490"
-        );
-      })
-      .onEvent(
-        "negotiation",
-        "provider",
-        ContractNegotiationState.REQUESTED,
-        async ({ negotiation, negotiationService }) => {
-          await negotiationService.terminate(negotiation.localId);
-        }
-      )
-      .onEvent(
-        "negotiation",
-        "consumer",
-        ContractNegotiationState.TERMINATED,
-        async ({ logger }) => {
-          logger.log("Negotiation terminated by provider, consumer notified");
-        }
-      )
-      .onComplete(expectedNegotiationState(ContractNegotiationState.TERMINATED))
-      .execute();
-  });
-  it("CN:02-02: Verify contract request, consumer terminated", async () => {
-    await pipelineExecutor
-      .newPipeline("ACN0202")
-      .onSetup(async ({ catalogService, negotiationService }) => {
-        const dataset = await catalogService.getDataset("ACN0202");
-        await negotiationService.requestNew(
-          dataset.hasPolicy![0] as Offer,
-          dataset.id,
-          "http://localhost:32490/api/negotiations",
-          "did:web:localhost%3A32490"
-        );
-      })
-      .onEvent(
-        "negotiation",
-        "consumer",
-        ContractNegotiationState.REQUESTED,
-        async ({ negotiation, negotiationService }) => {
-          await negotiationService.terminate(negotiation.localId);
-        }
-      )
-      .onEvent(
-        "negotiation",
-        "provider",
-        ContractNegotiationState.TERMINATED,
-        async ({ logger }) => {
-          logger.log("Negotiation terminated by consumer, provider notified");
-        }
-      )
-      .onComplete(expectedNegotiationState(ContractNegotiationState.TERMINATED))
-      .execute();
-  });
-  it("CN:02-03: Verify contract request, provider agreement, consumer terminated", async () => {
-    await pipelineExecutor
-      .newPipeline("ACN0203")
-      .onSetup(async ({ catalogService, negotiationService }) => {
-        const dataset = await catalogService.getDataset("ACN0203");
-        negotiationService.requestNew(
-          dataset.hasPolicy![0] as Offer,
-          dataset.id,
-          "http://localhost:32490/api/negotiations",
-          "did:web:localhost%3A32490"
-        );
-      })
-      .onEvent(
-        "negotiation",
-        "provider",
-        ContractNegotiationState.REQUESTED,
-        async ({ negotiation, negotiationService }) => {
-          await negotiationService.agree(negotiation.localId);
-        }
-      )
-      .onEvent(
-        "negotiation",
-        "consumer",
-        ContractNegotiationState.AGREED,
-        async ({ negotiation, negotiationService }) => {
-          await negotiationService.terminate(negotiation.localId);
-        }
-      )
-      .onEvent(
-        "negotiation",
-        "provider",
-        ContractNegotiationState.TERMINATED,
-        async ({ logger }) => {
-          logger.log("Negotiation terminated by consumer, provider notified");
-        }
-      )
-      .onComplete(expectedNegotiationState(ContractNegotiationState.TERMINATED))
-      .execute();
-  });
-  it("CN:02-04: Verify contract request, offer received, consumer terminated", async () => {
-    await pipelineExecutor
-      .newPipeline("ACN0204")
-      .onSetup(async ({ catalogService, negotiationService }) => {
-        const dataset = await catalogService.getDataset("ACN0204");
+        const dataset = await catalogService.getDataset("ACN0101");
         negotiationService.requestNew(
           dataset.hasPolicy![0] as Offer,
           dataset.id,
@@ -187,7 +86,7 @@ describe("Local - CN_02: Provider test scenarios", () => {
         async ({ negotiation, negotiationService }) => {
           await negotiationService.offer(
             new Offer({
-              id: `CD123:ACN0204:456`,
+              id: `CD123:ACN0101:456`,
               assigner: "did:web:localhost",
               permission: [
                 new Permission({
@@ -217,12 +116,13 @@ describe("Local - CN_02: Provider test scenarios", () => {
       )
       .onComplete(expectedNegotiationState(ContractNegotiationState.TERMINATED))
       .execute();
-  });
-  it("CN:02-05: Verify contract request, offer received, provider terminated", async () => {
+  }, 5000);
+
+  it("CN:01-02: Verify contract request, offer received, consumer counter-offer, provider terminated", async () => {
     await pipelineExecutor
-      .newPipeline("ACN0205")
+      .newPipeline("ACN0102")
       .onSetup(async ({ catalogService, negotiationService }) => {
-        const dataset = await catalogService.getDataset("ACN0205");
+        const dataset = await catalogService.getDataset("ACN0102");
         negotiationService.requestNew(
           dataset.hasPolicy![0] as Offer,
           dataset.id,
@@ -237,7 +137,7 @@ describe("Local - CN_02: Provider test scenarios", () => {
         async ({ negotiation, negotiationService }) => {
           await negotiationService.offer(
             new Offer({
-              id: `CD123:ACN0205:456`,
+              id: `CD123:ACN0102:456`,
               assigner: "did:web:localhost",
               permission: [
                 new Permission({
@@ -251,8 +151,19 @@ describe("Local - CN_02: Provider test scenarios", () => {
       )
       .onEvent(
         "negotiation",
-        "provider",
+        "consumer",
         ContractNegotiationState.OFFERED,
+        async ({ negotiation, negotiationService }) => {
+          await negotiationService.requestExisting(
+            negotiation.offer!,
+            negotiation.localId
+          );
+        }
+      )
+      .onEvent(
+        "negotiation",
+        "provider",
+        ContractNegotiationState.REQUESTED,
         async ({ negotiation, negotiationService }) => {
           await negotiationService.terminate(negotiation.localId);
         }
@@ -267,12 +178,12 @@ describe("Local - CN_02: Provider test scenarios", () => {
       )
       .onComplete(expectedNegotiationState(ContractNegotiationState.TERMINATED))
       .execute();
-  });
-  it("CN:02-06: Verify contract request, offer received, consumer accepted, provider terminated", async () => {
+  }, 5000);
+  it("CN:01-03: Verify contract request, offer received, consumer accepted, provider agreement, consumer verified, provider finalized", async () => {
     await pipelineExecutor
-      .newPipeline("ACN0206")
+      .newPipeline("ACN0103")
       .onSetup(async ({ catalogService, negotiationService }) => {
-        const dataset = await catalogService.getDataset("ACN0206");
+        const dataset = await catalogService.getDataset("ACN0103");
         negotiationService.requestNew(
           dataset.hasPolicy![0] as Offer,
           dataset.id,
@@ -287,8 +198,9 @@ describe("Local - CN_02: Provider test scenarios", () => {
         async ({ negotiation, negotiationService }) => {
           await negotiationService.offer(
             new Offer({
-              id: `CD123:ACN0206:456`,
+              id: `CD123:ACN0103:456`,
               assigner: "did:web:localhost",
+              target: "ACN0103",
               permission: [
                 new Permission({
                   action: "odrl:read"
@@ -312,25 +224,42 @@ describe("Local - CN_02: Provider test scenarios", () => {
         "provider",
         ContractNegotiationState.ACCEPTED,
         async ({ negotiation, negotiationService }) => {
-          await negotiationService.terminate(negotiation.localId);
+          await negotiationService.agree(negotiation.localId);
         }
       )
       .onEvent(
         "negotiation",
         "consumer",
-        ContractNegotiationState.TERMINATED,
-        async ({ logger }) => {
-          logger.log("Negotiation terminated by provider, consumer notified");
+        ContractNegotiationState.AGREED,
+        async ({ negotiation, negotiationService }) => {
+          await negotiationService.verify(negotiation.localId);
         }
       )
-      .onComplete(expectedNegotiationState(ContractNegotiationState.TERMINATED))
+      .onEvent(
+        "negotiation",
+        "provider",
+        ContractNegotiationState.VERIFIED,
+        async ({ negotiation, negotiationService }) => {
+          await negotiationService.finalize(negotiation.localId);
+        }
+      )
+      .onEvent(
+        "negotiation",
+        "consumer",
+        ContractNegotiationState.FINALIZED,
+        async ({ logger }) => {
+          logger.log("Negotiation finalized by provider, consumer notified");
+        }
+      )
+      .onComplete(expectedNegotiationState(ContractNegotiationState.FINALIZED))
       .execute();
-  });
-  it("CN:02-07: Verify contract request, provider agreement, consumer verified, provider terminated", async () => {
+  }, 5000);
+
+  it("CN:01-04: Verify contract request, provider agreement, consumer verified, provider finalized", async () => {
     await pipelineExecutor
-      .newPipeline("ACN0207")
+      .newPipeline("ACN0104")
       .onSetup(async ({ catalogService, negotiationService }) => {
-        const dataset = await catalogService.getDataset("ACN0207");
+        const dataset = await catalogService.getDataset("ACN0104");
         negotiationService.requestNew(
           dataset.hasPolicy![0] as Offer,
           dataset.id,
@@ -359,18 +288,18 @@ describe("Local - CN_02: Provider test scenarios", () => {
         "provider",
         ContractNegotiationState.VERIFIED,
         async ({ negotiation, negotiationService }) => {
-          await negotiationService.terminate(negotiation.localId);
+          await negotiationService.finalize(negotiation.localId);
         }
       )
       .onEvent(
         "negotiation",
         "consumer",
-        ContractNegotiationState.TERMINATED,
+        ContractNegotiationState.FINALIZED,
         async ({ logger }) => {
-          logger.log("Negotiation terminated by provider, consumer notified");
+          logger.log("Negotiation finalized by provider, consumer notified");
         }
       )
-      .onComplete(expectedNegotiationState(ContractNegotiationState.TERMINATED))
+      .onComplete(expectedNegotiationState(ContractNegotiationState.FINALIZED))
       .execute();
-  });
+  }, 5000);
 });

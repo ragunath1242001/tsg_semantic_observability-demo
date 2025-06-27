@@ -1,0 +1,23 @@
+db:
+  type: sqlite
+  database: ":memory:"
+  # database: tck-local.db
+  synchronize: true
+
+server:
+  port: "32491"
+  listen: "0.0.0.0"
+  publicDomain: localhost:32491
+  publicAddress: http://localhost:32491
+
+auth:
+  enabled: false
+
+initKeys:
+  - id: key-0
+    type: EdDSA
+    default: true
+
+initCredentials: []
+
+runtime: {}

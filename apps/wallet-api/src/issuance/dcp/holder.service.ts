@@ -115,16 +115,19 @@ export class DCPHolderService {
       request.issuerId
     );
 
-    const credentialsSupported = metadata.credentialsSupported.flatMap(
-      (object) => object.credentialType
+    const credentialsSupported = metadata.credentialsSupported.filter(
+      (credential) => request.credentialType.includes(credential.credentialType)
     );
-    if (
-      request.credentialType.some(
-        (type) => !credentialsSupported.includes(type)
-      )
-    ) {
+
+    const unsupportedCredentials = request.credentialType.filter(
+      (type) =>
+        !credentialsSupported.some(
+          (credential) => credential.credentialType === type
+        )
+    );
+    if (unsupportedCredentials.length > 0) {
       throw new AppError(
-        `Issuer does not support credential type(s): ${request.credentialType.filter((type) => !credentialsSupported.includes(type)).join(", ")}`,
+        `Issuer does not support credential type(s): ${unsupportedCredentials.join(", ")}`,
         HttpStatus.BAD_REQUEST
       ).andLog(this.logger);
     }
@@ -141,9 +144,8 @@ export class DCPHolderService {
       "@context": ["https://w3id.org/dspace-dcp/v1.0/dcp.jsonld"],
       type: "CredentialRequestMessage",
       holderPid: holderPid,
-      credentials: request.credentialType.map((type) => ({
-        credentialType: type,
-        format: "vcdm11_ld"
+      credentials: credentialsSupported.map((credential) => ({
+        id: credential.id
       }))
     };
 
@@ -175,15 +177,15 @@ export class DCPHolderService {
   }
 
   async handleCredentialMessage(
-    authorizationHeader: string,
+    authorizationHeader: string | undefined,
     credentialMessage: CredentialMessage
   ): Promise<void> {
-    if (!authorizationHeader.startsWith("Bearer ")) {
+    if (!authorizationHeader?.startsWith("Bearer ")) {
       throw new AppError("Invalid authorization", HttpStatus.UNAUTHORIZED);
     }
     const token = authorizationHeader.split(" ")[1];
     const validatedIdToken =
-      await this.secureTokenService.validateIDTokenWithAccessToken(token);
+      await this.secureTokenService.validateIDToken(token);
 
     if (credentialMessage.status === "REJECTED") {
       this.logger.warn(
@@ -203,7 +205,11 @@ export class DCPHolderService {
     }
 
     for (const credential of credentialMessage.credentials) {
-      if (credential.format !== "json-ld") {
+      if (credential.format !== "vc11-bssl/ld") {
+        this.logger.warn(
+          `Credential format ${credential.format} not supported`
+        );
+        this.logger.debug(credential);
         throw new AppError(
           `Credential format ${credential.format} not supported`,
           HttpStatus.BAD_REQUEST
@@ -212,9 +218,9 @@ export class DCPHolderService {
       const credentialObject = validateOrRejectSync(
         plainToInstance(VerifiableCredential, JSON.parse(credential.payload))
       );
-      if (credentialObject.issuer !== validatedIdToken.tokenPayload.sub) {
+      if (credentialObject.issuer !== validatedIdToken.sub) {
         throw new AppError(
-          `Credential issuer ${credentialObject.issuer} does not match token subject ${validatedIdToken.tokenPayload.sub}`,
+          `Credential issuer ${credentialObject.issuer} does not match token subject ${validatedIdToken.sub}`,
           HttpStatus.BAD_REQUEST
         ).andLog(this.logger);
       }
@@ -224,7 +230,7 @@ export class DCPHolderService {
   }
 
   async handleCredentialOfferMessage(
-    authorization: string,
+    authorization: string | undefined,
     credentialOfferMessage: CredentialOfferMessage
   ): Promise<void> {
     this.logger.debug(

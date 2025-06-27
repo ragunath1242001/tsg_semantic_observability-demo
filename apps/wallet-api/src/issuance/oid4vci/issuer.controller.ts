@@ -90,11 +90,11 @@ export class OID4VCIIssuerController {
   @DisableOAuthGuard()
   @HttpCode(HttpStatus.OK)
   async credentialEndpoint(
-    @Headers("Authorization") authorization: string,
+    @Headers("Authorization") authorization: string | undefined,
     @Body() credentialRequest: CredentialRequest
   ): Promise<CredentialResponse> {
     return this.issuerService.handleCredentialRequest(
-      authorization.substring(7),
+      authorization,
       credentialRequest
     );
   }

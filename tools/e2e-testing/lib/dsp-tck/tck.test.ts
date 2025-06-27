@@ -1,22 +1,9 @@
-import {
-  AppModule,
-  CatalogService,
-  DataPlaneService,
-  NegotiationService,
-  setupApp,
-  TransferService
-} from "@apps/control-plane-api";
 import { HttpServer, INestApplication } from "@nestjs/common";
 import { Test } from "@nestjs/testing";
-import { AppLogger } from "@tsg-dsp/common-api";
 import { SetupServer, setupServer } from "msw/node";
 
 import { setupDataPlaneMock } from "../dataPlane.mock.js";
-import {
-  ensureStoppedRuntime,
-  ensureTckRuntime,
-  execTck
-} from "../exec-tck.js";
+import { ensureStoppedRuntime, execTck } from "../exec-tck.js";
 import { PipelineExecutor } from "../pipeline.executor.js";
 import { SignalController } from "../signal.controller.js";
 import { controlPlaneHealthy, setupConfigFile } from "../test.setup.js";
@@ -33,6 +20,7 @@ import * as TP_03 from "./TP_03.js";
 import * as TP_C_01 from "./TP_C_01.js";
 import * as TP_C_02 from "./TP_C_02.js";
 import * as TP_C_03 from "./TP_C_03.js";
+
 function expectResolvesWithin(
   name: string,
   promise: Promise<any>,
@@ -46,7 +34,7 @@ function expectResolvesWithin(
   ]) as Promise<void>;
 }
 
-describe("TCK", () => {
+describe("DSP TCK", () => {
   const debug = "CI" in process.env === false;
   const timeout = 50 * 1000;
   let server: HttpServer;
@@ -61,7 +49,17 @@ describe("TCK", () => {
   ];
 
   beforeAll(async () => {
-    setupConfigFile();
+    setupConfigFile("control-plane.config.yaml");
+    const {
+      AppModule,
+      setupApp,
+      DataPlaneService,
+      CatalogService,
+      NegotiationService,
+      TransferService
+    } = await import("@apps/control-plane-api");
+    const { AppLogger } = await import("@tsg-dsp/common-api");
+    const { ensureTckRuntime } = await import("../exec-tck.js");
     await ensureTckRuntime(
       "https://dsptestcontext.blob.core.windows.net/tck/dsp-tck-runtime-2025-06-20.jar"
     );

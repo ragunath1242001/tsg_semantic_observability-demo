@@ -346,12 +346,7 @@ paths:
     post:
       description: Request a presentation with a SIOP-token and a PresentationQueryMessage
       operationId: DCPHolderController_presentationQuery
-      parameters:
-        - name: Authorization
-          required: true
-          in: header
-          schema:
-            type: string
+      parameters: []
       requestBody:
         required: true
         content:
@@ -1944,9 +1939,9 @@ paths:
       operationId: DCPHolderController_storeCredential
       parameters:
         - name: Authorization
-          required: true
           in: header
           description: Access Token from Self-Issued ID Token
+          required: true
           schema:
             type: string
             example: Bearer <token>
@@ -1980,9 +1975,9 @@ paths:
       operationId: DCPHolderController_credentialOffer
       parameters:
         - name: Authorization
-          required: true
           in: header
           description: Self-Issued ID Token
+          required: true
           schema:
             type: string
             example: Bearer <token>
@@ -2030,9 +2025,9 @@ paths:
       operationId: DCPIssuerController_credentialRequest
       parameters:
         - name: Authorization
-          required: true
           in: header
           description: Self-Issued ID Token
+          required: true
           schema:
             type: string
             example: Bearer <token>
@@ -2064,18 +2059,18 @@ paths:
       description: Returns the status of a credential request
       operationId: DCPIssuerController_credentialStatus
       parameters:
-        - name: Authorization
-          required: true
-          in: header
-          description: Self-Issued ID Token
-          schema:
-            type: string
-            example: Bearer <token>
         - name: requestId
           required: true
           in: path
           schema:
             type: string
+        - name: Authorization
+          in: header
+          description: Self-Issued ID Token
+          required: true
+          schema:
+            type: string
+            example: Bearer <token>
       responses:
         "200":
           description: ""
@@ -2207,12 +2202,7 @@ paths:
       description: Requests a new credential based on a Credential Request via the
         OID4VCI flow
       operationId: OID4VCIIssuerController_credentialEndpoint
-      parameters:
-        - name: Authorization
-          required: true
-          in: header
-          schema:
-            type: string
+      parameters: []
       requestBody:
         required: true
         content:
@@ -3201,6 +3191,13 @@ components:
             oneOf:
               - type: string
               - $ref: "#/components/schemas/VerifiablePresentation"
+        presentationSubmission:
+          example:
+            id: submission-id
+            definition_id: definition-id
+            descriptor_map: []
+          allOf:
+            - $ref: "#/components/schemas/PresentationSubmission"
       required:
         - "@context"
         - type
@@ -4041,8 +4038,6 @@ components:
     CredentialContainer:
       type: object
       properties:
-        type:
-          type: string
         payload:
           type: string
         credentialType:
@@ -4050,7 +4045,6 @@ components:
         format:
           type: string
       required:
-        - type
         - payload
         - credentialType
         - format
@@ -4090,6 +4084,10 @@ components:
     CredentialObject:
       type: object
       properties:
+        id:
+          type: string
+          example: db8a34c7-aa42-4aae-bb57-69cd805ef01a
+          description: Unique identifier for the credential object
         type:
           type: string
           example: CredentialObject
@@ -4117,6 +4115,7 @@ components:
           allOf:
             - $ref: "#/components/schemas/PresentationDefinition"
       required:
+        - id
         - type
         - credentialType
         - offerReason
@@ -4134,7 +4133,7 @@ components:
         type:
           type: string
           example: CredentialOfferMessage
-        credentialIssuer:
+        issuer:
           type: string
         credentials:
           type: array
@@ -4143,7 +4142,7 @@ components:
       required:
         - "@context"
         - type
-        - credentialIssuer
+        - issuer
         - credentials
     CredentialSubjectDefinition:
       type: object
@@ -4436,13 +4435,10 @@ components:
     CredentialRequestCredential:
       type: object
       properties:
-        format:
-          type: string
-        credentialType:
+        id:
           type: string
       required:
-        - format
-        - credentialType
+        - id
     CredentialRequestMessage:
       type: object
       properties:

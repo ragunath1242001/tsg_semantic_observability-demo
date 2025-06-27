@@ -203,17 +203,20 @@ describe("Issuer service", () => {
         .setIssuedAt()
         .sign(exampleKey.privateKey);
       expect(
-        await issuerService.handleCredentialRequest(access_token.access_token, {
-          format: "jwt_vc_json-ld",
-          credential_definition: {
-            "@context": [],
-            type: ["VerifiableCredential", "ExampleCredentialType"]
-          },
-          proof: {
-            proof_type: "jwt",
-            jwt: jwt
+        await issuerService.handleCredentialRequest(
+          `Bearer ${access_token.access_token}`,
+          {
+            format: "jwt_vc_json-ld",
+            credential_definition: {
+              "@context": [],
+              type: ["VerifiableCredential", "ExampleCredentialType"]
+            },
+            proof: {
+              proof_type: "jwt",
+              jwt: jwt
+            }
           }
-        })
+        )
       ).toBeTruthy();
     });
     it("Create offer without Holder ID", async () => {
@@ -239,17 +242,20 @@ describe("Issuer service", () => {
         .setIssuedAt()
         .sign(exampleKey.privateKey);
       expect(
-        await issuerService.handleCredentialRequest(access_token.access_token, {
-          format: "jwt_vc_json-ld",
-          credential_definition: {
-            "@context": [],
-            type: ["VerifiableCredential", "ExampleCredentialType"]
-          },
-          proof: {
-            proof_type: "jwt",
-            jwt: jwt
+        await issuerService.handleCredentialRequest(
+          `Bearer ${access_token.access_token}`,
+          {
+            format: "jwt_vc_json-ld",
+            credential_definition: {
+              "@context": [],
+              type: ["VerifiableCredential", "ExampleCredentialType"]
+            },
+            proof: {
+              proof_type: "jwt",
+              jwt: jwt
+            }
           }
-        })
+        )
       ).toBeTruthy();
     });
 
@@ -275,17 +281,20 @@ describe("Issuer service", () => {
         .setIssuedAt()
         .sign(exampleKey.privateKey);
       expect(
-        issuerService.handleCredentialRequest(access_token.access_token, {
-          format: "jwt_vc_json-ld",
-          credential_definition: {
-            "@context": [],
-            type: ["VerifiableCredential", "ExampleCredentialType"]
-          },
-          proof: {
-            proof_type: "jwt",
-            jwt: jwt
+        issuerService.handleCredentialRequest(
+          `Bearer ${access_token.access_token}`,
+          {
+            format: "jwt_vc_json-ld",
+            credential_definition: {
+              "@context": [],
+              type: ["VerifiableCredential", "ExampleCredentialType"]
+            },
+            proof: {
+              proof_type: "jwt",
+              jwt: jwt
+            }
           }
-        })
+        )
       ).rejects.toThrow(
         'Only JWTs with "kid" referencing a key described in a DID document are supported'
       );
@@ -314,17 +323,20 @@ describe("Issuer service", () => {
         .setIssuedAt()
         .sign(exampleKey.privateKey);
       expect(
-        issuerService.handleCredentialRequest(access_token.access_token, {
-          format: "jwt_vc_json-ld",
-          credential_definition: {
-            "@context": [],
-            type: ["VerifiableCredential", "ExampleCredentialType"]
-          },
-          proof: {
-            proof_type: "jwt",
-            jwt: jwt
+        issuerService.handleCredentialRequest(
+          `Bearer ${access_token.access_token}`,
+          {
+            format: "jwt_vc_json-ld",
+            credential_definition: {
+              "@context": [],
+              type: ["VerifiableCredential", "ExampleCredentialType"]
+            },
+            proof: {
+              proof_type: "jwt",
+              jwt: jwt
+            }
           }
-        })
+        )
       ).rejects.toThrow('Holder ID test1234234 does not start with "did:"');
     });
 
