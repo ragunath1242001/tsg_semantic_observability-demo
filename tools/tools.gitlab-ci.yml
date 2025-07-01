@@ -29,7 +29,7 @@ e2e-dsp-local:
 
 dsp-tck-fetch:
   image:
-    name: eclipsedataspacetck/dsp-tck-runtime:sha-d7ac94e
+    name: eclipsedataspacetck/dsp-tck-runtime:1.0.0-RC4
     entrypoint:
       - "/bin/sh"
       - "-c"
