@@ -290,8 +290,7 @@ describe("Negotiation Service (Consumer)", () => {
         new ContractAgreementMessage({
           consumerPid: localProcessId,
           providerPid: remoteProcessId,
-          agreement: agreement,
-          callbackAddress: `http://localhost/callbacks`
+          agreement: agreement
         }),
         "did:web:remoteparty.test"
       );
@@ -423,8 +422,7 @@ describe("Negotiation Service (Consumer)", () => {
           offer: new Offer({
             id: "urn:uuid:81a41b35-2926-4b29-8c9a-ee52665a047b",
             assigner: "urn:uuid:fcddc591-b9f1-4c75-b557-80d1cf955859"
-          }),
-          callbackAddress: `http://localhost/callbacks`
+          })
         }),
         "did:web:remoteparty.test"
       );
@@ -452,8 +450,7 @@ describe("Negotiation Service (Consumer)", () => {
           offer: new Offer({
             id: "urn:uuid:81a41b35-2926-4b29-8c9a-ee52665a047b",
             assigner: "urn:uuid:fcddc591-b9f1-4c75-b557-80d1cf955859"
-          }),
-          callbackAddress: `http://localhost/callbacks`
+          })
         }),
         "did:web:remoteparty.test"
       );
@@ -478,8 +475,7 @@ describe("Negotiation Service (Consumer)", () => {
         new ContractAgreementMessage({
           consumerPid: localProcessId,
           providerPid: remoteProcessId,
-          agreement: agreement,
-          callbackAddress: `http://localhost/callbacks`
+          agreement: agreement
         }),
         "did:web:remoteparty.test"
       );

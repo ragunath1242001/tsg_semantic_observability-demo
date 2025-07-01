@@ -33,7 +33,7 @@ export interface IContractRequestMessage {
   consumerPid: string;
   providerPid?: string;
   offer: Offer;
-  callbackAddress: string;
+  callbackAddress?: string;
 }
 
 @Serializable("ContractRequestMessage")
@@ -52,8 +52,8 @@ export class ContractRequestMessage extends SerializableClass<ContractRequestMes
   @LDType(() => Offer)
   offer: Offer;
   @Namespace("dspace")
-  @IsNotEmpty()
-  callbackAddress: string;
+  @IsOptional()
+  callbackAddress?: string;
 
   constructor(value: withExtraProps<IContractRequestMessage>) {
     super(value);
@@ -68,7 +68,7 @@ export interface IContractOfferMessage {
   consumerPid?: string;
   providerPid: string;
   offer: Offer;
-  callbackAddress: string;
+  callbackAddress?: string;
 }
 
 @Serializable("ContractOfferMessage")
@@ -87,8 +87,9 @@ export class ContractOfferMessage extends SerializableClass<ContractOfferMessage
   @LDType(() => Offer)
   offer: Offer;
   @Namespace("dspace")
-  @IsNotEmpty()
-  callbackAddress: string;
+  @IsOptional()
+  @IsString()
+  callbackAddress?: string;
 
   constructor(value: withExtraProps<IContractOfferMessage>) {
     super(value);
@@ -261,7 +262,6 @@ export interface IContractAgreementMessage {
   consumerPid: string;
   providerPid: string;
   agreement: Agreement;
-  callbackAddress: string;
 }
 
 @Serializable("ContractAgreementMessage")
@@ -279,9 +279,6 @@ export class ContractAgreementMessage extends SerializableClass<ContractAgreemen
   @ValidateNested()
   @LDType(() => Agreement)
   agreement: Agreement;
-  @Namespace("dspace")
-  @IsNotEmpty()
-  callbackAddress: string;
 
   constructor(value: withExtraProps<IContractAgreementMessage>) {
     super(value);
@@ -291,6 +288,5 @@ export class ContractAgreementMessage extends SerializableClass<ContractAgreemen
       value.agreement,
       Agreement
     ) as Agreement;
-    this.callbackAddress = value.callbackAddress;
   }
 }

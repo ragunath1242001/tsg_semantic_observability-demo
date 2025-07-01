@@ -4520,12 +4520,11 @@ components:
             - $ref: "#/components/schemas/OfferSchema"
         callbackAddress:
           type: string
-          example: http://example.com/offer-callback
+          example: urn:example:target
       required:
         - "@type"
         - providerPid
         - offer
-        - callbackAddress
     AgreementSchema:
       type: object
       properties:
@@ -4590,15 +4589,11 @@ components:
             target: urn:example:target
           allOf:
             - $ref: "#/components/schemas/AgreementSchema"
-        callbackAddress:
-          type: string
-          example: http://example.com/agreement-callback
       required:
         - "@type"
         - consumerPid
         - providerPid
         - agreement
-        - callbackAddress
     NegotiationStatusDto:
       type: object
       properties:

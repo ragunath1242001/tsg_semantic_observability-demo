@@ -1,4 +1,4 @@
-import { HttpServer, INestApplication } from "@nestjs/common";
+import { HttpServer, INestApplication, Logger } from "@nestjs/common";
 import { Test } from "@nestjs/testing";
 import { SetupServer, setupServer } from "msw/node";
 
@@ -59,10 +59,21 @@ describe("DSP TCK", () => {
       TransferService
     } = await import("@apps/control-plane-api");
     const { AppLogger } = await import("@tsg-dsp/common-api");
-    const { ensureTckRuntime } = await import("../exec-tck.js");
-    await ensureTckRuntime(
-      "https://dsptestcontext.blob.core.windows.net/tck/dsp-tck-runtime-2025-06-20.jar"
-    );
+    if (process.env.DISABLE_TCK_FETCH !== "true") {
+      Logger.log(
+        "Ensuring TCK runtime is available, downloading if necessary",
+        "TCK"
+      );
+      const { ensureTckRuntime } = await import("../exec-tck.js");
+      await ensureTckRuntime(
+        "https://dsptestcontext.blob.core.windows.net/tck/dsp-tck-runtime-2025-07-01.jar"
+      );
+    } else {
+      Logger.log(
+        "Skipping TCK runtime download, DISABLE_TCK_FETCH is set",
+        "TCK"
+      );
+    }
     const builder = Test.createTestingModule({
       imports: [AppModule],
       controllers: [SignalController]
@@ -70,7 +81,7 @@ describe("DSP TCK", () => {
     if (debug) {
       builder.setLogger(new AppLogger());
     } else {
-      builder.setLogger(new AppLogger("error"));
+      builder.setLogger(new AppLogger("info"));
     }
     app = await builder.compile().then((m) => m.createNestApplication());
     const config = setupApp(app);
@@ -142,7 +153,7 @@ describe("DSP TCK", () => {
         ...getTestsFromModule(TP_C_01),
         ...getTestsFromModule(TP_C_02),
         ...getTestsFromModule(TP_C_03),
-        expectResolvesWithin("execTck", execTck(debug), timeout)
+        expectResolvesWithin("execTck", execTck(), timeout)
       ]);
       const rejectedTests = tests
         .filter((test) => test.status === "rejected")

@@ -27,17 +27,41 @@ e2e-dsp-local:
     - pnpm run --filter control-plane-api build
     - NODE_OPTIONS="--experimental-vm-modules" pnpm e2e:dsp-local
 
+dsp-tck-fetch:
+  image:
+    name: eclipsedataspacetck/dsp-tck-runtime:sha-d7ac94e
+    entrypoint:
+      - "/bin/sh"
+      - "-c"
+  stage: build
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: "$CI_COMMIT_TAG"
+  script:
+    - echo "Fetching TCK test cases"
+    - mkdir -p tools/e2e-testing/assets
+    - cp /app/tck-runtime.jar tools/e2e-testing/assets/dsp-tck-runtime.jar
+  artifacts:
+    paths:
+      - tools/e2e-testing/assets/dsp-tck-runtime.jar
+    expire_in: 1 hour
+
 e2e-dsp-tck:
   extends: .base-rules
   stage: test
   allow_failure: true
-  needs: []
+  variables:
+    DISABLE_TCK_FETCH: "true"
+  needs:
+    - job: dsp-tck-fetch
+      artifacts: true
   tags:
     - saas-linux-medium-amd64
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: "$CI_COMMIT_TAG"
   script:
+    - ls -la tools/e2e-testing/assets
     - wget -q https://download.oracle.com/java/21/latest/jdk-21_linux-x64_bin.deb
     - dpkg -i jdk-21_linux-x64_bin.deb > /dev/null
     - pnpm install --frozen-lockfile

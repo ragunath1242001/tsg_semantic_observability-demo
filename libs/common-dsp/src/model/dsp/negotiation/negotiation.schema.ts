@@ -147,8 +147,8 @@ export class ContractOfferMessageSchema implements ContractOfferMessageDto {
   })
   "offer"!: OfferDto;
 
-  @ApiProperty({ example: "http://example.com/offer-callback" })
-  "callbackAddress"!: string;
+  @ApiPropertyOptional({ example: "urn:example:target" })
+  "callbackAddress"?: string;
 }
 
 export class ContractAgreementMessageSchema
@@ -174,8 +174,6 @@ export class ContractAgreementMessageSchema
     }
   })
   "agreement"!: AgreementDto;
-  @ApiProperty({ example: "http://example.com/agreement-callback" })
-  "callbackAddress"!: string;
 }
 
 export class ContractNegotiationTerminationMessageSchema

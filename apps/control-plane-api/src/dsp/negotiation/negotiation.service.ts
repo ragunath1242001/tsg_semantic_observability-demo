@@ -391,8 +391,7 @@ export class NegotiationService {
     const contractRequestMessage = new ContractRequestMessage({
       providerPid: negotiation.remoteId,
       consumerPid: negotiation.localId,
-      offer: offer,
-      callbackAddress: `${this.server.publicAddress}/callbacks`
+      offer: offer
     });
     const contractNegotiationResponse = await this.dsp.requestNegotiation(
       `${negotiation.remoteAddress}/request`,
@@ -423,6 +422,12 @@ export class NegotiationService {
     requestMessage: ContractRequestMessage,
     audience: string
   ) {
+    if (requestMessage.callbackAddress !== undefined) {
+      throw new DSPError(
+        `Contract request message on existing negotiation must not contain callbackAddress`,
+        HttpStatus.BAD_REQUEST
+      ).andLog(this.logger, "warn");
+    }
     if (processId !== requestMessage.providerPid) {
       throw new DSPError(
         `Contract negotiation process ID mismatch ${processId} vs ${requestMessage.providerPid}`,
@@ -473,8 +478,7 @@ export class NegotiationService {
     const contractOfferMessage = new ContractOfferMessage({
       providerPid: negotiation.localId,
       consumerPid: negotiation.remoteId,
-      offer: offer,
-      callbackAddress: `${this.server.publicAddress}/negotiations/${negotiation.localId}`
+      offer: offer
     });
     negotiation.events.push({
       time: new Date(),
@@ -507,6 +511,12 @@ export class NegotiationService {
     audience: string
   ): Promise<{ status: string }> {
     // TODO: Allow provider initiated negotiations
+    if (!contractOfferMessage.consumerPid) {
+      throw new DSPError(
+        `Contract offer message must contain consumerPid`,
+        HttpStatus.BAD_REQUEST
+      ).andLog(this.logger, "warn");
+    }
     const negotiation = await this.getNegotiation(processId, audience);
     await this.checkTransition(
       "remote",
@@ -660,8 +670,7 @@ export class NegotiationService {
     const agreementMessage = new ContractAgreementMessage({
       providerPid: negotiation.localId,
       consumerPid: negotiation.remoteId,
-      agreement: agreement,
-      callbackAddress: `${this.server.publicAddress}/callbacks`
+      agreement: agreement
     });
     negotiation.events.push({
       time: new Date(),

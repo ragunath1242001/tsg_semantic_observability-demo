@@ -44,7 +44,6 @@ describe("DCP TCK", () => {
   test.failing("Exec TCK", async () => {
     const { execTck } = await import("../exec-tck.js");
     const result = await execTck(
-      debug,
       "assets/dcp-tck-runtime.jar",
       "assets/dcp.tck.properties"
     );
