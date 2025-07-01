@@ -315,8 +315,7 @@ describe("Local - CN_03: Provider negative test scenarios", () => {
               new ContractRequestMessage({
                 providerPid: negotiation.remoteId,
                 consumerPid: negotiation.localId,
-                offer: negotiation.offer!,
-                callbackAddress: `${negotiation.remoteAddress}/request/${negotiation.localId}`
+                offer: negotiation.offer!
               }),
               negotiation.remoteParty
             )

@@ -286,7 +286,6 @@ describe("NegotiationController", () => {
         new ContractRequestMessage({
           consumerPid: "urn:uuid:a81bea31-55d4-4c70-b454-9758e1228fd0",
           providerPid: providerNegotiationId,
-          callbackAddress: "http://127.0.0.1/callbacks",
           offer: new Offer({
             id: "urn:uuid:81a41b35-2926-4b29-8c9a-ee52665a047b",
             assigner: "urn:uuid:fcddc591-b9f1-4c75-b557-80d1cf955859",
@@ -458,7 +457,6 @@ describe("NegotiationController", () => {
         new ContractOfferMessage({
           consumerPid: consumerNegotiationId,
           providerPid: "urn:uuid:e8f94bf2-c59d-48c8-b5b9-9d5366ae2f3d",
-          callbackAddress: `http://127.0.0.1/callbacks`,
           offer: new Offer({
             id: "urn:uuid:81a41b35-2926-4b29-8c9a-ee52665a047b",
             assigner: "urn:uuid:fcddc591-b9f1-4c75-b557-80d1cf955859",
@@ -478,7 +476,6 @@ describe("NegotiationController", () => {
           new ContractOfferMessage({
             consumerPid: consumerNegotiationId,
             providerPid: "urn:uuid:e8f94bf2-c59d-48c8-b5b9-9d5366ae2f3d",
-            callbackAddress: "http://127.0.0.1/callbacks",
             offer: new Offer({
               id: "urn:uuid:81a41b35-2926-4b29-8c9a-ee52665a047b",
               assigner: "urn:uuid:fcddc591-b9f1-4c75-b557-80d1cf955859"
@@ -504,8 +501,7 @@ describe("NegotiationController", () => {
             assignee: "urn:uuid:05da26f1-6213-4c27-b104-623cd33ecde7",
             timestamp: "2023-07-21T09:26:00Z",
             target: "urn:uuid:e9eeadef-a9cc-4b9c-ba57-fc182da03d63"
-          }),
-          callbackAddress: "http://127.0.0.1/callbacks"
+          })
         }),
         "did:web:localhost"
       );
@@ -526,8 +522,7 @@ describe("NegotiationController", () => {
               assignee: "urn:uuid:05da26f1-6213-4c27-b104-623cd33ecde7",
               timestamp: "2023-07-21T09:26:00Z",
               target: "urn:uuid:e9eeadef-a9cc-4b9c-ba57-fc182da03d63"
-            }),
-            callbackAddress: "http://127.0.0.1/callbacks"
+            })
           }),
           "did:web:localhost"
         );

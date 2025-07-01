@@ -1,5 +1,4 @@
 import { Logger } from "@nestjs/common";
-import { AppLogger } from "@tsg-dsp/common-api";
 import axios from "axios";
 import { ChildProcessWithoutNullStreams, spawn } from "child_process";
 import { existsSync, writeFileSync } from "fs";
@@ -31,7 +30,6 @@ export const ensureStoppedRuntime = async (): Promise<void> => {
 };
 
 export const execTck = async (
-  debug: boolean = false,
   jarPath: string = "assets/dsp-tck-runtime.jar",
   propertiesPath: string = "assets/dsp.tck.properties"
 ): Promise<string> => {
@@ -48,16 +46,12 @@ export const execTck = async (
     child.stdout.on("data", (data: Buffer) => {
       const text = data.toString();
       stdout += text;
-      if (debug) {
-        text.split("\n").forEach((line) => Logger.log(line, "TCK (JAVA)"));
-      }
+      text.split("\n").forEach((line) => Logger.log(line, "TCK (JAVA)"));
     });
     child.stderr.on("data", (data: Buffer) => {
       const text = data.toString();
       stderr += text;
-      if (debug) {
-        text.split("\n").forEach((line) => Logger.warn(line, "TCK (JAVA)"));
-      }
+      text.split("\n").forEach((line) => Logger.warn(line, "TCK (JAVA)"));
     });
     child.on("close", (code: number) => {
       Logger.log(`TCK process exited with code ${code}`, "TCK");
@@ -81,13 +75,6 @@ export const execTck = async (
         );
         reject("No passed tests");
       } else if (stdout.includes("Failed tests: 0")) {
-        const overrideLogger = new AppLogger("log");
-        for (const line of summary.split("\n")) {
-          overrideLogger.log(
-            line.replace(/\[\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d*\] /, ""),
-            "TCK (JAVA)"
-          );
-        }
         resolve(stdout);
       } else {
         Logger.error(`Tests failures: \n${summary}`, "TCK (JAVA)");

@@ -5,7 +5,7 @@ export interface ContractRequestMessageDto extends ContextDto {
   "@type": "ContractRequestMessage";
   consumerPid: string;
   providerPid?: string;
-  callbackAddress: string;
+  callbackAddress?: string;
   offer: OfferDto;
 }
 
@@ -14,7 +14,7 @@ export interface ContractOfferMessageDto extends ContextDto {
   consumerPid?: string;
   providerPid: string;
   offer: OfferDto;
-  callbackAddress: string;
+  callbackAddress?: string;
 }
 
 export interface ContractNegotiationTerminationMessageDto extends ContextDto {
@@ -80,5 +80,4 @@ export interface ContractAgreementMessageDto extends ContextDto {
   consumerPid: string;
   providerPid: string;
   agreement: AgreementDto;
-  callbackAddress: string;
 }
