@@ -1,53 +1,48 @@
-# TSG Deployment Documentation
+# TSG Deployment Guide
 
-This page contains documentation on technical deployments. Documentation on how to configure the catalog specificallly with the HTTP Data Plane is listed in [Dataset Configuration](./dataset/README.md)
+This guide covers advanced deployment scenarios and configurations for the TNO Security Gateway. For quick setup instructions, see the [Getting Started Guide](../getting-started.md).
 
-The default deployment strategies are formed around the [TSG CLI tool](/docs/tools/cli/). With this CLI tool configuration bootstrapping and deployment can be done for both:
+## Overview
 
-- an entire ecosystem; covering one or more participants for an environment with the different applications of the TSG.
-- a single participant: covering one participant that connects to an existing dataspace.
+TSG supports flexible deployment strategies using the [TSG CLI tool](../tools/cli/) for Kubernetes-based infrastructures. The deployment model supports two primary scenarios:
 
-The differentation between the deployment of an ecosystem or participant only differs in the initial configuration, where the latter only allows a single participant to be configured.
+- **Ecosystem Deployment**: Complete dataspace with multiple participants
+- **Participant Deployment**: Single participant joining an existing dataspace
+
+For detailed configuration options, see the [CLI Configuration Reference](../tools/cli/configuration.md).
 
 ## Prerequisites
 
-The deployments of the TSG support by default only Kubernetes-based infrastructures. The following aspects of the Kubernetes cluster are assumed:
+### Infrastructure Requirements
 
-- Kubernetes cluster >=v1.24
-- Ingress Controller with publicly available routes, e.g. [Ingress NGINX Controller](https://kubernetes.github.io/ingress-nginx/). Combined with TLS encryption on the ingress controller, e.g. via [CertManager](https://cert-manager.io/). _Required for hosting/resolvement of DID documents, even when all participants are on the same cluster_.
+**Kubernetes Cluster** (version 1.24 or higher)
+- Minimum 4 CPU cores and 8GB RAM for ecosystem deployments
+- 2 CPU cores and 4GB RAM for single participant deployments
 
-For the machine using the CLI tool, the following elements are required:
+**Ingress Controller** with public route support
+- [NGINX Ingress Controller](https://kubernetes.github.io/ingress-nginx/) (recommended)
+- [Traefik](https://traefik.io/) or other Kubernetes-compatible ingress controllers
 
-- NodeJS & NPM. _Required for installing the CLI tool_
-- Installed TSG CLI: `npm install -g @tsg-dsp/cli@latest` to install the latest released version of the CLI (replace `latest` for a specific version if necessary).
-- Kubectl
-- [Helm](https://helm.sh/docs/intro/quickstart/)
-  - [Helm Diff plugin](https://github.com/databus23/helm-diff). _Required if Helm diff is selected via the CLI_
+**TLS Certificate Management**
+- [cert-manager](https://cert-manager.io/) for automated certificate provisioning
+- Manual certificate management for custom PKI environments
 
-## Configuration
+> **Important**: HTTPS endpoints are required for DID document resolution, even for single-cluster deployments.
 
-The CLI tool uses configuration YAMLs to properly function. These files specify to the tool what kind of configuration it should generate and which services it should deploy. For an ecosystem the default file is `ecosystem.yaml` and for a single participant this is `participant.yaml`. For a complete overview of the configuration options see the [TSG CLI tool readme](/docs/tools/cli/README.md).
+### Client Tools
 
-Two examples, that are used in this doc are located at [ecosystem.yaml](ecosystem.yaml) and [participant.yaml](participant.yaml).
+**Required Tools**:
+- Node.js & npm (version 22+)
+- kubectl (configured for target cluster)
+- Helm (version 3.x)
 
-## Bootstrapping
+**Recommended Tools**:
+- **Helm Diff plugin** - Only required if you want to see the changes in Helm deployments. Install with: `helm plugin install https://github.com/databus23/helm-diff`
 
-The first command of the CLI tool is `tsg bootstrap`, which will convert the input configuration into configuration per service (i.e. Helm release).
+**TSG CLI Installation**:
+```bash
+npm install -g @tsg-dsp/cli@latest
 
-The manual for the bootstrap command is as follows:
-
-```
-Usage: tsg bootstrap [options] <scope>
-
-Bootstrap CLI utility to generate configuration files
-
-Arguments:
-  scope               scope of configuration generation (choices: "ecosystem", "participant")
-
-Options:
-  -f, --file <file>   input configuration file (default: "ecosystem.yaml" or "participant.yaml")
-  -o, --output <dir>  output directory (default: "output")
-  --stdout            output only to standard out (default: false)
   -v, --verbose       verbose logging (default: false)
   -y --yes            assume yes for all prompts (default: false)
   -h, --help          display help for command
@@ -104,7 +99,7 @@ The command line options include the input locations, but also some deployment s
 - Clean Database (`--clean-database`): Removes the Postgres database release, this will ensure all existing state is removed before redeployment.
 - Diff (`-d, --diff`): Shows the [Helm Diff plugin](https://github.com/databus23/helm-diff) diff based on the existing deployed charts and the config that will be deployed.
 - Dry-run (`--dry-run`): Shows all commands the tool otherwise would execute, will not execute any commands
-- Assyme yes (`-y`): Assume yes for all questions the CLI tool otherwise would ask the user. Usefull in automation, where all flags are set via the command line options.
+- Assume yes (`-y`): Assume yes for all questions the CLI tool otherwise would ask the user. Usefull in automation, where all flags are set via the command line options.
 
 The CLI tool will ask for confirmation before executing the commands (except when assume yes is enabled):
 
@@ -119,15 +114,11 @@ The CLI tool will ask for confirmation before executing the commands (except whe
  Press <enter> to confirm configuration
 ```
 
-## Examples
-
-The following examples of both an ecosystem and participant are minimal configurations that should allow an initial deployment.
-
-### Ecosystem
+## Ecosystem Example
 
 The ecosystem example uses the [ecosystem.yaml](ecosystem.yaml) file as basis. It will create an ecosystem of 4 participants: 1 dataspace authority and 3 dataspace participants.
 
-#### 1. Update configuration
+### 1. Update configuration
 
 The example configuration contains several properties that are not filled in but which are required for your deployment:
 
@@ -251,14 +242,6 @@ tsg bootstrap ecosystem
 
 This will likely ask you what to do with the existing configuration, select `Move` to move the existing `output` folder to `output.old` and create a new `output folder`.
 
-Execute the deploy command with `--diff` to check the differences in the new deployment with respect to the existing deployment:
-
-```
-tsg deploy ecosystem --diff
-```
-
-Depending on the changes made, the CLI tool will print the changes to the actual services, and will ask you whether you want to proceed with the update.
-
 ### 6. Uninstall deployment
 
 To remove the deployment, execute:
@@ -267,11 +250,11 @@ To remove the deployment, execute:
 tsg deploy ecosystem --uninstall
 ```
 
-### Participant
+## Participant Example
 
 The participant example uses the [participant.yaml](participant.yaml) file as basis. It will create a single participant deployment.
 
-#### 1. Update configuration
+### 1. Update configuration
 
 The example configuration contains several properties that are not filled in but which are required for your deployment:
 
@@ -352,14 +335,6 @@ tsg bootstrap participant
 ```
 
 This will likely ask you what to do with the existing configuration, select `Move` to move the existing `output` folder to `output.old` and create a new `output folder`.
-
-Execute the deploy command with `--diff` to check the differences in the new deployment with respect to the existing deployment:
-
-```
-tsg deploy participant --diff
-```
-
-Depending on the changes made, the CLI tool will print the changes to the actual services, and will ask you whether you want to proceed with the update.
 
 ### 6. Uninstall deployment
 

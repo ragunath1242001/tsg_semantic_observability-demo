@@ -17,19 +17,19 @@ For development, everything is setup to be used with vscode. This means tests wi
 To run the wallet-ui and wallet-api in watch mode use the following command:
 
 ```
-pnpm run dev:wallet-api
+pnpm dev:wallet-api
 ```
 
 and
 
 ```
-pnpm run dev:wallet-ui
+pnpm dev:wallet-ui
 ```
 
 Another option is to run them in parallel by running:
 
 ```
-pnpm run dev --parallel
+pnpm dev:wallet
 ```
 
 However, in that case you do not get the logs from both applications and some information might be missing from the logs.

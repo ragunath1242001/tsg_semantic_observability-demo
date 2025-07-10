@@ -1,46 +1,92 @@
-# TNO Security Gateway documentation
+# Introduction
 
-Welcome to the TNO Security Gateway documentation. This folder contains all the documentation that is available for the TNO Security Gateway. It is divided into apps folders for each component, describing the architecture and all of the configurable parameters. There is a seperate section [Deployment](./deployment/) for deployment of all the components.
+Welcome to the TNO Security Gateway (TSG) documentation! 
 
-## Structure
+In today's interconnected digital landscape, organizations increasingly need to collaborate and share data while maintaining strict security, privacy, and sovereignty over their information. The TNO Security Gateway addresses this challenge by providing a robust, standards-based platform that enables secure participation in data spaces.
 
-- Apps
-  - [Analytics Data Plane](./apps/analytics-data-plane/)
-  - [Control Plane](./apps/control-plane/)
-  - [HTTP Data Plane](./apps/http-data-plane/)
-  - [SSO Bridge](./apps/sso-bridge/)
-  - [Wallet](./apps/wallet/)
-- [Deployment](./deployment/)
-- Tools
-  - [CLI Tool](./tools/cli/)
+TSG is founded on the European Commission's [European strategy for data](https://digital-strategy.ec.europa.eu/en/policies/strategy-data) and the [Common European Data Spaces](https://digital-strategy.ec.europa.eu/en/policies/data-spaces) initiative. These strategic frameworks drive the development of secure, interoperable data sharing infrastructure across Europe.
 
-## General introduction
-The TNO Security Gateway allows users to participate in data spaces, bridging the gap towards technical interoperability. The TSG consists of a couple of components that are crucial for participation in data spaces, and an Oauth server (SSO Bridge) that acts as a service to provide authentication to e.g. UIs and to ensure safe communication between the components. The crucial components are the Wallet, Control Plane and Data Plane. The Data Plane has two options: 
-(1) the HTTP Data Plane, which is probably the one a reader should be using 
-(2) the Analytics Data Plane, used for orchestrating distributed analyses over multiple parties.
+TSG addresses these European strategies by providing the technical infrastructure needed to realize the vision of trusted data spaces. It enables organizations to participate in sector-specific data ecosystems while maintaining sovereignty over their data assets, implement security and interoperability standards for cross-border collaboration, and support the decentralized architecture that underpins European data sovereignty.
 
-The overall architecture (as to how the components work together and how they interact) can be seen in the figure below:
+Whether you're a developer building data-driven applications, a system operator deploying enterprise infrastructure, or an organization looking to join a data ecosystem, this documentation will guide you through every aspect of working with TSG. From initial setup to advanced deployment scenarios, you'll find detailed information about components, architecture, security considerations, and best practices.
 
-![Component diagram](/img/component-diagram.png)
+TSG empowers your organization to unlock the value of collaborative data exchange without compromising on security or control.
 
-## Specifications
-There are several protocols in the figure above that are generic. This section provides links to the relevant specifications and highlights the choices that were made for the TSG components.
+## Documentation Structure
 
-### DID Resolvement
-The DID Resolvement Protocols correspond to [Decentralized Identifier](https://www.w3.org/TR/did-1.0/) resolvement protocols. The TSG Wallet supports [did:web](https://w3c-ccg.github.io/did-method-web/) and [did:tdw](https://identity.foundation/didwebvh/v0.3/). 
+This documentation is organized to support your journey with TSG, from initial exploration to production deployment. Start with [Getting Started](./getting-started.md) for a hands-on introduction, then explore the [Architecture](./architecture/) section to understand system design and technical foundations. Developers will find detailed API references and integration patterns in [Applications](./apps/), while operators can reference [Deployment](./deployment/) for deployment scenarios. The [Tools](./tools/) section covers utilities that simplify management tasks, and [Troubleshooting](./troubleshooting.md) provides diagnostic guidance when issues arise.
 
-### Verifiable Credentials
-The Credential Issuance Protocols concern the issuance of [Verifiable Credentials](https://www.w3.org/TR/vc-overview/). The TSG Wallet supports [OpenID for Verifiable Credential Issuance](https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0.html) and [Eclipse Decentralized Claims Protocol](https://eclipse-dataspace-dcp.github.io/decentralized-claims-protocol/v1.0-RC1/).
+## Quick Start
 
-The [Verfiable Presentation](https://www.w3.org/TR/vc-overview/) Protocols that are supported by the TSG Wallet are [OpenID for Verifiable Presentations](https://openid.net/specs/openid-4-verifiable-presentations-1_0.html) and [Eclipse Decentralized Claims Protocol](https://eclipse-dataspace-dcp.github.io/decentralized-claims-protocol/v1.0-RC1/).
+Ready to dive in? This section provides fast-track paths based on your role and immediate needs.
 
-### Data Space Protocols
+### Getting Started Guide
+**New to TSG?** Follow our [getting-started guide](./getting-started.md) with step-by-step instructions for:
+- Installing the TSG CLI tool
+- Joining the TSG Playground dataspace as a participant
+- Verifying your deployment
 
-The Data Space Protocols between the Control Planes are limited to one implementation, namely the [Eclipse Dataspace Protocol](https://eclipse-dataspace-protocol-base.github.io/DataspaceProtocol/2025-1-RC1/).
+### For Developers
+If you're developing with or extending TSG:
+1. Start with [System Overview](./architecture/system-overview.md) to understand the overall architecture
+2. Review [Components](./architecture/components.md) for detailed component information
+3. Explore specific [app documentation for module-level](./apps/) details
+4. Check [Standards & Protocols](./architecture/standards-protocols.md) for implementation specifications
 
-### Data Space Component
-Within the Data Space Component we see Internal protocols between the Control Plane and the Data Plane(s). These are not specified yet and can be inspected by viewing APIs on this documentation. 
+### For Operators
+If you're deploying or operating TSG:
+1. Follow the [Getting Started Guide](./getting-started.md) for quick setup
+2. Review [System Overview](./architecture/system-overview.md) for component understanding
+3. Use the [CLI Tool](./tools/cli/) for configuration and deployment
 
-### Data Exchange
+## What is TSG?
 
-For communication between the Data Plane(s), several Data Exchange Protocols can be used. The specific protocol depends on the data plane implementation. Examples of these protocols are [HTTP](https://www.rfc-editor.org/rfc/rfc9110.html), [MQTT](https://docs.oasis-open.org/mqtt/mqtt/v5.0/mqtt-v5.0.html), [Apache Kafka](https://kafka.apache.org/documentation/). The TSG currently supports the HTTP Protocol with the HTTP Data Plane and specific protocols for Multi Party Computation and Federated Learning for the Analytics Data Plane.
+The TNO Security Gateway (TSG) is a complete platform that enables organizations to participate securely in data spaces where multiple parties can discover, negotiate, and exchange data while maintaining full control over their assets.
+
+Modern data collaboration faces significant challenges: organizations need to share valuable data assets while ensuring privacy, maintaining sovereignty, establishing trust between unknown parties, and complying with regulations. Traditional point-to-point integrations become difficult to manage at scale, and centralized platforms often compromise data sovereignty.
+
+### TSG's Solution
+
+TSG addresses these challenges by providing a decentralized, standards-based infrastructure that enables:
+
+- **Sovereign Data Exchange**: Organizations retain full control over their data while participating in collaborative ecosystems
+- **Trust Without Centralization**: Cryptographic proof and verifiable credentials establish trust without requiring a central authority
+- **Interoperable Standards**: Industry-standard protocols ensure compatibility across different data space implementations
+- **Simple Deployment**: Streamlined setup process with CLI tools and containerized components for quick installation and configuration
+
+### Key Capabilities
+
+TSG provides a full suite of capabilities designed to address the complex requirements of modern data space participation. These research-driven features demonstrate how organizations can maintain sovereignty over their data while participating in collaborative ecosystems.
+
+- **Digital Identity Management**:  
+  Create and verify digital identities using decentralized technologies that establish trust without central authorities.
+- **Data Space Protocols**:  
+  Find relevant services and establish data exchange agreements through standardized discovery and negotiation.
+
+- **Secure Data Exchange**:  
+  Transfer data with strong security guarantees using specialized data planes for different exchange patterns.
+
+- **Policy-Based Access Control**:  
+  Control data access through machine-readable policies that automate compliance with sharing requirements.
+
+### Architecture Overview
+
+![Component diagram](/img/component-diagram.drawio.svg)
+
+TSG follows a modular architecture designed for scalability, security, and flexibility. Each component serves a specific purpose while working together to create a complete data space solution. The separation of concerns allows for independent scaling and deployment while maintaining tight integration where needed.
+
+- **Wallet**: Manages digital identities, credentials, and cryptographic operations
+- **Control Plane**: Orchestrates data space interactions and protocol implementation
+- **Data Planes**: Handle secure data exchange (HTTP for general use, Analytics for distributed computation)
+- **SSO Bridge**: Provides administrative authentication and authorization services
+
+> **Detailed Architecture**: For detailed architecture information, see the [Architecture](./architecture/) section.
+
+## Standards and Protocols
+TSG implements standard protocols for data space interoperability:
+
+- **Identity**: [W3C Decentralized Identifiers (DIDs)](https://www.w3.org/TR/did-1.0/), [Verifiable Credentials (VCs)](https://www.w3.org/TR/vc-data-model-2.0/), [Eclipse Decentralized Claims Protocol (DCP)](https://eclipse-dataspace-dcp.github.io/decentralized-claims-protocol/), [OpenID 4 Verifiable Credentials](https://openid.net/sg/openid4vc/)
+- **Data Space**: [Eclipse Dataspace Protocol (DSP)](https://eclipse-dataspace-protocol-base.github.io/DataspaceProtocol/)
+- **Authentication**: [OAuth 2.0](https://datatracker.ietf.org/doc/html/rfc6749), [OpenID Connect](https://openid.net/specs/openid-connect-core-1_0.html)
+
+> **Protocol Reference**: See [Standards & Protocols](./architecture/standards-protocols.md) for detailed specifications and implementation details.

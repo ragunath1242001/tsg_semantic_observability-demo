@@ -1,8 +1,57 @@
-# TSG CLI Tool
+---
+sidebar_label: 'Overview'
+toc_max_heading_level: 2
+---
+# CLI Tool
 
-For an example with steps to use the CLI tool see the [docs page](../../deployment/deployment.md).
+The TSG CLI tool is a powerful command-line utility for deploying and managing TSG (TNO Security Gateway) environments. It simplifies the process of setting up complete dataspace ecosystems or joining existing dataspaces as a participant.
 
-## Commands
+## Quick Start
+
+**New to TSG?** Start with the [Getting Started Guide](../../getting-started.md) for step-by-step instructions.
+
+**Need configuration help?** See the [Configuration Reference](./configuration.md) for detailed configuration options.
+
+## Installation
+
+Install the TSG CLI globally using npm:
+
+```bash
+npm install -g @tsg-dsp/cli@latest
+```
+
+Verify installation:
+```bash
+tsg --version
+```
+
+## Basic Usage
+
+The TSG CLI provides two main deployment scenarios:
+
+### Complete Ecosystem Deployment
+Deploy multiple participants in a single environment:
+
+```bash
+# Generate configuration files
+tsg bootstrap ecosystem -f ecosystem.yaml
+
+# Deploy to Kubernetes
+tsg deploy ecosystem -f ecosystem.yaml
+```
+
+### Single Participant Deployment
+Join an existing dataspace:
+
+```bash
+# Generate configuration files
+tsg bootstrap participant -f participant.yaml
+
+# Deploy to Kubernetes  
+tsg deploy participant -f participant.yaml
+```
+
+## Command Reference
 
 ```
 Usage: tsg [options] [command]
@@ -12,15 +61,17 @@ Options:
   -h, --help                   display help for command
 
 Commands:
-  bootstrap [options] <scope>  Bootstrap CLI utility to generate configuration files
-  deploy [options] <scope>     Deploy configuration to an Kubernetes cluster (requires Helm to be installed)
+  bootstrap [options] <scope>  Generate configuration files for deployment
+  deploy [options] <scope>     Deploy to Kubernetes cluster (requires Helm)
   help [command]               display help for command
 ```
 
-### Bootstrap
+### Bootstrap Command
+
+Generates Helm value files and Kubernetes manifests from your configuration:
 
 ```
-Usage: tsg bootstrap [options] <scope>
+Usage: tsg-cli bootstrap [options] <scope>
 
 Bootstrap CLI utility to generate configuration files
 
@@ -36,10 +87,24 @@ Options:
   -h, --help          display help for command
 ```
 
-### Deploy
+**Examples:**
+```bash
+# Custom configuration file
+tsg bootstrap participant -f my-participant.yaml
+
+# Standard output only
+tsg bootstrap participant -f my-participant.yaml --stdout
+
+# Generate to specific directory
+tsg bootstrap ecosystem  -f my-ecosystem.yaml-o ./deployment-configs
+```
+
+### Deploy Command
+
+Deploys generated configurations to Kubernetes using Helm:
 
 ```
-Usage: tsg deploy [options] <scope>
+Usage: tsg-cli deploy [options] <scope>
 
 Deploy configuration to an Kubernetes cluster (requires Helm to be installed)
 
@@ -61,80 +126,265 @@ Options:
   -h, --help               display help for command
 ```
 
-## Configuration
+**Examples:**
+```bash
+# Basic deployment
+tsg deploy ecosystem
 
-Configuration for the CLI tool starts either at [Ecosystem](#ecosystem-ecosystemyaml) or [SingleParticipant](#singleparticipant-participantyaml).
+# Dry run to see what would be deployed
+tsg deploy participant --dry-run
 
-### Ecosystem (`ecosystem.yaml`)
+# Show differences before deploying
+tsg deploy ecosystem --diff
+```
 
-| Name           | Data Type                            | Required | Explanation                          | Default |
-| -------------- | ------------------------------------ | -------- | ------------------------------------ | ------- |
-| `general`      | [General](#general)                  | Yes      | General configuration properties     |         |
-| `applications` | [Applications](#applications)        |          | Application configuration properties |         |
-| `participants` | [`Array<Participant>`](#participant) | Yes      | Participant configuration            |         |
+## Configuration Files
 
-### SingleParticipant (`participant.yaml`)
+The CLI uses YAML configuration files to define your deployment. There are two main configuration types:
 
-| Name           | Data Type                     | Required | Explanation                          | Default |
-| -------------- | ----------------------------- | -------- | ------------------------------------ | ------- |
-| `general`      | [General](#general)           | Yes      | General configuration properties     |         |
-| `applications` | [Applications](#applications) |          | Application configuration properties |         |
-| `participant`  | [Participant](#participant)   | Yes      | Participant configuration            |         |
+### Ecosystem Configuration (`ecosystem.yaml`)
+**Use this when**: Creating a complete dataspace from scratch with multiple participants
 
-### General
+An ecosystem configuration:
+- Defines a complete dataspace environment with an authority and multiple participants
+- Includes the dataspace authority (credential issuer) 
+- Sets up multiple participants that can communicate with each other
+- Configures the entire credential schema and governance model
+- Best for: New dataspace environments, testing, demonstrations, or when you need full control
 
-| Name              | Data Type | Required | Explanation                                                                                             | Default |
-| ----------------- | --------- | -------- | ------------------------------------------------------------------------------------------------------- | ------- |
-| `namespace`       | String    | Yes      | Kubernetes namespace used for deployments                                                               |         |
-| `username`        | String    | Yes      | Default admin username                                                                                  |         |
-| `password`        | String    | Yes      | Default admin password                                                                                  |         |
-| `authorityDomain` | String    | Yes      | Domain name of the authority, either the one deployed as participant or an external dataspace authority |         |
-| `credentialType`  | String    | Yes      | Credential type name                                                                                    |         |
+**Key characteristics:**
+- Contains multiple participants in the `participants` array
+- One participant acts as the authority (`issuer: true`)
+- Defines the credential schema and JSON-LD context documents
+- Sets up the complete trust framework
 
-### Applications
+### Participant Configuration (`participant.yaml`)
+**Use this when**: Joining an existing dataspace as a new participant
 
-| Name           | Data Type                                  | Required                | Explanation                                                        | Default |
-| -------------- | ------------------------------------------ | ----------------------- | ------------------------------------------------------------------ | ------- |
-| `postgres`     | [Application](#application)                |                         | Postgres [application](#application), defaults to Bitnami Postgres |         |
-| `ssoBridge`    | [Application](#application)                |                         | SSO Bridge [application](#application)                             |         |
-| `wallet`       | [Application](#application)                |                         | TSG Wallet                                                         |         |
-| `controlPlane` | [Application](#application)                |                         | TSG Control Plane                                                  |         |
-| `dataPlanes`   | [`Map<String, Application>`](#application) | Data plane applications |                                                                    |         |
+A participant configuration:
+- Connects a single participant to an existing dataspace
+- Requires information from the existing dataspace authority
+- Uses the authority's established credential schema and governance
+- Minimal configuration focused on your organization's data offerings
+- Best for: Joining established dataspaces, production deployments, connecting to external ecosystems
 
-### Application
+**Key characteristics:**
+- Contains a single `participant` object (not an array)
+- References an external authority via `authorityDomain`
+- Requires pre-authorized codes and role definitions from the authority
+- Focuses on your organization's data planes and offerings
 
-| Name               | Data Type | Required | Explanation                         | Default                    |
-| ------------------ | --------- | -------- | ----------------------------------- | -------------------------- |
-| `chartVersion`     | String    |          | Helm chart version                  | CLI version                |
-| `chartName`        | String    |          | Helm chart name                     |                            |
-| `developmentChart` | Boolean   |          | Use TSG development Helm repository | `false`                    |
-| `imageTag`         | String    |          | Docker image tag                    | CLI version                |
-| `imageRepository`  | String    |          | Docker image repository             | TSG Gitlab Docker registry |
+### Getting Started
 
-### Participant
+- **New to TSG?** Start with the [Getting Started Guide](../../getting-started.md) for a step-by-step participant setup
+- **Need detailed configuration help?** See the [Configuration Reference](./configuration.md) for complete examples and all available options
+- **Ready for advanced scenarios?** The configuration reference includes ecosystem examples and advanced deployment patterns
 
-| Name                   | Data Type                              | Required                  | Explanation                                                                                                                                                   | Default  |
-| ---------------------- | -------------------------------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
-| `host`                 | String                                 | Yes                       | Domain name, used for host ingress paths                                                                                                                      |          |
-| `id`                   | String                                 | Yes                       | Participant identifier, used for identifier for instances                                                                                                     |          |
-| `name`                 | String                                 | Yes                       | Participant name, used for metadata                                                                                                                           |          |
-| `routing`              | `"path"` or `"subdomain"`              |                           | Path-based or subdomain-based routing for services                                                                                                            | `"path"` |
-| `hasControlPlane`      | Boolean                                |                           | Flag whether a control plane should be deployed                                                                                                               | `false`  |
-| `hasTestService`       | Boolean                                |                           | Flag whether a test HTTP data plane should be deployed with a test service                                                                                    | `false`  |
-| `hasDebugLogging`      | Boolean                                |                           | Flag whether to enable debug logging for the services                                                                                                         | `false`  |
-| `issuer`               | Boolean                                |                           | Flag whether this participant is an issuer of credentials. Should be used only for a dataspace authority                                                      | `false`  |
-| `document`             | Object                                 | Yes if `issuer` is `true` | JSON-LD document for credentials that will be issued                                                                                                          |          |
-| `schema`               | Object                                 | Yes if `issuer` is `true` | JSON schema for credentials that will be issued                                                                                                               |          |
-| `preAuthorizedCode` | String                                 |                           | Pre-authorized code for requesting a credential via OID4VCI. Use only when also deploying a dataspace authority or when a code is received from the issuer |          |
-| `dataPlanes`           | [`Map<String, DataPlane>`](#dataplane) |                           | Data planes that will be configured for this participant                                                                                                      |          |
+## Prerequisites
 
-### DataPlane
+Before using the CLI, ensure you have:
 
-| Name           | Data Type | Required | Explanation                                                                                            | Default |
-| -------------- | --------- | -------- | ------------------------------------------------------------------------------------------------------ | ------- |
-| `type`         | String    |          | Data plane type, only required when type does not match key                                            |         |
-| `tsgDataPlane` | Boolean   |          | Flag whether data plane configuration following the TSG data planes should be generated                | `true`  |
-| `postgres`     | Boolean   |          | Flag whether a postgres database and credentials should be made                                        | `true`  |
-| `subPath`      | String    |          | Subpath to use for this data plane if different from key and if participant routing is `"path`         |         |
-| `dnsPrefix`    | String    |          | DNS prefix to use for this data plane if different from key and if participant routing is `"subdomain` |         |
-| `config`       | Object    |          | Specific data plane config                                                                             |         |
+### Required Tools
+- **Node.js & npm** (version 22 or higher) - [Download here](https://nodejs.org/)
+- **kubectl** - [Installation guide](https://kubernetes.io/docs/tasks/tools/)
+- **Helm** (version 3.x) - [Installation guide](https://helm.sh/docs/intro/install/)
+- **Helm Diff plugin** - Install with: `helm plugin install https://github.com/databus23/helm-diff`
+
+### Infrastructure Requirements
+- **Kubernetes cluster** (version 1.24 or higher)
+- **Ingress Controller** with public routes (e.g., [NGINX Ingress Controller](https://kubernetes.github.io/ingress-nginx/))
+- **TLS Certificate Management** (e.g., [cert-manager](https://cert-manager.io/)) for HTTPS endpoints
+
+> **Important**: Public HTTPS endpoints are required for DID document resolution and interactions between connectors.
+
+## Workflow
+
+### Typical Development Workflow
+
+1. **Create Configuration**
+   ```bash
+   # Start with example configuration
+   cp ecosystem.example.yaml ecosystem.yaml
+   # Edit configuration for your needs
+   ```
+
+2. **Bootstrap configuration**
+   ```bash
+   # Generate deployment files
+   tsg bootstrap ecosystem
+   ```
+
+3. **Review Generated Files**
+   ```bash
+   # Check generated Helm values
+   tree output/
+   ```
+
+4. **Deploy**
+   ```bash
+   # Dry run first
+   tsg deploy ecosystem --dry-run
+   
+   # Deploy to cluster
+   tsg deploy ecosystem
+   ```
+
+5. **Verify Deployment**
+   ```bash
+   # Check pod status
+   kubectl get pods -n k8s-namespace
+   
+   # Check ingress
+   kubectl get ingress -n k8s-namespace
+   ```
+
+### Production Deployment Workflow
+
+1. **Environment-Specific Configuration**
+   ```bash
+   # Use environment-specific configs
+   tsg bootstrap ecosystem -f configs/production.yaml
+   ```
+
+2. **Review Changes**
+   ```bash
+   # Show differences before deployment
+   tsg deploy ecosystem --diff
+   ```
+
+3. **Staged Deployment**
+   ```bash
+   # Deploy with confirmation prompts
+   tsg deploy ecosystem
+   ```
+
+4. **Monitoring**
+   ```bash
+   # Monitor deployment progress
+   kubectl get pods -n production-dataspace -w
+   ```
+
+## Generated Output Structure
+
+After running `tsg bootstrap`, the output directory contains:
+
+```
+output/
+├── control-plane/
+│   ├── values.yaml          # Helm values
+│   └── secrets.yaml         # Generated secrets
+├── http-data-plane/
+│   ├── values.yaml
+│   └── config.yaml
+├── wallet/
+│   ├── values.yaml
+│   └── did-documents.json
+├── sso-bridge/
+│   ├── values.yaml
+│   └── oauth-clients.yaml
+└── manifests/
+    ├── namespaces.yaml      # Kubernetes namespaces
+    ├── ingress.yaml         # Ingress configurations
+    └── certificates.yaml    # TLS certificates
+```
+
+## Troubleshooting
+
+### Common Issues and Solutions
+
+**Installation Problems**
+```bash
+# Clear npm cache
+npm cache clean --force
+npm install -g @tsg-dsp/cli@latest
+
+# Check Node.js version
+node --version  # Should be 22+
+```
+
+**Configuration Validation Errors**
+```bash
+# Use verbose mode for detailed errors
+tsg bootstrap ecosystem --validate --verbose
+
+# Check YAML syntax
+yamllint ecosystem.yaml
+```
+
+**Deployment Failures**
+```bash
+# Check cluster connectivity
+kubectl cluster-info
+
+# Verify Helm installation
+helm version
+
+# Check namespace permissions
+kubectl auth can-i create pods --namespace tsg-ecosystem
+```
+
+**Ingress Issues**
+```bash
+# Check ingress controller
+kubectl get pods -n ingress-nginx
+
+# Verify certificate status
+kubectl get certificates -A
+kubectl describe certificate <cert-name>
+```
+
+### Debug Mode
+
+Enable verbose logging for detailed troubleshooting:
+
+```bash
+# Verbose bootstrap
+tsg bootstrap ecosystem --verbose
+
+# Verbose deployment with dry-run
+tsg deploy ecosystem --verbose --dry-run
+```
+
+### Getting Help
+
+- **Configuration Issues**: See [Configuration Reference](./configuration.md)
+- **Deployment Problems**: Check [Deployment Guide](../../deployment/)
+- **Architecture Questions**: Review [Architecture Documentation](../../architecture/)
+- **Bug Reports**: [GitHub Issues](https://github.com/tno-tsg/tno-security-gateway/issues)
+
+## Advanced Usage
+
+### Custom Helm Charts
+
+Override default Helm chart locations via the `applications` configuration property in your `ecosystem.yaml` or `participant.yaml`:
+
+```yaml
+applications:
+  controlPlane:
+    chartVersion: 0.0.0
+    chartName: custom-chart-name
+    imageTag: custom-image-tag
+    imageRepository: custom-repo
+```
+
+
+```bash
+# Use local Helm charts
+tsg deploy ecosystem
+```
+
+### CI/CD Integration
+
+Use the CLI in CI/CD pipelines:
+
+```bash
+# Non-interactive deployment
+tsg deploy ecosystem --yes --timeout 15m
+```
+
+## Next Steps
+
+- **[Getting Started Guide](../../getting-started.md)** - Step-by-step setup instructions
+- **[Configuration Reference](./configuration.md)** - Complete configuration documentation
+- **[Deployment Guide](../../deployment/)** - Advanced deployment scenarios
+- **[Architecture Overview](../../architecture/)** - Understanding TSG components

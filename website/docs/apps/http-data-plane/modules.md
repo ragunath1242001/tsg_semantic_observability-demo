@@ -1,94 +1,109 @@
-# Http Data-Plane
-This document outlines the modules and their dependencies for the http-data-plane application.
+# API Modules
 
+The HTTP Data Plane API provides a lightweight, efficient implementation for exposing and consuming HTTP-based data services within the TSG ecosystem. This document provides a technical overview of each module and its responsibilities.
 
-## AppModule
+## Core Modules
 
+### DataPlaneModule
+**Purpose**: Core data plane functionality for managing data endpoints, registrations, and coordination with the Control Plane.
 
-### Imports
-- DataPlaneTestModule
-- LoggingModule
-- AuthModule
-- ConfigModule
-- TypeOrmModule
+**Key Components**:
+- `DataPlaneController` - Implements data plane protocol endpoints for Control Plane coordination
+- `DataPlaneManagementController` - Internal management endpoints for data plane configuration and monitoring
+- `DataPlaneService` - Core business logic for data plane operations, endpoint management, and state tracking
 
-### Controllers
-- _None_
+**Data Entities**: DataPlaneStateDao, DatasetItemDao
 
-### Providers
-- _None_
+**Dependencies**: AuthModule, LoggingModule
 
-### Exports
-- DataPlaneTestModule
-- AuthModule
+**Responsibilities**:
+- Register and manage data endpoints with the Control Plane
+- Handle data plane discovery and capability reporting
+- Maintain data plane state and endpoint metadata
+- Coordinate transfer process initialization
 
+### TransferModule
+**Purpose**: Manages data transfer processes, including both consumer-side data retrieval and provider-side data serving.
 
-## ConfigModule
+**Key Components**:
+- `TransferController` - Implements transfer protocol endpoints for Control Plane coordination
+- `TransferManagementController` - Internal transfer management and monitoring endpoints
+- `ProxyController` - HTTP proxy functionality for transparent data access
+- `TransferService` - Transfer orchestration, execution, and lifecycle management
 
+**Data Entities**: TransferDao
 
-### Imports
-- _None_
+**Dependencies**: AuthModule, LoggingModule, DataPlaneModule
 
-### Controllers
-- _None_
+**Responsibilities**:
+- Execute transfer processes initiated by the Control Plane
+- Provide HTTP proxy functionality for seamless data access
+- Handle both consumer and provider transfer scenarios
+- Manage transfer state and completion reporting
 
-### Providers
-- _None_
+## Infrastructure Modules
 
-### Exports
-- _None_
+### LoggingModule
+**Purpose**: Provides complete logging and audit trail functionality for data plane operations.
 
+**Key Components**:
+- Structured logging for all data plane interactions
+- Audit trail management for compliance and monitoring
+- Integration with external logging systems
 
-## LoggingModule
+**Integration**: Used by all other modules for operational visibility and compliance
 
+### AuthModule
+**Purpose**: Authentication and authorization framework for securing data plane endpoints.
 
-### Imports
-- TypeOrmModule
-- AuthModule
+**Source**: Shared from `@tsg-dsp/common-api` library
 
-### Controllers
-- LoggingController
+**Integration**: Protects all management and data access endpoints
 
-### Providers
-- LoggingService
+## Support Components
 
-### Exports
-- LoggingService
+### ConfigController
+**Purpose**: Exposes configuration management endpoints for data plane settings and operational parameters.
 
+**Integration**: Provides runtime configuration access for administrators
 
-## DataPlaneTestModule
+## HTTP Data Plane Architecture Patterns
 
+The HTTP Data Plane follows several key architectural patterns:
 
-### Imports
-- TypeOrmModule
-- AuthModule
-- LoggingModule
+### Lightweight Design
+- **Minimal Dependencies**: Focused on essential functionality to maintain low resource usage
+- **Simple Module Structure**: Clear separation between core data plane logic and transfer management
+- **Efficient Operation**: Optimized for high-throughput data access scenarios
 
-### Controllers
-- DataPlaneController
-- DataPlaneManagementController
-- ProxyController
+### Protocol Integration
+- **Control Plane Coordination**: Seamless integration with Control Plane for transfer orchestration
+- **Standard HTTP**: Native HTTP protocol support for maximum compatibility
+- **Proxy Functionality**: Transparent data access through HTTP proxy capabilities
 
-### Providers
-- DataPlaneService
+### Transfer Patterns
+- **Consumer Mode**: Retrieves data from remote sources through proxy functionality
+- **Provider Mode**: Serves local data to authorized consumers
+- **Stateful Management**: Tracks transfer progress and completion for reliable operation
 
-### Exports
-- _None_
+## Key Capabilities
 
+### Data Access Patterns
+- **Direct HTTP Access**: Native HTTP endpoint exposure for applications
+- **Proxy-Based Access**: Transparent proxy for remote data sources
+- **Streaming Support**: Efficient handling of large data transfers
+- **Authentication Integration**: Secure access control for all data operations
 
-## AuthModule
+### Management Features
+- **Runtime Configuration**: Dynamic configuration updates without restart
+- **Transfer Monitoring**: Real-time visibility into transfer operations
+- **Health Checking**: Operational status reporting for system monitoring
+- **Audit Logging**: Detailed logging for compliance and debugging
 
+### Deployment Flexibility
+- **Containerized**: Docker-based deployment for cloud environments
+- **Scalable**: Horizontal scaling support for high-volume scenarios
+- **Integration Ready**: Clean APIs for integration with existing systems
+- **Configuration Driven**: Flexible setup through configuration files
 
-### Imports
-
-### Controllers
-- AuthController
-
-### Providers
-- AuthClientService
-- SessionSerializer
-- OAuthGuard
-- RolesGuard
-
-### Exports
-- AuthClientService
+The HTTP Data Plane provides a robust yet lightweight foundation for HTTP-based data exchange within the TSG ecosystem, balancing simplicity with the complete functionality required for enterprise data operations.
