@@ -17,13 +17,13 @@ For development, everything is setup to be used with vscode. This means tests wi
 To run the control-plane-ui and control-plane-api in watch mode use the following command:
 
 ```
-pnpm run dev:control-plane-api
+pnpm dev:control-plane-api
 ```
 
 and
 
 ```
-pnpm run dev:control-plane-ui
+pnpm dev:control-plane-ui
 ```
 
 If you want to test interactions between control planes excecute the following commands to generate a second instance:
@@ -41,7 +41,7 @@ BACKEND=http://localhost:3002 pnpm dev:control-plane-ui
 For building the docker image you can use the default docker commands to build and run the images and containers.
 
 ```
-docker build -t control-plane .
+docker build -t control-plane -f Dockerfile-control-plane .
 ```
 
 Then run it:

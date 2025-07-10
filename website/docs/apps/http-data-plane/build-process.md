@@ -17,19 +17,19 @@ For development, everything is setup to be used with vscode. This means tests wi
 To run the http-data-plane-ui and http-data-plane-api in watch mode use the following command:
 
 ```
-pnpm run dev:http-data-plane-api
+pnpm dev:http-data-plane-api
 ```
 
 and
 
 ```
-pnpm run dev:http-data-plane-ui
+pnpm dev:http-data-plane-ui
 ```
 
 Another option is to run them in parallel by running:
 
 ```
-pnpm run dev --parallel
+pnpm dev:http-data-plane
 ```
 
 However, in that case you do not get the logs from both applications and some information might be missing from the logs.

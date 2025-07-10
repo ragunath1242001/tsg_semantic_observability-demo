@@ -1,4 +1,4 @@
-# Secure your application by using Ingress Authentication with SSO Bridge
+# Ingress Authentication
 
 This page documents the usage and integration of the Ingress Auth 
 feature of the SSO Bridge, designed for use with the [Kubernetes NGINX Ingress Controller](https://kubernetes.github.io/ingress-nginx/).

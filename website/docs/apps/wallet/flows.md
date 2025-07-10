@@ -1,11 +1,12 @@
-# Process View
+# Process Flows
 
-The following processes are further detailed on this page:
+This document describes the key protocol flows implemented by the TSG Wallet, showing how W3C and other standards are applied in practice for credential and identity operations.
 
-- Authentication flow
-- Issuance flow
-- Direct Presentation flow
-- IATP Presentation flow
+> **Note**: These flows represent the Wallet's implementation of standard protocols. For system-wide data space flows, see the [Architecture Documentation](../../architecture/).
+
+## Core Wallet Flows
+
+The Wallet implements several key protocol flows that form the foundation of data space identity operations:
 
 ## Authentication flow
 
@@ -141,49 +142,12 @@ Different protocols for exchanging Verifiable Presentations between the _holder_
 
 Currently three protocols are implemented or are candidates for implementation in the Wallet:
 
-- Direct protocol: a simple protocol for exchaning verifiable presentations
-- Identity and Trust Protocol: a protocol based on the Digital Identity Foundations Presentation Exchange specfication
+- Eclipse Decentralized Claims Protocol: a protocol providing a machine-to-machine interface for exchanging Verifiable Presentations
 - OpenID 4 Verifiable Presentations: a draft specification from the OpenID foundation
 
-### Direct
+### Eclipse Decentralized Claims Protocol (DCP)
 
-The direct presentation protocol is a simple flow for presenting a credential to the _verifier_. Where the control plane of the holder decides which credential(s) to include in the verifiable presentation. The full presentation is shared with the verifier via the `Authorization` header.
-
-While this is a simple way of presenting credentials to the verifier, there are some drawbacks to this approach:
-
-- HTTP headers are often limited in size by the HTTP server implementations, resulting in maximum header sizes of 8kb (default for Nginx and Apache).
-- No authentication of the verifier is executed in this flow.
-- No handles for specifying which credential the verifier needs to approve the request.
-
-```mermaid
----
-config:
-  sequence:
-    showSequenceNumbers: true
----
-sequenceDiagram
-    participant hs as External System
-    box green Holder
-    participant hw as Wallet
-    end
-    box green Verifier
-    participant vw as Wallet
-    end
-    participant vs as External System
-
-    hs ->> hw: Request VP JWT
-    hw -->> hs: vp_token
-    hs ->> vs: Resource Request (with vp_token)
-    vs ->> vw: Validate vp_token
-    vw ->> vw: Validate Verifiable Presentation
-    vw -->> vs: Validation result
-    vs -->> hs: Resource response
-```
-
-### Identity and Trust Protocol (IATP)
-
-The identity and trust protocol (IATP) defines the flow of requesting and presenting Verifiable Presentations between _verifier_ and _holder_. This protocol is largely based on the [Eclipse Tractus-X IATP](https://github.com/eclipse-tractusx/identity-trust/), and uses the following wider standards/specifications:
-
+The Eclipse Decentralized Claims Protocol (DCP) defines protocols for credential issuance and presentation. The TSG Wallet implements the [Eclipse DCP Presentation Protocol](https://eclipse-dcp.github.io/dcp-presentation-protocol/) for exchanging Verifiable Presentations. The foundational standards used in this protocol are:
 - [W3C Decentralized Identifiers (DIDs) v1.0](https://www.w3.org/TR/did-core/)
 - [W3C Verifiable Credentials Data Model v1.1](https://www.w3.org/TR/vc-data-model/)
 - [DIF Presentation Exchange 2.0.0](https://identity.foundation/presentation-exchange/spec/v2.0.0/)

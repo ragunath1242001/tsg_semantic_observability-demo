@@ -1,230 +1,122 @@
-# Control Plane
-This document outlines the modules and their dependencies for the control-plane application.
+# API Modules
 
+The Control Plane API implements the Dataspace Protocol specifications through a modular NestJS architecture. This document provides a technical overview of each module and its responsibilities.
 
-## AppModule
+## Core Domain Modules
 
+### CatalogModule
+**Purpose**: Manages data catalogs, datasets, distributions, and data services according to Dataspace Protocol specifications.
 
-### Imports
-- ScheduleModule
-- EventEmitterModule
-- AuthModule
-- ConfigModule
-- TypeOrmModule
-- DataPlaneModule
-- DspClientModule
-- CatalogModule
-- NegotiationModule
-- TransferModule
-- RegistryModule
+**Key Components**:
+- `CatalogController` - Implements DSP catalog request endpoints (`/catalog/request`)
+- `CatalogManagementController` - Provides internal management endpoints for catalog administration
+- `CatalogService` - Core business logic for catalog operations and data management
 
-### Controllers
-- ConfigController
-- HealthController
+**Data Entities**: CatalogDao, DatasetDao, DataServiceDao, DistributionDao, ResourceDao, CatalogRecordDao
 
-### Providers
-- _None_
+**Dependencies**: AuthModule, VCAuthModule, DspClientModule
 
-### Exports
-- AuthModule
-- DataPlaneModule
-- DspClientModule
-- CatalogModule
-- NegotiationModule
-- TransferModule
+### NegotiationModule
+**Purpose**: Implements contract negotiation protocol according to Dataspace Protocol specifications for establishing data usage agreements.
 
+**Key Components**:
+- `NegotiationController` - Handles DSP negotiation protocol endpoints (`/negotiations/*`)
+- `NegotiationManagementController` - Internal management endpoints for negotiation oversight
+- `NegotiationService` - Contract negotiation business logic and state management
+- `NegotiationListener` - Event-driven coordination for negotiation state transitions
 
-## ConfigModule
+**Data Entities**: NegotiationDetailDao, NegotiationProcessEventDao
 
+**Dependencies**: AuthModule, VCAuthModule, DspClientModule, CatalogModule, TransferModule, PolicyModule
 
-### Imports
-- _None_
+### TransferModule
+**Purpose**: Manages data transfer processes and coordinates with data planes for actual data exchange.
 
-### Controllers
-- _None_
+**Key Components**:
+- `TransferController` - Implements DSP transfer protocol endpoints (`/transfer/*`)
+- `TransferManagementController` - Internal transfer process management
+- `TransferService` - Transfer orchestration and data plane coordination
+- `TransferListener` - Event handling for transfer state management
 
-### Providers
-- _None_
+**Data Entities**: TransferDetailDao
 
-### Exports
-- _None_
+**Dependencies**: AuthModule, VCAuthModule, DataPlaneModule, DspClientModule
 
+### RegistryModule
+**Purpose**: Provides registry/service catalog functionality for discovering dataspace participants and their capabilities.
 
-## RegistryModule
+**Key Components**:
+- `RegistryController` - Public registry discovery endpoints
+- `RegistryClientController` - Client-side registry interaction endpoints
+- `RegistryService` - Registry management and participant discovery logic
 
+**Dependencies**: Configurable external registry integrations
 
-### Imports
-- AuthModule
-- DspClientModule
-- CatalogModule
-- TypeOrmModule
-- ScheduleModule
+## Infrastructure Modules
 
-### Controllers
-- RegistryClientController
-- RegistryController
+### DataPlaneModule
+**Purpose**: Manages data plane registrations and coordinates between control plane and data planes for data transfer execution.
 
-### Providers
-- RegistryClientService
-- RegistryService
+**Key Components**:
+- Registration management for available data planes
+- Data plane selection and routing logic
+- Health monitoring and capability discovery
 
-### Exports
-- RegistryService
+**Integration**: Communicates with HTTP Data Plane and Analytics Data Plane instances
 
+### DspClientModule
+**Purpose**: Provides client functionality for making outbound Dataspace Protocol requests to other connectors in the dataspace.
 
-## PolicyModule
+**Key Components**:
+- HTTP client implementations for DSP protocol endpoints
+- Request/response transformation for protocol compliance
+- Error handling and retry logic for connector-to-connector communication
 
+### VCAuthModule
+**Purpose**: Handles Verifiable Credential authentication and authorization using Self-Sovereign Identity principles.
 
-### Imports
-- CatalogModule
-- TypeOrmModule
-- AuthModule
-- TransferModule
+**Key Components**:
+- `VCAuthService` - Core VC validation and authentication logic
+- `VerifiablePresentationGuard` - Request guard for VC-based endpoint protection
+- `TransferVerifiablePresentationGuard` - Specialized guard for transfer operations
+- Wallet integration adapters for different wallet implementations
 
-### Controllers
-- AgreementManagementController
-- PolicyEvaluationController
-- RuleRepositoryController
+**Dependencies**: Integration with TSG Wallet API for credential verification
 
-### Providers
-- AgreementService
-- AgreementMonitorService
-- PolicyEvaluationService
-- RuleRepositoryService
+### PolicyModule
+**Purpose**: Implements policy evaluation engine for access control and usage policies during negotiations and transfers.
 
-### Exports
-- AgreementService
-- AgreementMonitorService
-- PolicyEvaluationService
-- RuleRepositoryService
+**Key Components**:
+- Policy parsing and evaluation engine
+- Integration with negotiation and transfer workflows
+- Support for various policy languages and frameworks
 
+## Support Modules
 
-## TransferModule
+### AuthModule
+**Purpose**: Base authentication and authorization framework providing common security patterns.
 
+**Source**: Shared from `@tsg-dsp/common-api` library
 
-### Imports
-- AuthModule
-- DspClientModule
-- forwardRef(() => DataPlaneModule)
-- TypeOrmModule
-- forwardRef(() => PolicyModule)
+### StatusController
+**Purpose**: Provides health checks, version information, and operational monitoring endpoints.
 
-### Controllers
-- TransferController
-- TransferManagementController
+**Endpoints**:
+- `/status` - Application health and status
+- `/versions` - Version information
+- `/health` - Terminus health checks for dependencies
 
-### Providers
-- TransferService
+### ConfigController
+**Purpose**: Exposes configuration management endpoints for administrative access to system settings.
 
-### Exports
-- TransferService
+## Module Architecture Patterns
 
+The Control Plane follows several architectural patterns:
 
-## NegotiationModule
+- **Domain-Driven Design**: Core modules (Catalog, Negotiation, Transfer) represent business domains
+- **Clean Architecture**: Clear separation between controllers, services, and data access layers
+- **Event-Driven Architecture**: Listeners coordinate between modules using NestJS EventEmitter
+- **Dependency Injection**: NestJS container manages module dependencies and lifecycle
+- **Repository Pattern**: TypeORM DAOs abstract data persistence concerns
 
-
-### Imports
-- AuthModule
-- DspClientModule
-- CatalogModule
-- TransferModule
-- TypeOrmModule
-- PolicyModule
-
-### Controllers
-- NegotiationController
-- NegotiationManagementController
-
-### Providers
-- NegotiationService
-- NegotiationListener
-
-### Exports
-- NegotiationService
-
-
-## DspClientModule
-
-
-### Imports
-- AuthModule
-
-### Controllers
-- _None_
-
-### Providers
-- DspClientService
-- DspGateway
-
-### Exports
-- DspClientService
-- DspGateway
-
-
-## CatalogModule
-
-
-### Imports
-- AuthModule
-- DspClientModule
-- TypeOrmModule
-
-### Controllers
-- CatalogController
-- CatalogManagementController
-
-### Providers
-- CatalogService
-
-### Exports
-- CatalogService
-
-
-## DataPlaneModule
-
-
-### Imports
-- CatalogModule
-- TypeOrmModule
-- AuthModule
-- NegotiationModule
-- PolicyModule
-
-### Controllers
-- DataPlaneController
-- DataplaneManagementController
-
-### Providers
-- DataPlaneService
-
-### Exports
-- DataPlaneService
-
-
-## AuthModule
-
-
-### Imports
-- TypeOrmModule
-
-### Controllers
-- AuthController
-
-### Providers
-- AuthService
-- VerifiablePresentationGuard
-- VerifiablePresentationStrategy
-- TransferVerifiablePresentationGuard
-- TransferVerifiablePresentationStrategy
-- OAuthGuard
-- RolesGuard
-- AuthClientService
-- SessionSerializer
-
-### Exports
-- AuthService
-- VerifiablePresentationGuard
-- TransferVerifiablePresentationGuard
-- OAuthGuard
-- RolesGuard
-- AuthClientService
+Each module encapsulates its domain logic while exposing well-defined interfaces for inter-module communication and external integrations.

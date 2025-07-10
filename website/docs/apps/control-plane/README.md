@@ -1,46 +1,34 @@
+---
+sidebar_label: 'Overview'
+---
 # TSG Control Plane
 
-The TSG Control Plane is the TNO implementation of the Dataspace Protocol. It handles cataloging, contract negotiation and transfer process management. Furthermore, there a registry/service catalogue component within the TSG Control Plane.
+The TSG Control Plane is the TNO implementation of the Dataspace Protocol. It serves as the core orchestration layer for dataspace interactions, handling catalog management, contract negotiation, and transfer process coordination. The Control Plane also includes a registry component for service discovery within the dataspace ecosystem.
 
-## Structure
+## Overview
 
-- Architecture
-  - [Logical View](./architecture/logical.md)
-  - [Process View](./architecture/process.md)
-  - [Development View](./architecture/development.md)
-  - [Scenarios](./architecture/scenarios.md)
-  - [Security perpective](./architecture/security.md)
-- [Configuration](./configuration.md)
-- [Build process](./build-process.md)
-- [Interoperability](./interoperability.md)
+The Control Plane acts as the primary interface for dataspace operations, implementing standardized protocols while providing secure, policy-driven access to data resources. It coordinates with data planes for actual data transfer and integrates with the TSG Wallet for identity and credential management.
 
-## Design choices
+**Key Capabilities:**
+- **Catalog Management**: Publishing and discovering data assets according to Dataspace Protocol specifications
+- **Contract Negotiation**: Automated negotiation of data usage agreements between dataspace participants  
+- **Transfer Orchestration**: Managing data transfer processes and coordinating with appropriate data planes
+- **Service Discovery**: Registry functionality for finding and connecting with other dataspace participants
+- **Policy Enforcement**: Evaluation and enforcement of access control and usage policies
 
-### 1. Leveraging existing standards
+## Documentation
 
-Used standards:
+### For Developers
+- **[Module Architecture](./modules.md)** - Technical overview of Control Plane modules and their responsibilities
+- **[Process Flows](./flows.md)** - Detailed Dataspace Protocol implementation and interaction flows
+- **[Configuration](./configuration.md)** - Configuration options and environment setup
+- **[Build Process](./build-process.md)** - Development workflow and build instructions
+- **[API Reference](./openapi.yaml)** - OpenAPI specification for all endpoints
 
-- Dataspace Protocol [2025-1](https://eclipse-dataspace-protocol-base.github.io/DataspaceProtocol)
+### For System Architects
+- **[System Architecture](../../architecture/README.md)** - Overall TSG architecture and design principles
+- **[Compliance](./compliance.md)** - Standards compliance and interoperability details
 
-### 2. Programming language & environment
-
-NodeJS & Typescript are chosen as execution and development environment for these reasons:
-
-1. Efficiently deployable in cloud environments; considerably lower memory requirements compared to JVM-based environments
-2. Strongly typed development; given the size of the projects a strongly typed programming language is a must for maintainability of the code
-3. Easily understandable for new developers; Javascript/Typescript are more easily picked up by developers then for example Rust or Go
-4. Ability to share code/models between frontend and backend; since frontend UIs are predominantly written in Javascript/Typescript allows to share interface/classes between frontend and backend, reducing errors
-
-### 3. Limit external dependencies
-
-The requirement on external dependencies should be as low as possible, including only dependencies in case they provide concrete benefits. Reason for this is to keep the Software Bill of Materials as light as possible to recude security risks of these dependencies.
-This also applies for dependencies of external services, in particular for authentication towards the wallet where oAuth2.0 could be an alternative to the internal authentication as used right now. The advantage of the internal authentication is that it doesn't require any external service, especially given that Keycloak (one of the most used self-hosted authentication services) is based on a JVM and uses considerably amounts of memory.
-
-The main dependencies of the backend are:
-
-- [NestJS framework](https://nestjs.com/)
-- [Class-transformer](https://github.com/typestack/class-transformer) & [class-validator](https://github.com/typestack/class-validator)
-- [JSON-lD](https://github.com/digitalbazaar/jsonld.js)
-- [Jose](https://github.com/panva/jose)
-- [Express](https://expressjs.com/)
-- [Axios](https://axios-http.com/docs/intro)
+### For Operators
+- **[Deployment Guide](../../tools/cli/README.md)** - Using the TSG CLI for deployment and management
+- **[Configuration Reference](./configuration.md)** - Complete configuration documentation

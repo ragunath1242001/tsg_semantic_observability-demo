@@ -1,6 +1,8 @@
-# TSG HTTP Data Plane architecture
+# Process Flows
 
-## Logical view
+This document details the architectural views and process flows within the TSG HTTP Data Plane, focusing on transfer execution and data access patterns. For overall system architecture, see the [TSG Architecture documentation](../../architecture/README.md).
+
+## Logical View
 
 ```mermaid
 C4Component
@@ -27,9 +29,9 @@ C4Component
     UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="1")
 ```
 
-## Process view
+## Process Flows
 
-### Transfer process execution (consumer-side)
+### Transfer Process Execution (Consumer-Side)
 
 ```mermaid
 sequenceDiagram

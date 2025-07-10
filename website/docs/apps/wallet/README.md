@@ -1,65 +1,98 @@
-# TSG Wallet docs
+---
+sidebar_label: 'Overview'
+---
+# TSG Wallet
 
-The TSG Wallet is a SSI wallet that can issue and store verifiable credentials and create presentations to be used within data spaces.
+The TSG Wallet API provides complete Self-Sovereign Identity (SSI) capabilities for data space participation. It manages digital identities, verifiable credentials, and cryptographic operations that form the foundation of trust in data space ecosystems.
 
-The wallet is aimed at multi-tier deployments, with one (or more) wallet that acts as trust anchor for a data space and indivual wallets for each of the participants in the data space. On this page the central wallet that issues credentials will be called the Dataspace Wallet although it is not required that there always is exactly one issuer of credentials in a dataspace.
+## Overview
 
-# Structure
+The Wallet API serves as the identity management backbone for TSG, implementing W3C standards for Decentralized Identifiers (DIDs) and Verifiable Credentials (VCs). It provides both programmatic APIs for component integration and management interfaces for administrative operations.
 
-- Architecture
-  - [Logical View](./architecture/logical.md)
-  - [Process View](./architecture/process.md)
-  - [Development View](./architecture/development.md)
-  - [Scenarios](./architecture/scenarios.md)
-  - [Security perpective](./architecture/security.md)
-- [Configuration](./configuration.md)
-- [Build process](./build-process.md)
-- [Interoperability](./interoperability.md)
+### Key Capabilities
 
-# OpenAPI definition
+**Identity Management**: Complete lifecycle management of decentralized identifiers using multiple DID methods (did:web, did:tdw) with support for key rotation and DID document updates.
 
-An OpenAPI definition is generated for the wallet, currently the link between the schemas and the actual objects used in the requests/responses are soft. So it is not guaranteed that the OpenAPI specification is 100% correct. In later releases, this will be synchronized together with `class-validator` and `class-transformer` to ensure correctly structures objects are expected/returned.
+**Credential Operations**: Full support for credential issuance, storage, verification, and presentation using multiple protocols including OpenID4VC and Eclipse DCP.
 
-The specification is located at: [TSG Wallet OpenAPI Specification](./openapi.yaml)
+**Cryptographic Services**: Secure key generation, storage, and cryptographic operations with hardware security module (HSM) support for production environments.
 
-## Design choices
+**Protocol Integration**: Native support for multiple credential exchange protocols, enabling interoperability with various data space ecosystems and identity systems.
 
-### 1. Leveraging existing standards
+## Module Architecture
 
-Used standards:
+The Wallet API is organized into six focused modules that handle different aspects of identity and credential management. Each module provides both management APIs for administrative operations and protocol APIs for standards-based interactions.
 
-- W3C DID [(W3C recommendation)](https://www.w3.org/TR/did-core/)
-- did:web [(W3C internal document)](https://w3c-ccg.github.io/did-method-web/)
-- did:tdw [(BCGov specification draft)](https://bcgov.github.io/trustdidweb/)
-- JSON Web Signatures for Data Integrity Proofs [(W3C working draft)](https://www.w3.org/TR/vc-jws-2020/)
-  - Supported JOSE signing/encryption: Ed25519/EdDSA, P-384/ES384, RSA/PS256
-- Verifiable Credentials Data Model v1.1 [(W3C recommendation)](https://www.w3.org/TR/vc-data-model/)
+**Core Identity Modules** handle the fundamental identity operations: the **DID Module** manages decentralized identifiers with support for did:web and did:tdw methods, the **Keys Module** provides full cryptographic operations including HSM integration, and the **Credentials Module** manages verifiable credential storage and verification with selective disclosure capabilities.
 
-### 2. Programming language & environment
+**Protocol Implementation Modules** provide standards-based credential exchange: the **Issuance Module** implements OpenID4VCI and Eclipse DCP for credential issuance, the **Presentation Module** handles OpenID4VP and DCP for credential presentation, and the **Contexts Module** manages JSON-LD contexts for semantic interoperability.
 
-NodeJS & Typescript are chosen as execution and development environment for these reasons:
+> **Detailed Module Information**: See [API Modules](./modules.md) for complete module documentation including APIs, components, and integration details.
 
-1. Efficiently deployable in cloud environments; considerably lower memory requirements compared to JVM-based environments
-2. Strongly typed development; given the size of the projects a strongly typed programming language is a must for maintainability of the code
-3. Easily understandable for new developers; Javascript/Typescript are more easily picked up by developers then for example Rust or Go
-4. Ability to share code/models between frontend and backend; since frontend UIs are predominantly written in Javascript/Typescript allows to share interface/classes between frontend and backend, reducing errors
+## API Structure
 
-### 3. Limit external dependencies
+### Management APIs
+Administrative interfaces for wallet configuration and management:
+- **DID Management**: Create, update, and manage DID documents
+- **Key Management**: Generate, rotate, and manage cryptographic keys
+- **Credential Management**: Administrative operations for stored credentials
+- **Issuance Management**: Configure and manage credential issuance
+- **Presentation Management**: Configure presentation policies and templates
 
-The requirement on external dependencies should be as low as possible, including only dependencies in case they provide concrete benefits. Reason for this is to keep the Software Bill of Materials as light as possible to recude security risks of these dependencies.
+### Protocol APIs  
+Standard protocol endpoints for credential exchange:
+- **OpenID4VCI Endpoints**: OAuth 2.0 credential issuance flows
+- **OpenID4VP Endpoints**: Presentation request and response handling
+- **DCP Endpoints**: Eclipse Decentralized Claims Protocol implementation
+- **DID Resolution**: DID document resolution and verification
 
-The main dependencies of the backend are:
+### Integration APIs
+APIs for integration with other TSG components:
+- **Authentication**: Service-to-service authentication with JWT tokens
+- **Status**: Health checks and system status information
+- **Configuration**: Runtime configuration and feature flags
 
-- [NestJS framework](https://nestjs.com/)
-- [Class-transformer](https://github.com/typestack/class-transformer) & [class-validator](https://github.com/typestack/class-validator)
-- [Express](https://expressjs.com/)
-- [TypeORM](https://typeorm.io/)
-- [JSON Object Signing and Encryption](https://github.com/panva/jose)
-- [Axios](https://axios-http.com/docs/intro)
+## Security Features
 
-The main dependencies of the frontend are:
+### Cryptographic Security
+All cryptographic operations follow industry best practices with support for multiple algorithms and key types. Hardware Security Module (HSM) integration provides enhanced security for production deployments, while secure key storage ensures protection of private keys at rest.
 
-- [Vue](https://vuejs.org/)
-- [PrimeVue](https://primevue.org/)
-- [Axios](https://axios-http.com/docs/intro)
-- [MonacoEditor](https://microsoft.github.io/monaco-editor/)
+### Access Control
+Role-based access control (RBAC) governs access to management APIs, while API authentication uses JWT tokens issued by the SSO Bridge. Fine-grained permissions control access to specific wallet operations and data.
+
+### Privacy Protection
+Selective disclosure mechanisms enable sharing of minimal necessary information, while zero-knowledge proof capabilities support advanced privacy-preserving scenarios. All credential operations respect privacy-by-design principles.
+
+## Configuration and Deployment
+
+### Configuration Management
+The Wallet API uses environment-based configuration with thorough validation and auto-generated documentation. Configuration options cover cryptographic settings, protocol endpoints, database connections, and security policies.
+
+### Database Schema
+PostgreSQL provides reliable storage for keys, credentials, DIDs, and operational state. The schema is designed for performance and security, with encryption for sensitive data fields and optimized indexes for common queries.
+
+### Integration Points
+- **SSO Bridge**: Authentication and session management
+- **Control Plane**: Identity verification for data space operations  
+- **External Systems**: DID resolution, credential verification services
+
+## Implemented Specifications
+- [Decentralized Identifiers (DIDs) v1.0](https://www.w3.org/TR/did-core/)
+- [Verifiable Credentials Data Model v2.0](https://www.w3.org/TR/vc-data-model-2.0/)
+- [Presentation Exchange 2.0.0](https://identity.foundation/presentation-exchange/spec/v2.0.0)
+- [Eclipse Decentralized Claims Protocol (DCP)](https://eclipse-dataspace-dcp.github.io/decentralized-claims-protocol)
+- [OpenID for Verifiable Credential Issuance - draft 16](https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0.html)
+- [OpenID for Verifiable Presentations - draft 24](https://openid.net/specs/openid-4-verifiable-presentations-1_0.html)
+- [Self-Issued OpenID Provider v2 - draft 13](https://openid.net/specs/openid-connect-self-issued-v2-1_0.html)
+
+
+---
+
+## Quick Navigation
+
+- **[API Modules](./modules.md)** - Complete module documentation and API reference
+- **[Configuration](./configuration.md)** - Complete configuration reference
+- **[OpenAPI Specification](./openapi.yaml)** - Machine-readable API specification
+- **[Process Flows](./flows.md)** - Standards-based protocol flows and interactions
+
+> **For Integration**: See the [OpenAPI Specification](./openapi.yaml) for complete API documentation and the [Configuration Guide](./configuration.md) for deployment setup.

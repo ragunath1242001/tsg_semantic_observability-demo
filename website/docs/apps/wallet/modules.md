@@ -1,192 +1,79 @@
-# Wallet
-This document outlines the modules and their dependencies for the wallet application.
+# API Modules
 
+The TSG Wallet API is organized into six core modules that handle different aspects of identity and credential management.
 
-## AppModule
+## Core Identity Modules
 
+### DID Module (`/src/did/`)
+**Purpose**: Manages Decentralized Identifier lifecycle including creation, resolution, and updates.
 
-### Imports
-- ScheduleModule
-- ConfigModule
-- TypeOrmModule
-- PresentationModule
-- AuthModule
-- ContextModule
-- CredentialsModule
-- DidModule
-- KeysModule
-- IssuanceModule
+**Key Components**:
+- **DID Management**: Create, update, and resolve DID documents
+- **Method Support**: did:web and did:tdw implementations  
+- **History Tracking**: Cryptographic history for did:tdw
 
-### Controllers
-- HealthController
-- ConfigController
+**APIs**: `/did/management/*` for DID operations, `/.well-known/did/*` for resolution
 
-### Providers
-- _None_
+### Keys Module (`/src/keys/`)
+**Purpose**: Complete cryptographic key management and operations.
 
-### Exports
-- AuthModule
-- CredentialsModule
-- DidModule
-- IssuanceModule
-- KeysModule
+**Key Components**:
+- **Key Management**: Generation, storage, rotation with HSM support
+- **Signature Services**: Digital signing and verification operations
+- **Token Services**: JWT operations and token management
 
+**APIs**: `/keys/management/*`, `/keys/signature/*` for cryptographic operations
 
-## ConfigModule
+### Credentials Module (`/src/credentials/`)
+**Purpose**: Verifiable credential storage, verification, and lifecycle management.
 
+**Key Components**:
+- **Secure Storage**: Encrypted credential storage with metadata indexing
+- **Verification Engine**: Full validation including revocation checking
+- **Selective Disclosure**: Privacy-preserving credential sharing
 
-### Imports
-- _None_
+**APIs**: `/credentials/management/*` for credential operations
 
-### Controllers
-- _None_
+## Protocol Implementation Modules
 
-### Providers
-- _None_
+### Issuance Module (`/src/issuance/`)
+**Purpose**: Implements credential issuance protocols for issuing credentials to other participants.
 
-### Exports
-- _None_
+**Key Components**:
+- **OpenID4VCI**: Standard OAuth 2.0-based credential issuance flows
+- **Eclipse DCP**: Enterprise credential issuance for data space scenarios
+- **Batch Operations**: Support for bulk credential issuance
 
+**APIs**: `/issuance/management/*` for configuration, protocol-specific endpoints for issuance flows
 
-## PresentationModule
+### Presentation Module (`/src/presentation/`)
+**Purpose**: Handles credential presentation and verification for authentication/authorization.
 
+**Key Components**:
+- **OpenID4VP**: Standard presentation flows with selective disclosure
+- **Eclipse DCP**: Enterprise presentation exchange
+- **Direct Presentations**: Simplified presentation mechanisms
 
-### Imports
-- AuthModule
-- CredentialsModule
-- KeysModule
-- DidModule
+**APIs**: `/presentation/management/*` for configuration, protocol-specific endpoints for presentation flows
 
-### Controllers
-- _None_
+### Contexts Module (`/src/contexts/`)
+**Purpose**: Manages JSON-LD contexts for semantic interoperability and schema validation.
 
-### Providers
-- PresentationService
+**Key Components**:
+- **Context Management**: Storage and retrieval of JSON-LD contexts
+- **Schema Validation**: Credential validation against semantic schemas
+- **Namespace Resolution**: Resolution of semantic namespaces and vocabularies
 
-### Exports
-- PresentationService
+**APIs**: `/contexts/management/*` for context operations
 
+---
 
-## KeysModule
+## Integration Architecture
 
+**Module Dependencies**: DID ↔ Keys (cryptographic operations), Credentials → Keys (verification), Issuance → Credentials + Keys, Presentation → Credentials + Keys, Contexts → Credentials (validation)
 
-### Imports
-- AuthModule
-- DidModule
-- TypeOrmModule
+**External Integration**: All modules integrate with SSO Bridge for authentication, PostgreSQL for storage, and external systems for DID resolution and credential verification.
 
-### Controllers
-- KeysController
-- KeysManagementController
-- SignatureManagementController
+**Security**: Role-based access control across all modules, detailed audit logging, and encryption for sensitive data storage.
 
-### Providers
-- KeysService
-- SignatureService
-
-### Exports
-- KeysService
-- SignatureService
-
-
-## IssuanceModule
-
-
-### Imports
-- AuthModule
-- TypeOrmModule
-- ContextModule
-- CredentialsModule
-- DidModule
-- KeysModule
-- PresentationModule
-
-### Controllers
-- HolderController
-- IssuerController
-
-### Providers
-- IssuerService
-- HolderService
-
-### Exports
-- IssuerService
-- HolderService
-
-
-## DidModule
-
-
-### Imports
-- AuthModule
-- TypeOrmModule
-
-### Controllers
-- DIDManagementController
-
-### Providers
-- DidService
-
-
-### Exports
-- DidService
-
-
-## CredentialsModule
-
-
-### Imports
-- AuthModule
-- DidModule
-- KeysModule
-- ContextModule
-- TypeOrmModule
-
-### Controllers
-- CredentialsController
-- CredentialsManagementController
-- GaiaXManagementController
-
-### Providers
-- CredentialsService
-- GaiaXService
-
-### Exports
-- CredentialsService
-- GaiaXService
-
-
-## ContextModule
-
-
-### Imports
-- AuthModule
-- TypeOrmModule
-
-### Controllers
-- ContextController
-- ContextManagementController
-
-### Providers
-- ContextService
-
-### Exports
-- ContextService
-
-
-## AuthModule
-
-
-### Imports
-
-### Controllers
-- AuthController
-
-### Providers
-- AuthClientService
-- SessionSerializer
-- OAuthGuard
-- RolesGuard
-
-### Exports
-- AuthClientService
+> **Complete API Reference**: See [OpenAPI Specification](./openapi.yaml) for detailed endpoint documentation.

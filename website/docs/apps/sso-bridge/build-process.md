@@ -17,19 +17,19 @@ For development, everything is setup to be used with vscode. This means tests wi
 To run the sso-bridge-ui and sso-bridge-api in watch mode use the following command:
 
 ```
-pnpm run dev:sso-bridge-api
+pnpm dev:sso-bridge-api
 ```
 
 and
 
 ```
-pnpm run dev:sso-bridge-ui
+pnpm dev:sso-bridge-ui
 ```
 
 Another option is to run them in parallel by running:
 
 ```
-pnpm run dev --parallel
+pnpm dev:sso-bridge
 ```
 
 However, in that case you do not get the logs from both applications and some information might be missing from the logs.
