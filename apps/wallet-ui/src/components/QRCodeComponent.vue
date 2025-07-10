@@ -1,4 +1,80 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import QRCode from "qrcode";
+import { onMounted, ref } from "vue";
+
+const appstoreUrl = ref<string>("");
+const playstoreUrl = ref<string>("");
+
+const createQRWithLogo = async (url: string, logoPath: string) => {
+  const canvas = document.createElement("canvas");
+  await QRCode.toCanvas(canvas, url, {
+    width: 256,
+    margin: 2,
+    color: {
+      dark: "#000000",
+      light: "#FFFFFF"
+    },
+    errorCorrectionLevel: "H"
+  });
+
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return canvas.toDataURL();
+
+  return new Promise<string>((resolve, _reject) => {
+    const img = new Image();
+    img.onload = () => {
+      const logoSize = 40;
+      const x = (canvas.width - logoSize) / 2;
+      const y = (canvas.height - logoSize) / 2;
+
+      ctx.fillStyle = "#FFFFFF";
+      ctx.beginPath();
+      ctx.arc(
+        canvas.width / 2,
+        canvas.height / 2,
+        logoSize / 2 + 4,
+        0,
+        2 * Math.PI
+      );
+      ctx.fill();
+
+      ctx.drawImage(img, x, y, logoSize, logoSize);
+      resolve(canvas.toDataURL());
+    };
+    img.onerror = () => {
+      resolve(canvas.toDataURL());
+    };
+    img.src = logoPath;
+  });
+};
+
+const tsgLogo = "/images/applogodark.png";
+
+onMounted(async () => {
+  try {
+    appstoreUrl.value = await createQRWithLogo(
+      "https://apps.apple.com/us/app/tsg-mobile-wallet/id6741323068",
+      tsgLogo
+    );
+
+    playstoreUrl.value = await createQRWithLogo(
+      "https://play.google.com/store/apps/details?id=nl.tsg.mobilewallet",
+      tsgLogo
+    );
+  } catch (error) {
+    console.error(
+      "Error generating QR codes with logo, falling back to plain QR codes.",
+      error
+    );
+    appstoreUrl.value = await QRCode.toDataURL(
+      "https://apps.apple.com/us/app/tsg-mobile-wallet/id6741323068"
+    );
+    playstoreUrl.value = await QRCode.toDataURL(
+      "https://play.google.com/store/apps/details?id=nl.tsg.mobilewallet"
+    );
+  }
+});
+</script>
 <template>
   <Card
     class="mt-8 shadow-xl rounded-xl border-0 bg-gradient-to-b from-white to-gray-50">
@@ -18,7 +94,7 @@
         <!-- App Store Section -->
         <div class="flex flex-col items-center space-y-4 group">
           <img
-            src="/images/apple-qr.png"
+            :src="appstoreUrl"
             alt="QR Code for TSG Wallet on Apple App Store"
             class="w-56 h-56 rounded-2xl border-2 border-gray-200 shadow-lg transition-all duration-300 group-hover:scale-105 group-hover:shadow-xl" />
           <div class="text-center space-y-2">
@@ -54,7 +130,7 @@
         <!-- Google Play Section -->
         <div class="flex flex-col items-center space-y-4 group">
           <img
-            src="/images/playstore-qr.png"
+            :src="playstoreUrl"
             alt="QR Code for TSG Wallet on Google Play Store"
             class="w-56 h-56 rounded-2xl border-2 border-gray-200 shadow-lg transition-all duration-300 group-hover:scale-105 group-hover:shadow-xl" />
           <div class="text-center space-y-2">
