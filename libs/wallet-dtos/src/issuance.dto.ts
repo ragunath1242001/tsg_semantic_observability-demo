@@ -16,6 +16,19 @@ import {
   ValidateNested
 } from "class-validator";
 
+export enum CredentialFormat {
+  JWT_VC_JSON = "jwt_vc_json",
+  JWT_VC_JSON_LD = "jwt_vc_json-ld",
+  LDP_VC = "ldp_vc",
+  ISO_MSO_MDOC = "iso_mso_mdoc"
+}
+
+export enum ProofType {
+  JWT = "jwt",
+  DI_VP = "di_vp",
+  ATTESTATION = "attestation"
+}
+
 export class DCPCredentialRequestInitiation {
   @ApiProperty({
     example: "did:web:issuer.example",
@@ -235,12 +248,6 @@ export class AccessToken {
   @ApiPropertyOptional({ example: "refresh-token-sample" })
   refresh_token?: string;
 
-  @ApiPropertyOptional({ example: "c-nonce-sample" })
-  c_nonce?: string;
-
-  @ApiPropertyOptional({ example: 300 })
-  c_nonce_expires_in?: number;
-
   @ApiProperty({
     type: () => [AuthorizationDetail],
     example: [
@@ -266,19 +273,13 @@ export class AuthorizationDetail {
 }
 
 export class JwtProof {
-  @ApiProperty({ example: "jwt" })
-  proof_type!: "jwt";
+  @ApiProperty({ enum: ProofType, example: ProofType.JWT })
+  @IsString()
+  proof_type!: ProofType.JWT;
 
   @ApiProperty({ example: "jwt-token-sample" })
+  @IsString()
   jwt!: string;
-}
-
-export class CwtProof {
-  @ApiProperty({ example: "cbt" })
-  proof_type!: "cbt";
-
-  @ApiProperty({ example: "cbt-token-sample" })
-  cbt!: string;
 }
 
 export class DataIntegrityProof {
@@ -341,9 +342,10 @@ export class VpProof {
   proof!: DataIntegrityProof;
 }
 
-export class LdpVpProof {
-  @ApiProperty({ example: "ldp_vp" })
-  proof_type!: "ldp_vp";
+export class DiVpProof {
+  @ApiProperty({ enum: ProofType, example: ProofType.DI_VP })
+  @IsString()
+  proof_type!: ProofType.DI_VP;
 
   @ApiProperty({
     type: () => VpProof,
@@ -365,7 +367,21 @@ export class LdpVpProof {
       }
     }
   })
-  ldp_vp!: VpProof;
+  @ValidateNested()
+  @Type(() => VpProof)
+  di_vp!: VpProof;
+}
+
+export class AttestationProof {
+  @ApiProperty({ enum: ProofType, example: ProofType.ATTESTATION })
+  @IsString()
+  proof_type!: ProofType.ATTESTATION;
+
+  @ApiProperty({
+    example: "eyJ0eXAiOiJrZXktYXR0ZXN0YXRpb24rand0IiwiYWxnIjoiRVMyNTYifQ..."
+  })
+  @IsString()
+  attestation!: string;
 }
 
 export class BaseDisplay {
@@ -414,113 +430,156 @@ export class ExtendedDisplay extends LogoDisplay {
   text_color?: string;
 }
 
-export class CredentialSubjectElementDefinition {
+export class ClaimDescription {
+  @ApiProperty({
+    type: "array",
+    items: {
+      oneOf: [{ type: "string" }, { type: "null" }]
+    },
+    example: ["name", null]
+  })
+  path!: (string | null)[];
+
   @ApiPropertyOptional({ example: true })
   mandatory?: boolean;
 
-  @ApiPropertyOptional({ example: "string" })
-  value_type?: string;
-
   @ApiPropertyOptional({
     type: () => [BaseDisplay],
-    example: [{ name: "Field Label", locale: "en-US" }]
+    example: [{ name: "Full Name", locale: "en-US" }]
   })
   display?: BaseDisplay[];
 }
 
-export class CredentialSubjectDefinition {
-  [name: string]:
-    | CredentialSubjectElementDefinition
-    | CredentialSubjectDefinition;
+export class CredentialMetadata {
+  @ApiPropertyOptional({
+    type: () => [ExtendedDisplay],
+    example: [
+      {
+        name: "University Degree",
+        locale: "en-US",
+        description: "A verified university degree credential",
+        background_color: "#ffffff",
+        text_color: "#000000",
+        logo: {
+          uri: "https://example.com/logo.png",
+          alt_text: "Logo alt text"
+        }
+      }
+    ]
+  })
+  display?: ExtendedDisplay[];
+
+  @ApiPropertyOptional({
+    type: () => [ClaimDescription],
+    example: [
+      {
+        path: ["name"],
+        mandatory: true,
+        display: [{ name: "Full Name", locale: "en-US" }]
+      },
+      {
+        path: ["degree"],
+        mandatory: true,
+        display: [{ name: "Degree", locale: "en-US" }]
+      },
+      {
+        path: ["id"],
+        mandatory: false,
+        display: [{ name: "Student ID", locale: "en-US" }]
+      }
+    ]
+  })
+  claims?: ClaimDescription[];
 }
 
 export class CredentialDefinition {
-  @ApiProperty({
+  @ApiPropertyOptional({
     type: [String],
     example: ["https://www.w3.org/2018/credentials/v1"]
   })
-  "@context": string[];
+  "@context"?: string[];
 
   @ApiProperty({
     type: [String],
-    example: ["VerifiableCredential"]
+    example: ["VerifiableCredential", "UniversityDegree"]
   })
   type!: string[];
-
-  @ApiPropertyOptional({
-    type: () => CredentialSubjectDefinition,
-    example: {
-      id: {
-        mandatory: true,
-        value_type: "string",
-        display: [{ name: "ID", locale: "en-US" }]
-      }
-    }
-  })
-  credentialSubject?: CredentialSubjectDefinition;
 }
 
-@ApiExtraModels(JwtProof, CwtProof, LdpVpProof)
+@ApiExtraModels(JwtProof, DiVpProof, AttestationProof)
 export class CredentialRequest {
-  @ApiProperty({
-    enum: ["jwt_vc_json-ld", "jwt_vc_json"],
-    example: "jwt_vc_json-ld"
-  })
-  format!: "jwt_vc_json-ld" | "jwt_vc_json";
+  @ApiPropertyOptional({ example: "credential-identifier-123" })
+  @IsOptional()
+  @IsString()
+  credential_identifier?: string;
 
-  @ApiProperty({
-    type: () => CredentialDefinition,
+  @ApiPropertyOptional({ example: "credential-config-id-123" })
+  @IsOptional()
+  @IsString()
+  credential_configuration_id?: string;
+
+  @ApiPropertyOptional({
+    type: "array",
+    items: {
+      oneOf: [
+        { $ref: getSchemaPath(JwtProof) },
+        { $ref: getSchemaPath(DiVpProof) },
+        { $ref: getSchemaPath(AttestationProof) }
+      ]
+    },
+    example: [{ proof_type: "jwt", jwt: "jwt-token-sample" }]
+  })
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => Object)
+  proofs?: (JwtProof | DiVpProof | AttestationProof)[];
+
+  @ApiPropertyOptional({
+    type: "object",
+    properties: {
+      jwk: { type: "object", additionalProperties: true },
+      enc: { type: "string" },
+      zip: { type: "string" }
+    },
     example: {
-      "@context": ["https://www.w3.org/2018/credentials/v1"],
-      type: ["VerifiableCredential"],
-      credentialSubject: {
-        id: {
-          mandatory: true,
-          value_type: "string",
-          display: [{ name: "ID", locale: "en-US" }]
-        }
-      }
+      jwk: { kty: "EC", crv: "P-256" },
+      enc: "A256GCM"
     }
   })
-  credential_definition!: CredentialDefinition;
-
-  @ApiProperty({
-    oneOf: [
-      { $ref: getSchemaPath(JwtProof) },
-      { $ref: getSchemaPath(CwtProof) },
-      { $ref: getSchemaPath(LdpVpProof) }
-    ],
-    example: { proof_type: "jwt", jwt: "jwt-token-sample" }
-  })
-  proof!: JwtProof | CwtProof | LdpVpProof;
-
-  [key: string]: any;
+  credential_response_encryption?: {
+    jwk: Record<string, unknown>;
+    enc: string;
+    zip?: string;
+  };
 }
 
 export type CredentialResponse =
   | ImmediateCredentialResponse
   | DeferredCredentialResponse;
 
-export class ImmediateCredentialResponse {
+export class CredentialItem {
   @ApiProperty({ example: "credential-token-sample" })
   credential!: string;
+}
 
-  @ApiPropertyOptional({ example: "c-nonce-123" })
-  c_nonce?: string;
+export class ImmediateCredentialResponse {
+  @ApiProperty({
+    type: () => [CredentialItem],
+    example: [{ credential: "credential-token-sample" }]
+  })
+  credentials!: CredentialItem[];
 
-  @ApiPropertyOptional({ example: 3600 })
-  c_nonce_expires_in?: number;
+  @ApiPropertyOptional({ example: "notification-id-123" })
+  notification_id?: string;
 }
 
 export class DeferredCredentialResponse {
   @ApiProperty({ example: "tx-id-sample" })
   transaction_id!: string;
 
-  @ApiPropertyOptional({ example: "c-nonce-123" })
-  c_nonce?: string;
-
-  @ApiPropertyOptional({ example: 3600 })
-  c_nonce_expires_in?: number;
+  @ApiProperty({ example: 3600 })
+  interval!: number;
 }
 
 export class CredentialResponseEncryption {
@@ -540,9 +599,41 @@ export class CredentialResponseEncryption {
   encryption_required!: boolean;
 }
 
+export class CredentialRequestEncryption {
+  @ApiProperty({
+    type: "object",
+    additionalProperties: true,
+    example: { kty: "EC", crv: "P-256" }
+  })
+  jwks!: Record<string, unknown>;
+
+  @ApiProperty({
+    type: [String],
+    example: ["A256GCM"]
+  })
+  enc_values_supported!: string[];
+
+  @ApiPropertyOptional({
+    type: [String],
+    example: ["gzip"]
+  })
+  zip_values_supported?: string[];
+
+  @ApiProperty({ example: false })
+  encryption_required!: boolean;
+}
+
+export class BatchCredentialIssuance {
+  @ApiProperty({ example: 10 })
+  batch_size!: number;
+}
+
 export class CredentialConfiguration {
-  @ApiProperty({ example: "jwt_vc_json" })
-  format!: string;
+  @ApiProperty({
+    enum: CredentialFormat,
+    example: CredentialFormat.JWT_VC_JSON
+  })
+  format!: CredentialFormat;
 
   @ApiProperty({
     type: [String],
@@ -576,7 +667,11 @@ export class CredentialConfiguration {
         }
       }
     },
-    example: { proof_signing_alg_values_supported: ["RS256"] }
+    example: {
+      jwt: { proof_signing_alg_values_supported: ["RS256", "ES256"] },
+      di_vp: { proof_signing_alg_values_supported: ["EdDSA"] },
+      attestation: { proof_signing_alg_values_supported: ["ES256"] }
+    }
   })
   proof_types_supported?: {
     [id: string]: {
@@ -585,35 +680,40 @@ export class CredentialConfiguration {
   };
 
   @ApiProperty({
+    type: () => CredentialDefinition,
     example: {
       "@context": ["https://www.w3.org/2018/credentials/v1"],
-      type: ["VerifiableCredential"],
-      credentialSubject: {
-        id: {
-          mandatory: true,
-          value_type: "string",
-          display: [{ name: "ID", locale: "en-US" }]
-        }
-      }
+      type: ["VerifiableCredential", "UniversityDegree"]
     }
   })
   credential_definition!: CredentialDefinition;
 
   @ApiPropertyOptional({
-    type: () => [ExtendedDisplay],
-    example: [
-      {
-        name: "Extended Display Name",
-        locale: "en-US",
-        description: "Extended display description",
-        background_color: "#ffffff",
-        background_image: { uri: "https://example.com/background.png" },
-        text_color: "#000000",
-        logo: { uri: "https://example.com/logo.png", alt_text: "Logo alt text" }
-      }
-    ]
+    type: () => CredentialMetadata,
+    example: {
+      display: [
+        {
+          name: "University Degree",
+          locale: "en-US",
+          description: "A verified university degree credential",
+          background_color: "#ffffff",
+          text_color: "#000000",
+          logo: {
+            uri: "https://example.com/logo.png",
+            alt_text: "Logo alt text"
+          }
+        }
+      ],
+      claims: [
+        {
+          path: ["name"],
+          mandatory: true,
+          display: [{ name: "Full Name", locale: "en-US" }]
+        }
+      ]
+    }
   })
-  display?: ExtendedDisplay[];
+  credential_metadata?: CredentialMetadata;
 }
 
 @ApiExtraModels(CredentialConfiguration)
@@ -633,14 +733,24 @@ export class CredentialIssuerMetadata {
   @ApiProperty({ example: "https://issuer.example.com/credential" })
   credential_endpoint!: string;
 
-  @ApiPropertyOptional({ example: "https://issuer.example.com/batch" })
-  batch_credential_endpoint?: string;
+  @ApiPropertyOptional({ example: "https://issuer.example.com/nonce" })
+  nonce_endpoint?: string;
 
   @ApiPropertyOptional({ example: "https://issuer.example.com/deferred" })
   deferred_credential_endpoint?: string;
 
   @ApiPropertyOptional({ example: "https://issuer.example.com/notify" })
   notification_endpoint?: string;
+
+  @ApiPropertyOptional({
+    type: () => CredentialRequestEncryption,
+    example: {
+      jwks: { kty: "EC", crv: "P-256" },
+      enc_values_supported: ["A256GCM"],
+      encryption_required: false
+    }
+  })
+  credential_request_encryption?: CredentialRequestEncryption;
 
   @ApiPropertyOptional({
     type: () => CredentialResponseEncryption,
@@ -652,11 +762,13 @@ export class CredentialIssuerMetadata {
   })
   credential_response_encryption?: CredentialResponseEncryption;
 
-  @ApiPropertyOptional({ example: true })
-  credential_identifiers_supported?: boolean;
-
-  @ApiPropertyOptional({ example: "signed-metadata-sample" })
-  signed_metadata?: string;
+  @ApiPropertyOptional({
+    type: () => BatchCredentialIssuance,
+    example: {
+      batch_size: 10
+    }
+  })
+  batch_credential_issuance?: BatchCredentialIssuance;
 
   @ApiPropertyOptional({
     type: () => [LogoDisplay],
@@ -685,33 +797,98 @@ export class CredentialIssuerMetadata {
         },
         credential_definition: {
           "@context": ["https://www.w3.org/2018/credentials/v1"],
-          type: ["VerifiableCredential"],
-          credentialSubject: {
-            id: {
-              mandatory: true,
-              value_type: "string",
-              display: [{ name: "ID", locale: "en-US" }]
-            }
-          }
+          type: ["VerifiableCredential", "UniversityDegree"]
         },
-        display: [
-          {
-            name: "Extended Display Name",
-            locale: "en-US",
-            description: "Extended display description",
-            background_color: "#ffffff",
-            background_image: { uri: "https://example.com/background.png" },
-            text_color: "#000000",
-            logo: {
-              uri: "https://example.com/logo.png",
-              alt_text: "Logo alt text"
+        credential_metadata: {
+          display: [
+            {
+              name: "Extended Display Name",
+              locale: "en-US",
+              description: "Extended display description",
+              background_color: "#ffffff",
+              background_image: { uri: "https://example.com/background.png" },
+              text_color: "#000000",
+              logo: {
+                uri: "https://example.com/logo.png",
+                alt_text: "Logo alt text"
+              }
             }
-          }
-        ]
+          ]
+        }
       }
     }
   })
   credential_configurations_supported!: {
     [id: string]: CredentialConfiguration;
   };
+}
+
+export class DeferredCredentialRequest {
+  @ApiProperty({ example: "tx-id-sample" })
+  transaction_id!: string;
+
+  @ApiPropertyOptional({
+    type: "object",
+    properties: {
+      jwk: { type: "object", additionalProperties: true },
+      enc: { type: "string" },
+      zip: { type: "string" }
+    },
+    example: {
+      jwk: { kty: "EC", crv: "P-256" },
+      enc: "A256GCM"
+    }
+  })
+  credential_response_encryption?: {
+    jwk: Record<string, unknown>;
+    enc: string;
+    zip?: string;
+  };
+}
+
+export class NotificationRequest {
+  @ApiProperty({ example: "3fwe98js" })
+  notification_id!: string;
+
+  @ApiProperty({
+    enum: ["credential_accepted", "credential_failure", "credential_deleted"],
+    example: "credential_accepted"
+  })
+  event!: "credential_accepted" | "credential_failure" | "credential_deleted";
+
+  @ApiPropertyOptional({
+    example: "Could not store the Credential. Out of storage."
+  })
+  event_description?: string;
+}
+
+export class NotificationResponse {
+  @ApiPropertyOptional({ example: "Notification received successfully" })
+  message?: string;
+}
+
+export class CredentialErrorResponse {
+  @ApiProperty({
+    enum: [
+      "invalid_credential_request",
+      "unknown_credential_configuration",
+      "unknown_credential_identifier",
+      "invalid_proof",
+      "invalid_nonce",
+      "invalid_encryption_parameters",
+      "credential_request_denied"
+    ],
+    example: "invalid_credential_request"
+  })
+  error!: string;
+
+  @ApiPropertyOptional({
+    example: "The credential request is missing required parameters"
+  })
+  error_description?: string;
+}
+
+export class NonceResponse {
+  @ApiProperty({ example: "wKI4LT17ac15ES9bw8ac4" })
+  c_nonce!: string;
 }

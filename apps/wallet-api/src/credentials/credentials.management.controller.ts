@@ -40,7 +40,7 @@ import {
 import { AppRole, ClientInfo } from "@tsg-dsp/wallet-dtos";
 
 import { InitCredentialConfig, RootConfig } from "../config.js";
-import { ContextService } from "../contexts/context.service.js";
+import { IssueConfigurationService } from "../issue-configurations/issue-configuration.service.js";
 import { CredentialDao } from "../model/credentials.dao.js";
 import {
   CredentialConfigDto,
@@ -55,7 +55,7 @@ import { CredentialsService } from "./credentials.service.js";
 export class CredentialsManagementController {
   constructor(
     private readonly credentialsService: CredentialsService,
-    private readonly contextService: ContextService,
+    private readonly issueConfigurationService: IssueConfigurationService,
     private readonly config: RootConfig
   ) {}
 
@@ -144,7 +144,7 @@ export class CredentialsManagementController {
   @ApiOperation({
     summary: "Retrieve credential configuration",
     description:
-      "Retrieves credential configuration that can be used by this wallet. Contains both trust anchors and JSON-LD contexts."
+      "Retrieves credential configuration that can be used by this wallet. Contains both trust anchors and issue configurations."
   })
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({
@@ -156,7 +156,8 @@ export class CredentialsManagementController {
   async getConfig(): Promise<CredentialsConfigDto> {
     return {
       trustAnchors: this.config.trustAnchors,
-      contexts: await this.contextService.getContexts()
+      issueConfigurations:
+        await this.issueConfigurationService.getIssueConfigurations()
     };
   }
 

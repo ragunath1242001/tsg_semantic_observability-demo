@@ -38,107 +38,64 @@ trustAnchors:
     credentialTypes:
       - SCSNCredential
       - scsn:SCSNCredential
-      - https://wallet.alpha.scsn.dataspac.es/credentials/SCSNCredential
+      - http://localhost:3000/issue-configuration/SCSNCredential#SCSNCredential
 
-contexts:
+issueConfigurations:
   - id: SCSN
     credentialType: SCSNCredential
-    issuable: true
-    documentUrl: https://wallet.alpha.scsn.dataspac.es/context/SCSN
+    document:
+      "@context":
+        "@protected": true
+        "@version": 1.1
+        xsd: "http://www.w3.org/2001/XMLSchema#"
+        scsn: http://localhost:3000/issue-configuration/SCSNCredential#
+        id: "@id"
+        type: "@type"
+        SCSNCredential:
+          "@context":
+            - https://www.w3.org/2018/credentials/v1
+          "@id": scsn:SCSNCredential
+        scsnIdentifier:
+          "@id": scsn:scsnIdentifier
+          "@type": xsd:string
+        scsnRole:
+          "@id": scsn:scsnRole
+          "@type": "@vocab"
+        ServiceProvider:
+          "@id": scsn:ServiceProvider
+        Manufacturer:
+          "@id": scsn:Manufacturer
+        Administrator:
+          "@id": scsn:Administrator
+    backgroundImage: https://smart-connected.nl/_theme/scsn/images/frontend/scsn-logo-white.svg
+    backgroundColor: "#6bb542"
+    textColor: "#ffffff"
+    name: Membership Credential
+    description: Service Provider
     schema:
       type: object
-      title: SCSNCredential
       additionalProperties: true
       properties:
-        id:
-          type: string
-          pattern: "^did:.*"
         scsnIdentifier:
           type: string
+          title: "SCSN Identifier"
+          example: "urn:scsn:1234567890"
           pattern: "^urn:scsn:.*"
+        id:
+          type: string
+          title: "Participant Identifier"
+          example: "did:web:example.com"
+          pattern: "^did:.*"
         scsnRole:
+          type: string
+          title: "SCSN Role"
+          example: "ServiceProvider"
           enum:
-            - scsn:ServiceProvider
-            - scsn:Manufacturer
-            - scsn:Administrator
+            - ServiceProvider
+            - Manufacturer
+            - Administrator
       required:
         - scsnIdentifier
         - scsnRole
-  - id: Catena-X
-    credentialType: SummaryCredential
-    issuable: false
-    documentUrl: https://catenax-ng.github.io/product-core-schemas/SummaryVC.json
-  - id: Gaia-X LegalParticipant
-    credentialType: gx:LegalParticipant
-    issuable: true
-    documentUrl: https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#
-    schema:
-      type: object
-      title: LegalParticipant
-      additionalProperties: true
-      properties:
-        type:
-          const: "gx:LegalParticipant"
-        id:
-          type: string
-          pattern: "^did:.*"
-        gx:legalName:
-          type: string
-        gx:legalRegistrationNumber:
-          type: object
-          additionalProperties: false
-          properties:
-            id:
-              type: string
-          required:
-            - id
-        gx:headquarterAddress:
-          type: object
-          additionalProperties: false
-          properties:
-            gx:countrySubdivisionCode:
-              type: string
-          required:
-            - gx:countrySubdivisionCode
-        gx:legalAddress:
-          type: object
-          additionalProperties: false
-          properties:
-            gx:countrySubdivisionCode:
-              type: string
-          required:
-            - gx:countrySubdivisionCode
-        gx-terms-and-conditions:gaiaxTermsAndConditions:
-          type: string
-      required:
-        - id
-        - type
-        - gx:legalName
-        - gx:legalRegistrationNumber
-        - gx:headquarterAddress
-        - gx:legalAddress
-        - gx-terms-and-conditions:gaiaxTermsAndConditions
-
-  - id: Gaia-X Terms and Conditions
-    credentialType: gx:GaiaXTermsAndConditions
-    issuable: true
-    documentUrl: https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#
-    schema:
-      type: object
-      title: GaiaXTermsAndConditions
-      additionalProperties: true
-      properties:
-        type:
-          const: "gx:GaiaXTermsAndConditions"
-        id:
-          type: string
-          pattern: "^did:.*"
-        gx:termsAndConditions:
-          type: string
-      required:
-        - id
-        - type
-        - gx:termsAndConditions
-
 did:
   method: "did:web:"

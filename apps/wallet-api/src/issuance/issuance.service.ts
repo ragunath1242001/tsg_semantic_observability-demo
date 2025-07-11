@@ -198,7 +198,7 @@ export class IssuanceService {
   }
   async requestOID4VCICredential(
     request: OID4VCICredentialRequestInitiation
-  ): Promise<CredentialsDto> {
+  ): Promise<CredentialsDto[]> {
     return await this.oid4VCIHolderService.requestCredential(request);
   }
 }

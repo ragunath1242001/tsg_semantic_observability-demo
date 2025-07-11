@@ -23,11 +23,13 @@ import {
   IsBoolean,
   IsDefined,
   IsEnum,
+  IsHexColor,
   IsIn,
   IsObject,
   IsOptional,
   IsString,
   IsUrl,
+  Matches,
   ValidateNested
 } from "class-validator";
 
@@ -99,19 +101,14 @@ export class TrustAnchorConfig {
   public readonly credentialTypes: string[] = [];
 }
 
-export class JsonLdContextConfig {
-  @Description("ID of the context")
+export class IssueConfigurationConfig {
+  @Description("ID of the configuration")
   @IsString()
   public readonly id!: string;
 
-  @Description("Credential type associated with the context")
+  @Description("Credential type associated with the configuration")
   @IsString()
   public readonly credentialType!: string;
-
-  @Description("Can be issued by this wallet")
-  @IsBoolean()
-  @Transform(valueToBoolean)
-  public readonly issuable!: boolean;
 
   @Description("URL of the JSON-LD context")
   @IsUrl()
@@ -124,11 +121,45 @@ export class JsonLdContextConfig {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public readonly document?: Record<string, any>;
 
-  @Description("JSON-Schema of the JSON-LD context")
+  @Description("JSON-Schema of the issue configuration")
   @IsObject()
   @IsOptional()
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public readonly schema?: Record<string, any>;
+
+  @Description("Display name of the issue configuration")
+  @IsString()
+  @IsOptional()
+  public readonly name?: string;
+
+  @Description("Description of the issue configuration")
+  @IsString()
+  @IsOptional()
+  public readonly description?: string;
+
+  @Description("Background color for the credential display")
+  @IsString()
+  @IsHexColor()
+  @IsOptional()
+  public readonly backgroundColor?: string;
+
+  @Description("Background image for the credential display, must be a URL")
+  @IsString()
+  @Matches(
+    /^(data:image\/[a-zA-Z0-9+-]+;base64,[a-zA-Z0-9+/=]+|https:\/\/.+)$/,
+    {
+      message:
+        "Background image must be a valid Base64 data URL or public HTTPS URL"
+    }
+  )
+  @IsOptional()
+  public readonly backgroundImage?: string;
+
+  @Description("Text color for the credential display")
+  @IsString()
+  @IsHexColor()
+  @IsOptional()
+  public readonly textColor?: string;
 }
 
 export class IssuanceConfig {
@@ -359,10 +390,10 @@ export class RootConfig {
   @IsOptional()
   public readonly trustAnchors: TrustAnchorConfig[] = [];
 
-  @Description("JSON-LD context configurations")
+  @Description("Issue configuration settings")
   @ValidateNested({ each: true })
-  @Type(() => JsonLdContextConfig)
-  public readonly contexts: JsonLdContextConfig[] = [];
+  @Type(() => IssueConfigurationConfig)
+  public readonly issueConfigurations: IssueConfigurationConfig[] = [];
 
   @Description("Issuance configuration")
   @ValidateNested()

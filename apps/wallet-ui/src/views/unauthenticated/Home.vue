@@ -92,9 +92,7 @@ const createCredentialOffer = async () => {
   }
 };
 
-const credentialTypes = computed(
-  () => config.value?.contexts?.filter((c) => c.issuable) ?? []
-);
+const credentialTypes = computed(() => config.value?.issueConfigurations ?? []);
 
 const config = ref<CredentialConfig>();
 

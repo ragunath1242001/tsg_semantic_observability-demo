@@ -13,10 +13,10 @@ import {
 
 import { ConfigController } from "./config.controller.js";
 import { PresentationConfig, RootConfig } from "./config.js";
-import { ContextModule } from "./contexts/context.module.js";
 import { CredentialsModule } from "./credentials/credentials.module.js";
 import { DidModule } from "./did/did.module.js";
 import { IssuanceModule } from "./issuance/issuance.module.js";
+import { IssueConfigurationModule } from "./issue-configurations/issue-configuration.module.js";
 import { KeysModule } from "./keys/keys.module.js";
 import { CredentialDao, KeyMaterialDao } from "./model/credentials.dao.js";
 import { CredentialIssuance } from "./model/issuance.dao.js";
@@ -53,7 +53,7 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
     TerminusModule,
     PresentationModule.register(GenericConfigModule.get(PresentationConfig)),
     AuthModule,
-    ContextModule,
+    IssueConfigurationModule,
     CredentialsModule,
     DidModule,
     KeysModule,

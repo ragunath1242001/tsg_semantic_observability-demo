@@ -11,27 +11,38 @@ participants:
     routing: subdomain
     issuer: true
     hasControlPlane: false
-    document:
-      "@context":
-        "@protected": true
-        "@version": 1.1
-        ExampleCredential:
-          "@context":
-            - https://www.w3.org/2018/credentials/v1
-          "@id": example:ExampleCredential
-        id: "@id"
-        example: https://authority.example.com/context/ExampleCredential
-        type: "@type"
-    schema:
-      type: object
-      title: ExampleCredential
-      additionalProperties: true
-      properties:
-        id:
-          type: string
-          pattern: "^did:web:.*"
-      required:
-        - id
+    walletConfig:
+      issueConfigurations:
+        - id: ExampleCredential
+          credentialType: ExampleCredential
+          document:
+            "@context":
+              "@protected": true
+              "@version": 1.1
+              ExampleCredential:
+                "@context":
+                  - https://www.w3.org/2018/credentials/v1
+                "@id": example:ExampleCredential
+              id: "@id"
+              example: https://authority.example.com/api/issue-configuration/ExampleCredential
+              type: "@type"
+          schema:
+            type: object
+            title: ExampleCredential
+            additionalProperties: true
+            properties:
+              id:
+                title: Identifier
+                example: did:web:example.com
+                type: string
+                pattern: "^did:web:.*"
+            required:
+              - id
+          name: Example Credential
+          description: Example credential type for demonstration purposes
+          backgroundColor: "#000000"
+          textColor: "#FFFFFF"
+          logo: https://tsg.dataspac.es/img/sample-credential-logo.png
   - host: alfa.example.com
     id: alfa
     name: Alfa

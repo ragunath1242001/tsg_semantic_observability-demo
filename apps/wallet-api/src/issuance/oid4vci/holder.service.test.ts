@@ -19,12 +19,11 @@ import { http, HttpResponse, PathParams } from "msw";
 import { SetupServer, setupServer } from "msw/node";
 
 import { RootConfig } from "../../config.js";
-import { ContextService } from "../../contexts/context.service.js";
 import { CredentialsService } from "../../credentials/credentials.service.js";
 import { DidService } from "../../did/did.service.js";
+import { IssueConfigurationService } from "../../issue-configurations/issue-configuration.service.js";
 import { KeysService } from "../../keys/keys.service.js";
 import { SignatureService } from "../../keys/signature.service.js";
-import { JSONLDContext } from "../../model/context.dao.js";
 import {
   CredentialDao,
   KeyMaterialDao,
@@ -32,6 +31,7 @@ import {
 } from "../../model/credentials.dao.js";
 import { DIDDocuments, DIDLogs, DIDService } from "../../model/did.dao.js";
 import { CIAccessToken, CredentialIssuance } from "../../model/issuance.dao.js";
+import { IssueConfiguration } from "../../model/issue-configuration.dao.js";
 import { PresentationService } from "../../presentation/presentation.service.js";
 import { DCPHolderService } from "../dcp/holder.service.js";
 import { IssuanceService } from "../issuance.service.js";
@@ -56,11 +56,10 @@ describe("Holder service", () => {
           default: true
         }
       ],
-      contexts: [
+      issueConfigurations: [
         {
           id: "Example",
           credentialType: "ExampleCredentialType",
-          issuable: true,
           documentUrl: "https://example.com/context.json"
         }
       ]
@@ -76,7 +75,7 @@ describe("Holder service", () => {
           KeyMaterialDao,
           CredentialIssuance,
           CIAccessToken,
-          JSONLDContext,
+          IssueConfiguration,
           DIDLogs
         ]),
         TypeOrmModule.forFeature([
@@ -87,7 +86,7 @@ describe("Holder service", () => {
           KeyMaterialDao,
           CredentialIssuance,
           CIAccessToken,
-          JSONLDContext,
+          IssueConfiguration,
           DIDLogs
         ])
       ],
@@ -101,7 +100,7 @@ describe("Holder service", () => {
         IssuanceService,
         OID4VCIIssuerService,
         OID4VCIHolderService,
-        ContextService,
+        IssueConfigurationService,
         {
           provide: RootConfig,
           useValue: config
@@ -177,8 +176,11 @@ describe("Holder service", () => {
           return HttpResponse.json(await issuerService.issuerMetadata());
         }
       ),
+      http.post("http://localhost:3000/oid4vci/nonce", async () => {
+        return HttpResponse.json(await issuerService.createNonce());
+      }),
       http.post<PathParams, any, AccessToken>(
-        "http://localhost:3000/api/oid4vci/token",
+        "http://localhost:3000/oid4vci/token",
         async (ctx) => {
           const data = await ctx.request.formData();
           return HttpResponse.json(
@@ -189,7 +191,7 @@ describe("Holder service", () => {
         }
       ),
       http.post<PathParams, CredentialRequest, CredentialResponse>(
-        "http://localhost:3000/api/oid4vci/credential",
+        "http://localhost:3000/oid4vci/credential",
         async (ctx) => {
           const body = await ctx.request.json();
           const authorization = ctx.request.headers.get("Authorization");

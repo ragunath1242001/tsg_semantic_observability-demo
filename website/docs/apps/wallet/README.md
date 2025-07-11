@@ -25,7 +25,7 @@ The Wallet API is organized into six focused modules that handle different aspec
 
 **Core Identity Modules** handle the fundamental identity operations: the **DID Module** manages decentralized identifiers with support for did:web and did:tdw methods, the **Keys Module** provides full cryptographic operations including HSM integration, and the **Credentials Module** manages verifiable credential storage and verification with selective disclosure capabilities.
 
-**Protocol Implementation Modules** provide standards-based credential exchange: the **Issuance Module** implements OpenID4VCI and Eclipse DCP for credential issuance, the **Presentation Module** handles OpenID4VP and DCP for credential presentation, and the **Contexts Module** manages JSON-LD contexts for semantic interoperability.
+**Protocol Implementation Modules** provide standards-based credential exchange: the **Issuance Module** implements OpenID4VCI and Eclipse DCP for credential issuance, the **Presentation Module** handles OpenID4VP and DCP for credential presentation, and the **Issue Configuration Module** manages comprehensive issue configurations including metadata, styling, and validation schemas for credential types.
 
 > **Detailed Module Information**: See [API Modules](./modules.md) for complete module documentation including APIs, components, and integration details.
 
@@ -38,6 +38,7 @@ Administrative interfaces for wallet configuration and management:
 - **Credential Management**: Administrative operations for stored credentials
 - **Issuance Management**: Configure and manage credential issuance
 - **Presentation Management**: Configure presentation policies and templates
+- **Issue Configuration Management**: Configure credential types with metadata, styling, and validation schemas
 
 ### Protocol APIs  
 Standard protocol endpoints for credential exchange:

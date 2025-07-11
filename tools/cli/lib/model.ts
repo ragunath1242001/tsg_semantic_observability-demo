@@ -11,7 +11,6 @@ import {
   IsOptional,
   IsString,
   Matches,
-  ValidateIf,
   ValidateNested
 } from "class-validator";
 
@@ -72,13 +71,6 @@ export class Participant {
   public readonly issuer: boolean = false;
 
   @IsObject()
-  @ValidateIf((p) => p.issuer)
-  public readonly document?: any;
-  @IsObject()
-  @ValidateIf((p) => p.issuer)
-  public readonly schema?: any;
-
-  @IsObject()
   @IsOptional()
   public readonly credentialSubject?: any;
 
@@ -91,6 +83,14 @@ export class Participant {
   @IsInstance(Map)
   @Type(() => DataPlane)
   public dataPlanes: Map<string, DataPlane> = new Map<string, DataPlane>();
+
+  @IsObject()
+  @IsOptional()
+  public readonly walletConfig?: Record<string, any>;
+
+  @IsObject()
+  @IsOptional()
+  public readonly controlPlaneConfig?: Record<string, any>;
 
   @Exclude()
   generateTestService(warn: boolean = true) {

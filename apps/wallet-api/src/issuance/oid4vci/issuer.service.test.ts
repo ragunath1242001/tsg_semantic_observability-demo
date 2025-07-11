@@ -6,7 +6,7 @@ import {
   NodemailerConfiguration,
   TypeOrmTestHelper
 } from "@tsg-dsp/common-api";
-import { OfferGrants } from "@tsg-dsp/wallet-dtos";
+import { OfferGrants, ProofType } from "@tsg-dsp/wallet-dtos";
 import { plainToInstance } from "class-transformer";
 import { DIDDocument } from "did-resolver";
 import {
@@ -19,12 +19,11 @@ import { http, HttpResponse } from "msw";
 import { SetupServer, setupServer } from "msw/node";
 
 import { RootConfig } from "../../config.js";
-import { ContextService } from "../../contexts/context.service.js";
 import { CredentialsService } from "../../credentials/credentials.service.js";
 import { DidService } from "../../did/did.service.js";
+import { IssueConfigurationService } from "../../issue-configurations/issue-configuration.service.js";
 import { KeysService } from "../../keys/keys.service.js";
 import { SignatureService } from "../../keys/signature.service.js";
-import { JSONLDContext } from "../../model/context.dao.js";
 import {
   CredentialDao,
   KeyMaterialDao,
@@ -32,6 +31,7 @@ import {
 } from "../../model/credentials.dao.js";
 import { DIDDocuments, DIDLogs, DIDService } from "../../model/did.dao.js";
 import { CIAccessToken, CredentialIssuance } from "../../model/issuance.dao.js";
+import { IssueConfiguration } from "../../model/issue-configuration.dao.js";
 import { DCPHolderService } from "../dcp/holder.service.js";
 import { IssuanceService } from "../issuance.service.js";
 import { OID4VCIHolderService } from "./holder.service.js";
@@ -54,11 +54,10 @@ describe("Issuer service", () => {
           default: true
         }
       ],
-      contexts: [
+      issueConfigurations: [
         {
           id: "Example",
           credentialType: "ExampleCredentialType",
-          issuable: true,
           documentUrl: "https://example.com/context.json"
         }
       ],
@@ -77,7 +76,7 @@ describe("Issuer service", () => {
           KeyMaterialDao,
           CredentialIssuance,
           CIAccessToken,
-          JSONLDContext,
+          IssueConfiguration,
           DIDLogs
         ]),
         TypeOrmModule.forFeature([
@@ -88,7 +87,7 @@ describe("Issuer service", () => {
           KeyMaterialDao,
           CredentialIssuance,
           CIAccessToken,
-          JSONLDContext,
+          IssueConfiguration,
           DIDLogs
         ])
       ],
@@ -101,7 +100,7 @@ describe("Issuer service", () => {
         IssuanceService,
         OID4VCIIssuerService,
         OID4VCIHolderService,
-        ContextService,
+        IssueConfigurationService,
         {
           provide: RootConfig,
           useValue: config
@@ -191,8 +190,8 @@ describe("Issuer service", () => {
           "pre-authorized_code"
         ] ?? ""
       );
-
-      const jwt = await new SignJWT({ nonce: access_token.c_nonce })
+      const nonce = await issuerService.createNonce();
+      const jwt = await new SignJWT({ nonce: nonce.c_nonce })
         .setProtectedHeader({
           alg: "EdDSA",
           typ: "openid4vci-proof+jwt",
@@ -206,15 +205,14 @@ describe("Issuer service", () => {
         await issuerService.handleCredentialRequest(
           `Bearer ${access_token.access_token}`,
           {
-            format: "jwt_vc_json-ld",
-            credential_definition: {
-              "@context": [],
-              type: ["VerifiableCredential", "ExampleCredentialType"]
-            },
-            proof: {
-              proof_type: "jwt",
-              jwt: jwt
-            }
+            credential_identifier:
+              access_token.authorization_details[0].credential_identifiers[0],
+            proofs: [
+              {
+                proof_type: ProofType.JWT,
+                jwt: jwt
+              }
+            ]
           }
         )
       ).toBeTruthy();
@@ -231,7 +229,8 @@ describe("Issuer service", () => {
         ] ?? ""
       );
 
-      const jwt = await new SignJWT({ nonce: access_token.c_nonce })
+      const nonce = await issuerService.createNonce();
+      const jwt = await new SignJWT({ nonce: nonce.c_nonce })
         .setProtectedHeader({
           alg: "EdDSA",
           typ: "openid4vci-proof+jwt",
@@ -245,15 +244,14 @@ describe("Issuer service", () => {
         await issuerService.handleCredentialRequest(
           `Bearer ${access_token.access_token}`,
           {
-            format: "jwt_vc_json-ld",
-            credential_definition: {
-              "@context": [],
-              type: ["VerifiableCredential", "ExampleCredentialType"]
-            },
-            proof: {
-              proof_type: "jwt",
-              jwt: jwt
-            }
+            credential_identifier:
+              access_token.authorization_details[0].credential_identifiers[0],
+            proofs: [
+              {
+                proof_type: ProofType.JWT,
+                jwt: jwt
+              }
+            ]
           }
         )
       ).toBeTruthy();
@@ -271,7 +269,8 @@ describe("Issuer service", () => {
         ] ?? ""
       );
 
-      const jwt = await new SignJWT({ nonce: access_token.c_nonce })
+      const nonce = await issuerService.createNonce();
+      const jwt = await new SignJWT({ nonce: nonce.c_nonce })
         .setProtectedHeader({
           alg: "EdDSA",
           typ: "openid4vci-proof+jwt"
@@ -284,15 +283,14 @@ describe("Issuer service", () => {
         issuerService.handleCredentialRequest(
           `Bearer ${access_token.access_token}`,
           {
-            format: "jwt_vc_json-ld",
-            credential_definition: {
-              "@context": [],
-              type: ["VerifiableCredential", "ExampleCredentialType"]
-            },
-            proof: {
-              proof_type: "jwt",
-              jwt: jwt
-            }
+            credential_identifier:
+              access_token.authorization_details[0].credential_identifiers[0],
+            proofs: [
+              {
+                proof_type: ProofType.JWT,
+                jwt: jwt
+              }
+            ]
           }
         )
       ).rejects.toThrow(
@@ -312,7 +310,8 @@ describe("Issuer service", () => {
         ] ?? ""
       );
 
-      const jwt = await new SignJWT({ nonce: access_token.c_nonce })
+      const nonce = await issuerService.createNonce();
+      const jwt = await new SignJWT({ nonce: nonce.c_nonce })
         .setProtectedHeader({
           alg: "EdDSA",
           typ: "openid4vci-proof+jwt",
@@ -326,15 +325,14 @@ describe("Issuer service", () => {
         issuerService.handleCredentialRequest(
           `Bearer ${access_token.access_token}`,
           {
-            format: "jwt_vc_json-ld",
-            credential_definition: {
-              "@context": [],
-              type: ["VerifiableCredential", "ExampleCredentialType"]
-            },
-            proof: {
-              proof_type: "jwt",
-              jwt: jwt
-            }
+            credential_identifier:
+              access_token.authorization_details[0].credential_identifiers[0],
+            proofs: [
+              {
+                proof_type: ProofType.JWT,
+                jwt: jwt
+              }
+            ]
           }
         )
       ).rejects.toThrow('Holder ID test1234234 does not start with "did:"');
@@ -344,10 +342,10 @@ describe("Issuer service", () => {
       const metadata = await issuerService.issuerMetadata();
       expect(metadata.credential_issuer).toBe("https://localhost");
       expect(metadata.credential_endpoint).toBe(
-        "http://localhost:3000/api/oid4vci/credential"
+        "http://localhost:3000/oid4vci/credential"
       );
       expect(metadata.token_endpoint).toEqual(
-        "http://localhost:3000/api/oid4vci/token"
+        "http://localhost:3000/oid4vci/token"
       );
       expect(metadata.credential_configurations_supported).toHaveProperty(
         "ExampleCredentialType"

@@ -9,7 +9,7 @@ import {
   CredentialOffer,
   CredentialOfferRequest,
   CredentialOfferStatus,
-  JsonLdContextConfig
+  IssueConfiguration
 } from "@tsg-dsp/wallet-dtos";
 import Ajv, { JSONSchemaType } from "ajv";
 import { useToast } from "primevue/usetoast";
@@ -18,7 +18,7 @@ import { computed, onMounted, ref } from "vue";
 
 interface OfferForm {
   holderId?: string;
-  credentialType?: JsonLdContextConfig;
+  credentialType?: IssueConfiguration;
   credentialSubject: string;
   credentialSubjectObject: Record<string, any>;
   preAuthorizedCode?: string;
@@ -38,7 +38,7 @@ const config = ref<CredentialConfig>();
 const expandedRows = ref<Array<any>>();
 const issuerUrl = ref(window.location.origin);
 const isIssuer = computed(() => {
-  return config.value?.contexts?.some((c) => c.issuable) || false;
+  return config.value?.issueConfigurations?.length != 0 || false;
 });
 
 const offerDefault: OfferForm = {
@@ -52,7 +52,7 @@ const offerDefault: OfferForm = {
 const offerForm = ref<OfferForm>(offerDefault);
 
 const issuableCredentialTypes = computed(
-  () => config.value?.contexts?.filter((c) => c.issuable) ?? []
+  () => config.value?.issueConfigurations ?? []
 );
 
 const loadOffers = async () => {
@@ -159,14 +159,15 @@ const validateCredentialSubject = (showToast: boolean) => {
       offerForm.value.credentialValidation = undefined;
     }
 
-    const context = offerForm.value.credentialType;
-    if (context?.schema) {
-      const ajv = new Ajv({ allErrors: true });
-      const schema = context.schema as unknown as JSONSchemaType<any>;
+    const issueConfiguration = offerForm.value.credentialType;
+    if (issueConfiguration?.schema) {
+      const ajv = new Ajv({ allErrors: true, strictSchema: false });
+      const schema =
+        issueConfiguration.schema as unknown as JSONSchemaType<any>;
       const validate = ajv.compile(schema);
       if (!validate(credentialSubject)) {
         console.log(
-          `Validation of context ${context.id} error: ${JSON.stringify(
+          `Validation of issue configuration ${issueConfiguration.id} error: ${JSON.stringify(
             validate.errors
           )}`
         );
@@ -287,10 +288,10 @@ onMounted(async () => {
           protocol.
         </p>
         <Message v-if="!isIssuer" :closable="false" icon="pi pi-info-circle"
-          >Since no issuable JSON-LD contexts are provided, this page only shows
-          the form for requesting credentials. If you'd like to issue
-          credentials via DCP/OpenID4VCI, please add a context at
-          <RouterLink class="font-semibold" to="/contexts"
+          >Since no issue configurations are provided, this page only shows the
+          form for requesting credentials. If you'd like to issue credentials
+          via DCP/OpenID4VCI, please add an issue configuration at
+          <RouterLink class="font-semibold" to="/issue-configuration"
             >JSON-LD Contexts</RouterLink
           >.</Message
         >

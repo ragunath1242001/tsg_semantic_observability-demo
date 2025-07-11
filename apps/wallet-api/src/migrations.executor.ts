@@ -46,6 +46,11 @@ async function generate(
   }
   try {
     await dataSource.initialize();
+    if (type === "postgres") {
+      await dataSource.query(
+        "create or replace function uuid_generate_v4() RETURNS uuid as $$ SELECT md5(random()::text || clock_timestamp()::text)::uuid $$ LANGUAGE SQL;"
+      );
+    }
     await dataSource.runMigrations();
 
     const upSqls: string[] = [],

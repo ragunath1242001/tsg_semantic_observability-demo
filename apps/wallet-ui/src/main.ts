@@ -10,6 +10,7 @@ import {
   Checkbox,
   ColorPicker,
   DynamicDialog,
+  Inplace,
   TabList,
   TabPanels
 } from "primevue";
@@ -91,6 +92,7 @@ app.component("DataTable", DataTable);
 app.component("MeterGroup", MeterGroup);
 app.component("MultiSelect", MultiSelect);
 app.component("Message", Message);
+app.component("Inplace", Inplace);
 app.component("InputNumber", InputNumber);
 app.component("InputText", InputText);
 app.component("Password", Password);

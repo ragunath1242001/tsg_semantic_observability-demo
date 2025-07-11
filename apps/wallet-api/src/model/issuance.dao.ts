@@ -51,9 +51,6 @@ export class CIAccessToken extends MetaEntity {
   @Column({ type: String })
   refresh_token!: string;
 
-  @Column({ type: String })
-  nonce!: string;
-
   @ManyToOne(() => CredentialIssuance, (issuance) => issuance.tokens, {
     eager: true
   })

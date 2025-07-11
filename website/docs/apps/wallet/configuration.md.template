@@ -24,4 +24,34 @@ Two DID methods are currently supported: `did:web` and `did:tdw`. A comparison b
 | Advantages:              | Straightforward implementation with no additional processing other than hosting DID Document on web server.                                               | Additional security and validation mechanisms contained in the JSON Lines file that increases trustworthiness of DID Document.                                                                                                                       | No server implementation required, so very suitable for mobile wallets                                        |
 | Disadvantages:           | Easily compromisable without notice by resolving parties when malicious access is gained to the web server.                                               | DID Document is not directly available as extra processing to verify signatures and validate entry hashes retrieved from the JSON Lines file needs to be performed to resolve the DID Document.                                                      | DID document only contains the verification method, so additional properties like `service` are not supported |
 
+## Issue Configurations
+
+Issue configurations define the structure, validation rules, and visual presentation of credential types that the wallet can issue and manage. Each configuration combines semantic interoperability through JSON-LD contexts with schema validation and visual styling.
+
+### JSON-LD Context and Schema Relationship
+
+Issue configurations leverage both **JSON-LD contexts** and **JSON Schema** for comprehensive credential definition:
+
+- **JSON-LD Context** (`document` or `documentUrl`): Defines semantic meaning of credential properties for interoperability across systems
+- **JSON Schema** (`schema`): Defines structure, validation rules, and user interface information for credential properties
+
+### Schema-Driven User Interface
+
+The JSON Schema directly influences how credentials are presented to users:
+
+- **Property Order**: Schema property order determines display order in user interfaces
+- **Human-Readable Titles**: The `title` property provides user-friendly labels instead of technical property names
+- **Example Values**: The `example` property shows users expected data format
+- **Validation Rules**: Properties like `enum`, `pattern`, and `required` ensure data quality and guide user input when issuing credentials
+
+### Visual Styling
+
+Issue configurations support visual customization through:
+
+- **Background Color** (`backgroundColor`): Hex color code for credential background
+- **Background Image** (`backgroundImage`): URL or base64-encoded image for credential branding. PNG-based images are recommended for transparency support and support across applications.
+- **Text Color** (`textColor`): Hex color code for credential text
+- **Display Metadata** (`name`, `description`): Human-readable credential information
+
+
 ## Possible configuration parameters

@@ -15,7 +15,7 @@ async function bootstrap() {
   app.setGlobalPrefix(`${process.env["SUBPATH"] ?? ""}/api`, {
     exclude: [
       ".well-known/(.*)",
-      "context/(.*)",
+      "issue-configuration/(.*)",
       "keys/(.*)",
       "oid4vci/token",
       "oid4vci/credential",

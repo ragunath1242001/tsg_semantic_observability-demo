@@ -13,12 +13,11 @@ import { http, HttpResponse } from "msw";
 import { SetupServer, setupServer } from "msw/node";
 
 import { RootConfig } from "../config.js";
-import { ContextService } from "../contexts/context.service.js";
 import { CredentialsService } from "../credentials/credentials.service.js";
 import { DidService } from "../did/did.service.js";
+import { IssueConfigurationService } from "../issue-configurations/issue-configuration.service.js";
 import { KeysService } from "../keys/keys.service.js";
 import { SignatureService } from "../keys/signature.service.js";
-import { JSONLDContext } from "../model/context.dao.js";
 import {
   CredentialDao,
   KeyMaterialDao,
@@ -27,6 +26,7 @@ import {
 import { SIToken } from "../model/dcp.dao.js";
 import { DIDDocuments, DIDLogs, DIDService } from "../model/did.dao.js";
 import { CIAccessToken, CredentialIssuance } from "../model/issuance.dao.js";
+import { IssueConfiguration } from "../model/issue-configuration.dao.js";
 import { PresentationService } from "../presentation/presentation.service.js";
 import { DCPHolderService } from "./dcp/holder.service.js";
 import { IssuanceService } from "./issuance.service.js";
@@ -47,11 +47,10 @@ describe("DCP Issuance", () => {
           default: true
         }
       ],
-      contexts: [
+      issueConfigurations: [
         {
           id: "Example",
           credentialType: "ExampleCredentialType",
-          issuable: true,
           documentUrl: "https://example.com/context.json"
         }
       ],
@@ -81,7 +80,7 @@ describe("DCP Issuance", () => {
           KeyMaterialDao,
           CredentialIssuance,
           CIAccessToken,
-          JSONLDContext,
+          IssueConfiguration,
           DIDLogs,
           SIToken
         ]),
@@ -93,7 +92,7 @@ describe("DCP Issuance", () => {
           KeyMaterialDao,
           CredentialIssuance,
           CIAccessToken,
-          JSONLDContext,
+          IssueConfiguration,
           DIDLogs,
           SIToken
         ])
@@ -106,7 +105,7 @@ describe("DCP Issuance", () => {
         SignatureService,
         PresentationService,
         IssuanceService,
-        ContextService,
+        IssueConfigurationService,
         {
           provide: RootConfig,
           useValue: config

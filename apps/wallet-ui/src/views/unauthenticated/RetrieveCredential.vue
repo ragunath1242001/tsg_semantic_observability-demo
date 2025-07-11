@@ -15,9 +15,7 @@ import QRCodeComponent from "@/components/QRCodeComponent.vue";
 const email = ref("");
 const sent = ref(false);
 const config = ref<CredentialConfig>();
-const credentialTypes = computed(
-  () => config.value?.contexts?.filter((c) => c.issuable) ?? []
-);
+const credentialTypes = computed(() => config.value?.issueConfigurations ?? []);
 const credentialType = ref(undefined);
 const toast = useToast();
 
@@ -68,8 +66,7 @@ const loadConfig = async () => {
     );
     config.value = response.data;
 
-    const availableTypes =
-      config.value?.contexts?.filter((c) => c.issuable) ?? [];
+    const availableTypes = config.value?.issueConfigurations ?? [];
     if (availableTypes.length > 0) {
       credentialType.value = availableTypes[0];
     }

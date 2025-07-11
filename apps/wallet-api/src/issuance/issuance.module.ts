@@ -2,9 +2,9 @@ import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { AuthModule, EmailModule } from "@tsg-dsp/common-api";
 
-import { ContextModule } from "../contexts/context.module.js";
 import { CredentialsModule } from "../credentials/credentials.module.js";
 import { DidModule } from "../did/did.module.js";
+import { IssueConfigurationModule } from "../issue-configurations/issue-configuration.module.js";
 import { KeysModule } from "../keys/keys.module.js";
 import { CIAccessToken, CredentialIssuance } from "../model/issuance.dao.js";
 import { PresentationModule } from "../presentation/presentation.module.js";
@@ -23,7 +23,7 @@ import { OID4VCIIssuerService } from "./oid4vci/issuer.service.js";
   imports: [
     AuthModule,
     TypeOrmModule.forFeature([CredentialIssuance, CIAccessToken]),
-    ContextModule,
+    IssueConfigurationModule,
     CredentialsModule,
     DidModule,
     EmailModule,

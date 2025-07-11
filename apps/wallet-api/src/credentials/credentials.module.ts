@@ -2,8 +2,8 @@ import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { AuthModule } from "@tsg-dsp/common-api";
 
-import { ContextModule } from "../contexts/context.module.js";
 import { DidModule } from "../did/did.module.js";
+import { IssueConfigurationModule } from "../issue-configurations/issue-configuration.module.js";
 import { KeysModule } from "../keys/keys.module.js";
 import {
   CredentialDao,
@@ -20,7 +20,7 @@ import { GaiaXService } from "./gaiax/gaiax.service.js";
     AuthModule,
     DidModule,
     KeysModule,
-    ContextModule,
+    IssueConfigurationModule,
     TypeOrmModule.forFeature([CredentialDao, StatusListCredentialDao])
   ],
   controllers: [
