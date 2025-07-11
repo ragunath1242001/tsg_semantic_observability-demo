@@ -131,6 +131,8 @@ export class SignatureService {
         options
       );
     } catch (e) {
+      this.logger.debug("Failed to sign document:");
+      this.logger.debug(document);
       throw new AppError(
         "Could not sign data as DataIntegrityProof",
         HttpStatus.INTERNAL_SERVER_ERROR,

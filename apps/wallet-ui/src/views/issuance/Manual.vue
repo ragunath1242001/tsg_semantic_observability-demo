@@ -4,7 +4,7 @@ import JsonSchemaFormElement from "@tsg-dsp/common-ui/components/JsonSchemaFormE
 import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import http from "@tsg-dsp/common-ui/utils/http";
-import { CredentialConfig, JsonLdContextConfig } from "@tsg-dsp/wallet-dtos";
+import { CredentialConfig, IssueConfiguration } from "@tsg-dsp/wallet-dtos";
 import Ajv, { JSONSchemaType } from "ajv";
 import { useToast } from "primevue/usetoast";
 import { computed, onMounted, ref } from "vue";
@@ -50,17 +50,11 @@ const credentialForm = ref(formDefault);
 const didId = computed(() => userStore.user?.didId);
 
 const issuableContexts = computed(
-  () =>
-    config.value?.contexts
-      ?.filter((c) => c.issuable)
-      ?.map((c) => c.documentUrl) ?? []
+  () => config.value?.issueConfigurations?.map((c) => c.documentUrl) ?? []
 );
 
 const issuableCredentialTypes = computed(
-  () =>
-    config.value?.contexts
-      ?.filter((c) => c.issuable)
-      ?.map((c) => c.credentialType) ?? []
+  () => config.value?.issueConfigurations?.map((c) => c.credentialType) ?? []
 );
 const parsedProperties = computed(() => {
   if (credentialForm.value.schema?.properties) {
@@ -119,17 +113,23 @@ const issueCredential = async () => {
   }
 };
 
-const useContext = (context: JsonLdContextConfig) => {
+const useIssueConfiguration = (issueConfiguration: IssueConfiguration) => {
   credentialForm.value.context = [
-    ...new Set([...credentialForm.value.context, context.documentUrl || ""])
+    ...new Set([
+      ...credentialForm.value.context,
+      issueConfiguration.documentUrl || ""
+    ])
   ];
-  credentialForm.value.schema = context.schema;
+  credentialForm.value.schema = issueConfiguration.schema;
   if (
-    !context.schema?.properties?.type &&
-    !context.schema?.properties?.["@type"]
+    !issueConfiguration.schema?.properties?.type &&
+    !issueConfiguration.schema?.properties?.["@type"]
   ) {
     credentialForm.value.type = [
-      ...new Set([...credentialForm.value.type, context.credentialType])
+      ...new Set([
+        ...credentialForm.value.type,
+        issueConfiguration.credentialType
+      ])
     ];
   }
 };
@@ -171,18 +171,19 @@ const validateCredentialSubject = (showToast: boolean) => {
       credentialForm.value.credentialValidation = undefined;
     }
 
-    const contexts: JsonLdContextConfig[] =
-      config.value?.contexts?.filter((c) =>
+    const issueConfigurations: IssueConfiguration[] =
+      config.value?.issueConfigurations?.filter((c) =>
         credentialForm.value.type.includes(c.credentialType)
       ) || [];
-    for (const context of contexts) {
-      if (context.schema) {
+    for (const issueConfiguration of issueConfigurations) {
+      if (issueConfiguration.schema) {
         const ajv = new Ajv({ allErrors: true });
-        const schema = context.schema as unknown as JSONSchemaType<any>;
+        const schema =
+          issueConfiguration.schema as unknown as JSONSchemaType<any>;
         const validate = ajv.compile(schema);
         if (!validate(credentialSubject)) {
           console.log(
-            `Validation of context ${context.id} error: ${JSON.stringify(
+            `Validation of issue configuration ${issueConfiguration.id} error: ${JSON.stringify(
               validate.errors
             )}`
           );
@@ -228,9 +229,9 @@ onMounted(async () => {
           issuing a credential for a remote party.
         </p>
         <p>
-          JSON-LD context configurations can be used to streamline the process
-          of issuing credentials, the card below the form lists the available
-          contexts for this Wallet instance.
+          Issue configurations can be used to streamline the process of issuing
+          credentials, the card below the form lists the available issue
+          configurations for this Wallet instance.
         </p>
         <Message :closable="false" icon="pi pi-info-circle"
           >Manually issuing credentials for remote parties requires to share the
@@ -331,25 +332,17 @@ onMounted(async () => {
       </template>
     </Card>
     <Card class="mt-8">
-      <template #title>Configured contexts</template>
+      <template #title>Configured issue configurations</template>
       <template #subtitle>
         <p>
-          Configured context in this wallet instance, which might be used for
-          the issue process.
+          Configured issue configurations in this wallet instance, which might
+          be used for the issue process.
         </p>
       </template>
       <template #content>
-        <DataTable :value="config?.contexts" paginator :rows="10">
+        <DataTable :value="config?.issueConfigurations" paginator :rows="10">
           <Column field="id" header="ID" />
           <Column field="credentialType" header="Credential Type" />
-          <Column field="issuable" header="Issuable">
-            <template #body="props">
-              <i
-                v-if="props.data.issuable"
-                class="pi pi-check-circle text-green-500" />
-              <i v-else class="pi pi-times-circle text-red-500" />
-            </template>
-          </Column>
           <Column field="schema" header="Schema">
             <template #body="props">
               <i
@@ -364,7 +357,7 @@ onMounted(async () => {
                 severity="success"
                 label="Use"
                 :disabled="props.data.default"
-                @click="useContext(props.data)" />
+                @click="useIssueConfiguration(props.data)" />
             </template>
           </Column>
         </DataTable>

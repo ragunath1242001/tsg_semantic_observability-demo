@@ -30,8 +30,8 @@ async function createCredentialOffer() {
     const configResponse = await http<CredentialConfig>(
       "management/credentials/config"
     );
-    const context = configResponse.data.contexts.find((c) => c.issuable);
-    if (!context) {
+    const issueConfiguration = configResponse.data.issueConfigurations[0];
+    if (!issueConfiguration) {
       throw new Error("No issuable credential type found in configuration.");
     }
     const credentialSubject = {
@@ -42,7 +42,7 @@ async function createCredentialOffer() {
     };
     console.log(credentialSubject);
     const offerRequest: CredentialOfferRequest = {
-      credentialType: context.credentialType,
+      credentialType: issueConfiguration.credentialType,
       credentialSubject: credentialSubject,
       preAuthorizedCode: crypto.getRandomValues(new Uint8Array(16)).join("")
     };

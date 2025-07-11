@@ -27,7 +27,8 @@ import {
   CredentialRequest,
   CredentialResponse,
   DeferredCredentialResponse,
-  ImmediateCredentialResponse
+  ImmediateCredentialResponse,
+  NonceResponse
 } from "@tsg-dsp/wallet-dtos";
 
 import { OID4VCIIssuerService } from "./issuer.service.js";
@@ -68,6 +69,19 @@ export class OID4VCIIssuerController {
     @Body("pre-authorized_code") preAuthorizedCode: string
   ): Promise<AccessToken> {
     return this.issuerService.createAccessToken(preAuthorizedCode);
+  }
+
+  @Post("oid4vci/nonce")
+  @ApiOperation({
+    summary: "Request OID4VCI nonce",
+    description:
+      "Requests a nonce for the OID4VCI flow. This is used to prevent replay attacks."
+  })
+  @DisableOAuthGuard()
+  @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({ type: NonceResponse })
+  async nonceEndpoint(): Promise<NonceResponse> {
+    return this.issuerService.createNonce();
   }
 
   @Post("oid4vci/credential")

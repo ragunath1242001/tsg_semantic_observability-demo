@@ -1,0 +1,208 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://tsg.dataspac.es/opinionated-meta-schema",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "type": {
+      "type": "string",
+      "const": "object",
+      "title": "Schema Type",
+      "example": "object"
+    },
+    "additionalProperties": {
+      "type": "boolean",
+      "const": true,
+      "title": "Additional Properties Allowed",
+      "example": true
+    },
+    "properties": {
+      "type": "object",
+      "title": "Schema Properties",
+      "example": {},
+      "additionalProperties": {
+        "$ref": "#/$defs/property"
+      }
+    },
+    "required": {
+      "type": "array",
+      "title": "Required Properties",
+      "example": ["name"],
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true,
+      "not": {
+        "contains": {
+          "const": "id"
+        }
+      }
+    }
+  },
+  "required": ["type", "additionalProperties", "properties"],
+  "$defs": {
+    "property": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "string",
+            "number",
+            "integer",
+            "boolean",
+            "array",
+            "object",
+            "const"
+          ],
+          "title": "Property Type",
+          "example": "string"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "title": "Property Title",
+          "example": "User Name"
+        },
+        "description": {
+          "type": "string",
+          "title": "Property Description",
+          "example": "The full name of the user"
+        },
+        "example": {
+          "title": "Property Example",
+          "example": "John Doe"
+        },
+        "const": {
+          "title": "Constant Value",
+          "example": "fixed-value"
+        },
+        "pattern": {
+          "type": "string",
+          "format": "regex",
+          "title": "String Pattern",
+          "example": "^[a-zA-Z ]+$"
+        },
+        "enum": {
+          "type": "array",
+          "title": "Enumerated Values",
+          "example": ["active", "inactive", "pending"],
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "minimum": {
+          "type": "number",
+          "title": "Minimum Value",
+          "example": 0
+        },
+        "maximum": {
+          "type": "number",
+          "title": "Maximum Value",
+          "example": 100
+        },
+        "minLength": {
+          "type": "integer",
+          "minimum": 0,
+          "title": "Minimum String Length",
+          "example": 1
+        },
+        "maxLength": {
+          "type": "integer",
+          "minimum": 0,
+          "title": "Maximum String Length",
+          "example": 255
+        },
+        "format": {
+          "type": "string",
+          "enum": ["date", "date-time", "email", "uri", "uuid"],
+          "title": "String Format",
+          "example": "email"
+        },
+        "items": {
+          "$ref": "#/$defs/property",
+          "title": "Array Items Schema",
+          "example": {}
+        },
+        "minItems": {
+          "type": "integer",
+          "minimum": 0,
+          "title": "Minimum Array Items",
+          "example": 1
+        },
+        "maxItems": {
+          "type": "integer",
+          "minimum": 0,
+          "title": "Maximum Array Items",
+          "example": 10
+        },
+        "uniqueItems": {
+          "type": "boolean",
+          "title": "Array Items Must Be Unique",
+          "example": true
+        },
+        "properties": {
+          "type": "object",
+          "title": "Nested Object Properties",
+          "example": {},
+          "additionalProperties": {
+            "$ref": "#/$defs/property"
+          }
+        },
+        "additionalProperties": {
+          "type": "boolean",
+          "title": "Additional Properties Allowed",
+          "example": false
+        },
+        "required": {
+          "type": "array",
+          "title": "Required Properties",
+          "example": ["id"],
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        }
+      },
+      "required": ["type", "title", "example"],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "array"
+              }
+            }
+          },
+          "then": {
+            "required": ["items"]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "object"
+              }
+            }
+          },
+          "then": {
+            "required": ["properties"]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "const"
+              }
+            }
+          },
+          "then": {
+            "required": ["const"]
+          }
+        }
+      ]
+    }
+  }
+}

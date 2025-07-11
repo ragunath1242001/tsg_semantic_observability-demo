@@ -56,21 +56,22 @@ The TSG Wallet API is organized into six core modules that handle different aspe
 
 **APIs**: `/presentation/management/*` for configuration, protocol-specific endpoints for presentation flows
 
-### Contexts Module (`/src/contexts/`)
-**Purpose**: Manages JSON-LD contexts for semantic interoperability and schema validation.
+### Issue Configuration Module (`/src/issue-configurations/`)
+**Purpose**: Manages comprehensive issue configurations for credential types, including metadata, styling, and validation schemas.
 
 **Key Components**:
-- **Context Management**: Storage and retrieval of JSON-LD contexts
-- **Schema Validation**: Credential validation against semantic schemas
-- **Namespace Resolution**: Resolution of semantic namespaces and vocabularies
+- **Configuration Management**: Complete issue configuration lifecycle with metadata and styling
+- **Schema Management**: JSON Schema validation for credential types and JSON-LD context storage
+- **Visual Styling**: Credential display customization with colors, images, and branding
+- **Metadata Management**: Name, description, and semantic information for credential types
 
-**APIs**: `/contexts/management/*` for context operations
+**APIs**: `/issue-configurations/management/*` for configuration operations
 
 ---
 
 ## Integration Architecture
 
-**Module Dependencies**: DID ↔ Keys (cryptographic operations), Credentials → Keys (verification), Issuance → Credentials + Keys, Presentation → Credentials + Keys, Contexts → Credentials (validation)
+**Module Dependencies**: DID ↔ Keys (cryptographic operations), Credentials → Keys (verification), Issuance → Credentials + Keys, Presentation → Credentials + Keys, Issue Configuration → Credentials (validation and styling)
 
 **External Integration**: All modules integrate with SSO Bridge for authentication, PostgreSQL for storage, and external systems for DID resolution and credential verification.
 

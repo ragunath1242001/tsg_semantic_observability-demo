@@ -10,7 +10,7 @@ import {
 } from "class-validator";
 
 import { InitCredentialConfig, TrustAnchorConfig } from "../config.js";
-import { JsonLdContextConfigDto } from "../contexts/context.schemas.js";
+import { IssueConfigurationConfigDto } from "../issue-configurations/issue-configuration.schemas.js";
 import { CredentialDao } from "../model/credentials.dao.js";
 
 export class TrustAnchorConfigDto implements TrustAnchorConfig {
@@ -46,18 +46,20 @@ export class CredentialsConfigDto {
   trustAnchors!: TrustAnchorConfigDto[];
 
   @ApiProperty({
-    type: [JsonLdContextConfigDto],
+    type: [IssueConfigurationConfigDto],
     example: [
       {
-        url: "https://dataspace.example/context",
-        alias: "ds"
+        id: "issue-config-123",
+        credentialType: "DataSpaceCredentialType",
+        documentUrl: "https://dataspace.example/issue-config",
+        schema: {}
       }
     ],
-    description: "List of JSON-LD contexts configurations"
+    description: "List of issue configurations supported by the wallet"
   })
   @ValidateNested({ each: true })
-  @Type(() => JsonLdContextConfigDto)
-  contexts!: JsonLdContextConfigDto[];
+  @Type(() => IssueConfigurationConfigDto)
+  issueConfigurations!: IssueConfigurationConfigDto[];
 }
 
 export class CredentialsDto implements CredentialDao {

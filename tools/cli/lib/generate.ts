@@ -99,14 +99,38 @@ export class Generate {
     this.writeConfig(
       "wallet",
       `${options.output}/${participant.id}/values.wallet.yaml`,
-      { participant },
+      {
+        participant,
+        walletConfig: (indent: number): string => {
+          if (participant.walletConfig) {
+            return stringify(participant.walletConfig).replace(
+              /^/gm,
+              " ".repeat(indent)
+            );
+          } else {
+            return "";
+          }
+        }
+      },
       !options.stdout
     );
     if (participant.hasControlPlane) {
       this.writeConfig(
         "control-plane",
         `${options.output}/${participant.id}/values.control-plane.yaml`,
-        { participant },
+        {
+          participant,
+          controlPlaneConfig: (indent: number): string => {
+            if (participant.controlPlaneConfig) {
+              return stringify(participant.controlPlaneConfig).replace(
+                /^/gm,
+                " ".repeat(indent)
+              );
+            } else {
+              return "";
+            }
+          }
+        },
         !options.stdout
       );
     }

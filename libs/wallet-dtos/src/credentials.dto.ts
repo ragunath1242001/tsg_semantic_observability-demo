@@ -27,16 +27,20 @@ export interface TrustAnchorConfig {
   credentialTypes: string[];
 }
 
-export interface JsonLdContextConfig {
+export interface IssueConfiguration {
   id?: string;
   credentialType: string;
-  issuable: boolean;
   documentUrl?: string;
   document: Record<string, any>;
   schema?: Record<string, any>;
+  name?: string;
+  description?: string;
+  backgroundColor?: string;
+  backgroundImage?: string;
+  textColor?: string;
 }
 
 export interface CredentialConfig {
   trustAnchors: TrustAnchorConfig[];
-  contexts: JsonLdContextConfig[];
+  issueConfigurations: IssueConfiguration[];
 }

@@ -1,12 +1,17 @@
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
+import { Interval } from "@nestjs/schedule";
 import { InjectRepository } from "@nestjs/typeorm";
 import { AppError } from "@tsg-dsp/common-api";
 import { resolveDid } from "@tsg-dsp/common-signing-and-validation";
 import {
   AccessToken,
+  ClaimDescription,
+  convertJsonSchemaToClaimDescriptions,
+  CredentialFormat,
   CredentialIssuerMetadata,
   CredentialRequest,
-  CredentialResponse
+  CredentialResponse,
+  NonceResponse
 } from "@tsg-dsp/wallet-dtos";
 import { plainToInstance } from "class-transformer";
 import crypto from "crypto";
@@ -14,8 +19,8 @@ import { decodeProtectedHeader, importJWK, jwtVerify } from "jose";
 import { Repository } from "typeorm";
 
 import { InitCredentialConfig, RootConfig } from "../../config.js";
-import { ContextService } from "../../contexts/context.service.js";
 import { CredentialsService } from "../../credentials/credentials.service.js";
+import { IssueConfigurationService } from "../../issue-configurations/issue-configuration.service.js";
 import { SignatureService } from "../../keys/signature.service.js";
 import { CIAccessToken, CredentialIssuance } from "../../model/issuance.dao.js";
 
@@ -27,50 +32,98 @@ export class OID4VCIIssuerService {
     private readonly issuanceRepository: Repository<CredentialIssuance>,
     @InjectRepository(CIAccessToken)
     private readonly tokenRepository: Repository<CIAccessToken>,
-    private readonly contextService: ContextService,
+    private readonly issueConfigurationService: IssueConfigurationService,
     private readonly credentialService: CredentialsService,
     private readonly signatureService: SignatureService
   ) {}
   private readonly logger = new Logger(this.constructor.name);
 
+  private readonly nonceCache = new Map<string, number>();
+
+  @Interval(60 * 1000)
+  cleanupNonceCache() {
+    const now = Date.now();
+    for (const [nonce, exp] of this.nonceCache.entries()) {
+      if (exp < now) this.nonceCache.delete(nonce);
+    }
+  }
+
   async issuerMetadata(): Promise<CredentialIssuerMetadata> {
+    const publicEndpoint = `${this.config.server.publicAddress}${process.env["EMBEDDED_FRONTEND"] ? "/api" : ""}`;
     const issuerMetadata: CredentialIssuerMetadata = {
       credential_issuer: `https://${this.config.server.publicDomain}`,
-      credential_endpoint: `${this.config.server.publicAddress}/api/oid4vci/credential`,
-      token_endpoint: `${this.config.server.publicAddress}/api/oid4vci/token`,
+      credential_endpoint: `${publicEndpoint}/oid4vci/credential`,
+      token_endpoint: `${publicEndpoint}/oid4vci/token`,
+      nonce_endpoint: `${publicEndpoint}/oid4vci/nonce`,
+      display: [
+        {
+          name: this.config.runtime?.title ?? "TNO Security Gateway",
+          locale: "en-US",
+          logo: {
+            uri:
+              this.config.runtime?.lightThemeUrl ??
+              `https://${this.config.server.publicDomain}/layout/images/logo-white.svg`
+          }
+        }
+      ],
       credential_configurations_supported: {}
     };
-    const contexts = await this.contextService.getContexts();
-    contexts
-      .filter((context) => context.issuable)
-      .forEach((context) => {
-        issuerMetadata.credential_configurations_supported[
-          context.credentialType
-        ] = {
-          format: "jwt_vc_json-ld",
+    const issueConfigs =
+      await this.issueConfigurationService.getIssueConfigurations();
+    issueConfigs.forEach((issueConfig) => {
+      let claims: ClaimDescription[] | undefined = undefined;
+      if (issueConfig.schema) {
+        claims = convertJsonSchemaToClaimDescriptions(issueConfig.schema, []);
+      }
+      issuerMetadata.credential_configurations_supported[
+        issueConfig.credentialType
+      ] = {
+        format: CredentialFormat.JWT_VC_JSON_LD,
+        "@context": [
+          "https://www.w3.org/2018/credentials/v1",
+          issueConfig.documentUrl ??
+            `${publicEndpoint}/issue-configuration/${issueConfig.id}`
+        ],
+        cryptographic_binding_methods_supported: ["did:tdw", "did:web"],
+        credential_signing_alg_values_supported: ["EdDSA", "ES384", "PS256"],
+        proof_types_supported: {
+          jwt: {
+            proof_signing_alg_values_supported: ["EdDSA", "ES384", "PS256"]
+          }
+        },
+        credential_definition: {
+          type: ["VerifiableCredential", issueConfig.credentialType],
           "@context": [
             "https://www.w3.org/2018/credentials/v1",
-            context.documentUrl ??
-              `${this.config.server.publicAddress}/api/context/${context.id}`
-          ],
-          cryptographic_binding_methods_supported: ["did:tdw", "did:web"],
-          credential_signing_alg_values_supported: ["EdDSA", "ES384", "PS256"],
-          proof_types_supported: {
-            jwt: {
-              proof_signing_alg_values_supported: ["EdDSA", "ES384", "PS256"]
+            issueConfig.documentUrl ??
+              `${publicEndpoint}/issue-configuration/${issueConfig.id}`
+          ]
+        },
+        credential_metadata: {
+          display: [
+            {
+              name: issueConfig.name ?? issueConfig.credentialType,
+              description: issueConfig.description,
+              background_color: issueConfig.backgroundColor,
+              background_image: {
+                uri: `${publicEndpoint}/issue-configuration/${issueConfig.id}/background-image`
+              },
+              text_color: issueConfig.textColor
             }
-          },
-          credential_definition: {
-            type: ["VerifiableCredential", context.credentialType],
-            "@context": [
-              "https://www.w3.org/2018/credentials/v1",
-              context.documentUrl ??
-                `${this.config.server.publicAddress}/api/context/${context.id}`
-            ]
-          }
-        };
-      });
+          ],
+          claims: claims
+        }
+      };
+    });
     return issuerMetadata;
+  }
+
+  async createNonce(): Promise<NonceResponse> {
+    const nonce = crypto.randomBytes(48).toString("hex");
+    this.nonceCache.set(nonce, Date.now() + 60 * 1000);
+    return {
+      c_nonce: nonce
+    };
   }
 
   async createAccessToken(preAuthorizedCode: string): Promise<AccessToken> {
@@ -95,7 +148,6 @@ export class OID4VCIIssuerService {
       access_token: crypto.randomBytes(48).toString("hex"),
       expires_at: expirationDate,
       refresh_token: crypto.randomBytes(48).toString("hex"),
-      nonce: crypto.randomBytes(48).toString("hex"),
       issuance: issuance
     });
     return {
@@ -103,8 +155,6 @@ export class OID4VCIIssuerService {
       token_type: "bearer",
       expires_in: 86400,
       refresh_token: token.refresh_token,
-      c_nonce: token.nonce,
-      c_nonce_expires_in: 86400,
       authorization_details: [
         {
           type: "openid_credential",
@@ -131,16 +181,18 @@ export class OID4VCIIssuerService {
         throw new AppError("Token not recognized", HttpStatus.UNAUTHORIZED);
       }
       const issuance = token.issuance;
-      if (credentialRequest.proof.proof_type != "jwt") {
+
+      const jwtProof = credentialRequest.proofs?.find(
+        (p) => p.proof_type === "jwt"
+      );
+      if (!jwtProof) {
         throw new AppError(
-          "Only jwt proof types are supported at this moment",
+          "No JWT proof provided in credential request. Only jwt proof types are supported at this moment",
           HttpStatus.BAD_REQUEST
         );
       }
 
-      const parsedJwtHeader = decodeProtectedHeader(
-        credentialRequest.proof.jwt
-      );
+      const parsedJwtHeader = decodeProtectedHeader(jwtProof.jwt);
       if (!parsedJwtHeader.kid) {
         throw new AppError(
           'Only JWTs with "kid" referencing a key described in a DID document are supported',
@@ -170,7 +222,7 @@ export class OID4VCIIssuerService {
         ).andLog(this.logger);
       }
       const key = await importJWK(usedJwk.publicKeyJwk, parsedJwtHeader.alg);
-      const verifiedJwt = await jwtVerify(credentialRequest.proof.jwt, key);
+      const verifiedJwt = await jwtVerify(jwtProof.jwt, key);
 
       const expectedIssuer =
         this.config.server.publicDomain === "localhost"
@@ -183,21 +235,24 @@ export class OID4VCIIssuerService {
         );
       }
 
-      if (verifiedJwt.payload.nonce !== token.nonce) {
+      const nonce = verifiedJwt.payload.nonce;
+      if (typeof nonce !== "string" || !this.nonceCache.has(nonce)) {
         throw new AppError(
-          "Nonce in JWT proof doesn't match registered nonce",
+          "Nonce in JWT proof is invalid or expired",
           HttpStatus.BAD_REQUEST
         );
       }
+      this.nonceCache.delete(nonce);
 
-      const context = await this.contextService.getContextByType(
-        issuance.credentialType
-      );
+      const issueConfig =
+        await this.issueConfigurationService.getIssueConfigurationByType(
+          issuance.credentialType
+        );
 
       const credentialConfig = plainToInstance(InitCredentialConfig, {
         context: [
-          context.documentUrl ??
-            `${this.config.server.publicAddress}/api/context/${context.id}`
+          issueConfig.documentUrl ??
+            `${this.config.server.publicAddress}/api/issue-configuration/${issueConfig.id}`
         ],
         type: [issuance.credentialType],
         id: `${issuance.holderId}#${crypto.randomUUID()}`,
@@ -224,7 +279,11 @@ export class OID4VCIIssuerService {
         credentialId: credential.id
       });
       return {
-        credential: credentialJwt
+        credentials: [
+          {
+            credential: credentialJwt
+          }
+        ]
       };
     } catch (error) {
       if (error instanceof AppError) {

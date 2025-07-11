@@ -15,9 +15,9 @@ import { randomUUID } from "crypto";
 import { IsNull, Not, Repository } from "typeorm";
 
 import { InitCredentialConfig, RootConfig } from "../../config.js";
-import { ContextService } from "../../contexts/context.service.js";
 import { CredentialsService } from "../../credentials/credentials.service.js";
 import { DidService } from "../../did/did.service.js";
+import { IssueConfigurationService } from "../../issue-configurations/issue-configuration.service.js";
 import { SecureTokenService } from "../../keys/token.service.js";
 import { CredentialIssuance } from "../../model/issuance.dao.js";
 
@@ -29,40 +29,37 @@ export class DCPIssuerService {
     private readonly issuanceRepository: Repository<CredentialIssuance>,
     private readonly didService: DidService,
     private readonly secureTokenService: SecureTokenService,
-    private readonly contextService: ContextService,
+    private readonly issueConfigurationService: IssueConfigurationService,
     private readonly credentialService: CredentialsService
   ) {}
   private readonly logger = new Logger(this.constructor.name);
 
   async issuerMetadata(): Promise<IssuerMetadata> {
     const didId = await this.didService.getDidId();
-    const contexts = await this.contextService.getContexts();
+    const issueConfigs =
+      await this.issueConfigurationService.getIssueConfigurations();
     const metadata: IssuerMetadata = {
       "@context": [
         "https://w3id.org/dspace-dcp/v1.0/dcp.jsonld",
-        ...contexts
-          .filter((context) => context.issuable)
-          .map(
-            (context) =>
-              context.documentUrl ??
-              `${this.config.server.publicAddress}/api/context/${context.id}`
-          )
+        ...issueConfigs.map(
+          (issueConfig) =>
+            issueConfig.documentUrl ??
+            `${this.config.server.publicAddress}/api/issue-configuration/${issueConfig.id}`
+        )
       ],
       type: "IssuerMetadata",
       issuer: didId,
-      credentialsSupported: contexts
-        .filter((context) => context.issuable)
-        .map((context) => {
-          const credentialObject: CredentialObject = {
-            id: `${didId}#${context.credentialType}`,
-            type: "CredentialObject",
-            credentialType: context.credentialType,
-            offerReason: "reissue",
-            bindingMethods: ["did:web", "did:tdw"],
-            profiles: ["vc11-bssl/ld"]
-          };
-          return credentialObject;
-        })
+      credentialsSupported: issueConfigs.map((issueConfig) => {
+        const credentialObject: CredentialObject = {
+          id: `${didId}#${issueConfig.credentialType}`,
+          type: "CredentialObject",
+          credentialType: issueConfig.credentialType,
+          offerReason: "reissue",
+          bindingMethods: ["did:web", "did:tdw"],
+          profiles: ["vc11-bssl/ld"]
+        };
+        return credentialObject;
+      })
     };
     return metadata;
   }
@@ -142,13 +139,14 @@ export class DCPIssuerService {
         let credentialMessage: CredentialMessage;
         let idToken: string;
         try {
-          const context = await this.contextService.getContextByType(
-            issuance.credentialType
-          );
+          const issueConfig =
+            await this.issueConfigurationService.getIssueConfigurationByType(
+              issuance.credentialType
+            );
           const credentialConfig = plainToInstance(InitCredentialConfig, {
             context: [
-              context.documentUrl ??
-                `${this.config.server.publicAddress}/api/context/${context.id}`
+              issueConfig.documentUrl ??
+                `${this.config.server.publicAddress}/api/issue-configuration/${issueConfig.id}`
             ],
             type: [issuance.credentialType],
             id: `${issuance.holderId}#${crypto.randomUUID()}`,
@@ -161,8 +159,8 @@ export class DCPIssuerService {
           credentialMessage = {
             "@context": [
               "https://w3id.org/dspace-dcp/v1.0/dcp.jsonld",
-              context.documentUrl ??
-                `${this.config.server.publicAddress}/api/context/${context.id}`
+              issueConfig.documentUrl ??
+                `${this.config.server.publicAddress}/api/issue-configuration/${issueConfig.id}`
             ],
             type: "CredentialMessage",
             credentials: [

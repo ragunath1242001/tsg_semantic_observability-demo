@@ -66,11 +66,10 @@ describe("Config", () => {
           credentialTypes: ["VerifiableCredential", "ExampleCredentialType"]
         }
       ],
-      contexts: [
+      issueConfigurations: [
         {
           id: "Example",
           credentialType: "ExampleCredentialType",
-          issuable: true,
           documentUrl: "https://example.com/context.json"
         }
       ]

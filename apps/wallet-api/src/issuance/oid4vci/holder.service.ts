@@ -5,15 +5,17 @@ import { validateJwt } from "@tsg-dsp/common-signing-and-validation";
 import {
   AccessToken,
   CredentialConfiguration,
+  CredentialFormat,
   CredentialIssuerMetadata,
   CredentialRequest,
   CredentialResponse,
+  NonceResponse,
   OfferGrants,
-  OID4VCICredentialRequestInitiation
+  OID4VCICredentialRequestInitiation,
+  ProofType
 } from "@tsg-dsp/wallet-dtos";
 import axios from "axios";
 import { plainToInstance } from "class-transformer";
-import crypto from "crypto";
 import qs from "querystring";
 
 import { OID4VCIHolderConfig, RootConfig } from "../../config.js";
@@ -81,13 +83,12 @@ export class OID4VCIHolderService {
 
   async requestCredential(
     config: OID4VCICredentialRequestInitiation
-  ): Promise<CredentialDao> {
+  ): Promise<CredentialDao[]> {
     const issuerMetadata = await this.retrieveIssuerMetadata(config.issuerUrl);
     let accessToken: AccessToken;
     if (config.authorized) {
       accessToken = {
         access_token: config.authorized.accessToken,
-        c_nonce: crypto.randomBytes(48).toString("hex"),
         authorization_details: [
           {
             type: "openid_credential",
@@ -124,12 +125,25 @@ export class OID4VCIHolderService {
         HttpStatus.BAD_REQUEST
       ).andLog(this.logger);
     }
+    let nonce: string | undefined;
+    if (issuerMetadata.nonce_endpoint) {
+      try {
+        const nonceResponse = await axios.post<NonceResponse>(
+          issuerMetadata.nonce_endpoint
+        );
+        nonce = nonceResponse.data.c_nonce;
+      } catch (_error) {
+        this.logger.warn(
+          `Could not retrieve nonce from ${issuerMetadata.nonce_endpoint}, proceeding without nonce`
+        );
+      }
+    }
 
     const credentialRequest = await this.generateCredentialRequest(
-      accessToken.c_nonce,
+      nonce,
       config.issuerUrl,
       credentialConfig,
-      config.authorized?.credentialIdentifier,
+      credentialIdentifier,
       config.authorized?.additionalRequestParams
     );
 
@@ -138,25 +152,28 @@ export class OID4VCIHolderService {
       credentialRequest,
       accessToken.access_token
     );
-
-    if ("credential" in credentialResponse) {
-      this.logger.debug(
-        `Received credential as string, attempting to parse as JWT`
+    if ("credentials" in credentialResponse) {
+      return await Promise.all(
+        credentialResponse.credentials.map(async (credentialItem) => {
+          this.logger.debug(
+            `Received credential as string, attempting to parse as JWT`
+          );
+          const payload = await validateJwt(credentialItem.credential);
+          if (payload.vc) {
+            this.logger.debug(
+              `Received credential as JWT, parsing as VerifiableCredential`
+            );
+            return this.credentialsService.importCredential(
+              plainToInstance(VerifiableCredential, payload.vc)
+            );
+          }
+          this.logger.debug(`JWT payload: ${JSON.stringify(payload, null, 2)}`);
+          throw new AppError(
+            "Non parseable credential response",
+            HttpStatus.NOT_IMPLEMENTED
+          ).andLog(this.logger);
+        })
       );
-      const payload = await validateJwt(credentialResponse.credential);
-      if (payload.vc) {
-        this.logger.debug(
-          `Received credential as JWT, parsing as VerifiableCredential`
-        );
-        return this.credentialsService.importCredential(
-          plainToInstance(VerifiableCredential, payload.vc)
-        );
-      }
-      this.logger.debug(`JWT payload: ${JSON.stringify(payload, null, 2)}`);
-      throw new AppError(
-        "Non parseable credential response",
-        HttpStatus.NOT_IMPLEMENTED
-      ).andLog(this.logger);
     } else {
       throw new AppError(
         "Deferred credential handling not yet supported",
@@ -266,8 +283,8 @@ export class OID4VCIHolderService {
   private async generateCredentialRequest(
     nonce: string | undefined,
     issuerUrl: string,
-    credentialConfiguration: CredentialConfiguration,
-    credentialIdentifier?: string,
+    issueConfiguration: CredentialConfiguration,
+    credentialIdentifier: string,
     additionalRequestParams?: { [key: string]: any }
   ): Promise<CredentialRequest> {
     const jwt = await this.signatureService.signAsJwt(
@@ -280,26 +297,24 @@ export class OID4VCIHolderService {
       }
     );
     if (
-      credentialConfiguration.format !== "jwt_vc_json" &&
-      credentialConfiguration.format !== "jwt_vc_json-ld"
+      issueConfiguration.format !== CredentialFormat.JWT_VC_JSON &&
+      issueConfiguration.format !== CredentialFormat.JWT_VC_JSON_LD
     ) {
       throw new AppError(
-        `Unsupported credential format: ${credentialConfiguration.format}`,
+        `Unsupported credential format: ${issueConfiguration.format}`,
         HttpStatus.BAD_REQUEST
       ).andLog(this.logger);
     }
 
-    const response: CredentialRequest = {
-      format: credentialConfiguration.format,
-      credential_definition: credentialConfiguration.credential_definition,
-      proof: {
-        proof_type: "jwt",
-        jwt: jwt
-      }
+    const response: CredentialRequest & { [key: string]: any } = {
+      credential_identifier: credentialIdentifier,
+      proofs: [
+        {
+          proof_type: ProofType.JWT,
+          jwt: jwt
+        }
+      ]
     };
-    if (credentialIdentifier) {
-      response.credential_identifier = credentialIdentifier;
-    }
     if (additionalRequestParams) {
       Object.entries(additionalRequestParams).forEach(([key, value]) => {
         response[key] = value;

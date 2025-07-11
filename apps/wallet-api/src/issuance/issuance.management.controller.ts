@@ -75,12 +75,12 @@ export class IssuanceManagementController {
       "Requests a new credential via the OpenID 4 Verifiable Credential Issuance protocol."
   })
   @ApiBody({ type: OID4VCICredentialRequestInitiation })
-  @ApiOkResponse({ type: CredentialsDto })
+  @ApiOkResponse({ type: [CredentialsDto] })
   @ApiForbiddenResponseDefault()
   @HttpCode(HttpStatus.OK)
   async requestOID4VCICredential(
     @Body(validationPipe) request: OID4VCICredentialRequestInitiation
-  ): Promise<CredentialsDto> {
+  ): Promise<CredentialsDto[]> {
     return this.issuanceService.requestOID4VCICredential(request);
   }
 

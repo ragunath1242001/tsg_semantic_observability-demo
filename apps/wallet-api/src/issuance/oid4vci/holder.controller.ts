@@ -60,7 +60,7 @@ export class OID4VCIHolderController {
       credentialIdentifier: string;
       additionalRequestParams?: { [key: string]: any };
     }
-  ): Promise<CredentialDao> {
+  ): Promise<CredentialDao[]> {
     return this.holderService.requestCredential({
       issuerUrl,
       preAuthorizedCode,

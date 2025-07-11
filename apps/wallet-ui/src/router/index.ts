@@ -4,7 +4,6 @@ import { createRouter, createWebHashHistory } from "vue-router";
 import AppLayout from "@/layout/AppLayoutWallet.vue";
 import AppLayoutWalletUnauthenticated from "@/layout/AppLayoutWalletUnauthenticated.vue";
 import { useRuntimeStore } from "@/stores/runtime";
-import ContextView from "@/views/Contexts.vue";
 import CredentialGaiaX from "@/views/credentials/GaiaX.vue";
 import CredentialImport from "@/views/credentials/Import.vue";
 import CredentialOverview from "@/views/credentials/Overview.vue";
@@ -14,6 +13,7 @@ import DIDServiceView from "@/views/DIDServices.vue";
 import Manual from "@/views/issuance/Manual.vue";
 import Offers from "@/views/issuance/Offers.vue";
 import Requests from "@/views/issuance/Requests.vue";
+import IssueConfigurationView from "@/views/IssueConfiguration.vue";
 import KeysVue from "@/views/Keys.vue";
 import LoginVue from "@/views/Login.vue";
 import OID4VP from "@/views/OID4VP.vue";
@@ -91,9 +91,9 @@ const router = createRouter({
           component: DIDServiceView
         },
         {
-          path: "contexts",
-          name: "contexts",
-          component: ContextView
+          path: "issue-configuration",
+          name: "issue-configuration",
+          component: IssueConfigurationView
         }
       ]
     },

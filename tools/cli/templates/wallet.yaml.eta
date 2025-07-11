@@ -68,17 +68,6 @@ config:
         - "<%= it.participant.id %>:<%= it.general.credentialType %>"
         - https://<%= it.general.authorityDomain %>/credentials/<%= it.general.credentialType %>
   
-  contexts:
-    - id: "<%= it.general.credentialType %>"
-      credentialType: "<%= it.general.credentialType %>"
-      issuable: <%= it.participant.issuer %>
-<%- if (it.participant.issuer) { %>
-      document: <%= JSON.stringify(it.participant.document) %>
-      schema: <%= JSON.stringify(it.participant.schema) %>
-<% } else { %>
-      documentUrl: https://<%= it.general.authorityDomain %>/context/<%= it.general.credentialType %>
-<% } %>
-  
 <%- if (it.participant.issuer) { %>
   issuance:
     issuer: 
@@ -102,3 +91,4 @@ config:
       type: connector
       serviceEndpoint: "{{ .Values.controlPlaneEndpoint }}"
 <% } %>
+<%= it.walletConfig(2) %>

@@ -106,6 +106,11 @@ const menuList: Menu[] = [
         label: "Requests",
         icon: "pi pi-fw pi-download",
         to: "/issuance/requests"
+      },
+      {
+        label: "Configurations",
+        icon: "pi pi-fw pi-search-plus",
+        to: "/issue-configuration"
       }
     ]
   },
@@ -121,16 +126,6 @@ const menuList: Menu[] = [
         label: "OID4VP",
         icon: "pi pi-fw pi-qrcode",
         to: "/presentations/oid4vp"
-      }
-    ]
-  },
-  {
-    label: "Contexts",
-    items: [
-      {
-        label: "JSON-LD Contexts",
-        icon: "pi pi-fw pi-search-plus",
-        to: "/contexts"
       }
     ]
   }
