@@ -17,5 +17,5 @@ test("Validation", async () => {
     serializableTypes["TransferCompletionMessage"] = TransferCompletionMessage;
     const result = await deserialize<TransferCompletionMessage>(jsonLd);
     result.validate();
-  }).rejects.toThrowError(ClassValidationError);
+  }).rejects.toThrow(ClassValidationError);
 });

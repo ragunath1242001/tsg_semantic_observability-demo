@@ -103,7 +103,7 @@ describe("UsersService Tests", () => {
     it("should throw error when updating non-existent user", async () => {
       await expect(
         usersService.updateUser(9999, { username: "DoesNotExist" } as any)
-      ).rejects.toThrowError();
+      ).rejects.toThrow();
     });
 
     it("should delete an existing user", async () => {
