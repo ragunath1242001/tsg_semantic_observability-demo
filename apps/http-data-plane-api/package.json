@@ -46,7 +46,7 @@
     "jose": "^6.0.0",
     "jsonld": "^8.2.1",
     "jsonpath": "^1.1.1",
-    "multer": "2.0.0",
+    "multer": "2.0.1",
     "nest-typed-config": "^2.9.4",
     "pg": "^8.13.3",
     "reflect-metadata": "^0.2.0",

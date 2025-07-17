@@ -58,7 +58,7 @@
     "json-canonicalize": "^2.0.0",
     "jsonld": "^8.3.2",
     "jsonpath": "^1.1.1",
-    "multer": "2.0.0",
+    "multer": "2.0.1",
     "multiformats": "^13.3.2",
     "nest-typed-config": "^2.9.4",
     "pg": "^8.13.3",

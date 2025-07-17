@@ -116,6 +116,22 @@ release:
   rules:
     - if: '$RELEASE_NOW == "true" && $CI_COMMIT_BRANCH == "main"'
 
+test_release:
+  image: node:22
+  stage: release
+  needs: []
+  before_script:
+    - mv /usr/local/bin/yarn /usr/local/bin/yarn.bak
+  script:
+    - cd release/
+    - npm install
+    - VERSION=v$(node version.js)
+    - echo $VERSION
+    - cd ..
+    - node ./release/release.js debug
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+
 include:
   - template: Jobs/Dependency-Scanning.gitlab-ci.yml
   - template: Jobs/Container-Scanning.gitlab-ci.yml
