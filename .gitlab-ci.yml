@@ -55,7 +55,7 @@ lint:
 
 renovate:
   stage: check
-  image: ghcr.io/renovatebot/renovate:40.37.0
+  image: ghcr.io/renovatebot/renovate:41.32.0
   needs: []
   script:
     - renovate
@@ -63,6 +63,22 @@ renovate:
     - if: '$RENOVATE_CHECK == "true" && $CI_COMMIT_BRANCH == "main"'
   variables:
     RENOVATE_CONFIG_FILE: .gitlab/renovate-config.cjs
+
+renovate_test:
+  stage: check
+  image: ghcr.io/renovatebot/renovate:41.32.0
+  needs: []
+  script:
+    - renovate-config-validator
+    - renovate --dry-run=full
+  variables:
+    RENOVATE_CONFIG_FILE: .gitlab/renovate-config.cjs
+  rules:
+    - changes:
+        - .gitlab/renovate-config.cjs
+        - .gitlab/renovate.json
+        - .gitlab-ci.yml
+      if: $CI_PIPELINE_SOURCE == "merge_request_event"
 
 release:
   image: node:22
