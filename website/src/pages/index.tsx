@@ -29,7 +29,7 @@ function HomepageHeader() {
               <Link className={clsx("button button--lg", styles.primaryButton)} to="/docs/">
                 Explore Documentation
               </Link>
-              <Link className={clsx("button button--lg", styles.secondaryButton)} to="/docs/apis/">
+              <Link className={clsx("button button--lg", styles.secondaryButton)} to="/docs/apis/control-plane/tsg-control-plane/">
                 View APIs
               </Link>
             </div>
