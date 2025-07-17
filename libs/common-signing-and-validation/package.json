@@ -37,17 +37,17 @@
     "varint": "^6.0.0"
   },
   "devDependencies": {
-    "@jest/globals": "^29.7.0",
-    "@jest/types": "^29.6.3",
+    "@jest/globals": "^30.0.0",
+    "@jest/types": "^30.0.0",
     "@nestjs/testing": "^11.0.10",
     "@types/digitalbazaar__bitstring": "^3.1.1",
     "@types/elliptic": "^6.4.18",
-    "@types/jest": "^29.5.14",
+    "@types/jest": "^30.0.0",
     "@types/jsonld": "^1.5.15",
     "@types/jsonpath": "^0.2.4",
     "@types/varint": "^6.0.3",
     "msw": "^2.6.6",
-    "jest": "^29.7.0",
+    "jest": "^30.0.0",
     "ts-jest": "^29.2.5",
     "typescript": "^5.7.3"
   }

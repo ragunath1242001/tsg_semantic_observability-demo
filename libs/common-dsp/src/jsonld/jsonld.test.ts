@@ -128,7 +128,7 @@ describe("JSON LD Tests", () => {
 
   test("Version error", async () => {
     setJsonLdDebugContexts(false, "0.0.0");
-    await expect(compact(document)).rejects.toThrowError(
+    await expect(compact(document)).rejects.toThrow(
       "Dereferencing a URL did not result in a valid JSON-LD object."
     );
   });

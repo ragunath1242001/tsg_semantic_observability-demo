@@ -392,7 +392,7 @@ describe("TransferController", () => {
           "urn:uuid:00000000-0000-0000-0000-000000000000",
           "did:web:localhost"
         );
-      }).rejects.toThrowError(
+      }).rejects.toThrow(
         expect.objectContaining({ status: HttpStatus.NOT_FOUND })
       );
     });
@@ -432,7 +432,7 @@ describe("TransferController", () => {
           }),
           "did:web:localhost"
         );
-      }).rejects.toThrowError(
+      }).rejects.toThrow(
         expect.objectContaining({ status: HttpStatus.NOT_FOUND })
       );
     });
@@ -446,7 +446,7 @@ describe("TransferController", () => {
           }),
           "did:web:localhost"
         );
-      }).rejects.toThrowError(
+      }).rejects.toThrow(
         expect.objectContaining({ status: HttpStatus.BAD_REQUEST })
       );
     });
@@ -478,7 +478,7 @@ describe("TransferController", () => {
           }),
           "did:web:localhost"
         );
-      }).rejects.toThrowError(
+      }).rejects.toThrow(
         expect.objectContaining({ status: HttpStatus.NOT_FOUND })
       );
     });
@@ -492,7 +492,7 @@ describe("TransferController", () => {
           }),
           "did:web:localhost"
         );
-      }).rejects.toThrowError(
+      }).rejects.toThrow(
         expect.objectContaining({ status: HttpStatus.BAD_REQUEST })
       );
     });
@@ -526,7 +526,7 @@ describe("TransferController", () => {
           }),
           "did:web:localhost"
         );
-      }).rejects.toThrowError(
+      }).rejects.toThrow(
         expect.objectContaining({ status: HttpStatus.NOT_FOUND })
       );
     });
@@ -542,7 +542,7 @@ describe("TransferController", () => {
           }),
           "did:web:localhost"
         );
-      }).rejects.toThrowError(
+      }).rejects.toThrow(
         expect.objectContaining({ status: HttpStatus.BAD_REQUEST })
       );
     });
@@ -576,7 +576,7 @@ describe("TransferController", () => {
           }),
           "did:web:localhost"
         );
-      }).rejects.toThrowError(
+      }).rejects.toThrow(
         expect.objectContaining({ status: HttpStatus.NOT_FOUND })
       );
     });
@@ -591,7 +591,7 @@ describe("TransferController", () => {
           }),
           "did:web:localhost"
         );
-      }).rejects.toThrowError(
+      }).rejects.toThrow(
         expect.objectContaining({ status: HttpStatus.BAD_REQUEST })
       );
     });
@@ -621,7 +621,7 @@ describe("TransferController", () => {
           }),
           "did:web:localhost"
         );
-      }).rejects.toThrowError(
+      }).rejects.toThrow(
         expect.objectContaining({ status: HttpStatus.NOT_FOUND })
       );
     });
@@ -659,7 +659,7 @@ describe("TransferController", () => {
           }),
           "did:web:localhost"
         );
-      }).rejects.toThrowError(
+      }).rejects.toThrow(
         expect.objectContaining({ status: HttpStatus.NOT_FOUND })
       );
     });
@@ -693,7 +693,7 @@ describe("TransferController", () => {
           }),
           "did:web:localhost"
         );
-      }).rejects.toThrowError(
+      }).rejects.toThrow(
         expect.objectContaining({ status: HttpStatus.NOT_FOUND })
       );
     });
@@ -733,7 +733,7 @@ describe("TransferController", () => {
           }),
           "did:web:localhost"
         );
-      }).rejects.toThrowError(
+      }).rejects.toThrow(
         expect.objectContaining({ status: HttpStatus.NOT_FOUND })
       );
     });

@@ -167,11 +167,13 @@ describe("Algorithm Definition Service", () => {
         participants: [
           {
             didId: "did:example:123456789",
-            role: "server"
+            role: "server",
+            dataset: "dataset1"
           },
           {
             didId: "did:example:987654321",
-            role: "node"
+            role: "node",
+            dataset: "dataset2"
           }
         ]
       });
