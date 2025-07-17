@@ -81,7 +81,7 @@
     "@types/jest": "^29.5.14",
     "@types/jsonld": "^1.5.15",
     "@types/jsonpath": "^0.2.4",
-    "@types/multer": "^1.4.12",
+    "@types/multer": "^2.0.0",
     "@types/node": "^22.13.4",
     "@typescript-eslint/eslint-plugin": "^8.24.1",
     "@typescript-eslint/parser": "^8.24.1",
