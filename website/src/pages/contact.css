@@ -6,6 +6,9 @@
   --link-color: #007bff;
   --link-hover-color: #0056b3;
   --shadow-color: rgba(0, 0, 0, 0.1);
+  --business-icon-color: #1d4ed8;
+  --gitlab-icon-color: #e24329;
+  --developers-icon-color: #059669;
 }
 
 [data-theme="dark"] {
@@ -15,55 +18,92 @@
   --link-color: #61dafb;
   --link-hover-color: #52a9d9;
   --shadow-color: rgba(255, 255, 255, 0.1);
+  --business-icon-color: #2563eb;
+  --gitlab-icon-color: #e24329;
+  --developers-icon-color: #10b981;
+}
+
+/* Smaller hero for contact page */
+.contact-hero {
+  min-height: 30vh !important;
+  padding: 3rem 0 !important;
+}
+
+.contact-hero .hero__title {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.contact-hero .hero__subtitle {
+  font-size: 1.2rem;
+  opacity: 0.9;
+  margin-bottom: 0;
 }
 
 /* Styling for the contact page */
 .contact-container {
-  display: flex;
-  justify-content: space-between;
-  gap: 20px;
-  padding: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  padding: 3rem 2rem;
   max-width: 1200px;
   margin: 0 auto;
-  flex-wrap: wrap;
 }
 
 .contact-block {
-  flex: 1;
-  min-width: 280px;
-  padding: 20px;
+  padding: 2rem;
   border: 1px solid var(--border-color);
-  border-radius: 8px;
+  border-radius: 12px;
   background-color: var(--background-color);
   text-align: center;
   box-shadow: 0 4px 6px var(--shadow-color);
-  transition: transform 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .contact-block:hover {
   transform: translateY(-5px);
+  box-shadow: 0 8px 25px var(--shadow-color);
 }
 
-.contact-icon {
-  font-size: 40px;
-  color: var(--link-color);
-  margin-bottom: 15px;
+.contact-block svg {
+  margin-bottom: 1rem;
+  transition: transform 0.3s ease, color 0.3s ease;
 }
 
-h2 {
-  margin-bottom: 15px;
+.contact-block:first-child svg {
+  color: var(--business-icon-color);
 }
 
-p {
-  margin: 10px 0;
+.contact-block:nth-child(2) svg {
+  color: var(--gitlab-icon-color);
 }
 
-a {
+.contact-block:nth-child(3) svg {
+  color: var(--developers-icon-color);
+}
+
+.contact-block:hover svg {
+  transform: scale(1.1);
+}
+
+.contact-block h2 {
+  margin-bottom: 1rem;
+  color: var(--text-color);
+  font-size: 1.5rem;
+}
+
+.contact-block p {
+  margin: 0.5rem 0;
+  color: var(--text-color);
+}
+
+.contact-block a {
   color: var(--link-color);
   text-decoration: none;
+  font-weight: 500;
 }
 
-a:hover {
+.contact-block a:hover {
   text-decoration: underline;
   color: var(--link-hover-color);
 }
@@ -71,24 +111,55 @@ a:hover {
 .email-with-avatar {
   display: flex;
   align-items: center;
+  text-align: left;
+  margin-bottom: 0.5rem;
 }
 
 .avatar {
-  width: 40px; /* Adjust the size as needed */
-  height: 40px; /* Adjust the size as needed */
-  border-radius: 50%; /* Make the avatar round */
-  margin-left: 10%;
-  margin-right: 10px; /* Space between the avatar and email address */
-  object-fit: cover; /* Ensures the image fits the container properly */
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--border-color);
+  margin-right: 1rem;
+  flex-shrink: 0;
+}
+
+.email-with-avatar p {
+  margin: 0;
+  text-align: left;
 }
 
 /* Make the layout responsive */
 @media (max-width: 768px) {
   .contact-container {
-    flex-direction: column;
+    grid-template-columns: 1fr;
+    padding: 2rem 1rem;
   }
-
-  .contact-block {
-    margin-bottom: 20px;
+  
+  .contact-hero {
+    min-height: 25vh !important;
+    padding: 2rem 0 !important;
+  }
+  
+  .contact-hero .hero__title {
+    font-size: 2rem;
+  }
+  
+  .contact-hero .hero__subtitle {
+    font-size: 1rem;
+  }
+  
+  .email-with-avatar {
+    text-align: left;
+    justify-content: flex-start;
+  }
+  
+  .avatar {
+    margin-right: 1rem;
+  }
+  
+  .email-with-avatar p {
+    text-align: left;
   }
 }
