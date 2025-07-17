@@ -9,9 +9,9 @@
   "packageRules": [
     {
       "description": "Disable tailwindcss updates until primeui works with tailwindcss 4",
-      "packagePatterns": ["tailwindcss"],
       "matchUpdateTypes": ["major"],
-      "enabled": false
+      "enabled": false,
+      "matchPackageNames": ["/tailwindcss/"]
     }
   ]
 }
