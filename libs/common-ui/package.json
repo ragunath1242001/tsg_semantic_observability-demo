@@ -15,7 +15,7 @@
     "@tsconfig/node22": "^22.0.0",
     "@tsg-dsp/common-dsp": "workspace:*",
     "@types/dom-view-transitions": "^1.0.5",
-    "@vitejs/plugin-vue": "^5.2.1",
+    "@vitejs/plugin-vue": "^5.2.1 || ^6.0.0",
     "@vue/tsconfig": "^0.7.0",
     "pinia": "^3.0.1",
     "primeicons": "^7.0.0",
