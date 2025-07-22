@@ -12,4 +12,7 @@ export class OauthRole extends MetaEntity {
 
   @Column({ type: String })
   description!: string;
+
+  @Column({ type: Boolean, default: false })
+  isAdminRole?: boolean = false;
 }

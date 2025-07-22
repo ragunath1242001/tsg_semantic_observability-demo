@@ -2,9 +2,9 @@ import { HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { AppError, ServerConfig } from "@tsg-dsp/common-api";
 import {
-  AuthorizationResponse,
-  PresentationAuthorizationRequest,
-  PresentationDefinition
+  DcqlQuery,
+  OID4VPAuthorizationRequest,
+  OID4VPAuthorizationResponse
 } from "@tsg-dsp/common-dtos";
 import crypto from "crypto";
 import { Repository } from "typeorm";
@@ -37,26 +37,24 @@ export class OID4VPVerifierService {
     return authorizationRequest;
   }
 
-  async createAuthorizationRequest(
-    presentationDefinition: PresentationDefinition
-  ): Promise<string> {
+  async createAuthorizationRequest(dcqlQuery: DcqlQuery): Promise<string> {
     const id = crypto.randomUUID();
     await this.authorizationRequestRepository.save({
       identifier: id,
       nonce: crypto.randomBytes(48).toString("hex"),
-      presentationDefinition: presentationDefinition
+      dcqlQuery: dcqlQuery
     });
     return `oid4vp://?client_id=${this.serverConfig.publicAddress}&request_uri=${this.serverConfig.publicAddress}/api/oid4vp/ar/${id}`;
   }
 
   async getAuthorizationRequest(
     id: string
-  ): Promise<PresentationAuthorizationRequest> {
+  ): Promise<OID4VPAuthorizationRequest> {
     const authorizationRequest = await this.getAuthorizationRequestFromDB(id);
     return {
       state: authorizationRequest.identifier,
       nonce: authorizationRequest.nonce,
-      presentation_definition: authorizationRequest.presentationDefinition,
+      dcql_query: authorizationRequest.dcqlQuery,
       client_id: `${this.serverConfig.publicAddress}`,
       response_uri: `${this.serverConfig.publicAddress}/api/oid4vp/authorize`,
       response_type: "vp_token",
@@ -64,16 +62,19 @@ export class OID4VPVerifierService {
     };
   }
 
-  async verify(authorizationResponse: AuthorizationResponse): Promise<string> {
+  async verify(
+    authorizationResponse: OID4VPAuthorizationResponse
+  ): Promise<string> {
     const obj = await this.getAuthorizationRequestFromDB(
       authorizationResponse.state
     );
     await this.presentationService.evaluatePresentationResponse(
-      obj.presentationDefinition,
+      obj.dcqlQuery,
       {
         vp_token: authorizationResponse.vp_token,
-        presentation_submission: authorizationResponse.presentation_submission
-      }
+        state: authorizationResponse.state
+      },
+      this.serverConfig.publicAddress
     );
     return "Your Verifiable Presentation has been validated, you may now proceed.";
   }

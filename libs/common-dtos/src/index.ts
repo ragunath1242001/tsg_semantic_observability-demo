@@ -1,5 +1,6 @@
 export * from "./dataplane.dto.js";
 export * from "./dcp.dto.js";
+export * from "./dcql.dto.js";
 export * from "./did.schemas.js";
 export * from "./metadata.dto.js";
 export * from "./negotiations.dto.js";

@@ -40,6 +40,24 @@ export class RolesService {
     );
   }
 
+  async getBaseUserRoles(): Promise<string[]> {
+    return this.roleRepository
+      .find({
+        where: { isAdminRole: false },
+        select: ["name"]
+      })
+      .then((roles) => roles.map((role) => role.name));
+  }
+
+  async getAdminUserRoles(): Promise<string[]> {
+    return this.roleRepository
+      .find({
+        where: { isAdminRole: true },
+        select: ["name"]
+      })
+      .then((roles) => roles.map((role) => role.name));
+  }
+
   async getRoles(paginationOptions: PaginationOptionsDto) {
     const [data, total] = await this.roleRepository.findAndCount(
       paginationOptions.typeOrm

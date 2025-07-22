@@ -123,4 +123,9 @@ export class PresentationValidation extends VerifiablePresentationJwt {
   @IsBoolean()
   @IsOptional()
   validateAudience?: boolean;
+
+  @ApiPropertyOptional({ example: true })
+  @IsBoolean()
+  @IsOptional()
+  validateNonce?: boolean;
 }

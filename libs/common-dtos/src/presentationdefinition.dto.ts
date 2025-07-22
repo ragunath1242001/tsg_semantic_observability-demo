@@ -4,7 +4,6 @@ import {
   IsArray,
   IsBoolean,
   IsEnum,
-  IsIn,
   IsObject,
   IsOptional,
   IsString,
@@ -292,38 +291,6 @@ export class DescriptorMap {
   @ValidateNested()
   @Type(() => DescriptorMap)
   path_nested?: DescriptorMap;
-}
-
-export class PresentationAuthorizationRequest {
-  @ApiProperty({ example: "client123" })
-  @IsString()
-  client_id!: string;
-
-  @ApiProperty({ example: "https://client.example.com/callback" })
-  @IsString()
-  response_uri!: string;
-
-  @ApiProperty({ example: "vp_token" })
-  @IsString()
-  @IsIn(["vp_token"])
-  response_type = "vp_token";
-
-  @ApiProperty({ example: "direct_post" })
-  @IsString()
-  @IsIn(["direct_post"])
-  response_mode = "direct_post";
-
-  @ApiProperty({ example: { id: "pd1", input_descriptors: [] } })
-  @IsString()
-  presentation_definition!: PresentationDefinition;
-
-  @ApiProperty({ example: "nonce123" })
-  @IsString()
-  nonce!: string;
-
-  @ApiProperty({ example: "state123" })
-  @IsString()
-  state!: string;
 }
 
 export class AuthorizationResponse extends PresentationResponse {

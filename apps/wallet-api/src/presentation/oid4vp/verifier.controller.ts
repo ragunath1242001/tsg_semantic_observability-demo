@@ -4,21 +4,27 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Logger,
   Param,
   Post
 } from "@nestjs/common";
 import {
   ApiBody,
+  ApiConsumes,
   ApiOkResponse,
   ApiOperation,
   ApiParam,
   ApiTags
 } from "@nestjs/swagger";
-import { DisableOAuthGuard, DisableRolesGuard } from "@tsg-dsp/common-api";
+import {
+  DisableOAuthGuard,
+  DisableRolesGuard,
+  validationPipe
+} from "@tsg-dsp/common-api";
 import {
   ApiForbiddenResponseDefault,
-  AuthorizationResponse,
-  PresentationAuthorizationRequest
+  OID4VPAuthorizationRequest,
+  OID4VPAuthorizationResponse
 } from "@tsg-dsp/common-dtos";
 
 import { OID4VPVerifierService } from "./verifier.service.js";
@@ -28,6 +34,8 @@ import { OID4VPVerifierService } from "./verifier.service.js";
 @ApiTags("OID4VP")
 @Controller("oid4vp")
 export class OID4VPVerifierController {
+  private readonly logger = new Logger(OID4VPVerifierController.name);
+
   constructor(private readonly oid4vpVerifierService: OID4VPVerifierService) {}
 
   @Get("ar/:id")
@@ -42,23 +50,32 @@ export class OID4VPVerifierController {
   @ApiForbiddenResponseDefault()
   async getAuthorizationRequest(
     @Param("id") id: string
-  ): Promise<PresentationAuthorizationRequest> {
+  ): Promise<OID4VPAuthorizationRequest> {
     return this.oid4vpVerifierService.getAuthorizationRequest(id);
   }
 
   @Post("authorize")
   @ApiOperation({
-    summary: "Add an Authorization Request",
+    summary: "Submit Authorization Response",
     description:
-      "Add an Authorization Request according to the OID4VP specification."
+      "Submit an Authorization Response according to the OID4VP 1.0 specification using form-urlencoded format."
   })
   @HttpCode(HttpStatus.OK)
-  @ApiBody({ type: AuthorizationResponse })
+  @ApiConsumes("application/x-www-form-urlencoded")
+  @ApiBody({
+    type: OID4VPAuthorizationResponse,
+    description:
+      "Authorization response in form-urlencoded format as per OID4VP 1.0 specification."
+  })
   @ApiOkResponse()
   @ApiForbiddenResponseDefault()
   async status(
-    @Body() authorizationResponse: AuthorizationResponse
+    @Body(validationPipe) authResponse: OID4VPAuthorizationResponse
   ): Promise<string> {
-    return await this.oid4vpVerifierService.verify(authorizationResponse);
+    this.logger.debug(
+      `Received authorization response: ${JSON.stringify(authResponse)}`
+    );
+
+    return await this.oid4vpVerifierService.verify(authResponse);
   }
 }

@@ -11,7 +11,6 @@ import { UsersModule } from "../users/users.module.js";
 import { OID4VPVerifierController } from "./oid4vp/verifier.controller.js";
 import { OID4VPVerifierManagementController } from "./oid4vp/verifier.management.controller.js";
 import { OID4VPVerifierService } from "./oid4vp/verifier.service.js";
-import { PresentationService } from "./presentation.service.js";
 
 @Module({
   imports: [
@@ -25,8 +24,8 @@ import { PresentationService } from "./presentation.service.js";
     OauthModule,
     RolesModule
   ],
-  providers: [PresentationService, OID4VPVerifierService],
+  providers: [OID4VPVerifierService],
   controllers: [OID4VPVerifierController, OID4VPVerifierManagementController],
-  exports: [PresentationService]
+  exports: []
 })
 export class PresentationModule {}

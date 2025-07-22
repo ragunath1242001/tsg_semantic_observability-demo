@@ -206,15 +206,18 @@ paths:
         - OID4VP
   /api/oid4vp/authorize:
     post:
-      description: Add an Authorization Request according to the OID4VP specification.
+      description: Submit an Authorization Response according to the OID4VP 1.0
+        specification using form-urlencoded format.
       operationId: OID4VPVerifierController_status
       parameters: []
       requestBody:
         required: true
+        description: Authorization response in form-urlencoded format as per OID4VP 1.0
+          specification.
         content:
-          application/json:
+          application/x-www-form-urlencoded:
             schema:
-              $ref: "#/components/schemas/AuthorizationResponse"
+              $ref: "#/components/schemas/OID4VPAuthorizationResponse"
       responses:
         "200":
           description: ""
@@ -224,7 +227,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      summary: Add an Authorization Request
+      summary: Submit Authorization Response
       tags: *a5
   /api/management/oid4vp/verifier/create:
     post:
@@ -236,7 +239,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/PresentationDefinition"
+              $ref: "#/components/schemas/DcqlQuery"
       responses:
         "200":
           description: ""
@@ -267,7 +270,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/PresentationDefinition"
+              $ref: "#/components/schemas/DcqlQuery"
       responses:
         "200":
           description: ""
@@ -2572,298 +2575,184 @@ components:
         - statusListIndex
         - statusPurpose
         - status
-    DescriptorMap:
+    VpToken:
       type: object
-      properties:
-        id:
-          type: string
-          example: desc1
-        format:
-          type: string
-          example: jwt
-        path:
-          type: string
-          example: $.credential
-        path_nested:
-          example:
-            id: desc-nested
-            format: jwt
-            path: $.nested
-          allOf:
-            - $ref: "#/components/schemas/DescriptorMap"
-      required:
-        - id
-        - format
-        - path
-    PresentationSubmission:
-      type: object
-      properties:
-        id:
-          type: string
-          example: submission-id
-        definition_id:
-          type: string
-          example: definition-id
-        descriptor_map:
-          example:
-            - id: desc1
-              format: jwt
-              path: $.credential
-          type: array
-          items:
-            $ref: "#/components/schemas/DescriptorMap"
-      required:
-        - id
-        - definition_id
-        - descriptor_map
-    AuthorizationResponse:
+      properties: {}
+    OID4VPAuthorizationResponse:
       type: object
       properties:
         vp_token:
-          type: string
-          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
-        presentation_submission:
           example:
-            id: submission-id
-            definition_id: definition-id
-            descriptor_map: []
+            identity_credential:
+              - eyJhbGciOiJFUzI1NiJ9...
+          description: VP Token with credential ID to presentations mapping
           allOf:
-            - $ref: "#/components/schemas/PresentationSubmission"
+            - $ref: "#/components/schemas/VpToken"
         state:
           type: string
           example: state123
+          description: State parameter from the authorization request
       required:
         - vp_token
-        - presentation_submission
         - state
-    JwtVpClaimFormat:
+    CredentialMeta:
       type: object
       properties:
-        alg:
+        vct_values:
           example:
-            - Ed25519
+            - https://credentials.example.com/identity_credential
+          description: "For SD-JWT VC: allowed vct values"
           type: array
           items:
             type: string
-      required:
-        - alg
-    Format:
-      type: object
-      properties:
-        jwt_vp:
-          example:
-            alg:
-              - ES256
-          allOf:
-            - $ref: "#/components/schemas/JwtVpClaimFormat"
-    FilterItems:
-      type: object
-      properties:
-        const:
-          type: object
-          example: example-const
-        enum:
-          example: &a30
-            - 1
-            - two
+        type_values:
           type: array
           items:
-            type: number
-        exclusiveMinimum:
-          type: object
-          example: 0
-        exclusiveMaximum:
-          type: object
-          example: 100
-        format:
-          type: string
-          example: date-time
-        minLength:
-          type: number
-          example: 1
-        maxLength:
-          type: number
-          example: 255
-        minimum:
-          type: object
-          example: 0
-        maximum:
-          type: object
-          example: 100
-        not:
-          example: null
-          allOf:
-            - $ref: "#/components/schemas/FilterItems"
-        pattern:
-          type: string
-          example: ^[A-Za-z]+$
-        contains:
-          example: null
-          allOf:
-            - $ref: "#/components/schemas/FilterItems"
-        items:
-          type: object
-          example: &a31
-            property:
+            type: array
+            items:
               type: string
-              format: default
-    Filter:
+          example:
+            - - VerifiableCredential
+              - IDCredential
+          description: "For W3C VC: allowed type values"
+        doctype_value:
+          type: string
+          example: org.iso.18013.5.1.mDL
+          description: "For mdoc: document type value"
+    TrustedAuthoritiesQuery:
       type: object
       properties:
-        const:
-          type: object
-          example: example-const
-        enum:
-          example: *a30
-          type: array
-          items:
-            type: number
-        exclusiveMinimum:
-          type: object
-          example: 0
-        exclusiveMaximum:
-          type: object
-          example: 100
-        format:
-          type: string
-          example: date-time
-        minLength:
-          type: number
-          example: 1
-        maxLength:
-          type: number
-          example: 255
-        minimum:
-          type: object
-          example: 0
-        maximum:
-          type: object
-          example: 100
-        not:
-          example: null
-          allOf:
-            - $ref: "#/components/schemas/FilterItems"
-        pattern:
-          type: string
-          example: ^[A-Za-z]+$
-        contains:
-          example: null
-          allOf:
-            - $ref: "#/components/schemas/FilterItems"
-        items:
-          type: object
-          example: *a31
         type:
           type: string
-          example: string
+          enum:
+            - aki
+            - etsi_tl
+            - openid_federation
+          example: openid_federation
+          description: Type of trusted authority mechanism
+        values:
+          example:
+            - https://trustanchor.example.com
+          description: Array of trusted authority identifiers
+          type: array
+          items:
+            type: string
       required:
         - type
-    Field:
+        - values
+    ClaimsQuery:
       type: object
       properties:
+        id:
+          type: string
+          example: family_name_claim
+          description: Unique identifier for this claim query
         path:
           example:
-            - $.example
+            - credentialSubject
+            - familyName
+          description: Array representing path to claim in credential
           type: array
           items:
             type: string
-        id:
-          type: string
-          example: field-id
-        purpose:
-          type: string
-          example: Field purpose
-        name:
-          type: string
-          example: Field name
-        filter:
+        values:
           example:
+            - Doe
+            - Smith
+          description: Expected values for value matching
+          type: array
+          items:
             type: string
-            pattern: ^[A-Za-z]+$
-          allOf:
-            - $ref: "#/components/schemas/Filter"
-        optional:
-          type: boolean
-          example: true
       required:
         - path
-    Constraint:
+    CredentialQuery:
       type: object
       properties:
-        fields:
-          example:
-            - path:
-                - $.example
-              id: example-field
-              purpose: Example purpose
-              name: Example Name
-              filter:
-                type: string
-                pattern: ^[A-Za-z]+$
-              optional: false
-          type: array
-          items:
-            $ref: "#/components/schemas/Field"
-        limit_disclosure:
+        id:
           type: string
+          example: identity_credential
+          description: Unique identifier for this credential query
+        format:
+          type: string
+          example: dc+sd-jwt
+          description: Credential format identifier
           enum:
-            - required
-            - preferred
-          example: preferred
-    InputDescriptor:
-      type: object
-      properties:
-        id:
-          type: string
-          example: 44d1f3d6-f65d-4a7c-84db-f92ba826305e
-        name:
-          type: string
-          example: Example Input Descriptor
-        purpose:
-          type: string
-          example: Example Purpose
-        format:
-          example:
-            jwt_vp:
-              alg:
-                - ES256
+            - jwt_vc_json
+            - ldp_vc
+            - dc+sd-jwt
+            - mso_mdoc
+        multiple:
+          type: boolean
+          example: false
+          description: Whether multiple credentials can be returned for this query
+        meta:
+          description: Format-specific metadata and constraints
           allOf:
-            - $ref: "#/components/schemas/Format"
-        constraints:
-          example:
-            fields: []
-            limit_disclosure: preferred
-          allOf:
-            - $ref: "#/components/schemas/Constraint"
-      required:
-        - id
-        - constraints
-    PresentationDefinition:
-      type: object
-      properties:
-        id:
-          type: string
-          example: 44d1f3d6-f65d-4a7c-84db-f92ba826305e
-        input_descriptors:
+            - $ref: "#/components/schemas/CredentialMeta"
+        trusted_authorities:
+          description: Trusted authorities or trust frameworks
           type: array
           items:
-            $ref: "#/components/schemas/InputDescriptor"
-        name:
-          type: string
-          example: Example Presentation Definition
-        purpose:
-          type: string
-          example: Example Purpose
-        format:
+            $ref: "#/components/schemas/TrustedAuthoritiesQuery"
+        require_cryptographic_holder_binding:
+          type: boolean
+          example: true
+          description: Whether cryptographic holder binding is required
+        claims:
+          description: Specific claims to request from the credential
+          type: array
+          items:
+            $ref: "#/components/schemas/ClaimsQuery"
+        claim_sets:
+          type: array
+          items:
+            type: array
+            items:
+              type: string
           example:
-            jwt_vp:
-              alg:
-                - ES256
-          allOf:
-            - $ref: "#/components/schemas/Format"
+            - - claim1
+              - claim2
+            - - claim3
+          description: Alternative combinations of claims
       required:
         - id
-        - input_descriptors
+        - format
+        - meta
+    CredentialSetQuery:
+      type: object
+      properties:
+        options:
+          type: array
+          items:
+            type: array
+            items:
+              type: string
+          example:
+            - - identity_cred
+            - - passport_cred
+              - visa_cred
+          description: Array of credential ID combinations that satisfy the requirement
+        required:
+          type: boolean
+          example: true
+          description: Whether this credential set is required
+      required:
+        - options
+    DcqlQuery:
+      type: object
+      properties:
+        credentials:
+          description: Array of credential queries
+          type: array
+          items:
+            $ref: "#/components/schemas/CredentialQuery"
+        credential_sets:
+          description: Optional credential set constraints
+          type: array
+          items:
+            $ref: "#/components/schemas/CredentialSetQuery"
+      required:
+        - credentials
     VerifiablePresentationJwt:
       type: object
       properties:
@@ -3084,10 +2973,10 @@ components:
             verifier: did:example:verifier
         credentialStatus:
           oneOf:
-            - &a32
+            - &a30
               $ref: "#/components/schemas/CredentialStatus"
             - type: array
-              items: *a32
+              items: *a30
         proof:
           example:
             - type: JsonWebSignature2020
@@ -3124,10 +3013,10 @@ components:
           example: 3f2592da-ffc9-40cb-a336-a9daa9343ce8
         verifiableCredential:
           oneOf:
-            - &a33
+            - &a31
               $ref: "#/components/schemas/VerifiableCredential"
             - type: array
-              items: *a33
+              items: *a31
         proof:
           oneOf:
             - $ref: "#/components/schemas/JsonWebSignature2020"
@@ -3187,6 +3076,9 @@ components:
         validateAudience:
           type: boolean
           example: true
+        validateNonce:
+          type: boolean
+          example: true
       required:
         - vp
         - valid
@@ -3196,6 +3088,234 @@ components:
         - validExpiryDate
         - validProof
         - validStatus
+    JwtVpClaimFormat:
+      type: object
+      properties:
+        alg:
+          example:
+            - Ed25519
+          type: array
+          items:
+            type: string
+      required:
+        - alg
+    Format:
+      type: object
+      properties:
+        jwt_vp:
+          example:
+            alg:
+              - ES256
+          allOf:
+            - $ref: "#/components/schemas/JwtVpClaimFormat"
+    FilterItems:
+      type: object
+      properties:
+        const:
+          type: object
+          example: example-const
+        enum:
+          example: &a32
+            - 1
+            - two
+          type: array
+          items:
+            type: number
+        exclusiveMinimum:
+          type: object
+          example: 0
+        exclusiveMaximum:
+          type: object
+          example: 100
+        format:
+          type: string
+          example: date-time
+        minLength:
+          type: number
+          example: 1
+        maxLength:
+          type: number
+          example: 255
+        minimum:
+          type: object
+          example: 0
+        maximum:
+          type: object
+          example: 100
+        not:
+          example: null
+          allOf:
+            - $ref: "#/components/schemas/FilterItems"
+        pattern:
+          type: string
+          example: ^[A-Za-z]+$
+        contains:
+          example: null
+          allOf:
+            - $ref: "#/components/schemas/FilterItems"
+        items:
+          type: object
+          example: &a33
+            property:
+              type: string
+              format: default
+    Filter:
+      type: object
+      properties:
+        const:
+          type: object
+          example: example-const
+        enum:
+          example: *a32
+          type: array
+          items:
+            type: number
+        exclusiveMinimum:
+          type: object
+          example: 0
+        exclusiveMaximum:
+          type: object
+          example: 100
+        format:
+          type: string
+          example: date-time
+        minLength:
+          type: number
+          example: 1
+        maxLength:
+          type: number
+          example: 255
+        minimum:
+          type: object
+          example: 0
+        maximum:
+          type: object
+          example: 100
+        not:
+          example: null
+          allOf:
+            - $ref: "#/components/schemas/FilterItems"
+        pattern:
+          type: string
+          example: ^[A-Za-z]+$
+        contains:
+          example: null
+          allOf:
+            - $ref: "#/components/schemas/FilterItems"
+        items:
+          type: object
+          example: *a33
+        type:
+          type: string
+          example: string
+      required:
+        - type
+    Field:
+      type: object
+      properties:
+        path:
+          example:
+            - $.example
+          type: array
+          items:
+            type: string
+        id:
+          type: string
+          example: field-id
+        purpose:
+          type: string
+          example: Field purpose
+        name:
+          type: string
+          example: Field name
+        filter:
+          example:
+            type: string
+            pattern: ^[A-Za-z]+$
+          allOf:
+            - $ref: "#/components/schemas/Filter"
+        optional:
+          type: boolean
+          example: true
+      required:
+        - path
+    Constraint:
+      type: object
+      properties:
+        fields:
+          example:
+            - path:
+                - $.example
+              id: example-field
+              purpose: Example purpose
+              name: Example Name
+              filter:
+                type: string
+                pattern: ^[A-Za-z]+$
+              optional: false
+          type: array
+          items:
+            $ref: "#/components/schemas/Field"
+        limit_disclosure:
+          type: string
+          enum:
+            - required
+            - preferred
+          example: preferred
+    InputDescriptor:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 44d1f3d6-f65d-4a7c-84db-f92ba826305e
+        name:
+          type: string
+          example: Example Input Descriptor
+        purpose:
+          type: string
+          example: Example Purpose
+        format:
+          example:
+            jwt_vp:
+              alg:
+                - ES256
+          allOf:
+            - $ref: "#/components/schemas/Format"
+        constraints:
+          example:
+            fields: []
+            limit_disclosure: preferred
+          allOf:
+            - $ref: "#/components/schemas/Constraint"
+      required:
+        - id
+        - constraints
+    PresentationDefinition:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 44d1f3d6-f65d-4a7c-84db-f92ba826305e
+        input_descriptors:
+          type: array
+          items:
+            $ref: "#/components/schemas/InputDescriptor"
+        name:
+          type: string
+          example: Example Presentation Definition
+        purpose:
+          type: string
+          example: Example Purpose
+        format:
+          example:
+            jwt_vp:
+              alg:
+                - ES256
+          allOf:
+            - $ref: "#/components/schemas/Format"
+      required:
+        - id
+        - input_descriptors
     PresentationQueryMessage:
       type: object
       properties:
@@ -3217,6 +3337,50 @@ components:
       required:
         - "@context"
         - type
+    DescriptorMap:
+      type: object
+      properties:
+        id:
+          type: string
+          example: desc1
+        format:
+          type: string
+          example: jwt
+        path:
+          type: string
+          example: $.credential
+        path_nested:
+          example:
+            id: desc-nested
+            format: jwt
+            path: $.nested
+          allOf:
+            - $ref: "#/components/schemas/DescriptorMap"
+      required:
+        - id
+        - format
+        - path
+    PresentationSubmission:
+      type: object
+      properties:
+        id:
+          type: string
+          example: submission-id
+        definition_id:
+          type: string
+          example: definition-id
+        descriptor_map:
+          example:
+            - id: desc1
+              format: jwt
+              path: $.credential
+          type: array
+          items:
+            $ref: "#/components/schemas/DescriptorMap"
+      required:
+        - id
+        - definition_id
+        - descriptor_map
     PresentationResponseMessage:
       type: object
       properties:

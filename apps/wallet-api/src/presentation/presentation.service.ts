@@ -7,10 +7,7 @@ import {
   VerifiablePresentationJsonLd,
   VerifiablePresentationJwt
 } from "@tsg-dsp/common-dsp";
-import {
-  PresentationDefinition,
-  PresentationResponse
-} from "@tsg-dsp/common-dtos";
+import { DcqlQuery, OID4VPAuthorizationResponse } from "@tsg-dsp/common-dtos";
 import {
   evaluatePresentationResponseValidity,
   verifyCredentialStatusValidity,
@@ -143,17 +140,21 @@ export class PresentationService {
   }
 
   public async evaluatePresentationResponse(
-    definition: PresentationDefinition,
-    response: PresentationResponse
-  ): Promise<VerifiablePresentation> {
+    dcqlQuery: DcqlQuery,
+    response: OID4VPAuthorizationResponse,
+    audience?: string,
+    nonce?: string
+  ): Promise<VerifiablePresentation[]> {
     this.logger.log(`Evaluating presentation response`);
     this.logger.debug(`VP token: ${response.vp_token}`);
-    this.logger.debug(`Definition: ${JSON.stringify(definition)}`);
+    this.logger.debug(`DCQL Query: ${JSON.stringify(dcqlQuery)}`);
     this.logger.debug(`Response: ${JSON.stringify(response)}`);
     return await evaluatePresentationResponseValidity(
-      definition,
+      dcqlQuery,
       response,
-      this.config?.trustAnchors ? this.config.trustAnchors : []
+      this.config?.trustAnchors ? this.config.trustAnchors : [],
+      audience,
+      nonce
     );
   }
 }

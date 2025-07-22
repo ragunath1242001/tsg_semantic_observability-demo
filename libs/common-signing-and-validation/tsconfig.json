@@ -12,6 +12,7 @@
     "resolveJsonModule": true,
     "allowJs": true,
     "sourceMap": true,
+    "isolatedModules": true,
     "outDir": "dist",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,

@@ -1,11 +1,13 @@
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { AppError, AuthorizationRequest } from "@tsg-dsp/common-api";
+import { VerifiablePresentation } from "@tsg-dsp/common-dsp";
 import {
-  AuthorizationResponse,
-  PresentationAuthorizationRequest,
-  PresentationDefinition
+  DcqlQuery,
+  OID4VPAuthorizationRequest,
+  OID4VPAuthorizationResponse
 } from "@tsg-dsp/common-dtos";
+import { evaluatePresentationResponseValidity } from "@tsg-dsp/common-signing-and-validation";
 import crypto from "crypto";
 import { Request, Response } from "express";
 import { Repository } from "typeorm";
@@ -17,7 +19,6 @@ import { OauthService } from "../../oauth/oauth.service.js";
 import { RolesService } from "../../roles/roles.service.js";
 import { UsersService } from "../../users/users.service.js";
 import { getSession } from "../../utils/session.js";
-import { PresentationService } from "../presentation.service.js";
 
 @Injectable()
 export class OID4VPVerifierService {
@@ -27,8 +28,7 @@ export class OID4VPVerifierService {
     public authorizationRequestRepository: Repository<AuthorizationRequestDao>,
     private readonly oauthService: OauthService,
     private readonly rolesService: RolesService,
-    private readonly usersService: UsersService,
-    private readonly presentationService: PresentationService
+    private readonly usersService: UsersService
   ) {}
   private readonly logger = new Logger(this.constructor.name);
 
@@ -55,9 +55,10 @@ export class OID4VPVerifierService {
     return `oid4vp://?client_id=${this.config.server.publicAddress}&request_uri=${this.config.server.publicAddress}/api/oid4vp/ar/${identifier}`;
   }
 
-  async obtainAuthorizationRequestUrl(
+  async getOrCreateAuthorizationRequestUrl(
     identifier: string,
-    authorizationRequest: AuthorizationRequest
+    authorizationRequest: AuthorizationRequest,
+    dcqlQueryId?: string
   ): Promise<string> {
     try {
       await this.getAuthorizationRequestFromDB(identifier);
@@ -66,7 +67,8 @@ export class OID4VPVerifierService {
       if (err instanceof AppError && err.getStatus() === HttpStatus.NOT_FOUND) {
         return await this.createAuthorizationRequest(
           identifier,
-          authorizationRequest
+          authorizationRequest,
+          dcqlQueryId || "User"
         );
       } else {
         throw err;
@@ -76,32 +78,48 @@ export class OID4VPVerifierService {
 
   async createAuthorizationRequest(
     identifier: string,
-    authorizationRequest: AuthorizationRequest
+    authorizationRequest: AuthorizationRequest,
+    dcqlQueryId: string
   ): Promise<string> {
-    const presentationDefinition: PresentationDefinition = JSON.parse(
-      this.config.presentationDefinition
-    );
+    const dcqlQuery = this.getDcqlQuery(dcqlQueryId);
+
     await this.authorizationRequestRepository.save({
       identifier: identifier,
       nonce: crypto.randomBytes(48).toString("hex"),
-      presentationDefinition: presentationDefinition,
-      authorizationRequest: authorizationRequest
+      dcqlQuery: dcqlQuery,
+      authorizationRequest: authorizationRequest,
+      response_mode: "direct_post",
+      response_type: "vp_token",
+      response_uri: `${this.config.server.publicAddress}/api/oid4vp/authorize`
     });
     return this.getOid4vpUri(identifier);
   }
 
   async getAuthorizationRequest(
     id: string
-  ): Promise<PresentationAuthorizationRequest> {
+  ): Promise<OID4VPAuthorizationRequest> {
     const authorizationRequest = await this.getAuthorizationRequestFromDB(id);
+
+    let dcqlQuery = authorizationRequest.dcqlQuery;
+    if (!dcqlQuery) {
+      dcqlQuery = this.getDefaultDcqlQuery();
+      authorizationRequest.dcqlQuery = dcqlQuery;
+      await this.authorizationRequestRepository.save(authorizationRequest);
+    }
+
     return {
+      client_id: `${this.config.server.publicAddress}`,
+      redirect_uri:
+        authorizationRequest.response_type ||
+        `${this.config.server.publicAddress}/api/oid4vp/authorize`,
+      response_type: authorizationRequest.response_type || "vp_token",
+      response_mode: authorizationRequest.response_mode || "direct_post",
       state: authorizationRequest.identifier,
       nonce: authorizationRequest.nonce,
-      presentation_definition: authorizationRequest.presentationDefinition,
-      client_id: `${this.config.server.publicAddress}`,
-      response_uri: `${this.config.server.publicAddress}/api/oid4vp/authorize`,
-      response_type: "vp_token",
-      response_mode: "direct_post"
+      response_uri:
+        authorizationRequest.response_uri ||
+        `${this.config.server.publicAddress}/api/oid4vp/authorize`,
+      dcql_query: dcqlQuery
     };
   }
 
@@ -133,36 +151,41 @@ export class OID4VPVerifierService {
     response.redirect(loginResult.url);
   }
 
-  async verify(authorizationResponse: AuthorizationResponse) {
+  async verify(
+    authorizationResponse: OID4VPAuthorizationResponse,
+    requiredRole?: string
+  ) {
     const obj = await this.getAuthorizationRequestFromDB(
       authorizationResponse.state
     );
-    const vp = await this.presentationService.evaluatePresentationResponse(
-      obj.presentationDefinition,
-      {
-        vp_token: authorizationResponse.vp_token,
-        presentation_submission: authorizationResponse.presentation_submission
-      }
+
+    const dcqlQuery = obj.dcqlQuery;
+
+    const verifiablePresentations = await evaluatePresentationResponseValidity(
+      dcqlQuery,
+      authorizationResponse,
+      [],
+      undefined,
+      obj.nonce
     );
 
-    const verifiableCredentials = Array.isArray(vp.verifiableCredential)
-      ? vp.verifiableCredential
-      : [vp.verifiableCredential];
+    const user = await this.handleVerifiablePresentations(
+      verifiablePresentations,
+      obj,
+      requiredRole
+    );
 
-    let email: string | undefined;
+    return user;
+  }
 
-    for (const vc of verifiableCredentials) {
-      const subjects = Array.isArray(vc.credentialSubject)
-        ? vc.credentialSubject
-        : [vc.credentialSubject];
-      for (const subject of subjects) {
-        if (subject.email) {
-          email = subject.email;
-          break;
-        }
-      }
-      if (email) break;
-    }
+  private async handleVerifiablePresentations(
+    verifiablePresentations: VerifiablePresentation[],
+    authorizationRequest: AuthorizationRequestDao,
+    requiredRole?: string
+  ): Promise<OauthUser> {
+    const { email, isAdmin, role } = this.extractCredentialData(
+      verifiablePresentations
+    );
 
     if (!email) {
       throw new AppError(
@@ -171,39 +194,231 @@ export class OID4VPVerifierService {
       );
     }
 
-    let user: OauthUser;
+    if (requiredRole && role !== requiredRole) {
+      throw new AppError(
+        `Access denied: Required role '${requiredRole}' not found. User has role: '${role || "none"}'`,
+        HttpStatus.FORBIDDEN
+      );
+    }
+
+    const user = await this.getOrCreateUser(email, isAdmin);
+
+    authorizationRequest.user = user;
+    authorizationRequest.completed = true;
+    await this.authorizationRequestRepository.save(authorizationRequest);
+    return user;
+  }
+
+  private extractCredentialData(
+    verifiablePresentations: VerifiablePresentation[]
+  ): { email: string | undefined; isAdmin: boolean; role: string | undefined } {
+    let email: string | undefined;
+    let isAdmin = false;
+    let role: string | undefined;
+
+    const adminRoles = this.getAdminRolesFromConfig();
+
+    for (const vp of verifiablePresentations) {
+      const credentials = Array.isArray(vp.verifiableCredential)
+        ? vp.verifiableCredential
+        : [vp.verifiableCredential];
+
+      for (const credential of credentials) {
+        const result = this.extractFromCredential(credential);
+        if (result.email && !email) {
+          email = result.email;
+        }
+        if (result.role) {
+          if (!role) {
+            role = result.role;
+          }
+          if (adminRoles.includes(result.role)) {
+            isAdmin = true;
+          }
+        }
+        if (email && role) {
+          break;
+        }
+      }
+      if (email && role) {
+        break;
+      }
+    }
+
+    return { email, isAdmin, role };
+  }
+
+  private extractFromCredential(credential: unknown): {
+    email?: string;
+    isAdmin: boolean;
+    role?: string;
+  } {
+    const cred = credential as Record<string, unknown>;
+    const subjects = Array.isArray(cred.credentialSubject)
+      ? cred.credentialSubject
+      : [cred.credentialSubject];
+
+    let email: string | undefined;
+    let role: string | undefined;
+
+    const emailPaths = this.getClaimPathsFromConfig("email");
+    const rolePaths = this.getClaimPathsFromConfig("role");
+
+    for (const subject of subjects) {
+      const subj = subject as Record<string, unknown>;
+
+      if (!email) {
+        email = this.extractClaimValue(subj, "email", emailPaths);
+      }
+
+      if (!role) {
+        role = this.extractClaimValue(subj, "role", rolePaths);
+      }
+
+      if (email && role) {
+        break;
+      }
+    }
+
+    return { email, isAdmin: false, role };
+  }
+
+  private async getOrCreateUser(
+    email: string,
+    isAdmin: boolean
+  ): Promise<OauthUser> {
     try {
-      user = await this.usersService.getUserByEmail(email);
+      return await this.usersService.getUserByEmail(email);
     } catch (err) {
       if (
         !(err instanceof AppError && err.getStatus() === HttpStatus.NOT_FOUND)
       ) {
         throw err;
       }
-      user = await this.usersService.createUser({
-        username: email,
-        email: email,
-        password: "password",
-        roles: [
-          "wallet_view_did",
-          "wallet_manage_keys",
-          "wallet_use_keys",
-          "wallet_view_own_credentials",
-          "wallet_view_all_credentials",
-          "wallet_manage_own_credentials",
-          "wallet_manage_all_credentials",
-          "wallet_issue_credentials",
-          "wallet_view_presentations",
-          "wallet_manage_clients",
-          "controlplane_admin",
-          "controlplane_dataplane"
-        ],
-        grants: ["authorization_code"]
-      });
+      return this.createNewUser(email, isAdmin);
     }
-    obj.user = user;
-    obj.completed = true;
-    await this.authorizationRequestRepository.save(obj);
-    return user;
+  }
+
+  private async createNewUser(
+    email: string,
+    isAdmin: boolean
+  ): Promise<OauthUser> {
+    const roles = isAdmin
+      ? await this.rolesService.getAdminUserRoles()
+      : await this.rolesService.getBaseUserRoles();
+
+    return this.usersService.createUser({
+      username: email,
+      email: email,
+      password: "password",
+      roles,
+      grants: ["authorization_code"]
+    });
+  }
+
+  private getDcqlQuery(dcqlQueryId: string): DcqlQuery {
+    if (!this.config?.dcqlQueryMap?.[dcqlQueryId]) {
+      throw new Error(
+        `DCQL query with ID "${dcqlQueryId}" not found in configuration`
+      );
+    }
+    return this.config.dcqlQueryMap[dcqlQueryId];
+  }
+
+  private getDefaultDcqlQuery(): DcqlQuery {
+    return this.getDcqlQuery("User");
+  }
+
+  private getAdminRolesFromConfig(): string[] {
+    const adminRoles: string[] = [];
+
+    try {
+      if (this.config?.dcqlQueryMap) {
+        if (this.config.dcqlQueryMap.Administrator) {
+          const adminQuery = this.config.dcqlQueryMap.Administrator;
+          adminQuery.credentials?.forEach((credential) => {
+            credential.claims?.forEach((claim) => {
+              if (claim.id === "role" && claim.values) {
+                claim.values.forEach((value) => {
+                  if (typeof value === "string") {
+                    adminRoles.push(value);
+                  }
+                });
+              }
+            });
+          });
+        }
+      }
+    } catch (_error) {
+      return ["Administrator"];
+    }
+
+    return adminRoles.length > 0 ? [...new Set(adminRoles)] : ["Administrator"];
+  }
+
+  private getClaimPathsFromConfig(claimId: string): string[][] {
+    const paths: string[][] = [];
+
+    try {
+      if (this.config?.dcqlQueryMap) {
+        Object.values(this.config.dcqlQueryMap).forEach((dcqlQuery) => {
+          dcqlQuery.credentials?.forEach((credential) => {
+            credential.claims?.forEach((claim) => {
+              if (
+                claim.id === claimId &&
+                claim.path &&
+                Array.isArray(claim.path)
+              ) {
+                const stringPath = claim.path
+                  .filter(
+                    (segment): segment is string | number => segment !== null
+                  )
+                  .map((segment) => String(segment));
+                paths.push(stringPath);
+              }
+            });
+          });
+        });
+      }
+    } catch (_error) {
+      return [];
+    }
+
+    return paths;
+  }
+
+  private extractValueFromPath(
+    obj: Record<string, unknown>,
+    path: string[]
+  ): unknown {
+    let current = obj;
+    for (const segment of path) {
+      if (current && typeof current === "object" && segment in current) {
+        current = current[segment] as Record<string, unknown>;
+      } else {
+        return undefined;
+      }
+    }
+    return current;
+  }
+
+  private extractClaimValue(
+    subject: Record<string, unknown>,
+    claimName: string,
+    configPaths: string[][]
+  ): string | undefined {
+    if (configPaths.length > 0) {
+      for (const path of configPaths) {
+        const subjectPath =
+          path[0] === "credentialSubject" ? path.slice(1) : path;
+        const value = this.extractValueFromPath(subject, subjectPath);
+        if (value && typeof value === "string") {
+          return value;
+        }
+      }
+    } else if (subject[claimName] && typeof subject[claimName] === "string") {
+      return subject[claimName] as string;
+    }
+    return undefined;
   }
 }
