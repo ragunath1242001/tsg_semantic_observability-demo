@@ -33,7 +33,7 @@ export async function constructAuthorizationRequestUrl({
   return {
     state: state,
     code_verifier: codeVerifier,
-    url: `${authorizationEndpoint}?${new URLSearchParams({ ...authorizationRequest }).toString()}`
+    url: `${authorizationEndpoint}?${new URLSearchParams({ ...authorizationRequest }).toString()}&dcql_query_id=Administrator`
   };
 }
 

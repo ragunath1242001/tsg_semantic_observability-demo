@@ -83,7 +83,7 @@ PostgreSQL provides reliable storage for keys, credentials, DIDs, and operationa
 - [Presentation Exchange 2.0.0](https://identity.foundation/presentation-exchange/spec/v2.0.0)
 - [Eclipse Decentralized Claims Protocol (DCP)](https://eclipse-dataspace-dcp.github.io/decentralized-claims-protocol)
 - [OpenID for Verifiable Credential Issuance - draft 16](https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0.html)
-- [OpenID for Verifiable Presentations - draft 24](https://openid.net/specs/openid-4-verifiable-presentations-1_0.html)
+- [OpenID for Verifiable Presentations - v1.0](https://openid.net/specs/openid-4-verifiable-presentations-1_0.html)
 - [Self-Issued OpenID Provider v2 - draft 13](https://openid.net/specs/openid-connect-self-issued-v2-1_0.html)
 
 

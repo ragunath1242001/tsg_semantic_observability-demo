@@ -894,9 +894,9 @@ paths:
       requestBody:
         required: true
         content:
-          application/json:
+          application/x-www-form-urlencoded:
             schema:
-              $ref: "#/components/schemas/AuthorizationResponse"
+              $ref: "#/components/schemas/OID4VPAuthorizationResponse"
       responses:
         "200":
           description: ""
@@ -904,7 +904,8 @@ paths:
       tags: *a9
   /api/management/oid4vp/verifier/{id}:
     get:
-      description: Obtain an Authorization Request according to the OID4VP specification.
+      description: Obtain an Authorization Request according to the OID4VP
+        specification. Optionally specify a DCQL query ID to validate against.
       operationId: OID4VPVerifierManagementController_status
       parameters:
         - name: id
@@ -981,6 +982,12 @@ paths:
             enum:
               - plain
               - S256
+        - name: dcql_query_id
+          required: false
+          in: query
+          description: DCQL query ID to validate against
+          schema:
+            type: string
       responses:
         "200":
           description: ""
@@ -1213,69 +1220,25 @@ components:
         - name
         - status
         - code
-    DescriptorMap:
+    VpToken:
       type: object
-      properties:
-        id:
-          type: string
-          example: desc1
-        format:
-          type: string
-          example: jwt
-        path:
-          type: string
-          example: $.credential
-        path_nested:
-          example:
-            id: desc-nested
-            format: jwt
-            path: $.nested
-          allOf:
-            - $ref: "#/components/schemas/DescriptorMap"
-      required:
-        - id
-        - format
-        - path
-    PresentationSubmission:
-      type: object
-      properties:
-        id:
-          type: string
-          example: submission-id
-        definition_id:
-          type: string
-          example: definition-id
-        descriptor_map:
-          example:
-            - id: desc1
-              format: jwt
-              path: $.credential
-          type: array
-          items:
-            $ref: "#/components/schemas/DescriptorMap"
-      required:
-        - id
-        - definition_id
-        - descriptor_map
-    AuthorizationResponse:
+      properties: {}
+    OID4VPAuthorizationResponse:
       type: object
       properties:
         vp_token:
-          type: string
-          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
-        presentation_submission:
           example:
-            id: submission-id
-            definition_id: definition-id
-            descriptor_map: []
+            identity_credential:
+              - eyJhbGciOiJFUzI1NiJ9...
+          description: VP Token with credential ID to presentations mapping
           allOf:
-            - $ref: "#/components/schemas/PresentationSubmission"
+            - $ref: "#/components/schemas/VpToken"
         state:
           type: string
           example: state123
+          description: State parameter from the authorization request
       required:
         - vp_token
-        - presentation_submission
         - state
 externalDocs:
   description: Git Repository

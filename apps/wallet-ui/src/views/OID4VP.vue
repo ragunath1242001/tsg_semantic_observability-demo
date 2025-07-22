@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import schema from "@tsg-dsp/common-ui/assets/presentation-definition.schema.json";
+import schema from "@tsg-dsp/common-ui/assets/dcql.schema.json";
 import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import http from "@tsg-dsp/common-ui/utils/http";
@@ -14,25 +14,39 @@ const oid4vpUrl = ref<string>();
 const visible = ref(false);
 
 const verifierForm = ref<{
-  presentationDefinition: string;
+  dcqlQuery: string;
 }>({
-  presentationDefinition: JSON.stringify(
+  dcqlQuery: JSON.stringify(
     {
-      id: crypto.randomUUID(),
-      input_descriptors: [
+      credentials: [
         {
-          id: crypto.randomUUID(),
-          constraints: {
-            fields: [
-              {
-                path: ["$.type"],
-                filter: {
-                  type: "string",
-                  pattern: "VerifiableCredential"
-                }
-              }
-            ]
-          }
+          id: "identity_credential",
+          format: "jwt_vc_json",
+          meta: {
+            type_values: [["VerifiableCredential", "IdentityCredential"]]
+          },
+          claims: [
+            {
+              id: "email_claim",
+              path: ["credentialSubject", "email"]
+            },
+            {
+              id: "name_claim",
+              path: ["credentialSubject", "name"]
+            }
+          ],
+          trusted_authorities: [
+            {
+              type: "openid_federation",
+              values: ["https://federation.example.com"]
+            }
+          ]
+        }
+      ],
+      credential_sets: [
+        {
+          options: [["identity_credential"]],
+          required: true
         }
       ]
     },
@@ -47,7 +61,7 @@ const createAuthorizationRequest = async () => {
   try {
     const response = await http.post<string>(
       "management/oid4vp/verifier/create",
-      JSON.parse(verifierForm.value.presentationDefinition)
+      JSON.parse(verifierForm.value.dcqlQuery)
     );
     if (response.status == 201) {
       oid4vpUrl.value = response.data;
@@ -73,9 +87,14 @@ const createAuthorizationRequest = async () => {
       <template #subtitle>
         <p>
           This page allows you to manually create an authorization request for
-          the Open ID For Verifiable Presentations (OID4VP) protocol. This is
-          meant to be used with the TSG mobile wallet app and serves as an
-          authentication mechanism for users.
+          the Open ID For Verifiable Presentations (OID4VP) protocol version
+          1.0. This is meant to be used with the TSG mobile wallet app and
+          serves as an authentication mechanism for users.
+        </p>
+        <p>
+          <strong>Note:</strong> This interface now uses DCQL (Digital
+          Credentials Query Language) instead of Presentation Definitions as per
+          OID4VP 1.0 specification.
         </p>
       </template>
     </Card>
@@ -84,6 +103,7 @@ const createAuthorizationRequest = async () => {
       <template #subtitle>
         <p>
           Create an authorization request for the OID4VP protocol by providing a
+          DCQL (Digital Credentials Query Language) query instead of a
           presentation definition.
         </p>
       </template>
@@ -91,9 +111,9 @@ const createAuthorizationRequest = async () => {
         <form
           class="flex flex-col gap-4"
           @submit.prevent="createAuthorizationRequest">
-          <FormField label="Presentation Definition">
+          <FormField label="DCQL Query">
             <MonacoEditorVue
-              v-model="verifierForm.presentationDefinition"
+              v-model="verifierForm.dcqlQuery"
               :schema="schema"
               :min-lines="3"
               :max-lines="30"></MonacoEditorVue>

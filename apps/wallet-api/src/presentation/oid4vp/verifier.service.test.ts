@@ -4,10 +4,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { ServerConfig, TypeOrmTestHelper } from "@tsg-dsp/common-api";
 import { AppError } from "@tsg-dsp/common-api";
 import { VerifiablePresentationJwt } from "@tsg-dsp/common-dsp";
-import {
-  AuthorizationResponse,
-  PresentationDefinition
-} from "@tsg-dsp/common-dtos";
+import { DcqlQuery, OID4VPAuthorizationResponse } from "@tsg-dsp/common-dtos";
 import { plainToInstance } from "class-transformer";
 import { http, HttpResponse } from "msw";
 import { SetupServer, setupServer } from "msw/node";
@@ -124,14 +121,17 @@ describe("OID4VPVerifierService", () => {
 
   describe("createAuthorizationRequest", () => {
     it("should create an authorization request and return the request URI", async () => {
-      const presentationDefinition: PresentationDefinition = {
-        id: "test-definition",
-        input_descriptors: []
+      const dcqlQuery: DcqlQuery = {
+        credentials: [
+          {
+            id: "test-definition",
+            format: "jwt_vc_json",
+            meta: {}
+          }
+        ]
       };
 
-      const result = await service.createAuthorizationRequest(
-        presentationDefinition
-      );
+      const result = await service.createAuthorizationRequest(dcqlQuery);
 
       expect(result).toContain(
         "oid4vp://?client_id=http://localhost&request_uri=http://localhost/api/oid4vp/ar/"
@@ -145,7 +145,15 @@ describe("OID4VPVerifierService", () => {
       const authorizationRequest = {
         identifier: id,
         nonce: "test-nonce",
-        presentationDefinition: { id: "test-definition", input_descriptors: [] }
+        dcqlQuery: {
+          credentials: [
+            {
+              id: "test-definition",
+              format: "jwt_vc_json",
+              meta: {}
+            }
+          ]
+        }
       };
       await service.authorizationRequestRepository.save(authorizationRequest);
 
@@ -155,10 +163,6 @@ describe("OID4VPVerifierService", () => {
         expect.objectContaining({
           state: id,
           nonce: "test-nonce",
-          presentation_definition: {
-            id: "test-definition",
-            input_descriptors: []
-          },
           client_id: "http://localhost",
           response_uri: "http://localhost/api/oid4vp/authorize",
           response_type: "vp_token",
@@ -181,24 +185,27 @@ describe("OID4VPVerifierService", () => {
     beforeAll(async () => {
       vpJwt = await presentationService.createVerifiablePresentationJwt(
         "did:web:localhost#test-init-credential",
-        "did:web:external.com",
+        "http://localhost", // Set audience to match verifier
         false
       );
     });
     it("should verify the authorization response and return a success message", async () => {
-      const authorizationResponse: AuthorizationResponse = {
+      const authorizationResponse: OID4VPAuthorizationResponse = {
         state: "test-state",
-        vp_token: vpJwt.vp,
-        presentation_submission: {
-          id: "test-submission",
-          definition_id: "",
-          descriptor_map: []
-        }
+        vp_token: { testDefinition: [vpJwt.vp] }
       };
       const authorizationRequest = {
         identifier: "test-state",
         nonce: "test-nonce",
-        presentationDefinition: { id: "test-definition", input_descriptors: [] }
+        dcqlQuery: {
+          credentials: [
+            {
+              id: "testDefinition",
+              format: "jwt_vc_json",
+              meta: {}
+            }
+          ]
+        }
       };
       await service.authorizationRequestRepository.save(authorizationRequest);
       const result = await service.verify(authorizationResponse);
@@ -209,15 +216,35 @@ describe("OID4VPVerifierService", () => {
     });
 
     it("should throw an error if the authorization request is not found", async () => {
-      const authorizationResponse: AuthorizationResponse = {
+      const authorizationResponse: OID4VPAuthorizationResponse = {
         state: "test-state12341234",
-        vp_token: vpJwt.vp,
-        presentation_submission: {
-          id: "test-submission",
-          definition_id: "",
-          descriptor_map: []
+        vp_token: { testDefinition: [vpJwt.vp] }
+      };
+
+      await expect(service.verify(authorizationResponse)).rejects.toThrow(
+        AppError
+      );
+    });
+
+    it("should throw an error if the vp_token is invalid", async () => {
+      const authorizationResponse: OID4VPAuthorizationResponse = {
+        state: "test-state",
+        vp_token: { invalidDefinition: [vpJwt.vp] }
+      };
+      const authorizationRequest = {
+        identifier: "test-state",
+        nonce: "test-nonce",
+        dcqlQuery: {
+          credentials: [
+            {
+              id: "testDefinition",
+              format: "jwt_vc_json",
+              meta: {}
+            }
+          ]
         }
       };
+      await service.authorizationRequestRepository.save(authorizationRequest);
 
       await expect(service.verify(authorizationResponse)).rejects.toThrow(
         AppError

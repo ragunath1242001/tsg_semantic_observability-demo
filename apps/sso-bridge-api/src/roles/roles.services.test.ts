@@ -66,10 +66,13 @@ describe("RolesService Tests", () => {
     it("should create a new role", async () => {
       const adminRole = await rolesService.createRole({
         name: "admin",
-        description: "Admin user"
+        description: "Admin user",
+        isAdminRole: true
       });
       expect(adminRole).toHaveProperty("id");
       expect(adminRole.name).toEqual("admin");
+      expect(adminRole.description).toEqual("Admin user");
+      expect(adminRole.isAdminRole).toEqual(true);
     });
 
     it("should retrieve roles", async () => {

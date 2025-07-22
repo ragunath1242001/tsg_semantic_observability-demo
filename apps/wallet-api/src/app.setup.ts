@@ -1,4 +1,6 @@
 import { INestApplication, Logger } from "@nestjs/common";
+import crypto from "crypto";
+import express from "express";
 import session from "express-session";
 
 import { RootConfig } from "./config.js";
@@ -10,6 +12,14 @@ export function setupApp(app: INestApplication) {
       exclude: [".well-known/*paths", "health", "{*jsonl}.jsonl"]
     });
   }
+
+  app.use(
+    express.urlencoded({
+      extended: true,
+      limit: "10mb"
+    })
+  );
+
   Logger.debug(
     `Starting with the following context:\n${JSON.stringify(config, null, 2)}`,
     "Bootstrap"

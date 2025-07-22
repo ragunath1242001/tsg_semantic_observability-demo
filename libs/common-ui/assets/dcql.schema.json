@@ -1,0 +1,174 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "DCQL Query",
+  "type": "object",
+  "required": ["credentials"],
+  "properties": {
+    "credentials": {
+      "type": "array",
+      "description": "Array of credential queries",
+      "items": {
+        "$ref": "#/definitions/credentialQuery"
+      }
+    },
+    "credential_sets": {
+      "type": "array",
+      "description": "Optional credential set constraints",
+      "items": {
+        "$ref": "#/definitions/credentialSetQuery"
+      }
+    }
+  },
+  "definitions": {
+    "credentialQuery": {
+      "type": "object",
+      "required": ["id", "format", "meta"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for this credential query",
+          "example": "identity_credential"
+        },
+        "format": {
+          "type": "string",
+          "description": "Credential format identifier",
+          "enum": ["jwt_vc_json", "ldp_vc", "dc+sd-jwt", "mso_mdoc"]
+        },
+        "multiple": {
+          "type": "boolean",
+          "description": "Whether multiple credentials can be returned for this query",
+          "default": false
+        },
+        "meta": {
+          "$ref": "#/definitions/credentialMeta"
+        },
+        "trusted_authorities": {
+          "type": "array",
+          "description": "Trusted authorities or trust frameworks",
+          "items": {
+            "$ref": "#/definitions/trustedAuthoritiesQuery"
+          }
+        },
+        "require_cryptographic_holder_binding": {
+          "type": "boolean",
+          "description": "Whether cryptographic holder binding is required"
+        },
+        "claims": {
+          "type": "array",
+          "description": "Specific claims to request from the credential",
+          "items": {
+            "$ref": "#/definitions/claimsQuery"
+          }
+        },
+        "claim_sets": {
+          "type": "array",
+          "description": "Alternative combinations of claims",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "credentialMeta": {
+      "type": "object",
+      "properties": {
+        "vct_values": {
+          "type": "array",
+          "description": "For SD-JWT VC: allowed vct values",
+          "items": {
+            "type": "string"
+          }
+        },
+        "type_values": {
+          "type": "array",
+          "description": "For W3C VC: allowed type values",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "doctype_value": {
+          "type": "string",
+          "description": "For mdoc: document type value"
+        }
+      }
+    },
+    "trustedAuthoritiesQuery": {
+      "type": "object",
+      "required": ["type", "values"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["aki", "etsi_tl", "openid_federation"],
+          "description": "Type of trusted authority mechanism"
+        },
+        "values": {
+          "type": "array",
+          "description": "Array of trusted authority identifiers",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "claimsQuery": {
+      "type": "object",
+      "required": ["path"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for this claim query"
+        },
+        "path": {
+          "type": "array",
+          "description": "Array representing path to claim in credential",
+          "items": {
+            "oneOf": [
+              { "type": "string" },
+              { "type": "number" },
+              { "type": "null" }
+            ]
+          }
+        },
+        "values": {
+          "type": "array",
+          "description": "Expected values for value matching",
+          "items": {
+            "oneOf": [
+              { "type": "string" },
+              { "type": "number" },
+              { "type": "boolean" }
+            ]
+          }
+        }
+      }
+    },
+
+    "credentialSetQuery": {
+      "type": "object",
+      "required": ["options"],
+      "properties": {
+        "options": {
+          "type": "array",
+          "description": "Array of credential ID combinations that satisfy the requirement",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": {
+          "type": "boolean",
+          "description": "Whether this credential set is required",
+          "default": true
+        }
+      }
+    }
+  }
+}

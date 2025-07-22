@@ -12,16 +12,21 @@ import {
 } from "@nestjs/common";
 import {
   ApiBody,
+  ApiConsumes,
   ApiOkResponse,
   ApiOperation,
   ApiParam,
   ApiTags
 } from "@nestjs/swagger";
-import { DisableOAuthGuard, DisableRolesGuard } from "@tsg-dsp/common-api";
+import {
+  DisableOAuthGuard,
+  DisableRolesGuard,
+  validationPipe
+} from "@tsg-dsp/common-api";
 import {
   ApiForbiddenResponseDefault,
-  AuthorizationResponse,
-  PresentationAuthorizationRequest
+  OID4VPAuthorizationRequest,
+  OID4VPAuthorizationResponse
 } from "@tsg-dsp/common-dtos";
 import { Request, Response } from "express";
 
@@ -46,7 +51,7 @@ export class OID4VPVerifierController {
   @ApiForbiddenResponseDefault()
   async getAuthorizationRequest(
     @Param("id") id: string
-  ): Promise<PresentationAuthorizationRequest> {
+  ): Promise<OID4VPAuthorizationRequest> {
     return this.oid4vpVerifierService.getAuthorizationRequest(id);
   }
 
@@ -85,9 +90,12 @@ export class OID4VPVerifierController {
     description:
       "Add an Authorization Request according to the OID4VP specification."
   })
+  @ApiConsumes("application/x-www-form-urlencoded")
   @HttpCode(HttpStatus.OK)
-  @ApiBody({ type: AuthorizationResponse })
-  async authorize(@Body() authorizationResponse: AuthorizationResponse) {
+  @ApiBody({ type: OID4VPAuthorizationResponse })
+  async authorize(
+    @Body(validationPipe) authorizationResponse: OID4VPAuthorizationResponse
+  ) {
     await this.oid4vpVerifierService.verify(authorizationResponse);
   }
 }

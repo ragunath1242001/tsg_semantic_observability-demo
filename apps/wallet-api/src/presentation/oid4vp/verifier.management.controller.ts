@@ -12,10 +12,7 @@ import {
   DisableRolesGuard,
   Roles
 } from "@tsg-dsp/common-api";
-import {
-  ApiForbiddenResponseDefault,
-  PresentationDefinition
-} from "@tsg-dsp/common-dtos";
+import { ApiForbiddenResponseDefault, DcqlQuery } from "@tsg-dsp/common-dtos";
 import { AppRole } from "@tsg-dsp/wallet-dtos";
 
 import { RuntimeConfig } from "../../config.js";
@@ -38,15 +35,11 @@ export class OID4VPVerifierManagementController {
       "Add an Authorization Request according to the OID4VP specification."
   })
   @HttpCode(HttpStatus.CREATED)
-  @ApiBody({ type: PresentationDefinition })
+  @ApiBody({ type: DcqlQuery })
   @ApiOkResponse({ type: String })
   @ApiForbiddenResponseDefault()
-  async create(
-    @Body() presentationDefinition: PresentationDefinition
-  ): Promise<string> {
-    return this.oid4vpVerifierService.createAuthorizationRequest(
-      presentationDefinition
-    );
+  async create(@Body() dcqlQuery: DcqlQuery): Promise<string> {
+    return this.oid4vpVerifierService.createAuthorizationRequest(dcqlQuery);
   }
   @Post("create/public")
   @ApiOperation({
@@ -55,22 +48,18 @@ export class OID4VPVerifierManagementController {
       "Add an Authorization Request according to the OID4VP specification, allowed for unauthenticated requests."
   })
   @HttpCode(HttpStatus.CREATED)
-  @ApiBody({ type: PresentationDefinition })
+  @ApiBody({ type: DcqlQuery })
   @ApiOkResponse({ type: String })
   @DisableOAuthGuard()
   @DisableRolesGuard()
   @ApiForbiddenResponseDefault()
-  async createPublic(
-    @Body() presentationDefinition: PresentationDefinition
-  ): Promise<string> {
+  async createPublic(@Body() dcqlQuery: DcqlQuery): Promise<string> {
     if (this.runtimeConfig.acceptUnauthenticatedCredentialRequests !== true) {
       throw new AppError(
         "This wallet does not accept unauthenticated credential requests",
         HttpStatus.FORBIDDEN
       );
     }
-    return this.oid4vpVerifierService.createAuthorizationRequest(
-      presentationDefinition
-    );
+    return this.oid4vpVerifierService.createAuthorizationRequest(dcqlQuery);
   }
 }

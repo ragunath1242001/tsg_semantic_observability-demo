@@ -31,6 +31,7 @@ config:
   initRoles:
     - name: "ssobridge_admin"
       description: "SSO bridge administrator role with full access"
+      isAdminRole: true
     - name: "ssobridge_user"
       description: "SSO bridge regular user role with limited access"
     - name: wallet_view_did
@@ -55,6 +56,7 @@ config:
       description: Manage clients
     - name: controlplane_admin
       description: Control Plane Admin role
+      isAdminRole: true
     - name: controlplane_dataplane
       description: Control Plane Data Plane role
   initUsers:

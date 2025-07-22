@@ -1,4 +1,4 @@
-import { PresentationDefinition } from "@tsg-dsp/common-dtos";
+import { DcqlQuery } from "@tsg-dsp/common-dtos";
 import { Column, Entity, PrimaryColumn } from "typeorm";
 
 import { MetaEntity } from "./common.dao.js";
@@ -8,7 +8,7 @@ export class AuthorizationRequestDao extends MetaEntity {
   @PrimaryColumn({ type: String })
   identifier!: string;
   @Column({ type: "simple-json" })
-  presentationDefinition!: PresentationDefinition;
+  dcqlQuery!: DcqlQuery;
   @Column({ type: String })
   nonce!: string;
 }
