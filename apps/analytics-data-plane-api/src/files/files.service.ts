@@ -1,6 +1,7 @@
 import { HttpStatus, Injectable, Logger, StreamableFile } from "@nestjs/common";
 import { Cron, CronExpression } from "@nestjs/schedule";
 import { InjectRepository } from "@nestjs/typeorm";
+import { CSVW } from "@tsg-dsp/analytics-data-plane-dtos";
 import {
   Dataset,
   DatasetDto,
@@ -18,7 +19,6 @@ import { Repository } from "typeorm";
 import { FilesConfig, RootConfig } from "../config.js";
 import { DataPlaneService } from "../dataplane/dataplane.service.js";
 import { DataPlaneError } from "../utils/errors/error.js";
-import { CSVW } from "./files.dto.js";
 import { FileMetadataDao } from "./filesMetadata.dao.js";
 
 @Injectable()

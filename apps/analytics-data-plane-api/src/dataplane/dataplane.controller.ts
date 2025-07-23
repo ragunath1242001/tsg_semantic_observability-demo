@@ -110,7 +110,7 @@ export class DataPlaneController {
     @Query("processId", nonEmptyStringPipe) processId: string,
     @Headers("x-remote-party") remoteParty: string,
     @Headers("x-dataset-id") datasetId: string,
-    @Headers("x-analysis-id") analysisId: string
+    @Headers("x-algorithm-instance-id") algorithmInstanceId: string
   ): Promise<DataPlaneRequestResponseDto> {
     this.logger.log(
       `Requesting transfer for ${remoteParty} as ${role} with processId ${processId} and with message: ${JSON.stringify(
@@ -124,7 +124,7 @@ export class DataPlaneController {
       processId,
       remoteParty,
       datasetId,
-      analysisId
+      algorithmInstanceId
     );
   }
 

@@ -26,11 +26,20 @@ export class ClientsService {
   async init() {
     await this.rolesService.initialized;
 
-    // Skip if no clients to initialize or clients already exist
+    // Verify if kubernetes secrets are available
     if (
       !this.rootConfig.initClients.length ||
       (await this.clientsRepository.count()) > 0
     ) {
+      const existingClients = await this.clientsRepository.find();
+      await Promise.allSettled(
+        existingClients.map(async (client) => {
+          await this.kubernetesService.applySecret(client.secretName, {
+            clientId: client.clientId,
+            clientSecret: client.clientSecret
+          });
+        })
+      );
       return;
     }
 

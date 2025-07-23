@@ -12,6 +12,7 @@ import {
 } from "@nestjs/common";
 import { AnyFilesInterceptor } from "@nestjs/platform-express";
 import { ApiOAuth2, ApiOkResponse, ApiOperation } from "@nestjs/swagger";
+import { CSVW, FileMetadataDto } from "@tsg-dsp/analytics-data-plane-dtos";
 import {
   DisableOAuthGuard,
   DisableRolesGuard,
@@ -19,7 +20,6 @@ import {
 } from "@tsg-dsp/common-api";
 import { ApiForbiddenResponseDefault } from "@tsg-dsp/common-dtos";
 
-import { CSVW, FileMetadataDto } from "./files.dto.js";
 import { FilesService } from "./files.service.js";
 
 @Controller("files")

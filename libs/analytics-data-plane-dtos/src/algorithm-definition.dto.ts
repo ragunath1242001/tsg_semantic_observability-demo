@@ -6,7 +6,6 @@ import {
   IsNumber,
   IsOptional,
   IsString,
-  IsUrl,
   ValidateNested
 } from "class-validator";
 
@@ -182,7 +181,6 @@ export class AlgorithmDefinitionDto {
 
   @ApiProperty({ description: "Public image URL of the algorithm" })
   @IsString()
-  @IsUrl()
   @IsDefined()
   public image!: string;
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import AlgorithmInstanceComponent from "../components/AlgorithmInstanceComponent.vue";
+import CreateAlgorithmInstanceComponent from "../../components/CreateAlgorithmInstanceComponent.vue";
 </script>
 
 <template>
@@ -11,5 +11,5 @@ import AlgorithmInstanceComponent from "../components/AlgorithmInstanceComponent
       algorithm definition you want to use and configure the participants.
     </template>
   </Card>
-  <AlgorithmInstanceComponent />
+  <CreateAlgorithmInstanceComponent />
 </template>

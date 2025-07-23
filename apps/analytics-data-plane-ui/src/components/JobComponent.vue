@@ -1,83 +1,107 @@
 <script setup lang="ts">
+import type {
+  V1Job,
+  V1JobStatus,
+  V1Pod,
+  V1PodStatus
+} from "@kubernetes/client-node";
+import { FileMetadataDto } from "@tsg-dsp/analytics-data-plane-dtos";
 import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import http from "@tsg-dsp/common-ui/utils/http";
-import { useToast } from "primevue";
+import { DataTableRowSelectEvent, useToast } from "primevue";
 import { onMounted, ref } from "vue";
 
 import { useK8sStore } from "../stores/k8s";
 
 interface CreateJob {
   imageName: string;
-  command: string;
+  command?: string;
   fileId?: string;
 }
 
 const k8sStore = useK8sStore();
 const toast = useToast();
 
-const props = defineProps<{
-  transferId: string;
-  role: "provider" | "consumer";
+const { algorithmInstanceId } = defineProps<{
+  algorithmInstanceId: string;
 }>();
 
-const jobs = ref([]);
+const jobs = ref<V1Job[]>([]);
 
 const logs = ref<string>();
 
-const pods = ref([]);
+const pods = ref<V1Pod[]>([]);
 
-const selectedJob = ref();
+const selectedJob = ref<V1Job>();
 
-const selectedPod = ref();
+const selectedPod = ref<V1Pod>();
 
 const creating = ref(false);
 
 const createJob = ref<CreateJob>({
-  imageName: "",
-  command: "",
+  imageName:
+    "registry.gitlab.com/tno-tsg/dataspace-protocol/tno-security-gateway/adp-test-image",
+  command: undefined,
   fileId: undefined
 });
 
-const filesList = ref([]);
+const filesList = ref<FileMetadataDto[]>([]);
 
-const getJobs = async (id: string) => {
-  const response = await http.get(`/management/k8s/jobs/transfer/${id}`);
-  jobs.value = response.data;
-  await getPods();
+const getJobs = async (algorithmInstanceId: string) => {
+  try {
+    const jobsData =
+      await k8sStore.getJobsForAlgorithmInstance(algorithmInstanceId);
+    jobs.value = jobsData;
+    await getPods();
+  } catch (error) {
+    console.error("Error fetching jobs:", error);
+  }
 };
 
 const getPods = async () => {
   if (!selectedJob.value) {
     return;
   }
-  const response = await http.get(
-    `/management/k8s/jobs/${selectedJob.value.metadata.name}/pods`
-  );
-  pods.value = response.data.items;
+  try {
+    const podsData = await k8sStore.getJobPods(selectedJob.value.metadata.name);
+    pods.value = podsData.items;
+  } catch (error) {
+    console.error("Error fetching pods:", error);
+  }
 };
 
-const determineSeverity = (status): "warn" | "success" | "danger" => {
+const determineSeverity = (
+  status?: V1JobStatus
+): "warn" | "success" | "danger" => {
   if (status?.active >= 1) {
     return "warn";
   } else if (status?.succeeded >= 1) {
     return "success";
   } else if (status?.failed >= 1) {
     return "danger";
+  } else {
+    return "danger";
   }
 };
 
-const determineStatus = (status): "Pending" | "Completed" | "Failed" => {
+const determineStatus = (
+  status?: V1JobStatus
+): "Pending" | "Completed" | "Failed" | "Unknown" => {
   if (status?.active >= 1) {
     return "Pending";
   } else if (status?.succeeded >= 1) {
     return "Completed";
   } else if (status?.failed >= 1) {
     return "Failed";
+  } else {
+    return "Unknown";
   }
 };
 
-const determinePodSeverity = (status): "warn" | "success" | "danger" => {
+const determinePodSeverity = (
+  status?: V1PodStatus
+): "warn" | "success" | "danger" => {
   if (status?.phase === "Pending") {
     return "warn";
   } else if (status?.phase === "Running") {
@@ -86,12 +110,14 @@ const determinePodSeverity = (status): "warn" | "success" | "danger" => {
     return "success";
   } else if (status?.phase === "Failed") {
     return "danger";
+  } else {
+    return "danger";
   }
 };
 
 const determinePodStatus = (
-  status
-): "Pending" | "Running" | "Failed" | "Succeeded" => {
+  status?: V1PodStatus
+): "Pending" | "Running" | "Failed" | "Succeeded" | "Unknown" => {
   if (status?.phase === "Pending") {
     return "Pending";
   } else if (status?.phase === "Running") {
@@ -100,13 +126,19 @@ const determinePodStatus = (
     return "Succeeded";
   } else if (status?.phase === "Failed") {
     return "Failed";
+  } else {
+    return "Unknown";
   }
 };
 
 const getLogs = async (podName: string) => {
   logs.value = undefined;
-  const response = await http.get(`/management/k8s/pods/${podName}/logs`);
-  logs.value = response.data;
+  try {
+    const logsData = await k8sStore.getPodLogs(podName);
+    logs.value = logsData;
+  } catch (error) {
+    console.error("Error fetching logs:", error);
+  }
 };
 
 const onRowSelectJob = async () => {
@@ -115,39 +147,47 @@ const onRowSelectJob = async () => {
   await getPods();
 };
 
-const onRowSelectPod = async (event) => {
+const onRowSelectPod = async (event: DataTableRowSelectEvent<V1Pod>) => {
   await getLogs(event.data.metadata.name);
 };
 
 const spawnK8sJob = async () => {
   try {
-    const resp = await k8sStore.spawnJob(
+    // Process the command properly - filter out empty strings
+    let commandArray: string[] | undefined = undefined;
+    if (createJob.value.command?.trim()) {
+      commandArray = createJob.value.command
+        .split(",")
+        .map((c) => c.trim())
+        .filter((c) => c.length > 0);
+    }
+
+    await k8sStore.spawnJob(
       createJob.value.imageName,
-      props.transferId,
-      createJob.value.command.split(",").map((c) => c.trim()),
+      algorithmInstanceId,
+      commandArray,
       createJob.value.fileId
     );
-    if (resp.status === 201) {
-      toast.add({
-        severity: "success",
-        summary: "Job spawned",
-        detail: "Job has been spawned successfully",
-        life: 3000
-      });
-      creating.value = false;
-      createJob.value = {
-        imageName: "",
-        command: "",
-        fileId: undefined
-      };
-      await getJobs(props.transferId);
-    }
+    toast.add({
+      severity: "success",
+      summary: "Job spawned",
+      detail: "Job has been spawned successfully",
+      life: 3000
+    });
+    creating.value = false;
+    createJob.value = {
+      imageName: "",
+      command: undefined,
+      fileId: undefined
+    };
+    await getJobs(algorithmInstanceId);
   } catch (error) {
+    console.error("Error spawning job:", error);
     toast.add(
       toastError({
         error,
         summary: "Error spawning job",
-        defaultMessage: "Could not spawn job for transfer"
+        defaultMessage: "Could not spawn job for algorithm instance"
       })
     );
   }
@@ -155,7 +195,7 @@ const spawnK8sJob = async () => {
 
 const getFiles = async () => {
   try {
-    const response = await http.get("files");
+    const response = await http.get<FileMetadataDto[]>("files");
     filesList.value = response.data;
   } catch (error) {
     toast.add(
@@ -169,7 +209,7 @@ const getFiles = async () => {
 };
 
 onMounted(async () => {
-  await Promise.allSettled([getJobs(props.transferId), getFiles()]);
+  await Promise.allSettled([getJobs(algorithmInstanceId), getFiles()]);
 });
 </script>
 <template>
@@ -181,7 +221,10 @@ onMounted(async () => {
       width="30rem">
       <div class="flex-col items-center gap-4 mb-4">
         <FormField label="Image name">
-          <InputText v-model="createJob.imageName" class="w-full" />
+          <InputText
+            v-model="createJob.imageName"
+            placeholder="e.g., fl-simulation, python:3.9, busybox"
+            class="w-full" />
         </FormField>
       </div>
       <div class="flex-col items-center gap-4 mb-4">
@@ -190,15 +233,18 @@ onMounted(async () => {
             id="command"
             v-model="createJob.command"
             aria-describedby="command-help"
-            placeholder="sh, -c, echo hello world"
+            placeholder="python, src/fl_participant.py (leave empty for default command)"
             class="w-full" />
+
           <Message
             id="command-help"
             size="small"
             variant="simple"
             severity="secondary"
-            >Command to run in the container, seperate array entries with a
-            comma</Message
+            >Command to run in the container, separate array entries with a
+            comma. Leave empty to use the image's default command. Examples:
+            "python, src/fl_participant.py" or "sh, -c, echo hello
+            world"</Message
           >
         </FormField>
       </div>
@@ -231,7 +277,9 @@ onMounted(async () => {
     </Dialog>
     <Card class="mt-5">
       <template #title>Jobs</template>
-      <template #subtitle>Jobs associated with this transfer</template>
+      <template #subtitle
+        >Jobs associated with this algorithm instance</template
+      >
       <template #content>
         <Button
           icon="pi pi-plus"
@@ -242,7 +290,7 @@ onMounted(async () => {
           icon="pi pi-refresh"
           label="Refresh"
           class="ml-2"
-          @click="getJobs(props.transferId)" />
+          @click="getJobs(algorithmInstanceId)" />
         <DataTable
           v-model:selection="selectedJob"
           :value="jobs"

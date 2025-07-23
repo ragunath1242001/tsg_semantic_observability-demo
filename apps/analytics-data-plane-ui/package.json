@@ -10,6 +10,7 @@
     "type-check": "vue-tsc --noEmit"
   },
   "dependencies": {
+    "@kubernetes/client-node": "^1.0.0",
     "@guolao/vue-monaco-editor": "^1.5.4",
     "@nestjs/swagger": "^11.0.4",
     "@primevue/themes": "^4.2.4",

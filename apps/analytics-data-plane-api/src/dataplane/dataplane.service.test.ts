@@ -15,11 +15,11 @@ import { plainToClass } from "class-transformer";
 import { http, HttpResponse, PathParams } from "msw";
 import { SetupServer, setupServer } from "msw/node";
 
-import { AnalysesService } from "../analyses/analyses.service.js";
-import { AnalysisDao } from "../analyses/dao/analysis.dao.js";
+import { AlgorithmInstanceDao } from "../algorithm-instances/algorithm-instance.dao.js";
+import { AlgorithmInstancesService } from "../algorithm-instances/algorithm-instances.service.js";
 import { LoggingConfig, RootConfig } from "../config.js";
-import { AlgorithmEventDao } from "../events/dao/algorithm-event.dao.js";
-import { InternalEventDao } from "../events/dao/internal-event.dao.js";
+import { AlgorithmEventDao } from "../events/algorithm-event.dao.js";
+import { InternalEventDao } from "../events/internal-event.dao.js";
 import { EgressLogDao, IngressLogDao } from "../logging/logging.dao.js";
 import { LoggingService } from "../logging/logging.service.js";
 import { DataPlaneController } from "./dataplane.controller.js";
@@ -166,7 +166,7 @@ describe("Dataplane Service", () => {
       imports: [
         TypeOrmTestHelper.instance.module([
           TransferDao,
-          AnalysisDao,
+          AlgorithmInstanceDao,
           AlgorithmEventDao,
           InternalEventDao,
           DataPlaneStateDao,
@@ -175,7 +175,7 @@ describe("Dataplane Service", () => {
         ]),
         TypeOrmModule.forFeature([
           TransferDao,
-          AnalysisDao,
+          AlgorithmInstanceDao,
           AlgorithmEventDao,
           InternalEventDao,
           DataPlaneStateDao,
@@ -188,7 +188,7 @@ describe("Dataplane Service", () => {
         DataPlaneService,
         LoggingService,
         AuthClientService,
-        AnalysesService,
+        AlgorithmInstancesService,
         {
           provide: AuthConfig,
           useValue: { enabled: false }
@@ -426,7 +426,7 @@ describe("Dataplane Service Consumer", () => {
       imports: [
         TypeOrmTestHelper.instance.module([
           TransferDao,
-          AnalysisDao,
+          AlgorithmInstanceDao,
           AlgorithmEventDao,
           InternalEventDao,
           DataPlaneStateDao,
@@ -435,7 +435,7 @@ describe("Dataplane Service Consumer", () => {
         ]),
         TypeOrmModule.forFeature([
           TransferDao,
-          AnalysisDao,
+          AlgorithmInstanceDao,
           AlgorithmEventDao,
           InternalEventDao,
           DataPlaneStateDao,
@@ -448,7 +448,7 @@ describe("Dataplane Service Consumer", () => {
         DataPlaneService,
         LoggingService,
         AuthClientService,
-        AnalysesService,
+        AlgorithmInstancesService,
         {
           provide: AuthConfig,
           useValue: { enabled: false }

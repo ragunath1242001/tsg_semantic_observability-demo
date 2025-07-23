@@ -1,12 +1,12 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
+import { LogEntry, LogFilterDto } from "@tsg-dsp/analytics-data-plane-dtos";
 import { AuthConfig, TypeOrmTestHelper } from "@tsg-dsp/common-api";
 import { plainToInstance } from "class-transformer";
 
 import { LoggingConfig } from "../config.js";
 import { PageOptionsDto } from "../utils/pagination.js";
 import { EgressLogDao, IngressLogDao } from "./logging.dao.js";
-import { LogEntry, LogFilterDto } from "./logging.dto.js";
 import { LoggingService } from "./logging.service.js";
 
 describe("Logging Service", () => {

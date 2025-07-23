@@ -3,10 +3,12 @@ import { createRouter, createWebHashHistory } from "vue-router";
 
 import AppLayout from "@/layout/AppLayoutAnalyticsDataPlane.vue";
 
-import AlgorithmInstance from "../views/AlgorithmInstance.vue";
 import Dashboard from "../views/Dashboard.vue";
 import Files from "../views/Files.vue";
 import FilesUpload from "../views/FilesUpload.vue";
+import AlgorithmInstances from "../views/instances/AlgorithmInstances.vue";
+import CreateAlgorithmInstance from "../views/instances/CreateAlgorithmInstance.vue";
+import InstanceDetails from "../views/instances/InstanceDetails.vue";
 import JobDebug from "../views/JobDebug.vue";
 import Logging from "../views/Logging.vue";
 import LoginVue from "../views/Login.vue";
@@ -41,7 +43,23 @@ const router = createRouter({
           component: Files
         },
         {
+          path: "/algorithms/instances",
+          name: "algorithm-instances",
+          component: AlgorithmInstances
+        },
+        {
+          path: "/algorithms/create-instance",
+          component: CreateAlgorithmInstance
+        },
+        {
+          path: "/algorithms/instances/:id",
+          name: "algorithm-instance-details",
+          component: InstanceDetails,
+          props: true
+        },
+        {
           path: "/jobdebug",
+          name: "job-debug",
           component: JobDebug
         },
         {
@@ -58,10 +76,6 @@ const router = createRouter({
           path: "/consumer/:id",
           name: "consumer",
           component: ConsumerView
-        },
-        {
-          path: "/algorithms/instance",
-          component: AlgorithmInstance
         }
       ]
     },

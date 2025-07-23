@@ -144,7 +144,7 @@ paths:
           in: header
           schema:
             type: string
-        - name: x-analysis-id
+        - name: x-algorithm-instance-id
           required: true
           in: header
           schema:
@@ -304,6 +304,50 @@ paths:
                 $ref: "#/components/schemas/ErrorDto"
       security: *a5
       summary: Get catalog
+      tags: *a6
+  /api/management/registry/addresses:
+    get:
+      description: Get all participant addresses from the Control Plane registry.
+      operationId: DataPlaneManagementController_getRegistryAddresses
+      parameters: []
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a5
+      summary: Get registry addresses
+      tags: *a6
+  /api/management/participant-id:
+    get:
+      description: Get the ID of the current participant from the Control Plane catalog.
+      operationId: DataPlaneManagementController_getParticipantId
+      parameters: []
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: string
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a5
+      summary: Get current participant ID
       tags: *a6
   /api/management/refresh:
     post:
@@ -807,10 +851,10 @@ paths:
       security: *a8
       summary: Get egress logs
       tags: *a9
-  /api/analyses:
+  /api/algorithm-instances:
     get:
-      description: Retrieve all analyses
-      operationId: AnalysesController_findAll
+      description: Retrieve all algorithm instances
+      operationId: AlgorithmInstancesController_findAll
       parameters: []
       responses:
         "200":
@@ -820,7 +864,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/AnalysisDto"
+                  $ref: "#/components/schemas/AlgorithmInstanceDto"
         "403":
           description: Forbidden
           content:
@@ -830,27 +874,27 @@ paths:
       security: &a10
         - oauth2:
             - controlplane_dataplane
-      summary: Get all analyses
+      summary: Get all algorithm instances
       tags: &a11
-        - Analysis
+        - Algorithm Instances
     post:
-      description: Create a new analysis
-      operationId: AnalysesController_create
+      description: Create a new algorithm instance
+      operationId: AlgorithmInstancesController_create
       parameters: []
       requestBody:
         required: true
-        description: The analysis to create
+        description: The algorithm instance to create
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CreateAnalysisDto"
+              $ref: "#/components/schemas/AlgorithmInstanceDto"
       responses:
         "200":
-          description: The analysis has been successfully created
+          description: The algorithm instance has been successfully created
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/AnalysisDto"
+                $ref: "#/components/schemas/CreateAlgorithmInstanceDto"
         "403":
           description: Forbidden
           content:
@@ -858,12 +902,70 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
       security: *a10
-      summary: Create analysis
+      summary: Create algorithm instance
       tags: *a11
-  /api/analyses/{id}:
+  /api/algorithm-instances/catalogs/{participantId}:
     get:
-      description: Retrieve an analysis by its ID
-      operationId: AnalysesController_findOne
+      description: Fetches a specific catalog by its participant ID.
+      operationId: AlgorithmInstancesController_getCatalogByParticipantId
+      parameters:
+        - name: participantId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CatalogSchema"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a10
+      summary: Get catalog by participant ID
+      tags: *a11
+  /api/algorithm-instances/transfer/{transferId}:
+    get:
+      description: Retrieve an algorithm instance by its associated transfer ID
+      operationId: AlgorithmInstancesController_findByTransferId
+      parameters:
+        - name: transferId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AlgorithmInstanceDto"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a10
+      summary: Get an algorithm instance by transfer ID
+      tags: *a11
+  /api/algorithm-instances/{id}:
+    get:
+      description: Retrieve an algorithm instance by its ID
+      operationId: AlgorithmInstancesController_findOne
       parameters:
         - name: id
           required: true
@@ -876,7 +978,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/AnalysisDto"
+                $ref: "#/components/schemas/AlgorithmInstanceDto"
         "403":
           description: Forbidden
           content:
@@ -884,11 +986,11 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
       security: *a10
-      summary: Get analysis by ID
+      summary: Get an algorithm instance by ID
       tags: *a11
     delete:
-      description: Delete an analysis by its ID
-      operationId: AnalysesController_remove
+      description: Delete an algorithm instance by its ID
+      operationId: AlgorithmInstancesController_remove
       parameters:
         - name: id
           required: true
@@ -897,7 +999,7 @@ paths:
             type: string
       responses:
         "200":
-          description: The analysis has been successfully deleted
+          description: The algorithm instance has been successfully deleted
         "403":
           description: Forbidden
           content:
@@ -905,7 +1007,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
       security: *a10
-      summary: Delete analysis by ID
+      summary: Delete an algorithm instance by ID
       tags: *a11
   /api/files:
     get:
@@ -1021,20 +1123,26 @@ paths:
       security: *a12
       summary: Get CSVW
       tags: *a13
-  /api/management/k8s/jobs/analysis/{analysisId}:
+  /api/management/k8s/jobs/algorithm-instance/{algorithmInstanceId}:
     get:
-      operationId: OrchestrationManagementController_getJobsForAnalysis
+      operationId: OrchestrationManagementController_getJobsForAlgorithmInstance
       parameters:
-        - name: analysisId
+        - name: algorithmInstanceId
           required: true
           in: path
-          description: The analysis ID
+          description: The algorithm instance ID
           schema:
             example: urn:uuid:12345678-1234-5678-1234-567812345678
             type: string
       responses:
         "200":
           description: ""
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/JobDto"
         "403":
           description: Forbidden
           content:
@@ -1044,7 +1152,7 @@ paths:
       security: &a14
         - oauth2:
             - controlplane_dataplane
-      summary: Get jobs for analysis
+      summary: Get jobs for algorithm instance
       tags: &a15
         - Data Plane Management
   /api/management/k8s/jobs/{jobName}/pods:
@@ -1061,6 +1169,10 @@ paths:
       responses:
         "200":
           description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PodListDto"
         "403":
           description: Forbidden
           content:
@@ -1084,6 +1196,10 @@ paths:
       responses:
         "200":
           description: ""
+          content:
+            application/json:
+              schema:
+                type: string
         "403":
           description: Forbidden
           content:
@@ -1106,15 +1222,17 @@ paths:
               properties:
                 imageName:
                   type: string
-                analysisId:
+                algorithmInstanceId:
                   type: string
                 command:
                   type: array
                   items:
                     type: string
+                fileId:
+                  type: string
               example:
                 imageName: busybox
-                analysisId: urn:uuid:12345678-1234-5678-1234-567812345678
+                algorithmInstanceId: urn:uuid:12345678-1234-5678-1234-567812345678
                 command:
                   - echo
                   - Hello, World!
@@ -1130,11 +1248,11 @@ paths:
       security: *a14
       summary: Spawn a job
       tags: *a15
-  /api/events/{analysisId}/internal-event:
+  /api/events/{algorithmInstanceId}/internal-event:
     post:
       operationId: EventsController_createInternalEvent
       parameters:
-        - name: analysisId
+        - name: algorithmInstanceId
           required: true
           in: path
           schema:
@@ -1150,12 +1268,12 @@ paths:
           description: ""
       tags: &a16
         - Events
-  /api/events/{analysisId}/algorithm-event:
+  /api/events/{algorithmInstanceId}/algorithm-event:
     post:
-      description: Creates an algorithm event for the specified analysis.
+      description: Creates an algorithm event for the specified algorithm instance.
       operationId: EventsController_createAlgorithmEvent
       parameters:
-        - name: analysisId
+        - name: algorithmInstanceId
           required: true
           in: path
           schema:
@@ -1186,12 +1304,12 @@ paths:
                 $ref: "#/components/schemas/ErrorDto"
       summary: Create an algorithm event
       tags: *a16
-  /api/events/{analysisId}/upload/{eventId}:
+  /api/events/{algorithmInstanceId}/upload/{eventId}:
     post:
       description: Uploads binary algorithm event data.
       operationId: EventsController_uploadEventData
       parameters:
-        - name: analysisId
+        - name: algorithmInstanceId
           required: true
           in: path
           schema:
@@ -1217,11 +1335,11 @@ paths:
                 $ref: "#/components/schemas/ErrorDto"
       summary: Upload algorithm event data
       tags: *a16
-  /api/events/{analysisId}/data/{eventId}:
+  /api/events/{algorithmInstanceId}/data/{eventId}:
     get:
       operationId: EventsController_getEventData
       parameters:
-        - name: analysisId
+        - name: algorithmInstanceId
           required: true
           in: path
           schema:
@@ -1239,6 +1357,28 @@ paths:
       responses:
         "200":
           description: ""
+      tags: *a16
+  /api/events/{algorithmInstanceId}:
+    get:
+      description: Retrieves all algorithm and internal events for the specified
+        algorithm instance.
+      operationId: EventsController_getEventsForAlgorithmInstance
+      parameters:
+        - name: algorithmInstanceId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The events have been successfully retrieved.
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      summary: Get all events for an algorithm instance
       tags: *a16
 info:
   title: TSG Analytics Data Plane
@@ -2483,27 +2623,80 @@ components:
       required:
         - data
         - meta
+    AlgorithmDefinitionDto:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Title of the algorithm
+        description:
+          type: string
+          description: Description of the algorithm
+        keywords:
+          description: Keywords associated with the algorithm
+          type: array
+          items:
+            type: string
+        image:
+          type: string
+          description: Public image URL of the algorithm
+        algorithmEvents:
+          description: Algorithm event structure of the algorithm
+          type: array
+          items:
+            type: string
+        roleDefinitions:
+          description: Role definitions for the algorithm
+          type: array
+          items:
+            type: string
+        internalEvents:
+          description: Internal event structure of the algorithm
+          type: array
+          items:
+            type: string
+        uiTemplate:
+          description: UI template for visualizing internal events
+          type: array
+          items:
+            type: string
+      required:
+        - title
+        - description
+        - keywords
+        - image
+        - algorithmEvents
+        - roleDefinitions
+        - internalEvents
+        - uiTemplate
     AlgorithmEventDto:
       type: object
       properties:
         id:
           type: string
-        analysisId:
+        eventId:
+          type: string
+        algorithmInstanceId:
           type: string
         name:
           type: string
         number:
           type: number
         timestamp:
+          format: date-time
           type: string
-        data:
-          type: string
-          format: binary
         createdBy:
           type: string
+        transferId:
+          type: string
+        recipients:
+          type: array
+          items:
+            type: string
       required:
         - id
-        - analysisId
+        - eventId
+        - algorithmInstanceId
         - name
         - number
         - timestamp
@@ -2513,36 +2706,46 @@ components:
       properties:
         id:
           type: string
-        analysisId:
+        algorithmInstanceId:
           type: string
         name:
           type: string
         number:
           type: number
         timestamp:
+          format: date-time
           type: string
         data:
           type: object
           additionalProperties: true
       required:
         - id
-        - analysisId
+        - algorithmInstanceId
         - name
         - number
         - timestamp
-    AnalysisDto:
+    AlgorithmInstanceDto:
       type: object
       properties:
         id:
           type: string
-        name:
-          type: string
-        status:
-          type: string
-        participantIds:
+          example: 123e4567-e89b-12d3-a456-426614174000
+        algorithmDefinition:
+          description: The definition for the algorithm
+          allOf:
+            - $ref: "#/components/schemas/AlgorithmDefinitionDto"
+        participants:
+          description: Participants for this algorithm
           type: array
           items:
             type: string
+        createdDate:
+          format: date-time
+          type: string
+          example: 2023-01-01T00:00:00.000Z
+        status:
+          type: string
+          description: The current status of the algorithm instance
         startedAt:
           format: date-time
           type: string
@@ -2563,26 +2766,30 @@ components:
             $ref: "#/components/schemas/InternalEventDto"
       required:
         - id
-        - name
+        - algorithmDefinition
+        - participants
+        - createdDate
         - status
-        - participantIds
         - startedAt
-    CreateAnalysisDto:
+    CreateAlgorithmInstanceDto:
       type: object
       properties:
-        name:
+        id:
           type: string
-          example: Analysis Name
-        participantIds:
-          example:
-            - did:web:participant1
-            - did:web:participant2
+          example: 123e4567-e89b-12d3-a456-426614174000
+        algorithmDefinition:
+          description: The definition for the algorithm
+          allOf:
+            - $ref: "#/components/schemas/AlgorithmDefinitionDto"
+        participants:
+          description: Participants for this algorithm
           type: array
           items:
             type: string
       required:
-        - name
-        - participantIds
+        - id
+        - algorithmDefinition
+        - participants
     CSVWTableSchema:
       type: object
       properties:
@@ -2646,6 +2853,293 @@ components:
         - originalFileName
         - presentInLastCheck
         - csvw
+    TimeDto:
+      type: object
+      properties:
+        format:
+          type: string
+          description: Time is a wrapper around time.Time which supports correct
+            marshaling to YAML and JSON.
+      required:
+        - format
+    ManagedFieldsEntryDto:
+      type: object
+      properties:
+        apiVersion:
+          type: string
+        fieldsType:
+          type: string
+        fieldsV1:
+          type: object
+        manager:
+          type: string
+        operation:
+          type: string
+        subresource:
+          type: string
+        time:
+          $ref: "#/components/schemas/TimeDto"
+    OwnerReferenceDto:
+      type: object
+      properties:
+        apiVersion:
+          type: string
+        blockOwnerDeletion:
+          type: boolean
+        controller:
+          type: boolean
+        kind:
+          type: string
+        name:
+          type: string
+        uid:
+          type: string
+      required:
+        - apiVersion
+        - blockOwnerDeletion
+        - controller
+        - kind
+        - name
+        - uid
+    ObjectMetaDto:
+      type: object
+      properties:
+        annotations:
+          type: object
+        creationTimestamp:
+          $ref: "#/components/schemas/TimeDto"
+        deletionGracePeriodSeconds:
+          type: number
+        deletionTimestamp:
+          $ref: "#/components/schemas/TimeDto"
+        finalizers:
+          type: array
+          items:
+            type: string
+        generateName:
+          type: string
+        generation:
+          type: number
+        labels:
+          type: object
+        managedFields:
+          type: array
+          items:
+            $ref: "#/components/schemas/ManagedFieldsEntryDto"
+        name:
+          type: string
+        namespace:
+          type: string
+        ownerReferences:
+          type: array
+          items:
+            $ref: "#/components/schemas/OwnerReferenceDto"
+        resourceVersion:
+          type: string
+        selfLink:
+          type: string
+        uid:
+          type: string
+    JobDto:
+      type: object
+      properties:
+        apiVersion:
+          type: string
+        kind:
+          type: string
+        metadata:
+          $ref: "#/components/schemas/ObjectMetaDto"
+        spec:
+          type: object
+        status:
+          type: object
+    PodSpecDto:
+      type: object
+      properties:
+        activeDeadlineSeconds:
+          type: number
+        affinity:
+          type: object
+        automountServiceAccountToken:
+          type: boolean
+        containers:
+          type: array
+          items:
+            type: object
+        dnsConfig:
+          type: object
+        dnsPolicy:
+          type: string
+        enableServiceLinks:
+          type: boolean
+        ephemeralContainers:
+          type: array
+          items:
+            type: string
+        hostAliases:
+          type: array
+          items:
+            type: string
+        hostIPC:
+          type: boolean
+        hostNetwork:
+          type: boolean
+        hostPID:
+          type: boolean
+        hostUsers:
+          type: boolean
+        hostname:
+          type: string
+        imagePullSecrets:
+          type: array
+          items:
+            type: string
+        initContainers:
+          type: array
+          items:
+            type: string
+        nodeName:
+          type: string
+        nodeSelector:
+          type: object
+        os:
+          type: object
+        overhead:
+          type: object
+        preemptionPolicy:
+          type: string
+        priority:
+          type: number
+        priorityClassName:
+          type: string
+        readinessGates:
+          type: array
+          items:
+            type: string
+        resourceClaims:
+          type: array
+          items:
+            type: string
+        resources:
+          type: object
+        restartPolicy:
+          type: string
+        runtimeClassName:
+          type: string
+        schedulerName:
+          type: string
+        schedulingGates:
+          type: array
+          items:
+            type: string
+        securityContext:
+          type: object
+        serviceAccount:
+          type: string
+        serviceAccountName:
+          type: string
+        setHostnameAsFQDN:
+          type: boolean
+        shareProcessNamespace:
+          type: boolean
+        subdomain:
+          type: string
+        terminationGracePeriodSeconds:
+          type: number
+        tolerations:
+          type: array
+          items:
+            type: string
+        topologySpreadConstraints:
+          type: array
+          items:
+            type: string
+        volumes:
+          type: array
+          items:
+            type: string
+      required:
+        - containers
+    PodStatusDto:
+      type: object
+      properties:
+        conditions:
+          type: array
+          items:
+            type: string
+        containerStatuses:
+          type: array
+          items:
+            type: string
+        ephemeralContainerStatuses:
+          type: array
+          items:
+            type: string
+        hostIP:
+          type: string
+        hostIPs:
+          type: array
+          items:
+            type: string
+        initContainerStatuses:
+          type: array
+          items:
+            type: string
+        message:
+          type: string
+        nominatedNodeName:
+          type: string
+        observedGeneration:
+          type: number
+        phase:
+          type: string
+        podIP:
+          type: string
+        podIPs:
+          type: array
+          items:
+            type: string
+        qosClass:
+          type: string
+        reason:
+          type: string
+        resize:
+          type: string
+        resourceClaimStatuses:
+          type: array
+          items:
+            type: string
+        startTime:
+          format: date-time
+          type: string
+    PodDto:
+      type: object
+      properties:
+        apiVersion:
+          type: string
+        kind:
+          type: string
+        metadata:
+          $ref: "#/components/schemas/ObjectMetaDto"
+        spec:
+          $ref: "#/components/schemas/PodSpecDto"
+        status:
+          $ref: "#/components/schemas/PodStatusDto"
+    PodListDto:
+      type: object
+      properties:
+        apiVersion:
+          type: string
+        kind:
+          type: string
+        metadata:
+          type: object
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/PodDto"
+      required:
+        - items
     CreateInternalEventDto:
       type: object
       properties:
@@ -2676,8 +3170,11 @@ components:
           type: number
         timestamp:
           type: string
-        isOwnEvent:
-          type: boolean
+        recipients:
+          description: List of participant IDs to forward this event to
+          type: array
+          items:
+            type: string
       required:
         - eventId
         - name

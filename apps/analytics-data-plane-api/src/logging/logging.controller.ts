@@ -14,10 +14,10 @@ import {
   ApiQuery,
   ApiTags
 } from "@nestjs/swagger";
+import { LogEntry, LogFilterDto } from "@tsg-dsp/analytics-data-plane-dtos";
 import { Roles } from "@tsg-dsp/common-api";
 
 import { PageDto, PageOptionsDto } from "../utils/pagination.js";
-import { LogEntry, LogFilterDto } from "./logging.dto.js";
 import { LoggingService } from "./logging.service.js";
 
 @ApiTags("Logging")

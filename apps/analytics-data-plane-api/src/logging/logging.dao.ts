@@ -1,11 +1,10 @@
+import { LogEntry } from "@tsg-dsp/analytics-data-plane-dtos";
 import {
   Column,
   CreateDateColumn,
   Entity,
   PrimaryGeneratedColumn
 } from "typeorm";
-
-import { LogEntry } from "./logging.dto.js";
 
 @Entity()
 export class IngressLogDao implements LogEntry {
