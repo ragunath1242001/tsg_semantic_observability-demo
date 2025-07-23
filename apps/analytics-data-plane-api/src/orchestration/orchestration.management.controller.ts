@@ -1,4 +1,4 @@
-import { V1Job } from "@kubernetes/client-node";
+import { V1Job, V1PodList } from "@kubernetes/client-node";
 import {
   Body,
   Controller,
@@ -17,6 +17,7 @@ import {
   ApiResponse,
   ApiTags
 } from "@nestjs/swagger";
+import { JobDto, PodListDto } from "@tsg-dsp/analytics-data-plane-dtos";
 import { Roles } from "@tsg-dsp/common-api";
 import { ApiForbiddenResponseDefault } from "@tsg-dsp/common-dtos";
 
@@ -30,21 +31,23 @@ export class OrchestrationManagementController {
   constructor(private readonly orchestrationService: OrchestrationService) {}
   private readonly logger = new Logger(this.constructor.name);
 
-  @Get("/jobs/analysis/:analysisId")
-  @ApiOperation({ summary: "Get jobs for analysis" })
+  @Get("/jobs/algorithm-instance/:algorithmInstanceId")
+  @ApiOperation({ summary: "Get jobs for algorithm instance" })
   @ApiParam({
-    name: "analysisId",
-    description: "The analysis ID",
+    name: "algorithmInstanceId",
+    description: "The algorithm instance ID",
     example: "urn:uuid:12345678-1234-5678-1234-567812345678",
     required: true,
     type: "string"
   })
-  @ApiOkResponse()
+  @ApiOkResponse({ type: [JobDto] })
   @ApiForbiddenResponseDefault()
-  async getJobsForAnalysis(
-    @Param("analysisId") analysisId: string
+  async getJobsForAlgorithmInstance(
+    @Param("algorithmInstanceId") algorithmInstanceId: string
   ): Promise<V1Job[]> {
-    return await this.orchestrationService.getJobsForAnalysis(analysisId);
+    return await this.orchestrationService.getJobsForAlgorithmInstance(
+      algorithmInstanceId
+    );
   }
 
   @Get("/jobs/:jobName/pods")
@@ -56,9 +59,9 @@ export class OrchestrationManagementController {
     required: true,
     type: "string"
   })
-  @ApiOkResponse()
+  @ApiOkResponse({ type: PodListDto })
   @ApiForbiddenResponseDefault()
-  async getJobPods(@Param("jobName") jobName: string) {
+  async getJobPods(@Param("jobName") jobName: string): Promise<V1PodList> {
     return await this.orchestrationService.getPodsForJob(jobName);
   }
 
@@ -71,7 +74,7 @@ export class OrchestrationManagementController {
     required: true,
     type: "string"
   })
-  @ApiOkResponse()
+  @ApiOkResponse({ type: String })
   @ApiForbiddenResponseDefault()
   async getJobLogs(@Param("podName") podName: string) {
     return await this.orchestrationService.getPodLogs(podName);
@@ -84,12 +87,13 @@ export class OrchestrationManagementController {
       type: "object",
       properties: {
         imageName: { type: "string" },
-        analysisId: { type: "string" },
-        command: { type: "array", items: { type: "string" } }
+        algorithmInstanceId: { type: "string" },
+        command: { type: "array", items: { type: "string" } },
+        fileId: { type: "string" }
       },
       example: {
         imageName: "busybox",
-        analysisId: "urn:uuid:12345678-1234-5678-1234-567812345678",
+        algorithmInstanceId: "urn:uuid:12345678-1234-5678-1234-567812345678",
         command: ["echo", "Hello, World!"]
       }
     }
@@ -100,13 +104,13 @@ export class OrchestrationManagementController {
     @Body()
     body: {
       imageName: string;
-      analysisId: string;
-      command: string[];
+      algorithmInstanceId: string;
+      command?: string[];
       fileId?: string;
     }
   ) {
     return await this.orchestrationService.spawnJob(
-      body.analysisId,
+      body.algorithmInstanceId,
       body.imageName,
       body.command,
       body.fileId

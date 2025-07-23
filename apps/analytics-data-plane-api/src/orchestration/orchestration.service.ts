@@ -12,7 +12,7 @@ import { HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { hostname } from "os";
 import { Writable } from "stream";
 
-import { AnalysesService } from "../analyses/analyses.service.js";
+import { AlgorithmInstancesService } from "../algorithm-instances/algorithm-instances.service.js";
 import { RootConfig } from "../config.js";
 import { FilesService } from "../files/files.service.js";
 import { DataPlaneError } from "../utils/errors/error.js";
@@ -27,7 +27,7 @@ export class OrchestrationService {
   constructor(
     private readonly config: RootConfig,
     private readonly filesService: FilesService,
-    private readonly analysesService: AnalysesService
+    private readonly algorithmInstancesService: AlgorithmInstancesService
   ) {
     this.kubeConfig = new KubeConfig();
     this.containerName = "analytics-dp-container";
@@ -44,36 +44,46 @@ export class OrchestrationService {
   }
   private readonly logger = new Logger(this.constructor.name);
 
-  async getJobsForAnalysis(analysisId: string): Promise<V1Job[]> {
+  async getJobsForAlgorithmInstance(
+    algorithmInstanceId: string
+  ): Promise<V1Job[]> {
     const namespace = this.config.kubernetesConfig.namespace;
 
     const jobList = await this.batchV1Api.listNamespacedJob({
       namespace,
-      labelSelector: `analysisId=${analysisId}`
+      labelSelector: `algorithmInstanceId=${algorithmInstanceId}`
     });
 
     return jobList.items;
   }
 
   async spawnJob(
-    analysisId: string,
+    algorithmInstanceId: string,
     imageName: string,
-    command: string[],
+    command?: string[],
     fileId?: string
   ) {
-    const jobName = `adp-job-${analysisId}-${new Date().getTime()}`;
+    const jobName = `adp-job-${algorithmInstanceId}-${new Date().getTime()}`;
     const namespace = this.config.kubernetesConfig.namespace;
+
+    // Get the algorithm instance to retrieve participant information
+    const algorithmInstance =
+      await this.algorithmInstancesService.getAlgorithmInstance(
+        algorithmInstanceId
+      );
 
     const dataplaneAddress = process.env["POD_IP"] ?? hostname();
     const localDataPlaneAddress = `http://${dataplaneAddress}:${this.config.server.port}${process.env["SUBPATH"] ?? ""}${process.env["EMBEDDED_FRONTEND"] ? "/api" : ""}`;
 
     const eventsAccessToken =
-      await this.analysesService.createAccessToken(analysisId);
+      await this.algorithmInstancesService.createAccessToken(
+        algorithmInstanceId
+      );
 
     const env: V1EnvVar[] = [
       {
-        name: "ANALYSIS_ID",
-        value: analysisId
+        name: "ALGORITHM_INSTANCE_ID",
+        value: algorithmInstanceId
       },
       {
         name: "CALLBACK_URL",
@@ -82,6 +92,12 @@ export class OrchestrationService {
       {
         name: "EVENTS_ACCESS_TOKEN",
         value: eventsAccessToken
+      },
+      {
+        name: "PARTICIPANTS",
+        value: JSON.stringify(
+          algorithmInstance.participants.map((p) => p.didId)
+        )
       }
     ];
 
@@ -135,6 +151,11 @@ export class OrchestrationService {
       }
     }
 
+    // Filter out empty command elements and use undefined if no valid commands
+    const validCommand = command?.filter((cmd) => cmd && cmd.trim().length > 0);
+    const finalCommand =
+      validCommand && validCommand.length > 0 ? validCommand : undefined;
+
     const jobManifest: V1Job = {
       apiVersion: "batch/v1",
       kind: "Job",
@@ -148,7 +169,7 @@ export class OrchestrationService {
           metadata: {
             labels: {
               app: jobName,
-              analysisId
+              algorithmInstanceId
             }
           },
           spec: {
@@ -158,7 +179,7 @@ export class OrchestrationService {
                 name: this.containerName,
                 image: imageName,
                 env,
-                command,
+                command: finalCommand,
                 volumeMounts
               }
             ],
@@ -221,12 +242,18 @@ export class OrchestrationService {
       tailLines: 10 // Optional: Start with the last 10 lines of logs
     };
 
+    const write = (
+      chunk: any,
+      _encoding: BufferEncoding,
+      callback: (error?: Error | null) => void
+    ) => {
+      this.logger.log(chunk.toString()); // Output the log data
+      callback();
+    };
+
     // Create a readable stream for logs
     const logStreamWritable = new Writable({
-      write(chunk, _encoding, callback) {
-        console.log(chunk.toString()); // Output the log data
-        callback();
-      }
+      write
     });
 
     await logStream.log(
@@ -238,7 +265,7 @@ export class OrchestrationService {
     );
 
     logStreamWritable.on("finish", () => {
-      console.log("Log stream finished.");
+      this.logger.log(`Log stream for pod ${podName} finished.`);
     });
     return logStreamWritable;
   }

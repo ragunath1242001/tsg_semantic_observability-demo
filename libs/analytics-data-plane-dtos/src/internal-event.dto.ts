@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsNumber, IsOptional, IsString } from "class-validator";
+import { IsDate, IsNumber, IsOptional, IsString } from "class-validator";
 
 export class InternalEventDto {
   @ApiProperty()
@@ -8,7 +8,7 @@ export class InternalEventDto {
 
   @ApiProperty()
   @IsString()
-  analysisId!: string;
+  algorithmInstanceId!: string;
 
   @ApiProperty()
   @IsString()
@@ -19,8 +19,8 @@ export class InternalEventDto {
   number!: number;
 
   @ApiProperty()
-  @IsString()
-  timestamp!: string;
+  @IsDate()
+  timestamp!: Date;
 
   @ApiPropertyOptional({ type: "object", additionalProperties: true })
   @IsOptional()

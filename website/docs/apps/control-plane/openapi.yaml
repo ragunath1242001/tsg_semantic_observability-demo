@@ -3091,6 +3091,38 @@ paths:
       security: *a26
       summary: Get catalogs
       tags: *a27
+  /api/management/registry/catalogs/{participantId}:
+    get:
+      description: Fetches a specific catalog by its participant ID.
+      operationId: RegistryClientController_getCatalogByParticipantId
+      parameters:
+        - name: participantId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CatalogSchema"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a26
+      summary: Get catalog by participant ID
+      tags: *a27
   /api/registry:
     get:
       operationId: RegistryController_getCatalogs

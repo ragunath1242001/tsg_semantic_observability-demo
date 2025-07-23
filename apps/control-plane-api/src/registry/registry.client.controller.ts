@@ -1,4 +1,11 @@
-import { Controller, Get, HttpCode, HttpStatus, Logger } from "@nestjs/common";
+import {
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Logger,
+  Param
+} from "@nestjs/common";
 import {
   ApiOAuth2,
   ApiOkResponse,
@@ -13,7 +20,10 @@ import {
   UsePagination
 } from "@tsg-dsp/common-api";
 import { CatalogDto, CatalogSchema } from "@tsg-dsp/common-dsp";
-import { DIDDocumentDto } from "@tsg-dsp/common-dtos";
+import {
+  ApiNotFoundResponseDefault,
+  DIDDocumentDto
+} from "@tsg-dsp/common-dtos";
 import { ApiForbiddenResponseDefault } from "@tsg-dsp/common-dtos";
 import { CredentialAddress } from "@tsg-dsp/control-plane-dtos";
 import { DIDDocument } from "did-resolver";
@@ -83,5 +93,23 @@ export class RegistryClientController {
   ): Promise<Paginated<CatalogDto[]>> {
     this.logger.log(`Received request for all catalogs.`);
     return await this.registryService.getAllCatalogs(paginationOptions);
+  }
+
+  @Get("catalogs/:participantId")
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: "Get catalog by participant ID",
+    description: "Fetches a specific catalog by its participant ID."
+  })
+  @ApiOkResponse({ type: CatalogSchema })
+  @ApiForbiddenResponseDefault()
+  @ApiNotFoundResponseDefault()
+  async getCatalogByParticipantId(
+    @Param("participantId") participantId: string
+  ): Promise<CatalogDto> {
+    this.logger.log(
+      `Received request for catalog with participant ID: ${participantId}`
+    );
+    return await this.registryService.getCatalogByParticipantId(participantId);
   }
 }

@@ -29,7 +29,7 @@ import { AxiosInstance } from "axios";
 import crypto from "crypto";
 import { Repository } from "typeorm";
 
-import { AnalysesService } from "../analyses/analyses.service.js";
+import { AlgorithmInstancesService } from "../algorithm-instances/algorithm-instances.service.js";
 import { RootConfig } from "../config.js";
 import { LoggingService } from "../logging/logging.service.js";
 import { DataPlaneClientError, DataPlaneError } from "../utils/errors/error.js";
@@ -40,11 +40,12 @@ import { TransferDao } from "./transfer.dao.js";
 export class DataPlaneService {
   private readonly axiosDataPlane: AxiosInstance;
   private readonly axiosManagement: AxiosInstance;
+  private readonly axiosControlPlane: AxiosInstance;
 
   constructor(
     private readonly config: RootConfig,
     private readonly loggingService: LoggingService,
-    private readonly analysesService: AnalysesService,
+    private readonly algorithmInstancesService: AlgorithmInstancesService,
     authClient: AuthClientService,
     @InjectRepository(TransferDao)
     private readonly transferRepository: Repository<TransferDao>,
@@ -57,6 +58,9 @@ export class DataPlaneService {
     });
     this.axiosManagement = authClient.axiosInstance({
       baseURL: this.config.controlPlane.managementEndpoint
+    });
+    this.axiosControlPlane = authClient.axiosInstance({
+      baseURL: this.config.controlPlane.controlEndpoint
     });
   }
   private readonly logger = new Logger(this.constructor.name);
@@ -177,17 +181,33 @@ export class DataPlaneService {
     }
   }
 
+  async getRegistryAddresses(): Promise<{ didId: string; address: string }[]> {
+    try {
+      const response = await this.axiosControlPlane.get<
+        { didId: string; address: string }[]
+      >("/registry/addresses");
+      return response.data;
+    } catch (err) {
+      throw new DataPlaneClientError(
+        "Fetching registry addresses from control plane failed",
+        err
+      ).andLog(this.logger);
+    }
+  }
+
   async getParticipantId() {
     if (!this.participantId) {
       const catalog = await this.getControlPlaneCatalog();
-      if (!catalog.participantId) {
-        throw new DataPlaneError(
-          "Participant ID not found in control plane catalog",
-          HttpStatus.INTERNAL_SERVER_ERROR
-        ).andLog(this.logger, "error");
-      }
       this.participantId = catalog.participantId;
     }
+
+    if (!this.participantId) {
+      throw new DataPlaneError(
+        "Participant ID not found in control plane catalog",
+        HttpStatus.INTERNAL_SERVER_ERROR
+      ).andLog(this.logger, "error");
+    }
+
     return this.participantId;
   }
 
@@ -348,6 +368,22 @@ export class DataPlaneService {
     return transfer;
   }
 
+  /**
+   * Get a transfer for a specific algorithmInstance and remote party
+   */
+  async getTransferByAlgorithmInstanceAndParty(
+    algorithmInstanceId: string,
+    remoteParty: string
+  ): Promise<TransferDao | null> {
+    return await this.transferRepository.findOne({
+      where: {
+        algorithmInstance: { id: algorithmInstanceId },
+        remoteParty: remoteParty
+      },
+      relations: ["algorithmInstance"]
+    });
+  }
+
   async getMetadata(
     id: string
   ): Promise<{ agreement: AgreementDto; dataset: DatasetDto }> {
@@ -407,14 +443,16 @@ export class DataPlaneService {
     processId: string,
     remoteParty: string,
     datasetId: string,
-    analysisId?: string
+    algorithmInstanceId?: string
   ): Promise<DataPlaneRequestResponseDto> {
     const id = crypto.randomUUID();
     let dataAddress: DataPlaneAddressDto | undefined;
     let secret: string | undefined;
 
-    if (analysisId) {
-      await this.analysesService.getAnalyis(analysisId);
+    if (algorithmInstanceId) {
+      await this.algorithmInstancesService.getAlgorithmInstance(
+        algorithmInstanceId
+      );
     }
 
     if (role === "provider") {
@@ -422,8 +460,8 @@ export class DataPlaneService {
 
       let endpoint: string;
 
-      if (analysisId) {
-        endpoint = `${this.config.server.publicAddress}/events/${analysisId}/algorithm-event`;
+      if (algorithmInstanceId) {
+        endpoint = `${this.config.server.publicAddress}/events/${algorithmInstanceId}/algorithm-event`;
       } else {
         endpoint = `${this.config.server.publicAddress}/proxy/${id}`;
       }
@@ -455,9 +493,9 @@ export class DataPlaneService {
       }
     });
 
-    if (analysisId) {
-      await this.analysesService.linkTransfer({
-        analysisId,
+    if (algorithmInstanceId) {
+      await this.algorithmInstancesService.linkTransfer({
+        algorithmInstanceId,
         transfer
       });
     }
@@ -599,5 +637,66 @@ export class DataPlaneService {
     }
     transfer.state = TransferState.SUSPENDED;
     await this.transferRepository.save(transfer);
+  }
+
+  /**
+   * Forward an event to a specific participant via their transfer endpoint
+   */
+  async forwardEventToParticipant(
+    transfer: TransferDao,
+    _algorithmInstanceId: string,
+    eventData: {
+      eventId: string;
+      name: string;
+      number: number;
+      timestamp: string;
+    },
+    _authorizationHeader: string
+  ): Promise<void> {
+    try {
+      // Use the transfer's data address to determine the target endpoint
+      if (!transfer.dataAddress || !transfer.dataAddress.endpoint) {
+        throw new Error(`No endpoint found for transfer ${transfer.id}`);
+      }
+
+      const targetEndpoint = transfer.dataAddress.endpoint;
+
+      // Create the event payload for the remote participant
+      const eventPayload = {
+        eventId: eventData.eventId,
+        name: eventData.name,
+        number: eventData.number,
+        timestamp: eventData.timestamp
+      };
+
+      // Use the transfer secret for authentication when forwarding
+      const forwardingHeaders = {
+        Authorization: `Bearer ${transfer.secret}`,
+        "Content-Type": "application/json"
+      };
+
+      this.logger.log(
+        `Forwarding event ${eventData.eventId} to ${transfer.remoteParty} at ${targetEndpoint}`
+      );
+
+      // Make the HTTP request to create the event on the remote analytics data plane
+      const response = await this.axiosDataPlane.post(
+        targetEndpoint,
+        eventPayload,
+        { headers: forwardingHeaders }
+      );
+
+      this.logger.log(
+        `Successfully forwarded event ${eventData.eventId} to ${transfer.remoteParty}. Response status: ${response.status}`
+      );
+    } catch (error) {
+      this.logger.error(
+        `Failed to forward event ${eventData.eventId} to ${transfer.remoteParty}: ${error}`
+      );
+      throw new DataPlaneClientError(
+        `Event forwarding failed: ${error}`,
+        HttpStatus.BAD_GATEWAY
+      );
+    }
   }
 }

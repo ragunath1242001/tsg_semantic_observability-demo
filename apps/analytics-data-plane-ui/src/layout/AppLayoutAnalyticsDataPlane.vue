@@ -79,7 +79,12 @@ const menuList: Menu[] = [
       {
         label: "Create instance",
         icon: "pi pi-fw pi-sparkles",
-        to: "/algorithms/instance"
+        to: "/algorithms/create-instance"
+      },
+      {
+        label: "Instances",
+        icon: "pi pi-fw pi-chart-line",
+        to: "/algorithms/instances"
       }
     ]
   },

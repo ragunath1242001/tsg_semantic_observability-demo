@@ -9,6 +9,8 @@ export class RegistryDao extends MetaEntity {
   id!: number;
   @Column({ type: String })
   catalogId!: string;
+  @Column({ type: String })
+  participantId!: string;
   @Column("simple-json")
   catalogJson!: CatalogDto;
 }

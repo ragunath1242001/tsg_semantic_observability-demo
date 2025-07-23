@@ -118,6 +118,7 @@ export class RegistryService implements OnApplicationBootstrap {
   async saveToDatabase(catalog: CatalogDto) {
     const registryObj = this.registryRepository.create({
       catalogId: catalog["@id"],
+      participantId: catalog.participantId,
       catalogJson: catalog
     });
     await this.registryRepository.save(registryObj);
@@ -181,5 +182,20 @@ export class RegistryService implements OnApplicationBootstrap {
       data: registryDaos.map((reg) => reg.catalogJson),
       total: itemCount
     };
+  }
+
+  async getCatalogByParticipantId(participantId: string): Promise<CatalogDto> {
+    const catalog = await this.registryRepository.findOne({
+      where: {
+        participantId
+      }
+    });
+    if (!catalog) {
+      throw new DSPError(
+        `Catalog with participant ID ${participantId} not found in registry.`,
+        HttpStatus.NOT_FOUND
+      ).andLog(this.logger, "warn");
+    }
+    return catalog.catalogJson;
   }
 }

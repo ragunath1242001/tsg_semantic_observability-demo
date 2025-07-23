@@ -71,6 +71,10 @@ const helmfolders = getChildFolders("helm-charts");
 const projects = [];
 
 for (const folder of npmfolders) {
+  if (!fs.existsSync(`${folder}/package.json`)) {
+    console.warn(`No package.json found in ${folder}, skipping`);
+    continue;
+  }
   // eslint-disable-next-line no-await-in-loop
   const pkg = await readPkgAndWriteVersion(
     `${folder}/package.json`,

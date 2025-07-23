@@ -175,7 +175,11 @@ describe("Algorithm Definition Service", () => {
             role: "node",
             dataset: "dataset2"
           }
-        ]
+        ],
+        status: "pending",
+        transfers: [],
+        algorithmEvents: [],
+        internalEvents: []
       });
     const errors = validateSync(federatedLearningAlgorithmInstance);
     expect(errors).toHaveLength(0);

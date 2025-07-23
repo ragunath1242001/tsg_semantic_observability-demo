@@ -1,15 +1,22 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryColumn,
+  Relation
+} from "typeorm";
 
-import { AnalysisDao } from "../../analyses/dao/analysis.dao.js";
+import { AlgorithmInstanceDao } from "../algorithm-instances/algorithm-instance.dao.js";
 
 @Entity()
 export class InternalEventDao {
   @PrimaryColumn({ type: String })
   id!: string;
 
-  @ManyToOne(() => AnalysisDao)
+  @ManyToOne(() => AlgorithmInstanceDao)
   @JoinColumn()
-  analysis!: AnalysisDao;
+  algorithmInstance!: Relation<AlgorithmInstanceDao>;
 
   @Column({ type: String })
   name!: string;

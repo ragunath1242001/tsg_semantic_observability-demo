@@ -9,7 +9,7 @@ import {
   RequestContextMiddleware
 } from "@tsg-dsp/common-api";
 
-import { AnalysesModule } from "./analyses/analyses.module.js";
+import { AlgorithmInstancesModule } from "./algorithm-instances/algorithm-instances.module.js";
 import { ConfigController } from "./config.controller.js";
 import { RootConfig } from "./config.js";
 import { DataPlaneTestModule } from "./dataplane/dataplane.module.js";
@@ -34,7 +34,7 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
     AuthModule,
     FilesModule,
     OrchestrationModule,
-    AnalysesModule,
+    AlgorithmInstancesModule,
     EventsModule,
     GenericConfigModule.register(RootConfig),
     TypeOrmModule.forRoot({

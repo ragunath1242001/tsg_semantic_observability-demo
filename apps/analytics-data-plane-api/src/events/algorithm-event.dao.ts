@@ -1,7 +1,14 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryColumn,
+  Relation
+} from "typeorm";
 
-import { AnalysisDao } from "../../analyses/dao/analysis.dao.js";
-import { getBinaryColumnType } from "../../utils/get-binary-column-type.js";
+import { AlgorithmInstanceDao } from "../algorithm-instances/algorithm-instance.dao.js";
+import { getBinaryColumnType } from "../utils/get-binary-column-type.js";
 
 @Entity()
 export class AlgorithmEventDao {
@@ -13,9 +20,9 @@ export class AlgorithmEventDao {
   @Column({ type: String, unique: true })
   eventId!: string;
 
-  @ManyToOne(() => AnalysisDao)
+  @ManyToOne(() => AlgorithmInstanceDao)
   @JoinColumn()
-  analysis!: AnalysisDao;
+  algorithmInstance!: Relation<AlgorithmInstanceDao>;
 
   @Column({ type: String })
   name!: string;
@@ -42,4 +49,7 @@ export class AlgorithmEventDao {
 
   @Column({ type: String })
   createdBy!: string;
+
+  @Column("simple-array", { nullable: true })
+  recipients?: string[];
 }

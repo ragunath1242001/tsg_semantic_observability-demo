@@ -170,8 +170,7 @@
     },
     "image": {
       "type": "string",
-      "format": "uri",
-      "description": "Public image URL of the algorithm"
+      "description": "Public Docker image of the algorithm"
     },
     "algorithmEvents": {
       "type": "array",

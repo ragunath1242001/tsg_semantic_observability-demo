@@ -12,10 +12,11 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryColumn,
+  Relation,
   UpdateDateColumn
 } from "typeorm";
 
-import { AnalysisDao } from "../analyses/dao/analysis.dao.js";
+import { AlgorithmInstanceDao } from "../algorithm-instances/algorithm-instance.dao.js";
 
 @Entity()
 export class TransferDao {
@@ -58,7 +59,10 @@ export class TransferDao {
   @DeleteDateColumn({ type: String })
   deletedDate!: Date;
 
-  @ManyToOne("AnalysisDao", "transfers")
+  @ManyToOne(
+    () => AlgorithmInstanceDao,
+    (algorithmInstance) => algorithmInstance.transfers
+  )
   @JoinColumn()
-  analysis!: AnalysisDao;
+  algorithmInstance!: Relation<AlgorithmInstanceDao>;
 }

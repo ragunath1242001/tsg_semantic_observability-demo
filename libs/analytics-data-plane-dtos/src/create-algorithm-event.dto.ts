@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsBoolean, IsNumber, IsOptional, IsString } from "class-validator";
+import { IsArray, IsNumber, IsOptional, IsString } from "class-validator";
 
 export class CreateAlgorithmEventDto {
   @ApiProperty()
@@ -18,8 +18,12 @@ export class CreateAlgorithmEventDto {
   @IsString()
   timestamp!: string;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({
+    type: [String],
+    description: "List of participant IDs to forward this event to"
+  })
   @IsOptional()
-  @IsBoolean()
-  isOwnEvent?: boolean;
+  @IsArray()
+  @IsString({ each: true })
+  recipients?: string[];
 }

@@ -1,7 +1,6 @@
+import { CSVW } from "@tsg-dsp/analytics-data-plane-dtos";
 import { IsOptional } from "class-validator";
 import { Column, Entity, PrimaryColumn } from "typeorm";
-
-import { CSVW } from "./files.dto.js";
 
 @Entity({ name: "metadata" })
 export class FileMetadataDao {

@@ -68,6 +68,30 @@ export class DataPlaneManagementController {
     return await this.dataPlaneService.getControlPlaneCatalog();
   }
 
+  @Get("/registry/addresses")
+  @ApiOperation({
+    summary: "Get registry addresses",
+    description:
+      "Get all participant addresses from the Control Plane registry."
+  })
+  @ApiOkResponse({ type: [Object] })
+  @ApiForbiddenResponseDefault()
+  async getRegistryAddresses(): Promise<{ didId: string; address: string }[]> {
+    return await this.dataPlaneService.getRegistryAddresses();
+  }
+
+  @Get("/participant-id")
+  @ApiOperation({
+    summary: "Get current participant ID",
+    description:
+      "Get the ID of the current participant from the Control Plane catalog."
+  })
+  @ApiOkResponse({ type: String })
+  @ApiForbiddenResponseDefault()
+  async getParticipantId(): Promise<string> {
+    return await this.dataPlaneService.getParticipantId();
+  }
+
   @Post("/refresh")
   @ApiOperation({
     summary: "(Re)register data plane",
