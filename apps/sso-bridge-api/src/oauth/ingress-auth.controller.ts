@@ -15,6 +15,8 @@ import {
 } from "@tsg-dsp/common-api";
 import { Request } from "express";
 
+import { User } from "../auth/auth.guard.js";
+import { OauthUser } from "../model/user.dao.js";
 import { IngressAuthService } from "./ingress-auth.service.js";
 
 @Controller("ingress-auth")
@@ -23,16 +25,25 @@ export class IngressAuthController {
 
   @Get("auth-url")
   @HttpCode(HttpStatus.OK)
-  async authUrl(@Req() req: Request): Promise<string> {
-    const isAuthenticated = await this.ingressAuthService.isAuthenticated(req);
-    if (isAuthenticated) {
-      return "ok";
+  async authUrl(@User() user?: OauthUser) {
+    if (user) {
+      return {
+        state: "authenticated",
+        user: {
+          id: user.id,
+          username: user.username,
+          email: user.email,
+          roles: user.roles,
+          grants: user.grants
+        }
+      };
+    } else {
+      throw new AppError(
+        "Not authenticated",
+        HttpStatus.UNAUTHORIZED,
+        "You must be authenticated to access this endpoint."
+      );
     }
-    throw new AppError(
-      "Not authenticated",
-      HttpStatus.UNAUTHORIZED,
-      "You must be authenticated to access this endpoint."
-    );
   }
 
   @Get("auth-signin")
