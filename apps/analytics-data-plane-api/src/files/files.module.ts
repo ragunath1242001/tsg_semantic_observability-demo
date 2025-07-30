@@ -6,7 +6,7 @@ import fs from "fs";
 import { diskStorage } from "multer";
 
 import { RootConfig } from "../config.js";
-import { DataPlaneTestModule } from "../dataplane/dataplane.module.js";
+import { DataPlaneModule } from "../dataplane/dataplane.module.js";
 import { FilesController } from "./files.controller.js";
 import { FilesService } from "./files.service.js";
 import { FileMetadataDao } from "./filesMetadata.dao.js";
@@ -14,7 +14,7 @@ import { FileMetadataDao } from "./filesMetadata.dao.js";
 @Module({
   imports: [
     TypeOrmModule.forFeature([FileMetadataDao]),
-    DataPlaneTestModule,
+    DataPlaneModule,
     MulterModule.register({
       storage: diskStorage({
         destination: function (_req, _file, cb) {

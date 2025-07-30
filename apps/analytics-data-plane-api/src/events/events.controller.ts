@@ -5,6 +5,7 @@ import {
   Headers,
   HttpCode,
   HttpStatus,
+  Logger,
   Param,
   Post,
   RawBodyRequest,
@@ -15,7 +16,7 @@ import {
   CreateAlgorithmEventDto,
   CreateInternalEventDto
 } from "@tsg-dsp/analytics-data-plane-dtos";
-import { DisableOAuthGuard } from "@tsg-dsp/common-api";
+import { DisableOAuthGuard, nonEmptyStringPipe } from "@tsg-dsp/common-api";
 import { ApiForbiddenResponseDefault } from "@tsg-dsp/common-dtos";
 import { Request } from "express";
 import getRawBody from "raw-body";
@@ -32,7 +33,8 @@ export class EventsController {
     type: CreateInternalEventDto
   })
   async createInternalEvent(
-    @Param("algorithmInstanceId") algorithmInstanceId: string,
+    @Param("algorithmInstanceId", nonEmptyStringPipe)
+    algorithmInstanceId: string,
     @Body()
     createInternalEvent: CreateInternalEventDto
   ) {
@@ -58,11 +60,16 @@ export class EventsController {
   @ApiForbiddenResponseDefault()
   @HttpCode(HttpStatus.OK)
   async createAlgorithmEvent(
-    @Param("algorithmInstanceId") algorithmInstanceId: string,
+    @Param("algorithmInstanceId", nonEmptyStringPipe)
+    algorithmInstanceId: string,
     @Body()
     createEvent: CreateAlgorithmEventDto,
-    @Headers("Authorization") authorizationHeader: string
+    @Headers("Authorization") authorizationHeader?: string
   ) {
+    Logger.log(
+      `Creating algorithm event for instance ${algorithmInstanceId} with event ${JSON.stringify(createEvent)} and authorization header ${authorizationHeader}`,
+      EventsController.name
+    );
     return this.eventsService.createAlgorithmEvent({
       createEvent: createEvent,
       algorithmInstanceId,
@@ -82,10 +89,11 @@ export class EventsController {
   @ApiForbiddenResponseDefault()
   @HttpCode(HttpStatus.CREATED)
   async uploadEventData(
-    @Param("algorithmInstanceId") algorithmInstanceId: string,
-    @Param("eventId") eventId: string,
+    @Param("algorithmInstanceId", nonEmptyStringPipe)
+    algorithmInstanceId: string,
+    @Param("eventId", nonEmptyStringPipe) eventId: string,
     @Req() req: RawBodyRequest<Request>,
-    @Headers("Authorization") authorizationHeader: string
+    @Headers("Authorization") authorizationHeader?: string
   ) {
     const buffer = await getRawBody(req, {
       length: req.headers["content-length"],
@@ -103,9 +111,10 @@ export class EventsController {
 
   @Get("data/:eventId")
   async getEventData(
-    @Param("algorithmInstanceId") algorithmInstanceId: string,
-    @Param("eventId") eventId: string,
-    @Headers("Authorization") authorizationHeader: string
+    @Param("algorithmInstanceId", nonEmptyStringPipe)
+    algorithmInstanceId: string,
+    @Param("eventId", nonEmptyStringPipe) eventId: string,
+    @Headers("Authorization") authorizationHeader?: string
   ) {
     return await this.eventsService.getEventData({
       algorithmInstanceId,
@@ -125,7 +134,8 @@ export class EventsController {
   })
   @ApiForbiddenResponseDefault()
   async getEventsForAlgorithmInstance(
-    @Param("algorithmInstanceId") algorithmInstanceId: string
+    @Param("algorithmInstanceId", nonEmptyStringPipe)
+    algorithmInstanceId: string
   ) {
     return await this.eventsService.getEventsForAlgorithmInstance(
       algorithmInstanceId

@@ -2,23 +2,28 @@ import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { AuthModule } from "@tsg-dsp/common-api";
 
-import { AlgorithmInstancesModule } from "../algorithm-instances/algorithm-instances.module.js";
-import { LoggingModule } from "../logging/logging.module.js";
 import { DataPlaneController } from "./dataplane.controller.js";
 import { DataPlaneStateDao } from "./dataplane.dao.js";
 import { DataPlaneManagementController } from "./dataplane.management.controller.js";
 import { DataPlaneService } from "./dataplane.service.js";
+import { ManagementClient } from "./management-client.service.js";
 import { TransferDao } from "./transfer.dao.js";
+import { TransfersController } from "./transfers.controller.js";
+import { TransfersManagementController } from "./transfers.management.controller.js";
+import { TransfersService } from "./transfers.service.js";
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([TransferDao, DataPlaneStateDao]),
-    AuthModule,
-    LoggingModule,
-    AlgorithmInstancesModule
+    AuthModule
   ],
-  controllers: [DataPlaneController, DataPlaneManagementController],
-  providers: [DataPlaneService],
-  exports: [DataPlaneService]
+  controllers: [
+    DataPlaneController,
+    DataPlaneManagementController,
+    TransfersController,
+    TransfersManagementController
+  ],
+  providers: [DataPlaneService, TransfersService, ManagementClient],
+  exports: [DataPlaneService, TransfersService, ManagementClient]
 })
-export class DataPlaneTestModule {}
+export class DataPlaneModule {}

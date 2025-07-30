@@ -30,10 +30,11 @@ export class AlgorithmEventDto {
   @IsString()
   createdBy!: string;
 
-  @ApiProperty({ required: false })
-  @IsString()
-  transferId?: string;
+  @ApiProperty({ type: [String], required: false })
+  @IsString({ each: true })
+  transferIds?: string[];
 
   @ApiProperty({ type: [String], required: false })
+  @IsString({ each: true })
   recipients?: string[];
 }

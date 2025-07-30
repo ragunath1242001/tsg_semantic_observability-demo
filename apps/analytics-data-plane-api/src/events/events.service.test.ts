@@ -1,4 +1,5 @@
 import { jest } from "@jest/globals";
+import { EventEmitterModule } from "@nestjs/event-emitter";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { UIElementType } from "@tsg-dsp/analytics-data-plane-dtos";
@@ -7,21 +8,23 @@ import {
   AuthConfig,
   TypeOrmTestHelper
 } from "@tsg-dsp/common-api";
+import { TransferState } from "@tsg-dsp/common-dsp";
 
 import { AlgorithmInstanceDao } from "../algorithm-instances/algorithm-instance.dao.js";
 import { AlgorithmInstancesService } from "../algorithm-instances/algorithm-instances.service.js";
 import { RootConfig } from "../config.js";
 import { DataPlaneStateDao } from "../dataplane/dataplane.dao.js";
-import { DataPlaneService } from "../dataplane/dataplane.service.js";
+import { ManagementClientMock } from "../dataplane/management-client.mock.js";
+import { ManagementClient } from "../dataplane/management-client.service.js";
 import { TransferDao } from "../dataplane/transfer.dao.js";
-import { EgressLogDao, IngressLogDao } from "../logging/logging.dao.js";
+import { TransfersService } from "../dataplane/transfers.service.js";
 import { AlgorithmEventDao } from "./algorithm-event.dao.js";
 import { EventsService } from "./events.service.js";
 import { InternalEventDao } from "./internal-event.dao.js";
 
 describe("EventsService", () => {
   const TRANSFER_ID = "urn:uuid:16228d2e-5662-4961-bf2c-d929f48a7f3f";
-  const REMOTE_PARTY_ID = "did:web:remoteparty1";
+  const REMOTE_PARTY_ID = "did:web:remoteparty";
   const ALGORITHM_EVENT_ID = "urn:uuid:16a3b006-faa7-41fb-bffd-55d900a1ee0f";
   const JOB_ALGORITHM_EVENT_ID =
     "urn:uuid:94d26207-f86e-47d0-966f-b0869ec29f02";
@@ -37,58 +40,28 @@ describe("EventsService", () => {
 
     const moduleRef: TestingModule = await Test.createTestingModule({
       imports: [
+        EventEmitterModule.forRoot(),
         TypeOrmTestHelper.instance.module([
           TransferDao,
           AlgorithmInstanceDao,
           InternalEventDao,
           AlgorithmEventDao,
-          DataPlaneStateDao,
-          IngressLogDao,
-          EgressLogDao
+          DataPlaneStateDao
         ]),
         TypeOrmModule.forFeature([
           TransferDao,
           AlgorithmInstanceDao,
           InternalEventDao,
           AlgorithmEventDao,
-          DataPlaneStateDao,
-          IngressLogDao,
-          EgressLogDao
+          DataPlaneStateDao
         ])
       ],
       providers: [
         {
-          provide: DataPlaneService,
-          useValue: {
-            getTransferById: jest
-              .fn<
-                () => {
-                  remoteParty: string;
-                }
-              >()
-              .mockResolvedValue({
-                id: TRANSFER_ID,
-                remoteParty: REMOTE_PARTY_ID
-              } as never),
-            getTransferBySecret: jest
-              .fn<
-                () => {
-                  remoteParty: string;
-                }
-              >()
-              .mockResolvedValue({
-                id: TRANSFER_ID,
-                remoteParty: REMOTE_PARTY_ID
-              } as never),
-            getTransferByAlgorithmInstanceAndParty: jest
-              .fn()
-              .mockResolvedValue(null as never),
-            forwardEventToParticipant: jest
-              .fn()
-              .mockResolvedValue(undefined as never),
-            getParticipantId: () => "did:web:localhost"
-          }
+          provide: ManagementClient,
+          useValue: ManagementClientMock
         },
+        TransfersService,
         EventsService,
         AlgorithmInstancesService,
         AuthClientService,
@@ -116,6 +89,10 @@ describe("EventsService", () => {
   });
 
   it("should create an algorithm instance", async () => {
+    // Mock the distribution method to avoid actual HTTP calls
+    jest
+      .spyOn(algorithmInstancesService, "distributeAlgorithmInstance")
+      .mockResolvedValue();
     const algorithmInstance =
       await algorithmInstancesService.createAlgorithmInstance({
         id: "test-instance-id",
@@ -214,6 +191,32 @@ describe("EventsService", () => {
     const EVENT_NAME = "Test Event";
     const EVENT_NUMBER = 1;
     const authorizationHeader = `Bearer ${eventsAccessToken}`;
+    await eventsService["algorithmInstancesService"].linkTransfer({
+      algorithmInstanceId,
+      transfer: await eventsService["transfersService"][
+        "transferRepository"
+      ].save({
+        id: TRANSFER_ID,
+        remoteParty: REMOTE_PARTY_ID,
+        processId: "test-process-id",
+        datasetId: "urn:uuid:test",
+        role: "consumer",
+        state: TransferState.STARTED,
+        request: {},
+        response: {},
+        dataAddress: {
+          endpoint: "http://localhost:3000/data-address",
+          endpointType: "tsg:HTTP",
+          endpointProperties: [
+            {
+              name: "Authorization",
+              value: "Bearer test-token",
+              "@type": "EndpointProperty"
+            }
+          ]
+        }
+      })
+    });
     const event = await eventsService.createAlgorithmEvent({
       algorithmInstanceId: algorithmInstanceId,
       authorizationHeader,
@@ -221,7 +224,8 @@ describe("EventsService", () => {
         eventId: JOB_ALGORITHM_EVENT_ID,
         name: EVENT_NAME,
         number: EVENT_NUMBER,
-        timestamp: EVENT_TIMESTAMP
+        timestamp: EVENT_TIMESTAMP,
+        recipients: ["did:web:localhost", REMOTE_PARTY_ID]
       }
     });
 
@@ -252,38 +256,6 @@ describe("EventsService", () => {
   });
 
   it("should create an algorithm event with recipients and trigger forwarding", async () => {
-    // Mock the DataPlaneService methods for forwarding
-    const mockTransfer1 = {
-      id: "transfer-1",
-      remoteParty: "did:web:participant1",
-      secret: "test-secret-1",
-      dataAddress: { endpoint: "http://participant1.example.com" }
-    } as TransferDao;
-
-    const mockTransfer2 = {
-      id: "transfer-2",
-      remoteParty: "did:web:participant2",
-      secret: "test-secret-2",
-      dataAddress: { endpoint: "http://participant2.example.com" }
-    } as TransferDao;
-
-    // Spy on the DataPlaneService methods
-    const getTransferSpy = jest
-      .spyOn(
-        eventsService["dataPlaneService"],
-        "getTransferByAlgorithmInstanceAndParty"
-      )
-      .mockImplementation(
-        async (_algorithmInstanceId: string, remoteParty: string) => {
-          if (remoteParty === "did:web:participant1") return mockTransfer1;
-          if (remoteParty === "did:web:participant2") return mockTransfer2;
-          return null;
-        }
-      );
-    const forwardEventSpy = jest
-      .spyOn(eventsService["dataPlaneService"], "forwardEventToParticipant")
-      .mockResolvedValue(undefined);
-
     // Mock the algorithmInstancesService to include participants
     jest
       .spyOn(eventsService["algorithmInstancesService"], "getAlgorithmInstance")
@@ -302,6 +274,58 @@ describe("EventsService", () => {
           }
         ]
       } as any);
+    await eventsService["algorithmInstancesService"].linkTransfer({
+      algorithmInstanceId,
+      transfer: await eventsService["transfersService"][
+        "transferRepository"
+      ].save({
+        id: "transfer-1",
+        remoteParty: "did:web:participant1",
+        processId: "test-process-id",
+        datasetId: "urn:uuid:test",
+        role: "consumer",
+        state: TransferState.STARTED,
+        request: {},
+        response: {},
+        dataAddress: {
+          endpoint: "http://localhost:3000/data-address",
+          endpointType: "tsg:HTTP",
+          endpointProperties: [
+            {
+              name: "Authorization",
+              value: "Bearer test-token",
+              "@type": "EndpointProperty"
+            }
+          ]
+        }
+      })
+    });
+    await eventsService["algorithmInstancesService"].linkTransfer({
+      algorithmInstanceId,
+      transfer: await eventsService["transfersService"][
+        "transferRepository"
+      ].save({
+        id: "transfer-2",
+        remoteParty: "did:web:participant2",
+        processId: "test-process-id",
+        datasetId: "urn:uuid:test",
+        role: "consumer",
+        state: TransferState.STARTED,
+        request: {},
+        response: {},
+        dataAddress: {
+          endpoint: "http://localhost:3000/data-address",
+          endpointType: "tsg:HTTP",
+          endpointProperties: [
+            {
+              name: "Authorization",
+              value: "Bearer test-token",
+              "@type": "EndpointProperty"
+            }
+          ]
+        }
+      })
+    });
 
     const EVENT_TIMESTAMP = new Date().toISOString();
     const EVENT_NAME = "Test Forwarded Event";
@@ -324,31 +348,6 @@ describe("EventsService", () => {
     expect(event).toBeDefined();
     expect(event.eventId).toBe("forwarded-event-id");
     expect(event.recipients).toEqual(RECIPIENTS);
-
-    // Verify that forwarding methods were called
-    expect(getTransferSpy).toHaveBeenCalledTimes(2);
-    expect(getTransferSpy).toHaveBeenCalledWith(
-      algorithmInstanceId,
-      "did:web:participant1"
-    );
-    expect(getTransferSpy).toHaveBeenCalledWith(
-      algorithmInstanceId,
-      "did:web:participant2"
-    );
-    expect(forwardEventSpy).toHaveBeenCalledTimes(2);
-
-    // Verify the forwarding calls had correct parameters
-    expect(forwardEventSpy).toHaveBeenCalledWith(
-      mockTransfer1,
-      algorithmInstanceId,
-      expect.objectContaining({
-        eventId: "forwarded-event-id",
-        name: EVENT_NAME,
-        number: EVENT_NUMBER,
-        timestamp: expect.any(String)
-      }),
-      authorizationHeader
-    );
   });
 
   it("should reject invalid recipients early during event creation", async () => {
@@ -400,7 +399,33 @@ describe("EventsService", () => {
     const EVENT_NAME = "Test Event";
     const EVENT_NUMBER = 2;
     const authorizationHeader = `Bearer FAKE_TOKEN`;
-
+    await eventsService["algorithmInstancesService"].linkTransfer({
+      algorithmInstanceId,
+      transfer: await eventsService["transfersService"][
+        "transferRepository"
+      ].save({
+        id: "transfer-1",
+        remoteParty: "did:web:participant1",
+        processId: "test-process-id",
+        datasetId: "urn:uuid:test",
+        role: "provider",
+        secret: "FAKE_TOKEN",
+        state: TransferState.STARTED,
+        request: {},
+        response: {},
+        dataAddress: {
+          endpoint: "http://localhost:3000/data-address",
+          endpointType: "tsg:HTTP",
+          endpointProperties: [
+            {
+              name: "Authorization",
+              value: "Bearer FAKE_TOKEN",
+              "@type": "EndpointProperty"
+            }
+          ]
+        }
+      })
+    });
     const event = await eventsService.createAlgorithmEvent({
       algorithmInstanceId: algorithmInstanceId,
       authorizationHeader,

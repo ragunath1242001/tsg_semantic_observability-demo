@@ -56,6 +56,9 @@ export function parseNetworkError(
   task: string,
   status: number = HttpStatus.BAD_REQUEST
 ): AppError {
+  if (err instanceof AppError) {
+    return err;
+  }
   if (axios.isAxiosError(err)) {
     if (err.response) {
       return new AppError(

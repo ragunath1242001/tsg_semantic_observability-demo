@@ -33,7 +33,6 @@ async function bootstrap() {
     .addTag("Authentication", "Authentication Controller")
     .addTag("Data Plane", "Data Plane Controller")
     .addTag("Data Plane Management", "Data Plane Management Controller")
-    .addTag("Proxy", "Proxy Controller")
     .addTag("Logging", "Logging Controller")
     .addOAuth2({
       type: "oauth2",

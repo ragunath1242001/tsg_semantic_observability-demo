@@ -61,8 +61,9 @@ export class TransferDao {
 
   @ManyToOne(
     () => AlgorithmInstanceDao,
-    (algorithmInstance) => algorithmInstance.transfers
+    (algorithmInstance) => algorithmInstance.transfers,
+    { nullable: true }
   )
   @JoinColumn()
-  algorithmInstance!: Relation<AlgorithmInstanceDao>;
+  algorithmInstance?: Relation<AlgorithmInstanceDao>;
 }

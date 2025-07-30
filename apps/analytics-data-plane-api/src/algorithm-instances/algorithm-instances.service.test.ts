@@ -1,3 +1,5 @@
+import { jest } from "@jest/globals";
+import { EventEmitterModule } from "@nestjs/event-emitter";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import {
@@ -16,7 +18,10 @@ import {
 } from "@tsg-dsp/common-dsp";
 
 import { RootConfig } from "../config.js";
+import { ManagementClientMock } from "../dataplane/management-client.mock.js";
+import { ManagementClient } from "../dataplane/management-client.service.js";
 import { TransferDao } from "../dataplane/transfer.dao.js";
+import { TransfersService } from "../dataplane/transfers.service.js";
 import { AlgorithmEventDao } from "../events/algorithm-event.dao.js";
 import { InternalEventDao } from "../events/internal-event.dao.js";
 import { AlgorithmInstanceDao } from "./algorithm-instance.dao.js";
@@ -72,12 +77,12 @@ describe("AlgorithmInstancesService", () => {
         dataset: "urn:uuid:30b95804-685d-4f53-9903-8581d6e5b21d"
       },
       {
-        didId: "did:web:remoteparty",
+        didId: "did:web:remoteparty.com",
         role: "participant",
         dataset: "urn:uuid:b00ccdb5-11f1-4b2a-b132-8ee78dc418e8"
       },
       {
-        didId: "did:web:remoteparty2",
+        didId: "did:web:remoteparty2.com",
         role: "participant",
         dataset: "urn:uuid:652c71d1-81c5-4b42-9ed0-6f6d75f30b31"
       }
@@ -89,6 +94,7 @@ describe("AlgorithmInstancesService", () => {
 
     const module: TestingModule = await Test.createTestingModule({
       imports: [
+        EventEmitterModule.forRoot(),
         TypeOrmTestHelper.instance.module([
           TransferDao,
           AlgorithmInstanceDao,
@@ -105,6 +111,7 @@ describe("AlgorithmInstancesService", () => {
       providers: [
         AlgorithmInstancesService,
         AuthClientService,
+        TransfersService,
         {
           provide: RootConfig,
           useValue: {
@@ -120,6 +127,10 @@ describe("AlgorithmInstancesService", () => {
         {
           provide: AuthConfig,
           useValue: { enabled: false }
+        },
+        {
+          provide: ManagementClient,
+          useValue: ManagementClientMock
         }
       ]
     }).compile();
@@ -127,11 +138,20 @@ describe("AlgorithmInstancesService", () => {
     algorithmInstancesService = module.get(AlgorithmInstancesService);
   });
 
+  afterAll(() => {
+    TypeOrmTestHelper.instance.teardownTestDB();
+  });
+
   it("should be defined", () => {
     expect(algorithmInstancesService).toBeDefined();
   });
 
   it("should create an algorithm instance", async () => {
+    // Mock the distribution method to avoid actual HTTP calls
+    jest
+      .spyOn(algorithmInstancesService, "distributeAlgorithmInstance")
+      .mockResolvedValue();
+
     const result = await algorithmInstancesService.createAlgorithmInstance(
       sampleAlgorithmInstanceDto
     );
@@ -184,7 +204,7 @@ describe("AlgorithmInstancesService", () => {
         id: "test-transfer-id",
         role: "provider",
         processId: "test-process-id",
-        remoteParty: "did:web:remoteparty",
+        remoteParty: "did:web:remoteparty.com",
         datasetId: "urn:uuid:test-dataset-id",
         state: TransferState.REQUESTED,
         request: {} as TransferRequestMessageDto,
@@ -202,6 +222,10 @@ describe("AlgorithmInstancesService", () => {
         )
       ).transfers
     ).toHaveLength(1);
+    const reloadedTransferDao = await algorithmInstancesService[
+      "transfersService"
+    ].getTransferById(transferDao.id);
+    expect(reloadedTransferDao).toBeDefined();
     expect(
       await algorithmInstancesService.createAlgorithmInstance({
         ...sampleAlgorithmInstanceDto,
@@ -210,8 +234,8 @@ describe("AlgorithmInstancesService", () => {
     ).toBeDefined();
     await expect(
       algorithmInstancesService.linkTransfer({
-        algorithmInstanceId: algorithmInstance.id,
-        transfer: transferDao
+        algorithmInstanceId: "test-instance-id-2",
+        transfer: reloadedTransferDao!
       })
     ).rejects.toThrow("already linked to");
 
@@ -239,12 +263,12 @@ describe("AlgorithmInstancesService", () => {
       algorithmInstancesService["accessTokens"].has(accessToken)
     ).toBeTruthy();
 
-    await algorithmInstancesService.verifyAlgorithmInstanceToken(
+    await algorithmInstancesService.validateAccessToken(
       algorithmInstance.id,
       accessToken
     );
     await expect(
-      algorithmInstancesService.verifyAlgorithmInstanceToken(
+      algorithmInstancesService.validateAccessToken(
         algorithmInstance.id,
         "invalid-token"
       )

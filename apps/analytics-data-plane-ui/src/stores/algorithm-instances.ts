@@ -49,7 +49,7 @@ export const useAlgorithmInstancesStore = defineStore("algorithm-instances", {
 
       try {
         const response = await http.get<AlgorithmInstanceDto[]>(
-          "algorithm-instances"
+          "management/algorithm-instances"
         );
         this.algorithmInstances = response.data;
         return response.data;
@@ -67,7 +67,7 @@ export const useAlgorithmInstancesStore = defineStore("algorithm-instances", {
       this.error = null;
 
       try {
-        const response = await http.get(`algorithm-instances/${id}`);
+        const response = await http.get(`management/algorithm-instances/${id}`);
 
         // Update the algorithm instance in the store if it exists, otherwise add it
         const existingIndex = this.algorithmInstances.findIndex(
@@ -97,7 +97,7 @@ export const useAlgorithmInstancesStore = defineStore("algorithm-instances", {
 
       try {
         const response = await http.post(
-          "algorithm-instances",
+          "management/algorithm-instances",
           createAlgorithmInstance
         );
         this.algorithmInstances.push(response.data);
@@ -116,7 +116,7 @@ export const useAlgorithmInstancesStore = defineStore("algorithm-instances", {
       this.error = null;
 
       try {
-        await http.delete(`algorithm-instances/${id}`);
+        await http.delete(`management/algorithm-instances/${id}`);
         this.algorithmInstances = this.algorithmInstances.filter(
           (instance) => instance.id !== id
         );
@@ -135,7 +135,7 @@ export const useAlgorithmInstancesStore = defineStore("algorithm-instances", {
 
       try {
         const response = await http.get(
-          `algorithm-instances/transfer/${transferId}`
+          `management/algorithm-instances/transfer/${transferId}`
         );
 
         // Update the algorithm instance in the store if it exists, otherwise add it

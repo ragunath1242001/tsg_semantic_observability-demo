@@ -1,6 +1,6 @@
 import { Logger } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
-import { ServerConfig } from "@tsg-dsp/common-api";
+import { AppLogger, ServerConfig } from "@tsg-dsp/common-api";
 import crypto from "crypto";
 import session from "express-session";
 
@@ -8,7 +8,8 @@ import { AppModule } from "./app.module.js";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
-    rawBody: true
+    rawBody: true,
+    logger: new AppLogger()
   });
 
   const config = app.get(ServerConfig);

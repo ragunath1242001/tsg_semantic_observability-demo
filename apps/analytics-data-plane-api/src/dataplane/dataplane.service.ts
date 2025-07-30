@@ -1,63 +1,44 @@
-import { HttpException, HttpStatus, Injectable, Logger } from "@nestjs/common";
+import { HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { AuthClientService, promiseMap } from "@tsg-dsp/common-api";
 import {
-  AgreementDto,
   Catalog,
   CatalogDto,
-  DataPlaneAddressDto,
   DataPlaneCreation,
   DataPlaneDetailsDto,
-  DataPlaneRequestResponseDto,
   Dataset,
   DatasetDto,
   defaultContext,
   deserialize,
   DistributionDto,
   OfferDto,
-  PermissionDto,
-  TransferCompletionMessageDto,
-  TransferRequestMessageDto,
-  TransferStartMessageDto,
-  TransferState,
-  TransferSuspensionMessageDto,
-  TransferTerminationMessageDto
+  PermissionDto
 } from "@tsg-dsp/common-dsp";
-import { DataPlaneStateDto, TransferDto } from "@tsg-dsp/common-dtos";
-import { resolveDid } from "@tsg-dsp/common-signing-and-validation";
+import { DataPlaneStateDto } from "@tsg-dsp/common-dtos";
 import { AxiosInstance } from "axios";
 import crypto from "crypto";
 import { Repository } from "typeorm";
 
-import { AlgorithmInstancesService } from "../algorithm-instances/algorithm-instances.service.js";
 import { RootConfig } from "../config.js";
-import { LoggingService } from "../logging/logging.service.js";
 import { DataPlaneClientError, DataPlaneError } from "../utils/errors/error.js";
 import { DataPlaneStateDao } from "./dataplane.dao.js";
-import { TransferDao } from "./transfer.dao.js";
+import { ManagementClient } from "./management-client.service.js";
 
 @Injectable()
 export class DataPlaneService {
   private readonly axiosDataPlane: AxiosInstance;
-  private readonly axiosManagement: AxiosInstance;
   private readonly axiosControlPlane: AxiosInstance;
 
   constructor(
     private readonly config: RootConfig,
-    private readonly loggingService: LoggingService,
-    private readonly algorithmInstancesService: AlgorithmInstancesService,
     authClient: AuthClientService,
-    @InjectRepository(TransferDao)
-    private readonly transferRepository: Repository<TransferDao>,
     @InjectRepository(DataPlaneStateDao)
-    private readonly stateRepository: Repository<DataPlaneStateDao>
+    private readonly stateRepository: Repository<DataPlaneStateDao>,
+    private readonly managementClient: ManagementClient
   ) {
     this.initialized = this.init();
     this.axiosDataPlane = authClient.axiosInstance({
       baseURL: this.config.controlPlane.dataPlaneEndpoint
-    });
-    this.axiosManagement = authClient.axiosInstance({
-      baseURL: this.config.controlPlane.managementEndpoint
     });
     this.axiosControlPlane = authClient.axiosInstance({
       baseURL: this.config.controlPlane.controlEndpoint
@@ -66,7 +47,6 @@ export class DataPlaneService {
   private readonly logger = new Logger(this.constructor.name);
   initialized: Promise<void>;
   private state?: DataPlaneStateDao;
-  private participantId?: string;
   private defaultDataset: DatasetDto[] = this.createDataset();
 
   private createDataset(): DatasetDto[] {
@@ -76,8 +56,11 @@ export class DataPlaneService {
         "@context": defaultContext(),
         "@id": datasetId,
         "@type": "Dataset",
-        title: "Analytics Data Plane",
-        description: ["Default dataset for the analytics data plane"],
+        title: "Analytics Data Plane Orchestration",
+        description: [
+          "Dataset service for the orchestration aspects of the Analytics Data Plane"
+        ],
+        conformsTo: ["tsg:analytics-orchestration"],
         keyword: ["analytics"],
         theme: ["analytics"],
         language: "en",
@@ -89,15 +72,7 @@ export class DataPlaneService {
               {
                 "@type": "Permission",
                 action: "use",
-                target: datasetId,
-                constraint: [
-                  {
-                    "@type": "Constraint",
-                    leftOperand: "dct:format",
-                    operator: "eq",
-                    rightOperand: "tsg:analytics"
-                  }
-                ]
+                target: datasetId
               } as PermissionDto
             ]
           } as OfferDto
@@ -169,16 +144,7 @@ export class DataPlaneService {
   }
 
   async getControlPlaneCatalog(): Promise<CatalogDto> {
-    try {
-      const response =
-        await this.axiosManagement.get<CatalogDto>("/catalog/request");
-      return response.data;
-    } catch (err) {
-      throw new DataPlaneClientError(
-        "Fetching own catalog from control plane failed",
-        err
-      ).andLog(this.logger);
-    }
+    return this.managementClient.getOwnCatalog();
   }
 
   async getRegistryAddresses(): Promise<{ didId: string; address: string }[]> {
@@ -196,19 +162,7 @@ export class DataPlaneService {
   }
 
   async getParticipantId() {
-    if (!this.participantId) {
-      const catalog = await this.getControlPlaneCatalog();
-      this.participantId = catalog.participantId;
-    }
-
-    if (!this.participantId) {
-      throw new DataPlaneError(
-        "Participant ID not found in control plane catalog",
-        HttpStatus.INTERNAL_SERVER_ERROR
-      ).andLog(this.logger, "error");
-    }
-
-    return this.participantId;
+    return this.managementClient.getOwnParticipantId();
   }
 
   async addDataset(dataset: DatasetDto) {
@@ -340,363 +294,6 @@ export class DataPlaneService {
       return datasetConfig;
     } else {
       throw new DataPlaneError("No dataset configured", HttpStatus.NOT_FOUND);
-    }
-  }
-
-  async getTransfers(): Promise<TransferDto[]> {
-    return await this.transferRepository.find({});
-  }
-
-  async getTransferById(id: string) {
-    const transfer = await this.transferRepository.findOneBy({ id: id });
-    if (!transfer) {
-      throw new HttpException(`Transfer ${id} not found`, HttpStatus.NOT_FOUND);
-    }
-    return transfer;
-  }
-
-  async getTransferBySecret(secret: string) {
-    const transfer = await this.transferRepository.findOneBy({
-      secret: secret
-    });
-    if (!transfer) {
-      throw new HttpException(
-        `Invalid token, transfer by secret not found`,
-        HttpStatus.NOT_FOUND
-      );
-    }
-    return transfer;
-  }
-
-  /**
-   * Get a transfer for a specific algorithmInstance and remote party
-   */
-  async getTransferByAlgorithmInstanceAndParty(
-    algorithmInstanceId: string,
-    remoteParty: string
-  ): Promise<TransferDao | null> {
-    return await this.transferRepository.findOne({
-      where: {
-        algorithmInstance: { id: algorithmInstanceId },
-        remoteParty: remoteParty
-      },
-      relations: ["algorithmInstance"]
-    });
-  }
-
-  async getMetadata(
-    id: string
-  ): Promise<{ agreement: AgreementDto; dataset: DatasetDto }> {
-    const transfer = await this.getTransferById(id);
-    let agreement: AgreementDto;
-    try {
-      const response = await this.axiosManagement.get<AgreementDto>(
-        `/agreements/${transfer.request.agreementId}`
-      );
-      agreement = response.data;
-    } catch (err) {
-      throw new DataPlaneClientError(
-        `Fetching agreement ${transfer.request.agreementId} failed`,
-        err
-      ).andLog(this.logger);
-    }
-    const did = await resolveDid(transfer.remoteParty);
-    const connectorService = did.service?.find(
-      (s) => s.type === "connector" && typeof s.serviceEndpoint === "string"
-    );
-    if (!connectorService) {
-      throw new DataPlaneError(
-        `No connector service defined in DID document for ${transfer.remoteParty}`,
-        HttpStatus.BAD_REQUEST
-      ).andLog(new Logger("DidResolver"), "log");
-    }
-
-    let dataset: DatasetDto;
-    try {
-      const response = await this.axiosManagement.get<DatasetDto>(
-        `/catalog/dataset`,
-        {
-          params: {
-            address: connectorService.serviceEndpoint,
-            id: agreement.target,
-            audience: transfer.remoteParty
-          }
-        }
-      );
-      dataset = response.data;
-    } catch (err) {
-      throw new DataPlaneClientError(
-        `Fetching dataset ${agreement.target} at ${connectorService.serviceEndpoint} (${transfer.remoteParty}) failed`,
-        err
-      ).andLog(this.logger);
-    }
-
-    return {
-      agreement: agreement,
-      dataset: dataset
-    };
-  }
-
-  async handleTransferRequest(
-    transferRequestMessage: TransferRequestMessageDto,
-    role: "provider" | "consumer",
-    processId: string,
-    remoteParty: string,
-    datasetId: string,
-    algorithmInstanceId?: string
-  ): Promise<DataPlaneRequestResponseDto> {
-    const id = crypto.randomUUID();
-    let dataAddress: DataPlaneAddressDto | undefined;
-    let secret: string | undefined;
-
-    if (algorithmInstanceId) {
-      await this.algorithmInstancesService.getAlgorithmInstance(
-        algorithmInstanceId
-      );
-    }
-
-    if (role === "provider") {
-      secret = crypto.randomBytes(32).toString("hex");
-
-      let endpoint: string;
-
-      if (algorithmInstanceId) {
-        endpoint = `${this.config.server.publicAddress}/events/${algorithmInstanceId}/algorithm-event`;
-      } else {
-        endpoint = `${this.config.server.publicAddress}/proxy/${id}`;
-      }
-
-      dataAddress = {
-        endpoint,
-        properties: [
-          {
-            name: "Authorization",
-            value: `Bearer ${secret}`
-          }
-        ]
-      };
-    }
-
-    const transfer = await this.transferRepository.save({
-      role: role,
-      id: id,
-      processId: processId,
-      remoteParty: remoteParty,
-      datasetId: datasetId,
-      secret: secret,
-      state: TransferState.REQUESTED,
-      request: transferRequestMessage,
-      response: {
-        accepted: true,
-        identifier: id,
-        dataAddress: dataAddress
-      }
-    });
-
-    if (algorithmInstanceId) {
-      await this.algorithmInstancesService.linkTransfer({
-        algorithmInstanceId,
-        transfer
-      });
-    }
-
-    return transfer.response;
-  }
-
-  async transferStart(id: string) {
-    const transfer = await this.getTransferById(id);
-    try {
-      const response = await this.axiosManagement.post(
-        `/transfers/${transfer.processId}/start`
-      );
-      return response.data;
-    } catch (err) {
-      throw new DataPlaneClientError(
-        `Error starting transfer ${id}`,
-        err
-      ).andLog(this.logger);
-    }
-  }
-
-  async transferComplete(id: string) {
-    const transfer = await this.getTransferById(id);
-    try {
-      const response = await this.axiosManagement.post(
-        `/transfers/${transfer.processId}/completion`
-      );
-      return response.data;
-    } catch (err) {
-      throw new DataPlaneClientError(
-        `Error starting transfer ${id}`,
-        err
-      ).andLog(this.logger);
-    }
-  }
-
-  async transferTerminate(id: string, code: string, reason: string) {
-    const transfer = await this.getTransferById(id);
-    try {
-      const response = await this.axiosManagement.post(
-        `/transfers/${transfer.processId}/termination`,
-        {
-          code: code,
-          reason: reason
-        }
-      );
-      return response.data;
-    } catch (err) {
-      throw new DataPlaneClientError(
-        `Error starting transfer ${id}`,
-        err
-      ).andLog(this.logger);
-    }
-  }
-
-  async transferSuspend(id: string, reason: string) {
-    const transfer = await this.getTransferById(id);
-    try {
-      const response = await this.axiosManagement.post(
-        `/transfers/${transfer.processId}/suspension`,
-        {
-          reason: reason
-        }
-      );
-      return response.data;
-    } catch (err) {
-      throw new DataPlaneClientError(
-        `Error starting transfer ${id}`,
-        err
-      ).andLog(this.logger);
-    }
-  }
-
-  async handleTransferStart(
-    transferStartMessage: TransferStartMessageDto,
-    processId: string
-  ) {
-    const transfer = await this.transferRepository.findOneBy({ id: processId });
-    if (!transfer) {
-      throw new HttpException(
-        `Transfer ${processId} not found`,
-        HttpStatus.NOT_FOUND
-      );
-    }
-    transfer.state = TransferState.STARTED;
-    if (transfer.role === "consumer") {
-      if (transferStartMessage.dataAddress === undefined) {
-        throw new HttpException(
-          `Expected dataAddress in TransferStartMessage`,
-          HttpStatus.BAD_REQUEST
-        );
-      }
-      transfer.dataAddress = transferStartMessage.dataAddress;
-    }
-    await this.transferRepository.save(transfer);
-  }
-
-  async handleTransferComplete(
-    _transferCompletionMessage: TransferCompletionMessageDto,
-    processId: string
-  ) {
-    const transfer = await this.transferRepository.findOneBy({ id: processId });
-    if (!transfer) {
-      throw new HttpException(
-        `Transfer ${processId} not found`,
-        HttpStatus.NOT_FOUND
-      );
-    }
-    transfer.state = TransferState.COMPLETED;
-    await this.transferRepository.save(transfer);
-  }
-
-  async handleTransferTerminate(
-    _transferTerminationMessage: TransferTerminationMessageDto,
-    processId: string
-  ) {
-    const transfer = await this.transferRepository.findOneBy({ id: processId });
-    if (!transfer) {
-      throw new HttpException(
-        `Transfer ${processId} not found`,
-        HttpStatus.NOT_FOUND
-      );
-    }
-    transfer.state = TransferState.TERMINATED;
-    await this.transferRepository.save(transfer);
-  }
-
-  async handleTransferSuspend(
-    _transferSuspensionMessage: TransferSuspensionMessageDto,
-    processId: string
-  ) {
-    const transfer = await this.transferRepository.findOneBy({ id: processId });
-    if (!transfer) {
-      throw new HttpException(
-        `Transfer ${processId} not found`,
-        HttpStatus.NOT_FOUND
-      );
-    }
-    transfer.state = TransferState.SUSPENDED;
-    await this.transferRepository.save(transfer);
-  }
-
-  /**
-   * Forward an event to a specific participant via their transfer endpoint
-   */
-  async forwardEventToParticipant(
-    transfer: TransferDao,
-    _algorithmInstanceId: string,
-    eventData: {
-      eventId: string;
-      name: string;
-      number: number;
-      timestamp: string;
-    },
-    _authorizationHeader: string
-  ): Promise<void> {
-    try {
-      // Use the transfer's data address to determine the target endpoint
-      if (!transfer.dataAddress || !transfer.dataAddress.endpoint) {
-        throw new Error(`No endpoint found for transfer ${transfer.id}`);
-      }
-
-      const targetEndpoint = transfer.dataAddress.endpoint;
-
-      // Create the event payload for the remote participant
-      const eventPayload = {
-        eventId: eventData.eventId,
-        name: eventData.name,
-        number: eventData.number,
-        timestamp: eventData.timestamp
-      };
-
-      // Use the transfer secret for authentication when forwarding
-      const forwardingHeaders = {
-        Authorization: `Bearer ${transfer.secret}`,
-        "Content-Type": "application/json"
-      };
-
-      this.logger.log(
-        `Forwarding event ${eventData.eventId} to ${transfer.remoteParty} at ${targetEndpoint}`
-      );
-
-      // Make the HTTP request to create the event on the remote analytics data plane
-      const response = await this.axiosDataPlane.post(
-        targetEndpoint,
-        eventPayload,
-        { headers: forwardingHeaders }
-      );
-
-      this.logger.log(
-        `Successfully forwarded event ${eventData.eventId} to ${transfer.remoteParty}. Response status: ${response.status}`
-      );
-    } catch (error) {
-      this.logger.error(
-        `Failed to forward event ${eventData.eventId} to ${transfer.remoteParty}: ${error}`
-      );
-      throw new DataPlaneClientError(
-        `Event forwarding failed: ${error}`,
-        HttpStatus.BAD_GATEWAY
-      );
     }
   }
 }

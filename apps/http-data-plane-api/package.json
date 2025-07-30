@@ -5,10 +5,10 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
-    "watch": "rimraf test.db && tsc-watch -p tsconfig.build.json --onSuccess \"node ./dist/app.js\"",
+    "build": "rimraf dist && tsc -p tsconfig.build.json",
+    "watch": "rimraf test.db dist && tsc-watch -p tsconfig.build.json --onSuccess \"node ./dist/app.js\"",
     "start": "node ./dist/app.js",
-    "buildAndStart": "tsc -p tsconfig.build.json && node ./dist/app.js",
+    "buildAndStart": "rimraf dist && tsc -p tsconfig.build.json && node ./dist/app.js",
     "dev": "pnpm watch",
     "tsc": "rimraf dist && tsc -p tsconfig.build.json",
     "lint": "eslint . --fix --ext .ts",
