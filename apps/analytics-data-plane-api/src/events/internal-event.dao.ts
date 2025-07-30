@@ -21,7 +21,7 @@ export class InternalEventDao {
   @Column({ type: String })
   name!: string;
 
-  @Column({ type: Number, unique: true })
+  @Column({ type: Number })
   number!: number;
 
   @Column({ type: Date })

@@ -119,146 +119,6 @@ paths:
       security: *a3
       summary: Get participant ID
       tags: *a4
-  /api/transfers/request/{role}:
-    post:
-      description: Requests a transfer from control plane to data plane.
-      operationId: DataPlaneController_requestTransfer
-      parameters:
-        - name: role
-          required: true
-          in: path
-          schema:
-            type: string
-        - name: processId
-          required: true
-          in: query
-          schema:
-            type: string
-        - name: x-remote-party
-          required: true
-          in: header
-          schema:
-            type: string
-        - name: x-dataset-id
-          required: true
-          in: header
-          schema:
-            type: string
-        - name: x-algorithm-instance-id
-          required: true
-          in: header
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/TransferRequestMessageSchema"
-      responses:
-        "200":
-          description: ""
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/DataPlaneRequestResponseDto"
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorDto"
-      security: *a3
-      summary: Request Transfer
-      tags: *a4
-  /api/transfers/{id}/start:
-    post:
-      operationId: DataPlaneController_startTransfer
-      parameters:
-        - name: id
-          required: true
-          in: path
-          description: Transfer ID
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/TransferStartMessageSchema"
-      responses:
-        "202":
-          description: Transfer started successfully
-      security: *a3
-      summary: Start transfer process
-      tags: *a4
-  /api/transfers/{id}/completion:
-    post:
-      operationId: DataPlaneController_completeTransfer
-      parameters:
-        - name: id
-          required: true
-          in: path
-          description: Transfer ID
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/TransferCompletionMessageSchema"
-      responses:
-        "202":
-          description: Transfer completed successfully
-      security: *a3
-      summary: Complete transfer process
-      tags: *a4
-  /api/transfers/{id}/termination:
-    post:
-      operationId: DataPlaneController_terminateTransfer
-      parameters:
-        - name: id
-          required: true
-          in: path
-          description: Transfer ID
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/TransferTerminationMessageSchema"
-      responses:
-        "202":
-          description: Transfer terminated successfully
-      security: *a3
-      summary: Terminate transfer process
-      tags: *a4
-  /api/transfers/{id}/suspension:
-    post:
-      operationId: DataPlaneController_suspendTransfer
-      parameters:
-        - name: id
-          required: true
-          in: path
-          description: Transfer ID
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/TransferSuspensionMessageSchema"
-      responses:
-        "202":
-          description: Transfer suspended successfully
-      security: *a3
-      summary: Suspend transfer process
-      tags: *a4
   /api/management/state:
     get:
       description: Get the state of the data plane, consisting of the id, details and
@@ -455,9 +315,147 @@ paths:
       security: *a5
       summary: Delete dataset
       tags: *a6
+  /api/transfers/request/{role}:
+    post:
+      description: Requests a transfer from control plane to data plane.
+      operationId: TransfersController_requestTransfer
+      parameters:
+        - name: role
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: processId
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: x-remote-party
+          required: true
+          in: header
+          schema:
+            type: string
+        - name: x-dataset-id
+          required: true
+          in: header
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransferRequestMessageSchema"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DataPlaneRequestResponseDto"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: &a7
+        - oauth2:
+            - controlplane_dataplane
+      summary: Request Transfer
+      tags: &a8
+        - Data Plane
+  /api/transfers/{id}/start:
+    post:
+      operationId: TransfersController_startTransfer
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer ID
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransferStartMessageSchema"
+      responses:
+        "202":
+          description: Transfer started successfully
+      security: *a7
+      summary: Start transfer process
+      tags: *a8
+  /api/transfers/{id}/completion:
+    post:
+      operationId: TransfersController_completeTransfer
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer ID
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransferCompletionMessageSchema"
+      responses:
+        "202":
+          description: Transfer completed successfully
+      security: *a7
+      summary: Complete transfer process
+      tags: *a8
+  /api/transfers/{id}/termination:
+    post:
+      operationId: TransfersController_terminateTransfer
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer ID
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransferTerminationMessageSchema"
+      responses:
+        "202":
+          description: Transfer terminated successfully
+      security: *a7
+      summary: Terminate transfer process
+      tags: *a8
+  /api/transfers/{id}/suspension:
+    post:
+      operationId: TransfersController_suspendTransfer
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Transfer ID
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransferSuspensionMessageSchema"
+      responses:
+        "202":
+          description: Transfer suspended successfully
+      security: *a7
+      summary: Suspend transfer process
+      tags: *a8
   /api/management/transfers:
     get:
-      operationId: DataPlaneManagementController_getTransfers
+      operationId: TransfersManagementController_getTransfers
       parameters: []
       responses:
         "200":
@@ -474,12 +472,15 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a5
+      security: &a9
+        - oauth2:
+            - controlplane_dataplane
       summary: Get all transfers
-      tags: *a6
+      tags: &a10
+        - Data Plane Management
   /api/management/transfers/{id}:
     get:
-      operationId: DataPlaneManagementController_getTransfer
+      operationId: TransfersManagementController_getTransfer
       parameters:
         - name: id
           required: true
@@ -500,12 +501,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a5
+      security: *a9
       summary: Get transfer by ID
-      tags: *a6
+      tags: *a10
   /api/management/transfers/{id}/metadata:
     get:
-      operationId: DataPlaneManagementController_getMetadata
+      operationId: TransfersManagementController_getMetadata
       parameters:
         - name: id
           required: true
@@ -526,12 +527,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a5
+      security: *a9
       summary: Get metadata of transfer by ID
-      tags: *a6
+      tags: *a10
   /api/management/transfers/{id}/start:
     post:
-      operationId: DataPlaneManagementController_startTransfer
+      operationId: TransfersManagementController_startTransfer
       parameters:
         - name: id
           required: true
@@ -548,12 +549,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a5
+      security: *a9
       summary: Start a transfer by ID
-      tags: *a6
+      tags: *a10
   /api/management/transfers/{id}/completion:
     post:
-      operationId: DataPlaneManagementController_completeTransfer
+      operationId: TransfersManagementController_completeTransfer
       parameters:
         - name: id
           required: true
@@ -570,12 +571,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a5
+      security: *a9
       summary: Complete a transfer by ID
-      tags: *a6
+      tags: *a10
   /api/management/transfers/{id}/termination:
     post:
-      operationId: DataPlaneManagementController_terminateTransfer
+      operationId: TransfersManagementController_terminateTransfer
       parameters:
         - name: id
           required: true
@@ -602,12 +603,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a5
+      security: *a9
       summary: Terminate a transfer by ID
-      tags: *a6
+      tags: *a10
   /api/management/transfers/{id}/suspension:
     post:
-      operationId: DataPlaneManagementController_suspendTransfer
+      operationId: TransfersManagementController_suspendTransfer
       parameters:
         - name: id
           required: true
@@ -629,9 +630,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-      security: *a5
+      security: *a9
       summary: Suspend a transfer by ID
-      tags: *a6
+      tags: *a10
   /api/auth/user:
     get:
       description: Retrieves current user state, whether someone is logged in or not a
@@ -649,7 +650,7 @@ paths:
                   - $ref: "#/components/schemas/AuthenticatedUser"
                   - $ref: "#/components/schemas/UnauthenticatedUser"
       summary: Retrieve current user status
-      tags: &a7
+      tags: &a11
         - Authentication
   /api/auth/login:
     get:
@@ -660,7 +661,7 @@ paths:
         "302":
           description: ""
       summary: Login redirect
-      tags: *a7
+      tags: *a11
   /api/auth/logout:
     get:
       description: Removes session information and redirects user the root of the
@@ -671,7 +672,7 @@ paths:
         "302":
           description: ""
       summary: Logout redirect
-      tags: *a7
+      tags: *a11
   /api/auth/callback:
     get:
       description: Users are redirected from the authorization server to this endpoint
@@ -729,285 +730,6 @@ paths:
         "302":
           description: ""
       summary: Login callback
-      tags: *a7
-  /api/management/logging/ingress:
-    get:
-      operationId: LoggingController_getIngressLogs
-      parameters:
-        - name: order
-          required: false
-          in: query
-          schema:
-            default: DESC
-            type: string
-            enum:
-              - ASC
-              - DESC
-        - name: page
-          required: false
-          in: query
-          schema:
-            minimum: 1
-            default: 1
-            type: number
-        - name: take
-          required: false
-          in: query
-          schema:
-            minimum: 1
-            maximum: 50
-            default: 10
-            type: number
-        - required: false
-          name: order
-          in: query
-          schema:
-            default: DESC
-            type: string
-        - required: false
-          name: page
-          in: query
-          schema:
-            minimum: 1
-            default: 1
-            type: number
-        - required: false
-          name: take
-          in: query
-          schema:
-            minimum: 1
-            maximum: 50
-            default: 10
-            type: number
-      responses:
-        "200":
-          description: ""
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/PageDto"
-      security: &a8
-        - oauth2:
-            - controlplane_dataplane
-      summary: Get ingress logs
-      tags: &a9
-        - Logging
-  /api/management/logging/egress:
-    get:
-      operationId: LoggingController_getEgressLogs
-      parameters:
-        - name: order
-          required: false
-          in: query
-          schema:
-            default: DESC
-            type: string
-            enum:
-              - ASC
-              - DESC
-        - name: page
-          required: false
-          in: query
-          schema:
-            minimum: 1
-            default: 1
-            type: number
-        - name: take
-          required: false
-          in: query
-          schema:
-            minimum: 1
-            maximum: 50
-            default: 10
-            type: number
-        - required: false
-          name: order
-          in: query
-          schema:
-            default: DESC
-            type: string
-        - required: false
-          name: page
-          in: query
-          schema:
-            minimum: 1
-            default: 1
-            type: number
-        - required: false
-          name: take
-          in: query
-          schema:
-            minimum: 1
-            maximum: 50
-            default: 10
-            type: number
-      responses:
-        "200":
-          description: ""
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/PageDto"
-      security: *a8
-      summary: Get egress logs
-      tags: *a9
-  /api/algorithm-instances:
-    get:
-      description: Retrieve all algorithm instances
-      operationId: AlgorithmInstancesController_findAll
-      parameters: []
-      responses:
-        "200":
-          description: ""
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/AlgorithmInstanceDto"
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorDto"
-      security: &a10
-        - oauth2:
-            - controlplane_dataplane
-      summary: Get all algorithm instances
-      tags: &a11
-        - Algorithm Instances
-    post:
-      description: Create a new algorithm instance
-      operationId: AlgorithmInstancesController_create
-      parameters: []
-      requestBody:
-        required: true
-        description: The algorithm instance to create
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/AlgorithmInstanceDto"
-      responses:
-        "200":
-          description: The algorithm instance has been successfully created
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/CreateAlgorithmInstanceDto"
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorDto"
-      security: *a10
-      summary: Create algorithm instance
-      tags: *a11
-  /api/algorithm-instances/catalogs/{participantId}:
-    get:
-      description: Fetches a specific catalog by its participant ID.
-      operationId: AlgorithmInstancesController_getCatalogByParticipantId
-      parameters:
-        - name: participantId
-          required: true
-          in: path
-          schema:
-            type: string
-      responses:
-        "200":
-          description: ""
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/CatalogSchema"
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorDto"
-        "404":
-          description: Resource not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorDto"
-      security: *a10
-      summary: Get catalog by participant ID
-      tags: *a11
-  /api/algorithm-instances/transfer/{transferId}:
-    get:
-      description: Retrieve an algorithm instance by its associated transfer ID
-      operationId: AlgorithmInstancesController_findByTransferId
-      parameters:
-        - name: transferId
-          required: true
-          in: path
-          schema:
-            type: string
-      responses:
-        "200":
-          description: ""
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AlgorithmInstanceDto"
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorDto"
-      security: *a10
-      summary: Get an algorithm instance by transfer ID
-      tags: *a11
-  /api/algorithm-instances/{id}:
-    get:
-      description: Retrieve an algorithm instance by its ID
-      operationId: AlgorithmInstancesController_findOne
-      parameters:
-        - name: id
-          required: true
-          in: path
-          schema:
-            type: string
-      responses:
-        "200":
-          description: ""
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AlgorithmInstanceDto"
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorDto"
-      security: *a10
-      summary: Get an algorithm instance by ID
-      tags: *a11
-    delete:
-      description: Delete an algorithm instance by its ID
-      operationId: AlgorithmInstancesController_remove
-      parameters:
-        - name: id
-          required: true
-          in: path
-          schema:
-            type: string
-      responses:
-        "200":
-          description: The algorithm instance has been successfully deleted
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorDto"
-      security: *a10
-      summary: Delete an algorithm instance by ID
       tags: *a11
   /api/files:
     get:
@@ -1248,6 +970,222 @@ paths:
       security: *a14
       summary: Spawn a job
       tags: *a15
+  /api/management/algorithm-instances:
+    get:
+      description: Retrieve all algorithm instances
+      operationId: AlgorithmInstancesManagementController_findAll
+      parameters: []
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AlgorithmInstanceDto"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: &a16
+        - oauth2:
+            - controlplane_dataplane
+      summary: Get all algorithm instances
+      tags: &a17
+        - Algorithm Instances
+    post:
+      description: Create a new algorithm instance
+      operationId: AlgorithmInstancesManagementController_create
+      parameters: []
+      requestBody:
+        required: true
+        description: The algorithm instance to create
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AlgorithmInstanceDto"
+      responses:
+        "200":
+          description: The algorithm instance has been successfully created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateAlgorithmInstanceDto"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a16
+      summary: Create algorithm instance
+      tags: *a17
+  /api/management/algorithm-instances/catalogs/{participantId}:
+    get:
+      description: Fetches a specific catalog by its participant ID.
+      operationId: AlgorithmInstancesManagementController_getCatalogByParticipantId
+      parameters:
+        - name: participantId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CatalogSchema"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a16
+      summary: Get catalog by participant ID
+      tags: *a17
+  /api/management/algorithm-instances/transfer/{transferId}:
+    get:
+      description: Retrieve an algorithm instance by its associated transfer ID
+      operationId: AlgorithmInstancesManagementController_findByTransferId
+      parameters:
+        - name: transferId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AlgorithmInstanceDto"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a16
+      summary: Get an algorithm instance by transfer ID
+      tags: *a17
+  /api/management/algorithm-instances/{id}:
+    get:
+      description: Retrieve an algorithm instance by its ID
+      operationId: AlgorithmInstancesManagementController_findOne
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AlgorithmInstanceDto"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a16
+      summary: Get an algorithm instance by ID
+      tags: *a17
+    delete:
+      description: Delete an algorithm instance by its ID
+      operationId: AlgorithmInstancesManagementController_remove
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The algorithm instance has been successfully deleted
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a16
+      summary: Delete an algorithm instance by ID
+      tags: *a17
+  /api/algorithm-instances/create:
+    post:
+      description: Creates a new algorithm instance with the provided details.
+      operationId: AlgorithmInstancesController_createAlgorithmInstance
+      parameters:
+        - name: Authorization
+          required: true
+          in: header
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AlgorithmInstanceDto"
+      responses:
+        "200":
+          description: Successfully created algorithm instance
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrchestrationStatusDto"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      summary: Create an algorithm instance
+      tags: &a18
+        - Algorithm Instances
+  /api/algorithm-instances/{algorithmInstanceId}/start:
+    post:
+      description: Starts an algorithm instance with the given ID.
+      operationId: AlgorithmInstancesController_startAlgorithmInstance
+      parameters:
+        - name: algorithmInstanceId
+          required: true
+          in: path
+          description: The ID of the algorithm instance to start
+          schema:
+            example: "12345"
+            type: string
+        - name: Authorization
+          required: true
+          in: header
+          schema:
+            type: string
+      responses:
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      summary: Start an algorithm instance
+      tags: *a18
   /api/events/{algorithmInstanceId}/internal-event:
     post:
       operationId: EventsController_createInternalEvent
@@ -1266,7 +1204,7 @@ paths:
       responses:
         "201":
           description: ""
-      tags: &a16
+      tags: &a19
         - Events
   /api/events/{algorithmInstanceId}/algorithm-event:
     post:
@@ -1303,7 +1241,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
       summary: Create an algorithm event
-      tags: *a16
+      tags: *a19
   /api/events/{algorithmInstanceId}/upload/{eventId}:
     post:
       description: Uploads binary algorithm event data.
@@ -1334,7 +1272,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
       summary: Upload algorithm event data
-      tags: *a16
+      tags: *a19
   /api/events/{algorithmInstanceId}/data/{eventId}:
     get:
       operationId: EventsController_getEventData
@@ -1357,7 +1295,7 @@ paths:
       responses:
         "200":
           description: ""
-      tags: *a16
+      tags: *a19
   /api/events/{algorithmInstanceId}:
     get:
       description: Retrieves all algorithm and internal events for the specified
@@ -1379,7 +1317,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
       summary: Get all events for an algorithm instance
-      tags: *a16
+      tags: *a19
 info:
   title: TSG Analytics Data Plane
   description: This OpenAPI specification shows the endpoints of the Analytics Data Plane.
@@ -1399,8 +1337,6 @@ tags:
     description: Data Plane Controller
   - name: Data Plane Management
     description: Data Plane Management Controller
-  - name: Proxy
-    description: Proxy Controller
   - name: Logging
     description: Logging Controller
 servers: []
@@ -1456,6 +1392,736 @@ components:
         - name
         - status
         - code
+    ConstraintSchema:
+      type: object
+      properties:
+        "@type":
+          type: string
+          example: Constraint
+        leftOperand:
+          type: string
+          example: leftOperandExample
+        operator:
+          type: string
+          example: operatorExample
+        rightOperand:
+          type: object
+          example:
+            value: rightOperandExample
+        rightOperandReference:
+          type: string
+          example: rightOperandReferenceExample
+      required:
+        - "@type"
+        - leftOperand
+        - operator
+    PermissionSchema:
+      type: object
+      properties:
+        "@type":
+          type: string
+          example: Permission
+        assigner:
+          type: string
+          example: assignerExample
+        assignee:
+          type: string
+          example: assigneeExample
+        action:
+          type: string
+          example: actionExample
+        target:
+          type: string
+          example: targetExample
+        constraint:
+          example: &a20 []
+          type: array
+          items:
+            $ref: "#/components/schemas/ConstraintSchema"
+        Duty:
+          example: []
+          type: array
+          items:
+            type: string
+      required:
+        - "@type"
+        - action
+    ProhibitionSchema:
+      type: object
+      properties:
+        "@type":
+          type: string
+          example: Prohibition
+        assigner:
+          type: string
+          example: assignerExample
+        assignee:
+          type: string
+          example: assigneeExample
+        action:
+          type: string
+          example: actionExample
+        target:
+          type: string
+          example: targetExample
+        constraint:
+          example: *a20
+          type: array
+          items:
+            $ref: "#/components/schemas/ConstraintSchema"
+      required:
+        - "@type"
+        - action
+    DutySchema:
+      type: object
+      properties:
+        "@type":
+          type: string
+          example: Duty
+        assigner:
+          type: string
+          example: assignerExample
+        assignee:
+          type: string
+          example: assigneeExample
+        action:
+          type: string
+          example: actionExample
+        target:
+          type: string
+          example: targetExample
+        constraint:
+          example: *a20
+          type: array
+          items:
+            $ref: "#/components/schemas/ConstraintSchema"
+      required:
+        - "@type"
+        - action
+    PolicySchema:
+      type: object
+      properties:
+        "@id":
+          type: string
+          example: 3f2592da-ffc9-40cb-a336-a9daa9343ce8
+        "@type":
+          type: string
+          example: Offer
+        assigner:
+          type: string
+          example: assignerExample
+        assignee:
+          type: string
+          example: assigneeExample
+        profile:
+          type: string
+          example: profileExample
+        permission:
+          example: &a27 []
+          type: array
+          items:
+            $ref: "#/components/schemas/PermissionSchema"
+        prohibition:
+          example: &a28 []
+          type: array
+          items:
+            $ref: "#/components/schemas/ProhibitionSchema"
+        obligation:
+          example: &a29 []
+          type: array
+          items:
+            $ref: "#/components/schemas/DutySchema"
+        target:
+          type: string
+          example: targetExample
+      required:
+        - "@id"
+        - "@type"
+    DurationSchema:
+      type: object
+      properties:
+        "@value":
+          type: string
+          example: P3Y6M4DT12H30M5S
+        "@type":
+          type: string
+          example: xsd:duration
+      required:
+        - "@value"
+        - "@type"
+    DatasetSchema:
+      type: object
+      properties:
+        "@id":
+          type: string
+          example: 3f2592da-ffc9-40cb-a336-a9daa9343ce8
+        contactPoint:
+          type: string
+          example: contactPointExample
+        keyword:
+          example: &a21
+            - keyword1
+            - keyword2
+          type: array
+          items:
+            type: string
+        landingPage:
+          type: string
+          example: landingPageExample
+        theme:
+          example: &a22
+            - theme1
+            - theme2
+          type: array
+          items:
+            type: string
+        conformsTo:
+          example: &a23
+            - conformsToExample
+          type: array
+          items:
+            type: string
+        creator:
+          type: string
+          example: creatorExample
+        description:
+          example: &a24
+            - description1
+            - description2
+          type: array
+          items:
+            type: string
+        identifier:
+          type: string
+          example: identifierExample
+        isReferencedBy:
+          type: string
+          example: isReferencedByExample
+        issued:
+          type: string
+          example: 2020-01-01
+        language:
+          type: string
+          example: en
+        license:
+          type: string
+          example: licenseExample
+        modified:
+          type: string
+          example: 2020-01-02
+        publisher:
+          type: string
+          example: publisherExample
+        relation:
+          type: string
+          example: relationExample
+        title:
+          type: string
+          example: titleExample
+        type:
+          type: string
+          example: typeExample
+        hasPolicy:
+          example: &a25 []
+          type: array
+          items:
+            $ref: "#/components/schemas/PolicySchema"
+        hasVersion:
+          example: &a26
+            - version1
+            - version2
+          type: array
+          items:
+            type: string
+        isVersionOf:
+          type: string
+          example: isVersionOfExample
+        version:
+          type: string
+          example: versionExample
+        hasCurrentVersion:
+          type: string
+          example: hasCurrentVersionExample
+        previousVersion:
+          type: string
+          example: previousVersionExample
+        "@type":
+          type: string
+          example: Dataset
+        distribution:
+          type: array
+          items:
+            type: string
+        spatialResolutionInMeters:
+          type: string
+          example: "100"
+        temporalResolution:
+          example: P1Y
+          allOf:
+            - $ref: "#/components/schemas/DurationSchema"
+        accrualPeriodicity:
+          type: string
+          example: accrualPeriodicityExample
+        spatial:
+          type: string
+          example: spatialExample
+        temporal:
+          type: string
+          example: temporalExample
+        wasGeneratedBy:
+          type: string
+          example: wasGeneratedByExample
+      required:
+        - "@id"
+        - "@type"
+    DataPlaneDetailsDto:
+      type: object
+      properties:
+        datasets:
+          example:
+            - id: dataset-123
+              name: Example Dataset
+          type: array
+          items:
+            $ref: "#/components/schemas/DatasetSchema"
+        dataplaneType:
+          type: string
+          example: exampleType
+        endpointPrefix:
+          type: string
+          example: /api/v1/dataplane
+        callbackAddress:
+          type: string
+          example: http://localhost/callback
+        managementAddress:
+          type: string
+          example: http://localhost/manage
+        managementToken:
+          type: string
+          example: token123
+        catalogSynchronization:
+          type: string
+          enum:
+            - push
+            - pull
+          example: push
+        role:
+          type: string
+          enum:
+            - consumer
+            - provider
+            - both
+          example: consumer
+        identifier:
+          type: string
+          example: dp-12345
+      required:
+        - dataplaneType
+        - endpointPrefix
+        - callbackAddress
+        - managementAddress
+        - managementToken
+        - catalogSynchronization
+        - role
+        - identifier
+    DataPlaneStateDto:
+      type: object
+      properties:
+        identifier:
+          type: string
+          example: 44d1f3d6-f65d-4a7c-84db-f92ba826305e
+        details:
+          $ref: "#/components/schemas/DataPlaneDetailsDto"
+        dataset:
+          type: array
+          items:
+            $ref: "#/components/schemas/DatasetSchema"
+      required:
+        - identifier
+        - details
+        - dataset
+    ResourceSchema:
+      type: object
+      properties:
+        "@id":
+          type: string
+          example: 3f2592da-ffc9-40cb-a336-a9daa9343ce8
+        "@type":
+          type: string
+          example: Resource
+        contactPoint:
+          type: string
+          example: contactPointExample
+        keyword:
+          example: *a21
+          type: array
+          items:
+            type: string
+        landingPage:
+          type: string
+          example: landingPageExample
+        theme:
+          example: *a22
+          type: array
+          items:
+            type: string
+        conformsTo:
+          example: *a23
+          type: array
+          items:
+            type: string
+        creator:
+          type: string
+          example: creatorExample
+        description:
+          example: *a24
+          type: array
+          items:
+            type: string
+        identifier:
+          type: string
+          example: identifierExample
+        isReferencedBy:
+          type: string
+          example: isReferencedByExample
+        issued:
+          type: string
+          example: 2020-01-01
+        language:
+          type: string
+          example: en
+        license:
+          type: string
+          example: licenseExample
+        modified:
+          type: string
+          example: 2020-01-02
+        publisher:
+          type: string
+          example: publisherExample
+        relation:
+          type: string
+          example: relationExample
+        title:
+          type: string
+          example: titleExample
+        type:
+          type: string
+          example: typeExample
+        hasPolicy:
+          example: *a25
+          type: array
+          items:
+            $ref: "#/components/schemas/PolicySchema"
+        hasVersion:
+          example: *a26
+          type: array
+          items:
+            type: string
+        isVersionOf:
+          type: string
+          example: isVersionOfExample
+        version:
+          type: string
+          example: versionExample
+        hasCurrentVersion:
+          type: string
+          example: hasCurrentVersionExample
+        previousVersion:
+          type: string
+          example: previousVersionExample
+      required:
+        - "@id"
+        - "@type"
+    CatalogRecordSchema:
+      type: object
+      properties:
+        "@id":
+          type: string
+          example: 3f2592da-ffc9-40cb-a336-a9daa9343ce8
+        "@type":
+          type: string
+          example: CatalogRecord
+        conformsTo:
+          example:
+            - conformsToExample
+          type: array
+          items:
+            type: string
+        description:
+          example:
+            - Record description
+          type: array
+          items:
+            type: string
+        issued:
+          format: date-time
+          type: string
+          example: 2020-03-01T00:00:00Z
+        modified:
+          format: date-time
+          type: string
+          example: 2020-03-02T00:00:00Z
+        title:
+          type: string
+          example: Catalog title example
+        primaryTopic:
+          example: {}
+          allOf:
+            - $ref: "#/components/schemas/ResourceSchema"
+      required:
+        - "@id"
+        - "@type"
+    DataServiceSchema:
+      type: object
+      properties:
+        "@id":
+          type: string
+          example: 3f2592da-ffc9-40cb-a336-a9daa9343ce8
+        contactPoint:
+          type: string
+          example: contactPointExample
+        keyword:
+          example: *a21
+          type: array
+          items:
+            type: string
+        landingPage:
+          type: string
+          example: landingPageExample
+        theme:
+          example: *a22
+          type: array
+          items:
+            type: string
+        conformsTo:
+          example: *a23
+          type: array
+          items:
+            type: string
+        creator:
+          type: string
+          example: creatorExample
+        description:
+          example: *a24
+          type: array
+          items:
+            type: string
+        identifier:
+          type: string
+          example: identifierExample
+        isReferencedBy:
+          type: string
+          example: isReferencedByExample
+        issued:
+          type: string
+          example: 2020-01-01
+        language:
+          type: string
+          example: en
+        license:
+          type: string
+          example: licenseExample
+        modified:
+          type: string
+          example: 2020-01-02
+        publisher:
+          type: string
+          example: publisherExample
+        relation:
+          type: string
+          example: relationExample
+        title:
+          type: string
+          example: titleExample
+        type:
+          type: string
+          example: typeExample
+        hasPolicy:
+          example: *a25
+          type: array
+          items:
+            $ref: "#/components/schemas/PolicySchema"
+        hasVersion:
+          example: *a26
+          type: array
+          items:
+            type: string
+        isVersionOf:
+          type: string
+          example: isVersionOfExample
+        version:
+          type: string
+          example: versionExample
+        hasCurrentVersion:
+          type: string
+          example: hasCurrentVersionExample
+        previousVersion:
+          type: string
+          example: previousVersionExample
+        "@type":
+          type: string
+          example: DataService
+        endpointDescription:
+          type: string
+          example: endpointDescriptionExample
+        endpointURL:
+          type: string
+          example: https://example.com/api
+        servesDataset:
+          example: []
+          type: array
+          items:
+            $ref: "#/components/schemas/DatasetSchema"
+      required:
+        - "@id"
+        - "@type"
+    CatalogSchema:
+      type: object
+      properties:
+        "@id":
+          type: string
+          example: 3f2592da-ffc9-40cb-a336-a9daa9343ce8
+        contactPoint:
+          type: string
+          example: contactPointExample
+        keyword:
+          example: *a21
+          type: array
+          items:
+            type: string
+        landingPage:
+          type: string
+          example: landingPageExample
+        theme:
+          example: *a22
+          type: array
+          items:
+            type: string
+        conformsTo:
+          example: *a23
+          type: array
+          items:
+            type: string
+        creator:
+          type: string
+          example: creatorExample
+        description:
+          example: *a24
+          type: array
+          items:
+            type: string
+        identifier:
+          type: string
+          example: identifierExample
+        isReferencedBy:
+          type: string
+          example: isReferencedByExample
+        issued:
+          type: string
+          example: 2020-01-01
+        language:
+          type: string
+          example: en
+        license:
+          type: string
+          example: licenseExample
+        modified:
+          type: string
+          example: 2020-01-02
+        publisher:
+          type: string
+          example: publisherExample
+        relation:
+          type: string
+          example: relationExample
+        title:
+          type: string
+          example: titleExample
+        type:
+          type: string
+          example: typeExample
+        hasPolicy:
+          example: *a25
+          type: array
+          items:
+            $ref: "#/components/schemas/PolicySchema"
+        hasVersion:
+          example: *a26
+          type: array
+          items:
+            type: string
+        isVersionOf:
+          type: string
+          example: isVersionOfExample
+        version:
+          type: string
+          example: versionExample
+        hasCurrentVersion:
+          type: string
+          example: hasCurrentVersionExample
+        previousVersion:
+          type: string
+          example: previousVersionExample
+        distribution:
+          type: array
+          items:
+            type: string
+        spatialResolutionInMeters:
+          type: string
+          example: "100"
+        temporalResolution:
+          example: P1Y
+          allOf:
+            - $ref: "#/components/schemas/DurationSchema"
+        accrualPeriodicity:
+          type: string
+          example: accrualPeriodicityExample
+        spatial:
+          type: string
+          example: spatialExample
+        temporal:
+          type: string
+          example: temporalExample
+        wasGeneratedBy:
+          type: string
+          example: wasGeneratedByExample
+        "@type":
+          type: string
+          example: Catalog
+        participantId:
+          type: string
+          example: did:web:example
+        dataset:
+          example: []
+          type: array
+          items:
+            $ref: "#/components/schemas/DatasetSchema"
+        record:
+          example: {}
+          type: array
+          items:
+            $ref: "#/components/schemas/CatalogRecordSchema"
+        service:
+          example: []
+          type: array
+          items:
+            $ref: "#/components/schemas/DataServiceSchema"
+        themeTaxonomy:
+          type: string
+          example: themeTaxonomyExample
+        hasPart:
+          example: []
+          type: array
+          items:
+            $ref: "#/components/schemas/ResourceSchema"
+        homepage:
+          type: string
+          example: https://example.com/homepage
+      required:
+        - "@id"
+        - "@type"
+        - participantId
     EndpointPropertySchema:
       type: object
       properties:
@@ -1673,736 +2339,6 @@ components:
         - "@type"
         - providerPid
         - consumerPid
-    ConstraintSchema:
-      type: object
-      properties:
-        "@type":
-          type: string
-          example: Constraint
-        leftOperand:
-          type: string
-          example: leftOperandExample
-        operator:
-          type: string
-          example: operatorExample
-        rightOperand:
-          type: object
-          example:
-            value: rightOperandExample
-        rightOperandReference:
-          type: string
-          example: rightOperandReferenceExample
-      required:
-        - "@type"
-        - leftOperand
-        - operator
-    PermissionSchema:
-      type: object
-      properties:
-        "@type":
-          type: string
-          example: Permission
-        assigner:
-          type: string
-          example: assignerExample
-        assignee:
-          type: string
-          example: assigneeExample
-        action:
-          type: string
-          example: actionExample
-        target:
-          type: string
-          example: targetExample
-        constraint:
-          example: &a17 []
-          type: array
-          items:
-            $ref: "#/components/schemas/ConstraintSchema"
-        Duty:
-          example: []
-          type: array
-          items:
-            type: string
-      required:
-        - "@type"
-        - action
-    ProhibitionSchema:
-      type: object
-      properties:
-        "@type":
-          type: string
-          example: Prohibition
-        assigner:
-          type: string
-          example: assignerExample
-        assignee:
-          type: string
-          example: assigneeExample
-        action:
-          type: string
-          example: actionExample
-        target:
-          type: string
-          example: targetExample
-        constraint:
-          example: *a17
-          type: array
-          items:
-            $ref: "#/components/schemas/ConstraintSchema"
-      required:
-        - "@type"
-        - action
-    DutySchema:
-      type: object
-      properties:
-        "@type":
-          type: string
-          example: Duty
-        assigner:
-          type: string
-          example: assignerExample
-        assignee:
-          type: string
-          example: assigneeExample
-        action:
-          type: string
-          example: actionExample
-        target:
-          type: string
-          example: targetExample
-        constraint:
-          example: *a17
-          type: array
-          items:
-            $ref: "#/components/schemas/ConstraintSchema"
-      required:
-        - "@type"
-        - action
-    PolicySchema:
-      type: object
-      properties:
-        "@id":
-          type: string
-          example: 3f2592da-ffc9-40cb-a336-a9daa9343ce8
-        "@type":
-          type: string
-          example: Offer
-        assigner:
-          type: string
-          example: assignerExample
-        assignee:
-          type: string
-          example: assigneeExample
-        profile:
-          type: string
-          example: profileExample
-        permission:
-          example: &a24 []
-          type: array
-          items:
-            $ref: "#/components/schemas/PermissionSchema"
-        prohibition:
-          example: &a25 []
-          type: array
-          items:
-            $ref: "#/components/schemas/ProhibitionSchema"
-        obligation:
-          example: &a26 []
-          type: array
-          items:
-            $ref: "#/components/schemas/DutySchema"
-        target:
-          type: string
-          example: targetExample
-      required:
-        - "@id"
-        - "@type"
-    DurationSchema:
-      type: object
-      properties:
-        "@value":
-          type: string
-          example: P3Y6M4DT12H30M5S
-        "@type":
-          type: string
-          example: xsd:duration
-      required:
-        - "@value"
-        - "@type"
-    DatasetSchema:
-      type: object
-      properties:
-        "@id":
-          type: string
-          example: 3f2592da-ffc9-40cb-a336-a9daa9343ce8
-        contactPoint:
-          type: string
-          example: contactPointExample
-        keyword:
-          example: &a18
-            - keyword1
-            - keyword2
-          type: array
-          items:
-            type: string
-        landingPage:
-          type: string
-          example: landingPageExample
-        theme:
-          example: &a19
-            - theme1
-            - theme2
-          type: array
-          items:
-            type: string
-        conformsTo:
-          example: &a20
-            - conformsToExample
-          type: array
-          items:
-            type: string
-        creator:
-          type: string
-          example: creatorExample
-        description:
-          example: &a21
-            - description1
-            - description2
-          type: array
-          items:
-            type: string
-        identifier:
-          type: string
-          example: identifierExample
-        isReferencedBy:
-          type: string
-          example: isReferencedByExample
-        issued:
-          type: string
-          example: 2020-01-01
-        language:
-          type: string
-          example: en
-        license:
-          type: string
-          example: licenseExample
-        modified:
-          type: string
-          example: 2020-01-02
-        publisher:
-          type: string
-          example: publisherExample
-        relation:
-          type: string
-          example: relationExample
-        title:
-          type: string
-          example: titleExample
-        type:
-          type: string
-          example: typeExample
-        hasPolicy:
-          example: &a22 []
-          type: array
-          items:
-            $ref: "#/components/schemas/PolicySchema"
-        hasVersion:
-          example: &a23
-            - version1
-            - version2
-          type: array
-          items:
-            type: string
-        isVersionOf:
-          type: string
-          example: isVersionOfExample
-        version:
-          type: string
-          example: versionExample
-        hasCurrentVersion:
-          type: string
-          example: hasCurrentVersionExample
-        previousVersion:
-          type: string
-          example: previousVersionExample
-        "@type":
-          type: string
-          example: Dataset
-        distribution:
-          type: array
-          items:
-            type: string
-        spatialResolutionInMeters:
-          type: string
-          example: "100"
-        temporalResolution:
-          example: P1Y
-          allOf:
-            - $ref: "#/components/schemas/DurationSchema"
-        accrualPeriodicity:
-          type: string
-          example: accrualPeriodicityExample
-        spatial:
-          type: string
-          example: spatialExample
-        temporal:
-          type: string
-          example: temporalExample
-        wasGeneratedBy:
-          type: string
-          example: wasGeneratedByExample
-      required:
-        - "@id"
-        - "@type"
-    DataPlaneDetailsDto:
-      type: object
-      properties:
-        datasets:
-          example:
-            - id: dataset-123
-              name: Example Dataset
-          type: array
-          items:
-            $ref: "#/components/schemas/DatasetSchema"
-        dataplaneType:
-          type: string
-          example: exampleType
-        endpointPrefix:
-          type: string
-          example: /api/v1/dataplane
-        callbackAddress:
-          type: string
-          example: http://localhost/callback
-        managementAddress:
-          type: string
-          example: http://localhost/manage
-        managementToken:
-          type: string
-          example: token123
-        catalogSynchronization:
-          type: string
-          enum:
-            - push
-            - pull
-          example: push
-        role:
-          type: string
-          enum:
-            - consumer
-            - provider
-            - both
-          example: consumer
-        identifier:
-          type: string
-          example: dp-12345
-      required:
-        - dataplaneType
-        - endpointPrefix
-        - callbackAddress
-        - managementAddress
-        - managementToken
-        - catalogSynchronization
-        - role
-        - identifier
-    DataPlaneStateDto:
-      type: object
-      properties:
-        identifier:
-          type: string
-          example: 44d1f3d6-f65d-4a7c-84db-f92ba826305e
-        details:
-          $ref: "#/components/schemas/DataPlaneDetailsDto"
-        dataset:
-          type: array
-          items:
-            $ref: "#/components/schemas/DatasetSchema"
-      required:
-        - identifier
-        - details
-        - dataset
-    ResourceSchema:
-      type: object
-      properties:
-        "@id":
-          type: string
-          example: 3f2592da-ffc9-40cb-a336-a9daa9343ce8
-        "@type":
-          type: string
-          example: Resource
-        contactPoint:
-          type: string
-          example: contactPointExample
-        keyword:
-          example: *a18
-          type: array
-          items:
-            type: string
-        landingPage:
-          type: string
-          example: landingPageExample
-        theme:
-          example: *a19
-          type: array
-          items:
-            type: string
-        conformsTo:
-          example: *a20
-          type: array
-          items:
-            type: string
-        creator:
-          type: string
-          example: creatorExample
-        description:
-          example: *a21
-          type: array
-          items:
-            type: string
-        identifier:
-          type: string
-          example: identifierExample
-        isReferencedBy:
-          type: string
-          example: isReferencedByExample
-        issued:
-          type: string
-          example: 2020-01-01
-        language:
-          type: string
-          example: en
-        license:
-          type: string
-          example: licenseExample
-        modified:
-          type: string
-          example: 2020-01-02
-        publisher:
-          type: string
-          example: publisherExample
-        relation:
-          type: string
-          example: relationExample
-        title:
-          type: string
-          example: titleExample
-        type:
-          type: string
-          example: typeExample
-        hasPolicy:
-          example: *a22
-          type: array
-          items:
-            $ref: "#/components/schemas/PolicySchema"
-        hasVersion:
-          example: *a23
-          type: array
-          items:
-            type: string
-        isVersionOf:
-          type: string
-          example: isVersionOfExample
-        version:
-          type: string
-          example: versionExample
-        hasCurrentVersion:
-          type: string
-          example: hasCurrentVersionExample
-        previousVersion:
-          type: string
-          example: previousVersionExample
-      required:
-        - "@id"
-        - "@type"
-    CatalogRecordSchema:
-      type: object
-      properties:
-        "@id":
-          type: string
-          example: 3f2592da-ffc9-40cb-a336-a9daa9343ce8
-        "@type":
-          type: string
-          example: CatalogRecord
-        conformsTo:
-          example:
-            - conformsToExample
-          type: array
-          items:
-            type: string
-        description:
-          example:
-            - Record description
-          type: array
-          items:
-            type: string
-        issued:
-          format: date-time
-          type: string
-          example: 2020-03-01T00:00:00Z
-        modified:
-          format: date-time
-          type: string
-          example: 2020-03-02T00:00:00Z
-        title:
-          type: string
-          example: Catalog title example
-        primaryTopic:
-          example: {}
-          allOf:
-            - $ref: "#/components/schemas/ResourceSchema"
-      required:
-        - "@id"
-        - "@type"
-    DataServiceSchema:
-      type: object
-      properties:
-        "@id":
-          type: string
-          example: 3f2592da-ffc9-40cb-a336-a9daa9343ce8
-        contactPoint:
-          type: string
-          example: contactPointExample
-        keyword:
-          example: *a18
-          type: array
-          items:
-            type: string
-        landingPage:
-          type: string
-          example: landingPageExample
-        theme:
-          example: *a19
-          type: array
-          items:
-            type: string
-        conformsTo:
-          example: *a20
-          type: array
-          items:
-            type: string
-        creator:
-          type: string
-          example: creatorExample
-        description:
-          example: *a21
-          type: array
-          items:
-            type: string
-        identifier:
-          type: string
-          example: identifierExample
-        isReferencedBy:
-          type: string
-          example: isReferencedByExample
-        issued:
-          type: string
-          example: 2020-01-01
-        language:
-          type: string
-          example: en
-        license:
-          type: string
-          example: licenseExample
-        modified:
-          type: string
-          example: 2020-01-02
-        publisher:
-          type: string
-          example: publisherExample
-        relation:
-          type: string
-          example: relationExample
-        title:
-          type: string
-          example: titleExample
-        type:
-          type: string
-          example: typeExample
-        hasPolicy:
-          example: *a22
-          type: array
-          items:
-            $ref: "#/components/schemas/PolicySchema"
-        hasVersion:
-          example: *a23
-          type: array
-          items:
-            type: string
-        isVersionOf:
-          type: string
-          example: isVersionOfExample
-        version:
-          type: string
-          example: versionExample
-        hasCurrentVersion:
-          type: string
-          example: hasCurrentVersionExample
-        previousVersion:
-          type: string
-          example: previousVersionExample
-        "@type":
-          type: string
-          example: DataService
-        endpointDescription:
-          type: string
-          example: endpointDescriptionExample
-        endpointURL:
-          type: string
-          example: https://example.com/api
-        servesDataset:
-          example: []
-          type: array
-          items:
-            $ref: "#/components/schemas/DatasetSchema"
-      required:
-        - "@id"
-        - "@type"
-    CatalogSchema:
-      type: object
-      properties:
-        "@id":
-          type: string
-          example: 3f2592da-ffc9-40cb-a336-a9daa9343ce8
-        contactPoint:
-          type: string
-          example: contactPointExample
-        keyword:
-          example: *a18
-          type: array
-          items:
-            type: string
-        landingPage:
-          type: string
-          example: landingPageExample
-        theme:
-          example: *a19
-          type: array
-          items:
-            type: string
-        conformsTo:
-          example: *a20
-          type: array
-          items:
-            type: string
-        creator:
-          type: string
-          example: creatorExample
-        description:
-          example: *a21
-          type: array
-          items:
-            type: string
-        identifier:
-          type: string
-          example: identifierExample
-        isReferencedBy:
-          type: string
-          example: isReferencedByExample
-        issued:
-          type: string
-          example: 2020-01-01
-        language:
-          type: string
-          example: en
-        license:
-          type: string
-          example: licenseExample
-        modified:
-          type: string
-          example: 2020-01-02
-        publisher:
-          type: string
-          example: publisherExample
-        relation:
-          type: string
-          example: relationExample
-        title:
-          type: string
-          example: titleExample
-        type:
-          type: string
-          example: typeExample
-        hasPolicy:
-          example: *a22
-          type: array
-          items:
-            $ref: "#/components/schemas/PolicySchema"
-        hasVersion:
-          example: *a23
-          type: array
-          items:
-            type: string
-        isVersionOf:
-          type: string
-          example: isVersionOfExample
-        version:
-          type: string
-          example: versionExample
-        hasCurrentVersion:
-          type: string
-          example: hasCurrentVersionExample
-        previousVersion:
-          type: string
-          example: previousVersionExample
-        distribution:
-          type: array
-          items:
-            type: string
-        spatialResolutionInMeters:
-          type: string
-          example: "100"
-        temporalResolution:
-          example: P1Y
-          allOf:
-            - $ref: "#/components/schemas/DurationSchema"
-        accrualPeriodicity:
-          type: string
-          example: accrualPeriodicityExample
-        spatial:
-          type: string
-          example: spatialExample
-        temporal:
-          type: string
-          example: temporalExample
-        wasGeneratedBy:
-          type: string
-          example: wasGeneratedByExample
-        "@type":
-          type: string
-          example: Catalog
-        participantId:
-          type: string
-          example: did:web:example
-        dataset:
-          example: []
-          type: array
-          items:
-            $ref: "#/components/schemas/DatasetSchema"
-        record:
-          example: {}
-          type: array
-          items:
-            $ref: "#/components/schemas/CatalogRecordSchema"
-        service:
-          example: []
-          type: array
-          items:
-            $ref: "#/components/schemas/DataServiceSchema"
-        themeTaxonomy:
-          type: string
-          example: themeTaxonomyExample
-        hasPart:
-          example: []
-          type: array
-          items:
-            $ref: "#/components/schemas/ResourceSchema"
-        homepage:
-          type: string
-          example: https://example.com/homepage
-      required:
-        - "@id"
-        - "@type"
-        - participantId
     TransferDto:
       type: object
       properties:
@@ -2490,17 +2426,17 @@ components:
           type: string
           example: profileExample
         permission:
-          example: *a24
+          example: *a27
           type: array
           items:
             $ref: "#/components/schemas/PermissionSchema"
         prohibition:
-          example: *a25
+          example: *a28
           type: array
           items:
             $ref: "#/components/schemas/ProhibitionSchema"
         obligation:
-          example: *a26
+          example: *a29
           type: array
           items:
             $ref: "#/components/schemas/DutySchema"
@@ -2583,213 +2519,6 @@ components:
           example: unauthenticated
       required:
         - state
-    PageMetaDto:
-      type: object
-      properties:
-        page:
-          type: number
-          example: 1
-        take:
-          type: number
-          example: 10
-        itemCount:
-          type: number
-          example: 100
-        pageCount:
-          type: number
-          example: 10
-        hasPreviousPage:
-          type: boolean
-          example: false
-        hasNextPage:
-          type: boolean
-          example: true
-      required:
-        - page
-        - take
-        - itemCount
-        - pageCount
-        - hasPreviousPage
-        - hasNextPage
-    PageDto:
-      type: object
-      properties:
-        data:
-          type: array
-          items:
-            type: array
-        meta:
-          $ref: "#/components/schemas/PageMetaDto"
-      required:
-        - data
-        - meta
-    AlgorithmDefinitionDto:
-      type: object
-      properties:
-        title:
-          type: string
-          description: Title of the algorithm
-        description:
-          type: string
-          description: Description of the algorithm
-        keywords:
-          description: Keywords associated with the algorithm
-          type: array
-          items:
-            type: string
-        image:
-          type: string
-          description: Public image URL of the algorithm
-        algorithmEvents:
-          description: Algorithm event structure of the algorithm
-          type: array
-          items:
-            type: string
-        roleDefinitions:
-          description: Role definitions for the algorithm
-          type: array
-          items:
-            type: string
-        internalEvents:
-          description: Internal event structure of the algorithm
-          type: array
-          items:
-            type: string
-        uiTemplate:
-          description: UI template for visualizing internal events
-          type: array
-          items:
-            type: string
-      required:
-        - title
-        - description
-        - keywords
-        - image
-        - algorithmEvents
-        - roleDefinitions
-        - internalEvents
-        - uiTemplate
-    AlgorithmEventDto:
-      type: object
-      properties:
-        id:
-          type: string
-        eventId:
-          type: string
-        algorithmInstanceId:
-          type: string
-        name:
-          type: string
-        number:
-          type: number
-        timestamp:
-          format: date-time
-          type: string
-        createdBy:
-          type: string
-        transferId:
-          type: string
-        recipients:
-          type: array
-          items:
-            type: string
-      required:
-        - id
-        - eventId
-        - algorithmInstanceId
-        - name
-        - number
-        - timestamp
-        - createdBy
-    InternalEventDto:
-      type: object
-      properties:
-        id:
-          type: string
-        algorithmInstanceId:
-          type: string
-        name:
-          type: string
-        number:
-          type: number
-        timestamp:
-          format: date-time
-          type: string
-        data:
-          type: object
-          additionalProperties: true
-      required:
-        - id
-        - algorithmInstanceId
-        - name
-        - number
-        - timestamp
-    AlgorithmInstanceDto:
-      type: object
-      properties:
-        id:
-          type: string
-          example: 123e4567-e89b-12d3-a456-426614174000
-        algorithmDefinition:
-          description: The definition for the algorithm
-          allOf:
-            - $ref: "#/components/schemas/AlgorithmDefinitionDto"
-        participants:
-          description: Participants for this algorithm
-          type: array
-          items:
-            type: string
-        createdDate:
-          format: date-time
-          type: string
-          example: 2023-01-01T00:00:00.000Z
-        status:
-          type: string
-          description: The current status of the algorithm instance
-        startedAt:
-          format: date-time
-          type: string
-        finishedAt:
-          format: date-time
-          type: string
-        transfers:
-          type: array
-          items:
-            $ref: "#/components/schemas/TransferDto"
-        algorithmEvents:
-          type: array
-          items:
-            $ref: "#/components/schemas/AlgorithmEventDto"
-        internalEvents:
-          type: array
-          items:
-            $ref: "#/components/schemas/InternalEventDto"
-      required:
-        - id
-        - algorithmDefinition
-        - participants
-        - createdDate
-        - status
-        - startedAt
-    CreateAlgorithmInstanceDto:
-      type: object
-      properties:
-        id:
-          type: string
-          example: 123e4567-e89b-12d3-a456-426614174000
-        algorithmDefinition:
-          description: The definition for the algorithm
-          allOf:
-            - $ref: "#/components/schemas/AlgorithmDefinitionDto"
-        participants:
-          description: Participants for this algorithm
-          type: array
-          items:
-            type: string
-      required:
-        - id
-        - algorithmDefinition
-        - participants
     CSVWTableSchema:
       type: object
       properties:
@@ -3140,6 +2869,195 @@ components:
             $ref: "#/components/schemas/PodDto"
       required:
         - items
+    AlgorithmDefinitionDto:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Title of the algorithm
+        description:
+          type: string
+          description: Description of the algorithm
+        keywords:
+          description: Keywords associated with the algorithm
+          type: array
+          items:
+            type: string
+        image:
+          type: string
+          description: Public image URL of the algorithm
+        algorithmEvents:
+          description: Algorithm event structure of the algorithm
+          type: array
+          items:
+            type: string
+        roleDefinitions:
+          description: Role definitions for the algorithm
+          type: array
+          items:
+            type: string
+        internalEvents:
+          description: Internal event structure of the algorithm
+          type: array
+          items:
+            type: string
+        uiTemplate:
+          description: UI template for visualizing internal events
+          type: array
+          items:
+            type: string
+      required:
+        - title
+        - description
+        - keywords
+        - image
+        - algorithmEvents
+        - roleDefinitions
+        - internalEvents
+        - uiTemplate
+    AlgorithmEventDto:
+      type: object
+      properties:
+        id:
+          type: string
+        eventId:
+          type: string
+        algorithmInstanceId:
+          type: string
+        name:
+          type: string
+        number:
+          type: number
+        timestamp:
+          format: date-time
+          type: string
+        createdBy:
+          type: string
+        transferIds:
+          type: array
+          items:
+            type: string
+        recipients:
+          type: array
+          items:
+            type: string
+      required:
+        - id
+        - eventId
+        - algorithmInstanceId
+        - name
+        - number
+        - timestamp
+        - createdBy
+    InternalEventDto:
+      type: object
+      properties:
+        id:
+          type: string
+        algorithmInstanceId:
+          type: string
+        name:
+          type: string
+        number:
+          type: number
+        timestamp:
+          format: date-time
+          type: string
+        data:
+          type: object
+          additionalProperties: true
+      required:
+        - id
+        - algorithmInstanceId
+        - name
+        - number
+        - timestamp
+    AlgorithmInstanceDto:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 123e4567-e89b-12d3-a456-426614174000
+        algorithmDefinition:
+          description: The definition for the algorithm
+          allOf:
+            - $ref: "#/components/schemas/AlgorithmDefinitionDto"
+        participants:
+          description: Participants for this algorithm
+          type: array
+          items:
+            type: string
+        createdDate:
+          format: date-time
+          type: string
+          example: 2023-01-01T00:00:00.000Z
+        status:
+          type: string
+          description: The current status of the algorithm instance
+        startedAt:
+          format: date-time
+          type: string
+        finishedAt:
+          format: date-time
+          type: string
+        transfers:
+          type: array
+          items:
+            $ref: "#/components/schemas/TransferDto"
+        algorithmEvents:
+          type: array
+          items:
+            $ref: "#/components/schemas/AlgorithmEventDto"
+        internalEvents:
+          type: array
+          items:
+            $ref: "#/components/schemas/InternalEventDto"
+      required:
+        - id
+        - algorithmDefinition
+        - participants
+        - createdDate
+        - status
+        - startedAt
+    CreateAlgorithmInstanceDto:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 123e4567-e89b-12d3-a456-426614174000
+        algorithmDefinition:
+          description: The definition for the algorithm
+          allOf:
+            - $ref: "#/components/schemas/AlgorithmDefinitionDto"
+        participants:
+          description: Participants for this algorithm
+          type: array
+          items:
+            type: string
+      required:
+        - id
+        - algorithmDefinition
+        - participants
+    OrchestrationStatusDto:
+      type: object
+      properties:
+        status:
+          type: string
+          description: The status of the orchestration
+          example: accepted
+          enum:
+            - accepted
+            - pending
+        pendingReason:
+          type: string
+          description: The reason for the pending status, if applicable
+          example: Waiting for participant data
+        interval:
+          type: number
+          description: The interval in seconds for the orchestration
+          example: 60
+      required:
+        - status
     CreateInternalEventDto:
       type: object
       properties:

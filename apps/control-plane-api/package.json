@@ -6,9 +6,9 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "watch": "rimraf control-plane.sqlite && tsc-watch -p tsconfig.json --onSuccess \"node ./dist/app.js\"",
+    "watch": "rimraf control-plane.sqlite dist && tsc-watch -p tsconfig.json --onSuccess \"node ./dist/app.js\"",
     "start": "node ./dist/app.js",
-    "buildAndStart": "tsc -p tsconfig.json && node ./dist/app.js",
+    "buildAndStart": "rimraf dist && tsc -p tsconfig.json && node ./dist/app.js",
     "tsc": "tsc -p tsconfig.json",
     "dev": "pnpm watch",
     "build": "rimraf dist && tsc -p tsconfig.json",

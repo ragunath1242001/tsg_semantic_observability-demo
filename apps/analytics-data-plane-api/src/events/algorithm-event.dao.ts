@@ -27,7 +27,7 @@ export class AlgorithmEventDao {
   @Column({ type: String })
   name!: string;
 
-  @Column({ type: Number, unique: true })
+  @Column({ type: Number })
   number!: number;
 
   @Column({ type: Date })
@@ -44,8 +44,8 @@ export class AlgorithmEventDao {
   })
   isOwnEvent!: boolean;
 
-  @Column({ type: String, nullable: true })
-  transferId?: string;
+  @Column("simple-array", { nullable: true })
+  transferIds?: string[];
 
   @Column({ type: String })
   createdBy!: string;

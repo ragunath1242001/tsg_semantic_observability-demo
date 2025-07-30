@@ -8,3 +8,4 @@ export * from "./internal-event.dto.js";
 export * from "./k8s/meta.dto.js";
 export * from "./k8s/pod.dto.js";
 export * from "./logging.dto.js";
+export * from "./orchestration.dto.js";

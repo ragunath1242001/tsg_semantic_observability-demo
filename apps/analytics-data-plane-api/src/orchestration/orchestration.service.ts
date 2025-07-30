@@ -9,6 +9,7 @@ import {
   V1VolumeMount
 } from "@kubernetes/client-node";
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
+import { OnEvent } from "@nestjs/event-emitter";
 import { hostname } from "os";
 import { Writable } from "stream";
 
@@ -55,6 +56,22 @@ export class OrchestrationService {
     });
 
     return jobList.items;
+  }
+
+  @OnEvent("job.spawn")
+  async handleJobSpawnEvent(event: {
+    algorithmInstanceId: string;
+    imageName: string;
+    command?: string[];
+    fileId?: string;
+  }) {
+    const { algorithmInstanceId, imageName, command, fileId } = event;
+
+    this.logger.log(
+      `Spawning job for algorithm instance ${algorithmInstanceId} with image ${imageName}`
+    );
+
+    return await this.spawnJob(algorithmInstanceId, imageName, command, fileId);
   }
 
   async spawnJob(

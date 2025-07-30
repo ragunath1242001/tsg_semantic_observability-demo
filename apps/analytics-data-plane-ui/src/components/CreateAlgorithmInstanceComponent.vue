@@ -201,7 +201,7 @@ const getDataPlaneState = async () => {
 const getParticipantCatalog = async (didId: string) => {
   try {
     const response = await http.get<CatalogDto>(
-      `algorithm-instances/catalogs/${didId}`
+      `management/algorithm-instances/catalogs/${didId}`
     );
     if (!response.data.dataset || response.data.dataset.length === 0) {
       datasetOptions.value[didId] = [
@@ -320,7 +320,10 @@ const submitAlgorithmInstance = async () => {
   const createInstanceDto = generateInstanceDto();
   try {
     isSubmitting.value = true;
-    const response = await http.post("algorithm-instances", createInstanceDto);
+    const response = await http.post(
+      "management/algorithm-instances",
+      createInstanceDto
+    );
     toast.add({
       severity: "success",
       summary: "Instance Created",

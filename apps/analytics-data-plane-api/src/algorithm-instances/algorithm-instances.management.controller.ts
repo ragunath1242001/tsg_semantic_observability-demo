@@ -27,15 +27,17 @@ import {
   ApiNotFoundResponseDefault
 } from "@tsg-dsp/common-dtos";
 
+import { ManagementClient } from "../dataplane/management-client.service.js";
 import { AlgorithmInstancesService } from "./algorithm-instances.service.js";
 
-@Controller("algorithm-instances")
+@Controller("management/algorithm-instances")
 @ApiTags("Algorithm Instances")
 @ApiOAuth2(["controlplane_dataplane"])
 @Roles("controlplane_dataplane")
-export class AlgorithmInstancesController {
+export class AlgorithmInstancesManagementController {
   constructor(
-    private readonly algorithmInstancesService: AlgorithmInstancesService
+    private readonly algorithmInstancesService: AlgorithmInstancesService,
+    private readonly managementClient: ManagementClient
   ) {}
 
   @Get()
@@ -84,9 +86,7 @@ export class AlgorithmInstancesController {
   async getCatalogByParticipantId(
     @Param("participantId") participantId: string
   ): Promise<CatalogDto> {
-    return await this.algorithmInstancesService.getParticipantCatalog(
-      participantId
-    );
+    return await this.managementClient.getParticipantCatalog(participantId);
   }
 
   @Get("transfer/:transferId")

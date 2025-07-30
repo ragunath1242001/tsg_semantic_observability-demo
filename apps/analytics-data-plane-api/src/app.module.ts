@@ -1,4 +1,5 @@
-import { MiddlewareConsumer, Module } from "@nestjs/common";
+import { MiddlewareConsumer, Module, RequestMethod } from "@nestjs/common";
+import { EventEmitterModule } from "@nestjs/event-emitter";
 import { ScheduleModule } from "@nestjs/schedule";
 import { ServeStaticModule } from "@nestjs/serve-static";
 import { TypeOrmModule } from "@nestjs/typeorm";
@@ -12,7 +13,7 @@ import {
 import { AlgorithmInstancesModule } from "./algorithm-instances/algorithm-instances.module.js";
 import { ConfigController } from "./config.controller.js";
 import { RootConfig } from "./config.js";
-import { DataPlaneTestModule } from "./dataplane/dataplane.module.js";
+import { DataPlaneModule } from "./dataplane/dataplane.module.js";
 import { EventsModule } from "./events/events.module.js";
 import { FilesModule } from "./files/files.module.js";
 import { OrchestrationModule } from "./orchestration/orchestration.module.js";
@@ -30,7 +31,8 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
 @Module({
   imports: [
     ScheduleModule.forRoot(),
-    DataPlaneTestModule,
+    EventEmitterModule.forRoot(),
+    DataPlaneModule,
     AuthModule,
     FilesModule,
     OrchestrationModule,
@@ -47,12 +49,18 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
     }),
     ...embeddedFrontend
   ],
-  exports: [DataPlaneTestModule],
+  exports: [DataPlaneModule],
   controllers: [ConfigController]
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(RequestContextMiddleware).forRoutes("{*path}");
-    consumer.apply(LoggerMiddleware).forRoutes("{*path}");
+    consumer
+      .apply(LoggerMiddleware)
+      .exclude({
+        path: "events/:algorithmInstanceId",
+        method: RequestMethod.GET
+      })
+      .forRoutes("{*path}");
   }
 }

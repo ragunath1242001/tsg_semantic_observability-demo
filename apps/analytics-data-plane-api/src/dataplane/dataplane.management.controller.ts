@@ -6,7 +6,6 @@ import {
   HttpCode,
   HttpStatus,
   Logger,
-  Param,
   Post,
   Put,
   Query
@@ -16,23 +15,15 @@ import {
   ApiOAuth2,
   ApiOkResponse,
   ApiOperation,
-  ApiParam,
   ApiQuery,
   ApiResponse,
   ApiTags
 } from "@nestjs/swagger";
 import { nonEmptyStringPipe, Roles } from "@tsg-dsp/common-api";
-import {
-  AgreementDto,
-  CatalogDto,
-  CatalogSchema,
-  DatasetDto
-} from "@tsg-dsp/common-dsp";
+import { CatalogDto, CatalogSchema, DatasetDto } from "@tsg-dsp/common-dsp";
 import {
   ApiForbiddenResponseDefault,
-  DataPlaneStateDto,
-  MetadataDto,
-  TransferDto
+  DataPlaneStateDto
 } from "@tsg-dsp/common-dtos";
 
 import { DataPlaneService } from "./dataplane.service.js";
@@ -157,86 +148,5 @@ export class DataPlaneManagementController {
     @Query("datasetId", nonEmptyStringPipe) datasetId: string
   ) {
     return await this.dataPlaneService.deleteDataset(datasetId);
-  }
-
-  @Get("/transfers")
-  @ApiOperation({ summary: "Get all transfers" })
-  @ApiResponse({ status: HttpStatus.OK, type: [TransferDto] })
-  @ApiForbiddenResponseDefault()
-  async getTransfers(): Promise<TransferDto[]> {
-    return await this.dataPlaneService.getTransfers();
-  }
-
-  @Get("/transfers/:id")
-  @ApiOperation({ summary: "Get transfer by ID" })
-  @ApiParam({ name: "id", required: true, description: "Transfer identifier" })
-  @ApiResponse({ status: HttpStatus.OK, type: TransferDto })
-  @ApiForbiddenResponseDefault()
-  async getTransfer(@Param("id") id: string): Promise<TransferDto> {
-    return await this.dataPlaneService.getTransferById(id);
-  }
-
-  @Get("/transfers/:id/metadata")
-  @ApiOperation({ summary: "Get metadata of transfer by ID" })
-  @ApiParam({ name: "id", required: true, description: "Transfer identifier" })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    type: MetadataDto
-  })
-  @ApiForbiddenResponseDefault()
-  async getMetadata(
-    @Param("id") id: string
-  ): Promise<{ agreement: AgreementDto; dataset: DatasetDto }> {
-    return await this.dataPlaneService.getMetadata(id);
-  }
-
-  @Post("/transfers/:id/start")
-  @ApiOperation({ summary: "Start a transfer by ID" })
-  @ApiParam({ name: "id", required: true, description: "Transfer identifier" })
-  @ApiResponse({ status: HttpStatus.ACCEPTED })
-  @ApiForbiddenResponseDefault()
-  @HttpCode(HttpStatus.ACCEPTED)
-  async startTransfer(@Param("id") id: string): Promise<void> {
-    return await this.dataPlaneService.transferStart(id);
-  }
-
-  @Post("/transfers/:id/completion")
-  @ApiOperation({ summary: "Complete a transfer by ID" })
-  @ApiParam({ name: "id", required: true, description: "Transfer identifier" })
-  @ApiResponse({ status: HttpStatus.ACCEPTED })
-  @ApiForbiddenResponseDefault()
-  @HttpCode(HttpStatus.ACCEPTED)
-  async completeTransfer(@Param("id") id: string): Promise<void> {
-    return await this.dataPlaneService.transferComplete(id);
-  }
-
-  @Post("/transfers/:id/termination")
-  @ApiOperation({ summary: "Terminate a transfer by ID" })
-  @ApiParam({ name: "id", required: true, description: "Transfer identifier" })
-  @ApiQuery({ name: "code", type: String })
-  @ApiQuery({ name: "reason", type: String })
-  @ApiResponse({ status: HttpStatus.ACCEPTED })
-  @ApiForbiddenResponseDefault()
-  @HttpCode(HttpStatus.ACCEPTED)
-  async terminateTransfer(
-    @Param("id") id: string,
-    @Query("code", nonEmptyStringPipe) code: string,
-    @Query("code", nonEmptyStringPipe) reason: string
-  ): Promise<void> {
-    return await this.dataPlaneService.transferTerminate(id, code, reason);
-  }
-
-  @Post("/transfers/:id/suspension")
-  @ApiOperation({ summary: "Suspend a transfer by ID" })
-  @ApiParam({ name: "id", required: true, description: "Transfer identifier" })
-  @ApiQuery({ name: "code", type: String })
-  @ApiResponse({ status: HttpStatus.ACCEPTED })
-  @ApiForbiddenResponseDefault()
-  @HttpCode(HttpStatus.ACCEPTED)
-  async suspendTransfer(
-    @Param("id") id: string,
-    @Query("code", nonEmptyStringPipe) reason: string
-  ): Promise<void> {
-    return await this.dataPlaneService.transferSuspend(id, reason);
   }
 }
