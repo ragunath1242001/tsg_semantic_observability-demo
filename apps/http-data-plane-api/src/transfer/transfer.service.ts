@@ -6,7 +6,7 @@ import {
   RawBodyRequest
 } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { AuthClientService } from "@tsg-dsp/common-api";
+import { AppError, AuthClientService } from "@tsg-dsp/common-api";
 import {
   AgreementDto,
   ContractNegotiationDto,
@@ -28,6 +28,7 @@ import axios, { AxiosInstance } from "axios";
 import crypto from "crypto";
 import { Request, Response } from "express";
 import { IncomingHttpHeaders } from "http";
+import { PassThrough } from "stream";
 import { Repository } from "typeorm";
 
 import { RootConfig } from "../config.js";
@@ -84,6 +85,15 @@ export class TransferService {
             audience: did
           }
         }
+      );
+      if (!response.data) {
+        throw new DataPlaneClientError(
+          `Dataset ${datasetId} not found at ${address} (${did})`,
+          HttpStatus.NOT_FOUND
+        );
+      }
+      this.logger.debug(
+        `Dataset ${datasetId} found at ${address} (${did}): ${JSON.stringify(response.data)}`
       );
       return response.data;
     } catch (err) {
@@ -327,11 +337,23 @@ export class TransferService {
     address: string,
     audience: string
   ): Promise<NegotiationDetailDto> {
+    this.logger.debug(
+      `Requesting negotiation for dataset ${datasetId} at address ${address} with audience ${audience}.`
+    );
     const dataset = await this.getDataset(audience, datasetId, address);
+    if (!dataset.hasPolicy || dataset.hasPolicy.length === 0) {
+      throw new DataPlaneClientError(
+        `Dataset ${datasetId} does not have a policy defined`,
+        HttpStatus.BAD_REQUEST
+      );
+    }
     const offer = dataset.hasPolicy?.[0] as OfferDto;
     if (offer) {
       offer["@context"] = defaultContext();
     }
+    this.logger.debug(
+      `Offer for dataset ${datasetId} at address ${address} with audience ${audience}: ${JSON.stringify(offer)}`
+    );
     const response = await this.axiosManagement.post<ContractNegotiationDto>(
       "negotiations/request",
       offer,
@@ -653,7 +675,6 @@ export class TransferService {
     method: string,
     url: string,
     headers: IncomingHttpHeaders,
-
     body: Buffer | undefined,
     query: qs.ParsedQs,
     response: Response,
@@ -669,10 +690,12 @@ export class TransferService {
     if (removeAuth) {
       delete headers[this.config.authorizationHeader.toLowerCase()];
     }
+
     try {
       this.logger.log(
         `Proxying request ${method} ${url} (${JSON.stringify(headers)})`
       );
+
       const proxyResponse = await axios({
         method: method,
         url: url,
@@ -680,17 +703,87 @@ export class TransferService {
         data: body,
         params: query,
         responseType: "stream",
-        validateStatus: () => true
+        validateStatus: () => true,
+        timeout: 30000 // Add timeout for debugging
       });
+
+      this.logger.log(
+        `Proxy response: ${proxyResponse.status} ${JSON.stringify(proxyResponse.headers)}`
+      );
+
+      if (proxyResponse.status >= 400) {
+        this.logger.warn(
+          `Proxy request failed with status ${proxyResponse.status}: ${url}`
+        );
+
+        if (this.config.logging.debug) {
+          const chunks: Buffer[] = [];
+          proxyResponse.data.on("data", (chunk: Buffer) => {
+            chunks.push(chunk);
+          });
+
+          proxyResponse.data.on("end", () => {
+            const errorBody = Buffer.concat(chunks).toString("utf8");
+            this.logger.error(`Error response body: ${errorBody}`);
+          });
+        }
+
+        throw new HttpException(
+          `Proxy request failed with status ${proxyResponse.status}`,
+          proxyResponse.status
+        );
+      }
+
+      // Copy response headers
       Object.entries(proxyResponse.headers).forEach(([name, value]) => {
         if (value) {
           response.setHeader(name, value);
         }
       });
+
       response.status(proxyResponse.status);
-      proxyResponse.data.pipe(response);
+
+      if (this.config.logging.debug) {
+        const debugStream = new PassThrough();
+        let totalBytes = 0;
+        const maxPreviewBytes = 1024; // First 1KB for preview
+        let previewData = Buffer.alloc(0);
+
+        debugStream.on("data", (chunk: Buffer) => {
+          totalBytes += chunk.length;
+          if (previewData.length < maxPreviewBytes) {
+            const remainingSpace = maxPreviewBytes - previewData.length;
+            const chunkToAdd = chunk.slice(0, remainingSpace);
+            previewData = Buffer.concat([previewData, chunkToAdd]);
+          }
+        });
+
+        debugStream.on("end", () => {
+          this.logger.debug(`Proxy completed: ${totalBytes} bytes transferred`);
+          if (previewData.length > 0) {
+            this.logger.debug(
+              `Response preview: ${previewData.toString("utf8")}${totalBytes > maxPreviewBytes ? "..." : ""}`
+            );
+          }
+        });
+
+        debugStream.on("error", (err) => {
+          this.logger.error(`Stream error: ${err.message}`);
+        });
+
+        return proxyResponse.data.pipe(debugStream).pipe(response);
+      } else {
+        return proxyResponse.data.pipe(response);
+      }
     } catch (e) {
-      this.logger.warn(`Error proxying call to ${url}: ${e}`);
+      if (e instanceof Error) {
+        this.logger.error(`Error stack: ${e.stack}`);
+      }
+      throw new AppError(
+        `Error proxying call to ${url}: ${e}`,
+        HttpStatus.BAD_GATEWAY,
+        e
+      ).andLog(this.logger);
     }
   }
 }
