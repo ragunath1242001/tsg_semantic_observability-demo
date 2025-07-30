@@ -15,6 +15,7 @@ import {
   DatasetDto,
   defaultContext,
   NegotiationRole,
+  OfferDto,
   TransferState
 } from "@tsg-dsp/common-dsp";
 import { NegotiationDetailDto } from "@tsg-dsp/common-dtos";
@@ -653,6 +654,14 @@ describe.each(["Authorization", "X-TSG-Authorization"])(
         const address = "address";
         const audience = "audience";
         const dataset: DatasetDto = {} as DatasetDto;
+        const offer: OfferDto = {
+          "@type": "Offer",
+          "@id": "urn:uuid:offer-id",
+          assigner: "did:web:localhost",
+          assignee: "did:web:localhost",
+          target: "dataset-id"
+        };
+        dataset.hasPolicy = [offer];
 
         jest.spyOn(transferService, "getDataset").mockResolvedValue(dataset);
 
