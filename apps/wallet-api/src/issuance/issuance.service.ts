@@ -7,6 +7,7 @@ import {
   PaginationOptionsDto,
   TemplateParameters
 } from "@tsg-dsp/common-api";
+import { CredentialSubject } from "@tsg-dsp/common-dsp";
 import {
   CredentialOffer,
   CredentialOfferRequest,
@@ -20,6 +21,7 @@ import { Repository } from "typeorm";
 
 import { RootConfig } from "../config.js";
 import { CredentialsDto } from "../credentials/credentials.schemas.js";
+import { IssueConfigurationService } from "../issue-configurations/issue-configuration.service.js";
 import { CredentialIssuance } from "../model/issuance.dao.js";
 import { DCPHolderService } from "./dcp/holder.service.js";
 import { OID4VCIHolderService } from "./oid4vci/holder.service.js";
@@ -30,6 +32,7 @@ export class IssuanceService {
     private readonly config: RootConfig,
     @InjectRepository(CredentialIssuance)
     private readonly issuanceRepository: Repository<CredentialIssuance>,
+    private readonly issueConfigurationService: IssueConfigurationService,
     private readonly emailService: EmailService,
     private readonly dcpHolderService: DCPHolderService,
     private readonly oid4VCIHolderService: OID4VCIHolderService
@@ -122,6 +125,37 @@ export class IssuanceService {
     return new CredentialOfferStatus(issuance);
   }
 
+  async addDefaultClaims(
+    credentialSubject: CredentialSubject,
+    credentialType: string
+  ): Promise<CredentialSubject> {
+    const issuerConfig =
+      await this.issueConfigurationService.getIssueConfiguration(
+        credentialType
+      );
+    if (!issuerConfig) {
+      this.logger.warn(
+        `Issuer configuration with credential type ${credentialType} not found`
+      );
+      return credentialSubject;
+    }
+    const schema = issuerConfig.schema;
+    if (!schema) {
+      this.logger.warn(
+        `Schema for credential type ${credentialType} not found`
+      );
+      return credentialSubject;
+    }
+    const requiredClaims = schema.required;
+    requiredClaims.forEach((claim: string) => {
+      if (!credentialSubject[claim]) {
+        credentialSubject[claim] = schema.properties[claim].default;
+      }
+    });
+
+    return credentialSubject;
+  }
+
   async createCredentialOffer(
     offerRequest: CredentialOfferRequest,
     mobile?: boolean
@@ -129,17 +163,26 @@ export class IssuanceService {
     const code =
       offerRequest.preAuthorizedCode || randomBytes(48).toString("hex");
 
+    let credentialSubject: CredentialSubject;
+    if (mobile) {
+      credentialSubject = await this.addDefaultClaims(
+        offerRequest.credentialSubject,
+        offerRequest.credentialType
+      );
+    } else {
+      credentialSubject = offerRequest.credentialSubject;
+    }
     const offer = await this.issuanceRepository.save({
       preAuthorizedCode: code,
       holderId: offerRequest.holderId,
       credentialType: offerRequest.credentialType,
       revoked: false,
-      credentialSubject: offerRequest.credentialSubject
+      credentialSubject: credentialSubject
     });
 
-    if (offerRequest.credentialSubject.email && this.config.email.enabled) {
+    if (credentialSubject.email && this.config.email.enabled) {
       const emailParameters: TemplateParameters = {
-        email: offerRequest.credentialSubject.email,
+        email: credentialSubject.email,
         sender: `"${this.config.runtime.title} Wallet" <noreply@dataspac.es>`,
         title: `${this.config.runtime.title} - Retrieve your credential`,
         summary: `Retrieve your credential for ${this.config.runtime.title}`,
@@ -160,7 +203,7 @@ export class IssuanceService {
             }
           }
         ],
-        footer: `This email was sent to ${offerRequest.credentialSubject.email} because you asked for a credential for ${this.config.runtime.title}. If you did not expect this email, please ignore it.`
+        footer: `This email was sent to ${credentialSubject.email} because you asked for a credential for ${this.config.runtime.title}. If you did not expect this email, please ignore it.`
       };
       this.emailService.sendMail(emailParameters);
     }
