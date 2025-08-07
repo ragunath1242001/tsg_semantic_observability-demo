@@ -51,7 +51,22 @@ describe("DCP Issuance", () => {
         {
           id: "Example",
           credentialType: "ExampleCredentialType",
-          documentUrl: "https://example.com/context.json"
+          documentUrl: "https://example.com/context.json",
+          schema: {
+            required: ["email", "name"],
+            properties: {
+              email: {
+                type: "string",
+                title: "Email",
+                default: "default@email.com"
+              },
+              name: {
+                type: "string",
+                title: "Name",
+                default: "Default Name"
+              }
+            }
+          }
         }
       ],
       issuance: {
@@ -105,7 +120,31 @@ describe("DCP Issuance", () => {
         SignatureService,
         PresentationService,
         IssuanceService,
-        IssueConfigurationService,
+        {
+          provide: IssueConfigurationService,
+          useValue: {
+            getIssueConfiguration: jest.fn().mockImplementation(() => ({
+              id: "Example",
+              credentialType: "ExampleCredentialType",
+              documentUrl: "https://example.com/context.json",
+              schema: {
+                required: ["email", "name"],
+                properties: {
+                  email: {
+                    type: "string",
+                    title: "Email",
+                    default: "user@email.com"
+                  },
+                  name: {
+                    type: "string",
+                    title: "Name",
+                    default: "Default Name"
+                  }
+                }
+              }
+            }))
+          }
+        },
         {
           provide: RootConfig,
           useValue: config
@@ -161,6 +200,36 @@ describe("DCP Issuance", () => {
       );
       expect(status2.total).toBe(1);
     });
+    it("addDefaultClaims adds missing required claims with defaults", async () => {
+      const subject = { id: "did:web:test", email: "user@email.com" };
+      await issuanceService.initialized;
+      const result = await issuanceService.addDefaultClaims(
+        subject,
+        "ExampleCredentialType"
+      );
+      expect(result.email).toBe("user@email.com");
+      expect(result.name).toBe("Default Name");
+    });
+
+    it("createCredentialOffer uses addDefaultClaims when mobile is true", async () => {
+      const offer = await issuanceService.createCredentialOffer(
+        {
+          holderId: "did:web:mobile",
+          credentialType: "MobileType",
+          credentialSubject: { id: "did:web:mobile", email: "user@email.com" }
+        },
+        true
+      );
+      expect(offer.credential_configuration_ids[0]).toBe("MobileType");
+      // Check that default claim was added
+      const status = await issuanceService.credentialOfferStatus(
+        PaginationOptionsDto.NO_PAGINATION
+      );
+      const created = status.data.find((o) => o.holderId === "did:web:mobile");
+      expect(created).toBeDefined();
+      expect(created!.credentialSubject.name).toBe("Default Name");
+      expect(created!.credentialSubject.email).toBe("user@email.com");
+    });
     it("Create offer", async () => {
       const offer = await issuanceService.createCredentialOffer({
         holderId: "did:web:localhost",
@@ -182,13 +251,13 @@ describe("DCP Issuance", () => {
       const status = await issuanceService.credentialOfferStatus(
         PaginationOptionsDto.NO_PAGINATION
       );
-      expect(status.total).toBe(2);
-      expect(status.data[1].holderId).toBe("did:web:localhost");
-      expect(status.data[1].credentialType).toBe("ExampleCredentialType");
-      expect(status.data[1].revoked).toBe(false);
+      expect(status.total).toBe(3);
+      expect(status.data[2].holderId).toBe("did:web:localhost");
+      expect(status.data[2].credentialType).toBe("ExampleCredentialType");
+      expect(status.data[2].revoked).toBe(false);
 
       const offer = await issuanceService.credentialOfferById(
-        status.data[1].id
+        status.data[2].id
       );
       expect(offer.holderId).toBe("did:web:localhost");
       expect(offer.credentialType).toBe("ExampleCredentialType");
