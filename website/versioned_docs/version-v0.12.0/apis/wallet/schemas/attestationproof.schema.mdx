@@ -1,0 +1,33 @@
+---
+id: attestationproof
+title: "AttestationProof"
+description: ""
+sidebar_label: "AttestationProof"
+hide_title: true
+hide_table_of_contents: true
+schema: true
+sample: {"proof_type":"attestation","attestation":"eyJ0eXAiOiJrZXktYXR0ZXN0YXRpb24rand0IiwiYWxnIjoiRVMyNTYifQ..."}
+custom_edit_url: null
+---
+
+import Schema from "@theme/Schema";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"AttestationProof"}
+>
+</Heading>
+
+
+
+
+
+<Schema
+  schema={{"type":"object","properties":{"proof_type":{"type":"string","enum":["jwt","di_vp","attestation"],"example":"attestation"},"attestation":{"type":"string","example":"eyJ0eXAiOiJrZXktYXR0ZXN0YXRpb24rand0IiwiYWxnIjoiRVMyNTYifQ..."}},"required":["proof_type","attestation"],"title":"AttestationProof"}}
+  schemaType={"response"}
+>
+  
+</Schema>
+            

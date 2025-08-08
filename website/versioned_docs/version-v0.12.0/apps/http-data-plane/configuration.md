@@ -1,0 +1,160 @@
+---
+[comment]: # (This file is auto generated)
+hide_table_of_contents: true
+---
+# Configuration
+
+In this section, the configuration of the http data plane is explained. Configuration is used based on a `config.yaml` file which should be placed in the `apps/backend` folder. This `config.yaml` file is loaded when booting the application. The values get type checked, and it gives a clear error message if there is a configuration field missing or provided incorrectly. Next to the `config.yaml` file, you can also set environment variables. These override the values that are listed in the `config.yaml` file.
+
+## Databases
+
+By default, the development database is sqlite. We use postgres databases for production type instances of the http data planes.
+
+## Authentication
+
+Authentication for frontend services can be done via OAuth. This helps users who need to login to several components to authenticate themselves faster. The data plane is tested against the SSO Bridge, with an Helm chart provided alongside the Helm chart of the data plane, but other OAuth services should be usable (e.g. Keycloak, or hosted OAuth services).
+
+## Configuration parameters
+| Key                                                                      | Required | Type                               | Description                                         | Default                   |
+| ------------------------------------------------------------------------ | -------- | ---------------------------------- | --------------------------------------------------- | ------------------------- |
+| **`DatabaseConfig`**                                                     |          |                                    |                                                     |                           |
+| `db`                                                                     | Yes      | `DatabaseConfig`                   | Database configuration                              |                           |
+| `db.type`                                                                | Yes      | `"sqlite" \| "postgres"`           | Type of database                                    |                           |
+| `db.database`                                                            | Yes      | `String`                           | Name of the database                                |                           |
+| `db.synchronize`                                                         |          | `Boolean`                          | Synchronize database schema                         |                           |
+| `db{type=sqlite}`                                                        | Yes      | `SQLiteConfig`                     | Database configuration                              |                           |
+| `db{type=sqlite}.type`                                                   |          | `"sqlite" \| "postgres"`           | Type of database                                    | `"sqlite"`                |
+| `db{type=sqlite}.database`                                               | Yes      | `String`                           | Name of the database                                |                           |
+| `db{type=sqlite}.synchronize`                                            |          | `Boolean`                          | Synchronize database schema                         |                           |
+| `db{type=postgres}`                                                      | Yes      | `PostgresConfig`                   | Database configuration                              |                           |
+| `db{type=postgres}.host`                                                 | Yes      | `String`                           | Host of the database                                |                           |
+| `db{type=postgres}.port`                                                 | Yes      | `Number`                           | Port of the database                                |                           |
+| `db{type=postgres}.username`                                             | Yes      | `String`                           | Username of the database                            |                           |
+| `db{type=postgres}.password`                                             | Yes      | `String`                           | Password of the database                            |                           |
+| `db{type=postgres}.ssl`                                                  |          | `Unknown`                          | SSL configuration of the database                   |                           |
+| `db{type=postgres}.type`                                                 |          | `"sqlite" \| "postgres"`           | Type of database                                    | `"postgres"`              |
+| `db{type=postgres}.database`                                             | Yes      | `String`                           | Name of the database                                |                           |
+| `db{type=postgres}.synchronize`                                          |          | `Boolean`                          | Synchronize database schema                         |                           |
+| **`ServerConfig`**                                                       |          |                                    |                                                     |                           |
+| `server`                                                                 |          | `ServerConfig`                     | Server configuration                                |                           |
+| `server.listen`                                                          |          | `String`                           | IP address the server listens on                    | `"0.0.0.0"`               |
+| `server.port`                                                            |          | `Number`                           | Port the server listens on                          | `3000`                    |
+| `server.publicDomain`                                                    |          | `String`                           | Public domain of the server                         | `"localhost"`             |
+| `server.publicAddress`                                                   |          | `String`                           | Public address of the server                        | `"http://localhost:3000"` |
+| `server.subPath`                                                         |          | `String`                           | Sub path of the server                              |                           |
+| **`AuthConfig`**                                                         |          |                                    |                                                     |                           |
+| `auth`                                                                   | Yes      | `AuthConfig`                       | Management authentication configuration             |                           |
+| `auth.enabled`                                                           |          | `Boolean`                          | Enable authentication                               | `true`                    |
+| `auth.openIdConfigurationURL`                                            |          | `String`                           | OpenID configuration URL                            |                           |
+| `auth.callbackURL`                                                       |          | `URL`                              | Callback URL the auth service will redirect users   |                           |
+| `auth.redirectURL`                                                       |          | `URL`                              | Redirect URL to UI after login/logout               |                           |
+| `auth.clientId`                                                          |          | `String`                           | Client ID                                           |                           |
+| `auth.clientSecret`                                                      |          | `String`                           | Client secret                                       |                           |
+| `auth.rolePath`                                                          |          | `String`                           | JSON path to extract roles from the token           | `"$.roles[*]"`            |
+| **`ControlPlaneConfig`**                                                 |          |                                    |                                                     |                           |
+| `controlPlane`                                                           | Yes      | `ControlPlaneConfig`               | Control plane configuration                         |                           |
+| `controlPlane.dataPlaneEndpoint`                                         | Yes      | `URL`                              | Data plane management endpoint                      |                           |
+| `controlPlane.managementEndpoint`                                        | Yes      | `URL`                              | Control plane management endpoint                   |                           |
+| `controlPlane.controlEndpoint`                                           | Yes      | `URL`                              | Public control plane endpoint                       |                           |
+| `controlPlane.initializationDelay`                                       |          | `Number`                           | Initialization delay in milliseconds                | `5000`                    |
+| **`DatasetConfig`**                                                      |          |                                    |                                                     |                           |
+| `dataset`                                                                |          | `DatasetConfig`                    | Dataset configuration                               |                           |
+| `dataset.type`                                                           | Yes      | `"versioned" \| "collection"`      | Type of the dataset configuration                   |                           |
+| `dataset{type=versioned}`                                                |          | `VersionedDatasetConfig`           | Dataset configuration                               |                           |
+| `dataset{type=versioned}.id`                                             |          | `String`                           | ID of the dataset                                   |                           |
+| `dataset{type=versioned}.title`                                          | Yes      | `String`                           | Title of the dataset                                |                           |
+| `dataset{type=versioned}.baseSemanticModelRef`                           |          | `URL`                              | Base semantic model reference of the dataset        |                           |
+| **`VersionConfig`**                                                      |          |                                    |                                                     |                           |
+| `dataset{type=versioned}.versions`                                       | Yes      | `VersionConfig[]`                  | Versions of the dataset                             |                           |
+| `dataset{type=versioned}.versions[].id`                                  |          | `String`                           | Version ID                                          |                           |
+| `dataset{type=versioned}.versions[].version`                             | Yes      | `String`                           | Version number                                      |                           |
+| `dataset{type=versioned}.versions[].semanticModelRef`                    |          | `URL`                              | Semantic model reference of the version             |                           |
+| `dataset{type=versioned}.versions[].authorization`                       |          | `String`                           | Authorization header required for the backend       |                           |
+| **`DistributionConfig`**                                                 |          |                                    |                                                     |                           |
+| `dataset{type=versioned}.versions[].distributions`                       | Yes      | `DistributionConfig[]`             | Distributions of the version                        |                           |
+| `dataset{type=versioned}.versions[].distributions[].mediaType`           |          | `String`                           | Media type of the distribution                      |                           |
+| `dataset{type=versioned}.versions[].distributions[].schemaRef`           |          | `URL`                              | Schema reference of the distribution                |                           |
+| `dataset{type=versioned}.versions[].distributions[].openApiSpecRef`      |          | `URL`                              | OpenAPI specification reference of the distribution |                           |
+| `dataset{type=versioned}.versions[].distributions[].backendUrl`          | Yes      | `URL`                              | Backend URL of the distribution                     |                           |
+| `dataset{type=versioned}.currentVersion`                                 | Yes      | `String`                           | Current version of the dataset                      |                           |
+| **`PolicyConfig`**                                                       |          |                                    |                                                     |                           |
+| `dataset{type=versioned}.policy`                                         |          | `PolicyConfig`                     | Policy of the dataset                               |                           |
+| `dataset{type=versioned}.policy.type`                                    |          | `"default" \| "rules" \| "manual"` | Definition type of the policy                       | `"default"`               |
+| **`PolicyRuleConfig`**                                                   |          |                                    |                                                     |                           |
+| `dataset{type=versioned}.policy.permissions`                             |          | `PolicyRuleConfig[]`               | Permissions of the policy                           |                           |
+| `dataset{type=versioned}.policy.permissions[].action`                    | Yes      | `String`                           | Action of the rule                                  |                           |
+| **`RuleConstraintConfig`**                                               |          |                                    |                                                     |                           |
+| `dataset{type=versioned}.policy.permissions[].constraints`               |          | `RuleConstraintConfig[]`           | Constraints of the rule                             |                           |
+| `dataset{type=versioned}.policy.permissions[].constraints[].type`        | Yes      | `String`                           | Type of the constraint                              |                           |
+| `dataset{type=versioned}.policy.permissions[].constraints[].value`       | Yes      | `String`                           | Value of the constraint                             |                           |
+| **`PolicyRuleConfig`**                                                   |          |                                    |                                                     |                           |
+| `dataset{type=versioned}.policy.prohibitions`                            |          | `PolicyRuleConfig[]`               | Prohibitions of the policy                          |                           |
+| `dataset{type=versioned}.policy.prohibitions[].action`                   | Yes      | `String`                           | Action of the rule                                  |                           |
+| **`RuleConstraintConfig`**                                               |          |                                    |                                                     |                           |
+| `dataset{type=versioned}.policy.prohibitions[].constraints`              |          | `RuleConstraintConfig[]`           | Constraints of the rule                             |                           |
+| `dataset{type=versioned}.policy.prohibitions[].constraints[].type`       | Yes      | `String`                           | Type of the constraint                              |                           |
+| `dataset{type=versioned}.policy.prohibitions[].constraints[].value`      | Yes      | `String`                           | Value of the constraint                             |                           |
+| `dataset{type=versioned}.policy.raw`                                     |          | `Object`                           | Raw serialized ODRL offer                           |                           |
+| `dataset{type=versioned}.type`                                           |          | `"versioned" \| "collection"`      | Type of the dataset configuration                   | `"versioned"`             |
+| `dataset{type=collection}`                                               |          | `CollectionDatasetConfig`          | Dataset configuration                               |                           |
+| `dataset{type=collection}.baseSemanticModelRef`                          |          | `URL`                              | Base semantic model reference of the dataset        |                           |
+| **`PolicyConfig`**                                                       |          |                                    |                                                     |                           |
+| `dataset{type=collection}.basePolicy`                                    |          | `PolicyConfig`                     | Base policy of the dataset                          |                           |
+| `dataset{type=collection}.basePolicy.type`                               |          | `"default" \| "rules" \| "manual"` | Definition type of the policy                       | `"default"`               |
+| **`PolicyRuleConfig`**                                                   |          |                                    |                                                     |                           |
+| `dataset{type=collection}.basePolicy.permissions`                        |          | `PolicyRuleConfig[]`               | Permissions of the policy                           |                           |
+| `dataset{type=collection}.basePolicy.permissions[].action`               | Yes      | `String`                           | Action of the rule                                  |                           |
+| **`RuleConstraintConfig`**                                               |          |                                    |                                                     |                           |
+| `dataset{type=collection}.basePolicy.permissions[].constraints`          |          | `RuleConstraintConfig[]`           | Constraints of the rule                             |                           |
+| `dataset{type=collection}.basePolicy.permissions[].constraints[].type`   | Yes      | `String`                           | Type of the constraint                              |                           |
+| `dataset{type=collection}.basePolicy.permissions[].constraints[].value`  | Yes      | `String`                           | Value of the constraint                             |                           |
+| **`PolicyRuleConfig`**                                                   |          |                                    |                                                     |                           |
+| `dataset{type=collection}.basePolicy.prohibitions`                       |          | `PolicyRuleConfig[]`               | Prohibitions of the policy                          |                           |
+| `dataset{type=collection}.basePolicy.prohibitions[].action`              | Yes      | `String`                           | Action of the rule                                  |                           |
+| **`RuleConstraintConfig`**                                               |          |                                    |                                                     |                           |
+| `dataset{type=collection}.basePolicy.prohibitions[].constraints`         |          | `RuleConstraintConfig[]`           | Constraints of the rule                             |                           |
+| `dataset{type=collection}.basePolicy.prohibitions[].constraints[].type`  | Yes      | `String`                           | Type of the constraint                              |                           |
+| `dataset{type=collection}.basePolicy.prohibitions[].constraints[].value` | Yes      | `String`                           | Value of the constraint                             |                           |
+| `dataset{type=collection}.basePolicy.raw`                                |          | `Object`                           | Raw serialized ODRL offer                           |                           |
+| `dataset{type=collection}.authorization`                                 |          | `String`                           | Authorization header required for the backend       |                           |
+| `dataset{type=collection}.mediaType`                                     |          | `String`                           | Media type of the dataset                           |                           |
+| `dataset{type=collection}.schemaRef`                                     |          | `URL`                              | Schema reference of the dataset                     |                           |
+| `dataset{type=collection}.openApiSpecRef`                                |          | `URL`                              | OpenAPI specification reference of the dataset      |                           |
+| `dataset{type=collection}.type`                                          |          | `"versioned" \| "collection"`      | Type of the dataset configuration                   | `"collection"`            |
+| **`DatasetItem`**                                                        |          |                                    |                                                     |                           |
+| `initCollection`                                                         |          | `DatasetItem[]`                    | Initial collection configuration                    |                           |
+| `initCollection[].id`                                                    |          | `String`                           | ID of the dataset item                              |                           |
+| `initCollection[].title`                                                 | Yes      | `String`                           | Title of the dataset item                           |                           |
+| `initCollection[].version`                                               | Yes      | `String`                           | Version of the dataset item                         |                           |
+| `initCollection[].backendUrl`                                            | Yes      | `URL`                              | Base semantic model reference of the dataset item   |                           |
+| `initCollection[].authorization`                                         |          | `String`                           | Authorization header required for the backend       |                           |
+| `initCollection[].mediaType`                                             |          | `String`                           | Media type of the dataset item                      |                           |
+| `initCollection[].schemaRef`                                             |          | `URL`                              | Schema reference of the dataset item                |                           |
+| `initCollection[].openApiSpecRef`                                        |          | `URL`                              | OpenAPI specification reference of the dataset      |                           |
+| **`PolicyConfig`**                                                       |          |                                    |                                                     |                           |
+| `initCollection[].policy`                                                |          | `PolicyConfig`                     | Policy of the dataset item                          |                           |
+| `initCollection[].policy.type`                                           |          | `"default" \| "rules" \| "manual"` | Definition type of the policy                       | `"default"`               |
+| **`PolicyRuleConfig`**                                                   |          |                                    |                                                     |                           |
+| `initCollection[].policy.permissions`                                    |          | `PolicyRuleConfig[]`               | Permissions of the policy                           |                           |
+| `initCollection[].policy.permissions[].action`                           | Yes      | `String`                           | Action of the rule                                  |                           |
+| **`RuleConstraintConfig`**                                               |          |                                    |                                                     |                           |
+| `initCollection[].policy.permissions[].constraints`                      |          | `RuleConstraintConfig[]`           | Constraints of the rule                             |                           |
+| `initCollection[].policy.permissions[].constraints[].type`               | Yes      | `String`                           | Type of the constraint                              |                           |
+| `initCollection[].policy.permissions[].constraints[].value`              | Yes      | `String`                           | Value of the constraint                             |                           |
+| **`PolicyRuleConfig`**                                                   |          |                                    |                                                     |                           |
+| `initCollection[].policy.prohibitions`                                   |          | `PolicyRuleConfig[]`               | Prohibitions of the policy                          |                           |
+| `initCollection[].policy.prohibitions[].action`                          | Yes      | `String`                           | Action of the rule                                  |                           |
+| **`RuleConstraintConfig`**                                               |          |                                    |                                                     |                           |
+| `initCollection[].policy.prohibitions[].constraints`                     |          | `RuleConstraintConfig[]`           | Constraints of the rule                             |                           |
+| `initCollection[].policy.prohibitions[].constraints[].type`              | Yes      | `String`                           | Type of the constraint                              |                           |
+| `initCollection[].policy.prohibitions[].constraints[].value`             | Yes      | `String`                           | Value of the constraint                             |                           |
+| `initCollection[].policy.raw`                                            |          | `Object`                           | Raw serialized ODRL offer                           |                           |
+| **`LoggingConfig`**                                                      |          |                                    |                                                     |                           |
+| `logging`                                                                |          | `LoggingConfig`                    | Logging configuration                               |                           |
+| `logging.debug`                                                          |          | `Boolean`                          | Enable debug request logging                        |                           |
+| **`RuntimeConfig`**                                                      |          |                                    |                                                     |                           |
+| `runtime`                                                                | Yes      | `RuntimeConfig`                    | Runtime configuration                               |                           |
+| `runtime.color`                                                          |          | `String`                           | Primary UI color                                    | `"#3B8BF6"`               |
+| `runtime.lightThemeUrl`                                                  |          | `String`                           | Light theme logo URL                                |                           |
+| `runtime.darkThemeUrl`                                                   |          | `String`                           | Dark theme logo URL                                 |                           |
+| `authorizationHeader`                                                    |          | `String`                           | Authorization header used in provider proxy         | `"Authorization"`         |

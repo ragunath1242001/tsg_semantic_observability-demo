@@ -1,0 +1,72 @@
+---
+id: issuance-management-controller-list-general-offers
+title: "Retrieve offered credential"
+description: "Retrieves a specific credential offer"
+sidebar_label: "Retrieve offered credential"
+hide_title: true
+hide_table_of_contents: true
+api: eJylVntrHDcQ/ypCfyVh917Oo1lKwTghGNq65FwKTc0xJ83eKtZKijR758ux371Iu/e2nUKNse9m5jdvzcyGSwzCK0fKGl7wz0he4RIDAxYcClUqwYRHiYYUaGbLEj3PuHXoIWKuJS/4dQgNGIG/gYEF1mjoyhryVmv0M60CfUKDHvRNRAeecQceaqT4pfiy4QZq5AVXkmfc47dGeZS8IN9gxlV0ywFVPONBVFgDLzac1i4iAnllFrxt7yIwOGsChsifjEbx33FwPOPCGkJDkQfOaSVSEMOvIQpszg2A97DmGVeEdTig2/lXFBQj8TEVpDqzSp47l3F8gNrpSBqXozdzkJj/NCrL/PXbi3f5+3evL/I38Abfz8dCjN9OeJtx4REI5QcgjApL62sgXnAJhDmpGnn2jJXJaHKRj0f5aHw7GhXp9++o1Xm8bKiyXn1HeWUlPu+s8wgNVbmwEnOYi6iislqiv/5BmJ1UPp5c9MH07XObEM8hQ/qQ7yF5kj3S8iPrB2Al84f19wj3uLT3eIicW6sRzCG0BB3wyNa06QpdbPZSXZl56Fh56tq+g6dJhG1RbcZB65syNfn/6xypZNF/K7aWx7xtDx/Ml6jlLuOkKGGuzsJo7xKgtoQ/ymInFTOYynhu6LhLH+uus9Lvy/BYjh/1PI2MKQE1gbfpJ+MEizg3dmOH7edOVFIjVTZWaIEpz3F2FHwITg3rneBQ9eBhGmlhuFGyjSMG/bIbS3fxi2i8ovU0joWuTjY+icnhJOgIGS+1XSURByGsrJfdQLGuA65Aa6TZUuFqJlMDnVKyLaXzcnaP67AXOyTuJJtwKrajZEf67crM9hkPJ9ZPucdY0PoZ7Cn3NIonLT/BP8U/af0J/g4fC4yPQ89ZxxE7jwENpd1wGu8xr+9IZUqbeqLv39vpJ/ZXAvHsZAndVsj2bKbipp1Or1lng1EFxAQYlnxkYCQLZD2yJXpVKphrPNjHIQl075AdecbIsjmyJqBkK0WVMkwCxaUOAsPg57lnw1+6v/8YxhiLfq32PqkaJQNidaNJ5aTQM4lO23V8PCFLOpk1yF5Yz2rr8eVRBCAoMAiMfBOIgRGV9ay0nsGBG8l5ZaRaNqB7eEhSCKJitmRUIXPgSQnlwFBgyiTaXseA3USSCszBAhNToCG/U9j5k7IZjjK3UlrHFIkoJhPyAxB0nvXVAU2VbRYVUykrxhLbTsFOL1XokYFewTpECXwAQXqdMpNs+hjGoVll+hx07p8XYjZ79bslfDWbFew2Bnbj0Fz+cc0klsqoWN2tLyoeMzL6kootlcdkXStz39c93nHKLPQuJGUCxbk3YDzjcdQd3UaQdl2bca0EmpC2Xb/bLh2ICtlkMOIZb7yOe57IhWI4XK1WA0jsgfWLYY8Nw1+vrz7+Pv2YTwajQUW1TmvE2UA1mAPN26Ozuy5RHuTr9Pls9hfcf75V+0FN+EBDp0GZuJdTAJt+OXzh4BTP+H49xJOvXxDx2t3erUW3YCsbKKI2mzkE/NPrto3kbw36dbc5luDTW02bX6oQP8v+wHgmpBef++56yZ5yfHuYmniWLkE32FXvHtfdCZ12fIUg0SfrHeNSCHR0ADk7f9vD1fnp4y1v238BW9U/tA==
+sidebar_class_name: "get api-method"
+info_path: docs/apis/wallet/tsg-wallet
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Retrieve offered credential"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/api/management/issuance/offers/{id}"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Retrieves a specific credential offer
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"id","required":true,"in":"path","schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"","content":{"application/json":{"schema":{"type":"array","items":{"type":"object","properties":{"id":{"type":"string","example":"1f05bade-80ff-4637-9743-5a5e9b1cc162"},"createdDate":{"format":"date-time","type":"string","example":"2023-10-01T00:00:00Z"},"preAuthorizedCode":{"type":"string","example":"preauth-code-abc"},"holderId":{"type":"string","example":"holder-123"},"credentialType":{"type":"string","example":"sample-credential-type"},"credentialId":{"type":"string","example":"credential-id-xyz"},"revoked":{"type":"boolean","example":false},"credentialSubject":{"example":{"id":"subject-id","name":"Sample Subject"},"allOf":[{"type":"object","properties":{"id":{"type":"string","example":"did:example:subject-1"}},"required":["id"],"title":"CredentialSubject"}]},"remoteId":{"type":"string","example":"remote-id-123"}},"required":["id","createdDate","preAuthorizedCode","credentialType","revoked","credentialSubject"],"title":"CredentialOfferStatus"}}}}}}}
+>
+  
+</StatusCodes>
+
+
+      

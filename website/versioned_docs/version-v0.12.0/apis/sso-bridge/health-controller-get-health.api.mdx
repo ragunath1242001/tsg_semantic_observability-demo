@@ -1,0 +1,72 @@
+---
+id: health-controller-get-health
+title: "Health check"
+description: "Retrieves the current health of the app. If the app is running and it is connected to the database it always returns an empty 200 OK"
+sidebar_label: "Health check"
+hide_title: true
+hide_table_of_contents: true
+api: eJzVVE1v2zAM/SsCz1oSZNjFty4rumDDWizdKSgGVmZttbKkSlTSwPB/H2S7WdKPocfOFwuk9MhH8rGFkqIK2rN2Fgr4SRw0bSgKrkmoFAJZFjWh4Vq4m96K3k/Ecn8WOoqQrNW2EmhLoTlblLOWFFMp2PU3S2S8xkjZj2aLuygCcQo2CrSCGs87MZ/NxPk3kOA8BcwpLUso4GsffuEsB2cMhd8V8WADCR4DNsQUIhTrKwmBonc2UoSihflsln/HHKGT8Gk2f83x8bnjsiYxBBSLmtRdJmgdi5iUohhvkgEJylkmy/k1em+06glMb2OGaCGqmhrMJ955ggLc9S0pzgxCpst6SDkycooH9yIHbSuQQA/YeJNNFIILOVttb9xLkPurLTzW/RAbkoeuk4BlqXOSaC6OcngKF+g+6UAlFOtHjKu35v16HA6JOgk2GYPXOdnRMLD7N6tApT4KC6XbWpDQUIxY5WcLl0zZt2mcxXdMuSRGbV5M5C2tlP91PcZPAmOVRTzqPeM3xLXLK6CiXinINRQwrR/FHyls9srfi0Fzr5LL1ZlYrc7F56DLikA+FfWRW5xcLMUXp1JDlnvlCpCQwcfdMAgcVRZ4J8FoRXZohcUmhzvxqGoS88kMJKRgoICa2cdiOt1utxPs3RMXqun4Nk6/LxenP1anH+aT2aTmxvSV8i5yg/YAeVw9Kq+epzTav3vnvSzvsflMDzz1BrXNA9oXpB07uIZ63+LaRc6Wts0BfgXTddl8nyjshr5uMOhBLeurTuanJQUo1i3c0S4XXinyeTw2aFKO/Gz9doejdHZ6CV33B4+qagE=
+sidebar_class_name: "get api-method"
+info_path: docs/apis/sso-bridge/tsg-sso-bridge
+custom_edit_url: null
+hide_send_button: true
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Health check"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/health"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Retrieves the current health of the app. If the app is running and it is connected to the database it always returns an empty 200 OK
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":""},"502":{"description":""},"503":{"description":"The Health Check is not successful","content":{"application/json":{"schema":{"type":"object","properties":{"status":{"type":"string","example":"error"},"info":{"type":"object","example":{"database":{"status":"up"}},"additionalProperties":{"type":"object","required":["status"],"properties":{"status":{"type":"string"}},"additionalProperties":true},"nullable":true},"error":{"type":"object","example":{"redis":{"status":"down","message":"Could not connect"}},"additionalProperties":{"type":"object","required":["status"],"properties":{"status":{"type":"string"}},"additionalProperties":true},"nullable":true},"details":{"type":"object","example":{"database":{"status":"up"},"redis":{"status":"down","message":"Could not connect"}},"additionalProperties":{"type":"object","required":["status"],"properties":{"status":{"type":"string"}},"additionalProperties":true}}}}}}}}}
+>
+  
+</StatusCodes>
+
+
+      
