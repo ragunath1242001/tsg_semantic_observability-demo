@@ -22,7 +22,7 @@ The TSG Command Line Interface (CLI) tool is the primary deployment and configur
 npm install -g @tsg-dsp/cli@latest
 
 # Deploy a complete ecosystem
-tsg bootstrap ecosystem -f ecosystem.yaml
+tsg bootstrap ecosystem
 tsg deploy ecosystem
 ```
 

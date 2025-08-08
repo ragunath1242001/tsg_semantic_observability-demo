@@ -40,6 +40,42 @@ export class DataPlane {
   @IsObject()
   @IsOptional()
   public readonly config?: Record<string, any>;
+
+  @IsObject()
+  @IsOptional()
+  public readonly overrides?: Record<string, any>;
+}
+
+export class ParticipantConfigs {
+  @IsObject()
+  @IsOptional()
+  public readonly ssoBridge?: Record<string, any>;
+
+  @IsObject()
+  @IsOptional()
+  public readonly wallet?: Record<string, any>;
+
+  @IsObject()
+  @IsOptional()
+  public readonly controlPlane?: Record<string, any>;
+}
+
+export class ParticipantOverrides {
+  @IsObject()
+  @IsOptional()
+  public readonly postgres?: Record<string, any>;
+
+  @IsObject()
+  @IsOptional()
+  public readonly ssoBridge?: Record<string, any>;
+
+  @IsObject()
+  @IsOptional()
+  public readonly wallet?: Record<string, any>;
+
+  @IsObject()
+  @IsOptional()
+  public readonly controlPlane?: Record<string, any>;
 }
 
 export class Participant {
@@ -86,11 +122,11 @@ export class Participant {
 
   @IsObject()
   @IsOptional()
-  public readonly walletConfig?: Record<string, any>;
+  public readonly config?: ParticipantConfigs;
 
   @IsObject()
   @IsOptional()
-  public readonly controlPlaneConfig?: Record<string, any>;
+  public readonly overrides?: ParticipantOverrides;
 
   @Exclude()
   generateTestService(warn: boolean = true) {
