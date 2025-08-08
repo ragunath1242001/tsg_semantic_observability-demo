@@ -1,8 +1,7 @@
-import { DynamicModule, Logger, Module } from "@nestjs/common";
+import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { AuthModule } from "@tsg-dsp/common-api";
 
-import { PresentationConfig, PresentationType } from "../config.js";
 import { CredentialsModule } from "../credentials/credentials.module.js";
 import { DidModule } from "../did/did.module.js";
 import { KeysModule } from "../keys/keys.module.js";
@@ -14,75 +13,40 @@ import { DCPHolderManagementController } from "./dcp/holder.management.controlle
 import { DCPHolderService } from "./dcp/holder.service.js";
 import { DCPVerifierManagementController } from "./dcp/verifier.management.controller.js";
 import { DCPVerifierService } from "./dcp/verifier.service.js";
-import { DirectPresentationController } from "./direct/presentation.controller.js";
 import { OID4VPVerifierController } from "./oid4vp/verifier.controller.js";
 import { OID4VPVerifierManagementController } from "./oid4vp/verifier.management.controller.js";
 import { OID4VPVerifierService } from "./oid4vp/verifier.service.js";
 import { PresentationManagementController } from "./presentation.management.controller.js";
 import { PresentationService } from "./presentation.service.js";
 
-@Module({})
-export class PresentationModule {
-  static register(presentationConfig: PresentationConfig): DynamicModule {
-    const module: DynamicModule = {
-      module: PresentationModule,
-      imports: [
-        AuthModule,
-        CredentialsModule,
-        KeysModule,
-        DidModule,
-        TypeOrmModule.forFeature([AuthorizationRequestDao])
-      ],
-      global: true,
-      controllers: [
-        PresentationManagementController,
-        OID4VPVerifierController,
-        OID4VPVerifierManagementController
-      ],
-      providers: [PresentationService, OID4VPVerifierService],
-      exports: [PresentationService]
-    };
-
-    for (const type of presentationConfig.types) {
-      switch (type) {
-        case PresentationType.DIRECT:
-          module.controllers = [
-            ...(module.controllers ?? []),
-            DirectPresentationController
-          ];
-          break;
-        case PresentationType.DCP:
-          module.imports = [
-            ...(module.imports ?? []),
-            TypeOrmModule.forFeature([SIToken])
-          ];
-          module.controllers = [
-            ...(module.controllers ?? []),
-            DCPHolderController,
-            DCPHolderManagementController,
-            DCPVerifierManagementController
-          ];
-          module.providers = [
-            ...(module.providers ?? []),
-            SecureTokenService,
-            DCPHolderService,
-            DCPVerifierService
-          ];
-          module.exports = [
-            ...(module.exports ?? []),
-            SecureTokenService,
-            DCPHolderService,
-            DCPVerifierService
-          ];
-          break;
-        case PresentationType.OID4VP:
-          Logger.debug(
-            `OID4VP Presentation protocol not yet supported`,
-            "PresentationModule"
-          );
-          break;
-      }
-    }
-    return module;
-  }
-}
+@Module({
+  imports: [
+    AuthModule,
+    CredentialsModule,
+    KeysModule,
+    DidModule,
+    TypeOrmModule.forFeature([SIToken, AuthorizationRequestDao])
+  ],
+  controllers: [
+    PresentationManagementController,
+    DCPHolderController,
+    DCPHolderManagementController,
+    DCPVerifierManagementController,
+    OID4VPVerifierController,
+    OID4VPVerifierManagementController
+  ],
+  providers: [
+    PresentationService,
+    OID4VPVerifierService,
+    SecureTokenService,
+    DCPHolderService,
+    DCPVerifierService
+  ],
+  exports: [
+    PresentationService,
+    SecureTokenService,
+    DCPHolderService,
+    DCPVerifierService
+  ]
+})
+export class PresentationModule {}

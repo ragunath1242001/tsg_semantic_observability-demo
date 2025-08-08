@@ -65,12 +65,17 @@ describe("Issue Configuration Service", () => {
     await issueConfigurationService.init();
   });
 
+  afterAll(() => {
+    TypeOrmTestHelper.instance.teardownTestDB();
+  });
+
   describe("Issue Configuration Management", () => {
     it("Insert issue configuration", async () => {
       const issueConfig =
         await issueConfigurationService.insertIssueConfiguration({
           id: "Test",
           credentialType: "TestCredential",
+          proofType: "jwt",
           documentUrl: "http://localhost:3000/issue-configuration/Test",
           schema: {
             type: "object",
@@ -109,6 +114,7 @@ describe("Issue Configuration Service", () => {
         issueConfigurationService.insertIssueConfiguration({
           id: "Test",
           credentialType: "TestCredential",
+          proofType: "jwt",
           documentUrl: "http://localhost:3000/issue-configuration/Test",
           schema: {}
         })
@@ -135,6 +141,7 @@ describe("Issue Configuration Service", () => {
         await issueConfigurationService.updateIssueConfiguration("Test", {
           id: "Test",
           credentialType: "TestCredentialUpdated",
+          proofType: "jwt",
           documentUrl: "http://localhost:3000/issue-configuration/Test",
           schema: {
             type: "object",
@@ -181,6 +188,7 @@ describe("Issue Configuration Service", () => {
         issueConfigurationService.updateIssueConfiguration("Test", {
           id: "Test",
           credentialType: "TestCredential",
+          proofType: "jwt",
           documentUrl: "http://localhost:3000/issue-configuration/Test",
           schema: {}
         })

@@ -83,9 +83,9 @@ describe("Presentation Service", () => {
         }
       ]
     }).compile();
-    presentationService = await moduleRef.get(PresentationService);
-    credentialService = await moduleRef.get(CredentialsService);
-    const didService = await moduleRef.get(DidService);
+    presentationService = moduleRef.get(PresentationService);
+    credentialService = moduleRef.get(CredentialsService);
+    const didService = moduleRef.get(DidService);
     await moduleRef.get(KeysService).initialized;
     await moduleRef.get(CredentialsService).initialized;
     server = setupServer(

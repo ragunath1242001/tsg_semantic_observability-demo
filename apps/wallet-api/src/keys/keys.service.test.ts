@@ -61,7 +61,6 @@ describe("Key Service", () => {
     }).compile();
     keyService = await moduleRef.get(KeysService);
     await keyService.initialized;
-    await keyService.init();
   });
   afterAll(() => {
     TypeOrmTestHelper.instance.teardownTestDB();

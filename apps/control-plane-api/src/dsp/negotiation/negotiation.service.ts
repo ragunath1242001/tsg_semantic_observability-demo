@@ -589,12 +589,9 @@ export class NegotiationService {
         : ContractNegotiationState.FINALIZED;
     await this.checkTransition("remote", negotiation, newState);
     if (newState === ContractNegotiationState.FINALIZED) {
-      const agreement = await negotiation.agreement?.serialize();
+      const agreement = negotiation.agreement?.serialize();
       const remoteHash = contractNegotiationEventMessage.hashedMessage;
-      if (
-        remoteHash?.algorithm === "JsonWebSignature2020" ||
-        remoteHash?.algorithm === "DataIntegrityProof"
-      ) {
+      if (remoteHash?.algorithm === "DataIntegrityProof") {
         try {
           const signature = JSON.parse(remoteHash.digest);
           await this.authService.requestSignatureValidation({
@@ -729,7 +726,7 @@ export class NegotiationService {
     negotiation.agreement = contractAgreementMessage.agreement;
     negotiation.agreementId = contractAgreementMessage.agreement.id;
     const agreementDao = await this.agreementService.storeAgreement(
-      await contractAgreementMessage.agreement.serialize(),
+      contractAgreementMessage.agreement.serialize(),
       negotiation.localId
     );
     negotiation.state = ContractNegotiationState.AGREED;
@@ -774,7 +771,7 @@ export class NegotiationService {
     }
     let algorithm;
     let digest;
-    const agreement = await negotiation.agreement!.serialize();
+    const agreement = negotiation.agreement!.serialize();
     try {
       const signedDocument = await this.authService.requestSignature(agreement);
       digest = JSON.stringify(signedDocument["proof"]);
@@ -836,15 +833,13 @@ export class NegotiationService {
     let agreement: AgreementDto | undefined;
     if (
       contractAgreementVerificationMessage.hashedMessage?.algorithm ===
-        "JsonWebSignature2020" ||
-      contractAgreementVerificationMessage.hashedMessage?.algorithm ===
-        "DataIntegrityProof"
+      "DataIntegrityProof"
     ) {
       try {
         const signature = JSON.parse(
           contractAgreementVerificationMessage.hashedMessage.digest
         );
-        agreement = await negotiation.agreement?.serialize();
+        agreement = negotiation.agreement?.serialize();
         await this.authService.requestSignatureValidation({
           ...agreement,
           proof: signature
@@ -894,7 +889,7 @@ export class NegotiationService {
     );
     let algorithm;
     let digest;
-    const agreement = await negotiation.agreement!.serialize();
+    const agreement = negotiation.agreement!.serialize();
     try {
       const signedDocument = await this.authService.requestSignature(agreement);
       digest = JSON.stringify(signedDocument["proof"]);

@@ -10,8 +10,10 @@ import {
 } from "@tsg-dsp/common-api";
 import {
   CredentialMessage,
+  CredentialOfferMessage,
   CredentialRequestMessage
 } from "@tsg-dsp/common-dtos";
+import { createTestVerifiableCredential } from "@tsg-dsp/common-signing-and-validation/dist/utils/mock-vc-vp.util.mock.js";
 import { OfferGrants } from "@tsg-dsp/wallet-dtos";
 import { plainToInstance } from "class-transformer";
 import { DIDDocument } from "did-resolver";
@@ -53,6 +55,7 @@ describe("DCP Issuance", () => {
   let server: SetupServer;
   let moduleRef: TestingModule;
   let exampleKey: GenerateKeyPairResult;
+  let incorrectCredentialResponse: boolean = false;
 
   beforeAll(async () => {
     await TypeOrmTestHelper.instance.setupTestDB();
@@ -69,6 +72,12 @@ describe("DCP Issuance", () => {
           id: "Example",
           credentialType: "ExampleCredentialType",
           documentUrl: "https://example.com/context.json"
+        },
+        {
+          id: "ExampleLdp",
+          credentialType: "ExampleCredentialType",
+          documentUrl: "https://example.com/context.json",
+          proofType: "ldp"
         }
       ]
     });
@@ -129,10 +138,10 @@ describe("DCP Issuance", () => {
         }
       ]
     }).compile();
-    issuanceService = await moduleRef.get(IssuanceService);
-    issuerService = await moduleRef.get(DCPIssuerService);
-    holderService = await moduleRef.get(DCPHolderService);
-    const didService = await moduleRef.get(DidService);
+    issuanceService = moduleRef.get(IssuanceService);
+    issuerService = moduleRef.get(DCPIssuerService);
+    holderService = moduleRef.get(DCPHolderService);
+    const didService = moduleRef.get(DidService);
     await moduleRef.get(KeysService).initialized;
     await moduleRef.get(CredentialsService).initialized;
     exampleKey = await generateKeyPair("EdDSA");
@@ -169,7 +178,7 @@ describe("DCP Issuance", () => {
             "@protected": true,
             "@version": 1.1,
             ExampleCredentialType: {
-              // "@context": ["https://www.w3.org/2018/credentials/v1"],
+              // "@context": ["https://www.w3.org/ns/credentials/v2"],
               "@id": "example:ExampleCredentialType"
             },
             example: "https://example.dataspac.es/credentials/",
@@ -178,11 +187,11 @@ describe("DCP Issuance", () => {
           }
         });
       }),
-      http.get("http://localhost:3000/api/dcp/issuer/metadata", async () => {
+      http.get("http://localhost:3000/dcp/issuer/metadata", async () => {
         return HttpResponse.json(await issuerService.issuerMetadata());
       }),
       http.post(
-        "http://localhost:3000/api/dcp/issuer/credentials",
+        "http://localhost:3000/dcp/issuer/credentials",
         async ({ request }) => {
           const auth = request.headers.get("authorization")!;
           const body = plainToInstance(
@@ -194,15 +203,17 @@ describe("DCP Issuance", () => {
             body
           );
           return new HttpResponse("", {
-            headers: {
-              location: credentialRequest.url
-            },
+            headers: incorrectCredentialResponse
+              ? {}
+              : {
+                  location: credentialRequest.url
+                },
             status: HttpStatus.CREATED
           });
         }
       ),
       http.post(
-        "http://localhost:3000/api/dcp/credentials",
+        "http://localhost:3000/dcp/credentials",
         async ({ request }) => {
           const auth = request.headers.get("authorization")!;
           const body = plainToInstance(CredentialMessage, await request.json());
@@ -260,7 +271,7 @@ describe("DCP Issuance", () => {
         offers.data[0].id
       );
       expect(status.status).toBe("RECEIVED");
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
       const credentials =
         await holderService["credentialsService"].getCredentials();
@@ -277,6 +288,24 @@ describe("DCP Issuance", () => {
         offers.data[0].id
       );
       expect(status.status).toBe("ISSUED");
+      const newOffer = await issuanceService.createCredentialOffer({
+        holderId: "did:web:localhost",
+        credentialType: "ExampleCredentialType",
+        credentialSubject: { id: "did:web:localhost" }
+      });
+      incorrectCredentialResponse = true;
+      await expect(
+        holderService.requestCredential({
+          issuerId: "did:web:localhost",
+          credentialType: ["ExampleCredentialType"],
+          preAuthorizedCode:
+            newOffer.grants?.[OfferGrants.PRE_AUTHORIZED_CODE]?.[
+              "pre-authorized_code"
+            ] ?? ""
+        })
+      ).rejects.toThrow("No credential request status location in response");
+      incorrectCredentialResponse = false;
+      await new Promise((resolve) => setTimeout(resolve, 500));
       stsMock.mockRestore();
     });
     it("Issuer errors", async () => {
@@ -438,16 +467,95 @@ describe("DCP Issuance", () => {
             status: "ISSUED",
             credentials: [
               {
-                type: "CredentialContainer",
-                format: "jwt",
-                payload: "JWT_STRING",
+                format: "unknown-format",
+                payload: "UNKNOWN_FORMAT_STRING",
                 credentialType: "ExampleCredentialType"
               }
             ]
           })
         )
-      ).rejects.toThrow("not supported");
+      ).rejects.toThrow("Unsupported credential format");
+      await expect(
+        holderService.handleCredentialMessage(
+          `Bearer test`,
+          plainToInstance(CredentialMessage, {
+            "@context": ["https://w3id.org/dspace-dcp/v1.0/dcp.jsonld"],
+            type: "CredentialMessage",
+            issuerPid: "0",
+            holderPid: "1",
+            status: "ISSUED",
+            credentials: [
+              {
+                format: "jwt",
+                payload: `${(await createTestVerifiableCredential({ id: "did:web:test" }, "jwt_vc")).jwt}`,
+                credentialType: "ExampleCredentialType"
+              }
+            ]
+          })
+        )
+      ).rejects.toThrow(
+        "Credential issuer did:key:z6MkpsowBu74vFhAfuM2JipTgFNXemu2x5pQosnwZ5RtpPwz does not match token subject did:web:localhost"
+      );
+      await expect(
+        holderService.handleCredentialMessage(
+          `Bearer test`,
+          plainToInstance(CredentialMessage, {
+            "@context": ["https://w3id.org/dspace-dcp/v1.0/dcp.jsonld"],
+            type: "CredentialMessage",
+            issuerPid: "0",
+            holderPid: "1",
+            status: "ISSUED",
+            credentials: [
+              {
+                format: "ldp",
+                payload: `${JSON.stringify(await createTestVerifiableCredential({ id: "did:web:test" }, "DataIntegrityProof"))}`,
+                credentialType: "ExampleCredentialType"
+              }
+            ]
+          })
+        )
+      ).rejects.toThrow(
+        "Credential issuer did:key:z6MkpsowBu74vFhAfuM2JipTgFNXemu2x5pQosnwZ5RtpPwz does not match token subject did:web:localhost"
+      );
+      await expect(
+        holderService.handleCredentialOfferMessage(
+          `Bearer test`,
+          plainToInstance(CredentialOfferMessage, {
+            "@context": ["https://w3id.org/dspace-dcp/v1.0/dcp.jsonld"],
+            type: "CredentialOfferMessage"
+          })
+        )
+      ).rejects.toThrow("Method not implemented");
       stsHolderMock.mockRestore();
+    });
+    it("Holder profile formatting", async () => {
+      expect(holderService["formatDcpProfile"]("vc20-bssl/jwt")).toEqual({
+        score: 12,
+        vcDataModel: "vc20",
+        revocationSystem: "bssl",
+        proofStack: "jwt"
+      });
+      expect(holderService["formatDcpProfile"]("vc20-bssl/ldp")).toEqual({
+        score: 10,
+        vcDataModel: "vc20",
+        revocationSystem: "bssl",
+        proofStack: "ldp"
+      });
+      expect(holderService["formatDcpProfile"]("vc11-bssl/jwt")).toEqual({
+        score: 9,
+        vcDataModel: "vc11",
+        revocationSystem: "bssl",
+        proofStack: "jwt"
+      });
+      expect(holderService["formatDcpProfile"]("vc11-sl2021/jwt")).toEqual({
+        score: 5,
+        vcDataModel: "vc11",
+        revocationSystem: "sl2021",
+        proofStack: "jwt"
+      });
+      expect(() =>
+        holderService["formatDcpProfile"]("unknown-profile")
+      ).toThrow("Invalid DCP profile format: unknown-profile");
     });
   });
 });

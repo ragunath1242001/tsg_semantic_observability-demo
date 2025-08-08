@@ -16,6 +16,7 @@ import { Not, Repository } from "typeorm";
 import { InitKeyConfig, RootConfig } from "../config.js";
 import { DidService } from "../did/did.service.js";
 import { KeyMaterialDao } from "../model/credentials.dao.js";
+import { API_PREFIX } from "../utils/api-prefix.js";
 
 @Injectable()
 export class KeysService {
@@ -157,7 +158,7 @@ export class KeysService {
       const publicKeyJwk = (await exportJWK(publicKey)) as JsonWebKey;
       publicKeyJwk.x5u = `${
         this.config.server.publicAddress
-      }/keys/${encodeURIComponent(key.id)}`;
+      }${API_PREFIX}/keys/${encodeURIComponent(key.id)}`;
       return await this.keyRepository.save({
         id: key.id,
         type: key.type,

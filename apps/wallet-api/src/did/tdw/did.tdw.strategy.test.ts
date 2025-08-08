@@ -67,6 +67,10 @@ describe("DID Tdw Service", () => {
     didLogsRepository = await moduleRef.get(getRepositoryToken(DIDLogs));
   });
 
+  afterAll(() => {
+    TypeOrmTestHelper.instance.teardownTestDB();
+  });
+
   describe("DID Tdw Document testing", () => {
     let completeDidDocument: DIDDocument;
 

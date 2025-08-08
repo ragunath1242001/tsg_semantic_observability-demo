@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { validateOrRejectSync } from "@tsg-dsp/common-api";
-import { AgreementDto, VerifiableCredential } from "@tsg-dsp/common-dsp";
+import { AgreementDto, CredentialContainer } from "@tsg-dsp/common-dsp";
 import { plainToInstance, Type } from "class-transformer";
 import {
   IsDate,
@@ -71,10 +71,10 @@ export class EvaluationContext {
   @IsString()
   @ApiProperty({ example: "USE" })
   action!: string;
-  @Type(() => VerifiableCredential)
+  @Type(() => CredentialContainer)
   @ValidateNested()
-  @ApiProperty({ type: () => VerifiableCredential })
-  verifiableCredentials!: VerifiableCredential[];
+  @ApiProperty({ type: () => CredentialContainer })
+  verifiableCredentials!: CredentialContainer[];
   @IsDate()
   @ApiProperty({ example: "2025-02-21T10:26:42.206Z" })
   evaluationTime!: Date;

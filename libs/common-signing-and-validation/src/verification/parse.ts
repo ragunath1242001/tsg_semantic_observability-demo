@@ -1,4 +1,4 @@
-import { HttpStatus } from "@nestjs/common";
+import { HttpStatus, Logger } from "@nestjs/common";
 import { AppError } from "@tsg-dsp/common-api";
 import { JWK } from "jose";
 
@@ -35,7 +35,7 @@ export async function parseVerificationMethod(
       throw new AppError(
         `Could not find matching public key for "${verificationMethod}"`,
         HttpStatus.BAD_REQUEST
-      );
+      ).andLog(new Logger("parseVerificationMethod"), "debug");
     }
   }
 }

@@ -12,31 +12,23 @@ import {
   ValidateNested
 } from "class-validator";
 
-import { elementOrArray, OrArray } from "../../utils/unions.js";
+import { elementOrArray, OrArray, toArray } from "../../utils/unions.js";
 import {
   DataIntegrityProof,
-  JsonWebSignature2020,
-  Proof,
+  EnvelopedVerifiableCredential,
   VerifiableCredential
 } from "./credentials.dto.js";
 
-@ApiExtraModels(JsonWebSignature2020, DataIntegrityProof, VerifiableCredential)
+@ApiExtraModels(VerifiableCredential)
 export class VerifiablePresentation<
-  T extends VerifiableCredential = VerifiableCredential,
-  P extends Proof = Proof
+  T extends VerifiableCredential = VerifiableCredential
 > {
   @ApiProperty({
     type: () => [String],
     example: { "@context": "https://www.w3.org/ns/credentials/v2" }
   })
   @IsString({ each: true })
-  "@context": (
-    | "https://www.w3.org/2018/credentials/v1"
-    | "https://www.w3.org/ns/credentials/v2"
-    | "https://w3id.org/security/suites/jws-2020/v1"
-    | "https://w3id.org/security/data-integrity/v2"
-    | string
-  )[];
+  "@context": ("https://www.w3.org/ns/credentials/v2" | string)[];
   @ApiProperty({ type: () => [String], example: ["VerifiablePresentation"] })
   @IsString({ each: true })
   type!: string[];
@@ -47,28 +39,41 @@ export class VerifiablePresentation<
   @ApiProperty(elementOrArray({ $ref: getSchemaPath(VerifiableCredential) }))
   @ValidateNested()
   @Type(() => VerifiableCredential)
-  verifiableCredential!: OrArray<T>;
+  verifiableCredential!: OrArray<T | EnvelopedVerifiableCredential>;
 
   @ApiProperty({
-    oneOf: [
-      { $ref: getSchemaPath(JsonWebSignature2020) },
-      { $ref: getSchemaPath(DataIntegrityProof) }
-    ],
-    example: { type: "JsonWebSignature2020" }
+    type: () => [DataIntegrityProof]
   })
   @ValidateNested()
   @IsOptional()
-  @Type(() => Proof, {
-    discriminator: {
-      property: "type",
-      subTypes: [
-        { value: JsonWebSignature2020, name: "JsonWebSignature2020" },
-        { value: DataIntegrityProof, name: "DataIntegrityProof" }
-      ]
-    },
-    keepDiscriminatorProperty: true
+  @Type(() => DataIntegrityProof)
+  proof?: OrArray<DataIntegrityProof>;
+}
+
+export class EnvelopedVerifiablePresentation {
+  @ApiProperty({
+    type: [String],
+    items: { enum: ["https://www.w3.org/ns/credentials/v2"] }
   })
-  proof?: OrArray<P>;
+  "@context": ["https://www.w3.org/ns/credentials/v2"];
+  @ApiProperty({ type: String, example: "data:application/vp+jwt,..." })
+  @IsString()
+  id!: string;
+  @ApiProperty({
+    type: [String],
+    items: { enum: ["EnvelopedVerifiablePresentation"] }
+  })
+  type!: ["EnvelopedVerifiablePresentation"];
+}
+
+export function isEnvelopedVerifiablePresentation(
+  presentation: VerifiablePresentation | EnvelopedVerifiablePresentation
+): presentation is EnvelopedVerifiablePresentation {
+  return (
+    Array.isArray(presentation["@context"]) &&
+    presentation["@context"].includes("https://www.w3.org/ns/credentials/v2") &&
+    toArray(presentation.type).includes("EnvelopedVerifiablePresentation")
+  );
 }
 
 export class VerifiableCredentialJwt {
@@ -94,6 +99,11 @@ export class PresentationValidation extends VerifiablePresentationJwt {
   @ApiProperty({ example: true })
   @IsBoolean()
   valid!: boolean;
+
+  @ApiProperty({ type: () => VerifiablePresentation })
+  @ValidateNested()
+  @Type(() => VerifiablePresentation)
+  presentation!: VerifiablePresentation;
 
   @ApiProperty({ example: true })
   @IsBoolean()

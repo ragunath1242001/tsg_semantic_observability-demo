@@ -29,8 +29,8 @@ describe("Rule Repository Service", () => {
     ruleRepositoryService = moduleRef.get(RuleRepositoryService);
   });
 
-  afterAll(async () => {
-    await TypeOrmTestHelper.instance.teardownTestDB();
+  afterAll(() => {
+    TypeOrmTestHelper.instance.teardownTestDB();
   });
 
   describe("Constraints", () => {
@@ -41,7 +41,7 @@ describe("Rule Repository Service", () => {
         description: "Test constraint description",
         leftOperand: "dspace:vc",
         operator: "eq",
-        contextPath: "$.verifiableCredentials[*]",
+        contextPath: "$.verifiableCredentials[*].credential",
         dataType: DataType.STRING,
         evaluable: [
           EvaluationTrigger.PROVIDER_ON_REQUEST,
@@ -104,7 +104,7 @@ describe("Rule Repository Service", () => {
       expect(constraints[0]).toMatchObject({
         type: ConstraintType.ATOMIC,
         title: "Test Constraint",
-        contextPath: "$.verifiableCredentials[*]",
+        contextPath: "$.verifiableCredentials[*].credential",
         description: "Test constraint description",
         evaluable: [
           "PROVIDER_ON_REQUEST",
@@ -118,7 +118,7 @@ describe("Rule Repository Service", () => {
       });
       expect(constraintDtos.data[0]).toMatchObject({
         title: "Test Constraint",
-        contextPath: "$.verifiableCredentials[*]",
+        contextPath: "$.verifiableCredentials[*].credential",
         description: "Test constraint description",
         evaluable: [
           "PROVIDER_ON_REQUEST",

@@ -1,5 +1,11 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsHexColor, IsOptional, IsString, Matches } from "class-validator";
+import {
+  IsEnum,
+  IsHexColor,
+  IsOptional,
+  IsString,
+  Matches
+} from "class-validator";
 
 import { IssueConfigurationConfig } from "../config.js";
 import { IssueConfiguration } from "../model/issue-configuration.dao.js";
@@ -12,6 +18,11 @@ export class IssueConfigurationConfigDto implements IssueConfigurationConfig {
   @IsString()
   @ApiProperty({ example: "VerifiableCredential" })
   credentialType!: string;
+
+  @IsEnum(["jwt", "ldp"])
+  @IsOptional()
+  @ApiPropertyOptional({ example: "jwt" })
+  proofType: "jwt" | "ldp" = "jwt";
 
   @IsString()
   @IsOptional()
@@ -71,6 +82,9 @@ export class IssueConfigurationDto implements IssueConfiguration {
 
   @ApiProperty({ example: "VerifiableCredential" })
   credentialType!: string;
+
+  @IsEnum(["jwt", "ldp"])
+  proofType: "jwt" | "ldp" = "jwt";
 
   @ApiPropertyOptional({ example: "http://example.com/document" })
   documentUrl?: string;

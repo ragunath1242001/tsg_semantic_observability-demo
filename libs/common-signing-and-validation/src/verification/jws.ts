@@ -1,4 +1,4 @@
-import { HttpStatus } from "@nestjs/common";
+import { HttpStatus, Logger } from "@nestjs/common";
 import { AppError } from "@tsg-dsp/common-api";
 import { flattenedVerify, FlattenedVerifyResult, importJWK, JWK } from "jose";
 
@@ -35,6 +35,9 @@ export async function verifyJws(
       await importJWK(publicKey, publicKey.alg)
     );
   } catch (e) {
-    throw new AppError(`Verification failed`, HttpStatus.BAD_REQUEST, e);
+    throw new AppError(`Verification failed`, HttpStatus.BAD_REQUEST, e).andLog(
+      new Logger("verifyJws"),
+      "debug"
+    );
   }
 }

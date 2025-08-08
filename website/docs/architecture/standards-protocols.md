@@ -14,7 +14,7 @@ The **did:tdw (Trust DID Web)** method extends did:web with enhanced security fe
 
 ### Verifiable Credentials
 
-TSG implements the [W3C Verifiable Credentials Data Model v1.1](https://www.w3.org/TR/vc-data-model/) to enable trustworthy exchange of digital credentials between data space participants. This standard provides the foundation for establishing trust relationships and enabling fine-grained access control based on verifiable attributes.
+TSG implements the [W3C Verifiable Credentials Data Model v2.0](https://www.w3.org/TR/vc-data-model-2.0/) to enable trustworthy exchange of digital credentials between data space participants. This standard provides the foundation for establishing trust relationships and enabling fine-grained access control based on verifiable attributes. Both JSON Web Token (JWT) and JSON-LD formats are supported for Verifiable Credentials, allowing flexibility in data representation while ensuring compatibility with existing systems. Selective disclosure capabilties are not supported in the current implementation, but are planned for future releases.
 
 The implementation supports multiple credential exchange protocols to ensure interoperability with different data space ecosystems and identity systems. **OpenID for Verifiable Credential Issuance (OID4VCI)** provides a standardized flow for credential issuance that integrates smoothly with existing OAuth 2.0 infrastructure. This protocol includes support for authorization server integration, proof verification, batch issuance, and deferred issuance scenarios.
 

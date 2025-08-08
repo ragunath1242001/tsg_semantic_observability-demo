@@ -20,7 +20,7 @@ import {
 } from "@nestjs/swagger";
 import { DisableOAuthGuard } from "@tsg-dsp/common-api";
 import {
-  toArray,
+  CredentialContainer,
   TransferCompletionMessage,
   TransferCompletionMessageSchema,
   TransferProcessDto,
@@ -32,8 +32,7 @@ import {
   TransferSuspensionMessage,
   TransferSuspensionMessageSchema,
   TransferTerminationMessage,
-  TransferTerminationMessageSchema,
-  VerifiablePresentation
+  TransferTerminationMessageSchema
 } from "@tsg-dsp/common-dsp";
 
 import { DeserializePipe } from "../../utils/deserialize.pipe.js";
@@ -60,17 +59,13 @@ export class TransferController {
     @Body(new DeserializePipe(TransferRequestMessage))
     body: TransferRequestMessage,
     @VPId() vpId: string,
-    @VP() vp: VerifiablePresentation
+    @VP() vp: CredentialContainer[]
   ): Promise<TransferProcessDto> {
     this.logger.log(
       `Received transfer request from ${vpId}: ${JSON.stringify(body)}`
     );
-    const result = await this.transferService.handleRequest(
-      body,
-      vpId,
-      toArray(vp.verifiableCredential)
-    );
-    return await result.serialize();
+    const result = await this.transferService.handleRequest(body, vpId, vp);
+    return result.serialize();
   }
 
   @Get("transfers/:id")

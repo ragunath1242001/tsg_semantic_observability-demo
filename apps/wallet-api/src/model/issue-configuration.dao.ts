@@ -35,4 +35,7 @@ export class IssueConfiguration extends MetaEntity {
 
   @Column({ type: String, nullable: true })
   textColor?: string;
+
+  @Column({ type: String, default: "jwt" })
+  proofType: "jwt" | "ldp" = "jwt";
 }

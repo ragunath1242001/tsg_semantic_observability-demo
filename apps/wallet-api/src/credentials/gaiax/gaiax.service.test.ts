@@ -4,7 +4,6 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { TypeOrmTestHelper } from "@tsg-dsp/common-api";
 import {
   CredentialSubject,
-  JsonWebSignature2020,
   toArray,
   VerifiableCredential,
   VerifiablePresentation
@@ -63,23 +62,25 @@ describe("Credentials Service", () => {
       http.post<PathParams, CredentialSubject, VerifiableCredential>(
         "https://registrationnumber.notary.gaia-x.eu/v1/registrationNumberVC",
         async ({ request }) => {
-          return HttpResponse.json<VerifiableCredential<JsonWebSignature2020>>({
+          return HttpResponse.json<VerifiableCredential>({
             "@context": [
-              "https://www.w3.org/2018/credentials/v1",
+              "https://www.w3.org/ns/credentials/v2",
               "https://w3id.org/security/suites/jws-2020/v1"
             ],
             type: ["VerifiableCredential"],
             id: new URL(request.url).searchParams.get("vcid") || "",
             issuer: "did:web:registration.lab.gaia-x.eu:development",
-            issuanceDate: new Date().toISOString(),
+            validFrom: new Date().toISOString(),
             credentialSubject: await request.json(),
             proof: {
-              type: "JsonWebSignature2020",
-              created: new Date().toISOString(),
+              type: "DataIntegrityProof",
+              created: "2024-07-30T13:51:30.581Z",
               proofPurpose: "assertionMethod",
               verificationMethod:
-                "did:web:registration.lab.gaia-x.eu:development#X509-JWK2020",
-              jws: ""
+                "did:web:dataspace-authority.example.com#key-0",
+              cryptosuite: "eddsa-jcs-2022",
+              proofValue:
+                "z3f3bQLt79o87hpXSUzWYy1bVaLQLBeU9Aj6b7BHPmuL7vhmZu8wx2kvUQU3Y8PHNVKtahcQQQHyxcTfYq3tJquSe"
             }
           });
         }
@@ -90,15 +91,15 @@ describe("Credentials Service", () => {
           const json = await request.json();
           const vcs = toArray(json.verifiableCredential);
 
-          return HttpResponse.json<VerifiableCredential<JsonWebSignature2020>>({
+          return HttpResponse.json<VerifiableCredential>({
             "@context": [
-              "https://www.w3.org/2018/credentials/v1",
+              "https://www.w3.org/ns/credentials/v2",
               "https://w3id.org/security/suites/jws-2020/v1"
             ],
             type: ["VerifiableCredential"],
             id: new URL(request.url).searchParams.get("vcid") || "",
             issuer: "did:web:compliance.lab.gaia-x.eu:development",
-            issuanceDate: new Date().toISOString(),
+            validFrom: new Date().toISOString(),
             credentialSubject: vcs.map((credential) => {
               return {
                 type: "gx:compliance",
@@ -107,18 +108,22 @@ describe("Credentials Service", () => {
                 "gx:integrityNormalization": "RFC8785:JCS",
                 "gx:version": "22.10",
                 "gx:type":
-                  toArray(credential.credentialSubject)[0]["type"] ||
+                  toArray(
+                    (credential as VerifiableCredential).credentialSubject
+                  )[0]["type"] ||
                   credential.type[0] ||
                   "unknown"
               };
             }),
             proof: {
-              type: "JsonWebSignature2020",
-              created: new Date().toISOString(),
+              type: "DataIntegrityProof",
+              created: "2024-07-30T13:51:30.581Z",
               proofPurpose: "assertionMethod",
               verificationMethod:
-                "did:web:compliance.lab.gaia-x.eu:development#X509-JWK2020",
-              jws: ""
+                "did:web:dataspace-authority.example.com#key-0",
+              cryptosuite: "eddsa-jcs-2022",
+              proofValue:
+                "z3f3bQLt79o87hpXSUzWYy1bVaLQLBeU9Aj6b7BHPmuL7vhmZu8wx2kvUQU3Y8PHNVKtahcQQQHyxcTfYq3tJquSe"
             }
           });
         }

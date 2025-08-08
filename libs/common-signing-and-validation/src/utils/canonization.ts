@@ -1,10 +1,9 @@
 import { HttpStatus } from "@nestjs/common";
 import { AppError } from "@tsg-dsp/common-api";
+import { documentLoader } from "@tsg-dsp/common-dsp";
 import crypto from "crypto";
 import { canonicalize } from "json-canonicalize";
 import jsonld from "jsonld";
-
-import { jsonldOptions } from "./cachingContextLoader.js";
 
 export async function canonize(
   document: any,
@@ -22,7 +21,7 @@ export async function canonize(
             })
           ),
           {
-            ...jsonldOptions,
+            ...documentLoader,
             algorithm: "URDNA2015"
           }
         );

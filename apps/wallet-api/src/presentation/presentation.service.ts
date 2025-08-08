@@ -1,7 +1,8 @@
 import { Injectable, Logger } from "@nestjs/common";
 import {
+  EnvelopedVerifiableCredential,
+  EnvelopedVerifiablePresentation,
   PresentationValidation,
-  Proof,
   VerifiableCredential,
   VerifiablePresentation,
   VerifiablePresentationJsonLd,
@@ -17,10 +18,11 @@ import {
 import { plainToInstance } from "class-transformer";
 import crypto from "crypto";
 
-import { RootConfig, SignatureType } from "../config.js";
+import { RootConfig } from "../config.js";
 import { CredentialsService } from "../credentials/credentials.service.js";
 import { DidService } from "../did/did.service.js";
 import { SignatureService } from "../keys/signature.service.js";
+import { CredentialDao } from "../model/credentials.dao.js";
 
 @Injectable()
 export class PresentationService {
@@ -33,74 +35,169 @@ export class PresentationService {
   private readonly logger = new Logger(this.constructor.name);
 
   async createVerifiablePresentationJsonLd(
-    credentialId: string,
+    credentials: string | CredentialDao[],
     unwrap: boolean
   ): Promise<VerifiablePresentationJsonLd> {
-    const credential =
-      await this.credentialsService.getCredential(credentialId);
-    const verifiablePresentation: VerifiablePresentation = {
-      "@context": ["https://www.w3.org/2018/credentials/v1"],
-      type: ["VerifiablePresentation"],
-      id: `${await this.didService.getDidId()}#${crypto.randomUUID()}`,
-      verifiableCredential: unwrap
-        ? credential.credential
-        : [credential.credential]
-    };
-
-    let proof: Proof;
-    if (
-      this.config.signature.credentials === SignatureType.DATA_INTEGRITY_PROOF
-    ) {
-      verifiablePresentation["@context"].push(
-        "https://w3id.org/security/data-integrity/v2"
-      );
-      proof = await this.signatureService.signAsDataIntegrityProof(
-        "RDFC",
-        verifiablePresentation
-      );
+    let vcs: CredentialDao[];
+    if (Array.isArray(credentials)) {
+      vcs = credentials;
     } else {
-      verifiablePresentation["@context"].push(
-        "https://w3id.org/security/suites/jws-2020/v1"
-      );
-      proof = await this.signatureService.signAsJsonWebSignature2020(
-        verifiablePresentation
-      );
+      const credential =
+        await this.credentialsService.getCredential(credentials);
+      vcs = [credential];
     }
+    const didId = await this.didService.getDidId();
+    const verifiablePresentation: VerifiablePresentation = {
+      "@context": ["https://www.w3.org/ns/credentials/v2"],
+      type: ["VerifiablePresentation"],
+      id: `${didId}#${crypto.randomUUID()}`,
+      verifiableCredential: unwrap
+        ? this.convertDaoToCredential(vcs[0])
+        : vcs.map((c) => this.convertDaoToCredential(c))
+    };
+    const proof = await this.signatureService.signAsDataIntegrityProof(
+      "RDFC",
+      verifiablePresentation
+    );
     verifiablePresentation.proof = proof;
     return plainToInstance(VerifiablePresentationJsonLd, {
       vp: verifiablePresentation
     });
   }
 
+  private convertDaoToCredential(
+    credentialDao: CredentialDao
+  ): VerifiableCredential | EnvelopedVerifiableCredential {
+    if (credentialDao.jwt) {
+      return {
+        "@context": ["https://www.w3.org/ns/credentials/v2"],
+        id: `data:application/vc+jwt,${credentialDao.jwt}`,
+        type: ["EnvelopedVerifiableCredential"]
+      };
+    } else {
+      return plainToInstance(VerifiableCredential, {
+        ...credentialDao.credential,
+        proof: credentialDao.proof
+      });
+    }
+  }
+
   async createVerifiablePresentationJwt(
-    credentials: string | VerifiableCredential[],
+    credentials: string | CredentialDao[],
     audience: string,
-    unwrap: boolean
+    unwrap: boolean,
+    format: "vp+jwt" | "enveloped" | "jwt_vp" = "vp+jwt",
+    nonce?: string
   ): Promise<VerifiablePresentationJwt> {
-    let vcs: VerifiableCredential[];
+    let vcs: CredentialDao[];
     if (Array.isArray(credentials)) {
       vcs = credentials;
     } else {
       const credential =
         await this.credentialsService.getCredential(credentials);
-      vcs = [credential.credential];
+      vcs = [credential];
     }
     const didId = await this.didService.getDidId();
     const verifiablePresentation: VerifiablePresentation = {
-      "@context": ["https://www.w3.org/2018/credentials/v1"],
+      "@context": ["https://www.w3.org/ns/credentials/v2"],
       type: ["VerifiablePresentation"],
       id: `${didId}#${crypto.randomUUID()}`,
-      verifiableCredential: unwrap ? vcs[0] : vcs
+      verifiableCredential: unwrap
+        ? this.convertDaoToCredential(vcs[0])
+        : vcs.map((c) => this.convertDaoToCredential(c))
     };
+    let jwt: string;
+    switch (format) {
+      case "jwt_vp":
+        jwt = await this.createJwtVerifiablePresentation(
+          verifiablePresentation,
+          audience,
+          nonce
+        );
+        break;
+      case "vp+jwt":
+        jwt = await this.createVerifiablePresentationJose(
+          verifiablePresentation,
+          audience,
+          nonce
+        );
+        break;
+      case "enveloped":
+        jwt = await this.createEnvelopedVerifiablePresentation(
+          verifiablePresentation,
+          audience,
+          nonce
+        );
+        break;
+    }
     return plainToInstance(VerifiablePresentationJwt, {
-      vp: await this.signatureService.signAsJwt(
-        { vp: verifiablePresentation },
-        audience,
-        {
-          expirationTime: "24h"
-        }
-      )
+      vp: jwt
     });
+  }
+
+  // https://www.w3.org/TR/vc-jose-cose/#securing-vps-with-jose
+  private async createVerifiablePresentationJose(
+    verifiablePresentation: VerifiablePresentation,
+    audience: string,
+    nonce?: string
+  ): Promise<string> {
+    return await this.signatureService.signContainerAsJwt(
+      verifiablePresentation,
+      {
+        audience,
+        iat: true,
+        expiresIn: 24 * 60 * 60, // 24 hours
+        iss: true,
+        nonce,
+        typ: "vp+jwt",
+        cty: "vp"
+      }
+    );
+  }
+
+  // https://www.w3.org/TR/vc-jose-cose/#securing-vps-with-jose
+  private async createEnvelopedVerifiablePresentation(
+    verifiablePresentation: VerifiablePresentation,
+    audience: string,
+    nonce?: string
+  ): Promise<string> {
+    const vpJwt = await this.createVerifiablePresentationJose(
+      verifiablePresentation,
+      audience
+    );
+    const envelopedVerifiablePresentation: EnvelopedVerifiablePresentation = {
+      "@context": ["https://www.w3.org/ns/credentials/v2"],
+      id: `data:application/vp+jwt,${vpJwt}`,
+      type: ["EnvelopedVerifiablePresentation"]
+    };
+    return await this.signatureService.signContainerAsJwt(
+      envelopedVerifiablePresentation,
+      {
+        audience,
+        iat: true,
+        expiresIn: 24 * 60 * 60, // 24 hours
+        iss: true,
+        nonce,
+        typ: "vp+jwt",
+        cty: "vp"
+      }
+    );
+  }
+
+  // https://identity.foundation/jwt-vc-presentation-profile/
+  private async createJwtVerifiablePresentation(
+    verifiablePresentation: VerifiablePresentation,
+    audience: string,
+    nonce?: string
+  ): Promise<string> {
+    return await this.signatureService.signAsJwt(
+      { vp: verifiablePresentation, nonce },
+      audience,
+      {
+        expirationTime: 24 * 60 * 60, // 24 hours
+        jti: crypto.randomUUID()
+      }
+    );
   }
 
   async validatePresentation(

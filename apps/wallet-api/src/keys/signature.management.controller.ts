@@ -17,7 +17,7 @@ import {
   ApiForbiddenResponseDefault,
   ApiNotFoundResponseDefault
 } from "@tsg-dsp/common-dtos";
-import { validateProof } from "@tsg-dsp/common-signing-and-validation";
+import { validateDataIntegrityProof } from "@tsg-dsp/common-signing-and-validation";
 import { AppRole } from "@tsg-dsp/wallet-dtos";
 
 import { SignatureService } from "./signature.service.js";
@@ -42,11 +42,10 @@ export class SignatureManagementController {
   async sign(
     @Body(validationPipe) signRequest: SignRequest
   ): Promise<ProofDocument> {
-    const proof = await this.signatureService.signAsProof(
+    const proof = await this.signatureService.signAsDataIntegrityProof(
+      signRequest.normalization,
       signRequest.plainDocument,
       signRequest.keyId,
-      signRequest.type,
-      signRequest.normalization,
       signRequest.proofPurpose,
       signRequest.options,
       signRequest.embeddedVerificationMethod
@@ -70,7 +69,7 @@ export class SignatureManagementController {
     @Body(validationPipe) validateRequest: ValidateRequest
   ): Promise<ProofDocument> {
     const { proof, ...plainDocument } = validateRequest.proofDocument!;
-    await validateProof(plainDocument, toArray(proof)[0]);
+    await validateDataIntegrityProof(plainDocument, toArray(proof)[0]);
     return validateRequest.proofDocument!;
   }
 }

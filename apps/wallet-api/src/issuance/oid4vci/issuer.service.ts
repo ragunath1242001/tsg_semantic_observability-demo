@@ -7,6 +7,7 @@ import {
   AccessToken,
   ClaimDescription,
   convertJsonSchemaToClaimDescriptions,
+  CredentialConfiguration,
   CredentialFormat,
   CredentialIssuerMetadata,
   CredentialRequest,
@@ -23,6 +24,7 @@ import { CredentialsService } from "../../credentials/credentials.service.js";
 import { IssueConfigurationService } from "../../issue-configurations/issue-configuration.service.js";
 import { SignatureService } from "../../keys/signature.service.js";
 import { CIAccessToken, CredentialIssuance } from "../../model/issuance.dao.js";
+import { API_PREFIX } from "../../utils/api-prefix.js";
 
 @Injectable()
 export class OID4VCIIssuerService {
@@ -49,7 +51,7 @@ export class OID4VCIIssuerService {
   }
 
   async issuerMetadata(): Promise<CredentialIssuerMetadata> {
-    const publicEndpoint = `${this.config.server.publicAddress}${process.env["EMBEDDED_FRONTEND"] ? "/api" : ""}`;
+    const publicEndpoint = `${this.config.server.publicAddress}${API_PREFIX}`;
     const issuerMetadata: CredentialIssuerMetadata = {
       credential_issuer: `https://${this.config.server.publicDomain}`,
       credential_endpoint: `${publicEndpoint}/oid4vci/credential`,
@@ -75,29 +77,16 @@ export class OID4VCIIssuerService {
       if (issueConfig.schema) {
         claims = convertJsonSchemaToClaimDescriptions(issueConfig.schema, []);
       }
-      issuerMetadata.credential_configurations_supported[
-        issueConfig.credentialType
-      ] = {
-        format: CredentialFormat.JWT_VC_JSON_LD,
-        "@context": [
-          "https://www.w3.org/2018/credentials/v1",
-          issueConfig.documentUrl ??
-            `${publicEndpoint}/issue-configuration/${issueConfig.id}`
+      const credentialConfigurationBase: Partial<CredentialConfiguration> = {
+        cryptographic_binding_methods_supported: [
+          "did:tdw",
+          "did:web",
+          "did:key"
         ],
-        cryptographic_binding_methods_supported: ["did:tdw", "did:web"],
-        credential_signing_alg_values_supported: ["EdDSA", "ES384", "PS256"],
         proof_types_supported: {
           jwt: {
             proof_signing_alg_values_supported: ["EdDSA", "ES384", "PS256"]
           }
-        },
-        credential_definition: {
-          type: ["VerifiableCredential", issueConfig.credentialType],
-          "@context": [
-            "https://www.w3.org/2018/credentials/v1",
-            issueConfig.documentUrl ??
-              `${publicEndpoint}/issue-configuration/${issueConfig.id}`
-          ]
         },
         credential_metadata: {
           display: [
@@ -114,6 +103,38 @@ export class OID4VCIIssuerService {
           claims: claims
         }
       };
+      if (issueConfig.proofType === "jwt") {
+        issuerMetadata.credential_configurations_supported[
+          issueConfig.credentialType
+        ] = {
+          ...credentialConfigurationBase,
+          format: CredentialFormat.JWT_VC_JSON,
+          credential_signing_alg_values_supported: ["EdDSA", "ES384", "PS256"],
+          credential_definition: {
+            type: ["VerifiableCredential", issueConfig.credentialType]
+          }
+        };
+      } else {
+        issuerMetadata.credential_configurations_supported[
+          issueConfig.credentialType
+        ] = {
+          ...credentialConfigurationBase,
+          format: CredentialFormat.LDP_VC,
+          credential_signing_alg_values_supported: [
+            "eddsa-rdfc-2022",
+            "ecdsa-rdfc-2019",
+            "RSASSA-PSS"
+          ],
+          credential_definition: {
+            "@context": [
+              "https://www.w3.org/ns/credentials/v2",
+              issueConfig.documentUrl ??
+                `${publicEndpoint}/issue-configuration/${issueConfig.id}`
+            ],
+            type: ["VerifiableCredential", issueConfig.credentialType]
+          }
+        };
+      }
     });
     return issuerMetadata;
   }
@@ -165,6 +186,55 @@ export class OID4VCIIssuerService {
     };
   }
 
+  private async validateJwtProof(issuance: CredentialIssuance, jwt: string) {
+    const parsedJwtHeader = decodeProtectedHeader(jwt);
+    if (!parsedJwtHeader.kid) {
+      throw new AppError(
+        'Only JWTs with "kid" referencing a key described in a DID document are supported',
+        HttpStatus.BAD_REQUEST
+      );
+    }
+    if (!issuance.holderId) {
+      issuance.holderId = parsedJwtHeader.kid.split("#")[0];
+      issuance.credentialSubject.id = issuance.holderId;
+      if (
+        !issuance.holderId.startsWith("did:web:") &&
+        !issuance.holderId.startsWith("did:key:") &&
+        !issuance.holderId.startsWith("did:tdw:")
+      ) {
+        throw new AppError(
+          `Holder ID ${issuance.holderId} did method not supported, supported methods: "did:web:", "did:key:", "did:tdw:"`,
+          HttpStatus.BAD_REQUEST
+        );
+      }
+    }
+    const holderDid = await resolveDid(issuance.holderId);
+
+    const usedJwk = holderDid.verificationMethod?.find(
+      (m) => m.id === parsedJwtHeader.kid
+    );
+    if (!usedJwk || !usedJwk.publicKeyJwk) {
+      throw new AppError(
+        `Could not find publicKeyJwk for ${parsedJwtHeader.kid} in DID document`,
+        HttpStatus.BAD_REQUEST
+      ).andLog(this.logger);
+    }
+    const key = await importJWK(usedJwk.publicKeyJwk, parsedJwtHeader.alg);
+    const verifiedJwt = await jwtVerify(jwt, key);
+
+    const expectedAudience =
+      this.config.server.publicDomain === "localhost"
+        ? `http://localhost:${this.config.server.port}`
+        : `https://${this.config.server.publicDomain}`;
+    if (verifiedJwt.payload.aud !== expectedAudience) {
+      throw new AppError(
+        `Audience in proof JWT does not match credential_issuer (${verifiedJwt.payload.aud} vs ${expectedAudience}`,
+        HttpStatus.BAD_REQUEST
+      );
+    }
+    return verifiedJwt;
+  }
+
   async handleCredentialRequest(
     authorizationHeader: string | undefined,
     credentialRequest: CredentialRequest
@@ -187,54 +257,12 @@ export class OID4VCIIssuerService {
       );
       if (!jwtProof) {
         throw new AppError(
-          "No JWT proof provided in credential request. Only jwt proof types are supported at this moment",
+          "No JWT proof provided in credential request. Only jwt proof types are supported",
           HttpStatus.BAD_REQUEST
         );
       }
 
-      const parsedJwtHeader = decodeProtectedHeader(jwtProof.jwt);
-      if (!parsedJwtHeader.kid) {
-        throw new AppError(
-          'Only JWTs with "kid" referencing a key described in a DID document are supported',
-          HttpStatus.BAD_REQUEST
-        );
-      }
-      if (!issuance.holderId) {
-        issuance.holderId = parsedJwtHeader.kid.split("#")[0];
-        issuance.credentialSubject.id = issuance.holderId;
-
-        if (!issuance.holderId.startsWith("did:")) {
-          throw new AppError(
-            `Holder ID ${issuance.holderId} does not start with "did:"`,
-            HttpStatus.BAD_REQUEST
-          );
-        }
-      }
-      const holderDid = await resolveDid(issuance.holderId);
-
-      const usedJwk = holderDid.verificationMethod?.find(
-        (m) => m.id === parsedJwtHeader.kid
-      );
-      if (!usedJwk || !usedJwk.publicKeyJwk) {
-        throw new AppError(
-          `Could not find publicKeyJwk for ${parsedJwtHeader.kid} in DID document`,
-          HttpStatus.BAD_REQUEST
-        ).andLog(this.logger);
-      }
-      const key = await importJWK(usedJwk.publicKeyJwk, parsedJwtHeader.alg);
-      const verifiedJwt = await jwtVerify(jwtProof.jwt, key);
-
-      const expectedIssuer =
-        this.config.server.publicDomain === "localhost"
-          ? `http://localhost:${this.config.server.port}`
-          : `https://${this.config.server.publicDomain}`;
-      if (verifiedJwt.payload.aud !== expectedIssuer) {
-        throw new AppError(
-          `Audience in proof JWT does not match credential_issuer (${verifiedJwt.payload.aud} vs ${expectedIssuer}`,
-          HttpStatus.BAD_REQUEST
-        );
-      }
-
+      const verifiedJwt = await this.validateJwtProof(issuance, jwtProof.jwt);
       const nonce = verifiedJwt.payload.nonce;
       if (typeof nonce !== "string" || !this.nonceCache.has(nonce)) {
         throw new AppError(
@@ -252,39 +280,41 @@ export class OID4VCIIssuerService {
       const credentialConfig = plainToInstance(InitCredentialConfig, {
         context: [
           issueConfig.documentUrl ??
-            `${this.config.server.publicAddress}/api/issue-configuration/${issueConfig.id}`
+            `${this.config.server.publicAddress}${API_PREFIX}/issue-configuration/${issueConfig.id}`
         ],
         type: [issuance.credentialType],
         id: `${issuance.holderId}#${crypto.randomUUID()}`,
-        credentialSubject: issuance.credentialSubject
+        credentialSubject: issuance.credentialSubject,
+        proofType: issueConfig.proofType
       });
       const credential = await this.credentialService.issueCredential(
         credentialConfig,
         issuance.holderId
       );
-
-      const credentialJwt = await this.signatureService.signAsJwt(
-        {
-          vc: credential.credential
-        },
-        undefined,
-        {
-          jti: credential.id,
-          subject: issuance.holderId
-        }
-      );
-
       await this.issuanceRepository.save({
         ...issuance,
         credentialId: credential.id
       });
-      return {
-        credentials: [
-          {
-            credential: credentialJwt
-          }
-        ]
-      };
+      if (issueConfig.proofType === "jwt") {
+        return {
+          credentials: [
+            {
+              credential: credential.jwt!
+            }
+          ]
+        };
+      } else {
+        return {
+          credentials: [
+            {
+              credential: {
+                ...credential.credential,
+                proof: credential.proof!
+              }
+            }
+          ]
+        };
+      }
     } catch (error) {
       if (error instanceof AppError) {
         throw error.andLog(this.logger);

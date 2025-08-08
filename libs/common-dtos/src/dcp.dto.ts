@@ -219,12 +219,11 @@ export class CredentialObject {
   bindingMethods!: string[];
 
   @ApiProperty({
-    type: [String],
+    type: String,
     description: "Supported cryptographic methods"
   })
-  @IsArray()
-  @IsString({ each: true })
-  profiles!: string[];
+  @IsString()
+  profile!: string;
 
   @ApiPropertyOptional({
     type: () => PresentationDefinition,

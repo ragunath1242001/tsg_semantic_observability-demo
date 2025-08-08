@@ -61,6 +61,12 @@ describe("Holder service", () => {
           id: "Example",
           credentialType: "ExampleCredentialType",
           documentUrl: "https://example.com/context.json"
+        },
+        {
+          id: "ExampleLdp",
+          credentialType: "ExampleLdpCredentialType",
+          documentUrl: "https://example.com/context.json",
+          proofType: "ldp"
         }
       ]
     });
@@ -119,11 +125,11 @@ describe("Holder service", () => {
         }
       ]
     }).compile();
-    issuanceService = await moduleRef.get(IssuanceService);
-    issuerService = await moduleRef.get(OID4VCIIssuerService);
-    holderService = await moduleRef.get(OID4VCIHolderService);
+    issuanceService = moduleRef.get(IssuanceService);
+    issuerService = moduleRef.get(OID4VCIIssuerService);
+    holderService = moduleRef.get(OID4VCIHolderService);
 
-    const didService = await moduleRef.get(DidService);
+    const didService = moduleRef.get(DidService);
     await moduleRef.get(KeysService).initialized;
     await moduleRef.get(CredentialsService).initialized;
     exampleKey = await generateKeyPair("EdDSA");
@@ -161,8 +167,12 @@ describe("Holder service", () => {
             "@protected": true,
             "@version": 1.1,
             ExampleCredentialType: {
-              "@context": ["https://www.w3.org/2018/credentials/v1"],
+              "@context": ["https://www.w3.org/ns/credentials/v2"],
               "@id": "example:ExampleCredentialType"
+            },
+            ExampleLdpCredentialType: {
+              "@context": ["https://www.w3.org/ns/credentials/v2"],
+              "@id": "example:ExampleLdpCredentialType"
             },
             example: "https://example.dataspac.es/credentials/",
             id: "@id",
@@ -209,7 +219,7 @@ describe("Holder service", () => {
   });
 
   describe("Issuance process", () => {
-    it("Request credential", async () => {
+    it("Request credential via JWT", async () => {
       const offer = await issuanceService.createCredentialOffer({
         holderId: "did:web:localhost",
         credentialType: "ExampleCredentialType",
@@ -227,8 +237,27 @@ describe("Holder service", () => {
       const credentials = await moduleRef
         .get(CredentialsService)
         .getCredentials();
+      expect(credentials.length).toBe(2);
+    });
+    it("Request credential via LDP", async () => {
+      const offer = await issuanceService.createCredentialOffer({
+        holderId: "did:web:localhost",
+        credentialType: "ExampleLdpCredentialType",
+        credentialSubject: { id: "did:web:localhost" }
+      });
 
-      console.log(credentials);
+      await holderService.requestCredential({
+        issuerUrl: "http://localhost:3000",
+        preAuthorizedCode:
+          offer.grants?.[OfferGrants.PRE_AUTHORIZED_CODE]?.[
+            "pre-authorized_code"
+          ]
+      });
+
+      const credentials = await moduleRef
+        .get(CredentialsService)
+        .getCredentials();
+      expect(credentials.length).toBe(3);
     });
     it("Request errros", async () => {
       await expect(
@@ -237,6 +266,36 @@ describe("Holder service", () => {
         } as any)
       ).rejects.toThrow(
         "Either pre-authorized code or access token must be provided"
+      );
+
+      const incorrectOffer = await issuanceService.createCredentialOffer({
+        holderId: "did:web:localhost",
+        credentialType: "UnknownCredential",
+        credentialSubject: { id: "did:web:localhost" }
+      });
+
+      await expect(
+        holderService.requestCredential({
+          issuerUrl: "http://localhost:3000",
+          preAuthorizedCode:
+            incorrectOffer.grants?.[OfferGrants.PRE_AUTHORIZED_CODE]?.[
+              "pre-authorized_code"
+            ]
+        })
+      ).rejects.toThrow(
+        "Credential configuration for UnknownCredential not found"
+      );
+
+      await expect(
+        holderService.requestCredential({
+          issuerUrl: "http://localhost:3000",
+          authorized: {
+            accessToken: "test",
+            credentialIdentifier: undefined as unknown as string
+          }
+        })
+      ).rejects.toThrow(
+        "Access token does not contain authorization details or credential identifier"
       );
     });
   });

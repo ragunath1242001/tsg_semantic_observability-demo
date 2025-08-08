@@ -1,11 +1,15 @@
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { AppError } from "@tsg-dsp/common-api";
 import {
+  VerifiablePresentationJsonLd,
+  VerifiablePresentationJwt
+} from "@tsg-dsp/common-dsp";
+import {
   Field,
   PresentationDefinition,
   PresentationQueryMessage,
-  PresentationResponse,
-  PresentationResponseMessage
+  PresentationResponseMessage,
+  PresentationSubmission
 } from "@tsg-dsp/common-dtos";
 import { Ajv } from "ajv";
 import jsonpath from "jsonpath";
@@ -52,58 +56,67 @@ export class DCPHolderService {
         presentationQueryMessage.scope
       );
     }
-
-    const vpJwt =
-      await this.presentationService.createVerifiablePresentationJwt(
-        matchedCredentials.map((c) => c.credential),
+    let vpJwt: VerifiablePresentationJwt | undefined = undefined;
+    let vpLdp: VerifiablePresentationJsonLd | undefined = undefined;
+    const presentation_submission: PresentationSubmission = {
+      id: crypto.randomUUID(),
+      definition_id:
+        presentationQueryMessage.presentationDefinition?.id ??
+        crypto.randomUUID(),
+      descriptor_map:
+        presentationQueryMessage.presentationDefinition?.input_descriptors.map(
+          (inputDescriptor) => ({
+            id: inputDescriptor.id,
+            format: "",
+            path: ""
+          })
+        ) ?? []
+    };
+    const hasJwtCredentials = matchedCredentials.some((c) => c.jwt);
+    const hasProofCredentials = matchedCredentials.some((c) => c.proof);
+    if (hasJwtCredentials) {
+      vpJwt = await this.presentationService.createVerifiablePresentationJwt(
+        matchedCredentials.filter((c) => c.jwt),
         validatedIdToken.tokenPayload.iss!,
+        false,
+        "vp+jwt"
+      );
+      let vcIndex = 0;
+      matchedCredentials.forEach((c, index) => {
+        if (c.jwt) {
+          presentation_submission.descriptor_map[index].format = "vp+jwt";
+          presentation_submission.descriptor_map[index].path =
+            `$.presentation[0]`;
+          presentation_submission.descriptor_map[index].path_nested = {
+            id: crypto.randomUUID(),
+            format: "vc+jwt",
+            path: `$.verifiableCredential[${vcIndex}]`
+          };
+          vcIndex++;
+        }
+      });
+    }
+    if (hasProofCredentials) {
+      vpLdp = await this.presentationService.createVerifiablePresentationJsonLd(
+        matchedCredentials.filter((c) => c.proof),
         false
       );
+      let vcIndex = 0;
+      matchedCredentials.forEach((c, index) => {
+        if (c.proof) {
+          presentation_submission.descriptor_map[index].format = "ldp_vp";
+          presentation_submission.descriptor_map[index].path =
+            `$.presentation[${hasJwtCredentials ? 1 : 0}].verifiableCredential[${vcIndex}]`;
+          vcIndex++;
+        }
+      });
+    }
 
     return {
       "@context": ["https://w3id.org/dspace-dcp/v1.0/dcp.jsonld"],
       type: "PresentationResponseMessage",
-      presentation: [vpJwt.vp]
-    };
-  }
-
-  private async presentationRequest(
-    presentationDefinition: PresentationDefinition,
-    verifierIdTokenHeader: string
-  ): Promise<PresentationResponse> {
-    const verifierIdToken = verifierIdTokenHeader.substring(7);
-    const validatedIdToken =
-      await this.siopService.validateIDTokenWithAccessToken(verifierIdToken);
-    this.logger.log(
-      `Received presentation request from ${validatedIdToken.tokenPayload.iss}`
-    );
-
-    const matchedCredentials = await this.evaluatePresentationDefinition(
-      presentationDefinition
-    );
-
-    const vpJwt =
-      await this.presentationService.createVerifiablePresentationJwt(
-        matchedCredentials.map((c) => c.credential),
-        validatedIdToken.tokenPayload.iss!,
-        false
-      );
-
-    return {
-      vp_token: vpJwt.vp,
-      presentation_submission: {
-        id: crypto.randomUUID(),
-        definition_id: presentationDefinition.id,
-        descriptor_map: presentationDefinition.input_descriptors.map(
-          (inputDescriptor, index) => {
-            return {
-              id: inputDescriptor.id,
-              format: "jwt_vc",
-              path: `$.verifiableCredential[${index}]`
-            };
-          }
-        )
-      }
+      presentation: [vpJwt?.vp, vpLdp?.vp].filter((v) => v !== undefined),
+      presentationSubmission: presentation_submission
     };
   }
 

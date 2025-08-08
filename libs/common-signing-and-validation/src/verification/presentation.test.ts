@@ -1,341 +1,359 @@
+import { describe, expect, it } from "@jest/globals";
 import {
-  afterAll,
-  beforeAll,
-  beforeEach,
-  describe,
-  expect,
-  it
-} from "@jest/globals";
-import { AppError } from "@tsg-dsp/common-api";
-import {
-  CredentialSubject,
-  DataIntegrityProof,
   VerifiableCredential,
   VerifiablePresentation
 } from "@tsg-dsp/common-dsp";
-import {
-  ClaimsQuery,
-  CredentialQuery,
-  CredentialSetQuery,
-  DcqlQuery,
-  Field,
-  OID4VPAuthorizationResponse
-} from "@tsg-dsp/common-dtos";
+import { DcqlQuery, OID4VPAuthorizationResponse } from "@tsg-dsp/common-dtos";
 import { plainToInstance } from "class-transformer";
+import { JWK } from "jose";
 import { JWTInvalid } from "jose/errors";
-import { http, HttpResponse } from "msw";
-import { SetupServer, setupServer } from "msw/node";
 
 import { TrustAnchor } from "../model.js";
+import { generateSignedJwt } from "../signing/sign.js";
 import {
-  cachedStatusCredentials,
   evaluatePresentationResponseValidity,
-  getStatusCredential,
-  validateClaims,
-  validateClaimSets,
-  validateCredentialSets,
-  validateDcqlConstraints,
-  validateField,
-  validateFormatConstraints,
-  validateTrustedAuthorities,
-  verifyCredentialStatusValidity,
-  verifyCredentialValidity,
   verifyPresentationValidity
 } from "./presentation.js";
 
 describe("Presentation Verification", () => {
-  let server: SetupServer;
-
-  beforeAll(() => {
-    server = setupServer(
-      http.get("http://localhost/statusList", () => {
-        return HttpResponse.json({
-          "@context": [
-            "https://www.w3.org/2018/credentials/v1",
-            "https://w3id.org/security/data-integrity/v2",
-            "https://www.w3.org/ns/credentials/status/v1"
-          ],
-          type: ["VerifiableCredential", "BitstringStatusListCredential"],
-          id: "http://localhost/statusList",
-          issuer: "did:web:localhost",
-          issuanceDate: "2025-02-28T10:47:54.426Z",
-          expirationDate: "2099-05-28T09:47:54.426Z",
-          credentialSubject: {
-            id: "http://localhost/statusList#list",
-            type: "BitstringStatusList",
-            statusPurpose: "revocation",
-            encodedList: "uH4sIAAAAAAAAA2NgGAWjYBSMglEwCkbBSAMAnrro8QAIAAA"
-          },
-          proof: {
-            type: "DataIntegrityProof",
-            proofPurpose: "assertionMethod",
-            verificationMethod: "did:web:localhost#key-0",
-            cryptosuite: "eddsa-rdfc-2022",
-            created: "2025-02-28T10:47:55.260Z",
-            proofValue:
-              "z49zVbm5JEn71f4gNY9gbvneQddR5yb2ZoC5R4RjZM1kGotYzh5sVxWAKvsZRJ74uRcixm8B9rNTkSbetHNYpXBdw"
-          }
-        });
-      }),
-      http.get("http://localhost/invalid-status", () => {
-        return HttpResponse.json({}, { status: 404 });
-      }),
-      http.get("http://localhost/.well-known/did.json", () => {
-        return HttpResponse.json({
-          "@context": [
-            "https://www.w3.org/ns/did/v1",
-            "https://w3id.org/security/suites/jws-2020/v1"
-          ],
-          id: "did:web:localhost",
-          verificationMethod: [
-            {
-              id: "did:web:localhost#key-0",
-              type: "JsonWebKey2020",
-              controller: "did:web:localhost",
-              publicKeyJwk: {
-                alg: "EdDSA",
-                crv: "Ed25519",
-                x: "usTBS6gWbx112ZxOvTjF_NSAHgMtovyjk_TGWPPhxdg",
-                kty: "OKP"
-              }
-            }
-          ],
-          assertionMethod: ["did:web:localhost#key-0"]
-        });
-      })
-    );
-    server.listen({ onUnhandledRequest: "warn" });
-  });
-
-  afterAll(() => {
-    server.close();
-  });
-
-  beforeEach(() => {
-    cachedStatusCredentials.clear();
-  });
-
-  describe("validateField", () => {
-    it("should validate a field that exists and matches filter", () => {
-      const fieldDescriptor = {
-        name: "test-field",
-        path: ["$.testField"],
-        filter: {
-          type: "string",
-          pattern: "^test-value$"
-        }
+  describe("verifyPresentationValidity", () => {
+    it("should throw an error for invalid VerifiablePresentation format", async () => {
+      const vpJwt = {
+        vp: "invalid.jwt.token"
       };
-      const vpJson = { testField: "test-value" };
-      const result = validateField(fieldDescriptor, vpJson, false);
-      expect(result.error).toBe(false);
-      expect(result.found).toBe(true);
-      expect(result.validated).toBe(true);
-    });
 
-    it("should handle optional fields that don't exist", () => {
-      const fieldDescriptor = {
-        name: "optional-field",
-        path: ["$.nonExistentField"],
-        optional: true
-      };
-      const vpJson = { testField: "test-value" };
-      const result = validateField(fieldDescriptor, vpJson, false);
-      expect(result.error).toBe(false);
-      expect(result.found).toBe(false);
-      expect(result.validated).toBe(false);
-    });
-
-    it("should return error for required fields that don't exist", () => {
-      const fieldDescriptor = {
-        name: "required-field",
-        path: ["$.nonExistentField"]
-      };
-      const vpJson = { testField: "test-value" };
-      const result = validateField(fieldDescriptor, vpJson, false);
-      expect(result.error).toBe(true);
-      expect(result.found).toBe(false);
-    });
-
-    it("should validate array fields", () => {
-      const fieldDescriptor: Field = {
-        name: "array-field",
-        path: ["$.arrayField"],
-        filter: {
-          type: "array",
-          items: {}
-        }
-      };
-      const vpJson = { arrayField: ["test1", "test2"] };
-      const result = validateField(fieldDescriptor, vpJson, false);
-      expect(result.error).toBe(false);
-      expect(result.found).toBe(true);
-      expect(result.validated).toBe(true);
-    });
-
-    it("should throw error for required fields that don't exist when throwOnError is true", () => {
-      const fieldDescriptor = {
-        name: "required-field",
-        path: ["$.nonExistentField"]
-      };
-      const vpJson = { testField: "test-value" };
-      expect(() => validateField(fieldDescriptor, vpJson, true)).toThrow(
-        AppError
-      );
-    });
-  });
-
-  describe("getStatusCredential", () => {
-    it("should fetch and cache a status credential", async () => {
-      const result = await getStatusCredential("http://localhost/statusList");
-      expect(result).toBeDefined();
-      expect(result.credentialSubject).toBeDefined();
-      expect(cachedStatusCredentials.size).toBe(1);
-    });
-
-    it("should use cached value if available", async () => {
-      // First request to populate cache
-      await getStatusCredential("http://localhost/statusList");
-
-      // Second request should use cache
-      const result = await getStatusCredential("http://localhost/statusList");
-      expect(result).toBeDefined();
-      expect(result.credentialSubject).toBeDefined();
-    });
-
-    it("should bypass cache when disableCache is true", async () => {
-      // First request to populate cache
-      await getStatusCredential("http://localhost/statusList");
-
-      // Second request with disableCache
-      const result = await getStatusCredential(
-        "http://localhost/statusList",
-        true
-      );
-      expect(result).toBeDefined();
-      expect(result.credentialSubject).toBeDefined();
-    });
-
-    it("should throw AppError when status credential cannot be fetched", async () => {
-      await expect(
-        getStatusCredential("http://localhost/invalid-status")
-      ).rejects.toThrow(AppError);
-    });
-  });
-
-  describe("verifyCredentialStatusValidity", () => {
-    it("should throw AppError when status credential is invalid", async () => {
       const trustAnchors: TrustAnchor[] = [];
 
       await expect(
-        verifyCredentialStatusValidity(
-          "http://localhost/statusList",
-          "0",
-          false,
-          trustAnchors
-        )
-      ).rejects.toThrow(AppError);
-    });
-  });
+        verifyPresentationValidity(vpJwt, trustAnchors)
+      ).rejects.toThrow("Failed to parse the decoded payload as JSON");
 
-  describe("verifyCredentialValidity", () => {
-    it("should verify valid credential", async () => {
-      const credential: VerifiableCredential<
-        DataIntegrityProof,
-        CredentialSubject
-      > = {
-        "@context": ["https://www.w3.org/2018/credentials/v1"],
-        type: ["VerifiableCredential", "TestCredential"],
-        issuer: "did:web:localhost",
-        expirationDate: new Date(Date.now() + 86400000).toISOString(),
-        credentialSubject: {
-          id: "did:web:localhost"
-        },
-        proof: {
-          type: "DataIntegrityProof",
-          proofPurpose: "assertionMethod",
-          verificationMethod: "did:web:localhost#key-0",
-          cryptosuite: "eddsa-rdfc-2022",
-          created: "2023-01-01T00:00:00Z",
-          proofValue:
-            "z49zVbm5JEn71f4gNY9gbvneQddR5yb2ZoC5R4RjZM1kGotYzh5sVxWAKvsZRJ74uRcixm8B9rNTkSbetHNYpXBdw"
-        }
+      const vpJwt2 = {
+        vp: "eyJhbGciOiJFZERTQSIsImtpZCI6ImRpZDp3ZWI6bG9jYWxob3N0I2tleS0wIn0.e30.Lw50KYuepySKEJKwSucZoXOdWQEkN-qSiyVjbdfm4_Ol287fFfEq37HY07C0xNFu749BrYK7xDvm7cXl-fc2Dg"
       };
-
-      const trustAnchors: TrustAnchor[] = [
-        {
-          identifier: "did:web:localhost",
-          credentialTypes: ["TestCredential"]
-        }
-      ];
-
-      const result = await verifyCredentialValidity(credential, trustAnchors);
-
-      expect(result.validExpiryDate).toBe(true);
-      expect(result.validTrustAnchors).toBe(true);
+      await expect(
+        verifyPresentationValidity(vpJwt2, trustAnchors)
+      ).rejects.toThrow("Invalid VerifiablePresentation");
     });
+    describe("Presentation formats", () => {
+      it("should verify enveloped presentation validity", async () => {
+        const vpJwt = {
+          vp: "eyJhbGciOiJFZERTQSIsImtpZCI6ImRpZDp3ZWI6bG9jYWxob3N0I2tleS0wIn0.eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvbnMvY3JlZGVudGlhbHMvdjIiXSwiaWQiOiJkYXRhOmFwcGxpY2F0aW9uL3ZwK2p3dCxleUpoYkdjaU9pSkZaRVJUUVNJc0ltdHBaQ0k2SW1ScFpEcDNaV0k2Ykc5allXeG9iM04wSTJ0bGVTMHdJbjAuZXlKaGRXUWlPaUprYVdRNmQyVmlPblJsYzNRdVkyOXRJaXdpWlhod0lqbzBNVEF5TkRRME9EQXdMQ0pBWTI5dWRHVjRkQ0k2V3lKb2RIUndjem92TDNkM2R5NTNNeTV2Y21jdmJuTXZZM0psWkdWdWRHbGhiSE12ZGpJaVhTd2lkSGx3WlNJNld5SldaWEpwWm1saFlteGxVSEpsYzJWdWRHRjBhVzl1SWwwc0luWmxjbWxtYVdGaWJHVkRjbVZrWlc1MGFXRnNJanBiZXlKQVkyOXVkR1Y0ZENJNld5Sm9kSFJ3Y3pvdkwzZDNkeTUzTXk1dmNtY3Zibk12WTNKbFpHVnVkR2xoYkhNdmRqSWlYU3dpZEhsd1pTSTZXeUpXWlhKcFptbGhZbXhsUTNKbFpHVnVkR2xoYkNJc0lsUmxjM1JEY21Wa1pXNTBhV0ZzSWwwc0ltbHpjM1ZsY2lJNkltUnBaRHAzWldJNmJHOWpZV3hvYjNOMElpd2laWGh3YVhKaGRHbHZia1JoZEdVaU9pSXlNRGs1TFRBeExUQXhWREF3T2pBd09qQXdXaUo5WFgwLnFtVWZ6U2lja0VIUlZWUkRqYXptb0NpQjFlSjgtWFViUDJvdG1TaUFDV1RXcy10WkZrVnZFOGt3dnFDWWF2WmpZQnhndWhCQU1paGJoek0wS0xxSkF3IiwidHlwZSI6IkVudmVsb3BlZFZlcmlmaWFibGVQcmVzZW50YXRpb24iLCJhdWQiOiJkaWQ6d2ViOnRlc3QuY29tIiwiZXhwIjo0MTAyNDQ0ODAwfQ.06Pl5MQU1btRgi6-9O76OYH1baYzGIt2pDBYDSel0LIZnj8EM-ZJPrgc4g0ICEVI6Uzhzez9EOmnZ-Yr36FDBA"
+        };
 
-    it("should handle expired credential", async () => {
-      const credential: VerifiableCredential<
-        DataIntegrityProof,
-        CredentialSubject
-      > = {
-        "@context": ["https://www.w3.org/2018/credentials/v1"],
-        type: ["VerifiableCredential", "TestCredential"],
-        issuer: "did:web:localhost",
-        expirationDate: new Date(Date.now() - 86400000).toISOString(),
-        credentialSubject: {
-          id: "did:web:localhost"
-        },
-        proof: {
-          type: "DataIntegrityProof",
-          proofPurpose: "assertionMethod",
-          verificationMethod: "did:web:localhost#key-0",
-          created: "2023-01-01T00:00:00Z",
-          cryptosuite: "eddsa-rdfc-2022",
-          proofValue:
-            "z49zVbm5JEn71f4gNY9gbvneQddR5yb2ZoC5R4RjZM1kGotYzh5sVxWAKvsZRJ74uRcixm8B9rNTkSbetHNYpXBdw"
-        }
-      };
+        const trustAnchors: TrustAnchor[] = [
+          {
+            identifier: "did:web:localhost",
+            credentialTypes: ["TestCredential"]
+          }
+        ];
 
-      const trustAnchors: TrustAnchor[] = [
-        {
-          identifier: "did:web:localhost",
-          credentialTypes: ["TestCredential"]
-        }
-      ];
+        const result = await verifyPresentationValidity(
+          vpJwt,
+          trustAnchors,
+          "did:web:test.com"
+        );
+        // JWT signature validation will fail because we're using a dummy signature
+        expect(result.validateJWTSignature).toBe(false);
 
-      const result = await verifyCredentialValidity(credential, trustAnchors);
+        // But we can still test the other parts of the validation
+        expect(result.validateJWTExpiryDate).toBe(true);
+        expect(result.validateAudience).toBe(true);
+      });
+      it("should throw an error for invalid enveloped presentation", async () => {
+        const vpJwt = {
+          vp: "eyJhbGciOiJFZERTQSIsImtpZCI6ImRpZDp3ZWI6bG9jYWxob3N0I2tleS0wIn0.eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvbnMvY3JlZGVudGlhbHMvdjIiXSwiaWQiOiJ0ZXN0IiwidHlwZSI6IkVudmVsb3BlZFZlcmlmaWFibGVQcmVzZW50YXRpb24iLCJhdWQiOiJkaWQ6d2ViOnRlc3QuY29tIiwiZXhwIjo0MTAyNDQ0ODAwfQ.YUCWCoIZOi0nFUCgIH9dhsEFfPN5Ap8wps5RQ5cPjmeYCbtLDcf5rbWghlTQ67bJlV2KQjsjfuTsjXKp6AAiBQ"
+        };
 
-      expect(result.validExpiryDate).toBe(false);
+        const trustAnchors: TrustAnchor[] = [];
+
+        await expect(
+          verifyPresentationValidity(vpJwt, trustAnchors)
+        ).rejects.toThrow("Invalid EnvelopedVerifiablePresentation id");
+      });
+      it("should verify VP Jose JWT presentation validity with audience", async () => {
+        // Mock JWT with minimal valid structure
+        const vpJwt = {
+          vp: "eyJhbGciOiJFZERTQSIsImtpZCI6ImRpZDp3ZWI6bG9jYWxob3N0I2tleS0wIn0.eyJhdWQiOiJkaWQ6d2ViOnRlc3QuY29tIiwiZXhwIjo0MTAyNDQ0ODAwLCJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvbnMvY3JlZGVudGlhbHMvdjIiXSwidHlwZSI6WyJWZXJpZmlhYmxlUHJlc2VudGF0aW9uIl0sInZlcmlmaWFibGVDcmVkZW50aWFsIjpbeyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvbnMvY3JlZGVudGlhbHMvdjIiXSwidHlwZSI6WyJWZXJpZmlhYmxlQ3JlZGVudGlhbCIsIlRlc3RDcmVkZW50aWFsIl0sImlzc3VlciI6ImRpZDp3ZWI6bG9jYWxob3N0IiwiZXhwaXJhdGlvbkRhdGUiOiIyMDk5LTAxLTAxVDAwOjAwOjAwWiJ9XX0.qmUfzSickEHRVVRDjazmoCiB1eJ8-XUbP2otmSiACWTWs-tZFkVvE8kwvqCYavZjYBxguhBAMihbhzM0KLqJAw"
+        };
+
+        const trustAnchors: TrustAnchor[] = [
+          {
+            identifier: "did:web:localhost",
+            credentialTypes: ["TestCredential"]
+          }
+        ];
+
+        const result = await verifyPresentationValidity(
+          vpJwt,
+          trustAnchors,
+          "did:web:test.com"
+        );
+        // JWT signature validation will fail because we're using a dummy signature
+        expect(result.validateJWTSignature).toBe(false);
+
+        // But we can still test the other parts of the validation
+        expect(result.validateJWTExpiryDate).toBe(true);
+        expect(result.validateAudience).toBe(true);
+      });
+      it("should verify VP identity foundation JWT presentation validity with audience", async () => {
+        // Mock JWT with minimal valid structure
+        const vpJwt = {
+          vp: "eyJhbGciOiJFZERTQSIsImtpZCI6ImRpZDp3ZWI6bG9jYWxob3N0I2tleS0wIn0.eyJhdWQiOiJkaWQ6d2ViOnRlc3QuY29tIiwiZXhwIjo0MTAyNDQ0ODAwLCJ2cCI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvbnMvY3JlZGVudGlhbHMvdjIiXSwidHlwZSI6WyJWZXJpZmlhYmxlUHJlc2VudGF0aW9uIl0sInZlcmlmaWFibGVDcmVkZW50aWFsIjpbeyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvbnMvY3JlZGVudGlhbHMvdjIiXSwidHlwZSI6WyJWZXJpZmlhYmxlQ3JlZGVudGlhbCIsIlRlc3RDcmVkZW50aWFsIl0sImlzc3VlciI6ImRpZDp3ZWI6bG9jYWxob3N0IiwiZXhwaXJhdGlvbkRhdGUiOiIyMDk5LTAxLTAxVDAwOjAwOjAwWiJ9XX19.lNdWWQwvKFaF0PSNFfIdze0eWZLAP2ocWWp8YvcwCcnqgld9G2hZiGVSDHyiB3xZTS1mX1PQWLfxqlaHGiz9BA"
+        };
+
+        const trustAnchors: TrustAnchor[] = [
+          {
+            identifier: "did:web:localhost",
+            credentialTypes: ["TestCredential"]
+          }
+        ];
+
+        const result = await verifyPresentationValidity(
+          vpJwt,
+          trustAnchors,
+          "did:web:test.com"
+        );
+
+        // JWT signature validation will fail because we're using a dummy signature
+        expect(result.validateJWTSignature).toBe(false);
+
+        // But we can still test the other parts of the validation
+        expect(result.validateJWTExpiryDate).toBe(true);
+        expect(result.validateAudience).toBe(true);
+      });
     });
-  });
-
-  describe("verifyPresentationValidity", () => {
-    it("should verify presentation validity with audience", async () => {
-      // Mock JWT with minimal valid structure
-      const vpJwt = {
-        vp: "eyJhbGciOiJFZERTQSIsImtpZCI6ImRpZDp3ZWI6bG9jYWxob3N0I2tleS0wIn0.eyJhdWQiOiJkaWQ6d2ViOnRlc3QuY29tIiwiZXhwIjo0MTAyNDQ0ODAwLCJ2cCI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSJdLCJ0eXBlIjpbIlZlcmlmaWFibGVQcmVzZW50YXRpb24iXSwidmVyaWZpYWJsZUNyZWRlbnRpYWwiOlt7IkBjb250ZXh0IjpbImh0dHBzOi8vd3d3LnczLm9yZy8yMDE4L2NyZWRlbnRpYWxzL3YxIl0sInR5cGUiOlsiVmVyaWZpYWJsZUNyZWRlbnRpYWwiLCJUZXN0Q3JlZGVudGlhbCJdLCJpc3N1ZXIiOiJkaWQ6d2ViOmxvY2FsaG9zdCIsImV4cGlyYXRpb25EYXRlIjoiMjA5OS0wMS0wMVQwMDowMDowMFoifV19fQ.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+    describe("Verify JWT claims", () => {
+      const privateJwk: JWK = {
+        crv: "Ed25519",
+        d: "r3i3AEII1Cv97rOIaNifsyw0OSJ1tzY1giR-lgMjCMo",
+        x: "mt7dyxIpQ36nxQeO69q0mKbfeNWMDmYWjLUj3PvDdRU",
+        kty: "OKP"
       };
-
-      const trustAnchors: TrustAnchor[] = [
-        {
-          identifier: "did:web:localhost",
-          credentialTypes: ["TestCredential"]
-        }
-      ];
-
-      const result = await verifyPresentationValidity(
-        vpJwt,
-        trustAnchors,
-        "did:web:test.com"
-      );
-
-      // JWT signature validation will fail because we're using a dummy token
-      expect(result.validateJWTSignature).toBe(false);
-
-      // But we can still test the other parts of the validation
-      expect(result.validateJWTExpiryDate).toBe(true);
-      expect(result.validateAudience).toBe(true);
+      const publicKeyMultibase =
+        "z6MkpsowBu74vFhAfuM2JipTgFNXemu2x5pQosnwZ5RtpPwz";
+      const testPresentation: VerifiablePresentation = {
+        "@context": ["https://www.w3.org/ns/credentials/v2"],
+        type: ["VerifiablePresentation"],
+        verifiableCredential: [
+          {
+            "@context": ["https://www.w3.org/ns/credentials/v2"],
+            type: ["VerifiableCredential", "TestCredential"],
+            issuer: "did:web:localhost",
+            expirationDate: "2099-01-01T00:00:00Z"
+          } as unknown as VerifiableCredential
+        ]
+      };
+      it("should validate audience claim", async () => {
+        const signedJwt = await generateSignedJwt(
+          testPresentation,
+          `did:key:${publicKeyMultibase}`,
+          {
+            key: {
+              identifier: publicKeyMultibase,
+              signingKey: privateJwk,
+              algorithm: "EdDSA"
+            },
+            audience: "aud-1",
+            iss: true,
+            expiresIn: 60,
+            subject: "sub-1",
+            jti: crypto.randomUUID()
+          }
+        );
+        const vpJwt = {
+          vp: signedJwt
+        };
+        const trustAnchors: TrustAnchor[] = [];
+        const result = await verifyPresentationValidity(
+          vpJwt,
+          trustAnchors,
+          "aud-1"
+        );
+        expect(result.validateAudience).toBe(true);
+        expect(result.validateJWTSignature).toBe(true);
+      });
+      it("should validate audience claim", async () => {
+        const signedJwt = await generateSignedJwt(
+          testPresentation,
+          `did:key:${publicKeyMultibase}`,
+          {
+            key: {
+              identifier: publicKeyMultibase,
+              signingKey: privateJwk,
+              algorithm: "EdDSA"
+            },
+            iss: true,
+            expiresIn: 60,
+            subject: "sub-1",
+            jti: crypto.randomUUID()
+          }
+        );
+        const vpJwt = {
+          vp: signedJwt
+        };
+        const trustAnchors: TrustAnchor[] = [];
+        const result = await verifyPresentationValidity(vpJwt, trustAnchors);
+        expect(result.validateAudience).toBeUndefined();
+        expect(result.validateJWTSignature).toBe(true);
+        const result2 = await verifyPresentationValidity(
+          vpJwt,
+          trustAnchors,
+          "wrong-audience"
+        );
+        expect(result2.validateAudience).toBe(false);
+      });
+      it("should validate expiry date claim", async () => {
+        const signedJwt = await generateSignedJwt(
+          testPresentation,
+          `did:key:${publicKeyMultibase}`,
+          {
+            key: {
+              identifier: publicKeyMultibase,
+              signingKey: privateJwk,
+              algorithm: "EdDSA"
+            },
+            iss: true,
+            expiresIn: 60,
+            subject: "sub-1",
+            jti: crypto.randomUUID()
+          }
+        );
+        const vpJwt = {
+          vp: signedJwt
+        };
+        const trustAnchors: TrustAnchor[] = [];
+        const result = await verifyPresentationValidity(vpJwt, trustAnchors);
+        expect(result.validateJWTExpiryDate).toBe(true);
+      });
+      it("should validate with missing expiry date claim", async () => {
+        const signedJwt = await generateSignedJwt(
+          testPresentation,
+          `did:key:${publicKeyMultibase}`,
+          {
+            key: {
+              identifier: publicKeyMultibase,
+              signingKey: privateJwk,
+              algorithm: "EdDSA"
+            },
+            iss: true,
+            subject: "sub-1",
+            jti: crypto.randomUUID()
+          }
+        );
+        const vpJwt = {
+          vp: signedJwt
+        };
+        const trustAnchors: TrustAnchor[] = [];
+        const result = await verifyPresentationValidity(vpJwt, trustAnchors);
+        expect(result.validateJWTExpiryDate).toBe(true);
+      });
+      it("should error on expired JWT", async () => {
+        const signedJwt = await generateSignedJwt(
+          testPresentation,
+          `did:key:${publicKeyMultibase}`,
+          {
+            key: {
+              identifier: publicKeyMultibase,
+              signingKey: privateJwk,
+              algorithm: "EdDSA"
+            },
+            iss: true,
+            expiresIn: -60, // Expired JWT
+            subject: "sub-1",
+            jti: crypto.randomUUID()
+          }
+        );
+        const vpJwt = {
+          vp: signedJwt
+        };
+        const trustAnchors: TrustAnchor[] = [];
+        const result = await verifyPresentationValidity(vpJwt, trustAnchors);
+        expect(result.validateJWTSignature).toBe(false);
+      });
+      it("should validate nonce claim", async () => {
+        const nonce = "test-nonce";
+        const signedJwt = await generateSignedJwt(
+          testPresentation,
+          `did:key:${publicKeyMultibase}`,
+          {
+            key: {
+              identifier: publicKeyMultibase,
+              signingKey: privateJwk,
+              algorithm: "EdDSA"
+            },
+            iss: true,
+            expiresIn: 60,
+            subject: "sub-1",
+            jti: crypto.randomUUID(),
+            nonce
+          }
+        );
+        const vpJwt = {
+          vp: signedJwt
+        };
+        const trustAnchors: TrustAnchor[] = [];
+        const result = await verifyPresentationValidity(
+          vpJwt,
+          trustAnchors,
+          undefined,
+          nonce
+        );
+        expect(result.validateNonce).toBe(true);
+      });
+      it("should validate nonce claim with undefined nonce", async () => {
+        const signedJwt = await generateSignedJwt(
+          testPresentation,
+          `did:key:${publicKeyMultibase}`,
+          {
+            key: {
+              identifier: publicKeyMultibase,
+              signingKey: privateJwk,
+              algorithm: "EdDSA"
+            },
+            iss: true,
+            expiresIn: 60,
+            subject: "sub-1",
+            jti: crypto.randomUUID()
+          }
+        );
+        const vpJwt = {
+          vp: signedJwt
+        };
+        const trustAnchors: TrustAnchor[] = [];
+        const result = await verifyPresentationValidity(vpJwt, trustAnchors);
+        expect(result.validateNonce).toBeUndefined();
+      });
+      it("should validate nonce claim with mismatched nonce", async () => {
+        const nonce = "test-nonce";
+        const signedJwt = await generateSignedJwt(
+          testPresentation,
+          `did:key:${publicKeyMultibase}`,
+          {
+            key: {
+              identifier: publicKeyMultibase,
+              signingKey: privateJwk,
+              algorithm: "EdDSA"
+            },
+            iss: true,
+            expiresIn: 60,
+            subject: "sub-1",
+            jti: crypto.randomUUID(),
+            nonce
+          }
+        );
+        const vpJwt = {
+          vp: signedJwt
+        };
+        const trustAnchors: TrustAnchor[] = [];
+        const result = await verifyPresentationValidity(
+          vpJwt,
+          trustAnchors,
+          undefined,
+          "wrong-nonce"
+        );
+        expect(result.validateNonce).toBe(false);
+      });
     });
   });
 
@@ -428,596 +446,6 @@ describe("Presentation Verification", () => {
       ).rejects.toThrow(
         "No VP tokens found for credential query empty_credential"
       );
-    });
-  });
-
-  describe("Isolated DCQL Constraint Validation", () => {
-    describe("validateFormatConstraints", () => {
-      it("should validate SD-JWT VC vct_values constraints", () => {
-        const credentialQuery = plainToInstance(CredentialQuery, {
-          id: "test_credential",
-          format: "dc+sd-jwt",
-          meta: {
-            vct_values: [
-              "https://credentials.example.com/identity",
-              "https://credentials.example.com/address"
-            ]
-          }
-        });
-
-        // Test valid vct value
-        const validCredential = {
-          vct: "https://credentials.example.com/identity",
-          iss: "https://issuer.example.com",
-          iat: Date.now() / 1000
-        } as unknown as VerifiableCredential;
-
-        expect(() =>
-          validateFormatConstraints(credentialQuery, validCredential)
-        ).not.toThrow();
-
-        // Test invalid vct value
-        const invalidCredential = {
-          vct: "https://credentials.example.com/invalid",
-          iss: "https://issuer.example.com",
-          iat: Date.now() / 1000
-        } as unknown as VerifiableCredential;
-
-        expect(() =>
-          validateFormatConstraints(credentialQuery, invalidCredential)
-        ).toThrow(
-          "Credential vct https://credentials.example.com/invalid not in allowed values"
-        );
-
-        // Test missing vct value
-        const missingVctCredential = {
-          iss: "https://issuer.example.com",
-          iat: Date.now() / 1000
-        } as unknown as VerifiableCredential;
-
-        expect(() =>
-          validateFormatConstraints(credentialQuery, missingVctCredential)
-        ).toThrow("Credential vct undefined not in allowed values");
-      });
-
-      it("should validate W3C VC type_values constraints", () => {
-        const credentialQuery = plainToInstance(CredentialQuery, {
-          id: "test_credential",
-          format: "jwt_vc_json",
-          meta: {
-            type_values: [
-              ["VerifiableCredential", "IdentityCredential"],
-              ["VerifiableCredential", "AddressCredential"]
-            ]
-          }
-        });
-
-        // Test valid type combination
-        const validCredential = plainToInstance(VerifiableCredential, {
-          "@context": ["https://www.w3.org/2018/credentials/v1"],
-          type: ["VerifiableCredential", "IdentityCredential"],
-          issuer: "https://issuer.example.com",
-          issuanceDate: "2023-01-01T00:00:00Z",
-          credentialSubject: { id: "did:example:123" }
-        });
-
-        expect(() =>
-          validateFormatConstraints(credentialQuery, validCredential)
-        ).not.toThrow();
-
-        // Test invalid type combination
-        const invalidCredential = plainToInstance(VerifiableCredential, {
-          "@context": ["https://www.w3.org/2018/credentials/v1"],
-          type: ["VerifiableCredential", "InvalidCredential"],
-          issuer: "https://issuer.example.com",
-          issuanceDate: "2023-01-01T00:00:00Z",
-          credentialSubject: { id: "did:example:123" }
-        });
-
-        expect(() =>
-          validateFormatConstraints(credentialQuery, invalidCredential)
-        ).toThrow(
-          "Credential types VerifiableCredential, InvalidCredential do not match allowed types"
-        );
-
-        // Test missing type
-        const missingTypeCredential = plainToInstance(VerifiableCredential, {
-          "@context": ["https://www.w3.org/2018/credentials/v1"],
-          issuer: "https://issuer.example.com",
-          issuanceDate: "2023-01-01T00:00:00Z",
-          credentialSubject: { id: "did:example:123" }
-        });
-
-        expect(() =>
-          validateFormatConstraints(credentialQuery, missingTypeCredential)
-        ).toThrow("Credential types  do not match allowed types");
-      });
-
-      it("should validate mDoc doctype_value constraints", () => {
-        const credentialQuery = plainToInstance(CredentialQuery, {
-          id: "test_credential",
-          format: "mso_mdoc",
-          meta: {
-            doctype_value: "org.iso.18013.5.1.mDL"
-          }
-        });
-
-        // Test valid doctype
-        const validCredential = {
-          doctype: "org.iso.18013.5.1.mDL",
-          version: "1.0"
-        } as unknown as VerifiableCredential;
-
-        expect(() =>
-          validateFormatConstraints(credentialQuery, validCredential)
-        ).not.toThrow();
-
-        // Test invalid doctype
-        const invalidCredential = {
-          doctype: "org.iso.18013.5.1.invalid",
-          version: "1.0"
-        } as unknown as VerifiableCredential;
-
-        expect(() =>
-          validateFormatConstraints(credentialQuery, invalidCredential)
-        ).toThrow(
-          "Credential doctype org.iso.18013.5.1.invalid does not match required org.iso.18013.5.1.mDL"
-        );
-
-        // Test missing doctype
-        const missingDoctypeCredential = {
-          version: "1.0"
-        } as unknown as VerifiableCredential;
-
-        expect(() =>
-          validateFormatConstraints(credentialQuery, missingDoctypeCredential)
-        ).toThrow(
-          "Credential doctype undefined does not match required org.iso.18013.5.1.mDL"
-        );
-      });
-    });
-
-    describe("validateTrustedAuthorities", () => {
-      it("should validate OpenID Federation trusted authorities", () => {
-        const trustedAuthorities = [
-          {
-            type: "openid_federation" as const,
-            values: [
-              "https://federation.example.com",
-              "https://another-federation.example.com"
-            ]
-          }
-        ];
-
-        const credential = plainToInstance(VerifiableCredential, {
-          "@context": ["https://www.w3.org/2018/credentials/v1"],
-          type: ["VerifiableCredential"],
-          issuer: "https://issuer.example.com",
-          issuanceDate: "2023-01-01T00:00:00Z",
-          credentialSubject: { id: "did:example:123" }
-        });
-
-        const validTrustAnchors: TrustAnchor[] = [
-          {
-            identifier: "https://federation.example.com",
-            credentialTypes: ["VerifiableCredential"]
-          }
-        ];
-
-        expect(() =>
-          validateTrustedAuthorities(
-            trustedAuthorities,
-            credential,
-            validTrustAnchors
-          )
-        ).not.toThrow();
-
-        // Test with no matching trust anchors
-        const emptyTrustAnchors: TrustAnchor[] = [];
-
-        expect(() =>
-          validateTrustedAuthorities(
-            trustedAuthorities,
-            credential,
-            emptyTrustAnchors
-          )
-        ).toThrow(
-          "No trusted federation anchor found for issuer https://issuer.example.com"
-        );
-
-        // Test with non-matching trust anchors
-        const nonMatchingTrustAnchors: TrustAnchor[] = [
-          {
-            identifier: "https://different-federation.example.com",
-            credentialTypes: ["VerifiableCredential"]
-          }
-        ];
-
-        expect(() =>
-          validateTrustedAuthorities(
-            trustedAuthorities,
-            credential,
-            nonMatchingTrustAnchors
-          )
-        ).toThrow(
-          "No trusted federation anchor found for issuer https://issuer.example.com"
-        );
-      });
-
-      it("should throw for unsupported trusted authority types", () => {
-        const trustedAuthorities = [
-          {
-            type: "etsi_tl" as const,
-            values: ["https://etsi.example.com"]
-          }
-        ];
-
-        const credential = plainToInstance(VerifiableCredential, {
-          "@context": ["https://www.w3.org/2018/credentials/v1"],
-          type: ["VerifiableCredential"],
-          issuer: "https://issuer.example.com",
-          issuanceDate: "2023-01-01T00:00:00Z",
-          credentialSubject: { id: "did:example:123" }
-        });
-
-        expect(() =>
-          validateTrustedAuthorities(trustedAuthorities, credential, [])
-        ).toThrow("ETSI Trust List validation not yet implemented");
-
-        const akiAuthorities = [
-          {
-            type: "aki" as const,
-            values: ["keyid:123456"]
-          }
-        ];
-
-        expect(() =>
-          validateTrustedAuthorities(akiAuthorities, credential, [])
-        ).toThrow("AKI validation not yet implemented");
-
-        const unknownAuthorities = [
-          {
-            type: "unknown",
-            values: ["value"]
-          }
-        ];
-
-        expect(() =>
-          validateTrustedAuthorities(unknownAuthorities, credential, [])
-        ).toThrow("Unknown trusted authority type: unknown");
-      });
-    });
-
-    describe("validateClaims", () => {
-      it("should validate required claims with correct values", () => {
-        const claims = [
-          {
-            path: ["credentialSubject", "name"],
-            values: ["John Doe", "Jane Smith"]
-          },
-          {
-            path: ["credentialSubject", "age"]
-            // No values specified, just check existence
-          }
-        ] as ClaimsQuery[];
-
-        const validCredential = plainToInstance(VerifiableCredential, {
-          "@context": ["https://www.w3.org/2018/credentials/v1"],
-          type: ["VerifiableCredential"],
-          issuer: "https://issuer.example.com",
-          issuanceDate: "2023-01-01T00:00:00Z",
-          credentialSubject: {
-            id: "did:example:123",
-            name: "John Doe",
-            age: 30
-          }
-        });
-
-        expect(() => validateClaims(claims, validCredential)).not.toThrow();
-
-        // Test with invalid claim value
-        const invalidValueCredential = plainToInstance(VerifiableCredential, {
-          "@context": ["https://www.w3.org/2018/credentials/v1"],
-          type: ["VerifiableCredential"],
-          issuer: "https://issuer.example.com",
-          issuanceDate: "2023-01-01T00:00:00Z",
-          credentialSubject: {
-            id: "did:example:123",
-            name: "Invalid Name",
-            age: 30
-          }
-        });
-
-        expect(() => validateClaims(claims, invalidValueCredential)).toThrow(
-          "Claim value Invalid Name not in expected values: John Doe, Jane Smith"
-        );
-
-        // Test with missing required claim
-        const missingClaimCredential = plainToInstance(VerifiableCredential, {
-          "@context": ["https://www.w3.org/2018/credentials/v1"],
-          type: ["VerifiableCredential"],
-          issuer: "https://issuer.example.com",
-          issuanceDate: "2023-01-01T00:00:00Z",
-          credentialSubject: {
-            id: "did:example:123",
-            name: "John Doe"
-            // Missing age claim
-          }
-        });
-
-        expect(() => validateClaims(claims, missingClaimCredential)).toThrow(
-          "Required claim at path credentialSubject.age not found in credential"
-        );
-      });
-
-      it("should handle complex claim paths", () => {
-        const claims = [
-          {
-            path: ["credentialSubject", "address", "street"],
-            values: ["123 Main St", "456 Oak Ave"]
-          }
-        ];
-
-        const validCredential = plainToInstance(VerifiableCredential, {
-          "@context": ["https://www.w3.org/2018/credentials/v1"],
-          type: ["VerifiableCredential"],
-          issuer: "https://issuer.example.com",
-          issuanceDate: "2023-01-01T00:00:00Z",
-          credentialSubject: {
-            id: "did:example:123",
-            address: {
-              street: "123 Main St",
-              city: "Example City"
-            }
-          }
-        });
-
-        expect(() => validateClaims(claims, validCredential)).not.toThrow();
-
-        // Test with missing nested claim
-        const missingNestedCredential = plainToInstance(VerifiableCredential, {
-          "@context": ["https://www.w3.org/2018/credentials/v1"],
-          type: ["VerifiableCredential"],
-          issuer: "https://issuer.example.com",
-          issuanceDate: "2023-01-01T00:00:00Z",
-          credentialSubject: {
-            id: "did:example:123",
-            address: {
-              city: "Example City"
-              // Missing street
-            }
-          }
-        });
-
-        expect(() => validateClaims(claims, missingNestedCredential)).toThrow(
-          "Required claim at path credentialSubject.address.street not found in credential"
-        );
-      });
-    });
-
-    describe("validateClaimSets", () => {
-      it("should pass if at least one claim set is satisfied", () => {
-        const claimSets: string[][] = [
-          ["credentialSubject.id", "credentialSubject.name"],
-          ["credentialSubject.email"]
-        ];
-        const credential = plainToInstance(VerifiableCredential, {
-          "@context": ["https://www.w3.org/2018/credentials/v1"],
-          type: ["VerifiableCredential"],
-          issuer: "https://issuer.example.com",
-          issuanceDate: "2023-01-01T00:00:00Z",
-          credentialSubject: {
-            id: "did:example:123",
-            name: "John Doe"
-          }
-        });
-        expect(() => validateClaimSets(claimSets, credential)).not.toThrow();
-      });
-      it("should throw if no claim set is satisfied", () => {
-        const claimSets: string[][] = [
-          ["credentialSubject.email"],
-          ["credentialSubject.phone"]
-        ];
-        const credential = plainToInstance(VerifiableCredential, {
-          "@context": ["https://www.w3.org/2018/credentials/v1"],
-          type: ["VerifiableCredential"],
-          issuer: "https://issuer.example.com",
-          issuanceDate: "2023-01-01T00:00:00Z",
-          credentialSubject: {
-            id: "did:example:123",
-            name: "John Doe"
-          }
-        });
-        expect(() => validateClaimSets(claimSets, credential)).toThrow(
-          "No claim set satisfied by the credential"
-        );
-      });
-    });
-
-    describe("validateCredentialSets", () => {
-      it("should pass if at least one option is satisfied", () => {
-        const credentialSets: CredentialSetQuery[] = [
-          {
-            required: true,
-            options: [["cred1"], ["cred2", "cred3"]]
-          } as CredentialSetQuery
-        ];
-        const vpToken: Record<string, string[]> = {
-          cred1: ["vp1"],
-          cred2: [],
-          cred3: []
-        };
-        expect(() =>
-          validateCredentialSets(credentialSets, vpToken)
-        ).not.toThrow();
-      });
-
-      it("should throw if no option is satisfied", () => {
-        const credentialSets: CredentialSetQuery[] = [
-          {
-            required: true,
-            options: [["cred1"], ["cred2", "cred3"]]
-          } as CredentialSetQuery
-        ];
-        const vpToken: Record<string, string[]> = {
-          cred1: [],
-          cred2: [],
-          cred3: []
-        };
-        expect(() => validateCredentialSets(credentialSets, vpToken)).toThrow(
-          /Required credential set not satisfied/
-        );
-      });
-
-      it("should skip non-required credential sets", () => {
-        const credentialSets: CredentialSetQuery[] = [
-          {
-            required: false,
-            options: [["cred1"]]
-          } as CredentialSetQuery
-        ];
-        const vpToken: Record<string, string[]> = {
-          cred1: []
-        };
-        expect(() =>
-          validateCredentialSets(credentialSets, vpToken)
-        ).not.toThrow();
-      });
-    });
-
-    describe("validateDcqlConstraints", () => {
-      it("should validate complete DCQL constraints on a verifiable presentation", () => {
-        const credentialQuery = plainToInstance(CredentialQuery, {
-          id: "test_credential",
-          format: "jwt_vc_json",
-          meta: {
-            type_values: [["VerifiableCredential", "IdentityCredential"]]
-          },
-          trusted_authorities: [
-            {
-              type: "openid_federation",
-              values: ["https://federation.example.com"]
-            }
-          ],
-          claims: [
-            {
-              path: ["credentialSubject", "name"],
-              values: ["John Doe"]
-            }
-          ]
-        });
-
-        const validCredential = plainToInstance(VerifiableCredential, {
-          "@context": ["https://www.w3.org/2018/credentials/v1"],
-          type: ["VerifiableCredential", "IdentityCredential"],
-          issuer: "https://issuer.example.com",
-          issuanceDate: "2023-01-01T00:00:00Z",
-          credentialSubject: {
-            id: "did:example:123",
-            name: "John Doe"
-          }
-        });
-
-        const vp = plainToInstance(VerifiablePresentation, {
-          "@context": ["https://www.w3.org/2018/credentials/v1"],
-          type: ["VerifiablePresentation"],
-          verifiableCredential: [validCredential],
-          holder: "did:example:holder123"
-        });
-
-        const trustAnchors: TrustAnchor[] = [
-          {
-            identifier: "https://federation.example.com",
-            credentialTypes: ["IdentityCredential"]
-          }
-        ];
-
-        expect(() =>
-          validateDcqlConstraints(credentialQuery, vp, trustAnchors)
-        ).not.toThrow();
-      });
-
-      it("should fail validation when any constraint is violated", () => {
-        const credentialQuery = plainToInstance(CredentialQuery, {
-          id: "test_credential",
-          format: "jwt_vc_json",
-          meta: {
-            type_values: [["VerifiableCredential", "IdentityCredential"]]
-          },
-          claims: [
-            {
-              path: ["credentialSubject", "name"],
-              values: ["John Doe"]
-            }
-          ]
-        });
-
-        // Credential with wrong type
-        const invalidCredential = plainToInstance(VerifiableCredential, {
-          "@context": ["https://www.w3.org/2018/credentials/v1"],
-          type: ["VerifiableCredential", "WrongCredential"],
-          issuer: "https://issuer.example.com",
-          issuanceDate: "2023-01-01T00:00:00Z",
-          credentialSubject: {
-            id: "did:example:123",
-            name: "John Doe"
-          }
-        });
-
-        const vp = plainToInstance(VerifiablePresentation, {
-          "@context": ["https://www.w3.org/2018/credentials/v1"],
-          type: ["VerifiablePresentation"],
-          verifiableCredential: [invalidCredential],
-          holder: "did:example:holder123"
-        });
-
-        expect(() => validateDcqlConstraints(credentialQuery, vp, [])).toThrow(
-          "Credential types VerifiableCredential, WrongCredential do not match allowed types"
-        );
-      });
-
-      it("should handle multiple credentials in a presentation", () => {
-        const credentialQuery = plainToInstance(CredentialQuery, {
-          id: "test_credential",
-          format: "jwt_vc_json",
-          meta: {
-            type_values: [["VerifiableCredential", "IdentityCredential"]]
-          }
-        });
-
-        const credential1 = plainToInstance(VerifiableCredential, {
-          "@context": ["https://www.w3.org/2018/credentials/v1"],
-          type: ["VerifiableCredential", "IdentityCredential"],
-          issuer: "https://issuer.example.com",
-          issuanceDate: "2023-01-01T00:00:00Z",
-          credentialSubject: {
-            id: "did:example:123",
-            name: "John Doe"
-          }
-        });
-
-        const credential2 = plainToInstance(VerifiableCredential, {
-          "@context": ["https://www.w3.org/2018/credentials/v1"],
-          type: ["VerifiableCredential", "IdentityCredential"],
-          issuer: "https://issuer.example.com",
-          issuanceDate: "2023-01-01T00:00:00Z",
-          credentialSubject: {
-            id: "did:example:456",
-            name: "Jane Smith"
-          }
-        });
-
-        const vp = plainToInstance(VerifiablePresentation, {
-          "@context": ["https://www.w3.org/2018/credentials/v1"],
-          type: ["VerifiablePresentation"],
-          verifiableCredential: [credential1, credential2],
-          holder: "did:example:holder123"
-        });
-
-        expect(() =>
-          validateDcqlConstraints(credentialQuery, vp, [])
-        ).not.toThrow();
-      });
     });
   });
 });

@@ -178,7 +178,7 @@ export class DataPlaneService {
     });
     await this.axiosDataPlane.post<DataPlaneDetailsDto>(
       `/${currentState.identifier}/catalog`,
-      await catalog.serialize()
+      catalog.serialize()
     );
     const state = await this.stateRepository.save({
       ...currentState,
@@ -210,7 +210,7 @@ export class DataPlaneService {
     });
     await this.axiosDataPlane.post<DataPlaneDetailsDto>(
       `/${currentState.identifier}/catalog`,
-      await catalog.serialize()
+      catalog.serialize()
     );
     const state = await this.stateRepository.save({
       ...currentState,
@@ -241,7 +241,7 @@ export class DataPlaneService {
     });
     await this.axiosDataPlane.post<DataPlaneDetailsDto>(
       `/${currentState.identifier}/catalog`,
-      await catalog.serialize()
+      catalog.serialize()
     );
     const state = await this.stateRepository.save({
       ...currentState,
@@ -263,7 +263,7 @@ export class DataPlaneService {
     });
     await this.axiosDataPlane.post<DataPlaneDetailsDto>(
       `/${currentState.identifier}/catalog`,
-      await catalog.serialize()
+      catalog.serialize()
     );
     const state = await this.stateRepository.save({
       ...currentState,

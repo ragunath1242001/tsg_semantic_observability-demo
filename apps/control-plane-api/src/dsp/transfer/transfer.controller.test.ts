@@ -10,6 +10,7 @@ import {
 import {
   AgreementDto,
   Catalog,
+  CredentialContainer,
   DataService,
   Dataset,
   defaultContext,
@@ -22,8 +23,7 @@ import {
   TransferStartMessage,
   TransferState,
   TransferSuspensionMessage,
-  TransferTerminationMessage,
-  VerifiableCredential
+  TransferTerminationMessage
 } from "@tsg-dsp/common-dsp";
 import { plainToClass } from "class-transformer";
 import { http, HttpResponse, PathParams } from "msw";
@@ -107,9 +107,7 @@ describe("TransferController", () => {
         HttpResponse.text("")
       ),
       http.get("http://127.0.0.1/data-plane/catalog", async () =>
-        HttpResponse.json(
-          await new Catalog({ participantId: "did:web:localhost" })
-        )
+        HttpResponse.json(new Catalog({ participantId: "did:web:localhost" }))
       ),
       http.post<PathParams, TransferRequestMessageDto, TransferProcessDto>(
         "http://remoteparty.test/transfers/request",
@@ -225,7 +223,7 @@ describe("TransferController", () => {
               transferId: string,
               remoteParticipant: string,
               action: string,
-              verifiableCredentials: VerifiableCredential[]
+              verifiableCredentials: CredentialContainer[]
             ) {
               return EvaluationContext.parse({
                 role: role,
@@ -346,8 +344,8 @@ describe("TransferController", () => {
     transferConsumerUuid = transferConsumerProcess.localId;
   });
 
-  afterEach(async () => {
-    await TypeOrmTestHelper.instance.teardownTestDB();
+  afterEach(() => {
+    TypeOrmTestHelper.instance.teardownTestDB();
   });
 
   describe("/request", () => {
@@ -360,7 +358,7 @@ describe("TransferController", () => {
           callbackAddress: "http://127.0.0.1/callbacks"
         }),
         "did:web:localhost",
-        { "@context": [], type: [], verifiableCredential: [] }
+        []
       );
       expect(result).toStrictEqual<TransferProcessDto>({
         "@context": defaultContext(),
@@ -386,13 +384,13 @@ describe("TransferController", () => {
         state: TransferState.REQUESTED
       });
     });
-    it("Transfer request with unknown id should result in a 404", () => {
-      expect(async () => {
-        await transferController.getTransfer(
+    it("Transfer request with unknown id should result in a 404", async () => {
+      await expect(
+        transferController.getTransfer(
           "urn:uuid:00000000-0000-0000-0000-000000000000",
           "did:web:localhost"
-        );
-      }).rejects.toThrow(
+        )
+      ).rejects.toThrow(
         expect.objectContaining({ status: HttpStatus.NOT_FOUND })
       );
     });
@@ -422,31 +420,31 @@ describe("TransferController", () => {
         status: "OK"
       });
     });
-    it("Missing processId in contract request message should result in a 400", () => {
-      expect(async () => {
-        await transferController.startTransferProcess(
+    it("Missing processId in contract request message should result in a 400", async () => {
+      await expect(
+        transferController.startTransferProcess(
           "urn:uuid:741e3479-cdf4-4f1b-b8a5-9d07980725da",
           new TransferStartMessage({
             consumerPid: "urn:uuid:9b17c898-5cce-49f9-944b-20488ef55776",
             providerPid: "urn:uuid:741e3479-cdf4-4f1b-b8a5-9d07980725da"
           }),
           "did:web:localhost"
-        );
-      }).rejects.toThrow(
+        )
+      ).rejects.toThrow(
         expect.objectContaining({ status: HttpStatus.NOT_FOUND })
       );
     });
-    it("Mismatch processId in contract request message and id path parameter should result in a 400", () => {
-      expect(async () => {
-        await transferController.startTransferProcess(
+    it("Mismatch processId in contract request message and id path parameter should result in a 400", async () => {
+      await expect(
+        transferController.startTransferProcess(
           transferProviderUuid,
           new TransferStartMessage({
             consumerPid: "urn:uuid:9b17c898-5cce-49f9-944b-20488ef55776",
             providerPid: transferProviderUuid
           }),
           "did:web:localhost"
-        );
-      }).rejects.toThrow(
+        )
+      ).rejects.toThrow(
         expect.objectContaining({ status: HttpStatus.BAD_REQUEST })
       );
     });
@@ -468,31 +466,31 @@ describe("TransferController", () => {
         status: "OK"
       });
     });
-    it("Missing processId in contract request message should result in a 400", () => {
-      expect(async () => {
-        await transferController.completeTransferProcess(
+    it("Missing processId in contract request message should result in a 400", async () => {
+      await expect(
+        transferController.completeTransferProcess(
           "urn:uuid:741e3479-cdf4-4f1b-b8a5-9d07980725da",
           new TransferCompletionMessage({
             consumerPid: "urn:uuid:b7987d7b-85fe-4569-8ef9-965f16e93802",
             providerPid: "urn:uuid:741e3479-cdf4-4f1b-b8a5-9d07980725da"
           }),
           "did:web:localhost"
-        );
-      }).rejects.toThrow(
+        )
+      ).rejects.toThrow(
         expect.objectContaining({ status: HttpStatus.NOT_FOUND })
       );
     });
-    it("Mismatch processId in contract request message and id path parameter should result in a 400", () => {
-      expect(async () => {
-        await transferController.completeTransferProcess(
+    it("Mismatch processId in contract request message and id path parameter should result in a 400", async () => {
+      await expect(
+        transferController.completeTransferProcess(
           transferProviderUuid,
           new TransferCompletionMessage({
             consumerPid: transferConsumerUuid,
             providerPid: "urn:uuid:741e3479-cdf4-4f1b-b8a5-9d07980725da"
           }),
           "did:web:localhost"
-        );
-      }).rejects.toThrow(
+        )
+      ).rejects.toThrow(
         expect.objectContaining({ status: HttpStatus.BAD_REQUEST })
       );
     });
@@ -514,9 +512,9 @@ describe("TransferController", () => {
         status: "OK"
       });
     });
-    it("Missing processId in contract request message should result in a 400", () => {
-      expect(async () => {
-        await transferController.terminateTransferProcess(
+    it("Missing processId in contract request message should result in a 400", async () => {
+      await expect(
+        transferController.terminateTransferProcess(
           "urn:uuid:741e3479-cdf4-4f1b-b8a5-9d07980725da",
           new TransferTerminationMessage({
             consumerPid: transferConsumerUuid,
@@ -525,14 +523,14 @@ describe("TransferController", () => {
             reason: [new Multilanguage("Testing")]
           }),
           "did:web:localhost"
-        );
-      }).rejects.toThrow(
+        )
+      ).rejects.toThrow(
         expect.objectContaining({ status: HttpStatus.NOT_FOUND })
       );
     });
-    it("Mismatch processId in contract request message and id path parameter should result in a 400", () => {
-      expect(async () => {
-        await transferController.terminateTransferProcess(
+    it("Mismatch processId in contract request message and id path parameter should result in a 400", async () => {
+      await expect(
+        transferController.terminateTransferProcess(
           transferProviderUuid,
           new TransferTerminationMessage({
             consumerPid: transferConsumerUuid,
@@ -541,8 +539,8 @@ describe("TransferController", () => {
             reason: [new Multilanguage("Testing")]
           }),
           "did:web:localhost"
-        );
-      }).rejects.toThrow(
+        )
+      ).rejects.toThrow(
         expect.objectContaining({ status: HttpStatus.BAD_REQUEST })
       );
     });
@@ -565,9 +563,9 @@ describe("TransferController", () => {
         status: "OK"
       });
     });
-    it("Missing processId in contract request message should result in a 400", () => {
-      expect(async () => {
-        await transferController.suspendTransferProcess(
+    it("Missing processId in contract request message should result in a 400", async () => {
+      await expect(
+        transferController.suspendTransferProcess(
           "urn:uuid:741e3479-cdf4-4f1b-b8a5-9d07980725da",
           new TransferSuspensionMessage({
             consumerPid: transferConsumerUuid,
@@ -575,14 +573,14 @@ describe("TransferController", () => {
             reason: [new Multilanguage("Testing")]
           }),
           "did:web:localhost"
-        );
-      }).rejects.toThrow(
+        )
+      ).rejects.toThrow(
         expect.objectContaining({ status: HttpStatus.NOT_FOUND })
       );
     });
-    it("Mismatch processId in contract request message and id path parameter should result in a 400", () => {
-      expect(async () => {
-        await transferController.suspendTransferProcess(
+    it("Mismatch processId in contract request message and id path parameter should result in a 400", async () => {
+      await expect(
+        transferController.suspendTransferProcess(
           transferProviderUuid,
           new TransferSuspensionMessage({
             consumerPid: transferConsumerUuid,
@@ -590,8 +588,8 @@ describe("TransferController", () => {
             reason: [new Multilanguage("Testing")]
           }),
           "did:web:localhost"
-        );
-      }).rejects.toThrow(
+        )
+      ).rejects.toThrow(
         expect.objectContaining({ status: HttpStatus.BAD_REQUEST })
       );
     });
@@ -611,17 +609,17 @@ describe("TransferController", () => {
         status: "OK"
       });
     });
-    it("Missing processId in contract request message should result in a 400", () => {
-      expect(async () => {
-        await transferController.callbackStartTransferProcess(
+    it("Missing processId in contract request message should result in a 400", async () => {
+      await expect(
+        transferController.callbackStartTransferProcess(
           "urn:uuid:741e3479-cdf4-4f1b-b8a5-9d07980725da",
           new TransferStartMessage({
             consumerPid: transferConsumerUuid,
             providerPid: "urn:uuid:741e3479-cdf4-4f1b-b8a5-9d07980725da"
           }),
           "did:web:localhost"
-        );
-      }).rejects.toThrow(
+        )
+      ).rejects.toThrow(
         expect.objectContaining({ status: HttpStatus.NOT_FOUND })
       );
     });
@@ -649,17 +647,17 @@ describe("TransferController", () => {
         status: "OK"
       });
     });
-    it("Missing processId in contract request message should result in a 400", () => {
-      expect(async () => {
-        await transferController.callbackCompleteTransferProcess(
+    it("Missing processId in contract request message should result in a 400", async () => {
+      await expect(
+        transferController.callbackCompleteTransferProcess(
           "urn:uuid:741e3479-cdf4-4f1b-b8a5-9d07980725da",
           new TransferCompletionMessage({
             consumerPid: transferConsumerUuid,
             providerPid: "urn:uuid:741e3479-cdf4-4f1b-b8a5-9d07980725da"
           }),
           "did:web:localhost"
-        );
-      }).rejects.toThrow(
+        )
+      ).rejects.toThrow(
         expect.objectContaining({ status: HttpStatus.NOT_FOUND })
       );
     });
@@ -681,9 +679,9 @@ describe("TransferController", () => {
         status: "OK"
       });
     });
-    it("Missing processId in contract request message should result in a 400", () => {
-      expect(async () => {
-        await transferController.callbackTerminateTransferProcess(
+    it("Missing processId in contract request message should result in a 400", async () => {
+      await expect(
+        transferController.callbackTerminateTransferProcess(
           "urn:uuid:741e3479-cdf4-4f1b-b8a5-9d07980725da",
           new TransferTerminationMessage({
             consumerPid: transferConsumerUuid,
@@ -692,8 +690,8 @@ describe("TransferController", () => {
             reason: [new Multilanguage("Testing")]
           }),
           "did:web:localhost"
-        );
-      }).rejects.toThrow(
+        )
+      ).rejects.toThrow(
         expect.objectContaining({ status: HttpStatus.NOT_FOUND })
       );
     });
@@ -722,9 +720,9 @@ describe("TransferController", () => {
         status: "OK"
       });
     });
-    it("Missing processId in contract request message should result in a 400", () => {
-      expect(async () => {
-        await transferController.callbackSuspendTransferProcess(
+    it("Missing processId in contract request message should result in a 400", async () => {
+      await expect(
+        transferController.callbackSuspendTransferProcess(
           "urn:uuid:741e3479-cdf4-4f1b-b8a5-9d07980725da",
           new TransferSuspensionMessage({
             consumerPid: transferConsumerUuid,
@@ -732,8 +730,8 @@ describe("TransferController", () => {
             reason: [new Multilanguage("Testing")]
           }),
           "did:web:localhost"
-        );
-      }).rejects.toThrow(
+        )
+      ).rejects.toThrow(
         expect.objectContaining({ status: HttpStatus.NOT_FOUND })
       );
     });

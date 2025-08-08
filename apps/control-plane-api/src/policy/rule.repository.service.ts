@@ -47,7 +47,7 @@ export class RuleRepositoryService implements OnModuleInit {
             "Matches an input descriptor following the DIF Presentation Definition to a presented Verifiable Presentation",
           leftOperand: "tsg:vpInputDescriptor",
           operator: ODRLOperator.IS_ANY_OF,
-          contextPath: "$.verifiableCredentials[:]",
+          contextPath: "$.verifiableCredentials[:].credential",
           evaluable: [
             EvaluationTrigger.PROVIDER_ON_REQUEST,
             EvaluationTrigger.PROVIDER_CONTINUOUS,

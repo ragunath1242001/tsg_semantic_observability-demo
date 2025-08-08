@@ -1,4 +1,4 @@
-import { DataIntegrityProof, JsonWebSignature2020 } from "@tsg-dsp/common-dsp";
+import { DataIntegrityProof } from "@tsg-dsp/common-dsp";
 import { plainToInstance } from "class-transformer";
 import { CompactSign, importJWK, JWK, JWTPayload, SignJWT } from "jose";
 
@@ -24,51 +24,63 @@ export async function signAsJws(
 }
 
 export async function generateSignedJwt(
-  body: JWTPayload,
-  identifier: string,
-  signingKey: JWK,
-  algorithm: "EdDSA" | "ES384" | "X509",
+  container: object,
   didId: string,
-  audience?: string | string[],
-  options?: {
-    key?: string;
-    subject?: boolean | string;
-    expirationTime?: string;
+  options: {
+    key: {
+      identifier: string;
+      signingKey: JWK;
+      algorithm: "EdDSA" | "ES384" | "X509";
+    };
+    audience?: string | string[];
+    iat?: boolean;
+    expiresIn?: number | Date;
+    iss?: boolean;
+    jti?: string;
+    nonce?: string;
     typ?: string;
-    jti?: boolean | string;
+    cty?: string;
+    subject?: boolean | string;
   }
 ) {
-  const jwt = new SignJWT(body)
-    .setProtectedHeader({
-      alg: signingAlgorithm(algorithm),
-      kid: `${didId}#${identifier}`,
-      typ: options?.typ
-    })
-    .setIssuedAt()
-    .setIssuer(didId);
-  if (audience) {
-    jwt.setAudience(audience);
+  const payload: JWTPayload = {
+    ...container
+  };
+  if (options.audience) {
+    payload.aud = options.audience;
   }
-  if (options?.subject !== false) {
-    if (typeof options?.subject === "string") {
-      jwt.setSubject(options.subject);
+  if (options.iat !== false) {
+    payload.iat = Math.floor(Date.now() / 1000);
+  }
+  if (options.expiresIn) {
+    if (typeof options.expiresIn === "number") {
+      payload.exp = Math.floor(Date.now() / 1000) + options.expiresIn;
     } else {
-      jwt.setSubject(didId);
+      payload.exp = Math.floor(options.expiresIn.getTime() / 1000);
     }
   }
-  if (options?.expirationTime) {
-    jwt.setExpirationTime(options.expirationTime);
+  if (options.iss) {
+    payload.iss = didId;
   }
-  if (options?.jti !== false) {
-    if (typeof options?.jti === "string") {
-      jwt.setJti(options.jti);
-    } else {
-      jwt.setJti(crypto.randomUUID());
-    }
+  if (options.jti) {
+    payload.jti = options.jti;
   }
-  return await jwt.sign(await importJWK(signingKey, algorithm));
+  if (options.nonce) {
+    payload.nonce = options.nonce;
+  }
+  if (options.subject) {
+    payload.sub = options.subject === true ? didId : options.subject;
+  }
+  const jwt = new SignJWT(payload).setProtectedHeader({
+    alg: signingAlgorithm(options.key.algorithm),
+    kid: `${didId}#${options.key.identifier}`,
+    typ: options.typ,
+    cty: options.cty
+  });
+  return await jwt.sign(
+    await importJWK(options.key.signingKey, options.key.algorithm)
+  );
 }
-
 export async function generateSignedDataIntegrityProof(
   document: any,
   didId: string,
@@ -108,35 +120,5 @@ export async function generateSignedDataIntegrityProof(
   return plainToInstance(DataIntegrityProof, {
     ...proof,
     proofValue: base64urlToBase58btc(jws.split(".")[2])
-  });
-}
-
-export async function generateSignedJsonWebSignature2020(
-  document: any,
-  didId: string,
-  identifier: string,
-  signingKey: JWK,
-  algorithm: "EdDSA" | "ES384" | "X509",
-  proofPurpose: string
-) {
-  const verificationMethod = `${didId}#${identifier}`;
-  const documentHash = await canonizeAndHash(document, "RDFC");
-  const proofConfig: Omit<JsonWebSignature2020, "jws"> = {
-    type: "JsonWebSignature2020",
-    created: new Date().toISOString(),
-    proofPurpose: proofPurpose,
-    verificationMethod: verificationMethod
-  };
-  const proofConfigHash = await computeProofConfigHash(
-    proofConfig,
-    "RDFC",
-    document["@context"],
-    "https://w3id.org/security/suites/jws-2020/v1"
-  );
-  const combinedHash = Buffer.concat([proofConfigHash, documentHash]);
-  const jws = await signAsJws(combinedHash, algorithm, signingKey);
-  return plainToInstance(JsonWebSignature2020, {
-    ...proofConfig,
-    jws
   });
 }

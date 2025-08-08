@@ -42,6 +42,7 @@
     "test:wallet-ci": "pnpm --filter wallet-api jest:ci",
     "test:common-dsp-ci": "pnpm --filter common-dsp jest:ci",
     "test:common-api-ci": "pnpm --filter common-api jest:ci",
+    "test:common-signing-and-validation-ci": "pnpm --filter common-signing-and-validation-ci jest:ci",
     "e2e:dsp-local": "pnpm --filter e2e-testing e2e:dsp-local",
     "e2e:dsp-tck": "pnpm --filter e2e-testing e2e:dsp-tck",
     "e2e:dcp-tck": "pnpm --filter e2e-testing e2e:dcp-tck",

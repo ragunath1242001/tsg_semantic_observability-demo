@@ -6,6 +6,7 @@ import {
   ServerConfig
 } from "@tsg-dsp/common-api";
 import {
+  CredentialContainer,
   DataPlaneAddressDto,
   defaultContext,
   DistributionDto,
@@ -28,8 +29,7 @@ import {
   TransferState,
   TransferStatus,
   TransferSuspensionMessage,
-  TransferTerminationMessage,
-  VerifiableCredential
+  TransferTerminationMessage
 } from "@tsg-dsp/common-dsp";
 import crypto from "crypto";
 import { Repository } from "typeorm";
@@ -340,7 +340,7 @@ export class TransferService {
   async handleRequest(
     transferRequestMessage: TransferRequestMessage,
     audience: string,
-    verifiableCredentials: VerifiableCredential[]
+    verifiableCredentials: CredentialContainer[]
   ): Promise<TransferProcess> {
     const transferProcess = new TransferProcess({
       providerPid: `urn:uuid:provider:${crypto.randomUUID()}`,

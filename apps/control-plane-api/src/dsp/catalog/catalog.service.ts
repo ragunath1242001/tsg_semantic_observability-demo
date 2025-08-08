@@ -403,7 +403,9 @@ export class CatalogService {
     paginationOptions: PaginationOptionsDto
   ): Promise<Paginated<CatalogDto>> {
     requestMessage.filter?.forEach((filter) => {
-      console.log(filter);
+      this.logger.warn(
+        `Filter ${filter} is not supported in the catalog request. Ignoring it.`
+      );
     });
     const catalog = await this.getCatalogDao(paginationOptions);
     return {

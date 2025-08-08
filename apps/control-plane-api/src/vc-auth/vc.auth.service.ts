@@ -1,7 +1,7 @@
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { AuthClientService } from "@tsg-dsp/common-api";
-import { VerifiablePresentation } from "@tsg-dsp/common-dsp";
+import { CredentialContainer } from "@tsg-dsp/common-dsp";
 import { InputDescriptor } from "@tsg-dsp/common-dtos";
 import { Request } from "express";
 import { decode, JwtPayload } from "jsonwebtoken";
@@ -48,7 +48,7 @@ export class VCAuthService {
     token: string,
     audience?: string,
     inputDescriptors?: InputDescriptor[]
-  ): Promise<VerifiablePresentation[] | undefined> {
+  ): Promise<CredentialContainer[] | undefined> {
     return await this.walletClient.requestValidation(
       token,
       audience || this.config.iam.didId,
@@ -66,7 +66,7 @@ export class VCAuthService {
     return this.walletClient.requestSignatureValidation(signedDocument);
   }
 
-  async validateVP(token: string): Promise<VerifiablePresentation[]> {
+  async validateVP(token: string): Promise<CredentialContainer[]> {
     let tokenPayload: JwtPayload | null = null;
     try {
       tokenPayload = decode(token, { json: true });
@@ -97,7 +97,7 @@ export class VCAuthService {
   async validateTransferVP(
     req: Request,
     token: string
-  ): Promise<VerifiablePresentation[]> {
+  ): Promise<CredentialContainer[]> {
     let tokenPayload: JwtPayload | null = null;
     try {
       tokenPayload = decode(token, { json: true });
@@ -156,7 +156,10 @@ export class VCAuthService {
                 inputDescriptor = [parsedOperand];
               }
             } catch (e) {
-              console.error(e);
+              this.logger.warn(
+                `Could not parse right operand as JSON: ${rightOperand}`
+              );
+              this.logger.debug(e);
             }
           }
           this.logger.debug(

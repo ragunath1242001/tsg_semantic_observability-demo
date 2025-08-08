@@ -81,7 +81,7 @@ export function setupMockWalletServer(start: boolean = true): SetupServer {
       return HttpResponse.json([
         {
           "@context": [
-            "https://www.w3.org/2018/credentials/v1",
+            "https://www.w3.org/ns/credentials/v2",
             "https://w3c.github.io/vc-jws-2020/contexts/v1/"
           ],
           type: ["VerifiablePresentation"],
@@ -89,23 +89,26 @@ export function setupMockWalletServer(start: boolean = true): SetupServer {
           verifiableCredential: [
             {
               "@context": [
-                "https://www.w3.org/2018/credentials/v1",
+                "https://www.w3.org/ns/credentials/v2",
                 "https://w3c.github.io/vc-jws-2020/contexts/v1/"
               ],
               type: ["VerifiableCredential"],
               id: "did:web:localhost%3A3000#test",
               issuer: "did:web:localhost%3A3000",
-              issuanceDate: "2024-03-29T08:17:00.122Z",
-              expirationDate: "2024-06-29T08:17:00.122Z",
+              validFrom: "2024-03-29T08:17:00.122Z",
+              validUntil: "2024-06-29T08:17:00.122Z",
               credentialSubject: {
                 id: "did:web:localhost%3A3000"
               },
               proof: {
-                type: "JsonWebSignature2020",
-                created: "2024-03-29T08:17:00.685Z",
+                type: "DataIntegrityProof",
+                created: "2024-07-30T13:51:30.581Z",
                 proofPurpose: "assertionMethod",
-                jws: "eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..nirMrWvJsxFkl8KlhDLBcyTjg8aOGI1UA8wFA2iYuoFEtpf1Z1Ok3T8bwOjDJeCoYZU-lIG-9oIaGKyFIzdGAg",
-                verificationMethod: "did:web:localhost%3A3000#key-0"
+                verificationMethod:
+                  "did:web:dataspace-authority.example.com#key-0",
+                cryptosuite: "eddsa-jcs-2022",
+                proofValue:
+                  "z3f3bQLt79o87hpXSUzWYy1bVaLQLBeU9Aj6b7BHPmuL7vhmZu8wx2kvUQU3Y8PHNVKtahcQQQHyxcTfYq3tJquSe"
               }
             }
           ]
@@ -122,23 +125,26 @@ export function setupMockWalletServer(start: boolean = true): SetupServer {
           targetDid: "did:web:localhost",
           credential: {
             "@context": [
-              "https://www.w3.org/2018/credentials/v1",
+              "https://www.w3.org/ns/credentials/v2",
               "https://w3c.github.io/vc-jws-2020/contexts/v1/"
             ],
             type: ["VerifiableCredential"],
             id: "did:web:localhost#test-init-credential",
             issuer: "did:web:localhost",
-            issuanceDate: "2024-03-18T10:53:21.231Z",
-            expirationDate: "2024-06-18T09:53:21.231Z",
+            validFrom: "2024-03-18T10:53:21.231Z",
+            validUntil: "2024-06-18T09:53:21.231Z",
             credentialSubject: {
               id: "did:web:localhost"
             },
             proof: {
-              type: "JsonWebSignature2020",
-              created: "2024-03-18T10:53:21.859Z",
+              type: "DataIntegrityProof",
+              created: "2024-07-30T13:51:30.581Z",
               proofPurpose: "assertionMethod",
-              jws: "eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..icXdCpZ0sHdbavYz5TxrW0nvjbD11_ZaIPGfjgP8YBA2vK8wygd_ZWr8x-kCsmCzcTQ7wFEMq31hdFHaUDK1DQ",
-              verificationMethod: "did:web:localhost#key-0"
+              verificationMethod:
+                "did:web:dataspace-authority.example.com#key-0",
+              cryptosuite: "eddsa-jcs-2022",
+              proofValue:
+                "z3f3bQLt79o87hpXSUzWYy1bVaLQLBeU9Aj6b7BHPmuL7vhmZu8wx2kvUQU3Y8PHNVKtahcQQQHyxcTfYq3tJquSe"
             }
           },
           selfIssued: true

@@ -33,6 +33,7 @@ const documentRef = ref("Referenced");
 const defaultConfiguration: () => IssueConfigurationForm = () => ({
   id: "",
   credentialType: "",
+  proofType: "jwt",
   documentUrl: undefined,
   document: "",
   schema: JSON.stringify(
@@ -55,11 +56,11 @@ const configurationForm = ref<IssueConfigurationForm>(defaultConfiguration());
 
 const getFirstClaimExample = (schema: any): string | undefined => {
   if (!schema || !schema.properties) return undefined;
-  const firstProperty = Object.values(schema.properties)[0] as any;
-  if (firstProperty?.type === "object") {
+  const firstProperty = Object.entries(schema.properties)[0] as [string, any];
+  if (firstProperty[1]?.type === "object") {
     return getFirstClaimExample(firstProperty);
   }
-  return firstProperty?.example || undefined;
+  return firstProperty[1]?.example || `[${firstProperty[0]}]`;
 };
 
 const firstClaimExample = computed(() => {
@@ -69,11 +70,11 @@ const firstClaimExample = computed(() => {
         ? JSON.parse(configurationForm.value.schema)
         : undefined;
     if (!schema || !schema.properties) return undefined;
-    const firstProperty = Object.values(schema.properties)[0] as any;
-    if (firstProperty?.type === "object") {
+    const firstProperty = Object.entries(schema.properties)[0] as [string, any];
+    if (firstProperty[1]?.type === "object") {
       return getFirstClaimExample(firstProperty);
     }
-    return firstProperty?.example || undefined;
+    return firstProperty[1]?.example || `[${firstProperty[0]}]`;
   } catch (_error) {
     return undefined;
   }
@@ -193,6 +194,7 @@ const addConfiguration = async () => {
     const issueConfiguration: IssueConfiguration = {
       id: configurationForm.value.id,
       credentialType: configurationForm.value.credentialType,
+      proofType: configurationForm.value.proofType,
       documentUrl: configurationForm.value.documentUrl,
       document:
         configurationForm.value.document.trim() !== ""
@@ -320,6 +322,7 @@ onMounted(async () => {
           <Column expander style="width: 5rem" />
           <Column field="id" header="ID" />
           <Column field="credentialType" header="Credential Type" />
+          <Column field="proofType" header="Proof Type" />
           <Column field="schema" header="Schema">
             <template #body="props">
               <i
@@ -353,6 +356,11 @@ onMounted(async () => {
             </FormField>
             <FormField label="Credential Type">
               <code>{{ props.data.credentialType }}</code>
+            </FormField>
+            <FormField label="Proof Type">
+              <code>{{
+                props.data.proofType === "jwt" ? "JWT" : "Linked Data Proof"
+              }}</code>
             </FormField>
             <FormField v-if="props.data.documentUrl" label="Document URL">
               <a :href="props.data.documentUrl" target="_blank">
@@ -459,6 +467,21 @@ onMounted(async () => {
               class="w-full"
               placeholder="Credential type associated with this configuration"
               required />
+          </FormField>
+          <FormField v-slot="props" label="Proof Type">
+            <SelectButton
+              :id="props.id"
+              v-model="configurationForm.proofType"
+              class="mb-2"
+              :allow-empty="false"
+              :options="['jwt', 'ldp']"
+              aria-labelledby="basic" />
+            <div>
+              <small
+                >The proof type determines how the credential is signed, either
+                using a JWT or Linked Data Proof proof.</small
+              >
+            </div>
           </FormField>
           <FormField v-slot="props" label="Document">
             <SelectButton

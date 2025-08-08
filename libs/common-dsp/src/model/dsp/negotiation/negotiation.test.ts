@@ -50,7 +50,7 @@ test("Contract offer serialization", async () => {
     ]
   });
 
-  const serialized = await offer.serialize();
+  const serialized = offer.serialize();
   const expected: OfferDto = {
     "@context": defaultContext(),
     "@type": "Offer",
@@ -127,7 +127,7 @@ test("Contract agreement serialization", async () => {
     ]
   });
 
-  const serialized = await agreement.serialize();
+  const serialized = agreement.serialize();
   const expected: AgreementDto = {
     "@context": defaultContext(),
     "@type": "Agreement",

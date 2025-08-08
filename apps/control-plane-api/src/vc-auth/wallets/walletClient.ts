@@ -1,7 +1,4 @@
-import {
-  VerifiableCredential,
-  VerifiablePresentation
-} from "@tsg-dsp/common-dsp";
+import { CredentialContainer, VerifiableCredential } from "@tsg-dsp/common-dsp";
 import { InputDescriptor } from "@tsg-dsp/common-dtos";
 
 export interface ValidationResult {
@@ -21,7 +18,7 @@ export abstract class WalletClient {
     token: string,
     audience: string,
     inputDescriptors?: InputDescriptor[]
-  ): Promise<VerifiablePresentation[] | undefined>;
+  ): Promise<CredentialContainer[] | undefined>;
   abstract getCredentials(): Promise<Credential[]>;
   abstract requestSignature(document: Record<string, any>): Promise<any>;
   abstract requestSignatureValidation(

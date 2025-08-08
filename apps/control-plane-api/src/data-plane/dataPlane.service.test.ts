@@ -119,9 +119,9 @@ describe("DataPlane Service", () => {
     it("Dataplane creation", async () => {
       const dataPlane: DataPlaneCreation = {
         dataplaneType: "http",
-        endpointPrefix: "https://",
-        callbackAddress: "https://httpbin.org/anything",
-        managementAddress: "https://httpbin.org/mgmt",
+        endpointPrefix: "/api",
+        callbackAddress: "http://localhost/api/callback",
+        managementAddress: "http://localhost/api/management",
         managementToken: "",
         catalogSynchronization: "pull",
         role: "consumer"
@@ -136,9 +136,9 @@ describe("DataPlane Service", () => {
         const dataPlane: DataPlaneCreation = {
           identifier: "urn:uuid:f0a10802-90b4-43f5-a8d9-71ccdf907126",
           dataplaneType: "http",
-          endpointPrefix: "https://",
-          callbackAddress: "https://httpbin.org/anything",
-          managementAddress: "https://httpbin.org/mgmt",
+          endpointPrefix: "/api",
+          callbackAddress: "http://localhost/api/callback",
+          managementAddress: "http://localhost/api/management",
           managementToken: "",
           catalogSynchronization: "pull",
           role: "consumer"
@@ -150,7 +150,7 @@ describe("DataPlane Service", () => {
           "urn:uuid:f0a10802-90b4-43f5-a8d9-71ccdf907126"
         );
         expect(dpDetails).toBeDefined();
-        dpDetails.callbackAddress = "https://google.com";
+        dpDetails.callbackAddress = "http://localhost/api/updated-callback";
         const dpDetailsDto = {
           ...dpDetails,
           datasets: dpDetails.datasets
@@ -167,23 +167,25 @@ describe("DataPlane Service", () => {
         const dpDetailsUpdated = await dataPlaneService.getDataPlaneDetails(
           "urn:uuid:f0a10802-90b4-43f5-a8d9-71ccdf907126"
         );
-        expect(dpDetailsUpdated?.callbackAddress).toBe("https://google.com");
+        expect(dpDetailsUpdated?.callbackAddress).toBe(
+          "http://localhost/api/updated-callback"
+        );
       });
     });
 
     it("Dataplane delete", async () => {
       const dataPlane: DataPlaneCreation = {
         dataplaneType: "http",
-        endpointPrefix: "https://",
-        callbackAddress: "https://httpbin.org/anything",
-        managementAddress: "https://httpbin.org/mgmt",
+        endpointPrefix: "/api",
+        callbackAddress: "http://localhost/api/callback",
+        managementAddress: "http://localhost/api/management",
         managementToken: "",
         catalogSynchronization: "pull",
         role: "consumer"
       };
       const addedDataPlane = await dataPlaneService.addDataPlane(dataPlane);
       await dataPlaneService.deleteDataplane(addedDataPlane.identifier);
-      expect(
+      await expect(
         dataPlaneService.getDataPlane(addedDataPlane.identifier)
       ).rejects.toThrow(DSPError);
     });
@@ -236,9 +238,9 @@ describe("DataPlane Service", () => {
 
       const dataPlane: DataPlaneCreation = {
         dataplaneType: "http",
-        endpointPrefix: "https://",
-        callbackAddress: "https://httpbin.org/anything",
-        managementAddress: "https://httpbin.org/mgmt",
+        endpointPrefix: "/api",
+        callbackAddress: "http://localhost/api/callback",
+        managementAddress: "http://localhost/api/management",
         managementToken: "",
         catalogSynchronization: "pull",
         role: "consumer"
@@ -292,9 +294,9 @@ describe("DataPlane Service", () => {
 
       const dataPlane: DataPlaneCreation = {
         dataplaneType: "http",
-        endpointPrefix: "https://",
-        callbackAddress: "https://httpbin.org/anything",
-        managementAddress: "https://httpbin.org/mgmt",
+        endpointPrefix: "/api",
+        callbackAddress: "http://localhost/api/callback",
+        managementAddress: "http://localhost/api/management",
         managementToken: "",
         catalogSynchronization: "pull",
         role: "consumer"

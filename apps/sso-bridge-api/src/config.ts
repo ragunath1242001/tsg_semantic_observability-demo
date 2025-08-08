@@ -69,7 +69,7 @@ export class RootConfig {
       credentials: [
         {
           id: "identity_credential",
-          format: "dc+sd-jwt",
+          format: "jwt_vc_json",
           meta: {
             type_values: [["VerifiableCredential", "HandsonCredential"]]
           },
@@ -91,7 +91,7 @@ export class RootConfig {
       credentials: [
         {
           id: "identity_credential",
-          format: "dc+sd-jwt",
+          format: "jwt_vc_json",
           meta: {
             type_values: [["VerifiableCredential", "HandsonCredential"]]
           },

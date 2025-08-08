@@ -1,6 +1,10 @@
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { AppError, parseNetworkError } from "@tsg-dsp/common-api";
-import { toArray, VerifiablePresentation } from "@tsg-dsp/common-dsp";
+import {
+  formatCredentials,
+  toArray,
+  VerifiablePresentation
+} from "@tsg-dsp/common-dsp";
 import {
   PresentationDefinition,
   PresentationQueryMessage,
@@ -8,12 +12,11 @@ import {
 } from "@tsg-dsp/common-dtos";
 import {
   resolveDid,
-  validateField,
-  validateProof
+  validateDataIntegrityProof,
+  validateField
 } from "@tsg-dsp/common-signing-and-validation";
 import axios from "axios";
 import { instanceToPlain, plainToInstance } from "class-transformer";
-import { decodeJwt } from "jose";
 
 import { SecureTokenService } from "../../keys/token.service.js";
 import { PresentationService } from "../presentation.service.js";
@@ -116,19 +119,16 @@ export class DCPVerifierService {
               vp: vp
             });
           if (validatedVp.valid) {
-            const vpJwtPayload = decodeJwt(vp);
-            const parsedVp = plainToInstance(
-              VerifiablePresentation,
-              vpJwtPayload.vp
-            );
-            presentations.push(parsedVp);
+            presentations.push(validatedVp.presentation);
           } else {
             this.logger.error(`Error validating presentation: ${validatedVp}`);
           }
         } else {
           const parsedVp = plainToInstance(VerifiablePresentation, vp);
           const { proof, ...plainVp } = parsedVp;
-          if (proof) await validateProof(plainVp, toArray(proof)[0]);
+          if (proof) {
+            await validateDataIntegrityProof(plainVp, toArray(proof)[0]);
+          }
           presentations.push(parsedVp);
         }
       } catch (error) {
@@ -136,12 +136,12 @@ export class DCPVerifierService {
       }
     }
     const credentials = presentations.flatMap((vp) =>
-      toArray(vp.verifiableCredential)
+      formatCredentials(toArray(vp.verifiableCredential))
     );
     for (const inputDescriptor of definition.input_descriptors) {
       for (const fieldDescriptor of inputDescriptor.constraints.fields ?? []) {
         const result = credentials.map((vc) =>
-          validateField(fieldDescriptor, vc, false)
+          validateField(fieldDescriptor, vc.credential, false)
         );
         if (result.every((r) => r.error)) {
           this.logger.debug(

@@ -6,22 +6,25 @@ import { PaginationOptionsDto } from "@tsg-dsp/common-api";
 import {
   Credential,
   CredentialSubject,
-  Proof,
+  EnvelopedVerifiableCredential,
+  formatCredential,
   VerifiableCredential
 } from "@tsg-dsp/common-dsp";
 import { resolveDid } from "@tsg-dsp/common-signing-and-validation";
 import axios from "axios";
 import { randomInt } from "crypto";
 import { ServiceEndpoint } from "did-resolver";
-import { Equal, Or, Repository } from "typeorm";
+import { DeepPartial, Equal, Or, Repository } from "typeorm";
 
-import { InitCredentialConfig, RootConfig, SignatureType } from "../config.js";
+import { InitCredentialConfig, RootConfig } from "../config.js";
 import { DidService } from "../did/did.service.js";
 import { SignatureService } from "../keys/signature.service.js";
 import {
   CredentialDao,
   StatusListCredentialDao
 } from "../model/credentials.dao.js";
+import { API_PREFIX } from "../utils/api-prefix.js";
+import { retry } from "../utils/retry.js";
 
 @Injectable()
 export class CredentialsService {
@@ -41,57 +44,28 @@ export class CredentialsService {
 
   async init() {
     this.logger.log("Initializing CredentialService");
-    for (const key of this.config.initCredentials) {
-      await this.insertIfNotExists(key);
+    for (const credential of this.config.initCredentials) {
+      // eslint-disable-next-line no-await-in-loop
+      await retry(async () => {
+        const existing = await this.credentialRepository.findOneBy({
+          id: credential.id
+        });
+        if (!existing) {
+          this.logger.log(`Creating initial credential ${credential.id}`);
+          await this.selfIssueCredential(
+            credential,
+            credential.credentialSubject.id
+          );
+        } else {
+          this.logger.log(`Using existing initial credential ${credential.id}`);
+        }
+      }, `insert initial credential ${credential.id}`);
     }
     return true;
   }
 
   private credentialAddress(): string {
-    return `${this.config.server.publicAddress}${process.env["EMBEDDED_FRONTEND"] ? "/api" : ""}/credentials`;
-  }
-
-  private async insertIfNotExists(
-    initCredentialConfig: InitCredentialConfig,
-    retry = 0,
-    backOff = 1000
-  ): Promise<void> {
-    try {
-      const existing = await this.credentialRepository.findOneBy({
-        id: initCredentialConfig.id
-      });
-      if (!existing) {
-        this.logger.log(
-          `Creating initial credential ${initCredentialConfig.id}`
-        );
-        await this.selfIssueCredential(
-          initCredentialConfig,
-          initCredentialConfig.credentialSubject.id
-        );
-      } else {
-        this.logger.log(
-          `Using existing initial credential ${initCredentialConfig.id}`
-        );
-      }
-    } catch (err) {
-      if (retry < 5) {
-        this.logger.warn(
-          `Retrying creating credential ${initCredentialConfig.id}`
-        );
-        this.logger.log(`Error: ${err}`);
-        await new Promise((f) => setTimeout(f, backOff));
-        await this.insertIfNotExists(
-          initCredentialConfig,
-          ++retry,
-          backOff * 2
-        );
-      } else {
-        this.logger.error(
-          `Could not create credential ${initCredentialConfig.id}: ${err}`
-        );
-        throw err;
-      }
-    }
+    return `${this.config.server.publicAddress}${API_PREFIX}/credentials`;
   }
 
   async getPaginatedCredentials(
@@ -122,19 +96,6 @@ export class CredentialsService {
     credentials = credentials.filter(
       (credential) => !credential.targetDid.startsWith("did:key:")
     );
-    credentials.forEach((credential) => {
-      if (Array.isArray(credential.credential.credentialSubject)) {
-        credential.credential.credentialSubject.forEach(
-          (subject: CredentialSubject) => {
-            delete subject["email"];
-            delete subject["emailDomain"];
-          }
-        );
-      } else {
-        delete credential.credential.credentialSubject["email"];
-        delete credential.credential.credentialSubject["emailDomain"];
-      }
-    });
     return {
       data: credentials,
       total: itemCount
@@ -147,6 +108,21 @@ export class CredentialsService {
         targetDid: targetDid
       }
     });
+  }
+
+  async getCredentialFormatted(
+    credentialId: string,
+    targetDid?: string
+  ): Promise<VerifiableCredential | string> {
+    const credential = await this.getCredential(credentialId, targetDid);
+    if (credential.jwt) {
+      return credential.jwt;
+    } else {
+      return {
+        ...credential.credential,
+        proof: credential.proof!
+      };
+    }
   }
 
   async getCredential(
@@ -236,41 +212,52 @@ export class CredentialsService {
   }
 
   async importCredential(
-    credential: VerifiableCredential,
+    credential: VerifiableCredential | EnvelopedVerifiableCredential | string,
     targetDid?: string
   ): Promise<CredentialDao> {
+    const credentialContainer = formatCredential(credential);
     const didId = targetDid || (await this.didService.getDidId());
     if (
-      !credential.id?.startsWith(`${didId}#`) &&
-      !credential.id?.startsWith("http")
+      !credentialContainer.credential.id?.startsWith(`${didId}#`) &&
+      !credentialContainer.credential.id?.startsWith("http")
     ) {
       throw new AppError(
         "Imported credentials must be have an ID that starts with a DID appended with # and a credential ID or be a full URL",
         HttpStatus.BAD_REQUEST
       ).andLog(this.logger, "warn");
     }
+
     return await this.credentialRepository.save({
-      id: credential.id,
+      id: credentialContainer.credential.id,
       targetDid: didId,
       selfIssued: false,
-      credential: credential
+      credential: credentialContainer.credential,
+      jwt: credentialContainer.jwt,
+      proof: credentialContainer.proof
     });
   }
 
   async updateCredential(
     credentialId: string,
-    credential: InitCredentialConfig | VerifiableCredential,
+    credential:
+      | InitCredentialConfig
+      | VerifiableCredential
+      | EnvelopedVerifiableCredential
+      | string,
     targetDid?: string
   ): Promise<CredentialDao> {
     await this.getCredential(credentialId, targetDid);
     if (credential instanceof InitCredentialConfig) {
       return await this.selfIssueCredential(credential, targetDid);
     } else {
+      const credentialContainer = formatCredential(credential);
       return await this.credentialRepository.save({
-        id: credentialId,
+        id: credentialContainer.credential.id,
         targetDid: targetDid || (await this.didService.getDidId()),
         selfIssued: false,
-        credential: credential
+        credential: credentialContainer.credential,
+        jwt: credentialContainer.jwt,
+        proof: credentialContainer.proof
       });
     }
   }
@@ -297,9 +284,9 @@ export class CredentialsService {
     this.logger.log(
       `Creating verifiable credential for ${credentialConfig.id}`
     );
-    const issuanceDate = new Date();
-    const expirationDate = new Date();
-    expirationDate.setMonth(expirationDate.getMonth() + 3);
+    const validFrom = new Date();
+    const validUntil = new Date();
+    validUntil.setMonth(validUntil.getMonth() + 3);
     const target = targetDid ? targetDid : await this.didService.getDidId();
     const credentialId = this.normalizeCredentialId(
       target,
@@ -307,15 +294,14 @@ export class CredentialsService {
     );
 
     const credential: Credential<CredentialSubject> = {
-      "@context": [
-        "https://www.w3.org/2018/credentials/v1",
-        "https://www.w3.org/ns/credentials/status/v1"
-      ].concat(credentialConfig.context),
+      "@context": ["https://www.w3.org/ns/credentials/v2"].concat(
+        credentialConfig.context
+      ),
       type: ["VerifiableCredential"].concat(credentialConfig.type),
       id: credentialId,
       issuer: await this.didService.getDidId(),
-      issuanceDate: issuanceDate.toISOString(),
-      expirationDate: expirationDate.toISOString(),
+      validFrom: validFrom.toISOString(),
+      validUntil: validUntil.toISOString(),
       credentialSubject: credentialConfig.credentialSubject
     };
     let statusListIndex: number | undefined = undefined;
@@ -333,51 +319,53 @@ export class CredentialsService {
       statusListCredential = statusList.statusListCredential;
     }
 
-    let proof: Proof;
-    if (
-      this.config.signature.credentials === SignatureType.DATA_INTEGRITY_PROOF
-    ) {
-      credential["@context"].splice(
-        1,
-        0,
-        "https://w3id.org/security/data-integrity/v2"
-      );
-      proof = await this.signatureService.signAsDataIntegrityProof(
-        "RDFC",
-        credential,
-        credentialConfig.keyId
+    const credentialPart: DeepPartial<CredentialDao> = {
+      id: credentialId,
+      targetDid: credentialId.split("#")?.[0],
+      credential: credential,
+      selfIssued: true,
+      statusListIndex,
+      statusListCredential
+    };
+
+    if (credentialConfig.proofType === "jwt") {
+      const jwt = await this.signatureService.signContainerAsJwt(credential, {
+        keyId: credentialConfig.keyId,
+        iat: true,
+        expiresIn: validUntil,
+        iss: true,
+        typ: "vc+jwt",
+        cty: "vc"
+      });
+      credentialPart.jwt = jwt;
+      this.logger.debug(
+        `Verifiable credential ${credentialConfig.id}\n${JSON.stringify(
+          credential,
+          null,
+          2
+        )}\n${jwt}`
       );
     } else {
       credential["@context"].splice(
         1,
         0,
-        "https://w3id.org/security/suites/jws-2020/v1"
+        "https://w3id.org/security/data-integrity/v2"
       );
-      proof = await this.signatureService.signAsJsonWebSignature2020(
+      const proof = await this.signatureService.signAsDataIntegrityProof(
+        "RDFC",
         credential,
         credentialConfig.keyId
       );
+      credentialPart.proof = proof;
+      this.logger.debug(
+        `Verifiable credential ${credentialConfig.id}\n${JSON.stringify(
+          credential,
+          null,
+          2
+        )}\n${JSON.stringify(proof, null, 2)}`
+      );
     }
-
-    const verifiableCredential: VerifiableCredential = {
-      ...credential,
-      proof: proof
-    };
-    this.logger.debug(
-      `Verifiable credential ${credentialConfig.id}\n${JSON.stringify(
-        verifiableCredential,
-        null,
-        2
-      )}`
-    );
-    return await this.credentialRepository.save({
-      id: credentialId,
-      targetDid: credentialId.split("#")?.[0],
-      credential: verifiableCredential,
-      selfIssued: true,
-      statusListIndex,
-      statusListCredential
-    });
+    return await this.credentialRepository.save(credentialPart);
   }
 
   private async createEncodedBitstring(revoked: number[]): Promise<string> {
@@ -397,6 +385,7 @@ export class CredentialsService {
       type: ["BitstringStatusListCredential"],
       id: credentialId,
       keyId: undefined,
+      proofType: "ldp",
       credentialSubject: {
         id: `${credentialId}#list`,
         type: "BitstringStatusList",
@@ -432,7 +421,7 @@ export class CredentialsService {
         id: statusListCredential.id
       }
     });
-    if (linkedCredentialsCount >= 1000) {
+    if (linkedCredentialsCount >= this.config.issuance.statusListCount) {
       statusListCredential.full = true;
       await this.statusListCredentialRepository.save(statusListCredential);
       statusListCredential = await this.createNewStatusListCredential();

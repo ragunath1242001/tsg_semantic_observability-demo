@@ -12,7 +12,7 @@ import {
 } from "@tsg-dsp/common-api";
 
 import { ConfigController } from "./config.controller.js";
-import { PresentationConfig, RootConfig } from "./config.js";
+import { RootConfig } from "./config.js";
 import { CredentialsModule } from "./credentials/credentials.module.js";
 import { DidModule } from "./did/did.module.js";
 import { IssuanceModule } from "./issuance/issuance.module.js";
@@ -51,7 +51,7 @@ const embeddedFrontend = process.env["EMBEDDED_FRONTEND"]
       KeyMaterialDao
     ]),
     TerminusModule,
-    PresentationModule.register(GenericConfigModule.get(PresentationConfig)),
+    PresentationModule,
     AuthModule,
     IssueConfigurationModule,
     CredentialsModule,

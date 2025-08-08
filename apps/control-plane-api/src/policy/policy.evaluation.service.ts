@@ -1,6 +1,6 @@
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { VerifiableCredential } from "@tsg-dsp/common-dsp";
+import { CredentialContainer } from "@tsg-dsp/common-dsp";
 import { Repository } from "typeorm";
 
 import { RootConfig } from "../config.js";
@@ -30,7 +30,7 @@ export class PolicyEvaluationService {
     transferId: string,
     remoteParticipant: string,
     action: string,
-    verifiableCredentials: VerifiableCredential[]
+    verifiableCredentials: CredentialContainer[]
   ): Promise<EvaluationContext> {
     this.logger.debug(`Initializing context for ${agreementId}`);
     const agreement = await this.agreementService.getAgreementDao(agreementId);

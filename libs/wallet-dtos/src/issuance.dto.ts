@@ -4,7 +4,7 @@ import {
   ApiPropertyOptional,
   getSchemaPath
 } from "@nestjs/swagger";
-import { CredentialSubject } from "@tsg-dsp/common-dsp";
+import { CredentialSubject, VerifiableCredential } from "@tsg-dsp/common-dsp";
 import { Type } from "class-transformer";
 import {
   ArrayMinSize,
@@ -315,7 +315,7 @@ export class DataIntegrityProof {
 }
 
 export class VpProof {
-  @ApiProperty({ example: ["https://www.w3.org/2018/credentials/v1"] })
+  @ApiProperty({ example: ["https://www.w3.org/ns/credentials/v2"] })
   "@context": string[];
 
   @ApiProperty({ example: ["VerifiablePresentation"] })
@@ -350,7 +350,7 @@ export class DiVpProof {
   @ApiProperty({
     type: () => VpProof,
     example: {
-      "@context": ["https://www.w3.org/2018/credentials/v1"],
+      "@context": ["https://www.w3.org/ns/credentials/v2"],
       type: ["VerifiablePresentation"],
       holder: "holder-sample",
       proof: {
@@ -495,7 +495,7 @@ export class CredentialMetadata {
 export class CredentialDefinition {
   @ApiPropertyOptional({
     type: [String],
-    example: ["https://www.w3.org/2018/credentials/v1"]
+    example: ["https://www.w3.org/ns/credentials/v2"]
   })
   "@context"?: string[];
 
@@ -558,9 +558,13 @@ export type CredentialResponse =
   | ImmediateCredentialResponse
   | DeferredCredentialResponse;
 
+@ApiExtraModels(VerifiableCredential)
 export class CredentialItem {
-  @ApiProperty({ example: "credential-token-sample" })
-  credential!: string;
+  @ApiProperty({
+    example: "credential-token-sample",
+    oneOf: [{ type: "string" }, { $ref: getSchemaPath(VerifiableCredential) }]
+  })
+  credential!: string | VerifiableCredential;
 }
 
 export class ImmediateCredentialResponse {
@@ -637,9 +641,9 @@ export class CredentialConfiguration {
 
   @ApiProperty({
     type: [String],
-    example: ["https://www.w3.org/2018/credentials/v1"]
+    example: ["https://www.w3.org/ns/credentials/v2"]
   })
-  "@context": string[];
+  "@context"?: string[];
 
   @ApiPropertyOptional({ example: "openid" })
   scope?: string;
@@ -682,7 +686,7 @@ export class CredentialConfiguration {
   @ApiProperty({
     type: () => CredentialDefinition,
     example: {
-      "@context": ["https://www.w3.org/2018/credentials/v1"],
+      "@context": ["https://www.w3.org/ns/credentials/v2"],
       type: ["VerifiableCredential", "UniversityDegree"]
     }
   })
@@ -788,7 +792,7 @@ export class CredentialIssuerMetadata {
     example: {
       "config-id": {
         format: "jwt_vc_json",
-        "@context": ["https://www.w3.org/2018/credentials/v1"],
+        "@context": ["https://www.w3.org/ns/credentials/v2"],
         scope: "openid",
         cryptographic_binding_methods_supported: ["method1", "method2"],
         credential_signing_alg_values_supported: ["RS256", "ES256"],
@@ -796,7 +800,7 @@ export class CredentialIssuerMetadata {
           example: { proof_signing_alg_values_supported: ["RS256"] }
         },
         credential_definition: {
-          "@context": ["https://www.w3.org/2018/credentials/v1"],
+          "@context": ["https://www.w3.org/ns/credentials/v2"],
           type: ["VerifiableCredential", "UniversityDegree"]
         },
         credential_metadata: {

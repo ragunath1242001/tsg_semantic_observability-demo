@@ -4,21 +4,21 @@ import {
   HttpStatus,
   Logger
 } from "@nestjs/common";
-import { toArray, VerifiablePresentation } from "@tsg-dsp/common-dsp";
+import { CredentialContainer, toArray } from "@tsg-dsp/common-dsp";
 import { Request } from "express";
 
 import { DSPError } from "../utils/errors/error.js";
 
 export const VP = createParamDecorator(
-  (_, context: ExecutionContext): VerifiablePresentation | undefined => {
+  (_, context: ExecutionContext): CredentialContainer[] | undefined => {
     try {
       const request: Request = context.switchToHttp().getRequest();
       if (!request.user) {
         Logger.warn("No VP found in request", "VP-Decorator");
         return undefined;
       }
-      if (request.user[0] instanceof VerifiablePresentation) {
-        return request.user[0];
+      if (request.user[0] instanceof CredentialContainer) {
+        return request.user;
       }
       Logger.warn("No VP found in request user", "VP-Decorator");
       Logger.debug(request.user, "VP-Decorator");
@@ -43,10 +43,8 @@ export const VPId = createParamDecorator(
         Logger.warn("No VP found in request", "VPId-Decorator");
         return undefined;
       }
-      if (request.user[0] instanceof VerifiablePresentation) {
-        return toArray(
-          toArray(request.user[0]?.verifiableCredential)[0]?.credentialSubject
-        )[0]?.id;
+      if (request.user[0] instanceof CredentialContainer) {
+        return toArray(request.user[0].credential.credentialSubject)[0]?.id;
       }
       Logger.warn("No VP found in request user", "VPId-Decorator");
       Logger.debug(request.user, "VPId-Decorator");

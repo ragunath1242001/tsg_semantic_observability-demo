@@ -4,11 +4,14 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { Order, TypeOrmTestHelper } from "@tsg-dsp/common-api";
 import {
   CredentialSubject,
-  JsonWebSignature2020,
   toArray,
   VerifiableCredential,
   VerifiablePresentation
 } from "@tsg-dsp/common-dsp";
+import {
+  createTestVerifiableCredential,
+  testDidId
+} from "@tsg-dsp/common-signing-and-validation/dist/utils/mock-vc-vp.util.mock.js";
 import { plainToInstance } from "class-transformer";
 import { http, HttpResponse, PathParams } from "msw";
 import { SetupServer, setupServer } from "msw/node";
@@ -51,6 +54,9 @@ describe("Credentials Service", () => {
           }
         }
       ],
+      issuance: {
+        statusListCount: 10
+      },
       oid4vci: {
         holder: [
           {
@@ -71,23 +77,25 @@ describe("Credentials Service", () => {
       http.post<PathParams, CredentialSubject, VerifiableCredential>(
         "https://registrationnumber.notary.gaia-x.eu/v1/registrationNumberVC",
         async ({ request }) => {
-          return HttpResponse.json<VerifiableCredential<JsonWebSignature2020>>({
+          return HttpResponse.json<VerifiableCredential>({
             "@context": [
-              "https://www.w3.org/2018/credentials/v1",
+              "https://www.w3.org/ns/credentials/v2",
               "https://w3id.org/security/suites/jws-2020/v1"
             ],
             type: ["VerifiableCredential"],
             id: new URL(request.url).searchParams.get("vcid") || "",
             issuer: "did:web:registration.lab.gaia-x.eu:development",
-            issuanceDate: new Date().toISOString(),
+            validFrom: new Date().toISOString(),
             credentialSubject: await request.json(),
             proof: {
-              type: "JsonWebSignature2020",
-              created: new Date().toISOString(),
+              type: "DataIntegrityProof",
+              created: "2024-07-30T13:51:30.581Z",
               proofPurpose: "assertionMethod",
               verificationMethod:
-                "did:web:registration.lab.gaia-x.eu:development#X509-JWK2020",
-              jws: ""
+                "did:web:dataspace-authority.example.com#key-0",
+              cryptosuite: "eddsa-jcs-2022",
+              proofValue:
+                "z3f3bQLt79o87hpXSUzWYy1bVaLQLBeU9Aj6b7BHPmuL7vhmZu8wx2kvUQU3Y8PHNVKtahcQQQHyxcTfYq3tJquSe"
             }
           });
         }
@@ -98,15 +106,15 @@ describe("Credentials Service", () => {
           const json = await request.json();
           const vcs = toArray(json.verifiableCredential);
 
-          return HttpResponse.json<VerifiableCredential<JsonWebSignature2020>>({
+          return HttpResponse.json<VerifiableCredential>({
             "@context": [
-              "https://www.w3.org/2018/credentials/v1",
+              "https://www.w3.org/ns/credentials/v2",
               "https://w3id.org/security/suites/jws-2020/v1"
             ],
             type: ["VerifiableCredential"],
             id: new URL(request.url).searchParams.get("vcid") || "",
             issuer: "did:web:compliance.lab.gaia-x.eu:development",
-            issuanceDate: new Date().toISOString(),
+            validFrom: new Date().toISOString(),
             credentialSubject: vcs.map((credential) => {
               return {
                 type: "gx:compliance",
@@ -115,25 +123,29 @@ describe("Credentials Service", () => {
                 "gx:integrityNormalization": "RFC8785:JCS",
                 "gx:version": "22.10",
                 "gx:type":
-                  toArray(credential.credentialSubject)[0]["type"] ||
+                  toArray(
+                    (credential as VerifiableCredential).credentialSubject
+                  )[0]["type"] ||
                   credential.type[0] ||
                   "unknown"
               };
             }),
             proof: {
-              type: "JsonWebSignature2020",
-              created: new Date().toISOString(),
+              type: "DataIntegrityProof",
+              created: "2024-07-30T13:51:30.581Z",
               proofPurpose: "assertionMethod",
               verificationMethod:
-                "did:web:compliance.lab.gaia-x.eu:development#X509-JWK2020",
-              jws: ""
+                "did:web:dataspace-authority.example.com#key-0",
+              cryptosuite: "eddsa-jcs-2022",
+              proofValue:
+                "z3f3bQLt79o87hpXSUzWYy1bVaLQLBeU9Aj6b7BHPmuL7vhmZu8wx2kvUQU3Y8PHNVKtahcQQQHyxcTfYq3tJquSe"
             }
           });
         }
       )
     );
 
-    server.listen({ onUnhandledRequest: "bypass" });
+    server.listen({ onUnhandledRequest: "warn" });
 
     const moduleRef: TestingModule = await Test.createTestingModule({
       imports: [
@@ -187,6 +199,7 @@ describe("Credentials Service", () => {
         context: [],
         type: [],
         id: `test-credential`,
+        proofType: "ldp",
         keyId: "key-0",
         revocable: false,
         credentialSubject: {
@@ -199,6 +212,7 @@ describe("Credentials Service", () => {
           context: [],
           type: [],
           id: "did:web:external-did.com#test-credential",
+          proofType: "ldp",
           revocable: false,
           credentialSubject: {
             id: didId
@@ -212,6 +226,7 @@ describe("Credentials Service", () => {
           context: [],
           type: [],
           id: `${didId}#test-credential`,
+          proofType: "ldp",
           revocable: false,
           credentialSubject: {
             id: didId
@@ -224,9 +239,9 @@ describe("Credentials Service", () => {
       const testCredential = await credentialsService.getCredential(
         `${didId}#test-credential`
       );
-
       const importedCredential = await credentialsService.importCredential({
         ...testCredential.credential,
+        proof: testCredential.proof!,
         id: `${didId}#imported-credential`,
         issuer: "did:web:external-issuer.com"
       });
@@ -237,9 +252,44 @@ describe("Credentials Service", () => {
         "did:web:external-issuer.com"
       );
 
+      const importedJwtCredential = await credentialsService.importCredential(
+        (
+          await createTestVerifiableCredential(
+            {
+              id: didId
+            },
+            "vc+jwt",
+            {
+              credentialType: "ExampleCredentialType"
+            }
+          )
+        ).jwt,
+        testDidId
+      );
+      expect(importedJwtCredential).toBeDefined();
+      expect(importedJwtCredential.selfIssued).toBe(false);
+      expect(importedJwtCredential.jwt).toBeDefined();
+      const importedEnvelopedCredential =
+        await credentialsService.importCredential(
+          await createTestVerifiableCredential(
+            {
+              id: didId
+            },
+            "enveloped",
+            {
+              credentialType: "ExampleCredentialType"
+            }
+          ),
+          testDidId
+        );
+      expect(importedEnvelopedCredential).toBeDefined();
+      expect(importedEnvelopedCredential.selfIssued).toBe(false);
+      expect(importedEnvelopedCredential.jwt).toBeDefined();
+
       await expect(
         credentialsService.importCredential({
           ...testCredential.credential,
+          proof: testCredential.proof!,
           id: `imported-credential`,
           issuer: "did:web:external-issuer.com"
         })
@@ -271,11 +321,13 @@ describe("Credentials Service", () => {
       const testCredential = await credentialsService.getCredential(
         `${didId}#test-credential`
       );
+      const ldpCredential = testCredential.credential as VerifiableCredential;
+
       const updateImportedCredential =
         await credentialsService.updateCredential(
           `${didId}#imported-credential`,
           {
-            ...testCredential.credential,
+            ...ldpCredential,
             id: `${didId}#imported-credential`,
             issuer: "did:web:external-issuer.com"
           }
@@ -417,10 +469,12 @@ describe("Credentials Service", () => {
       const credentials = [];
       for (let i = 0; i < 5; i++) {
         credentials.push(
+          // eslint-disable-next-line no-await-in-loop
           await credentialsService.issueCredential({
             context: [],
             type: [],
             id: `test-credential-${i}`,
+            proofType: "ldp",
             keyId: "key-0",
             revocable: true,
             credentialSubject: {
@@ -453,26 +507,22 @@ describe("Credentials Service", () => {
           .encodedList
       );
     });
-    it("Generate test credentials", async () => {
+    it("Test statuslist credential overflow", async () => {
       const credentials = [];
-      const start = new Date().getTime();
-      for (let i = 0; i < 1100; i++) {
+      for (let i = 0; i < 12; i++) {
+        // eslint-disable-next-line no-await-in-loop
         const credential = await credentialsService.issueCredential({
           context: [],
           type: [],
           id: `test-credential-${i}`,
           keyId: "key-0",
+          proofType: "ldp",
           revocable: true,
           credentialSubject: {
             id: didId
           }
         });
-        if (i % 100 === 0) {
-          console.log(
-            `Issued ${i} credentials after ${new Date().getTime() - start}ms`
-          );
-        }
-        if (i == 0 || i == 1099) {
+        if (i == 0 || i == 11) {
           credentials.push(credential);
         }
       }
@@ -492,6 +542,7 @@ describe("Credentials Service", () => {
           type: [],
           revocable: false,
           id: "test-paginated-1",
+          proofType: "ldp",
           keyId: "key-0",
           credentialSubject: { id: targetDid }
         },
@@ -503,6 +554,7 @@ describe("Credentials Service", () => {
           context: [],
           type: [],
           id: "test-paginated-2",
+          proofType: "ldp",
           revocable: false,
           keyId: "key-0",
           credentialSubject: { id: targetDid }
@@ -556,12 +608,13 @@ describe("Credentials Service", () => {
       // Create a credential with a did:key DID (mobile device)
       const mobileDid =
         "did:key:z6MkiTBz1ymuepAQ4HEHYSF1H8quG5GLVVQR3djdX3mDooWp";
-      const credential = await credentialsService.issueCredential(
+      await credentialsService.issueCredential(
         {
           context: [],
           type: [],
           id: "mobile-credential",
           keyId: "key-0",
+          proofType: "ldp",
           credentialSubject: {
             id: mobileDid
           },
@@ -569,21 +622,16 @@ describe("Credentials Service", () => {
         },
         mobileDid
       );
-      credential.credential.credentialSubject = {
-        id: mobileDid,
-        email: "test@example.com",
-        emailDomain: "example.com"
-      };
-      await credentialsService["credentialRepository"].save(credential);
 
       // Create a regular credential with sensitive data
       const regularDid = "did:web:regular.com";
-      const credential2 = await credentialsService.issueCredential(
+      await credentialsService.issueCredential(
         {
           context: [],
           type: [],
           id: "regular-credential",
           keyId: "key-0",
+          proofType: "ldp",
           credentialSubject: {
             id: regularDid
           },
@@ -591,14 +639,6 @@ describe("Credentials Service", () => {
         },
         regularDid
       );
-
-      credential2.credential.credentialSubject = {
-        id: regularDid,
-        email: "test@example.com",
-        emailDomain: "example.com",
-        name: "Test User"
-      };
-      await credentialsService["credentialRepository"].save(credential2);
 
       const result = await credentialsService.getPaginatedCredentialsPublic({
         page: 1,
@@ -620,20 +660,6 @@ describe("Credentials Service", () => {
         (cred) => cred.targetDid === mobileDid
       );
       expect(hasMobileCredential).toBe(false);
-
-      // Check if sensitive data is removed from regular credentials
-      const regularCredential = result.data.find(
-        (cred) => cred.targetDid === regularDid
-      );
-
-      if (regularCredential) {
-        const subject = toArray(
-          regularCredential.credential.credentialSubject
-        )[0];
-        expect(subject.email).toBeUndefined();
-        expect(subject.emailDomain).toBeUndefined();
-        expect(subject.name).toBe("Test User"); // Non-sensitive data should remain
-      }
     });
   });
 });

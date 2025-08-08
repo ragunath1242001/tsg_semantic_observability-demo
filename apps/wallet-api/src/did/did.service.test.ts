@@ -60,6 +60,10 @@ describe("DID Service", () => {
     didService = await moduleRef.get(DidService);
   });
 
+  afterAll(() => {
+    TypeOrmTestHelper.instance.teardownTestDB();
+  });
+
   describe("DID Document testing", () => {
     let initialCreatedDid: DIDDocument;
     let createdDidWithKey: DIDDocument;
@@ -206,7 +210,6 @@ describe("DID Service", () => {
   describe("DID Service management", () => {
     it("Insert service", async () => {
       const prevDidDoc: DIDDocument = clone(await didService.getDid());
-      console.log(prevDidDoc.service);
       const service = await didService.insertService({
         id: "did:web:localhost#TestService",
         type: "TestService",
@@ -216,7 +219,6 @@ describe("DID Service", () => {
       expect(service.id).toBe("did:web:localhost#TestService");
       expect(service.type).toBe("TestService");
       expect(service.serviceEndpoint).toBe("http://localhost");
-      console.log(newDidDoc.service);
       expect(newDidDoc.service!.length).toEqual(prevDidDoc.service!.length + 1);
     });
     it("Insert already existing service", async () => {
@@ -321,6 +323,10 @@ describe("DID Service Multikey-based", () => {
     }).compile();
 
     didService = await moduleRef.get(DidService);
+  });
+
+  afterAll(() => {
+    TypeOrmTestHelper.instance.teardownTestDB();
   });
 
   describe("DID Document testing", () => {

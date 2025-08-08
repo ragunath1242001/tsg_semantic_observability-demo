@@ -1,8 +1,11 @@
 import { Logger } from "@nestjs/common";
 import { AuthClientService } from "@tsg-dsp/common-api";
-import { VerifiablePresentation } from "@tsg-dsp/common-dsp";
+import {
+  CredentialContainer,
+  formatPresentation,
+  VerifiablePresentation
+} from "@tsg-dsp/common-dsp";
 import { InputDescriptor } from "@tsg-dsp/common-dtos";
-import { plainToInstance } from "class-transformer";
 import crypto from "crypto";
 
 import { TsgWalletConfig } from "../../config.js";
@@ -71,7 +74,7 @@ export class TsgWalletClient extends WalletClient {
     token: string,
     audience: string,
     inputDescriptors?: InputDescriptor[]
-  ): Promise<VerifiablePresentation[] | undefined> {
+  ): Promise<CredentialContainer[] | undefined> {
     try {
       if (!inputDescriptors) {
         inputDescriptors = [
@@ -130,7 +133,8 @@ export class TsgWalletClient extends WalletClient {
       this.logger.debug(
         `Successfully requested validation for audience ${audience}`
       );
-      return plainToInstance(VerifiablePresentation, response.data);
+      const credentialContainers = response.data.flatMap(formatPresentation);
+      return credentialContainers;
     } catch (err) {
       throw new DSPClientError("Could not request VP", err).andLog(
         this.logger,

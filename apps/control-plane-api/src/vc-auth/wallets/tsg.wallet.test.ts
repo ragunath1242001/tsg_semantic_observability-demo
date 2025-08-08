@@ -29,7 +29,7 @@ describe("TSG Wallet", () => {
         return HttpResponse.json([
           {
             "@context": [
-              "https://www.w3.org/2018/credentials/v1",
+              "https://www.w3.org/ns/credentials/v2",
               "https://w3c.github.io/vc-jws-2020/contexts/v1/"
             ],
             type: ["VerifiablePresentation"],
@@ -37,23 +37,26 @@ describe("TSG Wallet", () => {
             verifiableCredential: [
               {
                 "@context": [
-                  "https://www.w3.org/2018/credentials/v1",
+                  "https://www.w3.org/ns/credentials/v2",
                   "https://w3c.github.io/vc-jws-2020/contexts/v1/"
                 ],
                 type: ["VerifiableCredential"],
                 id: "did:web:localhost%3A3000#test",
                 issuer: "did:web:localhost%3A3000",
-                issuanceDate: "2024-03-29T08:17:00.122Z",
-                expirationDate: "2024-06-29T08:17:00.122Z",
+                validFrom: "2024-03-29T08:17:00.122Z",
+                validUntil: "2024-06-29T08:17:00.122Z",
                 credentialSubject: {
                   id: "did:web:localhost%3A3000"
                 },
                 proof: {
-                  type: "JsonWebSignature2020",
-                  created: "2024-03-29T08:17:00.685Z",
+                  type: "DataIntegrityProof",
+                  created: "2024-07-30T13:51:30.581Z",
                   proofPurpose: "assertionMethod",
-                  jws: "eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..nirMrWvJsxFkl8KlhDLBcyTjg8aOGI1UA8wFA2iYuoFEtpf1Z1Ok3T8bwOjDJeCoYZU-lIG-9oIaGKyFIzdGAg",
-                  verificationMethod: "did:web:localhost%3A3000#key-0"
+                  verificationMethod:
+                    "did:web:dataspace-authority.example.com#key-0",
+                  cryptosuite: "eddsa-jcs-2022",
+                  proofValue:
+                    "z3f3bQLt79o87hpXSUzWYy1bVaLQLBeU9Aj6b7BHPmuL7vhmZu8wx2kvUQU3Y8PHNVKtahcQQQHyxcTfYq3tJquSe"
                 }
               }
             ]
@@ -73,11 +76,14 @@ describe("TSG Wallet", () => {
             return HttpResponse.json({
               ...body.plainDocument,
               proof: {
-                type: "JsonWebSignature2020",
-                created: "2024-07-29T16:10:20.763Z",
+                type: "DataIntegrityProof",
+                created: "2024-07-30T13:51:30.581Z",
                 proofPurpose: "assertionMethod",
-                jws: "eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..8zL0OkKo0z1VkxF2ZVtTmHP8e5GdxdwPyCc4RrD-d155B2NhB8jsUfMiw4H0en6dnnbV6AucUTw0MfHKJJfxBA",
-                verificationMethod: "did:web:localhost%3A3000#key-0"
+                verificationMethod:
+                  "did:web:dataspace-authority.example.com#key-0",
+                cryptosuite: "eddsa-jcs-2022",
+                proofValue:
+                  "z3f3bQLt79o87hpXSUzWYy1bVaLQLBeU9Aj6b7BHPmuL7vhmZu8wx2kvUQU3Y8PHNVKtahcQQQHyxcTfYq3tJquSe"
               }
             });
           }
@@ -164,11 +170,13 @@ describe("TSG Wallet", () => {
       telephone: "(425) 123-4567",
       url: "http://www.janedoe.com",
       proof: {
-        type: "JsonWebSignature2020",
-        created: "2024-07-29T16:10:20.763Z",
+        type: "DataIntegrityProof",
+        created: "2024-07-30T13:51:30.581Z",
         proofPurpose: "assertionMethod",
-        jws: "eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..8zL0OkKo0z1VkxF2ZVtTmHP8e5GdxdwPyCc4RrD-d155B2NhB8jsUfMiw4H0en6dnnbV6AucUTw0MfHKJJfxBA",
-        verificationMethod: "did:web:localhost%3A3000#key-0"
+        verificationMethod: "did:web:dataspace-authority.example.com#key-0",
+        cryptosuite: "eddsa-jcs-2022",
+        proofValue:
+          "z3f3bQLt79o87hpXSUzWYy1bVaLQLBeU9Aj6b7BHPmuL7vhmZu8wx2kvUQU3Y8PHNVKtahcQQQHyxcTfYq3tJquSe"
       }
     });
   });

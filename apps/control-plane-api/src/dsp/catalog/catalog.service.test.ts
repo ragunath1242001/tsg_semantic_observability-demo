@@ -187,7 +187,7 @@ describe("Catalog Service", () => {
       expect(updatedDataset.distribution?.[0]?.accessService).toMatchObject({
         endpointURL: "https://httpbin.org/anything"
       });
-      const dto = await datasetDao.serialize();
+      const dto = datasetDao.serialize();
       expect(dto["hasPolicy"]?.[0]?.["assigner"]).toBeDefined();
     });
 
