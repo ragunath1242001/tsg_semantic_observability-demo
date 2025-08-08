@@ -91,4 +91,3 @@ config:
       type: connector
       serviceEndpoint: "{{ .Values.controlPlaneEndpoint }}"
 <% } %>
-<%= it.walletConfig(2) %>

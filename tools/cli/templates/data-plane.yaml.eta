@@ -1,6 +1,4 @@
-<% if (!it.dataPlane.tsgDataPlane) { %>
-<%= it.config(0) %>
-<% } else { %>
+<% if (it.dataPlane.tsgDataPlane) { %>
 <% if (it.participant.routing === "subdomain") { %>
 host: "<%= it.dataPlane.dnsPrefix ?? it.id %>.<%= it.participant.host %>"
 endpoint: https://dp.<%= it.participant.host %>
@@ -71,5 +69,4 @@ config:
   logging:
     debug: true
 <% } %>
-<%= it.config(2) %>
 <% } %>

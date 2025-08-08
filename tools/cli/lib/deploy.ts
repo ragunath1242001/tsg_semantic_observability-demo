@@ -1,6 +1,7 @@
 import { checkbox, confirm, Separator } from "@inquirer/prompts";
 import chalk from "chalk";
 import fs from "fs";
+import path from "path";
 import { parse } from "yaml";
 
 import {
@@ -26,12 +27,150 @@ interface Options {
   timeout: string;
 }
 
+interface BootstrapStateSection {
+  files: string[];
+  outputDir: string;
+  scope: "ecosystem" | "participant";
+  updatedAt: string;
+  cliVersion: string;
+}
+
+interface DeployStateSection {
+  namespace: string;
+  participants: Record<string, { releases: string[] }>;
+  updatedAt: string;
+  cliVersion: string;
+}
+
+interface TsgState {
+  bootstrap?: BootstrapStateSection;
+  deploy?: DeployStateSection;
+}
+
 export class Deploy {
   general!: General;
   applications?: Applications;
   cwd?: string;
   latestVersion!: string;
   currentCliVersion!: string;
+
+  private getStatePath(configFile: string | undefined, defaultFile: string) {
+    const file = configFile ?? defaultFile;
+    const dir = path.dirname(path.resolve(file));
+    const base = path.basename(file, path.extname(file));
+    return path.join(dir, `${base}.tsg-state.json`);
+  }
+
+  private readState(statePath: string): TsgState {
+    try {
+      if (fs.existsSync(statePath)) {
+        const content = fs.readFileSync(statePath, "utf8");
+        const parsed = JSON.parse(content) as unknown;
+        if (
+          parsed &&
+          typeof parsed === "object" &&
+          "participants" in (parsed as Record<string, unknown>)
+        ) {
+          // legacy root-level deploy state
+          const legacy = parsed as DeployStateSection;
+          return { deploy: legacy } as TsgState;
+        }
+        return parsed as TsgState;
+      }
+    } catch (e) {
+      log("warn", `Failed to read state at ${statePath}: ${e}`);
+    }
+    return {
+      deploy: {
+        namespace: this.general.namespace,
+        participants: {},
+        updatedAt: new Date().toISOString(),
+        cliVersion: this.currentCliVersion
+      }
+    } as TsgState;
+  }
+
+  private writeState(statePath: string, state: TsgState) {
+    try {
+      fs.writeFileSync(statePath, JSON.stringify(state, null, 2));
+      log("log", `Wrote deploy state to ${statePath}`);
+    } catch (e) {
+      log("warn", `Failed to write state to ${statePath}: ${e}`);
+    }
+  }
+
+  private participantReleases(p: Participant): string[] {
+    const releases: string[] = [];
+    releases.push(`${p.id}-postgresql`);
+    releases.push(`${p.id}-tsg-sso-bridge`);
+    releases.push(`${p.id}-tsg-wallet`);
+    if (p.hasControlPlane) releases.push(`${p.id}-tsg-control-plane`);
+    p.dataPlanes.forEach((_dp, id) => releases.push(`${p.id}-tsg-${id}`));
+    return releases;
+  }
+
+  private async uninstallReleases(
+    releases: string[],
+    dryRun: boolean
+  ): Promise<void> {
+    for (const rel of releases) {
+      // eslint-disable-next-line no-await-in-loop
+      await execPromise(
+        `helm delete -n ${this.general.namespace} ${rel}`,
+        dryRun,
+        this.cwd,
+        false
+      );
+    }
+  }
+
+  private async pruneStale(
+    state: TsgState,
+    current: Record<string, string[]>,
+    dryRun: boolean
+  ) {
+    const deploy = state.deploy;
+    if (deploy?.namespace && deploy.namespace !== this.general.namespace) {
+      log(
+        "warn",
+        `State namespace (${deploy?.namespace}) differs from current (${this.general.namespace}), skipping prune.`
+      );
+      return;
+    }
+    // Remove participants not present anymore
+    const staleParticipants = Object.keys(deploy?.participants ?? {}).filter(
+      (pid) => !(pid in current)
+    );
+    for (const pid of staleParticipants) {
+      const releases = deploy?.participants[pid]?.releases ?? [];
+      for (const rel of releases) {
+        // eslint-disable-next-line no-await-in-loop
+        await execPromise(
+          `helm delete -n ${this.general.namespace} ${rel}`,
+          dryRun,
+          this.cwd,
+          false
+        );
+      }
+    }
+    // Remove releases removed from existing participants
+    for (const [pid, releases] of Object.entries(deploy?.participants ?? {})) {
+      if (!(pid in current)) continue;
+      const wanted = new Set(current[pid]);
+      const staleReleases = (releases?.releases ?? []).filter(
+        (r) => !wanted.has(r)
+      );
+      for (const rel of staleReleases) {
+        // eslint-disable-next-line no-await-in-loop
+        await execPromise(
+          `helm delete -n ${this.general.namespace} ${rel}`,
+          dryRun,
+          this.cwd,
+          false
+        );
+      }
+    }
+  }
 
   deployEcosystem = async (options: Options) => {
     const yaml = fs.readFileSync(options.file ?? "ecosystem.yaml");
@@ -49,20 +188,40 @@ export class Deploy {
 
     await this.confirmOptions(options);
 
+    const statePath = this.getStatePath(options.file, "ecosystem.yaml");
+    const state = this.readState(statePath);
+
     if (options.uninstall) {
       log("log", `Uninstalling ecosystem`);
-      const promises = [];
+      // Determine all releases to uninstall from state and current YAML (union)
+      const allReleases = new Set<string>();
+      // From state
+      for (const p of Object.values(state.deploy?.participants ?? {})) {
+        p.releases.forEach((r: string) => allReleases.add(r));
+      }
+      // From current YAML (covers cases where state is missing/incomplete)
       for (const participant of participants) {
-        promises.push(
-          this.uninstallParticipant(participant, options.dryRun, true)
+        this.participantReleases(participant).forEach((r) =>
+          allReleases.add(r)
         );
       }
-      await Promise.all(promises);
+
+      await this.uninstallReleases(Array.from(allReleases), options.dryRun);
       await execPromise(
         `kubectl get secrets -n ${this.general.namespace} -o name | grep 'secret/sso-' | xargs -L 1 kubectl delete -n ${this.general.namespace}`,
         options.dryRun,
         this.cwd
       );
+      // Clear deploy state section but keep other sections
+      this.writeState(statePath, {
+        ...state,
+        deploy: {
+          namespace: this.general.namespace,
+          participants: {},
+          updatedAt: new Date().toISOString(),
+          cliVersion: this.currentCliVersion
+        }
+      });
       return;
     }
 
@@ -95,6 +254,13 @@ export class Deploy {
         this.cwd
       );
     }
+
+    // Prune removed participants/services before installing
+    const currentMap: Record<string, string[]> = {};
+    for (const p of participants) {
+      currentMap[p.id] = this.participantReleases(p);
+    }
+    await this.pruneStale(state, currentMap, options.dryRun);
 
     if (options.diff) {
       log("log", `Determining differences for ecosystem`);
@@ -137,6 +303,22 @@ export class Deploy {
         );
       }
     }
+
+    // Update state when not a dry run
+    if (!options.dryRun) {
+      const deploySection: DeployStateSection = {
+        namespace: this.general.namespace,
+        participants: {},
+        updatedAt: new Date().toISOString(),
+        cliVersion: this.currentCliVersion
+      };
+      for (const p of participants) {
+        deploySection.participants[p.id] = {
+          releases: this.participantReleases(p)
+        };
+      }
+      this.writeState(statePath, { ...state, deploy: deploySection });
+    }
   };
   deploySingleParticipant = async (options: Options) => {
     const yaml = fs.readFileSync(options.file ?? "participant.yaml");
@@ -153,9 +335,37 @@ export class Deploy {
 
     await this.confirmOptions(options);
 
+    const statePath = this.getStatePath(options.file, "participant.yaml");
+    const state = this.readState(statePath);
+
     if (options.uninstall) {
       log("log", `Uninstalling participant`);
-      await this.uninstallParticipant(participant, options.dryRun, true);
+      // Gather releases from current YAML and from state for this participant
+      const fromYaml = this.participantReleases(participant);
+      const fromState =
+        state.deploy?.participants[participant.id]?.releases ?? [];
+      const releases = Array.from(new Set([...fromYaml, ...fromState]));
+      await this.uninstallReleases(releases, options.dryRun);
+      await execPromise(
+        `kubectl get secrets -n ${this.general.namespace} -o name | grep 'secret/sso-' | xargs -L 1 kubectl delete -n ${this.general.namespace}`,
+        options.dryRun,
+        this.cwd
+      );
+      // Remove only this participant from state
+      if (!options.dryRun) {
+        const newState: TsgState = { ...state };
+        const participantsMap: Record<string, { releases: string[] }> = {
+          ...(state.deploy?.participants ?? {})
+        };
+        delete participantsMap[participant.id];
+        newState.deploy = {
+          namespace: this.general.namespace,
+          participants: participantsMap,
+          updatedAt: new Date().toISOString(),
+          cliVersion: this.currentCliVersion
+        };
+        this.writeState(statePath, newState);
+      }
       return;
     }
 
@@ -182,6 +392,13 @@ export class Deploy {
         this.cwd
       );
     }
+    // Prune removed services for this participant
+    await this.pruneStale(
+      state,
+      { [participant.id]: this.participantReleases(participant) },
+      options.dryRun
+    );
+
     if (options.diff) {
       log("log", `Determining differences for participant`);
       await this.installParticipant(
@@ -213,6 +430,19 @@ export class Deploy {
         options.yes,
         options.timeout
       );
+    }
+
+    if (!options.dryRun) {
+      const newState: TsgState = { ...state };
+      newState.deploy = {
+        namespace: this.general.namespace,
+        participants: {
+          [participant.id]: { releases: this.participantReleases(participant) }
+        },
+        updatedAt: new Date().toISOString(),
+        cliVersion: this.currentCliVersion
+      };
+      this.writeState(statePath, newState);
     }
   };
 
@@ -469,6 +699,7 @@ export class Deploy {
       }
 
       // Wait before checking again
+      // eslint-disable-next-line no-await-in-loop
       await new Promise((resolve) => setTimeout(resolve, 5000));
     }
 

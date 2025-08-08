@@ -75,5 +75,3 @@ config:
     publisher: did:web:{{ .Values.wallet }}
     title: "<%= it.participant.name %>"
     description: "<%= it.participant.name %> connector"
-
-<%= it.controlPlaneConfig(2) %>

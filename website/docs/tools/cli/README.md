@@ -34,10 +34,10 @@ Deploy multiple participants in a single environment:
 
 ```bash
 # Generate configuration files
-tsg bootstrap ecosystem -f ecosystem.yaml
+tsg bootstrap ecosystem
 
 # Deploy to Kubernetes
-tsg deploy ecosystem -f ecosystem.yaml
+tsg deploy ecosystem
 ```
 
 ### Single Participant Deployment
@@ -45,24 +45,24 @@ Join an existing dataspace:
 
 ```bash
 # Generate configuration files
-tsg bootstrap participant -f participant.yaml
+tsg bootstrap participant
 
-# Deploy to Kubernetes  
-tsg deploy participant -f participant.yaml
+# Deploy to Kubernetes
+tsg deploy participant
 ```
 
 ## Command Reference
 
 ```
-Usage: tsg [options] [command]
+Usage: tsg-cli [options] [command]
 
 Options:
   -v, --version                output the current version
   -h, --help                   display help for command
 
 Commands:
-  bootstrap [options] <scope>  Generate configuration files for deployment
-  deploy [options] <scope>     Deploy to Kubernetes cluster (requires Helm)
+  bootstrap [options] <scope>  Bootstrap CLI utility to generate configuration files
+  deploy [options] <scope>     Deploy configuration to an Kubernetes cluster (requires Helm to be installed)
   help [command]               display help for command
 ```
 
@@ -275,6 +275,14 @@ After running `tsg bootstrap`, the output directory contains (by default `output
 ├── values.sso-bridge.yaml
 └── values.wallet.yaml
 ```
+
+## State management
+
+After running either `tsg bootstrap` or `tsg deploy`, the CLI updates the state of the bootstrap process in the `[ecosystem|participant].tsg-state.json` file. This file tracks which configuration files have been created in the output directory, as well as, the helm releases that have been deployed by the CLI.
+
+This is used to ensure the config and state are in sync between the CLI and the Kubernetes cluster.
+
+> **_Tip_**: check in the state file into version control to keep track of changes.
 
 ## Troubleshooting
 
