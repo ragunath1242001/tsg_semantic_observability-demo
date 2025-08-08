@@ -92,16 +92,16 @@ describe("DataPlaneController", () => {
   });
 
   afterAll(async () => {
-    await TypeOrmTestHelper.instance.teardownTestDB();
+    TypeOrmTestHelper.instance.teardownTestDB();
   });
 
   describe("/init", () => {
     it("Initialization of a new data plane should return 200", async () => {
       const result = await dataPlaneController.init({
         dataplaneType: "http",
-        endpointPrefix: "https://",
-        callbackAddress: "https://httpbin.org/anything",
-        managementAddress: "https://httpbin.org/mgmt",
+        endpointPrefix: "/api",
+        callbackAddress: "http://localhost/api/callback",
+        managementAddress: "http://localhost/api/management",
         managementToken: "",
         catalogSynchronization: "pull",
         role: "consumer"

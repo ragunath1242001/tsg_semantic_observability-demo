@@ -46,10 +46,7 @@ function isBase64urlEven(s: string): boolean {
   return big.modulo(2).eq(0);
 }
 
-export function jwkOKPToMultibase(
-  jwk: JWK,
-  isPrivate: boolean = false
-): string {
+function jwkOKPToMultibase(jwk: JWK, isPrivate: boolean): string {
   if (jwk.crv !== "Ed25519") {
     throw new Error(
       `The JWK curve algorithm (crv) ${jwk.crv} is not supported for OKP key type (kty)`
@@ -62,7 +59,7 @@ export function jwkOKPToMultibase(
   );
 }
 
-export function jwkECToMultibase(jwk: JWK, isPrivate: boolean = false): string {
+function jwkECToMultibase(jwk: JWK, isPrivate: boolean): string {
   if (jwk.crv !== "P-384") {
     throw new Error(
       `The JWK curve algorithm (crv) ${jwk.crv} is not supported for EC key type (kty)`
@@ -77,10 +74,7 @@ export function jwkECToMultibase(jwk: JWK, isPrivate: boolean = false): string {
   );
 }
 
-export function jwkRSAToMultibase(
-  jwk: JWK,
-  isPrivate: boolean = false
-): string {
+function jwkRSAToMultibase(jwk: JWK, isPrivate: boolean): string {
   return hexToBase58btc(
     (isPrivate
       ? varintPrefix(multicodecPrivate[jwk.kty!])

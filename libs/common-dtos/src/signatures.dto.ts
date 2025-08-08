@@ -1,16 +1,5 @@
-import {
-  ApiProperty,
-  ApiPropertyOptional,
-  getSchemaPath,
-  PartialType
-} from "@nestjs/swagger";
-import {
-  DataIntegrityProof,
-  elementOrArray,
-  JsonWebSignature2020,
-  OrArray,
-  Proof
-} from "@tsg-dsp/common-dsp";
+import { ApiProperty, ApiPropertyOptional, PartialType } from "@nestjs/swagger";
+import { DataIntegrityProof, OrArray } from "@tsg-dsp/common-dsp";
 import { Type } from "class-transformer";
 import {
   IsBoolean,
@@ -23,34 +12,27 @@ import {
 } from "class-validator";
 
 export class ProofDocument {
-  @ApiProperty(elementOrArray({ $ref: getSchemaPath(Proof) }))
-  @Type(() => Proof)
+  @ApiProperty({
+    type: () => [DataIntegrityProof],
+    example: [
+      {
+        type: "DataIntegrityProof",
+        created: "2023-10-12T18:25:43.511Z",
+        proofPurpose: "assertionMethod",
+        verificationMethod: "did:example:12345#key-1",
+        cryptosuite: "ecdsa-2019",
+        proofValue: "zQm..."
+      }
+    ]
+  })
+  @Type(() => DataIntegrityProof)
   @IsDefined()
   @ValidateNested()
-  @Type(() => Proof, {
-    discriminator: {
-      property: "type",
-      subTypes: [
-        { value: JsonWebSignature2020, name: "JsonWebSignature2020" },
-        { value: DataIntegrityProof, name: "DataIntegrityProof" }
-      ]
-    },
-    keepDiscriminatorProperty: true
-  })
-  proof!: OrArray<Proof>;
+  proof!: OrArray<DataIntegrityProof>;
   [key: string]: any;
 }
 
 export class SignRequest {
-  @ApiPropertyOptional({
-    enum: ["JsonWebSignature2020", "DataIntegrityProof"],
-    example: { type: "JsonWebSignature2020" }
-  })
-  @IsString()
-  @IsOptional()
-  @IsIn(["DataIntegrityProof", "JsonWebSignature2020"])
-  type?: "JsonWebSignature2020" | "DataIntegrityProof";
-
   @ApiProperty({
     example: { id: "document1", content: "This is a sample document" }
   })
@@ -106,10 +88,12 @@ export class ValidateRequest {
     type: ProofDocument,
     example: {
       proof: {
-        type: "JsonWebSignature2020",
+        type: "DataIntegrityProof",
         created: "2023-10-12T18:25:43.511Z",
         proofPurpose: "assertionMethod",
-        jws: "eyJ..."
+        verificationMethod: "did:example:12345#key-1",
+        cryptosuite: "ecdsa-jcs-2019",
+        proofValue: "zQm..."
       }
     }
   })

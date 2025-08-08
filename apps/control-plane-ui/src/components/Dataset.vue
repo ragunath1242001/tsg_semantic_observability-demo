@@ -64,10 +64,6 @@ const changeEditable = (edit: boolean) => {
   return;
 };
 
-const stripOdrl = (value: string) => {
-  return value.slice(5);
-};
-
 const goBack = () => {
   emit("change-dataset-view");
 };
@@ -243,7 +239,7 @@ const sendNegotiation = async (
             :key="policy">
             <div
               class="px-2 font-medium text-lg text-surface-700 dark:text-surface-100">
-              {{ stripOdrl(policy.type) }}
+              {{ policy.type }}
             </div>
             <div class="grid grid-cols-12 gap-4 grid-nogutter">
               <DisplayField label="Assigner">

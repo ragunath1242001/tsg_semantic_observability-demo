@@ -1,3 +1,4 @@
+import { Logger } from "@nestjs/common";
 import { compactVerify, importJWK } from "jose";
 
 import { canonizeAndHash } from "../../../utils/canonization.js";
@@ -55,7 +56,11 @@ export const documentStateIsValid = async (
       const jws = `${jwsHeader}.${input}.${jwsSignature}`;
       await compactVerify(jws, await importJWK(jwk));
     } catch (e) {
-      console.error(e);
+      Logger.error(
+        `Failed to verify proof ${i} with verification method ${proof.verificationMethod}`,
+        "TDW DocumentStateValidation"
+      );
+      Logger.debug(e, "TDW DocumentStateValidation");
       throw new Error(`Error verifying signature: ${e}`);
     }
     i++;

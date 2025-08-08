@@ -128,7 +128,7 @@ export class CredentialQuery {
   id!: string;
 
   @ApiProperty({
-    example: "dc+sd-jwt",
+    example: "jwt_vc_json",
     description: "Credential format identifier",
     enum: ["jwt_vc_json", "ldp_vc", "dc+sd-jwt", "mso_mdoc"]
   })

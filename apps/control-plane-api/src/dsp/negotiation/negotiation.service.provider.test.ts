@@ -158,8 +158,8 @@ describe("Negotiation Service (Provider)", () => {
     );
   });
 
-  afterAll(async () => {
-    await TypeOrmTestHelper.instance.teardownTestDB();
+  afterAll(() => {
+    TypeOrmTestHelper.instance.teardownTestDB();
     server.close();
   });
 

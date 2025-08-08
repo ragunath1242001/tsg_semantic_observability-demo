@@ -1,12 +1,10 @@
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
-import { AppError } from "@tsg-dsp/common-api";
+import { AppError, parseNetworkError, promiseMap } from "@tsg-dsp/common-api";
 import { VerifiableCredential } from "@tsg-dsp/common-dsp";
-import { validateJwt } from "@tsg-dsp/common-signing-and-validation";
 import {
   AccessToken,
   CredentialConfiguration,
   CredentialFormat,
-  CredentialIssuerMetadata,
   CredentialRequest,
   CredentialResponse,
   NonceResponse,
@@ -18,10 +16,12 @@ import axios from "axios";
 import { plainToInstance } from "class-transformer";
 import qs from "querystring";
 
-import { OID4VCIHolderConfig, RootConfig } from "../../config.js";
+import { RootConfig } from "../../config.js";
 import { CredentialsService } from "../../credentials/credentials.service.js";
 import { SignatureService } from "../../keys/signature.service.js";
 import { CredentialDao } from "../../model/credentials.dao.js";
+import { retrieveOpenIDIssuerMetadata } from "../../utils/openid-metadata.js";
+import { retry } from "../../utils/retry.js";
 
 @Injectable()
 export class OID4VCIHolderService {
@@ -39,52 +39,29 @@ export class OID4VCIHolderService {
     this.logger.log("Initializing HolderService");
     const existingCredentials = await this.credentialsService.getCredentials();
     const existingTypes = existingCredentials.flatMap((c) => c.credential.type);
-    await Promise.all(
-      this.config.issuance.oid4vci.map(async (holderConfig) => {
-        if (
-          holderConfig.credentialType.every((type) =>
-            existingTypes.includes(type)
-          )
-        ) {
-          this.logger.log(
-            `Already holding ${holderConfig.credentialType.join(", ")} credential(s), skipping request`
-          );
-        } else {
-          await this.requestCredentialWithRetry(holderConfig);
-        }
-      })
+    await promiseMap(this.config.issuance.oid4vci, (config) =>
+      retry(
+        async () => {
+          if (
+            config.credentialType.every((type) => existingTypes.includes(type))
+          ) {
+            this.logger.log(
+              `Already holding ${config.credentialType.join(", ")} credential(s), skipping request`
+            );
+          } else {
+            await this.requestCredential(config);
+          }
+        },
+        `request credential for ${config.credentialType.join(", ")}`
+      )
     );
-
     return true;
-  }
-
-  async requestCredentialWithRetry(
-    config: OID4VCIHolderConfig,
-    retry = 0,
-    backOff = 1000
-  ) {
-    try {
-      await this.requestCredential(config);
-    } catch (err) {
-      if (retry < 5) {
-        this.logger.warn(
-          `Could not request credential with code ${config.preAuthorizedCode} at ${config.issuerUrl}, retrying in 10 seconds`
-        );
-        await new Promise((f) => setTimeout(f, backOff));
-        await this.requestCredentialWithRetry(config, ++retry, backOff * 2);
-      } else {
-        this.logger.error(
-          `Could not request credential with code ${config.preAuthorizedCode} at ${config.issuerUrl}: ${err}`
-        );
-        throw err;
-      }
-    }
   }
 
   async requestCredential(
     config: OID4VCICredentialRequestInitiation
   ): Promise<CredentialDao[]> {
-    const issuerMetadata = await this.retrieveIssuerMetadata(config.issuerUrl);
+    const issuerMetadata = await retrieveOpenIDIssuerMetadata(config.issuerUrl);
     let accessToken: AccessToken;
     if (config.authorized) {
       accessToken = {
@@ -108,9 +85,11 @@ export class OID4VCIHolderService {
         HttpStatus.BAD_REQUEST
       ).andLog(this.logger);
     }
+    const credentialConfigurationId =
+      accessToken.authorization_details?.[0]?.credential_configuration_id;
     const credentialIdentifier =
       accessToken.authorization_details?.[0]?.credential_identifiers?.[0];
-    if (!credentialIdentifier) {
+    if (!credentialIdentifier || !credentialConfigurationId) {
       throw new AppError(
         "Access token does not contain authorization details or credential identifier",
         HttpStatus.BAD_REQUEST
@@ -118,10 +97,12 @@ export class OID4VCIHolderService {
     }
 
     const credentialConfig =
-      issuerMetadata.credential_configurations_supported[credentialIdentifier];
+      issuerMetadata.credential_configurations_supported[
+        credentialConfigurationId
+      ];
     if (!credentialConfig) {
       throw new AppError(
-        `Credential configuration for ${accessToken.authorization_details?.[0]?.credential_identifiers?.[0]} not found`,
+        `Credential configuration for ${credentialConfigurationId} not found`,
         HttpStatus.BAD_REQUEST
       ).andLog(this.logger);
     }
@@ -155,23 +136,15 @@ export class OID4VCIHolderService {
     if ("credentials" in credentialResponse) {
       return await Promise.all(
         credentialResponse.credentials.map(async (credentialItem) => {
-          this.logger.debug(
-            `Received credential as string, attempting to parse as JWT`
-          );
-          const payload = await validateJwt(credentialItem.credential);
-          if (payload.vc) {
-            this.logger.debug(
-              `Received credential as JWT, parsing as VerifiableCredential`
-            );
+          if (typeof credentialItem.credential === "string") {
             return this.credentialsService.importCredential(
-              plainToInstance(VerifiableCredential, payload.vc)
+              credentialItem.credential
+            );
+          } else {
+            return this.credentialsService.importCredential(
+              plainToInstance(VerifiableCredential, credentialItem.credential)
             );
           }
-          this.logger.debug(`JWT payload: ${JSON.stringify(payload, null, 2)}`);
-          throw new AppError(
-            "Non parseable credential response",
-            HttpStatus.NOT_IMPLEMENTED
-          ).andLog(this.logger);
         })
       );
     } else {
@@ -179,83 +152,6 @@ export class OID4VCIHolderService {
         "Deferred credential handling not yet supported",
         HttpStatus.NOT_IMPLEMENTED
       ).andLog(this.logger);
-    }
-  }
-
-  private async retrieveIssuerMetadata(
-    issuerUrl: string
-  ): Promise<CredentialIssuerMetadata> {
-    const credentialIssuerMetadataEndpoint = this.constructWellKnown(
-      "issuer",
-      issuerUrl
-    );
-    try {
-      const response = await axios.get<CredentialIssuerMetadata>(
-        credentialIssuerMetadataEndpoint
-      );
-
-      if (!response.data.token_endpoint) {
-        if (response.data.authorization_servers) {
-          for (const authorizationServer of response.data
-            .authorization_servers) {
-            const tokenEndpoint =
-              await this.retrieveTokenEndpoint(authorizationServer);
-            if (tokenEndpoint) {
-              return {
-                ...response.data,
-                token_endpoint: tokenEndpoint
-              };
-            }
-          }
-        }
-        const tokenEndpoint = await this.retrieveTokenEndpoint(issuerUrl);
-        if (tokenEndpoint) {
-          return {
-            ...response.data,
-            token_endpoint: tokenEndpoint
-          };
-        } else {
-          throw new AppError(
-            `Could not find token endpoint for ${issuerUrl}`,
-            HttpStatus.BAD_REQUEST
-          ).andLog(this.logger);
-        }
-      }
-
-      return response.data;
-    } catch (_) {
-      throw new AppError(
-        `Could not load OpenID Credential issuer metadata from ${credentialIssuerMetadataEndpoint}`,
-        HttpStatus.BAD_REQUEST
-      ).andLog(this.logger);
-    }
-  }
-
-  private async retrieveTokenEndpoint(
-    authorizationServer: string
-  ): Promise<string | undefined> {
-    const openIdMetadataEndpoint = this.constructWellKnown(
-      "openid",
-      authorizationServer
-    );
-    const oauthMetadataEndpoint = this.constructWellKnown(
-      "oauth",
-      authorizationServer
-    );
-    try {
-      const response = await axios.get(openIdMetadataEndpoint);
-      if (response.data.token_endpoint) {
-        return response.data.token_endpoint as string;
-      } else {
-        const response = await axios.get(oauthMetadataEndpoint);
-        if (response.data.token_endpoint) {
-          return response.data.token_endpoint as string;
-        } else {
-          return undefined;
-        }
-      }
-    } catch (_) {
-      return undefined;
     }
   }
 
@@ -298,7 +194,8 @@ export class OID4VCIHolderService {
     );
     if (
       issueConfiguration.format !== CredentialFormat.JWT_VC_JSON &&
-      issueConfiguration.format !== CredentialFormat.JWT_VC_JSON_LD
+      issueConfiguration.format !== CredentialFormat.JWT_VC_JSON_LD &&
+      issueConfiguration.format !== CredentialFormat.LDP_VC
     ) {
       throw new AppError(
         `Unsupported credential format: ${issueConfiguration.format}`,
@@ -346,32 +243,10 @@ export class OID4VCIHolderService {
       );
       return response.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        this.logger.error(error.response?.data);
-      }
-      throw new AppError(
-        `Error in requesting credential at ${credentialEndpoint}`,
-        HttpStatus.BAD_REQUEST
-      ).andLog(this.logger);
+      throw parseNetworkError(
+        error,
+        `requesting credential at ${credentialEndpoint}`
+      );
     }
-  }
-
-  private constructWellKnown(
-    type: "issuer" | "openid" | "oauth",
-    baseUrl: string
-  ) {
-    let url: string;
-    switch (type) {
-      case "issuer":
-        url = `${baseUrl}/.well-known/openid-credential-issuer`;
-        break;
-      case "openid":
-        url = `${baseUrl}/.well-known/openid-configuration`;
-        break;
-      case "oauth":
-        url = `${baseUrl}/.well-known/oauth-authorization-server`;
-        break;
-    }
-    return url.replace(/([^:])(\/\/+)/g, "$1/");
   }
 }

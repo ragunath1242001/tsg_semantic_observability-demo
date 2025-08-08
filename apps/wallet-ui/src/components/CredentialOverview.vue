@@ -1,5 +1,9 @@
 <script setup lang="ts">
-import { CredentialStatus, VerifiableCredential } from "@tsg-dsp/common-dsp";
+import {
+  Credential,
+  CredentialStatus,
+  DataIntegrityProof
+} from "@tsg-dsp/common-dsp";
 import { VerifiedCredentialStatus } from "@tsg-dsp/common-dtos";
 import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
 import { formatDate, formatRelative } from "@tsg-dsp/common-ui/utils/date.js";
@@ -22,12 +26,13 @@ const props = defineProps({
 });
 
 const authenticated = toRef(props, "authenticated");
-console.log(authenticated.value);
 
-interface Credential {
+interface CredentialDto {
   id: string;
   targetDid: string;
-  credential: VerifiableCredential;
+  credential: Credential;
+  proof?: DataIntegrityProof;
+  jwt?: string;
   selfIssued: boolean;
 }
 
@@ -44,9 +49,9 @@ interface CredentialParsed {
   targetDid: string;
   issuer: string;
   type: string[];
-  expirationDate: string;
+  validUntil: string;
   expirationSeverity: "secondary" | "warn" | "danger";
-  raw: Credential;
+  raw: CredentialDto;
   statusLoading: boolean;
   status: Record<string, FetchedStatus>;
 }
@@ -58,7 +63,7 @@ const expandedRows = ref();
 
 const { data, loading, total, perPage, load } = setupPagination({
   fetch: async (params) => {
-    const response = await http<Credential[]>("management/credentials", {
+    const response = await http<CredentialDto[]>("management/credentials", {
       params
     });
     const parsedCredentials: CredentialParsed[] = response.data.map((item) => {
@@ -72,13 +77,13 @@ const { data, loading, total, perPage, load } = setupPagination({
       const simpleTypes = [...credentialTypes]
         .map((type) => type.split(/[/#]/g).slice(-1)[0])
         .filter((type) => type !== "VerifiableCredential");
-      const expirationDate = new Date(
-        item.credential.expirationDate ?? item.credential.validUntil
+      const validUntil = new Date(
+        item.credential.validUntil ?? item.credential.expirationDate
       );
       const expirationSeverity =
-        expirationDate < new Date()
+        validUntil < new Date()
           ? "danger"
-          : expirationDate < new Date(Date.now() + 1000 * 60 * 60 * 24 * 7)
+          : validUntil < new Date(Date.now() + 1000 * 60 * 60 * 24 * 7)
             ? "warn"
             : "secondary";
       return {
@@ -86,8 +91,8 @@ const { data, loading, total, perPage, load } = setupPagination({
         targetDid: item.targetDid,
         issuer: item.selfIssued ? "self" : item.credential.issuer,
         type: simpleTypes,
-        expirationDate: dayjs(
-          item.credential.expirationDate ?? item.credential.validUntil
+        validUntil: dayjs(
+          item.credential.validUntil ?? item.credential.expirationDate
         ).fromNow(),
         expirationSeverity,
         raw: item,
@@ -187,8 +192,25 @@ const copyCredentialId = (credentialId: string) => {
   });
 };
 
-const copyCredential = (credential: VerifiableCredential) => {
-  navigator.clipboard.writeText(JSON.stringify(credential, null, 2));
+const copyCredential = (credential: CredentialDto) => {
+  if (credential.jwt) {
+    navigator.clipboard.writeText(credential.jwt);
+    toast.add({
+      severity: "success",
+      summary: "Copied",
+      detail: "Copied Credential JWT to clipboard",
+      life: 3000
+    });
+    return;
+  }
+
+  navigator.clipboard.writeText(
+    JSON.stringify(
+      { ...credential.credential, proof: credential.proof },
+      null,
+      2
+    )
+  );
   toast.add({
     severity: "success",
     summary: "Copied",
@@ -373,22 +395,20 @@ onMounted(async () => {
             sortable>
             <template #body="props">
               <Tag
-                v-if="props.data.raw.credential.issuanceDate"
+                v-if="props.data.raw.credential.validFrom"
                 severity="secondary"
-                >{{
-                  formatRelative(props.data.raw.credential.issuanceDate)
-                }}</Tag
+                >{{ formatRelative(props.data.raw.credential.validFrom) }}</Tag
               >
               <Tag v-else severity="warn">-</Tag>
             </template>
           </Column>
           <Column
-            field="credential.expirationDate"
+            field="credential.validUntil"
             header="Expiration"
             style="width: 8rem; text-align: center">
             <template #body="props">
               <Tag :severity="props.data.expirationSeverity">{{
-                props.data.expirationDate
+                props.data.validUntil
               }}</Tag>
             </template>
           </Column>
@@ -410,7 +430,7 @@ onMounted(async () => {
                 class="mr-2"
                 severity="help"
                 icon="pi pi-copy"
-                @click="copyCredential(props.data.raw.credential)" />
+                @click="copyCredential(props.data.raw)" />
               <Button
                 v-if="
                   authenticated &&
@@ -446,22 +466,22 @@ onMounted(async () => {
                   </FormField>
                   <FormField label="Issuance date"
                     >{{
-                      formatDate(props.data.raw.credential.issuanceDate)
+                      formatDate(props.data.raw.credential.validFrom)
                     }}
                     &nbsp;&nbsp;({{
-                      dayjs(props.data.raw.credential.issuanceDate).fromNow()
+                      dayjs(props.data.raw.credential.validFrom).fromNow()
                     }})</FormField
                   >
                   <FormField label="Expiration date"
                     >{{
-                      formatDate(props.data.raw.credential.expirationDate)
+                      formatDate(props.data.raw.credential.validUntil)
                     }}
                     &nbsp;&nbsp;({{
-                      dayjs(props.data.raw.credential.expirationDate).fromNow()
+                      dayjs(props.data.raw.credential.validUntil).fromNow()
                     }})</FormField
                   >
                   <FormField label="Proof Type">{{
-                    props.data.raw.credential.proof.type
+                    props.data.raw.jwt ? "JWT" : "Linked Data Proof"
                   }}</FormField>
                   <template v-if="props.data.raw.credential.credentialStatus">
                     <FormField
@@ -517,11 +537,32 @@ onMounted(async () => {
                     :max-lines="100" />
                 </TabPanel>
                 <TabPanel value="Credential">
-                  <MonacoEditorVue
-                    :static="props.data.raw.credential"
-                    :read-only="true"
-                    :min-lines="1"
-                    :max-lines="100" />
+                  <template v-if="props.data.raw.jwt">
+                    <MonacoEditorVue
+                      :static="props.data.raw.credential"
+                      :read-only="true"
+                      :min-lines="1"
+                      :max-lines="100" />
+                    <div class="font-mono text-wrap break-all p-4">
+                      <span class="text-red-600 inline-block">
+                        {{ props.data.raw.jwt.split(".")[0] }}.</span
+                      ><span class="text-green-600 inline-block">
+                        {{ props.data.raw.jwt.split(".")[1] }}.</span
+                      ><span class="text-blue-600 inline-block">
+                        {{ props.data.raw.jwt.split(".")[2] }}
+                      </span>
+                    </div>
+                  </template>
+                  <template v-else>
+                    <MonacoEditorVue
+                      :static="{
+                        ...props.data.raw.credential,
+                        proof: props.data.raw.proof
+                      }"
+                      :read-only="true"
+                      :min-lines="1"
+                      :max-lines="100" />
+                  </template>
                 </TabPanel>
               </TabPanels>
             </Tabs>

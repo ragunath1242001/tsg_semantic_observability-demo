@@ -25,6 +25,7 @@ import {
   IsEnum,
   IsHexColor,
   IsIn,
+  IsNumber,
   IsObject,
   IsOptional,
   IsString,
@@ -75,6 +76,11 @@ export class InitCredentialConfig {
   @IsString()
   public readonly id!: string;
 
+  @Description("Type of proof used for the credential")
+  @IsEnum(["ldp", "jwt"])
+  @IsOptional()
+  public readonly proofType: "ldp" | "jwt" = "ldp";
+
   @Description("ID of key signing the credential")
   @IsString()
   @IsOptional()
@@ -109,6 +115,11 @@ export class IssueConfigurationConfig {
   @Description("Credential type associated with the configuration")
   @IsString()
   public readonly credentialType!: string;
+
+  @Description("Proof type for the credential")
+  @IsEnum(["jwt", "ldp"])
+  @IsOptional()
+  public readonly proofType: "jwt" | "ldp" = "jwt";
 
   @Description("URL of the JSON-LD context")
   @IsUrl()
@@ -177,6 +188,11 @@ export class IssuanceConfig {
   @ValidateNested({ each: true })
   @Type(() => OID4VCIHolderConfig)
   public oid4vci: OID4VCIHolderConfig[] = [];
+
+  @Description("Maximum number of status list entries per StatusListCredential")
+  @IsOptional()
+  @IsNumber()
+  public statusListCount: number = 1000;
 }
 
 export class IssuerConfig {
@@ -213,6 +229,11 @@ export class DCPHolderConfig {
   @IsArray()
   @ArrayMinSize(1)
   public readonly credentialType!: string[];
+
+  @Description("Preferred proof type for the credential")
+  @IsOptional()
+  @IsEnum(["jwt", "ldp"])
+  public readonly preferredProofType: "jwt" | "ldp" = "jwt";
 }
 
 export class OID4VCIHolderConfig {
@@ -244,22 +265,6 @@ export class DidServiceConfig {
   @IsString()
   @IsUrl({ require_tld: true, require_protocol: true, require_host: false })
   public readonly serviceEndpoint!: string;
-}
-
-export enum PresentationType {
-  DIRECT = "DIRECT",
-  DCP = "DCP",
-  OID4VP = "OID4VP"
-}
-
-export class PresentationConfig {
-  @Description("Types of presentation protocols supported")
-  @IsOptional()
-  @IsEnum(PresentationType, { each: true })
-  public readonly types: PresentationType[] = [
-    PresentationType.DIRECT,
-    PresentationType.DCP
-  ];
 }
 
 export class RuntimeConfig {
@@ -317,21 +322,6 @@ export class DidConfig {
 export enum SignatureType {
   DATA_INTEGRITY_PROOF = "DATA_INTEGRITY_PROOF",
   JSON_WEB_SIGNATURE_2020 = "JSON_WEB_SIGNATURE_2020"
-}
-
-export class SignatureConfig {
-  @Description("Default signature type")
-  @IsEnum(SignatureType)
-  @IsOptional()
-  public default: SignatureType = SignatureType.DATA_INTEGRITY_PROOF;
-  @Description("Signature type for credentials")
-  @IsEnum(SignatureType)
-  @IsOptional()
-  public credentials: SignatureType = SignatureType.DATA_INTEGRITY_PROOF;
-  @Description("Signature type for presentations")
-  @IsEnum(SignatureType)
-  @IsOptional()
-  public presentations: SignatureType = SignatureType.DATA_INTEGRITY_PROOF;
 }
 
 export class RootConfig {
@@ -405,11 +395,6 @@ export class RootConfig {
   @Type(() => DidServiceConfig)
   public readonly didServices: DidServiceConfig[] = [];
 
-  @Description("Presentation configuration")
-  @ValidateNested()
-  @Type(() => PresentationConfig)
-  public readonly presentation: PresentationConfig = new PresentationConfig();
-
   @Description("Runtime configuration")
   @ValidateNested()
   @Type(() => RuntimeConfig)
@@ -421,10 +406,4 @@ export class RootConfig {
   @Type(() => DidConfig)
   @IsOptional()
   public readonly did: DidConfig = new DidConfig();
-
-  @Description("Signature configuration")
-  @ValidateNested()
-  @Type(() => SignatureConfig)
-  @IsOptional()
-  public readonly signature: SignatureConfig = new SignatureConfig();
 }

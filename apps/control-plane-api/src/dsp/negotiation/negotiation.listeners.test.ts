@@ -58,8 +58,8 @@ describe("NegotiationListener", () => {
     negotiationListener = module.get(NegotiationListener);
     runtimeConfig = module.get(RuntimeConfig);
   });
-  afterAll(async () => {
-    await TypeOrmTestHelper.instance.teardownTestDB();
+  afterAll(() => {
+    TypeOrmTestHelper.instance.teardownTestDB();
   });
   afterEach(() => {
     jest.clearAllMocks();

@@ -58,7 +58,25 @@ describe("Issuer service", () => {
         {
           id: "Example",
           credentialType: "ExampleCredentialType",
-          documentUrl: "https://example.com/context.json"
+          documentUrl: "https://example.com/context.json",
+          schema: {
+            type: "object",
+            title: "ExampleCredentialType",
+            additionalProperties: true,
+            properties: {
+              id: {
+                type: "string",
+                pattern: "^did:web:.*"
+              }
+            },
+            required: ["id"]
+          }
+        },
+        {
+          id: "Example",
+          credentialType: "ExampleLdpCredentialType",
+          documentUrl: "https://example.com/context.json",
+          proofType: "ldp"
         }
       ],
       email: {
@@ -160,7 +178,7 @@ describe("Issuer service", () => {
             "@protected": true,
             "@version": 1.1,
             ExampleCredentialType: {
-              "@context": ["https://www.w3.org/2018/credentials/v1"],
+              "@context": ["https://www.w3.org/ns/credentials/v2"],
               "@id": "example:ExampleCredentialType"
             },
             example: "https://example.dataspac.es/credentials/",
@@ -178,6 +196,21 @@ describe("Issuer service", () => {
   });
 
   describe("Issuance process", () => {
+    it("Issuer metadata", async () => {
+      const metadata = await issuerService.issuerMetadata();
+      expect(metadata.credential_issuer).toBe("https://localhost");
+      expect(
+        metadata.credential_configurations_supported["ExampleCredentialType"]
+      ).toBeDefined();
+      expect(
+        metadata.credential_configurations_supported["ExampleCredentialType"]
+          .credential_metadata
+      ).toBeDefined();
+      expect(
+        metadata.credential_configurations_supported["ExampleCredentialType"]
+          .credential_metadata?.claims
+      ).toHaveLength(1);
+    });
     it("Create offer", async () => {
       const offer = await issuanceService.createCredentialOffer({
         holderId: "did:web:example.com",
@@ -185,11 +218,35 @@ describe("Issuer service", () => {
         credentialSubject: { id: "did:web:example.com" }
       });
 
+      await expect(
+        issuerService.createAccessToken(undefined as unknown as string)
+      ).rejects.toThrow("No pre-authorized code provided");
+      await expect(
+        issuerService.createAccessToken("unknown-code")
+      ).rejects.toThrow("No credential issuance flow found");
+
       const access_token = await issuerService.createAccessToken(
         offer.grants?.[OfferGrants.PRE_AUTHORIZED_CODE]?.[
           "pre-authorized_code"
         ] ?? ""
       );
+
+      await expect(
+        issuerService.handleCredentialRequest(`Incorrect Header`, {})
+      ).rejects.toThrow("Invalid authorization");
+      await expect(
+        issuerService.handleCredentialRequest(`Bearer UnknownAccessToken`, {})
+      ).rejects.toThrow("Token not recognized");
+      await expect(
+        issuerService.handleCredentialRequest(
+          `Bearer ${access_token.access_token}`,
+          {
+            credential_identifier:
+              access_token.authorization_details[0].credential_identifiers[0]
+          }
+        )
+      ).rejects.toThrow("No JWT proof provided in credential request");
+
       const nonce = await issuerService.createNonce();
       const jwt = await new SignJWT({ nonce: nonce.c_nonce })
         .setProtectedHeader({
@@ -279,7 +336,7 @@ describe("Issuer service", () => {
         .setAudience("http://localhost:3000")
         .setIssuedAt()
         .sign(exampleKey.privateKey);
-      expect(
+      await expect(
         issuerService.handleCredentialRequest(
           `Bearer ${access_token.access_token}`,
           {
@@ -321,7 +378,7 @@ describe("Issuer service", () => {
         .setAudience("http://localhost:3000")
         .setIssuedAt()
         .sign(exampleKey.privateKey);
-      expect(
+      await expect(
         issuerService.handleCredentialRequest(
           `Bearer ${access_token.access_token}`,
           {
@@ -335,7 +392,9 @@ describe("Issuer service", () => {
             ]
           }
         )
-      ).rejects.toThrow('Holder ID test1234234 does not start with "did:"');
+      ).rejects.toThrow(
+        'Holder ID test1234234 did method not supported, supported methods: "did:web:", "did:key:", "did:tdw:"'
+      );
     });
 
     it("Issuer Metadata", async () => {

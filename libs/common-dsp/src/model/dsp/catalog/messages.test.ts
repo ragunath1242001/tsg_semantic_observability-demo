@@ -24,7 +24,7 @@ test("Catalog Error", async () => {
       })
     ]
   });
-  const serialized = await catalogError.serialize();
+  const serialized = catalogError.serialize();
   const expected: CatalogErrorDto = {
     "@context": defaultContext(),
     "@type": "CatalogError",
@@ -50,7 +50,7 @@ test("Catalog Request Message", async () => {
       }
     ]
   });
-  const serialized = await catalogRequestMessage.serialize();
+  const serialized = catalogRequestMessage.serialize();
   const expected: CatalogRequestMessageDto = {
     "@context": defaultContext(),
     "@type": "CatalogRequestMessage",
@@ -70,7 +70,7 @@ test("Dataset Request Message", async () => {
   const datasetRequestMessage = new DatasetRequestMessage({
     dataset: "urn:uuid:5b156cfa-5800-4345-8acc-6725c7eb5bc2"
   });
-  const serialized = await datasetRequestMessage.serialize();
+  const serialized = datasetRequestMessage.serialize();
   const expected: DatasetRequestMessageDto = {
     "@context": defaultContext(),
     "@type": "DatasetRequestMessage",

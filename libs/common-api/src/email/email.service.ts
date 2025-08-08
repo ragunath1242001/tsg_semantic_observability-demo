@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import nodemailer from "nodemailer";
 
 import { NodemailerConfiguration } from "../config/email.js";
@@ -102,6 +102,9 @@ export class EmailService {
       html: this.emailHtmlTemplate(parameters),
       text: this.emailTextTemplate(parameters)
     });
-    console.log(`Message sent ${info.messageId} to ${parameters.email}`);
+    Logger.log(
+      `Message sent ${info.messageId} to ${parameters.email}`,
+      "EmailService"
+    );
   }
 }

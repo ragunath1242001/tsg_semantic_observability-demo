@@ -9,6 +9,7 @@ import {
   TypeOrmTestHelper
 } from "@tsg-dsp/common-api";
 import {
+  CredentialContainer,
   DataPlaneRequestResponseDto,
   Dataset,
   DatasetDto,
@@ -28,8 +29,7 @@ import {
   TransferStartMessage,
   TransferState,
   TransferSuspensionMessage,
-  TransferTerminationMessage,
-  VerifiableCredential
+  TransferTerminationMessage
 } from "@tsg-dsp/common-dsp";
 import { plainToClass } from "class-transformer";
 import { http, HttpResponse, PathParams } from "msw";
@@ -138,7 +138,7 @@ describe("Transfer service", () => {
               transferId: string,
               remoteParticipant: string,
               action: string,
-              verifiableCredentials: VerifiableCredential[]
+              verifiableCredentials: CredentialContainer[]
             ) {
               return EvaluationContext.parse({
                 role: role,
@@ -345,8 +345,8 @@ describe("Transfer service", () => {
     });
   });
 
-  afterAll(async () => {
-    await TypeOrmTestHelper.instance.teardownTestDB();
+  afterAll(() => {
+    TypeOrmTestHelper.instance.teardownTestDB();
     server.close();
     jest.useRealTimers();
   });

@@ -1,5 +1,10 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { CredentialSubject, VerifiableCredential } from "@tsg-dsp/common-dsp";
+import {
+  Credential,
+  CredentialSubject,
+  DataIntegrityProof,
+  OrArray
+} from "@tsg-dsp/common-dsp";
 import { Type } from "class-transformer";
 import {
   IsBoolean,
@@ -77,19 +82,44 @@ export class CredentialsDto implements CredentialDao {
   })
   targetDid!: string;
 
-  @IsString()
+  @ValidateNested()
+  @Type(() => Credential)
   @ApiProperty({
-    type: () => VerifiableCredential,
+    type: () => Credential,
     example: {
-      "@context": ["https://www.w3.org/2018/credentials/v1"],
+      "@context": ["https://www.w3.org/ns/credentials/v2"],
       type: ["VerifiableCredential", "DataSpaceCredential"],
       issuer: "did:example:issuer",
-      issuanceDate: "2023-10-01T00:00:00Z",
+      validFrom: "2023-10-01T00:00:00Z",
       credentialSubject: { id: "did:example:subject" }
     },
     description: "The verifiable credential object"
   })
-  credential!: VerifiableCredential;
+  credential!: Credential;
+
+  @ApiProperty({
+    type: () => [DataIntegrityProof],
+    example: [
+      {
+        type: "DataIntegrityProof",
+        created: "2020-01-01T00:00:00Z",
+        proofPurpose: "assertionMethod",
+        cryptosuite: "eddsa-rdfc-2022",
+        proofValue: "...",
+        verificationMethod: "did:example:123456#key-1"
+      }
+    ]
+  })
+  @ValidateNested()
+  @Type(() => DataIntegrityProof)
+  proof?: OrArray<DataIntegrityProof>;
+
+  @IsString()
+  @ApiPropertyOptional({
+    example: "jwt-token-123",
+    description: "JWT representation of the credential"
+  })
+  jwt?: string;
 
   @IsBoolean()
   @ApiProperty({
@@ -157,6 +187,15 @@ export class CredentialConfigDto implements InitCredentialConfig {
     description: "Unique identifier for the credential configuration"
   })
   id!: string;
+
+  @IsString()
+  @ApiProperty({
+    title: "Type of proof used for the credential",
+    enum: ["ldp", "jwt"],
+    description: "Type of proof used for the credential",
+    example: "ldp"
+  })
+  proofType!: "ldp" | "jwt";
 
   @ApiPropertyOptional({
     example: "key-identifier-001",

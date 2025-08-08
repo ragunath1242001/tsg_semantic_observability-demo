@@ -266,26 +266,14 @@ Before using the CLI, ensure you have:
 
 ## Generated Output Structure
 
-After running `tsg bootstrap`, the output directory contains:
+After running `tsg bootstrap`, the output directory contains (by default `output/` and for ecosystem bootstraps it contains a folder for each participant):
 
 ```
-output/
-├── control-plane/
-│   ├── values.yaml          # Helm values
-│   └── secrets.yaml         # Generated secrets
-├── http-data-plane/
-│   ├── values.yaml
-│   └── config.yaml
-├── wallet/
-│   ├── values.yaml
-│   └── did-documents.json
-├── sso-bridge/
-│   ├── values.yaml
-│   └── oauth-clients.yaml
-└── manifests/
-    ├── namespaces.yaml      # Kubernetes namespaces
-    ├── ingress.yaml         # Ingress configurations
-    └── certificates.yaml    # TLS certificates
+├── values.control-plane.yaml
+├── values.http-data-plane.yaml
+├── values.postgres.yaml
+├── values.sso-bridge.yaml
+└── values.wallet.yaml
 ```
 
 ## Troubleshooting

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { DcqlQuery } from "@tsg-dsp/common-dtos";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import http from "@tsg-dsp/common-ui/utils/http";
 import {
@@ -38,6 +39,7 @@ async function createCredentialOffer() {
       id: crypto.randomUUID(),
       email: "credential-debug@dataspac.es",
       emailDomain: "dataspac.es",
+      role: "Participant",
       debug: true
     };
     console.log(credentialSubject);
@@ -75,28 +77,34 @@ async function createCredentialOffer() {
 
 async function createCredentialPresentation() {
   try {
-    const presentationDefinition = {
-      id: crypto.randomUUID(),
-      input_descriptors: [
+    const dcql: DcqlQuery = {
+      credentials: [
         {
-          id: crypto.randomUUID(),
-          constraints: {
-            fields: [
-              {
-                path: ["$.type"],
-                filter: {
-                  type: "string",
-                  pattern: "VerifiableCredential"
-                }
-              }
-            ]
-          }
+          id: "identity_credential",
+          format: "jwt_vc_json",
+          meta: {
+            type_values: [["VerifiableCredential", "HandsonCredential"]]
+          },
+          claims: [
+            {
+              id: "email",
+              path: ["credentialSubject", "email"]
+            },
+            {
+              id: "role",
+              path: ["credentialSubject", "role"]
+            },
+            {
+              id: "debug",
+              path: ["credentialSubject", "debug"]
+            }
+          ]
         }
       ]
     };
     const response = await http.post<string>(
       "management/oid4vp/verifier/create/public",
-      presentationDefinition
+      dcql
     );
     if (response.status == 201) {
       toast.add({

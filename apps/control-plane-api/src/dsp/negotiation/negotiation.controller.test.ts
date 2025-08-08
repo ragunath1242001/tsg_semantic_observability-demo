@@ -61,7 +61,7 @@ describe("NegotiationController", () => {
         "http://127.0.0.1/negotiation/request",
         async (ctx) => {
           return HttpResponse.json(
-            await new ContractNegotiation({
+            new ContractNegotiation({
               consumerPid: (await ctx.request.json())["consumerPid"],
               providerPid: "urn:uuid:4486d6f5-aa10-45d3-b260-2f368dfca4e2",
               state: ContractNegotiationState.REQUESTED
@@ -219,8 +219,8 @@ describe("NegotiationController", () => {
     consumerNegotiationId = consumerNegotiation.localId!;
   });
 
-  afterEach(async () => {
-    await TypeOrmTestHelper.instance.teardownTestDB();
+  afterEach(() => {
+    TypeOrmTestHelper.instance.teardownTestDB();
   });
 
   describe("/request", () => {
@@ -263,13 +263,13 @@ describe("NegotiationController", () => {
         consumerPid: "urn:uuid:a81bea31-55d4-4c70-b454-9758e1228fd0"
       });
     });
-    it("Negotiation request with unknown id should result in a 404", () => {
-      expect(async () => {
-        await negotiationController.getNegotiation(
+    it("Negotiation request with unknown id should result in a 404", async () => {
+      await expect(
+        negotiationController.getNegotiation(
           "urn:uuid:00000000-0000-0000-0000-000000000000",
           "did:web:localhost"
-        );
-      }).rejects.toThrow(
+        )
+      ).rejects.toThrow(
         expect.objectContaining({ status: HttpStatus.NOT_FOUND })
       );
     });
@@ -303,9 +303,9 @@ describe("NegotiationController", () => {
         consumerPid: "urn:uuid:a81bea31-55d4-4c70-b454-9758e1228fd0"
       });
     });
-    it("Missing processId in contract request message should result in a 400", () => {
-      expect(async () => {
-        await negotiationController.requestWithId(
+    it("Missing processId in contract request message should result in a 400", async () => {
+      await expect(
+        negotiationController.requestWithId(
           "urn:uuid:5d9c9c88-a86a-47b7-9ade-72913afda5e2",
           new ContractRequestMessage({
             consumerPid: "urn:uuid:a81bea31-55d4-4c70-b454-9758e1228fd0",
@@ -317,14 +317,14 @@ describe("NegotiationController", () => {
             })
           }),
           "did:web:localhost"
-        );
-      }).rejects.toThrow(
+        )
+      ).rejects.toThrow(
         expect.objectContaining({ status: HttpStatus.BAD_REQUEST })
       );
     });
-    it("Mismatch processId in contract request message and id path parameter should result in a 400", () => {
-      expect(async () => {
-        await negotiationController.requestWithId(
+    it("Mismatch processId in contract request message and id path parameter should result in a 400", async () => {
+      await expect(
+        negotiationController.requestWithId(
           "urn:uuid:5d9c9c88-a86a-47b7-9ade-72913afda5e2",
           new ContractRequestMessage({
             consumerPid: "urn:uuid:e8f94bf2-c59d-48c8-b5b9-9d5366ae2f3d",
@@ -336,8 +336,8 @@ describe("NegotiationController", () => {
             })
           }),
           "did:web:localhost"
-        );
-      }).rejects.toThrow(
+        )
+      ).rejects.toThrow(
         expect.objectContaining({ status: HttpStatus.BAD_REQUEST })
       );
     });
@@ -362,9 +362,9 @@ describe("NegotiationController", () => {
         status: "OK"
       });
     });
-    it("Mismatch processId in contract request message and id path parameter should result in a 400", () => {
-      expect(async () => {
-        await negotiationController.negotiationEvent(
+    it("Mismatch processId in contract request message and id path parameter should result in a 400", async () => {
+      await expect(
+        negotiationController.negotiationEvent(
           "urn:uuid:5d9c9c88-a86a-47b7-9ade-72913afda5e2",
           new ContractNegotiationEventMessage({
             consumerPid: "urn:uuid:e8f94bf2-c59d-48c8-b5b9-9d5366ae2f3d",
@@ -372,8 +372,8 @@ describe("NegotiationController", () => {
             eventType: NegotiationEvent.ACCEPTED
           }),
           "did:web:localhost"
-        );
-      }).rejects.toThrow(
+        )
+      ).rejects.toThrow(
         expect.objectContaining({ status: HttpStatus.BAD_REQUEST })
       );
     });
@@ -400,9 +400,9 @@ describe("NegotiationController", () => {
         status: "OK"
       });
     });
-    it("Mismatch processId in contract request message and id path parameter should result in a 400", () => {
-      expect(async () => {
-        await negotiationController.agreementVerification(
+    it("Mismatch processId in contract request message and id path parameter should result in a 400", async () => {
+      await expect(
+        negotiationController.agreementVerification(
           "urn:uuid:5d9c9c88-a86a-47b7-9ade-72913afda5e2",
           new ContractAgreementVerificationMessage({
             consumerPid: "urn:uuid:e8f94bf2-c59d-48c8-b5b9-9d5366ae2f3d",
@@ -413,8 +413,8 @@ describe("NegotiationController", () => {
             }
           }),
           "did:web:localhost"
-        );
-      }).rejects.toThrow(
+        )
+      ).rejects.toThrow(
         expect.objectContaining({ status: HttpStatus.BAD_REQUEST })
       );
     });
@@ -434,9 +434,9 @@ describe("NegotiationController", () => {
         status: "OK"
       });
     });
-    it("Mismatch processId in contract request message and id path parameter should result in a 400", () => {
-      expect(async () => {
-        await negotiationController.negotiationEvent(
+    it("Mismatch processId in contract request message and id path parameter should result in a 400", async () => {
+      await expect(
+        negotiationController.negotiationEvent(
           "urn:uuid:5d9c9c88-a86a-47b7-9ade-72913afda5e2",
           new ContractNegotiationEventMessage({
             consumerPid: consumerNegotiationId,
@@ -444,8 +444,8 @@ describe("NegotiationController", () => {
             eventType: NegotiationEvent.ACCEPTED
           }),
           "did:web:localhost"
-        );
-      }).rejects.toThrow(
+        )
+      ).rejects.toThrow(
         expect.objectContaining({ status: HttpStatus.BAD_REQUEST })
       );
     });
@@ -469,9 +469,9 @@ describe("NegotiationController", () => {
         status: "OK"
       });
     });
-    it("Callback with a contract offer to an unknown identifier should return a 404", () => {
-      expect(async () => {
-        await negotiationController.callbackOffer(
+    it("Callback with a contract offer to an unknown identifier should return a 404", async () => {
+      await expect(
+        negotiationController.callbackOffer(
           "urn:uuid:5d9c9c88-a86a-47b7-9ade-72913afda5e2",
           new ContractOfferMessage({
             consumerPid: consumerNegotiationId,
@@ -482,8 +482,8 @@ describe("NegotiationController", () => {
             })
           }),
           "did:web:localhost"
-        );
-      }).rejects.toThrow(
+        )
+      ).rejects.toThrow(
         expect.objectContaining({ status: HttpStatus.NOT_FOUND })
       );
     });
@@ -509,9 +509,9 @@ describe("NegotiationController", () => {
         status: "OK"
       });
     });
-    it("Callback with a contract agreement to an unknown identifier should return a 404", () => {
-      expect(async () => {
-        await negotiationController.callbackAgreement(
+    it("Callback with a contract agreement to an unknown identifier should return a 404", async () => {
+      await expect(
+        negotiationController.callbackAgreement(
           "urn:uuid:5d9c9c88-a86a-47b7-9ade-72913afda5e2",
           new ContractAgreementMessage({
             consumerPid: consumerNegotiationId,
@@ -525,8 +525,8 @@ describe("NegotiationController", () => {
             })
           }),
           "did:web:localhost"
-        );
-      }).rejects.toThrow(
+        )
+      ).rejects.toThrow(
         expect.objectContaining({ status: HttpStatus.NOT_FOUND })
       );
     });
@@ -550,9 +550,9 @@ describe("NegotiationController", () => {
         status: "OK"
       });
     });
-    it("Callback with a contract event to an unknown identifier should return a 404", () => {
-      expect(async () => {
-        await negotiationController.callbackEvent(
+    it("Callback with a contract event to an unknown identifier should return a 404", async () => {
+      await expect(
+        negotiationController.callbackEvent(
           "urn:uuid:5d9c9c88-a86a-47b7-9ade-72913afda5e2",
           new ContractNegotiationEventMessage({
             consumerPid: consumerNegotiationId,
@@ -560,8 +560,8 @@ describe("NegotiationController", () => {
             eventType: NegotiationEvent.ACCEPTED
           }),
           "did:web:localhost"
-        );
-      }).rejects.toThrow(
+        )
+      ).rejects.toThrow(
         expect.objectContaining({ status: HttpStatus.NOT_FOUND })
       );
     });

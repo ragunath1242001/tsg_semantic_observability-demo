@@ -141,9 +141,6 @@ export class DidTdwStrategy implements DidStrategy {
     );
 
     this.logger.log(`DID document created for ${created.did}`);
-    this.logger.debug(
-      `DID document ${created.did}\n${JSON.stringify(created.doc, null, 2)}`
-    );
 
     return { didId: created.did, didDocument: created.doc };
   }
@@ -176,9 +173,6 @@ export class DidTdwStrategy implements DidStrategy {
     });
 
     this.logger.log(`DID document updated for ${updated.did}`);
-    this.logger.debug(
-      `DID document ${updated.did}\n${JSON.stringify(updated.doc, null, 2)}`
-    );
 
     await this.didLogsRepository.save({
       scid: scid,

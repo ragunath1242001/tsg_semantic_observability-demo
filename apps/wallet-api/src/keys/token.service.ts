@@ -57,7 +57,9 @@ export class SecureTokenService {
       jwtPayload["pre-authorized_code"] = preAuthorizedCode;
     }
     return await this.signatureService.signAsJwt(jwtPayload, audience, {
-      expirationTime: "5m"
+      expirationTime: 5 * 60 * 1000, // 5 minutes
+      jti: crypto.randomUUID(),
+      subject: true
     });
   }
 

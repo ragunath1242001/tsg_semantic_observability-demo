@@ -30,7 +30,7 @@ test("Transfer Completion Message", async () => {
     providerPid: "urn:uuid:42f9f234-0aa7-4fba-9efd-01b4a942f052",
     consumerPid: "urn:uuid:89442cfb-4d96-48fa-80d1-d7cf93bd34a3"
   });
-  const serialized = await transferCompletionMessage.serialize();
+  const serialized = transferCompletionMessage.serialize();
   const expected: TransferCompletionMessageDto = {
     "@context": defaultContext(),
     "@type": "TransferCompletionMessage",
@@ -49,7 +49,7 @@ test("Transfer Error", async () => {
     code: "123:A",
     reason: [new Multilanguage("Could not transfer")]
   });
-  const serialized = await transferError.serialize();
+  const serialized = transferError.serialize();
   const expected: TransferErrorDto = {
     "@context": defaultContext(),
     "@type": "TransferError",
@@ -74,7 +74,7 @@ test("Transfer Process", async () => {
     consumerPid: "urn:uuid:89442cfb-4d96-48fa-80d1-d7cf93bd34a3",
     state: TransferState.SUSPENDED
   });
-  const serialized = await transferProcess.serialize();
+  const serialized = transferProcess.serialize();
   const expected: TransferProcessDto = {
     "@context": defaultContext(),
     "@type": "TransferProcess",
@@ -104,7 +104,7 @@ test("Transfer Request Message", async () => {
       ]
     })
   });
-  const serialized = await transferRequestMessage.serialize();
+  const serialized = transferRequestMessage.serialize();
   const expected: TransferRequestMessageDto = {
     "@context": defaultContext(),
     "@type": "TransferRequestMessage",
@@ -145,7 +145,7 @@ test("Transfer Start Message", async () => {
       ]
     })
   });
-  const serialized = await transferStartMessage.serialize();
+  const serialized = transferStartMessage.serialize();
   const expected: TransferStartMessageDto = {
     "@context": defaultContext(),
     "@type": "TransferStartMessage",
@@ -175,7 +175,7 @@ test("Transfer Suspension Message", async () => {
     consumerPid: "urn:uuid:89442cfb-4d96-48fa-80d1-d7cf93bd34a3",
     reason: [new Multilanguage("Network switching")]
   });
-  const serialized = await transferSuspensionMessage.serialize();
+  const serialized = transferSuspensionMessage.serialize();
   const expected: TransferSuspensionMessageDto = {
     "@context": defaultContext(),
     "@type": "TransferSuspensionMessage",
@@ -200,7 +200,7 @@ test("Transfer Termination Message", async () => {
     code: "123:A",
     reason: [new Multilanguage("Network switching")]
   });
-  const serialized = await transferTerminationMessage.serialize();
+  const serialized = transferTerminationMessage.serialize();
   const expected: TransferTerminationMessageDto = {
     "@context": defaultContext(),
     "@type": "TransferTerminationMessage",

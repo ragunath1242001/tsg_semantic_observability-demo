@@ -218,8 +218,7 @@ const requestTransfer = async (accNegotiation: NegotiationDetailDto) => {
                     <TabPanel
                       v-if="
                         localProof &&
-                        (localProof['algorithm'] === 'JsonWebSignature2020' ||
-                          localProof['algorithm'] === 'DataIntegrityProof')
+                        localProof['algorithm'] === 'DataIntegrityProof'
                       "
                       value="Local Signature">
                       <MonacoEditor
@@ -230,8 +229,7 @@ const requestTransfer = async (accNegotiation: NegotiationDetailDto) => {
                     <TabPanel
                       v-if="
                         remoteProof &&
-                        (remoteProof['algorithm'] === 'JsonWebSignature2020' ||
-                          remoteProof['algorithm'] === 'DataIntegrityProof')
+                        remoteProof['algorithm'] === 'DataIntegrityProof'
                       "
                       value="Remote Signature">
                       <MonacoEditor

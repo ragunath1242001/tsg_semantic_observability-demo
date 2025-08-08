@@ -9,6 +9,7 @@ import { Like, Repository } from "typeorm";
 import { DidServiceConfig, RootConfig } from "../config.js";
 import { KeyMaterialDao } from "../model/credentials.dao.js";
 import { DIDDocuments, DIDLogs, DIDService } from "../model/did.dao.js";
+import { API_PREFIX } from "../utils/api-prefix.js";
 import { createServices, createVerificationMethods } from "../utils/did.js";
 import { DidTdwStrategy } from "./tdw/did.tdw.strategy.js";
 import { DidWebStrategy } from "./web/did.web.strategy.js";
@@ -86,17 +87,17 @@ export class DidService {
       {
         id: `${this.didId}#DCP-credentialService`,
         type: "CredentialService",
-        serviceEndpoint: `${this.config.server.publicAddress}/api/dcp`
+        serviceEndpoint: `${this.config.server.publicAddress}${API_PREFIX}/dcp`
       },
       {
         id: `${this.didId}#DCP-issuerService`,
         type: "IssuerService",
-        serviceEndpoint: `${this.config.server.publicAddress}/api/dcp/issuer`
+        serviceEndpoint: `${this.config.server.publicAddress}${API_PREFIX}/dcp/issuer`
       },
       {
         id: `${this.didId}#management`,
         type: "Management",
-        serviceEndpoint: `${this.config.server.publicAddress}/api`
+        serviceEndpoint: `${this.config.server.publicAddress}${API_PREFIX}`
       },
       ...this.config.didServices
     ];
@@ -222,13 +223,6 @@ export class DidService {
     this.didId = existingDidDocument.id;
     await this.setDidDefaultKey(defaultKey);
     this.logger.log(`Using existing DID Document for ${this.didId}`);
-    this.logger.debug(
-      `DID document ${this.didId}\n${JSON.stringify(
-        existingDidDocument,
-        null,
-        2
-      )}`
-    );
     return existingDidDocument;
   }
 

@@ -9,7 +9,10 @@ import {
   TypeOrmTestHelper
 } from "@tsg-dsp/common-api";
 import { AppError } from "@tsg-dsp/common-api";
-import { VerifiablePresentation } from "@tsg-dsp/common-dsp";
+import {
+  CredentialContainer,
+  VerifiablePresentation
+} from "@tsg-dsp/common-dsp";
 import { plainToInstance } from "class-transformer";
 import { http, HttpResponse } from "msw";
 import { SetupServer, setupServer } from "msw/node";
@@ -363,14 +366,16 @@ describe("OID4VPVerifierService", () => {
   describe("credential extraction methods", () => {
     describe("extractFromCredential", () => {
       it("should extract email and role from single credential", () => {
-        const credential = {
-          credentialSubject: {
-            email: "single@example.com",
-            role: "Developer"
+        const credentialContainer = {
+          credential: {
+            credentialSubject: {
+              email: "single@example.com",
+              role: "Developer"
+            }
           }
-        };
+        } as unknown as CredentialContainer;
 
-        const result = service["extractFromCredential"](credential);
+        const result = service["extractFromCredential"](credentialContainer);
         expect(result).toEqual({
           email: "single@example.com",
           isAdmin: false,
@@ -379,14 +384,16 @@ describe("OID4VPVerifierService", () => {
       });
 
       it("should identify Administrator role", () => {
-        const credential = {
-          credentialSubject: {
-            email: "admin@example.com",
-            role: "Administrator"
+        const credentialContainer = {
+          credential: {
+            credentialSubject: {
+              email: "admin@example.com",
+              role: "Administrator"
+            }
           }
-        };
+        } as unknown as CredentialContainer;
 
-        const result = service["extractFromCredential"](credential);
+        const result = service["extractFromCredential"](credentialContainer);
         expect(result).toEqual({
           email: "admin@example.com",
           isAdmin: false, // isAdmin logic is now handled in extractCredentialData
@@ -395,26 +402,30 @@ describe("OID4VPVerifierService", () => {
       });
 
       it("should handle array of credential subjects", () => {
-        const credential = {
-          credentialSubject: [
-            { role: "Participant" },
-            { email: "multi@example.com" }
-          ]
-        };
+        const credentialContainer = {
+          credential: {
+            credentialSubject: [
+              { role: "Participant" },
+              { email: "multi@example.com" }
+            ]
+          }
+        } as unknown as CredentialContainer;
 
-        const result = service["extractFromCredential"](credential);
+        const result = service["extractFromCredential"](credentialContainer);
         expect(result.email).toBe("multi@example.com");
         expect(result.role).toBe("Participant");
       });
 
       it("should return undefined for missing fields", () => {
-        const credential = {
-          credentialSubject: {
-            name: "John Doe"
+        const credentialContainer = {
+          credential: {
+            credentialSubject: {
+              name: "John Doe"
+            }
           }
-        };
+        } as unknown as CredentialContainer;
 
-        const result = service["extractFromCredential"](credential);
+        const result = service["extractFromCredential"](credentialContainer);
         expect(result).toEqual({
           email: undefined,
           isAdmin: false,
@@ -423,14 +434,16 @@ describe("OID4VPVerifierService", () => {
       });
 
       it("should prioritize first email found", () => {
-        const credential = {
-          credentialSubject: [
-            { email: "first@example.com", role: "User" },
-            { email: "second@example.com" }
-          ]
-        };
+        const credentialContainer = {
+          credential: {
+            credentialSubject: [
+              { email: "first@example.com", role: "User" },
+              { email: "second@example.com" }
+            ]
+          }
+        } as unknown as CredentialContainer;
 
-        const result = service["extractFromCredential"](credential);
+        const result = service["extractFromCredential"](credentialContainer);
         expect(result.email).toBe("first@example.com");
       });
     });
@@ -544,11 +557,11 @@ describe("OID4VPVerifierService", () => {
       // Mock verifiable presentations (using unknown then casting to avoid strict typing issues)
       const mockVerifiablePresentations = [
         {
-          "@context": ["https://www.w3.org/2018/credentials/v1"],
+          "@context": ["https://www.w3.org/ns/credentials/v2"],
           type: ["VerifiablePresentation"],
           verifiableCredential: [
             {
-              "@context": ["https://www.w3.org/2018/credentials/v1"],
+              "@context": ["https://www.w3.org/ns/credentials/v2"],
               type: ["VerifiableCredential"],
               credentialSubject: {
                 email: "test@example.com",
@@ -595,11 +608,11 @@ describe("OID4VPVerifierService", () => {
     it("should throw error when required role is not present", async () => {
       const mockVerifiablePresentations = [
         {
-          "@context": ["https://www.w3.org/2018/credentials/v1"],
+          "@context": ["https://www.w3.org/ns/credentials/v2"],
           type: ["VerifiablePresentation"],
           verifiableCredential: [
             {
-              "@context": ["https://www.w3.org/2018/credentials/v1"],
+              "@context": ["https://www.w3.org/ns/credentials/v2"],
               type: ["VerifiableCredential"],
               credentialSubject: {
                 email: "test@example.com",
@@ -628,11 +641,11 @@ describe("OID4VPVerifierService", () => {
     it("should succeed when user has the required role", async () => {
       const mockVerifiablePresentations = [
         {
-          "@context": ["https://www.w3.org/2018/credentials/v1"],
+          "@context": ["https://www.w3.org/ns/credentials/v2"],
           type: ["VerifiablePresentation"],
           verifiableCredential: [
             {
-              "@context": ["https://www.w3.org/2018/credentials/v1"],
+              "@context": ["https://www.w3.org/ns/credentials/v2"],
               type: ["VerifiableCredential"],
               credentialSubject: {
                 email: "test@example.com",
@@ -657,11 +670,11 @@ describe("OID4VPVerifierService", () => {
     it("should handle role checking when no role is present in credential", async () => {
       const mockVerifiablePresentations = [
         {
-          "@context": ["https://www.w3.org/2018/credentials/v1"],
+          "@context": ["https://www.w3.org/ns/credentials/v2"],
           type: ["VerifiablePresentation"],
           verifiableCredential: [
             {
-              "@context": ["https://www.w3.org/2018/credentials/v1"],
+              "@context": ["https://www.w3.org/ns/credentials/v2"],
               type: ["VerifiableCredential"],
               credentialSubject: {
                 email: "test@example.com"

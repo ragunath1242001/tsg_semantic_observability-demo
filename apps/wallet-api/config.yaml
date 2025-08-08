@@ -43,6 +43,7 @@ trustAnchors:
 issueConfigurations:
   - id: SCSN
     credentialType: SCSNCredential
+    proofType: jwt
     document:
       "@context":
         "@protected": true
@@ -53,8 +54,65 @@ issueConfigurations:
         type: "@type"
         SCSNCredential:
           "@context":
-            - https://www.w3.org/2018/credentials/v1
+            - https://www.w3.org/ns/credentials/v2
           "@id": scsn:SCSNCredential
+        scsnIdentifier:
+          "@id": scsn:scsnIdentifier
+          "@type": xsd:string
+        scsnRole:
+          "@id": scsn:scsnRole
+          "@type": "@vocab"
+        ServiceProvider:
+          "@id": scsn:ServiceProvider
+        Manufacturer:
+          "@id": scsn:Manufacturer
+        Administrator:
+          "@id": scsn:Administrator
+    backgroundImage: https://smart-connected.nl/_theme/scsn/images/frontend/scsn-logo-white.svg
+    backgroundColor: "#6bb542"
+    textColor: "#ffffff"
+    name: Membership Credential
+    description: Service Provider
+    schema:
+      type: object
+      additionalProperties: true
+      properties:
+        scsnIdentifier:
+          type: string
+          title: "SCSN Identifier"
+          example: "urn:scsn:1234567890"
+          pattern: "^urn:scsn:.*"
+        id:
+          type: string
+          title: "Participant Identifier"
+          example: "did:web:example.com"
+          pattern: "^did:.*"
+        scsnRole:
+          type: string
+          title: "SCSN Role"
+          example: "ServiceProvider"
+          enum:
+            - ServiceProvider
+            - Manufacturer
+            - Administrator
+      required:
+        - scsnIdentifier
+        - scsnRole
+  - id: SCSNLdp
+    credentialType: SCSNCredentialLdp
+    proofType: ldp
+    document:
+      "@context":
+        "@protected": true
+        "@version": 1.1
+        xsd: "http://www.w3.org/2001/XMLSchema#"
+        scsn: http://localhost:3000/issue-configuration/SCSNCredentialLdp#
+        id: "@id"
+        type: "@type"
+        SCSNCredentialLdp:
+          "@context":
+            - https://www.w3.org/ns/credentials/v2
+          "@id": scsn:SCSNCredentialLdp
         scsnIdentifier:
           "@id": scsn:scsnIdentifier
           "@type": xsd:string

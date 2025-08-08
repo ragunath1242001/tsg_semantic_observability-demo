@@ -460,7 +460,7 @@ export class DataPlaneService {
         const dataPlaneRequestResponse =
           await this.axios.post<DataPlaneRequestResponseDto>(
             `${dataPlane.managementAddress}/transfers/request/${role}?processId=${processId}`,
-            await requestDetail.serialize(),
+            requestDetail.serialize(),
             requestConfig
           );
         if (dataPlaneRequestResponse.data.accepted) {

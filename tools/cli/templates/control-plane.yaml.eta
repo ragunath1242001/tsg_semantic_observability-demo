@@ -54,7 +54,7 @@ config:
     redirectURL: "{{ .Values.endpoint }}/"
 
   runtime:
-    controlPlaneInteractions: manual
+    controlPlaneInteractions: automatic
   
   registry:
     useRegistry: true

@@ -97,8 +97,8 @@ describe("OID4VPVerifierService", () => {
     service = moduleRef.get<OID4VPVerifierService>(OID4VPVerifierService);
     presentationService =
       moduleRef.get<PresentationService>(PresentationService);
-    const credentialService = await moduleRef.get(CredentialsService);
-    const didService = await moduleRef.get(DidService);
+    const credentialService = moduleRef.get(CredentialsService);
+    const didService = moduleRef.get(DidService);
     await moduleRef.get(KeysService).initialized;
     await moduleRef.get(CredentialsService).initialized;
     server = setupServer(

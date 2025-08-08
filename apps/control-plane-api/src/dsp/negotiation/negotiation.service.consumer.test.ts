@@ -186,8 +186,8 @@ describe("Negotiation Service (Consumer)", () => {
     );
   });
 
-  afterAll(async () => {
-    await TypeOrmTestHelper.instance.teardownTestDB();
+  afterAll(() => {
+    TypeOrmTestHelper.instance.teardownTestDB();
     server.close();
   });
 
@@ -318,7 +318,7 @@ describe("Negotiation Service (Consumer)", () => {
             providerPid: remoteProcessId,
             eventType: NegotiationEvent.FINALIZED,
             hashedMessage: {
-              algorithm: "JsonWebSignature2020",
+              algorithm: "DataIntegrityProof",
               digest: '{"error": true}'
             }
           }),
@@ -332,7 +332,7 @@ describe("Negotiation Service (Consumer)", () => {
           providerPid: remoteProcessId,
           eventType: NegotiationEvent.FINALIZED,
           hashedMessage: {
-            algorithm: "JsonWebSignature2020",
+            algorithm: "DataIntegrityProof",
             digest: "{}"
           }
         }),

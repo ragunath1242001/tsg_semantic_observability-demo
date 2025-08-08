@@ -1,13 +1,20 @@
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { AppError, AuthorizationRequest } from "@tsg-dsp/common-api";
-import { VerifiablePresentation } from "@tsg-dsp/common-dsp";
+import { AppError, AuthorizationRequest, toArray } from "@tsg-dsp/common-api";
+import {
+  CredentialContainer,
+  formatCredential,
+  VerifiablePresentation
+} from "@tsg-dsp/common-dsp";
 import {
   DcqlQuery,
   OID4VPAuthorizationRequest,
   OID4VPAuthorizationResponse
 } from "@tsg-dsp/common-dtos";
-import { evaluatePresentationResponseValidity } from "@tsg-dsp/common-signing-and-validation";
+import {
+  evaluatePresentationResponseValidity,
+  getValueByPath
+} from "@tsg-dsp/common-signing-and-validation";
 import crypto from "crypto";
 import { Request, Response } from "express";
 import { Repository } from "typeorm";
@@ -224,7 +231,8 @@ export class OID4VPVerifierService {
         : [vp.verifiableCredential];
 
       for (const credential of credentials) {
-        const result = this.extractFromCredential(credential);
+        const credentialContainer = formatCredential(credential);
+        const result = this.extractFromCredential(credentialContainer);
         if (result.email && !email) {
           email = result.email;
         }
@@ -248,15 +256,12 @@ export class OID4VPVerifierService {
     return { email, isAdmin, role };
   }
 
-  private extractFromCredential(credential: unknown): {
+  private extractFromCredential(credential: CredentialContainer): {
     email?: string;
     isAdmin: boolean;
     role?: string;
   } {
-    const cred = credential as Record<string, unknown>;
-    const subjects = Array.isArray(cred.credentialSubject)
-      ? cred.credentialSubject
-      : [cred.credentialSubject];
+    const subjects = toArray(credential.credential.credentialSubject);
 
     let email: string | undefined;
     let role: string | undefined;
@@ -387,21 +392,6 @@ export class OID4VPVerifierService {
     return paths;
   }
 
-  private extractValueFromPath(
-    obj: Record<string, unknown>,
-    path: string[]
-  ): unknown {
-    let current = obj;
-    for (const segment of path) {
-      if (current && typeof current === "object" && segment in current) {
-        current = current[segment] as Record<string, unknown>;
-      } else {
-        return undefined;
-      }
-    }
-    return current;
-  }
-
   private extractClaimValue(
     subject: Record<string, unknown>,
     claimName: string,
@@ -411,9 +401,15 @@ export class OID4VPVerifierService {
       for (const path of configPaths) {
         const subjectPath =
           path[0] === "credentialSubject" ? path.slice(1) : path;
-        const value = this.extractValueFromPath(subject, subjectPath);
-        if (value && typeof value === "string") {
-          return value;
+        try {
+          const value = getValueByPath(subject, subjectPath);
+          if (value && typeof value === "string") {
+            return value;
+          }
+        } catch (error) {
+          this.logger.verbose(
+            `Error getting value by path ${JSON.stringify(path)}: ${error}`
+          );
         }
       }
     } else if (subject[claimName] && typeof subject[claimName] === "string") {

@@ -169,8 +169,8 @@ describe("DCP Issuance", () => {
         }
       ]
     }).compile();
-    issuanceService = await moduleRef.get(IssuanceService);
-    const didService = await moduleRef.get(DidService);
+    issuanceService = moduleRef.get(IssuanceService);
+    const didService = moduleRef.get(DidService);
     await moduleRef.get(KeysService).initialized;
     await moduleRef.get(CredentialsService).initialized;
     await issuanceService.initialized;

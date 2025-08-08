@@ -149,7 +149,7 @@ Currently three protocols are implemented or are candidates for implementation i
 
 The Eclipse Decentralized Claims Protocol (DCP) defines protocols for credential issuance and presentation. The TSG Wallet implements the [Eclipse DCP Presentation Protocol](https://eclipse-dcp.github.io/dcp-presentation-protocol/) for exchanging Verifiable Presentations. The foundational standards used in this protocol are:
 - [W3C Decentralized Identifiers (DIDs) v1.0](https://www.w3.org/TR/did-core/)
-- [W3C Verifiable Credentials Data Model v1.1](https://www.w3.org/TR/vc-data-model/)
+- [W3C Verifiable Credentials Data Model v2.0](https://www.w3.org/TR/vc-data-model-2.0/)
 - [DIF Presentation Exchange 2.0.0](https://identity.foundation/presentation-exchange/spec/v2.0.0/)
 
 The sequence diagram below shows the interactions between the wallets and control planes of the verifier and holder.

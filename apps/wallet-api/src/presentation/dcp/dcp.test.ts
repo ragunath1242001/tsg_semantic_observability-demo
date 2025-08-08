@@ -105,10 +105,10 @@ describe("Presentation Service", () => {
         }
       ]
     }).compile();
-    dcpSiopService = await moduleRef.get(SecureTokenService);
-    dcpHolderService = await moduleRef.get(DCPHolderService);
-    dcpVerifierService = await moduleRef.get(DCPVerifierService);
-    const didService = await moduleRef.get(DidService);
+    dcpSiopService = moduleRef.get(SecureTokenService);
+    dcpHolderService = moduleRef.get(DCPHolderService);
+    dcpVerifierService = moduleRef.get(DCPVerifierService);
+    const didService = moduleRef.get(DidService);
     await moduleRef.get(KeysService).initialized;
     await moduleRef.get(CredentialsService).initialized;
     server = setupServer(
@@ -117,7 +117,7 @@ describe("Presentation Service", () => {
         return HttpResponse.json(didDocument);
       }),
       http.post(
-        "http://localhost:3000/api/dcp/presentations/query",
+        "http://localhost:3000/dcp/presentations/query",
         async (ctx) => {
           const authorization = ctx.request.headers.get("Authorization");
           const presentationQueryMessage = await ctx.request.json();
@@ -175,11 +175,8 @@ describe("Presentation Service", () => {
         audience: "did:web:localhost",
         createAccessToken: true
       });
-      console.log(holderIdToken);
-
       const validatedHolderIdToken =
         await dcpSiopService.validateIDToken(holderIdToken);
-      console.log(validatedHolderIdToken);
 
       const verifierIdToken = await dcpSiopService.createSelfIssuedIDToken({
         audience: "did:web:localhost",
@@ -187,11 +184,10 @@ describe("Presentation Service", () => {
         scope: undefined,
         existingAccessToken: validatedHolderIdToken.token as string
       });
-      console.log(verifierIdToken);
 
       const validateVerifierIdToken =
         await dcpSiopService.validateIDTokenWithAccessToken(verifierIdToken);
-      console.log(validateVerifierIdToken);
+      expect(validateVerifierIdToken).toBeDefined();
     });
 
     it("Presentation flow", async () => {

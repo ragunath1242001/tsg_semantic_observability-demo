@@ -30,6 +30,7 @@ export interface TrustAnchorConfig {
 export interface IssueConfiguration {
   id?: string;
   credentialType: string;
+  proofType: "jwt" | "ldp";
   documentUrl?: string;
   document: Record<string, any>;
   schema?: Record<string, any>;

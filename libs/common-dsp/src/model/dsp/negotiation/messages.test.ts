@@ -38,7 +38,7 @@ test("Contract Request Message", async () => {
     }),
     callbackAddress: "http://example.com"
   });
-  const serialized = await contractRequestMessage.serialize();
+  const serialized = contractRequestMessage.serialize();
   const expected: ContractRequestMessageDto = {
     "@context": defaultContext(),
     "@type": "ContractRequestMessage",
@@ -65,7 +65,7 @@ test("Contract Offer Message", async () => {
     }),
     callbackAddress: "http://example.com"
   });
-  const serialized = await contractOfferMessage.serialize();
+  const serialized = contractOfferMessage.serialize();
   const expected: ContractOfferMessageDto = {
     "@context": defaultContext(),
     "@type": "ContractOfferMessage",
@@ -90,7 +90,7 @@ test("Contract Negotiation Termination Message", async () => {
       code: "123:A",
       reason: [new Multilanguage("Could not proceed with negotiation")]
     });
-  const serialized = await contractNegotiationTerminationMessage.serialize();
+  const serialized = contractNegotiationTerminationMessage.serialize();
   const expected: ContractNegotiationTerminationMessageDto = {
     "@context": defaultContext(),
     "@type": "ContractNegotiationTerminationMessage",
@@ -117,7 +117,7 @@ test("Contract Negotiation", async () => {
     consumerPid: "urn:uuid:0a66a76e-70c9-4c0c-b70d-06e3a0047a9c",
     state: ContractNegotiationState.REQUESTED
   });
-  const serialized = await contractNegotiation.serialize();
+  const serialized = contractNegotiation.serialize();
   const expected: ContractNegotiationDto = {
     "@context": defaultContext(),
     "@type": "ContractNegotiation",
@@ -137,7 +137,7 @@ test("Contract Negotiation Event Message", async () => {
     consumerPid: "urn:uuid:0a66a76e-70c9-4c0c-b70d-06e3a0047a9c",
     eventType: NegotiationEvent.ACCEPTED
   });
-  const serialized = await contractNegotiationEventMessage.serialize();
+  const serialized = contractNegotiationEventMessage.serialize();
   const expected: ContractNegotiationEventMessageDto = {
     "@context": defaultContext(),
     "@type": "ContractNegotiationEventMessage",
@@ -158,7 +158,7 @@ test("Contract Negotiation Error", async () => {
     description: [new Multilanguage("123:A")],
     reason: [new Multilanguage("Could not proceed with negotiation")]
   });
-  const serialized = await contractNegotiationError.serialize();
+  const serialized = contractNegotiationError.serialize();
   const expected: ContractNegotiationErrorDto = {
     "@context": defaultContext(),
     "@type": "ContractNegotiationError",
@@ -187,7 +187,7 @@ test("Contract AgreementVerification Message", async () => {
         digest: "DIGEST"
       }
     });
-  const serialized = await contractAgreementVerificationMessage.serialize();
+  const serialized = contractAgreementVerificationMessage.serialize();
   const expected: ContractAgreementVerificationMessageDto = {
     "@context": defaultContext(),
     "@type": "ContractAgreementVerificationMessage",
@@ -216,7 +216,7 @@ test("Contract Agreement Message", async () => {
       target: "urn:uuid:urn:uuid:3058a24a-2805-4f00-9276-c4f2234c7117"
     })
   });
-  const serialized = await contractAgreementMessage.serialize();
+  const serialized = contractAgreementMessage.serialize();
   const expected: ContractAgreementMessageDto = {
     "@context": defaultContext(),
     "@type": "ContractAgreementMessage",

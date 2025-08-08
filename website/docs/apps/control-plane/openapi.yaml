@@ -5240,35 +5240,17 @@ components:
           example: did:example:subject-1
       required:
         - id
-    Proof:
-      type: object
-      properties:
-        type:
-          type: string
-          enum:
-            - JsonWebSignature2020
-            - DataIntegrityProof
-          example: JsonWebSignature2020
-        proofPurpose:
-          type: string
-          example: assertionMethod
-      required:
-        - type
-        - proofPurpose
-    VerifiableCredential:
+    Credential:
       type: object
       properties:
         "@context":
           type: array
           example:
-            - https://www.w3.org/2018/credentials/v1
+            - https://www.w3.org/ns/credentials/v2
           items:
             type: string
             enum:
-              - https://www.w3.org/2018/credentials/v1
               - https://www.w3.org/ns/credentials/v2
-              - https://w3id.org/security/suites/jws-2020/v1
-              - https://w3id.org/security/data-integrity/v2
               - string
         type:
           example:
@@ -5314,21 +5296,103 @@ components:
               $ref: "#/components/schemas/CredentialStatus"
             - type: array
               items: *a46
-        proof:
-          example:
-            - type: JsonWebSignature2020
-              created: 2020-01-01T00:00:00Z
-              proofPurpose: assertionMethod
-              jws: eyJhbGciOiJFUzI1NiIsInR5cCI...
-              verificationMethod: did:example:123456#key-1
-          type: array
-          items:
-            $ref: "#/components/schemas/Proof"
       required:
         - "@context"
         - type
         - credentialSubject
         - issuer
+    DataIntegrityProof:
+      type: object
+      properties:
+        id:
+          type: string
+          example: did:example:xyz#proof-1
+        type:
+          type: string
+          enum:
+            - DataIntegrityProof
+          example: DataIntegrityProof
+        proofPurpose:
+          type: string
+          example: assertionMethod
+        verificationMethod:
+          type: string
+          example: did:example:author#verificationKey
+        cryptosuite:
+          type: string
+          example: ecdsa-2019
+        created:
+          type: string
+          example: 2021-01-01T00:00:00Z
+        expires:
+          type: string
+          example: 2022-01-01T00:00:00Z
+        domain:
+          example:
+            - example.com
+          type: array
+          items:
+            type: string
+        challenge:
+          type: string
+          example: "1234567890"
+        proofValue:
+          type: string
+          example: ProofValueString
+        previousProof:
+          example:
+            - PreviousProof1
+            - PreviousProof2
+          type: array
+          items:
+            type: string
+        nonce:
+          type: string
+          example: nonce-string
+      required:
+        - type
+        - proofPurpose
+        - cryptosuite
+        - proofValue
+    CredentialContainer:
+      type: object
+      properties:
+        credential:
+          example:
+            "@context":
+              - https://www.w3.org/ns/credentials/v2
+            type:
+              - VerifiableCredential
+            credentialSubject:
+              id: did:example:subject-1
+            issuer: did:example:issuer
+            validFrom: 2020-01-01T00:00:00Z
+            proof:
+              type: DataIntegrityProof
+              created: 2020-01-01T00:00:00Z
+              proofPurpose: assertionMethod
+              cryptosuite: eddsa-jcs-2022
+              proofValue: ""
+              verificationMethod: did:example:123456#key-1
+          allOf:
+            - $ref: "#/components/schemas/Credential"
+        jwt:
+          type: string
+          example: eyJraWQiOiJFeEhrQk1XOWZtYmt2VjI2Nm1ScHVQMnNVWV9OX0VXSU4xbGFwVXpPOHJvIiwiYWxnIjoiRVMyNTYifQ.eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvbnMvY3JlZGVudGlhbHMvdjIiLCJodHRwczovL3d3dy53My5vcmcvbnMvY3JlZGVudGlhbHMvZXhhbXBsZXMvdjIiXSwiaWQiOiJodHRwOi8vdW5pdmVyc2l0eS5leGFtcGxlL2NyZWRlbnRpYWxzLzM3MzIiLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIiwiRXhhbXBsZURlZ3JlZUNyZWRlbnRpYWwiXSwiaXNzdWVyIjoiaHR0cHM6Ly91bml2ZXJzaXR5LmV4YW1wbGUvaXNzdWVycy81NjUwNDkiLCJ2YWxpZEZyb20iOiIyMDEwLTAxLTAxVDAwOjAwOjAwWiIsImNyZWRlbnRpYWxTdWJqZWN0Ijp7ImlkIjoiZGlkOmV4YW1wbGU6ZWJmZWIxZjcxMmViYzZmMWMyNzZlMTJlYzIxIiwiZGVncmVlIjp7InR5cGUiOiJFeGFtcGxlQmFjaGVsb3JEZWdyZWUiLCJuYW1lIjoiQmFjaGVsb3Igb2YgU2NpZW5jZSBhbmQgQXJ0cyJ9fX0.YEsG9at9Hnt_j-UykCrnl494fcYMTjzpgvlK0KzzjvfmZmSg-sNVJqMZWizYhWv_eRUvAoZohvSJWeagwj_Ajw
+        proof:
+          example:
+            - type: DataIntegrityProof
+              created: 2020-01-01T00:00:00Z
+              proofPurpose: assertionMethod
+              cryptosuite: eddsa-jcs-2022
+              proofValue: ""
+              verificationMethod: did:example:123456#key-1
+          type: array
+          items:
+            $ref: "#/components/schemas/DataIntegrityProof"
+      required:
+        - credential
+        - jwt
         - proof
     EvaluationContext:
       type: object
@@ -5349,7 +5413,7 @@ components:
           type: string
           example: USE
         verifiableCredentials:
-          $ref: "#/components/schemas/VerifiableCredential"
+          $ref: "#/components/schemas/CredentialContainer"
         evaluationTime:
           format: date-time
           type: string

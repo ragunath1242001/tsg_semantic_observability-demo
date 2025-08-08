@@ -5,7 +5,6 @@ import { TypeOrmTestHelper } from "@tsg-dsp/common-api";
 import {
   signAsJws,
   validateDataIntegrityProof,
-  validateJsonWebSignature2020,
   validateJwt,
   verifyJws
 } from "@tsg-dsp/common-signing-and-validation";
@@ -74,13 +73,13 @@ describe("Key Service", () => {
         }
       ]
     }).compile();
-    const keyService = await moduleRef.get(KeysService);
+    const keyService = moduleRef.get(KeysService);
     await keyService.initialized;
     await keyService.init();
     await keyService.addKey({ id: "key-10", type: "EdDSA", default: true });
-    signatureService = await moduleRef.get(SignatureService);
+    signatureService = moduleRef.get(SignatureService);
 
-    const didService = await moduleRef.get(DidService);
+    const didService = moduleRef.get(DidService);
     server = setupServer(
       http.get("http://localhost/.well-known/did.json", async () => {
         return HttpResponse.json(await didService.getDid());
@@ -96,13 +95,14 @@ describe("Key Service", () => {
   describe("Signature service", () => {
     it("JWT signing and validation", async () => {
       await signatureService.signAsJwt({ test: "test" }, "did:web:localhost", {
-        expirationTime: "5m"
+        expirationTime: 5 * 60 * 1000 // 5 minutes
       });
       const jwt = await signatureService.signAsJwt(
         { test: "test" },
         "did:web:localhost",
         {
-          key: "key-0"
+          key: "key-0",
+          jti: crypto.randomUUID()
         }
       );
       await validateJwt(jwt);
@@ -125,7 +125,8 @@ describe("Key Service", () => {
           { test: "test" },
           "did:web:localhost",
           {
-            key: "key-0"
+            key: "key-0",
+            jti: crypto.randomUUID()
           }
         )
       ).split(".");
@@ -160,49 +161,27 @@ describe("Key Service", () => {
         verifyJws(jwsKey0, defaultKey.publicKey, Buffer.from("123456"))
       ).rejects.toThrow("Verification failed");
     });
-    it("JsonWebSignature", async () => {
-      const document = {
-        "@context": "http://schema.org/",
-        "@type": "Person",
-        name: "Jane Doe",
-        jobTitle: "Professor",
-        telephone: "(425) 123-4567",
-        url: "http://www.janedoe.com"
-      };
-      const proof = await signatureService.signAsJsonWebSignature2020(document);
-      const proof2 = await signatureService.signAsJsonWebSignature2020(
-        document,
-        "key-2"
-      );
-
-      await validateJsonWebSignature2020(document, proof);
-      await validateJsonWebSignature2020(document, proof2);
-      await expect(
-        validateJsonWebSignature2020(
-          { ...document, "@context": undefined },
-          proof
-        )
-      ).rejects.toThrow(
-        "Could not canonize the plain document via RDF canonicalization URDNA2015"
-      );
-
-      await expect(
-        validateJsonWebSignature2020(document, {
-          ...proof,
-          verificationMethod: "did:web:localhost#unknown"
-        })
-      ).rejects.toThrow("Could not find matching public key");
-
-      await expect(
-        validateJsonWebSignature2020(document, {
-          ...proof,
-          jws: proof.jws + "11"
-        })
-      ).rejects.toThrow("Verification failed");
-    });
     it("DataIntegrityProof", async () => {
       const document = {
-        "@context": "http://schema.org/",
+        "@context": {
+          schema: "http://schema.org",
+          Person: {
+            "@id": "schema:Person"
+          },
+          name: {
+            "@id": "schema:name"
+          },
+          jobTitle: {
+            "@id": "schema:jobTitle"
+          },
+          url: {
+            "@id": "schema:url",
+            "@type": "@id"
+          },
+          telephone: {
+            "@id": "schema:telephone"
+          }
+        },
         "@type": "Person",
         name: "Jane Doe",
         jobTitle: "Professor",
@@ -214,7 +193,6 @@ describe("Key Service", () => {
         document
       );
       await validateDataIntegrityProof(document, proof);
-      console.log(proof);
       const proof2 = await signatureService.signAsDataIntegrityProof(
         "RDFC",
         document,
@@ -223,7 +201,6 @@ describe("Key Service", () => {
         undefined,
         true
       );
-      console.log(proof2);
       await validateDataIntegrityProof(document, proof2);
       await expect(
         validateDataIntegrityProof(document, {
@@ -237,7 +214,6 @@ describe("Key Service", () => {
         "JCS",
         document
       );
-      console.log(proof3);
       await validateDataIntegrityProof(document, proof3);
     });
   });

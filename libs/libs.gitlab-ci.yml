@@ -42,6 +42,12 @@ common-dsp-test:
   variables:
     LIB: common-dsp
 
+common-signing-and-validation-test:
+  extends:
+    - .libs-test
+  variables:
+    LIB: common-signing-and-validation
+
 common-dsp-package:
   extends: .npm-package
   script:

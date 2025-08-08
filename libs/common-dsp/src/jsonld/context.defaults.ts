@@ -3,6 +3,8 @@ import { JsonLd } from "jsonld/jsonld-spec.js";
 import dsp from "./contexts/dsp.2025-1.js";
 import health from "./contexts/health.js";
 import odrl from "./contexts/odrl-profile.js";
+import credentialsv2 from "./contexts/preload/credentials.v2.js";
+import dataIntegrity from "./contexts/preload/data-integrity.js";
 import tsg from "./contexts/tsg.js";
 
 const getOptionalEnv = (key: string, defaultValue: string) => {
@@ -43,6 +45,11 @@ export const healthContextUrl = (version?: string) =>
     (version ?? debugContexts) ? "next" : currentVersion
   }/health.json`;
 
+export const credentialsv2ContextUrl = "https://www.w3.org/ns/credentials/v2";
+
+export const dataIntegrityContextUrl =
+  "https://w3id.org/security/data-integrity/v2";
+
 export const dspContext: JsonLd = dsp as unknown as JsonLd;
 
 export const dspOdrlProfileContext: JsonLd = <JsonLd>odrl;
@@ -65,3 +72,7 @@ export const dereferencedDspContext: JsonLd = (() => {
 export const tsgContext: JsonLd = <JsonLd>tsg;
 
 export const healthContext: JsonLd = <JsonLd>health;
+
+export const credentialsv2Context: JsonLd = <JsonLd>credentialsv2;
+
+export const dataIntegrityContext: JsonLd = <JsonLd>dataIntegrity;

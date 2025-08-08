@@ -32,6 +32,7 @@ import {
 import { DataPlaneService } from "../dataplane/dataplane.service.js";
 import { EgressLogDao, IngressLogDao } from "../logging/logging.dao.js";
 import { LoggingService } from "../logging/logging.service.js";
+import { DataPlaneClientError } from "../utils/errors/error.js";
 import { TransferDao } from "./transfer.dao.js";
 import { TransferService } from "./transfer.service.js";
 
@@ -882,7 +883,7 @@ describe.each(["Authorization", "X-TSG-Authorization"])(
         } as TransferDao;
 
         jest
-          .spyOn(transferService, "retryFindTransfer")
+          .spyOn(transferService, "getStartedTransferWithBackoff")
           .mockResolvedValue(transfer);
 
         const result = await transferService.determineTransferId(
@@ -931,8 +932,13 @@ describe.each(["Authorization", "X-TSG-Authorization"])(
           .mockResolvedValue(undefined);
 
         jest
-          .spyOn(transferService, "retryFindTransfer")
-          .mockResolvedValue(null);
+          .spyOn(transferService, "getStartedTransferWithBackoff")
+          .mockImplementationOnce(() => {
+            throw new DataPlaneClientError(
+              `Failed to find transfer for dataset ${datasetId}`,
+              HttpStatus.BAD_REQUEST
+            );
+          });
 
         await expect(
           transferService.determineTransferId(
@@ -940,7 +946,7 @@ describe.each(["Authorization", "X-TSG-Authorization"])(
             audience,
             controlPlaneAddress
           )
-        ).rejects.toThrow(`No transfer found for dataset ${datasetId}`);
+        ).rejects.toThrow(`Failed to find transfer for dataset ${datasetId}`);
       });
 
       it("should handle errors during negotiation request", async () => {
@@ -979,7 +985,11 @@ describe.each(["Authorization", "X-TSG-Authorization"])(
           .spyOn(transferService.transferRepository, "findOne")
           .mockResolvedValueOnce(transfer);
 
-        const result = await transferService.retryFindTransfer(datasetId, 3, 1);
+        const result = await transferService.getStartedTransferWithBackoff(
+          datasetId,
+          3,
+          1
+        );
 
         expect(result).toBe(transfer);
         expect(
@@ -987,16 +997,17 @@ describe.each(["Authorization", "X-TSG-Authorization"])(
         ).toHaveBeenCalledTimes(1);
       });
 
-      it("should return null if transfer is not found after max retries", async () => {
+      it("should throw if transfer is not found after max retries", async () => {
         const datasetId = "urn:uuid:test-dataset";
 
         jest
           .spyOn(transferService.transferRepository, "findOne")
           .mockResolvedValueOnce(null);
 
-        const result = await transferService.retryFindTransfer(datasetId, 3, 1);
+        await expect(
+          transferService.getStartedTransferWithBackoff(datasetId, 3, 1)
+        ).rejects.toThrow(`Failed to find transfer for dataset ${datasetId}`);
 
-        expect(result).toBeNull();
         expect(
           transferService.transferRepository.findOne
         ).toHaveBeenCalledTimes(3);

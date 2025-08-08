@@ -3,7 +3,6 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { AppError, parseNetworkError } from "@tsg-dsp/common-api";
 import {
   CredentialMessage,
-  CredentialObject,
   CredentialRequestMessage,
   CredentialStatus,
   IssuerMetadata
@@ -20,6 +19,7 @@ import { DidService } from "../../did/did.service.js";
 import { IssueConfigurationService } from "../../issue-configurations/issue-configuration.service.js";
 import { SecureTokenService } from "../../keys/token.service.js";
 import { CredentialIssuance } from "../../model/issuance.dao.js";
+import { API_PREFIX } from "../../utils/api-prefix.js";
 
 @Injectable()
 export class DCPIssuerService {
@@ -44,21 +44,31 @@ export class DCPIssuerService {
         ...issueConfigs.map(
           (issueConfig) =>
             issueConfig.documentUrl ??
-            `${this.config.server.publicAddress}/api/issue-configuration/${issueConfig.id}`
+            `${this.config.server.publicAddress}${API_PREFIX}/issue-configuration/${issueConfig.id}`
         )
       ],
       type: "IssuerMetadata",
       issuer: didId,
       credentialsSupported: issueConfigs.map((issueConfig) => {
-        const credentialObject: CredentialObject = {
-          id: `${didId}#${issueConfig.credentialType}`,
-          type: "CredentialObject",
-          credentialType: issueConfig.credentialType,
-          offerReason: "reissue",
-          bindingMethods: ["did:web", "did:tdw"],
-          profiles: ["vc11-bssl/ld"]
-        };
-        return credentialObject;
+        if (issueConfig.proofType === "jwt") {
+          return {
+            id: `${didId}#${issueConfig.id}`,
+            type: "CredentialObject",
+            credentialType: issueConfig.credentialType,
+            offerReason: "reissue",
+            bindingMethods: ["did:web", "did:key", "did:tdw"],
+            profile: "vc20-bssl/jwt"
+          };
+        } else {
+          return {
+            id: `${didId}#${issueConfig.id}`,
+            type: "CredentialObject",
+            credentialType: issueConfig.credentialType,
+            offerReason: "reissue",
+            bindingMethods: ["did:web", "did:key", "did:tdw"],
+            profile: "vc20-bssl/ldp"
+          };
+        }
       })
     };
     return metadata;
@@ -119,10 +129,15 @@ export class DCPIssuerService {
         HttpStatus.BAD_REQUEST
       );
     }
+    const issueConfigs =
+      await this.issueConfigurationService.getIssueConfigurations();
     if (
       credentialRequestMessage.credentials.length !== 1 ||
-      credentialRequestMessage.credentials[0].id !==
-        `${didId}#${issuance.credentialType}`
+      !issueConfigs.some(
+        (issueConfig) =>
+          credentialRequestMessage.credentials[0].id ===
+          `${didId}#${issueConfig.id}`
+      )
     ) {
       throw new AppError(
         "Invalid credential request message",
@@ -146,11 +161,12 @@ export class DCPIssuerService {
           const credentialConfig = plainToInstance(InitCredentialConfig, {
             context: [
               issueConfig.documentUrl ??
-                `${this.config.server.publicAddress}/api/issue-configuration/${issueConfig.id}`
+                `${this.config.server.publicAddress}${API_PREFIX}/issue-configuration/${issueConfig.id}`
             ],
             type: [issuance.credentialType],
             id: `${issuance.holderId}#${crypto.randomUUID()}`,
-            credentialSubject: issuance.credentialSubject
+            credentialSubject: issuance.credentialSubject,
+            proofType: issueConfig.proofType
           });
           const credential = await this.credentialService.issueCredential(
             credentialConfig,
@@ -160,14 +176,20 @@ export class DCPIssuerService {
             "@context": [
               "https://w3id.org/dspace-dcp/v1.0/dcp.jsonld",
               issueConfig.documentUrl ??
-                `${this.config.server.publicAddress}/api/issue-configuration/${issueConfig.id}`
+                `${this.config.server.publicAddress}${API_PREFIX}/issue-configuration/${issueConfig.id}`
             ],
             type: "CredentialMessage",
             credentials: [
               {
                 credentialType: issuance.credentialType,
-                payload: JSON.stringify(credential.credential),
-                format: "vc11-bssl/ld"
+                payload:
+                  issueConfig.proofType === "jwt"
+                    ? credential.jwt!
+                    : JSON.stringify({
+                        ...credential.credential,
+                        proof: credential.proof
+                      }),
+                format: issueConfig.proofType
               }
             ],
             issuerPid: randomUUID(),
@@ -212,7 +234,7 @@ export class DCPIssuerService {
     });
 
     return {
-      url: `${this.config.server.publicAddress}/api/dcp/issuer/requests/${issuance.id}`
+      url: `${this.config.server.publicAddress}${API_PREFIX}/dcp/issuer/requests/${issuance.id}`
     };
   }
 
@@ -240,7 +262,7 @@ export class DCPIssuerService {
       );
     }
     return {
-      "@context": ["https://www.w3.org/2018/credentials/v1"],
+      "@context": ["https://www.w3.org/ns/credentials/v2"],
       type: "CredentialStatus",
       issuerPid: `${issuance.id}`,
       holderPid: issuance.remoteId!,

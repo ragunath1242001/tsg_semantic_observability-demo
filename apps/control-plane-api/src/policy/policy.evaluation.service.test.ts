@@ -117,8 +117,8 @@ describe("Policy Evaluation Service", () => {
     );
   });
 
-  afterAll(async () => {
-    await TypeOrmTestHelper.instance.teardownTestDB();
+  afterAll(() => {
+    TypeOrmTestHelper.instance.teardownTestDB();
   });
 
   describe("Evaluate", () => {
@@ -147,12 +147,12 @@ describe("Policy Evaluation Service", () => {
           ]
         },
         localSignature: {
-          algorithm: "JsonWebSignature2020",
-          digest: "{}"
+          algorithm: "jwt",
+          digest: ""
         },
         remoteSignature: {
-          algorithm: "JsonWebSignature2020",
-          digest: "{}"
+          algorithm: "jwt",
+          digest: ""
         },
         signatureStatus: "verified"
       }
@@ -307,12 +307,12 @@ describe("Policy Evaluation Service", () => {
               ]
             },
             localSignature: {
-              algorithm: "JsonWebSignature2020",
-              digest: "{}"
+              algorithm: "jwt",
+              digest: ""
             },
             remoteSignature: {
-              algorithm: "JsonWebSignature2020",
-              digest: "{}"
+              algorithm: "jwt",
+              digest: ""
             },
             signatureStatus: "verified"
           },

@@ -8,7 +8,7 @@ import { ref } from "vue";
 const toast = useToast();
 
 const signOptions = ref<{
-  type: "JsonWebSignature2020" | "DataIntegrityProof";
+  type: "DataIntegrityProof";
   normalization: "RDFC" | "JCS";
   proofPurpose: string;
 }>({
@@ -99,13 +99,13 @@ const validateDocument = async () => {
 const updateContext = () => {
   if (signOptions.value.type === "DataIntegrityProof") {
     signRef.value = signRef.value.replace(
-      "https://www.w3.org/2018/credentials/v1",
+      "https://www.w3.org/ns/credentials/v2",
       "https://w3id.org/security/data-integrity/v2"
     );
   } else {
     signRef.value = signRef.value.replace(
       "https://w3id.org/security/data-integrity/v2",
-      "https://www.w3.org/2018/credentials/v1"
+      "https://www.w3.org/ns/credentials/v2"
     );
   }
 };
@@ -131,7 +131,7 @@ const onUpload = (event) => {
               },
               signOptions.value.type === "DataIntegrityProof"
                 ? "https://w3id.org/security/data-integrity/v2"
-                : "https://www.w3.org/2018/credentials/v1"
+                : "https://www.w3.org/ns/credentials/v2"
             ],
             "tsg:digest": hashHex,
             "tsg:fileName": file.name,
@@ -154,8 +154,7 @@ const onUpload = (event) => {
       <template #subtitle>
         <p>
           The form below can be used to sign JSON-LD or plain documents. A
-          DataIntegrityProof or JsonWebSignature2020 proof is created with the
-          default key of the wallet.
+          DataIntegrityProof is created with the default key of the wallet.
         </p>
         <p>
           To sign the digest of a file, choose a file below. The file will be
@@ -165,7 +164,6 @@ const onUpload = (event) => {
         <p>
           For RDF canonicalization, the input document must be valid JSON-LD.
           It's context should include the relevant context for the proof. For
-          JsonWebSignature2020, the input must always be in JSON-LD form. For
           DataIntegrityProofs also the non JSON-LD variant JSON Canonicalization
           Scheme may be used.
         </p>
@@ -186,27 +184,11 @@ const onUpload = (event) => {
             <SelectButton
               v-model="signOptions.type"
               :options="[
-                { name: 'Data Integrity Proof', value: 'DataIntegrityProof' },
-                {
-                  name: 'JSON Web Signature 2020',
-                  value: 'JsonWebSignature2020'
-                }
+                { name: 'Data Integrity Proof', value: 'DataIntegrityProof' }
               ]"
               option-label="name"
               option-value="value"
               @change="updateContext" />
-          </FormField>
-          <FormField
-            v-if="signOptions.type !== 'JsonWebSignature2020'"
-            label="Normalization">
-            <SelectButton
-              v-model="signOptions.normalization"
-              :options="[
-                { name: 'RDF Canonicalization', value: 'RDFC' },
-                { name: 'JSON Canonicalization Scheme', value: 'JCS' }
-              ]"
-              option-label="name"
-              option-value="value" />
           </FormField>
           <FormField v-slot="props" label="Proof purpose">
             <InputText
@@ -240,14 +222,7 @@ const onUpload = (event) => {
       <template #title>Validate document</template>
       <template #subtitle>
         <p>
-          The form below can be used to validate JsonWebSignature2020 documents.
-        </p>
-        <p>
-          The contents of the form should match the specification in the
-          <a
-            href="https://www.w3.org/community/reports/credentials/CG-FINAL-lds-jws2020-20220721/"
-            >JSON Web Signature 2020</a
-          >.
+          The form below can be used to validate DataIntegrityProof documents.
         </p>
       </template>
       <template #content>

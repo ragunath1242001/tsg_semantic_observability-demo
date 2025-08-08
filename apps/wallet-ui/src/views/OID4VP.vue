@@ -20,32 +20,22 @@ const verifierForm = ref<{
     {
       credentials: [
         {
-          id: "identity_credential",
+          id: "handson_credential",
           format: "jwt_vc_json",
           meta: {
-            type_values: [["VerifiableCredential", "IdentityCredential"]]
+            type_values: [["VerifiableCredential", "HandsonCredential"]]
           },
           claims: [
             {
               id: "email_claim",
               path: ["credentialSubject", "email"]
-            },
-            {
-              id: "name_claim",
-              path: ["credentialSubject", "name"]
-            }
-          ],
-          trusted_authorities: [
-            {
-              type: "openid_federation",
-              values: ["https://federation.example.com"]
             }
           ]
         }
       ],
       credential_sets: [
         {
-          options: [["identity_credential"]],
+          options: [["handson_credential"]],
           required: true
         }
       ]

@@ -271,7 +271,7 @@ export class DspClientService {
     config?: AxiosRequestConfig
   ): Promise<Out> {
     try {
-      const bodyDto = await body.serialize();
+      const bodyDto = body.serialize();
       const response = await this.axios.post<Out>(address, bodyDto, {
         ...config,
         headers: {

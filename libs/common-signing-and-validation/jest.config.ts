@@ -24,6 +24,7 @@ const config: Config.InitialOptions = {
     "!src/**/*.controller.ts",
     "!src/**/*.module.ts",
     "!src/**/*.schemas.ts",
+    "!src/**/*.mock.ts",
     "!src/migrations/**",
     "!src/migrations.executor.ts",
     "!src/generate-oas.ts",

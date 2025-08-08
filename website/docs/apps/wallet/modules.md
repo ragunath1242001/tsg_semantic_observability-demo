@@ -52,7 +52,6 @@ The TSG Wallet API is organized into six core modules that handle different aspe
 **Key Components**:
 - **OpenID4VP**: Standard presentation flows with selective disclosure
 - **Eclipse DCP**: Enterprise presentation exchange
-- **Direct Presentations**: Simplified presentation mechanisms
 
 **APIs**: `/presentation/management/*` for configuration, protocol-specific endpoints for presentation flows
 

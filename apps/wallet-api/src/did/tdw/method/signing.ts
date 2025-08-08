@@ -1,3 +1,4 @@
+import { Logger } from "@nestjs/common";
 import {
   buffersToHex,
   canonizeAndHash,
@@ -41,7 +42,8 @@ export const createSigner = (vm: VerificationMethod) => {
       );
       return { ...doc, proof };
     } catch (e: any) {
-      console.error(e);
+      Logger.error(`Error signing document: ${e.message}`, "TDW createSigner");
+      Logger.debug(e, "TDW createSigner");
       throw new Error(`Document signing failure: ${e.details}`);
     }
   };

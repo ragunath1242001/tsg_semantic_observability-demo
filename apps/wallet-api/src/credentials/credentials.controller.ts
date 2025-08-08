@@ -1,5 +1,10 @@
 import { Controller, Get, HttpCode, HttpStatus, Param } from "@nestjs/common";
-import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
+import {
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+  getSchemaPath
+} from "@nestjs/swagger";
 import { DisableOAuthGuard } from "@tsg-dsp/common-api";
 import { VerifiableCredential } from "@tsg-dsp/common-dsp";
 import {
@@ -36,12 +41,15 @@ export class CredentialsController {
     description:
       "Retrieve a specific Verifiable Credential issued by this wallet"
   })
-  @ApiOkResponse({ type: CredentialsDto })
+  @ApiOkResponse({
+    schema: {
+      oneOf: [{ $ref: getSchemaPath(VerifiableCredential) }, { type: "string" }]
+    }
+  })
   @ApiNotFoundResponseDefault()
   async getCredential(
     @Param("credentialId") credentialId: string
-  ): Promise<VerifiableCredential> {
-    return (await this.credentialsService.getCredential(credentialId))
-      .credential;
+  ): Promise<VerifiableCredential | string> {
+    return await this.credentialsService.getCredentialFormatted(credentialId);
   }
 }

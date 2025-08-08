@@ -55,5 +55,5 @@
       "runMode": "on-demand"
     }
   ],
-  "svg.preview.background": "black"
+  "jest.useJest30": true
 }

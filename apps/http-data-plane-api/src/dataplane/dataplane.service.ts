@@ -126,7 +126,7 @@ export class DataPlaneService {
       });
       await this.axiosDataPlane.post<DataPlaneDetailsDto>(
         `/${details.data.identifier}/catalog`,
-        await catalog.serialize()
+        catalog.serialize()
       );
     }
     const state = await this.stateRepository.save({

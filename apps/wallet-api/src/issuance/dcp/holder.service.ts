@@ -2,9 +2,10 @@ import { HttpStatus, Injectable, Logger } from "@nestjs/common";
 import {
   AppError,
   parseNetworkError,
+  promiseMap,
   validateOrRejectSync
 } from "@tsg-dsp/common-api";
-import { VerifiableCredential } from "@tsg-dsp/common-dsp";
+import { formatCredential, VerifiableCredential } from "@tsg-dsp/common-dsp";
 import {
   CredentialMessage,
   CredentialOfferMessage,
@@ -17,16 +18,15 @@ import axios, { AxiosResponse } from "axios";
 import { plainToInstance } from "class-transformer";
 import { randomUUID } from "crypto";
 
-import { DCPHolderConfig, RootConfig } from "../../config.js";
+import { RootConfig } from "../../config.js";
 import { CredentialsService } from "../../credentials/credentials.service.js";
-import { SignatureService } from "../../keys/signature.service.js";
 import { SecureTokenService } from "../../keys/token.service.js";
+import { retry } from "../../utils/retry.js";
 
 @Injectable()
 export class DCPHolderService {
   constructor(
     private readonly credentialsService: CredentialsService,
-    private readonly signatureService: SignatureService,
     private readonly secureTokenService: SecureTokenService,
     private readonly config: RootConfig
   ) {
@@ -39,46 +39,23 @@ export class DCPHolderService {
     this.logger.log("Initializing HolderService");
     const existingCredentials = await this.credentialsService.getCredentials();
     const existingTypes = existingCredentials.flatMap((c) => c.credential.type);
-    await Promise.all(
-      this.config.issuance.dcp.map(async (holderConfig) => {
-        if (
-          holderConfig.credentialType.every((type) =>
-            existingTypes.includes(type)
-          )
-        ) {
-          this.logger.log(
-            `Already holding ${holderConfig.credentialType.join(", ")} credential(s), skipping request`
-          );
-        } else {
-          await this.requestCredentialWithRetry(holderConfig);
-        }
-      })
+    await promiseMap(this.config.issuance.dcp, (config) =>
+      retry(
+        async () => {
+          if (
+            config.credentialType.every((type) => existingTypes.includes(type))
+          ) {
+            this.logger.log(
+              `Already holding ${config.credentialType.join(", ")} credential(s), skipping request`
+            );
+          } else {
+            await this.requestCredential(config);
+          }
+        },
+        `request credential for ${config.credentialType.join(", ")}`
+      )
     );
-
     return true;
-  }
-
-  async requestCredentialWithRetry(
-    config: DCPHolderConfig,
-    retry = 0,
-    backOff = 1000
-  ) {
-    try {
-      await this.requestCredential(config);
-    } catch (err) {
-      if (retry < 5) {
-        this.logger.warn(
-          `Could not request credential with code ${config.preAuthorizedCode} at ${config.issuerId}, retrying in 10 seconds`
-        );
-        await new Promise((f) => setTimeout(f, backOff));
-        await this.requestCredentialWithRetry(config, ++retry, backOff * 2);
-      } else {
-        this.logger.error(
-          `Could not request credential with code ${config.preAuthorizedCode} at ${config.issuerId}: ${err}`
-        );
-        throw err;
-      }
-    }
   }
 
   private async fetchIssuerMetadata(issuerId: string): Promise<{
@@ -114,23 +91,26 @@ export class DCPHolderService {
     const { issuerService, metadata } = await this.fetchIssuerMetadata(
       request.issuerId
     );
+    const credentials = request.credentialType.map((credentialType) => {
+      const supportedCredentials = metadata.credentialsSupported.filter(
+        (credentialObject) => credentialObject.credentialType === credentialType
+      );
 
-    const credentialsSupported = metadata.credentialsSupported.filter(
-      (credential) => request.credentialType.includes(credential.credentialType)
-    );
+      if (supportedCredentials.length === 0) {
+        throw new AppError(
+          `Issuer does not support credential type: ${credentialType}`,
+          HttpStatus.BAD_REQUEST
+        ).andLog(this.logger);
+      }
 
-    const unsupportedCredentials = request.credentialType.filter(
-      (type) =>
-        !credentialsSupported.some(
-          (credential) => credential.credentialType === type
-        )
-    );
-    if (unsupportedCredentials.length > 0) {
-      throw new AppError(
-        `Issuer does not support credential type(s): ${unsupportedCredentials.join(", ")}`,
-        HttpStatus.BAD_REQUEST
-      ).andLog(this.logger);
-    }
+      const bestMatch = supportedCredentials.reduce((best, current) => {
+        const currentProfile = this.formatDcpProfile(current.profile);
+        const bestProfile = this.formatDcpProfile(best.profile);
+        return currentProfile.score > bestProfile.score ? current : best;
+      });
+
+      return { id: bestMatch.id };
+    });
 
     const accessToken = await this.secureTokenService.createSelfIssuedIDToken({
       audience: request.issuerId,
@@ -144,9 +124,7 @@ export class DCPHolderService {
       "@context": ["https://w3id.org/dspace-dcp/v1.0/dcp.jsonld"],
       type: "CredentialRequestMessage",
       holderPid: holderPid,
-      credentials: credentialsSupported.map((credential) => ({
-        id: credential.id
-      }))
+      credentials: credentials
     };
 
     let credentialRequest: AxiosResponse;
@@ -205,28 +183,67 @@ export class DCPHolderService {
     }
 
     for (const credential of credentialMessage.credentials) {
-      if (credential.format !== "vc11-bssl/ld") {
-        this.logger.warn(
-          `Credential format ${credential.format} not supported`
+      if (credential.format === "jwt") {
+        const credentialContainer = formatCredential(credential.payload);
+        if (credentialContainer.credential.issuer !== validatedIdToken.sub) {
+          throw new AppError(
+            `Credential issuer ${credentialContainer.credential.issuer} does not match token subject ${validatedIdToken.sub}`,
+            HttpStatus.BAD_REQUEST
+          ).andLog(this.logger);
+        }
+        await this.credentialsService.importCredential(credential.payload);
+        this.logger.log(
+          `Imported JWT credential ${credentialContainer.credential.id}`
         );
-        this.logger.debug(credential);
+      } else if (credential.format === "ldp") {
+        const credentialObject = validateOrRejectSync(
+          plainToInstance(VerifiableCredential, JSON.parse(credential.payload))
+        );
+        if (credentialObject.issuer !== validatedIdToken.sub) {
+          throw new AppError(
+            `Credential issuer ${credentialObject.issuer} does not match token subject ${validatedIdToken.sub}`,
+            HttpStatus.BAD_REQUEST
+          ).andLog(this.logger);
+        }
+        await this.credentialsService.importCredential(credentialObject);
+        this.logger.log(`Imported credential ${credentialObject.id}`);
+      } else {
         throw new AppError(
-          `Credential format ${credential.format} not supported`,
+          `Unsupported credential format: ${credential.format}`,
           HttpStatus.BAD_REQUEST
         ).andLog(this.logger);
       }
-      const credentialObject = validateOrRejectSync(
-        plainToInstance(VerifiableCredential, JSON.parse(credential.payload))
-      );
-      if (credentialObject.issuer !== validatedIdToken.sub) {
-        throw new AppError(
-          `Credential issuer ${credentialObject.issuer} does not match token subject ${validatedIdToken.sub}`,
-          HttpStatus.BAD_REQUEST
-        ).andLog(this.logger);
-      }
-      await this.credentialsService.importCredential(credentialObject);
-      this.logger.log(`Imported credential ${credentialObject.id}`);
     }
+  }
+
+  formatDcpProfile(profile: string) {
+    const regex = /^(vc\d+)-([\w\d]+)\/([\w\d]+)$/;
+    const match = profile.match(regex);
+
+    if (!match) {
+      throw new AppError(
+        `Invalid DCP profile format: ${profile}`,
+        HttpStatus.BAD_REQUEST
+      ).andLog(this.logger, "error");
+    }
+
+    const vcDataModel = match[1];
+    const revocationSystem = match[2];
+    const proofStack = match[3];
+
+    return {
+      score:
+        (vcDataModel === "vc20" ? 4 : vcDataModel === "vc11" ? 1 : 0) +
+        (revocationSystem === "bssl"
+          ? 4
+          : revocationSystem === "sl2021"
+            ? 0
+            : -1) +
+        (proofStack === "jwt" ? 4 : proofStack === "ldp" ? 2 : 0),
+      vcDataModel,
+      revocationSystem,
+      proofStack
+    };
   }
 
   async handleCredentialOfferMessage(

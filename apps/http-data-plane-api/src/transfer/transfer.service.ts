@@ -300,35 +300,43 @@ export class TransferService {
     }
     return undefined;
   }
-
   async getNegotiationWithBackoff(
     negotiationId: string,
-    maxRetries: number = 5,
-    initialDelay: number = 500
+    maxRetries?: number,
+    initialDelay?: number
   ): Promise<NegotiationDetailDto> {
-    let retries = 0;
-    let delay = initialDelay;
+    return await this.retryWithBackoff(
+      () => this.checkForFinalizedNegotiation(negotiationId),
+      `Negotiation ${negotiationId} did not finalize after ${maxRetries} retries`,
+      maxRetries,
+      initialDelay
+    );
+  }
 
-    while (retries < maxRetries) {
-      try {
-        const negotiation =
-          await this.checkForFinalizedNegotiation(negotiationId);
-        if (negotiation) {
-          return negotiation;
-        }
-      } catch (_) {
-        this.logger.debug(
-          `Negotiation ${negotiationId} did not finalize after ${retries} retries`
-        );
-      }
-
-      retries++;
-      await new Promise((resolve) => setTimeout(resolve, delay));
-      delay *= 2; // Exponential backoff
+  private async retryWithBackoff<T>(
+    operation: () => Promise<T | undefined | null>,
+    errorMessage: string,
+    retries: number = 7,
+    delay: number = 100
+  ): Promise<T> {
+    if (retries <= 0) {
+      this.logger.error(errorMessage);
+      throw new DataPlaneClientError(errorMessage, HttpStatus.BAD_REQUEST);
     }
-
-    throw new Error(
-      `Negotiation ${negotiationId} did not finalize after ${maxRetries} retries`
+    await new Promise((resolve) => setTimeout(resolve, delay));
+    try {
+      const result = await operation();
+      if (result) {
+        return result;
+      }
+    } catch (err) {
+      this.logger.debug(`Retry attempt failed: ${err}`);
+    }
+    return this.retryWithBackoff(
+      operation,
+      errorMessage,
+      retries - 1,
+      delay * 2 // Exponential backoff
     );
   }
 
@@ -411,40 +419,21 @@ export class TransferService {
       );
     }
   }
-  async retryFindTransfer(
+  async getStartedTransferWithBackoff(
     datasetId: string,
-    maxRetries: number = 5,
-    initialDelay: number = 500
-  ): Promise<TransferDao | null> {
-    let retries = 0;
-    let delay = initialDelay;
-
-    while (retries < maxRetries) {
-      try {
-        const transfer = await this.transferRepository.findOne({
-          where: { datasetId: datasetId },
+    maxRetries?: number,
+    initialDelay?: number
+  ): Promise<TransferDao> {
+    return await this.retryWithBackoff(
+      () =>
+        this.transferRepository.findOne({
+          where: { datasetId: datasetId, state: TransferState.STARTED },
           order: { createdDate: "DESC" }
-        });
-        if (transfer) {
-          return transfer;
-        }
-      } catch (err) {
-        this.logger.warn(
-          `Attempt ${
-            retries + 1
-          } failed to find transfer for dataset ${datasetId}: ${err}`
-        );
-      }
-
-      retries++;
-      await new Promise((resolve) => setTimeout(resolve, delay));
-      delay *= 2; // Exponential backoff
-    }
-
-    this.logger.error(
-      `Failed to find transfer for dataset ${datasetId} after ${maxRetries} retries`
+        }),
+      `Failed to find transfer for dataset ${datasetId}`,
+      maxRetries,
+      initialDelay
     );
-    return null;
   }
 
   async determineTransferId(
@@ -487,16 +476,8 @@ export class TransferService {
       }
 
       await this.requestTransfer(negotiation, address, audience, datasetId);
-      transfer = await this.retryFindTransfer(datasetId);
+      transfer = await this.getStartedTransferWithBackoff(datasetId);
     }
-
-    if (!transfer) {
-      throw new DataPlaneClientError(
-        `No transfer found for dataset ${datasetId}`,
-        HttpStatus.BAD_REQUEST
-      );
-    }
-
     return transfer.id;
   }
 

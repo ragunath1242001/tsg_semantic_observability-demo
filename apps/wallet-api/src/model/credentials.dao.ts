@@ -1,4 +1,4 @@
-import { VerifiableCredential } from "@tsg-dsp/common-dsp";
+import { Credential, DataIntegrityProof, OrArray } from "@tsg-dsp/common-dsp";
 import { JWK } from "jose";
 import {
   Column,
@@ -42,7 +42,13 @@ export class CredentialDao extends MetaEntity {
   targetDid!: string;
 
   @Column("simple-json")
-  credential!: VerifiableCredential;
+  credential!: Credential;
+
+  @Column("simple-json", { nullable: true })
+  proof?: OrArray<DataIntegrityProof>;
+
+  @Column({ type: String, nullable: true })
+  jwt?: string;
 
   @Column({ type: Boolean })
   selfIssued!: boolean;

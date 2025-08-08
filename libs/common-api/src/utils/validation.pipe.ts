@@ -16,7 +16,7 @@ export const validateOrRejectSync = <T extends object>(
       `Could not parse object: ${errors.map((e) => e.toString())}`,
       HttpStatus.BAD_REQUEST,
       errors
-    );
+    ).andLog(new Logger("ValidationPipe"), "debug");
   }
   return object;
 };

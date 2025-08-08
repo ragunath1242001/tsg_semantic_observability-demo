@@ -1,7 +1,8 @@
 import { HttpStatus } from "@nestjs/common";
 import {
   ConstraintDto,
-  JsonWebSignature2020,
+  DataIntegrityProof,
+  formatCredentials,
   ODRLAction,
   ODRLOperator
 } from "@tsg-dsp/common-dsp";
@@ -130,7 +131,7 @@ describe("Constraint Evaluation", () => {
           description: "Test constraint description 7",
           leftOperand: "tsg:vpInputDescriptor",
           operator: ODRLOperator.IS_ANY_OF,
-          contextPath: "$.verifiableCredentials[:]",
+          contextPath: "$.verifiableCredentials[:].credential",
           evaluable: [
             EvaluationTrigger.PROVIDER_ON_REQUEST,
             EvaluationTrigger.PROVIDER_CONTINUOUS,
@@ -175,12 +176,12 @@ describe("Constraint Evaluation", () => {
         ]
       },
       localSignature: {
-        algorithm: "JsonWebSignature2020",
-        digest: "{}"
+        algorithm: "jwt",
+        digest: ""
       },
       remoteSignature: {
-        algorithm: "JsonWebSignature2020",
-        digest: "{}"
+        algorithm: "jwt",
+        digest: ""
       },
       signatureStatus: "verified"
     }
@@ -404,32 +405,34 @@ describe("Constraint Evaluation", () => {
   it("VC", async () => {
     const context = EvaluationContext.parse({
       ...contextDefaults,
-      verifiableCredentials: [
+      verifiableCredentials: formatCredentials([
         {
           "@context": [
-            "https://www.w3.org/2018/credentials/v1",
+            "https://www.w3.org/ns/credentials/v2",
             "https://w3c.github.io/vc-jws-2020/contexts/v1/"
           ],
           type: ["VerifiableCredential"],
           id: "did:web:remote.example.com#209eb793-8c3b-4d58-b1de-c4a4e15ce448",
           issuer: "did:web:dataspace-authority.example.com",
-          issuanceDate: "2024-07-30T13:51:30.571Z",
-          expirationDate: "2024-10-30T13:51:30.571Z",
+          validFrom: "2024-07-30T13:51:30.571Z",
+          validUntil: "2024-10-30T13:51:30.571Z",
           credentialSubject: {
             id: "did:web:remote.example.com",
             role: "https://example.com/#DataProvider"
           },
           proof: {
-            type: "JsonWebSignature2020",
+            type: "DataIntegrityProof",
             created: "2024-07-30T13:51:30.581Z",
             proofPurpose: "assertionMethod",
-            jws: "eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..aMlm-Sb3m18j2IOwUJz8U6g53QOp6IA9gmG6oTZkdz2ibyzweR3CjLpC2uWYld75Mr8udXPjk2GXMVRQeH0mDg",
-            verificationMethod: "did:web:dataspace-authority.example.com#key-0"
-          } as JsonWebSignature2020
+            verificationMethod: "did:web:dataspace-authority.example.com#key-0",
+            cryptosuite: "eddsa-jcs-2022",
+            proofValue:
+              "z3f3bQLt79o87hpXSUzWYy1bVaLQLBeU9Aj6b7BHPmuL7vhmZu8wx2kvUQU3Y8PHNVKtahcQQQHyxcTfYq3tJquSe"
+          } as DataIntegrityProof
         },
         {
           "@context": [
-            "https://www.w3.org/2018/credentials/v1",
+            "https://www.w3.org/ns/credentials/v2",
             "https://w3c.github.io/vc-jws-2020/contexts/v1/"
           ],
           type: [
@@ -438,21 +441,23 @@ describe("Constraint Evaluation", () => {
           ],
           id: "did:web:remote.example.com#209eb793-8c3b-4d58-b1de-c4a4e15ce448",
           issuer: "did:web:dataspace-authority.example.com",
-          issuanceDate: "2024-07-30T13:51:30.571Z",
-          expirationDate: "2024-10-30T13:51:30.571Z",
+          validFrom: "2024-07-30T13:51:30.571Z",
+          validUntil: "2024-10-30T13:51:30.571Z",
           credentialSubject: {
             id: "did:web:remote.example.com",
             role: "https://example.com/#DataProvider"
           },
           proof: {
-            type: "JsonWebSignature2020",
+            type: "DataIntegrityProof",
             created: "2024-07-30T13:51:30.581Z",
             proofPurpose: "assertionMethod",
-            jws: "eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..aMlm-Sb3m18j2IOwUJz8U6g53QOp6IA9gmG6oTZkdz2ibyzweR3CjLpC2uWYld75Mr8udXPjk2GXMVRQeH0mDg",
-            verificationMethod: "did:web:dataspace-authority.example.com#key-0"
-          } as JsonWebSignature2020
+            verificationMethod: "did:web:dataspace-authority.example.com#key-0",
+            cryptosuite: "eddsa-jcs-2022",
+            proofValue:
+              "z3f3bQLt79o87hpXSUzWYy1bVaLQLBeU9Aj6b7BHPmuL7vhmZu8wx2kvUQU3Y8PHNVKtahcQQQHyxcTfYq3tJquSe"
+          } as DataIntegrityProof
         }
-      ],
+      ]),
       dataPlane: {
         testString: "Test String",
         testUri: "urn:uuid:bac46e31-79f8-4744-82c3-0b09012d2d95",

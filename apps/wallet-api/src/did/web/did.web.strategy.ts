@@ -39,9 +39,6 @@ export class DidWebStrategy implements DidStrategy {
     };
 
     this.logger.log(`DID document created for ${didId}`);
-    this.logger.debug(
-      `DID document ${didId}\n${JSON.stringify(didDocument, null, 2)}`
-    );
 
     return { didId: didId, didDocument: didDocument };
   }
@@ -60,9 +57,6 @@ export class DidWebStrategy implements DidStrategy {
     didDocument.service = services;
 
     this.logger.log(`DID document updated for ${didDocument.id}`);
-    this.logger.debug(
-      `DID document ${didDocument.id}\n${JSON.stringify(didDocument, null, 2)}`
-    );
 
     return didDocument;
   }

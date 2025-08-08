@@ -40,7 +40,7 @@ test("Resource serialization", async () => {
   resource.hasPolicy![0].extraProps["dct:test2"] = {
     "@id": "urn:uuid:ab07632c-68c3-4665-8708-533552b51e91"
   };
-  const serialized = await resource.serialize();
+  const serialized = resource.serialize();
   const expected: ResourceDto = {
     "@context": defaultContext(),
     "@type": "Resource",
@@ -125,7 +125,7 @@ test("Catalog serialization", async () => {
       })
     ]
   });
-  const serialized = await catalog.serialize();
+  const serialized = catalog.serialize();
   const expected: CatalogDto = {
     "@context": defaultContext(),
     "@type": "Catalog",

@@ -18,45 +18,9 @@ import {
   ValidateNested
 } from "class-validator";
 
-import { elementOrArray, OrArray } from "../../utils/unions.js";
+import { elementOrArray, OrArray, toArray } from "../../utils/unions.js";
 
-export abstract class Proof {
-  @ApiProperty({
-    enum: ["JsonWebSignature2020", "DataIntegrityProof"],
-    example: "JsonWebSignature2020"
-  })
-  type!: "JsonWebSignature2020" | "DataIntegrityProof";
-
-  @ApiProperty({ example: "assertionMethod" })
-  proofPurpose!: string;
-}
-
-export class JsonWebSignature2020 extends Proof {
-  @ApiProperty({
-    enum: ["JsonWebSignature2020"],
-    example: "JsonWebSignature2020"
-  })
-  @IsString()
-  declare type: "JsonWebSignature2020";
-
-  @ApiProperty({ example: "2020-01-01T00:00:00Z" })
-  @IsDateString()
-  created!: string;
-
-  @ApiProperty({ example: "assertionMethod" })
-  @IsString()
-  declare proofPurpose: string;
-
-  @ApiProperty({ example: "eyJhbGciOiJFUzI1NiIsInR5cCI..." })
-  @IsString()
-  jws!: string;
-
-  @ApiProperty({ example: "did:example:123456#key-1" })
-  @IsString()
-  verificationMethod!: string;
-}
-
-export class DataIntegrityProof extends Proof {
+export class DataIntegrityProof {
   @ApiPropertyOptional({
     example: "did:example:xyz#proof-1"
   })
@@ -69,11 +33,11 @@ export class DataIntegrityProof extends Proof {
     example: "DataIntegrityProof"
   })
   @IsString()
-  declare type: "DataIntegrityProof";
+  type!: "DataIntegrityProof";
 
   @ApiProperty({ example: "assertionMethod" })
   @IsString()
-  declare proofPurpose: string;
+  proofPurpose!: string;
 
   @ApiPropertyOptional({ example: "did:example:author#verificationKey" })
   @IsString()
@@ -156,7 +120,7 @@ export class BitstringStatusList extends CredentialSubject {
 
   @ApiPropertyOptional({ example: 3600 })
   @IsNumber()
-  ttl!: number;
+  ttl?: number;
 }
 
 export class CredentialStatus {
@@ -220,14 +184,8 @@ export class StatusMessage {
 export class Credential<T extends CredentialSubject = CredentialSubject> {
   @ApiProperty({
     type: [String],
-    enum: [
-      "https://www.w3.org/2018/credentials/v1",
-      "https://www.w3.org/ns/credentials/v2",
-      "https://w3id.org/security/suites/jws-2020/v1",
-      "https://w3id.org/security/data-integrity/v2",
-      "string"
-    ],
-    example: ["https://www.w3.org/2018/credentials/v1"]
+    enum: ["https://www.w3.org/ns/credentials/v2", "string"],
+    example: ["https://www.w3.org/ns/credentials/v2"]
   })
   @IsString({ each: true })
   "@context": string[];
@@ -295,32 +253,102 @@ export class Credential<T extends CredentialSubject = CredentialSubject> {
   credentialStatus?: OrArray<CredentialStatus>;
 }
 
-export class VerifiableCredential<
-  P extends Proof = Proof,
+export class CredentialContainer<
   T extends CredentialSubject = CredentialSubject
-> extends Credential<T> {
+> {
   @ApiProperty({
-    type: () => [Proof],
-    example: [
-      {
-        type: "JsonWebSignature2020",
+    type: () => Credential,
+    example: {
+      "@context": ["https://www.w3.org/ns/credentials/v2"],
+      type: ["VerifiableCredential"],
+      credentialSubject: { id: "did:example:subject-1" },
+      issuer: "did:example:issuer",
+      validFrom: "2020-01-01T00:00:00Z",
+      proof: {
+        type: "DataIntegrityProof",
         created: "2020-01-01T00:00:00Z",
         proofPurpose: "assertionMethod",
-        jws: "eyJhbGciOiJFUzI1NiIsInR5cCI...",
+        cryptosuite: "eddsa-jcs-2022",
+        proofValue: "",
+        verificationMethod: "did:example:123456#key-1"
+      }
+    }
+  })
+  @ValidateNested()
+  @Type(() => Credential)
+  credential!: Credential<T>;
+
+  @ApiProperty({
+    type: String,
+    example:
+      "eyJraWQiOiJFeEhrQk1XOWZtYmt2VjI2Nm1ScHVQMnNVWV9OX0VXSU4xbGFwVXpPOHJvIiwiYWxnIjoiRVMyNTYifQ.eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvbnMvY3JlZGVudGlhbHMvdjIiLCJodHRwczovL3d3dy53My5vcmcvbnMvY3JlZGVudGlhbHMvZXhhbXBsZXMvdjIiXSwiaWQiOiJodHRwOi8vdW5pdmVyc2l0eS5leGFtcGxlL2NyZWRlbnRpYWxzLzM3MzIiLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIiwiRXhhbXBsZURlZ3JlZUNyZWRlbnRpYWwiXSwiaXNzdWVyIjoiaHR0cHM6Ly91bml2ZXJzaXR5LmV4YW1wbGUvaXNzdWVycy81NjUwNDkiLCJ2YWxpZEZyb20iOiIyMDEwLTAxLTAxVDAwOjAwOjAwWiIsImNyZWRlbnRpYWxTdWJqZWN0Ijp7ImlkIjoiZGlkOmV4YW1wbGU6ZWJmZWIxZjcxMmViYzZmMWMyNzZlMTJlYzIxIiwiZGVncmVlIjp7InR5cGUiOiJFeGFtcGxlQmFjaGVsb3JEZWdyZWUiLCJuYW1lIjoiQmFjaGVsb3Igb2YgU2NpZW5jZSBhbmQgQXJ0cyJ9fX0.YEsG9at9Hnt_j-UykCrnl494fcYMTjzpgvlK0KzzjvfmZmSg-sNVJqMZWizYhWv_eRUvAoZohvSJWeagwj_Ajw"
+  })
+  @IsString()
+  @IsOptional()
+  jwt?: string;
+
+  @ApiProperty({
+    type: () => [DataIntegrityProof],
+    example: [
+      {
+        type: "DataIntegrityProof",
+        created: "2020-01-01T00:00:00Z",
+        proofPurpose: "assertionMethod",
+        cryptosuite: "eddsa-jcs-2022",
+        proofValue: "",
         verificationMethod: "did:example:123456#key-1"
       }
     ]
   })
   @ValidateNested()
-  @Type(() => Proof, {
-    discriminator: {
-      property: "type",
-      subTypes: [
-        { value: JsonWebSignature2020, name: "JsonWebSignature2020" },
-        { value: DataIntegrityProof, name: "DataIntegrityProof" }
-      ]
-    },
-    keepDiscriminatorProperty: true
+  @Type(() => DataIntegrityProof)
+  @IsOptional()
+  proof?: OrArray<DataIntegrityProof>;
+}
+
+export class EnvelopedVerifiableCredential {
+  @ApiProperty({
+    type: [String],
+    items: { enum: ["https://www.w3.org/ns/credentials/v2"] }
   })
-  proof!: OrArray<P>;
+  "@context": ["https://www.w3.org/ns/credentials/v2"];
+  @ApiProperty({ type: String, example: "data:application/vc+jwt,..." })
+  @IsString()
+  id!: string;
+  @ApiProperty({
+    type: [String],
+    items: { enum: ["EnvelopedVerifiableCredential"] }
+  })
+  type!: ["EnvelopedVerifiableCredential"];
+}
+
+export function isEnvelopedVerifiableCredential(
+  credential: VerifiableCredential | EnvelopedVerifiableCredential
+): credential is EnvelopedVerifiableCredential {
+  return (
+    toArray(credential["@context"]).includes(
+      "https://www.w3.org/ns/credentials/v2"
+    ) && toArray(credential.type).includes("EnvelopedVerifiableCredential")
+  );
+}
+
+export class VerifiableCredential<
+  T extends CredentialSubject = CredentialSubject
+> extends Credential<T> {
+  @ApiProperty({
+    type: () => [DataIntegrityProof],
+    example: [
+      {
+        type: "DataIntegrityProof",
+        created: "2020-01-01T00:00:00Z",
+        proofPurpose: "assertionMethod",
+        cryptosuite: "eddsa-jcs-2022",
+        proofValue: "",
+        verificationMethod: "did:example:123456#key-1"
+      }
+    ]
+  })
+  @ValidateNested()
+  @Type(() => DataIntegrityProof)
+  proof!: OrArray<DataIntegrityProof>;
 }
