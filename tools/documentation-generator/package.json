@@ -19,26 +19,26 @@
     "access": "public"
   },
   "devDependencies": {
-    "@jest/types": "^30.0.0",
-    "@nestjs/cli": "^11.0.4",
-    "@nestjs/testing": "^11.0.10",
+    "@jest/types": "^30.0.5",
+    "@nestjs/cli": "^11.0.10",
+    "@nestjs/testing": "^11.1.6",
     "@types/deep-equal": "^1.0.1",
     "@types/jest": "^30.0.0",
-    "@types/node": "^22.13.4",
-    "@typescript-eslint/eslint-plugin": "^8.24.1",
-    "@typescript-eslint/parser": "^8.24.1",
-    "eslint": "^9.20.1",
-    "jest": "^30.0.0",
+    "@types/node": "^22.17.1",
+    "@typescript-eslint/eslint-plugin": "^8.39.0",
+    "@typescript-eslint/parser": "^8.39.0",
+    "eslint": "^9.33.0",
+    "jest": "^30.0.5",
     "jest-junit": "^16.0.0",
-    "msw": "^2.6.6",
-    "supertest": "^7.0.0",
-    "ts-jest": "^29.2.5",
+    "msw": "^2.10.4",
+    "supertest": "^7.1.4",
+    "ts-jest": "^29.4.1",
     "ts-node": "^10.9.2",
     "tsc-watch": "^7.0.0",
-    "typescript": "^5.7.3"
+    "typescript": "^5.9.2"
   },
   "dependencies": {
     "@commander-js/extra-typings": "^14.0.0",
-    "@inquirer/prompts": "^7.3.2"
+    "@inquirer/prompts": "^7.8.1"
   }
 }

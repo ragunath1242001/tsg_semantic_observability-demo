@@ -1,16 +1,7 @@
 import type { Config } from "tailwindcss";
 
+import preset from "./tailwind-preset.cjs";
 export default {
-  darkMode: ["selector", '[class*="app-dark"]'],
-  content: ["./**/*.{vue,js,ts,jsx,tsx}"],
-  plugins: [require("tailwindcss-primeui")],
-  theme: {
-    screens: {
-      sm: "576px",
-      md: "768px",
-      lg: "992px",
-      xl: "1200px",
-      "2xl": "1920px"
-    }
-  }
+  presets: [preset],
+  content: ["./**/*.{vue,js,ts,jsx,tsx}"]
 } satisfies Config;

@@ -94,7 +94,7 @@ const issuerIdentifier = computed(() => {
 
       <div class="h-full flex flex-col justify-between relative z-20">
         <div class="mb-4">
-          <h3 class="text-2xl font-bold mb-2 leading-tight text-inherit">
+          <h3 class="text-2xl font-bold mb-2 leading-tight text-inherit!">
             {{
               configuration.name ||
               configuration.credentialType ||

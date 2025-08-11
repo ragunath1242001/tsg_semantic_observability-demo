@@ -6,12 +6,5 @@
   "labels": ["Renovate"],
   "prHourlyLimit": 0,
   "branchPrefix": "renovate-",
-  "packageRules": [
-    {
-      "description": "Disable tailwindcss updates until primeui works with tailwindcss 4",
-      "matchUpdateTypes": ["major"],
-      "enabled": false,
-      "matchPackageNames": ["/tailwindcss/"]
-    }
-  ]
+  "packageRules": []
 }
