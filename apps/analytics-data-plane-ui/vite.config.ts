@@ -1,5 +1,6 @@
 import { fileURLToPath, URL } from "node:url";
 
+import tailwindcss from "@tailwindcss/vite";
 import vue from "@vitejs/plugin-vue";
 import { readFileSync } from "fs";
 import path from "path";
@@ -24,7 +25,7 @@ try {
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [vue()],
+  plugins: [tailwindcss(), vue()],
   base: "",
   envPrefix: "TSG_STATIC_",
   resolve: {

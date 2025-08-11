@@ -16,23 +16,23 @@
     "jest:ci": "jest --coverage --coverage-reporters cobertura --coverage-reporters text --ci --reporters=default --reporters=jest-junit"
   },
   "dependencies": {
-    "@nestjs/common": "^11.0.10",
+    "@nestjs/common": "^11.1.6",
     "@nestjs/swagger": "^11.0.4",
     "@tsg-dsp/common-dsp": "workspace:*",
     "@tsg-dsp/common-dtos": "workspace:*",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
-    "jose": "^6.0.0",
+    "jose": "^6.0.12",
     "reflect-metadata": "^0.2.0",
     "tslib": "^2.8.1"
   },
   "devDependencies": {
-    "@jest/globals": "^30.0.0",
-    "@jest/types": "^30.0.0",
-    "@nestjs/testing": "^11.0.10",
+    "@jest/globals": "^30.0.5",
+    "@jest/types": "^30.0.5",
+    "@nestjs/testing": "^11.1.6",
     "@types/jest": "^30.0.0",
-    "jest": "^30.0.0",
-    "ts-jest": "^29.2.5",
-    "typescript": "^5.7.3"
+    "jest": "^30.0.5",
+    "ts-jest": "^29.4.1",
+    "typescript": "^5.9.2"
   }
 }
