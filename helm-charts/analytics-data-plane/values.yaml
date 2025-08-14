@@ -24,7 +24,12 @@ serviceAccount:
     - apiGroups: [""]
       resources: ["pods", "pods/log"]
       verbs: ["get", "list", "watch"]
-
+    - apiGroups: ["apps"]
+      resources: ["replicasets"]
+      verbs: ["get", "list"]
+    - apiGroups: [""]
+      resources: ["configmaps"]
+      verbs: ["get", "create", "update", "patch", "delete"]
 ingress:
   enabled: true
   clusterIssuer: letsencrypt
@@ -32,7 +37,11 @@ ingress:
     - path: '{{ template "tsg.subPath" $ }}/'
       type: Prefix
 
-env: []
+env:
+  - name: POD_IP
+    valueFrom:
+      fieldRef:
+        fieldPath: status.podIP
 configFromSecrets: {}
 
 subPath: ""

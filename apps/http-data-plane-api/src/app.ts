@@ -35,5 +35,3 @@ async function bootstrap() {
   await app.listen(config.port, config.listen);
 }
 bootstrap();
-
-// somewhere in your initialization file

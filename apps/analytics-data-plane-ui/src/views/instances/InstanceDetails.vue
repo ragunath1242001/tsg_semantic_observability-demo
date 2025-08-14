@@ -165,7 +165,7 @@ onUnmounted(() => {
 
 <template>
   <div class="grid">
-    <div class="col-12">
+    <div class="col-span-12">
       <div class="flex justify-between items-center mb-4">
         <Button
           icon="pi pi-arrow-left"
@@ -217,14 +217,14 @@ onUnmounted(() => {
 
         <template #content>
           <div class="grid">
-            <div class="col-12 md:col-6">
+            <div class="col-span-12 md:col-span-6">
               <h3 class="text-xl font-medium mb-3">Instance Details</h3>
               <div class="grid">
-                <div class="col-12">
+                <div class="col-span-12">
                   <label class="block font-medium mb-2">ID</label>
                   <code class="text-sm">{{ algorithmInstance?.id }}</code>
                 </div>
-                <div v-if="algorithmInstance?.createdDate" class="col-12">
+                <div v-if="algorithmInstance?.createdDate" class="col-span-12">
                   <label class="block font-medium mb-2">Created At</label>
                   <span
                     >{{ formatRelative(algorithmInstance.createdDate) }}
@@ -233,7 +233,7 @@ onUnmounted(() => {
                     }}</small>
                   </span>
                 </div>
-                <div v-if="algorithmInstance?.startedAt" class="col-12">
+                <div v-if="algorithmInstance?.startedAt" class="col-span-12">
                   <label class="block font-medium mb-2">Started At</label>
 
                   <span
@@ -243,7 +243,7 @@ onUnmounted(() => {
                     }}</small>
                   </span>
                 </div>
-                <div v-if="algorithmInstance?.finishedAt" class="col-12">
+                <div v-if="algorithmInstance?.finishedAt" class="col-span-12">
                   <label class="block font-medium mb-2">Finished At</label>
                   <span
                     >{{ formatRelative(algorithmInstance.finishedAt) }}
@@ -255,7 +255,7 @@ onUnmounted(() => {
               </div>
             </div>
 
-            <div class="col-12 md:col-6">
+            <div class="col-span-12 md:col-span-6">
               <h6 class="text-xl font-medium mb-3">Participants</h6>
               <div class="flex flex-wrap gap-2">
                 <Tag

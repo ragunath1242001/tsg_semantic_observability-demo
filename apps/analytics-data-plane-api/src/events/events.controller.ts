@@ -8,18 +8,28 @@ import {
   Logger,
   Param,
   Post,
+  Query,
   RawBodyRequest,
-  Req
+  Req,
+  Res
 } from "@nestjs/common";
-import { ApiBody, ApiOkResponse, ApiOperation } from "@nestjs/swagger";
+import {
+  ApiBody,
+  ApiNoContentResponse,
+  ApiOkResponse,
+  ApiOperation
+} from "@nestjs/swagger";
 import {
   CreateAlgorithmEventDto,
   CreateInternalEventDto
 } from "@tsg-dsp/analytics-data-plane-dtos";
-import { DisableOAuthGuard, nonEmptyStringPipe } from "@tsg-dsp/common-api";
+import {
+  DisableOAuthGuard,
+  nonEmptyStringPipe,
+  validationPipe
+} from "@tsg-dsp/common-api";
 import { ApiForbiddenResponseDefault } from "@tsg-dsp/common-dtos";
-import { Request } from "express";
-import getRawBody from "raw-body";
+import { Request, Response } from "express";
 
 import { EventsService } from "./events.service.js";
 
@@ -35,7 +45,7 @@ export class EventsController {
   async createInternalEvent(
     @Param("algorithmInstanceId", nonEmptyStringPipe)
     algorithmInstanceId: string,
-    @Body()
+    @Body(validationPipe)
     createInternalEvent: CreateInternalEventDto
   ) {
     return await this.eventsService.createInternalEvent({
@@ -62,7 +72,7 @@ export class EventsController {
   async createAlgorithmEvent(
     @Param("algorithmInstanceId", nonEmptyStringPipe)
     algorithmInstanceId: string,
-    @Body()
+    @Body(validationPipe)
     createEvent: CreateAlgorithmEventDto,
     @Headers("Authorization") authorizationHeader?: string
   ) {
@@ -95,15 +105,9 @@ export class EventsController {
     @Req() req: RawBodyRequest<Request>,
     @Headers("Authorization") authorizationHeader?: string
   ) {
-    const buffer = await getRawBody(req, {
-      length: req.headers["content-length"],
-      limit: "10mb",
-      encoding: null
-    });
-
     await this.eventsService.uploadAlgorithmEventData({
       algorithmInstanceId,
-      eventData: buffer,
+      eventData: req.rawBody,
       eventId,
       authorizationHeader
     });
@@ -111,16 +115,50 @@ export class EventsController {
 
   @Get("data/:eventId")
   async getEventData(
+    @Res() res: Response,
     @Param("algorithmInstanceId", nonEmptyStringPipe)
     algorithmInstanceId: string,
     @Param("eventId", nonEmptyStringPipe) eventId: string,
     @Headers("Authorization") authorizationHeader?: string
   ) {
-    return await this.eventsService.getEventData({
+    const data = await this.eventsService.getEventData({
       algorithmInstanceId,
       eventId,
       authorizationHeader
     });
+
+    if (!data) {
+      return res.status(HttpStatus.NO_CONTENT).send();
+    }
+
+    res.setHeader("Content-Type", "application/octet-stream");
+    res.setHeader("Content-Length", data.length.toString());
+    return res.send(data);
+  }
+
+  @Get("poll")
+  @ApiOperation({
+    summary:
+      "Poll for the next available algorithm event for this algorithm instance",
+    description:
+      "Long polling endpoint that returns the next available algorithm event for this specific algorithm instance. Supports 'since' query parameter with ISO date format to filter events after that timestamp. Only returns external events (excludes own events)."
+  })
+  @ApiOkResponse({
+    description: "The next algorithm event has been found"
+  })
+  @ApiNoContentResponse({
+    description: "No event within longpolling window"
+  })
+  @ApiForbiddenResponseDefault()
+  async pollForAlgorithmEvent(
+    @Param("algorithmInstanceId", nonEmptyStringPipe)
+    algorithmInstanceId: string,
+    @Query("since") since?: string
+  ) {
+    return await this.eventsService.pollForAlgorithmEvent(
+      algorithmInstanceId,
+      since
+    );
   }
 
   @Get()

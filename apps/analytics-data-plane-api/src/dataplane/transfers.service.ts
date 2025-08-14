@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable, Logger } from "@nestjs/common";
+import { HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { AlgorithmParticipant } from "@tsg-dsp/analytics-data-plane-dtos";
 import {
@@ -76,7 +76,10 @@ export class TransfersService {
       relations: ["algorithmInstance"]
     });
     if (!transfer) {
-      throw new HttpException(`Transfer ${id} not found`, HttpStatus.NOT_FOUND);
+      throw new DataPlaneError(
+        `Transfer ${id} not found`,
+        HttpStatus.NOT_FOUND
+      ).andLog(this.logger);
     }
     return transfer;
   }
@@ -87,10 +90,10 @@ export class TransfersService {
       relations: ["algorithmInstance"]
     });
     if (!transfer) {
-      throw new HttpException(
+      throw new DataPlaneError(
         `Transfer with processId ${processId} not found`,
         HttpStatus.NOT_FOUND
-      );
+      ).andLog(this.logger);
     }
     return transfer;
   }
@@ -101,10 +104,10 @@ export class TransfersService {
       relations: ["algorithmInstance"]
     });
     if (!transfer) {
-      throw new HttpException(
+      throw new DataPlaneError(
         `Invalid token, transfer by secret not found`,
         HttpStatus.NOT_FOUND
-      );
+      ).andLog(this.logger);
     }
     return transfer;
   }
@@ -122,7 +125,7 @@ export class TransfersService {
       throw new DataPlaneError(
         `Could not find ControlPlaneService in DID document for ${participantDidId}`,
         HttpStatus.NOT_FOUND
-      );
+      ).andLog(this.logger);
     }
     return service.serviceEndpoint as string;
   }
@@ -197,7 +200,7 @@ export class TransfersService {
       throw new DataPlaneError(
         `No agreement ID found for negotiation ${negotiation.localId}`,
         HttpStatus.BAD_REQUEST
-      );
+      ).andLog(this.logger);
     }
     return await this.managementClient.requestTransfer(
       agreementId,
@@ -274,18 +277,18 @@ export class TransfersService {
   ) {
     const transfer = await this.transferRepository.findOneBy({ id: processId });
     if (!transfer) {
-      throw new HttpException(
+      throw new DataPlaneError(
         `Transfer ${processId} not found`,
         HttpStatus.NOT_FOUND
-      );
+      ).andLog(this.logger);
     }
     transfer.state = TransferState.STARTED;
     if (transfer.role === "consumer") {
       if (transferStartMessage.dataAddress === undefined) {
-        throw new HttpException(
+        throw new DataPlaneError(
           `Expected dataAddress in TransferStartMessage`,
           HttpStatus.BAD_REQUEST
-        );
+        ).andLog(this.logger);
       }
       transfer.dataAddress = transferStartMessage.dataAddress;
     }
@@ -299,10 +302,10 @@ export class TransfersService {
   ) {
     const transfer = await this.transferRepository.findOneBy({ id: processId });
     if (!transfer) {
-      throw new HttpException(
+      throw new DataPlaneError(
         `Transfer ${processId} not found`,
         HttpStatus.NOT_FOUND
-      );
+      ).andLog(this.logger);
     }
     transfer.state = TransferState.COMPLETED;
     await this.transferRepository.save(transfer);
@@ -315,10 +318,10 @@ export class TransfersService {
   ) {
     const transfer = await this.transferRepository.findOneBy({ id: processId });
     if (!transfer) {
-      throw new HttpException(
+      throw new DataPlaneError(
         `Transfer ${processId} not found`,
         HttpStatus.NOT_FOUND
-      );
+      ).andLog(this.logger);
     }
     transfer.state = TransferState.TERMINATED;
     await this.transferRepository.save(transfer);
@@ -331,10 +334,10 @@ export class TransfersService {
   ) {
     const transfer = await this.transferRepository.findOneBy({ id: processId });
     if (!transfer) {
-      throw new HttpException(
+      throw new DataPlaneError(
         `Transfer ${processId} not found`,
         HttpStatus.NOT_FOUND
-      );
+      ).andLog(this.logger);
     }
     transfer.state = TransferState.SUSPENDED;
     await this.transferRepository.save(transfer);

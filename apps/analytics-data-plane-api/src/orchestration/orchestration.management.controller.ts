@@ -111,6 +111,7 @@ export class OrchestrationManagementController {
   ) {
     return await this.orchestrationService.spawnJob(
       body.algorithmInstanceId,
+      "manual-spawn",
       body.imageName,
       body.command,
       body.fileId

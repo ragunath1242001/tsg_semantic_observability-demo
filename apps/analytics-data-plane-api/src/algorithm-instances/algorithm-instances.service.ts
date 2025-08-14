@@ -366,6 +366,7 @@ export class AlgorithmInstancesService {
     });
     this.eventEmitter.emit("job.spawn", {
       algorithmInstanceId: algorithmInstance.id,
+      participantId: await this.managementClient.getOwnParticipantId(),
       imageName: algorithmInstance.algorithmDefinition.image,
       command: undefined,
       fileId: undefined
