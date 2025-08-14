@@ -233,16 +233,15 @@ describe("EventsService", () => {
   });
 
   it("should upload event data", async () => {
-    const event = await eventsService.uploadAlgorithmEventData({
+    jest
+      .spyOn(eventsService, "forwardEventDataToParticipant")
+      .mockResolvedValue();
+    await eventsService.uploadAlgorithmEventData({
       algorithmInstanceId: algorithmInstanceId,
       eventId: JOB_ALGORITHM_EVENT_ID,
       eventData: Buffer.from("Test Event Data"),
       authorizationHeader: `Bearer ${eventsAccessToken}`
     });
-
-    expect(event).toBeDefined();
-    expect(event.eventId).toBe(JOB_ALGORITHM_EVENT_ID);
-    expect(event.data).toEqual(Buffer.from("Test Event Data"));
   });
 
   it("should get event data", async () => {
@@ -395,7 +394,9 @@ describe("EventsService", () => {
   });
 
   it("should create an algorithm event from another party", async () => {
+    const ALGORITHM_EVENT_ID_2 = "algorithm-event-2";
     const EVENT_TIMESTAMP = new Date().toISOString();
+    const EVENT_TIMESTAMP_2 = new Date(Date.now() + 1000).toISOString();
     const EVENT_NAME = "Test Event";
     const EVENT_NUMBER = 2;
     const authorizationHeader = `Bearer FAKE_TOKEN`;
@@ -426,6 +427,14 @@ describe("EventsService", () => {
         }
       })
     });
+    await expect(
+      eventsService.pollForAlgorithmEvent(algorithmInstanceId, undefined, 10)
+    ).rejects.toThrow();
+    const pollingListener = eventsService.pollForAlgorithmEvent(
+      algorithmInstanceId,
+      undefined,
+      1000
+    );
     const event = await eventsService.createAlgorithmEvent({
       algorithmInstanceId: algorithmInstanceId,
       authorizationHeader,
@@ -439,5 +448,47 @@ describe("EventsService", () => {
 
     expect(event).toBeDefined();
     expect(event.eventId).toBe(ALGORITHM_EVENT_ID);
+    await expect(pollingListener).resolves.toBeDefined();
+
+    await expect(
+      eventsService.pollForAlgorithmEvent(algorithmInstanceId, undefined, 10)
+    ).resolves.toBeDefined();
+
+    await expect(
+      eventsService.pollForAlgorithmEvent(
+        algorithmInstanceId,
+        `${new Date(Date.now() + 1000).toISOString()}`,
+        10
+      )
+    ).rejects.toThrow();
+    const event2 = await eventsService.createAlgorithmEvent({
+      algorithmInstanceId: algorithmInstanceId,
+      authorizationHeader,
+      createEvent: {
+        eventId: ALGORITHM_EVENT_ID_2,
+        name: EVENT_NAME,
+        number: EVENT_NUMBER + 1,
+        timestamp: EVENT_TIMESTAMP_2
+      }
+    });
+
+    expect(event2).toBeDefined();
+    expect(event2.eventId).toBe(ALGORITHM_EVENT_ID_2);
+
+    const polledEvent = await eventsService.pollForAlgorithmEvent(
+      algorithmInstanceId,
+      undefined,
+      10
+    );
+    expect(polledEvent).toBeDefined();
+    expect(polledEvent.eventId).toBe(ALGORITHM_EVENT_ID);
+
+    const polledEvent2 = await eventsService.pollForAlgorithmEvent(
+      algorithmInstanceId,
+      EVENT_TIMESTAMP,
+      10
+    );
+    expect(polledEvent2).toBeDefined();
+    expect(polledEvent2.eventId).toBe(ALGORITHM_EVENT_ID_2);
   });
 });

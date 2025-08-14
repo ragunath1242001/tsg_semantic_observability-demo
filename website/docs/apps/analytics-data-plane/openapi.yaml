@@ -1296,6 +1296,37 @@ paths:
         "200":
           description: ""
       tags: *a19
+  /api/events/{algorithmInstanceId}/poll:
+    get:
+      description: Long polling endpoint that returns the next available algorithm
+        event for this specific algorithm instance. Supports 'since' query
+        parameter with ISO date format to filter events after that timestamp.
+        Only returns external events (excludes own events).
+      operationId: EventsController_pollForAlgorithmEvent
+      parameters:
+        - name: algorithmInstanceId
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: since
+          required: true
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The next algorithm event has been found
+        "204":
+          description: No event within longpolling window
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      summary: Poll for the next available algorithm event for this algorithm instance
+      tags: *a19
   /api/events/{algorithmInstanceId}:
     get:
       description: Retrieves all algorithm and internal events for the specified

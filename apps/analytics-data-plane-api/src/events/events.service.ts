@@ -1,4 +1,5 @@
-import { HttpStatus, Injectable, Logger } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable, Logger } from "@nestjs/common";
+import { EventEmitter2 } from "@nestjs/event-emitter";
 import { InjectRepository } from "@nestjs/typeorm";
 import {
   AlgorithmEventDto,
@@ -9,7 +10,7 @@ import {
 import { parseNetworkError } from "@tsg-dsp/common-api";
 import axios from "axios";
 import crypto from "crypto";
-import { Repository } from "typeorm";
+import { MoreThan, Repository } from "typeorm";
 
 import { AlgorithmInstanceDao } from "../algorithm-instances/algorithm-instance.dao.js";
 import { AlgorithmInstancesService } from "../algorithm-instances/algorithm-instances.service.js";
@@ -28,6 +29,7 @@ export class EventsService {
     private readonly transfersService: TransfersService,
     private readonly managementClient: ManagementClient,
     private readonly algorithmInstancesService: AlgorithmInstancesService,
+    private readonly eventEmitter: EventEmitter2,
     @InjectRepository(AlgorithmEventDao)
     private readonly algorithmEventsRepository: Repository<AlgorithmEventDao>,
     @InjectRepository(InternalEventDao)
@@ -52,9 +54,7 @@ export class EventsService {
       ...createInternalEvent
     });
 
-    await this.internalEventsRepository.save(event);
-
-    return event;
+    return await this.internalEventsRepository.save(event);
   }
 
   async createOwnAlgorithmEvent({
@@ -237,7 +237,7 @@ export class EventsService {
       isOwnEvent = false;
       createdBy = transfer.remoteParty;
     }
-    return await this.algorithmEventsRepository.save({
+    const savedEvent = await this.algorithmEventsRepository.save({
       id: `urn:uuid:${crypto.randomUUID()}`,
       eventId: createEvent.eventId,
       algorithmInstance: algorithmInstance,
@@ -249,6 +249,12 @@ export class EventsService {
       transferIds: transferIds,
       recipients: createEvent.recipients
     });
+
+    if (!isOwnEvent) {
+      this.eventEmitter.emit(`event.created.${algorithmInstanceId}`);
+    }
+
+    return savedEvent;
   }
 
   async uploadAlgorithmEventData({
@@ -259,18 +265,73 @@ export class EventsService {
   }: {
     algorithmInstanceId: string;
     eventId: string;
-    eventData: Buffer;
+    eventData?: Buffer;
     authorizationHeader?: string;
   }) {
-    const token = parseToken(authorizationHeader);
-    await this.algorithmInstancesService.validateAccessToken(
-      algorithmInstanceId,
-      token
-    );
-
+    if (!eventData) {
+      throw new DataPlaneError(
+        `No data provided for algorithm event ${eventId}`,
+        HttpStatus.BAD_REQUEST
+      ).andLog(this.logger);
+    }
+    const algorithmInstance =
+      await this.algorithmInstancesService.getAlgorithmInstance(
+        algorithmInstanceId
+      );
     const event = await this.getAlgorithmEvent(algorithmInstanceId, eventId);
-    event.data = eventData;
-    return await this.algorithmEventsRepository.save(event);
+
+    const token = parseToken(authorizationHeader);
+
+    if (event.isOwnEvent) {
+      // If no transfer for secret, try internal events token
+      await this.algorithmInstancesService.validateAccessToken(
+        algorithmInstanceId,
+        token
+      );
+      event.data = eventData;
+      await Promise.all(
+        event.recipients?.map(async (recipient) => {
+          const recipientTransfer = algorithmInstance.transfers.find(
+            (transfer) =>
+              transfer.remoteParty === recipient && transfer.role === "consumer"
+          );
+          if (recipientTransfer) {
+            await this.forwardEventDataToParticipant(
+              recipientTransfer,
+              algorithmInstanceId,
+              eventId,
+              eventData
+            );
+          }
+        }) ?? []
+      );
+      await this.algorithmEventsRepository.save(event);
+    } else {
+      const transfer = await this.transfersService.getTransferBySecret(token);
+
+      if (
+        transfer &&
+        algorithmInstance.transfers.some((t) => t.id === transfer.id)
+      ) {
+        const event = await this.getAlgorithmEvent(
+          algorithmInstanceId,
+          eventId
+        );
+        if (event.createdBy !== transfer.remoteParty) {
+          throw new DataPlaneError(
+            `Unauthorized access to algorithm event ${eventId}`,
+            HttpStatus.FORBIDDEN
+          ).andLog(this.logger);
+        }
+        event.data = eventData;
+        await this.algorithmEventsRepository.save(event);
+      } else {
+        throw new DataPlaneError(
+          `No transfer found or not linked to the algorithm instance`,
+          HttpStatus.FORBIDDEN
+        ).andLog(this.logger);
+      }
+    }
   }
 
   async getEventData({
@@ -290,7 +351,12 @@ export class EventsService {
 
     const token = parseToken(authorizationHeader);
 
-    if (event.isOwnEvent) {
+    if (
+      this.algorithmInstancesService.isValidJobAccessToken(
+        token,
+        algorithmInstanceId
+      )
+    ) {
       // If no transfer for secret, try internal events token
       await this.algorithmInstancesService.validateAccessToken(
         algorithmInstanceId,
@@ -367,6 +433,75 @@ export class EventsService {
     };
   }
 
+  async pollForAlgorithmEvent(
+    algorithmInstanceId: string,
+    since?: string,
+    longPollingInterval: number = 27500
+  ): Promise<AlgorithmEventDto> {
+    const sinceDate = since ? new Date(since) : undefined;
+
+    await this.algorithmInstancesService.getAlgorithmInstance(
+      algorithmInstanceId
+    );
+
+    const existingEvent = await this.findNextAlgorithmEvent(
+      algorithmInstanceId,
+      sinceDate
+    );
+    if (existingEvent) {
+      return existingEvent;
+    }
+
+    try {
+      await this.eventEmitter.waitFor(
+        `event.created.${algorithmInstanceId}`,
+        longPollingInterval
+      );
+    } catch {
+      throw new HttpException("", HttpStatus.NO_CONTENT);
+    }
+
+    const newEvent = await this.findNextAlgorithmEvent(
+      algorithmInstanceId,
+      sinceDate
+    );
+    if (newEvent) {
+      return newEvent;
+    }
+
+    throw new HttpException("", HttpStatus.NO_CONTENT);
+  }
+
+  private async findNextAlgorithmEvent(
+    algorithmInstanceId: string,
+    since?: Date
+  ): Promise<AlgorithmEventDto | null> {
+    const event = await this.algorithmEventsRepository.findOne({
+      where: {
+        algorithmInstance: { id: algorithmInstanceId },
+        isOwnEvent: false,
+        ...(since && { timestamp: MoreThan(since) })
+      },
+      order: { timestamp: "ASC" }
+    });
+
+    if (!event) {
+      return null;
+    }
+
+    return {
+      id: event.id,
+      eventId: event.eventId,
+      algorithmInstanceId: algorithmInstanceId,
+      name: event.name,
+      number: event.number,
+      timestamp: event.timestamp,
+      createdBy: event.createdBy,
+      transferIds: event.transferIds,
+      recipients: event.recipients
+    };
+  }
+
   /**
    * Forward an event to a specific participant via their transfer endpoint
    */
@@ -377,7 +512,10 @@ export class EventsService {
   ): Promise<void> {
     try {
       if (!transfer.dataAddress || !transfer.dataAddress.endpoint) {
-        throw new Error(`No endpoint found for transfer ${transfer.id}`);
+        throw new DataPlaneError(
+          `No endpoint found for transfer ${transfer.id}`,
+          HttpStatus.INTERNAL_SERVER_ERROR
+        ).andLog(this.logger);
       }
 
       const targetEndpoint = `${transfer.dataAddress.endpoint}/events/${algorithmInstanceId}/algorithm-event`;
@@ -399,6 +537,43 @@ export class EventsService {
       throw parseNetworkError(
         error,
         `forwarding event ${createEvent.eventId} to participant ${transfer.remoteParty}`
+      ).andLog(this.logger);
+    }
+  }
+
+  async forwardEventDataToParticipant(
+    transfer: TransferDao,
+    algorithmInstanceId: string,
+    eventId: string,
+    eventData: Buffer
+  ): Promise<void> {
+    try {
+      if (!transfer.dataAddress || !transfer.dataAddress.endpoint) {
+        throw new DataPlaneError(
+          `No endpoint found for transfer ${transfer.id}`,
+          HttpStatus.INTERNAL_SERVER_ERROR
+        ).andLog(this.logger);
+      }
+
+      const targetEndpoint = `${transfer.dataAddress.endpoint}/events/${algorithmInstanceId}/upload/${eventId}`;
+
+      this.logger.log(
+        `Forwarding event data to ${transfer.remoteParty} at ${targetEndpoint}`
+      );
+
+      const response = await axios.post(
+        targetEndpoint,
+        eventData,
+        getAxiosConfigFromDataAddress(transfer)
+      );
+
+      this.logger.log(
+        `Successfully forwarded event data to ${transfer.remoteParty}. Response status: ${response.status}`
+      );
+    } catch (error) {
+      throw parseNetworkError(
+        error,
+        `forwarding event data to participant ${transfer.remoteParty}`
       ).andLog(this.logger);
     }
   }

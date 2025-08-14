@@ -1,10 +1,12 @@
 import {
+  AppsV1Api,
   BatchV1Api,
   CoreV1Api,
   KubeConfig,
   Log,
   V1EnvVar,
   V1Job,
+  V1OwnerReference,
   V1Volume,
   V1VolumeMount
 } from "@kubernetes/client-node";
@@ -22,6 +24,7 @@ import { DataPlaneError } from "../utils/errors/error.js";
 export class OrchestrationService {
   private readonly batchV1Api: BatchV1Api;
   private readonly coreV1Api: CoreV1Api;
+  private readonly appsV1Api: AppsV1Api;
   private kubeConfig: KubeConfig;
   private containerName: string;
 
@@ -37,6 +40,7 @@ export class OrchestrationService {
       this.kubeConfig.loadFromDefault();
       this.coreV1Api = this.kubeConfig.makeApiClient(CoreV1Api);
       this.batchV1Api = this.kubeConfig.makeApiClient(BatchV1Api);
+      this.appsV1Api = this.kubeConfig.makeApiClient(AppsV1Api);
       this.logger.debug("KubeConfig loaded successfully");
     } catch (error) {
       this.logger.error("Failed to load kubeconfig", error);
@@ -45,6 +49,8 @@ export class OrchestrationService {
   }
   private readonly logger = new Logger(this.constructor.name);
 
+  private deploymentOwnerRef: V1OwnerReference | null = null;
+
   async getJobsForAlgorithmInstance(
     algorithmInstanceId: string
   ): Promise<V1Job[]> {
@@ -52,7 +58,7 @@ export class OrchestrationService {
 
     const jobList = await this.batchV1Api.listNamespacedJob({
       namespace,
-      labelSelector: `algorithmInstanceId=${algorithmInstanceId}`
+      labelSelector: `adp.tsg.app/algorithm-instance-id=${algorithmInstanceId}`
     });
 
     return jobList.items;
@@ -61,26 +67,37 @@ export class OrchestrationService {
   @OnEvent("job.spawn")
   async handleJobSpawnEvent(event: {
     algorithmInstanceId: string;
+    participantId: string;
     imageName: string;
     command?: string[];
     fileId?: string;
   }) {
-    const { algorithmInstanceId, imageName, command, fileId } = event;
+    const { algorithmInstanceId, participantId, imageName, command, fileId } =
+      event;
 
     this.logger.log(
       `Spawning job for algorithm instance ${algorithmInstanceId} with image ${imageName}`
     );
 
-    return await this.spawnJob(algorithmInstanceId, imageName, command, fileId);
+    return await this.spawnJob(
+      algorithmInstanceId,
+      participantId,
+      imageName,
+      command,
+      fileId
+    );
   }
 
   async spawnJob(
     algorithmInstanceId: string,
+    participantId: string,
     imageName: string,
     command?: string[],
     fileId?: string
   ) {
-    const jobName = `adp-job-${algorithmInstanceId}-${new Date().getTime()}`;
+    const time = new Date().getTime();
+    const jobName = `adp-job-${algorithmInstanceId}-${time}`;
+    const configMapName = `adp-config-${algorithmInstanceId}-${time}`;
     const namespace = this.config.kubernetesConfig.namespace;
 
     // Get the algorithm instance to retrieve participant information
@@ -97,11 +114,16 @@ export class OrchestrationService {
         algorithmInstanceId
       );
 
+    // Store ConfigMap data for later creation
+    const algorithmInstanceData = {
+      id: algorithmInstance.id,
+      algorithmDefinition: algorithmInstance.algorithmDefinition,
+      participants: algorithmInstance.participants,
+      createdDate: algorithmInstance.createdDate,
+      status: algorithmInstance.status
+    };
+
     const env: V1EnvVar[] = [
-      {
-        name: "ALGORITHM_INSTANCE_ID",
-        value: algorithmInstanceId
-      },
       {
         name: "CALLBACK_URL",
         value: localDataPlaneAddress
@@ -111,15 +133,30 @@ export class OrchestrationService {
         value: eventsAccessToken
       },
       {
-        name: "PARTICIPANTS",
-        value: JSON.stringify(
-          algorithmInstance.participants.map((p) => p.didId)
-        )
+        name: "PARTICIPANT_ID",
+        value: participantId
+      },
+      {
+        name: "ALGORITHM_INSTANCE_FILE",
+        value: "/config/algorithm-instance.json"
       }
     ];
 
-    const volumeMounts: V1VolumeMount[] = [];
-    const volumes: V1Volume[] = [];
+    const volumeMounts: V1VolumeMount[] = [
+      {
+        mountPath: "/config",
+        name: "algorithm-instance-config",
+        readOnly: true
+      }
+    ];
+    const volumes: V1Volume[] = [
+      {
+        name: "algorithm-instance-config",
+        configMap: {
+          name: configMapName
+        }
+      }
+    ];
     if (fileId) {
       const fileMetadata = await this.filesService.getFileMetadata(fileId);
       if (!fileMetadata) {
@@ -173,12 +210,22 @@ export class OrchestrationService {
     const finalCommand =
       validCommand && validCommand.length > 0 ? validCommand : undefined;
 
+    // Get deployment information for ownerReference
+    const deploymentOwnerRef = await this.getDeploymentOwnerReference();
+
     const jobManifest: V1Job = {
       apiVersion: "batch/v1",
       kind: "Job",
       metadata: {
         name: jobName,
-        namespace
+        namespace,
+        labels: {
+          "adp.tsg.app/component": "analytics-job",
+          "adp.tsg.app/algorithm-instance-id": algorithmInstanceId
+        },
+        ...(deploymentOwnerRef && {
+          ownerReferences: [deploymentOwnerRef]
+        })
       },
       spec: {
         backoffLimit: 3,
@@ -186,7 +233,9 @@ export class OrchestrationService {
           metadata: {
             labels: {
               app: jobName,
-              algorithmInstanceId
+              algorithmInstanceId,
+              "adp.tsg.app/component": "analytics-job",
+              "adp.tsg.app/algorithm-instance-id": algorithmInstanceId
             }
           },
           spec: {
@@ -206,9 +255,50 @@ export class OrchestrationService {
       }
     };
 
-    await this.batchV1Api.createNamespacedJob({
+    // Create the job first to get its UID for ownerReferences
+    const createdJob = await this.batchV1Api.createNamespacedJob({
       namespace,
       body: jobManifest
+    });
+
+    const jobUid = createdJob.metadata?.uid;
+    if (!jobUid) {
+      throw new Error("Failed to get job UID for ConfigMap ownerReference");
+    }
+
+    // Create ConfigMap with ownerReferences to the job for automatic cleanup
+    await this.coreV1Api.createNamespacedConfigMap({
+      namespace,
+      body: {
+        apiVersion: "v1",
+        kind: "ConfigMap",
+        metadata: {
+          name: configMapName,
+          namespace,
+          labels: {
+            "adp.tsg.app/component": "analytics-job-config",
+            "adp.tsg.app/algorithm-instance-id": algorithmInstanceId,
+            "adp.tsg.app/job-name": jobName
+          },
+          ownerReferences: [
+            {
+              apiVersion: "batch/v1",
+              kind: "Job",
+              name: jobName,
+              uid: jobUid,
+              controller: true,
+              blockOwnerDeletion: true
+            }
+          ]
+        },
+        data: {
+          "algorithm-instance.json": JSON.stringify(
+            algorithmInstanceData,
+            null,
+            2
+          )
+        }
+      }
     });
 
     return {
@@ -260,7 +350,7 @@ export class OrchestrationService {
     };
 
     const write = (
-      chunk: any,
+      chunk: Buffer | string,
       _encoding: BufferEncoding,
       callback: (error?: Error | null) => void
     ) => {
@@ -285,5 +375,81 @@ export class OrchestrationService {
       this.logger.log(`Log stream for pod ${podName} finished.`);
     });
     return logStreamWritable;
+  }
+
+  private async getDeploymentOwnerReference(): Promise<V1OwnerReference | null> {
+    if (this.deploymentOwnerRef) {
+      return this.deploymentOwnerRef;
+    }
+
+    try {
+      const namespace = this.config.kubernetesConfig.namespace;
+      const podName = process.env["HOSTNAME"]; // Kubernetes sets this to the pod name
+
+      if (!podName) {
+        this.logger.warn(
+          "Could not determine current pod name - jobs will not have deployment owner reference"
+        );
+        return null;
+      }
+
+      // Get current pod information
+      const currentPod = await this.coreV1Api.readNamespacedPod({
+        name: podName,
+        namespace
+      });
+
+      // Find the ReplicaSet owner reference
+      const replicaSetOwnerRef = currentPod.metadata?.ownerReferences?.find(
+        (owner) => owner.kind === "ReplicaSet"
+      );
+
+      if (!replicaSetOwnerRef) {
+        this.logger.warn(
+          "Current pod has no ReplicaSet owner - jobs will not have deployment owner reference"
+        );
+        return null;
+      }
+
+      // Get the ReplicaSet to find its Deployment owner
+      // TODO: Fix if not allowed
+      const replicaSet = await this.appsV1Api.readNamespacedReplicaSet({
+        name: replicaSetOwnerRef.name,
+        namespace
+      });
+
+      // Find the Deployment owner reference
+      const deploymentOwnerRef = replicaSet.metadata?.ownerReferences?.find(
+        (owner) => owner.kind === "Deployment"
+      );
+
+      if (!deploymentOwnerRef) {
+        this.logger.warn(
+          "ReplicaSet has no Deployment owner - jobs will not have deployment owner reference"
+        );
+        return null;
+      }
+
+      // Cache the result
+      this.deploymentOwnerRef = {
+        apiVersion: deploymentOwnerRef.apiVersion,
+        kind: deploymentOwnerRef.kind,
+        name: deploymentOwnerRef.name,
+        uid: deploymentOwnerRef.uid,
+        controller: false, // Jobs should not be controlled by the deployment directly
+        blockOwnerDeletion: false // Allow deployment deletion even if jobs exist
+      };
+
+      this.logger.debug(
+        `Found deployment owner reference: ${deploymentOwnerRef.name}`
+      );
+      return this.deploymentOwnerRef;
+    } catch (error) {
+      this.logger.warn(
+        "Failed to get deployment owner reference - jobs will not have deployment owner",
+        error
+      );
+      return null;
+    }
   }
 }
