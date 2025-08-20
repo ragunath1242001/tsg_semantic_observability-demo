@@ -30,6 +30,7 @@ import {
 } from "@tsg-dsp/common-api";
 import { ApiForbiddenResponseDefault } from "@tsg-dsp/common-dtos";
 import { Request, Response } from "express";
+import getRawBody from "raw-body";
 
 import { EventsService } from "./events.service.js";
 
@@ -105,9 +106,16 @@ export class EventsController {
     @Req() req: RawBodyRequest<Request>,
     @Headers("Authorization") authorizationHeader?: string
   ) {
+    let eventData = req.rawBody;
+    if (!eventData) {
+      eventData = await getRawBody(req, {
+        length: req.headers["content-length"],
+        limit: "1024mb"
+      });
+    }
     await this.eventsService.uploadAlgorithmEventData({
       algorithmInstanceId,
-      eventData: req.rawBody,
+      eventData,
       eventId,
       authorizationHeader
     });

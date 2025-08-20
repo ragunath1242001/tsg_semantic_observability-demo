@@ -35,6 +35,12 @@ describe("FilesService", () => {
             },
             async updateDatasets() {
               return {};
+            },
+            async addDataset() {
+              return {};
+            },
+            async deleteDataset() {
+              return {};
             }
           }
         },
@@ -71,8 +77,18 @@ describe("FilesService", () => {
   describe("uploadFiles", () => {
     it("should create and insert file metadata entries", async () => {
       const mockFiles = [
-        { size: 1000, filename: "file1.txt", originalname: "file1.txt" },
-        { size: 2000, filename: "file2.txt", originalname: "file2.txt" }
+        {
+          size: 1000,
+          filename: "file1.txt",
+          originalname: "file1.txt",
+          mimetype: "text/plain"
+        },
+        {
+          size: 2000,
+          filename: "file2.txt",
+          originalname: "file2.txt",
+          mimetype: "text/plain"
+        }
       ] as Express.Multer.File[];
 
       await filesService.uploadFiles(mockFiles);
@@ -90,8 +106,18 @@ describe("FilesService", () => {
     it("should mark missing files as not present", async () => {
       // Step 1: Upload initial files and verify they are in the database
       const mockFiles = [
-        { size: 1000, filename: "file1.txt", originalname: "file1.txt" },
-        { size: 2000, filename: "file2.txt", originalname: "file2.txt" }
+        {
+          size: 1000,
+          filename: "file1.txt",
+          originalname: "file1.txt",
+          mimetype: "text/plain"
+        },
+        {
+          size: 2000,
+          filename: "file2.txt",
+          originalname: "file2.txt",
+          mimetype: "text/plain"
+        }
       ] as Express.Multer.File[];
       await filesService.uploadFiles(mockFiles);
 
@@ -141,13 +167,46 @@ describe("FilesService", () => {
       ]);
       await fs.rm(path.join(testUploadDir, mockFile.filename));
     });
+    it("should process a CSV file and return its first 10 lines", async () => {
+      const mockFile = { filename: "test.csv" } as Express.Multer.File;
+      const mockContent =
+        "col1,col2\nval1,val2\nval3,val4\nval5,val6\nval7,val8\nval9,val10\nval11,val12\nval13,val14\nval15,val16\nval17,val18\nval19,val20\nval21,val22";
+      await fs.writeFile(
+        path.join(testUploadDir, mockFile.filename),
+        mockContent
+      );
+      const records = await filesService.processFile(mockFile);
+      expect(records).toEqual([
+        ["col1", "col2"],
+        ["val1", "val2"],
+        ["val3", "val4"],
+        ["val5", "val6"],
+        ["val7", "val8"],
+        ["val9", "val10"],
+        ["val11", "val12"],
+        ["val13", "val14"],
+        ["val15", "val16"],
+        ["val17", "val18"]
+      ]);
+      await fs.rm(path.join(testUploadDir, mockFile.filename));
+    });
   });
 
   describe("createMetadata", () => {
     it("should create metadata for uploaded files", async () => {
       const mockFiles = [
-        { size: 1000, filename: "file1.csv", originalname: "file1.csv" },
-        { size: 2000, filename: "file2.csv", originalname: "file2.csv" }
+        {
+          size: 1000,
+          filename: "file1.csv",
+          originalname: "file1.csv",
+          mimetype: "text/csv"
+        },
+        {
+          size: 2000,
+          filename: "file2.csv",
+          originalname: "file2.csv",
+          mimetype: "text/csv"
+        }
       ] as Express.Multer.File[];
 
       const mockContent = "col1,col2\nval1,val2\nval3,val4";
@@ -165,14 +224,31 @@ describe("FilesService", () => {
       expect(savedFiles.length).toBe(2);
       expect(savedFiles[0].csvw).toBeDefined();
       expect(savedFiles[1].csvw).toBeDefined();
+
+      expect(
+        await filesService.getFileByDatasetId(savedFiles[0].datasetId!)
+      ).toEqual(savedFiles[0]);
+      expect(
+        await filesService.getFileByDatasetId(savedFiles[1].datasetId!)
+      ).toEqual(savedFiles[1]);
     });
   });
 
   describe("getFileMetadata", () => {
     it("should return metadata for a given file identifier", async () => {
       const mockFiles = [
-        { size: 1000, filename: "file1.csv", originalname: "file1.csv" },
-        { size: 2000, filename: "file2.csv", originalname: "file2.csv" }
+        {
+          size: 1000,
+          filename: "file1.csv",
+          originalname: "file1.csv",
+          mimetype: "text/csv"
+        },
+        {
+          size: 2000,
+          filename: "file2.csv",
+          originalname: "file2.csv",
+          mimetype: "text/csv"
+        }
       ] as Express.Multer.File[];
 
       const mockContent = "col1,col2\nval1,val2\nval3,val4";
@@ -207,8 +283,18 @@ describe("FilesService", () => {
   describe("createAccessToken", () => {
     it("should create an access token for a given file identifier", async () => {
       const mockFiles = [
-        { size: 1000, filename: "file1.csv", originalname: "file1.csv" },
-        { size: 2000, filename: "file2.csv", originalname: "file2.csv" }
+        {
+          size: 1000,
+          filename: "file1.csv",
+          originalname: "file1.csv",
+          mimetype: "text/csv"
+        },
+        {
+          size: 2000,
+          filename: "file2.csv",
+          originalname: "file2.csv",
+          mimetype: "text/csv"
+        }
       ] as Express.Multer.File[];
       const mockContent = "col1,col2\nval1,val2\nval3,val4";
       mockFiles.forEach(async (mockFile) => {
@@ -236,8 +322,18 @@ describe("FilesService", () => {
   describe("getFile", () => {
     it("should return the file path for a given identifier", async () => {
       const mockFiles = [
-        { size: 1000, filename: "file1.csv", originalname: "file1.csv" },
-        { size: 2000, filename: "file2.csv", originalname: "file2.csv" }
+        {
+          size: 1000,
+          filename: "file1.csv",
+          originalname: "file1.csv",
+          mimetype: "text/csv"
+        },
+        {
+          size: 2000,
+          filename: "file2.csv",
+          originalname: "file2.csv",
+          mimetype: "text/csv"
+        }
       ] as Express.Multer.File[];
 
       const mockContent = "col1,col2\nval1,val2\nval3,val4";
@@ -268,7 +364,12 @@ describe("FilesService", () => {
     });
     it("should throw an error if access token is missing", async () => {
       const mockFiles = [
-        { size: 1000, filename: "file1.csv", originalname: "file1.csv" }
+        {
+          size: 1000,
+          filename: "file1.csv",
+          originalname: "file1.csv",
+          mimetype: "text/csv"
+        }
       ] as Express.Multer.File[];
       const mockContent = "col1,col2\nval1,val2\nval3,val4";
       mockFiles.forEach(async (mockFile) => {
@@ -291,7 +392,12 @@ describe("FilesService", () => {
     });
     it("should throw an error if access token is invalid", async () => {
       const mockFiles = [
-        { size: 1000, filename: "file1.csv", originalname: "file1.csv" }
+        {
+          size: 1000,
+          filename: "file1.csv",
+          originalname: "file1.csv",
+          mimetype: "text/csv"
+        }
       ] as Express.Multer.File[];
       const mockContent = "col1,col2\nval1,val2\nval3,val4";
       mockFiles.forEach(async (mockFile) => {
@@ -315,7 +421,8 @@ describe("FilesService", () => {
       const mockFile = {
         filename: "test.csv",
         originalname: "test.csv",
-        size: 1000
+        size: 1000,
+        mimetype: "text/csv"
       } as Express.Multer.File;
       const mockContent = "col1,col2\nval1,val2\nval3,val4";
       await fs.writeFile(
@@ -341,7 +448,8 @@ describe("FilesService", () => {
       const mockFile = {
         filename: "test.csv",
         originalname: "test.csv",
-        size: 1000
+        size: 1000,
+        mimetype: "text/csv"
       } as Express.Multer.File;
       await filesService.uploadFiles([mockFile]);
       const dbEntry = await filesService.getAllFileMetadata();
@@ -349,6 +457,76 @@ describe("FilesService", () => {
       await expect(filesService.getCSVW(dbEntry[0].identifier)).rejects.toThrow(
         "CSVW not found"
       );
+    });
+  });
+
+  describe("removeFile", () => {
+    it("should handle removal of files in normal operation", async () => {
+      const mockFile = {
+        filename: "test.csv",
+        originalname: "test.csv",
+        size: 1000,
+        mimetype: "text/csv"
+      } as Express.Multer.File;
+      await fs.writeFile(
+        path.join(testUploadDir, mockFile.filename),
+        "col1,col2\nval1,val2\nval3,val4"
+      );
+      await filesService.uploadFiles([mockFile]);
+      const dbEntry = await filesService.getAllFileMetadata();
+
+      await expect(
+        filesService.removeFile(dbEntry[0].identifier)
+      ).resolves.toBeUndefined();
+      await expect(
+        filesService.removeFile(dbEntry[0].identifier)
+      ).rejects.toThrow("File not found");
+      await expect(
+        fs.access(path.join(testUploadDir, mockFile.filename))
+      ).rejects.toThrow();
+    });
+    it("should handle removal of files when backing file is already removed", async () => {
+      const mockFile = {
+        filename: "test.csv",
+        originalname: "test.csv",
+        size: 1000,
+        mimetype: "text/csv"
+      } as Express.Multer.File;
+      await fs.writeFile(
+        path.join(testUploadDir, mockFile.filename),
+        "col1,col2\nval1,val2\nval3,val4"
+      );
+      await filesService.uploadFiles([mockFile]);
+      await filesService.createMetadata([mockFile]);
+      const dbEntry = await filesService.getAllFileMetadata();
+
+      await expect(
+        filesService.removeFile(dbEntry[0].identifier)
+      ).resolves.toBeUndefined();
+      await expect(
+        filesService.removeFile(dbEntry[0].identifier)
+      ).rejects.toThrow("File not found");
+    });
+    it("should handle removal of files when no dataset is created", async () => {
+      const mockFile = {
+        filename: "test.csv",
+        originalname: "test.csv",
+        size: 1000,
+        mimetype: "text/csv"
+      } as Express.Multer.File;
+      await fs.writeFile(
+        path.join(testUploadDir, mockFile.filename),
+        "col1,col2\nval1,val2\nval3,val4"
+      );
+      await filesService.uploadFiles([mockFile]);
+      const dbEntry = await filesService.getAllFileMetadata();
+      await fs.rm(path.join(testUploadDir, mockFile.filename));
+      await expect(
+        filesService.removeFile(dbEntry[0].identifier)
+      ).resolves.toBeUndefined();
+      await expect(
+        filesService.removeFile(dbEntry[0].identifier)
+      ).rejects.toThrow("File not found");
     });
   });
 });

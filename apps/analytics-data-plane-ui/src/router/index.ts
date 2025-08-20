@@ -5,7 +5,6 @@ import AppLayout from "@/layout/AppLayoutAnalyticsDataPlane.vue";
 
 import Dashboard from "../views/Dashboard.vue";
 import Files from "../views/Files.vue";
-import FilesUpload from "../views/FilesUpload.vue";
 import AlgorithmInstances from "../views/instances/AlgorithmInstances.vue";
 import CreateAlgorithmInstance from "../views/instances/CreateAlgorithmInstance.vue";
 import InstanceDetails from "../views/instances/InstanceDetails.vue";
@@ -61,11 +60,6 @@ const router = createRouter({
           path: "/jobdebug",
           name: "job-debug",
           component: JobDebug
-        },
-        {
-          path: "/files/upload",
-          name: "fileUpload",
-          component: FilesUpload
         },
         {
           path: "/provider/:id",

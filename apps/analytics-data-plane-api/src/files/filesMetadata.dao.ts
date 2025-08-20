@@ -16,10 +16,16 @@ export class FileMetadataDao {
   @Column({ type: String })
   originalFileName!: string;
 
+  @Column({ type: String })
+  mediaType!: string;
+
   @Column({ type: Boolean })
   presentInLastCheck!: boolean;
 
   @Column({ type: "simple-json", nullable: true })
   @IsOptional()
   csvw?: CSVW;
+
+  @Column({ type: String, nullable: true })
+  datasetId?: string;
 }

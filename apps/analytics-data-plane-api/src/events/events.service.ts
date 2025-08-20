@@ -347,7 +347,16 @@ export class EventsService {
       await this.algorithmInstancesService.getAlgorithmInstance(
         algorithmInstanceId
       );
-    const event = await this.getAlgorithmEvent(algorithmInstanceId, eventId);
+    const event = await this.algorithmEventsRepository.findOne({
+      where: { eventId, algorithmInstance: { id: algorithmInstanceId } },
+      select: ["id", "data"]
+    });
+    if (!event || !event.data) {
+      throw new DataPlaneError(
+        `Algorithm event with ID ${eventId} not found or no data available`,
+        HttpStatus.NOT_FOUND
+      ).andLog(this.logger);
+    }
 
     const token = parseToken(authorizationHeader);
 
@@ -375,9 +384,9 @@ export class EventsService {
     }
   }
 
-  async getAlgorithmEvent(analyisId: string, eventId: string) {
+  async getAlgorithmEvent(algorithmInstanceId: string, eventId: string) {
     const event = await this.algorithmEventsRepository.findOne({
-      where: { eventId, algorithmInstance: { id: analyisId } }
+      where: { eventId, algorithmInstance: { id: algorithmInstanceId } }
     });
 
     if (!event) {
@@ -561,11 +570,12 @@ export class EventsService {
         `Forwarding event data to ${transfer.remoteParty} at ${targetEndpoint}`
       );
 
-      const response = await axios.post(
-        targetEndpoint,
-        eventData,
-        getAxiosConfigFromDataAddress(transfer)
-      );
+      const response = await axios.post(targetEndpoint, eventData, {
+        headers: {
+          ...getAxiosConfigFromDataAddress(transfer).headers,
+          "Content-Type": "application/octet-stream"
+        }
+      });
 
       this.logger.log(
         `Successfully forwarded event data to ${transfer.remoteParty}. Response status: ${response.status}`

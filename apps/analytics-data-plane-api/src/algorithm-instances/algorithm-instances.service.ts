@@ -364,12 +364,17 @@ export class AlgorithmInstancesService {
       startedAt: new Date(),
       status: "running"
     });
+    const ownParticipantId = await this.managementClient.getOwnParticipantId();
+    const participant = algorithmInstance.participants.find(
+      (p) => p.didId === ownParticipantId
+    );
+
     this.eventEmitter.emit("job.spawn", {
       algorithmInstanceId: algorithmInstance.id,
       participantId: await this.managementClient.getOwnParticipantId(),
       imageName: algorithmInstance.algorithmDefinition.image,
       command: undefined,
-      fileId: undefined
+      datasetId: participant?.dataset
     });
   }
 }

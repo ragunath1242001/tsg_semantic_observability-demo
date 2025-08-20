@@ -2,13 +2,7 @@ import { HttpStatus, Injectable, Logger, StreamableFile } from "@nestjs/common";
 import { Cron, CronExpression } from "@nestjs/schedule";
 import { InjectRepository } from "@nestjs/typeorm";
 import { CSVW } from "@tsg-dsp/analytics-data-plane-dtos";
-import {
-  Dataset,
-  DatasetDto,
-  Distribution,
-  Offer,
-  Permission
-} from "@tsg-dsp/common-dsp";
+import { Dataset, Distribution, Offer, Permission } from "@tsg-dsp/common-dsp";
 import { randomBytes } from "crypto";
 import { parse } from "csv-parse";
 import fs, { createReadStream } from "fs";
@@ -46,6 +40,12 @@ export class FilesService {
       throw new DataPlaneError("File not found", HttpStatus.NOT_FOUND);
     }
     return file;
+  }
+
+  async getFileByDatasetId(datasetId: string): Promise<FileMetadataDao | null> {
+    return this.fileRepository.findOneBy({
+      datasetId: datasetId
+    });
   }
 
   async getFile(
@@ -105,7 +105,7 @@ export class FilesService {
     const records: any[] = [];
     const parser = fs
       .createReadStream(this.filesConfig.path + "/" + file.filename)
-      .pipe(parse({ delimiter: "," }));
+      .pipe(parse({ delimiter: ",", to_line: 10 }));
     parser.on("readable", () => {
       let record;
       while ((record = parser.read()) !== null) {
@@ -144,48 +144,70 @@ export class FilesService {
   }
 
   async createMetadata(files: Array<Express.Multer.File>) {
-    const datasets: DatasetDto[] = [];
     await Promise.all(
       files.map(async (file: Express.Multer.File) => {
         const dbentry = await this.fileRepository.findOneBy({
           fileName: file.filename
         });
         if (!dbentry) {
-          throw Error("File not found in database");
+          throw new DataPlaneError(
+            "File not found in database",
+            HttpStatus.NOT_FOUND
+          );
         }
-        const csvwurl = await this.createCSVW(file, dbentry);
+        const conformsTo: string[] = [];
+        if (file.mimetype === "text/csv") {
+          try {
+            const csvwUrl = await this.createCSVW(file, dbentry);
+            conformsTo.push(csvwUrl);
+          } catch (error) {
+            this.logger.debug(
+              `Error creating CSVW, probably not a CSV file: ${file.filename} -> ${error instanceof Error ? error.message : error}`
+            );
+          }
+        }
         const catalog = await this.dataplaneService.getControlPlaneCatalog();
-
-        datasets.push(
-          new Dataset({
-            distribution: [
-              new Distribution({
-                byteSize: `${file.size}`,
-                conformsTo: [csvwurl],
-                title: file.filename,
-                issued: new Date().toISOString(),
-                format: "text/csv",
-                mediaType: "text/csv",
-                description: [`CSV file ${file.filename}`]
-              })
-            ],
-            title: file.filename,
-            identifier: dbentry.identifier,
-            hasPolicy: [
-              new Offer({
-                assigner: catalog.publisher as string,
-                permission: [
-                  new Permission({
-                    action: "odrl:use"
-                  })
-                ]
-              })
-            ]
-          }).serialize()
-        );
+        const datasetId =
+          dbentry.datasetId ?? `urn:uuid:${crypto.randomUUID()}`;
+        const datasetDto = new Dataset({
+          id: datasetId,
+          distribution: [
+            new Distribution({
+              byteSize: `${file.size}`,
+              conformsTo: conformsTo,
+              title: file.originalname,
+              issued: new Date().toISOString(),
+              format: "tsg:analytics",
+              mediaType: file.mimetype,
+              description: [`Data file ${file.originalname}`]
+            })
+          ],
+          title: file.originalname,
+          identifier: dbentry.identifier,
+          hasPolicy: [
+            new Offer({
+              assigner: catalog.publisher as string,
+              permission: [
+                new Permission({
+                  action: "odrl:use"
+                })
+              ]
+            })
+          ]
+        }).serialize();
+        if (dbentry.datasetId) {
+          await this.dataplaneService.updateDataset(
+            dbentry.datasetId,
+            datasetDto
+          );
+        } else {
+          await this.dataplaneService.addDataset(datasetDto);
+          await this.fileRepository.update(dbentry.identifier, {
+            datasetId: datasetId
+          });
+        }
       })
     );
-    await this.dataplaneService.updateDatasets(datasets);
   }
 
   async getCSVW(identifier: string): Promise<CSVW> {
@@ -208,11 +230,33 @@ export class FilesService {
         fileSizeInBytes: file.size,
         fileName: file.filename,
         originalFileName: file.originalname,
+        mediaType: file.mimetype,
         presentInLastCheck: true,
-        csvw: undefined
+        csvw: undefined,
+        datasetId: undefined
       });
     });
     await this.fileRepository.insert(fileEntries);
+  }
+
+  async removeFile(identifier: string) {
+    const dbentry = await this.fileRepository.findOneBy({
+      identifier: identifier
+    });
+    if (!dbentry) {
+      throw new DataPlaneError("File not found", HttpStatus.NOT_FOUND);
+    }
+    if (dbentry.datasetId) {
+      this.logger.log(`Deleting dataset for file: ${identifier}`);
+      await this.dataplaneService.deleteDataset(dbentry.datasetId);
+    }
+    const filePath = this.filesConfig.path + "/" + dbentry.fileName;
+    if (fs.existsSync(filePath)) {
+      this.logger.log(`Deleting file: ${filePath}`);
+      fs.rmSync(filePath);
+    }
+
+    await this.fileRepository.remove(dbentry);
   }
 
   @Cron(CronExpression.EVERY_10_SECONDS)

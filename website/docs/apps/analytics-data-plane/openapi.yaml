@@ -819,6 +819,25 @@ paths:
       security: *a12
       summary: Get file
       tags: *a13
+    delete:
+      description: Delete the file by ID.
+      operationId: FilesController_removeFile
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a12
+      summary: Delete file
+      tags: *a13
   /api/files/{id}/csvw:
     get:
       description: Get the CSVW of a file.
@@ -2601,16 +2620,23 @@ components:
         originalFileName:
           type: string
           example: file.csv
+        mediaType:
+          type: string
+          example: text/csv
         presentInLastCheck:
           type: boolean
           example: true
         csvw:
           $ref: "#/components/schemas/CSVW"
+        datasetId:
+          type: string
+          example: dataset-123
       required:
         - identifier
         - fileSizeInBytes
         - fileName
         - originalFileName
+        - mediaType
         - presentInLastCheck
         - csvw
     TimeDto:

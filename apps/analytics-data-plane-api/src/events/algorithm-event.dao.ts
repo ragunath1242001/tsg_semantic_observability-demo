@@ -35,7 +35,8 @@ export class AlgorithmEventDao {
 
   @Column({
     type: getBinaryColumnType(),
-    nullable: true
+    nullable: true,
+    select: false
   })
   data!: Buffer | null;
 

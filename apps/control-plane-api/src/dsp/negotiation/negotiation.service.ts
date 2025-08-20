@@ -659,6 +659,7 @@ export class NegotiationService {
     );
     const agreement = new Agreement({
       ...negotiation.offer,
+      id: `urn:uuid:${crypto.randomUUID()}`,
       target: negotiation.offer.target,
       timestamp: new Date().toISOString(),
       assignee: negotiation.remoteParty,
