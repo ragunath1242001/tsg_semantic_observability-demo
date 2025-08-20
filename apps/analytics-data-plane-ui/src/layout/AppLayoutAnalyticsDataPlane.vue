@@ -62,14 +62,9 @@ const menuList: Menu[] = [
     label: "Files",
     items: [
       {
-        label: "Current files",
+        label: "Files",
         icon: "pi pi-fw pi-folder-open",
         to: "/files"
-      },
-      {
-        label: "Upload",
-        icon: "pi pi-fw pi-file-arrow-up",
-        to: "/files/upload"
       }
     ]
   },

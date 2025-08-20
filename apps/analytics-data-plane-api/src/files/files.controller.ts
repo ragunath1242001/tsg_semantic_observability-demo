@@ -1,5 +1,6 @@
 import {
   Controller,
+  Delete,
   Get,
   Headers,
   HttpCode,
@@ -47,10 +48,18 @@ export class FilesController {
   })
   @ApiForbiddenResponseDefault()
   @HttpCode(HttpStatus.CREATED)
-  @UseInterceptors(AnyFilesInterceptor())
+  @UseInterceptors(
+    AnyFilesInterceptor({
+      limits: {
+        fileSize: 1024 * 1024 * 1024 // 1GB - TODO: Configurable
+      }
+    })
+  )
   async uploadFile(@UploadedFiles() files: Array<Express.Multer.File>) {
     await this.filesService.uploadFiles(files);
-    return await this.filesService.createMetadata(files);
+    setImmediate(() => {
+      this.filesService.createMetadata(files);
+    });
   }
 
   @Post("sync")
@@ -87,6 +96,17 @@ export class FilesController {
     @Headers("Authorization") authorizationHeader?: string
   ): Promise<StreamableFile> {
     return await this.filesService.getFile(id, authorizationHeader);
+  }
+
+  @Delete(":id")
+  @ApiOperation({
+    summary: "Delete file",
+    description: "Delete the file by ID."
+  })
+  @ApiForbiddenResponseDefault()
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async removeFile(@Param("id") id: string): Promise<void> {
+    return await this.filesService.removeFile(id);
   }
 
   @Get(":id/csvw")

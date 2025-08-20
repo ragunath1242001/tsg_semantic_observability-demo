@@ -10,7 +10,7 @@ import {
   V1Volume,
   V1VolumeMount
 } from "@kubernetes/client-node";
-import { HttpStatus, Injectable, Logger } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { OnEvent } from "@nestjs/event-emitter";
 import { hostname } from "os";
 import { Writable } from "stream";
@@ -18,7 +18,6 @@ import { Writable } from "stream";
 import { AlgorithmInstancesService } from "../algorithm-instances/algorithm-instances.service.js";
 import { RootConfig } from "../config.js";
 import { FilesService } from "../files/files.service.js";
-import { DataPlaneError } from "../utils/errors/error.js";
 
 @Injectable()
 export class OrchestrationService {
@@ -70,13 +69,18 @@ export class OrchestrationService {
     participantId: string;
     imageName: string;
     command?: string[];
-    fileId?: string;
+    datasetId?: string;
   }) {
-    const { algorithmInstanceId, participantId, imageName, command, fileId } =
-      event;
+    const {
+      algorithmInstanceId,
+      participantId,
+      imageName,
+      command,
+      datasetId
+    } = event;
 
     this.logger.log(
-      `Spawning job for algorithm instance ${algorithmInstanceId} with image ${imageName}`
+      `Spawning job for algorithm instance ${algorithmInstanceId} with image ${imageName}, for participant ${participantId} and dataset ${datasetId}`
     );
 
     return await this.spawnJob(
@@ -84,7 +88,7 @@ export class OrchestrationService {
       participantId,
       imageName,
       command,
-      fileId
+      datasetId
     );
   }
 
@@ -93,7 +97,7 @@ export class OrchestrationService {
     participantId: string,
     imageName: string,
     command?: string[],
-    fileId?: string
+    datasetId?: string
   ) {
     const time = new Date().getTime();
     const jobName = `adp-job-${algorithmInstanceId}-${time}`;
@@ -157,14 +161,13 @@ export class OrchestrationService {
         }
       }
     ];
-    if (fileId) {
-      const fileMetadata = await this.filesService.getFileMetadata(fileId);
-      if (!fileMetadata) {
-        throw new DataPlaneError(
-          `File with ID ${fileId} not found`,
-          HttpStatus.NOT_FOUND
-        );
-      }
+    const fileMetadata = datasetId
+      ? await this.filesService.getFileByDatasetId(datasetId)
+      : null;
+    this.logger.debug(
+      `File metadata for dataset ${datasetId}: ${fileMetadata?.originalFileName}`
+    );
+    if (fileMetadata) {
       if (this.config.files.pvcName) {
         volumeMounts.push({
           mountPath: `/data/${fileMetadata.fileName}`,
@@ -187,8 +190,9 @@ export class OrchestrationService {
           value: `/data/${fileMetadata.fileName}`
         });
       } else {
-        const dataAccessToken =
-          await this.filesService.createAccessToken(fileId);
+        const dataAccessToken = await this.filesService.createAccessToken(
+          fileMetadata.identifier
+        );
 
         env.push({
           name: "DATA_TYPE",
@@ -228,7 +232,7 @@ export class OrchestrationService {
         })
       },
       spec: {
-        backoffLimit: 3,
+        backoffLimit: 0,
         template: {
           metadata: {
             labels: {
@@ -244,6 +248,7 @@ export class OrchestrationService {
               {
                 name: this.containerName,
                 image: imageName,
+                imagePullPolicy: "Always",
                 env,
                 command: finalCommand,
                 volumeMounts

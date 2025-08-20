@@ -59,10 +59,17 @@ export class FileMetadataDto {
   @ApiProperty({ example: "file.csv" })
   @IsString()
   originalFileName!: string;
+  @ApiProperty({ example: "text/csv" })
+  @IsString()
+  mediaType!: string;
   @ApiProperty({ example: true })
   @IsBoolean()
   presentInLastCheck!: boolean;
   @ApiProperty({ type: () => CSVW })
   @IsOptional()
   csvw?: CSVW;
+  @ApiPropertyOptional({ example: "dataset-123" })
+  @IsString()
+  @IsOptional()
+  datasetId?: string;
 }
