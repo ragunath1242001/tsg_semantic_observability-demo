@@ -118,6 +118,30 @@ const createPolicy = (policy: PolicyDto): string => {
   };
   return JSON.stringify(offer, null, 2);
 };
+
+const openLandingPage = (landingPageUrl: string) => {
+  window.open(landingPageUrl, "_blank");
+};
+
+const getFormatInfo = (dataset: DatasetDto) => {
+  const format = dataset.distribution?.[0]?.format?.toLowerCase() || "";
+
+  if (format === "tsg:analytics" && !dataset.distribution?.[0]?.byteSize) {
+    return {
+      icon: "pi pi-chart-bar",
+      color: "bg-violet-100 text-violet-700",
+      label: "Analytics"
+    };
+  } else if (format === "tsg:http") {
+    return {
+      icon: "pi pi-globe",
+      color: "bg-blue-100 text-blue-700",
+      label: "HTTP"
+    };
+  }
+
+  return { icon: "pi-file", color: "bg-gray-100 text-gray-700", label: "Data" };
+};
 </script>
 <template>
   <div v-if="!datasetView && singleCatalog" class="col-span-12">
@@ -167,27 +191,57 @@ const createPolicy = (policy: PolicyDto): string => {
             </span>
             <div
               v-tooltip.top="dataset.root.title"
-              class="bg-surface-0 dark:bg-surface-900 whitespace-nowrap overflow-hidden text-ellipsis">
+              class="whitespace-nowrap overflow-hidden text-ellipsis">
               {{ dataset.root.title }}
             </div>
           </div>
         </template>
         <template #subtitle>
-          <div>
-            {{ obtainValues(dataset.root.description).join("\r\n") }}
-          </div>
-          <div v-if="!!dataset.current.version">
-            Current version: {{ dataset.current.version }}
+          <div class="flex items-start align-center justify-between gap-2 mb-2">
+            <div
+              v-if="!!dataset.current.version"
+              class="inline-flex items-center gap-1">
+              <i class="pi pi-tag text-sm"></i>
+              <span class="text-sm font-medium"
+                >Current version: v{{ dataset.current.version }}</span
+              >
+            </div>
+            <div class="text-sm leading-relaxed flex-1 min-w-0">
+              {{ obtainValues(dataset.root.description).join("\r\n") }}
+            </div>
+            <div class="flex-shrink-0">
+              <div
+                v-tooltip.top="
+                  `Format: ${getFormatInfo(dataset.current).label}`
+                "
+                :class="`inline-flex items-center px-2 py-1 rounded-md text-xs font-medium ${getFormatInfo(dataset.current).color}`">
+                <i
+                  :class="`${getFormatInfo(dataset.current).icon} mr-1 text-xs`"></i>
+                <span class="hidden sm:inline">{{
+                  getFormatInfo(dataset.current).label
+                }}</span>
+              </div>
+            </div>
           </div>
         </template>
         <template #content>
-          <div style="min-height: 4em">
-            <span class="font-semibold">
-              Policies: {{ dataset.current.hasPolicy?.length ?? 0 }}
-            </span>
-            <div class="pt-4">
-              <span class="font-semibold">References</span>
-              <ul>
+          <div class="space-y-4 py-2" style="min-height: 4em">
+            <div class="flex items-center gap-1">
+              <i class="pi pi-shield text-sm"></i>
+              <span class="text-sm">
+                <span class="font-medium">{{
+                  dataset.current.hasPolicy?.length ?? 0
+                }}</span>
+                Policies
+              </span>
+            </div>
+
+            <div>
+              <div class="flex items-center gap-1 mb-2">
+                <i class="pi pi-link text-sm"></i>
+                <span class="text-sm font-medium">References</span>
+              </div>
+              <ul class="ml-5 space-y-1">
                 <li v-if="dataset.versions.length === 0">
                   <Links
                     :url-array="dataset.current.conformsTo"
@@ -230,7 +284,8 @@ const createPolicy = (policy: PolicyDto): string => {
             value=""
             unstyled>
             <AccordionPanel value="0">
-              <AccordionHeader class="font-semibold">
+              <AccordionHeader class="text-sm font-medium">
+                <i class="pi pi-history text-xs mr-1"></i>
                 All versions
               </AccordionHeader>
               <AccordionContent>
@@ -260,6 +315,14 @@ const createPolicy = (policy: PolicyDto): string => {
               {{ catalog.title }}
             </span>
             <span class="flex-auto text-right">
+              <Button
+                v-if="dataset.current.landingPage"
+                v-tooltip.top="'Visit Landing Page'"
+                icon="pi pi-external-link"
+                rounded
+                outlined
+                class="shadow-lg mr-2"
+                @click="openLandingPage(dataset.current.landingPage)"></Button>
               <Button
                 icon="pi pi-info"
                 rounded

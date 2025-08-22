@@ -93,12 +93,19 @@ const logout = () => {
       </button>
       <router-link to="/" class="layout-topbar-logo">
         <img :src="logoUrl" alt="logo" />
-        <span class="pr-2"> {{ title }}</span>
       </router-link>
     </div>
-    <span v-if="name" class="layout-topbar-logo">
-      {{ name }}
-    </span>
+    <div class="layout-topbar-title">
+      <span v-if="name" class="layout-topbar-title-desktop"
+        >{{ name }} - {{ title }}</span
+      >
+      <span v-else class="layout-topbar-title-desktop">{{ title }}</span>
+
+      <div class="layout-topbar-title-mobile">
+        <div v-if="name" class="layout-topbar-title-name">{{ name }}</div>
+        <div class="layout-topbar-title-subtitle">{{ title }}</div>
+      </div>
+    </div>
     <div class="layout-topbar-actions">
       <div class="layout-config-menu">
         <button
@@ -154,13 +161,37 @@ const logout = () => {
 </template>
 
 <style lang="scss" scoped>
+.layout-topbar-title {
+  display: inline-flex;
+  justify-content: left;
+  align-items: center;
+  height: 2.5rem;
+  color: var(--text-color);
+  padding: 0.5rem 1rem;
+  font-size: 1.5rem;
+  margin-left: 1rem;
+  margin-right: 1rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+
+  .layout-topbar-title-desktop {
+    display: inline;
+  }
+
+  .layout-topbar-title-mobile {
+    display: none;
+  }
+}
+
 .layout-topbar-text {
   display: inline-flex;
   justify-content: left;
   align-items: center;
   height: 2.5rem;
   color: var(--text-color);
-  max-width: 8rem;
+  padding: 0.5rem 1rem;
 
   div {
     overflow: hidden;
@@ -184,7 +215,59 @@ const logout = () => {
   }
 }
 
+@media (min-width: 992px) {
+  .layout-topbar-title {
+    font-size: 1.5rem !important;
+  }
+}
+
 @media (max-width: 991px) {
+  .layout-topbar-title {
+    display: inline-flex;
+    justify-content: left;
+    align-items: center;
+    height: 2.5rem;
+    color: var(--text-color);
+    padding: 0.5rem 1rem;
+    font-size: 1rem !important;
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+    flex-shrink: 1;
+  }
+
+  @media (max-width: 480px) {
+    .layout-topbar-title {
+      font-size: 0.9rem !important;
+      margin-left: 0.25rem;
+      margin-right: 0.25rem;
+      flex-shrink: 1;
+      white-space: normal;
+
+      .layout-topbar-title-desktop {
+        display: none;
+      }
+
+      .layout-topbar-title-mobile {
+        display: block;
+
+        .layout-topbar-title-name {
+          font-size: 0.85rem;
+          font-weight: 600;
+          color: var(--text-color);
+          line-height: 1.2;
+        }
+
+        .layout-topbar-title-subtitle {
+          font-size: 0.75rem;
+          font-weight: 400;
+          color: var(--text-color-secondary);
+          line-height: 1.1;
+          margin-top: 0.1rem;
+        }
+      }
+    }
+  }
+
   .layout-topbar-text {
     display: flex;
     width: 100%;

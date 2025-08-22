@@ -168,7 +168,7 @@ const sendNegotiation = async (
           <Button icon="pi pi-chevron-left" rounded @click="goBack()"></Button>
           <h2
             v-tooltip.top="datasetData.title"
-            class="mx-4 bg-surface-0 dark:bg-surface-900 whitespace-nowrap overflow-hidden text-ellipsis">
+            class="mx-4 whitespace-nowrap overflow-hidden text-ellipsis">
             {{ datasetData.title }}
           </h2>
         </div></template
