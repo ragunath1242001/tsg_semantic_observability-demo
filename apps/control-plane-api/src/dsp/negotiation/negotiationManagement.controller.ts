@@ -52,6 +52,7 @@ export class NegotiationManagementController {
   private readonly logger = new Logger(this.constructor.name);
 
   @Get()
+  @Roles(["controlplane_admin", "controlplane_dataplane", "readonly_user"])
   @UsePagination()
   @ApiOperation({ summary: "Get all negotiations" })
   @ApiResponse({
@@ -66,6 +67,7 @@ export class NegotiationManagementController {
   }
 
   @Get("/dataset/:datasetId")
+  @Roles(["controlplane_admin", "controlplane_dataplane", "readonly_user"])
   @ApiOperation({ summary: "Get all negotiations for a dataset" })
   @ApiParam({
     name: "datasetId",
@@ -93,6 +95,7 @@ export class NegotiationManagementController {
   }
 
   @Get(":processId")
+  @Roles(["controlplane_admin", "controlplane_dataplane", "readonly_user"])
   @ApiOperation({ summary: "Get a negotiation by process ID" })
   @ApiParam({
     name: "processId",

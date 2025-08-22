@@ -42,6 +42,7 @@ export class TransferManagementController {
   private readonly logger = new Logger(this.constructor.name);
 
   @Get("/transfers")
+  @Roles(["controlplane_dataplane", "readonly_user"])
   @ApiOperation({ summary: "Get all transfers" })
   @ApiResponse({ status: HttpStatus.OK, type: [TransferDto] })
   @ApiForbiddenResponseDefault()
@@ -50,6 +51,7 @@ export class TransferManagementController {
   }
 
   @Get("/transfers/:id")
+  @Roles(["controlplane_dataplane", "readonly_user"])
   @ApiOperation({ summary: "Get transfer by ID" })
   @ApiParam({ name: "id", required: true, description: "Transfer identifier" })
   @ApiResponse({ status: HttpStatus.OK, type: TransferDto })

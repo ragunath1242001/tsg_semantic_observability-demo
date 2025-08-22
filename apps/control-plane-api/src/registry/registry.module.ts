@@ -13,10 +13,10 @@ import {
 } from "../model/catalog.dao.js";
 import { RegistryDao } from "../model/registry.dao.js";
 import { VCAuthModule } from "../vc-auth/vc.auth.module.js";
-import { RegistryClientController } from "./registry.client.controller.js";
 import { RegistryClientService } from "./registry.client.service.js";
 import { RegistryController } from "./registry.controller.js";
 import { RegistryService } from "./registry.service.js";
+import { RegistryManagementController } from "./registryManagement.controller.js";
 
 @Module({})
 export class RegistryModule {
@@ -37,7 +37,7 @@ export class RegistryModule {
         ]),
         ScheduleModule.forRoot()
       ],
-      controllers: [RegistryClientController, RegistryController],
+      controllers: [RegistryManagementController, RegistryController],
       providers: [RegistryClientService, RegistryService],
       exports: [RegistryService]
     };

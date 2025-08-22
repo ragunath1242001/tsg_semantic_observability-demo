@@ -59,6 +59,7 @@ export class CatalogManagementController {
   private readonly logger = new Logger(this.constructor.name);
 
   @Get("request")
+  @Roles(["controlplane_admin", "controlplane_dataplane", "readonly_user"])
   @HttpCode(HttpStatus.OK)
   @UsePagination()
   @ApiOperation({
@@ -104,6 +105,7 @@ export class CatalogManagementController {
   }
 
   @Get("dataset")
+  @Roles(["controlplane_admin", "controlplane_dataplane", "readonly_user"])
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: "Request dataset",

@@ -31,11 +31,11 @@ import { DIDDocument } from "did-resolver";
 import { RegistryClientService } from "./registry.client.service.js";
 import { RegistryService } from "./registry.service.js";
 
-@Roles(["controlplane_admin", "controlplane_dataplane"])
+@Roles(["controlplane_admin", "controlplane_dataplane", "readonly_user"])
 @Controller("management/registry")
 @ApiTags("Registry Management")
 @ApiOAuth2(["controlplane_admin", "controlplane_dataplane"])
-export class RegistryClientController {
+export class RegistryManagementController {
   constructor(
     private readonly registryClientService: RegistryClientService,
     private readonly registryService: RegistryService
@@ -55,6 +55,7 @@ export class RegistryClientController {
   }
 
   @Get("addresses")
+  @Roles(["controlplane_admin", "controlplane_dataplane", "readonly_user"])
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: "Request addresses",
@@ -63,7 +64,7 @@ export class RegistryClientController {
   @ApiOkResponse({ type: [CredentialAddress] })
   @ApiForbiddenResponseDefault()
   async requestAddresses(): Promise<CredentialAddress[]> {
-    return await this.registryClientService.requestAddresses();
+    return await this.registryService.fetchAddresses();
   }
 
   @Get("didDocuments")

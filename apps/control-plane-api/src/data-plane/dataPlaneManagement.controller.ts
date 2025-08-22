@@ -41,6 +41,7 @@ export class DataplaneManagementController {
   private readonly logger = new Logger(this.constructor.name);
 
   @Get()
+  @Roles(["controlplane_admin", "controlplane_dataplane", "readonly_user"])
   @UsePagination()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({

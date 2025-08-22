@@ -152,7 +152,7 @@ onMounted(async () => {
               {{ formatRelative(props.data.updatedDate) }}
             </template>
           </Column>
-          <Column field="actions" header="Actions">
+          <Column v-if="!userStore.isReadOnly" field="actions" header="Actions">
             <template #body="props">
               <Button
                 severity="danger"
@@ -163,7 +163,7 @@ onMounted(async () => {
         </DataTable>
       </template>
     </Card>
-    <Card class="mt-8">
+    <Card v-if="!userStore.isReadOnly" class="mt-8">
       <template #title>Add service</template>
       <template #subtitle>
         <p>

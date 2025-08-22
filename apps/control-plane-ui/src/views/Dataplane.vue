@@ -2,12 +2,15 @@
 import { DataPlaneDetailsDto } from "@tsg-dsp/common-dsp";
 import DisplayField from "@tsg-dsp/common-ui/components/DisplayField.vue";
 import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
+import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import http from "@tsg-dsp/common-ui/utils/http";
 import { storeToRefs } from "pinia";
 import { useConfirm } from "primevue/useconfirm";
 import { useToast } from "primevue/usetoast";
 import { onMounted, ref } from "vue";
+
+const userStore = useUserStore();
 
 import { useDataPlaneStore } from "../stores/dataplane";
 
@@ -98,8 +101,8 @@ onMounted(async () => {
     <template #title>Dataplanes</template>
     <template #content
       >On this page you can find the dataplanes that are linked to this Control
-      Plane. There is also an option to delete or add dataplanes in this
-      view.</template
+      Plane. If you have the required roles, there is also an option to delete
+      or add dataplanes in this view.</template
     >
   </Card>
   <Card
@@ -144,7 +147,9 @@ onMounted(async () => {
       </div>
     </template>
   </Card>
-  <Card style="border-radius: 12px; border: 1px solid var(--surface-border)">
+  <Card
+    v-if="!userStore.isReadOnly"
+    style="border-radius: 12px; border: 1px solid var(--surface-border)">
     <template #title>Add Data Plane</template>
     <template #subtitle> Link a data plane to this Control Plane </template>
     <template #content>

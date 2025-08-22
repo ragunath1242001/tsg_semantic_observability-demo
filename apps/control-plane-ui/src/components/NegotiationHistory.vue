@@ -5,6 +5,7 @@ import {
   NegotiationStatusDto
 } from "@tsg-dsp/common-dtos";
 import MonacoEditor from "@tsg-dsp/common-ui/components/MonacoEditor.vue";
+import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import http from "@tsg-dsp/common-ui/utils/http";
 import { ConfirmDialog, useConfirm } from "primevue";
@@ -23,6 +24,7 @@ const localProof = ref<HashedMessage>();
 const remoteProof = ref<HashedMessage>();
 
 const dataPlaneStore = useDataPlaneStore();
+const userStore = useUserStore();
 
 const toast = useToast();
 const confirm = useConfirm();
@@ -257,7 +259,8 @@ const requestTransfer = async (accNegotiation: NegotiationDetailDto) => {
                 <Button
                   v-if="
                     accNegotiation.role === 'consumer' &&
-                    accNegotiation.state === 'FINALIZED'
+                    accNegotiation.state === 'FINALIZED' &&
+                    !userStore.isReadOnly
                   "
                   raised
                   type="button"

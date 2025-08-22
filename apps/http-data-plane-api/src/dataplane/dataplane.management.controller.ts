@@ -48,6 +48,7 @@ export class DataPlaneManagementController {
   private readonly logger = new Logger(this.constructor.name);
 
   @Get("/state")
+  @Roles(["controlplane_dataplane", "readonly_user"])
   @ApiOperation({
     summary: "Get Data Plane state",
     description:
@@ -60,6 +61,7 @@ export class DataPlaneManagementController {
   }
 
   @Get("/catalog")
+  @Roles(["controlplane_dataplane", "readonly_user"])
   @ApiOperation({
     summary: "Get catalog",
     description: "Get the current catalog from the Control Plane."
@@ -84,6 +86,7 @@ export class DataPlaneManagementController {
   }
 
   @Get("/config")
+  @Roles(["controlplane_dataplane", "readonly_user"])
   @ApiOperation({
     summary: "Get dataset",
     description: "Get the current dataset configuration."
@@ -118,6 +121,7 @@ export class DataPlaneManagementController {
   }
 
   @Get("/datasets")
+  @Roles(["controlplane_dataplane", "readonly_user"])
   @ApiOperation({
     summary: "Get datasets",
     description: "Retrieve all datasets."
@@ -129,6 +133,7 @@ export class DataPlaneManagementController {
   }
 
   @Get("/datasets/:id")
+  @Roles(["controlplane_dataplane", "readonly_user"])
   @ApiOperation({
     summary: "Get dataset",
     description: "Retrieve a specific dataset by id."

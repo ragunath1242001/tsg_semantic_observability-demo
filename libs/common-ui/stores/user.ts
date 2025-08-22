@@ -31,6 +31,17 @@ export const useUserStore = defineStore("user", {
     user: null,
     returnUrl: null
   }),
+  getters: {
+    isReadOnly: (state) => {
+      if (!state.user) {
+        return false;
+      }
+      return (
+        state.user.roles.length === 1 &&
+        state.user.roles.includes("readonly_user")
+      );
+    }
+  },
   actions: {
     hasRole(...roles: string[]) {
       if (!this.user) {

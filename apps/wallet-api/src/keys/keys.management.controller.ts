@@ -39,12 +39,13 @@ import { KeysService } from "./keys.service.js";
 
 @Controller("management/keys")
 @ApiTags("Management Keys")
-@ApiOAuth2([AppRole.MANAGE_KEYS])
+@ApiOAuth2([AppRole.MANAGE_KEYS, AppRole.READONLY_USER])
 @Roles(AppRole.MANAGE_KEYS)
 export class KeysManagementController {
   constructor(private readonly keyService: KeysService) {}
 
   @Get()
+  @Roles([AppRole.MANAGE_KEYS, AppRole.READONLY_USER])
   @UsePagination()
   @ApiOperation({
     summary: "Retrieve keys",

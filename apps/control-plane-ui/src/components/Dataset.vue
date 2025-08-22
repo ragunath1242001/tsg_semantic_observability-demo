@@ -8,6 +8,7 @@ import {
 import schema from "@tsg-dsp/common-ui/assets/odrl.schema.json";
 import DisplayField from "@tsg-dsp/common-ui/components/DisplayField.vue";
 import MonacoEditor from "@tsg-dsp/common-ui/components/MonacoEditor.vue";
+import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
 import { obtainValues, stringify } from "@tsg-dsp/common-ui/utils/common";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import { useToast } from "primevue/usetoast";
@@ -50,6 +51,7 @@ const policy = toRef(props, "policy");
 
 const display = ref(false);
 const editable = ref(false);
+const userStore = useUserStore();
 
 const datasetDataString = ref("");
 datasetDataString.value = stringify(datasetDataRo.value);
@@ -276,7 +278,9 @@ const sendNegotiation = async (
             </div>
             <Divider />
           </template>
-          <div v-if="!props.ownDataset" class="grid grid-cols-7">
+          <div
+            v-if="!props.ownDataset && !userStore.isReadOnly"
+            class="grid grid-cols-7">
             <div class="col-span-1 col-start-4">
               <Button
                 severity="success"

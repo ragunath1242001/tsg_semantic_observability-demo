@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { type CatalogDto } from "@tsg-dsp/common-dsp";
+import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import { CredentialAddress } from "@tsg-dsp/control-plane-dtos";
 import { storeToRefs } from "pinia";
 import { useToast } from "primevue/usetoast";
 import { onMounted, ref } from "vue";
+
+const userStore = useUserStore();
 
 import Catalog from "../components/Catalog.vue";
 import router from "../router";
@@ -74,6 +77,7 @@ onMounted(async () => await initialize());
 <template>
   <div>
     <Card
+      v-if="!userStore.isReadOnly"
       style="border-radius: 12px; border: 1px solid var(--surface-border)"
       class="mb-8">
       <template #title>Catalog Request</template>

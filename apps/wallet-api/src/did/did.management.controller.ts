@@ -42,11 +42,12 @@ import { DidService } from "./did.service.js";
 @Controller("management/did")
 @Roles(AppRole.VIEW_DID)
 @ApiTags("Management DID")
-@ApiOAuth2([AppRole.VIEW_DID])
+@ApiOAuth2([AppRole.VIEW_DID, AppRole.READONLY_USER])
 export class DIDManagementController {
   constructor(private readonly didService: DidService) {}
 
   @Get()
+  @Roles([AppRole.VIEW_DID, AppRole.READONLY_USER])
   @ApiOperation({
     summary: "Retrieve DID document",
     description: "Retrieves the current DID document for this wallet"
@@ -59,6 +60,7 @@ export class DIDManagementController {
   }
 
   @Get("services")
+  @Roles([AppRole.VIEW_DID, AppRole.READONLY_USER])
   @UsePagination()
   @ApiOperation({
     summary: "Retrieve DID services",

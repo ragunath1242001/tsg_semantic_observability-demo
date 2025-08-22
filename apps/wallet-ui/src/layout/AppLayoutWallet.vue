@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import AppLayout from "@tsg-dsp/common-ui/layout/AppLayout.vue";
-import { Menu, MenuProps } from "@tsg-dsp/common-ui/layout/AppMenu.vue";
+import { MenuProps } from "@tsg-dsp/common-ui/layout/AppMenu.vue";
 import { useLayout } from "@tsg-dsp/common-ui/layout/composables/layout";
+import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
 import { computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
+import { generateMenuFromRoutes } from "../router/route-permissions";
 import { useRuntimeStore } from "../stores/runtime";
 import AppConfig from "./AppConfig.vue";
 
@@ -12,6 +14,8 @@ const { layoutConfig, layoutState } = useLayout();
 
 const runtimeStore = useRuntimeStore();
 runtimeStore.getRuntimeSettings();
+
+const userStore = useUserStore();
 
 const logoUrl = computed(() => {
   if (layoutConfig.darkTheme && runtimeStore.darkThemeUrl) {
@@ -23,6 +27,7 @@ const logoUrl = computed(() => {
     layoutConfig.darkTheme ? "logo-white" : "logo-dark"
   }.svg`;
 });
+
 const containerClass = computed(() => {
   return {
     "layout-overlay": layoutConfig.menuMode === "overlay",
@@ -34,109 +39,20 @@ const containerClass = computed(() => {
     "layout-mobile-active": layoutState.staticMenuMobileActive
   };
 });
-const menuList: Menu[] = [
-  {
-    label: "Home",
-    items: [
-      {
-        label: "Dashboard",
-        icon: "pi pi-fw pi-id-card",
-        to: "/"
-      }
-    ]
-  },
-  {
-    label: "DID",
-    items: [
-      {
-        label: "Services",
-        icon: "pi pi-fw pi-code",
-        to: "/services"
-      },
-      {
-        label: "Key management",
-        icon: "pi pi-fw pi-key",
-        to: "/keys"
-      },
-      {
-        label: "Signature",
-        icon: "pi pi-fw pi-verified",
-        to: "/signature"
-      }
-    ]
-  },
-  {
-    label: "Credentials",
-    items: [
-      {
-        label: "Overview",
-        icon: "pi pi-fw pi-home",
-        to: "/credentials"
-      },
-      {
-        label: "Import plain credential",
-        icon: "pi pi-fw pi-file-import",
-        to: "/credentials/import"
-      },
-      ...(runtimeStore.gaiaXSupport
-        ? [
-            {
-              label: "Gaia-X Credentials",
-              icon: "pi pi-fw pi-verified",
-              to: "/credentials/gaiax"
-            }
-          ]
-        : [])
-    ]
-  },
-  {
-    label: "Issuance",
-    items: [
-      {
-        label: "Manual issuance",
-        icon: "pi pi-fw pi-pencil",
-        to: "/issuance/manual"
-      },
-      {
-        label: "Offers",
-        icon: "pi pi-fw pi-upload",
-        to: "/issuance/offers"
-      },
-      {
-        label: "Requests",
-        icon: "pi pi-fw pi-download",
-        to: "/issuance/requests"
-      },
-      {
-        label: "Configurations",
-        icon: "pi pi-fw pi-search-plus",
-        to: "/issue-configuration"
-      }
-    ]
-  },
-  {
-    label: "Presentation",
-    items: [
-      {
-        label: "DCP",
-        icon: "pi pi-fw pi-wrench",
-        to: "/presentations/dcp"
-      },
-      {
-        label: "OID4VP",
-        icon: "pi pi-fw pi-qrcode",
-        to: "/presentations/oid4vp"
-      }
-    ]
-  }
-];
+
+// Generate menu dynamically from route configuration
+const menuList = computed(() =>
+  generateMenuFromRoutes(userStore.isReadOnly, runtimeStore)
+);
 
 const route = useRoute();
 
-const sidebar: MenuProps = {
-  menu: menuList,
-  route: route
-};
+const sidebar = computed(
+  (): MenuProps => ({
+    menu: menuList.value,
+    route: route
+  })
+);
 </script>
 <template>
   <div class="layout-wrapper" :class="containerClass">

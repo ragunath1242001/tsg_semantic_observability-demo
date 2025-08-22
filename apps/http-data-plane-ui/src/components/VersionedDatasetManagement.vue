@@ -2,11 +2,14 @@
 import { DataPlaneStateDto } from "@tsg-dsp/common-dtos";
 import schema from "@tsg-dsp/common-ui/assets/dataset-config.schema.json";
 import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
+import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import http from "@tsg-dsp/common-ui/utils/http";
 import { VersionedDatasetConfig } from "@tsg-dsp/http-data-plane-dtos";
 import { useToast } from "primevue/usetoast";
 import { onMounted, ref, watch } from "vue";
+
+const userStore = useUserStore();
 
 import { cleanPolicyConfig } from "../utils/policyconfig";
 import PolicyEditor from "./PolicyEditor.vue";
@@ -148,6 +151,7 @@ onMounted(() => {
           </div>
           <div class="mt-4">
             <Button
+              v-if="!userStore.isReadOnly"
               label="Update configuration"
               :loading="updateLoading"
               severity="warn"

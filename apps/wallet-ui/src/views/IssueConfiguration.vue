@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
+import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import http from "@tsg-dsp/common-ui/utils/http";
 import { IssueConfiguration } from "@tsg-dsp/wallet-dtos";
@@ -7,6 +8,8 @@ import { FileUploadUploaderEvent } from "primevue";
 import { useConfirm } from "primevue/useconfirm";
 import { useToast } from "primevue/usetoast";
 import { computed, onMounted, ref } from "vue";
+
+const userStore = useUserStore();
 
 import IssueMetaSchema from "@/assets/issue-meta-schema.json";
 import CredentialPreview from "@/components/CredentialPreview.vue";
@@ -436,7 +439,7 @@ onMounted(async () => {
         </DataTable>
       </template>
     </Card>
-    <Card class="mt-8">
+    <Card v-if="!userStore.isReadOnly" class="mt-8">
       <template #title>Add/update configuration</template>
       <template #subtitle>
         <p>

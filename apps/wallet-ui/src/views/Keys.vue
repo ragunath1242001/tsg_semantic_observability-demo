@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
+import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
 import { formatRelative } from "@tsg-dsp/common-ui/utils/date";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import http from "@tsg-dsp/common-ui/utils/http";
@@ -8,6 +9,8 @@ import { KeyInfo } from "@tsg-dsp/wallet-dtos";
 import { useConfirm } from "primevue/useconfirm";
 import { useToast } from "primevue/usetoast";
 import { onMounted, ref } from "vue";
+
+const userStore = useUserStore();
 
 interface KeyForm {
   type: "EdDSA" | "ES384" | "X509";
@@ -188,7 +191,7 @@ onMounted(async () => {
               {{ formatRelative(props.data.createdDate) }}
             </template>
           </Column>
-          <Column field="actions" header="Actions">
+          <Column v-if="!userStore.isReadOnly" field="actions" header="Actions">
             <template #body="props">
               <Button
                 severity="primary"
@@ -215,7 +218,7 @@ onMounted(async () => {
         </Dialog>
       </template>
     </Card>
-    <Card class="mt-8">
+    <Card v-if="!userStore.isReadOnly" class="mt-8">
       <template #title>Add key</template>
       <template #subtitle>
         <p>

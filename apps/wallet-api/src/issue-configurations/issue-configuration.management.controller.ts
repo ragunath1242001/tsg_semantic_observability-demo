@@ -43,6 +43,7 @@ export class IssueConfigurationManagementController {
   ) {}
 
   @Get()
+  @Roles([AppRole.VIEW_DID, AppRole.READONLY_USER])
   @ApiOperation({
     summary: "Retrieve issue configurations",
     description: "Retrieve all issue configurations registered in this wallet"

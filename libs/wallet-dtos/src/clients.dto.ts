@@ -7,7 +7,8 @@ export enum AppRole {
   MANAGE_OWN_CREDENTIALS = "wallet_manage_own_credentials",
   MANAGE_ALL_CREDENTIALS = "wallet_manage_all_credentials",
   ISSUE_CREDENTIALS = "wallet_issue_credentials",
-  VIEW_PRESENTATIONS = "wallet_view_presentations"
+  VIEW_PRESENTATIONS = "wallet_view_presentations",
+  READONLY_USER = "readonly_user"
 }
 
 export interface ClientInfo {
