@@ -25,7 +25,7 @@ export function setupDataPlaneMock(
       managementToken: "",
       catalogSynchronization: "push",
       role: role,
-      datasets: []
+      title: "Mock Data Plane"
     },
     mocks: [
       http.post(

@@ -6,7 +6,6 @@ import {
 } from "@tsg-dsp/analytics-data-plane-dtos";
 import { AlgorithmParticipant } from "@tsg-dsp/analytics-data-plane-dtos";
 import { CatalogDto } from "@tsg-dsp/common-dsp";
-import { DataPlaneStateDto } from "@tsg-dsp/common-dtos";
 import MonacoEditorVue from "@tsg-dsp/common-ui/components/MonacoEditor.vue";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import http from "@tsg-dsp/common-ui/utils/http";
@@ -175,28 +174,6 @@ const validateAlgortithmDefinition = (
    2. Participants step
    -------------------- */
 const participants = ref<AlgorithmParticipant[]>([]);
-const dataPlaneState = ref<DataPlaneStateDto>();
-
-const getDataPlaneState = async () => {
-  try {
-    const response = await http.get<DataPlaneStateDto>("management/state");
-    dataPlaneState.value = response.data;
-    datasetOptions.value[participantId] = response.data.dataset.map(
-      (dataset) => ({
-        label: dataset.title || dataset["@id"],
-        value: dataset["@id"]
-      })
-    );
-  } catch (error) {
-    toast.add(
-      toastError({
-        error,
-        summary: "Loading state failed",
-        defaultMessage: "Could not load state from the analytics data plane"
-      })
-    );
-  }
-};
 
 const getParticipantCatalog = async (didId: string) => {
   try {
@@ -361,11 +338,7 @@ const getParticipantId = async () => {
 };
 
 onMounted(async () => {
-  await Promise.allSettled([
-    getDataPlaneState(),
-    getParticipantId(),
-    registryStore.initialize()
-  ]);
+  await Promise.allSettled([getParticipantId(), registryStore.initialize()]);
 });
 </script>
 <template>

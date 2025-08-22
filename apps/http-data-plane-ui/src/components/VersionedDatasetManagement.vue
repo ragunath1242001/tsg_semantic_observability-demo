@@ -33,8 +33,6 @@ const editModal = ref(false);
 const updateLoading = ref(false);
 const refreshLoading = ref(false);
 
-const showDataset = ref(false);
-
 const fillFormProperties = (config?: VersionedDatasetConfig) => {
   configForm.value = JSON.parse(JSON.stringify(config));
   if (!configForm.value.policy) {
@@ -117,11 +115,6 @@ onMounted(() => {
           <FormField class="mb-1" :label-width="3" label="Role">{{
             state.details.role
           }}</FormField>
-          <FormField class="mb-1" :label-width="3" label="Dataset IDs">
-            <div v-for="dataset in state.dataset" :key="dataset['@id']">
-              {{ dataset["@id"] }}
-            </div>
-          </FormField>
         </div>
         <div class="col-span-12 min-[1024px]:col-span-4">
           <div>
@@ -131,20 +124,6 @@ onMounted(() => {
               label="Refresh state at Control Plane"
               :loading="refreshLoading"
               @click="refreshRegistration" />
-          </div>
-          <div class="mt-4">
-            <Button label="Show DCAT dataset" @click="showDataset = true" />
-            <Dialog
-              v-model:visible="showDataset"
-              :dismissable-mask="true"
-              modal
-              header="DCAT datasets"
-              :style="{ width: '90vw', maxWidth: '75rem' }">
-              <MonacoEditorVue
-                :static="state.dataset"
-                :read-only="true"
-                :max-lines="30" />
-            </Dialog>
           </div>
           <div class="mt-4">
             <Button

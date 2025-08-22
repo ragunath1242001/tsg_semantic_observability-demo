@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { DataPlaneDetailsDto } from "@tsg-dsp/common-dsp";
+import { DataPlaneDetailsDto, DatasetDto } from "@tsg-dsp/common-dsp";
 import DisplayField from "@tsg-dsp/common-ui/components/DisplayField.vue";
 import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
@@ -13,6 +13,7 @@ import { useDataPlaneStore } from "../stores/dataplane";
 
 const dataPlaneFormDefault: DataPlaneDetailsDto = {
   identifier: "",
+  title: "Data Plane",
   dataplaneType: "",
   endpointPrefix: undefined,
   callbackAddress: undefined,
@@ -27,6 +28,7 @@ const dataPlaneForm = ref(dataPlaneFormDefault);
 const toast = useToast();
 const dataPlaneStore = useDataPlaneStore();
 const { dataPlanes } = storeToRefs(dataPlaneStore);
+const dataPlaneDatasets = ref<{ [key: string]: DatasetDto[] }>({});
 
 const addDataPlane = async () => {
   try {
@@ -84,6 +86,34 @@ const deleteDataPlane = async (dataplaneId: string) => {
   });
 };
 
+const loadDataPlaneDatasets = async (
+  event: MouseEvent,
+  dataPlaneId: string
+) => {
+  try {
+    (event.currentTarget as HTMLButtonElement).disabled = true;
+    const response = await http.get<DatasetDto[]>(
+      `management/dataplanes/${encodeURIComponent(dataPlaneId)}/datasets`,
+      {
+        params: {
+          per_page: 5
+        }
+      }
+    );
+    const datasets = response.data;
+    dataPlaneDatasets.value[dataPlaneId] = datasets;
+  } catch (error) {
+    toast.add(
+      toastError({
+        error,
+        summary: "Failed to load datasets",
+        defaultMessage: `Could not load datasets for dataplane ${dataPlaneId}`
+      })
+    );
+  }
+  (event.currentTarget as HTMLButtonElement).disabled = false;
+};
+
 const initialize = async () => {
   await dataPlaneStore.fetchDataPlanes();
 };
@@ -110,7 +140,7 @@ onMounted(async () => {
     <template #title>
       <div class="grid grid-cols-12 gap-4 mb-0">
         <div class="col-span-11 lg:col-span-8 mb-0">
-          {{ dataplane.identifier }}
+          {{ dataplane.title }}
         </div>
         <div class="col-span-1 mb-0">
           <Button
@@ -138,9 +168,23 @@ onMounted(async () => {
         <DisplayField label="Management Address">{{
           dataplane.managementAddress
         }}</DisplayField>
-        <DisplayField label="Dataset ID">{{
-          dataplane.datasets.map((dataset) => dataset["@id"]).join(", ")
-        }}</DisplayField>
+        <DisplayField label="Dataset Titles">
+          <template v-if="dataPlaneDatasets[dataplane.identifier]">
+            <ul>
+              <li
+                v-for="dataset in dataPlaneDatasets[dataplane.identifier]"
+                :key="dataset['@id']">
+                {{ dataset.title }}
+              </li>
+            </ul>
+          </template>
+          <template v-else>
+            <Button
+              label="Load first 5 datasets"
+              severity="secondary"
+              @click="loadDataPlaneDatasets($event, dataplane.identifier)" />
+          </template>
+        </DisplayField>
       </div>
     </template>
   </Card>
@@ -155,6 +199,14 @@ onMounted(async () => {
             v-model="dataPlaneForm.dataplaneType"
             class="w-full"
             placeholder="Type of data plane you are using, e.g. tsg:HTTP"
+            required></InputText>
+        </FormField>
+        <FormField v-slot="props" label="Title">
+          <InputText
+            :id="props.id"
+            v-model="dataPlaneForm.title"
+            class="w-full"
+            placeholder="Title of the data plane"
             required></InputText>
         </FormField>
         <FormField v-slot="props" label="Identifier">

@@ -4,13 +4,21 @@ import { AuthModule } from "@tsg-dsp/common-api";
 
 import { LoggingModule } from "../logging/logging.module.js";
 import { DataPlaneController } from "./dataplane.controller.js";
-import { DataPlaneStateDao, DatasetItemDao } from "./dataplane.dao.js";
+import {
+  DataPlaneStateDao,
+  DatasetItemDao,
+  VersionedDatasetDao
+} from "./dataplane.dao.js";
 import { DataPlaneManagementController } from "./dataplane.management.controller.js";
 import { DataPlaneService } from "./dataplane.service.js";
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([DataPlaneStateDao, DatasetItemDao]),
+    TypeOrmModule.forFeature([
+      DataPlaneStateDao,
+      DatasetItemDao,
+      VersionedDatasetDao
+    ]),
     AuthModule,
     LoggingModule
   ],

@@ -22,9 +22,15 @@ export class DataPlaneStateDao {
     }
   })
   datasetConfig?: DatasetConfig;
+}
+
+@Entity()
+export class VersionedDatasetDao {
+  @PrimaryColumn({ type: String })
+  identifier!: string;
 
   @Column("simple-json")
-  dataset!: Array<DatasetDto>;
+  dataset!: DatasetDto;
 }
 
 @Entity()

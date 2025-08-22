@@ -28,7 +28,11 @@ import { EgressLogDao, IngressLogDao } from "../logging/logging.dao.js";
 import { LoggingService } from "../logging/logging.service.js";
 import { TransferDao } from "../transfer/transfer.dao.js";
 import { DataPlaneController } from "./dataplane.controller.js";
-import { DataPlaneStateDao, DatasetItemDao } from "./dataplane.dao.js";
+import {
+  DataPlaneStateDao,
+  DatasetItemDao,
+  VersionedDatasetDao
+} from "./dataplane.dao.js";
 import { DataPlaneService } from "./dataplane.service.js";
 
 describe("Dataplane Service", () => {
@@ -191,6 +195,7 @@ describe("Dataplane Service", () => {
         TypeOrmTestHelper.instance.module([
           TransferDao,
           DataPlaneStateDao,
+          VersionedDatasetDao,
           DatasetItemDao,
           IngressLogDao,
           EgressLogDao
@@ -198,6 +203,7 @@ describe("Dataplane Service", () => {
         TypeOrmModule.forFeature([
           TransferDao,
           DataPlaneStateDao,
+          VersionedDatasetDao,
           DatasetItemDao,
           IngressLogDao,
           EgressLogDao
@@ -244,7 +250,6 @@ describe("Dataplane Service", () => {
       await dataPlaneService.initialized;
       await new Promise((r) => setTimeout(r, 100));
       const state = await dataPlaneService.getStateDto();
-      expect(state.dataset?.length).toBeGreaterThanOrEqual(1);
       expect(state.identifier).toBeDefined();
       expect(state.details).toBeDefined();
     });
@@ -506,6 +511,7 @@ describe("Starting without initial dataset configuration", () => {
         TypeOrmTestHelper.instance.module([
           TransferDao,
           DataPlaneStateDao,
+          VersionedDatasetDao,
           DatasetItemDao,
           IngressLogDao,
           EgressLogDao
@@ -513,6 +519,7 @@ describe("Starting without initial dataset configuration", () => {
         TypeOrmModule.forFeature([
           TransferDao,
           DataPlaneStateDao,
+          VersionedDatasetDao,
           DatasetItemDao,
           IngressLogDao,
           EgressLogDao

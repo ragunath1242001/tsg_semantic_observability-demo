@@ -1,8 +1,14 @@
 import { HttpStatus, Injectable, Logger, StreamableFile } from "@nestjs/common";
 import { Cron, CronExpression } from "@nestjs/schedule";
 import { InjectRepository } from "@nestjs/typeorm";
-import { CSVW } from "@tsg-dsp/analytics-data-plane-dtos";
-import { Dataset, Distribution, Offer, Permission } from "@tsg-dsp/common-dsp";
+import { CSVW, FileUpdateDto } from "@tsg-dsp/analytics-data-plane-dtos";
+import {
+  Dataset,
+  DatasetDto,
+  Distribution,
+  Offer,
+  Permission
+} from "@tsg-dsp/common-dsp";
 import { randomBytes } from "crypto";
 import { parse } from "csv-parse";
 import fs, { createReadStream } from "fs";
@@ -86,6 +92,30 @@ export class FilesService {
       throw new DataPlaneError("File not found", HttpStatus.NOT_FOUND);
     }
     const fileStream = createReadStream(filePath);
+    return new StreamableFile(fileStream);
+  }
+
+  async previewFile(
+    identifier: string,
+    previewSize?: number
+  ): Promise<StreamableFile> {
+    const file = await this.fileRepository.findOneBy({
+      identifier: identifier
+    });
+    if (!file) {
+      throw new DataPlaneError("File not found", HttpStatus.NOT_FOUND);
+    }
+    if (!file.presentInLastCheck) {
+      throw new DataPlaneError(
+        "File not present in last check",
+        HttpStatus.NOT_FOUND
+      );
+    }
+    const filePath = this.filesConfig.path + "/" + file.fileName;
+    if (!fs.existsSync(filePath)) {
+      throw new DataPlaneError("File not found", HttpStatus.NOT_FOUND);
+    }
+    const fileStream = createReadStream(filePath, { end: previewSize });
     return new StreamableFile(fileStream);
   }
 
@@ -223,6 +253,19 @@ export class FilesService {
     return file.csvw;
   }
 
+  async getDataset(identifier: string): Promise<DatasetDto> {
+    const file = await this.fileRepository.findOneBy({
+      identifier: identifier
+    });
+    if (!file) {
+      throw new DataPlaneError("File not found", HttpStatus.NOT_FOUND);
+    }
+    if (!file.datasetId) {
+      throw new DataPlaneError("Dataset not found", HttpStatus.NOT_FOUND);
+    }
+    return await this.dataplaneService.getDataset(file.datasetId);
+  }
+
   async uploadFiles(files: Array<Express.Multer.File>) {
     const fileEntries = files.map((file: Express.Multer.File) => {
       return this.fileRepository.create({
@@ -237,6 +280,45 @@ export class FilesService {
       });
     });
     await this.fileRepository.insert(fileEntries);
+  }
+
+  async updateFileMetadata(identifier: string, fileUpdateDto: FileUpdateDto) {
+    const dbentry = await this.fileRepository.findOneBy({
+      identifier: identifier
+    });
+    if (!dbentry) {
+      throw new DataPlaneError("File not found", HttpStatus.NOT_FOUND);
+    }
+    if (fileUpdateDto.originalFileName) {
+      dbentry.originalFileName = fileUpdateDto.originalFileName;
+    }
+    if (fileUpdateDto.mediaType) {
+      dbentry.mediaType = fileUpdateDto.mediaType;
+    }
+    if (fileUpdateDto.csvw) {
+      dbentry.csvw = fileUpdateDto.csvw;
+    }
+    await this.fileRepository.save(dbentry);
+  }
+
+  async updateFile(identifier: string, file: Express.Multer.File) {
+    const dbentry = await this.fileRepository.findOneBy({
+      identifier: identifier
+    });
+    if (!dbentry) {
+      throw new DataPlaneError("File not found", HttpStatus.NOT_FOUND);
+    }
+    const filePath = this.filesConfig.path + "/" + dbentry.fileName;
+    if (fs.existsSync(filePath)) {
+      fs.rmSync(filePath);
+    }
+    fs.renameSync(file.path, filePath);
+    dbentry.fileSizeInBytes = file.size;
+    dbentry.fileName = file.filename;
+    dbentry.originalFileName = file.originalname;
+    dbentry.mediaType = file.mimetype;
+    dbentry.presentInLastCheck = true;
+    await this.fileRepository.save(dbentry);
   }
 
   async removeFile(identifier: string) {

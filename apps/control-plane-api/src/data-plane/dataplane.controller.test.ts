@@ -99,6 +99,7 @@ describe("DataPlaneController", () => {
     it("Initialization of a new data plane should return 200", async () => {
       const result = await dataPlaneController.init({
         dataplaneType: "http",
+        title: "Test Data Plane",
         endpointPrefix: "/api",
         callbackAddress: "http://localhost/api/callback",
         managementAddress: "http://localhost/api/management",

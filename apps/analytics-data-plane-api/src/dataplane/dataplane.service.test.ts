@@ -1,6 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import {
+  AppLogger,
   AuthClientService,
   AuthConfig,
   TypeOrmTestHelper
@@ -21,6 +22,7 @@ import { InternalEventDao } from "../events/internal-event.dao.js";
 import { DataPlaneController } from "./dataplane.controller.js";
 import { DataPlaneStateDao } from "./dataplane.dao.js";
 import { DataPlaneService } from "./dataplane.service.js";
+import { DatasetDao } from "./dataset.dao.js";
 import { ManagementClientMock } from "./management-client.mock.js";
 import { ManagementClient } from "./management-client.service.js";
 import { TransferDao } from "./transfer.dao.js";
@@ -91,6 +93,24 @@ describe("Dataplane Service", () => {
           return HttpResponse.json(request.json());
         }
       ),
+      http.post(
+        `${config.controlPlane.dataPlaneEndpoint}/:id/dataset`,
+        ({ request }) => {
+          return HttpResponse.json(request.json());
+        }
+      ),
+      http.put(
+        `${config.controlPlane.dataPlaneEndpoint}/:id/dataset/:datasetId`,
+        ({ request }) => {
+          return HttpResponse.json(request.json());
+        }
+      ),
+      http.delete(
+        `${config.controlPlane.dataPlaneEndpoint}/:id/dataset/:datasetId`,
+        () => {
+          return HttpResponse.json({});
+        }
+      ),
       http.get("http://localhost/.well-known/did.json", () => {
         return HttpResponse.json({
           service: [
@@ -103,7 +123,7 @@ describe("Dataplane Service", () => {
       })
     );
 
-    server.listen({ onUnhandledRequest: "bypass" });
+    server.listen({ onUnhandledRequest: "error" });
 
     const moduleRef: TestingModule = await Test.createTestingModule({
       imports: [
@@ -112,14 +132,16 @@ describe("Dataplane Service", () => {
           AlgorithmInstanceDao,
           AlgorithmEventDao,
           InternalEventDao,
-          DataPlaneStateDao
+          DataPlaneStateDao,
+          DatasetDao
         ]),
         TypeOrmModule.forFeature([
           TransferDao,
           AlgorithmInstanceDao,
           AlgorithmEventDao,
           InternalEventDao,
-          DataPlaneStateDao
+          DataPlaneStateDao,
+          DatasetDao
         ])
       ],
       controllers: [DataPlaneController],
@@ -139,15 +161,11 @@ describe("Dataplane Service", () => {
           useValue: ManagementClientMock
         }
       ]
-    }).compile();
+    })
+      .setLogger(new AppLogger())
+      .compile();
 
     dataPlaneService = moduleRef.get(DataPlaneService);
-    await expect(dataPlaneService.getStateDto()).rejects.toThrow(
-      "No state available yet"
-    );
-
-    await dataPlaneService.initialized;
-    await new Promise((r) => setTimeout(r, 50));
   });
 
   afterAll(async () => {
@@ -155,10 +173,73 @@ describe("Dataplane Service", () => {
   });
 
   describe("Config management", () => {
-    it("Update config", async () => {
-      await dataPlaneService.updateDatasets([]);
-      const config = await dataPlaneService.getDatasets();
-      expect(config).toHaveLength(0);
+    const testDataset: DatasetDto = {
+      "@context": defaultContext(),
+      "@type": "Dataset",
+      "@id": "urn:uuid:test-2",
+      title: "CSV Test File",
+      hasPolicy: [
+        {
+          "@type": "Offer",
+          "@id": "urn:uuid:3fdbf466-b2de-45ef-bc9b-215267091ed0",
+          assigner: "did:web:localhost",
+          permission: [
+            {
+              "@type": "Permission",
+              action: "use"
+            }
+          ]
+        }
+      ],
+      distribution: [
+        {
+          "@type": "Distribution",
+          "@id": "urn:uuid:d5aa3eca-fa52-4987-9040-29c320e08f70",
+          byteSize: "1000",
+          mediaType: "text/csv",
+          description: ["Data file test.csv"],
+          format: "tsg:analytics",
+          issued: "2025-08-01T00:00:00.000Z",
+          title: "test.csv"
+        }
+      ]
+    };
+
+    it("Initialize data plane", async () => {
+      await expect(dataPlaneService.getStateDto()).rejects.toThrow(
+        "No state available yet"
+      );
+
+      await dataPlaneService.initialized;
+      await new Promise((r) => setTimeout(r, 50));
+    });
+    it("Add dataset", async () => {
+      expect(await dataPlaneService.getDatasets()).toHaveLength(1);
+      await dataPlaneService.addDataset(testDataset);
+      expect(await dataPlaneService.getDatasets()).toHaveLength(2);
+      const fetchedDataset = await dataPlaneService.getDataset(
+        testDataset["@id"]
+      );
+      expect(fetchedDataset).toEqual(testDataset);
+
+      await expect(dataPlaneService.getDataset("unknown")).rejects.toThrow(
+        "not found"
+      );
+    });
+    it("Update dataset", async () => {
+      await dataPlaneService.updateDataset(testDataset["@id"], {
+        ...testDataset,
+        title: "Updated CSV Test File"
+      });
+      expect(await dataPlaneService.getDatasets()).toHaveLength(2);
+    });
+    it("Delete dataset", async () => {
+      await dataPlaneService.deleteDataset(testDataset["@id"]);
+      await expect(
+        dataPlaneService.getDataset(testDataset["@id"])
+      ).rejects.toThrow("not found");
+
+      expect(await dataPlaneService.getDatasets()).toHaveLength(1);
     });
   });
 });

@@ -1,15 +1,16 @@
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { AuthClientService, promiseMap } from "@tsg-dsp/common-api";
 import {
-  Catalog,
+  AuthClientService,
+  parseNetworkError,
+  promiseMap
+} from "@tsg-dsp/common-api";
+import {
   CatalogDto,
   DataPlaneCreation,
   DataPlaneDetailsDto,
-  Dataset,
   DatasetDto,
   defaultContext,
-  deserialize,
   DistributionDto,
   OfferDto,
   PermissionDto
@@ -22,6 +23,7 @@ import { Repository } from "typeorm";
 import { RootConfig } from "../config.js";
 import { DataPlaneClientError, DataPlaneError } from "../utils/errors/error.js";
 import { DataPlaneStateDao } from "./dataplane.dao.js";
+import { DatasetDao } from "./dataset.dao.js";
 import { ManagementClient } from "./management-client.service.js";
 
 @Injectable()
@@ -34,6 +36,8 @@ export class DataPlaneService {
     authClient: AuthClientService,
     @InjectRepository(DataPlaneStateDao)
     private readonly stateRepository: Repository<DataPlaneStateDao>,
+    @InjectRepository(DatasetDao)
+    private readonly datasetRepository: Repository<DatasetDao>,
     private readonly managementClient: ManagementClient
   ) {
     this.initialized = this.init();
@@ -108,8 +112,10 @@ export class DataPlaneService {
   }
 
   async registerDataplane() {
+    this.logger.log("Registering data plane with control plane");
     const dataPlaneCreation: DataPlaneCreation = {
       identifier: this.state?.identifier,
+      title: this.config.controlPlane.title,
       dataplaneType: "tsg:analytics",
       endpointPrefix: `${this.config.server.publicAddress}/data`,
       callbackAddress: this.config.server.publicAddress,
@@ -122,24 +128,25 @@ export class DataPlaneService {
       `/init`,
       dataPlaneCreation
     );
-    const datasets: Dataset[] = await promiseMap(
-      this.state?.dataset ?? this.config.dataset ?? this.defaultDataset,
-      async (datasetDto) => deserialize<Dataset>(datasetDto)
-    );
-    const catalog: Catalog = new Catalog({
-      participantId: "",
-      dataset: datasets
-    });
-    await this.axiosDataPlane.post<DataPlaneDetailsDto>(
-      `/${details.data.identifier}/catalog`,
-      catalog.serialize()
-    );
     const state = await this.stateRepository.save({
       identifier: details.data.identifier,
-      details: details.data,
-      dataset: this.state?.dataset ?? this.config.dataset ?? this.defaultDataset
+      details: details.data
     });
     this.state = state;
+    if (await this.hasStoredDatasets()) {
+      this.logger.log("Using stored datasets");
+      const datasets = await this.getDatasets();
+      await promiseMap(datasets, async (datasetDto) => {
+        await this.axiosDataPlane.post(
+          `/${details.data.identifier}/dataset`,
+          datasetDto
+        );
+      });
+    } else {
+      this.logger.log("Creating new datasets");
+      const datasetDtos = this.config.dataset ?? this.defaultDataset;
+      await promiseMap(datasetDtos, this.addDataset.bind(this));
+    }
     return state;
   }
 
@@ -165,113 +172,77 @@ export class DataPlaneService {
     return this.managementClient.getOwnParticipantId();
   }
 
+  async hasStoredDatasets(): Promise<boolean> {
+    const count = await this.datasetRepository.count();
+    return count > 0;
+  }
+
+  async getDatasets(): Promise<DatasetDto[]> {
+    const datasets = await this.datasetRepository.find();
+    return datasets.map((datasetDao) => datasetDao.dataset);
+  }
+
+  async getDataset(datasetId: string): Promise<DatasetDto> {
+    const dataset = await this.datasetRepository.findOneBy({
+      identifier: datasetId
+    });
+    if (!dataset) {
+      throw new DataPlaneError(
+        `Dataset with id ${datasetId} not found`,
+        HttpStatus.NOT_FOUND
+      );
+    }
+    return dataset.dataset;
+  }
+
   async addDataset(dataset: DatasetDto) {
     const currentState = this.getState();
+    try {
+      await this.axiosDataPlane.post(
+        `/${currentState.identifier}/dataset`,
+        dataset
+      );
 
-    const newDatasets = [...currentState.dataset, dataset];
-
-    const catalog: Catalog = new Catalog({
-      participantId: "",
-      dataset: await promiseMap(newDatasets, async (datasetDto) =>
-        deserialize<Dataset>(datasetDto)
-      )
-    });
-    await this.axiosDataPlane.post<DataPlaneDetailsDto>(
-      `/${currentState.identifier}/catalog`,
-      catalog.serialize()
-    );
-    const state = await this.stateRepository.save({
-      ...currentState,
-      dataset: newDatasets
-    });
-
-    this.state = state;
-    return state;
+      await this.datasetRepository.save({
+        identifier: dataset["@id"],
+        dataset
+      });
+    } catch (error) {
+      throw parseNetworkError(error, "adding dataset to control plane");
+    }
   }
 
   async updateDataset(datasetId: string, updatedDataset: DatasetDto) {
     const currentState = this.getState();
 
-    if (!currentState.dataset.find((dataset) => dataset["@id"] === datasetId)) {
-      throw new DataPlaneError(
-        `Could not find dataset with id ${datasetId}`,
-        HttpStatus.NOT_FOUND
+    // Check if the dataset exists and fail early if not
+    await this.getDataset(datasetId);
+
+    try {
+      await this.axiosDataPlane.put(
+        `/${currentState.identifier}/dataset/${datasetId}`,
+        updatedDataset
       );
+      await this.datasetRepository.update(
+        { identifier: datasetId },
+        { dataset: updatedDataset }
+      );
+    } catch (error) {
+      throw parseNetworkError(error, "updating dataset in control plane");
     }
-    const newDatasets = currentState.dataset.map((dataset) =>
-      dataset["@id"] === datasetId ? updatedDataset : dataset
-    );
-
-    const catalog: Catalog = new Catalog({
-      participantId: "",
-      dataset: await promiseMap(newDatasets, async (datasetDto) =>
-        deserialize<Dataset>(datasetDto)
-      )
-    });
-    await this.axiosDataPlane.post<DataPlaneDetailsDto>(
-      `/${currentState.identifier}/catalog`,
-      catalog.serialize()
-    );
-    const state = await this.stateRepository.save({
-      ...currentState,
-      dataset: newDatasets
-    });
-
-    this.state = state;
-    return state;
   }
 
   async deleteDataset(datasetId: string) {
     const currentState = this.getState();
-    if (!currentState.dataset.find((dataset) => dataset["@id"] === datasetId)) {
-      throw new DataPlaneError(
-        `Could not find dataset with id ${datasetId}`,
-        HttpStatus.NOT_FOUND
+    await this.getDataset(datasetId);
+    try {
+      await this.axiosDataPlane.delete(
+        `/${currentState.identifier}/dataset/${datasetId}`
       );
+      await this.datasetRepository.delete({ identifier: datasetId });
+    } catch (error) {
+      throw parseNetworkError(error, "deleting dataset in control plane");
     }
-    const newDatasets = currentState.dataset.filter(
-      (dataset) => dataset["@id"] !== datasetId
-    );
-
-    const catalog: Catalog = new Catalog({
-      participantId: "",
-      dataset: await promiseMap(newDatasets, async (datasetDto) =>
-        deserialize<Dataset>(datasetDto)
-      )
-    });
-    await this.axiosDataPlane.post<DataPlaneDetailsDto>(
-      `/${currentState.identifier}/catalog`,
-      catalog.serialize()
-    );
-    const state = await this.stateRepository.save({
-      ...currentState,
-      dataset: newDatasets
-    });
-
-    this.state = state;
-    return state;
-  }
-
-  async updateDatasets(datasets: DatasetDto[]) {
-    const currentState = this.getState();
-
-    const catalog: Catalog = new Catalog({
-      participantId: "",
-      dataset: await promiseMap(datasets, async (datasetDto) =>
-        deserialize<Dataset>(datasetDto)
-      )
-    });
-    await this.axiosDataPlane.post<DataPlaneDetailsDto>(
-      `/${currentState.identifier}/catalog`,
-      catalog.serialize()
-    );
-    const state = await this.stateRepository.save({
-      ...currentState,
-      dataset: datasets
-    });
-
-    this.state = state;
-    return state;
   }
 
   private getState(): DataPlaneStateDao {
@@ -286,14 +257,5 @@ export class DataPlaneService {
 
   async getStateDto(): Promise<DataPlaneStateDto> {
     return this.getState();
-  }
-
-  async getDatasets(): Promise<DatasetDto[]> {
-    const datasetConfig = this.getState().dataset;
-    if (datasetConfig) {
-      return datasetConfig;
-    } else {
-      throw new DataPlaneError("No dataset configured", HttpStatus.NOT_FOUND);
-    }
   }
 }

@@ -11,23 +11,14 @@ import {
   ValidateNested
 } from "class-validator";
 
-import { DatasetDto } from "../dsp/catalog/catalog.dto.js";
-import { DatasetSchema } from "../dsp/catalog/catalog.schema.js";
-
 class DataPlaneBaseDto {
-  @ApiPropertyOptional({
-    type: () => [DatasetSchema],
-    example: [{ id: "dataset-123", name: "Example Dataset" }]
-  })
-  @IsOptional()
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => DatasetSchema)
-  datasets?: DatasetDto[];
-
   @ApiProperty({ example: "exampleType" })
   @IsString()
   dataplaneType!: string;
+
+  @ApiProperty({ example: "Dataplane Titel" })
+  @IsString()
+  title!: string;
 
   @ApiProperty({ example: "/api/v1/dataplane" })
   @IsString()

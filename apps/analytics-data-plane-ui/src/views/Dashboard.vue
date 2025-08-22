@@ -8,7 +8,6 @@ import { useConfirm } from "primevue/useconfirm";
 import { useToast } from "primevue/usetoast";
 import { computed, onMounted, ref } from "vue";
 
-import PaginatedLogTable from "../components/PaginatedLogTable.vue";
 import router from "../router";
 import { useK8sStore } from "../stores/k8s";
 import { stateSeverity } from "../utils/stateseverity";
@@ -160,16 +159,6 @@ const spawnK8sJob = async (_transfer: TransferDto) => {
   }
 };
 
-const showLogs = (transfer: TransferDto) => {
-  logModal.value = {
-    type: transfer.role === "consumer" ? "egress" : "ingress",
-    transfer: transfer.id
-  };
-  showLogModal.value = true;
-};
-const showLogModal = ref(false);
-const logModal = ref<{ type: "ingress" | "egress"; transfer: string }>();
-
 onMounted(async () => {
   await getState();
   await getTransfers();
@@ -177,23 +166,6 @@ onMounted(async () => {
 </script>
 
 <template>
-  <Dialog
-    v-model:visible="showLogModal"
-    :dismissable-mask="true"
-    :style="{ width: '90vw', maxWidth: '100rem' }"
-    modal
-    @hide="logModal = undefined">
-    <template #header>
-      <span class="p-dialog-title" data-pc-section="title"
-        ><span class="capitalize">{{ logModal.type }}</span> logs for transfer
-        {{ logModal.transfer }}</span
-      >
-    </template>
-    <PaginatedLogTable
-      v-if="logModal"
-      :type="logModal.type"
-      :transfer-id="logModal.transfer" />
-  </Dialog>
   <Card>
     <template #title>State</template>
     <template #subtitle>State of this HTTP data plane</template>
@@ -205,11 +177,6 @@ onMounted(async () => {
           state.details.catalogSynchronization
         }}</FormField>
         <FormField label="Role">{{ state.details.role }}</FormField>
-        <FormField label="Dataset IDs">
-          <div v-for="dataset in state.dataset" :key="dataset['@id']">
-            {{ dataset["@id"] }}
-          </div>
-        </FormField>
       </div>
     </template>
   </Card>
@@ -300,14 +267,6 @@ onMounted(async () => {
               aria-label="Complete"
               outlined
               @click="action($event, 'complete', props.data)" />
-            <Button
-              v-tooltip.bottom="'Logs'"
-              class="ml-2"
-              icon="pi pi-list"
-              severity="help"
-              aria-label="Logs"
-              outlined
-              @click="showLogs(props.data)" />
           </template>
         </Column>
         <template #expansion="props">
@@ -417,14 +376,6 @@ onMounted(async () => {
               aria-label="Complete"
               outlined
               @click="action($event, 'complete', props.data)" />
-            <Button
-              v-tooltip.bottom="'Logs'"
-              class="ml-2"
-              icon="pi pi-list"
-              severity="help"
-              aria-label="Logs"
-              outlined
-              @click="showLogs(props.data)" />
             <Button
               v-tooltip.bottom="'Execute'"
               class="ml-2"

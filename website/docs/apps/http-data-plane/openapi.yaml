@@ -1649,6 +1649,64 @@ components:
         - name
         - status
         - code
+    DataPlaneDetailsDto:
+      type: object
+      properties:
+        dataplaneType:
+          type: string
+          example: exampleType
+        title:
+          type: string
+          example: Dataplane Titel
+        endpointPrefix:
+          type: string
+          example: /api/v1/dataplane
+        callbackAddress:
+          type: string
+          example: http://localhost/callback
+        managementAddress:
+          type: string
+          example: http://localhost/manage
+        managementToken:
+          type: string
+          example: token123
+        catalogSynchronization:
+          type: string
+          enum:
+            - push
+            - pull
+          example: push
+        role:
+          type: string
+          enum:
+            - consumer
+            - provider
+            - both
+          example: consumer
+        identifier:
+          type: string
+          example: dp-12345
+      required:
+        - dataplaneType
+        - title
+        - endpointPrefix
+        - callbackAddress
+        - managementAddress
+        - managementToken
+        - catalogSynchronization
+        - role
+        - identifier
+    DataPlaneStateDto:
+      type: object
+      properties:
+        identifier:
+          type: string
+          example: 44d1f3d6-f65d-4a7c-84db-f92ba826305e
+        details:
+          $ref: "#/components/schemas/DataPlaneDetailsDto"
+      required:
+        - identifier
+        - details
     ConstraintSchema:
       type: object
       properties:
@@ -1931,72 +1989,6 @@ components:
       required:
         - "@id"
         - "@type"
-    DataPlaneDetailsDto:
-      type: object
-      properties:
-        datasets:
-          example:
-            - id: dataset-123
-              name: Example Dataset
-          type: array
-          items:
-            $ref: "#/components/schemas/DatasetSchema"
-        dataplaneType:
-          type: string
-          example: exampleType
-        endpointPrefix:
-          type: string
-          example: /api/v1/dataplane
-        callbackAddress:
-          type: string
-          example: http://localhost/callback
-        managementAddress:
-          type: string
-          example: http://localhost/manage
-        managementToken:
-          type: string
-          example: token123
-        catalogSynchronization:
-          type: string
-          enum:
-            - push
-            - pull
-          example: push
-        role:
-          type: string
-          enum:
-            - consumer
-            - provider
-            - both
-          example: consumer
-        identifier:
-          type: string
-          example: dp-12345
-      required:
-        - dataplaneType
-        - endpointPrefix
-        - callbackAddress
-        - managementAddress
-        - managementToken
-        - catalogSynchronization
-        - role
-        - identifier
-    DataPlaneStateDto:
-      type: object
-      properties:
-        identifier:
-          type: string
-          example: 44d1f3d6-f65d-4a7c-84db-f92ba826305e
-        details:
-          $ref: "#/components/schemas/DataPlaneDetailsDto"
-        dataset:
-          type: array
-          items:
-            $ref: "#/components/schemas/DatasetSchema"
-      required:
-        - identifier
-        - details
-        - dataset
     ResourceSchema:
       type: object
       properties:

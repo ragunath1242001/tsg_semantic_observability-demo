@@ -1,18 +1,16 @@
 <script setup lang="ts">
 import {
-  FileUpload,
   FileUploadSelectEvent,
-  FileUploadUploadEvent
+  FileUploadUploadEvent,
+  useToast
 } from "primevue";
-import { useToast } from "primevue/usetoast";
-import { useTemplateRef } from "vue";
+import { DynamicDialogInstance } from "primevue/dynamicdialogoptions";
+import { inject, Ref } from "vue";
 
-import { mimeToUrl } from "../utils/mime";
+import { mimeToUrl } from "../../utils/mime";
 
 const toast = useToast();
-const emit = defineEmits(["uploaded"]);
-
-const fileUploadRef = useTemplateRef("fileUploadRef");
+const dialogRef = inject<Ref<DynamicDialogInstance>>("dialogRef");
 
 const onSelectedFile = (event: FileUploadSelectEvent) => {
   event.files.forEach((file) => {
@@ -30,18 +28,17 @@ const onAdvancedUpload = (event: FileUploadUploadEvent) => {
     detail: "Files Uploaded",
     life: 3000
   });
-  emit("uploaded", event.files);
-  (fileUploadRef.value as any)?.clear();
+  dialogRef.value.close();
 };
 </script>
 
 <template>
   <div>
     <FileUpload
-      ref="fileUploadRef"
-      name="files[]"
+      name="file"
       url="api/files/upload"
-      :multiple="true"
+      :multiple="false"
+      :file-limit="1"
       :max-file-size="1024 * 1024 * 1024"
       :pt="{
         root: {

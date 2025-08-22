@@ -8,13 +8,13 @@ import {
 import { InjectRepository } from "@nestjs/typeorm";
 import { AuthClientService } from "@tsg-dsp/common-api";
 import {
-  Catalog,
   CatalogDto,
   Constraint,
   DataPlaneCreation,
   DataPlaneDetailsDto,
   Dataset,
   DatasetDto,
+  defaultContext,
   deserialize,
   Distribution,
   ODRLLeftOperand,
@@ -41,7 +41,11 @@ import { IsNull, Not, Repository } from "typeorm";
 import { RootConfig } from "../config.js";
 import { defArray } from "../utils/arrays.js";
 import { DataPlaneClientError, DataPlaneError } from "../utils/errors/error.js";
-import { DataPlaneStateDao, DatasetItemDao } from "./dataplane.dao.js";
+import {
+  DataPlaneStateDao,
+  DatasetItemDao,
+  VersionedDatasetDao
+} from "./dataplane.dao.js";
 
 @Injectable()
 export class DataPlaneService {
@@ -53,7 +57,9 @@ export class DataPlaneService {
     @InjectRepository(DataPlaneStateDao)
     private readonly stateRepository: Repository<DataPlaneStateDao>,
     @InjectRepository(DatasetItemDao)
-    private readonly itemRepository: Repository<DatasetItemDao>
+    private readonly itemRepository: Repository<DatasetItemDao>,
+    @InjectRepository(VersionedDatasetDao)
+    private readonly versionedItemRepository: Repository<VersionedDatasetDao>
   ) {
     this.initialized = this.init();
     this.axiosDataPlane = authClient.axiosInstance({
@@ -65,6 +71,7 @@ export class DataPlaneService {
   }
   logger = new Logger(this.constructor.name);
   initialized: Promise<void>;
+  registered?: Promise<unknown>;
   private state?: DataPlaneStateDao;
 
   async init() {
@@ -92,9 +99,17 @@ export class DataPlaneService {
       this.logger.log(
         `Creating new state (after ${this.config.controlPlane.initializationDelay}ms)`
       );
-      setTimeout(async () => {
-        await this.registerDataplane();
-      }, this.config.controlPlane.initializationDelay);
+      this.registered = new Promise<void>((resolve, reject) => {
+        setTimeout(async () => {
+          try {
+            await this.registerDataplane();
+            resolve();
+          } catch (error) {
+            this.logger.error("Error registering dataplane", error);
+            reject(error);
+          }
+        }, this.config.controlPlane.initializationDelay);
+      });
     }
   }
 
@@ -102,6 +117,7 @@ export class DataPlaneService {
     const managementToken = ""; // TODO: should be removed, due to move towards oAuth
     const dataPlaneCreation: DataPlaneCreation = {
       identifier: this.state?.identifier,
+      title: this.config.controlPlane.dataPlaneTitle,
       dataplaneType: "tsg:HTTP",
       endpointPrefix: `${this.config.server.publicAddress}/data`,
       callbackAddress: this.config.server.publicAddress,
@@ -114,27 +130,27 @@ export class DataPlaneService {
       `/init`,
       dataPlaneCreation
     );
-    let datasets: Dataset[] = [];
     if (this.config.dataset) {
-      datasets = await this.createDatasets(
+      const datasets = await this.createDatasets(
         this.state?.datasetConfig || this.config.dataset
       );
-
-      const catalog: Catalog = new Catalog({
+      const catalogDto: CatalogDto = {
+        "@context": defaultContext(),
+        "@type": "Catalog",
+        "@id": details.data.identifier,
         participantId: "",
         dataset: datasets
-      });
+      };
       await this.axiosDataPlane.post<DataPlaneDetailsDto>(
         `/${details.data.identifier}/catalog`,
-        catalog.serialize()
+        catalogDto
       );
     }
     const state = await this.stateRepository.save({
       identifier: details.data.identifier,
       managementToken: managementToken,
       details: details.data,
-      datasetConfig: this.state?.datasetConfig || this.config.dataset,
-      dataset: await Promise.all(datasets.map((d) => d.serialize()))
+      datasetConfig: this.state?.datasetConfig || this.config.dataset
     });
     this.state = state;
     return state;
@@ -185,7 +201,8 @@ export class DataPlaneService {
     }
 
     if (this.state.datasetConfig instanceof VersionedDatasetConfig) {
-      return this.state.dataset;
+      const items = await this.versionedItemRepository.find();
+      return items.map((item) => item.dataset);
     } else if (this.state.datasetConfig instanceof CollectionDatasetConfig) {
       const items = await this.itemRepository.find({
         where: {
@@ -227,33 +244,19 @@ export class DataPlaneService {
         HttpStatus.SERVICE_UNAVAILABLE
       );
     }
-    if (!this.state.dataset) {
-      throw new DataPlaneError(
-        "No dataset configuration available",
-        HttpStatus.SERVICE_UNAVAILABLE
-      );
-    }
     if (this.state.datasetConfig instanceof VersionedDatasetConfig) {
-      const dataset = this.state.dataset.find((d) => d["@id"] === id);
-      if (!dataset) {
-        throw new HttpException(
-          `Dataset ${id} not found`,
-          HttpStatus.NOT_FOUND
+      const versionedDataset = await this.getVersionedDataset(id);
+      if (
+        currentVersion &&
+        !versionedDataset.dataset.version &&
+        versionedDataset.dataset.hasCurrentVersion
+      ) {
+        const currentVersionedDataset = await this.getVersionedDataset(
+          versionedDataset.dataset.hasCurrentVersion
         );
+        return currentVersionedDataset.dataset;
       }
-      if (currentVersion && !dataset.version && dataset.hasCurrentVersion) {
-        const currentVersionDataset = this.state.dataset.find(
-          (d) => d["@id"] === dataset.hasCurrentVersion
-        );
-        if (!currentVersionDataset) {
-          throw new HttpException(
-            `Dataset of current version ${dataset.hasCurrentVersion} not found`,
-            HttpStatus.INTERNAL_SERVER_ERROR
-          );
-        }
-        return currentVersionDataset;
-      }
-      return dataset;
+      return versionedDataset.dataset;
     } else {
       const item = await this.getDatasetItem(id);
       if (!item?.dataset) {
@@ -264,6 +267,19 @@ export class DataPlaneService {
       }
       return item.dataset;
     }
+  }
+
+  async getVersionedDataset(id: string): Promise<VersionedDatasetDao> {
+    const item = await this.versionedItemRepository.findOneBy({
+      identifier: id
+    });
+    if (!item) {
+      throw new HttpException(
+        `Versioned dataset ${id} not found`,
+        HttpStatus.NOT_FOUND
+      );
+    }
+    return item;
   }
 
   async getDatasetItem(datasetId: string): Promise<DatasetItemDao> {
@@ -299,19 +315,20 @@ export class DataPlaneService {
     }
 
     const datasets = await this.createDatasets(datasetConfig);
-
-    const catalog: Catalog = new Catalog({
+    const catalogDto: CatalogDto = {
+      "@context": defaultContext(),
+      "@type": "Catalog",
+      "@id": currentState.details.identifier,
       participantId: "",
       dataset: datasets
-    });
+    };
     await this.axiosDataPlane.post<DataPlaneDetailsDto>(
       `/${currentState.identifier}/catalog`,
-      catalog.serialize()
+      catalogDto
     );
     const state = await this.stateRepository.save({
       ...currentState,
-      datasetConfig: datasetConfig,
-      dataset: await Promise.all(datasets.map((d) => d.serialize()))
+      datasetConfig: datasetConfig
     });
 
     this.state = state;
@@ -322,12 +339,6 @@ export class DataPlaneService {
     if (!this.state) {
       throw new DataPlaneError(
         "No state available yet",
-        HttpStatus.SERVICE_UNAVAILABLE
-      );
-    }
-    if (!this.state.dataset) {
-      throw new DataPlaneError(
-        "No dataset configuration available",
         HttpStatus.SERVICE_UNAVAILABLE
       );
     }
@@ -424,7 +435,7 @@ export class DataPlaneService {
 
   private async createDatasets(
     datasetConfig: DatasetConfig
-  ): Promise<Dataset[]> {
+  ): Promise<DatasetDto[]> {
     if (datasetConfig instanceof VersionedDatasetConfig) {
       return this.createVersionedDatasets(datasetConfig);
     } else if (datasetConfig instanceof CollectionDatasetConfig) {
@@ -435,9 +446,9 @@ export class DataPlaneService {
 
   private async createCollectionDatasets(
     datasetConfig: CollectionDatasetConfig
-  ): Promise<Dataset[]> {
+  ): Promise<DatasetDto[]> {
     const items = await this.itemRepository.find();
-    const datasets: Dataset[] = [];
+    const datasets: DatasetDto[] = [];
     for (const item of items) {
       datasets.push(await this.createCollectionDataset(item, datasetConfig));
     }
@@ -447,7 +458,7 @@ export class DataPlaneService {
   private async createCollectionDataset(
     item: DatasetItemDao,
     datasetConfig: CollectionDatasetConfig
-  ): Promise<Dataset> {
+  ): Promise<DatasetDto> {
     let policyConfigs: PolicyConfig[] = [];
     if (item.policy) {
       policyConfigs = item.policy;
@@ -487,16 +498,13 @@ export class DataPlaneService {
     });
     item.dataset = dataset.serialize();
     await this.itemRepository.save(item);
-    return dataset;
+    return item.dataset;
   }
 
   private async createVersionedDatasets(
     datasetConfig: VersionedDatasetConfig
-  ): Promise<Dataset[]> {
-    const id =
-      datasetConfig.id ||
-      this.state?.dataset?.[0]?.["@id"] ||
-      `urn:uuid:${crypto.randomUUID()}`;
+  ): Promise<DatasetDto[]> {
+    const id = datasetConfig.id || `urn:uuid:${crypto.randomUUID()}`;
 
     const currentDatasetRef =
       datasetConfig.versions.filter(
@@ -517,7 +525,7 @@ export class DataPlaneService {
         previous: datasetConfig.versions.at(idx + 1)
       };
     });
-    const datasets = [baseDataset];
+    const datasets = [baseDataset.serialize()];
     for (const v of versions) {
       datasets.push(
         new Dataset({
@@ -544,9 +552,15 @@ export class DataPlaneService {
               })
           ),
           hasPolicy: await this.constructOffer(id, datasetConfig.policy)
-        })
+        }).serialize()
       );
     }
+    await this.versionedItemRepository.save(
+      datasets.map((dataset) => ({
+        identifier: dataset["@id"],
+        dataset: dataset
+      }))
+    );
     return datasets;
   }
 

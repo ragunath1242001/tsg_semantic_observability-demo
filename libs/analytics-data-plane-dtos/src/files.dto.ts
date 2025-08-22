@@ -73,3 +73,19 @@ export class FileMetadataDto {
   @IsOptional()
   datasetId?: string;
 }
+
+export class FileUpdateDto {
+  @ApiProperty({ example: "file.csv" })
+  @IsString()
+  @IsOptional()
+  originalFileName?: string;
+
+  @ApiProperty({ example: "text/csv" })
+  @IsString()
+  @IsOptional()
+  mediaType?: string;
+
+  @ApiProperty({ type: () => CSVW })
+  @IsOptional()
+  csvw?: CSVW;
+}
