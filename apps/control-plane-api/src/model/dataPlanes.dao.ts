@@ -8,6 +8,8 @@ import { MetaEntity } from "./common.dao.js";
 export class DataPlaneDao extends MetaEntity implements IDataPlane {
   @PrimaryColumn({ type: String })
   identifier!: string;
+  @Column({ type: String })
+  title!: string;
   @Column({ type: String, nullable: true })
   created?: Date;
   @Column({ type: String, nullable: true })

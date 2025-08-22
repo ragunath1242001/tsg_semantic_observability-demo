@@ -37,6 +37,11 @@ export class ControlPlaneConfig {
   @IsNumber()
   @Type(() => Number)
   public readonly initializationDelay: number = 5000;
+  @Description("Data Plane title")
+  @IsString()
+  @IsOptional()
+  public readonly title: string =
+    `Analytics Data Plane - ${process.env.TSG_MODE === "development" ? "dev" : `v${process.env.TSG_VERSION}`}`;
 }
 
 export class LoggingConfig {

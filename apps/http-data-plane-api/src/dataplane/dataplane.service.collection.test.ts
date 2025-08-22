@@ -15,7 +15,11 @@ import { EgressLogDao, IngressLogDao } from "../logging/logging.dao.js";
 import { LoggingService } from "../logging/logging.service.js";
 import { TransferDao } from "../transfer/transfer.dao.js";
 import { DataPlaneController } from "./dataplane.controller.js";
-import { DataPlaneStateDao, DatasetItemDao } from "./dataplane.dao.js";
+import {
+  DataPlaneStateDao,
+  DatasetItemDao,
+  VersionedDatasetDao
+} from "./dataplane.dao.js";
 import { DataPlaneService } from "./dataplane.service.js";
 
 describe("Dataplane with CollectionDatasetConfig", () => {
@@ -103,6 +107,7 @@ describe("Dataplane with CollectionDatasetConfig", () => {
         TypeOrmTestHelper.instance.module([
           TransferDao,
           DataPlaneStateDao,
+          VersionedDatasetDao,
           DatasetItemDao,
           IngressLogDao,
           EgressLogDao
@@ -110,6 +115,7 @@ describe("Dataplane with CollectionDatasetConfig", () => {
         TypeOrmModule.forFeature([
           TransferDao,
           DataPlaneStateDao,
+          VersionedDatasetDao,
           DatasetItemDao,
           IngressLogDao,
           EgressLogDao

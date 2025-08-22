@@ -4,20 +4,21 @@ import { InjectRepository } from "@nestjs/typeorm";
 import {
   AuthClientService,
   Paginated,
-  PaginationOptionsDto
+  PaginationOptionsDto,
+  promiseMap
 } from "@tsg-dsp/common-api";
 import {
   DataPlaneCreation,
   DataPlaneDetailsDto,
   DataPlaneRequestResponseDto,
-  DataPlaneTransferDto
+  DataPlaneTransferDto,
+  DatasetDto
 } from "@tsg-dsp/common-dsp";
 import {
   Catalog,
   DataPlane,
   DataPlaneStatus,
   Dataset,
-  deserialize,
   HealthStatus,
   ICatalog,
   SerializableClass,
@@ -75,6 +76,9 @@ export class DataPlaneService {
         order: {
           [paginationOptions.order_by]: paginationOptions.order
         },
+        relations: {
+          _datasets: false
+        },
         skip: paginationOptions.skip,
         take: paginationOptions.take
       }
@@ -88,14 +92,8 @@ export class DataPlaneService {
       return {
         data: await Promise.all(
           dataPlanes.map(async (dataplane) => {
-            return {
-              ...dataplane,
-              datasets: dataplane.datasets
-                ? await Promise.all(
-                    dataplane.datasets.map((d) => d.serialize())
-                  )
-                : undefined
-            };
+            const { _datasets, datasets: _, ...dataplaneDetails } = dataplane;
+            return dataplaneDetails;
           })
         ),
         total: itemCount
@@ -143,13 +141,9 @@ export class DataPlaneService {
     dataPlaneCreation: DataPlaneCreation
   ): Promise<DataPlaneDetailsDto> {
     const dataPlane: DataPlane = {
-      datasets: dataPlaneCreation.datasets
-        ? await Promise.all(
-            dataPlaneCreation.datasets?.map((d) => deserialize<Dataset>(d))
-          )
-        : undefined,
       identifier:
         dataPlaneCreation.identifier || `urn:uuid:${crypto.randomUUID()}`,
+      title: dataPlaneCreation.title,
       created: new Date(),
       modified: new Date(),
       health: HealthStatus.UNKNOWN,
@@ -162,22 +156,17 @@ export class DataPlaneService {
       catalogSynchronization: dataPlaneCreation.catalogSynchronization,
       role: dataPlaneCreation.role
     };
-    await this.dataPlaneRepository.save(dataPlane);
+    const dataPlaneDao = await this.dataPlaneRepository.save(dataPlane);
     this.logger.debug(`Added dataplane ${dataPlane.identifier}`);
     switch (dataPlaneCreation.catalogSynchronization) {
       case "push":
-        await this.healthCheck(dataPlane);
+        await this.healthCheck(dataPlaneDao);
         break;
       case "pull":
-        await this.pullCatalog(dataPlane);
+        await this.pullCatalog(dataPlaneDao);
         break;
     }
-    return {
-      ...dataPlane,
-      datasets: dataPlane.datasets
-        ? await Promise.all(dataPlane.datasets.map((d) => d.serialize()))
-        : undefined
-    };
+    return dataPlane;
   }
 
   async updateDataPlane(
@@ -186,17 +175,10 @@ export class DataPlaneService {
   ): Promise<DataPlaneDetailsDto> {
     const dataPlane = await this.getDataPlaneDetails(identifier);
     dataPlane.modified = new Date();
-    const dataPlaneDetailsObj = {
-      ...dataPlaneDetails,
-      datasets: dataPlaneDetails.datasets
-        ? await Promise.all(
-            dataPlaneDetails.datasets?.map((d) => deserialize<Dataset>(d))
-          )
-        : undefined
-    };
     await this.dataPlaneRepository.save({
       ...dataPlane,
-      ...dataPlaneDetailsObj
+      ...dataPlaneDetails,
+      identifier: identifier
     });
     this.logger.debug(`Added dataplane ${dataPlane.identifier}`);
     switch (dataPlane.catalogSynchronization) {
@@ -207,17 +189,22 @@ export class DataPlaneService {
         await this.pullCatalog(dataPlane);
         break;
     }
-    return {
-      ...dataPlane,
-      datasets: dataPlane.datasets
-        ? await Promise.all(dataPlane.datasets.map((d) => d.serialize()))
-        : undefined
-    };
+    return dataPlane;
   }
 
   async deleteDataplane(dataPlaneId: string) {
     const dataPlane = await this.getDataPlane(dataPlaneId);
     await this.dataPlaneRepository.delete({ identifier: dataPlane.identifier });
+  }
+
+  async getDatasets(
+    dataPlaneId: string,
+    paginationOptions: PaginationOptionsDto
+  ): Promise<Paginated<DatasetDto[]>> {
+    return await this.catalogService.getDataplaneDatasets(
+      dataPlaneId,
+      paginationOptions
+    );
   }
 
   async addDataset(dataPlaneId: string, dataset: Dataset): Promise<DatasetDao> {
@@ -310,7 +297,7 @@ export class DataPlaneService {
     }
   }
 
-  async pullCatalog(dataPlaneStatus: DataPlane) {
+  async pullCatalog(dataPlaneStatus: DataPlaneDao) {
     try {
       const requestConfig: AxiosRequestConfig = {
         headers: {
@@ -348,7 +335,7 @@ export class DataPlaneService {
     }
   }
 
-  async healthCheck(dataPlaneStatus: DataPlane) {
+  async healthCheck(dataPlaneStatus: DataPlaneDao) {
     try {
       const requestConfig: AxiosRequestConfig = {
         headers: {
@@ -375,7 +362,10 @@ export class DataPlaneService {
     }
   }
 
-  private async updateHealth(dataPlane: DataPlane, healthStatus: HealthStatus) {
+  private async updateHealth(
+    dataPlane: DataPlaneDao,
+    healthStatus: HealthStatus
+  ) {
     switch (healthStatus) {
       case HealthStatus.HEALTHY:
         dataPlane.health = HealthStatus.HEALTHY;
@@ -408,11 +398,9 @@ export class DataPlaneService {
             1000
           } seconds, its catalog is deregistered.`
         );
-        for (const dataset of dataPlane.datasets) {
-          await this.catalogService.removeDataset(dataset.id);
-        }
-        dataPlane.datasets = undefined;
-        this.dataPlaneRepository.save(dataPlane);
+        await promiseMap(dataPlane.datasets, (dataset) =>
+          this.catalogService.removeDataset(dataset.id)
+        );
       }
     }
   }

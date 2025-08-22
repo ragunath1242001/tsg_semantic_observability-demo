@@ -296,14 +296,14 @@ describe("TransferController", () => {
 
     await dataPlaneService.addDataPlane({
       identifier: "urn:uuid:b363b656-9f63-4e2b-baab-5376a25bdc0b",
+      title: "Test Data Plane",
       dataplaneType: "tsg:HTTP",
       endpointPrefix: "",
       callbackAddress: "http://127.0.0.1/data-plane",
       managementAddress: "http://127.0.0.1/data-plane",
       managementToken: "DpuwVK9bnX2MVGf6MVVjlBnI4PvtQSGJ",
       catalogSynchronization: "push",
-      role: "both",
-      datasets: []
+      role: "both"
     });
     await dataPlaneService.addDataset(
       "urn:uuid:b363b656-9f63-4e2b-baab-5376a25bdc0b",

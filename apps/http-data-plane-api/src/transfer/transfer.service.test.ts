@@ -4,6 +4,7 @@ import { HttpStatus, RawBodyRequest } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import {
+  AppLogger,
   AuthClientService,
   AuthConfig,
   TypeOrmTestHelper
@@ -27,7 +28,8 @@ import { SetupServer, setupServer } from "msw/node";
 import { LoggingConfig, RootConfig } from "../config.js";
 import {
   DataPlaneStateDao,
-  DatasetItemDao
+  DatasetItemDao,
+  VersionedDatasetDao
 } from "../dataplane/dataplane.dao.js";
 import { DataPlaneService } from "../dataplane/dataplane.service.js";
 import { EgressLogDao, IngressLogDao } from "../logging/logging.dao.js";
@@ -213,6 +215,7 @@ describe.each(["Authorization", "X-TSG-Authorization"])(
           TypeOrmTestHelper.instance.module([
             TransferDao,
             DataPlaneStateDao,
+            VersionedDatasetDao,
             DatasetItemDao,
             IngressLogDao,
             EgressLogDao
@@ -220,6 +223,7 @@ describe.each(["Authorization", "X-TSG-Authorization"])(
           TypeOrmModule.forFeature([
             TransferDao,
             DataPlaneStateDao,
+            VersionedDatasetDao,
             DatasetItemDao,
             IngressLogDao,
             EgressLogDao
@@ -244,10 +248,13 @@ describe.each(["Authorization", "X-TSG-Authorization"])(
             useValue: config
           }
         ]
-      }).compile();
+      })
+        .setLogger(new AppLogger())
+        .compile();
 
       transferService = moduleRef.get(TransferService);
       await moduleRef.get(DataPlaneService).initialized;
+      await moduleRef.get(DataPlaneService).registered;
 
       await new Promise((r) => setTimeout(r, 20));
     });

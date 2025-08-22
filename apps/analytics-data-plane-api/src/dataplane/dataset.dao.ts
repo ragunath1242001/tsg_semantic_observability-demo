@@ -1,11 +1,11 @@
-import { DataPlaneDetailsDto } from "@tsg-dsp/common-dsp";
+import { DatasetDto } from "@tsg-dsp/common-dsp";
 import { Column, Entity, PrimaryColumn } from "typeorm";
 
 @Entity()
-export class DataPlaneStateDao {
+export class DatasetDao {
   @PrimaryColumn({ type: String })
   identifier!: string;
 
   @Column("simple-json")
-  details!: DataPlaneDetailsDto;
+  dataset!: DatasetDto;
 }

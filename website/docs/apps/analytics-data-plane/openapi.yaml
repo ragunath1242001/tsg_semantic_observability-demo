@@ -819,6 +819,31 @@ paths:
       security: *a12
       summary: Get file
       tags: *a13
+    post:
+      description: Update the file metadata by ID.
+      operationId: FilesController_updateFileMetadata
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FileUpdateDto"
+      responses:
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a12
+      summary: Update file metadata
+      tags: *a13
     delete:
       description: Delete the file by ID.
       operationId: FilesController_removeFile
@@ -837,6 +862,50 @@ paths:
                 $ref: "#/components/schemas/ErrorDto"
       security: *a12
       summary: Delete file
+      tags: *a13
+  /api/files/{id}/preview:
+    get:
+      operationId: FilesController_previewFile
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: previewSize
+          required: true
+          in: query
+          schema:
+            type: number
+      responses:
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a12
+      summary: Preview file
+      tags: *a13
+  /api/files/{id}/upload:
+    post:
+      description: Upload updated file and (re)create metadata.
+      operationId: FilesController_updateFile
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a12
+      summary: Upload updated file
       tags: *a13
   /api/files/{id}/csvw:
     get:
@@ -863,6 +932,32 @@ paths:
                 $ref: "#/components/schemas/ErrorDto"
       security: *a12
       summary: Get CSVW
+      tags: *a13
+  /api/files/{id}/dataset:
+    get:
+      description: Get the dataset of a file.
+      operationId: FilesController_getDataset
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DatasetSchema"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a12
+      summary: Get dataset
       tags: *a13
   /api/management/k8s/jobs/algorithm-instance/{algorithmInstanceId}:
     get:
@@ -1442,6 +1537,64 @@ components:
         - name
         - status
         - code
+    DataPlaneDetailsDto:
+      type: object
+      properties:
+        dataplaneType:
+          type: string
+          example: exampleType
+        title:
+          type: string
+          example: Dataplane Titel
+        endpointPrefix:
+          type: string
+          example: /api/v1/dataplane
+        callbackAddress:
+          type: string
+          example: http://localhost/callback
+        managementAddress:
+          type: string
+          example: http://localhost/manage
+        managementToken:
+          type: string
+          example: token123
+        catalogSynchronization:
+          type: string
+          enum:
+            - push
+            - pull
+          example: push
+        role:
+          type: string
+          enum:
+            - consumer
+            - provider
+            - both
+          example: consumer
+        identifier:
+          type: string
+          example: dp-12345
+      required:
+        - dataplaneType
+        - title
+        - endpointPrefix
+        - callbackAddress
+        - managementAddress
+        - managementToken
+        - catalogSynchronization
+        - role
+        - identifier
+    DataPlaneStateDto:
+      type: object
+      properties:
+        identifier:
+          type: string
+          example: 44d1f3d6-f65d-4a7c-84db-f92ba826305e
+        details:
+          $ref: "#/components/schemas/DataPlaneDetailsDto"
+      required:
+        - identifier
+        - details
     ConstraintSchema:
       type: object
       properties:
@@ -1724,72 +1877,6 @@ components:
       required:
         - "@id"
         - "@type"
-    DataPlaneDetailsDto:
-      type: object
-      properties:
-        datasets:
-          example:
-            - id: dataset-123
-              name: Example Dataset
-          type: array
-          items:
-            $ref: "#/components/schemas/DatasetSchema"
-        dataplaneType:
-          type: string
-          example: exampleType
-        endpointPrefix:
-          type: string
-          example: /api/v1/dataplane
-        callbackAddress:
-          type: string
-          example: http://localhost/callback
-        managementAddress:
-          type: string
-          example: http://localhost/manage
-        managementToken:
-          type: string
-          example: token123
-        catalogSynchronization:
-          type: string
-          enum:
-            - push
-            - pull
-          example: push
-        role:
-          type: string
-          enum:
-            - consumer
-            - provider
-            - both
-          example: consumer
-        identifier:
-          type: string
-          example: dp-12345
-      required:
-        - dataplaneType
-        - endpointPrefix
-        - callbackAddress
-        - managementAddress
-        - managementToken
-        - catalogSynchronization
-        - role
-        - identifier
-    DataPlaneStateDto:
-      type: object
-      properties:
-        identifier:
-          type: string
-          example: 44d1f3d6-f65d-4a7c-84db-f92ba826305e
-        details:
-          $ref: "#/components/schemas/DataPlaneDetailsDto"
-        dataset:
-          type: array
-          items:
-            $ref: "#/components/schemas/DatasetSchema"
-      required:
-        - identifier
-        - details
-        - dataset
     ResourceSchema:
       type: object
       properties:
@@ -2638,6 +2725,21 @@ components:
         - originalFileName
         - mediaType
         - presentInLastCheck
+        - csvw
+    FileUpdateDto:
+      type: object
+      properties:
+        originalFileName:
+          type: string
+          example: file.csv
+        mediaType:
+          type: string
+          example: text/csv
+        csvw:
+          $ref: "#/components/schemas/CSVW"
+      required:
+        - originalFileName
+        - mediaType
         - csvw
     TimeDto:
       type: object

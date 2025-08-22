@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Delete,
   Get,
@@ -6,19 +7,29 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  ParseIntPipe,
   Post,
+  Query,
   StreamableFile,
+  UploadedFile,
   UploadedFiles,
   UseInterceptors
 } from "@nestjs/common";
 import { AnyFilesInterceptor } from "@nestjs/platform-express";
 import { ApiOAuth2, ApiOkResponse, ApiOperation } from "@nestjs/swagger";
-import { CSVW, FileMetadataDto } from "@tsg-dsp/analytics-data-plane-dtos";
+import {
+  CSVW,
+  FileMetadataDto,
+  FileUpdateDto
+} from "@tsg-dsp/analytics-data-plane-dtos";
 import {
   DisableOAuthGuard,
   DisableRolesGuard,
-  Roles
+  Roles,
+  validationPipe
 } from "@tsg-dsp/common-api";
+import { DatasetSchema } from "@tsg-dsp/common-dsp";
+import { DatasetDto } from "@tsg-dsp/common-dsp/dist/model/dsp/catalog/catalog.dto.js";
 import { ApiForbiddenResponseDefault } from "@tsg-dsp/common-dtos";
 
 import { FilesService } from "./files.service.js";
@@ -98,6 +109,58 @@ export class FilesController {
     return await this.filesService.getFile(id, authorizationHeader);
   }
 
+  @Get(":id/preview")
+  @ApiOperation({
+    summary: "Preview file"
+  })
+  @ApiForbiddenResponseDefault()
+  @HttpCode(HttpStatus.OK)
+  async previewFile(
+    @Param("id") id: string,
+    @Query("previewSize", new ParseIntPipe({ optional: true }))
+    previewSize?: number
+  ): Promise<StreamableFile> {
+    return await this.filesService.previewFile(id, previewSize);
+  }
+
+  @Post(":id")
+  @ApiOperation({
+    summary: "Update file metadata",
+    description: "Update the file metadata by ID."
+  })
+  @ApiForbiddenResponseDefault()
+  @HttpCode(HttpStatus.OK)
+  async updateFileMetadata(
+    @Param("id") id: string,
+    @Body(validationPipe) fileUpdateDto: FileUpdateDto
+  ) {
+    await this.filesService.updateFileMetadata(id, fileUpdateDto);
+  }
+
+  @Post(":id/upload")
+  @ApiOperation({
+    summary: "Upload updated file",
+    description: "Upload updated file and (re)create metadata."
+  })
+  @ApiForbiddenResponseDefault()
+  @HttpCode(HttpStatus.CREATED)
+  @UseInterceptors(
+    AnyFilesInterceptor({
+      limits: {
+        fileSize: 1024 * 1024 * 1024 // 1GB - TODO: Configurable
+      }
+    })
+  )
+  async updateFile(
+    @Param("id") id: string,
+    @UploadedFile() file: Express.Multer.File
+  ) {
+    await this.filesService.updateFile(id, file);
+    setImmediate(() => {
+      this.filesService.createMetadata([file]);
+    });
+  }
+
   @Delete(":id")
   @ApiOperation({
     summary: "Delete file",
@@ -119,5 +182,17 @@ export class FilesController {
   @HttpCode(HttpStatus.OK)
   async getCSVW(@Param("id") id: string): Promise<CSVW> {
     return await this.filesService.getCSVW(id);
+  }
+
+  @Get(":id/dataset")
+  @ApiOperation({
+    summary: "Get dataset",
+    description: "Get the dataset of a file."
+  })
+  @ApiForbiddenResponseDefault()
+  @ApiOkResponse({ type: DatasetSchema })
+  @HttpCode(HttpStatus.OK)
+  async getDataset(@Param("id") id: string): Promise<DatasetDto> {
+    return await this.filesService.getDataset(id);
   }
 }

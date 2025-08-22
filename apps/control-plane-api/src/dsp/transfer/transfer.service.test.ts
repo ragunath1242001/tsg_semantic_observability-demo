@@ -335,6 +335,7 @@ describe("Transfer service", () => {
 
     await dataPlaneService.addDataPlane({
       identifier: "urn:uuid:db725fa1-584f-4d9d-91d5-0aa0b0f60848",
+      title: "Test Data Plane",
       dataplaneType: "tsg:HTTP",
       endpointPrefix: "",
       callbackAddress: "http://127.0.0.1/data-plane",

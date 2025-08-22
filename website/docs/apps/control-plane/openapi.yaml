@@ -636,6 +636,95 @@ paths:
       security: *a8
       summary: Delete a dataplane
       tags: *a9
+  /api/management/dataplanes/{id}/datasets:
+    get:
+      description: Fetches all datasets associated with a specific dataplane.
+      operationId: DataplaneManagementController_getDatasets
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: order
+          required: false
+          in: query
+          schema:
+            default: DESC
+            type: string
+            enum:
+              - ASC
+              - DESC
+        - name: order_by
+          required: false
+          in: query
+          schema:
+            default: modifiedDate
+            type: string
+        - name: page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            default: 1
+            type: number
+        - name: per_page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            default: 100
+            type: number
+      responses:
+        "200":
+          description: ""
+          headers:
+            x-page:
+              description: Index of the current page (starting at 1)
+              schema:
+                type: integer
+            x-prev-page:
+              description: Index of the previous page
+              schema:
+                type: integer
+              required: false
+            x-next-page:
+              description: Index of the next page
+              schema:
+                type: integer
+              required: false
+            x-per-page:
+              description: Number of items per page
+              schema:
+                type: integer
+            x-total-pages:
+              description: Total number of pages
+              schema:
+                type: integer
+            x-total:
+              description: Total number of items
+              schema:
+                type: integer
+            link:
+              description: Web Linking to other pages of this resource
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DatasetSchema"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+      security: *a8
+      summary: Get all datasets for a dataplane
+      tags: *a9
   /api/catalog/request:
     post:
       description: Requests a catalog with the provided details.
@@ -3579,6 +3668,94 @@ components:
           example: unauthenticated
       required:
         - state
+    DataPlaneCreation:
+      type: object
+      properties:
+        dataplaneType:
+          type: string
+          example: exampleType
+        title:
+          type: string
+          example: Dataplane Titel
+        endpointPrefix:
+          type: string
+          example: /api/v1/dataplane
+        callbackAddress:
+          type: string
+          example: http://localhost/callback
+        managementAddress:
+          type: string
+          example: http://localhost/manage
+        managementToken:
+          type: string
+          example: token123
+        catalogSynchronization:
+          type: string
+          enum: &a30
+            - push
+            - pull
+          example: push
+        role:
+          type: string
+          enum: &a31
+            - consumer
+            - provider
+            - both
+          example: consumer
+        identifier:
+          type: string
+          example: dp-optional-12345
+      required:
+        - dataplaneType
+        - title
+        - endpointPrefix
+        - callbackAddress
+        - managementAddress
+        - managementToken
+        - catalogSynchronization
+        - role
+    DataPlaneDetailsDto:
+      type: object
+      properties:
+        dataplaneType:
+          type: string
+          example: exampleType
+        title:
+          type: string
+          example: Dataplane Titel
+        endpointPrefix:
+          type: string
+          example: /api/v1/dataplane
+        callbackAddress:
+          type: string
+          example: http://localhost/callback
+        managementAddress:
+          type: string
+          example: http://localhost/manage
+        managementToken:
+          type: string
+          example: token123
+        catalogSynchronization:
+          type: string
+          enum: *a30
+          example: push
+        role:
+          type: string
+          enum: *a31
+          example: consumer
+        identifier:
+          type: string
+          example: dp-12345
+      required:
+        - dataplaneType
+        - title
+        - endpointPrefix
+        - callbackAddress
+        - managementAddress
+        - managementToken
+        - catalogSynchronization
+        - role
+        - identifier
     ConstraintSchema:
       type: object
       properties:
@@ -3621,7 +3798,7 @@ components:
           type: string
           example: targetExample
         constraint:
-          example: &a30 []
+          example: &a32 []
           type: array
           items:
             $ref: "#/components/schemas/ConstraintSchema"
@@ -3652,7 +3829,7 @@ components:
           type: string
           example: targetExample
         constraint:
-          example: *a30
+          example: *a32
           type: array
           items:
             $ref: "#/components/schemas/ConstraintSchema"
@@ -3678,7 +3855,7 @@ components:
           type: string
           example: targetExample
         constraint:
-          example: *a30
+          example: *a32
           type: array
           items:
             $ref: "#/components/schemas/ConstraintSchema"
@@ -3704,17 +3881,17 @@ components:
           type: string
           example: profileExample
         permission:
-          example: &a40 []
+          example: &a39 []
           type: array
           items:
             $ref: "#/components/schemas/PermissionSchema"
         prohibition:
-          example: &a41 []
+          example: &a40 []
           type: array
           items:
             $ref: "#/components/schemas/ProhibitionSchema"
         obligation:
-          example: &a42 []
+          example: &a41 []
           type: array
           items:
             $ref: "#/components/schemas/DutySchema"
@@ -3746,7 +3923,7 @@ components:
           type: string
           example: contactPointExample
         keyword:
-          example: &a34
+          example: &a33
             - keyword1
             - keyword2
           type: array
@@ -3756,14 +3933,14 @@ components:
           type: string
           example: landingPageExample
         theme:
-          example: &a35
+          example: &a34
             - theme1
             - theme2
           type: array
           items:
             type: string
         conformsTo:
-          example: &a36
+          example: &a35
             - conformsToExample
           type: array
           items:
@@ -3772,7 +3949,7 @@ components:
           type: string
           example: creatorExample
         description:
-          example: &a37
+          example: &a36
             - description1
             - description2
           type: array
@@ -3809,12 +3986,12 @@ components:
           type: string
           example: typeExample
         hasPolicy:
-          example: &a38 []
+          example: &a37 []
           type: array
           items:
             $ref: "#/components/schemas/PolicySchema"
         hasVersion:
-          example: &a39
+          example: &a38
             - version1
             - version2
           type: array
@@ -3861,98 +4038,6 @@ components:
       required:
         - "@id"
         - "@type"
-    DataPlaneCreation:
-      type: object
-      properties:
-        datasets:
-          example: &a31
-            - id: dataset-123
-              name: Example Dataset
-          type: array
-          items:
-            $ref: "#/components/schemas/DatasetSchema"
-        dataplaneType:
-          type: string
-          example: exampleType
-        endpointPrefix:
-          type: string
-          example: /api/v1/dataplane
-        callbackAddress:
-          type: string
-          example: http://localhost/callback
-        managementAddress:
-          type: string
-          example: http://localhost/manage
-        managementToken:
-          type: string
-          example: token123
-        catalogSynchronization:
-          type: string
-          enum: &a32
-            - push
-            - pull
-          example: push
-        role:
-          type: string
-          enum: &a33
-            - consumer
-            - provider
-            - both
-          example: consumer
-        identifier:
-          type: string
-          example: dp-optional-12345
-      required:
-        - dataplaneType
-        - endpointPrefix
-        - callbackAddress
-        - managementAddress
-        - managementToken
-        - catalogSynchronization
-        - role
-    DataPlaneDetailsDto:
-      type: object
-      properties:
-        datasets:
-          example: *a31
-          type: array
-          items:
-            $ref: "#/components/schemas/DatasetSchema"
-        dataplaneType:
-          type: string
-          example: exampleType
-        endpointPrefix:
-          type: string
-          example: /api/v1/dataplane
-        callbackAddress:
-          type: string
-          example: http://localhost/callback
-        managementAddress:
-          type: string
-          example: http://localhost/manage
-        managementToken:
-          type: string
-          example: token123
-        catalogSynchronization:
-          type: string
-          enum: *a32
-          example: push
-        role:
-          type: string
-          enum: *a33
-          example: consumer
-        identifier:
-          type: string
-          example: dp-12345
-      required:
-        - dataplaneType
-        - endpointPrefix
-        - callbackAddress
-        - managementAddress
-        - managementToken
-        - catalogSynchronization
-        - role
-        - identifier
     ResourceSchema:
       type: object
       properties:
@@ -3966,7 +4051,7 @@ components:
           type: string
           example: contactPointExample
         keyword:
-          example: *a34
+          example: *a33
           type: array
           items:
             type: string
@@ -3974,12 +4059,12 @@ components:
           type: string
           example: landingPageExample
         theme:
-          example: *a35
+          example: *a34
           type: array
           items:
             type: string
         conformsTo:
-          example: *a36
+          example: *a35
           type: array
           items:
             type: string
@@ -3987,7 +4072,7 @@ components:
           type: string
           example: creatorExample
         description:
-          example: *a37
+          example: *a36
           type: array
           items:
             type: string
@@ -4022,12 +4107,12 @@ components:
           type: string
           example: typeExample
         hasPolicy:
-          example: *a38
+          example: *a37
           type: array
           items:
             $ref: "#/components/schemas/PolicySchema"
         hasVersion:
-          example: *a39
+          example: *a38
           type: array
           items:
             type: string
@@ -4095,7 +4180,7 @@ components:
           type: string
           example: contactPointExample
         keyword:
-          example: *a34
+          example: *a33
           type: array
           items:
             type: string
@@ -4103,12 +4188,12 @@ components:
           type: string
           example: landingPageExample
         theme:
-          example: *a35
+          example: *a34
           type: array
           items:
             type: string
         conformsTo:
-          example: *a36
+          example: *a35
           type: array
           items:
             type: string
@@ -4116,7 +4201,7 @@ components:
           type: string
           example: creatorExample
         description:
-          example: *a37
+          example: *a36
           type: array
           items:
             type: string
@@ -4151,12 +4236,12 @@ components:
           type: string
           example: typeExample
         hasPolicy:
-          example: *a38
+          example: *a37
           type: array
           items:
             $ref: "#/components/schemas/PolicySchema"
         hasVersion:
-          example: *a39
+          example: *a38
           type: array
           items:
             type: string
@@ -4199,7 +4284,7 @@ components:
           type: string
           example: contactPointExample
         keyword:
-          example: *a34
+          example: *a33
           type: array
           items:
             type: string
@@ -4207,12 +4292,12 @@ components:
           type: string
           example: landingPageExample
         theme:
-          example: *a35
+          example: *a34
           type: array
           items:
             type: string
         conformsTo:
-          example: *a36
+          example: *a35
           type: array
           items:
             type: string
@@ -4220,7 +4305,7 @@ components:
           type: string
           example: creatorExample
         description:
-          example: *a37
+          example: *a36
           type: array
           items:
             type: string
@@ -4255,12 +4340,12 @@ components:
           type: string
           example: typeExample
         hasPolicy:
-          example: *a38
+          example: *a37
           type: array
           items:
             $ref: "#/components/schemas/PolicySchema"
         hasVersion:
-          example: *a39
+          example: *a38
           type: array
           items:
             type: string
@@ -4367,17 +4452,17 @@ components:
           type: string
           example: profileExample
         permission:
-          example: *a40
+          example: *a39
           type: array
           items:
             $ref: "#/components/schemas/PermissionSchema"
         prohibition:
-          example: *a41
+          example: *a40
           type: array
           items:
             $ref: "#/components/schemas/ProhibitionSchema"
         obligation:
-          example: *a42
+          example: *a41
           type: array
           items:
             $ref: "#/components/schemas/DutySchema"
@@ -4576,17 +4661,17 @@ components:
           type: string
           example: profileExample
         permission:
-          example: *a40
+          example: *a39
           type: array
           items:
             $ref: "#/components/schemas/PermissionSchema"
         prohibition:
-          example: *a41
+          example: *a40
           type: array
           items:
             $ref: "#/components/schemas/ProhibitionSchema"
         obligation:
-          example: *a42
+          example: *a41
           type: array
           items:
             $ref: "#/components/schemas/DutySchema"
@@ -4640,7 +4725,7 @@ components:
           example: Remote Party Name
         role:
           type: string
-          enum: &a43
+          enum: &a42
             - provider
             - consumer
           example: provider
@@ -4649,7 +4734,7 @@ components:
           example: 192.168.1.100
         state:
           type: string
-          enum: &a44
+          enum: &a43
             - REQUESTED
             - OFFERED
             - ACCEPTED
@@ -4738,14 +4823,14 @@ components:
           example: Remote Party Name
         role:
           type: string
-          enum: *a43
+          enum: *a42
           example: provider
         remoteAddress:
           type: string
           example: 192.168.1.100
         state:
           type: string
-          enum: *a44
+          enum: *a43
           example: REQUESTED
         dataSet:
           type: string
@@ -4986,7 +5071,7 @@ components:
           example: party-identifier-001
         state:
           type: string
-          enum: &a45
+          enum: &a44
             - REQUESTED
             - STARTED
             - TERMINATED
@@ -5128,7 +5213,7 @@ components:
           example: party-identifier-001
         state:
           type: string
-          enum: *a45
+          enum: *a44
           example: REQUESTED
         agreementId:
           type: string
@@ -5292,10 +5377,10 @@ components:
             verifier: did:example:verifier
         credentialStatus:
           oneOf:
-            - &a46
+            - &a45
               $ref: "#/components/schemas/CredentialStatus"
             - type: array
-              items: *a46
+              items: *a45
       required:
         - "@context"
         - type
@@ -5604,10 +5689,10 @@ components:
         serviceEndpoint:
           example: https://example.com
           oneOf:
-            - &a47
+            - &a46
               type: string
             - type: array
-              items: *a47
+              items: *a46
       required:
         - id
         - type
@@ -5618,10 +5703,10 @@ components:
         "@context":
           example: https://www.w3.org/ns/did/v1
           oneOf:
-            - &a48
+            - &a47
               type: string
             - type: array
-              items: *a48
+              items: *a47
         id:
           type: string
           example: bdfd4c8e-3a44-4b9f-bc3e-1a8e26e3e99d
@@ -5634,10 +5719,10 @@ components:
         controller:
           example: bdfd4c8e-3a44-4b9f-bc3e-1a8e26e3e99d
           oneOf:
-            - &a49
+            - &a48
               type: string
             - type: array
-              items: *a49
+              items: *a48
         verificationMethod:
           example:
             - id: bdfd4c8e-3a44-4b9f-bc3e-1a8e26e3e99d

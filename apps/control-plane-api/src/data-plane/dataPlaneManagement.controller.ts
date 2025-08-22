@@ -27,7 +27,11 @@ import {
   Roles,
   UsePagination
 } from "@tsg-dsp/common-api";
-import { DataPlaneDetailsDto } from "@tsg-dsp/common-dsp";
+import {
+  DataPlaneDetailsDto,
+  DatasetDto,
+  DatasetSchema
+} from "@tsg-dsp/common-dsp";
 import { ApiForbiddenResponseDefault } from "@tsg-dsp/common-dtos";
 
 import { DataPlaneService } from "./dataPlane.service.js";
@@ -105,5 +109,22 @@ export class DataplaneManagementController {
   async deleteDataPlane(@Param("id") id: string): Promise<void> {
     this.logger.log(`Deleting dataplane ${id}`);
     return await this.dataplaneService.deleteDataplane(id);
+  }
+
+  @Get(":id/datasets")
+  @UsePagination()
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: "Get all datasets for a dataplane",
+    description: "Fetches all datasets associated with a specific dataplane."
+  })
+  @ApiOkResponse({ type: [DatasetSchema] })
+  @ApiForbiddenResponseDefault()
+  async getDatasets(
+    @Param("id") id: string,
+    @PaginationQuery() paginationOptions: PaginationOptionsDto
+  ): Promise<Paginated<DatasetDto[]>> {
+    this.logger.log(`Received call to fetch datasets for dataplane ${id}`);
+    return await this.dataplaneService.getDatasets(id, paginationOptions);
   }
 }

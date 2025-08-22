@@ -4,3 +4,4 @@
 @custom-variant dark (&:where(.app-dark, .app-dark *));
 
 @source inline("{sm:,md:,lg:,xl:,2xl:,}col-span-{1..12}");
+@source inline("hidden");

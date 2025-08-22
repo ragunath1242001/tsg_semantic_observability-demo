@@ -414,6 +414,32 @@ export class CatalogService {
     };
   }
 
+  async getDataplaneDatasets(
+    dataPlaneId: string,
+    paginationOptions: PaginationOptionsDto
+  ): Promise<Paginated<DatasetDto[]>> {
+    const [datasets, itemCount] = await this.datasetRepository.findAndCount({
+      where: {
+        _dataPlane: {
+          identifier: dataPlaneId
+        }
+      },
+      relations: {
+        _resource: true,
+        _distribution: {
+          _accessService: {
+            _resource: true
+          }
+        }
+      },
+      ...paginationOptions.typeOrm
+    });
+    return {
+      data: datasets.map((dataset) => new Dataset(dataset).serialize()),
+      total: itemCount
+    };
+  }
+
   async getDataset(datasetId: string): Promise<Dataset> {
     const dataset = await this.datasetRepository.findOne({
       where: {

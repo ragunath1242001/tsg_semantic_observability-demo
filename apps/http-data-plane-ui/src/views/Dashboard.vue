@@ -195,11 +195,6 @@ onMounted(async () => {
         <FormField :label-width="3" label="Role">{{
           state.details.role
         }}</FormField>
-        <FormField :label-width="3" label="Dataset IDs">
-          <div v-for="dataset in state.dataset" :key="dataset['@id']">
-            {{ dataset["@id"] }}
-          </div>
-        </FormField>
       </div>
     </template>
   </Card>

@@ -1,5 +1,3 @@
-import { Dataset } from "../dsp/catalog/catalog.js";
-
 export enum HealthStatus {
   HEALTHY,
   UNRESPONSIVE,
@@ -9,6 +7,7 @@ export enum HealthStatus {
 }
 export interface IDataPlaneStatus {
   identifier: string;
+  title: string;
   created?: Date;
   modified?: Date;
   health: HealthStatus;
@@ -18,6 +17,7 @@ export interface IDataPlaneStatus {
 
 export class DataPlaneStatus {
   identifier: string;
+  title: string;
   created?: Date;
   modified?: Date;
   health: HealthStatus;
@@ -26,6 +26,7 @@ export class DataPlaneStatus {
 
   constructor(value: IDataPlaneStatus) {
     this.identifier = value.identifier;
+    this.title = value.title;
     this.created = value.created;
     this.modified = value.modified;
     this.health = value.health;
@@ -35,7 +36,6 @@ export class DataPlaneStatus {
 }
 
 export interface IDataPlane extends IDataPlaneStatus {
-  datasets?: Array<Dataset>;
   dataplaneType: string;
   endpointPrefix: string;
   callbackAddress: string;
@@ -46,7 +46,6 @@ export interface IDataPlane extends IDataPlaneStatus {
 }
 
 export class DataPlane extends DataPlaneStatus {
-  datasets?: Array<Dataset>;
   dataplaneType: string;
   endpointPrefix: string;
   callbackAddress: string;
@@ -57,7 +56,6 @@ export class DataPlane extends DataPlaneStatus {
 
   constructor(value: IDataPlane) {
     super(value);
-    this.datasets = value.datasets;
     this.dataplaneType = value.dataplaneType;
     this.endpointPrefix = value.endpointPrefix;
     this.callbackAddress = value.callbackAddress;

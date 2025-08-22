@@ -1,11 +1,18 @@
 <script setup lang="ts">
-import { FileMetadataDto } from "@tsg-dsp/analytics-data-plane-dtos";
+import { CSVW, FileMetadataDto } from "@tsg-dsp/analytics-data-plane-dtos";
+import { DatasetDto } from "@tsg-dsp/common-dsp";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import http from "@tsg-dsp/common-ui/utils/http";
+import { useDialog } from "primevue";
 import { usePrimeVue } from "primevue/config";
+import { SelectChangeEvent } from "primevue/select";
 import { useConfirm } from "primevue/useconfirm";
 import { useToast } from "primevue/usetoast";
 import { computed, onMounted, ref } from "vue";
+
+import FileDetailModal from "./files/FileDetailModal.vue";
+import FileEditModal from "./files/FileEditModal.vue";
+import FileReUploadModal from "./files/FileReUploadModal.vue";
 
 const $primevue = usePrimeVue();
 
@@ -29,6 +36,7 @@ const sortOptions = ref([
 
 const toast = useToast();
 const confirm = useConfirm();
+const dialog = useDialog();
 
 // Filter states
 const globalFilterValue = ref("");
@@ -138,8 +146,9 @@ const removeFile = async (fileId: string) => {
   });
 };
 
-const onSortChange = (event: any) => {
+const onSortChange = (event: SelectChangeEvent) => {
   const sortValue = event.value;
+
   sortOrder.value = sortValue.order;
   sortField.value = sortValue.value;
   sortKey.value = sortValue;
@@ -187,6 +196,152 @@ const getFileStatusText = (file: FileMetadataDto) => {
   if (!file.presentInLastCheck) return "Missing from disk";
   if (!file.datasetId) return "No dataset linked";
   return "Ready";
+};
+const showDatasetDetails = async (fileId: string, title: string) => {
+  try {
+    const response = await http.get<DatasetDto>(`files/${fileId}/dataset`);
+    dialog.open(FileDetailModal, {
+      props: {
+        header: `Dataset Details - ${title}`,
+        pt: {
+          header: "cursor-move"
+        },
+        modal: false
+      },
+      data: {
+        dcat: response.data,
+        fileId: fileId
+      },
+      onClose(options) {
+        if (options.data?.reload) {
+          getFiles();
+        }
+      }
+    });
+  } catch (error) {
+    toast.add(
+      toastError({
+        error,
+        summary: "Dataset loading failed",
+        defaultMessage: "Could not load dataset details"
+      })
+    );
+    return null;
+  }
+};
+
+const showCSVWDetails = async (fileId: string, csvw: CSVW, title: string) => {
+  dialog.open(FileDetailModal, {
+    props: {
+      header: `CSVW Details - ${title}`,
+      pt: {
+        header: "cursor-move"
+      },
+      modal: false
+    },
+    data: {
+      csvw: csvw,
+      fileId: fileId
+    },
+    onClose(options) {
+      if (options.data?.reload) {
+        getFiles();
+      }
+    }
+  });
+};
+
+const previewFile = async (fileId: string, title: string) => {
+  try {
+    const response = await http.get<Blob>(`files/${fileId}/preview`, {
+      params: { previewSize: 102400 },
+      responseType: "blob"
+    });
+    dialog.open(FileDetailModal, {
+      props: {
+        header: `File preview - ${title}`,
+        pt: {
+          header: "cursor-move"
+        },
+        modal: false
+      },
+      data: {
+        preview: await response.data.text(),
+        fileId: fileId
+      }
+    });
+  } catch (error) {
+    toast.add(
+      toastError({
+        error,
+        summary: "File preview failed",
+        defaultMessage: "Could not preview the file"
+      })
+    );
+  }
+};
+
+const downloadFile = async (fileId: string, filename: string) => {
+  try {
+    const response = await http.get<Blob>(`files/${fileId}/preview`, {
+      responseType: "blob"
+    });
+
+    const url = URL.createObjectURL(response.data);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    URL.revokeObjectURL(url);
+    document.body.removeChild(link);
+  } catch (error) {
+    toast.add(
+      toastError({
+        error,
+        summary: "File preview failed",
+        defaultMessage: "Could not preview the file"
+      })
+    );
+  }
+};
+
+const editFile = (file: FileMetadataDto) => {
+  dialog.open(FileEditModal, {
+    props: {
+      header: `Edit File - ${file.originalFileName}`,
+      pt: {
+        root: {
+          class: "w-5xl max-w-[90vw]"
+        },
+        header: "cursor-move"
+      },
+      modal: true
+    },
+    data: {
+      file: file
+    },
+    onClose: () => getFiles()
+  });
+};
+
+const reUploadFile = (file: FileMetadataDto) => {
+  dialog.open(FileReUploadModal, {
+    props: {
+      header: `Re-upload File - ${file.originalFileName}`,
+      pt: {
+        root: {
+          class: "w-5xl max-w-[90vw]"
+        },
+        header: "cursor-move"
+      },
+      modal: true
+    },
+    data: {
+      file: file
+    },
+    onClose: () => getFiles()
+  });
 };
 
 defineExpose({
@@ -241,7 +396,7 @@ onMounted(async () => {
       :value="filteredFiles"
       :layout="layout"
       :paginator="filteredFiles.length > 12"
-      :rows="layout === 'list' ? 6 : 9"
+      :rows="layout === 'list' ? 9 : 9"
       :sort-order="sortOrder"
       :sort-field="sortField"
       :pt="{
@@ -335,7 +490,7 @@ onMounted(async () => {
           <div
             v-for="(file, index) in slotProps.items"
             :key="file.identifier"
-            class="flex flex-col sm:flex-row sm:items-center p-6 gap-6 border-surface-200 dark:border-surface-700"
+            class="flex flex-col sm:flex-row sm:items-center p-2 gap-6 border-surface-200 dark:border-surface-700"
             :class="{
               'border-t ': index !== 0,
               'opacity-60': !file.presentInLastCheck
@@ -370,29 +525,78 @@ onMounted(async () => {
                   <span class="text-sm text-surface-600 dark:text-surface-400">
                     {{ formatSize(file.fileSizeInBytes) }}
                   </span>
-                  <Badge
+                  <Button
                     v-if="file.csvw"
-                    value="CSVW"
+                    :pt:root:class="'p-0.5! text-xs!'"
+                    label="Has CSVW"
                     severity="info"
-                    size="small" />
-                  <Badge
+                    size="small"
+                    @click="
+                      showCSVWDetails(
+                        file.identifier,
+                        file.csvw,
+                        file.originalFileName
+                      )
+                    " />
+                  <Button
                     v-if="file.datasetId"
-                    value="Dataset"
+                    :pt:root:class="'p-0.5! text-xs!'"
+                    label="Dataset Linked"
                     severity="success"
-                    size="small" />
+                    size="small"
+                    @click="
+                      showDatasetDetails(file.identifier, file.originalFileName)
+                    " />
                 </div>
               </div>
 
               <!-- Actions -->
               <div class="flex gap-2">
                 <Button
+                  v-tooltip.bottom="'Preview file'"
+                  icon="pi pi-eye"
+                  severity="info"
+                  size="small"
+                  rounded
+                  outlined
+                  @click.capture="
+                    previewFile(file.identifier, file.originalFileName)
+                  " />
+                <Button
+                  v-tooltip.bottom="'Download file'"
+                  class="mr-5"
+                  icon="pi pi-download"
+                  severity="success"
+                  size="small"
+                  rounded
+                  outlined
+                  @click.capture="
+                    downloadFile(file.identifier, file.originalFileName)
+                  " />
+                <Button
+                  v-tooltip.bottom="'Re-upload file'"
+                  icon="pi pi-upload"
+                  severity="info"
+                  size="small"
+                  rounded
+                  outlined
+                  @click.capture="reUploadFile(file)" />
+                <Button
+                  v-tooltip.bottom="'Edit file metadata'"
+                  icon="pi pi-pencil"
+                  severity="warn"
+                  size="small"
+                  rounded
+                  outlined
+                  @click.capture="editFile(file)" />
+                <Button
                   v-tooltip.bottom="'Delete file'"
                   icon="pi pi-trash"
                   severity="danger"
-                  outlined
-                  rounded
                   size="small"
-                  @click="removeFile(file.identifier)" />
+                  rounded
+                  outlined
+                  @click.capture="removeFile(file.identifier)" />
               </div>
             </div>
           </div>
@@ -409,7 +613,45 @@ onMounted(async () => {
             :class="{ 'opacity-60': !file.presentInLastCheck }">
             <!-- Card Header -->
             <div class="relative p-4 bg-surface-50 dark:bg-surface-800">
-              <div class="absolute top-2 right-2">
+              <div class="absolute top-2 left-2 flex gap-2">
+                <Button
+                  v-tooltip.bottom="'Preview file'"
+                  icon="pi pi-eye"
+                  severity="info"
+                  size="small"
+                  rounded
+                  outlined
+                  @click.capture="
+                    previewFile(file.identifier, file.originalFileName)
+                  " />
+                <Button
+                  v-tooltip.bottom="'Download file'"
+                  icon="pi pi-download"
+                  severity="success"
+                  size="small"
+                  rounded
+                  outlined
+                  @click.capture="
+                    downloadFile(file.identifier, file.originalFileName)
+                  " />
+              </div>
+              <div class="absolute top-2 right-2 flex gap-2">
+                <Button
+                  v-tooltip.bottom="'Re-upload file'"
+                  icon="pi pi-upload"
+                  severity="info"
+                  size="small"
+                  rounded
+                  outlined
+                  @click.capture="reUploadFile(file)" />
+                <Button
+                  v-tooltip.bottom="'Edit file metadata'"
+                  icon="pi pi-pencil"
+                  severity="warn"
+                  size="small"
+                  rounded
+                  outlined
+                  @click.capture="editFile(file)" />
                 <Button
                   v-tooltip.bottom="'Delete file'"
                   icon="pi pi-trash"
@@ -417,7 +659,7 @@ onMounted(async () => {
                   size="small"
                   rounded
                   outlined
-                  @click="removeFile(file.identifier)" />
+                  @click.capture="removeFile(file.identifier)" />
               </div>
 
               <div class="flex flex-col items-center text-center">
@@ -455,16 +697,28 @@ onMounted(async () => {
 
                 <!-- Badges -->
                 <div class="flex flex-wrap gap-2">
-                  <Badge
+                  <Button
                     v-if="file.csvw"
-                    value="Has CSVW"
+                    :pt:root:class="'p-0.5! text-xs!'"
+                    label="Has CSVW"
                     severity="info"
-                    size="small" />
-                  <Badge
+                    size="small"
+                    @click="
+                      showCSVWDetails(
+                        file.identifier,
+                        file.csvw,
+                        file.originalFileName
+                      )
+                    " />
+                  <Button
                     v-if="file.datasetId"
-                    value="Dataset Linked"
+                    :pt:root:class="'p-0.5! text-xs!'"
+                    label="Dataset Linked"
                     severity="success"
-                    size="small" />
+                    size="small"
+                    @click="
+                      showDatasetDetails(file.identifier, file.originalFileName)
+                    " />
                 </div>
 
                 <!-- Warning Icons -->

@@ -6,7 +6,7 @@ const props = defineProps({
 
 <template>
   <div class="col-span-12 md:col-span-6 p-3">
-    <div class="text-surface-500 dark:text-surface-300 font-medium mb-2">
+    <div class="text-surface-500 dark:text-surface-300 font-semibold mb-2">
       {{ props.label }}
     </div>
     <div class="text-surface-900 dark:text-surface-0">

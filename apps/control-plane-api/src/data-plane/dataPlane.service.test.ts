@@ -119,6 +119,7 @@ describe("DataPlane Service", () => {
     it("Dataplane creation", async () => {
       const dataPlane: DataPlaneCreation = {
         dataplaneType: "http",
+        title: "Test Data Plane",
         endpointPrefix: "/api",
         callbackAddress: "http://localhost/api/callback",
         managementAddress: "http://localhost/api/management",
@@ -135,6 +136,7 @@ describe("DataPlane Service", () => {
       it("Add", async () => {
         const dataPlane: DataPlaneCreation = {
           identifier: "urn:uuid:f0a10802-90b4-43f5-a8d9-71ccdf907126",
+          title: "Test Data Plane",
           dataplaneType: "http",
           endpointPrefix: "/api",
           callbackAddress: "http://localhost/api/callback",
@@ -176,6 +178,7 @@ describe("DataPlane Service", () => {
     it("Dataplane delete", async () => {
       const dataPlane: DataPlaneCreation = {
         dataplaneType: "http",
+        title: "Test Data Plane",
         endpointPrefix: "/api",
         callbackAddress: "http://localhost/api/callback",
         managementAddress: "http://localhost/api/management",
@@ -238,6 +241,7 @@ describe("DataPlane Service", () => {
 
       const dataPlane: DataPlaneCreation = {
         dataplaneType: "http",
+        title: "Test Data Plane",
         endpointPrefix: "/api",
         callbackAddress: "http://localhost/api/callback",
         managementAddress: "http://localhost/api/management",
@@ -294,6 +298,7 @@ describe("DataPlane Service", () => {
 
       const dataPlane: DataPlaneCreation = {
         dataplaneType: "http",
+        title: "Test Data Plane",
         endpointPrefix: "/api",
         callbackAddress: "http://localhost/api/callback",
         managementAddress: "http://localhost/api/management",

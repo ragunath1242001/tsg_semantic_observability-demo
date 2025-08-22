@@ -5,12 +5,19 @@ import FilesComponent from "../components/FilesComponent.vue";
 import FileUploadComponent from "../components/FileUploadComponent.vue";
 
 const filesComponentRef = useTemplateRef("filesComponent");
+
+const onUploaded = () => {
+  filesComponentRef.value?.getFiles();
+  setTimeout(() => {
+    filesComponentRef.value?.getFiles();
+  }, 5000);
+};
 </script>
 <template>
   <Card>
     <template #title>Upload files</template>
     <template #content>
-      <FileUploadComponent @uploaded="() => filesComponentRef.getFiles()" />
+      <FileUploadComponent @uploaded="onUploaded" />
     </template>
   </Card>
   <Card class="mt-5">
