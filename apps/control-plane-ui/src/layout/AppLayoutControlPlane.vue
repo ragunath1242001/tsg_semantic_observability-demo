@@ -52,6 +52,16 @@ const menuList: Menu[] = [
         label: "Own Catalog",
         icon: "pi pi-fw pi-warehouse",
         to: "/catalog"
+      },
+      {
+        label: "Dataplanes",
+        icon: "pi pi-fw pi-database",
+        to: "/dataplanes"
+      },
+      {
+        label: "Federated Catalog",
+        icon: "pi pi-fw pi-address-book",
+        to: "/registry"
       }
     ]
   },
@@ -73,26 +83,6 @@ const menuList: Menu[] = [
         label: "Transfers",
         icon: "pi pi-fw pi-arrow-right-arrow-left",
         to: "/transfers"
-      }
-    ]
-  },
-  {
-    label: "Dataplanes",
-    items: [
-      {
-        label: "Dataplanes",
-        icon: "pi pi-fw pi-database",
-        to: "/dataplanes"
-      }
-    ]
-  },
-  {
-    label: "Registry",
-    items: [
-      {
-        label: "Registry",
-        icon: "pi pi-fw pi-address-book",
-        to: "/registry"
       }
     ]
   }

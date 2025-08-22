@@ -479,6 +479,7 @@ export class DataPlaneService {
       id: item.id,
       title: item.title,
       version: item.version,
+      landingPage: datasetConfig.landingPage,
       conformsTo: defArray(datasetConfig.baseSemanticModelRef),
       distribution: [
         new Distribution({
@@ -514,6 +515,7 @@ export class DataPlaneService {
     const baseDataset = new Dataset({
       id: id,
       title: datasetConfig.title,
+      landingPage: datasetConfig.landingPage,
       conformsTo: defArray(datasetConfig.baseSemanticModelRef),
       hasVersion: datasetConfig.versions.map((v) => `${id}:${v.version}`),
       hasCurrentVersion: `${id}:${currentDatasetRef}`,
@@ -532,6 +534,7 @@ export class DataPlaneService {
           id: `${id}:${v.version}`,
           title: `${datasetConfig.title} (${v.version})`,
           version: `${v.version}`,
+          landingPage: datasetConfig.landingPage,
           isVersionOf: id,
           previousVersion: v.previous
             ? `${id}:${v.previous.version}`

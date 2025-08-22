@@ -176,6 +176,11 @@ export class VersionedDatasetConfig extends DatasetConfig {
   @IsDefined()
   public title!: string;
 
+  @Description("Landing Page of the dataset")
+  @IsString()
+  @IsOptional()
+  public landingPage?: string;
+
   @Description("Base semantic model reference of the dataset")
   @IsString()
   @IsOptional()
@@ -202,6 +207,11 @@ export class VersionedDatasetConfig extends DatasetConfig {
 
 export class CollectionDatasetConfig extends DatasetConfig {
   override type: "collection" = "collection" as const;
+
+  @Description("Landing Page of the dataset")
+  @IsString()
+  @IsOptional()
+  public landingPage?: string;
 
   @Description("Base semantic model reference of the dataset")
   @IsString()
