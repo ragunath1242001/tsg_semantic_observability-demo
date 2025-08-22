@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { DataPlaneStateDto } from "@tsg-dsp/common-dtos";
 import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
+import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import http from "@tsg-dsp/common-ui/utils/http";
 import {
@@ -10,6 +11,8 @@ import {
 } from "@tsg-dsp/http-data-plane-dtos";
 import { useConfirm, useDialog, useToast } from "primevue";
 import { onMounted, ref } from "vue";
+
+const userStore = useUserStore();
 
 import { pushOrCreate } from "../utils/arrays";
 import { cleanPolicyConfig } from "../utils/policyconfig";
@@ -299,6 +302,7 @@ onMounted(async () => {
           </div>
           <div class="mt-4">
             <Button
+              v-if="!userStore.isReadOnly"
               label="Update configuration"
               :loading="updateLoading"
               severity="warn"
@@ -307,6 +311,7 @@ onMounted(async () => {
           </div>
           <div class="mt-4">
             <Button
+              v-if="!userStore.isReadOnly"
               label="Add new dataset"
               severity="success"
               type="submit"
@@ -328,11 +333,13 @@ onMounted(async () => {
             severity="info"
             @click="openDatasetDto(dataset)" />
           <Button
+            v-if="!userStore.isReadOnly"
             class="ml-2"
             icon="pi pi-pencil"
             severity="warn"
             @click="openDatasetEditModal(dataset)" />
           <Button
+            v-if="!userStore.isReadOnly"
             class="ml-2"
             icon="pi pi-trash"
             severity="danger"

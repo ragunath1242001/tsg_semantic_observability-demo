@@ -2,12 +2,15 @@
 import { AgreementDto, DatasetDto } from "@tsg-dsp/common-dsp";
 import { TransferDto } from "@tsg-dsp/common-dtos";
 import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
+import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import http from "@tsg-dsp/common-ui/utils/http";
 import { useDialog } from "primevue/usedialog";
 import { useToast } from "primevue/usetoast";
 import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
+
+const userStore = useUserStore();
 
 import JSONDialog from "../components/JSONDialog.vue";
 import TesterComponent from "../components/TesterComponent.vue";
@@ -119,7 +122,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div>
+  <div v-if="!userStore.isReadOnly">
     <Card>
       <template #title>Metadata</template>
       <template #subtitle>Fetch agreement and dataset metadata</template>
@@ -182,5 +185,14 @@ onMounted(async () => {
       </template>
     </Card>
     <TesterComponent :headers="headers" :url="url" :transfer="transfer" />
+  </div>
+  <div v-else>
+    <Card>
+      <template #title>Tester</template>
+      <template #content>
+        Since you are in read-only mode, you cannot send requests using the
+        tester.
+      </template>
+    </Card>
   </div>
 </template>

@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import { DataPlaneStateDto, TransferDto } from "@tsg-dsp/common-dtos";
 import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
+import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
 import { formatDate } from "@tsg-dsp/common-ui/utils/date";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import http from "@tsg-dsp/common-ui/utils/http";
 import { useConfirm } from "primevue/useconfirm";
 import { useToast } from "primevue/usetoast";
 import { computed, onMounted, ref } from "vue";
+
+const userStore = useUserStore();
 
 import PaginatedLogTable from "../components/PaginatedLogTable.vue";
 import router from "../router";
@@ -231,7 +234,7 @@ onMounted(async () => {
             {{ new Date(props.data.createdDate).toLocaleString() }}
           </template>
         </Column>
-        <Column header="Quick actions">
+        <Column v-if="!userStore.isReadOnly" header="Quick actions">
           <template #body="props">
             <Button
               v-tooltip.bottom="'Terminate'"
@@ -363,7 +366,7 @@ onMounted(async () => {
             {{ new Date(props.data.createdDate).toLocaleString() }}
           </template>
         </Column>
-        <Column header="Quick actions">
+        <Column v-if="!userStore.isReadOnly" header="Quick actions">
           <template #body="props">
             <Button
               v-tooltip.bottom="'Terminate'"

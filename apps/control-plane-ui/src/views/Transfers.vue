@@ -1,6 +1,9 @@
 <script setup lang="ts">
+import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
 import { storeToRefs } from "pinia";
 import { onMounted } from "vue";
+
+const userStore = useUserStore();
 
 import CTATransfer from "../components/CTATransfer.vue";
 import TransferHistory from "../components/TransferHistory.vue";
@@ -30,7 +33,9 @@ onMounted(async () => {
         </p>
       </template>
     </Card>
-    <CTATransfer :transfers="ctaTransfers"></CTATransfer>
+    <CTATransfer
+      v-if="!userStore.isReadOnly"
+      :transfers="ctaTransfers"></CTATransfer>
     <TransferHistory :transfers="transfers"></TransferHistory>
   </div>
 </template>

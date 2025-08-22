@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import schema from "@tsg-dsp/common-ui/assets/dcql.schema.json";
 import FormField from "@tsg-dsp/common-ui/components/FormField.vue";
+import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import http from "@tsg-dsp/common-ui/utils/http";
 import { useToast } from "primevue/usetoast";
 import QRCode from "qrcode";
 import { ref } from "vue";
+
+const userStore = useUserStore();
 
 const toast = useToast();
 
@@ -108,7 +111,7 @@ const createAuthorizationRequest = async () => {
               :min-lines="3"
               :max-lines="30"></MonacoEditorVue>
           </FormField>
-          <FormField no-label>
+          <FormField v-if="!userStore.isReadOnly" no-label>
             <Button label="Create Authorization Request" type="submit" />
           </FormField>
         </form>

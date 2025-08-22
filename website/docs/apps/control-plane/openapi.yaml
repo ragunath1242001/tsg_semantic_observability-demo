@@ -2940,7 +2940,7 @@ paths:
   /api/management/registry:
     get:
       description: Requests all available catalogs.
-      operationId: RegistryClientController_requestCatalogs
+      operationId: RegistryManagementController_requestCatalogs
       parameters: []
       responses:
         "200":
@@ -2967,7 +2967,7 @@ paths:
   /api/management/registry/addresses:
     get:
       description: Requests all available credential addresses.
-      operationId: RegistryClientController_requestAddresses
+      operationId: RegistryManagementController_requestAddresses
       parameters: []
       responses:
         "200":
@@ -2991,7 +2991,7 @@ paths:
     get:
       description: Requests all DID Documents that could be retrieved at the Wallet
         this Control Plane is linked to.
-      operationId: RegistryClientController_requestDIDDocuments
+      operationId: RegistryManagementController_requestDIDDocuments
       parameters: []
       responses:
         "200":
@@ -3012,7 +3012,7 @@ paths:
   /api/management/registry/catalogs:
     get:
       description: Fetches all catalogs from the registry.
-      operationId: RegistryClientController_getCatalogs
+      operationId: RegistryManagementController_getCatalogs
       parameters:
         - name: order
           required: false
@@ -3094,7 +3094,7 @@ paths:
   /api/management/registry/catalogs/{participantId}:
     get:
       description: Fetches a specific catalog by its participant ID.
-      operationId: RegistryClientController_getCatalogByParticipantId
+      operationId: RegistryManagementController_getCatalogByParticipantId
       parameters:
         - name: participantId
           required: true

@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { CatalogDto } from "@tsg-dsp/common-dsp";
+import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
 import { toastError } from "@tsg-dsp/common-ui/utils/error";
 import { CredentialAddress } from "@tsg-dsp/control-plane-dtos";
 import { storeToRefs } from "pinia";
 import { useToast } from "primevue/usetoast";
 import { onMounted, ref } from "vue";
+
+const userStore = useUserStore();
 
 import Catalog from "../components/Catalog.vue";
 import router from "../router";
@@ -24,7 +27,7 @@ const { urlInput, didInput } = storeToRefs(useCatalogStore());
 
 const queryAddresses = async () => {
   try {
-    const response = await http.get(`registry/addresses`);
+    const response = await http.get(`management/registry/addresses`);
     addresses.value = response.data;
     return addresses;
   } catch (error) {
@@ -41,9 +44,12 @@ const queryAddresses = async () => {
 };
 
 const getCatalog = () => {
-  urlInput.value = selection.value.address;
-  didInput.value = selection.value.didId;
-  router.push({ path: "/catalog/request" });
+  if (!userStore.isReadOnly) {
+    urlInput.value = selection.value.address;
+    didInput.value = selection.value.didId;
+    router.push({ path: "/catalog/request" });
+    return;
+  }
 };
 
 const getCatalogs = async () => {
@@ -87,8 +93,8 @@ onMounted(async () => await initialize());
     class="mt-8">
     <template #title>Addresses</template>
     <template #subtitle
-      >Overview of all participants in the dataspace. Click an entry to request
-      their catalog.</template
+      >Overview of all participants in the dataspace. The DID and addresses are
+      fetched from the Dataspace Authority.</template
     >
     <template #content>
       <DataTable

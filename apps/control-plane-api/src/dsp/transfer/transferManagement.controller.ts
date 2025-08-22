@@ -48,6 +48,7 @@ export class TransferManagementController {
   private readonly logger = new Logger(this.constructor.name);
 
   @Get()
+  @Roles(["controlplane_admin", "controlplane_dataplane", "readonly_user"])
   @UsePagination()
   @ApiOperation({ summary: "Get all transfers" })
   @ApiResponse({ status: HttpStatus.OK, type: [TransferStatusDto] })
@@ -58,6 +59,7 @@ export class TransferManagementController {
   }
 
   @Get(":processId")
+  @Roles(["controlplane_admin", "controlplane_dataplane", "readonly_user"])
   @ApiOperation({ summary: "Get transfer details by process ID" })
   @ApiParam({ name: "processId", required: true, description: "Process ID" })
   @ApiResponse({ status: HttpStatus.OK, type: TransferDetailDto })

@@ -1,6 +1,9 @@
 <script setup lang="ts">
+import { useUserStore } from "@tsg-dsp/common-ui/stores/user";
 import { storeToRefs } from "pinia";
 import { onMounted } from "vue";
+
+const userStore = useUserStore();
 
 import CTANegotiation from "../components/CTANegotiation.vue";
 import NegotiationHistory from "../components/NegotiationHistory.vue";
@@ -30,7 +33,9 @@ onMounted(async () => {
         >
       </template>
     </Card>
-    <CTANegotiation :negotiations="ctaNegotiations" />
+    <CTANegotiation
+      v-if="!userStore.isReadOnly"
+      :negotiations="ctaNegotiations" />
     <NegotiationHistory :negotiations="negotiations"></NegotiationHistory>
   </div>
 </template>

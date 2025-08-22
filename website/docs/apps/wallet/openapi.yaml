@@ -614,6 +614,7 @@ paths:
           oauth2:
             - wallet_view_all_credentials
             - wallet_view_own_credentials
+            - readonly_user
       summary: List credentials
       tags: &a11
         - Management Credentials
@@ -974,6 +975,7 @@ paths:
       security: &a15
         - oauth2:
             - wallet_view_did
+            - readonly_user
       summary: Retrieve DID document
       tags: &a16
         - Management DID
@@ -1285,6 +1287,7 @@ paths:
       security: &a17
         - oauth2:
             - wallet_manage_keys
+            - readonly_user
       summary: Retrieve keys
       tags: &a18
         - Management Keys
@@ -2274,6 +2277,7 @@ components:
             wallet_manage_all_credentials: wallet_manage_all_credentials
             wallet_issue_credentials: wallet_issue_credentials
             wallet_view_presentations: wallet_view_presentations
+            readonly_user: readonly_user
   schemas:
     RuntimeConfigDto:
       type: object

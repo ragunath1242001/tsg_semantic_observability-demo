@@ -50,7 +50,11 @@ import {
 import { CredentialsService } from "./credentials.service.js";
 
 @ApiTags("Management Credentials")
-@ApiOAuth2([AppRole.VIEW_ALL_CREDENTIALS, AppRole.VIEW_OWN_CREDENTIALS])
+@ApiOAuth2([
+  AppRole.VIEW_ALL_CREDENTIALS,
+  AppRole.VIEW_OWN_CREDENTIALS,
+  AppRole.READONLY_USER
+])
 @Controller("management/credentials")
 export class CredentialsManagementController {
   constructor(
@@ -65,7 +69,10 @@ export class CredentialsManagementController {
   ): string | undefined {
     switch (action) {
       case "view":
-        if (client.roles.includes(AppRole.VIEW_ALL_CREDENTIALS)) {
+        if (
+          client.roles.includes(AppRole.VIEW_ALL_CREDENTIALS) ||
+          client.roles.includes(AppRole.READONLY_USER)
+        ) {
           return undefined;
         } else if (client.roles.includes(AppRole.VIEW_OWN_CREDENTIALS)) {
           return client.didId;

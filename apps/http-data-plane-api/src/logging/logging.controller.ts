@@ -29,6 +29,7 @@ export class LoggingController {
   constructor(private readonly loggingService: LoggingService) {}
 
   @Get("ingress")
+  @Roles(["controlplane_dataplane", "readonly_user"])
   @ApiOperation({ summary: "Get ingress logs" })
   @ApiQuery({ type: LogFilterDto })
   @ApiQuery({ type: PageOptionsDto })
@@ -42,6 +43,7 @@ export class LoggingController {
   }
 
   @Get("egress")
+  @Roles(["controlplane_dataplane", "readonly_user"])
   @ApiOperation({ summary: "Get egress logs" })
   @ApiQuery({ type: LogFilterDto })
   @ApiQuery({ type: PageOptionsDto })
