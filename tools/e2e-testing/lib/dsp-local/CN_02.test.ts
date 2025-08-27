@@ -75,7 +75,7 @@ describe("Local - CN_02: Provider test scenarios", () => {
         negotiationService.requestNew(
           dataset.hasPolicy![0] as Offer,
           dataset.id,
-          "http://localhost:32490/api/negotiations",
+          "http://localhost:32490/negotiations",
           "did:web:localhost%3A32490"
         );
       })
@@ -106,7 +106,7 @@ describe("Local - CN_02: Provider test scenarios", () => {
         await negotiationService.requestNew(
           dataset.hasPolicy![0] as Offer,
           dataset.id,
-          "http://localhost:32490/api/negotiations",
+          "http://localhost:32490/negotiations",
           "did:web:localhost%3A32490"
         );
       })
@@ -137,7 +137,7 @@ describe("Local - CN_02: Provider test scenarios", () => {
         negotiationService.requestNew(
           dataset.hasPolicy![0] as Offer,
           dataset.id,
-          "http://localhost:32490/api/negotiations",
+          "http://localhost:32490/negotiations",
           "did:web:localhost%3A32490"
         );
       })
@@ -176,7 +176,7 @@ describe("Local - CN_02: Provider test scenarios", () => {
         negotiationService.requestNew(
           dataset.hasPolicy![0] as Offer,
           dataset.id,
-          "http://localhost:32490/api/negotiations",
+          "http://localhost:32490/negotiations",
           "did:web:localhost%3A32490"
         );
       })
@@ -226,7 +226,7 @@ describe("Local - CN_02: Provider test scenarios", () => {
         negotiationService.requestNew(
           dataset.hasPolicy![0] as Offer,
           dataset.id,
-          "http://localhost:32490/api/negotiations",
+          "http://localhost:32490/negotiations",
           "did:web:localhost%3A32490"
         );
       })
@@ -276,7 +276,7 @@ describe("Local - CN_02: Provider test scenarios", () => {
         negotiationService.requestNew(
           dataset.hasPolicy![0] as Offer,
           dataset.id,
-          "http://localhost:32490/api/negotiations",
+          "http://localhost:32490/negotiations",
           "did:web:localhost%3A32490"
         );
       })
@@ -334,7 +334,7 @@ describe("Local - CN_02: Provider test scenarios", () => {
         negotiationService.requestNew(
           dataset.hasPolicy![0] as Offer,
           dataset.id,
-          "http://localhost:32490/api/negotiations",
+          "http://localhost:32490/negotiations",
           "did:web:localhost%3A32490"
         );
       })

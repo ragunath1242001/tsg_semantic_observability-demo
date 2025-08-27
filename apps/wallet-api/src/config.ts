@@ -263,7 +263,7 @@ export class DidServiceConfig {
 
   @Description("Service endpoint")
   @IsString()
-  @IsUrl({ require_tld: true, require_protocol: true, require_host: false })
+  @IsUrl({ require_tld: false, require_protocol: true, require_host: false })
   public readonly serviceEndpoint!: string;
 }
 

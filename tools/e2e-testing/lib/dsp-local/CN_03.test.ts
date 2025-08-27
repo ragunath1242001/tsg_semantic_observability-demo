@@ -78,7 +78,7 @@ describe("Local - CN_03: Provider negative test scenarios", () => {
         negotiationService.requestNew(
           dataset.hasPolicy![0] as Offer,
           dataset.id,
-          "http://localhost:32490/api/negotiations",
+          "http://localhost:32490/negotiations",
           "did:web:localhost%3A32490"
         );
       })
@@ -139,7 +139,7 @@ describe("Local - CN_03: Provider negative test scenarios", () => {
         negotiationService.requestNew(
           dataset.hasPolicy![0] as Offer,
           dataset.id,
-          "http://localhost:32490/api/negotiations",
+          "http://localhost:32490/negotiations",
           "did:web:localhost%3A32490"
         );
       })
@@ -197,7 +197,7 @@ describe("Local - CN_03: Provider negative test scenarios", () => {
         negotiationService.requestNew(
           dataset.hasPolicy![0] as Offer,
           dataset.id,
-          "http://localhost:32490/api/negotiations",
+          "http://localhost:32490/negotiations",
           "did:web:localhost%3A32490"
         );
       })
@@ -263,7 +263,7 @@ describe("Local - CN_03: Provider negative test scenarios", () => {
         negotiationService.requestNew(
           dataset.hasPolicy![0] as Offer,
           dataset.id,
-          "http://localhost:32490/api/negotiations",
+          "http://localhost:32490/negotiations",
           "did:web:localhost%3A32490"
         );
       })

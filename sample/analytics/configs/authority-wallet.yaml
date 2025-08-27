@@ -1,0 +1,75 @@
+server:
+  publicAddress: http://localhost:3400
+  publicDomain: localhost:3400
+  port: 3400
+  listen: "0.0.0.0"
+
+db:
+  type: "sqlite"
+  database: "authority.db"
+
+auth:
+  enabled: false
+
+initKeys:
+  - id: key-0
+    type: EdDSA
+    default: true
+
+runtime:
+  color: "#3B8BF6"
+  acceptUnauthenticatedCredentialRequests: true
+  issueMobileCredentials: true
+  issueDebugCredentials: true
+
+trustAnchors:
+  - identifier: did:web:localhost%3A3400
+    credentialTypes:
+      - ExampleCredential
+      - authority:ExampleCredential
+      - http://localhost:3400/credentials/ExampleCredential
+
+issuance:
+  issuer:
+    - credentialSubject:
+        id: did:web:localhost%3A3500
+      credentialType: ExampleCredential
+      holderId: did:web:localhost%3A3500
+      preAuthorizedCode: 386527fd21960fd8bd3aa0208c9275a4437fde1bdae9469daaf91fb7cace67d827ff152e5f89c02ccdbde1766387feb2
+    - credentialSubject:
+        id: did:web:localhost%3A3600
+      credentialType: ExampleCredential
+      holderId: did:web:localhost%3A3600
+      preAuthorizedCode: 84f3eb915ac95caf5ab5edf03359d0424e3c546a51ed0a4f96691c63f24b92cd3f58c97aa35e52bc7f6429157b5d4c7b
+
+issueConfigurations:
+  - backgroundColor: "#3B8BF6"
+    credentialType: ExampleCredential
+    description: Example Membership Credential
+    document:
+      "@context":
+        "@protected": true
+        "@version": 1.1
+        ExampleCredential:
+          "@context":
+            - https://www.w3.org/2018/credentials/v1
+          "@id": example:ExampleCredential
+        example: https://localhost:3400/context/ExampleCredential
+        id: "@id"
+        type: "@type"
+    id: example
+    name: Example Credential
+    schema:
+      additionalProperties: true
+      properties:
+        id:
+          pattern: ^did:web:.*
+          type: string
+      required:
+        - id
+      title: ExampleCredential
+      type: object
+    textColor: "#FFFFFF"
+
+did:
+  method: "did:web:"

@@ -102,7 +102,7 @@ describe("Local - TP_03: Transfer request provider negative scenarios", () => {
       .onSetup(async ({ transferService }) => {
         await transferService.initiateTransferProcess(
           "ATP0301",
-          "http://localhost:32490/api/transfers",
+          "http://localhost:32490/transfers",
           "did:web:localhost%3A32490",
           "HttpData-PULL"
         );
@@ -138,7 +138,7 @@ describe("Local - TP_03: Transfer request provider negative scenarios", () => {
       .onSetup(async ({ transferService }) => {
         await transferService.initiateTransferProcess(
           "ATP0302",
-          "http://localhost:32490/api/transfers",
+          "http://localhost:32490/transfers",
           "did:web:localhost%3A32490",
           "HttpData-PULL"
         );
@@ -175,7 +175,7 @@ describe("Local - TP_03: Transfer request provider negative scenarios", () => {
       .onSetup(async ({ transferService }) => {
         await transferService.initiateTransferProcess(
           "ATP0303",
-          "http://localhost:32490/api/transfers",
+          "http://localhost:32490/transfers",
           "did:web:localhost%3A32490",
           "HttpData-PULL"
         );
@@ -243,7 +243,7 @@ describe("Local - TP_03: Transfer request provider negative scenarios", () => {
       .onSetup(async ({ transferService }) => {
         await transferService.initiateTransferProcess(
           "ATP0304",
-          "http://localhost:32490/api/transfers",
+          "http://localhost:32490/transfers",
           "did:web:localhost%3A32490",
           "HttpData-PULL"
         );
@@ -312,7 +312,7 @@ describe("Local - TP_03: Transfer request provider negative scenarios", () => {
       .onSetup(async ({ transferService }) => {
         await transferService.initiateTransferProcess(
           "ATP0305",
-          "http://localhost:32490/api/transfers",
+          "http://localhost:32490/transfers",
           "did:web:localhost%3A32490",
           "HttpData-PULL"
         );
