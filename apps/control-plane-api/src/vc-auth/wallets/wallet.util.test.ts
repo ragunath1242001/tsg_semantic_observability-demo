@@ -9,9 +9,9 @@ export function mockWalletConfig(): IamConfig {
   return plainToInstance<TsgWalletConfig, TsgWalletConfig>(TsgWalletConfig, {
     type: "tsg",
     didId: "did:web:localhost%3A3000",
-    walletUrl: "http://127.0.0.1/api",
-    siopUrl: "http://127.0.0.1/api/management/dcp/holder/token",
-    verifyUrl: "http://127.0.0.1/api/management/dcp/verifier/verify",
+    walletUrl: "http://127.0.0.1",
+    siopUrl: "http://127.0.0.1/management/dcp/holder/token",
+    verifyUrl: "http://127.0.0.1/management/dcp/verifier/verify",
     typeFilter: "VerifiableCredential",
     issuerFilter: "did:web:localhost%3A3000",
     protocol: "DUMMY",
@@ -63,7 +63,7 @@ export function sampleVpToken(): string {
 
 export function setupMockWalletServer(start: boolean = true): SetupServer {
   const server = setupServer(
-    http.post("http://127.0.0.1/api/auth/login", () => {
+    http.post("http://127.0.0.1/auth/login", () => {
       return HttpResponse.json({
         access_token:
           "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjb25uZWN0b3IiLCJlbWFpbCI6Im5vcmVwbHlAZGF0YXNwYWMuZXMiLCJkaWRJZCI6ImRpZDp3ZWI6d2FsbGV0LWNhdGVuYS14LmFscGhhLnNjc24uZGF0YXNwYWMuZXMiLCJyb2xlcyI6WyJ2aWV3X3ByZXNlbnRhdGlvbnMiXSwiaWF0IjoxNjkzNDIzNzgyLCJleHAiOjE2OTM0MjQ2ODJ9.UkVNT1ZFRF9TSUdOQVRVUkU",
@@ -71,13 +71,13 @@ export function setupMockWalletServer(start: boolean = true): SetupServer {
           "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjb25uZWN0b3IiLCJlbWFpbCI6Im5vcmVwbHlAZGF0YXNwYWMuZXMiLCJkaWRJZCI6ImRpZDp3ZWI6d2FsbGV0LWNhdGVuYS14LmFscGhhLnNjc24uZGF0YXNwYWMuZXMiLCJyb2xlcyI6WyJ2aWV3X3ByZXNlbnRhdGlvbnMiXSwiaWF0IjoxNjkzNDIzNzgyLCJleHAiOjE2OTQwMjg1ODJ9.UkVNT1ZFRF9TSUdOQVRVUkU"
       });
     }),
-    http.get("http://127.0.0.1/api/management/dcp/holder/token", () => {
+    http.get("http://127.0.0.1/management/dcp/holder/token", () => {
       return HttpResponse.json({
         id_token:
           "eyJhbGciOiJFZERTQSIsImtpZCI6ImRpZDp3ZWI6bG9jYWxob3N0JTNBMzAwMCNrZXktMCJ9.eyJhdWQiOiJkaWQ6d2ViOmxvY2FsaG9zdCUzQTMwMDAiLCJ0b2tlbiI6IjliYjU0YjliMmM3YWI0NjBjZTc2MGRjOTQ4OWUxNTBmZDU5NzE3NWY1OTJmYWM0N2YyZmMyMzg4ZTJmYzVkYjEyYWE4MzRhYTAxOGJjZDcyNTRmYTRhNWIzZjBiMjk1YyIsImlhdCI6MTcxMTcxNzgzMSwiaXNzIjoiZGlkOndlYjpsb2NhbGhvc3QlM0EzMDAwIiwic3ViIjoiZGlkOndlYjpsb2NhbGhvc3QlM0EzMDAwIiwianRpIjoiMDI2MDI4YTctZGE1Mi00M2Q2LTlhYzYtYWNhMTE3ZWRhYWFhIiwiZXhwIjoxNzExNzE4MTMxfQ.Aif9GVz9fwmQxrJP58PUH6FXAUZxwCWy_JFSy8-Pk7Ud2qksKqM3v42oKfQywO108MkwaQ95N_hlj-n562PPDw"
       });
     }),
-    http.post("http://127.0.0.1/api/management/dcp/verifier/verify", () => {
+    http.post("http://127.0.0.1/management/dcp/verifier/verify", () => {
       return HttpResponse.json([
         {
           "@context": [
@@ -115,7 +115,7 @@ export function setupMockWalletServer(start: boolean = true): SetupServer {
         }
       ]);
     }),
-    http.get("http://127.0.0.1/api/management/credentials/dataspace", () => {
+    http.get("http://127.0.0.1/management/credentials/dataspace", () => {
       return HttpResponse.json([
         {
           created: "2024-03-18T10:53:21.000Z",

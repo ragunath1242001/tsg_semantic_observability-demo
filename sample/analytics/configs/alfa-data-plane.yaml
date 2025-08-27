@@ -1,0 +1,26 @@
+server:
+  publicAddress: http://localhost:3502
+  publicDomain: localhost:3502
+  port: 3502
+  listen: "0.0.0.0"
+
+db:
+  type: "sqlite"
+  database: "alfa.db"
+
+auth:
+  enabled: false
+
+controlPlane:
+  dataPlaneEndpoint: http://localhost:3501/data-plane
+  managementEndpoint: http://localhost:3501/management
+  controlEndpoint: http://localhost:3501
+
+runtime:
+  color: "#3B8BF6"
+
+files:
+  path: "./uploads"
+
+kubernetesConfig:
+  namespace: analytics-dataplane-test

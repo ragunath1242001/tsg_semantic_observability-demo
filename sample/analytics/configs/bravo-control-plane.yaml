@@ -1,0 +1,36 @@
+server:
+  publicAddress: http://localhost:3601
+  publicDomain: localhost:3601
+  port: 3601
+  listen: "0.0.0.0"
+
+db:
+  type: sqlite
+  database: "bravo.db"
+
+auth:
+  enabled: false
+
+runtime:
+  controlPlaneInteractions: automatic
+  color: "#3B8BF6"
+
+registry:
+  useRegistry: true
+  registryIntervalInMilliseconds: 30000
+
+iam:
+  type: tsg
+  didId: did:web:localhost%3A3600
+  issuerFilter: did:web:localhost%3A3400
+  typeFilter: ExampleCredential
+  walletUrl: http://localhost:3600
+  siopUrl: http://localhost:3600/management/dcp/holder/token
+  verifyUrl: http://localhost:3600/management/dcp/verifier/verify
+
+initCatalog:
+  participantId: did:web:localhost%3A3600
+  creator: did:web:localhost%3A3600
+  publisher: did:web:localhost%3A3600
+  title: Bravo
+  description: Bravo connector

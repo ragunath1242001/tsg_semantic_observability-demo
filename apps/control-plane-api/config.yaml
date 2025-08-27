@@ -1,26 +1,15 @@
 db:
   type: sqlite
   database: ":memory:"
-  # database: control-plane.sqlite
 
 server:
   port: "3000"
   listen: "0.0.0.0"
   publicDomain: localhost:3000
-  publicAddress: http://localhost:3000/api
+  publicAddress: http://localhost:3000
 
 auth:
   enabled: false
-  # authorizationURL: https://localhost/login/oauth/authorize
-  # tokenURL: https://localhost/api/login/oauth/access_token
-  # introspectionURL: https://localhost/api/login/oauth/introspect
-  # callbackURL: http://localhost:5173/api/auth/callback
-  # clientId:
-  # clientSecret:
-  # clientUsername:
-  # clientPassword:
-  # rolePath: "$.roles[*].name"
-  # redirectURL: http://localhost:5173/
 
 runtime:
   controlPlaneInteractions: automatic
@@ -33,10 +22,6 @@ registry:
 iam:
   type: dev
   didId: did:web:localhost%3A3001
-  # tokenUrl: http://localhost:3001/api/auth/login
-  # walletUrl: http://localhost:3001/api
-  # clientId: client
-  # clientSecret: secret
 
 initCatalog:
   participantId: did:web:localhost%3A3001

@@ -8,7 +8,7 @@ server:
   port: "32490"
   listen: "0.0.0.0"
   publicDomain: localhost:32490
-  publicAddress: http://localhost:32490/api
+  publicAddress: http://localhost:32490
 
 auth:
   enabled: false
